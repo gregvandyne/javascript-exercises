@@ -1,0 +1,529 @@
+{
+ "id": "sky-islands",
+ "name": "Sky Islands",
+ "version": "1.0.0",
+ "engine": "three",
+ "description": "Hop between floating grassy islands above the clouds, collect coins and jump to the right answer.",
+ "goodFor": [
+  "maths",
+  "quizzes",
+  "platformers"
+ ],
+ "cover": "cover.webp",
+ "units": "1 unit = 1 metre. World pieces, props and heroes stand on y = 0, centred on x and z; the two effects (dust, brick-bit) are centred on 0.",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (models and sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers",
+   "size": [
+    1.35,
+    2.57,
+    1.52
+   ]
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers",
+   "size": [
+    1.33,
+    2.51,
+    1.47
+   ]
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers",
+   "size": [
+    2.24,
+    3.17,
+    2.5
+   ]
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers",
+   "size": [
+    1.31,
+    2.16,
+    1.15
+   ]
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers",
+   "size": [
+    1.31,
+    2.22,
+    1.26
+   ]
+  }
+ ],
+ "heroNotes": "Held weapons and the mug are removed from every hero. All heroes share one skeleton; their moves are in heroes/moves.glb and play on any hero by bone name.",
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "island-round",
+   "file": "world/island-round.glb",
+   "kind": "world",
+   "tags": [
+    "island",
+    "ground",
+    "answer"
+   ],
+   "size": [
+    5,
+    0.5,
+    5
+   ],
+   "pack": "kenney-platformer",
+   "note": "The main grassy island. Top surface at y = 0.5."
+  },
+  {
+   "id": "platform",
+   "file": "world/platform.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "step"
+   ],
+   "size": [
+    2,
+    0.55,
+    2
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "platform-medium",
+   "file": "world/platform-medium.glb",
+   "kind": "world",
+   "tags": [
+    "platform"
+   ],
+   "size": [
+    3,
+    0.55,
+    3
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "platform-large",
+   "file": "world/platform-large.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "ground"
+   ],
+   "size": [
+    5,
+    0.55,
+    5
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "platform-falling",
+   "file": "world/platform-falling.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "obstacle",
+    "falls"
+   ],
+   "size": [
+    2.2,
+    0.5,
+    2.2
+   ],
+   "pack": "kenney-platformer",
+   "note": "Orange: a platform that drops after you land."
+  },
+  {
+   "id": "brick",
+   "file": "world/brick.glb",
+   "kind": "world",
+   "tags": [
+    "block",
+    "wall",
+    "breakable"
+   ],
+   "size": [
+    1,
+    1,
+    1
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "grass",
+   "file": "world/grass.glb",
+   "kind": "decor",
+   "tags": [
+    "plant"
+   ],
+   "size": [
+    0.51,
+    0.31,
+    0.54
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "grass-small",
+   "file": "world/grass-small.glb",
+   "kind": "decor",
+   "tags": [
+    "plant"
+   ],
+   "size": [
+    0.25,
+    0.26,
+    0.31
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "cloud",
+   "file": "world/cloud.glb",
+   "kind": "decor",
+   "tags": [
+    "cloud",
+    "sky"
+   ],
+   "size": [
+    1,
+    1,
+    1
+   ],
+   "pack": "kenney-platformer",
+   "note": "A blocky cloud. Big soft clouds are drawn in code (Oomba3D sky)."
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.41,
+    0.42,
+    0.17
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin-block",
+   "file": "props/coin-block.glb",
+   "kind": "prop",
+   "tags": [
+    "block",
+    "bonus"
+   ],
+   "size": [
+    1.08,
+    1,
+    1.08
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "flag",
+   "file": "props/flag.glb",
+   "kind": "prop",
+   "tags": [
+    "goal",
+    "finish"
+   ],
+   "size": [
+    0.2,
+    1.24,
+    0.68
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "dust",
+   "file": "props/dust.glb",
+   "kind": "effect",
+   "tags": [
+    "effect",
+    "land"
+   ],
+   "size": [
+    0.36,
+    0.33,
+    0.36
+   ],
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "brick-bit",
+   "file": "props/brick-bit.glb",
+   "kind": "effect",
+   "tags": [
+    "effect",
+    "break"
+   ],
+   "size": [
+    0.5,
+    0.58,
+    0.58
+   ],
+   "pack": "kenney-platformer"
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "soundsMissing": "Cheer, wrong answer and an ambient loop are not in these packs yet: Oomba3D makes cheer and wrong-answer sounds in code until a CC0 pack with them is added.",
+ "look": {
+  "sky": {
+   "top": "#5fb8ff",
+   "middle": "#bfe6ff",
+   "bottom": "#fff4d6"
+  },
+  "fog": {
+   "color": "#d6eeff",
+   "near": 70,
+   "far": 230
+  },
+  "hemisphere": {
+   "sky": "#dff3ff",
+   "ground": "#7a8f5a",
+   "intensity": 1.1
+  },
+  "sun": {
+   "color": "#fff1d6",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98,
+   "lowPower": false
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#e8f4ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 1963,
+   "sha384": "sha384-xgiVhErW/JV6kvfsay/jDFVJNHUhiDxhrfgajvHefHVVS2sYOEFMjdX+nryEtuU3"
+  },
+  "cover.webp": {
+   "bytes": 14980,
+   "sha384": "sha384-45W6NDg1TFzwjX1u8611xtktBD7VB7Qs90jSAk+FzrmKe8NDWxRav6grjbvrhneD"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 108036,
+   "sha384": "sha384-RqHaAh1z+tHSxprA94TIETcdmr3qUyKpJEl4Nir2I+QtjyAtIySTR3W+M2bnWDRC"
+  },
+  "heroes/knight.glb": {
+   "bytes": 111640,
+   "sha384": "sha384-azJm6tWoNysyqgC5edUDTZXozhEiUZDAWnFvF4NT0SxR19+qTp8C8XuTRNBYRXd3"
+  },
+  "heroes/mage.glb": {
+   "bytes": 105924,
+   "sha384": "sha384-Oi5hjasdA98NFZk3K45hmuruMtvK4w8/4sLxdgFaibPFYXkSmPeawAAzbs5VXeAK"
+  },
+  "heroes/moves.glb": {
+   "bytes": 368044,
+   "sha384": "sha384-hIZ/9Pjg2DTOEn9Mi+QHlG0wmUNf+5gsDyx/kygVZD8KLKTVFaKF2mhqWcbWdpxp"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 97796,
+   "sha384": "sha384-v6lwX03UsoNJtaJyaXfzQTj9Q5QyAHQJwjjRW8fpEs1RFDv7/FqdhRDUOuHNlhEa"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 101472,
+   "sha384": "sha384-8XErGnTrDPsKPY/zzfUF63WRZO1YSipepg0GRgpttYAu3AzoAnA7fWeUM9iFMsmC"
+  },
+  "props/brick-bit.glb": {
+   "bytes": 13544,
+   "sha384": "sha384-8GVxYKD1ITGkWKfrddVsZtmLEWfo8xPMRPHDgT8gAqI0DHoD6h3TKwHCNbKeS44W"
+  },
+  "props/coin-block.glb": {
+   "bytes": 24248,
+   "sha384": "sha384-wchsJU+WqjtE8YWGb9VmF8JAZLcA7qNTCAXTM2Nplr2sa8ksQxbBpSMPrvHh4t4Z"
+  },
+  "props/coin.glb": {
+   "bytes": 15216,
+   "sha384": "sha384-/+M0TffUYBiYsrw2yo+9IGBckk6eurDoRAYxQdV6Cue7I7TSQ0p8+oPmRNl8AXgr"
+  },
+  "props/dust.glb": {
+   "bytes": 18580,
+   "sha384": "sha384-G2qbEVIwOPE1Sem2AmyB7ddYno5OmVpEBjHJS9DvDS+RP57DrqCQIjBMuGXcTKV7"
+  },
+  "props/flag.glb": {
+   "bytes": 14668,
+   "sha384": "sha384-uAFu/035fkTnC3y2ntcqLwbRD5OX+si6aNbv1fbX9DIQVI0EMw+GHIqGJzml/kAh"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/brick.glb": {
+   "bytes": 16456,
+   "sha384": "sha384-EQc31VE76fQJh7reiOJ8h7TFMKvDidEk1uUz9c6qh8YRlWnaFTjiads8kVhTUNWc"
+  },
+  "world/cloud.glb": {
+   "bytes": 16644,
+   "sha384": "sha384-SpPnre48qDKqzL8oEjMunH/VcuN4pQX6iC77S08mZCNOlI+fkYsPMsEe+Jmu5Znt"
+  },
+  "world/grass-small.glb": {
+   "bytes": 14184,
+   "sha384": "sha384-n1cID0e5LLXe6wsziyHM3xrW+bjq7OhUAwm4qwXXpCJIxEDvlgfQ++WhcpiKjRwU"
+  },
+  "world/grass.glb": {
+   "bytes": 14164,
+   "sha384": "sha384-ahj5+4Dcfe+LEF4umqrJ9zJJ129hCm3yUaDEYG+Uwsz7oq/mizvuuKIdXG0TAD5C"
+  },
+  "world/island-round.glb": {
+   "bytes": 14160,
+   "sha384": "sha384-wra6/FpDvCcMQ0nR/Z1r7cKI+CWToQNJZdReXBiF4hbfs5C5gab/6lxxSjy99STW"
+  },
+  "world/platform-falling.glb": {
+   "bytes": 15236,
+   "sha384": "sha384-xG6ZbnZsnqyJbpsunPgGj4h0brUiHWH2JdtWEV/XbtJ9e6FvvI6O6bCzPFddptdL"
+  },
+  "world/platform-large.glb": {
+   "bytes": 16324,
+   "sha384": "sha384-bjHILC7gkovcrLiV+SWhtVNtljorEkyz/Icp/wZBP6D+BspTuJTNwLqs4f/P1Ozy"
+  },
+  "world/platform-medium.glb": {
+   "bytes": 15352,
+   "sha384": "sha384-q0to47R849cacvcPT97UXep3nk4FBDc15DTuxn3ZTSznso2Oz46oSogNm2CCfZGK"
+  },
+  "world/platform.glb": {
+   "bytes": 14664,
+   "sha384": "sha384-HdwipPUgOH8GWAXzu47dcfD3TIL169Jm4CHAsr08hRlMt+dWaJb9eBziI0vYmP2S"
+  }
+ },
+ "firstLoadBytes": 1167688
+}

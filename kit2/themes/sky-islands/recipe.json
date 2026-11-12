@@ -1,0 +1,34 @@
+{
+ "_": "How Sky Islands 1.0.0 is built from its two packs (see SOURCES.md). node kit2/pipeline/build-theme.mjs kit2/themes/sky-islands/recipe.json <packs> public/vendor/themes/sky-islands/1.0.0",
+ "models": [
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb", "to": "heroes/knight.glb", "keepMeshes": ["Knight_.*"]},
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Barbarian.glb", "to": "heroes/barbarian.glb", "keepMeshes": ["Barbarian_(Hat|Cape|Arm.*|Body|Head|Leg.*)"]},
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Mage.glb", "to": "heroes/mage.glb", "keepMeshes": ["Mage_.*"]},
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue.glb", "to": "heroes/rogue.glb", "keepMeshes": ["Rogue_.*"]},
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue_Hooded.glb", "to": "heroes/rogue-hooded.glb", "keepMeshes": ["Rogue_.*"]},
+  {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb", "to": "heroes/moves.glb", "animsOnly": true,
+   "keepAnims": ["Unarmed_Idle", "Idle", "Walking_A", "Running_A", "Jump_Start", "Jump_Idle", "Jump_Land", "Jump_Full_Short", "Cheer", "Interact", "PickUp", "Use_Item", "Hit_A", "Sit_Floor_Idle", "Spellcasting"]},
+  {"from": "Starter-Kit-3D-Platformer/models/platform.glb", "to": "world/platform.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/platform-medium.glb", "to": "world/platform-medium.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/platform-large.glb", "to": "world/platform-large.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/platform-grass-large-round.glb", "to": "world/island-round.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/platform-falling.glb", "to": "world/platform-falling.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/grass.glb", "to": "world/grass.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/grass-small.glb", "to": "world/grass-small.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/brick.glb", "to": "world/brick.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/cloud.glb", "to": "world/cloud.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/coin.glb", "to": "props/coin.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/block-coin.glb", "to": "props/coin-block.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/flag.glb", "to": "props/flag.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/dust.glb", "to": "props/dust.glb"},
+  {"from": "Starter-Kit-3D-Platformer/models/brick-particle.glb", "to": "props/brick-bit.glb"}
+ ],
+ "copy": [
+  {"from": "Starter-Kit-3D-Platformer/sounds/jump.ogg", "to": "sounds/jump.ogg"},
+  {"from": "Starter-Kit-3D-Platformer/sounds/land.ogg", "to": "sounds/land.ogg"},
+  {"from": "Starter-Kit-3D-Platformer/sounds/coin.ogg", "to": "sounds/coin.ogg"},
+  {"from": "Starter-Kit-3D-Platformer/sounds/fall.ogg", "to": "sounds/fall.ogg"},
+  {"from": "Starter-Kit-3D-Platformer/sounds/break.ogg", "to": "sounds/break.ogg"},
+  {"from": "Starter-Kit-3D-Platformer/sounds/walking.ogg", "to": "sounds/walk.ogg"}
+ ]
+}

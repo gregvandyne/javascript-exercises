@@ -1,0 +1,60 @@
+{
+ "id": "sky-islands",
+ "name": "Sky Islands",
+ "version": "1.0.0",
+ "engine": "three",
+ "description": "Hop between floating grassy islands above the clouds, collect coins and jump to the right answer.",
+ "goodFor": ["maths", "quizzes", "platformers"],
+ "cover": "cover.webp",
+ "units": "1 unit = 1 metre. World pieces, props and heroes stand on y = 0, centred on x and z; the two effects (dust, brick-bit) are centred on 0.",
+ "packs": [
+  {"id": "kaykit-adventurers", "name": "KayKit Adventurers Character Pack 1.0", "author": "Kay Lousberg", "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0", "commit": "672074b73ba276876a19e8816ecdc5241817ab47", "downloaded": "2026-11-12", "licence": "CC0-1.0", "licenceFile": "LICENSES/kaykit-adventurers.txt", "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"},
+  {"id": "kenney-platformer", "name": "Kenney Starter Kit 3D Platformer (models and sounds)", "author": "Kenney", "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer", "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0", "downloaded": "2026-11-12", "licence": "CC0-1.0", "licenceFile": "LICENSES/kenney-platformer.md", "credit": "Kenney, www.kenney.nl (not required, given anyway)"}
+ ],
+ "heroes": [
+  {"id": "knight", "name": "Knight", "file": "heroes/knight.glb", "pack": "kaykit-adventurers", "size": [1.35, 2.57, 1.52]},
+  {"id": "barbarian", "name": "Explorer", "file": "heroes/barbarian.glb", "pack": "kaykit-adventurers", "size": [1.33, 2.51, 1.47]},
+  {"id": "mage", "name": "Wizard", "file": "heroes/mage.glb", "pack": "kaykit-adventurers", "size": [2.24, 3.17, 2.5]},
+  {"id": "rogue", "name": "Ranger", "file": "heroes/rogue.glb", "pack": "kaykit-adventurers", "size": [1.31, 2.16, 1.15]},
+  {"id": "rogue-hooded", "name": "Hooded Ranger", "file": "heroes/rogue-hooded.glb", "pack": "kaykit-adventurers", "size": [1.31, 2.22, 1.26]}
+ ],
+ "heroNotes": "Held weapons and the mug are removed from every hero. All heroes share one skeleton; their moves are in heroes/moves.glb and play on any hero by bone name.",
+ "moves": {"file": "heroes/moves.glb", "pack": "kaykit-adventurers", "clips": {
+  "idle": "Unarmed_Idle", "ready": "Idle", "walk": "Walking_A", "run": "Running_A", "jumpStart": "Jump_Start", "jumpAir": "Jump_Idle", "jumpLand": "Jump_Land",
+  "jump": "Jump_Full_Short", "cheer": "Cheer", "wave": "Interact", "pickUp": "PickUp", "use": "Use_Item", "bump": "Hit_A", "sit": "Sit_Floor_Idle", "cast": "Spellcasting"}},
+ "pieces": [
+  {"id": "island-round", "file": "world/island-round.glb", "kind": "world", "tags": ["island", "ground", "answer"], "size": [5, 0.5, 5], "pack": "kenney-platformer", "note": "The main grassy island. Top surface at y = 0.5."},
+  {"id": "platform", "file": "world/platform.glb", "kind": "world", "tags": ["platform", "step"], "size": [2, 0.55, 2], "pack": "kenney-platformer"},
+  {"id": "platform-medium", "file": "world/platform-medium.glb", "kind": "world", "tags": ["platform"], "size": [3, 0.55, 3], "pack": "kenney-platformer"},
+  {"id": "platform-large", "file": "world/platform-large.glb", "kind": "world", "tags": ["platform", "ground"], "size": [5, 0.55, 5], "pack": "kenney-platformer"},
+  {"id": "platform-falling", "file": "world/platform-falling.glb", "kind": "world", "tags": ["platform", "obstacle", "falls"], "size": [2.2, 0.5, 2.2], "pack": "kenney-platformer", "note": "Orange: a platform that drops after you land."},
+  {"id": "brick", "file": "world/brick.glb", "kind": "world", "tags": ["block", "wall", "breakable"], "size": [1, 1, 1], "pack": "kenney-platformer"},
+  {"id": "grass", "file": "world/grass.glb", "kind": "decor", "tags": ["plant"], "size": [0.51, 0.31, 0.54], "pack": "kenney-platformer"},
+  {"id": "grass-small", "file": "world/grass-small.glb", "kind": "decor", "tags": ["plant"], "size": [0.25, 0.26, 0.31], "pack": "kenney-platformer"},
+  {"id": "cloud", "file": "world/cloud.glb", "kind": "decor", "tags": ["cloud", "sky"], "size": [1, 1, 1], "pack": "kenney-platformer", "note": "A blocky cloud. Big soft clouds are drawn in code (Oomba3D sky)."},
+  {"id": "coin", "file": "props/coin.glb", "kind": "prop", "tags": ["collectible", "coin"], "size": [0.41, 0.42, 0.17], "pack": "kenney-platformer"},
+  {"id": "coin-block", "file": "props/coin-block.glb", "kind": "prop", "tags": ["block", "bonus"], "size": [1.08, 1, 1.08], "pack": "kenney-platformer"},
+  {"id": "flag", "file": "props/flag.glb", "kind": "prop", "tags": ["goal", "finish"], "size": [0.2, 1.24, 0.68], "pack": "kenney-platformer"},
+  {"id": "dust", "file": "props/dust.glb", "kind": "effect", "tags": ["effect", "land"], "size": [0.36, 0.33, 0.36], "pack": "kenney-platformer"},
+  {"id": "brick-bit", "file": "props/brick-bit.glb", "kind": "effect", "tags": ["effect", "break"], "size": [0.5, 0.58, 0.58], "pack": "kenney-platformer"}
+ ],
+ "sounds": [
+  {"id": "jump", "file": "sounds/jump.ogg", "pack": "kenney-platformer"},
+  {"id": "land", "file": "sounds/land.ogg", "pack": "kenney-platformer"},
+  {"id": "coin", "file": "sounds/coin.ogg", "pack": "kenney-platformer"},
+  {"id": "fall", "file": "sounds/fall.ogg", "pack": "kenney-platformer"},
+  {"id": "break", "file": "sounds/break.ogg", "pack": "kenney-platformer"},
+  {"id": "walk", "file": "sounds/walk.ogg", "pack": "kenney-platformer"}
+ ],
+ "soundsMissing": "Cheer, wrong answer and an ambient loop are not in these packs yet: Oomba3D makes cheer and wrong-answer sounds in code until a CC0 pack with them is added.",
+ "look": {
+  "sky": {"top": "#5fb8ff", "middle": "#bfe6ff", "bottom": "#fff4d6"},
+  "fog": {"color": "#d6eeff", "near": 70, "far": 230},
+  "hemisphere": {"sky": "#dff3ff", "ground": "#7a8f5a", "intensity": 1.1},
+  "sun": {"color": "#fff1d6", "intensity": 2.6},
+  "toneMapping": "ACESFilmic", "exposure": 0.95,
+  "glow": {"strength": 0.12, "radius": 0.4, "threshold": 0.98, "lowPower": false},
+  "clouds": {"color": "#ffffff", "emissive": "#e8f4ff", "emissiveIntensity": 0.15},
+  "hud": {"ink": "#141414", "cream": "#FFFDF2", "mint": "#66C792", "spark": "#FFD23F", "correct": "#9df5b9"}
+ }
+}
