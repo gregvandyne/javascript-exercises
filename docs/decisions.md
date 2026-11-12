@@ -4545,3 +4545,11 @@ tapping "Start free trial" (Stripe Checkout); /signup teachers landed on the fre
   their Teacher plan card, "Your school now covers you. You can cancel your own plan." above Manage billing (the
   existing Customer Portal flow). Cancelling stays their choice; refunds are the owner's (D10).
 - **Honest about prices.** None of the new lines name an amount; prices stay on /plans and the pages that sell.
+
+## Standards tab taken off the class page (12 Nov 2026)
+
+The owner found the class Standards tab confusing, so it is no longer linked: it is gone from the class tabs (Lessons,
+Progress, Games, Students, Settings), from the teaching loop's Check step and from the loop screenshots on the landing
+and /teachers. Nothing else changed: the page still answers at /class/:id/standards (and its CSV), the lesson standards
+picker, the code chips on Learn and the student report keep working, so it can be brought back by putting 'standards'
+back in CLASS_TABS (routes/schools.js) and the loop (views/teacher-loop.js).

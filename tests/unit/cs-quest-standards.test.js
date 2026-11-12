@@ -157,7 +157,7 @@ test('Meets: 80% of the class', () => {
 test('the page, the student drill-down, the CSV and the school report; who may see them', async () => {
   const page = await as(ana)(`/class/${cls.id}/standards`);
   assert.equal(page.status, 200);
-  assert.match(page.text, /1B-AP-10/); assert.match(page.text, /aria-current="page"[^>]*>.*Standards|href="\/class\/[^"]+\/standards" aria-current="page"/s);
+  assert.match(page.text, /1B-AP-10/);
   assert.match(page.text, /Leo Pupil/, 'needs a look names the student for the teacher');
   assert.match(page.text, /50% · 2 items · 2 students|50% · \d+ items · \d students/);
   const one = await as(ana)(`/class/${cls.id}/standards?student=${nora.id}`);
@@ -191,8 +191,9 @@ test('the page, the student drill-down, the CSV and the school report; who may s
   assert.equal((await as(outsider)(`/class/${cls.id}/standards?report=1`)).status, 404);
   assert.equal((await as(boss)(`/class/${cls.id}/standards`)).status, 200, 'school admins');
 
+  // No Standards tab on the class page any more (12 Nov 2026): the page answers but nothing links to it.
   const tab = await as(ana)(`/class/${cls.id}`);
-  assert.match(tab.text, new RegExp(`href="/class/${cls.id}/standards"`));
+  assert.doesNotMatch(tab.text, new RegExp(`href="/class/${cls.id}/standards"`));
 });
 
 test('deleted with the class: rows of its assignments go', () => {
