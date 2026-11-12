@@ -25,6 +25,7 @@ import { q, uid, now, tx, setting, audit } from '../db.js';
 import { config } from '../config.js';
 import { getUser, accountKind, onFirstSignIn, OFFICIAL } from '../auth.js';
 import * as E from './email.js';
+import * as F from './email-frame.js';
 import { register } from './jobs.js';
 import { log } from './log.js';
 import { esc } from '../views/html.js';
@@ -151,8 +152,6 @@ function linesOf(list) {
   return { lines: all.slice(0, LINES_PER_KIND), more: Math.max(0, all.length - LINES_PER_KIND) };
 }
 
-const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const P = `margin:0 0 12px;font-size:15px;line-height:1.5;color:#1f2937;font-family:${FONT}`;
 /**
  * The summary email for a list of items. -> { subject, html, text, kinds: { kind: count }, items }
  * English only: it is for the platform admin, like the admin pages.
@@ -171,29 +170,15 @@ export function renderEmail(items, { test = false, base = E.siteBase() } = {}) {
     const own = KINDS[k].path;
     const lineText = x => `${x.text}${x.n > 1 ? ` (${x.n})` : ''}`;
     textParts.push([heads[i], abs(own), ...lines.map(x => `  - ${lineText(x)}${x.url !== own ? `: ${abs(x.url)}` : ''}`), ...(more ? [`  - and ${more} more`] : [])].join('\n'));
-    htmlParts.push(`<p style="${P};margin-top:20px;font-weight:700"><a href="${esc(abs(own))}" style="color:#2f6bff">${esc(heads[i])}</a></p>`
-      + `<ul style="margin:0 0 12px;padding-left:22px;font-size:15px;line-height:1.5;color:#1f2937;font-family:${FONT}">`
-      + lines.map(x => `<li style="margin:0 0 4px">${x.url !== own ? `<a href="${esc(abs(x.url))}" style="color:#2f6bff">${esc(lineText(x))}</a>` : esc(lineText(x))}</li>`).join('')
-      + (more ? `<li style="margin:0 0 4px">and ${more} more</li>` : '') + '</ul>');
+    htmlParts.push((i ? F.rule() : '') + F.p(F.link(abs(own), heads[i]), { bold: true })
+      + F.list([...lines.map(x => (x.url !== own ? F.link(abs(x.url), lineText(x)) : esc(lineText(x)))), ...(more ? [`and ${more} more`] : [])]));
   });
   const foot = 'Internal alert for the Oomba Academy admins, sent at most every 10 minutes. It never includes message text, real names or addresses: open the admin page to see more.';
   const switches = abs('/admin/emails#e-alerts');
   textParts.push(`--\n${foot}\nSwitch these off, or one kind at a time: ${switches}`);
-  const html = `<!doctype html>
-<html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>${esc(subject)}</title>
-<style>@media (prefers-color-scheme: dark) { .bg { background:#0f172a !important; } .card { background:#111827 !important; border-color:#374151 !important; }
-  .card p, .card li { color:#e5e7eb !important; } .card a { color:#93c5fd !important; } .foot, .foot a { color:#9ca3af !important; } }</style></head>
-<body style="margin:0;padding:0;background:#f3f4f6" class="bg">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#f3f4f6"><tr><td align="center" style="padding:24px 12px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px">
-<tr><td class="card" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:24px">
-<p style="${P};font-weight:700;color:#2f6bff">Oomba Academy admin alerts</p>
-${test ? `<p style="${P}">This is a test with made-up examples.</p>` : ''}
-${htmlParts.join('\n')}
-</td></tr>
-<tr><td class="foot" style="padding:16px 8px;font-size:13px;line-height:1.5;color:#6b7280;font-family:${FONT};text-align:center">${esc(foot)} <a href="${esc(switches)}" style="color:#6b7280;text-decoration:underline">Alert settings</a></td></tr>
-</table></td></tr></table></body></html>`;
+  const html = F.frame({ subject, base, tag: 'Admin alerts',
+    body: `${test ? F.p('This is a test with made-up examples.', { muted: true }) : ''}${htmlParts.join('\n')}`,
+    foot: `${esc(foot)}<br>${F.footLink(switches, 'Alert settings')}` });
   return { subject, html, text: `${textParts.join('\n\n')}\n`, kinds };
 }
 /** Made-up items for the preview and the test send (no real account is named). */

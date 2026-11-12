@@ -5,13 +5,8 @@
 // the school page's checklist, how teachers start, and "reply to this email". Transactional: they asked for it, so it
 // needs no unsubscribe and no postal address. Logged in email_log like every send (never the body or the link).
 import { esc } from '../views/html.js';
+import * as F from './email-frame.js';
 import * as E from './email.js';
-
-const FONT = 'font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
-const P = `margin:0 0 16px;font-size:16px;line-height:1.55;color:#1f2937;${FONT}`;
-const H = `margin:24px 0 8px;font-size:17px;line-height:1.3;color:#141414;${FONT}`;
-const LI = `margin:0 0 8px;font-size:16px;line-height:1.55;color:#1f2937;${FONT}`;
-const BTN = 'display:inline-block;padding:12px 20px;border-radius:999px;background:#141414;color:#ffffff;font-weight:700;text-decoration:none';
 
 /** The first word of a name, for "Hi Ana" (a title keeps the word after it: "Ms Rivera"). */
 export function greetName(name) {
@@ -38,23 +33,18 @@ export function schoolWelcomeEmail(t, { name, school, username, setUrl = null, s
   const button = setUrl ? t(k('setButton'), v) : t(k('signInButton'), v);
   const buttonUrl = setUrl || loginUrl;
   const dir = t.dir || 'ltr', lang = t.locale || 'en';
-  const html = `<!doctype html><html lang="${esc(lang)}" dir="${dir}"><body style="margin:0;padding:24px;background:#ffffff">
-<p style="${P}">${esc(hi)}</p>
-<p style="${P}">${esc(intro)}</p>
-<h2 style="${H}">${esc(t(k('signInH'), v))}</h2>
-<p style="${P}">${esc(signIn[0])}</p>
-<p style="${P}"><span style="color:#4b5563">${esc(t(k('usernameLabel'), v))}</span> <b dir="ltr">${esc(username)}</b></p>
-<p style="${P};color:#4b5563">${esc(t(k('changeLater'), v))}</p>
-<p style="${P}"><a href="${esc(buttonUrl)}" style="${BTN}">${esc(button)}</a></p>
-${signIn[1] ? `<p style="${P};color:#4b5563">${esc(signIn[1])}</p>` : ''}
-<h2 style="${H}">${esc(t(k('firstH'), v))}</h2>
-<p style="${P}">${esc(t(k('firstText'), v))} <a href="${esc(schoolUrl)}" dir="ltr">${esc(schoolUrl.replace(/^https?:\/\//, ''))}</a></p>
-<ol style="margin:0 0 16px;padding-inline-start:22px">${steps.map(s => `<li style="${LI}">${esc(s)}</li>`).join('')}</ol>
-<h2 style="${H}">${esc(t(k('teachersH'), v))}</h2>
-${teach.map(s => `<p style="${P}">${esc(s)}</p>`).join('\n')}
-<p style="${P}">${esc(help)}</p>
-<p style="${P}">${esc(bye)}<br>${esc(t(k('signature'), v))}</p>
-</body></html>`;
+  const html = F.frame({ lang, dir, subject: t(k('subject'), v), base: E.siteBase(), body: [
+    F.p(esc(hi)), F.p(esc(intro)),
+    F.h(t(k('signInH'), v)), F.p(esc(signIn[0])),
+    F.box(`${F.p(`<span class="muted" style="color:${F.COLORS.muted}">${esc(t(k('usernameLabel'), v))}</span> <b dir="ltr">${esc(username)}</b>`, { last: true })}`),
+    F.p(esc(t(k('changeLater'), v)), { muted: true, small: true }),
+    F.button(buttonUrl, button),
+    signIn[1] ? F.p(esc(signIn[1]), { muted: true, small: true }) : '',
+    F.h(t(k('firstH'), v)), F.p(`${esc(t(k('firstText'), v))} <span dir="ltr">${F.link(schoolUrl, schoolUrl.replace(/^https?:\/\//, ''))}</span>`),
+    F.list(steps.map(esc), { ordered: true }),
+    F.h(t(k('teachersH'), v)), ...teach.map(x => F.p(esc(x))),
+    F.p(esc(help)), F.signoff([bye, t(k('signature'), v)]),
+  ].filter(Boolean).join('\n') });
   const text = [hi, '', intro, '', `## ${t(k('signInH'), v)}`, signIn[0], `${t(k('usernameLabel'), v)} ${username}`, t(k('changeLater'), v), `${button}: ${buttonUrl}`,
     ...(signIn[1] ? [signIn[1]] : []), '', `## ${t(k('firstH'), v)}`, `${t(k('firstText'), v)} ${schoolUrl}`,
     ...steps.map((s, i) => `${i + 1}. ${s}`), '', `## ${t(k('teachersH'), v)}`, ...teach, '', help, '', bye, t(k('signature'), v), ''].join('\n');
