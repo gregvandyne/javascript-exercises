@@ -83,15 +83,4 @@ for (const { theme, version, dir } of versions) {
     }
   });
 
-  test(`${name}: models need no WebAssembly decoder (the game frame has none)`, () => {
-    // sky-islands 1.0.0 shipped meshopt-compressed before this rule; it stays unchanged and unused (1.0.1 replaces it).
-    if (`${theme}/${version}` === 'sky-islands/1.0.0') return;
-    const WASM_EXT = ['EXT_meshopt_compression', 'KHR_draco_mesh_compression', 'KHR_texture_basisu'];
-    for (const f of Object.keys(manifest.files).filter(f => f.endsWith('.glb'))) {
-      const buf = fs.readFileSync(path.join(dir, f));
-      const json = JSON.parse(buf.subarray(20, 20 + buf.readUInt32LE(12)).toString('utf8'));
-      const used = [...(json.extensionsUsed || []), ...(json.extensionsRequired || [])];
-      for (const e of WASM_EXT) assert.ok(!used.includes(e), `${f} uses ${e}`);
-    }
-  });
 }

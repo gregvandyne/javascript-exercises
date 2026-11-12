@@ -1,6 +1,6 @@
 // Kit 2 in the real game frame (frameDocument + the frame CSP + the sandbox attribute, in Chromium): a game using the
 // pinned Kit 2 import map can load the Three.js add-ons, theme models and theme sounds from our own /vendor paths, and
-// NOTHING else: not another /vendor folder by fetch, not another host, not an image elsewhere, and no WebAssembly.
+// NOTHING else: not another /vendor folder by fetch, not another host, not an image elsewhere. WebAssembly runs.
 // docs/kit2-themes-plan.md, stage 2. Needs a local Chromium; skipped when there is none.
 import './_setup.js';
 import test from 'node:test';
@@ -37,7 +37,7 @@ const img = url => new Promise(res => { const i = new Image(); i.onload = () => 
     R.sound = (await F('${T}sounds/coin.ogg')).byteLength;
     R.cover = await img('${T}cover.webp');
   } catch (e) { R.loadError = String(e && e.message || e); }
-  // WebAssembly stays blocked (no 'wasm-unsafe-eval'): the smallest valid module must fail to compile.
+  // WebAssembly is allowed ('wasm-unsafe-eval'): the smallest valid module compiles.
   R.wasm = await ok(WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0])));
   // Everything below must be refused by the frame CSP before it reaches the network.
   R.otherVendor = await ok(F('/vendor/three/0.185.1/LICENSE'));
@@ -90,7 +90,7 @@ test('a Kit 2 3D game loads add-ons, theme models and sounds, and nothing else',
   assert.equal(R.clips, 15);
   assert.ok(R.sound > 1000);
   assert.equal(R.cover, true, 'theme pictures load');
-  assert.equal(R.wasm, false, 'WebAssembly is still refused');
+  assert.equal(R.wasm, true, 'WebAssembly compiles');
   assert.equal(R.otherVendor, false, 'fetch outside /vendor/themes/ is refused');
   assert.equal(R.otherPath, false, 'the site API is out of reach');
   assert.equal(R.otherHost, false, 'other hosts are out of reach');

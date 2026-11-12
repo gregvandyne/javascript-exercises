@@ -1,4 +1,4 @@
-# Oomba3D API reference (Oomba3D 1.0.0)
+# Oomba3D API reference (Oomba3D 1.1.0)
 
 Oomba3D is the small 3D game library for Kit 2 themes (plan: [kit2-themes-plan.md](kit2-themes-plan.md)). This page
 lists only what it does today, with exact signatures: it is the page a model reads before writing a Kit 2 game.
@@ -27,34 +27,50 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
 - Load art only through Oomba3D, from the theme and version named in `start()`. The game's own code may not call
   `fetch` or `XMLHttpRequest`.
 - Name a shipped theme version: `sky-islands` `1.0.1` today. (1.0.0 exists but its models cannot load in a game.)
-- There is no WebAssembly, so no Rapier physics. Oomba3D's own platform physics is used instead.
+- WebAssembly is allowed, so `g.physics()` gives real physics (Rapier) and meshopt-compressed models load. Heroes still
+  use Oomba3D's own simple platform physics (`g.controls`), which is kinder to young players.
 - Words a player sees (questions, toasts) come from the game; keep them kind and short, as on the rest of the site.
 
 ## `start(options)`
 
-`start({ theme, version, lowPower = 'auto', reducedMotion, parent = document.body })` → `Promise<g>`
+`start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`
 
 Loads the theme's `theme.json`, makes the renderer, the sky (the theme's colours), fog, light, glow and soft clouds,
-and starts the game loop. Also exported: `VERSION` (`'1.0.0'`), `API` (the names below) and `THREE` (the same Three.js).
+and starts the game loop. Also exported: `VERSION` (`'1.1.0'`), `API` (the names below), `GRAPHICS`, `TIMES`, `WEATHER`
+(the allowed values) and `THREE` (the same Three.js). Games saved on Oomba3D 1.0.0 keep working: everything in it is in
+1.1.0, and 1.0.0's `lowPower: true` means `graphics: 'low'`.
 
-- `lowPower`: `true`, `false` or `'auto'`. `'auto'` turns it on for devices with 4 or fewer CPU cores or 4 GB or less
-  of memory, and the loop turns it on for good after two 3-second spells under 30 frames a second. Low power: no glow,
-  no shadows, a third of the clouds, pixel ratio 1, no confetti. Otherwise the pixel ratio is capped at 2.
+- `graphics`: `'auto'`, `'low'` (shown to players as Fast), `'medium'` (Balanced) or `'high'` (Beautiful); see
+  `g.graphics()`. `'auto'` starts at low on devices with 4 or fewer CPU cores or 4 GB or less of memory, otherwise high,
+  and steps down a level after two 3-second spells under 30 frames a second.
+- `time`: `'morning'`, `'day'` (the theme's own look), `'sunset'` or `'night'` (with stars); see `g.sky()`.
+- `weather`: `'clear'`, `'snow'`, `'rain'`, `'sparkles'` or `'leaves'`; see `g.weather()`.
+- `outline`: `true` draws a thin ink outline round every hero and piece (the Oomba look). It doubles the meshes drawn, so
+  keep it for scenes with up to a few hundred pieces.
+- `settings`: `true` shows the gear button (top right). Players use it to pick Auto, Fast, Balanced or Beautiful
+  graphics and to turn weather effects off, for this game only.
 - `reducedMotion`: defaults to the player's `prefers-reduced-motion`. When on: clouds do not drift, coins do not spin,
   answer tokens do not bob, a wrong island disappears instead of sinking, and there is no confetti.
 
 `g` also has `THREE`, `scene`, `camera`, `renderer`, `theme` (the theme's `theme.json`: `heroes`, `pieces`, `sounds`,
-`moves`, `look`), `lowPower` (read-only, may turn on during play) and `reducedMotion`.
+`moves`, `look`), `lowPower` (read-only: whether the level is low now) and `reducedMotion`.
+
+| Level | Pixel ratio | Shadows | Glow | Smoothing (SMAA) | Clouds | Weather | Confetti |
+|---|---|---|---|---|---|---|---|
+| low (Fast) | 1 | off | off | off | a third | 35% | off |
+| medium (Balanced) | up to 1.5 | 1024 | on | off | all | 70% | on |
+| high (Beautiful) | up to 2 | 2048, soft | on | on | all | all | on |
 
 ### `g.hero(id, options)`
 
-`g.hero(id, { x = 0, y = 0, z = 0, face = 0 })` → `Promise<hero>`
+`g.hero(id, { x = 0, y = 0, z = 0, face = 0, outfit })` → `Promise<hero>`
 
 Adds one of the theme's heroes (`g.theme.heroes`; Sky Islands: `knight`, `barbarian` "Explorer", `mage` "Wizard",
 `rogue` "Ranger", `rogue-hooded` "Hooded Ranger"). `face` turns it (radians). A hero has `id`, `name`, `object`,
 `position` and `play(move, { once = false, fade = 0.2 })`. Moves: `idle`, `ready`, `walk`, `run`, `jumpStart`,
 `jumpAir`, `jumpLand`, `jump`, `cheer`, `wave`, `pickUp`, `use`, `bump`, `sit`, `cast` (`g.theme.moves.clips`). Heroes
-carry no weapons.
+carry no weapons. `outfit` (any CSS colour: `'#66C792'`, `'gold'`) recolours the hero's cape (and the Wizard's hat), so
+one hero can be many characters: a green Knight, a gold Wizard, a team in matching capes.
 
 ### `g.world.island(options)`
 
@@ -73,6 +89,13 @@ with `solid: true`)
 
 Decoration and props: Sky Islands has `grass`, `grass-small`, `cloud`, `flag`, `coin`, `coin-block`, `dust`, `brick-bit`
 and the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Pieces stand on their `y`.
+
+### `g.world.water(options)`
+
+`g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`
+
+A sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it
+again replaces the sea.
 
 ### `g.followCamera(target, options)`
 
@@ -136,3 +159,35 @@ Adds `add` (a number) and shows the score at the top; with no number, just retur
 `g.onUpdate(dt => { … })`
 
 Runs `fn` every frame with the seconds since the last frame (at most 1/30), before the camera moves and the frame draws.
+
+### `g.graphics(level)`
+
+`g.graphics(level)` → the level now
+
+Sets `'auto'`, `'low'`, `'medium'` or `'high'` (the table above) while the game runs; with no level, returns it (`'auto (high)'`
+while on auto). The gear button calls this too.
+
+### `g.sky(time)`
+
+`g.sky(time = 'day')` → the time
+
+Changes the sky, sun, light, fog and cloud colours to `'morning'`, `'day'`, `'sunset'` or `'night'` (stars come out at
+night, a few at sunset), at once. Good for a level that ends at sunset, or a night level.
+
+### `g.weather(kind)`
+
+`g.weather(kind = 'clear')` → the kind
+
+`'snow'`, `'rain'`, `'sparkles'` (gold, rising), `'leaves'` (green and orange) or `'clear'`. The particles travel with the
+hero. None with reduced motion, or when a player turns weather effects off in the gear menu; fewer at lower levels.
+
+### `g.physics(options)`
+
+`g.physics({ gravity = -24 })` → `Promise<{ RAPIER, world, add }>`
+
+Real physics with Rapier 0.21 (WebAssembly), loaded the first time a game asks (about 1.5 MB, so only games that need
+it pay for it). `add(object, { type = 'dynamic', shape = 'box', bounce = 0.3, friction = 0.8 })` puts a body round an
+object (a piece's `object`) from its size and keeps the object on it every frame; `type: 'fixed'` makes ground and walls,
+`shape: 'ball'` rolls. `world` and `RAPIER` are Rapier's own, for joints, forces and anything else. Heroes moved by
+`g.controls` are not in the physics world.
+

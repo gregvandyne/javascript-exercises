@@ -29,10 +29,11 @@ export function frameCsp(origins = '') {
   const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
   // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for
   // connect, img and media: never any other path or host. connect-src also allows blob:, a URL for data the frame already
-  // holds (the model loader reads a model's own textures that way), so it reaches no network. (Still no WebAssembly,
-  // workers or eval.)
+  // holds (the model loader reads a model's own textures that way), so it reaches no network. 'wasm-unsafe-eval' lets
+  // games run WebAssembly (Rapier physics, the meshopt decoder): it compiles WebAssembly only, never eval or
+  // new Function, and WebAssembly has no network of its own. (Still no workers.)
   const themes = own.map(o => ` ${o}${THEMES_PATH}`).join('');
-  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? 'blob:' + themes : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
+  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? 'blob:' + themes : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }
 export const FRAME_CSP = frameCsp();
 const ORIGIN_RE = /^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;

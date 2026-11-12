@@ -1,5 +1,5 @@
 <title>Sky Islands</title>
-<!-- The Sky Islands prototype rebuilt on Oomba3D 1.0.0 (docs/kit2-api.md): pick a hero, hop the islands, collect
+<!-- The Sky Islands prototype rebuilt on Oomba3D 1.1.0 (docs/kit2-api.md): pick a hero, hop the islands, collect
      coins, land on the right answer, reach the flag. A game carries kitImportMap() where the marker line below is;
      tests/unit/kit2-oomba3d.test.js puts it there and plays this game in the real game frame. -->
 <!-- KIT2_IMPORT_MAP -->
@@ -16,8 +16,9 @@
 <script type="module">
 import { start } from 'oomba3d';
 
-const g = await start({ theme: 'sky-islands', version: '1.0.1' });
+const g = await start({ theme: 'sky-islands', version: '1.0.1', outline: true, weather: 'sparkles' });
 const W = g.world;
+W.water({ y: -7 });
 
 // The start island and its grass.
 await W.island({ x: 0, y: 0, z: 0 });
