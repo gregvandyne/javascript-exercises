@@ -26,11 +26,14 @@ export const STATUSES = Object.freeze(['open', 'building']);
 /** A step key of any tier: [, tier, "u.s", unit, step]. */
 export const STEP_KEY = /^(launchpad|explorer|pro)-((\d)\.(\d))$/;
 
-let reg = null;
+let reg = null, testReg = null;
 const overrides = new Map();
-const registry = () => (reg || (reg = JSON.parse(fs.readFileSync(FILE, 'utf8'))));
-/** Forget the loaded catalogue (tests that rewrite it). Status overrides are kept: clear them with setTierStatus. */
+const registry = () => testReg || reg || (reg = JSON.parse(fs.readFileSync(FILE, 'utf8')));
+/** Forget the loaded catalogue (tests that rewrite it). The test hooks below are kept: clear them by name. */
 export const reload = () => { reg = null; };
+/** FOR TESTS ONLY: read this catalogue instead of units.json (null restores the file). A test that swaps
+ *  the catalogue also calls courses.reload(), which rebuilds the steps from it. Nothing in the app calls this. */
+export function setCatalogueForTests(catalogueObject) { testReg = catalogueObject || null; }
 /** The catalogue file as read: { about, program, tiers, units }. */
 export const catalogue = () => registry();
 
