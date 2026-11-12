@@ -14,8 +14,8 @@ const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', e
   launchpad: { key: 'launchpad', emoji: '🌱' }, explorer: { key: 'explorer', emoji: '🧭' }, pro: { key: 'pro', emoji: '🚀' } };
 /** A band's emoji tile ('' for a band this page does not know). */
 export const bandEmoji = band => (BAND_INFO[band] || {}).emoji || '';
-/** A band as one line: "Launchpad · Grades K–2". */
-export const bandLine = (t, band) => `${bandName(t, band)} · ${t(`courses.band.${BAND_INFO[band].key}Sub`)}`;
+/** A band as one line, the way the course map prints it: "Launchpad · Grades K–2". */
+export const bandLine = (t, band) => `${bandName(t, band)} · ${bandGrades(t, band)}`;
 export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
 const bandGrades = (t, band) => t(`courses.band.${BAND_INFO[band].key}Sub`);
 /** Text still in English on this language's page is marked so. */

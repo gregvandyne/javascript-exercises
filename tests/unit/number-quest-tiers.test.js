@@ -95,6 +95,18 @@ test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly it
   assert.deepEqual(C.bandsFor(C.getCourse('cs-quest'), admin), ['1b', '2']);
 });
 
+test('band labels: Number Quest\u2019s literal tier keys render beside the other courses\u2019 bands, which keep theirs', async () => {
+  const { bandName, bandEmoji, bandLine } = await import('../../server/views/courses.js');
+  const { current } = await import('../../server/i18n/index.js');
+  const { t } = current();
+  assert.equal(bandLine(t, 'launchpad'), 'Launchpad · Grades K–2'); assert.equal(bandEmoji('launchpad'), '🌱');
+  assert.equal(bandLine(t, 'explorer'), 'Explorer · Grades 3–5'); assert.equal(bandEmoji('explorer'), '🧭');
+  assert.equal(bandLine(t, 'pro'), 'Pro · Grades 6–8'); assert.equal(bandEmoji('pro'), '🚀');
+  // CS Quest and Cyber Defenders: band '1b' is still labelled Explorer and band '2' Pro.
+  assert.equal(bandName(t, '1b'), 'Explorer'); assert.equal(bandLine(t, 2), 'Pro · Grades 6–8'); assert.equal(bandEmoji('1b'), '🧭'); assert.equal(bandEmoji(2), '🚀');
+  assert.equal(bandEmoji('nowhere'), '');
+});
+
 test('standards tags read every tier, keyed by full step key', () => {
   const steps = tags.numberQuestSteps();
   assert.deepEqual(steps.get('explorer-1.1'), ['4.NBT.A.1', '4.NBT.A.2']);
