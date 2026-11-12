@@ -96,15 +96,18 @@ export function liveRunCodes(mode, settings) {
 // ---------------------------------------------------------------- courses
 const UNITS = fileURLToPath(new URL('../../seed-lessons/number-quest/units.json', import.meta.url));
 let nqSteps = null;
-/** Number Quest's steps -> their primary CCSS-M statement codes (units.json, the locked registry; clusters left out). */
+/** Number Quest's steps, in every tier -> their primary CCSS-M statement codes (units.json, the locked registry;
+ *  clusters left out). A unit names its tier (one without the field is Explorer's); a step's standards are keyed
+ *  by that tier and its key is "<tier>-<n>". */
 export function numberQuestSteps() {
   if (nqSteps) return nqSteps;
   const units = JSON.parse(fs.readFileSync(UNITS, 'utf8')).units || [];
   nqSteps = new Map();
   for (const u of units) for (const s of u.steps || []) {
-    const st = ((s.standards || {}).explorer) || {};
+    const tier = ['launchpad', 'explorer', 'pro'].includes(u.tier) ? u.tier : 'explorer';
+    const st = ((s.standards || {})[tier]) || {};
     const codes = (st.primary || []).filter(c => /^(K|\d)\.[A-Z]+\.[A-D]\.\d+[a-z]?$/.test(c));
-    if (codes.length) nqSteps.set(`explorer-${s.n}`, codes);
+    if (codes.length) nqSteps.set(`${tier}-${s.n}`, codes);
   }
   return nqSteps;
 }

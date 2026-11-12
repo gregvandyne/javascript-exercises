@@ -172,7 +172,9 @@ router.post('/api/number-quest/daily-goal', ...api, form, (req, res) => {
  *  six games, the units and steps, the locked CCSS-M map for Explorer Units 1-7 plus the finale, the
  *  teacher notes and the printed pack (?print=1). Anyone may read it; the course stands alone. */
 router.get('/teachers/number-quest', (req, res) => {
-  const t = req.t, cat = C.numberQuestCatalogue();
+  // The tiers this reader may see: the open ones (a tier still being built shows to the platform admin only).
+  const t = req.t, cat = C.numberQuestCatalogue(req.user);
+  const tierOf = u => NQT.tierOfUnit(u), manyTiers = cat.tiers.length > 1;
   const K = 'teachers.nq';
   if (req.query.print === '1') {
     const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🔢 Number Quest — ${t(`${K}.print.h`)}</h1>
@@ -187,13 +189,13 @@ router.get('/teachers/number-quest', (req, res) => {
     { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
     { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
-  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
-    <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {}).explorer || s.n}</li>`)}</ol></li>`;
+  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${manyTiers ? `${NQT.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+    <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${NQT.stepTitle(tierOf(u), s)}</li>`)}</ol></li>`;
   const faqPairs = [1, 2, 3, 4, 5].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers') });
   const path = '/teachers/number-quest';
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${K}.crumb`), path]];
-  const codes = [...new Set(cat.units.flatMap(u => (u.steps || []).flatMap(s => { const st = (s.standards || {}).explorer || {}; return [...(st.primary || []), ...(st.also || [])]; })))];
+  const codes = [...new Set(cat.units.flatMap(u => (u.steps || []).flatMap(s => { const st = (s.standards || {})[tierOf(u)] || {}; return [...(st.primary || []), ...(st.also || [])]; })))];
   const body = html`<div class="lp">
   <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
   <section class="lp-hero" aria-labelledby="lp-h1">
@@ -227,7 +229,7 @@ router.get('/teachers/number-quest', (req, res) => {
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Number Quest', description: t(`${K}.description`),
     provider: { '@id': seo.orgId(req) }, educationalLevel: 'Grades 3-5', inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan',
-    teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => (s.titles || {}).explorer)))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
+    teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => NQT.stepTitle(tierOf(u), s))))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
     educationalAlignment: codes.map(code => ({ '@type': 'AlignmentObject', alignmentType: 'teaches', educationalFramework: 'Common Core State Standards for Mathematics (CCSS-M, 2010)', targetName: code })),
   };
   page(req, res, {

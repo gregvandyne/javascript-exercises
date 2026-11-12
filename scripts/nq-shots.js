@@ -162,7 +162,7 @@ async function wouldYouRather(f) {
 /** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and
  *  `whole: true` (written in place, the deck's own formatting kept), so a re-run never leaves a stale crop. */
 function writeView(shot) {
-  const file = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer', `${shot.step}.json`);
+  const file = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', shot.tier || 'explorer', `${shot.step}.json`); // a shot names its tier; Explorer when it names none
   let src = fs.readFileSync(file, 'utf8');
   const key = `"img": "nq/${shot.slug}/${shot.state}"`, at = src.indexOf(key);
   if (at < 0) return console.log(`  (deck ${shot.step} has no slide with ${key})`);

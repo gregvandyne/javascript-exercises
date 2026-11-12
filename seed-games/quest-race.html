@@ -804,7 +804,14 @@ window.SoloBank = (function () {
   // race must practise patterns, not a general bank — so a lesson arrival (BRB.params carries the
   // course and step) opens straight on eight generated pattern questions, with no subject/level
   // picker first. Every other way in keeps the picker and the bank, unchanged.
-  var NQ_STEP = (window.BRB && BRB.params && /^nq-\d-\d$/.test(String(BRB.params.mode || ''))) ? 'explorer-' + String(BRB.params.mode).slice(3).replace('-', '.') : '';
+  /* The lesson mode names the step: mode=nq-<unit>-<step> is the Explorer tier (as it always was),
+     mode=nql-<unit>-<step> the Launchpad tier, mode=nqp-<unit>-<step> the Pro tier. A step this game has no
+     lesson content for is not a lesson arrival at all: NQ_STEP stays empty and the game opens as normal. */
+  var NQ_STEP = (function (known) {
+    var m = /^(nq|nql|nqp)-(\d)-(\d)$/.exec(String((window.BRB && BRB.params && BRB.params.mode) || ''));
+    var key = m ? { nq: 'explorer', nql: 'launchpad', nqp: 'pro' }[m[1]] + '-' + m[2] + '.' + m[3] : '';
+    return known.indexOf(key) >= 0 ? key : '';
+  })(['explorer-1.3', 'explorer-5.2', 'explorer-7.3', 'explorer-7.4']);
   var nqPads = 0;
   function nqPatternItems(rnd) {
     var out = [];
