@@ -79,7 +79,8 @@ test('a new teacher\'s Classroom: the card above My classes, nothing done, Hide 
   await expect(card.locator('.tl-count')).toHaveText('0 of 4 done');
   await expect(card.locator('.tl-mstep.is-done')).toHaveCount(0);
   await expect(card.locator('.tl-sub')).toContainText('Loop 4C');
-  await expect(card.locator(`a.chip[href="/class/${classId}/standards"]`)).toHaveText('Standards tab');
+  await expect(card.locator(`a.chip[href="/class/${classId}/progress"]`).first()).toBeVisible();
+  await expect(card.locator(`a[href="/class/${classId}/standards"]`)).toHaveCount(0); // no Standards tab (12 Nov 2026)
   const [cardY, classesY] = await Promise.all([card.boundingBox(), t.locator('#my-classes').boundingBox()]).then(b => b.map(x => x.y));
   expect(cardY).toBeLessThan(classesY);
   // On a phone only the next step (Plan) is open, so My classes starts on the first screen.

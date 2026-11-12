@@ -788,7 +788,9 @@ router.get('/class/:id', requireUser, (req, res) => {
   if (c && S.canViewClass(req.user, c)) return studentClass(req, res, c);
   no(req, res);
 });
-const CLASS_TABS = ['lessons', 'progress', 'standards', 'games', 'students', 'settings'];
+// Standards was a tab too: taken off on 12 Nov 2026 (teachers found it confusing). Its page still answers at
+// /class/:id/standards (routes/standards.js) but nothing links to it.
+const CLASS_TABS = ['lessons', 'progress', 'games', 'students', 'settings'];
 /** The class header and its tabs (Lessons, Progress, Standards, Games, Students, Settings), shared with the progress pages. */
 export function classHeader(req, c, active) {
   const t = req.t; const s = S.getSchool(c.school_id);

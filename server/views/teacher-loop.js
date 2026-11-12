@@ -16,11 +16,11 @@ import { html, raw } from './html.js';
 export const LOOP = [
   { step: 'plan', emoji: '📝', tools: ['library', 'draftAi', 'builder'] },
   { step: 'play', emoji: '🎮', tools: ['assign', 'live'] },
-  { step: 'check', emoji: '📊', tools: ['gradebook', 'attention', 'standards'] },
+  { step: 'check', emoji: '📊', tools: ['gradebook', 'attention'] },
   { step: 'feedback', emoji: '💬', tools: ['review', 'written'] },
 ];
 /** The screenshots in public/img/teach-loop (scripts/teach-loop-shots.js): name, the step it shows. 1280x800, 16:10. */
-export const SHOTS = [['gradebook', 'check'], ['attention', 'check'], ['feedback', 'feedback'], ['standards', 'check']];
+export const SHOTS = [['gradebook', 'check'], ['attention', 'check'], ['feedback', 'feedback']];
 export const SHOT_W = 1280, SHOT_H = 800;
 const SHOT_V = '2';
 

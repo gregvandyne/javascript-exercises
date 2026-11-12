@@ -62,7 +62,8 @@ test('a new teacher: the card near the top of /teach, nothing ticked, links to t
   assert.match(c, /class="tl-mstep is-next"><span class="tl-tick"[^]*?Plan/, 'Plan is next');
   assert.doesNotMatch(c, /teach\.loop\.home\.makeClass|Make your first class/, 'they have a class');
   for (const href of [`/teach/lessons?school=${school.id}`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=ai`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=new`,
-    `/class/${cls.id}/progress`, `/class/${cls.id}/standards`, `/class/${cls.id}/progress#to-review`]) assert.ok(c.includes(`href="${href}"`), href);
+    `/class/${cls.id}/progress`, `/class/${cls.id}/progress#to-review`]) assert.ok(c.includes(`href="${href}"`), href);
+  assert.ok(!c.includes(`/class/${cls.id}/standards`), 'no Standards link (taken off 12 Nov 2026)');
   assert.match(c, /data-api="\/api\/teach\/loop\/hide"/);
   assert.match(c, /href="\/teach\/loop"/);
   assert.doesNotMatch(r.text, /id="teach-loop-link"/, 'no small link while the card shows');
@@ -152,7 +153,8 @@ test('the landing at "/": one teaching-loop section right after how it works, wi
   const sec = s.slice(at, s.indexOf('</section>', at));
   assert.match(sec, /<h2 id="loop-h">Plan → Play → Check → Feedback<\/h2>/);
   assert.equal((sec.match(/class="lp-card lp-step lp-loop-step rv"/g) || []).length, 4);
-  for (const w of ['Lesson library', 'Draft with AI', 'Turn a lesson into a game', 'Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Standards tab', 'Answers to review', 'Written feedback students see']) assert.ok(sec.includes(w), w);
+  for (const w of ['Lesson library', 'Draft with AI', 'Turn a lesson into a game', 'Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Answers to review', 'Written feedback students see']) assert.ok(sec.includes(w), w);
+  assert.ok(!sec.includes('Standards tab'), 'no Standards tab');
   assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
   assert.match(sec, /href="\/trial" data-cta="trial"/);
   for (const [name] of V.SHOTS) {
@@ -177,7 +179,7 @@ test('/teachers: the same section; plain words for visitors, real links for staf
   assert.doesNotMatch(sec, /href=/);
   assert.match(out, /\/css\/teach-loop\.css/);
   const staff = (await get('/teachers', teacher)).text;
-  assert.match(staff.slice(staff.indexOf('id="teach-loop"')), new RegExp(`href="/class/${cls.id}/standards"`));
+  assert.match(staff.slice(staff.indexOf('id="teach-loop"')), new RegExp(`href="/class/${cls.id}/progress"`));
   const kidView = (await get('/teachers', kid)).text;
   assert.doesNotMatch(kidView.slice(kidView.indexOf('id="teach-loop"'), kidView.indexOf('</section>', kidView.indexOf('id="teach-loop"'))), /href=/, 'a kid gets words, no class links');
 });
@@ -213,7 +215,7 @@ test('no class yet: the class tools are plain words and one "Make your first cla
     assert.equal((c.match(/href="\/teach\?new=class"/g) || []).length, 1, `${p}: one Make your first class button`);
     assert.match(c, /class="btn btn-primary" href="\/teach\?new=class">🍎 Make your first class<\/a>/, p);
     assert.doesNotMatch(c, /href="\/class\//, `${p}: no class links`);
-    if (p === '/teach/loop') for (const w of ['Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Standards tab', 'Answers to review', 'Written feedback students see']) assert.ok(c.includes(`<span>${w}</span></li>`), `${w}: plain words`);
+    if (p === '/teach/loop') for (const w of ['Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Answers to review', 'Written feedback students see']) assert.ok(c.includes(`<span>${w}</span></li>`), `${w}: plain words`);
   }
 });
 
