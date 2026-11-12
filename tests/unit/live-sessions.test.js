@@ -442,7 +442,7 @@ test('frames: a seat\'s frame gets the session name only, the pinned version, gz
   const a = await player(s);
   const r = await fetch(`${ctx.base}/live/frame/${a.wel.frame}`, { headers: { 'accept-encoding': 'gzip' } });
   assert.equal(r.status, 200);
-  assert.match(r.headers.get('content-security-policy'), /connect-src 'none'/);
+  assert.match(r.headers.get('content-security-policy'), /connect-src https?:\/\/[^\s;\/]+\/vendor\/themes\/;/);
   assert.equal(r.headers.get('content-encoding'), 'gzip');
   const html = await r.text();
   const init = JSON.parse(html.match(/window.__BRB_INIT__=(.*?);<\/script>/)[1]);
