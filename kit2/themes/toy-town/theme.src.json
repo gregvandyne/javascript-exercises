@@ -1,0 +1,656 @@
+{
+ "id": "toy-town",
+ "name": "Toy Town",
+ "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works.",
+ "goodFor": [
+  "geography",
+  "money",
+  "maths"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-city-builder",
+   "name": "KayKit City Builder Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0",
+   "commit": "63976910ca04d16f0fc531b9c614244be8128713",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-city-builder.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "look": {
+  "sky": {
+   "top": "#4fb0ff",
+   "middle": "#bfe6ff",
+   "bottom": "#fff4d6"
+  },
+  "fog": {
+   "color": "#d6eeff",
+   "near": 80,
+   "far": 250
+  },
+  "hemisphere": {
+   "sky": "#e8f4ff",
+   "ground": "#7a8f5a",
+   "intensity": 1.15
+  },
+  "sun": {
+   "color": "#fff1d6",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#e8f4ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.63,
+    2
+   ]
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    2,
+    2
+   ]
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.31,
+    2
+   ]
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.59,
+    2
+   ]
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "ground",
+   "file": "world/ground.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "road",
+   "file": "world/road.glb",
+   "kind": "world",
+   "tags": [
+    "road",
+    "path",
+    "floor"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "road-crossing",
+   "file": "world/road-crossing.glb",
+   "kind": "world",
+   "tags": [
+    "road",
+    "path",
+    "floor"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "road-corner",
+   "file": "world/road-corner.glb",
+   "kind": "world",
+   "tags": [
+    "road",
+    "path",
+    "floor"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "road-junction",
+   "file": "world/road-junction.glb",
+   "kind": "world",
+   "tags": [
+    "road",
+    "path",
+    "floor"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "road-t",
+   "file": "world/road-t.glb",
+   "kind": "world",
+   "tags": [
+    "road",
+    "path",
+    "floor"
+   ],
+   "size": [
+    2,
+    0.1,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-a",
+   "file": "world/building-a.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2,
+    1.65,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-b",
+   "file": "world/building-b.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2,
+    1.65,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-c",
+   "file": "world/building-c.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2,
+    2.98,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-d",
+   "file": "world/building-d.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2,
+    2.97,
+    2.02
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-e",
+   "file": "world/building-e.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2.01,
+    2.35,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-f",
+   "file": "world/building-f.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2.01,
+    2.35,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-g",
+   "file": "world/building-g.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2.01,
+    2.98,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "building-h",
+   "file": "world/building-h.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "house"
+   ],
+   "size": [
+    2.01,
+    3.05,
+    2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "car-taxi",
+   "file": "props/car-taxi.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "car"
+   ],
+   "size": [
+    0.42,
+    0.43,
+    0.94
+   ],
+   "pack": "kaykit-city-builder",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "car-police",
+   "file": "props/car-police.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "car"
+   ],
+   "size": [
+    0.42,
+    0.41,
+    0.94
+   ],
+   "pack": "kaykit-city-builder",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "car-hatchback",
+   "file": "props/car-hatchback.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "car"
+   ],
+   "size": [
+    0.42,
+    0.37,
+    0.81
+   ],
+   "pack": "kaykit-city-builder",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "car-sedan",
+   "file": "props/car-sedan.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "car"
+   ],
+   "size": [
+    0.42,
+    0.37,
+    0.94
+   ],
+   "pack": "kaykit-city-builder",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "car-wagon",
+   "file": "props/car-wagon.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "car"
+   ],
+   "size": [
+    0.42,
+    0.37,
+    0.94
+   ],
+   "pack": "kaykit-city-builder",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "bench",
+   "file": "world/bench.glb",
+   "kind": "decor",
+   "tags": [
+    "bench",
+    "furniture"
+   ],
+   "size": [
+    0.4,
+    0.1,
+    0.15
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "bush",
+   "file": "world/bush.glb",
+   "kind": "decor",
+   "tags": [
+    "plant"
+   ],
+   "size": [
+    0.19,
+    0.38,
+    0.2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "streetlight",
+   "file": "world/streetlight.glb",
+   "kind": "decor",
+   "tags": [
+    "light"
+   ],
+   "size": [
+    0.27,
+    0.96,
+    0.07
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "traffic-light",
+   "file": "world/traffic-light.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "traffic"
+   ],
+   "size": [
+    0.17,
+    0.73,
+    0.15
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "fire-hydrant",
+   "file": "world/fire-hydrant.glb",
+   "kind": "decor",
+   "tags": [
+    "street"
+   ],
+   "size": [
+    0.14,
+    0.22,
+    0.13
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "water-tower",
+   "file": "world/water-tower.glb",
+   "kind": "world",
+   "tags": [
+    "tower"
+   ],
+   "size": [
+    0.5,
+    0.67,
+    0.5
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "box",
+   "file": "props/box.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "block",
+    "collectible"
+   ],
+   "size": [
+    0.2,
+    0.18,
+    0.2
+   ],
+   "pack": "kaykit-city-builder"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ]
+}

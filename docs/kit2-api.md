@@ -26,7 +26,19 @@ add-ons and Oomba3D, each pinned with its integrity) and imports from `'oomba3d'
 Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
 - Load art only through Oomba3D, from the theme and version named in `start()`. The game's own code may not call
   `fetch` or `XMLHttpRequest`.
-- Name a shipped theme version: `sky-islands` `1.0.1` today. (1.0.0 exists but its models cannot load in a game.)
+- Name a shipped theme and version (`g.theme` has its catalogue: `heroes`, `pieces` with tags and sizes, `sounds`):
+
+  | Theme | Version | Heroes | Stand on (pass as `piece` to `g.world.island`) |
+  |---|---|---|---|
+  | `sky-islands` | `1.0.1` | the 5 adventurers | `island-round` (the default), `platform`, `platform-medium`, `platform-large` |
+  | `castle-quest` | `1.0.0` | adventurers + the 4 skeleton pals | `floor-stone`, `floor-wood`, `floor-dirt`, `block`, `stairs` |
+  | `spooky-hollow` | `1.0.0` | skeleton pals + adventurers | `ground`, `ground-small` |
+  | `space-base` | `1.0.0` | adventurers + skeleton pals | `ground`, `ground-high`, `landing-pad`, `landing-pad-small` |
+  | `toy-town` | `1.0.0` | adventurers + skeleton pals | `ground`, `road`, `road-crossing`, `road-junction` |
+
+  Adventurers: `knight`, `barbarian` (Explorer), `mage` (Wizard), `rogue` (Ranger), `rogue-hooded` (Hooded Ranger).
+  Skeleton pals: `skelly`, `rattles`, `bonzo`, `captain-clank` (friendly cartoon skeletons, no weapons). Every hero plays
+  every move, and `outfit` recolours capes, so there are many more looks than heroes.
 - WebAssembly is allowed, so `g.physics()` gives real physics (Rapier) and meshopt-compressed models load. Heroes still
   use Oomba3D's own simple platform physics (`g.controls`), which is kinder to young players.
 - Words a player sees (questions, toasts) come from the game; keep them kind and short, as on the rest of the site.

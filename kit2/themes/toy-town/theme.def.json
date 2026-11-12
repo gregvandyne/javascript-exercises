@@ -1,0 +1,478 @@
+{
+ "id": "toy-town",
+ "name": "Toy Town",
+ "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works.",
+ "goodFor": [
+  "geography",
+  "money",
+  "maths"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+  },
+  {
+   "id": "kaykit-city-builder",
+   "name": "KayKit City Builder Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0",
+   "commit": "63976910ca04d16f0fc531b9c614244be8128713",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-city-builder.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-City-Builder-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Dungeon-Remastered-1.0/"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "pieces": [
+  [
+   "ground",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/base.gltf",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "road",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight.gltf",
+   "world",
+   [
+    "road",
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "road-crossing",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight_crossing.gltf",
+   "world",
+   [
+    "road",
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "road-corner",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_corner_curved.gltf",
+   "world",
+   [
+    "road",
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "road-junction",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_junction.gltf",
+   "world",
+   [
+    "road",
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "road-t",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_tsplit.gltf",
+   "world",
+   [
+    "road",
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "building-a",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_A.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-b",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_B.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-c",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_C.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-d",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_D.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-e",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_E.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-f",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_F.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-g",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_G.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "building-h",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_H.gltf",
+   "world",
+   [
+    "building",
+    "house"
+   ]
+  ],
+  [
+   "car-taxi",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_taxi.gltf",
+   "prop",
+   [
+    "vehicle",
+    "car"
+   ]
+  ],
+  [
+   "car-police",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_police.gltf",
+   "prop",
+   [
+    "vehicle",
+    "car"
+   ]
+  ],
+  [
+   "car-hatchback",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_hatchback.gltf",
+   "prop",
+   [
+    "vehicle",
+    "car"
+   ]
+  ],
+  [
+   "car-sedan",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_sedan.gltf",
+   "prop",
+   [
+    "vehicle",
+    "car"
+   ]
+  ],
+  [
+   "car-wagon",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_stationwagon.gltf",
+   "prop",
+   [
+    "vehicle",
+    "car"
+   ]
+  ],
+  [
+   "bench",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bench.gltf",
+   "decor",
+   [
+    "bench",
+    "furniture"
+   ]
+  ],
+  [
+   "bush",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bush.gltf",
+   "decor",
+   [
+    "plant"
+   ]
+  ],
+  [
+   "streetlight",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/streetlight.gltf",
+   "decor",
+   [
+    "light"
+   ]
+  ],
+  [
+   "traffic-light",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/trafficlight_A.gltf",
+   "decor",
+   [
+    "light",
+    "traffic"
+   ]
+  ],
+  [
+   "fire-hydrant",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/firehydrant.gltf",
+   "decor",
+   [
+    "street"
+   ]
+  ],
+  [
+   "water-tower",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/watertower.gltf",
+   "world",
+   [
+    "tower"
+   ]
+  ],
+  [
+   "box",
+   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/box_A.gltf",
+   "prop",
+   [
+    "crate",
+    "block",
+    "collectible"
+   ]
+  ],
+  [
+   "coin",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ]
+  ]
+ ],
+ "look": {
+  "sky": {
+   "top": "#4fb0ff",
+   "middle": "#bfe6ff",
+   "bottom": "#fff4d6"
+  },
+  "fog": {
+   "color": "#d6eeff",
+   "near": 80,
+   "far": 250
+  },
+  "hemisphere": {
+   "sky": "#e8f4ff",
+   "ground": "#7a8f5a",
+   "intensity": 1.15
+  },
+  "sun": {
+   "color": "#fff1d6",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#e8f4ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "moves": {
+  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

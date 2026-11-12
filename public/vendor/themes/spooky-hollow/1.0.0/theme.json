@@ -1,0 +1,860 @@
+{
+ "id": "spooky-hollow",
+ "name": "Spooky Hollow",
+ "description": "A friendly autumn night: pumpkins, glowing lanterns and a crew of silly skeleton pals.",
+ "goodFor": [
+  "seasons",
+  "science",
+  "maths"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-halloween",
+   "name": "KayKit Halloween Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Halloween-Bits-1.0",
+   "commit": "6dc69bf6b2fa766a985754f35ec6a0324090e6c6",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-halloween.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "look": {
+  "sky": {
+   "top": "#2a1f5c",
+   "middle": "#7b5aa6",
+   "bottom": "#f0a35e"
+  },
+  "fog": {
+   "color": "#6e5a96",
+   "near": 40,
+   "far": 160
+  },
+  "hemisphere": {
+   "sky": "#c9b6ff",
+   "ground": "#3a2f4a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#ffcf9a",
+   "intensity": 2
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1.05,
+  "glow": {
+   "strength": 0.35,
+   "radius": 0.5,
+   "threshold": 0.75
+  },
+  "clouds": {
+   "color": "#b9a8de",
+   "emissive": "#5a4a8a",
+   "emissiveIntensity": 0.25
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "heroNotes": "Friendly cartoon skeletons with names, no weapons; no graves, bones or skulls in this theme.",
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.63,
+    2
+   ]
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    2,
+    2
+   ]
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.31,
+    2
+   ]
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.59,
+    2
+   ]
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "ground",
+   "file": "world/ground.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.53,
+    4
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.5 below its y."
+  },
+  {
+   "id": "ground-small",
+   "file": "world/ground-small.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2,
+    0.53,
+    2
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.5 below its y."
+  },
+  {
+   "id": "path",
+   "file": "world/path.glb",
+   "kind": "world",
+   "tags": [
+    "path",
+    "floor"
+   ],
+   "size": [
+    1.9,
+    0.1,
+    1.88
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "path-stones",
+   "file": "world/path-stones.glb",
+   "kind": "world",
+   "tags": [
+    "path",
+    "floor"
+   ],
+   "size": [
+    1.85,
+    0.1,
+    1.86
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "fence",
+   "file": "world/fence.glb",
+   "kind": "world",
+   "tags": [
+    "fence",
+    "wall"
+   ],
+   "size": [
+    4,
+    2.2,
+    0.5
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "fence-gate",
+   "file": "world/fence-gate.glb",
+   "kind": "world",
+   "tags": [
+    "fence",
+    "gate",
+    "door"
+   ],
+   "size": [
+    4,
+    3,
+    0.5
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "fence-post",
+   "file": "world/fence-post.glb",
+   "kind": "world",
+   "tags": [
+    "fence",
+    "post"
+   ],
+   "size": [
+    0.5,
+    2.2,
+    0.5
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "arch",
+   "file": "world/arch.glb",
+   "kind": "world",
+   "tags": [
+    "arch",
+    "gate"
+   ],
+   "size": [
+    4.22,
+    4.41,
+    0.77
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "arch-gate",
+   "file": "world/arch-gate.glb",
+   "kind": "world",
+   "tags": [
+    "arch",
+    "gate",
+    "door"
+   ],
+   "size": [
+    4.22,
+    4.41,
+    0.77
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pillar",
+   "file": "world/pillar.glb",
+   "kind": "world",
+   "tags": [
+    "pillar"
+   ],
+   "size": [
+    1,
+    4.4,
+    1
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "bench",
+   "file": "world/bench.glb",
+   "kind": "decor",
+   "tags": [
+    "bench",
+    "furniture"
+   ],
+   "size": [
+    2,
+    0.5,
+    0.75
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pumpkin",
+   "file": "props/pumpkin.glb",
+   "kind": "prop",
+   "tags": [
+    "pumpkin",
+    "collectible",
+    "answer"
+   ],
+   "size": [
+    1,
+    0.7,
+    1
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pumpkin-lantern",
+   "file": "props/pumpkin-lantern.glb",
+   "kind": "prop",
+   "tags": [
+    "pumpkin",
+    "light"
+   ],
+   "size": [
+    1.5,
+    1.3,
+    1.4
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pumpkin-yellow",
+   "file": "props/pumpkin-yellow.glb",
+   "kind": "prop",
+   "tags": [
+    "pumpkin",
+    "collectible"
+   ],
+   "size": [
+    1,
+    0.7,
+    1
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pumpkin-yellow-lantern",
+   "file": "props/pumpkin-yellow-lantern.glb",
+   "kind": "prop",
+   "tags": [
+    "pumpkin",
+    "light"
+   ],
+   "size": [
+    1.5,
+    1.3,
+    1.4
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "pumpkin-small",
+   "file": "props/pumpkin-small.glb",
+   "kind": "prop",
+   "tags": [
+    "pumpkin",
+    "collectible"
+   ],
+   "size": [
+    0.6,
+    0.55,
+    0.6
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "candle",
+   "file": "world/candle.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "candle"
+   ],
+   "size": [
+    0.3,
+    0.79,
+    0.3
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "candles",
+   "file": "world/candles.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "candle"
+   ],
+   "size": [
+    0.45,
+    0.79,
+    0.35
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "lantern",
+   "file": "world/lantern.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "lantern"
+   ],
+   "size": [
+    0.64,
+    0.93,
+    0.64
+   ],
+   "pack": "kaykit-halloween"
+  },
+  {
+   "id": "lantern-hanging",
+   "file": "world/lantern-hanging.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "lantern"
+   ],
+   "size": [
+    0.64,
+    1.41,
+    0.64
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -1.31 below its y."
+  },
+  {
+   "id": "tree-bare",
+   "file": "world/tree-bare.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    2.3,
+    5.07,
+    1.38
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.27 below its y."
+  },
+  {
+   "id": "tree-bare-medium",
+   "file": "world/tree-bare-medium.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    1.81,
+    4.19,
+    0.47
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.3 below its y."
+  },
+  {
+   "id": "tree-pine-orange",
+   "file": "world/tree-pine-orange.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    4.76,
+    7.48,
+    4.16
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.55 below its y."
+  },
+  {
+   "id": "tree-pine-orange-small",
+   "file": "world/tree-pine-orange-small.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    2.4,
+    4.04,
+    2.2
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.4 below its y."
+  },
+  {
+   "id": "tree-pine-yellow",
+   "file": "world/tree-pine-yellow.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    3.33,
+    5.87,
+    3.12
+   ],
+   "pack": "kaykit-halloween",
+   "note": "Its base is -0.48 below its y."
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "chest",
+   "file": "props/chest.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    1.7,
+    1.3,
+    1.45
+   ],
+   "pack": "kaykit-dungeon"
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kaykit-halloween.txt": {
+   "bytes": 877,
+   "sha384": "sha384-KbhmBJ2PA4Lm3ua2orl5eDp3kaIW4GO6oGEgC3JXuLKf2ZeSkEZlWKPd794k9ArI"
+  },
+  "LICENSES/kaykit-skeletons.txt": {
+   "bytes": 914,
+   "sha384": "sha384-VTwraYs673AY2gPjxV+sKhDaPCaojJBbM38zHPbgP4Cs50EUpN8ThLgZnzdjK40T"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 2567,
+   "sha384": "sha384-jLm6Xcb98XrJvvcxotKEjwALQtjtGgQZufBriIBrgZv1hwfaxeXKx6CuwNtRfJFy"
+  },
+  "cover.webp": {
+   "bytes": 28466,
+   "sha384": "sha384-Q5GcNDeAFyfYg8VImv0Jv01GvwHjAbM7upyNgj0Kqeri9P8kBwAvx6IIM1+plSrt"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/bonzo.glb": {
+   "bytes": 231944,
+   "sha384": "sha384-RFrgktMl9/UeKDa0znXX5QMIrVfYBOKmWMVTI00Oortjg6Pu8uNIDTfAc+HEuH2H"
+  },
+  "heroes/captain-clank.glb": {
+   "bytes": 257908,
+   "sha384": "sha384-fiPOxR5eUdbtKadN016jUpmydPN7fnY3SvdeotS2vfCOrRbXd3kUGWgiYPWUih5k"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rattles.glb": {
+   "bytes": 226448,
+   "sha384": "sha384-yG/G4KSwUsgihxot8mmrjuTc2petgmkChp2oaAJl4Mghbd9wI31Zq/L8+nXs6AUf"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "heroes/skelly.glb": {
+   "bytes": 194104,
+   "sha384": "sha384-wZCWwNpt0a0SeWUoYQFzA5Ds6jQMJdRRME4/u+Id3Kapuuvo3eKXQQHnj8mRhSSF"
+  },
+  "props/chest.glb": {
+   "bytes": 47704,
+   "sha384": "sha384-pXQcOkY/GzrRv+/V5W4sLtg/FqmPJaj+NyETSRmIh5q0QfuxNVRmy3jJUuKRfyZN"
+  },
+  "props/coin.glb": {
+   "bytes": 20304,
+   "sha384": "sha384-teLpgl8cyEiohrtiVKB8NJX9pfxInuVEUNV6Mic7LuNJz6c221AxzXRvimys7qpD"
+  },
+  "props/pumpkin-lantern.glb": {
+   "bytes": 25888,
+   "sha384": "sha384-ZPwDt7UXfBqsbNyTdP57kA7KBYocFL9Qapwi3Dy5ssytahEzCW5Aks09ysmJPupA"
+  },
+  "props/pumpkin-small.glb": {
+   "bytes": 23208,
+   "sha384": "sha384-vhaoJPRGBOtRCvEnlpX+jq+yzEZRRm7ljuvGsiUcGL0+gF1t6hcRw4E2dZkVbQTt"
+  },
+  "props/pumpkin-yellow-lantern.glb": {
+   "bytes": 25888,
+   "sha384": "sha384-NlmzUMo3pRjpFeG/9m0IDmh8tmkLlELxsdH4pujlC4qD9ZjjofNN3qeuYIOitYel"
+  },
+  "props/pumpkin-yellow.glb": {
+   "bytes": 22768,
+   "sha384": "sha384-hmTgO9ji4zTkuupz0B45ntacd+Z5ugMO0rYibrMQww/9wNAmFCr0y8KqSC4dlkm9"
+  },
+  "props/pumpkin.glb": {
+   "bytes": 22768,
+   "sha384": "sha384-HrQDtk+jT5D14rr4DNIvvnhbXkBOZWvrXukHU9N5Pku6QAB0YoR4Q2UPMjLuNKs9"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/arch-gate.glb": {
+   "bytes": 56524,
+   "sha384": "sha384-P8u9xb7YXe/11Kvc2Y/p03OVo0qQH6hiPJkTIv5QK5MDsT5zyV3INh7k6XnYrDAj"
+  },
+  "world/arch.glb": {
+   "bytes": 35668,
+   "sha384": "sha384-0dFnlCkqDT9v+fuO6aYfaUpKfgxerglewENqgrZb2m+9WrTSjpuyP2RDa8b+o+xy"
+  },
+  "world/bench.glb": {
+   "bytes": 23780,
+   "sha384": "sha384-RK+Th2VHn25pgVQoeCatwHP4onWN/oCJwFvyX82FfPX66/fcfiCr/dfTiZk8FtJ4"
+  },
+  "world/candle.glb": {
+   "bytes": 18892,
+   "sha384": "sha384-MCtqQhO9/AlR0iLgxj5Hmbh7QngGI/Ye3xiqysAQkANQB/bKfrAzVOb4MfqBf3Gt"
+  },
+  "world/candles.glb": {
+   "bytes": 23332,
+   "sha384": "sha384-4BVo9z+Qeal6Ow1+SFtvk4d/YhUE9/8cmtcnwAdwd6cn/0tSEIWQyaVjmlUZkxMQ"
+  },
+  "world/fence-gate.glb": {
+   "bytes": 45768,
+   "sha384": "sha384-AfNS872AiN3/bjZ334phrsPDoz3fnAvkJskXgyWQRBVx7r/ynJYEoHHP2K3VCPFf"
+  },
+  "world/fence-post.glb": {
+   "bytes": 20824,
+   "sha384": "sha384-ivdltfyla80lbITldDEhYRFFj97b/VQzT0libMvY6W4PwPnOLM862KOBPL8kEqq2"
+  },
+  "world/fence.glb": {
+   "bytes": 34148,
+   "sha384": "sha384-UICRSb4HI0dAdtsDGHETLcjvggYQhHZbb/+2B+ZbPLmcZDO30zNPEKatZ9+battj"
+  },
+  "world/ground-small.glb": {
+   "bytes": 20260,
+   "sha384": "sha384-EK5ZsdwJaJqveXjhAMorQeyDDwWvioTKbVem3tSCIpfbA9OjK/cBEOtaZLAz7yQ/"
+  },
+  "world/ground.glb": {
+   "bytes": 22108,
+   "sha384": "sha384-3YMdILDy08YZDQ7ONO5/6jMsXRThpyEOekT3iJHjculWBznnw5KU1YEmPgFRYOHv"
+  },
+  "world/lantern-hanging.glb": {
+   "bytes": 29904,
+   "sha384": "sha384-464kAPqL5keCSpbU5X6a24a+GUZnbLLeLhmEuz/AXybW5gi0C5WCtsZV2UD9LiNz"
+  },
+  "world/lantern.glb": {
+   "bytes": 24992,
+   "sha384": "sha384-ZzefG0CSyZ2upEQLjZ7trfMR8v/R0/N2rgWIuoMdxAhmDVZb2FJegglhZylH9vOi"
+  },
+  "world/path-stones.glb": {
+   "bytes": 27756,
+   "sha384": "sha384-Nwbtm8lsvwT1T4fTCKx1FK3Y2BiI9UqVr/cCrXEoYnp2rJXRDXxPVq11aS+D4ln0"
+  },
+  "world/path.glb": {
+   "bytes": 26668,
+   "sha384": "sha384-1wzS2ZcRgQpmMgHlw9kmXFJg3gLUwzFYHLYTXzCtvGi0rhZlCpwtgrLNjC4CIaHH"
+  },
+  "world/pillar.glb": {
+   "bytes": 20820,
+   "sha384": "sha384-ng1/yh1wMJ2BB+i+bziz0i7DkKzMGaJv/dUINBxgvCrt5cpUzInOjcnOSmc0DO1r"
+  },
+  "world/tree-bare-medium.glb": {
+   "bytes": 20644,
+   "sha384": "sha384-P87oHS0Z0b+eTCttx2LE7/SILQOBzyt68GiPQJAWxqLAoe8JEJBEZRJ2eTb271xc"
+  },
+  "world/tree-bare.glb": {
+   "bytes": 21764,
+   "sha384": "sha384-jLDvrZ3tr0g7bJ6sAyrlWDn2l8eI41g4w7rpKeJf8/5bjqAouSVWep2kBMty7YVv"
+  },
+  "world/tree-pine-orange-small.glb": {
+   "bytes": 25952,
+   "sha384": "sha384-MApClInqbNvz1l+mjM8I0KetfB5BJ4s5MJKvflEY72NiQKZe5YWL2IM+b5BQ6x+t"
+  },
+  "world/tree-pine-orange.glb": {
+   "bytes": 28336,
+   "sha384": "sha384-bXDjkGQIW1fEAIgiR+H2a0uiAj4SLa0rMFGv7CbZUffu9sjXfIiuADlRABWz/Bnz"
+  },
+  "world/tree-pine-yellow.glb": {
+   "bytes": 28260,
+   "sha384": "sha384-SWA7PMbRZSG4RMrx2iLJeW0L0WdFZqBYQXtjbezDroDJu2DaorGWA0WJEmk92NQf"
+  }
+ },
+ "firstLoadBytes": 3058700
+}

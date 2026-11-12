@@ -4,6 +4,7 @@ Kit 2 is the next game kit: real engines (Three.js, Phaser) and free professiona
 
 | Folder | What |
 |---|---|
+| `themes/<theme>/theme.def.json` | A theme in one short file (packs, heroes, pieces as `[id, file, kind, tags]`, look); `pipeline/from-def.mjs` turns it into `recipe.json` and `theme.src.json` (Castle Quest, Spooky Hollow, Space Base, Toy Town). |
 | `themes/<theme>/recipe.json` | Which pack files go into the theme and what is stripped (held weapons, unused animations). |
 | `themes/<theme>/theme.src.json` | The theme's catalogue by hand: names, tags, sizes, animation names, look, packs and licences. |
 | `pipeline/build-theme.mjs` | Builds a theme's models and sounds from its packs (glTF Transform; quantized; `"meshopt": true` in a recipe adds meshopt compression, which games decode with WebAssembly). |
@@ -11,6 +12,7 @@ Kit 2 is the next game kit: real engines (Three.js, Phaser) and free professiona
 | `SHIPPED.json` | The lock: every file under `public/vendor/kit2/` and every theme version's `theme.json`, by sha384. |
 | `pipeline/manifest.mjs` | Writes the built theme's `theme.json`: the catalogue plus every file's size and hash. |
 | `demo/sky-islands.html` | The Sky Islands demo on Oomba3D (62 lines); `tests/unit/kit2-oomba3d.test.js` plays it. |
+| `demo/theme-tour.html` | One scene for any theme from its catalogue: the covers, and `tests/unit/kit2-worlds.test.js` plays it for every theme. |
 | `demo/sky-islands-prototype.html` | The first prototype (no library), for reference. |
 
 Engines live in `public/vendor/kit2/` (Three.js add-ons, Rapier, Phaser, and our own game library Oomba3D: `docs/kit2-api.md`), loaded with `kit2ImportMap()` / `phaserTag()` from `server/services/vendor.js`. Built themes live in `public/vendor/themes/<theme>/<version>/` with `theme.json`, `SOURCES.md` and `LICENSES/`. `tests/unit/kit2-themes.test.js` checks each one: every file listed with its hash, every pack CC0 with its licence file, every piece from a listed pack, and the first load under 5 MB.

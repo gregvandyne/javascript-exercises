@@ -1,0 +1,476 @@
+{
+ "id": "spooky-hollow",
+ "name": "Spooky Hollow",
+ "description": "A friendly autumn night: pumpkins, glowing lanterns and a crew of silly skeleton pals.",
+ "goodFor": [
+  "seasons",
+  "science",
+  "maths"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+  },
+  {
+   "id": "kaykit-halloween",
+   "name": "KayKit Halloween Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Halloween-Bits-1.0",
+   "commit": "6dc69bf6b2fa766a985754f35ec6a0324090e6c6",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-halloween.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Halloween-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Dungeon-Remastered-1.0/"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "heroes": [
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "pieces": [
+  [
+   "ground",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/floor_dirt.gltf",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "ground-small",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/floor_dirt_small.gltf",
+   "world",
+   [
+    "ground",
+    "platform",
+    "step"
+   ]
+  ],
+  [
+   "path",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/path_A.gltf",
+   "world",
+   [
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "path-stones",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/path_C.gltf",
+   "world",
+   [
+    "path",
+    "floor"
+   ]
+  ],
+  [
+   "fence",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence.gltf",
+   "world",
+   [
+    "fence",
+    "wall"
+   ]
+  ],
+  [
+   "fence-gate",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence_gate.gltf",
+   "world",
+   [
+    "fence",
+    "gate",
+    "door"
+   ]
+  ],
+  [
+   "fence-post",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence_pillar.gltf",
+   "world",
+   [
+    "fence",
+    "post"
+   ]
+  ],
+  [
+   "arch",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/arch.gltf",
+   "world",
+   [
+    "arch",
+    "gate"
+   ]
+  ],
+  [
+   "arch-gate",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/arch_gate.gltf",
+   "world",
+   [
+    "arch",
+    "gate",
+    "door"
+   ]
+  ],
+  [
+   "pillar",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pillar.gltf",
+   "world",
+   [
+    "pillar"
+   ]
+  ],
+  [
+   "bench",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/bench.gltf",
+   "decor",
+   [
+    "bench",
+    "furniture"
+   ]
+  ],
+  [
+   "pumpkin",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange.gltf",
+   "prop",
+   [
+    "pumpkin",
+    "collectible",
+    "answer"
+   ]
+  ],
+  [
+   "pumpkin-lantern",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange_jackolantern.gltf",
+   "prop",
+   [
+    "pumpkin",
+    "light"
+   ]
+  ],
+  [
+   "pumpkin-yellow",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_yellow.gltf",
+   "prop",
+   [
+    "pumpkin",
+    "collectible"
+   ]
+  ],
+  [
+   "pumpkin-yellow-lantern",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_yellow_jackolantern.gltf",
+   "prop",
+   [
+    "pumpkin",
+    "light"
+   ]
+  ],
+  [
+   "pumpkin-small",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange_small.gltf",
+   "prop",
+   [
+    "pumpkin",
+    "collectible"
+   ]
+  ],
+  [
+   "candle",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/candle.gltf",
+   "decor",
+   [
+    "light",
+    "candle"
+   ]
+  ],
+  [
+   "candles",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/candle_triple.gltf",
+   "decor",
+   [
+    "light",
+    "candle"
+   ]
+  ],
+  [
+   "lantern",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/lantern_standing.gltf",
+   "decor",
+   [
+    "light",
+    "lantern"
+   ]
+  ],
+  [
+   "lantern-hanging",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/lantern_hanging.gltf",
+   "decor",
+   [
+    "light",
+    "lantern"
+   ]
+  ],
+  [
+   "tree-bare",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_dead_large.gltf",
+   "decor",
+   [
+    "tree"
+   ]
+  ],
+  [
+   "tree-bare-medium",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_dead_medium.gltf",
+   "decor",
+   [
+    "tree"
+   ]
+  ],
+  [
+   "tree-pine-orange",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_orange_large.gltf",
+   "decor",
+   [
+    "tree"
+   ]
+  ],
+  [
+   "tree-pine-orange-small",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_orange_small.gltf",
+   "decor",
+   [
+    "tree"
+   ]
+  ],
+  [
+   "tree-pine-yellow",
+   "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_yellow_medium.gltf",
+   "decor",
+   [
+    "tree"
+   ]
+  ],
+  [
+   "coin",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ]
+  ],
+  [
+   "chest",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "prop",
+   [
+    "treasure",
+    "goal",
+    "answer"
+   ]
+  ]
+ ],
+ "look": {
+  "sky": {
+   "top": "#2a1f5c",
+   "middle": "#7b5aa6",
+   "bottom": "#f0a35e"
+  },
+  "fog": {
+   "color": "#6e5a96",
+   "near": 40,
+   "far": 160
+  },
+  "hemisphere": {
+   "sky": "#c9b6ff",
+   "ground": "#3a2f4a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#ffcf9a",
+   "intensity": 2
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1.05,
+  "glow": {
+   "strength": 0.35,
+   "radius": 0.5,
+   "threshold": 0.75
+  },
+  "clouds": {
+   "color": "#b9a8de",
+   "emissive": "#5a4a8a",
+   "emissiveIntensity": 0.25
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "heroNotes": "Friendly cartoon skeletons with names, no weapons; no graves, bones or skulls in this theme.",
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "moves": {
+  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

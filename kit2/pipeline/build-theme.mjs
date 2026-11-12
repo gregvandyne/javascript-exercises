@@ -8,10 +8,11 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
-import { prune, dedup, resample, quantize, weld, reorder, unpartition } from '@gltf-transform/functions';
+import { prune, dedup, resample, quantize, weld, reorder, unpartition, getBounds } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
-const [recipeFile, packsDir, outDir] = process.argv.slice(2);
+const [recipeFile, packsDir, outDir, sizesFile] = process.argv.slice(2);   // sizesFile: optional, gets each model's measured size
+const measured = {};
 const recipe = JSON.parse(fs.readFileSync(recipeFile, 'utf8'));
 await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
@@ -41,10 +42,14 @@ for (const item of recipe.models) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, await io.writeBinary(doc));
   out.push(item.to);
+  if (!item.animsOnly) { const b = getBounds(doc.getRoot().getDefaultScene()); measured[item.to] = { size: b.max.map((v, i) => +(v - b.min[i]).toFixed(2)), minY: +b.min[1].toFixed(2) }; }
 }
 for (const item of recipe.copy || []) {
   const file = path.join(outDir, item.to); fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.copyFileSync(path.join(packsDir, item.from), file); out.push(item.to);
+  // "theme:<theme>/<version>/<file>" copies a file from an already built theme (its own licence travels with it).
+  const src = item.from.startsWith('theme:') ? path.resolve(path.dirname(recipeFile), '../../../public/vendor/themes', item.from.slice(6)) : path.join(packsDir, item.from);
+  fs.copyFileSync(src, file); out.push(item.to);
 }
+if (sizesFile) fs.writeFileSync(sizesFile, JSON.stringify(measured, null, 1));
 const sizes = Object.fromEntries(out.map(f => [f, fs.statSync(path.join(outDir, f)).size]));
 console.log(JSON.stringify(sizes, null, 1), '\ntotal', Object.values(sizes).reduce((a, b) => a + b, 0));

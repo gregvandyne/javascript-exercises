@@ -1,0 +1,880 @@
+{
+ "id": "space-base",
+ "name": "Space Base",
+ "description": "Land on a red planet: drive rovers, power up the base and hop between landing pads under the stars.",
+ "goodFor": [
+  "science",
+  "maths",
+  "space"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-space-base",
+   "name": "KayKit Space Base Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Space-Base-Bits-1.0",
+   "commit": "6dfbcac9927d06283752c4defd4882cfe0d29666",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-space-base.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "look": {
+  "sky": {
+   "top": "#05081a",
+   "middle": "#1b2550",
+   "bottom": "#3a2a5a"
+  },
+  "fog": {
+   "color": "#1b2550",
+   "near": 60,
+   "far": 220
+  },
+  "hemisphere": {
+   "sky": "#c8d4ff",
+   "ground": "#4a4060",
+   "intensity": 1.4
+  },
+  "sun": {
+   "color": "#ffffff",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1.05,
+  "glow": {
+   "strength": 0.3,
+   "radius": 0.4,
+   "threshold": 0.8
+  },
+  "clouds": {
+   "color": "#8a93c4",
+   "emissive": "#2e3b72",
+   "emissiveIntensity": 0.2
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.63,
+    2
+   ]
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    2,
+    2
+   ]
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.31,
+    2
+   ]
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.59,
+    2
+   ]
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "ground",
+   "file": "world/ground.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -1 below its y."
+  },
+  {
+   "id": "ground-high",
+   "file": "world/ground-high.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2,
+    2,
+    2
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -1 below its y."
+  },
+  {
+   "id": "ground-curved",
+   "file": "world/ground-curved.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -1 below its y."
+  },
+  {
+   "id": "slope",
+   "file": "world/slope.glb",
+   "kind": "world",
+   "tags": [
+    "slope",
+    "ramp"
+   ],
+   "size": [
+    2,
+    2,
+    2
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -1 below its y."
+  },
+  {
+   "id": "crater",
+   "file": "world/crater.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "crater"
+   ],
+   "size": [
+    2,
+    2.07,
+    2
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -1 below its y."
+  },
+  {
+   "id": "landing-pad",
+   "file": "world/landing-pad.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    2.5,
+    0.5,
+    2.5
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "landing-pad-small",
+   "file": "world/landing-pad-small.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "answer",
+    "step"
+   ],
+   "size": [
+    1.9,
+    0.5,
+    1.9
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "base-dome",
+   "file": "world/base-dome.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "base"
+   ],
+   "size": [
+    2.25,
+    1,
+    2.18
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "base-long",
+   "file": "world/base-long.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "base"
+   ],
+   "size": [
+    2.08,
+    1,
+    2.32
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "base-tower",
+   "file": "world/base-tower.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "base"
+   ],
+   "size": [
+    2,
+    1,
+    2.21
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "base-small",
+   "file": "world/base-small.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "base"
+   ],
+   "size": [
+    2.44,
+    1,
+    2.14
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "garage",
+   "file": "world/garage.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "garage"
+   ],
+   "size": [
+    2,
+    1,
+    2.37
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "tunnel",
+   "file": "world/tunnel.glb",
+   "kind": "world",
+   "tags": [
+    "tunnel",
+    "path"
+   ],
+   "size": [
+    2,
+    0.6,
+    0.93
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is 0.2 below its y."
+  },
+  {
+   "id": "structure",
+   "file": "world/structure.glb",
+   "kind": "world",
+   "tags": [
+    "tower"
+   ],
+   "size": [
+    1.75,
+    2,
+    1.75
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "drill",
+   "file": "world/drill.glb",
+   "kind": "world",
+   "tags": [
+    "machine",
+    "tower"
+   ],
+   "size": [
+    1.75,
+    2,
+    1.75
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "rocket-lander",
+   "file": "props/rocket-lander.glb",
+   "kind": "prop",
+   "tags": [
+    "rocket",
+    "vehicle",
+    "goal"
+   ],
+   "size": [
+    1.37,
+    1.19,
+    1.42
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "lander",
+   "file": "props/lander.glb",
+   "kind": "prop",
+   "tags": [
+    "rocket",
+    "vehicle"
+   ],
+   "size": [
+    1.37,
+    1.1,
+    1.42
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "rover",
+   "file": "props/rover.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "rover"
+   ],
+   "size": [
+    0.49,
+    0.57,
+    0.89
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -0.08 below its y."
+  },
+  {
+   "id": "rover-big",
+   "file": "props/rover-big.glb",
+   "kind": "prop",
+   "tags": [
+    "vehicle",
+    "rover"
+   ],
+   "size": [
+    0.5,
+    0.69,
+    1.03
+   ],
+   "pack": "kaykit-space-base",
+   "note": "Its base is -0.13 below its y."
+  },
+  {
+   "id": "solar-panel",
+   "file": "world/solar-panel.glb",
+   "kind": "decor",
+   "tags": [
+    "energy",
+    "solar"
+   ],
+   "size": [
+    0.9,
+    0.37,
+    0.45
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "wind-turbine",
+   "file": "world/wind-turbine.glb",
+   "kind": "decor",
+   "tags": [
+    "energy"
+   ],
+   "size": [
+    1.67,
+    3,
+    1
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "cargo",
+   "file": "props/cargo.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "block",
+    "collectible"
+   ],
+   "size": [
+    0.5,
+    0.52,
+    0.52
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "cargo-stack",
+   "file": "props/cargo-stack.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "obstacle"
+   ],
+   "size": [
+    1.02,
+    1.02,
+    1.02
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "containers",
+   "file": "props/containers.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "obstacle"
+   ],
+   "size": [
+    0.5,
+    0.2,
+    0.5
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "lights",
+   "file": "world/lights.glb",
+   "kind": "decor",
+   "tags": [
+    "light"
+   ],
+   "size": [
+    0.68,
+    1,
+    0.68
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "rock",
+   "file": "world/rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "obstacle"
+   ],
+   "size": [
+    0.53,
+    0.25,
+    0.5
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "rocks",
+   "file": "world/rocks.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    1.31,
+    0.35,
+    1.64
+   ],
+   "pack": "kaykit-space-base"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kaykit-skeletons.txt": {
+   "bytes": 914,
+   "sha384": "sha384-VTwraYs673AY2gPjxV+sKhDaPCaojJBbM38zHPbgP4Cs50EUpN8ThLgZnzdjK40T"
+  },
+  "LICENSES/kaykit-space-base.txt": {
+   "bytes": 826,
+   "sha384": "sha384-pON3Zjz/1tdD8yGW+eh6vERg7rY0E6g6Kmu7mYyzkeIex/4QpTGLby9cBDdoH5Ae"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 2427,
+   "sha384": "sha384-GUFaysjjIjSx66fRhEqNHpxnQB+Aq7/AWfUN6j1XCJFkY4FJUJcUXT9NrPEFT4Fn"
+  },
+  "cover.webp": {
+   "bytes": 20244,
+   "sha384": "sha384-SUAx5FDuvSDU5awgyD+atofP/t4rOrvhlQFY8/rpzY19ypUYHilK5nDXL5MQfOWq"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/bonzo.glb": {
+   "bytes": 231944,
+   "sha384": "sha384-RFrgktMl9/UeKDa0znXX5QMIrVfYBOKmWMVTI00Oortjg6Pu8uNIDTfAc+HEuH2H"
+  },
+  "heroes/captain-clank.glb": {
+   "bytes": 257908,
+   "sha384": "sha384-fiPOxR5eUdbtKadN016jUpmydPN7fnY3SvdeotS2vfCOrRbXd3kUGWgiYPWUih5k"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rattles.glb": {
+   "bytes": 226448,
+   "sha384": "sha384-yG/G4KSwUsgihxot8mmrjuTc2petgmkChp2oaAJl4Mghbd9wI31Zq/L8+nXs6AUf"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "heroes/skelly.glb": {
+   "bytes": 194104,
+   "sha384": "sha384-wZCWwNpt0a0SeWUoYQFzA5Ds6jQMJdRRME4/u+Id3Kapuuvo3eKXQQHnj8mRhSSF"
+  },
+  "props/cargo-stack.glb": {
+   "bytes": 46236,
+   "sha384": "sha384-SnZ3u4T3Jc4JtGofOUJE8xtMEwZDj1xOGplMpnYhZ2jFrhHX/+0ftQ8MUvGM1LS6"
+  },
+  "props/cargo.glb": {
+   "bytes": 31364,
+   "sha384": "sha384-Aq8PpVAJDEhi5Se178EokGcP4CFVJ1n1FWmi64veuYV5ZyDO7Z04auEduAeUtsR/"
+  },
+  "props/coin.glb": {
+   "bytes": 20304,
+   "sha384": "sha384-teLpgl8cyEiohrtiVKB8NJX9pfxInuVEUNV6Mic7LuNJz6c221AxzXRvimys7qpD"
+  },
+  "props/containers.glb": {
+   "bytes": 36880,
+   "sha384": "sha384-NbdnSNYTWnZt/idevketN/XtMBwk5bISF9JrQstSPbnoHoRX6alvdi2gv/xDge1r"
+  },
+  "props/lander.glb": {
+   "bytes": 74712,
+   "sha384": "sha384-+Po+1VtJQ1GfPSYBENIBH+hv3auYSo6Vrhy6ym7E6PoT3EFF2lzfKO5AsU58hRGf"
+  },
+  "props/rocket-lander.glb": {
+   "bytes": 81432,
+   "sha384": "sha384-PZG299xxy1YDVpoV9Rh8LzI8ATtrS026cmasYdaD7uxC6ydaXRYLxGckhU6cBgov"
+  },
+  "props/rover-big.glb": {
+   "bytes": 68632,
+   "sha384": "sha384-DUydt9efrzQpaj0hhXgCxzaosPH62o4ZvAmsf3vc782f9JzKZj/EosOjaNk7+q2Z"
+  },
+  "props/rover.glb": {
+   "bytes": 56520,
+   "sha384": "sha384-gZetVR6JUHy1PVQXkkYXFTmMjuonlSvA8aOSXQB/DDOoCIgOqO/5APmzaATOAV0U"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/base-dome.glb": {
+   "bytes": 51828,
+   "sha384": "sha384-G4hD7fVG51XAynrEp60nncIT7rBpcAv2BuVx6jcGEzcR7o3DrdFybclD1AYeZ/wO"
+  },
+  "world/base-long.glb": {
+   "bytes": 53592,
+   "sha384": "sha384-3Vfpwq4Kocg7XZYa86JARqsZ9QTAaxeuJQe/qkRIviGRSKrwO+XfYish4CGYikFF"
+  },
+  "world/base-small.glb": {
+   "bytes": 60732,
+   "sha384": "sha384-TdowaMusfZdYqvFAfM0xj1cj3D2YSSLZEGWhw1SowwwU58ztnCYRftGvDXbG1pVh"
+  },
+  "world/base-tower.glb": {
+   "bytes": 54592,
+   "sha384": "sha384-Y1F0TEtSr1HvzFaS+seSzoTGGnuWe0TO2FwWt7/O+vi5PGaKJ+pFKUEDwlrYrTl5"
+  },
+  "world/crater.glb": {
+   "bytes": 30236,
+   "sha384": "sha384-TpjASF4PfTDaACi69fqr1uviswZXdgawbJtcPKXuLnCwvnO94y7B/8q3eJz1DjaI"
+  },
+  "world/drill.glb": {
+   "bytes": 73436,
+   "sha384": "sha384-ZL2moRfJOag9epUAbexEMvX89uqxIfP9tjVaYcsscmXTaOlRlOmTQteVrthQehVY"
+  },
+  "world/garage.glb": {
+   "bytes": 60812,
+   "sha384": "sha384-caGwV7s+RxPgYgPdcLqNqPetuVDJaH4db0eoLsRLMMGWhyKQaiULlBAeYx9eD44o"
+  },
+  "world/ground-curved.glb": {
+   "bytes": 28636,
+   "sha384": "sha384-MCdjRTatHIWRKNJEEJ6fDZ7V/5f33OWH0lgmuzBAeaQOYc76Ton8jaeEvmV7WZli"
+  },
+  "world/ground-high.glb": {
+   "bytes": 27736,
+   "sha384": "sha384-9yrdfGRoFcgV6TZchcGkarG/wE+Xhmujaz0CddWJdMoBCuAIS5s/fQ+Jw882jyLl"
+  },
+  "world/ground.glb": {
+   "bytes": 27760,
+   "sha384": "sha384-aN/YahZHMvaGhhiWCtFw8Oa2gpRyw0QY8JbXv8xYnD/XeFvL6m5ybk4TY8RR7PIw"
+  },
+  "world/landing-pad-small.glb": {
+   "bytes": 44916,
+   "sha384": "sha384-Gf+/G3ph3A08CCYVk7+nXoDRKSk6QJCYQ9r0lmKZpmn4OdRgym/EROEa3SBDumt2"
+  },
+  "world/landing-pad.glb": {
+   "bytes": 45600,
+   "sha384": "sha384-uk6la+BokccQWZ3vbqQ3uG9aa1tsCfQgxNeVxyiV6ne4cbLgdLAtq5vaqvOudIQb"
+  },
+  "world/lights.glb": {
+   "bytes": 39540,
+   "sha384": "sha384-cMSMSTGJ67JTfTPbUBO3Rq6Zr8gJ+P249+RYnuE1mmIXMqBClfZaP/oZbd+CtXVn"
+  },
+  "world/rock.glb": {
+   "bytes": 28440,
+   "sha384": "sha384-v9byiJqnOm5d/FIVOS8RTPrtKJ3735tvLoJvULEXfJktqQZ1gzyHvVWCQKmUIFSz"
+  },
+  "world/rocks.glb": {
+   "bytes": 30784,
+   "sha384": "sha384-Jacr1Sw/s5jHSvO5tYTk+fK5WG+AfUzNWUjnUUziacWsZwWAwTpeckpWoPb477wt"
+  },
+  "world/slope.glb": {
+   "bytes": 28156,
+   "sha384": "sha384-j12loqNWrAqZsd9b+oR6lcTodNbNmcym+UGHBvaQeVGRFrvRP9sf0GCho0SXwzhQ"
+  },
+  "world/solar-panel.glb": {
+   "bytes": 31756,
+   "sha384": "sha384-rqyN0J7AaALibzYjupO2ITxq+wDfjja/oDnCFTiCt44oSBcwogxrLwux+hKSes6W"
+  },
+  "world/structure.glb": {
+   "bytes": 54728,
+   "sha384": "sha384-Nja+gsp2ef0y06R4FfkzGp+WW1dw8tuhuX1QNVS0m0tFYpPS5R7d4Bpn+mTkkHSp"
+  },
+  "world/tunnel.glb": {
+   "bytes": 52976,
+   "sha384": "sha384-z/yNxW7A7vtPaNc3eJ6+TMPtqoXyOOCZOqY+oS2SbOVSITOyoNFNa0dTtZcUvYL/"
+  },
+  "world/wind-turbine.glb": {
+   "bytes": 48288,
+   "sha384": "sha384-ojG9OGkErvaKxJ36wiWnybZAeaxWeWLDJFtiRXVS3LTOL8GHVUQ7S1TprZa4xksZ"
+  }
+ },
+ "firstLoadBytes": 3604396
+}

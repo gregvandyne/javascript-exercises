@@ -1,0 +1,486 @@
+{
+ "id": "space-base",
+ "name": "Space Base",
+ "description": "Land on a red planet: drive rovers, power up the base and hop between landing pads under the stars.",
+ "goodFor": [
+  "science",
+  "maths",
+  "space"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+  },
+  {
+   "id": "kaykit-space-base",
+   "name": "KayKit Space Base Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Space-Base-Bits-1.0",
+   "commit": "6dfbcac9927d06283752c4defd4882cfe0d29666",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-space-base.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Space-Base-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Dungeon-Remastered-1.0/"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "pieces": [
+  [
+   "ground",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_low.gltf",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "ground-high",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_tall.gltf",
+   "world",
+   [
+    "ground",
+    "platform",
+    "step"
+   ]
+  ],
+  [
+   "ground-curved",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_low_curved.gltf",
+   "world",
+   [
+    "ground",
+    "platform"
+   ]
+  ],
+  [
+   "slope",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_slope.gltf",
+   "world",
+   [
+    "slope",
+    "ramp"
+   ]
+  ],
+  [
+   "crater",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_mining.gltf",
+   "world",
+   [
+    "ground",
+    "crater"
+   ]
+  ],
+  [
+   "landing-pad",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/landingpad_large.gltf",
+   "world",
+   [
+    "platform",
+    "goal",
+    "answer"
+   ]
+  ],
+  [
+   "landing-pad-small",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/landingpad_small.gltf",
+   "world",
+   [
+    "platform",
+    "answer",
+    "step"
+   ]
+  ],
+  [
+   "base-dome",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_A.gltf",
+   "world",
+   [
+    "building",
+    "base"
+   ]
+  ],
+  [
+   "base-long",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_B.gltf",
+   "world",
+   [
+    "building",
+    "base"
+   ]
+  ],
+  [
+   "base-tower",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_C.gltf",
+   "world",
+   [
+    "building",
+    "base"
+   ]
+  ],
+  [
+   "base-small",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_D.gltf",
+   "world",
+   [
+    "building",
+    "base"
+   ]
+  ],
+  [
+   "garage",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_garage.gltf",
+   "world",
+   [
+    "building",
+    "garage"
+   ]
+  ],
+  [
+   "tunnel",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/tunnel_straight_A.gltf",
+   "world",
+   [
+    "tunnel",
+    "path"
+   ]
+  ],
+  [
+   "structure",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/structure_tall.gltf",
+   "world",
+   [
+    "tower"
+   ]
+  ],
+  [
+   "drill",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/drill_structure.gltf",
+   "world",
+   [
+    "machine",
+    "tower"
+   ]
+  ],
+  [
+   "rocket-lander",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lander_A.gltf",
+   "prop",
+   [
+    "rocket",
+    "vehicle",
+    "goal"
+   ]
+  ],
+  [
+   "lander",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lander_B.gltf",
+   "prop",
+   [
+    "rocket",
+    "vehicle"
+   ]
+  ],
+  [
+   "rover",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/spacetruck.gltf",
+   "prop",
+   [
+    "vehicle",
+    "rover"
+   ]
+  ],
+  [
+   "rover-big",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/spacetruck_large.gltf",
+   "prop",
+   [
+    "vehicle",
+    "rover"
+   ]
+  ],
+  [
+   "solar-panel",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/solarpanel.gltf",
+   "decor",
+   [
+    "energy",
+    "solar"
+   ]
+  ],
+  [
+   "wind-turbine",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/windturbine_tall.gltf",
+   "decor",
+   [
+    "energy"
+   ]
+  ],
+  [
+   "cargo",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/cargo_A.gltf",
+   "prop",
+   [
+    "crate",
+    "block",
+    "collectible"
+   ]
+  ],
+  [
+   "cargo-stack",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/cargo_A_stacked.gltf",
+   "prop",
+   [
+    "crate",
+    "obstacle"
+   ]
+  ],
+  [
+   "containers",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/containers_A.gltf",
+   "prop",
+   [
+    "crate",
+    "obstacle"
+   ]
+  ],
+  [
+   "lights",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lights.gltf",
+   "decor",
+   [
+    "light"
+   ]
+  ],
+  [
+   "rock",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/rock_A.gltf",
+   "decor",
+   [
+    "rock",
+    "obstacle"
+   ]
+  ],
+  [
+   "rocks",
+   "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/rocks_A.gltf",
+   "decor",
+   [
+    "rock"
+   ]
+  ],
+  [
+   "coin",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ]
+  ]
+ ],
+ "look": {
+  "sky": {
+   "top": "#05081a",
+   "middle": "#1b2550",
+   "bottom": "#3a2a5a"
+  },
+  "fog": {
+   "color": "#1b2550",
+   "near": 60,
+   "far": 220
+  },
+  "hemisphere": {
+   "sky": "#c8d4ff",
+   "ground": "#4a4060",
+   "intensity": 1.4
+  },
+  "sun": {
+   "color": "#ffffff",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1.05,
+  "glow": {
+   "strength": 0.3,
+   "radius": 0.4,
+   "threshold": 0.8
+  },
+  "clouds": {
+   "color": "#8a93c4",
+   "emissive": "#2e3b72",
+   "emissiveIntensity": 0.2
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "moves": {
+  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

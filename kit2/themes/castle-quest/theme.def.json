@@ -1,0 +1,520 @@
+{
+ "id": "castle-quest",
+ "name": "Castle Quest",
+ "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests.",
+ "goodFor": [
+  "reading",
+  "history",
+  "adventures"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Dungeon-Remastered-1.0/"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ],
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "pieces": [
+  [
+   "floor-stone",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_large.gltf.glb",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "floor-wood",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_wood_large.gltf.glb",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "floor-dirt",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_dirt_large.gltf.glb",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "block",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_foundation_allsides.gltf.glb",
+   "world",
+   [
+    "platform",
+    "step",
+    "block"
+   ]
+  ],
+  [
+   "stairs",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs.gltf.glb",
+   "world",
+   [
+    "stairs",
+    "climb"
+   ]
+  ],
+  [
+   "stairs-wide",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs_wide.gltf.glb",
+   "world",
+   [
+    "stairs",
+    "climb"
+   ]
+  ],
+  [
+   "wall",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall.gltf.glb",
+   "world",
+   [
+    "wall"
+   ]
+  ],
+  [
+   "wall-doorway",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_doorway.glb",
+   "world",
+   [
+    "wall",
+    "door"
+   ]
+  ],
+  [
+   "wall-window",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_window_open.gltf.glb",
+   "world",
+   [
+    "wall",
+    "window"
+   ]
+  ],
+  [
+   "wall-arched",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_arched.gltf.glb",
+   "world",
+   [
+    "wall",
+    "arch"
+   ]
+  ],
+  [
+   "wall-corner",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_corner.gltf.glb",
+   "world",
+   [
+    "wall",
+    "corner"
+   ]
+  ],
+  [
+   "pillar",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/pillar.gltf.glb",
+   "world",
+   [
+    "pillar"
+   ]
+  ],
+  [
+   "column",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/column.gltf.glb",
+   "world",
+   [
+    "pillar"
+   ]
+  ],
+  [
+   "spikes",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_big_spikes.glb",
+   "world",
+   [
+    "obstacle",
+    "hazard",
+    "floor"
+   ],
+   "A floor with spikes: a hazard to jump over."
+  ],
+  [
+   "chest",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "prop",
+   [
+    "treasure",
+    "goal",
+    "answer"
+   ]
+  ],
+  [
+   "chest-gold",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest_gold.glb",
+   "prop",
+   [
+    "treasure",
+    "goal",
+    "answer"
+   ]
+  ],
+  [
+   "coin",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ]
+  ],
+  [
+   "coin-pile",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin_stack_large.gltf.glb",
+   "prop",
+   [
+    "treasure",
+    "collectible"
+   ]
+  ],
+  [
+   "key",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/key.gltf.glb",
+   "prop",
+   [
+    "collectible",
+    "key"
+   ]
+  ],
+  [
+   "barrel",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_large.gltf.glb",
+   "prop",
+   [
+    "barrel",
+    "obstacle"
+   ]
+  ],
+  [
+   "barrel-small",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_small.gltf.glb",
+   "prop",
+   [
+    "barrel"
+   ]
+  ],
+  [
+   "crate",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/box_large.gltf.glb",
+   "prop",
+   [
+    "crate",
+    "block"
+   ]
+  ],
+  [
+   "crates",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/crates_stacked.gltf.glb",
+   "prop",
+   [
+    "crate",
+    "obstacle"
+   ]
+  ],
+  [
+   "torch",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_lit.gltf.glb",
+   "decor",
+   [
+    "light",
+    "torch"
+   ]
+  ],
+  [
+   "wall-torch",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_mounted.gltf.glb",
+   "decor",
+   [
+    "light",
+    "torch"
+   ]
+  ],
+  [
+   "candles",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/candle_triple.gltf.glb",
+   "decor",
+   [
+    "light",
+    "candle"
+   ]
+  ],
+  [
+   "banner-blue",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_blue.gltf.glb",
+   "decor",
+   [
+    "banner",
+    "flag"
+   ]
+  ],
+  [
+   "banner-red",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_red.gltf.glb",
+   "decor",
+   [
+    "banner",
+    "flag"
+   ]
+  ],
+  [
+   "banner-yellow",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_patternA_yellow.gltf.glb",
+   "decor",
+   [
+    "banner",
+    "flag"
+   ]
+  ],
+  [
+   "table",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/table_medium_tablecloth.gltf.glb",
+   "decor",
+   [
+    "table",
+    "furniture"
+   ]
+  ],
+  [
+   "chair",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chair.gltf.glb",
+   "decor",
+   [
+    "chair",
+    "furniture"
+   ]
+  ],
+  [
+   "shelf",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/shelf_small_candles.gltf.glb",
+   "decor",
+   [
+    "shelf",
+    "furniture"
+   ]
+  ],
+  [
+   "feast",
+   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/plate_food_A.gltf.glb",
+   "decor",
+   [
+    "food"
+   ]
+  ]
+ ],
+ "look": {
+  "sky": {
+   "top": "#6fa8dc",
+   "middle": "#cfe3f2",
+   "bottom": "#f3e6c8"
+  },
+  "fog": {
+   "color": "#d9e4ee",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#f1ecdf",
+   "ground": "#6b5b45",
+   "intensity": 1.15
+  },
+  "sun": {
+   "color": "#fff0d2",
+   "intensity": 2.4
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.18,
+   "radius": 0.4,
+   "threshold": 0.9
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef4fa",
+   "emissiveIntensity": 0.12
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "moves": {
+  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

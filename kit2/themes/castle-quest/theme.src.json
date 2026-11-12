@@ -1,0 +1,740 @@
+{
+ "id": "castle-quest",
+ "name": "Castle Quest",
+ "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests.",
+ "goodFor": [
+  "reading",
+  "history",
+  "adventures"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "look": {
+  "sky": {
+   "top": "#6fa8dc",
+   "middle": "#cfe3f2",
+   "bottom": "#f3e6c8"
+  },
+  "fog": {
+   "color": "#d9e4ee",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#f1ecdf",
+   "ground": "#6b5b45",
+   "intensity": 1.15
+  },
+  "sun": {
+   "color": "#fff0d2",
+   "intensity": 2.4
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.18,
+   "radius": 0.4,
+   "threshold": 0.9
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef4fa",
+   "emissiveIntensity": 0.12
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.63,
+    2
+   ]
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    2,
+    2
+   ]
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.31,
+    2
+   ]
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons",
+   "size": [
+    2,
+    3.59,
+    2
+   ]
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "floor-stone",
+   "file": "world/floor-stone.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.15,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "floor-wood",
+   "file": "world/floor-wood.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.15,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "floor-dirt",
+   "file": "world/floor-dirt.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.21,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "block",
+   "file": "world/block.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "step",
+    "block"
+   ],
+   "size": [
+    2.2,
+    2,
+    2.2
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "stairs",
+   "file": "world/stairs.glb",
+   "kind": "world",
+   "tags": [
+    "stairs",
+    "climb"
+   ],
+   "size": [
+    5,
+    5.1,
+    4
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "stairs-wide",
+   "file": "world/stairs-wide.glb",
+   "kind": "world",
+   "tags": [
+    "stairs",
+    "climb"
+   ],
+   "size": [
+    7,
+    5.1,
+    4
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall",
+   "file": "world/wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-doorway",
+   "file": "world/wall-doorway.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "door"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-window",
+   "file": "world/wall-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-arched",
+   "file": "world/wall-arched.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "arch"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-corner",
+   "file": "world/wall-corner.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "corner"
+   ],
+   "size": [
+    2.5,
+    4,
+    2.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "pillar",
+   "file": "world/pillar.glb",
+   "kind": "world",
+   "tags": [
+    "pillar"
+   ],
+   "size": [
+    1.5,
+    4,
+    1.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "column",
+   "file": "world/column.glb",
+   "kind": "world",
+   "tags": [
+    "pillar"
+   ],
+   "size": [
+    0.7,
+    1.4,
+    0.7
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "spikes",
+   "file": "world/spikes.glb",
+   "kind": "world",
+   "tags": [
+    "obstacle",
+    "hazard",
+    "floor"
+   ],
+   "size": [
+    4,
+    2.1,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "A floor with spikes: a hazard to jump over. Its base is -0.1 below its y."
+  },
+  {
+   "id": "chest",
+   "file": "props/chest.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    1.7,
+    1.3,
+    1.45
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "chest-gold",
+   "file": "props/chest-gold.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    1.7,
+    1.3,
+    1.45
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "coin-pile",
+   "file": "props/coin-pile.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "collectible"
+   ],
+   "size": [
+    1.44,
+    1.16,
+    1.66
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "key",
+   "file": "props/key.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "key"
+   ],
+   "size": [
+    0.9,
+    0.4,
+    0.14
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "barrel",
+   "file": "props/barrel.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel",
+    "obstacle"
+   ],
+   "size": [
+    1.8,
+    2,
+    1.8
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "barrel-small",
+   "file": "props/barrel-small.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel"
+   ],
+   "size": [
+    1,
+    1.02,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "crate",
+   "file": "props/crate.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "block"
+   ],
+   "size": [
+    1.5,
+    1.5,
+    1.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "crates",
+   "file": "props/crates.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "obstacle"
+   ],
+   "size": [
+    2.09,
+    2.14,
+    2.25
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "torch",
+   "file": "world/torch.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "torch"
+   ],
+   "size": [
+    0.55,
+    1.13,
+    0.55
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.4 below its y."
+  },
+  {
+   "id": "wall-torch",
+   "file": "world/wall-torch.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "torch"
+   ],
+   "size": [
+    0.55,
+    1.06,
+    0.62
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.38 below its y."
+  },
+  {
+   "id": "candles",
+   "file": "world/candles.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "candle"
+   ],
+   "size": [
+    0.5,
+    0.87,
+    0.39
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "banner-blue",
+   "file": "world/banner-blue.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "banner-red",
+   "file": "world/banner-red.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "banner-yellow",
+   "file": "world/banner-yellow.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "table",
+   "file": "world/table.glb",
+   "kind": "decor",
+   "tags": [
+    "table",
+    "furniture"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "chair",
+   "file": "world/chair.glb",
+   "kind": "decor",
+   "tags": [
+    "chair",
+    "furniture"
+   ],
+   "size": [
+    0.75,
+    1.23,
+    0.75
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "shelf",
+   "file": "world/shelf.glb",
+   "kind": "decor",
+   "tags": [
+    "shelf",
+    "furniture"
+   ],
+   "size": [
+    1,
+    0.99,
+    0.5
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.3 below its y."
+  },
+  {
+   "id": "feast",
+   "file": "world/feast.glb",
+   "kind": "decor",
+   "tags": [
+    "food"
+   ],
+   "size": [
+    1.02,
+    0.79,
+    0.97
+   ],
+   "pack": "kaykit-dungeon"
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ]
+}
