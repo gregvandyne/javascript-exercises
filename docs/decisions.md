@@ -4553,3 +4553,22 @@ Progress, Games, Students, Settings), from the teaching loop's Check step and fr
 and /teachers. Nothing else changed: the page still answers at /class/:id/standards (and its CSV), the lesson standards
 picker, the code chips on Learn and the student report keep working, so it can be brought back by putting 'standards'
 back in CLASS_TABS (routes/schools.js) and the loop (views/teacher-loop.js).
+
+## Kit 2 themes, stage 1: the art pipeline and Sky Islands 1.0.0 (12 Nov 2026)
+
+The owner wants games that "blow people away" and found Kit 1's home-made characters too limiting. Kit 2 (plan:
+`docs/kit2-themes-plan.md`) uses real engines and CC0 art packaged as themes. Stage 1 ships the art only; no game loads it yet.
+- **Sky Islands 1.0.0** in `public/vendor/themes/sky-islands/1.0.0/`: five KayKit heroes, 14 Kenney world pieces and props,
+  six Kenney sounds, 1.11 MB in all (limit 5 MB). Built by `kit2/pipeline/build-theme.mjs` (glTF Transform, meshopt).
+- **Kid-safe heroes:** every held item (swords, axes, knives, crossbows, shields, wands, staffs, spellbooks, the mug) is
+  stripped, and only 15 of the 76 animations are kept (no fighting, falling down or dying). The heroes are renamed for
+  kids: Knight, Explorer (Barbarian), Wizard (Mage), Ranger (Rogue), Hooded Ranger.
+- **One moves file:** all five heroes share one skeleton, so their animations live once in `heroes/moves.glb` and play on
+  any hero by bone name (checked on a contact sheet). This cut each hero from 3.6 MB to about 100 KB.
+- **Art in git** (an open decision in the plan): the plan's `/vendor/themes` path and 1.2 MB per theme make git the simple
+  choice for now; object storage can come later if waves 2 and 3 grow the repo too much.
+- **Licences:** both packs are CC0 (KayKit's LICENSE.txt; the Kenney kit's README says its models and sounds are CC0, its
+  code MIT, and no code is used). Each theme keeps `LICENSES/`, `SOURCES.md` (repository, commit, date, what changed) and
+  every file's size and sha384 in `theme.json`; `tests/unit/kit2-themes.test.js` checks all of it and the 5 MB limit.
+- **Not yet in the theme:** cheer, wrong-answer and ambient sounds (not in these packs; Oomba3D will make cheer and
+  wrong-answer sounds in code), and Kenney's/Quaternius's full sites (not reachable from the build machine; GitHub copies used).

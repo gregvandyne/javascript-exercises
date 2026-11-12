@@ -1,0 +1,314 @@
+<!-- The Kit 2 prototype (11 Nov 2026), kept as the reference for the Oomba3D library (stage 3 rebuilds it on that library).
+     Not served by the site and not a game: it loads Three.js 0.170.0 from a CDN and its models as base64 .glb.json files
+     (the artifact host it was shown on refused .glb). Its art is now public/vendor/themes/sky-islands/1.0.0. -->
+<title>Sky Islands</title>
+<style>
+  /* One full-screen sky scene with a light game HUD over it: a single deliberate look in both themes. */
+  :root { --ink:#141414; --cream:#FFFDF2; --mint:#66C792; --spark:#FFD23F; --sky:#bfe3ff; --font: "Bricolage Grotesque", system-ui, sans-serif; color-scheme: light; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--sky); color: var(--ink); font-family: var(--font); }
+  canvas { display: block; }
+  .hud { position: fixed; inset: 0; pointer-events: none; }
+  .top { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; }
+  .pill { background: var(--cream); color: var(--ink); border: 3px solid var(--ink); border-radius: 999px; padding: 8px 16px; font-weight: 800; font-size: 18px; box-shadow: 0 4px 0 var(--ink); }
+  .q { font-size: 22px; background: var(--spark); }
+  .coins::before { content: "\1FA99  "; }
+  .title { position: absolute; top: 6%; left: 0; right: 0; text-align: center; color: var(--ink); }
+  .title h1 { margin: 0; font-size: clamp(30px, 6vw, 64px); letter-spacing: -1px; text-shadow: 0 4px 0 var(--cream); }
+  .title p { margin: 6px 0 0; font-size: clamp(15px, 2.2vw, 20px); font-weight: 700; }
+  .pick { position: absolute; bottom: 7%; left: 0; right: 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; pointer-events: auto; padding: 0 12px; }
+  .pick button { font: 800 16px system-ui, sans-serif; padding: 12px 18px; border-radius: 16px; border: 3px solid var(--ink); background: var(--cream); box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
+  .pick button.go { background: var(--mint); font-size: 20px; }
+  .toast { position: absolute; top: 64%; white-space: nowrap; left: 50%; transform: translate(-50%, -50%) scale(.6); opacity: 0; transition: .25s; font: 900 48px system-ui, sans-serif; color: var(--cream); -webkit-text-stroke: 3px var(--ink); paint-order: stroke; }
+  .toast.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .help { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font: 700 14px system-ui, sans-serif; color: var(--ink); background: #fffdf2cc; border-radius: 10px; padding: 6px 12px; }
+  .hidden { display: none !important; }
+  .pad { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
+  .pad .dpad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 56px); gap: 6px; }
+  .pad button { pointer-events: auto; touch-action: none; width: 56px; height: 56px; border-radius: 16px; border: 3px solid var(--ink); background: var(--cream); color: var(--ink); font: 900 22px var(--font); box-shadow: 0 4px 0 var(--ink); }
+  .pad .jump { width: 92px; height: 92px; border-radius: 50%; background: var(--spark); font-size: 18px; }
+  .pad button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .pad { display: none; } }
+  .help { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  @media (pointer: coarse) { .help { display: none; } }
+  .credit { position: absolute; right: max(10px, env(safe-area-inset-right, 0px)); top: calc(8px + env(safe-area-inset-top, 0px)); font: 600 11px var(--font); color: var(--ink); opacity: .6; }
+  @media (max-width: 560px) { .top { flex-direction: column; } .q { font-size: 17px; } .credit { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }</script>
+<div class="hud">
+  <div class="title" id="title"><h1>Sky Islands</h1><p>Pick your hero, then jump to the right answer</p></div>
+  <div class="pick" id="pick"></div>
+  <div class="top hidden" id="top"><span class="pill q" id="q"></span><span class="pill coins" id="coins">0</span></div>
+  <div class="toast" id="toast"></div>
+  <div class="help hidden" id="help">Arrows or WASD to move · Space to jump</div>
+  <div class="pad hidden" id="pad"><div class="dpad"><span></span><button id="b-up" aria-label="Forward">&#9650;</button><span></span><button id="b-left" aria-label="Left">&#9664;</button><button id="b-down" aria-label="Back">&#9660;</button><button id="b-right" aria-label="Right">&#9654;</button></div><button class="jump" id="b-jump">Jump</button></div>
+  <div class="credit">Models: KayKit and Kenney (CC0)</div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const params = new URLSearchParams(location.search);
+const SHOT = params.get('shot');           // screenshots: 'title' or 'run'
+const $ = id => document.getElementById(id);
+
+// ---------------------------------------------------------------- renderer, sky, light
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: !!SHOT });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+document.body.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+// A soft sky: a big sphere with a vertical gradient.
+const skyGeo = new THREE.SphereGeometry(400, 32, 16);
+const skyMat = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { top: { value: new THREE.Color('#5fb8ff') }, mid: { value: new THREE.Color('#bfe6ff') }, bottom: { value: new THREE.Color('#fff4d6') } },
+  vertexShader: 'varying vec3 vP; void main(){ vP = (modelMatrix*vec4(position,1.)).xyz; gl_Position = projectionMatrix*viewMatrix*vec4(vP,1.); }',
+  fragmentShader: 'uniform vec3 top; uniform vec3 mid; uniform vec3 bottom; varying vec3 vP; void main(){ float h = normalize(vP).y; vec3 c = h > 0. ? mix(mid, top, pow(h, .6)) : mix(mid, bottom, pow(-h, .5)); gl_FragColor = vec4(c, 1.); }' });
+scene.add(new THREE.Mesh(skyGeo, skyMat));
+scene.fog = new THREE.Fog('#d6eeff', 70, 230);
+
+scene.add(new THREE.HemisphereLight('#dff3ff', '#7a8f5a', 1.1));
+const sun = new THREE.DirectionalLight('#fff1d6', 2.6);
+sun.position.set(18, 30, 12);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 90 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+scene.add(sun, sun.target);
+
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 600);
+// Tall phone screens: widen the view so the scene is not mostly sky.
+const fitFov = () => { camera.fov = camera.aspect < 1 ? Math.min(78, 50 / Math.max(camera.aspect, 0.45) * 0.8) : 50; camera.updateProjectionMatrix(); };
+fitFov();
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.12, 0.4, 0.98);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; fitFov(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); });
+
+// ---------------------------------------------------------------- loading
+const loader = new GLTFLoader();
+// Models ship as base64 inside .json files (the page host serves only common web formats); unwrap, then parse.
+const load = async url => {
+  const r = await fetch(`${url}.json`); if (!r.ok) throw new Error(`Could not load ${url}`);
+  const bin = Uint8Array.from(atob((await r.json()).glb), c => c.charCodeAt(0));
+  return new Promise((res, rej) => loader.parse(bin.buffer, url.slice(0, url.lastIndexOf('/') + 1), res, rej));
+};
+const K = name => `./models/kenney/${name}.glb`;
+const shadowy = o => { o.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } }); return o; };
+const HEROES = ['Knight', 'Mage', 'Barbarian', 'Rogue', 'Rogue_Hooded'];
+const [kit, heroes] = await Promise.all([
+  Promise.all(['platform-grass-large-round', 'coin', 'flag', 'grass', 'grass-small'].map(n => load(K(n)).then(g => [n, g]))).then(Object.fromEntries),
+  Promise.all(HEROES.map(h => load(`./models/heroes/${h}.glb`).then(g => [h, g]))).then(Object.fromEntries),
+]);
+const clone = (n, s = 1) => { const o = shadowy(kit[n].scene.clone(true)); o.scale.setScalar(s); return o; };
+
+// Sounds (Kenney, CC0): played only after the first click.
+const sfx = Object.fromEntries(['coin', 'jump', 'land', 'break', 'fall'].map(n => [n, new Audio(`./sounds/${n}.ogg`)]));
+const play = n => { if (SHOT) return; const a = sfx[n].cloneNode(); a.volume = 0.5; a.play().catch(() => {}); };
+
+// A hero: its own skeleton copy, an animation mixer and a play(name) that cross-fades.
+function makeHero(name) {
+  const g = heroes[name];
+  const root = shadowy(SkeletonUtils.clone(g.scene));
+  const mixer = new THREE.AnimationMixer(root);
+  const clips = Object.fromEntries(g.animations.map(c => [c.name, c]));
+  let cur = null;
+  const playAnim = (clip, { once = false, fade = 0.2 } = {}) => {
+    const a = mixer.clipAction(clips[clip]); if (!a || cur === a) return a;
+    a.reset(); a.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat); a.clampWhenFinished = once;
+    if (cur) cur.crossFadeTo(a, fade, false); a.play(); cur = a; return a;
+  };
+  return { root, mixer, play: playAnim };
+}
+
+// ---------------------------------------------------------------- the world: floating islands in the sky
+const world = new THREE.Group(); scene.add(world);
+const solids = [];   // { box: Box3, mesh, kind, answer }
+function place(name, x, y, z, s = 2, extra = {}) {
+  const o = clone(name, s); o.position.set(x, y, z); world.add(o);
+  o.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(o);
+  const solid = { box, mesh: o, ...extra }; solids.push(solid); return solid;
+}
+function deco(name, x, y, z, s = 2, ry = 0) { const o = clone(name, s); o.position.set(x, y, z); o.rotation.y = ry; world.add(o); return o; }
+
+// Start island, a path of steps, three answer islands, and the goal. (Sizes: a platform is 2 wide and 0.55 tall at
+// scale 1, a hero about 2.5 tall; everything below is scale 2-3, so a step is 4 wide and its top is 1.1 above its base.)
+place('platform-grass-large-round', 0, 0, 0, 3);
+for (const [x, z, r] of [[-4, 3, 0.3], [4.5, -2, 1], [-3, -4.2, 2], [5, 3.5, 0.5]]) deco('grass', x, 1.5, z, 3, r);
+const path = [[0, 0.6, -11], [3, 1.2, -17], [0, 1.8, -23], [-3, 2.4, -29]];
+path.forEach(([x, y, z], i) => place('platform-grass-large-round', x, y + 0.6, z, i % 2 ? 1.1 : 0.9));
+const coins = [];
+path.forEach(([x, y, z]) => { const c = clone('coin', 2.6); c.position.set(x, y + 2.3, z); world.add(c); coins.push(c); });
+
+// The question and its three answer islands.
+const QUESTION = { text: '7 \u00d7 8 = ?', answers: [54, 56, 63], right: 56 };
+const ANSWER_Y = 3.0;
+const answerIslands = [-8, 0, 8].map((x, i) => {
+  const s = place('platform-grass-large-round', x, ANSWER_Y + 0.45, -38, 1.3, { answer: QUESTION.answers[i] });
+  // The answer floats above its island as a big number on a token.
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 256;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#FFFDF2'; g.strokeStyle = '#141414'; g.lineWidth = 14;
+  g.beginPath(); g.arc(128, 128, 112, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#141414'; g.font = '900 120px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(QUESTION.answers[i]), 128, 136);
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false }));
+  sprite.scale.set(2.4, 2.4, 1); sprite.position.set(x, ANSWER_Y + 4.6, -38); world.add(sprite);
+  s.sprite = sprite; s.baseY = ANSWER_Y + 4.6; return s;
+});
+const goal = place('platform-grass-large-round', 0, 4.0, -51, 2);
+deco('flag', 0, 5.0, -53, 3);
+for (const [x, z] of [[-2.8, -49.5], [2.6, -52.5]]) deco('grass-small', x, 5.0, z, 3.5);
+// Soft clouds: clusters of white spheres, a sea of them below and a few drifting above.
+const cloudMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 1, emissive: '#e8f4ff', emissiveIntensity: 0.15 });
+const puff = new THREE.IcosahedronGeometry(1, 3);
+function cloudAt(x, y, z, s) {
+  const c = new THREE.Group();
+  const n = 5 + Math.floor(Math.random() * 4);
+  for (let k = 0; k < n; k++) { const m = new THREE.Mesh(puff, cloudMat); const r = 0.7 + Math.random() * 0.8; m.scale.set(r * 1.3, r * 0.8, r); m.position.set((k - n / 2) * 0.9 + Math.random() * 0.4, Math.random() * 0.5, (Math.random() - 0.5) * 1.2); c.add(m); }
+  c.scale.setScalar(s); c.position.set(x, y, z); world.add(c); return c;
+}
+const clouds = [];
+for (let i = 0; i < 60; i++) clouds.push(cloudAt((Math.random() - 0.5) * 160, -9 - Math.random() * 5, 30 - Math.random() * 140, 3 + Math.random() * 3));
+for (let i = 0; i < 8; i++) clouds.push(cloudAt(-45 + i * 13, 14 + Math.random() * 8, -30 - Math.random() * 50, 1.6 + Math.random()));
+
+// ---------------------------------------------------------------- the hero-select stage (the title screen)
+const stage = new THREE.Group(); scene.add(stage);
+stage.position.set(0, 0, 40);
+const ring = clone('platform-grass-large-round', 3); stage.add(ring);
+for (const [x, z] of [[-6, 2.5], [6.2, 1.5], [-4.5, -4], [5, -4.5]]) { const g = clone('grass', 3); g.position.set(x, 1.5, z); stage.add(g); }
+const lineup = HEROES.map((name, i) => {
+  const h = makeHero(name);
+  h.root.position.set((i - 2) * 2.7, 1.5, -Math.abs(i - 2) * 0.8);
+  h.root.rotation.y = (2 - i) * 0.22;
+  h.play(['Cheer', 'Spellcasting', '2H_Melee_Idle', 'Idle', 'Jump_Idle'][i]);
+  stage.add(h.root); return h;
+});
+
+// ---------------------------------------------------------------- the player
+let player = null, mode = 'title', score = 0, vel = new THREE.Vector3(), onGround = false, answered = false;
+const keys = {};
+addEventListener('keydown', e => { keys[e.code] = true; if (e.code === 'Space') e.preventDefault(); });
+addEventListener('keyup', e => { keys[e.code] = false; });
+const SPAWN = new THREE.Vector3(0, 1.5, 3);
+
+function toast(text, ms = 1400) { const t = $('toast'); t.textContent = text; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms); }
+
+function start(name) {
+  mode = 'run';
+  $('title').classList.add('hidden'); $('pick').classList.add('hidden');
+  $('top').classList.remove('hidden'); $('help').classList.remove('hidden'); $('pad').classList.remove('hidden');
+  $('q').textContent = `Jump to the answer: ${QUESTION.text}`;
+  player = makeHero(name);
+  player.root.position.copy(SPAWN); scene.add(player.root);
+  player.play('Idle');
+}
+// Touch buttons press the same keys.
+for (const [id, code] of [['b-up', 'ArrowUp'], ['b-down', 'ArrowDown'], ['b-left', 'ArrowLeft'], ['b-right', 'ArrowRight'], ['b-jump', 'Space']]) {
+  const b = $(id); const on = e => { e.preventDefault(); keys[code] = true; }, off = () => { keys[code] = false; };
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+}
+const pick = $('pick');
+HEROES.forEach(n => { const b = document.createElement('button'); b.textContent = n.replace('_', ' '); b.onclick = () => start(n); pick.append(b); });
+
+// ---------------------------------------------------------------- physics (simple and kind: wide landings, quick respawn)
+const tmp = new THREE.Vector3(), camGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3();
+function groundUnder(p) {
+  let best = null;
+  for (const s of solids) {
+    if (s.gone) continue;
+    const b = s.box;
+    if (p.x > b.min.x - 0.2 && p.x < b.max.x + 0.2 && p.z > b.min.z - 0.2 && p.z < b.max.z + 0.2 && p.y >= b.max.y - 0.6) {
+      if (!best || b.max.y > best.box.max.y) best = s;
+    }
+  }
+  return best;
+}
+function step(dt) {
+  const p = player.root.position;
+  const fwd = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
+  const side = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+  const move = new THREE.Vector3(side, 0, -fwd);
+  if (move.lengthSq()) { move.normalize().multiplyScalar(7); player.root.rotation.y = Math.atan2(move.x, move.z); }
+  vel.x = move.x; vel.z = move.z;
+  if (onGround && keys.Space) { vel.y = 9.5; onGround = false; play('jump'); player.play('Jump_Full_Short', { once: true, fade: 0.1 }); }
+  vel.y -= 24 * dt;
+  p.addScaledVector(vel, dt);
+  const g = groundUnder(p);
+  if (g && vel.y <= 0 && p.y <= g.box.max.y + 0.05) {
+    if (!onGround) { play('land'); landedOn(g); }
+    p.y = g.box.max.y; vel.y = 0; onGround = true;
+  } else if (!g || p.y > g.box.max.y + 0.05) onGround = false;
+  if (onGround) player.play(move.lengthSq() ? 'Running_A' : 'Idle');
+  if (p.y < -12) { play('fall'); p.copy(SPAWN); vel.set(0, 0, 0); toast('Try again!'); }
+  // coins
+  for (const c of coins) if (c.visible && c.position.distanceTo(tmp.copy(p).setY(p.y + 1)) < 1.4) { c.visible = false; score++; $('coins').textContent = score; play('coin'); }
+}
+function landedOn(s) {
+  if (s.answer === undefined || answered) { if (s === goal && answered) { player.play('Cheer'); toast('You did it!', 3000); } return; }
+  if (s.answer === QUESTION.right) {
+    answered = true; score += 5; $('coins').textContent = score; play('coin');
+    s.sprite.material.color.set('#9df5b9'); toast('Correct! +5');
+    player.play('Cheer', { once: true });
+  } else {
+    play('break'); toast(`Not ${s.answer}! Try another island`);
+    s.gone = true; const m = s.mesh; const t0 = performance.now();
+    (function sink() { const k = (performance.now() - t0) / 900; m.position.y -= 0.25; m.rotation.z += 0.03; s.sprite.material.opacity = 1 - k; s.sprite.material.transparent = true; if (k < 1) requestAnimationFrame(sink); else { m.visible = false; s.sprite.visible = false; } })();
+  }
+}
+
+// ---------------------------------------------------------------- loop
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 1 / 30), t = clock.elapsedTime;
+  for (const h of lineup) h.mixer.update(dt);
+  if (player) player.mixer.update(dt);
+  for (const c of coins) c.rotation.y += dt * 3;
+  answerIslands.forEach((s, i) => { if (!s.gone) s.sprite.position.y = s.baseY + Math.sin(t * 2 + i) * 0.25; });
+  clouds.forEach((c, i) => { c.position.x += Math.sin(i) * dt * 0.3; });
+  if (mode === 'title') {
+    const a = t * 0.15;
+    camGoal.set(Math.sin(a) * 3, 4.6, stage.position.z + 14); lookGoal.set(0, 2.6, stage.position.z);
+    stage.rotation.y = Math.sin(t * 0.3) * 0.08;
+  } else if (player) {
+    step(dt);
+    const p = player.root.position;
+    camGoal.set(p.x * 0.5, p.y + 5.5, p.z + 10); lookGoal.set(p.x * 0.6, p.y + 1.6, p.z - 8);
+    sun.position.set(p.x + 18, p.y + 30, p.z + 12); sun.target.position.copy(p);
+  }
+  camera.position.lerp(camGoal, SHOT ? 1 : 0.08);
+  camera.lookAt(lookGoal);
+  composer.render();
+  if (!SHOT || frame.n++ < 400) requestAnimationFrame(frame);
+}
+frame.n = 0;
+// Screenshot set-ups: the title, or mid-run with the question up.
+if (SHOT === 'run') {
+  start(params.get('hero') || 'Mage');
+  player.root.position.set(-2.5, 3.5, -28.5); player.root.rotation.y = Math.PI * 1.08; onGround = true;
+  coins[0].visible = coins[1].visible = false; score = 2; $('coins').textContent = 2;
+  player.play('Running_A');
+  keys.KeyW = false;
+} else if (SHOT === 'answer') {
+  start(params.get('hero') || 'Knight');
+  player.root.position.set(0, ANSWER_Y + 1.1, -37); onGround = true; answered = true; score = 9; $('coins').textContent = 9;
+  answerIslands[1].sprite.material.color.set('#9df5b9');
+  player.play('Cheer'); toast('Correct! +5', 60000);
+}
+
+window.__ready = true;
+frame();
+</script>
