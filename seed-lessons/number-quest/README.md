@@ -122,3 +122,55 @@ zero errors.
 Cyber's PR #181: each box equals its target element's measured bounds in the drawn diagram
 (the renderer's outset supplies the breathing room), verified on rendered pages at
 390/834/1280, and pinned in the registry in `tests/unit/number-quest-guided-focus.test.js`.
+
+## Tiers: one path, three streets (the authoring contract)
+
+The engine reads the tiers from the data (`server/services/number-quest-tiers.js`); nothing in the
+code names a tier's units. A tier is `launchpad` (K-2), `explorer` (3-5) or `pro` (6-8): the band
+value in `course_progress.band` / `course_bands`, and the prefix of every step key,
+`<tier>-<unit>.<step>` (`launchpad-1.1`, `explorer-3.2`, `pro-2.1`).
+
+**To add a unit to a tier**
+
+1. `units.json` `units[]`: one object `{ tier, n, title, group, emoji, stamp, tool, teacherNotes: [...], steps: [...] }`.
+   `n` is the unit number inside its tier (it may repeat across tiers; a unit is tier + n); `group`
+   is the unit's anchor id on the street (`unit-<n>`); `stamp` is its stone or `null`.
+   Each step: `{ n: "<unit>.<step>", order, mp: "MP1".."MP8", titles: { <tier>: ... }, shorts: { <tier>: ... },
+   game: { <tier>: null | { slug, chapter, chapterTitle, params } }, standards: { <tier>: { primary: [], also: [],
+   buildsToward: [], flag: "coverage" | "framing" | "enrichment", primaryNote? } } }`. Every tier-keyed
+   field uses the unit's own tier. `order` starts at 1 in each tier and runs through that tier's steps.
+2. The tier's line in `units.json` `tiers.<tier>`: `{ district, grades, inGame, stones: [], status }`,
+   plus `finale: "<unit>.<step>"` when the tier ends on a finale door (Explorer: `"7.4"`).
+3. The deck: `course/<tier>/<unit>.<step>.json` with `key: "<tier>-<n>"`, `n`, `band: "<tier>"`,
+   `title` (= `titles.<tier>`), `topic` (= `shorts.<tier>`), `minutes`, `slides`, `check`, `game`
+   (the same slug/chapter/params as units.json, or `null`) and `talk` (required when there is no game).
+4. The bank: `sets/u<unit>-<tier>.json` with `id: "nq-u<unit>-<tier>"`, `unit`, and three items a step,
+   ids `nq-<tier>-<unit>.<step>-e1..e3`, each `{ id, lesson: "<unit>.<step>", use: "exit", cat, topic, kind,
+   secs, q, choices (4), answer, misconceptions (4, the key tagged "correct"), why }`. `cat` is one of the
+   step's own primary codes (or `framing` / `enrichment` for a step flagged so).
+5. Codes: a tier's steps may cite only codes in `standards.json` `<tier>Codes.codes`
+   (`explorerCodes`, `launchpadCodes`, later `proCodes`), each in a cluster named in `clusters`.
+
+**Launchpad limits** (ages 5-7, audio-first; `tests/unit/number-quest-launchpad-decks.test.js` holds every
+file in `course/launchpad/` to them): slide title 3-40 chars, text 8-160 chars, at most 2 sentences of at
+most 12 words; 5-7 slides; exactly one example slide (2-6 chips of at most 40 chars), exactly one words
+slide with exactly 3 words (each meaning 6-80 chars, at most 12 words), the mission last; a diagram
+carries 1-4 focus steps with cues of at most 12 words; exit `q` at most 90 chars, 4 distinct choices of at
+most 24 chars, `why` 20-160 chars; deck `minutes` 3-8.
+
+**Opening a tier.** `tiers.<tier>.status` is `"building"` or `"open"`. While building, the tier's steps,
+band, street and teacher-page rows exist for the platform admin only; for everyone else the tier does not
+exist. Set it to `"open"` and the street switcher, the band card, the teacher page and placement all pick
+it up. A tier with no units does not exist at all, whatever its status.
+
+**Placement.** `placement.json` `crosswalk.entryProfiles` is keyed by a unit's door,
+`"<tier>-<unit>.1"`: `{ "Number": rung, "Algebra & Patterns": rung, "Shape & Measure": rung, "Data & Chance": rung }`.
+A learner with any rung under 2.5 walks the Launchpad profiles once Launchpad is open and has at least one
+(under the first profile: the tier's first step; else the first unit whose profile is not met; all met: the
+Explorer welcome). Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open.
+The same profiles drive each unit's test-out.
+
+**Game lesson modes.** Brain Board and Quest Race read the step from `mode`: `nq-<unit>-<step>` is the
+Explorer tier (unchanged), `nql-<unit>-<step>` Launchpad, `nqp-<unit>-<step>` Pro. A game opens a lesson
+board only for a step key in its own known list (the array passed to the `NQ_STEP` decoder in the game's
+HTML) with a matching `if (NQ_STEP === '<tier>-<n>')` generator; any other mode opens the normal game.
