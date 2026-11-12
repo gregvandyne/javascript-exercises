@@ -7936,6 +7936,14 @@
       "done": "Publicado en el tablón de la clase.",
       "locked": "Para publicar anuncios, permite que Oomba Academy publique en Classroom.",
       "fromLive": "Anunciar en Classroom"
+    },
+    "chip": {
+      "connect": "Conectar Google Classroom",
+      "connected": "Classroom conectado",
+      "reconnect": "Volver a conectar Classroom",
+      "notLinked": "Aún no está vinculada a una clase de Classroom.",
+      "link": "Vincular una clase de Classroom",
+      "manage": "Ajustes de Classroom"
     }
   },
   "digest": {

@@ -7938,6 +7938,14 @@
       "done": "Publicado no mural da turma.",
       "locked": "Para publicar avisos, permita que a Oomba Academy publique no Classroom.",
       "fromLive": "Avisar no Classroom"
+    },
+    "chip": {
+      "connect": "Conectar o Google Classroom",
+      "connected": "Classroom conectado",
+      "reconnect": "Conectar o Classroom de novo",
+      "notLinked": "Ainda não está vinculada a uma turma do Classroom.",
+      "link": "Vincular uma turma do Classroom",
+      "manage": "Configurações do Classroom"
     }
   },
   "digest": {

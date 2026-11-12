@@ -7938,6 +7938,14 @@
       "done": "פורסם בלוח של הכיתה.",
       "locked": "כדי לפרסם הודעות, אפשרו ל-Oomba Academy‏ לפרסם ב-Classroom‏.",
       "fromLive": "הודעה ב-Classroom‏"
+    },
+    "chip": {
+      "connect": "חיבור Google Classroom",
+      "connected": "Classroom מחובר",
+      "reconnect": "חיבור Classroom מחדש",
+      "notLinked": "עדיין לא מקושר לכיתה ב-Classroom.",
+      "link": "קישור כיתה ב-Classroom",
+      "manage": "הגדרות Classroom"
     }
   },
   "digest": {

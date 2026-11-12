@@ -420,6 +420,26 @@ export function gcLessonsButton(req, c) {
   return html`<a class="btn" href="${pagePath(c.id)}">🎓 ${req.t('gclassroom.title')}${lk ? html` <span class="chip-s good">✓</span>` : ''}</a>`;
 }
 /** Students tab: "Import from Google Classroom" (school staff only). */
+/** The class header's Google Classroom chip (top right): "Connect Google Classroom" (one tap, back to this class), "Connect
+ *  again" when the key stopped working, or "Classroom connected" opening a small menu with the account, the linked course,
+ *  the class's Classroom page and Disconnect. School staff only, and only while Classroom is on. */
+export function gcHeaderChip(req, c) {
+  const u = req.user;
+  if (!GC.enabled() || !GC.mayConnect(u) || c.archived_at || !GC.canStore()) return '';
+  const t = req.t; const state = GC.connectionState(u.id);
+  if (state !== 'ok') {
+    return html`<form class="gc-chipform" data-api="/api/google-classroom/connect" novalidate><input type="hidden" name="back" value="${c.id}">
+      <button class="gc-chip ${state === 'reconnect' ? 'gc-chip-warn' : 'gc-chip-off'}" type="submit"><span class="gc-dot" aria-hidden="true"></span>${t(state === 'reconnect' ? 'gclassroom.chip.reconnect' : 'gclassroom.chip.connect')}</button></form>`;
+  }
+  const conn = GC.connectionOf(u.id); const lk = GC.linkOf(c.id);
+  return html`<details class="gc-chipmenu"><summary class="gc-chip gc-chip-on"><span class="gc-dot" aria-hidden="true"></span>${t('gclassroom.chip.connected')}</summary>
+    <div class="gc-pop">
+      <p class="small">${t('gclassroom.connect.connectedAs', { email: ltr(conn.email) })}</p>
+      <p class="small muted">${lk ? t('gclassroom.course.linkedTo', { course: lk.course_name }) : t('gclassroom.chip.notLinked')}</p>
+      <a class="btn btn-sm" href="${pagePath(c.id)}">🎓 ${t(lk ? 'gclassroom.chip.manage' : 'gclassroom.chip.link')}</a>
+      <form data-api="/api/google-classroom/disconnect" data-reload data-confirm="${t('gclassroom.connect.disconnectConfirm')}"><button class="btn btn-sm" type="submit">${t('gclassroom.connect.disconnect')}</button></form>
+    </div></details>`;
+}
 export function gcRosterHint(req, c) {
   if (!GC.enabled() || !GC.mayConnect(req.user)) return '';
   return html`<p class="small gc-hint">🎓 ${tHtml(req.t, 'gclassroom.roster.hint', { link: html`<a href="${pagePath(c.id)}#gc-roster">${req.t('gclassroom.roster.hintLink')}</a>` })}</p>`;

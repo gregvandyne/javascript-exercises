@@ -7937,6 +7937,14 @@
       "done": "Im Kurs-Stream gepostet.",
       "locked": "Um Ankündigungen zu posten, erlaube Oomba Academy das Posten in Classroom.",
       "fromLive": "In Classroom ankündigen"
+    },
+    "chip": {
+      "connect": "Google Classroom verbinden",
+      "connected": "Classroom verbunden",
+      "reconnect": "Classroom erneut verbinden",
+      "notLinked": "Noch mit keinem Classroom-Kurs verknüpft.",
+      "link": "Classroom-Kurs verknüpfen",
+      "manage": "Classroom-Einstellungen"
     }
   },
   "digest": {

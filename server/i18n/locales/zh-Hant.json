@@ -7936,6 +7936,14 @@
       "done": "已發布到班級訊息串。",
       "locked": "若要發布公告，請允許 Oomba Academy 發布到 Classroom。",
       "fromLive": "在 Classroom 公告"
+    },
+    "chip": {
+      "connect": "連結 Google Classroom",
+      "connected": "已連結 Classroom",
+      "reconnect": "重新連結 Classroom",
+      "notLinked": "尚未連結到 Classroom 課程。",
+      "link": "連結 Classroom 課程",
+      "manage": "Classroom 設定"
     }
   },
   "digest": {

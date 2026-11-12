@@ -1086,3 +1086,19 @@ test('announcements: everyday words that are also first names (May, Will, Art) p
   assert.equal(GC.nameIn('Due by May 12', c.id), '');
   assert.equal(GC.nameIn('Thanks, Ortiz', c.id), '', 'a last name alone is not checked');
 });
+
+test('class header chip: Connect when not connected, a menu with the account, Classroom page and Disconnect once connected', async () => {
+  const { c, tc } = school();
+  const before = await (await get(`/class/${c.id}`, tc)).text();
+  assert.match(before, /class="gc-chipform" data-api="\/api\/google-classroom\/connect"/);
+  assert.match(before, /Connect Google Classroom/);
+  await connect(tc, c.id);
+  const after = await (await get(`/class/${c.id}`, tc)).text();
+  assert.doesNotMatch(after, /gc-chipform/);
+  assert.match(after, /class="gc-chipmenu"/); assert.match(after, /Classroom connected/);
+  assert.match(after, /Not linked to a Classroom class yet/);
+  assert.match(after, new RegExp(`href="/class/${c.id}/google-classroom"`));
+  assert.match(after, /data-api="\/api\/google-classroom\/disconnect"/);
+  const id = course([]); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  assert.match(await (await get(`/class/${c.id}?tab=students`, tc)).text(), /Classroom settings/);
+});
