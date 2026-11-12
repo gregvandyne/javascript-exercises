@@ -71,9 +71,9 @@ const SHOTS = [
   { step: '7.4', state: 'vault-run', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-7-4&lock=1', prep: questRace, cdp: true },
   // Launchpad Unit 1, The Counting Patch (tier: 'launchpad'): Garden Count, a 3D game, in each step's own chapter. The
   // whole phone screen is the band (the garden fills it, the words on top and the big buttons at the bottom).
-  { tier: 'launchpad', step: '1.1', state: 'pick-and-count', slug: 'garden-count', narrow: { width: 390, height: 700, from: 0, to: 700 }, params: 'chapter=count&lock=1', prep: gardenCount, cdp: true },
-  { tier: 'launchpad', step: '1.2', state: 'more-or-fewer', slug: 'garden-count', narrow: { width: 390, height: 700, from: 0, to: 700 }, params: 'chapter=compare&lock=1', prep: gardenCount, cdp: true },
-  { tier: 'launchpad', step: '1.3', state: 'ten-and-more', slug: 'garden-count', narrow: { width: 390, height: 700, from: 0, to: 700 }, params: 'chapter=teens&lock=1', prep: gardenCount, cdp: true },
+  { tier: 'launchpad', step: '1.1', state: 'pick-and-count', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=count&lock=1', prep: gardenCount, cdp: true },
+  { tier: 'launchpad', step: '1.2', state: 'more-or-fewer', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=compare&lock=1', prep: gardenCount, cdp: true },
+  { tier: 'launchpad', step: '1.3', state: 'ten-and-more', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=teens&lock=1', prep: gardenCount, cdp: true },
 ];
 
 async function brainBoard(f) {

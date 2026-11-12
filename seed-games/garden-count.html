@@ -55,20 +55,22 @@
   .gc button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .gc button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
   .gc-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 68px 0 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .gc-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
   .gc-ask { display: flex; align-items: center; gap: 10px; max-width: 100%; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
   .gc-ask[hidden], .gc-hint[hidden], .gc-num[hidden], .gc-sum[hidden], .gc-bar[hidden], .gc-card[hidden], .gc-dots[hidden] { display: none; }
   .gc .gc-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
-  .gc-say:active, .gc-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .gc .gc-say:active, .gc .gc-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
   .gc-askt { font-weight: 800; font-size: clamp(22px, 4.6vw, 34px); line-height: 1.15; }
   .gc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .gc-num { min-width: 86px; height: 86px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: center; background: #66C792; border: 3px solid #141414; border-radius: 26px; box-shadow: 0 4px 0 #141414; font-weight: 900; font-size: 60px; line-height: 1; font-variant-numeric: tabular-nums; }
   .gc-sum { background: #FFFDF2; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 8px 16px; font-weight: 900; font-size: clamp(24px, 5.4vw, 38px); line-height: 1.1; }
-  .gc-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; max-width: min(100%, 560px); }
+  .gc-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .gc-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
   .gc-dots { display: flex; gap: 7px; padding: 2px 4px; }
   .gc-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
   .gc-dots i.on { background: #FFD23F; } .gc-dots i.now { background: #66C792; }
-  .gc-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
-  .gc .gc-btn { flex: 1 1 0; max-width: 220px; min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 8px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: 17px; line-height: 1.1; }
+  .gc-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .gc .gc-btn { flex: 1 1 0; max-width: 240px; min-height: clamp(70px, 11vh, 104px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 8px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(16px, 2.3vh, 21px); line-height: 1.1; }
   .gc-btn .i { font-size: 30px; line-height: 1.1; } .gc-btn .big { font-size: 44px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
   .gc-btn.go { background: #66C792; } .gc-btn.pick { background: #FFD23F; }
   .gc-btn.no { animation: gc-no .45s ease; }
@@ -80,24 +82,30 @@
   .gc-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
   .gc-pick .gc-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
   .gc-pick .gc-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
-  .gc-menu { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; max-width: 760px; }
+  .gc-menu { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; width: min(760px, 100%); }
   .gc-menu .gc-btn { flex: 1 1 200px; max-width: 240px; min-height: 150px; font-size: 22px; gap: 8px; }
   .gc-menu .gc-btn .i { font-size: 60px; }
   .gc-star { font-size: 84px; line-height: 1; }
   .gc-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
-  @media (max-width: 480px) { .gc-btn { min-height: 70px; font-size: 15px; border-radius: 18px; } .gc-btn .i { font-size: 26px; } .gc-num { min-width: 70px; height: 70px; font-size: 48px; border-radius: 20px; } .gc-menu .gc-btn { min-height: 104px; flex-basis: 100%; flex-direction: row; gap: 14px; max-width: 340px; } .gc-menu .gc-btn .i { font-size: 46px; } }
-  @media (max-height: 520px) { .gc-btn { min-height: 60px; } .gc-num { min-width: 64px; height: 64px; font-size: 44px; } .gc-say { width: 46px; height: 46px; } .gc-menu .gc-btn { min-height: 110px; } .gc-star { font-size: 56px; } }
-  @media (prefers-reduced-motion: reduce) { .gc-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .gc-say:active, .gc-btn:active { transform: none; } }
+  /* Wide screens: the words, the big number and the round dots share one line across the top, so the garden gets the height. */
+  @media (min-aspect-ratio: 9/10) { .gc-line { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; } }
+  @media (max-width: 480px) { .gc .gc-btn { min-height: 70px; font-size: 15px; border-radius: 18px; } .gc-btn .i { font-size: 26px; } .gc-num { min-width: 70px; height: 70px; font-size: 48px; border-radius: 20px; } .gc-menu .gc-btn { min-height: 104px; flex-basis: 100%; flex-direction: row; gap: 14px; max-width: 340px; font-size: 21px; } .gc-menu .gc-btn .i { font-size: 46px; } }
+  @media (max-height: 520px) { .gc .gc-btn { min-height: 60px; font-size: 15px; } .gc-btn .i { font-size: 24px; } .gc-btn .big { font-size: 36px; } .gc-num { min-width: 60px; height: 60px; font-size: 42px; border-radius: 18px; } .gc .gc-say { width: 44px; height: 44px; font-size: 20px; } .gc-menu .gc-btn { min-height: 110px; } .gc-star { font-size: 56px; } }
+  @media (prefers-reduced-motion: reduce) { .gc .gc-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .gc .gc-say:active, .gc .gc-btn:active { transform: none; } }
 </style>
 <div class="gc-load" id="load" role="status">Getting the garden ready…</div>
 <div class="gc" id="gc" hidden>
   <div class="gc-top">
+    <div class="gc-line" id="line">
     <div class="gc-ask" id="ask" hidden><button class="gc-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="gc-askt" id="askt" role="status" aria-live="polite"></span></div>
     <div class="gc-row"><div class="gc-num" id="num" hidden aria-live="polite"></div><div class="gc-sum" id="sum" hidden role="status" aria-live="polite"></div></div>
     <div class="gc-dots" id="dots" hidden role="img"></div>
-    <div class="gc-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    </div>
   </div>
-  <div class="gc-bar" id="bar" hidden></div>
+  <div class="gc-low">
+    <div class="gc-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="gc-bar" id="bar" hidden></div>
+  </div>
   <div class="gc-card" id="card" hidden></div>
 </div>
 <script>
@@ -224,7 +232,7 @@ import { start } from 'oomba3d';
 
 const GC = window.GardenCount, T = (window.GardenCountI18n || {}).en || {};
 const B = window.BRB || null;
-const el = Object.fromEntries(['load', 'gc', 'ask', 'say', 'askt', 'num', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const el = Object.fromEntries(['load', 'gc', 'line', 'ask', 'say', 'askt', 'num', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
 const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
@@ -361,8 +369,8 @@ const portrait = () => innerWidth < innerHeight * 0.9;
 let tall = portrait();
 const LAY = {
   heroes: () => (tall
-    ? { spots: [[-2.4, -1.5], [0, -1.5], [2.4, -1.5], [-1.2, 1.5], [1.2, 1.5]], rect: [-3.6, 3.6, -2.4, 2.4], high: 3.4 }
-    : { spots: [[-5.2, 0], [-2.6, 0.5], [0, 0.8], [2.6, 0.5], [5.2, 0]], rect: [-6.4, 6.4, -0.6, 1.8], high: 3.4 }),
+    ? { spots: [[-2.5, -2.3], [0, -2.3], [2.5, -2.3], [-1.25, 1.7], [1.25, 1.7]], rect: [-3.7, 3.7, -3.1, 2.6], high: 3.4, tilt: 0.8 }
+    : { spots: [[-5.2, 0], [-2.6, 0.5], [0, 0.8], [2.6, 0.5], [5.2, 0]], rect: [-6.4, 6.4, -0.6, 1.8], high: 3.4, tilt: 0.5 }),
   // count: the garden bed and the basket, each just big enough for the round's apples (the basket in rows of five)
   count: R => {
     const cols = tall ? 5 : 6, gRows = Math.max(2, Math.ceil(R.total / cols)), bRows = Math.max(2, Math.ceil(R.total / 5));
@@ -373,7 +381,7 @@ const LAY = {
   // compare: two beds side by side in rows (wide) or in columns going away (tall), so partners sit next to each other
   compare: R => {
     const n = Math.max(5, R.a, R.b), len = n * PITCH;
-    if (tall) { const z0 = (n - 1) / 2 * PITCH; return { n, a: i => [-0.75, z0 - i * PITCH], b: i => [0.75, z0 - i * PITCH], signA: [-2.3, z0], signB: [2.3, z0], beds: [[-0.75, 0, 1.3, len + 0.3], [0.75, 0, 1.3, len + 0.3]], rect: [-3.2, 3.2, -len / 2 - 0.3, len / 2 + 0.4], hero: [0, -len / 2 - 2] }; }
+    if (tall) { const z0 = (n - 1) / 2 * PITCH; return { n, a: i => [-0.75, z0 - i * PITCH], b: i => [0.75, z0 - i * PITCH], signA: [-2.3, z0], signB: [2.3, z0], beds: [[-0.75, 0, 1.3, len + 0.3], [0.75, 0, 1.3, len + 0.3]], rect: [-3.2, 3.2, -len / 2 - 0.3, len / 2 + 0.4], hero: [2.7, -len / 2 + 0.2] }; }
     const x0 = -(n - 1) / 2 * PITCH + 0.9;
     return { n, a: i => [x0 + i * PITCH, -1.05], b: i => [x0 + i * PITCH, 1.05], signA: [x0 - 1.9, -1.05], signB: [x0 - 1.9, 1.05], beds: [[0.9, -1.05, len + 0.3, 1.3], [0.9, 1.05, len + 0.3, 1.3]], rect: [x0 - 2.9, x0 + (n - 1) * PITCH + 0.9, -1.9, 1.9], hero: [0.9, -4.2] };
   },
@@ -390,7 +398,7 @@ const view = { rect: [-6, 6, -2, 2], high: 0, hero: null, tilt: 0.8 };   // tilt
 function frame() {
   if (!g) return;
   const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
-  const topPx = (S.screen === 'play' ? el.dots.getBoundingClientRect().bottom : Hd * 0.2) + 6;   // the words, the big number and the round dots
+  const topPx = (S.screen === 'play' ? el.line.getBoundingClientRect().bottom : Hd * 0.2) + 6;   // the words, the big number and the round dots
   const botPx = (el.bar.hidden ? (S.screen === 'play' ? 12 : Hd * 0.24) : Hd - el.bar.getBoundingClientRect().top) + 10;
   const safe = { l: -1 + 16 / Wd, r: 1 - 16 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
   const pts = [];
@@ -399,14 +407,15 @@ function frame() {
   if (view.high) pts.push(V3(x0, view.high, z0), V3(x1, view.high, z0));
   const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
   let d = 18; const TILT = view.tilt;
-  for (let i = 0; i < 12; i++) {
+  if (cam.fov !== 42) { cam.fov = 42; cam.updateProjectionMatrix(); }   // a long lens on every screen shape: rows stay rows, far apples stay apple-sized
+  for (let i = 0; i < 16; i++) {
     cam.position.set(look.x, look.y + Math.sin(TILT) * d, look.z + Math.cos(TILT) * d); cam.lookAt(look); cam.updateMatrixWorld(true);
     let a = 9, b = -9, c = 9, e = -9;
     for (const p of pts) { v.copy(p).project(cam); a = Math.min(a, v.x); b = Math.max(b, v.x); c = Math.min(c, v.y); e = Math.max(e, v.y); }
     const k = Math.max((b - a) / (safe.r - safe.l), (e - c) / (safe.t - safe.b));
     const half = d * Math.tan(cam.fov * Math.PI / 360);
     look.z += ((e + c) / 2 - (safe.t + safe.b) / 2) * half / Math.sin(TILT) * -0.9;
-    d = Math.max(8, Math.min(60, d * (0.35 + 0.65 * k)));
+    d = Math.max(6, Math.min(90, d * (0.35 + 0.65 * k)));
   }
   cam.position.set(look.x, look.y + Math.sin(TILT) * d, look.z + Math.cos(TILT) * d); cam.lookAt(look);
 }
@@ -439,7 +448,7 @@ async function showHeroes() {
   lineup.forEach((h, i) => { h.position.set(L.spots[i][0], 0, L.spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
   targets.length = 0;
   lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.5), r: 1.3, go: () => chooseHero(h.id) }));
-  Object.assign(view, { rect: L.rect, high: L.high, hero: null, tilt: 0.5 });
+  Object.assign(view, { rect: L.rect, high: L.high, hero: null, tilt: L.tilt });
   card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
   frame();
 }
