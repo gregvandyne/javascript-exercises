@@ -1,0 +1,234 @@
+{
+ "key": "launchpad-1.2",
+ "n": "1.2",
+ "band": "launchpad",
+ "title": "More, fewer, the same",
+ "topic": "More or fewer",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Two garden beds",
+   "text": "Tally planted two garden beds. Which bed has more?",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Match them one to one",
+   "text": "Line them up, one to one. The row with extras has more.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "5 apples over 3 lemons, matched one to one",
+    "groups": [
+     {
+      "n": 5,
+      "name": "apples"
+     },
+     {
+      "n": 3,
+      "name": "lemons",
+      "tone": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Three apples have a lemon partner.",
+     "box": [
+      41.5,
+      23.3,
+      21.1,
+      37
+     ]
+    },
+    {
+     "cue": "Two apples have no partner. There are more apples.",
+     "box": [
+      62.5,
+      23.3,
+      14.1,
+      12.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Fewer means not as many",
+   "text": "The pears run out first. There are fewer pears than plums.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "4 pears over 6 plums, matched one to one",
+    "groups": [
+     {
+      "n": 4,
+      "name": "pears",
+      "tone": 1
+     },
+     {
+      "n": 6,
+      "name": "plums",
+      "tone": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The pear row is shorter: 4 pears.",
+     "box": [
+      38,
+      23.3,
+      28.1,
+      12.2
+     ]
+    },
+    {
+     "cue": "Two plums are left over.",
+     "box": [
+      66,
+      48.1,
+      14.1,
+      12.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The same number",
+   "text": "Every apple has a partner. The beds have the same number.",
+   "art": "people",
+   "visual": {
+    "type": "counters",
+    "label": "4 apples over 4 lemons, every one matched",
+    "groups": [
+     {
+      "n": 4,
+      "name": "apples"
+     },
+     {
+      "n": 4,
+      "name": "lemons",
+      "tone": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Four pairs and no extras: the same.",
+     "box": [
+      45,
+      23.3,
+      28.1,
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Which number is more?",
+   "text": "Count up to compare two numbers. The number you say later is more.",
+   "art": "ruler",
+   "steps": [
+    "Count: 1, 2, 3, 4, 5, 6",
+    "4 comes first: 4 is less",
+    "6 comes later: 6 is more"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 0 to 10 with 4 and 6 marked",
+    "min": 0,
+    "max": 10,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 4,
+      "label": "4"
+     },
+     {
+      "at": 6,
+      "label": "6"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "4 comes first, so 4 is less.",
+     "box": [
+      39.1,
+      57.8,
+      4.5,
+      25.5
+     ]
+    },
+    {
+     "cue": "6 comes later, so 6 is more.",
+     "box": [
+      56.6,
+      57.8,
+      4.5,
+      25.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "more",
+     "means": "a bigger number of things"
+    },
+    {
+     "word": "fewer",
+     "means": "not as many things"
+    },
+    {
+     "word": "same",
+     "means": "just as many, with no extras"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Garden Count at More or Fewer. Pick more, fewer or the same six times.",
+   "art": "trophy",
+   "img": "nq/garden-count/more-or-fewer",
+   "alt": "Garden Count on a phone: a bed of 5 apples beside a bed of 3 lemons, and a big button for each bed.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-1.2-e1",
+  "nq-launchpad-1.2-e2",
+  "nq-launchpad-1.2-e3"
+ ],
+ "game": {
+  "slug": "garden-count",
+  "chapter": "More or Fewer",
+  "params": "chapter=compare&lock=1"
+ }
+}

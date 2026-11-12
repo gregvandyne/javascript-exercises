@@ -1,0 +1,16 @@
+{
+  "slug": "garden-count",
+  "title": "Garden Count",
+  "icon": "🍎",
+  "cover": "meadow",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "counting,count to 20,numbers,more and fewer,compare,ten frame,teen numbers,kindergarten,math,maths,3d,garden,apples,read aloud,learning",
+  "description": "Count apples in a sunny 3D garden! Pick the number your helper asks for, find the bed with more or fewer, and build teen numbers on a ten-frame. Every instruction is read aloud, so you can play before you can read.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest Launchpad Unit 1, The Counting Patch (kindergarten): a Kit 2 game on Oomba3D 1.1.0 in the Medieval Village theme 1.0.0 (daytime, ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/garden-count.test.js checks the literal map). Made for a child who cannot read: every instruction is one short sentence, shown and spoken through BRB.speak (voice role friendly; the speaker button says it again), numbers are big, and everything is done by tapping big buttons or the things in the garden. No timer, no lives, no fail state: a wrong tap gets a small wobble (a dashed outline with reduced motion) and a spoken hint, then another try. Three chapters of six rounds, made by window.GardenCount.round(chapter, n, lap) (the block between /* garden-count:begin */ and /* garden-count:end */, pure, seeded from the round number; a replay lap gets new numbers): count (step 1.1; K.CC.A.1, K.CC.B.4, K.CC.B.5): pick 3-5, 4-7, 6-10, 8-12, 11-15 then 16-20 apples into the basket, each counted aloud on a big counter, then Done; too many and the helper hands them back one at a time, counting down. compare (1.2; K.CC.C.6, K.CC.C.7): two beds matched one to one, which has more, which has fewer, are they the same (a third button in rounds 3 and 6), then two number signs to 10 (more, less, the same). teens (1.3; K.NBT.A.1): a ten-frame and loose ones: make a number from 11 to 19 with Fill the ten and One more (three rounds), then read a full ten-frame and its loose ones from three number buttons (three rounds), always showing and saying '10 and 4 make 14'. The player picks one of the theme's five adventurers as a helper. Lesson mode: BRB.params { chapter: count | compare | teens, lock: 1 } opens that chapter only; finishing its six rounds calls BRB.gameOver({ won: true }) once (the single call site), which completes the course step. With no parameters a picture menu offers the three chapters. Save: BRB.storage 'garden-count-v1' holds only which chapters are finished. Layout: wide screens set the beds side by side, tall phones one above the other; the camera backs off until the play area fits between the words and the buttons. Keyboard: every action is a button (Tab, Enter, Space). A device without WebGL2 or import maps gets the site's 'needs a newer device' card (the SDK's check for import-map games). Words: English only (the I18N block, read by server/services/tts-lines.js for AI voices). Test handle: window.__gc (also window.__brbTest): state(), fast(), hero(id), act(name, arg).",
+  "l10n": {}
+}

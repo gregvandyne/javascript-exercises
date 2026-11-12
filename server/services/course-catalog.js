@@ -37,13 +37,15 @@ export const COURSES = Object.freeze([
     // Quest Race, the finale Quest Race). All five are shared: three are open-library engines whose
     // maths lives in this course's banks, Fraction Factory keeps its own page in the library too, and Data
     // Detective is CS Quest's (borrowed for Unit 7's data steps). No step plays Would You Rather (7.3 races
-    // Quest Race's chance questions), so it is not listed as a Number Quest game.
+    // Quest Race's chance questions), so it is not listed as a Number Quest game. Garden Count is the Launchpad
+    // tier's first game (Unit 1, The Counting Patch: counting, comparing and teen numbers for kindergarten).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
       { slug: 'sum-racer', topic: 'numbers', shared: true },
       { slug: 'fraction-factory', topic: 'fractions', shared: true },
       { slug: 'data-detective', topic: 'data', shared: true },
+      { slug: 'garden-count', topic: 'numbers', shared: true },
     ],
   },
 ]);

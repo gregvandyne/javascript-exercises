@@ -69,6 +69,11 @@ const SHOTS = [
   { step: '7.2', state: 'my-data', slug: 'data-detective', narrow: { width: 360, height: 760, from: 146, to: 472 }, params: 'chapter=my-data&band=1b&lock=1', prep: dataDetective },
   { step: '7.3', state: 'chance-race', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-7-3&lock=1', prep: questRace, cdp: true },
   { step: '7.4', state: 'vault-run', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-7-4&lock=1', prep: questRace, cdp: true },
+  // Launchpad Unit 1, The Counting Patch (tier: 'launchpad'): Garden Count, a 3D game, in each step's own chapter. The
+  // whole phone screen is the band (the garden fills it, the words on top and the big buttons at the bottom).
+  { tier: 'launchpad', step: '1.1', state: 'pick-and-count', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=count&lock=1', prep: gardenCount, cdp: true },
+  { tier: 'launchpad', step: '1.2', state: 'more-or-fewer', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=compare&lock=1', prep: gardenCount, cdp: true },
+  { tier: 'launchpad', step: '1.3', state: 'ten-and-more', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=teens&lock=1', prep: gardenCount, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -157,6 +162,19 @@ async function wouldYouRather(f) {
     setTimeout(() => { clearInterval(t); res(false); }, 15000);
   }));
   await wait(500);
+}
+
+async function gardenCount(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Then play a little through
+  // the game's own buttons, so the photograph is mid-round: three apples picked and counted (Pick and Count), the two
+  // beds as they are asked about (More or Fewer), a full ten-frame and the ones that make the number (Ten and More).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1, 20000);
+  const s = await f.evaluate(() => window.__brbTest.state());
+  if (s.kind === 'count') for (let i = 0; i < 3; i++) { await f.click('#gc-pick'); await wait(450); }
+  if (s.kind === 'make') { await f.click('#gc-fill'); await wait(500); for (let i = 10; i < s.target; i++) { await f.click('#gc-one'); await wait(450); } }
+  await wait(1500);
 }
 
 /** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and
@@ -295,6 +313,8 @@ async function capture(browser, shot) {
 
 const wanted = process.argv.slice(2).filter(a => !a.startsWith('--'));
 const shots = wanted.length ? SHOTS.filter(s => wanted.includes(s.state)) : SHOTS;
-const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE } : {});
+// Software WebGL (SwiftShader), so the 3D games draw on a machine with no graphics card; the 2D games ignore it.
+const GL = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'];
+const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE, args: GL } : { args: GL });
 for (const shot of shots) await capture(browser, shot);
 await browser.close();

@@ -52,6 +52,9 @@ export const GAMES = {
   // Number Quest's game: every line in its block is Tally the cat's, and its VOICES block gives them all the
   // friendly role its BRB.speak calls ask for.
   'fraction-factory': { title: 'Fraction Factory', role: 'friendly', spoken: /./ },
+  // Garden Count (Number Quest Launchpad, kindergarten): every instruction, hint and number word is spoken, in the
+  // friendly voice (its VOICES block). The button labels (btn.*) and the round counter are shown, never read.
+  'garden-count': { title: 'Garden Count', role: 'friendly', spoken: /^(?!btn\.|round$|title$|loading$|ch\.)/ },
   'gulp-city': { title: 'Gulp City', role: 'friendly', spoken: /./ },
   'happy-putt': { title: 'Happy Putt', role: 'narrator', spoken: /./ },
   'loop-lab': { title: 'Loop Lab', role: 'narrator', spoken: /./ },

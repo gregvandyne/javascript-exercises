@@ -174,3 +174,24 @@ The same profiles drive each unit's test-out.
 Explorer tier (unchanged), `nql-<unit>-<step>` Launchpad, `nqp-<unit>-<step>` Pro. A game opens a lesson
 board only for a step key in its own known list (the array passed to the `NQ_STEP` decoder in the game's
 HTML) with a matching `if (NQ_STEP === '<tier>-<n>')` generator; any other mode opens the normal game.
+
+## Launchpad Unit 1 — The Counting Patch (2026-11-12, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/1.1.json`, `1.2.json`, `1.3.json` | the three kindergarten decks, inside the Launchpad limits above: **1.1 Count to 20** (K.CC.A.1, K.CC.B.4; also K.CC.B.5), **1.2 More, fewer, the same** (K.CC.C.6, K.CC.C.7), **1.3 Teen numbers** (K.NBT.A.1). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u1-launchpad.json` | nine exit items (`nq-launchpad-1.<s>-e1..3`), each `cat` one of its step's primary codes, every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why` |
+| `standards.json` `launchpadCodes.codes` | the six locked statements, with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/garden-count.html` | **Garden Count**, the unit's game (Oomba3D 1.1.0, Medieval Village theme): chapter `count` for 1.1, `compare` for 1.2, `teens` for 1.3, six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**Diagrams.** The unit adds one drawn diagram type, `counters` (`server/services/diagrams.js`, `server/views/nq-diagrams.js`):
+`{ type: "counters", label, groups: [{ n, name?, tone?, count?, frame? }] }`. One group of 1-20 draws rows of ten (`count: true`
+writes 1, 2, 3... on the counters); two groups of 1-10 draw two rows matched one to one with a dashed line a pair; `frame: true`
+draws a ten-frame with the ones past ten beside it and "10" and the rest named under them. 1.2's number comparison uses the
+existing `numberline`. All 25 focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/garden-count/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/garden-count.recipe.js`.
+
+**Stone.** The unit's stamp is the Counting Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"last number says how many" misconception, and how the game checks each idea by doing. Launchpad stays `status: "building"`.

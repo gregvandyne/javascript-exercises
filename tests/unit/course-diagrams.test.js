@@ -24,6 +24,7 @@ const GOOD = {
   split: { type: 'split', whole: '3 kg 400 g', parts: [{ w: 0.882, label: '3,000 g' }, { w: 0.118, label: '400 g' }] },
   ladder: { type: 'ladder', words: ['certain', 'likely', 'even chance', 'unlikely', 'impossible'] },
   fix: { type: 'fix', wrong: '7 × 8 = 54', steps: ['7 × 4 = 28', '28 + 28 = 56'], right: '7 × 8 = 56' },
+  counters: { type: 'counters', groups: [{ n: 14, frame: true }] },
 };
 const texts = svg => [...svg.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" font-size="([\d.]+)"[^>]*>([^<]*)<\/text>/g)].map(m => ({ x: +m[1], y: +m[2], size: +m[3], s: m[4] }));
 
@@ -148,4 +149,35 @@ test('a bar model marked big keeps the flag through the course engine', async ()
   const views = fs.readFileSync(new URL('../../server/views/courses.js', import.meta.url), 'utf8');
   assert.match(views, /const BIG_ROW = 4\.1, BIG_PART = 4\.1, BIG_HALF = 4\.0;/);
   assert.match(fs.readFileSync(new URL('../../server/services/courses.js', import.meta.url), 'utf8'), /\.\.\.\(v\.big \? \{ big: true \} : \{\}\)/);
+});
+
+test('counters (Launchpad Unit 1): rows to count, rows matched one to one, and the ten-frame draw exactly their numbers', () => {
+  const circles = svg => [...svg.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)" fill="(#[0-9A-F]+)"/g)].map(m => ({ x: +m[1], y: +m[2], r: +m[3], fill: m[4] }));
+  // one group, numbered: 12 counters in a row of ten and a row of two, numbered 1 to 12 in order
+  const line = cleanDiagram({ type: 'counters', groups: [{ n: 12, count: true, name: '12 apples' }] }, 'Twelve apples');
+  const ls = diagramSvg(line), lc = circles(ls);
+  assert.equal(lc.length, 12);
+  assert.equal(new Set(lc.slice(0, 10).map(c => c.y)).size, 1, 'ten in the top row'); assert.ok(lc[10].y > lc[0].y && lc[10].x === lc[0].x, 'the eleventh starts the next row under the first');
+  assert.deepEqual(texts(ls).filter(t => /^\d+$/.test(t.s)).map(t => +t.s), Array.from({ length: 12 }, (_, i) => i + 1), 'one number on each counter, in order');
+  // two groups: matched pairs share an x, one dashed line a pair, the extras stick out
+  const match = cleanDiagram({ type: 'counters', groups: [{ n: 5, name: 'apples' }, { n: 3, name: 'lemons', tone: 1 }] }, '5 over 3'), ms = diagramSvg(match), mc = circles(ms);
+  const top = mc.filter(c => c.y === mc[0].y), bottom = mc.filter(c => c.y !== mc[0].y);
+  assert.equal(top.length, 5); assert.equal(bottom.length, 3);
+  assert.deepEqual(bottom.map(c => c.x), top.slice(0, 3).map(c => c.x), 'each lemon sits under an apple');
+  assert.equal((ms.match(/stroke-dasharray="1.4 1.1"/g) || []).length, 3, 'one matching line for each pair');
+  // the ten-frame: ten cells, the first ten counters inside them, the rest beside it, and the two numbers under them
+  for (const n of [10, 14, 19, 20, 7]) {
+    const v = cleanDiagram({ type: 'counters', groups: [{ n, frame: true }] }, 'A ten-frame'), svg = diagramSvg(v), cs = circles(svg);
+    const cells = [...svg.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="7" height="7"/g)].map(m => ({ x: +m[1], y: +m[2] }));
+    assert.equal(cells.length, 10, 'a 2 by 5 frame'); assert.equal(cs.length, n);
+    const right = Math.max(...cells.map(c => c.x)) + 7;
+    assert.equal(cs.filter(c => c.x < right).length, Math.min(n, 10), `${n}: the first ten sit in the frame`);
+    assert.equal(cs.filter(c => c.x > right).length, Math.max(0, n - 10), `${n}: the rest sit beside it`);
+    assert.deepEqual(texts(svg).filter(t => /^\d+$/.test(t.s)).map(t => +t.s), n > 10 ? [10, n - 10] : [n], `${n}: ten and the ones named under them`);
+    const [a, b] = diagramExtent(v);
+    for (const c of cs) assert.ok(c.y - c.r >= a && c.y + c.r <= b && c.x - c.r >= 0 && c.x + c.r <= 100, `${n}: every counter inside the frame`);
+  }
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 21 }] }, 'L'), null, 'at most 20');
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 12 }, { n: 3 }] }, 'L'), null, 'two rows to match hold at most ten each');
+  assert.equal(cleanDiagram({ type: 'counters', groups: [] }, 'L'), null);
 });

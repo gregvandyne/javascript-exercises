@@ -16,7 +16,9 @@
 //   split   a whole bar over the same amount split into parts, each part named under it (3.1, 7.4);
 //   ladder  words stacked from most likely to least, with the direction marked (7.3);
 //   fix     a Jumble beat: the Jumble's wrong answer on its card, crossed out, an arrow, then the trick that fixes it,
-//           step by step, down to the right answer (3.3, 4.3, 5.3, 6.3, 7.3).
+//           step by step, down to the right answer (3.3, 4.3, 5.3, 6.3, 7.3);
+//   counters counters to count and match (Launchpad 1.1-1.3): one group in rows of ten, numbered where `count` is set; two
+//           rows one under the other, matched one to one; or a ten-frame with the ones left over beside it.
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
@@ -344,8 +346,60 @@ function fixSvg(v) {
 // corner, outside the box, and without this row it would land between the cards, beside the other step.
 const fixExtent = v => [FX.top - 9, fixGeo(v).bottom];
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg, fix: fixSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent, fix: fixExtent };
+// ---------------------------------------------------------------------------------------------- counters
+/** Counters to count and match (Launchpad Unit 1), under the caption at 6.5. Three layouts:
+ *  - one group: its counters in rows of ten from y 13 (8 units a counter), centred, its name under them;
+ *  - two groups: two rows of up to ten (7 units a counter) from the same left edge, one under the other, a dashed line joining each
+ *    matched pair, each row's name in the gutter on its left: the longer row sticks out past the last pair;
+ *  - a ten-frame (`frame`): a 2 by 5 frame of 7-unit cells filled left to right, top row first; the ones past ten sit
+ *    beside it in the same order with no frame; "10" under the full frame and the count of the rest under them.
+ *  `count` writes each counter's number on it (1, 2, 3...), so the last number is the size of the group. */
+function countersGeo(v) {
+  const gs = v.groups, top = 13;
+  if (gs.length === 2) {
+    const u = 7, x0 = r2(50 - (18 + Math.max(...gs.map(q => q.n)) * u) / 2 + 18); // the name gutter (16) and the rows, centred together
+    return { mode: 'match', u, top, rows: gs.map((q, k) => ({ q, y: top + k * 14, x0 })), bottom: top + 14 + u };
+  }
+  const q = gs[0];
+  if (q.frame) {
+    const u = 7, loose = Math.max(0, q.n - 10), fx = loose ? 11 : 32.5;
+    return { mode: 'frame', u, top, q, fx, lx: fx + 5 * u + 8, loose, bottom: tBot(top + 2 * u + 6, 4.6) };
+  }
+  const u = 8, per = Math.min(q.n, 10), rows = Math.ceil(q.n / 10), x0 = 50 - per * u / 2;
+  return { mode: 'line', u, top, q, x0, rows, bottom: q.name ? tBot(top + rows * u + 5.5, 4.2) : top + rows * u };
+}
+function countersSvg(v) {
+  const g = countersGeo(v), r = r2(g.u * 0.36);
+  const dot = (cx, cy, tone, num) => `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="${TONES[tone % TONES.length]}" stroke="${INK}" stroke-width="0.45"/>` + (num ? tx(cx, cy + 1.2, num, 3.4, 'middle', 800) : '');
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  if (g.mode === 'match') {
+    const pairs = Math.min(...g.rows.map(w => w.q.n));
+    for (let i = 0; i < pairs; i++) { const x = g.rows[0].x0 + (i + 0.5) * g.u; s += `<line x1="${r2(x)}" y1="${r2(g.top + g.u)}" x2="${r2(x)}" y2="${r2(g.top + 14)}" stroke="${LEAF}" stroke-width="0.6" stroke-dasharray="1.4 1.1"/>`; }
+    g.rows.forEach((w, k) => {
+      for (let i = 0; i < w.q.n; i++) s += dot(w.x0 + (i + 0.5) * g.u, w.y + g.u / 2, w.q.tone ?? k, w.q.count ? i + 1 : 0);
+      if (w.q.name) s += tx(w.x0 - 2, w.y + g.u / 2 + 1.4, w.q.name, r2(Math.max(3.4, Math.min(4.2, 16 / (String(w.q.name).length * 0.56)))), 'end', 800, LEAF);
+    });
+    return s;
+  }
+  const q = g.q, tone = q.tone ?? 0;
+  if (g.mode === 'frame') {
+    for (let i = 0; i < 10; i++) s += `<rect x="${r2(g.fx + (i % 5) * g.u)}" y="${r2(g.top + Math.floor(i / 5) * g.u)}" width="${g.u}" height="${g.u}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.6"/>`;
+    for (let i = 0; i < q.n; i++) {
+      const j = i % 10, x = (i < 10 ? g.fx : g.lx) + (j % 5 + 0.5) * g.u, y = g.top + (Math.floor(j / 5) + 0.5) * g.u;
+      s += dot(x, y, i < 10 ? tone : tone + 1, q.count ? i + 1 : 0);
+    }
+    s += tx(g.fx + 2.5 * g.u, g.top + 2 * g.u + 6, Math.min(q.n, 10), 4.6, 'middle', 800, LEAF);
+    if (g.loose) s += tx(g.lx + Math.min(g.loose, 5) * g.u / 2, g.top + 2 * g.u + 6, g.loose, 4.6, 'middle', 800, LEAF);
+    return s;
+  }
+  for (let i = 0; i < q.n; i++) s += dot(g.x0 + (i % 10 + 0.5) * g.u, g.top + (Math.floor(i / 10) + 0.5) * g.u, tone, q.count ? i + 1 : 0);
+  if (q.name) s += tx(50, g.top + g.rows * g.u + 5.5, q.name, 4.2, 'middle', 800, LEAF);
+  return s;
+}
+const countersExtent = v => [v.label ? tTop(6.5, capFs(v.label)) : 13, countersGeo(v).bottom];
+
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg, fix: fixSvg, counters: countersSvg };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent, fix: fixExtent, counters: countersExtent };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */

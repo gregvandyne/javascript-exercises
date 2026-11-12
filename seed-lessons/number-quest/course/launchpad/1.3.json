@@ -1,0 +1,224 @@
+{
+ "key": "launchpad-1.3",
+ "n": "1.3",
+ "band": "launchpad",
+ "title": "Teen numbers",
+ "topic": "Teen numbers",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "More than ten apples",
+   "text": "Tally has more than ten apples. A ten-frame keeps count.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A ten-frame holds ten",
+   "text": "A ten-frame has ten spaces. Five on top and five below make ten.",
+   "art": "grid",
+   "visual": {
+    "type": "counters",
+    "label": "A full ten-frame: ten apples",
+    "groups": [
+     {
+      "n": 10,
+      "frame": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Five apples in the top row.",
+     "box": [
+      31.5,
+      21.5,
+      37,
+      15.7
+     ]
+    },
+    {
+     "cue": "A full frame is 10.",
+     "box": [
+      31.5,
+      21.5,
+      37,
+      41
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Ten and four more",
+   "text": "Here is a full ten and 4 more. 10 and 4 make 14.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "14 apples: a full ten-frame and 4 more",
+    "groups": [
+     {
+      "n": 14,
+      "frame": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The full frame is ten.",
+     "box": [
+      10,
+      21.5,
+      37,
+      41
+     ]
+    },
+    {
+     "cue": "Four more ones sit beside it.",
+     "box": [
+      54,
+      23.3,
+      28.1,
+      39.2
+     ]
+    },
+    {
+     "cue": "10 and 4 make 14.",
+     "box": [
+      10,
+      21.5,
+      72.1,
+      41
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Build 17 with Tally",
+   "text": "Tally builds 17 apples. Start with ten, then count on.",
+   "art": "star",
+   "steps": [
+    "Fill the frame: 10",
+    "Count on: 11, 12, 13, 14",
+    "15, 16, 17",
+    "10 and 7 make 17"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "17 apples: a full ten-frame and 7 more, numbered",
+    "groups": [
+     {
+      "n": 17,
+      "frame": true,
+      "count": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Ten in the frame.",
+     "box": [
+      10,
+      21.5,
+      37,
+      41
+     ]
+    },
+    {
+     "cue": "Count on from 11 to 17.",
+     "box": [
+      54,
+      23.3,
+      35.1,
+      39.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Every teen has one ten",
+   "text": "19 is a full ten and 9 more. Every teen number has one ten.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "19 apples: a full ten-frame and 9 more",
+    "groups": [
+     {
+      "n": 19,
+      "frame": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One full ten.",
+     "box": [
+      10,
+      21.5,
+      37,
+      41
+     ]
+    },
+    {
+     "cue": "Nine more ones: 10 and 9 make 19.",
+     "box": [
+      54,
+      23.3,
+      35.1,
+      39.2
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ten-frame",
+     "means": "a box with ten spaces"
+    },
+    {
+     "word": "teen number",
+     "means": "a number from 11 to 19"
+    },
+    {
+     "word": "ones",
+     "means": "single things, counted one by one"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Garden Count at Ten and More. Build teen numbers from a full ten six times.",
+   "art": "trophy",
+   "img": "nq/garden-count/ten-and-more",
+   "alt": "Garden Count on a phone: a ten-frame full of apples, one more apple under it, and the words 10 and 1 make 11.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-1.3-e1",
+  "nq-launchpad-1.3-e2",
+  "nq-launchpad-1.3-e3"
+ ],
+ "game": {
+  "slug": "garden-count",
+  "chapter": "Ten and More",
+  "params": "chapter=teens&lock=1"
+ }
+}

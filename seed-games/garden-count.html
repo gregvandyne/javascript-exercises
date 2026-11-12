@@ -1,0 +1,703 @@
+<title>Garden Count</title>
+<!-- Garden Count: Number Quest Launchpad Unit 1, The Counting Patch (kindergarten, ages 5-6). A calm counting garden
+     on Oomba3D 1.1.0 in the Medieval Village theme. Three chapters of six rounds, one per course step:
+       count   (1.1) pick the asked number of apples into the basket, each one counted aloud, then Done;
+       compare (1.2) which bed has more or fewer, or are they the same: rows matched one to one, then numbers to 10;
+       teens   (1.3) a ten-frame and loose ones: make a teen number, or say how many, always "10 and 4 make 14".
+     Made for a child who cannot read yet: every instruction is one short sentence, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), the numbers are big, and everything is done by tapping big
+     targets. No timer, no lives, no fail state: a wrong tap gets a small wobble and a spoken hint, then another try.
+     Lesson mode: BRB.params { chapter: count | compare | teens, lock: 1 } opens that chapter only; finishing its six
+     rounds reports game over, won, once (the course step's completion signal). With no parameters the game
+     offers the three chapters from a picture menu. Saves only which chapters are finished (BRB.storage
+     'garden-count-v1'). The import map below is exactly kit2ImportMap() (server/services/vendor.js);
+     tests/unit/garden-count.test.js fails if a library bump leaves it behind. English only, like Number Quest's other
+     lesson games. Test handle: window.__gc (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .gc[hidden], .gc-load[hidden] { display: none; }
+  .gc { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .gc button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .gc button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .gc-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 68px 0 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .gc-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .gc-ask { display: flex; align-items: center; gap: 10px; max-width: 100%; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .gc-ask[hidden], .gc-hint[hidden], .gc-num[hidden], .gc-sum[hidden], .gc-bar[hidden], .gc-card[hidden], .gc-dots[hidden] { display: none; }
+  .gc .gc-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .gc .gc-say:active, .gc .gc-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .gc-askt { font-weight: 800; font-size: clamp(22px, 4.6vw, 34px); line-height: 1.15; }
+  .gc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .gc-num { min-width: 86px; height: 86px; box-sizing: border-box; padding: 0 14px; display: flex; align-items: center; justify-content: center; background: #66C792; border: 3px solid #141414; border-radius: 26px; box-shadow: 0 4px 0 #141414; font-weight: 900; font-size: 60px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .gc-sum { background: #FFFDF2; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 8px 16px; font-weight: 900; font-size: clamp(24px, 5.4vw, 38px); line-height: 1.1; }
+  .gc-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .gc-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .gc-dots { display: flex; gap: 7px; padding: 2px 4px; }
+  .gc-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .gc-dots i.on { background: #FFD23F; } .gc-dots i.now { background: #66C792; }
+  .gc-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .gc .gc-btn { flex: 1 1 0; max-width: 240px; min-height: clamp(70px, 11vh, 104px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 8px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(16px, 2.3vh, 21px); line-height: 1.1; }
+  .gc-btn .i { font-size: 30px; line-height: 1.1; } .gc-btn .big { font-size: 44px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .gc-btn.go { background: #66C792; } .gc-btn.pick { background: #FFD23F; }
+  .gc-btn.no { animation: gc-no .45s ease; }
+  @keyframes gc-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .gc-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .gc-card.dim { background: rgba(255, 253, 242, .82); justify-content: center; }
+  .gc-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .gc-card .gc-ask { margin-top: 10px; }
+  .gc-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .gc-pick .gc-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .gc-pick .gc-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .gc-menu { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; width: min(760px, 100%); }
+  .gc-menu .gc-btn { flex: 1 1 200px; max-width: 240px; min-height: 150px; font-size: 22px; gap: 8px; }
+  .gc-menu .gc-btn .i { font-size: 60px; }
+  .gc-star { font-size: 84px; line-height: 1; }
+  .gc-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the big number and the round dots share one line across the top, so the garden gets the height. */
+  @media (min-aspect-ratio: 9/10) { .gc-line { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; } }
+  @media (max-width: 480px) { .gc .gc-btn { min-height: 70px; font-size: 15px; border-radius: 18px; } .gc-btn .i { font-size: 26px; } .gc-num { min-width: 70px; height: 70px; font-size: 48px; border-radius: 20px; } .gc-menu .gc-btn { min-height: 104px; flex-basis: 100%; flex-direction: row; gap: 14px; max-width: 340px; font-size: 21px; } .gc-menu .gc-btn .i { font-size: 46px; } }
+  @media (max-height: 520px) { .gc .gc-btn { min-height: 60px; font-size: 15px; } .gc-btn .i { font-size: 24px; } .gc-btn .big { font-size: 36px; } .gc-num { min-width: 60px; height: 60px; font-size: 42px; border-radius: 18px; } .gc .gc-say { width: 44px; height: 44px; font-size: 20px; } .gc-menu .gc-btn { min-height: 110px; } .gc-star { font-size: 56px; } }
+  @media (prefers-reduced-motion: reduce) { .gc .gc-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .gc .gc-say:active, .gc .gc-btn:active { transform: none; } }
+</style>
+<div class="gc-load" id="load" role="status">Getting the garden ready…</div>
+<div class="gc" id="gc" hidden>
+  <div class="gc-top">
+    <div class="gc-line" id="line">
+    <div class="gc-ask" id="ask" hidden><button class="gc-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="gc-askt" id="askt" role="status" aria-live="polite"></span></div>
+    <div class="gc-row"><div class="gc-num" id="num" hidden aria-live="polite"></div><div class="gc-sum" id="sum" hidden role="status" aria-live="polite"></div></div>
+    <div class="gc-dots" id="dots" hidden role="img"></div>
+    </div>
+  </div>
+  <div class="gc-low">
+    <div class="gc-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="gc-bar" id="bar" hidden></div>
+  </div>
+  <div class="gc-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Garden Count's rounds: plain data and functions (no DOM, no 3D), so tests/unit/garden-count.test.js can run
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
+   so the first six rounds are always the same; a replay gets new numbers). ===== */
+/* garden-count:begin */
+(function (root) {
+  var CHAPTERS = ['count', 'compare', 'teens'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function pick(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  // count: how many to pick, growing to 20 by round 6; a few more than that grow in the garden (24 at most).
+  var COUNT = [[3, 5], [4, 7], [6, 10], [8, 12], [11, 15], [16, 20]];
+  // compare: what is asked, whether the beds hold things or number signs, whether "the same" is offered, the range.
+  var COMPARE = [
+    { ask: 'more', form: 'things', lo: 1, hi: 6, gap: 2 }, { ask: 'fewer', form: 'things', lo: 2, hi: 9, gap: 1 }, { ask: 'more', form: 'things', same: true, lo: 3, hi: 8 },
+    { ask: 'more', form: 'numbers', lo: 1, hi: 10, gap: 1 }, { ask: 'fewer', form: 'numbers', lo: 1, hi: 10, gap: 1 }, { ask: 'more', form: 'numbers', same: true, lo: 2, hi: 10 }];
+  // teens: three numbers to make (ten and some ones), then three to read off a full ten-frame and its loose ones.
+  var TEENS = [[11, 13], [13, 16], [15, 19], [11, 14], [13, 17], [15, 19]];
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    var r = rng((ci + 1) * 7919 + n * 104729 + (lap || 0) * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'count') {
+      out.kind = 'count'; out.target = pick(r, COUNT[n - 1][0], COUNT[n - 1][1]); out.total = Math.min(24, out.target + pick(r, 2, 4)); out.answer = out.target;
+    } else if (chapter === 'compare') {
+      var c = COMPARE[n - 1], a = pick(r, c.lo, c.hi), b = a;
+      // a round that offers "the same": the third round always is the same (the first time the button shows, it is
+      // the answer); the sixth is the same half the time
+      var equal = !!c.same && (c.form === 'things' || r() < 0.5);
+      if (!equal) { var gap = c.gap || 1, tries = 0; do { b = pick(r, c.lo, c.hi); tries++; } while (Math.abs(a - b) < gap && tries < 60); if (Math.abs(a - b) < gap) b = a + gap <= c.hi ? a + gap : a - gap; }
+      out.kind = 'compare'; out.ask = c.ask; out.form = c.form; out.same = !!c.same; out.a = a; out.b = b;
+      out.answer = a === b ? 'same' : (c.ask === 'more') === (a > b) ? 'a' : 'b';
+    } else {
+      out.target = pick(r, TEENS[n - 1][0], TEENS[n - 1][1]); out.answer = out.target;
+      if (n <= 3) out.kind = 'make';
+      else {
+        out.kind = 'howmany';
+        var pool = [out.target - 1, out.target + 1, out.target - 2, out.target + 2].filter(function (v) { return v >= 11 && v <= 19; });
+        var ch = [out.target];
+        while (ch.length < 3) ch.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
+        for (var i = ch.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ch[i]; ch[i] = ch[j]; ch[j] = t; }
+        out.choices = ch;
+      }
+    }
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.GardenCount = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* garden-count:end */
+</script>
+<script>
+/* ===== Garden Count's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {n}
+   takes a number in its place. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Garden Count",
+    "loading": "Getting the garden ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.count": "Pick and Count",
+    "ch.compare": "More or Fewer",
+    "ch.teens": "Ten and More",
+    "count.ask": "Pick {n} apples.",
+    "count.few": "Keep going. We need {n} apples.",
+    "count.many": "That is too many. Let us put some back.",
+    "count.now": "Now we have {n}. Tap Done.",
+    "count.right": "Yes! {n} apples.",
+    "compare.more": "Which bed has more?",
+    "compare.fewer": "Which bed has fewer?",
+    "compare.same": "Which has more, or are they the same?",
+    "compare.num.more": "Which number is more?",
+    "compare.num.less": "Which number is less?",
+    "compare.num.same": "Which is more, or are they the same?",
+    "compare.hint.more": "Match them up. The bed with extras has more.",
+    "compare.hint.fewer": "Match them up. The bed that runs out first has fewer.",
+    "compare.hint.same": "Match them up. Are there any extras?",
+    "compare.hint.num.more": "Count up. The number you say later is more.",
+    "compare.hint.num.less": "Count up. The number you say first is less.",
+    "compare.right.more": "Yes! {a} is more than {b}.",
+    "compare.right.fewer": "Yes! {a} is fewer than {b}.",
+    "compare.right.less": "Yes! {a} is less than {b}.",
+    "compare.right.same": "Yes! {a} and {b} are the same.",
+    "teens.make": "Make {n}.",
+    "teens.howmany": "How many apples?",
+    "teens.sum": "{a} and {b} make {c}.",
+    "teens.few": "Keep going. We need {n}.",
+    "teens.many": "That is too many. Let us put some back.",
+    "teens.now": "Now we have {n}. Tap Done.",
+    "teens.full": "The ten is full. Add one more.",
+    "teens.hint": "Start at ten. Then count on.",
+    "win": "You did it!",
+    "win.card": "The garden is counted. Well done!",
+    "round": "Round {n} of {m}",
+    "btn.say": "Say it again",
+    "btn.pick": "Pick one",
+    "btn.back": "Put back",
+    "btn.back.say": "Put one back",
+    "btn.done": "Done",
+    "btn.fill": "Fill the ten",
+    "btn.one": "One more",
+    "btn.same": "The same",
+    "btn.apples": "The apple bed",
+    "btn.lemons": "The lemon bed",
+    "btn.again": "Play again",
+    "btn.menu": "More games",
+    "n.0": "Zero", "n.1": "One", "n.2": "Two", "n.3": "Three", "n.4": "Four", "n.5": "Five", "n.6": "Six", "n.7": "Seven", "n.8": "Eight", "n.9": "Nine", "n.10": "Ten",
+    "n.11": "Eleven", "n.12": "Twelve", "n.13": "Thirteen", "n.14": "Fourteen", "n.15": "Fifteen", "n.16": "Sixteen", "n.17": "Seventeen", "n.18": "Eighteen", "n.19": "Nineteen", "n.20": "Twenty"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).GardenCountI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the garden's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const GC = window.GardenCount, T = (window.GardenCountI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'gc', 'line', 'ask', 'say', 'askt', 'num', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'garden-count-v1';
+const ICON = { count: '🍎', compare: '⚖️', teens: '🔟' };
+
+/* ---------- state ---------- */
+const P = GC.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', count: 0, hero: null, fast: false, line: null, reported: 0, done: {} };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of GC.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show the instruction (one short sentence) and say it; the speaker button says it again. */
+function ask(key, vars) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars);
+}
+let hintTimer = 0;
+function hint(key, vars, o) {
+  clearTimeout(hintTimer);
+  if (!key) { el.hint.hidden = true; return; }
+  el.hint.textContent = fmt(key, vars); el.hint.hidden = false;
+  speak(key, vars, o);
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 6000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+const timers = new Set();
+const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+
+/* ---------- the 3D garden ---------- */
+let g;
+try {
+  g = await start({ theme: 'medieval-village', version: '1.0.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+W.water({ y: -2.2 });
+// The ground: big hexagon tiles (rows offset by half a tile), then the village behind and beside the garden.
+const GS = 6, tile = g.theme.pieces.find(p => p.id === 'ground').size;
+/** A theme piece standing on the ground with its middle at (x, z) (some pieces are modelled off-centre). */
+async function prop(id, x, z, turn = 0, scale = 4) {
+  const o = (await W.piece(id, { x: 0, y: 0, z: 0, turn, scale })).object, box = new THREE.Box3().setFromObject(o), c = box.getCenter(new THREE.Vector3());
+  o.position.set(x - c.x, -Math.min(0, box.min.y) * 0.5, z - c.z);
+  return o;
+}
+{
+  const jobs = [];
+  for (let iz = -4; iz <= 2; iz++) for (let ix = -3; ix <= 3; ix++) jobs.push(W.piece('ground', { scale: GS, x: (ix + (iz & 1) * 0.5) * tile[0] * GS, y: 0, z: iz * tile[2] * GS * 0.75 - 2 }));
+  const D = 4;
+  for (const [id, x, z, turn = 0, s = D] of [
+    ['windmill', -10, -17, 0.3], ['house', -3.5, -15.5, 0.2], ['cottage', 3.5, -16.5, -0.2], ['house-red', 9, -14.5, -0.4], ['tower', 15, -19, 0], ['well', -15, -11, 0], ['church', -17, -21, 0.4],
+    ['tree', -13.5, -5, 0], ['tree-round', 13.5, -6.5, 1], ['tree', 16, -1, 2], ['tree-round', -16.5, 0.5, 0.5], ['trees', -22, -9, 0, 5], ['forest-round', 22, -12, 0.6, 5], ['hills-trees', 0, -25, 0, 6], ['mountain', -12, -30, 0, 7], ['mountain', 14, -31, 1, 7],
+    ['bushes', 12, 6.5, 0.4], ['bushes', -13, 7.5, 2.2], ['barrel', 11.2, 1.2, 0, 5], ['crate', 12.4, 1.8, 0.4, 5], ['wheelbarrow', -11.5, 2.5, 2.2, 5], ['sack', -12.6, 0.6, 0.5, 6], ['bucket', 10.6, 2.6, 0, 6],
+    ['flag-blue', -7, -10.5, 0, 6], ['flag-red', 7, -10.5, 0, 6],
+  ]) jobs.push(prop(id, x, z, turn, s));
+  for (let i = -3; i <= 2; i++) jobs.push(prop(i === -1 ? 'fence-gate' : 'fence', i * 4.6 + 2.3, -11, Math.PI / 2, 4));
+  await Promise.all(jobs);
+}
+
+// The game's own simple shapes (apples, lemons, beds, the basket, the ten-frame), with the same ink edge as the theme.
+const mat = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 });
+const M = { apple: mat('#e5484d'), lemon: mat('#ffd23f'), stem: mat('#6b4423'), leaf: mat('#3fa650'), soil: mat('#8a5a3c'), tan: mat('#e7b877'), cream: mat('#fff6dc'), wood: mat('#b9793f'),
+  ink: new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide }), inkFlat: new THREE.MeshBasicMaterial({ color: '#141414' }) };
+const GEO = { ball: new THREE.SphereGeometry(0.42, 18, 14), stem: new THREE.CylinderGeometry(0.03, 0.045, 0.22, 6), leaf: new THREE.SphereGeometry(0.16, 8, 6), box: new THREE.BoxGeometry(1, 1, 1) };
+function fruit(kind) {
+  const o = new THREE.Group(), body = new THREE.Mesh(GEO.ball, M[kind]);
+  body.position.y = 0.4; body.castShadow = true;
+  if (kind === 'lemon') body.scale.set(1.14, 0.84, 0.84); else body.scale.y = 0.92;
+  const hull = new THREE.Mesh(GEO.ball, M.ink); hull.scale.setScalar(1.09); body.add(hull);
+  const stem = new THREE.Mesh(GEO.stem, M.stem); stem.position.y = 0.84;
+  const leaf = new THREE.Mesh(GEO.leaf, M.leaf); leaf.scale.set(1, 0.3, 0.6); leaf.position.set(0.15, 0.88, 0); leaf.rotation.z = 0.5;
+  if (kind === 'lemon') { stem.visible = false; leaf.position.set(0.5, 0.42, 0); leaf.rotation.z = 0; leaf.scale.set(0.5, 0.5, 0.5); leaf.material = M.lemon; }
+  o.add(body, stem, leaf); o.userData.kind = kind;
+  return o;
+}
+/** A flat slab centred on (x, z), its top at y = h, with an ink edge round it. */
+function slab(x, z, w, d, h, material) {
+  const o = new THREE.Group(), m = new THREE.Mesh(GEO.box, material), edge = new THREE.Mesh(GEO.box, M.inkFlat);
+  m.scale.set(w, h, d); m.position.y = h / 2; m.receiveShadow = true;
+  edge.scale.set(w + 0.16, h * 0.8, d + 0.16); edge.position.y = h * 0.4;
+  o.add(edge, m); o.position.set(x, 0, z);
+  return o;
+}
+/** A number on a sign that always faces the player. */
+function sign(text, size = 1.7) {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#FFFDF2'; x.strokeStyle = '#141414'; x.lineWidth = 14;
+  x.beginPath(); x.roundRect(14, 30, 228, 196, 44); x.fill(); x.stroke();
+  x.fillStyle = '#141414'; x.font = '900 150px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 136);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false })); s.scale.setScalar(size);
+  return s;
+}
+
+const stage = new THREE.Group(); g.scene.add(stage);
+function clearStage() { for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) { c.material.map.dispose(); c.material.dispose(); } }); } tweens.length = 0; targets.length = 0; }
+const put = o => { stage.add(o); return o; };
+
+// Moving things: a short hop from where a thing is to where it belongs (none with reduced motion).
+const tweens = [];
+function fly(o, to, { dur = 0.42, arc = 1.1, from } = {}) {
+  for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1);
+  if (reduced || S.fast) { o.position.copy(to); return; }
+  tweens.push({ o, from: (from || o.position).clone(), to: to.clone(), t: 0, dur, arc });
+}
+function pop(o) { if (reduced || S.fast) return; o.scale.setScalar(0.01); tweens.push({ o, pop: true, t: 0, dur: 0.3 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i]; w.t = Math.min(1, w.t + dt / w.dur);
+    const k = w.t * w.t * (3 - 2 * w.t);
+    if (w.pop) w.o.scale.setScalar(Math.max(0.01, k));
+    else { w.o.position.lerpVectors(w.from, w.to, k); w.o.position.y += Math.sin(Math.PI * k) * w.arc; }
+    if (w.t >= 1) tweens.splice(i, 1);
+  }
+});
+
+/* ---------- where things go: one layout for wide screens, one for tall phones ---------- */
+const PITCH = 1.15, TOP = 0.16;
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+const LAY = {
+  heroes: () => (tall
+    ? { spots: [[-2.5, -2.3], [0, -2.3], [2.5, -2.3], [-1.25, 1.7], [1.25, 1.7]], rect: [-3.7, 3.7, -3.1, 2.6], high: 3.4, tilt: 0.8 }
+    : { spots: [[-5.2, 0], [-2.6, 0.5], [0, 0.8], [2.6, 0.5], [5.2, 0]], rect: [-6.4, 6.4, -0.6, 1.8], high: 3.4, tilt: 0.5 }),
+  // count: the garden bed and the basket, each just big enough for the round's apples (the basket in rows of five)
+  count: R => {
+    const cols = tall ? 5 : 6, gRows = Math.max(2, Math.ceil(R.total / cols)), bRows = Math.max(2, Math.ceil(R.total / 5));
+    if (tall) { const D = (gRows + bRows) * PITCH + 1, x = -2 * PITCH; return { cols, gRows, bRows, garden: [x, -D / 2 + PITCH / 2], basket: [x, -D / 2 + gRows * PITCH + 1 + PITCH / 2], rect: [x - 1.25, -x + 1.25, -D / 2 - 0.3, D / 2 + 0.6], hero: [1.9, -D / 2 - 1.7] }; }
+    const wide = 11 * PITCH + 1.7, rows = Math.max(gRows, bRows), z = -(rows - 1) / 2 * PITCH, bx = -wide / 2 + 6 * PITCH + 1.7 + PITCH / 2;
+    return { cols, gRows, bRows, garden: [-wide / 2 + PITCH / 2, z], basket: [bx, z], rect: [-wide / 2 - 0.4, wide / 2 + 0.8, z - 0.9, -z + 1.1], hero: [bx + 2 * PITCH, z - 2.3] };
+  },
+  // compare: two beds side by side in rows (wide) or in columns going away (tall), so partners sit next to each other
+  compare: R => {
+    const n = Math.max(5, R.a, R.b), len = n * PITCH;
+    if (tall) { const z0 = (n - 1) / 2 * PITCH; return { n, a: i => [-0.75, z0 - i * PITCH], b: i => [0.75, z0 - i * PITCH], signA: [-2.3, z0], signB: [2.3, z0], beds: [[-0.75, 0, 1.3, len + 0.3], [0.75, 0, 1.3, len + 0.3]], rect: [-3.2, 3.2, -len / 2 - 0.3, len / 2 + 0.4], hero: [2.7, -len / 2 + 0.2] }; }
+    const x0 = -(n - 1) / 2 * PITCH + 0.9;
+    return { n, a: i => [x0 + i * PITCH, -1.05], b: i => [x0 + i * PITCH, 1.05], signA: [x0 - 1.9, -1.05], signB: [x0 - 1.9, 1.05], beds: [[0.9, -1.05, len + 0.3, 1.3], [0.9, 1.05, len + 0.3, 1.3]], rect: [x0 - 2.9, x0 + (n - 1) * PITCH + 0.9, -1.9, 1.9], hero: [0.9, -4.2] };
+  },
+  teens: () => (tall
+    ? { frame: [-2.3, -2.4], loose: [-2.3, 1.1], rect: [-3.3, 3.3, -3.4, 3.1], hero: [0, -5.6] }
+    : { frame: [-6.4, -0.575], loose: [1.0, -0.575], rect: [-7.3, 6.5, -1.5, 1.5], hero: [-0.2, -3.8] }),
+};
+const grid = (o, cols) => i => V3(o[0] + (i % cols) * PITCH, TOP, o[1] + Math.floor(i / cols) * PITCH);
+const gridRect = (o, cols, rows) => [o[0] + (cols - 1) * PITCH / 2, o[1] + (rows - 1) * PITCH / 2, cols * PITCH + 0.35, rows * PITCH + 0.35];
+
+// The camera looks down on the garden and backs off until the play area (and the helper) fits between the words
+// at the top and the buttons at the bottom, on any screen shape.
+const view = { rect: [-6, 6, -2, 2], high: 0, hero: null, tilt: 0.8 };   // tilt: radians above the ground
+function frame() {
+  if (!g) return;
+  const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
+  const topPx = (S.screen === 'play' ? el.line.getBoundingClientRect().bottom : Hd * 0.2) + 6;   // the words, the big number and the round dots
+  const botPx = (el.bar.hidden ? (S.screen === 'play' ? 12 : Hd * 0.24) : Hd - el.bar.getBoundingClientRect().top) + 10;
+  const safe = { l: -1 + 16 / Wd, r: 1 - 16 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  const pts = [];
+  for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(V3(x, 0, z), V3(x, 1, z));
+  if (view.hero) pts.push(V3(view.hero[0] - 1, 0, view.hero[1]), V3(view.hero[0] + 1, 2.6, view.hero[1]));
+  if (view.high) pts.push(V3(x0, view.high, z0), V3(x1, view.high, z0));
+  const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
+  let d = 18; const TILT = view.tilt;
+  if (cam.fov !== 42) { cam.fov = 42; cam.updateProjectionMatrix(); }   // a long lens on every screen shape: rows stay rows, far apples stay apple-sized
+  for (let i = 0; i < 16; i++) {
+    cam.position.set(look.x, look.y + Math.sin(TILT) * d, look.z + Math.cos(TILT) * d); cam.lookAt(look); cam.updateMatrixWorld(true);
+    let a = 9, b = -9, c = 9, e = -9;
+    for (const p of pts) { v.copy(p).project(cam); a = Math.min(a, v.x); b = Math.max(b, v.x); c = Math.min(c, v.y); e = Math.max(e, v.y); }
+    const k = Math.max((b - a) / (safe.r - safe.l), (e - c) / (safe.t - safe.b));
+    const half = d * Math.tan(cam.fov * Math.PI / 360);
+    look.z += ((e + c) / 2 - (safe.t + safe.b) / 2) * half / Math.sin(TILT) * -0.9;
+    d = Math.max(6, Math.min(90, d * (0.35 + 0.65 * k)));
+  }
+  cam.position.set(look.x, look.y + Math.sin(TILT) * d, look.z + Math.cos(TILT) * d); cam.lookAt(look);
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping things in the garden: the nearest target under the finger, with a generous reach ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(26, Math.hypot(ex - sx, ey - sy) * 1.25), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+const fruitAt = o => () => o.position.clone().setY(o.position.y + 0.4);
+
+/* ---------- the helper ---------- */
+let lineup = [];
+async function showHeroes() {
+  S.screen = 'hero';
+  const L = LAY.heroes();
+  if (!lineup.length) {
+    lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+    for (const h of lineup) h.object.scale.setScalar(1.2);
+  }
+  lineup.forEach((h, i) => { h.position.set(L.spots[i][0], 0, L.spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  targets.length = 0;
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.5), r: 1.3, go: () => chooseHero(h.id) }));
+  Object.assign(view, { rect: L.rect, high: L.high, hero: null, tilt: L.tilt });
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(h.back); h.back = setTimeout(() => h.play('idle'), ms);
+}
+function placeHero(at) { if (S.hero) { S.hero.position.set(at[0], 0, at[1]); S.hero.object.rotation.y = 0; } view.hero = at; }
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'gc-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  if (icon) { const i = document.createElement('span'); i.className = 'i'; i.setAttribute('aria-hidden', 'true'); i.textContent = icon; b.append(i); }
+  if (big != null) { const n = document.createElement('span'); n.className = 'big'; n.textContent = big; b.append(n); }
+  if (label && big == null) { const l = document.createElement('span'); l.className = 'l'; l.textContent = label; b.append(l); }
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.num.hidden = true; el.sum.hidden = true; el.dots.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'gc-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'gc-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'gc-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'gc-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'gc-menu' : 'gc-pick'; row.append(...buttons.map(button));
+  el.card.className = 'gc-card' + (kind === 'menu' ? ' dim' : '');
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+function showMenu() {
+  clearTimers(); clearStage(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle';
+  placeHero([0, 0]); Object.assign(view, { rect: [-4, 4, -1.5, 1.5], high: 3.4, tilt: 0.5 });
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: GC.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!GC.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true;
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: GC.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: GC.ROUNDS })); el.dots.hidden = false;
+}
+function nextRound() {
+  clearTimers();
+  if (S.round >= GC.ROUNDS) return finish();
+  S.round++; S.R = GC.round(S.chapter, S.round, S.lap); S.count = 0; S.phase = 'play'; S.basket = []; S.shown = false;
+  hint(); dots(); redraw();
+  const R = S.R;
+  if (R.kind === 'count') ask('count.ask', { n: R.target });
+  else if (R.kind === 'compare') ask(R.form === 'numbers' ? (R.same ? 'compare.num.same' : R.ask === 'more' ? 'compare.num.more' : 'compare.num.less') : (R.same ? 'compare.same' : 'compare.' + R.ask));
+  else if (R.kind === 'make') ask('teens.make', { n: R.target });
+  else ask('teens.howmany');
+  frame();
+}
+/** The round is right: cheer, say what is true, then the next round (or the end). */
+function right(key, vars) {
+  S.phase = 'right'; hint();
+  sfx('cheer'); heroMove('cheer', 1500);
+  S.line = [key, vars]; el.askt.textContent = fmt(key, vars); speak(key, vars);
+  later(S.R.kind === 'compare' && S.R.form === 'numbers' ? 2600 : 2000, nextRound);
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  clearStage(); placeHero([0, 0]); Object.assign(view, { rect: [-4, 4, -1.5, 1.5], high: 3.4, tilt: 0.5 });
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🌻', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/** Draw the round from its state (also after the screen turns): the beds, the fruit, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const keys = el.bar.contains(document.activeElement);
+  clearStage();
+  const R = S.R, L = LAY[S.chapter](R);
+  Object.assign(view, { rect: L.rect, high: 0, tilt: 0.8 }); placeHero(L.hero);
+  el.card.hidden = true; el.bar.hidden = false;
+  if (R.kind === 'count') drawCount(R, L); else if (R.kind === 'compare') drawCompare(R, L); else drawTeens(R, L);
+  if (keys) { const b = el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+}
+function showNum() { el.num.textContent = String(S.count); el.num.hidden = false; }
+/** Too many: the helper hands them back one at a time, counting down, until the number asked for is left. */
+function handBack(target, back, nowKey) {
+  S.phase = 'busy';
+  const step = () => {
+    if (S.count > target) { back(); speak('n.' + S.count, null, { queue: true }); heroMove('use', 700); later(850, step); }
+    else { S.phase = 'play'; hint(nowKey, { n: target }, { queue: true }); }
+  };
+  later(1500, step);
+}
+
+/* ----- chapter 1, count: pick the number asked for into the basket ----- */
+function drawCount(R, L) {
+  const gSlot = grid(L.garden, L.cols), bSlot = grid(L.basket, 5), gr = gridRect(L.garden, L.cols, L.gRows), br = gridRect(L.basket, 5, L.bRows);
+  put(slab(gr[0], gr[1], gr[2], gr[3], TOP, M.soil));
+  put(slab(br[0], br[1], br[2], br[3], TOP, M.tan));   // the basket: a pale floor with a wooden rim round it
+  for (const [dx, dz, w, d] of [[0, -(br[3] + 0.3) / 2, br[2] + 0.6, 0.3], [0, (br[3] + 0.3) / 2, br[2] + 0.6, 0.3], [-(br[2] + 0.3) / 2, 0, 0.3, br[3]], [(br[2] + 0.3) / 2, 0, 0.3, br[3]]]) put(slab(br[0] + dx, br[1] + dz, w, d, TOP * 2.6, M.wood));
+  const all = Array.from({ length: R.total }, (_, i) => { const f = put(fruit('apple')); f.userData.slot = i; f.position.copy(gSlot(i)); return f; });
+  S.basket = S.basket.map(f => all[f.userData.slot]);   // the same apples after the screen turns
+  S.basket.forEach((f, j) => f.position.copy(bSlot(j)));
+  const settle = () => S.basket.forEach((f, j) => { if (f.position.distanceTo(bSlot(j)) > 0.01) fly(f, bSlot(j), { arc: 0.3 }); });
+  const pick = f => {
+    if (S.phase !== 'play') return;
+    f = f || all.find(x => !S.basket.includes(x)); if (!f || S.basket.includes(f)) return;
+    S.basket.push(f); S.count = S.basket.length; fly(f, bSlot(S.count - 1)); showNum(); sfx('coin'); heroMove('pickUp', 900); speak('n.' + S.count);
+  };
+  const back = (f, quiet) => {
+    f = f || S.basket[S.basket.length - 1]; if (!f) return;
+    S.basket.splice(S.basket.indexOf(f), 1); S.count = S.basket.length; fly(f, gSlot(f.userData.slot)); settle(); showNum();
+    if (!quiet) speak('n.' + S.count);
+  };
+  const done = b => {
+    if (S.phase !== 'play') return;
+    if (S.count === R.target) return right('count.right', { n: R.target });
+    wobble(b || document.getElementById('gc-done'));
+    if (S.count < R.target) return hint('count.few', { n: R.target });
+    hint('count.many'); handBack(R.target, () => back(null, true), 'count.now');
+  };
+  for (const f of all) targets.push({ at: fruitAt(f), r: 0.55, go: () => (S.basket.includes(f) ? (S.phase === 'play' && back(f)) : pick(f)) });
+  S.act = { pick: () => pick(), back: () => S.phase === 'play' && back(), done: () => done() };
+  S.basketIds = () => S.basket.map(f => f.userData.slot);
+  el.bar.replaceChildren(
+    button({ id: 'gc-pick', icon: '🍎', label: fmt('btn.pick'), cls: 'pick', go: () => pick() }),
+    button({ id: 'gc-back', icon: '↩️', label: fmt('btn.back'), aria: fmt('btn.back.say'), go: () => S.phase === 'play' && back() }),
+    button({ id: 'gc-done', icon: '✅', label: fmt('btn.done'), cls: 'go', go: done }));
+  showNum(); el.sum.hidden = true;
+}
+
+/* ----- chapter 2, compare: which bed has more or fewer, or are they the same ----- */
+function drawCompare(R, L) {
+  for (const b of L.beds) put(slab(b[0], b[1], b[2], b[3], TOP, M.soil));
+  const numbers = R.form === 'numbers';
+  const fill = animate => {
+    S.shown = true;
+    for (const [kind, n, at] of [['apple', R.a, L.a], ['lemon', R.b, L.b]]) for (let i = 0; i < n; i++) { const f = put(fruit(kind)); const p = at(i); f.position.set(p[0], TOP, p[1]); if (animate) pop(f); }
+  };
+  const signs = () => { for (const [n, at] of [[R.a, L.signA], [R.b, L.signB]]) { const s = put(sign(n, tall ? 1.5 : 1.7)); s.position.set(at[0], 1.0, at[1]); } };
+  if (!numbers || S.shown) fill(false);
+  if (numbers || S.phase === 'right') signs();
+  const answer = (x, b) => {
+    if (S.phase !== 'play') return;
+    if (x !== R.answer) {
+      wobble(b || document.getElementById('gc-' + x));
+      return hint(R.same && R.answer === 'same' ? 'compare.hint.same' : numbers ? 'compare.hint.num.' + (R.ask === 'more' ? 'more' : 'less') : 'compare.hint.' + R.ask);
+    }
+    if (numbers) fill(true); else signs();
+    const hi = Math.max(R.a, R.b), lo = Math.min(R.a, R.b);
+    if (R.answer === 'same') right('compare.right.same', { a: R.a, b: R.b });
+    else if (R.ask === 'more') right('compare.right.more', { a: hi, b: lo });
+    else right(numbers ? 'compare.right.less' : 'compare.right.fewer', { a: lo, b: hi });
+  };
+  // a tap anywhere along a bed picks it
+  for (const [x, at] of [['a', L.a], ['b', L.b]]) for (let i = 0; i < L.n; i++) targets.push({ at: () => V3(at(i)[0], 0.5, at(i)[1]), r: 0.62, go: () => answer(x) });
+  S.act = { answer: x => answer(x) };
+  const bs = [button({ id: 'gc-a', icon: '🍎', big: numbers ? R.a : undefined, label: fmt('btn.apples'), aria: fmt('btn.apples') + (numbers ? ': ' + R.a : ''), go: b => answer('a', b) })];
+  if (R.same) bs.push(button({ id: 'gc-same', icon: '🟰', label: fmt('btn.same'), go: b => answer('same', b) }));
+  bs.push(button({ id: 'gc-b', icon: '🍋', big: numbers ? R.b : undefined, label: fmt('btn.lemons'), aria: fmt('btn.lemons') + (numbers ? ': ' + R.b : ''), go: b => answer('b', b) }));
+  el.bar.replaceChildren(...bs);
+  el.num.hidden = true; el.sum.hidden = true;
+}
+
+/* ----- chapter 3, teens: a full ten and some more ones ----- */
+function drawTeens(R, L) {
+  const fSlot = grid(L.frame, 5), lSlot = grid(L.loose, 5), fr = gridRect(L.frame, 5, 2), lr = gridRect(L.loose, 5, 2);
+  put(slab(fr[0], fr[1], fr[2] + 0.1, fr[3] + 0.1, TOP * 0.7, M.inkFlat));
+  for (let i = 0; i < 10; i++) { const p = fSlot(i), c = new THREE.Mesh(GEO.box, M.cream); c.scale.set(PITCH - 0.12, TOP, PITCH - 0.12); c.position.set(p.x, TOP / 2, p.z); c.receiveShadow = true; put(c); }
+  put(slab(lr[0], lr[1], lr[2], lr[3], TOP * 0.5, M.soil));
+  const slot = i => (i < 10 ? fSlot(i) : lSlot(i - 10).setY(TOP * 0.5));
+  const fruits = [];
+  const sum = () => {
+    const n = S.count;
+    el.sum.textContent = n > 10 ? fmt('teens.sum', { a: 10, b: n - 10, c: n }).replace(/\.$/, '') : n === 10 ? '10' : '';
+    el.sum.hidden = !el.sum.textContent; showNum();
+  };
+  const set = (n, animate) => {
+    n = Math.max(0, Math.min(20, n));
+    while (fruits.length > n) stage.remove(fruits.pop());
+    while (fruits.length < n) { const f = put(fruit('apple')); f.position.copy(slot(fruits.length)); if (animate) pop(f); fruits.push(f); }
+    S.count = n; sum();
+  };
+  if (R.kind === 'howmany') {
+    S.count = R.target; set(R.target, false); el.num.hidden = true; el.sum.hidden = true;
+    const answer = (v, b) => {
+      if (S.phase !== 'play') return;
+      if (v !== R.target) { wobble(b || document.getElementById('gc-n' + v)); return hint('teens.hint'); }
+      el.sum.textContent = fmt('teens.sum', { a: 10, b: R.target - 10, c: R.target }).replace(/\.$/, ''); el.sum.hidden = false;
+      right('teens.sum', { a: 10, b: R.target - 10, c: R.target });
+    };
+    S.act = { answer: v => answer(v) };
+    el.bar.replaceChildren(...R.choices.map(v => button({ id: 'gc-n' + v, big: v, go: b => answer(v, b) })));
+    return;
+  }
+  set(S.count, false);
+  const fill = b => {
+    if (S.phase !== 'play') return;
+    if (S.count >= 10) { wobble(b || document.getElementById('gc-fill')); return hint('teens.full'); }
+    set(10, true); sfx('coin'); heroMove('pickUp', 900); speak('n.10');
+  };
+  const one = () => { if (S.phase !== 'play' || S.count >= 20) return; set(S.count + 1, true); sfx('coin'); speak('n.' + S.count); };
+  const back = quiet => { if (S.count <= 0) return; set(S.count - 1, false); if (!quiet) speak('n.' + S.count); };
+  const done = b => {
+    if (S.phase !== 'play') return;
+    if (S.count === R.target) return right('teens.sum', { a: 10, b: R.target - 10, c: R.target });
+    wobble(b || document.getElementById('gc-done'));
+    if (S.count < R.target) return hint('teens.few', { n: R.target });
+    hint('teens.many'); handBack(R.target, () => back(true), 'teens.now');
+  };
+  for (let i = 0; i < 10; i++) targets.push({ at: () => fSlot(i).setY(0.4), r: 0.6, go: () => (S.count < 10 ? fill() : null) });
+  S.act = { fill: () => fill(), one, back: () => S.phase === 'play' && back(), done: () => done() };
+  el.bar.replaceChildren(
+    button({ id: 'gc-fill', icon: '🔟', label: fmt('btn.fill'), cls: 'pick', go: fill }),
+    button({ id: 'gc-one', icon: '🍎', label: fmt('btn.one'), cls: 'pick', go: one }),
+    button({ id: 'gc-back', icon: '↩️', label: fmt('btn.back'), aria: fmt('btn.back.say'), go: () => S.phase === 'play' && back() }),
+    button({ id: 'gc-done', icon: '✅', label: fmt('btn.done'), cls: 'go', go: done }));
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+window.__gc = window.__brbTest = {
+  state: () => ({ game: 'garden-count', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: GC.ROUNDS, phase: S.phase, count: S.count, hero: S.hero ? S.hero.id : null,
+    reported: S.reported, tall, ...(S.R && S.screen === 'play' ? { kind: S.R.kind, target: S.R.target, answer: S.R.answer, ask: S.R.ask, form: S.R.form, same: S.R.same, a: S.R.a, b: S.R.b, choices: S.R.choices, total: S.R.total } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => (S.act && S.act[name] ? S.act[name](arg) : undefined),
+};
+
+el.load.hidden = true; el.load.remove(); el.gc.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>
