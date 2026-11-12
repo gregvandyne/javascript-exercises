@@ -20,13 +20,18 @@ const plc = JSON.parse(fs.readFileSync(path.join(NQ, 'placement.json'), 'utf8'))
 
 const CODE = /^([3-5])\.(OA|NBT|NF|MD|G)\.([A-D])\.(\d)$/;
 const CLUSTER = /^(K|[1-8])\.(CC|OA|NBT|NF|MD|G|RP|NS|EE|SP|F)\.([A-D])$/;
-const UNITS = cat.units;
-const STEPS = UNITS.flatMap(u => u.steps.map(s => ({ ...s, unit: u.n })));
+// Every unit names its tier; the Explorer assertions below run on the Explorer tier's units only, and the
+// Launchpad tier (kindergarten to grade 2) has the equivalent lock rules of its own at the end of this file.
+const tierUnits = tier => cat.units.filter(u => u.tier === tier);
+const tierSteps = tier => tierUnits(tier).flatMap(u => u.steps.map(s => ({ ...s, unit: u.n })));
+const UNITS = tierUnits('explorer');
+const STEPS = tierSteps('explorer');
 const locked = new Set(Object.keys(reg.explorerCodes.codes));
 const clusterSet = new Set(Object.values(reg.clusters).flatMap(g => Object.keys(g)));
 const deferredSet = new Set(Object.values(reg.deferredClusters).filter(v => typeof v === 'object').flatMap(g => Object.keys(g)));
 
 test('the catalogue: intro + Explorer units 1-7 + the finale, 23 steps in order, stones and teacher notes', () => {
+  for (const u of cat.units) assert.ok(['launchpad', 'explorer', 'pro'].includes(u.tier), `unit ${u.n} "${u.title}" names its tier`);
   assert.deepEqual(UNITS.map(u => u.n), [0, 1, 2, 3, 4, 5, 6, 7]);
   assert.deepEqual(STEPS.map(s => s.n), ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4']);
   assert.deepEqual(STEPS.map(s => s.order), [...Array(23).keys()].map(i => i + 1));
@@ -104,10 +109,95 @@ test('placement: four strands, rungs K.0-5.5 locked on real clusters, 6.0-8.0 de
 
 test('crosswalk: an entry profile per unit door, monotone across units, ties resolve lower', () => {
   const profiles = plc.crosswalk.entryProfiles;
-  assert.deepEqual(Object.keys(profiles).sort(), ['explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1']);
+  assert.deepEqual(Object.keys(profiles).filter(k => k.startsWith('explorer-')).sort(), ['explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1']);
   const strands = ['Number', 'Algebra & Patterns', 'Shape & Measure', 'Data & Chance'];
+  // Another tier's profiles are keyed the same way, "<tier>-<unit>.1", each naming a unit that tier has;
+  // within a tier they are monotone too, and a Launchpad door never asks more than Explorer's first.
+  for (const tier of ['launchpad', 'pro']) {
+    const keys = Object.keys(profiles).filter(k => k.startsWith(`${tier}-`));
+    const units = tierUnits(tier).map(u => u.n);
+    for (const k of keys) {
+      const m = /^[a-z]+-(\d)\.1$/.exec(k);
+      assert.ok(m && units.includes(+m[1]), `${k} names the door of a ${tier} unit`);
+      for (const [label, rung] of Object.entries(profiles[k])) {
+        assert.ok(strands.includes(label), `${k}: ${label} is a strand`);
+        assert.ok(typeof rung === 'number' && rung >= 0 && rung <= 8 && (rung * 2) % 1 === 0, `${k}: ${label} names a rung`);
+        if (tier === 'launchpad') assert.ok(rung <= profiles['explorer-1.1'][label], `${k}: ${label} asks no more than Explorer's first door`);
+      }
+    }
+    const inOrder = units.map(n => profiles[`${tier}-${n}.1`]).filter(Boolean);
+    for (let i = 1; i < inOrder.length; i++) for (const [label, rung] of Object.entries(inOrder[i])) {
+      if (typeof inOrder[i - 1][label] === 'number') assert.ok(rung >= inOrder[i - 1][label], `${tier} ${label}: a later unit never asks less`);
+    }
+  }
+  for (const k of Object.keys(profiles)) assert.match(k, /^(launchpad|explorer|pro)-\d\.1$/, `${k} is a unit door`);
   const seq = ['explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1'].map(k => profiles[k]);
   for (const p of seq) for (const s of strands) assert.ok(typeof p[s] === 'number' && p[s] >= 0 && p[s] <= 8, `profile names ${s} as a rung`);
   for (let i = 1; i < seq.length; i++) for (const s of strands) assert.ok(seq[i][s] >= seq[i - 1][s], `${s}: unit ${i + 1} never asks less than unit ${i}`);
   assert.match(plc.crosswalk.rule, /LOWER|lower/, 'the tie rule is written down');
+});
+
+// ------------------------------------------------------------------------------------------------- Launchpad
+// The Launchpad tier's lock (kindergarten to grade 2): the same rules as Explorer's, against its own code set
+// (standards.json launchpadCodes). A Launchpad step may cite only codes locked there, every locked code is a
+// well-formed K-2 statement code in a real cluster, and step order starts at 1 in the tier.
+const LP_CODE = /^(K|[12])\.(CC|OA|NBT|MD|G)\.([A-D])\.(\d)[a-z]?$/;
+const lpLocked = new Set(Object.keys(reg.launchpadCodes.codes));
+
+test('Launchpad registry: locked codes are well-formed K-2 statement codes in real clusters', () => {
+  assert.equal(typeof reg.launchpadCodes.about, 'string');
+  for (const code of lpLocked) {
+    const m = LP_CODE.exec(code);
+    assert.ok(m, `${code} is a well-formed grade K-2 CCSS-M statement code`);
+    assert.ok(clusterSet.has(`${m[1]}.${m[2]}.${m[3]}`), `${code}: its cluster exists in the verified registry`);
+    assert.ok(typeof reg.launchpadCodes.codes[code] === 'string' && reg.launchpadCodes.codes[code].length >= 30, `${code}: carries a plain-language short title`);
+    assert.ok(!locked.has(code), `${code}: locked for one tier only`);
+  }
+});
+
+test('Launchpad units cite only codes in launchpadCodes; the welcome cites none; order starts at 1', () => {
+  const units = tierUnits('launchpad'), steps = tierSteps('launchpad');
+  assert.ok(units.length >= 1 && units[0].n === 0, 'the Launchpad tier opens with its welcome unit');
+  assert.equal(new Set(units.map(u => u.n)).size, units.length, 'unit numbers are unique within the tier');
+  assert.deepEqual(steps.map(s => s.order).sort((a, b) => a - b), steps.map((_, i) => i + 1), 'step order is 1..n within the tier');
+  assert.equal(new Set(steps.map(s => s.n)).size, steps.length, 'step numbers are unique within the tier');
+  for (const u of units) {
+    assert.ok(Array.isArray(u.teacherNotes) && u.teacherNotes.length >= 1, `launchpad unit ${u.n} carries teacher notes`);
+    for (const s of u.steps) assert.equal(s.n.split('.')[0], String(u.n), `launchpad ${s.n} sits in unit ${u.n}`);
+  }
+  for (const s of steps) {
+    const st = s.standards.launchpad;
+    assert.ok(st, `launchpad ${s.n}: standards are keyed by the unit's own tier`);
+    assert.equal(s.standards.explorer, undefined, `launchpad ${s.n}: carries no Explorer standards`);
+    assert.equal(typeof s.titles.launchpad, 'string', `launchpad ${s.n}: a title under its tier`);
+    assert.match(s.mp, /^MP[1-8]$/, `launchpad ${s.n}: MP spotlight`);
+    for (const k of ['primary', 'also', 'buildsToward']) {
+      assert.ok(Array.isArray(st[k]), `launchpad ${s.n}: ${k} is a list`);
+      for (const code of st[k]) {
+        if (CLUSTER.test(code) && !LP_CODE.test(code)) {
+          assert.equal(k, 'buildsToward', `launchpad ${s.n}: cluster-level citation ${code} is only ever buildsToward`);
+          assert.ok(clusterSet.has(code), `launchpad ${s.n}: ${code} is a real cluster`);
+        } else if (k === 'buildsToward' && locked.has(code)) {
+          // Preparation may point up the path at a locked Explorer statement; it is never coverage.
+        } else {
+          assert.match(code, LP_CODE, `launchpad ${s.n}: ${code} is a K-2 statement code`);
+          assert.ok(lpLocked.has(code), `launchpad ${s.n}: ${code} is in launchpadCodes`);
+        }
+      }
+    }
+    const cited = [...st.primary, ...st.also, ...st.buildsToward];
+    if (st.flag === 'framing' || st.flag === 'enrichment') assert.deepEqual(cited, [], `launchpad ${s.n}: ${st.flag} cites no code in any position`);
+    else assert.ok(st.primary.length >= 1, `launchpad ${s.n}: at least one primary locked code`);
+  }
+  assert.equal(steps[0].n, '0.1'); assert.equal(steps[0].standards.launchpad.flag, 'framing', 'the welcome is framing');
+});
+
+test('tiers: Launchpad and Explorer are declared, each with a status; no Pro tier yet', () => {
+  assert.deepEqual(Object.keys(cat.tiers).sort(), ['explorer', 'launchpad']);
+  assert.equal(cat.tiers.explorer.status, 'open');
+  assert.ok(['open', 'building'].includes(cat.tiers.launchpad.status));
+  assert.equal(cat.tiers.launchpad.district, 'The Gardens'); assert.equal(cat.tiers.launchpad.grades, 'K-2'); assert.equal(cat.tiers.launchpad.inGame, 'Launchpad');
+  assert.ok(Array.isArray(cat.tiers.launchpad.stones));
+  assert.deepEqual(cat.units.filter(u => u.tier === 'pro'), [], 'the Pro tier has no units yet');
+  assert.equal(reg.proCodes, undefined, 'Pro codes lock in the Pro phase');
 });

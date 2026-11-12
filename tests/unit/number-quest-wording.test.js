@@ -10,9 +10,13 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const DIR = 'seed-lessons/number-quest/course/explorer';
+// The pinned sentences below are the Explorer street's (deck(n) reads course/explorer); the whole-course
+// sweeps (allText) read every tier that has a deck folder, and every bank.
+const COURSE = 'seed-lessons/number-quest/course';
+const DIR = `${COURSE}/explorer`;
 const deck = n => JSON.parse(read(`${DIR}/${n}.json`));
-const allText = () => fs.readdirSync(path.join(ROOT, DIR)).map(f => read(`${DIR}/${f}`)).join('\n')
+const tierDirs = () => fs.readdirSync(path.join(ROOT, COURSE)).filter(t => fs.statSync(path.join(ROOT, COURSE, t)).isDirectory()).sort();
+const allText = () => tierDirs().flatMap(t => fs.readdirSync(path.join(ROOT, COURSE, t)).map(f => read(`${COURSE}/${t}/${f}`))).join('\n') + '\n'
   + fs.readdirSync(path.join(ROOT, 'seed-lessons/number-quest/sets')).map(f => read(`seed-lessons/number-quest/sets/${f}`)).join('\n');
 
 test('times and shares are written × and ÷, the way the games write them', () => {

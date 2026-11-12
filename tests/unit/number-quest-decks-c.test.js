@@ -37,7 +37,7 @@ const cat = JSON.parse(fs.readFileSync(path.join(NQ, 'units.json'), 'utf8'));
 const reg = JSON.parse(fs.readFileSync(path.join(NQ, 'standards.json'), 'utf8'));
 const locked = new Set(Object.keys(reg.explorerCodes.codes));
 const STEPS = ['5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4'].map(n => {
-  const u = cat.units.find(x => x.steps.some(s => s.n === n));
+  const u = cat.units.filter(x => x.tier === 'explorer').find(x => x.steps.some(s => s.n === n)); // these are the Explorer street's decks; unit numbers repeat across tiers
   return { ...u.steps.find(s => s.n === n), unit: u.n };
 });
 const banks = new Map();
