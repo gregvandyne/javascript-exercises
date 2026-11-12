@@ -66,15 +66,17 @@ const isPinnedMap = m => {
 };
 
 // ---------- Kit 2 (docs/kit2-themes-plan.md) ----------
-// Engines under /vendor/kit2/ (Three.js add-ons, Phaser 2D) and theme art under /vendor/themes/, every
+// Engines under /vendor/kit2/ (Three.js add-ons, Rapier physics, Phaser 2D) and theme art under /vendor/themes/, every
 // file pinned by kit2/SHIPPED.json (it never changes once shipped). A Kit 2 3D game uses exactly KIT2_IMPORT_MAP: the
-// same Three.js as above plus "three/addons/", with integrity for every file, so no file can be swapped. (No Rapier:
-// it needs WebAssembly, which the frame does not allow; an open decision in the plan.)
+// same Three.js as above plus "three/addons/", Rapier and Oomba3D, with integrity for every file, so no file can be
+// swapped. Rapier and the meshopt decoder run WebAssembly: the frame allows it since 12 Nov 2026 (docs/safety.md).
 export const KIT2_PATH = '/vendor/kit2/';
 export const THEMES_PATH = '/vendor/themes/';
 export const KIT2_ADDONS_DIR = `${KIT2_PATH}three-addons/${THREE_VERSION}/`;
 // Oomba3D, the Kit 2 game library (docs/kit2-api.md): imported as 'oomba3d' through the Kit 2 import map.
-export const OOMBA3D_VERSION = '1.0.0';
+export const OOMBA3D_VERSION = '1.1.0';
+export const RAPIER_VERSION = '0.21.0';
+export const RAPIER_MODULE = `${KIT2_PATH}rapier/${RAPIER_VERSION}/rapier.mjs`;
 export const OOMBA3D_MODULE = `${KIT2_PATH}oomba3d/${OOMBA3D_VERSION}/oomba3d.js`;
 export const PHASER_VERSION = '3.90.0';
 export const PHASER_SCRIPT = `${KIT2_PATH}phaser/${PHASER_VERSION}/phaser.min.js`;
@@ -83,13 +85,13 @@ const KIT2_LOCK_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 export const KIT2_LOCK = (() => { try { return JSON.parse(fs.readFileSync(KIT2_LOCK_FILE, 'utf8')); } catch { return { engines: {}, themes: {} }; } })();
 const kit2Sri = url => KIT2_LOCK.engines[url.slice(KIT2_PATH.length)];
 export const PHASER_SRI = kit2Sri(PHASER_SCRIPT);
-/** The one import map a Kit 2 3D game may use (every add-on file and Oomba3D listed with its integrity). */
+/** The one import map a Kit 2 3D game may use (every add-on file, Rapier and Oomba3D listed with its integrity). */
 export const KIT2_IMPORT_MAP = (() => {
   const integrity = { [THREE_MODULE]: THREE_SRI[THREE_MODULE], [THREE_CORE]: THREE_SRI[THREE_CORE] };
   const addons = KIT2_ADDONS_DIR.slice(KIT2_PATH.length);
   for (const [rel, sri] of Object.entries(KIT2_LOCK.engines)) if (rel.startsWith(addons) && rel.endsWith('.js')) integrity[KIT2_PATH + rel] = sri;
-  if (kit2Sri(OOMBA3D_MODULE)) integrity[OOMBA3D_MODULE] = kit2Sri(OOMBA3D_MODULE);
-  return { imports: { three: THREE_MODULE, 'three/addons/': KIT2_ADDONS_DIR, oomba3d: OOMBA3D_MODULE }, integrity };
+  for (const m of [OOMBA3D_MODULE, RAPIER_MODULE]) if (kit2Sri(m)) integrity[m] = kit2Sri(m);
+  return { imports: { three: THREE_MODULE, 'three/addons/': KIT2_ADDONS_DIR, '@dimforge/rapier3d-compat': RAPIER_MODULE, oomba3d: OOMBA3D_MODULE }, integrity };
 })();
 export const kit2ImportMap = () => `<script type="importmap">\n${JSON.stringify(KIT2_IMPORT_MAP, null, 1)}\n</script>`;
 /** The one tag a Kit 2 2D game loads Phaser with. */

@@ -1,6 +1,7 @@
 // Oomba3D (public/vendor/kit2/oomba3d/<version>/oomba3d.js, docs/kit2-api.md): the docs and the code list the same API,
 // and the Sky Islands demo built on it (kit2/demo/sky-islands.html) plays in the real game frame (frameDocument + the
-// frame CSP + the sandbox, in Chromium): pick a hero, walk, collect a coin, land on the right answer, cheer at the flag.
+// frame CSP + the sandbox, in Chromium): pick a hero, walk, collect a coin, land on the right answer, cheer at the flag,
+// then the graphics options: the gear button's levels, time of day, weather, Rapier physics and meshopt models.
 // Needs a local Chromium for the play test; skipped when there is none. K2_SHOTS=<dir> saves screenshots there.
 import './_setup.js';
 import test from 'node:test';
@@ -28,9 +29,10 @@ test('docs/kit2-api.md documents exactly the API the library exports, and names 
   assert.deepEqual([...documented].sort(), [...API].sort(), 'every API name has a "### `g.name(`" section, and nothing else does');
   assert.match(DOC, new RegExp(`Oomba3D ${V.OOMBA3D_VERSION.replace(/\./g, '\\.')}`));
   // Every API name is really on the returned game object.
-  const ret = /return \{\n\s+THREE,[\s\S]*?\n\s+hero, world: \{ ([^}]+) \}, ([^\n]+),\n\s+\};/.exec(LIB);
+  const ret = /\n  return \{\n\s+THREE,[^\n]*\n[^\n]*\n\s+hero, world: \{ ([^}]+) \}, ([^\n]+),\n\s+([^\n]+),\n\s+\};/.exec(LIB);
   assert.ok(ret, 'the game object literal');
-  const names = ['hero', ...ret[1].split(',').map(s => 'world.' + s.trim()), ...ret[2].split(',').map(s => s.trim())];
+  const key = s => s.trim().split(':')[0].trim();
+  const names = ['hero', ...ret[1].split(',').map(s => 'world.' + key(s)), ...ret[2].split(',').map(key), ...ret[3].split(',').map(key)].filter(n => n && n !== 'world.');
   assert.deepEqual(names.sort(), [...API].sort());
 });
 
@@ -56,7 +58,7 @@ test('the Sky Islands demo plays in the game frame: walk, coin, right answer, ch
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: page });
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
     const f = u.startsWith(HOST + '/vendor/') && vendorFile(u);
-    const types = { js: 'text/javascript', glb: 'model/gltf-binary', ogg: 'audio/ogg', json: 'application/json', webp: 'image/webp' };
+    const types = { js: 'text/javascript', mjs: 'text/javascript', glb: 'model/gltf-binary', ogg: 'audio/ogg', json: 'application/json', webp: 'image/webp' };
     if (f) return route.fulfill({ status: 200, headers: { 'content-type': types[f.split('.').pop()] || 'application/octet-stream', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) });
     outside.push(u); return route.abort();
   });
@@ -98,6 +100,41 @@ test('the Sky Islands demo plays in the game frame: walk, coin, right answer, ch
   await until(() => !!__game.goal.cheered);
   assert.match(await frame.evaluate(() => document.querySelector('.o3-toast').textContent), /You did it!/);
   if (shots) await p.screenshot({ path: path.join(shots, 'o3-4-goal.png') });
+
+  // Graphics options: the gear button changes the level; time of day, weather and Rapier physics work in the frame.
+  await frame.click('.o3-gear');
+  await frame.click('.o3-set >> text=Fast');
+  assert.equal(await frame.evaluate(() => __game.g.graphics()), 'low');
+  assert.equal(await frame.evaluate(() => document.querySelector('[data-v="low"]').getAttribute('aria-pressed')), 'true');
+  await frame.click('.o3-set >> text=Beautiful');
+  assert.equal(await frame.evaluate(() => __game.g.graphics()), 'high');
+  assert.equal(await frame.evaluate(() => __game.g.sky('night')), 'night');
+  if (shots) { await p.waitForTimeout(400); await p.screenshot({ path: path.join(shots, 'o3-5-night.png') }); }
+  assert.equal(await frame.evaluate(() => __game.g.sky('sunset')), 'sunset');
+  assert.equal(await frame.evaluate(() => __game.g.weather('snow')), 'snow');
+  await frame.evaluate(() => { __game.me.position.set(0, 1.5, 3); });
+  if (shots) { await p.waitForTimeout(1500); await p.screenshot({ path: path.join(shots, 'o3-6-sunset-snow.png') }); }
+  await frame.evaluate(async () => {
+    const ph = await __game.g.physics();
+    const box = (await __game.g.world.piece('brick', { x: 0, y: 12, z: 0 })).object;
+    ph.add(box);
+    ph.add((await __game.g.world.piece('platform-large', { x: 0, y: -1, z: 0, scale: 2 })).object, { type: 'fixed' });
+    window.__box = box;
+  });
+  await until(() => window.__box.position.y < 6);
+  // Outfits: the same hero with a green cape is a new character; the face and armour keep their texture.
+  assert.deepEqual(await frame.evaluate(async () => {
+    const k = await __game.g.hero('knight', { x: 4, y: 1.5, z: 3, outfit: '#66C792' });
+    const cape = k.object.getObjectByName('Knight_Cape'), head = k.object.getObjectByName('Knight_Head');
+    return [cape.material.color.equals(new __game.g.THREE.Color('#66C792')), !!cape.material.map, !!head.material.map];
+  }), [true, false, true]);
+  // Meshopt-compressed models (Sky Islands 1.0.0) load now that WebAssembly is allowed.
+  assert.ok(await frame.evaluate(async () => {
+    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+    const { MeshoptDecoder } = await import('three/addons/libs/meshopt_decoder.module.js');
+    const gl = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('/vendor/themes/sky-islands/1.0.0/heroes/knight.glb');
+    let n = 0; gl.scene.traverse(o => { if (o.isMesh) n++; }); return n;
+  }) > 0);
 
   assert.deepEqual(errors, []);
   assert.deepEqual(consoleErrors, [], 'no console errors (a texture the CSP blocks shows up here)');

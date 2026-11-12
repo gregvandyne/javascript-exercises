@@ -4614,3 +4614,24 @@ The owner wants games that "blow people away" and found Kit 1's home-made charac
 - **Fix to stage 2's frame CSP: `connect-src` also allows `blob:`.** The model loader reads a model's own embedded
   textures through a `blob:` URL; without it every model drew grey (no game used Kit 2 yet, so no player saw it). A
   `blob:` URL is data the frame already holds, so this reaches no network. The play test now fails on any console error.
+
+## WebAssembly in games, and Oomba3D 1.1.0 graphics options (12 Nov 2026)
+
+- **The owner allowed WebAssembly in games** (the open decision from stage 2). The frame CSP's `script-src` now has
+  `'wasm-unsafe-eval'`; still no `'unsafe-eval'` (no `eval`/`new Function`, and the scanner still fails both) and no
+  workers. `docs/safety.md` says what this does and does not open. With it:
+  - **Rapier 0.21.0** (Apache-2.0) is vendored at `/vendor/kit2/rapier/0.21.0/rapier.mjs` and in the Kit 2 import map as
+    `@dimforge/rapier3d-compat`. Oomba3D loads it only when a game calls `g.physics()`, so other games don't download it.
+  - The **meshopt decoder** add-on is back, so meshopt-compressed models load (Sky Islands 1.0.0 now works too). Themes
+    stay quantized and brotli-served by default: smaller over the wire than meshopt here.
+- **Oomba3D 1.1.0** (`'oomba3d'` in the import map now points at it; 1.0.0 stays unchanged), with the owner's "more
+  graphic options":
+  - Graphics levels `auto`/`low`/`medium`/`high` (players see Auto, Fast, Balanced, Beautiful): pixel ratio, shadows and
+    their size, glow, SMAA smoothing (new add-on), cloud count, weather density and confetti. Auto steps down a level
+    after two slow 3-second spells.
+  - A **gear button** in every Oomba3D game: players pick the graphics level and turn weather effects off, for that game.
+  - Time of day (`morning`, `day`, `sunset`, `night` with stars), weather (`snow`, `rain`, `sparkles`, `leaves`, as soft
+    round particles), a shader sea (`g.world.water`), ink outlines (`outline: true`, the Oomba look) and `g.physics()`.
+  - The demo now has water, outlines and sparkles. `tests/unit/kit2-oomba3d.test.js` also clicks the gear button's
+    levels, changes the time and weather, drops a Rapier box onto a fixed platform and loads a meshopt model, in the real
+    game frame.

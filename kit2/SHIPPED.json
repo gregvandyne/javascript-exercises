@@ -21,7 +21,14 @@
   "three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
   "three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
   "oomba3d/1.0.0/LICENSE": "sha384-eD+BrgV6JiBZ4LC4KVPi7Ep+ExnHKtRyMBOlJ0Y02Mw8/7h0UXjczI7PK1yqsVp/",
-  "oomba3d/1.0.0/oomba3d.js": "sha384-nkfQSRr1TLKszkcUxN/nwpQY+uSsLTeGWhUP74kZob19abJvFNnrNLpJJBzSi0if"
+  "oomba3d/1.0.0/oomba3d.js": "sha384-nkfQSRr1TLKszkcUxN/nwpQY+uSsLTeGWhUP74kZob19abJvFNnrNLpJJBzSi0if",
+  "rapier/0.21.0/LICENSE": "sha384-jm/zl4tDqSUx2RYZuMkZzq9Fc9fnRdxglTCPrYx01Stwb6np/0LT+e5o2CSCT7ox",
+  "rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx",
+  "three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "oomba3d/1.1.0/LICENSE": "sha384-d1LSX0WDHWkcFsstp9CaZCATdNA97s8zQAbGOShgOGiWTwyEnQ+GWBVHa0jZBmLE",
+  "oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH"
  },
  "themes": {
   "sky-islands/1.0.0": "sha384-8VQ0ivDr2OkOzP7RQHLq85R0vYP8LOkh4UhPJ4Nj2UmKZ/flJLw4ArPfaICCyiXO",

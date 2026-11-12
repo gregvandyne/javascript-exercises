@@ -1,6 +1,6 @@
 // Kit 2 engines and hosting (docs/kit2-themes-plan.md, stage 2): kit2/SHIPPED.json pins every file under
 // public/vendor/kit2/ and every theme version, the frame CSP opens exactly /vendor/kit2/ (scripts) and /vendor/themes/
-// (fetch, images, sound) on our own origin (still no eval, WebAssembly or workers), and the scanner accepts only the
+// (fetch, images, sound) on our own origin (WebAssembly yes; still no eval or workers), and the scanner accepts only the
 // pinned Kit 2 import map and Phaser tag.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -33,13 +33,14 @@ test('every theme version is in the lock, and its theme.json never changes', () 
 });
 
 test('every engine keeps its licence beside it', () => {
-  for (const eng of ['three-addons/0.185.1', 'phaser/3.90.0', 'oomba3d/1.0.0']) assert.ok(Object.keys(lock.engines).some(f => f.startsWith(eng + '/') && /^LICENSE/.test(f.slice(eng.length + 1))), eng);
+  for (const eng of ['three-addons/0.185.1', 'phaser/3.90.0', 'oomba3d/1.0.0', 'oomba3d/1.1.0', 'rapier/0.21.0']) assert.ok(Object.keys(lock.engines).some(f => f.startsWith(eng + '/') && /^LICENSE/.test(f.slice(eng.length + 1))), eng);
 });
 
-test('the Kit 2 import map pins Three.js, every add-on and Oomba3D', () => {
+test('the Kit 2 import map pins Three.js, every add-on, Rapier and Oomba3D', () => {
   const m = V.KIT2_IMPORT_MAP;
-  assert.deepEqual(m.imports, { three: V.THREE_MODULE, 'three/addons/': V.KIT2_ADDONS_DIR, oomba3d: V.OOMBA3D_MODULE });
-  assert.equal(m.integrity[V.OOMBA3D_MODULE], lock.engines['oomba3d/1.0.0/oomba3d.js']);
+  assert.deepEqual(m.imports, { three: V.THREE_MODULE, 'three/addons/': V.KIT2_ADDONS_DIR, '@dimforge/rapier3d-compat': V.RAPIER_MODULE, oomba3d: V.OOMBA3D_MODULE });
+  assert.equal(m.integrity[V.OOMBA3D_MODULE], lock.engines[`oomba3d/${V.OOMBA3D_VERSION}/oomba3d.js`]);
+  assert.equal(m.integrity[V.RAPIER_MODULE], lock.engines['rapier/0.21.0/rapier.mjs']);
   for (const f of Object.keys(lock.engines).filter(f => f.startsWith('three-addons/') && f.endsWith('.js'))) assert.equal(m.integrity['/vendor/kit2/' + f], lock.engines[f], f);
   assert.equal(m.integrity[V.THREE_MODULE], V.THREE_SRI[V.THREE_MODULE]);
 });
@@ -48,7 +49,8 @@ test('frame CSP: Kit 2 scripts, and theme art only from /vendor/themes/ on our o
   const csp = frameCsp('https://oomba.ai');
   const dir = n => (csp.split(';').map(s => s.trim()).find(s => s.startsWith(n + ' ')) || '').split(/\s+/).slice(1);
   assert.ok(dir('script-src').includes('https://oomba.ai/vendor/kit2/'));
-  assert.ok(!dir('script-src').some(s => /eval/.test(s)), 'no eval, not even for WebAssembly');
+  assert.ok(dir('script-src').includes("'wasm-unsafe-eval'"), 'WebAssembly (Rapier, the meshopt decoder)');
+  assert.ok(!dir('script-src').includes("'unsafe-eval'"), 'never eval or new Function');
   assert.ok(!/worker-src/.test(csp), 'no workers');
   assert.deepEqual(dir('connect-src'), ['blob:', 'https://oomba.ai/vendor/themes/']);
   assert.deepEqual(dir('img-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/']);
