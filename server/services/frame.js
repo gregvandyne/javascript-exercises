@@ -28,9 +28,11 @@ export function frameCsp(origins = '') {
   const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH}`).join('');
   const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
   // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for
-  // connect, img and media: never any other path or host. (Still no WebAssembly, workers or eval.)
+  // connect, img and media: never any other path or host. connect-src also allows blob:, a URL for data the frame already
+  // holds (the model loader reads a model's own textures that way), so it reaches no network. (Still no WebAssembly,
+  // workers or eval.)
   const themes = own.map(o => ` ${o}${THEMES_PATH}`).join('');
-  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? themes.trim() : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
+  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? 'blob:' + themes : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }
 export const FRAME_CSP = frameCsp();
 const ORIGIN_RE = /^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;

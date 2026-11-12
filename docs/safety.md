@@ -16,7 +16,8 @@ Every game, whether it came from our team or from a kid, runs the same way.
 - The game is served from its own route (`/frame/<token>`) with a strict Content Security Policy:
   no network except the site's own `/vendor/themes/` folder (`connect-src`, `img-src` and `media-src` name the site's
   origin plus that path: Kit 2 theme art, read-only files, so the loaders can fetch models, pictures and sounds; nothing
-  else on the site and no other host), no forms (`form-action 'none'`), no other pages may embed it,
+  else on the site and no other host; `connect-src` also has `blob:`, data the frame already holds, which the model loader
+  reads textures from), no forms (`form-action 'none'`), no other pages may embed it,
   scripts only inline, from `cdnjs.cloudflare.com`, or from the site's own `/vendor/three/`, `/vendor/oomba-kit/`,
   `/vendor/data/` and `/vendor/kit2/` folders (pinned libraries, named by the site's origin plus that path, so no other
   script on the site can run in a game), styles and fonts only from Google Fonts and the kit.
@@ -334,7 +335,7 @@ language; typed messages are never machine-translated. Usernames stay Latin lett
 
 **The wall.** The guarantee a game cannot get around is the browser's own: an opaque-origin iframe with
 `sandbox="allow-scripts allow-pointer-lock allow-orientation-lock"` (never `allow-same-origin`) under a CSP with
-`default-src 'none'`, `connect-src` only for the site's read-only `/vendor/themes/` folder, no `allow-popups`, no
+`default-src 'none'`, `connect-src` only for the site's read-only `/vendor/themes/` folder (and `blob:`), no `allow-popups`, no
 `wasm-unsafe-eval`, no `worker-src`. A game cannot reach the website's pages or API, read its cookies or storage, open a
 window, start a Worker, run WebAssembly, or make a `fetch`/`XHR`/`WebSocket`/`EventSource` call to anything but Kit 2
 theme files (and the scanner fails a game whose own code calls `fetch` or `XMLHttpRequest` at all). It can draw, play sound, use WebGL (so real 3D works), and talk to the

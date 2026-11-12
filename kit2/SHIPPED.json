@@ -19,7 +19,9 @@
   "three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
   "three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
   "three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
-  "three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw"
+  "three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "oomba3d/1.0.0/LICENSE": "sha384-eD+BrgV6JiBZ4LC4KVPi7Ep+ExnHKtRyMBOlJ0Y02Mw8/7h0UXjczI7PK1yqsVp/",
+  "oomba3d/1.0.0/oomba3d.js": "sha384-nkfQSRr1TLKszkcUxN/nwpQY+uSsLTeGWhUP74kZob19abJvFNnrNLpJJBzSi0if"
  },
  "themes": {
   "sky-islands/1.0.0": "sha384-8VQ0ivDr2OkOzP7RQHLq85R0vYP8LOkh4UhPJ4Nj2UmKZ/flJLw4ArPfaICCyiXO",

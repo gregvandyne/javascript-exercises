@@ -1,0 +1,5 @@
+Oomba3D 1.0.0
+Copyright (c) 2026 Oomba Academy. All rights reserved.
+
+Oomba3D is Oomba Academy's own code, served for games on oomba.ai. It is built on Three.js (MIT licence:
+/vendor/kit2/three-addons/0.185.1/LICENSE) and loads theme art whose licences are in each theme's LICENSES folder.

@@ -33,12 +33,13 @@ test('every theme version is in the lock, and its theme.json never changes', () 
 });
 
 test('every engine keeps its licence beside it', () => {
-  for (const eng of ['three-addons/0.185.1', 'phaser/3.90.0']) assert.ok(Object.keys(lock.engines).some(f => f.startsWith(eng + '/') && /^LICENSE/.test(f.slice(eng.length + 1))), eng);
+  for (const eng of ['three-addons/0.185.1', 'phaser/3.90.0', 'oomba3d/1.0.0']) assert.ok(Object.keys(lock.engines).some(f => f.startsWith(eng + '/') && /^LICENSE/.test(f.slice(eng.length + 1))), eng);
 });
 
-test('the Kit 2 import map pins Three.js and every add-on', () => {
+test('the Kit 2 import map pins Three.js, every add-on and Oomba3D', () => {
   const m = V.KIT2_IMPORT_MAP;
-  assert.deepEqual(m.imports, { three: V.THREE_MODULE, 'three/addons/': V.KIT2_ADDONS_DIR });
+  assert.deepEqual(m.imports, { three: V.THREE_MODULE, 'three/addons/': V.KIT2_ADDONS_DIR, oomba3d: V.OOMBA3D_MODULE });
+  assert.equal(m.integrity[V.OOMBA3D_MODULE], lock.engines['oomba3d/1.0.0/oomba3d.js']);
   for (const f of Object.keys(lock.engines).filter(f => f.startsWith('three-addons/') && f.endsWith('.js'))) assert.equal(m.integrity['/vendor/kit2/' + f], lock.engines[f], f);
   assert.equal(m.integrity[V.THREE_MODULE], V.THREE_SRI[V.THREE_MODULE]);
 });
@@ -49,7 +50,7 @@ test('frame CSP: Kit 2 scripts, and theme art only from /vendor/themes/ on our o
   assert.ok(dir('script-src').includes('https://oomba.ai/vendor/kit2/'));
   assert.ok(!dir('script-src').some(s => /eval/.test(s)), 'no eval, not even for WebAssembly');
   assert.ok(!/worker-src/.test(csp), 'no workers');
-  assert.deepEqual(dir('connect-src'), ['https://oomba.ai/vendor/themes/']);
+  assert.deepEqual(dir('connect-src'), ['blob:', 'https://oomba.ai/vendor/themes/']);
   assert.deepEqual(dir('img-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/']);
   assert.deepEqual(dir('media-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/']);
   // With no origin known, nothing is reachable.

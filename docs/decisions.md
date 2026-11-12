@@ -4595,3 +4595,22 @@ The owner wants games that "blow people away" and found Kit 1's home-made charac
 - **Scanner:** a Kit 2 3D game uses exactly `kit2ImportMap()` (Three.js plus `three/addons/` with an integrity line for
   every add-on file); Phaser only with exactly `phaserTag()`; any `/vendor/themes/<theme>/<version>/` must be a shipped
   theme version. The Kit 2 rules live in `vendor.js` beside the Three.js ones (no new module, so no import cycle).
+
+## Kit 2 themes, stage 3: the Oomba3D library (12 Nov 2026)
+
+- **Oomba3D 1.0.0** (`public/vendor/kit2/oomba3d/1.0.0/oomba3d.js`, our own code; reference `docs/kit2-api.md`): one
+  ES module imported as `'oomba3d'` through the Kit 2 import map (now Three.js, its add-ons and Oomba3D, each pinned).
+  `start({ theme, version })` loads a theme's `theme.json` and makes the sky, light, glow and clouds; the game object has
+  `hero`, `world.island`, `world.piece`, `followCamera`, `controls` (keyboard, and an on-screen pad on touch screens),
+  `coins`, `askQuestion`, `sound` (theme sounds through Web Audio, plus a cheer and a "wrong" made in code: the theme has
+  neither), `celebrate`, `toast`, `score` and `onUpdate`. Physics is the prototype's own simple, kind platform physics.
+- **Chromebook first:** low-power mode (no glow, no shadows, a third of the clouds, pixel ratio 1, no confetti) is on for
+  devices with 4 or fewer cores or 4 GB or less, and switches on for good after two 3-second spells under 30 frames a
+  second. `prefers-reduced-motion` stops cloud drift, coin spin, token bobbing, sinking and confetti.
+- **The demo** (`kit2/demo/sky-islands.html`) is 62 lines on Oomba3D (the prototype was 311), and
+  `tests/unit/kit2-oomba3d.test.js` plays it in the real game frame in Chromium: pick a hero, walk, collect a coin, a
+  wrong island sinks, the right one gives +5, a cheer at the flag, no console errors and nothing asked for outside
+  `/vendor`. The same test checks `docs/kit2-api.md` and the library list the same API.
+- **Fix to stage 2's frame CSP: `connect-src` also allows `blob:`.** The model loader reads a model's own embedded
+  textures through a `blob:` URL; without it every model drew grey (no game used Kit 2 yet, so no player saw it). A
+  `blob:` URL is data the frame already holds, so this reaches no network. The play test now fails on any console error.
