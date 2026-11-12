@@ -203,7 +203,14 @@
    "text": "Open Garden Count at Pick and Count. Pick the right number of apples six times.",
    "art": "trophy",
    "img": "nq/garden-count/pick-and-count",
-   "alt": "Garden Count on a phone: apples in the garden, a basket, a big counter and a Done button."
+   "alt": "Garden Count on a phone: apples in the garden, a basket, a big counter and a Done button.",
+   "view": [
+    0,
+    0,
+    31.34,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

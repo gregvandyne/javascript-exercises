@@ -211,7 +211,14 @@
    "text": "Open Garden Count at More or Fewer. Pick more, fewer or the same six times.",
    "art": "trophy",
    "img": "nq/garden-count/more-or-fewer",
-   "alt": "Garden Count on a phone: a row of apples over a row of lemons, and a big button for each row."
+   "alt": "Garden Count on a phone: a bed of 5 apples beside a bed of 3 lemons, and a big button for each bed.",
+   "view": [
+    0,
+    0,
+    31.34,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

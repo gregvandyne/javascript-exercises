@@ -201,7 +201,14 @@
    "text": "Open Garden Count at Ten and More. Build teen numbers from a full ten six times.",
    "art": "trophy",
    "img": "nq/garden-count/ten-and-more",
-   "alt": "Garden Count on a phone: a ten-frame full of apples, some more beside it, and 10 and 4 make 14."
+   "alt": "Garden Count on a phone: a ten-frame full of apples, one more apple under it, and the words 10 and 1 make 11.",
+   "view": [
+    0,
+    0,
+    31.34,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

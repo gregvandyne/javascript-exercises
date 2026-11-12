@@ -134,6 +134,39 @@
       "state": "recipe-math"
     },
     {
+      "alt": "Garden Count on a phone: a bed of 5 apples beside a bed of 3 lemons, and a big button for each bed.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "1.2",
+      "commit": "cf0bd187",
+      "concept": "Launchpad 1.2, More or Fewer round 1 (Which bed has more?): 5 apples beside 3 lemons, matched one to one, shot at phone width (scripts/nq-shots.js band)",
+      "game": "garden-count",
+      "key": "nq/garden-count/more-or-fewer",
+      "state": "more-or-fewer"
+    },
+    {
+      "alt": "Garden Count on a phone: apples in the garden, a basket, a big counter and a Done button.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "1.1",
+      "commit": "cf0bd187",
+      "concept": "Launchpad 1.1, Pick and Count round 1 (Pick 4 apples): three apples picked into the basket, the counter on 3, shot at phone width (scripts/nq-shots.js band)",
+      "game": "garden-count",
+      "key": "nq/garden-count/pick-and-count",
+      "state": "pick-and-count"
+    },
+    {
+      "alt": "Garden Count on a phone: a ten-frame full of apples, one more apple under it, and the words 10 and 1 make 11.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "1.3",
+      "commit": "cf0bd187",
+      "concept": "Launchpad 1.3, Ten and More round 1 (Make 11): the ten-frame full and one more apple, 10 and 1 make 11, shot at phone width (scripts/nq-shots.js band)",
+      "game": "garden-count",
+      "key": "nq/garden-count/ten-and-more",
+      "state": "ten-and-more"
+    },
+    {
       "alt": "Quest Race on a phone: a spinner chance question and four chance words to pick from, the race track just above.",
       "band": "explorer",
       "capturedAt": "2026-11-07",
