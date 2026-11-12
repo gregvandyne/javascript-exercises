@@ -1,7 +1,7 @@
 {
  "id": "castle-quest",
  "name": "Castle Quest",
- "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests.",
+ "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests, with forests, hills and a castle on the hill.",
  "goodFor": [
   "reading",
   "history",
@@ -52,6 +52,17 @@
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kenney-platformer.md",
    "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-medieval",
+   "name": "KayKit Medieval Hexagon Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+   "commit": "84fa4e91af6a88989be7c99e0891cede11f2ca38",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-medieval.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   }
  ],
  "look": {
@@ -95,7 +106,7 @@
   }
  },
  "engine": "three",
- "version": "1.0.0",
+ "version": "1.1.0",
  "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
  "heroes": [
   {
@@ -132,45 +143,25 @@
    "id": "skelly",
    "name": "Skelly",
    "file": "heroes/skelly.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.63,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "rattles",
    "name": "Rattles",
    "file": "heroes/rattles.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    2,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "bonzo",
    "name": "Bonzo",
    "file": "heroes/bonzo.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.31,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "captain-clank",
    "name": "Captain Clank",
    "file": "heroes/captain-clank.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.59,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   }
  ],
  "moves": {
@@ -409,7 +400,7 @@
     4
    ],
    "pack": "kaykit-dungeon",
-   "note": "A floor with spikes: a hazard to jump over. Its base is -0.1 below its y."
+   "note": "Its base is -0.1 below its y."
   },
   {
    "id": "chest",
@@ -703,6 +694,256 @@
     0.97
    ],
    "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "tree",
+   "file": "world/tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.57,
+    1.2,
+    0.55
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "tree-round",
+   "file": "world/tree-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.68,
+    1.21,
+    0.72
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "trees",
+   "file": "world/trees.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.75,
+    1.3,
+    1.81
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest",
+   "file": "world/forest.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.95,
+    0.93,
+    1.97
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest-round",
+   "file": "world/forest-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.85,
+    1.17,
+    1.93
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "bushes",
+   "file": "world/bushes.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "bush",
+    "nature"
+   ],
+   "size": [
+    1.33,
+    0.92,
+    1.14
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "hill",
+   "file": "world/hill.glb",
+   "kind": "decor",
+   "tags": [
+    "hill",
+    "nature"
+   ],
+   "size": [
+    1.11,
+    0.31,
+    0.81
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "hills-trees",
+   "file": "world/hills-trees.glb",
+   "kind": "decor",
+   "tags": [
+    "hill",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.76,
+    1.33,
+    1.74
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "mountain",
+   "file": "world/mountain.glb",
+   "kind": "decor",
+   "tags": [
+    "mountain",
+    "nature"
+   ],
+   "size": [
+    1.86,
+    2.18,
+    1.88
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock",
+   "file": "world/rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.3,
+    0.07,
+    0.28
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock-big",
+   "file": "world/rock-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.34,
+    0.19,
+    0.34
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "castle-building",
+   "file": "world/castle-building.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "castle",
+    "goal"
+   ],
+   "size": [
+    1.98,
+    3.98,
+    2.26
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "tower",
+   "file": "world/tower.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "tower"
+   ],
+   "size": [
+    0.99,
+    2.19,
+    1.15
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "well",
+   "file": "world/well.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "well"
+   ],
+   "size": [
+    0.65,
+    0.83,
+    0.75
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "fence",
+   "file": "world/fence.glb",
+   "kind": "world",
+   "tags": [
+    "fence"
+   ],
+   "size": [
+    0.1,
+    0.55,
+    1.15
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "bridge",
+   "file": "world/bridge.glb",
+   "kind": "world",
+   "tags": [
+    "bridge",
+    "path"
+   ],
+   "size": [
+    1.33,
+    1.25,
+    1.92
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -1 below its y."
   }
  ],
  "sounds": [

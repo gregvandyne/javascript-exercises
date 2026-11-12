@@ -28,8 +28,10 @@ async function compress(doc) {
 }
 
 const out = [];
+// "theme:<theme>/<version>/<file>" is a file from an already built theme (its own licence travels with it).
+const source = from => from.startsWith('theme:') ? path.resolve(path.dirname(recipeFile), '../../../public/vendor/themes', from.slice(6)) : path.join(packsDir, from);
 for (const item of recipe.models) {
-  const doc = await io.read(path.join(packsDir, item.from));
+  const doc = await io.read(source(item.from));
   const root = doc.getRoot();
   // Kid-safe: drop every mesh the recipe does not keep (held weapons, mugs), and every animation it does not keep.
   if (item.keepMeshes) for (const n of root.listNodes()) if (n.getMesh() && !item.keepMeshes.some(k => new RegExp(`^${k}$`).test(n.getName()))) { n.setMesh(null); }
@@ -46,9 +48,7 @@ for (const item of recipe.models) {
 }
 for (const item of recipe.copy || []) {
   const file = path.join(outDir, item.to); fs.mkdirSync(path.dirname(file), { recursive: true });
-  // "theme:<theme>/<version>/<file>" copies a file from an already built theme (its own licence travels with it).
-  const src = item.from.startsWith('theme:') ? path.resolve(path.dirname(recipeFile), '../../../public/vendor/themes', item.from.slice(6)) : path.join(packsDir, item.from);
-  fs.copyFileSync(src, file); out.push(item.to);
+  fs.copyFileSync(source(item.from), file); out.push(item.to);
 }
 if (sizesFile) fs.writeFileSync(sizesFile, JSON.stringify(measured, null, 1));
 const sizes = Object.fromEntries(out.map(f => [f, fs.statSync(path.join(outDir, f)).size]));

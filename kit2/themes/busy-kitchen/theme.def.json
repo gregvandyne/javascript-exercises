@@ -1,0 +1,566 @@
+{
+ "id": "busy-kitchen",
+ "name": "Busy Kitchen",
+ "description": "A bustling kitchen full of food to cook, count and sort: burgers, vegetables, pots and pans.",
+ "goodFor": [
+  "maths",
+  "fractions",
+  "healthy eating"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-restaurant",
+   "name": "KayKit Restaurant Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0",
+   "commit": "153c8a7535b48237854cb54ff6890679f8c574d1",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-restaurant.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Restaurant-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "pieces": [
+  [
+   "floor",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/floor_kitchen.gltf",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "floor-small",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/floor_kitchen_small.gltf",
+   "world",
+   [
+    "floor",
+    "platform",
+    "step"
+   ]
+  ],
+  [
+   "wall",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall.gltf",
+   "world",
+   [
+    "wall"
+   ]
+  ],
+  [
+   "wall-window",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall_window_open.gltf",
+   "world",
+   [
+    "wall",
+    "window"
+   ]
+  ],
+  [
+   "wall-door",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall_doorway.gltf",
+   "world",
+   [
+    "wall",
+    "door"
+   ]
+  ],
+  [
+   "order-window",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall_orderwindow_decorated.gltf",
+   "world",
+   [
+    "wall",
+    "window",
+    "shop"
+   ]
+  ],
+  [
+   "counter",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/kitchencounter_straight_A.gltf",
+   "world",
+   [
+    "counter",
+    "platform"
+   ]
+  ],
+  [
+   "counter-sink",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/kitchencounter_sink.gltf",
+   "world",
+   [
+    "counter",
+    "sink"
+   ]
+  ],
+  [
+   "counter-corner",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/kitchencounter_outercorner.gltf",
+   "world",
+   [
+    "counter",
+    "platform"
+   ]
+  ],
+  [
+   "oven",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/oven.gltf",
+   "world",
+   [
+    "oven",
+    "appliance"
+   ]
+  ],
+  [
+   "stove",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/stove_multi.gltf",
+   "world",
+   [
+    "stove",
+    "appliance"
+   ]
+  ],
+  [
+   "fridge",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/fridge_A.gltf",
+   "world",
+   [
+    "fridge",
+    "appliance"
+   ]
+  ],
+  [
+   "cupboard",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/kitchencabinet.gltf",
+   "world",
+   [
+    "cupboard",
+    "wall"
+   ]
+  ],
+  [
+   "kitchen-table",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/kitchentable_A_large.gltf",
+   "world",
+   [
+    "table",
+    "platform"
+   ]
+  ],
+  [
+   "table-round",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/table_round_A.gltf",
+   "world",
+   [
+    "table",
+    "platform"
+   ]
+  ],
+  [
+   "chair",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/chair_A.gltf",
+   "world",
+   [
+    "chair"
+   ]
+  ],
+  [
+   "stool",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/chair_stool.gltf",
+   "world",
+   [
+    "chair",
+    "step"
+   ]
+  ],
+  [
+   "burger",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_burger.gltf",
+   "prop",
+   [
+    "food",
+    "collectible",
+    "answer"
+   ]
+  ],
+  [
+   "veggie-burger",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_vegetableburger.gltf",
+   "prop",
+   [
+    "food",
+    "collectible",
+    "answer"
+   ]
+  ],
+  [
+   "dinner",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_dinner.gltf",
+   "prop",
+   [
+    "food",
+    "answer"
+   ]
+  ],
+  [
+   "stew",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_stew.gltf",
+   "prop",
+   [
+    "food",
+    "answer"
+   ]
+  ],
+  [
+   "carrot",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_carrot.gltf",
+   "prop",
+   [
+    "food",
+    "vegetable",
+    "collectible"
+   ]
+  ],
+  [
+   "tomato",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_tomato.gltf",
+   "prop",
+   [
+    "food",
+    "vegetable",
+    "collectible"
+   ]
+  ],
+  [
+   "potato",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_potato.gltf",
+   "prop",
+   [
+    "food",
+    "vegetable",
+    "collectible"
+   ]
+  ],
+  [
+   "onion",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_onion.gltf",
+   "prop",
+   [
+    "food",
+    "vegetable",
+    "collectible"
+   ]
+  ],
+  [
+   "lettuce",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_lettuce.gltf",
+   "prop",
+   [
+    "food",
+    "vegetable",
+    "collectible"
+   ]
+  ],
+  [
+   "cheese",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_cheese.gltf",
+   "prop",
+   [
+    "food",
+    "collectible"
+   ]
+  ],
+  [
+   "bun",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/food_ingredient_bun.gltf",
+   "prop",
+   [
+    "food",
+    "collectible"
+   ]
+  ],
+  [
+   "crate-carrots",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/crate_carrots.gltf",
+   "prop",
+   [
+    "crate",
+    "food"
+   ]
+  ],
+  [
+   "crate-tomatoes",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/crate_tomatoes.gltf",
+   "prop",
+   [
+    "crate",
+    "food"
+   ]
+  ],
+  [
+   "pot",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/pot_A_stew.gltf",
+   "prop",
+   [
+    "pot",
+    "cooking"
+   ]
+  ],
+  [
+   "pan",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/pan_A.gltf",
+   "prop",
+   [
+    "pan",
+    "cooking"
+   ]
+  ],
+  [
+   "plate",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/plate.gltf",
+   "prop",
+   [
+    "plate"
+   ]
+  ],
+  [
+   "bowl",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/bowl.gltf",
+   "prop",
+   [
+    "bowl"
+   ]
+  ],
+  [
+   "jar",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/jar_A_medium.gltf",
+   "prop",
+   [
+    "jar"
+   ]
+  ],
+  [
+   "ketchup",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/ketchup.gltf",
+   "prop",
+   [
+    "sauce"
+   ]
+  ],
+  [
+   "menu",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/menu.gltf",
+   "prop",
+   [
+    "menu",
+    "sign"
+   ]
+  ],
+  [
+   "coin",
+   "theme:castle-quest/1.0.0/props/coin.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ],
+   null,
+   "kaykit-dungeon"
+  ]
+ ],
+ "cover": "cover.webp",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "theme:castle-quest/1.0.0/heroes/skelly.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "theme:castle-quest/1.0.0/heroes/rattles.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "theme:castle-quest/1.0.0/heroes/bonzo.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "theme:castle-quest/1.0.0/heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "moves": {
+  "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "look": {
+  "sky": {
+   "top": "#9fd8ff",
+   "middle": "#e6f6ff",
+   "bottom": "#fffbe8"
+  },
+  "fog": {
+   "color": "#eef8ff",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#ffffff",
+   "ground": "#8a7a6a",
+   "intensity": 1.3
+  },
+  "sun": {
+   "color": "#fff6e0",
+   "intensity": 2.3
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.95
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

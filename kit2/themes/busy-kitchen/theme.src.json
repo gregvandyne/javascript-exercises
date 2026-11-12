@@ -1,0 +1,800 @@
+{
+ "id": "busy-kitchen",
+ "name": "Busy Kitchen",
+ "description": "A bustling kitchen full of food to cook, count and sort: burgers, vegetables, pots and pans.",
+ "goodFor": [
+  "maths",
+  "fractions",
+  "healthy eating"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-restaurant",
+   "name": "KayKit Restaurant Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0",
+   "commit": "153c8a7535b48237854cb54ff6890679f8c574d1",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-restaurant.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "look": {
+  "sky": {
+   "top": "#9fd8ff",
+   "middle": "#e6f6ff",
+   "bottom": "#fffbe8"
+  },
+  "fog": {
+   "color": "#eef8ff",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#ffffff",
+   "ground": "#8a7a6a",
+   "intensity": 1.3
+  },
+  "sun": {
+   "color": "#fff6e0",
+   "intensity": 2.3
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.95
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "floor",
+   "file": "world/floor.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.5,
+    4
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "floor-small",
+   "file": "world/floor-small.glb",
+   "kind": "world",
+   "tags": [
+    "floor",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2,
+    0.5,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall",
+   "file": "world/wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall-window",
+   "file": "world/wall-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall-door",
+   "file": "world/wall-door.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "door"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "order-window",
+   "file": "world/order-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window",
+    "shop"
+   ],
+   "size": [
+    4,
+    4,
+    0.9
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter",
+   "file": "world/counter.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2.04
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter-sink",
+   "file": "world/counter-sink.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "sink"
+   ],
+   "size": [
+    2,
+    1.8,
+    2.04
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter-corner",
+   "file": "world/counter-corner.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "oven",
+   "file": "world/oven.glb",
+   "kind": "world",
+   "tags": [
+    "oven",
+    "appliance"
+   ],
+   "size": [
+    2,
+    2.02,
+    2.35
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stove",
+   "file": "world/stove.glb",
+   "kind": "world",
+   "tags": [
+    "stove",
+    "appliance"
+   ],
+   "size": [
+    2,
+    1.2,
+    2.29
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "fridge",
+   "file": "world/fridge.glb",
+   "kind": "world",
+   "tags": [
+    "fridge",
+    "appliance"
+   ],
+   "size": [
+    2,
+    2.5,
+    2.24
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "cupboard",
+   "file": "world/cupboard.glb",
+   "kind": "world",
+   "tags": [
+    "cupboard",
+    "wall"
+   ],
+   "size": [
+    2,
+    2,
+    1.04
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is 2 below its y."
+  },
+  {
+   "id": "kitchen-table",
+   "file": "world/kitchen-table.glb",
+   "kind": "world",
+   "tags": [
+    "table",
+    "platform"
+   ],
+   "size": [
+    3,
+    1,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "table-round",
+   "file": "world/table-round.glb",
+   "kind": "world",
+   "tags": [
+    "table",
+    "platform"
+   ],
+   "size": [
+    3,
+    1,
+    3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "chair",
+   "file": "world/chair.glb",
+   "kind": "world",
+   "tags": [
+    "chair"
+   ],
+   "size": [
+    0.75,
+    1.21,
+    0.8
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stool",
+   "file": "world/stool.glb",
+   "kind": "world",
+   "tags": [
+    "chair",
+    "step"
+   ],
+   "size": [
+    0.75,
+    0.5,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "burger",
+   "file": "props/burger.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.86,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "veggie-burger",
+   "file": "props/veggie-burger.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.86,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "dinner",
+   "file": "props/dinner.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "answer"
+   ],
+   "size": [
+    1.04,
+    0.91,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stew",
+   "file": "props/stew.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.37,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "carrot",
+   "file": "props/carrot.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.56,
+    1.27,
+    0.55
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is -0.59 below its y."
+  },
+  {
+   "id": "tomato",
+   "file": "props/tomato.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.75,
+    0.7,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "potato",
+   "file": "props/potato.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.6,
+    0.78,
+    0.68
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is -0.39 below its y."
+  },
+  {
+   "id": "onion",
+   "file": "props/onion.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.75,
+    0.86,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "lettuce",
+   "file": "props/lettuce.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    1.1,
+    0.82,
+    1.13
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "cheese",
+   "file": "props/cheese.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible"
+   ],
+   "size": [
+    0.98,
+    0.5,
+    0.72
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "bun",
+   "file": "props/bun.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible"
+   ],
+   "size": [
+    0.7,
+    0.51,
+    0.7
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "crate-carrots",
+   "file": "props/crate-carrots.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "food"
+   ],
+   "size": [
+    2,
+    0.94,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "crate-tomatoes",
+   "file": "props/crate-tomatoes.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "food"
+   ],
+   "size": [
+    2,
+    0.92,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "pot",
+   "file": "props/pot.glb",
+   "kind": "prop",
+   "tags": [
+    "pot",
+    "cooking"
+   ],
+   "size": [
+    1.4,
+    0.52,
+    1
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "pan",
+   "file": "props/pan.glb",
+   "kind": "prop",
+   "tags": [
+    "pan",
+    "cooking"
+   ],
+   "size": [
+    1,
+    0.25,
+    1.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "plate",
+   "file": "props/plate.glb",
+   "kind": "prop",
+   "tags": [
+    "plate"
+   ],
+   "size": [
+    0.95,
+    0.1,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "bowl",
+   "file": "props/bowl.glb",
+   "kind": "prop",
+   "tags": [
+    "bowl"
+   ],
+   "size": [
+    0.95,
+    0.3,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "jar",
+   "file": "props/jar.glb",
+   "kind": "prop",
+   "tags": [
+    "jar"
+   ],
+   "size": [
+    0.5,
+    0.65,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "ketchup",
+   "file": "props/ketchup.glb",
+   "kind": "prop",
+   "tags": [
+    "sauce"
+   ],
+   "size": [
+    0.3,
+    0.78,
+    0.3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "menu",
+   "file": "props/menu.glb",
+   "kind": "prop",
+   "tags": [
+    "menu",
+    "sign"
+   ],
+   "size": [
+    0.5,
+    0.8,
+    0.3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ]
+}

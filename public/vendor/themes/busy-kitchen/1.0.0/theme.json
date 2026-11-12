@@ -1,0 +1,1047 @@
+{
+ "id": "busy-kitchen",
+ "name": "Busy Kitchen",
+ "description": "A bustling kitchen full of food to cook, count and sort: burgers, vegetables, pots and pans.",
+ "goodFor": [
+  "maths",
+  "fractions",
+  "healthy eating"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-restaurant",
+   "name": "KayKit Restaurant Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0",
+   "commit": "153c8a7535b48237854cb54ff6890679f8c574d1",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-restaurant.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "look": {
+  "sky": {
+   "top": "#9fd8ff",
+   "middle": "#e6f6ff",
+   "bottom": "#fffbe8"
+  },
+  "fog": {
+   "color": "#eef8ff",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#ffffff",
+   "ground": "#8a7a6a",
+   "intensity": 1.3
+  },
+  "sun": {
+   "color": "#fff6e0",
+   "intensity": 2.3
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.95
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "floor",
+   "file": "world/floor.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.5,
+    4
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "floor-small",
+   "file": "world/floor-small.glb",
+   "kind": "world",
+   "tags": [
+    "floor",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2,
+    0.5,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall",
+   "file": "world/wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall-window",
+   "file": "world/wall-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "wall-door",
+   "file": "world/wall-door.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "door"
+   ],
+   "size": [
+    4,
+    4,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "order-window",
+   "file": "world/order-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window",
+    "shop"
+   ],
+   "size": [
+    4,
+    4,
+    0.9
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter",
+   "file": "world/counter.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2.04
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter-sink",
+   "file": "world/counter-sink.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "sink"
+   ],
+   "size": [
+    2,
+    1.8,
+    2.04
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "counter-corner",
+   "file": "world/counter-corner.glb",
+   "kind": "world",
+   "tags": [
+    "counter",
+    "platform"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "oven",
+   "file": "world/oven.glb",
+   "kind": "world",
+   "tags": [
+    "oven",
+    "appliance"
+   ],
+   "size": [
+    2,
+    2.02,
+    2.35
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stove",
+   "file": "world/stove.glb",
+   "kind": "world",
+   "tags": [
+    "stove",
+    "appliance"
+   ],
+   "size": [
+    2,
+    1.2,
+    2.29
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "fridge",
+   "file": "world/fridge.glb",
+   "kind": "world",
+   "tags": [
+    "fridge",
+    "appliance"
+   ],
+   "size": [
+    2,
+    2.5,
+    2.24
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "cupboard",
+   "file": "world/cupboard.glb",
+   "kind": "world",
+   "tags": [
+    "cupboard",
+    "wall"
+   ],
+   "size": [
+    2,
+    2,
+    1.04
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is 2 below its y."
+  },
+  {
+   "id": "kitchen-table",
+   "file": "world/kitchen-table.glb",
+   "kind": "world",
+   "tags": [
+    "table",
+    "platform"
+   ],
+   "size": [
+    3,
+    1,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "table-round",
+   "file": "world/table-round.glb",
+   "kind": "world",
+   "tags": [
+    "table",
+    "platform"
+   ],
+   "size": [
+    3,
+    1,
+    3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "chair",
+   "file": "world/chair.glb",
+   "kind": "world",
+   "tags": [
+    "chair"
+   ],
+   "size": [
+    0.75,
+    1.21,
+    0.8
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stool",
+   "file": "world/stool.glb",
+   "kind": "world",
+   "tags": [
+    "chair",
+    "step"
+   ],
+   "size": [
+    0.75,
+    0.5,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "burger",
+   "file": "props/burger.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.86,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "veggie-burger",
+   "file": "props/veggie-burger.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.86,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "dinner",
+   "file": "props/dinner.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "answer"
+   ],
+   "size": [
+    1.04,
+    0.91,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "stew",
+   "file": "props/stew.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "answer"
+   ],
+   "size": [
+    0.95,
+    0.37,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "carrot",
+   "file": "props/carrot.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.56,
+    1.27,
+    0.55
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is -0.59 below its y."
+  },
+  {
+   "id": "tomato",
+   "file": "props/tomato.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.75,
+    0.7,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "potato",
+   "file": "props/potato.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.6,
+    0.78,
+    0.68
+   ],
+   "pack": "kaykit-restaurant",
+   "note": "Its base is -0.39 below its y."
+  },
+  {
+   "id": "onion",
+   "file": "props/onion.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    0.75,
+    0.86,
+    0.75
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "lettuce",
+   "file": "props/lettuce.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "vegetable",
+    "collectible"
+   ],
+   "size": [
+    1.1,
+    0.82,
+    1.13
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "cheese",
+   "file": "props/cheese.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible"
+   ],
+   "size": [
+    0.98,
+    0.5,
+    0.72
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "bun",
+   "file": "props/bun.glb",
+   "kind": "prop",
+   "tags": [
+    "food",
+    "collectible"
+   ],
+   "size": [
+    0.7,
+    0.51,
+    0.7
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "crate-carrots",
+   "file": "props/crate-carrots.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "food"
+   ],
+   "size": [
+    2,
+    0.94,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "crate-tomatoes",
+   "file": "props/crate-tomatoes.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "food"
+   ],
+   "size": [
+    2,
+    0.92,
+    2
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "pot",
+   "file": "props/pot.glb",
+   "kind": "prop",
+   "tags": [
+    "pot",
+    "cooking"
+   ],
+   "size": [
+    1.4,
+    0.52,
+    1
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "pan",
+   "file": "props/pan.glb",
+   "kind": "prop",
+   "tags": [
+    "pan",
+    "cooking"
+   ],
+   "size": [
+    1,
+    0.25,
+    1.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "plate",
+   "file": "props/plate.glb",
+   "kind": "prop",
+   "tags": [
+    "plate"
+   ],
+   "size": [
+    0.95,
+    0.1,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "bowl",
+   "file": "props/bowl.glb",
+   "kind": "prop",
+   "tags": [
+    "bowl"
+   ],
+   "size": [
+    0.95,
+    0.3,
+    0.95
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "jar",
+   "file": "props/jar.glb",
+   "kind": "prop",
+   "tags": [
+    "jar"
+   ],
+   "size": [
+    0.5,
+    0.65,
+    0.5
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "ketchup",
+   "file": "props/ketchup.glb",
+   "kind": "prop",
+   "tags": [
+    "sauce"
+   ],
+   "size": [
+    0.3,
+    0.78,
+    0.3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "menu",
+   "file": "props/menu.glb",
+   "kind": "prop",
+   "tags": [
+    "menu",
+    "sign"
+   ],
+   "size": [
+    0.5,
+    0.8,
+    0.3
+   ],
+   "pack": "kaykit-restaurant"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kaykit-restaurant.txt": {
+   "bytes": 862,
+   "sha384": "sha384-hOcE11LBd6mNwmNb/bbuEzrH3JDmL/IeZgs6IGjshCm9U/kWNGNShDG+29oAXNhL"
+  },
+  "LICENSES/kaykit-skeletons.txt": {
+   "bytes": 914,
+   "sha384": "sha384-VTwraYs673AY2gPjxV+sKhDaPCaojJBbM38zHPbgP4Cs50EUpN8ThLgZnzdjK40T"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 2302,
+   "sha384": "sha384-PxchUYPFpcckbi4Frr6p8ol35yDScRF0WGjeQWiUVh2jQCw2EhQR46XqCM3fac8Z"
+  },
+  "cover.webp": {
+   "bytes": 22492,
+   "sha384": "sha384-r4uXVm19HQmKAgZz0i0FNlRgdWsNaiNkQB8XZlVRnkNS4cyf7wTx7e9EocafmKfR"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/bonzo.glb": {
+   "bytes": 231944,
+   "sha384": "sha384-RFrgktMl9/UeKDa0znXX5QMIrVfYBOKmWMVTI00Oortjg6Pu8uNIDTfAc+HEuH2H"
+  },
+  "heroes/captain-clank.glb": {
+   "bytes": 257908,
+   "sha384": "sha384-fiPOxR5eUdbtKadN016jUpmydPN7fnY3SvdeotS2vfCOrRbXd3kUGWgiYPWUih5k"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rattles.glb": {
+   "bytes": 226448,
+   "sha384": "sha384-yG/G4KSwUsgihxot8mmrjuTc2petgmkChp2oaAJl4Mghbd9wI31Zq/L8+nXs6AUf"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "heroes/skelly.glb": {
+   "bytes": 194104,
+   "sha384": "sha384-wZCWwNpt0a0SeWUoYQFzA5Ds6jQMJdRRME4/u+Id3Kapuuvo3eKXQQHnj8mRhSSF"
+  },
+  "props/bowl.glb": {
+   "bytes": 28372,
+   "sha384": "sha384-iN9oc63p5SZDpF55uRxJaK2tX58vkud95XAOlhhmHljU9I5il2bb3+afKeQU1iav"
+  },
+  "props/bun.glb": {
+   "bytes": 33372,
+   "sha384": "sha384-TP1s1qGn9v7W7VXHZ3jopBKh9oFdNk9Pr8GYSZHvA+z3SZSk3L1nTpkb2Kzudi+k"
+  },
+  "props/burger.glb": {
+   "bytes": 65224,
+   "sha384": "sha384-Za5cr//CdZNKVGw2faT8eit/q40kFsHdbiapM8fEDNQQP6WDo3v0Ccli3I0JsTMJ"
+  },
+  "props/carrot.glb": {
+   "bytes": 29664,
+   "sha384": "sha384-2XR2S2jYG/dZ3+mAqCpFnim6Z2AdFTSa5xu3oH/nBI4ojjG+1wqD0fDV1Nu5TITx"
+  },
+  "props/cheese.glb": {
+   "bytes": 29524,
+   "sha384": "sha384-0TUYTfxw3pNZJMemhG+aMrathoqvsr2Xtq/Q7lD8wuz6rcoBpjMM4qFTrdLuWCNG"
+  },
+  "props/coin.glb": {
+   "bytes": 20184,
+   "sha384": "sha384-c1uMDiDQnmgzdSY3ilYv+EcIQps4Lj+kBzXDHk4nIXUuxB7QjNh6IvWk8TUaS95D"
+  },
+  "props/crate-carrots.glb": {
+   "bytes": 66020,
+   "sha384": "sha384-jRUOZj4LHLnlkTKMFL0uKcZWbnGIuqTO+Ss6AnKN3xoonXzAFQee1Tie79QxLlLI"
+  },
+  "props/crate-tomatoes.glb": {
+   "bytes": 78444,
+   "sha384": "sha384-x8qLXdiNV8xhVvpmG86LnRSHAImCKF1tKQ/a7/y+BBKR9LKalGSt+sGjhS3ycs+V"
+  },
+  "props/dinner.glb": {
+   "bytes": 53288,
+   "sha384": "sha384-Z7e96ZA8OGQ2n4INmSUKhVtsRpYMWlc6leNoQTecwyPJzG2bJ20cy6XbY1fVM9x2"
+  },
+  "props/jar.glb": {
+   "bytes": 27556,
+   "sha384": "sha384-2czBI9+eRGsNT1ZWC2Pb5AapMrT9kaPKGsg29rJ/XwC57NpnWqLaa71Cz/zgmOi8"
+  },
+  "props/ketchup.glb": {
+   "bytes": 27012,
+   "sha384": "sha384-FMpsRpu+GCN1Sm3qfDJ3aiaqW9FAnk7TS1aHVd6Yr8fUIoeLhjSyECccIv9HnpY/"
+  },
+  "props/lettuce.glb": {
+   "bytes": 33016,
+   "sha384": "sha384-Eoe8dCZp7M6c5KmCkec03XPMgZEdKMmmNLmFrH0Si2zool6meEAkzkYSSGoDHIFH"
+  },
+  "props/menu.glb": {
+   "bytes": 26244,
+   "sha384": "sha384-5Uwnw9PLrhnOFweLPL/YZ3W6IWQWzo0UvvDJXPvXtZqhkF9SdYIEVcSfbtJUm597"
+  },
+  "props/onion.glb": {
+   "bytes": 29800,
+   "sha384": "sha384-kb0FzDS3DEGuTGXMz5TX0TZljip4gbzr3JH9t7ReJGGS+DVjDT9ULjzsUQHNOabY"
+  },
+  "props/pan.glb": {
+   "bytes": 30184,
+   "sha384": "sha384-0cugLg+luGccnTL0PHVKqE/8j1KsnXCSA5t0fKGYJJ39hM008BZOnSyF+FgcCmm3"
+  },
+  "props/plate.glb": {
+   "bytes": 26816,
+   "sha384": "sha384-f1YV8HRXZC7uglZ3uqrFB0Kz44dkaVfwFAuG63sJ3ZfgT+t4TAae2FZr9a+Kyk6L"
+  },
+  "props/pot.glb": {
+   "bytes": 40900,
+   "sha384": "sha384-3INGcTlSUz5A9J802UV2f2vgMOkstrzXf2Dj3R+I5K2BTLWPvRHThiTzZ0kXm6tA"
+  },
+  "props/potato.glb": {
+   "bytes": 25192,
+   "sha384": "sha384-/Zth1cRel8SE0sWrK8RAwa9d4U7RhTI9XPiUkk0QbUlJzgDl+8Qsdrx85wvDvDJ7"
+  },
+  "props/stew.glb": {
+   "bytes": 38244,
+   "sha384": "sha384-i3OKLPLe1ojcAUjYEDZxKGcw24/l206tPZdrHA0z0Qs76hl32meX1B5oNeoIJxLU"
+  },
+  "props/tomato.glb": {
+   "bytes": 31832,
+   "sha384": "sha384-BqwOOv5MY4ZJTpckdMGU27282QgjPuyLEApt7B/Edq450zzJwASkzRVgzhtoCiDx"
+  },
+  "props/veggie-burger.glb": {
+   "bytes": 69836,
+   "sha384": "sha384-zs3ORAZNB1r5huBujAhGVxDql6gTmsFcngPPL43SnmLl0Mu218JaGKNGi/H/05W9"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/chair.glb": {
+   "bytes": 34156,
+   "sha384": "sha384-+6Kwk2urjNRqtcHJX4N+BHupFhW30Cjr41DKfIn4Txqw1seBMKStD6LnquPe4G6Z"
+  },
+  "world/counter-corner.glb": {
+   "bytes": 24140,
+   "sha384": "sha384-BS/7S6J5yx6oNUExWWI89b53c+0nCfABwBxnUP/jfIEqiNSX7QN4HamzZAMgQAEG"
+  },
+  "world/counter-sink.glb": {
+   "bytes": 42416,
+   "sha384": "sha384-3wK+odT9bmBTUESWHVIPW88KZ8+Bs1hf2ZYb8lWLLkgW9pxBvDlkPMRi0rNjXrve"
+  },
+  "world/counter.glb": {
+   "bytes": 28248,
+   "sha384": "sha384-6wMuieG9aGgqX8DVcA1KzKWZJw0J1dt0eiaurwTKxe4p4EpK7wZufgoZK5Vver2y"
+  },
+  "world/cupboard.glb": {
+   "bytes": 27512,
+   "sha384": "sha384-kERZvWIwq+R59StGZ1SKurU8Ex2A0gWSUc3+AdVXKw4XSqZTJBANLgnRjJ02/mTl"
+  },
+  "world/floor-small.glb": {
+   "bytes": 24652,
+   "sha384": "sha384-+qfWum/b030DOEGww9S6uQ8pxY8LYlBBzTD8mE8p9nw7ybwwjyC46hk1JpsZI1zV"
+  },
+  "world/floor.glb": {
+   "bytes": 24660,
+   "sha384": "sha384-LGGPBR1o+UbFEysuz2575+ZL1BvNe8AA4MFmqybmdTUknIfJZTOe77Q3e5GBMN+u"
+  },
+  "world/fridge.glb": {
+   "bytes": 42284,
+   "sha384": "sha384-T8qiNwB9Xm2lCFevKm1xIRasXMMVCqjZdGp5xqm9vhge5G5DmB+O8AcKWuW9sPCF"
+  },
+  "world/kitchen-table.glb": {
+   "bytes": 30404,
+   "sha384": "sha384-rfmODpz9IMUJs9JWd8NFBhsoTInrwRWd4E+WCkZZPVDKpDEvoc99q2sTU3GrBN78"
+  },
+  "world/order-window.glb": {
+   "bytes": 43104,
+   "sha384": "sha384-ccS0M0rXBEODcl0Ff109y5jhXE3VKzucFhs0gcnKkgeSponPM87RwduYzz9H0beB"
+  },
+  "world/oven.glb": {
+   "bytes": 46256,
+   "sha384": "sha384-wsjNRZsyTXKuQs7Z2hR34NOaS7Tvw2EULRjDhTsYbHoiTtj7t2jGaov1lCdv24Zt"
+  },
+  "world/stool.glb": {
+   "bytes": 29504,
+   "sha384": "sha384-xAQsXNKBWW1fwoyNNkK4csn4kcUlvZxq06xCi4o9ahvp/D2UWzXE4QpyXBWrxJOv"
+  },
+  "world/stove.glb": {
+   "bytes": 59248,
+   "sha384": "sha384-J4Hq0QMTawQ503heOltcuWmJ/E83qa9WhhxBi4CfwT2My29GrX0X4y0+I5ySluuZ"
+  },
+  "world/table-round.glb": {
+   "bytes": 31100,
+   "sha384": "sha384-EMRPsEUW87WL2ldCywGTnApOM7zlEtukzc48R3k1J77+1PD6xrr96wS3OzSZ/XAl"
+  },
+  "world/wall-door.glb": {
+   "bytes": 29440,
+   "sha384": "sha384-eGXOeZLhMKU4Yqs34vRR4T9/g+rTb0iITgvuhVORWL8WOq0YvQK0rVZQUrcT3AGk"
+  },
+  "world/wall-window.glb": {
+   "bytes": 30180,
+   "sha384": "sha384-hb0O1JzHi06cIq2ZZ5BGfr2bZIgF+Uui0YFSBHvL7+FgJpBlw4viIleFB0GtcEpQ"
+  },
+  "world/wall.glb": {
+   "bytes": 26112,
+   "sha384": "sha384-6DFEdXDOUBY3HNXE8U1Dal6rUWjitnyx9WbjGU4GYbobOKvBwePEePmILl+jsR+j"
+  }
+ },
+ "firstLoadBytes": 3697912
+}

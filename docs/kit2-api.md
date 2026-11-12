@@ -31,10 +31,13 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
   | Theme | Version | Heroes | Stand on (pass as `piece` to `g.world.island`) |
   |---|---|---|---|
   | `sky-islands` | `1.0.1` | the 5 adventurers | `island-round` (the default), `platform`, `platform-medium`, `platform-large` |
-  | `castle-quest` | `1.0.0` | adventurers + the 4 skeleton pals | `floor-stone`, `floor-wood`, `floor-dirt`, `block`, `stairs` |
+  | `castle-quest` | `1.1.0` (adds trees, hills, rocks, a castle, tower, well, fence, bridge) | adventurers + the 4 skeleton pals | `floor-stone`, `floor-wood`, `floor-dirt`, `block`, `stairs` |
   | `spooky-hollow` | `1.0.0` | skeleton pals + adventurers | `ground`, `ground-small` |
   | `space-base` | `1.0.0` | adventurers + skeleton pals | `ground`, `ground-high`, `landing-pad`, `landing-pad-small` |
-  | `toy-town` | `1.0.0` | adventurers + skeleton pals | `ground`, `road`, `road-crossing`, `road-junction` |
+  | `toy-town` | `1.1.0` (adds trees, bushes, rocks) | adventurers + skeleton pals | `ground`, `road`, `road-crossing`, `road-junction` |
+  | `medieval-village` | `1.0.0` | adventurers + skeleton pals | `ground` (hexagon tiles), `ground-high`, `road`, `river-crossing`, `bridge` |
+  | `cosy-home` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `bed`, `couch`, `table`, `cabinet` |
+  | `busy-kitchen` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `counter`, `kitchen-table`, `table-round` |
 
   Adventurers: `knight`, `barbarian` (Explorer), `mage` (Wizard), `rogue` (Ranger), `rogue-hooded` (Hooded Ranger).
   Skeleton pals: `skelly`, `rattles`, `bonzo`, `captain-clank` (friendly cartoon skeletons, no weapons). Every hero plays

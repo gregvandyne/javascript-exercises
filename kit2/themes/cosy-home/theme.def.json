@@ -1,0 +1,505 @@
+{
+ "id": "cosy-home",
+ "name": "Cosy Home",
+ "description": "A warm little house: beds, sofas, bookshelves, lamps and rugs, for stories, counting and tidy-up games.",
+ "goodFor": [
+  "reading",
+  "maths",
+  "life skills"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-furniture",
+   "name": "KayKit Furniture Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0",
+   "commit": "96d5930a8dbdb363409bbc2d3341718b00e17c9c",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-furniture.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Furniture-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-restaurant",
+   "name": "KayKit Restaurant Bits 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0",
+   "commit": "153c8a7535b48237854cb54ff6890679f8c574d1",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-restaurant.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Restaurant-Bits-1.0/"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "pieces": [
+  [
+   "floor",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/floor_kitchen.gltf",
+   "world",
+   [
+    "ground",
+    "floor",
+    "platform"
+   ]
+  ],
+  [
+   "floor-small",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/floor_kitchen_small.gltf",
+   "world",
+   [
+    "floor",
+    "platform",
+    "step"
+   ]
+  ],
+  [
+   "wall",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall.gltf",
+   "world",
+   [
+    "wall"
+   ]
+  ],
+  [
+   "wall-window",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall_window_open.gltf",
+   "world",
+   [
+    "wall",
+    "window"
+   ]
+  ],
+  [
+   "wall-door",
+   "KayKit-Restaurant-Bits-1.0/addons/kaykit_restaurant_bits/Assets/gltf/wall_doorway.gltf",
+   "world",
+   [
+    "wall",
+    "door"
+   ]
+  ],
+  [
+   "bed",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/bed_double_A.gltf",
+   "world",
+   [
+    "bed",
+    "furniture",
+    "platform"
+   ]
+  ],
+  [
+   "bed-small",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/bed_single_A.gltf",
+   "world",
+   [
+    "bed",
+    "furniture",
+    "platform"
+   ]
+  ],
+  [
+   "couch",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/couch_pillows.gltf",
+   "world",
+   [
+    "sofa",
+    "furniture",
+    "platform"
+   ]
+  ],
+  [
+   "armchair",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/armchair_pillows.gltf",
+   "world",
+   [
+    "chair",
+    "furniture"
+   ]
+  ],
+  [
+   "table",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/table_medium.gltf",
+   "world",
+   [
+    "table",
+    "furniture",
+    "platform"
+   ]
+  ],
+  [
+   "table-low",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/table_low.gltf",
+   "world",
+   [
+    "table",
+    "furniture",
+    "step"
+   ]
+  ],
+  [
+   "chair",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/chair_A_wood.gltf",
+   "world",
+   [
+    "chair",
+    "furniture"
+   ]
+  ],
+  [
+   "stool",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/chair_stool_wood.gltf",
+   "world",
+   [
+    "chair",
+    "furniture",
+    "step"
+   ]
+  ],
+  [
+   "bookshelf",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/shelf_B_large_decorated.gltf",
+   "world",
+   [
+    "shelf",
+    "books",
+    "furniture"
+   ]
+  ],
+  [
+   "shelf",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/shelf_A_big.gltf",
+   "world",
+   [
+    "shelf",
+    "furniture"
+   ]
+  ],
+  [
+   "cabinet",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/cabinet_medium_decorated.gltf",
+   "world",
+   [
+    "cabinet",
+    "furniture",
+    "platform"
+   ]
+  ],
+  [
+   "lamp",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/lamp_standing.gltf",
+   "decor",
+   [
+    "light",
+    "lamp"
+   ]
+  ],
+  [
+   "lamp-table",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/lamp_table.gltf",
+   "decor",
+   [
+    "light",
+    "lamp"
+   ]
+  ],
+  [
+   "rug",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/rug_rectangle_stripes_A.gltf",
+   "decor",
+   [
+    "rug",
+    "floor"
+   ]
+  ],
+  [
+   "rug-round",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/rug_oval_A.gltf",
+   "decor",
+   [
+    "rug",
+    "floor"
+   ]
+  ],
+  [
+   "picture",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/pictureframe_large_A.gltf",
+   "decor",
+   [
+    "picture",
+    "wall"
+   ]
+  ],
+  [
+   "picture-standing",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/pictureframe_standing_A.gltf",
+   "decor",
+   [
+    "picture"
+   ]
+  ],
+  [
+   "books",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/book_set.gltf",
+   "prop",
+   [
+    "book",
+    "collectible",
+    "answer"
+   ]
+  ],
+  [
+   "book",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/book_single.gltf",
+   "prop",
+   [
+    "book",
+    "collectible"
+   ]
+  ],
+  [
+   "pillow",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/pillow_A.gltf",
+   "prop",
+   [
+    "pillow",
+    "soft"
+   ]
+  ],
+  [
+   "cactus",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/cactus_medium_A.gltf",
+   "decor",
+   [
+    "plant",
+    "cactus"
+   ]
+  ],
+  [
+   "cactus-small",
+   "KayKit-Furniture-Bits-1.0/addons/kaykit_furniture_bits/Assets/gltf/cactus_small_A.gltf",
+   "decor",
+   [
+    "plant",
+    "cactus"
+   ]
+  ],
+  [
+   "coin",
+   "theme:castle-quest/1.0.0/props/coin.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ],
+   null,
+   "kaykit-dungeon"
+  ],
+  [
+   "chest",
+   "theme:castle-quest/1.0.0/props/chest.glb",
+   "prop",
+   [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   null,
+   "kaykit-dungeon"
+  ]
+ ],
+ "cover": "cover.webp",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "from": "theme:castle-quest/1.0.0/heroes/skelly.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "from": "theme:castle-quest/1.0.0/heroes/rattles.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "from": "theme:castle-quest/1.0.0/heroes/bonzo.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "from": "theme:castle-quest/1.0.0/heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "moves": {
+  "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "look": {
+  "sky": {
+   "top": "#ffd9b8",
+   "middle": "#ffeedd",
+   "bottom": "#fff6ea"
+  },
+  "fog": {
+   "color": "#fff1e2",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#fff4e6",
+   "ground": "#8a6a50",
+   "intensity": 1.3
+  },
+  "sun": {
+   "color": "#ffe6c4",
+   "intensity": 2.2
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.15,
+   "radius": 0.4,
+   "threshold": 0.9
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#fff0e0",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "sounds": [
+  [
+   "jump",
+   "Starter-Kit-3D-Platformer/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "Starter-Kit-3D-Platformer/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "Starter-Kit-3D-Platformer/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "Starter-Kit-3D-Platformer/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "Starter-Kit-3D-Platformer/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "Starter-Kit-3D-Platformer/sounds/walking.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer"
+}

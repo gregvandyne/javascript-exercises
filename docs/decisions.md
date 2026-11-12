@@ -4657,3 +4657,22 @@ are still blocked from the build machine):
   `tests/unit/kit2-worlds.test.js` plays it in the real game frame for the newest version of every theme.
 - **Still to come:** Under the Sea, Dino Valley and animal or kid characters need Quaternius's packs: allow quaternius.com
   and kenney.nl on the repository's cloud environment (Settings), then a session can fetch them.
+
+## Even more worlds, buildings and trees: Medieval Village, Cosy Home, Busy Kitchen (12 Nov 2026)
+
+The owner asked for more worlds, architecture (buildings, trees) and characters.
+- **Three new themes, 1.0.0:** Medieval Village (KayKit Medieval Hexagon: hexagon ground with roads, rivers, water and
+  coast; castle, houses in four colours, windmill, watermill, market, blacksmith, lumbermill, mine, church, well, tower,
+  bridge, walls and fences; trees, forests, hills, a mountain, rocks, waterlilies; barrels, carts, flags, logs), Cosy
+  Home (KayKit Furniture Bits: beds, sofas, armchairs, tables, bookshelves, lamps, rugs, pictures, cacti, on kitchen floor
+  and walls from Restaurant Bits) and Busy Kitchen (KayKit Restaurant Bits: counters, oven, stove, fridge, pots and pans,
+  burgers, vegetables, cheese, stew). 29-55 pieces each, all nine heroes.
+- **Trees and buildings for existing worlds, as new versions** (shipped versions never change): Castle Quest 1.1.0 adds
+  forests, hills, a mountain, rocks, a castle, a tower, a well, a fence and a bridge; Toy Town 1.1.0 adds trees, bushes and
+  rocks. Their 1.0.0 pieces are copied from the shipped 1.0.0 files (the pipeline now takes pieces, not only heroes,
+  from a built theme), so the original packs are not needed to rebuild.
+- **Kid-safe choices:** no archery range, barracks, catapult towers, weapon rack, arrows, target, wrecked building or
+  tavern in Medieval Village; no knife, dirty plates or food scraps in Busy Kitchen.
+- **Characters:** no new character pack is reachable on GitHub (KayKit has only Adventurers and Skeletons there), and
+  Quaternius's animals and dinosaurs sit on Google Drive, which refused anonymous downloads today ("quota exceeded").
+  They come next, with Oomba3D 1.2.0 (heroes that carry their own animations).

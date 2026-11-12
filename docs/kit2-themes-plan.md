@@ -40,6 +40,9 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Spooky Hollow | added 12 Nov | KayKit Halloween + Skeletons | Three.js | Seasons, science, maths |
 | Space Base | added 12 Nov | KayKit Space Base | Three.js | Science, maths, space |
 | Toy Town | added 12 Nov | KayKit City Builder | Three.js | Geography, money, maths |
+| Medieval Village | added 12 Nov | KayKit Medieval Hexagon | Three.js | History, geography, maths |
+| Cosy Home | added 12 Nov | KayKit Furniture + Restaurant | Three.js | Reading, maths, life skills |
+| Busy Kitchen | added 12 Nov | KayKit Restaurant | Three.js | Maths, fractions, healthy eating |
 
 ## How it fits together
 

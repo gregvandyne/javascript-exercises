@@ -19,12 +19,13 @@ const heroes = def.heroes.map(h => {
 });
 if (def.moves.from.startsWith('theme:')) recipe.copy.push({ from: def.moves.from, to: 'heroes/moves.glb' });
 else recipe.models.push({ from: def.moves.from, to: 'heroes/moves.glb', animsOnly: true, keepAnims: Object.values(def.moves.clips) });
-const pieces = def.pieces.map(([id, from, kind, tags, note]) => {
+const pieces = def.pieces.map(([id, from, kind, tags, note, packId]) => {
   const to = `${folder[kind] || 'world'}/${id}.glb`;
   recipe.models.push({ from, to });
   const m = sizes[to];
-  const pack = def.packs.find(p => p.dir && from.startsWith(p.dir));
-  if (!pack) throw new Error(`${id}: no pack has a dir that ${from} starts with`);
+  // A piece from a built theme names its pack in a 6th field: [id, 'theme:<theme>/<v>/<file>', kind, tags, note, pack].
+  const pack = def.packs.find(p => (p.dir && from.startsWith(p.dir)) || (packId && p.id === packId));
+  if (!pack) throw new Error(`${id}: no pack has a dir that ${from} starts with (a piece from a built theme names its pack as the 6th field)`);
   return { id, file: to, kind, tags, ...(m ? { size: m.size } : {}), pack: pack.id, ...(m && Math.abs(m.minY) > 0.05 ? { note: `${note ? note + ' ' : ''}Its base is ${m.minY} below its y.` } : note ? { note } : {}) };
 });
 const sounds = def.sounds.map(([id, from]) => { recipe.copy.push({ from, to: `sounds/${id}.ogg` }); return { id, file: `sounds/${id}.ogg`, pack: def.soundPack }; });
