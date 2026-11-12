@@ -7936,6 +7936,14 @@
       "done": "クラスのストリームに投稿しました。",
       "locked": "お知らせを投稿するには、Oomba Academy に Classroom への投稿を許可してください。",
       "fromLive": "Classroom でお知らせ"
+    },
+    "chip": {
+      "connect": "Google Classroom に接続",
+      "connected": "Classroom に接続済み",
+      "reconnect": "Classroom に再接続",
+      "notLinked": "まだ Classroom のクラスにリンクされていません。",
+      "link": "Classroom のクラスをリンク",
+      "manage": "Classroom の設定"
     }
   },
   "digest": {

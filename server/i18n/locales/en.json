@@ -8344,6 +8344,14 @@
       "done": "Posted to the class stream.",
       "locked": "To post announcements, allow Oomba Academy to post to Classroom.",
       "fromLive": "Announce in Classroom"
+    },
+    "chip": {
+      "connect": "Connect Google Classroom",
+      "connected": "Classroom connected",
+      "reconnect": "Connect Classroom again",
+      "notLinked": "Not linked to a Classroom class yet.",
+      "link": "Link a Classroom class",
+      "manage": "Classroom settings"
     }
   },
   "digest": {

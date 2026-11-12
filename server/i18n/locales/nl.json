@@ -7937,6 +7937,14 @@
       "done": "Geplaatst in de stream van de klas.",
       "locked": "Laat Oomba Academy plaatsen in Classroom om aankondigingen te plaatsen.",
       "fromLive": "Aankondigen in Classroom"
+    },
+    "chip": {
+      "connect": "Google Classroom koppelen",
+      "connected": "Classroom gekoppeld",
+      "reconnect": "Classroom opnieuw koppelen",
+      "notLinked": "Nog niet gekoppeld aan een Classroom-klas.",
+      "link": "Classroom-klas koppelen",
+      "manage": "Classroom-instellingen"
     }
   },
   "digest": {

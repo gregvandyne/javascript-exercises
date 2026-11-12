@@ -1041,3 +1041,20 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 }
 /* What a unit is (class page) and what a folder is (lesson library): one line under the buttons. */
 .unit-why,.folder-why{margin:var(--s3) 0 0;max-width:72ch}
+/* The class header's Google Classroom chip (routes/gclassroom.js gcHeaderChip): top right, on the school-name line. */
+.classtop{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);flex-wrap:wrap;min-width:0}
+.gc-chipform{margin:0}
+.gc-chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 12px;border:0;border-radius:999px;font:inherit;font-size:.8125rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+.gc-chip::-webkit-details-marker{display:none}
+.gc-chip:hover{box-shadow:inset 0 0 0 1px var(--muted)}
+.gc-chip:focus-visible{outline:2px solid var(--focus,currentColor);outline-offset:2px}
+.gc-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.gc-chip-on .gc-dot{background:var(--ok)}
+.gc-chip-on::after{content:"▾";font-size:.75em;opacity:.7}
+.gc-chip-warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
+.gc-chip-warn .gc-dot{background:currentColor}
+.gc-chipmenu{position:relative}
+.gc-pop{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;width:min(300px,calc(100vw - 32px));display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);padding:var(--s3);border-radius:var(--r-sm);background:var(--card);box-shadow:0 0 0 1px var(--line),0 8px 24px rgba(0,0,0,.25)}
+.gc-pop p{margin:0;overflow-wrap:anywhere}
+.gc-pop form{margin:0}
+.gc-pop .btn-sm{min-height:40px}

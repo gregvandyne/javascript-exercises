@@ -7936,6 +7936,14 @@
       "done": "Опубликовано в ленте класса.",
       "locked": "Чтобы публиковать объявления, разрешите Oomba Academy публиковать в Classroom.",
       "fromLive": "Объявить в Classroom"
+    },
+    "chip": {
+      "connect": "Подключить Google Classroom",
+      "connected": "Classroom подключён",
+      "reconnect": "Подключить Classroom снова",
+      "notLinked": "Пока не связан с курсом в Classroom.",
+      "link": "Связать с курсом Classroom",
+      "manage": "Настройки Classroom"
     }
   },
   "digest": {

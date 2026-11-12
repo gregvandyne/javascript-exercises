@@ -7937,6 +7937,14 @@
       "done": "نُشر في ساحة مشاركات الصف.",
       "locked": "لنشر الإعلانات، اسمح لـ Oomba Academy‏ بالنشر في Classroom‏.",
       "fromLive": "الإعلان في Classroom‏"
+    },
+    "chip": {
+      "connect": "ربط Google Classroom",
+      "connected": "تم ربط Classroom",
+      "reconnect": "ربط Classroom مرة أخرى",
+      "notLinked": "لم يتم ربطه بصف في Classroom بعد.",
+      "link": "ربط صف في Classroom",
+      "manage": "إعدادات Classroom"
     }
   },
   "digest": {
