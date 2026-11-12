@@ -25,7 +25,7 @@ const course = C.getCourse('number-quest');
 const steps = C.steps(course, 'explorer');
 const byN = n => steps.find(s => s.n === n);
 
-test('every mission game reports completion: gameOver call sites in all five mission games', () => {
+test('every mission game reports completion: gameOver call sites in all six mission games', () => {
   // Fraction Factory fires only at chapter completion (its own test pins the single call site).
   assert.equal((read('seed-games/fraction-factory.html').match(/BRB\.gameOver\(/g) || []).length, 1);
   // Sum Racer fires at race end with won = place 1.
@@ -48,6 +48,13 @@ test('every mission game reports completion: gameOver call sites in all five mis
   assert.match(gc, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
   assert.match(gc, /if \(S\.round >= GC\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
   assert.equal((gc.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
+  // Lily Hop (Launchpad Unit 2): the same shape, one report in finish(), after the sixth right round only
+  // (tests/unit/lily-hop.test.js plays every chapter and counts the message).
+  const lh = read('seed-games/lily-hop.html');
+  assert.equal((lh.match(/BRB\.gameOver\(/g) || []).length, 1);
+  assert.match(lh, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
+  assert.match(lh, /if \(S\.round >= LH\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
+  assert.equal((lh.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
 });
 
 test('Sum Racer missions are locked to the taught skill in units.json and in every deck', () => {
@@ -187,15 +194,16 @@ test('lesson identity survives the frame: units.json mode params pass the play-p
   }
 });
 
-test('lesson identity survives the frame for Launchpad too: Garden Count’s chapter and lock pass the allow-list intact', () => {
+test('lesson identity survives the frame for Launchpad too: Garden Count’s and Lily Hop’s chapter and lock pass the allow-list intact', () => {
   const lp = C.steps(course, 'launchpad').filter(s => s.game);
-  assert.deepEqual(lp.map(s => s.n), ['1.1', '1.2', '1.3']);
+  assert.deepEqual(lp.map(s => s.n), ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3']);
   for (const s of lp) {
-    assert.equal(s.game.slug, 'garden-count', s.n);
-    const want = { chapter: { '1.1': 'count', '1.2': 'compare', '1.3': 'teens' }[s.n], lock: 1 };
+    const slug = s.unit === 1 ? 'garden-count' : 'lily-hop';
+    assert.equal(s.game.slug, slug, s.n);
+    const want = { chapter: { '1.1': 'count', '1.2': 'compare', '1.3': 'teens', '2.1': 'join', '2.2': 'apart', '2.3': 'twenty' }[s.n], lock: 1 };
     assert.deepEqual(PP.parseParams(Object.fromEntries(new URLSearchParams(s.game.params))), want, `${s.n}: params parse`);
     assert.deepEqual(PP.unpackParams(PP.packParams(want)), want, `${s.n}: chapter and lock survive the signed token`);
-    assert.equal(C.playHref(course, C.getStep(course, `launchpad-${s.n}`)), `/play/garden-count?course=number-quest&cstep=launchpad-${s.n}&chapter=${want.chapter}&lock=1`, `${s.n}: the Play link carries the step and the chapter`);
+    assert.equal(C.playHref(course, C.getStep(course, `launchpad-${s.n}`)), `/play/${slug}?course=number-quest&cstep=launchpad-${s.n}&chapter=${want.chapter}&lock=1`, `${s.n}: the Play link carries the step and the chapter`);
     const deck = JSON.parse(read(`seed-lessons/number-quest/course/launchpad/${s.n}.json`));
     assert.deepEqual({ slug: deck.game.slug, chapter: deck.game.chapter, params: deck.game.params }, { slug: s.game.slug, chapter: s.game.chapter, params: s.game.params }, `${s.n}: deck agrees with units.json`);
   }

@@ -195,3 +195,31 @@ existing `numberline`. All 25 focus steps are measured and pinned in `tests/unit
 
 **Stone.** The unit's stamp is the Counting Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "last number says how many" misconception, and how the game checks each idea by doing. Launchpad stays `status: "building"`.
+
+## Launchpad Unit 2 — The Joining Pond (2026-11-12, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/2.1.json`, `2.2.json`, `2.3.json` | the three decks, inside the Launchpad limits above: **2.1 Put together to 10** (K.OA.A.1, K.OA.A.2), **2.2 Take apart and make 10** (K.OA.A.3, K.OA.A.4), **2.3 Add and take away to 20** (1.OA.C.6; also 1.OA.B.3). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u2-launchpad.json` | nine exit items (`nq-launchpad-2.<s>-e1..3`), each `cat` one of its step's primary codes (2.3's three are all 1.OA.C.6; its turn-around item practises 1.OA.B.3 under that code), every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why` |
+| `standards.json` `launchpadCodes.codes` | six more locked statements (twelve in all), with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/lily-hop.html` | **Lily Hop**, the unit's game (Oomba3D 1.1.0, Sky Islands theme 1.0.1 with the sea): chapter `join` for 2.1, `apart` for 2.2, `twenty` for 2.3, six rounds each, every round answered by hopping to one of three number pads. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `join`: four rounds of two groups of frogs put together (totals to 10, "3 and 2 make 5"), then two rounds where some
+hop away ("5 take away 2 is 3"), because K.OA.A.2 adds and subtracts within 10. `apart`: rounds 1 and 2 split the same number two different
+ways ("5 is 2 and what?"), round 3 a bigger number, rounds 4-6 a ten-frame of spots ("7 and what make 10?"). `twenty`: a row of numbered pads
+with a flag on 10: ten and some more, add over ten, the same two numbers turned round (1.OA.B.3), take away inside the teens, take away back
+over ten, add over ten again; over ten the helper stops on 10 and the sum is said in two steps.
+
+**Diagrams.** The unit adds no diagram type. `counters` gains two options for a single group of 2-10 (`server/services/diagrams.js`,
+`server/views/nq-diagrams.js`): `split: k` draws the first k counters, a gap, then the rest in the next tone with each part's size under it
+(5 is 3 and 2), and in a ten-frame only changes the tone after the first part (8 and 2 make 10); `away: true` (with `split`, no frame) draws
+the second part as dashed outlines (they went away). 2.3 uses the existing `numberline` with `hops` (8 to 10, then 10 to 13) and `bars` (8
+and 5, then 5 and 8, the same length). All 27 focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/lily-hop/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/lily-hop.recipe.js`.
+
+**Stone.** The unit's stamp is the Joining Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"counts all again from 1" misconception (and hopping past ten without stopping), and how the game checks each idea by doing. Launchpad stays
+`status: "building"`.

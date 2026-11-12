@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 92, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams) and 12 in Launchpad Unit 1');
-  assert.equal(steps, 208, 'focus steps: 183 across the 23 Explorer decks and 25 in Launchpad Unit 1');
+  assert.equal(slides, 104, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1 and 12 in Unit 2');
+  assert.equal(steps, 235, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1 and 27 in Unit 2');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -314,14 +314,43 @@ const REGISTRY = [
   ['launchpad-1.3', 3, 1, [54.98, 24.87, 88.02, 60.81], [54, 23.3, 35.1, 39.2]],
   ['launchpad-1.3', 4, 0, [11, 23.13, 46, 60.81], [10, 21.5, 37, 41]],
   ['launchpad-1.3', 4, 1, [54.98, 24.87, 88.02, 60.81], [54, 23.3, 35.1, 39.2]],
+  // Launchpad Unit 2, The Joining Pond (2026-11-12): counters in two parts (split, away, and in the ten-frame), 2.3's
+  // number lines with hops and its two bars, measured the same way on the rendered step pages at 390 px.
+  ['launchpad-2.1', 1, 0, [29.14, 25.1, 50.88, 50.18], [28.1, 23.5, 23.8, 28.3]],
+  ['launchpad-2.1', 1, 1, [57.11, 25.1, 70.86, 50.18], [56.1, 23.5, 15.8, 28.3]],
+  ['launchpad-2.1', 1, 2, [29.14, 25.1, 70.86, 50.18], [28.1, 23.5, 43.8, 28.3]],
+  ['launchpad-2.1', 2, 0, [21.15, 25.1, 50.88, 50.18], [20.2, 23.5, 31.7, 28.3]],
+  ['launchpad-2.1', 2, 1, [57.11, 25.1, 78.85, 50.18], [56.1, 23.5, 23.7, 28.3]],
+  ['launchpad-2.1', 3, 0, [33.48, 24.86, 66.52, 46.25], [32.5, 23.3, 35, 24.6]],
+  ['launchpad-2.1', 3, 1, [40.48, 37.3, 66.52, 46.25], [39.5, 35.7, 28, 12.1]],
+  ['launchpad-2.1', 4, 0, [57.11, 25.1, 70.86, 50.18], [56.1, 23.5, 15.8, 28.3]],
+  ['launchpad-2.1', 4, 1, [29.14, 25.1, 50.88, 50.18], [28.1, 23.5, 23.8, 28.3]],
+  ['launchpad-2.2', 1, 0, [29.14, 25.1, 42.89, 50.18], [28.1, 23.5, 15.8, 28.3]],
+  ['launchpad-2.2', 1, 1, [49.12, 25.1, 70.86, 50.18], [48.1, 23.5, 23.8, 28.3]],
+  ['launchpad-2.2', 1, 2, [29.14, 25.1, 70.86, 50.18], [28.1, 23.5, 43.8, 28.3]],
+  ['launchpad-2.2', 2, 0, [29.14, 25.1, 58.87, 50.18], [28.1, 23.5, 31.8, 28.3]],
+  ['launchpad-2.2', 2, 1, [65.11, 25.1, 70.86, 50.18], [64.1, 23.5, 7.8, 28.3]],
+  ['launchpad-2.2', 3, 0, [33.48, 24.86, 66.52, 46.25], [32.5, 23.3, 35, 24.6]],
+  ['launchpad-2.2', 3, 1, [46.5, 35.55, 67.5, 47.99], [45.5, 33.9, 23, 15.7]],
+  ['launchpad-2.2', 4, 0, [33.48, 24.86, 66.52, 46.25], [32.5, 23.3, 35, 24.6]],
+  ['launchpad-2.2', 4, 1, [54.48, 37.3, 66.52, 46.25], [53.5, 35.7, 14, 12.1]],
+  ['launchpad-2.3', 1, 0, [40.04, 59.38, 42.49, 81.64], [39, 57.8, 4.5, 25.4]],
+  ['launchpad-2.3', 1, 1, [41.22, 25.1, 63.17, 60.44], [40.2, 23.5, 24, 38.5]],
+  ['launchpad-2.3', 1, 2, [61.46, 59.38, 64.89, 81.64], [60.5, 57.8, 5.4, 25.4]],
+  ['launchpad-2.3', 2, 0, [41.2, 24.58, 50, 60.44], [40.2, 23, 10.8, 39]],
+  ['launchpad-2.3', 2, 1, [50, 24.58, 63.2, 60.44], [49, 23, 15.2, 39]],
+  ['launchpad-2.3', 3, 0, [50, 24.58, 63.2, 60.44], [49, 23, 15.2, 39]],
+  ['launchpad-2.3', 3, 1, [41.2, 24.58, 50, 60.44], [40.2, 23, 10.8, 39]],
+  ['launchpad-2.3', 4, 0, [6, 13.42, 94, 38.23], [5, 11.8, 90, 28]],
+  ['launchpad-2.3', 4, 1, [6, 43.58, 94, 68.4], [5, 42, 90, 28]],
 ];
-test('every authored box contains its measured target with a small margin (208-step registry)', () => {
+test('every authored box contains its measured target with a small margin (235-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 208);
+  assert.equal(REGISTRY.length, 235);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -339,7 +368,7 @@ test('every authored box contains its measured target with a small margin (208-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 208);
+  assert.equal(total, 235);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

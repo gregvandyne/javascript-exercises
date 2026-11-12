@@ -181,3 +181,37 @@ test('counters (Launchpad Unit 1): rows to count, rows matched one to one, and t
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 12 }, { n: 3 }] }, 'L'), null, 'two rows to match hold at most ten each');
   assert.equal(cleanDiagram({ type: 'counters', groups: [] }, 'L'), null);
 });
+
+test('counters in two parts (Launchpad Unit 2): split shows a number as two parts, away empties the second, a ten-frame keeps its ten spots', () => {
+  const circles = svg => [...svg.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)" fill="(#[0-9A-F]+)"[^>]*?(stroke-dasharray="[^"]*")?\/>/g)].map(m => ({ x: +m[1], y: +m[2], r: +m[3], fill: m[4], dashed: !!m[5] }));
+  // 5 is 3 and 2: one row, the first three in one tone, a gap, two in the next tone, and "3" and "2" under the parts
+  const v = cleanDiagram({ type: 'counters', groups: [{ n: 5, split: 3 }] }, '3 frogs and 2 more'), svg = diagramSvg(v), cs = circles(svg);
+  assert.deepEqual(v.groups, [{ n: 5, split: 3 }]);
+  assert.equal(cs.length, 5); assert.equal(new Set(cs.map(c => c.y)).size, 1, 'one row');
+  assert.equal(new Set(cs.slice(0, 3).map(c => c.fill)).size, 1); assert.equal(new Set(cs.slice(3).map(c => c.fill)).size, 1); assert.notEqual(cs[0].fill, cs[3].fill, 'the two parts differ in tone');
+  const step = cs[1].x - cs[0].x;
+  assert.ok(cs[3].x - cs[2].x > step + 2, 'a gap between the parts'); assert.equal(+(cs[4].x - cs[3].x).toFixed(2), +step.toFixed(2));
+  assert.equal(+(((cs[0].x - cs[0].r) + (cs[4].x + cs[4].r)) / 2).toFixed(1), 50, 'centred');
+  const nums = texts(svg).filter(t => /^\d+$/.test(t.s));
+  assert.deepEqual(nums.map(t => +t.s), [3, 2], 'each part named by its size');
+  assert.equal(+nums[0].x.toFixed(1), +cs[1].x.toFixed(1), 'under the middle of its part'); assert.ok(nums[0].y > cs[0].y + cs[0].r);
+  // numbered counters count on across the gap: 1 2 3 4, then 5 6 7
+  const on = diagramSvg(cleanDiagram({ type: 'counters', groups: [{ n: 7, split: 4, count: true }] }, '4 and 3 more'));
+  assert.deepEqual(texts(on).filter(t => /^\d+$/.test(t.s)).map(t => +t.s), [1, 2, 3, 4, 5, 6, 7, 4, 3]);
+  // away: the second part is drawn as dashed outlines (they went away); the first part is untouched
+  const away = circles(diagramSvg(cleanDiagram({ type: 'counters', groups: [{ n: 5, split: 3, away: true }] }, '2 hop away')));
+  assert.deepEqual(away.map(c => c.dashed), [false, false, false, true, true]); assert.deepEqual(away.slice(3).map(c => c.fill), ['#FFFFFF', '#FFFFFF']);
+  // in a ten-frame the split only changes the tone after the first part: ten counters in ten cells, "10" under them
+  const f = cleanDiagram({ type: 'counters', groups: [{ n: 10, frame: true, split: 8 }] }, '8 and 2 make 10'), fs2 = diagramSvg(f), fc = circles(fs2);
+  assert.equal(fc.length, 10); assert.equal(new Set(fc.slice(0, 8).map(c => c.fill)).size, 1); assert.equal(new Set(fc.slice(8).map(c => c.fill)).size, 1); assert.notEqual(fc[0].fill, fc[9].fill);
+  assert.deepEqual(texts(fs2).filter(t => /^\d+$/.test(t.s)).map(t => +t.s), [10]);
+  for (const g of [{ n: 5, split: 3 }, { n: 10, split: 1 }, { n: 2, split: 1, away: true }, { n: 10, split: 9, count: true }]) {
+    const d = cleanDiagram({ type: 'counters', groups: [g] }, 'Two parts'), [a, b] = diagramExtent(d);
+    for (const c of circles(diagramSvg(d))) assert.ok(c.y - c.r >= a && c.y + c.r <= b && c.x - c.r >= 0 && c.x + c.r <= 100, JSON.stringify(g) + ': every counter inside the frame');
+    for (const t of texts(diagramSvg(d))) assert.ok(t.y <= b, JSON.stringify(g) + ': every number inside the band');
+  }
+  // only a real split of one group of 2 to 10: both parts hold a counter, and away needs a split and no frame
+  for (const g of [{ n: 12, split: 3 }, { n: 5, split: 5 }, { n: 5, split: 0 }, { n: 5, split: 2.5 }, { n: 5, away: true }, { n: 10, frame: true, split: 8, away: true }])
+    assert.equal(cleanDiagram({ type: 'counters', groups: [g] }, 'L'), null, JSON.stringify(g));
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 5, split: 2 }, { n: 3 }] }, 'L'), null, 'two rows to match are never split');
+});
