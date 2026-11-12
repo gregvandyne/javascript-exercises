@@ -17,7 +17,7 @@
 import { q, now, today } from '../db.js';
 import { OFFICIAL } from '../auth.js';
 import { TYPE_SQL, METHOD_SQL, TYPES, TYPE_LABEL, METHOD_LABEL, rangeStart, likeEsc, cell, iso, CSV_MAX } from './admin-users.js';
-import { COURSES, bandsFor, steps, getBand, overview } from './courses.js';
+import { COURSES, bandsFor, allBandsFor, steps, getBand, overview } from './courses.js';
 import { register } from './jobs.js';
 
 const DAY = 86400e3;
@@ -101,7 +101,7 @@ let gameStepKeys = null;
 function gameSteps() {
   if (gameStepKeys) return gameStepKeys;
   const keys = [];
-  try { for (const c of COURSES) for (const b of bandsFor(c)) for (const s of steps(c, b)) if (s.game) keys.push(`${c.slug}|${s.key}`); } catch { /* no decks: read + check counts */ }
+  try { for (const c of COURSES) for (const b of allBandsFor(c)) for (const s of steps(c, b)) if (s.game) keys.push(`${c.slug}|${s.key}`); } catch { /* no decks: read + check counts */ }
   return (gameStepKeys = JSON.stringify(keys));
 }
 const STEP_DONE = "c.read_at IS NOT NULL AND c.checked_at IS NOT NULL AND (c.completed_at IS NOT NULL OR (c.course || '|' || c.step) NOT IN (SELECT value FROM json_each(?)))";

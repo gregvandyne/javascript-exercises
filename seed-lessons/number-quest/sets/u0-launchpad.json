@@ -1,0 +1,82 @@
+{
+ "id": "nq-u0-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 0,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 0 · Welcome (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-0.1-e1",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Who looks after the Gardens?",
+   "choices": [
+    "Tally the cat",
+    "A big dog",
+    "A red fox",
+    "A green frog"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "picked a pet that is not in the story",
+    "picked an animal that is not in the story",
+    "mixed up Tally with a garden frog"
+   ],
+   "why": "Tally the cat looks after the Gardens. You will see Tally on every step."
+  },
+  {
+   "id": "nq-launchpad-0.1-e2",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What do we do to find how many?",
+   "choices": [
+    "We sleep",
+    "We count",
+    "We sing",
+    "We hide"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "picked a rest, not a number job",
+    "correct",
+    "picked a song, not a number job",
+    "picked a hiding game, not a number job"
+   ],
+   "why": "We count to find how many. One, two, three: now we know."
+  },
+  {
+   "id": "nq-launchpad-0.1-e3",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Who mixes things up in the Gardens?",
+   "choices": [
+    "Tally",
+    "The bees",
+    "The Jumble",
+    "The flowers"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "mixed up the helper with the trickster",
+    "picked the bees, who only buzz",
+    "correct",
+    "picked the flowers, who only grow"
+   ],
+   "why": "The Jumble mixes things up and giggles. Tally and you put things right."
+  }
+ ]
+}

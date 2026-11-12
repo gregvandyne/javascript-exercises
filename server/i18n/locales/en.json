@@ -7294,6 +7294,8 @@
       "explorerSub": "Grades 3–5",
       "pro": "Pro",
       "proSub": "Grades 6–8",
+      "launchpad": "Launchpad",
+      "launchpadSub": "Grades K–2",
       "switch": "Switch to {band}"
     },
     "map": {

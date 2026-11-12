@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'.",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad so far holds its welcome step (0.1) only; its codes lock in standards.json launchpadCodes.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -11,8 +11,10 @@
  "tiers": {
   "explorer": {
    "district": "The Workshops",
+   "finale": "7.4",
    "grades": "3-5",
    "inGame": "Explorer",
+   "status": "open",
    "stones": [
     "Counting Stone",
     "Joining Stone",
@@ -22,6 +24,13 @@
     "Compass Stone",
     "Scales Stone"
    ]
+  },
+  "launchpad": {
+   "district": "The Gardens",
+   "grades": "K-2",
+   "inGame": "Launchpad",
+   "status": "building",
+   "stones": []
   }
  },
  "units": [
@@ -57,6 +66,7 @@
    "teacherNotes": [
     "Number Quest is a standalone course: no CS Quest or Cyber Defenders knowledge is needed. The intro frames the Numberworks, Tally the cat, the Jumble and the Vault of Measures; it teaches no standard and its check, if any, is a routing preview, never assessed coverage."
    ],
+   "tier": "explorer",
    "title": "Welcome to the Numberworks",
    "tool": null
   },
@@ -169,6 +179,7 @@
    "teacherNotes": [
     "Open every worked example with an estimate (the course's 'Rough first' habit, MP1/MP2). Place value is taught as a pattern (each place ten times the next, MP7), not as column names to memorize."
    ],
+   "tier": "explorer",
    "title": "The Counting House",
    "tool": "brain-board"
   },
@@ -278,6 +289,7 @@
    "teacherNotes": [
     "The bar model (Singapore CPA pictorial step) is taught once, here, before symbols: draw the story, see the missing piece, then write the equation. The unit's Jumble beat lives in 2.3: it added when the story said difference - learners find, name and fix it (MP3)."
    ],
+   "tier": "explorer",
    "title": "Joining & Splitting",
    "tool": "sum-racer"
   },
@@ -393,6 +405,7 @@
    "teacherNotes": [
     "Fluency missions are Dash gear: learners race their own ghost, never a classmate. Strategies are named in the deck (doubling, halving, near facts) so speed grows out of structure (MP7/MP8), per NCTM's build-fluency-from-understanding practice."
    ],
+   "tier": "explorer",
    "title": "Groups & Shares",
    "tool": "sum-racer"
   },
@@ -501,6 +514,7 @@
    "teacherNotes": [
     "Cut real paper cakes before the deck: equivalence lands in hands first (CPA). Fraction Factory is this unit's home game and Tally the cat's debut - her sprite is extracted from Fraction Factory, never redrawn (house rule)."
    ],
+   "tier": "explorer",
    "title": "The Bakery",
    "tool": "fraction-factory"
   },
@@ -611,6 +625,7 @@
    "teacherNotes": [
     "Bring real tools before the deck: a meter stick, a kitchen scale, a measuring jug, a handful of coins. Measuring is counting units, and it lands in the hands first (CPA). The unit's Jumble beat is in 5.3, where it reads $2.05 as two dollars and five cents and forgets the zero that holds the place."
    ],
+   "tier": "explorer",
    "title": "The Measure Shop",
    "tool": "brain-board"
   },
@@ -732,6 +747,7 @@
    "teacherNotes": [
     "String and pegs (or chalk on the playground) before the deck: build one fence and one carpet with the same string and let the class feel the difference between around and inside. The unit's Jumble beat is in 6.3, where it reads a grid address backwards and lands one square off."
    ],
+   "tier": "explorer",
    "title": "The Building Yard",
    "tool": "brain-board"
   },
@@ -877,8 +893,46 @@
    "teacherNotes": [
     "Collect real answers before the deck: one class question with a handful of choices, tallied on the board. A chart of the class's own answers is the one chart nobody has to be persuaded to read. Step 7.3 is enrichment and says so on the map: chance words are judgement practice, not coverage. The unit's Jumble beat is in 7.3, where it calls a one-in-six chance 'impossible' - and the Vault finale (7.4) is where the Jumble's whole story ends."
    ],
+   "tier": "explorer",
    "title": "The Fairground",
    "tool": "data-detective"
+  },
+  {
+   "emoji": "🌱",
+   "group": "unit-0",
+   "n": 0,
+   "stamp": null,
+   "steps": [
+    {
+     "game": {
+      "launchpad": null
+     },
+     "mp": "MP1",
+     "n": "0.1",
+     "order": 1,
+     "shorts": {
+      "launchpad": "Welcome"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "framing",
+       "primary": []
+      }
+     },
+     "titles": {
+      "launchpad": "Meet Tally in the Gardens"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Launchpad is audio-first: read each slide aloud, or let the read-aloud button do it. The sentences are short on purpose, so a five-year-old can follow by ear.",
+    "The welcome frames the Gardens, Tally the cat and the Jumble. It teaches no standard, and its check is a story recap, never assessed coverage."
+   ],
+   "tier": "launchpad",
+   "title": "Welcome to the Gardens",
+   "tool": null
   }
  ]
 }

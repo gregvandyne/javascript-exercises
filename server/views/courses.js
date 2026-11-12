@@ -7,7 +7,15 @@ import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
 import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
 
-const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' }, explorer: { key: 'explorer', emoji: '🧭' } };
+// CS Quest and Cyber Defenders name their bands '1b' (labelled Explorer) and '2' (labelled Pro). Number Quest's
+// bands are its tiers, stored under their own literal keys: 'launchpad', 'explorer' and 'pro' — so 'pro' here is
+// Number Quest's Pro street and 2 is the other courses' Pro band; both read "Pro · Grades 6–8".
+const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' },
+  launchpad: { key: 'launchpad', emoji: '🌱' }, explorer: { key: 'explorer', emoji: '🧭' }, pro: { key: 'pro', emoji: '🚀' } };
+/** A band's emoji tile ('' for a band this page does not know). */
+export const bandEmoji = band => (BAND_INFO[band] || {}).emoji || '';
+/** A band as one line: "Launchpad · Grades K–2". */
+export const bandLine = (t, band) => `${bandName(t, band)} · ${t(`courses.band.${BAND_INFO[band].key}Sub`)}`;
 export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
 const bandGrades = (t, band) => t(`courses.band.${BAND_INFO[band].key}Sub`);
 /** Text still in English on this language's page is marked so. */

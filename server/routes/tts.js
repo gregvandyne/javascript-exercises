@@ -130,7 +130,7 @@ function resolve(req, b) {
   if (b.ctx === 'course') {
     if (!req.user) return { error: [404, 'off'] };
     const c = COURSES.getCourse(String(b.course || ''));
-    const step = c && COURSES.getStep(c, String(b.step || ''));
+    const step = c && COURSES.stepFor(req.user, c, String(b.step || ''));
     if (!step) return { error: [404, 'off'] };
     const st = COURSES.stateOf(req.user, c, step.key);
     const preview = req.user.role === 'admin' || isStaff(req.user);
