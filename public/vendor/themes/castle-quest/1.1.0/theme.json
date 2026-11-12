@@ -1,0 +1,1272 @@
+{
+ "id": "castle-quest",
+ "name": "Castle Quest",
+ "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests, with forests, hills and a castle on the hill.",
+ "goodFor": [
+  "reading",
+  "history",
+  "adventures"
+ ],
+ "cover": "cover.webp",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-skeletons",
+   "name": "KayKit Skeletons Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+   "commit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-skeletons.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-medieval",
+   "name": "KayKit Medieval Hexagon Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+   "commit": "84fa4e91af6a88989be7c99e0891cede11f2ca38",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-medieval.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  }
+ ],
+ "look": {
+  "sky": {
+   "top": "#6fa8dc",
+   "middle": "#cfe3f2",
+   "bottom": "#f3e6c8"
+  },
+  "fog": {
+   "color": "#d9e4ee",
+   "near": 60,
+   "far": 200
+  },
+  "hemisphere": {
+   "sky": "#f1ecdf",
+   "ground": "#6b5b45",
+   "intensity": 1.15
+  },
+  "sun": {
+   "color": "#fff0d2",
+   "intensity": 2.4
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 0.95,
+  "glow": {
+   "strength": 0.18,
+   "radius": 0.4,
+   "threshold": 0.9
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef4fa",
+   "emissiveIntensity": 0.12
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.1.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
+ "heroes": [
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "skelly",
+   "name": "Skelly",
+   "file": "heroes/skelly.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "rattles",
+   "name": "Rattles",
+   "file": "heroes/rattles.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "bonzo",
+   "name": "Bonzo",
+   "file": "heroes/bonzo.glb",
+   "pack": "kaykit-skeletons"
+  },
+  {
+   "id": "captain-clank",
+   "name": "Captain Clank",
+   "file": "heroes/captain-clank.glb",
+   "pack": "kaykit-skeletons"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "floor-stone",
+   "file": "world/floor-stone.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.15,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "floor-wood",
+   "file": "world/floor-wood.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.15,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "floor-dirt",
+   "file": "world/floor-dirt.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "floor",
+    "platform"
+   ],
+   "size": [
+    4,
+    0.21,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "block",
+   "file": "world/block.glb",
+   "kind": "world",
+   "tags": [
+    "platform",
+    "step",
+    "block"
+   ],
+   "size": [
+    2.2,
+    2,
+    2.2
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "stairs",
+   "file": "world/stairs.glb",
+   "kind": "world",
+   "tags": [
+    "stairs",
+    "climb"
+   ],
+   "size": [
+    5,
+    5.1,
+    4
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "stairs-wide",
+   "file": "world/stairs-wide.glb",
+   "kind": "world",
+   "tags": [
+    "stairs",
+    "climb"
+   ],
+   "size": [
+    7,
+    5.1,
+    4
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall",
+   "file": "world/wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-doorway",
+   "file": "world/wall-doorway.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "door"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-window",
+   "file": "world/wall-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "window"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-arched",
+   "file": "world/wall-arched.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "arch"
+   ],
+   "size": [
+    4,
+    4,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "wall-corner",
+   "file": "world/wall-corner.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "corner"
+   ],
+   "size": [
+    2.5,
+    4,
+    2.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "pillar",
+   "file": "world/pillar.glb",
+   "kind": "world",
+   "tags": [
+    "pillar"
+   ],
+   "size": [
+    1.5,
+    4,
+    1.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "column",
+   "file": "world/column.glb",
+   "kind": "world",
+   "tags": [
+    "pillar"
+   ],
+   "size": [
+    0.7,
+    1.4,
+    0.7
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "spikes",
+   "file": "world/spikes.glb",
+   "kind": "world",
+   "tags": [
+    "obstacle",
+    "hazard",
+    "floor"
+   ],
+   "size": [
+    4,
+    2.1,
+    4
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "chest",
+   "file": "props/chest.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    1.7,
+    1.3,
+    1.45
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "chest-gold",
+   "file": "props/chest-gold.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "goal",
+    "answer"
+   ],
+   "size": [
+    1.7,
+    1.3,
+    1.45
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "coin-pile",
+   "file": "props/coin-pile.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "collectible"
+   ],
+   "size": [
+    1.44,
+    1.16,
+    1.66
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "key",
+   "file": "props/key.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "key"
+   ],
+   "size": [
+    0.9,
+    0.4,
+    0.14
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "barrel",
+   "file": "props/barrel.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel",
+    "obstacle"
+   ],
+   "size": [
+    1.8,
+    2,
+    1.8
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "barrel-small",
+   "file": "props/barrel-small.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel"
+   ],
+   "size": [
+    1,
+    1.02,
+    1
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "crate",
+   "file": "props/crate.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "block"
+   ],
+   "size": [
+    1.5,
+    1.5,
+    1.5
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "crates",
+   "file": "props/crates.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "obstacle"
+   ],
+   "size": [
+    2.09,
+    2.14,
+    2.25
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "torch",
+   "file": "world/torch.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "torch"
+   ],
+   "size": [
+    0.55,
+    1.13,
+    0.55
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.4 below its y."
+  },
+  {
+   "id": "wall-torch",
+   "file": "world/wall-torch.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "torch"
+   ],
+   "size": [
+    0.55,
+    1.06,
+    0.62
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.38 below its y."
+  },
+  {
+   "id": "candles",
+   "file": "world/candles.glb",
+   "kind": "decor",
+   "tags": [
+    "light",
+    "candle"
+   ],
+   "size": [
+    0.5,
+    0.87,
+    0.39
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "banner-blue",
+   "file": "world/banner-blue.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "banner-red",
+   "file": "world/banner-red.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "banner-yellow",
+   "file": "world/banner-yellow.glb",
+   "kind": "decor",
+   "tags": [
+    "banner",
+    "flag"
+   ],
+   "size": [
+    1.5,
+    3.2,
+    0.31
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is 0.53 below its y."
+  },
+  {
+   "id": "table",
+   "file": "world/table.glb",
+   "kind": "decor",
+   "tags": [
+    "table",
+    "furniture"
+   ],
+   "size": [
+    2,
+    1,
+    2
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "chair",
+   "file": "world/chair.glb",
+   "kind": "decor",
+   "tags": [
+    "chair",
+    "furniture"
+   ],
+   "size": [
+    0.75,
+    1.23,
+    0.75
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "shelf",
+   "file": "world/shelf.glb",
+   "kind": "decor",
+   "tags": [
+    "shelf",
+    "furniture"
+   ],
+   "size": [
+    1,
+    0.99,
+    0.5
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.3 below its y."
+  },
+  {
+   "id": "feast",
+   "file": "world/feast.glb",
+   "kind": "decor",
+   "tags": [
+    "food"
+   ],
+   "size": [
+    1.02,
+    0.79,
+    0.97
+   ],
+   "pack": "kaykit-dungeon"
+  },
+  {
+   "id": "tree",
+   "file": "world/tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.57,
+    1.2,
+    0.55
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "tree-round",
+   "file": "world/tree-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.68,
+    1.21,
+    0.72
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "trees",
+   "file": "world/trees.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.75,
+    1.3,
+    1.81
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest",
+   "file": "world/forest.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.95,
+    0.93,
+    1.97
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest-round",
+   "file": "world/forest-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.85,
+    1.17,
+    1.93
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "bushes",
+   "file": "world/bushes.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "bush",
+    "nature"
+   ],
+   "size": [
+    1.33,
+    0.92,
+    1.14
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "hill",
+   "file": "world/hill.glb",
+   "kind": "decor",
+   "tags": [
+    "hill",
+    "nature"
+   ],
+   "size": [
+    1.11,
+    0.31,
+    0.81
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "hills-trees",
+   "file": "world/hills-trees.glb",
+   "kind": "decor",
+   "tags": [
+    "hill",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.76,
+    1.33,
+    1.74
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "mountain",
+   "file": "world/mountain.glb",
+   "kind": "decor",
+   "tags": [
+    "mountain",
+    "nature"
+   ],
+   "size": [
+    1.86,
+    2.18,
+    1.88
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock",
+   "file": "world/rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.3,
+    0.07,
+    0.28
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock-big",
+   "file": "world/rock-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.34,
+    0.19,
+    0.34
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "castle-building",
+   "file": "world/castle-building.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "castle",
+    "goal"
+   ],
+   "size": [
+    1.98,
+    3.98,
+    2.26
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "tower",
+   "file": "world/tower.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "tower"
+   ],
+   "size": [
+    0.99,
+    2.19,
+    1.15
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "well",
+   "file": "world/well.glb",
+   "kind": "world",
+   "tags": [
+    "building",
+    "well"
+   ],
+   "size": [
+    0.65,
+    0.83,
+    0.75
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "fence",
+   "file": "world/fence.glb",
+   "kind": "world",
+   "tags": [
+    "fence"
+   ],
+   "size": [
+    0.1,
+    0.55,
+    1.15
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "bridge",
+   "file": "world/bridge.glb",
+   "kind": "world",
+   "tags": [
+    "bridge",
+    "path"
+   ],
+   "size": [
+    1.33,
+    1.25,
+    1.92
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -1 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kaykit-medieval.txt": {
+   "bytes": 1027,
+   "sha384": "sha384-oplMGknWkRDVQCv5ogqOmIQSurpDRyaQ40Xg4HN5QaL/8MkVUmUUeAjDWOtq0+CP"
+  },
+  "LICENSES/kaykit-skeletons.txt": {
+   "bytes": 914,
+   "sha384": "sha384-VTwraYs673AY2gPjxV+sKhDaPCaojJBbM38zHPbgP4Cs50EUpN8ThLgZnzdjK40T"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 2438,
+   "sha384": "sha384-4NQ4otmDa7MHSt5enyvPnqCgtny/ZoNcHYY0UtyIsa5CEnedagkg8+UwU1M0pp+J"
+  },
+  "cover.webp": {
+   "bytes": 26894,
+   "sha384": "sha384-idmMBpoPSDFENcm4ZFR7frrcXxuj4841v7Vz0Cu2voqs36k0BoEY2RIH8bH6Rdkk"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/bonzo.glb": {
+   "bytes": 231944,
+   "sha384": "sha384-RFrgktMl9/UeKDa0znXX5QMIrVfYBOKmWMVTI00Oortjg6Pu8uNIDTfAc+HEuH2H"
+  },
+  "heroes/captain-clank.glb": {
+   "bytes": 257908,
+   "sha384": "sha384-fiPOxR5eUdbtKadN016jUpmydPN7fnY3SvdeotS2vfCOrRbXd3kUGWgiYPWUih5k"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rattles.glb": {
+   "bytes": 226448,
+   "sha384": "sha384-yG/G4KSwUsgihxot8mmrjuTc2petgmkChp2oaAJl4Mghbd9wI31Zq/L8+nXs6AUf"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "heroes/skelly.glb": {
+   "bytes": 194104,
+   "sha384": "sha384-wZCWwNpt0a0SeWUoYQFzA5Ds6jQMJdRRME4/u+Id3Kapuuvo3eKXQQHnj8mRhSSF"
+  },
+  "props/barrel-small.glb": {
+   "bytes": 26572,
+   "sha384": "sha384-mUSc9M5jl6gFdixVwx+T9Wvw2qmb/UM/SYnhkqcViBH7BAGmvxMP/+4de6Gs/B5e"
+  },
+  "props/barrel.glb": {
+   "bytes": 34532,
+   "sha384": "sha384-Jn1ORDDPrL0oaWr6WSc9L+IO3aDFOjLGBUQs9fYaY6NM1GT6V1RAA6ghwJ4ug71n"
+  },
+  "props/chest-gold.glb": {
+   "bytes": 71800,
+   "sha384": "sha384-Rf7QobPmSqb7KqPWxI8QhyP62/jDjG3OQv5yrWpC+bULhkIk/lvj66kf5esq66u7"
+  },
+  "props/chest.glb": {
+   "bytes": 45184,
+   "sha384": "sha384-C75TVamhngccjiTAA5bH6+lmJijJB2oAwicYJs2JlilpnrVDEFEaMYQvKIIUNcxO"
+  },
+  "props/coin-pile.glb": {
+   "bytes": 72172,
+   "sha384": "sha384-2bqOkj85nuu8oXXKLqvpoJFouUZSpqOQ1vC17++TCSkzigyWiA17mc13Qh5m7sag"
+  },
+  "props/coin.glb": {
+   "bytes": 20184,
+   "sha384": "sha384-c1uMDiDQnmgzdSY3ilYv+EcIQps4Lj+kBzXDHk4nIXUuxB7QjNh6IvWk8TUaS95D"
+  },
+  "props/crate.glb": {
+   "bytes": 24848,
+   "sha384": "sha384-RW/Au9Y+LXSgm9kBepEmlx+P6e+5NiVRtqBMHfHJXWIKhY00zGQTaQl09RtAGa7X"
+  },
+  "props/crates.glb": {
+   "bytes": 70120,
+   "sha384": "sha384-i55EsfAH7c27ZCkQdda55ykqN7jJdGhG5PiVPXShKkv8lmqnuC95USYtYYlNk4L5"
+  },
+  "props/key.glb": {
+   "bytes": 21488,
+   "sha384": "sha384-UqxOQ2ARe84nmj5wJecuZgZZC1isxwa7bzNZR3G7jZbsjRheplDcLoLkBY0MDNg6"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/banner-blue.glb": {
+   "bytes": 21656,
+   "sha384": "sha384-4CQ1D/hW1PFzs6MzDvO7bgNMm7xgyEqvO17wMjp+G+6INVHe1dNzXzwZvxaCJR+z"
+  },
+  "world/banner-red.glb": {
+   "bytes": 21656,
+   "sha384": "sha384-4+vDDw8NsB1nD5KCzAunHxpxXkNLBf8m/BLK6D1ROdLA9aG48yJ0E3vPoBWEFVln"
+  },
+  "world/banner-yellow.glb": {
+   "bytes": 22404,
+   "sha384": "sha384-ymlQOwf6k4krmx2r7lfuAMLI6Nhk9hXdUaiaR2K9Z89UVo5JhcSs5SbUpym42/SK"
+  },
+  "world/block.glb": {
+   "bytes": 35060,
+   "sha384": "sha384-TkmMlaJogf9w9Z7djLS9eE7QIpDj0vaLQGUZLi9xxsD7aI/C32vpG9PwayVqsH5S"
+  },
+  "world/bridge.glb": {
+   "bytes": 34708,
+   "sha384": "sha384-p/Hl07WwRXYeWqi+m5/SndPjj6pYhmKef4k3F25FglHqH+rZcvYGZ0SOLdOEJhUx"
+  },
+  "world/bushes.glb": {
+   "bytes": 32708,
+   "sha384": "sha384-PW+C0QImRqO/KWgZ+ow25vBGl8AMG4pnZV5TnzNoO4ZlwSkJbLlOW/4tfxR8dyfK"
+  },
+  "world/candles.glb": {
+   "bytes": 23992,
+   "sha384": "sha384-f+J0bM3DKOEc+f23UdyJG1H3iytL2jmeuil1LBoFzkN8jplfJR4+zQMuWVBOHl2T"
+  },
+  "world/castle-building.glb": {
+   "bytes": 228680,
+   "sha384": "sha384-pVoduQQ/ajn1gU+at1YKs5OwvpPqdgGal6cjymUw0/aJ2sn4FkbE0f4ow5XyKuzA"
+  },
+  "world/chair.glb": {
+   "bytes": 29216,
+   "sha384": "sha384-FQ3na0IKuQ15t1vsoF5KpcZcheqttJk1ES7CY9iXr9g8+kpO7QRO8qMGk+yMshUT"
+  },
+  "world/column.glb": {
+   "bytes": 19396,
+   "sha384": "sha384-bK6kH3X6CvIuqjD0RqRp9/T0h1eLCA6t5dqWFeSM7j3oGLUQLtBxt4pU+y8/ouLZ"
+  },
+  "world/feast.glb": {
+   "bytes": 31352,
+   "sha384": "sha384-iYi1eoWPJbqBXKy1fPv9oN9aRujFhoaU6X+hWSXBmaM9CrShJQDopmQvT6KAEG9k"
+  },
+  "world/fence.glb": {
+   "bytes": 27244,
+   "sha384": "sha384-qGJOenj3IOkBOLEQCjRgP3chjEaxuj5Iq17wRvet8J/h0kAWvuu2u9m1OQppM7vL"
+  },
+  "world/floor-dirt.glb": {
+   "bytes": 21892,
+   "sha384": "sha384-tkLlOOhM+QGZJmgC7URcjJVhGJWhm5qI3Zvh4TDNmnI3JOEugKqyhFsMyn90gGf1"
+  },
+  "world/floor-stone.glb": {
+   "bytes": 23824,
+   "sha384": "sha384-fvH8bhzQ0/SDrbDq3/sa5Rb1zre+wTqcwCm7VNTMQ7nEWEyAbviQ6m0iC3RrDRpL"
+  },
+  "world/floor-wood.glb": {
+   "bytes": 29452,
+   "sha384": "sha384-eFHDX2PmkLQfqGyT5f1f/B/OxIJlVvPo5dLhL5F8Zas98eKmpgVtegDGuLYEw8Gt"
+  },
+  "world/forest-round.glb": {
+   "bytes": 53312,
+   "sha384": "sha384-XyRq7ph/RFHt1ZIeZcd+oPlbp8S9dEDLKXY8b0IooC+PJ6FvgDCNpO+vB8k3r1kK"
+  },
+  "world/forest.glb": {
+   "bytes": 54952,
+   "sha384": "sha384-oOHSPvnJey83Vdctv/65cdBUsO7w7uY6O/eJcwxNUKzhJSzCqYXFJyBNlf8hLWGr"
+  },
+  "world/hill.glb": {
+   "bytes": 19500,
+   "sha384": "sha384-lfRT5AU5u4DyHqVFrWuhFo3kiI6onozxpK7E0HBWTQ/dpq0YDQ0K6Hymqw9ntAn7"
+  },
+  "world/hills-trees.glb": {
+   "bytes": 37932,
+   "sha384": "sha384-XOjvpuhyj+gLUMDWFW+gvURB2LyTMdDMwHRONDgEFX4ff9tNmorOeVhOsRxQAdjy"
+  },
+  "world/mountain.glb": {
+   "bytes": 35512,
+   "sha384": "sha384-QjNFuLrFL7WS7QXN4+NXjwpz9z6kR2A7KCR/5kvrajP1S6dK7F1pxCN9R02T4HaY"
+  },
+  "world/pillar.glb": {
+   "bytes": 22904,
+   "sha384": "sha384-eQ/bGlc9tWQinUTwLugYj4osPvpjCRe4C57etjOfd2xuT4zO2Hh6dXkfm/MN4IUY"
+  },
+  "world/rock-big.glb": {
+   "bytes": 18824,
+   "sha384": "sha384-2dXDGWyh15BWWp4FXCjBJ+pia0mOd7sJUf2GWfSj5SXgxChFx9etfbDFYav3RFxe"
+  },
+  "world/rock.glb": {
+   "bytes": 18164,
+   "sha384": "sha384-kdsEtYO+hpdq0ujMUi3KlNqp9+Ex04GFTIdBGt2XxYe8RLjGkUhn4uLeJkNTDkfy"
+  },
+  "world/shelf.glb": {
+   "bytes": 25320,
+   "sha384": "sha384-1wGZqY6hC6x+Af0vcusjPwxVllqj8VS49XhJ35DthMOAEAhsjJwd7aPX9J9KnBIA"
+  },
+  "world/spikes.glb": {
+   "bytes": 46044,
+   "sha384": "sha384-sfkN1QpiO/mR0w/HJGNEW+cmFW8Wjxf1SljVuuDgKetdStQgcU6Hp+yFW6GZuEMu"
+  },
+  "world/stairs-wide.glb": {
+   "bytes": 34168,
+   "sha384": "sha384-pXAP+JhytD9Nu+TWnhc9NTzLNYpTtMOAmQYiRcGo4PN2ZHF6rzYzWWWXESjM+85u"
+  },
+  "world/stairs.glb": {
+   "bytes": 34160,
+   "sha384": "sha384-9DFK3n1LpbuAkpxLZXPMbbLO0+LDPY2PpNRpeqbrDtWWdMBtxQDVVyIpPY+HC+O0"
+  },
+  "world/table.glb": {
+   "bytes": 28544,
+   "sha384": "sha384-PzyNwNiz8y6djxJTLqf61O24wAzvuFPuj2U4Taoe9U9WCb6ze2Ftq8Q6IA5lpIA2"
+  },
+  "world/torch.glb": {
+   "bytes": 25304,
+   "sha384": "sha384-SfNs1Mk/FcEzEv9P8vcQA0zYw5BgFmzrZi5gwRqvC/9Wh0FAdL8Zo2uUSB4IbN1Y"
+  },
+  "world/tower.glb": {
+   "bytes": 93508,
+   "sha384": "sha384-QooZNjq3Z+Pc6gEKDbbvubR+0Y0EiT5O1HDlxxKt/H9MRltaxXQk4ZYegOm9ZxGG"
+  },
+  "world/tree-round.glb": {
+   "bytes": 22464,
+   "sha384": "sha384-KfFBwrBPklfm5pIoYS/Qx9SFIpuma2rP1l4vqICMpfTnxMCO8ivPNY0FdmF3dy/a"
+  },
+  "world/tree.glb": {
+   "bytes": 19556,
+   "sha384": "sha384-D8Sjm4uqxwCsoO1wX4yrY6Vj1rLmUd5NZrHUwdDoHj0HxorIxAued/HntvnVH8hX"
+  },
+  "world/trees.glb": {
+   "bytes": 38244,
+   "sha384": "sha384-6rcDJRtVlhIRndgn7DhpQtKq9SZn0675pVOHsYFJTRCC7+/M4ZbechYa6nACtvPw"
+  },
+  "world/wall-arched.glb": {
+   "bytes": 49676,
+   "sha384": "sha384-JQluTb/Rx+tMQ6GE6xqGK12G39wAE+tRxnR/nLW+aMpD2myBmRRlk7wtLw0Xn/7U"
+  },
+  "world/wall-corner.glb": {
+   "bytes": 37648,
+   "sha384": "sha384-syBF46sknI5ZmibdOIx1YYvgcMACAmH63o+UlQ8TTWlajICVHs1LF5SpbwLOtiBx"
+  },
+  "world/wall-doorway.glb": {
+   "bytes": 54200,
+   "sha384": "sha384-Rw/714HZfrmRZxywQ9RurIqRt9v2uTerJJz+OiZaUqHvGSzkY7DOygMI/hwFIrQ+"
+  },
+  "world/wall-torch.glb": {
+   "bytes": 26652,
+   "sha384": "sha384-BDaL6iuStLRCbFgxqy0citCO9Ok/xL8Hgen6YkdxhFGueiVQzLXfhhI0jPxeEaLB"
+  },
+  "world/wall-window.glb": {
+   "bytes": 43068,
+   "sha384": "sha384-Uh3Ksjgqrdt+LsUfFnER7niC2IfHYz0bxyFQqxKwb5j88m+UqjWkzGDNYJgonrob"
+  },
+  "world/wall.glb": {
+   "bytes": 40352,
+   "sha384": "sha384-AgCFU0IEziq2AQwOCEjvfmCW7h3WCrk5hc0rzHk4xFEAWObPAs5p/yHwhIi4wDGU"
+  },
+  "world/well.glb": {
+   "bytes": 45456,
+   "sha384": "sha384-gjzv2U8zi74MySomfSpa+uqc5SNY4rJ1Vn/GUPA9he2/0GoZZc9J80/b8Y+pOtS5"
+  }
+ },
+ "firstLoadBytes": 4229376
+}

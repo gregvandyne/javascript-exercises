@@ -1,166 +1,186 @@
 {
- "_": "How Toy Town 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "_": "How Toy Town 1.1.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
  "models": [
   {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
-   "to": "heroes/skelly.glb",
-   "keepMeshes": [
-    "Skeleton_Mage_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
-   "to": "heroes/rattles.glb",
-   "keepMeshes": [
-    "Skeleton_Minion_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
-   "to": "heroes/bonzo.glb",
-   "keepMeshes": [
-    "Skeleton_Rogue_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
-   "to": "heroes/captain-clank.glb",
-   "keepMeshes": [
-    "Skeleton_Warrior_.*"
-   ]
-  },
-  {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/base.gltf",
+   "from": "theme:toy-town/1.0.0/world/ground.glb",
    "to": "world/ground.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight.gltf",
+   "from": "theme:toy-town/1.0.0/world/road.glb",
    "to": "world/road.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight_crossing.gltf",
+   "from": "theme:toy-town/1.0.0/world/road-crossing.glb",
    "to": "world/road-crossing.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_corner_curved.gltf",
+   "from": "theme:toy-town/1.0.0/world/road-corner.glb",
    "to": "world/road-corner.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_junction.gltf",
+   "from": "theme:toy-town/1.0.0/world/road-junction.glb",
    "to": "world/road-junction.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_tsplit.gltf",
+   "from": "theme:toy-town/1.0.0/world/road-t.glb",
    "to": "world/road-t.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_A.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-a.glb",
    "to": "world/building-a.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_B.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-b.glb",
    "to": "world/building-b.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_C.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-c.glb",
    "to": "world/building-c.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_D.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-d.glb",
    "to": "world/building-d.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_E.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-e.glb",
    "to": "world/building-e.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_F.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-f.glb",
    "to": "world/building-f.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_G.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-g.glb",
    "to": "world/building-g.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_H.gltf",
+   "from": "theme:toy-town/1.0.0/world/building-h.glb",
    "to": "world/building-h.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_taxi.gltf",
+   "from": "theme:toy-town/1.0.0/props/car-taxi.glb",
    "to": "props/car-taxi.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_police.gltf",
+   "from": "theme:toy-town/1.0.0/props/car-police.glb",
    "to": "props/car-police.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_hatchback.gltf",
+   "from": "theme:toy-town/1.0.0/props/car-hatchback.glb",
    "to": "props/car-hatchback.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_sedan.gltf",
+   "from": "theme:toy-town/1.0.0/props/car-sedan.glb",
    "to": "props/car-sedan.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_stationwagon.gltf",
+   "from": "theme:toy-town/1.0.0/props/car-wagon.glb",
    "to": "props/car-wagon.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bench.gltf",
+   "from": "theme:toy-town/1.0.0/world/bench.glb",
    "to": "world/bench.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bush.gltf",
+   "from": "theme:toy-town/1.0.0/world/bush.glb",
    "to": "world/bush.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/streetlight.gltf",
+   "from": "theme:toy-town/1.0.0/world/streetlight.glb",
    "to": "world/streetlight.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/trafficlight_A.gltf",
+   "from": "theme:toy-town/1.0.0/world/traffic-light.glb",
    "to": "world/traffic-light.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/firehydrant.gltf",
+   "from": "theme:toy-town/1.0.0/world/fire-hydrant.glb",
    "to": "world/fire-hydrant.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/watertower.gltf",
+   "from": "theme:toy-town/1.0.0/world/water-tower.glb",
    "to": "world/water-tower.glb"
   },
   {
-   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/box_A.gltf",
+   "from": "theme:toy-town/1.0.0/props/box.glb",
    "to": "props/box.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "from": "theme:toy-town/1.0.0/props/coin.glb",
    "to": "props/coin.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
+   "to": "world/tree.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
+   "to": "world/tree-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
+   "to": "world/trees.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
+   "to": "world/forest.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
+   "to": "world/forest-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
+   "to": "world/bushes.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
+   "to": "world/rock.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
+   "to": "world/rock-big.glb"
   }
  ],
  "copy": [
   {
-   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "from": "theme:toy-town/1.0.0/heroes/knight.glb",
    "to": "heroes/knight.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "from": "theme:toy-town/1.0.0/heroes/barbarian.glb",
    "to": "heroes/barbarian.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "from": "theme:toy-town/1.0.0/heroes/mage.glb",
    "to": "heroes/mage.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "from": "theme:toy-town/1.0.0/heroes/rogue.glb",
    "to": "heroes/rogue.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "from": "theme:toy-town/1.0.0/heroes/rogue-hooded.glb",
    "to": "heroes/rogue-hooded.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "from": "theme:toy-town/1.0.0/heroes/skelly.glb",
+   "to": "heroes/skelly.glb"
+  },
+  {
+   "from": "theme:toy-town/1.0.0/heroes/rattles.glb",
+   "to": "heroes/rattles.glb"
+  },
+  {
+   "from": "theme:toy-town/1.0.0/heroes/bonzo.glb",
+   "to": "heroes/bonzo.glb"
+  },
+  {
+   "from": "theme:toy-town/1.0.0/heroes/captain-clank.glb",
+   "to": "heroes/captain-clank.glb"
+  },
+  {
+   "from": "theme:toy-town/1.0.0/heroes/moves.glb",
    "to": "heroes/moves.glb"
   },
   {

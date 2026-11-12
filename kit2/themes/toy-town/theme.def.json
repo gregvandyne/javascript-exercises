@@ -1,7 +1,7 @@
 {
  "id": "toy-town",
  "name": "Toy Town",
- "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works.",
+ "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works, now with trees, bushes and rocks.",
  "goodFor": [
   "geography",
   "money",
@@ -29,8 +29,7 @@
    "downloaded": "2026-11-12",
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kaykit-skeletons.txt",
-   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
-   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   },
   {
    "id": "kaykit-city-builder",
@@ -41,8 +40,7 @@
    "downloaded": "2026-11-12",
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kaykit-city-builder.txt",
-   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
-   "dir": "KayKit-City-Builder-Bits-1.0/"
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   },
   {
    "id": "kaykit-dungeon",
@@ -53,8 +51,7 @@
    "downloaded": "2026-11-12",
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kaykit-dungeon.txt",
-   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
-   "dir": "KayKit-Dungeon-Remastered-1.0/"
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   },
   {
    "id": "kenney-platformer",
@@ -66,321 +63,453 @@
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kenney-platformer.md",
    "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-medieval",
+   "name": "KayKit Medieval Hexagon Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+   "commit": "84fa4e91af6a88989be7c99e0891cede11f2ca38",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-medieval.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Medieval-Hexagon-Pack-1.0/"
   }
  ],
  "heroes": [
   {
    "id": "knight",
    "name": "Knight",
-   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "from": "theme:toy-town/1.0.0/heroes/knight.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "barbarian",
    "name": "Explorer",
-   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "from": "theme:toy-town/1.0.0/heroes/barbarian.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "mage",
    "name": "Wizard",
-   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "from": "theme:toy-town/1.0.0/heroes/mage.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "rogue",
    "name": "Ranger",
-   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "from": "theme:toy-town/1.0.0/heroes/rogue.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "rogue-hooded",
    "name": "Hooded Ranger",
-   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "from": "theme:toy-town/1.0.0/heroes/rogue-hooded.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "skelly",
    "name": "Skelly",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
-   "keepMeshes": [
-    "Skeleton_Mage_.*"
-   ],
+   "from": "theme:toy-town/1.0.0/heroes/skelly.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "rattles",
    "name": "Rattles",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
-   "keepMeshes": [
-    "Skeleton_Minion_.*"
-   ],
+   "from": "theme:toy-town/1.0.0/heroes/rattles.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "bonzo",
    "name": "Bonzo",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
-   "keepMeshes": [
-    "Skeleton_Rogue_.*"
-   ],
+   "from": "theme:toy-town/1.0.0/heroes/bonzo.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "captain-clank",
    "name": "Captain Clank",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
-   "keepMeshes": [
-    "Skeleton_Warrior_.*"
-   ],
+   "from": "theme:toy-town/1.0.0/heroes/captain-clank.glb",
    "pack": "kaykit-skeletons"
   }
  ],
  "pieces": [
   [
    "ground",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/base.gltf",
+   "theme:toy-town/1.0.0/world/ground.glb",
    "world",
    [
     "ground",
     "floor",
     "platform"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "road",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight.gltf",
+   "theme:toy-town/1.0.0/world/road.glb",
    "world",
    [
     "road",
     "path",
     "floor"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "road-crossing",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight_crossing.gltf",
+   "theme:toy-town/1.0.0/world/road-crossing.glb",
    "world",
    [
     "road",
     "path",
     "floor"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "road-corner",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_corner_curved.gltf",
+   "theme:toy-town/1.0.0/world/road-corner.glb",
    "world",
    [
     "road",
     "path",
     "floor"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "road-junction",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_junction.gltf",
+   "theme:toy-town/1.0.0/world/road-junction.glb",
    "world",
    [
     "road",
     "path",
     "floor"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "road-t",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_tsplit.gltf",
+   "theme:toy-town/1.0.0/world/road-t.glb",
    "world",
    [
     "road",
     "path",
     "floor"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-a",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_A.gltf",
+   "theme:toy-town/1.0.0/world/building-a.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-b",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_B.gltf",
+   "theme:toy-town/1.0.0/world/building-b.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-c",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_C.gltf",
+   "theme:toy-town/1.0.0/world/building-c.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-d",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_D.gltf",
+   "theme:toy-town/1.0.0/world/building-d.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-e",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_E.gltf",
+   "theme:toy-town/1.0.0/world/building-e.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-f",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_F.gltf",
+   "theme:toy-town/1.0.0/world/building-f.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-g",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_G.gltf",
+   "theme:toy-town/1.0.0/world/building-g.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "building-h",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_H.gltf",
+   "theme:toy-town/1.0.0/world/building-h.glb",
    "world",
    [
     "building",
     "house"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "car-taxi",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_taxi.gltf",
+   "theme:toy-town/1.0.0/props/car-taxi.glb",
    "prop",
    [
     "vehicle",
     "car"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "car-police",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_police.gltf",
+   "theme:toy-town/1.0.0/props/car-police.glb",
    "prop",
    [
     "vehicle",
     "car"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "car-hatchback",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_hatchback.gltf",
+   "theme:toy-town/1.0.0/props/car-hatchback.glb",
    "prop",
    [
     "vehicle",
     "car"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "car-sedan",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_sedan.gltf",
+   "theme:toy-town/1.0.0/props/car-sedan.glb",
    "prop",
    [
     "vehicle",
     "car"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "car-wagon",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_stationwagon.gltf",
+   "theme:toy-town/1.0.0/props/car-wagon.glb",
    "prop",
    [
     "vehicle",
     "car"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "bench",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bench.gltf",
+   "theme:toy-town/1.0.0/world/bench.glb",
    "decor",
    [
     "bench",
     "furniture"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "bush",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bush.gltf",
+   "theme:toy-town/1.0.0/world/bush.glb",
    "decor",
    [
     "plant"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "streetlight",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/streetlight.gltf",
+   "theme:toy-town/1.0.0/world/streetlight.glb",
    "decor",
    [
     "light"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "traffic-light",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/trafficlight_A.gltf",
+   "theme:toy-town/1.0.0/world/traffic-light.glb",
    "decor",
    [
     "light",
     "traffic"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "fire-hydrant",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/firehydrant.gltf",
+   "theme:toy-town/1.0.0/world/fire-hydrant.glb",
    "decor",
    [
     "street"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "water-tower",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/watertower.gltf",
+   "theme:toy-town/1.0.0/world/water-tower.glb",
    "world",
    [
     "tower"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "box",
-   "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/box_A.gltf",
+   "theme:toy-town/1.0.0/props/box.glb",
    "prop",
    [
     "crate",
     "block",
     "collectible"
-   ]
+   ],
+   null,
+   "kaykit-city-builder"
   ],
   [
    "coin",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "theme:toy-town/1.0.0/props/coin.glb",
    "prop",
    [
     "collectible",
     "coin"
+   ],
+   null,
+   "kaykit-dungeon"
+  ],
+  [
+   "tree",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
+   "decor",
+   [
+    "tree",
+    "nature"
+   ]
+  ],
+  [
+   "tree-round",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
+   "decor",
+   [
+    "tree",
+    "nature"
+   ]
+  ],
+  [
+   "trees",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "forest",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "forest-round",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "bushes",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
+   "decor",
+   [
+    "tree",
+    "bush",
+    "nature"
+   ]
+  ],
+  [
+   "rock",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
+   "decor",
+   [
+    "rock",
+    "nature",
+    "obstacle"
+   ]
+  ],
+  [
+   "rock-big",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
+   "decor",
+   [
+    "rock",
+    "nature",
+    "obstacle"
    ]
   ]
  ],
@@ -425,10 +554,10 @@
   }
  },
  "engine": "three",
- "version": "1.0.0",
+ "version": "1.1.0",
  "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
  "moves": {
-  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "from": "theme:toy-town/1.0.0/heroes/moves.glb",
   "pack": "kaykit-adventurers",
   "clips": {
    "idle": "Unarmed_Idle",

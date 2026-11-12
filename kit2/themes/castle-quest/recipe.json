@@ -1,190 +1,242 @@
 {
- "_": "How Castle Quest 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "_": "How Castle Quest 1.1.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
  "models": [
   {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
-   "to": "heroes/skelly.glb",
-   "keepMeshes": [
-    "Skeleton_Mage_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
-   "to": "heroes/rattles.glb",
-   "keepMeshes": [
-    "Skeleton_Minion_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
-   "to": "heroes/bonzo.glb",
-   "keepMeshes": [
-    "Skeleton_Rogue_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
-   "to": "heroes/captain-clank.glb",
-   "keepMeshes": [
-    "Skeleton_Warrior_.*"
-   ]
-  },
-  {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/floor-stone.glb",
    "to": "world/floor-stone.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_wood_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/floor-wood.glb",
    "to": "world/floor-wood.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_dirt_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/floor-dirt.glb",
    "to": "world/floor-dirt.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_foundation_allsides.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/block.glb",
    "to": "world/block.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/stairs.glb",
    "to": "world/stairs.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs_wide.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/stairs-wide.glb",
    "to": "world/stairs-wide.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall.glb",
    "to": "world/wall.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_doorway.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall-doorway.glb",
    "to": "world/wall-doorway.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_window_open.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall-window.glb",
    "to": "world/wall-window.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_arched.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall-arched.glb",
    "to": "world/wall-arched.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_corner.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall-corner.glb",
    "to": "world/wall-corner.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/pillar.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/pillar.glb",
    "to": "world/pillar.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/column.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/column.glb",
    "to": "world/column.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_big_spikes.glb",
+   "from": "theme:castle-quest/1.0.0/world/spikes.glb",
    "to": "world/spikes.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "from": "theme:castle-quest/1.0.0/props/chest.glb",
    "to": "props/chest.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest_gold.glb",
+   "from": "theme:castle-quest/1.0.0/props/chest-gold.glb",
    "to": "props/chest-gold.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/coin.glb",
    "to": "props/coin.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin_stack_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/coin-pile.glb",
    "to": "props/coin-pile.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/key.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/key.glb",
    "to": "props/key.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/barrel.glb",
    "to": "props/barrel.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_small.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/barrel-small.glb",
    "to": "props/barrel-small.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/box_large.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/crate.glb",
    "to": "props/crate.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/crates_stacked.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/props/crates.glb",
    "to": "props/crates.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_lit.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/torch.glb",
    "to": "world/torch.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_mounted.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/wall-torch.glb",
    "to": "world/wall-torch.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/candle_triple.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/candles.glb",
    "to": "world/candles.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_blue.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/banner-blue.glb",
    "to": "world/banner-blue.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_red.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/banner-red.glb",
    "to": "world/banner-red.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_patternA_yellow.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/banner-yellow.glb",
    "to": "world/banner-yellow.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/table_medium_tablecloth.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/table.glb",
    "to": "world/table.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chair.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/chair.glb",
    "to": "world/chair.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/shelf_small_candles.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/shelf.glb",
    "to": "world/shelf.glb"
   },
   {
-   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/plate_food_A.gltf.glb",
+   "from": "theme:castle-quest/1.0.0/world/feast.glb",
    "to": "world/feast.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
+   "to": "world/tree.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
+   "to": "world/tree-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
+   "to": "world/trees.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
+   "to": "world/forest.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
+   "to": "world/forest-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
+   "to": "world/bushes.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hill_single_A.gltf",
+   "to": "world/hill.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hills_A_trees.gltf",
+   "to": "world/hills-trees.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/mountain_A_grass_trees.gltf",
+   "to": "world/mountain.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
+   "to": "world/rock.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
+   "to": "world/rock-big.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_castle_blue.gltf",
+   "to": "world/castle-building.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_tower_A_blue.gltf",
+   "to": "world/tower.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_well_blue.gltf",
+   "to": "world/well.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/fence_wood_straight.gltf",
+   "to": "world/fence.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/building_bridge_A.gltf",
+   "to": "world/bridge.glb"
   }
  ],
  "copy": [
   {
-   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
    "to": "heroes/knight.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
    "to": "heroes/barbarian.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
    "to": "heroes/mage.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
    "to": "heroes/rogue.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
    "to": "heroes/rogue-hooded.glb"
   },
   {
-   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/skelly.glb",
+   "to": "heroes/skelly.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rattles.glb",
+   "to": "heroes/rattles.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/bonzo.glb",
+   "to": "heroes/bonzo.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/captain-clank.glb",
+   "to": "heroes/captain-clank.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
    "to": "heroes/moves.glb"
   },
   {

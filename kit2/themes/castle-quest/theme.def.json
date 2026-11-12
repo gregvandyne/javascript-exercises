@@ -1,7 +1,7 @@
 {
  "id": "castle-quest",
  "name": "Castle Quest",
- "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests.",
+ "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests, with forests, hills and a castle on the hill.",
  "goodFor": [
   "reading",
   "history",
@@ -29,8 +29,7 @@
    "downloaded": "2026-11-12",
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kaykit-skeletons.txt",
-   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
-   "dir": "KayKit-Character-Pack-Skeletons-1.0/"
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   },
   {
    "id": "kaykit-dungeon",
@@ -41,8 +40,7 @@
    "downloaded": "2026-11-12",
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kaykit-dungeon.txt",
-   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
-   "dir": "KayKit-Dungeon-Remastered-1.0/"
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   },
   {
    "id": "kenney-platformer",
@@ -54,375 +52,591 @@
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kenney-platformer.md",
    "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-medieval",
+   "name": "KayKit Medieval Hexagon Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+   "commit": "84fa4e91af6a88989be7c99e0891cede11f2ca38",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-medieval.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)",
+   "dir": "KayKit-Medieval-Hexagon-Pack-1.0/"
   }
  ],
  "heroes": [
   {
    "id": "knight",
    "name": "Knight",
-   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "barbarian",
    "name": "Explorer",
-   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "mage",
    "name": "Wizard",
-   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "rogue",
    "name": "Ranger",
-   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "rogue-hooded",
    "name": "Hooded Ranger",
-   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
    "pack": "kaykit-adventurers"
   },
   {
    "id": "skelly",
    "name": "Skelly",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
-   "keepMeshes": [
-    "Skeleton_Mage_.*"
-   ],
+   "from": "theme:castle-quest/1.0.0/heroes/skelly.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "rattles",
    "name": "Rattles",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
-   "keepMeshes": [
-    "Skeleton_Minion_.*"
-   ],
+   "from": "theme:castle-quest/1.0.0/heroes/rattles.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "bonzo",
    "name": "Bonzo",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
-   "keepMeshes": [
-    "Skeleton_Rogue_.*"
-   ],
+   "from": "theme:castle-quest/1.0.0/heroes/bonzo.glb",
    "pack": "kaykit-skeletons"
   },
   {
    "id": "captain-clank",
    "name": "Captain Clank",
-   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
-   "keepMeshes": [
-    "Skeleton_Warrior_.*"
-   ],
+   "from": "theme:castle-quest/1.0.0/heroes/captain-clank.glb",
    "pack": "kaykit-skeletons"
   }
  ],
  "pieces": [
   [
    "floor-stone",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_large.gltf.glb",
+   "theme:castle-quest/1.0.0/world/floor-stone.glb",
    "world",
    [
     "ground",
     "floor",
     "platform"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "floor-wood",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_wood_large.gltf.glb",
+   "theme:castle-quest/1.0.0/world/floor-wood.glb",
    "world",
    [
     "ground",
     "floor",
     "platform"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "floor-dirt",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_dirt_large.gltf.glb",
+   "theme:castle-quest/1.0.0/world/floor-dirt.glb",
    "world",
    [
     "ground",
     "floor",
     "platform"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "block",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_foundation_allsides.gltf.glb",
+   "theme:castle-quest/1.0.0/world/block.glb",
    "world",
    [
     "platform",
     "step",
     "block"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "stairs",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs.gltf.glb",
+   "theme:castle-quest/1.0.0/world/stairs.glb",
    "world",
    [
     "stairs",
     "climb"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "stairs-wide",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs_wide.gltf.glb",
+   "theme:castle-quest/1.0.0/world/stairs-wide.glb",
    "world",
    [
     "stairs",
     "climb"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall.gltf.glb",
+   "theme:castle-quest/1.0.0/world/wall.glb",
    "world",
    [
     "wall"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall-doorway",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_doorway.glb",
+   "theme:castle-quest/1.0.0/world/wall-doorway.glb",
    "world",
    [
     "wall",
     "door"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall-window",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_window_open.gltf.glb",
+   "theme:castle-quest/1.0.0/world/wall-window.glb",
    "world",
    [
     "wall",
     "window"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall-arched",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_arched.gltf.glb",
+   "theme:castle-quest/1.0.0/world/wall-arched.glb",
    "world",
    [
     "wall",
     "arch"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall-corner",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_corner.gltf.glb",
+   "theme:castle-quest/1.0.0/world/wall-corner.glb",
    "world",
    [
     "wall",
     "corner"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "pillar",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/pillar.gltf.glb",
+   "theme:castle-quest/1.0.0/world/pillar.glb",
    "world",
    [
     "pillar"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "column",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/column.gltf.glb",
+   "theme:castle-quest/1.0.0/world/column.glb",
    "world",
    [
     "pillar"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "spikes",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_big_spikes.glb",
+   "theme:castle-quest/1.0.0/world/spikes.glb",
    "world",
    [
     "obstacle",
     "hazard",
     "floor"
    ],
-   "A floor with spikes: a hazard to jump over."
+   null,
+   "kaykit-dungeon"
   ],
   [
    "chest",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "theme:castle-quest/1.0.0/props/chest.glb",
    "prop",
    [
     "treasure",
     "goal",
     "answer"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "chest-gold",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest_gold.glb",
+   "theme:castle-quest/1.0.0/props/chest-gold.glb",
    "prop",
    [
     "treasure",
     "goal",
     "answer"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "coin",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "theme:castle-quest/1.0.0/props/coin.glb",
    "prop",
    [
     "collectible",
     "coin"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "coin-pile",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin_stack_large.gltf.glb",
+   "theme:castle-quest/1.0.0/props/coin-pile.glb",
    "prop",
    [
     "treasure",
     "collectible"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "key",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/key.gltf.glb",
+   "theme:castle-quest/1.0.0/props/key.glb",
    "prop",
    [
     "collectible",
     "key"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "barrel",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_large.gltf.glb",
+   "theme:castle-quest/1.0.0/props/barrel.glb",
    "prop",
    [
     "barrel",
     "obstacle"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "barrel-small",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_small.gltf.glb",
+   "theme:castle-quest/1.0.0/props/barrel-small.glb",
    "prop",
    [
     "barrel"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "crate",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/box_large.gltf.glb",
+   "theme:castle-quest/1.0.0/props/crate.glb",
    "prop",
    [
     "crate",
     "block"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "crates",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/crates_stacked.gltf.glb",
+   "theme:castle-quest/1.0.0/props/crates.glb",
    "prop",
    [
     "crate",
     "obstacle"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "torch",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_lit.gltf.glb",
+   "theme:castle-quest/1.0.0/world/torch.glb",
    "decor",
    [
     "light",
     "torch"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "wall-torch",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_mounted.gltf.glb",
+   "theme:castle-quest/1.0.0/world/wall-torch.glb",
    "decor",
    [
     "light",
     "torch"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "candles",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/candle_triple.gltf.glb",
+   "theme:castle-quest/1.0.0/world/candles.glb",
    "decor",
    [
     "light",
     "candle"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "banner-blue",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_blue.gltf.glb",
+   "theme:castle-quest/1.0.0/world/banner-blue.glb",
    "decor",
    [
     "banner",
     "flag"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "banner-red",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_red.gltf.glb",
+   "theme:castle-quest/1.0.0/world/banner-red.glb",
    "decor",
    [
     "banner",
     "flag"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "banner-yellow",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_patternA_yellow.gltf.glb",
+   "theme:castle-quest/1.0.0/world/banner-yellow.glb",
    "decor",
    [
     "banner",
     "flag"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "table",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/table_medium_tablecloth.gltf.glb",
+   "theme:castle-quest/1.0.0/world/table.glb",
    "decor",
    [
     "table",
     "furniture"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "chair",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chair.gltf.glb",
+   "theme:castle-quest/1.0.0/world/chair.glb",
    "decor",
    [
     "chair",
     "furniture"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "shelf",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/shelf_small_candles.gltf.glb",
+   "theme:castle-quest/1.0.0/world/shelf.glb",
    "decor",
    [
     "shelf",
     "furniture"
-   ]
+   ],
+   null,
+   "kaykit-dungeon"
   ],
   [
    "feast",
-   "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/plate_food_A.gltf.glb",
+   "theme:castle-quest/1.0.0/world/feast.glb",
    "decor",
    [
     "food"
+   ],
+   null,
+   "kaykit-dungeon"
+  ],
+  [
+   "tree",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
+   "decor",
+   [
+    "tree",
+    "nature"
+   ]
+  ],
+  [
+   "tree-round",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
+   "decor",
+   [
+    "tree",
+    "nature"
+   ]
+  ],
+  [
+   "trees",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "forest",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "forest-round",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
+   "decor",
+   [
+    "tree",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "bushes",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
+   "decor",
+   [
+    "tree",
+    "bush",
+    "nature"
+   ]
+  ],
+  [
+   "hill",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hill_single_A.gltf",
+   "decor",
+   [
+    "hill",
+    "nature"
+   ]
+  ],
+  [
+   "hills-trees",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hills_A_trees.gltf",
+   "decor",
+   [
+    "hill",
+    "forest",
+    "nature"
+   ]
+  ],
+  [
+   "mountain",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/mountain_A_grass_trees.gltf",
+   "decor",
+   [
+    "mountain",
+    "nature"
+   ]
+  ],
+  [
+   "rock",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
+   "decor",
+   [
+    "rock",
+    "nature",
+    "obstacle"
+   ]
+  ],
+  [
+   "rock-big",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
+   "decor",
+   [
+    "rock",
+    "nature",
+    "obstacle"
+   ]
+  ],
+  [
+   "castle-building",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_castle_blue.gltf",
+   "world",
+   [
+    "building",
+    "castle",
+    "goal"
+   ]
+  ],
+  [
+   "tower",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_tower_A_blue.gltf",
+   "world",
+   [
+    "building",
+    "tower"
+   ]
+  ],
+  [
+   "well",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_well_blue.gltf",
+   "world",
+   [
+    "building",
+    "well"
+   ]
+  ],
+  [
+   "fence",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/fence_wood_straight.gltf",
+   "world",
+   [
+    "fence"
+   ]
+  ],
+  [
+   "bridge",
+   "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/building_bridge_A.gltf",
+   "world",
+   [
+    "bridge",
+    "path"
    ]
   ]
  ],
@@ -467,10 +681,10 @@
   }
  },
  "engine": "three",
- "version": "1.0.0",
+ "version": "1.1.0",
  "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
  "moves": {
-  "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+  "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
   "pack": "kaykit-adventurers",
   "clips": {
    "idle": "Unarmed_Idle",

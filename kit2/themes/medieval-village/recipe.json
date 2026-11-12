@@ -1,0 +1,291 @@
+{
+ "_": "How Medieval Village 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/base/hex_grass.gltf",
+   "to": "world/ground.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/base/hex_grass_sloped_high.gltf",
+   "to": "world/ground-high.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/roads/hex_road_A.gltf",
+   "to": "world/road.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/roads/hex_road_B.gltf",
+   "to": "world/road-bend.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/rivers/hex_river_A.gltf",
+   "to": "world/river.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/rivers/hex_river_B.gltf",
+   "to": "world/river-bend.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/rivers/hex_river_crossing_A.gltf",
+   "to": "world/river-crossing.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/base/hex_water.gltf",
+   "to": "world/water.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/tiles/coast/hex_coast_A.gltf",
+   "to": "world/coast.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_castle_blue.gltf",
+   "to": "world/castle.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_home_A_blue.gltf",
+   "to": "world/house.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/red/building_home_A_red.gltf",
+   "to": "world/house-red.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/yellow/building_home_B_yellow.gltf",
+   "to": "world/cottage.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/green/building_home_B_green.gltf",
+   "to": "world/cottage-green.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/yellow/building_windmill_yellow.gltf",
+   "to": "world/windmill.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_watermill_blue.gltf",
+   "to": "world/watermill.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/red/building_market_red.gltf",
+   "to": "world/market.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/green/building_blacksmith_green.gltf",
+   "to": "world/blacksmith.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/yellow/building_lumbermill_yellow.gltf",
+   "to": "world/lumbermill.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_mine_blue.gltf",
+   "to": "world/mine.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/red/building_church_red.gltf",
+   "to": "world/church.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_well_blue.gltf",
+   "to": "world/well.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_tower_A_blue.gltf",
+   "to": "world/tower.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/building_bridge_A.gltf",
+   "to": "world/bridge.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/building_grain.gltf",
+   "to": "world/farm-field.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/wall_straight.gltf",
+   "to": "world/wall.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/wall_straight_gate.gltf",
+   "to": "world/wall-gate.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/fence_wood_straight.gltf",
+   "to": "world/fence.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/fence_wood_straight_gate.gltf",
+   "to": "world/fence-gate.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
+   "to": "world/tree.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
+   "to": "world/tree-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
+   "to": "world/trees.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
+   "to": "world/forest.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
+   "to": "world/forest-round.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
+   "to": "world/bushes.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hill_single_A.gltf",
+   "to": "world/hill.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hills_A_trees.gltf",
+   "to": "world/hills-trees.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/mountain_A_grass_trees.gltf",
+   "to": "world/mountain.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
+   "to": "world/rock.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
+   "to": "world/rock-big.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/waterlily_A.gltf",
+   "to": "world/waterlily.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/waterplant_A.gltf",
+   "to": "world/reeds.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/barrel.gltf",
+   "to": "props/barrel.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/crate_A_big.gltf",
+   "to": "props/crate.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/sack.gltf",
+   "to": "props/sack.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/wheelbarrow.gltf",
+   "to": "props/wheelbarrow.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/tent.gltf",
+   "to": "props/tent.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/flag_blue.gltf",
+   "to": "world/flag-blue.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/flag_red.gltf",
+   "to": "world/flag-red.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/resource_lumber.gltf",
+   "to": "props/logs.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/resource_stone.gltf",
+   "to": "props/stones.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/bucket_water.gltf",
+   "to": "props/bucket.glb"
+  },
+  {
+   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/props/ladder.gltf",
+   "to": "props/ladder.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/props/coin.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/props/chest.glb",
+   "to": "props/chest.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/skelly.glb",
+   "to": "heroes/skelly.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rattles.glb",
+   "to": "heroes/rattles.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/bonzo.glb",
+   "to": "heroes/bonzo.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/captain-clank.glb",
+   "to": "heroes/captain-clank.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 {
  "id": "toy-town",
  "name": "Toy Town",
- "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works.",
+ "description": "A bright little town with roads, shops, cars and traffic lights: perfect for maps, money and how a town works, now with trees, bushes and rocks.",
  "goodFor": [
   "geography",
   "money",
@@ -63,6 +63,17 @@
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kenney-platformer.md",
    "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-medieval",
+   "name": "KayKit Medieval Hexagon Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+   "commit": "84fa4e91af6a88989be7c99e0891cede11f2ca38",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-medieval.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
   }
  ],
  "look": {
@@ -106,7 +117,7 @@
   }
  },
  "engine": "three",
- "version": "1.0.0",
+ "version": "1.1.0",
  "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
  "heroes": [
   {
@@ -143,45 +154,25 @@
    "id": "skelly",
    "name": "Skelly",
    "file": "heroes/skelly.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.63,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "rattles",
    "name": "Rattles",
    "file": "heroes/rattles.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    2,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "bonzo",
    "name": "Bonzo",
    "file": "heroes/bonzo.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.31,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   },
   {
    "id": "captain-clank",
    "name": "Captain Clank",
    "file": "heroes/captain-clank.glb",
-   "pack": "kaykit-skeletons",
-   "size": [
-    2,
-    3.59,
-    2
-   ]
+   "pack": "kaykit-skeletons"
   }
  ],
  "moves": {
@@ -619,6 +610,134 @@
    ],
    "pack": "kaykit-dungeon",
    "note": "Its base is -0.06 below its y."
+  },
+  {
+   "id": "tree",
+   "file": "world/tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.57,
+    1.2,
+    0.55
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "tree-round",
+   "file": "world/tree-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "nature"
+   ],
+   "size": [
+    0.68,
+    1.21,
+    0.72
+   ],
+   "pack": "kaykit-medieval",
+   "note": "Its base is -0.1 below its y."
+  },
+  {
+   "id": "trees",
+   "file": "world/trees.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.75,
+    1.3,
+    1.81
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest",
+   "file": "world/forest.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.95,
+    0.93,
+    1.97
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "forest-round",
+   "file": "world/forest-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "forest",
+    "nature"
+   ],
+   "size": [
+    1.85,
+    1.17,
+    1.93
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "bushes",
+   "file": "world/bushes.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "bush",
+    "nature"
+   ],
+   "size": [
+    1.33,
+    0.92,
+    1.14
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock",
+   "file": "world/rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.3,
+    0.07,
+    0.28
+   ],
+   "pack": "kaykit-medieval"
+  },
+  {
+   "id": "rock-big",
+   "file": "world/rock-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "nature",
+    "obstacle"
+   ],
+   "size": [
+    0.34,
+    0.19,
+    0.34
+   ],
+   "pack": "kaykit-medieval"
   }
  ],
  "sounds": [
