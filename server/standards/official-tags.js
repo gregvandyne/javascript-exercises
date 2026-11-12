@@ -35,6 +35,9 @@ export const GAMES = Object.freeze({
   // Garden Count (kindergarten): counting out to 20, comparing two groups and two numerals to 10, and 11-19 as ten
   // ones and some more ones (its three chapters, GARDEN_CHAPTERS below).
   'garden-count': { 'ccss-math': ['K.CC.A.1', 'K.CC.B.4', 'K.CC.B.5', 'K.CC.C.6', 'K.CC.C.7', 'K.NBT.A.1'] },
+  // Lily Hop (kindergarten to grade 1): putting together and taking away within 10, number partners and what makes
+  // ten, adding and taking away within 20 by way of ten (its three chapters, LILY_CHAPTERS below).
+  'lily-hop': { 'ccss-math': ['K.OA.A.1', 'K.OA.A.2', 'K.OA.A.3', 'K.OA.A.4', '1.OA.C.6', '1.OA.B.3'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -52,8 +55,12 @@ export const FRACTION_CHAPTERS = Object.freeze({
 export const GARDEN_CHAPTERS = Object.freeze({
   count: ['K.CC.A.1', 'K.CC.B.4', 'K.CC.B.5'], compare: ['K.CC.C.6', 'K.CC.C.7'], teens: ['K.NBT.A.1'],
 });
+/** Lily Hop's chapters (seed-games/lily-hop.html LilyHop.CHAPTERS), for a step locked to one. */
+export const LILY_CHAPTERS = Object.freeze({
+  join: ['K.OA.A.1', 'K.OA.A.2'], apart: ['K.OA.A.3', 'K.OA.A.4'], twenty: ['1.OA.C.6', '1.OA.B.3'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -64,6 +71,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'sum-racer') { const n = /^\d{1,2}$/.test(p.get('level') || '') ? +p.get('level') : 0; return SUM_RACER_TRACKS[n] ? [...SUM_RACER_TRACKS[n]] : null; }
   if (slug === 'fraction-factory') { const ch = p.get('chapter') || ''; return Object.hasOwn(FRACTION_CHAPTERS, ch) ? [...FRACTION_CHAPTERS[ch]] : null; }
   if (slug === 'garden-count') { const ch = p.get('chapter') || ''; return Object.hasOwn(GARDEN_CHAPTERS, ch) ? [...GARDEN_CHAPTERS[ch]] : null; }
+  if (slug === 'lily-hop') { const ch = p.get('chapter') || ''; return Object.hasOwn(LILY_CHAPTERS, ch) ? [...LILY_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

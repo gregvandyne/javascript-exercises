@@ -1,0 +1,223 @@
+{
+ "key": "launchpad-2.2",
+ "n": "2.2",
+ "band": "launchpad",
+ "title": "Take apart and make 10",
+ "topic": "Number partners",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Two pads for five frogs",
+   "text": "Five frogs want two pads. How can they split up?",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "One number, two parts",
+   "text": "5 frogs split up: 2 here and 3 there. 5 is 2 and 3.",
+   "art": "people",
+   "visual": {
+    "type": "counters",
+    "label": "5 frogs split into 2 and 3",
+    "groups": [
+     {
+      "n": 5,
+      "split": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 frogs on one pad.",
+     "box": [
+      28.1,
+      23.5,
+      15.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "3 frogs on the other pad.",
+     "box": [
+      48.1,
+      23.5,
+      23.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "Together they are still 5.",
+     "box": [
+      28.1,
+      23.5,
+      43.8,
+      28.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Another way to split 5",
+   "text": "The same 5 can be 4 and 1. There is more than one way.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "5 frogs split another way: 4 and 1",
+    "groups": [
+     {
+      "n": 5,
+      "split": 4
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Now 4 frogs are here.",
+     "box": [
+      28.1,
+      23.5,
+      31.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "And 1 frog is there.",
+     "box": [
+      64.1,
+      23.5,
+      7.8,
+      28.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Find the partner of 7",
+   "text": "Ten spots and 7 frogs. How many spots are empty?",
+   "art": "star",
+   "steps": [
+    "Count the frogs: 7",
+    "Count the empty spots: 3",
+    "7 and 3 make 10"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "A ten-frame with 7 frogs and 3 empty spots",
+    "groups": [
+     {
+      "n": 7,
+      "frame": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "7 frogs sit in the frame.",
+     "box": [
+      32.5,
+      23.3,
+      35,
+      24.6
+     ]
+    },
+    {
+     "cue": "3 spots are empty.",
+     "box": [
+      45.5,
+      33.9,
+      23,
+      15.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Partners that make 10",
+   "text": "8 and 2 fill the frame. 8 and 2 make 10.",
+   "art": "grid",
+   "visual": {
+    "type": "counters",
+    "label": "A full ten-frame: 8 frogs and 2 more",
+    "groups": [
+     {
+      "n": 10,
+      "frame": true,
+      "split": 8
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "8 frogs sit here.",
+     "box": [
+      32.5,
+      23.3,
+      35,
+      24.6
+     ]
+    },
+    {
+     "cue": "2 more fill the frame.",
+     "box": [
+      53.5,
+      35.7,
+      14,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "part",
+     "means": "one piece of a whole group"
+    },
+    {
+     "word": "whole",
+     "means": "all the parts put together"
+    },
+    {
+     "word": "partners",
+     "means": "two numbers that make another number"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lily Hop at Number Partners. Find the missing partner six times.",
+   "art": "trophy",
+   "img": "nq/lily-hop/number-partners",
+   "alt": "Lily Hop on a phone: frogs split onto two lily pads, the words 4 is 3 and ?, and three number pads.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-2.2-e1",
+  "nq-launchpad-2.2-e2",
+  "nq-launchpad-2.2-e3"
+ ],
+ "game": {
+  "slug": "lily-hop",
+  "chapter": "Number Partners",
+  "params": "chapter=apart&lock=1"
+ }
+}

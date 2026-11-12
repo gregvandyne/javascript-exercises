@@ -90,10 +90,10 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
   assert.equal(lines.allowedLine('no-such-game', 'en', 'Find the word!'), null, 'only listed games');
   // Fraction Factory (Number Quest's game) is registered too, between footy-tycoon and gulp-city as in GAMES; Tug of
   // Math after Trick Inbox; Remi's Quiet Meadow after Question Battle; Garden Count (Number Quest Launchpad) after
-  // Fraction Factory.
+  // Fraction Factory, and Lily Hop (Launchpad Unit 2) after Happy Putt.
   assert.deepEqual([...lines.TTS_GAMES], ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'hero-of-sunvale',
     'atlas-quest', 'atlas-quest-live', 'beat-lanes', 'brain-board', 'brick-drop', 'castle-clash', 'code-isle',
-    'connect-four', 'escape-the-post-office', 'footy-tycoon', 'fraction-factory', 'garden-count', 'gulp-city', 'happy-putt', 'loop-lab', 'munch-maze',
+    'connect-four', 'escape-the-post-office', 'footy-tycoon', 'fraction-factory', 'garden-count', 'gulp-city', 'happy-putt', 'lily-hop', 'loop-lab', 'munch-maze',
     'quest-race', 'question-battle', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'ring-rumble', 'shark-plank', 'sum-racer', 'swish-flick', 'trick-inbox', 'tug-of-math',
     'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'word-trail', 'jungle-cup']);
 });

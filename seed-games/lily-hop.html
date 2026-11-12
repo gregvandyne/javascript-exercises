@@ -1,0 +1,754 @@
+<title>Lily Hop</title>
+<!-- Lily Hop: Number Quest Launchpad Unit 2, The Joining Pond (kindergarten to grade 1, ages 5-7). A calm pond on
+     Oomba3D 1.1.0 in the Sky Islands theme, with the sea: the helper hops across lily pads to the pad with the
+     answer. Three chapters of six rounds, one per course step:
+       join   (2.1) two groups of frogs come together (3 and 2 make 5), then some hop away (5 take away 2 is 3), to 10;
+       apart  (2.2) number partners: one number split two ways (5 is 2 and 3, 5 is 1 and 4), then what makes 10 with 7;
+       twenty (2.3) a number line of pads: start on 8, hop on 5; over ten by making ten first, forward and back to 20,
+                    and one round that turns the two numbers round (5 and 8 is the same as 8 and 5).
+     Made for a child who cannot read yet: every instruction is short, shown and spoken (BRB.speak, the shared path;
+     the speaker button says it again), the numbers are big, and everything is done by tapping a pad or a big number
+     button. No timer, no lives, no fail state: a wrong pad wobbles and the helper gives a spoken hint, then another try.
+     Lesson mode: BRB.params { chapter: join | apart | twenty, lock: 1 } opens that chapter only; finishing its six
+     rounds reports game over, won, once (the course step's completion signal). With no parameters the game offers the
+     three chapters from a picture menu. Saves only which chapters are finished (BRB.storage 'lily-hop-v1'). The import
+     map below is exactly kit2ImportMap() (server/services/vendor.js); tests/unit/lily-hop.test.js fails if a library
+     bump leaves it behind. English only, like Number Quest's other lesson games. Test handle: window.__lh (also
+     window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .lh[hidden], .lh-load[hidden] { display: none; }
+  .lh { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .lh button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .lh button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .lh-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 68px 0 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .lh-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .lh-ask { display: flex; align-items: center; gap: 10px; max-width: 100%; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .lh-ask[hidden], .lh-hint[hidden], .lh-sum[hidden], .lh-bar[hidden], .lh-card[hidden], .lh-dots[hidden] { display: none; }
+  .lh .lh-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .lh .lh-say:active, .lh .lh-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .lh-askt { font-weight: 800; font-size: clamp(21px, 4.4vw, 32px); line-height: 1.15; }
+  .lh-sum { background: #66C792; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 6px 16px; font-weight: 900; font-size: clamp(26px, 5.6vw, 40px); line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lh-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .lh-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .lh-dots { display: flex; gap: 7px; padding: 2px 4px; }
+  .lh-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .lh-dots i.on { background: #FFD23F; } .lh-dots i.now { background: #66C792; }
+  .lh-bar { display: flex; gap: 12px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .lh .lh-btn { flex: 1 1 0; max-width: 200px; min-height: clamp(70px, 11vh, 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 8px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(16px, 2.3vh, 21px); line-height: 1.1; }
+  .lh-btn .i { font-size: 30px; line-height: 1.1; } .lh-btn .big { font-size: 46px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .lh-btn.go { background: #66C792; } .lh-btn.pick { background: #FFD23F; }
+  .lh-btn.no { animation: lh-no .45s ease; }
+  @keyframes lh-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .lh-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .lh-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .lh-card .lh-ask { margin-top: 10px; }
+  .lh-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .lh-pick .lh-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .lh-pick .lh-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .lh-menu { display: flex; gap: 12px; justify-content: center; width: min(760px, 100%); }
+  .lh-menu .lh-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
+  .lh-menu .lh-btn .i { font-size: 44px; }
+  .lh-star { font-size: 76px; line-height: 1; }
+  .lh-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the sum and the round dots share one line across the top, so the pond gets the height. */
+  @media (min-aspect-ratio: 9/10) { .lh-line { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; } }
+  @media (max-width: 480px) { .lh .lh-btn { min-height: 72px; font-size: 15px; border-radius: 18px; } .lh-btn .i { font-size: 26px; } .lh-menu { gap: 8px; } .lh-menu .lh-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .lh-menu .lh-btn .i { font-size: 36px; } .lh-star { font-size: 60px; } }
+  @media (max-height: 520px) { .lh .lh-btn { min-height: 60px; font-size: 15px; } .lh-btn .i { font-size: 24px; } .lh-btn .big { font-size: 36px; } .lh .lh-say { width: 44px; height: 44px; font-size: 20px; } .lh-menu .lh-btn { min-height: 90px; } .lh-star { font-size: 52px; } }
+  @media (prefers-reduced-motion: reduce) { .lh .lh-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .lh .lh-say:active, .lh .lh-btn:active { transform: none; } }
+</style>
+<div class="lh-load" id="load" role="status">Getting the pond ready…</div>
+<div class="lh" id="lh" hidden>
+  <div class="lh-top">
+    <div class="lh-line" id="line">
+    <div class="lh-ask" id="ask" hidden><button class="lh-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="lh-askt" id="askt" role="status" aria-live="polite"></span></div>
+    <div class="lh-sum" id="sum" hidden role="status" aria-live="polite"></div>
+    <div class="lh-dots" id="dots" hidden role="img"></div>
+    </div>
+  </div>
+  <div class="lh-low">
+    <div class="lh-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="lh-bar" id="bar" hidden></div>
+  </div>
+  <div class="lh-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Lily Hop's rounds: plain data and functions (no DOM, no 3D), so tests/unit/lily-hop.test.js can run this
+   block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through, so
+   the first six rounds are always the same; a replay gets new numbers). Every round ends in three number pads:
+   the answer and two numbers near it, smallest first. ===== */
+/* lily-hop:begin */
+(function (root) {
+  var CHAPTERS = ['join', 'apart', 'twenty'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function pick(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  function choices(r, answer, lo, hi) {
+    var pool = [answer - 1, answer + 1, answer - 2, answer + 2].filter(function (v) { return v >= lo && v <= hi; }), ch = [answer];
+    while (ch.length < 3) ch.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
+    return ch.sort(function (x, y) { return x - y; });
+  }
+  // join: the total of the two groups in rounds 1-4 (to 10 by round 4); then two rounds where some frogs hop away.
+  var JOIN = [[2, 4], [4, 6], [6, 8], [8, 10]], AWAY = [{ a: [4, 6], b: [1, 2] }, { a: [7, 10], b: [2, 5] }];
+  // apart: rounds 1 and 2 split the same number (4-6) two different ways, round 3 splits a bigger one (7-9); rounds
+  // 4-6 ask what makes 10 with a number that is near ten, then in the middle, then small.
+  var SPLIT = [7, 9], TEN = [[7, 9], [4, 6], [1, 3]];
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'join') {
+      if (n <= 4) { var t = pick(r, JOIN[n - 1][0], JOIN[n - 1][1]); out.kind = 'join'; out.a = pick(r, 1, t - 1); out.b = t - out.a; out.answer = t; out.choices = choices(r, t, 1, 10); }
+      else { var w = AWAY[n - 5]; out.kind = 'away'; out.a = pick(r, w.a[0], w.a[1]); out.b = pick(r, w.b[0], Math.min(w.b[1], out.a - 1)); out.answer = out.a - out.b; out.choices = choices(r, out.answer, 0, 10); }
+    } else if (chapter === 'apart') {
+      if (n <= 2) {
+        // the same whole in rounds 1 and 2 (made from the lap alone), and two different pairs of partners for it
+        var r0 = rng((ci + 1) * 7919 + lap * 1299709 + 17), whole = pick(r0, 4, 6), parts = [];
+        for (var p = 1; p <= whole / 2; p++) parts.push(p);
+        for (var i = parts.length - 1; i > 0; i--) { var j = Math.floor(r0() * (i + 1)), s = parts[i]; parts[i] = parts[j]; parts[j] = s; }
+        out.kind = 'split'; out.whole = whole; out.a = r() < 0.5 ? parts[n - 1] : whole - parts[n - 1];
+      } else if (n === 3) { out.kind = 'split'; out.whole = pick(r, SPLIT[0], SPLIT[1]); out.a = pick(r, 2, out.whole - 2); }
+      else { out.kind = 'ten'; out.whole = 10; out.a = pick(r, TEN[n - 4][0], TEN[n - 4][1]); }
+      out.b = out.whole - out.a; out.answer = out.b; out.choices = choices(r, out.b, 1, out.kind === 'ten' ? 9 : out.whole);
+    } else {
+      // twenty: 1 ten and some more; 2 over ten; 3 round 2 turned round; 4 back inside the teens; 5 back over ten; 6 over ten again
+      out.kind = 'hop'; out.op = n === 4 || n === 5 ? 'sub' : 'add';
+      if (n === 1) { out.a = 10; out.b = pick(r, 2, 6); }
+      else if (n === 2) { out.a = pick(r, 7, 8); out.b = pick(r, Math.max(3, 11 - out.a), 6); }
+      else if (n === 3) { var two = round(chapter, 2, lap); out.a = two.b; out.b = two.a; out.turn = true; }
+      else if (n === 4) { out.a = pick(r, 13, 19); out.b = pick(r, 2, Math.min(5, out.a - 10)); }
+      else if (n === 5) { out.a = pick(r, 11, 15); out.b = pick(r, Math.max(3, out.a - 9), 7); }
+      else { out.a = pick(r, 6, 9); out.b = pick(r, Math.max(5, 11 - out.a), 7); }
+      out.answer = out.op === 'add' ? out.a + out.b : out.a - out.b;
+      out.cross = (out.a < 10 && out.answer > 10) || (out.a > 10 && out.answer < 10);
+      out.choices = choices(r, out.answer, 0, 20);
+    }
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.LilyHop = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* lily-hop:end */
+</script>
+<script>
+/* ===== Lily Hop's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {a}
+   takes a number in its place. The show.* lines are the sums on screen (never spoken: a "?" may stand in them). ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Lily Hop",
+    "loading": "Getting the pond ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.join": "Hop Together",
+    "ch.apart": "Number Partners",
+    "ch.twenty": "Hop to 20",
+    "join.ask": "How many frogs in all?",
+    "join.hint": "Count all the frogs.",
+    "join.sum": "{a} and {b} make {c}.",
+    "away.ask": "{b} hop away. How many are left?",
+    "away.hint": "Count the frogs on the pad.",
+    "away.sum": "{a} take away {b} is {c}.",
+    "split.ask": "{n} is {a} and what?",
+    "split.hint": "Count the orange frogs.",
+    "split.sum": "{n} is {a} and {b}.",
+    "split.ways": "There is more than one way to make {n}.",
+    "ten.ask": "{a} and what make 10?",
+    "ten.hint": "Count the empty spots.",
+    "ten.sum": "{a} and {b} make 10.",
+    "add.ask": "Start on {a}. Hop on {b}.",
+    "add.hint": "Count on from {a}.",
+    "add.hint.ten": "Hop to 10 first. Then hop on.",
+    "add.ten": "{a} and {b} make 10.",
+    "add.more": "{b} more makes {c}.",
+    "add.sum": "{a} and {b} make {c}.",
+    "add.turn": "{a} and {b} is the same as {b} and {a}.",
+    "sub.ask": "Start on {a}. Hop back {b}.",
+    "sub.hint": "Count back from {a}.",
+    "sub.hint.ten": "Hop back to 10 first. Then hop back more.",
+    "sub.ten": "{a} take away {b} is 10.",
+    "sub.more": "Take away {b} more. That is {c}.",
+    "sub.sum": "{a} take away {b} is {c}.",
+    "win": "You did it!",
+    "win.card": "You crossed the pond. Well done!",
+    "round": "Round {n} of {m}",
+    "show.join": "{a} and {b} make {c}",
+    "show.away": "{a} take away {b} is {c}",
+    "show.split": "{n} is {a} and {b}",
+    "show.ten": "{a} and {b} make 10",
+    "show.add": "{a} + {b} = {c}",
+    "show.sub": "{a} − {b} = {c}",
+    "btn.say": "Say it again",
+    "btn.pad": "Hop to {n}",
+    "btn.again": "Play again",
+    "btn.menu": "More games"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).LilyHopI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the pond's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const LH = window.LilyHop, T = (window.LilyHopI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'lh', 'line', 'ask', 'say', 'askt', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'lily-hop-v1';
+const ICON = { join: '🐸', apart: '🔟', twenty: '🔢' };
+
+/* ---------- state ---------- */
+const P = LH.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, L: null, phase: 'idle', at: 'home', hero: null, fast: false, line: null, reported: 0, done: {}, pads: {}, signs: {}, shown: false };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of LH.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box (one or two short sentences) and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The sum on screen: "3 and 2 make ?" while it is asked, "3 and 2 make 5" when it is answered. */
+function sum(key, vars) { el.sum.textContent = key ? fmt(key, vars) : ''; el.sum.hidden = !key; }
+let hintTimer = 0;
+function hint(key, vars, o) {
+  clearTimeout(hintTimer);
+  if (!key) { el.hint.hidden = true; return; }
+  el.hint.textContent = fmt(key, vars); el.hint.hidden = false;
+  speak(key, vars, o);
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 6000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+const timers = new Set();
+const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+
+/* ---------- the 3D pond ---------- */
+let g;
+try {
+  g = await start({ theme: 'sky-islands', version: '1.0.1', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+// The sea, calmed to a pond: the library's swell is a metre high, so the game turns its waves down to ripples.
+const sea = W.water({ y: -0.2, color: '#2a9bd4' });
+try { const u = sea.object.material.uniforms.moving; if (u && u.value) u.value = 0.14; } catch (e) { /* the library's own sea */ }
+
+// A deep-blue floor just under the water, so the pond reads as water all the way down.
+{ const floor = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), new THREE.MeshBasicMaterial({ color: '#2f8fd0' })); floor.rotation.x = -Math.PI / 2; floor.position.y = -0.75; g.scene.add(floor); }
+
+// The theme's pieces, loaded once and copied: its round island is every lily pad and every island in the pond.
+const TOP = 0.08;   // the height of a pad's top, where frogs and the helper stand
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const [padT, flagT, grassT] = await Promise.all([take('island-round'), take('flag'), take('grass')]);
+/** A lily pad (the theme's round island) w wide and d deep with its top at `top`, centred on (x, z). */
+function pad(x, z, w, d = w, top = TOP) {
+  const o = padT.clone(true), sy = Math.min(w, d) / 5 * 0.8;
+  o.scale.set(w / 5, sy, d / 5); o.position.set(x, top - 0.5 * sy, z);
+  return o;
+}
+
+// The game's own simple shapes (frogs, trees, a hut, a lighthouse), with the same ink edge as the theme.
+const mat = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.65 });
+const M = { blue: mat('#2f7fe0'), orange: mat('#ff8a2a'), white: mat('#ffffff'), spot: mat('#c9f7c2'), trunk: mat('#8a5a3c'), leaf: mat('#2e9b57'), leaf2: mat('#49b86a'), wall: mat('#fff3d6'), roof: mat('#e5484d'), door: mat('#8a5a3c'), stone: mat('#b9c2cc'), petal: mat('#ff9ec7'), gold: mat('#ffd23f'),
+  ink: new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide }), black: new THREE.MeshBasicMaterial({ color: '#141414' }) };
+const GEO = { ball: new THREE.SphereGeometry(0.5, 18, 14), cone: new THREE.ConeGeometry(0.5, 1, 12), roof: new THREE.ConeGeometry(0.5, 1, 4), tube: new THREE.CylinderGeometry(0.5, 0.5, 1, 14), box: new THREE.BoxGeometry(1, 1, 1), disc: new THREE.CylinderGeometry(0.5, 0.5, 1, 20) };
+/** One of the game's shapes: a mesh at (x, y, z), scaled (sx, sy, sz), with an ink hull round it. */
+function shape(geo, material, x, y, z, sx, sy = sx, sz = sx, hull = 1.07) {
+  const m = new THREE.Mesh(geo, material); m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.castShadow = true;
+  if (hull) { const h = new THREE.Mesh(geo, M.ink); h.scale.setScalar(hull); m.add(h); }
+  return m;
+}
+function frog(kind) {
+  const o = new THREE.Group();
+  o.add(shape(GEO.ball, M[kind], 0, 0.21, 0, 0.6, 0.42, 0.66, 1.1));
+  for (const sx of [-1, 1]) {
+    o.add(shape(GEO.ball, M[kind], sx * 0.15, 0.42, 0.14, 0.24, 0.24, 0.24, 1.14), shape(GEO.ball, M.white, sx * 0.15, 0.44, 0.2, 0.17, 0.17, 0.17, 0), shape(GEO.ball, M.black, sx * 0.15, 0.45, 0.275, 0.07, 0.07, 0.07, 0));
+    o.add(shape(GEO.ball, M[kind], sx * 0.27, 0.07, 0.12, 0.2, 0.12, 0.3, 1.14));
+  }
+  o.userData.kind = kind; o.scale.setScalar(1.2);
+  return o;
+}
+function tree(x, y, z, s = 1) {
+  const o = new THREE.Group();
+  o.add(shape(GEO.tube, M.trunk, 0, 0.5, 0, 0.36, 1, 0.36), shape(GEO.cone, M.leaf, 0, 1.75, 0, 2.1, 1.9, 2.1), shape(GEO.cone, M.leaf2, 0, 2.8, 0, 1.5, 1.6, 1.5));
+  o.position.set(x, y, z); o.scale.setScalar(s);
+  return o;
+}
+function bush(x, y, z, s = 1) { const o = new THREE.Group(); o.add(shape(GEO.ball, M.leaf2, 0, 0.35, 0, 1.2, 0.9, 1.1), shape(GEO.ball, M.leaf, 0.55, 0.28, 0.1, 0.8, 0.65, 0.8)); o.position.set(x, y, z); o.scale.setScalar(s); return o; }
+function hut(x, y, z, s = 1, turn = 0) {
+  const o = new THREE.Group(), roof = shape(GEO.roof, M.roof, 0, 2.05, 0, 3.4, 1.5, 3.4);
+  roof.rotation.y = Math.PI / 4;
+  o.add(shape(GEO.box, M.wall, 0, 0.7, 0, 2, 1.4, 1.8), roof, shape(GEO.box, M.door, 0, 0.45, 0.91, 0.5, 0.9, 0.06, 0), shape(GEO.box, M.blue, 0.62, 0.85, 0.91, 0.36, 0.36, 0.06, 0));
+  o.position.set(x, y, z); o.scale.setScalar(s); o.rotation.y = turn;
+  return o;
+}
+function lighthouse(x, y, z, s = 1) {
+  const o = new THREE.Group(), lamp = shape(GEO.tube, M.gold, 0, 3.75, 0, 0.8, 0.5, 0.8);
+  o.add(shape(GEO.tube, M.wall, 0, 0.8, 0, 1.3, 1.6, 1.3), shape(GEO.tube, M.roof, 0, 2.0, 0, 1.15, 0.8, 1.15), shape(GEO.tube, M.wall, 0, 2.95, 0, 1.0, 1.1, 1.0), lamp, shape(GEO.cone, M.roof, 0, 4.4, 0, 1.2, 0.8, 1.2));
+  o.position.set(x, y, z); o.scale.setScalar(s);
+  return o;
+}
+function flower(x, z) { const o = new THREE.Group(); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; o.add(shape(GEO.ball, M.petal, Math.cos(a) * 0.13, 0.05, Math.sin(a) * 0.13, 0.2, 0.1, 0.2, 0)); } o.add(shape(GEO.ball, M.gold, 0, 0.09, 0, 0.14, 0.12, 0.14, 0)); o.position.set(x, TOP, z); return o; }
+
+// The islands behind the pond: the theme's round island, big, with the game's trees, a hut and a lighthouse on them.
+// Two sets, one for wide screens and one for tall phones (a phone sees a narrow strip of the world).
+const ISLE = 0.5;   // an island's top
+function island(x, z, w, things = []) {
+  const o = new THREE.Group(), base = pad(0, 0, w, w * 0.8, ISLE);
+  o.add(base);
+  for (const [kind, dx, dz, s = 1, turn = 0] of things) {
+    const px = dx * w / 2, pz = dz * w * 0.4;
+    if (kind === 'tree') o.add(tree(px, ISLE, pz, s)); else if (kind === 'bush') o.add(bush(px, ISLE, pz, s)); else if (kind === 'hut') o.add(hut(px, ISLE, pz, s, turn)); else if (kind === 'light') o.add(lighthouse(px, ISLE, pz, s));
+    else { const f = (kind === 'flag' ? flagT : grassT).clone(true); f.scale.setScalar(s); f.position.set(px, ISLE, pz); f.rotation.y = turn; o.add(f); }
+  }
+  o.position.set(x, 0, z);
+  return o;
+}
+const SCENES = {
+  wide: [
+    [-15, -13, 11, [['tree', -0.45, -0.2, 1.1], ['tree', 0.05, -0.45, 1.35], ['hut', 0.25, 0.2, 1.05, -0.3], ['bush', -0.5, 0.45, 0.9], ['grass', 0.6, 0.55, 2.4], ['flag', -0.1, 0.5, 1.6, 0.4]]],
+    [14, -15, 12, [['light', 0.1, -0.1, 1.15], ['tree', -0.5, 0.05, 1.2], ['bush', 0.55, 0.35, 1], ['tree', 0.6, -0.35, 0.9], ['grass', -0.2, 0.6, 2.4]]],
+    [0, -30, 17, [['tree', -0.5, 0, 1.6], ['tree', -0.2, -0.3, 2], ['tree', 0.15, 0.1, 1.5], ['tree', 0.5, -0.2, 1.8], ['hut', -0.05, 0.55, 1.2, 0.2], ['bush', 0.4, 0.55, 1.3]]],
+    [-32, -27, 14, [['tree', -0.3, 0, 1.7], ['tree', 0.2, -0.2, 2], ['tree', 0.5, 0.3, 1.4], ['bush', -0.1, 0.5, 1.4]]],
+    [31, -30, 14, [['tree', -0.4, -0.1, 1.8], ['tree', 0.1, 0.2, 1.5], ['hut', 0.45, 0.1, 1.3, -0.5], ['tree', -0.1, -0.5, 2]]],
+    [-27, -8, 6, [['tree', 0, -0.1, 1.1], ['bush', 0.4, 0.4, 0.8]]], [27, -7, 6, [['tree', -0.1, -0.1, 1.2], ['grass', 0.4, 0.5, 2.2]]],
+    [-52, -48, 20, [['tree', -0.3, 0, 2.4], ['tree', 0.3, -0.2, 2.6]]], [50, -52, 20, [['tree', 0, 0, 2.6], ['tree', -0.4, 0.2, 2.2]]],
+  ],
+  tall: [
+    [-0.5, -14, 9.5, [['tree', -0.55, -0.25, 1], ['tree', -0.15, -0.5, 1.25], ['hut', 0.2, 0.15, 1, -0.2], ['bush', -0.5, 0.5, 0.8], ['flag', 0.62, 0.3, 1.5, 0.4], ['grass', -0.15, 0.6, 2.2]]],
+    [-10, -25, 10, [['tree', -0.2, 0, 1.5], ['tree', 0.4, -0.2, 1.8], ['bush', 0.3, 0.5, 1.2]]],
+    [9.5, -27, 11, [['light', -0.1, 0, 1.3], ['tree', 0.5, 0.1, 1.5], ['tree', -0.55, -0.2, 1.3]]],
+    [0, -44, 18, [['tree', -0.5, 0, 2.2], ['tree', -0.15, -0.3, 2.6], ['tree', 0.2, 0.1, 2.1], ['tree', 0.55, -0.2, 2.4]]],
+    [-9, -8, 4.5, [['tree', 0, -0.1, 0.9]]], [9, -7, 4.5, [['bush', 0, 0, 0.9], ['grass', 0.4, 0.4, 2]]],
+  ],
+};
+const scenes = {};
+function scenery(tall, z = 0) {
+  const k = tall ? 'tall' : 'wide';
+  if (!scenes[k]) { scenes[k] = new THREE.Group(); for (const [x, zz, w, things] of SCENES[k]) scenes[k].add(island(x, zz, w, things)); g.scene.add(scenes[k]); }
+  for (const n of Object.keys(scenes)) scenes[n].visible = n === k;
+  scenes[k].position.z = z;
+}
+
+/** A number on a round sign that always faces the player (the textures are made once and kept). */
+const signTex = new Map(), SIGN_LIGHT = new THREE.Color(1.5, 1.5, 1.5);   // brighter than white: the tone curve brings it back to cream
+function sign(text, size = 1.4, tone = 'cream') {
+  const key = text + '|' + tone;
+  if (!signTex.has(key)) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const x = c.getContext('2d');
+    x.fillStyle = { cream: '#FFFDF2', gold: '#FFD23F', green: '#9df5b9' }[tone]; x.strokeStyle = '#141414'; x.lineWidth = 14;
+    x.beginPath(); x.arc(128, 128, 112, 0, Math.PI * 2); x.fill(); x.stroke();
+    x.fillStyle = '#141414'; x.font = `900 ${String(text).length > 1 ? 128 : 150}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 138);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; signTex.set(key, tex);
+  }
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: signTex.get(key), fog: false, alphaTest: 0.5, color: SIGN_LIGHT })); s.scale.setScalar(size);
+  s.userData.text = text;
+  return s;
+}
+const retone = (s, tone) => { if (s) { sign(s.userData.text, 1, tone); s.material.map = signTex.get(s.userData.text + '|' + tone); } };
+
+const stage = new THREE.Group(); g.scene.add(stage);
+function clearStage() { for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); } tweens.length = 0; targets.length = 0; S.pads = {}; S.signs = {}; }
+const put = o => { stage.add(o); return o; };
+
+// Moving things: a hop from where a thing is to where it belongs (none with reduced motion), a pop, a dip.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function fly(o, to, { dur = 0.42, arc = 1, then } = {}) {
+  drop(o);
+  if (reduced || S.fast) { o.position.copy(to); if (then) then(); return; }
+  tweens.push({ o, from: o.position.clone(), to: to.clone(), t: 0, dur, arc, then });
+}
+function pop(o) { if (reduced || S.fast) return; o.scale.setScalar(0.01); tweens.push({ o, pop: true, t: 0, dur: 0.3 }); }
+/** A wrong pad: it dips into the water and bobs back (nothing with reduced motion; the button shows the miss). */
+function dip(o) { if (!o || reduced || S.fast) return; if (tweens.some(w => w.o === o)) return; tweens.push({ o, dip: true, y: o.position.y, t: 0, dur: 0.7 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i]; w.t = Math.min(1, w.t + dt / w.dur);
+    const k = w.t * w.t * (3 - 2 * w.t);
+    if (w.pop) w.o.scale.setScalar(Math.max(0.01, k));
+    else if (w.dip) { w.o.position.y = w.y - Math.sin(Math.PI * w.t) * 0.16; w.o.rotation.z = Math.sin(Math.PI * 4 * w.t) * 0.07 * (1 - w.t); }
+    else { w.o.position.lerpVectors(w.from, w.to, k); w.o.position.y += Math.sin(Math.PI * k) * w.arc; }
+    if (w.t >= 1) { tweens.splice(tweens.indexOf(w), 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- where things go: one layout for wide screens, one for tall phones ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+const PITCH = 1.3;   // from one pad of the number line to the next
+const LAY = {
+  heroes: () => (tall
+    ? { spots: [[-2.4, -1.6], [0, -1.9], [2.4, -1.6], [-1.3, 1.5], [1.3, 1.5]], rect: [-3.5, 3.5, -2.4, 2.3], high: 3.3 }
+    : { spots: [[-5.4, 0], [-2.7, 0.5], [0, 0.8], [2.7, 0.5], [5.4, 0]], rect: [-6.6, 6.6, -0.8, 1.7], high: 3.3 }),
+  solo: () => ({ rect: tall ? [-3, 3, -1.2, 1.4] : [-5, 5, -1.2, 1.4], high: 3.4 }),
+  // the frog pads: two big pads for the two groups, the helper's own pad, and three number pads beyond it
+  frogs: () => (tall
+    ? { A: [0, 1.75], B: [0, 4.75], home: [0, -1.1], ans: [[-2.5, -3.6], [0, -4], [2.5, -3.6]], swim: [0.2, 4.4], rect: [-3.6, 3.6, -5, 6.2], high: 3.9 }
+    : { A: [-4.9, 0.9], B: [4.9, 0.9], home: [0, 1.3], ans: [[-3.4, -2.6], [0, -2.9], [3.4, -2.6]], swim: [4.6, 0.9], rect: [-7.5, 7.5, -3.9, 2.5], high: 3.9 }),
+  // the number line: the pads this round hops over and one each side, then as many more as the screen has room for
+  // at a size a small finger can tap (all of 0 to 20 on a big screen)
+  line: R => {
+    let lo = Math.min(R.a, R.answer, ...R.choices), hi = Math.max(R.a, R.answer, ...R.choices);
+    const room = Math.min(21, Math.floor((innerWidth - 28) / 58));
+    while (hi - lo + 1 < room) { if (lo > 0 && (hi === 20 || (hi - lo) % 2)) lo--; else hi++; }
+    const mid = (lo + hi) / 2, x = v => (v - mid) * PITCH;
+    return { lo, hi, x, z: 0.5, rect: [x(lo) - 0.75, x(hi) + 0.75, -0.3, 1.9], high: 2.7 };
+  },
+};
+/** Where the i-th frog sits on a big pad centred on c: two rows of five, the back row first. */
+const slot = (c, i) => V3(c[0] + (i % 5 - 2) * 0.82, TOP, c[1] + (i < 5 ? -0.45 : 0.45));
+
+// The camera looks across the pond, low enough that the islands and the sky show behind the play area, and backs
+// off until the play area fits between the words at the top and the buttons at the bottom, on any screen shape.
+// The play area sits low in that space; a band above it is kept clear for the view.
+const view = { rect: [-6, 6, -2, 2], high: 3, back: 0 };
+function frame() {
+  if (!g) return;
+  const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
+  const play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 6;
+  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
+  const TILT = tall ? 0.52 : 0.4, fov = tall ? 50 : 38, band = (tall ? 0.13 : 0.15) * Hd;
+  const safe = { l: -1 + 14 / Wd, r: 1 - 14 / Wd, t: 1 - 2 * (topPx + band) / Hd, b: -1 + 2 * botPx / Hd };
+  const pts = [];
+  for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(V3(x, 0, z), V3(x, z === z0 ? view.high : 1, z));
+  const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const sin = Math.sin(TILT), cos = Math.cos(TILT);
+  // at one distance: slide the camera along the pond until the front of the play area rests just above the buttons,
+  // then say whether the whole play area is inside the space kept for it
+  const fits = d => {
+    let lo = z1 - cos * d + 1.5, hi = z1 + 90, box;
+    for (let i = 0; i < 22; i++) {
+      look.z = (lo + hi) / 2;
+      cam.position.set(look.x, sin * d, look.z + cos * d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      box = [9, -9, 9, -9];
+      for (const p of pts) { v.copy(p).project(cam); box[0] = Math.min(box[0], v.x); box[1] = Math.max(box[1], v.x); box[2] = Math.min(box[2], v.y); box[3] = Math.max(box[3], v.y); }
+      if (box[2] > safe.b) hi = look.z; else lo = look.z;
+    }
+    return box[0] >= safe.l && box[1] <= safe.r && box[3] <= safe.t;
+  };
+  let near = 5, far = 150;
+  for (let i = 0; i < 16; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+  scenery(tall, z0 + view.back);
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping things in the pond: the nearest target under the finger, with a generous reach ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+
+/* ---------- the helper ---------- */
+let lineup = [];
+async function showHeroes() {
+  S.screen = 'hero';
+  const L = LAY.heroes();
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: TOP, z: 0 })));
+  clearStage();
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(1); h.position.set(L.spots[i][0], TOP, L.spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); put(pad(L.spots[i][0], L.spots[i][1], 2.3)); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.4), r: 1.2, go: () => chooseHero(h.id) }));
+  Object.assign(view, { rect: L.rect, high: L.high, back: tall ? -6 : -8 });
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+function placeHero(at, scale = 0.82) { const h = S.hero; if (!h) return; pathId++; drop(h.object); h.object.scale.setScalar(scale); h.position.set(at[0], TOP, at[1]); h.object.rotation.y = 0; }
+/** The helper hops from pad to pad along `points` ([x, z] each), turning to face the way it goes; `each(i)` after
+ *  every landing, `done()` after the last. With reduced motion it is simply there. */
+let pathId = 0;
+function heroPath(points, { each, done } = {}) {
+  const h = S.hero; if (!h) { if (done) done(); return; }
+  const id = ++pathId; let i = 0;
+  const step = () => {
+    if (id !== pathId) return;
+    if (i >= points.length) { h.object.rotation.y = 0; if (!reduced) { clearTimeout(heroBack); h.play('idle'); } if (done) done(); return; }
+    const to = points[i++], dx = to[0] - h.position.x, dz = to[1] - h.position.z;
+    if (!reduced && !S.fast) { if (Math.abs(dx) + Math.abs(dz) > 0.01) h.object.rotation.y = Math.atan2(dx, dz); clearTimeout(heroBack); h.play('jump', { once: true, fade: 0.05 }); sfx('jump'); }
+    fly(h.object, V3(to[0], TOP, to[1]), { dur: 0.36, arc: 0.9, then: () => { if (id !== pathId) return; if (!reduced && !S.fast) h.play('jumpLand', { once: true, fade: 0.05 }); if (each) each(i); step(); } });
+  };
+  step();
+}
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'lh-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  if (icon) { const i = document.createElement('span'); i.className = 'i'; i.setAttribute('aria-hidden', 'true'); i.textContent = icon; b.append(i); }
+  if (big != null) { const n = document.createElement('span'); n.className = 'big'; n.textContent = big; b.append(n); }
+  if (label && big == null) { const l = document.createElement('span'); l.className = 'l'; l.textContent = label; b.append(l); }
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.sum.hidden = true; el.dots.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'lh-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'lh-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'lh-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'lh-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'lh-menu' : 'lh-pick'; row.append(...buttons.map(button));
+  el.card.className = 'lh-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper alone on one pad, with a flower: the menu and the end of a chapter. */
+function solo() {
+  clearStage(); put(pad(0, 0, 3)); put(flower(-0.95, 0.5)); put(flower(1, -0.3));
+  placeHero([0, 0], 1); Object.assign(view, { ...LAY.solo(), back: tall ? -7 : -8 });
+}
+function showMenu() {
+  clearTimers(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: LH.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!LH.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: LH.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: LH.ROUNDS })); el.dots.hidden = false;
+}
+const ASK = { join: 'join.ask', away: 'away.ask', split: 'split.ask', ten: 'ten.ask' };
+/** The sum for the round: with "?" where the answer goes while it is asked, the number once it is found. */
+function showSum(R, found) {
+  const q = found ? R.answer : '?';
+  if (R.kind === 'join') sum('show.join', { a: R.a, b: R.b, c: q });
+  else if (R.kind === 'away') sum('show.away', { a: R.a, b: R.b, c: q });
+  else if (R.kind === 'split') sum('show.split', { n: R.whole, a: R.a, b: q });
+  else if (R.kind === 'ten') sum('show.ten', { a: R.a, b: q });
+  else sum('show.' + R.op, { a: R.a, b: R.b, c: q });
+}
+function nextRound() {
+  clearTimers();
+  if (S.round >= LH.ROUNDS) return finish();
+  S.round++; S.R = LH.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.at = 'home'; S.shown = false;
+  const R = S.R;
+  hint(); dots(); showSum(R, false);
+  say(R.kind === 'hop' ? R.op + '.ask' : ASK[R.kind], { a: R.a, b: R.b, n: R.whole });   // the words first: the camera fits the pond under them
+  redraw(); frame();
+}
+/** The round is right: cheer and say what is true, then the next round (or the end). */
+function right(key, vars, ms, then) {
+  sfx('cheer');
+  showSum(S.R, true); say(key, vars, { queue: true });
+  if (then) then();
+  later(ms, nextRound);
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  solo();
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🐸', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/** Draw the round from its state (also after the screen turns): the pads, the frogs, the helper, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const keys = el.bar.contains(document.activeElement);
+  clearStage();
+  const R = S.R, L = S.L = R.kind === 'hop' ? LAY.line(R) : LAY.frogs();
+  Object.assign(view, { rect: L.rect, high: L.high, back: R.kind === 'hop' ? (tall ? 4 : 2) : (tall ? -3 : -5) });
+  el.card.hidden = true; el.bar.hidden = false;
+  if (R.kind === 'hop') drawLine(R, L); else drawFrogs(R, L);
+  el.bar.replaceChildren(...R.choices.map(v => button({ id: 'lh-n' + v, big: v, aria: fmt('btn.pad', { n: v }), cls: S.phase === 'right' && v === R.answer ? 'go' : '', go: b => answer(v, b) })));
+  if (keys) { const b = el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+}
+const HINT = R => (R.kind === 'hop' ? R.op + '.hint' + (R.cross ? '.ten' : '') : R.kind + '.hint');
+/** The child picks a number: a tap on a pad in the pond or on a big number button. */
+function answer(v, b) {
+  if (S.phase !== 'play') return;
+  const R = S.R;
+  if (v !== R.answer) {
+    wobble(b || document.getElementById('lh-n' + v)); dip(S.pads[v]);
+    // the helper tries the pad and hops back (the frog pads); on the number line it stays where it is
+    if (R.kind !== 'hop' && S.L.ans[R.choices.indexOf(v)]) heroPath([S.L.ans[R.choices.indexOf(v)], S.L.home]);
+    return hint(HINT(R), { a: R.a });
+  }
+  S.phase = 'right'; S.at = v; hint(); sfx('coin');
+  const btn = document.getElementById('lh-n' + v); if (btn) btn.classList.add('go');
+  retone(S.signs[v], 'green');
+  if (R.kind === 'hop') return hopHome(R);
+  heroPath([S.L.ans[R.choices.indexOf(v)]], { done: () => heroMove('cheer', 1600) });
+  if (R.kind === 'join') { S.frogsB.forEach((f, i) => fly(f, slot(S.L.A, R.a + i), { dur: 0.5 + i * 0.05, arc: 1.3 })); right('join.sum', { a: R.a, b: R.b, c: R.answer }, 3000); }
+  else if (R.kind === 'away') right('away.sum', { a: R.a, b: R.b, c: R.answer }, 3000);
+  else if (R.kind === 'split') right('split.sum', { n: R.whole, a: R.a, b: R.b }, R.n === 2 ? 5600 : 3000, () => { if (R.n === 2) speak('split.ways', { n: R.whole }, { queue: true }); });
+  else { for (let i = R.a; i < 10; i++) { const f = put(frog('orange')); f.position.copy(slot(S.L.A, i)); pop(f); } right('ten.sum', { a: R.a, b: R.b }, 3000); }
+}
+
+/* ----- chapters 1 and 2, the frog pads: two groups come together, some hop away, a number splits, what makes ten ----- */
+function drawFrogs(R, L) {
+  const found = S.phase === 'right', first = !S.shown && !reduced;
+  put(pad(L.A[0], L.A[1], 4.9, 2.9));
+  if (R.kind === 'join' || R.kind === 'split') put(pad(L.B[0], L.B[1], 4.9, 2.9));
+  if (R.kind === 'ten') for (let i = 0; i < 10; i++) { const p = slot(L.A, i), m = new THREE.Mesh(GEO.disc, M.spot); m.scale.set(0.62, 0.03, 0.62); m.position.set(p.x, TOP + 0.015, p.z); put(m); }
+  const sit = (kind, at) => { const f = put(frog(kind)); f.position.copy(at); return f; };
+  const stay = R.kind === 'away' ? R.answer : R.a;
+  for (let i = 0; i < stay; i++) sit('blue', slot(L.A, i));
+  S.frogsB = [];
+  if (R.kind === 'join') for (let i = 0; i < R.b; i++) S.frogsB.push(sit('orange', found ? slot(L.A, R.a + i) : slot(L.B, i)));
+  else if (R.kind === 'split') {
+    // the whole number sits together, then the orange frogs hop across to their own pad
+    for (let i = 0; i < R.b; i++) { const f = sit('orange', first ? slot(L.A, R.a + i) : slot(L.B, i)); if (first) later(700 + i * 120, () => fly(f, slot(L.B, i), { arc: 1.3, dur: 0.55 })); }
+  } else if (R.kind === 'away') {
+    // the frogs that hop away swim off beside the pad: still in sight, no longer on it
+    for (let i = 0; i < R.b; i++) {
+      const to = V3(L.swim[0] + (i % 3 - 1) * 1.0 + (tall ? 0 : 0.6), -0.3, L.swim[1] + Math.floor(i / 3) * 0.95 - 0.4), f = sit('blue', first ? slot(L.A, stay + i) : to);
+      f.rotation.y = 2.4;
+      if (first) later(700 + i * 160, () => { sfx('jump'); fly(f, to, { arc: 1.5, dur: 0.6 }); });
+    }
+  } else if (found) for (let i = R.a; i < 10; i++) sit('orange', slot(L.A, i));
+  // the helper's pad and the three number pads, each with its number floating over it
+  put(pad(L.home[0], L.home[1], 2.1)); put(flower(L.home[0] - 0.7, L.home[1] + 0.45));
+  R.choices.forEach((v, i) => {
+    const at = L.ans[i]; S.pads[v] = put(pad(at[0], at[1], 2.2));
+    const s = S.signs[v] = put(sign(v, 1.45, found && v === R.answer ? 'green' : 'cream')); s.position.set(at[0], 3.05, at[1]);
+    targets.push({ at: () => V3(at[0], 0.3, at[1]), r: 1.2, go: () => answer(v) }, { at: () => V3(at[0], 3.05, at[1]), r: 0.8, go: () => answer(v) });
+  });
+  placeHero(found ? L.ans[R.choices.indexOf(R.answer)] : L.home);
+}
+
+/* ----- chapter 3, the number line: start on a pad, hop on or hop back, over ten by way of ten ----- */
+function drawLine(R, L) {
+  const found = S.phase === 'right';
+  for (let v = L.lo; v <= L.hi; v++) {
+    const x = L.x(v); S.pads[v] = put(pad(x, L.z, 1.16));
+    const s = S.signs[v] = put(sign(v, tall ? 1.2 : 1.06, found && v === R.answer ? 'green' : v === R.a ? 'gold' : 'cream')); s.position.set(x, 0.42, L.z + 0.86);
+    if (v !== R.a) targets.push({ at: () => V3(x, 0.3, L.z + 0.4), r: 0.62, go: () => answer(v) });
+  }
+  if (L.lo <= 10 && L.hi >= 10) { const f = flagT.clone(true); f.scale.setScalar(1.5); f.position.set(L.x(10) + 0.38, TOP, L.z - 0.38); f.rotation.y = -0.5; put(f); }   // ten: the pad with the flag
+  // loose lily pads and flowers on the water behind the line (nothing to tap: the pond is not bare)
+  const w = L.x(L.hi) - L.x(L.lo);
+  for (const [fx, dz, size, bloom] of [[-0.42, -2.6, 1.5, 1], [-0.12, -3.9, 1.1, 0], [0.2, -2.9, 1.7, 1], [0.47, -4.3, 1.3, 1], [-0.3, -5.2, 1.2, 0], [0.05, -5.6, 0.9, 0]]) {
+    put(pad(fx * w, L.z + dz, size)); if (bloom) put(flower(fx * w + size * 0.2, L.z + dz + size * 0.15)).scale.setScalar(1.5);
+  }
+  for (const [fx, dz, kind] of [[-0.42, -2.75, 'orange'], [0.2, -3.1, 'blue']]) { const f = put(frog(kind)); f.position.set(fx * w - 0.25, TOP, L.z + dz); f.rotation.y = fx > 0 ? -0.5 : 0.5; }
+  placeHero([L.x(found ? R.answer : R.a), L.z]);
+}
+/** The right pad on the number line: the helper hops there one pad at a time. Over ten, it stops on 10 and the sum
+ *  is said in two steps (8 and 2 make 10; 3 more makes 13), then whole. */
+function hopHome(R) {
+  const dir = R.op === 'add' ? 1 : -1, way = (from, to) => { const p = []; for (let v = from + dir; dir > 0 ? v <= to : v >= to; v += dir) p.push([S.L.x(v), S.L.z]); return p; };
+  const whole = () => right(R.op + '.sum', { a: R.a, b: R.b, c: R.answer }, R.turn ? 6200 : 3200, () => { heroMove('cheer', 1600); if (R.turn) speak('add.turn', { a: R.a, b: R.b }, { queue: true }); });
+  if (!R.cross) return heroPath(way(R.a, R.answer), { done: whole }), undefined;
+  const first = Math.abs(10 - R.a), rest = R.b - first;
+  sum('show.' + R.op, { a: R.a, b: first, c: 10 }); say(R.op + '.ten', { a: R.a, b: first });
+  heroPath(way(R.a, 10));
+  later(first * 380 + 2300, () => {
+    sum('show.' + R.op, { a: 10, b: rest, c: R.answer }); say(R.op + '.more', { b: rest, c: R.answer }, { queue: true });
+    heroPath(way(10, R.answer));
+    later(rest * 380 + 2500, whole);
+  });
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+window.__lh = window.__brbTest = {
+  state: () => ({ game: 'lily-hop', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: LH.ROUNDS, phase: S.phase, at: S.at, hero: S.hero ? S.hero.id : null,
+    reported: S.reported, tall, ...(S.R && S.screen === 'play' ? { kind: S.R.kind, a: S.R.a, b: S.R.b, whole: S.R.whole, op: S.R.op, cross: S.R.cross, turn: S.R.turn, answer: S.R.answer, choices: S.R.choices, pads: Object.keys(S.pads).map(Number) } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => (name === 'answer' ? answer(arg) : undefined),
+  /** Where a pad's number is on the screen (CSS pixels), for a test that taps the pond itself. */
+  spot: v => { const p = S.pads[v]; if (!p) return null; const q = p.position.clone().setY(0.3).project(g.camera), r = g.renderer.domElement.getBoundingClientRect(); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; },
+};
+
+el.load.hidden = true; el.load.remove(); el.lh.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>

@@ -1,0 +1,225 @@
+{
+ "key": "launchpad-2.1",
+ "n": "2.1",
+ "band": "launchpad",
+ "title": "Put together to 10",
+ "topic": "Put together",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Frogs at the pond",
+   "text": "Tally found frogs at the pond. Some frogs hop together.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Put two groups together",
+   "text": "3 frogs and 2 frogs hop together. Count them all: 5.",
+   "art": "people",
+   "visual": {
+    "type": "counters",
+    "label": "3 frogs and 2 more frogs: 5 in all",
+    "groups": [
+     {
+      "n": 5,
+      "split": 3
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Here are 3 frogs.",
+     "box": [
+      28.1,
+      23.5,
+      23.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "Here are 2 more frogs.",
+     "box": [
+      56.1,
+      23.5,
+      15.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "3 and 2 make 5.",
+     "box": [
+      28.1,
+      23.5,
+      43.8,
+      28.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Count on from the first group",
+   "text": "Start at 4. Count on 3 more: 5, 6, 7.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "4 frogs and 3 more, counted on to 7",
+    "groups": [
+     {
+      "n": 7,
+      "split": 4,
+      "count": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start with the group of 4.",
+     "box": [
+      20.2,
+      23.5,
+      31.7,
+      28.3
+     ]
+    },
+    {
+     "cue": "Count on: 5, 6, 7.",
+     "box": [
+      56.1,
+      23.5,
+      23.7,
+      28.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Make 10 with Tally",
+   "text": "Tally has 6 frogs. 4 more hop over.",
+   "art": "star",
+   "steps": [
+    "Start with 6",
+    "Count on: 7, 8, 9, 10",
+    "6 and 4 make 10"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "A ten-frame: 6 frogs and 4 more fill it",
+    "groups": [
+     {
+      "n": 10,
+      "frame": true,
+      "split": 6
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "6 frogs sit in the frame.",
+     "box": [
+      32.5,
+      23.3,
+      35,
+      24.6
+     ]
+    },
+    {
+     "cue": "4 more fill it: 10.",
+     "box": [
+      39.5,
+      35.7,
+      28,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Some hop away",
+   "text": "5 frogs sit on a pad. 2 hop away, so 3 are left.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "5 frogs: 2 hop away and 3 are left",
+    "groups": [
+     {
+      "n": 5,
+      "split": 3,
+      "away": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 frogs hop away.",
+     "box": [
+      56.1,
+      23.5,
+      15.8,
+      28.3
+     ]
+    },
+    {
+     "cue": "3 frogs are left.",
+     "box": [
+      28.1,
+      23.5,
+      23.8,
+      28.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "in all",
+     "means": "the whole group, counted together"
+    },
+    {
+     "word": "take away",
+     "means": "some go, so there are fewer"
+    },
+    {
+     "word": "left",
+     "means": "what stays after some go away"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lily Hop at Hop Together. Hop to the right number six times.",
+   "art": "trophy",
+   "img": "nq/lily-hop/hop-together",
+   "alt": "Lily Hop on a phone: 2 blue frogs on one lily pad, 1 orange frog on another, and three number pads.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-2.1-e1",
+  "nq-launchpad-2.1-e2",
+  "nq-launchpad-2.1-e3"
+ ],
+ "game": {
+  "slug": "lily-hop",
+  "chapter": "Hop Together",
+  "params": "chapter=join&lock=1"
+ }
+}

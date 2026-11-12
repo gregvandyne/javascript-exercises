@@ -1,0 +1,331 @@
+{
+ "key": "launchpad-2.3",
+ "n": "2.3",
+ "band": "launchpad",
+ "title": "Add and take away to 20",
+ "topic": "Add to 20",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A long row of pads",
+   "text": "The pads go all the way to 20. Tally hops along them.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Hop on to add",
+   "text": "Start on 8 and hop on 5. You land on 13.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line to 20: one hop of 5 from 8 to 13",
+    "min": 0,
+    "max": 20,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     },
+     {
+      "at": 20,
+      "label": "20"
+     }
+    ],
+    "hops": [
+     {
+      "from": 8,
+      "to": 13,
+      "label": "+5"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start on 8.",
+     "box": [
+      39,
+      57.8,
+      4.5,
+      25.4
+     ]
+    },
+    {
+     "cue": "Hop on 5.",
+     "box": [
+      40.2,
+      23.5,
+      24,
+      38.5
+     ]
+    },
+    {
+     "cue": "You land on 13.",
+     "box": [
+      60.5,
+      57.8,
+      5.4,
+      25.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Make ten first",
+   "text": "Hop from 8 to 13 in two hops. Stop at 10 on the way.",
+   "art": "star",
+   "steps": [
+    "8 and 2 make 10",
+    "3 more hops",
+    "10 and 3 make 13",
+    "8 + 5 = 13"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line to 20: hop 2 from 8 to 10, then 3 more to 13",
+    "min": 0,
+    "max": 20,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     },
+     {
+      "at": 20,
+      "label": "20"
+     }
+    ],
+    "hops": [
+     {
+      "from": 8,
+      "to": 10,
+      "label": "+2"
+     },
+     {
+      "from": 10,
+      "to": 13,
+      "label": "+3"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 hops take you to 10.",
+     "box": [
+      40.2,
+      23.5,
+      10.8,
+      38.5
+     ]
+    },
+    {
+     "cue": "3 more hops take you to 13.",
+     "box": [
+      49,
+      23.5,
+      15.2,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Hop back to take away",
+   "text": "Start on 13 and hop back 5. Stop at 10 on the way.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line to 20: hop back 3 from 13 to 10, then 2 more to 8",
+    "min": 0,
+    "max": 20,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     },
+     {
+      "at": 20,
+      "label": "20"
+     }
+    ],
+    "hops": [
+     {
+      "from": 10,
+      "to": 13,
+      "label": "−3"
+     },
+     {
+      "from": 8,
+      "to": 10,
+      "label": "−2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Hop back 3 to land on 10.",
+     "box": [
+      49,
+      23.5,
+      15.2,
+      38.5
+     ]
+    },
+    {
+     "cue": "Hop back 2 more to land on 8.",
+     "box": [
+      40.2,
+      23.5,
+      10.8,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Turn it around",
+   "text": "8 + 5 and 5 + 8 both make 13. You can add in any order.",
+   "art": "scale",
+   "visual": {
+    "type": "bars",
+    "label": "Two bars the same length: 8 and 5, then 5 and 8",
+    "big": true,
+    "rows": [
+     {
+      "label": "8 + 5 = 13",
+      "parts": [
+       {
+        "w": 0.6154,
+        "label": "8",
+        "tone": 0
+       },
+       {
+        "w": 0.3846,
+        "label": "5",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "5 + 8 = 13",
+      "parts": [
+       {
+        "w": 0.3846,
+        "label": "5",
+        "tone": 1
+       },
+       {
+        "w": 0.6154,
+        "label": "8",
+        "tone": 0
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "8 and then 5 make 13.",
+     "box": [
+      5.1,
+      11.8,
+      89.8,
+      28
+     ]
+    },
+    {
+     "cue": "5 and then 8 make 13 too.",
+     "box": [
+      5.1,
+      42,
+      89.8,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "add",
+     "means": "put more on and count on"
+    },
+    {
+     "word": "take away",
+     "means": "hop back, so there are fewer"
+    },
+    {
+     "word": "make ten",
+     "means": "stop at 10 on the way"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lily Hop at Hop to 20. Hop to the right pad six times.",
+   "art": "trophy",
+   "img": "nq/lily-hop/hop-to-20",
+   "alt": "Lily Hop on a phone: a helper on a row of numbered lily pads, a flag on pad 10, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-2.3-e1",
+  "nq-launchpad-2.3-e2",
+  "nq-launchpad-2.3-e3"
+ ],
+ "game": {
+  "slug": "lily-hop",
+  "chapter": "Hop to 20",
+  "params": "chapter=twenty&lock=1"
+ }
+}

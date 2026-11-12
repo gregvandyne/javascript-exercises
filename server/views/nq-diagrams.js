@@ -353,7 +353,10 @@ const fixExtent = v => [FX.top - 9, fixGeo(v).bottom];
  *    matched pair, each row's name in the gutter on its left: the longer row sticks out past the last pair;
  *  - a ten-frame (`frame`): a 2 by 5 frame of 7-unit cells filled left to right, top row first; the ones past ten sit
  *    beside it in the same order with no frame; "10" under the full frame and the count of the rest under them.
- *  `count` writes each counter's number on it (1, 2, 3...), so the last number is the size of the group. */
+ *  `count` writes each counter's number on it (1, 2, 3...), so the last number is the size of the group.
+ *  `split` (Launchpad Unit 2, a single group of 2-10): the first `split` counters, a gap, then the rest in the next tone,
+ *  each part's size under it (5 is 3 and 2); with `away` the second part is drawn as dashed outlines (they went away). In
+ *  a ten-frame, `split` only changes the tone of the counters after the first part (8 and 2 make 10). */
 function countersGeo(v) {
   const gs = v.groups, top = 13;
   if (gs.length === 2) {
@@ -365,12 +368,13 @@ function countersGeo(v) {
     const u = 7, loose = Math.max(0, q.n - 10), fx = loose ? 11 : 32.5;
     return { mode: 'frame', u, top, q, fx, lx: fx + 5 * u + 8, loose, bottom: tBot(top + 2 * u + 6, 4.6) };
   }
-  const u = 8, per = Math.min(q.n, 10), rows = Math.ceil(q.n / 10), x0 = 50 - per * u / 2;
-  return { mode: 'line', u, top, q, x0, rows, bottom: q.name ? tBot(top + rows * u + 5.5, 4.2) : top + rows * u };
+  const u = 8, per = Math.min(q.n, 10), rows = Math.ceil(q.n / 10), gap = q.split ? 4 : 0, x0 = 50 - (per * u + gap) / 2;
+  return { mode: 'line', u, top, q, x0, rows, gap, bottom: q.split ? tBot(top + u + 6, 4.6) : q.name ? tBot(top + rows * u + 5.5, 4.2) : top + rows * u };
 }
 function countersSvg(v) {
   const g = countersGeo(v), r = r2(g.u * 0.36);
-  const dot = (cx, cy, tone, num) => `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="${TONES[tone % TONES.length]}" stroke="${INK}" stroke-width="0.45"/>` + (num ? tx(cx, cy + 1.2, num, 3.4, 'middle', 800) : '');
+  const dot = (cx, cy, tone, num, gone) => (gone ? `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.45" stroke-dasharray="1.2 0.9"/>`
+    : `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="${TONES[tone % TONES.length]}" stroke="${INK}" stroke-width="0.45"/>`) + (num ? tx(cx, cy + 1.2, num, 3.4, 'middle', 800) : '');
   let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
   if (g.mode === 'match') {
     const pairs = Math.min(...g.rows.map(w => w.q.n));
@@ -386,10 +390,17 @@ function countersSvg(v) {
     for (let i = 0; i < 10; i++) s += `<rect x="${r2(g.fx + (i % 5) * g.u)}" y="${r2(g.top + Math.floor(i / 5) * g.u)}" width="${g.u}" height="${g.u}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.6"/>`;
     for (let i = 0; i < q.n; i++) {
       const j = i % 10, x = (i < 10 ? g.fx : g.lx) + (j % 5 + 0.5) * g.u, y = g.top + (Math.floor(j / 5) + 0.5) * g.u;
-      s += dot(x, y, i < 10 ? tone : tone + 1, q.count ? i + 1 : 0);
+      s += dot(x, y, i < 10 && !(q.split && i >= q.split) ? tone : tone + 1, q.count ? i + 1 : 0);
     }
     s += tx(g.fx + 2.5 * g.u, g.top + 2 * g.u + 6, Math.min(q.n, 10), 4.6, 'middle', 800, LEAF);
     if (g.loose) s += tx(g.lx + Math.min(g.loose, 5) * g.u / 2, g.top + 2 * g.u + 6, g.loose, 4.6, 'middle', 800, LEAF);
+    return s;
+  }
+  if (q.split) {
+    // two parts in one row, a gap between them, each part's size under it; a part that went away is drawn as outlines
+    const cx = i => g.x0 + (i + 0.5) * g.u + (i >= q.split ? g.gap : 0);
+    for (let i = 0; i < q.n; i++) s += dot(cx(i), g.top + g.u / 2, i < q.split ? tone : tone + 1, q.count ? i + 1 : 0, q.away && i >= q.split);
+    s += tx((cx(0) + cx(q.split - 1)) / 2, g.top + g.u + 6, q.split, 4.6, 'middle', 800, LEAF) + tx((cx(q.split) + cx(q.n - 1)) / 2, g.top + g.u + 6, q.n - q.split, 4.6, 'middle', 800, LEAF);
     return s;
   }
   for (let i = 0; i < q.n; i++) s += dot(g.x0 + (i % 10 + 0.5) * g.u, g.top + (Math.floor(i / 10) + 0.5) * g.u, tone, q.count ? i + 1 : 0);
