@@ -17,9 +17,12 @@ await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
 fs.mkdirSync(outDir, { recursive: true });
 
+// recipe.meshopt: true adds EXT_meshopt_compression (smaller files, but its decoder needs WebAssembly, which the game frame
+// does not allow: docs/safety.md). Without it the models are quantized only (KHR_mesh_quantization, decoded by Three.js
+// itself) and the server sends them brotli-compressed.
 async function compress(doc) {
   await doc.transform(dedup(), weld(), resample(), prune({ keepAttributes: false }), reorder({ encoder: MeshoptEncoder }), quantize(), unpartition());
-  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
+  if (recipe.meshopt) doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
   return doc;
 }
 

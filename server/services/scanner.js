@@ -2,7 +2,7 @@
 // status: 'pass' (fine), 'flag' (allowed for Private/Friends, needs a human look before Public), 'fail' (cannot be shared).
 import { profanityMatch, personalInfo, looksLikeLinkCode } from './textfilter.js';
 import { MAX_GAME_BYTES } from './sanitize.js';
-import { checkThree } from './vendor.js';
+import { checkThree, checkKit2 } from './vendor.js';
 import { checkKit } from './kit.js';
 import { lintGame } from './stylelint.js';
 import { checkHtml as liveCheckHtml } from './classlive-lint.js';
@@ -160,9 +160,13 @@ export function scanVersion(html) {
   // external-script and Three.js checks. Any other mention of its files fails (kit_pin / kit_tag).
   const kit = checkKit(src);
   for (const i of kit.issues) add(i.level, i.code, i.message);
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(kit.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
-  // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity); any other Three.js fails.
-  for (const i of checkThree(kit.rest)) add(i.level, i.code, i.message);
+  // Kit 2 (vendor.js): exactly the pinned Phaser tag passes and is taken out the same way; theme art paths must name a
+  // shipped theme version.
+  const kit2 = checkKit2(kit.rest);
+  for (const i of kit2.issues) add(i.level, i.code, i.message);
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(kit2.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
+  // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity, or the Kit 2 map); any other Three.js fails.
+  for (const i of checkThree(kit2.rest)) add(i.level, i.code, i.message);
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);

@@ -4572,3 +4572,26 @@ The owner wants games that "blow people away" and found Kit 1's home-made charac
   every file's size and sha384 in `theme.json`; `tests/unit/kit2-themes.test.js` checks all of it and the 5 MB limit.
 - **Not yet in the theme:** cheer, wrong-answer and ambient sounds (not in these packs; Oomba3D will make cheer and
   wrong-answer sounds in code), and Kenney's/Quaternius's full sites (not reachable from the build machine; GitHub copies used).
+
+## Kit 2 themes, stage 2: engines and hosting (12 Nov 2026)
+
+- **One folder for Kit 2 engines, `/vendor/kit2/`** (the plan named `/vendor/rapier`, `/vendor/phaser`): the Three.js
+  0.185.1 add-ons a theme game needs (GLTFLoader, SkeletonUtils, BufferGeometryUtils, the bloom/composer passes and their
+  shaders, Sky, Water, SimplexNoise; MIT, with three's LICENSE) and Phaser 3.90.0 (MIT, its last v3 release). One folder
+  means one new `script-src` source. Every file and theme version is pinned in `kit2/SHIPPED.json`
+  (`node kit2/pipeline/lock.mjs` only adds entries; `tests/unit/kit2-hosting.test.js` fails if a shipped file changes).
+- **The frame may fetch only `/vendor/themes/`.** `connect-src`, `img-src` and `media-src` name the site's origin plus
+  that path, so the pinned loaders can read models, pictures and sounds; the site API, other `/vendor` folders and every
+  other host stay out of reach (checked in real Chromium: `tests/unit/kit2-frame.test.js`). Game code calling
+  `fetch`/`XMLHttpRequest` itself still fails the scanner. The screenshot worker answers the two new folders from disk.
+- **Still no WebAssembly.** `docs/safety.md` promises no `wasm-unsafe-eval`, so Kit 2 keeps that promise for now:
+  - **Rapier physics is not shipped** (it is WebAssembly). Oomba3D does simple platform physics itself. Allowing
+    WebAssembly for Rapier is a new open decision in the plan, for the owner.
+  - **Sky Islands 1.0.1**: the meshopt decoder is WebAssembly too, so 1.0.0's meshopt-compressed models could never load in
+    a game. 1.0.1 has the same pieces quantized only (Three.js reads them in plain JavaScript), and the server now
+    brotli-compresses `.glb` from `/vendor` (632 KB on the wire for the whole theme, smaller than 1.0.0's 1.11 MB). 1.0.0
+    stays unchanged and unused. `tests/unit/kit2-themes.test.js` fails any later theme version whose models need meshopt,
+    Draco or Basis.
+- **Scanner:** a Kit 2 3D game uses exactly `kit2ImportMap()` (Three.js plus `three/addons/` with an integrity line for
+  every add-on file); Phaser only with exactly `phaserTag()`; any `/vendor/themes/<theme>/<version>/` must be a shipped
+  theme version. The Kit 2 rules live in `vendor.js` beside the Three.js ones (no new module, so no import cycle).

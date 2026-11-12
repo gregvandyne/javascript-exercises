@@ -209,11 +209,11 @@ test('two kits at once: new games get the latest; games pinned to an older shipp
   assert.deepEqual(Object.keys(K.KIT_PACKS['1.0.0']).sort(), ['art-animals', 'art-biomes', 'art-school', 'dress', 'style-bold'], '1.0.0 keeps exactly the packs it shipped with');
 });
 
-test('the frame CSP allows the kit in script-src and font-src (images stay data:/blob: only)', () => {
+test('the frame CSP allows the kit in script-src and font-src (images: data:/blob: and Kit 2 theme art only)', () => {
   const csp = frameCsp('https://oomba.example');
   assert.match(csp.match(/script-src[^;]*/)[0], /https:\/\/oomba\.example\/vendor\/oomba-kit\//);
   assert.match(csp.match(/font-src[^;]*/)[0], /https:\/\/oomba\.example\/vendor\/oomba-kit\//);
-  assert.match(csp, /img-src data: blob:;/); assert.match(csp, /connect-src 'none'/);
+  assert.match(csp, /img-src data: blob: https:\/\/oomba\.example\/vendor\/themes\/;/); assert.match(csp, /connect-src https:\/\/oomba\.example\/vendor\/themes\/;/);
 });
 
 test('scanner: exactly the pinned tag passes; any other kit reference fails with an actionable message', () => {

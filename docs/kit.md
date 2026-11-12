@@ -115,8 +115,8 @@ A Builder game becomes `CONFIG` + `Oomba.game({...})` + a one-character ASCII le
 - **Frame CSP** (`server/services/frame.js` `frameCsp`):
   - `script-src`: inline scripts, cdnjs, `<origin>/vendor/three/` and `<origin>/vendor/oomba-kit/`;
   - `font-src`: gstatic, `data:` and `<origin>/vendor/oomba-kit/` (the kit's own font);
-  - images only from `data:`/`blob:`;
-  - `connect-src 'none'`;
+  - images only from `data:`/`blob:` (and, since Kit 2, the read-only `<origin>/vendor/themes/` theme art);
+  - `connect-src 'none'` (since Kit 2: only `<origin>/vendor/themes/`);
   - opaque origin.
 
   So the kit cannot use eval or `new Function`, wasm, workers, fetch/XHR, or URL images. **All art is code.**

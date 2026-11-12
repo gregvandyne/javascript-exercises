@@ -3,6 +3,10 @@
 // Pure module (no database): used by the scanner, the frame, the screenshot worker and the Builder prompt.
 // To bump the version, see docs/decisions.md ("3D games").
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 export const THREE_VERSION = '0.185.1';
 export const VENDOR_PATH = '/vendor/three/';                  // every vendored version; the frame CSP allows this path
 export const THREE_DIR = `${VENDOR_PATH}${THREE_VERSION}/`;
@@ -61,6 +65,59 @@ const isPinnedMap = m => {
   return integ[THREE_MODULE] === THREE_SRI[THREE_MODULE] && integ[THREE_CORE] === THREE_SRI[THREE_CORE];
 };
 
+// ---------- Kit 2 (docs/kit2-themes-plan.md) ----------
+// Engines under /vendor/kit2/ (Three.js add-ons, Phaser 2D) and theme art under /vendor/themes/, every
+// file pinned by kit2/SHIPPED.json (it never changes once shipped). A Kit 2 3D game uses exactly KIT2_IMPORT_MAP: the
+// same Three.js as above plus "three/addons/", with integrity for every file, so no file can be swapped. (No Rapier:
+// it needs WebAssembly, which the frame does not allow; an open decision in the plan.)
+export const KIT2_PATH = '/vendor/kit2/';
+export const THEMES_PATH = '/vendor/themes/';
+export const KIT2_ADDONS_DIR = `${KIT2_PATH}three-addons/${THREE_VERSION}/`;
+export const PHASER_VERSION = '3.90.0';
+export const PHASER_SCRIPT = `${KIT2_PATH}phaser/${PHASER_VERSION}/phaser.min.js`;
+const KIT2_LOCK_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../kit2/SHIPPED.json');
+/** kit2/SHIPPED.json: { engines: { "<path under /vendor/kit2/>": sri }, themes: { "<theme>/<version>": sri of theme.json } }. */
+export const KIT2_LOCK = (() => { try { return JSON.parse(fs.readFileSync(KIT2_LOCK_FILE, 'utf8')); } catch { return { engines: {}, themes: {} }; } })();
+const kit2Sri = url => KIT2_LOCK.engines[url.slice(KIT2_PATH.length)];
+export const PHASER_SRI = kit2Sri(PHASER_SCRIPT);
+/** The one import map a Kit 2 3D game may use (every add-on file listed with its integrity). */
+export const KIT2_IMPORT_MAP = (() => {
+  const integrity = { [THREE_MODULE]: THREE_SRI[THREE_MODULE], [THREE_CORE]: THREE_SRI[THREE_CORE] };
+  const addons = KIT2_ADDONS_DIR.slice(KIT2_PATH.length);
+  for (const [rel, sri] of Object.entries(KIT2_LOCK.engines)) if (rel.startsWith(addons) && rel.endsWith('.js')) integrity[KIT2_PATH + rel] = sri;
+  return { imports: { three: THREE_MODULE, 'three/addons/': KIT2_ADDONS_DIR }, integrity };
+})();
+export const kit2ImportMap = () => `<script type="importmap">\n${JSON.stringify(KIT2_IMPORT_MAP, null, 1)}\n</script>`;
+/** The one tag a Kit 2 2D game loads Phaser with. */
+export const phaserTag = () => `<script src="${PHASER_SCRIPT}" integrity="${PHASER_SRI}" crossorigin="anonymous"></script>`;
+const sameKeys = (a, b) => a && b && typeof a === 'object' && !Array.isArray(a) && Object.keys(a).length === Object.keys(b).length && Object.keys(b).every(k => a[k] === b[k]);
+const isKit2Map = m => !!m && typeof m === 'object' && Object.keys(m).sort().join(',') === 'imports,integrity' && sameKeys(m.imports, KIT2_IMPORT_MAP.imports) && sameKeys(m.integrity, KIT2_IMPORT_MAP.integrity);
+const PHASER_TAG_RE = /<script\b([^>]*)>\s*<\/script\s*>/gi;
+const attr = (attrs, name) => { const m = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i').exec(attrs); return m ? (m[1] ?? m[2] ?? m[3]) : null; };
+const THEME_REF_RE = /\/vendor\/themes\/([^\s"'`)<>]*)/g;
+
+/**
+ * Kit 2 rules -> { rest, issues }. The exact Phaser tag is taken out (like the Oomba Kit tag) so the scanner's
+ * external-script rule does not see it; any other Kit 2 script tag fails. A theme path must name a shipped theme version.
+ */
+export function checkKit2(src) {
+  src = String(src || '');
+  const issues = [];
+  const add = (code, message) => { if (!issues.some(i => i.message === message)) issues.push({ level: 'fail', code, message }); };
+  const rest = src.replace(PHASER_TAG_RE, (tag, attrs) => {
+    const s = attr(attrs, 'src');
+    if (!s || !s.includes(KIT2_PATH)) return tag;
+    if (s === PHASER_SCRIPT && attr(attrs, 'integrity') === PHASER_SRI && attr(attrs, 'crossorigin') === 'anonymous' && PHASER_SRI) return ' ';
+    add('kit2_pin', `Loads a Kit 2 file in a way we do not allow. Load Phaser ${PHASER_VERSION} with exactly the tag from the Kit 2 rules.`);
+    return ' ';
+  });
+  for (const m of rest.matchAll(THEME_REF_RE)) {
+    const [theme, version] = m[1].split('/');
+    if (!theme || !version || !KIT2_LOCK.themes[`${theme}/${version}`] || m[1].includes('..')) add('kit2_theme', `Uses theme art that does not exist (${('/vendor/themes/' + m[1]).slice(0, 70)}). Use a theme and version from the theme list.`);
+  }
+  return { rest, issues };
+}
+
 /**
  * Scanner rules for 3D games -> [{ level, code, message }]. Accepts exactly the pinned form: the import map above
  * (any whitespace or key order) and bare `import ... from 'three'`. Any other Three.js (another version, another host,
@@ -71,19 +128,21 @@ export function checkThree(src) {
   const issues = [];
   const add = (code, message) => { if (!issues.some(i => i.message === message)) issues.push({ level: 'fail', code, message }); };
   const PIN = `Loads Three.js in a way we do not allow. Use the built-in Three.js ${THREE_VERSION} with the exact import map (and its integrity lines) from the 3D rules.`;
-  let pinned = false;
+  let pinned = false, kit2 = false;
   let rest = src.replace(IMPORTMAP_RE, (block, body) => {
     let map = null;
     try { map = JSON.parse(body); } catch { add('three_pin', 'The import map is not valid. Use the exact import map from the 3D rules.'); return ' '; }
     if (isPinnedMap(map)) { pinned = true; return ' '; }
+    if (isKit2Map(map)) { pinned = true; kit2 = true; return ' '; }
     // Not the pinned map: anything Three.js or vendor in it is refused; other entries are judged by the URL rules.
-    if (body.includes(VENDOR_PATH) || THREE_URL.test(body) || (map && map.imports && typeof map.imports === 'object' && 'three' in map.imports)) add('three_pin', PIN);
+    if (body.includes(VENDOR_PATH) || body.includes(KIT2_PATH) || THREE_URL.test(body) || (map && map.imports && typeof map.imports === 'object' && 'three' in map.imports)) add('three_pin', PIN);
     return block;
   });
   if (rest.includes(VENDOR_PATH)) add('three_pin', PIN);
+  if (rest.includes(KIT2_PATH)) add('kit2_pin', 'Loads a Kit 2 file in a way we do not allow. Use exactly the Kit 2 import map from the Kit 2 rules.');
   if (THREE_URL.test(rest)) add('three_pin', PIN);
   const mods = moduleCode(rest);
-  if (THREE_ADDON.test(mods)) add('three_pin', 'Uses a Three.js add-on (three/addons/...). Add-ons are not available here: build it with Three.js itself.');
+  if (THREE_ADDON.test(mods) && !kit2) add('three_pin', 'Uses a Three.js add-on (three/addons/...). Add-ons are not available here: build it with Three.js itself.');
   if (BARE_THREE.test(mods) && !pinned) add('three_pin', `Uses Three.js without the import map. Add the exact import map from the 3D rules.`);
   return issues;
 }

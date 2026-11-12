@@ -1,5 +1,5 @@
 {
- "_": "How Sky Islands 1.0.0 is built from its two packs (see SOURCES.md). node kit2/pipeline/build-theme.mjs kit2/themes/sky-islands/recipe.json <packs> public/vendor/themes/sky-islands/1.0.0",
+ "_": "How Sky Islands 1.0.0 is built from its two packs (see SOURCES.md). node kit2/pipeline/build-theme.mjs kit2/themes/sky-islands/recipe.json <packs> public/vendor/themes/sky-islands/<version>",
  "models": [
   {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb", "to": "heroes/knight.glb", "keepMeshes": ["Knight_.*"]},
   {"from": "KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Barbarian.glb", "to": "heroes/barbarian.glb", "keepMeshes": ["Barbarian_(Hat|Cape|Arm.*|Body|Head|Leg.*)"]},

@@ -6,7 +6,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
-import { deviceNeeds, VENDOR_PATH, DATA_PATH } from './vendor.js';
+import { deviceNeeds, VENDOR_PATH, DATA_PATH, KIT2_PATH, THEMES_PATH } from './vendor.js';
 import { KIT_PATH, upgradeKitPins } from './kit.js';
 import { config } from '../config.js';
 
@@ -25,9 +25,12 @@ const ORIGIN_URL_RE = /^https?:\/\/(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;
 export function frameCsp(origins = '') {
   const own = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))];
   // Scripts: the 3D library, the Oomba Kit and the reviewed game data packs. Fonts: the kit's self-hosted font files.
-  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH}`).join('');
+  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH}`).join('');
   const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
-  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:; media-src data: blob:; connect-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
+  // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for
+  // connect, img and media: never any other path or host. (Still no WebAssembly, workers or eval.)
+  const themes = own.map(o => ` ${o}${THEMES_PATH}`).join('');
+  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? themes.trim() : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }
 export const FRAME_CSP = frameCsp();
 const ORIGIN_RE = /^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;

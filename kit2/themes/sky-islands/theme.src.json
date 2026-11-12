@@ -1,7 +1,7 @@
 {
  "id": "sky-islands",
  "name": "Sky Islands",
- "version": "1.0.0",
+ "version": "1.0.1",
  "engine": "three",
  "description": "Hop between floating grassy islands above the clouds, collect coins and jump to the right answer.",
  "goodFor": ["maths", "quizzes", "platformers"],
