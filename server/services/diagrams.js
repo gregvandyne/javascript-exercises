@@ -1,7 +1,7 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder', 'fix']);
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder', 'fix', 'counters']);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
@@ -88,6 +88,16 @@ export function cleanDiagram(v, label) {
     if (!line(v.wrong) || !line(v.right) || !Array.isArray(v.steps) || v.steps.length < 1 || v.steps.length > 2 || !v.steps.every(line)) return null;
     return { type: 'fix', label, wrong: txt(v.wrong, 18), steps: v.steps.map(t => txt(t, 18)), right: txt(v.right, 18),
       ...(str(v.badName, 18) ? { badName: str(v.badName, 18) } : {}), ...(str(v.goodName, 18) ? { goodName: str(v.goodName, 18) } : {}), ...(str(v.wrongNote, 18) ? { wrongNote: str(v.wrongNote, 18) } : {}) };
+  }
+  if (v.type === 'counters') {
+    // counters to count and match (Launchpad): one group of 1-20, or two rows of 1-10 set one under the other so they
+    // match one to one; `count` numbers each counter in order; `frame` sets a single group's first ten in a ten-frame
+    if (!Array.isArray(v.groups) || v.groups.length < 1 || v.groups.length > 2) return null;
+    if (!v.groups.every(q => q && int(q.n, 1, 20) && (q.tone == null || int(q.tone, 0, 3)))) return null;
+    const two = v.groups.length === 2;
+    if (two && v.groups.some(q => q.n > 10 || q.frame)) return null;
+    return { type: 'counters', label, groups: v.groups.map(q => ({ n: q.n, ...(q.tone != null ? { tone: q.tone } : {}), ...(txt(q.name, two ? 8 : 12) ? { name: txt(q.name, two ? 8 : 12) } : {}),
+      ...(q.frame ? { frame: true } : {}), ...(q.count ? { count: true } : {}) })) };
   }
   return null;
 }

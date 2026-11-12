@@ -1,0 +1,226 @@
+{
+ "id": "nq-u1-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 1,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 1 · The Counting Patch (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-1.1-e1",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "K.CC.A.1",
+   "topic": "Count to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What number comes right after 10?",
+   "choices": [
+    "11",
+    "9",
+    "12",
+    "20"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "counted back instead of on",
+    "skipped a number in the count",
+    "jumped to the end of the count"
+   ],
+   "why": "After 10 comes 11. Say them in order: 9, 10, 11."
+  },
+  {
+   "id": "nq-launchpad-1.1-e2",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "K.CC.B.4",
+   "topic": "Count to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Tally counts apples: 1, 2, 3, 4, 5, 6, 7. How many apples?",
+   "choices": [
+    "6",
+    "7",
+    "8",
+    "1"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "stopped one number too early",
+    "correct",
+    "counted one apple two times",
+    "picked the first number said"
+   ],
+   "why": "The last number you say is how many. The last number was 7."
+  },
+  {
+   "id": "nq-launchpad-1.1-e3",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "K.CC.B.4",
+   "topic": "Count to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "When we count, how many numbers does each apple get?",
+   "choices": [
+    "Two numbers",
+    "No number",
+    "One number",
+    "Ten numbers"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted the same apple two times",
+    "skipped an apple in the count",
+    "correct",
+    "gave one apple the whole count"
+   ],
+   "why": "Each apple gets one number. Touch it once and say one number."
+  },
+  {
+   "id": "nq-launchpad-1.2-e1",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "K.CC.C.6",
+   "topic": "More or fewer",
+   "kind": "apply",
+   "secs": 25,
+   "q": "One row has 5 apples. One row has 3 lemons. Which has more?",
+   "choices": [
+    "The lemons",
+    "The apples",
+    "They are the same",
+    "We cannot tell"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "picked the shorter row",
+    "correct",
+    "ignored the two extra apples",
+    "skipped matching the rows up"
+   ],
+   "why": "Match them up. Two apples have no partner, so there are more apples."
+  },
+  {
+   "id": "nq-launchpad-1.2-e2",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "K.CC.C.6",
+   "topic": "More or fewer",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Every apple has a lemon partner. No extras are left. What is true?",
+   "choices": [
+    "More apples",
+    "More lemons",
+    "Fewer apples",
+    "They are the same"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "imagined extra apples",
+    "imagined extra lemons",
+    "mixed up same with fewer",
+    "correct"
+   ],
+   "why": "No extras on either side means the two rows have the same number."
+  },
+  {
+   "id": "nq-launchpad-1.2-e3",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "K.CC.C.7",
+   "topic": "More or fewer",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is less: 9 or 7?",
+   "choices": [
+    "7",
+    "9",
+    "They are the same",
+    "16"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "picked the number said later",
+    "treated two numbers as equal",
+    "added the two numbers"
+   ],
+   "why": "Count up: 7 comes first and 9 comes later. So 7 is less."
+  },
+  {
+   "id": "nq-launchpad-1.3-e1",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "K.NBT.A.1",
+   "topic": "Teen numbers",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A full ten-frame and 4 more apples. How many apples?",
+   "choices": [
+    "4",
+    "10",
+    "14",
+    "41"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted only the extra ones",
+    "counted only the full frame",
+    "correct",
+    "swapped the ten and the ones"
+   ],
+   "why": "A full frame is 10. Count on four more: 11, 12, 13, 14."
+  },
+  {
+   "id": "nq-launchpad-1.3-e2",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "K.NBT.A.1",
+   "topic": "Teen numbers",
+   "kind": "apply",
+   "secs": 25,
+   "q": "17 is ten and how many more?",
+   "choices": [
+    "7",
+    "1",
+    "17",
+    "10"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "read the ten as the extras",
+    "counted every apple as an extra",
+    "named the ten, not the extras"
+   ],
+   "why": "17 is a full ten and 7 more. 10 and 7 make 17."
+  },
+  {
+   "id": "nq-launchpad-1.3-e3",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "K.NBT.A.1",
+   "topic": "Teen numbers",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is ten and 2 more?",
+   "choices": [
+    "20",
+    "12",
+    "2",
+    "21"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "made two tens, not ten and 2",
+    "correct",
+    "forgot the full ten",
+    "swapped the ten and the ones"
+   ],
+   "why": "Ten and 2 more is 12. Count on from ten: 11, 12."
+  }
+ ]
+}

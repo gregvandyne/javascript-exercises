@@ -1,0 +1,219 @@
+{
+ "key": "launchpad-1.1",
+ "n": "1.1",
+ "band": "launchpad",
+ "title": "Count to 20",
+ "topic": "Count to 20",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "The apple patch",
+   "text": "Tally needs apples from the patch. Count them with Tally.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "One number for each apple",
+   "text": "Touch each apple one time. Say one number for each apple.",
+   "art": "grid",
+   "visual": {
+    "type": "counters",
+    "label": "Five apples in a row: 1, 2, 3, 4, 5",
+    "groups": [
+     {
+      "n": 5,
+      "count": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Touch the first apple. Say 1.",
+     "box": [
+      30.1,
+      23.5,
+      7.8,
+      13.5
+     ]
+    },
+    {
+     "cue": "Each apple gets one number.",
+     "box": [
+      30.1,
+      23.5,
+      39.8,
+      13.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The last number says how many",
+   "text": "The last number you say is how many. Here it is 7.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "Seven apples, counted in order",
+    "groups": [
+     {
+      "n": 7,
+      "count": true,
+      "name": "7 apples"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Count in order: 1, 2, 3, 4, 5, 6.",
+     "box": [
+      22.2,
+      23.5,
+      47.7,
+      13.5
+     ]
+    },
+    {
+     "cue": "The last number is 7. There are 7 apples.",
+     "box": [
+      70.1,
+      23.5,
+      7.8,
+      13.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Count 12 with Tally",
+   "text": "Tally counts 12 apples in rows. Count along out loud.",
+   "art": "star",
+   "steps": [
+    "1, 2, 3, 4, 5",
+    "6, 7, 8, 9, 10",
+    "11, 12",
+    "12 apples in all"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "Twelve apples: a row of ten and two more",
+    "groups": [
+     {
+      "n": 12,
+      "count": true,
+      "name": "12 apples"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Ten apples fill the top row.",
+     "box": [
+      10.1,
+      23.5,
+      79.8,
+      13.5
+     ]
+    },
+    {
+     "cue": "Two more: 11, 12. There are 12 apples.",
+     "box": [
+      10.1,
+      37.7,
+      15.8,
+      13.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "All the way to 20",
+   "text": "After 10 come 11, 12 and on to 20. Say them in order.",
+   "art": "ruler",
+   "visual": {
+    "type": "counters",
+    "label": "Twenty apples in two rows of ten",
+    "groups": [
+     {
+      "n": 20,
+      "count": true,
+      "name": "20 apples"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The top row ends at 10.",
+     "box": [
+      82.1,
+      23.5,
+      7.8,
+      13.5
+     ]
+    },
+    {
+     "cue": "Then 11 comes right after 10.",
+     "box": [
+      10.1,
+      37.7,
+      7.8,
+      13.5
+     ]
+    },
+    {
+     "cue": "The last apple is number 20.",
+     "box": [
+      82.1,
+      37.7,
+      7.8,
+      13.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "count",
+     "means": "say one number for each thing"
+    },
+    {
+     "word": "how many",
+     "means": "the last number you say"
+    },
+    {
+     "word": "order",
+     "means": "the same way each time: 1, 2, 3"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Garden Count at Pick and Count. Pick the right number of apples six times.",
+   "art": "trophy",
+   "img": "nq/garden-count/pick-and-count",
+   "alt": "Garden Count on a phone: apples in the garden, a basket, a big counter and a Done button."
+  }
+ ],
+ "check": [
+  "nq-launchpad-1.1-e1",
+  "nq-launchpad-1.1-e2",
+  "nq-launchpad-1.1-e3"
+ ],
+ "game": {
+  "slug": "garden-count",
+  "chapter": "Pick and Count",
+  "params": "chapter=count&lock=1"
+ }
+}
