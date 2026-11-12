@@ -10,9 +10,10 @@ Kit 2 is the next game kit: real engines (Three.js, Phaser) and free professiona
 | `pipeline/lock.mjs` | Adds new engine files and theme versions to `SHIPPED.json` (never rewrites a shipped one). |
 | `SHIPPED.json` | The lock: every file under `public/vendor/kit2/` and every theme version's `theme.json`, by sha384. |
 | `pipeline/manifest.mjs` | Writes the built theme's `theme.json`: the catalogue plus every file's size and hash. |
-| `demo/` | The Sky Islands prototype, for reference. |
+| `demo/sky-islands.html` | The Sky Islands demo on Oomba3D (62 lines); `tests/unit/kit2-oomba3d.test.js` plays it. |
+| `demo/sky-islands-prototype.html` | The first prototype (no library), for reference. |
 
-Engines live in `public/vendor/kit2/` (Three.js add-ons, Phaser), loaded with `kit2ImportMap()` / `phaserTag()` from `server/services/vendor.js`. Built themes live in `public/vendor/themes/<theme>/<version>/` with `theme.json`, `SOURCES.md` and `LICENSES/`. `tests/unit/kit2-themes.test.js` checks each one: every file listed with its hash, every pack CC0 with its licence file, every piece from a listed pack, and the first load under 5 MB.
+Engines live in `public/vendor/kit2/` (Three.js add-ons, Phaser, and our own game library Oomba3D: `docs/kit2-api.md`), loaded with `kit2ImportMap()` / `phaserTag()` from `server/services/vendor.js`. Built themes live in `public/vendor/themes/<theme>/<version>/` with `theme.json`, `SOURCES.md` and `LICENSES/`. `tests/unit/kit2-themes.test.js` checks each one: every file listed with its hash, every pack CC0 with its licence file, every piece from a listed pack, and the first load under 5 MB.
 
 ## Adding or rebuilding a theme
 
