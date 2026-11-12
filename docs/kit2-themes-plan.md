@@ -44,8 +44,8 @@ Everything a Kit 2 game loads comes from oomba.ai itself, pinned by version, ins
 
 | Part | What it is | Where it lives |
 |---|---|---|
-| Engines | Three.js (already vendored, 0.185.1) with its loaders and effects, Rapier physics, Phaser 3 for 2D | `public/vendor/three`, `public/vendor/rapier`, `public/vendor/phaser` |
-| Art | Each theme's models, textures and sounds, compressed with gltf-transform (meshopt) | `public/vendor/themes/<theme>/<version>/` |
+| Engines | Three.js (already vendored, 0.185.1) with its loaders and effects, Phaser 3 for 2D (Rapier physics waits on the WebAssembly decision below) | `public/vendor/three`, `public/vendor/kit2/three-addons`, `public/vendor/kit2/phaser` |
+| Art | Each theme's models, textures and sounds, optimised with gltf-transform (quantized; served brotli-compressed) | `public/vendor/themes/<theme>/<version>/` |
 | Theme manifest | One JSON per theme version: pieces, tags, animation names, sizes, licence, cover | Same folder, `theme.json` |
 | Helper library (Oomba3D) | A short, friendly API the Builder writes against: `hero()`, `world.island()`, `followCamera()`, `controls()` with touch buttons, `coins()`, `askQuestion()`, `sound()`, `celebrate()` | `kit2/src`, built to `public/vendor/oomba-kit2/<version>/` |
 | Frame security policy | Allows only the new `/vendor` paths, nothing outside oomba.ai | `server/services/frame.js` |
@@ -83,6 +83,7 @@ Wave 2 and 3 themes follow the same steps 1 and 6 for each new theme.
 - [ ] Store theme art in git (simplest, but grows the repo by tens of MB per wave) or in object storage pinned by version. *Stage 1 uses git for now (1.2 MB per theme).*
 - [ ] Is the Builder's theme picker free for everyone, or are some themes part of a paid plan?
 - [ ] Keep the fantasy heroes in Sky Islands, or swap in kid characters from Quaternius for younger players?
+- [ ] Allow WebAssembly in the game frame (`wasm-unsafe-eval`) so games can use Rapier physics and meshopt-compressed models? `docs/safety.md` promises no WebAssembly today, so stage 2 shipped without Rapier and Sky Islands 1.0.1 uses quantized models instead (added 12 Nov 2026).
 
 ## Sources
 

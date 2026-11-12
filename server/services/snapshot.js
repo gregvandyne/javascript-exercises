@@ -11,7 +11,7 @@
 //     worker (server/shots-worker.js) over HTTP, so the browser runs in its own container with no database and no
 //     secrets. The worker runs the exact same code via runLocal().
 //   BRB_SNAPSHOTS=0 turns both off.
-// The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/ and /vendor/oomba-kit/
+// The game page can reach nothing but Google Fonts, cdnjs and the self-hosted /vendor/three/, /vendor/oomba-kit/, Kit 2's /vendor/kit2/ and /vendor/themes/
 // files (the same sources its CSP allows); the vendor files are answered from disk, so 3D and kit games work the same
 // locally and in the worker.
 import fs from 'node:fs';
@@ -19,7 +19,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frameDocument, frameCsp, SANDBOX } from './frame.js';
-import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE } from './vendor.js';
+import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE, KIT2_PATH, THEMES_PATH } from './vendor.js';
 import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
@@ -35,6 +35,13 @@ function vendorFile(url) {
     const dir = path.join(PUBLIC_DIR, 'vendor', 'data'), f = path.join(dir, d[1], d[2], d[3]);
     return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
   }
+  // Kit 2: /vendor/kit2/<engine>/<v>/<path> and /vendor/themes/<theme>/<v>/<path> (up to three folders deep, plain names).
+  const k = /^\/vendor\/(kit2|themes)\/((?:[a-z0-9][a-z0-9._-]{0,40}\/){2,5}[a-z0-9][a-z0-9._-]{0,60})$/i.exec(p);
+  if (k) {
+    if (k[2].split('/').some(x => x === '..' || x.startsWith('.'))) return null;
+    const dir = path.join(PUBLIC_DIR, 'vendor', k[1]), f = path.join(dir, k[2]);
+    return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
+  }
   const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/|packs\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
   if (!m || m[2].includes('..') || m[3].includes('..') || (m[1] === 'three' && m[3].includes('/'))) return null;
   const dir = path.join(PUBLIC_DIR, 'vendor', m[1]);
@@ -42,7 +49,7 @@ function vendorFile(url) {
   return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
 }
 export { vendorFile };
-const VENDOR_TYPES = { js: 'text/javascript; charset=utf-8', woff2: 'font/woff2', json: 'application/json; charset=utf-8' };
+const VENDOR_TYPES = { js: 'text/javascript; charset=utf-8', mjs: 'text/javascript; charset=utf-8', woff2: 'font/woff2', json: 'application/json; charset=utf-8', glb: 'model/gltf-binary', ogg: 'audio/ogg', webp: 'image/webp', png: 'image/png' };
 /** Are the pinned Three.js files on this disk? (The worker checks at start: without them 3D covers fail.) */
 export const threeReady = () => [THREE_MODULE, THREE_CORE].every(p => !!vendorFile(`${HOST}${p}`));
 const ALLOWED = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)\//;
@@ -294,7 +301,7 @@ async function capture(gameHtml, opts) {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
       if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`)) {
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`) || u.startsWith(`${HOST}${KIT2_PATH}`) || u.startsWith(`${HOST}${THEMES_PATH}`)) {
         const f = vendorFile(u);
         if (!f) return route.fulfill({ status: 404, body: '' });
         return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });

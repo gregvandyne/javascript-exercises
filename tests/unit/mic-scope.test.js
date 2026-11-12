@@ -63,9 +63,9 @@ test('Remi\'s game frame is exactly like every other frame: same sandbox, same a
   assert.equal(f.status, 200);
   assert.equal(micOf(f.headers), '()'); assert.match(f.headers.get('permissions-policy'), /camera=\(\), microphone=\(\)/);
   const csp = f.headers.get('content-security-policy');
-  assert.ok(csp.startsWith(`sandbox ${SANDBOX};`)); assert.ok(!csp.includes('allow-same-origin')); assert.match(csp, /connect-src 'none'/);
+  assert.ok(csp.startsWith(`sandbox ${SANDBOX};`)); assert.ok(!csp.includes('allow-same-origin')); assert.match(csp, /connect-src https?:\/\/[^\s;\/]+\/vendor\/themes\/;/, 'fetch reaches only Kit 2 theme art');
   const norm = c => c.replace(/https?:\/\/[^ ;]+/g, '').replace(/\s+/g, ' ').replace(/ ;/g, ';');
-  assert.equal(norm(csp), norm(frameCsp([])), 'the standard frame CSP');
+  assert.equal(norm(csp), norm(frameCsp(['https://oomba.example'])), 'the standard frame CSP');
   assert.ok(f.text.includes('BRB.loudness') || f.text.includes('loudApi'), 'the SDK only talks to the page');
 });
 

@@ -151,7 +151,8 @@ export function createApp() {
     res.set({ 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Max-Age': '86400', ...(/^[\w-]+(\s*,\s*[\w-]+)*$/.test(asked) ? { 'Access-Control-Allow-Headers': asked } : {}) });
     res.status(204).end();
   });
-  // The three.js files are large text, so compress them. The app has no general compression (static HTML is
+  // The three.js files are large text, and Kit 2 models (quantized, not meshopt: docs/kit2-themes-plan.md) shrink by
+  // about 60% with brotli, so compress them. The app has no general compression (static HTML is
   // small and first-paint-critical), so this is scoped to /vendor's library files only. Each compressed form is
   // built once and kept in memory (the folder is immutable); the browser decompresses before checking SRI.
   const VENDOR_ROOT = path.join(ROOT, 'public/vendor');
@@ -167,14 +168,14 @@ export function createApp() {
   app.use('/vendor', (req, res, next) => {
     if (req.method !== 'GET') return next();
     let rel; try { rel = decodeURIComponent(req.path.replace(/^\/+/, '')); } catch { return next(); }   // a malformed escape: express.static answers it
-    if (rel.includes('..') || !/\.(js|css|json)$/i.test(rel)) return next();   // only text; other files via express.static
+    if (rel.includes('..') || !/\.(m?js|css|json|glb)$/i.test(rel)) return next();   // text and Kit 2 models; other files via express.static
     const enc = /\bbr\b/.test(req.headers['accept-encoding'] || '') ? 'br' : /\bgzip\b/.test(req.headers['accept-encoding'] || '') ? 'gzip' : null;
     if (!enc) return next();
     const abs = path.join(VENDOR_ROOT, rel);
     if (!abs.startsWith(VENDOR_ROOT + path.sep) || !fs.existsSync(abs) || !fs.statSync(abs).isFile()) return next();
     let body; try { body = vendorCompressed(abs, enc); } catch { return next(); }
     res.set({
-      'Content-Type': rel.endsWith('.css') ? 'text/css; charset=utf-8' : rel.endsWith('.json') ? 'application/json; charset=utf-8' : 'text/javascript; charset=utf-8',
+      'Content-Type': rel.endsWith('.css') ? 'text/css; charset=utf-8' : rel.endsWith('.json') ? 'application/json; charset=utf-8' : rel.endsWith('.glb') ? 'model/gltf-binary' : 'text/javascript; charset=utf-8',
       'Content-Encoding': enc, 'Vary': 'Accept-Encoding',
       'Cache-Control': 'public, max-age=31536000, immutable',
       'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin',

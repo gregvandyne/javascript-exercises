@@ -37,6 +37,8 @@ COPY seed-lessons ./seed-lessons
 COPY kit/demo ./kit/demo
 COPY kit/src ./kit/src
 COPY kit/packs ./kit/packs
+# Kit 2's lock: server/services/vendor.js reads it at start for the pinned import map, Phaser tag and theme versions.
+COPY kit2/SHIPPED.json ./kit2/SHIPPED.json
 RUN chmod 0755 scripts/entrypoint.sh && mkdir -p /data && chown node:node /data
 EXPOSE 3000
 VOLUME ["/data"]

@@ -14,10 +14,12 @@ Every game, whether it came from our team or from a kid, runs the same way.
   It **never** gets `allow-same-origin`, so the game cannot read the website's cookies, storage or pages.
   The Studio preview uses the exact same sandbox as the play page.
 - The game is served from its own route (`/frame/<token>`) with a strict Content Security Policy:
-  no network at all (`connect-src 'none'`), no forms (`form-action 'none'`), no other pages may embed it,
-  scripts only inline, from `cdnjs.cloudflare.com`, or from the site's own `/vendor/three/` folder (the one 3D library,
-  named by the site's origin plus that path, so no other script on the site can run in a game), styles and fonts only
-  from Google Fonts.
+  no network except the site's own `/vendor/themes/` folder (`connect-src`, `img-src` and `media-src` name the site's
+  origin plus that path: Kit 2 theme art, read-only files, so the loaders can fetch models, pictures and sounds; nothing
+  else on the site and no other host), no forms (`form-action 'none'`), no other pages may embed it,
+  scripts only inline, from `cdnjs.cloudflare.com`, or from the site's own `/vendor/three/`, `/vendor/oomba-kit/`,
+  `/vendor/data/` and `/vendor/kit2/` folders (pinned libraries, named by the site's origin plus that path, so no other
+  script on the site can run in a game), styles and fonts only from Google Fonts and the kit.
 - The token in the frame link is signed and expires. Studio previews use a preview token, which also switches
   saving off.
 - **Two network gaps the CSP cannot cover are closed in code, before any game code runs** (`public/sdk/brb-sdk.js`,
@@ -41,7 +43,9 @@ Every game, whether it came from our team or from a kid, runs the same way.
 - **Code libraries are pinned.** The CSP allows scripts from `cdnjs.cloudflare.com`, but the scanner only passes a
   short, reviewed list of exact library files (empty today). Any other cdnjs script or import-map entry is *flagged*
   for a human, because the scanner cannot read a big minified bundle. (WebAssembly, Workers and `blob:`/`data:` script
-  loading stay blocked by the CSP — we do **not** add `wasm-unsafe-eval` or `worker-src`.)
+  loading stay blocked by the CSP — we do **not** add `wasm-unsafe-eval` or `worker-src`. Kit 2 keeps this: its models
+  are quantized, not meshopt- or Draco-compressed, because those decoders need WebAssembly, and Rapier physics is not
+  offered; `tests/unit/kit2-themes.test.js` and `tests/unit/kit2-frame.test.js` check both.)
 - **3D games use one self-hosted, pinned Three.js** (r185.1, in `public/vendor/three/0.185.1/` with its MIT licence).
   A game loads it with exactly one import map whose `integrity` lines carry the files' sha384 hashes, so a changed file
   would not run (in browsers that check import-map integrity: Chrome 127+, Safari 18+, Firefox 138+). The scanner passes
@@ -330,9 +334,10 @@ language; typed messages are never machine-translated. Usernames stay Latin lett
 
 **The wall.** The guarantee a game cannot get around is the browser's own: an opaque-origin iframe with
 `sandbox="allow-scripts allow-pointer-lock allow-orientation-lock"` (never `allow-same-origin`) under a CSP with
-`connect-src 'none'`, `default-src 'none'`, no `allow-popups`, no `wasm-unsafe-eval`, no `worker-src`. A game cannot
-reach the website's origin, read its cookies or storage, open a window, start a Worker, run WebAssembly, or make a
-`fetch`/`XHR`/`WebSocket`/`EventSource` call. It can draw, play sound, use WebGL (so real 3D works), and talk to the
+`default-src 'none'`, `connect-src` only for the site's read-only `/vendor/themes/` folder, no `allow-popups`, no
+`wasm-unsafe-eval`, no `worker-src`. A game cannot reach the website's pages or API, read its cookies or storage, open a
+window, start a Worker, run WebAssembly, or make a `fetch`/`XHR`/`WebSocket`/`EventSource` call to anything but Kit 2
+theme files (and the scanner fails a game whose own code calls `fetch` or `XMLHttpRequest` at all). It can draw, play sound, use WebGL (so real 3D works), and talk to the
 page only through `postMessage`, which both the page and the server re-check.
 
 **A frame navigating *itself*.** The frame's own CSP has no directive for where a frame may send *itself* (there is

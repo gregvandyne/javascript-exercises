@@ -133,7 +133,7 @@ test('Start from a template: version 1 is the template; the Studio uses the play
   assert.match(page.text, /<p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"><\/p>/, 'the build steps announcer sits outside the chat log');
   const src = page.text.match(/src="(\/frame\/[^"]+)"/)[1];
   const frame = await owner(src);
-  assert.equal(frame.status, 200); assert.match(frame.headers.get('content-security-policy'), /connect-src 'none'/);
+  assert.equal(frame.status, 200); assert.match(frame.headers.get('content-security-policy'), /connect-src https?:\/\/[^\s;\/]+\/vendor\/themes\/;/, 'the frame can fetch only Kit 2 theme art');
   assert.match(frame.text, /"preview":true/); assert.match(frame.text, /"canSave":false/);
   const list = await owner('/build'); assert.match(list.text, /📝 Draft/);
 });
