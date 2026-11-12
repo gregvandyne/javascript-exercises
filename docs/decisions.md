@@ -4676,3 +4676,38 @@ The owner asked for more worlds, architecture (buildings, trees) and characters.
 - **Characters:** no new character pack is reachable on GitHub (KayKit has only Adventurers and Skeletons there), and
   Quaternius's animals and dinosaurs sit on Google Drive, which refused anonymous downloads today ("quota exceeded").
   They come next, with Oomba3D 1.2.0 (heroes that carry their own animations).
+
+## Number Quest tiers: three streets on one path (12 Nov 2026)
+
+Number Quest was built with the Explorer tier (grades 3-5) alone, and the code named it everywhere. The
+course now reads its tiers from its catalogue, so Launchpad (K-2) and Pro (6-8) are added as data.
+
+- **A tier is a band.** The tier name (`launchpad`, `explorer`, `pro`) is the band stored in
+  `course_progress.band` and `course_bands`, and the prefix of every step key: `<tier>-<unit>.<step>`.
+  Every existing `explorer-*` key, row and URL is unchanged. Unlike CS Quest's two bands, which teach the
+  same steps twice, each tier has its own units and steps; unit numbers repeat across tiers, so a unit is
+  always tier + number (laps, test-outs and the soft-landing rule all compare both).
+- **One module answers "which tiers".** `server/services/number-quest-tiers.js` reads `units.json` and
+  nothing else: the tiers that have units, their status, their units and doors. The course loader, the
+  placement service and the views ask it; none of them names a tier's units.
+- **Building means admin only.** A tier's `status` is `open` or `building`. A building tier is loaded
+  (so its decks are validated) but shown to the platform admin alone, who already walks every step. For
+  everyone else its steps answer exactly as steps that do not exist (404), its band cannot be picked,
+  and the path page, the band picker, the teacher page and placement behave as if the tier were not
+  there. A tier with no units does not exist for anyone. Visibility is decided where a viewer is known
+  (`bandsFor(course, user)`, `stepFor`, `stateOf`), never in the loader.
+- **The street a learner sees** is their band; with no band yet, the street their placement start sits
+  on; else Explorer. The switcher appears only when the viewer may see more than one street, and each
+  street renders only its own units. A learner placed on a later street has the whole earlier street
+  open behind them.
+- **Placement stays as it was until Launchpad opens.** While Launchpad is building, a rung under 2.5
+  still starts at the Explorer welcome with the gap flagged on the note. Once it is open and has entry
+  profiles (`placement.json`, keyed `launchpad-<unit>.1`), those rungs walk the Launchpad units. Start
+  nodes, overrides, the Just Play door, the soft landing and test-out all derive from the catalogue.
+- **Game lesson modes** keep Explorer's encoding (`mode=nq-<unit>-<step>`) and add `nql-` for Launchpad
+  and `nqp-` for Pro. A game opens a lesson board only for a step it has content for; any other mode
+  opens the normal game.
+- **Launchpad reading load** is its own rule set (two sentences a slide, twelve words a sentence, three
+  words on the words slide), enforced for every Launchpad deck by
+  `tests/unit/number-quest-launchpad-decks.test.js`. The contract for adding a unit is in
+  `seed-lessons/number-quest/README.md`.

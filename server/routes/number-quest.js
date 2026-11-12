@@ -13,6 +13,7 @@ import * as F from '../services/family.js';
 import { q } from '../db.js';
 import * as P from '../services/number-quest-placement.js';
 import * as NQ from '../services/number-quest-progress.js';
+import * as NQT from '../services/number-quest-tiers.js';
 import * as C from '../services/courses.js';
 import * as S from '../services/schools.js';
 import { sortingGamePage, startingPointPage, CSS } from '../views/number-quest-placement.js';
@@ -106,7 +107,7 @@ router.post('/api/number-quest/placement/confirm-retake', ...api, (req, res) => 
 router.get('/api/number-quest/placement', ...api, (req, res) => {
   const u = needUser(req, res); if (!u) return;
   const p = P.getPlacement(u);
-  res.json({ placement: p, testedOut: P.testedOutUnits(u), softLand: p && p.softLandNode ? { node: p.softLandNode, workshop: P.nodeInfo(p.softLandNode).workshop } : null });
+  res.json({ placement: p, testedOut: P.testedOutUnits(u), testedOutByTier: Object.fromEntries(NQT.visibleTiers(u).map(k => [k, P.testedOutUnits(u, k)])), softLand: p && p.softLandNode ? { node: p.softLandNode, workshop: P.nodeInfo(p.softLandNode).workshop } : null });
 });
 /** A check result at the placed start (the soft-landing rule, §4.4); the course step API calls the same
  *  service function, this endpoint keeps the rule usable and testable on its own. */
@@ -120,8 +121,13 @@ router.post('/api/number-quest/placement/check-result', ...api, (req, res) => {
 router.post('/api/number-quest/testout/start', ...api, (req, res) => {
   const u = needUser(req, res); if (!u) return;
   const unit = Number((req.body || {}).unit);
-  if (![1, 2, 3, 4].includes(unit)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const out = P.startRun(u, { kind: 'testout', unit });
+  // The street the unit is on (Explorer unless the page names another): one this learner may see. The
+  // Explorer street offers test-out for Units 1-4, as it always has; another street offers it for every
+  // unit that has a locked entry profile.
+  const tier = (req.body || {}).tier === undefined ? NQT.DEFAULT_TIER : String((req.body || {}).tier);
+  const okUnit = tier === NQT.DEFAULT_TIER ? [1, 2, 3, 4].includes(unit) : NQT.visibleTo(u, tier) && Number.isInteger(unit) && !!P.entryProfile(tier, unit);
+  if (!okUnit) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  const out = P.startRun(u, { kind: 'testout', unit, tier });
   if (!out || !out.current) return res.status(400).json({ error: req.t('errors.api.badRequest') });
   res.json({ runId: out.runId, current: out.current });
 });
@@ -146,11 +152,8 @@ router.get('/number-quest/starting-point', (req, res) => {
 function rebuildNote(placement) {
   const placed = Object.fromEntries(Object.entries(placement.rungs).map(([k, v]) => [k, { rung: v, confirmed: placement.source !== 'beginning' }]));
   const lines = Object.entries(placed).map(([k, v]) => P.strandNoteWords(P.STRAND_LABELS[k], v, placement.rungs));
-  const { launchpadGap, finaleDoor } = P.crosswalk(placement.rungs);
-  const info = P.nodeInfo(placement.startNode);
-  return { lines, placedUnit: finaleDoor
-      ? `Past Unit 7: every strand pointed beyond the Explorer street's workshops. The start is the Vault of Measures, the finale at the end of Unit 7 (The Fairground), and every workshop stays open for games, laps and test-out.`
-      : `Unit ${info.unit}: ${info.workshop}`,
+  const { node, launchpadGap, finaleDoor } = P.crosswalk(placement.rungs);
+  return { lines, placedUnit: finaleDoor ? P.finaleWords(node) : P.placedUnitWords(placement.startNode),
     launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line; the Launchpad gardens are still being built, so this learner starts at Welcome to the Numberworks for now.' : null, partial: null };
 }
 // ------------------------------------------------------------------------------------------------- the daily goal
@@ -169,7 +172,9 @@ router.post('/api/number-quest/daily-goal', ...api, form, (req, res) => {
  *  six games, the units and steps, the locked CCSS-M map for Explorer Units 1-7 plus the finale, the
  *  teacher notes and the printed pack (?print=1). Anyone may read it; the course stands alone. */
 router.get('/teachers/number-quest', (req, res) => {
-  const t = req.t, cat = C.numberQuestCatalogue();
+  // The tiers this reader may see: the open ones (a tier still being built shows to the platform admin only).
+  const t = req.t, cat = C.numberQuestCatalogue(req.user);
+  const tierOf = u => NQT.tierOfUnit(u), manyTiers = cat.tiers.length > 1;
   const K = 'teachers.nq';
   if (req.query.print === '1') {
     const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🔢 Number Quest — ${t(`${K}.print.h`)}</h1>
@@ -184,13 +189,13 @@ router.get('/teachers/number-quest', (req, res) => {
     { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
     { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
-  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
-    <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {}).explorer || s.n}</li>`)}</ol></li>`;
+  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${manyTiers ? `${NQT.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+    <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${NQT.stepTitle(tierOf(u), s)}</li>`)}</ol></li>`;
   const faqPairs = [1, 2, 3, 4, 5].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers') });
   const path = '/teachers/number-quest';
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${K}.crumb`), path]];
-  const codes = [...new Set(cat.units.flatMap(u => (u.steps || []).flatMap(s => { const st = (s.standards || {}).explorer || {}; return [...(st.primary || []), ...(st.also || [])]; })))];
+  const codes = [...new Set(cat.units.flatMap(u => (u.steps || []).flatMap(s => { const st = (s.standards || {})[tierOf(u)] || {}; return [...(st.primary || []), ...(st.also || [])]; })))];
   const body = html`<div class="lp">
   <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
   <section class="lp-hero" aria-labelledby="lp-h1">
@@ -224,7 +229,7 @@ router.get('/teachers/number-quest', (req, res) => {
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Number Quest', description: t(`${K}.description`),
     provider: { '@id': seo.orgId(req) }, educationalLevel: 'Grades 3-5', inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan',
-    teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => (s.titles || {}).explorer)))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
+    teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => NQT.stepTitle(tierOf(u), s))))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
     educationalAlignment: codes.map(code => ({ '@type': 'AlignmentObject', alignmentType: 'teaches', educationalFramework: 'Common Core State Standards for Mathematics (CCSS-M, 2010)', targetName: code })),
   };
   page(req, res, {

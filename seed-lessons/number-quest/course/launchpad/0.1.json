@@ -1,0 +1,95 @@
+{
+ "key": "launchpad-0.1",
+ "n": "0.1",
+ "band": "launchpad",
+ "title": "Meet Tally in the Gardens",
+ "topic": "Welcome",
+ "minutes": 4,
+ "slides": [
+  {
+   "title": "Meet Tally",
+   "text": "This is Tally the cat. Tally looks after the Gardens.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The Gardens are quiet",
+   "text": "The Gardens have gone quiet. Nobody is counting the flowers.",
+   "art": "lock",
+   "story": {
+    "scene": "street",
+    "lit": 0,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "We count to find out",
+   "text": "We count to find how many. Count along with Tally.",
+   "art": "lightbulb",
+   "steps": [
+    "1 red flower",
+    "2 green frogs",
+    "3 busy bees"
+   ]
+  },
+  {
+   "title": "Who is giggling?",
+   "text": "Something giggles in the bushes. It is the Jumble, mixing things up.",
+   "art": "mask"
+  },
+  {
+   "title": "You can help",
+   "text": "Help Tally wake the Gardens. Count, and the flowers open.",
+   "art": "star",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "count",
+     "means": "say the numbers in order"
+    },
+    {
+     "word": "number",
+     "means": "it tells us how many"
+    },
+    {
+     "word": "garden",
+     "means": "a place where plants grow"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game this time. Find the first garden on the path.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-launchpad-0.1-e1",
+  "nq-launchpad-0.1-e2",
+  "nq-launchpad-0.1-e3"
+ ],
+ "game": null,
+ "talk": "What is something you like to count?"
+}

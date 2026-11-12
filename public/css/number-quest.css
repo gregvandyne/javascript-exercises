@@ -180,3 +180,13 @@
 .nq-moment-goal { border-color: var(--accent-line, #1F9D63); background: var(--ok-bg, #E1F1E1); }
 @keyframes nq-moment-in { from { transform: translateY(8px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .nq-moment { animation: none; } }
+
+/* The street switcher (shown once more than one tier is open): one pill per street, the street on
+   screen marked; a street still being built says so (the platform admin alone sees one). */
+.nqp-streets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+.nqp-streets form { margin: 0; }
+.nqp-street { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 14px; border-radius: 999px;
+  border: 2px solid var(--line, #ccc); background: var(--card, #fff); color: var(--text, #222); font: inherit; text-decoration: none; cursor: pointer; }
+.nqp-street:hover { border-color: var(--accent-line, #1F9D63); }
+.nqp-street.is-on { border-color: var(--accent-line, #1F9D63); background: var(--accent-soft, #e7f6ee); cursor: default; }
+.nqp-street-g, .nqp-street-b { color: var(--muted, #666); font-size: .9rem; }

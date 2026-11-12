@@ -83,9 +83,12 @@ test('chained Packet Post chapters are named in the mission with their true size
 test('every quick-check item in every course step carries a why, and a miss returns it', () => {
   // Since the 2026-11-10 pass every step of all three courses is covered: CS Quest units 4-6 already had
   // their whys (the old audited list just never named them), and Number Quest units 0-4 got theirs then.
-  const nqDir = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer');
-  const nq = fs.readdirSync(nqDir).filter(x => x.endsWith('.json')).sort()
-    .map(f => ({ course: 'number-quest', band: 'explorer', deck: JSON.parse(fs.readFileSync(path.join(nqDir, f), 'utf8')) }));
+  // Number Quest's bands are its tiers: every tier that has a deck folder is read (course/<tier>/).
+  const nqRoot = path.join(ROOT, 'seed-lessons', 'number-quest', 'course');
+  const nqTiers = fs.readdirSync(nqRoot).filter(x => fs.statSync(path.join(nqRoot, x)).isDirectory()).sort();
+  assert.deepEqual(nqTiers, ['explorer', 'launchpad'], 'the Number Quest tiers that have decks');
+  const nq = nqTiers.flatMap(band => fs.readdirSync(path.join(nqRoot, band)).filter(x => x.endsWith('.json')).sort()
+    .map(f => ({ course: 'number-quest', band, deck: JSON.parse(fs.readFileSync(path.join(nqRoot, band, f), 'utf8')) })));
   let checked = 0;
   for (const { course, band, deck: d } of [...ALL, ...nq]) {
     for (const id of d.check) {
@@ -99,7 +102,7 @@ test('every quick-check item in every course step carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 318, 'the three courses hold 318 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 69)');
+  assert.equal(checked, 321, 'the three courses hold 321 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 72: Explorer 69, Launchpad 3)');
 });
 
 test('every exit item in every question-set file carries a why', () => {
@@ -122,8 +125,8 @@ test('every exit item in every question-set file carries a why', () => {
       }
     }
   }
-  assert.equal(files, 36, 'the three programs hold 36 question-set files');
-  assert.equal(exits, 327, 'and 327 exit items, every one with a why');
+  assert.equal(files, 37, 'the three programs hold 37 question-set files');
+  assert.equal(exits, 330, 'and 330 exit items, every one with a why');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).

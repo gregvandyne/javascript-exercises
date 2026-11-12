@@ -639,7 +639,14 @@ window.SoloBank = (function () {
   // skill — no subject/level picker first, and no general-knowledge tiles: step 1.1 practises place
   // value, step 2.3 practises bar-model stories. Items are generated in the live-bank shape and run
   // through boardFrom, so the board, scoring and the finished-round report are the game's own.
-  var NQ_STEP = (window.BRB && BRB.params && /^nq-\d-\d$/.test(String(BRB.params.mode || ''))) ? 'explorer-' + String(BRB.params.mode).slice(3).replace('-', '.') : '';
+  /* The lesson mode names the step: mode=nq-<unit>-<step> is the Explorer tier (as it always was),
+     mode=nql-<unit>-<step> the Launchpad tier, mode=nqp-<unit>-<step> the Pro tier. A step this game has no
+     lesson content for is not a lesson arrival at all: NQ_STEP stays empty and the game opens as normal. */
+  var NQ_STEP = (function (known) {
+    var m = /^(nq|nql|nqp)-(\d)-(\d)$/.exec(String((window.BRB && BRB.params && BRB.params.mode) || ''));
+    var key = m ? { nq: 'explorer', nql: 'launchpad', nqp: 'pro' }[m[1]] + '-' + m[2] + '.' + m[3] : '';
+    return known.indexOf(key) >= 0 ? key : '';
+  })(['explorer-1.1', 'explorer-2.3', 'explorer-5.1', 'explorer-5.3', 'explorer-6.1', 'explorer-6.2', 'explorer-6.3']);
   /* A lesson board's points goal (Greg, 5 Nov 2026): the board holds 7,500 face points (five columns of
      100+200+300+400+500). 3,000 is 40% of it: the three easiest rows across all five columns sum to exactly
      3,000 (15 tiles, no speed bonus needed), and the hard route needs at least seven tiles (the six richest

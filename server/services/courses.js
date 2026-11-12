@@ -31,6 +31,7 @@ import { onAccountMerge } from './schools.js';
 
 import { COURSES, courseOfSlug } from './course-catalog.js';
 import { DIAGRAM_TYPES, cleanDiagram } from './diagrams.js';
+import * as NQT from './number-quest-tiers.js';
 export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 
@@ -40,10 +41,22 @@ const CSQ = path.join(ROOT, 'seed-lessons/cs-quest');
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 const NQD = path.join(ROOT, 'seed-lessons/number-quest');
 export const BANDS = Object.freeze(['1b', '2']);
-/** The bands a course offers: the two graded bands for CS Quest and Cyber Defenders; Number Quest's single
- *  Explorer band (its decks and step keys are keyed "explorer", e.g. explorer-1.1 — the same node names the
- *  placement service places students at). */
-export const bandsFor = course => (course && course.slug === 'number-quest' ? ['explorer'] : BANDS);
+const isNq = course => !!course && course.slug === 'number-quest';
+/** The bands a course offers this viewer: the two graded bands for CS Quest and Cyber Defenders; for Number
+ *  Quest, its tiers (services/number-quest-tiers.js: launchpad / explorer / pro, the band value and the
+ *  prefix of its step keys, e.g. explorer-1.1 — the same node names the placement service places students
+ *  at). Only the tiers the viewer may see are offered: the open ones, plus a tier still being built for
+ *  the platform admin. With no viewer named, the open tiers. */
+export const bandsFor = (course, user = null) => (isNq(course) ? NQT.visibleTiers(user) : BANDS);
+/** Every band a course has, whoever is looking (Number Quest: every tier that has units, open or not). */
+export const allBandsFor = course => (isNq(course) ? NQT.existingTiers() : BANDS);
+/** The band a viewer with no band of their own is shown: the first graded band; Number Quest's Explorer street. */
+export const defaultBand = (course, user = null) => {
+  const bands = bandsFor(course, user);
+  return isNq(course) && bands.includes(NQT.DEFAULT_TIER) ? NQT.DEFAULT_TIER : bands[0] || null;
+};
+/** May this viewer see this band of the course at all (false for a Number Quest tier still being built)? */
+export const bandVisible = (user, course, band) => bandsFor(course, user).includes(band);
 /** A check passes with this many right out of three. */
 export const PASS = 2;
 
@@ -465,48 +478,62 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   return { title: str(d.title, 80) || (s.titles || {})[band] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[band] || '', minutes: +d.minutes || 6, slides, ...(first ? { slidesFirstTime: first } : {}), check, talk: str(d.talk, 400), deck: true };
 }
 
-/** Number Quest: a third, deck-native course on the same machinery, with one difference of shape — a single
- *  Explorer band (Phase 1 builds the Explorer intro and Units 1-4; Launchpad and Pro are specced, not built).
- *  Its units.json is the source of truth for the order, the game module, the locked CCSS-M statements and each
- *  step's Mathematical Practice spotlight; its decks and check banks live beside it. Step keys are
- *  "explorer-<n>", the very node names the placement service (services/number-quest-placement.js) routes to. */
+/** Number Quest: a third, deck-native course on the same machinery, with one difference of shape — its bands
+ *  are its tiers (services/number-quest-tiers.js): sequential streets on one path, each with its OWN units and
+ *  steps, where CS Quest and Cyber Defenders teach the same steps in two bands. Its units.json is the source of
+ *  truth for the tiers, the order, the game module, the locked CCSS-M statements and each step's Mathematical
+ *  Practice spotlight; its decks (course/<tier>/<n>.json) and check banks (sets/u<n>-<tier>.json) live beside
+ *  it. Step keys are "<tier>-<n>", the very node names the placement service
+ *  (services/number-quest-placement.js) routes to. Every tier that has units is loaded, open or not: who may
+ *  see a tier is decided where a viewer is known (bandsFor, stepFor, stateOf), never here. */
 function loadNumberQuest(items) {
-  for (const f of fs.readdirSync(path.join(NQD, 'sets')).filter(f => /^u\d-explorer\.json$/.test(f))) {
+  NQT.reload();
+  for (const f of fs.readdirSync(path.join(NQD, 'sets')).filter(f => /^u\d-(launchpad|explorer|pro)\.json$/.test(f))) {
     for (const it of readJson(path.join(NQD, 'sets', f)).items || []) items.set(it.id, it);
   }
-  const reg = readJson(path.join(NQD, 'units.json'));
+  const reg = NQT.catalogue();
   const registry = readJson(path.join(NQD, 'standards.json'));
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
-  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title }));
-  const problems = { explorer: [] };
-  const flat = (reg.units || []).flatMap(u => (u.steps || []).map(s => ({ u, s }))).sort((a, b) => a.s.order - b.s.order);
-  const steps = flat.map(({ u, s }, index) => {
-    const key = `explorer-${s.n}`;
-    const spec = (s.game || {}).explorer || null;
-    const game = spec ? { slug: spec.slug, chapter: spec.chapter, chapterTitle: spec.chapterTitle || spec.chapter, params: spec.params || '', title: gameTitle(spec.slug, gameInfo) } : null;
-    const file = path.join(NQD, 'course', 'explorer', `${s.n}.json`);
-    let deck = null;
-    if (fs.existsSync(file)) {
-      try { deck = readJson(file); } catch (e) { problems.explorer.push(`${key}: ${e.message}`); }
-    }
-    const base = { key, n: s.n, unit: u.n, band: 'explorer', index, game, lesson: null, group: u.group, standards: (s.standards || {}).explorer || null, mp: s.mp || null };
-    if (!deck) {
-      problems.explorer.push(`${key}: no deck at course/explorer/${s.n}.json`);
-      return { ...base, title: (s.titles || {}).explorer || s.n, topic: (s.shorts || {}).explorer || '', minutes: 6, slides: [{ kind: 'text', title: (s.titles || {}).explorer || s.n, text: reg.program.tagline, art: 'star', say: '' }], check: [], talk: '', deck: false };
-    }
-    return { ...base, ...fromNqDeck(key, s, deck, game, items, problems.explorer) };
-  });
-  return { steps: { explorer: steps }, problems, groups, catalogue: { program: reg.program, units: reg.units || [], registry, tier: (reg.tiers || {}).explorer || null } };
+  const groupOf = u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title });
+  const steps = {}, problems = {}, groups = {};
+  for (const tier of NQT.existingTiers()) {
+    problems[tier] = [];
+    groups[tier] = NQT.unitsOf(tier).map(groupOf);
+    steps[tier] = NQT.stepsOf(tier).map(({ key, unit: u, s }, index) => {
+      const spec = (s.game || {})[tier] || null;
+      const game = spec ? { slug: spec.slug, chapter: spec.chapter, chapterTitle: spec.chapterTitle || spec.chapter, params: spec.params || '', title: gameTitle(spec.slug, gameInfo) } : null;
+      const file = path.join(NQD, 'course', tier, `${s.n}.json`);
+      let deck = null;
+      if (fs.existsSync(file)) {
+        try { deck = readJson(file); } catch (e) { problems[tier].push(`${key}: ${e.message}`); }
+      }
+      const base = { key, n: s.n, unit: u.n, band: tier, index, game, lesson: null, group: u.group, standards: (s.standards || {})[tier] || null, mp: s.mp || null };
+      if (!deck) {
+        problems[tier].push(`${key}: no deck at course/${tier}/${s.n}.json`);
+        return { ...base, title: (s.titles || {})[tier] || s.n, topic: (s.shorts || {})[tier] || '', minutes: 6, slides: [{ kind: 'text', title: (s.titles || {})[tier] || s.n, text: reg.program.tagline, art: 'star', say: '' }], check: [], talk: '', deck: false };
+      }
+      return { ...base, ...fromNqDeck(key, s, tier, deck, game, items, problems[tier]) };
+    });
+  }
+  return { steps, problems, groups, reg, registry };
+}
+/** Number Quest's teacher-facing catalogue as one viewer may see it: the units of the tiers they may see (the
+ *  open ones; a tier still being built only for the platform admin), in path order, each unit carrying its
+ *  `tier`; `tiers` lists those tiers with their catalogue line and status; `tier` is Explorer's line. */
+function nqCatalogue(nq, user) {
+  const seen = NQT.visibleTiers(user);
+  return { program: nq.reg.program, units: seen.flatMap(t => NQT.unitsOf(t)), registry: nq.registry, tier: NQT.tierInfo('explorer'),
+    tiers: seen.map(t => ({ key: t, ...(NQT.tierInfo(t) || {}), status: NQT.statusOf(t), name: NQT.tierName(t), units: NQT.unitsOf(t) })) };
 }
 /** One Number Quest deck, cleaned and checked against its units.json entry (the same rules as fromCyberDeck;
- *  its check items are the step's own bank items, ids "nq-explorer-<n>-e<k>", each tagged to a locked code). */
-function fromNqDeck(key, s, d, game, items, problems) {
+ *  its check items are the step's own bank items, ids "nq-<tier>-<n>-e<k>", each tagged to a locked code). */
+function fromNqDeck(key, s, tier, d, game, items, problems) {
   const slides = (Array.isArray(d.slides) ? d.slides : []).filter(x => x && typeof x === 'object').map(cleanSlide);
   const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : [];
   const say = m => problems.push(`${key}: ${m}`);
   if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
   if (d.n !== s.n) say(`n is ${JSON.stringify(d.n)}`);
-  if (d.band !== 'explorer') say(`band is ${JSON.stringify(d.band)}`);
+  if (d.band !== tier) say(`band is ${JSON.stringify(d.band)}`);
   if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
   if (slides.filter(x => x.kind === 'example').length !== 1) say('needs exactly one example slide');
   if (slides.filter(x => x.kind === 'words').length !== 1) say('needs exactly one words slide');
@@ -521,12 +548,12 @@ function fromNqDeck(key, s, d, game, items, problems) {
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
-  else for (const id of check) if (items.get(id).lesson !== s.n || !id.startsWith('nq-explorer-')) say(`check item ${id} is not from step ${s.n}`);
+  else for (const id of check) if (items.get(id).lesson !== s.n || !id.startsWith(`nq-${tier}-`)) say(`check item ${id} is not from step ${s.n}`);
   const want = game ? { slug: game.slug, chapter: game.chapter, params: game.params } : null;
   const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
   if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match units.json (${JSON.stringify(want)})`);
   if (!game && !str(d.talk)) say('a step without a game needs "talk"');
-  return { title: str(d.title, 80) || (s.titles || {}).explorer || s.n, topic: str(d.topic, 40) || (s.shorts || {}).explorer || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+  return { title: str(d.title, 80) || (s.titles || {})[tier] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[tier] || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
 
 /** The unit groups on the course map, each headed by its game (unit 6 by its theme), after the course's own
@@ -541,25 +568,36 @@ export const GROUPS = Object.freeze([
   { id: 'tech-choices', units: [6], game: null, emoji: '💡', titleKey: 'courses.groups.techChoices' },
 ]);
 const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[1]).id;
-/** The course map's groups for a course: CS Quest's game worlds, Cyber Defenders' units from its units.json. */
-export function groupsFor(course) {
+/** The course map's groups for a course: CS Quest's game worlds, Cyber Defenders' units from its units.json,
+ *  Number Quest's units of one tier (its Explorer street unless a band is named). */
+export function groupsFor(course, band = NQT.DEFAULT_TIER) {
   if (course && course.slug === 'cyber-defenders') return load().cyber.groups;
-  if (course && course.slug === 'number-quest') return load().nq.groups;
+  if (isNq(course)) return load().nq.groups[band] || [];
   return GROUPS;
 }
 
-/** The course's steps for a band, in order. */
+/** The course's steps for a band, in order. Number Quest: any tier that has units, open or still being built
+ *  (a tier with no units has no steps) — who may OPEN a step is stepFor's and stateOf's question, not this one's. */
 export function steps(course, band) {
-  if (!course || !bandsFor(course).includes(band)) return [];
+  if (!course || !allBandsFor(course).includes(band)) return [];
   if (course.slug === 'cs-quest') return load().csq.steps[band];
   if (course.slug === 'cyber-defenders') return load().cyber.steps[band];
-  if (course.slug === 'number-quest') return load().nq.steps[band];
+  if (course.slug === 'number-quest') return load().nq.steps[band] || [];
   return [];
 }
-/** One step by key ("1b-1.2", "explorer-1.2"), or null. */
+/** A step key's shape, for any course: "1b-1.2", "2-3.1", "explorer-1.2", "launchpad-0.1", "pro-2.1". */
+export const STEP_KEY = /^(1b|2|launchpad|explorer|pro)-(\d\.\d)$/;
+/** One step by key, or null. It answers for the catalogue, not for a viewer: use stepFor where one is known. */
 export function getStep(course, key) {
-  const m = /^(1b|2|explorer)-(\d\.\d)$/.exec(String(key || ''));
+  const m = STEP_KEY.exec(String(key || ''));
   return m ? steps(course, m[1]).find(s => s.n === m[2]) || null : null;
+}
+/** One step by key as this viewer may meet it: null for an unknown key AND for a step of a band the viewer
+ *  may not see (a Number Quest tier still being built, for anyone but the platform admin), so such a step
+ *  reads exactly as a step that does not exist. */
+export function stepFor(user, course, key) {
+  const step = getStep(course, key);
+  return step && bandVisible(user, course, step.band) ? step : null;
 }
 /** A bank item by id (with its answer: server side only). */
 export const item = id => load().items.get(id) || null;
@@ -568,20 +606,21 @@ export const deckProblems = (band, slug = 'cs-quest') => (slug === 'cyber-defend
 /** Cyber Defenders' teacher-facing catalogue: the program line, the units with their steps, standards and
  *  teacher notes, and the standards registry — the data the teacher page renders (units.json + standards.json). */
 export const cyberCatalogue = () => load().cyber.catalogue;
-/** Number Quest's teacher-facing catalogue: the program line, the Explorer units with their steps, locked
- *  CCSS-M statements and teacher notes, and the standards registry (units.json + standards.json). */
-export const numberQuestCatalogue = () => load().nq.catalogue;
+/** Number Quest's teacher-facing catalogue: the program line, the units (each with its tier, steps, locked
+ *  CCSS-M statements and teacher notes) of the tiers this viewer may see, and the standards registry
+ *  (units.json + standards.json). With no viewer: the open tiers. */
+export const numberQuestCatalogue = (user = null) => nqCatalogue(load().nq, user);
 /** Forget the loaded files (tests that write decks). */
-export const reload = () => { cache = null; };
+export const reload = () => { cache = null; NQT.reload(); };
 
 // ------------------------------------------------------------------------------------------------- band
 export function getBand(user, course) {
   if (!user || !course) return null;
   const r = q.get('SELECT band FROM course_bands WHERE user_id=? AND course=?', user.id, course.slug);
-  return r && bandsFor(course).includes(r.band) ? r.band : null;
+  return r && bandsFor(course, user).includes(r.band) ? r.band : null;
 }
 export function setBand(user, course, band) {
-  if (!user || !course || !bandsFor(course).includes(band)) return false;
+  if (!user || !course || !bandsFor(course, user).includes(band)) return false;
   q.run('INSERT INTO course_bands(user_id, course, band, updated_at) VALUES (?,?,?,?) ON CONFLICT(user_id, course) DO UPDATE SET band=excluded.band, updated_at=excluded.updated_at', user.id, course.slug, band, now());
   return true;
 }
@@ -622,7 +661,14 @@ export function states(user, course, band) {
   if (course.slug === 'number-quest' && user && user.id) {
     const pr = q.get('SELECT start_node FROM nq_placement WHERE user_id=?', user.id);
     const node = pr && pr.start_node;
-    if (node) placedIdx = all.findIndex(s => s.key === node);
+    if (node) {
+      placedIdx = all.findIndex(s => s.key === node);
+      // The streets are sequential: a learner placed on a LATER street has every workshop of this one
+      // behind their start, so all of it stays open; a learner placed on an earlier street has none of
+      // this one behind them, and it opens step by step like any street.
+      const at = NQT.parseKey(node);
+      if (placedIdx < 0 && at && NQT.TIERS.indexOf(at.tier) > NQT.TIERS.indexOf(band) && NQT.visibleTo(user, at.tier)) placedIdx = all.length - 1;
+    }
   }
   // The platform admin tests the courses themselves (Greg, 2026-11-05): for the admin account every step
   // is open — enterable from the map in any order, whatever the account's own progress or placement — so
@@ -641,7 +687,7 @@ export function states(user, course, band) {
 }
 /** The course map's summary: { band, list, done, total, next } (next: the first open step not complete, or null). */
 export function overview(user, course, band = getBand(user, course)) {
-  if (!band) return { band: null, list: [], done: 0, total: steps(course, bandsFor(course)[0]).length, next: null };
+  if (!band) return { band: null, list: [], done: 0, total: steps(course, defaultBand(course, user)).length, next: null };
   const list = states(user, course, band);
   return { band, list, done: list.filter(s => s.complete).length, total: list.length, next: (list.find(s => s.open && !s.complete) || null) };
 }
@@ -658,9 +704,9 @@ export function classCourseProgress(students, course) {
     let band = getBand(user, course);
     if (!band && user && user.id != null) {
       const r = q.get('SELECT band, COUNT(*) AS n FROM course_progress WHERE user_id=? AND course=? GROUP BY band ORDER BY n DESC LIMIT 1', user.id, course.slug);
-      band = r && BANDS.includes(r.band) ? r.band : null;
+      band = r && bandsFor(course, user).includes(r.band) ? r.band : null;
     }
-    if (!band) return { user, band: null, status: 'not-started', done: 0, total: steps(course, '1b').length, score: 0, maxScore: 0, list: [] };
+    if (!band) return { user, band: null, status: 'not-started', done: 0, total: steps(course, defaultBand(course, user)).length, score: 0, maxScore: 0, list: [] };
     const list = states(user, course, band);
     const done = list.filter(s => s.complete).length;
     const started = list.some(s => s.row);
@@ -674,13 +720,13 @@ export function classCourseProgress(students, course) {
  *  a Pro kid who never walked Explorer gets a welcome written for a first visit. Read-aloud uses the same pick. */
 export function slidesFor(user, course, step) {
   if (!step || !step.slidesFirstTime) return step ? step.slides : [];
-  const other = bandsFor(course).find(b => b !== step.band);
+  const other = bandsFor(course, user).find(b => b !== step.band);
   const veteran = !!other && !!user && states(user, course, other).some(s => s.complete);
   return veteran ? step.slides : step.slidesFirstTime;
 }
 /** One step's state for this player (open, read, checked...), or null when the key is unknown. */
 export function stateOf(user, course, key) {
-  const step = getStep(course, key);
+  const step = stepFor(user, course, key);
   return step ? states(user, course, step.band)[step.index] : null;
 }
 

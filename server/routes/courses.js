@@ -8,6 +8,7 @@ import * as C from '../services/courses.js';
 // import; the course map and step APIs read it from here in the Number Quest stage that wires them up.
 import * as NQ from '../services/number-quest-progress.js';
 import * as NQP from '../services/number-quest-placement.js';
+import * as NQT from '../services/number-quest-tiers.js';
 import { coursePage, stepPage, afterSection } from '../views/courses.js';
 import { pathPage } from '../views/number-quest-path.js';
 import { CSS as NQ_CSS } from '../views/number-quest-placement.js';
@@ -19,7 +20,7 @@ import { current } from '../i18n/index.js';
 
 export const router = Router();
 const form = express.urlencoded({ extended: false, limit: '8kb', parameterLimit: 20 });
-const STEP = /^(1b|2|explorer)-\d\.\d$/;
+const STEP = C.STEP_KEY;
 
 /** A visitor without a session becomes a guest (like one tap on Play), so their course progress saves. Browsers only. */
 function ensureUser(req, res) {
@@ -47,9 +48,18 @@ router.get('/courses/:slug', (req, res) => {
     if (req.headers['sec-fetch-mode'] === 'navigate' && !isGrownup(u)) ensureUser(req, res);
     const user = req.user;
     honourPendingWins(user); // a win earned as a guest lands before the street is drawn
-    const bandSet = !!C.getBand(user, c);
-    const ov = C.overview(user, c, 'explorer');
     const placement = NQP.getPlacement(user);
+    // The street shown: the learner's own (their band); with no band yet, the street Tally placed them
+    // on; else Explorer. ?street=<tier> looks at another street without moving the learner (a grown-up
+    // reading the course has no band to move). Only streets this viewer may see count: the open ones,
+    // plus a street still being built for the platform admin.
+    const streets = C.bandsFor(c, user);
+    const own = C.getBand(user, c);
+    const bandSet = !!own;
+    const placedTier = placement && placement.startNode ? (NQT.parseKey(placement.startNode) || {}).tier : null;
+    const asked = String(req.query.street || '');
+    const street = streets.includes(asked) ? asked : own || (streets.includes(placedTier) ? placedTier : C.defaultBand(c, user));
+    const ov = C.overview(user, c, street);
     // "You are here" is the placed start while it is still undone: the earlier workshops are open
     // for laps and test-out, but the way forward begins at Tally's workshop, not at step one.
     if (placement && placement.startNode) {
@@ -57,10 +67,11 @@ router.get('/courses/:slug', (req, res) => {
       if (startState && !startState.complete) ov.next = startState;
     }
     return page(req, res, { title: t(`${c.key}.title`), active: 'learn', head: NQ_CSS,
-      body: pathPage({ course: c, ov, units: C.numberQuestCatalogue().units, marks: NQ.totalMarks(user, c),
-        daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, 'explorer').map(l => [l.unit, l])),
+      body: pathPage({ course: c, ov, units: NQT.unitsOf(street), marks: NQ.totalMarks(user, c),
+        street, streets: streets.map(k => ({ key: k, name: NQT.tierName(k), grades: (NQT.tierInfo(k) || {}).grades || '', district: (NQT.tierInfo(k) || {}).district || '', building: !NQT.isOpen(k) })),
+        daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, street).map(l => [l.unit, l])),
         placement: placement && placement.startNode ? { ...placement, workshop: NQP.nodeInfo(placement.startNode).workshop } : placement,
-        testedOut: NQP.testedOutUnits(user), canPick: !isGrownup(user), bandSet, locked: lockedKey(req),
+        testedOut: NQP.testedOutUnits(user, street), canPick: !isGrownup(user), bandSet, locked: lockedKey(req),
         hasProgress: ov.done > 0 || !!(placement && placement.startNode) }),
       description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
   }
@@ -74,7 +85,9 @@ router.post('/courses/:slug/band', rateLimit('course-band', 30, 60e3), form, (re
   const c = C.getCourse(req.params.slug);
   if (!c) return notFound(req, res);
   const band = String((req.body && req.body.band) || '');
-  if (!C.bandsFor(c).includes(band)) return res.redirect(303, `/courses/${c.slug}`);
+  // A band this viewer may not pick is refused before a guest is made for it (a visitor with no session
+  // may pick an open band only: a Number Quest street still being built is the platform admin's alone).
+  if (!C.bandVisible(req.user || null, c, band)) return res.redirect(303, `/courses/${c.slug}`);
   const u = isGrownup(req.user) ? null : ensureUser(req, res);
   if (u) C.setBand(u, c, band);
   res.redirect(303, `/courses/${c.slug}`);
@@ -82,7 +95,9 @@ router.post('/courses/:slug/band', rateLimit('course-band', 30, 60e3), form, (re
 
 function loadStep(req, res) {
   const c = C.getCourse(req.params.slug);
-  const step = c && STEP.test(req.params.step) ? C.getStep(c, req.params.step) : null;
+  // stepFor, not getStep: a step of a band this viewer may not see (a Number Quest street still being
+  // built) is not found, exactly as a step that does not exist.
+  const step = c && STEP.test(req.params.step) ? C.stepFor(req.user, c, req.params.step) : null;
   if (!step) { notFound(req, res); return null; }
   return { c, step };
 }
@@ -113,7 +128,7 @@ const lastWrong = (req, step) => String(req.query.w || '').split(',').filter(id 
 const api = [rateLimit('course', 120, 60e3)];
 function apiStep(req, res) {
   const c = C.getCourse(req.params.slug);
-  const step = c && STEP.test(req.params.step) ? C.getStep(c, req.params.step) : null;
+  const step = c && STEP.test(req.params.step) ? C.stepFor(req.user, c, req.params.step) : null;
   if (!step) { res.status(404).json({ error: req.t('errors.api.notFound') }); return null; }
   const u = req.user;
   if (!u || isGrownup(u)) { res.status(401).json({ error: req.t('errors.api.signInFirst') }); return null; }
@@ -192,9 +207,9 @@ function nqLapSync(u, c, step) {
   const unitSteps = C.steps(c, step.band).filter(s => s.unit === step.unit);
   const states = new Map(C.states(u, c, step.band).map(s => [s.step.key, s]));
   if (!unitSteps.length || !unitSteps.every(s => states.get(s.key) && states.get(s.key).complete)) return null;
-  const before = NQ.lapState(u, c, 'explorer', step.unit);
+  const before = NQ.lapState(u, c, step.band, step.unit); // laps are per tier: Launchpad Unit 1 is not Explorer Unit 1
   if (!before || before.completed.includes(1)) return null;
-  const out = NQ.completeLap(u, c, 'explorer', step.unit, 1);
+  const out = NQ.completeLap(u, c, step.band, step.unit, 1);
   return out.recorded ? { unit: step.unit, lap: 1, marks: out.marks } : null;
 }
 /** The moment payload after a check or a mission: what was awarded, the day against the goal (justMet is
@@ -269,7 +284,7 @@ router.post('/api/courses/:slug/:step/complete', ...api, (req, res) => {
 // The same check as a plain form (no page script): back to the step with the score.
 router.post('/courses/:slug/:step/check', rateLimit('course', 120, 60e3), form, (req, res) => {
   const c = C.getCourse(req.params.slug);
-  const step = c && STEP.test(req.params.step) ? C.getStep(c, req.params.step) : null;
+  const step = c && STEP.test(req.params.step) ? C.stepFor(req.user, c, req.params.step) : null;
   if (!step) return notFound(req, res);
   const u = req.user; const s = u && C.stateOf(u, c, step.key);
   if (!s || !s.open || isGrownup(u)) return res.redirect(303, `/courses/${c.slug}`);

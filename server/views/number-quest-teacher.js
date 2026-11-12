@@ -10,23 +10,33 @@
 import { html, raw, esc } from './html.js';
 import * as V from './cs-quest.js';
 import * as P from '../services/number-quest-placement.js';
+import * as T from '../services/number-quest-tiers.js';
 
 const K = 'teachers.nq';
-/** A locked CCSS-M code as a chip, its full statement as the title (the registry carries the statements). */
+/** A tier's locked code set in the registry: standards.json "<tier>Codes" ({ about, codes }), {} when unlocked. */
+export const tierCodes = (registry, tier) => ((registry && registry[`${tier}Codes`]) || {}).codes || {};
+/** A unit's tier (a unit without one is Explorer's), and a step's fields read under it. */
+const tierOf = u => T.tierOfUnit(u);
+const multi = cat => (cat.tiers || []).length > 1;
+/** A unit's heading: "Unit 3 · Groups & Shares", the intro by its title alone; with more than one street
+ *  on the page, the street is named first ("Launchpad · Unit 1 · ..."). */
+const unitHead = (cat, u, unitWord = n => `Unit ${n}`) => `${multi(cat) ? `${T.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${unitWord(u.n)} · ${u.title}`}`;
+/** A locked CCSS-M code as a chip, its full statement as the title (the registry carries the statements,
+ *  one locked set per tier). */
 export const codeChip = (registry, code) => {
-  const stmt = registry && registry.explorerCodes && registry.explorerCodes.codes[code];
+  const stmt = T.TIERS.map(tier => tierCodes(registry, tier)[code]).find(Boolean);
   return raw(`<span class="csq-badge csq-ids" lang="en" dir="ltr"${stmt ? ` title="${esc(stmt)}"` : ''}>${esc(code)}</span>`);
 };
 export const codeChips = (registry, codes) => (codes && codes.length
   ? html`<span class="csq-idrow">${codes.map(code => codeChip(registry, code))}</span>` : html`<span class="muted">—</span>`);
 
-/** The Explorer standards map: every step, grouped under unit header rows. */
+/** The standards map: every step of the tiers on the page, grouped under unit header rows. */
 export function mapTable(req, cat) {
   const t = req.t, reg = cat.registry;
   const rows = cat.units.map(u => {
-    const head = `<tr class="csq-map-unit"><th colspan="6" lang="en" dir="ltr">${u.n === 0 ? esc(u.title) : `Unit ${u.n} · ${esc(u.title)}`}${u.stamp ? ` — ${esc(u.stamp)}` : ''}</th></tr>`;
+    const head = `<tr class="csq-map-unit"><th colspan="6" lang="en" dir="ltr">${esc(unitHead(cat, u))}${u.stamp ? ` — ${esc(u.stamp)}` : ''}</th></tr>`;
     const body = (u.steps || []).map(s => {
-      const st = (s.standards || {}).explorer || {};
+      const st = (s.standards || {})[tierOf(u)] || {};
       const mp = s.mp && reg.frameworks.practices.codes[s.mp]
         ? raw(`<span class="csq-badge csq-ids" lang="en" dir="ltr" title="${esc(reg.frameworks.practices.codes[s.mp])}">${esc(s.mp)}</span> <span lang="en" dir="ltr">${esc(reg.frameworks.practices.codes[s.mp])}</span>`) : html`<span class="muted">—</span>`;
       // A step flagged enrichment (7.3, chance language) cites no code anywhere: its primary cell says
@@ -35,7 +45,7 @@ export function mapTable(req, cat) {
       const primaryCell = st.flag === 'enrichment' && !(st.primary || []).length
         ? html`<span lang="en" dir="ltr">Enrichment — no CCSS code (probability is first codable at 7.SP.C; SP begins in grade 6)</span>`
         : codeChips(reg, st.primary);
-      return html`<tr><td dir="ltr">${s.n}</td><td lang="en" dir="ltr">${(s.titles || {}).explorer || s.n}</td>
+      return html`<tr><td dir="ltr">${s.n}</td><td lang="en" dir="ltr">${T.stepTitle(tierOf(u), s)}</td>
         <td>${primaryCell}</td><td>${codeChips(reg, st.also)}</td><td>${codeChips(reg, st.buildsToward)}</td>
         <td>${mp}</td></tr>`;
     }).join('');
@@ -55,7 +65,8 @@ export function placementMatrix() {
       <td>${form === 'launchpad' ? 'Short form (audio-first)' : 'Standard form'}</td>
       <td>${strands}</td>
       <td dir="ltr">${P.rungLabel(P.seedRung(g))}</td>
-      <td>${g <= 2 ? 'Starts at Welcome to the Numberworks; a start in the Launchpad gardens is flagged on the note, because that tier is still being built' : 'The first Explorer unit (1–7) whose entry profile the four rungs do not fully meet, or the Vault of Measures door (the finale) when all seven are met'}</td></tr>`;
+      <td>${g <= 2 ? (T.isOpen('launchpad') ? 'A rung under the Explorer starting line starts in the Launchpad gardens: the first garden whose entry profile is not fully met. Otherwise the first Explorer unit (1–7) whose entry profile is not fully met'
+        : 'Starts at Welcome to the Numberworks; a start in the Launchpad gardens is flagged on the note, because that tier is still being built') : 'The first Explorer unit (1–7) whose entry profile the four rungs do not fully meet, or the Vault of Measures door (the finale) when all seven are met'}</td></tr>`;
   }).join('');
   return html`<div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>Grade named</th><th>Form played</th><th>Strands visited</th><th>First questions start at rung</th><th>Where the start point can land</th></tr></thead><tbody>${raw(rows)}</tbody></table></div>`;
 }
@@ -90,7 +101,7 @@ export function placementSection() {
  *  view free of a route import. */
 export function mapAndNotes(req, cat, el) {
   const t = req.t;
-  const locked = Object.keys(cat.registry.explorerCodes.codes).length;
+  const locked = (cat.tiers || [{ key: 'explorer' }]).reduce((n, tier) => n + Object.keys(tierCodes(cat.registry, tier.key)).length, 0);
   return html`
   <section class="lp-sec" id="map" aria-labelledby="map-h">${el(t, 'h2', `${K}.map.h`, {}, ' id="map-h"')}
     ${el(t, 'p', `${K}.map.p`)}
@@ -99,5 +110,5 @@ export function mapAndNotes(req, cat, el) {
     ${el(t, 'p', `${K}.map.lock`, {}, ' class="small muted"')}</section>
   <section class="lp-sec" id="notes" aria-labelledby="notes-h">${el(t, 'h2', `${K}.notes.h`, {}, ' id="notes-h"')}
     ${el(t, 'p', `${K}.notes.p`)}
-    ${cat.units.map(u => html`<article class="panel"><h3 lang="en" dir="ltr">${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</h3>${V.enList(u.teacherNotes)}</article>`)}</section>`;
+    ${cat.units.map(u => html`<article class="panel"><h3 lang="en" dir="ltr">${unitHead(cat, u, n => t('cs.unit.n', { n }))}</h3>${V.enList(u.teacherNotes)}</article>`)}</section>`;
 }

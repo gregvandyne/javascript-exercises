@@ -23,12 +23,12 @@ import { fileURLToPath } from 'node:url';
 import { q, uid, now } from '../db.js';
 import { TEMPLATES, generateItem, rngFromSeed } from '../../seed-lessons/number-quest/placement/generator.js';
 import * as NQ from './number-quest-progress.js';
+import * as T from './number-quest-tiers.js';
 import { onAccountMerge } from './schools.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const readJson = p => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const PLACEMENT_LOCK = readJson('seed-lessons/number-quest/placement.json');
-const UNITS = readJson('seed-lessons/number-quest/units.json');
 
 export const COURSE_SLUG = 'number-quest';
 const COURSE = Object.freeze({ slug: COURSE_SLUG });
@@ -279,44 +279,133 @@ export function gradeServed(templateId, itemSeed, answer) {
 }
 
 // ------------------------------------------------------------------------------------------------- the crosswalk
-const unitTitle = n => { const u = UNITS.units.find(x => x.n === n); return u ? u.title : null; };
-/** Every start node the game (or an override) can name, in path order. Only BUILT workshops are
- *  nameable: a start node is a place a child can actually open. Phase 2 (2026-11-05) built out the
- *  street, so the list runs to Unit 7's door — plus one more node that is not a unit door at all:
- *  the finale door, explorer-7.4 (the Vault of Measures), where a run lands when its strands meet
- *  every unit's entry profile (see crosswalk). It never names an unbuilt node, and never shows a
- *  child a fallback label in place of a workshop. */
-export const START_NODES = Object.freeze([...[0, 1, 2, 3, 4, 5, 6, 7].map(n => Object.freeze({
-  node: `explorer-${n}.1`, unit: n,
-  workshop: unitTitle(n),
-  built: true,
-})), Object.freeze({ node: 'explorer-7.4', unit: 7, workshop: 'The Vault of Measures', built: true, finale: true })]);
-export const nodeInfo = node => START_NODES.find(x => x.node === node) || START_NODES[0];
+// Everything below reads the path from the catalogue (services/number-quest-tiers.js): which tiers are open,
+// their units, their doors. No node name is spelled here, so a tier that opens (Launchpad, then Pro) joins
+// the placement walk by its data alone — its units in units.json, its entry profiles in placement.json
+// (crosswalk.entryProfiles, keyed "<tier>-<unit>.1").
+const profilesLock = () => (PLACEMENT_LOCK.crosswalk && PLACEMENT_LOCK.crosswalk.entryProfiles) || {};
+let profileOverrides = null;
+/** FOR TESTS ONLY: read these entry profiles on top of the locked ones (null restores the lock alone).
+ *  Nothing in the app calls this: a tier's profiles are locked for real in placement.json. */
+export function setEntryProfilesForTests(extra) { profileOverrides = extra && typeof extra === 'object' ? { ...extra } : null; }
+const entryProfiles = () => (profileOverrides ? { ...profilesLock(), ...profileOverrides } : profilesLock());
+/** A unit's locked entry profile ({ strand label: rung }), or null: the key is its door, "<tier>-<n>.1". */
+export const entryProfile = (tier, unit) => entryProfiles()[`${tier}-${unit}.1`] || null;
+/** A tier's units that have an entry profile, in path order: the units the walk (and test-out) can name. */
+const profiledUnits = tier => T.unitsOf(tier).filter(u => entryProfile(tier, u.n));
+/** May placement land a learner in this tier? Only an OPEN tier: a tier still being built is nobody's start. */
+const placeable = tier => T.isOpen(tier);
+/** A tier's finale door (units.json tiers.<tier>.finale, a step number): where a run that meets every
+ *  profile of the tier lands. Null for a tier without one. */
+function finaleOf(tier) {
+  const n = (T.tierInfo(tier) || {}).finale;
+  const hit = n ? T.stepsOf(tier).find(x => x.n === n) : null;
+  return hit ? { node: hit.key, unit: hit.unit.n, workshop: T.stepTitle(tier, hit.s) } : null;
+}
+/** Every start node the game (or an override) can name, in path order: each open tier's unit doors (a
+ *  unit's first step), then the tier's finale door when it has one (Explorer's explorer-7.4, the Vault of
+ *  Measures, where a run lands when its strands meet every unit's entry profile). Only BUILT workshops of
+ *  OPEN tiers are nameable: a start node is a place a child can actually open. It never names an unbuilt
+ *  node, and never shows a child a fallback label in place of a workshop. */
+export function startNodes() {
+  const out = [];
+  for (const tier of T.openTiers()) {
+    for (const u of T.unitsOf(tier)) {
+      const node = T.doorOf(tier, u);
+      if (node) out.push(Object.freeze({ node, tier, unit: u.n, workshop: u.title, built: true }));
+    }
+    const fin = finaleOf(tier);
+    if (fin) out.push(Object.freeze({ ...fin, tier, built: true, finale: true }));
+  }
+  return out;
+}
+/** The same list as a live, read-only array (startNodes() read afresh on every use, so it follows the
+ *  catalogue): kept for the callers that knew it as a constant. */
+export const START_NODES = new Proxy([], {
+  get: (_, k) => { const now_ = startNodes(); const v = now_[k]; return typeof v === 'function' ? v.bind(now_) : v; },
+  has: (_, k) => k in startNodes(),
+  set: () => false, deleteProperty: () => false,
+});
+/** The path's fallback node: the Explorer street's first step (Welcome to the Numberworks), else the first
+ *  node there is. A stored node that names no workshop reads as this one. */
+const homeNode = () => { const all = startNodes(); return all.find(x => x.node === T.firstKey(T.DEFAULT_TIER)) || all[0]; };
+export const nodeInfo = node => startNodes().find(x => x.node === node) || homeNode();
+/** A tier's first node as a string (its welcome), for the places that only need the name. */
+const firstNode = tier => T.firstKey(tier) || homeNode().node;
+const strandKeyOf = label => Object.keys(STRAND_LABELS).find(k => STRAND_LABELS[k] === label);
+const profileMet = (profile, eff) => Object.entries(profile).every(([label, need]) => {
+  const key = strandKeyOf(label);
+  return typeof eff[key] === 'number' && eff[key] >= need;
+});
+/** The rung under which a learner belongs to the Launchpad tier (the Explorer starting line, spec §4.4). */
+export const EXPLORER_LINE = 2.5;
 
-/** The locked crosswalk (placement.json): the start node is the first Explorer unit (1–7) whose entry
- *  profile the four placed rungs do not fully meet — a near-miss counts as not met, so ties resolve to the
- *  LOWER unit. Any rung below 2.5 puts the start in the Launchpad tier, whose content is still being built:
- *  the learner starts at the intro and the note flags the gap. All seven profiles met → the strands point
- *  past every workshop: the start is the finale door (explorer-7.4, the Vault of Measures) and
- *  `finaleDoor` rides along so the child and the grown-up note can both say the street is finished and
- *  the Vault is waiting. (Phase 1, when Units 5–7 were unbuilt, landed such a run at Unit 4's door with
- *  a "still being built" note; that copy retired with Phase 2.)
+/** The locked crosswalk (placement.json): the start node is the first unit whose entry profile the four
+ *  placed rungs do not fully meet — a near-miss counts as not met, so ties resolve to the LOWER unit.
+ *  - Explorer (always walked for rungs at or over the line): Units 1-7 in order. All seven met → the strands
+ *    point past every workshop: with no Pro tier open, the start is the finale door (explorer-7.4, the Vault
+ *    of Measures) and `finaleDoor` rides along so the child and the grown-up note can both say the street is
+ *    finished and the Vault is waiting.
+ *  - Any rung below 2.5 puts the start in the Launchpad tier. While Launchpad is still being built (or has
+ *    no entry profiles yet), the learner starts at the Explorer intro and the note flags the gap
+ *    (`launchpadGap`). Once Launchpad is open and has profiles (keys "launchpad-<n>.1"), its units are
+ *    walked the same way: below its first profile → the tier's very first step (its welcome); otherwise the
+ *    first unit whose profile is not met; every Launchpad profile met → the Explorer intro, with no gap.
+ *  - Pro, once open with profiles (keys "pro-<n>.1"), continues the walk after Explorer's seven: below its
+ *    first profile → Pro's first step; else its first unmet unit; all met → Pro's finale door when it has
+ *    one, else its last unit's door.
+ *  `tier` names the street the node sits on.
  *  The Launchpad form has no Algebra staircase: its Number rung speaks for the folded strand. */
 export function crosswalk(rungs) {
   const eff = { ...rungs };
   if (typeof eff.algebra !== 'number' && typeof eff.number === 'number') eff.algebra = eff.number;
   const vals = STRANDS.map(k => eff[k]).filter(v => typeof v === 'number');
-  if (vals.length && Math.min(...vals) < 2.5) return { node: 'explorer-0.1', launchpadGap: true, finaleDoor: false };
-  const profiles = PLACEMENT_LOCK.crosswalk.entryProfiles;
-  for (const n of [1, 2, 3, 4, 5, 6, 7]) {
-    const profile = profiles[`explorer-${n}.1`] || {};
-    const met = Object.entries(profile).every(([label, need]) => {
-      const key = Object.keys(STRAND_LABELS).find(k => STRAND_LABELS[k] === label);
-      return typeof eff[key] === 'number' && eff[key] >= need;
-    });
-    if (!met) return { node: `explorer-${n}.1`, launchpadGap: false, finaleDoor: false };
+  const at = (node, extra = {}) => ({ node, tier: (T.parseKey(node) || {}).tier || T.DEFAULT_TIER, launchpadGap: false, finaleDoor: false, ...extra });
+  /** Walk one tier's profiled units: the first unmet unit's node, or null when every profile is met. */
+  const walk = (tier, { belowFirst }) => {
+    const units = profiledUnits(tier);
+    for (const [i, u] of units.entries()) {
+      if (!profileMet(entryProfile(tier, u.n), eff)) return i === 0 && belowFirst ? firstNode(tier) : T.doorOf(tier, u);
+    }
+    return null;
+  };
+  if (vals.length && Math.min(...vals) < EXPLORER_LINE) {
+    if (!placeable('launchpad') || !profiledUnits('launchpad').length) return at(firstNode('explorer'), { launchpadGap: true });
+    return at(walk('launchpad', { belowFirst: true }) || firstNode('explorer'));
   }
-  return { node: 'explorer-7.4', launchpadGap: false, finaleDoor: true };
+  // Explorer's own walk is exactly the locked rule: a miss at Unit 1's profile names Unit 1's door.
+  const inExplorer = walk('explorer', { belowFirst: false });
+  if (inExplorer) return at(inExplorer);
+  if (placeable('pro') && profiledUnits('pro').length) {
+    const inPro = walk('pro', { belowFirst: true });
+    if (inPro) return at(inPro);
+    const fin = finaleOf('pro'), units = T.unitsOf('pro');
+    return at(fin ? fin.node : T.doorOf('pro', units[units.length - 1]), { finaleDoor: !!fin });
+  }
+  const fin = finaleOf('explorer');
+  if (fin) return at(fin.node, { finaleDoor: true });
+  const units = T.unitsOf('explorer');
+  return at(T.doorOf('explorer', units[units.length - 1]));
+}
+/** How a start node's unit reads on the grown-up note: "Unit 3: Groups & Shares" on the Explorer street
+ *  (as it always has), with the street named first on any other ("Launchpad · Unit 1: ..."). */
+export function placedUnitWords(node) {
+  const info = nodeInfo(node);
+  const unit = `Unit ${info.unit}: ${info.workshop}`;
+  return info.tier === T.DEFAULT_TIER ? unit : `${T.tierName(info.tier)} · ${info.unit === 0 ? info.workshop : unit}`;
+}
+/** The grown-up note's line for a run that met every profile and starts at a finale door. Explorer's is
+ *  its own locked copy (the Vault of Measures); another tier's finale reads from the catalogue. */
+export function finaleWords(node) {
+  const info = nodeInfo(node);
+  if (info.tier === T.DEFAULT_TIER) return `Past Unit 7: every strand pointed beyond the Explorer street's workshops. The start is the Vault of Measures, the finale at the end of Unit 7 (The Fairground), and every workshop stays open for games, laps and test-out.`;
+  return `Past the last unit: every strand pointed beyond the ${T.tierName(info.tier)} street's workshops. The start is ${info.workshop}, the finale at the end of the street, and every workshop stays open for games, laps and test-out.`;
+}
+/** The child's line for the same landing: the street is finished and its last door is where they start. */
+export function finaleLineFor(node) {
+  const info = nodeInfo(node);
+  if (info.tier === T.DEFAULT_TIER) return `You raced to the very end of the street! Every workshop is open to you, and the Vault of Measures is waiting: seven locks, one for every workshop. You start at the Vault.`;
+  return `You raced to the very end of the street! Every workshop is open to you, and ${info.workshop} is waiting. That is where you start.`;
 }
 
 /** One strand of the Starting Point note, in plain words: "solid to grade 4" when a whole rung confirmed,
@@ -357,23 +446,21 @@ export function strandPicture(state) {
 export function finishRun(state, { partial = false } = {}) {
   const rungs = {}, placed = {};
   for (const key of Object.keys(state.strands)) { placed[key] = placedRung(state.strands[key]); rungs[key] = placed[key].rung; }
-  const { node, launchpadGap, finaleDoor } = crosswalk(rungs);
+  const { node, tier, launchpadGap, finaleDoor } = crosswalk(rungs);
   const info = nodeInfo(node);
   const note = {
     lines: Object.keys(state.strands).map(k => strandNoteWords(STRAND_LABELS[k], placed[k], rungs)),
-    placedUnit: finaleDoor
-      ? `Past Unit 7: every strand pointed beyond the Explorer street's workshops. The start is the Vault of Measures, the finale at the end of Unit 7 (The Fairground), and every workshop stays open for games, laps and test-out.`
-      : `Unit ${info.unit}: ${info.workshop}`,
-    startNode: node, launchpadGap, finaleDoor: !!finaleDoor,
+    placedUnit: finaleDoor ? finaleWords(node) : placedUnitWords(node),
+    startNode: node, tier, launchpadGap, finaleDoor: !!finaleDoor,
     launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line. The Launchpad gardens (kindergarten to grade 2) are still being built, so for now this learner starts at Welcome to the Numberworks, and this note flags the gap honestly rather than hiding it.' : null,
     partial: partial ? 'The game was stopped early. Strands place independently, so this start point still stands; a strand that had not settled starts at its seed rung.' : null,
     caveat: CAVEAT,
   };
-  return { grade: state.grade, form: state.form, rungs, confirmed: Object.fromEntries(Object.entries(placed).map(([k, v]) => [k, v.confirmed])), startNode: node, workshop: info.workshop,
+  return { grade: state.grade, form: state.form, rungs, confirmed: Object.fromEntries(Object.entries(placed).map(([k, v]) => [k, v.confirmed])), startNode: node, tier, workshop: info.workshop,
     // Past every workshop: the child hears the honest version too — the street is finished, every
     // workshop behind them is open, and the Vault of Measures at its end is where they start.
     finaleDoor: !!finaleDoor,
-    finaleLine: finaleDoor ? `You raced to the very end of the street! Every workshop is open to you, and the Vault of Measures is waiting: seven locks, one for every workshop. You start at the Vault.` : null,
+    finaleLine: finaleDoor ? finaleLineFor(node) : null,
     note, picture: strandPicture(state) };
 }
 
@@ -421,27 +508,36 @@ function savePlacement(user, { grade, rungs, startNode, source, reanchorGrade = 
   return getPlacement(user);
 }
 
+/** Where a stated grade begins without a game: the first unit of the tier matching the grade.
+ *  - K-2: the Launchpad tier's first step once that tier is open; until then, the Explorer intro.
+ *  - 3-5: Explorer's first workshop (Unit 1's door: the intro is a welcome, not a unit).
+ *  - 6-8: the Pro tier's first step once that tier is open; until then the furthest built Explorer
+ *    workshop door (Unit 7's door), never an unbuilt node. The finale door is NOT a beginning: the Vault
+ *    unlocks in course order, so a beginning start names the last unit's first step, not the finale. */
+export function beginningNode(grade) {
+  const g = seedGrade(grade);
+  const explorer = T.unitsOf('explorer');
+  if (g <= 2) return placeable('launchpad') ? firstNode('launchpad') : firstNode('explorer');
+  if (g <= 5) return T.doorOf('explorer', explorer.find(u => u.n >= 1) || explorer[0]);
+  return placeable('pro') ? firstNode('pro') : T.doorOf('explorer', explorer[explorer.length - 1]);
+}
 /** The "Just Play" door (start from the very beginning, spec §4.1): no game; begin at the first unit of
- *  the tier matching the stated grade (Launchpad starters begin at the intro until that tier ships). */
+ *  the tier matching the stated grade (see beginningNode). */
 export function placeAtBeginning(user, grade) {
   const g = seedGrade(grade);
-  // Grades 6–8 would begin in the Pro tier, which is not built yet: they begin at the furthest built
-  // workshop door, Unit 7's door, never at an unbuilt node. The finale door is NOT a beginning: the
-  // Vault unlocks in course order, so a beginning start names Unit 7's first step, not 7.4.
-  const node = g <= 2 ? 'explorer-0.1' : g <= 5 ? 'explorer-1.1' : 'explorer-7.1';
-  return savePlacement(user, { grade: g, rungs: {}, startNode: node, source: 'beginning' });
+  return savePlacement(user, { grade: g, rungs: {}, startNode: beginningNode(g), source: 'beginning' });
 }
 
 /** Start a run (sorting game or test-out) and serve its first item. A retake re-seeds at the last placed
  *  rungs (spec §4.5). Refused while a grown-up has disabled the game for this student. */
-export function startRun(user, { grade, kind = 'placement', unit = null } = {}) {
+export function startRun(user, { grade, kind = 'placement', unit = null, tier = T.DEFAULT_TIER } = {}) {
   if (!user || !user.id) return null;
   const existing = getPlacement(user);
   if (kind === 'placement' && existing && existing.disabled) return { disabled: true, placement: existing };
   const seed = uid();
   let state, current = null;
   if (kind === 'testout') {
-    state = { kind, unit, seed, served: 0, correctCount: 0, items: testOutItems(unit, seed) };
+    state = { kind, unit, tier, seed, served: 0, correctCount: 0, items: testOutItems(unit, seed, tier) };
     current = state.items[0] || null;
   } else {
     const retake = !!(existing && existing.startNode && existing.source !== 'beginning');
@@ -457,7 +553,7 @@ export function startRun(user, { grade, kind = 'placement', unit = null } = {}) 
   const id = uid();
   q.run('INSERT INTO nq_sort_runs(id, user_id, course, kind, unit, seed, state, current_item, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
     id, user.id, COURSE_SLUG, kind, unit, seed, JSON.stringify(state), current ? JSON.stringify(current) : null, 'active', now(), now());
-  return { runId: id, kind, unit, current: publicItem(current), state };
+  return { runId: id, kind, unit, ...(kind === 'testout' ? { tier } : {}), current: publicItem(current), state };
 }
 const publicItem = c => (c ? { strand: c.strand, strandLabel: c.strandLabel, audioFirst: !!c.audioFirst, ...(c.progress ? { progress: c.progress } : {}), item: c.item } : null);
 const runRow = (user, runId) => (user && runId ? q.get('SELECT * FROM nq_sort_runs WHERE id=? AND user_id=? AND course=?', runId, user.id, COURSE_SLUG) : null);
@@ -536,7 +632,7 @@ export function keepOriginal(user) { return getPlacement(user); }
  *  is re-anchored (addendum): an override replaces the stored grade with the current derived grade and
  *  resets its declaration date, so the clock restarts from the grown-up's word. */
 export function overrideStartNode(user, node) {
-  if (!user || !user.id || !START_NODES.some(n => n.node === node)) return null;
+  if (!user || !user.id || !startNodes().some(n => n.node === node)) return null;
   const cur = getPlacement(user) || { grade: null, rungs: {} };
   return savePlacement(user, { rungs: cur.rungs, startNode: node, source: 'override', reanchorGrade: true });
 }
@@ -544,7 +640,7 @@ export function overrideStartNode(user, node) {
  *  start node is simply where they play. */
 export function setPlacementDisabled(user, disabled) {
   if (!user || !user.id) return null;
-  if (!rowOf(user.id)) savePlacement(user, { grade: null, rungs: {}, startNode: 'explorer-0.1', source: 'override' });
+  if (!rowOf(user.id)) savePlacement(user, { grade: null, rungs: {}, startNode: firstNode('explorer'), source: 'override' });
   q.run('UPDATE nq_placement SET disabled=?, updated_at=? WHERE user_id=?', disabled ? 1 : 0, now(), user.id);
   return getPlacement(user);
 }
@@ -556,15 +652,18 @@ export function setPlacementDisabled(user, disabled) {
 export function recordStartCheck(user, stepKey, passed) {
   const p = getPlacement(user);
   if (!p || !p.startNode) return null;
-  const unitOf = k => { const m = /^explorer-(\d)\.\d$/.exec(String(k || '')); return m ? +m[1] : null; };
-  if (unitOf(stepKey) === null || unitOf(stepKey) !== unitOf(p.startNode)) return p;
+  // The rule reads checks in the placed start's own unit: same tier AND same unit number (Launchpad
+  // Unit 1 is not Explorer Unit 1).
+  const step = T.parseKey(stepKey), start = T.parseKey(p.startNode);
+  if (!step || !start || step.tier !== start.tier || step.unit !== start.unit) return p;
   if (passed) {
     if (p.startFails || p.softLandNode) q.run('UPDATE nq_placement SET start_fails=0, soft_land_node=NULL, updated_at=? WHERE user_id=?', now(), user.id);
     return getPlacement(user);
   }
   const fails = p.startFails + 1;
-  const prev = Math.max(0, unitOf(p.startNode) - 1);
-  const soft = fails >= 2 && unitOf(p.startNode) > 0 ? `explorer-${prev}.1` : p.softLandNode;
+  // The warm-up is the unit before the start on the same street; a street's first unit has none.
+  const units = T.unitsOf(start.tier), i = units.findIndex(u => u.n === start.unit);
+  const soft = fails >= 2 && i > 0 ? T.doorOf(start.tier, units[i - 1]) : p.softLandNode;
   q.run('UPDATE nq_placement SET start_fails=?, soft_land_node=?, updated_at=? WHERE user_id=?', fails, soft, now(), user.id);
   return getPlacement(user);
 }
@@ -573,21 +672,26 @@ export function recordStartCheck(user, stepKey, passed) {
 /** The 5 test-out items for a unit: one per strand at the rung the crosswalk asks of that unit's door,
  *  plus a second Number item (the strand every unit leans on hardest). Deterministic in the seed; the
  *  public shape hides the keys exactly as the Sorting Game does. Any unit with a locked entry profile
- *  can be tested out of — Units 1–7 since the Phase 2 lock; the finale has no profile and no test-out. */
-export function testOutItems(unit, seed = 'testout') {
-  const profile = (PLACEMENT_LOCK.crosswalk.entryProfiles || {})[`explorer-${unit}.1`];
+ *  can be tested out of — Explorer Units 1–7 since the Phase 2 lock; the finale has no profile and no
+ *  test-out. `tier` names the street (Explorer unless said): a unit is tier + number, so Launchpad Unit 2
+ *  and Explorer Unit 2 deal different items from different profiles. */
+export function testOutItems(unit, seed = 'testout', tier = T.DEFAULT_TIER) {
+  const profile = T.exists(tier) ? entryProfile(tier, unit) : null;
   if (!profile) return [];
+  // Explorer's seeds are spelled as they always were (the same seed deals the same items as before the
+  // tiers); any other tier salts its own name in, so two tiers never deal one unit's items.
+  const unitSeed = tier === T.DEFAULT_TIER ? `${unit}` : `${tier}-${unit}`;
   const picks = [];
   const seen = new Set(); // no verbatim repeats inside one test-out either (repair round 3)
   const take = (strandKey, rung, salt) => {
     const pool = TEMPLATES.filter(t => t.strand === strandKey && t.rung === rung);
     if (!pool.length) return;
-    const rng = rngFromSeed(`${seed}:testout:${unit}:${salt}`);
+    const rng = rngFromSeed(`${seed}:testout:${unitSeed}:${salt}`);
     const template = pool[Math.floor(rng() * pool.length)];
-    let itemSeed = `${seed}:testout:${unit}:${salt}:${template.id}`;
+    let itemSeed = `${seed}:testout:${unitSeed}:${salt}:${template.id}`;
     let full = generateItem(template, itemSeed);
     for (let retry = 1; retry <= 6 && seen.has(`${full.prompt} => ${full.answer}`); retry++) {
-      itemSeed = `${seed}:testout:${unit}:${salt}:r${retry}:${template.id}`;
+      itemSeed = `${seed}:testout:${unitSeed}:${salt}:r${retry}:${template.id}`;
       full = generateItem(template, itemSeed);
     }
     seen.add(`${full.prompt} => ${full.answer}`);
@@ -597,7 +701,7 @@ export function testOutItems(unit, seed = 'testout') {
     });
   };
   for (const [label, rung] of Object.entries(profile)) {
-    const key = Object.keys(STRAND_LABELS).find(k => STRAND_LABELS[k] === label);
+    const key = strandKeyOf(label);
     if (key) take(key, rung, key);
   }
   take('number', profile.Number ?? 3.5, 'number-2');
@@ -605,12 +709,13 @@ export function testOutItems(unit, seed = 'testout') {
 }
 function finishTestOut(user, row, state) {
   const passed = state.correctCount >= TESTOUT_PASS;
+  const tier = T.TIERS.includes(state.tier) ? state.tier : T.DEFAULT_TIER; // runs saved before the tiers carry none
   let marks = { awarded: false, marks: 0, total: NQ.totalMarks(user, COURSE) };
   if (passed && !user.is_guest) { // a guest's pass is applauded, never recorded (addendum)
-    q.run('INSERT OR IGNORE INTO nq_testout(user_id, course, tier, unit, passed_at) VALUES (?,?,?,?,?)', user.id, COURSE_SLUG, 'explorer', row.unit, now());
-    marks = NQ.awardTestOutPassed(user, COURSE, 'explorer', row.unit);
+    q.run('INSERT OR IGNORE INTO nq_testout(user_id, course, tier, unit, passed_at) VALUES (?,?,?,?,?)', user.id, COURSE_SLUG, tier, row.unit, now());
+    marks = NQ.awardTestOutPassed(user, COURSE, tier, row.unit);
   }
-  return { kind: 'testout', unit: row.unit, passed, correctCount: state.correctCount, needed: TESTOUT_PASS,
+  return { kind: 'testout', tier, unit: row.unit, passed, correctCount: state.correctCount, needed: TESTOUT_PASS,
     stoneEarned: false, marks,
     words: passed ? 'You showed Tally you know this unit. Its stone is still earned by doing the unit\u2019s mission: that rule never bends.' : 'Not yet. The unit stays right here to play through, and you can try again another day.' };
 }
@@ -623,8 +728,9 @@ onAccountMerge(({ from, into }) => {
   q.run('DELETE FROM nq_testout WHERE user_id=?', from);
 });
 
-/** Units this student has tested out of (explorer tier, Phase 1): [unit numbers]. */
-export function testedOutUnits(user) {
+/** Units of one tier this student has tested out of (the Explorer street unless a tier is named):
+ *  [unit numbers]. Test-outs are stored per tier, so one tier's Unit 2 never reads as another's. */
+export function testedOutUnits(user, tier = T.DEFAULT_TIER) {
   if (!user || !user.id) return [];
-  return q.all('SELECT unit FROM nq_testout WHERE user_id=? AND course=? ORDER BY unit', user.id, COURSE_SLUG).map(r => r.unit);
+  return q.all('SELECT unit FROM nq_testout WHERE user_id=? AND course=? AND tier=? ORDER BY unit', user.id, COURSE_SLUG, tier).map(r => r.unit);
 }

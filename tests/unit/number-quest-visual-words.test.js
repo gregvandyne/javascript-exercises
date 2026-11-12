@@ -12,10 +12,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const COURSE = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer');
+// Every tier that has a deck folder (course/<tier>/): Explorer's decks keep their bare file names in the
+// messages, another tier's carry the tier ("launchpad/1.1.json").
+const COURSE = path.join(ROOT, 'seed-lessons', 'number-quest', 'course');
 const SETS = path.join(ROOT, 'seed-lessons', 'number-quest', 'sets');
-const decks = fs.readdirSync(COURSE).filter(f => f.endsWith('.json')).sort()
-  .map(f => ({ file: f, deck: JSON.parse(fs.readFileSync(path.join(COURSE, f), 'utf8')) }));
+const decks = fs.readdirSync(COURSE).filter(t => fs.statSync(path.join(COURSE, t)).isDirectory()).sort()
+  .flatMap(tier => fs.readdirSync(path.join(COURSE, tier)).filter(f => f.endsWith('.json')).sort()
+    .map(f => ({ file: tier === 'explorer' ? f : `${tier}/${f}`, deck: JSON.parse(fs.readFileSync(path.join(COURSE, tier, f), 'utf8')) })));
 
 const rat = s => { const t = s.trim(); const mx = /^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/.exec(t); if (mx) return Number(mx[1]) + Number(mx[2]) / Number(mx[3]); const m = /^(-?\d+)\s*\/\s*(\d+)$/.exec(t); if (m) return Number(m[1]) / Number(m[2]); const n = Number(t.replace(/,/g, '')); return Number.isNaN(n) ? null : n; };
 const NUM = String.raw`-?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?`;

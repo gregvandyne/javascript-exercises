@@ -12,7 +12,7 @@
 import { html, raw } from './html.js';
 import { current } from '../i18n/index.js';
 import * as NQ from '../services/number-quest-progress.js';
-import { subLine, lockedNote } from './courses.js';
+import { subLine, lockedNote, bandEmoji } from './courses.js';
 
 /** Tally Marks as tally bundles (spec §6.1: five-bar gates, legible to a five-year-old): full bundles of
  *  five, then the loose marks, then the number in words for anyone counting along. */
@@ -44,7 +44,7 @@ function node(t, c, s, { canPick, here }) {
 /** One workshop (unit) on the street: its banner (emoji, name, its stone once planted, its lap rings) and
  *  its three step nodes winding under it. The rings are the unit's mastery laps (0-3, spec §6.3): a ring
  *  fills for each lap done, and the words say which lap is next — laps are optional, nothing gates on them. */
-function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut }) {
+function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut, welcome }) {
   const steps = list.filter(s => s.step.unit === u.n);
   const done = steps.length > 0 && steps.every(s => s.complete);
   // The ring measures the laps that EXIST: Lap 1 is the only playable lap (2 and 3 are being built),
@@ -57,7 +57,7 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut }) {
       <span class="nqp-medal ${lap1Done ? 'is-complete' : ''}" style="--ring:${ringPct}%" aria-hidden="true"><span class="nqp-medal-in">${u.emoji || '🔢'}</span></span>
       <div class="nqp-unit-t">
         <h3 lang="en" dir="ltr">${u.n === 0 ? u.title : `Unit ${u.n} · ${u.title}`}</h3>
-        ${u.n >= 1 ? html`<p class="small muted nqp-laps">${lap && lap.rings ? `Lap${lap.rings > 1 ? 's' : ''} ${lap.completed.join(', ')} done · Laps 2 and 3 are being built` : 'Finish the unit to plant its stone and record Lap 1. Laps 2 and 3 are being built.'}</p>` : html`<p class="small muted nqp-laps">Start here: meet Tally, the Jumble and the Numberworks.</p>`}
+        ${u.n >= 1 ? html`<p class="small muted nqp-laps">${lap && lap.rings ? `Lap${lap.rings > 1 ? 's' : ''} ${lap.completed.join(', ')} done · Laps 2 and 3 are being built` : 'Finish the unit to plant its stone and record Lap 1. Laps 2 and 3 are being built.'}</p>` : html`<p class="small muted nqp-laps">${welcome}</p>`}
       </div>
       ${u.stamp ? html`<span class="nqp-stone ${done ? 'is-planted' : ''}">${done ? '🏅' : '🪨'} <span lang="en" dir="ltr">${u.stamp}${done ? ' planted' : ''}</span></span>` : ''}
       ${testedOut ? html`<span class="nqp-stone is-tested">⭐ Tested out</span>` : ''}
@@ -66,11 +66,35 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut }) {
   </li>`;
 }
 
-/** The path home. d: { course, ov (the Explorer overview), marks, daily, laps (unit -> lapState),
- *  placement, testedOut (unit numbers), canPick, bandSet } */
+/** Grades as a street's card prints them: the catalogue's "3-5" with an en dash. */
+const gradesLine = g => `Grades ${String(g || '').replace('-', '–')}`;
+const EXPLORER_STREET = Object.freeze({ key: 'explorer', name: 'Explorer', grades: '3-5', district: 'The Workshops', building: false });
+/** The street switcher: shown only when the viewer may see more than one street. The street on screen is
+ *  marked; another street is a button that makes it the learner's own (their band), or, for a viewer who has
+ *  no band to move (a grown-up reading the course), a plain link that only looks at it. */
+function streetSwitcher(c, streets, street, canPick) {
+  if (streets.length < 2) return '';
+  const label = s => html`<span aria-hidden="true">${bandEmoji(s.key)}</span> <b>${s.name}</b> <span class="nqp-street-g">${gradesLine(s.grades)}</span>${s.building ? html` <span class="nqp-street-b">being built</span>` : ''}`;
+  return html`<nav class="nqp-streets" id="nqp-streets" aria-label="Streets of the Numberworks" lang="en" dir="ltr">
+    ${streets.map(s => (s.key === street
+    ? html`<span class="nqp-street is-on" aria-current="page" id="street-${s.key}">${label(s)}</span>`
+    : canPick
+      ? html`<form method="post" action="/courses/${c.slug}/band"><button class="nqp-street" type="submit" name="band" value="${s.key}" id="street-${s.key}">${label(s)}</button></form>`
+      : html`<a class="nqp-street" href="/courses/${c.slug}?street=${s.key}" id="street-${s.key}">${label(s)}</a>`))}
+  </nav>`;
+}
+
+/** The path home. d: { course, ov (the overview of the street on screen), units (that street's units),
+ *  street (its tier key), streets (the tiers this viewer may see: [{ key, name, grades, district,
+ *  building }]), marks, daily, laps (unit -> lapState, that street's), placement, testedOut (that street's
+ *  unit numbers), canPick, bandSet }. Without street/streets it is the Explorer street alone. */
 export function pathPage(d) {
   const { t } = current();
   const { course: c, ov, daily, placement } = d;
+  const streets = d.streets && d.streets.length ? d.streets : [EXPLORER_STREET];
+  const here = streets.find(s => s.key === d.street) || streets.find(s => s.key === 'explorer') || streets[0];
+  // Each street's welcome step says who the learner meets there, in the street's own words.
+  const welcome = here.key === 'explorer' ? 'Start here: meet Tally, the Jumble and the Numberworks.' : `Start here: meet Tally in ${here.district || 'the Numberworks'}.`;
   const nextKey = ov.next ? ov.next.step.key : null;
   const groups = new Map();
   for (const s of ov.list) { if (!groups.has(s.step.unit)) groups.set(s.step.unit, []); groups.get(s.step.unit).push(s); }
@@ -86,13 +110,13 @@ export function pathPage(d) {
 
     ${!d.bandSet && d.canPick && !d.hasProgress ? html`<section class="bandpick" aria-labelledby="bandpick-h">
       <h2 id="bandpick-h">${t('courses.band.h')}</h2>
-      <p class="muted">Number Quest opens with the Explorer street, for grades 3–5. More streets are being built.</p>
+      <p class="muted">${streets.length > 1 ? 'Pick your street. You can switch later from this page.' : 'Number Quest opens with the Explorer street, for grades 3–5. More streets are being built.'}</p>
       <form method="post" action="/courses/${c.slug}/band" class="bandpick-cards">
-        <button class="bandcard" type="submit" name="band" value="explorer" id="band-explorer">
-          <span class="bandcard-e" aria-hidden="true">🧭</span>
-          <span class="bandcard-t"><span class="bandcard-h">Explorer</span><span class="bandcard-s">Grades 3–5</span></span>
+        ${streets.map(s => html`<button class="bandcard" type="submit" name="band" value="${s.key}" id="band-${s.key}">
+          <span class="bandcard-e" aria-hidden="true">${bandEmoji(s.key)}</span>
+          <span class="bandcard-t"><span class="bandcard-h">${s.name}</span><span class="bandcard-s">${gradesLine(s.grades)}${s.building ? ' · being built' : ''}</span></span>
           <span class="bandcard-go flip" aria-hidden="true">›</span>
-        </button>
+        </button>`)}
       </form>
     </section>` : ''}
 
@@ -112,8 +136,9 @@ export function pathPage(d) {
       ${ov.next && d.canPick ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
 
-    <ol class="nqp-path" aria-label="The Numberworks street, Explorer">
-      ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n) }))}
+    ${streetSwitcher(c, streets, here.key, d.canPick)}
+    <ol class="nqp-path" aria-label="The Numberworks street, ${here.name}">
+      ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}
     </ol>
 
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>

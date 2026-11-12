@@ -1,5 +1,7 @@
 // Number Quest surfaces (the Duolingo-lite UI + the teacher map): the course registered on the
-// platform machinery with its single Explorer band, the path home rendering the street (nodes, lap rings,
+// platform machinery with its tiers as bands (a learner sees the Explorer street alone while the Launchpad
+// tier is still being built, and no Pro tier exists; tests/unit/number-quest-tiers.test.js covers the
+// tiers themselves), the path home rendering the street (nodes, lap rings,
 // Tally Marks, the daily goal), and the teacher map publishing the locked CCSS-M
 // statements for Units 1-7 plus the finale (Phase 2, 2026-11-05) with primary / also / builds-toward kept separate. The in-lesson moment wiring
 // itself rides the generic step APIs (routes/courses.js) and is covered end to end by the shape asserted
@@ -19,10 +21,13 @@ const course = C.getCourse('number-quest');
 let n = 0;
 const newKid = () => auth.createUser({ username: `nqp${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
 
-test('the course is registered: one Explorer band, 23 steps, no deck problems, other courses untouched', () => {
+test('the course is registered: a learner sees one Explorer band, 23 steps, no deck problems, other courses untouched', () => {
   assert.ok(course);
   assert.equal(course.teacherPath, '/teachers/number-quest');
+  // The bands a learner is offered: Explorer alone. (Launchpad has units but is still being built, so only
+  // the platform admin sees it; Pro has no units, so it is nobody's band.)
   assert.deepEqual(C.bandsFor(course), ['explorer']);
+  assert.deepEqual(C.bandsFor(course, newKid()), ['explorer']);
   assert.deepEqual(C.bandsFor(C.getCourse('cs-quest')), ['1b', '2']);
   const steps = C.steps(course, 'explorer');
   assert.equal(steps.length, 23);
@@ -33,11 +38,16 @@ test('the course is registered: one Explorer band, 23 steps, no deck problems, o
   assert.equal(C.getStep(course, 'explorer-7.4').game.slug, 'quest-race', 'the finale rides the Vault Run');
   assert.equal(C.getStep(course, 'explorer-6.1').game.params, 'mode=nq-6-1&lock=1', '6.1 plays the Shape Hunt board until Builders Yard ships');
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
+  assert.equal(C.getStep(course, 'pro-1.1'), null, 'no Pro tier exists yet');
+  assert.deepEqual(C.steps(course, 'pro'), []);
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);
   // Band choice is per course: '2' is refused for Number Quest, 'explorer' for CS Quest.
   const kid = newKid();
   assert.equal(C.setBand(kid, course, '2'), false);
+  assert.equal(C.setBand(kid, course, 'pro'), false, 'a tier with no units is no band');
+  assert.equal(C.setBand(kid, course, 'launchpad'), false, 'a tier still being built is no band for a learner');
+  assert.equal(C.getBand(kid, course), null);
   assert.equal(C.setBand(kid, course, 'explorer'), true);
   assert.equal(C.getBand(kid, course), 'explorer');
 });

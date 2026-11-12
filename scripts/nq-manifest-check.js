@@ -4,7 +4,7 @@
 //
 //   node scripts/nq-manifest-check.js          (also: npm run nq:check)
 //
-// It proves, for every Number Quest Explorer deck slide that carries an img:
+// It proves, for every Number Quest deck slide that carries an img (every tier that has decks):
 //   - the manifest (public/img/nq/manifest.json) names that exact key, with an alt identical to the
 //     deck's own alt (one source of truth, checked both ways);
 //   - the .webp file exists on disk and stays under the size the CSQ discipline set (warn >120 KB,
@@ -51,10 +51,15 @@ for (const e of manifest.images || []) {
   if (!e.state || !e.concept) problems.push(`manifest: ${e.key} needs a state and a concept line`);
 }
 
-const deckDir = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer');
+// Every tier that has a deck folder (course/<tier>/). Explorer's decks are named by their file alone, as
+// they always were (the OWED list keys on "5.1.json"); another tier's carry the tier ("launchpad/1.1.json").
+const courseDir = path.join(ROOT, 'seed-lessons', 'number-quest', 'course');
+const deckFiles = fs.readdirSync(courseDir).filter(t => fs.statSync(path.join(courseDir, t)).isDirectory()).sort()
+  .flatMap(tier => fs.readdirSync(path.join(courseDir, tier)).filter(n => n.endsWith('.json')).sort()
+    .map(n => ({ name: tier === 'explorer' ? n : `${tier}/${n}`, file: path.join(courseDir, tier, n) })));
 const used = new Set();
-for (const name of fs.readdirSync(deckDir).filter(n => n.endsWith('.json')).sort()) {
-  const deck = JSON.parse(fs.readFileSync(path.join(deckDir, name), 'utf8'));
+for (const { name, file } of deckFiles) {
+  const deck = JSON.parse(fs.readFileSync(file, 'utf8'));
   deck.slides.forEach((s, i) => {
     if (!s.img) return;
     used.add(s.img);
