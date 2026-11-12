@@ -37,6 +37,9 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Farm & Friends | 3 | Quaternius animals + Kenney nature | Three.js | Younger kids, counting |
 | City Builder | 3 | Kenney / KayKit city | Three.js | Geography, money |
 | Classic | now | Kit 1 (today's kit) | Oomba Kit 1.x | Every game made so far |
+| Spooky Hollow | added 12 Nov | KayKit Halloween + Skeletons | Three.js | Seasons, science, maths |
+| Space Base | added 12 Nov | KayKit Space Base | Three.js | Science, maths, space |
+| Toy Town | added 12 Nov | KayKit City Builder | Three.js | Geography, money, maths |
 
 ## How it fits together
 

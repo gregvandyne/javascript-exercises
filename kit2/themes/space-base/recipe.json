@@ -1,0 +1,195 @@
+{
+ "_": "How Space Base 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "to": "heroes/skelly.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "to": "heroes/rattles.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "to": "heroes/bonzo.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "to": "heroes/captain-clank.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_low.gltf",
+   "to": "world/ground.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_tall.gltf",
+   "to": "world/ground-high.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_low_curved.gltf",
+   "to": "world/ground-curved.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_slope.gltf",
+   "to": "world/slope.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/terrain_mining.gltf",
+   "to": "world/crater.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/landingpad_large.gltf",
+   "to": "world/landing-pad.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/landingpad_small.gltf",
+   "to": "world/landing-pad-small.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_A.gltf",
+   "to": "world/base-dome.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_B.gltf",
+   "to": "world/base-long.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_C.gltf",
+   "to": "world/base-tower.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_D.gltf",
+   "to": "world/base-small.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/basemodule_garage.gltf",
+   "to": "world/garage.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/tunnel_straight_A.gltf",
+   "to": "world/tunnel.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/structure_tall.gltf",
+   "to": "world/structure.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/drill_structure.gltf",
+   "to": "world/drill.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lander_A.gltf",
+   "to": "props/rocket-lander.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lander_B.gltf",
+   "to": "props/lander.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/spacetruck.gltf",
+   "to": "props/rover.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/spacetruck_large.gltf",
+   "to": "props/rover-big.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/solarpanel.gltf",
+   "to": "world/solar-panel.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/windturbine_tall.gltf",
+   "to": "world/wind-turbine.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/cargo_A.gltf",
+   "to": "props/cargo.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/cargo_A_stacked.gltf",
+   "to": "props/cargo-stack.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/containers_A.gltf",
+   "to": "props/containers.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/lights.gltf",
+   "to": "world/lights.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/rock_A.gltf",
+   "to": "world/rock.glb"
+  },
+  {
+   "from": "KayKit-Space-Base-Bits-1.0/addons/kaykit_space_base_bits/Assets/gltf/rocks_A.gltf",
+   "to": "world/rocks.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "to": "props/coin.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

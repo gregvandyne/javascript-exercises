@@ -1,0 +1,191 @@
+{
+ "_": "How Spooky Hollow 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "to": "heroes/skelly.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "to": "heroes/rattles.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "to": "heroes/bonzo.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "to": "heroes/captain-clank.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/floor_dirt.gltf",
+   "to": "world/ground.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/floor_dirt_small.gltf",
+   "to": "world/ground-small.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/path_A.gltf",
+   "to": "world/path.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/path_C.gltf",
+   "to": "world/path-stones.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence.gltf",
+   "to": "world/fence.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence_gate.gltf",
+   "to": "world/fence-gate.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/fence_pillar.gltf",
+   "to": "world/fence-post.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/arch.gltf",
+   "to": "world/arch.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/arch_gate.gltf",
+   "to": "world/arch-gate.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pillar.gltf",
+   "to": "world/pillar.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/bench.gltf",
+   "to": "world/bench.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange.gltf",
+   "to": "props/pumpkin.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange_jackolantern.gltf",
+   "to": "props/pumpkin-lantern.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_yellow.gltf",
+   "to": "props/pumpkin-yellow.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_yellow_jackolantern.gltf",
+   "to": "props/pumpkin-yellow-lantern.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/pumpkin_orange_small.gltf",
+   "to": "props/pumpkin-small.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/candle.gltf",
+   "to": "world/candle.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/candle_triple.gltf",
+   "to": "world/candles.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/lantern_standing.gltf",
+   "to": "world/lantern.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/lantern_hanging.gltf",
+   "to": "world/lantern-hanging.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_dead_large.gltf",
+   "to": "world/tree-bare.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_dead_medium.gltf",
+   "to": "world/tree-bare-medium.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_orange_large.gltf",
+   "to": "world/tree-pine-orange.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_orange_small.gltf",
+   "to": "world/tree-pine-orange-small.glb"
+  },
+  {
+   "from": "KayKit-Halloween-Bits-1.0/addons/kaykit_halloween_bits/Assets/gltf/tree_pine_yellow_medium.gltf",
+   "to": "world/tree-pine-yellow.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "to": "props/chest.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

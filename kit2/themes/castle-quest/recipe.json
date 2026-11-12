@@ -1,0 +1,215 @@
+{
+ "_": "How Castle Quest 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "to": "heroes/skelly.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "to": "heroes/rattles.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "to": "heroes/bonzo.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "to": "heroes/captain-clank.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_large.gltf.glb",
+   "to": "world/floor-stone.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_wood_large.gltf.glb",
+   "to": "world/floor-wood.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_dirt_large.gltf.glb",
+   "to": "world/floor-dirt.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_foundation_allsides.gltf.glb",
+   "to": "world/block.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs.gltf.glb",
+   "to": "world/stairs.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/stairs_wide.gltf.glb",
+   "to": "world/stairs-wide.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall.gltf.glb",
+   "to": "world/wall.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_doorway.glb",
+   "to": "world/wall-doorway.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_window_open.gltf.glb",
+   "to": "world/wall-window.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_arched.gltf.glb",
+   "to": "world/wall-arched.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/wall_corner.gltf.glb",
+   "to": "world/wall-corner.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/pillar.gltf.glb",
+   "to": "world/pillar.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/column.gltf.glb",
+   "to": "world/column.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/floor_tile_big_spikes.glb",
+   "to": "world/spikes.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest.glb",
+   "to": "props/chest.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chest_gold.glb",
+   "to": "props/chest-gold.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin_stack_large.gltf.glb",
+   "to": "props/coin-pile.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/key.gltf.glb",
+   "to": "props/key.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_large.gltf.glb",
+   "to": "props/barrel.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/barrel_small.gltf.glb",
+   "to": "props/barrel-small.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/box_large.gltf.glb",
+   "to": "props/crate.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/crates_stacked.gltf.glb",
+   "to": "props/crates.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_lit.gltf.glb",
+   "to": "world/torch.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/torch_mounted.gltf.glb",
+   "to": "world/wall-torch.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/candle_triple.gltf.glb",
+   "to": "world/candles.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_blue.gltf.glb",
+   "to": "world/banner-blue.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_red.gltf.glb",
+   "to": "world/banner-red.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/banner_patternA_yellow.gltf.glb",
+   "to": "world/banner-yellow.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/table_medium_tablecloth.gltf.glb",
+   "to": "world/table.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/chair.gltf.glb",
+   "to": "world/chair.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/shelf_small_candles.gltf.glb",
+   "to": "world/shelf.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/plate_food_A.gltf.glb",
+   "to": "world/feast.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

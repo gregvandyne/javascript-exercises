@@ -4635,3 +4635,25 @@ The owner wants games that "blow people away" and found Kit 1's home-made charac
   - The demo now has water, outlines and sparkles. `tests/unit/kit2-oomba3d.test.js` also clicks the gear button's
     levels, changes the time and weather, drops a Rapier box onto a fixed platform and loads a meshopt model, in the real
     game frame.
+
+## More worlds and characters: Castle Quest, Spooky Hollow, Space Base, Toy Town (12 Nov 2026)
+
+The owner asked for more characters and worlds. From CC0 KayKit packs reachable on GitHub (kenney.nl and quaternius.com
+are still blocked from the build machine):
+- **Four new themes, 1.0.0 each:** Castle Quest (Dungeon Remastered: floors, walls, stairs, chests, keys, torches,
+  banners), Spooky Hollow (Halloween Bits: pumpkins, lanterns, fences, arches, autumn trees, a purple dusk), Space Base
+  (Space Base Bits: red-planet ground, landing pads, base modules, rovers, landers; first called Moon Base, renamed for its
+  red ground) and Toy Town (City Builder Bits: roads, eight buildings, five cars, traffic lights). 27-33 pieces each,
+  2.9-3.4 MB raw (about 1.3 MB brotli on the wire; a game loads only the pieces it uses).
+- **Four new heroes, the skeleton pals** (KayKit Skeletons): Skelly, Rattles, Bonzo and Captain Clank. They share the
+  adventurers' skeleton, so every move plays on them; their weapons are separate files and were not used. Every new theme
+  has all nine heroes; with Oomba3D 1.1.0's `outfit` colours there are many more looks.
+- **Kid-safe choices** (every model looked at on a contact sheet): no graves, gravestones, coffins, bones, skulls, crypt or
+  shrines in Spooky Hollow, and not its skull-decorated bench or the gallows-shaped lamp post; no swords, shields or the
+  sword-decorated pillar and banner in Castle Quest; no rubbish bins in Toy Town.
+- **Pipeline:** a theme is now one short `theme.def.json`; `kit2/pipeline/from-def.mjs` makes the recipe and catalogue,
+  `build-theme.mjs` measures every model so sizes are never typed by hand, and heroes are reused from an already built
+  theme. `kit2/demo/theme-tour.html` lays out any theme from its catalogue (the covers), and
+  `tests/unit/kit2-worlds.test.js` plays it in the real game frame for the newest version of every theme.
+- **Still to come:** Under the Sea, Dino Valley and animal or kid characters need Quaternius's packs: allow quaternius.com
+  and kenney.nl on the repository's cloud environment (Settings), then a session can fetch them.

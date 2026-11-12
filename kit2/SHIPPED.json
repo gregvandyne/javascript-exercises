@@ -32,6 +32,10 @@
  },
  "themes": {
   "sky-islands/1.0.0": "sha384-8VQ0ivDr2OkOzP7RQHLq85R0vYP8LOkh4UhPJ4Nj2UmKZ/flJLw4ArPfaICCyiXO",
-  "sky-islands/1.0.1": "sha384-4rmNjJxt60TL1o5Bzlh1uKX2LggXsqjZG8pcI2dGMCwmUDvy+v5Pexk5PmTiR77i"
+  "sky-islands/1.0.1": "sha384-4rmNjJxt60TL1o5Bzlh1uKX2LggXsqjZG8pcI2dGMCwmUDvy+v5Pexk5PmTiR77i",
+  "castle-quest/1.0.0": "sha384-o75/9P/Jf265Kk7H9t3xkhh82lJNmkXNFtB72JyHUYW8+VFp156fDLZNZtzJovCd",
+  "space-base/1.0.0": "sha384-8y+c3rqFFHD+33J8E2zsevxMir0C/wFIt3iuoyqDI/hEdLGXCYgqOy5GJSOHDb6f",
+  "spooky-hollow/1.0.0": "sha384-+/5qRv5FCqA3Fw8VHO/KOhdCFYVD8eaO8I6safpC3hEh+/ihzy1eJmZB9+oQoNer",
+  "toy-town/1.0.0": "sha384-kssNVqsmTinuZBrRClQFgS6vRySouA7grO0PeOZFa7NZY9rmSFU7o5DIEz2p+zdR"
  }
 }

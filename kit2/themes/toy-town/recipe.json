@@ -1,0 +1,191 @@
+{
+ "_": "How Toy Town 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Mage.glb",
+   "to": "heroes/skelly.glb",
+   "keepMeshes": [
+    "Skeleton_Mage_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Minion.glb",
+   "to": "heroes/rattles.glb",
+   "keepMeshes": [
+    "Skeleton_Minion_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Rogue.glb",
+   "to": "heroes/bonzo.glb",
+   "keepMeshes": [
+    "Skeleton_Rogue_.*"
+   ]
+  },
+  {
+   "from": "KayKit-Character-Pack-Skeletons-1.0/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb",
+   "to": "heroes/captain-clank.glb",
+   "keepMeshes": [
+    "Skeleton_Warrior_.*"
+   ]
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/base.gltf",
+   "to": "world/ground.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight.gltf",
+   "to": "world/road.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_straight_crossing.gltf",
+   "to": "world/road-crossing.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_corner_curved.gltf",
+   "to": "world/road-corner.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_junction.gltf",
+   "to": "world/road-junction.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/road_tsplit.gltf",
+   "to": "world/road-t.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_A.gltf",
+   "to": "world/building-a.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_B.gltf",
+   "to": "world/building-b.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_C.gltf",
+   "to": "world/building-c.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_D.gltf",
+   "to": "world/building-d.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_E.gltf",
+   "to": "world/building-e.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_F.gltf",
+   "to": "world/building-f.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_G.gltf",
+   "to": "world/building-g.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/building_H.gltf",
+   "to": "world/building-h.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_taxi.gltf",
+   "to": "props/car-taxi.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_police.gltf",
+   "to": "props/car-police.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_hatchback.gltf",
+   "to": "props/car-hatchback.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_sedan.gltf",
+   "to": "props/car-sedan.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/car_stationwagon.gltf",
+   "to": "props/car-wagon.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bench.gltf",
+   "to": "world/bench.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/bush.gltf",
+   "to": "world/bush.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/streetlight.gltf",
+   "to": "world/streetlight.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/trafficlight_A.gltf",
+   "to": "world/traffic-light.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/firehydrant.gltf",
+   "to": "world/fire-hydrant.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/watertower.gltf",
+   "to": "world/water-tower.glb"
+  },
+  {
+   "from": "KayKit-City-Builder-Bits-1.0/addons/kaykit_city_builder_bits/Assets/gltf/box_A.gltf",
+   "to": "props/box.glb"
+  },
+  {
+   "from": "KayKit-Dungeon-Remastered-1.0/addons/kaykit_dungeon_remastered/Assets/gltf/coin.gltf.glb",
+   "to": "props/coin.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:sky-islands/1.0.1/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

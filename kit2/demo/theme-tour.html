@@ -1,0 +1,38 @@
+<title>Theme tour</title>
+<!-- One scene for any Kit 2 theme, laid out from its own catalogue: its ground, every hero (cheering, waving…) and a
+     spread of its props. Used for each theme's cover picture and by tests/unit/kit2-worlds.test.js, which plays it in
+     the real game frame for every theme. The test fills in the import map and the theme on the marker lines below. -->
+<!-- KIT2_IMPORT_MAP -->
+<style>html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; }</style>
+<script type="module">
+import { start } from 'oomba3d';
+const THEME = { id: 'THEME_ID', version: 'THEME_VERSION', time: 'THEME_TIME' };
+const g = await start({ theme: THEME.id, version: THEME.version, time: THEME.time, outline: true, settings: false });
+const T = g.theme, W = g.world;
+const has = (p, tag) => p.tags.includes(tag);
+
+// The ground: the theme's first 'ground' piece, tiled under everything.
+const ground = T.pieces.find(p => has(p, 'ground'));
+const [gw, , gd] = ground.size;
+for (let ix = -3; ix <= 3; ix++) for (let iz = -4; iz <= 1; iz++) await W.island({ piece: ground.id, scale: 1, x: ix * gw, y: -ground.size[1], z: iz * gd });
+
+// Every hero in a row, each doing something different.
+const moves = ['cheer', 'wave', 'idle', 'ready', 'jumpAir', 'cast', 'pickUp', 'use', 'sit'];
+const n = T.heroes.length;
+const heroes = await Promise.all(T.heroes.map((h, i) => g.hero(h.id, { x: (i - (n - 1) / 2) * 1.9, y: 0, z: 2 - Math.abs(i - (n - 1) / 2) * 0.35 })));
+heroes.forEach((h, i) => h.play(moves[i % moves.length]));
+
+// A spread of the theme's other pieces behind them: big ones far back, small ones nearer.
+const rest = T.pieces.filter(p => p !== ground && !has(p, 'ground') && !has(p, 'road') && !has(p, 'floor') && !has(p, 'path') && p.kind !== 'effect');
+rest.sort((a, b) => Math.max(...b.size) - Math.max(...a.size));
+const placed = [];
+for (const [i, p] of rest.entries()) {
+  const big = Math.max(...p.size) > 3, row = big ? -12 - (i % 2) * 6 : -4 - (i % 3) * 2.2;
+  const x = ((i * 7) % 15 - 7) * (big ? 1.8 : 1.4);
+  placed.push(W.piece(p.id, { x, y: 0, z: row, turn: (i % 4) * 0.4 }));
+}
+await Promise.all(placed);
+g.camera.position.set(0, 4.2, 12.5); g.camera.lookAt(0, 1.6, -2);
+window.__tour = { heroes: heroes.length, pieces: rest.length + 1, g };
+window.__ready = true;
+</script>
