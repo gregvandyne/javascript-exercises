@@ -49,9 +49,11 @@ const EVENT_AUDIT = {
 
 /** Who can own a plan: kind -> exists(id). Schools are here; families arrive with grown-up accounts (chunk 3). An
  *  owner named only in Stripe metadata is accepted only when exists(id) says so. */
-const ownerKinds = new Map();
-export function registerOwnerKind(kind, exists) { ownerKinds.set(kind, exists); }
-export const ownerKindExists = (kind, id) => { const f = ownerKinds.get(kind); return !!(f && id && f(String(id))); };
+// A hoisted function, not a const: family.js imports this file and registers 'family' at its own top level, so when
+// family.js is loaded first (some tests import it before billing.js) registerOwnerKind runs before this module's body.
+function ownerKinds() { return ownerKinds.map || (ownerKinds.map = new Map()); }
+export function registerOwnerKind(kind, exists) { ownerKinds().set(kind, exists); }
+export function ownerKindExists(kind, id) { const f = ownerKinds().get(kind); return !!(f && id && f(String(id))); }
 registerOwnerKind('school', id => !!q.get('SELECT 1 FROM schools WHERE id=?', id));
 // A teacher's own Teacher plan (services/teacher-plan.js): the owner is the teacher's account.
 registerOwnerKind('teacher', id => !!q.get('SELECT 1 FROM users WHERE id=? AND is_guest=0', id));
