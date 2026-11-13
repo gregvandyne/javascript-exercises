@@ -1,0 +1,226 @@
+{
+ "id": "nq-u2-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 2 · The Joining Pond (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "K.OA.A.1",
+   "topic": "Put together",
+   "kind": "apply",
+   "secs": 25,
+   "q": "3 frogs sit. 2 more frogs come. Which one shows this?",
+   "choices": [
+    "3 and 2",
+    "3 take away 2",
+    "2 and 2",
+    "3 and 3"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "mixed up joining with taking away",
+    "counted the first group wrong",
+    "counted the second group wrong"
+   ],
+   "why": "More frogs came, so we put the groups together. That is 3 and 2."
+  },
+  {
+   "id": "nq-launchpad-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "K.OA.A.2",
+   "topic": "Put together",
+   "kind": "apply",
+   "secs": 25,
+   "q": "4 frogs and 3 frogs hop together. How many in all?",
+   "choices": [
+    "6",
+    "7",
+    "8",
+    "1"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "stopped one count too early",
+    "correct",
+    "counted one frog two times",
+    "took away instead of joining"
+   ],
+   "why": "Start at 4 and count on 3 more: 5, 6, 7. There are 7 frogs."
+  },
+  {
+   "id": "nq-launchpad-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "K.OA.A.2",
+   "topic": "Put together",
+   "kind": "apply",
+   "secs": 25,
+   "q": "6 frogs sit on a pad. 2 hop away. How many are left?",
+   "choices": [
+    "8",
+    "5",
+    "4",
+    "3"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "joined instead of taking away",
+    "took away only one frog",
+    "correct",
+    "took away one frog too many"
+   ],
+   "why": "Two frogs go. Count back from 6: 5, 4. There are 4 left."
+  },
+  {
+   "id": "nq-launchpad-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "K.OA.A.3",
+   "topic": "Number partners",
+   "kind": "apply",
+   "secs": 25,
+   "q": "5 frogs sit on two pads. One pad has 2. How many on the other?",
+   "choices": [
+    "2",
+    "3",
+    "5",
+    "7"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "repeated the part already given",
+    "correct",
+    "gave the whole, not the other part",
+    "added the part to the whole"
+   ],
+   "why": "5 is 2 and 3. Two on one pad means three on the other."
+  },
+  {
+   "id": "nq-launchpad-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "K.OA.A.3",
+   "topic": "Number partners",
+   "kind": "apply",
+   "secs": 25,
+   "q": "5 is 2 and 3. Which two numbers also make 5?",
+   "choices": [
+    "4 and 1",
+    "4 and 2",
+    "3 and 3",
+    "5 and 1"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "counted one too many in a part",
+    "split 6 instead of 5",
+    "added a part to the whole"
+   ],
+   "why": "4 and 1 make 5 too. There is more than one way to split 5."
+  },
+  {
+   "id": "nq-launchpad-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "K.OA.A.4",
+   "topic": "Number partners",
+   "kind": "apply",
+   "secs": 25,
+   "q": "7 and what number make 10?",
+   "choices": [
+    "2",
+    "3",
+    "4",
+    "17"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "stopped one short of ten",
+    "correct",
+    "counted one empty spot too many",
+    "added ten instead of filling ten"
+   ],
+   "why": "A ten-frame with 7 has 3 empty spots. 7 and 3 make 10."
+  },
+  {
+   "id": "nq-launchpad-2.3-e1",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "1.OA.C.6",
+   "topic": "Add to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 8 + 5? Make ten first.",
+   "choices": [
+    "12",
+    "13",
+    "14",
+    "3"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "stopped one hop too early",
+    "correct",
+    "hopped one pad too far",
+    "took away instead of adding"
+   ],
+   "why": "8 and 2 make 10. Then 3 more makes 13."
+  },
+  {
+   "id": "nq-launchpad-2.3-e2",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "1.OA.C.6",
+   "topic": "Add to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 13 take away 5? Hop back to 10 first.",
+   "choices": [
+    "7",
+    "8",
+    "9",
+    "18"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "hopped back one pad too many",
+    "correct",
+    "stopped one hop too early",
+    "added instead of taking away"
+   ],
+   "why": "13 take away 3 is 10. Take away 2 more and you land on 8."
+  },
+  {
+   "id": "nq-launchpad-2.3-e3",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "1.OA.C.6",
+   "topic": "Add to 20",
+   "kind": "apply",
+   "secs": 25,
+   "q": "9 + 4 = 13. What is 4 + 9?",
+   "choices": [
+    "13",
+    "12",
+    "14",
+    "5"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "lost one when turning it around",
+    "gained one when turning it around",
+    "took away instead of adding"
+   ],
+   "why": "You can add in any order. 4 + 9 is the same as 9 + 4."
+  }
+ ]
+}

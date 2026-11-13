@@ -74,6 +74,11 @@ const SHOTS = [
   { tier: 'launchpad', step: '1.1', state: 'pick-and-count', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=count&lock=1', prep: gardenCount, cdp: true },
   { tier: 'launchpad', step: '1.2', state: 'more-or-fewer', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=compare&lock=1', prep: gardenCount, cdp: true },
   { tier: 'launchpad', step: '1.3', state: 'ten-and-more', slug: 'garden-count', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=teens&lock=1', prep: gardenCount, cdp: true },
+  // Launchpad Unit 2, The Joining Pond: Lily Hop, a 3D game, in each step's own chapter, the whole phone screen as the
+  // band (the pond and its islands fill it, the words and the sum on top, the three number buttons at the bottom).
+  { tier: 'launchpad', step: '2.1', state: 'hop-together', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=join&lock=1', prep: lilyHop, cdp: true },
+  { tier: 'launchpad', step: '2.2', state: 'number-partners', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=apart&lock=1', prep: lilyHop, cdp: true },
+  { tier: 'launchpad', step: '2.3', state: 'hop-to-20', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=twenty&lock=1', prep: lilyHop, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -175,6 +180,16 @@ async function gardenCount(f) {
   if (s.kind === 'count') for (let i = 0; i < 3; i++) { await f.click('#gc-pick'); await wait(450); }
   if (s.kind === 'make') { await f.click('#gc-fill'); await wait(500); for (let i = 10; i < s.target; i++) { await f.click('#gc-one'); await wait(450); } }
   await wait(1500);
+}
+
+async function lilyHop(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. The photograph is the round
+  // as it is asked: the two groups of frogs (Hop Together), the number split onto two pads once the orange frogs have
+  // hopped across (Number Partners), the helper on its starting pad of the number line (Hop to 20).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1, 20000);
+  await wait(2800);
 }
 
 /** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and

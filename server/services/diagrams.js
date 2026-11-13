@@ -91,13 +91,16 @@ export function cleanDiagram(v, label) {
   }
   if (v.type === 'counters') {
     // counters to count and match (Launchpad): one group of 1-20, or two rows of 1-10 set one under the other so they
-    // match one to one; `count` numbers each counter in order; `frame` sets a single group's first ten in a ten-frame
+    // match one to one; `count` numbers each counter in order; `frame` sets a single group's first ten in a ten-frame;
+    // `split` (Unit 2) shows a single group of 2-10 as two parts, the first `split` counters and the rest in a second
+    // tone with each part's size under it, and `away` draws the second part as empty outlines (they went away)
     if (!Array.isArray(v.groups) || v.groups.length < 1 || v.groups.length > 2) return null;
     if (!v.groups.every(q => q && int(q.n, 1, 20) && (q.tone == null || int(q.tone, 0, 3)))) return null;
     const two = v.groups.length === 2;
-    if (two && v.groups.some(q => q.n > 10 || q.frame)) return null;
+    if (two && v.groups.some(q => q.n > 10 || q.frame || q.split != null || q.away)) return null;
+    if (v.groups.some(q => (q.split != null && !(q.n <= 10 && int(q.split, 1, q.n - 1))) || (q.away && (q.split == null || q.frame)))) return null;
     return { type: 'counters', label, groups: v.groups.map(q => ({ n: q.n, ...(q.tone != null ? { tone: q.tone } : {}), ...(txt(q.name, two ? 8 : 12) ? { name: txt(q.name, two ? 8 : 12) } : {}),
-      ...(q.frame ? { frame: true } : {}), ...(q.count ? { count: true } : {}) })) };
+      ...(q.frame ? { frame: true } : {}), ...(q.count ? { count: true } : {}), ...(q.split != null ? { split: q.split } : {}), ...(q.away ? { away: true } : {}) })) };
   }
   return null;
 }

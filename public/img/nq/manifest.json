@@ -167,6 +167,39 @@
       "state": "ten-and-more"
     },
     {
+      "alt": "Lily Hop on a phone: a helper on a row of numbered lily pads, a flag on pad 10, and three number buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "2.3",
+      "commit": "ea228f30",
+      "concept": "Launchpad 2.3, Hop to 20 round 1 (Start on 10. Hop on 2.): the helper on pad 10 of the number line, the flag on ten, 10 + 2 = ?, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lily-hop",
+      "key": "nq/lily-hop/hop-to-20",
+      "state": "hop-to-20"
+    },
+    {
+      "alt": "Lily Hop on a phone: 2 blue frogs on one lily pad, 1 orange frog on another, and three number pads.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "2.1",
+      "commit": "ea228f30",
+      "concept": "Launchpad 2.1, Hop Together round 1 (How many frogs in all?): 2 blue frogs and 1 orange frog on two lily pads, number pads 1, 2 and 3, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lily-hop",
+      "key": "nq/lily-hop/hop-together",
+      "state": "hop-together"
+    },
+    {
+      "alt": "Lily Hop on a phone: frogs split onto two lily pads, the words 4 is 3 and ?, and three number pads.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-12",
+      "chapter": "2.2",
+      "commit": "ea228f30",
+      "concept": "Launchpad 2.2, Number Partners round 1 (4 is 3 and what?): 3 blue frogs on one pad and 1 orange frog on the other, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lily-hop",
+      "key": "nq/lily-hop/number-partners",
+      "state": "number-partners"
+    },
+    {
       "alt": "Quest Race on a phone: a spinner chance question and four chance words to pick from, the race track just above.",
       "band": "explorer",
       "capturedAt": "2026-11-07",

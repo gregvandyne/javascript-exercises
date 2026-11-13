@@ -57,6 +57,10 @@ export const GAMES = {
   'garden-count': { title: 'Garden Count', role: 'friendly', spoken: /^(?!btn\.|round$|title$|loading$|ch\.)/ },
   'gulp-city': { title: 'Gulp City', role: 'friendly', spoken: /./ },
   'happy-putt': { title: 'Happy Putt', role: 'narrator', spoken: /./ },
+  // Lily Hop (Number Quest Launchpad, kindergarten to grade 1): every instruction, hint and answer line is spoken, in
+  // the friendly voice (its VOICES block). The sums on screen (show.*, where a "?" may stand), the button labels (btn.*)
+  // and the round counter are shown, never read.
+  'lily-hop': { title: 'Lily Hop', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'loop-lab': { title: 'Loop Lab', role: 'narrator', spoken: /./ },
   'munch-maze': { title: 'Munch Maze', role: 'narrator', spoken: /./ },
   'quest-race': { title: 'Quest Race', role: 'narrator', spoken: /./ },
