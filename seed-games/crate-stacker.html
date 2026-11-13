@@ -1,0 +1,483 @@
+<title>Crate Stacker</title>
+<!-- Crate Stacker: Number Quest Launchpad Unit 3, The Tens Trellis (grade 1, ages 6-7). A toy loading yard on
+     Oomba3D 1.1.0 in the Toy Town theme: one crate is a ONE, a tower of ten crates is a TEN, and a toy truck takes
+     the load. Three chapters of six rounds, one per course step:
+       build   (3.1) load a number with towers and crates (Add a ten, Add a one, Take one off, Go; ten loose crates
+                     snap into a tower by themselves), then read a load and pick its number (34 or 43?), up to 109;
+       greater (3.2) two trucks: which has more (tens first, then ones), then pick the sign: >, = or <;
+       add     (3.3) 27 and 30 more (towers hop on), 10 more and 10 less (one tower comes or goes), and 27 and 5 more
+                     (crates fill a tower, then the rest), all within 100.
+     Made for a child who is only starting to read: every instruction is short, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), the numbers are big, and everything is done with big buttons or
+     by tapping a truck. No timer, no lives, no fail state: a wrong answer wobbles and gets a spoken hint, then
+     another try. Lesson mode: BRB.params { chapter: build | greater | add, lock: 1 } opens that chapter only;
+     finishing its six rounds reports game over, won, once (the course step's completion signal). With no parameters
+     the game offers the three chapters from a picture menu. Saves only which chapters are finished (BRB.storage
+     'crate-stacker-v1'). The import map below is exactly kit2ImportMap() (server/services/vendor.js);
+     tests/unit/crate-stacker.test.js fails if a library bump leaves it behind. English only, like Number Quest's
+     other lesson games. Test handle: window.__cs (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .cs[hidden], .cs-load[hidden] { display: none; }
+  .cs { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .cs button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .cs button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .cs-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 68px 0 10px; }
+  /* The words, then the number chip and the round dots. On a phone: the words on one row, the chip and the dots on
+     the next. On a wide screen: all three on one row that never wraps (the words box gives way and wraps inside). */
+  .cs-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .cs-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .cs-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .cs-ask[hidden], .cs-hint[hidden], .cs-sum[hidden], .cs-bar[hidden], .cs-card[hidden], .cs-dots[hidden], .cs-row2[hidden] { display: none; }
+  .cs .cs-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .cs .cs-say:active, .cs .cs-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .cs-askt { font-weight: 800; font-size: clamp(20px, 5vw, 30px); line-height: 1.15; min-width: 0; }
+  .cs-sum { flex: none; background: #66C792; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(22px, 5.6vw, 34px); line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cs-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .cs-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .cs-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
+  .cs-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .cs-dots i.on { background: #FFD23F; } .cs-dots i.now { background: #66C792; }
+  .cs-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .cs .cs-btn { flex: 1 1 0; min-width: 0; max-width: 200px; min-height: clamp(70px, 11vh, 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .cs-btn .i { font-size: 30px; line-height: 1.1; } .cs-btn .big { font-size: 46px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .cs-btn .pic { display: flex; align-items: flex-end; justify-content: center; gap: 5px; height: 38px; font-size: 26px; font-weight: 900; line-height: 1; }
+  /* the little pictures on the loading buttons: a tower of ten blue crates, one orange crate */
+  .cs-btn .tw { width: 13px; height: 38px; box-sizing: border-box; border: 2px solid #141414; border-radius: 2px; background: repeating-linear-gradient(#3d8bea 0 2.4px, #141414 2.4px 3.4px); }
+  .cs-btn .cr { width: 20px; height: 20px; box-sizing: border-box; border: 2.5px solid #141414; border-radius: 3px; background: #ff9a3c; }
+  .cs-btn.go { background: #66C792; } .cs-btn.red { background: #ffc2b5; } .cs-btn.blue { background: #b7dcff; }
+  .cs-btn.no { animation: cs-no .45s ease; }
+  @keyframes cs-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .cs-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .cs-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .cs-card .cs-ask { margin-top: 10px; }
+  .cs-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .cs-pick .cs-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .cs-pick .cs-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .cs-menu { display: flex; gap: 12px; justify-content: center; width: min(760px, 100%); }
+  .cs-menu .cs-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
+  .cs-menu .cs-btn .i { font-size: 44px; }
+  .cs-star { font-size: 76px; line-height: 1; }
+  .cs-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the chip and the round dots share one line across the top, so the yard gets the height. */
+  @media (min-aspect-ratio: 9/10) {
+    .cs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; }
+    .cs-ask { flex: 0 1 auto; } .cs-row2 { flex: none; }
+    .cs-askt { font-size: clamp(19px, 2.6vw, 30px); } .cs-sum { font-size: clamp(20px, 2.9vw, 34px); }
+  }
+  @media (max-width: 480px) { .cs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .cs .cs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .cs-btn .i { font-size: 26px; } .cs-menu { gap: 8px; } .cs-menu .cs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .cs-menu .cs-btn .i { font-size: 36px; } .cs-star { font-size: 60px; } .cs-btn .pic { height: 34px; font-size: 22px; } .cs-btn .tw { height: 34px; } }
+  @media (max-height: 520px) { .cs .cs-btn { min-height: 60px; font-size: 15px; } .cs-btn .i { font-size: 24px; } .cs-btn .big { font-size: 36px; } .cs .cs-say { width: 44px; height: 44px; font-size: 20px; } .cs-menu .cs-btn { min-height: 90px; } .cs-star { font-size: 52px; } .cs-btn .pic { height: 28px; } .cs-btn .tw { height: 28px; } }
+  @media (prefers-reduced-motion: reduce) { .cs .cs-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .cs .cs-say:active, .cs .cs-btn:active { transform: none; } }
+</style>
+<div class="cs-load" id="load" role="status">Getting the yard ready…</div>
+<div class="cs" id="cs" hidden>
+  <div class="cs-top">
+    <div class="cs-line" id="line">
+      <div class="cs-ask" id="ask" hidden><button class="cs-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="cs-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="cs-row2" id="row2" hidden>
+        <div class="cs-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="cs-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cs-low">
+    <div class="cs-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="cs-bar" id="bar" hidden></div>
+  </div>
+  <div class="cs-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Crate Stacker's rounds: plain data and functions (no DOM, no 3D), so tests/unit/crate-stacker.test.js can run
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
+   so the first six rounds are always the same; a replay gets new numbers). A crate is a one and a tower is a ten:
+   every number here is tens * 10 + ones. ===== */
+/* crate-stacker:begin */
+(function (root) {
+  var CHAPTERS = ['build', 'greater', 'add'], ROUNDS = 6, SIGNS = ['gt', 'eq', 'lt'];
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function pick(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  /** Three numbers, smallest first: the answer and the first two of `traps` (the mistakes a child makes) that are
+   *  other numbers inside [lo, hi]; a neighbour of the answer stands in when a trap is not there to use. */
+  function three(answer, traps, lo, hi) {
+    var ch = [answer], pool = traps.concat([answer + 1, answer - 1, answer + 2, answer - 2, answer + 3]);
+    for (var i = 0; i < pool.length && ch.length < 3; i++) if (pool[i] >= lo && pool[i] <= hi && ch.indexOf(pool[i]) < 0) ch.push(pool[i]);
+    return ch.sort(function (x, y) { return x - y; });
+  }
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n }, t, o, k;
+    if (chapter === 'build') {
+      // 1-3 load a number: a teen, a number to 49 named as a numeral, a number to 99 named by its tens and ones.
+      // 4-6 read a load: the two digits the other way round are offered (34 or 43?), then a load with no loose
+      // crates (60, not 6), then ten towers and a few crates (past 100).
+      if (n <= 3) {
+        t = n === 1 ? 1 : n === 2 ? pick(r, 2, 4) : pick(r, 5, 9); o = pick(r, 1, 9);
+        out.kind = 'build'; out.ask = n === 3 ? 'parts' : 'number'; out.tens = t; out.ones = o; out.answer = t * 10 + o;
+      } else if (n === 4) {
+        t = pick(r, 2, 9); do { o = pick(r, 1, 9); } while (o === t);
+        out.kind = 'read'; out.tens = t; out.ones = o; out.answer = t * 10 + o;
+        out.choices = three(out.answer, [o * 10 + t, r() < 0.5 ? out.answer + 10 : out.answer - 10, out.answer + 10], 11, 99);
+      } else if (n === 5) {
+        t = pick(r, 2, 9);
+        out.kind = 'read'; out.tens = t; out.ones = 0; out.answer = t * 10; out.choices = three(out.answer, [t, 10 + t], 1, 99);
+      } else {
+        k = pick(r, 1, 9);
+        out.kind = 'read'; out.tens = 10; out.ones = k; out.answer = 100 + k; out.choices = three(out.answer, [10 + k, 110 + k], 11, 120);
+      }
+    } else if (chapter === 'greater') {
+      // 1-3 which truck has more: different tens, then the same tens, then two numerals with the digits swapped.
+      // 4-6 pick the sign, one round of each kind in an order made from the lap: different tens (the smaller number
+      // has the bigger ones digit), the same number twice, the same tens. Rounds 3 and 6 show numerals only.
+      var a, b, look;
+      if (n === 1) { t = pick(r, 2, 8); do { k = pick(r, 2, 8); } while (Math.abs(k - t) < 2); a = t * 10 + pick(r, 1, 9); b = k * 10 + pick(r, 1, 9); look = 'tens'; }
+      else if (n === 2) { t = pick(r, 3, 8); o = pick(r, 2, 9); do { k = pick(r, 2, 9); } while (k === o); a = t * 10 + o; b = t * 10 + k; look = 'ones'; }
+      else if (n === 3) { t = pick(r, 2, 9); do { o = pick(r, 2, 9); } while (o === t); a = t * 10 + o; b = o * 10 + t; look = 'tens'; }
+      else {
+        var r0 = rng((ci + 1) * 7919 + lap * 1299709 + 17), types = ['tens', 'equal', 'ones'];
+        for (var i = 2; i > 0; i--) { var j = Math.floor(r0() * (i + 1)), s = types[i]; types[i] = types[j]; types[j] = s; }
+        out.type = types[n - 4];
+        if (out.type === 'tens') { t = pick(r, 3, 9); k = pick(r, 2, t - 1); o = pick(r, 5, 9); a = t * 10 + pick(r, 1, o - 1); b = k * 10 + o; look = 'tens'; if (r() < 0.5) { s = a; a = b; b = s; } }
+        else if (out.type === 'equal') { a = b = pick(r, 2, 8) * 10 + pick(r, 1, 9); look = 'same'; }
+        else { t = pick(r, 2, 9); o = pick(r, 2, 9); do { k = pick(r, 2, 9); } while (k === o); a = t * 10 + o; b = t * 10 + k; look = 'ones'; }
+      }
+      out.kind = n <= 3 ? 'more' : 'sign'; out.view = n === 3 || n === 6 ? 'numbers' : 'loads'; out.a = a; out.b = b; out.look = look;
+      if (out.kind === 'more') { out.answer = Math.max(a, b); out.choices = [a, b]; }
+      else { out.answer = a > b ? 'gt' : a < b ? 'lt' : 'eq'; out.choices = SIGNS.slice(); }
+    } else {
+      // add: 1 a number and some tens more; 2 ten more; 3 some ones more, inside the ten; 4 some ones more that fill
+      // a tower and go on; 5 ten less; 6 round 4 again with bigger numbers. Every total is under 100.
+      if (n === 1) {
+        t = pick(r, 1, 3); o = pick(r, 1, 9); k = pick(r, 2, 4);
+        out.kind = 'tens'; out.a = t * 10 + o; out.b = k * 10; out.answer = out.a + out.b;
+        out.choices = three(out.answer, [out.a + k, r() < 0.5 ? out.answer + 10 : out.answer - 10, out.answer - 10], 11, 99);
+      } else if (n === 2) {
+        out.kind = 'more10'; out.a = pick(r, 2, 7) * 10 + pick(r, 1, 9); out.b = 10; out.answer = out.a + 10;
+        out.choices = three(out.answer, [out.a + 1, out.a - 10], 1, 99);
+      } else if (n === 5) {
+        out.kind = 'less10'; out.a = pick(r, 3, 9) * 10 + pick(r, 1, 9); out.b = 10; out.answer = out.a - 10;
+        out.choices = three(out.answer, [out.a - 1, out.a + 10 <= 99 ? out.a + 10 : out.a - 20], 1, 99);
+      } else if (n === 3) {
+        t = pick(r, 2, 4); o = pick(r, 1, 4); k = pick(r, 2, Math.min(5, 9 - o));
+        out.kind = 'ones'; out.a = t * 10 + o; out.b = k; out.answer = out.a + k; out.cross = false;
+        out.choices = three(out.answer, [out.a + k * 10 <= 99 ? out.a + k * 10 : out.answer + 10, r() < 0.5 ? out.answer - 1 : out.answer + 1], 11, 99);
+      } else {
+        t = n === 4 ? pick(r, 1, 3) : pick(r, 4, 8); o = pick(r, 5, 9); k = pick(r, 11 - o, 9);
+        out.kind = 'ones'; out.a = t * 10 + o; out.b = k; out.answer = out.a + k; out.cross = true;
+        out.choices = three(out.answer, [out.answer - 10, r() < 0.5 ? out.answer + 1 : out.answer - 1], 11, 99);
+      }
+    }
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.CrateStacker = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, SIGNS: SIGNS, MAX: 99, round: round, params: params };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* crate-stacker:end */
+</script>
+<script>
+/* ===== Crate Stacker's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {a}
+   takes a number in its place (never a word: "1 ten" and "3 tens" are two lines). The show.* lines are what the
+   number chip shows (never spoken: a "?" or a sign may stand in them). ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Crate Stacker",
+    "loading": "Getting the yard ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.build": "Load the Truck",
+    "ch.greater": "Which Has More?",
+    "ch.add": "Add More Crates",
+    "build.ask": "Load {n} crates.",
+    "build.ask.parts.nn": "Load {t} tens and {o} ones.",
+    "build.ask.parts.n1": "Load {t} tens and 1 one.",
+    "build.bundle": "10 ones make 1 ten.",
+    "build.full": "The truck is full.",
+    "build.empty": "The truck is empty.",
+    "build.hint.tens.n": "You need {t} tens.",
+    "build.hint.tens.1": "You need 1 ten.",
+    "build.hint.ones.n": "You need {o} ones.",
+    "build.hint.ones.1": "You need 1 one.",
+    "parts.nn": "{t} tens and {o} ones make {n}.",
+    "parts.n1": "{t} tens and 1 one make {n}.",
+    "parts.1n": "1 ten and {o} ones make {n}.",
+    "parts.11": "1 ten and 1 one make 11.",
+    "read.ask": "How many crates?",
+    "read.hint": "Count the tens. Then count the ones.",
+    "read.hundred": "10 tens make 100. {o} more makes {n}.",
+    "more.ask": "Which truck has more?",
+    "sign.ask": "Which sign goes in the middle?",
+    "gr.hint.tens": "Look at the tens first.",
+    "gr.hint.ones": "The tens are the same. Look at the ones.",
+    "gr.hint.same": "Count the tens. Count the ones.",
+    "gr.gt": "{a} is greater than {b}.",
+    "gr.lt": "{a} is less than {b}.",
+    "gr.eq": "{a} is equal to {b}.",
+    "gr.why.tens": "{a} tens is more than {b} tens.",
+    "gr.why.ones": "{a} ones is more than {b} ones.",
+    "gr.why.same": "Same tens. Same ones.",
+    "add.ask": "{a} and {b} more. How many?",
+    "add.sum": "{a} and {b} make {c}.",
+    "tens.hint": "Count the tens. The ones stay.",
+    "ones.hint": "Count on from {a}.",
+    "ones.hint.ten": "Fill a tower of ten first.",
+    "add.fill": "{a} and {b} make {c}.",
+    "add.more": "{b} more makes {c}.",
+    "more10.ask": "What is 10 more than {a}?",
+    "more10.hint": "Add one tower. The ones stay.",
+    "more10.sum": "10 more than {a} is {c}.",
+    "less10.ask": "What is 10 less than {a}?",
+    "less10.hint": "Take one tower away. The ones stay.",
+    "less10.sum": "10 less than {a} is {c}.",
+    "win": "You did it!",
+    "win.card": "Every truck is loaded. Well done!",
+    "round": "Round {n} of {m}",
+    "show.parts.nn": "{t} tens and {o} ones",
+    "show.parts.n1": "{t} tens and 1 one",
+    "show.parts.1n": "1 ten and {o} ones",
+    "show.parts.11": "1 ten and 1 one",
+    "show.read": "? crates",
+    "show.gt": "{a} > {b}",
+    "show.lt": "{a} < {b}",
+    "show.eq": "{a} = {b}",
+    "show.q": "{a} ? {b}",
+    "show.add": "{a} + {b} = {c}",
+    "show.sub": "{a} − {b} = {c}",
+    "btn.say": "Say it again",
+    "btn.ten": "Add a ten",
+    "btn.one": "Add a one",
+    "btn.off": "Take one off",
+    "btn.go": "Go",
+    "btn.num": "Pick {n}",
+    "btn.gt": "is greater than",
+    "btn.eq": "is equal to",
+    "btn.lt": "is less than",
+    "btn.again": "Play again",
+    "btn.menu": "More games"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).CrateStackerI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the yard's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const CS = window.CrateStacker, T = (window.CrateStackerI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'cs', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'crate-stacker-v1';
+const ICON = { build: '📦', greater: '⚖️', add: '➕' };
+const SIGN = { gt: '>', eq: '=', lt: '<' };
+
+/* ---------- state ---------- */
+const P = CS.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, hist: [], count: 0, shown: false, stage: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of CS.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box (one or two short sentences) and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The number chip: "3 tens and 4 ones" as the truck is loaded, "27 + 30 = ?" while a sum is asked. */
+function sum(key, vars) { el.sum.textContent = key ? fmt(key, vars) : ''; el.sum.hidden = !key; }
+let hintTimer = 0;
+function hint(key, vars, o) {
+  clearTimeout(hintTimer);
+  if (!key) { el.hint.hidden = true; return; }
+  el.hint.textContent = fmt(key, vars); el.hint.hidden = false;
+  speak(key, vars, o);
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 6000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+const timers = new Set();
+const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+/** "3 tens and 4 ones" needs four lines ("1 ten", "1 one"): the key for these tens and ones. */
+const partsKey = (base, t, o) => base + '.' + (t === 1 ? '1' : 'n') + (o === 1 ? '1' : 'n');
+
+/* ---------- the 3D yard ---------- */
+let g;
+try {
+  g = await start({ theme: 'toy-town', version: '1.1.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its buildings, roads, cars, trees and street things are the town.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['road', 'road-crossing', 'building-a', 'building-b', 'building-c', 'building-d', 'building-e', 'building-f', 'building-g', 'building-h', 'car-taxi', 'car-police', 'car-hatchback', 'car-sedan', 'car-wagon',
+  'tree', 'tree-round', 'trees', 'forest-round', 'bushes', 'bush', 'streetlight', 'water-tower', 'fire-hydrant', 'bench'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+// The game's own simple shapes (crates, towers, trucks), with the same ink edge as the theme.
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, ...o });
+const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide }), BLACK = new THREE.MeshBasicMaterial({ color: '#141414' });
+const M = { red: mat('#e5484d'), blue: mat('#2f7fe0'), yellow: mat('#ffd23f'), green: mat('#49b86a'), glass: mat('#bfe6ff', { roughness: 0.2 }), tyre: mat('#2b2b2b'), hub: mat('#dfe3e8'), bed: mat('#c9a36b'), steel: mat('#8d99a6'),
+  slab: mat('#e9e2cf'), line: mat('#ffd23f'), grass: mat('#8fd27a'), dock: mat('#b9c2cc'), white: mat('#ffffff'), spotT: mat('#9cc7f5'), spotO: mat('#ffc38a'), teal: mat('#2bb7a9'), purple: mat('#8b6fe0') };
+const geos = new Map();
+const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
+const WHEEL = new THREE.CylinderGeometry(0.5, 0.5, 1, 16);
+/** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
+function box(material, w, h, d, x = 0, y = 0, z = 0, edge = 0.035) {
+  const m = new THREE.Mesh(boxGeo(w, h, d), material); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  if (edge) m.add(new THREE.Mesh(boxGeo(+(w + edge * 2).toFixed(3), +(h + edge * 2).toFixed(3), +(d + edge * 2).toFixed(3)), INK));
+  return m;
+}
+function wheel(x, y, z, r = 0.3, w = 0.22) {
+  const o = new THREE.Group(), t = new THREE.Mesh(WHEEL, M.tyre), h = new THREE.Mesh(WHEEL, M.hub), k = new THREE.Mesh(WHEEL, INK);
+  t.scale.set(r * 2, w, r * 2); h.scale.set(r, w * 1.08, r); k.scale.set(r * 2 + 0.07, w + 0.06, r * 2 + 0.07);
+  const sp = new THREE.Mesh(boxGeo(0.06, 0.06, 0.06), BLACK); sp.scale.set(r * 12, w * 19, 1.4);   // a spoke, so a turning wheel shows
+  o.add(t, h, k, sp); o.rotation.x = Math.PI / 2; o.position.set(x, y, z);
+  return o;
+}
+
+// Crates: one is a ONE (orange, loose), ten in a tower are a TEN (blue). The faces are drawn once on a canvas.
+const CR = 0.44, PITCH = 0.5, BED = 0.62;
+function crateTex(fill, dark, light) {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d');
+  x.fillStyle = '#141414'; x.fillRect(0, 0, 128, 128);
+  x.fillStyle = fill; x.fillRect(7, 7, 114, 114);
+  x.fillStyle = light; x.fillRect(22, 22, 84, 84);
+  x.strokeStyle = dark; x.lineWidth = 9; x.strokeRect(22, 22, 84, 84);
+  x.beginPath(); x.moveTo(26, 26); x.lineTo(102, 102); x.moveTo(102, 26); x.lineTo(26, 102); x.stroke();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+const TEX = { one: crateTex('#ff9a3c', '#c96a14', '#ffb469'), ten: crateTex('#3d8bea', '#1f5fb8', '#62a5f2') };
+const TEX10 = TEX.ten.clone(); TEX10.wrapT = THREE.RepeatWrapping; TEX10.repeat.set(1, 10); TEX10.needsUpdate = true;
+const CM = { one: new THREE.MeshStandardMaterial({ map: TEX.one, roughness: 0.75 }), ten: new THREE.MeshStandardMaterial({ map: TEX.ten, roughness: 0.75 }), side10: new THREE.MeshStandardMaterial({ map: TEX10, roughness: 0.75 }) };
+const TOWER_MATS = [CM.side10, CM.side10, CM.ten, CM.ten, CM.side10, CM.side10];
+/** One loose crate (a one), its middle at the object's origin. */
+function crate() { const m = box(CM.one, CR, CR, CR, 0, 0, 0, 0.028); m.userData.kind = 'one'; return m; }
+/** A tower of ten crates (a ten): one tall box whose sides show the ten crates, its foot at the object's origin. */
+function tower() {
+  const o = new THREE.Group(), m = new THREE.Mesh(boxGeo(CR, CR * 10, CR), TOWER_MATS);
+  m.castShadow = true; m.position.y = CR * 5; m.add(new THREE.Mesh(boxGeo(CR + 0.056, CR * 10 + 0.056, CR + 0.056), INK));
+  o.add(m); o.userData.kind = 'ten';
+  return o;
+}
+
+/** Words on a board that always faces the player (the textures are made once and kept): a number on a truck's
+ *  sign, the sign between two trucks, the big number on a closed load. */
+const boardTex = new Map(), BOARD_LIGHT = new THREE.Color(1.5, 1.5, 1.5);   // brighter than white: the tone curve brings it back to cream
+function board(text, w = 1.7, tone = 'cream') {
+  const key = text + '|' + tone;
+  if (!boardTex.has(key)) {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 176;
+    const x = c.getContext('2d');
+    x.fillStyle = { cream: '#FFFDF2', gold: '#FFD23F', green: '#9df5b9' }[tone]; x.strokeStyle = '#141414'; x.lineWidth = 14; x.lineJoin = 'round';
+    x.beginPath(); x.roundRect(10, 10, 236, 156, 36); x.fill(); x.stroke();
+    x.fillStyle = '#141414'; x.font = `900 ${String(text).length > 2 ? 104 : 128}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 97);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; boardTex.set(key, tex);
+  }
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex.get(key), fog: false, alphaTest: 0.5, color: BOARD_LIGHT })); s.scale.set(w, w * 176 / 256, 1);
+  s.userData.text = String(text); s.userData.w = w;
+  return s;
+}
+const reboard = (s, text, tone = 'cream') => { if (!s) return; board(text, 1, tone); s.material.map = boardTex.get(text + '|' + tone); s.userData.text = String(text); };
+
+/** A toy truck: a cab on the left, a flat bed with room for `cap` towers and, at the far end, the loose crates.
+ *  Its origin is where the bed begins. `T.sign` is the number board on the cab roof. */
+function truck(color, cap) {
+  const o = new THREE.Group(), L = cap * PITCH + 1.0, body = new THREE.Group();
+  body.add(box(M.steel, L + 1.5, 0.16, 0.74, (L - 1.5) / 2 + 0.05, 0.4, 0), box(M.bed, L + 0.16, 0.14, 1.06, L / 2, BED - 0.07, 0));
+  // painted spots on the bed: a blue one for each tower, an orange one for the loose crates
+  for (let i = 0; i < cap; i++) body.add(box(M.spotT, 0.36, 0.012, 0.36, 0.3 + i * PITCH, BED + 0.006, 0, 0));
+  body.add(box(M.spotO, 0.4, 0.012, 0.4, 0.3 + cap * PITCH + 0.24, BED + 0.006, 0, 0));
+  body.add(box(M[color], 1.2, 1.2, 1.06, -0.78, 0.92, 0), box(M.glass, 0.52, 0.46, 1.1, -1.08, 1.2, 0, 0.02), box(M.steel, 0.16, 0.22, 1.1, -1.44, 0.44, 0), box(M.yellow, 0.06, 0.16, 0.2, -1.4, 0.7, 0.36, 0.015), box(M.yellow, 0.06, 0.16, 0.2, -1.4, 0.7, -0.36, 0.015));
+  const wheels = [];
+  for (const x of [-0.8, L * 0.45, L - 0.55]) for (const z of [-0.48, 0.48]) { const w = wheel(x, 0.3, z); wheels.push(w); o.add(w); }
+  const load = new THREE.Group(); body.add(load);
+  const sign = board('', 1.5); sign.position.set(-0.78, 2.12, 0); sign.visible = false; body.add(sign);
+  o.add(body);
+  const T = { object: o, body, load, sign, wheels, cap, L, color, tens: 0, ones: 0, towers: [], crates: [], x0: -1.56, x1: L + 0.1 };
+  o.userData.truck = T;
+  return T;
+}
+const towerAt = (T, i) => V3(0.3 + i * PITCH, BED, 0), crateAt = (T, j) => V3(0.3 + T.cap * PITCH + 0.24, BED + CR / 2 + j * CR, 0);
+/** Put exactly `tens` towers and `ones` loose crates on a truck, at once. */
+function setLoad(T, tens, ones) {
+  for (const o of [...T.load.children]) { drop(o); T.load.remove(o); }
+  T.towers = []; T.crates = []; T.tens = tens; T.ones = ones;
+  for (let i = 0; i < tens; i++) { const t = tower(); t.position.copy(towerAt(T, i)); T.load.add(t); T.towers.push(t); }
+  for (let j = 0; j < ones; j++) { const c = crate(); c.position.copy(crateAt(T, j)); T.load.add(c); T.crates.push(c); }
+}
+/** A closed load: a container with its number on the side, for the rounds that show numerals only. */
+function setContainer(T, n) {
+  setLoad(T, 0, 0);
+  const w = Math.min(T.L - 0.2, 3.4), c = box(M[T.color === 'red' ? 'teal' : 'purple'], w, 1.9, 0.98, 0.1 + w / 2, BED + 0.95, 0);
+  for (let i = 0; i < 5; i++) c.add(box(M.white, 0.05, 1.7, 1.0, -w / 2 + (i + 0.5) * w / 5, 0, 0, 0));
+  const b = board(n, 2.1); b.position.set(0.1 + w / 2, BED + 1.0, 0.75); T.load.add(c, b); T.big = b;
+}
+function setSign(T, text, tone) { T.sign.visible = text !== '' && text != null; if (T.sign.visible) reboard(T.sign, text, tone); if (T.big) reboard(T.big, text, tone); }
+
+/** A small cart with a toy car to pull it: it brings the crates to add, or takes a tower away. */
+function cart(slots, withCar) {
+  const o = new THREE.Group(), L = Math.max(1, slots * PITCH + 0.3);
+  o.add(box(M.yellow, L, 0.14, 0.96, L / 2, 0.45, 0), box(M.steel, 0.5, 0.08, 0.1, L + 0.25, 0.42, 0, 0.02));
+  const wheels = [];
+  for (const x of [0.3, L - 0.3]) for (const z of [-0.46, 0.46]) { const w = wheel(x, 0.2, z, 0.2, 0.16); wheels.push(w); o.add(w); }
+  if (withCar) o.add(piece('car-hatchback', L + 1.25, 0.14, 0, 2.2, Math.PI / 2));
+  const load = new THREE.Group(); o.add(load);
+  return { object: o, load, wheels, L, top: 0.52, x0: 0, x1: L + (withCar ? 2.3 : 0.5) };
+}
