@@ -363,8 +363,8 @@ const ids = (frame, sel) => frame.evaluate(s => [...document.querySelectorAll(s)
 const btn = v => '#kr-n' + v;
 /** The hint a wrong choice gets: its lines, one after the other. */
 const hintOf = (s, v) => s.hints[v].map(([k, a]) => say(k, a)).join(' ');
-/** What a button shows: a number, a time or an amount; a word (with its sign or picture); or a clock face. */
-const face = o => (o.clock ? '' : (o.v === 'yes' ? '✔️' : o.v === 'no' ? '✖️' : '') + (o.t || '') + (o.key ? T[o.key] : ''));
+/** What a button shows: a number, a time or an amount; a word (with its sign or picture); or a clock face (its 12, 3, 6 and 9). */
+const face = o => (o.clock ? '12369' : (o.v === 'yes' ? '✔️' : o.v === 'no' ? '✖️' : '') + (o.t || '') + (o.key ? T[o.key] : ''));
 
 for (const chapter of CHAPTERS) {
   test(`lesson mode, ${chapter}: loads clean, a wrong answer shows why and does not advance, six right rounds post game over once`, { skip, timeout: 420_000 }, async () => {

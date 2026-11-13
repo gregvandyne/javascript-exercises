@@ -100,6 +100,13 @@ const SHOTS = [
   { tier: 'launchpad', step: '6.1', state: 'find-the-shape', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=find&lock=1', prep: shapeHunt, cdp: true },
   { tier: 'launchpad', step: '6.2', state: 'build-it', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: shapeHunt, cdp: true },
   { tier: 'launchpad', step: '6.3', state: 'equal-shares', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=share&lock=1', prep: shapeHunt, cdp: true },
+  // Launchpad Unit 7, The Measuring Meadow, and the tier's finale: Kitchen Rush, a 3D game, in each step's own chapter,
+  // the whole phone screen as the band (the kitchen fills it: the words on top, the board on the wall over the
+  // counters, the helper and the party table under it, the big buttons below).
+  { tier: 'launchpad', step: '7.1', state: 'measure-it', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=measure&lock=1', prep: kitchenRush, cdp: true },
+  { tier: 'launchpad', step: '7.2', state: 'clocks-and-coins', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=clock&lock=1', prep: kitchenRush, cdp: true },
+  { tier: 'launchpad', step: '7.3', state: 'sort-and-chart', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=chart&lock=1', prep: kitchenRush, cdp: true },
+  { tier: 'launchpad', step: '7.4', state: 'the-garden-gate', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=gate&lock=1', prep: kitchenRush, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -265,6 +272,18 @@ async function shapeHunt(f) {
   // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Each is photographed as it is
   // asked, once its things have popped in: four shape cards on the shelves and the table (Find the Shape), the board
   // with a ghost square and three sets of pieces (Build It), a pizza cut in two shares that are not equal (Equal Shares).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function kitchenRush(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Each is photographed as it is
+  // asked, once the board has popped in: a baguette over six sugar cubes (Measure It), the kitchen clock at 3 o'clock
+  // (Clocks and Coins), carrots and tomatoes in a muddle over two bins (Sort and Chart), a full tray of ten buns and
+  // four more (The Garden Gate).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#hero-mage');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);

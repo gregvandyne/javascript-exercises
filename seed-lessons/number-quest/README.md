@@ -366,3 +366,54 @@ shaded shares green. 6.1 also uses the existing shape strip (`tiles`), 6.3 the e
 **Stone.** The unit's stamp is the Shape Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "one picture of each shape" misconception (an upside-down triangle is "not a triangle"; any two pieces are "halves"), and how the game
 checks each idea by doing. Launchpad stays `status: "building"`.
+
+## Launchpad Unit 7 — The Measuring Meadow, and the tier's finale (2026-11-13, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/7.1.json`, `7.2.json`, `7.3.json` | the three kindergarten to grade 2 decks, inside the Launchpad limits above: **7.1 How long is it?** (1.MD.A.2, 2.MD.A.1), **7.2 Clocks and coins** (1.MD.B.3, 2.MD.C.7, 2.MD.C.8), **7.3 Sort it and chart it** (K.MD.B.3, 1.MD.C.4, 2.MD.D.10). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `course/launchpad/7.4.json` | **7.4 The Garden Gate**, the tier's finale: a mixed review, nothing new. Two story slides (the gate, and the Jumble counting twice to check), tens and ones, make ten, both sides the same, three words, the mission |
+| `sets/u7-launchpad.json` | twelve exit items (`nq-launchpad-7.<s>-e1..3`): three a teaching step, each `cat` one of its step's primary codes, and the finale's three (1.OA.C.6, 1.NBT.B.2, 2.NBT.A.1), as Explorer's Unit 7 bank carries its finale's. Every distractor is tagged with a misconception that starts with a past-tense verb, every item has a `why`, and no choice is a false sum |
+| `standards.json` `launchpadCodes.codes` | eight more locked statements, with the published statement text (the same text as `server/standards/ccss-math.json`). The finale locks nothing: its six codes are Units 1 to 6's |
+| `units.json` | the unit, its stone, and `tiers.launchpad.finale: "7.4"` (the finale door, read by placement exactly as Explorer's is) |
+| `seed-games/kitchen-rush.html` | **Kitchen Rush**, the unit's game (Oomba3D 1.1.0, Busy Kitchen theme 1.0.0): chapter `measure` for 7.1, `clock` for 7.2, `chart` for 7.3 and `gate` for the finale 7.4, six rounds each. A busy kitchen getting a garden party ready; every right round puts a dish on the party table. There is no timer: the rush is the busy kitchen. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `measure`: a thing with same-size units laid end to end under it, twice (a baguette is 6 sugar cubes long, a spoon
+4 beans), "do the cubes measure it the right way?" (gaps on the first lap; on replays a fair row, overlaps, cubes of two sizes), a ruler
+with the thing starting at 0 (inches, then centimeters turn about), the classic trap (a fork from 2 to 9: the number at its end is offered
+and is wrong), and two things on one ruler: how much longer is the top one. `clock`: the kitchen clock to the hour (the half hour on a
+replay), the oven's digital clock matched to one of three clock faces, a time to five minutes with a.m. or p.m. (breakfast, after school,
+bedtime), then the tip jar: dimes and pennies in cents, a quarter with other coins in cents, and a dollar bill with coins written with the
+dollar sign. Coins are counted for their value only: nothing is bought, sold or priced, and the game uses none of the theme's shop pieces.
+`chart`: a muddle of two kinds to sort and count, three bins (which has the most), how many more (how many altogether on a replay), a
+picture graph of four fruits (how many), and a bar graph (how many more or fewer, how many altogether). `gate`: one round from each
+earlier unit: a teen number on two trays of buns, adding over ten, bags of ten and loose rolls, the two sides of a scale (a comparing
+story on a replay), boxes of 100 with tens and ones, and the name of one equal share of a pie (the name of a shape on a replay).
+
+**Face on.** Every ruler, clock, coin, bin and graph is drawn by the game on one kitchen board that always faces the player, so the room's
+perspective never bends a ruler or squashes a clock. On a tall screen the board hangs over a run of counters with the helper and the party
+table under it (smaller and tucked in on a short phone); on a wide one it stands between them. Coins differ by size, color and the value
+written on each. The board has three looks: asked, "why" (after a wrong answer: counting marks, rings and guides, with the spoken hint) and
+found. The test holds the board to its 4 by 3 shape, in full view, clear of the helper and the table, and its smallest numbers to a
+readable size at 960, 390 and 360 px.
+
+**The finale.** Explorer's finale (7.4, the Vault of Measures) is an ordinary fourth step of Unit 7 named by `tiers.explorer.finale`, with
+its own deck, three exit items in the unit bank and a mission. Launchpad's is built the same way. Its mission is not one of the shared
+quiz games: it is Kitchen Rush's own fourth chapter, The Garden Gate (`chapter=gate&lock=1`). The step cites one code from each of
+Units 1 to 6: three primary (1.OA.C.6, 1.NBT.B.2, 2.NBT.A.1, the ones its exit items check) and three also-covers (K.NBT.A.1, 1.OA.D.7,
+1.G.A.3); `server/standards/official-tags.js` `KITCHEN_CHAPTERS.gate` credits a step locked to the chapter with exactly those. The game's
+own library tags stay the eight measurement and data codes.
+
+**Diagrams.** The unit adds no diagram type, and one option. The existing `spinner` (`server/services/diagrams.js`,
+`server/views/nq-diagrams.js`) gains `clock: { h, m }` (twelve parts, none shaded): the same circle as a clock face with its twelve
+numbers, a short thick hand for the hour and a long blue hand for the minutes; `fives: true` counts the minutes by fives round the edge.
+7.1 uses `counters` (cubes counted in a row), `bars` (with and without gaps) and `numberline` as a ruler; 7.2 the clock and a `table` of
+coin values; 7.3 `tally`, two matched rows of `counters` and `chart`; 7.4 sticks of ten, hops to ten and the level see-saw. All 40 focus
+steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The four mission slides carry `nq/kitchen-rush/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/kitchen-rush.recipe.js`.
+
+**Stone.** The unit's stamp is the Measuring Seed (`tiers.launchpad.stones`). **Teacher notes** (four) say what the unit covers, the
+"read the number at the end" misconception (and swapped clock hands, and coins counted instead of valued), how the game checks each idea
+by doing, and what the finale is. Launchpad stays `status: "building"`.
