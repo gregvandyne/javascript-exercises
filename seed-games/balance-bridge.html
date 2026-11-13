@@ -1,0 +1,901 @@
+<title>Balance Bridge</title>
+<!-- Balance Bridge: Number Quest Launchpad Unit 4, The Balance Bridge (grades 1-2, ages 6-8). A see-saw drawbridge
+     over the castle moat, on Oomba3D 1.1.0 in the Castle Quest theme: stone blocks stand on each side, and when both
+     sides weigh the same the bridge goes level and the helper walks across. Three chapters of six rounds, one per
+     course step:
+       equal  (4.1) is it true? (5 + 2 = 7, 6 = 6, 4 + 1 = 5 + 2), then find the missing number (8 + ? = 11,
+                    5 = ? − 3, 6 + 6 = ?): the equals sign means "the same as", and it is not always at the end;
+       story  (4.2) short spoken stories about the castle's stones (add to, take from, put together, compare; then
+                    within 100 and one two-step story): the blocks act the story out and the child picks the answer;
+       groups (4.3) odd or even by sharing the blocks in pairs, one to each side (is one left over?), an even number
+                    as a double (8 = 4 + 4), and rows of blocks added as equal addends (3 rows of 4: 4 + 4 + 4 = 12).
+     Made for a child who is only starting to read: every instruction is short, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), the numbers are big, and everything is done with big buttons.
+     No timer, no lives, no fail state: a wrong number is tried on the bridge (too light or too heavy), wobbles and
+     gets a spoken hint, then another try. Lesson mode: BRB.params { chapter: equal | story | groups, lock: 1 } opens
+     that chapter only; finishing its six rounds reports game over, won, once (the course step's completion signal).
+     With no parameters the game offers the three chapters from a picture menu. Saves only which chapters are
+     finished (BRB.storage 'balance-bridge-v1'). The bridge is a Rapier rigid body on a hinge (g.physics()); if
+     Rapier cannot start, the game's own small spring tilts it instead. The import map below is exactly
+     kit2ImportMap() (server/services/vendor.js); tests/unit/balance-bridge.test.js fails if a library bump leaves it
+     behind. English only, like Number Quest's other lesson games. Test handle: window.__bb (also window.__brbTest,
+     the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #cfe3f2; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .bb[hidden], .bb-load[hidden] { display: none; }
+  .bb { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .bb button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .bb button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .bb-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the number chip and the round dots. On a phone: the words on one row, the chip and the dots on
+     the next (the words keep clear of the gear button; the row under it has the whole width). On a wide screen: all
+     three on one row that never wraps (the words box gives way and wraps inside). */
+  .bb-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .bb-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .bb-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .bb-ask[hidden], .bb-hint[hidden], .bb-sum[hidden], .bb-bar[hidden], .bb-card[hidden], .bb-dots[hidden], .bb-row2[hidden] { display: none; }
+  .bb .bb-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .bb .bb-say:active, .bb .bb-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .bb-askt { font-weight: 800; font-size: clamp(19px, 4.9vw, 28px); line-height: 1.15; min-width: 0; }
+  .bb-sum { flex: none; background: #66C792; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(22px, 5.6vw, 34px); line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bb-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .bb-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .bb-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
+  .bb-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .bb-dots i.on { background: #FFD23F; } .bb-dots i.now { background: #66C792; }
+  .bb-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .bb .bb-btn { flex: 1 1 0; min-width: 0; max-width: 200px; min-height: clamp(70px, 11vh, 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .bb-btn .i { font-size: 30px; line-height: 1.1; } .bb-btn .big { font-size: 46px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .bb-bar.two .bb-btn { max-width: 260px; } .bb-bar.two .bb-btn .l { font-size: clamp(20px, 3.4vh, 28px); font-weight: 900; }
+  .bb-btn.go { background: #66C792; } .bb-btn.red { background: #ffc2b5; } .bb-btn.blue { background: #b7dcff; }
+  .bb-btn.no { animation: bb-no .45s ease; }
+  .bb-bar.wait .bb-btn { opacity: .55; }
+  @keyframes bb-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .bb-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .bb-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .bb-card .bb-ask { margin-top: 10px; max-width: 100%; }
+  .bb-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .bb-pick .bb-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .bb-pick .bb-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .bb-menu { display: flex; gap: 12px; justify-content: center; width: min(760px, 100%); }
+  .bb-menu .bb-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
+  .bb-menu .bb-btn .i { font-size: 44px; }
+  .bb-star { font-size: 76px; line-height: 1; }
+  .bb-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the chip and the round dots share one line across the top, so the bridge gets the height. */
+  @media (min-aspect-ratio: 9/10) {
+    .bb-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .bb-ask { flex: 0 1 auto; max-width: 100%; } .bb-row2 { flex: none; }
+    .bb-askt { font-size: clamp(18px, 2.4vw, 28px); } .bb-sum { font-size: clamp(20px, 2.9vw, 34px); }
+  }
+  @media (max-width: 480px) { .bb-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .bb-dots { gap: 5px; } .bb-dots i { width: 13px; height: 13px; border-width: 2.5px; } .bb-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .bb .bb-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .bb-btn .i { font-size: 26px; } .bb-menu { gap: 8px; } .bb-menu .bb-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .bb-menu .bb-btn .i { font-size: 36px; } .bb-star { font-size: 60px; } }
+  @media (max-height: 520px) { .bb .bb-btn { min-height: 60px; font-size: 15px; } .bb-btn .i { font-size: 24px; } .bb-btn .big { font-size: 36px; } .bb .bb-say { width: 44px; height: 44px; font-size: 20px; } .bb-menu .bb-btn { min-height: 90px; } .bb-star { font-size: 52px; } }
+  @media (prefers-reduced-motion: reduce) { .bb .bb-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .bb .bb-say:active, .bb .bb-btn:active { transform: none; } }
+</style>
+<div class="bb-load" id="load" role="status">Getting the bridge ready…</div>
+<div class="bb" id="bb" hidden>
+  <div class="bb-top">
+    <div class="bb-line" id="line">
+      <div class="bb-ask" id="ask" hidden><button class="bb-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="bb-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="bb-row2" id="row2" hidden>
+        <div class="bb-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="bb-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bb-low">
+    <div class="bb-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="bb-bar" id="bar" hidden></div>
+  </div>
+  <div class="bb-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Balance Bridge's rounds: plain data and functions (no DOM, no 3D), so tests/unit/balance-bridge.test.js can
+   run this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time
+   through, so the first six rounds are always the same; a replay gets new numbers). Every round is two sides of a
+   bridge, L and R: each a list of terms, { n } a number of blocks, { n, op: '-' } blocks taken away, { q: true } the
+   number to find. The two sides are worth lv and rv once the answer is in. ===== */
+/* balance-bridge:begin */
+(function (root) {
+  var CHAPTERS = ['equal', 'story', 'groups'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function pick(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  /** Three numbers, smallest first: the answer and the first two of `traps` (the mistakes a child makes) that are
+   *  other numbers inside [lo, hi]; a neighbour of the answer stands in when a trap is not there to use. */
+  function three(answer, traps, lo, hi) {
+    var ch = [answer], pool = traps.concat([answer + 1, answer - 1, answer + 2, answer - 2, answer + 3]);
+    for (var i = 0; i < pool.length && ch.length < 3; i++) if (pool[i] >= lo && pool[i] <= hi && ch.indexOf(pool[i]) < 0) ch.push(pool[i]);
+    return ch.sort(function (x, y) { return x - y; });
+  }
+  function N(n, op) { return op ? { n: n, op: op } : { n: n }; }
+  function Q(op) { return op ? { q: true, op: op } : { q: true }; }
+  /** What a side is worth with x in place of the number to find. */
+  function value(side, x) { var v = 0; for (var i = 0; i < side.length; i++) { var t = side[i], k = t.q ? (x || 0) : t.n; v += t.op === '-' ? -k : k; } return v; }
+  /** A side as it is written: "8 + ?" while it is asked, "8 + 3" with x in. */
+  function text(side, x) { var s = ''; for (var i = 0; i < side.length; i++) { var t = side[i]; s += (i ? (t.op === '-' ? ' − ' : ' + ') : '') + (t.rows ? Array(t.rows + 1).join(t.cols + ' + ').slice(0, -3) : t.q ? (x == null ? '?' : x) : t.n); } return s; }
+  // Which of the three true-or-not rounds are true, by lap: always at least one of each.
+  var TRUTH = [[1, 1, 0], [0, 1, 1], [1, 0, 1], [0, 1, 0], [1, 0, 0], [0, 0, 1]];
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n }, a, b, c, d, x, s, yes;
+    if (chapter === 'equal') {
+      // 1-3 is it true: a sum and its total (5 + 2 = 7), a number and a number (6 = 6; on odd laps a number and a
+      // taking away, 7 = 8 − 1), then a sum on each side (4 + 1 = 5 + 2). 4-6 find the missing number: 8 + ? = 11,
+      // 5 = ? − 3, then 6 + 6 = ? (on odd laps 8 + 4 = ? + 5, where "the answer comes next" is the trap).
+      if (n <= 3) {
+        yes = !!TRUTH[lap % 6][n - 1]; out.kind = 'true';
+        if (n === 1) { a = pick(r, 2, 6); b = pick(r, 1, 4); c = a + b + (yes ? 0 : r() < 0.5 ? 1 : -1); out.form = 'ab_c'; out.L = [N(a), N(b, '+')]; out.R = [N(c)]; out.ask = ['tf.ask.ab_c', { a: a, b: b, c: c }]; }
+        else if (n === 2 && lap % 2 === 0) { a = pick(r, 4, 9); b = yes ? a : a + pick(r, 1, 2); out.form = 'n_n'; out.L = [N(a)]; out.R = [N(b)]; out.ask = ['tf.ask.n_n', { a: a, b: b }]; }
+        else if (n === 2) { a = pick(r, 6, 10); b = pick(r, 1, 3); c = a - b + (yes ? 0 : r() < 0.5 ? 1 : -1); out.form = 'c_ab'; out.L = [N(c)]; out.R = [N(a), N(b, '-')]; out.ask = ['tf.ask.c_ab', { c: c, a: a, b: b }]; }
+        else { s = pick(r, 5, 9); a = pick(r, 1, s - 1); do { c = pick(r, 1, s - 1); } while (c === a); d = s - c + (yes ? 0 : r() < 0.5 || s - c < 2 ? 2 : -1); out.form = 'ab_cd'; out.L = [N(a), N(s - a, '+')]; out.R = [N(c), N(d, '+')]; out.ask = ['tf.ask.ab_cd', { a: a, b: s - a, c: c, d: d }]; }
+        out.answer = yes ? 'yes' : 'no'; out.choices = ['yes', 'no'];
+        out.said = [yes ? ['tf.yes', { n: value(out.L) }] : ['tf.no', { a: value(out.L), b: value(out.R) }]];
+      } else {
+        out.kind = 'find';
+        if (n === 4) { a = pick(r, 5, 9); x = pick(r, 2, 6); c = a + x; out.form = 'a_q_c'; out.L = [N(a), Q('+')]; out.R = [N(c)]; out.choices = three(x, [c, x + 1, x - 1], 1, 20); out.ask = ['find.ask.a_q_c', { a: a, c: c }]; out.said = [['sum.add', { a: a, b: x, c: c }]]; }
+        else if (n === 5) { b = pick(r, 2, 5); c = pick(r, 3, 9); x = c + b; out.form = 'c_q_b'; out.L = [N(c)]; out.R = [Q(), N(b, '-')]; out.choices = three(x, [c - b, c], 1, 20); out.ask = ['find.ask.c_q_b', { c: c, b: b }]; out.said = [['sum.sub', { a: x, b: b, c: c }]]; }
+        else if (lap % 2 === 0) { a = pick(r, 5, 9); x = a + a; out.form = 'ab_q'; out.L = [N(a), N(a, '+')]; out.R = [Q()]; out.choices = three(x, [a, x + 1, x - 1], 1, 20); out.ask = ['find.ask.ab_q', { a: a, b: a }]; out.said = [['sum.add', { a: a, b: a, c: x }]]; }
+        else { a = pick(r, 5, 9); b = pick(r, 3, 6); d = pick(r, 2, 5); x = a + b - d; out.form = 'ab_qd'; out.L = [N(a), N(b, '+')]; out.R = [Q(), N(d, '+')]; out.choices = three(x, [a + b, a + b + d], 1, 20); out.ask = ['find.ask.ab_qd', { a: a, b: b, d: d }]; out.said = [['sum.add', { a: x, b: d, c: a + b }]]; }
+        out.answer = x; out.said.push(['both', {}]);
+      }
+    } else if (chapter === 'story') {
+      // 1 add to (how many now), 2 take from (how many are left), 3 put together with one part to find, 4 compare
+      // (how many more to match), all within 20; 5 how many more are needed, within 100; 6 two steps, within 100.
+      out.kind = 'story';
+      if (n === 1) { a = pick(r, 5, 9); b = pick(r, 3, 8); x = a + b; out.form = 'add'; out.L = [N(a), N(b, '+')]; out.R = [Q()]; out.choices = three(x, [a - b > 0 ? a - b : x + 1, x - 1], 1, 20); out.ask = ['st.add', { a: a, b: b }]; out.said = [['sum.add', { a: a, b: b, c: x }]]; }
+      else if (n === 2) { a = pick(r, 11, 18); b = pick(r, 3, 8); x = a - b; out.form = 'take'; out.L = [N(a), N(b, '-')]; out.R = [Q()]; out.choices = three(x, [a + b, x + 1, x - 1], 1, 20); out.ask = ['st.take', { a: a, b: b }]; out.said = [['sum.sub', { a: a, b: b, c: x }]]; }
+      else if (n === 3) { a = pick(r, 4, 9); x = pick(r, 3, 9); c = a + x; out.form = 'part'; out.L = [N(a), Q('+')]; out.R = [N(c)]; out.choices = three(x, [c, x + 1], 1, 20); out.ask = ['st.part', { a: a, c: c }]; out.said = [['sum.add', { a: a, b: x, c: c }]]; }
+      else if (n === 4) { a = pick(r, 11, 18); b = pick(r, 4, 9); x = a - b; out.form = 'compare'; out.L = [N(a)]; out.R = [N(b), Q('+')]; out.choices = three(x, [a, x + 1, x - 1], 1, 20); out.ask = ['st.compare', { a: a, b: b }]; out.said = [['st.compare.sum', { a: a, x: x, b: b }]]; }
+      else if (n === 5) { a = pick(r, 2, 5) * 10 + pick(r, 1, 9); x = pick(r, 2, 4) * 10; c = a + x; out.form = 'need'; out.L = [N(a), Q('+')]; out.R = [N(c)]; out.choices = three(x, [x / 10, x + 10, x - 10], 1, 100); out.ask = ['st.need', { c: c, a: a }]; out.said = [['sum.add', { a: a, b: x, c: c }]]; }
+      else { a = pick(r, 2, 4) * 10 + pick(r, 3, 9); b = pick(r, 1, 3) * 10; c = pick(r, 2, a % 10); x = a + b - c; out.form = 'two'; out.L = [N(a), N(b, '+'), N(c, '-')]; out.R = [Q()]; out.choices = three(x, [a + b, a + b + c], 1, 100); out.ask = ['st.two', { a: a, b: b, c: c }]; out.said = [['st.two.sum', { a: a, b: b, c: a + b, d: c, e: x }]]; }
+      out.answer = x;
+    } else {
+      // 1-2 odd or even: the blocks are shared in pairs, one to each side (one round of each, in an order made from
+      // the lap). 3-4 an even number as a double (8 = ? + ?). 5-6 rows of blocks: 3 rows of 4 is 4 + 4 + 4.
+      if (n <= 2) {
+        var odd = (n + lap) % 2 === 0; x = n === 1 ? pick(r, 3, 6) * 2 : pick(r, 6, 9) * 2; if (odd) x += 1;
+        out.kind = 'parity'; out.num = x; out.L = [N(Math.ceil(x / 2))]; out.R = [N(Math.floor(x / 2))]; out.answer = odd ? 'odd' : 'even'; out.choices = ['even', 'odd'];
+        out.ask = ['par.ask', { n: x }]; out.said = [odd ? ['par.odd', { n: x }] : ['par.even', { n: x, h: x / 2 }]];
+      } else if (n <= 4) {
+        x = n === 3 ? pick(r, 3, 6) : pick(r, 6, 10);
+        out.kind = 'double'; out.num = 2 * x; out.L = [N(2 * x)]; out.R = [Q(), Q('+')]; out.answer = x; out.choices = three(x, [x + 1, x - 1], 1, 20);
+        out.ask = ['dbl.ask', { n: 2 * x }]; out.said = [['sum.add', { a: x, b: x, c: 2 * x }], ['both', {}]];
+      } else {
+        a = n === 5 ? pick(r, 2, 3) : pick(r, 4, 5); do { b = n === 5 ? pick(r, 2, 5) : pick(r, 3, 5); } while (n === 5 && b === a);
+        x = a * b;
+        out.kind = 'array'; out.rows = a; out.cols = b; out.L = [{ n: x, rows: a, cols: b }]; out.R = [Q()]; out.answer = x; out.choices = three(x, [a + b, x + b, x - b], 2, 30);
+        out.ask = ['arr.ask', { r: a, c: b }]; out.said = [['arr.sum', { r: a, c: b, n: x }]];
+      }
+    }
+    var num = typeof out.answer === 'number';
+    out.lv = value(out.L, num ? out.answer : 0); out.rv = value(out.R, num ? out.answer : 0);
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.BalanceBridge = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params, value: value, text: text };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* balance-bridge:end */
+</script>
+<script>
+/* ===== Balance Bridge's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {a}
+   takes a number in its place (never a word). The show.* lines are what the number chip shows (never spoken; the
+   sums themselves, with their signs and "?", are written by the game from the round's numbers). ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Balance Bridge",
+    "loading": "Getting the bridge ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.equal": "Same on Both Sides",
+    "ch.story": "Castle Stories",
+    "ch.groups": "Pairs and Rows",
+    "tf.ask.ab_c": "Is {a} plus {b} the same as {c}?",
+    "tf.ask.n_n": "Is {a} the same as {b}?",
+    "tf.ask.c_ab": "Is {c} the same as {a} take away {b}?",
+    "tf.ask.ab_cd": "Is {a} plus {b} the same as {c} plus {d}?",
+    "tf.hint": "Count each side. Are they the same?",
+    "tf.yes": "True! Both sides make {n}.",
+    "tf.no": "Not true. {a} is not the same as {b}.",
+    "find.ask.a_q_c": "{a} plus what is the same as {c}?",
+    "find.ask.c_q_b": "{c} is the same as what take away {b}?",
+    "find.ask.ab_q": "{a} plus {b} is the same as what?",
+    "find.ask.ab_qd": "{a} plus {b} is the same as what plus {d}?",
+    "hint.light": "Too light. Try a bigger number.",
+    "hint.heavy": "Too heavy. Try a smaller number.",
+    "sum.add": "{a} plus {b} makes {c}.",
+    "sum.sub": "{a} take away {b} makes {c}.",
+    "both": "Both sides are the same.",
+    "st.add": "{a} stones. {b} more come. How many now?",
+    "st.take": "{a} stones. {b} roll away. How many are left?",
+    "st.part": "{a} red stones and some blue. {c} in all. How many blue?",
+    "st.compare": "Left has {a}. Right has {b}. How many more to match?",
+    "st.need": "The wall needs {c} stones. It has {a}. How many more?",
+    "st.two": "{a} stones. {b} more come. {c} roll away. How many now?",
+    "st.compare.sum": "{a} is {x} more than {b}.",
+    "st.two.sum": "{a} and {b} make {c}. Take away {d}: {e}.",
+    "par.ask": "Is {n} odd or even?",
+    "par.hint": "Make pairs. Is one left over?",
+    "par.even": "{n} is even. {h} and {h} make {n}.",
+    "par.odd": "{n} is odd. One is left over.",
+    "dbl.ask": "Two equal groups make {n}. How many in each?",
+    "arr.ask": "{r} rows of {c}. How many?",
+    "arr.sum": "{r} rows of {c} make {n}.",
+    "win": "You did it!",
+    "win.card": "You crossed every bridge. Well done!",
+    "round": "Round {n} of {m}",
+    "show.blocks": "{n} blocks",
+    "btn.say": "Say it again",
+    "btn.yes": "True",
+    "btn.no": "Not true",
+    "btn.even": "Even",
+    "btn.odd": "Odd",
+    "btn.num": "Pick {n}",
+    "btn.again": "Play again",
+    "btn.menu": "More games"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).BalanceBridgeI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the bridge's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const BB = window.BalanceBridge, T = (window.BalanceBridgeI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'bb', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'balance-bridge-v1';
+const ICON = { equal: '⚖️', story: '🏰', groups: '🧱' };
+
+/* ---------- state ---------- */
+const P = BB.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, shown: false, tick: 0, trial: null, held: false, side: -1, crossed: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of BB.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box (a few short sentences) and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The number chip: the sum as it is written, "8 + ? = 11", and "8 + 3 = 11" once it is found. */
+function sum(text, tone) { el.sum.textContent = text || ''; el.sum.hidden = !text; el.sum.style.background = tone === 'bad' ? '#ffc2b5' : tone === 'ask' ? '#FFD23F' : ''; }
+let hintTimer = 0;
+function hint(key, vars, o) {
+  clearTimeout(hintTimer);
+  if (!key) { el.hint.hidden = true; return; }
+  el.hint.textContent = fmt(key, vars); el.hint.hidden = false;
+  speak(key, vars, o);
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 6000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D castle ---------- */
+let g;
+try {
+  g = await start({ theme: 'castle-quest', version: '1.1.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its castle, towers, walls, trees, hills and yard things are the world.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['castle-building', 'tower', 'wall', 'wall-arched', 'wall-window', 'pillar', 'block', 'floor-stone', 'floor-dirt', 'tree', 'tree-round', 'trees', 'forest', 'forest-round', 'bushes', 'hill', 'hills-trees', 'mountain', 'rock-big', 'well',
+  'banner-blue', 'banner-red', 'banner-yellow', 'barrel', 'crates', 'torch', 'chest'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+// The game's own simple shapes (the bridge, the stone blocks), with the same ink edge as the theme.
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, ...o });
+const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide });
+const M = { wood: mat('#b9824a'), woodDark: mat('#8a5a2e'), stone: mat('#b8bcc4'), stoneDark: mat('#8f949e'), grass: mat('#86c66a'), grassDark: mat('#6fb257'), dirt: mat('#c9ad7c'), iron: mat('#59606b') };
+const geos = new Map();
+const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
+/** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
+function box(material, w, h, d, x = 0, y = 0, z = 0, edge = 0.035) {
+  const m = new THREE.Mesh(boxGeo(w, h, d), material); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  if (edge) m.add(new THREE.Mesh(boxGeo(+(w + edge * 2).toFixed(3), +(h + edge * 2).toFixed(3), +(d + edge * 2).toFixed(3)), INK));
+  return m;
+}
+
+// Stone blocks: one small block is a ONE; a wide slab with "10" on it is a TEN. A side's first number is red, its
+// second blue, its third green (the right side: gold, then purple); a block that was taken away is a pale ghost.
+const BS = 0.46, PITCH = 0.5, SLAB_W = 0.92, SLAB_H = 0.3, GAP = 0.24, ARM0 = 0.42, ARM1 = 3.05, HALF = 3.15, ZB = -0.3, ZH = 0.52;
+const TONES = { l: [['#f0705a', '#b8402c', '#f79a88'], ['#4d8fe8', '#2a5fb5', '#84b4f2'], ['#58b368', '#337f42', '#8fd19b']], r: [['#f4b63f', '#b97f12', '#f9d382'], ['#a07be6', '#6a45b8', '#c3a9f2'], ['#58b368', '#337f42', '#8fd19b']] };
+function stoneTex(fill, dark, light, label) {
+  const c = document.createElement('canvas'); c.width = label ? 256 : 128; c.height = label ? 84 : 128;
+  const x = c.getContext('2d'), w = c.width, h = c.height;
+  x.fillStyle = '#141414'; x.fillRect(0, 0, w, h);
+  x.fillStyle = fill; x.fillRect(7, 7, w - 14, h - 14);
+  x.fillStyle = light; x.fillRect(7, 7, w - 14, label ? 12 : 22);
+  x.fillStyle = dark; x.fillRect(7, h - (label ? 17 : 27), w - 14, label ? 10 : 20);
+  if (label) { x.fillStyle = '#141414'; x.font = '900 60px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(label, w / 2, h / 2 + 3); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+const stoneMats = new Map();
+function stoneMat(side, tone, ten) {
+  const k = side + tone + (ten ? 't' : '');
+  if (!stoneMats.has(k)) {
+    const [f, d, l] = TONES[side][tone % 3], plain = new THREE.MeshStandardMaterial({ map: stoneTex(f, d, l), roughness: 0.8 });
+    stoneMats.set(k, ten ? [plain, plain, plain, plain, new THREE.MeshStandardMaterial({ map: stoneTex(f, d, l, '10'), roughness: 0.8 }), plain] : plain);
+  }
+  return stoneMats.get(k);
+}
+const GHOST = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.42, depthWrite: false }), GHOST_EDGE = new THREE.LineBasicMaterial({ color: '#141414', transparent: true, opacity: 0.55 });
+const EDGES = new THREE.EdgesGeometry(boxGeo(BS, BS, BS));
+function stone(kind, side, tone) {
+  let m;
+  if (kind === 'ghost') { m = new THREE.Mesh(boxGeo(BS, BS, BS), GHOST); m.add(new THREE.LineSegments(EDGES, GHOST_EDGE)); m.renderOrder = 2; }
+  else if (kind === 'ten') { m = new THREE.Mesh(boxGeo(SLAB_W, SLAB_H - 0.02, BS), stoneMat(side, tone, true)); m.add(new THREE.Mesh(boxGeo(SLAB_W + 0.056, SLAB_H + 0.036, BS + 0.056), INK)); m.castShadow = true; }
+  else { m = box(stoneMat(side, tone, false), BS, BS, BS, 0, 0, 0, 0.028); }
+  m.userData.kind = kind;
+  return m;
+}
+
+/** A number on a board that always faces the player (the textures are made once and kept). */
+const boardTex = new Map(), BOARD_LIGHT = new THREE.Color(1.5, 1.5, 1.5);   // brighter than white: the tone curve brings it back to cream
+function board(text, w = 0.8, tone = 'cream') {
+  const key = text + '|' + tone;
+  if (!boardTex.has(key)) {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 176;
+    const x = c.getContext('2d');
+    x.fillStyle = { cream: '#FFFDF2', gold: '#FFD23F', green: '#9df5b9' }[tone]; x.strokeStyle = '#141414'; x.lineWidth = 14; x.lineJoin = 'round';
+    x.beginPath(); x.roundRect(10, 10, 236, 156, 36); x.fill(); x.stroke();
+    x.fillStyle = '#141414'; x.font = `900 ${String(text).length > 2 ? 100 : 128}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 97);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; boardTex.set(key, tex);
+  }
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex.get(key), fog: false, alphaTest: 0.5, color: BOARD_LIGHT })); s.scale.set(w, w * 176 / 256, 1);
+  s.userData.text = String(text);
+  return s;
+}
+
+// Moving things: a drop from above with a bounce, a hop from one place to another, a walk, a wait. With reduced
+// motion (and in the tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these,
+// run by the game loop, so a slow device plays the same steps in the same order.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const bounce = k => { const n = 7.5625, d = 2.75; if (k < 1 / d) return n * k * k; if (k < 2 / d) { k -= 1.5 / d; return n * k * k + 0.75; } if (k < 2.5 / d) { k -= 2.25 / d; return n * k * k + 0.9375; } k -= 2.625 / d; return n * k * k + 0.984375; };
+/** A block falls onto its place and bounces; the thud sounds as it lands. */
+function fall(o, { wait = 0, then, high = 2.6 } = {}) {
+  const y = o.position.y; let hit = false;
+  anim(o, 0.5, k => { o.position.y = y + high * (1 - bounce(k)); if (!hit && k >= 0.36) { hit = true; sfx('land'); } if (k >= 1) o.position.y = y; }, then, wait);
+}
+function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+/** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- the castle and its moat: the theme's castle, towers, walls, trees and hills round a channel of water ---------- */
+const EDGE = HALF + 0.14;   // where each bank begins
+{
+  W.water({ y: -0.95, color: '#4fb3d9', size: 600 });
+  const world = new THREE.Group();
+  const land = (x0, x1, z0, z1) => {
+    const w = x1 - x0, d = z1 - z0, top = new THREE.Mesh(boxGeo(w, 0.5, d), M.grass); top.position.set((x0 + x1) / 2, -0.25, (z0 + z1) / 2); top.receiveShadow = true;
+    const base = new THREE.Mesh(boxGeo(w, 1.6, d), M.stoneDark); base.position.set((x0 + x1) / 2, -1.3, (z0 + z1) / 2);
+    world.add(top, base);
+  };
+  land(-90, -EDGE, -9, 40); land(EDGE, 90, -9, 40); land(-90, 90, -70, -9);
+  // the stone quay along each side of the moat, and a stone landing at each end of the bridge
+  for (const s of [-1, 1]) {
+    world.add(box(M.stone, 0.7, 0.62, 49, s * (EDGE + 0.35), -0.3, 15.5, 0.03));
+    for (const z of [-6.2, -2, 2.2, 6.4]) world.add(piece('floor-stone', s * (EDGE + 2.7), -0.14, z, 1.05));
+    world.add(piece('floor-dirt', s * (EDGE + 6.8), -0.2, 0.2, 1.05), piece('floor-dirt', s * (EDGE + 11), -0.2, 0.2, 1.05));
+  }
+  world.add(box(M.stone, 190, 0.62, 0.7, 0, -0.3, -9.35, 0.03));
+  // the pier in the middle of the moat that the bridge rocks on
+  world.add(piece('block', 0, -1.52, 0, 0.62), box(M.stoneDark, 1.0, 0.3, 1.9, 0, -0.27, 0, 0.03));
+  const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 2, 14), M.iron); hinge.rotation.x = Math.PI / 2; hinge.position.set(0, -0.16, 0); world.add(hinge);
+  // the castle on the far bank: a wall with a water gate, the keep behind it, towers, banners
+  for (let i = -10; i <= 10; i++) world.add(piece(i === 0 ? 'wall-arched' : i % 2 ? 'wall' : 'wall-window', i * 4, 0, -13, 1));
+  for (const [id, x, z, s, turn = 0] of [['castle-building', 0, -19, 3], ['tower', -6, -14.2, 3.2], ['tower', 6, -14.2, 3.2], ['tower', -16, -14.2, 2.8], ['tower', 16, -14.2, 2.8], ['tower', -26, -14.6, 3.2], ['tower', 26, -14.6, 3.2],
+    ['banner-red', -4, -12.4, 1], ['banner-blue', 4, -12.4, 1], ['banner-yellow', -12, -12.4, 1], ['banner-yellow', 12, -12.4, 1],
+    ['mountain', -38, -52, 13], ['mountain', 14, -58, 15], ['mountain', 44, -50, 12], ['mountain', -12, -56, 11], ['hills-trees', -26, -30, 9], ['hills-trees', 27, -31, 9, 1], ['hill', -44, -24, 12], ['hill', 45, -25, 12],
+    ['forest', -16, -7.2, 2.6], ['forest-round', 16.5, -7, 2.6, 1], ['forest', 24, -4, 3], ['forest-round', -24, -3.6, 3], ['trees', -9.4, -6.6, 2.2], ['trees', 10, -6.4, 2.2, 2], ['tree', -6.2, -4.4, 2.6], ['tree-round', 6.3, -4.6, 2.6],
+    ['tree-round', -12.6, -1.5, 2.8], ['tree', 12.8, -1.2, 2.8], ['bushes', -8.6, 3.4, 2], ['bushes', 8.8, 3.2, 2, 1], ['tree', -11, 6, 3], ['tree-round', 11.4, 6.4, 3], ['forest', -18, 9, 3.2], ['forest-round', 18.6, 9.4, 3.2],
+    ['well', -8.6, -2.6, 2.6], ['barrel', 6.1, -2.6, 0.55], ['barrel', 7.2, -2.2, 0.55], ['crates', 8.3, -3.2, 0.7], ['crates', -6, -2.9, 0.6], ['torch', -4.2, -2.3, 1.5], ['torch', 4.2, -2.3, 1.5], ['banner-blue', -7.4, -4.6, 0.9], ['banner-red', 7.4, -4.6, 0.9],
+    ['rock-big', -1.9, 5.2, 4.2], ['rock-big', 1.6, 8.6, 5]])
+    world.add(piece(id, x, id === 'rock-big' ? -1 : 0, z, s, turn));
+  g.scene.add(world);
+}
+
+/* ---------- the see-saw: a plank on a hinge. Rapier turns it (a rigid body on a revolute joint with stops and a
+   spring; a landing block gives it a real push); the game's own sums say which side is heavier, and the game lays
+   the blocks out itself, in stacks of five, so they can always be counted. ---------- */
+const LIMIT = 0.13;
+const plank = new THREE.Group(); plank.position.set(0, -0.07, 0); g.scene.add(plank);
+{
+  const deck = new THREE.Group(); deck.position.y = 0.07; plank.add(deck);   // deck: y = 0 is the top of the planks
+  deck.add(box(M.wood, HALF * 2, 0.14, 1.8, 0, -0.07, 0));
+  for (let i = -6; i <= 6; i++) deck.add(box(M.woodDark, 0.05, 0.012, 1.8, i * (HALF / 6.5), 0.004, 0, 0));
+  for (const s of [-1, 1]) deck.add(box(M.woodDark, HALF * 2 + 0.06, 0.2, 0.1, 0, -0.06, s * 0.9), box(M.iron, 0.12, 0.24, 1.92, s * (HALF - 0.06), -0.06, 0, 0.02));
+  plank.userData.deck = deck;
+}
+const deck = plank.userData.deck, stage = new THREE.Group(), under = new THREE.Group(); deck.add(stage); g.scene.add(under);
+const seesaw = { mode: 'simple', angle: 0, vel: 0, target: 0, body: null, joint: null, lean: 0, held: false };
+try {
+  const ph = await g.physics(), R = ph.RAPIER;
+  const pier = ph.world.createRigidBody(R.RigidBodyDesc.fixed().setTranslation(0, -0.07, 0));
+  const body = ph.world.createRigidBody(R.RigidBodyDesc.dynamic().setTranslation(0, -0.07, 0).setAngularDamping(0.5).setCanSleep(false));
+  ph.world.createCollider(R.ColliderDesc.cuboid(HALF, 0.07, 0.9).setDensity(1), body);
+  const joint = ph.world.createImpulseJoint(R.JointData.revolute({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }), pier, body, true);
+  joint.setLimits(-LIMIT, LIMIT);
+  Object.assign(seesaw, { mode: 'rapier', body, joint });
+} catch (e) { /* no WebAssembly here: the game's own spring turns the bridge */ }
+const weight = { l: 0, r: 0 };
+/** Which way the bridge leans: 1 the left side is down (it is heavier), -1 the right side, 0 level. Props hold it level. */
+const leanNow = () => (S.held ? 0 : Math.sign(weight.l - weight.r));
+function aim() {
+  const lean = leanNow(), held = S.held;
+  if (lean === seesaw.lean && held === seesaw.held && seesaw.set) return;
+  seesaw.lean = lean; seesaw.held = held; seesaw.set = true; seesaw.target = lean * LIMIT;
+  if (seesaw.joint) seesaw.joint.configureMotorPosition(lean * LIMIT * 1.4, held ? 600 : 70, held ? 60 : 6.5);
+}
+/** A push on the bridge (a block landing, a wrong answer): it rocks and settles again. */
+function kick(k) { if (reduced || S.fast) return; if (seesaw.body) seesaw.body.applyTorqueImpulse({ x: 0, y: 0, z: k }, true); else seesaw.vel += k * 0.09; }
+g.onUpdate(dt => {
+  aim();
+  if (reduced || S.fast) {
+    seesaw.angle = seesaw.target; seesaw.vel = 0;
+    if (seesaw.body) { seesaw.body.setRotation({ x: 0, y: 0, z: Math.sin(seesaw.angle / 2), w: Math.cos(seesaw.angle / 2) }, true); seesaw.body.setAngvel({ x: 0, y: 0, z: 0 }, true); }
+  } else if (seesaw.body) {
+    const q = seesaw.body.rotation(); seesaw.angle = 2 * Math.atan2(q.z, q.w); seesaw.vel = seesaw.body.angvel().z;
+  } else {
+    seesaw.vel += ((seesaw.held ? 130 : 15) * (seesaw.target * 1.4 - seesaw.angle) - (seesaw.held ? 13 : 1.4) * seesaw.vel) * dt; seesaw.angle += seesaw.vel * dt;
+    if (Math.abs(seesaw.angle) > LIMIT) { seesaw.angle = Math.sign(seesaw.angle) * LIMIT; seesaw.vel *= -0.3; }
+  }
+  plank.rotation.z = seesaw.angle;
+});
+/** Call `then` when the bridge has come to rest where its weights send it (at once in fast mode). */
+let resting = null;
+function settle(then) {
+  if (reduced || S.fast) { resting = null; aim(); seesaw.angle = seesaw.target; plank.rotation.z = seesaw.angle; return then(); }
+  resting = { then, frames: 0, still: 0 };
+}
+g.onUpdate(() => {
+  if (!resting) return;
+  const w = resting; w.frames++;
+  w.still = Math.abs(seesaw.angle - seesaw.target) < 0.012 && Math.abs(seesaw.vel) < 0.05 ? w.still + 1 : 0;
+  if ((w.frames > 10 && w.still > 6) || w.frames > 420) { resting = null; w.then(); }
+});
+
+/* ---------- a side of the bridge, laid out from its terms ---------- */
+/** Where everything on one side goes. `x` stands in for the number to find (null: a chest with "?" on it).
+ *  -> { items: [{ kind: 'one' | 'ten' | 'ghost' | 'chest', x, y, tone, w, q, gone }], labels: [{ x, y, text, q }] }
+ *  A block that is taken away is in the list twice: as the ghost that stays and (gone: true) as the block that
+ *  rolls away. Stacks fill from the middle of the bridge outwards, so the two sides are mirror pictures. */
+function layout(terms, side, x, kind) {
+  const groups = [];
+  terms.forEach((t, ti) => {
+    const v = t.q ? x : t.n, prev = groups[groups.length - 1];
+    if (t.op === '-') {
+      const ones = groups.flatMap(gr => gr.cells.filter(c => c.kind === 'one'));   // the last small blocks that came go away
+      if (prev && !prev.chest && ones.length >= v) { for (const c of ones.slice(-v)) c.away = true; return; }
+      const cols = Math.ceil(v / 5); groups.push({ w: cols * PITCH, cells: Array.from({ length: v }, (_, i) => ({ kind: 'ghost', cx: (Math.floor(i / 5) + 0.5) * PITCH, y: (i % 5) * PITCH + BS / 2, w: 0 })), ti, top: Math.min(v, 5) * PITCH }); return;
+    }
+    if (v == null) { groups.push({ w: 0.9, chest: true, cells: [{ kind: 'chest', cx: 0.45, y: 0, w: 0, q: true }], ti, top: 0.75, text: '?', q: true }); return; }
+    const cells = []; let w, top, read = false;
+    if (t.rows) { w = t.cols * PITCH; top = t.rows * PITCH; for (let r = 0; r < t.rows; r++) for (let c = 0; c < t.cols; c++) cells.push({ kind: 'one', cx: (c + 0.5) * PITCH, y: r * PITCH + BS / 2, w: 1, tone: r }); }
+    else if (v > 20 && kind !== 'array') {
+      const tens = Math.floor(v / 10), ones = v % 10, oc = Math.ceil(ones / 5); read = true;   // tens on the left, ones on the right, as the number is written
+      for (let i = 0; i < tens; i++) cells.push({ kind: 'ten', cx: SLAB_W / 2, y: i * SLAB_H + SLAB_H / 2, w: 10 });
+      for (let i = 0; i < ones; i++) cells.push({ kind: 'one', cx: SLAB_W + 0.08 + (Math.floor(i / 5) + 0.5) * PITCH, y: (i % 5) * PITCH + BS / 2, w: 1 });
+      w = SLAB_W + (oc ? 0.08 + oc * PITCH : 0); top = Math.max(tens * SLAB_H, Math.min(ones, 5) * PITCH);
+    } else { const cols = Math.max(1, Math.ceil(v / 5)); w = cols * PITCH; top = Math.min(v, 5) * PITCH; for (let i = 0; i < v; i++) cells.push({ kind: 'one', cx: (Math.floor(i / 5) + 0.5) * PITCH, y: (i % 5) * PITCH + BS / 2, w: 1 }); }
+    for (const c of cells) { if (c.tone == null) c.tone = ti; c.q = !!t.q; }
+    groups.push({ w, cells, ti, top, read, text: kind === 'parity' || t.rows ? null : String(v), q: !!t.q });
+  });
+  const total = groups.reduce((s, gr) => s + gr.w, 0) + GAP * (groups.length - 1), mid = (ARM0 + ARM1) / 2;
+  const items = [], labels = [];
+  let u = 0;   // across the side in reading order, left to right
+  for (const gr of groups) {
+    // the middle of the bridge is on the right of the left side and on the left of the right side
+    const at = cx => (side === 'l' ? -(mid + total / 2) + u + (gr.read ? cx : gr.w - cx) : mid - total / 2 + u + cx);
+    for (const c of gr.cells) {
+      if (c.away) { items.push({ kind: 'ghost', x: at(c.cx), y: c.y, w: 0, q: c.q }, { kind: 'one', x: at(c.cx), y: c.y, tone: c.tone, w: 1, q: c.q, gone: true }); continue; }
+      items.push({ kind: c.kind, x: at(c.cx), y: c.y, tone: c.tone, w: c.w, q: c.q });
+    }
+    if (gr.text) labels.push({ x: at(gr.w / 2), y: gr.top + 0.42, text: gr.text, q: gr.q });
+    u += gr.w + GAP;
+  }
+  return { items, labels };
+}
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+// The camera looks across the moat at the castle, low enough that the castle and the sky show behind the bridge, and
+// backs off until the bridge fits between the words at the top and the buttons at the bottom, on any screen shape.
+const view = { rect: [-5, 5, -1, 1.4], high: 3.4, low: 1.6, tilt: 0 };
+function frame() {
+  if (!g) return;
+  const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
+  const play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 6;
+  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
+  const TILT = view.tilt || (tall ? 0.36 : 0.2), fov = tall ? 50 : 38, band = (tall ? (Hd > 720 ? 0.13 : 0.04) : 0.12) * Hd;   // a band of castle and sky above the bridge
+  const safe = { l: -1 + 14 / Wd, r: 1 - 14 / Wd, t: 1 - 2 * (topPx + band) / Hd, b: -1 + 2 * botPx / Hd };
+  const pts = [];
+  for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(V3(x, -0.5, z), V3(x, z === z0 ? view.high : view.low, z));
+  const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const sin = Math.sin(TILT), cos = Math.cos(TILT);
+  // at one distance: slide the camera along the moat until the front of the bridge rests just above the buttons,
+  // then say whether the whole bridge is inside the space kept for it
+  const fits = d => {
+    let lo = z1 - cos * d + 1.5, hi = z1 + 90, bx;
+    for (let i = 0; i < 22; i++) {
+      look.z = (lo + hi) / 2;
+      cam.position.set(look.x, sin * d, look.z + cos * d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (bx[2] > safe.b) hi = look.z; else lo = look.z;
+    }
+    return bx[0] >= safe.l && bx[1] <= safe.r && bx[3] <= safe.t;
+  };
+  let near = 5, far = 150;
+  for (let i = 0; i < 16; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping a helper in the castle yard: the nearest one under the finger, with a generous reach ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+
+/* ---------- drawing the bridge ---------- */
+function clearStage() {
+  for (const grp of [stage, under]) for (const o of [...grp.children]) { grp.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); }
+  tweens.length = 0; targets.length = 0; resting = null; S.props = null;
+}
+/** Put both sides on the bridge. `x`: the number standing in for the one to find (null: the chest). `move`: 'intro'
+ *  (everything drops in, a group at a time, and what is taken away then rolls off), 'new' (only the blocks of the
+ *  number to find drop in) or '' (everything is where it belongs). `then` runs when the last block has landed. */
+function drawSides(Rd, x, move, then, tone = 'cream') {
+  for (const o of [...stage.children]) { drop(o); stage.remove(o); if (o.isSprite) o.material.dispose(); }
+  weight.l = weight.r = 0;
+  const shown = { l: { ones: 0, tens: 0, ghosts: 0, chests: 0 }, r: { ones: 0, tens: 0, ghosts: 0, chests: 0 } };
+  let pending = 0, ended = false, building = true; const leavers = [], tick = S.tick;
+  const end = () => { if (ended || pending > 0) return; ended = true; if (then && tick === S.tick) then(); };
+  const landed = (side, it) => () => { weight[side] += it.w; if (it.w) kick(side === 'l' ? 0.5 : -0.5); pending--; if (building || pending) return; if (leavers.length) rollAway(); else end(); };
+  /** What was taken away rolls off the front of the bridge into the moat; its ghost stays. */
+  const rollAway = () => {
+    const list = leavers.splice(0); pending += list.length;
+    list.forEach(({ o, side, it, ghost }, i) => {
+      fly(o, V3(o.position.x, -1.3, 1.9), { dur: 0.6, arc: 0.7, wait: 0.35 + i * 0.16, then: () => { stage.remove(o); ghost.visible = true; weight[side] -= it.w; kick(side === 'l' ? -0.4 : 0.4); pending--; end(); } });
+    });
+  };
+  for (const side of ['l', 'r']) {
+    const lay = layout(side === 'l' ? Rd.L : Rd.R, side, x, Rd.kind);
+    let wait = 0.15, lastTone = null, ghosts = [];
+    for (const it of lay.items) {
+      const moves = move === 'intro' || (move === 'new' && it.q);
+      if (it.kind === 'chest') {
+        const c = piece('chest', it.x, 0, ZB, 0.6); c.userData.kind = 'chest'; stage.add(c); shown[side].chests++; continue;
+      }
+      if (it.gone) {
+        // the block that is taken away: it stands on its place (and weighs) only while it is on its way in and out
+        if (!moves) continue;
+        const o = stone('one', side, it.tone); o.position.set(it.x, it.y, ZB); stage.add(o); pending++;
+        const ghost = ghosts.pop(); if (ghost) ghost.visible = false;
+        leavers.push({ o, side, it, ghost });
+        fall(o, { wait, then: landed(side, it) }); wait += 0.05; continue;
+      }
+      const o = stone(it.kind, side, it.tone || 0); o.position.set(it.x, it.y, ZB); stage.add(o);
+      if (it.kind === 'ghost') { shown[side].ghosts++; ghosts.push(o); continue; }
+      shown[side][it.kind === 'ten' ? 'tens' : 'ones']++;
+      if (!moves) { weight[side] += it.w; continue; }
+      if (lastTone != null && it.tone !== lastTone && Rd.kind !== 'array') wait += 0.45;   // the next number comes after a beat
+      lastTone = it.tone; pending++;
+      fall(o, { wait, then: landed(side, it) }); wait += it.kind === 'ten' ? 0.12 : 0.05;
+    }
+    for (const lb of lay.labels) { const b = board(lb.text, 0.74, lb.q ? (x == null ? 'gold' : tone) : 'cream'); b.position.set(lb.x, lb.y, ZB); b.userData.label = true; stage.add(b); }
+  }
+  S.shownBlocks = shown; building = false;
+  if (!pending) { if (leavers.length) rollAway(); else end(); }
+}
+/** The posts that hold the bridge level while a true-or-not question is asked. */
+function props(on) {
+  for (const o of [...under.children]) under.remove(o);
+  S.props = null; if (!on) return;
+  S.props = [-1, 1].map(s => { const p = box(M.woodDark, 0.26, 1.0, 0.26, s * (HALF - 0.45), -0.66, 0.55); under.add(p); return p; });
+}
+function dropProps(then) {
+  const ps = S.props || []; S.props = null;
+  if (!ps.length) { S.held = false; return then(); }
+  ps.forEach((p, i) => { const y = p.position.y; anim(p, 0.4, k => { p.position.y = y - 1.3 * smooth(k); }, () => { under.remove(p); if (i === ps.length - 1) { S.held = false; then(); } }); });
+}
+
+/* ---------- the helper ---------- */
+let lineup = [];
+const heroSize = () => (tall ? 0.8 : 0.95);
+/** The helper's place on the bank at one end of the bridge (side -1 the left bank, 1 the right). */
+const bankSpot = side => V3(side * (HALF + (tall ? 0.55 : 1.05)), 0, tall ? 1.05 : ZH);
+function placeHero(side = S.side) { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(bankSpot(side)); h.object.rotation.y = -side * 0.5; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+/** The bridge is level: the helper walks across it to the other bank. */
+function cross(then) {
+  const h = S.hero, from = S.side, to = -from;
+  S.side = to; S.crossed++;
+  if (!h) return then();
+  const a = bankSpot(from), b = tall ? V3(to * (HALF - 0.5), 0, ZH) : bankSpot(to);
+  if (reduced || S.fast) { placeHero(to); return then(); }
+  clearTimeout(heroBack); h.object.rotation.y = to * Math.PI / 2; h.play('walk'); sfx('walk');
+  anim(h.object, 2.1, k => { const e = smooth(k); h.position.set(a.x + (b.x - a.x) * e, 0, a.z + (ZH - a.z) * Math.min(1, e * 5) + (b.z - ZH) * Math.max(0, e * 5 - 4)); }, () => { h.object.rotation.y = -to * 0.5; h.play('cheer', { once: true }); heroBack = setTimeout(() => h.play('idle'), 1500); then(); });
+}
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage(); S.held = true; weight.l = weight.r = 0; props(true);
+  const gap = tall ? 1.2 : 1.5;
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(tall ? 0.85 : 1.05); h.position.set((i - 2) * gap, 0, 0.1); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1), r: 0.7, go: () => chooseHero(h.id) }));
+  Object.assign(view, { rect: tall ? [-HALF - 0.2, HALF + 0.2, -0.9, 1.2] : [-HALF - 1.4, HALF + 1.4, -0.9, 1.2], high: 2.6, low: 2.4, tilt: 0 });
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'bb-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, text) => { const s = document.createElement('span'); s.className = c; if (text != null) s.textContent = text; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (big != null) b.append(span('big', big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'bb-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'bb-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'bb-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'bb-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'bb-menu' : 'bb-pick'; row.append(...buttons.map(button));
+  el.card.className = 'bb-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper on a level bridge with three blocks on each side: the menu and the end of a chapter. */
+function solo() {
+  clearStage(); S.held = false; props(false);
+  drawSides({ L: [{ n: 3 }], R: [{ n: 3 }], kind: 'parity' }, null, '');
+  const h = S.hero; if (h) { drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(0, 0, ZH); h.object.rotation.y = 0; }
+  Object.assign(view, { rect: tall ? [-HALF - 0.2, HALF + 0.2, -0.9, 1.2] : [-HALF - 1.4, HALF + 1.4, -0.9, 1.2], high: 2.6, low: 2.4, tilt: 0 });
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.tick++; solo();
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: BB.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!BB.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; S.side = -1; el.card.hidden = true; el.card.replaceChildren();
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: BB.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: BB.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+const numeric = Rd => typeof Rd.answer === 'number';
+/** The number chip for the round: the sum as it is written, "?" where the answer goes while it is asked. */
+function chipText(Rd, found) {
+  if (Rd.kind === 'parity') return found ? `${Rd.num} = ${Rd.rv} + ${Rd.rv}${Rd.answer === 'odd' ? ' + 1' : ''}` : fmt('show.blocks', { n: Rd.num });
+  const x = found && numeric(Rd) ? Rd.answer : null;
+  return BB.text(Rd.L, x) + ' = ' + BB.text(Rd.R, x) + (found && Rd.kind === 'true' ? (Rd.answer === 'yes' ? ' ✔' : ' ✘') : '');
+}
+const showSum = (Rd, found) => sum(chipText(Rd, found), found ? (Rd.answer === 'no' ? 'bad' : '') : 'ask');
+function nextRound() {
+  if (S.round >= BB.ROUNDS) return finish();
+  S.round++; S.R = BB.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.trial = null; S.tick++;
+  const Rd = S.R;
+  hint(); dots(); showSum(Rd, false);
+  say(Rd.ask[0], Rd.ask[1]);   // the words first: the camera fits the bridge under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  solo();
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🏰', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/** Draw the round from its state (also after the screen turns): the bridge, its blocks, the helper, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++; S.trial = null; if (S.phase === 'try') S.phase = 'play';
+  el.card.hidden = true; el.bar.hidden = false;
+  S.held = !found && (Rd.kind === 'true' || Rd.kind === 'parity'); props(S.held);
+  drawSides(Rd, found && numeric(Rd) ? Rd.answer : null, first ? 'intro' : '', null, 'green');
+  placeHero(S.side);
+  const m = tall ? [S.side < 0 ? 1.05 : 0.25, S.side < 0 ? 0.25 : 1.05] : [1.75, 1.75];
+  Object.assign(view, { rect: [-HALF - m[0], HALF + m[1], -0.9, tall ? 1.5 : 1.2], high: 3.5, low: tall ? 1.5 : 2.4, tilt: 0 });
+  const num = v => button({ id: 'bb-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
+  const word = (v, icon) => button({ id: 'bb-' + v, icon, label: fmt('btn.' + v), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
+  el.bar.className = 'bb-bar' + (numeric(Rd) ? '' : ' two');
+  if (Rd.kind === 'true') el.bar.replaceChildren(word('yes', '✔️'), word('no', '✖️'));
+  else if (Rd.kind === 'parity') el.bar.replaceChildren(word('even', '👫'), word('odd', '☝️'));
+  else el.bar.replaceChildren(...Rd.choices.map(v => num(v)));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the bridge was settling: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return () => { if (tick === S.tick) fn(); }; };
+
+/** The child picks an answer: True or Not true, Even or Odd, or a number. */
+function answer(v, b) {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play') return;
+  const Rd = S.R, id = 'bb-' + (numeric(Rd) ? 'n' + v : v);
+  if (!Rd.choices.includes(v)) return;
+  b = b || document.getElementById(id);
+  if (v !== Rd.answer) {
+    wobble(b);
+    if (!numeric(Rd)) { kick(v === 'yes' || v === 'even' ? 3 : -3); return hint(Rd.kind === 'true' ? 'tf.hint' : 'par.hint'); }
+    hint(v < Rd.answer ? 'hint.light' : 'hint.heavy');
+    if (reduced || S.fast) return;
+    // the number is tried on the bridge: its blocks drop in, the bridge shows too light or too heavy, they go again
+    S.phase = 'try'; S.tick++; S.trial = v; el.bar.classList.add('wait');
+    const back = guard(() => { S.trial = null; S.phase = 'play'; el.bar.classList.remove('wait'); S.tick++; drawSides(Rd, null, ''); });
+    return drawSides(Rd, v, 'new', () => settle(guard(() => pause(1.1, back))));
+  }
+  S.phase = 'right'; S.tick++; hint(); sfx('coin');
+  if (b) b.classList.add('go');
+  showSum(Rd, true);
+  say(Rd.said[0][0], Rd.said[0][1], { queue: true });
+  for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
+  const level = Rd.lv === Rd.rv;
+  const done = guard(() => {
+    sfx('cheer'); if (!level) heroMove('cheer', 1700);
+    const next = guard(() => pause(reduced ? 3.6 : level ? 1.5 : 2.6, guard(nextRound)));
+    if (level) cross(next); else next();
+  });
+  // the bridge shows the answer: the blocks of the missing number drop in, or the posts let go; then it comes to rest
+  if (numeric(Rd)) drawSides(Rd, Rd.answer, 'new', () => settle(done), 'green');
+  else dropProps(guard(() => settle(done)));
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+/** The screen box (left, top, right, bottom in CSS pixels) round some objects. */
+function screenBox(objs) {
+  const bx = [1e9, 1e9, -1e9, -1e9], b3 = new THREE.Box3(); let any = false;
+  for (const o of objs) {
+    if (!o.visible) continue; o.updateWorldMatrix(true, true); b3.setFromObject(o); if (b3.isEmpty()) continue; any = true;
+    for (const x of [b3.min.x, b3.max.x]) for (const y of [b3.min.y, b3.max.y]) for (const z of [b3.min.z, b3.max.z]) { const [sx, sy] = scr(V3(x, y, z)); bx[0] = Math.min(bx[0], sx); bx[1] = Math.min(bx[1], sy); bx[2] = Math.max(bx[2], sx); bx[3] = Math.max(bx[3], sy); }
+  }
+  return any ? bx.map(n => Math.round(n)) : null;
+}
+window.__bb = window.__brbTest = {
+  state: () => ({ game: 'balance-bridge', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: BB.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall, physics: seesaw.mode,
+    ...(S.R && S.screen === 'play' ? { ...S.R, weight: { l: weight.l, r: weight.r }, lean: ['right', 'level', 'left'][leanNow() + 1], held: S.held, angle: +seesaw.angle.toFixed(3), blocks: S.shownBlocks, trial: S.trial, side: S.side, crossed: S.crossed, moving: tweens.length + (resting ? 1 : 0) } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => answer(arg),
+  /** The helper's place: [x, y, z]. */
+  heroAt: () => { if (!S.hero) return null; const p = S.hero.object.getWorldPosition(V3(0, 0, 0)); return [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]; },
+  /** Where things are on the screen (CSS pixels): the two ends of the bridge, and the boxes round the helper, the
+   *  blocks of each side and the number boards, for a test that checks everything is in view and nothing is hidden. */
+  spot: () => ({ left: scr(V3(-HALF, 0, 0)), right: scr(V3(HALF, 0, 0)), hero: S.hero ? (() => { const p = S.hero.position, k = S.hero.object.scale.x, a = scr(V3(p.x - 0.42 * k, p.y + 1.8 * k, p.z)), b = scr(V3(p.x + 0.42 * k, p.y, p.z)); return [a[0], a[1], b[0], b[1]].map(n => Math.round(n)); })() : null,
+    blocks: screenBox(stage.children.filter(o => !o.userData.label)), labels: screenBox(stage.children.filter(o => o.userData.label)),
+    size: (() => { const a = scr(V3(0, 0, ZB)), b = scr(V3(BS, 0, ZB)); return +(b[0] - a[0]).toFixed(1); })() }),
+};
+
+el.load.hidden = true; el.load.remove(); el.bb.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>
