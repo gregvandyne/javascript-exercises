@@ -292,3 +292,43 @@ picture scripts now serve `.mjs` files as JavaScript, as the site does, so Rapie
 **Stone.** The unit's stamp is the Balance Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "equals means the answer comes next" misconception (8 + 4 = ? + 5 gets 12; 5 = 2 + 3 looks backwards), and how the game checks each idea
 by doing. Launchpad stays `status: "building"`.
+
+## Launchpad Unit 6 — The Shape Shed (2026-11-13, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/6.1.json`, `6.2.json`, `6.3.json` | the three kindergarten to grade 2 decks, inside the Launchpad limits above: **6.1 Name that shape** (K.G.A.2, 1.G.A.1), **6.2 Build with shapes** (K.G.B.6, 1.G.A.2), **6.3 Halves and fourths** (1.G.A.3, 2.G.A.3). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u6-launchpad.json` | nine exit items (`nq-launchpad-6.<s>-e1..3`), each `cat` one of its step's primary codes (6.1: two for K.G.A.2, one for 1.G.A.1; 6.2: one for K.G.B.6, two for 1.G.A.2; 6.3: two for 1.G.A.3, one about thirds for 2.G.A.3), every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why` |
+| `standards.json` `launchpadCodes.codes` | six more locked statements, with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/shape-hunt.html` | **Shape Hunt**, the unit's game (Oomba3D 1.1.0, Cosy Home theme 1.0.0): chapter `find` for 6.1, `build` for 6.2, `share` for 6.3, six rounds each. A tidy-up treasure hunt in a cosy house: shapes hide among the furniture, and the helper finds them, builds with them and shares them. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `find`: four shapes on the shelves and the table, one to tap: a shape by name (a triangle; a turned square, or on a
+replay a thin or upside-down triangle, a rectangle standing tall, a turned hexagon; then a solid: cube, cone, cylinder or sphere), a shape by
+what defines it ("the shape with 3 sides", "the shape with no corners"; on a replay 4 equal sides, 6 sides, the solid with a point), and
+"Which one is not a triangle?" (three triangles and a look-alike that is open or has a curved side). Colors and sizes are dealt out by
+chance, never the clue. `build`: a ghost outline on a board (a square of two triangles, a rectangle of two squares, a house of a square and
+a triangle, a hexagon of two trapezoids, then of six triangles; on a replay a circle of two half circles) or a ghost tower on the table
+(a cube and a cone; on a replay a cylinder and a cone), and three sets of pieces to pick from; the right pieces fly in and snap, a wrong
+set is tried on the outline and goes again. `share`: are the shares equal (a cut off to one side on the first lap), tap the one cut in
+halves, tap the one cut in fourths, what one share is called (a third on the first lap; a fourth is "a quarter" on odd laps), how many
+halves make one whole, and which is bigger, a half or a fourth of the same pizza. A wrong pick gets a spoken hint that names the
+attribute ("That one has 4 equal sides. A triangle has 3 sides.").
+
+**Face on.** Flat shapes, the board and the things to share are pictures on cards that always face the player, so the room's perspective
+never turns a square into another shape; solids are real 3D shapes. A shape in the room is tapped through a clear button that sits exactly
+over it (so Tab, Enter and Space work too); the test holds each to at least 44 px, in full view of the camera and clear of the helper.
+
+**Diagrams.** The unit adds no diagram type, and two options. The existing `shapes` type (`server/services/courses.js`,
+`server/views/courses.js`) gains `look` on an item (a triangle `flip`, `thin` or `right`; a square `turned`) and `made` (a square of 2
+triangles, a rectangle of 2 squares, a hexagon of 2 trapezoids or 6 triangles: the lines inside are drawn). The existing `spinner` gains
+`pie: true` (`server/services/diagrams.js`, `server/views/nq-diagrams.js`): the same circle cut in equal shares with no pointer and its
+shaded shares green. 6.1 also uses the existing shape strip (`tiles`), 6.3 the existing `fraction` bars (halves, thirds, fourths) and
+`bars` (two shares that are not equal over two that are). All 30 focus steps are measured and pinned in
+`tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/shape-hunt/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/shape-hunt.recipe.js`.
+
+**Stone.** The unit's stamp is the Shape Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"one picture of each shape" misconception (an upside-down triangle is "not a triangle"; any two pieces are "halves"), and how the game
+checks each idea by doing. Launchpad stays `status: "building"`.
