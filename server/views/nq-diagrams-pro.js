@@ -422,7 +422,9 @@ const uprightLay = once(v => {
   (v.hops || []).forEach((h, k) => {
     const hx = 62 + 12 * k, y1 = Y(h.from), y2 = Y(h.to), dir = Math.sign(y2 - y1), fs = fit(h.label, 9.6, 3.8);
     // a faint level line ties each end of the arrow to its number on the line
-    for (const y of [y1, y2]) s += `<line data-level-line="1" x1="${ax + 2.8}" y1="${r2(y)}" x2="${hx}" y2="${r2(y)}" stroke="${LINE}" stroke-width="0.5" stroke-dasharray="1.2 1"/>`;
+    // (it starts past the point's own name where the two are level)
+    const clear = y => (v.point && Math.abs(y - Y(v.point.at)) < 3.4 ? Math.min(hx - 1, ax + (tube ? 7 : 4.6) + wOf(v.point.label) * 4.6 + 1) : ax + 2.8);
+    for (const y of [y1, y2]) s += `<line data-level-line="1" x1="${r2(clear(y))}" y1="${r2(y)}" x2="${hx}" y2="${r2(y)}" stroke="${LINE}" stroke-width="0.5" stroke-dasharray="1.2 1"/>`;
     s += `<circle cx="${hx}" cy="${r2(y1)}" r="0.9" fill="${LEAF}"/><line data-hop="${k}" x1="${hx}" y1="${r2(y1)}" x2="${hx}" y2="${r2(y2 - dir * 1.6)}" stroke="${LEAF}" stroke-width="1.1"/>` + head(hx, y2, 0, dir, LEAF, 2.2)
       + tx(hx + 2.2, (y1 + y2) / 2 + 0.35 * fs, h.label, fs, 'start', 800, LEAF);
     parts[`hop:${k}`] = part(hx - 1.4, y1, hx + 2.2 + wOf(h.label) * fs, y2, 1);
