@@ -56,12 +56,13 @@
   .cs { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
   .cs button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .cs button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
-  .cs-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 68px 0 10px; }
+  .cs-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
   /* The words, then the number chip and the round dots. On a phone: the words on one row, the chip and the dots on
-     the next. On a wide screen: all three on one row that never wraps (the words box gives way and wraps inside). */
+     the next (the words keep clear of the gear button; the row under it has the whole width). On a wide screen: all
+     three on one row that never wraps (the words box gives way and wraps inside). */
   .cs-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
   .cs-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
-  .cs-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .cs-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
   .cs-ask[hidden], .cs-hint[hidden], .cs-sum[hidden], .cs-bar[hidden], .cs-card[hidden], .cs-dots[hidden], .cs-row2[hidden] { display: none; }
   .cs .cs-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
   .cs .cs-say:active, .cs .cs-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
@@ -84,7 +85,7 @@
   @keyframes cs-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
   .cs-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
   .cs-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
-  .cs-card .cs-ask { margin-top: 10px; }
+  .cs-card .cs-ask { margin-top: 10px; max-width: 100%; }
   .cs-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
   .cs-pick .cs-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
   .cs-pick .cs-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
@@ -95,11 +96,11 @@
   .cs-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
   /* Wide screens: the words, the chip and the round dots share one line across the top, so the yard gets the height. */
   @media (min-aspect-ratio: 9/10) {
-    .cs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; }
-    .cs-ask { flex: 0 1 auto; } .cs-row2 { flex: none; }
+    .cs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .cs-ask { flex: 0 1 auto; max-width: 100%; } .cs-row2 { flex: none; }
     .cs-askt { font-size: clamp(19px, 2.6vw, 30px); } .cs-sum { font-size: clamp(20px, 2.9vw, 34px); }
   }
-  @media (max-width: 480px) { .cs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .cs .cs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .cs-btn .i { font-size: 26px; } .cs-menu { gap: 8px; } .cs-menu .cs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .cs-menu .cs-btn .i { font-size: 36px; } .cs-star { font-size: 60px; } .cs-btn .pic { height: 34px; font-size: 22px; } .cs-btn .tw { height: 34px; } }
+  @media (max-width: 480px) { .cs-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .cs-dots { gap: 5px; } .cs-dots i { width: 13px; height: 13px; border-width: 2.5px; } .cs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .cs .cs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .cs-btn .i { font-size: 26px; } .cs-menu { gap: 8px; } .cs-menu .cs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .cs-menu .cs-btn .i { font-size: 36px; } .cs-star { font-size: 60px; } .cs-btn .pic { height: 34px; font-size: 22px; } .cs-btn .tw { height: 34px; } }
   @media (max-height: 520px) { .cs .cs-btn { min-height: 60px; font-size: 15px; } .cs-btn .i { font-size: 24px; } .cs-btn .big { font-size: 36px; } .cs .cs-say { width: 44px; height: 44px; font-size: 20px; } .cs-menu .cs-btn { min-height: 90px; } .cs-star { font-size: 52px; } .cs-btn .pic { height: 28px; } .cs-btn .tw { height: 28px; } }
   @media (prefers-reduced-motion: reduce) { .cs .cs-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .cs .cs-say:active, .cs .cs-btn:active { transform: none; } }
 </style>
