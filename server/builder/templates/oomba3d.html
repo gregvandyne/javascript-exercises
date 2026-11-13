@@ -1,0 +1,241 @@
+<title>My 3D World</title>
+<!-- The Builder's Kit 2 starter: a 3D game in one of the ready-made worlds (WORLD_NAME), on Oomba3D
+     (docs/kit2-api.md). Not on the Oomba Kit. A hero hops along a path of the world's own pieces, collects coins, jumps
+     to the right answer of each question and reaches the goal. The Builder makes it theirs: CONFIG, QUESTIONS, WORDS,
+     and LAYOUT / buildWorld() for a different place. The import map is exactly the Kit 2 one (vendor.js). -->
+<!--KIT2_IMPORT_MAP-->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .screen { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-start; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(20, 20, 20, .28); }
+  .screen[hidden] { display: none; }
+  .card { margin-top: 5vh; width: min(92vw, 460px); max-height: 92vh; overflow: auto; box-sizing: border-box; padding: clamp(16px, 4vw, 28px); text-align: center; background: #FFFDF2; border: 4px solid #141414; border-radius: 28px; box-shadow: 0 8px 0 #141414; }
+  .card h1 { margin: 0 0 8px; font-size: clamp(26px, 7vw, 40px); line-height: 1.1; overflow-wrap: anywhere; }
+  .card p { margin: 0 0 16px; font-size: clamp(16px, 4.2vw, 20px); font-weight: 600; line-height: 1.35; }
+  .card .big { margin: 0 0 12px; font-size: clamp(22px, 6vw, 30px); font-weight: 900; }
+  .btn { min-width: 180px; min-height: 60px; padding: 10px 28px; font: 900 clamp(20px, 5.5vw, 26px) "Bricolage Grotesque", system-ui, sans-serif; color: #141414; background: #FFD23F; border: 4px solid #141414; border-radius: 999px; box-shadow: 0 6px 0 #141414; cursor: pointer; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #141414; }
+  .btn:focus-visible { outline: 4px solid #1F9D63; outline-offset: 3px; }
+  #ask { position: fixed; z-index: 20; left: 50%; top: calc(68px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); max-width: min(92vw, 560px); box-sizing: border-box; padding: 8px 18px; text-align: center; font-weight: 800; font-size: clamp(17px, 4.6vw, 22px); background: #FFD23F; border: 3px solid #141414; border-radius: 999px; box-shadow: 0 4px 0 #141414; pointer-events: none; }
+  #ask:empty { display: none; }
+  #loading { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 26px; background: #bfe3ff; }
+  @media (max-height: 430px) { .card p { margin-bottom: 10px; } .btn { min-height: 52px; } }
+</style>
+<div id="loading" role="status">…</div>
+<div id="ask" role="status" aria-live="polite"></div>
+<div class="screen" id="title" hidden><div class="card"><h1 id="t-title"></h1><p id="t-sub"></p><button class="btn" id="play" type="button"></button></div></div>
+<div class="screen" id="end" hidden><div class="card"><h1 id="e-title"></h1><p class="big" id="e-score"></p><button class="btn" id="again" type="button"></button></div></div>
+<script type="module">
+import { start } from 'oomba3d';
+
+// ---- CONFIG: what a builder is most likely to change, one key per line ------------------------------------------
+const CONFIG = {
+  title: 'My 3D World',
+  world: 'WORLD_ID',
+  version: 'WORLD_VERSION',
+  hero: 'HERO_ID',
+  outfit: '',
+  time: 'WORLD_TIME',
+  weather: 'clear',
+  steps: 4,
+  coinValue: 1,
+  bonus: 5,
+};
+// world + version: one of the ready-made worlds and its exact shipped version (always change both together).
+// hero: one of that world's heroes. outfit: a colour for the hero's cape ('' keeps its own, or 'gold', '#66C792').
+// time: 'morning' | 'day' | 'sunset' | 'night'. weather: 'clear' | 'snow' | 'rain' | 'sparkles' | 'leaves'.
+// steps: stones to hop along before each question. coinValue / bonus: points for a coin / for a right answer.
+
+// ---- QUESTIONS: one gate per question, in order. Answers are numbers or short words (up to about 6 letters). ------
+const QUESTIONS = [
+  { question: '7 × 8 = ?', answers: [54, 56, 63], correct: 56 },
+  { question: '9 + 6 = ?', answers: [15, 14, 16], correct: 15 },
+];
+
+// ---- LAYOUT: what this world's starter is made of (piece names from this world's own list, with a scale) ----------
+const LAYOUT = {
+  /*LAYOUT*/
+};
+
+// ---- WORDS: everything the player reads, in the 13 site languages -----------------------------------------------
+const WORDS = {
+  en: { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!' },
+  'en-GB': { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!' },
+  pt: { sub: 'Pule, pegue as moedas e salte na resposta certa!', play: 'Jogar', again: 'Jogar de novo', won: 'Você conseguiu!', score: 'Pontos: {n}', ask: 'Pule na resposta:', right: 'Certo! +{n}', wrong: 'Não é {a}! Tente outra', first: 'Responda à pergunta primeiro!', fell: 'Tente de novo!' },
+  fr: { sub: 'Saute, attrape les pièces et saute sur la bonne réponse !', play: 'Jouer', again: 'Rejouer', won: 'Bravo, tu as réussi !', score: 'Score : {n}', ask: 'Saute sur la réponse :', right: 'Correct ! +{n}', wrong: 'Pas {a} ! Essaie une autre', first: 'Réponds d’abord à la question !', fell: 'Essaie encore !' },
+  es: { sub: '¡Salta, coge las monedas y salta a la respuesta correcta!', play: 'Jugar', again: 'Jugar otra vez', won: '¡Lo lograste!', score: 'Puntos: {n}', ask: 'Salta a la respuesta:', right: '¡Correcto! +{n}', wrong: '¡No es {a}! Prueba otra', first: '¡Primero responde la pregunta!', fell: '¡Inténtalo de nuevo!' },
+  de: { sub: 'Hüpf los, sammle die Münzen und spring auf die richtige Antwort!', play: 'Spielen', again: 'Noch mal spielen', won: 'Geschafft!', score: 'Punkte: {n}', ask: 'Spring zur Antwort:', right: 'Richtig! +{n}', wrong: 'Nicht {a}! Probier eine andere', first: 'Beantworte zuerst die Frage!', fell: 'Versuch es noch mal!' },
+  he: { sub: 'קפצו, אספו מטבעות וקפצו אל התשובה הנכונה!', play: 'שחקו', again: 'שחקו שוב', won: 'הצלחתם!', score: 'ניקוד: {n}', ask: 'קפצו אל התשובה:', right: 'נכון! +{n}', wrong: 'לא {a}! נסו אחרת', first: 'קודם ענו על השאלה!', fell: 'נסו שוב!' },
+  ja: { sub: 'ぴょんぴょん すすんで、コインを あつめて、せいかいに ジャンプ！', play: 'あそぶ', again: 'もういちど', won: 'やったね！', score: 'スコア: {n}', ask: 'こたえに ジャンプ:', right: 'せいかい！ +{n}', wrong: '{a} じゃないよ！ ほかを ためそう', first: 'さきに もんだいに こたえてね！', fell: 'もういちど！' },
+  ar: { sub: 'اقفز واجمع العملات واقفز إلى الإجابة الصحيحة!', play: 'العب', again: 'العب مرة أخرى', won: 'أحسنت!', score: 'النقاط: {n}', ask: 'اقفز إلى الإجابة:', right: 'صحيح! +{n}', wrong: 'ليست {a}! جرّب غيرها', first: 'أجب عن السؤال أولاً!', fell: 'حاول مرة أخرى!' },
+  ru: { sub: 'Прыгай, собирай монеты и прыгай на правильный ответ!', play: 'Играть', again: 'Играть ещё', won: 'Получилось!', score: 'Очки: {n}', ask: 'Прыгни на ответ:', right: 'Верно! +{n}', wrong: 'Не {a}! Попробуй другой', first: 'Сначала ответь на вопрос!', fell: 'Попробуй ещё раз!' },
+  it: { sub: 'Salta, prendi le monete e salta sulla risposta giusta!', play: 'Gioca', again: 'Gioca ancora', won: 'Ce l’hai fatta!', score: 'Punti: {n}', ask: 'Salta sulla risposta:', right: 'Giusto! +{n}', wrong: 'Non è {a}! Prova un’altra', first: 'Prima rispondi alla domanda!', fell: 'Riprova!' },
+  'zh-Hant': { sub: '跳過去，收集金幣，跳到正確的答案上！', play: '開始玩', again: '再玩一次', won: '你做到了！', score: '分數：{n}', ask: '跳到答案上：', right: '答對了！+{n}', wrong: '不是 {a}！試試別的', first: '先回答問題！', fell: '再試一次！' },
+  nl: { sub: 'Spring, pak de munten en spring naar het goede antwoord!', play: 'Spelen', again: 'Nog een keer', won: 'Het is gelukt!', score: 'Score: {n}', ask: 'Spring naar het antwoord:', right: 'Goed zo! +{n}', wrong: 'Niet {a}! Probeer een andere', first: 'Beantwoord eerst de vraag!', fell: 'Probeer het nog eens!' },
+};
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const W0 = WORDS[LANG] || WORDS[LANG.split('-')[0]] || WORDS.en;
+const say = (key, vars = {}) => String(W0[key] || WORDS.en[key] || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+const $ = id => document.getElementById(id);
+if ((window.BRB && BRB.user && BRB.user.dir) === 'rtl') for (const el of document.querySelectorAll('.card, #ask')) el.dir = 'rtl';
+
+// ---- The round's state, and the platform's test hook (state() and start(): the playtest and the cover picture use
+// them; a start() that comes while the world is still loading starts the round as soon as it is ready) ------------------
+let scene = 'loading', g = null, me = null, answered = 0, coinsGot = 0, taken = [], controlsOn = false, startWhenReady = false;
+const spots = { coins: [], gates: [], checkpoints: [], goal: [0, 0, 0], spawn: [0, 0, 1] };
+const gates = [];      // one per question: { q, pads: [{ solid, sprite, answer }], done }
+window.__brbTest = {
+  state: () => ({ scene, score: g ? g.score() : 0, coins: coinsGot, coinsTotal: spots.coins.length, answered, questions: QUESTIONS.length, world: CONFIG.world, heroId: CONFIG.hero, hero: me ? { x: me.position.x, y: me.position.y, z: me.position.z } : null }),
+  start: () => { if (scene === 'loading') startWhenReady = true; else if (scene === 'title' || scene === 'win') play(); },
+  spots: () => ({ ...spots, gate: spots.gates[Math.min(answered, spots.gates.length - 1)], pads: gates.map(gt => gt.pads.map(p => ({ answer: p.answer, right: p.answer === gt.q.correct, at: [p.sprite.position.x, p.solid.top() + 2, p.sprite.position.z] }))) }),
+  put: (x, y, z) => { me.position.set(x, y, z); },
+  win: () => { answered = gates.length; me.position.set(spots.goal[0], spots.goal[1] + 2, spots.goal[2]); },
+};
+
+// ---- The world --------------------------------------------------------------------------------------------------
+g = await start({ theme: CONFIG.world, version: CONFIG.version, time: CONFIG.time, weather: CONFIG.weather, outline: true, settings: true });
+const THREE = g.THREE, W = g.world;
+const sizeOf = (id, scale) => { const p = g.theme.pieces.find(x => x.id === id); return p ? p.size.map(n => n * scale) : [2, 1, 2]; };
+/** Something to walk on, with its TOP at the height `top` (whatever the piece's own base is). */
+async function stand(piece, x, z, scale = 1, top = 0, turn = 0) {
+  const s = await W.island({ piece, x, y: 0, z, scale, turn });
+  const d = top - s.top(); s.object.position.y += d; s.box.translate(new THREE.Vector3(0, d, 0));
+  return s;
+}
+/** A piece to look at, standing on the height `y` (whatever its own base is). */
+async function put(piece, x, z, scale = 1, turn = 0, y = 0) {
+  const p = await W.piece(piece, { x, y: 0, z, scale, turn });
+  p.object.position.y += y - new THREE.Box3().setFromObject(p.object).min.y;
+  return p;
+}
+/** A square of ground tiles, n by n, centred on (x, z), top at 0 -> its tiles. hex: a honeycomb. */
+async function plaza(x, z, n) {
+  const { piece, scale } = LAYOUT.ground, [tw, , td] = sizeOf(piece, scale), tiles = [];
+  const dz = LAYOUT.hex ? td * 0.75 : td;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const off = LAYOUT.hex && r % 2 ? tw / 2 : 0;
+    tiles.push(stand(piece, x + (c - (n - 1) / 2) * tw + off, z + (r - (n - 1) / 2) * dz, scale));
+  }
+  return Promise.all(tiles);
+}
+
+let goalTiles = [];
+async function buildWorld() {
+  const [gw, , gd] = sizeOf(LAYOUT.ground.piece, LAYOUT.ground.scale), n = LAYOUT.plaza;
+  const half = (n * (LAYOUT.hex ? gd * 0.75 : gd)) / 2;
+  const [sw, , sd] = sizeOf(LAYOUT.step.piece, LAYOUT.step.scale), [pw, , pd] = sizeOf(LAYOUT.pad.piece, LAYOUT.pad.scale);
+  const GAP = 1.6, jobs = [], scenery = LAYOUT.scenery.slice(), [dw] = sizeOf(LAYOUT.side.piece, LAYOUT.side.scale);
+  let k = 0;
+  const side = (z, far = 0) => {   // the next scenery piece on its own small ground beside the way
+    if (!scenery.length) return;
+    const s = scenery[k % scenery.length], x = (k % 2 ? 1 : -1) * (Math.max(sw, pw * 1.5) / 2 + dw / 2 + 2.5 + far); k++;
+    jobs.push(stand(LAYOUT.side.piece, x, z, LAYOUT.side.scale, -0.4).then(() => put(s.piece, x, z, s.scale, (k % 4) * 0.5, -0.4)));
+  };
+  if (LAYOUT.sea) W.water({ y: -5, color: LAYOUT.sea });
+
+  // The start: a place to stand, with two pieces of scenery at its far corners.
+  jobs.push(plaza(0, 0, n));
+  for (const sx of [-1, 1]) { const s = scenery[k++ % Math.max(1, scenery.length)]; if (s) jobs.push(put(s.piece, sx * (n * gw / 2 - 1.2), -half + 1.2, s.scale, sx * 0.4)); }
+  spots.checkpoints.push([0, 0.2, 1]);
+  spots.coins.push([0, 1.2, -2.2], [0, 1.2, -4.4]);   // two coins right in front of the hero: fun in the first seconds
+  let z = -half;
+
+  // For each question: stones to hop along (a coin over each), then the answers, then a place to rest.
+  for (const q of QUESTIONS) {
+    for (let i = 0; i < CONFIG.steps; i++) {
+      z -= GAP + sd / 2;
+      const x = (i % 2 ? 1 : -1) * Math.min(1.4, sw * 0.3);
+      jobs.push(stand(LAYOUT.step.piece, x, z, LAYOUT.step.scale));
+      spots.coins.push([x, 1.7, z]);
+      if (i % 2 === 0) side(z);
+      z -= sd / 2;
+    }
+    z -= GAP + pd / 2;
+    const gate = { q, pads: [], done: false, z }, sp = pw + 2.2;
+    q.answers.forEach((answer, i) => {
+      const x = (i - (q.answers.length - 1) / 2) * sp;
+      jobs.push(stand(LAYOUT.pad.piece, x, z, LAYOUT.pad.scale, 0.5).then(solid => gate.pads.push(answerPad(gate, solid, answer, x, z))));
+    });
+    gates.push(gate); spots.gates.push([0, 1, z + pd / 2 + GAP + 1]);
+    z -= pd / 2 + GAP + gd / 2;
+    jobs.push(stand(LAYOUT.ground.piece, 0, z, LAYOUT.ground.scale)); side(z, 1.5);
+    spots.checkpoints.push([0, 0.2, z]);
+    z -= gd / 2;
+  }
+
+  // The goal: a place with the goal on it and the landmark behind.
+  z -= GAP + half;
+  jobs.push(plaza(0, z, n).then(t => { goalTiles = t; for (const s of t) s.onLand = reachGoal; }));
+  jobs.push(put(LAYOUT.goal.piece, 0, z - half * 0.35, LAYOUT.goal.scale));
+  const [, , ld] = sizeOf(LAYOUT.landmark.piece, LAYOUT.landmark.scale);
+  jobs.push(stand(LAYOUT.ground.piece, 0, z - half - gd / 2, LAYOUT.ground.scale, -0.2).then(() => put(LAYOUT.landmark.piece, 0, z - half - Math.max(gd, ld) / 2, LAYOUT.landmark.scale, 0, -0.2)));
+  side(z + half * 0.5, 1); side(z - half * 0.5, 1);
+  spots.goal = [0, 0.2, z];
+  await Promise.all(jobs);
+}
+
+/** An answer floating over its own pad: landing on the right one cheers; a wrong one says so and can be tried again. */
+function answerPad(gate, solid, answer, x, z) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 256; const c = cv.getContext('2d');
+  const label = String(answer);
+  c.fillStyle = '#FFFDF2'; c.strokeStyle = '#141414'; c.lineWidth = 14; c.beginPath(); c.arc(128, 128, 112, 0, Math.PI * 2); c.fill(); c.stroke();
+  c.fillStyle = '#141414'; c.font = `900 ${label.length > 5 ? 52 : label.length > 3 ? 72 : 120}px system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(label, 128, 136);
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false, transparent: true }));
+  const baseY = solid.top() + 3.4; sprite.scale.set(2.4, 2.4, 1); sprite.position.set(x, baseY, z); g.scene.add(sprite);
+  const bob = gate.pads.length;
+  g.onUpdate(() => { if (!g.reducedMotion) sprite.position.y = baseY + Math.sin(performance.now() / 500 + bob) * 0.2; });
+  const pad = { solid, sprite, answer };
+  solid.onLand = hero => {
+    if (scene !== 'play' || gate.done || gate !== gates[answered]) return;
+    if (answer === gate.q.correct) {
+      gate.done = true; answered++; sprite.material.color.set('#9df5b9');
+      g.score(CONFIG.bonus); g.celebrate(hero, say('right', { n: CONFIG.bonus })); showAsk();
+    } else { sprite.material.color.set('#ffb3a7'); g.sound('wrong'); g.toast(say('wrong', { a: answer })); }
+  };
+  return pad;
+}
+
+// ---- The round --------------------------------------------------------------------------------------------------
+const showAsk = () => { const gate = gates[answered]; $('ask').textContent = scene === 'play' && gate ? `${say('ask')} ${gate.q.question}` : ''; };
+function reachGoal(hero) {
+  if (scene !== 'play') return;
+  if (answered < gates.length) { g.toast(say('first')); return; }
+  scene = 'win'; showAsk();
+  const score = g.score();
+  g.celebrate(hero, say('won'));
+  try { if (window.BRB) { BRB.score.submit(score); BRB.gameOver({ won: true, score }); } } catch (e) { /* no page around the game */ }
+  setTimeout(() => { if (scene !== 'win') return; $('e-title').textContent = say('won'); $('e-score').textContent = say('score', { n: score }); $('end').hidden = false; $('again').focus(); }, 1800);
+}
+function reset() {
+  answered = 0; coinsGot = 0; g.score(-g.score());
+  for (const c of taken) c.object.visible = true; taken = [];
+  for (const gate of gates) { gate.done = false; for (const p of gate.pads) p.sprite.material.color.set('#ffffff'); }
+  me.position.set(...spots.spawn);
+}
+function play() {
+  $('title').hidden = true; $('end').hidden = true;
+  if (scene === 'win') reset();
+  scene = 'play'; showAsk();
+  if (!controlsOn) { controlsOn = true; g.controls(me, { fallY: -60, tryAgain: '' }); g.followCamera(me); }
+}
+
+await buildWorld();
+me = await g.hero(CONFIG.hero, { x: spots.spawn[0], y: spots.spawn[1], z: spots.spawn[2], ...(CONFIG.outfit ? { outfit: CONFIG.outfit } : {}) });
+me.play('wave');
+g.coins(spots.coins, { value: CONFIG.coinValue, onCollect: c => { taken.push(c); coinsGot++; } });
+g.camera.position.set(0, 3.6, 10.5); g.camera.lookAt(0, 3.6, -6);
+// A kind fall: back to the last safe place passed, never to the very start.
+g.onUpdate(() => {
+  if (!me || scene !== 'play' || me.position.y > -7) return;
+  const back = spots.checkpoints.filter(c => c[2] >= me.position.z - 3).pop() || spots.checkpoints[0];
+  me.position.set(...back); g.sound('fall'); g.toast(say('fell'));
+});
+
+document.title = CONFIG.title;
+$('t-title').textContent = CONFIG.title; $('t-sub').textContent = say('sub');
+$('play').textContent = `▶ ${say('play')}`; $('again').textContent = `↻ ${say('again')}`;
+$('play').onclick = play; $('again').onclick = play;
+$('loading').remove(); $('title').hidden = false; scene = 'title'; $('play').focus();
+if (startWhenReady) play();
+
+</script>

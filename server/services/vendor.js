@@ -121,6 +121,14 @@ export function checkKit2(src) {
     const [theme, version] = m[1].split('/');
     if (!theme || !version || !KIT2_LOCK.themes[`${theme}/${version}`] || m[1].includes('..')) add('kit2_theme', `Uses theme art that does not exist (${('/vendor/themes/' + m[1]).slice(0, 70)}). Use a theme and version from the theme list.`);
   }
+  // A game on Oomba3D names its world and version in words (start({ theme, version }), or the starter's CONFIG lines
+  // world / version): a pair written out as text must be a shipped theme version, so a built game is pinned to art that
+  // exists and never changes. (A name built in code cannot be read here; the frame can only reach /vendor/themes/.)
+  if (/\bfrom\s*["']oomba3d["']/.test(rest)) {
+    for (const m of rest.matchAll(/\b(?:theme|world)\s*:\s*(['"])([^'"\n]{1,60})\1\s*,\s*(?:\/\/[^\n]*\n\s*)?version\s*:\s*(['"])([^'"\n]{1,20})\3/g)) {
+      if (!KIT2_LOCK.themes[`${m[2]}/${m[4]}`]) add('kit2_theme', `Names a world or version that has not shipped (${`${m[2]} ${m[4]}`.slice(0, 60)}). Use a world and its exact version from the KIT 2 RULES.`);
+    }
+  }
   return { rest, issues };
 }
 

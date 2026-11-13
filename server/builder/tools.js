@@ -18,8 +18,10 @@ import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS } from './catalog.js'
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
+import { WORLD_IDS, worldById, charactersOf, heroFor, DEFAULT_WORLD } from './kit2.js';
 
-// Templates the Builder may start from with start_from_template: the 2D kit templates, and world3d (its own 3D starter).
+// Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
+// and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
 const STARTERS = BUILDER_TEMPLATE_KEYS;
 
 const CATS = games.CATEGORY_KEYS;
@@ -206,12 +208,25 @@ export function toolbox(ctx) {
     async start_from_template(input) {
       const key = String((input && input.template) || '');
       if (!STARTERS.includes(key)) return { ok: false, forModel: `Unknown template. Use one of: ${STARTERS.join(', ')}.` };
-      const [{ html, fallback }, info] = await Promise.all([templateHtml(key), templateInfo(key)]);
+      // The Kit 2 starter needs a shipped world and one of that world's characters: an invented name is refused with the
+      // real names, so the model never guesses.
+      let k2 = null;
+      if (key === 'oomba3d') {
+        const kept = (ctx.state && ctx.state.kit2) || {};
+        const world = String((input && input.world) || kept.world || DEFAULT_WORLD), w = worldById(world);
+        if (!w) return { ok: false, forModel: `There is no 3D world called "${world.slice(0, 40)}". The worlds are: ${WORLD_IDS.join(', ')}.` };
+        const asked = String((input && input.hero) || (kept.world === world ? kept.hero : '') || ''), heroes = charactersOf(world).map(h => h.id);
+        if (asked && !heroes.includes(asked)) return { ok: false, forModel: `${w.id} has no character called "${asked.slice(0, 40)}". Its characters are: ${heroes.join(', ')}. There are no others: pick one of these.` };
+        k2 = { world, hero: heroFor(world, asked) };
+      }
+      const [{ html, fallback }, info] = await Promise.all([templateHtml(key, k2 || undefined), templateInfo(key)]);
       if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
       if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
-      const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
-      if (r.ok) r.forModel += key === 'world3d'
+      const r = saveVersion(html, (input && input.notes) || `Started from ${k2 ? worldById(k2.world).name : info ? info.title : key}`);
+      if (k2 && r.version && ctx.state) ctx.state.kit2 = k2;   // remembered: the next turns are Kit 2 turns
+      if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
+      else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
         : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;
       return r;
