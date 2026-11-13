@@ -1994,7 +1994,8 @@
         "namedIt": "Named it {title}",
         "whatKind": "What kind of game should we make?",
         "hello": "Hi! I’m the Builder 🤖 Tell me your game idea, or tap one to start.",
-        "readyToPlay": "Your game “{title}” is ready to play in the preview! 🎉 What should we change? Tell me in your own words, or tap an idea."
+        "readyToPlay": "Your game “{title}” is ready to play in the preview! 🎉 What should we change? Tell me in your own words, or tap an idea.",
+        "start": "Hi! I’m the Builder 🤖 Tell me your game idea in your own words, and I’ll build it."
       },
       "startChips": {
         "a": "🏃 A running and jumping game",

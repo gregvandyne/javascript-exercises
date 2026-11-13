@@ -24,8 +24,13 @@ test('build with the mock Builder, edit, restore, publish, review, update', asyn
   await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
   const id = page.url().split('/studio/')[1];
 
-  // The Builder asks with chips; tap chips until a game is built.
-  await expect(page.locator('#st-log .qchips:not(.used) .chip').first()).toBeVisible();
+  // A new game starts with one simple message and no starter chips: type an idea, then tap the Builder's question chips
+  // until a game is built.
+  await expect(page.locator('#st-log .msg.bot')).toContainText('Tell me your game idea');
+  await expect(page.locator('#st-log .qchips')).toHaveCount(0);
+  await expect(page.locator('.st-themes')).toBeHidden();
+  await page.fill('#st-input', 'A catch game with falling stars'); await page.press('#st-input', 'Enter');
+  await expect(page.locator('.st-busy')).toHaveCount(0, { timeout: 20000 }); await idle(page);
   for (let i = 0; i < 5 && !(await page.locator('#st-log .ev.version').count()); i++) {
     const chip = page.locator('#st-log .qchips:not(.used) .chip').first();
     await chip.click();
@@ -141,6 +146,8 @@ test('a dropped connection mid-build still shows what the Builder made; a messag
   // The phone loses the stream after the server has the message: the server finishes the turn and saves it,
   // and the page (seeing a network error) waits for the Builder and redraws the chat from the saved state.
   await page.route('**/api/studio/*/chat', async route => { await route.fetch(); await route.abort('connectionreset'); });
+  await page.fill('#st-input', 'A catch game with falling stars'); await page.press('#st-input', 'Enter');
+  await expect(page.locator('.st-busy')).toHaveCount(0, { timeout: 30000 }); await idle(page);
   for (let i = 0; i < 5 && !(await page.locator('#st-log .ev.version').count()); i++) {
     await page.locator('#st-log .qchips:not(.used) .chip').first().click();
     await expect(page.locator('.st-busy')).toHaveCount(0, { timeout: 30000 }); await idle(page);

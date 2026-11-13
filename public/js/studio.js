@@ -26,7 +26,6 @@ const grownupHint = k => (!S.grownup ? '' : k === 'family' ? t('js.studio.share.
   : k === 'public' ? t('js.studio.share.hint.publicGrownup', { name: S.grownup.name }) : '');
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
-const START_CHIPS = chipList('js.studio.startChips');
 const NEXT_CHIPS = chipList('js.studio.nextChips');
 const when = at => { const d = new Date(at); return d.toLocaleDateString(INTL, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' }); };
 const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">⚠️ ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">⛔ ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
@@ -247,6 +246,7 @@ let shownVersion = S.current ? S.current.id : null;   // the version in the prev
 function setPreview(url, vid = null) {
   if (!url) return;
   S.preview = url; $('#st-empty').hidden = true; shownVersion = vid;
+  const picker = $('.st-themes'); if (picker) picker.hidden = false;   // the world picker appears once there is a game
   stopLoud(); frame.src = url;
 }
 const reloadPreview = () => { stopLoud(); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
@@ -394,7 +394,8 @@ function renderLog() {
     // The site's AI budget is spent for now: say when the Builder is back instead of asking what to build.
     if (S.resting && !S.turn && !outOfMessages()) restingNote();
     else if (!msgs.length && !S.turn) {
-      if (!S.current) { askBlock({ question: t('js.studio.log.whatKind') }, true, bubble('bot', t('js.studio.log.hello'))); chips(START_CHIPS, true); }
+      // A new game: one simple message and the message box (no starter chips, no world picker until there is a game).
+      if (!S.current) bubble('bot', t('js.studio.log.start'));
       else { bubble('bot', t('js.studio.log.readyToPlay', { title: S.game.title })); chips(NEXT_CHIPS, true); }
     }
   } finally { drawingLog = false; }

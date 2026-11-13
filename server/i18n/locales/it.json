@@ -1982,7 +1982,8 @@
         "namedIt": "Nome scelto: {title}",
         "whatKind": "Che tipo di gioco facciamo?",
         "hello": "Ciao! Sono il Costruttore 🤖 Raccontami la tua idea di gioco, oppure toccane una per iniziare.",
-        "readyToPlay": "Il tuo gioco «{title}» è pronto da giocare nell'anteprima! 🎉 Cosa cambiamo? Dimmelo con parole tue, o tocca un'idea."
+        "readyToPlay": "Il tuo gioco «{title}» è pronto da giocare nell'anteprima! 🎉 Cosa cambiamo? Dimmelo con parole tue, o tocca un'idea.",
+        "start": "Ciao! Sono il Costruttore 🤖 Raccontami la tua idea di gioco con parole tue e la costruirò."
       },
       "startChips": {
         "a": "🏃 Un gioco di corsa e salti",

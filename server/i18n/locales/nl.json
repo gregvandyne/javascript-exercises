@@ -1982,7 +1982,8 @@
         "namedIt": "Naam gegeven: {title}",
         "whatKind": "Wat voor game zullen we maken?",
         "hello": "Hoi! Ik ben de Bouwer 🤖 Vertel me je game-idee, of tik op een idee om te beginnen.",
-        "readyToPlay": "Je game “{title}” is klaar om te spelen in het voorbeeld! 🎉 Wat zullen we veranderen? Vertel het in je eigen woorden, of tik op een idee."
+        "readyToPlay": "Je game “{title}” is klaar om te spelen in het voorbeeld! 🎉 Wat zullen we veranderen? Vertel het in je eigen woorden, of tik op een idee.",
+        "start": "Hoi! Ik ben de Bouwer 🤖 Vertel me je spelidee in je eigen woorden, dan bouw ik het."
       },
       "startChips": {
         "a": "🏃 Een ren- en springgame",

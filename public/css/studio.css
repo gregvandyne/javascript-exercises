@@ -321,6 +321,7 @@ button.stp-line{cursor:pointer}
 .sheet textarea.input{display:block;width:100%}
 .mygame .coverart .shot-icon{display:none}.mygame .coverart.has-shot img{object-position:center}
 /* The theme chips over the message box (routes/studio.js themePicker): one scrolling row, a small picture of each world. */
+.st-themes[hidden]{display:none}
 .st-themes{display:flex;align-items:center;gap:8px;margin:0 -10px 8px;padding:0 10px;min-width:0}
 /* The picker's tabs: 3D worlds, 3D heroes, classic kit themes (one row of chips shows at a time). */
 .st-tabs{flex:none;display:inline-flex;gap:2px;padding:2px;border-radius:999px;border:2px solid var(--line);background:var(--card-2)}
