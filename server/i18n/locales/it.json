@@ -3111,7 +3111,7 @@
       "emptyText": "Crei una nuova lezione, lasci che l'IA ne prepari una bozza, oppure copi una lezione condivisa da un collega.",
       "find": "Cerca una lezione",
       "readyMade": "Già pronti",
-      "numberQuest": "Number Quest (matematica, classi 3ª–5ª)"
+      "numberQuest": "Number Quest (matematica, dall’infanzia alla 5ª)"
     },
     "folder": {
       "name": "Nome della cartella",
@@ -4310,7 +4310,7 @@
       "q4": "Come proteggete la privacy degli studenti?",
       "a4": "Non chiediamo mai agli studenti indirizzo email, età o indirizzo di casa. Non ci sono pubblicità né cookie di tracciamento, e il nome vero di uno studente è visibile solo al personale della sua scuola. La nostra <a href=\"{href}\">informativa sulla privacy</a> elenca esattamente cosa conserviamo.",
       "q5": "Per quali età e classi è pensato?",
-      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli, e i corsi completi iniziano dalla terza elementare.",
+      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli. Number Quest, il corso di matematica, inizia dall’ultimo anno della scuola dell’infanzia, mentre CS Quest e Cyber Defenders iniziano dalla terza elementare.",
       "q6": "Come aggiungo la mia classe?",
       "a6": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso.",
       "a6google": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso. Le scuole che usano Google possono far accedere gli studenti con Google.",
@@ -4743,7 +4743,7 @@
         "title": "Giochi educativi gratuiti per bambini di 5, 6 e 7 anni",
         "description": "Giochi gratuiti e senza pubblicità per bambini dai 5 ai 7 anni: parole inglesi lette ad alta voce, prime somme, ritmo e strategia. Niente download né chat con estranei.",
         "h1": "Giochi educativi per bambini dai 5 ai 7 anni",
-        "lead": "Dall’ultimo anno della scuola dell’infanzia alla seconda elementare, quasi tutti i bambini stanno ancora imparando a leggere. Questi giochi leggono le parole ad alta voce, oppure usano numeri, musica e immagini, così un bambino piccolo può giocare con un adulto vicino all’inizio. I nostri percorsi completi iniziano in terza elementare, verso gli 8 anni.",
+        "lead": "Dall’ultimo anno della scuola dell’infanzia alla seconda elementare, quasi tutti i bambini stanno ancora imparando a leggere. Questi giochi leggono le parole ad alta voce, oppure usano numeri, musica e immagini, così un bambino piccolo può giocare con un adulto vicino all’inizio. Number Quest, il nostro percorso di matematica, inizia dall’ultimo anno della scuola dell’infanzia; gli altri percorsi completi iniziano in terza elementare, verso gli 8 anni.",
         "fit": {
           "wordTrail": "Fatto per questa età: le prime parole frequenti in inglese su un sentiero da fiaba, e ogni parola viene letta ad alta voce.",
           "sharkPlank": "L’impiccato con parole inglesi per chi sta appena imparando a leggere, con ogni parola letta ad alta voce.",
@@ -4758,7 +4758,7 @@
           "q2": "Mio figlio può giocare anche se non sa ancora leggere?",
           "a2": "Con alcuni giochi, sì. Word Trail e Shark Plank leggono ogni parola ad alta voce, Word Hunt legge una parola quando la tocchi, e Sum Racer e Tug of Math usano i numeri. Menu e istruzioni sono scritti, quindi all’inizio aiuta avere un adulto vicino.",
           "q3": "I percorsi sono adatti a questa età?",
-          "a3": "Non ancora. Number Quest, CS Quest e Cyber Defenders iniziano in terza elementare, verso gli 8 anni. Dai 5 ai 7 anni, i giochi di questa pagina sono il punto di partenza.",
+          "a3": "Uno sì. Number Quest, il nostro percorso di matematica, inizia dall’ultimo anno della scuola dell’infanzia: la sua strada Launchpad va fino alla seconda elementare, e i suoi giochi leggono ogni istruzione ad alta voce. CS Quest e Cyber Defenders iniziano in terza elementare, verso gli 8 anni.",
           "q4": "Un bambino di 6 anni può usare il Costruttore IA?",
           "a4": "I bambini scrivono la loro idea al Costruttore, quindi a questa età è meglio che un adulto si sieda con loro e li aiuti a scriverla. Il Costruttore segue regole di sicurezza fisse per bambini, e un gioco nuovo resta privato finché non viene condiviso."
         }
@@ -6918,7 +6918,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "La matematica nei Numberworks · dalla 3ª alla 5ª elementare"
+      "sub": "La matematica nei Numberworks · dall’infanzia alla 5ª elementare"
     },
     "unitsN": "{count, plural, one {Vedi l’unità} other {Vedi le # unità}}",
     "gamesN": "{count, plural, one {Vedi il gioco} other {Vedi i # giochi}}"
@@ -7225,8 +7225,8 @@
       "lead": "Brevi presentazioni, verifiche veloci e missioni di gioco in un unico percorso. Ogni studente va al suo ritmo; tu vedi i progressi nel registro.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matematica · dalla terza alla quinta",
-        "p": "Valore posizionale, frazioni, misure, figure e dati nel Numberworks di Netville con la gatta Tally. Ogni passo è collegato ai Common Core State Standards di matematica."
+        "tag": "Matematica · dall’infanzia alla quinta",
+        "p": "Contare, valore posizionale, frazioni, misure, figure e dati nel Numberworks di Netville con la gatta Tally, dall’ultimo anno della scuola dell’infanzia alla quinta elementare. Ogni passo è collegato ai Common Core State Standards di matematica."
       },
       "cs": {
         "name": "CS Quest",

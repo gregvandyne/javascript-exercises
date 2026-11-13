@@ -1,6 +1,6 @@
 // Number Quest surfaces (the Duolingo-lite UI + the teacher map): the course registered on the
-// platform machinery with its tiers as bands (a learner sees the Explorer street alone while the Launchpad
-// tier is still being built, and no Pro tier exists; tests/unit/number-quest-tiers.test.js covers the
+// platform machinery with its tiers as bands (a learner sees two streets, Launchpad and Explorer, since
+// Launchpad opened on 2026-11-13, and no Pro tier exists; tests/unit/number-quest-tiers.test.js covers the
 // tiers themselves), the path home rendering the street (nodes, lap rings,
 // Tally Marks, the daily goal), and the teacher map publishing the locked CCSS-M
 // statements for Units 1-7 plus the finale (Phase 2, 2026-11-05) with primary / also / builds-toward kept separate. The in-lesson moment wiring
@@ -21,13 +21,17 @@ const course = C.getCourse('number-quest');
 let n = 0;
 const newKid = () => auth.createUser({ username: `nqp${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
 
-test('the course is registered: a learner sees one Explorer band, 23 steps, no deck problems, other courses untouched', () => {
+test('the course is registered: a learner sees the Launchpad and Explorer bands, 23 steps each, no deck problems, other courses untouched', () => {
   assert.ok(course);
   assert.equal(course.teacherPath, '/teachers/number-quest');
-  // The bands a learner is offered: Explorer alone. (Launchpad has units but is still being built, so only
-  // the platform admin sees it; Pro has no units, so it is nobody's band.)
-  assert.deepEqual(C.bandsFor(course), ['explorer']);
-  assert.deepEqual(C.bandsFor(course, newKid()), ['explorer']);
+  // The bands a learner is offered: Launchpad and Explorer, in path order. (Launchpad opened on 2026-11-13;
+  // Pro has no units, so it is nobody's band.)
+  assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer']);
+  assert.deepEqual(C.bandsFor(course, newKid()), ['launchpad', 'explorer']);
+  assert.equal(C.defaultBand(course, newKid()), 'explorer', 'a viewer with no band and no placement is still shown the Explorer street');
+  assert.equal(C.steps(course, 'launchpad').length, 23);
+  assert.equal(C.steps(course, 'launchpad')[0].key, 'launchpad-0.1'); assert.equal(C.steps(course, 'launchpad').at(-1).key, 'launchpad-7.4');
+  assert.deepEqual(C.deckProblems('launchpad', 'number-quest'), []);
   assert.deepEqual(C.bandsFor(C.getCourse('cs-quest')), ['1b', '2']);
   const steps = C.steps(course, 'explorer');
   assert.equal(steps.length, 23);
@@ -46,20 +50,24 @@ test('the course is registered: a learner sees one Explorer band, 23 steps, no d
   const kid = newKid();
   assert.equal(C.setBand(kid, course, '2'), false);
   assert.equal(C.setBand(kid, course, 'pro'), false, 'a tier with no units is no band');
-  assert.equal(C.setBand(kid, course, 'launchpad'), false, 'a tier still being built is no band for a learner');
   assert.equal(C.getBand(kid, course), null);
+  assert.equal(C.setBand(kid, course, 'launchpad'), true, 'an open tier is a band a learner may pick');
+  assert.equal(C.getBand(kid, course), 'launchpad');
   assert.equal(C.setBand(kid, course, 'explorer'), true);
   assert.equal(C.getBand(kid, course), 'explorer');
 });
 
-test('the catalogue carries the locked map: 53 statements, every cited code locked, practices named', () => {
+test('the catalogue carries the locked map: 53 Explorer statements, every cited code locked in its own tier, practices named', () => {
   const cat = C.numberQuestCatalogue();
-  assert.equal(cat.units.length, 8);
+  assert.deepEqual(cat.tiers.map(t => t.key), ['launchpad', 'explorer']);
+  assert.equal(cat.units.length, 16, 'a welcome and seven units on each of the two open streets');
+  assert.equal(cat.units.filter(u => (u.tier || 'explorer') === 'explorer').length, 8);
   assert.equal(Object.keys(cat.registry.explorerCodes.codes).length, 53);
-  const locked = new Set(Object.keys(cat.registry.explorerCodes.codes));
   const clusters = new Set(Object.values(cat.registry.clusters).flatMap(g => Object.keys(g)));
   for (const u of cat.units) for (const s of u.steps) {
-    const st = s.standards.explorer;
+    const tier = u.tier || 'explorer';
+    const locked = new Set(Object.keys(cat.registry[`${tier}Codes`].codes));
+    const st = s.standards[tier];
     for (const code of [...st.primary, ...st.also]) assert.ok(locked.has(code), `${s.n} cites unlocked ${code}`);
     // Builds toward may also name a whole cluster (3.1's 3.MD.C seed for area): preparation at cluster
     // level, labelled as such in the step's own note — never a statement the course does not teach.
@@ -116,7 +124,7 @@ test('the path home renders the street: HUD, nodes, lap words, stones, all seven
   ['explorer-0.1', 'explorer-1.1', 'explorer-1.2', 'explorer-1.3'].forEach(finish);
   NQ.completeLap(kid, course, 'explorer', 1, 1);
   const ov = C.overview(kid, course, 'explorer');
-  const html = String(pathPage({ course, ov, units: C.numberQuestCatalogue().units,
+  const html = String(pathPage({ course, ov, units: C.numberQuestCatalogue().tiers.find(t => t.key === 'explorer').units,
     marks: NQ.totalMarks(kid, course), daily: NQ.dailyStatus(kid, course),
     laps: Object.fromEntries(NQ.lapsForTier(kid, course, 'explorer').map(l => [l.unit, l])),
     placement: null, testedOut: [], canPick: true, bandSet: true, hasProgress: true }));
@@ -139,7 +147,7 @@ test('the path home renders the street: HUD, nodes, lap words, stones, all seven
 test('a fresh student gets the level picker and the Sorting Game invitation, and no false progress', () => {
   const kid = newKid();
   const ov = C.overview(kid, course, 'explorer');
-  const html = String(pathPage({ course, ov, units: C.numberQuestCatalogue().units,
+  const html = String(pathPage({ course, ov, units: C.numberQuestCatalogue().tiers.find(t => t.key === 'explorer').units,
     marks: 0, daily: NQ.dailyStatus(kid, course), laps: {}, placement: null, testedOut: [],
     canPick: true, bandSet: false, hasProgress: false }));
   assert.match(html, /id="band-explorer"/);

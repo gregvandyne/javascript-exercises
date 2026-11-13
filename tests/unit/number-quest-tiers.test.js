@@ -8,6 +8,9 @@
 //     Hedge (5.1-5.3, played in Rocket Supply), its Unit 6, The Shape Shed (6.1-6.3, played in Shape Hunt), and its Unit 7,
 //     The Measuring Meadow (7.1-7.3, played in Kitchen Rush) with the tier's finale, The Garden Gate (7.4, Kitchen Rush's
 //     fourth chapter), load with no deck problems; Pro has no units, so it does not exist;
+//   - Launchpad is "open" in units.json since 2026-11-13 (tests/unit/number-quest-launchpad-open.test.js pins what
+//     that means for real learners); the building state is still the engine's to keep, for Pro's turn, so the
+//     "building" tests below ask for it by the test-only status hook;
 //   - while Launchpad is "building", a learner sees Explorer alone (path page, band picker, placement,
 //     teacher page), cannot open launchpad-0.1 (it reads as a step that does not exist) nor pick the band;
 //     the platform admin can;
@@ -70,7 +73,8 @@ test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly it
   assert.deepEqual(T.TIERS, ['launchpad', 'explorer', 'pro']);
   assert.deepEqual(T.existingTiers(), ['launchpad', 'explorer']);
   assert.equal(T.statusOf('explorer'), 'open');
-  assert.equal(T.statusOf('launchpad'), 'building');
+  assert.equal(T.statusOf('launchpad'), 'open', 'Launchpad opened to everyone on 2026-11-13, with all seven units and its finale');
+  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer']);
   assert.equal(T.statusOf('pro'), null, 'a tier with no units has no status: it does not exist');
   assert.deepEqual({ district: T.tierInfo('launchpad').district, grades: T.tierInfo('launchpad').grades, inGame: T.tierInfo('launchpad').inGame, stones: T.tierInfo('launchpad').stones },
     { district: 'The Gardens', grades: 'K-2', inGame: 'Launchpad', stones: ['Counting Seed', 'Joining Seed', 'Tens Seed', 'Balance Seed', 'Hundreds Seed', 'Shape Seed', 'Measuring Seed'] });
@@ -175,6 +179,7 @@ test('Brain Board and Quest Race decode the lesson mode per tier, and an unknown
 
 // ------------------------------------------------------------------------------------------------- building
 test('Launchpad building: a learner sees Explorer alone and cannot reach launchpad-0.1 or its band', async () => {
+  T.setTierStatus('launchpad', 'building'); // units.json says "open" since 2026-11-13: the building state is asked for by name
   const kid = newKid(), cookie = cookieFor(kid.id);
   assert.deepEqual(C.bandsFor(course), ['explorer']);
   assert.deepEqual(C.bandsFor(course, kid), ['explorer']);
@@ -222,6 +227,7 @@ test('Launchpad building: a learner sees Explorer alone and cannot reach launchp
 });
 
 test('Launchpad building: placement behaves exactly as with Explorer alone, even if profiles existed', () => {
+  T.setTierStatus('launchpad', 'building'); // units.json says "open" since 2026-11-13: the building state is asked for by name
   P.setEntryProfilesForTests({ 'launchpad-0.1': profile(1) });
   assert.deepEqual(P.crosswalk({ number: 1, algebra: 3, 'shape-measure': 3, 'data-chance': 3 }), { node: 'explorer-0.1', tier: 'explorer', launchpadGap: true, finaleDoor: false });
   assert.deepEqual(P.startNodes().map(x => x.node), ['explorer-0.1', 'explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1', 'explorer-7.4']);
@@ -240,6 +246,7 @@ test('Launchpad building: placement behaves exactly as with Explorer alone, even
 });
 
 test('Launchpad building: the platform admin sees the tier and can open its welcome', async () => {
+  T.setTierStatus('launchpad', 'building'); // units.json says "open" since 2026-11-13: the building state is asked for by name
   const cookie = cookieFor(admin.id);
   assert.deepEqual(C.bandsFor(course, admin), ['launchpad', 'explorer']);
   assert.equal(C.stepFor(admin, course, 'launchpad-0.1').key, 'launchpad-0.1');
@@ -351,9 +358,10 @@ test('Launchpad open: the switcher renders, a learner picks the band and walks t
 test('Launchpad open: placement lands a rung under 2.5 on a Launchpad node once entry profiles exist', () => {
   T.setTierStatus('launchpad', 'open');
   const low = { number: 0.5, algebra: 3, 'shape-measure': 3, 'data-chance': 3 };
-  // Open but no profiles locked yet: today's answer, gap flagged.
-  assert.deepEqual(P.crosswalk(low), { node: 'explorer-0.1', tier: 'explorer', launchpadGap: true, finaleDoor: false });
-  // With the real tier (the welcome and Units 1 to 3) and a profile on its first door.
+  // The real tier with its locked profiles (placement.json, 2026-11-13): Number 0.5 meets the profiles of
+  // Units 1 and 2 (Algebra 3 covers Unit 2's 1.0) and misses Unit 3's Number 1.5: no gap is flagged any more.
+  assert.deepEqual(P.crosswalk(low), { node: 'launchpad-3.1', tier: 'launchpad', launchpadGap: false, finaleDoor: false });
+  // With a profile on its first door too, a rung under it starts at the tier's welcome.
   P.setEntryProfilesForTests({ 'launchpad-0.1': profile(1) });
   assert.deepEqual(P.crosswalk(low), { node: 'launchpad-0.1', tier: 'launchpad', launchpadGap: false, finaleDoor: false });
   // Three Launchpad units (0, 1, 2), profiles on the doors of 1 and 2.

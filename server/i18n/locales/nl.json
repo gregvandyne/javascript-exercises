@@ -3111,7 +3111,7 @@
       "emptyText": "Maak een nieuwe les, laat de AI een opzet maken, of kopieer een les die een collega heeft gedeeld.",
       "find": "Zoek een les",
       "readyMade": "Kant-en-klaar",
-      "numberQuest": "Number Quest (rekenen, groep 5–7)"
+      "numberQuest": "Number Quest (rekenen, groep 2–7)"
     },
     "folder": {
       "name": "Naam van de map",
@@ -4310,7 +4310,7 @@
       "q4": "Hoe beschermen jullie de privacy van leerlingen?",
       "a4": "We vragen leerlingen nooit om een e-mailadres, leeftijd of woonadres. Er is geen reclame en er zijn geen trackingcookies, en de echte naam van een leerling is alleen zichtbaar voor medewerkers van de school. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
       "q5": "Voor welke leeftijden en groepen is het?",
-      "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten, en de volledige cursussen beginnen in groep 5.",
+      "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten. Number Quest, de rekencursus, begint in groep 2, en CS Quest en Cyber Defenders beginnen in groep 5.",
       "q6": "Hoe voeg ik mijn klas toe?",
       "a6": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
       "a6google": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
@@ -4743,7 +4743,7 @@
         "title": "Gratis leerspelletjes voor kinderen van 5, 6 en 7 jaar",
         "description": "Gratis browserspelletjes zonder reclame voor kinderen van 5 tot 7: Engelse woorden voorgelezen, eerste sommen, ritme en strategie. Zonder downloads of chat met vreemden.",
         "h1": "Leerspelletjes voor kinderen van 5 tot 7 jaar",
-        "lead": "Van groep 2 tot en met groep 4 leren de meeste kinderen nog lezen. Deze spelletjes lezen hun woorden voor, of werken met getallen, muziek en plaatjes, zodat een jong kind in het begin kan spelen met een volwassene in de buurt. Onze volledige cursussen beginnen in groep 5, rond 8 jaar.",
+        "lead": "Van groep 2 tot en met groep 4 leren de meeste kinderen nog lezen. Deze spelletjes lezen hun woorden voor, of werken met getallen, muziek en plaatjes, zodat een jong kind in het begin kan spelen met een volwassene in de buurt. Number Quest, onze rekencursus, begint in groep 2; onze andere volledige cursussen beginnen in groep 5, rond 8 jaar.",
         "fit": {
           "wordTrail": "Gemaakt voor deze leeftijd: de eerste veelgebruikte Engelse woorden op een sprookjespad, en elk woord wordt voorgelezen.",
           "sharkPlank": "Galgje met Engelse woorden voor kinderen die net leren lezen, en elk woord wordt voorgelezen.",
@@ -4758,7 +4758,7 @@
           "q2": "Kan mijn kind spelen als het nog niet kan lezen?",
           "a2": "Bij sommige spelletjes wel. Word Trail en Shark Plank lezen elk woord voor, Word Hunt leest een woord voor als je het aantikt, en Sum Racer en Tug of Math werken met getallen. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
           "q3": "Zijn de cursussen voor deze leeftijd?",
-          "a3": "Nog niet. Number Quest, CS Quest en Cyber Defenders beginnen in groep 5, rond 8 jaar. Van 5 tot 7 zijn de spelletjes op deze pagina de plek om te beginnen.",
+          "a3": "Eén wel. Number Quest, onze rekencursus, begint in groep 2: de Launchpad-straat is voor groep 2 tot en met 4, en de spelletjes daar lezen elke opdracht voor. CS Quest en Cyber Defenders beginnen in groep 5, rond 8 jaar.",
           "q4": "Kan een kind van 6 de AI-Bouwer gebruiken?",
           "a4": "Kinderen typen hun idee voor de Bouwer, dus op deze leeftijd kan een volwassene er het best bij gaan zitten en helpen met schrijven. De bouwer volgt vaste veiligheidsregels voor kinderen, en een nieuw spel blijft privé tot het gedeeld wordt."
         }
@@ -6918,7 +6918,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
+      "sub": "Rekenen in de Numberworks · groep 2 tot en met 7"
     },
     "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
     "gamesN": "{count, plural, one {Bekijk het # spel} other {Bekijk de # spellen}}"
@@ -7225,8 +7225,8 @@
       "lead": "Korte dia’s, snelle checks en gamemissies op één pad. Leerlingen werken in hun eigen tempo; jij ziet de voortgang in het cijferoverzicht.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Rekenen · groep 5 tot en met 7",
-        "p": "Plaatswaarde, breuken, meten, vormen en data in het Numberworks van Netville, met Tally de kat. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
+        "tag": "Rekenen · groep 2 tot en met 7",
+        "p": "Tellen, plaatswaarde, breuken, meten, vormen en data in het Numberworks van Netville, met Tally de kat, van groep 2 tot en met groep 7. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
       },
       "cs": {
         "name": "CS Quest",

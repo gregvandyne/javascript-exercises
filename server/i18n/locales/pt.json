@@ -3112,7 +3112,7 @@
       "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou.",
       "find": "Procurar uma aula",
       "readyMade": "Prontos para usar",
-      "numberQuest": "Number Quest (matemática, 3º–5º ano)"
+      "numberQuest": "Number Quest (matemática, da educação infantil ao 5º ano)"
     },
     "folder": {
       "name": "Nome da pasta",
@@ -4311,7 +4311,7 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos, e os cursos completos começam no 3º ano.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos. Number Quest, o curso de matemática, começa na educação infantil, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
@@ -4744,7 +4744,7 @@
         "title": "Jogos educativos grátis para crianças de 5, 6 e 7 anos",
         "description": "Jogos grátis e sem anúncios para crianças de 5 a 7 anos: palavras em inglês lidas em voz alta, primeiras somas, ritmo e estratégia. Sem downloads nem chat com estranhos.",
         "h1": "Jogos educativos para crianças de 5 a 7 anos",
-        "lead": "Da educação infantil ao 2º ano, a maioria das crianças ainda está aprendendo a ler. Estes jogos leem as palavras em voz alta, ou usam números, música e imagens, para que uma criança pequena possa jogar com um adulto por perto no começo. Nossos cursos completos começam no 3º ano, por volta dos 8 anos.",
+        "lead": "Da educação infantil ao 2º ano, a maioria das crianças ainda está aprendendo a ler. Estes jogos leem as palavras em voz alta, ou usam números, música e imagens, para que uma criança pequena possa jogar com um adulto por perto no começo. Number Quest, nosso curso de matemática, começa na educação infantil; nossos outros cursos completos começam no 3º ano, por volta dos 8 anos.",
         "fit": {
           "wordTrail": "Feito para esta idade: as primeiras palavras frequentes em inglês numa trilha de história, e cada palavra é lida em voz alta.",
           "sharkPlank": "Jogo da forca com palavras em inglês para quem está começando a ler, com cada palavra lida em voz alta.",
@@ -4759,7 +4759,7 @@
           "q2": "Meu filho pode jogar se ainda não sabe ler?",
           "a2": "Em alguns jogos, sim. Word Trail e Shark Plank leem cada palavra em voz alta, Word Hunt lê uma palavra quando você toca nela, e Sum Racer e Tug of Math usam números. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
           "q3": "Os cursos são para esta idade?",
-          "a3": "Ainda não. Number Quest, CS Quest e Cyber Defenders começam no 3º ano, por volta dos 8 anos. Dos 5 aos 7, os jogos desta página são o lugar para começar.",
+          "a3": "Um deles, sim. Number Quest, nosso curso de matemática, começa na educação infantil: a rua Launchpad vai da educação infantil ao 2º ano, e seus jogos leem cada instrução em voz alta. CS Quest e Cyber Defenders começam no 3º ano, por volta dos 8 anos.",
           "q4": "Uma criança de 6 anos pode usar o Construtor com IA?",
           "a4": "As crianças digitam a ideia para o Construtor, então nesta idade é bom um adulto se sentar junto e ajudar a escrever. O Construtor segue regras fixas de segurança infantil, e um jogo novo fica privado até ser compartilhado."
         }
@@ -6919,7 +6919,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Matemática nos Numberworks · do 3º ao 5º ano"
+      "sub": "Matemática nos Numberworks · da educação infantil ao 5º ano"
     },
     "unitsN": "{count, plural, one {Ver a # unidade} other {Ver as # unidades}}",
     "gamesN": "{count, plural, one {Ver o # jogo} other {Ver os # jogos}}"
@@ -7226,8 +7226,8 @@
       "lead": "Apresentações curtas, verificações rápidas e missões de jogo num só caminho. Cada aluno avança no seu ritmo; você acompanha o progresso no boletim.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matemática · 3º ao 5º ano",
-        "p": "Valor posicional, frações, medidas, formas e dados pelo Numberworks de Netville com a gata Tally. Cada passo está alinhado aos Common Core State Standards de matemática."
+        "tag": "Matemática · educação infantil ao 5º ano",
+        "p": "Contagem, valor posicional, frações, medidas, formas e dados pelo Numberworks de Netville com a gata Tally, da educação infantil ao 5º ano. Cada passo está alinhado aos Common Core State Standards de matemática."
       },
       "cs": {
         "name": "CS Quest",

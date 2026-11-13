@@ -166,7 +166,7 @@ test('subtitles keep "· grades 3–8" together; the en strings say "Math"', () 
   assert.equal(String(V.subLine('Computer science in four games · grades 3–8')), '<span class="sub-a">Computer science in four games</span> <span class="sub-b"><span class="sub-dot">· </span>grades 3–8</span>');
   assert.equal(String(V.subLine('No dot here')), 'No dot here');
   const en = JSON.parse(fs.readFileSync(path.join(ROOT, 'server/i18n/locales/en.json'), 'utf8'));
-  assert.equal(en.courses.nq.sub, 'Math through the Numberworks · grades 3–5');
+  assert.equal(en.courses.nq.sub, 'Math through the Numberworks · grades K–5');
 });
 
 test('Tally\'s wrong-answer line: kid phrases in a frame, anything else gets her plain line', () => {

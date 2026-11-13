@@ -152,9 +152,12 @@ router.get('/number-quest/starting-point', (req, res) => {
 function rebuildNote(placement) {
   const placed = Object.fromEntries(Object.entries(placement.rungs).map(([k, v]) => [k, { rung: v, confirmed: placement.source !== 'beginning' }]));
   const lines = Object.entries(placed).map(([k, v]) => P.strandNoteWords(P.STRAND_LABELS[k], v, placement.rungs));
-  const { node, launchpadGap, finaleDoor } = P.crosswalk(placement.rungs);
-  return { lines, placedUnit: finaleDoor ? P.finaleWords(node) : P.placedUnitWords(placement.startNode),
-    launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line; the Launchpad gardens are still being built, so this learner starts at Welcome to the Numberworks for now.' : null, partial: null };
+  const { node, finaleDoor } = P.crosswalk(placement.rungs);
+  // The finale wording belongs to a start that IS the finale door: a start a grown-up moved elsewhere
+  // (or one set before a tier opened) reads as the stored node, never as what the rungs would say now.
+  const atFinale = finaleDoor && node === placement.startNode;
+  return { lines, placedUnit: atFinale ? P.finaleWords(node) : P.placedUnitWords(placement.startNode),
+    launchpadLine: P.launchpadNoteLine(placement.rungs, placement.startNode, placement.source), partial: null };
 }
 // ------------------------------------------------------------------------------------------------- the daily goal
 /** The student's own daily-goal choice (1, 2 or 3 activities, progress service §6.1) from the path home's
@@ -169,50 +172,77 @@ router.post('/api/number-quest/daily-goal', ...api, form, (req, res) => {
 
 // ------------------------------------------------------------------------------------------------- the teacher page
 /** /teachers/number-quest: the public program page (Cyber Defenders' page is the model): overview, the
- *  six games, the units and steps, the locked CCSS-M map for Explorer Units 1-7 plus the finale, the
- *  teacher notes and the printed pack (?print=1). Anyone may read it; the course stands alone. */
+ *  games, the units and steps, the locked CCSS-M map of every open street (Launchpad K-2 and Explorer 3-5,
+ *  each with its Units 1-7 and its finale), the teacher notes and the printed pack (?print=1). Anyone may
+ *  read it; the course stands alone. Every count on the page (steps, units, streets, games, the grade
+ *  range) is worked out from the catalogue this reader may see, never typed. */
+/** The games that carry the course, in street order. A game is listed only when a step this reader may
+ *  see plays it, so a street that is not open brings no game with it. Titles are the games' own names. */
+const NQ_CREW = Object.freeze([
+  { slug: 'garden-count', key: 'gardenCount', emoji: '🍎', title: 'Garden Count' },
+  { slug: 'lily-hop', key: 'lilyHop', emoji: '🐸', title: 'Lily Hop' },
+  { slug: 'crate-stacker', key: 'crateStacker', emoji: '📦', title: 'Crate Stacker' },
+  { slug: 'balance-bridge', key: 'balanceBridge', emoji: '⚖️', title: 'Balance Bridge' },
+  { slug: 'rocket-supply', key: 'rocketSupply', emoji: '🚀', title: 'Rocket Supply' },
+  { slug: 'shape-hunt', key: 'shapeHunt', emoji: '🔺', title: 'Shape Hunt' },
+  { slug: 'kitchen-rush', key: 'kitchenRush', emoji: '🍳', title: 'Kitchen Rush' },
+  { slug: 'brain-board', key: 'brainBoard', emoji: '🌟', title: 'Brain Board' },
+  { slug: 'sum-racer', key: 'sumRacer', emoji: '🏎️', title: 'Sum Racer' },
+  { slug: 'quest-race', key: 'questRace', emoji: '🏝️', title: 'Quest Race' },
+  { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
+  { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
+]);
+/** What the page counts, from the catalogue a reader may see: its streets, numbered units, steps, the
+ *  games those steps play, and the grades the streets span ("K–5", from each tier's own "K-2" / "3-5"). */
+export function nqFacts(cat) {
+  const tierOf = u => NQT.tierOfUnit(u);
+  const slugs = new Set(cat.units.flatMap(u => (u.steps || []).map(s => ((s.game || {})[tierOf(u)] || {}).slug).filter(Boolean)));
+  const ends = (cat.tiers || []).map(x => String((NQT.tierInfo(x.key) || {}).grades || '').split('-')).filter(g => g.length === 2);
+  const num = g => (g === 'K' ? 0 : +g);
+  const lo = ends.map(g => g[0]).sort((a, b) => num(a) - num(b))[0], hi = ends.map(g => g[1]).sort((a, b) => num(b) - num(a))[0];
+  return { streets: (cat.tiers || []).length || 1, units: cat.units.filter(u => u.n >= 1).length, steps: cat.units.reduce((n, u) => n + (u.steps || []).length, 0),
+    games: NQ_CREW.filter(c => slugs.has(c.slug)), grades: lo && hi ? `${lo}–${hi}` : '3–5', gradesPlain: lo && hi ? `${lo}-${hi}` : '3-5' };
+}
 router.get('/teachers/number-quest', (req, res) => {
-  // The tiers this reader may see: the open ones (a tier still being built shows to the platform admin only).
+  // The tiers this reader may see: the open ones (a tier that is not open shows to the platform admin only).
   const t = req.t, cat = C.numberQuestCatalogue(req.user);
+  const facts = nqFacts(cat);
+  // The games named in a sentence, in the reader's language's own list form ("A, B and C"); the titles stay as they are.
+  const listOf = names => { try { return new Intl.ListFormat(req.locale || 'en', { style: 'long', type: 'conjunction' }).format(names); } catch { return names.join(', '); } };
+  const fv = { steps: facts.steps, units: facts.units, streets: facts.streets, games: facts.games.length, grades: facts.grades, gameList: listOf(facts.games.map(g => g.title)) };
   const tierOf = u => NQT.tierOfUnit(u), manyTiers = cat.tiers.length > 1;
   const K = 'teachers.nq';
   if (req.query.print === '1') {
     const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🔢 Number Quest — ${t(`${K}.print.h`)}</h1>
       <p class="muted" lang="en" dir="ltr">${cat.program.standards}</p>${mapAndNotes(req, cat, el)}</div>`;
-    return page(req, res, { title: `${t(`${K}.title`)} — ${t(`${K}.print.h`)}`, body, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
+    return page(req, res, { title: `${t(`${K}.title`, fv)} — ${t(`${K}.print.h`)}`, body, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   const staff = !!req.user && !req.user.is_guest && S.isSchoolStaff(req.user);
-  const crew = [
-    { slug: 'brain-board', key: 'brainBoard', emoji: '🌟', title: 'Brain Board' },
-    { slug: 'sum-racer', key: 'sumRacer', emoji: '🏎️', title: 'Sum Racer' },
-    { slug: 'quest-race', key: 'questRace', emoji: '🏝️', title: 'Quest Race' },
-    { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
-    { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
-  ].map(c => ({ ...c, live: launchGame(c.slug) }));
+  const crew = facts.games.map(c => ({ ...c, live: launchGame(c.slug) }));
   const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${manyTiers ? `${NQT.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${NQT.stepTitle(tierOf(u), s)}</li>`)}</ol></li>`;
   const faqPairs = [1, 2, 3, 4, 5].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
-  const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers') });
+  const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers'), ...fv });
   const path = '/teachers/number-quest';
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${K}.crumb`), path]];
   const codes = [...new Set(cat.units.flatMap(u => (u.steps || []).flatMap(s => { const st = (s.standards || {})[tierOf(u)] || {}; return [...(st.primary || []), ...(st.also || [])]; })))];
   const body = html`<div class="lp">
   <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
   <section class="lp-hero" aria-labelledby="lp-h1">
-    ${el(t, 'p', `${K}.kicker`, {}, ' class="lp-kicker"')}
+    ${el(t, 'p', `${K}.kicker`, fv, ' class="lp-kicker"')}
     ${el(t, 'h1', `${K}.h1`, {}, ' id="lp-h1"')}
     ${el(t, 'p', `${K}.lead`, {}, ' class="lead"')}
-    <ul class="lp-badges">${['steps', 'units', 'games', 'minutes', 'free'].map(x => html`<li>${el(t, 'span', `${K}.badges.${x}`)}</li>`)}</ul>
+    <ul class="lp-badges">${['steps', 'units', 'games', 'minutes', 'free'].map(x => html`<li>${el(t, 'span', `${K}.badges.${x}`, fv)}</li>`)}</ul>
     <div class="row lp-cta"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.cta.open`)}</a><a class="btn btn-big" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a></div>
   </section>
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${K}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.promise.li${n}`))}</ul></section>
   ${placementSection()}
-  <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, {}, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`)}
+  <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, fv, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`, fv)}
     <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, c.emoji)}<h3 lang="en" dir="ltr">${c.title}</h3>
       ${el(t, 'p', `${K}.crew.${c.key}`, {}, ' class="small"')}
       <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
-  <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${K}.units.p`)}
+  <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, fv, ' id="units-h"')}${el(t, 'p', `${K}.units.p`, fv)}
     <ul class="csq-public-units">${cat.units.map(unitItem)}</ul></section>
   ${mapAndNotes(req, cat, el)}
   <div class="lp-cols">
@@ -227,17 +257,17 @@ router.get('/teachers/number-quest', (req, res) => {
     <div class="row"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.cta.open`)}</a></div></section>
   </div>`;
   const course = {
-    '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Number Quest', description: t(`${K}.description`),
-    provider: { '@id': seo.orgId(req) }, educationalLevel: 'Grades 3-5', inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan',
+    '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Number Quest', description: t(`${K}.description`, fv),
+    provider: { '@id': seo.orgId(req) }, educationalLevel: `Grades ${facts.gradesPlain}`, inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan',
     teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => NQT.stepTitle(tierOf(u), s))))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
     educationalAlignment: codes.map(code => ({ '@type': 'AlignmentObject', alignmentType: 'teaches', educationalFramework: 'Common Core State Standards for Mathematics (CCSS-M, 2010)', targetName: code })),
   };
   page(req, res, {
-    title: t(`${K}.title`), description: t(`${K}.description`), body, bodyClass: 'lp-page', head: V.CSS,
+    title: t(`${K}.title`, fv), description: t(`${K}.description`, fv), body, bodyClass: 'lp-page', head: V.CSS,
     seo: {
-      index: true, path, langs: seo.langsWithKey(`${K}.h1`), image: '/og/teachers.jpg', imageAlt: t(`${K}.title`),
+      index: true, path, langs: seo.langsWithKey(`${K}.h1`), image: '/og/teachers.jpg', imageAlt: t(`${K}.title`, fv),
       jsonld: [seo.graph([
-        { '@type': 'WebPage', '@id': seo.abs(req, path), url: seo.abs(req, path), name: t(`${K}.title`), description: t(`${K}.description`), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' }, mainEntity: { '@id': course['@id'] } },
+        { '@type': 'WebPage', '@id': seo.abs(req, path), url: seo.abs(req, path), name: t(`${K}.title`, fv), description: t(`${K}.description`, fv), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' }, mainEntity: { '@id': course['@id'] } },
         course, faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req), seo.websiteLd(req, req.locale),
       ])],
     },

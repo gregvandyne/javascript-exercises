@@ -3110,7 +3110,7 @@
       "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega.",
       "find": "Buscar una lección",
       "readyMade": "Listos para usar",
-      "numberQuest": "Number Quest (matemáticas, grados 3–5)"
+      "numberQuest": "Number Quest (matemáticas, de kínder a 5.º grado)"
     },
     "folder": {
       "name": "Nombre de la carpeta",
@@ -4309,7 +4309,7 @@
       "q4": "¿Cómo protegen la privacidad de los estudiantes?",
       "a4": "Nunca pedimos a los estudiantes su correo electrónico, su edad ni su dirección. No hay anuncios ni cookies de seguimiento, y el nombre real de un estudiante solo lo ve el personal de su escuela. Nuestra <a href=\"{href}\">política de privacidad</a> detalla exactamente qué datos guardamos.",
       "q5": "¿Para qué edades y grados es?",
-      "a5": "Oomba Academy está pensada de kínder a 8.º grado, más o menos de 5 a 14 años. Juegos como Shark Plank y las primeras pistas de Sum Racer van bien para los más pequeños, y los cursos completos empiezan en 3.º grado.",
+      "a5": "Oomba Academy está pensada de kínder a 8.º grado, más o menos de 5 a 14 años. Juegos como Shark Plank y las primeras pistas de Sum Racer van bien para los más pequeños. Number Quest, el curso de matemáticas, empieza en kínder, y CS Quest y Cyber Defenders empiezan en 3.º grado.",
       "q6": "¿Cómo agrego a mi clase?",
       "a6": "Primero, escríbanos para registrar su escuela (es gratis). Luego cree una clase y comparta su código de clase con los estudiantes que tienen su propia cuenta, o cree cuentas escolares para toda la clase e imprima tarjetas de acceso.",
       "a6google": "Primero, escríbanos para registrar su escuela (es gratis). Luego cree una clase y comparta su código de clase con los estudiantes que tienen su propia cuenta, o cree cuentas escolares para toda la clase e imprima tarjetas de acceso. Las escuelas que usan Google pueden permitir que los estudiantes inicien sesión con Google.",
@@ -4742,7 +4742,7 @@
         "title": "Juegos educativos gratis para niños de 5, 6 y 7 años",
         "description": "Juegos gratis y sin anuncios para niños de 5 a 7 años: palabras en inglés leídas en voz alta, primeras sumas, ritmo y estrategia. Sin descargas ni chat con desconocidos.",
         "h1": "Juegos educativos para niños de 5 a 7 años",
-        "lead": "De kínder a 2.º grado, la mayoría de los niños todavía está aprendiendo a leer. Estos juegos leen sus palabras en voz alta o usan números, música e imágenes, así que un niño pequeño puede jugar con un adulto cerca al principio. Nuestros cursos completos empiezan en 3.er grado, hacia los 8 años.",
+        "lead": "De kínder a 2.º grado, la mayoría de los niños todavía está aprendiendo a leer. Estos juegos leen sus palabras en voz alta o usan números, música e imágenes, así que un niño pequeño puede jugar con un adulto cerca al principio. Number Quest, nuestro curso de matemáticas, empieza en kínder; nuestros otros cursos completos empiezan en 3.er grado, hacia los 8 años.",
         "fit": {
           "wordTrail": "Hecho para esta edad: las primeras palabras frecuentes en inglés en un sendero de cuento, y cada palabra se lee en voz alta.",
           "sharkPlank": "El ahorcado con palabras en inglés para niños que están empezando a leer, y cada palabra se lee en voz alta.",
@@ -4757,7 +4757,7 @@
           "q2": "¿Puede jugar mi hijo si todavía no sabe leer?",
           "a2": "En algunos juegos, sí. Word Trail y Shark Plank leen cada palabra en voz alta, Word Hunt lee una palabra cuando la tocas, y Sum Racer y Tug of Math usan números. Los menús y las instrucciones están escritos, así que al principio ayuda tener un adulto cerca.",
           "q3": "¿Los cursos son para esta edad?",
-          "a3": "Todavía no. Number Quest, CS Quest y Cyber Defenders empiezan en 3.er grado, hacia los 8 años. De los 5 a los 7, los juegos de esta página son el lugar para empezar.",
+          "a3": "Uno sí. Number Quest, nuestro curso de matemáticas, empieza en kínder: su calle Launchpad es para kínder a 2.º grado, y sus juegos leen cada instrucción en voz alta. CS Quest y Cyber Defenders empiezan en 3.er grado, hacia los 8 años.",
           "q4": "¿Puede un niño de 6 años usar el Constructor con IA?",
           "a4": "Los niños escriben su idea para el Constructor, así que a esta edad conviene que un adulto se siente con ellos y les ayude a escribirla. El Constructor sigue reglas fijas de seguridad infantil, y un juego nuevo es privado hasta que se comparte."
         }
@@ -6917,7 +6917,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Matemáticas en los Numberworks · de 3.º a 5.º grado"
+      "sub": "Matemáticas en los Numberworks · de kínder a 5.º grado"
     },
     "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}",
     "gamesN": "{count, plural, one {Ver el # juego} other {Ver los # juegos}}"
@@ -7224,8 +7224,8 @@
       "lead": "Presentaciones cortas, comprobaciones rápidas y misiones de juego en un solo camino. Cada estudiante avanza a su ritmo; tú ves el progreso en el libro de calificaciones.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matemáticas · 3.º a 5.º grado",
-        "p": "Valor posicional, fracciones, medidas, figuras y datos por el Numberworks de Netville con Tally la gata. Cada paso está alineado con los Common Core State Standards de matemáticas."
+        "tag": "Matemáticas · kínder a 5.º grado",
+        "p": "Conteo, valor posicional, fracciones, medidas, figuras y datos por el Numberworks de Netville con Tally la gata, de kínder a 5.º grado. Cada paso está alineado con los Common Core State Standards de matemáticas."
       },
       "cs": {
         "name": "CS Quest",

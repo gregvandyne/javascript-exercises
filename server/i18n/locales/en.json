@@ -3130,7 +3130,7 @@
       "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared.",
       "find": "Find a lesson",
       "readyMade": "Ready-made",
-      "numberQuest": "Number Quest (math, grades 3–5)"
+      "numberQuest": "Number Quest (math, grades K–5)"
     },
     "folder": {
       "name": "Folder name",
@@ -4338,7 +4338,7 @@
       "q4": "How do you protect student privacy?",
       "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q5": "What ages and grades is it for?",
-      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players, and the full courses start in grade 3.",
+      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, starts in kindergarten, and CS Quest and Cyber Defenders start in grade 3.",
       "q6": "How do I add my class?",
       "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
       "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
@@ -4624,16 +4624,16 @@
       }
     },
     "nq": {
-      "title": "Number Quest: math lessons for grades 3–5, mapped to CCSS-M",
-      "description": "Number Quest is a free math course for grades 3–5: 23 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race, Fraction Factory and Data Detective, with every step of Units 1–7 and the finale mapped to the Common Core State Standards for Mathematics. One step (7.3, chance language) is flagged enrichment and maps to no standard, and the map says so.",
+      "title": "Number Quest: math lessons for grades {grades}, mapped to CCSS-M",
+      "description": "Number Quest is a free math course for grades {grades}: {steps} short steps through the Numberworks, played through {gameList}, with every step mapped to the Common Core State Standards for Mathematics. One step (Explorer 7.3, chance language) is flagged enrichment and maps to no standard, and the map says so.",
       "crumb": "Number Quest",
-      "kicker": "For teachers · grades 3–5",
+      "kicker": "For teachers · grades {grades}",
       "h1": "Number Quest: math with a map you can show anyone",
-      "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
+      "lead": "A winding path through Netville's Numberworks with Tally the cat, on two streets. The Launchpad gardens, for kindergarten to grade 2: counting, joining, tens and ones, the equals sign, hundreds, shapes and measuring, with the Garden Gate at the end. The Explorer street, for grades 3 to 5: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
       "badges": {
-        "steps": "23 steps",
-        "units": "An intro and 7 units",
-        "games": "Six games",
+        "steps": "{steps} steps",
+        "units": "{streets, plural, one {One street} other {# streets}} · {units} units",
+        "games": "{games} games",
         "minutes": "About 10 minutes a step",
         "free": "Free · no ads"
       },
@@ -4642,7 +4642,7 @@
       },
       "promise": {
         "h": "What you get",
-        "li1": "One street all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how.",
+        "li1": "One town all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how. The Launchpad gardens lead on to the Explorer street, and a learner can move between them at any time.",
         "li2": "Every worked example opens with an estimate: the course's “Rough first” habit, so checking whether an answer is the right size becomes reflex.",
         "li3": "Short reading decks, then a three-question check, then the game mission itself. A step counts as finished only when the mission is actually completed, not just opened.",
         "li4": "Tally Marks for doing, never for being first or fastest: checks passed, missions completed, mastery laps and reviews all earn them, and they are never spent or ranked.",
@@ -4650,8 +4650,15 @@
         "li6": "The full standards map on this page: every step's primary CCSS-M statements, the statements it also covers, and the ones it builds toward, labeled as preparation and never counted as coverage."
       },
       "crew": {
-        "h": "Five games carry the course",
-        "p": "Three are quiz, race and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows a fifth: Data Detective from CS Quest for its data cases.",
+        "h": "{games} games carry the course",
+        "p": "Seven were built for the Launchpad gardens, one for each unit, from Garden Count to Kitchen Rush: every instruction in them is read aloud, so a child can play before they can read well. On the Explorer street, three are quiz, race and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows a fifth: Data Detective from CS Quest for its data cases.",
+        "gardenCount": "Launchpad Unit 1, The Counting Patch (kindergarten). Count apples in a sunny garden: pick the number your helper asks for (step 1.1), find the bed with more or fewer (1.2), and build teen numbers on a ten-frame (1.3). Each chapter is six rounds, and the sixth right round completes the mission.",
+        "lilyHop": "Launchpad Unit 2, The Joining Pond (kindergarten to grade 1). Frogs hop together and hop away within 10 (step 2.1), a number is split into its partners and made up to 10 (2.2), and a row of numbered lily pads carries adding and taking away to 20 (2.3). Every round is answered by hopping to one of three pads.",
+        "crateStacker": "Launchpad Unit 3, The Tens Trellis (grade 1). A crate is a one and a tower of ten crates is a ten: build and read two-digit numbers (step 3.1), say which truck has more and pick the sign (3.2), and add tens and ones with totals under 100 (3.3).",
+        "balanceBridge": "Launchpad Unit 4, The Balance Bridge (grades 1 and 2). A see-saw drawbridge goes level only when both sides weigh the same: true or not true and the missing number (step 4.1), spoken stories the blocks act out (4.2), and odd, even and equal rows (4.3). A wrong number is tried on the bridge, so the child sees it lean and tries again.",
+        "rocketSupply": "Launchpad Unit 5, The Hundreds Hedge (grade 2). A pallet is a hundred, a rack is a ten and a canister is a one: load and read three-digit numbers (step 5.1), skip count and compare along the fuel gauge (5.2), and add and subtract within 100 with the regrouping shown on the pad (5.3).",
+        "shapeHunt": "Launchpad Unit 6, The Shape Shed (kindergarten to grade 2). A tidy-up treasure hunt in a cosy house: find a shape whatever its size or the way it is turned (step 6.1), build a bigger shape from the right pieces (6.2), and share pizzas, pies and cakes into halves, fourths and thirds (6.3).",
+        "kitchenRush": "Launchpad Unit 7, The Measuring Meadow (kindergarten to grade 2). Measure in cubes and on a ruler (step 7.1), read clocks and count coins (7.2), sort and read graphs (7.3). Its fourth chapter is the Garden Gate (7.4), the street's finale: a mixed review of all seven units. Nothing in it is timed; the rush is in the name only.",
         "brainBoard": "A category quiz board, played solo as a practice board. In Number Quest it is the fluency mission for steps 1.1 and 2.3 and for the Measure Shop and Building Yard boards of Units 5 and 6 (measures, money, perimeter and area, lines and grids): the step's own deck and check teach the skill, and scoring 3,000 points on the board is what completes the mission, and the board saves as the student plays, so a lesson can span sittings.",
         "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only Trading Post races with 3- and 4-digit trades in Unit 2, and the all-tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
         "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it carries steps 1.3 (patterns), 5.2 (timetables) and the finale 7.4, the Vault Run: the deck and check teach the skill, and finishing the whole race, all the way to the podium, is what completes it.",
@@ -4661,8 +4668,8 @@
         "inCourse": "Play it in the course"
       },
       "units": {
-        "h": "The intro and seven units",
-        "p": "Twenty-three steps, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done, and the street ends inside Unit 7, at the Vault of Measures finale.",
+        "h": "The streets, their units and their steps",
+        "p": "{steps} steps on {streets, plural, one {one street} other {# streets}}, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done. Each street ends inside its Unit 7, at a finale: the Garden Gate on Launchpad and the Vault of Measures on Explorer.",
         "stamp": "{stamp}"
       },
       "map": {
@@ -4676,10 +4683,10 @@
           "toward": "Builds toward",
           "mp": "Practice"
         },
-        "codes": "locked CCSS-M statements, Units 1–7 + the finale",
+        "codes": "locked CCSS-M statements, every unit and finale shown",
         "statSteps": "steps in the map",
         "statUnits": "stones to plant",
-        "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05): the Explorer Units 1–7 and finale statement codes, verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. The Launchpad and Pro tiers are specced but not built yet, and their codes are not cited here until their own locks land."
+        "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05), the Explorer Units 1–7 and finale statement codes, and the Launchpad lock (unit by unit, 2026-11-12 and 2026-11-13), the Launchpad Units 1–7 and finale statement codes, all verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Explorer step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. The Pro tier (grades 6–8) is specced but not built yet, and its codes are not cited here until its own lock lands."
       },
       "notes": {
         "h": "Teacher notes",
@@ -4702,9 +4709,9 @@
         "q1": "Do I need to be a math specialist?",
         "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you the habit to open with and the trap to watch for.",
         "q2": "Which standards does it teach?",
-        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–7 and the finale lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labeled. One step lists none: 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
+        "a2": "The Common Core State Standards for Mathematics for kindergarten to grade 5: the Launchpad street covers kindergarten to grade 2 and the Explorer street grades 3 to 5. Every step lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labeled. One step lists none: Explorer 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
         "q3": "How long does a step take?",
-        "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. The intro and the seven units make 23 steps, so the course is just under four hours of lessons, and mastery laps stretch it much further for students who finish early.",
+        "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. A street is a welcome, seven units and a finale, so one street is just under four hours of lessons; the course has {steps} steps in all, and mastery laps stretch it much further for students who finish early.",
         "q4": "What are Tally Marks and laps?",
         "a4": "Tally Marks are points for doing: a passed check, a finished mission, a completed lap. They are never spent and never ranked. Finishing a unit records Lap 1 of its mastery laps. Laps 2 (bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built; the course labels them as such until they can really be played.",
         "q5": "Is it really free?",
@@ -4712,8 +4719,8 @@
       },
       "start": {
         "h": "Start when you are ready",
-        "p": "Open the course and walk the first step with your class. The teacher note for the intro is above.",
-        "staff": "Open the course and walk the first step with your class. The teacher note for the intro is above."
+        "p": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street and grades 3 to 5 on the Explorer street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for both welcomes are above.",
+        "staff": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street and grades 3 to 5 on the Explorer street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for both welcomes are above."
       }
     },
     "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free.",
@@ -5090,7 +5097,7 @@
         "title": "Free learning games for 5, 6 and 7 year olds",
         "description": "Free, ad-free browser games for 5 to 7 year olds: sight words read aloud, first sums, rhythm and simple strategy. No downloads, no chat with strangers.",
         "h1": "Learning games for 5 to 7 year olds",
-        "lead": "From kindergarten to grade 2, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Our full courses start in grade 3, at about age 8.",
+        "lead": "From kindergarten to grade 2, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Number Quest, our math course, starts in kindergarten; our other full courses start in grade 3, at about age 8.",
         "fit": {
           "wordTrail": "Made for this age: the first sight words on a storybook trail, and every word is read aloud.",
           "sharkPlank": "Hangman for kids who are just learning to read, with every word read aloud.",
@@ -5105,7 +5112,7 @@
           "q2": "Can my child play if they can’t read yet?",
           "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer and Tug of Math use numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
           "q3": "Are the courses for this age?",
-          "a3": "Not yet. Number Quest, CS Quest and Cyber Defenders start in grade 3, at about age 8. From 5 to 7, the games on this page are the place to start.",
+          "a3": "One is. Number Quest, our math course, starts in kindergarten: its Launchpad street is for kindergarten to grade 2, and its games read every instruction aloud. CS Quest and Cyber Defenders start in grade 3, at about age 8.",
           "q4": "Can a 6 year old use the AI Builder?",
           "a4": "Kids type their idea to the Builder, so at this age a grown-up should sit with them and help write it. The Builder follows fixed kid-safety rules, and a new game stays private until it is shared."
         }
@@ -7315,9 +7322,9 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Math through the Numberworks · grades 3–5",
-      "about": "Walk the Numberworks street in the town of Netville with Tally the cat: counting, joining and splitting, groups and shares, fractions at the Bakery, then measures, shapes, charts and chance. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
-      "teachers": "Every step of Explorer Units 1–7 and the Vault of Measures finale is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
+      "sub": "Math through the Numberworks · grades K–5",
+      "about": "Walk the Numberworks in the town of Netville with Tally the cat. The Launchpad gardens, for kindergarten to grade 2, grow counting, adding and taking away, tens and ones, shapes and measuring. The Explorer street, for grades 3 to 5, goes on to big numbers, groups and shares, fractions at the Bakery, then measures, shapes, charts and chance. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
+      "teachers": "Every step of both streets, Launchpad (grades K–2) and Explorer (grades 3–5), each with seven units and a finale, is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
     },
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",
@@ -7728,8 +7735,8 @@
       "lead": "Short slide decks, quick checks and game missions in one path. Students work at their own pace; you see progress in the gradebook.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Math · grades 3–5",
-        "p": "Place value, fractions, measuring, shapes and data along Netville’s Numberworks with Tally the cat. Every step is mapped to the Common Core State Standards for Mathematics."
+        "tag": "Math · grades K–5",
+        "p": "Counting, place value, fractions, measuring, shapes and data along Netville’s Numberworks with Tally the cat, from kindergarten to grade 5. Every step is mapped to the Common Core State Standards for Mathematics."
       },
       "cs": {
         "name": "CS Quest",
