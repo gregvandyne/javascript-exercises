@@ -1,0 +1,226 @@
+{
+ "id": "nq-u5-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 5 · The Hundreds Hedge (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2.NBT.A.1",
+   "topic": "Hundreds, tens, ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is 4 hundreds, 0 tens and 7 ones?",
+   "choices": [
+    "47",
+    "407",
+    "470",
+    "4007"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "dropped the empty tens place",
+    "correct",
+    "put the 7 in the tens place",
+    "wrote each part as its own number"
+   ],
+   "why": "4 hundreds is 400. There are no tens, so write 0. Then 7 ones: 407."
+  },
+  {
+   "id": "nq-launchpad-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2.NBT.A.1",
+   "topic": "Hundreds, tens, ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What does the 5 mean in 352?",
+   "choices": [
+    "5 ones",
+    "5 tens",
+    "5 hundreds",
+    "5 thousands"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "read the middle digit as ones",
+    "correct",
+    "mixed up the tens and hundreds places",
+    "counted one place too many"
+   ],
+   "why": "The middle digit is in the tens place. So the 5 means 5 tens, or 50."
+  },
+  {
+   "id": "nq-launchpad-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2.NBT.A.3",
+   "topic": "Hundreds, tens, ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is 600 + 30 + 8?",
+   "choices": [
+    "638",
+    "683",
+    "836",
+    "6308"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped the tens and the ones",
+    "read the parts from back to front",
+    "wrote each part in full, side by side"
+   ],
+   "why": "600 is 6 hundreds, 30 is 3 tens and 8 is 8 ones. Together that is 638."
+  },
+  {
+   "id": "nq-launchpad-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2.NBT.A.2",
+   "topic": "Count and compare",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Count by tens: 230, 240, 250. What comes next?",
+   "choices": [
+    "251",
+    "255",
+    "260",
+    "350"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted on by one",
+    "counted on by five",
+    "correct",
+    "counted on by a hundred"
+   ],
+   "why": "Each step is 10 more. 250 and 10 more is 260."
+  },
+  {
+   "id": "nq-launchpad-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2.NBT.A.4",
+   "topic": "Count and compare",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which sign goes between 352 and 418?",
+   "choices": [
+    ">",
+    "=",
+    "<",
+    "+"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "looked at the tens and ones first",
+    "thought all three-digit numbers are the same size",
+    "correct",
+    "picked a sign that does not compare"
+   ],
+   "why": "Look at the hundreds first. 3 hundreds is less than 4 hundreds, so 352 is less."
+  },
+  {
+   "id": "nq-launchpad-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2.NBT.A.4",
+   "topic": "Count and compare",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is greater than 364?",
+   "choices": [
+    "346",
+    "359",
+    "364",
+    "371"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "swapped the tens and the ones",
+    "looked only at the ones digit",
+    "picked the same number",
+    "correct"
+   ],
+   "why": "The hundreds are the same, so look at the tens. 7 tens is more than 6 tens."
+  },
+  {
+   "id": "nq-launchpad-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2.NBT.B.5",
+   "topic": "Add and subtract",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 38 + 27?",
+   "choices": [
+    "55",
+    "65",
+    "75",
+    "515"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "forgot the new ten",
+    "correct",
+    "added a ten too many",
+    "wrote the tens and the ones side by side"
+   ],
+   "why": "8 ones and 7 ones make 15: one new ten and 5 ones. 3 tens, 2 tens and 1 ten make 6 tens."
+  },
+  {
+   "id": "nq-launchpad-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2.NBT.B.5",
+   "topic": "Add and subtract",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 62 − 25?",
+   "choices": [
+    "37",
+    "43",
+    "47",
+    "87"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "took the smaller digit from the bigger each time",
+    "forgot the ten that was opened",
+    "added instead of taking away"
+   ],
+   "why": "Open a ten: 5 tens and 12 ones. Take away 2 tens and 5 ones. That leaves 37."
+  },
+  {
+   "id": "nq-launchpad-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2.NBT.B.5",
+   "topic": "Add and subtract",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 46 + 34?",
+   "choices": [
+    "70",
+    "80",
+    "90",
+    "710"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "forgot the new ten",
+    "correct",
+    "added a ten too many",
+    "wrote the tens and the ones side by side"
+   ],
+   "why": "6 ones and 4 ones make a new ten. 4 tens, 3 tens and 1 new ten make 8 tens: 80."
+  }
+ ]
+}

@@ -97,8 +97,15 @@ export function cleanDiagram(v, label) {
     // `tens` (Unit 3) draws a number from 10 to 99 as sticks of ten and loose ones (one number, or two side by side);
     // `balance` (Unit 4, on the diagram itself) sets two groups of 1-20 on the two sides of a see-saw beam, level when
     // they are the same and leaning to the heavier side when not: a side may be `split` into two parts (5 + 2), and
-    // `hide` (with `split`) draws its second part as a box marked "?" that weighs nothing yet (8 + ?)
+    // `hide` (with `split`) draws its second part as a box marked "?" that weighs nothing yet (8 + ?);
+    // `hundreds` (Unit 5) draws one number from 100 to 999 as flats of a hundred, sticks of ten and loose ones, with
+    // an empty place left empty (407 has no sticks)
     if (!Array.isArray(v.groups) || v.groups.length < 1 || v.groups.length > 2) return null;
+    if (v.groups.some(q => q && q.hundreds)) {
+      const q = v.groups[0];
+      if (v.groups.length !== 1 || v.balance || !int(q.n, 100, 999) || q.tone != null || q.name != null || q.frame || q.count || q.split != null || q.away || q.tens || q.hide) return null;
+      return { type: 'counters', label, groups: [{ n: q.n, hundreds: true }] };
+    }
     if (v.balance) {
       if (v.groups.length !== 2 || !v.groups.every(q => q && int(q.n, 1, 20) && q.tone == null && q.name == null && !q.frame && !q.count && !q.away && !q.tens
         && (q.split == null || int(q.split, 1, q.n - 1)) && (!q.hide || q.split != null))) return null;
