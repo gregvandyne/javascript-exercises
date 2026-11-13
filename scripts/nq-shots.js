@@ -84,6 +84,11 @@ const SHOTS = [
   { tier: 'launchpad', step: '3.1', state: 'load-the-truck', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: crateStacker, cdp: true },
   { tier: 'launchpad', step: '3.2', state: 'which-has-more', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=greater&lock=1', prep: crateStacker, cdp: true },
   { tier: 'launchpad', step: '3.3', state: 'add-more-crates', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=add&lock=1', prep: crateStacker, cdp: true },
+  // Launchpad Unit 4, The Balance Bridge: Balance Bridge, a 3D game, in each step's own chapter, the whole phone screen
+  // as the band (the castle and the see-saw bridge fill it, the words and the sum on top, the big buttons at the bottom).
+  { tier: 'launchpad', step: '4.1', state: 'same-on-both-sides', slug: 'balance-bridge', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=equal&lock=1', prep: balanceBridge, cdp: true },
+  { tier: 'launchpad', step: '4.2', state: 'castle-stories', slug: 'balance-bridge', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=story&lock=1', prep: balanceBridge, cdp: true },
+  { tier: 'launchpad', step: '4.3', state: 'pairs-and-rows', slug: 'balance-bridge', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=groups&lock=1', prep: balanceBridge, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -211,6 +216,17 @@ async function crateStacker(f) {
   await wait(1600);
 }
 
+async function balanceBridge(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Each is photographed as it is
+  // asked, once its blocks have dropped in: a sum held level by its posts (Same on Both Sides), a story's blocks on
+  // one side and the chest on the other (Castle Stories), blocks shared one to each side (Pairs and Rows).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
 /** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and
  *  `whole: true` (written in place, the deck's own formatting kept), so a re-run never leaves a stale crop. */
 function writeView(shot) {
@@ -238,7 +254,7 @@ async function capture(browser, shot) {
     if (q.url.startsWith('/vendor/')) {
       const file = vendorFile(origin + q.url.split('?')[0]);
       if (!file) { r.statusCode = 404; return r.end(); }
-      r.setHeader('Content-Type', file.endsWith('.js') ? 'text/javascript; charset=utf-8' : file.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
+      r.setHeader('Content-Type', /\.m?js$/.test(file) ? 'text/javascript; charset=utf-8' : file.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
       r.setHeader('Access-Control-Allow-Origin', '*'); r.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       return r.end(fs.readFileSync(file));
     }
