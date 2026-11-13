@@ -448,7 +448,7 @@ function truck(color, cap) {
   const wheels = [];
   for (const x of [-0.8, L * 0.45, L - 0.55]) for (const z of [-0.48, 0.48]) { const w = wheel(x, 0.3, z); wheels.push(w); o.add(w); }
   const load = new THREE.Group(); body.add(load);
-  const sign = board('', 1.5); sign.position.set(-0.78, 3.85, 0); sign.visible = false; body.add(sign);
+  const sign = board('', 1.5); sign.position.set(-0.78, 4.0, 0); sign.visible = false; body.add(sign);
   o.add(body);
   const T = { object: o, body, load, sign, wheels, cap, L, color, tens: 0, ones: 0, towers: [], crates: [], x0: -1.56, x1: L + 0.1 };
   o.userData.truck = T;
@@ -543,7 +543,7 @@ const town = new THREE.Group(), traffic = [];
   });
   // a soft haze in front of the town, so the crates in the yard stand out from the busy street behind them
   const c = document.createElement('canvas'); c.width = 4; c.height = 64;
-  const x = c.getContext('2d'), gr = x.createLinearGradient(0, 64, 0, 0); gr.addColorStop(0, 'rgba(226,242,255,0)'); gr.addColorStop(0.1, 'rgba(226,242,255,0.5)'); gr.addColorStop(1, 'rgba(226,242,255,0.62)');
+  const x = c.getContext('2d'), gr = x.createLinearGradient(0, 64, 0, 0); gr.addColorStop(0, 'rgba(226,242,255,0)'); gr.addColorStop(0.12, 'rgba(226,242,255,0.26)'); gr.addColorStop(1, 'rgba(226,242,255,0.34)');
   x.fillStyle = gr; x.fillRect(0, 0, 4, 64);
   const haze = new THREE.Mesh(new THREE.PlaneGeometry(260, 40), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, fog: false }));
   haze.position.set(0, 20, -0.4); haze.renderOrder = 1; town.add(haze);
@@ -626,11 +626,11 @@ async function showHeroes() {
   S.screen = 'hero';
   if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
   clearStage();
-  const spots = tall ? [[-2.2, 1.2], [0, 0.9], [2.2, 1.2], [-1.2, 3.2], [1.2, 3.2]] : [[-4.6, 1.6], [-2.3, 1.2], [0, 1], [2.3, 1.2], [4.6, 1.6]];
-  parked(tall ? -2.4 : -2); slab(tall ? -4 : -6.2, tall ? 4 : 6.2, -3.6, tall ? 4.6 : 3.2);
-  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(HS); h.position.set(spots[i][0], 0, spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  const spots = tall ? [[-2.3, 0.6], [0, 0.2], [2.3, 0.6], [-1.25, 3.5], [1.25, 3.5]] : [[-4.6, 1.6], [-2.3, 1.2], [0, 1], [2.3, 1.2], [4.6, 1.6]];
+  parked(tall ? -3 : -2); slab(tall ? -4 : -6.2, tall ? 4 : 6.2, -4.4, tall ? 4.8 : 3.2);
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(tall ? 1.1 : HS); h.position.set(spots[i][0], 0, spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
   lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.2), r: 1.1, go: () => chooseHero(h.id) }));
-  Object.assign(view, { rect: tall ? [-3.3, 3.3, -0.2, 4.2] : [-5.6, 5.6, 0.2, 2.6], high: 2.6, low: 2.4, back: tall ? -6 : -5, tilt: 0 });
+  Object.assign(view, { rect: tall ? [-3.4, 3.4, -0.4, 4.2] : [-5.6, 5.6, 0.2, 2.6], high: 2.6, low: 2.2, back: tall ? -7 : -5, tilt: 0 });
   card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
   frame();
 }
@@ -678,9 +678,9 @@ function card(kind, { title, line, buttons, star }) {
 }
 /** The helper beside a parked truck: the menu and the end of a chapter. */
 function solo() {
-  clearStage(); const A = parked(-0.6); slab(-4.4, 4.4, -2.2, 3);
-  placeHero(tall ? 0 : A.object.position.x + A.x0 - 0.9, tall ? 1.6 : 0.9, 0);
-  Object.assign(view, { rect: tall ? [-3.2, 3.2, -1.2, 2.2] : [-4.6, 3.6, -1.2, 1.6], high: 5.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });
+  clearStage(); const A = parked(-0.6); slab(-4.6, 3.4, -2.2, 3);
+  placeHero(A.object.position.x + A.x0 - 0.9, tall ? 1.4 : 0.9, 0.3);
+  Object.assign(view, { rect: [-4.3, 2.6, -1.2, tall ? 2 : 1.6], high: 5.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });
 }
 function showMenu() {
   clearTimers(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
