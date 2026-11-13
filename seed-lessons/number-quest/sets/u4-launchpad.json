@@ -1,0 +1,226 @@
+{
+ "id": "nq-u4-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 4,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 4 · The Balance Bridge (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-4.1-e1",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1.OA.D.7",
+   "topic": "The equals sign",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which one is true?",
+   "choices": [
+    "4 + 3 = 8",
+    "4 + 3 = 7",
+    "7 = 4 + 2",
+    "5 = 5 + 1"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "counted one too many",
+    "correct",
+    "counted one too few on the right",
+    "added 1 and called it the same"
+   ],
+   "why": "4 and 3 make 7. Both sides are 7, so 4 + 3 = 7 is true."
+  },
+  {
+   "id": "nq-launchpad-4.1-e2",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1.OA.D.7",
+   "topic": "The equals sign",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Is 6 = 6 true?",
+   "choices": [
+    "Yes, both sides are 6",
+    "No, there is no plus",
+    "No, it needs an answer",
+    "No, 6 comes twice"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "thought the sign needs a sum",
+    "read the sign as the answer comes next",
+    "thought a number cannot come twice"
+   ],
+   "why": "The sign means the same as. 6 is the same as 6, so it is true."
+  },
+  {
+   "id": "nq-launchpad-4.1-e3",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1.OA.D.8",
+   "topic": "The equals sign",
+   "kind": "apply",
+   "secs": 25,
+   "q": "8 + ? = 11. What is the missing number?",
+   "choices": [
+    "19",
+    "11",
+    "3",
+    "4"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the two numbers",
+    "copied the number after the sign",
+    "correct",
+    "counted on one too many"
+   ],
+   "why": "Count on from 8: 9, 10, 11. That is 3 more, so 8 + 3 = 11."
+  },
+  {
+   "id": "nq-launchpad-4.2-e1",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "1.OA.A.1",
+   "topic": "Story problems",
+   "kind": "apply",
+   "secs": 25,
+   "q": "7 stones. 5 more come. How many now?",
+   "choices": [
+    "2",
+    "11",
+    "12",
+    "13"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "took away instead of adding",
+    "counted on one too few",
+    "correct",
+    "counted on one too many"
+   ],
+   "why": "More come, so add. 7 and 5 make 12."
+  },
+  {
+   "id": "nq-launchpad-4.2-e2",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "1.OA.A.1",
+   "topic": "Story problems",
+   "kind": "apply",
+   "secs": 25,
+   "q": "6 red and some blue. 14 in all. How many blue?",
+   "choices": [
+    "20",
+    "14",
+    "9",
+    "8"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "added the two numbers",
+    "picked the total",
+    "counted on one too many",
+    "correct"
+   ],
+   "why": "6 and what make 14? Count on from 6 to 14. That is 8."
+  },
+  {
+   "id": "nq-launchpad-4.2-e3",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "2.OA.A.1",
+   "topic": "Story problems",
+   "kind": "apply",
+   "secs": 25,
+   "q": "40 stones. 25 more come. 5 roll away. How many now?",
+   "choices": [
+    "60",
+    "65",
+    "70",
+    "10"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "stopped after the first step",
+    "added the 5 instead of taking it away",
+    "took both numbers away"
+   ],
+   "why": "First 40 and 25 make 65. Then take away 5. That leaves 60."
+  },
+  {
+   "id": "nq-launchpad-4.3-e1",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2.OA.C.3",
+   "topic": "Pairs and rows",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is odd?",
+   "choices": [
+    "8",
+    "12",
+    "15",
+    "20"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "forgot that 4 and 4 make 8",
+    "forgot that 6 and 6 make 12",
+    "correct",
+    "forgot that 10 and 10 make 20"
+   ],
+   "why": "15 makes 7 pairs with one left over. One left over means odd."
+  },
+  {
+   "id": "nq-launchpad-4.3-e2",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2.OA.C.3",
+   "topic": "Pairs and rows",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which sum shows that 14 is even?",
+   "choices": [
+    "7 + 7",
+    "10 + 4",
+    "13 + 1",
+    "8 + 6"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "split 14 into a ten and ones",
+    "took one away instead of sharing",
+    "picked two groups that are not equal"
+   ],
+   "why": "An even number is two equal groups. 7 and 7 make 14."
+  },
+  {
+   "id": "nq-launchpad-4.3-e3",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2.OA.C.4",
+   "topic": "Pairs and rows",
+   "kind": "apply",
+   "secs": 25,
+   "q": "3 rows of 5 blocks. How many blocks?",
+   "choices": [
+    "8",
+    "10",
+    "15",
+    "20"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added 3 and 5",
+    "counted only two rows",
+    "correct",
+    "counted one row too many"
+   ],
+   "why": "Add the rows: 5 + 5 + 5. That is 5, 10, 15."
+  }
+ ]
+}

@@ -94,8 +94,16 @@ export function cleanDiagram(v, label) {
     // match one to one; `count` numbers each counter in order; `frame` sets a single group's first ten in a ten-frame;
     // `split` (Unit 2) shows a single group of 2-10 as two parts, the first `split` counters and the rest in a second
     // tone with each part's size under it, and `away` draws the second part as empty outlines (they went away);
-    // `tens` (Unit 3) draws a number from 10 to 99 as sticks of ten and loose ones (one number, or two side by side)
+    // `tens` (Unit 3) draws a number from 10 to 99 as sticks of ten and loose ones (one number, or two side by side);
+    // `balance` (Unit 4, on the diagram itself) sets two groups of 1-20 on the two sides of a see-saw beam, level when
+    // they are the same and leaning to the heavier side when not: a side may be `split` into two parts (5 + 2), and
+    // `hide` (with `split`) draws its second part as a box marked "?" that weighs nothing yet (8 + ?)
     if (!Array.isArray(v.groups) || v.groups.length < 1 || v.groups.length > 2) return null;
+    if (v.balance) {
+      if (v.groups.length !== 2 || !v.groups.every(q => q && int(q.n, 1, 20) && q.tone == null && q.name == null && !q.frame && !q.count && !q.away && !q.tens
+        && (q.split == null || int(q.split, 1, q.n - 1)) && (!q.hide || q.split != null))) return null;
+      return { type: 'counters', label, balance: true, groups: v.groups.map(q => ({ n: q.n, ...(q.split != null ? { split: q.split } : {}), ...(q.hide ? { hide: true } : {}) })) };
+    }
     if (v.groups.some(q => q && q.tens)) {
       if (!v.groups.every(q => q && q.tens && int(q.n, 10, 99) && q.tone == null && q.name == null && !q.frame && !q.count && q.split == null && !q.away)) return null;
       return { type: 'counters', label, groups: v.groups.map(q => ({ n: q.n, tens: true })) };

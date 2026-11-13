@@ -260,3 +260,51 @@ test('counters as tens and ones (Launchpad Unit 3): sticks of ten and loose ones
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 34, tens: true }, { n: 8 }] }, 'L'), null, 'two numbers are both drawn as tens and ones, or neither');
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 34 }] }, 'L'), null, 'without tens a group still holds at most 20');
 });
+
+test('counters on a see-saw (Launchpad Unit 4): each side holds exactly its number, level when the sides are the same, leaning to the heavier side when not', () => {
+  const rects = (svg, fill) => [...svg.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)" fill="(#[0-9A-F]+)"/g)].filter(m => m[5] === fill).map(m => ({ x: +m[1], y: +m[2], w: +m[3], h: +m[4] }));
+  const A = '#66C792', B2 = '#FFD23F', SECOND = '#8FC1F5';
+  const draw = (groups, label = 'Two sides on a see-saw') => { const v = cleanDiagram({ type: 'counters', balance: true, groups }, label); return { v, svg: diagramSvg(v) }; };
+  const turn = svg => +(/<g transform="rotate\((-?[\d.]+) 50 41\)">/.exec(svg) || [0, 0])[1];
+  const side = (svg, s) => new RegExp(`<g data-side="${s}">(.*?)</g>`).exec(svg)[1];
+  const words = svg => texts(svg).map(t => t.s).filter(s => s !== 'Two sides on a see-saw');
+  // 5 + 2 = 7: five blocks and two more on the left, seven on the right, level, the sum under each side and "="
+  const eq = draw([{ n: 7, split: 5 }, { n: 7 }]);
+  assert.deepEqual(eq.v, { type: 'counters', label: 'Two sides on a see-saw', balance: true, groups: [{ n: 7, split: 5 }, { n: 7 }] });
+  assert.equal(rects(side(eq.svg, 'l'), A).length, 5); assert.equal(rects(side(eq.svg, 'l'), SECOND).length, 2); assert.equal(rects(side(eq.svg, 'r'), B2).length, 7);
+  assert.equal(turn(eq.svg), 0, 'the same on both sides: level'); assert.deepEqual(words(eq.svg), ['5 + 2', '7', '=']);
+  const all = [...rects(eq.svg, A), ...rects(eq.svg, SECOND), ...rects(eq.svg, B2)];
+  assert.ok(all.every(r => r.w === r.h), 'square blocks'); assert.ok(rects(side(eq.svg, 'l'), A).every(r => r.x + r.w < 50) && rects(side(eq.svg, 'r'), B2).every(r => r.x > 50), 'each side on its own half');
+  assert.equal(new Set(rects(side(eq.svg, 'r'), B2).map(r => r.x)).size, 2, 'stacks of five: seven blocks take two stacks'); assert.equal(rects(side(eq.svg, 'r'), B2).filter(r => r.x === rects(side(eq.svg, 'r'), B2)[0].x).length, 5);
+  // the blocks stand on the beam, and the two sides sit the same distance from the pivot
+  const beam = /<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="1.6" rx="0.5" fill="#D9A066"/.exec(eq.svg).slice(1).map(Number);
+  assert.equal(+Math.max(...all.map(r => r.y + r.h)).toFixed(2), beam[1]); assert.equal(beam[0] + beam[2] / 2, 50);
+  const mid = rs => (Math.min(...rs.map(r => r.x)) + Math.max(...rs.map(r => r.x + r.w))) / 2;
+  assert.equal(+(50 - mid([...rects(side(eq.svg, 'l'), A), ...rects(side(eq.svg, 'l'), SECOND)])).toFixed(2), +(mid(rects(side(eq.svg, 'r'), B2)) - 50).toFixed(2));
+  // 4 + 1 = 5 + 2 is not true: the heavier right side goes down, and the sign between them is crossed
+  const ne = draw([{ n: 5, split: 4 }, { n: 7, split: 5 }]);
+  assert.equal(turn(ne.svg), 5); assert.deepEqual(words(ne.svg), ['4 + 1', '5 + 2', '≠']);
+  assert.equal(turn(draw([{ n: 9 }, { n: 6 }]).svg), -5, 'a heavier left side goes down');
+  assert.equal(turn(draw([{ n: 6 }, { n: 6 }]).svg), 0); assert.deepEqual(words(draw([{ n: 6 }, { n: 6 }]).svg), ['6', '6', '=']);
+  // the sign may come first: 7 = 3 + 4
+  assert.deepEqual(words(draw([{ n: 7 }, { n: 7, split: 3 }]).svg), ['7', '3 + 4', '=']);
+  // 8 + ? = 11: the hidden part is a dashed box marked "?", it weighs nothing yet (the side with it is up), and the sum still says "="
+  const q = draw([{ n: 11, split: 8, hide: true }, { n: 11 }]);
+  assert.equal(rects(side(q.svg, 'l'), A).length, 8); assert.equal(rects(side(q.svg, 'l'), SECOND).length, 0, 'the hidden blocks are not drawn');
+  assert.match(side(q.svg, 'l'), /stroke-dasharray="1\.2 0\.9"\/><text [^>]*>\?<\/text>/); assert.equal(turn(q.svg), 5); assert.deepEqual(words(q.svg), ['?', '8 + ?', '11', '=']);
+  // every block and every word stays inside the frame and the drawing's band, up to 20 and 20, level or leaning
+  for (const gs of [[{ n: 20 }, { n: 20, split: 10 }], [{ n: 20, split: 1 }, { n: 1 }], [{ n: 1 }, { n: 20, split: 19 }], [{ n: 20, split: 19, hide: true }, { n: 20 }]]) {
+    const d = draw(gs), [a, b] = diagramExtent(d.v), k = turn(d.svg) * Math.PI / 180;
+    for (const r of [...rects(d.svg, A), ...rects(d.svg, B2), ...rects(d.svg, SECOND)]) for (const [x, y] of [[r.x, r.y], [r.x + r.w, r.y + r.h]]) {
+      const X = 50 + (x - 50) * Math.cos(k) - (y - 41) * Math.sin(k), Y = 41 + (x - 50) * Math.sin(k) + (y - 41) * Math.cos(k);
+      assert.ok(X >= 1 && X <= 99 && Y >= a && Y <= b && Y <= 48, JSON.stringify(gs) + ': every block inside the frame, above the ground');
+    }
+    for (const t of texts(d.svg)) assert.ok(t.y <= b && t.x > 4 && t.x < 96, JSON.stringify(gs) + ': every word inside the band');
+  }
+  // two whole numbers from 1 to 20, a split inside the number, a hidden part only with a split, and no other counter option
+  for (const gs of [[{ n: 7 }], [{ n: 7 }, { n: 21 }], [{ n: 0 }, { n: 7 }], [{ n: 7, split: 7 }, { n: 7 }], [{ n: 7, hide: true }, { n: 7 }], [{ n: 7, frame: true }, { n: 7 }], [{ n: 7, name: 'x' }, { n: 7 }], [{ n: 7, tone: 1 }, { n: 7 }], [{ n: 7, split: 3, away: true }, { n: 7 }], [{ n: 34, tens: true }, { n: 7 }]])
+    assert.equal(cleanDiagram({ type: 'counters', balance: true, groups: gs }, 'L'), null, JSON.stringify(gs));
+  // without `balance`, two groups are still the matched rows they were (no more than 10 each)
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 12 }, { n: 12 }] }, 'L'), null);
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 4 }, { n: 4 }] }, 'L').balance, undefined);
+});

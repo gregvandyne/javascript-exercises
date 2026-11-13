@@ -1,0 +1,250 @@
+{
+ "key": "launchpad-4.1",
+ "n": "4.1",
+ "band": "launchpad",
+ "title": "Equals means the same as",
+ "topic": "The equals sign",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A see-saw bridge",
+   "text": "Tally found a see-saw bridge. It goes flat when both sides match.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The same on both sides",
+   "text": "5 + 2 = 7. Both sides hold 7, so the bridge is flat.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "5 + 2 and 7 on a see-saw: level",
+    "balance": true,
+    "groups": [
+     {
+      "n": 7,
+      "split": 5
+     },
+     {
+      "n": 7
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "5 and 2 make 7.",
+     "box": [
+      24.8,
+      36.8,
+      10.4,
+      36.3
+     ]
+    },
+    {
+     "cue": "7 on this side too.",
+     "box": [
+      65.4,
+      36.8,
+      9.2,
+      36.3
+     ]
+    },
+    {
+     "cue": "The sign means the same as.",
+     "box": [
+      47.6,
+      83.5,
+      4.8,
+      14.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Not the same",
+   "text": "4 + 1 = 5 + 2 is not true. 5 is not the same as 7.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "4 + 1 and 5 + 2 on a see-saw: it leans",
+    "balance": true,
+    "groups": [
+     {
+      "n": 5,
+      "split": 4
+     },
+     {
+      "n": 7,
+      "split": 5
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "4 and 1 make 5.",
+     "box": [
+      25,
+      39.9,
+      11.6,
+      30.7
+     ]
+    },
+    {
+     "cue": "5 and 2 make 7.",
+     "box": [
+      64.8,
+      39.4,
+      12,
+      37.4
+     ]
+    },
+    {
+     "cue": "7 is heavier. Not the same.",
+     "box": [
+      47.2,
+      83.5,
+      5.6,
+      14.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The sign can come first",
+   "text": "7 = 3 + 4 is true. Both sides are still the same.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "7 and 3 + 4 on a see-saw: level",
+    "balance": true,
+    "groups": [
+     {
+      "n": 7
+     },
+     {
+      "n": 7,
+      "split": 3
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "7 on its own.",
+     "box": [
+      25.4,
+      36.8,
+      9.2,
+      36.3
+     ]
+    },
+    {
+     "cue": "3 and 4 make 7.",
+     "box": [
+      64.8,
+      43.6,
+      10.4,
+      29.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Find the missing number",
+   "text": "8 and a hidden number make 11. Which number is hidden?",
+   "art": "star",
+   "steps": [
+    "8 on the left",
+    "11 on the right",
+    "Count on: 9, 10, 11",
+    "8 + 3 = 11"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "8 and a hidden number, and 11, on a see-saw",
+    "balance": true,
+    "groups": [
+     {
+      "n": 11,
+      "split": 8,
+      "hide": true
+     },
+     {
+      "n": 11
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "8 and a hidden number.",
+     "box": [
+      21.6,
+      32.7,
+      18.7,
+      38.4
+     ]
+    },
+    {
+     "cue": "This side has 11.",
+     "box": [
+      63.5,
+      39.2,
+      14.6,
+      37.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "equals",
+     "means": "is the same as"
+    },
+    {
+     "word": "true",
+     "means": "both sides are the same"
+    },
+    {
+     "word": "missing",
+     "means": "the hidden number that makes it true"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Balance Bridge at Same on Both Sides. Make the bridge flat six times.",
+   "art": "trophy",
+   "img": "nq/balance-bridge/same-on-both-sides",
+   "alt": "Balance Bridge on a phone: a see-saw bridge with blocks on both sides, and two big buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-4.1-e1",
+  "nq-launchpad-4.1-e2",
+  "nq-launchpad-4.1-e3"
+ ],
+ "game": {
+  "slug": "balance-bridge",
+  "chapter": "Same on Both Sides",
+  "params": "chapter=equal&lock=1"
+ }
+}

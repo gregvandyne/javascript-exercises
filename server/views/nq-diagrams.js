@@ -19,7 +19,8 @@
 //           step by step, down to the right answer (3.3, 4.3, 5.3, 6.3, 7.3);
 //   counters counters to count and match (Launchpad 1.1-1.3): one group in rows of ten, numbered where `count` is set; two
 //           rows one under the other, matched one to one; or a ten-frame with the ones left over beside it; or
-//           (Unit 3, `tens`) a two-digit number as sticks of ten and loose ones, alone or two side by side.
+//           (Unit 3, `tens`) a two-digit number as sticks of ten and loose ones, alone or two side by side; or
+//           (Unit 4, `balance`) two groups of blocks on the two sides of a see-saw beam, level when they are the same.
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
@@ -391,8 +392,43 @@ function tensSvg(v, g) {
   }
   return s;
 }
+/** `balance` (Launchpad Unit 4): two groups of small blocks on the two sides of a see-saw beam over a pivot. The beam
+ *  is level when both sides hold the same number and leans to the heavier side when they do not. A side that is
+ *  `split` shows its two parts in two tones with a gap between them; `hide` draws the second part as a dashed box
+ *  marked "?" that weighs nothing yet. Under each side is what it holds as it is written ("5 + 2", "7", "8 + ?"), and
+ *  between them the sign: "=" when the sides are the same (or one part is still hidden), a crossed "≠" when not. */
+function balanceGeo(v) {
+  const u = 3.4, pitch = 3.8, gap = 1.6, qb = 6.4, px = 50, py = 41, arm = 20;
+  const sides = v.groups.map((q, k) => {
+    const sizes = q.split ? [q.split, q.n - q.split] : [q.n], parts = [];
+    let x = 0;
+    sizes.forEach((n, i) => { const hidden = !!q.hide && i === 1, w = hidden ? qb : Math.ceil(n / 5) * pitch - (pitch - u); parts.push({ n, hidden, x, w, tone: i ? 2 : k ? 1 : 0 }); x += w + gap; });
+    const w = x - gap, x0 = px + (k ? arm : -arm) - w / 2;
+    return { parts, w, x0, weight: q.hide ? q.split : q.n, text: q.split ? `${q.split} + ${q.hide ? '?' : q.n - q.split}` : String(q.n), tx: px + (k ? arm : -arm) };
+  });
+  const lean = Math.sign(sides[1].weight - sides[0].weight);   // 1: the right side is heavier and goes down
+  return { mode: 'balance', u, pitch, qb, px, py, sides, lean, angle: lean * 5, same: lean === 0 || v.groups.some(q => q.hide), bottom: tBot(52.8, 5.2) };
+}
+function balanceSvg(v, g) {
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  const floor = g.py - 0.8;
+  let on = `<rect x="13" y="${r2(floor)}" width="74" height="1.6" rx="0.5" fill="#D9A066" stroke="${INK}" stroke-width="0.45"/>`;
+  g.sides.forEach((sd, k) => {
+    on += `<g data-side="${k ? 'r' : 'l'}">`;
+    for (const p of sd.parts) {
+      if (p.hidden) { on += `<rect x="${r2(sd.x0 + p.x)}" y="${r2(floor - g.qb)}" width="${g.qb}" height="${g.qb}" rx="0.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.45" stroke-dasharray="1.2 0.9"/>` + tx(sd.x0 + p.x + g.qb / 2, floor - g.qb / 2 + 1.7, '?', 4.8, 'middle', 800); continue; }
+      for (let i = 0; i < p.n; i++) on += `<rect x="${r2(sd.x0 + p.x + Math.floor(i / 5) * g.pitch)}" y="${r2(floor - (i % 5) * g.pitch - g.u)}" width="${g.u}" height="${g.u}" fill="${TONES[p.tone]}" stroke="${INK}" stroke-width="0.45"/>`;
+    }
+    on += '</g>';
+  });
+  s += `<path d="M${g.px} ${r2(g.py + 0.9)} L${g.px - 5.5} 48 L${g.px + 5.5} 48 Z" fill="${LINE}" stroke="${INK}" stroke-width="0.45" stroke-linejoin="round"/>`;
+  s += g.angle ? `<g transform="rotate(${g.angle} ${g.px} ${g.py})">${on}</g>` : on;
+  s += tx(g.sides[0].tx, 52.8, g.sides[0].text, 5.2, 'middle', 800, LEAF) + tx(g.sides[1].tx, 52.8, g.sides[1].text, 5.2, 'middle', 800, LEAF) + tx(g.px, 52.8, g.same ? '=' : '\u2260', 5.2, 'middle', 800, g.same ? INK : '#C2431F');
+  return s;
+}
 function countersGeo(v) {
   const gs = v.groups, top = 13;
+  if (v.balance) return balanceGeo(v);
   if (gs[0].tens) return tensGeo(v);
   if (gs.length === 2) {
     const u = 7, x0 = r2(50 - (18 + Math.max(...gs.map(q => q.n)) * u) / 2 + 18); // the name gutter (16) and the rows, centred together
@@ -408,6 +444,7 @@ function countersGeo(v) {
 }
 function countersSvg(v) {
   const g = countersGeo(v);
+  if (g.mode === 'balance') return balanceSvg(v, g);
   if (g.mode === 'tens') return tensSvg(v, g);
   const r = r2(g.u * 0.36);
   const dot = (cx, cy, tone, num, gone) => (gone ? `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.45" stroke-dasharray="1.2 0.9"/>`
