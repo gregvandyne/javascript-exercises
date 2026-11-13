@@ -25,27 +25,15 @@
 //           (Unit 3, `tens`) a two-digit number as sticks of ten and loose ones, alone or two side by side; or
 //           (Unit 4, `balance`) two groups of blocks on the two sides of a see-saw beam, level when they are the same; or
 //           (Unit 5, `hundreds`) a three-digit number as flats of a hundred, sticks of ten and loose ones.
+// The Pro pack's types (plane, double, boxplot, angles, righttriangle, net, flow) are drawn in views/nq-diagrams-pro.js.
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
 // Every text size is 3.4 units or more: about 12 px on a 390 px phone.
-const INK = '#141414', LEAF = '#1F9D63', GROUND = '#FFFDF2', LINE = '#C9C2A6';
-const TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
-const r2 = v => Math.round(v * 100) / 100;
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-/** A text line; `halo` paints a ground-coloured outline under the letters where they sit on lines. */
-const tx = (x, y, str, size, anchor = 'middle', weight = 700, fill = INK, halo = false) =>
-  `<text x="${r2(x)}" y="${r2(y)}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" fill="${fill}"${halo ? ` stroke="${GROUND}" stroke-width="1.1" paint-order="stroke" stroke-linejoin="round"` : ''}>${esc(str)}</text>`;
-const tTop = (y, size) => y - 0.84 * size, tBot = (y, size) => y + 0.28 * size;
-/** A caption's size: the standard 3.8, smaller only for a long one (the labelFs rule in courses.js). */
-const capFs = s => Math.min(3.8, 168 / String(s).length);
-/** An arrowhead at (x, y) pointing along (dx, dy). */
-const head = (x, y, dx, dy, fill = INK, k = 2.2) => {
-  const l = Math.hypot(dx, dy), ux = dx / l, uy = dy / l;
-  return `<path d="M${r2(x)} ${r2(y)} L${r2(x - ux * k - uy * k * 0.55)} ${r2(y - uy * k + ux * k * 0.55)} L${r2(x - ux * k + uy * k * 0.55)} ${r2(y - uy * k - ux * k * 0.55)} Z" fill="${fill}"/>`;
-};
-
+import { INK, LEAF, LINE, TONES, r2, tx, tTop, tBot, capFs, head } from './nq-diagram-kit.js';
 import { DIAGRAM_TYPES as TYPES } from '../services/diagrams.js';
+import { PRO_SVG, PRO_EXTENT } from './nq-diagrams-pro.js';
+export { diagramParts, diagramAlt } from './nq-diagrams-pro.js';
 export const DIAGRAM_TYPES = new Set(TYPES);
 
 // ---------------------------------------------------------------------------------------------- grid
@@ -140,7 +128,8 @@ function linesSvg(v) {
 const linesExtent = v => [8, tBot(45, 3.8)];
 
 // ---------------------------------------------------------------------------------------------- chart
-const chartGeo = v => { const n = v.bars.length, x0 = 20, x1 = 92, bw = Math.min(14, (x1 - x0) / n * 0.6); return { x0, x1, y0: 44, top: v.label ? 15 : 9, bw, slot: (x1 - x0) / n }; };
+// (`touch`, a histogram: each bar fills its slot, so the bars touch)
+const chartGeo = v => { const n = v.bars.length, x0 = 20, x1 = 92, bw = v.touch ? (x1 - x0) / n : Math.min(14, (x1 - x0) / n * 0.6); return { x0, x1, y0: 44, top: v.label ? 15 : 9, bw, slot: (x1 - x0) / n }; };
 function chartSvg(v) {
   const g = chartGeo(v), Y = val => g.y0 - (val / v.max) * (g.y0 - g.top);
   let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
@@ -150,7 +139,7 @@ function chartSvg(v) {
   s += `<line x1="${g.x0}" y1="${g.y0}" x2="${g.x0}" y2="${r2(g.top - 2)}" stroke="${INK}" stroke-width="0.8"/>`;
   v.bars.forEach((b, i) => {
     const cx = g.x0 + g.slot * (i + 0.5), y = Y(b.value);
-    s += `<rect x="${r2(cx - g.bw / 2)}" y="${r2(y)}" width="${r2(g.bw)}" height="${r2(g.y0 - y)}" fill="${TONES[(b.tone ?? i) % TONES.length]}" stroke="${INK}" stroke-width="0.6"/>`;
+    s += `<rect x="${r2(cx - g.bw / 2)}" y="${r2(y)}" width="${r2(g.bw)}" height="${r2(g.y0 - y)}" fill="${TONES[(b.tone ?? (v.touch ? 2 : i)) % TONES.length]}" stroke="${INK}" stroke-width="0.6"/>`;
     s += tx(cx, y - 1.5, b.value, 3.8, 'middle', 800, INK, true) + tx(cx, g.y0 + 5, b.label, 3.6, 'middle', 700);
   });
   if (v.unit) s += tx(4, (g.top + g.y0) / 2, v.unit, 3.4, 'middle', 700, LEAF).replace('<text ', `<text transform="rotate(-90 4 ${r2((g.top + g.y0) / 2)})" `);
@@ -544,8 +533,8 @@ function countersSvg(v) {
 }
 const countersExtent = v => [v.label ? tTop(6.5, capFs(v.label)) : 13, countersGeo(v).bottom];
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg, fix: fixSvg, counters: countersSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent, fix: fixExtent, counters: countersExtent };
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg, fix: fixSvg, counters: countersSvg, ...PRO_SVG };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent, fix: fixExtent, counters: countersExtent, ...PRO_EXTENT };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */
