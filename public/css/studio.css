@@ -337,7 +337,8 @@ button.stp-line{cursor:pointer}
 .st-theme[aria-pressed="true"],.st-pick[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
 .st-theme.is-current,.st-pick.is-current{border-color:var(--accent-line)}
 .st-theme-now{font-size:.7rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
-@media (max-width:640px){.st-tab-t{display:none}.st-tab{padding:2px 6px}}
+/* On a phone the tabs sit on their own line over the chips, so their words stay readable. */
+@media (max-width:640px){.st-themes{flex-direction:column;align-items:stretch;gap:4px}.st-tabs{align-self:flex-start;max-width:100%}.st-tab{padding:2px 9px;font-size:.78rem}}
 /* Out of messages: nothing can be sent, so the theme chips (they only write into the message) step aside for the card. */
 .st-compose.st-out .st-themes{display:none}
 /* Opened from a lesson's build step: the way back to the lesson (and its Hand in). */

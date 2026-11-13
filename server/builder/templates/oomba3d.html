@@ -228,7 +228,8 @@ function answerPad(gate, solid, answer, x, z) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false, transparent: true }));
   const baseY = solid.top() + 3.4; sprite.scale.set(2.4, 2.4, 1); sprite.position.set(x, baseY, z); g.scene.add(sprite);
   const bob = gate.pads.length;
-  g.onUpdate(() => { if (!g.reducedMotion) sprite.position.y = baseY + Math.sin(performance.now() / 500 + bob) * 0.2; });
+  // An answer shows once its question is the one being asked (later questions wait their turn).
+  g.onUpdate(() => { sprite.visible = gates.indexOf(gate) <= answered; if (!g.reducedMotion) sprite.position.y = baseY + Math.sin(performance.now() / 500 + bob) * 0.2; });
   const pad = { solid, sprite, answer };
   solid.onLand = hero => {
     if (scene !== 'play' || gate.done || gate !== gates[answered]) return;
