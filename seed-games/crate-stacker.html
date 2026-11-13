@@ -481,3 +481,454 @@ function cart(slots, withCar) {
   const load = new THREE.Group(); o.add(load);
   return { object: o, load, wheels, L, top: 0.52, x0: 0, x1: L + (withCar ? 2.3 : 0.5) };
 }
+
+// Moving things: a drop from above with a bounce, a hop from one place to another, a pop, a shake, a drive. With
+// reduced motion (and in the tests' fast mode) a thing is simply where it belongs.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const bounce = k => { const n = 7.5625, d = 2.75; if (k < 1 / d) return n * k * k; if (k < 2 / d) { k -= 1.5 / d; return n * k * k + 0.75; } if (k < 2.5 / d) { k -= 2.25 / d; return n * k * k + 0.9375; } k -= 2.625 / d; return n * k * k + 0.984375; };
+/** A crate or a tower falls onto its place and bounces; the thud sounds as it lands. */
+function fall(o, { wait = 0, then, high = 3.2 } = {}) {
+  const y = o.position.y; let hit = false;
+  anim(o, 0.62, k => { o.position.y = y + high * (1 - bounce(k)); if (!hit && k >= 0.36) { hit = true; sfx('land'); } if (k >= 1) o.position.y = y; }, then, wait);
+}
+function fly(o, to, { dur = 0.42, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+function pop(o) { const s = o.scale.x; anim(o, 0.3, k => o.scale.setScalar(Math.max(0.01, s * smooth(k)))); }
+/** A wrong answer: the truck wobbles on its wheels (nothing with reduced motion; the button shows the miss). */
+function shake(o) { if (!o || tweens.some(w => w.o === o)) return; anim(o, 0.6, k => { o.rotation.z = Math.sin(Math.PI * 5 * k) * 0.05 * (1 - k); o.position.y = Math.sin(Math.PI * k) * 0.06; }); }
+/** A happy hop on the spot. */
+function hop(o, high = 0.7) { if (!o || tweens.some(w => w.o === o)) return; const y = o.position.y; anim(o, 0.5, k => { o.position.y = y + Math.sin(Math.PI * k) * high; }); }
+/** A truck or a cart drives along x, its wheels turning. */
+function drive(V, toX, { dur = 0.9, then, from } = {}) {
+  const o = V.object; let a = null;
+  if (from != null && !(reduced || S.fast)) o.position.x = from;
+  anim(o, dur, k => { if (a == null) a = o.position.x; const x = a + (toX - a) * smooth(k), dx = x - o.position.x; o.position.x = x; for (const w of V.wheels) w.rotation.y -= dx / 0.3; if (k >= 1) o.position.x = toX; }, then);
+}
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- the town behind the yard: the theme's buildings, road, cars, trees and street lights ---------- */
+{ const grass = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), M.grass); grass.rotation.x = -Math.PI / 2; grass.position.y = -0.06; grass.receiveShadow = true; g.scene.add(grass); }
+const town = new THREE.Group(), traffic = [];
+{
+  const BS = 3.1, row = ['building-c', 'building-a', 'building-g', 'building-e', 'building-d', 'building-b', 'building-h', 'building-f', 'building-c', 'building-a', 'building-g'];
+  row.forEach((id, i) => town.add(piece(id, (i - 5) * (BS * 2 + 0.5), -0.1, -13, BS)));
+  for (let i = -7; i <= 7; i++) town.add(piece(i === -2 || i === 3 ? 'road-crossing' : 'road', i * 6, -0.29, -6.2, 3, Math.PI / 2));
+  // a second, taller row far behind, and woods at the ends, so the sky line is a town
+  ['building-h', 'building-d', 'building-g', 'building-c', 'building-h', 'building-d'].forEach((id, i) => town.add(piece(id, (i - 2.5) * 11.5, -0.1, -23, 4.6)));
+  for (const [id, x, z, s, turn = 0] of [['trees', -10, -1.2, 2.3], ['tree-round', -4.6, -1.8, 2.4], ['tree', 5.2, -1.6, 2.5], ['trees', 11, -1.3, 2.3, 1], ['bushes', -15.5, -1.5, 2], ['bushes', 16.5, -1.6, 2, 2], ['tree-round', 21, -1.5, 2.8], ['tree', -21, -1.4, 2.8],
+    ['streetlight', -7.5, -2.9, 2.6], ['streetlight', 0.6, -2.9, 2.6], ['streetlight', 8.2, -2.9, 2.6], ['streetlight', -16, -2.9, 2.6], ['streetlight', 17, -2.9, 2.6], ['fire-hydrant', 2.6, -2.7, 2.6], ['bench', -2.2, -2.6, 3, 0],
+    ['forest-round', -34, -10, 5], ['forest-round', 35, -11, 5, 1], ['trees', -28, -3, 3.2], ['trees', 29, -2.5, 3.2, 2], ['water-tower', -17.2, 0, -18, 5], ['water-tower', 14, 0, -18.5, 5],
+    ['tree', -3.1, -9.6, 2.6], ['tree-round', 3.4, -9.6, 2.6], ['tree', 10.2, -9.6, 2.4], ['tree-round', -9.8, -9.6, 2.4], ['bush', 0.2, -9.5, 3.4], ['tree', 16.6, -9.6, 2.6], ['tree-round', -16.4, -9.6, 2.6]])
+    town.add(piece(id, x, id === 'tree' || id === 'tree-round' ? 0.2 : 0, z, s, turn));
+  // cars on the road: they drive by, turn round at the ends of the street and come back on the other side
+  [['car-taxi', -20, 1, 3.4], ['car-wagon', 6, 1, 2.6], ['car-police', 24, -1, 3], ['car-sedan', -4, -1, 3.8]].forEach(([id, x, dir, speed]) => {
+    const o = piece(id, x, 0.15, -6.2 + dir * 1.25, 2.3, dir > 0 ? Math.PI / 2 : -Math.PI / 2); town.add(o); traffic.push({ o, dir, speed });
+  });
+  g.scene.add(town);
+}
+if (!reduced) g.onUpdate(dt => { for (const c of traffic) { c.o.position.x += c.dir * c.speed * dt; if (c.o.position.x * c.dir > 44) c.o.position.x = -44 * c.dir; } });
+
+const stage = new THREE.Group(); g.scene.add(stage);
+function clearStage() { for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); } tweens.length = 0; targets.length = 0; S.A = S.B = S.C = S.mid = null; }
+const put = o => { stage.add(o); return o; };
+/** Stand a truck (or a cart) so that its middle is at cx. */
+const centre = (V, cx, y = 0, z = 0) => { V.object.position.set(cx - (V.x0 + V.x1) / 2, y, z); V.home = V.object.position.x; return V; };
+/** The yard's floor under the play area: a pale slab with a yellow line round it. */
+function slab(x0, x1, z0, z1) {
+  const w = x1 - x0, d = z1 - z0, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+  put(box(M.slab, w, 0.1, d, cx, -0.04, cz, 0.04));
+  for (const [lw, ld, lx, lz] of [[w - 0.5, 0.1, cx, z0 + 0.3], [w - 0.5, 0.1, cx, z1 - 0.3], [0.1, d - 0.5, x0 + 0.3, cz], [0.1, d - 0.5, x1 - 0.3, cz]]) put(box(M.line, lw, 0.012, ld, lx, 0.017, lz, 0));
+}
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+// The camera looks across the yard, low enough that the town and the sky show behind the play area, and backs off
+// until the play area fits between the words at the top and the buttons at the bottom, on any screen shape.
+const view = { rect: [-6, 6, -1, 2], high: 5.4, low: 1.8, back: -2, tilt: 0 };
+function frame() {
+  if (!g) return;
+  const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
+  const play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 6;
+  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
+  const TILT = view.tilt || (tall ? 0.5 : 0.36), fov = tall ? 50 : 38, band = (tall ? (Hd > 720 ? 0.09 : 0.02) : 0.1) * Hd;   // a band of town and sky above the play area
+  const safe = { l: -1 + 14 / Wd, r: 1 - 14 / Wd, t: 1 - 2 * (topPx + band) / Hd, b: -1 + 2 * botPx / Hd };
+  const pts = [];
+  for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(V3(x, 0, z), V3(x, z === z0 ? view.high : view.low, z));
+  const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const sin = Math.sin(TILT), cos = Math.cos(TILT);
+  // at one distance: slide the camera along the yard until the front of the play area rests just above the buttons,
+  // then say whether the whole play area is inside the space kept for it
+  const fits = d => {
+    let lo = z1 - cos * d + 1.5, hi = z1 + 90, bx;
+    for (let i = 0; i < 22; i++) {
+      look.z = (lo + hi) / 2;
+      cam.position.set(look.x, sin * d, look.z + cos * d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (bx[2] > safe.b) hi = look.z; else lo = look.z;
+    }
+    return bx[0] >= safe.l && bx[1] <= safe.r && bx[3] <= safe.t;
+  };
+  let near = 5, far = 150;
+  for (let i = 0; i < 16; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+  town.position.set((x0 + x1) / 2, 0, z0 + view.back);
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping things in the yard: the nearest target under the finger, with a generous reach ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+
+/* ---------- the helper ---------- */
+let lineup = [];
+const HS = 1.3;   // the helper's size in the yard
+/** A parked truck with a small load, for the screens with no round on them. */
+function parked(z = -1.3) { const A = centre(truck('red', 4), 0, 0, z); setLoad(A, 3, 4); put(A.object); return A; }
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage();
+  const spots = tall ? [[-2.2, 1.2], [0, 0.9], [2.2, 1.2], [-1.2, 3.2], [1.2, 3.2]] : [[-4.6, 1.6], [-2.3, 1.2], [0, 1], [2.3, 1.2], [4.6, 1.6]];
+  parked(tall ? -2.4 : -2); slab(tall ? -4 : -6.2, tall ? 4 : 6.2, -3.6, tall ? 4.6 : 3.2);
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(HS); h.position.set(spots[i][0], 0, spots[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.2), r: 1.1, go: () => chooseHero(h.id) }));
+  Object.assign(view, { rect: tall ? [-3.3, 3.3, -0.2, 4.2] : [-5.6, 5.6, 0.2, 2.6], high: 2.6, low: 2.4, back: tall ? -6 : -5, tilt: 0 });
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+function placeHero(x, z, turn = 0.45) { const h = S.hero; if (!h) return; drop(h.object); h.object.scale.setScalar(HS); h.position.set(x, 0, z); h.object.rotation.y = turn; }
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, pic, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'cs-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, text) => { const s = document.createElement('span'); s.className = c; if (text != null) s.textContent = text; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (pic) { const p = span('pic'); p.setAttribute('aria-hidden', 'true'); p.append('+', span(pic)); b.append(p); }
+  if (big != null) b.append(span('big', big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'cs-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'cs-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'cs-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'cs-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'cs-menu' : 'cs-pick'; row.append(...buttons.map(button));
+  el.card.className = 'cs-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper beside a parked truck: the menu and the end of a chapter. */
+function solo() {
+  clearStage(); const A = parked(-0.6); slab(-4.4, 4.4, -2.2, 3);
+  placeHero(tall ? 0 : A.object.position.x + A.x0 - 0.9, tall ? 1.6 : 0.9, 0);
+  Object.assign(view, { rect: tall ? [-3.2, 3.2, -1.2, 2.2] : [-4.6, 3.6, -1.2, 1.6], high: 5.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });
+}
+function showMenu() {
+  clearTimers(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: CS.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!CS.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: CS.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: CS.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+const tensOf = n => Math.floor(n / 10), onesOf = n => n % 10;
+/** The number chip for the round: what is loaded, or the sum with "?" where the answer goes while it is asked. */
+function showSum(R, found) {
+  if (R.kind === 'build') { const n = found ? R.answer : S.count; sum(partsKey('show.parts', tensOf(n), onesOf(n)), { t: tensOf(n), o: onesOf(n) }); }
+  else if (R.kind === 'read') { if (found) sum(partsKey('show.parts', R.tens, R.ones), { t: R.tens, o: R.ones }); else sum('show.read'); }
+  else if (R.kind === 'more') { if (found) sum('show.gt', { a: Math.max(R.a, R.b), b: Math.min(R.a, R.b) }); else sum('show.q', { a: R.a, b: R.b }); }
+  else if (R.kind === 'sign') sum(found ? 'show.' + R.answer : 'show.q', { a: R.a, b: R.b });
+  else sum(R.kind === 'less10' ? 'show.sub' : 'show.add', { a: R.a, b: R.b, c: found ? R.answer : '?' });
+}
+/** The words that ask the round. */
+function ask(R) {
+  if (R.kind === 'build') return R.ask === 'parts' ? say('build.ask.parts.' + (R.ones === 1 ? 'n1' : 'nn'), { t: R.tens, o: R.ones }) : say('build.ask', { n: R.answer });
+  if (R.kind === 'read') return say('read.ask');
+  if (R.kind === 'more' || R.kind === 'sign') return say(R.kind + '.ask');
+  if (R.kind === 'more10' || R.kind === 'less10') return say(R.kind + '.ask', { a: R.a });
+  return say('add.ask', { a: R.a, b: R.b });
+}
+function nextRound() {
+  clearTimers();
+  if (S.round >= CS.ROUNDS) return finish();
+  S.round++; S.R = CS.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.hist = []; S.count = 0; S.tick = 0;
+  const R = S.R;
+  hint(); dots(); showSum(R, false);
+  ask(R);   // the words first: the camera fits the yard under them
+  redraw(); frame();
+}
+/** The round is right: cheer and say what is true, then the next round (or the end). */
+function right(key, vars, ms, then) {
+  sfx('cheer'); heroMove('cheer', 1700); if (S.hero) hop(S.hero.object, 0.5);
+  showSum(S.R, true); say(key, vars, { queue: true });
+  if (then) then();
+  later(ms, nextRound);
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  solo();
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '📦', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/** Draw the round from its state (also after the screen turns): the trucks, their loads, the helper, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  clearStage();
+  const R = S.R, found = S.phase === 'right';
+  el.card.hidden = true; el.bar.hidden = false;
+  if (R.kind === 'build' || R.kind === 'read') drawOne(R, found); else if (R.kind === 'more' || R.kind === 'sign') drawTwo(R, found); else drawAdd(R, found);
+  const num = (v, cls) => button({ id: 'cs-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: (cls || '') + (found && v === R.answer ? ' go' : ''), go: b => answer(v, b) });
+  if (R.kind === 'build') el.bar.replaceChildren(button({ id: 'cs-ten', pic: 'tw', label: fmt('btn.ten'), go: b => build('ten', b) }), button({ id: 'cs-one', pic: 'cr', label: fmt('btn.one'), go: b => build('one', b) }),
+    button({ id: 'cs-off', icon: '↩️', label: fmt('btn.off'), go: b => build('off', b) }), button({ id: 'cs-go', icon: '🚚', label: fmt('btn.go'), cls: 'go', go: b => build('go', b) }));
+  else if (R.kind === 'more') el.bar.replaceChildren(num(R.a, 'red'), num(R.b, 'blue'));
+  else if (R.kind === 'sign') el.bar.replaceChildren(...R.choices.map(v => button({ id: 'cs-' + v, big: SIGN[v], label: fmt('btn.' + v), aria: fmt('btn.' + v), cls: found && v === R.answer ? 'go' : '', go: b => answer(v, b) })));
+  else el.bar.replaceChildren(...R.choices.map(v => num(v)));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+}
+
+/* ----- chapter 1, one truck: load a number with towers and crates, then read a load ----- */
+const TOP = BED + CR * 10;   // the top of a tower on a truck
+function drawOne(R, found) {
+  const A = S.A = centre(truck('red', R.kind === 'build' ? 9 : Math.max(3, R.tens)), 0), half = (A.x1 - A.x0) / 2;
+  put(A.object);
+  if (R.kind === 'build') { const n = found ? R.answer : S.count; setLoad(A, tensOf(n), onesOf(n)); setSign(A, R.ask === 'parts' && !found ? '?' : n, found ? 'green' : 'cream'); }
+  else { setLoad(A, R.tens, R.ones); setSign(A, found ? R.answer : '?', found ? 'green' : 'cream'); }
+  slab(-half - 1.6, half + 1.6, -1.9, 2.8);
+  placeHero(-half + 0.55, 1.5);
+  Object.assign(view, { rect: [-half - 0.2, half + 0.2, -0.6, 2.0], high: TOP + 0.3, low: 2.2, back: tall ? -4.6 : -4.2, tilt: 0 });
+  if (!S.shown && !found) drive(A, A.home, { from: A.home + 16, dur: 0.8 });
+}
+/** The chip and the truck's sign follow the load as it is built. */
+function live() { const R = S.R; showSum(R, false); setSign(S.A, R.ask === 'parts' ? '?' : S.count, 'cream'); }
+/** Ten loose crates snap into a tower: it hops from the crates' corner to its place among the towers. */
+function bundle(A, tens) {
+  setLoad(A, tens, 0);
+  const t = A.towers[tens - 1], to = t.position.clone();
+  t.position.set(crateAt(A, 0).x, BED, 0); fly(t, to, { arc: 1.1, dur: 0.5, then: () => sfx('land') }); sfx('coin');
+}
+function build(act, b) {
+  if (S.phase !== 'play' || !S.A || S.R.kind !== 'build') return;
+  const R = S.R, A = S.A, tick = ++S.tick;
+  setLoad(A, tensOf(S.count), onesOf(S.count));   // whatever was still moving is where it belongs
+  if (act === 'ten' || act === 'one') {
+    const n = act === 'ten' ? 10 : 1;
+    if (S.count + n > CS.MAX) { wobble(b); return hint('build.full'); }
+    S.hist.push(act); S.count += n; hint(); heroMove('use', 800);
+    if (act === 'ten') { const t = tower(); t.position.copy(towerAt(A, A.tens)); A.load.add(t); A.towers.push(t); A.tens++; fall(t); }
+    else {
+      const c = crate(), full = A.ones === 9; c.position.copy(crateAt(A, A.ones)); A.load.add(c); A.crates.push(c); A.ones++;
+      if (full) { hint('build.bundle'); A.tens++; A.ones = 0; }   // the tenth loose crate: they become a tower
+      fall(c, { high: 2.2, then: () => { if (full && S.tick === tick) bundle(A, tensOf(S.count)); } });
+    }
+    return live();
+  }
+  if (act === 'off') {
+    if (!S.hist.length) { wobble(b); return hint('build.empty'); }
+    S.count -= S.hist.pop() === 'ten' ? 10 : 1; hint(); sfx('jump');
+    setLoad(A, tensOf(S.count), onesOf(S.count));
+    return live();
+  }
+  if (S.count !== R.answer) {
+    wobble(b); shake(A.body);
+    return tensOf(S.count) !== R.tens ? hint('build.hint.tens.' + (R.tens === 1 ? '1' : 'n'), { t: R.tens }) : hint('build.hint.ones.' + (R.ones === 1 ? '1' : 'n'), { o: R.ones });
+  }
+  S.phase = 'right'; hint(); sfx('coin'); setSign(A, R.answer, 'green');
+  right(partsKey('parts', R.tens, R.ones), { t: R.tens, o: R.ones, n: R.answer }, 3600, () => later(2100, () => leave(A)));
+}
+/** A loaded truck drives off to the left. */
+function leave(V, to = -30) { if (reduced || S.fast) return; sfx('walk'); drive(V, to, { dur: 1.3 }); }
+
+/* ----- chapter 2, two trucks: which has more, then the sign that goes between the two numbers ----- */
+function drawTwo(R, found) {
+  const cap = R.view === 'numbers' ? 5 : Math.max(3, tensOf(R.a), tensOf(R.b));
+  const A = S.A = truck('red', cap), B2 = S.B = truck('blue', cap), len = A.x1 - A.x0, half = len / 2;
+  put(A.object); put(B2.object);
+  // side by side on a wide screen; on a tall phone the first truck is up on the loading dock behind the second
+  if (tall) { centre(A, 0, 1, -6.4); centre(B2, 0, 0, 1.2); put(box(M.dock, len + 2.2, 1, 2.6, 0, 0.5, -6.4)); slab(-half - 1.6, half + 1.6, -4.6, 3.8); }
+  else { centre(A, -half - 0.75); centre(B2, half + 0.75); slab(-len - 2.4, len + 2.4, -1.9, 2.8); }
+  for (const [V, n] of [[A, R.a], [B2, R.b]]) {
+    if (R.view === 'numbers') setContainer(V, n); else setLoad(V, tensOf(n), onesOf(n));
+    setSign(V, n, found && (R.kind === 'sign' || n === R.answer) ? 'green' : 'cream');
+    if (R.kind === 'more') targets.push({ at: () => V.object.position.clone().add(V3((V.x0 + V.x1) / 2, 1.5, 0)), r: half * 0.8, go: () => answer(n) });
+  }
+  if (R.kind === 'sign') { const m = S.mid = put(board(found ? SIGN[R.answer] : '?', 1.5, found ? 'green' : 'gold')); m.position.copy(tall ? V3(half - 0.9, 1.6, -2.4) : V3(0, 2.3, 0.9)); }
+  placeHero(tall ? -half + 0.5 : 0, tall ? 3 : 2.1, tall ? 0.4 : 0);
+  const high = R.view === 'numbers' ? 3.4 : TOP + 0.3;
+  Object.assign(view, tall ? { rect: [-half - 0.2, half + 0.2, -7, 3.4], high: high + 1, low: 2.2, back: -3.4, tilt: 0.62 } : { rect: [-len - 0.95, len + 0.95, -0.6, 2.6], high, low: 2.2, back: -4.2, tilt: 0 });
+}
+
+/* ----- chapter 3, a truck and a cart: tens more, ten more and ten less, ones more (they may fill a tower) ----- */
+function drawAdd(R, found) {
+  const tensAdd = R.kind === 'tens' || R.kind === 'more10', n = found ? R.answer : R.a;
+  const A = S.A = truck('red', Math.max(3, tensOf(R.a), tensOf(R.answer))), C = S.C = cart(tensAdd ? R.b / 10 : 1, !tall);
+  const lenA = A.x1 - A.x0, lenC = C.x1 - C.x0, all = lenA + 0.6 + lenC;
+  put(A.object); put(C.object); centre(A, -all / 2 + lenA / 2); centre(C, all / 2 - lenC / 2);
+  setLoad(A, tensOf(n), onesOf(n)); setSign(A, n, found ? 'green' : 'cream');
+  C.towers = []; C.crates = [];
+  if (!found) {
+    if (tensAdd) for (let i = 0; i < R.b / 10; i++) { const t = tower(); t.position.set(0.4 + i * PITCH, C.top, 0); C.load.add(t); C.towers.push(t); }
+    if (R.kind === 'ones') for (let j = 0; j < R.b; j++) { const c = crate(); c.position.set(0.5, C.top + CR / 2 + j * CR, 0); C.load.add(c); C.crates.push(c); }
+    const tag = C.tag = board((R.kind === 'less10' ? '−' : '+') + R.b, 1.25, 'gold'); tag.position.set(C.L / 2, C.top + (tensAdd ? CR * 10 : R.kind === 'ones' ? R.b * CR : 0) + 0.62, 0); C.object.add(tag);
+  } else if (R.kind === 'less10') C.object.visible = false;
+  slab(-all / 2 - 1.6, all / 2 + 1.6, -1.9, 2.8);
+  placeHero(-all / 2 + 0.55, 1.5);
+  Object.assign(view, { rect: [-all / 2 - 0.2, all / 2 + 0.2, -0.6, 2.0], high: TOP + (tensAdd ? 0.9 : 0.3), low: 2.2, back: tall ? -4.6 : -4.2, tilt: 0 });
+  if (!S.shown && !found) drive(C, C.home, { from: C.home + 14, dur: 0.8 });
+}
+/** Move a thing from the cart to its place on the truck (or back): it keeps its place in the world, then hops. */
+function carry(o, to, parent, at, o2 = {}) { parent.attach(o); o.rotation.set(0, 0, 0); fly(o, at, { arc: 1.2, dur: 0.45, ...o2 }); }
+function addRight(R) {
+  const A = S.A, C = S.C, tick = ++S.tick, ok = () => S.tick === tick && S.A === A;
+  if (C.tag) C.tag.visible = false;
+  const whole = (key, vars, ms = 3400) => right(key, vars, ms, () => setSign(A, R.answer, 'green'));
+  const crates = (list, each) => list.forEach((c, i) => carry(c, A, A.load, crateAt(A, A.ones + i), { wait: i * 0.24, then: () => { sfx('land'); if (ok()) each(i); } }));
+  if (R.kind === 'tens' || R.kind === 'more10') {
+    C.towers.forEach((t, i) => carry(t, A, A.load, towerAt(A, A.tens + i), { wait: i * 0.42, then: () => { sfx('land'); if (ok()) setSign(A, R.a + 10 * (i + 1), 'cream'); } }));
+    A.towers.push(...C.towers); A.tens += C.towers.length;
+    return R.kind === 'tens' ? whole('add.sum', { a: R.a, b: R.b, c: R.answer }, 3400 + C.towers.length * 420) : whole('more10.sum', { a: R.a, c: R.answer });
+  }
+  if (R.kind === 'less10') {
+    const t = A.towers.pop(); A.tens--;
+    carry(t, C, C.load, V3(0.5, C.top, 0), { then: () => { sfx('land'); if (ok()) later(500, () => { if (ok()) leave(C, 34); }); } });
+    return whole('less10.sum', { a: R.a, c: R.answer });
+  }
+  if (!R.cross) { crates(C.crates, i => setSign(A, R.a + i + 1, 'cream')); A.crates.push(...C.crates); A.ones += R.b; return whole('add.sum', { a: R.a, b: R.b, c: R.answer }, 3400 + R.b * 240); }
+  // over a ten: the crates fill the tower first (27 and 3 make 30), then the rest go on (2 more makes 32)
+  const fill = 10 - onesOf(R.a), rest = R.b - fill, ten = R.a + fill, first = C.crates.slice(0, fill), last = C.crates.slice(fill);
+  sum('show.add', { a: R.a, b: fill, c: ten }); say('add.fill', { a: R.a, b: fill, c: ten });
+  crates(first, i => setSign(A, R.a + i + 1, 'cream'));
+  later(fill * 240 + 700, () => {
+    if (!ok()) return;
+    for (const c of first) c.removeFromParent();
+    bundle(A, tensOf(ten)); setSign(A, ten, 'cream');
+    later(1900, () => {
+      if (!ok()) return;
+      sum('show.add', { a: ten, b: rest, c: R.answer }); say('add.more', { b: rest, c: R.answer }, { queue: true });
+      crates(last, i => setSign(A, ten + i + 1, 'cream')); A.crates.push(...last); A.ones = rest;
+      later(rest * 240 + 2300, () => { if (ok()) whole('add.sum', { a: R.a, b: R.b, c: R.answer }); });
+    });
+  });
+}
+
+const HINT = R => (R.kind === 'read' ? 'read.hint' : R.kind === 'more' || R.kind === 'sign' ? 'gr.hint.' + R.look : R.kind === 'ones' ? 'ones.hint' + (R.cross ? '.ten' : '') : R.kind + '.hint');
+/** The child picks an answer: a number button, a sign button, or a tap on a truck in the yard. */
+function answer(v, b) {
+  if (S.phase !== 'play' || !S.R || S.R.kind === 'build') return;
+  const R = S.R, id = 'cs-' + (R.kind === 'sign' ? v : 'n' + v);
+  if (!R.choices.includes(v)) return;
+  if (v !== R.answer) {
+    wobble(b || document.getElementById(id));
+    shake(R.kind === 'more' && v === R.b ? S.B.body : S.A.body);
+    return hint(HINT(R), { a: R.a });
+  }
+  S.phase = 'right'; hint(); sfx('coin');
+  const btn = document.getElementById(id); if (btn) btn.classList.add('go');
+  if (R.kind === 'read') {
+    setSign(S.A, R.answer, 'green');
+    return right(R.tens === 10 ? 'read.hundred' : partsKey('parts', R.tens, R.ones), { t: R.tens, o: R.ones, n: R.answer }, R.tens === 10 ? 4600 : 3600, () => later(2100, () => leave(S.A)));
+  }
+  if (R.kind === 'more' || R.kind === 'sign') {
+    const hi = Math.max(R.a, R.b), lo = Math.min(R.a, R.b);
+    const why = () => (R.look === 'same' ? speak('gr.why.same', null, { queue: true }) : R.look === 'tens' ? speak('gr.why.tens', { a: tensOf(hi), b: tensOf(lo) }, { queue: true }) : speak('gr.why.ones', { a: onesOf(hi), b: onesOf(lo) }, { queue: true }));
+    if (R.kind === 'more') { const V = v === R.a ? S.A : S.B; setSign(V, v, 'green'); hop(V.body, 0.45); return right('gr.gt', { a: hi, b: lo }, 5200, why); }
+    reboard(S.mid, SIGN[v], 'green'); setSign(S.A, R.a, 'green'); setSign(S.B, R.b, 'green');
+    return right('gr.' + v, { a: R.a, b: R.b }, 5200, why);
+  }
+  addRight(R);
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+const loadOf = V => (V ? { tens: V.tens, ones: V.ones } : null);
+window.__cs = window.__brbTest = {
+  state: () => ({ game: 'crate-stacker', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: CS.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, count: S.count, load: loadOf(S.A), loadB: loadOf(S.B), sign: S.A && S.A.sign.visible ? S.A.sign.userData.text : null, moving: tweens.length } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => (name === 'answer' ? answer(arg) : build(name)),
+  /** The helper's place: [x, how far above the ground, z]. */
+  heroAt: () => (S.hero ? [+S.hero.position.x.toFixed(2), +S.hero.position.y.toFixed(2), +S.hero.position.z.toFixed(2)] : null),
+  /** Where a truck ('a' or 'b') is on the screen (CSS pixels): the middle of its bed and the top of its load, for a
+   *  test that taps the yard itself or checks that the whole load is in view. */
+  spot: which => {
+    const V = which === 'b' ? S.B : S.A; if (!V) return null;
+    const r = g.renderer.domElement.getBoundingClientRect(), px = p => { const q = p.project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+    const at = (x, y) => px(V.object.position.clone().add(V3(x, y, 0)));
+    return { mid: at((V.x0 + V.x1) / 2, 1.5), left: at(V.x0, 0.3), right: at(V.x1, 0.3), top: at(V.L / 2, V.big ? BED + 1.9 : TOP) };
+  },
+};
+
+el.load.hidden = true; el.load.remove(); el.cs.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>
