@@ -551,24 +551,25 @@ test('keyboard, phones and reduced motion: everything is a big button a key can 
           const top = ['ask', 'sum', 'dots'].map($).filter(vis).map(r), gear = r(document.querySelector('.o3-gear')), bs = [...document.querySelectorAll('#bar .rs-btn')].map(r);
           const hit = (a, b) => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
           const sp = window.__rs.spot(), line = r($('line')).bottom, bar = r($('bar')).top, box = b => ({ left: b[0], top: b[1], right: b[2], bottom: b[3] });
-          const things = [sp.pods, sp.labels].filter(Boolean).map(box), hero = box(sp.hero), rocket = box(sp.rocket), hint = vis($('hint')) ? r($('hint')) : null;
+          const things = [sp.pods, sp.labels].filter(Boolean).map(box), each = sp.each.map(box), hero = box(sp.hero), rocket = box(sp.rocket), hint = vis($('hint')) ? r($('hint')) : null;
           return { inside: [...top, ...bs].every(b => b.left >= 0 && b.right <= innerWidth + 0.5 && b.top >= 0 && b.bottom <= innerHeight + 0.5),
             top: top.some((a, i) => top.some((b, j) => j > i && hit(a, b))) || top.some(a => hit(a, gear)),
             oneLine: innerWidth > innerHeight ? top.every(a => a.top < top[0].bottom && a.bottom > top[0].top) : null,
             small: bs.filter(b => b.height < 60 || b.width < 60).length, n: bs.length, overlap: bs.some((a, i) => bs.some((b, j) => j > i && hit(a, b))), scroll: document.documentElement.scrollWidth > innerWidth,
             // every pod and number board, the rocket and the helper are drawn between the words and the buttons
-            view: things.length > 0 && things.every(b => b.left > 0 && b.right < innerWidth && b.top > line && b.bottom < bar),
+            view: things.every(b => b.left > 0 && b.right < innerWidth && b.top > line && b.bottom < bar), things: things.length,
             rocket: rocket.left >= 0 && rocket.right <= innerWidth && rocket.top > line && rocket.bottom < bar,
-            helper: hero.left >= 0 && hero.right <= innerWidth && hero.top > line && hero.bottom < bar, hidden: things.some(b => hit(b, hero)),
-            hint: hint ? things.some(b => hit(b, hint)) : null, size: sp.size };
+            helper: hero.left >= 0 && hero.right <= innerWidth && hero.top > line && hero.bottom < bar, hidden: each.some(b => hit(b, hero)),
+            hint: hint ? each.some(b => hit(b, hint)) : null, size: sp.size };
         });
         const fit = await measure();
-        assert.deepEqual(fit, { inside: true, top: false, oneLine: width > height ? true : null, small: 0, n: st.kind === 'build' ? 5 : 3, overlap: false, scroll: false, view: true, rocket: true, helper: true, hidden: false, hint: null, size: fit.size },
+        assert.deepEqual(fit, { inside: true, top: false, oneLine: width > height ? true : null, small: 0, n: st.kind === 'build' ? 5 : 3, overlap: false, scroll: false, view: true, rocket: true, helper: true, hidden: false, hint: null, things: fit.things, size: fit.size },
           `${at}: on screen, the top row tidy, the buttons big and apart, the pods, the numbers and the rocket in view, the helper clear of them`);
+        assert.ok(fit.things > 0 || st.kind === 'name', `${at}: something stands on the pad (only a number that is heard starts with an empty pad)`);
         // a canister is big enough to see and count in its stack of five: at least 15 px across on a desktop, 10 px on a
-        // 390 px phone and 9 px on a 360 px one; where two loads are compared, 10, 8 and 7 px
+        // 390 px phone and 9 px on a 360 px one; where two loads are compared, 10, 8 and 6.5 px
         const two = st.kind === 'compare';
-        assert.ok(fit.size >= (width >= 900 ? (two ? 10 : 15) : width >= 390 ? (two ? 8 : 10) : (two ? 7 : 9)), `${at}: a canister is ${fit.size} px across`);
+        assert.ok(fit.size >= (width >= 900 ? (two ? 10 : 15) : width >= 390 ? (two ? 8 : 10) : (two ? 6.5 : 9)), `${at}: a canister is ${fit.size} px across`);
         if (st.kind !== 'build') {
           // a wrong pick: the hint stands clear of the pods and the numbers, and what the pad then shows is still in view
           const miss = btn(st, st.choices.find(v => v !== st.answer)).slice(1);

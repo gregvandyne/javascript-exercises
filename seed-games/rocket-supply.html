@@ -71,7 +71,7 @@
   .rs .rs-say:active, .rs .rs-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
   .rs-askt { font-weight: 800; font-size: clamp(19px, 4.9vw, 28px); line-height: 1.15; min-width: 0; }
   .rs-sum { flex: 0 1 auto; min-width: 0; background: #66C792; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(22px, 5.6vw, 34px); line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .rs-sum.long { font-size: clamp(16px, 4.3vw, 24px); padding: 8px 12px; }
+  .rs-sum.long { font-size: clamp(16px, 4.3vw, 24px); padding: 8px 12px; white-space: normal; }
   .rs-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .rs-hint { background: #FFFDF2; color: #141414; border: 3px solid #141414; border-radius: 16px; padding: 6px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
   .rs-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
@@ -107,9 +107,9 @@
   @media (min-aspect-ratio: 9/10) {
     .rs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
     .rs-ask { flex: 0 1 auto; max-width: 100%; } .rs-row2 { flex: 0 1 auto; min-width: 0; }
-    .rs-askt { font-size: clamp(18px, 2.4vw, 28px); } .rs-sum { font-size: clamp(20px, 2.9vw, 34px); } .rs-sum.long { font-size: clamp(15px, 2vw, 24px); }
+    .rs-askt { font-size: clamp(18px, 2.4vw, 28px); } .rs-sum { font-size: clamp(20px, 2.9vw, 34px); } .rs-sum.long { font-size: clamp(15px, 2vw, 24px); white-space: nowrap; }
   }
-  @media (max-width: 480px) { .rs-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .rs-dots { gap: 5px; } .rs-dots i { width: 13px; height: 13px; border-width: 2.5px; } .rs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .rs .rs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .rs-btn .i { font-size: 26px; } .rs-bar.build { gap: 6px; padding-left: 6px; padding-right: 6px; } .rs-bar.build .rs-btn { font-size: 12px; } .rs-menu { gap: 8px; } .rs-menu .rs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .rs-menu .rs-btn .i { font-size: 36px; } .rs-star { font-size: 60px; } }
+  @media (max-width: 480px) { .rs-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .rs-sum.long { font-size: clamp(16px, 4.3vw, 24px); } .rs-dots { gap: 5px; } .rs-dots i { width: 13px; height: 13px; border-width: 2.5px; } .rs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .rs .rs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .rs-btn .i { font-size: 26px; } .rs-bar.build { gap: 6px; padding-left: 6px; padding-right: 6px; } .rs-bar.build .rs-btn { font-size: 12px; } .rs-menu { gap: 8px; } .rs-menu .rs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .rs-menu .rs-btn .i { font-size: 36px; } .rs-star { font-size: 60px; } }
   @media (max-height: 520px) { .rs .rs-btn { min-height: 60px; font-size: 15px; } .rs-btn .i { font-size: 24px; } .rs-btn .big { font-size: 36px; } .rs .rs-say { width: 44px; height: 44px; font-size: 20px; } .rs-menu .rs-btn { min-height: 90px; } .rs-star { font-size: 52px; } }
   @media (prefers-reduced-motion: reduce) { .rs .rs-btn.no { animation: none; outline: 5px dashed #ff8a70; outline-offset: 2px; } .rs .rs-say:active, .rs .rs-btn:active { transform: none; } }
 </style>
@@ -413,7 +413,7 @@ const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); 
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, ...o });
 const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide });
 const M = { ground: mat('#d9824f'), deck: mat('#3a4468'), deckLight: mat('#55628f'), steel: mat('#8b93ad'), dark: mat('#262c44'), white: mat('#f4f1e6'), red: mat('#e8503a'), glass: mat('#7fd6ff', { roughness: 0.3 }),
-  lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: new THREE.Color(0.25, 0.95, 0.45) }), tube: mat('#1c2238') };
+  edge: mat('#ffd23f'), lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: new THREE.Color(0.08, 0.72, 0.28) }), tube: mat('#1c2238') };
 const geos = new Map();
 const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
 /** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
@@ -423,9 +423,10 @@ function box(material, w, h, d, x = 0, y = 0, z = 0, edge = 0.035) {
   return m;
 }
 /** A round part (a cylinder, or a cone when r0 is 0) with an ink hull. */
+const cylGeo = (r0, r1, h, n = 16) => { const k = ['c', r0, r1, h, n].join('|'); if (!geos.has(k)) geos.set(k, new THREE.CylinderGeometry(r0, r1, h, n)); return geos.get(k); };
 function round(material, r0, r1, h, x = 0, y = 0, z = 0, edge = 0.03) {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, 16), material); m.position.set(x, y, z); m.castShadow = true;
-  if (edge) m.add(new THREE.Mesh(new THREE.CylinderGeometry(r0 + edge, r1 + edge, h + edge * 2, 16), INK));
+  const m = new THREE.Mesh(cylGeo(r0, r1, h), material); m.position.set(x, y, z); m.castShadow = true;
+  if (edge) m.add(new THREE.Mesh(cylGeo(+(r0 + edge).toFixed(3), +(r1 + edge).toFixed(3), +(h + edge * 2).toFixed(3)), INK));
   return m;
 }
 
@@ -454,7 +455,7 @@ const SIZE = { h: [10 * U, 0.9 * U, 10 * U], t: [0.9 * U, 10 * U, 0.9 * U], o: [
 function pod(kind, ghost) {
   const [w, h, d] = SIZE[kind]; let m;
   if (ghost) { EDGES[kind] ||= new THREE.EdgesGeometry(boxGeo(w, h, d)); m = new THREE.Mesh(boxGeo(w, h, d), GHOST); m.add(new THREE.LineSegments(EDGES[kind], GHOST_EDGE)); m.renderOrder = 2; }
-  else if (kind === 'o') { m = round(podMat.o, w / 2, w / 2, h, 0, 0, 0, 0.022); const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.3, w * 0.3, 0.012, 12), podMat.oTop); cap.position.y = h / 2 + 0.004; m.add(cap); }
+  else if (kind === 'o') { m = round(podMat.o, w / 2, w / 2, h, 0, 0, 0, 0.022); const cap = new THREE.Mesh(cylGeo(w * 0.3, w * 0.3, 0.012, 12), podMat.oTop); cap.position.y = h / 2 + 0.004; m.add(cap); }
   else { m = new THREE.Mesh(boxGeo(w, h, d), podMat[kind]); m.castShadow = true; m.add(new THREE.Mesh(boxGeo(w + 0.05, h + 0.05, d + 0.05), INK)); }
   m.userData.pod = kind; m.userData.ghost = !!ghost;
   return m;
@@ -523,8 +524,8 @@ const GY = -0.5, LIFT_Z = -4.3;   // the ground; the loading pad's top is y = 0
     ['structure', -10.6, -6, 2.1, 0.2], ['drill', 10.8, -6.2, 2.1, 0], ['structure', 20, -10, 2.6, 0], ['drill', -20.5, -9.5, 2.6, 0],
     // out on the field: pads with landers, rovers, cargo, lights, sun panels
     ['landing-pad-small', -9.6, -1.6, 1.6, 0, GY - 0.3], ['lander', -9.6, -1.6, 1.5, 0.5, GY + 0.45], ['landing-pad-small', 9.8, -1.2, 1.6, 0, GY - 0.3], ['rocket-lander', 9.8, -1.2, 1.5, -0.6, GY + 0.45],
-    ['rover-big', -8.2, 2.6, 1.9, 1.9], ['rover', 8.4, 3, 1.9, -2], ['cargo-stack', -8.4, -4.4, 1.3, 0.3], ['cargo', -7.2, -3.9, 1.3, 0], ['containers', 7.4, -4.6, 1.9, 0.2], ['cargo-stack', 8.6, -4.9, 1.3, -0.4], ['cargo', 12.8, 1.8, 1.3, 0.6],
-    ['lights', -6.6, -6.4, 1.7, 0], ['lights', 6.6, -6.4, 1.7, 0], ['lights', -11.5, -5.2, 1.7, 0], ['lights', 11.5, -5.2, 1.7, 0],
+    ['rover-big', -8.2, 2.6, 1.9, 1.9], ['rover', 8.4, 3, 1.9, -2], ['cargo-stack', -12.6, -5.6, 1.3, 0.3], ['cargo', -11.4, -5.1, 1.3, 0], ['containers', 11.6, -5.8, 1.9, 0.2], ['cargo-stack', 12.9, -6.1, 1.3, -0.4], ['cargo', 12.8, 1.8, 1.3, 0.6],
+    ['lights', -6.6, -6.4, 1.7, 0], ['lights', 6.6, -6.4, 1.7, 0], ['lights', -9.4, -7.6, 1.7, 0], ['lights', 9.4, -7.6, 1.7, 0],
     ['solar-panel', -12.2, -3.4, 2.6, 0.5], ['solar-panel', -14.4, -1.9, 2.6, 0.5], ['solar-panel', 12.6, -3.6, 2.6, -0.5], ['solar-panel', 14.9, -2.1, 2.6, -0.5], ['solar-panel', -11.6, 2.2, 2.4, 0.3],
     ['crater', -16.5, 2.6, 1.8, 0, GY - 1.7], ['crater', 17.5, 3.4, 1.6, 1, GY - 1.5], ['rocks', -8.6, 3.6, 1.7, 0], ['rocks', 9.2, 4.2, 1.6, 2], ['rock', -3.9, 4.3, 1.8, 0], ['rock', 4.6, 4.9, 1.6, 1], ['rocks', -19, -4, 2.2, 1], ['rocks', 21, -3, 2.2, 0],
     // the hills at the edge of the plain
@@ -547,10 +548,10 @@ const GY = -0.5, LIFT_Z = -4.3;   // the ground; the loading pad's top is y = 0
 const lift = new THREE.Group(), rocket = new THREE.Group(), flame = new THREE.Group();
 {
   lift.add(box(M.deck, 3.6, 0.3, 3.0, 0, -0.15, 0));
-  for (const s of [-1, 1]) lift.add(box(new THREE.MeshStandardMaterial({ color: '#ffd23f', roughness: 0.8 }), 3.66, 0.1, 0.12, 0, -0.06, s * 1.46, 0.02));
+  for (const s of [-1, 1]) lift.add(box(M.edge, 3.66, 0.1, 0.12, 0, -0.06, s * 1.46, 0.02));
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) lift.add(box(M.steel, 0.24, 16, 0.24, sx * 1.55, -8.3, sz * 1.25, 0.03));
   for (let i = 0; i < 9; i++) lift.add(box(M.steel, 3.1, 0.14, 0.14, 0, -1.2 - i * 1.6, 1.25, 0.02), box(M.steel, 0.14, 0.14, 2.5, -1.55, -1.2 - i * 1.6, 0, 0.02), box(M.steel, 0.14, 0.14, 2.5, 1.55, -1.2 - i * 1.6, 0, 0.02));
-  lift.add(piece('landing-pad', -0.75, -0.42, 0, 1.0));
+  const stand = piece('landing-pad', -0.75, -0.42, 0, 1.0); lift.add(stand); lift.userData.stand = stand;   // the theme's pad under the rocket
   // the rocket: the game's own, tall and plain to see (the theme's landers stand on the pads out on the field)
   rocket.add(round(M.white, 0.5, 0.5, 1.6, 0, 1.25, 0), round(M.red, 0, 0.5, 0.85, 0, 2.47, 0), round(M.dark, 0.3, 0.42, 0.22, 0, 0.36, 0, 0.025), round(M.red, 0.51, 0.51, 0.16, 0, 0.62, 0, 0));
   const win = round(M.glass, 0.19, 0.19, 0.06, 0, 1.55, 0.49, 0.035); win.rotation.x = Math.PI / 2; rocket.add(win);
@@ -635,27 +636,28 @@ g.renderer.domElement.addEventListener('pointerdown', ev => {
 
 /* ---------- the loading pad and what stands on it ---------- */
 const PAD_W = 6.5, LOAD_W = 5.8, SHELF = 3.3;   // (a pad that stands over another one stands SHELF higher)   // a load is 29 canisters wide: a pallet, nine racks in fives, two stacks of canisters
-const plateTex = new Map();
+const plateTex = new Map(), plateGeo = new Map();
 function plate(key, tone, w = 256) {
   if (!plateTex.has(key)) {
     const c = document.createElement('canvas'); c.width = w; c.height = 96; const x = c.getContext('2d');
     x.fillStyle = '#141414'; x.fillRect(0, 0, w, 96); x.fillStyle = tone; x.beginPath(); x.roundRect(8, 8, w - 16, 80, 18); x.fill();
     x.fillStyle = '#141414'; x.font = '900 62px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(fmt(key), w / 2, 51);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; plateTex.set(key, t);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; plateTex.set(key, new THREE.MeshBasicMaterial({ map: t, color: BOARD_LIGHT }));
   }
-  return new THREE.MeshBasicMaterial({ map: plateTex.get(key), color: BOARD_LIGHT });
+  return plateTex.get(key);
 }
 /** A pad `w` wide with its top at y, centred on cx; `bays` paints the three places (hundreds, tens, ones) on it and
  *  names them on its front edge. A pad above the ground stands on legs. */
 function pad(cx, y, w = PAD_W, bays = false, z = 0) {
   floor.add(box(M.deck, w, 0.5, 2.8, cx, y - 0.25, z));
-  for (const s of [-1, 1]) floor.add(box(new THREE.MeshStandardMaterial({ color: '#ffd23f', roughness: 0.8 }), 0.14, 0.52, 2.84, cx + s * (w / 2 - 0.05), y - 0.25, z, 0.02));
+  for (const s of [-1, 1]) floor.add(box(M.edge, 0.14, 0.52, 2.84, cx + s * (w / 2 - 0.05), y - 0.25, z, 0.02));
   if (y > 0.1) for (const s of [-1, 1]) floor.add(box(M.steel, 0.22, y, 0.22, cx + s * (w / 2 - 0.2), y / 2 - 0.5, z - 1.1, 0.03), box(M.steel, 0.22, y, 0.22, cx + s * (w / 2 - 0.2), y / 2 - 0.5, z + 1.1, 0.03));
   if (!bays) return;
   const x0 = cx - LOAD_W / 2;
   for (const [k, bx, bw] of [['h', x0 + 1, 2.1], ['t', x0 + 3.64, 2.78], ['o', x0 + 5.54, 0.62]]) {
     const b = new THREE.Mesh(boxGeo(bw, 0.02, 2.5), M.deckLight); b.position.set(bx, y + 0.011, z); b.receiveShadow = true; floor.add(b);
-    const pw = k === 'o' ? 144 : 256, lh = 0.4, l = new THREE.Mesh(new THREE.PlaneGeometry(lh * pw / 96, lh), plate('show.' + k, TONE[k][0], pw)); l.position.set(bx, y - 0.25, z + 1.405); floor.add(l);   // the place's name on the pad's front edge
+    const pw = k === 'o' ? 144 : 256, lh = 0.4; if (!plateGeo.has(pw)) plateGeo.set(pw, new THREE.PlaneGeometry(lh * pw / 96, lh));
+    const l = new THREE.Mesh(plateGeo.get(pw), plate('show.' + k, TONE[k][0], pw)); l.position.set(bx, y - 0.25, z + 1.405); floor.add(l);   // the place's name on the pad's front edge
   }
 }
 const rackDX = i => (i + 0.5) * 0.28 + (i >= 5 ? 0.16 : 0), racksW = t => (t ? t * 0.28 + (t > 5 ? 0.16 : 0) : 0);
@@ -702,7 +704,7 @@ function showNumber(n, cx, y0, { move = '', boards = '', num = false, mark = '',
 let lineup = [];
 const heroSize = () => (tall ? 0.72 : 0.82);
 /** The helper stands on the lift beside the rocket, above the load: never in front of a pod or a number. */
-function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(lift.position.x + 0.92, lift.position.y, lift.position.z + 0.45); h.object.rotation.y = -0.25; }
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(lift.position.x - S.rx * 1.23, lift.position.y, lift.position.z + 0.45); h.object.rotation.y = S.rx < 0 ? -0.25 : 0.25; }
 let heroBack = 0;
 function heroMove(move, ms = 1500) {
   const h = S.hero; if (!h || reduced) return;
@@ -719,8 +721,10 @@ function clearStage() {
 function arrange(two, top) {
   const side = !tall && !two, stacked = two && tall, wide = two && !tall;
   // (behind the pad the lift is further off, so it shows over the load from about a canister-stack lower than the load's top)
-  lift.position.set(side ? -3.5 : 0, side ? 0.6 : stacked ? SHELF + 1.6 : wide ? 1.7 : Math.max(1.7, top - 1), side ? -0.1 : wide ? -3.3 : LIFT_Z);
+  lift.position.set(side ? -3.5 : 0, side ? 0.6 : stacked ? SHELF + 1.9 : wide ? 1.7 : Math.max(1.7, top - 1), side ? -0.1 : wide ? -3.3 : LIFT_Z);
   S.cx = side ? 1.9 : 0; stage.position.x = floor.position.x = S.cx;
+  // between two pads the rocket stands on the right (it shows over the pallets) and the helper on the left (over the canisters)
+  S.rx = wide ? 0.75 : -0.75; rocket.position.x = lift.userData.stand.position.x = S.rx;
   const high = lift.position.y + 2.95;
   if (side) Object.assign(view, { rect: [-5.3, 5.15, -1.45, 1.45], high: Math.max(high, top), low: Math.max(high, top), tilt: 0 });
   else Object.assign(view, { rect: wide ? [-7.1, 7.1, -3.3, 1.45] : [-3.02, 3.02, LIFT_Z, 1.45], high, low: stacked ? SHELF + top : top, tilt: 0 });
@@ -898,7 +902,7 @@ function clearPods() { for (const o of [...stage.children]) { drop(o); stage.rem
 
 /* ---------- the fuel gauge: a pipe along the pad with a lamp and a number at each mark; the fuel has run as far
    as the last number counted ---------- */
-const MARKS = [-2.25, -0.75, 0.75, 2.25];
+const MARKS = [-2.25, -0.75, 0.75, 2.25], BULB = [new THREE.SphereGeometry(0.15, 14, 10), new THREE.SphereGeometry(0.18, 14, 10)];
 function drawGauge(Rd, found) {
   const y = 0.42, x0 = -2.95;
   stage.add(box(M.tube, 5.9, 0.46, 0.4, 0, y, ZP, 0.03));
@@ -907,7 +911,7 @@ function drawGauge(Rd, found) {
   MARKS.forEach((x, i) => {
     const lit = i < 3 || found;
     stage.add(box(M.steel, 0.1, 0.9, 0.1, x, y + 0.45, ZP - 0.1, 0.02));
-    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.15, 14, 10), lit ? M.lamp : M.lampOff); lamp.position.set(x, y + 0.98, ZP - 0.1); lamp.add(new THREE.Mesh(new THREE.SphereGeometry(0.18, 14, 10), INK)); stage.add(lamp);
+    const lamp = new THREE.Mesh(BULB[0], lit ? M.lamp : M.lampOff); lamp.position.set(x, y + 0.98, ZP - 0.1); lamp.add(new THREE.Mesh(BULB[1], INK)); stage.add(lamp);
     addBoard(i < 3 ? Rd.seq[i] : found ? Rd.answer : '?', x, y + 1.62, 1.3, i < 3 ? 'cream' : found ? 'green' : 'gold');
     if (S.reveal && i > 0) addBoard('+' + Rd.by, (x + MARKS[i - 1]) / 2, y + 0.62, Rd.by === 100 ? 0.8 : 0.62, 'gold', ZP + 0.3);   // the hop between two marks
   });
@@ -1073,9 +1077,10 @@ window.__rs = window.__brbTest = {
   heroAt: () => { if (!S.hero) return null; const p = S.hero.object.getWorldPosition(V3(0, 0, 0)); return [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]; },
   /** Where things are on the screen (CSS pixels): the two ends of the pad, and the boxes round the helper (as wide
    *  as the Wizard's hat), the rocket, the pods and the number boards, for a test that checks everything is in view
-   *  and nothing is hidden; `size` is how many pixels across one canister is. */
+   *  and nothing is hidden (`each`: a box for every pod and board on its own); `size` is how many pixels across one
+   *  canister is. */
   spot: () => ({ left: scr(V3(view.rect[0] + 0.15, 0, 1.4)), right: scr(V3(view.rect[1] - 0.15, 0, 1.4)), hero: S.hero ? (() => { const p = S.hero.position, k = S.hero.object.scale.x, a = scr(V3(p.x - 0.95 * k, p.y + 2.1 * k, p.z)), b = scr(V3(p.x + 0.95 * k, p.y, p.z)); return [a[0], a[1], b[0], b[1]].map(n => Math.round(n)); })() : null,
-    rocket: screenBox([rocket]), pods: screenBox(stage.children.filter(o => !o.userData.label)), labels: screenBox(stage.children.filter(o => o.userData.label)),
+    rocket: screenBox([rocket]), pods: screenBox(stage.children.filter(o => !o.userData.label)), labels: screenBox(stage.children.filter(o => o.userData.label)), each: stage.children.map(o => screenBox([o])).filter(Boolean),
     size: (() => { const a = scr(V3(0, 0, ZP)), b = scr(V3(U, 0, ZP)); return +(b[0] - a[0]).toFixed(1); })() }),
 };
 
