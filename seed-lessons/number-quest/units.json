@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop) and Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker); its codes lock in standards.json launchpadCodes.",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker) and Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge); its codes lock in standards.json launchpadCodes.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -33,7 +33,8 @@
    "stones": [
     "Counting Seed",
     "Joining Seed",
-    "Tens Seed"
+    "Tens Seed",
+    "Balance Seed"
    ]
   }
  },
@@ -1257,6 +1258,112 @@
    "tier": "launchpad",
    "title": "The Tens Trellis",
    "tool": "crate-stacker"
+  },
+  {
+   "emoji": "⚖️",
+   "group": "unit-4",
+   "n": 4,
+   "stamp": "Balance Seed",
+   "steps": [
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Same on Both Sides",
+       "chapterTitle": "Same on Both Sides",
+       "params": "chapter=equal&lock=1",
+       "slug": "balance-bridge"
+      }
+     },
+     "mp": "MP6",
+     "n": "4.1",
+     "order": 11,
+     "shorts": {
+      "launchpad": "The equals sign"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "1.OA.D.7",
+        "1.OA.D.8"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Equals means the same as"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Castle Stories",
+       "chapterTitle": "Castle Stories",
+       "params": "chapter=story&lock=1",
+       "slug": "balance-bridge"
+      }
+     },
+     "mp": "MP1",
+     "n": "4.2",
+     "order": 12,
+     "shorts": {
+      "launchpad": "Story problems"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "1.OA.A.1",
+        "2.OA.A.1"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Story problems"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Pairs and Rows",
+       "chapterTitle": "Pairs and Rows",
+       "params": "chapter=groups&lock=1",
+       "slug": "balance-bridge"
+      }
+     },
+     "mp": "MP7",
+     "n": "4.3",
+     "order": 13,
+     "shorts": {
+      "launchpad": "Pairs and rows"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "2.OA.C.3",
+        "2.OA.C.4"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Equal groups, odd and even"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "This unit covers the grade 1 and 2 ideas that hold sums together: the equals sign means \"the same as\" (true or not true, and the missing number in sums such as 8 + ? = 11 and 5 = ? − 3), story problems within 20 and then within 100 (add to, take from, put together, compare, and one with two steps), and equal groups: odd and even numbers, doubles, and rows added as equal addends.",
+    "A common misconception: a child reads the equals sign as \"the answer comes next\", so 8 + 4 = ? + 5 gets 12, and 5 = 2 + 3 looks backwards. Say \"is the same as\" for the sign, and weigh both sides: the sign sits where the two sides balance.",
+    "Balance Bridge checks each idea by doing, not reading. Every instruction and story is spoken; blocks stand on each side of a see-saw bridge, a wrong number is tried on the bridge and shows too light or too heavy, and the bridge goes level when both sides are the same. A wrong answer gets a spoken hint, and six finished rounds complete the step."
+   ],
+   "tier": "launchpad",
+   "title": "The Balance Bridge",
+   "tool": "balance-bridge"
   }
  ]
 }

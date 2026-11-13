@@ -41,6 +41,8 @@ export const COURSES = Object.freeze([
     // tier's first game (Unit 1, The Counting Patch: counting, comparing and teen numbers for kindergarten); Lily Hop
     // is its second (Unit 2, The Joining Pond: putting together, number partners, adding and taking away to 20) and
     // Crate Stacker its third (Unit 3, The Tens Trellis: tens and ones, comparing two-digit numbers, adding within 100).
+    // Balance Bridge is its fourth (Unit 4, The Balance Bridge: what the equals sign means, story problems, equal
+    // groups with odd and even numbers).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -50,6 +52,7 @@ export const COURSES = Object.freeze([
       { slug: 'garden-count', topic: 'numbers', shared: true },
       { slug: 'lily-hop', topic: 'numbers', shared: true },
       { slug: 'crate-stacker', topic: 'numbers', shared: true },
+      { slug: 'balance-bridge', topic: 'numbers', shared: true },
     ],
   },
 ]);

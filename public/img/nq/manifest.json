@@ -2,6 +2,39 @@
   "about": "Number Quest slide pictures: every img a Number Quest deck carries, what game state it photographs, and the alt the deck shows. Captured by scripts/nq-shots.js; kept honest by scripts/nq-manifest-check.js (npm run nq:check).",
   "images": [
     {
+      "alt": "Balance Bridge on a phone: 8 and 5 blocks on one side of a see-saw bridge, a chest on the other, and three number buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "4.2",
+      "commit": "1668eb68",
+      "concept": "Launchpad 4.2, Castle Stories round 1 (8 stones. 5 more come. How many now?): 8 red and 5 blue blocks on the left of the see-saw bridge, which leans left, the chest marked ? on the right, 8 + 5 = ?, number buttons 3, 12 and 13, shot at phone width (scripts/nq-shots.js band)",
+      "game": "balance-bridge",
+      "key": "nq/balance-bridge/castle-stories",
+      "state": "castle-stories"
+    },
+    {
+      "alt": "Balance Bridge on a phone: 3 blocks on each side of a see-saw bridge, and the buttons Even and Odd.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "4.3",
+      "commit": "1668eb68",
+      "concept": "Launchpad 4.3, Pairs and Rows round 1 (Is 6 odd or even?): 6 blocks shared 3 to each side of the see-saw bridge, held level by its posts, the chip reading 6 blocks, the buttons Even and Odd, shot at phone width (scripts/nq-shots.js band)",
+      "game": "balance-bridge",
+      "key": "nq/balance-bridge/pairs-and-rows",
+      "state": "pairs-and-rows"
+    },
+    {
+      "alt": "Balance Bridge on a phone: a see-saw bridge with 4 and 3 blocks on one side and 7 on the other, and two big buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "4.1",
+      "commit": "1668eb68",
+      "concept": "Launchpad 4.1, Same on Both Sides round 1 (Is 4 plus 3 the same as 7?): 4 red and 3 blue blocks on the left of the see-saw bridge and 7 gold blocks on the right, held level by its posts, the chip reading 4 + 3 = 7, the buttons True and Not true, shot at phone width (scripts/nq-shots.js band)",
+      "game": "balance-bridge",
+      "key": "nq/balance-bridge/same-on-both-sides",
+      "state": "same-on-both-sides"
+    },
+    {
       "alt": "Brain Board's Around & Inside board on a phone: a Fence it question for 100 points, four answers to pick from.",
       "band": "explorer",
       "capturedAt": "2026-11-07",

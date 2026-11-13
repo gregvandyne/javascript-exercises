@@ -218,7 +218,7 @@ async function capture(browser, slug) {
     if (q.url.startsWith('/vendor/')) {
       const f = vendorFile(origin + q.url.split('?')[0]);
       if (!f) { r.statusCode = 404; return r.end(); }
-      r.setHeader('Content-Type', f.endsWith('.js') ? 'text/javascript; charset=utf-8' : f.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
+      r.setHeader('Content-Type', /\.m?js$/.test(f) ? 'text/javascript; charset=utf-8' : f.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
       r.setHeader('Access-Control-Allow-Origin', '*'); r.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       return r.end(fs.readFileSync(f));
     }

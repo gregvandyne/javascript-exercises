@@ -1,0 +1,268 @@
+{
+ "key": "launchpad-4.2",
+ "n": "4.2",
+ "band": "launchpad",
+ "title": "Story problems",
+ "topic": "Story problems",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Stories at the castle",
+   "text": "The builders tell Tally number stories. Each story is a sum.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "More come: add",
+   "text": "7 stones, and 5 more come. That makes 12 stones.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "7 + 5 and 12 on a see-saw: level",
+    "balance": true,
+    "groups": [
+     {
+      "n": 12,
+      "split": 7
+     },
+     {
+      "n": 12
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start with 7.",
+     "box": [
+      22.9,
+      36.8,
+      9.2,
+      36.3
+     ]
+    },
+    {
+     "cue": "5 more come.",
+     "box": [
+      31.7,
+      36.8,
+      5.4,
+      36.3
+     ]
+    },
+    {
+     "cue": "12 in all.",
+     "box": [
+      63.5,
+      36.8,
+      13,
+      36.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Some go away: take away",
+   "text": "13 stones, and 4 roll away. Now there are 9 stones.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 5 to 15: hop back 4 from 13 to 9",
+    "min": 5,
+    "max": 15,
+    "marks": [
+     {
+      "at": 5,
+      "label": "5"
+     },
+     {
+      "at": 9,
+      "label": "9"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     },
+     {
+      "at": 15,
+      "label": "15"
+     }
+    ],
+    "hops": [
+     {
+      "from": 13,
+      "to": 9,
+      "label": "−4"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start on 13.",
+     "box": [
+      73.6,
+      57.8,
+      5.5,
+      25.4
+     ]
+    },
+    {
+     "cue": "Hop back 4.",
+     "box": [
+      40.2,
+      23.5,
+      37.1,
+      38.5
+     ]
+    },
+    {
+     "cue": "Land on 9.",
+     "box": [
+      39,
+      57.8,
+      4.5,
+      25.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Find the missing part",
+   "text": "6 red stones and some blue. There are 14 in all.",
+   "art": "star",
+   "steps": [
+    "6 red stones",
+    "14 in all",
+    "6 + ? = 14",
+    "8 are blue"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "6 and a hidden number, and 14, on a see-saw",
+    "balance": true,
+    "groups": [
+     {
+      "n": 14,
+      "split": 6,
+      "hide": true
+     },
+     {
+      "n": 14
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "6 red and a hidden number.",
+     "box": [
+      21.6,
+      32.7,
+      18.7,
+      38.4
+     ]
+    },
+    {
+     "cue": "14 in all.",
+     "box": [
+      63.5,
+      39.2,
+      14.6,
+      37.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "How many more?",
+   "text": "9 flags and 6 flags. 9 is 3 more than 6.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "9 red flags over 6 blue flags, matched one to one",
+    "groups": [
+     {
+      "n": 9,
+      "name": "red",
+      "tone": 3
+     },
+     {
+      "n": 6,
+      "name": "blue",
+      "tone": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "6 have a partner.",
+     "box": [
+      27.5,
+      23.3,
+      42,
+      37
+     ]
+    },
+    {
+     "cue": "3 have no partner: 3 more.",
+     "box": [
+      69.5,
+      23.3,
+      21,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "in all",
+     "means": "everything put together"
+    },
+    {
+     "word": "left",
+     "means": "what stays when some go away"
+    },
+    {
+     "word": "more than",
+     "means": "how many extra one group has"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Balance Bridge at Castle Stories. Listen, then pick the answer six times.",
+   "art": "trophy",
+   "img": "nq/balance-bridge/castle-stories",
+   "alt": "Balance Bridge on a phone: 8 and 5 blocks on one side of a see-saw bridge, a chest on the other, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-4.2-e1",
+  "nq-launchpad-4.2-e2",
+  "nq-launchpad-4.2-e3"
+ ],
+ "game": {
+  "slug": "balance-bridge",
+  "chapter": "Castle Stories",
+  "params": "chapter=story&lock=1"
+ }
+}

@@ -1,0 +1,224 @@
+{
+ "key": "launchpad-4.3",
+ "n": "4.3",
+ "band": "launchpad",
+ "title": "Equal groups, odd and even",
+ "topic": "Pairs and rows",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Two by two",
+   "text": "The blocks line up in pairs. Tally looks for one left over.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Even: every block has a partner",
+   "text": "8 is even. 4 and 4 make 8.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "8 blocks in two rows of 4, every one matched",
+    "groups": [
+     {
+      "n": 4,
+      "name": "4"
+     },
+     {
+      "n": 4,
+      "name": "4",
+      "tone": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "4 on top.",
+     "box": [
+      45,
+      23.3,
+      28,
+      12.1
+     ]
+    },
+    {
+     "cue": "4 below. No block is left over.",
+     "box": [
+      45,
+      48.1,
+      28,
+      12.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Odd: one is left over",
+   "text": "7 is odd. One block has no partner.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "7 blocks in two rows, 4 over 3: one has no partner",
+    "groups": [
+     {
+      "n": 4,
+      "name": "4"
+     },
+     {
+      "n": 3,
+      "name": "3",
+      "tone": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "3 pairs.",
+     "box": [
+      45,
+      23.3,
+      21,
+      37
+     ]
+    },
+    {
+     "cue": "This one has no partner.",
+     "box": [
+      66,
+      23.3,
+      7,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A double is always even",
+   "text": "6 + 6 = 12. Two equal groups make an even number.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "12 and 6 + 6 on a see-saw: level",
+    "balance": true,
+    "groups": [
+     {
+      "n": 12
+     },
+     {
+      "n": 12,
+      "split": 6
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "12 on this side.",
+     "box": [
+      23.5,
+      36.8,
+      13,
+      36.3
+     ]
+    },
+    {
+     "cue": "6 and 6: two equal groups.",
+     "box": [
+      61,
+      36.8,
+      18,
+      36.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rows of blocks",
+   "text": "3 rows of 4. Add the rows to find how many.",
+   "art": "star",
+   "steps": [
+    "4 in each row",
+    "4 + 4 + 4",
+    "4, 8, 12",
+    "3 rows of 4 make 12"
+   ],
+   "visual": {
+    "type": "array",
+    "label": "Blocks in 3 rows of 4",
+    "rows": 3,
+    "cols": 4
+   },
+   "focus": [
+    {
+     "cue": "One row has 4.",
+     "box": [
+      20,
+      22.6,
+      60,
+      10.5
+     ]
+    },
+    {
+     "cue": "3 rows: 12 in all.",
+     "box": [
+      20,
+      22.6,
+      60,
+      50.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "even",
+     "means": "can be shared in two equal groups"
+    },
+    {
+     "word": "odd",
+     "means": "one is left over after pairing"
+    },
+    {
+     "word": "row",
+     "means": "a line of blocks going across"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Balance Bridge at Pairs and Rows. Share the blocks and count the rows.",
+   "art": "trophy",
+   "img": "nq/balance-bridge/pairs-and-rows",
+   "alt": "Balance Bridge on a phone: 3 blocks on each side of a see-saw bridge, and the buttons Even and Odd.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-4.3-e1",
+  "nq-launchpad-4.3-e2",
+  "nq-launchpad-4.3-e3"
+ ],
+ "game": {
+  "slug": "balance-bridge",
+  "chapter": "Pairs and Rows",
+  "params": "chapter=groups&lock=1"
+ }
+}

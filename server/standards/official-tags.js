@@ -41,6 +41,10 @@ export const GAMES = Object.freeze({
   // Crate Stacker (grade 1): two-digit numbers as tens and ones (and counting past 100), comparing two of them with
   // >, = and <, adding within 100 and ten more or ten less (its three chapters, CRATE_CHAPTERS below).
   'crate-stacker': { 'ccss-math': ['1.NBT.B.2', '1.NBT.A.1', '1.NBT.B.3', '1.NBT.C.4', '1.NBT.C.5'] },
+  // Balance Bridge (grades 1 and 2): what the equals sign means and the missing number in an equation, story problems
+  // within 20 and then within 100, odd and even numbers and rows of equal groups (its three chapters, BRIDGE_CHAPTERS
+  // below).
+  'balance-bridge': { 'ccss-math': ['1.OA.D.7', '1.OA.D.8', '1.OA.A.1', '2.OA.A.1', '2.OA.C.3', '2.OA.C.4'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -66,8 +70,12 @@ export const LILY_CHAPTERS = Object.freeze({
 export const CRATE_CHAPTERS = Object.freeze({
   build: ['1.NBT.B.2', '1.NBT.A.1'], greater: ['1.NBT.B.3'], add: ['1.NBT.C.4', '1.NBT.C.5'],
 });
+/** Balance Bridge's chapters (seed-games/balance-bridge.html BalanceBridge.CHAPTERS), for a step locked to one. */
+export const BRIDGE_CHAPTERS = Object.freeze({
+  equal: ['1.OA.D.7', '1.OA.D.8'], story: ['1.OA.A.1', '2.OA.A.1'], groups: ['2.OA.C.3', '2.OA.C.4'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -80,6 +88,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'garden-count') { const ch = p.get('chapter') || ''; return Object.hasOwn(GARDEN_CHAPTERS, ch) ? [...GARDEN_CHAPTERS[ch]] : null; }
   if (slug === 'lily-hop') { const ch = p.get('chapter') || ''; return Object.hasOwn(LILY_CHAPTERS, ch) ? [...LILY_CHAPTERS[ch]] : null; }
   if (slug === 'crate-stacker') { const ch = p.get('chapter') || ''; return Object.hasOwn(CRATE_CHAPTERS, ch) ? [...CRATE_CHAPTERS[ch]] : null; }
+  if (slug === 'balance-bridge') { const ch = p.get('chapter') || ''; return Object.hasOwn(BRIDGE_CHAPTERS, ch) ? [...BRIDGE_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

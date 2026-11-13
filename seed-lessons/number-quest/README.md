@@ -253,3 +253,42 @@ focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.tes
 **Stone.** The unit's stamp is the Tens Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "two digits are two small numbers" misconception (34 and 43 look the same; 38 looks greater than 52), and how the game checks each idea
 by doing. Launchpad stays `status: "building"`.
+
+## Launchpad Unit 4 — The Balance Bridge (2026-11-13, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/4.1.json`, `4.2.json`, `4.3.json` | the three grade 1-2 decks, inside the Launchpad limits above: **4.1 Equals means the same as** (1.OA.D.7, 1.OA.D.8), **4.2 Story problems** (1.OA.A.1, 2.OA.A.1), **4.3 Equal groups, odd and even** (2.OA.C.3, 2.OA.C.4). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u4-launchpad.json` | nine exit items (`nq-launchpad-4.<s>-e1..3`), each `cat` one of its step's primary codes (4.1: two for 1.OA.D.7, one for 1.OA.D.8; 4.2: two for 1.OA.A.1, one two-step item for 2.OA.A.1; 4.3: two for 2.OA.C.3, one for 2.OA.C.4), every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why` |
+| `standards.json` `launchpadCodes.codes` | six more locked statements (twenty-three in all), with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/balance-bridge.html` | **Balance Bridge**, the unit's game (Oomba3D 1.1.0, Castle Quest theme 1.1.0): chapter `equal` for 4.1, `story` for 4.2, `groups` for 4.3, six rounds each. A see-saw drawbridge over the castle moat with stone blocks on each side: when both sides weigh the same the bridge goes level and the helper walks across. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `equal`: three rounds of True or Not true with posts holding the bridge level until the answer (a sum and its
+total, 5 + 2 = 7; a number and a number, 6 = 6, or on a replay a taking away with the sign first, 7 = 8 − 1; a sum on each side,
+4 + 1 = 5 + 2), at least one true and one not true every time; then three rounds of the missing number (8 + ? = 11, 5 = ? − 3, 6 + 6 = ?,
+or on a replay 8 + 4 = ? + 5). `story`: spoken stories about stones that the blocks act out: add to, take from (the blocks roll off into the
+moat and leave ghosts), put together with one part to find, compare (how many more to match), all within 20; then how many more are needed
+within 100 (a slab marked 10 is a ten) and a two-step story within 100. `groups`: two rounds of odd or even, the blocks shared one to each
+side (an even number balances, an odd number leaves one over), two rounds of an even number as a double (10 = ? + ?), and two rounds of
+rows of blocks added as equal addends (3 rows of 4 is 4 + 4 + 4), up to 5 by 5. A wrong number is tried on the bridge: its blocks drop
+in, the bridge shows too light or too heavy, and they go again with a spoken hint.
+
+**Physics.** The bridge is a Rapier rigid body (Oomba3D's `g.physics()`, Rapier 0.21.0) on a hinge with stops and a spring; landing blocks
+push it. Which side is heavier comes from the game's own sums, and the game lays the blocks out in stacks of five so they can always be
+counted. Where Rapier cannot start the game's own spring turns the bridge instead (`state().physics`).
+
+**Diagrams.** The unit adds no diagram type. `counters` gains one option (`server/services/diagrams.js`, `server/views/nq-diagrams.js`):
+`balance: true` on the diagram sets two groups of 1-20 on the two sides of a see-saw beam, level when they are the same and leaning to the
+heavier side when not, with each side as it is written under it and "=" (or a crossed "≠") between them. A side may be `split` into two
+parts (5 + 2), and `hide: true` (with `split`) draws its second part as a box marked "?" that weighs nothing yet (8 + ?). 4.2 also uses
+the existing `numberline` (a hop back from 13 to 9) and matched rows (9 is 3 more than 6); 4.3 uses matched rows as pairs (8 is 4 and 4;
+7 leaves one over) and the existing `array` (3 rows of 4). All 28 focus steps are measured and pinned in
+`tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/balance-bridge/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/balance-bridge.recipe.js`. The
+picture scripts now serve `.mjs` files as JavaScript, as the site does, so Rapier loads in the photographs too.
+
+**Stone.** The unit's stamp is the Balance Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"equals means the answer comes next" misconception (8 + 4 = ? + 5 gets 12; 5 = 2 + 3 looks backwards), and how the game checks each idea
+by doing. Launchpad stays `status: "building"`.
