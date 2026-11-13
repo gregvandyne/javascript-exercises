@@ -1,0 +1,16 @@
+{
+  "slug": "shape-hunt",
+  "title": "Shape Hunt",
+  "icon": "🔺",
+  "cover": "sunset",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "shapes,circle,triangle,square,rectangle,hexagon,cube,cone,cylinder,sphere,sides,corners,2d shapes,3d shapes,solids,build shapes,compose shapes,trapezoid,halves,fourths,quarters,thirds,equal shares,fractions,kindergarten,first grade,second grade,grade 1,grade 2,math,maths,geometry,3d,house,read aloud,learning",
+  "description": "A tidy-up treasure hunt in a cosy house! Shapes hide among the furniture: find the triangle (even when it is long, thin or upside down), build a square, a house or a tower from the right pieces, and share pizzas, pies and cakes in equal shares: halves, fourths and thirds. Every instruction is read aloud, so new readers can play too.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest Launchpad Unit 6, The Shape Shed (grades K-2): a Kit 2 game on Oomba3D 1.1.0 in the Cosy Home theme 1.0.0 (daytime, ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/shape-hunt.test.js checks the literal map). The room (floor, walls, couch, cabinet, lamps, rugs, shelves, low table) is the theme's own pieces. Flat shapes are drawn by the game on cards that always face the player, so perspective never turns one shape into another; solids (cube, cone, cylinder, sphere) are the game's own simple meshes with an ink edge. Three chapters of six rounds, one per course step (lesson mode: chapter=find|build|share and lock=1): Find the Shape (6.1: by name, by attribute, and the one that is not a triangle), Build It (6.2: pick the pieces that make the outline; they fly in and snap) and Equal Shares (6.3: equal or not, halves and fourths, the name of a share, how many make the whole, which piece is bigger). A shape in the room is tapped through a clear button that sits exactly over it, so keys work too. Every instruction is spoken (BRB.speak, friendly voice); no timer, no lives, no fail state; a wrong tap gets a wobble and a spoken hint that names the attribute. The sixth right round of a chapter reports game over (won) once, which completes the course step. Saves only which chapters are finished. English only.",
+  "l10n": {}
+}
