@@ -4721,3 +4721,54 @@ Listening · Stop pill, and the game receives one dBFS number about 20 times a s
 (opaque origin, `microphone=()`), the scanner still refuses `getUserMedia`, and no audio, words or numbers are recorded,
 stored or sent. The Builder's prompt explains the API and asks for a tap fallback. `MIC_BUILDER=0` switches Builder games
 back off without touching the official ones; `MIC_GAMES=0` switches everything off.
+
+## AI voices for Builder games: fixed, scanned lines only (13 Nov 2026)
+
+**The owner's decision (13 Nov 2026):** "All games should have the AI voiceover by default for now." Asked how far
+that goes for games kids make, the owner chose: "Builder games get the AI voice, but only for lines fixed in the game
+when it was built and passed by the safety scanner. Anything typed while playing is never read by it. This changes the
+earlier rule, so the Privacy Policy gets an update for lawyer review."
+
+**What it replaces.** "Builder games never get AI voices, so a kid's own words are never sent" (AI voices, client
+part; review fixes). What stays: names and typed text are never read by the AI voice, no audio is stored beyond the
+cache of generated speech, Oomba Live and lessons are unchanged, code-isle's `pip.say` is never spoken, and with voices
+off or on any failure the device's voice reads the line.
+
+**What is new in what leaves our server.** A fixed line of a child-made game can now be sent to the voice service
+(OpenAI) when a player hears it. Such a line may contain words the child asked the Builder to put in the game. Nothing
+else about the child or the player goes with it (no account, no game id, no address: our server makes the call).
+
+**Safeguards** (`server/services/tts-built.js`, `routes/tts.js`; docs/tts-design.md "Builder games by default"):
+- **Scanned versions only.** The game must be published and not hidden, its maker in good standing, and its published
+  version's stored scan result `pass`. Flagged, failed and unscanned versions, drafts and every preview (Studio,
+  Builder, review) keep the device's voice.
+- **An allowlist from our own copy.** The server derives the lines from the stored HTML of that version (string
+  literals, markup text, text attributes, and their sentences), on demand, cached per version id. No migration and
+  nothing new stored. The page never supplies the list.
+- **Exact matches only.** A request is read only when it equals one of those lines (whitespace tidied, case ignored).
+  No numbers filled in, no names, no joins; strings with a slot are left out whole. This is stricter than official
+  games (numbers may stand in their `{placeholders}`), because in a kid-made game a number in a slot can be something
+  the player typed. Cost: score lines and the kit's joined "how to play" are read by the device's voice.
+- **The existing checks still run:** rude words, emails, phone numbers, link codes, the player's own name or
+  username, the length limit, per-person and per-address daily quotas, per-minute limits and the TTS budget.
+- **One fixed friendly voice**, whatever the page asks for. **No warm-up** (made on first play, cached).
+- **A switch:** `TTS_BUILT_GAMES=0` puts every Builder game back on the device's voice without a deploy of code.
+- **Told to players and parents:** the 🔊 AI voices button, sheet and one-time note appear on Builder games too (the
+  existing strings, 13 languages); /parents (`info.parents.ai.p4`) and /privacy (`info.privacy.children.p6`) were
+  reworded in 13 languages, `LEGAL_UPDATED` 2026-11-13, lawyer sign-off pending (docs/legal-review.md 44a).
+
+**Choices made while building it, for the owner to confirm:**
+- "Passed by the safety scanner" is read strictly: the automatic scan said `pass`. A flagged version that a person
+  approved for sharing still keeps the device's voice.
+- Previews stay on the device's voice even when the previewed version is the published one.
+- The admin's per-game switch (AI voices for a chosen game) is kept as it was, as a wider rule for the games the
+  owner picked (numbers in the game's own patterns, the game's own names, a few sentences read as one).
+- The Builder's prompt now asks every new game to read its instructions and feedback aloud by default, as whole fixed
+  lines, with a button to hear them again. The starter templates were not changed (the kit already reads its "how to
+  play"; several templates already speak).
+- Known limit: a game with a long word list can have its single listed words read one at a time. Each is a fixed
+  string from scanned source, never a sentence; the cache means the voice service sees a word once however often it
+  is played.
+
+Tested with the mock provider only (`tests/unit/tts-built.test.js`, `tests/e2e/tts.spec.js`); the real provider has
+never been called from here.

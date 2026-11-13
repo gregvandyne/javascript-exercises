@@ -78,6 +78,8 @@ design); e2e (`E2E_PORT=5881`) the Builder/Studio specs (`studio-steps`, `studio
 
 - **Builds keep going without the page:** reload, a second tab, closing the computer or signing out never stops a build; coming back shows the chat and the live steps (unit tests; e2e `studio-background`, `studio-live`). Follow-up messages during a build and time estimates are the next steps.
 
+- **AI voices for Builder games (13 Nov 2026):** a published Builder game whose version passed the safety scanner gets the AI voice by default, for the exact fixed lines of that version only (unit `tts-built.test.js`, e2e `tts.spec.js`; mock provider only; the Privacy Policy change waits for the lawyer, docs/legal-review.md 44a).
+
 - **AI voices (text to speech)** are built and tested with the mock provider (unit tests; e2e `tts.spec.js`: off by default, the admin's voice page, a game line played from the server with fallbacks, Hero of Sunvale's voice roles, Oomba Live Read on devices and the projector, the parents and privacy text). Off until the owner sets `TTS_ENABLED=1` and a key, then switches each language on at `/admin/voices`.
 
 ## Not verified / known limits

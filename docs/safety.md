@@ -476,12 +476,36 @@ docs/legal-review.md). Billing data and its timers are on `/privacy`.
 
 ### AI voices: what may be read aloud
 
-When AI voices are on (docs/tts-design.md; off by default), only text written by us, an official game's makers or a
-teacher is ever sent to the voice service (OpenAI), from our server:
-- **Games:** only official seed games get the play page's token (signed, 2 hours, bound to the player and game);
-  Builder games use the device's voice, so a kid's own words are never sent. The one exception: the site owner may
-  switch AI voices on for a game made by a **teacher, school staff or the admin** (never a student's game; audited).
-  Even then only that game's own words from its published version are read, checked on the server: a whole line of
+When AI voices are on (docs/tts-design.md; off by default), only **fixed text** is ever sent to the voice service
+(OpenAI), from our server: text written by us, an official game's makers or a teacher, and (since 13 Nov 2026) the
+fixed lines of a game made in the Builder:
+- **Builder games (the owner's decision of 13 Nov 2026; docs/decisions.md "AI voices for Builder games: fixed, scanned
+  lines only").** This replaces the earlier rule "Builder games never get AI voices, so a kid's own words are never
+  sent". A Builder game now gets the play page's token and the AI voice by default, but only for lines that were fixed
+  in the game when it was saved and passed by the safety scanner (`server/services/tts-built.js`):
+  - **Which games:** published, not hidden, the maker's account in good standing, and the published version's stored
+    scan result is `pass`. A flagged, failed or unscanned version, a draft, and every Studio, Builder or review preview
+    keep the device's voice. `TTS_BUILT_GAMES=0` switches all Builder games back to the device's voice.
+  - **Which words:** the server reads its own stored copy of the published version (never anything from the page) and
+    takes the string literals in its scripts, its markup text and its text attributes, each also split into lines and
+    sentences. A request is read only when it is **exactly** one of those (whitespace tidied, upper/lower case
+    ignored). A string with a `${…}` slot or an `'a' + x + 'b'` chain is left out whole; numbers are not
+    interchangeable; nothing is joined. So an answer, an input's value, a name, a score line, or any sentence the game
+    puts together while it runs is refused (422) and read by the device's voice; it never reaches the voice service.
+  - **What does go:** a line the child asked the Builder to put in the game ("Welcome to Sam's dino quiz!") is a fixed
+    line and can be sent when a player hears it. The backstops below still refuse a line with rude words, an email
+    address, a phone number, a link code, or the **player's** own name or username; they do not know the maker's
+    name. The Privacy Policy says this (docs/legal-review.md item 44a, waiting for the lawyer).
+  - **One voice:** the `friendly` role, whatever the page asks for. The per-person and per-address daily quotas, the
+    per-minute limits and the TTS budget are the same as for every game. No warm-up: a line is made the first time
+    someone plays it, then served from the cache (so the voice service sees each fixed line once, not once a player).
+  - Known limit: a game that carries a long word list can have single listed words read one at a time; each is still
+    a fixed string from its scanned source, and never a sentence.
+- **Official games:** official seed games get the play page's token (signed, 2 hours, bound to the player and game)
+  and read only their registered lines (`tts-lines.GAMES`). On top of the Builder default, the site owner may
+  switch a wider rule on for one game made by a **teacher, school staff or the admin**, or a student's game pinned to
+  the version the admin saw (audited).
+  Then that game's own words from its published version are read, checked on the server: a whole line of
   the game's with its numbers (or one of its own names, like 'Fox') in its placeholders, or up to 3 of its phrases or
   sentences joined. Word lists, letter lists and single words are never building blocks, no emoji or extra numbers can
   be added, so a kid can't make it say new sentences or a name; anything else gets the device's voice. Official games
@@ -491,7 +515,7 @@ teacher is ever sent to the voice service (OpenAI), from our server:
   switching on a game by someone recently promoted.
 - **Oomba Live and lesson quizzes:** the page sends a question's **number**, never text; the server reads the teacher's
   question and choices, and only for the question open now.
-- **Never:** chat, typed answers, names, or a child's voice. Backstops refuse rude words, emails, phone numbers, links,
+- **Never:** chat, typed answers, anything typed while playing, names, or a child's voice. Backstops refuse rude words, emails, phone numbers, links,
   link codes and the player's own name or username (quiz questions skip the phone and link-code checks, see
   docs/decisions.md).
 - Kids are told the voices are made by AI (the 🔊 Voices sheet, the note under Read) and can choose the device's voice;
