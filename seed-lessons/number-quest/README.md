@@ -223,3 +223,33 @@ and 5, then 5 and 8, the same length). All 27 focus steps are measured and pinne
 **Stone.** The unit's stamp is the Joining Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "counts all again from 1" misconception (and hopping past ten without stopping), and how the game checks each idea by doing. Launchpad stays
 `status: "building"`.
+
+## Launchpad Unit 3 — The Tens Trellis (2026-11-13, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/3.1.json`, `3.2.json`, `3.3.json` | the three grade 1 decks, inside the Launchpad limits above: **3.1 Tens and ones** (1.NBT.B.2; also 1.NBT.A.1), **3.2 Which is greater?** (1.NBT.B.3), **3.3 Add tens, add ones** (1.NBT.C.4, 1.NBT.C.5). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u3-launchpad.json` | nine exit items (`nq-launchpad-3.<s>-e1..3`), each `cat` one of its step's primary codes (3.3: two for 1.NBT.C.4, one for 1.NBT.C.5), every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why` |
+| `standards.json` `launchpadCodes.codes` | five more locked statements (seventeen in all), with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/crate-stacker.html` | **Crate Stacker**, the unit's game (Oomba3D 1.1.0, Toy Town theme 1.1.0): chapter `build` for 3.1, `greater` for 3.2, `add` for 3.3, six rounds each. A crate is a one and a tower of ten crates is a ten. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `build`: three rounds of loading a number with "Add a ten", "Add a one", "Take one off" and "Go" (a teen, a
+number to 49, then a number to 99 asked as "5 tens and 3 ones" with the numeral hidden until Go; ten loose crates snap into a tower by
+themselves), then three rounds of reading a load: the digits swapped (34 or 43), no loose crates (40, not 4), and ten towers and a few
+crates (101-109, the unit's look past 100 for 1.NBT.A.1). `greater`: "Which truck has more?" with different tens, the same tens, then
+numerals only with the digits swapped; then the sign for two numbers (>, = or <), one round each of different tens, the same number and
+the same tens, the last with numerals only. `add`: a number and 20-40 more, ten more, ones more inside the ten, ones more that fill a
+tower first ("15 and 5 make 20", "3 more makes 23"), ten less, and the tower-filling round again with bigger numbers; totals stay under 100.
+
+**Diagrams.** The unit adds no diagram type. `counters` gains one option (`server/services/diagrams.js`, `server/views/nq-diagrams.js`):
+`tens: true` on a group of 10-99 draws the number as sticks of ten and loose ones. One number sits in the middle with "3 tens" and
+"4 ones" under its parts; two numbers sit side by side, each with its numeral under it (34 and 43, 52 and 38, 27 and 30). 3.1's example
+uses the existing `places` chart, 3.2 and 3.3 the existing `numberline` (with `hops` for ten more, ten less and filling a ten). All 27
+focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/crate-stacker/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/crate-stacker.recipe.js`.
+
+**Stone.** The unit's stamp is the Tens Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"two digits are two small numbers" misconception (34 and 43 look the same; 38 looks greater than 52), and how the game checks each idea
+by doing. Launchpad stays `status: "building"`.

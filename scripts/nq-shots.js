@@ -79,6 +79,11 @@ const SHOTS = [
   { tier: 'launchpad', step: '2.1', state: 'hop-together', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=join&lock=1', prep: lilyHop, cdp: true },
   { tier: 'launchpad', step: '2.2', state: 'number-partners', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=apart&lock=1', prep: lilyHop, cdp: true },
   { tier: 'launchpad', step: '2.3', state: 'hop-to-20', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=twenty&lock=1', prep: lilyHop, cdp: true },
+  // Launchpad Unit 3, The Tens Trellis: Crate Stacker, a 3D game, in each step's own chapter, the whole phone screen as
+  // the band (the yard and the town fill it, the words and the number chip on top, the big buttons at the bottom).
+  { tier: 'launchpad', step: '3.1', state: 'load-the-truck', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: crateStacker, cdp: true },
+  { tier: 'launchpad', step: '3.2', state: 'which-has-more', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=greater&lock=1', prep: crateStacker, cdp: true },
+  { tier: 'launchpad', step: '3.3', state: 'add-more-crates', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=add&lock=1', prep: crateStacker, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -190,6 +195,20 @@ async function lilyHop(f) {
   await f.click('#hero-mage');
   await until(f, s => s.screen === 'play' && s.round === 1, 20000);
   await wait(2800);
+}
+
+async function crateStacker(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Load the Truck is photographed
+  // with the truck loaded as the round asks (through the game's own buttons); the other two as they are asked: two
+  // loaded trucks (Which Has More?), a truck and the cart with the crates to add (Add More Crates).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1, 20000);
+  await wait(1800);
+  const s = await f.evaluate(() => window.__brbTest.state());
+  if (s.kind === 'build') { for (let i = 0; i < s.tens; i++) { await f.click('#cs-ten'); await wait(350); } for (let i = 0; i < s.ones; i++) { await f.click('#cs-one'); await wait(350); } }
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(1600);
 }
 
 /** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and
