@@ -180,9 +180,12 @@ are screened like typed text. The clip lives in memory for that one request and 
 microphone is allowed on the Studio page and on the play page of one official classroom game (below), never in a game
 frame.
 
-**Loudness** (the three official noise meters only: Remi's Quiet Meadow, Quiet Bounce and Popcorn Hush;
-`server/services/mic-games.js`, `public/js/loudness.js`; off with `MIC_GAMES=0`). Each game is a classroom noise meter. Its play page, and only that page (the slug, an official seed
-game owned by the official account, published, not hidden, not in an online match), sends `microphone=(self)`. After a
+**Loudness** (the three official noise meters, Remi's Quiet Meadow, Quiet Bounce and Popcorn Hush, and since 13 Nov 2026
+any Builder game whose code uses `BRB.loudness`; `server/services/mic-games.js`, `public/js/loudness.js`; off for every
+game with `MIC_GAMES=0`, for Builder games only with `MIC_BUILDER=0`). The play page of such a game (an official one: the
+slug, official, published, not hidden; a Builder game: its code uses `BRB.loudness`, not hidden; never in an online match),
+and the Builder's Studio page for its preview, send `microphone=(self)`. A Builder game gets exactly the same page-side
+listening as the official ones and nothing more: it can only ever see how loud the room is, never any sound or words. After a
 real tap, the page opens the microphone with the browser's own prompt (no echo cancelling, noise suppression or
 automatic gain), measures the level on the device with an AnalyserNode that is connected to nothing else, and posts
 one dBFS number to the game about 20 times a second. Audio is never recorded (no MediaRecorder), stored, uploaded or

@@ -311,9 +311,10 @@ router.get('/play/:slug', (req, res) => {
   // escape (the game's own screens offer only Play again / Next).
   const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
   const backLabel = lesson ? t('progress.play.backToLesson') : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
-  // Loudness (services/mic-games.js): only Remi's Quiet Meadow, official and live, and never in an online match. This page
-  // (not the game frame, which keeps microphone=()) may then open the mic after a tap and pass the game a number.
-  const mic = micGame(g) && !inMatch;
+  // Loudness (services/mic-games.js): the official noise meters, and any Builder game whose code uses BRB.loudness; never
+  // in an online match. This page (not the game frame, which keeps microphone=()) may then open the mic after a tap and
+  // pass the game a number.
+  const mic = !inMatch && micGame(g, games.getVersion(versionId)?.html);
   if (mic) res.set('Permissions-Policy', MIC_POLICY);
   const body = html`
   <header class="playbar">

@@ -110,6 +110,8 @@ const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_
 const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
 const liveClassroom = parseFlag(process.env.LIVE_CLASSROOM, 'LIVE_CLASSROOM', true);
 const micGames = parseFlag(process.env.MIC_GAMES, 'MIC_GAMES', true);
+// Builder games that use BRB.loudness may listen too (services/mic-games.js). MIC_BUILDER=0: only the official ones.
+const micBuilder = parseFlag(process.env.MIC_BUILDER, 'MIC_BUILDER', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
@@ -241,7 +243,7 @@ export const config = {
     ...stripe.errors,
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
-    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error,
+    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -296,6 +298,7 @@ export const config = {
   // is and passes the game a number; audio is never recorded or sent. MIC_GAMES=0 switches it off site-wide (the game
   // then offers its demo without a mic).
   micGames: micGames.on,
+  micBuilder: micBuilder.on,
   sttRealtimeModel: process.env.STT_REALTIME_MODEL || '',
   // Oomba Live (docs/decisions.md "Oomba Live"; server/services/classlive-*.js): live class games with join codes.
   // LIVE_CLASSROOM=0 turns it off (live pages and the live socket answer 404, entry buttons hide; the class-code /join
