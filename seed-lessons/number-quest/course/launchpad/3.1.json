@@ -1,0 +1,224 @@
+{
+ "key": "launchpad-3.1",
+ "n": "3.1",
+ "band": "launchpad",
+ "title": "Tens and ones",
+ "topic": "Tens and ones",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Crates in the yard",
+   "text": "Tally found a yard full of crates. Ten crates make one tower.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A ten and some ones",
+   "text": "14 is 1 ten and 4 ones. The tower is the ten.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "14 as 1 stick of ten and 4 loose ones",
+    "groups": [
+     {
+      "n": 14,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "This tower is 1 ten.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    },
+    {
+     "cue": "These are 4 ones.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Count the tens first",
+   "text": "34 has 3 tens and 4 ones. Count the tens, then the ones.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "34 as 3 sticks of ten and 4 loose ones",
+    "groups": [
+     {
+      "n": 34,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "3 tens: 10, 20, 30.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    },
+    {
+     "cue": "4 ones more: 34.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Read 52 with Tally",
+   "text": "Look at 52. Each digit has its own job.",
+   "art": "star",
+   "steps": [
+    "5 tens",
+    "2 ones",
+    "5 tens and 2 ones",
+    "That is 52"
+   ],
+   "visual": {
+    "type": "places",
+    "label": "52 in a place chart: 5 tens and 2 ones",
+    "cols": [
+     {
+      "d": "5",
+      "place": "tens",
+      "value": "50"
+     },
+     {
+      "d": "2",
+      "place": "ones",
+      "value": "2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The 5 means 5 tens.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    },
+    {
+     "cue": "The 2 means 2 ones.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The order matters",
+   "text": "34 and 43 use the same digits. They are not the same number.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "34 and 43 side by side as tens and ones",
+    "groups": [
+     {
+      "n": 34,
+      "tens": true
+     },
+     {
+      "n": 43,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "34 is 3 tens and 4 ones.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    },
+    {
+     "cue": "43 is 4 tens and 3 ones.",
+     "box": [
+      10,
+      10,
+      20,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ten",
+     "means": "a tower of 10 ones"
+    },
+    {
+     "word": "ones",
+     "means": "loose crates, fewer than ten"
+    },
+    {
+     "word": "digit",
+     "means": "each 0 to 9 you write in a number"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Crate Stacker at Load the Truck. Load each truck with the right number.",
+   "art": "trophy",
+   "img": "nq/crate-stacker/load-the-truck",
+   "alt": "Crate Stacker on a phone: a toy truck with towers of ten crates and loose crates, and the loading buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-3.1-e1",
+  "nq-launchpad-3.1-e2",
+  "nq-launchpad-3.1-e3"
+ ],
+ "game": {
+  "slug": "crate-stacker",
+  "chapter": "Load the Truck",
+  "params": "chapter=build&lock=1"
+ }
+}

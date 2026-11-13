@@ -1,0 +1,226 @@
+{
+ "id": "nq-u3-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 3 · The Tens Trellis (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1.NBT.B.2",
+   "topic": "Tens and ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is 4 tens and 7 ones?",
+   "choices": [
+    "47",
+    "74",
+    "11",
+    "407"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped the tens and the ones",
+    "added the two digits together",
+    "wrote the tens as hundreds"
+   ],
+   "why": "4 tens are 40. Then 7 ones more make 47."
+  },
+  {
+   "id": "nq-launchpad-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1.NBT.B.2",
+   "topic": "Tens and ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "How many tens are in 60?",
+   "choices": [
+    "0",
+    "6",
+    "16",
+    "60"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "read the ones digit instead",
+    "correct",
+    "wrote a teen number for the tens",
+    "gave the whole number, not the tens"
+   ],
+   "why": "60 is 6 tens and 0 ones. That is six towers and no loose crates."
+  },
+  {
+   "id": "nq-launchpad-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1.NBT.B.2",
+   "topic": "Tens and ones",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What does the 2 mean in 25?",
+   "choices": [
+    "2 ones",
+    "2 tens",
+    "5 tens",
+    "7 tens"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "read the tens digit as ones",
+    "correct",
+    "looked at the other digit",
+    "added the two digits together"
+   ],
+   "why": "The 2 comes first, so it counts tens. It means 2 tens, or 20."
+  },
+  {
+   "id": "nq-launchpad-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1.NBT.B.3",
+   "topic": "Greater or less",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which number is the greatest?",
+   "choices": [
+    "59",
+    "61",
+    "64",
+    "46"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "picked the biggest ones digit",
+    "stopped at the first number with 6 tens",
+    "correct",
+    "read the ones digit as the tens"
+   ],
+   "why": "64 and 61 both have 6 tens. 4 ones is more than 1 one."
+  },
+  {
+   "id": "nq-launchpad-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1.NBT.B.3",
+   "topic": "Greater or less",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which sign makes this true? 43 ? 46",
+   "choices": [
+    ">",
+    "<",
+    "=",
+    "+"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "pointed the sign the wrong way",
+    "correct",
+    "looked at the tens only",
+    "chose a sign for adding"
+   ],
+   "why": "Both have 4 tens. 3 ones is less than 6 ones, so 43 < 46."
+  },
+  {
+   "id": "nq-launchpad-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1.NBT.B.3",
+   "topic": "Greater or less",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which one is true?",
+   "choices": [
+    "27 > 72",
+    "72 > 27",
+    "27 = 72",
+    "72 < 27"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "compared the ones digits first",
+    "correct",
+    "treated swapped digits as the same",
+    "pointed the sign the wrong way"
+   ],
+   "why": "72 has 7 tens and 27 has 2 tens. So 72 is greater than 27."
+  },
+  {
+   "id": "nq-launchpad-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1.NBT.C.4",
+   "topic": "Add to 100",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 27 + 30?",
+   "choices": [
+    "30",
+    "47",
+    "57",
+    "60"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the 3 tens as 3 ones",
+    "added one ten too few",
+    "correct",
+    "changed the ones as well"
+   ],
+   "why": "2 tens and 3 tens make 5 tens. The 7 ones stay, so it is 57."
+  },
+  {
+   "id": "nq-launchpad-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1.NBT.C.4",
+   "topic": "Add to 100",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 27 + 5? Fill a ten first.",
+   "choices": [
+    "22",
+    "31",
+    "32",
+    "77"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "forgot to count the new ten",
+    "stopped one crate too early",
+    "correct",
+    "added the 5 to the tens"
+   ],
+   "why": "27 and 3 make 30. Then 2 more makes 32."
+  },
+  {
+   "id": "nq-launchpad-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1.NBT.C.5",
+   "topic": "Add to 100",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What is 10 less than 63?",
+   "choices": [
+    "53",
+    "62",
+    "73",
+    "13"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "took away one, not ten",
+    "added ten instead of taking it away",
+    "took away too many tens"
+   ],
+   "why": "Take one ten away. 6 tens become 5 tens, so it is 53."
+  }
+ ]
+}
