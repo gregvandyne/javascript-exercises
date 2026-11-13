@@ -769,9 +769,11 @@
 
   // tts-client:start
   // ---- AI voices (docs/sdk.md "AI voices"; server/routes/tts.js) --------------------------------------
-  // Only official games listed for voices, and a game the admin switched on, get INIT.tts ({ langs: locales on }); others
-  // never have it, and then
-  // nothing below runs. The frame can't fetch (connect-src 'none'), so it asks the play page (brb:tts {id, text, lang,
+  // Official games listed for voices, a game the admin switched on, and a Builder game whose published version passed
+  // the safety scanner get INIT.tts ({ langs: locales on }); others (and every preview) never have it, and then
+  // nothing below runs. A Builder game's line is read only when it is exactly one of the lines fixed in its saved
+  // version (the server checks against its own copy): anything typed or put together while playing is refused there
+  // and read by the device's voice. The frame can't fetch (connect-src 'none'), so it asks the play page (brb:tts {id, text, lang,
   // role, rate}); the page asks our server and hands back the MP3's bytes, which play here as a blob: URL on one shared
   // Audio element. Queueing, stopping, volume and onend stay here, as with the device's voice. No answer in 4 s, a
   // refusal, or audio that won't play: that line is spoken with the device's voice instead. The play page can also say

@@ -13,6 +13,10 @@ only the game's own spoken lines (a server allowlist) with the line's own role, 
 `tts-lines.GAMES`; TTS has its own budget share and per-person daily quotas; live/lesson use the session's/page's
 language only.
 
+**Changed on 13 Nov 2026 (the owner's decision): games made in the Builder get the AI voice by default, for fixed,
+scanned lines only.** See "Builder games by default" in §3; where the text below says Builder games always keep the
+device's voice, that section replaces it.
+
 Goal: official games, lessons and Oomba Live can read **site-, game- and teacher-written text** aloud with a hosted
 voice (OpenAI's speech API) instead of the device's own voice. It is off by default. When it is off, or anything goes
 wrong, everything works as it does today with the device voice.
@@ -229,6 +233,7 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
 | Env | Default | Meaning |
 |---|---|---|
 | `TTS_ENABLED` | off (`parseFlag`) | the owner's switch |
+| `TTS_BUILT_GAMES` | on | `0`: games made in the Builder keep the device's voice (official games and admin-switched games are not affected) |
 | `TTS_PROVIDER` | `openai` | `openai` or `mock` (mock is refused in production) |
 | `TTS_API_KEY` | – | falls back to `STT_API_KEY` only when `STT_PROVIDER=openai` |
 | `TTS_MODEL` | `gpt-4o-mini-tts` | or `tts-1` / `tts-1-hd` (then `speed` is sent instead of `instructions`) |
@@ -270,6 +275,45 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
   to `setting('tts.voices')`, written with `audit()`. It takes effect without a redeploy (each request reads it; an
   in-memory copy is refreshed when it is saved).
 - It works with `TTS_PROVIDER=mock` (silent mp3), so the e2e test can drive it.
+
+### Builder games by default (`services/tts-built.js`; the owner's decision of 13 Nov 2026)
+"All games should have the AI voiceover by default for now", with the option the owner chose: "Builder games get the
+AI voice, but only for lines fixed in the game when it was built and passed by the safety scanner. Anything typed
+while playing is never read by it." (docs/decisions.md "AI voices for Builder games: fixed, scanned lines only").
+- **Which games** (`routes/tts.js builtGame`, `tts-built.js allowed`): not an official game; `status='published'`
+  with a `published_version_id`; not hidden; the maker exists and is not a guest or banned; the published version's
+  stored `safety_status` is `'pass'` (the scanner's result, set at publish by `publish.js ensureScanned`; `flag`,
+  `fail` and `unchecked` never count, not even when a person later approved a flagged version); `TTS_BUILT_GAMES` is
+  not `0`. The viewer must be signed in and able to view the game (`games.canView`), as for every game token.
+- **The allowlist** (`fixedLines`): derived on the server from the stored HTML of the published version, on demand,
+  cached in memory per version id (a version's HTML never changes; 100 versions; **no migration, nothing stored**).
+  It holds `tts-games.js sourceItems` (the string literals in the scripts, markup text, the text attributes `title`,
+  `alt`, `aria-label`, `placeholder`, `value`, `content`, `label`, `data-say`, `data-text`, and the text of markup
+  inside strings), each also split into its lines and sentences. Anything carrying a slot (a template `${…}`, or a
+  `'a' + x + 'b'` chain, which the tokenizer marks) is left out whole. Comments are not lines.
+- **Matching** (`allowedText`): the request, after `tidy()` (NFC, whitespace collapsed, trimmed), must **equal** one
+  entry; only upper/lower case is ignored (a word game reads `'CAT'` as `cat`). No number substitution, no name
+  slots, no joined pieces. This is stricter than the official path (which lets numbers stand in a line's
+  `{placeholders}`) on purpose: in a kid-made game a number in a slot may be something the player typed (an age, an
+  answer). Everything else is `422 filtered`, which the SDK turns into the device's voice at once.
+- **Role:** `friendly` for every line; the page's `role` is ignored. Rate buckets as for every game.
+- **Frame and page:** `playData` gives the play page its token (so the 🔊 AI voices button, the sheet and the
+  one-time "voices are AI-made" toast appear, with the existing strings in all 13 languages); `frameData(user, game,
+  versionId)` gives `INIT.tts` only to a frame showing the **published** version. Preview frames (token `p:1`: the
+  Studio, the Builder, the admin's review) never get it, published or not: a preview may be a version the scanner has
+  not passed, and the Studio page has no `brb:tts` handler. Oomba Live frames are unchanged (no `INIT.tts`).
+- **No warm-up.** A line is generated the first time someone plays it and cached like any other line; nothing is
+  pinned. Because of the cache the provider is called once per distinct fixed line (and voice, locale, rate), not once
+  per listener.
+- **Limits of the rule, on purpose:** a line with a score or any changing number, the kit's "how to play" read as
+  several cards joined into one string, and `w.say(who, key, vars)` with values filled in are read by the device's
+  voice. The Builder's prompt now asks new games to speak whole fixed lines (and to read instructions and feedback
+  aloud by default, with a button to hear them again).
+- **With a game the admin switched on** (below): that wider rule still applies to that game; for every other Builder
+  game this default applies. A student's game whose admin switch went stale (a new version) now falls back to this
+  default instead of to nothing.
+- Tests: `tests/unit/tts-built.test.js` (the provider is spied on: typed text, joined strings, filled-in numbers and
+  another game's line are never sent), `tests/e2e/tts.spec.js` ("a kid's Builder game has AI voices by default…").
 
 ### A game the admin switched on (`services/tts-games.js`)
 The site owner can give AI voices to one more game at a time, such as a teacher's own Builder game:

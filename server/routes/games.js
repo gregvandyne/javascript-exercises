@@ -27,7 +27,7 @@ import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
 import { liveGameOf } from '../live/live-games.js';
-import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed } from './tts.js';
+import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed, builtGame as ttsBuilt } from './tts.js';
 import { parseParams, packParams, unpackParams, hasParams } from '../services/play-params.js';
 import * as ttsGames from '../services/tts-games.js';
 
@@ -183,6 +183,7 @@ function adminVoices(u, g) {
   const x = ttsGames.info(g);
   return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
     <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
+    <p id="admin-voices-default"><b>By default:</b> ${ttsBuilt(g) ? 'on. Only the exact lines fixed in the published version (it passed the safety check) are read, in one friendly voice.' : 'off for this game now. A Builder game gets AI voices once it is published, not hidden, and its published version passed the safety check (and TTS_BUILT_GAMES is not 0).'} The switch below goes further for this one game: lines with changing numbers, the game's own names and a few of its sentences read as one.</p>
     ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
     ${x.student ? html`<p id="admin-voices-student"><b>A student's game.</b> ${x.on && !x.stale ? 'On for the version published when you switched it on.' : 'Switching on covers the version published now: play it first.'} If the student publishes a new version, the voices stop until you switch them on again.</p>` : ''}
     ${x.stale ? html`<p id="admin-voices-stale"><b>Paused:</b> the student published a new version. Play it, then switch the voices off and on again to cover it.</p>` : ''}
@@ -303,7 +304,8 @@ router.get('/play/:slug', (req, res) => {
   const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
   const liked = games.userLiked(g.id, u && u.id);
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
-  // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
+  // AI voices (routes/tts.js): official games, a game the admin switched on and Builder games whose published version
+  // passed the safety scanner, when TTS is on and a language is switched on; absent otherwise.
   const ttsData = ttsPlayData(u, g);
   // The way back (to the lesson, the course step, the course map or the game's page). It appears twice: in the
   // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
@@ -379,9 +381,10 @@ router.get('/frame/:token', (req, res) => {
     preview,
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
-    // AI voices (routes/tts.js): the TTS locales on now, only for official games with TTS on; absent otherwise (the SDK
-    // then speaks with the device's voice exactly as before).
-    ...(!preview && ttsFrameData(u, g) ? { tts: ttsFrameData(u, g) } : {}),
+    // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
+    // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
+    // SDK then speaks with the device's voice exactly as before).
+    ...(!preview && ttsFrameData(u, g, v.id) ? { tts: ttsFrameData(u, g, v.id) } : {}),
     // An online match frame (BRB.match): the seat only; names and moves come from the page over a private port.
     ...(tok.m && u && match.get(tok.m) && match.seatOf(match.get(tok.m), u) >= 0 ? { match: { v: 1, seat: match.seatOf(match.get(tok.m), u) } } : {}),
     // Shown by the SDK, in the game's language: the "newer device" card (can't run 3D) and the "3D picture
