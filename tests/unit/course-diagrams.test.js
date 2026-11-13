@@ -309,6 +309,53 @@ test('counters on a see-saw (Launchpad Unit 4): each side holds exactly its numb
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 4 }, { n: 4 }] }, 'L').balance, undefined);
 });
 
+test('counters as hundreds, tens and ones (Launchpad Unit 5): flats of a hundred, sticks of ten and loose ones, an empty place left empty', () => {
+  const rects = (svg, fill) => [...svg.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)" fill="(#[0-9A-F]+)"/g)].filter(m => m[5] === fill).map(m => ({ x: +m[1], y: +m[2], w: +m[3], h: +m[4] }));
+  const FLAT = '#66C792', STICK = '#8FC1F5', ONE = '#F2A65A';
+  const draw = n => { const v = cleanDiagram({ type: 'counters', groups: [{ n, hundreds: true }] }, 'A number as hundreds, tens and ones'); return { v, svg: diagramSvg(v) }; };
+  const names = svg => texts(svg).map(t => t.s).filter(t => /^\d+ (hundreds?|tens?|ones?)$/.test(t));
+  // 243: two flats, four sticks, three loose ones, each named under its place
+  const d = draw(243);
+  assert.deepEqual(d.v, { type: 'counters', label: 'A number as hundreds, tens and ones', groups: [{ n: 243, hundreds: true }] });
+  const flats = rects(d.svg, FLAT), sticks = rects(d.svg, STICK), ones = rects(d.svg, ONE);
+  assert.equal(flats.length, 2); assert.equal(sticks.length, 4); assert.equal(ones.length, 3);
+  assert.ok(flats.every(f => f.w === f.h && f.w === 10 * sticks[0].w / 1.2), 'a flat is a square ten blocks each way');
+  assert.equal((d.svg.match(/<line /g) || []).length, 2 * 18 + 4 * 9, 'nine lines each way on a flat, nine on a stick: a hundred blocks, ten blocks');
+  assert.ok(sticks.every(s => s.h === flats[0].h && s.y === flats[0].y), 'a stick is as tall as a flat');
+  assert.ok(flats[1].x > flats[0].x && flats[1].x < flats[0].x + flats[0].w, 'the flats lie one over the next, each showing an edge to count');
+  assert.ok(Math.min(...sticks.map(s => s.x)) > Math.max(...flats.map(f => f.x + f.w)) && Math.min(...ones.map(o => o.x)) > Math.max(...sticks.map(s => s.x + s.w)), 'hundreds, then tens, then ones, as the number is written');
+  assert.equal(+Math.max(...ones.map(o => o.y + o.h)).toFixed(2), +(flats[0].y + flats[0].h).toFixed(2), 'everything stands on one floor');
+  assert.equal(+((flats[0].x + Math.max(...ones.map(o => o.x + o.w))) / 2).toFixed(1), 50, 'centred');
+  assert.deepEqual(names(d.svg), ['2 hundreds', '4 tens', '3 ones']);
+  // an empty place is left empty and still named: 407 has no sticks, 470 no loose ones; one of each is singular
+  const z = draw(407);
+  assert.equal(rects(z.svg, FLAT).length, 4); assert.equal(rects(z.svg, STICK).length, 0); assert.equal(rects(z.svg, ONE).length, 7); assert.deepEqual(names(z.svg), ['4 hundreds', '0 tens', '7 ones']);
+  assert.ok(Math.min(...rects(z.svg, ONE).map(o => o.x)) - Math.max(...rects(z.svg, FLAT).map(f => f.x + f.w)) >= 12, 'room is kept where the tens would stand');
+  assert.equal(new Set(rects(z.svg, ONE).map(o => o.x)).size, 2, 'more than five ones take a second column');
+  assert.deepEqual(names(draw(470).svg), ['4 hundreds', '7 tens', '0 ones']); assert.equal(rects(draw(470).svg, ONE).length, 0);
+  assert.deepEqual(names(draw(111).svg), ['1 hundred', '1 ten', '1 one']); assert.deepEqual(names(draw(100).svg), ['1 hundred', '0 tens', '0 ones']);
+  // more than five flats or sticks: a wider gap after the fifth
+  const big = draw(999), bf = rects(big.svg, FLAT), bs = rects(big.svg, STICK);
+  assert.equal(bf.length, 9); assert.equal(bs.length, 9); assert.equal(rects(big.svg, ONE).length, 9);
+  assert.ok(bf[5].x - bf[4].x > bf[4].x - bf[3].x + 1 && bs[5].x - bs[4].x > bs[4].x - bs[3].x + 1, 'a gap after five');
+  // every block and every word stays inside the frame and the drawing's band, and the names never print over each other
+  for (const n of [100, 101, 110, 111, 199, 243, 407, 470, 505, 909, 990, 999]) {
+    const { v, svg } = draw(n), [a, b] = diagramExtent(v);
+    for (const r of [...rects(svg, FLAT), ...rects(svg, STICK), ...rects(svg, ONE)]) assert.ok(r.x >= 1 && r.x + r.w <= 99 && r.y >= a && r.y + r.h <= b, `${n}: every block inside the frame`);
+    const ts = texts(svg).filter(t => /^\d+ (hundreds?|tens?|ones?)$/.test(t.s));
+    assert.equal(ts.length, 3, `${n}: three names`);
+    for (const t of texts(svg)) assert.ok(t.y <= b && t.x - t.s.length * (t.size * 0.55) / 2 > 1 && t.x + t.s.length * (t.size * 0.55) / 2 < 99, `${n}: every word inside the band`);
+    for (let i = 1; i < 3; i++) assert.ok(ts[i].x - ts[i - 1].x >= (ts[i].s.length + ts[i - 1].s.length) * 2.53 / 2 + 1.9, `${n}: the names are apart`);
+  }
+  // one whole number from 100 to 999, and never mixed with the other counter options
+  for (const gs of [[{ n: 99, hundreds: true }], [{ n: 1000, hundreds: true }], [{ n: 243.5, hundreds: true }], [{ n: 243, hundreds: true, tens: true }], [{ n: 243, hundreds: true, frame: true }], [{ n: 243, hundreds: true, name: 'pods' }], [{ n: 243, hundreds: true, split: 3 }],
+    [{ n: 243, hundreds: true }, { n: 407, hundreds: true }], [{ n: 243, hundreds: true }, { n: 7 }]])
+    assert.equal(cleanDiagram({ type: 'counters', groups: gs }, 'L'), null, JSON.stringify(gs));
+  assert.equal(cleanDiagram({ type: 'counters', balance: true, groups: [{ n: 243, hundreds: true }] }, 'L'), null);
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 243 }] }, 'L'), null, 'without hundreds a group still holds at most 20');
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 34, tens: true }] }, 'L').groups[0].hundreds, undefined, 'tens and ones are still what they were');
+});
+
 test('shapes that look another way and shapes made of shapes (Launchpad Unit 6): a triangle is still three corners upside down, thin or right-angled; a square, a rectangle and a hexagon show the pieces inside', async () => {
   const V = await import('../../server/views/courses.js');
   const clean = items => C.cleanSlide({ title: 'Shapes', text: 'Some shapes to look at.', visual: { type: 'shapes', label: 'Shapes', items } }).visual;

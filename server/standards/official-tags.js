@@ -45,6 +45,10 @@ export const GAMES = Object.freeze({
   // within 20 and then within 100, odd and even numbers and rows of equal groups (its three chapters, BRIDGE_CHAPTERS
   // below).
   'balance-bridge': { 'ccss-math': ['1.OA.D.7', '1.OA.D.8', '1.OA.A.1', '2.OA.A.1', '2.OA.C.3', '2.OA.C.4'] },
+  // Rocket Supply (grade 2): three-digit numbers as hundreds, tens and ones, in expanded form and by name, skip
+  // counting by 5s, 10s and 100s, comparing with >, = and <, adding and subtracting within 100 and the facts within
+  // 20 (its three chapters, ROCKET_CHAPTERS below).
+  'rocket-supply': { 'ccss-math': ['2.NBT.A.1', '2.NBT.A.3', '2.NBT.A.2', '2.NBT.A.4', '2.NBT.B.5', '2.OA.B.2'] },
   // Shape Hunt (kindergarten to grade 2): naming flat and solid shapes whatever their size or turn and telling them by
   // what defines them, putting shapes together to make new ones, and equal shares: halves, fourths and thirds (its
   // three chapters, SHAPE_CHAPTERS below).
@@ -78,12 +82,16 @@ export const CRATE_CHAPTERS = Object.freeze({
 export const BRIDGE_CHAPTERS = Object.freeze({
   equal: ['1.OA.D.7', '1.OA.D.8'], story: ['1.OA.A.1', '2.OA.A.1'], groups: ['2.OA.C.3', '2.OA.C.4'],
 });
+/** Rocket Supply's chapters (seed-games/rocket-supply.html RocketSupply.CHAPTERS), for a step locked to one. */
+export const ROCKET_CHAPTERS = Object.freeze({
+  build: ['2.NBT.A.1', '2.NBT.A.3'], count: ['2.NBT.A.2', '2.NBT.A.4'], fuel: ['2.NBT.B.5', '2.OA.B.2'],
+});
 /** Shape Hunt's chapters (seed-games/shape-hunt.html ShapeHunt.CHAPTERS), for a step locked to one. */
 export const SHAPE_CHAPTERS = Object.freeze({
   find: ['K.G.A.2', '1.G.A.1'], build: ['K.G.B.6', '1.G.A.2'], share: ['1.G.A.3', '2.G.A.3'],
 });
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'shape-hunt']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -97,6 +105,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'lily-hop') { const ch = p.get('chapter') || ''; return Object.hasOwn(LILY_CHAPTERS, ch) ? [...LILY_CHAPTERS[ch]] : null; }
   if (slug === 'crate-stacker') { const ch = p.get('chapter') || ''; return Object.hasOwn(CRATE_CHAPTERS, ch) ? [...CRATE_CHAPTERS[ch]] : null; }
   if (slug === 'balance-bridge') { const ch = p.get('chapter') || ''; return Object.hasOwn(BRIDGE_CHAPTERS, ch) ? [...BRIDGE_CHAPTERS[ch]] : null; }
+  if (slug === 'rocket-supply') { const ch = p.get('chapter') || ''; return Object.hasOwn(ROCKET_CHAPTERS, ch) ? [...ROCKET_CHAPTERS[ch]] : null; }
   if (slug === 'shape-hunt') { const ch = p.get('chapter') || ''; return Object.hasOwn(SHAPE_CHAPTERS, ch) ? [...SHAPE_CHAPTERS[ch]] : null; }
   return null;
 }

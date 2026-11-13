@@ -21,7 +21,8 @@
 //   counters counters to count and match (Launchpad 1.1-1.3): one group in rows of ten, numbered where `count` is set; two
 //           rows one under the other, matched one to one; or a ten-frame with the ones left over beside it; or
 //           (Unit 3, `tens`) a two-digit number as sticks of ten and loose ones, alone or two side by side; or
-//           (Unit 4, `balance`) two groups of blocks on the two sides of a see-saw beam, level when they are the same.
+//           (Unit 4, `balance`) two groups of blocks on the two sides of a see-saw beam, level when they are the same; or
+//           (Unit 5, `hundreds`) a three-digit number as flats of a hundred, sticks of ten and loose ones.
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
@@ -395,6 +396,38 @@ function tensSvg(v, g) {
   }
   return s;
 }
+/** `hundreds` (Launchpad Unit 5): one number from 100 to 999 as flats of a hundred (ten by ten, set one over the
+ *  next like cards so each can be counted, a gap after five), sticks of ten and loose ones in columns of five. A place
+ *  that holds nothing keeps its room, empty (407 has no sticks). Under each place is how many it holds: "4 hundreds",
+ *  "0 tens", "7 ones". */
+function hundredsGeo(v) {
+  const n = v.groups[0].n, h = Math.floor(n / 100), t = Math.floor(n / 10) % 10, o = n % 10, top = 13, c = 2, F = 10 * c, step = 3, sw = 2.4, pitch = 3.4, ou = 2.4, gap = 4;
+  const five = (i, k) => (i >= 5 ? k : 0);
+  const hw = F + (h - 1) * step + five(h - 1, 1.6), tw = t ? (t - 1) * pitch + sw + five(t - 1, 1.2) : 6, ow = o ? (o > 5 ? 2 : 1) * (ou + 0.5) - 0.5 : 6;
+  const x0 = 50 - (hw + gap + tw + gap + ow) / 2, tx0 = x0 + hw + gap, ox0 = tx0 + tw + gap;
+  // the three names, each under its place, moved apart where the places are too narrow for the words to clear each other
+  const names = [h === 1 ? '1 hundred' : `${h} hundreds`, t === 1 ? '1 ten' : `${t} tens`, o === 1 ? '1 one' : `${o} ones`], half = names.map(s => s.length * 2.53 / 2);
+  const at = [x0 + hw / 2, tx0 + tw / 2, ox0 + ow / 2];
+  at[1] = Math.max(at[1], at[0] + half[0] + half[1] + 2); at[2] = Math.max(at[2], at[1] + half[1] + half[2] + 2);
+  const over = (at[0] - half[0] + at[2] + half[2]) / 2 - 50; for (let i = 0; i < 3; i++) at[i] -= over;   // the row of names stays in the middle
+  return { mode: 'hundreds', h, t, o, top, c, F, step, sw, pitch, ou, x0, tx0, ox0, five, names, at, bottom: tBot(top + F + 6, 4.6) };
+}
+function hundredsSvg(v, g) {
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  for (let i = 0; i < g.h; i++) {
+    const x = r2(g.x0 + i * g.step + g.five(i, 1.6));
+    s += `<rect x="${x}" y="${g.top}" width="${g.F}" height="${g.F}" fill="${TONES[0]}" stroke="${INK}" stroke-width="0.45"/>`;
+    for (let j = 1; j < 10; j++) s += `<line x1="${x}" y1="${r2(g.top + j * g.c)}" x2="${r2(x + g.F)}" y2="${r2(g.top + j * g.c)}" stroke="${INK}" stroke-width="0.2"/><line x1="${r2(x + j * g.c)}" y1="${g.top}" x2="${r2(x + j * g.c)}" y2="${g.top + g.F}" stroke="${INK}" stroke-width="0.2"/>`;
+  }
+  for (let i = 0; i < g.t; i++) {
+    const x = r2(g.tx0 + i * g.pitch + g.five(i, 1.2));
+    s += `<rect x="${x}" y="${g.top}" width="${g.sw}" height="${g.F}" fill="${TONES[2]}" stroke="${INK}" stroke-width="0.45"/>`;
+    for (let j = 1; j < 10; j++) s += `<line x1="${x}" y1="${r2(g.top + j * g.c)}" x2="${r2(x + g.sw)}" y2="${r2(g.top + j * g.c)}" stroke="${INK}" stroke-width="0.3"/>`;
+  }
+  for (let j = 0; j < g.o; j++) s += `<rect x="${r2(g.ox0 + Math.floor(j / 5) * (g.ou + 0.5))}" y="${r2(g.top + g.F - (j % 5 + 1) * (g.ou + 0.5) + 0.5)}" width="${g.ou}" height="${g.ou}" fill="${TONES[3]}" stroke="${INK}" stroke-width="0.45"/>`;
+  g.names.forEach((name, i) => { s += tx(g.at[i], g.top + g.F + 6, name, 4.6, 'middle', 800, LEAF); });
+  return s;
+}
 /** `balance` (Launchpad Unit 4): two groups of small blocks on the two sides of a see-saw beam over a pivot. The beam
  *  is level when both sides hold the same number and leans to the heavier side when they do not. A side that is
  *  `split` shows its two parts in two tones with a gap between them; `hide` draws the second part as a dashed box
@@ -432,6 +465,7 @@ function balanceSvg(v, g) {
 function countersGeo(v) {
   const gs = v.groups, top = 13;
   if (v.balance) return balanceGeo(v);
+  if (gs[0].hundreds) return hundredsGeo(v);
   if (gs[0].tens) return tensGeo(v);
   if (gs.length === 2) {
     const u = 7, x0 = r2(50 - (18 + Math.max(...gs.map(q => q.n)) * u) / 2 + 18); // the name gutter (16) and the rows, centred together
@@ -448,6 +482,7 @@ function countersGeo(v) {
 function countersSvg(v) {
   const g = countersGeo(v);
   if (g.mode === 'balance') return balanceSvg(v, g);
+  if (g.mode === 'hundreds') return hundredsSvg(v, g);
   if (g.mode === 'tens') return tensSvg(v, g);
   const r = r2(g.u * 0.36);
   const dot = (cx, cy, tone, num, gone) => (gone ? `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.45" stroke-dasharray="1.2 0.9"/>`

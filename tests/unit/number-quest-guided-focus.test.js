@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 140, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4 and 12 in Unit 6');
-  assert.equal(steps, 320, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4 and 30 in Unit 6');
+  assert.equal(slides, 152, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5 and 12 in Unit 6');
+  assert.equal(steps, 349, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5 and 30 in Unit 6');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -404,6 +404,39 @@ const REGISTRY = [
   ['launchpad-4.3', 3, 1, [61.98, 38.4, 77.96, 71.47], [61, 36.8, 18, 36.3]],
   ['launchpad-4.3', 4, 0, [20.98, 24.21, 79.03, 31.5], [20, 22.6, 60, 10.5]],
   ['launchpad-4.3', 4, 1, [20.98, 24.21, 79.03, 71.79], [20, 22.6, 60, 50.8]],
+  // Launchpad Unit 5, The Hundreds Hedge (2026-11-13): counters as hundreds, tens and ones (`hundreds`: the flats, the
+  // sticks, the loose ones, the name of an empty place), a place chart of three columns, number lines with hops of
+  // five and ten and with two numbers to compare, and tens and ones side by side, measured the same way on the
+  // rendered step pages at 390 px.
+  ['launchpad-5.1', 1, 0, [30.12, 23.11, 50.1, 58.67], [29.1, 21.5, 22, 38.8]],
+  ['launchpad-5.1', 1, 1, [54.1, 23.11, 59.89, 58.67], [53.1, 21.5, 7.8, 38.8]],
+  ['launchpad-5.1', 2, 0, [27.02, 23.11, 50, 58.67], [26, 21.5, 25, 38.8]],
+  ['launchpad-5.1', 2, 1, [54, 23.11, 66.59, 58.67], [53, 21.5, 14.6, 38.8]],
+  ['launchpad-5.1', 2, 2, [70.58, 44.09, 72.98, 58.67], [69.6, 42.5, 4.4, 17.8]],
+  ['launchpad-5.1', 3, 0, [25.89, 23.11, 54.85, 58.67], [24.9, 21.5, 31, 38.8]],
+  ['launchpad-5.1', 3, 1, [47.97, 61.69, 62.13, 71.52], [47, 60.1, 16.1, 13]],
+  ['launchpad-5.1', 3, 2, [68.82, 33.78, 74.11, 58.67], [67.8, 32.2, 7.3, 28.1]],
+  ['launchpad-5.1', 4, 0, [7.5, 16.02, 33.83, 78.6], [6.5, 14.4, 28.3, 65.8]],
+  ['launchpad-5.1', 4, 1, [36.83, 16.02, 63.16, 78.6], [35.8, 14.4, 28.4, 65.8]],
+  ['launchpad-5.1', 4, 2, [66.17, 16.02, 92.5, 78.6], [65.2, 14.4, 28.3, 65.8]],
+  ['launchpad-5.2', 1, 0, [26.95, 59.38, 29.15, 81.64], [26, 57.8, 4.1, 25.4]],
+  ['launchpad-5.2', 1, 1, [28.05, 25.1, 71.95, 60.44], [27.1, 23.5, 45.9, 38.5]],
+  ['launchpad-5.2', 1, 2, [71.95, 25.1, 96.25, 81.64], [71, 23.5, 26.3, 59.7]],
+  ['launchpad-5.2', 2, 0, [24.67, 59.38, 31.48, 81.64], [23.7, 57.8, 8.8, 25.4]],
+  ['launchpad-5.2', 2, 1, [28.05, 25.1, 71.95, 60.44], [27.1, 23.5, 45.9, 38.5]],
+  ['launchpad-5.2', 2, 2, [71.95, 25.1, 97.43, 81.64], [71, 23.5, 27.4, 59.7]],
+  ['launchpad-5.2', 3, 0, [25.62, 59.38, 32.19, 81.63], [24.6, 57.8, 8.6, 25.4]],
+  ['launchpad-5.2', 3, 1, [55.02, 59.38, 60.9, 81.63], [54, 57.8, 7.9, 25.4]],
+  ['launchpad-5.2', 4, 0, [20.18, 59.38, 27.15, 81.63], [19.2, 57.8, 9, 25.4]],
+  ['launchpad-5.2', 4, 1, [72.96, 59.38, 80, 81.63], [72, 57.8, 9, 25.4]],
+  ['launchpad-5.3', 1, 0, [16.96, 23.11, 35.05, 58.67], [16, 21.5, 20, 38.8]],
+  ['launchpad-5.3', 1, 1, [66.75, 23.11, 81.24, 58.67], [65.8, 21.5, 16.4, 38.8]],
+  ['launchpad-5.3', 2, 0, [31.56, 23.11, 61.14, 69.33], [30.6, 21.5, 31.5, 49.4]],
+  ['launchpad-5.3', 2, 1, [65.14, 36.44, 68.44, 69.34], [64.1, 34.8, 5.3, 36.1]],
+  ['launchpad-5.3', 3, 0, [31.56, 23.11, 61.14, 69.33], [30.6, 21.5, 31.5, 49.4]],
+  ['launchpad-5.3', 3, 1, [65.14, 56.71, 68.44, 69.34], [64.1, 55.1, 5.3, 15.8]],
+  ['launchpad-5.3', 4, 0, [28, 24.58, 42.67, 60.44], [27, 23, 16.7, 39]],
+  ['launchpad-5.3', 4, 1, [42.67, 24.58, 79.33, 60.44], [41.7, 23, 38.6, 39]],
   // Launchpad Unit 6, The Shape Shed (2026-11-13): drawn shapes with their names (an upside-down, a thin and a
   // right-angled triangle, a turned square, shapes shown made of smaller shapes), a shape strip, a circle cut in equal
   // shares (`pie`), fraction bars and a bar cut in shares that are not equal, measured the same way at 390 px.
@@ -438,13 +471,13 @@ const REGISTRY = [
   ['launchpad-6.3', 4, 0, [6, 23.11, 94, 38.22], [5.0, 22.2, 90.0, 16.9]],
   ['launchpad-6.3', 4, 1, [6, 53.33, 94, 68.44], [5.0, 52.4, 90.0, 16.9]],
 ];
-test('every authored box contains its measured target with a small margin (320-step registry)', () => {
+test('every authored box contains its measured target with a small margin (349-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 320);
+  assert.equal(REGISTRY.length, 349);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -462,7 +495,7 @@ test('every authored box contains its measured target with a small margin (320-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 320);
+  assert.equal(total, 349);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

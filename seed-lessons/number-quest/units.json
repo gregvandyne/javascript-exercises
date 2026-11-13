@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge) and Unit 6, The Shape Shed (6.1-6.3, kindergarten to grade 2: naming shapes by what defines them, building shapes from shapes, halves, fourths and thirds, played in Shape Hunt); its codes lock in standards.json launchpadCodes.",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge), Unit 5, The Hundreds Hedge (5.1-5.3, grade 2: hundreds, tens and ones, skip counting and comparing to 1000, adding and subtracting within 100, played in Rocket Supply) and Unit 6, The Shape Shed (6.1-6.3, kindergarten to grade 2: naming shapes by what defines them, building shapes from shapes, halves, fourths and thirds, played in Shape Hunt); its codes lock in standards.json launchpadCodes.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -35,6 +35,7 @@
     "Joining Seed",
     "Tens Seed",
     "Balance Seed",
+    "Hundreds Seed",
     "Shape Seed"
    ]
   }
@@ -1367,6 +1368,113 @@
    "tool": "balance-bridge"
   },
   {
+   "emoji": "🚀",
+   "group": "unit-5",
+   "n": 5,
+   "stamp": "Hundreds Seed",
+   "steps": [
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Load the Rocket",
+       "chapterTitle": "Load the Rocket",
+       "params": "chapter=build&lock=1",
+       "slug": "rocket-supply"
+      }
+     },
+     "mp": "MP7",
+     "n": "5.1",
+     "order": 14,
+     "shorts": {
+      "launchpad": "Hundreds, tens, ones"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "2.NBT.A.1",
+        "2.NBT.A.3"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Hundreds, tens and ones"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Count and Compare",
+       "chapterTitle": "Count and Compare",
+       "params": "chapter=count&lock=1",
+       "slug": "rocket-supply"
+      }
+     },
+     "mp": "MP8",
+     "n": "5.2",
+     "order": 15,
+     "shorts": {
+      "launchpad": "Count and compare"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "2.NBT.A.2",
+        "2.NBT.A.4"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Skip counting and comparing"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Fuel Up",
+       "chapterTitle": "Fuel Up",
+       "params": "chapter=fuel&lock=1",
+       "slug": "rocket-supply"
+      }
+     },
+     "mp": "MP2",
+     "n": "5.3",
+     "order": 16,
+     "shorts": {
+      "launchpad": "Add and subtract"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [
+        "2.OA.B.2"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "2.NBT.B.5"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Add and subtract to 100"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "This unit covers the grade 2 place value ideas: a three-digit number is hundreds, tens and ones (ten tens make a hundred, and a zero keeps an empty place), read from a model, from its parts (300 + 40 + 2) and from its name; skip counting by 5s, 10s and 100s within 1000; comparing two three-digit numbers with >, = and <; and adding and subtracting within 100, with the facts within 20.",
+    "A common misconception: a child writes each part of a number in full, so 4 hundreds and 7 ones becomes 4007 or 47, and 38 + 27 becomes 515. Keep saying how many hundreds, how many tens, how many ones, and trade: ten ones for a ten, ten tens for a hundred.",
+    "Rocket Supply checks each idea by doing, not reading. Every instruction is spoken; a pallet is a hundred, a rack is a ten and a canister is a one, and the load stands on a pad with a bay for each place. A wrong answer shows why on the pad (how many in each place, the hop between two marks, a ten made or opened) with a spoken hint, and six finished rounds complete the step."
+   ],
+   "tier": "launchpad",
+   "title": "The Hundreds Hedge",
+   "tool": "rocket-supply"
+  },
+  {
    "emoji": "🔺",
    "group": "unit-6",
    "n": 6,
@@ -1383,7 +1491,7 @@
      },
      "mp": "MP6",
      "n": "6.1",
-     "order": 14,
+     "order": 17,
      "shorts": {
       "launchpad": "Shapes and their sides"
      },
@@ -1413,7 +1521,7 @@
      },
      "mp": "MP7",
      "n": "6.2",
-     "order": 15,
+     "order": 18,
      "shorts": {
       "launchpad": "Shapes make shapes"
      },
@@ -1443,7 +1551,7 @@
      },
      "mp": "MP3",
      "n": "6.3",
-     "order": 16,
+     "order": 19,
      "shorts": {
       "launchpad": "Equal shares"
      },
