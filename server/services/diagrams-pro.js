@@ -22,7 +22,7 @@ const arr = (a, lo, hi) => Array.isArray(a) && a.length >= lo && a.length <= hi;
 const obj = x => !!x && typeof x === 'object' && !Array.isArray(x);
 /** The minus sign the decks print (U+2212), wherever a hyphen stands for "negative" or "subtract" in a label:
  *  before a number or a letter at the start, after a space, a bracket or an operator, and between spaces. */
-export const minus = s => String(s).replace(/(^|[\s(=<>≤≥×÷+,])-(?=[\d.a-z(])/gi, '$1−').replace(/ - /g, ' − ');
+export const minus = s => String(s).replace(/(^|[\s(=<>≤≥×÷+,])-(?=\s?[\d.a-z(])/gi, '$1−').replace(/ - /g, ' − ');
 /** A number as a deck prints it: at most two decimals, the real minus sign, no "-0". */
 export const fmt = n => { const r = Math.round(n * 100) / 100; return minus(String(Object.is(r, -0) ? 0 : r)); };
 /** A label: a number (printed with fmt) or a string, whole. One that is empty or longer than `max` is not a label

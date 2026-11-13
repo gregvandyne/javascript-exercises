@@ -109,7 +109,7 @@ const planeLay = once(v => {
   if (longX) { const ny2 = (y0 === 0 ? oy + 4.1 : yb + 0.6) + 4.6; nums += tx(gx + pw / 2, ny2, xName, 3.6, 'middle', 800, LEAF); ext[1] = tBot(ny2, 3.6); }
   else nums += tx(xb + 2.2, oy + 1.25, xName, 3.6, 'start', 800, LEAF);
   if (longY) { const cx = left - (x0 === 0 ? yLabW + 1.6 : 0) - 1.6, cy = gy + ph / 2; nums += tx(cx, cy, yName, 3.6, 'middle', 800, LEAF).replace('<text ', `<text transform="rotate(-90 ${r2(cx)} ${r2(cy)})" `); }
-  else nums += tx(ox + 2.4, ya + 0.9, yName, 3.6, 'start', 800, LEAF, true);
+  else { nums += tx(ox + 2.4, ya + 0.9, yName, 3.6, 'start', 800, LEAF, true); ext[0] = Math.min(ext[0], tTop(ya + 0.9, 3.6)); }
   // what is drawn on the plane, back to front: polygons, segments, lines, the slope triangle, points; then every name,
   // each set where it covers nothing already placed (a point, a number on an axis, another name)
   const parts = { plane: part(gx, gy, gx + pw, gy + ph, 2), origin: part(ox - 4, oy - 2, ox + 2, oy + 5, 0) };
@@ -193,7 +193,7 @@ const planeLay = once(v => {
     // the part a name belongs to grows to hold it
     const pb = parts[n.key], bx = [best[0] - w / 2, best[1] - h / 2, best[0] + w / 2, best[1] + h / 2];
     if (pb) { const o = [pb[0], pb[1] * 0.5625, pb[0] + pb[2], (pb[1] + pb[3]) * 0.5625]; parts[n.key] = part(Math.min(o[0], bx[0]), Math.min(o[1], bx[1]), Math.max(o[2], bx[2]), Math.max(o[3], bx[3]), 0.4); }
-    ext = [Math.min(ext[0], bx[1] - 0.3), Math.max(ext[1], bx[3] + 0.3)];
+    ext = [Math.min(ext[0], best[1] - h * 0.55), Math.max(ext[1], best[1] + h * 0.66)];
   }
   return { svg: s + shapes + nums + dots + words, extent: [Math.max(0, ext[0]), Math.min(56.25, ext[1])], parts, X, Y, kx, ky };
 });
@@ -288,7 +288,7 @@ const anglesLay = once(v => {
     }
     const c = P(bis, lr);
     words += mid(c[0], c[1], label, fs, 800, unknown ? LEAF : INK, true);
-    ys.push(c[1] - fs * 0.6, c[1] + fs * 0.55);
+    ys.push(c[1] - fs * 0.6, c[1] + fs * 0.66);
     const far = [P(d0, lr + 2), P(d1, lr + 2), P(bis, lr + fs * 0.6), V, [c[0] - w / 2, c[1]], [c[0] + w / 2, c[1]]];
     parts[`angle:${i}`] = part(Math.min(...far.map(p => p[0])), Math.min(...far.map(p => p[1])), Math.max(...far.map(p => p[0])), Math.max(...far.map(p => p[1])), 0.8);
   });
@@ -307,7 +307,7 @@ const triLay = once(v => {
   const parts = { corner: part(A[0], yB - 3.4, A[0] + dir * 3.4, yB, 1.2), triangle: part(A[0], C[1], B[0], yB, 1.6) }, ys = [C[1] - 1, yB + 1];
   const word = (cx, cy, str, key, anchorDir = 0) => {
     const q = isQ(str), size = q ? 5.2 : 4.4, wd = wOf(str) * size, x = cx + anchorDir * wd / 2;
-    s += mid(x, cy, str, size, 800, q ? LEAF : INK, true); ys.push(cy - size * 0.6, cy + size * 0.55);
+    s += mid(x, cy, str, size, 800, q ? LEAF : INK, true); ys.push(cy - size * 0.6, cy + size * 0.66);
     parts[key] = part(x - wd / 2, cy - size / 2, x + wd / 2, cy + size / 2, 1.2);
   };
   if (L.base) word((A[0] + B[0]) / 2, yB + 4.4, L.base, 'base');
@@ -460,7 +460,7 @@ export function diagramParts(v) {
 export function sayLabel(s) {
   return String(s).replace(/^\s*\?\s*$/, 'unknown').replace(/\?/g, ' unknown ')
     .replace(/(\d+) (\d+)\/(\d+)/g, '$1 and $2 over $3').replace(/(\d+)\/(\d+)/g, '$1 over $2')
-    .replace(/(^|[\s(=<>≤≥×÷+,])−\s*(?=[\d.a-z(])/gi, '$1negative ').replace(/−/g, ' minus ')
+    .replace(/(?<=[\w)°²³′]) − /g, ' minus ').replace(/(^|[\s(=<>≤≥×÷+,])−(?=[\d.a-z(])/gi, '$1negative ').replace(/−/g, ' minus ')
     .replace(/°C\b/g, ' degrees Celsius').replace(/°F\b/g, ' degrees Fahrenheit').replace(/°/g, ' degrees').replace(/²/g, ' squared').replace(/³/g, ' cubed').replace(/′/g, ' prime')
     .replace(/×/g, ' times ').replace(/÷/g, ' divided by ').replace(/≤/g, ' at most ').replace(/≥/g, ' at least ').replace(/\+/g, ' plus ').replace(/=/g, ' equals ')
     .replace(/\s+/g, ' ').trim();

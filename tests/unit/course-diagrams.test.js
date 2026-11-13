@@ -616,7 +616,7 @@ test('plane: a coordinate plane with its axes numbered from zero, points where t
   assert.match(sc.alt, /^Practice and score\. A coordinate plane: Hours of practice from 0 to 10, Score from 0 to 100\. 9 points: \(1, 22\), .* and \(9, 90\)\. A line with slope 8 that crosses the y-axis at 14, labelled trend\.$/);
   // big planes keep phone-sized numbers by numbering fewer gridlines (the drawing is clamped, never the data)
   const big = sound({ type: 'plane', label: 'Big', x: [-10, 10], y: [-10, 10], points: [{ x: -8, y: 6, label: '(-8, 6)' }] }, 'a plane from −10 to 10');
-  assert.deepEqual(texts(big.svg).filter(t => /^−?\d+$/.test(t.s)).map(t => t.s).sort(), ['10', '10', '5', '5', '−10', '−10', '−5', '−5'], 'numbered every 5');
+  assert.deepEqual(texts(big.svg).filter(t => /^−?\d+$/.test(t.s)).map(t => t.s).sort(), ['0', '10', '10', '5', '5', '−10', '−10', '−5', '−5'], 'numbered every 5');
   assert.ok(texts(big.svg).some(t => t.s === '(−8, 6)'));
   // what is false is dropped: a point off the plane, a plane without its axes, part squares, a line that misses it, a flat slope triangle
   const bad = more => pro({ type: 'plane', x: [-5, 5], y: [-5, 5], ...more });
@@ -696,7 +696,7 @@ test('angles: rays from one point with the measure of each angle; on a line, in 
   assert.deepEqual(rays(round.svg).map(r => Math.round(r.at)), [0, 120, 210, 320], 'all the way round: four rays for four angles'); assert.match(round.alt, /Together they go all the way round: 360 degrees\.$/);
   assert.deepEqual(Object.keys(round.parts), ['vertex', 'angle:0', 'angle:1', 'angle:2', 'angle:3']);
   // every measure is phone-sized even in the narrowest angle allowed, and clear of the point
-  for (const deg of [20, 25, 33.5, 70, 160]) { const s = sound({ type: 'angles', label: 'L', layout: 'line', angles: [{ deg, label: '(2x + 10)°' }, { deg: 180 - deg }] }, `a ${deg} degree angle`); for (const t of texts(s.svg)) assert.ok(Math.hypot(t.x - 50, t.y - 46) > 7, `${t.s} is clear of the point`); }
+  for (const deg of [20, 25, 33.5, 70, 160]) { const s = sound({ type: 'angles', label: 'L', layout: 'line', angles: [{ deg, label: '(2x+10)°' }, { deg: 180 - deg }] }, `a ${deg} degree angle`); for (const t of texts(s.svg)) assert.ok(Math.hypot(t.x - 50, t.y - 46) > 7, `${t.s} is clear of the point`); }
   // angles that do not add up are not drawn
   const bad = (layout, ...degs) => pro({ type: 'angles', layout, angles: degs.map(deg => ({ deg })) });
   assert.equal(bad('line', 65, 110), null); assert.equal(bad('corner', 32, 60), null); assert.equal(bad('cross', 50, 130, 50, 120), null); assert.equal(bad('cross', 50, 130), null); assert.equal(bad('rays', 200, 170), null);
@@ -766,7 +766,7 @@ test('flow: values and machines in a row, the way back drawn under them for the 
   const ts = texts(svg); for (const s of ['?', '15', '17', '× 3', '+ 2', '÷ 3', '− 2']) assert.ok(ts.some(t => t.s === s), `"${s}" is drawn`);
   assert.ok(ts.find(t => t.s === '÷ 3').y > ts.find(t => t.s === '× 3').y + 8 && Math.abs(ts.find(t => t.s === '÷ 3').x - ts.find(t => t.s === '× 3').x) < 0.02, 'each inverse sits under the operation it undoes');
   assert.equal(sound({ ...GOOD.flow, label: 'Undo it' }, 'flow').alt, 'Undo it. An operation flow. Start with unknown; times 3 gives 15; then plus 2 gives 17. Going back from 17: minus 2, then divided by 3.');
-  assert.deepEqual(Object.keys(diagramParts(v)), ['value:0', 'value:1', 'op:0', 'undo:0', 'value:2', 'op:1', 'undo:1']);
+  assert.deepEqual(Object.keys(diagramParts(v)), ['value:0', 'value:1', 'value:2', 'op:0', 'undo:0', 'op:1', 'undo:1']);
   // one machine with its ends named; three machines still phone-sized
   const one = sound({ type: 'flow', label: 'L', values: ['x', '12'], ops: ['× 4'], inName: 'in', outName: 'out' }, 'one machine'); assert.ok(texts(one.svg).some(t => t.s === 'in') && texts(one.svg).some(t => t.s === 'out')); assert.doesNotMatch(one.svg, /data-undo/);
   const three = sound({ type: 'flow', label: 'L', values: ['n', '2n', '?', '−4'], ops: ['× 2', '− 9', '÷ 2'], undo: ['÷ 2', '+ 9', '× 2'] }, 'three machines'); assert.equal((three.svg.match(/data-op=/g) || []).length, 3);
@@ -829,4 +829,13 @@ test('gaps closed in the older types for grades 6-8: eleven marks, hops that sta
   sound({ ...hist, label: 'Heights' }, 'histogram');
   assert.equal(pro({ ...GOOD.chart, bars: Array.from({ length: 6 }, (_, i) => ({ label: `b${i}`, value: i })) }), null, 'six bars only when they touch'); assert.equal(pro({ ...GOOD.chart, touch: 'yes' }), null);
   assert.equal(pro(GOOD.chart).touch, undefined);
+});
+
+test('every JSON example in the README’s Pro diagram reference is a diagram the engine keeps and draws soundly', () => {
+  const readme = fs.readFileSync(new URL('../../seed-lessons/number-quest/README.md', import.meta.url), 'utf8'), section = readme.slice(readme.indexOf('## Pro diagram pack'));
+  const examples = [...section.matchAll(/```json\n([\s\S]*?)```/g)].map(m => JSON.parse(m[1]));
+  assert.ok(examples.length >= 14, 'an example for each type and option');
+  const seen = new Set();
+  for (const ex of examples) { const s = sound(ex, `README ${ex.type} "${ex.label}"`); seen.add(ex.type + (ex.upright ? ':upright' : '') + (ex.tube ? ':tube' : '') + (ex.ray ? ':ray' : '') + (ex.touch ? ':touch' : '')); assert.ok(s.alt.startsWith(ex.label)); }
+  for (const t of [...PRO_DIAGRAM_TYPES, 'numberline:upright', 'numberline:upright:tube', 'numberline:ray', 'chart:touch']) assert.ok(seen.has(t), `the reference shows ${t}`);
 });

@@ -483,3 +483,177 @@ settle a rung without tiring a five-year-old, or a second short sitting; a floor
 misses everything places half a rung under the lowest rung it reached, not at the bottom, when it runs out of
 questions); and profiles re-fitted from real item data once there is some. Guarded by
 `tests/unit/number-quest-launchpad-open.test.js`.
+
+## Pro diagram pack: the drawn types for grades 6–8 (2026-11-13, no Pro units yet)
+
+Seven drawn types and three number-line options that the Pro decks will need, built once before the units so no
+unit has to touch the shared drawing files. Nothing here changes a deck: there are no Pro units, decks or tier
+changes in this pack. Cleaned in `server/services/diagrams-pro.js` (called by `services/diagrams.js`
+`cleanDiagram` and, for the number line, by `services/courses.js` `cleanSlide`); drawn in
+`server/views/nq-diagrams-pro.js`; tested in `tests/unit/course-diagrams.test.js`.
+
+**The contract every type here keeps**
+
+- **`label` is required** (as for every `visual`): the picture's short name, at most 160 characters. For these types
+  the viewer then adds the drawing's own data in words (`diagramAlt`), so the accessible name is
+  `"<label>. <the numbers on the drawing>"` and a learner who cannot see the picture gets the same information.
+  A value drawn as `?` is always said as "unknown", never as its number. Write the label as a name ("Flour and
+  cookies"), not as a description of the numbers.
+- **Malformed data drops the diagram** (the slide keeps its art; `fromDeck` reports it), exactly like the older
+  types. That covers anything that would draw something false: a point off the plane, five numbers out of order,
+  angles that do not add up, more items than the type allows. **A label is never cut short**: one longer than its
+  limit drops the diagram (half a number is a wrong number).
+- **What is only a matter of drawing is clamped**, not refused: a plane or an axis with many gridlines numbers every
+  2nd, 5th or 10th so the numbers stay 12 px or more on a phone; a very thin triangle or net is drawn no thinner
+  than a phone can show (the labels stay true); labels that would touch are moved apart.
+- **Minus signs.** A number given as a number prints with the deck's minus sign (U+2212, `−3`), and a hyphen typed
+  for a minus in a label (`"-3"`, `"y = -2x + 1"`, `"- 9"`) is turned into it. A hyphen inside a word stays.
+  This now also holds for a negative number given as a number in the older `table`, `squares` and `swap` cells.
+- **Fractions, decimals, exponents, degrees** are written as text and drawn as written: `"1 1/2"`, `"2.5"`,
+  `"c² = 100"`, `"65°"`, `"A′"`. In the accessible name they are said in words ("1 and 1 over 2", "c squared equals
+  100", "65 degrees", "A prime", "negative 3", "5 minus 2").
+- **Read-aloud never speaks a diagram.** The Listen button reads `slide.say` (or the title and text); nothing in
+  `visual` reaches the voice. Put what the picture shows into `say` in words if it should be heard.
+- **Never colour alone.** A second line is dashed, an image polygon is dashed, an open circle is hollow, an unknown
+  is a `?` in a dashed outline, the way back in a flow is dashed and under the way forward.
+- **Sizes.** No text under 3.4 units (12 px at 390 px wide, 10 px at 326 px, the floor the older diagrams use).
+  Drawn on the Cream ground in light and dark themes alike. The deck is `dir="ltr"`, so the drawings do not mirror
+  in a right-to-left interface.
+- **Guided focus.** Layouts are a pure function of the data. `diagramParts(visual)` (exported by
+  `server/views/nq-diagrams.js`; pass the cleaned visual) returns `{ name: [x, y, w, h] }` for each named part, in
+  the unit `slide.focus[].box` is written in, with the same small margin the measured boxes use. Print them with
+  `node -e "import('./server/services/courses.js').then(async C => { const { diagramParts } = await import('./server/views/nq-diagrams.js'); console.log(diagramParts(C.cleanSlide({ title: 'T', visual: JSON.parse(process.argv[1]) }).visual)); })" '<visual json>'`.
+  Part names are listed with each type below. Boxes for the Pro decks still get pinned in
+  `tests/unit/number-quest-guided-focus.test.js` when the decks are written.
+
+**`plane`: a coordinate plane (also the scatter plot).** `x` and `y` are `[min, max]` and must both include 0;
+`step` (a number, or `[xStep, yStep]`, default 1) is the size of one grid square; 2–20 squares each way. Optional:
+`points` (1–16: `{ x, y, label?, tone? 0–3, open? }`), `segments` (1–6: `{ from, to, label?, dash? }`), `lines`
+(1–3: `{ m, b }` for y = mx + b, or `{ through: [[x, y], [x, y]] }`, the only way to write an upright line; plus
+`label?`, `dash?`; the 2nd and 3rd are dashed anyway), `polygons` (1–2: `{ pts: 3–8 points, names?, image? }`; the
+`image` one is dashed and blue), `slope` (`{ from, to, rise?, run? }`, default labels "rise 4", "run 2"),
+`xName`, `yName` (default x and y; a name of 3–20 characters is written along its axis: a scatter plot).
+Equal steps draw square units. Parts: `plane`, `origin`, `point:<i>`, `segment:<i>`, `line:<i>`, `polygon:<i>`, `slope`.
+
+```json
+{ "type": "plane", "label": "A line and its slope", "x": [-4, 6], "y": [-3, 7],
+  "points": [{ "x": 1, "y": 1, "label": "A (1, 1)" }, { "x": 3, "y": 5 }],
+  "lines": [{ "m": 2, "b": -1, "label": "y = 2x − 1" }], "slope": { "from": [1, 1], "to": [3, 5] } }
+```
+```json
+{ "type": "plane", "label": "A slide", "x": [-6, 6], "y": [-4, 4],
+  "polygons": [{ "pts": [[-5, 1], [-2, 1], [-2, 3]], "names": ["A", "B", "C"] },
+               { "pts": [[1, -3], [4, -3], [4, -1]], "names": ["A′", "B′", "C′"], "image": true }] }
+```
+```json
+{ "type": "plane", "label": "Practice and score", "x": [0, 10], "y": [0, 100], "step": [1, 10],
+  "xName": "Hours of practice", "yName": "Score",
+  "points": [{ "x": 1, "y": 22 }, { "x": 4, "y": 48 }, { "x": 9, "y": 90 }],
+  "lines": [{ "m": 8, "b": 14, "dash": true, "label": "trend" }] }
+```
+
+**`double`: a double number line.** `ticks` is 2–7 pairs `[top, bottom]`, drawn evenly spaced, each pair one above
+the other; any value may be `"?"`. Values are whole labels of up to 7 characters (up to 5 on a line of 6 or 7
+ticks). `top` and `bottom` (optional, up to 24 characters) name the two scales. Parts: `top`, `bottom`, `pair:<i>`,
+`blank:<i>:top`, `blank:<i>:bottom`.
+
+```json
+{ "type": "double", "label": "Flour and cookies", "top": "Cups of flour", "bottom": "Cookies",
+  "ticks": [[0, 0], [2, 12], [4, 24], [6, "?"], [8, 48]] }
+```
+
+**`boxplot`: one or two box plots over one axis.** `min`, `max`, `step` set the axis (2–12 steps); `plots` is 1–2 of
+`{ five: [lowest, lower quartile, median, upper quartile, highest], name?, tone? }`, in order and on the axis;
+`unit` (optional) is the axis title. Parts: `axis`, `plot:<i>`, `box:<i>`, `median:<i>`.
+
+```json
+{ "type": "boxplot", "label": "Two classes", "min": 50, "max": 100, "step": 5, "unit": "Test score",
+  "plots": [{ "name": "Class A", "five": [55, 68, 75, 82, 95] }, { "name": "Class B", "five": [60, 70, 72, 78, 100] }] }
+```
+
+**`angles`: angles at one point.** `angles` go round anticlockwise from the ray pointing right; each is
+`{ deg, label?, blank? }` with `deg` its true size (20 or more) and `label` what is written (default `"65°"`;
+`"?"` or `"x°"` for an unknown, up to 9 characters; `blank: true` writes nothing). A 90° angle gets a square corner.
+`layout`: `"line"` (2–4 angles that make 180: supplementary), `"corner"` (2–3 that make 90: complementary),
+`"cross"` (exactly 4, two lines crossing: a, b, a, b with a + b = 180: vertical angles), `"rays"` (1–5 angles, up
+to 360 in all). Parts: `vertex`, `angle:<i>`.
+
+```json
+{ "type": "angles", "label": "Angles on a line", "layout": "line", "angles": [{ "deg": 65 }, { "deg": 115, "label": "?" }] }
+```
+```json
+{ "type": "angles", "label": "Two lines cross", "layout": "cross",
+  "angles": [{ "deg": 50 }, { "deg": 130, "label": "?" }, { "deg": 50, "label": "x°" }, { "deg": 130, "blank": true }] }
+```
+
+**`righttriangle`: a labelled right triangle.** `base` and `height` are numbers (the proportions it is drawn to);
+`labels` has two or three of `base`, `height`, `hyp` (up to 9 characters; `"?"` for the unknown); `corner: "right"`
+puts the square corner at the bottom right. Parts: `triangle`, `corner`, `base`, `height`, `hyp`.
+
+```json
+{ "type": "righttriangle", "label": "A right triangle", "base": 4, "height": 3, "labels": { "base": "4 cm", "height": "3 cm", "hyp": "?" } }
+```
+
+**`net`: the net of a prism.** `solid: "box"` with `dims: [length, width, height]` draws six rectangles (a strip of
+four, the top over the front, the bottom under it); `solid: "prism"` with `dims: [triangle base, triangle height,
+length]` draws three rectangles and two triangles. `labels` (optional, three, up to 7 characters) replace the
+numbers on the edges. Parts: box `net`, `left`, `front`, `right`, `back`, `top`, `bottom`; prism `net`, `side:0`,
+`base`, `side:1`, `end:0`, `end:1`.
+
+```json
+{ "type": "net", "label": "A box, unfolded", "solid": "box", "dims": [5, 3, 2], "labels": ["5 cm", "3 cm", "2 cm"] }
+```
+```json
+{ "type": "net", "label": "A prism, unfolded", "solid": "prism", "dims": [6, 4, 7], "labels": ["6 m", "4 m", "7 m"] }
+```
+
+**`flow`: an operation flow (a function machine).** `ops` is 1–3 operations; `values` is one more than that, the
+value before and after each machine, any of them `"?"`; `undo` (optional, one per op) draws the way back under it,
+each inverse under the operation it undoes; `inName`, `outName` (optional) name the two ends. Labels are up to 6
+characters (up to 4 with three machines). Parts: `value:<i>`, `op:<i>`, `undo:<i>`.
+
+```json
+{ "type": "flow", "label": "Undo it", "values": ["?", "15", "17"], "ops": ["× 3", "+ 2"], "undo": ["÷ 3", "− 2"] }
+```
+
+**`numberline` options.** `upright: true` stands the line up (bigger numbers higher): marks named on the left, the
+point on the right, each hop an arrow up or down beside the line with level lines to its two numbers (hop labels up
+to 5 characters; no `stacks`). `tube: true` (with `upright`) draws it as a thermometer filled to the point.
+`ray: { at, dir: "left" | "right", open? }` (on the flat line) shades every number from `at` to that end, with a
+filled circle at `at`, or a hollow one when `open: true` (an inequality). Parts: `line`, `point`, `hop:<i>`; `ray`, `end`.
+
+```json
+{ "type": "numberline", "label": "From 4 down to −3", "min": -5, "max": 5, "upright": true,
+  "marks": [{ "at": -5, "label": "−5" }, { "at": 0, "label": "0" }, { "at": 5, "label": "5" }],
+  "point": { "at": -3, "label": "−3" }, "hops": [{ "from": 4, "to": -3, "label": "−7" }] }
+```
+```json
+{ "type": "numberline", "label": "A cold morning", "min": -20, "max": 30, "upright": true, "tube": true,
+  "marks": [{ "at": -20, "label": "−20°" }, { "at": 0, "label": "0°" }, { "at": 30, "label": "30°" }], "point": { "at": -5, "label": "−5°C" } }
+```
+```json
+{ "type": "numberline", "label": "x is greater than −2", "min": -5, "max": 5,
+  "marks": [{ "at": -5, "label": "−5" }, { "at": -2, "label": "−2" }, { "at": 0, "label": "0" }, { "at": 5, "label": "5" }],
+  "ray": { "at": -2, "dir": "right", "open": true } }
+```
+
+**The older types, checked against grades 6–8.** Ratio table (`table`), percent bar (`split`), area model
+(`squares` with `top` / `side` labels) and bar chart (`chart`) already take decimals, fractions and negatives as
+text. Four real gaps were closed, none of which changes an existing deck:
+
+- `numberline` takes up to 11 marks (it was 6): a line from −5 to 5, or a dot plot from 0 to 10, names every number.
+- `numberline` hops must start and land on the line (a hop from 999 to −999 used to pass and draw off the frame);
+  a hop back, below zero, is allowed as before.
+- `bars` takes up to 10 parts a row (it was 4): a tape diagram of 3 : 5 or 3 : 7, a percent bar in tenths.
+- `chart` takes `touch: true`: a histogram, its bars touching, up to six, in one tone.
+
+  ```json
+  { "type": "chart", "label": "Heights of 30 plants", "max": 12, "step": 2, "unit": "plants", "touch": true,
+    "bars": [{ "label": "0–9", "value": 2 }, { "label": "10–19", "value": 7 }, { "label": "20–29", "value": 11 }, { "label": "30–39", "value": 6 }] }
+  ```
+
+**No existing drawing moved.** `tests/fixtures/course/diagram-baseline.json` holds every diagram in the seed decks
+(173) with the hash of the SVG it drew before this pack; `course-diagrams.test.js` draws each again and compares.
+Regenerate it (`node scripts/nq-diagram-baseline.js`) only when a drawing is changed on purpose.
+
+**Not in the pack:** algebra tiles, a tree diagram (a `table` stands in), a fraction-division model, a pyramid net.
