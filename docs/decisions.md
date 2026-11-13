@@ -4858,3 +4858,15 @@ stage 5 of `docs/kit2-themes-plan.md`.
 - **Not verified:** a build with the real model (no API key on the build machine). Verified with the mock builder, the
   fake Messages API (the blocks the model is sent, the tool refusals), the starter in every world, and real Chromium in
   the production frame (`tests/unit/builder-kit2.test.js`).
+
+## The Builder picks the world and hero from the idea, and never swaps silently (13 Nov 2026)
+
+The owner found Builder games defaulting to the same classic look (a fox in a meadow), and creatures the kit lacks
+(a shark, a dragon) quietly became the closest species. The kit rules the Builder reads (docs/kit-api.md, builder
+parts, generated into server/builder/kit-rules.js) now say: the world and hero come from the idea (sea `reef`, ice
+`snow`, dinos `jungle`, robots `city`, aliens `space`, dragons `castle`, spooky `haunted`, sport `stadium`, ...),
+`meadow` is for fields and farms only, the examples' fox, castle and meadow are only examples, and when the kit lacks
+what the builder named the reply says so (what was made instead and how to change it). The rules stayed inside their
+32,000-character budget (a few existing lines were tightened). Tried and ruled out for now: drawing a missing
+creature with `Oomba.art.define` (a defined name is not a species, so a hero falls back to the mascot and a spawned
+kind to a placeholder); custom creatures need the kit's creature maker first.
