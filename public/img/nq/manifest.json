@@ -79,6 +79,39 @@
       "state": "story-board"
     },
     {
+      "alt": "Crate Stacker on a phone: a toy truck with 17 crates, a cart with 2 more towers, and three number buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "3.3",
+      "commit": "9b6f4baf",
+      "concept": "Launchpad 3.3, Add More Crates round 1 (17 and 20 more. How many?): the truck with 17, the cart with 2 towers marked +20, 17 + 20 = ?, number buttons 19, 27 and 37, shot at phone width (scripts/nq-shots.js band)",
+      "game": "crate-stacker",
+      "key": "nq/crate-stacker/add-more-crates",
+      "state": "add-more-crates"
+    },
+    {
+      "alt": "Crate Stacker on a phone: a toy truck with 1 tower of ten crates and 4 loose crates, and four loading buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "3.1",
+      "commit": "9b6f4baf",
+      "concept": "Launchpad 3.1, Load the Truck round 1 (Load 14 crates.): the truck loaded with 1 tower of ten and 4 loose crates, the chip reading 1 ten and 4 ones, the four loading buttons, shot at phone width (scripts/nq-shots.js band)",
+      "game": "crate-stacker",
+      "key": "nq/crate-stacker/load-the-truck",
+      "state": "load-the-truck"
+    },
+    {
+      "alt": "Crate Stacker on a phone: two toy trucks loaded with towers of ten and loose crates, and number buttons 79 and 46.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "3.2",
+      "commit": "9b6f4baf",
+      "concept": "Launchpad 3.2, Which Has More? round 1 (Which truck has more?): two trucks loaded with 79 and 46 as towers and crates, the first on the loading dock behind the second, number buttons 79 and 46, shot at phone width (scripts/nq-shots.js band)",
+      "game": "crate-stacker",
+      "key": "nq/crate-stacker/which-has-more",
+      "state": "which-has-more"
+    },
+    {
       "alt": "Data Detective, Chart It, on a phone: fruit counts as a bar chart (Apple 6, Banana 4, Grape 7, Pear 2), the Bars view picked.",
       "band": "explorer",
       "capturedAt": "2026-11-07",
