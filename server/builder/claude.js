@@ -205,7 +205,8 @@ export async function run(ctx) {
         : wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
       // An older 3D game on the kit's 3D bridge: its reference too (no cache point of its own; the game's block caches it).
       ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
-      ...(wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      // (Live class games are built on the Oomba Kit's live pack: not for Kit 2 games yet, whose rules say so.)
+      ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       ...(k2 ? [{ type: 'text', text: kit2Note(k2) }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },

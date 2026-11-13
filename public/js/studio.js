@@ -1950,6 +1950,12 @@ if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.fo
     let text = takeOut(input.value, kind);
     for (const other of kind === 'theme' ? ['world', 'hero'] : ['theme']) text = takeOut(text, other);
     if (on) { said[kind] = lineOf(b); b.setAttribute('aria-pressed', 'true'); text = text ? `${text}\n${said[kind]}` : said[kind]; }
+    // A picked world shows only the heroes it has (Sky Islands has no skeleton pals); a hero it lacks is taken out again.
+    const picked = [...chips('world')].find(x => x.getAttribute('aria-pressed') === 'true');
+    for (const h of chips('hero')) {
+      h.hidden = !!picked && !(h.dataset.worlds || '').split(' ').includes(picked.dataset.world);
+      if (h.hidden && h.getAttribute('aria-pressed') === 'true') text = takeOut(text, 'hero');
+    }
     setText(text);
     input.focus();
   });
@@ -1959,5 +1965,5 @@ if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.fo
     const tabs = [...$$('.st-tab')], next = tabs[(tabs.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
     e.preventDefault(); next.focus(); next.click();
   });
-  $('#st-compose').addEventListener('submit', () => { for (const k of Object.keys(said)) said[k] = ''; $$('.st-theme, .st-pick').forEach(x => x.setAttribute('aria-pressed', 'false')); });
+  $('#st-compose').addEventListener('submit', () => { for (const k of Object.keys(said)) said[k] = ''; $$('.st-theme, .st-pick').forEach(x => { x.setAttribute('aria-pressed', 'false'); x.hidden = false; }); });
 }

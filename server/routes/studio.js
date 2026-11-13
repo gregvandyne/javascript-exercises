@@ -113,14 +113,15 @@ export function themeOf(src) {
 function themePicker(t, current, k2, hasGame) {
   const first = hasGame && !k2 ? 'classic' : 'worlds';
   const now = html`<span class="st-theme-now">${t('studio.themes.current')}</span>`;
-  const chip = (cls, attr, id, name, img, cur, size) => html`<button type="button" class="${cls}${cur ? ' is-current' : ''}" ${raw(`data-${attr}="${id}"`)} data-name="${name}" aria-pressed="false"><img src="${img}" alt="" width="${size[0]}" height="${size[1]}" loading="lazy" decoding="async"><span>${name}</span>${cur ? now : ''}</button>`;
+  // extra: for a hero chip, the worlds that have this character (the page hides the others once a world is picked)
+  const chip = (cls, attr, id, name, img, cur, size, extra = '') => html`<button type="button" class="${cls}${cur ? ' is-current' : ''}" ${raw(`data-${attr}="${id}"${extra}`)} data-name="${name}" aria-pressed="false"><img src="${img}" alt="" width="${size[0]}" height="${size[1]}" loading="lazy" decoding="async"><span>${name}</span>${cur ? now : ''}</button>`;
   const tab = (key, emoji) => html`<button type="button" class="st-tab" role="tab" id="st-tab-${key}" data-tab="${key}" aria-controls="st-row-${key}" aria-selected="${String(key === first)}" tabindex="${key === first ? '0' : '-1'}" title="${t(`studio.picker.${key}`)}"><span aria-hidden="true">${emoji}</span><span class="st-tab-t">${t(`studio.picker.${key}`)}</span></button>`;
   const row = (key, chips) => html`<div class="st-themes-row" id="st-row-${key}" role="tabpanel" aria-labelledby="st-tab-${key}"${key === first ? '' : raw(' hidden')}>${chips}</div>`;
   const heroes = k2 ? KIT2_CHARACTERS.filter(c => c.worlds.includes(k2.world)) : KIT2_CHARACTERS;
   return html`<div class="st-themes" role="group" aria-label="${t('studio.picker.label')}">
     <div class="st-tabs" role="tablist" aria-label="${t('studio.picker.label')}">${tab('worlds', '🌍')}${tab('heroes', '🦸')}${tab('classic', '🎨')}</div>
     ${row('worlds', KIT2_WORLDS.map(w => chip('st-pick st-world', 'world', w.id, t(`studio.worlds.names.${w.id}`), `/img/kit2/worlds/${w.id}.webp`, !!k2 && k2.world === w.id, [48, 32])))}
-    ${row('heroes', heroes.map(c => chip('st-pick st-hero', 'hero', c.id, t(`studio.heroes.names.${c.id}`), `/img/kit2/heroes/${c.id}.webp`, !!k2 && k2.hero === c.id, [32, 32])))}
+    ${row('heroes', heroes.map(c => chip('st-pick st-hero', 'hero', c.id, t(`studio.heroes.names.${c.id}`), `/img/kit2/heroes/${c.id}.webp`, !!k2 && k2.hero === c.id, [32, 32], ` data-worlds="${c.worlds.join(' ')}"`)))}
     ${row('classic', Object.keys(THEMES).map(id => chip('st-theme', 'theme', id, t(`studio.themes.names.${id}`), `/img/themes/${id}.webp`, id === current, [48, 32])))}
   </div>`;
 }

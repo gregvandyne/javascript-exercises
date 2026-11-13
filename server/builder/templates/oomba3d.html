@@ -150,10 +150,10 @@ async function buildWorld() {
       z -= sd / 2;
     }
     z -= GAP + pd / 2;
-    const gate = { q, pads: [], done: false, z }, sp = pw + 2.2;
+    const gate = { q, pads: [], done: false, z }, sp = pw + 2.2, gz = z;
     q.answers.forEach((answer, i) => {
       const x = (i - (q.answers.length - 1) / 2) * sp;
-      jobs.push(stand(LAYOUT.pad.piece, x, z, LAYOUT.pad.scale, 0.5).then(solid => gate.pads.push(answerPad(gate, solid, answer, x, z))));
+      jobs.push(stand(LAYOUT.pad.piece, x, gz, LAYOUT.pad.scale, 0.5).then(solid => gate.pads.push(answerPad(gate, solid, answer, x, gz))));
     });
     gates.push(gate); spots.gates.push([0, 1, z + pd / 2 + GAP + 1]);
     z -= pd / 2 + GAP + gd / 2;

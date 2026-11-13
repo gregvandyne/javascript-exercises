@@ -6,6 +6,7 @@
 import { worldById, characterById, charactersOf, heroFor, kit2Starter, kit2Of, isKit2Game, worldLook, KIT2_WORLDS } from './kit2.js';
 import { detectTheme, detectColor } from './themes.js';
 import { cleanText } from '../services/textfilter.js';
+import { asksForLive } from './prompt.js';
 
 const lookOf = worldLook;
 const CHECK = ['Walk with the arrow keys, or the buttons on a phone', 'Jump from stone to stone and grab the coins', 'Jump onto the right answer', 'Reach the goal and press Play again'];
@@ -67,9 +68,10 @@ export async function buildKit2(ctx, m, pick, say, o = {}) {
   const learnBit = a.learn && a.learn !== 'none' ? ` It sneaks in some ${a.learn} too.` : '';
   if (o.replaces) await say(ctx, 'This will be a brand new 3D game. Your old game stays in Versions if you want it back. ');
   if (pick.wantsCreature) await say(ctx, `${NO_CREATURE}So ${who.name} is your hero${outfit && !col ? ', in a green cape' : ''}. `);
+  else if (pick.missing && characterById(pick.missing)) await say(ctx, `${w.name} has no ${characterById(pick.missing).name}, so ${who.name} is your hero. `);
   await say(ctx, `Here's my plan for ${title} ${icon}: a 3D game in the ${w.name} world with ${who.name} as the hero. Hop along the path, grab the coins, jump to the right answer and reach the goal.${learnBit} Building it now…\n\n`);
   tools.exec('set_game', { title, icon: pick.wantsCreature && theme ? theme.emoji : icon, description: w.description.slice(0, 300), category: a.learn && a.learn !== 'none' ? 'learning' : 'adventure', tags: ['3d', w.id, hero], players: 1, cover, orientation: 'any' });
-  const r = tools.exec('write_game', { html, notes: `${o.replaces ? 'A new 3D game' : 'First version'}: ${title} in the ${w.name} world` });
+  const r = tools.exec('write_game', { html, notes: `${o.replaces ? 'A new 3D game' : 'First version'}: ${title === w.name ? `the ${w.name} world` : `${title} in the ${w.name} world`}` });
   m.built = true; m.answers = { ...a, kind: 'oomba3d' };
   if (!r.ok) { await say(ctx, 'Hmm, the safety check found a problem. Ask me to fix it and I will!'); return; }
   if (ctx.state) ctx.state.kit2 = { world: w.id, hero };
@@ -89,6 +91,11 @@ export async function followUpKit2(ctx, m, cur, pick, say) {
     if (r.ok) tools.exec('ask_user', { question: 'All fixed! What next?', options: nextChips(html) });
     return;
   }
+  if (asksForLive(text)) {
+    await say(ctx, 'The 3D worlds can’t be played live with a class yet. Your game works great for one player! What should we change next?');
+    tools.exec('ask_user', { question: 'What next?', options: nextChips(cur.html) });
+    return;
+  }
   if (/\b(ready|polish|finished|all done|it'?s done|publish|perfect|looks good)\b/.test(t)) {
     await say(ctx, 'Polish time! ✨ Here is a checklist of things to try in your game. Press Publish when you are happy with it!');
     tools.exec('test_notes', { checklist: POLISH });
@@ -105,7 +112,8 @@ export async function followUpKit2(ctx, m, cur, pick, say) {
   }
   const world = moved ? pick.world : (w ? w.id : pick.world);
   const hero = heroFor(world, pick.hero || k.hero);
-  if (hero && hero !== k2Read(html, 'hero')) { changes.hero = hero; said.push(`made ${characterById(hero).name} the hero 🦸`); }
+  if (pick.missing && characterById(pick.missing)) said.push(`kept your hero (${worldById(world).name} has no ${characterById(pick.missing).name})`);
+  else if (hero && hero !== k2Read(html, 'hero')) { changes.hero = hero; said.push(`made ${characterById(hero).name} the hero 🦸`); }
   else if (pick.wantsCreature && /\b(hero|player|character|play as|turn (it|him|her|them) into)\b/.test(t.replace(/\b(?:call it|name it|rename it(?: to)?|title it)\b[\s\S]*$/, ''))) said.push('kept your hero (there are no animal or dinosaur characters in the 3D worlds yet)');
   const time = (TIMES.find(([, re]) => re.test(t)) || [])[0];
   if (time && time !== k2Read(html, 'time')) { changes.time = time; said.push(SAID_TIME[time]); }

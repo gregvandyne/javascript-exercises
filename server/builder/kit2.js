@@ -124,7 +124,8 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '' } = {
 //      "a spooky forest", "in the kitchen"), unless it asks for a kind of game Kit 2 does not make (cards, a board, a
 //      word game, two players on one screen, catching falling things), says 2D, or picks an old-kit theme chip.
 // Otherwise the build stays on the old kit (the Oomba Kit for 2D, its own Three.js world for a 3D request that fits no
-// world). A character named in words counts only together with a world, a 3D word or a Kit 2 game: "a wizard quiz"
+// world). A character named in words counts only together with a world, a 3D word ("a 3D game with a knight") or a
+// Kit 2 game: "a wizard quiz"
 // alone is an old-kit game, as before. The model can also choose Kit 2 itself (start_from_template "oomba3d") for
 // requests in other languages; this module is the part that does not depend on the model.
 const norm = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[’‘`]/g, '\'');
@@ -158,7 +159,8 @@ function lastNamed(list, t) {
   for (const [name, id] of list) {
     // Japanese and Chinese are written without spaces: a name there is matched wherever it stands.
     const re = new RegExp(NO_SPACES.test(name) ? esc(name) : `${BOUND}${esc(name)}${END}`, 'gu'); let m;
-    while ((m = re.exec(t))) if (m.index > bestAt) { bestAt = m.index; best = id; }
+    // the list is longest first, so of two names ending at the same place ("Hooded Ranger", "Ranger") the longer wins
+    while ((m = re.exec(t))) { const end = m.index + m[0].length; if (end > bestAt) { bestAt = end; best = id; } }
   }
   return best;
 }
@@ -196,11 +198,13 @@ export function pickKit2(text) {
   const worldChip = chipOf('world'), heroChip = chipOf('hero');
   const chipWorld = worldChip ? lastNamed(NAMES.worlds, worldChip) : '', chipHero = heroChip ? lastNamed(NAMES.heroes, heroChip) : '';
   const named = lastNamed(NAMES.worlds, t);
-  const classicChip = chipOf('classic'), classic = (!!classicChip && !chipWorld && !chipHero && !named) || /\b2 ?-?d\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/.test(t);
+  const classicChip = chipOf('classic'), classic = (!!classicChip && !chipWorld && !chipHero && !named) || /(^|[^a-z0-9])2 ?-?d\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/.test(t);
   let place = ''; for (const [id, re] of PLACE_WORDS) if (re.test(t)) { place = id; break; }
   const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], heroName = chipHero || lastNamed(NAMES.heroes, t) || heroWord;
-  const by = chipWorld || chipHero ? 'chip' : named ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
-  return { world: chipWorld || named || (by === 'place' || by === 'chip' ? place : ''), hero: heroName, by, classic, threeD: THREE_D.test(t), wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
+  const threeD = THREE_D.test(t);
+  // "a 3D game with a knight": a 3D request that names one of the characters is a pick of that character.
+  const by = chipWorld || chipHero ? 'chip' : named || (threeD && heroName && !classic) ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
+  return { world: chipWorld || named || (by ? place : ''), hero: heroName, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
 }
 
 /**
@@ -222,11 +226,14 @@ export function wantsKit2(state, text, version) {
   else if (state && state.kit2 && !version) by = 'kept';
   if (!by) return null;
   const before = (state && state.kit2) || {};
-  const world = p.world || (cur && WORLD_IDS.includes(cur.world) ? cur.world : '') || before.world || DEFAULT_WORLD;
+  // With no world named: the game's own, the one picked before, or the first world that has the character asked for.
+  const asked = characterById(p.hero), home = asked && !asked.worlds.includes(DEFAULT_WORLD) ? asked.worlds[0] : DEFAULT_WORLD;
+  const world = p.world || (cur && WORLD_IDS.includes(cur.world) ? cur.world : '') || before.world || home;
   // A character named in words counts here, inside a Kit 2 build; it must be one this world has.
   const hero = heroFor(world, p.hero || (cur && cur.hero) || before.hero || '');
   if (state) state.kit2 = { world, hero };
-  return { world, hero, by, wantsCreature: p.wantsCreature, changed: !!cur && ((!!p.world && p.world !== cur.world) || (!!p.hero && hero !== cur.hero)) };
+  // missing: a character they asked for that this world does not have (the world's first hero plays instead).
+  return { world, hero, by, wantsCreature: p.wantsCreature, ...(p.hero && heroFor(world, p.hero) !== p.hero ? { missing: p.hero } : {}), changed: !!cur && ((!!p.world && p.world !== cur.world) || (!!p.hero && hero !== cur.hero)) };
 }
 
 // ---- What the model is told --------------------------------------------------------------------------------------
@@ -281,7 +288,7 @@ ${kit2ImportMap()}
   another world, or one you made up, stops the game with an error. Do not load anything by URL: no fetch, no model
   files, no textures, no fonts, no other add-ons (Oomba3D loads the world's art itself).${NO_CREATURES}
 - g.askQuestion() makes its answer islands from the piece "island-round", which only sky-islands has. In every other
-  world use the starter's askAt() (answer pads made from that world's own piece), never g.askQuestion().
+  world use the starter's answer pads (answerPad(): made from that world's own pad piece), never g.askQuestion().
 - Pieces have very different sizes: check each piece's size below and scale it against the hero (about 2.4 m tall). The
   starter's put() stands a piece on the ground whatever its own base is; stand() makes something to walk on with its
   top at a height you choose. A jump reaches about 1.8 m up and 5 m forward: keep gaps under 3 m and steps under 1.5 m.
@@ -290,6 +297,8 @@ ${kit2ImportMap()}
 - Keep window.__brbTest (state, start), BRB.gameOver({ won, score }) at the end of every round, BRB.score.submit, the
   title screen with its big Play button and the results screen with Play again. Words the player reads live in WORDS.
 - No text boxes, no names, no chat: the kid rules are the same in 3D.
+- Live class games (Oomba Live) are not made in these 3D worlds yet: if the builder asks for one, say so kindly in one
+  short sentence and offer to keep building their world. Do not add the live pack to a Kit 2 game.
 
 # The Oomba3D reference (exact signatures)
 ${KIT2_API_SOURCE}
@@ -304,5 +313,6 @@ export function kit2Note(pick) {
   const how = { chip: 'The builder picked', name: 'The builder named', place: 'The builder described a place that is', kept: 'Earlier the builder picked', game: 'This game is in' }[pick.by] || 'This build uses';
   return `KIT 2 CHOICE: ${how} the 3D world ${w ? `${w.id} ("${w.name}") ${w.version}` : pick.world}${h ? `, with the hero ${h.id} (${h.name})` : ''}. `
     + (pick.by === 'game' && !pick.changed ? 'Keep it a Kit 2 game in this world unless they ask for another.' : pick.by === 'place' ? 'Build it as a Kit 2 game (start_from_template "oomba3d" with this world) unless they clearly want a flat 2D game.' : 'Build it as a Kit 2 game: start_from_template "oomba3d" with this world and hero, then make it theirs.')
-    + (pick.wantsCreature ? ' They asked for an animal or dinosaur: there is none yet, so say that kindly and pick the closest hero.' : '');
+    + (pick.wantsCreature ? ' They asked for an animal or dinosaur: there is none yet, so say that kindly and pick the closest hero.' : '')
+    + (pick.missing && characterById(pick.missing) ? ` ${w ? w.name : 'This world'} has no ${characterById(pick.missing).name}: say so kindly and use one of this world's heroes.` : '');
 }

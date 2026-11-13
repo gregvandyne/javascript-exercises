@@ -329,6 +329,7 @@ button.stp-line{cursor:pointer}
 .st-tab[aria-selected="true"]{background:var(--current);color:var(--on-current)}
 .st-themes-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;min-width:0;flex:1;padding:2px 2px 4px;scroll-snap-type:x proximity}
 .st-themes-row[hidden]{display:none}
+.st-pick[hidden]{display:none}
 .st-theme,.st-pick{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:3px 12px 3px 3px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .85rem var(--font);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
 .st-theme img,.st-pick img{width:48px;height:32px;border-radius:999px;object-fit:cover;background:var(--card-2);flex:none}
 .st-hero img{width:36px;height:36px;border-radius:50%}
