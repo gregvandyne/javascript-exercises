@@ -511,7 +511,7 @@ const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 const HOWS = ['solo', 'two', 'live'];
 /** Each course's subject and grades, for the filters and the card's "Subject · Grades" line: the same grades as the
  *  course's own subtitle (courses.<key>.sub; Cyber Defenders has two bands, 3-5 and 6-8). */
-const COURSE_INFO = { 'cs-quest': { subject: 'code', from: 3, to: 8 }, 'cyber-defenders': { subject: 'code', from: 3, to: 8 }, 'number-quest': { subject: 'math', from: 3, to: 5 } };
+const COURSE_INFO = { 'cs-quest': { subject: 'code', from: 3, to: 8 }, 'cyber-defenders': { subject: 'code', from: 3, to: 8 }, 'number-quest': { subject: 'math', from: 0, to: 5 } };
 /** The filters asked for in the address, each one only when it is a known value. */
 export function learnFilters(query = {}, defaultGrade = '') {
   const subject = SUBJECTS.some(x => x.key === query.subject) ? query.subject : '';
@@ -582,7 +582,7 @@ router.get('/learn', (req, res) => {
   if (f.how !== 'two' && f.how !== 'live' && !std) {
     try {
       // Each course card carries the same "Subject · Grades" line as the game cards.
-      const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: String(i.from), to: String(i.to) }) }) : null; };
+      const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: i.from === 0 ? 'K' : String(i.from), to: String(i.to) }) }) : null; };
       const items = courses.COURSES.filter(c => fits(COURSE_INFO[c.slug], f)).map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c), meta: courseMeta(c) }));
       // "My courses" once a player has begun one (picked a band); "Courses" until then.
       const mine = !out && !staff && !isGrownup(u) && items.some(it => it.ov && it.ov.band);

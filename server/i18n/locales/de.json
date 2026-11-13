@@ -3111,7 +3111,7 @@
       "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat.",
       "find": "Lektion suchen",
       "readyMade": "Fertige Kurse",
-      "numberQuest": "Number Quest (Mathe, Klassen 3–5)"
+      "numberQuest": "Number Quest (Mathe, Vorschule bis Klasse 5)"
     },
     "folder": {
       "name": "Ordnername",
@@ -4310,7 +4310,7 @@
       "q4": "Wie schützen Sie die Daten der Schüler?",
       "a4": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Es gibt keine Werbung und keine Tracking-Cookies, und den echten Namen eines Schülers sieht nur das Personal seiner Schule. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
       "q5": "Für welches Alter und welche Klassen ist es gedacht?",
-      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten, die ganzen Kurse beginnen ab Klasse 3.",
+      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, beginnt in der Vorschule, CS Quest und Cyber Defenders beginnen ab Klasse 3.",
       "q6": "Wie füge ich meine Klasse hinzu?",
       "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
       "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
@@ -4743,7 +4743,7 @@
         "title": "Kostenlose Lernspiele für 5-, 6- und 7-Jährige",
         "description": "Kostenlose, werbefreie Browserspiele für 5- bis 7-Jährige: vorgelesene englische Wörter, erste Rechenaufgaben, Rhythmus und Strategie. Ohne Download, ohne Chat mit Fremden.",
         "h1": "Lernspiele für 5- bis 7-Jährige",
-        "lead": "Von der Vorschule bis Klasse 2 lernen die meisten Kinder noch lesen. Diese Spiele lesen ihre Wörter vor oder arbeiten mit Zahlen, Musik und Bildern, sodass ein junges Kind am Anfang mit einem Erwachsenen in der Nähe spielen kann. Unsere vollständigen Kurse beginnen in Klasse 3, mit etwa 8 Jahren.",
+        "lead": "Von der Vorschule bis Klasse 2 lernen die meisten Kinder noch lesen. Diese Spiele lesen ihre Wörter vor oder arbeiten mit Zahlen, Musik und Bildern, sodass ein junges Kind am Anfang mit einem Erwachsenen in der Nähe spielen kann. Number Quest, unser Mathekurs, beginnt in der Vorschule; unsere anderen vollständigen Kurse beginnen in Klasse 3, mit etwa 8 Jahren.",
         "fit": {
           "wordTrail": "Genau für dieses Alter: die ersten englischen Sichtwörter auf einem Märchenpfad, und jedes Wort wird vorgelesen.",
           "sharkPlank": "Galgenmännchen mit englischen Wörtern für Kinder, die gerade lesen lernen, und jedes Wort wird vorgelesen.",
@@ -4758,7 +4758,7 @@
           "q2": "Kann mein Kind spielen, wenn es noch nicht lesen kann?",
           "a2": "Bei einigen Spielen ja. Word Trail und Shark Plank lesen jedes Wort vor, Word Hunt liest ein Wort vor, wenn man es antippt, und Sum Racer und Tug of Math arbeiten mit Zahlen. Menüs und Anleitungen sind geschrieben, deshalb hilft am Anfang ein Erwachsener in der Nähe.",
           "q3": "Gibt es die Kurse auch für dieses Alter?",
-          "a3": "Noch nicht. Number Quest, CS Quest und Cyber Defenders beginnen in Klasse 3, mit etwa 8 Jahren. Von 5 bis 7 sind die Spiele auf dieser Seite der richtige Anfang.",
+          "a3": "Einen gibt es. Number Quest, unser Mathekurs, beginnt in der Vorschule: Seine Launchpad-Straße ist für die Vorschule bis Klasse 2, und ihre Spiele lesen jede Anweisung vor. CS Quest und Cyber Defenders beginnen in Klasse 3, mit etwa 8 Jahren.",
           "q4": "Kann ein 6-jähriges Kind den KI-Baumeister benutzen?",
           "a4": "Kinder tippen ihre Idee für den Baumeister ein, deshalb sollte in diesem Alter ein Erwachsener dabeisitzen und beim Schreiben helfen. Der Baumeister folgt festen Sicherheitsregeln für Kinder, und ein neues Spiel bleibt privat, bis es geteilt wird."
         }
@@ -6918,7 +6918,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Mathe in den Numberworks · Klassen 3 bis 5"
+      "sub": "Mathe in den Numberworks · Vorschule bis Klasse 5"
     },
     "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}",
     "gamesN": "{count, plural, one {Das # Spiel ansehen} other {Die # Spiele ansehen}}"
@@ -7225,8 +7225,8 @@
       "lead": "Kurze Foliensätze, schnelle Checks und Spielmissionen auf einem Weg. Jedes Kind lernt im eigenen Tempo; du siehst den Fortschritt in der Notenübersicht.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Mathe · Klasse 3 bis 5",
-        "p": "Stellenwerte, Brüche, Messen, Formen und Daten im Numberworks von Netville mit Katze Tally. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
+        "tag": "Mathe · Vorschule bis Klasse 5",
+        "p": "Zählen, Stellenwerte, Brüche, Messen, Formen und Daten im Numberworks von Netville mit Katze Tally, von der Vorschule bis Klasse 5. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
       },
       "cs": {
         "name": "CS Quest",

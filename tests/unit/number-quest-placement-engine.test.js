@@ -134,7 +134,7 @@ test('grading through regenerated keys: pick by index, numeric by value', () => 
   assert.ok(sawPick && sawNumeric);
 });
 
-test('the crosswalk: first unmet profile wins, near-misses resolve low, low rungs flag the Launchpad gap', () => {
+test('the crosswalk: first unmet profile wins, near-misses resolve low, a rung under 2.5 walks the Launchpad gardens', () => {
   assert.equal(P.crosswalk({ number: 2.5, algebra: 2.5, 'shape-measure': 2.5, 'data-chance': 2.5 }).node, 'explorer-2.1');
   assert.equal(P.crosswalk({ number: 3.5, algebra: 3, 'shape-measure': 2.5, 'data-chance': 2.5 }).node, 'explorer-3.1');
   // Units 1-4 met but Unit 5's Shape & Measure 3.5 unmet: the start is Unit 5's door (Phase 2 built it).
@@ -148,7 +148,9 @@ test('the crosswalk: first unmet profile wins, near-misses resolve low, low rung
   const at4 = P.crosswalk({ number: 3.5, algebra: 3.5, 'shape-measure': 3, 'data-chance': 2.5 });
   assert.equal(at4.node, 'explorer-4.1'); assert.equal(at4.finaleDoor, false);
   const low = P.crosswalk({ number: 2, algebra: 3.5, 'shape-measure': 3, 'data-chance': 3 });
-  assert.equal(low.node, 'explorer-0.1'); assert.equal(low.launchpadGap, true);
+  // Launchpad opened on 2026-11-13 with its own entry profiles: a rung under the Explorer line starts in the
+  // gardens (Number 2.0 misses Unit 5's Number 2.5), and no gap is flagged any more.
+  assert.equal(low.node, 'launchpad-5.1'); assert.equal(low.tier, 'launchpad'); assert.equal(low.launchpadGap, false);
 });
 
 test('the Starting Point note: plain words, the placed unit, and the caveat in the data', () => {
@@ -168,7 +170,7 @@ test('the beginning door places without a game; the override is absolute; disabl
   const kid = newKid();
   const p = P.placeAtBeginning(kid, 5);
   assert.equal(p.startNode, 'explorer-1.1'); assert.equal(p.source, 'beginning');
-  assert.equal(P.placeAtBeginning(kid, 1).startNode, 'explorer-0.1');
+  assert.equal(P.placeAtBeginning(kid, 1).startNode, 'launchpad-0.1', 'grade 1 begins at the Launchpad welcome now that the gardens are open');
   const o = P.overrideStartNode(kid, 'explorer-3.1');
   assert.equal(o.startNode, 'explorer-3.1'); assert.equal(o.source, 'override');
   assert.equal(P.overrideStartNode(kid, 'explorer-9.1'), null);
@@ -194,7 +196,7 @@ test('soft landing: two failed checks at the placed start offer the previous uni
   assert.equal(p.startFails, 1);
 });
 
-test('full runs: always-right lands at the finale door (past every workshop, honestly flagged), always-wrong at the intro with the gap flagged', () => {
+test('full runs: always-right lands at the finale door (past every workshop, honestly flagged), always-wrong in the Launchpad gardens', () => {
   const run = (kid, wantCorrect) => {
     const out = P.startRun(kid, { grade: 4 });
     let res = null, guard = 0;
@@ -219,8 +221,12 @@ test('full runs: always-right lands at the finale door (past every workshop, hon
   assert.equal(P.getPlacement(hiKid).startNode, 'explorer-7.4');
   const loKid = newKid();
   const lo = run(loKid, false);
-  assert.ok(lo); assert.equal(lo.startNode, 'explorer-0.1'); assert.equal(lo.note.launchpadGap, true);
-  assert.equal(P.getPlacement(loKid).startNode, 'explorer-0.1');
+  // A grade 4 run that misses everything steps down from rung 3.5 to 1.5 in its five questions a strand and
+  // places just under the lowest rung missed (1.0): under the Explorer line, so the start is a Launchpad
+  // garden (Unit 3, the first whose profile rung 1.0 does not meet), with no gap to flag.
+  assert.ok(lo); assert.equal(lo.startNode, 'launchpad-3.1'); assert.equal(lo.tier, 'launchpad'); assert.equal(lo.note.launchpadGap, false);
+  assert.equal(lo.workshop, 'The Tens Trellis'); assert.equal(lo.note.placedUnit, 'Launchpad · Unit 3: The Tens Trellis');
+  assert.equal(P.getPlacement(loKid).startNode, 'launchpad-3.1');
 });
 
 test('stopping early still places (partial note), and a retake replaces only on confirmation', () => {

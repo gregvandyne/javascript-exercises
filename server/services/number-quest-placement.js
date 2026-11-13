@@ -293,7 +293,7 @@ const entryProfiles = () => (profileOverrides ? { ...profilesLock(), ...profileO
 export const entryProfile = (tier, unit) => entryProfiles()[`${tier}-${unit}.1`] || null;
 /** A tier's units that have an entry profile, in path order: the units the walk (and test-out) can name. */
 const profiledUnits = tier => T.unitsOf(tier).filter(u => entryProfile(tier, u.n));
-/** May placement land a learner in this tier? Only an OPEN tier: a tier still being built is nobody's start. */
+/** May placement land a learner in this tier? Only an OPEN tier: a tier that is not open is nobody's start. */
 const placeable = tier => T.isOpen(tier);
 /** A tier's finale door (units.json tiers.<tier>.finale, a step number): where a run that meets every
  *  profile of the tier lands. Null for a tier without one. */
@@ -346,11 +346,12 @@ export const EXPLORER_LINE = 2.5;
  *    point past every workshop: with no Pro tier open, the start is the finale door (explorer-7.4, the Vault
  *    of Measures) and `finaleDoor` rides along so the child and the grown-up note can both say the street is
  *    finished and the Vault is waiting.
- *  - Any rung below 2.5 puts the start in the Launchpad tier. While Launchpad is still being built (or has
- *    no entry profiles yet), the learner starts at the Explorer intro and the note flags the gap
- *    (`launchpadGap`). Once Launchpad is open and has profiles (keys "launchpad-<n>.1"), its units are
- *    walked the same way: below its first profile → the tier's very first step (its welcome); otherwise the
- *    first unit whose profile is not met; every Launchpad profile met → the Explorer intro, with no gap.
+ *  - Any rung below 2.5 puts the start in the Launchpad tier (open since 2026-11-13, with profiles keyed
+ *    "launchpad-<n>.1"): its units are walked the same way: below its first profile → the tier's very
+ *    first step (its welcome); otherwise the first unit whose profile is not met; every Launchpad profile
+ *    met → the Explorer intro, with no gap (never the Launchpad finale: the Garden Gate is a review door a
+ *    learner walks to, not a start). Should Launchpad ever be closed again (or lose its profiles), the
+ *    learner starts at the Explorer intro and the note flags the gap (`launchpadGap`).
  *  - Pro, once open with profiles (keys "pro-<n>.1"), continues the walk after Explorer's seven: below its
  *    first profile → Pro's first step; else its first unmet unit; all met → Pro's finale door when it has
  *    one, else its last unit's door.
@@ -408,6 +409,31 @@ export function finaleLineFor(node) {
   return `You raced to the very end of the street! Every workshop is open to you, and ${info.workshop} is waiting. That is where you start.`;
 }
 
+/** The grown-up note's line about the Explorer starting line, or null when no strand sits under it. It is
+ *  worked out from the rungs and the start node the note is about, so the note a run writes and the note
+ *  rebuilt later from the stored row (routes/number-quest.js) say the same thing:
+ *  - the start is in the Launchpad gardens: no extra line, the placed unit already names the garden;
+ *  - the rungs point into the gardens but the stored start is elsewhere (a start set before the gardens
+ *    opened on 2026-11-13, when such runs began at the Explorer welcome): say where the game would start
+ *    them now, and that nothing has been moved. A learner is never moved by the tier opening: only a
+ *    confirmed retake or a grown-up's override changes a stored start. A grown-up's own choice
+ *    (`source` 'override') gets no such line: their word stands without comment;
+ *  - every garden's profile is met but a rung is still under the line: the Explorer welcome, said plainly;
+ *  - Launchpad is not open to placement: the old gap line, flagged honestly. */
+export function launchpadNoteLine(rungs, startNode, source = 'sorting-game') {
+  const cw = crosswalk(rungs || {});
+  const vals = Object.values(rungs || {}).filter(v => typeof v === 'number');
+  if (!vals.length || Math.min(...vals) >= EXPLORER_LINE) return null;
+  const gardens = T.tierName('launchpad');
+  if (cw.launchpadGap) return `One or more strands landed below the Explorer starting line. The ${gardens} gardens (kindergarten to grade 2) are not open for placement, so this learner starts at ${nodeInfo(firstNode('explorer')).workshop}, and this note flags the gap honestly rather than hiding it.`;
+  const stored = (T.parseKey(startNode) || {}).tier || T.DEFAULT_TIER;
+  if (cw.tier === 'launchpad') {
+    if (stored === 'launchpad' || source === 'override') return null;
+    return `One or more strands sit below the Explorer starting line. This start point was set before the ${gardens} gardens (kindergarten to grade 2) opened; on the same answers the Sorting Game would now start this learner at ${placedUnitWords(cw.node)}. Nothing has been moved and no progress has changed: use the override on this page, or let the learner replay the Sorting Game, if you would like the start to change.`;
+  }
+  return `One or more strands landed just below the Explorer starting line, and every ${gardens} garden's entry profile was met, so the start is ${nodeInfo(cw.node).workshop} on the Explorer street. The ${gardens} gardens stay open behind it for games and review.`;
+}
+
 /** One strand of the Starting Point note, in plain words: "solid to grade 4" when a whole rung confirmed,
  *  "grade 3, growing" for a half rung, kindergarten named, "worth a look" when the strand sits well below
  *  the student's best strand or under the Explorer starting line, and an honest line when the game ran out
@@ -452,7 +478,7 @@ export function finishRun(state, { partial = false } = {}) {
     lines: Object.keys(state.strands).map(k => strandNoteWords(STRAND_LABELS[k], placed[k], rungs)),
     placedUnit: finaleDoor ? finaleWords(node) : placedUnitWords(node),
     startNode: node, tier, launchpadGap, finaleDoor: !!finaleDoor,
-    launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line. The Launchpad gardens (kindergarten to grade 2) are still being built, so for now this learner starts at Welcome to the Numberworks, and this note flags the gap honestly rather than hiding it.' : null,
+    launchpadLine: launchpadNoteLine(rungs, node),
     partial: partial ? 'The game was stopped early. Strands place independently, so this start point still stands; a strand that had not settled starts at its seed rung.' : null,
     caveat: CAVEAT,
   };
@@ -509,7 +535,8 @@ function savePlacement(user, { grade, rungs, startNode, source, reanchorGrade = 
 }
 
 /** Where a stated grade begins without a game: the first unit of the tier matching the grade.
- *  - K-2: the Launchpad tier's first step once that tier is open; until then, the Explorer intro.
+ *  - K-2: the Launchpad tier's first step (Meet Tally in the Gardens); the Explorer intro if that tier
+ *    is not open.
  *  - 3-5: Explorer's first workshop (Unit 1's door: the intro is a welcome, not a unit).
  *  - 6-8: the Pro tier's first step once that tier is open; until then the furthest built Explorer
  *    workshop door (Unit 7's door), never an unbuilt node. The finale door is NOT a beginning: the Vault

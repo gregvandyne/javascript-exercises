@@ -110,7 +110,7 @@ test('footer links to /research and /compliance for grown-ups who teach and the 
   assert.doesNotMatch(k.slice(k.lastIndexOf('<footer')), /href="\/compliance"/);
 });
 
-test('ages 5 to 7: an honest guide, early-years games only, says the courses start in grade 3', async () => {
+test('ages 5 to 7: an honest guide, early-years games only, says Number Quest starts in kindergarten and the other courses in grade 3', async () => {
   const a5 = AGES.find(a => a.key === 'a5');
   assert.deepEqual([a5.min, a5.max, a5.slug], [5, 7, 'games-for-5-to-7-year-olds']);
   assert.equal(AGES[0], a5, 'first in the list of ages');
@@ -123,8 +123,11 @@ test('ages 5 to 7: an honest guide, early-years games only, says the courses sta
   assert.equal(r.status, 200);
   const words = text(main(r.text));
   assert.ok(words.includes('Ages 5–7'));
-  assert.ok(words.includes('full courses start in grade 3'));
-  assert.ok(words.includes('Not yet. Number Quest, CS Quest and Cyber Defenders start in grade 3'));
+  // Number Quest's Launchpad street (kindergarten to grade 2) opened on 2026-11-13: one course is for this age now.
+  assert.ok(words.includes('Number Quest, our math course, starts in kindergarten; our other full courses start in grade 3'));
+  assert.ok(words.includes('One is. Number Quest, our math course, starts in kindergarten'));
+  assert.ok(words.includes('CS Quest and Cyber Defenders start in grade 3'));
+  assert.ok(!words.includes('Not yet.'), 'no line still says no course is for this age');
   const cp = ofType(r.text, 'CollectionPage')[0];
   assert.equal(cp.typicalAgeRange, '5-7');
   // /parents links it, and says the guides start at 5.

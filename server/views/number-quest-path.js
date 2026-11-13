@@ -99,6 +99,9 @@ export function pathPage(d) {
   const groups = new Map();
   for (const s of ov.list) { if (!groups.has(s.step.unit)) groups.set(s.step.unit, []); groups.get(s.step.unit).push(s); }
   const units = d.units;
+  // A street walked to its end leads on: when every step of the street on screen is done and a later
+  // street is open (Launchpad's Garden Gate leads to Explorer), the page says so and offers the way.
+  const onward = ov.total > 0 && ov.done === ov.total ? streets.slice(streets.indexOf(here) + 1).find(x => !x.building) || null : null;
   return html`<section class="course-page nqpath">
     <a class="back small" href="/">← ${t('courses.home')}</a>
     <header class="course-hero nqp-hero">
@@ -110,7 +113,7 @@ export function pathPage(d) {
 
     ${!d.bandSet && d.canPick && !d.hasProgress ? html`<section class="bandpick" aria-labelledby="bandpick-h">
       <h2 id="bandpick-h">${t('courses.band.h')}</h2>
-      <p class="muted">${streets.length > 1 ? 'Pick your street. You can switch later from this page.' : 'Number Quest opens with the Explorer street, for grades 3–5. More streets are being built.'}</p>
+      <p class="muted">${streets.length > 1 ? 'Pick your street. Not sure? Tally\'s Sorting Game below finds it for you. You can switch later from this page.' : `Number Quest opens with the ${streets[0].name} street, for ${gradesLine(streets[0].grades).toLowerCase()}.`}</p>
       <form method="post" action="/courses/${c.slug}/band" class="bandpick-cards">
         ${streets.map(s => html`<button class="bandcard" type="submit" name="band" value="${s.key}" id="band-${s.key}">
           <span class="bandcard-e" aria-hidden="true">${bandEmoji(s.key)}</span>
@@ -136,6 +139,12 @@ export function pathPage(d) {
       ${ov.next && d.canPick ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
 
+    ${onward ? html`<section class="panel nqp-onward" id="nqp-onward" aria-labelledby="nqp-onward-h" lang="en" dir="ltr">
+      <h2 id="nqp-onward-h">🎉 You walked the whole ${here.name} street!</h2>
+      <p>Every step here is done, and it all stays open to play again. The next street is ${onward.name}, for ${gradesLine(onward.grades).toLowerCase()}.</p>
+      ${d.canPick ? html`<form method="post" action="/courses/${c.slug}/band"><button class="btn btn-primary btn-big" type="submit" name="band" value="${onward.key}" id="nqp-onward-go">${bandEmoji(onward.key)} Walk on to ${onward.name} ›</button></form>`
+    : html`<a class="btn" href="/courses/${c.slug}?street=${onward.key}" id="nqp-onward-go">Look at ${onward.name} ›</a>`}
+    </section>` : ''}
     ${streetSwitcher(c, streets, here.key, d.canPick)}
     <ol class="nqp-path" aria-label="The Numberworks street, ${here.name}">
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}

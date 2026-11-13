@@ -130,7 +130,7 @@ const band = s => { const m = /^(K|\d+)-(\d+)$/.exec(s); return { from: m[1] ===
 /** Each Learn-shelf launch game: subject ('any' = live quizzes for any subject) and grades. */
 export const SHELF_INFO = Object.fromEntries(Object.entries({
   'shark-plank': ['words', 'K-3'], 'word-hunt': ['words', '1-5'], 'word-peek': ['words', '3-8'], 'word-trail': ['words', 'K-3'], 'doodle-hoot': ['words', '1-8'],
-  'sum-racer': ['math', '1-5'], 'fraction-factory': ['math', '3-5'], 'tug-of-math': ['math', '1-8'], 'garden-count': ['math', 'K-1'], 'lily-hop': ['math', 'K-1'], 'crate-stacker': ['math', '1-2'], 'balance-bridge': ['math', '1-2'], 'rocket-supply': ['math', '2-2'], 'shape-hunt': ['math', 'K-2'], 'kitchen-rush': ['math', '1-2'],
+  'sum-racer': ['math', '1-5'], 'fraction-factory': ['math', '3-5'], 'tug-of-math': ['math', '1-8'], 'garden-count': ['math', 'K-1'], 'lily-hop': ['math', 'K-1'], 'crate-stacker': ['math', '1-2'], 'balance-bridge': ['math', '1-2'], 'rocket-supply': ['math', '2-2'], 'shape-hunt': ['math', 'K-2'], 'kitchen-rush': ['math', 'K-2'],
   'castle-clash': ['thinking', '2-8'], 'loop-lab': ['music', '2-8'],
   'atlas-quest': ['maps', '3-8'], 'atlas-quest-live': ['maps', '3-8'],
   'code-isle': ['code', '4-8'], 'packet-post': ['code', '3-8'], 'inside-the-machine': ['code', '3-8'], 'data-detective': ['code', '3-8'], 'robo-route': ['code', '3-8'],

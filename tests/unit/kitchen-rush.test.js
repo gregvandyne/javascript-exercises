@@ -280,7 +280,7 @@ test('words: every instruction, hint and answer line is a registered spoken line
 test('registration: seeded, in the Number Quest course, and tagged chapter by chapter as units.json teaches', () => {
   assert.ok(SEED_GAMES.includes('kitchen-rush'));
   assert.equal(META.slug, 'kitchen-rush'); assert.equal(META.title, 'Kitchen Rush'); assert.equal(META.category, 'learning'); assert.equal(META.shelf, 'learn'); assert.equal(META.players_max, 1); assert.equal(META.featured, true);
-  assert.deepEqual(SHELF_INFO['kitchen-rush'], { subject: 'math', from: 1, to: 2 }, 'on the Learn shelf as math for grades 1 and 2');
+  assert.deepEqual(SHELF_INFO['kitchen-rush'], { subject: 'math', from: 0, to: 2 }, 'on the Learn shelf as math for kindergarten to grade 2 (its sorting chapter carries K.MD.B.3)');
   for (const f of ['public/covers/kitchen-rush.jpg', 'public/og/kitchen-rush.jpg', 'scripts/covers/kitchen-rush.recipe.js']) assert.ok(fs.existsSync(path.join(ROOT, f)), f);
   const nq = catalog.COURSES.find(c => c.slug === 'number-quest');
   assert.deepEqual(nq.games.find(g => g.slug === 'kitchen-rush'), { slug: 'kitchen-rush', topic: 'numbers', shared: true });
@@ -291,7 +291,7 @@ test('registration: seeded, in the Number Quest course, and tagged chapter by ch
   assert.deepEqual(TAGS.gameCodes('kitchen-rush', 'ccss-math'), [...TAGS.KITCHEN_CHAPTERS.measure, ...TAGS.KITCHEN_CHAPTERS.clock, ...TAGS.KITCHEN_CHAPTERS.chart]);
   assert.ok(TAGS.LEVELLED.includes('kitchen-rush'));
   assert.equal(UNIT.title, 'The Measuring Meadow'); assert.equal(UNIT.stamp, 'Measuring Seed'); assert.equal(UNIT.tool, 'kitchen-rush');
-  assert.ok(UNITS.tiers.launchpad.stones.includes('Measuring Seed')); assert.equal(UNITS.tiers.launchpad.status, 'building'); assert.equal(UNITS.tiers.launchpad.finale, '7.4');
+  assert.ok(UNITS.tiers.launchpad.stones.includes('Measuring Seed')); assert.equal(UNITS.tiers.launchpad.status, 'open'); assert.equal(UNITS.tiers.launchpad.finale, '7.4');
   assert.deepEqual(STEPS.map(s => [s.n, s.titles.launchpad]), [['7.1', 'How long is it?'], ['7.2', 'Clocks and coins'], ['7.3', 'Sort it and chart it'], ['7.4', 'The Garden Gate']]);
   // the statements the unit locks carry the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).launchpadCodes.codes;

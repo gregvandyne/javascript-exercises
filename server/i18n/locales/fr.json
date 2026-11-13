@@ -3110,7 +3110,7 @@
       "emptyText": "Créez une nouvelle leçon, laissez l’IA en rédiger une ébauche, ou copiez une leçon partagée par un collègue.",
       "find": "Chercher une leçon",
       "readyMade": "Prêts à l’emploi",
-      "numberQuest": "Number Quest (maths, CE2–CM2)"
+      "numberQuest": "Number Quest (maths, GS–CM2)"
     },
     "folder": {
       "name": "Nom du dossier",
@@ -4309,7 +4309,7 @@
       "q4": "Comment protégez-vous la vie privée des élèves ?",
       "a4": "Nous ne demandons jamais aux élèves leur adresse e-mail, leur âge ni leur adresse postale. Il n’y a ni publicité ni cookies de suivi, et le vrai nom d’un élève n’est visible que par le personnel de son école. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons.",
       "q5": "Pour quels âges et quels niveaux ?",
-      "a5": "Oomba Academy est conçue de la maternelle à la 4e, soit environ pour les 5-14 ans. Des jeux comme Shark Plank et les premiers circuits de Sum Racer conviennent aux plus jeunes, et les cours complets commencent au CE2.",
+      "a5": "Oomba Academy est conçue de la maternelle à la 4e, soit environ pour les 5-14 ans. Des jeux comme Shark Plank et les premiers circuits de Sum Racer conviennent aux plus jeunes. Number Quest, le cours de maths, commence en grande section, et CS Quest et Cyber Defenders commencent au CE2.",
       "q6": "Comment ajouter ma classe ?",
       "a6": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion.",
       "a6google": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion. Les écoles qui utilisent Google peuvent permettre aux élèves de se connecter avec Google.",
@@ -4742,7 +4742,7 @@
         "title": "Jeux éducatifs gratuits pour les enfants de 5, 6 et 7 ans",
         "description": "Jeux gratuits et sans publicité pour les 5 à 7 ans : mots anglais lus à voix haute, premières additions, rythme et stratégie. Sans téléchargement, sans inconnus.",
         "h1": "Jeux éducatifs pour les enfants de 5 à 7 ans",
-        "lead": "De la grande section au CE1, la plupart des enfants apprennent encore à lire. Ces jeux lisent leurs mots à voix haute, ou utilisent des nombres, de la musique et des images, pour qu’un jeune enfant puisse jouer avec un adulte à côté au début. Nos parcours complets commencent au CE2, vers 8 ans.",
+        "lead": "De la grande section au CE1, la plupart des enfants apprennent encore à lire. Ces jeux lisent leurs mots à voix haute, ou utilisent des nombres, de la musique et des images, pour qu’un jeune enfant puisse jouer avec un adulte à côté au début. Number Quest, notre parcours de maths, commence en grande section ; nos autres parcours complets commencent au CE2, vers 8 ans.",
         "fit": {
           "wordTrail": "Fait pour cet âge : les premiers mots courants en anglais sur un sentier de conte, et chaque mot est lu à voix haute.",
           "sharkPlank": "Le pendu en anglais pour les enfants qui apprennent tout juste à lire, avec chaque mot lu à voix haute.",
@@ -4757,7 +4757,7 @@
           "q2": "Mon enfant peut-il jouer s’il ne sait pas encore lire ?",
           "a2": "Pour certains jeux, oui. Word Trail et Shark Plank lisent chaque mot à voix haute, Word Hunt lit un mot quand on le touche, et Sum Racer et Tug of Math utilisent des nombres. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
           "q3": "Les parcours sont-ils prévus pour cet âge ?",
-          "a3": "Pas encore. Number Quest, CS Quest et Cyber Defenders commencent au CE2, vers 8 ans. De 5 à 7 ans, les jeux de cette page sont le bon point de départ.",
+          "a3": "L’un d’eux, oui. Number Quest, notre parcours de maths, commence en grande section : sa rue Launchpad va de la grande section au CE1, et ses jeux lisent chaque consigne à voix haute. CS Quest et Cyber Defenders commencent au CE2, vers 8 ans.",
           "q4": "Un enfant de 6 ans peut-il utiliser le Constructeur IA ?",
           "a4": "Les enfants tapent leur idée pour le Constructeur, donc à cet âge un adulte devrait s’asseoir avec eux et les aider à l’écrire. Le Constructeur suit des règles de sécurité fixes pour les enfants, et un nouveau jeu reste privé tant qu’il n’est pas partagé."
         }
@@ -6917,7 +6917,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Les maths dans les Numberworks · du CE2 au CM2"
+      "sub": "Les maths dans les Numberworks · de la GS au CM2"
     },
     "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}",
     "gamesN": "{count, plural, one {Voir le jeu} other {Voir les # jeux}}"
@@ -7224,8 +7224,8 @@
       "lead": "Courts diaporamas, vérifications rapides et missions de jeu sur un même chemin. Chaque élève avance à son rythme ; vous suivez la progression dans le carnet de notes.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Maths · du CE2 au CM2",
-        "p": "Numération, fractions, mesures, géométrie et données à travers le Numberworks de Netville avec Tally la chatte. Chaque étape est reliée aux Common Core State Standards de mathématiques."
+        "tag": "Maths · de la GS au CM2",
+        "p": "Comptage, numération, fractions, mesures, géométrie et données à travers le Numberworks de Netville avec Tally la chatte, de la grande section au CM2. Chaque étape est reliée aux Common Core State Standards de mathématiques."
       },
       "cs": {
         "name": "CS Quest",

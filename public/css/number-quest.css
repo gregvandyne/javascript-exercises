@@ -183,6 +183,11 @@
 
 /* The street switcher (shown once more than one tier is open): one pill per street, the street on
    screen marked; a street still being built says so (the platform admin alone sees one). */
+/* A street walked to its end: the way on to the next one (Launchpad's Garden Gate leads to Explorer). */
+.nqp-onward { margin: 16px 0 0; border-left: 4px solid var(--accent-line, #1F9D63); }
+.nqp-onward h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.nqp-onward p { margin: 0 0 12px; }
+.nqp-onward form { margin: 0; }
 .nqp-streets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
 .nqp-streets form { margin: 0; }
 .nqp-street { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 14px; border-radius: 999px;

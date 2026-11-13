@@ -218,7 +218,7 @@
       "quiz": "Answer quiz questions"
     },
     "library": {
-      "numberQuest": "Number Quest (maths, grades 3–5)"
+      "numberQuest": "Number Quest (maths, grades K–5)"
     }
   },
   "family": {
@@ -264,7 +264,7 @@
     },
     "faq": {
       "q5": "What ages and year groups is it for?",
-      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players, and the full courses start in Year 4.",
+      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the maths course, starts at about age 5, and CS Quest and Cyber Defenders start in Year 4.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
     },
     "setup": {
@@ -277,7 +277,7 @@
       "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), levels 1B and 2. This programme is not made, reviewed or endorsed by CSTA."
     },
     "nq": {
-      "title": "Number Quest: maths lessons for grades 3–5, mapped to CCSS-M",
+      "title": "Number Quest: maths lessons for grades {grades}, mapped to CCSS-M",
       "h1": "Number Quest: maths with a map you can show anyone",
       "faq": {
         "q1": "Do I need to be a maths specialist?"
@@ -348,9 +348,9 @@
         }
       },
       "a5": {
-        "lead": "Between 5 and 7, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Our full courses start at about age 8 (Year 4).",
+        "lead": "Between 5 and 7, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Number Quest, our maths course, starts at about age 5; our other full courses start at about age 8 (Year 4).",
         "faq": {
-          "a3": "Not yet. Number Quest, CS Quest and Cyber Defenders start at about age 8 (Year 4). From 5 to 7, the games on this page are the place to start."
+          "a3": "One is. Number Quest, our maths course, starts at about age 5: its Launchpad street is for ages 5 to 7, and its games read every instruction aloud. CS Quest and Cyber Defenders start at about age 8 (Year 4)."
         }
       }
     },
@@ -730,7 +730,7 @@
   },
   "courses": {
     "nq": {
-      "sub": "Maths through the Numberworks · grades 3–5"
+      "sub": "Maths through the Numberworks · grades K–5"
     }
   },
   "stories": {
@@ -760,7 +760,7 @@
     },
     "courses": {
       "nq": {
-        "tag": "Maths · ages 8 to 11"
+        "tag": "Maths · ages 5 to 11"
       },
       "cs": {
         "tag": "Computing · ages 8 to 14",

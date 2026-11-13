@@ -273,7 +273,7 @@ test('registration: seeded, in the Number Quest course, and tagged chapter by ch
   assert.deepEqual(TAGS.gameCodes('shape-hunt', 'ccss-math'), Object.values(TAGS.SHAPE_CHAPTERS).flat());
   assert.ok(TAGS.LEVELLED.includes('shape-hunt'));
   assert.equal(UNIT.title, 'The Shape Shed'); assert.equal(UNIT.stamp, 'Shape Seed'); assert.equal(UNIT.tool, 'shape-hunt');
-  assert.ok(UNITS.tiers.launchpad.stones.includes('Shape Seed')); assert.equal(UNITS.tiers.launchpad.status, 'building');
+  assert.ok(UNITS.tiers.launchpad.stones.includes('Shape Seed')); assert.equal(UNITS.tiers.launchpad.status, 'open');
   assert.deepEqual(STEPS.map(s => s.n), ['6.1', '6.2', '6.3']);
   STEPS.forEach((s, i) => {
     const g = s.game.launchpad, st = s.standards.launchpad, id = CHAPTERS[i];
