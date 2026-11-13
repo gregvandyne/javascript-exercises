@@ -720,7 +720,7 @@ function ask(R) {
 function nextRound() {
   clearTimers();
   if (S.round >= CS.ROUNDS) return finish();
-  S.round++; S.R = CS.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.hist = []; S.count = 0; S.tick = 0;
+  S.round++; S.R = CS.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.hist = []; S.count = 0; S.tick = 0; S.after = null;
   const R = S.R;
   hint(); dots(); showSum(R, false);
   ask(R);   // the words first: the camera fits the yard under them
@@ -764,6 +764,7 @@ function redraw() {
   else el.bar.replaceChildren(...R.choices.map(v => num(v)));
   if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
   S.shown = true;
+  if (found && S.after) S.after();   // the screen turned while crates were moving: the round ends here
 }
 
 /* ----- chapter 1, one truck: load a number with towers and crates, then read a load ----- */
@@ -831,7 +832,8 @@ function drawTwo(R, found) {
     setSign(V, n, found && (R.kind === 'sign' || n === R.answer) ? 'green' : 'cream');
     if (R.kind === 'more') targets.push({ at: () => V.object.position.clone().add(V3((V.x0 + V.x1) / 2, 1.5, 0)), r: half * 0.8, go: () => answer(n) });
   }
-  if (R.kind === 'sign') { const m = S.mid = put(board(found ? SIGN[R.answer] : '?', 1.5, found ? 'green' : 'gold')); m.position.copy(tall ? V3(half - 0.9, 1.6, -2.4) : V3(0, 2.3, 0.9)); }
+  // the sign between the two trucks (on a tall phone the trucks stand one behind the other: the chip shows the sign)
+  if (R.kind === 'sign' && !tall) { const m = S.mid = put(board(found ? SIGN[R.answer] : '?', 1.5, found ? 'green' : 'gold')); m.position.set(0, 2.3, 0.9); }
   ride(A);
   const high = R.view === 'numbers' ? 4.5 : TOP + 0.3;
   Object.assign(view, tall ? { rect: [-half - 0.2, half + 0.2, -7, 2.2], high: high + 1, low: 1.2, back: -3.4, tilt: 0.62 } : { rect: [-len - 0.95, len + 0.95, -0.6, 1.6], high, low: 1.2, back: -4.2, tilt: 0 });
@@ -856,36 +858,41 @@ function drawAdd(R, found) {
   if (!S.shown && !found) drive(C, C.home, { from: C.home + 14, dur: 0.8 });
 }
 /** Move a thing from the cart to its place on the truck (or back): it keeps its place in the world, then hops. */
-function carry(o, to, parent, at, o2 = {}) { parent.attach(o); o.rotation.set(0, 0, 0); fly(o, at, { arc: 1.2, dur: 0.45, ...o2 }); }
+function carry(o, parent, at, opts = {}) { parent.attach(o); o.rotation.set(0, 0, 0); fly(o, at, { arc: 1.2, dur: 0.45, ...opts }); }
+/** The right total: the crates move first, each step when the one before has landed, and the round is done when the
+ *  last has (S.after is that last step, so a turned screen, which redraws the round finished, can still end it). */
 function addRight(R) {
   const A = S.A, C = S.C, tick = ++S.tick, ok = () => S.tick === tick && S.A === A;
   if (C.tag) C.tag.visible = false;
-  const whole = (key, vars, ms = 3400) => right(key, vars, ms, () => setSign(A, R.answer, 'green'));
-  const crates = (list, each) => list.forEach((c, i) => carry(c, A, A.load, crateAt(A, A.ones + i), { wait: i * 0.24, then: () => { sfx('land'); if (ok()) each(i); } }));
+  const key = R.kind === 'more10' || R.kind === 'less10' ? R.kind + '.sum' : 'add.sum';
+  const whole = S.after = () => { if (S.after !== whole) return; S.after = null; setSign(S.A, R.answer, 'green'); right(key, { a: R.a, b: R.b, c: R.answer }, 3400); };
+  /** Loose crates hop from the cart onto the truck's corner one after another; `each(i)` as each lands. */
+  const crates = (list, each) => list.forEach((c, i) => carry(c, A.load, crateAt(A, A.ones + i), { wait: i * 0.24, then: () => { sfx('land'); if (ok()) each(i, i === list.length - 1); } }));
   if (R.kind === 'tens' || R.kind === 'more10') {
-    C.towers.forEach((t, i) => carry(t, A, A.load, towerAt(A, A.tens + i), { wait: i * 0.42, then: () => { sfx('land'); if (ok()) setSign(A, R.a + 10 * (i + 1), 'cream'); } }));
-    A.towers.push(...C.towers); A.tens += C.towers.length;
-    return R.kind === 'tens' ? whole('add.sum', { a: R.a, b: R.b, c: R.answer }, 3400 + C.towers.length * 420) : whole('more10.sum', { a: R.a, c: R.answer });
+    const ts = C.towers, from = A.tens;
+    A.towers.push(...ts); A.tens += ts.length;
+    return ts.forEach((t, i) => carry(t, A.load, towerAt(A, from + i), { wait: i * 0.42, then: () => { sfx('land'); if (!ok()) return; setSign(A, R.a + 10 * (i + 1), 'cream'); if (i === ts.length - 1) whole(); } }));
   }
   if (R.kind === 'less10') {
     const t = A.towers.pop(); A.tens--;
-    carry(t, C, C.load, V3(0.5, C.top, 0), { then: () => { sfx('land'); if (ok()) later(500, () => { if (ok()) leave(C, 34); }); } });
-    return whole('less10.sum', { a: R.a, c: R.answer });
+    return carry(t, C.load, V3(0.5, C.top, 0), { then: () => { sfx('land'); if (!ok()) return; whole(); later(600, () => { if (ok()) leave(C, 34); }); } });
   }
-  if (!R.cross) { crates(C.crates, i => setSign(A, R.a + i + 1, 'cream')); A.crates.push(...C.crates); A.ones += R.b; return whole('add.sum', { a: R.a, b: R.b, c: R.answer }, 3400 + R.b * 240); }
+  if (!R.cross) { const from = A.ones; A.crates.push(...C.crates); crates(C.crates, (i, last) => { setSign(A, R.a + i + 1, 'cream'); if (last) whole(); }); A.ones = from + R.b; return; }
   // over a ten: the crates fill the tower first (27 and 3 make 30), then the rest go on (2 more makes 32)
   const fill = 10 - onesOf(R.a), rest = R.b - fill, ten = R.a + fill, first = C.crates.slice(0, fill), last = C.crates.slice(fill);
   sum('show.add', { a: R.a, b: fill, c: ten }); say('add.fill', { a: R.a, b: fill, c: ten });
-  crates(first, i => setSign(A, R.a + i + 1, 'cream'));
-  later(fill * 240 + 700, () => {
-    if (!ok()) return;
-    for (const c of first) c.removeFromParent();
-    bundle(A, tensOf(ten)); setSign(A, ten, 'cream');
-    later(1900, () => {
+  crates(first, (i, end) => {
+    setSign(A, R.a + i + 1, 'cream');
+    if (end) later(450, () => {
       if (!ok()) return;
-      sum('show.add', { a: ten, b: rest, c: R.answer }); say('add.more', { b: rest, c: R.answer }, { queue: true });
-      crates(last, i => setSign(A, ten + i + 1, 'cream')); A.crates.push(...last); A.ones = rest;
-      later(rest * 240 + 2300, () => { if (ok()) whole('add.sum', { a: R.a, b: R.b, c: R.answer }); });
+      for (const c of first) c.removeFromParent();
+      bundle(A, tensOf(ten)); setSign(A, ten, 'cream');
+      later(1900, () => {
+        if (!ok()) return;
+        sum('show.add', { a: ten, b: rest, c: R.answer }); say('add.more', { b: rest, c: R.answer }, { queue: true });
+        crates(last, (j, done) => { setSign(A, ten + j + 1, 'cream'); if (done) later(1900, () => { if (ok()) whole(); }); });
+        A.crates.push(...last); A.ones = rest;
+      });
     });
   });
 }
