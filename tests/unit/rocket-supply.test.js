@@ -311,6 +311,15 @@ async function open({ params = '', width = 960, height = 600, reducedMotion = 'n
   const shot = async name => { if (shotsDir) { await p.waitForTimeout(900); await p.screenshot({ path: path.join(shotsDir, `${name}.png`) }); } };
   return { ctx, p, frame, state, msgs, spoken, until, shot, errors, outside };
 }
+/** Record every wobble a button gets (the class is taken off again after a moment, so on a slow machine a look at
+ *  the button afterwards could come too late): window.__wob lists the ids, in order. */
+const watchWobbles = frame => frame.evaluate(() => {
+  window.__wob = [];
+  // (one wobble takes the class off and puts it on again: its records come together, and count once)
+  new MutationObserver(ms => { for (const id of new Set(ms.filter(m => m.target.classList.contains('no') && !/(^| )no( |$)/.test(m.oldValue || '')).map(m => m.target.id))) window.__wob.push(id); })
+    .observe(document.getElementById('bar'), { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+});
+const wobbles = frame => frame.evaluate(() => window.__wob.slice());
 const text = (frame, sel) => frame.evaluate(s => { const e = document.querySelector(s); return e && !e.hidden ? e.textContent : null; }, sel);
 const ids = (frame, sel) => frame.evaluate(s => [...document.querySelectorAll(s)].map(b => b.id), sel);
 const btn = (s, v) => '#rs-' + (numeric(s) ? 'n' + v : v);
@@ -341,6 +350,7 @@ for (const chapter of CHAPTERS) {
     assert.equal(await frame.evaluate(() => document.querySelectorAll('#ch-build, #menu').length), 0);
     await frame.evaluate(() => window.__rs.fast());   // no waiting between the steps of a round; the taps are the real ones
     await until(() => window.__rs.state().moving === 0, null, 90_000);   // round 1's pods have dropped in at the game's own speed
+    await watchWobbles(frame);
     for (let round = 1; round <= 6; round++) {
       s = await state();
       assert.equal(s.round, round); assert.equal(s.phase, 'play');
@@ -372,7 +382,7 @@ for (const chapter of CHAPTERS) {
         assert.deepEqual([after.round, after.phase, after.total, after.pods, after.launched], [round, 'play', 10, [0, 1, 0], round - 1], `round ${round}: a wrong load does not lift off`);
         assert.equal(await text(frame, '#hint'), s.form === 'tens' ? say('build.hint.count', { n: s.target }) : say('build.hint.h', { h }), `round ${round}: a wrong load gets a hint`);
         assert.deepEqual(after.boards, ['0', '1', '0'], `round ${round}: and each place shows how many it holds`);
-        assert.equal(await frame.evaluate(() => document.querySelectorAll('#rs-go.no').length), 1, `round ${round}: and a wobble on the button`);
+        assert.deepEqual((await wobbles(frame)).slice(-2), ['rs-off', 'rs-go'], `round ${round}: and a wobble on each button that could not do its work`);
         await frame.click('#rs-off');
         assert.deepEqual([(await state()).total, await text(frame, '#sum')], [0, '0']);
         // load it pod by pod: the chip shows the load so far in its parts, and ten racks lock into a pallet
@@ -394,7 +404,7 @@ for (const chapter of CHAPTERS) {
         const after = await state();
         assert.deepEqual([after.round, after.phase, after.screen, after.launched], [round, 'play', 'play', round - 1], `round ${round}: a wrong answer does not advance`);
         assert.equal(await text(frame, '#hint'), hintOf(s), `round ${round}: a wrong answer gets the round’s hint`);
-        assert.equal(await frame.evaluate(() => document.querySelectorAll('.rs-btn.no').length), 1, `round ${round}: and a wobble on the button`);
+        assert.equal((await wobbles(frame)).at(-1), btn(s, wrong).slice(1), `round ${round}: and a wobble on the button`);
         assert.equal((await g.msgs('brb:gameover')).length, 0, `round ${round}: no completion before the sixth round is right`);
         if (s.kind === 'read') assert.deepEqual(after.boards, hto(s.num).map(String), `round ${round}: each place shows how many it holds (an empty place shows 0)`);
         if (s.kind === 'skip') assert.deepEqual(after.boards.filter(b => b[0] === '+'), Array(3).fill('+' + s.by), `round ${round}: the hop between the marks is shown`);
@@ -575,8 +585,12 @@ test('keyboard, phones and reduced motion: everything is a big button a key can 
           const miss = btn(st, st.choices.find(v => v !== st.answer)).slice(1);
           await (touch ? m.frame.tap('#' + miss) : m.frame.click('#' + miss));
           const shown = await measure();
-          assert.deepEqual([shown.view, shown.hidden, shown.hint, shown.helper], [true, false, false, true], `${at}: after a wrong pick the hint covers nothing, and everything is still in view`);
-          if (round === 1 && reducedMotion === 'reduce') assert.equal(await m.frame.evaluate(id => getComputedStyle(document.getElementById(id)).outlineStyle, miss), 'dashed', `${at}: with reduced motion a wrong tap shows as a dashed outline`);
+          // (the hint goes away by itself after a few seconds, so on a slow machine it may be gone by now: null)
+          assert.deepEqual([shown.view, shown.hidden, shown.helper], [true, false, true], `${at}: after a wrong pick everything is still in view`);
+          assert.notEqual(shown.hint, true, `${at}: the hint covers no pod and no number`);
+          // with reduced motion a wrong pick shows as a dashed outline, read in the same breath as the pick (it is
+          // taken off again after a moment)
+          if (round === 1 && reducedMotion === 'reduce') assert.equal(await m.frame.evaluate(id => { const b = document.getElementById(id); b.click(); return getComputedStyle(b).outlineStyle; }, miss), 'dashed', `${at}: with reduced motion a wrong pick shows as a dashed outline`);
           assert.equal((await m.state()).round, round);
         }
         if (round === 1 && reducedMotion === 'reduce') await m.shot(`${chapter}-360`);
