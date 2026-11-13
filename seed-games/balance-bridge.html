@@ -239,8 +239,8 @@ const I18N = {
     "find.ask.c_q_b": "{c} is the same as what take away {b}?",
     "find.ask.ab_q": "{a} plus {b} is the same as what?",
     "find.ask.ab_qd": "{a} plus {b} is the same as what plus {d}?",
-    "hint.light": "Too light. Try a bigger number.",
-    "hint.heavy": "Too heavy. Try a smaller number.",
+    "try.light": "Too light. Try a bigger number.",
+    "try.heavy": "Too heavy. Try a smaller number.",
     "sum.add": "{a} plus {b} makes {c}.",
     "sum.sub": "{a} take away {b} makes {c}.",
     "both": "Both sides are the same.",
@@ -695,7 +695,7 @@ function dropProps(then) {
 let lineup = [];
 const heroSize = () => (tall ? 0.8 : 0.95);
 /** The helper's place on the bank at one end of the bridge (side -1 the left bank, 1 the right). */
-const bankSpot = side => V3(side * (HALF + (tall ? 0.55 : 1.05)), 0, tall ? 1.05 : ZH);
+const bankSpot = side => V3(side * (HALF + (tall ? 0.5 : 1.05)), 0, tall ? 0.95 : ZH);
 function placeHero(side = S.side) { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(bankSpot(side)); h.object.rotation.y = -side * 0.5; }
 let heroBack = 0;
 function heroMove(move, ms = 1500) {
@@ -822,8 +822,8 @@ function redraw() {
   S.held = !found && (Rd.kind === 'true' || Rd.kind === 'parity'); props(S.held);
   drawSides(Rd, found && numeric(Rd) ? Rd.answer : null, first ? 'intro' : '', null, 'green');
   placeHero(S.side);
-  const m = tall ? [S.side < 0 ? 1.05 : 0.25, S.side < 0 ? 0.25 : 1.05] : [1.75, 1.75];
-  Object.assign(view, { rect: [-HALF - m[0], HALF + m[1], -0.9, tall ? 1.5 : 1.2], high: 3.5, low: tall ? 1.5 : 2.4, tilt: 0 });
+  const m = tall ? [S.side < 0 ? 0.86 : 0.12, S.side < 0 ? 0.12 : 0.86] : [1.75, 1.75];
+  Object.assign(view, { rect: [-HALF - m[0], HALF + m[1], -0.9, tall ? 1.3 : 1.2], high: 3.5, low: tall ? 1.5 : 2.4, tilt: 0 });
   const num = v => button({ id: 'bb-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
   const word = (v, icon) => button({ id: 'bb-' + v, icon, label: fmt('btn.' + v), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
   el.bar.className = 'bb-bar' + (numeric(Rd) ? '' : ' two');
@@ -846,7 +846,7 @@ function answer(v, b) {
   if (v !== Rd.answer) {
     wobble(b);
     if (!numeric(Rd)) { kick(v === 'yes' || v === 'even' ? 3 : -3); return hint(Rd.kind === 'true' ? 'tf.hint' : 'par.hint'); }
-    hint(v < Rd.answer ? 'hint.light' : 'hint.heavy');
+    hint(v < Rd.answer ? 'try.light' : 'try.heavy');
     if (reduced || S.fast) return;
     // the number is tried on the bridge: its blocks drop in, the bridge shows too light or too heavy, they go again
     S.phase = 'try'; S.tick++; S.trial = v; el.bar.classList.add('wait');

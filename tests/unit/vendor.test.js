@@ -83,7 +83,7 @@ test('the scanner rejects other versions, other hosts and unpinned forms of Thre
   const quiz = '<title>Q</title><canvas></canvas><script>const Q = "Count from \'three\' to \'ten\'"; const R = "import \'three\' cats";</script>';
   assert.equal(V.isThreeGame(quiz), false); assert.equal(scanVersion(quiz).status, 'pass', JSON.stringify(scanVersion(quiz).issues));
   // Ordinary 2D games and every launch game are untouched; the 3D launch games use exactly the pinned form.
-  const THREE_LAUNCH = new Set(['hero-of-sunvale.html', 'code-isle.html', 'quest-race.html', 'atlas-quest.html', 'gulp-city.html', 'garden-count.html', 'lily-hop.html', 'crate-stacker.html']);   // Garden Count, Lily Hop and Crate Stacker: the Kit 2 map (Oomba3D)
+  const THREE_LAUNCH = new Set(['hero-of-sunvale.html', 'code-isle.html', 'quest-race.html', 'atlas-quest.html', 'gulp-city.html', 'garden-count.html', 'lily-hop.html', 'crate-stacker.html', 'balance-bridge.html']);   // Garden Count, Lily Hop, Crate Stacker and Balance Bridge: the Kit 2 map (Oomba3D)
   for (const f of fs.readdirSync(path.join(ROOT, 'seed-games')).filter(x => x.endsWith('.html'))) {
     const html = fs.readFileSync(path.join(ROOT, 'seed-games', f), 'utf8');
     assert.equal(V.isThreeGame(html), THREE_LAUNCH.has(f), f); assert.deepEqual(V.checkThree(html), [], f);
