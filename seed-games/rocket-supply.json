@@ -1,0 +1,16 @@
+{
+  "slug": "rocket-supply",
+  "title": "Rocket Supply",
+  "icon": "🚀",
+  "cover": "ocean",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "place value,hundreds,tens and ones,three-digit numbers,expanded form,number names,skip counting,count by 5,count by 10,count by 100,compare numbers,greater than,less than,add,subtract,regrouping,within 100,within 1000,second grade,grade 2,math,maths,3d,space,rocket,read aloud,learning",
+  "description": "Stock the rocket on the space base launch pad! A flat pallet is a hundred, a rack is a ten and a canister is a one. Load the right number, read a load, count by fives, tens and hundreds along the fuel gauge, pick the sign between two numbers, and add and take away with tens and ones. When the load is right, the rocket lifts off. Every instruction is read aloud, so new readers can play too.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "PLACEHOLDER",
+  "l10n": {}
+}

@@ -42,7 +42,8 @@ export const COURSES = Object.freeze([
     // is its second (Unit 2, The Joining Pond: putting together, number partners, adding and taking away to 20) and
     // Crate Stacker its third (Unit 3, The Tens Trellis: tens and ones, comparing two-digit numbers, adding within 100).
     // Balance Bridge is its fourth (Unit 4, The Balance Bridge: what the equals sign means, story problems, equal
-    // groups with odd and even numbers).
+    // groups with odd and even numbers) and Rocket Supply its fifth (Unit 5, The Hundreds Hedge: hundreds, tens and
+    // ones, skip counting and comparing to 1000, adding and taking away within 100).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -53,6 +54,7 @@ export const COURSES = Object.freeze([
       { slug: 'lily-hop', topic: 'numbers', shared: true },
       { slug: 'crate-stacker', topic: 'numbers', shared: true },
       { slug: 'balance-bridge', topic: 'numbers', shared: true },
+      { slug: 'rocket-supply', topic: 'numbers', shared: true },
     ],
   },
 ]);

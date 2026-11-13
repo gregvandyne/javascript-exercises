@@ -80,7 +80,7 @@
   .rs-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
   .rs .rs-btn { flex: 1 1 0; min-width: 0; max-width: 200px; min-height: clamp(70px, 11vh, 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
   .rs-btn .i { font-size: 30px; line-height: 1.1; } .rs-btn .big { font-size: 46px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-  .rs-bar.sign .rs-btn .big { font-size: 52px; } .rs-bar.sign .rs-btn .l { font-size: clamp(12px, 1.9vh, 16px); }
+  .rs-bar.sign .rs-btn .big { font-size: 52px; } .rs-bar.sign .rs-btn .l { font-size: clamp(13px, 2.4vh, 17px); }
   .rs-bar.build .rs-btn { max-width: 150px; } .rs-bar.build .rs-btn .big { font-size: clamp(22px, 6.4vw, 36px); }
   .rs-btn.h { background: #9be8bd; } .rs-btn.t { background: #a9dcff; } .rs-btn.o { background: #ffe68a; }
   .rs-btn.go { background: #66C792; } .rs .rs-btn[disabled] { opacity: .4; cursor: default; }
@@ -413,7 +413,7 @@ const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); 
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, ...o });
 const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide });
 const M = { ground: mat('#d9824f'), deck: mat('#3a4468'), deckLight: mat('#55628f'), steel: mat('#8b93ad'), dark: mat('#262c44'), white: mat('#f4f1e6'), red: mat('#e8503a'), glass: mat('#7fd6ff', { roughness: 0.3 }),
-  lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: new THREE.Color(0.35, 1.25, 0.6) }), tube: mat('#1c2238') };
+  lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: new THREE.Color(0.25, 0.95, 0.45) }), tube: mat('#1c2238') };
 const geos = new Map();
 const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
 /** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
@@ -523,14 +523,22 @@ const GY = -0.5, LIFT_Z = -4.3;   // the ground; the loading pad's top is y = 0
     ['structure', -10.6, -6, 2.1, 0.2], ['drill', 10.8, -6.2, 2.1, 0], ['structure', 20, -10, 2.6, 0], ['drill', -20.5, -9.5, 2.6, 0],
     // out on the field: pads with landers, rovers, cargo, lights, sun panels
     ['landing-pad-small', -9.6, -1.6, 1.6, 0, GY - 0.3], ['lander', -9.6, -1.6, 1.5, 0.5, GY + 0.45], ['landing-pad-small', 9.8, -1.2, 1.6, 0, GY - 0.3], ['rocket-lander', 9.8, -1.2, 1.5, -0.6, GY + 0.45],
-    ['rover-big', -6.3, 1.3, 1.9, 1.9], ['rover', 6.5, 1.9, 1.9, -2], ['cargo-stack', -5.9, -2.6, 1.2, 0.3], ['cargo', -4.9, -1.9, 1.2, 0], ['containers', 5.3, -2.4, 1.8, 0.2], ['cargo-stack', 6.3, -3.1, 1.2, -0.4], ['cargo', 12.8, 1.8, 1.3, 0.6],
-    ['lights', -4.3, 1.9, 1.5, 0], ['lights', 4.3, 1.9, 1.5, 0], ['lights', -8, -5.2, 1.7, 0], ['lights', 8, -5.2, 1.7, 0],
+    ['rover-big', -8.2, 2.6, 1.9, 1.9], ['rover', 8.4, 3, 1.9, -2], ['cargo-stack', -8.4, -4.4, 1.3, 0.3], ['cargo', -7.2, -3.9, 1.3, 0], ['containers', 7.4, -4.6, 1.9, 0.2], ['cargo-stack', 8.6, -4.9, 1.3, -0.4], ['cargo', 12.8, 1.8, 1.3, 0.6],
+    ['lights', -6.6, -6.4, 1.7, 0], ['lights', 6.6, -6.4, 1.7, 0], ['lights', -11.5, -5.2, 1.7, 0], ['lights', 11.5, -5.2, 1.7, 0],
     ['solar-panel', -12.2, -3.4, 2.6, 0.5], ['solar-panel', -14.4, -1.9, 2.6, 0.5], ['solar-panel', 12.6, -3.6, 2.6, -0.5], ['solar-panel', 14.9, -2.1, 2.6, -0.5], ['solar-panel', -11.6, 2.2, 2.4, 0.3],
     ['crater', -16.5, 2.6, 1.8, 0, GY - 1.7], ['crater', 17.5, 3.4, 1.6, 1, GY - 1.5], ['rocks', -8.6, 3.6, 1.7, 0], ['rocks', 9.2, 4.2, 1.6, 2], ['rock', -3.9, 4.3, 1.8, 0], ['rock', 4.6, 4.9, 1.6, 1], ['rocks', -19, -4, 2.2, 1], ['rocks', 21, -3, 2.2, 0],
     // the hills at the edge of the plain
     ['ground-high', -30, -30, 7, 0.3, GY - 2], ['slope', -17, -33, 6, 0, GY - 1], ['ground-high', 3, -38, 8, 0.1, GY - 3], ['ground-high', 21, -34, 6, -0.2, GY - 1], ['slope', 34, -29, 7, Math.PI, GY - 1], ['ground-high', -46, -22, 8, 0, GY - 2], ['ground-high', 48, -24, 8, 0.4, GY - 2],
     ['crater', -9, -24, 3, 0, GY - 2.8], ['crater', 12, -22, 2.6, 0, GY - 2.4]])
     world.add(piece(id, x, y, z, s, turn));
+  // stars over the base: small points far off in the dark sky (the same every time)
+  const sr = (() => { let a = 7; return () => { a = (a * 16807) % 2147483647; return a / 2147483647; }; })(), sp = [];
+  for (let i = 0; i < 260; i++) { const az = (sr() - 0.5) * 2.6, alt = 0.06 + sr() * 1.1, d = 190; sp.push(Math.sin(az) * Math.cos(alt) * d, Math.sin(alt) * d - 4, -Math.cos(az) * Math.cos(alt) * d); }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+  world.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: '#fff6d8', size: 2.2, sizeAttenuation: false, fog: false })));
+  // and a blue world with a ring, low in the sky
+  const far = new THREE.Group(), globe = new THREE.Mesh(new THREE.SphereGeometry(11, 24, 16), new THREE.MeshBasicMaterial({ color: '#5aa7e8', fog: false })), ring = new THREE.Mesh(new THREE.RingGeometry(14, 18, 40), new THREE.MeshBasicMaterial({ color: '#cfe6ff', fog: false, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ring.rotation.x = 1.25; far.add(globe, ring); far.position.set(42, 62, -170); far.rotation.z = 0.35; world.add(far);
   g.scene.add(world);
 }
 
@@ -538,21 +546,20 @@ const GY = -0.5, LIFT_Z = -4.3;   // the ground; the loading pad's top is y = 0
    seen over the load; it stands higher when two loads are shown one above the other on a tall screen ---------- */
 const lift = new THREE.Group(), rocket = new THREE.Group(), flame = new THREE.Group();
 {
-  lift.add(box(M.deck, 5.7, 0.3, 3.2, 0, -0.15, 0));
-  for (const s of [-1, 1]) lift.add(box(new THREE.MeshStandardMaterial({ color: '#ffd23f', roughness: 0.8 }), 5.76, 0.1, 0.12, 0, -0.06, s * 1.56, 0.02));
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) lift.add(box(M.steel, 0.26, 16, 0.26, sx * 2.5, -8.3, sz * 1.3, 0.03));
-  for (let i = 0; i < 9; i++) lift.add(box(M.steel, 5.2, 0.14, 0.14, 0, -1.2 - i * 1.6, 1.3, 0.02), box(M.steel, 0.14, 0.14, 2.6, -2.5, -1.2 - i * 1.6, 0, 0.02), box(M.steel, 0.14, 0.14, 2.6, 2.5, -1.2 - i * 1.6, 0, 0.02));
-  lift.add(piece('landing-pad', -0.9, -0.42, 0, 1.15));
+  lift.add(box(M.deck, 3.6, 0.3, 3.0, 0, -0.15, 0));
+  for (const s of [-1, 1]) lift.add(box(new THREE.MeshStandardMaterial({ color: '#ffd23f', roughness: 0.8 }), 3.66, 0.1, 0.12, 0, -0.06, s * 1.46, 0.02));
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) lift.add(box(M.steel, 0.24, 16, 0.24, sx * 1.55, -8.3, sz * 1.25, 0.03));
+  for (let i = 0; i < 9; i++) lift.add(box(M.steel, 3.1, 0.14, 0.14, 0, -1.2 - i * 1.6, 1.25, 0.02), box(M.steel, 0.14, 0.14, 2.5, -1.55, -1.2 - i * 1.6, 0, 0.02), box(M.steel, 0.14, 0.14, 2.5, 1.55, -1.2 - i * 1.6, 0, 0.02));
+  lift.add(piece('landing-pad', -0.75, -0.42, 0, 1.0));
   // the rocket: the game's own, tall and plain to see (the theme's landers stand on the pads out on the field)
   rocket.add(round(M.white, 0.5, 0.5, 1.6, 0, 1.25, 0), round(M.red, 0, 0.5, 0.85, 0, 2.47, 0), round(M.dark, 0.3, 0.42, 0.22, 0, 0.36, 0, 0.025), round(M.red, 0.51, 0.51, 0.16, 0, 0.62, 0, 0));
   const win = round(M.glass, 0.19, 0.19, 0.06, 0, 1.55, 0.49, 0.035); win.rotation.x = Math.PI / 2; rocket.add(win);
   for (let i = 0; i < 3; i++) { const f = box(M.red, 0.08, 0.75, 0.5, 0, 0.5, 0, 0.03), a = i * Math.PI * 2 / 3 + Math.PI / 2; f.position.set(Math.sin(a) * 0.68, 0.5, Math.cos(a) * 0.68); f.rotation.y = a + Math.PI / 2; rocket.add(f); }
   const fl = (c, r, h) => { const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 12), new THREE.MeshBasicMaterial({ color: c })); m.rotation.x = Math.PI; m.position.y = -h / 2; return m; };
   flame.add(fl(new THREE.Color(1.6, 0.55, 0.12), 0.34, 1.5), fl(new THREE.Color(1.8, 1.5, 0.5), 0.2, 0.95)); flame.position.y = 0.3; flame.visible = false; rocket.add(flame);
-  rocket.position.set(-0.9, 0, 0); lift.add(rocket);
+  rocket.position.set(-0.75, 0, 0); lift.add(rocket);
   lift.position.set(0, 3.7, LIFT_Z); g.scene.add(lift);
 }
-const HOLD = () => V3(lift.position.x - 0.9, lift.position.y + 1.3, LIFT_Z);   // where a pod goes into the rocket
 let flying = false;
 g.onUpdate(dt => { if (flame.visible && !reduced) { flame.scale.y = 0.85 + 0.3 * Math.abs(Math.sin(performance.now() / 45)); } });
 /** The rocket stands on the lift again (a new one comes down for the next round). */
@@ -583,7 +590,8 @@ function frame() {
   const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
   const play = S.screen === 'play', kids = el.card.children;
   const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 6;
-  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
+  // (in a round, room is kept over the buttons for a hint, so a hint never covers the pad)
+  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) + (tall ? 58 : 36) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
   const TILT = view.tilt || (tall ? 0.3 : 0.2), fov = tall ? 50 : 38, band = (tall ? 0.01 : 0.02) * Hd;   // a little sky above the rocket's nose
   const safe = { l: -1 + 14 / Wd, r: 1 - 14 / Wd, t: 1 - 2 * (topPx + band) / Hd, b: -1 + 2 * botPx / Hd };
   const pts = [];
@@ -646,7 +654,7 @@ function pad(cx, y, w = PAD_W, bays = false, z = 0) {
   const x0 = cx - LOAD_W / 2;
   for (const [k, bx, bw] of [['h', x0 + 1, 2.1], ['t', x0 + 3.64, 2.78], ['o', x0 + 5.54, 0.62]]) {
     const b = new THREE.Mesh(boxGeo(bw, 0.02, 2.5), M.deckLight); b.position.set(bx, y + 0.011, z); b.receiveShadow = true; floor.add(b);
-    const lw = Math.min(bw, 1.1), l = new THREE.Mesh(new THREE.PlaneGeometry(lw, lw * 96 / 256), plate('show.' + k, TONE[k][0])); l.position.set(bx, y - 0.25, z + 1.405); floor.add(l);
+    const lw = Math.max(0.6, Math.min(bw, 1.1)), l = new THREE.Mesh(new THREE.PlaneGeometry(lw, lw * 96 / 256), plate('show.' + k, TONE[k][0])); l.position.set(bx, y - 0.25, z + 1.405); floor.add(l);
   }
 }
 const rackDX = i => (i + 0.5) * 0.28 + (i >= 5 ? 0.16 : 0), racksW = t => (t ? t * 0.28 + (t > 5 ? 0.16 : 0) : 0);
@@ -680,11 +688,11 @@ function showNumber(n, cx, y0, { move = '', boards = '', num = false, mark = '',
   const L = numberLayout(n, cx, y0);
   standPods(L.items, move, then);
   for (const k of ['h', 't', 'o']) {
-    const v = L.p[k], w = k === 'o' ? 0.5 : 0.62;
-    if (boards === 'digits' || mark === k) addBoard(v, L.mid[k], Math.max(L.top[k], y0 + 0.02) + 0.3, w, mark === k ? 'gold' : tone);
-    else if (boards === 'values' && v) addBoard(v * { h: 100, t: 10, o: 1 }[k], L.mid[k], L.top[k] + 0.34, k === 'o' ? 0.5 : 0.84, tone);
+    const v = L.p[k], bz = k === 'h' && v ? -0.85 : ZP;   // a pallet is deep: its board stands over its far edge
+    if (boards === 'digits' || mark === k) addBoard(v, L.mid[k], Math.max(L.top[k], y0) + 0.36, 0.7, mark === k ? 'gold' : tone, bz);
+    else if (boards === 'values' && v) addBoard(v * { h: 100, t: 10, o: 1 }[k], L.mid[k], L.top[k] + 0.38, k === 'o' ? 0.66 : 0.9, tone, bz);
   }
-  if (num) addBoard(n, cx, y0 + Math.max(L.top.h - y0, L.top.t - y0, L.top.o - y0, 0.3) + (boards || mark ? 0.86 : 0.42), 1.0, tone);
+  if (num) addBoard(n, cx + 0.2, y0 + 2.62, 1.15, tone);
   return L;
 }
 
@@ -692,7 +700,7 @@ function showNumber(n, cx, y0, { move = '', boards = '', num = false, mark = '',
 let lineup = [];
 const heroSize = () => (tall ? 0.72 : 0.82);
 /** The helper stands on the lift beside the rocket, above the load: never in front of a pod or a number. */
-function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(lift.position.x + 1.75, lift.position.y, LIFT_Z + 0.5); h.object.rotation.y = -0.25; }
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(lift.position.x + 0.92, lift.position.y, lift.position.z + 0.45); h.object.rotation.y = -0.25; }
 let heroBack = 0;
 function heroMove(move, ms = 1500) {
   const h = S.hero; if (!h || reduced) return;
@@ -702,15 +710,26 @@ function clearStage() {
   for (const grp of [stage, floor]) for (const o of [...grp.children]) { grp.remove(o); if (o.isSprite) o.material.dispose(); }
   tweens.length = 0; targets.length = 0;
 }
-function setView(x, high, low) { Object.assign(view, { rect: [-x, x, LIFT_Z, 1.45], high, low, tilt: 0 }); }
+/** Where the lift stands for what is shown. A wide screen with one pad: beside the pad, low (the pad is `S.cx` to
+ *  the right of the middle). A tall screen, or two pads side by side: behind the pad, high enough to be seen over
+ *  the load, and higher still when two pads stand one above the other. Then the camera is told what to fit:
+ *  `top` is how high the load and its boards reach. */
+function arrange(two, top) {
+  const side = !tall && !two, stacked = two && tall, wide = two && !tall;
+  lift.position.set(side ? -3.5 : 0, side ? 0.6 : stacked ? 7.5 : wide ? 1.7 : 3.7, side ? -0.1 : wide ? -3.3 : LIFT_Z);
+  S.cx = side ? 1.9 : 0; stage.position.x = floor.position.x = S.cx;
+  const high = lift.position.y + 2.95;
+  if (side) Object.assign(view, { rect: [-5.3, 5.15, -1.45, 1.45], high: Math.max(high, top), low: Math.max(high, top), tilt: 0 });
+  else Object.assign(view, { rect: wide ? [-7.1, 7.1, -3.3, 1.45] : [-3.02, 3.02, LIFT_Z, 1.45], high, low: top, tilt: 0 });
+  return stacked;
+}
 async function showHeroes() {
   S.screen = 'hero';
   if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
-  clearStage(); lift.position.y = 3.7; rocketHome(); pad(0, 0);
+  clearStage(); arrange(false, 2.4); rocketHome(); pad(0, 0);
   const gap = tall ? 1.2 : 1.35;
-  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(tall ? 0.8 : 0.95); h.position.set((i - 2) * gap, 0, 0.3); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(tall ? 0.8 : 0.95); h.position.set(S.cx + (i - 2) * gap, 0, 0.3); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
   lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1), r: 0.7, go: () => chooseHero(h.id) }));
-  setView(3.4, 6.6, 2.4);
   card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
   frame();
 }
@@ -751,10 +770,9 @@ function card(kind, { title, line, buttons, star }) {
 }
 /** The helper beside the rocket, and a small load on the pad (1 pallet, 2 racks, 3 canisters): the menu and the end of a chapter. */
 function solo() {
-  clearStage(); lift.position.y = 3.7; rocketHome(); pad(0, 0, PAD_W, true);
+  clearStage(); arrange(false, 2.4); rocketHome(); pad(0, 0, PAD_W, true);
   showNumber(123, 0, 0); S.load = null;
   placeHero();
-  setView(3.4, 6.6, 2.4);
 }
 function showMenu() {
   S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.tick++; solo();
@@ -825,7 +843,7 @@ function sumLayout(Rd, done) {
       for (let i = 0; i < A.o; i++) at('o', x0 + racksW(A.t) + (A.t ? G : 0) + oneDX(i), oneY(i), { g: 'a' });
       for (let i = 0; i < Bp.t; i++) at('t', xb + rackDX(i), 1, { g: 'b' });
       for (let i = 0; i < Bp.o; i++) at('o', xb + racksW(Bp.t) + (Bp.t ? G : 0) + oneDX(i), oneY(i), { g: 'b' });
-      boards.push([Rd.a, x0 + wa / 2, top(A.t, A.o) + 0.4, 0.84, 'cream'], ['+', x0 + wa + mid / 2, 0.75, 0.6, 'cream'], [Rd.b, xb + wb / 2, top(Bp.t, Bp.o) + 0.4, 0.84, 'cream']);
+      boards.push([Rd.a, x0 + wa / 2, top(A.t, A.o) + 0.4, 0.84, 'cream'], ['+', x0 + wa + mid / 2, 0.7, 0.7, 'gold'], [Rd.b, xb + wb / 2, top(Bp.t, Bp.o) + 0.4, 0.84, 'cream']);
       return { items, boards, counts: { racks: A.t + Bp.t, ones: A.o + Bp.o, ghostRacks: 0, ghostOnes: 0 } };
     }
     const ones = A.o + Bp.o, carry = ones >= 10 ? 1 : 0, nt = A.t + Bp.t + carry, no = ones - carry * 10, w = racksW(nt) + (nt && no ? G : 0) + onesW(no), x0 = -w / 2;
@@ -854,7 +872,7 @@ function drawSum(Rd, done, move, then) {
 function workSum(Rd, then) {
   S.work = true;
   const tick = S.tick, ok = fn => () => { if (tick === S.tick) fn(); };
-  const finish = ok(() => { clearPods(); drawSum(Rd, true, ''); then(); });
+  const finish = ok(() => { clearPods(); drawSum(Rd, true, ''); then(); });   // the worked sum stands on the pad
   if (reduced || S.fast || !Rd.regroup) return finish();
   const pods = stage.children.filter(o => o.userData.pod), ones = pods.filter(o => o.userData.pod === 'o'), racks = pods.filter(o => o.userData.pod === 't');
   const F = sumLayout(Rd, true);
@@ -880,8 +898,8 @@ function clearPods() { for (const o of [...stage.children]) { drop(o); stage.rem
 const MARKS = [-2.25, -0.75, 0.75, 2.25];
 function drawGauge(Rd, found) {
   const y = 0.42, x0 = -2.95;
-  stage.add(box(M.tube, 5.9, 0.34, 0.34, 0, y, ZP, 0.03));
-  const upTo = MARKS[found ? 3 : 2], fuel = new THREE.Mesh(boxGeo(1, 0.2, 0.36), M.fuel); fuel.scale.x = upTo - x0; fuel.position.set((x0 + upTo) / 2, y, ZP + 0.02); stage.add(fuel);
+  stage.add(box(M.tube, 5.9, 0.46, 0.4, 0, y, ZP, 0.03));
+  const upTo = MARKS[found ? 3 : 2], fuel = new THREE.Mesh(boxGeo(1, 0.3, 0.42), M.fuel); fuel.scale.x = upTo - x0; fuel.position.set((x0 + upTo) / 2, y, ZP + 0.02); stage.add(fuel);
   S.fuelBar = fuel;
   MARKS.forEach((x, i) => {
     const lit = i < 3 || found;
@@ -893,44 +911,50 @@ function drawGauge(Rd, found) {
   S.load = { marks: found ? 4 : 3 };
 }
 
-/** Draw the round from its state (also after the screen turns): the pad, its pods, the rocket, the helper, the buttons. */
+/** What stands on the pad for the round as it is now: the pads, the pods, the boards, the lift and the helper.
+ *  `move`: 'intro' the pods drop in. */
+function scene(move) {
+  const Rd = S.R, found = S.phase === 'right', shown = S.reveal || found, tone = found ? 'green' : 'cream';
+  clearPods(); for (const o of [...floor.children]) floor.remove(o);
+  const two = Rd.kind === 'compare', stacked = arrange(two, 2.4);
+  stage.scale.setScalar(Rd.kind === 'add' || Rd.kind === 'sub' ? 1.25 : 1);
+  let low = 2.5;
+  if (two) {
+    // two loads: side by side on a wide screen, one above the other on a tall one
+    const spots = stacked ? [[0, 3.75, -0.35], [0, 0, 0]] : [[-4, 0, 0], [4, 0, 0]];
+    [Rd.a, Rd.b].forEach((n, i) => { const [cx, y0, z] = spots[i]; pad(cx, y0, stacked ? PAD_W : 6.1, true, z); showNumber(n, cx, y0, { move, num: true, tone, mark: shown && Rd.why !== 'same' ? Rd.why : '', boards: shown && Rd.why === 'same' ? 'digits' : '' }); });
+    if (found && !stacked) addBoard(SIGN[Rd.answer], 0, 0.75, 1.05, 'green');
+    S.load = { a: RS.parts(Rd.a), b: RS.parts(Rd.b) }; low = 3.5;
+  } else if (Rd.kind === 'skip') { pad(0, 0); drawGauge(Rd, found); }
+  else if (Rd.kind === 'add' || Rd.kind === 'sub') { pad(0, 0); drawSum(Rd, found || S.work, move); low = 3.5; }
+  else {
+    // one load on the three places of the pad: what is loaded so far, the load to read, a number in its parts;
+    // a number that is only heard stands on the pad once it is found
+    pad(0, 0, PAD_W, true);
+    const n = Rd.kind === 'build' ? S.total : Rd.kind === 'name' && !found ? 0 : Rd.num;
+    const L = showNumber(n, 0, 0, { move, tone, boards: Rd.kind === 'expand' ? 'values' : shown ? 'digits' : '' });
+    S.load = L.p; low = Math.max(2.5, L.top.h + 0.9);
+  }
+  arrange(two, low); placeHero();
+}
+/** Draw the round from its state (also after the screen turns): the pad and what stands on it, the rocket, the buttons. */
 function redraw() {
   if (S.screen === 'hero') return void showHeroes();
   if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
   if (S.screen !== 'play' || !S.R) return void frame();
   const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
-  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found, move = first ? 'intro' : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
   clearStage(); S.tick++; if (S.phase === 'try') S.phase = 'play';
-  el.card.hidden = true; el.bar.hidden = false; el.bar.classList.remove('wait');
-  const two = Rd.kind === 'compare', stacked = two && tall;
-  lift.position.y = stacked ? 7.5 : 3.7; rocketHome(first && S.round > 1);
-  let low = 2.4;
-  if (two) {
-    // two loads: side by side on a wide screen, one above the other on a tall one
-    const spots = stacked ? [[0, 3.75, -0.35], [0, 0, 0]] : [[-3.55, 0, 0], [3.55, 0, 0]];
-    [Rd.a, Rd.b].forEach((n, i) => { const [cx, y0] = spots[i]; pad(cx, y0, PAD_W, true, spots[i][2]); stage.position.z = 0; showNumber(n, cx, y0, { move, num: true, mark: (S.reveal || found) && Rd.why !== 'same' ? Rd.why : '', boards: (S.reveal || found) && Rd.why === 'same' ? 'digits' : '' }); });
-    if (found && !stacked) addBoard(SIGN[Rd.answer], 0, 1.5, 0.95, 'green');
-    S.load = { a: RS.parts(Rd.a), b: RS.parts(Rd.b) };
-    setView(stacked ? 3.4 : 7, lift.position.y + 2.95, 3.5);
-  } else {
-    const chart = Rd.kind === 'build' || Rd.kind === 'read' || Rd.kind === 'expand' || Rd.kind === 'name';
-    pad(0, 0, PAD_W, chart);
-    if (Rd.kind === 'build') { const L = showNumber(S.total, 0, 0, { boards: S.reveal || found ? 'digits' : '', tone: found ? 'green' : 'cream' }); S.load = L.p; low = Math.max(2.5, L.top.h + 0.7); }
-    else if (Rd.kind === 'read') { const L = showNumber(Rd.num, 0, 0, { move, boards: S.reveal || found ? 'digits' : '', tone: found ? 'green' : 'cream' }); S.load = L.p; low = Math.max(2.5, L.top.h + 0.7); }
-    else if (Rd.kind === 'expand') { const L = showNumber(Rd.num, 0, 0, { move, boards: 'values', tone: found ? 'green' : 'cream' }); S.load = L.p; low = Math.max(2.5, L.top.h + 0.7); }
-    else if (Rd.kind === 'name') { if (found) { const L = showNumber(Rd.num, 0, 0, { boards: 'digits', tone: 'green' }); S.load = L.p; low = Math.max(2.5, L.top.h + 0.7); } else S.load = { h: 0, t: 0, o: 0 }; }
-    else if (Rd.kind === 'skip') drawGauge(Rd, found);
-    else drawSum(Rd, found || S.work, move);
-    setView(3.4, lift.position.y + 2.95, low);
-  }
-  placeHero();
+  el.card.hidden = true; el.bar.hidden = false;
+  rocketHome(first && S.round > 1);
+  scene(first ? 'intro' : '');
   const num = v => button({ id: 'rs-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
   const sign = v => button({ id: 'rs-' + v, big: SIGN[v], label: fmt('btn.' + v), aria: fmt('btn.' + v), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
-  el.bar.className = 'rs-bar' + (Rd.kind === 'build' ? ' build' : two ? ' sign' : '');
+  el.bar.className = 'rs-bar' + (Rd.kind === 'build' ? ' build' : Rd.kind === 'compare' ? ' sign' : '') + (found ? ' wait' : '');
   if (Rd.kind === 'build') el.bar.replaceChildren(
     button({ id: 'rs-h', pic: 'h', big: '100', cls: 'h', aria: fmt('btn.h'), off: !Rd.stock.h, go: () => load('h') }), button({ id: 'rs-t', pic: 't', big: '10', cls: 't', aria: fmt('btn.t'), off: !Rd.stock.t, go: () => load('t') }),
     button({ id: 'rs-o', pic: 'o', big: '1', cls: 'o', aria: fmt('btn.o'), off: !Rd.stock.o, go: () => load('o') }), button({ id: 'rs-off', icon: '↩️', aria: fmt('btn.off'), go: b => unload(b) }), button({ id: 'rs-go', icon: '🚀', cls: 'go', aria: fmt('btn.go'), go: b => go(b) }));
-  else if (two) el.bar.replaceChildren(...Rd.choices.map(sign));
+  else if (Rd.kind === 'compare') el.bar.replaceChildren(...Rd.choices.map(sign));
   else el.bar.replaceChildren(...Rd.choices.map(num));
   if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
   S.shown = true;
@@ -943,12 +967,8 @@ const guard = fn => { const tick = S.tick; return () => { if (tick === S.tick) f
 const WORTH = { h: 100, t: 10, o: 1 };
 /** Put the load on the pad again after it changed; the pod that just came (or the pallet or rack ten of them made) drops in. */
 function reload(came) {
-  clearPods();
-  const L = numberLayout(S.total, 0, 0); S.load = L.p;
-  const made = standPods(L.items, '');
-  if (came) { const mine = made.filter(o => o.userData.pod === came), o = mine[mine.length - 1]; if (o) fall(o, { high: 1.6 }); }
-  if (S.reveal) for (const k of ['h', 't', 'o']) addBoard(L.p[k], L.mid[k], Math.max(L.top[k], 0.02) + 0.3, k === 'o' ? 0.5 : 0.62, 'cream');
-  const low = Math.max(2.5, L.top.h + 0.7); if (low !== view.low) { view.low = low; frame(); }
+  scene(''); frame();
+  if (came) { const mine = stage.children.filter(o => o.userData.pod === came), o = mine[mine.length - 1]; if (o) fall(o, { high: 1.6 }); }
   showSum(S.R, false);
 }
 function load(kind) {
@@ -973,7 +993,7 @@ function go(b) {
   if (S.phase !== 'play' || !Rd || Rd.kind !== 'build' || S.screen !== 'play') return;
   b = b || document.getElementById('rs-go');
   if (S.total === Rd.target) return right(b);
-  wobble(b); rock(); S.reveal = true; reload('');
+  wobble(b); rock(); S.reveal = true; scene(''); frame();
   const want = RS.parts(Rd.target), have = RS.parts(S.total);
   if (Rd.form === 'tens') return hint('build.hint.count', { n: Rd.target });
   hint(have.h !== want.h ? 'build.hint.h' : have.t !== want.t ? 'build.hint.t' : 'build.hint.o', want);
@@ -999,11 +1019,11 @@ function answer(v, b) {
   // show why on the pad: how many of each place, the hop between two marks, the place that decides, the sum's work
   if (Rd.kind === 'add' || Rd.kind === 'sub') {
     if (S.work) return;
-    if (reduced || S.fast || !Rd.regroup) { S.work = true; clearPods(); drawSum(Rd, true, ''); return; }
+    if (reduced || S.fast || !Rd.regroup) { S.work = true; scene(''); return; }
     S.phase = 'try'; S.tick++; el.bar.classList.add('wait');
     return workSum(Rd, guard(() => { S.phase = 'play'; S.tick++; el.bar.classList.remove('wait'); }));
   }
-  if (!S.reveal && Rd.kind !== 'expand' && Rd.kind !== 'name') { S.reveal = true; const p = S.phase; redraw(); S.phase = p; frame(); }
+  if (!S.reveal && Rd.kind !== 'expand' && Rd.kind !== 'name') { S.reveal = true; scene(''); frame(); }
 }
 function right(b) {
   const Rd = S.R;
@@ -1014,30 +1034,15 @@ function right(b) {
   say(Rd.said[0][0], Rd.said[0][1], { queue: true });
   for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
   const off = guard(() => pause(reduced ? 2.2 : 0.7, guard(() => liftoff(guard(() => pause(reduced ? 1.6 : 0.8, guard(nextRound)))))));
-  // the pad shows the answer: the boards turn green, the fuel runs on, the sign stands between, the sum is worked
-  if ((Rd.kind === 'add' || Rd.kind === 'sub') && !S.work) return workSum(Rd, off);
+  const show = guard(() => { scene(''); frame(); off(); });
+  // the pad shows the answer: the boards turn green, the fuel runs on to the next lamp, the sign stands between
+  // the two loads, the sum is worked with its racks and canisters
+  if ((Rd.kind === 'add' || Rd.kind === 'sub') && !S.work) return workSum(Rd, show);
   if (Rd.kind === 'skip' && !reduced && !S.fast) {
     const bar = S.fuelBar, from = bar.scale.x, to = MARKS[3] + 2.95;
-    return anim(bar, 0.7, k => { bar.scale.x = from + (to - from) * smooth(k); bar.position.x = -2.95 + bar.scale.x / 2; }, guard(() => { const t = S.tick; redrawQuiet(); if (t === S.tick) off(); }));
+    return anim(bar, 0.7, k => { bar.scale.x = from + (to - from) * smooth(k); bar.position.x = -2.95 + bar.scale.x / 2; }, show);
   }
-  redrawQuiet(); off();
-}
-/** Draw the found round again without ending it (redraw would start the pause that ends a turned screen's round). */
-function redrawQuiet() {
-  const keep = [...tweens]; const tick = S.tick; S.shown = true;
-  const found = S.phase; clearPods(); for (const o of [...floor.children]) floor.remove(o);
-  const Rd = S.R, two = Rd.kind === 'compare', stacked = two && tall;
-  if (two) {
-    const spots = stacked ? [[0, 3.75, -0.35], [0, 0, 0]] : [[-3.55, 0, 0], [3.55, 0, 0]];
-    [Rd.a, Rd.b].forEach((n, i) => { const [cx, y0, z] = spots[i]; pad(cx, y0, PAD_W, true, z); showNumber(n, cx, y0, { num: true, mark: Rd.why !== 'same' ? Rd.why : '', boards: Rd.why === 'same' ? 'digits' : '', tone: 'green' }); });
-    if (!stacked) addBoard(SIGN[Rd.answer], 0, 1.5, 0.95, 'green');
-  } else {
-    pad(0, 0, PAD_W, Rd.kind !== 'skip' && Rd.kind !== 'add' && Rd.kind !== 'sub');
-    if (Rd.kind === 'skip') drawGauge(Rd, true);
-    else if (Rd.kind === 'add' || Rd.kind === 'sub') drawSum(Rd, true, '');
-    else { const L = showNumber(Rd.kind === 'build' ? S.total : Rd.num, 0, 0, { boards: Rd.kind === 'expand' ? 'values' : 'digits', tone: 'green' }); S.load = L.p; const low = Math.max(2.5, L.top.h + 0.7); if (low !== view.low) { view.low = low; frame(); } }
-  }
-  S.tick = tick; S.phase = found; tweens.push(...keep.filter(w => !tweens.includes(w) && !w.o.userData));
+  show();
 }
 
 /* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
