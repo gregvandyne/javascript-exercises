@@ -215,3 +215,48 @@ test('counters in two parts (Launchpad Unit 2): split shows a number as two part
     assert.equal(cleanDiagram({ type: 'counters', groups: [g] }, 'L'), null, JSON.stringify(g));
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 5, split: 2 }, { n: 3 }] }, 'L'), null, 'two rows to match are never split');
 });
+
+test('counters as tens and ones (Launchpad Unit 3): sticks of ten and loose ones draw exactly the number, alone or two side by side', () => {
+  const rects = (svg, fill) => [...svg.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)" fill="(#[0-9A-F]+)"/g)].filter(m => m[5] === fill).map(m => ({ x: +m[1], y: +m[2], w: +m[3], h: +m[4] }));
+  const STICK = '#8FC1F5', ONE = '#F2A65A';
+  // 34: three sticks, each cut into ten blocks by nine lines, four loose ones standing on the same floor, both parts named
+  const v = cleanDiagram({ type: 'counters', groups: [{ n: 34, tens: true }] }, '34 as tens and ones'), svg = diagramSvg(v);
+  assert.deepEqual(v.groups, [{ n: 34, tens: true }]);
+  const sticks = rects(svg, STICK), ones = rects(svg, ONE);
+  assert.equal(sticks.length, 3); assert.equal(ones.length, 4);
+  assert.equal((svg.match(/<line /g) || []).length, 27, 'nine lines a stick: ten blocks each');
+  assert.ok(sticks.every(s => s.h === sticks[0].h && s.y === sticks[0].y && s.h >= 9 * s.w / 2), 'tall sticks of one size');
+  assert.ok(ones.every(o => o.w === o.h && o.x > sticks[2].x + sticks[2].w), 'square ones to the right of the tens');
+  assert.equal(+Math.max(...ones.map(o => o.y + o.h)).toFixed(2), +(sticks[0].y + sticks[0].h).toFixed(2), 'the ones stand on the same floor as the sticks');
+  assert.equal(+((sticks[0].x + Math.max(...ones.map(o => o.x + o.w))) / 2).toFixed(1), 50, 'centred');
+  assert.deepEqual(texts(svg).map(t => t.s).filter(t => /^\d+ (tens?|ones?)$/.test(t)), ['3 tens', '4 ones']);
+  // one of each is named in the singular; no loose ones, no ones name; more than five ones take a second column
+  const names = n => texts(diagramSvg(cleanDiagram({ type: 'counters', groups: [{ n, tens: true }] }, 'A number as tens and ones'))).map(t => t.s).filter(t => /^\d+ (tens?|ones?)$/.test(t));
+  assert.deepEqual(names(11), ['1 ten', '1 one']); assert.deepEqual(names(60), ['6 tens']); assert.deepEqual(names(99), ['9 tens', '9 ones']);
+  const nine = rects(diagramSvg(cleanDiagram({ type: 'counters', groups: [{ n: 19, tens: true }] }, 'Nineteen as tens and ones')), ONE);
+  assert.equal(nine.length, 9); assert.equal(new Set(nine.map(o => o.x)).size, 2, 'two columns'); assert.equal(nine.filter(o => o.x === nine[0].x).length, 5, 'five in the first');
+  // the two names never print over each other, even under one stick and one loose block
+  for (const n of [11, 12, 21, 91, 19, 34, 99]) {
+    const ts = texts(diagramSvg(cleanDiagram({ type: 'counters', groups: [{ n, tens: true }] }, 'A number as tens and ones'))).filter(t => /^\d+ (tens?|ones?)$/.test(t.s));
+    if (ts.length === 2) assert.ok(ts[1].x - ts[0].x >= (ts[0].s.length + ts[1].s.length) * 2.53 / 2 + 1.9, `${n}: the names are apart`);
+  }
+  // two numbers side by side: each in its own half with its numeral under it
+  const two = cleanDiagram({ type: 'counters', groups: [{ n: 34, tens: true }, { n: 43, tens: true }] }, '34 and 43'), ts = diagramSvg(two);
+  const st = rects(ts, STICK), on = rects(ts, ONE);
+  assert.equal(st.length, 7); assert.equal(on.length, 7);
+  assert.equal(st.filter(s => s.x < 50).length, 3); assert.equal(on.filter(o => o.x < 50).length, 4);
+  assert.ok([...st, ...on].every(r => (r.x < 50) === (r.x + r.w < 50)), 'nothing crosses the middle');
+  const nums = texts(ts).filter(t => /^\d+$/.test(t.s));
+  assert.deepEqual(nums.map(t => t.s), ['34', '43']); assert.ok(nums[0].x < 50 && nums[1].x > 50);
+  // every block and every word stays inside the frame and the drawing's band, up to 99 and 99
+  for (const gs of [[{ n: 10, tens: true }], [{ n: 99, tens: true }], [{ n: 99, tens: true }, { n: 98, tens: true }], [{ n: 10, tens: true }, { n: 11, tens: true }]]) {
+    const d = cleanDiagram({ type: 'counters', groups: gs }, 'Tens and ones'), out = diagramSvg(d), [a, b] = diagramExtent(d);
+    for (const r of [...rects(out, STICK), ...rects(out, ONE)]) assert.ok(r.x >= 1 && r.x + r.w <= 99 && r.y >= a && r.y + r.h <= b, JSON.stringify(gs) + ': every block inside the frame');
+    for (const t of texts(out)) assert.ok(t.y <= b && t.x > 4 && t.x < 96, JSON.stringify(gs) + ': every word inside the band');
+  }
+  // only whole numbers from 10 to 99, and never mixed with the other counter options
+  for (const g of [{ n: 9, tens: true }, { n: 100, tens: true }, { n: 34.5, tens: true }, { n: 34, tens: true, frame: true }, { n: 34, tens: true, split: 3 }, { n: 34, tens: true, count: true }, { n: 34, tens: true, name: 'crates' }])
+    assert.equal(cleanDiagram({ type: 'counters', groups: [g] }, 'L'), null, JSON.stringify(g));
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 34, tens: true }, { n: 8 }] }, 'L'), null, 'two numbers are both drawn as tens and ones, or neither');
+  assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 34 }] }, 'L'), null, 'without tens a group still holds at most 20');
+});

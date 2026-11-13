@@ -38,6 +38,9 @@ export const GAMES = Object.freeze({
   // Lily Hop (kindergarten to grade 1): putting together and taking away within 10, number partners and what makes
   // ten, adding and taking away within 20 by way of ten (its three chapters, LILY_CHAPTERS below).
   'lily-hop': { 'ccss-math': ['K.OA.A.1', 'K.OA.A.2', 'K.OA.A.3', 'K.OA.A.4', '1.OA.C.6', '1.OA.B.3'] },
+  // Crate Stacker (grade 1): two-digit numbers as tens and ones (and counting past 100), comparing two of them with
+  // >, = and <, adding within 100 and ten more or ten less (its three chapters, CRATE_CHAPTERS below).
+  'crate-stacker': { 'ccss-math': ['1.NBT.B.2', '1.NBT.A.1', '1.NBT.B.3', '1.NBT.C.4', '1.NBT.C.5'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -59,8 +62,12 @@ export const GARDEN_CHAPTERS = Object.freeze({
 export const LILY_CHAPTERS = Object.freeze({
   join: ['K.OA.A.1', 'K.OA.A.2'], apart: ['K.OA.A.3', 'K.OA.A.4'], twenty: ['1.OA.C.6', '1.OA.B.3'],
 });
+/** Crate Stacker's chapters (seed-games/crate-stacker.html CrateStacker.CHAPTERS), for a step locked to one. */
+export const CRATE_CHAPTERS = Object.freeze({
+  build: ['1.NBT.B.2', '1.NBT.A.1'], greater: ['1.NBT.B.3'], add: ['1.NBT.C.4', '1.NBT.C.5'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -72,6 +79,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'fraction-factory') { const ch = p.get('chapter') || ''; return Object.hasOwn(FRACTION_CHAPTERS, ch) ? [...FRACTION_CHAPTERS[ch]] : null; }
   if (slug === 'garden-count') { const ch = p.get('chapter') || ''; return Object.hasOwn(GARDEN_CHAPTERS, ch) ? [...GARDEN_CHAPTERS[ch]] : null; }
   if (slug === 'lily-hop') { const ch = p.get('chapter') || ''; return Object.hasOwn(LILY_CHAPTERS, ch) ? [...LILY_CHAPTERS[ch]] : null; }
+  if (slug === 'crate-stacker') { const ch = p.get('chapter') || ''; return Object.hasOwn(CRATE_CHAPTERS, ch) ? [...CRATE_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

@@ -93,8 +93,13 @@ export function cleanDiagram(v, label) {
     // counters to count and match (Launchpad): one group of 1-20, or two rows of 1-10 set one under the other so they
     // match one to one; `count` numbers each counter in order; `frame` sets a single group's first ten in a ten-frame;
     // `split` (Unit 2) shows a single group of 2-10 as two parts, the first `split` counters and the rest in a second
-    // tone with each part's size under it, and `away` draws the second part as empty outlines (they went away)
+    // tone with each part's size under it, and `away` draws the second part as empty outlines (they went away);
+    // `tens` (Unit 3) draws a number from 10 to 99 as sticks of ten and loose ones (one number, or two side by side)
     if (!Array.isArray(v.groups) || v.groups.length < 1 || v.groups.length > 2) return null;
+    if (v.groups.some(q => q && q.tens)) {
+      if (!v.groups.every(q => q && q.tens && int(q.n, 10, 99) && q.tone == null && q.name == null && !q.frame && !q.count && q.split == null && !q.away)) return null;
+      return { type: 'counters', label, groups: v.groups.map(q => ({ n: q.n, tens: true })) };
+    }
     if (!v.groups.every(q => q && int(q.n, 1, 20) && (q.tone == null || int(q.tone, 0, 3)))) return null;
     const two = v.groups.length === 2;
     if (two && v.groups.some(q => q.n > 10 || q.frame || q.split != null || q.away)) return null;

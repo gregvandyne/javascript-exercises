@@ -1,0 +1,309 @@
+{
+ "key": "launchpad-3.3",
+ "n": "3.3",
+ "band": "launchpad",
+ "title": "Add tens, add ones",
+ "topic": "Add to 100",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "More crates are coming",
+   "text": "A cart brings more crates. How many will the truck have?",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Add tens: the ones stay",
+   "text": "27 and 30 more. 2 tens and 3 tens make 5 tens: 57.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "27 and 30 side by side as tens and ones",
+    "groups": [
+     {
+      "n": 27,
+      "tens": true
+     },
+     {
+      "n": 30,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "27 has 2 tens.",
+     "box": [
+      17.8,
+      21.5,
+      8.2,
+      38.8
+     ]
+    },
+    {
+     "cue": "30 is 3 more tens.",
+     "box": [
+      68.1,
+      21.5,
+      11.8,
+      38.8
+     ]
+    },
+    {
+     "cue": "The 7 ones stay: 57.",
+     "box": [
+      26.8,
+      31.3,
+      7.4,
+      29
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Ten more, ten less",
+   "text": "10 more than 46 is 56. 10 less than 46 is 36.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line with hops of ten: 36 to 46, then 46 to 56",
+    "min": 26,
+    "max": 66,
+    "marks": [
+     {
+      "at": 26,
+      "label": "26"
+     },
+     {
+      "at": 36,
+      "label": "36"
+     },
+     {
+      "at": 46,
+      "label": "46"
+     },
+     {
+      "at": 56,
+      "label": "56"
+     },
+     {
+      "at": 66,
+      "label": "66"
+     }
+    ],
+    "hops": [
+     {
+      "from": 36,
+      "to": 46,
+      "label": "+10"
+     },
+     {
+      "from": 46,
+      "to": 56,
+      "label": "+10"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start on 46.",
+     "box": [
+      46.7,
+      57.8,
+      6.7,
+      25.4
+     ]
+    },
+    {
+     "cue": "One ten more: 56.",
+     "box": [
+      49,
+      23.5,
+      24,
+      38.5
+     ]
+    },
+    {
+     "cue": "One ten less: 36.",
+     "box": [
+      24.8,
+      57.8,
+      6.6,
+      25.4
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Add ones: the tens stay",
+   "text": "43 and 5 more. 3 ones and 5 ones make 8 ones: 48.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "43, then 48: the same 4 tens with 5 more ones",
+    "groups": [
+     {
+      "n": 43,
+      "tens": true
+     },
+     {
+      "n": 48,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "43 has 3 ones.",
+     "box": [
+      31.9,
+      42,
+      4.5,
+      18.3
+     ]
+    },
+    {
+     "cue": "5 more ones make 8 ones.",
+     "box": [
+      78.3,
+      31.3,
+      7.5,
+      29
+     ]
+    },
+    {
+     "cue": "Still 4 tens: 48.",
+     "box": [
+      62.1,
+      21.5,
+      15.4,
+      38.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Fill a ten first",
+   "text": "27 and 5 more. Fill the tower, then add the rest.",
+   "art": "star",
+   "steps": [
+    "27 and 3 make 30",
+    "2 more crates",
+    "30 and 2 make 32",
+    "27 + 5 = 32"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 20 to 40: hop 3 from 27 to 30, then 2 more to 32",
+    "min": 20,
+    "max": 40,
+    "marks": [
+     {
+      "at": 20,
+      "label": "20"
+     },
+     {
+      "at": 27,
+      "label": "27"
+     },
+     {
+      "at": 30,
+      "label": "30"
+     },
+     {
+      "at": 32,
+      "label": "32"
+     },
+     {
+      "at": 40,
+      "label": "40"
+     }
+    ],
+    "hops": [
+     {
+      "from": 27,
+      "to": 30,
+      "label": "+3"
+     },
+     {
+      "from": 30,
+      "to": 32,
+      "label": "+2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "3 more fill the ten: 30.",
+     "box": [
+      35.8,
+      23,
+      15.2,
+      39
+     ]
+    },
+    {
+     "cue": "2 more make 32.",
+     "box": [
+      49,
+      23,
+      10.8,
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ten more",
+     "means": "one more tower of ten"
+    },
+    {
+     "word": "ten less",
+     "means": "one tower of ten taken away"
+    },
+    {
+     "word": "total",
+     "means": "how many there are in all"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Crate Stacker at Add More Crates. Find the new number six times.",
+   "art": "trophy",
+   "img": "nq/crate-stacker/add-more-crates",
+   "alt": "Crate Stacker on a phone: a toy truck with 17 crates, a cart with 2 more towers, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-3.3-e1",
+  "nq-launchpad-3.3-e2",
+  "nq-launchpad-3.3-e3"
+ ],
+ "game": {
+  "slug": "crate-stacker",
+  "chapter": "Add More Crates",
+  "params": "chapter=add&lock=1"
+ }
+}
