@@ -3,7 +3,8 @@
 // Pinned here:
 //   - the catalogue declares Launchpad and Explorer; Explorer's 23 steps and keys are exactly what they were;
 //     Launchpad's welcome (launchpad-0.1), its Unit 1, The Counting Patch (1.1-1.3, played in Garden Count) and its
-//     Unit 2, The Joining Pond (2.1-2.3, played in Lily Hop), load with no deck problems; Pro has no units, so it does not exist;
+//     Unit 2, The Joining Pond (2.1-2.3, played in Lily Hop), and its Unit 3, The Tens Trellis (3.1-3.3, played in
+//     Crate Stacker), load with no deck problems; Pro has no units, so it does not exist;
 //   - while Launchpad is "building", a learner sees Explorer alone (path page, band picker, placement,
 //     teacher page), cannot open launchpad-0.1 (it reads as a step that does not exist) nor pick the band;
 //     the platform admin can;
@@ -69,7 +70,7 @@ test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly it
   assert.equal(T.statusOf('launchpad'), 'building');
   assert.equal(T.statusOf('pro'), null, 'a tier with no units has no status: it does not exist');
   assert.deepEqual({ district: T.tierInfo('launchpad').district, grades: T.tierInfo('launchpad').grades, inGame: T.tierInfo('launchpad').inGame, stones: T.tierInfo('launchpad').stones },
-    { district: 'The Gardens', grades: 'K-2', inGame: 'Launchpad', stones: ['Counting Seed', 'Joining Seed'] });
+    { district: 'The Gardens', grades: 'K-2', inGame: 'Launchpad', stones: ['Counting Seed', 'Joining Seed', 'Tens Seed'] });
   // Explorer: unchanged, key for key, in order.
   const ex = C.steps(course, 'explorer');
   assert.deepEqual(ex.map(s => s.key), EXPLORER_KEYS);
@@ -80,16 +81,19 @@ test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly it
   assert.deepEqual(T.unitsOf('explorer').map(u => u.n), [0, 1, 2, 3, 4, 5, 6, 7]);
   // Launchpad: its own units and steps, its own deck and bank.
   const lp = C.steps(course, 'launchpad');
-  assert.deepEqual(lp.map(s => s.key), ['launchpad-0.1', 'launchpad-1.1', 'launchpad-1.2', 'launchpad-1.3', 'launchpad-2.1', 'launchpad-2.2', 'launchpad-2.3']);
-  assert.deepEqual(lp.map(s => s.index), [0, 1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(lp.map(s => s.key), ['launchpad-0.1', 'launchpad-1.1', 'launchpad-1.2', 'launchpad-1.3', 'launchpad-2.1', 'launchpad-2.2', 'launchpad-2.3', 'launchpad-3.1', 'launchpad-3.2', 'launchpad-3.3']);
+  assert.deepEqual(lp.map(s => s.index), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   assert.deepEqual(C.deckProblems('launchpad', 'number-quest'), [], 'the Launchpad decks have no problems');
-  assert.deepEqual(T.unitsOf('launchpad').map(u => [u.n, u.title, u.stamp]), [[0, 'Welcome to the Gardens', null], [1, 'The Counting Patch', 'Counting Seed'], [2, 'The Joining Pond', 'Joining Seed']]);
+  assert.deepEqual(T.unitsOf('launchpad').map(u => [u.n, u.title, u.stamp]), [[0, 'Welcome to the Gardens', null], [1, 'The Counting Patch', 'Counting Seed'], [2, 'The Joining Pond', 'Joining Seed'], [3, 'The Tens Trellis', 'Tens Seed']]);
   // Unit 1's steps play Garden Count, each locked to its own chapter.
   assert.deepEqual(lp.slice(1, 4).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Count to 20', 1, 'garden-count', 'chapter=count&lock=1', 'MP6'],
     ['More, fewer, the same', 1, 'garden-count', 'chapter=compare&lock=1', 'MP2'], ['Teen numbers', 1, 'garden-count', 'chapter=teens&lock=1', 'MP7']]);
   // Unit 2's steps play Lily Hop, each locked to its own chapter.
-  assert.deepEqual(lp.slice(4).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Put together to 10', 2, 'lily-hop', 'chapter=join&lock=1', 'MP4'],
+  assert.deepEqual(lp.slice(4, 7).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Put together to 10', 2, 'lily-hop', 'chapter=join&lock=1', 'MP4'],
     ['Take apart and make 10', 2, 'lily-hop', 'chapter=apart&lock=1', 'MP7'], ['Add and take away to 20', 2, 'lily-hop', 'chapter=twenty&lock=1', 'MP8']]);
+  // Unit 3's steps play Crate Stacker, each locked to its own chapter.
+  assert.deepEqual(lp.slice(7).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Tens and ones', 3, 'crate-stacker', 'chapter=build&lock=1', 'MP7'],
+    ['Which is greater?', 3, 'crate-stacker', 'chapter=greater&lock=1', 'MP2'], ['Add tens, add ones', 3, 'crate-stacker', 'chapter=add&lock=1', 'MP8']]);
   assert.notEqual(C.getStep(course, 'explorer-1.1').title, C.getStep(course, 'launchpad-1.1').title, 'two tiers, two different steps numbered 1.1');
   const w = C.getStep(course, 'launchpad-0.1');
   assert.equal(w.band, 'launchpad'); assert.equal(w.unit, 0); assert.equal(w.index, 0); assert.equal(w.deck, true);
@@ -237,7 +241,8 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   assert.doesNotMatch(street.text, /id="step-explorer-/, 'a street renders only its own units');
   assert.match(street.text, /id="step-launchpad-1\.1"/); assert.match(street.text, /The Counting Patch/);
   assert.match(street.text, /id="step-launchpad-2\.3"/); assert.match(street.text, /The Joining Pond/);
-  assert.equal(C.numberQuestCatalogue(admin).units.length, 11);
+  assert.match(street.text, /id="step-launchpad-3\.3"/); assert.match(street.text, /The Tens Trellis/);
+  assert.equal(C.numberQuestCatalogue(admin).units.length, 12);
   // Unit 1's first step opens for the admin, with its mission in Garden Count.
   const one = await get('/courses/number-quest/launchpad-1.1', cookie);
   assert.equal(one.status, 200);
@@ -246,6 +251,10 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   const pond = await get('/courses/number-quest/launchpad-2.3', cookie);
   assert.equal(pond.status, 200);
   assert.match(pond.text, /Add and take away to 20/); assert.match(pond.text, /Open Lily Hop at Hop to 20\./);
+  // Unit 3's last step opens too, with its mission in Crate Stacker.
+  const yard = await get('/courses/number-quest/launchpad-3.3', cookie);
+  assert.equal(yard.status, 200);
+  assert.match(yard.text, /Add tens, add ones/); assert.match(yard.text, /Open Crate Stacker at Add More Crates\./);
   const teach = await get('/teachers/number-quest', cookie);
   assert.match(teach.text, /Launchpad · Welcome to the Gardens/);
   assert.match(teach.text, /Meet Tally in the Gardens/);
@@ -283,7 +292,7 @@ test('Launchpad open: the switcher renders, a learner picks the band and walks t
   assert.deepEqual(q.get('SELECT step, band FROM course_progress WHERE user_id=? AND course=?', kid.id, 'number-quest'), { step: 'launchpad-0.1', band: 'launchpad' });
   assert.equal(C.stateOf(kid, course, 'launchpad-0.1').complete, true);
   assert.equal(C.stateOf(kid, course, 'explorer-0.1').complete, false, 'Explorer 0.1 is another step entirely');
-  assert.equal(C.overview(kid, course).done, 1); assert.equal(C.overview(kid, course).total, 7, 'the welcome, Unit 1’s three steps and Unit 2’s three');
+  assert.equal(C.overview(kid, course).done, 1); assert.equal(C.overview(kid, course).total, 10, 'the welcome and the three steps each of Units 1, 2 and 3');
   assert.equal(C.overview(kid, course, 'explorer').done, 0);
   // Switch back: Explorer is its own street with its own progress.
   assert.equal(C.setBand(kid, course, 'explorer'), true);
@@ -301,7 +310,7 @@ test('Launchpad open: placement lands a rung under 2.5 on a Launchpad node once 
   const low = { number: 0.5, algebra: 3, 'shape-measure': 3, 'data-chance': 3 };
   // Open but no profiles locked yet: today's answer, gap flagged.
   assert.deepEqual(P.crosswalk(low), { node: 'explorer-0.1', tier: 'explorer', launchpadGap: true, finaleDoor: false });
-  // With the real tier (the welcome, Unit 1 and Unit 2) and a profile on its first door.
+  // With the real tier (the welcome and Units 1 to 3) and a profile on its first door.
   P.setEntryProfilesForTests({ 'launchpad-0.1': profile(1) });
   assert.deepEqual(P.crosswalk(low), { node: 'launchpad-0.1', tier: 'launchpad', launchpadGap: false, finaleDoor: false });
   // Three Launchpad units (0, 1, 2), profiles on the doors of 1 and 2.
