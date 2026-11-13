@@ -160,13 +160,16 @@ test('tidy and mask: control characters go, spaces collapse, at most 2000 charac
 
 // ---- The endpoint (accounts and the game are made before the first test: see the top).
 
-test('off without a key: 404, no mic in the Studio, and the microphone stays blocked on the page', async () => {
+test('off without a key: 404 and no mic button in the Studio (the page still allows its own loudness for the preview)', async () => {
   off();
   assert.equal((await post(owner, WEBM())).status, 404);
   const page = await owner(`/studio/${g.id}`);
   assert.equal(page.status, 200);
   assert.doesNotMatch(page.text, /id="st-mic"/);
-  assert.match(page.headers.get('permissions-policy'), /microphone=\(\)/);
+  // BRB.loudness in the preview (services/mic-games.js): the Studio page listens for a game that asks; MIC_BUILDER=0 blocks it.
+  assert.match(page.headers.get('permissions-policy'), /microphone=\(self\)/);
+  config.micBuilder = false;
+  try { assert.match((await owner(`/studio/${g.id}`)).headers.get('permissions-policy'), /microphone=\(\)/); } finally { config.micBuilder = true; }
   assert.equal((await owner(`/api/studio/${g.id}`)).json.mic, null);
 });
 
