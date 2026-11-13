@@ -304,10 +304,10 @@
     });
   }
   // ---- Loudness (BRB.loudness): how loud the room is, as a number from the play page (docs/sdk.md "Loudness") ----------
-  // Only official classroom games get it (server/services/mic-games.js; today Remi's Quiet Meadow). The PAGE opens the
-  // microphone after a tap and posts one dBFS number (-100..0) about 20 times a second; this frame never touches the
-  // microphone (it can't: it is opaque-origin and its header says microphone=()). On every other page, and in previews,
-  // covers and Live frames, the answer is 'off'. Audio never exists in here, only the number.
+  // The official noise meters and Builder games that use it (server/services/mic-games.js). The PAGE (the play page, or the
+  // Studio page for the preview) opens the microphone after a tap and posts one dBFS number (-100..0) about 20 times a
+  // second; this frame never touches the microphone (it can't: it is opaque-origin and its header says microphone=()).
+  // Covers, Live frames and online matches answer 'off'. Audio never exists in here, only the number.
   var LOUD_STATES = ['ready', 'on', 'off', 'idle', 'denied', 'nodevice', 'busy', 'unavailable', 'needsTap', 'stopped'];
   // loudWanted: this game called start() (and not stop() since). Only then does it keep the page's lease alive: an 'on'
   // it never asked for (a start left over from before a reload) is answered with stop at once.

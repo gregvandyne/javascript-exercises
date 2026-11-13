@@ -43,6 +43,7 @@ import { upsellFor, askTarget } from '../builder/upsell.js';
 import * as sparks from '../services/sparks.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
+import { builderMicOn } from '../services/mic-games.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
@@ -143,6 +144,8 @@ export function studioState(user, gameId, t = tEn, req = null) {
     // Speech to text (services/stt.js): only when the owner turned it on; the page hides the mic otherwise.
     // Not while the Builder is off for this account (a grown-up or teacher turned it off): no voice leaves the site then.
     // live: words show while the kid speaks (services/stt-live.js), unless STT_LIVE=0; the page records and uploads otherwise.
+    // The preview may listen for loudness (services/mic-games.js): any version the builder makes can start using it.
+    loud: builderMicOn(),
     mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider] } : {}) } : null,
     grownUpLink: grownUpLinkHint(req, user),
     // The daily-limit card's offer (builder/upsell.js): a plan or a Spark Pack, asked of a child's grown-up; never a price.
@@ -215,8 +218,9 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
   const proKey = isSchoolStaff(req.user) || !isTrustedOnlyAsAll(req.user) ? 'studio.chat.proIncluded' : 'studio.chat.proIncludedAll';
   // Opened from a lesson's build step: a strip back to that lesson (where Hand in is).
   const step = lessonStepOf(req.user, g.id);
-  // The microphone is allowed on this page only, and only while speech to text is on (the game frame never gets it).
-  if (state.mic) res.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()');
+  // The microphone is allowed on this page only (the game frame never gets it): for speech to text, and for the preview's
+  // loudness (a game that uses BRB.loudness: this page listens after a tap and passes the preview one number at a time).
+  if (state.mic || state.loud) res.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()');
   const body = html`
   <div class="studio" id="studio">
     <div class="st-top">
@@ -275,7 +279,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
     </div>
   </div>
   ${jsonData('page-data', { ...state, icons: ICONS, categories: games.CATEGORIES.map(([k, i]) => [k, i, categoryLabel(k, t)]), covers: games.COVERS })}`;
-  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: 'studio-page', head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/studio.js'] });
+  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: 'studio-page', head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/studio.js'], i18n: state.loud ? ['js.loudness'] : [] });
 });
 
 // ---------------------------------------------------------------- APIs
