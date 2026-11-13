@@ -7,6 +7,9 @@
 //                  allowedLine; numbers only in a line's {placeholders}), or for a switched-on game its own words from
 //                  its published version (tts-games allowedText): anything else is 422 filtered. The role comes from the
 //                  line for a listed game; a switched-on game gets the role asked for if it is a known one, else narrator.
+//                  Any other game made in the Builder (services/tts-built.js; the owner's decision of 2026-11-13): only
+//                  while its published version passed the safety scanner, and only a line that is EXACTLY one of the
+//                  fixed strings in that stored version (nothing filled in, nothing joined), in one fixed friendly role.
 //     ctx 'live'   { sid, tok, i }  the live question i (only the one open now), by number: the server reads the
 //                  teacher's question and its answer choices, in the session's language. tok: the player's seat token or
 //                  the host/co-host token.
@@ -39,6 +42,7 @@ import * as V from '../services/tts-voices.js';
 import * as usage from '../services/tts-usage.js';
 import * as lines from '../services/tts-lines.js';
 import * as TG from '../services/tts-games.js';
+import * as BG from '../services/tts-built.js';
 import * as games from '../services/games.js';
 import { isOfficial } from '../services/classlive-access.js';
 import * as LS from '../services/classlive-sessions.js';
@@ -65,10 +69,13 @@ export const GAME_TOKEN_SEC = 2 * 3600;
  *  token until it is registered. Also a game the admin switched on (services/tts-games.js: made by a teacher, staff
  *  or the admin, published, not hidden; never a draft or a preview). */
 export const listedGame = g => !!g && lines.TTS_GAMES.has(g.slug) && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
-export const gameAllowed = g => listedGame(g) || TG.allowed(g);
+/** A game made in the Builder whose fixed lines may be read (services/tts-built.js): published, not hidden, its
+ *  published version passed by the safety scanner. Never an official game, a draft or a preview. */
+export const builtGame = g => !listedGame(g) && BG.allowed(g);
+export const gameAllowed = g => listedGame(g) || TG.allowed(g) || builtGame(g);
 /**
- * The play page's tts data for a game, or null (TTS off, no locale on, not an official game, nobody signed in, a guest
- * included). -> { tok, langs } where tok is bound to the user and the game for 2 hours.
+ * The play page's tts data for a game, or null (TTS off, no locale on, a game that may not use AI voices, nobody signed
+ * in, a guest included). -> { tok, langs } where tok is bound to the user and the game for 2 hours.
  */
 export function playData(user, game) {
   if (!user || !tts.ttsEnabled() || !gameAllowed(game)) return null;
@@ -76,8 +83,13 @@ export function playData(user, game) {
   if (!langs.length) return null;
   return { tok: signToken({ k: 'tts', g: game.id, u: user.id }, GAME_TOKEN_SEC), langs };
 }
-/** The frame's INIT.tts for a game ({ langs }) or null: the same rule as playData. */
-export const frameData = (user, game) => { const d = playData(user, game); return d ? { langs: d.langs } : null; };
+/** The frame's INIT.tts for a game ({ langs }) or null: the same rule as playData. versionId: the version this frame
+ *  shows; a Builder game's frame gets it only for the published version (the one its lines come from). */
+export const frameData = (user, game, versionId = null) => {
+  const d = playData(user, game);
+  if (!d || (versionId && !listedGame(game) && versionId !== game.published_version_id)) return null;
+  return { langs: d.langs };
+};
 
 // ---------------------------------------------------------------- POST /api/tts
 const who = req => (req.user ? `u:${req.user.id}` : `ip:${ipOf(req)}`);
@@ -109,9 +121,16 @@ function resolve(req, b) {
       return { text: line.text, locale, role: line.role, rate: V.rateBucket(b.rate) };
     }
     // A game the admin switched on: words from its published version's own source only.
-    const text = TG.allowedText(g, b.text);
-    if (!text) return { error: [422, 'filtered'] };
-    return { text, locale, role: V.ROLES.includes(b.role) ? b.role : 'narrator', rate: V.rateBucket(b.rate) };
+    if (TG.allowed(g)) {
+      const text = TG.allowedText(g, b.text);
+      if (!text) return { error: [422, 'filtered'] };
+      return { text, locale, role: V.ROLES.includes(b.role) ? b.role : 'narrator', rate: V.rateBucket(b.rate) };
+    }
+    // Any other Builder game: exactly one of the fixed lines of its published, scanner-passed version (never what a
+    // player typed, never a string put together while playing), in the one fixed role, whatever the page asked for.
+    const fixed = BG.allowedText(g, b.text);
+    if (!fixed) return { error: [422, 'filtered'] };
+    return { text: fixed, locale, role: BG.ROLE, rate: V.rateBucket(b.rate) };
   }
   if (b.ctx === 'live') {
     const s = LS.get(b.sid);
@@ -234,7 +253,7 @@ router.get('/admin/voices', (req, res) => {
     <p><b>Provider</b> ${config.ttsProvider || '–'} · <b>model</b> ${config.ttsProvider === 'mock' ? 'mock (silent audio)' : config.ttsModel} · <b>TTS_LOCALES</b> ${config.ttsLocales.join(', ')}</p>
     <p><b>Today</b> ${use.chars.toLocaleString('en-US')} of ${usage.dailyCap().toLocaleString('en-US')} characters (${use.calls} new, ${use.hits} from the cache, ${use.fails} failed) · about ${usd(usage.usdFor(use.chars))} · AI budget today ${usd(b.today)} of ${usd(b.daily)}${b.ok ? '' : html` <b>(cap reached: no new audio)</b>`}</p>
     <p><b>Cache</b> ${st.n} lines, ${mb(st.bytes)} of ${config.ttsCacheMb} MB (${st.pinned} kept by warm-up and samples)</p>
-    <p class="muted">Only text written by us, a game's makers or a teacher is ever spoken, never what a kid types and never a name. Players are told the voices are AI voices from OpenAI. Each language stays silent until you switch it on here; listen to it first.</p>
+    <p class="muted">Only text written by us, a game's makers or a teacher is ever spoken, never what a kid types and never a name. Games made in the Builder ${config.ttsBuiltGames ? 'have AI voices by default' : 'keep the device\'s voice (TTS_BUILT_GAMES is off)'}: only the exact lines fixed in a published version that passed the safety check. Players are told the voices are AI voices from OpenAI. Each language stays silent until you switch it on here; listen to it first.</p>
   </section>
   <h2 class="stats-h">Languages and narrator voices</h2>
   <p class="muted small">▶ plays the sample sentence in that language with that voice (made once, then kept; the narrator's ▶ is marked). Narrator: the voice that reads stories, lessons and quiz questions in that language. On a phone, ▶ plays the narrator chosen in that row.</p>

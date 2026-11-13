@@ -2,8 +2,10 @@
 // site- or teacher-written text (an official game's signed token bound to the player; the live question open now, by
 // number; a lesson quiz question the student may see), locales off until the admin switches them on, the backstop
 // filters, generation limits; GET /tts/<hash>.mp3 headers and refusals; the admin voice page and its APIs; the play
-// page's token and the frame's INIT.tts only for official games listed in tts-lines GAMES (Hero of Sunvale), and for
-// them only the game's own spoken lines (an allowlist from the repository file), with the line's own role.
+// page's token and the frame's INIT.tts for official games listed in tts-lines GAMES (Hero of Sunvale), and for
+// them only the game's own spoken lines (an allowlist from the repository file), with the line's own role. Since the
+// owner's decision of 2026-11-13 a Builder game gets a token too, for the exact fixed lines of its published,
+// scanner-passed version only (tts-built.test.js has that rule's own tests).
 import { reset, call, config, q, auth, LS, games, publish, official, teacher, cls, mia, leo, kid, boss, open } from './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -31,7 +33,7 @@ function on(locales = ['en']) {
   config.ttsPerMinute = 20; config.ttsDailyChars = 300000; config.ttsMaxChars = 600;
   V.save(null, { locales: Object.fromEntries(TTS_ALL_LOCALES.map(l => [l, { on: locales.includes(l) }])) });
 }
-function off() { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
+function off() { config.ttsEnabled = false; config.ttsProvider = 'openai'; config.ttsBuiltGames = true; }
 const usage = await import('../../server/services/tts-usage.js');
 test.beforeEach(() => { reset(); usage._resetQuota(); q.run('DELETE FROM tts_cache'); q.run('DELETE FROM tts_usage'); q.run('DELETE FROM ai_spend'); q.run('DELETE FROM ai_spend_pool'); });
 test.afterEach(() => off());
@@ -52,11 +54,15 @@ test('off by default: POST answers 404 off, no token on the play page, no INIT.t
   assert.ok(!page.text.includes('"tts"'), 'no tts in page-data');
 });
 
-test('game: an official game\'s token works for its own player only; Builder games never get one; the locale must be on', async () => {
+test('game: an official game\'s token works for its own player only; a Builder game\'s token reads only its own fixed lines; the locale must be on', async () => {
   on(['en']);
   const d = R.playData(mia, seedGame);
   assert.deepEqual(d.langs, ['en']); assert.ok(d.tok);
-  assert.equal(R.playData(mia, kidGame), null, 'a kid-made game: device voice only');
+  // A kid-made game (the rule changed on 2026-11-13): a token, but only for the fixed lines of its published version.
+  assert.ok(R.playData(mia, kidGame).tok, 'a kid-made game whose published version passed the scanner');
+  config.ttsBuiltGames = false;
+  assert.equal(R.playData(mia, kidGame), null, 'TTS_BUILT_GAMES=0: a kid-made game keeps the device voice');
+  config.ttsBuiltGames = true;
   assert.equal(R.playData(null, seedGame), null, 'nobody signed in');
   const r = await say(mia, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en-US', role: 'friendly', rate: 1 });
   assert.equal(r.status, 200, r.text); assert.match(r.json.u, /^\/tts\/[0-9a-f]{64}\.mp3$/);
@@ -79,7 +85,10 @@ test('game: an official game\'s token works for its own player only; Builder gam
   assert.equal((await say(leo, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).status, 403);
   assert.equal((await say(null, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).status, 403);
   const forged = auth.signToken({ k: 'tts', g: kidGame.id, u: mia.id }, 60);
-  assert.equal((await say(mia, { ctx: 'game', tok: forged, text: CHEER, lang: 'en' })).json.code, 'off', 'a token for a Builder game is refused');
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: forged, text: CHEER, lang: 'en' })).json, { code: 'filtered' }, 'a Builder game\'s token never reads another game\'s line');
+  config.ttsBuiltGames = false;
+  assert.equal((await say(mia, { ctx: 'game', tok: forged, text: 'Hello there!', lang: 'en' })).json.code, 'off', 'TTS_BUILT_GAMES=0: a token for a Builder game is refused');
+  config.ttsBuiltGames = true;
   // An official game that isn't listed for AI voices: no data, and a token minted for it anyway is refused.
   assert.equal(R.playData(mia, unlistedGame), null); assert.equal(R.frameData(mia, unlistedGame), null);
   assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ k: 'tts', g: unlistedGame.id, u: mia.id }, 60), text: CHEER, lang: 'en' })).status, 404);
@@ -118,7 +127,7 @@ test('the all-games rule: a word game and a kit course game get tokens; only the
   assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Is this email safe?', lang: 'en' })).json, { code: 'filtered' });
 });
 
-test('play page and frame: the token and INIT.tts only for an official game with a locale on', async () => {
+test('play page and frame: the token and INIT.tts for an official game and a scanner-passed Builder game with a locale on', async () => {
   on(['en', 'fr']);
   const page = await call('/play/hero-of-sunvale', { user: mia });
   const pd = JSON.parse(/<script type="application\/json" id="page-data">(.*?)<\/script>/s.exec(page.text)[1]);
@@ -128,9 +137,15 @@ test('play page and frame: the token and INIT.tts only for an official game with
   assert.equal(frame.status, 200);
   assert.match(frame.text, /"tts":\{"langs":\["en","fr"\]\}/);
   const kidPage = await call('/play/tts-kid-game', { user: mia });
-  assert.ok(!kidPage.text.includes('"tts"'));
+  assert.ok(kidPage.text.includes('"tts"') && kidPage.text.includes('id="p-voices"'), 'a Builder game: the token and the Voices button');
   const kidFrame = await call(/data-src="(\/frame\/[^"]+)"/.exec(kidPage.text)[1], { user: mia });
-  assert.ok(!kidFrame.text.includes('"tts":{'), 'no INIT.tts for a Builder game');
+  assert.match(kidFrame.text, /"tts":\{"langs":\["en","fr"\]\}/, 'INIT.tts for a Builder game (2026-11-13)');
+  config.ttsBuiltGames = false;
+  const offPage = await call('/play/tts-kid-game', { user: mia });
+  assert.ok(!offPage.text.includes('"tts"') && !offPage.text.includes('id="p-voices"'), 'TTS_BUILT_GAMES=0: no token, no button');
+  const offFrame = await call(/data-src="(\/frame\/[^"]+)"/.exec(offPage.text)[1], { user: mia });
+  assert.ok(!offFrame.text.includes('"tts":{'), 'TTS_BUILT_GAMES=0: no INIT.tts for a Builder game');
+  config.ttsBuiltGames = true;
   const unlistedPage = await call('/play/unlisted-test-game', { user: mia });
   assert.ok(!unlistedPage.text.includes('"tts"') && !unlistedPage.text.includes('id="p-voices"'), 'no tts and no Voices button for an official game not listed');
 });

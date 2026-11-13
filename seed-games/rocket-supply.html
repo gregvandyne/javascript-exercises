@@ -1,0 +1,1093 @@
+<title>Rocket Supply</title>
+<!-- Rocket Supply: Number Quest Launchpad Unit 5, The Hundreds Hedge (grade 2, ages 7-8). A launch pad on a space
+     base, on Oomba3D 1.1.0 in the Space Base theme: supply pods are stocked for a rocket (a flat pallet is a HUNDRED,
+     a rack is a TEN, a canister is a ONE), and when the load is right the rocket lifts off. Three chapters of six
+     rounds, one per course step:
+       build (5.1) load a number with pallets, racks and canisters (ten racks lock into a pallet), read a load and
+                   pick its number (407, 470 or 47?), match a number to its parts (300 + 40 + 2) and to its name,
+                   read aloud, all to 999;
+       count (5.2) skip count by fives, tens and hundreds along the fuel gauge (what comes next?), then pick the
+                   sign for two three-digit numbers: >, = or <;
+       fuel  (5.3) add and take away within 100 with tens and ones (38 + 27: ten ones lock into a new ten;
+                   62 − 25: a ten opens into ten ones), and quick facts within 20.
+     Made for a child who is only starting to read: every instruction is short, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), the numbers are big, and everything is done with big buttons.
+     No timer, no lives, no fail state: a wrong answer wobbles, shows why on the pad and gets a spoken hint, then
+     another try. Lesson mode: BRB.params { chapter: build | count | fuel, lock: 1 } opens that chapter only;
+     finishing its six rounds reports game over, won, once (the course step's completion signal). With no parameters
+     the game offers the three chapters from a picture menu. Saves only which chapters are finished (BRB.storage
+     'rocket-supply-v1'). The import map below is exactly kit2ImportMap() (server/services/vendor.js);
+     tests/unit/rocket-supply.test.js fails if a library bump leaves it behind. English only, like Number Quest's
+     other lesson games. Test handle: window.__rs (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1033; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .rs[hidden], .rs-load[hidden] { display: none; }
+  .rs { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .rs button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .rs button:focus-visible { outline: 4px solid #FFD23F; outline-offset: 3px; }
+  .rs-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the number chip and the round dots. On a phone: the words on one row, the chip and the dots on
+     the next (the words keep clear of the gear button; the row under it has the whole width). On a wide screen: all
+     three on one row that never wraps (the words box gives way and wraps inside). */
+  .rs-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .rs-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .rs-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .rs-ask[hidden], .rs-hint[hidden], .rs-sum[hidden], .rs-bar[hidden], .rs-card[hidden], .rs-dots[hidden], .rs-row2[hidden] { display: none; }
+  .rs .rs-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .rs .rs-say:active, .rs .rs-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .rs-askt { font-weight: 800; font-size: clamp(19px, 4.9vw, 28px); line-height: 1.15; min-width: 0; }
+  .rs-sum { flex: 0 1 auto; min-width: 0; background: #66C792; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(22px, 5.6vw, 34px); line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rs-sum.long { font-size: clamp(16px, 4.3vw, 24px); padding: 8px 12px; white-space: normal; }
+  .rs-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .rs-hint { background: #FFFDF2; color: #141414; border: 3px solid #141414; border-radius: 16px; padding: 6px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .rs-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
+  .rs-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; box-shadow: 0 0 0 2px #FFFDF2; }
+  .rs-dots i.on { background: #FFD23F; } .rs-dots i.now { background: #66C792; }
+  .rs-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .rs .rs-btn { flex: 1 1 0; min-width: 0; max-width: 200px; min-height: clamp(70px, 11vh, 100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .rs-btn .i { font-size: 30px; line-height: 1.1; } .rs-btn .big { font-size: 46px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .rs-bar.sign .rs-btn .big { font-size: 52px; } .rs-bar.sign .rs-btn .l { font-size: clamp(13px, 2.4vh, 17px); }
+  .rs-bar.build .rs-btn { max-width: 150px; } .rs-bar.build .rs-btn .big { font-size: clamp(22px, 6.4vw, 36px); }
+  .rs-btn.h { background: #9be8bd; } .rs-btn.t { background: #a9dcff; } .rs-btn.o { background: #ffe68a; }
+  .rs-btn.go { background: #66C792; } .rs .rs-btn[disabled] { opacity: .4; cursor: default; }
+  .rs-btn.no { animation: rs-no .45s ease; }
+  .rs-bar.wait .rs-btn { opacity: .55; }
+  /* a little picture of the pod each loading button brings: a flat pallet, a tall rack, one canister */
+  .rs-pod { display: block; box-sizing: border-box; border: 2.5px solid #141414; border-radius: 3px; }
+  .rs-pod.h { width: 26px; height: 26px; background-color: #58c98a; background-image: repeating-linear-gradient(90deg, transparent 0 4.2px, #14141466 4.2px 5.2px), repeating-linear-gradient(0deg, transparent 0 4.2px, #14141466 4.2px 5.2px); }
+  .rs-pod.t { width: 10px; height: 26px; background-color: #58b7f5; background-image: repeating-linear-gradient(0deg, transparent 0 4.2px, #14141466 4.2px 5.2px); }
+  .rs-pod.o { width: 12px; height: 12px; margin-top: 14px; background: #ffd23f; border-radius: 4px; }
+  @keyframes rs-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .rs-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .rs-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; color: #FFFDF2; text-shadow: 0 4px 0 #141414, 0 -2px 0 #141414, 2px 0 0 #141414, -2px 0 0 #141414, 2px 2px 0 #141414, -2px 2px 0 #141414; }
+  .rs-card .rs-ask { margin-top: 10px; max-width: 100%; }
+  .rs-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .rs-pick .rs-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .rs-pick .rs-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .rs-menu { display: flex; gap: 12px; justify-content: center; width: min(760px, 100%); }
+  .rs-menu .rs-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
+  .rs-menu .rs-btn .i { font-size: 44px; }
+  .rs-star { font-size: 76px; line-height: 1; }
+  .rs-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; color: #FFFDF2; }
+  /* Wide screens: the words, the chip and the round dots share one line across the top, so the pad gets the height. */
+  @media (min-aspect-ratio: 9/10) {
+    .rs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .rs-ask { flex: 0 1 auto; max-width: 100%; } .rs-row2 { flex: 0 1 auto; min-width: 0; }
+    .rs-askt { font-size: clamp(18px, 2.4vw, 28px); } .rs-sum { font-size: clamp(20px, 2.9vw, 34px); } .rs-sum.long { font-size: clamp(15px, 2vw, 24px); white-space: nowrap; }
+  }
+  @media (max-width: 480px) { .rs-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .rs-sum.long { font-size: clamp(16px, 4.3vw, 24px); } .rs-dots { gap: 5px; } .rs-dots i { width: 13px; height: 13px; border-width: 2.5px; } .rs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .rs .rs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .rs-btn .i { font-size: 26px; } .rs-bar.build { gap: 6px; padding-left: 6px; padding-right: 6px; } .rs-bar.build .rs-btn { font-size: 12px; } .rs-menu { gap: 8px; } .rs-menu .rs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .rs-menu .rs-btn .i { font-size: 36px; } .rs-star { font-size: 60px; } }
+  @media (max-height: 520px) { .rs .rs-btn { min-height: 60px; font-size: 15px; } .rs-btn .i { font-size: 24px; } .rs-btn .big { font-size: 36px; } .rs .rs-say { width: 44px; height: 44px; font-size: 20px; } .rs-menu .rs-btn { min-height: 90px; } .rs-star { font-size: 52px; } }
+  @media (prefers-reduced-motion: reduce) { .rs .rs-btn.no { animation: none; outline: 5px dashed #ff8a70; outline-offset: 2px; } .rs .rs-say:active, .rs .rs-btn:active { transform: none; } }
+</style>
+<div class="rs-load" id="load" role="status">Getting the rocket ready…</div>
+<div class="rs" id="rs" hidden>
+  <div class="rs-top">
+    <div class="rs-line" id="line">
+      <div class="rs-ask" id="ask" hidden><button class="rs-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="rs-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="rs-row2" id="row2" hidden>
+        <div class="rs-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="rs-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="rs-low">
+    <div class="rs-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="rs-bar" id="bar" hidden></div>
+  </div>
+  <div class="rs-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Rocket Supply's rounds: plain data and functions (no DOM, no 3D), so tests/unit/rocket-supply.test.js can run
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
+   so the first six rounds are always the same; a replay gets new numbers). ===== */
+/* rocket-supply:begin */
+(function (root) {
+  var CHAPTERS = ['build', 'count', 'fuel'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function pick(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  /** Three numbers, smallest first: the answer and the first two of `traps` (the mistakes a child makes) that are
+   *  other numbers inside [lo, hi]; a neighbour of the answer stands in when a trap is not there to use. */
+  function three(answer, traps, lo, hi) {
+    var ch = [answer], pool = traps.concat([answer + 1, answer - 1, answer + 2, answer - 2, answer + 3]);
+    for (var i = 0; i < pool.length && ch.length < 3; i++) if (pool[i] >= lo && pool[i] <= hi && ch.indexOf(pool[i]) < 0) ch.push(pool[i]);
+    return ch.sort(function (x, y) { return x - y; });
+  }
+  /** A number's hundreds, tens and ones. */
+  function parts(n) { return { h: Math.floor(n / 100), t: Math.floor(n / 10) % 10, o: n % 10 }; }
+  /** A number in expanded form, as it is written: 342 is "300 + 40 + 2", 407 is "400 + 7", 0 is "0". */
+  function expanded(n) { var p = parts(n), s = []; if (p.h) s.push(p.h * 100); if (p.t) s.push(p.t * 10); if (p.o || !s.length) s.push(p.o); return s.join(' + '); }
+  var ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  var TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  /** A number's name in words, to 999: 618 is "six hundred eighteen", 342 is "three hundred forty-two". */
+  function name(n) {
+    var h = Math.floor(n / 100), r = n % 100, s = h ? ONES[h] + ' hundred' : '';
+    if (r || !h) s += (s ? ' ' : '') + (r < 20 ? ONES[r] : TENS[Math.floor(r / 10)] + (r % 10 ? '-' + ONES[r % 10] : ''));
+    return s;
+  }
+  /** Three different digits from lo to 9. */
+  function digits3(r, lo) { var a = pick(r, lo, 9), b, c; do { b = pick(r, lo, 9); } while (b === a); do { c = pick(r, lo, 9); } while (c === a || c === b); return [a, b, c]; }
+  // Which kind of pair each of the three comparing rounds shows, by lap: hundreds differ (h), the same hundreds (t),
+  // the same hundreds and tens (o), the same digits in another order (swap), the same number twice (eq).
+  var PAIRS = [['h', 'swap', 'o'], ['t', 'eq', 'h'], ['swap', 'o', 'eq'], ['o', 'h', 't']];
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n }, a, b, c, d, h, t, o, x, k, p;
+    if (chapter === 'build') {
+      // 1 load a number with pallets, racks and canisters. 2 no pallets today: load 120 with racks of ten (ten racks
+      // lock into a pallet). 3 read a load with an empty place (407; on odd laps 470). 4 read a load with three
+      // different digits (352, not 325 or 532). 5 a number from its parts (300 + 40 + 2; on odd laps 500 + 6).
+      // 6 a number from its name, read aloud (618, not 680 or 608; on odd laps 342, not 324).
+      if (n === 1) { h = pick(r, 2, lap ? 4 : 3); t = pick(r, 2, lap ? 5 : 4); o = pick(r, 2, lap ? 5 : 4); x = h * 100 + t * 10 + o; out.kind = 'build'; out.form = 'hto'; out.stock = { h: true, t: true, o: true }; out.target = x; out.ask = ['build.ask', { n: x }]; out.said = [['parts', { h: h, t: t, o: o, n: x }]]; out.choices = []; }
+      else if (n === 2) { t = pick(r, 11, 14); x = t * 10; out.kind = 'build'; out.form = 'tens'; out.stock = { h: false, t: true, o: false }; out.target = x; out.ask = ['build.ask.tens', { n: x }]; out.said = [['tens.said', { t: t, n: x }]]; out.choices = []; }
+      else if (n === 3) {
+        h = pick(r, 2, 9); do { o = pick(r, 2, 9); } while (o === h);
+        out.kind = 'read';
+        if (lap % 2 === 0) { x = h * 100 + o; out.form = 'h0o'; out.said = [['read.zero.t', { h: h, o: o, n: x }]]; }
+        else { x = h * 100 + o * 10; out.form = 'ht0'; out.said = [['read.zero.o', { h: h, t: o, n: x }]]; }
+        out.num = x; out.choices = [h * 10 + o, h * 100 + o, h * 100 + o * 10]; out.ask = ['read.ask', {}];
+      } else if (n === 4) {
+        p = digits3(r, 2); h = p[0]; t = p[1]; o = p[2]; x = h * 100 + t * 10 + o;
+        out.kind = 'read'; out.form = 'hto'; out.num = x; out.choices = three(x, [h * 100 + o * 10 + t, t * 100 + h * 10 + o], 100, 999); out.ask = ['read.ask', {}]; out.said = [['parts', { h: h, t: t, o: o, n: x }]];
+      } else if (n === 5) {
+        out.kind = 'expand';
+        if (lap % 2 === 0) { p = digits3(r, 2); h = p[0]; t = p[1]; o = p[2]; x = h * 100 + t * 10 + o; out.form = 'hto'; out.choices = three(x, [h * 100 + o * 10 + t, t * 100 + h * 10 + o], 100, 999); out.ask = ['expand.ask3', { a: h * 100, b: t * 10, c: o }]; out.said = [['expand.said3', { a: h * 100, b: t * 10, c: o, n: x }]]; }
+        else if (lap % 4 === 1) { h = pick(r, 2, 9); do { o = pick(r, 2, 9); } while (o === h); x = h * 100 + o; out.form = 'h0o'; out.choices = [h * 10 + o, x, h * 100 + o * 10]; out.ask = ['expand.ask2', { a: h * 100, b: o }]; out.said = [['expand.said2', { a: h * 100, b: o, n: x }]]; }
+        else { h = pick(r, 2, 9); do { t = pick(r, 2, 9); } while (t === h); x = h * 100 + t * 10; out.form = 'ht0'; out.choices = [h * 10 + t, h * 100 + t, x]; out.ask = ['expand.ask2', { a: h * 100, b: t * 10 }]; out.said = [['expand.said2', { a: h * 100, b: t * 10, n: x }]]; }
+        out.num = x;
+      } else {
+        out.kind = 'name'; h = pick(r, 2, 9);
+        if (lap % 2 === 0) { o = [3, 4, 6, 7, 8, 9][pick(r, 0, 5)]; x = h * 100 + 10 + o; out.form = 'teen'; out.choices = [h * 100 + o, x, h * 100 + o * 10]; }   // eighteen, not eighty or eight
+        else { p = digits3(r, 2); h = p[0]; t = p[1]; o = p[2]; x = h * 100 + t * 10 + o; out.form = 'ty'; out.choices = three(x, [h * 100 + o * 10 + t, h * 100 + t], 100, 999); }
+        out.num = x; out.words = name(x); out.ask = ['name.ask', { n: x }]; out.said = [['name.said', { n: x }]];
+      }
+      out.answer = x;
+    } else if (chapter === 'count') {
+      // 1-3 what comes next, counting by fives, by tens and by hundreds (on odd laps the tens and the hundreds
+      // start off a round number: 234, 244, 254). 4-6 the sign between two three-digit numbers.
+      if (n <= 3) {
+        k = [5, 10, 100][n - 1]; out.kind = 'skip'; out.by = k;
+        if (n === 1) a = pick(r, lap % 2 ? 40 : 3, lap % 2 ? 190 : 17) * 5;
+        else if (n === 2) a = pick(r, 1, 9) * 100 + (lap % 2 ? pick(r, 0, 5) * 10 + pick(r, 1, 9) : pick(r, 1, 6) * 10);
+        else a = pick(r, 1, 6) * 100 + (lap % 2 ? pick(r, 1, 9) * 10 + (lap % 4 === 3 ? 5 : 0) : 0);
+        out.seq = [a, a + k, a + 2 * k]; x = a + 3 * k; out.answer = x;
+        out.choices = three(x, k === 5 ? [x - 4, x + 5] : k === 10 ? [x - 9, x + 90] : [x - 90, x - 99], 1, 1000);
+        out.ask = ['skip.ask.' + k, {}]; out.said = [['skip.said', { a: a, b: a + k, c: a + 2 * k, d: x }]];
+      } else {
+        var form = PAIRS[lap % 4][n - 4], big, small, why, flip = (n + lap) % 2 === 1;   // the greater number comes first in one round and second in the next
+        if (form === 'h') { h = pick(r, 3, 9); d = pick(r, 2, h - 1); big = h * 100 + pick(r, 0, 4) * 10 + pick(r, 0, 4); small = d * 100 + pick(r, 5, 9) * 10 + pick(r, 5, 9); why = ['cmp.why.h', { x: h, y: d }]; }
+        else if (form === 't') { h = pick(r, 1, 9); t = pick(r, 3, 9); d = pick(r, 2, t - 1); big = h * 100 + t * 10 + pick(r, 0, 4); small = h * 100 + d * 10 + pick(r, 5, 9); why = ['cmp.why.t', { x: t, y: d }]; }
+        else if (form === 'o') { h = pick(r, 1, 9); t = pick(r, 0, 9); o = pick(r, 3, 9); d = pick(r, 2, o - 1); big = h * 100 + t * 10 + o; small = h * 100 + t * 10 + d; why = ['cmp.why.o', { x: o, y: d }]; }
+        else if (form === 'swap') { h = pick(r, 1, 9); t = pick(r, 3, 9); d = pick(r, 2, t - 1); big = h * 100 + t * 10 + d; small = h * 100 + d * 10 + t; why = ['cmp.why.t', { x: t, y: d }]; }
+        else { big = small = pick(r, 1, 9) * 100 + pick(r, 0, 9) * 10 + pick(r, 0, 9); why = ['cmp.why.same', {}]; }
+        a = flip ? small : big; b = flip ? big : small;
+        out.kind = 'compare'; out.form = form; out.a = a; out.b = b; out.answer = a > b ? 'gt' : a < b ? 'lt' : 'eq'; out.choices = ['gt', 'eq', 'lt'];
+        out.why = form === 'eq' ? 'same' : form === 'swap' ? 't' : form;
+        out.ask = ['cmp.ask', {}]; out.said = [['cmp.' + out.answer, { a: a, b: b }], why];
+      }
+    } else {
+      // 1 a quick adding fact past ten (8 + 7). 2 adding two two-digit numbers where the ones make a new ten
+      // (38 + 27). 3 taking away where a ten must be opened (62 − 25). 4 a quick taking-away fact past ten (15 − 8).
+      // 5 adding again (on odd laps the ones make ten exactly: 46 + 34). 6 taking away again (on odd laps from a
+      // round ten: 70 − 26).
+      var ta, oa, tb, ob;
+      if (n === 1) { a = pick(r, 6, 9); b = pick(r, 11 - a, 9); x = a + b; out.kind = 'add'; out.fact = true; out.choices = three(x, [x - 1, x + 1], 1, 20); }
+      else if (n === 4) { a = pick(r, 11, 17); b = pick(r, a - 9, 9); x = a - b; out.kind = 'sub'; out.fact = true; out.choices = three(x, [x + 1, x - 1], 1, 20); }
+      else if (n === 2 || n === 5) {
+        ta = pick(r, n === 2 ? 1 : 2, n === 2 ? 4 : 5); tb = pick(r, 1, Math.min(n === 2 ? 3 : 4, 8 - ta)); oa = pick(r, n === 5 && lap % 2 ? 1 : 2, 9); ob = n === 5 && lap % 2 ? 10 - oa : pick(r, 11 - oa, 9);
+        a = ta * 10 + oa; b = tb * 10 + ob; x = a + b; out.kind = 'add'; out.fact = false; out.choices = three(x, [x - 10, x + 10], 1, 100);
+      } else {
+        ta = pick(r, n === 3 ? 4 : 6, n === 3 ? 7 : 9); tb = pick(r, 1, ta - 2); oa = n === 6 && lap % 2 ? 0 : pick(r, 1, 7); ob = pick(r, oa + 1, 9);
+        a = ta * 10 + oa; b = tb * 10 + ob; x = a - b; out.kind = 'sub'; out.fact = false; out.choices = three(x, [x + 10, (ta - tb) * 10 + (ob - oa)], 1, 100);   // the ten not opened; the smaller digit taken from the bigger
+      }
+      out.a = a; out.b = b; out.answer = x;
+      out.regroup = out.kind === 'add' ? a % 10 + b % 10 >= 10 : a % 10 < b % 10;
+      out.ask = [out.kind === 'add' ? 'add.ask' : 'sub.ask', { a: a, b: b }];
+      out.said = (out.regroup ? [[out.kind === 'add' ? 'add.ten' : 'sub.ten', {}]] : []).concat([[out.kind === 'add' ? 'sum.add' : 'sum.sub', { a: a, b: b, c: x }]]);
+    }
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.RocketSupply = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params, parts: parts, expanded: expanded, name: name };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* rocket-supply:end */
+</script>
+<script>
+/* ===== Rocket Supply's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {a}
+   takes a number in its place (never a word). The show.* lines are shown, never spoken (and what the number chip
+   shows, sums and signs and a number's name in words, is written by the game from the round's numbers). ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Rocket Supply",
+    "loading": "Getting the rocket ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.build": "Load the Rocket",
+    "ch.count": "Count and Compare",
+    "ch.fuel": "Fuel Up",
+    "build.ask": "Load {n}.",
+    "build.ask.tens": "No pallets left. Load {n} with tens.",
+    "build.bundle.t": "10 tens make 1 hundred.",
+    "build.bundle.o": "10 ones make 1 ten.",
+    "build.full": "The pad is full.",
+    "build.empty": "The pad is empty.",
+    "build.hint.h": "You need {h} hundreds.",
+    "build.hint.t": "You need {t} tens.",
+    "build.hint.o": "You need {o} ones.",
+    "build.hint.count": "Count by tens up to {n}.",
+    "parts": "{h} hundreds, {t} tens and {o} ones make {n}.",
+    "tens.said": "{t} tens make {n}.",
+    "read.ask": "How many in the load?",
+    "read.hint": "Count the hundreds, then tens, then ones.",
+    "read.zero.t": "{h} hundreds, no tens and {o} ones make {n}.",
+    "read.zero.o": "{h} hundreds, {t} tens and no ones make {n}.",
+    "expand.ask3": "What is {a} plus {b} plus {c}?",
+    "expand.ask2": "What is {a} plus {b}?",
+    "expand.hint": "Hundreds first. Then tens. Then ones.",
+    "expand.said3": "{a} plus {b} plus {c} makes {n}.",
+    "expand.said2": "{a} plus {b} makes {n}.",
+    "name.ask": "Which number is {n}?",
+    "name.hint": "Listen again. The hundreds come first.",
+    "name.said": "Yes! That is {n}.",
+    "skip.ask.5": "Count by fives. What comes next?",
+    "skip.ask.10": "Count by tens. What comes next?",
+    "skip.ask.100": "Count by hundreds. What comes next?",
+    "skip.hint.5": "Each step is 5 more.",
+    "skip.hint.10": "Each step is 10 more.",
+    "skip.hint.100": "Each step is 100 more.",
+    "skip.said": "{a}, {b}, {c}, {d}.",
+    "cmp.ask": "Which sign goes in the middle?",
+    "cmp.hint.h": "Look at the hundreds first.",
+    "cmp.hint.t": "Same hundreds. Look at the tens.",
+    "cmp.hint.o": "Same hundreds and tens. Look at the ones.",
+    "cmp.hint.same": "Check each place. Are they the same?",
+    "cmp.gt": "{a} is greater than {b}.",
+    "cmp.lt": "{a} is less than {b}.",
+    "cmp.eq": "{a} is equal to {b}.",
+    "cmp.why.h": "{x} hundreds is more than {y} hundreds.",
+    "cmp.why.t": "{x} tens is more than {y} tens.",
+    "cmp.why.o": "{x} ones is more than {y} ones.",
+    "cmp.why.same": "Every place is the same.",
+    "add.ask": "{a} plus {b}. How many?",
+    "sub.ask": "{a} take away {b}. How many are left?",
+    "add.hint": "Add the ones first. Do they make a ten?",
+    "sub.hint": "Not enough ones? Open a ten.",
+    "add.ten": "10 ones make a new ten.",
+    "sub.ten": "One ten opens into 10 ones.",
+    "sum.add": "{a} plus {b} makes {c}.",
+    "sum.sub": "{a} take away {b} leaves {c}.",
+    "win": "You did it!",
+    "win.card": "Every rocket is on its way. Well done!",
+    "round": "Round {n} of {m}",
+    "show.name": "Which number is this?",
+    "show.h": "100s",
+    "show.t": "10s",
+    "show.o": "1s",
+    "btn.say": "Say it again",
+    "btn.h": "Load a hundred",
+    "btn.t": "Load a ten",
+    "btn.o": "Load a one",
+    "btn.off": "Take one off",
+    "btn.go": "Lift off",
+    "btn.num": "Pick {n}",
+    "btn.gt": "is greater than",
+    "btn.eq": "is equal to",
+    "btn.lt": "is less than",
+    "btn.again": "Play again",
+    "btn.menu": "More games"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).RocketSupplyI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the launch pad's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const RS = window.RocketSupply, T = (window.RocketSupplyI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'rs', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'rocket-supply-v1';
+const ICON = { build: '📦', count: '🔢', fuel: '⛽' };
+const SIGN = { gt: '>', eq: '=', lt: '<' };
+
+/* ---------- state ---------- */
+const P = RS.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, shown: false, tick: 0,
+  total: 0, hist: [], reveal: false, work: false, launched: 0, load: null };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of RS.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box and say it; the speaker button says it again. `o.show` is a line to show in its
+ *  place (a number's name is heard, never given away in digits). */
+function say(key, vars, o = {}) {
+  S.line = [key, vars];
+  el.askt.textContent = o.show ? fmt(o.show) : fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The number chip: the sum or the sign as it is written, "38 + 27 = ?", and "38 + 27 = 65" once it is found. */
+function sum(text, tone) { el.sum.textContent = text || ''; el.sum.hidden = !text; el.sum.classList.toggle('long', String(text || '').length > 15); el.sum.style.background = tone === 'ask' ? '#FFD23F' : ''; }
+let hintTimer = 0;
+function hint(key, vars, o) {
+  clearTimeout(hintTimer);
+  if (!key) { el.hint.hidden = true; return; }
+  el.hint.textContent = fmt(key, vars); el.hint.hidden = false;
+  speak(key, vars, o);
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 6000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D space base ---------- */
+let g;
+try {
+  g = await start({ theme: 'space-base', version: '1.0.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+// A planet has no sea of clouds under it: the library's soft clouds are sent far below the ground.
+for (const o of g.scene.children) if (o.isGroup && o.children.length > 2 && o.children.every(m => m.isMesh && m.material === o.children[0].material)) o.position.y -= 900;
+
+// The theme's pieces, loaded once and copied: its base buildings, pads, landers, rovers, towers and rocks are the world.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['ground-high', 'slope', 'crater', 'landing-pad', 'landing-pad-small', 'base-dome', 'base-long', 'base-tower', 'base-small', 'garage', 'tunnel', 'structure', 'drill', 'rocket-lander', 'lander', 'rover', 'rover-big',
+  'solar-panel', 'wind-turbine', 'cargo', 'cargo-stack', 'containers', 'lights', 'rock', 'rocks'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+// The game's own simple shapes (the pad, the lift, the rocket, the supply pods), with the same ink edge as the theme.
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, ...o });
+const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide });
+const M = { ground: mat('#d9824f'), deck: mat('#3a4468'), deckLight: mat('#55628f'), steel: mat('#8b93ad'), dark: mat('#262c44'), white: mat('#f4f1e6'), red: mat('#e8503a'), glass: mat('#7fd6ff', { roughness: 0.3 }),
+  edge: mat('#ffd23f'), lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: '#1fc257' }), tube: mat('#1c2238') };
+const geos = new Map();
+const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
+/** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
+function box(material, w, h, d, x = 0, y = 0, z = 0, edge = 0.035) {
+  const m = new THREE.Mesh(boxGeo(w, h, d), material); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  if (edge) m.add(new THREE.Mesh(boxGeo(+(w + edge * 2).toFixed(3), +(h + edge * 2).toFixed(3), +(d + edge * 2).toFixed(3)), INK));
+  return m;
+}
+/** A round part (a cylinder, or a cone when r0 is 0) with an ink hull. */
+const cylGeo = (r0, r1, h, n = 16) => { const k = ['c', r0, r1, h, n].join('|'); if (!geos.has(k)) geos.set(k, new THREE.CylinderGeometry(r0, r1, h, n)); return geos.get(k); };
+function round(material, r0, r1, h, x = 0, y = 0, z = 0, edge = 0.03) {
+  const m = new THREE.Mesh(cylGeo(r0, r1, h), material); m.position.set(x, y, z); m.castShadow = true;
+  if (edge) m.add(new THREE.Mesh(cylGeo(+(r0 + edge).toFixed(3), +(r1 + edge).toFixed(3), +(h + edge * 2).toFixed(3)), INK));
+  return m;
+}
+
+// Supply pods. One canister is a ONE; a rack of ten canisters is a TEN; a flat pallet of ten racks is a HUNDRED.
+// Each place has its own bright colour, so a load reads against the dark pad and the dark sky.
+const U = 0.2, ZP = 0.45;   // a canister is U across; racks and canisters stand a little in front of the pad's middle
+const TONE = { h: ['#58c98a', '#2f8f5b', '#a5ecc6'], t: ['#58b7f5', '#2b78b8', '#b4e0ff'], o: ['#ffd23f', '#c58f0a', '#fff0a8'] };
+function podTex(kind, face) {
+  const [fill, dark, light] = TONE[kind], c = document.createElement('canvas'), top = face === 'top';
+  c.width = kind === 't' ? 40 : 320; c.height = kind === 't' || top ? 320 : 40;
+  const x = c.getContext('2d'), w = c.width, h = c.height, nx = kind === 't' ? 1 : 10, ny = kind === 't' || top ? 10 : 1, cw = w / nx, chh = h / ny;
+  x.fillStyle = '#141414'; x.fillRect(0, 0, w, h);
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) { x.fillStyle = fill; x.fillRect(i * cw + 3, j * chh + 3, cw - 6, chh - 6); x.fillStyle = light; x.fillRect(i * cw + 3, j * chh + 3, cw - 6, 7); x.fillStyle = dark; x.fillRect(i * cw + 3, (j + 1) * chh - 9, cw - 6, 6); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+const podMat = {};
+{
+  const tex = (kind, face) => new THREE.MeshStandardMaterial({ map: podTex(kind, face), roughness: 0.75 });
+  const hs = tex('h', 'side'), ht = tex('h', 'top'), ts = tex('t', 'side'), plain = k => mat(TONE[k][0]);
+  podMat.h = [hs, hs, ht, plain('h'), hs, hs]; podMat.t = [ts, ts, plain('t'), plain('t'), ts, ts]; podMat.o = plain('o'); podMat.oTop = mat(TONE.o[2]);
+}
+const GHOST = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.3, depthWrite: false }), GHOST_EDGE = new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.85 });
+const SIZE = { h: [10 * U, 0.9 * U, 10 * U], t: [0.9 * U, 10 * U, 0.9 * U], o: [0.9 * U, 0.9 * U, 0.9 * U] }, EDGES = {};
+/** One pod: 'h' a pallet, 't' a rack, 'o' a canister; `ghost` is the pale outline of one that was taken away. */
+function pod(kind, ghost) {
+  const [w, h, d] = SIZE[kind]; let m;
+  if (ghost) { EDGES[kind] ||= new THREE.EdgesGeometry(boxGeo(w, h, d)); m = new THREE.Mesh(boxGeo(w, h, d), GHOST); m.add(new THREE.LineSegments(EDGES[kind], GHOST_EDGE)); m.renderOrder = 2; }
+  else if (kind === 'o') { m = round(podMat.o, w / 2, w / 2, h, 0, 0, 0, 0.022); const cap = new THREE.Mesh(cylGeo(w * 0.3, w * 0.3, 0.012, 12), podMat.oTop); cap.position.y = h / 2 + 0.004; m.add(cap); }
+  else { m = new THREE.Mesh(boxGeo(w, h, d), podMat[kind]); m.castShadow = true; m.add(new THREE.Mesh(boxGeo(w + 0.05, h + 0.05, d + 0.05), INK)); }
+  m.userData.pod = kind; m.userData.ghost = !!ghost;
+  return m;
+}
+
+/** A number (or a sign, or a few words) on a board that always faces the player (the textures are made once and kept). */
+const boardTex = new Map(), BOARD_LIGHT = new THREE.Color(0.86, 0.86, 0.86);   // under the glow threshold, so a board never blooms into the dark sky
+function board(text, w = 0.9, tone = 'cream') {
+  const key = text + '|' + tone;
+  if (!boardTex.has(key)) {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 176;
+    const x = c.getContext('2d'), n = String(text).length;
+    x.fillStyle = { cream: '#FFFDF2', gold: '#FFD23F', green: '#9df5b9' }[tone]; x.strokeStyle = '#141414'; x.lineWidth = 14; x.lineJoin = 'round';
+    x.beginPath(); x.roundRect(10, 10, 236, 156, 36); x.fill(); x.stroke();
+    x.fillStyle = '#141414'; x.font = `900 ${n > 3 ? 84 : n > 2 ? 104 : 128}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 97);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; boardTex.set(key, tex);
+  }
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex.get(key), fog: false, alphaTest: 0.5, color: BOARD_LIGHT })); s.scale.set(w, w * 176 / 256, 1);
+  s.userData.text = String(text); s.userData.label = true;
+  return s;
+}
+
+// Moving things: a drop from above with a bounce, a flight from one place to another, a wait. With reduced motion
+// (and in the tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these, run by
+// the game loop, so a slow device plays the same steps in the same order.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const bounce = k => { const n = 7.5625, d = 2.75; if (k < 1 / d) return n * k * k; if (k < 2 / d) { k -= 1.5 / d; return n * k * k + 0.75; } if (k < 2.5 / d) { k -= 2.25 / d; return n * k * k + 0.9375; } k -= 2.625 / d; return n * k * k + 0.984375; };
+/** A pod falls onto its place and bounces; the thud sounds as it lands. */
+function fall(o, { wait = 0, then, high = 2.2, quiet = false } = {}) {
+  const y = o.position.y; let hit = false;
+  anim(o, 0.45, k => { o.position.y = y + high * (1 - bounce(k)); if (!hit && k >= 0.36) { hit = true; if (!quiet) sfx('land'); } if (k >= 1) o.position.y = y; }, then, wait);
+}
+function fly(o, to, { dur = 0.5, arc = 0.8, then, wait = 0, shrink = false } = {}) {
+  let from = null; const s0 = o.scale.x;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (shrink) o.scale.setScalar(s0 * (1 - 0.8 * e)); if (k >= 1) o.position.copy(to); }, then, wait);
+}
+/** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- the base: the theme's domes, towers, pads, landers and rovers on the red ground, under the stars ---------- */
+const GY = -0.5, LIFT_Z = -4.3;   // the ground; the loading pad's top is y = 0
+{
+  const world = new THREE.Group();
+  const ground = new THREE.Mesh(boxGeo(520, 2, 520), M.ground); ground.position.set(0, GY - 1, -120); ground.receiveShadow = true; world.add(ground);
+  for (const [id, x, z, s, turn = 0, y = GY] of [
+    // the base, close behind the launch lift: buildings joined by tunnels, a garage, towers
+    ['base-dome', -7.2, -10.5, 3.2, 0.4], ['base-long', 7.4, -10.8, 3.2, -0.5], ['base-tower', -3.6, -13.5, 3, 0], ['base-small', 3.9, -13.8, 3, 0.3], ['garage', 13.5, -8.2, 2.8, -0.9], ['base-small', -13.8, -8, 2.8, 0.9],
+    ['tunnel', -5.6, -12.4, 2.2, 0.7], ['tunnel', 0.2, -13.9, 2.2, 0], ['tunnel', 5.8, -12.6, 2.2, -0.7],
+    ['wind-turbine', -4.9, -9, 2.6, 0.3], ['wind-turbine', 5.2, -9.2, 2.6, -0.3], ['wind-turbine', -17, -13, 3.4, 0.2], ['wind-turbine', 17.5, -13.5, 3.4, -0.2],
+    ['structure', -10.6, -6, 2.1, 0.2], ['drill', 10.8, -6.2, 2.1, 0], ['structure', 20, -10, 2.6, 0], ['drill', -20.5, -9.5, 2.6, 0],
+    // out on the field: pads with landers, rovers, cargo, lights, sun panels
+    ['landing-pad-small', -9.6, -1.6, 1.6, 0, GY - 0.3], ['lander', -9.6, -1.6, 1.5, 0.5, GY + 0.45], ['landing-pad-small', 9.8, -1.2, 1.6, 0, GY - 0.3], ['rocket-lander', 9.8, -1.2, 1.5, -0.6, GY + 0.45],
+    ['rover-big', -8.2, 2.6, 1.9, 1.9], ['rover', 8.4, 3, 1.9, -2], ['cargo-stack', -12.6, -5.6, 1.3, 0.3], ['cargo', -11.4, -5.1, 1.3, 0], ['containers', 11.6, -5.8, 1.9, 0.2], ['cargo-stack', 12.9, -6.1, 1.3, -0.4], ['cargo', 12.8, 1.8, 1.3, 0.6],
+    ['lights', -6.6, -6.4, 1.7, 0], ['lights', 6.6, -6.4, 1.7, 0], ['lights', -9.4, -7.6, 1.7, 0], ['lights', 9.4, -7.6, 1.7, 0],
+    ['solar-panel', -12.2, -3.4, 2.6, 0.5], ['solar-panel', -14.4, -1.9, 2.6, 0.5], ['solar-panel', 12.6, -3.6, 2.6, -0.5], ['solar-panel', 14.9, -2.1, 2.6, -0.5], ['solar-panel', -11.6, 2.2, 2.4, 0.3],
+    ['crater', -16.5, 2.6, 1.8, 0, GY - 1.7], ['crater', 17.5, 3.4, 1.6, 1, GY - 1.5], ['rocks', -8.6, 3.6, 1.7, 0], ['rocks', 9.2, 4.2, 1.6, 2], ['rock', -3.9, 4.3, 1.8, 0], ['rock', 4.6, 4.9, 1.6, 1], ['rocks', -19, -4, 2.2, 1], ['rocks', 21, -3, 2.2, 0],
+    // the hills at the edge of the plain
+    ['ground-high', -30, -30, 7, 0.3, GY - 2], ['slope', -17, -33, 6, 0, GY - 1], ['ground-high', 3, -38, 8, 0.1, GY - 3], ['ground-high', 21, -34, 6, -0.2, GY - 1], ['slope', 34, -29, 7, Math.PI, GY - 1], ['ground-high', -46, -22, 8, 0, GY - 2], ['ground-high', 48, -24, 8, 0.4, GY - 2],
+    ['crater', -9, -24, 3, 0, GY - 2.8], ['crater', 12, -22, 2.6, 0, GY - 2.4]])
+    world.add(piece(id, x, y, z, s, turn));
+  // stars over the base: small points far off in the dark sky (the same every time)
+  const sr = (() => { let a = 7; return () => { a = (a * 16807) % 2147483647; return a / 2147483647; }; })(), sp = [];
+  for (let i = 0; i < 260; i++) { const az = (sr() - 0.5) * 2.6, alt = 0.06 + sr() * 1.1, d = 190; sp.push(Math.sin(az) * Math.cos(alt) * d, Math.sin(alt) * d - 4, -Math.cos(az) * Math.cos(alt) * d); }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+  world.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: '#fff6d8', size: 2.2, sizeAttenuation: false, fog: false })));
+  // and a blue world with a ring, low in the sky
+  const far = new THREE.Group(), globe = new THREE.Mesh(new THREE.SphereGeometry(11, 24, 16), new THREE.MeshBasicMaterial({ color: '#5aa7e8', fog: false })), ring = new THREE.Mesh(new THREE.RingGeometry(14, 18, 40), new THREE.MeshBasicMaterial({ color: '#cfe6ff', fog: false, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ring.rotation.x = 1.25; far.add(globe, ring); far.position.set(42, 62, -170); far.rotation.z = 0.35; world.add(far);
+  g.scene.add(world);
+}
+
+/* ---------- the launch lift: a platform on a tower that holds the rocket (and the helper) up where they can be
+   seen over the load; it stands higher when two loads are shown one above the other on a tall screen ---------- */
+const lift = new THREE.Group(), rocket = new THREE.Group(), flame = new THREE.Group();
+{
+  lift.add(box(M.deck, 3.6, 0.3, 3.0, 0, -0.15, 0));
+  for (const s of [-1, 1]) lift.add(box(M.edge, 3.66, 0.1, 0.12, 0, -0.06, s * 1.46, 0.02));
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) lift.add(box(M.steel, 0.24, 16, 0.24, sx * 1.55, -8.3, sz * 1.25, 0.03));
+  for (let i = 0; i < 9; i++) lift.add(box(M.steel, 3.1, 0.14, 0.14, 0, -1.2 - i * 1.6, 1.25, 0.02), box(M.steel, 0.14, 0.14, 2.5, -1.55, -1.2 - i * 1.6, 0, 0.02), box(M.steel, 0.14, 0.14, 2.5, 1.55, -1.2 - i * 1.6, 0, 0.02));
+  const stand = piece('landing-pad', -0.75, -0.42, 0, 1.0); lift.add(stand); lift.userData.stand = stand;   // the theme's pad under the rocket
+  // the rocket: the game's own, tall and plain to see (the theme's landers stand on the pads out on the field)
+  rocket.add(round(M.white, 0.5, 0.5, 1.6, 0, 1.25, 0), round(M.red, 0, 0.5, 0.85, 0, 2.47, 0), round(M.dark, 0.3, 0.42, 0.22, 0, 0.36, 0, 0.025), round(M.red, 0.51, 0.51, 0.16, 0, 0.62, 0, 0));
+  const win = round(M.glass, 0.19, 0.19, 0.06, 0, 1.55, 0.49, 0.035); win.rotation.x = Math.PI / 2; rocket.add(win);
+  for (let i = 0; i < 3; i++) { const f = box(M.red, 0.08, 0.75, 0.5, 0, 0.5, 0, 0.03), a = i * Math.PI * 2 / 3 + Math.PI / 2; f.position.set(Math.sin(a) * 0.68, 0.5, Math.cos(a) * 0.68); f.rotation.y = a + Math.PI / 2; rocket.add(f); }
+  const fl = (c, r, h) => { const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 12), new THREE.MeshBasicMaterial({ color: c })); m.rotation.x = Math.PI; m.position.y = -h / 2; return m; };
+  flame.add(fl(new THREE.Color(1.6, 0.55, 0.12), 0.34, 1.5), fl(new THREE.Color(1.8, 1.5, 0.5), 0.2, 0.95)); flame.position.y = 0.3; flame.visible = false; rocket.add(flame);
+  rocket.position.set(-0.75, 0, 0); lift.add(rocket);
+  lift.position.set(0, 3.7, LIFT_Z); g.scene.add(lift);
+}
+let flying = false;
+let burn = 0;
+g.onUpdate(dt => { if (flame.visible && !reduced) { burn += dt; flame.scale.y = 0.85 + 0.3 * Math.abs(Math.sin(burn * 22)); } });
+/** The rocket stands on the lift again (a new one comes down for the next round). */
+function rocketHome(land) {
+  drop(rocket); flying = false; rocket.visible = true; flame.visible = false; rocket.rotation.z = 0; rocket.position.y = 0;
+  if (land && !reduced && !S.fast) { flame.visible = true; anim(rocket, 0.8, k => { rocket.position.y = 9 * (1 - smooth(k)) ** 2; }, () => { flame.visible = false; sfx('land'); }); }
+}
+/** The load is right: the rocket lifts off at once. */
+function liftoff(then) {
+  S.launched++;
+  if (reduced || S.fast) { rocket.position.y = 0; return then(); }
+  flying = true; flame.visible = true; sfx('jump'); sfx('cheer');
+  if (S.hero) heroMove('cheer', 1900);
+  anim(rocket, 1.7, k => { rocket.position.y = 17 * k * k * k; rocket.rotation.z = Math.sin(k * 40) * 0.012 * (1 - k); }, () => { rocket.visible = false; flame.visible = false; flying = false; then(); });
+}
+/** A wrong answer: the rocket rocks on its pad. */
+function rock() { if (reduced || S.fast || flying) return; anim(rocket, 0.5, k => { rocket.rotation.z = Math.sin(k * Math.PI * 4) * 0.09 * (1 - k); }); }
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+const stage = new THREE.Group(), floor = new THREE.Group(); g.scene.add(floor, stage);
+// The camera looks across the pad at the base, low enough that the base and the sky show behind the load, and backs
+// off until the pad and the rocket fit between the words at the top and the buttons at the bottom, on any screen shape.
+const view = { rect: [-3.4, 3.4, LIFT_Z, 1.4], high: 6.7, low: 3, tilt: 0 };
+function frame() {
+  if (!g) return;
+  const cam = g.camera, [x0, x1, z0, z1] = view.rect, Wd = innerWidth, Hd = innerHeight;
+  const play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 6;
+  // (in a round, room is kept over the buttons for a hint, so a hint never covers the pad)
+  const botPx = (play ? (el.bar.hidden ? 12 : Hd - el.bar.getBoundingClientRect().top) + (tall ? 58 : 36) : kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 12;
+  const TILT = view.tilt || (tall ? 0.3 : 0.2), fov = tall ? 50 : 38, band = (tall ? 0.01 : 0.02) * Hd;   // a little sky above the rocket's nose
+  const safe = { l: -1 + 14 / Wd, r: 1 - 14 / Wd, t: 1 - 2 * (topPx + band) / Hd, b: -1 + 2 * botPx / Hd };
+  const pts = [];
+  for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(V3(x, -0.5, z), V3(x, z === z0 ? view.high : view.low, z));
+  const look = V3((x0 + x1) / 2, 0, (z0 + z1) / 2), v = V3(0, 0, 0);
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const sin = Math.sin(TILT), cos = Math.cos(TILT);
+  // at one distance: slide the camera up or down until the front of the pad rests just above the buttons, then say
+  // whether everything is inside the space kept for it
+  const fits = d => {
+    let lo = -40, hi = 60, bx;
+    for (let i = 0; i < 24; i++) {
+      look.y = (lo + hi) / 2;
+      cam.position.set(look.x, look.y + sin * d, look.z + cos * d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (bx[2] > safe.b) lo = look.y; else hi = look.y;
+    }
+    return bx[0] >= safe.l && bx[1] <= safe.r && bx[3] <= safe.t;
+  };
+  let near = 5, far = 150;
+  for (let i = 0; i < 16; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping a helper on the pad: the nearest one under the finger, with a generous reach ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+
+/* ---------- the loading pad and what stands on it ---------- */
+const PAD_W = 6.5, LOAD_W = 5.8, SHELF = 3.3;   // (a pad that stands over another one stands SHELF higher)   // a load is 29 canisters wide: a pallet, nine racks in fives, two stacks of canisters
+const plateTex = new Map(), plateGeo = new Map();
+function plate(key, tone, w = 256) {
+  if (!plateTex.has(key)) {
+    const c = document.createElement('canvas'); c.width = w; c.height = 96; const x = c.getContext('2d');
+    x.fillStyle = '#141414'; x.fillRect(0, 0, w, 96); x.fillStyle = tone; x.beginPath(); x.roundRect(8, 8, w - 16, 80, 18); x.fill();
+    x.fillStyle = '#141414'; x.font = '900 62px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(fmt(key), w / 2, 51);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; plateTex.set(key, new THREE.MeshBasicMaterial({ map: t, color: BOARD_LIGHT }));
+  }
+  return plateTex.get(key);
+}
+/** A pad `w` wide with its top at y, centred on cx; `bays` paints the three places (hundreds, tens, ones) on it and
+ *  names them on its front edge. A pad above the ground stands on legs. */
+function pad(cx, y, w = PAD_W, bays = false, z = 0) {
+  floor.add(box(M.deck, w, 0.5, 2.8, cx, y - 0.25, z));
+  for (const s of [-1, 1]) floor.add(box(M.edge, 0.14, 0.52, 2.84, cx + s * (w / 2 - 0.05), y - 0.25, z, 0.02));
+  if (y > 0.1) for (const s of [-1, 1]) floor.add(box(M.steel, 0.22, y, 0.22, cx + s * (w / 2 - 0.2), y / 2 - 0.5, z - 1.1, 0.03), box(M.steel, 0.22, y, 0.22, cx + s * (w / 2 - 0.2), y / 2 - 0.5, z + 1.1, 0.03));
+  if (!bays) return;
+  const x0 = cx - LOAD_W / 2;
+  for (const [k, bx, bw] of [['h', x0 + 1, 2.1], ['t', x0 + 3.64, 2.78], ['o', x0 + 5.54, 0.62]]) {
+    const b = new THREE.Mesh(boxGeo(bw, 0.02, 2.5), M.deckLight); b.position.set(bx, y + 0.011, z); b.receiveShadow = true; floor.add(b);
+    const pw = k === 'o' ? 144 : 256, lh = 0.4; if (!plateGeo.has(pw)) plateGeo.set(pw, new THREE.PlaneGeometry(lh * pw / 96, lh));
+    const l = new THREE.Mesh(plateGeo.get(pw), plate('show.' + k, TONE[k][0], pw)); l.position.set(bx, y - 0.25, z + 1.405); floor.add(l);   // the place's name on the pad's front edge
+  }
+}
+const rackDX = i => (i + 0.5) * 0.28 + (i >= 5 ? 0.16 : 0), racksW = t => (t ? t * 0.28 + (t > 5 ? 0.16 : 0) : 0);
+const oneDX = i => (Math.floor(i / 5) + 0.5) * 0.26, oneY = i => (i % 5) * 0.24 + 0.09, onesW = o => Math.ceil(o / 5) * 0.26;
+const palletY = i => i * 0.28 + (i >= 5 ? 0.12 : 0) + 0.09;
+/** Where a number's pods stand on a pad centred on cx with its top at y0: pallets in one pile (a gap after five),
+ *  racks side by side in fives, canisters in stacks of five. -> { items, top: { h, t, o }, mid: { h, t, o } } */
+function numberLayout(n, cx, y0) {
+  const p = RS.parts(n), x0 = cx - LOAD_W / 2, items = [];
+  for (let i = 0; i < p.h; i++) items.push({ kind: 'h', x: x0 + 1, y: y0 + palletY(i), z: 0 });
+  for (let i = 0; i < p.t; i++) items.push({ kind: 't', x: x0 + 2.3 + rackDX(i), y: y0 + 1, z: ZP });
+  for (let i = 0; i < p.o; i++) items.push({ kind: 'o', x: x0 + 5.28 + oneDX(i), y: y0 + oneY(i), z: ZP });
+  return { p, items, top: { h: y0 + (p.h ? palletY(p.h - 1) + 0.09 : 0), t: y0 + (p.t ? 2 : 0), o: y0 + (p.o ? oneY(Math.min(p.o, 5) - 1) + 0.09 : 0) },
+    mid: { h: x0 + 1, t: x0 + 2.3 + (p.t ? racksW(p.t) / 2 : 1.34), o: x0 + 5.28 + (p.o ? onesW(p.o) / 2 : 0.26) } };
+}
+/** Stand pods on the pad. `move`: 'intro' they drop in, a place at a time; otherwise they are simply there. */
+function standPods(items, move, then, tick = S.tick) {
+  let pending = 0, wait = 0.1, last = null;
+  const made = items.map(it => {
+    const o = pod(it.kind, it.ghost); o.position.set(it.x, it.y, it.z); stage.add(o);
+    if (move === 'intro' && !it.ghost) { if (last && last !== it.kind) wait += 0.3; last = it.kind; pending++; fall(o, { wait, then: () => { if (--pending === 0 && then && tick === S.tick) then(); } }); wait += it.kind === 'o' ? 0.05 : 0.09; }
+    return o;
+  });
+  if (!pending && then) then();
+  return made;
+}
+function addBoard(text, x, y, w, tone, z = ZP) { const b = board(text, w, tone); b.position.set(x, y, z); stage.add(b); return b; }
+/** A number's pods on its pad, and the boards over them: 'digits' how many of each place (3, 0, 7), 'values' what
+ *  each place is worth (300, 40, 2), `num` the number itself over the middle. */
+function showNumber(n, cx, y0, { move = '', boards = '', num = false, mark = '', tone = 'cream', then } = {}) {
+  const L = numberLayout(n, cx, y0);
+  standPods(L.items, move, then);
+  for (const k of ['h', 't', 'o']) {
+    const v = L.p[k], low = num === 'side', bz = k === 'h' && v && !low ? -0.85 : ZP;   // a pallet is deep: its board stands over its far edge
+    if (boards === 'digits' || mark === k) addBoard(v, L.mid[k], Math.min(Math.max(L.top[k], y0) + 0.36, low ? y0 + 2.4 : 99), low ? 0.6 : 0.7, mark === k ? 'gold' : tone, bz);
+    else if (boards === 'values' && v) addBoard(v * { h: 100, t: 10, o: 1 }[k], L.mid[k], L.top[k] + 0.38, k === 'o' ? 0.66 : 0.9, tone, bz);
+  }
+  // the number itself: over the load, or (where another pad stands close above) beside the racks, over the canisters
+  if (num) addBoard(n, num === 'side' ? cx + 2.47 : cx + 0.2, y0 + (num === 'side' ? 1.75 : 2.62), num === 'side' ? 0.9 : 1.15, tone);
+  return L;
+}
+
+/* ---------- the helper ---------- */
+let lineup = [];
+const heroSize = () => (tall ? 0.72 : 0.82);
+/** The helper stands on the lift beside the rocket, above the load: never in front of a pod or a number. */
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.set(lift.position.x - S.rx * 1.23, lift.position.y, lift.position.z + 0.45); h.object.rotation.y = S.rx < 0 ? -0.25 : 0.25; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+function clearStage() {
+  for (const grp of [stage, floor]) for (const o of [...grp.children]) { grp.remove(o); if (o.isSprite) o.material.dispose(); }
+  tweens.length = 0; targets.length = 0;
+}
+/** Where the lift stands for what is shown. A wide screen with one pad: beside the pad, low (the pad is `S.cx` to
+ *  the right of the middle). A tall screen, or two pads side by side: behind the pad, high enough to be seen over
+ *  the load, and higher still when two pads stand one above the other. Then the camera is told what to fit:
+ *  `top` is how high the load and its boards reach. */
+function arrange(two, top) {
+  const side = !tall && !two, stacked = two && tall, wide = two && !tall;
+  // (behind the pad the lift is further off, so it shows over the load from about a canister-stack lower than the load's top)
+  lift.position.set(side ? -3.5 : 0, side ? 0.6 : stacked ? SHELF + 1.9 : wide ? 1.7 : Math.max(1.7, top - 1), side ? -0.1 : wide ? -3.3 : LIFT_Z);
+  S.cx = side ? 1.9 : 0; stage.position.x = floor.position.x = S.cx;
+  // between two pads the rocket stands on the right (it shows over the pallets) and the helper on the left (over the canisters)
+  S.rx = wide ? 0.75 : -0.75; rocket.position.x = lift.userData.stand.position.x = S.rx;
+  const high = lift.position.y + 2.95;
+  if (side) Object.assign(view, { rect: [-5.3, 5.15, -1.45, 1.45], high: Math.max(high, top), low: Math.max(high, top), tilt: 0 });
+  else Object.assign(view, { rect: wide ? [-7.1, 7.1, -3.3, 1.45] : [-3.02, 3.02, LIFT_Z, 1.45], high, low: stacked ? SHELF + top : top, tilt: 0 });
+  return stacked;
+}
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage(); arrange(false, 2.4); rocketHome(); pad(0, 0);
+  const gap = tall ? 1.2 : 1.35;
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(tall ? 0.8 : 0.95); h.position.set(S.cx + (i - 2) * gap, 0, 0.3); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1), r: 0.7, go: () => chooseHero(h.id) }));
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, cls, go, aria, pic, off }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'rs-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, text) => { const s = document.createElement('span'); s.className = c; if (text != null) s.textContent = text; return s; };
+  if (pic) { const i = span('rs-pod ' + pic); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (big != null) b.append(span('big', big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  if (off) b.disabled = true;
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'rs-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'rs-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'rs-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'rs-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'rs-menu' : 'rs-pick'; row.append(...buttons.map(button));
+  el.card.className = 'rs-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper beside the rocket, and a small load on the pad (1 pallet, 2 racks, 3 canisters): the menu and the end of a chapter. */
+function solo() {
+  clearStage(); arrange(false, 2.4); rocketHome(); pad(0, 0, PAD_W, true);
+  showNumber(123, 0, 0); S.load = null;
+  placeHero();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.tick++; solo();
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: RS.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!RS.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: RS.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: RS.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+/** The number chip for the round: what is asked as it is written, "?" where the answer goes while it is asked. */
+function chipText(Rd, found) {
+  const q = found ? Rd.answer : '?';
+  if (Rd.kind === 'build') return RS.expanded(S.total);   // the load so far, in its parts: 200 + 40 + 3
+  if (Rd.kind === 'read') return found ? RS.expanded(Rd.num) + ' = ' + Rd.num : '';
+  if (Rd.kind === 'expand') return RS.expanded(Rd.num) + ' = ' + q;
+  if (Rd.kind === 'name') return Rd.words + (found ? ' = ' + Rd.num : '');
+  if (Rd.kind === 'skip') return Rd.seq.join(', ') + ', ' + q;
+  if (Rd.kind === 'compare') return Rd.a + ' ' + (found ? SIGN[Rd.answer] : '?') + ' ' + Rd.b;
+  return Rd.a + (Rd.kind === 'add' ? ' + ' : ' − ') + Rd.b + ' = ' + q;
+}
+const showSum = (Rd, found) => sum(chipText(Rd, found), found ? '' : 'ask');
+function nextRound() {
+  if (S.round >= RS.ROUNDS) return finish();
+  S.round++; S.R = RS.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.tick++;
+  S.total = 0; S.hist = []; S.reveal = false; S.work = false;
+  const Rd = S.R;
+  hint(); dots(); showSum(Rd, false);
+  say(Rd.ask[0], Rd.ask[1], Rd.kind === 'name' ? { show: 'show.name' } : {});   // the words first: the camera fits the pad under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  solo();
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🚀', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/* ---------- adding and taking away with racks and canisters (the fuel chapter) ---------- */
+const stackY = k => k * U + 0.09;   // ten canisters stood one on another are as tall as a rack
+/** Where everything stands for a sum. `done`: the work is shown (the ones that made a ten are a new rack; an opened
+ *  ten is ten canisters, and what was taken away is a pale outline).
+ *  -> { items: [{ kind, x, y, z, ghost, from }], boards: [[text, x, y, w, tone]], counts } */
+function sumLayout(Rd, done) {
+  const A = RS.parts(Rd.a), Bp = RS.parts(Rd.b), items = [], boards = [], G = 0.24;
+  A.t += A.h * 10; Bp.t += Bp.h * 10;
+  // how wide the sum stands while it is asked: its pods are drawn as big as the pad allows (never more than 1.25)
+  const wide = Rd.kind === 'add' ? racksW(A.t) + (A.t && A.o ? G : 0) + onesW(A.o) + 1 + racksW(Bp.t) + (Bp.t && Bp.o ? G : 0) + onesW(Bp.o) : racksW(A.t) + G + onesW(Math.max(A.o + (A.o < Bp.o ? 10 : 0), 1)) + 0.35 + 1.15, k = Math.min(1.25, 5.7 / wide);
+  const at = (kind, x, y, extra) => items.push({ kind, x, y, z: ZP, ...extra });
+  const top = (t, o) => (t ? 2 : o ? oneY(Math.min(o, 5) - 1) + 0.09 : 0);
+  if (Rd.kind === 'add') {
+    if (!done) {
+      const wa = racksW(A.t) + (A.t && A.o ? G : 0) + onesW(A.o), wb = racksW(Bp.t) + (Bp.t && Bp.o ? G : 0) + onesW(Bp.o), mid = 1.0, x0 = -(wa + mid + wb) / 2, xb = x0 + wa + mid;
+      for (let i = 0; i < A.t; i++) at('t', x0 + rackDX(i), 1, { g: 'a' });
+      for (let i = 0; i < A.o; i++) at('o', x0 + racksW(A.t) + (A.t ? G : 0) + oneDX(i), oneY(i), { g: 'a' });
+      for (let i = 0; i < Bp.t; i++) at('t', xb + rackDX(i), 1, { g: 'b' });
+      for (let i = 0; i < Bp.o; i++) at('o', xb + racksW(Bp.t) + (Bp.t ? G : 0) + oneDX(i), oneY(i), { g: 'b' });
+      boards.push([Rd.a, x0 + wa / 2, top(A.t, A.o) + 0.4, 0.84, 'cream'], ['+', x0 + wa + mid / 2, 0.7, 0.7, 'gold'], [Rd.b, xb + wb / 2, top(Bp.t, Bp.o) + 0.4, 0.84, 'cream']);
+      return { k, items, boards, counts: { racks: A.t + Bp.t, ones: A.o + Bp.o, ghostRacks: 0, ghostOnes: 0 } };
+    }
+    const ones = A.o + Bp.o, carry = ones >= 10 ? 1 : 0, nt = A.t + Bp.t + carry, no = ones - carry * 10, w = racksW(nt) + (nt && no ? G : 0) + onesW(no), x0 = -w / 2;
+    for (let i = 0; i < nt; i++) at('t', x0 + rackDX(i), 1, { fresh: carry && i === nt - 1 });
+    for (let i = 0; i < no; i++) at('o', x0 + racksW(nt) + (nt ? G : 0) + oneDX(i), oneY(i));
+    boards.push([Rd.answer, 0, top(nt, no) + 0.42, 0.9, 'green']);
+    return { k, items, boards, counts: { racks: nt, ones: no, ghostRacks: 0, ghostOnes: 0 }, slot: carry ? x0 + rackDX(nt - 1) : null, x0, nt };
+  }
+  // taking away: the racks and canisters of the first number; with the work shown, a ten is opened where the ones
+  // do not reach, and what goes is a pale outline (the last canisters, the last racks)
+  const open = done && A.o < Bp.o ? 1 : 0, nt = A.t - open, no = A.o + open * 10, slots = A.t, w = racksW(slots) + G + onesW(Math.max(no, A.o + (A.o < Bp.o ? 10 : 0), 1)), bw = 1.15, x0 = -(w + 0.35 + bw) / 2;
+  for (let i = 0; i < nt; i++) at('t', x0 + rackDX(i), 1, { ghost: done && i >= nt - Bp.t });
+  for (let i = 0; i < no; i++) at('o', x0 + racksW(slots) + G + oneDX(i), oneY(i), { ghost: done && i >= no - Bp.o, opened: open && i >= A.o });
+  boards.push([done ? Rd.answer : Rd.a, x0 + (racksW(slots) + G + onesW(Math.max(no, 1))) / 2, (slots ? 2 : top(0, no)) + 0.42, 0.9, done ? 'green' : 'cream'], ['−' + Rd.b, x0 + w + 0.35 + bw / 2, 1.0, bw, 'gold']);
+  return { k, items, boards, counts: { racks: nt - (done ? Bp.t : 0), ones: no - (done ? Bp.o : 0), ghostRacks: done ? Bp.t : 0, ghostOnes: done ? Bp.o : 0 }, openX: open ? x0 + rackDX(A.t - 1) : null };
+}
+function drawSum(Rd, done, move, then) {
+  const L = sumLayout(Rd, done);
+  stage.scale.setScalar(L.k);
+  standPods(L.items, move, then);
+  for (const b of L.boards) addBoard(...b);
+  S.load = L.counts;
+  return L;
+}
+/** Show the work of a sum on the pad, step by step: the ones come together and ten of them lock into a new rack;
+ *  or a rack opens into ten canisters and what is taken away flies to the rocket. Then `then`. */
+function workSum(Rd, then) {
+  S.work = true;
+  const tick = S.tick, ok = fn => () => { if (tick === S.tick) fn(); };
+  const shown = ok(() => { clearPods(); drawSum(Rd, true, ''); then(); });   // the worked sum stands on the pad
+  if (reduced || S.fast || !Rd.regroup) return shown();
+  const pods = stage.children.filter(o => o.userData.pod), ones = pods.filter(o => o.userData.pod === 'o'), racks = pods.filter(o => o.userData.pod === 't');
+  const F = sumLayout(Rd, true);
+  if (Rd.kind === 'add') {
+    // every pod goes to its place in the answer; the first ten canisters stack up where the new rack will stand
+    const rackSpots = F.items.filter(i => i.kind === 't' && !i.fresh), oneSpots = F.items.filter(i => i.kind === 'o');
+    let pending = pods.length;
+    const landed = ok(() => { if (--pending) return; sfx('coin'); hint('add.ten'); pause(0.9, shown); });
+    racks.forEach((o, i) => fly(o, V3(rackSpots[i].x, 1, ZP), { dur: 0.6, arc: 0.3, then: landed }));
+    ones.forEach((o, i) => fly(o, i < 10 ? V3(F.slot, stackY(i), ZP) : V3(oneSpots[i - 10].x, oneSpots[i - 10].y, ZP), { dur: 0.6, arc: 0.5, wait: 0.25 + i * 0.05, then: landed }));
+    return;
+  }
+  // the last rack opens: ten canisters stand where it stood, then walk over to the ones
+  const last = racks[racks.length - 1], spots = F.items.filter(i => i.kind === 'o' && i.opened);
+  stage.remove(last); sfx('break'); hint('sub.ten');
+  let pending = 10;
+  for (let k = 0; k < 10; k++) { const o = pod('o'); o.position.set(F.openX, stackY(k), ZP); stage.add(o); fly(o, V3(spots[k].x, spots[k].y, ZP), { dur: 0.55, arc: 0.5, wait: 0.5 + k * 0.06, then: ok(() => { if (--pending === 0) pause(0.7, shown); }) }); }
+}
+function clearPods() { for (const o of [...stage.children]) { drop(o); stage.remove(o); if (o.isSprite) o.material.dispose(); } }
+
+/* ---------- the fuel gauge: a pipe along the pad with a lamp and a number at each mark; the fuel has run as far
+   as the last number counted ---------- */
+const MARKS = [-2.25, -0.75, 0.75, 2.25], BULB = [new THREE.SphereGeometry(0.15, 14, 10), new THREE.SphereGeometry(0.18, 14, 10)];
+function drawGauge(Rd, found) {
+  const y = 0.42, x0 = -2.95;
+  stage.add(box(M.tube, 5.9, 0.46, 0.4, 0, y, ZP, 0.03));
+  const upTo = MARKS[found ? 3 : 2], fuel = new THREE.Mesh(boxGeo(1, 0.3, 0.42), M.fuel); fuel.scale.x = upTo - x0; fuel.position.set((x0 + upTo) / 2, y, ZP + 0.02); stage.add(fuel);
+  S.fuelBar = fuel;
+  MARKS.forEach((x, i) => {
+    const lit = i < 3 || found;
+    stage.add(box(M.steel, 0.1, 0.9, 0.1, x, y + 0.45, ZP - 0.1, 0.02));
+    const lamp = new THREE.Mesh(BULB[0], lit ? M.lamp : M.lampOff); lamp.position.set(x, y + 0.98, ZP - 0.1); lamp.add(new THREE.Mesh(BULB[1], INK)); stage.add(lamp);
+    addBoard(i < 3 ? Rd.seq[i] : found ? Rd.answer : '?', x, y + 1.62, 1.3, i < 3 ? 'cream' : found ? 'green' : 'gold');
+    if (S.reveal && i > 0) addBoard('+' + Rd.by, (x + MARKS[i - 1]) / 2, y + 0.62, Rd.by === 100 ? 0.8 : 0.62, 'gold', ZP + 0.3);   // the hop between two marks
+  });
+  S.load = { marks: found ? 4 : 3 };
+}
+
+/** What stands on the pad for the round as it is now: the pads, the pods, the boards, the lift and the helper.
+ *  `move`: 'intro' the pods drop in. */
+function scene(move) {
+  const Rd = S.R, found = S.phase === 'right', shown = S.reveal || found, tone = found ? 'green' : 'cream';
+  clearPods(); for (const o of [...floor.children]) floor.remove(o);
+  const two = Rd.kind === 'compare', stacked = arrange(two, 2.4);
+  stage.scale.setScalar(1);
+  let low = 2.5;
+  if (two) {
+    // two loads: side by side on a wide screen, one above the other on a tall one
+    const spots = stacked ? [[0, SHELF, -0.35], [0, 0, 0]] : [[-4, 0, 0], [4, 0, 0]];
+    [Rd.a, Rd.b].forEach((n, i) => { const [cx, y0, z] = spots[i]; pad(cx, y0, stacked ? PAD_W : 6.1, true, z); showNumber(n, cx, y0, { move, num: stacked ? 'side' : 'over', tone, mark: shown && Rd.why !== 'same' ? Rd.why : '', boards: shown && Rd.why === 'same' ? 'digits' : '' }); });
+    if (found && !stacked) addBoard(SIGN[Rd.answer], 0, 0.75, 1.05, 'green');
+    S.load = { a: RS.parts(Rd.a), b: RS.parts(Rd.b) }; low = stacked ? 2.6 : 3.5;
+  } else if (Rd.kind === 'skip') { pad(0, 0); drawGauge(Rd, found); }
+  else if (Rd.kind === 'add' || Rd.kind === 'sub') { pad(0, 0); low = 2.75 * drawSum(Rd, found || S.work, move).k; }
+  else {
+    // one load on the three places of the pad: what is loaded so far, the load to read, a number in its parts;
+    // a number that is only heard stands on the pad once it is found
+    pad(0, 0, PAD_W, true);
+    const n = Rd.kind === 'build' ? S.total : Rd.kind === 'name' && !found ? 0 : Rd.num;
+    const L = showNumber(n, 0, 0, { move, tone, boards: Rd.kind === 'expand' ? 'values' : shown ? 'digits' : '' });
+    S.load = L.p; low = Math.max(2.5, L.top.h + 0.9);
+  }
+  arrange(two, low); placeHero();
+}
+/** Draw the round from its state (also after the screen turns): the pad and what stands on it, the rocket, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++; if (S.phase === 'try') S.phase = 'play';
+  el.card.hidden = true; el.bar.hidden = false;
+  rocketHome(first && S.round > 1);
+  scene(first ? 'intro' : '');
+  const num = v => button({ id: 'rs-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
+  const sign = v => button({ id: 'rs-' + v, big: SIGN[v], label: fmt('btn.' + v), aria: fmt('btn.' + v), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
+  el.bar.className = 'rs-bar' + (Rd.kind === 'build' ? ' build' : Rd.kind === 'compare' ? ' sign' : '') + (found ? ' wait' : '');
+  if (Rd.kind === 'build') el.bar.replaceChildren(
+    button({ id: 'rs-h', pic: 'h', big: '100', cls: 'h', aria: fmt('btn.h'), off: !Rd.stock.h, go: () => load('h') }), button({ id: 'rs-t', pic: 't', big: '10', cls: 't', aria: fmt('btn.t'), off: !Rd.stock.t, go: () => load('t') }),
+    button({ id: 'rs-o', pic: 'o', big: '1', cls: 'o', aria: fmt('btn.o'), off: !Rd.stock.o, go: () => load('o') }), button({ id: 'rs-off', icon: '↩️', aria: fmt('btn.off'), go: b => unload(b) }), button({ id: 'rs-go', icon: '🚀', cls: 'go', aria: fmt('btn.go'), go: b => go(b) }));
+  else if (Rd.kind === 'compare') el.bar.replaceChildren(...Rd.choices.map(sign));
+  else el.bar.replaceChildren(...Rd.choices.map(num));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the rocket was on its way: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return () => { if (tick === S.tick) fn(); }; };
+
+/* ---------- loading a number (the build rounds): a pallet, a rack or a canister at a time ---------- */
+const WORTH = { h: 100, t: 10, o: 1 };
+/** Put the load on the pad again after it changed; the pod that just came (or the pallet or rack ten of them made) drops in. */
+function reload(came) {
+  scene(''); frame();
+  if (came) { const mine = stage.children.filter(o => o.userData.pod === came), o = mine[mine.length - 1]; if (o) fall(o, { high: 1.6 }); }
+  showSum(S.R, false);
+}
+function load(kind) {
+  const Rd = S.R;
+  if (S.phase !== 'play' || !Rd || Rd.kind !== 'build' || S.screen !== 'play' || !Rd.stock[kind]) return;
+  if (S.total + WORTH[kind] > 999) { wobble(document.getElementById('rs-' + kind)); return hint('build.full'); }
+  const before = RS.parts(S.total);
+  S.total += WORTH[kind]; S.hist.push(kind);
+  const now = RS.parts(S.total), came = now.h > before.h ? 'h' : now.t > before.t ? 't' : 'o';
+  reload(came);
+  // ten canisters lock into a rack, and ten racks into a pallet: said as it happens
+  if (came !== kind) { sfx('coin'); hint(kind === 'o' && came === 'h' ? 'build.bundle.t' : 'build.bundle.' + kind); } else hint();
+}
+function unload(b) {
+  const Rd = S.R;
+  if (S.phase !== 'play' || !Rd || Rd.kind !== 'build' || S.screen !== 'play') return;
+  if (!S.hist.length) { wobble(b || document.getElementById('rs-off')); return hint('build.empty'); }
+  S.total -= WORTH[S.hist.pop()]; hint(); reload('');
+}
+function go(b) {
+  const Rd = S.R;
+  if (S.phase !== 'play' || !Rd || Rd.kind !== 'build' || S.screen !== 'play') return;
+  b = b || document.getElementById('rs-go');
+  if (S.total === Rd.target) return right(b);
+  wobble(b); rock(); S.reveal = true; scene(''); frame();
+  const want = RS.parts(Rd.target), have = RS.parts(S.total);
+  if (Rd.form === 'tens') return hint('build.hint.count', { n: Rd.target });
+  hint(have.h !== want.h ? 'build.hint.h' : have.t !== want.t ? 'build.hint.t' : 'build.hint.o', want);
+}
+
+/** The hint a wrong answer gets. */
+function hintFor(Rd) {
+  if (Rd.kind === 'read') return ['read.hint'];
+  if (Rd.kind === 'expand') return ['expand.hint'];
+  if (Rd.kind === 'name') return ['name.hint'];
+  if (Rd.kind === 'skip') return ['skip.hint.' + Rd.by];
+  if (Rd.kind === 'compare') return ['cmp.hint.' + Rd.why];
+  return [Rd.kind === 'add' ? 'add.hint' : 'sub.hint'];
+}
+/** The child picks an answer: a number, or a sign. */
+function answer(v, b) {
+  const Rd = S.R;
+  if (S.phase !== 'play' || !Rd || S.screen !== 'play' || Rd.kind === 'build') return;
+  if (!Rd.choices.includes(v)) return;
+  b = b || document.getElementById('rs-' + (typeof v === 'number' ? 'n' + v : v));
+  if (v === Rd.answer) return right(b);
+  wobble(b); rock(); hint(...hintFor(Rd));
+  // show why on the pad: how many of each place, the hop between two marks, the place that decides, the sum's work
+  if (Rd.kind === 'add' || Rd.kind === 'sub') {
+    if (S.work) return;
+    if (reduced || S.fast || !Rd.regroup) { S.work = true; scene(''); return; }
+    S.phase = 'try'; S.tick++; el.bar.classList.add('wait');
+    return workSum(Rd, guard(() => { S.phase = 'play'; S.tick++; el.bar.classList.remove('wait'); }));
+  }
+  if (!S.reveal && Rd.kind !== 'expand' && Rd.kind !== 'name') { S.reveal = true; scene(''); frame(); }
+}
+function right(b) {
+  const Rd = S.R;
+  S.phase = 'right'; S.tick++; hint(); sfx('coin');
+  if (b) b.classList.add('go');
+  el.bar.classList.add('wait');
+  showSum(Rd, true);
+  say(Rd.said[0][0], Rd.said[0][1], { queue: true });
+  for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
+  const off = guard(() => pause(reduced ? 2.2 : 0.7, guard(() => liftoff(guard(() => pause(reduced ? 1.6 : 0.8, guard(nextRound)))))));
+  const show = guard(() => { scene(''); frame(); off(); });
+  // the pad shows the answer: the boards turn green, the fuel runs on to the next lamp, the sign stands between
+  // the two loads, the sum is worked with its racks and canisters
+  if ((Rd.kind === 'add' || Rd.kind === 'sub') && !S.work) return workSum(Rd, show);
+  if (Rd.kind === 'skip' && !reduced && !S.fast) {
+    const bar = S.fuelBar, from = bar.scale.x, to = MARKS[3] + 2.95;
+    return anim(bar, 0.7, k => { bar.scale.x = from + (to - from) * smooth(k); bar.position.x = -2.95 + bar.scale.x / 2; }, show);
+  }
+  show();
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+/** The screen box (left, top, right, bottom in CSS pixels) round some objects. */
+function screenBox(objs) {
+  const bx = [1e9, 1e9, -1e9, -1e9], b3 = new THREE.Box3(); let any = false;
+  for (const o of objs) {
+    if (!o.visible) continue; o.updateWorldMatrix(true, true);
+    if (o.isSprite) { const p = o.getWorldPosition(V3(0, 0, 0)), right = V3(1, 0, 0).applyQuaternion(g.camera.quaternion), up = V3(0, 1, 0).applyQuaternion(g.camera.quaternion); b3.makeEmpty(); for (const sx of [-0.5, 0.5]) for (const sy of [-0.5, 0.5]) b3.expandByPoint(p.clone().addScaledVector(right, sx * o.scale.x).addScaledVector(up, sy * o.scale.y)); }
+    else b3.setFromObject(o);
+    if (b3.isEmpty()) continue; any = true;
+    for (const x of [b3.min.x, b3.max.x]) for (const y of [b3.min.y, b3.max.y]) for (const z of [b3.min.z, b3.max.z]) { const [sx, sy] = scr(V3(x, y, z)); bx[0] = Math.min(bx[0], sx); bx[1] = Math.min(bx[1], sy); bx[2] = Math.max(bx[2], sx); bx[3] = Math.max(bx[3], sy); }
+  }
+  return any ? bx.map(n => Math.round(n)) : null;
+}
+window.__rs = window.__brbTest = {
+  state: () => ({ game: 'rocket-supply', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: RS.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall, launched: S.launched,
+    ...(S.R && S.screen === 'play' ? { ...S.R, total: S.total, load: S.load, reveal: S.reveal, work: S.work, lift: lift.position.y, flying, moving: tweens.length,
+      pods: ['h', 't', 'o'].map(k => stage.children.filter(o => o.userData.pod === k && !o.userData.ghost).length), ghosts: stage.children.filter(o => o.userData.ghost).length, boards: stage.children.filter(o => o.userData.label).map(o => o.userData.text) } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => (name === 'load' ? load(arg) : name === 'off' ? unload() : name === 'go' ? go() : answer(arg)),
+  /** The helper's place: [x, y, z]. */
+  heroAt: () => { if (!S.hero) return null; const p = S.hero.object.getWorldPosition(V3(0, 0, 0)); return [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]; },
+  /** Where things are on the screen (CSS pixels): the two ends of the pad, and the boxes round the helper (as wide
+   *  as the Wizard's hat), the rocket, the pods and the number boards, for a test that checks everything is in view
+   *  and nothing is hidden (`each`: a box for every pod and board on its own); `size` is how many pixels across one
+   *  canister is. */
+  spot: () => ({ left: scr(V3(view.rect[0] + 0.15, 0, 1.4)), right: scr(V3(view.rect[1] - 0.15, 0, 1.4)), hero: S.hero ? (() => { const p = S.hero.position, k = S.hero.object.scale.x, a = scr(V3(p.x - 0.95 * k, p.y + 2.1 * k, p.z)), b = scr(V3(p.x + 0.95 * k, p.y, p.z)); return [a[0], a[1], b[0], b[1]].map(n => Math.round(n)); })() : null,
+    rocket: screenBox([rocket]), pods: screenBox(stage.children.filter(o => !o.userData.label)), labels: screenBox(stage.children.filter(o => o.userData.label)), each: stage.children.map(o => screenBox([o])).filter(Boolean),
+    size: (() => { const a = scr(V3(0, 0, ZP)), b = scr(V3(U, 0, ZP)); return +(b[0] - a[0]).toFixed(1); })() }),
+};
+
+el.load.hidden = true; el.load.remove(); el.rs.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>
