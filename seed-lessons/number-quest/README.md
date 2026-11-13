@@ -292,3 +292,37 @@ picture scripts now serve `.mjs` files as JavaScript, as the site does, so Rapie
 **Stone.** The unit's stamp is the Balance Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
 "equals means the answer comes next" misconception (8 + 4 = ? + 5 gets 12; 5 = 2 + 3 looks backwards), and how the game checks each idea
 by doing. Launchpad stays `status: "building"`.
+
+## Launchpad Unit 5 — The Hundreds Hedge (2026-11-13, tier still `building`)
+
+| File | What |
+|---|---|
+| `course/launchpad/5.1.json`, `5.2.json`, `5.3.json` | the three grade 2 decks, inside the Launchpad limits above: **5.1 Hundreds, tens and ones** (2.NBT.A.1, 2.NBT.A.3), **5.2 Skip counting and comparing** (2.NBT.A.2, 2.NBT.A.4), **5.3 Add and subtract to 100** (2.NBT.B.5; also 2.OA.B.2). Story slide with Tally, drawn diagrams with guided focus, one example, three words, the mission last |
+| `sets/u5-launchpad.json` | nine exit items (`nq-launchpad-5.<s>-e1..3`), each `cat` one of its step's primary codes (5.1: two for 2.NBT.A.1, one for 2.NBT.A.3; 5.2: one for 2.NBT.A.2, two for 2.NBT.A.4; 5.3: three for 2.NBT.B.5), every distractor tagged with a misconception that starts with a past-tense verb, every item with a `why`. A choice is a number, a sign or a few words, never a sum that is not true |
+| `standards.json` `launchpadCodes.codes` | six more locked statements (twenty-nine in all), with the published statement text (the same text as `server/standards/ccss-math.json`) |
+| `seed-games/rocket-supply.html` | **Rocket Supply**, the unit's game (Oomba3D 1.1.0, Space Base theme 1.0.0): chapter `build` for 5.1, `count` for 5.2, `fuel` for 5.3, six rounds each. A launch pad on a space base: a flat pallet is a hundred, a rack is a ten, a canister is a one, and when the load is right the rocket lifts off. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `build`: load a three-digit number a pallet, a rack or a canister at a time (ten canisters lock into a rack and
+ten racks into a pallet; the chip shows the load so far in expanded form), load 110 to 140 with racks only, read a load with an empty
+place (407, with 47 and 470 offered), read a load of three different digits, find a number from its parts (300 + 40 + 2) and from its
+name, heard and written in words. `count`: what comes next along the fuel gauge, counting by fives, by tens and by hundreds (on a replay
+from a number that is not round: 234, 244, 254), then the sign between two three-digit numbers: >, = or <, with the reason said (the
+hundreds differ, the same digits in another order, the same hundreds and tens; a replay brings the same number twice). `fuel`: a quick
+adding fact past ten, two two-digit numbers whose ones make a new ten (38 + 17), taking away where a ten must be opened (67 − 19), a
+quick taking-away fact, and one more of each; the numbers stand as racks and canisters, and the work is shown on the pad (ten ones
+lock into a new rack; a rack opens into ten canisters, and what is taken away stays as outlines). A wrong answer shows why on the pad:
+how many stand in each place, the hop between two marks, the place that decides, or the sum's work.
+
+**Diagrams.** The unit adds no diagram type. `counters` gains one option (`server/services/diagrams.js`, `server/views/nq-diagrams.js`):
+`hundreds: true` on a single group draws a number from 100 to 999 as flats of a hundred (ten by ten, one over the next so each can be
+counted), sticks of ten and loose ones, each place named under it ("4 hundreds", "0 tens", "7 ones"); a place that holds nothing keeps
+its room, empty. 5.1 also uses the existing `places` chart (342 as 300, 40 and 2); 5.2 uses the existing `numberline` (hops of five and
+of ten, and two numbers to compare); 5.3 uses `tens` (38 and 27 side by side, 65, 62) and a `numberline` (8 + 2 + 5). All 29 focus steps
+are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/rocket-supply/<state>` phone-width captures (`scripts/nq-shots.js`, shots marked
+`tier: 'launchpad'`; manifest entries with `band: "launchpad"`). Cover and share picture: `scripts/covers/rocket-supply.recipe.js`.
+
+**Stone.** The unit's stamp is the Hundreds Seed (`tiers.launchpad.stones`). **Teacher notes** (three) say what the unit covers, the
+"write each part in full" misconception (4 hundreds and 7 ones written 4007 or 47; 38 + 27 written 515), and how the game checks each
+idea by doing. Launchpad stays `status: "building"`.
