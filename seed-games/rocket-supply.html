@@ -413,7 +413,7 @@ const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); 
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, ...o });
 const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide });
 const M = { ground: mat('#d9824f'), deck: mat('#3a4468'), deckLight: mat('#55628f'), steel: mat('#8b93ad'), dark: mat('#262c44'), white: mat('#f4f1e6'), red: mat('#e8503a'), glass: mat('#7fd6ff', { roughness: 0.3 }),
-  edge: mat('#ffd23f'), lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: new THREE.Color(0.08, 0.72, 0.28) }), tube: mat('#1c2238') };
+  edge: mat('#ffd23f'), lamp: new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, 0.3) }), lampOff: mat('#5d6585'), fuel: new THREE.MeshBasicMaterial({ color: '#1fc257' }), tube: mat('#1c2238') };
 const geos = new Map();
 const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
 /** A box w by h by d centred on (x, y, z), with an ink hull `edge` thick round it. */
