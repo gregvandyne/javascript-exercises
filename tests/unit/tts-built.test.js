@@ -303,3 +303,14 @@ test('a game the admin switched on keeps its wider rule; a teacher\'s game witho
   TG.set(boss, g, false);
   await refused(mia, g, 'You have 3 points!');
 });
+
+test('the Builder is told to give new games a voiceover by default, as whole fixed lines', async () => {
+  const { SYSTEM_PROMPT } = await import('../../server/builder/prompt.js');
+  const at = SYSTEM_PROMPT.indexOf('- Voiceover by default:');
+  assert.ok(at > 0, 'the voiceover rule is in the Builder\'s instructions');
+  const rule = SYSTEM_PROMPT.slice(at, SYSTEM_PROMPT.indexOf('\n- ', at + 5));
+  assert.match(rule, /reads its own words aloud without being asked/);
+  assert.match(rule, /says it again/);
+  assert.match(rule, /one whole fixed string/);
+  assert.match(rule, /never with a score, a name or anything the player types/);
+});

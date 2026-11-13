@@ -11,6 +11,10 @@
 //   3b. a teacher's Builder game the admin switched on (its page's "AI voices for this game", then /admin/voices "Add a
 //      game" by link): the game itself speaks a line from its own source (the quiz host's hello) and it plays, a
 //      made-up line falls back to the device; switched off again
+//   3c. a kid's Builder game has AI voices by default (the owner's decision of 2026-11-13), with no admin switch: the
+//      Voices button and the AI note, one of its fixed lines plays; what the player types into an input, a string joined
+//      while playing and a line with a number filled in are refused and read by the device's voice; the Studio preview
+//      of the same game has no AI voice
 //   4. Hero of Sunvale: Granny Fern's line is asked for in her own voice role, and the talk still moves on when blocked
 //   5. Oomba Live: the player's Read and the projector's Read question ask for the open question by number (the audio
 //      element is unlocked inside the tap, for iPhone); the next question is refused; the projector says the voice is AI
@@ -198,12 +202,14 @@ test('a teacher\'s Builder game switched on by the admin: its own words play, a 
     const g = await templateGame(tp, { title: uniq('Voice Quiz '), template: 'quiz' });
     await publishFromStudio(tp, 'school');
     await expect.poll(async () => (await (await tp.request.get(`/api/studio/${g.id}`)).json()).game.status).toBe('published');
-    // Off until the admin switches it on: no Voices button.
+    // A Builder game has AI voices by default since 2026-11-13 (its exact fixed lines only; the next test). The admin's
+    // switch below goes further for this one game.
     await tp.goto(`/play/${g.slug}`);
-    expect(JSON.parse(await tp.locator('#page-data').textContent()).tts).toBeUndefined();
+    expect(JSON.parse(await tp.locator('#page-data').textContent()).tts.langs).toEqual(['en']);
     // The admin, on the game's own page: the switch.
     await a.goto(`/g/${g.slug}`);
     await expect(a.locator('#admin-voices')).toContainText('AI voices for this game');
+    await expect(a.locator('#admin-voices-default')).toContainText('By default: on.');
     await Promise.all([a.waitForResponse(r => r.url().endsWith('/api/admin/tts/games') && r.ok()), a.locator('#admin-voices-on').check()]);
     await expect(a.locator('#admin-voices-status')).toContainText('on for this game');
     // The maker sees no switch.
@@ -247,6 +253,78 @@ test('a teacher\'s Builder game switched on by the admin: its own words play, a 
     const off = await a.request.post('/api/admin/tts/games', { data: { game: g.id, on: false }, headers: { Origin: new URL(a.url()).origin } });
     expect(off.status()).toBe(200);
   } finally { await tctx.close(); }
+});
+
+test('a kid\'s Builder game has AI voices by default: a fixed line plays; typed text, a joined string and a filled-in number go to the device\'s voice; no AI voice in the Studio preview', async ({ browser }) => {
+  test.setTimeout(150_000);
+  await setLocales(browser, ['en']);
+  const kctx = await browser.newContext(); const kp = await kctx.newPage();
+  try {
+    await ownIp(kp);
+    await signup(kp);
+    const g = await templateGame(kp, { title: uniq('Kid Quiz '), template: 'quiz' });
+    // The Studio preview (a draft, not yet through the scanner): no INIT.tts, so the device's voice.
+    const pre = kp.frames().find(x => x.url().includes('/frame/'));
+    expect(await pre.evaluate(() => !!(window.__BRB_INIT__ && window.__BRB_INIT__.tts))).toBe(false);
+    await publishFromStudio(kp, 'private');
+    await expect.poll(async () => (await (await kp.request.get(`/api/studio/${g.id}`)).json()).game.status).toBe('published');
+    // Still none in the Studio preview after publishing.
+    await kp.reload();
+    await expect(kp.locator('#st-frame')).toHaveAttribute('src', /\/frame\//);
+    const pre2 = kp.frames().find(x => x.url().includes('/frame/'));
+    await pre2.waitForFunction(() => !!window.__BRB_INIT__);
+    expect(await pre2.evaluate(() => !!window.__BRB_INIT__.tts)).toBe(false);
+
+    // Playing it: the Voices button and the AI note, with nobody switching anything on for this game.
+    const bodies = []; kp.on('request', r => { if (r.url().endsWith('/api/tts')) bodies.push(r.postDataJSON()); });
+    await kp.goto(`/play/${g.slug}`);
+    const f = await gameFrame(kp);
+    expect(JSON.parse(await kp.locator('#page-data').textContent()).tts.langs).toEqual(['en']);
+    await expect(kp.locator('#p-voices')).toContainText('AI voices');
+    expect(await f.evaluate(() => window.__BRB_INIT__.tts)).toEqual({ langs: ['en'] });
+    await f.locator('body').click({ position: { x: 5, y: 5 } });
+    await watchAudio(f);
+    // The game speaks one of its own fixed lines by itself (the quiz host's hello): read by the server voice.
+    const hello = kp.waitForResponse(r => r.url().endsWith('/api/tts') && /Welcome to the quiz show/.test(r.request().postData() || ''), { timeout: 60000 });
+    for (const sel of ['.ok-title-screen .ok-hot', '.ok-howto .ok-hot']) {
+      const b = f.locator(sel);
+      if (await b.isVisible({ timeout: 8000 }).catch(() => false)) await b.click();
+    }
+    const ok = await hello;
+    expect(ok.status(), await ok.text()).toBe(200);
+    await expect.poll(() => f.evaluate(() => window.__plays.length), { timeout: 15000 }).toBeGreaterThan(0);
+    await expect(kp.locator('#toasts .toast')).toContainText('AI voices from OpenAI');
+
+    // What the player types is never read by the AI voice: the game tries to speak an input's value, the value inside
+    // its own sentence, pieces joined while playing, and its own line with a number added. Each is refused by the
+    // server (so nothing is generated) and the device's voice gets the line (onend still comes once).
+    await f.evaluate(() => {
+      try { BRB.stopSpeaking(); } catch { /* none */ }
+      const i = document.createElement('input'); i.id = 'typed-answer'; i.value = 'my hamster Peanut'; document.body.appendChild(i);
+    });
+    const tries = [
+      () => document.getElementById('typed-answer').value,
+      () => 'You typed ' + document.getElementById('typed-answer').value + '!',
+      () => ['Hoot!', 'Welcome to the quiz show!', 'Peanut'].join(' '),
+      () => ['Welcome to the quiz show!', 'Hoot!'].join(' '),   // two of its own sentences, joined the other way round
+      () => 'Hoot! Welcome to the quiz show! 7',
+    ];
+    for (const make of tries) {
+      const plays = await f.evaluate(() => window.__plays.length);
+      await f.evaluate(() => { window.__onend = 0; });
+      const said = await f.evaluate(make);
+      const [ref] = await Promise.all([
+        kp.waitForResponse(r => r.url().endsWith('/api/tts') && (r.request().postDataJSON() || {}).text === said),
+        f.evaluate(text => BRB.speak(text, { lang: 'en', onend: () => { window.__onend++; } }), said),
+      ]);
+      expect([said, ref.status(), (await ref.json()).code]).toEqual([said, 422, 'filtered']);
+      await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(1);
+      expect(await f.evaluate(() => window.__plays.length), said).toBe(plays);   // no server audio for it
+    }
+    // The player's name never goes with a line.
+    expect(bodies.length).toBeGreaterThan(5);
+    for (const b of bodies) expect(Object.keys(b).sort()).toEqual(['ctx', 'lang', 'rate', 'role', 'text', 'tok']);
+  } finally { await kctx.close(); }
 });
 
 test('Hero of Sunvale: Granny Fern is read in her own voice role; the talk moves on when the voice is blocked', async ({ browser, page }) => {
