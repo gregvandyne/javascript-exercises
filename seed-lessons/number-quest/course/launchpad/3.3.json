@@ -72,7 +72,7 @@
    "art": "ruler",
    "visual": {
     "type": "numberline",
-    "label": "A number line: from 46, a hop of ten on to 56 and a hop of ten back to 36",
+    "label": "A number line with hops of ten: 36 to 46, then 46 to 56",
     "min": 26,
     "max": 66,
     "marks": [
@@ -99,14 +99,14 @@
     ],
     "hops": [
      {
-      "from": 46,
-      "to": 56,
+      "from": 36,
+      "to": 46,
       "label": "+10"
      },
      {
       "from": 46,
-      "to": 36,
-      "label": "−10"
+      "to": 56,
+      "label": "+10"
      }
     ]
    },
@@ -132,10 +132,10 @@
     {
      "cue": "One ten less: 36.",
      "box": [
-      27,
-      23.5,
-      24,
-      38.5
+      24.8,
+      57.8,
+      6.6,
+      25.4
      ]
     }
    ]
@@ -244,18 +244,18 @@
      "cue": "3 more fill the ten: 30.",
      "box": [
       35.8,
-      23.5,
+      23,
       15.2,
-      38.5
+      39
      ]
     },
     {
      "cue": "2 more make 32.",
      "box": [
       49,
-      23.5,
+      23,
       10.8,
-      38.5
+      39
      ]
     }
    ]
