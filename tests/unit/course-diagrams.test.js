@@ -308,3 +308,70 @@ test('counters on a see-saw (Launchpad Unit 4): each side holds exactly its numb
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 12 }, { n: 12 }] }, 'L'), null);
   assert.equal(cleanDiagram({ type: 'counters', groups: [{ n: 4 }, { n: 4 }] }, 'L').balance, undefined);
 });
+
+test('shapes that look another way and shapes made of shapes (Launchpad Unit 6): a triangle is still three corners upside down, thin or right-angled; a square, a rectangle and a hexagon show the pieces inside', async () => {
+  const V = await import('../../server/views/courses.js');
+  const clean = items => C.cleanSlide({ title: 'Shapes', text: 'Some shapes to look at.', visual: { type: 'shapes', label: 'Shapes', items } }).visual;
+  const draw = items => { const v = clean(items); assert.ok(v, JSON.stringify(items)); return String(V.visualSvg(v, { y0: 0, fh: 56.25 })); };
+  const polys = svg => [...svg.matchAll(/<polygon points="([^"]+)"/g)].map(m => m[1].split(' ').map(p => p.split(',').map(Number)));
+  const cuts = svg => [...svg.matchAll(/<line data-cut="1" x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)"/g)].map(m => m.slice(1).map(Number));
+  const side = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  assert.deepEqual(C.SHAPE_LOOKS, { triangle: ['flip', 'thin', 'right'], square: ['turned'] }); assert.deepEqual(C.SHAPE_MADE, { square: [2], rectangle: [2], hexagon: [2, 6] });
+  // the cleaner keeps a look and a made count, and nothing else
+  assert.deepEqual(clean([{ shape: 'triangle', name: 'a', look: 'flip', extra: 1 }, { shape: 'hexagon', name: 'b', made: 6 }]).items, [{ shape: 'triangle', name: 'a', look: 'flip' }, { shape: 'hexagon', name: 'b', made: 6 }]);
+  // three triangles: upright, upside down, long and thin. Each has three corners; the flipped one points down.
+  const [up, down, thin] = polys(draw([{ shape: 'triangle', name: 'triangle' }, { shape: 'triangle', name: 'upside down', look: 'flip' }, { shape: 'triangle', name: 'long and thin', look: 'thin' }]));
+  for (const t of [up, down, thin]) assert.equal(t.length, 3);
+  const tip = t => { const ys = t.map(p => p[1]).sort((a, b) => a - b); return ys[1] - ys[0] > ys[2] - ys[1] ? 'up' : 'down'; };   // one corner alone at the top, or alone at the bottom
+  assert.equal(tip(up), 'up'); assert.equal(tip(down), 'down');
+  assert.equal(Math.max(...down.map(p => p[1])) - Math.min(...down.map(p => p[1])), Math.max(...up.map(p => p[1])) - Math.min(...up.map(p => p[1])), 'the same triangle, turned over');
+  const sides = t => [side(t[0], t[1]), side(t[1], t[2]), side(t[2], t[0])].sort((a, b) => a - b);
+  assert.ok(sides(thin)[2] > 3 * sides(thin)[0], 'long and thin: two long sides and a short one'); assert.ok(Math.abs(sides(up)[2] - sides(up)[0]) < 0.05, 'the plain one has equal sides');
+  // a right-angled triangle is half of the square beside it: its two short sides are the square's side
+  const [ra, , sq] = polys(draw([{ shape: 'triangle', name: 'triangle', look: 'right' }, { shape: 'triangle', name: 'triangle', look: 'right' }, { shape: 'square', name: 'square', made: 2 }]));
+  const sqSide = side(sq[0], sq[1]);
+  assert.ok(Math.abs(sides(ra)[0] - sqSide) < 0.02 && Math.abs(sides(ra)[1] - sqSide) < 0.02 && Math.abs(sides(ra)[2] - sqSide * Math.SQRT2) < 0.03, 'two of them make the square');
+  const sqSvg = draw([{ shape: 'square', name: 'square' }, { shape: 'square', name: 'square', made: 2 }]);
+  assert.equal(cuts(sqSvg).length, 1); const d = cuts(sqSvg)[0], s2 = polys(sqSvg)[1];
+  assert.deepEqual([d.slice(0, 2), d.slice(2)], [s2[0], s2[2]], 'the square made of 2: one line corner to corner');
+  // a turned square is still four equal sides and four square corners, standing on a corner
+  const [flat, turned] = polys(draw([{ shape: 'square', name: 'square', corners: true }, { shape: 'square', name: 'turned', corners: true, look: 'turned' }]));
+  const ts = [0, 1, 2, 3].map(i => side(turned[i], turned[(i + 1) % 4]));
+  assert.ok(ts.every(x => Math.abs(x - ts[0]) < 0.02), 'four equal sides'); assert.ok(Math.abs(side(turned[0], turned[2]) - side(turned[1], turned[3])) < 0.02, 'equal diagonals: square corners');
+  assert.equal(new Set(turned.map(p => p[1])).size, 3, 'it stands on a corner'); assert.equal(new Set(flat.map(p => p[1])).size, 2);
+  assert.equal((draw([{ shape: 'square', name: 'square', corners: true }, { shape: 'square', name: 'turned', corners: true, look: 'turned' }]).match(/<path d="M[^"]+" fill="none" stroke="#141414" stroke-width="0.5"\/>/g) || []).length, 8, 'a square-corner mark in all four corners of both');
+  // a rectangle made of 2 is exactly two squares wide, with one line down its middle
+  const recSvg = draw([{ shape: 'square', name: 'square' }, { shape: 'rectangle', name: 'rectangle', made: 2 }]), rec = polys(recSvg)[1], rc = cuts(recSvg);
+  assert.ok(Math.abs(side(rec[0], rec[1]) - 2 * side(rec[1], rec[2])) < 0.02, 'twice as wide as it is tall'); assert.equal(rc.length, 1);
+  assert.ok(Math.abs(rc[0][0] - (rec[0][0] + rec[1][0]) / 2) < 0.02 && rc[0][0] === rc[0][2] && rc[0][1] === rec[0][1] && rc[0][3] === rec[2][1], 'the line stands in the middle, top to bottom');
+  const plain = polys(draw([{ shape: 'square', name: 'square' }, { shape: 'rectangle', name: 'rectangle' }]))[1];
+  assert.ok(Math.abs(side(plain[1], plain[2]) / side(plain[0], plain[1]) - 0.6) < 0.01, 'a rectangle on its own keeps the shape it always had');
+  // a hexagon made of 2 has one line through its middle (two trapezoids); made of 6, three lines through its middle
+  const hexSvg = draw([{ shape: 'trapezoid', name: 'trapezoid' }, { shape: 'hexagon', name: '2 trapezoids', made: 2 }, { shape: 'hexagon', name: '6 triangles', made: 6 }]), hc = cuts(hexSvg), hx = polys(hexSvg);
+  assert.equal(hc.length, 4);
+  for (const [i, lines] of [[1, hc.slice(0, 1)], [2, hc.slice(1)]]) {
+    const cx = hx[i].reduce((a, p) => a + p[0], 0) / 6, cy = hx[i].reduce((a, p) => a + p[1], 0) / 6;
+    for (const l of lines) { assert.ok(Math.abs((l[0] + l[2]) / 2 - cx) < 0.02 && Math.abs((l[1] + l[3]) / 2 - cy) < 0.02, 'every line goes through the middle'); assert.ok(hx[i].some(p => Math.abs(p[0] - l[0]) < 0.011 && Math.abs(p[1] - l[1]) < 0.011), 'from a corner'); }
+  }
+  assert.equal(hc[0][1], hc[0][3], 'two trapezoids: the line lies flat');
+  // only a look or a count the shape really has; a shape is never both
+  for (const it of [{ shape: 'square', name: 'x', look: 'flip' }, { shape: 'hexagon', name: 'x', look: 'turned' }, { shape: 'triangle', name: 'x', made: 2 }, { shape: 'hexagon', name: 'x', made: 3 }, { shape: 'square', name: 'x', made: 2, look: 'turned' }, { shape: 'rectangle', name: 'x', made: 6 }])
+    assert.equal(clean([{ shape: 'square', name: 'ok' }, it]), undefined, JSON.stringify(it));
+});
+
+test('a circle cut in equal shares (Launchpad Unit 6): `pie` draws the spinner’s circle with no pointer and its shaded shares green', () => {
+  const v = cleanDiagram({ type: 'spinner', parts: 4, shaded: 1, pie: true, right: 'one fourth' }, 'A circle cut in 4 equal shares');
+  assert.deepEqual(v, { type: 'spinner', label: 'A circle cut in 4 equal shares', parts: 4, shaded: 1, pie: true, right: 'one fourth' });
+  const svg = diagramSvg(v), parts = [...svg.matchAll(/<path d="(M50 25 L[^"]+Z)" fill="(#[0-9A-F]+)"/g)];
+  assert.equal(parts.length, 4, 'four shares'); assert.deepEqual(parts.map(m => m[2]), ['#66C792', '#FFFFFF', '#FFFFFF', '#FFFFFF'], 'one shaded, green');
+  // equal shares: every part sweeps the same quarter turn of the same circle
+  for (const m of parts) { const [, x1, y1, x2, y2] = /L([\d.]+) ([\d.]+) A16\.5 16\.5 0 0 1 ([\d.]+) ([\d.]+) Z/.exec(m[1]).map(Number); assert.ok(Math.abs(Math.hypot(x2 - x1, y2 - y1) - 16.5 * Math.SQRT2) < 0.02); }
+  assert.doesNotMatch(svg, /<line |<circle |<polygon /, 'no pointer, no hub');
+  assert.deepEqual(texts(svg).map(t => t.s), ['one fourth']);
+  const half = diagramSvg(cleanDiagram({ type: 'spinner', parts: 2, shaded: 1, pie: true }, 'Halves'));
+  assert.equal((half.match(/fill="#66C792"/g) || []).length, 1); assert.equal((half.match(/<path /g) || []).length, 2);
+  // without `pie` the spinner is the spinner it was: red shares and a pointer
+  const spin = diagramSvg(cleanDiagram({ type: 'spinner', parts: 4, shaded: 1 }, 'L'));
+  assert.match(spin, /fill="#E9465C"/); assert.match(spin, /<line /); assert.equal(cleanDiagram({ type: 'spinner', parts: 4, shaded: 1 }, 'L').pie, undefined);
+  const [a, b] = diagramExtent(v); assert.ok(a <= 25 - 16.5 && b >= 25 + 16.5, 'the whole circle is inside the band the frame shows');
+});

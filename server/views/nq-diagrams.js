@@ -9,7 +9,8 @@
 //   chart   a bar chart with a numbered scale and gridlines, each bar named under it and counted on top (7.1);
 //   table   a small table, a timetable, with one row picked out (5.2);
 //   letters big letters in panels, each with its fold line dashed down the middle where it has one (6.3);
-//   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3);
+//   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3); or (Launchpad
+//           Unit 6, `pie`) the same circle with no pointer and its shaded shares green: halves, thirds, fourths;
 //   build   digit cards apart, then joined into the number they build (1.1);
 //   tally   a survey's tally (CS Quest 3.3): one row per answer, its marks in fives (four lines, one across), its count;
 //   swap    two tiles swapped, an arrow, then the same tiles back in order (0.1);
@@ -200,8 +201,10 @@ const sector = (k, n) => {
 function spinnerSvg(v) {
   const { cx, cy, r } = SPIN;
   let s = '';
-  for (let k = 0; k < v.parts; k++) s += `<path d="${sector(k, v.parts)}" fill="${k < v.shaded ? '#E9465C' : '#FFFFFF'}" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`;
+  for (let k = 0; k < v.parts; k++) s += `<path d="${sector(k, v.parts)}" fill="${k < v.shaded ? (v.pie ? TONES[0] : '#E9465C') : '#FFFFFF'}" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`;
   // the pointer, resting in a white part (a picture of the spinner, not of a spin's result)
+  // `pie`: a circle cut in equal shares (halves, thirds, fourths), the shaded shares green and no pointer
+  if (v.pie) return s + (v.left ? tx(cx - r - 4, cy + 1.3, v.left, 3.8, 'end', 800) : '') + (v.right ? tx(cx + r + 4, cy + 1.3, v.right, 3.8, 'start', 800, LEAF) : '');
   const ap = -Math.PI / 2 + (v.shaded + 0.5 + Math.floor((v.parts - v.shaded) / 2)) * 2 * Math.PI / v.parts;
   s += `<line x1="${cx}" y1="${cy}" x2="${r2(cx + r * 0.72 * Math.cos(ap))}" y2="${r2(cy + r * 0.72 * Math.sin(ap))}" stroke="${INK}" stroke-width="1.2" stroke-linecap="round"/>`
     + head(cx + r * 0.78 * Math.cos(ap), cy + r * 0.78 * Math.sin(ap), Math.cos(ap), Math.sin(ap), INK, 2.4)

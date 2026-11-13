@@ -80,6 +80,10 @@ export const GAMES = {
   'quiet-bounce': { title: 'Quiet Bounce', role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
   'popcorn-hush': { title: 'Popcorn Hush', role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
   'ring-rumble': { title: 'Ring Rumble', role: 'narrator', spoken: /./ },
+  // Shape Hunt (Number Quest Launchpad, grades K-2): every instruction, hint and answer line is spoken, in the friendly
+  // voice (its VOICES block). What the chip shows (show.*), the button labels (btn.*), the chapter names and the round
+  // counter are shown, never read.
+  'shape-hunt': { title: 'Shape Hunt', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'shark-plank': { title: 'Shark Plank', role: 'deep', spoken: /./ },
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },
   'swish-flick': { title: 'Swish Flick', role: 'narrator', spoken: /./ },

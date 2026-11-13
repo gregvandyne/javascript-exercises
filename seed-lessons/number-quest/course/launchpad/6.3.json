@@ -1,0 +1,254 @@
+{
+ "key": "launchpad-6.3",
+ "n": "6.3",
+ "band": "launchpad",
+ "title": "Halves and fourths",
+ "topic": "Equal shares",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A pie to share",
+   "text": "Tally shares a pie with a friend. Each share must be fair.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Halves: 2 equal shares",
+   "text": "Cut a circle in 2 equal shares. Each share is one half.",
+   "art": "cake",
+   "visual": {
+    "type": "spinner",
+    "label": "A circle cut in 2 equal shares, one of them shaded",
+    "parts": 2,
+    "shaded": 1,
+    "pie": true,
+    "right": "one half"
+   },
+   "focus": [
+    {
+     "cue": "One half.",
+     "box": [
+      49.0,
+      13.5,
+      18.5,
+      61.9
+     ]
+    },
+    {
+     "cue": "Two halves make one whole.",
+     "box": [
+      32.5,
+      13.5,
+      35.0,
+      61.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Fourths: 4 equal shares",
+   "text": "Cut it in 4 equal shares. Each is a fourth, or a quarter.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "spinner",
+    "label": "A circle cut in 4 equal shares, one of them shaded",
+    "parts": 4,
+    "shaded": 1,
+    "pie": true,
+    "right": "one fourth"
+   },
+   "focus": [
+    {
+     "cue": "One fourth, or one quarter.",
+     "box": [
+      49.0,
+      13.5,
+      18.5,
+      32.5
+     ]
+    },
+    {
+     "cue": "Four fourths make one whole.",
+     "box": [
+      32.5,
+      13.5,
+      35.0,
+      61.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "More shares, smaller shares",
+   "text": "Three equal shares are thirds. More shares make each one smaller.",
+   "art": "ruler",
+   "visual": {
+    "type": "fraction",
+    "label": "The same cake cut in halves, thirds and fourths, one share shaded in each",
+    "big": true,
+    "rows": [
+     {
+      "label": "Halves: 2 equal shares",
+      "cuts": 2,
+      "shaded": 1
+     },
+     {
+      "label": "Thirds: 3 equal shares",
+      "cuts": 3,
+      "shaded": 1
+     },
+     {
+      "label": "Fourths: 4 equal shares",
+      "cuts": 4,
+      "shaded": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One half.",
+     "box": [
+      5.5,
+      13.3,
+      45.0,
+      16.9
+     ]
+    },
+    {
+     "cue": "One third.",
+     "box": [
+      5.5,
+      43.5,
+      30.3,
+      17.0
+     ]
+    },
+    {
+     "cue": "One fourth is the smallest.",
+     "box": [
+      5.5,
+      73.8,
+      22.9,
+      16.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Are these halves?",
+   "text": "Two pieces are halves only when they are equal.",
+   "art": "scale",
+   "steps": [
+    "count the shares: 2",
+    "are they the same size?",
+    "not equal: not halves",
+    "equal: halves"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "A bar cut in two shares that are not equal, and a bar cut in two equal shares",
+    "big": true,
+    "rows": [
+     {
+      "label": "Not equal shares",
+      "parts": [
+       {
+        "w": 0.7,
+        "tone": 0
+       },
+       {
+        "w": 0.3,
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "Equal shares: halves",
+      "parts": [
+       {
+        "w": 0.5,
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One big, one small: not halves.",
+     "box": [
+      5.0,
+      22.2,
+      90.0,
+      16.9
+     ]
+    },
+    {
+     "cue": "The same size: halves.",
+     "box": [
+      5.0,
+      52.4,
+      90.0,
+      16.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "half",
+     "means": "one of 2 equal shares"
+    },
+    {
+     "word": "fourth",
+     "means": "one of 4 equal shares, also called a quarter"
+    },
+    {
+     "word": "whole",
+     "means": "all of the shares together"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Shape Hunt at Equal Shares. Share each treat in equal pieces.",
+   "art": "trophy",
+   "img": "nq/shape-hunt/equal-shares",
+   "alt": "Shape Hunt on a phone: a pizza cut in two pieces on a card in a cosy room, and the buttons Yes and No.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-6.3-e1",
+  "nq-launchpad-6.3-e2",
+  "nq-launchpad-6.3-e3"
+ ],
+ "game": {
+  "slug": "shape-hunt",
+  "chapter": "Equal Shares",
+  "params": "chapter=share&lock=1"
+ }
+}

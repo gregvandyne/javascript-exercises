@@ -53,7 +53,8 @@ export function cleanDiagram(v, label) {
   }
   if (v.type === 'spinner') {
     if (!int(v.parts, 2, 12) || !int(v.shaded, 0, v.parts)) return null;
-    return { type: 'spinner', label, parts: v.parts, shaded: v.shaded, ...(str(v.left, 16) ? { left: str(v.left, 16) } : {}), ...(str(v.right, 16) ? { right: str(v.right, 16) } : {}) };
+    // `pie` (Launchpad Unit 6): a circle cut in equal shares with some shaded, and no pointer (a pie, not a spinner)
+    return { type: 'spinner', label, parts: v.parts, shaded: v.shaded, ...(v.pie ? { pie: true } : {}), ...(str(v.left, 16) ? { left: str(v.left, 16) } : {}), ...(str(v.right, 16) ? { right: str(v.right, 16) } : {}) };
   }
   if (v.type === 'build') {
     if (!Array.isArray(v.digits) || v.digits.length < 2 || v.digits.length > 5 || !v.digits.every(d => /^\d$/.test(d))) return null;

@@ -385,15 +385,15 @@ const I18N = {
     "yes.cone": "Yes! A cone has a point.",
     "yes.cylinder": "Yes! A cylinder has 2 flat round ends.",
     "yes.sphere": "Yes! A sphere is round like a ball.",
-    "yes.sides3": "Yes! 3 sides. It is a triangle.",
-    "yes.sides4": "Yes! 4 equal sides. It is a square.",
-    "yes.sides6": "Yes! 6 sides. It is a hexagon.",
-    "yes.round": "Yes! No corners. It is a circle.",
+    "yes.sides3": "Yes! 3 sides make a triangle.",
+    "yes.sides4": "Yes! 4 equal sides make a square.",
+    "yes.sides6": "Yes! 6 sides make a hexagon.",
+    "yes.round": "Yes! No corners: it is a circle.",
     "yes.point": "Yes! The cone has a point.",
     "yes.ball": "Yes! The sphere is round all over.",
     "yes.faces": "Yes! The cube has 6 square faces.",
     "yes.open": "Yes! It is open, so it is not a triangle.",
-    "yes.curvy": "Yes! One side is curved. Not a triangle.",
+    "yes.curvy": "Yes! A curved side, so not a triangle.",
     "still.triangle.thin": "Long and thin, it is still a triangle.",
     "still.triangle.flip": "Upside down, it is still a triangle.",
     "still.triangle.right": "It has a square corner. Still a triangle.",
@@ -957,7 +957,7 @@ function candidate(v, o, base, w, h) {
   const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'sh-spot'; btn.id = 'sh-n' + v; btn.setAttribute('aria-label', fmt('btn.spot', { n: v + 1 }));
   btn.addEventListener('click', () => answer(v, btn));
   el.spots.append(btn);
-  const c = { v, o, at: V3(base.x, base.y + h / 2 + 0.03, base.z), w, h, btn, css: '' };
+  const c = { v, o, at: V3(base.x, base.y + h / 2 + (o.isSprite ? 0.03 : 0), base.z), w, h, btn, css: '' };
   cands.push(c);
   return c;
 }
@@ -978,7 +978,7 @@ function samples() {
 function drawFind(Rd, first) {
   shelves.visible = true; el.spots.hidden = false;
   Rd.items.forEach((it, i) => {
-    const k = [0.8, 0.92, 1.05][it.size], o = Rd.solid ? solid(it.shape, it.tone, k) : sprite(shapeCard(it), 1, 1);
+    const k = [0.92, 1.0, 1.1][it.size], o = Rd.solid ? solid(it.shape, it.tone, k) : sprite(shapeCard(it), 1, 1);
     const c = candidate(i, o, SPOT4[i], Rd.solid ? SOLIDS[it.shape].w * k : 1, Rd.solid ? SOLIDS[it.shape].h * k : 1);
     if (first) pop(c.o, { wait: 0.1 + i * 0.13 });
   });

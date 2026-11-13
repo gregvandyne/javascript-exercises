@@ -473,7 +473,7 @@ function numberlineLabels(v) {
   }
   return mlabels;
 }
-function visualSvg(v, f) {
+export function visualSvg(v, f) {
   const ink = '#141414', leaf = '#1F9D63';
   const tx = (x, y, str, size, anchor = 'middle', weight = 700, fill = ink) =>
     raw(`<text x="${x}" y="${y}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" fill="${fill}">${String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`);
@@ -583,15 +583,26 @@ function shapesBody(v, tx, ink) {
     const cx = 6 + cw * (i + 0.5), cy = 25, R = Math.min(13, cw / 2 - 3);
     let pts;
     const poly = (k, rot) => Array.from({ length: k }, (_, j) => { const a = rot + j * 2 * Math.PI / k; return [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
-    if (it.shape === 'triangle') pts = poly(3, -Math.PI / 2).map(([x, y]) => [x, y + R * 0.25]);
+    // Launchpad Unit 6 looks: a triangle upside down, long and thin (and leaning) or with a square corner; a square
+    // turned on its corner. A rectangle shown as two squares is drawn exactly two squares wide.
+    if (it.shape === 'triangle' && it.look === 'thin') pts = [[0, -R], [R * 0.27, R], [-R * 0.27, R]].map(([x, y]) => [cx + x * Math.cos(0.5) - y * Math.sin(0.5), cy + x * Math.sin(0.5) + y * Math.cos(0.5)]);
+    else if (it.shape === 'triangle' && it.look === 'right') { const h = R * 0.78; pts = [[cx - h, cy - h], [cx + h, cy + h], [cx - h, cy + h]]; }
+    else if (it.shape === 'triangle') pts = poly(3, -Math.PI / 2).map(([x, y]) => [x, it.look === 'flip' ? 2 * cy - y - R * 0.25 : y + R * 0.25]);
+    else if (it.shape === 'square' && it.look === 'turned') pts = [[cx, cy - R], [cx + R, cy], [cx, cy + R], [cx - R, cy]];
     else if (it.shape === 'square') { const h = R * 0.78; pts = [[cx - h, cy - h], [cx + h, cy - h], [cx + h, cy + h], [cx - h, cy + h]]; }
-    else if (it.shape === 'rectangle') { const w = R, h = R * 0.6; pts = [[cx - w, cy - h], [cx + w, cy - h], [cx + w, cy + h], [cx - w, cy + h]]; }
+    else if (it.shape === 'rectangle') { const w = R, h = R * (it.made ? 0.5 : 0.6); pts = [[cx - w, cy - h], [cx + w, cy - h], [cx + w, cy + h], [cx - w, cy + h]]; }
     else if (it.shape === 'pentagon') pts = poly(5, -Math.PI / 2).map(([x, y]) => [x, y + R * 0.1]);
     else if (it.shape === 'hexagon') pts = poly(6, 0);
     else if (it.shape === 'rhombus') pts = [[cx, cy - R], [cx + R * 0.72, cy], [cx, cy + R], [cx - R * 0.72, cy]];
     else if (it.shape === 'parallelogram') { const w = R * 0.75, h = R * 0.55, k = R * 0.32; pts = [[cx - w + k, cy - h], [cx + w + k, cy - h], [cx + w - k, cy + h], [cx - w - k, cy + h]]; }
     else { const h = R * 0.6; pts = [[cx - R * 0.5, cy - h], [cx + R * 0.5, cy - h], [cx + R, cy + h], [cx - R, cy + h]]; } // trapezoid
     let marks = '';
+    if (it.made) {
+      // the lines that show the smaller shapes inside: a square's diagonal (2 triangles), a rectangle's middle (2
+      // squares), a hexagon's middle (2 trapezoids) or its three diagonals (6 triangles)
+      const cuts = it.shape === 'square' ? [[pts[0], pts[2]]] : it.shape === 'rectangle' ? [[[cx, pts[0][1]], [cx, pts[2][1]]]] : it.made === 2 ? [[pts[0], pts[3]]] : [[pts[0], pts[3]], [pts[1], pts[4]], [pts[2], pts[5]]];
+      for (const [a, b] of cuts) marks += `<line data-cut="1" x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}" stroke="${ink}" stroke-width="0.6" stroke-linecap="round"/>`;
+    }
     if (it.corners) {
       // A right-angle mark in every square corner (the corner's two sides meet at 90 degrees).
       const m = Math.min(2.2, R * 0.2);
