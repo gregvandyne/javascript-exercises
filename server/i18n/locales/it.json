@@ -1426,6 +1426,8 @@
     "newGame": "Nuovo gioco",
     "startFrom": "Parti da un modello",
     "startFromLabel": "Parti da {title}",
+    "worlds": "Inizia in un mondo 3D",
+    "startInLabel": "Inizia nel mondo 3D {title}",
     "twoPlayers": "2 giocatori",
     "updateWaiting": "Aggiornamento in attesa di revisione",
     "changed": "Modificato {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Bosco",
         "autumn": "Autunno",
         "city": "Città"
+      }
+    },
+    "picker": {
+      "label": "Scegli uno stile",
+      "worlds": "Mondi 3D",
+      "heroes": "Eroi 3D",
+      "classic": "Classico"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Isole del Cielo",
+        "castle-quest": "Avventura al Castello",
+        "spooky-hollow": "Valle Stregata",
+        "space-base": "Base Spaziale",
+        "toy-town": "Città Giocattolo",
+        "medieval-village": "Villaggio Medievale",
+        "cosy-home": "Casa Accogliente",
+        "busy-kitchen": "Cucina Indaffarata"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Cavaliere",
+        "barbarian": "Esploratore",
+        "mage": "Mago",
+        "rogue": "Ranger",
+        "rogue-hooded": "Ranger incappucciato",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Capitan Clank"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "Vedi i piani per più messaggi del Costruttore"
       },
       "themeUse": "Usa il tema {name}.",
+      "worldUse": "Fanne un gioco 3D nel mondo {name}.",
+      "heroUse": "Usa l’eroe 3D {name}.",
       "sparks": "{n, plural, one {# messaggio dai Pacchetti Scintilla} other {# messaggi dai Pacchetti Scintilla}}"
     },
     "character": {

@@ -1,12 +1,12 @@
-// /build: "New game" and "Start from" template cards create a game and open the Studio; My games can be renamed or deleted.
+// /build: "New game", the "Start from" template cards and the 3D world cards create a game and open the Studio; My games can be renamed or deleted.
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 
-async function create(template, btn) {
+async function create(template, btn, world) {
   $$('.tplcard, #newgame').forEach(b => (b.disabled = true));
   const old = btn.innerHTML;
   if (btn.id === 'newgame') btn.textContent = `✨ ${t('js.build.gettingReady')}`;
   try {
-    const r = await api('/api/studio/new', { method: 'POST', body: template ? { template } : {} });
+    const r = await api('/api/studio/new', { method: 'POST', body: template ? { template, ...(world ? { world } : {}) } : {} });
     location.href = r.url;
   } catch (e) {
     toast(e.message, { bad: true });
@@ -14,7 +14,8 @@ async function create(template, btn) {
   }
 }
 const nb = $('#newgame'); if (nb) nb.addEventListener('click', () => create(null, nb));
-$$('.tplcard').forEach(b => b.addEventListener('click', () => create(b.dataset.template, b)));
+// A 3D world card (data-world) starts the Kit 2 starter in that world.
+$$('.tplcard').forEach(b => b.addEventListener('click', () => create(b.dataset.template, b, b.dataset.world)));
 
 // A 3D template needs import maps and WebGL 2 (e.g. not an iPad on iPadOS 15). Mark its card so a child sees
 // "Needs a newer device" before making the game, instead of only seeing it in the preview afterwards. A browser

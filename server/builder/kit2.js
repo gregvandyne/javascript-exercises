@@ -33,6 +33,9 @@ export const charactersOf = world => { const w = worldById(world); return w ? [.
 export const DEFAULT_WORLD = 'sky-islands';
 /** A character this world has: the one asked for, or the world's first. */
 export const heroFor = (world, hero) => { const list = charactersOf(world); return (list.find(h => h.id === hero) || list[0] || { id: '' }).id; };
+/** An emoji and a cover colour for each world: a new game's icon and card until its own picture is taken. */
+const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'] };
+export const worldLook = id => LOOKS[id] || ['🌍', 'ocean'];
 /** Is this exact theme version shipped (kit2/SHIPPED.json)? */
 export const isShipped = (world, version) => !!KIT2_LOCK.themes[`${world}/${version}`];
 
@@ -148,12 +151,13 @@ const NAMES = (() => {
   const sorted = map => [...map.entries()].sort((x, y) => y[0].length - x[0].length);
   return { worlds: sorted(worlds), heroes: sorted(heroes), chips };
 })();
-const BOUND = '(?:^|[^\\p{L}\\p{N}])', END = '(?=$|[^\\p{L}\\p{N}])';
+const BOUND = '(?:^|[^\\p{L}\\p{N}])', END = '(?=$|[^\\p{L}\\p{N}])', NO_SPACES = /[\u3040-\u30ff\u3400-\u9fff]/;
 /** The name (of a sorted [name, id] list) that appears LAST in the text, as a whole word -> id or ''. */
 function lastNamed(list, t) {
   let best = '', bestAt = -1;
   for (const [name, id] of list) {
-    const re = new RegExp(`${BOUND}${esc(name)}${END}`, 'gu'); let m;
+    // Japanese and Chinese are written without spaces: a name there is matched wherever it stands.
+    const re = new RegExp(NO_SPACES.test(name) ? esc(name) : `${BOUND}${esc(name)}${END}`, 'gu'); let m;
     while ((m = re.exec(t))) if (m.index > bestAt) { bestAt = m.index; best = id; }
   }
   return best;

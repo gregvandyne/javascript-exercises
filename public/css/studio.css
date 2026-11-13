@@ -322,16 +322,25 @@ button.stp-line{cursor:pointer}
 .mygame .coverart .shot-icon{display:none}.mygame .coverart.has-shot img{object-position:center}
 /* The theme chips over the message box (routes/studio.js themePicker): one scrolling row, a small picture of each world. */
 .st-themes{display:flex;align-items:center;gap:8px;margin:0 -10px 8px;padding:0 10px;min-width:0}
-.st-themes-h{flex:none;font-weight:800;font-size:.85rem;color:var(--text-2)}
-.st-themes-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;min-width:0;padding:2px 2px 4px;scroll-snap-type:x proximity}
-.st-theme{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:3px 12px 3px 3px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .85rem var(--font);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
-.st-theme img{width:48px;height:32px;border-radius:999px;object-fit:cover;background:var(--card-2);flex:none}
-.st-theme:hover{border-color:var(--accent-line)}
-.st-theme[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
-.st-theme.is-current{border-color:var(--accent-line)}
+/* The picker's tabs: 3D worlds, 3D heroes, classic kit themes (one row of chips shows at a time). */
+.st-tabs{flex:none;display:inline-flex;gap:2px;padding:2px;border-radius:999px;border:2px solid var(--line);background:var(--card-2)}
+.st-tab{display:inline-flex;align-items:center;gap:5px;min-height:40px;min-width:44px;justify-content:center;padding:2px 10px;border:0;border-radius:999px;background:transparent;color:var(--text-2);font:800 .82rem var(--font);cursor:pointer;white-space:nowrap}
+.st-tab:hover{color:var(--text)}
+.st-tab[aria-selected="true"]{background:var(--current);color:var(--on-current)}
+.st-themes-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;min-width:0;flex:1;padding:2px 2px 4px;scroll-snap-type:x proximity}
+.st-themes-row[hidden]{display:none}
+.st-theme,.st-pick{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:3px 12px 3px 3px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .85rem var(--font);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
+.st-theme img,.st-pick img{width:48px;height:32px;border-radius:999px;object-fit:cover;background:var(--card-2);flex:none}
+.st-hero img{width:36px;height:36px;border-radius:50%}
+.st-theme:hover,.st-pick:hover{border-color:var(--accent-line)}
+.st-theme[aria-pressed="true"],.st-pick[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
+.st-theme.is-current,.st-pick.is-current{border-color:var(--accent-line)}
 .st-theme-now{font-size:.7rem;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
-@media (max-width:520px){.st-themes-h{display:none}}
+@media (max-width:640px){.st-tab-t{display:none}.st-tab{padding:2px 6px}}
 /* Out of messages: nothing can be sent, so the theme chips (they only write into the message) step aside for the card. */
 .st-compose.st-out .st-themes{display:none}
 /* Opened from a lesson's build step: the way back to the lesson (and its Hand in). */
 .st-lesson{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:8px 12px;border-radius:12px;background:var(--hover);font-weight:700}
+/* A 3D world card on /build: the world's own picture as its cover. */
+.tplcard .tplpic{display:block;aspect-ratio:16/10;background:var(--card-2);overflow:hidden}
+.tplcard .tplpic img{display:block;width:100%;height:100%;object-fit:cover}

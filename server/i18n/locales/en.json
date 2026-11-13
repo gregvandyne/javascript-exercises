@@ -1426,6 +1426,8 @@
     "newGame": "New game",
     "startFrom": "Start from",
     "startFromLabel": "Start from {title}",
+    "worlds": "Start in a 3D world",
+    "startInLabel": "Start in the 3D world {title}",
     "twoPlayers": "2 players",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Forest",
         "autumn": "Autumn",
         "city": "City"
+      }
+    },
+    "picker": {
+      "label": "Pick a look",
+      "worlds": "3D worlds",
+      "heroes": "3D heroes",
+      "classic": "Classic"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Sky Islands",
+        "castle-quest": "Castle Quest",
+        "spooky-hollow": "Spooky Hollow",
+        "space-base": "Space Base",
+        "toy-town": "Toy Town",
+        "medieval-village": "Medieval Village",
+        "cosy-home": "Cosy Home",
+        "busy-kitchen": "Busy Kitchen"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Knight",
+        "barbarian": "Explorer",
+        "mage": "Wizard",
+        "rogue": "Ranger",
+        "rogue-hooded": "Hooded Ranger",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Captain Clank"
       }
     },
     "lesson": {
@@ -2369,6 +2402,8 @@
         "seePlans": "See plans for more Builder messages"
       },
       "themeUse": "Use the {name} theme.",
+      "worldUse": "Make it a 3D game in the {name} world.",
+      "heroUse": "Use the 3D hero {name}.",
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}"
     },
     "character": {

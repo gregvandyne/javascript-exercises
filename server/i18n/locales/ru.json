@@ -1425,6 +1425,8 @@
     "newGame": "Новая игра",
     "startFrom": "Начни с заготовки",
     "startFromLabel": "Начать с заготовки «{title}»",
+    "worlds": "Начни в 3D-мире",
+    "startInLabel": "Начать в 3D-мире «{title}»",
     "twoPlayers": "2 игрока",
     "updateWaiting": "Обновление ждёт проверки",
     "changed": "Изменено {when}",
@@ -1581,6 +1583,37 @@
         "forest": "Лес",
         "autumn": "Осень",
         "city": "Город"
+      }
+    },
+    "picker": {
+      "label": "Выбери стиль",
+      "worlds": "3D-миры",
+      "heroes": "3D-герои",
+      "classic": "Классика"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Небесные острова",
+        "castle-quest": "Замковое приключение",
+        "spooky-hollow": "Жуткая лощина",
+        "space-base": "Космическая база",
+        "toy-town": "Игрушечный город",
+        "medieval-village": "Средневековая деревня",
+        "cosy-home": "Уютный дом",
+        "busy-kitchen": "Шумная кухня"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Рыцарь",
+        "barbarian": "Исследователь",
+        "mage": "Волшебник",
+        "rogue": "Следопыт",
+        "rogue-hooded": "Следопыт в капюшоне",
+        "skelly": "Скелли",
+        "rattles": "Рэттлс",
+        "bonzo": "Бонзо",
+        "captain-clank": "Капитан Кланк"
       }
     },
     "lesson": {
@@ -2356,6 +2389,8 @@
         "seePlans": "Посмотреть тарифы с бо́льшим числом сообщений Мастеру"
       },
       "themeUse": "Используй тему «{name}».",
+      "worldUse": "Сделай 3D-игру в мире «{name}».",
+      "heroUse": "Возьми 3D-героя: {name}.",
       "sparks": "{n, plural, one {# сообщение из наборов искр} few {# сообщения из наборов искр} many {# сообщений из наборов искр} other {# сообщения из наборов искр}}"
     },
     "character": {
