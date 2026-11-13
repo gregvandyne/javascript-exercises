@@ -1,0 +1,252 @@
+{
+ "key": "launchpad-5.1",
+ "n": "5.1",
+ "band": "launchpad",
+ "title": "Hundreds, tens and ones",
+ "topic": "Hundreds, tens, ones",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A rocket to load",
+   "text": "Tally found a rocket on the launch pad. It needs supplies by the hundred.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Ten tens make a hundred",
+   "text": "10 tens make 1 hundred. 120 is 1 hundred and 2 tens.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "120 as 1 flat of a hundred and 2 sticks of ten",
+    "groups": [
+     {
+      "n": 120,
+      "hundreds": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "This flat is 10 tens: 100.",
+     "box": [
+      29.1,
+      21.5,
+      22,
+      38.8
+     ]
+    },
+    {
+     "cue": "2 more tens: 110, 120.",
+     "box": [
+      53.1,
+      21.5,
+      7.8,
+      38.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Three digits, three places",
+   "text": "243 has 2 hundreds, 4 tens and 3 ones.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "counters",
+    "label": "243 as 2 flats of a hundred, 4 sticks of ten and 3 ones",
+    "groups": [
+     {
+      "n": 243,
+      "hundreds": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 hundreds: 100, 200.",
+     "box": [
+      26,
+      21.5,
+      25,
+      38.8
+     ]
+    },
+    {
+     "cue": "4 tens: 210, 220, 230, 240.",
+     "box": [
+      53,
+      21.5,
+      14.6,
+      38.8
+     ]
+    },
+    {
+     "cue": "3 ones: 241, 242, 243.",
+     "box": [
+      69.6,
+      42.5,
+      4.4,
+      17.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Read 407 with Tally",
+   "text": "Look at 407. The zero keeps the tens place empty.",
+   "art": "star",
+   "steps": [
+    "4 hundreds",
+    "0 tens",
+    "7 ones",
+    "400 + 7 = 407"
+   ],
+   "visual": {
+    "type": "counters",
+    "label": "407 as 4 flats of a hundred, no sticks of ten and 7 ones",
+    "groups": [
+     {
+      "n": 407,
+      "hundreds": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "4 hundreds make 400.",
+     "box": [
+      24.9,
+      21.5,
+      31,
+      38.8
+     ]
+    },
+    {
+     "cue": "No tens here: write 0.",
+     "box": [
+      47,
+      60.1,
+      16.1,
+      13
+     ]
+    },
+    {
+     "cue": "7 ones make 407.",
+     "box": [
+      67.8,
+      32.2,
+      7.3,
+      28.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A number in its parts",
+   "text": "342 is 300 + 40 + 2. Each digit has its own value.",
+   "art": "scale",
+   "visual": {
+    "type": "places",
+    "label": "342 in a place chart: 3 hundreds, 4 tens and 2 ones",
+    "cols": [
+     {
+      "d": "3",
+      "place": "hundreds",
+      "value": "300"
+     },
+     {
+      "d": "4",
+      "place": "tens",
+      "value": "40"
+     },
+     {
+      "d": "2",
+      "place": "ones",
+      "value": "2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The 3 means 300.",
+     "box": [
+      6.5,
+      14.4,
+      28.3,
+      65.8
+     ]
+    },
+    {
+     "cue": "The 4 means 40.",
+     "box": [
+      35.8,
+      14.4,
+      28.4,
+      65.8
+     ]
+    },
+    {
+     "cue": "The 2 means 2.",
+     "box": [
+      65.2,
+      14.4,
+      28.3,
+      65.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "hundred",
+     "means": "ten tens, the same as 100 ones"
+    },
+    {
+     "word": "place",
+     "means": "where a digit sits in a number"
+    },
+    {
+     "word": "expanded form",
+     "means": "a number written as its parts, like 300 + 40 + 2"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Rocket Supply at Load the Rocket. Load each rocket with the right number.",
+   "art": "trophy",
+   "img": "nq/rocket-supply/load-the-rocket",
+   "alt": "Rocket Supply on a phone: a rocket on a launch pad, pallets, racks and canisters to load, and five loading buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-5.1-e1",
+  "nq-launchpad-5.1-e2",
+  "nq-launchpad-5.1-e3"
+ ],
+ "game": {
+  "slug": "rocket-supply",
+  "chapter": "Load the Rocket",
+  "params": "chapter=build&lock=1"
+ }
+}

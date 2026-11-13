@@ -1,0 +1,332 @@
+{
+ "key": "launchpad-5.2",
+ "n": "5.2",
+ "band": "launchpad",
+ "title": "Skip counting and comparing",
+ "topic": "Count and compare",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Lights on the launch pad",
+   "text": "The landing lights blink in a pattern. Tally counts along with them.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Count by fives",
+   "text": "5, 10, 15, 20. Each hop is 5 more.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 0 to 20 with hops of five",
+    "min": 0,
+    "max": 20,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 5,
+      "label": "5"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     },
+     {
+      "at": 15,
+      "label": "15"
+     },
+     {
+      "at": 20,
+      "label": "20"
+     }
+    ],
+    "hops": [
+     {
+      "from": 5,
+      "to": 10,
+      "label": "+5"
+     },
+     {
+      "from": 10,
+      "to": 15,
+      "label": "+5"
+     },
+     {
+      "from": 15,
+      "to": 20,
+      "label": "+5"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start on 5.",
+     "box": [
+      26,
+      57.8,
+      4.1,
+      25.4
+     ]
+    },
+    {
+     "cue": "Hop 5 more: 10, then 15.",
+     "box": [
+      27.1,
+      23.5,
+      45.9,
+      38.5
+     ]
+    },
+    {
+     "cue": "The next hop lands on 20.",
+     "box": [
+      71,
+      23.5,
+      26.3,
+      59.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Count by tens and hundreds",
+   "text": "230, 240, 250: ten more each time. By hundreds it is 300, 400, 500.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 220 to 260 with hops of ten from 230",
+    "min": 220,
+    "max": 260,
+    "marks": [
+     {
+      "at": 220,
+      "label": "220"
+     },
+     {
+      "at": 230,
+      "label": "230"
+     },
+     {
+      "at": 240,
+      "label": "240"
+     },
+     {
+      "at": 250,
+      "label": "250"
+     },
+     {
+      "at": 260,
+      "label": "260"
+     }
+    ],
+    "hops": [
+     {
+      "from": 230,
+      "to": 240,
+      "label": "+10"
+     },
+     {
+      "from": 240,
+      "to": 250,
+      "label": "+10"
+     },
+     {
+      "from": 250,
+      "to": 260,
+      "label": "+10"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start on 230.",
+     "box": [
+      23.7,
+      57.8,
+      8.8,
+      25.4
+     ]
+    },
+    {
+     "cue": "Ten more is 240, then 250.",
+     "box": [
+      27.1,
+      23.5,
+      45.9,
+      38.5
+     ]
+    },
+    {
+     "cue": "The next ten is 260.",
+     "box": [
+      71,
+      23.5,
+      27.4,
+      59.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Look at the hundreds first",
+   "text": "352 and 418. 4 hundreds is more than 3 hundreds.",
+   "art": "scale",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 300 to 500 with 352 and 418 marked",
+    "min": 300,
+    "max": 500,
+    "marks": [
+     {
+      "at": 300,
+      "label": "300"
+     },
+     {
+      "at": 352,
+      "label": "352"
+     },
+     {
+      "at": 418,
+      "label": "418"
+     },
+     {
+      "at": 500,
+      "label": "500"
+     }
+    ],
+    "hops": []
+   },
+   "focus": [
+    {
+     "cue": "352 comes first: it is less.",
+     "box": [
+      24.6,
+      57.8,
+      8.6,
+      25.4
+     ]
+    },
+    {
+     "cue": "418 is further on: it is greater.",
+     "box": [
+      54,
+      57.8,
+      7.9,
+      25.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Same hundreds? Check the tens",
+   "text": "346 and 364 both have 3 hundreds. Now look at the tens.",
+   "art": "star",
+   "steps": [
+    "3 hundreds and 3 hundreds",
+    "4 tens and 6 tens",
+    "6 tens is more",
+    "364 > 346"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 340 to 370 with 346 and 364 marked",
+    "min": 340,
+    "max": 370,
+    "marks": [
+     {
+      "at": 340,
+      "label": "340"
+     },
+     {
+      "at": 346,
+      "label": "346"
+     },
+     {
+      "at": 364,
+      "label": "364"
+     },
+     {
+      "at": 370,
+      "label": "370"
+     }
+    ],
+    "hops": []
+   },
+   "focus": [
+    {
+     "cue": "346 has 4 tens.",
+     "box": [
+      19.2,
+      57.8,
+      9,
+      25.4
+     ]
+    },
+    {
+     "cue": "364 has 6 tens: it is greater.",
+     "box": [
+      72,
+      57.8,
+      9,
+      25.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "skip count",
+     "means": "count on by the same hop each time"
+    },
+    {
+     "word": "greater",
+     "means": "more, further along the number line"
+    },
+    {
+     "word": "less",
+     "means": "not as many, earlier on the number line"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Rocket Supply at Count and Compare. Count along the gauge, then pick the sign.",
+   "art": "trophy",
+   "img": "nq/rocket-supply/count-and-compare",
+   "alt": "Rocket Supply on a phone: a fuel gauge with the numbers 70, 75, 80 and a question mark, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-5.2-e1",
+  "nq-launchpad-5.2-e2",
+  "nq-launchpad-5.2-e3"
+ ],
+ "game": {
+  "slug": "rocket-supply",
+  "chapter": "Count and Compare",
+  "params": "chapter=count&lock=1"
+ }
+}
