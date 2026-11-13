@@ -841,6 +841,8 @@ const stackY = k => k * U + 0.09;   // ten canisters stood one on another are as
 function sumLayout(Rd, done) {
   const A = RS.parts(Rd.a), Bp = RS.parts(Rd.b), items = [], boards = [], G = 0.24;
   A.t += A.h * 10; Bp.t += Bp.h * 10;
+  // how wide the sum stands while it is asked: its pods are drawn as big as the pad allows (never more than 1.25)
+  const wide = Rd.kind === 'add' ? racksW(A.t) + (A.t && A.o ? G : 0) + onesW(A.o) + 1 + racksW(Bp.t) + (Bp.t && Bp.o ? G : 0) + onesW(Bp.o) : racksW(A.t) + G + onesW(Math.max(A.o + (A.o < Bp.o ? 10 : 0), 1)) + 0.35 + 1.15, k = Math.min(1.25, 5.7 / wide);
   const at = (kind, x, y, extra) => items.push({ kind, x, y, z: ZP, ...extra });
   const top = (t, o) => (t ? 2 : o ? oneY(Math.min(o, 5) - 1) + 0.09 : 0);
   if (Rd.kind === 'add') {
@@ -851,13 +853,13 @@ function sumLayout(Rd, done) {
       for (let i = 0; i < Bp.t; i++) at('t', xb + rackDX(i), 1, { g: 'b' });
       for (let i = 0; i < Bp.o; i++) at('o', xb + racksW(Bp.t) + (Bp.t ? G : 0) + oneDX(i), oneY(i), { g: 'b' });
       boards.push([Rd.a, x0 + wa / 2, top(A.t, A.o) + 0.4, 0.84, 'cream'], ['+', x0 + wa + mid / 2, 0.7, 0.7, 'gold'], [Rd.b, xb + wb / 2, top(Bp.t, Bp.o) + 0.4, 0.84, 'cream']);
-      return { items, boards, counts: { racks: A.t + Bp.t, ones: A.o + Bp.o, ghostRacks: 0, ghostOnes: 0 } };
+      return { k, items, boards, counts: { racks: A.t + Bp.t, ones: A.o + Bp.o, ghostRacks: 0, ghostOnes: 0 } };
     }
     const ones = A.o + Bp.o, carry = ones >= 10 ? 1 : 0, nt = A.t + Bp.t + carry, no = ones - carry * 10, w = racksW(nt) + (nt && no ? G : 0) + onesW(no), x0 = -w / 2;
     for (let i = 0; i < nt; i++) at('t', x0 + rackDX(i), 1, { fresh: carry && i === nt - 1 });
     for (let i = 0; i < no; i++) at('o', x0 + racksW(nt) + (nt ? G : 0) + oneDX(i), oneY(i));
     boards.push([Rd.answer, 0, top(nt, no) + 0.42, 0.9, 'green']);
-    return { items, boards, counts: { racks: nt, ones: no, ghostRacks: 0, ghostOnes: 0 }, slot: carry ? x0 + rackDX(nt - 1) : null, x0, nt };
+    return { k, items, boards, counts: { racks: nt, ones: no, ghostRacks: 0, ghostOnes: 0 }, slot: carry ? x0 + rackDX(nt - 1) : null, x0, nt };
   }
   // taking away: the racks and canisters of the first number; with the work shown, a ten is opened where the ones
   // do not reach, and what goes is a pale outline (the last canisters, the last racks)
@@ -865,10 +867,11 @@ function sumLayout(Rd, done) {
   for (let i = 0; i < nt; i++) at('t', x0 + rackDX(i), 1, { ghost: done && i >= nt - Bp.t });
   for (let i = 0; i < no; i++) at('o', x0 + racksW(slots) + G + oneDX(i), oneY(i), { ghost: done && i >= no - Bp.o, opened: open && i >= A.o });
   boards.push([done ? Rd.answer : Rd.a, x0 + (racksW(slots) + G + onesW(Math.max(no, 1))) / 2, (slots ? 2 : top(0, no)) + 0.42, 0.9, done ? 'green' : 'cream'], ['−' + Rd.b, x0 + w + 0.35 + bw / 2, 1.0, bw, 'gold']);
-  return { items, boards, counts: { racks: nt - (done ? Bp.t : 0), ones: no - (done ? Bp.o : 0), ghostRacks: done ? Bp.t : 0, ghostOnes: done ? Bp.o : 0 }, openX: open ? x0 + rackDX(A.t - 1) : null };
+  return { k, items, boards, counts: { racks: nt - (done ? Bp.t : 0), ones: no - (done ? Bp.o : 0), ghostRacks: done ? Bp.t : 0, ghostOnes: done ? Bp.o : 0 }, openX: open ? x0 + rackDX(A.t - 1) : null };
 }
 function drawSum(Rd, done, move, then) {
   const L = sumLayout(Rd, done);
+  stage.scale.setScalar(L.k);
   standPods(L.items, move, then);
   for (const b of L.boards) addBoard(...b);
   S.load = L.counts;
@@ -924,7 +927,7 @@ function scene(move) {
   const Rd = S.R, found = S.phase === 'right', shown = S.reveal || found, tone = found ? 'green' : 'cream';
   clearPods(); for (const o of [...floor.children]) floor.remove(o);
   const two = Rd.kind === 'compare', stacked = arrange(two, 2.4);
-  stage.scale.setScalar(Rd.kind === 'add' || Rd.kind === 'sub' ? 1.25 : 1);
+  stage.scale.setScalar(1);
   let low = 2.5;
   if (two) {
     // two loads: side by side on a wide screen, one above the other on a tall one
@@ -933,7 +936,7 @@ function scene(move) {
     if (found && !stacked) addBoard(SIGN[Rd.answer], 0, 0.75, 1.05, 'green');
     S.load = { a: RS.parts(Rd.a), b: RS.parts(Rd.b) }; low = stacked ? 2.6 : 3.5;
   } else if (Rd.kind === 'skip') { pad(0, 0); drawGauge(Rd, found); }
-  else if (Rd.kind === 'add' || Rd.kind === 'sub') { pad(0, 0); drawSum(Rd, found || S.work, move); low = 3.5; }
+  else if (Rd.kind === 'add' || Rd.kind === 'sub') { pad(0, 0); low = 2.75 * drawSum(Rd, found || S.work, move).k; }
   else {
     // one load on the three places of the pad: what is loaded so far, the load to read, a number in its parts;
     // a number that is only heard stands on the pad once it is found
