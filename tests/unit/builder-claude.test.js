@@ -166,6 +166,58 @@ test('3D: the fixed 3D rules block is sent only for 3D; the Builder starts from 
   assert.equal(sys2.length, 3); assert.ok(!sys2.some(b => b.text === THREE_D_RULES));
 });
 
+test('a picked 3D world: the KIT 2 RULES in place of the 3D RULES, the Kit 2 starter with a world and a hero, never an invented name', async () => {
+  const { KIT2_RULES } = await import('../../server/builder/prompt.js');
+  const { kit2Of } = await import('../../server/builder/kit2.js');
+  const { kit2ImportMap } = await import('../../server/services/vendor.js');
+  const u = auth.createUser({ username: 'ClaudeKit2', password: 'secret1' }); const g = games.createGame(u.id, {});
+  script.push(
+    [{ type: 'text', text: 'A wizard on the red planet!' }, { type: 'tool_use', name: 'start_from_template', input: { template: 'oomba3d', world: 'space-base', hero: 't-rex', notes: 'A dinosaur on the red planet' } }],
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'oomba3d', world: 'space-base', hero: 'mage', notes: 'A wizard on the red planet' } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { edits: [{ find: "\n  steps: 4,\n", replace: "\n  steps: 5,\n" }, { find: "question: '9 + 6 = ?', answers: [15, 14, 16], correct: 15", replace: "question: '8 + 8 = ?', answers: [16, 14, 18], correct: 16" }], notes: 'A longer way and a new question' } }],
+    [{ type: 'text', text: 'Your 3D game is ready!' }],
+  );
+  const before = requests.length; const events = [];
+  const r = await runTurn({ user: u, gameId: g.id, text: 'Make it a 3D game in the Space Base world.\nUse the 3D hero Wizard.', emit: (n, d) => events.push([n, d]) });
+  assert.equal(r.ok, true, JSON.stringify(events.filter(e => e[0] === 'error')));
+  const calls = requests.slice(before).filter(x => x.body.stream);
+  assert.equal(calls.length, 4);
+  const sys = calls[0].body.system;
+  assert.equal(sys[0].text, SYSTEM_PROMPT, 'the main prompt is the same for every build (cache-friendly)');
+  assert.equal(sys[1].text, KIT2_RULES); assert.deepEqual(sys[1].cache_control, { type: 'ephemeral' });
+  assert.match(sys[2].text, /CURRENT GAME: none yet/);
+  assert.match(sys[3].text, /^KIT 2 CHOICE: The builder picked the 3D world space-base \("Space Base"\) 1\.0\.0, with the hero mage \(Wizard\)[\s\S]*start_from_template "oomba3d"/);
+  assert.equal(sys[3].cache_control, undefined, 'this turn\'s pick is not part of the cached prefix');
+  assert.match(sys[4].text, /^LANGUAGE:/);
+  for (const c of calls) assert.ok(!c.body.system.some(b => b.text === THREE_D_RULES), 'never both sets of 3D rules');
+  assert.ok(KIT2_RULES.includes(kit2ImportMap()), 'the rules carry the exact Kit 2 import map');
+  const startTool = calls[0].body.tools.find(t => t.name === 'start_from_template');
+  assert.ok(startTool.input_schema.properties.world.enum.includes('space-base') && startTool.input_schema.properties.hero.enum.includes('mage'));
+  // the invented character was refused with the world's real characters, and nothing was saved for it
+  const refusal = calls[1].body.messages.at(-1).content.find(c => c.type === 'tool_result');
+  assert.match(JSON.stringify(refusal.content), /space-base has no character called \\"t-rex\\"[\s\S]*knight, barbarian, mage/);
+  assert.equal(events.filter(e => e[0] === 'version').length, 2);
+  // once the starter is saved the game is a Kit 2 game: the next steps keep the rules, and the note says so
+  assert.equal(calls[2].body.system[1].text, KIT2_RULES);
+  assert.match(calls[2].body.system[2].text, /<current_game>[\s\S]*from 'oomba3d'/);
+  assert.match(calls[2].body.system[3].text, /^KIT 2 CHOICE: This game is in the 3D world space-base/);
+  const v = games.getVersion(games.getGame(g.id).current_version_id);
+  assert.equal(v.number, 2); assert.equal(v.safety_status, 'pass', v.safety_report);
+  assert.deepEqual(kit2Of(v.html), { world: 'space-base', version: '1.0.0', hero: 'mage' });
+  assert.match(v.html, /\n  steps: 5,\n/); assert.match(v.html, /8 \+ 8 = \?/); assert.ok(v.html.includes(kit2ImportMap()));
+  assert.ok(!/oomba-kit/.test(v.html), 'no Oomba Kit in a Kit 2 game');
+  // later turns on the game keep the Kit 2 rules; a game with no Kit 2 pick never gets them
+  script.push([{ type: 'text', text: 'Sure!' }]);
+  await runTurn({ user: u, gameId: g.id, text: 'thanks', emit: () => {} });
+  const later = requests.filter(x => x.body.stream).at(-1).body.system;
+  assert.equal(later[1].text, KIT2_RULES); assert.ok(!later.some(b => b.text === THREE_D_RULES));
+  const g2 = games.createGame(u.id, {});
+  script.push([{ type: 'text', text: 'What kind of game?' }]);
+  await runTurn({ user: u, gameId: g2.id, text: 'a catching game with apples', emit: () => {} });
+  const sys2 = requests.filter(x => x.body.stream).at(-1).body.system;
+  assert.equal(sys2.length, 3); assert.ok(!sys2.some(b => b.text === KIT2_RULES || /^KIT 2 CHOICE/.test(b.text)));
+});
+
 test('the model classifier can refuse what the word rules miss', async () => {
   const u = auth.createUser({ username: 'ClaudeKid2', password: 'secret1' }); const g = games.createGame(u.id, {});
   const before = requests.filter(x => x.body.stream).length;

@@ -688,7 +688,7 @@
         "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI.",
         "p2": "Speaking instead of typing: when your child taps the microphone in the Builder chat, the recording is sent to {provider}, a speech-to-text service, which turns it into words. Your child sees the words and can change them before sending. The recording is used only for this and deleted straight away: we never store it, and {provider} is not allowed to keep it or use it to train its systems. The words go through the same safety checks as a typed message.",
         "p3": "Looking up facts: to get a game right, the Builder can look up a fact on the web (for example how fast a cheetah runs). Your child never sees the web pages or links. The Builder is told never to search for anything personal; if a search still looks personal, its results are not used and its words are not kept. Adult, gambling, social media and video sites are blocked. We keep a list of the searches, without your child's name or username, together with the game they were for, for 90 days so our team can check them.",
-        "p4": "AI voices: some of our own games, lesson quizzes and Oomba Live quizzes can read their words aloud with a computer-made voice from {ttsProvider}. Only text written by us, a game's makers or your child's teacher is sent, never what your child types or says, and never their name. Your child is told the voices are made by AI, and can switch to the device's own voice with the 🔊 AI voices button."
+        "p4": "AI voices: our own games, games made in the Builder, lesson quizzes and Oomba Live quizzes can read their words aloud with a computer-made voice from {ttsProvider}. Only fixed text is sent: text written by us or your child's teacher, and the lines written into a game when it was made. In a game a child made with the Builder, those lines can include words the child asked for; they are sent only when our safety check has passed that version of the game. What a player types or says while playing is never sent, and never their name. Your child is told the voices are made by AI, and can switch to the device's own voice with the 🔊 AI voices button."
       },
       "keep": {
         "h": "How long we keep it",
@@ -1070,7 +1070,7 @@
         "p3": "<b>Your rights as a parent (own accounts):</b> you can ask us to show you what we keep about your child, to delete it, or to stop collecting more. Email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. There is no delete or download button yet, so we handle these requests by hand, and we will need to check that you are the parent before we act. Unlinking or cancelling a plan does not delete your child's account.",
         "p4": "<b>School accounts:</b> a school account is made and owned by the school. For those accounts we act on the school's behalf and under its direction: we use student information only to provide Oomba Academy to the school, never for advertising, and we don't sell it. Parents of school accounts should ask the school to see or delete records; the school can ask us. A data agreement the school has signed with us comes first.",
         "p5": "<b>No selling, no ads:</b> we don't sell anyone's personal information, show ads, or use advertising or tracking cookies.",
-        "p6": "<b>AI voices:</b> when a game, lesson or Oomba Live reads text aloud with an AI voice, only that text is sent from our server to {ttsProvider} to make the sound, never anything about your child. {ttsProvider} may keep it for a limited time to check for misuse. Players are told these voices are made by a computer."
+        "p6": "<b>AI voices:</b> when a game, lesson or Oomba Live reads text aloud with an AI voice, only that text is sent from our server to {ttsProvider} to make the sound, with nothing that says who is playing or who made the game. It is always fixed text: written by us or a teacher, or a line written into a game when it was made. In a game a child made with the Builder, those lines can include words the child asked for; a line is sent only if that version of the game passed our safety check, and never if it has rude words, an email address, a phone number or the player's own name in it. What a player types or says while playing is never sent. {ttsProvider} may keep the text for a limited time to check for misuse. Players are told these voices are made by a computer."
       },
       "billingKeep": {
         "h": "How long we keep billing information",
@@ -1426,6 +1426,8 @@
     "newGame": "New game",
     "startFrom": "Start from",
     "startFromLabel": "Start from {title}",
+    "worlds": "Start in a 3D world",
+    "startInLabel": "Start in the 3D world {title}",
     "twoPlayers": "2 players",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Forest",
         "autumn": "Autumn",
         "city": "City"
+      }
+    },
+    "picker": {
+      "label": "Pick a look",
+      "worlds": "3D worlds",
+      "heroes": "3D heroes",
+      "classic": "Classic"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Sky Islands",
+        "castle-quest": "Castle Quest",
+        "spooky-hollow": "Spooky Hollow",
+        "space-base": "Space Base",
+        "toy-town": "Toy Town",
+        "medieval-village": "Medieval Village",
+        "cosy-home": "Cosy Home",
+        "busy-kitchen": "Busy Kitchen"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Knight",
+        "barbarian": "Explorer",
+        "mage": "Wizard",
+        "rogue": "Ranger",
+        "rogue-hooded": "Hooded Ranger",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Captain Clank"
       }
     },
     "lesson": {
@@ -2369,6 +2402,8 @@
         "seePlans": "See plans for more Builder messages"
       },
       "themeUse": "Use the {name} theme.",
+      "worldUse": "Make it a 3D game in the {name} world.",
+      "heroUse": "Use the 3D hero {name}.",
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}"
     },
     "character": {

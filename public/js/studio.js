@@ -1916,22 +1916,54 @@ addEventListener('online', () => { if (!LIVE.ctrl && !LIVE.stopped && !LIVE.hidd
 const ask = new URLSearchParams(location.search).get('ask');
 if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
 
-// The theme chips over the message box (routes/studio.js themePicker): a tap puts "Use the snow theme." into the
-// message (the kit theme's own name in brackets when the language calls it something else), a second tap takes it out,
-// another chip swaps it. The builder sees and can edit the sentence before sending; it goes to the Builder as their words.
+// The picker over the message box (routes/studio.js themePicker): three tabs of chips. A tap puts a sentence into the
+// message: "Make it a 3D game in the Castle Quest world." (a 3D world), "Use the 3D hero Skelly." (a 3D hero) or "Use
+// the snow theme." (a classic kit theme: the kit's own name in brackets when the language calls it something else). A
+// second tap takes it out, another chip of the same kind swaps it; a 3D world and a 3D hero go together, and a classic
+// theme takes the place of both (one game, one engine). The builder sees and can edit the sentences before sending;
+// they go to the Builder as their words.
 {
-  let said = '';
-  const themeLine = b => { const id = b.dataset.theme, name = b.dataset.name || id; return t('js.studio.themeUse', { name: name.toLowerCase() === id ? name : `${name} (${id})` }); };
+  const said = { world: '', hero: '', theme: '' };
+  const kindOf = b => (b.dataset.world ? 'world' : b.dataset.hero ? 'hero' : 'theme');
+  const lineOf = b => {
+    const kind = kindOf(b), id = b.dataset[kind], name = b.dataset.name || id;
+    if (kind === 'world') return t('js.studio.worldUse', { name });
+    if (kind === 'hero') return t('js.studio.heroUse', { name });
+    return t('js.studio.themeUse', { name: name.toLowerCase() === id ? name : `${name} (${id})` });
+  };
+  const chips = kind => $$(kind === 'theme' ? '.st-theme' : `.st-pick[data-${kind}]`);
   const setText = v => { input.value = v; autosize(); input.dispatchEvent(new Event('input', { bubbles: true })); };
+  // Take a kind's sentence out of the message again (and un-press its chips).
+  const takeOut = (text, kind) => {
+    if (said[kind] && text.includes(said[kind])) text = text.replace(said[kind], '').replace(/\n{2,}/g, '\n').replace(/[^\S\n]{2,}/g, ' ').trim();
+    said[kind] = ''; chips(kind).forEach(x => x.setAttribute('aria-pressed', 'false'));
+    return text;
+  };
   document.addEventListener('click', e => {
-    const b = e.target.closest('.st-theme'); if (!b) return;
-    const on = b.getAttribute('aria-pressed') !== 'true';
-    $$('.st-theme').forEach(x => x.setAttribute('aria-pressed', String(on && x === b)));
-    let text = input.value;
-    if (said && text.includes(said)) text = text.replace(said, '').replace(/\s{2,}/g, ' ').trim();
-    said = on ? themeLine(b) : '';
-    setText(on ? (text ? `${text}\n${said}` : said) : text);
+    const tab = e.target.closest('.st-tab');
+    if (tab) {
+      $$('.st-tab').forEach(x => { const on = x === tab; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; const row = document.getElementById(x.getAttribute('aria-controls')); if (row) row.hidden = !on; });
+      return;
+    }
+    const b = e.target.closest('.st-theme, .st-pick'); if (!b) return;
+    const kind = kindOf(b), on = b.getAttribute('aria-pressed') !== 'true';
+    let text = takeOut(input.value, kind);
+    for (const other of kind === 'theme' ? ['world', 'hero'] : ['theme']) text = takeOut(text, other);
+    if (on) { said[kind] = lineOf(b); b.setAttribute('aria-pressed', 'true'); text = text ? `${text}\n${said[kind]}` : said[kind]; }
+    // A picked world shows only the heroes it has (Sky Islands has no skeleton pals); a hero it lacks is taken out again.
+    const picked = [...chips('world')].find(x => x.getAttribute('aria-pressed') === 'true');
+    for (const h of chips('hero')) {
+      h.hidden = !!picked && !(h.dataset.worlds || '').split(' ').includes(picked.dataset.world);
+      if (h.hidden && h.getAttribute('aria-pressed') === 'true') text = takeOut(text, 'hero');
+    }
+    setText(text);
     input.focus();
   });
-  $('#st-compose').addEventListener('submit', () => { said = ''; $$('.st-theme').forEach(x => x.setAttribute('aria-pressed', 'false')); });
+  // Arrow keys move between the tabs (a tab list).
+  document.addEventListener('keydown', e => {
+    const tab = e.target.closest && e.target.closest('.st-tab'); if (!tab || !/^Arrow(Left|Right)$/.test(e.key)) return;
+    const tabs = [...$$('.st-tab')], next = tabs[(tabs.indexOf(tab) + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+    e.preventDefault(); next.focus(); next.click();
+  });
+  $('#st-compose').addEventListener('submit', () => { for (const k of Object.keys(said)) said[k] = ''; $$('.st-theme, .st-pick').forEach(x => { x.setAttribute('aria-pressed', 'false'); x.hidden = false; }); });
 }

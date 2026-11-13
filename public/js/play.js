@@ -117,7 +117,7 @@ const TYPES = {
   'brb:back': m => true,
   'brb:poll': m => typeof m.item === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(m.item) && (m.choice === 0 || m.choice === 1) && Number.isInteger(m.seat) && m.seat >= 0 && m.seat <= 5 && Number.isInteger(m.n) && m.n >= 0 && m.n < 1e9,
   'brb:online': m => true,
-  // AI voices (official games listed for voices, and games the admin switched on; public/js/tts.js): one line of the game's own words to read aloud.
+  // AI voices (official games listed for voices, games the admin switched on and scanner-passed Builder games; public/js/tts.js): one line of the game's own words to read aloud.
   'brb:tts': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.text === 'string' && m.text.length > 0 && m.text.length <= 600 && typeof m.lang === 'string' && m.lang.length <= 16
     && TTS_ROLES.includes(m.role) && Number.isFinite(m.rate) && m.rate >= 0.5 && m.rate <= 2 && (m.pre === undefined || m.pre === true),
   // Loudness (BRB.loudness; only page-data.mic pages ever listen, public/js/loudness.js): hello / start / keep / stop.
@@ -291,7 +291,8 @@ function loudMessage(m) {
 function stopLoud() { loudGen++; if (loudBridge) loudBridge.stop('stopped'); }
 
 // ---- AI voices (docs/tts-design.md): the game frame can't fetch, so its lines come through here ----
-// Only official games listed for voices and games the admin switched on get d.tts (a token bound to this player and
+// Only official games listed for voices, games the admin switched on and Builder games whose published version passed
+// the safety scanner get d.tts (a token bound to this player and
 // game); the server checks the game, the language and the words again. Any refusal, a timeout or the device choice: the frame is told no, and it uses the device's voice.
 const toFrame = (msg, transfer) => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*', transfer || []); } catch { /* frame gone */ } };
 function tellMode() { if (d.tts) toFrame({ type: 'brb:tts-mode', mode: voiceMode() }); }

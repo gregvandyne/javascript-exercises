@@ -687,7 +687,7 @@
         "p1": "Pour créer un jeu, les messages, images et fichiers que votre enfant donne au Constructeur sont envoyés à Claude, une IA créée par l’entreprise Anthropic, qui écrit le jeu. Le nom et le nom d’utilisateur de votre enfant ne sont pas envoyés avec ces contenus. Les photos de profil sont aussi envoyées à Claude pour être vérifiées avant que quiconque les voie. Claude examine les jeux avant qu’ils puissent être partagés avec tout le monde, et notre équipe vérifie ceux pour lesquels il a un doute. Les discussions entre amis et les réponses aux leçons ne sont pas envoyées à l’IA.",
         "p2": "Parler au lieu d’écrire : quand votre enfant touche le micro dans le chat du Constructeur, l’enregistrement est envoyé au service de transcription de la parole {provider}, qui le transforme en mots. Votre enfant voit les mots et peut les modifier avant d’envoyer. L’enregistrement sert uniquement à cela et est supprimé aussitôt : nous ne le conservons jamais, et {provider} n’a pas le droit de le conserver ni de l’utiliser pour entraîner ses systèmes. Les mots passent par les mêmes contrôles de sécurité qu’un message écrit.",
         "p3": "Recherche de faits : pour qu’un jeu soit juste, le Constructeur peut chercher un fait sur le web (par exemple la vitesse d’un guépard). Votre enfant ne voit jamais les pages web ni les liens. Le Constructeur a pour consigne de ne jamais rien chercher de personnel ; si une recherche semble quand même personnelle, ses résultats ne sont pas utilisés et ses mots ne sont pas conservés. Les sites pour adultes, de jeux d’argent, de réseaux sociaux et de vidéos sont bloqués. Nous gardons une liste des recherches, sans le nom ni le nom d’utilisateur de votre enfant, avec le jeu pour lequel elles ont été faites, pendant 90 jours pour que notre équipe puisse les vérifier.",
-        "p4": "Voix IA : certains de nos jeux, quiz de leçons et quiz Oomba Live peuvent lire leur texte à voix haute avec une voix faite par ordinateur de {ttsProvider}. Seul le texte écrit par nous, par les créateurs d'un jeu ou par l'enseignant de votre enfant est envoyé, jamais ce que votre enfant écrit ou dit, ni son nom. Votre enfant est informé que les voix sont faites par une IA et peut passer à la voix de l'appareil avec le bouton 🔊 Voix IA."
+        "p4": "Voix IA : nos jeux, les jeux créés avec le Constructeur, les quiz de leçons et les quiz Oomba Live peuvent lire leur texte à voix haute avec une voix faite par ordinateur de {ttsProvider}. Seul du texte fixe est envoyé : le texte écrit par nous ou par l'enseignant de votre enfant, et les lignes écrites dans un jeu au moment de sa création. Dans un jeu qu'un enfant a créé avec le Constructeur, ces lignes peuvent contenir des mots que l'enfant a demandés ; elles ne sont envoyées que si notre contrôle de sécurité a validé cette version du jeu. Ce qu'un joueur écrit ou dit pendant qu'il joue n'est jamais envoyé, ni son nom. Votre enfant est informé que les voix sont faites par une IA et peut passer à la voix de l'appareil avec le bouton 🔊 Voix IA."
       },
       "keep": {
         "h": "Combien de temps nous conservons les données",
@@ -1069,7 +1069,7 @@
         "p3": "<b>Vos droits en tant que parent (comptes personnels) :</b> vous pouvez nous demander de vous montrer ce que nous conservons sur votre enfant, de le supprimer, ou d’arrêter d’en collecter davantage. Écrivez à <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Il n’y a pas encore de bouton de suppression ou de téléchargement : nous traitons donc ces demandes manuellement, et nous devrons vérifier que vous êtes bien le parent avant d’agir. Retirer le lien ou résilier un abonnement ne supprime pas le compte de votre enfant.",
         "p4": "<b>Comptes école :</b> un compte école est créé par l’école, à qui il appartient. Pour ces comptes, nous agissons pour le compte de l’école et selon ses instructions : nous utilisons les informations des élèves uniquement pour fournir Oomba Academy à l’école, jamais à des fins publicitaires, et nous ne les vendons pas. Les parents d’élèves ayant un compte école doivent s’adresser à l’école pour consulter ou supprimer des données ; l’école peut nous le demander. Un accord sur les données signé entre l’école et nous prévaut.",
         "p5": "<b>Pas de vente, pas de publicité :</b> nous ne vendons les informations personnelles de personne, n’affichons pas de publicité et n’utilisons pas de cookies publicitaires ou de suivi.",
-        "p6": "<b>Voix IA :</b> quand un jeu, une leçon ou Oomba Live lit un texte avec une voix IA, seul ce texte est envoyé de notre serveur à {ttsProvider} pour créer le son, jamais rien sur votre enfant. {ttsProvider} peut le garder pendant une durée limitée pour vérifier qu'il n'y a pas d'abus. Les joueurs sont informés que ces voix sont faites par un ordinateur."
+        "p6": "<b>Voix IA :</b> quand un jeu, une leçon ou Oomba Live lit un texte avec une voix IA, seul ce texte est envoyé de notre serveur à {ttsProvider} pour créer le son, sans rien qui indique qui joue ni qui a créé le jeu. C'est toujours du texte fixe : écrit par nous ou par un enseignant, ou une ligne écrite dans un jeu au moment de sa création. Dans un jeu qu'un enfant a créé avec le Constructeur, ces lignes peuvent contenir des mots que l'enfant a demandés ; une ligne n'est envoyée que si cette version du jeu a passé notre contrôle de sécurité, et jamais si elle contient des gros mots, une adresse e-mail, un numéro de téléphone ou le nom du joueur. Ce qu'un joueur écrit ou dit pendant qu'il joue n'est jamais envoyé. {ttsProvider} peut garder le texte pendant une durée limitée pour vérifier qu'il n'y a pas d'abus. Les joueurs sont informés que ces voix sont faites par un ordinateur."
       },
       "billingKeep": {
         "h": "Combien de temps nous conservons les informations de facturation",
@@ -1425,6 +1425,8 @@
     "newGame": "Nouveau jeu",
     "startFrom": "Commencer avec un modèle",
     "startFromLabel": "Commencer avec {title}",
+    "worlds": "Commence dans un monde 3D",
+    "startInLabel": "Commencer dans le monde 3D {title}",
     "twoPlayers": "2 joueurs",
     "updateWaiting": "Mise à jour en attente de vérification",
     "changed": "Modifié {when}",
@@ -1581,6 +1583,37 @@
         "forest": "Forêt",
         "autumn": "Automne",
         "city": "Ville"
+      }
+    },
+    "picker": {
+      "label": "Choisis un style",
+      "worlds": "Mondes 3D",
+      "heroes": "Héros 3D",
+      "classic": "Classique"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Îles du Ciel",
+        "castle-quest": "Quête du Château",
+        "spooky-hollow": "Vallon Hanté",
+        "space-base": "Base Spatiale",
+        "toy-town": "Ville Jouet",
+        "medieval-village": "Village Médiéval",
+        "cosy-home": "Maison Douillette",
+        "busy-kitchen": "Cuisine Animée"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Chevalier",
+        "barbarian": "Explorateur",
+        "mage": "Magicien",
+        "rogue": "Rôdeur",
+        "rogue-hooded": "Rôdeur à capuche",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Capitaine Clank"
       }
     },
     "lesson": {
@@ -2356,6 +2389,8 @@
         "seePlans": "Voir les formules pour plus de messages du Constructeur"
       },
       "themeUse": "Utilise le thème {name}.",
+      "worldUse": "Fais-en un jeu 3D dans le monde {name}.",
+      "heroUse": "Utilise le héros 3D {name}.",
       "sparks": "{n, plural, one {# message de Packs Étincelle} other {# messages de Packs Étincelle}}"
     },
     "character": {

@@ -688,7 +688,7 @@
         "p1": "Para criar um jogo, as mensagens, imagens e arquivos que a criança dá ao Construtor são enviados ao Claude, uma IA feita pela empresa Anthropic, que escreve o jogo. O nome e o nome de usuário da criança não são enviados junto. As fotos de perfil também são enviadas ao Claude para serem verificadas antes que alguém as veja. O Claude revisa os jogos antes que possam ser compartilhados com todos, e a nossa equipe confere os jogos sobre os quais ele tem dúvida. Os chats entre amigos e as respostas das aulas não são enviados à IA.",
         "p2": "Falar em vez de digitar: quando a criança toca no microfone no chat do Construtor, a gravação é enviada ao serviço de conversão de fala em texto {provider}, que a transforma em palavras. A criança vê as palavras e pode mudá-las antes de enviar. A gravação é usada só para isso e apagada na hora: nós nunca a guardamos, e {provider} não pode guardá-la nem usá-la para treinar seus sistemas. As palavras passam pelas mesmas verificações de segurança que uma mensagem digitada.",
         "p3": "Pesquisa de fatos: para acertar um jogo, o Construtor pode pesquisar um fato na internet (por exemplo, a velocidade de um guepardo). A criança nunca vê as páginas nem os links. O Construtor tem a instrução de nunca pesquisar nada pessoal; se ainda assim uma pesquisa parecer pessoal, os resultados não são usados e as palavras não são guardadas. Sites adultos, de apostas, de redes sociais e de vídeos são bloqueados. Guardamos uma lista das pesquisas, sem o nome nem o nome de usuário da criança, junto com o jogo para o qual foram feitas, por 90 dias para que nossa equipe possa conferi-las.",
-        "p4": "Vozes de IA: alguns dos nossos jogos, quizzes de aulas e quizzes do Oomba Live podem ler o texto em voz alta com uma voz feita por computador da {ttsProvider}. Só é enviado texto escrito por nós, pelos criadores de um jogo ou pelo professor do seu filho, nunca o que seu filho digita ou fala, e nunca o nome dele. Seu filho fica sabendo que as vozes são feitas por IA e pode trocar para a voz do próprio aparelho com o botão 🔊 Vozes de IA."
+        "p4": "Vozes de IA: os nossos jogos, os jogos feitos com o Construtor, os quizzes de aulas e os quizzes do Oomba Live podem ler o texto em voz alta com uma voz feita por computador da {ttsProvider}. Só é enviado texto fixo: o texto escrito por nós ou pelo professor do seu filho, e as linhas escritas em um jogo quando ele foi criado. Em um jogo que uma criança fez com o Construtor, essas linhas podem ter palavras que a criança pediu; elas só são enviadas se a nossa verificação de segurança aprovou aquela versão do jogo. O que um jogador digita ou fala enquanto joga nunca é enviado, nem o nome dele. Seu filho fica sabendo que as vozes são feitas por IA e pode trocar para a voz do próprio aparelho com o botão 🔊 Vozes de IA."
       },
       "keep": {
         "h": "Por quanto tempo guardamos",
@@ -1070,7 +1070,7 @@
         "p3": "<b>Seus direitos como pai, mãe ou responsável (contas próprias):</b> você pode nos pedir para mostrar o que guardamos sobre a criança, para apagar esses dados ou para parar de coletar mais. Escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Ainda não há um botão para apagar ou baixar os dados, então atendemos esses pedidos manualmente e vamos precisar confirmar que você é o pai, a mãe ou o responsável antes de agir. Desvincular ou cancelar um plano não exclui a conta da criança.",
         "p4": "<b>Contas da escola:</b> uma conta da escola é criada pela escola e pertence a ela. Para essas contas, agimos em nome da escola e sob a orientação dela: usamos as informações dos alunos apenas para oferecer a Oomba Academy à escola, nunca para publicidade, e não as vendemos. Os pais e responsáveis de contas da escola devem pedir à escola para ver ou apagar registros; a escola pode pedir para a gente. Um acordo de dados que a escola tenha assinado com a gente tem prioridade.",
         "p5": "<b>Nada de venda, nada de anúncios:</b> não vendemos informações pessoais de ninguém, não mostramos anúncios e não usamos cookies de publicidade ou de rastreamento.",
-        "p6": "<b>Vozes de IA:</b> quando um jogo, uma aula ou o Oomba Live lê um texto com uma voz de IA, só esse texto é enviado do nosso servidor para a {ttsProvider} para criar o som, nunca nada sobre seu filho. A {ttsProvider} pode guardá-lo por um tempo limitado para verificar abusos. Os jogadores ficam sabendo que essas vozes são feitas por um computador."
+        "p6": "<b>Vozes de IA:</b> quando um jogo, uma aula ou o Oomba Live lê um texto com uma voz de IA, só esse texto é enviado do nosso servidor para a {ttsProvider} para criar o som, sem nada que diga quem está jogando ou quem fez o jogo. É sempre texto fixo: escrito por nós ou por um professor, ou uma linha escrita em um jogo quando ele foi criado. Em um jogo que uma criança fez com o Construtor, essas linhas podem ter palavras que a criança pediu; uma linha só é enviada se aquela versão do jogo passou pela nossa verificação de segurança, e nunca se tiver palavrões, um endereço de e-mail, um número de telefone ou o nome do próprio jogador. O que um jogador digita ou fala enquanto joga nunca é enviado. A {ttsProvider} pode guardar o texto por um tempo limitado para verificar abusos. Os jogadores ficam sabendo que essas vozes são feitas por um computador."
       },
       "billingKeep": {
         "h": "Por quanto tempo guardamos as informações de cobrança",
@@ -1426,6 +1426,8 @@
     "newGame": "Novo jogo",
     "startFrom": "Comece com um modelo",
     "startFromLabel": "Começar com {title}",
+    "worlds": "Comece em um mundo 3D",
+    "startInLabel": "Começar no mundo 3D {title}",
     "twoPlayers": "2 jogadores",
     "updateWaiting": "Atualização esperando revisão",
     "changed": "Alterado {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Floresta",
         "autumn": "Outono",
         "city": "Cidade"
+      }
+    },
+    "picker": {
+      "label": "Escolha um visual",
+      "worlds": "Mundos 3D",
+      "heroes": "Heróis 3D",
+      "classic": "Clássico"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Ilhas do Céu",
+        "castle-quest": "Missão no Castelo",
+        "spooky-hollow": "Vale Assombrado",
+        "space-base": "Base Espacial",
+        "toy-town": "Cidade de Brinquedo",
+        "medieval-village": "Vila Medieval",
+        "cosy-home": "Casa Aconchegante",
+        "busy-kitchen": "Cozinha Agitada"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Cavaleiro",
+        "barbarian": "Explorador",
+        "mage": "Mago",
+        "rogue": "Patrulheiro",
+        "rogue-hooded": "Patrulheiro de Capuz",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Capitão Clank"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "Ver planos para mais mensagens do Construtor"
       },
       "themeUse": "Use o tema {name}.",
+      "worldUse": "Faça um jogo 3D no mundo {name}.",
+      "heroUse": "Use o herói 3D {name}.",
       "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}"
     },
     "character": {

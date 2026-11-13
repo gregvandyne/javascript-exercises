@@ -4721,3 +4721,107 @@ Listening · Stop pill, and the game receives one dBFS number about 20 times a s
 (opaque origin, `microphone=()`), the scanner still refuses `getUserMedia`, and no audio, words or numbers are recorded,
 stored or sent. The Builder's prompt explains the API and asks for a tap fallback. `MIC_BUILDER=0` switches Builder games
 back off without touching the official ones; `MIC_GAMES=0` switches everything off.
+
+## AI voices for Builder games: fixed, scanned lines only (13 Nov 2026)
+
+**The owner's decision (13 Nov 2026):** "All games should have the AI voiceover by default for now." Asked how far
+that goes for games kids make, the owner chose: "Builder games get the AI voice, but only for lines fixed in the game
+when it was built and passed by the safety scanner. Anything typed while playing is never read by it. This changes the
+earlier rule, so the Privacy Policy gets an update for lawyer review."
+
+**What it replaces.** "Builder games never get AI voices, so a kid's own words are never sent" (AI voices, client
+part; review fixes). What stays: names and typed text are never read by the AI voice, no audio is stored beyond the
+cache of generated speech, Oomba Live and lessons are unchanged, code-isle's `pip.say` is never spoken, and with voices
+off or on any failure the device's voice reads the line.
+
+**What is new in what leaves our server.** A fixed line of a child-made game can now be sent to the voice service
+(OpenAI) when a player hears it. Such a line may contain words the child asked the Builder to put in the game. Nothing
+else about the child or the player goes with it (no account, no game id, no address: our server makes the call).
+
+**Safeguards** (`server/services/tts-built.js`, `routes/tts.js`; docs/tts-design.md "Builder games by default"):
+- **Scanned versions only.** The game must be published and not hidden, its maker in good standing, and its published
+  version's stored scan result `pass`. Flagged, failed and unscanned versions, drafts and every preview (Studio,
+  Builder, review) keep the device's voice.
+- **An allowlist from our own copy.** The server derives the lines from the stored HTML of that version (string
+  literals, markup text, text attributes, and their sentences), on demand, cached per version id. No migration and
+  nothing new stored. The page never supplies the list.
+- **Exact matches only.** A request is read only when it equals one of those lines (whitespace tidied, case ignored).
+  No numbers filled in, no names, no joins; strings with a slot are left out whole. This is stricter than official
+  games (numbers may stand in their `{placeholders}`), because in a kid-made game a number in a slot can be something
+  the player typed. Cost: score lines and the kit's joined "how to play" are read by the device's voice.
+- **The existing checks still run:** rude words, emails, phone numbers, link codes, the player's own name or
+  username, the length limit, per-person and per-address daily quotas, per-minute limits and the TTS budget.
+- **One fixed friendly voice**, whatever the page asks for. **No warm-up** (made on first play, cached).
+- **A switch:** `TTS_BUILT_GAMES=0` puts every Builder game back on the device's voice without a deploy of code.
+- **Told to players and parents:** the 🔊 AI voices button, sheet and one-time note appear on Builder games too (the
+  existing strings, 13 languages); /parents (`info.parents.ai.p4`) and /privacy (`info.privacy.children.p6`) were
+  reworded in 13 languages, `LEGAL_UPDATED` 2026-11-13, lawyer sign-off pending (docs/legal-review.md 44a).
+
+**Choices made while building it, for the owner to confirm:**
+- "Passed by the safety scanner" is read strictly: the automatic scan said `pass`. A flagged version that a person
+  approved for sharing still keeps the device's voice.
+- Previews stay on the device's voice even when the previewed version is the published one.
+- The admin's per-game switch (AI voices for a chosen game) is kept as it was, as a wider rule for the games the
+  owner picked (numbers in the game's own patterns, the game's own names, a few sentences read as one).
+- The Builder's prompt now asks every new game to read its instructions and feedback aloud by default, as whole fixed
+  lines, with a button to hear them again. The starter templates were not changed (the kit already reads its "how to
+  play"; several templates already speak).
+- Known limit: a game with a long word list can have its single listed words read one at a time. Each is a fixed
+  string from scanned source, never a sentence; the cache means the voice service sees a word once however often it
+  is played.
+
+Tested with the mock provider only (`tests/unit/tts-built.test.js`, `tests/e2e/tts.spec.js`); the real provider has
+never been called from here.
+
+## Kit 2 in the Builder: the 3D worlds and characters (13 Nov 2026)
+
+The owner reported that picking the new worlds in the Builder still gave an old-kit game. Nothing under
+`server/builder/` knew Kit 2: the picker, the prompt, the templates, the tools and the mock were all Kit 1. This is
+stage 5 of `docs/kit2-themes-plan.md`.
+
+- **The engine choice** (`server/builder/kit2.js` `wantsKit2`). A build uses Kit 2 when: the game already is a Kit 2
+  game; or the builder picked or named a world or character (a 3D world or hero chip in the Studio, a world's name in any
+  site language, or a 3D request that names a character: "a 3D game with a knight"); or there is no game yet and the
+  message describes a place that is one of the worlds ("on the moon", "in a castle", "a spooky forest", "in the
+  kitchen"), unless it asks for cards, a board, a word game, two players on one screen or catching falling things, says
+  2D, or picks a Classic theme chip. Everything else is the old kit exactly as before: a described place never moves an
+  existing old-kit game, and "a wizard quiz" alone is still a 2D quiz. A picked world on an old-kit game makes a new
+  version (the AI asks first; the old game stays in Versions). The place words are English; in other languages the
+  chips and the worlds' translated names do the job, and the AI itself can choose a world from the short list that is
+  now in its main instructions.
+- **Two sets of 3D rules, never both.** A Kit 2 build gets the KIT 2 RULES block (cached, the same bytes for everyone)
+  in place of the 3D RULES, plus a short uncached note naming this turn's world and hero. 3D requests that fit no world
+  still build their own Three.js world from `world3d`. The Builder's model settings were not touched.
+- **No invented names.** The catalogue (`server/builder/kit2-catalog.js`) is generated by
+  `scripts/build-kit2-rules.js` from `kit2/SHIPPED.json` and each shipped `theme.json`: the newest version of every
+  world, with every hero, creature, piece (size, tags, note), sound and move, plus the Oomba3D reference from
+  `docs/kit2-api.md`. `start_from_template` takes `world` and `hero` from fixed lists and refuses anything else with the
+  real names. After each version a Kit 2 note (`server/services/kit2-lint.js`, like the kit's style notes: never a
+  safety result) names a hero, piece or sound the world does not have, and `g.askQuestion()` outside Sky Islands (it
+  needs the piece `island-round`).
+- **Pinned.** A built game carries the literal Kit 2 import map (engines with their integrity) and names its world and
+  exact version in words. The scanner now fails a Kit 2 game whose written-out world and version are not in
+  `kit2/SHIPPED.json` (`kit2_theme`); an older shipped version stays allowed, so a saved game never moves. New games get
+  the newest version of a world. No shipped file changed.
+- **The starter** (`server/builder/templates/oomba3d.html`, filled in by `kit2Starter({ world, hero })`): a hero hops
+  along a path of the world's own pieces, collects coins, jumps to the right answer of each question and reaches the
+  goal; title and results screens, the words in the 13 languages, checkpoints instead of a fall to the start, and
+  `window.__brbTest`. Each world has a small layout of its own pieces (`STARTERS`), checked against the catalogue.
+  Oomba3D has no pause and no sound switch, so the starter has neither (the gear button is Oomba3D's own).
+- **The picker.** The Studio's row of theme chips became three tabs: 3D worlds, 3D heroes and Classic. A new game opens
+  on 3D worlds, an old-kit game on Classic. Chips have pictures: the worlds' own covers, and each character drawn by
+  Oomba3D in the game frame (`scripts/kit2-thumbs.js`). The Build page has a card per world above the classic starters.
+  Every new word is in all the site's languages; the world names are made-up place names, kept distinctive because the
+  engine choice recognises them.
+- **Nothing safety-related loosened.** The frame, CSP and sandbox are the ones official Kit 2 games already had; the
+  scanner refuses everything it refused (the tests add the same refusals inside a Kit 2 game). Nothing new is stored;
+  the model is sent nothing more about the child than before (their message, as always). The automatic playtest calls a
+  Kit 2 game slow only under 3 frames a second (others: 8): the test machine draws a whole world of models without a
+  graphics card, and Oomba3D lowers its own graphics on a slow device.
+- **Animals and dinosaurs: none has shipped.** The owner asked for them, but no theme has a creature (the Quaternius
+  packs are still unreachable from the build machine, see above). The Builder says so kindly and picks the closest hero
+  rather than pretend; the catalogue, rules, picker and tests read `creatures` from the manifests, so they appear when a
+  theme ships them.
+- **Not verified:** a build with the real model (no API key on the build machine). Verified with the mock builder, the
+  fake Messages API (the blocks the model is sent, the tool refusals), the starter in every world, and real Chromium in
+  the production frame (`tests/unit/builder-kit2.test.js`).

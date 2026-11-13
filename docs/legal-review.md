@@ -449,7 +449,7 @@ Owner decisions for parent-made accounts (no lawyer needed):
 44. **AI voices (text to speech with OpenAI).** docs/decisions.md "AI voices", docs/tts-design.md. **Off** until the
     owner sets `TTS_ENABLED=1` and a key (`TTS_API_KEY`, or `STT_API_KEY` when both providers are OpenAI); even then
     each language stays silent until the admin switches it on at `/admin/voices` after listening to it. What ships:
-    official games (never Builder games), lesson quiz steps and Oomba Live questions can be read aloud with a voice
+    official games (never Builder games; **changed on 2026-11-13, see item 44a**), lesson quiz steps and Oomba Live questions can be read aloud with a voice
     made by OpenAI's speech API instead of the device's own voice. Please confirm:
     - **No child's personal information goes to OpenAI.** Only text written by us, an official game's makers or the
       child's teacher is sent (live and lesson questions are looked up on the server by number; the child's page can't
@@ -476,6 +476,73 @@ Owner decisions for parent-made accounts (no lawyer needed):
       `TTS_CACHE_MB`), a `tts_cache` row per line (hash, sizes, voice, locale, role; no text, no user) and `tts_usage`
       per day (counts and characters only; 90 days). Logs carry a short hash, sizes and timings, never the text or who
       asked. The cost goes into the AI spending caps. Nothing is sold; there are no ads.
+
+### AI voices for games made in the Builder (2026-11-13; the owner decided; NEEDS THE LAWYER'S SIGN-OFF)
+
+44a. **AI voices now read the fixed lines of Builder games, including games children make.** docs/decisions.md "AI
+    voices for Builder games: fixed, scanned lines only", docs/tts-design.md "Builder games by default". **Status: the
+    owner decided this on 2026-11-13; the code and the policy text are written; no lawyer has reviewed either.** It
+    changes item 44, which said "official games (never Builder games)" and "Only text written by us, an official
+    game's makers or the child's teacher is sent". Like item 44 it does nothing until `TTS_ENABLED=1`, a key and a
+    language switched on at `/admin/voices`; `TTS_BUILT_GAMES=0` turns this part alone off.
+    - **What now goes to OpenAI:** when a player hears a Builder game read a line, that line's text is sent from our
+      server to OpenAI's speech API once (then served from our cache). The line must be exactly one of the strings
+      fixed in the stored, published version of the game, and that version must have passed our automatic safety scan.
+      In a game a child made, those strings can contain **words the child asked the Builder to write** (a title, a
+      joke, a question, a pet's name, and possibly the child's own first name if they asked for it in the game).
+      Nothing else goes with it: no account, username, game id, device or address of the child or the player.
+    - **What still never goes:** anything typed or said while playing, the player's name or username (checked), chat,
+      and any line the game puts together while it runs (scores, answers, names filled in). Rude words, email
+      addresses, phone numbers and family link codes in a line are refused. The maker's own name is **not** checked
+      for (the checks know only who is playing).
+    - **The policy text that changed** (13 languages; `LEGAL_UPDATED` 2026-11-13):
+      - /parents `info.parents.ai.p4`. Before: "AI voices: some of our own games, lesson quizzes and Oomba Live
+        quizzes can read their words aloud with a computer-made voice from OpenAI. Only text written by us, a game's
+        makers or your child's teacher is sent, never what your child types or says, and never their name. …" Now:
+        "AI voices: our own games, games made in the Builder, lesson quizzes and Oomba Live quizzes can read their
+        words aloud with a computer-made voice from OpenAI. Only fixed text is sent: text written by us or your
+        child's teacher, and the lines written into a game when it was made. In a game a child made with the Builder,
+        those lines can include words the child asked for; they are sent only when our safety check has passed that
+        version of the game. What a player types or says while playing is never sent, and never their name. …" (the
+        last sentence, about being told and the 🔊 button, is unchanged).
+      - /privacy `info.privacy.children.p6`. Before: "AI voices: when a game, lesson or Oomba Live reads text aloud
+        with an AI voice, only that text is sent from our server to OpenAI to make the sound, never anything about
+        your child. OpenAI may keep it for a limited time to check for misuse. Players are told these voices are made
+        by a computer." Now: "AI voices: when a game, lesson or Oomba Live reads text aloud with an AI voice, only
+        that text is sent from our server to OpenAI to make the sound, with nothing that says who is playing or who
+        made the game. It is always fixed text: written by us or a teacher, or a line written into a game when it was
+        made. In a game a child made with the Builder, those lines can include words the child asked for; a line is
+        sent only if that version of the game passed our safety check, and never if it has rude words, an email
+        address, a phone number or the player's own name in it. What a player types or says while playing is never
+        sent. OpenAI may keep the text for a limited time to check for misuse. Players are told these voices are made
+        by a computer."
+      - **Not changed, please decide:** the direct notice to a parent making a child's account
+        (`family.made.notice.ai`, also `info.privacy.made.*`) lists only what goes to Anthropic's Claude. The play
+        page's note to kids ("They read only the game's own words, never anything you type and never your name") and
+        the Terms were left as they are.
+    - **Questions for counsel:**
+      1. Is the text of a child-made game "personal information collected from a child" under COPPA when it is sent
+         to OpenAI without any identifier, and is OpenAI then a recipient that must be named in the direct notice and
+         covered by verifiable parental consent (or the school's authorization for school accounts)? The words were
+         already sent to Anthropic to build the game (disclosed); OpenAI is a second AI company receiving a part of
+         them.
+      2. "Never anything about your child" was removed from /privacy because a child's own words in their game can
+         now be sent. Is the new sentence accurate and enough, and should the **direct notice** get an OpenAI line
+         before this is switched on for families?
+      3. A child can ask the Builder to put a name in a game (their own, a friend's, a teacher's). Our checks stop
+         the player's own name, emails and phone numbers, not other names. Is that acceptable for text that carries
+         no other identifier, or should names be screened (which we cannot do reliably)?
+      4. **Schools:** student work (a student's game text) now reaches OpenAI as well as Anthropic. Does OpenAI need
+         adding to the school-facing subprocessor list and to any signed DPA before this is on for school accounts
+         (FERPA school official; NY Ed Law 2-d, SOPIPA, SOPPA)? If so, we can keep school students' games on the
+         device's voice until then (not built; say if wanted).
+      5. OpenAI's retention of this text (item 44: about 30 days for abuse monitoring by default, from memory, not
+         checked): is zero data retention now needed, since some of the text is child-written?
+      6. The owner's rule is "only when the automatic scan passed". Is the automatic scan plus the per-line filters a
+         reasonable safeguard to describe as "our safety check" in the policy?
+    - **Until the lawyer answers:** the owner can leave `TTS_BUILT_GAMES=0` in production, which keeps Builder games
+      on the device's voice while everything else about AI voices stays as reviewed under item 44. The policy text
+      above would then describe more than the site does.
 
 ### Spark Packs on /refunds (2026-11-08; needs the owner's and the lawyer's sign-off before packs go live)
 

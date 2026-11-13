@@ -71,7 +71,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.speak(text, opts?)` | Reads `text` aloud with the most natural voice already on the device (see [Speech](#speech)). `opts`: `{ lang, rate, pitch, volume, queue, onend, voice, device }`; `lang` is the language the text is written in (default `BRB.user.lang`); `voice` a character role for AI voices; `device: true` always the device's voice. Returns `true` if it started, `false` if it cannot (no speech, or no voice for the language). After `true`, `onend` comes exactly once unless the line is stopped. |
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.prefetchSpeech(lines, opts?)` | AI voices only (see [AI voices](#ai-voices)): asks for lines the game will say soon (a whole conversation card), so they start at once. `opts`: `{ lang, voice, rate }`. `false` (and nothing happens) without AI voices. |
-| `BRB.aiVoice(lang?)` | `true` when lines in this language are read by an AI voice now (an official game, the language switched on, the player has not chosen the device's voice). A game can leave out its own "voice" beeps then. |
+| `BRB.aiVoice(lang?)` | `true` when lines in this language are read by an AI voice now (an official game or a published Builder game, the language switched on, the player has not chosen the device's voice). A game can leave out its own "voice" beeps then. |
 | `BRB.stopSpeaking()` | Stops the speech that is playing or waiting. |
 
 There is no network and no way to reach the page around the game.
@@ -141,10 +141,25 @@ BRB.speak(T[BRB.user.lang].win);                      // text from the game's ow
 
 ### AI voices
 
-Official games (our seed games, never Builder games) can be read by a hosted AI voice (OpenAI's speech API) when the
-owner turns it on (`TTS_ENABLED`, a key, and each language switched on at `/admin/voices`; docs/tts-design.md). The frame
-then gets `INIT.tts = { langs }`, and the SDK's `tts-client` block (`// tts-client:start … end`) puts it behind the same
-`BRB.speak`:
+Official games (our seed games) and, since 13 Nov 2026, games made in the Builder can be read by a hosted AI voice
+(OpenAI's speech API) when the owner turns it on (`TTS_ENABLED`, a key, and each language switched on at
+`/admin/voices`; docs/tts-design.md). The frame then gets `INIT.tts = { langs }`, and the SDK's `tts-client` block
+(`// tts-client:start … end`) puts it behind the same `BRB.speak`.
+
+**Builder games** (docs/decisions.md "AI voices for Builder games: fixed, scanned lines only"; `TTS_BUILT_GAMES=0`
+turns it off): only a published version that passed the safety scanner gets `INIT.tts`, never a Studio or Builder
+preview. The AI voice reads a line only when it is **exactly** one of the strings fixed in that saved version (a
+string literal, markup text, a text attribute, or one sentence of one; upper/lower case ignored), always in one
+friendly voice (`opts.voice` is ignored). Anything else is refused by the server and read by the device's voice at
+once: a line with a score, a number that changes, a name, something the player typed, or pieces joined while playing.
+So a game that wants the natural voice writes each spoken line as one whole fixed string:
+
+```js
+BRB.speak('Tap the animal that says moo!', { lang: 'en' });      // fixed: AI voice
+BRB.speak('You scored ' + score + ' points!', { lang: 'en' });   // changes: the device's voice
+```
+
+How it works:
 - The frame can't fetch, so it asks the play page with `brb:tts { id, text, lang, role, rate, pre? }`; the page asks
   `POST /api/tts` (with its game token) and answers `{ brb:1, type:'brb:tts', id, ok:true, buf }` (the MP3's bytes,
   transferred) or `{ ok:false, why }`. The SDK plays the bytes as a `blob:` URL on one shared `Audio` element (unlocked

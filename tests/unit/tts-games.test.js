@@ -26,12 +26,16 @@ const teacherGame = publish(teacher, HTML, { slug: 'haberle-quiz', title: 'Plane
 const kidGame = publish(kid, HTML, { slug: 'kid-quiz', title: 'Kid Quiz' });
 const pupilGame = publish(mia, HTML, { slug: 'pupil-quiz', title: 'Pupil Quiz' });
 
+// TTS_BUILT_GAMES=0 in this file: it is about the admin's own switch (and what a game has without it once the Builder
+// default is off). The default for Builder games (the owner's decision of 2026-11-13: exact fixed lines of a published,
+// scanner-passed version) has its own tests in tts-built.test.js.
 function on(locales = ['en']) {
+  config.ttsBuiltGames = false;
   config.ttsEnabled = true; config.ttsProvider = 'mock'; config.ttsApiKey = ''; config.ttsLocales = [...TTS_ALL_LOCALES];
   config.ttsPerMinute = 20; config.ttsDailyChars = 300000; config.ttsMaxChars = 600;
   V.save(null, { locales: Object.fromEntries(TTS_ALL_LOCALES.map(l => [l, { on: locales.includes(l) }])) });
 }
-const off = () => { config.ttsEnabled = false; config.ttsProvider = 'openai'; };
+const off = () => { config.ttsEnabled = false; config.ttsProvider = 'openai'; config.ttsBuiltGames = true; };
 test.beforeEach(() => { reset(); usage._resetQuota(); q.run('DELETE FROM tts_cache'); q.run("DELETE FROM settings WHERE key='tts.games'"); TG._clear(); });
 test.afterEach(() => off());
 const sw = (user, game, onOff) => call('/api/admin/tts/games', { method: 'POST', user, body: { game, on: onOff } });

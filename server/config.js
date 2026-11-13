@@ -126,6 +126,7 @@ export const TTS_PROVIDERS = ['openai', 'mock'];
 /** Every site locale TTS may speak (TTS_LOCALES narrows it; /admin/voices switches each one on inside that). */
 export const TTS_ALL_LOCALES = ['en', 'en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl'];
 const ttsEnabled = parseFlag(process.env.TTS_ENABLED, 'TTS_ENABLED');
+const ttsBuiltGames = parseFlag(process.env.TTS_BUILT_GAMES, 'TTS_BUILT_GAMES', true);
 const ttsProvider = String(process.env.TTS_PROVIDER || 'openai').trim().toLowerCase();
 const ttsModel = String(process.env.TTS_MODEL || 'gpt-4o-mini-tts').trim();
 /** TTS_LOCALES: a comma list of site locales (any case), default all of them. -> { list, error } */
@@ -247,7 +248,7 @@ export const config = {
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
-    ttsEnabled.error, ttsLocales.error,
+    ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
     !TTS_PROVIDERS.includes(ttsProvider) && `TTS_PROVIDER must be one of ${TTS_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     ttsProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "TTS_PROVIDER=mock is for tests and can't be used in production",
     !/^[A-Za-z0-9._-]{1,60}$/.test(ttsModel) && 'TTS_MODEL must be a model name like gpt-4o-mini-tts, tts-1 or tts-1-hd',
@@ -333,6 +334,10 @@ export const config = {
   // TTS_API_KEY, or STT_API_KEY when both TTS_PROVIDER and STT_PROVIDER are openai (the owner sets keys in the host's
   // dashboard, never in a file). Even then each language stays off until the admin switches it on at /admin/voices.
   ttsEnabled: ttsEnabled.on,
+  // Games made in the Builder get the AI voice too (the owner's decision of 2026-11-13; server/services/tts-built.js),
+  // for the fixed lines of a published version that passed the safety scanner only. TTS_BUILT_GAMES=0 puts them back
+  // on the device's voice (official games and games the admin switched on are not affected).
+  ttsBuiltGames: ttsBuiltGames.on,
   ttsProvider: TTS_PROVIDERS.includes(ttsProvider) ? ttsProvider : '',
   ttsApiKey: process.env.TTS_API_KEY || '',
   ttsModel,

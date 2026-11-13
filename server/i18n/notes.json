@@ -1483,5 +1483,15 @@
   "school.billing.tp.seats.paid": "Small note next to a teacher's name in the school's seat list, before a seat is given: they pay for their own Teacher plan.",
   "school.billing.tp.seats.paidConfirm": "Confirmation question the school admin sees before giving a seat to a teacher who pays for their own Teacher plan.",
   "school.billing.tp.errors.ownPaid": "Error when a seat is given to such a teacher without the confirmation.",
-  "school.billing.tp.seat.trialClosed": "Short pop-up for the school admin: the seat was given and the teacher's own free trial was closed at no charge."
+  "school.billing.tp.seat.trialClosed": "Short pop-up for the school admin: the seat was given and the teacher's own free trial was closed at no charge.",
+  "studio.picker.label": "The name of the picker over the Builder's message box (for screen readers): three tabs of chips, 3D worlds, 3D heroes and the classic 2D themes.",
+  "studio.picker.worlds": "Tab in the Studio picker: the ready-made 3D worlds. Short (one or two words).",
+  "studio.picker.heroes": "Tab in the Studio picker: the animated 3D characters. Short (one or two words).",
+  "studio.picker.classic": "Tab in the Studio picker: the older 2D kit themes (studio.themes.names.*). One word.",
+  "studio.worlds.names.sky-islands": "The names of the 3D worlds (studio.worlds.names.*): a made-up place name of two or three words, the same everywhere on the site. The Builder recognises a world by this name, so keep it distinctive (not one everyday word).",
+  "studio.heroes.names.knight": "The names of the 3D characters (studio.heroes.names.*). Skelly, Rattles, Bonzo and Captain Clank are friendly cartoon skeletons with made-up names: keep or transliterate them.",
+  "js.studio.worldUse": "Put into the kid's message to the Builder when they tap a 3D world chip in the Studio. {name} is the world's name (studio.worlds.names.*). Short, like the kid would say it; keep \"3D\".",
+  "js.studio.heroUse": "Put into the kid's message to the Builder when they tap a 3D hero chip in the Studio. {name} is the character's name (studio.heroes.names.*). Short, like the kid would say it; keep \"3D\".",
+  "build.worlds": "Heading on the Build page over the cards that start a new game in one of the ready-made 3D worlds.",
+  "build.startInLabel": "Screen-reader label of a 3D world card on the Build page. {title} is the world's name."
 }

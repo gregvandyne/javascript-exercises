@@ -46,6 +46,13 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
   use Oomba3D's own simple platform physics (`g.controls`), which is kinder to young players.
 - Words a player sees (questions, toasts) come from the game; keep them kind and short, as on the rest of the site.
 
+The Builder builds Kit 2 games too (since 13 Nov 2026, `docs/decisions.md` "Kit 2 in the Builder"). It reads this page
+from `start(options)` on, and the catalogue of every shipped world (heroes, creatures, pieces with sizes, sounds, moves),
+both generated into `server/builder/kit2-catalog.js` by `node scripts/build-kit2-rules.js`
+(`tests/unit/builder-kit2.test.js` fails when that file is out of date). Its starter game is
+`server/builder/templates/oomba3d.html`. The table above is a summary for people; the generated catalogue is the list
+of names a built game may use.
+
 ## `start(options)`
 
 `start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`
@@ -142,7 +149,9 @@ are still there.
 Shows `prompt question` at the top and makes one island per answer in a row at `at`, `spacing` apart, each with its
 answer floating above it on a big token. Landing on `correct`: the token turns green, `bonus` is added, the hero cheers
 and `onRight()` is called. Landing on another: it sinks, `notIt(answer)` shows and `onWrong(answer)` is called. Answers
-can be numbers or short words (up to about 6 characters read well).
+can be numbers or short words (up to about 6 characters read well). The answer islands are made from the piece
+`island-round`, so this works in Sky Islands only: in every other world a game makes its own answer pads from that
+world's pieces (the Builder's starter does: a solid with `onLand`, and the answer on a sprite above it).
 
 ### `g.sound(name)`
 
