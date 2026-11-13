@@ -681,7 +681,7 @@ function card(kind, { title, line, buttons, star }) {
 function solo() {
   clearStage(); const A = parked(-0.6); slab(-4.6, 3.4, -2.2, 3);
   placeHero(A.object.position.x + A.x0 - 0.9, tall ? 1.4 : 0.9, 0.3);
-  Object.assign(view, { rect: [-4.3, 2.6, -1.2, tall ? 2 : 1.6], high: 5.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });
+  Object.assign(view, { rect: [-4.3, 2.6, -1.2, tall ? 2 : 1.6], high: tall ? 5.4 : 3.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });   // on a wide screen the towers may reach up into the band of sky
 }
 function showMenu() {
   clearTimers(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
