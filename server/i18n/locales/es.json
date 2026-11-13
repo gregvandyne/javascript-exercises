@@ -1981,7 +1981,8 @@
         "namedIt": "Le puse de nombre {title}",
         "whatKind": "¿Qué tipo de juego hacemos?",
         "hello": "¡Hola! Soy el Constructor 🤖 Cuéntame tu idea de juego o toca una para empezar.",
-        "readyToPlay": "¡Tu juego “{title}” ya se puede jugar en la vista previa! 🎉 ¿Qué cambiamos? Dímelo con tus palabras o toca una idea."
+        "readyToPlay": "¡Tu juego “{title}” ya se puede jugar en la vista previa! 🎉 ¿Qué cambiamos? Dímelo con tus palabras o toca una idea.",
+        "start": "¡Hola! Soy el Constructor 🤖 Cuéntame tu idea de juego con tus propias palabras y la construiré."
       },
       "startChips": {
         "a": "🏃 Un juego de correr y saltar",

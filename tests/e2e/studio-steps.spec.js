@@ -15,6 +15,8 @@ async function newGame(page, lang) {
 }
 /** Tap the Builder's chips until it has built a game (the mock asks a question or two first). */
 async function buildWithChips(page) {
+  // a new game has no starter chips: type an idea first, then answer the Builder's question chips
+  if (!(await page.locator('#st-log .qchips:not(.used) .chip').count())) { await page.fill('#st-input', 'A catch game'); await page.press('#st-input', 'Enter'); await settled(page); }
   for (let i = 0; i < 6 && !(await page.locator('#st-log .ev.version').count()); i++) {
     await page.locator('#st-log .qchips:not(.used) .chip').first().click();
     await settled(page);
@@ -260,7 +262,7 @@ test('the live card, fed step by step: thinking is a chip, "Just now" lines, a l
 test('the tips toggle hides the learning lines and is remembered', async ({ page }) => {
   test.setTimeout(60_000);
   await newGame(page);
-  await page.locator('#st-log .qchips:not(.used) .chip').first().click(); await settled(page);
+  await page.fill('#st-input', 'A catch game with falling stars'); await page.press('#st-input', 'Enter'); await settled(page);
   await page.locator('.stp-sum').last().click();
   const tips = page.locator('.stp-body .stp-tips').last();
   await expect(tips).toHaveText('💡 Tips: on');
@@ -326,7 +328,7 @@ test('a refused message keeps the kind refusal and leaves no steps card', async 
   await page.fill('#st-input', 'make a pokemon game'); await page.press('#st-input', 'Enter');
   await settled(page);
   await expect(page.locator('#st-log .msg.bot.refused')).toBeVisible();
-  await expect(page.locator('#st-log .qchips:not(.used)')).toHaveCount(1);
+  await expect(page.locator('#st-log .qchips:not(.used)')).toHaveCount(1);   // the refusal's own suggestions
   await expect(page.locator('.stp')).toHaveCount(0);
   await expect(page.locator('#st-log .err')).toHaveCount(0);
 });

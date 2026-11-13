@@ -1982,7 +1982,8 @@
         "namedIt": "Name: {title}",
         "whatKind": "Was für ein Spiel sollen wir bauen?",
         "hello": "Hallo! Ich bin der Baumeister 🤖 Erzähl mir deine Spielidee, oder tipp auf eine, um loszulegen.",
-        "readyToPlay": "Dein Spiel „{title}“ ist in der Vorschau spielbereit! 🎉 Was sollen wir ändern? Sag es mir mit deinen eigenen Worten, oder tipp auf eine Idee."
+        "readyToPlay": "Dein Spiel „{title}“ ist in der Vorschau spielbereit! 🎉 Was sollen wir ändern? Sag es mir mit deinen eigenen Worten, oder tipp auf eine Idee.",
+        "start": "Hallo! Ich bin der Baumeister 🤖 Erzähl mir deine Spielidee in deinen eigenen Worten, und ich baue sie."
       },
       "startChips": {
         "a": "🏃 Ein Lauf- und Springspiel",
