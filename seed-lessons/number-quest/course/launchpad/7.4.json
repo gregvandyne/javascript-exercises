@@ -130,7 +130,7 @@
   },
   {
    "title": "Both sides the same",
-   "text": "6 + 2 = 4 + 4. Both sides make 8.",
+   "text": "6 and 2 make 8. So do 4 and 4, so the sides are equal.",
    "art": "scale",
    "visual": {
     "type": "counters",
