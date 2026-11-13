@@ -1,0 +1,267 @@
+{
+ "key": "launchpad-7.2",
+ "n": "7.2",
+ "band": "launchpad",
+ "title": "Clocks and coins",
+ "topic": "Time and money",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Time for the party",
+   "text": "The party starts at 3 o'clock. Tally looks at the clock.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The short hand is the hour",
+   "text": "The short hand points to 3. The long hand is on 12: 3 o'clock.",
+   "art": "clock",
+   "visual": {
+    "type": "spinner",
+    "parts": 12,
+    "shaded": 0,
+    "clock": {
+     "h": 3,
+     "m": 0
+    },
+    "left": "3:00",
+    "right": "3 o'clock",
+    "label": "A clock face: the short hand on 3 and the long hand on 12, 3 o'clock"
+   },
+   "focus": [
+    {
+     "cue": "The short hand points to 3.",
+     "box": [
+      49,
+      39.1,
+      15.6,
+      10.8
+     ]
+    },
+    {
+     "cue": "The long hand is on 12.",
+     "box": [
+      47.2,
+      16.8,
+      5.5,
+      29.2
+     ]
+    },
+    {
+     "cue": "We say 3 o'clock.",
+     "box": [
+      69.5,
+      38.6,
+      18.2,
+      11.4
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Half past",
+   "text": "The long hand on 6 means half past. The short hand is past 3.",
+   "art": "clock",
+   "visual": {
+    "type": "spinner",
+    "parts": 12,
+    "shaded": 0,
+    "clock": {
+     "h": 3,
+     "m": 30
+    },
+    "left": "3:30",
+    "right": "half past 3",
+    "label": "A clock face: the long hand on 6 and the short hand between 3 and 4, half past 3"
+   },
+   "focus": [
+    {
+     "cue": "The long hand is on 6.",
+     "box": [
+      47.8,
+      42.8,
+      4.5,
+      29.4
+     ]
+    },
+    {
+     "cue": "The short hand is past 3.",
+     "box": [
+      49,
+      39.1,
+      15.6,
+      10.8
+     ]
+    },
+    {
+     "cue": "We write 3:30.",
+     "box": [
+      20.3,
+      38.6,
+      10.2,
+      11.4
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Count by fives",
+   "text": "Count by fives round the clock. Morning times say a.m., night times say p.m.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "spinner",
+    "parts": 12,
+    "shaded": 0,
+    "clock": {
+     "h": 7,
+     "m": 10
+    },
+    "left": "7:10 a.m.",
+    "right": "morning",
+    "fives": true,
+    "label": "A clock face at ten past 7, with 5 and 10 counted outside the numbers 1 and 2"
+   },
+   "focus": [
+    {
+     "cue": "5, 10: count by fives.",
+     "box": [
+      57.9,
+      9.1,
+      12.0,
+      23.1
+     ]
+    },
+    {
+     "cue": "The short hand is just past 7.",
+     "box": [
+      41.8,
+      42.9,
+      9.2,
+      26.3
+     ]
+    },
+    {
+     "cue": "7:10 a.m. is in the morning.",
+     "box": [
+      8.9,
+      38.6,
+      17.6,
+      11.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Count the tip jar",
+   "text": "Each coin has its own value. Start with the biggest and count on.",
+   "art": "coins",
+   "steps": [
+    "a quarter: 25¢",
+    "a dime: 35¢",
+    "a nickel: 40¢",
+    "a penny: 41¢"
+   ],
+   "visual": {
+    "type": "table",
+    "label": "Four coins and their values: a quarter 25 cents, a dime 10 cents, a nickel 5 cents, a penny 1 cent",
+    "head": [
+     "quarter",
+     "dime",
+     "nickel",
+     "penny"
+    ],
+    "rows": [
+     [
+      "25¢",
+      "10¢",
+      "5¢",
+      "1¢"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A quarter is 25 cents.",
+     "box": [
+      8.8,
+      22.3,
+      16.6,
+      24.9
+     ]
+    },
+    {
+     "cue": "A dime is 10 cents.",
+     "box": [
+      33.3,
+      22.3,
+      11.4,
+      24.9
+     ]
+    },
+    {
+     "cue": "A nickel is 5 cents.",
+     "box": [
+      54.4,
+      22.3,
+      13.2,
+      24.9
+     ]
+    },
+    {
+     "cue": "A penny is 1 cent.",
+     "box": [
+      76.0,
+      22.3,
+      13.9,
+      24.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "hour",
+     "means": "60 minutes; the short hand shows it"
+    },
+    {
+     "word": "half past",
+     "means": "30 minutes after the hour"
+    },
+    {
+     "word": "cent",
+     "means": "the value of one penny; 100 make a dollar"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Kitchen Rush at Clocks and Coins. Tell the time and count the coins.",
+   "art": "trophy",
+   "img": "nq/kitchen-rush/clocks-and-coins",
+   "alt": "Kitchen Rush on a phone: the kitchen clock at 3 o'clock on the board, and the buttons 12:15, 3:00 and 3:30."
+  }
+ ],
+ "check": [
+  "nq-launchpad-7.2-e1",
+  "nq-launchpad-7.2-e2",
+  "nq-launchpad-7.2-e3"
+ ],
+ "game": {
+  "slug": "kitchen-rush",
+  "chapter": "Clocks and Coins",
+  "params": "chapter=clock&lock=1"
+ }
+}

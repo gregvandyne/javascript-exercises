@@ -1,0 +1,323 @@
+{
+ "key": "launchpad-7.1",
+ "n": "7.1",
+ "band": "launchpad",
+ "title": "How long is it?",
+ "topic": "Measure length",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A table in the meadow",
+   "text": "Tally sets a picnic in the meadow. How long is the table?",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Same units, end to end",
+   "text": "Lay cubes end to end along the bread. It is 6 cubes long.",
+   "art": "ruler",
+   "visual": {
+    "type": "counters",
+    "label": "Six cubes in a row, counted from 1 to 6",
+    "groups": [
+     {
+      "n": 6,
+      "count": true,
+      "name": "6 cubes long"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start at one end.",
+     "box": [
+      26.1,
+      23.5,
+      7.8,
+      13.4
+     ]
+    },
+    {
+     "cue": "Count every cube: 6.",
+     "box": [
+      26.1,
+      23.5,
+      47.7,
+      13.4
+     ]
+    },
+    {
+     "cue": "It is 6 cubes long.",
+     "box": [
+      35.9,
+      38.4,
+      28.2,
+      12.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "No gaps, no overlaps",
+   "text": "The cubes must touch. Gaps make the count too small.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "bars",
+    "label": "The same length measured with gaps between the cubes, and with the cubes touching",
+    "big": true,
+    "rows": [
+     {
+      "label": "With gaps: only 2 cubes",
+      "parts": [
+       {
+        "w": 0.25,
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "tone": -1
+       },
+       {
+        "w": 0.25,
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "tone": -1
+       }
+      ]
+     },
+     {
+      "label": "End to end: 4 cubes",
+      "parts": [
+       {
+        "w": 0.25,
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Gaps: this count is too small.",
+     "box": [
+      5.1,
+      21.5,
+      89.8,
+      18.3
+     ]
+    },
+    {
+     "cue": "No gaps: a fair measure.",
+     "box": [
+      5.1,
+      51.7,
+      89.8,
+      18.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A ruler has the units on it",
+   "text": "A ruler is marked in inches or centimeters. Start at 0 and read the end.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "min": 0,
+    "max": 5,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 1,
+      "label": "1"
+     },
+     {
+      "at": 2,
+      "label": "2"
+     },
+     {
+      "at": 3,
+      "label": "3"
+     },
+     {
+      "at": 4,
+      "label": "4"
+     },
+     {
+      "at": 5,
+      "label": "5"
+     }
+    ],
+    "hops": [
+     {
+      "from": 0,
+      "to": 4,
+      "label": "4 inches"
+     }
+    ],
+    "label": "A ruler from 0 to 5 inches, and a carrot that starts at 0 and ends at 4"
+   },
+   "focus": [
+    {
+     "cue": "Line up the start with 0.",
+     "box": [
+      3.9,
+      57.8,
+      4.4,
+      25.4
+     ]
+    },
+    {
+     "cue": "It ends at 4.",
+     "box": [
+      74.2,
+      57.8,
+      4.5,
+      25.4
+     ]
+    },
+    {
+     "cue": "4 spaces: 4 inches long.",
+     "box": [
+      5.1,
+      23.5,
+      72.3,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Not at zero",
+   "text": "This ribbon starts at 2 and ends at 5. Count the spaces.",
+   "art": "star",
+   "steps": [
+    "starts at 2",
+    "ends at 5",
+    "count the spaces: 3",
+    "3 inches long"
+   ],
+   "visual": {
+    "type": "numberline",
+    "min": 0,
+    "max": 5,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 1,
+      "label": "1"
+     },
+     {
+      "at": 2,
+      "label": "2"
+     },
+     {
+      "at": 3,
+      "label": "3"
+     },
+     {
+      "at": 4,
+      "label": "4"
+     },
+     {
+      "at": 5,
+      "label": "5"
+     }
+    ],
+    "hops": [
+     {
+      "from": 2,
+      "to": 5,
+      "label": "3 inches"
+     }
+    ],
+    "label": "A ruler from 0 to 5 inches, and a ribbon that starts at 2 and ends at 5"
+   },
+   "focus": [
+    {
+     "cue": "It starts at 2, not at 0.",
+     "box": [
+      39.1,
+      57.8,
+      4.2,
+      25.4
+     ]
+    },
+    {
+     "cue": "3 spaces: 3 inches long.",
+     "box": [
+      40.2,
+      23.5,
+      54.7,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "unit",
+     "means": "a same-size piece you measure with"
+    },
+    {
+     "word": "length",
+     "means": "how long something is"
+    },
+    {
+     "word": "ruler",
+     "means": "a tool marked in inches or centimeters"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Kitchen Rush at Measure It. Measure the food six times.",
+   "art": "trophy",
+   "img": "nq/kitchen-rush/measure-it",
+   "alt": "Kitchen Rush on a phone: a baguette over a row of six sugar cubes on the kitchen board, and three number buttons."
+  }
+ ],
+ "check": [
+  "nq-launchpad-7.1-e1",
+  "nq-launchpad-7.1-e2",
+  "nq-launchpad-7.1-e3"
+ ],
+ "game": {
+  "slug": "kitchen-rush",
+  "chapter": "Measure It",
+  "params": "chapter=measure&lock=1"
+ }
+}
