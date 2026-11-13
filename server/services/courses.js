@@ -175,10 +175,16 @@ export function viewMisses(sl) {
 }
 /** The shapes a `shapes` diagram draws. */
 export const SHAPE_KINDS = Object.freeze(['triangle', 'square', 'rectangle', 'pentagon', 'hexagon', 'rhombus', 'parallelogram', 'trapezoid']);
+/** The looks a drawn shape may take and still be itself (Launchpad Unit 6): a triangle upside down (`flip`), long and
+ *  thin (`thin`) or with a square corner (`right`), a square turned on its corner (`turned`). */
+export const SHAPE_LOOKS = Object.freeze({ triangle: ['flip', 'thin', 'right'], square: ['turned'] });
+/** The smaller shapes a drawn shape may be shown made of (Launchpad Unit 6), by how many: a square of 2 triangles, a
+ *  rectangle of 2 squares, a hexagon of 2 trapezoids or 6 triangles. */
+export const SHAPE_MADE = Object.freeze({ square: [2], rectangle: [2], hexagon: [2, 6] });
 /** The drawn diagram types a slide's `visual` may be. */
 export const VISUAL_TYPES = Object.freeze(['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', ...DIAGRAM_TYPES]);
 /** One slide, cleaned: only the fields the viewer draws. */
-function cleanSlide(s) {
+export function cleanSlide(s) {
   const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
   const out = { kind, title: str(s.title, 120), text: str(s.text, 400), art: ART.has(s.art) ? s.art : 'lightbulb', say: str(s.say, 600) };
   // An in-game picture replaces the emoji art only when it is well formed: a manifest key plus its own alt text
@@ -239,10 +245,12 @@ function cleanSlide(s) {
         // `bad`: one swapped tile's index, or several ([0, 1]: both tiles of a swap marked).
         vis = { type: 'tiles', label, values: v.values.map(x => str(String(x), 10)), ...(v.bad != null ? { bad: [...new Set([].concat(v.bad))] } : {}) };
       } else if (v.type === 'shapes' && Array.isArray(v.items) && v.items.length >= 2 && v.items.length <= 4
-        && v.items.every(it => it && SHAPE_KINDS.includes(it.shape) && str(it.name, 14) && (it.corners == null || typeof it.corners === 'boolean'))) {
+        && v.items.every(it => it && SHAPE_KINDS.includes(it.shape) && str(it.name, 14) && (it.corners == null || typeof it.corners === 'boolean')
+          && (it.look == null || (SHAPE_LOOKS[it.shape] || []).includes(it.look)) && (it.made == null || ((SHAPE_MADE[it.shape] || []).includes(it.made) && it.look == null)))) {
         // Real drawn shapes (the geometry steps): each a regular outline with its name under it, and
-        // optional right-angle marks in its corners.
-        vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 14), ...(it.corners ? { corners: true } : {}) })) };
+        // optional right-angle marks in its corners; `look` draws it another way it can look (an upside-down triangle,
+        // a turned square) and `made` draws the lines that show the smaller shapes it is made of.
+        vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 14), ...(it.corners ? { corners: true } : {}), ...(it.look ? { look: it.look } : {}), ...(it.made ? { made: it.made } : {}) })) };
       } else if (DIAGRAM_TYPES.includes(v.type)) {
         vis = cleanDiagram(v, label); // grid, squares, lines, chart, table (services/diagrams.js)
       }

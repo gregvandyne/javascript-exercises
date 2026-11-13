@@ -752,7 +752,7 @@ export const MIGRATIONS = [
   // here for existing ones; players' games keep '' and services/games.js SHELF_SQL derives theirs from the category.
   ['0062_game_shelf', '', conn => {
     if (!conn.prepare('PRAGMA table_info(games)').all().some(c => c.name === 'shelf')) conn.exec("ALTER TABLE games ADD COLUMN shelf TEXT NOT NULL DEFAULT '';");
-    const learn = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply'];
+    const learn = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt'];
     const list = learn.map(s => `'${s}'`).join(',');
     conn.exec(`UPDATE games SET shelf='learn' WHERE source='seed' AND slug IN (${list})`);
     conn.exec(`UPDATE games SET shelf='play' WHERE source='seed' AND slug NOT IN (${list})`);

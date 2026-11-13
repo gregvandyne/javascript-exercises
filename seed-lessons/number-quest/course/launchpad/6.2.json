@@ -1,0 +1,266 @@
+{
+ "key": "launchpad-6.2",
+ "n": "6.2",
+ "band": "launchpad",
+ "title": "Build with shapes",
+ "topic": "Shapes make shapes",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Pieces on the rug",
+   "text": "Tally has loose pieces. Put together, they make new shapes.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Two triangles make a square",
+   "text": "Put two triangles side to side. They make a square.",
+   "art": "shapes",
+   "visual": {
+    "type": "shapes",
+    "label": "Two triangles, and a square made of two triangles",
+    "items": [
+     {
+      "shape": "triangle",
+      "name": "triangle",
+      "look": "right"
+     },
+     {
+      "shape": "triangle",
+      "name": "triangle",
+      "look": "right"
+     },
+     {
+      "shape": "square",
+      "name": "square",
+      "made": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One triangle.",
+     "box": [
+      10.6,
+      26.7,
+      20.2,
+      61.9
+     ]
+    },
+    {
+     "cue": "One more triangle.",
+     "box": [
+      39.9,
+      26.7,
+      20.2,
+      61.9
+     ]
+    },
+    {
+     "cue": "Together they make a square.",
+     "box": [
+      69.2,
+      26.7,
+      20.2,
+      61.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Two squares make a rectangle",
+   "text": "Two squares side by side make one rectangle.",
+   "art": "box",
+   "visual": {
+    "type": "shapes",
+    "label": "Two squares, and a rectangle made of two squares",
+    "items": [
+     {
+      "shape": "square",
+      "name": "square"
+     },
+     {
+      "shape": "square",
+      "name": "square"
+     },
+     {
+      "shape": "rectangle",
+      "name": "rectangle",
+      "made": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Two squares.",
+     "box": [
+      10.6,
+      26.7,
+      49.5,
+      61.9
+     ]
+    },
+    {
+     "cue": "Side by side: one rectangle.",
+     "box": [
+      66.7,
+      32.5,
+      25.3,
+      56.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A hexagon from pieces",
+   "text": "Two trapezoids make a hexagon. Six triangles make one too.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "shapes",
+    "label": "A trapezoid, a hexagon made of two trapezoids and a hexagon made of six triangles",
+    "items": [
+     {
+      "shape": "trapezoid",
+      "name": "trapezoid"
+     },
+     {
+      "shape": "hexagon",
+      "name": "2 trapezoids",
+      "made": 2
+     },
+     {
+      "shape": "hexagon",
+      "name": "6 triangles",
+      "made": 6
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A trapezoid.",
+     "box": [
+      8.0,
+      30.4,
+      25.3,
+      58.2
+     ]
+    },
+    {
+     "cue": "Two of them make a hexagon.",
+     "box": [
+      37.3,
+      24.9,
+      25.4,
+      63.7
+     ]
+    },
+    {
+     "cue": "Six triangles make it too.",
+     "box": [
+      66.7,
+      24.9,
+      25.3,
+      63.7
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Build a house shape",
+   "text": "A house shape needs two pieces. Which ones?",
+   "art": "star",
+   "steps": [
+    "a square for the walls",
+    "a triangle for the roof",
+    "put the triangle on top",
+    "a house shape"
+   ],
+   "visual": {
+    "type": "shapes",
+    "label": "A square for the walls and a triangle for the roof",
+    "items": [
+     {
+      "shape": "square",
+      "name": "walls"
+     },
+     {
+      "shape": "triangle",
+      "name": "roof"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A square for the walls.",
+     "box": [
+      16.9,
+      24.8,
+      22.2,
+      63.8
+     ]
+    },
+    {
+     "cue": "A triangle for the roof.",
+     "box": [
+      59.7,
+      25.5,
+      24.6,
+      63.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "trapezoid",
+     "means": "a shape with 4 sides, like half a hexagon"
+    },
+    {
+     "word": "hexagon",
+     "means": "a shape with 6 sides"
+    },
+    {
+     "word": "join",
+     "means": "to put shapes side to side"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Shape Hunt at Build It. Pick the pieces that fill the shape.",
+   "art": "trophy",
+   "img": "nq/shape-hunt/build-it",
+   "alt": "Shape Hunt on a phone: a board with the dotted outline of a square, and three buttons with pieces on them.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-6.2-e1",
+  "nq-launchpad-6.2-e2",
+  "nq-launchpad-6.2-e3"
+ ],
+ "game": {
+  "slug": "shape-hunt",
+  "chapter": "Build It",
+  "params": "chapter=build&lock=1"
+ }
+}

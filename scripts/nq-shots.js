@@ -95,6 +95,11 @@ const SHOTS = [
   { tier: 'launchpad', step: '5.1', state: 'load-the-rocket', slug: 'rocket-supply', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: rocketSupply, cdp: true },
   { tier: 'launchpad', step: '5.2', state: 'count-and-compare', slug: 'rocket-supply', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=count&lock=1', prep: rocketSupply, cdp: true },
   { tier: 'launchpad', step: '5.3', state: 'fuel-up', slug: 'rocket-supply', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=fuel&lock=1', prep: rocketSupply, cdp: true },
+  // Launchpad Unit 6, The Shape Shed: Shape Hunt, a 3D game, in each step's own chapter, the whole phone screen as the
+  // band (the cosy room fills it, the words on top, the shapes on the shelves and the table or the big buttons below).
+  { tier: 'launchpad', step: '6.1', state: 'find-the-shape', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=find&lock=1', prep: shapeHunt, cdp: true },
+  { tier: 'launchpad', step: '6.2', state: 'build-it', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: shapeHunt, cdp: true },
+  { tier: 'launchpad', step: '6.3', state: 'equal-shares', slug: 'shape-hunt', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=share&lock=1', prep: shapeHunt, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -252,6 +257,17 @@ async function rocketSupply(f, page, shot) {
     await f.click('#rs-n' + s.answer);
     await until(f, t => t.round === 2 && t.phase === 'play' && t.moving === 0 && !t.flying, 120000);
   }
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function shapeHunt(f) {
+  // A lesson arrival: pick the helper, and the locked chapter opens on its first round. Each is photographed as it is
+  // asked, once its things have popped in: four shape cards on the shelves and the table (Find the Shape), the board
+  // with a ghost square and three sets of pieces (Build It), a pizza cut in two shares that are not equal (Equal Shares).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
   await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
   await wait(2200);
 }

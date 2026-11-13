@@ -1,0 +1,1230 @@
+<title>Shape Hunt</title>
+<!-- Shape Hunt: Number Quest Launchpad Unit 6, The Shape Shed (grades K-2, ages 5-8). A tidy-up treasure hunt in a
+     cosy house, on Oomba3D 1.1.0 in the Cosy Home theme: shapes hide among the furniture, and the helper finds them,
+     builds with them and shares them. Three chapters of six rounds, one per course step:
+       find  (6.1) tap the shape that is named (a triangle, a turned square, a cone), then the shape with an
+                   attribute (3 sides, no corners), then the one that is NOT a triangle (an open or curved
+                   look-alike). Colour, size and turn are never the clue;
+       build (6.2) a ghost outline on the board (a square, a rectangle, a house, a hexagon) or a ghost tower on the
+                   table: pick the pieces that make it, and they fly in and snap together;
+       share (6.3) pizzas, pies, rugs, cakes and blankets shared in equal shares: are the shares equal, which one
+                   shows halves or fourths, what one share is called, how many make the whole, and which piece is
+                   bigger, a half or a fourth.
+     Made for a child who is only starting to read: every instruction is short, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), and everything is done with big taps. Flat shapes are always
+     shown face on, as cards, so the room's perspective never turns one shape into another. No timer, no lives, no
+     fail state: a wrong tap wobbles and gets a spoken hint that names the attribute, then another try. Lesson mode:
+     BRB.params { chapter: find | build | share, lock: 1 } opens that chapter only; finishing its six rounds reports
+     game over, won, once (the course step's completion signal). With no parameters the game offers the three
+     chapters from a picture menu. Saves only which chapters are finished (BRB.storage 'shape-hunt-v1'). The import
+     map below is exactly kit2ImportMap() (server/services/vendor.js); tests/unit/shape-hunt.test.js fails if a
+     library bump leaves it behind. English only, like Number Quest's other lesson games. Test handle: window.__sh
+     (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #ffeedd; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .sh[hidden], .sh-load[hidden] { display: none; }
+  .sh { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .sh button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .sh button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .sh-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the chip and the round dots. On a phone: the words on one row, the chip and the dots on the
+     next (the words keep clear of the gear button; the row under it has the whole width). On a wide screen: all
+     three on one row that never wraps (the words box gives way and wraps inside). */
+  .sh-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .sh-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .sh-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .sh-ask[hidden], .sh-hint[hidden], .sh-sum[hidden], .sh-bar[hidden], .sh-card[hidden], .sh-dots[hidden], .sh-row2[hidden], .sh-spots[hidden] { display: none; }
+  .sh .sh-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .sh .sh-say:active, .sh .sh-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .sh-askt { font-weight: 800; font-size: clamp(19px, 4.9vw, 28px); line-height: 1.15; min-width: 0; }
+  .sh-sum { flex: none; background: #FFD23F; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(20px, 5vw, 30px); line-height: 1.15; white-space: nowrap; }
+  .sh-sum.ok { background: #66C792; } .sh-sum.bad { background: #ffc2b5; }
+  .sh-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sh-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .sh-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
+  .sh-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .sh-dots i.on { background: #FFD23F; } .sh-dots i.now { background: #66C792; }
+  .sh-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .sh .sh-btn { flex: 1 1 0; min-width: 0; max-width: 220px; min-height: clamp(76px, 12vh, 104px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .sh-btn .i { font-size: 30px; line-height: 1.1; } .sh-btn .big { font-size: 44px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+  .sh-btn svg { display: block; width: 100%; height: clamp(52px, 9vh, 76px); }
+  .sh-bar.two .sh-btn { max-width: 260px; } .sh-bar.two .sh-btn .l { font-size: clamp(19px, 3.2vh, 26px); font-weight: 900; }
+  .sh-btn.go { background: #66C792; }
+  .sh-btn.no { animation: sh-no .45s ease; }
+  .sh-bar.wait .sh-btn { opacity: .55; }
+  @keyframes sh-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  /* A shape in the room is tapped through a clear button that sits exactly over it (so a key can press it too). */
+  .sh-spots { position: fixed; inset: 0; pointer-events: none; }
+  .sh .sh-spot { position: absolute; box-sizing: border-box; min-width: 44px; min-height: 44px; padding: 0; background: transparent; border: 0; border-radius: 20px; }
+  .sh .sh-spot.no { outline: 5px dashed #C2431F; outline-offset: 2px; }
+  .sh .sh-spot.go { outline: 5px solid #1F9D63; outline-offset: 2px; }
+  .sh-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .sh-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .sh-card .sh-ask { margin-top: 10px; max-width: 100%; }
+  .sh-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .sh-pick .sh-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .sh-pick .sh-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .sh-menu { display: flex; gap: 12px; justify-content: center; width: min(760px, 100%); }
+  .sh-menu .sh-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
+  .sh-menu .sh-btn .i { font-size: 44px; }
+  .sh-star { font-size: 76px; line-height: 1; }
+  .sh-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the chip and the round dots share one line across the top, so the room gets the height. */
+  @media (min-aspect-ratio: 9/10) {
+    .sh-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .sh-ask { flex: 0 1 auto; max-width: 100%; } .sh-row2 { flex: none; }
+    .sh-askt { font-size: clamp(18px, 2.4vw, 28px); } .sh-sum { font-size: clamp(18px, 2.5vw, 30px); }
+  }
+  @media (max-width: 480px) { .sh-sum { font-size: clamp(18px, 4.9vw, 24px); padding: 5px 12px; } .sh-dots { gap: 5px; } .sh-dots i { width: 13px; height: 13px; border-width: 2.5px; } .sh-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .sh .sh-btn { min-height: 80px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .sh-btn .i { font-size: 26px; } .sh-btn .big { font-size: 38px; } .sh-menu { gap: 8px; } .sh-menu .sh-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .sh-menu .sh-btn .i { font-size: 36px; } .sh-star { font-size: 60px; } }
+  @media (max-height: 520px) { .sh .sh-btn { min-height: 62px; font-size: 15px; } .sh-btn .i { font-size: 24px; } .sh-btn .big { font-size: 34px; } .sh-btn svg { height: 44px; } .sh .sh-say { width: 44px; height: 44px; font-size: 20px; } .sh-menu .sh-btn { min-height: 90px; } .sh-star { font-size: 52px; } }
+  @media (prefers-reduced-motion: reduce) { .sh .sh-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .sh .sh-say:active, .sh .sh-btn:active { transform: none; } }
+</style>
+<div class="sh-load" id="load" role="status">Getting the house ready…</div>
+<div class="sh" id="sh" hidden>
+  <div class="sh-top">
+    <div class="sh-line" id="line">
+      <div class="sh-ask" id="ask" hidden><button class="sh-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="sh-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="sh-row2" id="row2" hidden>
+        <div class="sh-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="sh-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sh-spots" id="spots" hidden></div>
+  <div class="sh-low">
+    <div class="sh-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="sh-bar" id="bar" hidden></div>
+  </div>
+  <div class="sh-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Shape Hunt's rounds: plain data and functions (no DOM, no 3D), so tests/unit/shape-hunt.test.js can run this
+   block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through, so
+   the first six rounds are always the same; a replay gets new shapes). Every round has `choices` (what may be
+   picked), `answer` (the one that is right), `ask` and `said` (lines of the words table, with their numbers),
+   `hints` (for each wrong choice, the lines that say why) and `show` (what the chip shows). ===== */
+/* shape-hunt:begin */
+(function (root) {
+  var CHAPTERS = ['find', 'build', 'share'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function one(r, a) { return a[Math.floor(r() * a.length)]; }
+  function shuffle(r, a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function L(key, vars) { return [key, vars || {}]; }
+
+  /* ---- find: the shapes, what defines each, and the looks a shape may take and still be itself ---- */
+  var FLAT = {
+    circle: { sides: 0, corners: 0, looks: ['plain'] },
+    triangle: { sides: 3, corners: 3, looks: ['plain', 'flip', 'thin', 'right'] },
+    square: { sides: 4, corners: 4, equal: true, looks: ['plain', 'turned'] },
+    rectangle: { sides: 4, corners: 4, looks: ['plain', 'tall'] },
+    hexagon: { sides: 6, corners: 6, looks: ['plain', 'turned'] }
+  };
+  var SOLID = { cube: { faces: 6 }, cone: { point: true }, cylinder: { ends: 2 }, sphere: { ball: true } };
+  var FAKES = ['open', 'curvy'];   // look-alikes that are not triangles: a side missing, a side that is not straight
+  // An attribute that exactly one shape of its set has.
+  var ATTR = { sides3: { is: 'triangle' }, sides4: { is: 'square' }, sides6: { is: 'hexagon' }, round: { is: 'circle' }, point: { is: 'cone', solid: true }, ball: { is: 'sphere', solid: true }, faces: { is: 'cube', solid: true } };
+  var TONES = 6, SIZES = 3;
+  function findRound(n, lap, r, out) {
+    var flat = Object.keys(FLAT), solid = Object.keys(SOLID), items, target = null, look = 'plain', i;
+    if (n === 6) {
+      out.kind = 'not'; out.fake = lap === 0 ? 'open' : one(r, FAKES);
+      items = shuffle(r, FLAT.triangle.looks).slice(0, 3).map(function (l) { return { shape: 'triangle', look: l, line: true }; });
+      items.push({ shape: out.fake, look: 'plain', line: true });
+      out.ask = L('find.ask.not'); out.show = 'show.not'; out.said = [L('yes.' + out.fake)];
+    } else {
+      if (n === 1) { out.kind = 'name'; target = lap === 0 ? 'triangle' : one(r, flat); }
+      else if (n === 2) { out.kind = 'name'; target = lap === 0 ? 'square' : one(r, ['triangle', 'square', 'rectangle', 'hexagon']); look = one(r, FLAT[target].looks.slice(1)); }
+      else if (n === 3) { out.kind = 'name'; out.solid = true; target = lap === 0 ? 'cone' : one(r, solid); }
+      else {
+        out.kind = 'attr'; out.attr = lap === 0 ? (n === 4 ? 'sides3' : 'round') : one(r, n === 4 ? ['sides3', 'sides4', 'sides6'] : ['round', 'point', 'ball', 'faces']);
+        target = ATTR[out.attr].is; if (ATTR[out.attr].solid) out.solid = true;
+        if (!out.solid && FLAT[target].looks.length > 1) look = lap === 0 ? 'thin' : one(r, FLAT[target].looks.slice(1));
+      }
+      out.target = target;
+      // the other three: other shapes of the same set. A square is a rectangle too, so it never sits beside a
+      // rectangle that is asked for by name.
+      var pool = (out.solid ? solid : flat).filter(function (s) { return s !== target && !(target === 'rectangle' && s === 'square'); });
+      items = shuffle(r, pool).slice(0, 3).map(function (s) { return { shape: s, look: out.solid ? 'plain' : one(r, FLAT[s].looks) }; });
+      items.push({ shape: target, look: look });
+      var key = out.kind === 'name' ? target : out.attr;
+      out.ask = L('find.ask.' + key); out.show = 'show.' + key; out.said = [L('yes.' + key)];
+      if (look !== 'plain') out.said.push(L('still.' + target + '.' + look));
+    }
+    // colour and size are dealt out by chance, whatever the shape: they are never the clue
+    var tones = shuffle(r, [0, 1, 2, 3, 4, 5]), sizes = shuffle(r, [0, 1, 1, 2]);
+    for (i = 0; i < items.length; i++) { items[i].tone = tones[i]; items[i].size = sizes[i]; }
+    items = shuffle(r, items);
+    out.items = items; out.choices = [0, 1, 2, 3]; out.hints = {};
+    for (i = 0; i < items.length; i++) {
+      var it = items[i], right = out.kind === 'not' ? it.shape === out.fake : it.shape === target;
+      if (right) out.answer = i;
+      else out.hints[i] = out.kind === 'not' ? [L('has.real'), L('want.' + out.fake)] : [L('has.' + it.shape), L('want.' + (out.kind === 'name' ? target : out.attr))];
+    }
+  }
+
+  /* ---- build: the pieces, what each outline is made of, and the sets that do not make it ---- */
+  var PIECE = {
+    tri: { name: 'triangle', area: 0.5 }, sq: { name: 'square', area: 1 }, etri: { name: 'triangle', area: 0.433 }, trap: { name: 'trapezoid', area: 1.299 },
+    half: { name: 'half circle', area: 1.571, curved: true }, quarter: { name: 'quarter circle', area: 0.785, curved: true },
+    cube: { name: 'cube', solid: true }, cone: { name: 'cone', solid: true }, cylinder: { name: 'cylinder', solid: true }, sphere: { name: 'sphere', solid: true }
+  };
+  var TARGET = {
+    square: { name: 'square', recipe: ['tri', 'tri'], area: 1 },
+    rectangle: { name: 'rectangle', recipe: ['sq', 'sq'], area: 2 },
+    house: { name: 'house', recipe: ['sq', 'etri'], area: 1.433 },
+    hexagon: { name: 'hexagon', recipe: ['trap', 'trap'], area: 2.598 },
+    hexagon6: { name: 'hexagon', recipe: ['etri', 'etri', 'etri', 'etri', 'etri', 'etri'], area: 2.598 },
+    circle: { name: 'circle', recipe: ['half', 'half'], area: 3.1416, curved: true },
+    tower: { name: 'tower', recipe: ['cube', 'cone'], solid: true },
+    rocket: { name: 'tower', recipe: ['cylinder', 'cone'], solid: true }
+  };
+  var WRONG = {
+    square: [['half', 'half'], ['sq', 'sq'], ['etri', 'etri']],
+    rectangle: [['tri', 'tri'], ['half', 'half'], ['sq', 'sq', 'sq']],
+    house: [['sq', 'half'], ['sq', 'sq'], ['etri', 'etri']],
+    hexagon: [['sq', 'sq'], ['half', 'half'], ['trap', 'etri']],
+    hexagon6: [['etri', 'etri', 'etri'], ['sq', 'sq', 'sq'], ['half', 'half']],
+    circle: [['sq', 'sq'], ['tri', 'tri'], ['quarter', 'quarter']],
+    tower: [['cube', 'sphere'], ['cylinder', 'cone']],
+    rocket: [['cylinder', 'sphere'], ['cube', 'cone']]
+  };
+  /** Why a set of pieces does not make the outline: the solids' top or bottom is another solid; flat pieces have a
+   *  curved side the outline has not (or none where it has one), or cover too little of it, or too much. */
+  function why(id, set) {
+    var T = TARGET[id], area = 0, curved = false, i;
+    if (T.solid) return set[1] !== T.recipe[1] ? 'top.' + T.recipe[1] : 'base.' + T.recipe[0];
+    for (i = 0; i < set.length; i++) { area += PIECE[set[i]].area; if (PIECE[set[i]].curved) curved = true; }
+    if (!T.curved && curved) return 'curved';
+    if (T.curved && !curved) return 'straight';
+    return area < T.area ? 'gap' : 'over';
+  }
+  function buildRound(n, lap, r, out) {
+    var id = n === 1 ? (lap % 2 ? 'circle' : 'square') : n === 2 ? 'rectangle' : n === 3 ? 'house' : n === 4 ? 'hexagon' : n === 5 ? (lap % 2 ? 'rocket' : 'tower') : 'hexagon6';
+    var T = TARGET[id], wrong = lap === 0 ? WRONG[id].slice(0, 2) : shuffle(r, WRONG[id]).slice(0, 2), sets = shuffle(r, [T.recipe].concat(wrong)), i;
+    out.kind = T.solid ? 'solid' : 'flat'; out.target = id; out.name = T.name; out.recipe = T.recipe.slice();
+    out.sets = sets; out.choices = [0, 1, 2]; out.hints = {}; out.whys = [];
+    for (i = 0; i < sets.length; i++) {
+      if (sets[i] === T.recipe) { out.answer = i; out.whys.push(null); continue; }
+      out.whys.push(why(id, sets[i])); out.hints[i] = [L('no.' + out.whys[i])];
+    }
+    out.sets = sets.map(function (s) { return s.slice(); });
+    out.ask = L('build.ask.' + T.name); out.show = 'show.' + T.name; out.shown = 'show.made.' + id; out.said = [L('build.said.' + id)];
+  }
+
+  /* ---- share: things cut into shares. A card is one thing: what it is, how many shares, whether they are equal,
+     how it is cut, and whether one share is pulled out or all of them stand a little apart. ---- */
+  var ITEMS = { pizza: 'round', pie: 'round', rug: 'round', cake: 'rect', blanket: 'rect' };
+  var CUTS = {
+    round: { eq: { 2: ['v', 'h', 'd'], 3: ['y'], 4: ['plus', 'x'] }, un: { 2: ['off'], 3: ['off'], 4: ['off'] } },
+    rect: { eq: { 2: ['v', 'h', 'diag'], 3: ['strips'], 4: ['grid', 'strips'] }, un: { 2: ['off'], 3: ['off'], 4: ['off'] } }
+  };
+  var SHARE = { 2: 'half', 3: 'third', 4: 'fourth' };
+  var FIRST = ['pizza', 'cake', 'rug', 'pie', 'blanket', 'pizza'];   // the first lap's things, round by round
+  function card(r, item, parts, equal, extra) {
+    var c = { item: item, parts: parts, equal: equal, cut: one(r, CUTS[ITEMS[item]][equal ? 'eq' : 'un'][parts]) }, k;
+    for (k in extra || {}) c[k] = extra[k];
+    return c;
+  }
+  function shareRound(n, lap, r, out) {
+    var item = lap === 0 ? FIRST[n - 1] : one(r, Object.keys(ITEMS)), p, q, i, cards;
+    out.item = item; out.hints = {};
+    if (n === 1) {
+      // are the shares equal? Not on the first lap (the cut is off to one side), then turn about
+      var eq = lap % 2 === 1; p = lap === 0 ? 2 : one(r, [2, 4]);
+      out.kind = 'equal'; out.cards = [card(r, item, p, eq)]; out.choices = ['yes', 'no']; out.answer = eq ? 'yes' : 'no';
+      out.ask = L('share.ask.eq.' + item, { n: p }); out.said = [L(eq ? 'share.eq.yes' : 'share.eq.no')]; out.hints[eq ? 'no' : 'yes'] = [L('share.hint.eq')];
+      out.show = 'show.equal'; out.shown = eq ? 'show.eq.yes' : 'show.eq.no';
+    } else if (n <= 3) {
+      // tap the one cut in halves (round 2) or fourths (round 3; on a replay sometimes thirds): beside it the same
+      // number of shares that are not equal, and another number of equal shares
+      p = n === 2 ? 2 : lap === 0 ? 4 : one(r, [4, 4, 3]); q = p === 2 ? (lap === 0 ? 4 : one(r, [3, 4])) : p === 4 ? (lap === 0 ? 3 : one(r, [2, 3])) : one(r, [2, 4]);
+      cards = shuffle(r, [card(r, item, p, true, { want: true }), card(r, item, p, false), card(r, item, q, true)]);
+      out.kind = 'pick'; out.parts = p; out.choices = [0, 1, 2];
+      for (i = 0; i < 3; i++) {
+        if (cards[i].want) { out.answer = i; delete cards[i].want; }
+        else out.hints[i] = cards[i].equal ? [L('share.has', { n: cards[i].parts }), L('share.want.' + p)] : [L('share.uneq')];
+      }
+      out.cards = cards; out.ask = L('share.ask.pick' + p); out.said = [L('share.said.' + p)]; out.show = 'show.pick' + p; out.shown = 'show.pick' + p;
+    } else if (n === 4) {
+      // one share is pulled out: what is it called? Thirds on the first lap; a fourth is "a quarter" on odd laps
+      p = lap === 0 ? 3 : one(r, [2, 3, 4]);
+      var fourth = lap % 2 ? 'quarter' : 'fourth', names = { 2: 'half', 3: 'third', 4: fourth };
+      out.kind = 'name'; out.parts = p; out.cards = [card(r, item, p, true, { out: true })]; out.choices = ['half', 'third', fourth]; out.answer = names[p];
+      out.hints = {}; for (i = 0; i < 3; i++) if (out.choices[i] !== out.answer) out.hints[out.choices[i]] = [L('share.hint.name', { n: p })];
+      out.ask = L('share.ask.name'); out.said = [L('share.name.' + out.answer)]; out.show = 'show.name' + p; out.shown = 'show.is.' + out.answer;
+    } else if (n === 5) {
+      // how many of these shares make the whole thing? Two halves on the first lap
+      p = lap === 0 ? 2 : one(r, [2, 3, 4]);
+      out.kind = 'whole'; out.parts = p; out.cards = [card(r, item, p, true, { apart: true })]; out.choices = [2, 3, 4]; out.answer = p;
+      for (i = 2; i <= 4; i++) if (i !== p) out.hints[i] = [L('share.hint.whole')];
+      out.ask = L('share.ask.whole' + p); out.said = [L('share.whole.' + p)]; out.show = 'show.whole' + p; out.shown = 'show.whole' + p + '.yes';
+    } else {
+      // the same thing twice, cut two ways, one share of each pulled out: which piece is bigger?
+      var pair = lap === 0 ? [2, 4] : one(r, [[2, 4], [2, 3], [3, 4]]), order = r() < 0.5 ? pair : [pair[1], pair[0]], id = '' + pair[0] + pair[1];
+      out.kind = 'bigger'; out.pair = pair; out.cards = order.map(function (k) { return card(r, item, k, true, { out: true, mark: true }); });
+      out.choices = order.map(function (k) { return SHARE[k]; }); out.answer = SHARE[pair[0]]; out.hints[SHARE[pair[1]]] = [L('share.hint.big')];
+      out.ask = L('share.ask.big' + id); out.said = [L('share.big.' + id), L('share.more')]; out.show = 'show.big' + id; out.shown = 'show.big' + id + '.yes';
+    }
+  }
+
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'find') findRound(n, lap, r, out); else if (chapter === 'build') buildRound(n, lap, r, out); else shareRound(n, lap, r, out);
+    if (!out.shown) out.shown = out.show;
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.ShapeHunt = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params, FLAT: FLAT, SOLID: SOLID, FAKES: FAKES, ATTR: ATTR, PIECE: PIECE, TARGET: TARGET, WRONG: WRONG, ITEMS: ITEMS, CUTS: CUTS, SHARE: SHARE, TONES: TONES, SIZES: SIZES, why: why };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* shape-hunt:end */
+</script>
+<script>
+/* ===== Shape Hunt's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {n}
+   takes a number in its place (never a word). The show.* lines are what the chip shows and the btn.* lines are
+   button labels: shown, never spoken. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Shape Hunt",
+    "loading": "Getting the house ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a game.",
+    "ch.find": "Find the Shape",
+    "ch.build": "Build It",
+    "ch.share": "Equal Shares",
+    "find.ask.circle": "Tap the circle.",
+    "find.ask.triangle": "Tap the triangle.",
+    "find.ask.square": "Tap the square.",
+    "find.ask.rectangle": "Tap the rectangle.",
+    "find.ask.hexagon": "Tap the hexagon.",
+    "find.ask.cube": "Tap the cube.",
+    "find.ask.cone": "Tap the cone.",
+    "find.ask.cylinder": "Tap the cylinder.",
+    "find.ask.sphere": "Tap the sphere.",
+    "find.ask.sides3": "Tap the shape with 3 sides.",
+    "find.ask.sides4": "Tap the shape with 4 equal sides.",
+    "find.ask.sides6": "Tap the shape with 6 sides.",
+    "find.ask.round": "Tap the shape with no corners.",
+    "find.ask.point": "Tap the solid with a point.",
+    "find.ask.ball": "Tap the solid that is round all over.",
+    "find.ask.faces": "Tap the solid with 6 square faces.",
+    "find.ask.not": "Which one is not a triangle?",
+    "has.circle": "That one is round, with no corners.",
+    "has.triangle": "That one has 3 sides.",
+    "has.square": "That one has 4 equal sides.",
+    "has.rectangle": "That one has 2 long sides and 2 short.",
+    "has.hexagon": "That one has 6 sides.",
+    "has.cube": "That one has 6 square faces.",
+    "has.cone": "That one has a point.",
+    "has.cylinder": "That one has 2 flat round ends.",
+    "has.sphere": "That one is round all over.",
+    "has.real": "That one is closed, with 3 straight sides.",
+    "want.circle": "A circle is round, with no corners.",
+    "want.triangle": "A triangle has 3 sides.",
+    "want.square": "A square has 4 equal sides.",
+    "want.rectangle": "A rectangle has 2 long sides and 2 short.",
+    "want.hexagon": "A hexagon has 6 sides.",
+    "want.cube": "A cube has 6 square faces.",
+    "want.cone": "A cone has a point and a round bottom.",
+    "want.cylinder": "A cylinder has 2 flat round ends.",
+    "want.sphere": "A sphere is round all over, like a ball.",
+    "want.sides3": "Count the sides. Find 3.",
+    "want.sides4": "Find 4 sides, all the same length.",
+    "want.sides6": "Count the sides. Find 6.",
+    "want.round": "Find the round one.",
+    "want.point": "Find the one with a point on top.",
+    "want.ball": "Find the one with no flat face.",
+    "want.faces": "Find the one with square faces.",
+    "want.open": "Find the shape that is not closed.",
+    "want.curvy": "Find the side that is not straight.",
+    "yes.circle": "Yes! A circle is round.",
+    "yes.triangle": "Yes! A triangle has 3 sides.",
+    "yes.square": "Yes! A square has 4 equal sides.",
+    "yes.rectangle": "Yes! A rectangle has 4 sides.",
+    "yes.hexagon": "Yes! A hexagon has 6 sides.",
+    "yes.cube": "Yes! A cube has 6 square faces.",
+    "yes.cone": "Yes! A cone has a point.",
+    "yes.cylinder": "Yes! A cylinder has 2 flat round ends.",
+    "yes.sphere": "Yes! A sphere is round like a ball.",
+    "yes.sides3": "Yes! 3 sides make a triangle.",
+    "yes.sides4": "Yes! 4 equal sides make a square.",
+    "yes.sides6": "Yes! 6 sides make a hexagon.",
+    "yes.round": "Yes! No corners: it is a circle.",
+    "yes.point": "Yes! The cone has a point.",
+    "yes.ball": "Yes! The sphere is round all over.",
+    "yes.faces": "Yes! The cube has 6 square faces.",
+    "yes.open": "Yes! It is open, so it is not a triangle.",
+    "yes.curvy": "Yes! A curved side, so not a triangle.",
+    "still.triangle.thin": "Long and thin, it is still a triangle.",
+    "still.triangle.flip": "Upside down, it is still a triangle.",
+    "still.triangle.right": "It has a square corner. Still a triangle.",
+    "still.square.turned": "Turned round, it is still a square.",
+    "still.rectangle.tall": "Standing tall, it is still a rectangle.",
+    "still.hexagon.turned": "Turned round, it is still a hexagon.",
+    "build.ask.square": "Which pieces make the square?",
+    "build.ask.rectangle": "Which pieces make the rectangle?",
+    "build.ask.house": "Which pieces make the house?",
+    "build.ask.hexagon": "Which pieces make the hexagon?",
+    "build.ask.circle": "Which pieces make the circle?",
+    "build.ask.tower": "Which solids make the tower?",
+    "build.said.square": "Two triangles make a square.",
+    "build.said.rectangle": "Two squares make a rectangle.",
+    "build.said.house": "A square and a triangle make a house.",
+    "build.said.hexagon": "Two trapezoids make a hexagon.",
+    "build.said.hexagon6": "Six triangles make a hexagon.",
+    "build.said.circle": "Two half circles make a circle.",
+    "build.said.tower": "A cube and a cone make a tower.",
+    "build.said.rocket": "A cylinder and a cone make a tower.",
+    "no.curved": "Those have a curved side. This shape has none.",
+    "no.straight": "Those have straight sides. A circle is round.",
+    "no.gap": "Those are too small. They leave a gap.",
+    "no.over": "Those are too big. They stick out.",
+    "no.top.cone": "The top has a point. Find the cone.",
+    "no.base.cube": "The bottom has square faces. Find the cube.",
+    "no.base.cylinder": "The bottom is round. Find the cylinder.",
+    "share.ask.eq.pizza": "{n} helpers share a pizza. Are the shares equal?",
+    "share.ask.eq.pie": "{n} helpers share a pie. Are the shares equal?",
+    "share.ask.eq.rug": "{n} helpers share a rug. Are the shares equal?",
+    "share.ask.eq.cake": "{n} helpers share a cake. Are the shares equal?",
+    "share.ask.eq.blanket": "{n} helpers share a blanket. Are the shares equal?",
+    "share.ask.pick2": "Tap the one cut in halves.",
+    "share.ask.pick3": "Tap the one cut in thirds.",
+    "share.ask.pick4": "Tap the one cut in fourths.",
+    "share.ask.name": "What is one share called?",
+    "share.ask.whole2": "How many halves make one whole?",
+    "share.ask.whole3": "How many thirds make one whole?",
+    "share.ask.whole4": "How many fourths make one whole?",
+    "share.ask.big24": "Which is bigger: a half or a fourth?",
+    "share.ask.big23": "Which is bigger: a half or a third?",
+    "share.ask.big34": "Which is bigger: a third or a fourth?",
+    "share.hint.eq": "Look at each share. Are they the same size?",
+    "share.uneq": "Those shares are not the same size.",
+    "share.has": "That one has {n} equal shares.",
+    "share.want.2": "Halves are 2 equal shares.",
+    "share.want.3": "Thirds are 3 equal shares.",
+    "share.want.4": "Fourths are 4 equal shares.",
+    "share.hint.name": "Count the equal shares. There are {n}.",
+    "share.hint.whole": "Count the pieces of the whole one.",
+    "share.hint.big": "Look at the two pieces. Which takes more room?",
+    "share.eq.yes": "Yes! Every share is the same size.",
+    "share.eq.no": "No. The shares are not the same size.",
+    "share.said.2": "Two equal shares are halves.",
+    "share.said.3": "Three equal shares are thirds.",
+    "share.said.4": "Four equal shares are fourths, or quarters.",
+    "share.name.half": "One of 2 equal shares is one half.",
+    "share.name.third": "One of 3 equal shares is one third.",
+    "share.name.fourth": "One of 4 equal shares is one fourth.",
+    "share.name.quarter": "One of 4 equal shares is a quarter.",
+    "share.whole.2": "Two halves make one whole.",
+    "share.whole.3": "Three thirds make one whole.",
+    "share.whole.4": "Four fourths make one whole.",
+    "share.big.24": "A half is bigger than a fourth.",
+    "share.big.23": "A half is bigger than a third.",
+    "share.big.34": "A third is bigger than a fourth.",
+    "share.more": "More shares make smaller pieces.",
+    "win": "You did it!",
+    "win.card": "You found every shape. Well done!",
+    "round": "Round {n} of {m}",
+    "show.circle": "circle",
+    "show.triangle": "triangle",
+    "show.square": "square",
+    "show.rectangle": "rectangle",
+    "show.hexagon": "hexagon",
+    "show.cube": "cube",
+    "show.cone": "cone",
+    "show.cylinder": "cylinder",
+    "show.sphere": "sphere",
+    "show.sides3": "3 sides",
+    "show.sides4": "4 equal sides",
+    "show.sides6": "6 sides",
+    "show.round": "no corners",
+    "show.point": "a point",
+    "show.ball": "round all over",
+    "show.faces": "6 square faces",
+    "show.not": "not a triangle",
+    "show.house": "house",
+    "show.tower": "tower",
+    "show.made.square": "2 triangles",
+    "show.made.rectangle": "2 squares",
+    "show.made.house": "square + triangle",
+    "show.made.hexagon": "2 trapezoids",
+    "show.made.hexagon6": "6 triangles",
+    "show.made.circle": "2 half circles",
+    "show.made.tower": "cube + cone",
+    "show.made.rocket": "cylinder + cone",
+    "show.equal": "equal shares?",
+    "show.eq.yes": "equal shares",
+    "show.eq.no": "not equal",
+    "show.pick2": "halves",
+    "show.pick3": "thirds",
+    "show.pick4": "fourths",
+    "show.name2": "1 of 2",
+    "show.name3": "1 of 3",
+    "show.name4": "1 of 4",
+    "show.is.half": "½ one half",
+    "show.is.third": "⅓ one third",
+    "show.is.fourth": "¼ one fourth",
+    "show.is.quarter": "¼ a quarter",
+    "show.whole2": "? halves = 1 whole",
+    "show.whole3": "? thirds = 1 whole",
+    "show.whole4": "? fourths = 1 whole",
+    "show.whole2.yes": "2 halves = 1 whole",
+    "show.whole3.yes": "3 thirds = 1 whole",
+    "show.whole4.yes": "4 fourths = 1 whole",
+    "show.big24": "½ or ¼",
+    "show.big23": "½ or ⅓",
+    "show.big34": "⅓ or ¼",
+    "show.big24.yes": "½ is bigger",
+    "show.big23.yes": "½ is bigger",
+    "show.big34.yes": "⅓ is bigger",
+    "show.piece.tri": "triangle",
+    "show.piece.sq": "square",
+    "show.piece.etri": "triangle",
+    "show.piece.trap": "trapezoid",
+    "show.piece.half": "half circle",
+    "show.piece.quarter": "quarter circle",
+    "show.piece.cube": "cube",
+    "show.piece.cone": "cone",
+    "show.piece.cylinder": "cylinder",
+    "show.piece.sphere": "sphere",
+    "btn.say": "Say it again",
+    "btn.yes": "Yes",
+    "btn.no": "No",
+    "btn.half": "One half",
+    "btn.third": "One third",
+    "btn.fourth": "One fourth",
+    "btn.quarter": "A quarter",
+    "btn.num": "Pick {n}",
+    "btn.spot": "Shape {n}",
+    "btn.set": "Pieces {n}",
+    "btn.again": "Play again",
+    "btn.menu": "More games"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).ShapeHuntI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the house's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const SH = window.ShapeHunt, T = (window.ShapeHuntI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'sh', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'spots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'shape-hunt-v1';
+const ICON = { find: '🔍', build: '🧩', share: '🍕' };
+
+/* ---------- state ---------- */
+const P = SH.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, shown: false, tick: 0, trial: null, snapped: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of SH.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The chip: the word or the share the round is about ("triangle", "3 sides", "1 of 4"), and what was found. */
+function chip(key, tone) { el.sum.textContent = key ? fmt(key) : ''; el.sum.hidden = !key; el.sum.className = 'sh-sum' + (tone ? ' ' + tone : ''); }
+let hintTimer = 0;
+/** A hint: one or two of the game's lines, shown together and said one after the other. */
+function hint(lines) {
+  clearTimeout(hintTimer);
+  if (!lines || !lines.length) { el.hint.hidden = true; return; }
+  el.hint.textContent = lines.map(([k, v]) => fmt(k, v)).join(' '); el.hint.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { queue: i > 0 }));
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 7000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion, and on a shape in the room). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D house ---------- */
+let g;
+try {
+  g = await start({ theme: 'cosy-home', version: '1.0.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its floor, walls and furniture are the room.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['floor', 'wall', 'wall-window', 'wall-door', 'couch', 'armchair', 'table-low', 'stool', 'bookshelf', 'shelf', 'cabinet', 'lamp', 'lamp-table', 'rug', 'rug-round', 'picture', 'picture-standing', 'books', 'book', 'pillow',
+  'cactus', 'cactus-small', 'chest', 'chair', 'bed-small'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+const INKC = '#141414', CREAM = '#FFFDF2';
+const TONE = ['#f0705a', '#4d8fe8', '#58b368', '#f4b63f', '#a07be6', '#f58fb5'];
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.75, ...o });
+const INK = new THREE.MeshBasicMaterial({ color: INKC, side: THREE.BackSide });
+const GHOST = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.4, depthWrite: false }), GHOST_EDGE = new THREE.LineBasicMaterial({ color: INKC, transparent: true, opacity: 0.6 });
+
+/* ---------- the room: the theme's floor, walls and furniture round a low table, two shelves and a clear wall ---------- */
+const TT = 0.675, ST = 2.2;   // the top of the low table and the top of the wall shelves
+const room = new THREE.Group(), props = new THREE.Group(), shelves = new THREE.Group();
+{
+  for (const x of [-8, -4, 0, 4, 8]) for (const z of [-2, 2, 6, 10, 14]) room.add(piece('floor', x, -0.5, z));
+  // the back wall (two storeys, so no sky shows over it on a tall screen) and the side walls
+  [['wall-door', -8], ['wall-window', -4], ['wall', 0], ['wall-window', 4], ['wall', 8]].forEach(([id, x]) => room.add(piece(id, x, 0, -4), piece('wall', x, 4, -4)));
+  for (const s of [-1, 1]) for (const z of [-2, 2, 6, 10]) room.add(piece(z === 2 ? 'wall-window' : 'wall', s * 10, 0, z, 1, s * Math.PI / 2), piece('wall', s * 10, 4, z, 1, s * Math.PI / 2));
+  for (const [id, x, y, z, s = 1, turn = 0] of [
+    ['couch', -5.3, 0, -2.75, 1.25], ['pillow', -5.9, 0.78, -2.6, 1.2, 0.3], ['lamp', -7.6, 0, -3.1, 1.25], ['picture', -5.3, 2.5, -3.72, 1.3], ['picture', -3.15, 2.75, -3.72, 0.95],
+    ['cabinet', 3.75, 0, -3.15, 1.2], ['lamp-table', 3.3, 2.2, -3.15, 0.95], ['books', 4.25, 2.2, -3.15, 1.1], ['bookshelf', 6.6, 2.3, -3.5, 1.25], ['picture', 3.1, 2.95, -3.72, 0.8],
+    ['armchair', 5.6, 0, -0.9, 1.2, -0.75], ['cactus', 2.55, 0, -3.15, 1.25], ['chest', -4.6, 0, 0.3, 0.75, 0.5], ['stool', 3.2, 0, 0.2, 1.1], ['books', 3.2, 0.55, 0.2, 0.9, 0.4],
+    ['rug', 0, 0, -1.35, 1.55], ['rug-round', 0, 0, 2.0, 1.15], ['pillow', -1.55, 0, 0.55, 1.1, 0.5], ['book', 1.5, 0, 0.75, 1.2, 1.1], ['cactus-small', 1.75, 0, 2.3, 1.2], ['pillow', -1.7, 0, 2.6, 1, -0.4],
+    ['bed-small', -8.1, 0, 1.5, 1.2, Math.PI / 2], ['chair', 7.6, 0, 2.2, 1.2, -1.2]])
+    room.add(piece(id, x, y, z, s, turn));
+  props.add(piece('table-low', 0, 0, -1.6, 1.35));
+  shelves.add(piece('shelf', -1.0, ST - 0.4, -3.5), piece('shelf', 1.0, ST - 0.4, -3.5));
+  props.add(shelves);
+  g.scene.add(room, props);
+}
+const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the room: cards, solids, the board, pieces
+
+/* ---------- pictures drawn by the game: shape cards, share cards, the board and its pieces (made once, kept) ---------- */
+const LIGHT = new THREE.Color(1.75, 1.75, 1.75);   // brighter than white: the tone curve brings it back to cream
+const texes = new Map();
+function tex(key, w, h, draw) {
+  if (!texes.has(key)) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.lineJoin = 'round'; x.lineCap = 'round'; draw(x, w, h);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; texes.set(key, t);
+  }
+  return texes.get(key);
+}
+function sprite(texture, w, h, order = 2) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
+  s.scale.set(w, h, 1); s.renderOrder = order; s.userData.size = [w, h];
+  return s;
+}
+function cardBase(x, w, h, fill = CREAM) { x.fillStyle = fill; x.strokeStyle = INKC; x.lineWidth = 12; x.beginPath(); x.roundRect(8, 8, w - 16, h - 16, Math.min(w, h) * 0.13); x.fill(); x.stroke(); }
+const turnPts = (pts, a) => pts.map(([px, py]) => [px * Math.cos(a) - py * Math.sin(a), px * Math.sin(a) + py * Math.cos(a)]);
+/** A flat shape's outline, centred, as it looks: a triangle may be upside down, long and thin or right-angled, a
+ *  square or hexagon turned, a rectangle standing tall. `open` is three sides with a gap; `curvy` has a curved side. */
+function shapePath(shape, look, R) {
+  const p = new Path2D(), poly = (pts, close = true) => { pts.forEach(([px, py], i) => (i ? p.lineTo(px, py) : p.moveTo(px, py))); if (close) p.closePath(); };
+  const regular = (n, a0, r) => Array.from({ length: n }, (_, i) => [r * Math.cos(a0 + i * 2 * Math.PI / n), r * Math.sin(a0 + i * 2 * Math.PI / n)]);
+  if (shape === 'circle') p.arc(0, 0, R * 0.84, 0, Math.PI * 2);
+  else if (shape === 'triangle') {
+    if (look === 'thin') poly(turnPts([[0, -R * 1.02], [R * 0.27, R * 0.98], [-R * 0.27, R * 0.98]], 0.55));
+    else if (look === 'right') poly([[-R * 0.72, -R * 0.82], [-R * 0.72, R * 0.72], [R * 0.86, R * 0.72]]);
+    else poly([[0, -R * 0.9], [R * 0.9, R * 0.66], [-R * 0.9, R * 0.66]].map(([px, py]) => [px, look === 'flip' ? -py : py]));
+  } else if (shape === 'square') { const h = look === 'turned' ? R * 0.66 : R * 0.72; poly(turnPts([[-h, -h], [h, -h], [h, h], [-h, h]], look === 'turned' ? Math.PI / 4 : 0)); }
+  else if (shape === 'rectangle') { const a = R * 0.96, b = R * 0.52, [w, h] = look === 'tall' ? [b, a] : [a, b]; poly([[-w, -h], [w, -h], [w, h], [-w, h]]); }
+  else if (shape === 'hexagon') poly(regular(6, look === 'turned' ? Math.PI / 6 : 0, R * 0.9));
+  else if (shape === 'open') { const a = [0, -R * 0.9], b = [R * 0.9, R * 0.66], c = [-R * 0.9, R * 0.66]; poly([[a[0] + (c[0] - a[0]) * 0.42, a[1] + (c[1] - a[1]) * 0.42], c, b, a], false); }
+  else { p.moveTo(-R * 0.82, R * 0.3); p.lineTo(0, -R * 0.9); p.lineTo(R * 0.82, R * 0.3); p.quadraticCurveTo(0, R * 1.5, -R * 0.82, R * 0.3); p.closePath(); }   // curvy
+  return p;
+}
+/** A shape on its card. In the "not a triangle" round every shape is drawn as a thick line, so a gap shows. */
+function shapeCard(it) {
+  return tex(['c', it.shape, it.look, it.tone, it.size, it.line ? 1 : 0].join('|'), 256, 256, (x, w, h) => {
+    cardBase(x, w, h); x.translate(w / 2, h / 2 + (it.shape === 'triangle' && it.look !== 'thin' && it.look !== 'right' ? (it.look === 'flip' ? -8 : 8) : 0));
+    const p = shapePath(it.shape, it.look, 94 * (it.line ? [0.74, 0.86, 0.98] : [0.62, 0.8, 1])[it.size]);
+    if (it.line) { x.strokeStyle = INKC; x.lineWidth = 27; x.stroke(p); x.strokeStyle = TONE[it.tone]; x.lineWidth = 14; x.stroke(p); }
+    else { x.fillStyle = TONE[it.tone]; x.fill(p); x.strokeStyle = INKC; x.lineWidth = 10; x.stroke(p); }
+  });
+}
+/** A green tick on a round badge: what was found. */
+const tickTex = () => tex('tick', 128, 128, x => { x.fillStyle = '#66C792'; x.strokeStyle = INKC; x.lineWidth = 10; x.beginPath(); x.arc(64, 64, 54, 0, Math.PI * 2); x.fill(); x.stroke(); x.lineWidth = 16; x.beginPath(); x.moveTo(38, 66); x.lineTo(57, 85); x.lineTo(91, 44); x.stroke(); });
+
+// Solids: real 3D shapes with the same ink edge as the theme.
+const geos = new Map();
+const geo = (k, make) => { if (!geos.has(k)) geos.set(k, make()); return geos.get(k); };
+const SOLIDS = {
+  cube: { h: 0.8, w: 1.0, make: () => new THREE.BoxGeometry(0.8, 0.8, 0.8) }, cone: { h: 0.96, w: 0.92, make: () => new THREE.ConeGeometry(0.46, 0.96, 28) },
+  cylinder: { h: 0.9, w: 0.82, make: () => new THREE.CylinderGeometry(0.41, 0.41, 0.9, 28) }, sphere: { h: 0.94, w: 0.94, make: () => new THREE.SphereGeometry(0.47, 28, 18) },
+};
+const SOLID_TONE = { cube: 1, cone: 0, cylinder: 2, sphere: 3 };
+/** A solid standing on its base at the group's origin, `k` times life size; a ghost is a pale see-through one. */
+function solid(kind, tone, k = 1, ghost = false) {
+  const d = SOLIDS[kind], gm = geo(kind, d.make), grp = new THREE.Group(), m = new THREE.Mesh(gm, ghost ? GHOST : mat(TONE[tone]));
+  m.position.y = d.h / 2; if (kind === 'cube') m.rotation.y = 0.55;
+  if (ghost) { m.add(new THREE.LineSegments(geo(kind + 'e', () => new THREE.EdgesGeometry(gm, 30)), GHOST_EDGE)); m.renderOrder = 2; }
+  else { m.castShadow = true; const hull = new THREE.Mesh(gm, INK); hull.scale.setScalar(1.075); m.add(hull); }
+  grp.add(m); grp.scale.setScalar(k); grp.userData = { solid: kind, size: [d.w * k, d.h * k], lift: d.h * k / 2 };
+  return grp;
+}
+
+// Things to share, seen from above on a card: a pizza, a pie, a round rug, a cake, a blanket.
+function paintItem(x, item, R, Wd, Hd) {
+  const disc = (r, c) => { x.fillStyle = c; x.beginPath(); x.arc(0, 0, r, 0, Math.PI * 2); x.fill(); };
+  const dot = (px, py, r, c) => { x.fillStyle = c; x.beginPath(); x.arc(px, py, r, 0, Math.PI * 2); x.fill(); };
+  if (item === 'pizza') {
+    disc(R, '#d99a4e'); disc(R * 0.87, '#ffd45c');
+    for (let i = 0; i < 8; i++) { const a = (22.5 + i * 45) * Math.PI / 180; dot(R * 0.6 * Math.cos(a), R * 0.6 * Math.sin(a), R * 0.1, '#d9483b'); }
+    for (let i = 0; i < 4; i++) { const a = (45 + i * 90 + 22.5) * Math.PI / 180; dot(R * 0.27 * Math.cos(a), R * 0.27 * Math.sin(a), R * 0.085, '#d9483b'); }
+  } else if (item === 'pie') {
+    disc(R, '#c98a4b'); disc(R * 0.82, '#b8436b'); disc(R * 0.5, '#cf5d83');
+    for (let i = 0; i < 12; i++) { const a = (15 + i * 30) * Math.PI / 180; dot(R * 0.91 * Math.cos(a), R * 0.91 * Math.sin(a), R * 0.045, '#e9b97d'); }
+  } else if (item === 'rug') { disc(R, '#4d8fe8'); disc(R * 0.78, CREAM); disc(R * 0.58, '#f0705a'); disc(R * 0.3, '#ffd45c'); }
+  else if (item === 'cake') {
+    x.fillStyle = '#c9925a'; x.fillRect(-Wd, -Hd, Wd * 2, Hd * 2); x.fillStyle = '#f9b4cf'; x.fillRect(-Wd + 10, -Hd + 10, Wd * 2 - 20, Hd * 2 - 20);
+    for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) dot(-Wd + (i + 0.5) * Wd / 4, -Hd + (j + 0.5) * Hd / 2, 5, ['#4d8fe8', '#ffd45c', '#58b368', '#f0705a'][(i + j * 3) % 4]);
+  } else {
+    x.fillStyle = '#9bd6a6'; x.fillRect(-Wd, -Hd, Wd * 2, Hd * 2); x.fillStyle = '#58b368';
+    for (let i = 0; i < 8; i++) x.fillRect(-Wd + (i + 0.5) * Wd / 4 - 5, -Hd, 10, Hd * 2);
+    for (let j = 0; j < 4; j++) x.fillRect(-Wd, -Hd + (j + 0.5) * Hd / 2 - 5, Wd * 2, 10);
+  }
+}
+/** The shares of a thing: each a list of outlines to cut it by (the share is where they all overlap) and the way
+ *  it moves when it is pulled out. Equal shares are sectors of a round thing and halves, strips or quarters of a
+ *  rectangle; shares that are not equal come from cuts that miss the middle. */
+function sharesOf(c, R, Wd, Hd) {
+  const round = SH.ITEMS[c.item] === 'round', out = [], big = 4 * Math.max(R, Wd);
+  const rect = (x0, y0, x1, y1) => { const p = new Path2D(); p.rect(x0, y0, x1 - x0, y1 - y0); return p; };
+  const poly = pts => { const p = new Path2D(); pts.forEach(([px, py], i) => (i ? p.lineTo(px, py) : p.moveTo(px, py))); p.closePath(); return p; };
+  const add = (clips, dx, dy) => { const l = Math.hypot(dx, dy) || 1; out.push({ clips, dir: [dx / l, dy / l] }); };
+  if (round) {
+    const whole = new Path2D(); whole.arc(0, 0, R, 0, Math.PI * 2);
+    if (c.equal) {
+      const a0 = { v: -90, h: 0, d: 45, plus: 0, x: 45, y: -90 }[c.cut] * Math.PI / 180, n = c.parts;
+      for (let k = 0; k < n; k++) { const a = a0 + k * 2 * Math.PI / n, b = a + 2 * Math.PI / n, p = new Path2D(); p.moveTo(0, 0); p.arc(0, 0, R, a, b); p.closePath(); add([p], Math.cos((a + b) / 2), Math.sin((a + b) / 2)); }
+    } else if (c.parts === 2) { add([whole, rect(-big, -big, R * 0.38, big)], -1, 0); add([whole, rect(R * 0.38, -big, big, big)], 1, 0); }
+    else if (c.parts === 3) { add([whole, rect(-big, -big, -R * 0.5, big)], -1, 0); add([whole, rect(-R * 0.5, -big, R * 0.2, big)], 0, 1); add([whole, rect(R * 0.2, -big, big, big)], 1, 0); }
+    else for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) add([whole, rect(sx < 0 ? -big : R * 0.3, sy < 0 ? -big : -R * 0.32, sx < 0 ? R * 0.3 : big, sy < 0 ? -R * 0.32 : big)], sx, sy);
+  } else if (c.equal) {
+    if (c.cut === 'diag') { add([poly([[-Wd, -Hd], [Wd, -Hd], [-Wd, Hd]])], -1, -1); add([poly([[Wd, -Hd], [Wd, Hd], [-Wd, Hd]])], 1, 1); }
+    else if (c.cut === 'h') { add([rect(-Wd, -Hd, Wd, 0)], 0, -1); add([rect(-Wd, 0, Wd, Hd)], 0, 1); }
+    else if (c.cut === 'grid') for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) add([rect(sx < 0 ? -Wd : 0, sy < 0 ? -Hd : 0, sx < 0 ? 0 : Wd, sy < 0 ? 0 : Hd)], sx, sy);
+    else for (let k = 0; k < c.parts; k++) add([rect(-Wd + k * 2 * Wd / c.parts, -Hd, -Wd + (k + 1) * 2 * Wd / c.parts, Hd)], k === 0 ? -1 : k === c.parts - 1 ? 1 : 0, k === 0 || k === c.parts - 1 ? 0 : -1);   // v and strips
+  } else {
+    const cuts = { 2: [0.3], 3: [0.2, 0.56], 4: [0.32] }[c.parts].map(f => -Wd + f * 2 * Wd);
+    if (c.parts === 4) { const cy = -Hd + 0.36 * 2 * Hd; for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) add([rect(sx < 0 ? -Wd : cuts[0], sy < 0 ? -Hd : cy, sx < 0 ? cuts[0] : Wd, sy < 0 ? cy : Hd)], sx, sy); }
+    else { const xs = [-Wd, ...cuts, Wd]; for (let k = 0; k + 1 < xs.length; k++) add([rect(xs[k], -Hd, xs[k + 1], Hd)], k === 0 ? -1 : 1, 0); }
+  }
+  return out;
+}
+const MARK = { 2: '½', 3: '⅓', 4: '¼' };
+/** A thing on its card, cut into its shares; `whole` draws the shares of an `apart` card back together. */
+function shareCard(c, whole = false) {
+  return tex(['s', c.item, c.parts, c.equal ? 1 : 0, c.cut, c.out ? 1 : 0, c.apart && !whole ? 1 : 0, c.mark ? 1 : 0].join('|'), 400, 400, (x, w, h) => {
+    cardBase(x, w, h);
+    const round = SH.ITEMS[c.item] === 'round', R = c.out || c.apart ? 122 : 142, Wd = c.out || c.apart ? 132 : 150, Hd = Wd * 0.66, shares = sharesOf(c, R, Wd, Hd);
+    const reach = round ? R : Hd, dashed = c.item === 'rug' || c.item === 'blanket';
+    shares.forEach((sh, k) => {
+      const far = c.out && k === 0 ? reach * 0.26 : c.apart && !whole ? reach * 0.12 : 0;
+      x.save(); x.translate(w / 2 + sh.dir[0] * far - (c.out ? shares[0].dir[0] * reach * 0.1 : 0), h / 2 + (c.mark ? 14 : 0) + sh.dir[1] * far - (c.out ? shares[0].dir[1] * reach * 0.1 : 0));
+      if (c.out && k === 0) { x.strokeStyle = '#FFD23F'; x.lineWidth = 26; x.stroke(sh.clips[0]); }
+      for (const p of sh.clips) x.clip(p);
+      paintItem(x, c.item, R, Wd, Hd);
+      x.strokeStyle = INKC; x.lineWidth = 13; if (dashed && !far) x.setLineDash([16, 12]);
+      for (const p of sh.clips) x.stroke(p);
+      x.restore();
+    });
+    if (dashed && !(c.out || (c.apart && !whole))) { x.save(); x.translate(w / 2, h / 2 + (c.mark ? 14 : 0)); x.strokeStyle = INKC; x.lineWidth = 7; x.beginPath(); if (round) x.arc(0, 0, R, 0, Math.PI * 2); else x.rect(-Wd, -Hd, Wd * 2, Hd * 2); x.stroke(); x.restore(); }
+    if (c.mark) { x.fillStyle = '#FFD23F'; x.strokeStyle = INKC; x.lineWidth = 7; x.beginPath(); x.arc(64, 64, 38, 0, Math.PI * 2); x.fill(); x.stroke(); x.fillStyle = INKC; x.font = '900 50px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(MARK[c.parts], 64, 67); }
+  });
+}
+
+// Building: flat pieces as outlines (one unit is the side of the small square), where each goes in the shape it
+// makes, and the board with the ghost outline.
+const PP = {
+  tri: { d: 'M-0.5 -0.5 L0.5 -0.5 L-0.5 0.5 Z', box: [-0.5, -0.5, 0.5, 0.5], tone: 0 }, sq: { d: 'M-0.5 -0.5 L0.5 -0.5 L0.5 0.5 L-0.5 0.5 Z', box: [-0.5, -0.5, 0.5, 0.5], tone: 1 },
+  etri: { d: 'M0 -0.577 L0.5 0.289 L-0.5 0.289 Z', box: [-0.5, -0.577, 0.5, 0.289], tone: 2 }, trap: { d: 'M-1 0.433 L-0.5 -0.433 L0.5 -0.433 L1 0.433 Z', box: [-1, -0.433, 1, 0.433], tone: 3 },
+  half: { d: 'M0 -1 A1 1 0 0 0 0 1 Z', box: [-1, -1, 0, 1], tone: 4 }, quarter: { d: 'M0 0 L0 -1 A1 1 0 0 0 -1 0 Z', box: [-1, -1, 0, 0], tone: 5 },
+};
+const HEX = 'M1 0 L0.5 0.866 L-0.5 0.866 L-1 0 L-0.5 -0.866 L0.5 -0.866 Z';
+const MAKE = {
+  square: { k: 0.95, outline: PP.sq.d, at: [[0, 0, 0], [0, 0, 180]] },
+  rectangle: { k: 0.68, outline: 'M-1 -0.5 L1 -0.5 L1 0.5 L-1 0.5 Z', at: [[-0.5, 0, 0], [0.5, 0, 0]] },
+  house: { k: 0.8, outline: 'M-0.5 0.933 L-0.5 -0.067 L0 -0.933 L0.5 -0.067 L0.5 0.933 Z', at: [[0, 0.433, 0], [0, -0.356, 0]] },
+  hexagon: { k: 0.68, outline: HEX, at: [[0, -0.433, 0], [0, 0.433, 180]] },
+  hexagon6: { k: 0.68, outline: HEX, at: [0, 1, 2, 3, 4, 5].map(i => { const a = (30 + 60 * i) * Math.PI / 180; return [0.577 * Math.cos(a), 0.577 * Math.sin(a), 300 + 60 * i]; }) },
+  circle: { k: 0.62, outline: 'M-1 0 A1 1 0 1 0 1 0 A1 1 0 1 0 -1 0 Z', at: [[0, 0, 0], [0, 0, 180]] },
+};
+/** Pieces laid side by side as they come (rows of three): [[kind, x, y, turn]], and the box round them. */
+function tray(set) {
+  const out = [], gap = 0.16, rows = []; for (let i = 0; i < set.length; i += 3) rows.push(set.slice(i, i + 3));
+  const rh = rows.map(r => Math.max(...r.map(k => PP[k].box[3] - PP[k].box[1]))), th = rh.reduce((a, b) => a + b, 0) + gap * (rows.length - 1);
+  let y = -th / 2, wide = 0;
+  rows.forEach((r, ri) => {
+    const tw = r.reduce((a, k) => a + PP[k].box[2] - PP[k].box[0], 0) + gap * (r.length - 1); let x = -tw / 2; wide = Math.max(wide, tw);
+    for (const k of r) { const b = PP[k].box; out.push([k, x - b[0], y + rh[ri] / 2 - (b[1] + b[3]) / 2, 0]); x += b[2] - b[0] + gap; }
+    y += rh[ri] + gap;
+  });
+  return { at: out, w: wide, h: th };
+}
+const BW = 2.6, BH = 2.3, PX = 180, BOARD = V3(0, 2.15, -3.42);
+function boardTex(id) {
+  return tex('b|' + id, BW * PX, BH * PX, (x, w, h) => {
+    cardBase(x, w, h); const k = MAKE[id].k * PX, p = new Path2D(MAKE[id].outline);
+    x.translate(w / 2, h / 2); x.scale(k, k); x.fillStyle = 'rgba(20,20,20,0.13)'; x.fill(p); x.strokeStyle = INKC; x.lineWidth = 6 / k; x.setLineDash([15 / k, 11 / k]); x.stroke(p);
+  });
+}
+/** One piece where it goes on the board (the picture is as big as the board, so the piece snaps exactly). */
+function pieceSprite(id, kind, px, py, turn) {
+  const k = MAKE[id].k * PX;
+  const s = sprite(tex(['p', id, kind, px.toFixed(3), py.toFixed(3), turn].join('|'), BW * PX, BH * PX, (x, w, h) => {
+    x.translate(w / 2, h / 2); x.scale(k, k); x.translate(px, py); x.rotate(turn * Math.PI / 180);
+    const p = new Path2D(PP[kind].d); x.fillStyle = TONE[PP[kind].tone]; x.fill(p); x.strokeStyle = INKC; x.lineWidth = 8 / k; x.stroke(p);
+  }), BW, BH, 3);
+  s.userData.piece = kind;
+  return s;
+}
+// The pictures on the buttons: the pieces of a set side by side, never put together.
+const NS = 'http://www.w3.org/2000/svg';
+const SOLID_ICON = {
+  cube: ['M-0.45 -0.22 L0 -0.46 L0.45 -0.22 L0.45 0.28 L0 0.52 L-0.45 0.28 Z', 'M-0.45 -0.22 L0 0.02 L0.45 -0.22 M0 0.02 L0 0.52'],
+  cone: ['M0 -0.5 L0.42 0.36 A0.42 0.14 0 0 1 -0.42 0.36 Z', 'M-0.42 0.36 A0.42 0.14 0 0 1 0.42 0.36'],
+  cylinder: ['M-0.38 -0.34 A0.38 0.13 0 0 1 0.38 -0.34 L0.38 0.36 A0.38 0.13 0 0 1 -0.38 0.36 Z', 'M-0.38 -0.34 A0.38 0.13 0 0 0 0.38 -0.34'],
+  sphere: ['M-0.46 0 A0.46 0.46 0 1 0 0.46 0 A0.46 0.46 0 1 0 -0.46 0 Z', 'M-0.46 0 A0.46 0.16 0 0 0 0.46 0'],
+};
+function setIcon(set) {
+  const svg = document.createElementNS(NS, 'svg'), path = (d, fill, tf) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('fill', fill); p.setAttribute('stroke', INKC); p.setAttribute('stroke-width', '0.07'); p.setAttribute('stroke-linejoin', 'round'); if (tf) p.setAttribute('transform', tf); svg.append(p); };
+  svg.setAttribute('aria-hidden', 'true');
+  if (SH.PIECE[set[0]].solid) {
+    svg.setAttribute('viewBox', `${-0.62} -0.62 ${set.length * 1.2 + 0.04} 1.24`);
+    set.forEach((k, i) => { path(SOLID_ICON[k][0], TONE[SOLID_TONE[k]], `translate(${i * 1.2} 0)`); path(SOLID_ICON[k][1], 'none', `translate(${i * 1.2} 0)`); });
+  } else {
+    const t = tray(set), m = 0.1; svg.setAttribute('viewBox', `${-t.w / 2 - m} ${-t.h / 2 - m} ${t.w + 2 * m} ${t.h + 2 * m}`);
+    for (const [k, px, py] of t.at) path(PP[k].d, TONE[PP[k].tone], `translate(${px.toFixed(3)} ${py.toFixed(3)})`);
+  }
+  return svg;
+}
+
+// Moving things: a hop from one place to another, a pop into place, a shake, a wait. With reduced motion (and in the
+// tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these, run by the game
+// loop, so a slow device plays the same steps in the same order.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const back = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };   // a little past, then back
+function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+/** A thing pops into its place: it grows from nothing, a little past its size, and settles. */
+function pop(o, { wait = 0, then } = {}) {
+  const s = o.scale.clone();
+  anim(o, 0.34, k => { o.scale.copy(s).multiplyScalar(Math.max(0.001, back(k))); if (k >= 1) o.scale.copy(s); }, then, wait);
+}
+/** A wrong pick shakes its head. */
+function shake(o, then) {
+  const x = o.position.x;
+  anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
+}
+/** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+const heroSize = () => (tall ? 0.62 : 0.95);
+/** The helper's place: beside the table on a wide screen, in front of it (lower on the screen) on a tall one. */
+const heroSpot = () => (tall ? V3(0, 0, 1.75) : V3(-3.0, 0, -1.25));
+const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];   // as wide as the Wizard's hat
+/** The points the camera keeps in view while a chapter plays: the wall over the shelves, the low table, the helper. */
+function stagePts() {
+  const pts = [];
+  for (const x of [-1.72, 1.72]) pts.push(V3(x, 3.5, -3.4), V3(x, TT - 0.1, -3.4), V3(x, TT, -0.55));
+  return pts.concat(heroBox(heroSpot(), heroSize()));
+}
+// The camera looks across the room at the back wall, from a little above, and backs off until everything a round
+// uses fits between the words at the top and the buttons at the bottom, on any screen shape.
+const view = { pts: [] };
+function frame() {
+  if (!g || !view.pts.length) return;
+  const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (tall ? 58 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.22;
+  const safe = { l: -1 + 24 / Wd, r: 1 - 24 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
+  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  let bx;
+  const fits = d => {
+    look.copy(mid);
+    for (let i = 0; i < 6; i++) {
+      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (i === 5) break;
+      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+    }
+    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  };
+  let near = 3, far = 120;
+  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+  place();
+}
+addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+
+/* ---------- tapping: a helper in the room is the nearest one under the finger; a shape in the room has a clear
+   button exactly over it (so it can be tapped, clicked, or reached with Tab and pressed with a key) ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+const cands = [];   // the things a round offers in the room: { v, o, at (its middle), w, h, btn }
+/** Keep each clear button over its shape (the camera moves when the screen turns or a round begins). */
+function place() {
+  if (!cands.length) return;
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion);
+  for (const c of cands) {
+    const [sx, sy] = scr(c.at), [rx] = scr(c.at.clone().addScaledVector(right, c.w / 2)), [, uy] = scr(c.at.clone().addScaledVector(up, c.h / 2));
+    const hw = Math.max(22, rx - sx), hh = Math.max(22, sy - uy), css = `left:${(sx - hw).toFixed(1)}px;top:${(sy - hh).toFixed(1)}px;width:${(hw * 2).toFixed(1)}px;height:${(hh * 2).toFixed(1)}px`;
+    if (c.css !== css) { c.css = css; c.btn.style.cssText = css; }
+  }
+}
+g.onUpdate(place);
+/** A shape, a solid or a share card standing on a spot in the room, with its clear button. */
+function candidate(v, o, base, w, h) {
+  o.position.copy(base); if (o.isSprite) o.position.y += h / 2 + 0.03;
+  stage.add(o);
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'sh-spot'; btn.id = 'sh-n' + v; btn.setAttribute('aria-label', fmt('btn.spot', { n: v + 1 }));
+  btn.addEventListener('click', () => answer(v, btn));
+  el.spots.append(btn);
+  const c = { v, o, at: V3(base.x, base.y + h / 2 + (o.isSprite ? 0.03 : 0), base.z), w, h, btn, css: '' };
+  cands.push(c);
+  return c;
+}
+const SPOT4 = [V3(-1.0, ST, -3.3), V3(1.0, ST, -3.3), V3(-1.0, TT, -1.55), V3(1.0, TT, -1.55)], SPOT3 = [V3(-0.82, ST, -3.3), V3(0.82, ST, -3.3), V3(0, TT, -1.55)];
+
+/* ---------- drawing a round ---------- */
+function clearStage() {
+  for (const o of [...stage.children]) stage.remove(o);
+  tweens.length = 0; targets.length = 0; cands.length = 0; el.spots.replaceChildren(); el.spots.hidden = true; S.snapped = 0; S.board = null;
+}
+/** Things on the shelves and the table while nothing is asked: the helper picker, the menu, the end of a chapter. */
+function samples() {
+  shelves.visible = true;
+  [[{ shape: 'triangle', look: 'plain', tone: 0, size: 2 }, SPOT4[0]], [{ shape: 'circle', look: 'plain', tone: 1, size: 2 }, SPOT4[1]]].forEach(([it, at]) => { const s = sprite(shapeCard(it), 1, 1); s.position.set(at.x, at.y + 0.53, at.z); stage.add(s); });
+  const a = solid('cube', 3, 0.9), b = solid('cone', 4, 0.9); a.position.copy(SPOT4[2]); b.position.copy(SPOT4[3]); stage.add(a, b);
+}
+/** Find the Shape: four shapes on the shelves and the table, each on its card (solids as they are). */
+function drawFind(Rd, first) {
+  shelves.visible = true; el.spots.hidden = false;
+  Rd.items.forEach((it, i) => {
+    const k = [0.92, 1.0, 1.1][it.size], o = Rd.solid ? solid(it.shape, it.tone, k) : sprite(shapeCard(it), 1, 1);
+    const c = candidate(i, o, SPOT4[i], Rd.solid ? SOLIDS[it.shape].w * k : 1, Rd.solid ? SOLIDS[it.shape].h * k : 1);
+    if (first) pop(c.o, { wait: 0.1 + i * 0.13 });
+  });
+}
+/** Build It: the board with the ghost outline on the wall, or a ghost tower on the table. */
+function drawBuild(Rd, found) {
+  shelves.visible = false;
+  if (Rd.kind === 'solid') {
+    let y = TT;
+    Rd.recipe.forEach(k => { const gh = solid(k, 0, 1.05, true); gh.position.set(0, y, -1.55); gh.userData.ghost = true; stage.add(gh); y += SOLIDS[k].h * 1.05; });
+  } else { const b = sprite(boardTex(Rd.target), BW, BH, 1); b.position.copy(BOARD); b.userData.board = true; stage.add(b); S.board = b; }
+  if (found) putPieces(Rd, Rd.recipe, true, '', null);
+}
+/** Where the pieces of a set go: the right set into the outline, any other side by side over it.
+ *  -> [{ o, to }] (flat pieces are pictures as big as the board; solids stand one on the other on the table) */
+function piecesOf(Rd, set, fit) {
+  if (Rd.kind === 'solid') { let y = TT; return set.map(k => { const o = solid(k, SOLID_TONE[k], 1.05), to = V3(0, y, -1.55); y += SOLIDS[k].h * 1.05; o.userData.piece = k; return { o, to }; }); }
+  const at = fit ? Rd.recipe.map((k, i) => [k, ...MAKE[Rd.target].at[i]]) : tray(set).at;
+  return at.map(([k, px, py, turn]) => ({ o: pieceSprite(Rd.target, k, px, py, turn), to: V3(BOARD.x, BOARD.y, BOARD.z + 0.05) }));
+}
+/** Bring a set of pieces in. `move`: 'in' (they fly in one after another and snap), '' (they are there). */
+function putPieces(Rd, set, fit, move, then) {
+  const list = piecesOf(Rd, set, fit); let pending = list.length;
+  const tick = S.tick, done = () => { if (--pending === 0 && then && tick === S.tick) then(list); };
+  list.forEach(({ o, to }, i) => {
+    o.userData.fit = fit; stage.add(o);
+    if (!move) { o.position.copy(to); if (fit) S.snapped++; return; }
+    o.position.set(to.x + (i - (list.length - 1) / 2) * 0.7, Rd.kind === 'solid' ? TT : to.y - 2.4, Rd.kind === 'solid' ? 1.2 : to.z + 1.6);
+    fly(o, to, { dur: 0.55, arc: Rd.kind === 'solid' ? 1.1 : 0.4, wait: 0.12 + i * (list.length > 3 ? 0.2 : 0.3), then: () => { sfx('land'); if (fit) S.snapped++; done(); } });
+  });
+  if (!move && then) then(list);
+  return list;
+}
+/** Equal Shares: one big card over the table, two side by side, or three to pick from. */
+function drawShare(Rd, first, found) {
+  const pick = Rd.kind === 'pick'; shelves.visible = pick; el.spots.hidden = !pick;
+  Rd.cards.forEach((c, i) => {
+    const t = shareCard(c, found && Rd.kind === 'whole');
+    if (pick) { const cd = candidate(i, sprite(t, 1.26, 1.26), SPOT3[i], 1.26, 1.26); if (first) pop(cd.o, { wait: 0.1 + i * 0.14 }); return; }
+    const two = Rd.cards.length === 2, w = two ? 1.56 : 2.2, s = sprite(t, w, w);
+    s.position.set(two ? (i ? 0.84 : -0.84) : 0, two ? 2.1 : 2.2, -3.4); s.userData.share = true; stage.add(s);
+    if (first) pop(s, { wait: 0.1 + i * 0.16 });
+  });
+}
+
+/* ---------- the helper ---------- */
+let lineup = [];
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(heroSpot()); h.object.rotation.y = tall ? 0 : 0.45; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage(); samples();
+  // a row of five on a wide screen; on a tall one three at the back and two in front, so each is big enough to tap
+  const k = tall ? 0.82 : 1.0, at = tall ? [[-1.3, 0.3], [-0.65, 1.7], [0, 0.3], [0.65, 1.7], [1.3, 0.3]] : [-2, -1, 0, 1, 2].map(i => [i * 1.85, 0.9]), far = Math.max(...at.map(q => q[0])) + 0.95 * k;
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(k); h.position.set(at[i][0], 0, at[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1 * k), r: 0.7 * k, go: () => chooseHero(h.id) }));
+  view.pts = [V3(-far, 0, at[1][1]), V3(far, 0, at[1][1]), V3(-far, 2.3 * k, at[0][1]), V3(far, 2.3 * k, at[0][1])];
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, pic, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'sh-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, text) => { const s = document.createElement('span'); s.className = c; if (text != null) s.textContent = text; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (pic) b.append(pic);
+  if (big != null) b.append(span('big', big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'sh-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'sh-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'sh-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'sh-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'sh-menu' : 'sh-pick'; row.append(...buttons.map(button));
+  el.card.className = 'sh-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper in the room with a few shapes on the shelves and the table: the menu and the end of a chapter. */
+function solo() {
+  clearStage(); samples(); placeHero();
+  view.pts = stagePts();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.tick++; solo();
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: SH.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!SH.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots() {
+  el.dots.replaceChildren(...Array.from({ length: SH.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: SH.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+/** Whether the round is answered by tapping a thing in the room (the others use the big buttons at the bottom). */
+const inRoom = Rd => Rd.chapter === 'find' || Rd.kind === 'pick';
+function nextRound() {
+  if (S.round >= SH.ROUNDS) return finish();
+  S.round++; S.R = SH.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.trial = null; S.tick++;
+  const Rd = S.R;
+  hint(); dots(); chip(Rd.show);
+  say(Rd.ask[0], Rd.ask[1]);   // the words first: the camera fits the room under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  solo();
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🏠', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+
+/** Draw the round from its state (also after the screen turns): the room's things, the helper, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = (el.bar.contains(document.activeElement) || el.spots.contains(document.activeElement)) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++; S.trial = null; if (S.phase === 'try') S.phase = 'play';
+  el.card.hidden = true; el.bar.classList.remove('wait');
+  if (Rd.chapter === 'find') drawFind(Rd, first); else if (Rd.chapter === 'build') drawBuild(Rd, found); else drawShare(Rd, first, found);
+  placeHero(); view.pts = stagePts();
+  const id = v => 'sh-' + (typeof v === 'number' ? 'n' + v : v), cls = v => (found && v === Rd.answer ? 'go' : '');
+  el.bar.hidden = inRoom(Rd);
+  el.bar.className = 'sh-bar' + (Rd.choices.length === 2 ? ' two' : '');
+  if (Rd.chapter === 'build') el.bar.replaceChildren(...Rd.choices.map(v => button({ id: id(v), pic: setIcon(Rd.sets[v]), cls: cls(v), aria: Rd.sets[v].map(k => fmt('show.piece.' + k)).join(', '), go: b => answer(v, b) })));
+  else if (Rd.kind === 'equal') el.bar.replaceChildren(...Rd.choices.map(v => button({ id: id(v), icon: v === 'yes' ? '✔️' : '✖️', label: fmt('btn.' + v), cls: cls(v), go: b => answer(v, b) })));
+  else if (Rd.kind === 'whole') el.bar.replaceChildren(...Rd.choices.map(v => button({ id: id(v), big: v, aria: fmt('btn.num', { n: v }), cls: cls(v), go: b => answer(v, b) })));
+  else if (Rd.kind === 'name' || Rd.kind === 'bigger') el.bar.replaceChildren(...Rd.choices.map(v => button({ id: id(v), big: { half: '½', third: '⅓', fourth: '¼', quarter: '¼' }[v], label: fmt('btn.' + v), cls: cls(v), go: b => answer(v, b) })));
+  else el.bar.replaceChildren();
+  if (found && inRoom(Rd)) markFound(Rd);
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button') || el.spots.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
+/** The thing that was found gets a green tick (and its clear button a green ring). */
+function markFound(Rd) {
+  const c = cands.find(q => q.v === Rd.answer); if (!c) return;
+  c.btn.classList.add('go');
+  const t = sprite(tickTex(), 0.46, 0.46, 4); t.position.set(c.at.x + c.w * 0.42, c.at.y + c.h * 0.42, c.at.z + 0.06); stage.add(t); pop(t);
+}
+
+/** The child picks: a thing in the room, a set of pieces, a word or a number. */
+function answer(v, b) {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play') return;
+  const Rd = S.R;
+  if (!Rd.choices.includes(v)) return;
+  b = b || document.getElementById('sh-' + (typeof v === 'number' ? 'n' + v : v));
+  const c = cands.find(q => q.v === v);
+  if (v !== Rd.answer) {
+    wobble(b); hint(Rd.hints[v]);
+    if (c) shake(c.o);
+    if (Rd.chapter !== 'build' || reduced || S.fast) return;
+    // the pieces are tried on the outline: they fly in, do not fit, and go again
+    S.phase = 'try'; S.tick++; S.trial = v; el.bar.classList.add('wait');
+    const away = guard(list => {
+      let left = list.length;
+      const end = guard(() => { S.trial = null; S.phase = 'play'; el.bar.classList.remove('wait'); });
+      list.forEach(({ o }, i) => fly(o, V3(o.position.x + (i - (list.length - 1) / 2) * 0.7, o.position.y - 2.6, o.position.z + 1.8), { dur: 0.45, arc: 0.3, wait: 0.9, then: () => { stage.remove(o); if (--left === 0) end(); } }));
+    });
+    return void putPieces(Rd, Rd.sets[v], false, 'in', list => { list.forEach(({ o }) => shake(o)); pause(0.55, guard(() => away(list))); });
+  }
+  S.phase = 'right'; S.tick++; hint(); sfx('coin');
+  if (b) b.classList.add('go');
+  chip(Rd.shown, Rd.answer === 'no' ? 'bad' : 'ok');
+  say(Rd.said[0][0], Rd.said[0][1], { queue: true });
+  for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
+  const done = guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.4 : 2.1, guard(nextRound)); });
+  if (Rd.chapter === 'build') return void putPieces(Rd, Rd.recipe, true, 'in', () => { for (const o of stage.children) if (o.userData.ghost) o.visible = false; done(); });
+  if (inRoom(Rd)) markFound(Rd);
+  else if (Rd.kind === 'whole') { const s = stage.children.find(o => o.userData.share); if (s) { s.material.map = shareCard(Rd.cards[0], true); pop(s); } }   // the shares come back together: one whole
+  done();
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+/** The screen box (left, top, right, bottom in CSS pixels) of a picture or a solid in the room. */
+function boxOf(o) {
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
+  const mid = o.getWorldPosition(V3(0, 0, 0)); if (!o.isSprite) mid.y += o.userData.lift;
+  const [sx, sy] = scr(mid), [rx] = scr(mid.clone().addScaledVector(right, w / 2)), [, uy] = scr(mid.clone().addScaledVector(up, h / 2));
+  return [sx - (rx - sx), uy, rx, sy + (sy - uy)].map(n => Math.round(n));
+}
+const shown = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+const ray = new THREE.Raycaster();
+/** Whether nothing of the room stands between the camera and a point (the furniture never hides a shape). */
+function clearTo(p) {
+  const from = g.camera.position, dir = p.clone().sub(from), dist = dir.length();
+  ray.set(from, dir.normalize()); ray.near = 0.1; ray.far = dist - 0.12;
+  return !ray.intersectObjects([room, props], true).some(hit => shown(hit.object));
+}
+window.__sh = window.__brbTest = {
+  state: () => ({ game: 'shape-hunt', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: SH.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, trial: S.trial, snapped: S.snapped, moving: tweens.length,
+      onStage: { cards: stage.children.filter(o => o.isSprite && !o.userData.board && !o.userData.piece && o.userData.size[0] > 0.6).length, solids: stage.children.filter(o => o.userData.solid && !o.userData.ghost && !o.userData.piece).length,
+        ghosts: stage.children.filter(o => o.userData.ghost && o.visible).length, board: !!S.board, pieces: stage.children.filter(o => o.userData.piece).map(o => o.userData.piece) } } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => answer(arg),
+  /** Where things are on the screen (CSS pixels): the box round the helper (as wide as the Wizard's hat), each thing
+   *  to tap (its clear button, the box of the thing itself, and whether the room's furniture leaves it in full view),
+   *  and every other picture a round shows (the board, its pieces, the share cards). */
+  spot: () => ({
+    hero: S.hero ? (() => { const p = heroBox(S.hero.position, S.hero.object.scale.x).map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); })() : null,
+    cands: cands.map(c => { const r = c.btn.getBoundingClientRect(), k = 0.4; return { v: c.v, btn: [r.left, r.top, r.right, r.bottom].map(n => Math.round(n)), box: boxOf(c.o),
+      clear: [[0, 0], [-k, -k], [k, -k], [k, k], [-k, k]].every(([dx, dy]) => clearTo(V3(c.at.x + dx * c.w, c.at.y + dy * c.h, c.at.z))) }; }),
+    things: stage.children.filter(o => o.visible && o.userData.size && !o.userData.ghost && !cands.some(c => c.o === o)).map(o => ({ box: boxOf(o), clear: clearTo(o.getWorldPosition(V3(0, 0, 0)).add(V3(0, o.isSprite ? 0 : o.userData.lift, 0))) })),
+  }),
+};
+
+el.load.hidden = true; el.load.remove(); el.sh.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>

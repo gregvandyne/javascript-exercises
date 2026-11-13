@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge) and Unit 5, The Hundreds Hedge (5.1-5.3, grade 2: hundreds, tens and ones, skip counting and comparing to 1000, adding and subtracting within 100, played in Rocket Supply); its codes lock in standards.json launchpadCodes.",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge), Unit 5, The Hundreds Hedge (5.1-5.3, grade 2: hundreds, tens and ones, skip counting and comparing to 1000, adding and subtracting within 100, played in Rocket Supply) and Unit 6, The Shape Shed (6.1-6.3, kindergarten to grade 2: naming shapes by what defines them, building shapes from shapes, halves, fourths and thirds, played in Shape Hunt); its codes lock in standards.json launchpadCodes.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -35,7 +35,8 @@
     "Joining Seed",
     "Tens Seed",
     "Balance Seed",
-    "Hundreds Seed"
+    "Hundreds Seed",
+    "Shape Seed"
    ]
   }
  },
@@ -1472,6 +1473,112 @@
    "tier": "launchpad",
    "title": "The Hundreds Hedge",
    "tool": "rocket-supply"
+  },
+  {
+   "emoji": "🔺",
+   "group": "unit-6",
+   "n": 6,
+   "stamp": "Shape Seed",
+   "steps": [
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Find the Shape",
+       "chapterTitle": "Find the Shape",
+       "params": "chapter=find&lock=1",
+       "slug": "shape-hunt"
+      }
+     },
+     "mp": "MP6",
+     "n": "6.1",
+     "order": 17,
+     "shorts": {
+      "launchpad": "Shapes and their sides"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "K.G.A.2",
+        "1.G.A.1"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Name that shape"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Build It",
+       "chapterTitle": "Build It",
+       "params": "chapter=build&lock=1",
+       "slug": "shape-hunt"
+      }
+     },
+     "mp": "MP7",
+     "n": "6.2",
+     "order": 18,
+     "shorts": {
+      "launchpad": "Shapes make shapes"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "K.G.B.6",
+        "1.G.A.2"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Build with shapes"
+     }
+    },
+    {
+     "game": {
+      "launchpad": {
+       "chapter": "Equal Shares",
+       "chapterTitle": "Equal Shares",
+       "params": "chapter=share&lock=1",
+       "slug": "shape-hunt"
+      }
+     },
+     "mp": "MP3",
+     "n": "6.3",
+     "order": 19,
+     "shorts": {
+      "launchpad": "Equal shares"
+     },
+     "standards": {
+      "launchpad": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "1.G.A.3",
+        "2.G.A.3"
+       ]
+      }
+     },
+     "titles": {
+      "launchpad": "Halves and fourths"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "This unit covers shapes from kindergarten to grade 2: naming flat and solid shapes whatever their size, color or turn, and telling them by what defines them (a triangle is closed and has 3 straight sides); putting shapes together to make new ones (two triangles make a square, two trapezoids or six triangles make a hexagon, a cube and a cone make a tower); and equal shares of circles and rectangles: halves, fourths (quarters) and thirds.",
+    "A common misconception: a child knows one picture of each shape, so an upside-down or long thin triangle is \"not a triangle\" and a turned square is \"a diamond\". Count the sides and corners together every time. With shares, any two pieces get called halves: ask \"are the shares the same size?\" first.",
+    "Shape Hunt checks each idea by doing, not reading. Every instruction is spoken; shapes sit on cards around a cosy room, pieces fly in and snap into an outline, and pizzas, pies and cakes are shared between helpers. A wrong tap gets a spoken hint that names the attribute, and six finished rounds complete the step."
+   ],
+   "tier": "launchpad",
+   "title": "The Shape Shed",
+   "tool": "shape-hunt"
   }
  ]
 }

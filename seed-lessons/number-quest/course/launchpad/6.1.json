@@ -1,0 +1,265 @@
+{
+ "key": "launchpad-6.1",
+ "n": "6.1",
+ "band": "launchpad",
+ "title": "Name that shape",
+ "topic": "Shapes and their sides",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Shapes in the shed",
+   "text": "Tally tidies the shed. Shapes hide on every shelf.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Count the sides",
+   "text": "A triangle has 3 sides. A square has 4 equal sides.",
+   "art": "shapes",
+   "visual": {
+    "type": "shapes",
+    "label": "A triangle, a square and a hexagon, with their sides counted",
+    "items": [
+     {
+      "shape": "triangle",
+      "name": "3 sides"
+     },
+     {
+      "shape": "square",
+      "name": "4 sides"
+     },
+     {
+      "shape": "hexagon",
+      "name": "6 sides"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A triangle: 3 sides.",
+     "box": [
+      9.6,
+      27.3,
+      22.2,
+      61.3
+     ]
+    },
+    {
+     "cue": "A square: 4 equal sides.",
+     "box": [
+      39.9,
+      26.7,
+      20.2,
+      61.9
+     ]
+    },
+    {
+     "cue": "A hexagon: 6 sides.",
+     "box": [
+      66.7,
+      24.9,
+      25.3,
+      63.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Round or with corners",
+   "text": "A circle is round. It has no sides and no corners.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "tiles",
+    "label": "A circle, a rectangle and a hexagon",
+    "values": [
+     "circle",
+     "rectangle",
+     "hexagon"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "No corners at all.",
+     "box": [
+      5.0,
+      23.3,
+      30.0,
+      56.5
+     ]
+    },
+    {
+     "cue": "4 corners.",
+     "box": [
+      35.0,
+      23.3,
+      30.0,
+      56.5
+     ]
+    },
+    {
+     "cue": "6 corners.",
+     "box": [
+      65.0,
+      23.3,
+      30.0,
+      56.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Still a triangle",
+   "text": "Turn it or stretch it. 3 sides still make a triangle.",
+   "art": "angle",
+   "visual": {
+    "type": "shapes",
+    "label": "Three triangles: one upright, one upside down, one long and thin",
+    "items": [
+     {
+      "shape": "triangle",
+      "name": "triangle"
+     },
+     {
+      "shape": "triangle",
+      "name": "upside down",
+      "look": "flip"
+     },
+     {
+      "shape": "triangle",
+      "name": "long and thin",
+      "look": "thin"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "3 sides.",
+     "box": [
+      9.6,
+      27.3,
+      22.2,
+      61.3
+     ]
+    },
+    {
+     "cue": "Upside down: still 3 sides.",
+     "box": [
+      37.6,
+      27.3,
+      24.8,
+      61.3
+     ]
+    },
+    {
+     "cue": "Long and thin: still 3 sides.",
+     "box": [
+      66.8,
+      24.6,
+      25.1,
+      64.0
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Is it a square?",
+   "text": "This shape is turned. Count to name it.",
+   "art": "star",
+   "steps": [
+    "4 sides",
+    "all the same length",
+    "4 square corners",
+    "It is a square"
+   ],
+   "visual": {
+    "type": "shapes",
+    "label": "A square, and the same square turned on its corner",
+    "items": [
+     {
+      "shape": "square",
+      "name": "square",
+      "corners": true
+     },
+     {
+      "shape": "square",
+      "name": "turned",
+      "corners": true,
+      "look": "turned"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A square.",
+     "box": [
+      16.9,
+      24.8,
+      22.2,
+      63.8
+     ]
+    },
+    {
+     "cue": "Turned: it is still a square.",
+     "box": [
+      58.0,
+      19.7,
+      28.0,
+      68.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "side",
+     "means": "a straight edge of a shape"
+    },
+    {
+     "word": "corner",
+     "means": "where two sides meet"
+    },
+    {
+     "word": "solid",
+     "means": "a shape you can hold, like a cube"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Shape Hunt at Find the Shape. Tap the shape Tally asks for.",
+   "art": "trophy",
+   "img": "nq/shape-hunt/find-the-shape",
+   "alt": "Shape Hunt on a phone: four shape cards on a shelf and a table in a cosy room, and the words Tap the triangle.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-6.1-e1",
+  "nq-launchpad-6.1-e2",
+  "nq-launchpad-6.1-e3"
+ ],
+ "game": {
+  "slug": "shape-hunt",
+  "chapter": "Find the Shape",
+  "params": "chapter=find&lock=1"
+ }
+}

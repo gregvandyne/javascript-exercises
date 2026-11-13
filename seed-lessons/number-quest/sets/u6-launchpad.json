@@ -1,0 +1,226 @@
+{
+ "id": "nq-u6-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 6 · The Shape Shed (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "K.G.A.2",
+   "topic": "Shapes and their sides",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A shape has 3 straight sides. It is upside down. What is it?",
+   "choices": [
+    "A triangle",
+    "A square",
+    "Not a shape at all",
+    "A circle"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "counted four sides",
+    "thought a turned shape has no name",
+    "picked a round shape"
+   ],
+   "why": "It is closed and has 3 straight sides. Turning it does not change its name."
+  },
+  {
+   "id": "nq-launchpad-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "K.G.A.2",
+   "topic": "Shapes and their sides",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which solid has a point on top and a round bottom?",
+   "choices": [
+    "A cube",
+    "A cone",
+    "A sphere",
+    "A cylinder"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "picked the solid with square faces",
+    "correct",
+    "picked the ball",
+    "picked the solid with two flat ends"
+   ],
+   "why": "A cone has one point and one flat round face. A cylinder has two round ends."
+  },
+  {
+   "id": "nq-launchpad-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "1.G.A.1",
+   "topic": "Shapes and their sides",
+   "kind": "apply",
+   "secs": 25,
+   "q": "What makes a shape a square?",
+   "choices": [
+    "It is red",
+    "It is small",
+    "4 equal sides, 4 corners",
+    "It sits flat"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "named the color",
+    "named the size",
+    "correct",
+    "named the way it is turned"
+   ],
+   "why": "Color, size and turn can change. 4 equal sides and 4 square corners make a square."
+  },
+  {
+   "id": "nq-launchpad-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "K.G.B.6",
+   "topic": "Shapes make shapes",
+   "kind": "apply",
+   "secs": 25,
+   "q": "You join two triangles side to side. What can they make?",
+   "choices": [
+    "A circle",
+    "A square",
+    "A hexagon",
+    "A cube"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "picked a round shape",
+    "correct",
+    "counted too many sides",
+    "picked a solid"
+   ],
+   "why": "Two triangles with a square corner fit side to side. They make a square."
+  },
+  {
+   "id": "nq-launchpad-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "1.G.A.2",
+   "topic": "Shapes make shapes",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which pieces make a hexagon?",
+   "choices": [
+    "2 trapezoids",
+    "2 squares",
+    "2 circles",
+    "1 triangle"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "made a rectangle instead",
+    "picked round pieces",
+    "stopped after one piece"
+   ],
+   "why": "A trapezoid is half a hexagon. Two of them side to side make all 6 sides."
+  },
+  {
+   "id": "nq-launchpad-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "1.G.A.2",
+   "topic": "Shapes make shapes",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Two squares side by side make which shape?",
+   "choices": [
+    "A triangle",
+    "A bigger square",
+    "A rectangle",
+    "A circle"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted three sides",
+    "kept the same shape",
+    "correct",
+    "picked a round shape"
+   ],
+   "why": "The two squares share one side. The new shape is long, with 4 sides: a rectangle."
+  },
+  {
+   "id": "nq-launchpad-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "1.G.A.3",
+   "topic": "Equal shares",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A pie is cut in 2 equal shares. What is one share called?",
+   "choices": [
+    "One half",
+    "One fourth",
+    "One whole",
+    "Two pies"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "named four shares",
+    "named all of the pie",
+    "counted pies, not shares"
+   ],
+   "why": "Two equal shares are halves. One of them is one half."
+  },
+  {
+   "id": "nq-launchpad-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "1.G.A.3",
+   "topic": "Equal shares",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Same cake. Which piece is bigger: a half or a fourth?",
+   "choices": [
+    "A fourth",
+    "They are the same",
+    "A half",
+    "You cannot tell"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "thought the bigger number is bigger",
+    "thought every share is the same",
+    "correct",
+    "forgot the cakes are the same"
+   ],
+   "why": "Fourths cut the cake into more pieces. More shares make smaller pieces, so a half is bigger."
+  },
+  {
+   "id": "nq-launchpad-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "2.G.A.3",
+   "topic": "Equal shares",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A rug is in 3 equal shares. How many thirds make the whole rug?",
+   "choices": [
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted one share",
+    "counted one too few",
+    "correct",
+    "counted one too many"
+   ],
+   "why": "Three equal shares are thirds. Three thirds make one whole."
+  }
+ ]
+}

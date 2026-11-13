@@ -343,6 +343,39 @@
       "state": "load-the-rocket"
     },
     {
+      "alt": "Shape Hunt on a phone: a board with the dotted outline of a square, and three buttons with pieces on them.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "6.2",
+      "commit": "de333904",
+      "concept": "Launchpad 6.2, Build It round 1 (Which pieces make the square?): the board on the wall with the ghost outline of a square, the low table and the Wizard helper in front, the chip reading square, three buttons showing two half circles, two triangles and two squares, shot at phone width (scripts/nq-shots.js band)",
+      "game": "shape-hunt",
+      "key": "nq/shape-hunt/build-it",
+      "state": "build-it"
+    },
+    {
+      "alt": "Shape Hunt on a phone: a pizza cut in two pieces on a card in a cosy room, and the buttons Yes and No.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "6.3",
+      "commit": "de333904",
+      "concept": "Launchpad 6.3, Equal Shares round 1 (2 helpers share a pizza. Are the shares equal?): a pizza on its card cut off to one side into a big share and a small one, the chip reading equal shares?, the buttons Yes and No, shot at phone width (scripts/nq-shots.js band)",
+      "game": "shape-hunt",
+      "key": "nq/shape-hunt/equal-shares",
+      "state": "equal-shares"
+    },
+    {
+      "alt": "Shape Hunt on a phone: four shape cards on a shelf and a table in a cosy room, and the words Tap the triangle.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "6.1",
+      "commit": "de333904",
+      "concept": "Launchpad 6.1, Find the Shape round 1 (Tap the triangle.): a circle and a rectangle on cards on the wall shelves, a hexagon and a triangle on cards on the low table, the Wizard helper in front, the chip reading triangle, shot at phone width (scripts/nq-shots.js band)",
+      "game": "shape-hunt",
+      "key": "nq/shape-hunt/find-the-shape",
+      "state": "find-the-shape"
+    },
+    {
       "alt": "Sum Racer's Trading Post track on a phone: question 2, a big addition that needs a trade, four answers to pick from.",
       "band": "explorer",
       "capturedAt": "2026-11-07",
