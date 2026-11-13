@@ -4711,3 +4711,13 @@ course now reads its tiers from its catalogue, so Launchpad (K-2) and Pro (6-8) 
   words on the words slide), enforced for every Launchpad deck by
   `tests/unit/number-quest-launchpad-decks.test.js`. The contract for adding a unit is in
   `seed-lessons/number-quest/README.md`.
+
+## Builder games may react to how loud the room is (13 Nov 2026)
+
+The owner asked for Builder games that use the microphone (a kid's "noise spooks the animals" idea was refused). Builder
+games now get the same page-side loudness as the official noise meters: a game whose code uses `BRB.loudness` makes its
+play page (and the Studio page, for the preview) listen after a tap with the browser's prompt and the page's own
+Listening · Stop pill, and the game receives one dBFS number about 20 times a second. Nothing about the frame changed
+(opaque origin, `microphone=()`), the scanner still refuses `getUserMedia`, and no audio, words or numbers are recorded,
+stored or sent. The Builder's prompt explains the API and asks for a tap fallback. `MIC_BUILDER=0` switches Builder games
+back off without touching the official ones; `MIC_GAMES=0` switches everything off.

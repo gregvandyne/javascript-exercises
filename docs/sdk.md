@@ -299,10 +299,11 @@ and resolves to `{ a, b, total, min }` (show a percentage only when `total >= mi
 player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, seat, n}` to the page and
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
 
-## Loudness (`BRB.loudness`, official classroom games only)
-Not part of the Builder's API: only the play page of an official game on the list in `server/services/mic-games.js`
-(today Remi's Quiet Meadow) listens. The PAGE opens the microphone after a tap and posts one number; the frame never
-touches the microphone. Everywhere else (other games, previews, covers, Live) the answer is `off`.
+## Loudness (`BRB.loudness`)
+How loud the room is, as one number. Any game may use it (the official noise meters, and Builder games since 13 Nov
+2026; `server/services/mic-games.js` decides, `MIC_BUILDER=0` limits it to the official ones). The PAGE (the play page,
+or the Studio page for the preview) opens the microphone after a tap and posts one number; the frame never touches the
+microphone. Covers, Live frames and online matches answer `off`. A game must work without it (a tap fallback).
 
 - `BRB.loudness.available()` → `Promise<boolean>` (false after at most 800 ms when the page cannot listen). The page
   answers at once from its page data; only its answer is remembered (a timeout is asked again next time).

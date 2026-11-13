@@ -1,9 +1,9 @@
-// The microphone is for ONE official game's play page, never for a game frame and never for any other game
-// (server/services/mic-games.js; docs/safety.md "Loudness"; docs/decisions.md "Remi's Quiet Meadow"). A real app with the
-// real seed games: Remi's play page gets microphone=(self) and page-data.mic; its frame, every other page and every
-// look-alike (a byte copy of Remi's html, a similar slug or title, a "seed" game the official account does not own, the
-// game once hidden or unpublished, an online match, the site-wide off switch) get nothing. The frame's sandbox, CSP and
-// iframe attributes are exactly as for every other game, and the scanner still fails a game that asks for the mic.
+// Loudness is for a game's PLAY PAGE (and the Studio page, for the preview), never for a game frame
+// (server/services/mic-games.js; docs/safety.md "Loudness"). Who gets it: the official noise meters (slug, official,
+// published, not hidden) and, since 13 Nov 2026, Builder games whose code uses BRB.loudness (not hidden; MIC_BUILDER=0
+// turns that off). A real app with the real seed games: those play pages get microphone=(self) and page-data.mic; every
+// other game and page, an online match and the site-wide off switch get nothing. The frame's sandbox, CSP and iframe
+// attributes are exactly as for every other game, and the scanner still fails a game that asks for the mic itself.
 process.env.BRB_DB = ':memory:';
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
@@ -77,20 +77,26 @@ test('every other game and page keeps microphone=() and gets no mic flag', async
   }
 });
 
-test('look-alikes get nothing: a byte copy of Remi, a similar slug and title, a "seed" game nobody official owns', async () => {
-  const copy = publish(kid, html, { title: "Remi's Quiet Meadow" });
-  const twin = publish(kid, html, { slug: 'remis-quiet-meadow-2', title: "Remi's Quiet Meadow" });
-  const fake = publish(kid, html, { slug: 'remis-quiet-meadow-fake', title: 'Remi', source: 'seed' });
-  for (const g of [copy, twin, fake]) {
-    assert.equal(micGame(g), false, g.slug);
-    const r = await get(`/play/${g.slug}`); assert.equal(r.status, 200, g.slug);
-    assert.equal(micOf(r.headers), '()', g.slug); assert.ok(!pageData(r.text).mic, g.slug);
-  }
-  // a row that claims Remi's slug but is not the official account's (forced in the database) is refused too
+test('Builder games: code that uses BRB.loudness gets the same page-side listening; code that does not gets nothing', async () => {
+  const uses = publish(kid, html, { title: 'Spooky Farm' });                 // any Builder game that uses BRB.loudness
+  const plain = publish(kid, '<!doctype html><html><body><canvas></canvas><script>BRB.ready && BRB.ready();</script></body></html>', { title: 'Plain' });
+  assert.equal(micGame(uses, games.getVersion(uses.published_version_id).html), true);
+  const r = await get(`/play/${uses.slug}`); assert.equal(r.status, 200);
+  assert.equal(micOf(r.headers), '(self)'); assert.equal(pageData(r.text).mic, true);
+  assert.match(/<iframe id="gameframe"[^>]*>/.exec(r.text)[0], new RegExp(`sandbox="${SANDBOX}"`), 'the frame is unchanged');
+  assert.equal(micGame(plain, games.getVersion(plain.published_version_id).html), false);
+  const p = await get(`/play/${plain.slug}`); assert.equal(micOf(p.headers), '()'); assert.ok(!pageData(p.text).mic);
+  assert.equal(micGame(uses), false, 'no code, no microphone');
+  assert.equal(micGame({ ...uses, hidden_reason: 'review' }, html), false, 'a hidden game never listens');
+  config.micBuilder = false;
+  try {
+    const off = await get(`/play/${uses.slug}`); assert.equal(micOf(off.headers), '()'); assert.ok(!pageData(off.text).mic, 'MIC_BUILDER=0');
+    assert.equal(micOf((await get(`/play/${REMI}`)).headers), '(self)', 'the official ones keep it');
+  } finally { config.micBuilder = true; }
+  // the official list is still checked on its own: a row claiming Remi's slug that is not official needs the code
   const official = games.getGameBySlug(REMI);
   assert.equal(micGame({ ...official, owner_id: kid.id }), false, 'owner checked');
   assert.equal(micGame({ ...official, source: 'studio' }), false, 'source checked');
-  assert.equal(micGame({ ...official, slug: 'tug-of-math' }), false, 'slug checked');
   assert.equal(micGame(official), true);
 });
 
@@ -102,7 +108,7 @@ test('Remi hidden or unpublished, in an online match, or switched off site-wide:
   // an online match link that is not the viewer's goes back to the plain game page, and the route never listens in a match
   const m = await get(`/play/${REMI}?match=nope`); assert.equal(m.status, 302); assert.equal(micOf(m.headers), '()');
   const route = fs.readFileSync('server/routes/games.js', 'utf8');
-  assert.match(route, /const mic = micGame\(g\) && !inMatch;/);
+  assert.match(route, /const mic = !inMatch && micGame\(g, /);
   config.micGames = false;
   try {
     const r = await get(`/play/${REMI}`); assert.equal(micOf(r.headers), '()'); assert.ok(!pageData(r.text).mic);
@@ -122,7 +128,7 @@ test('nothing else grants the microphone: no iframe allow names it, SANDBOX is u
   }
   assert.equal(SANDBOX, 'allow-scripts allow-pointer-lock allow-orientation-lock');
   assert.match(fs.readFileSync('public/js/live-common.js', 'utf8'), /allow-scripts allow-pointer-lock allow-orientation-lock/);
-  for (const f of ['server/routes/studio.js', 'public/js/live-common.js', 'public/js/live-host.js', 'public/js/live-play.js', 'public/js/studio.js']) {
+  for (const f of ['public/js/live-common.js', 'public/js/live-host.js', 'public/js/live-play.js']) {
     if (fs.existsSync(f)) assert.ok(!fs.readFileSync(f, 'utf8').includes('brb:loud'), `${f} never handles loudness`);
   }
 });

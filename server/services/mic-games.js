@@ -7,10 +7,9 @@
 // getUserMedia in an opaque-origin document whatever the Permissions-Policy says (Chromium: "Invalid security origin").
 // So the frame, its sandbox, its CSP and its `microphone=()` header stay exactly as for every other game.
 //
-// Who gets it is decided here, on the server, from the database row: the slug on the list, an official seed game
-// (source 'seed', owned by the official account), published and not hidden. A user game with a byte copy of the html,
-// the same title or a look-alike slug never passes. MIC_GAMES=0 switches it off for the whole site (the game then offers
-// its "try it without a mic" demo).
+// Who gets it is decided here, on the server: the three official noise meters (slug on the list, official, published,
+// not hidden), and since 13 Nov 2026 any Builder game whose code uses BRB.loudness (MIC_BUILDER=0 turns that part off).
+// Both get exactly the same page-side listening and nothing more. MIC_GAMES=0 switches it off for the whole site.
 import { isOfficial } from './classlive-access.js';
 import { config } from '../config.js';
 
@@ -19,9 +18,19 @@ export const MIC_GAMES = Object.freeze(new Set(['remis-quiet-meadow', 'quiet-bou
 /** The play page's Permissions-Policy for such a game: the site's usual one with the microphone for this page only
  *  (`self`, never `*`; the game frame keeps its own `microphone=()`). */
 export const MIC_POLICY = 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()';
-/** May this game's play page listen for loudness? g: a games row. */
-export function micGame(g) {
-  if (config.micGames === false || !g || !MIC_GAMES.has(g.slug)) return false;
-  if (g.status !== 'published' || !g.published_version_id || g.hidden_reason) return false;
-  return isOfficial(g);
+/** Code that asks for loudness through the SDK (the only way a game can: getUserMedia itself is refused by the scanner,
+ *  and the opaque frame could never use it anyway). */
+export const USES_LOUDNESS = /\bBRB\s*\.\s*loudness\b/;
+/** Builder games may listen too (MIC_BUILDER, on by default; MIC_GAMES=0 still switches every game off). */
+export const builderMicOn = () => config.micGames !== false && config.micBuilder !== false;
+/**
+ * May this game's play page listen for loudness? g: a games row; html: the code of the version this page plays.
+ * The official noise meters on the list: published, not hidden, official. Any other game (a Builder game): its code uses
+ * BRB.loudness and it is not hidden. Either way it is the same page-side listening: a tap, the browser's prompt, the
+ * page's own Listening pill, one number at a time to the game, nothing recorded or sent.
+ */
+export function micGame(g, html = null) {
+  if (config.micGames === false || !g || g.hidden_reason) return false;
+  if (MIC_GAMES.has(g.slug) && g.status === 'published' && g.published_version_id && isOfficial(g)) return true;
+  return builderMicOn() && typeof html === 'string' && USES_LOUDNESS.test(html);
 }

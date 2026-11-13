@@ -247,9 +247,9 @@ let shownVersion = S.current ? S.current.id : null;   // the version in the prev
 function setPreview(url, vid = null) {
   if (!url) return;
   S.preview = url; $('#st-empty').hidden = true; shownVersion = vid;
-  frame.src = url;
+  stopLoud(); frame.src = url;
 }
-const reloadPreview = () => { frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
+const reloadPreview = () => { stopLoud(); frame.src = 'about:blank'; setTimeout(() => (frame.src = S.preview), 30); };
 $('#st-reload').addEventListener('click', () => { if (!S.preview) return toast(t('js.studio.buildFirst')); reloadPreview(); });
 // "Try again" in a game (brb:retry): reload the preview from here, with a fresh link (a reload the frame starts itself
 // has no sign-in cookie, so the server refuses it).
@@ -264,7 +264,28 @@ addEventListener('message', e => {
   if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
   else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
   else if (e.data.type === 'brb:retry' && tappedJustNow()) retryPreview();
+  // Loudness (BRB.loudness): this page, never the preview frame, opens the microphone, and only after a real tap.
+  else if (e.data.type === 'brb:loud' && e.origin === 'null' && LOUD_OPS.includes(e.data.op)) { if (!S.loud) toFrame({ type: 'brb:loudState', state: 'off' }); else loudMessage(e.data); }
 });
+
+// ---------------------------------------------------------------- loudness in the preview (docs/safety.md "Loudness")
+// The same page-side listening as the play page (public/js/loudness.js): a tap, the browser's own prompt, the page's
+// "Listening · Stop" pill on the preview, and one number at a time to the game. Nothing is recorded, stored or sent.
+const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
+let loudBridge = null, loudLoading = null, loudGen = 0;
+const toFrame = msg => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*'); } catch { /* frame gone */ } };
+const loudTapped = () => tappedJustNow('brb-loud-at', 3e3);
+function loudMessage(m) {
+  if (m.op === 'hello' && !loudBridge) { toFrame({ type: 'brb:loudState', state: 'ready' }); return; }
+  if (!loudLoading) loudLoading = import('/js/loudness.js').then(mod => { loudBridge = mod.bridge({ toFrame, stage: device, t, tapped: loudTapped }); return loudBridge; });
+  const tap = m.op === 'start' ? loudTapped() : false, gen = loudGen;
+  loudLoading.then(b => {
+    if (m.op === 'start' && gen !== loudGen) return;   // a start from a preview that has since been reloaded
+    return b.message({ op: m.op }, tap);
+  }).catch(() => toFrame({ type: 'brb:loudState', state: 'unavailable' }));
+}
+function stopLoud() { loudGen++; if (loudBridge) loudBridge.stop('stopped'); }
+addEventListener('pagehide', stopLoud);
 
 // ---------------------------------------------------------------- chat log
 const scrollDown = () => { log.scrollTop = log.scrollHeight; };
