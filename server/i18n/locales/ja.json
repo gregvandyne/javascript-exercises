@@ -1425,6 +1425,8 @@
     "newGame": "新しいゲーム",
     "startFrom": "ここからはじめる",
     "startFromLabel": "{title}からはじめる",
+    "worlds": "3Dワールドから はじめる",
+    "startInLabel": "3Dワールド「{title}」から はじめる",
     "twoPlayers": "2人用",
     "updateWaiting": "アップデートがチェック待ち",
     "changed": "{when}にへんこう",
@@ -1581,6 +1583,37 @@
         "forest": "森",
         "autumn": "秋",
         "city": "まち"
+      }
+    },
+    "picker": {
+      "label": "みためを えらぼう",
+      "worlds": "3Dワールド",
+      "heroes": "3Dヒーロー",
+      "classic": "クラシック"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "そらのしま",
+        "castle-quest": "おしろのぼうけん",
+        "spooky-hollow": "おばけのたに",
+        "space-base": "うちゅうきち",
+        "toy-town": "おもちゃのまち",
+        "medieval-village": "むかしのむら",
+        "cosy-home": "ぽかぽかのおうち",
+        "busy-kitchen": "にぎやかキッチン"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "きし",
+        "barbarian": "たんけんか",
+        "mage": "まほうつかい",
+        "rogue": "レンジャー",
+        "rogue-hooded": "フードのレンジャー",
+        "skelly": "スケリー",
+        "rattles": "ラトルズ",
+        "bonzo": "ボンゾ",
+        "captain-clank": "キャプテン・クランク"
       }
     },
     "lesson": {
@@ -2356,6 +2389,8 @@
         "seePlans": "ビルダーのメッセージを増やすプランを見る"
       },
       "themeUse": "「{name}」のテーマにして。",
+      "worldUse": "「{name}」の3Dワールドの ゲームにして。",
+      "heroUse": "3Dヒーローは「{name}」にして。",
       "sparks": "{n, plural, other {スパークパック #回分}}"
     },
     "character": {

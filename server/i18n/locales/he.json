@@ -1426,6 +1426,8 @@
     "newGame": "משחק חדש",
     "startFrom": "להתחיל מתבנית",
     "startFromLabel": "להתחיל עם {title}",
+    "worlds": "התחילו בעולם תלת־ממד",
+    "startInLabel": "להתחיל בעולם התלת־ממד {title}",
     "twoPlayers": "2 שחקנים",
     "updateWaiting": "עדכון מחכה לבדיקה",
     "changed": "שונה {when}",
@@ -1582,6 +1584,37 @@
         "forest": "יער",
         "autumn": "סתיו",
         "city": "עיר"
+      }
+    },
+    "picker": {
+      "label": "בחרו מראה",
+      "worlds": "עולמות תלת־ממד",
+      "heroes": "גיבורי תלת־ממד",
+      "classic": "קלאסי"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "איי השמיים",
+        "castle-quest": "מסע בטירה",
+        "spooky-hollow": "עמק הרפאים",
+        "space-base": "בסיס חלל",
+        "toy-town": "עיר הצעצועים",
+        "medieval-village": "כפר ימי הביניים",
+        "cosy-home": "בית חמים",
+        "busy-kitchen": "מטבח שוקק"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "אביר",
+        "barbarian": "חוקר",
+        "mage": "קוסם",
+        "rogue": "סייר",
+        "rogue-hooded": "סייר עם ברדס",
+        "skelly": "סקלי",
+        "rattles": "רטלס",
+        "bonzo": "בונזו",
+        "captain-clank": "קפטן קלאנק"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "לצפייה בתוכניות עם יותר הודעות לבנאי"
       },
       "themeUse": "השתמשו בנושא {name}.",
+      "worldUse": "תהפוך את זה למשחק תלת־ממד בעולם {name}.",
+      "heroUse": "השתמש בגיבור התלת־ממד {name}.",
       "sparks": "{n, plural, one {הודעה אחת מחבילות ניצוצות} two {שתי הודעות מחבילות ניצוצות} other {# הודעות מחבילות ניצוצות}}"
     },
     "character": {

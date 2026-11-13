@@ -70,6 +70,22 @@ Six stages, each its own pull request that ships on its own; the build starts 12
 3. **Oomba3D helper library.** The API above, keyboard and touch controls, low-power mode (no glow, fewer clouds, pixel ratio capped), reduced-motion support, docs in the style of `docs/kit-api.md` with a test that keeps docs and code in step. Done when the Sky Islands demo is rebuilt on it in under 150 lines.
 4. **Showcase game 1: Sky Islands.** An official game with three worlds and a lesson's worth of questions, on the live site. Done when it runs at 30+ frames a second on a low-end Chromebook.
 5. **Builder themes.** Theme picker cards, the theme manifest and Oomba3D rules in the Builder's instructions, scanner checks, Turn a lesson into a game picks a theme. Done when the Builder makes a working Sky Islands game from a one-line request.
+   **Built 13 Nov 2026** (branch `builder-kit2`, details in `docs/decisions.md` "Kit 2 in the Builder"):
+   - The Studio's picker has three tabs of chips with pictures: 3D worlds (all eight shipped worlds), 3D heroes (all
+     nine characters) and Classic (the Kit 1 themes); the Build page has a card for each world. A pick is a sentence in
+     the child's message, in their language.
+   - A build uses Kit 2 when the child picks or names a world or character, or describes a place that is one of the
+     worlds ("a dinosaur game on the moon"), for a new game; otherwise it stays on Kit 1. A game keeps its engine.
+   - The Builder's instructions carry the Kit 2 import map, the Oomba3D reference and a catalogue generated from the
+     shipped theme manifests (`node scripts/build-kit2-rules.js`), and a starter game for every world
+     (`server/builder/templates/oomba3d.html`). The scanner refuses a world or version that has not shipped; a note
+     tells the Builder when it used a hero, piece or sound name the world does not have.
+   - Checked with the mock builder, the starter and real Chromium in the game frame. **Not yet checked: a build with the
+     real model** (no API key on the build machine), so the "one-line request" test is still to do on the live site.
+   - Still open from this stage: Turn a lesson into a game does not suggest a world yet, and a remix keeps its world
+     only because the game's code names it. **No animal or dinosaur character has shipped** (the Quaternius packs are
+     still out of reach of the build machine), so the Builder says so when asked for one; the catalogue, the rules and
+     the picker pick them up from the manifest the day a theme has a `creatures` list.
 6. **Wave 1 complete.** Under the Sea and Castle Quest themes, plus the 2D Pixel World on Phaser as showcase game 2. Done when all three themes and both showcase games are live.
 
 Wave 2 and 3 themes follow the same steps 1 and 6 for each new theme.

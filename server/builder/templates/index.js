@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { kitTag, kitPackTag } from '../../services/kit.js';
+import { kit2Starter } from '../kit2.js';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -34,13 +35,20 @@ export const TEMPLATES = [
   // an EXAMPLE world the Builder replaces with the world the builder asked for. Not a "Start from" card (builderOnly).
   { key: 'world3d', title: 'My 3D World', icon: '🌍', cover: 'ocean', category: 'adventure', players: 1, threeD: true, builderOnly: true,
     description: 'A 3D world of your own to explore.' },
+  // The Builder's Kit 2 starter (no Oomba Kit): a 3D game in one of the ready-made worlds with an animated hero, on
+  // Oomba3D (docs/kit2-api.md). loadTemplate('oomba3d', { world, hero }) fills in the world, its newest shipped version,
+  // its starter layout and the hero (../kit2.js). The /build page offers one card per world (builderOnly: not in the
+  // classic "Start from" row).
+  { key: 'oomba3d', title: 'My 3D World', icon: '🏰', cover: 'ocean', category: 'adventure', players: 1, threeD: true, builderOnly: true, kit2: true,
+    description: 'A ready-made 3D world with a hero who runs, jumps, collects and answers.' },
 ];
 
 const cache = new Map();
 
-/** Returns the template's HTML. Throws on an unknown key. */
-export function loadTemplate(key) {
+/** Returns the template's HTML. Throws on an unknown key. opts (oomba3d only): { world, hero, title }. */
+export function loadTemplate(key, opts = {}) {
   if (!TEMPLATES.some(t => t.key === key)) throw new Error(`Unknown template: ${key}`);
+  if (key === 'oomba3d') { const h = kit2Starter(opts || {}); if (!h) throw new Error(`Unknown world: ${opts && opts.world}`); return h; }
   if (!cache.has(key)) cache.set(key, withKitTags(fs.readFileSync(path.join(DIR, `${key}.html`), 'utf8')));
   return cache.get(key);
 }

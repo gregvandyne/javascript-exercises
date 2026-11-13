@@ -1426,6 +1426,8 @@
     "newGame": "Neues Spiel",
     "startFrom": "Fang mit einer Vorlage an",
     "startFromLabel": "Mit {title} anfangen",
+    "worlds": "Starte in einer 3D-Welt",
+    "startInLabel": "In der 3D-Welt {title} starten",
     "twoPlayers": "2 Spieler",
     "updateWaiting": "Update wartet auf Prüfung",
     "changed": "Geändert {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Wald",
         "autumn": "Herbst",
         "city": "Stadt"
+      }
+    },
+    "picker": {
+      "label": "Wähle einen Look",
+      "worlds": "3D-Welten",
+      "heroes": "3D-Helden",
+      "classic": "Klassisch"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Himmelsinseln",
+        "castle-quest": "Burg-Abenteuer",
+        "spooky-hollow": "Gruseltal",
+        "space-base": "Weltraumbasis",
+        "toy-town": "Spielzeugstadt",
+        "medieval-village": "Mittelalterdorf",
+        "cosy-home": "Gemütliches Zuhause",
+        "busy-kitchen": "Wuselküche"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Ritter",
+        "barbarian": "Entdecker",
+        "mage": "Zauberer",
+        "rogue": "Waldläufer",
+        "rogue-hooded": "Waldläufer mit Kapuze",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Käpt’n Clank"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "Pläne für mehr Baumeister-Nachrichten ansehen"
       },
       "themeUse": "Nimm das Thema {name}.",
+      "worldUse": "Mach daraus ein 3D-Spiel in der Welt {name}.",
+      "heroUse": "Nimm den 3D-Helden {name}.",
       "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}"
     },
     "character": {

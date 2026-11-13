@@ -1425,6 +1425,8 @@
     "newGame": "新遊戲",
     "startFrom": "從範本開始",
     "startFromLabel": "從 {title} 開始",
+    "worlds": "從 3D 世界開始",
+    "startInLabel": "從 3D 世界「{title}」開始",
     "twoPlayers": "2 位玩家",
     "updateWaiting": "更新等待審核中",
     "changed": "{when}修改",
@@ -1581,6 +1583,37 @@
         "forest": "森林",
         "autumn": "秋天",
         "city": "城市"
+      }
+    },
+    "picker": {
+      "label": "選一個風格",
+      "worlds": "3D 世界",
+      "heroes": "3D 英雄",
+      "classic": "經典"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "天空島",
+        "castle-quest": "城堡探險",
+        "spooky-hollow": "幽靈山谷",
+        "space-base": "太空基地",
+        "toy-town": "玩具小鎮",
+        "medieval-village": "中世紀村莊",
+        "cosy-home": "溫馨小屋",
+        "busy-kitchen": "忙碌廚房"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "騎士",
+        "barbarian": "探險家",
+        "mage": "巫師",
+        "rogue": "遊俠",
+        "rogue-hooded": "兜帽遊俠",
+        "skelly": "史凱利",
+        "rattles": "拉托斯",
+        "bonzo": "邦佐",
+        "captain-clank": "克朗克船長"
       }
     },
     "lesson": {
@@ -2356,6 +2389,8 @@
         "seePlans": "查看有更多小幫手訊息的方案"
       },
       "themeUse": "使用「{name}」主題。",
+      "worldUse": "做成「{name}」世界的 3D 遊戲。",
+      "heroUse": "用 3D 英雄「{name}」。",
       "sparks": "{n, plural, other {火花包 # 次}}"
     },
     "character": {

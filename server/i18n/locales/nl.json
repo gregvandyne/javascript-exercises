@@ -1426,6 +1426,8 @@
     "newGame": "Nieuwe game",
     "startFrom": "Begin met een voorbeeld",
     "startFromLabel": "Begin met {title}",
+    "worlds": "Begin in een 3D-wereld",
+    "startInLabel": "Begin in de 3D-wereld {title}",
     "twoPlayers": "2 spelers",
     "updateWaiting": "Update wacht op controle",
     "changed": "Veranderd {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Bos",
         "autumn": "Herfst",
         "city": "Stad"
+      }
+    },
+    "picker": {
+      "label": "Kies een stijl",
+      "worlds": "3D-werelden",
+      "heroes": "3D-helden",
+      "classic": "Klassiek"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Luchteilanden",
+        "castle-quest": "Kasteelavontuur",
+        "spooky-hollow": "Spookvallei",
+        "space-base": "Ruimtebasis",
+        "toy-town": "Speelgoedstad",
+        "medieval-village": "Middeleeuws Dorp",
+        "cosy-home": "Gezellig Huis",
+        "busy-kitchen": "Drukke Keuken"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Ridder",
+        "barbarian": "Ontdekker",
+        "mage": "Tovenaar",
+        "rogue": "Woudloper",
+        "rogue-hooded": "Woudloper met kap",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Kapitein Clank"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "Bekijk abonnementen voor meer berichten aan de Bouwer"
       },
       "themeUse": "Gebruik het thema {name}.",
+      "worldUse": "Maak er een 3D-spel van in de wereld {name}.",
+      "heroUse": "Gebruik de 3D-held {name}.",
       "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}"
     },
     "character": {

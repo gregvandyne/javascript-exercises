@@ -20,8 +20,8 @@ const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', '
 const CATEGORIES = ['arcade', 'sports', 'puzzle', 'words', 'board', 'adventure', 'learning', 'music', 'silly'];
 
 test('TEMPLATES lists every template with valid metadata', () => {
-  assert.deepEqual(TEMPLATES.map(t => t.key), ALL);
-  assert.deepEqual(TEMPLATES.filter(t => t.builderOnly).map(t => t.key), ['world3d']);
+  assert.deepEqual(TEMPLATES.map(t => t.key), [...ALL, 'oomba3d']);
+  assert.deepEqual(TEMPLATES.filter(t => t.builderOnly).map(t => t.key), ['world3d', 'oomba3d']);   // oomba3d: the Kit 2 starter (tests/unit/builder-kit2.test.js)
   for (const t of TEMPLATES) {
     assert.ok(t.title && t.icon && t.description, `${t.key} has title/icon/description`);
     assert.ok(COVERS.includes(t.cover), `${t.key} cover`);

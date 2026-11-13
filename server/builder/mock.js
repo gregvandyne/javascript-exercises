@@ -7,6 +7,9 @@
 //                -> "it's ready" / "polish" -> polish pass with a checklist
 //                -> "upgrade it" / "the new look" (an older game, before the Oomba Kit) -> rebuilt on the kit template of
 //                   its kind, keeping its title and tune-ups; only when asked, never on its own
+//   a Kit 2 pick -> one of the ready-made 3D worlds or characters picked, named or described (kit2.js wantsKit2), or a
+//                   game that is already one: mock-kit2.js builds it from the Kit 2 starter and changes it (hero, world,
+//                   sky, weather, cape, length, title). Anything else is the old kit, as before.
 // Games on the Oomba Kit (every template) are changed through the kit layer (layer.js): character looks, the biome,
 // the title and the game clock are spec edits on single BRB_TUNE lines ("make the fox blue with a hat").
 // Text is streamed in small chunks so the SSE path is exercised.
@@ -29,6 +32,8 @@ import { isThreeGame } from '../services/vendor.js';
 import { NO_STEPS } from './steps.js';
 import { asksForLive } from './prompt.js';
 import { kitPackTag } from '../services/kit.js';
+import { wantsKit2, isKit2Game } from './kit2.js';
+import { buildKit2, followUpKit2 } from './mock-kit2.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** Milliseconds between streamed chunks of three words (BRB_MOCK_DELAY_MS, 12 by default). */
@@ -395,8 +400,16 @@ export async function run(ctx) {
   for (let pass = 0; pass < 4; pass++) {
     const cur = ctx.tools.current();
     if (!text) { if (!cur) ctx.tools.exec('ask_user', { question: 'What kind of game should we make?', options: KIND_CHIPS }); }
-    else if (cur) await followUp({ ...ctx, text }, m, cur);
-    else await plan({ ...ctx, text }, m);
+    else {
+      // The engine choice (kit2.js): a Kit 2 game, or a pick of one of the ready-made 3D worlds or characters, goes to
+      // the Kit 2 side (mock-kit2.js); everything else is the old kit, exactly as before.
+      const k2 = wantsKit2(st, text, cur), c2 = { ...ctx, text };
+      if (cur && isKit2Game(cur.html)) await followUpKit2(c2, m, cur, k2 || {}, say);
+      else if (cur && k2) await buildKit2(c2, m, k2, say, { replaces: ctx.tools.game() });
+      else if (k2) await buildKit2(c2, m, k2, say);
+      else if (cur) await followUp(c2, m, cur);
+      else await plan(c2, m);
+    }
     const fu = await readNew(ctx, pass + 2, true);   // after a question (the answer) or a version (a change)
     if (!fu || !fu.length) break;
     await say(ctx, 'Got your new message! ');

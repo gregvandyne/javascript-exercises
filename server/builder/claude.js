@@ -26,7 +26,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -194,15 +194,21 @@ export async function run(ctx) {
     steps.start('think', { n: step + 1, c, ...(c === 'msg' ? { m: fresh.length } : {}), ...(c === 'auto' && prev.p ? { p: prev.p } : {}), ...(!step && cur ? { g: 1 } : {}) });
     // The short language block goes last, after the cache points, so the cached prefix is the same for every language.
     // The fixed 3D rules sit between the system prompt and the game, only for 3D requests and 3D games.
+    // Kit 2 (kit2.js): a game in one of the ready-made 3D worlds gets the KIT 2 RULES in place of the 3D RULES (never
+    // both: they are two different ways to build a 3D game), and a short note naming this turn's world and hero.
+    const k2 = wantsKit2(ctx.state || {}, ctx.text, cur);
     const system = [
       { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
       // Fixed, and only while web search is on: it is cached with the block after it.
       ...(searchOn ? [{ type: 'text', text: search.SEARCH_RULES }] : []),
-      ...(wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      ...(k2 ? [{ type: 'text', text: KIT2_RULES, cache_control: { type: 'ephemeral' } }]
+        : wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
       // An older 3D game on the kit's 3D bridge: its reference too (no cache point of its own; the game's block caches it).
       ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
-      ...(wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      // (Live class games are built on the Oomba Kit's live pack: not for Kit 2 games yet, whose rules say so.)
+      ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
+      ...(k2 ? [{ type: 'text', text: kit2Note(k2) }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).

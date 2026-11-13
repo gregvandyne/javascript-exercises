@@ -107,7 +107,10 @@ export function buildReport(raw, o = {}) {
   if (!blank && started && !frozen && input === 'no') add('input', heroes.length > 1 ? 'The hero never moved and the score never changed while the playtest pressed arrows, WASD and space, tapped, swiped and pressed the game\'s buttons: the controls seem not to work. Check the key and touch handlers (and that they listen on window or the canvas, not an element that never gets focus).' : 'The screen did not react to any input (arrows, WASD, space, taps, swipes, the game\'s own buttons): check the controls are wired up.');
   if (instantOver) add('over', `The game ended ${Math.max(0, Math.round(firstOver / 100) / 10)} s after it started: a round should not be over before the player has a chance (check the start state: lives, timers, collisions at the start position).`);
   if (!blank && started && !frozen && scoring && !scoreChanged && !numbersChanged && !overEvents.length && input !== 'no') add('score', `In ${facts.playSecs} s of play (arrows, WASD, space, taps, swipes and the game's own buttons) the score never changed and no numbers on screen changed. If this game is about scoring, check points are really added (and shown). If it is a calm game or waits for an answer, ignore this.`, true);
-  if (fps !== null && fps > 0 && fps < 8) add('slow', `It ran at about ${fps} frames a second on the test machine: far too slow. Draw less each frame (fewer objects, smaller canvases, no work that grows every frame).`);
+  // A Kit 2 game draws a whole ready-made world of models, and Oomba3D lowers its own graphics level on a slow device;
+  // the test machine has no graphics card, so only a game that barely moves there is called slow.
+  const slowAt = /\bfrom\s*["']oomba3d["']/.test(html) ? 3 : 8;
+  if (fps !== null && fps > 0 && fps < slowAt) add('slow', `It ran at about ${fps} frames a second on the test machine: far too slow. Draw less each frame (fewer objects, smaller canvases, no work that grows every frame).`);
   for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `On ${v.label.toLowerCase()} (${v.width}x${v.height}): ${v.problems.join('; ')}.`);
   for (const w of (raw.kitWarnings || []).slice(0, 3)) add(`kit:${cleanNote(w, 40)}`, `Oomba Kit warning: ${q(w)}.`);
   const problems = issues.map(i => i.text);

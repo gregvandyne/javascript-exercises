@@ -43,6 +43,7 @@ import { upsellFor, askTarget } from '../builder/upsell.js';
 import * as sparks from '../services/sparks.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
+import { KIT2_WORLDS, KIT2_CHARACTERS, WORLD_IDS, kit2Of, worldById, heroFor, worldLook } from '../builder/kit2.js';
 import { builderMicOn } from '../services/mic-games.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
@@ -104,11 +105,24 @@ export function themeOf(src) {
   const raw = m[2].toLowerCase().replace(/[^a-z]/g, ''), name = THEME_ALIAS[raw] || raw;
   return THEMES[name] ? name : '';
 }
-/** The theme chips over the Builder's message box: tap one and "Use the snow theme." goes into the message. */
-function themePicker(t, current) {
-  return html`<div class="st-themes" role="group" aria-labelledby="st-themes-h">
-    <span class="st-themes-h" id="st-themes-h"><span aria-hidden="true">🎨</span> ${t('studio.themes.heading')}</span>
-    <div class="st-themes-row">${Object.keys(THEMES).map(id => html`<button type="button" class="st-theme${id === current ? ' is-current' : ''}" data-theme="${id}" data-name="${t(`studio.themes.names.${id}`)}" aria-pressed="false"><img src="/img/themes/${id}.webp" alt="" width="48" height="32" loading="lazy" decoding="async"><span>${t(`studio.themes.names.${id}`)}</span>${id === current ? html`<span class="st-theme-now">${t('studio.themes.current')}</span>` : ''}</button>`)}</div>
+/** The picker over the Builder's message box: three tabs of chips. 3D worlds and 3D heroes are the ready-made Kit 2
+ *  worlds and characters (builder/kit2.js, from the shipped theme manifests); Classic is the old kit's themes. A tap puts
+ *  a sentence into the message ("Make it a 3D game in the Castle Quest world.", "Use the snow theme."), which the
+ *  builder can read and edit before sending. k2: the game's Kit 2 world and hero now ({ world, hero } or null).
+ *  The tab that opens first: Classic for a game on the old kit (its themes are what change it), 3D worlds otherwise. */
+function themePicker(t, current, k2, hasGame) {
+  const first = hasGame && !k2 ? 'classic' : 'worlds';
+  const now = html`<span class="st-theme-now">${t('studio.themes.current')}</span>`;
+  // extra: for a hero chip, the worlds that have this character (the page hides the others once a world is picked)
+  const chip = (cls, attr, id, name, img, cur, size, extra = '') => html`<button type="button" class="${cls}${cur ? ' is-current' : ''}" ${raw(`data-${attr}="${id}"${extra}`)} data-name="${name}" aria-pressed="false"><img src="${img}" alt="" width="${size[0]}" height="${size[1]}" loading="lazy" decoding="async"><span>${name}</span>${cur ? now : ''}</button>`;
+  const tab = (key, emoji) => html`<button type="button" class="st-tab" role="tab" id="st-tab-${key}" data-tab="${key}" aria-controls="st-row-${key}" aria-selected="${String(key === first)}" tabindex="${key === first ? '0' : '-1'}" title="${t(`studio.picker.${key}`)}"><span aria-hidden="true">${emoji}</span><span class="st-tab-t">${t(`studio.picker.${key}`)}</span></button>`;
+  const row = (key, chips) => html`<div class="st-themes-row" id="st-row-${key}" role="tabpanel" aria-labelledby="st-tab-${key}"${key === first ? '' : raw(' hidden')}>${chips}</div>`;
+  const heroes = k2 ? KIT2_CHARACTERS.filter(c => c.worlds.includes(k2.world)) : KIT2_CHARACTERS;
+  return html`<div class="st-themes" role="group" aria-label="${t('studio.picker.label')}">
+    <div class="st-tabs" role="tablist" aria-label="${t('studio.picker.label')}">${tab('worlds', '🌍')}${tab('heroes', '🦸')}${tab('classic', '🎨')}</div>
+    ${row('worlds', KIT2_WORLDS.map(w => chip('st-pick st-world', 'world', w.id, t(`studio.worlds.names.${w.id}`), `/img/kit2/worlds/${w.id}.webp`, !!k2 && k2.world === w.id, [48, 32])))}
+    ${row('heroes', heroes.map(c => chip('st-pick st-hero', 'hero', c.id, t(`studio.heroes.names.${c.id}`), `/img/kit2/heroes/${c.id}.webp`, !!k2 && k2.hero === c.id, [32, 32], ` data-worlds="${c.worlds.join(' ')}"`)))}
+    ${row('classic', Object.keys(THEMES).map(id => chip('st-theme', 'theme', id, t(`studio.themes.names.${id}`), `/img/themes/${id}.webp`, id === current, [48, 32])))}
   </div>`;
 }
 /** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
@@ -126,6 +140,8 @@ export function studioState(user, gameId, t = tEn, req = null) {
     status: studioStatus(g, t),
     versions: versions.map(v => ({ id: v.id, number: v.number, notes: v.notes, safety: v.safety_status, review: v.review_status, at: v.created_at, live: v.id === g.published_version_id, pending: v.id === g.pending_version_id, current: v.id === g.current_version_id })),
     theme: themeOf(cur && cur.html),
+    // The game's Kit 2 world and hero (builder/kit2.js), or null for a game on the old kit or no game yet.
+    kit2: cur ? kit2Of(cur.html) : null,
     current: cur ? { id: cur.id, number: cur.number, safety: cur.safety_status, issues: (report.issues || []).map(i => ({ level: i.level, code: i.code, message: i.message })) } : null,
     live: g.status === 'published' && g.published_version_id ? { number: num(g.published_version_id), visibility: g.visibility, id: g.published_version_id } : null,
     pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id, visibility: g.pending_visibility || 'public' } : null,
@@ -177,6 +193,12 @@ router.get('/build', requireBuilder, async (req, res) => {
   <section class="build-hero panel">
     <div class="build-hero-text"><h2>${t('build.hero.heading')}</h2><p>${t('build.hero.text')}</p></div>
     <button class="btn btn-primary btn-big" type="button" id="newgame">✨ ${t('build.newGame')}</button>
+  </section>
+  <section aria-labelledby="k2-h" class="build-sec">
+    <h2 id="k2-h">${t('build.worlds')}</h2>
+    <div class="tplgrid">${KIT2_WORLDS.map(w => { const title = t(`studio.worlds.names.${w.id}`); return html`<button type="button" class="tplcard tplworld" data-template="oomba3d" data-world="${w.id}" data-threed="1" aria-label="${t('build.startInLabel', { title })}">
+      <span class="tplcover tplpic"><img src="/img/kit2/worlds/${w.id}-card.webp" alt="" width="320" height="180" loading="lazy" decoding="async"></span><span class="tpl-t">${title}</span>
+      <span class="tpl-p">👤 ${t('game.about.onePlayer')}</span></button>`; })}</div>
   </section>
   <section aria-labelledby="tpl-h" class="build-sec">
     <h2 id="tpl-h">${t('build.startFrom')}</h2>
@@ -251,7 +273,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <form class="st-compose" id="st-compose" autocomplete="off">
           <div class="st-limit" id="st-limit" role="status"${t.own('js.studio.limitCard.heading') ? '' : html` lang="en" dir="ltr"`} hidden></div>
           <div class="st-attach" id="st-attach" hidden></div>
-          ${themePicker(t, state.theme)}
+          ${themePicker(t, state.theme, state.kit2, !!state.current)}
           <div class="st-row">
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
@@ -295,16 +317,19 @@ router.post('/api/studio/ask-grownup', requireBuilder, rateLimit('builder-ask', 
 router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), async (req, res) => {
   const t = req.t;
   const key = String((req.body || {}).template || '');
-  if (key && !TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
+  // A 3D world card: the Kit 2 starter in that world (the world must be a shipped one; the hero is the world's first).
+  const world = key === 'oomba3d' ? String((req.body || {}).world || '') : '';
+  if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
   if (!req.user.builder_enabled) return res.status(403).json({ error: t('studio.api.buildingOff') });
   if (!key) {
     const g = games.createGame(req.user.id, { title: t('studio.newGameTitle'), icon: '🎮', cover: games.COVERS[Math.floor(Math.random() * games.COVERS.length)] });
     audit(req.user.id, 'game.create', g.id, {});
     return res.json({ ok: true, id: g.id, url: `/studio/${g.id}` });
   }
-  const info = await templateInfo(key);
-  const { html: tpl } = await templateHtml(key);
-  const g = games.createGame(req.user.id, { title: info.title, icon: info.icon, cover: info.cover, category: info.category, description: info.description, players_max: info.players || 1, tags: key });
+  const w = world ? worldById(world) : null, wTitle = w ? t(`studio.worlds.names.${w.id}`) : '';
+  const info = w ? { ...(await templateInfo(key)), title: wTitle, description: '', icon: worldLook(w.id)[0], cover: worldLook(w.id)[1] } : await templateInfo(key);
+  const { html: tpl } = await templateHtml(key, w ? { world: w.id, hero: heroFor(w.id, ''), title: wTitle } : undefined);
+  const g = games.createGame(req.user.id, { title: info.title, icon: info.icon, cover: info.cover, category: info.category, description: info.description, players_max: info.players || 1, tags: w ? `3d,${w.id}` : key });
   const { html: clean } = sanitizeGameHtml(tpl);
   const report = scanVersion(clean);
   games.addVersion(g.id, clean, { notes: t('studio.startedFrom', { title: info.title }), createdBy: req.user.id, safetyStatus: report.status, safetyReport: report });

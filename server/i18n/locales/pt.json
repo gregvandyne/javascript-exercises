@@ -1426,6 +1426,8 @@
     "newGame": "Novo jogo",
     "startFrom": "Comece com um modelo",
     "startFromLabel": "Começar com {title}",
+    "worlds": "Comece em um mundo 3D",
+    "startInLabel": "Começar no mundo 3D {title}",
     "twoPlayers": "2 jogadores",
     "updateWaiting": "Atualização esperando revisão",
     "changed": "Alterado {when}",
@@ -1582,6 +1584,37 @@
         "forest": "Floresta",
         "autumn": "Outono",
         "city": "Cidade"
+      }
+    },
+    "picker": {
+      "label": "Escolha um visual",
+      "worlds": "Mundos 3D",
+      "heroes": "Heróis 3D",
+      "classic": "Clássico"
+    },
+    "worlds": {
+      "names": {
+        "sky-islands": "Ilhas do Céu",
+        "castle-quest": "Missão no Castelo",
+        "spooky-hollow": "Vale Assombrado",
+        "space-base": "Base Espacial",
+        "toy-town": "Cidade de Brinquedo",
+        "medieval-village": "Vila Medieval",
+        "cosy-home": "Casa Aconchegante",
+        "busy-kitchen": "Cozinha Agitada"
+      }
+    },
+    "heroes": {
+      "names": {
+        "knight": "Cavaleiro",
+        "barbarian": "Explorador",
+        "mage": "Mago",
+        "rogue": "Patrulheiro",
+        "rogue-hooded": "Patrulheiro de Capuz",
+        "skelly": "Skelly",
+        "rattles": "Rattles",
+        "bonzo": "Bonzo",
+        "captain-clank": "Capitão Clank"
       }
     },
     "lesson": {
@@ -2357,6 +2390,8 @@
         "seePlans": "Ver planos para mais mensagens do Construtor"
       },
       "themeUse": "Use o tema {name}.",
+      "worldUse": "Faça um jogo 3D no mundo {name}.",
+      "heroUse": "Use o herói 3D {name}.",
       "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}"
     },
     "character": {
