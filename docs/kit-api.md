@@ -484,31 +484,34 @@ Oomba.game({ api: 1, title: CONFIG.title, subtitle: 'sub', strings: WORDS, /* ..
 ```
 
 - Copy the kit tag exactly: `{{KIT_TAG}}`. A pack goes right after it, exactly as listed under the art lists. Load only
-  the packs the game uses, and always `dress` (every 2D game: it fills the world with trees, houses, framing leaves
-  and birds by itself; never add decoration code of your own).
-- Pick the world with a theme (`theme: 'castle'` in CONFIG; what the builder asks for: "a spooky level" is `haunted`,
-  "underwater" is `reef`, "football" is `stadium`), load the packs the art lists give for it right after `dress`, and
-  use its props (the `props` of `Oomba.theme.look`, or by name in the level's legend). A builder's colour wish is a recolour
-  (`theme: { name: 'beach', accent: 'grape' }`), never colour codes. Use `biome` only for a world no theme has.
+  the packs the game uses, and always `dress` (every 2D game: it dresses the world; never add decoration
+  code of your own).
+- Pick the world with a theme (`theme: 'reef'` in CONFIG), load the packs the art lists give for it right after
+  `dress`, and use its props (`Oomba.theme.look`'s `props`, or by name in the legend). A colour wish is a recolour
+  (`theme: { name: 'beach', accent: 'grape' }`), never colour codes. `biome` only for a world no theme has.
+- World and hero fit the idea, never a default: sea `reef`, ice `snow`, dinos `jungle`, sweets `candy`, robots
+  `city`, aliens `space`, dragons `castle`, spooky `haunted`, sport `stadium`; else what fits the hero. `meadow` only
+  for fields and farms; the fox, castle and meadow here are examples.
 - Who is it for? Ideas that sound 12-14 (cyber, neon, esports, skate, parkour, ninja, robot, battle, speedrun, space
   station, haunted, or "cool" / "older" / "not babyish") get `style: 'bold'` and the `style-bold` pack (taller cast,
-  sharper UI, dusk light, its biomes and wear). Everything else stays playful (no `style`). `<div id="game"></div>` comes before the kit tag (the kit needs the page body).
+  sharper UI). Everything else stays playful (no `style`).
 - Use `Oomba.game` for every kind of game: platformers, catchers and runners (`controls: 'platformer:...'`), top-down
   worlds (`'topdown'`), and quiz, card, word, board and party games (`controls: 'none'`, `camera: 'fixed'`, the turns
-  started from `on.start(w)`, your buttons or cards appended to `Oomba.ui.root()`). It brings the title, how-to,
-  countdown, HUD, pause, results, best score, `BRB.gameOver` and the test hooks. Use `Oomba.stage` plus `Oomba.ui` only
+  started from `on.start(w)`, your buttons or cards appended to `Oomba.ui.root()`). It brings every screen, the HUD,
+  `BRB.gameOver` and the test hooks. Use `Oomba.stage` plus `Oomba.ui` only
   when `Oomba.game` truly cannot fit; then call `Oomba.test({state, start})` and `BRB.gameOver({won, score})` yourself.
 - `const CONFIG = { ... }` near the top, **one key per line**, holds what a builder may change: title, hero and cast as
   character specs, theme, lives, times, speeds, item lists. Restyling a character is editing its spec line
-  (`hero: { species: 'fox', colors: { base: 'sky' }, wear: ['wizard-hat'] },`). Long content (questions, words, level
+  (`hero: { species: 'frog', colors: { base: 'sky' }, wear: ['wizard-hat'] },`). Long content (questions, words, level
   rows) goes in its own `const` with one entry per line.
 - Art: the kit's. Characters are specs or species names, things are props, pictures in DOM are
-  `Oomba.art.toCanvas(name)`, symbols are `Oomba.icon(name)`, the world is a theme (or a biome) plus the level's ground. Unless
+  `Oomba.art.toCanvas(name)`, symbols are `Oomba.icon(name)`. Unless
   the builder asks, never draw your own characters, never use emoji as pictures, never add images.
 - The builder's own choices always win: their colours (even a colour code), characters and made-up creatures (a
   "dragon-cat": the closest species recoloured and dressed, called what they call it), an odd world (the closest theme
   recoloured), a plain look, emoji or a font they asked for. Never swap them back to a kit default: these rules and the
-  style check's look suggestions only cover what they did not say.
+  style check's look suggestions only cover what they did not say. Never swap silently: if the kit lacks what they
+  named, say so in your reply (what you made, how to change it).
 - "Me", "my character" or "play as me" is `hero: 'me'`: the character the player designed on their Me page
   (`Oomba.avatar()`); Star Island: `hero: 'me'` too.
 - Colour: hue names (`mint spark coral sky grape peach cocoa stone snow`) and roles (`player friend correct go reward
