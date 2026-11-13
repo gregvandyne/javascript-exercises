@@ -251,7 +251,14 @@
    "text": "Open Kitchen Rush at Clocks and Coins. Tell the time and count the coins.",
    "art": "trophy",
    "img": "nq/kitchen-rush/clocks-and-coins",
-   "alt": "Kitchen Rush on a phone: the kitchen clock at 3 o'clock on the board, and the buttons 12:15, 3:00 and 3:30."
+   "alt": "Kitchen Rush on a phone: the kitchen clock at 3 o'clock on the board, and the buttons 12:15, 3:00 and 3:30.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

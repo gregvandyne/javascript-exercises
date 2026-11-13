@@ -233,6 +233,50 @@
       "state": "ten-and-more"
     },
     {
+      "alt": "Kitchen Rush on a phone: the kitchen clock at 3 o'clock on the board, and the buttons 12:15, 3:00 and 3:30.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "7.2",
+      "commit": "a4488cdd",
+      "concept": "Launchpad 7.2, Clocks and Coins round 1 (What time does the kitchen clock show?): the kitchen clock on the board, the short hand on 3 and the long hand on 12, the chip reading what time?, the buttons 12:15, 3:00 and 3:30, shot at phone width (scripts/nq-shots.js band)",
+      "game": "kitchen-rush",
+      "key": "nq/kitchen-rush/clocks-and-coins",
+      "state": "clocks-and-coins"
+    },
+    {
+      "alt": "Kitchen Rush on a phone: a baguette over a row of six sugar cubes on the kitchen board, and three number buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "7.1",
+      "commit": "a4488cdd",
+      "concept": "Launchpad 7.1, Measure It round 1 (How many sugar cubes long is the baguette?): the kitchen board on the wall over the counters with a baguette over a row of six sugar cubes, the Wizard helper and the empty party table under it, the chip reading ? cubes long, number buttons 6, 7 and 5, shot at phone width (scripts/nq-shots.js band)",
+      "game": "kitchen-rush",
+      "key": "nq/kitchen-rush/measure-it",
+      "state": "measure-it"
+    },
+    {
+      "alt": "Kitchen Rush on a phone: carrots and tomatoes in a muddle over two bins on the kitchen board, and three number buttons.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "7.3",
+      "commit": "a4488cdd",
+      "concept": "Launchpad 7.3, Sort and Chart round 1 (Sort them. How many tomatoes are there?): four carrots and three tomatoes in a muddle on the board over a carrot bin and a tomato bin, the chip reading ? tomatoes, number buttons 7, 4 and 3, shot at phone width (scripts/nq-shots.js band)",
+      "game": "kitchen-rush",
+      "key": "nq/kitchen-rush/sort-and-chart",
+      "state": "sort-and-chart"
+    },
+    {
+      "alt": "Kitchen Rush on a phone: a full tray of ten buns and four more on the kitchen board, and the buttons 5, 14 and 41.",
+      "band": "launchpad",
+      "capturedAt": "2026-11-13",
+      "chapter": "7.4",
+      "commit": "a4488cdd",
+      "concept": "Launchpad 7.4, The Garden Gate round 1 (How many buns are on the trays?): a full tray of ten buns and a tray with four on the board, the chip reading ? buns, number buttons 5, 14 and 41, shot at phone width (scripts/nq-shots.js band)",
+      "game": "kitchen-rush",
+      "key": "nq/kitchen-rush/the-garden-gate",
+      "state": "the-garden-gate"
+    },
+    {
       "alt": "Lily Hop on a phone: a helper on a row of numbered lily pads, a flag on pad 10, and three number buttons.",
       "band": "launchpad",
       "capturedAt": "2026-11-12",

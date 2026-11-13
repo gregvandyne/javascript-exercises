@@ -194,7 +194,14 @@
    "text": "Open Kitchen Rush at The Garden Gate. Cook the feast and open the gate.",
    "art": "trophy",
    "img": "nq/kitchen-rush/the-garden-gate",
-   "alt": "Kitchen Rush on a phone: a full tray of ten buns and four more on the kitchen board, and the buttons 5, 14 and 41."
+   "alt": "Kitchen Rush on a phone: a full tray of ten buns and four more on the kitchen board, and the buttons 5, 14 and 41.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

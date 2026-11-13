@@ -258,7 +258,14 @@
    "text": "Open Kitchen Rush at Sort and Chart. Sort the food and read the graphs.",
    "art": "trophy",
    "img": "nq/kitchen-rush/sort-and-chart",
-   "alt": "Kitchen Rush on a phone: carrots and tomatoes in a muddle over two bins on the kitchen board, and three number buttons."
+   "alt": "Kitchen Rush on a phone: carrots and tomatoes in a muddle over two bins on the kitchen board, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

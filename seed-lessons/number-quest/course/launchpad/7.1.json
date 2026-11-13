@@ -307,7 +307,14 @@
    "text": "Open Kitchen Rush at Measure It. Measure the food six times.",
    "art": "trophy",
    "img": "nq/kitchen-rush/measure-it",
-   "alt": "Kitchen Rush on a phone: a baguette over a row of six sugar cubes on the kitchen board, and three number buttons."
+   "alt": "Kitchen Rush on a phone: a baguette over a row of six sugar cubes on the kitchen board, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [
