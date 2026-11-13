@@ -90,8 +90,9 @@ const TEMPLATE_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), 't
 let templateSrc = null;
 const js = v => JSON.stringify(v).replace(/</g, '\\u003c');
 /**
- * The Kit 2 starter game for one world and character: the literal Kit 2 import map, the world's newest shipped
- * version, its starter layout and the character (the world's first when it has no such character).
+ * The Kit 2 starter game for one world and character: templates/oomba3d.html (the Sky Islands starter, a whole game
+ * by itself) with the literal Kit 2 import map, this world's newest shipped version, its starter layout and sky, and
+ * the character (the world's first when it has no such character) put into its own lines.
  * -> the game document, or null for a world that has not shipped.
  */
 export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '' } = {}) {
@@ -103,16 +104,13 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '' } = {
     `  scenery: [${lay.scenery.map(one).join(', ')}],`, `  plaza: ${lay.plaza},`, `  hex: ${lay.hex},`, `  sea: ${js(lay.sea)},`,
   ].join('\n');
   const name = title || w.name;
-  return templateSrc
-    .replace('<!--KIT2_IMPORT_MAP-->', () => kit2ImportMap())
+  const setLine = (src, key, value) => src.replace(new RegExp(`\\n(  ${key}: )[^\\n]*,\\n`), (m, a) => `\n${a}${value},\n`);
+  let out = templateSrc
+    .replace(/<script type="importmap">[\s\S]*?<\/script>/, () => kit2ImportMap())
     .replace(/<title>[^<]*<\/title>/, () => `<title>${name.replace(/[<>&]/g, '')}</title>`)
-    .replace("title: 'My 3D World',", () => `title: ${js(name).replace(/^"|"$/g, "'").replace(/\\"/g, '"')},`)
-    .replace("world: 'WORLD_ID',", () => `world: '${w.id}',`)
-    .replace("version: 'WORLD_VERSION',", () => `version: '${w.version}',`)
-    .replace("hero: 'HERO_ID',", () => `hero: '${heroFor(w.id, hero)}',`)
-    .replace("time: 'WORLD_TIME',", () => `time: '${lay.time}',`)
-    .replace('  /*LAYOUT*/', () => layout)
-    .replace('WORLD_NAME', () => `${w.name} ${w.version}`);
+    .replace(/\nconst LAYOUT = \{\n[\s\S]*?\n\};\n/, () => `\nconst LAYOUT = {\n${layout}\n};\n`);
+  for (const [key, value] of [['title', `'${name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[<>\n\r]/g, '')}'`], ['world', `'${w.id}'`], ['version', `'${w.version}'`], ['hero', `'${heroFor(w.id, hero)}'`], ['time', `'${lay.time}'`]]) out = setLine(out, key, value);
+  return out;
 }
 
 // ---- The engine choice -------------------------------------------------------------------------------------------
@@ -136,7 +134,7 @@ const at = (o, dotted) => dotted.split('.').reduce((x, k) => (x && typeof x === 
 /** Every site language's names for the worlds and characters, and its chip sentences (read from the locale files). */
 const NAMES = (() => {
   const worlds = new Map(), heroes = new Map(), chips = { world: [], hero: [], classic: [] };
-  const add = (map, name, id) => { const n = norm(name).trim(); if (n.length >= 3 && !map.has(n)) map.set(n, id); };
+  const add = (map, name, id) => { const n = norm(name).trim(); if (n.length >= 2 && !map.has(n)) map.set(n, id); };
   for (const w of KIT2_WORLDS) { add(worlds, w.name, w.id); add(worlds, w.id, w.id); add(worlds, w.id.replace(/-/g, ' '), w.id); }
   for (const c of KIT2_CHARACTERS) { add(heroes, c.name, c.id); add(heroes, c.id, c.id); add(heroes, c.id.replace(/-/g, ' '), c.id); }
   for (const code of CODES) {
@@ -273,7 +271,7 @@ Oomba.game, no Oomba.three, no Three.js shapes for characters. The 3D RULES do n
   of that world's heroes). You get a finished starter: the world's sky and light, a start place, stones to hop along
   with coins, a question with answers to jump to, a goal, the title and results screens, touch and keyboard controls,
   the words in 13 languages and the test hook. In the SAME turn make it theirs with edit_game: CONFIG (title, hero,
-  outfit, time, weather, coins, steps), QUESTIONS (their questions, in the builder's language), the WORDS table (every
+  outfit, time, weather, steps, coinValue, bonus), QUESTIONS (their questions, in the builder's language), the WORDS table (every
   language you change), and LAYOUT or buildWorld() for a different place (more scenery, another landmark, a longer way).
 - To move a Kit 2 game to another world, call start_from_template again with the new world and carry over their title,
   hero, questions and words with edit_game: every world has its own pieces, so LAYOUT must be that world's.

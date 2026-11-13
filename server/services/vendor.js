@@ -158,5 +158,7 @@ export function checkThree(src) {
   const mods = moduleCode(rest);
   if (THREE_ADDON.test(mods) && !kit2) add('three_pin', 'Uses a Three.js add-on (three/addons/...). Add-ons are not available here: build it with Three.js itself.');
   if (BARE_THREE.test(mods) && !pinned) add('three_pin', `Uses Three.js without the import map. Add the exact import map from the 3D rules.`);
+  // Oomba3D (and its physics) resolve only through the Kit 2 import map: without it the game cannot start.
+  if (/\b(?:from|import)\s*["'](?:oomba3d|@dimforge\/rapier3d-compat)["']/.test(mods) && !kit2) add('kit2_pin', 'Uses Oomba3D without the Kit 2 import map. Add the exact import map from the KIT 2 RULES (copy it byte for byte).');
   return issues;
 }

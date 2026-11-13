@@ -1,9 +1,45 @@
-<title>My 3D World</title>
-<!-- The Builder's Kit 2 starter: a 3D game in one of the ready-made worlds (WORLD_NAME), on Oomba3D
+<title>Sky Islands</title>
+<!-- The Builder's Kit 2 starter: a 3D game in one of the ready-made worlds (here Sky Islands), on Oomba3D
      (docs/kit2-api.md). Not on the Oomba Kit. A hero hops along a path of the world's own pieces, collects coins, jumps
      to the right answer of each question and reaches the goal. The Builder makes it theirs: CONFIG, QUESTIONS, WORDS,
-     and LAYOUT / buildWorld() for a different place. The import map is exactly the Kit 2 one (vendor.js). -->
-<!--KIT2_IMPORT_MAP-->
+     and LAYOUT / buildWorld() for a different place. The import map is exactly the Kit 2 one (vendor.js).
+     This file is the Sky Islands starter as it is served; kit2.js kit2Starter() puts in another world (its newest
+     version, its layout, its sky) and hero. tests/unit/builder-kit2.test.js keeps the two in step. -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script>
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
   .screen { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-start; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(20, 20, 20, .28); }
@@ -29,12 +65,12 @@ import { start } from 'oomba3d';
 
 // ---- CONFIG: what a builder is most likely to change, one key per line ------------------------------------------
 const CONFIG = {
-  title: 'My 3D World',
-  world: 'WORLD_ID',
-  version: 'WORLD_VERSION',
-  hero: 'HERO_ID',
+  title: 'Sky Islands',
+  world: 'sky-islands',
+  version: '1.0.1',
+  hero: 'knight',
   outfit: '',
-  time: 'WORLD_TIME',
+  time: 'day',
   weather: 'clear',
   steps: 4,
   coinValue: 1,
@@ -53,7 +89,16 @@ const QUESTIONS = [
 
 // ---- LAYOUT: what this world's starter is made of (piece names from this world's own list, with a scale) ----------
 const LAYOUT = {
-  /*LAYOUT*/
+  ground: { piece: "island-round", scale: 3 },
+  side: { piece: "island-round", scale: 1 },
+  step: { piece: "platform-medium", scale: 1.3 },
+  pad: { piece: "island-round", scale: 0.9 },
+  goal: { piece: "flag", scale: 3 },
+  landmark: { piece: "cloud", scale: 5 },
+  scenery: [{ piece: "grass", scale: 3.5 }, { piece: "grass-small", scale: 3.5 }, { piece: "coin-block", scale: 1.4 }, { piece: "brick", scale: 1.4 }],
+  plaza: 1,
+  hex: false,
+  sea: "#3fa7d6",
 };
 
 // ---- WORDS: everything the player reads, in the 13 site languages -----------------------------------------------

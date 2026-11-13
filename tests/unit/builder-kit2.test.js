@@ -267,6 +267,11 @@ test('a starter for every world: the literal import map, pinned versions, only n
     }
     assert.equal(K.kit2Of(starter(w.id, 'nobody')).hero, K.charactersOf(w.id)[0].id, 'an unknown hero becomes the world\'s first');
   }
+  // the template file is a whole game by itself (the Sky Islands starter, literal import map and all), kept in step
+  const raw = fs.readFileSync(path.join(ROOT, 'server/builder/templates/oomba3d.html'), 'utf8');
+  assert.ok(raw.includes(V.kit2ImportMap()), 'templates/oomba3d.html carries the literal Kit 2 import map (vendor.js kit2ImportMap())');
+  assert.equal(raw, K.kit2Starter({ world: 'sky-islands', hero: 'knight' }), 'templates/oomba3d.html is the Sky Islands starter as served (newest version, its layout)');
+  assert.equal(scanVersion(raw).status, 'pass');
   assert.throws(() => T.loadTemplate('oomba3d', { world: 'dino-valley' }), /Unknown world/);
   assert.equal(K.kit2Starter({ world: 'dino-valley' }), null);
   // the words a player reads: every site language
@@ -521,7 +526,7 @@ async function openGame(html, { width = 960, height = 600, touch = false, lang =
   const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: touch, isMobile: touch });
   // The production frame: the same document, CSP header and sandbox attribute a player's browser gets.
   const doc = frameDocument(html, { user: { displayName: 'T', avatar: 'x', lang }, game: { id: 'g', title: 'T' }, save: {}, canSave: false });
-  const outer = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe><script>window.__msgs=[];addEventListener('message',e=>{if(e.data&&e.data.type)__msgs.push(e.data.type)});</script>`;
+  const outer = `<!doctype html><meta charset=utf-8><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe><script>window.__msgs=[];addEventListener('message',e=>{if(e.data&&e.data.type)__msgs.push(e.data.type)});</script>`;
   const outside = [], asked = [];
   await ctx.route('**/*', route => {
     const u = route.request().url();
