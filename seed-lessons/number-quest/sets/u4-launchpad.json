@@ -14,21 +14,21 @@
    "topic": "The equals sign",
    "kind": "apply",
    "secs": 25,
-   "q": "Which one is true?",
+   "q": "Is 5 plus 2 the same as 2 plus 5?",
    "choices": [
-    "4 + 3 = 8",
-    "4 + 3 = 7",
-    "7 = 4 + 2",
-    "5 = 5 + 1"
+    "No, the order changed",
+    "Yes, both make 7",
+    "No, it has no answer",
+    "No, 2 is less than 5"
    ],
    "answer": 1,
    "misconceptions": [
-    "counted one too many",
+    "thought the order changes the total",
     "correct",
-    "counted one too few on the right",
-    "added 1 and called it the same"
+    "read the sign as the answer comes next",
+    "compared the first numbers only"
    ],
-   "why": "4 and 3 make 7. Both sides are 7, so 4 + 3 = 7 is true."
+   "why": "5 and 2 make 7. 2 and 5 make 7 too. Both sides are the same."
   },
   {
    "id": "nq-launchpad-4.1-e2",

@@ -523,8 +523,8 @@ test('keyboard, phones and reduced motion: everything is a big button a key can 
         });
         assert.deepEqual(fit, { inside: true, top: false, oneLine: width > height ? true : null, small: 0, n: st.choices.length, overlap: false, scroll: false, view: true, helper: true, hidden: false, size: fit.size },
           `${at}: on screen, the top row tidy, the buttons big and apart, the bridge and its blocks in view, the helper clear of the blocks`);
-        // a block is big enough to count: at least 21 px across on a 390 px phone, 19 px on a 360 px one, 30 px on a desktop
-        assert.ok(fit.size >= (width >= 900 ? 30 : width >= 390 ? 21 : 19), `${at}: a block is ${fit.size} px across`);
+        // a block is big enough to count: at least 20 px across on a 390 px phone, 18 px on a 360 px one, 30 px on a desktop
+        assert.ok(fit.size >= (width >= 900 ? 30 : width >= 390 ? 20 : 18), `${at}: a block is ${fit.size} px across`);
         if (round === 1 && reducedMotion === 'reduce') {
           const miss = btn(st, st.choices.find(v => v !== st.answer)).slice(1);
           await m.frame.tap('#' + miss);

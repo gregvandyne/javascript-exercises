@@ -693,9 +693,9 @@ function dropProps(then) {
 
 /* ---------- the helper ---------- */
 let lineup = [];
-const heroSize = () => (tall ? 0.72 : 0.95);
+const heroSize = () => (tall ? 0.6 : 0.95);
 /** The helper's place on the bank at one end of the bridge (side -1 the left bank, 1 the right). */
-const bankSpot = side => V3(side * (HALF + (tall ? 0.5 : 1.05)), 0, tall ? 0.95 : ZH);
+const bankSpot = side => V3(side * (HALF + (tall ? 0.68 : 1.15)), 0, tall ? 1.1 : ZH);
 function placeHero(side = S.side) { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(bankSpot(side)); h.object.rotation.y = -side * 0.5; }
 let heroBack = 0;
 function heroMove(move, ms = 1500) {
@@ -822,7 +822,7 @@ function redraw() {
   S.held = !found && (Rd.kind === 'true' || Rd.kind === 'parity'); props(S.held);
   drawSides(Rd, found && numeric(Rd) ? Rd.answer : null, first ? 'intro' : '', null, 'green');
   placeHero(S.side);
-  const m = tall ? [S.side < 0 ? 0.95 : 0.12, S.side < 0 ? 0.12 : 0.95] : [1.75, 1.75];
+  const m = tall ? [S.side < 0 ? 1.25 : 0.12, S.side < 0 ? 0.12 : 1.25] : [2.1, 2.1];
   Object.assign(view, { rect: [-HALF - m[0], HALF + m[1], -0.9, tall ? 1.3 : 1.2], high: 3.5, low: tall ? 1.5 : 2.4, tilt: 0 });
   const num = v => button({ id: 'bb-n' + v, big: v, aria: fmt('btn.num', { n: v }), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
   const word = (v, icon) => button({ id: 'bb-' + v, icon, label: fmt('btn.' + v), cls: found && v === Rd.answer ? 'go' : '', go: b => answer(v, b) });
@@ -888,9 +888,10 @@ window.__bb = window.__brbTest = {
   act: (name, arg) => answer(arg),
   /** The helper's place: [x, y, z]. */
   heroAt: () => { if (!S.hero) return null; const p = S.hero.object.getWorldPosition(V3(0, 0, 0)); return [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]; },
-  /** Where things are on the screen (CSS pixels): the two ends of the bridge, and the boxes round the helper, the
+  /** Where things are on the screen (CSS pixels): the two ends of the bridge, and the boxes round the helper (as wide
+   *  as the Wizard's hat), the
    *  blocks of each side and the number boards, for a test that checks everything is in view and nothing is hidden. */
-  spot: () => ({ left: scr(V3(-HALF, 0, 0)), right: scr(V3(HALF, 0, 0)), hero: S.hero ? (() => { const p = S.hero.position, k = S.hero.object.scale.x, a = scr(V3(p.x - 0.6 * k, p.y + 2.1 * k, p.z)), b = scr(V3(p.x + 0.6 * k, p.y, p.z)); return [a[0], a[1], b[0], b[1]].map(n => Math.round(n)); })() : null,
+  spot: () => ({ left: scr(V3(-HALF, 0, 0)), right: scr(V3(HALF, 0, 0)), hero: S.hero ? (() => { const p = S.hero.position, k = S.hero.object.scale.x, a = scr(V3(p.x - 0.95 * k, p.y + 2.1 * k, p.z)), b = scr(V3(p.x + 0.95 * k, p.y, p.z)); return [a[0], a[1], b[0], b[1]].map(n => Math.round(n)); })() : null,
     blocks: screenBox(stage.children.filter(o => !o.userData.label)), labels: screenBox(stage.children.filter(o => o.userData.label)),
     size: (() => { const a = scr(V3(0, 0, ZB)), b = scr(V3(BS, 0, ZB)); return +(b[0] - a[0]).toFixed(1); })() }),
 };
