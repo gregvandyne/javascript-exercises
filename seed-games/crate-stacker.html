@@ -448,7 +448,7 @@ function truck(color, cap) {
   const wheels = [];
   for (const x of [-0.8, L * 0.45, L - 0.55]) for (const z of [-0.48, 0.48]) { const w = wheel(x, 0.3, z); wheels.push(w); o.add(w); }
   const load = new THREE.Group(); body.add(load);
-  const sign = board('', 1.5); sign.position.set(-0.78, 2.12, 0); sign.visible = false; body.add(sign);
+  const sign = board('', 1.5); sign.position.set(-0.78, 3.85, 0); sign.visible = false; body.add(sign);
   o.add(body);
   const T = { object: o, body, load, sign, wheels, cap, L, color, tens: 0, ones: 0, towers: [], crates: [], x0: -1.56, x1: L + 0.1 };
   o.userData.truck = T;
@@ -532,21 +532,28 @@ const town = new THREE.Group(), traffic = [];
   for (let i = -7; i <= 7; i++) town.add(piece(i === -2 || i === 3 ? 'road-crossing' : 'road', i * 6, -0.29, -6.2, 3, Math.PI / 2));
   // a second, taller row far behind, and woods at the ends, so the sky line is a town
   ['building-h', 'building-d', 'building-g', 'building-c', 'building-h', 'building-d'].forEach((id, i) => town.add(piece(id, (i - 2.5) * 11.5, -0.1, -23, 4.6)));
-  for (const [id, x, z, s, turn = 0] of [['trees', -10, -1.2, 2.3], ['tree-round', -4.6, -1.8, 2.4], ['tree', 5.2, -1.6, 2.5], ['trees', 11, -1.3, 2.3, 1], ['bushes', -15.5, -1.5, 2], ['bushes', 16.5, -1.6, 2, 2], ['tree-round', 21, -1.5, 2.8], ['tree', -21, -1.4, 2.8],
+  for (const [id, x, z, s, turn = 0] of [['trees', -13, -1.6, 2.3], ['tree-round', -9.4, -2.2, 2.2], ['tree', 9.6, -2.2, 2.3], ['trees', 13.4, -1.6, 2.3, 1], ['bushes', -17.5, -1.5, 2], ['bushes', 18, -1.6, 2, 2], ['tree-round', 22, -1.5, 2.8], ['tree', -22, -1.4, 2.8], ['bush', -5.5, -2.5, 3], ['bush', 5.8, -2.5, 3],
     ['streetlight', -7.5, -2.9, 2.6], ['streetlight', 0.6, -2.9, 2.6], ['streetlight', 8.2, -2.9, 2.6], ['streetlight', -16, -2.9, 2.6], ['streetlight', 17, -2.9, 2.6], ['fire-hydrant', 2.6, -2.7, 2.6], ['bench', -2.2, -2.6, 3, 0],
-    ['forest-round', -34, -10, 5], ['forest-round', 35, -11, 5, 1], ['trees', -28, -3, 3.2], ['trees', 29, -2.5, 3.2, 2], ['water-tower', -17.2, 0, -18, 5], ['water-tower', 14, 0, -18.5, 5],
+    ['forest-round', -34, -10, 5], ['forest-round', 35, -11, 5, 1], ['trees', -28, -3, 3.2], ['trees', 29, -2.5, 3.2, 2], ['water-tower', -17.2, -18, 5], ['water-tower', 14, -18.5, 5],
     ['tree', -3.1, -9.6, 2.6], ['tree-round', 3.4, -9.6, 2.6], ['tree', 10.2, -9.6, 2.4], ['tree-round', -9.8, -9.6, 2.4], ['bush', 0.2, -9.5, 3.4], ['tree', 16.6, -9.6, 2.6], ['tree-round', -16.4, -9.6, 2.6]])
     town.add(piece(id, x, id === 'tree' || id === 'tree-round' ? 0.2 : 0, z, s, turn));
   // cars on the road: they drive by, turn round at the ends of the street and come back on the other side
   [['car-taxi', -20, 1, 3.4], ['car-wagon', 6, 1, 2.6], ['car-police', 24, -1, 3], ['car-sedan', -4, -1, 3.8]].forEach(([id, x, dir, speed]) => {
     const o = piece(id, x, 0.15, -6.2 + dir * 1.25, 2.3, dir > 0 ? Math.PI / 2 : -Math.PI / 2); town.add(o); traffic.push({ o, dir, speed });
   });
+  // a soft haze in front of the town, so the crates in the yard stand out from the busy street behind them
+  const c = document.createElement('canvas'); c.width = 4; c.height = 64;
+  const x = c.getContext('2d'), gr = x.createLinearGradient(0, 64, 0, 0); gr.addColorStop(0, 'rgba(226,242,255,0)'); gr.addColorStop(0.1, 'rgba(226,242,255,0.5)'); gr.addColorStop(1, 'rgba(226,242,255,0.62)');
+  x.fillStyle = gr; x.fillRect(0, 0, 4, 64);
+  const haze = new THREE.Mesh(new THREE.PlaneGeometry(260, 40), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, fog: false }));
+  haze.position.set(0, 20, -0.4); haze.renderOrder = 1; town.add(haze);
   g.scene.add(town);
 }
 if (!reduced) g.onUpdate(dt => { for (const c of traffic) { c.o.position.x += c.dir * c.speed * dt; if (c.o.position.x * c.dir > 44) c.o.position.x = -44 * c.dir; } });
 
 const stage = new THREE.Group(); g.scene.add(stage);
-function clearStage() { for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); } tweens.length = 0; targets.length = 0; S.A = S.B = S.C = S.mid = null; }
+function clearStage() { if (S.hero) g.scene.add(S.hero.object);   // the helper steps off the truck before the yard is cleared
+  for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); } tweens.length = 0; targets.length = 0; S.A = S.B = S.C = S.mid = null; }
 const put = o => { stage.add(o); return o; };
 /** Stand a truck (or a cart) so that its middle is at cx. */
 const centre = (V, cx, y = 0, z = 0) => { V.object.position.set(cx - (V.x0 + V.x1) / 2, y, z); V.home = V.object.position.x; return V; };
@@ -639,7 +646,9 @@ function heroMove(move, ms = 1500) {
   const h = S.hero; if (!h || reduced) return;
   h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
 }
-function placeHero(x, z, turn = 0.45) { const h = S.hero; if (!h) return; drop(h.object); h.object.scale.setScalar(HS); h.position.set(x, 0, z); h.object.rotation.y = turn; }
+function placeHero(x, z, turn = 0.45) { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.scale.setScalar(HS); h.position.set(x, 0, z); h.object.rotation.y = turn; }
+/** In a round the helper rides on the roof of the truck's cab: always in sight, never in front of the crates. */
+function ride(T) { const h = S.hero; if (!h) return; drop(h.object); T.body.add(h.object); h.object.scale.setScalar(0.78); h.position.set(-0.78, 1.52, 0.05); h.object.rotation.y = 0.25; }
 
 /* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
 function button({ id, label, icon, big, pic, cls, go, aria }) {
@@ -765,8 +774,8 @@ function drawOne(R, found) {
   if (R.kind === 'build') { const n = found ? R.answer : S.count; setLoad(A, tensOf(n), onesOf(n)); setSign(A, R.ask === 'parts' && !found ? '?' : n, found ? 'green' : 'cream'); }
   else { setLoad(A, R.tens, R.ones); setSign(A, found ? R.answer : '?', found ? 'green' : 'cream'); }
   slab(-half - 1.6, half + 1.6, -1.9, 2.8);
-  placeHero(-half + 0.55, 1.5);
-  Object.assign(view, { rect: [-half - 0.2, half + 0.2, -0.6, 2.0], high: TOP + 0.3, low: 2.2, back: tall ? -4.6 : -4.2, tilt: 0 });
+  ride(A);
+  Object.assign(view, { rect: [-half - 0.2, half + 0.2, -0.6, 0.9], high: TOP + 0.3, low: 1.2, back: tall ? -4.6 : -4.2, tilt: 0 });
   if (!S.shown && !found) drive(A, A.home, { from: A.home + 16, dur: 0.8 });
 }
 /** The chip and the truck's sign follow the load as it is built. */
@@ -823,9 +832,9 @@ function drawTwo(R, found) {
     if (R.kind === 'more') targets.push({ at: () => V.object.position.clone().add(V3((V.x0 + V.x1) / 2, 1.5, 0)), r: half * 0.8, go: () => answer(n) });
   }
   if (R.kind === 'sign') { const m = S.mid = put(board(found ? SIGN[R.answer] : '?', 1.5, found ? 'green' : 'gold')); m.position.copy(tall ? V3(half - 0.9, 1.6, -2.4) : V3(0, 2.3, 0.9)); }
-  placeHero(tall ? -half + 0.5 : 0, tall ? 3 : 2.1, tall ? 0.4 : 0);
-  const high = R.view === 'numbers' ? 3.4 : TOP + 0.3;
-  Object.assign(view, tall ? { rect: [-half - 0.2, half + 0.2, -7, 3.4], high: high + 1, low: 2.2, back: -3.4, tilt: 0.62 } : { rect: [-len - 0.95, len + 0.95, -0.6, 2.6], high, low: 2.2, back: -4.2, tilt: 0 });
+  ride(A);
+  const high = R.view === 'numbers' ? 4.5 : TOP + 0.3;
+  Object.assign(view, tall ? { rect: [-half - 0.2, half + 0.2, -7, 2.2], high: high + 1, low: 1.2, back: -3.4, tilt: 0.62 } : { rect: [-len - 0.95, len + 0.95, -0.6, 1.6], high, low: 1.2, back: -4.2, tilt: 0 });
 }
 
 /* ----- chapter 3, a truck and a cart: tens more, ten more and ten less, ones more (they may fill a tower) ----- */
@@ -842,8 +851,8 @@ function drawAdd(R, found) {
     const tag = C.tag = board((R.kind === 'less10' ? '−' : '+') + R.b, 1.25, 'gold'); tag.position.set(C.L / 2, C.top + (tensAdd ? CR * 10 : R.kind === 'ones' ? R.b * CR : 0) + 0.62, 0); C.object.add(tag);
   } else if (R.kind === 'less10') C.object.visible = false;
   slab(-all / 2 - 1.6, all / 2 + 1.6, -1.9, 2.8);
-  placeHero(-all / 2 + 0.55, 1.5);
-  Object.assign(view, { rect: [-all / 2 - 0.2, all / 2 + 0.2, -0.6, 2.0], high: TOP + (tensAdd ? 0.9 : 0.3), low: 2.2, back: tall ? -4.6 : -4.2, tilt: 0 });
+  ride(A);
+  Object.assign(view, { rect: [-all / 2 - 0.2, all / 2 + 0.2, -0.6, 0.9], high: TOP + (tensAdd ? 0.9 : 0.3), low: 1.2, back: tall ? -4.6 : -4.2, tilt: 0 });
   if (!S.shown && !found) drive(C, C.home, { from: C.home + 14, dur: 0.8 });
 }
 /** Move a thing from the cart to its place on the truck (or back): it keeps its place in the world, then hops. */
@@ -916,8 +925,8 @@ window.__cs = window.__brbTest = {
   fast: on => { S.fast = on !== false; },
   hero: id => chooseHero(id || HEROES[0]),
   act: (name, arg) => (name === 'answer' ? answer(arg) : build(name)),
-  /** The helper's place: [x, how far above the ground, z]. */
-  heroAt: () => (S.hero ? [+S.hero.position.x.toFixed(2), +S.hero.position.y.toFixed(2), +S.hero.position.z.toFixed(2)] : null),
+  /** The helper's place in the yard: [x, how far above the ground, z]. */
+  heroAt: () => { if (!S.hero) return null; const p = S.hero.object.getWorldPosition(V3(0, 0, 0)); return [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]; },
   /** Where a truck ('a' or 'b') is on the screen (CSS pixels): the middle of its bed and the top of its load, for a
    *  test that taps the yard itself or checks that the whole load is in view. */
   spot: which => {

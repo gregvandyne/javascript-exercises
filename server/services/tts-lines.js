@@ -47,6 +47,10 @@ export const GAMES = {
   'castle-clash': { title: 'Castle Clash', role: 'narrator', spoken: /./ },
   'code-isle': { title: 'Code Isle', role: 'bright', spoken: /./ },
   'connect-four': { title: 'Drop Four', role: 'friendly', spoken: /./ },
+  // Crate Stacker (Number Quest Launchpad, grade 1): every instruction, hint and answer line is spoken, in the
+  // friendly voice (its VOICES block). What the number chip shows (show.*, where a "?" or a sign may stand), the
+  // button labels (btn.*) and the round counter are shown, never read.
+  'crate-stacker': { title: 'Crate Stacker', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'escape-the-post-office': { title: 'Escape the Post Office', role: 'wise', spoken: /./ },
   'footy-tycoon': { title: 'Footy Tycoon', role: 'narrator', spoken: /./ },
   // Number Quest's game: every line in its block is Tally the cat's, and its VOICES block gives them all the
