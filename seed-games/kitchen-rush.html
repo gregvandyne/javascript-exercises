@@ -391,7 +391,8 @@
       // never offered together)
       var shape = one(r, Object.keys(SHAPES)), pool = Object.keys(SHAPES).filter(function (s) { return s !== shape && !(shape === 'square' && s === 'rectangle') && !(shape === 'rectangle' && s === 'square'); });
       out.kind = 'shape'; out.pic = { shape: shape, thing: SHAPES[shape] };
-      offer(r, out, { v: shape, key: 'btn.' + shape }, shuffle(r, pool).slice(0, 2).map(function (s) { return [{ v: s, key: 'btn.' + s }, [L('g.hint.shape.' + shape)]]; }));
+      pool = shuffle(r, pool); if (pool.slice(0, 2).indexOf('square') >= 0 && pool.slice(0, 2).indexOf('rectangle') >= 0) pool.splice(pool.indexOf('rectangle'), 1);
+      offer(r, out, { v: shape, key: 'btn.' + shape }, pool.slice(0, 2).map(function (s) { return [{ v: s, key: 'btn.' + s }, [L('g.hint.shape.' + shape)]]; }));
       out.ask = L('g.ask.shape'); out.said = [L('g.said.shape.' + shape)]; out.show = L('show.q.shape'); out.shown = L('show.' + shape);
     }
   }

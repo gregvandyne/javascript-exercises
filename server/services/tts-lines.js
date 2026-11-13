@@ -68,7 +68,7 @@ export const GAMES = {
   // Kitchen Rush (Number Quest Launchpad, grades K-2): every instruction, hint and answer line is spoken, in the
   // friendly voice (its VOICES block). What the chip and the board show (show.*), the button labels (btn.*), the
   // chapter names and the round counter are shown, never read.
-  'kitchen-rush': { title: 'Kitchen Rush', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
+  'kitchen-rush': { title: 'Kitchen Rush', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.(?:measure|clock|chart|gate)$)/ },
   // Lily Hop (Number Quest Launchpad, kindergarten to grade 1): every instruction, hint and answer line is spoken, in
   // the friendly voice (its VOICES block). The sums on screen (show.*, where a "?" may stand), the button labels (btn.*)
   // and the round counter are shown, never read.
