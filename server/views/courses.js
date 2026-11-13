@@ -6,6 +6,7 @@ import { coverArt } from './components.js';
 import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
 import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
+import { diagramAlt, uprightSvg, uprightExtent, raySvg } from './nq-diagrams-pro.js';
 
 // CS Quest and Cyber Defenders name their bands '1b' (labelled Explorer) and '2' (labelled Pro). Number Quest's
 // bands are its tiers, stored under their own literal keys: 'launchpad', 'explorer' and 'pro' — so 'pro' here is
@@ -411,6 +412,7 @@ const tTop = (y, size) => y - 0.84 * size, tBot = (y, size) => y + 0.28 * size;
 function visualExtent(v) {
   if (v.type === 'places') return [9, tBot(43, 4.2)];
   if (v.type === 'numberline') {
+    if (v.upright) return uprightExtent(v); // the line stood on end (views/nq-diagrams-pro.js)
     const tallest = Math.max(0, ...(v.stacks || []).map(k => k.n));
     const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 4.2 - 1.6 : 99);
     return [a, tBot(numberlineLabels(v).some(m => m.y > 45) ? 52.3 : 45, 3.6)];
@@ -486,6 +488,8 @@ export function visualSvg(v, f) {
         + tx(x + cw / 2, 23.5, c.d, 11) + tx(x + cw / 2, 35, c.place, 3.6, 'middle', 600)
         + tx(x + cw / 2, 43, c.value, 4.2, 'middle', 800, leaf);
     }).join('');
+  } else if (v.type === 'numberline' && v.upright) {
+    body = raw(uprightSvg(v));
   } else if (v.type === 'numberline') {
     const X = at => 6 + ((at - v.min) / (v.max - v.min)) * 88;
     const mlabels = numberlineLabels(v);
@@ -502,6 +506,7 @@ export function visualSvg(v, f) {
         const cx = X(k.at), cy = 31.2 - j * 4.2, d = 1.7; // an X 3.4 units tall: 11 px on a 390 px phone
         return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="1" stroke-linecap="round"/>`);
       }).join('')).join('')
+      + (v.ray ? raw(raySvg(v, X)) : '') // an inequality's ray and its open or closed circle
       + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');
   } else if (v.type === 'bars' || v.type === 'fraction') {
@@ -568,7 +573,9 @@ export function visualSvg(v, f) {
   }
   else if (v.type === 'shapes') body = shapesBody(v, tx, ink);
   else if (DIAGRAM_TYPES.has(v.type)) body = raw(diagramSvg(v));
-  return raw(`<svg class="vf-svg" viewBox="0 ${f.y0} 100 ${f.fh}" role="img" aria-label="${String(v.label || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
+  // The picture's accessible name: the author's label, then (for the Pro pack's diagrams) the drawing's own data in words.
+  const said = diagramAlt(v), name = said ? `${String(v.label || '').replace(/[.:;,\s]+$/, '')}. ${said}` : String(v.label || '');
+  return raw(`<svg class="vf-svg" viewBox="0 ${f.y0} 100 ${f.fh}" role="img" aria-label="${name.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
 }
 /** A shapes diagram's one name size: the longest name sets it (one text size per row). */
 function shapeNameFs(v) {

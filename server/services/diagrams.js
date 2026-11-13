@@ -1,15 +1,19 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder', 'fix', 'counters']);
+// The Pro pack's types (plane, double, boxplot, angles, righttriangle, net, flow) are cleaned in services/diagrams-pro.js.
+import { PRO_DIAGRAM_TYPES, cleanProDiagram, fmt } from './diagrams-pro.js';
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder', 'fix', 'counters', ...PRO_DIAGRAM_TYPES]);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
-const txt = (x, max) => (typeof x === 'number' && Number.isFinite(x) ? String(x) : str(x, max));
+// (a negative number given as a number prints with the minus sign the decks use, U+2212, never a hyphen)
+const txt = (x, max) => (typeof x === 'number' && Number.isFinite(x) ? (x < 0 ? fmt(x) : String(x)) : str(x, max));
 
 /** One cleaned diagram ({ type, label, ...its data }) or null. `label` is the already-cleaned alt label. */
 export function cleanDiagram(v, label) {
   if (!label || !v || typeof v !== 'object') return null;
+  if (PRO_DIAGRAM_TYPES.includes(v.type)) return cleanProDiagram(v, label);
   if (v.type === 'grid') {
     if (!int(v.cols, 2, 8) || !int(v.rows, 2, 6)) return null;
     const p = v.point;
@@ -34,9 +38,12 @@ export function cleanDiagram(v, label) {
   }
   if (v.type === 'chart') {
     if (!int(v.max, 1, 1000) || !int(v.step, 1, v.max) || v.max % v.step || v.max / v.step > 10) return null;
-    if (!Array.isArray(v.bars) || v.bars.length < 2 || v.bars.length > 5) return null;
+    // `touch` (Pro): a histogram. Its bars touch (each is a range of numbers, with no gap to the next), there may be
+    // six of them, and they share one tone unless a bar names its own.
+    if (v.touch != null && typeof v.touch !== 'boolean') return null;
+    if (!Array.isArray(v.bars) || v.bars.length < 2 || v.bars.length > (v.touch ? 6 : 5)) return null;
     if (!v.bars.every(b => b && str(b.label, 10) && typeof b.value === 'number' && b.value >= 0 && b.value <= v.max && (b.tone == null || int(b.tone, 0, 3)))) return null;
-    return { type: 'chart', label, max: v.max, step: v.step, ...(str(v.unit, 20) ? { unit: str(v.unit, 20) } : {}),
+    return { type: 'chart', label, max: v.max, step: v.step, ...(v.touch ? { touch: true } : {}), ...(str(v.unit, 20) ? { unit: str(v.unit, 20) } : {}),
       bars: v.bars.map(b => ({ label: str(b.label, 10), value: b.value, ...(b.tone != null ? { tone: b.tone } : {}) })) };
   }
   if (v.type === 'table') {

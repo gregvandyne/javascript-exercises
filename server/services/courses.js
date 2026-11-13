@@ -31,6 +31,7 @@ import { onAccountMerge } from './schools.js';
 
 import { COURSES, courseOfSlug } from './course-catalog.js';
 import { DIAGRAM_TYPES, cleanDiagram } from './diagrams.js';
+import { numberlineOptions } from './diagrams-pro.js';
 import * as NQT from './number-quest-tiers.js';
 export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
@@ -221,16 +222,22 @@ export function cleanSlide(s) {
         && v.cols.every(c => c && str(c.d, 2) && str(c.place, 12) && str(c.value, 8))) {
         vis = { type: 'places', label, cols: v.cols.map(c => ({ d: str(c.d, 2), place: str(c.place, 12), value: str(c.value, 8) })) };
       } else if (v.type === 'numberline' && num(v.min) && num(v.max) && v.min < v.max
-        && Array.isArray(v.marks) && v.marks.length <= 6 && v.marks.every(m => m && num(m.at) && m.at >= v.min && m.at <= v.max && str(m.label, 6))
+        // up to 11 marks (a line from -5 to 5, or a dot plot from 0 to 10, names every whole number)
+        && Array.isArray(v.marks) && v.marks.length <= 11 && v.marks.every(m => m && num(m.at) && m.at >= v.min && m.at <= v.max && str(m.label, 6))
         && (v.point == null || (num(v.point.at) && v.point.at >= v.min && v.point.at <= v.max && str(v.point.label, 6)))
-        && (v.hops == null || (Array.isArray(v.hops) && v.hops.length <= 3 && v.hops.every(h => h && num(h.from) && num(h.to) && h.from >= v.min && h.to <= v.max && str(h.label, 8))))
-        && (v.stacks == null || (Array.isArray(v.stacks) && v.stacks.length <= 12 && v.stacks.every(k => k && num(k.at) && k.at >= v.min && k.at <= v.max && Number.isInteger(k.n) && k.n >= 1 && k.n <= 6)))) {
+        // a hop starts and lands on the line, either way along it (a hop back is a subtraction, or a step below zero)
+        && (v.hops == null || (Array.isArray(v.hops) && v.hops.length <= 3 && v.hops.every(h => h && num(h.from) && num(h.to) && Math.min(h.from, h.to) >= v.min && Math.max(h.from, h.to) <= v.max && h.from !== h.to && str(h.label, 8))))
+        && (v.stacks == null || (Array.isArray(v.stacks) && v.stacks.length <= 12 && v.stacks.every(k => k && num(k.at) && k.at >= v.min && k.at <= v.max && Number.isInteger(k.n) && k.n >= 1 && k.n <= 6)))
+        && numberlineOptions(v)) {
+        // (the Pro pack's options, services/diagrams-pro.js: `upright`, `tube` and `ray`)
         vis = { type: 'numberline', label, min: v.min, max: v.max, marks: v.marks.map(m => ({ at: m.at, label: str(m.label, 6) })),
           ...(v.point ? { point: { at: v.point.at, label: str(v.point.label, 6) } } : {}),
           ...(v.hops ? { hops: v.hops.map(h => ({ from: h.from, to: h.to, label: str(h.label, 8) })) } : {}),
-          ...(v.stacks ? { stacks: v.stacks.map(k => ({ at: k.at, n: k.n })) } : {}) };
+          ...(v.stacks ? { stacks: v.stacks.map(k => ({ at: k.at, n: k.n })) } : {}),
+          ...numberlineOptions(v) };
       } else if (v.type === 'bars' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
-        && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 4
+        // (up to 10 parts a row: a tape diagram of a ratio such as 3 : 7, or a percent bar in tenths)
+        && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 10
           && r.parts.every(p => p && num(p.w) && p.w > 0 && p.w <= 1 && (p.tone == null || (Number.isInteger(p.tone) && p.tone >= -1 && p.tone <= 3)))
           && r.parts.reduce((sum, p) => sum + p.w, 0) <= 1.02)) {
         vis = { type: 'bars', label, ...(v.half ? { half: true } : {}), ...(v.big ? { big: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
