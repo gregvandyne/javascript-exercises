@@ -18,7 +18,8 @@
 //   fix     a Jumble beat: the Jumble's wrong answer on its card, crossed out, an arrow, then the trick that fixes it,
 //           step by step, down to the right answer (3.3, 4.3, 5.3, 6.3, 7.3);
 //   counters counters to count and match (Launchpad 1.1-1.3): one group in rows of ten, numbered where `count` is set; two
-//           rows one under the other, matched one to one; or a ten-frame with the ones left over beside it.
+//           rows one under the other, matched one to one; or a ten-frame with the ones left over beside it; or
+//           (Unit 3, `tens`) a two-digit number as sticks of ten and loose ones, alone or two side by side.
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
@@ -356,9 +357,43 @@ const fixExtent = v => [FX.top - 9, fixGeo(v).bottom];
  *  `count` writes each counter's number on it (1, 2, 3...), so the last number is the size of the group.
  *  `split` (Launchpad Unit 2, a single group of 2-10): the first `split` counters, a gap, then the rest in the next tone,
  *  each part's size under it (5 is 3 and 2); with `away` the second part is drawn as dashed outlines (they went away). In
- *  a ten-frame, `split` only changes the tone of the counters after the first part (8 and 2 make 10). */
+ *  a ten-frame, `split` only changes the tone of the counters after the first part (8 and 2 make 10).
+ *  `tens` (Launchpad Unit 3, a number from 10 to 99): its tens as sticks of ten small blocks and its ones as loose
+ *  blocks beside them (two columns of up to five, from the bottom). One number sits in the middle with "3 tens" and
+ *  "4 ones" under its two parts; two numbers sit side by side, each with its numeral under it. */
+function tensGeo(v) {
+  const two = v.groups.length === 2, top = 13, c = two ? 2 : 2.6, sw = two ? 2.6 : 3.6, pitch = two ? 3.6 : 5.2, ou = two ? 2.5 : 3.3, og = two ? 2.8 : 4, h = 10 * c;
+  const parts = v.groups.map((q, k) => {
+    const t = Math.floor(q.n / 10), o = q.n % 10, tw = t * pitch - (pitch - sw), ow = o ? (o > 5 ? 2 : 1) * ou + (o > 5 ? 0.5 : 0) : 0, w = tw + (o ? og + ow : 0);
+    const x0 = (two ? (k ? 74 : 26) : 50) - w / 2;
+    return { n: q.n, t, o, x0, tw, ox: x0 + tw + og, ow, w };
+  });
+  return { mode: 'tens', two, top, c, sw, pitch, ou, h, parts, bottom: tBot(top + h + (two ? 7.2 : 6), two ? 6 : 4.6) };
+}
+function tensSvg(v, g) {
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  for (const p of g.parts) {
+    for (let i = 0; i < p.t; i++) {
+      const x = r2(p.x0 + i * g.pitch);
+      s += `<rect x="${x}" y="${g.top}" width="${g.sw}" height="${g.h}" fill="${TONES[2]}" stroke="${INK}" stroke-width="0.45"/>`;
+      for (let j = 1; j < 10; j++) s += `<line x1="${x}" y1="${r2(g.top + j * g.c)}" x2="${r2(x + g.sw)}" y2="${r2(g.top + j * g.c)}" stroke="${INK}" stroke-width="0.3"/>`;
+    }
+    for (let j = 0; j < p.o; j++) s += `<rect x="${r2(p.ox + Math.floor(j / 5) * (g.ou + 0.5))}" y="${r2(g.top + g.h - (j % 5 + 1) * (g.ou + 0.5) + 0.5)}" width="${g.ou}" height="${g.ou}" fill="${TONES[3]}" stroke="${INK}" stroke-width="0.45"/>`;
+    if (g.two) s += tx(p.x0 + p.w / 2, g.top + g.h + 7.2, p.n, 6, 'middle', 800, LEAF);
+    else {
+      // the two names under their parts, moved apart where the parts are too narrow for the words to clear each other
+      const tn = p.t === 1 ? '1 ten' : `${p.t} tens`, on = p.o === 1 ? '1 one' : `${p.o} ones`, need = (tn.length + on.length) * 2.53 / 2 + 2;
+      let ct = p.x0 + p.tw / 2, co = p.ox + p.ow / 2;
+      if (p.o && co - ct < need) { const mid = (ct + co) / 2; ct = mid - need / 2; co = mid + need / 2; }
+      s += tx(ct, g.top + g.h + 6, tn, 4.6, 'middle', 800, LEAF);
+      if (p.o) s += tx(co, g.top + g.h + 6, on, 4.6, 'middle', 800, LEAF);
+    }
+  }
+  return s;
+}
 function countersGeo(v) {
   const gs = v.groups, top = 13;
+  if (gs[0].tens) return tensGeo(v);
   if (gs.length === 2) {
     const u = 7, x0 = r2(50 - (18 + Math.max(...gs.map(q => q.n)) * u) / 2 + 18); // the name gutter (16) and the rows, centred together
     return { mode: 'match', u, top, rows: gs.map((q, k) => ({ q, y: top + k * 14, x0 })), bottom: top + 14 + u };
@@ -372,7 +407,9 @@ function countersGeo(v) {
   return { mode: 'line', u, top, q, x0, rows, gap, bottom: q.split ? tBot(top + u + 6, 4.6) : q.name ? tBot(top + rows * u + 5.5, 4.2) : top + rows * u };
 }
 function countersSvg(v) {
-  const g = countersGeo(v), r = r2(g.u * 0.36);
+  const g = countersGeo(v);
+  if (g.mode === 'tens') return tensSvg(v, g);
+  const r = r2(g.u * 0.36);
   const dot = (cx, cy, tone, num, gone) => (gone ? `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.45" stroke-dasharray="1.2 0.9"/>`
     : `<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="${TONES[tone % TONES.length]}" stroke="${INK}" stroke-width="0.45"/>`) + (num ? tx(cx, cy + 1.2, num, 3.4, 'middle', 800) : '');
   let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
