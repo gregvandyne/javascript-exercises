@@ -38,9 +38,10 @@ end of this file.
 
 - **Explorer Units 5–7 + finale** statement lock (MD.A/B/C, G.A/B, 5.G/5.MD depth) — Phase 3.
   Unit 1–4 steps may seed those clusters only as cluster-level `buildsToward` (e.g. `3.MD.C`).
-- **Launchpad tier** statement lock and audio item-form lock — Phase 2. (Placement rung
-  *content* K.0–2.5 is already locked in `placement.json`, because an Explorer-seeded
-  staircase can walk down into it.)
+- ~~**Launchpad tier** statement lock~~ — landed unit by unit (2026-11-12 and 2026-11-13,
+  `standards.json` `launchpadCodes`), and the tier opened on 2026-11-13 (see "Launchpad opens" at
+  the end of this file). Still owed: a purpose-built K–2 placement item form (the game plays its
+  short audio-first form over the locked K.0–2.5 rungs meanwhile).
 - **Pro tier** statement lock, placement rungs 6.0–8.0 — Phase 3/4. Bridges stay flagged:
   8.F and 8.NS are builds-toward, 8.SP partial (spec §2.5 notes 7, 9, 10).
 
@@ -158,16 +159,16 @@ slide with exactly 3 words (each meaning 6-80 chars, at most 12 words), the miss
 carries 1-4 focus steps with cues of at most 12 words; exit `q` at most 90 chars, 4 distinct choices of at
 most 24 chars, `why` 20-160 chars; deck `minutes` 3-8.
 
-**Opening a tier.** `tiers.<tier>.status` is `"building"` or `"open"`. While building, the tier's steps,
+**Opening a tier.** Launchpad has been `"open"` since 2026-11-13; Pro has no units yet. `tiers.<tier>.status` is `"building"` or `"open"`. While building, the tier's steps,
 band, street and teacher-page rows exist for the platform admin only; for everyone else the tier does not
 exist. Set it to `"open"` and the street switcher, the band card, the teacher page and placement all pick
 it up. A tier with no units does not exist at all, whatever its status.
 
 **Placement.** `placement.json` `crosswalk.entryProfiles` is keyed by a unit's door,
 `"<tier>-<unit>.1"`: `{ "Number": rung, "Algebra & Patterns": rung, "Shape & Measure": rung, "Data & Chance": rung }`.
-A learner with any rung under 2.5 walks the Launchpad profiles once Launchpad is open and has at least one
-(under the first profile: the tier's first step; else the first unit whose profile is not met; all met: the
-Explorer welcome). Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open.
+A learner with any rung under 2.5 walks the Launchpad profiles (locked 2026-11-13, one per unit; under the
+first profile: the tier's first step; else the first unit whose profile is not met; all met: the Explorer
+welcome). A profile that is met moves the walk past its unit, exactly as on the Explorer street. Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open.
 The same profiles drive each unit's test-out.
 
 **Game lesson modes.** Brain Board and Quest Race read the step from `mode`: `nq-<unit>-<step>` is the
@@ -417,3 +418,68 @@ steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
 **Stone.** The unit's stamp is the Measuring Seed (`tiers.launchpad.stones`). **Teacher notes** (four) say what the unit covers, the
 "read the number at the end" misconception (and swapped clock hands, and coins counted instead of valued), how the game checks each idea
 by doing, and what the finale is. Launchpad stays `status: "building"`.
+
+## Launchpad opens (2026-11-13)
+
+`units.json` `tiers.launchpad.status` is `"open"`: the Launchpad street (kindergarten to grade 2, the welcome,
+Units 1–7 and the Garden Gate finale, 23 steps) is there for everyone, beside Explorer. Pro still has no units,
+so it exists for nobody. The per-unit sections above are the build log and keep their "tier still `building`"
+headings as history.
+
+**Placement.** `placement.json` `crosswalk.entryProfiles` gains `launchpad-1.1` … `launchpad-7.1`; the evidence
+for each is written beside them in `crosswalk.launchpadProfiles`. Rungs as Number / Algebra & Patterns /
+Shape & Measure / Data & Chance:
+
+| Door | Profile | What the unit teaches, and the rung that samples it |
+|---|---|---|
+| `launchpad-1.1` The Counting Patch | 0.5 / 0 / 0 / 0 | K.CC.A/B/C, K.NBT.A: Number K.5 |
+| `launchpad-2.1` The Joining Pond | 0.5 / 1.0 / 0 / 0 | K.OA.A, then facts to 20: Algebra 1.0 (1.OA.A/B within 20) |
+| `launchpad-3.1` The Tens Trellis | 1.5 / 1.0 / 0 / 0 | 1.NBT.A/B/C: Number 1.5 |
+| `launchpad-4.1` The Balance Bridge | 1.5 / 2.0 / 0 / 0 | 1.OA.D, 1.OA.A, 2.OA.A: Algebra 2.0 (its last step, 2.OA.C, sits at 2.5, Explorer's line, and is not asked) |
+| `launchpad-5.1` The Hundreds Hedge | 2.5 / 2.0 / 0 / 0 | 2.NBT.A/B: Number 2.5 |
+| `launchpad-6.1` The Shape Shed | 2.5 / 2.0 / 2.0 / 0 | K.G, 1.G.A, 2.G.A: Shape & Measure 2.0 |
+| `launchpad-7.1` The Measuring Meadow | 2.5 / 2.0 / 2.5 / 2.0 | 1.MD.A/B, 2.MD.A/C: Shape & Measure 2.5; K.MD.B, 1.MD.C, 2.MD.D: Data & Chance 2.0 |
+
+How a start is chosen now (`server/services/number-quest-placement.js` `crosswalk`, `beginningNode`):
+
+1. **Just Play** with a named grade: K–2 starts at `launchpad-0.1` (Meet Tally in the Gardens), 3–5 at
+   `explorer-1.1`, 6–8 at `explorer-7.1` (until Pro exists).
+2. **The Sorting Game.** A named grade of K–2 plays the short form (Number, Shape & Measure, Data & Chance, at
+   most four questions each, every item audio-first; the Number rung stands in for Algebra). Grades 3–8 play
+   the standard form. If any placed rung is under 2.5 the Launchpad doors are walked in order: nothing met →
+   `launchpad-0.1`; else the door of the first unit whose profile is not fully met; all seven met →
+   `explorer-0.1`. With every rung at or over 2.5, Explorer's walk is unchanged.
+3. **The Launchpad finale is never a start.** A learner who meets every Launchpad profile starts at the
+   Explorer welcome; the Garden Gate (`launchpad-7.4`) is a review door a learner walks to. (Explorer's finale
+   is still where a run that meets every Explorer profile lands, as before.) A grown-up may still choose any
+   door, the Garden Gate included, with the override.
+4. On the short form `launchpad-1.1` is not a landing the game picks: a run with nothing settled starts at the
+   welcome (one step before it), and a run with Number K.5 has met Unit 1 and starts at Unit 2.
+
+**Existing learners are not moved.** Opening the tier writes nothing: no migration, no backfill, no new column.
+A learner's band, progress, stones, laps, marks, test-outs and stored start are exactly what they were. A
+learner who was placed at the Explorer welcome with the gap flagged (a rung under 2.5 before the gardens
+opened) stays there; their Starting Point note now says where the same answers would start them today and
+that nothing has been moved (`launchpadNoteLine`). A start changes only by a retake the learner confirms or by
+a grown-up's override. The Launchpad street is open behind every Explorer-placed learner, and the street
+switcher on the path moves between the two streets without touching either street's progress.
+
+**The path.** With two streets, a brand-new learner sees both street cards (and the Sorting Game invitation);
+until they choose or are placed, the street drawn is Explorer, the course's default. A street walked to its
+end shows "You walked the whole Launchpad street!" with the way on to the next open street
+(`views/number-quest-path.js`, `#nqp-onward`).
+
+**Copy.** The teacher page's counts (steps, units, streets, games, the grade range, the game list) come from
+the catalogue the reader may see (`routes/number-quest.js` `nqFacts`), so they follow the data. The seven
+Launchpad games are in the page's game list with a short description each (`teachers.nq.crew.*`).
+
+**Still owed: a proper K–2 placement check.** The game uses what exists: the grade the learner names and the
+bank's K.0–2.5 rungs. What a purpose-built check would need: items a non-reader can answer alone (every prompt
+spoken by a recorded or AI voice in the learner's language, picture or tap answers only, no typed answers);
+hands-on forms for each strand (count out, build on a ten-frame, sort, match shapes, compare lengths); more
+than the bank's three or four templates a rung so a retake does not repeat; an Algebra staircase of its own
+(the short form folds it into Number, so Units 2 and 4 are placed from the Number rung); enough questions to
+settle a rung without tiring a five-year-old, or a second short sitting; a floor rule (today a run that
+misses everything places half a rung under the lowest rung it reached, not at the bottom, when it runs out of
+questions); and profiles re-fitted from real item data once there is some. Guarded by
+`tests/unit/number-quest-launchpad-open.test.js`.

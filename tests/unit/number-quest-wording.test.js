@@ -63,4 +63,5 @@ test('the course page teacher note maps every built unit', () => {
   const en = JSON.parse(read('server/i18n/locales/en.json'));
   const find = o => (o && typeof o === 'object' ? (o.nq && o.nq.teachers) || Object.values(o).map(find).find(Boolean) : null);
   assert.match(find(en), /Units 1–7 and the Vault of Measures finale/);
+  assert.match(find(en), /Launchpad Units 1–7 and the Garden Gate finale/, 'the Launchpad street is built and open too (2026-11-13)');
 });

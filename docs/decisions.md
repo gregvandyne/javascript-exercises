@@ -4712,6 +4712,39 @@ course now reads its tiers from its catalogue, so Launchpad (K-2) and Pro (6-8) 
   `tests/unit/number-quest-launchpad-decks.test.js`. The contract for adding a unit is in
   `seed-lessons/number-quest/README.md`.
 
+## Number Quest: Launchpad opens (13 Nov 2026)
+
+All seven Launchpad units and the Garden Gate finale are built, so `tiers.launchpad.status` in
+`seed-lessons/number-quest/units.json` is now `open`: the K-2 street is there for everyone. Pro still has no
+units and exists for nobody.
+
+- **Placement walks the gardens.** `placement.json` gains an entry profile for each Launchpad unit door
+  (`launchpad-1.1` to `launchpad-7.1`), each asking the rung whose locked clusters sample what the unit
+  teaches (the table and the evidence are in `seed-lessons/number-quest/README.md` and in
+  `crosswalk.launchpadProfiles`). A run with any rung under 2.5 starts at the first garden whose profile is
+  not fully met (the Launchpad welcome when nothing is settled), instead of at the Explorer welcome with a
+  gap flagged. The engine was already written for this (#311); only data changed.
+- **Meeting every Launchpad profile starts at the Explorer welcome, not the Launchpad finale.** The Garden
+  Gate is a review a learner walks to. This is the opposite of Explorer's finale, where a run that meets
+  every profile lands, because there the street has nothing after it; Launchpad has Explorer after it.
+- **Just Play with a grade of K, 1 or 2 starts at the Launchpad welcome** (`launchpad-0.1`), the first step
+  of the tier that matches the grade, as `beginningNode` always said it would once the tier opened.
+- **Nobody is moved.** Opening writes nothing: no migration, no backfill. Existing Explorer learners keep
+  their band, progress, stones, laps, marks and stored start. A learner placed at the Explorer welcome under
+  the old gap rule stays there; the grown-up note says where the same answers would start today and that
+  nothing has moved. A start changes only by a retake the learner confirms or a grown-up's override.
+- **No new assessment was invented.** K-2 learners are told apart by the grade they name (which picks the
+  short audio-first form) and the bank's existing K.0-2.5 rungs. What a purpose-built K-2 check would need is
+  listed in the README; until then the profiles are curriculum-order judgements, like every rung.
+- **Counts on the teacher page come from the catalogue** (steps, units, streets, games, grades), so the copy
+  cannot drift from the data again. The Learn tab lists the course as K-5, and Kitchen Rush as K-2 (its
+  sorting chapter carries K.MD.B.3; the shelf's grades are the lowest to the highest grade a game covers).
+- **A finished street leads on.** The path page offers the next open street when every step of the one on
+  screen is done.
+- **Known and left alone:** a run that misses every question places half a rung under the lowest rung it
+  reached, so a grade 4 learner with nothing right starts at Launchpad Unit 3, not at the welcome (the
+  soft-landing rule and the override are the remedies today). Legal pages were not edited.
+
 ## Builder games may react to how loud the room is (13 Nov 2026)
 
 The owner asked for Builder games that use the microphone (a kid's "noise spooks the animals" idea was refused). Builder
