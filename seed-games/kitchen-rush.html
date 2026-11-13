@@ -787,10 +787,11 @@ const room = new THREE.Group(), props = new THREE.Group(), feast = new THREE.Gro
 }
 // On a tall screen the board hangs higher, over a run of counters, so the kitchen shows in the narrow view; on a wide
 // one the board comes down to the floor between the sink and the cooker, and these counters step aside.
-const under = new THREE.Group();
-for (const [id, x, y, z, s = 1, turn = 0] of [['counter', -1.16, 0, -2.85, 1.15], ['counter', 1.16, 0, -2.85, 1.15], ['pan', -1.5, 1.15, -2.8, 0.8, 0.5], ['jar', -0.6, 1.15, -3.0, 1.0], ['bowl', 1.2, 1.15, -2.8, 1.0], ['tomato', 1.2, 1.27, -2.8, 0.5], ['ketchup', 1.9, 1.15, -3.0, 1.0],
+const under = new THREE.Group(), tops = new THREE.Group();   // `tops`: what stands on those counters, put away when the board hangs low (a short screen)
+for (const [id, x, y, z, s = 1, turn = 0] of [['counter', -1.16, 0, -2.85, 1.15], ['counter', 1.16, 0, -2.85, 1.15], ['pan', -1.5, 1.15, -2.6, 0.8, 0.5],
   ['cupboard', -1.12, 4.95, -3.4, 1.1], ['cupboard', 1.12, 4.95, -3.4, 1.1]]) under.add(piece(id, x, y, z, s, turn));
-props.add(under);
+for (const [id, x, y, z, s = 1] of [['jar', -0.6, 1.15, -2.8, 1.0], ['bowl', 1.2, 1.15, -2.7, 1.0], ['tomato', 1.2, 1.27, -2.7, 0.5], ['ketchup', 1.9, 1.15, -2.8, 1.0]]) tops.add(piece(id, x, y, z, s));
+under.add(tops); props.add(under);
 // The party table (where each finished round's dish goes) moves with the screen's shape, so it is its own group.
 const table = piece('kitchen-table', 0, 0, 0, 1); props.add(table);
 const DISHES = ['burger', 'stew', 'dinner', 'veggie-burger', 'cheese', 'lettuce'];   // one for each finished round
@@ -809,7 +810,7 @@ const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SR
 const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
 board.renderOrder = 2;
 /** The board's size and place for the screen's shape: beside the helper on a wide screen, over the helper on a tall one. */
-function sizeBoard() { under.visible = tall; BW = tall ? 4.0 : 4.8; BH = BW * 0.75; BOARD.y = tall ? 3.12 : 2.2; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH]; }
+function sizeBoard() { under.visible = tall; tops.visible = !squat(); BW = tall ? 4.0 : 4.8; BH = BW * 0.75; BOARD.y = squat() ? 2.92 : tall ? 3.12 : 2.2; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH]; }
 /** The smallest words and numbers a child must read on the board, in board pixels (the test turns it into screen pixels). */
 let smallest = 999;
 function text(s, px, py, size, o = {}) {
@@ -1243,13 +1244,16 @@ g.onUpdate(dt => {
 /* ---------- where things go, and the camera ---------- */
 const portrait = () => innerWidth < innerHeight * 0.9;
 let tall = portrait();
-const heroSize = () => (tall ? 0.7 : 0.92);
+/** A tall screen that is not very tall (a small phone, or a phone with the browser's bars showing): the helper and the
+ *  party table are smaller and tucked in under the board, so the board keeps the whole width. */
+const squat = () => tall && innerHeight < innerWidth * 1.95;
+const heroSize = () => (squat() ? 0.5 : tall ? 0.7 : 0.92);
 /** The helper's place: beside the board on a wide screen, under it on a tall one. */
-const heroSpot = () => (tall ? V3(-1.12, 0, -0.5) : V3(-3.55, 0, -1.3));
+const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -1.2 : -0.5) : V3(-3.55, 0, -1.3));
 const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];   // as wide as the Wizard's hat
 /** The party table: on the other side of the board from the helper, or beside the helper (under the board) on a tall screen. */
-const tableSize = () => (tall ? 0.56 : 0.8);
-const tableSpot = () => (tall ? V3(0.98, 0, -0.5) : V3(3.85, 0, -1.2));
+const tableSize = () => (squat() ? 0.44 : tall ? 0.56 : 0.8);
+const tableSpot = () => (tall ? V3(0.98, 0, squat() ? -1.2 : -0.5) : V3(3.85, 0, -1.2));
 function placeTable() {
   const k = tableSize(), at = tableSpot(); table.scale.setScalar(k); table.position.copy(at);
   feast.children.forEach(o => { const i = o.userData.dish; o.scale.setScalar(k * DISH_K[DISHES[i]]); o.position.copy(dishSpot(i)); });
@@ -1269,7 +1273,7 @@ function frame() {
   if (!g || !view.pts.length) return;
   const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
   const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
-  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
   const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
   const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
   if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
@@ -1291,7 +1295,8 @@ function frame() {
   for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
   fits(far);
 }
-addEventListener('resize', () => { const t = portrait(); if (t !== tall) { tall = t; redraw(); } frame(); });
+let wasSquat = squat();
+addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
 
 /* ---------- tapping a helper in the kitchen: the nearest one under the finger ---------- */
 const targets = [];   // { at: () => Vector3, r: world radius, go }
