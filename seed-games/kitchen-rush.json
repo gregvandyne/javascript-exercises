@@ -1,0 +1,16 @@
+{
+  "slug": "kitchen-rush",
+  "title": "Kitchen Rush",
+  "icon": "🍳",
+  "cover": "sunset",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "measuring,measure,length,ruler,inches,centimeters,units,telling time,clock,analog clock,digital clock,o'clock,half past,a.m.,p.m.,coins,pennies,nickels,dimes,quarters,cents,dollar,sorting,sort,picture graph,bar graph,graphs,data,counting,first grade,second grade,grade 1,grade 2,kindergarten,math,maths,measurement,3d,kitchen,read aloud,learning",
+  "description": "A busy kitchen is getting a garden party ready! Measure a baguette in sugar cubes and a carrot on a ruler, read the kitchen clock and the oven clock, count the coins in the tip jar, sort the vegetables and read the fruit graphs. Every right answer puts a dish on the party table. Every instruction is read aloud, so new readers can play too.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest Launchpad Unit 7, The Measuring Meadow (grades K-2), and the Launchpad finale: a Kit 2 game on Oomba3D 1.1.0 in the Busy Kitchen theme 1.0.0 (daytime, ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/kitchen-rush.test.js checks the literal map). The kitchen (floor, walls, counters, sink, cooker, oven, fridge, cupboards, tables, food) is the theme's own pieces. Rulers, clocks, coins, bins and graphs are drawn by the game on one kitchen board that always faces the player, so perspective never bends them; on a tall screen the board hangs over a run of counters with the helper and the party table in front, on a wide one it stands between them. Four chapters of six rounds (lesson mode: chapter=measure|clock|chart|gate and lock=1): Measure It (7.1: same-size units end to end with no gaps, a ruler in inches or centimeters, a thing that does not start at 0, how much longer), Clocks and Coins (7.2: the hour, the half hour on the oven's digital clock, five minutes with a.m. and p.m., then pennies, nickels, dimes and quarters with the cent sign and one round with a dollar bill), Sort and Chart (7.3: two and three bins, the most, how many more, a picture graph and a bar graph of four fruits) and The Garden Gate (7.4, the tier's finale: one round from each of Units 1 to 6). There is no timer: the rush is the busy kitchen. Coins are counted for their value only; nothing is bought, sold or priced. Every instruction is spoken (BRB.speak, friendly voice); no lives, no fail state; a wrong answer gets a wobble, the board shows why (counting marks, rings and guides) and a spoken hint says it. Each right round puts a dish on the party table, and the sixth reports game over (won) once, which completes the course step. Saves only which chapters are finished. English only.",
+  "l10n": {}
+}

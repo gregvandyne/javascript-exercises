@@ -1,0 +1,217 @@
+{
+ "key": "launchpad-7.4",
+ "n": "7.4",
+ "band": "launchpad",
+ "title": "The Garden Gate",
+ "topic": "The seven seeds",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "The gate at the end",
+   "text": "The Garden Gate is shut. Your seven seeds can open it.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The Jumble helps",
+   "text": "The Jumble sets the table for a feast. It counts twice to check.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Tens first, then ones",
+   "text": "36 is 3 tens and 6 ones. Count the tens first.",
+   "art": "box",
+   "visual": {
+    "type": "counters",
+    "label": "36 drawn as 3 sticks of ten and 6 ones",
+    "groups": [
+     {
+      "n": 36,
+      "tens": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "3 tens make 30.",
+     "box": [
+      35.2,
+      21.5,
+      17.2,
+      62.3
+     ]
+    },
+    {
+     "cue": "6 ones more: 36.",
+     "box": [
+      51.8,
+      34.8,
+      17.1,
+      49.0
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Make ten, then add",
+   "text": "8 and 5 more. Fill the ten first.",
+   "art": "star",
+   "steps": [
+    "8 and 2 make 10",
+    "3 are left",
+    "10 and 3 make 13"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line: a hop from 8 to 10, then a hop from 10 to 13",
+    "min": 7,
+    "max": 14,
+    "marks": [
+     {
+      "at": 8,
+      "label": "8"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     }
+    ],
+    "hops": [
+     {
+      "from": 8,
+      "to": 10,
+      "label": "+2"
+     },
+     {
+      "from": 10,
+      "to": 13,
+      "label": "+3"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Hop to 10 first.",
+     "box": [
+      17.6,
+      23.5,
+      27.1,
+      38.5
+     ]
+    },
+    {
+     "cue": "Then 3 more: 13.",
+     "box": [
+      42.7,
+      23.5,
+      39.7,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Both sides the same",
+   "text": "6 and 2 make 8. So do 4 and 4, so the sides are equal.",
+   "art": "scale",
+   "visual": {
+    "type": "counters",
+    "label": "A level see-saw: 6 and 2 blocks on one side, 4 and 4 blocks on the other",
+    "balance": true,
+    "groups": [
+     {
+      "n": 8,
+      "split": 6
+     },
+     {
+      "n": 8,
+      "split": 4
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "6 and 2 make 8.",
+     "box": [
+      23.0,
+      36.8,
+      14.1,
+      61.4
+     ]
+    },
+    {
+     "cue": "4 and 4 make 8.",
+     "box": [
+      63.1,
+      43.6,
+      13.8,
+      54.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ten",
+     "means": "ten ones in one group"
+    },
+    {
+     "word": "equal",
+     "means": "the same amount on both sides"
+    },
+    {
+     "word": "measure",
+     "means": "find how long or how many"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Kitchen Rush at The Garden Gate. Cook the feast and open the gate.",
+   "art": "trophy",
+   "img": "nq/kitchen-rush/the-garden-gate",
+   "alt": "Kitchen Rush on a phone: a full tray of ten buns and four more on the kitchen board, and the buttons 5, 14 and 41.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-7.4-e1",
+  "nq-launchpad-7.4-e2",
+  "nq-launchpad-7.4-e3"
+ ],
+ "game": {
+  "slug": "kitchen-rush",
+  "chapter": "The Garden Gate",
+  "params": "chapter=gate&lock=1"
+ }
+}

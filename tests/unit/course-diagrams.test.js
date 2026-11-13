@@ -406,6 +406,53 @@ test('shapes that look another way and shapes made of shapes (Launchpad Unit 6):
     assert.equal(clean([{ shape: 'square', name: 'ok' }, it]), undefined, JSON.stringify(it));
 });
 
+test('a clock face (Launchpad Unit 7): `clock` draws the spinner’s circle with twelve numbers, a short hand for the hour and a long hand for the minutes', () => {
+  const clean = (clock, more = {}) => cleanDiagram({ type: 'spinner', parts: 12, shaded: 0, clock, ...more }, 'A clock');
+  assert.deepEqual(clean({ h: 3, m: 0 }, { left: '3:00', right: "3 o'clock" }), { type: 'spinner', label: 'A clock', parts: 12, shaded: 0, clock: { h: 3, m: 0 }, left: '3:00', right: "3 o'clock" });
+  assert.deepEqual(clean({ h: 7, m: 10 }, { fives: true }), { type: 'spinner', label: 'A clock', parts: 12, shaded: 0, clock: { h: 7, m: 10 }, fives: true });
+  // a time to five minutes on a twelve-hour face, and nothing else: no 13 o'clock, no 7:12, never a pie, always twelve parts
+  for (const c of [{ h: 0, m: 0 }, { h: 13, m: 0 }, { h: 7, m: 12 }, { h: 7, m: 60 }, { h: 7.5, m: 0 }, { h: 7 }, 'seven', []]) assert.equal(clean(c), null, JSON.stringify(c));
+  assert.equal(cleanDiagram({ type: 'spinner', parts: 6, shaded: 0, clock: { h: 3, m: 0 } }, 'L'), null); assert.equal(clean({ h: 3, m: 0 }, { pie: true }), null);
+  assert.equal(cleanDiagram({ type: 'spinner', parts: 12, shaded: 1, clock: { h: 3, m: 0 } }, 'L'), null);
+  const hands = svg => Object.fromEntries([...svg.matchAll(/<line data-hand="(minute|hour)" x1="([\d.]+)" y1="([\d.]+)" x2="([\d.-]+)" y2="([\d.-]+)" stroke="(#[0-9A-Fa-f]+)" stroke-width="([\d.]+)"/g)]
+    .map(m => [m[1], { dx: +m[4] - +m[2], dy: +m[5] - +m[3], from: [+m[2], +m[3]], tone: m[6], width: +m[7] }]));
+  /** Where a hand points, as an hour on the face (0 to 12, clockwise from the top), worked out here from its two ends. */
+  const points = hd => ((Math.atan2(hd.dx, -hd.dy) * 6 / Math.PI) + 12) % 12, len = hd => Math.hypot(hd.dx, hd.dy);
+  for (const [h, m] of [[3, 0], [12, 0], [3, 30], [7, 10], [11, 55], [6, 30], [9, 45]]) {
+    const svg = diagramSvg(clean({ h, m })), hd = hands(svg), at = `${h}:${String(m).padStart(2, '0')}`;
+    assert.deepEqual(texts(svg).map(t => t.s), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'], `${at}: the twelve numbers, and nothing else without a label`);
+    assert.equal((svg.match(/<line data-tick="1"/g) || []).length, 12, `${at}: twelve hour marks`);
+    // the long hand is at the minutes (m / 5 on the face); the short hand at the hour and the part of it that has passed
+    assert.ok(Math.abs(points(hd.minute) - (m / 5) % 12) < 0.02, `${at}: the long hand points to ${m / 5 || 12}`);
+    assert.ok(Math.abs(points(hd.hour) - ((h % 12) + m / 60) % 12) < 0.02, `${at}: the short hand has moved ${m} minutes past ${h}`);
+    assert.ok(len(hd.hour) < len(hd.minute) * 0.7, `${at}: the hour hand is the short one`); assert.ok(hd.hour.width > hd.minute.width, `${at}: and the thick one`);
+    assert.notEqual(hd.hour.tone, hd.minute.tone, `${at}: the hands differ in color too`); assert.deepEqual([hd.hour.from, hd.minute.from], [[50, 25], [50, 25]], `${at}: both from the middle`);
+    for (const t of texts(svg)) { assert.ok(t.size >= 3.4, `${at}: ${t.s} is phone-sized`); assert.ok(Math.hypot(t.x - 50, t.y - 1.25 - 25) < 16.5, `${at}: ${t.s} is inside the face`); }
+    // every number sits where its hour is
+    for (const t of texts(svg)) assert.ok(Math.abs(((Math.atan2(t.x - 50, -(t.y - 1.25 - 25)) * 6 / Math.PI) + 12) % 12 - (+t.s % 12)) < 0.02, `${at}: the ${t.s} is at ${t.s} o'clock`);
+    assert.doesNotMatch(svg, /<path /, `${at}: no shares and no pointer`);
+  }
+  // half past: the short hand is half way between its hour and the next
+  assert.ok(Math.abs(points(hands(diagramSvg(clean({ h: 3, m: 30 }))).hour) - 3.5) < 0.02);
+  // `fives`: the minutes counted by fives outside the face, as far as the long hand has gone
+  const five = diagramSvg(clean({ h: 7, m: 10 }, { fives: true, left: '7:10 a.m.', right: 'morning' })), outside = texts(five).filter(t => Math.hypot(t.x - 50, t.y - 1.2 - 25) > 16.5 && /^\d+$/.test(t.s));
+  assert.deepEqual(outside.map(t => t.s), ['5', '10']);
+  outside.forEach((t, i) => assert.ok(Math.abs(((Math.atan2(t.x - 50, -(t.y - 1.2 - 25)) * 6 / Math.PI) + 12) % 12 - (i + 1)) < 0.02, `${t.s} minutes is counted beside the ${i + 1}`));
+  assert.deepEqual(texts(five).filter(t => !/^\d+$/.test(t.s)).map(t => t.s), ['7:10 a.m.', 'morning']);
+  for (const t of texts(five)) assert.ok(t.size >= 3.4);
+  assert.deepEqual(texts(diagramSvg(clean({ h: 7, m: 0 }, { fives: true }))).length, 12, 'on the hour there are no minutes to count');
+  // the drawing sits inside the band the frame shows, with and without the minutes round the edge
+  const tTop = t => t.y - 0.84 * t.size;
+  for (const v of [clean({ h: 3, m: 0 }), clean({ h: 7, m: 55 }, { fives: true })]) {
+    const [a, b] = diagramExtent(v), svg = diagramSvg(v);
+    assert.ok(a <= 25 - 16.5 - 0.4 && b >= 25 + 16.5 + 0.4, 'the whole face and its edge');
+    for (const t of texts(svg)) assert.ok(tTop(t) >= a - 0.01 && t.y + 0.28 * t.size <= b + 0.01, `"${t.s}" at y ${t.y} is inside ${a}..${b}`);
+    assert.ok(a >= 0 && b <= 56.25);
+  }
+  // without `clock` the spinner is the spinner it was
+  assert.equal(cleanDiagram({ type: 'spinner', parts: 12, shaded: 0 }, 'L').clock, undefined); assert.match(diagramSvg(cleanDiagram({ type: 'spinner', parts: 12, shaded: 0 }, 'L')), /<path /);
+});
+
 test('a circle cut in equal shares (Launchpad Unit 6): `pie` draws the spinner’s circle with no pointer and its shaded shares green', () => {
   const v = cleanDiagram({ type: 'spinner', parts: 4, shaded: 1, pie: true, right: 'one fourth' }, 'A circle cut in 4 equal shares');
   assert.deepEqual(v, { type: 'spinner', label: 'A circle cut in 4 equal shares', parts: 4, shaded: 1, pie: true, right: 'one fourth' });

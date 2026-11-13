@@ -53,6 +53,11 @@ export const GAMES = Object.freeze({
   // what defines them, putting shapes together to make new ones, and equal shares: halves, fourths and thirds (its
   // three chapters, SHAPE_CHAPTERS below).
   'shape-hunt': { 'ccss-math': ['K.G.A.2', '1.G.A.1', 'K.G.B.6', '1.G.A.2', '1.G.A.3', '2.G.A.3'] },
+  // Kitchen Rush (kindergarten to grade 2): length in same-size units and on a ruler, time to the hour, the half hour
+  // and five minutes with a.m. and p.m., coins and a dollar bill with their signs, sorting into categories and reading
+  // picture graphs and bar graphs (its three measuring chapters, KITCHEN_CHAPTERS below). Its fourth chapter, The
+  // Garden Gate, is the Launchpad finale: one round from each earlier unit, credited only to a step locked to it.
+  'kitchen-rush': { 'ccss-math': ['1.MD.A.2', '2.MD.A.1', '1.MD.B.3', '2.MD.C.7', '2.MD.C.8', 'K.MD.B.3', '1.MD.C.4', '2.MD.D.10'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -90,8 +95,15 @@ export const ROCKET_CHAPTERS = Object.freeze({
 export const SHAPE_CHAPTERS = Object.freeze({
   find: ['K.G.A.2', '1.G.A.1'], build: ['K.G.B.6', '1.G.A.2'], share: ['1.G.A.3', '2.G.A.3'],
 });
+/** Kitchen Rush's chapters (seed-games/kitchen-rush.html KitchenRush.CHAPTERS), for a step locked to one. `gate` is the
+ *  Launchpad finale, The Garden Gate: one round from each of Units 1 to 6 (a teen number, adding over ten, tens and
+ *  ones, the equals sign, hundreds, equal shares), so a step locked to it is credited with one code a unit. */
+export const KITCHEN_CHAPTERS = Object.freeze({
+  measure: ['1.MD.A.2', '2.MD.A.1'], clock: ['1.MD.B.3', '2.MD.C.7', '2.MD.C.8'], chart: ['K.MD.B.3', '1.MD.C.4', '2.MD.D.10'],
+  gate: ['1.OA.C.6', '1.NBT.B.2', '2.NBT.A.1', 'K.NBT.A.1', '1.OA.D.7', '1.G.A.3'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -107,6 +119,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'balance-bridge') { const ch = p.get('chapter') || ''; return Object.hasOwn(BRIDGE_CHAPTERS, ch) ? [...BRIDGE_CHAPTERS[ch]] : null; }
   if (slug === 'rocket-supply') { const ch = p.get('chapter') || ''; return Object.hasOwn(ROCKET_CHAPTERS, ch) ? [...ROCKET_CHAPTERS[ch]] : null; }
   if (slug === 'shape-hunt') { const ch = p.get('chapter') || ''; return Object.hasOwn(SHAPE_CHAPTERS, ch) ? [...SHAPE_CHAPTERS[ch]] : null; }
+  if (slug === 'kitchen-rush') { const ch = p.get('chapter') || ''; return Object.hasOwn(KITCHEN_CHAPTERS, ch) ? [...KITCHEN_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

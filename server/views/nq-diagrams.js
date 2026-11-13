@@ -10,7 +10,9 @@
 //   table   a small table, a timetable, with one row picked out (5.2);
 //   letters big letters in panels, each with its fold line dashed down the middle where it has one (6.3);
 //   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3); or (Launchpad
-//           Unit 6, `pie`) the same circle with no pointer and its shaded shares green: halves, thirds, fourths;
+//           Unit 6, `pie`) the same circle with no pointer and its shaded shares green: halves, thirds, fourths; or
+//           (Launchpad Unit 7, `clock`) the same circle as a clock face: twelve numbers, a short hand and a long hand,
+//           and with `fives` the minutes counted by fives round the edge;
 //   build   digit cards apart, then joined into the number they build (1.1);
 //   tally   a survey's tally (CS Quest 3.3): one row per answer, its marks in fives (four lines, one across), its count;
 //   swap    two tiles swapped, an arrow, then the same tiles back in order (0.1);
@@ -199,7 +201,28 @@ const sector = (k, n) => {
   const a0 = -Math.PI / 2 + k * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n, { cx, cy, r } = SPIN;
   return `M${cx} ${cy} L${r2(cx + r * Math.cos(a0))} ${r2(cy + r * Math.sin(a0))} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${r2(cx + r * Math.cos(a1))} ${r2(cy + r * Math.sin(a1))} Z`;
 };
+/** The angles of a clock's two hands (radians, clockwise from 12): the short hand moves on as the minutes pass. */
+export const clockHands = (h, m) => ({ hour: ((h % 12) + m / 60) * Math.PI / 6, minute: m * Math.PI / 30 });
+const CLOCK_BLUE = '#2F6FD6';
+/** `clock`: a clock face on the spinner's circle. The short hand (ink, thick) is the hour and the long hand (blue,
+ *  thin) the minutes; `fives` counts the minutes by fives outside the edge, as far as the long hand has gone. */
+function clockSvg(v) {
+  const { cx, cy, r } = SPIN, { h, m } = v.clock, a = clockHands(h, m), at = (ang, k) => [r2(cx + r * k * Math.sin(ang)), r2(cy - r * k * Math.cos(ang))];
+  let s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#FFFFFF" stroke="${INK}" stroke-width="0.8"/>`;
+  for (let i = 0; i < 12; i++) { const [x1, y1] = at(i * Math.PI / 6, 0.93), [x2, y2] = at(i * Math.PI / 6, 0.99); s += `<line data-tick="1" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/>`; }
+  for (let n = 1; n <= 12; n++) { const [x, y] = at(n * Math.PI / 6, 0.76); s += tx(x, y + 1.25, String(n), 3.6, 'middle', 800); }
+  if (v.fives) for (let k = 1; k <= m / 5; k++) { const [x, y] = at(k * Math.PI / 6, 1.2); s += tx(x, y + 1.2, String(k * 5), 3.4, 'middle', 800, CLOCK_BLUE); }
+  const [mx, my] = at(a.minute, 0.84), [hx, hy] = at(a.hour, 0.5);
+  s += `<line data-hand="minute" x1="${cx}" y1="${cy}" x2="${mx}" y2="${my}" stroke="${CLOCK_BLUE}" stroke-width="1" stroke-linecap="round"/>`
+    + `<line data-hand="hour" x1="${cx}" y1="${cy}" x2="${hx}" y2="${hy}" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/>`
+    + `<circle cx="${cx}" cy="${cy}" r="1.1" fill="#FFD23F" stroke="${INK}" stroke-width="0.5"/>`;
+  const out = r + (v.fives ? 8 : 4);
+  if (v.left) s += tx(cx - out, cy + 1.3, v.left, 3.8, 'end', 800);
+  if (v.right) s += tx(cx + out, cy + 1.3, v.right, 3.8, 'start', 800, LEAF);
+  return s;
+}
 function spinnerSvg(v) {
+  if (v.clock) return clockSvg(v);
   const { cx, cy, r } = SPIN;
   let s = '';
   for (let k = 0; k < v.parts; k++) s += `<path d="${sector(k, v.parts)}" fill="${k < v.shaded ? (v.pie ? TONES[0] : '#E9465C') : '#FFFFFF'}" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`;
@@ -214,7 +237,7 @@ function spinnerSvg(v) {
   if (v.right) s += tx(cx + r + 4, cy + 1.3, v.right, 3.8, 'start', 800, '#C2431F');
   return s;
 }
-const spinnerExtent = () => [SPIN.cy - SPIN.r, SPIN.cy + SPIN.r];
+const spinnerExtent = v => (v.clock && v.fives ? [SPIN.cy - SPIN.r * 1.2 - 4.2, SPIN.cy + SPIN.r * 1.2 + 2.4] : [SPIN.cy - SPIN.r - (v.clock ? 0.6 : 0), SPIN.cy + SPIN.r + (v.clock ? 0.6 : 0)]);
 
 // ---------------------------------------------------------------------------------------------- build
 /** Digit cards apart on top (y 8-22), an arrow, then the same digits joined into one number (y 32-48). */

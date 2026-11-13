@@ -1,0 +1,281 @@
+{
+ "key": "launchpad-7.3",
+ "n": "7.3",
+ "band": "launchpad",
+ "title": "Sort it and chart it",
+ "topic": "Sort and graph",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A muddle in the basket",
+   "text": "The garden basket is all mixed up. Tally sorts it by kind.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Sort, then count",
+   "text": "Put each kind in its own group. Then count each group.",
+   "art": "table",
+   "visual": {
+    "type": "tally",
+    "label": "A tally of the basket: 5 carrots, 2 tomatoes and 4 potatoes",
+    "rows": [
+     {
+      "label": "carrots",
+      "n": 5
+     },
+     {
+      "label": "tomatoes",
+      "n": 2
+     },
+     {
+      "label": "potatoes",
+      "n": 4
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "5 carrots.",
+     "box": [
+      5.0,
+      21.5,
+      90.0,
+      19.9
+     ]
+    },
+    {
+     "cue": "2 tomatoes.",
+     "box": [
+      5.0,
+      38.2,
+      90.0,
+      19.9
+     ]
+    },
+    {
+     "cue": "4 potatoes.",
+     "box": [
+      5.0,
+      54.9,
+      90.0,
+      19.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A picture graph",
+   "text": "One picture stands for one thing. Line them up to compare.",
+   "art": "grid",
+   "visual": {
+    "type": "counters",
+    "label": "A row of 5 carrots over a row of 2 tomatoes, matched one to one",
+    "groups": [
+     {
+      "n": 5,
+      "name": "carrots",
+      "tone": 3
+     },
+     {
+      "n": 2,
+      "name": "tomatoes",
+      "tone": 0
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "5 carrots in a row.",
+     "box": [
+      23.7,
+      23.2,
+      52.8,
+      12.4
+     ]
+    },
+    {
+     "cue": "2 tomatoes under them.",
+     "box": [
+      21.6,
+      48.1,
+      33.9,
+      12.2
+     ]
+    },
+    {
+     "cue": "3 carrots are extra: 3 more.",
+     "box": [
+      55.5,
+      23.2,
+      21.0,
+      12.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A bar graph",
+   "text": "Each bar shows how many. Read the top of the bar across.",
+   "art": "chart",
+   "visual": {
+    "type": "chart",
+    "label": "A bar graph of fruit: 5 apples, 3 bananas, 6 pears and 2 plums",
+    "max": 6,
+    "step": 1,
+    "bars": [
+     {
+      "label": "apples",
+      "value": 5,
+      "tone": 3
+     },
+     {
+      "label": "bananas",
+      "value": 3,
+      "tone": 1
+     },
+     {
+      "label": "pears",
+      "value": 6,
+      "tone": 0
+     },
+     {
+      "label": "plums",
+      "value": 2,
+      "tone": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The apple bar stops at 5.",
+     "box": [
+      22.1,
+      24.4,
+      14.0,
+      65.9
+     ]
+    },
+    {
+     "cue": "Pears have the most: 6.",
+     "box": [
+      58.6,
+      15.8,
+      12.8,
+      74.5
+     ]
+    },
+    {
+     "cue": "Plums have the fewest: 2.",
+     "box": [
+      76.5,
+      50.2,
+      13.1,
+      40.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "How many more?",
+   "text": "Read both bars. Then find the gap between them.",
+   "art": "star",
+   "steps": [
+    "apples: 5",
+    "plums: 2",
+    "5 take away 2",
+    "3 more apples"
+   ],
+   "visual": {
+    "type": "chart",
+    "label": "A bar graph with two bars: 5 apples and 2 plums",
+    "max": 6,
+    "step": 1,
+    "bars": [
+     {
+      "label": "apples",
+      "value": 5,
+      "tone": 3
+     },
+     {
+      "label": "plums",
+      "value": 2,
+      "tone": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Apples: 5.",
+     "box": [
+      30,
+      24.5,
+      16,
+      65.8
+     ]
+    },
+    {
+     "cue": "Plums: 2.",
+     "box": [
+      66,
+      50.2,
+      16,
+      40.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "sort",
+     "means": "put the same kinds together"
+    },
+    {
+     "word": "graph",
+     "means": "a picture that shows how many"
+    },
+    {
+     "word": "data",
+     "means": "what you count and write down"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Kitchen Rush at Sort and Chart. Sort the food and read the graphs.",
+   "art": "trophy",
+   "img": "nq/kitchen-rush/sort-and-chart",
+   "alt": "Kitchen Rush on a phone: carrots and tomatoes in a muddle over two bins on the kitchen board, and three number buttons.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-launchpad-7.3-e1",
+  "nq-launchpad-7.3-e2",
+  "nq-launchpad-7.3-e3"
+ ],
+ "game": {
+  "slug": "kitchen-rush",
+  "chapter": "Sort and Chart",
+  "params": "chapter=chart&lock=1"
+ }
+}

@@ -1,0 +1,298 @@
+{
+ "id": "nq-u7-launchpad",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 7,
+ "band": "Launchpad",
+ "title": "Number Quest Unit 7 · The Measuring Meadow (Launchpad)",
+ "items": [
+  {
+   "id": "nq-launchpad-7.1-e1",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "1.MD.A.2",
+   "topic": "Measure length",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Which is the right way to measure with cubes?",
+   "choices": [
+    "With gaps between them",
+    "End to end, no gaps",
+    "On top of each other",
+    "Big and small cubes"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "left gaps between the units",
+    "correct",
+    "overlapped the units",
+    "mixed units of two sizes"
+   ],
+   "why": "Units must be the same size and touch end to end. Then the count is fair."
+  },
+  {
+   "id": "nq-launchpad-7.1-e2",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "1.MD.A.2",
+   "topic": "Measure length",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A fork is 6 beans long. A spoon is 4 beans long. Which is longer?",
+   "choices": [
+    "The fork",
+    "The spoon",
+    "They are the same",
+    "You cannot tell"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "picked the smaller number of units",
+    "treated two different counts as equal",
+    "thought the counts could not be compared"
+   ],
+   "why": "Both use the same beans. 6 beans is more than 4 beans, so the fork is longer."
+  },
+  {
+   "id": "nq-launchpad-7.1-e3",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "2.MD.A.1",
+   "topic": "Measure length",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A ribbon starts at 2 on the ruler and ends at 7. How long is it?",
+   "choices": [
+    "7 inches",
+    "9 inches",
+    "5 inches",
+    "2 inches"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "read the number at the end",
+    "added the two numbers",
+    "correct",
+    "read the number at the start"
+   ],
+   "why": "It does not start at 0. Count the spaces from 2 to 7: there are 5."
+  },
+  {
+   "id": "nq-launchpad-7.2-e1",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "1.MD.B.3",
+   "topic": "Time and money",
+   "kind": "apply",
+   "secs": 25,
+   "q": "The short hand is just past 4. The long hand is on 6. What time is it?",
+   "choices": [
+    "4:30",
+    "6:20",
+    "5:30",
+    "4:06"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped the two hands",
+    "took the next hour",
+    "read the 6 as 6 minutes"
+   ],
+   "why": "The long hand on 6 means half past. The short hand has passed 4, so it is 4:30."
+  },
+  {
+   "id": "nq-launchpad-7.2-e2",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "2.MD.C.7",
+   "topic": "Time and money",
+   "kind": "apply",
+   "secs": 25,
+   "q": "The long hand points to 2. How many minutes past the hour is it?",
+   "choices": [
+    "2 minutes",
+    "10 minutes",
+    "20 minutes",
+    "12 minutes"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "read the number as minutes",
+    "correct",
+    "counted by tens instead of fives",
+    "joined the number to a ten"
+   ],
+   "why": "Count by fives round the clock: 5, 10. The long hand on 2 means 10 minutes."
+  },
+  {
+   "id": "nq-launchpad-7.2-e3",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "2.MD.C.8",
+   "topic": "Time and money",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Tally has 1 quarter, 1 dime and 2 pennies. How many cents is that?",
+   "choices": [
+    "4¢",
+    "27¢",
+    "45¢",
+    "37¢"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "counted the coins, not their values",
+    "left out the dime",
+    "counted each penny as 5 cents",
+    "correct"
+   ],
+   "why": "Count on from the biggest coin: 25, 35, 36, 37. That is 37 cents."
+  },
+  {
+   "id": "nq-launchpad-7.3-e1",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "K.MD.B.3",
+   "topic": "Sort and graph",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Tally sorts 3 apples, 5 pears and 2 plums. Which group has the most?",
+   "choices": [
+    "Apples",
+    "Pears",
+    "Plums",
+    "They are the same"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "picked the first group named",
+    "correct",
+    "picked the smallest group",
+    "treated the groups as equal"
+   ],
+   "why": "5 is more than 3 and more than 2. The pears have the most."
+  },
+  {
+   "id": "nq-launchpad-7.3-e2",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "1.MD.C.4",
+   "topic": "Sort and graph",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A chart shows 6 carrots and 4 tomatoes. How many more carrots are there?",
+   "choices": [
+    "10",
+    "6",
+    "2",
+    "4"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the two groups",
+    "read the bigger group only",
+    "correct",
+    "read the smaller group only"
+   ],
+   "why": "Match them up: 4 carrots have a partner and 2 do not. 6 is 2 more than 4."
+  },
+  {
+   "id": "nq-launchpad-7.3-e3",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "2.MD.D.10",
+   "topic": "Sort and graph",
+   "kind": "apply",
+   "secs": 25,
+   "q": "A bar graph shows 5 apples, 3 bananas and 4 pears. How many in all?",
+   "choices": [
+    "12",
+    "5",
+    "8",
+    "9"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "read the tallest bar only",
+    "left out the pears",
+    "left out the bananas"
+   ],
+   "why": "Add all three bars: 5 and 3 make 8, and 4 more make 12."
+  },
+  {
+   "id": "nq-launchpad-7.4-e1",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "1.OA.C.6",
+   "topic": "The seven seeds",
+   "kind": "apply",
+   "secs": 25,
+   "q": "Tally has 8 buns and bakes 5 more. How many buns now?",
+   "choices": [
+    "12",
+    "3",
+    "13",
+    "85"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted one too few",
+    "took away instead of adding",
+    "correct",
+    "wrote the two numbers side by side"
+   ],
+   "why": "Make ten first: 8 and 2 make 10. Then 3 more make 13."
+  },
+  {
+   "id": "nq-launchpad-7.4-e2",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "1.NBT.B.2",
+   "topic": "The seven seeds",
+   "kind": "apply",
+   "secs": 25,
+   "q": "There are 3 bags of ten rolls and 6 more rolls. How many rolls?",
+   "choices": [
+    "63",
+    "36",
+    "9",
+    "306"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "swapped the tens and the ones",
+    "correct",
+    "counted each bag as one roll",
+    "wrote a zero between the digits"
+   ],
+   "why": "3 bags of ten are 30 rolls. 30 and 6 more make 36."
+  },
+  {
+   "id": "nq-launchpad-7.4-e3",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "2.NBT.A.1",
+   "topic": "The seven seeds",
+   "kind": "apply",
+   "secs": 25,
+   "q": "2 boxes of 100 cups, 4 stacks of ten and 5 cups. How many cups?",
+   "choices": [
+    "245",
+    "254",
+    "11",
+    "2045"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped the tens and the ones",
+    "counted each box and stack as one",
+    "wrote the hundreds as a whole number first"
+   ],
+   "why": "2 hundreds, 4 tens and 5 ones are written 245."
+  }
+ ]
+}

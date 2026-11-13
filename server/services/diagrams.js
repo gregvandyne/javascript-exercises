@@ -53,6 +53,14 @@ export function cleanDiagram(v, label) {
   }
   if (v.type === 'spinner') {
     if (!int(v.parts, 2, 12) || !int(v.shaded, 0, v.parts)) return null;
+    // `clock` (Launchpad Unit 7): the same circle as a clock face with its twelve numbers, the short hand and the long
+    // hand at a time to five minutes ({ h: 1-12, m: 0-55 }); `fives` writes the minutes counted by fives round the
+    // edge, as far as the long hand. A clock has twelve parts and none shaded, and is never a pie.
+    if (v.clock != null) {
+      const c = v.clock;
+      if (!c || !int(c.h, 1, 12) || !int(c.m, 0, 55) || c.m % 5 || v.parts !== 12 || v.shaded !== 0 || v.pie) return null;
+      return { type: 'spinner', label, parts: 12, shaded: 0, clock: { h: c.h, m: c.m }, ...(v.fives ? { fives: true } : {}), ...(str(v.left, 12) ? { left: str(v.left, 12) } : {}), ...(str(v.right, 12) ? { right: str(v.right, 12) } : {}) };
+    }
     // `pie` (Launchpad Unit 6): a circle cut in equal shares with some shaded, and no pointer (a pie, not a spinner)
     return { type: 'spinner', label, parts: v.parts, shaded: v.shaded, ...(v.pie ? { pie: true } : {}), ...(str(v.left, 16) ? { left: str(v.left, 16) } : {}), ...(str(v.right, 16) ? { right: str(v.right, 16) } : {}) };
   }

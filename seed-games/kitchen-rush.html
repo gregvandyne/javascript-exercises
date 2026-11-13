@@ -1,0 +1,1536 @@
+<title>Kitchen Rush</title>
+<!-- Kitchen Rush: Number Quest Launchpad Unit 7, The Measuring Meadow (grades K-2, ages 5-8), and the Launchpad
+     finale. A busy kitchen getting a garden party ready, on Oomba3D 1.1.0 in the Busy Kitchen theme: the helper
+     measures, tells the time, counts the tip jar and sorts the vegetables, and every finished round puts a dish on
+     the party table. The "rush" is the busy kitchen: there is no clock on the child. Four chapters of six rounds:
+       measure (7.1) same-size units laid end to end with no gaps (a baguette is 6 sugar cubes long), then a ruler
+                     in inches or centimeters (start at 0; one thing that does not start at 0), then which is
+                     longer and by how much;
+       clock   (7.2) the kitchen's clock to the hour and the half hour, the oven's digital clock, then to five
+                     minutes with a.m. and p.m.; then the coins in the tip jar: pennies, nickels, dimes and
+                     quarters with the cent sign, and one round with a dollar bill and the dollar sign. Coins are
+                     counted for their value only: nothing is bought, sold or priced;
+       chart   (7.3) vegetables sorted into two and three bins (how many, which has the most, how many more),
+                     then a picture graph and a bar graph of four fruits (how many, how many more or fewer, how
+                     many altogether);
+       gate    (7.4) The Garden Gate feast, the Launchpad finale: one round from each earlier unit (a teen
+                     number, adding over ten, tens and ones, equal sides or a story, hundreds, shares or shapes).
+     Made for a child who is only starting to read: every instruction is short, shown and spoken (BRB.speak, the
+     shared path; the speaker button says it again), and everything is done with big buttons. Rulers, clocks,
+     coins and graphs are drawn face on, on the kitchen board, so the room's perspective never bends them. No
+     timer, no lives, no fail state: a wrong answer wobbles, the board shows why, and a spoken hint says it; then
+     another try. Lesson mode: BRB.params { chapter: measure | clock | chart | gate, lock: 1 } opens that chapter
+     only; finishing its six rounds reports game over, won, once (the course step's completion signal). With no
+     parameters the game offers the four chapters from a picture menu. Saves only which chapters are finished
+     (BRB.storage 'kitchen-rush-v1'). The import map below is exactly kit2ImportMap() (server/services/vendor.js);
+     tests/unit/kitchen-rush.test.js fails if a library bump leaves it behind. English only, like Number Quest's
+     other lesson games. Test handle: window.__kr (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #fff4e0; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
+  .kr[hidden], .kr-load[hidden] { display: none; }
+  .kr { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .kr button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .kr button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
+  .kr-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the chip and the round dots. On a phone: the words on one row, the chip and the dots on the
+     next (the words keep clear of the gear button; the row under it has the whole width). On a wide screen: all
+     three on one row that never wraps (the words box gives way and wraps inside). */
+  .kr-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .kr-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .kr-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 4px 0 #141414; padding: 6px 16px 6px 6px; }
+  .kr-ask[hidden], .kr-hint[hidden], .kr-sum[hidden], .kr-bar[hidden], .kr-card[hidden], .kr-dots[hidden], .kr-row2[hidden] { display: none; }
+  .kr .kr-say { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #141414; background: #FFD23F; font-size: 24px; line-height: 1; box-shadow: 0 3px 0 #141414; }
+  .kr .kr-say:active, .kr .kr-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #141414; }
+  .kr-askt { font-weight: 800; font-size: clamp(19px, 4.9vw, 28px); line-height: 1.15; min-width: 0; }
+  .kr-sum { flex: 0 1 auto; min-width: 0; background: #FFD23F; border: 3px solid #141414; border-radius: 18px; box-shadow: 0 4px 0 #141414; padding: 5px 14px; font-weight: 900; font-size: clamp(20px, 5vw, 30px); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kr-sum.ok { background: #66C792; } .kr-sum.bad { background: #ffc2b5; }
+  .kr-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .kr-hint { background: #141414; color: #FFFDF2; border-radius: 16px; padding: 8px 14px; margin: 0 10px 10px; font-weight: 700; font-size: clamp(17px, 3.6vw, 22px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 560px); }
+  .kr-dots { flex: none; display: flex; gap: 6px; padding: 2px 2px; }
+  .kr-dots i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #141414; background: #FFFDF2; box-sizing: border-box; }
+  .kr-dots i.on { background: #FFD23F; } .kr-dots i.now { background: #66C792; }
+  .kr-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .kr .kr-btn { flex: 1 1 0; min-width: 0; max-width: 220px; min-height: clamp(76px, 12vh, 104px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 6px; background: #FFFDF2; border: 3px solid #141414; border-radius: 22px; box-shadow: 0 5px 0 #141414; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .kr-btn .i { font-size: 30px; line-height: 1.1; } .kr-btn .big { font-size: 44px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kr-btn .big.long { font-size: clamp(21px, 5.6vw, 32px); }
+  .kr-btn svg { display: block; width: 100%; height: clamp(52px, 9vh, 76px); }
+  .kr-bar.clocks .kr-btn svg { height: clamp(84px, 15vh, 112px); }
+  .kr-bar.two .kr-btn { max-width: 260px; } .kr-bar.two .kr-btn .l { font-size: clamp(19px, 3.2vh, 26px); font-weight: 900; }
+  .kr-btn.go { background: #66C792; }
+  .kr-btn.no { animation: kr-no .45s ease; }
+  .kr-bar.wait .kr-btn { opacity: .55; }
+  @keyframes kr-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .kr-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .kr-card h1 { margin: 0; font-size: clamp(34px, 8vw, 60px); line-height: 1; text-shadow: 0 4px 0 #FFFDF2, 0 -2px 0 #FFFDF2, 2px 0 0 #FFFDF2, -2px 0 0 #FFFDF2; }
+  .kr-card .kr-ask { margin-top: 10px; max-width: 100%; }
+  .kr-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .kr-pick .kr-btn { flex: 0 1 auto; min-width: 104px; min-height: 60px; font-size: 19px; }
+  .kr-pick .kr-btn.go { min-width: 190px; min-height: 80px; font-size: 21px; }
+  .kr-menu { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: min(880px, 100%); }
+  .kr-menu .kr-btn { flex: 1 1 0; max-width: 210px; min-height: 112px; font-size: 20px; gap: 6px; }
+  .kr-menu .kr-btn .i { font-size: 44px; }
+  .kr-star { font-size: 76px; line-height: 1; }
+  .kr-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* Wide screens: the words, the chip and the round dots share one line across the top, so the kitchen gets the height. */
+  @media (min-aspect-ratio: 9/10) {
+    .kr-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .kr-ask { flex: 0 1 auto; max-width: 100%; } .kr-row2 { flex: none; max-width: 46%; }
+    .kr-askt { font-size: clamp(18px, 2.4vw, 28px); } .kr-sum { font-size: clamp(18px, 2.5vw, 30px); }
+  }
+  @media (max-width: 480px) { .kr-sum { font-size: clamp(18px, 4.9vw, 24px); padding: 5px 12px; } .kr-dots { gap: 5px; } .kr-dots i { width: 13px; height: 13px; border-width: 2.5px; } .kr-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .kr .kr-btn { min-height: 80px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .kr-btn .i { font-size: 26px; } .kr-btn .big { font-size: 38px; } .kr-menu { gap: 8px; } .kr-menu .kr-btn { flex: 1 1 40%; max-width: 46%; min-height: 84px; font-size: 16px; padding: 6px 4px; } .kr-menu .kr-btn .i { font-size: 32px; } .kr-star { font-size: 60px; } }
+  @media (max-height: 520px) { .kr .kr-btn { min-height: 62px; font-size: 15px; } .kr-btn .i { font-size: 24px; } .kr-btn .big { font-size: 34px; } .kr-btn svg { height: 44px; } .kr-bar.clocks .kr-btn svg { height: 64px; } .kr .kr-say { width: 44px; height: 44px; font-size: 20px; } .kr-menu .kr-btn { min-height: 90px; } .kr-star { font-size: 52px; } }
+  @media (prefers-reduced-motion: reduce) { .kr .kr-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .kr .kr-say:active, .kr .kr-btn:active { transform: none; } }
+</style>
+<div class="kr-load" id="load" role="status">Getting the kitchen ready…</div>
+<div class="kr" id="kr" hidden>
+  <div class="kr-top">
+    <div class="kr-line" id="line">
+      <div class="kr-ask" id="ask" hidden><button class="kr-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="kr-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="kr-row2" id="row2" hidden>
+        <div class="kr-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="kr-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="kr-low">
+    <div class="kr-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="kr-bar" id="bar" hidden></div>
+  </div>
+  <div class="kr-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Kitchen Rush's rounds: plain data and functions (no DOM, no 3D), so tests/unit/kitchen-rush.test.js can run
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
+   so the first six rounds are always the same; a replay gets new numbers). Every round has `pic` (what the kitchen
+   board draws), `opts` (what the buttons offer: a value `v`, and the text `t`, the label `key`, the clock or the
+   picture on the button), `choices` (their places), `answer` (the place of the right one), `ask` and `said` (lines
+   of the words table, with their numbers), `hints` (for each wrong choice, the lines that say why) and `show` and
+   `shown` (what the chip shows before and after). ===== */
+/* kitchen-rush:begin */
+(function (root) {
+  var CHAPTERS = ['measure', 'clock', 'chart', 'gate'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function one(r, a) { return a[Math.floor(r() * a.length)]; }
+  function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  function shuffle(r, a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function L(key, vars) { return [key, vars || {}]; }
+  function pad(m) { return (m < 10 ? '0' : '') + m; }
+  function num(v) { return { v: v, t: String(v) }; }
+  /** The buttons of a round: the right option and the wrong ones (each with the lines that say why it is wrong),
+   *  in a seeded order, or as they come when `keep` is set (Yes then No; the bins left to right). */
+  function offer(r, out, right, wrongs, keep) {
+    var all = [{ o: right, ok: true }].concat(wrongs.map(function (w) { return { o: w[0], hint: w[1] }; })), i;
+    if (!keep) all = shuffle(r, all);
+    out.opts = []; out.choices = []; out.hints = {};
+    for (i = 0; i < all.length; i++) { out.opts.push(all[i].o); out.choices.push(i); if (all[i].ok) out.answer = i; else out.hints[i] = all[i].hint; }
+  }
+  /** Buttons in a fixed order (`list` of options), the right one at `at`; `why(i)` gives a wrong one's lines. */
+  function fixed(out, list, at, why) {
+    out.opts = list; out.choices = list.map(function (o, i) { return i; }); out.answer = at; out.hints = {};
+    list.forEach(function (o, i) { if (i !== at) out.hints[i] = why(i); });
+  }
+
+  /* ---- measure: things to measure, the unit each is measured with, and the two rulers ---- */
+  var OBJ = { baguette: 'cube', spoon: 'bean', carrot: 'grape', fork: 'bean', pin: 'cube', cucumber: 'grape' };
+  var RULER = { in: 8, cm: 10 };
+  var LAYS = ['gaps', 'good', 'overlap', 'mixed'];   // how the cubes of round 3 are laid: only `good` measures
+  function measureRound(n, lap, r, out) {
+    var objs = Object.keys(OBJ), obj, unit, len, max, from, to, la, lb;
+    if (n <= 2) {
+      // same-size units laid end to end under the thing: how many long is it?
+      obj = lap === 0 ? (n === 1 ? 'baguette' : 'spoon') : one(r, objs); unit = OBJ[obj]; len = lap === 0 ? (n === 1 ? 6 : 4) : between(r, 3, 8);
+      out.kind = 'units'; out.pic = { obj: obj, unit: unit, len: len, lay: 'good' };
+      offer(r, out, num(len), [[num(len - 1), [L('m.hint.count')]], [num(len + 1), [L('m.hint.count')]]]);
+      out.ask = L('m.ask.units.' + obj); out.said = [L('m.said.units.' + unit, { n: len })]; out.show = L('show.q.' + unit); out.shown = L('show.a.' + unit, { n: len });
+    } else if (n === 3) {
+      // is this the right way to measure? Only cubes of one size that touch end to end, with no gaps and no overlaps
+      var lay = LAYS[lap % 4]; obj = lap === 0 ? 'carrot' : one(r, objs); len = lay === 'mixed' ? one(r, [4, 6]) : lap === 0 ? 5 : between(r, 4, 7);
+      out.kind = 'fair'; out.pic = { obj: obj, unit: 'cube', len: len, lay: lay };
+      fixed(out, [{ v: 'yes', key: 'btn.yes' }, { v: 'no', key: 'btn.no' }], lay === 'good' ? 0 : 1, function () { return [L('m.hint.fair.' + lay)]; });
+      out.ask = L('m.ask.fair'); out.said = [L('m.said.fair.' + lay)]; out.show = L('show.q.fair'); out.shown = L('show.a.fair.' + lay);
+    } else if (n === 4) {
+      // a ruler, the thing starting at 0: read the number at its end
+      unit = lap % 2 === 0 ? 'in' : 'cm'; max = RULER[unit]; obj = lap === 0 ? 'carrot' : one(r, objs); len = lap === 0 ? 5 : between(r, 2, max - 1);
+      out.kind = 'ruler'; out.pic = { obj: obj, unit: unit, from: 0, to: len, max: max };
+      offer(r, out, num(len), [[num(len - 1), [L('m.hint.zero')]], [num(len + 1), [L('m.hint.zero')]]]);
+      out.ask = L('m.ask.' + unit + '.' + obj); out.said = [L('m.said.' + unit, { n: len })]; out.show = L('show.q.' + unit); out.shown = L('show.a.' + unit, { n: len });
+    } else if (n === 5) {
+      // the classic trap: the thing does not start at 0, so the number at its end is not its length
+      unit = lap % 2 === 0 ? 'cm' : 'in'; max = RULER[unit]; obj = lap === 0 ? 'fork' : one(r, objs);
+      from = lap === 0 ? 2 : between(r, 1, 3); len = lap === 0 ? 7 : between(r, 3, max - from); to = from + len;
+      out.kind = 'ruler'; out.off = true; out.pic = { obj: obj, unit: unit, from: from, to: to, max: max };
+      offer(r, out, num(len), [[num(to), [L('m.hint.off', { n: from }), L('m.hint.spaces')]], [num(from === 1 ? len - 1 : len + 1), [L('m.hint.spaces')]]]);
+      out.ask = L('m.ask.' + unit + '.' + obj); out.said = [L('m.said.off.' + unit, { a: from, b: to, n: len })]; out.show = L('show.q.' + unit); out.shown = L('show.a.' + unit, { n: len });
+    } else {
+      // two things on one ruler: how much longer is the top one?
+      unit = lap % 2 === 0 ? 'in' : 'cm'; max = RULER[unit];
+      la = lap === 0 ? 7 : between(r, 4, max); lb = lap === 0 ? 4 : between(r, 1, la - 1);
+      var pair = lap === 0 ? ['baguette', 'spoon'] : shuffle(r, objs).slice(0, 2);
+      out.kind = 'longer'; out.pic = { a: { obj: pair[0], len: la }, b: { obj: pair[1], len: lb }, unit: unit, max: max };
+      offer(r, out, num(la - lb), [[num(la), [L('m.hint.long.top', { n: la })]], [num(la + lb), [L('m.hint.long.add')]]]);
+      out.ask = L('m.ask.longer.' + unit); out.said = [L('m.said.longer', { a: la, b: lb, n: la - lb })]; out.show = L('show.q.longer'); out.shown = L('show.a.longer.' + unit, { n: la - lb });
+    }
+  }
+
+  /* ---- clock: times on the kitchen clock and the oven, then the coins in the tip jar ---- */
+  function clockText(h, m, ap) { return h + ':' + pad(m) + (ap ? ' ' + ap : ''); }
+  function timeOpt(h, m, ap) { return { v: clockText(h, m, ap), t: clockText(h, m, ap), h: h, m: m }; }
+  function faceOpt(h, m) { return { v: clockText(h, m), clock: true, h: h, m: m }; }
+  var MEALS = { breakfast: { ap: 'a.m.', hours: [6, 7, 8] }, snack: { ap: 'p.m.', hours: [3, 4] }, bedtime: { ap: 'p.m.', hours: [7, 8] } };
+  var COIN = { p: 1, n: 5, d: 10, q: 25 };
+  function cents(coins) { return coins.reduce(function (a, c) { return a + COIN[c]; }, 0); }
+  function centOpt(v) { return { v: v, t: v + '¢' }; }
+  function dollarOpt(v) { return { v: v, t: '$' + Math.floor(v / 100) + '.' + pad(v % 100) }; }
+  function clockRound(n, lap, r, out) {
+    var h, m, half, coins, total, count, w;
+    if (n === 1) {
+      // the kitchen clock, to the hour (and on a replay the half hour): the short hand is the hour
+      half = lap % 2 === 1; h = lap === 0 ? 3 : one(r, half ? [1, 2, 3, 4, 5, 7, 8, 9, 10, 11] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]); m = half ? 30 : 0;
+      out.kind = 'read'; out.pic = { h: h, m: m };
+      offer(r, out, timeOpt(h, m), half
+        ? [[timeOpt(h % 12 + 1, 30), [L('c.hint.past', { n: h })]], [timeOpt(6, h * 5 % 60), [L('c.hint.short', { n: h })]]]
+        : [[timeOpt(12, h * 5 % 60), [L('c.hint.short', { n: h })]], [timeOpt(h, 30), [L('c.hint.oclock')]]]);
+      out.ask = L('c.ask.read'); out.said = [L(half ? 'c.said.half' : 'c.said.hour', { n: h })]; out.show = L('show.q.time'); out.shown = L('show.time', { t: clockText(h, m) });
+    } else if (n === 2) {
+      // the oven's digital clock, to the half hour (and on a replay the hour): which clock face shows the same time?
+      half = lap % 2 === 0; h = lap === 0 ? 4 : one(r, half ? [1, 2, 3, 4, 5, 7, 8, 9, 10, 11] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]); m = half ? 30 : 0;
+      out.kind = 'match'; out.pic = { h: h, m: m };
+      offer(r, out, faceOpt(h, m), half
+        ? [[faceOpt(6, h * 5 % 60), [L('c.hint.short', { n: h })]], [faceOpt(h, 0), [L('c.hint.half6')]]]
+        : [[faceOpt(12, h * 5 % 60), [L('c.hint.short', { n: h })]], [faceOpt(h, 30), [L('c.hint.oclock')]]]);
+      out.ask = L('c.ask.match'); out.said = [L(half ? 'c.said.match.half' : 'c.said.match.hour', { n: h })]; out.show = L('show.time', { t: clockText(h, m) }); out.shown = L('show.time', { t: clockText(h, m) });
+    } else if (n === 3) {
+      // to five minutes, with a.m. and p.m.: breakfast is in the morning, a snack after school, bedtime at night
+      var meal = lap === 0 ? 'breakfast' : one(r, Object.keys(MEALS)), M = MEALS[meal], other = M.ap === 'a.m.' ? 'p.m.' : 'a.m.';
+      h = lap === 0 ? 7 : one(r, M.hours); m = lap === 0 ? 10 : one(r, [5, 10, 15, 20, 25, 35, 40, 45, 50, 55].filter(function (x) { return x / 5 !== h; }));
+      out.kind = 'five'; out.meal = meal; out.pic = { h: h, m: m, meal: meal };
+      offer(r, out, timeOpt(h, m, M.ap), [[timeOpt(h, m, other), [L('c.hint.' + meal)]], [timeOpt(m / 5, h * 5 % 60, M.ap), [L('c.hint.short', { n: h }), L('c.hint.fives')]]]);
+      out.ask = L('c.ask.five.' + meal); out.said = [L('c.said.five.' + meal, { h: h, m: pad(m) })]; out.show = L('show.q.time'); out.shown = L('show.time', { t: clockText(h, m, M.ap) });
+    } else if (n <= 5) {
+      // the tip jar, in cents: dimes and pennies (or nickels and pennies), then quarters too
+      if (lap === 0) coins = n === 4 ? ['d', 'd', 'p', 'p', 'p'] : ['q', 'd', 'n', 'p', 'p'];
+      else if (n === 4) { var big = one(r, ['d', 'd', 'n']), nb = between(r, 1, 4), np = between(r, 1, 4); coins = []; for (w = 0; w < nb; w++) coins.push(big); for (w = 0; w < np; w++) coins.push('p'); }
+      else { coins = ['q']; if (r() < 0.4) coins.push('q'); for (w = between(r, 0, 2); w > 0; w--) coins.push('d'); for (w = between(r, 0, 2); w > 0; w--) coins.push('n'); for (w = between(r, 1, 2); w > 0; w--) coins.push('p'); }
+      total = cents(coins); count = coins.length;
+      // the wrong answers: each coin counted as one cent; and the pennies swapped with the biggest coin (round 4), or
+      // a quarter counted as a dime (round 5)
+      var swapped = n === 4 ? coins.reduce(function (a, c) { return a + (c === 'p' ? COIN[coins[0]] : 1); }, 0) : total - 15;
+      if (swapped === total || swapped === count || swapped <= 0) swapped = total + 10;
+      out.kind = 'coins'; out.pic = { coins: coins, bill: 0 };
+      offer(r, out, centOpt(total), [[centOpt(count), [L('k.hint.value')]], [centOpt(swapped), [L(n === 4 ? 'k.hint.big' : 'k.hint.quarter')]]]);
+      out.ask = L('k.ask.cents'); out.said = [L('k.said.cents', { n: total })]; out.show = L('show.q.cents'); out.shown = L('show.cents', { n: total });
+    } else {
+      // one round with a dollar bill: dollars and cents, written with the dollar sign
+      if (lap === 0) coins = ['q', 'n'];
+      else { coins = []; for (w = between(r, 0, 2); w > 0; w--) coins.push('q'); for (w = between(r, 0, 2); w > 0; w--) coins.push('d'); for (w = between(r, coins.length ? 0 : 1, 1); w > 0; w--) coins.push('n'); }
+      total = cents(coins); count = coins.length + 1;
+      out.kind = 'dollar'; out.pic = { coins: coins, bill: 1 };
+      offer(r, out, dollarOpt(100 + total), [[centOpt(total + 1), [L('k.hint.bill')]], [dollarOpt(count * 100), [L('k.hint.value')]]]);
+      out.ask = L('k.ask.dollar'); out.said = [L('k.said.dollar', { n: total })]; out.show = L('show.q.dollar'); out.shown = L('show.dollar', { t: dollarOpt(100 + total).t });
+    }
+  }
+
+  /* ---- chart: vegetables sorted into bins, then a picture graph and a bar graph of four fruits ---- */
+  var VEG = ['carrot', 'tomato', 'potato'], FRUIT = ['apple', 'banana', 'pear', 'plum'];
+  var MORE3 = [['carrot', 'tomato'], ['potato', 'tomato'], ['carrot', 'potato']];   // "how many more a than b": a has more
+  var BARQ = [['apple', 'plum', 'more'], ['banana', 'pear', 'fewer'], ['pear', 'banana', 'more'], ['plum', 'apple', 'fewer']];
+  var ALLQ = [['apple', 'banana'], ['pear', 'plum']];
+  var FIRST_VEG = { carrot: 5, tomato: 2, potato: 4 }, FIRST_FRUIT = { apple: 5, banana: 3, pear: 6, plum: 2 };
+  /** `k` different counts from lo to hi. */
+  function counts(r, k, lo, hi) { var all = []; for (var i = lo; i <= hi; i++) all.push(i); return shuffle(r, all).slice(0, k); }
+  function pickOpt(kind) { return { v: kind, key: 'btn.' + kind, pic: kind }; }
+  function chartRound(n, lap, r, out) {
+    var kinds, cs, data = {}, a, b, i, sum;
+    if (n === 1) {
+      // a jumble of two kinds: sort them into two bins and count one kind
+      kinds = lap === 0 ? ['carrot', 'tomato'] : shuffle(r, VEG).slice(0, 2); cs = lap === 0 ? [4, 3] : counts(r, 2, 2, 6);
+      a = lap === 0 ? 1 : between(r, 0, 1); b = 1 - a;
+      out.kind = 'sort'; out.pic = { kinds: kinds, counts: cs, mark: [kinds[a]] };
+      offer(r, out, num(cs[a]), [[num(cs[b]), [L('ch.hint.other')]], [num(cs[a] + cs[b]), [L('ch.hint.total')]]]);
+      out.ask = L('ch.ask.count.' + kinds[a]); out.said = [L('ch.said.count.' + kinds[a], { n: cs[a] })]; out.show = L('show.q.' + kinds[a]); out.shown = L('show.a.' + kinds[a], { n: cs[a] });
+    } else if (n <= 3) {
+      // three bins, sorted: which has the most (or the fewest), then how many more (or how many altogether)
+      kinds = VEG.slice(); cs = lap === 0 ? kinds.map(function (k) { return FIRST_VEG[k]; }) : counts(r, 3, 1, 6);
+      if (n === 2) {
+        var want = lap % 2 === 0 ? 'most' : 'fewest', best = cs.indexOf(Math[want === 'most' ? 'max' : 'min'].apply(null, cs));
+        out.kind = 'most'; out.want = want; out.pic = { kinds: kinds, counts: cs, mark: [] };
+        fixed(out, kinds.map(pickOpt), best, function (j) { return [L('ch.hint.has.' + kinds[j], { n: cs[j] }), L('ch.hint.' + want)]; });
+        out.ask = L('ch.ask.' + want); out.said = [L('ch.said.' + want + '.' + kinds[best], { n: cs[best] })]; out.show = L('show.q.' + want); out.shown = L('show.a.' + kinds[best], { n: cs[best] });
+      } else if (lap % 2 === 0) {
+        var q = MORE3[(lap / 2) % 3]; a = kinds.indexOf(q[0]); b = kinds.indexOf(q[1]);
+        if (cs[a] < cs[b]) { i = cs[a]; cs[a] = cs[b]; cs[b] = i; }
+        out.kind = 'more'; out.pic = { kinds: kinds, counts: cs, mark: [q[0], q[1]] };
+        offer(r, out, num(cs[a] - cs[b]), [[num(cs[a]), [L('ch.hint.has.' + q[0], { n: cs[a] }), L('ch.hint.more')]], [num(cs[a] + cs[b]), [L('ch.hint.noadd')]]]);
+        out.ask = L('ch.ask.more.' + q[0] + '.' + q[1]); out.said = [L('ch.said.more', { a: cs[a], b: cs[b], n: cs[a] - cs[b] })]; out.show = L('show.q.more'); out.shown = L('show.a.more', { n: cs[a] - cs[b] });
+      } else {
+        sum = cs[0] + cs[1] + cs[2]; var top = Math.max.apply(null, cs), low = Math.min.apply(null, cs);
+        out.kind = 'total'; out.pic = { kinds: kinds, counts: cs, mark: kinds.slice() };
+        offer(r, out, num(sum), [[num(top), [L('ch.hint.onebin')]], [num(sum - low), [L('ch.hint.allbins')]]]);
+        out.ask = L('ch.ask.total'); out.said = [L('ch.said.total', { n: sum })]; out.show = L('show.q.total'); out.shown = L('show.a.total', { n: sum });
+      }
+    } else {
+      // four fruits for the fruit salad: a picture graph (how many), then a bar graph (how many more or fewer, how
+      // many altogether). The first lap keeps one set of numbers through all three rounds.
+      kinds = FRUIT.slice(); cs = lap === 0 ? kinds.map(function (k) { return FIRST_FRUIT[k]; }) : counts(r, 4, 1, n === 4 ? 7 : 8);
+      for (i = 0; i < 4; i++) data[kinds[i]] = cs[i];
+      if (n === 4) {
+        a = lap === 0 ? 2 : between(r, 0, 3); var others = [0, 1, 2, 3].filter(function (j) { return j !== a; });
+        others = lap === 0 ? [1, 3] : shuffle(r, others).slice(0, 2);
+        out.kind = 'pic'; out.pic = { kinds: kinds, counts: cs, mark: [kinds[a]] };
+        offer(r, out, num(cs[a]), others.map(function (j) { return [num(cs[j]), [L('ch.hint.row.' + kinds[j]), L('ch.hint.row')]]; }));
+        out.ask = L('ch.ask.pic.' + kinds[a]); out.said = [L('ch.said.count.' + kinds[a], { n: cs[a] })]; out.show = L('show.q.' + kinds[a]); out.shown = L('show.a.' + kinds[a], { n: cs[a] });
+      } else if (n === 5) {
+        var Q = BARQ[lap % 4], big = Q[2] === 'more' ? Q[0] : Q[1], small = Q[2] === 'more' ? Q[1] : Q[0];
+        a = kinds.indexOf(big); b = kinds.indexOf(small);
+        if (cs[a] < cs[b]) { i = cs[a]; cs[a] = cs[b]; cs[b] = i; }
+        out.kind = 'bar'; out.want = Q[2]; out.pic = { kinds: kinds, counts: cs, mark: [big, small] };
+        offer(r, out, num(cs[a] - cs[b]), [[num(cs[a]), [L('ch.hint.bars')]], [num(cs[a] + cs[b]), [L('ch.hint.noadd')]]]);
+        out.ask = L('ch.ask.bar.' + Q[2] + '.' + Q[0] + '.' + Q[1]);
+        out.said = [Q[2] === 'more' ? L('ch.said.more', { a: cs[a], b: cs[b], n: cs[a] - cs[b] }) : L('ch.said.fewer', { a: cs[b], b: cs[a], n: cs[a] - cs[b] })];
+        out.show = L('show.q.' + Q[2]); out.shown = L('show.a.' + Q[2], { n: cs[a] - cs[b] });
+      } else if (lap % 3 === 2) {
+        cs = lap === 0 ? cs : counts(r, 4, 1, 6); sum = cs[0] + cs[1] + cs[2] + cs[3]; var two = cs.slice().sort(function (x, y) { return y - x; });
+        out.kind = 'bar'; out.want = 'all4'; out.pic = { kinds: kinds, counts: cs, mark: kinds.slice() };
+        offer(r, out, num(sum), [[num(two[0]), [L('ch.hint.onebar')]], [num(two[0] + two[1]), [L('ch.hint.allbars')]]]);
+        out.ask = L('ch.ask.all4'); out.said = [L('ch.said.all4', { n: sum })]; out.show = L('show.q.total'); out.shown = L('show.a.total', { n: sum });
+      } else {
+        var P = ALLQ[lap % 3]; a = kinds.indexOf(P[0]); b = kinds.indexOf(P[1]); sum = cs[a] + cs[b];
+        out.kind = 'bar'; out.want = 'all'; out.pic = { kinds: kinds, counts: cs, mark: [P[0], P[1]] };
+        offer(r, out, num(sum), [[num(Math.abs(cs[a] - cs[b])), [L('ch.hint.together')]], [num(Math.max(cs[a], cs[b])), [L('ch.hint.onebar')]]]);
+        out.ask = L('ch.ask.all.' + P[0] + '.' + P[1]); out.said = [L('ch.said.all', { a: cs[a], b: cs[b], n: sum })]; out.show = L('show.q.total'); out.shown = L('show.a.total', { n: sum });
+      }
+    }
+  }
+
+  /* ---- gate: The Garden Gate feast, one round from each earlier unit ---- */
+  var SHARE = { 2: 'half', 3: 'third', 4: 'fourth' }, MARK = { half: '½', third: '⅓', fourth: '¼' };
+  var SHAPES = { circle: 'plate', triangle: 'napkin', square: 'cracker', rectangle: 'tray', hexagon: 'cookie' };
+  function gateRound(n, lap, r, out) {
+    var a, b, c, d, sum, t, o, h;
+    if (n === 1) {
+      // Unit 1: a teen number is ten and some more (a full tray of ten buns, and some on the next tray)
+      a = lap === 0 ? 4 : between(r, 1, 9); sum = 10 + a;
+      out.kind = 'teen'; out.pic = { n: sum };
+      offer(r, out, num(sum), [[num(a === 1 ? 12 : a * 10 + 1), [L('g.hint.teen.ten')]], [num(1 + a), [L('g.hint.teen')]]]);
+      out.ask = L('g.ask.teen'); out.said = [L('g.said.teen', { a: a, n: sum })]; out.show = L('show.q.buns'); out.shown = L('show.a.buns', { n: sum });
+    } else if (n === 2) {
+      // Unit 2: adding over ten (make ten first)
+      a = lap === 0 ? 8 : between(r, 6, 9); b = lap === 0 ? 5 : between(r, 11 - a, 9); sum = a + b;
+      var away = a - b > 0 && a - b !== sum - 1 ? a - b : sum + 1;
+      out.kind = 'add'; out.pic = { a: a, b: b };
+      offer(r, out, num(sum), [[num(sum - 1), [L('g.hint.ten', { n: 10 - a })]], [num(away), [L('g.hint.add')]]]);
+      out.ask = L('g.ask.add', { a: a, b: b }); out.said = [L('g.said.add', { a: a, b: b, n: sum })]; out.show = L('show.add', { a: a, b: b }); out.shown = L('show.add.yes', { a: a, b: b, n: sum });
+    } else if (n === 3) {
+      // Unit 3: tens and ones (bags of ten rolls, and some loose)
+      t = lap === 0 ? 3 : between(r, 2, 9); o = lap === 0 ? 6 : one(r, [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(function (x) { return x !== t; })); sum = t * 10 + o;
+      out.kind = 'tens'; out.pic = { t: t, o: o };
+      offer(r, out, num(sum), [[num(o * 10 + t), [L('g.hint.tens', { n: t })]], [num(t + o), [L('g.hint.bag')]]]);
+      out.ask = L('g.ask.tens', { a: t, b: o }); out.said = [L('g.said.tens', { a: t, b: o, n: sum })]; out.show = L('show.q.rolls'); out.shown = L('show.a.rolls', { n: sum });
+    } else if (n === 4 && lap % 2 === 0) {
+      // Unit 4: the equals sign means the same as (both sides of the scale make the same number)
+      sum = lap === 0 ? 8 : between(r, 6, 12); a = lap === 0 ? 6 : between(r, 2, sum - 2); b = sum - a;
+      c = lap === 0 ? 4 : one(r, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].filter(function (x) { return x < sum && x !== a && sum - x !== x + sum; })); d = sum - c;
+      out.kind = 'equal'; out.pic = { a: a, b: b, c: c, d: d };
+      offer(r, out, num(d), [[num(sum), [L('g.hint.equal', { n: sum }), L('g.hint.equal.right', { n: c })]], [num(sum + c), [L('g.hint.equal', { n: sum })]]]);
+      out.ask = L('g.ask.equal'); out.said = [L('g.said.equal', { n: sum })]; out.show = L('show.equal', { a: a, b: b, c: c }); out.shown = L('show.equal.yes', { a: a, b: b, c: c, d: d });
+    } else if (n === 4) {
+      // Unit 4 on a replay: a story problem that compares (how many more forks than spoons)
+      a = between(r, 5, 9); b = between(r, 2, a - 1); d = a - b;
+      out.kind = 'story'; out.pic = { a: a, b: b };
+      offer(r, out, num(d), [[num(a + b), [L('g.hint.story.add')]], [num(a), [L('g.hint.story')]]]);
+      out.ask = L('g.ask.story', { a: a, b: b }); out.said = [L('g.said.story', { a: a, b: b, n: d })]; out.show = L('show.story', { a: a, b: b }); out.shown = L('show.story.yes', { a: a, b: b, n: d });
+    } else if (n === 5) {
+      // Unit 5: hundreds, tens and ones (boxes of 100 cups, stacks of ten, single cups); on some replays no tens at all
+      h = lap === 0 ? 2 : between(r, 1, 4); t = lap === 0 ? 4 : lap % 3 === 1 ? 0 : between(r, 1, 9); o = lap === 0 ? 5 : one(r, [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(function (x) { return x !== t; }));
+      sum = h * 100 + t * 10 + o;
+      out.kind = 'hund'; out.pic = { h: h, t: t, o: o };
+      offer(r, out, num(sum), [t === 0 ? [num(h * 10 + o), [L('g.hint.hund.zero')]] : [num(h * 100 + o * 10 + t), [L('g.hint.hund.order')]], [num(h + t + o), [L('g.hint.hund.box')]]]);
+      out.ask = L('g.ask.hund', { a: h, b: t, c: o }); out.said = [L('g.said.hund', { a: h, b: t, c: o, n: sum })]; out.show = L('show.q.cups'); out.shown = L('show.a.cups', { n: sum });
+    } else if (lap % 2 === 0) {
+      // Unit 6: equal shares of a pie, one share pulled out: what is it called?
+      var parts = lap === 0 ? 4 : one(r, [2, 3, 4]), names = ['half', 'third', 'fourth'];
+      out.kind = 'share'; out.pic = { parts: parts };
+      fixed(out, names.map(function (k) { return { v: k, key: 'btn.' + k, t: MARK[k] }; }), names.indexOf(SHARE[parts]), function () { return [L('g.hint.share', { n: parts })]; });
+      out.ask = L('g.ask.share'); out.said = [L('g.said.share.' + SHARE[parts])]; out.show = L('show.share', { n: parts }); out.shown = L('show.is.' + SHARE[parts]);
+    } else {
+      // Unit 6 on a replay: the name of a shape, whatever the thing is (a square is a rectangle too, so the two are
+      // never offered together)
+      var shape = one(r, Object.keys(SHAPES)), pool = Object.keys(SHAPES).filter(function (s) { return s !== shape && !(shape === 'square' && s === 'rectangle') && !(shape === 'rectangle' && s === 'square'); });
+      out.kind = 'shape'; out.pic = { shape: shape, thing: SHAPES[shape] };
+      pool = shuffle(r, pool); if (pool.slice(0, 2).indexOf('square') >= 0 && pool.slice(0, 2).indexOf('rectangle') >= 0) pool.splice(pool.indexOf('rectangle'), 1);
+      offer(r, out, { v: shape, key: 'btn.' + shape }, pool.slice(0, 2).map(function (s) { return [{ v: s, key: 'btn.' + s }, [L('g.hint.shape.' + shape)]]; }));
+      out.ask = L('g.ask.shape'); out.said = [L('g.said.shape.' + shape)]; out.show = L('show.q.shape'); out.shown = L('show.' + shape);
+    }
+  }
+
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'measure') measureRound(n, lap, r, out); else if (chapter === 'clock') clockRound(n, lap, r, out); else if (chapter === 'chart') chartRound(n, lap, r, out); else gateRound(n, lap, r, out);
+    return out;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.KitchenRush = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params, OBJ: OBJ, RULER: RULER, LAYS: LAYS, MEALS: MEALS, COIN: COIN, VEG: VEG, FRUIT: FRUIT, SHARE: SHARE, SHAPES: SHAPES };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* kitchen-rush:end */
+</script>
+<script>
+/* ===== Kitchen Rush's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {n}
+   takes a number in its place (never a word). The show.* lines are what the chip and the board show and the btn.*
+   lines are button labels: shown, never spoken. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Kitchen Rush",
+    "loading": "Getting the kitchen ready.",
+    "hero.pick": "Pick your helper.",
+    "menu.pick": "Pick a job.",
+    "ch.measure": "Measure It",
+    "ch.clock": "Clocks and Coins",
+    "ch.chart": "Sort and Chart",
+    "ch.gate": "The Garden Gate",
+    "m.ask.units.baguette": "How many sugar cubes long is the baguette?",
+    "m.ask.units.pin": "How many sugar cubes long is the rolling pin?",
+    "m.ask.units.spoon": "How many beans long is the spoon?",
+    "m.ask.units.fork": "How many beans long is the fork?",
+    "m.ask.units.carrot": "How many grapes long is the carrot?",
+    "m.ask.units.cucumber": "How many grapes long is the cucumber?",
+    "m.ask.fair": "Do the cubes measure it the right way?",
+    "m.ask.in.baguette": "How many inches long is the baguette?",
+    "m.ask.in.pin": "How many inches long is the rolling pin?",
+    "m.ask.in.spoon": "How many inches long is the spoon?",
+    "m.ask.in.fork": "How many inches long is the fork?",
+    "m.ask.in.carrot": "How many inches long is the carrot?",
+    "m.ask.in.cucumber": "How many inches long is the cucumber?",
+    "m.ask.cm.baguette": "How many centimeters long is the baguette?",
+    "m.ask.cm.pin": "How many centimeters long is the rolling pin?",
+    "m.ask.cm.spoon": "How many centimeters long is the spoon?",
+    "m.ask.cm.fork": "How many centimeters long is the fork?",
+    "m.ask.cm.carrot": "How many centimeters long is the carrot?",
+    "m.ask.cm.cucumber": "How many centimeters long is the cucumber?",
+    "m.ask.longer.in": "How many inches longer is the top one?",
+    "m.ask.longer.cm": "How many centimeters longer is the top one?",
+    "m.hint.count": "Touch each one and count. They sit end to end.",
+    "m.hint.fair.gaps": "Look between the cubes. There are gaps.",
+    "m.hint.fair.overlap": "Look closely. Some cubes sit on each other.",
+    "m.hint.fair.mixed": "Look at the sizes. They are not the same.",
+    "m.hint.fair.good": "Look again. The cubes touch, end to end.",
+    "m.hint.zero": "It starts at 0. Read the number at its end.",
+    "m.hint.off": "It starts at {n}, not at 0.",
+    "m.hint.spaces": "Count the spaces from its start to its end.",
+    "m.hint.long.top": "The top one is {n} long. Find how much longer.",
+    "m.hint.long.add": "Do not add. Find how much longer it is.",
+    "m.said.units.cube": "Yes! It is {n} sugar cubes long.",
+    "m.said.units.bean": "Yes! It is {n} beans long.",
+    "m.said.units.grape": "Yes! It is {n} grapes long.",
+    "m.said.fair.good": "Yes! Same size, end to end, with no gaps.",
+    "m.said.fair.gaps": "No. There are gaps between the cubes.",
+    "m.said.fair.overlap": "No. Some cubes sit on top of others.",
+    "m.said.fair.mixed": "No. The cubes are not all the same size.",
+    "m.said.in": "Yes! It is {n} inches long.",
+    "m.said.cm": "Yes! It is {n} centimeters long.",
+    "m.said.off.in": "Yes! From {a} to {b} is {n} inches.",
+    "m.said.off.cm": "Yes! From {a} to {b} is {n} centimeters.",
+    "m.said.longer": "Yes! {a} take away {b} is {n}.",
+    "c.ask.read": "What time does the kitchen clock show?",
+    "c.ask.match": "Which clock shows the oven's time?",
+    "c.ask.five.breakfast": "It is breakfast time. What time is it?",
+    "c.ask.five.snack": "It is after school. What time is it?",
+    "c.ask.five.bedtime": "It is bedtime. What time is it?",
+    "c.hint.short": "The short hand shows the hour. It is {n}.",
+    "c.hint.oclock": "The long hand on 12 means o'clock.",
+    "c.hint.past": "The short hand is just past {n}.",
+    "c.hint.half6": "Half past: the long hand points to 6.",
+    "c.hint.fives": "The long hand counts by fives.",
+    "c.hint.breakfast": "Breakfast is in the morning. Morning is a.m.",
+    "c.hint.snack": "After school is the afternoon. Afternoon is p.m.",
+    "c.hint.bedtime": "Bedtime is at night. Night is p.m.",
+    "c.said.hour": "Yes! It is {n} o'clock.",
+    "c.said.half": "Yes! It is half past {n}.",
+    "c.said.match.half": "Yes! Half past {n}: the long hand is on 6.",
+    "c.said.match.hour": "Yes! {n} o'clock: the long hand is on 12.",
+    "c.said.five.breakfast": "Yes! {h}:{m} a.m., in the morning.",
+    "c.said.five.snack": "Yes! {h}:{m} p.m., in the afternoon.",
+    "c.said.five.bedtime": "Yes! {h}:{m} p.m., at night.",
+    "k.ask.cents": "How many cents are in the tip jar?",
+    "k.ask.dollar": "How much money is in the tip jar?",
+    "k.hint.value": "Each one has its own value. Read it.",
+    "k.hint.big": "Start with the biggest value. Then count on.",
+    "k.hint.quarter": "A quarter is 25 cents. Then count on.",
+    "k.hint.bill": "The bill is 1 dollar. That is 100 cents.",
+    "k.said.cents": "Yes! That makes {n} cents.",
+    "k.said.dollar": "Yes! 1 dollar and {n} cents.",
+    "ch.ask.count.carrot": "Sort them. How many carrots are there?",
+    "ch.ask.count.tomato": "Sort them. How many tomatoes are there?",
+    "ch.ask.count.potato": "Sort them. How many potatoes are there?",
+    "ch.ask.most": "Which bin has the most?",
+    "ch.ask.fewest": "Which bin has the fewest?",
+    "ch.ask.more.carrot.tomato": "How many more carrots than tomatoes?",
+    "ch.ask.more.potato.tomato": "How many more potatoes than tomatoes?",
+    "ch.ask.more.carrot.potato": "How many more carrots than potatoes?",
+    "ch.ask.total": "How many vegetables are there altogether?",
+    "ch.ask.pic.apple": "How many apples does the graph show?",
+    "ch.ask.pic.banana": "How many bananas does the graph show?",
+    "ch.ask.pic.pear": "How many pears does the graph show?",
+    "ch.ask.pic.plum": "How many plums does the graph show?",
+    "ch.ask.bar.more.apple.plum": "How many more apples than plums?",
+    "ch.ask.bar.fewer.banana.pear": "How many fewer bananas than pears?",
+    "ch.ask.bar.more.pear.banana": "How many more pears than bananas?",
+    "ch.ask.bar.fewer.plum.apple": "How many fewer plums than apples?",
+    "ch.ask.all.apple.banana": "How many apples and bananas altogether?",
+    "ch.ask.all.pear.plum": "How many pears and plums altogether?",
+    "ch.ask.all4": "How many pieces of fruit altogether?",
+    "ch.hint.other": "That is the other kind. Sort them first.",
+    "ch.hint.total": "That is all of them. Count one kind only.",
+    "ch.hint.has.carrot": "The carrot bin has {n}.",
+    "ch.hint.has.tomato": "The tomato bin has {n}.",
+    "ch.hint.has.potato": "The potato bin has {n}.",
+    "ch.hint.most": "Find the bin with the most.",
+    "ch.hint.fewest": "Find the bin with the fewest.",
+    "ch.hint.more": "Match them up. Count the extra ones.",
+    "ch.hint.noadd": "Do not add. Find the gap between them.",
+    "ch.hint.onebin": "That is one bin. Add all three bins.",
+    "ch.hint.allbins": "One bin is missing. Add all three bins.",
+    "ch.hint.row.apple": "That is the row of apples.",
+    "ch.hint.row.banana": "That is the row of bananas.",
+    "ch.hint.row.pear": "That is the row of pears.",
+    "ch.hint.row.plum": "That is the row of plums.",
+    "ch.hint.row": "Find the right row. Count across.",
+    "ch.hint.bars": "That is one bar. Find the gap between two.",
+    "ch.hint.together": "Altogether means add the two bars.",
+    "ch.hint.onebar": "That is one bar. Add the others too.",
+    "ch.hint.allbars": "Some bars are missing. Add all four.",
+    "ch.said.count.carrot": "Yes! There are {n} carrots.",
+    "ch.said.count.tomato": "Yes! There are {n} tomatoes.",
+    "ch.said.count.potato": "Yes! There are {n} potatoes.",
+    "ch.said.count.apple": "Yes! The graph shows {n} apples.",
+    "ch.said.count.banana": "Yes! The graph shows {n} bananas.",
+    "ch.said.count.pear": "Yes! The graph shows {n} pears.",
+    "ch.said.count.plum": "Yes! The graph shows {n} plums.",
+    "ch.said.most.carrot": "Yes! {n} carrots is the most.",
+    "ch.said.most.tomato": "Yes! {n} tomatoes is the most.",
+    "ch.said.most.potato": "Yes! {n} potatoes is the most.",
+    "ch.said.fewest.carrot": "Yes! {n} carrots is the fewest.",
+    "ch.said.fewest.tomato": "Yes! {n} tomatoes is the fewest.",
+    "ch.said.fewest.potato": "Yes! {n} potatoes is the fewest.",
+    "ch.said.more": "Yes! {a} is {n} more than {b}.",
+    "ch.said.fewer": "Yes! {a} is {n} fewer than {b}.",
+    "ch.said.total": "Yes! There are {n} vegetables altogether.",
+    "ch.said.all": "Yes! {a} and {b} make {n} altogether.",
+    "ch.said.all4": "Yes! There are {n} pieces of fruit.",
+    "g.ask.teen": "How many buns are on the trays?",
+    "g.ask.add": "{a} carrots and {b} more. How many now?",
+    "g.ask.tens": "{a} bags of 10 rolls and {b} more. How many?",
+    "g.ask.equal": "Balance the scale. What number is missing?",
+    "g.ask.story": "{a} forks and {b} spoons. How many more forks?",
+    "g.ask.hund": "{a} boxes of 100, {b} tens, {c} ones. How many?",
+    "g.ask.share": "Equal shares of pie. What is one share called?",
+    "g.ask.shape": "What shape is this?",
+    "g.hint.teen": "A full tray holds 10. Count on from 10.",
+    "g.hint.teen.ten": "The full tray is 1 ten. It comes first.",
+    "g.hint.ten": "Make 10 first: move {n} over. Then count on.",
+    "g.hint.add": "They come together. Count them all.",
+    "g.hint.tens": "Bags of 10 come first: {n} tens.",
+    "g.hint.bag": "Each bag holds 10 rolls, not 1.",
+    "g.hint.equal": "Both sides must make {n}.",
+    "g.hint.equal.right": "The right side has {n} already.",
+    "g.hint.story": "Match each fork with a spoon. Count the extra.",
+    "g.hint.story.add": "Do not add. Find how many more forks.",
+    "g.hint.hund.order": "Hundreds come first, then tens, then ones.",
+    "g.hint.hund.zero": "No tens: write 0 in the tens place.",
+    "g.hint.hund.box": "Each box holds 100 cups, not 1.",
+    "g.hint.share": "Count the equal shares. There are {n}.",
+    "g.hint.shape.circle": "It is round, with no corners.",
+    "g.hint.shape.triangle": "Count the sides. It has 3.",
+    "g.hint.shape.square": "It has 4 sides, all the same length.",
+    "g.hint.shape.rectangle": "It has 2 long sides and 2 short.",
+    "g.hint.shape.hexagon": "Count the sides. It has 6.",
+    "g.said.teen": "Yes! 10 and {a} make {n}.",
+    "g.said.add": "Yes! {a} and {b} make {n}.",
+    "g.said.tens": "Yes! {a} tens and {b} ones make {n}.",
+    "g.said.equal": "Yes! Both sides make {n}.",
+    "g.said.story": "Yes! {a} take away {b} is {n}.",
+    "g.said.hund": "Yes! {a} hundreds, {b} tens and {c} ones: {n}.",
+    "g.said.share.half": "Yes! One of 2 equal shares is one half.",
+    "g.said.share.third": "Yes! One of 3 equal shares is one third.",
+    "g.said.share.fourth": "Yes! One of 4 equal shares is one fourth.",
+    "g.said.shape.circle": "Yes! The plate is a circle.",
+    "g.said.shape.triangle": "Yes! 3 sides make a triangle.",
+    "g.said.shape.square": "Yes! 4 equal sides make a square.",
+    "g.said.shape.rectangle": "Yes! The tray is a rectangle.",
+    "g.said.shape.hexagon": "Yes! 6 sides make a hexagon.",
+    "win": "You did it!",
+    "win.card": "The party is ready. Well done!",
+    "win.gate": "The garden gate is open. Well done!",
+    "round": "Round {n} of {m}",
+    "show.q.cube": "? cubes long",
+    "show.q.bean": "? beans long",
+    "show.q.grape": "? grapes long",
+    "show.a.cube": "{n} cubes long",
+    "show.a.bean": "{n} beans long",
+    "show.a.grape": "{n} grapes long",
+    "show.q.fair": "right way?",
+    "show.a.fair.good": "end to end",
+    "show.a.fair.gaps": "gaps",
+    "show.a.fair.overlap": "overlaps",
+    "show.a.fair.mixed": "not the same size",
+    "show.q.in": "? inches",
+    "show.q.cm": "? centimeters",
+    "show.a.in": "{n} inches",
+    "show.a.cm": "{n} centimeters",
+    "show.q.longer": "how much longer?",
+    "show.a.longer.in": "{n} inches longer",
+    "show.a.longer.cm": "{n} centimeters longer",
+    "show.unit.in": "inches",
+    "show.unit.cm": "centimeters",
+    "show.q.time": "what time?",
+    "show.time": "{t}",
+    "show.q.cents": "? ¢",
+    "show.cents": "{n}¢",
+    "show.q.dollar": "$ ?",
+    "show.dollar": "{t}",
+    "show.q.carrot": "? carrots",
+    "show.q.tomato": "? tomatoes",
+    "show.q.potato": "? potatoes",
+    "show.q.apple": "? apples",
+    "show.q.banana": "? bananas",
+    "show.q.pear": "? pears",
+    "show.q.plum": "? plums",
+    "show.a.carrot": "{n} carrots",
+    "show.a.tomato": "{n} tomatoes",
+    "show.a.potato": "{n} potatoes",
+    "show.a.apple": "{n} apples",
+    "show.a.banana": "{n} bananas",
+    "show.a.pear": "{n} pears",
+    "show.a.plum": "{n} plums",
+    "show.q.most": "the most?",
+    "show.q.fewest": "the fewest?",
+    "show.q.more": "how many more?",
+    "show.q.fewer": "how many fewer?",
+    "show.a.more": "{n} more",
+    "show.a.fewer": "{n} fewer",
+    "show.q.total": "altogether?",
+    "show.a.total": "{n} altogether",
+    "show.graph": "Fruit for the salad",
+    "show.key": "= 1 fruit",
+    "show.q.buns": "? buns",
+    "show.a.buns": "{n} buns",
+    "show.add": "{a} + {b} = ?",
+    "show.add.yes": "{a} + {b} = {n}",
+    "show.q.rolls": "? rolls",
+    "show.a.rolls": "{n} rolls",
+    "show.equal": "{a} + {b} = {c} + ?",
+    "show.equal.yes": "{a} + {b} = {c} + {d}",
+    "show.story": "{a} − {b} = ?",
+    "show.story.yes": "{a} − {b} = {n}",
+    "show.q.cups": "? cups",
+    "show.a.cups": "{n} cups",
+    "show.share": "1 of {n}",
+    "show.is.half": "½ one half",
+    "show.is.third": "⅓ one third",
+    "show.is.fourth": "¼ one fourth",
+    "show.q.shape": "what shape?",
+    "show.circle": "circle",
+    "show.triangle": "triangle",
+    "show.square": "square",
+    "show.rectangle": "rectangle",
+    "show.hexagon": "hexagon",
+    "show.hundreds": "hundreds",
+    "show.tens": "tens",
+    "show.ones": "ones",
+    "btn.say": "Say it again",
+    "btn.yes": "Yes",
+    "btn.no": "No",
+    "btn.num": "Pick {n}",
+    "btn.clock": "Clock {n}",
+    "btn.carrot": "Carrots",
+    "btn.tomato": "Tomatoes",
+    "btn.potato": "Potatoes",
+    "btn.half": "One half",
+    "btn.third": "One third",
+    "btn.fourth": "One fourth",
+    "btn.circle": "Circle",
+    "btn.triangle": "Triangle",
+    "btn.square": "Square",
+    "btn.rectangle": "Rectangle",
+    "btn.hexagon": "Hexagon",
+    "btn.again": "Play again",
+    "btn.menu": "More jobs"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).KitchenRushI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the kitchen's friendly helper voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const KR = window.KitchenRush, T = (window.KitchenRushI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'kr', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
+const SAVE_KEY = 'kitchen-rush-v1';
+const ICON = { measure: '📏', clock: '🕒', chart: '📊', gate: '🌿' };
+
+/* ---------- state ---------- */
+const P = KR.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', mode: 'ask', hero: null, fast: false, line: null, reported: 0, done: {}, tick: 0, dishes: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of KR.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The chip: what the round is working out ("? inches", "3 + 5 = ?"), and what was found. */
+function chip(line, tone) { el.sum.textContent = line ? fmt(line[0], line[1]) : ''; el.sum.hidden = !line; el.sum.className = 'kr-sum' + (tone ? ' ' + tone : ''); }
+let hintTimer = 0;
+/** A hint: one or two of the game's lines, shown together and said one after the other. */
+function hint(lines) {
+  clearTimeout(hintTimer);
+  if (!lines || !lines.length) { el.hint.hidden = true; return; }
+  el.hint.textContent = lines.map(([k, v]) => fmt(k, v)).join(' '); el.hint.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { queue: i > 0 }));
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 7000);
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A wrong tap: a small wobble on the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D kitchen ---------- */
+let g;
+try {
+  g = await start({ theme: 'busy-kitchen', version: '1.0.0', graphics: 'auto', time: 'day', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its floor, walls, counters and food are the kitchen.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['floor', 'wall', 'wall-window', 'wall-door', 'counter', 'counter-sink', 'counter-corner', 'oven', 'stove', 'fridge', 'cupboard', 'kitchen-table', 'table-round', 'chair', 'stool',
+  'burger', 'veggie-burger', 'dinner', 'stew', 'carrot', 'tomato', 'potato', 'onion', 'lettuce', 'cheese', 'bun', 'crate-carrots', 'crate-tomatoes', 'pot', 'pan', 'plate', 'bowl', 'jar', 'ketchup'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+const INKC = '#141414', CREAM = '#FFFDF2', LEAF = '#1F9D63', WARN = '#C2431F', SUN = '#FFD23F';
+
+/* ---------- the kitchen: the theme's floor, walls, counters and cooker round a clear wall for the board ---------- */
+const room = new THREE.Group(), props = new THREE.Group(), feast = new THREE.Group();
+{
+  for (const x of [-8, -4, 0, 4, 8]) for (const z of [-2, 2, 6, 10, 14]) room.add(piece('floor', x, -0.5, z));
+  // the back wall (two storeys, so no sky shows over it on a tall screen) and the side walls
+  [['wall-window', -8], ['wall', -4], ['wall', 0], ['wall', 4], ['wall-window', 8]].forEach(([id, x]) => room.add(piece(id, x, 0, -4), piece('wall', x, 4, -4)));
+  for (const s of [-1, 1]) for (const z of [-2, 2, 6, 10]) room.add(piece(z === 2 ? 'wall-window' : z === 6 && s > 0 ? 'wall-door' : 'wall', s * 10, 0, z, 1, s * Math.PI / 2), piece('wall', s * 10, 4, z, 1, s * Math.PI / 2));
+  for (const [id, x, y, z, s = 1, turn = 0] of [
+    // along the back wall, either side of the board
+    ['fridge', -8.6, 0, -2.75, 1.15], ['counter', -6.4, 0, -2.85, 1.15], ['counter-sink', -4.1, 0, -2.85, 1.15], ['cupboard', -6.4, 2.75, -3.4, 1.1],
+    ['stove', 4.1, 0, -2.85, 1.15], ['oven', 6.4, 0, -2.8, 1.15], ['counter', 8.6, 0, -2.85, 1.15], ['cupboard', 8.6, 2.75, -3.4, 1.1],
+    ['pot', 4.1, 1.38, -2.9, 0.85], ['jar', -6.9, 1.15, -2.8, 1.1], ['jar', -6.3, 1.15, -3.0, 0.9], ['ketchup', -5.9, 1.15, -2.7, 1.0], ['bowl', 8.6, 1.15, -2.8, 1.0], ['lettuce', 8.6, 1.3, -2.8, 0.6],
+    // the floor in front: crates from the garden, a round table and its chairs
+    ['crate-carrots', -7.6, 0, 0.2, 0.9, 0.3], ['crate-tomatoes', -7.4, 0, 2.3, 0.9, -0.2], ['table-round', 7.2, 0, 1.6, 0.9], ['chair', 5.6, 0, 1.9, 1.1, 1.4], ['chair', 8.6, 0, 2.6, 1.1, -1.9],
+    ['bowl', 7.2, 0.9, 1.6, 1.0], ['tomato', 7.2, 1.02, 1.6, 0.5], ['stool', -5.4, 0, 1.2, 1.2]])
+    room.add(piece(id, x, y, z, s, turn));
+  g.scene.add(room, props, feast);
+}
+// On a tall screen the board hangs higher, over a run of counters, so the kitchen shows in the narrow view; on a wide
+// one the board comes down to the floor between the sink and the cooker, and these counters step aside.
+const under = new THREE.Group(), tops = new THREE.Group();   // `tops`: what stands on those counters, put away when the board hangs low (a short screen)
+for (const [id, x, y, z, s = 1, turn = 0] of [['counter', -1.16, 0, -2.85, 1.15], ['counter', 1.16, 0, -2.85, 1.15], ['pan', -1.5, 1.15, -2.6, 0.8, 0.5],
+  ['cupboard', -1.12, 4.95, -3.4, 1.1], ['cupboard', 1.12, 4.95, -3.4, 1.1]]) under.add(piece(id, x, y, z, s, turn));
+for (const [id, x, y, z, s = 1] of [['jar', -0.6, 1.15, -2.8, 1.0], ['bowl', 1.2, 1.15, -2.7, 1.0], ['tomato', 1.2, 1.27, -2.7, 0.5], ['ketchup', 1.9, 1.15, -2.8, 1.0]]) tops.add(piece(id, x, y, z, s));
+under.add(tops); props.add(under);
+// The party table (where each finished round's dish goes) moves with the screen's shape, so it is its own group.
+const table = piece('kitchen-table', 0, 0, 0, 1); props.add(table);
+const DISHES = ['burger', 'stew', 'dinner', 'veggie-burger', 'cheese', 'lettuce'];   // one for each finished round
+const DISH_K = { burger: 0.62, stew: 0.7, dinner: 0.62, 'veggie-burger': 0.62, cheese: 0.62, lettuce: 0.52 };
+const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the kitchen: the board
+
+/* ---------- the kitchen board: one picture, drawn by the game, always face on (so a ruler stays straight and a
+   clock stays round), redrawn for each round and for each of its three looks: asked, hinted (it shows why) and
+   found ---------- */
+const CW = 1024, CH = 768, BOARD = V3(0, 2.2, -3.05);
+let BW = 4.8, BH = 3.6;   // a wide screen's board; a tall screen's is 4 by 3, higher on the wall (sizeBoard)
+const LIGHT = new THREE.Color(1.5, 1.5, 1.5);   // brighter than white: the tone curve brings it back to cream
+const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = CH;
+const X = canvas.getContext('2d');
+const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
+const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
+board.renderOrder = 2;
+/** The board's size and place for the screen's shape: beside the helper on a wide screen, over the helper on a tall one. */
+function sizeBoard() { under.visible = tall; tops.visible = !squat(); BW = tall ? 4.0 : 4.8; BH = BW * 0.75; BOARD.y = squat() ? 2.92 : tall ? 3.12 : 2.2; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH]; }
+/** The smallest words and numbers a child must read on the board, in board pixels (the test turns it into screen pixels). */
+let smallest = 999;
+function text(s, px, py, size, o = {}) {
+  X.font = `${o.weight || 800} ${size}px "Bricolage Grotesque", system-ui, sans-serif`; X.textAlign = o.align || 'center'; X.textBaseline = o.base || 'middle';
+  if (o.halo) { X.strokeStyle = o.halo; X.lineWidth = size * 0.28; X.lineJoin = 'round'; X.strokeText(s, px, py); }
+  X.fillStyle = o.fill || INKC; X.fillText(s, px, py);
+  if (!o.deco) smallest = Math.min(smallest, size);
+}
+const P2 = d => new Path2D(d);
+function shapeAt(d, fill, px, py, k, o = {}) {
+  X.save(); X.translate(px, py); X.scale(k, k); const p = typeof d === 'string' ? P2(d) : d;
+  if (fill) { X.fillStyle = fill; X.fill(p); }
+  if (o.stroke !== false) { X.strokeStyle = o.stroke || INKC; X.lineWidth = (o.width || 8) / k; X.lineJoin = 'round'; X.stroke(p); }
+  X.restore();
+}
+const rr = (x0, y0, w, h, r) => { const p = new Path2D(); p.roundRect(x0, y0, w, h, r); return p; };
+const circ = (cx, cy, r) => { const p = new Path2D(); p.arc(cx, cy, r, 0, Math.PI * 2); return p; };
+function fillStroke(p, fill, stroke = INKC, width = 9) { if (fill) { X.fillStyle = fill; X.fill(p); } if (stroke) { X.strokeStyle = stroke; X.lineWidth = width; X.lineJoin = 'round'; X.stroke(p); } }
+function line(x0, y0, x1, y1, color = INKC, width = 9, dash) { X.save(); X.strokeStyle = color; X.lineWidth = width; X.lineCap = 'round'; if (dash) X.setLineDash(dash); X.beginPath(); X.moveTo(x0, y0); X.lineTo(x1, y1); X.stroke(); X.restore(); }
+/** A number in a round badge: what was counted or found. */
+function badge(s, px, py, size, fill = '#66C792') { const r = Math.max(size * 0.72, size * 0.36 * String(s).length + size * 0.3); fillStroke(rr(px - r, py - size * 0.7, r * 2, size * 1.4, size * 0.7), fill, INKC, 5); text(s, px, py + size * 0.04, size, { weight: 900 }); }
+
+// Food and tools as small pictures (a box of 100 by 100, the middle at 0, 0): each a list of [outline, colour]. The
+// same outlines draw the board (canvas) and the buttons (SVG).
+const CIRCLE = (cx, cy, r) => `M${cx - r} ${cy} A${r} ${r} 0 1 0 ${cx + r} ${cy} A${r} ${r} 0 1 0 ${cx - r} ${cy} Z`;
+const FOOD = {
+  carrot: [['M0 -20 L-14 -46 L-3 -34 L0 -50 L3 -34 L14 -46 Z', '#3fa34d'], ['M-17 -22 Q0 -31 17 -22 L4 44 Q0 49 -4 44 Z', '#f08a2c']],
+  tomato: [[CIRCLE(0, 6, 36), '#e2463c'], ['M0 -34 L-16 -24 L-6 -19 L-11 -5 L0 -14 L11 -5 L6 -19 L16 -24 Z', '#3fa34d']],
+  potato: [['M-40 8 C-40 -18 -14 -30 6 -24 C30 -18 42 -4 40 12 C36 32 10 36 -12 32 C-30 30 -40 24 -40 8 Z', '#c79a5b'], [CIRCLE(-12, -2, 3.5), '#7a5a30'], [CIRCLE(12, 10, 3.5), '#7a5a30'], [CIRCLE(18, -8, 3), '#7a5a30']],
+  apple: [['M-3 -20 L1 -44 L7 -42 L4 -19 Z', '#6b4a2b'], ['M0 -16 C-28 -40 -48 -6 -36 22 C-26 46 -8 46 0 38 C8 46 26 46 36 22 C48 -6 28 -40 0 -16 Z', '#d93a3a'], ['M6 -36 Q22 -50 34 -36 Q20 -26 6 -36 Z', '#3fa34d']],
+  banana: [['M-44 -16 Q-12 44 42 -4 Q48 -14 38 -18 Q6 12 -32 -26 Q-42 -28 -44 -16 Z', '#f6d33c']],
+  pear: [['M-2 -30 L0 -48 L6 -47 L4 -30 Z', '#6b4a2b'], ['M0 -34 C-12 -34 -13 -16 -18 -4 C-40 12 -36 46 0 46 C36 46 40 12 18 -4 C13 -16 12 -34 0 -34 Z', '#9ccc3c']],
+  plum: [['M-2 -26 L2 -46 L8 -44 L4 -25 Z', '#6b4a2b'], [CIRCLE(0, 8, 36), '#7a4fb3'], ['M8 -38 Q24 -48 34 -34 Q20 -26 8 -38 Z', '#3fa34d']],
+  bun: [['M-42 14 A42 38 0 0 1 42 14 L42 22 Q0 34 -42 22 Z', '#e0a458'], [CIRCLE(-14, -6, 3), '#fff3d6'], [CIRCLE(6, -14, 3), '#fff3d6'], [CIRCLE(20, 0, 3), '#fff3d6']],
+  cup: [['M-30 -34 L30 -34 L22 38 L-22 38 Z', '#8fc1f5'], ['M-30 -34 L30 -34 L28 -20 L-28 -20 Z', '#ffffff']],
+  forkpic: [['M-6 -4 L6 -4 L5 46 L-5 46 Z', '#c9ced6'], ['M-20 -46 L-14 -46 L-14 -18 L-4 -18 L-4 -46 L4 -46 L4 -18 L14 -18 L14 -46 L20 -46 L20 -10 Q20 0 0 0 Q-20 0 -20 -10 Z', '#c9ced6']],
+  spoonpic: [['M-5 -8 L5 -8 L4 46 L-4 46 Z', '#c9ced6'], ['M0 -48 C20 -48 22 -6 0 -4 C-22 -6 -20 -48 0 -48 Z', '#c9ced6']],
+};
+function food(kind, px, py, size, o = {}) { for (const [d, fill] of FOOD[kind]) shapeAt(d, o.ghost ? 'rgba(20,20,20,0.08)' : fill, px, py, size / 100, { width: o.ghost ? 4 : 7, stroke: o.ghost ? 'rgba(20,20,20,0.45)' : INKC }); }
+const NS = 'http://www.w3.org/2000/svg';
+function svg(viewBox) { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', viewBox); s.setAttribute('aria-hidden', 'true'); return s; }
+function svgEl(s, tag, at) { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); s.append(e); return e; }
+function foodSvg(kind) { const s = svg('-54 -54 108 108'); for (const [d, fill] of FOOD[kind]) svgEl(s, 'path', { d, fill, stroke: INKC, 'stroke-width': 4, 'stroke-linejoin': 'round' }); return s; }
+
+/* ---- a thing to measure, drawn lying flat from x0 to x1 (its whole length), middle at cy, h tall ---- */
+function thing(obj, x0, x1, cy, h) {
+  const w = x1 - x0, t = h / 2;
+  if (obj === 'baguette') {
+    fillStroke(rr(x0, cy - t * 0.72, w, t * 1.44, t * 0.72), '#e2a85c');
+    for (let i = 1; i <= 4; i++) { const px = x0 + w * i / 5; line(px - t * 0.25, cy - t * 0.4, px + t * 0.25, cy + t * 0.4, '#b7772f', 7); }
+  } else if (obj === 'cucumber') {
+    fillStroke(rr(x0, cy - t * 0.6, w, t * 1.2, t * 0.6), '#4f9a4a');
+    for (let i = 1; i <= 5; i++) { const px = x0 + w * i / 6; line(px, cy - t * 0.3, px, cy + t * 0.3, '#8ccf7e', 6); }
+  } else if (obj === 'carrot') {
+    const leaf = Math.min(w * 0.2, t * 1.1), p = new Path2D();
+    const top = new Path2D(); top.moveTo(x0 + leaf, cy); top.lineTo(x0, cy - t * 0.6); top.lineTo(x0 + leaf * 0.45, cy - t * 0.12); top.lineTo(x0, cy); top.lineTo(x0 + leaf * 0.45, cy + t * 0.12); top.lineTo(x0, cy + t * 0.6); top.closePath();
+    fillStroke(top, '#3fa34d');
+    p.moveTo(x0 + leaf, cy - t * 0.62); p.quadraticCurveTo(x0 + leaf - t * 0.3, cy, x0 + leaf, cy + t * 0.62); p.lineTo(x1, cy + t * 0.06); p.quadraticCurveTo(x1, cy, x1, cy - t * 0.06); p.closePath();
+    fillStroke(p, '#f08a2c');
+  } else if (obj === 'spoon' || obj === 'fork') {
+    const head = Math.min(w * 0.3, t * 2.2);
+    fillStroke(rr(x0 + head * 0.8, cy - t * 0.18, w - head * 0.8, t * 0.36, t * 0.18), '#c9ced6');
+    if (obj === 'spoon') { const p = new Path2D(); p.ellipse(x0 + head / 2, cy, head / 2, t * 0.7, 0, 0, Math.PI * 2); fillStroke(p, '#dfe6ee'); }
+    else {
+      const p = new Path2D(), a = cy - t * 0.7, gapH = t * 1.4 / 5;
+      p.moveTo(x0 + head, cy - t * 0.7); p.lineTo(x0, a); p.lineTo(x0, a + gapH); p.lineTo(x0 + head * 0.55, a + gapH); p.lineTo(x0 + head * 0.55, a + 2 * gapH); p.lineTo(x0, a + 2 * gapH); p.lineTo(x0, a + 3 * gapH);
+      p.lineTo(x0 + head * 0.55, a + 3 * gapH); p.lineTo(x0 + head * 0.55, a + 4 * gapH); p.lineTo(x0, a + 4 * gapH); p.lineTo(x0, cy + t * 0.7); p.lineTo(x0 + head, cy + t * 0.7); p.closePath();
+      fillStroke(p, '#dfe6ee');
+    }
+  } else {   // rolling pin
+    const hd = Math.min(w * 0.14, t * 0.9);
+    fillStroke(rr(x0, cy - t * 0.22, hd + 8, t * 0.44, t * 0.2), '#b7772f'); fillStroke(rr(x1 - hd - 8, cy - t * 0.22, hd + 8, t * 0.44, t * 0.2), '#b7772f');
+    fillStroke(rr(x0 + hd, cy - t * 0.62, w - 2 * hd, t * 1.24, t * 0.3), '#e8c489');
+  }
+}
+/** One unit to measure with, in the cell from x0 to x0 + w, standing on the line y. */
+function unitAt(unit, x0, y, w) {
+  if (unit === 'cube') { fillStroke(rr(x0 + 3, y - w + 3, w - 6, w - 6, w * 0.12), '#cfe3ff'); line(x0 + w * 0.24, y - w * 0.76, x0 + w * 0.46, y - w * 0.76, '#ffffff', 8); }
+  else if (unit === 'bean') { const p = new Path2D(); p.ellipse(x0 + w / 2, y - w * 0.32, w / 2 - 2, w * 0.3, 0, 0, Math.PI * 2); fillStroke(p, '#9c4a36'); line(x0 + w * 0.34, y - w * 0.38, x0 + w * 0.6, y - w * 0.38, '#d98b6f', 5); }
+  else { fillStroke(circ(x0 + w / 2, y - w / 2, w / 2 - 2), '#8a56c9'); fillStroke(circ(x0 + w * 0.36, y - w * 0.64, w * 0.08), '#d7c2f2', null); }
+}
+/** Where the units of a measuring row lie: [{ x0, w }] along a thing `len` units of `u` long, laid the way `lay` says. */
+function cellsOf(pic, x0, u) {
+  const out = [], Lp = pic.len * u;
+  if (pic.lay === 'gaps') { const k = pic.len - 2; for (let i = 0; i < k; i++) out.push({ x0: x0 + i * (Lp - u) / (k - 1), w: u }); }
+  else if (pic.lay === 'overlap') { const k = pic.len + 2; for (let i = 0; i < k; i++) out.push({ x0: x0 + i * (Lp - u) / (k - 1), w: u }); }
+  else if (pic.lay === 'mixed') { let px = x0; for (let i = 0; i < pic.len; i++) { const w = u * (i % 2 ? 0.62 : 1.38); out.push({ x0: px, w }); px += w; } }
+  else for (let i = 0; i < pic.len; i++) out.push({ x0: x0 + i * u, w: u });
+  return out;
+}
+function paintUnits(pic, mode, fair) {
+  const u = Math.min(132, 880 / pic.len), x0 = (CW - pic.len * u) / 2, x1 = x0 + pic.len * u, base = 540;
+  thing(pic.obj, x0, x1, 240, Math.min(190, u * 1.6));
+  line(x0, 120, x0, base + 30, 'rgba(20,20,20,0.55)', 5, [14, 12]); line(x1, 120, x1, base + 30, 'rgba(20,20,20,0.55)', 5, [14, 12]);
+  const cells = cellsOf(pic, x0, u);
+  // overlapping cubes are drawn from the far end, so each one's near edge shows
+  cells.forEach(c => unitAt(pic.unit, c.x0, base - (pic.lay === 'mixed' ? 0 : 0), c.w));
+  if (mode === 'ask') return;
+  if (!fair || pic.lay === 'good') { cells.forEach((c, i) => badge(i + 1, c.x0 + c.w / 2, base + 84, Math.min(60, u * 0.5), mode === 'found' ? '#66C792' : SUN)); return; }
+  // why this row does not measure: the gaps, the overlaps, or the two sizes, marked in red
+  if (pic.lay === 'gaps') for (let i = 0; i + 1 < cells.length; i++) { const a = cells[i].x0 + u, b = cells[i + 1].x0; fillStroke(rr(a + 3, base - u, b - a - 6, u, 8), 'rgba(194,67,31,0.25)', WARN, 5); }
+  else if (pic.lay === 'overlap') for (let i = 0; i + 1 < cells.length; i++) { const a = cells[i + 1].x0, b = cells[i].x0 + u; fillStroke(rr(a, base - u - 8, b - a, u + 16, 6), 'rgba(194,67,31,0.3)', WARN, 5); }
+  else cells.forEach((c, i) => { if (i % 2) fillStroke(rr(c.x0 + 2, base - c.w - 2, c.w - 4, c.w + 2, 8), null, WARN, 7); });
+}
+/** A ruler from 0 to `max`, its 0 at x = rx0, one unit `u` wide, its top edge at y. */
+function ruler(unit, max, rx0, u, y) {
+  fillStroke(rr(rx0 - 40, y, max * u + 80, 190, 14), '#f3c95c');
+  for (let i = 0; i <= max; i++) {
+    line(rx0 + i * u, y + 5, rx0 + i * u, y + 54, INKC, 8);
+    if (i < max) line(rx0 + (i + 0.5) * u, y + 5, rx0 + (i + 0.5) * u, y + 30, INKC, 5);
+    text(String(i), rx0 + i * u, y + 96, unit === 'cm' ? 50 : 56, { weight: 900 });
+  }
+  text(fmt('show.unit.' + unit), CW / 2, y + 156, 40, { weight: 800 });
+}
+function paintRuler(pic, mode) {
+  const u = 860 / pic.max, rx0 = 82, y = 330, a = rx0 + pic.from * u, b = rx0 + pic.to * u, on = mode !== 'ask';
+  thing(pic.obj, a, b, y - 92, 150);
+  ruler(pic.unit, pic.max, rx0, u, y);
+  for (const px of [a, b]) line(px, y - 176, px, y + 56, on ? LEAF : 'rgba(20,20,20,0.55)', on ? 9 : 5, [14, 12]);
+  if (!on) return;
+  // why: where it starts and where it ends are ringed; when it does not start at 0 the spaces are counted
+  for (const [n, px] of [[pic.from, a], [pic.to, b]]) { X.strokeStyle = LEAF; X.lineWidth = 9; X.beginPath(); X.arc(px, y + 94, n > 9 ? 46 : 38, 0, Math.PI * 2); X.stroke(); }
+  if (pic.from > 0) for (let i = pic.from; i < pic.to; i++) { X.strokeStyle = LEAF; X.lineWidth = 8; X.beginPath(); X.arc(rx0 + (i + 0.5) * u, y + 262, u * 0.42, Math.PI, 0); X.stroke(); text(String(i - pic.from + 1), rx0 + (i + 0.5) * u, y + 300, 48, { weight: 900, fill: LEAF }); }
+}
+function paintLonger(pic, mode) {
+  const u = 860 / pic.max, rx0 = 82, y = 470, a = rx0 + pic.a.len * u, b = rx0 + pic.b.len * u, on = mode !== 'ask';
+  thing(pic.a.obj, rx0, a, 150, 140); thing(pic.b.obj, rx0, b, 340, 140);
+  ruler(pic.unit, pic.max, rx0, u, y);
+  line(rx0, 70, rx0, y + 56, 'rgba(20,20,20,0.55)', 5, [14, 12]);
+  line(a, 70, a, y + 56, on ? LEAF : 'rgba(20,20,20,0.55)', on ? 9 : 5, [14, 12]); line(b, 260, b, y + 56, on ? LEAF : 'rgba(20,20,20,0.55)', on ? 9 : 5, [14, 12]);
+  if (!on) return;
+  // why: the two ends are ringed on the ruler, and the gap between them is the answer
+  for (const [n, px] of [[pic.a.len, a], [pic.b.len, b]]) { X.strokeStyle = LEAF; X.lineWidth = 9; X.beginPath(); X.arc(px, y + 94, n > 9 ? 46 : 38, 0, Math.PI * 2); X.stroke(); }
+  fillStroke(rr(b + 6, 296, a - b - 12, 88, 10), 'rgba(255,210,63,0.6)', WARN, 7);
+  if (mode === 'found') badge(pic.a.len - pic.b.len, (a + b) / 2, 340, 54);
+}
+
+/* ---- clocks: the kitchen's clock face, and the oven with its digital clock ---- */
+const handAngle = (h, m) => [((h % 12) + m / 60) * Math.PI / 6, m * Math.PI / 30];
+function clockFace(cx, cy, R, h, m, o = {}) {
+  fillStroke(circ(cx, cy, R), '#ffffff', INKC, R * 0.045);
+  for (let i = 0; i < 60; i++) { const a = i * Math.PI / 30, big = i % 5 === 0, r0 = R * (big ? 0.88 : 0.93); line(cx + r0 * Math.sin(a), cy - r0 * Math.cos(a), cx + R * 0.97 * Math.sin(a), cy - R * 0.97 * Math.cos(a), INKC, R * (big ? 0.022 : 0.01)); }
+  for (let n = 1; n <= 12; n++) { if (o.few && n % 3) continue; const a = n * Math.PI / 6; text(String(n), cx + R * 0.74 * Math.sin(a), cy - R * 0.74 * Math.cos(a) + R * 0.01, R * (o.few ? 0.26 : 0.2), { weight: 900, deco: !!o.deco }); }
+  const [ha, ma] = handAngle(h, m);
+  if (o.glow) { line(cx, cy, cx + R * 0.5 * Math.sin(ha), cy - R * 0.5 * Math.cos(ha), SUN, R * 0.2); const hn = h % 12 || 12, a = hn * Math.PI / 6; X.strokeStyle = WARN; X.lineWidth = 7; X.beginPath(); X.arc(cx + R * 0.74 * Math.sin(a), cy - R * 0.74 * Math.cos(a), R * 0.13, 0, Math.PI * 2); X.stroke(); }
+  line(cx - R * 0.1 * Math.sin(ma), cy + R * 0.1 * Math.cos(ma), cx + R * 0.84 * Math.sin(ma), cy - R * 0.84 * Math.cos(ma), '#2f6fd6', R * 0.045);
+  line(cx - R * 0.08 * Math.sin(ha), cy + R * 0.08 * Math.cos(ha), cx + R * 0.5 * Math.sin(ha), cy - R * 0.5 * Math.cos(ha), INKC, R * 0.085);
+  fillStroke(circ(cx, cy, R * 0.055), WARN, INKC, 4);
+}
+function mealSign(meal, px, py) {
+  if (meal === 'bedtime') { fillStroke(rr(px - 84, py - 84, 168, 168, 26), '#27356b'); X.fillStyle = '#ffe9a6'; X.beginPath(); X.arc(px - 6, py, 50, 0.6, Math.PI * 2 - 0.6); X.arc(px + 22, py, 38, Math.PI * 2 - 0.95, 0.95, true); X.closePath(); X.fill(); for (const [dx, dy] of [[46, -52], [58, 30], [-58, -56]]) fillStroke(circ(px + dx, py + dy, 6), '#ffe9a6', null); return; }
+  fillStroke(rr(px - 84, py - 84, 168, 168, 26), meal === 'breakfast' ? '#ffd9b8' : '#bfe4ff');
+  const cy = meal === 'breakfast' ? py + 30 : py;
+  X.save(); X.beginPath(); X.rect(px - 78, py - 78, 156, meal === 'breakfast' ? 108 : 156); X.clip();
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; line(px + 50 * Math.cos(a), cy + 50 * Math.sin(a), px + 70 * Math.cos(a), cy + 70 * Math.sin(a), '#f0a020', 8); }
+  fillStroke(circ(px, cy, 40), SUN, INKC, 5); X.restore();
+  if (meal === 'breakfast') { line(px - 76, py + 30, px + 76, py + 30, INKC, 6); fillStroke(rr(px - 78, py + 33, 156, 45, 8), '#8fce7a', null); }
+}
+function paintClock(pic, mode, five) {
+  const cx = five ? 580 : 512, cy = 392, R = 300, on = mode !== 'ask';
+  clockFace(cx, cy, R, pic.h, pic.m, { glow: on });
+  if (five) mealSign(pic.meal, 130, 130);
+  // why: the short hand's hour is ringed; to five minutes, the long hand's fives are counted round the edge
+  if (on && five) for (let k = 1; k <= pic.m / 5; k++) { const a = k * Math.PI / 6; badge(k * 5, cx + (R + 44) * Math.sin(a), cy - (R + 44) * Math.cos(a), 36, '#bcd6fb'); }
+  if (mode === 'found') { const t = pic.h + ':' + (pic.m < 10 ? '0' : '') + pic.m; fillStroke(rr(40, 620, 250, 110, 22), INKC, INKC, 4); text(t, 165, 678, 76, { fill: '#9df5b9', weight: 900 }); }
+}
+function paintOven(pic, mode) {
+  fillStroke(rr(150, 60, 724, 660, 34), '#d7dce4'); fillStroke(rr(190, 96, 644, 250, 22), '#aeb6c2');
+  fillStroke(rr(280, 122, 464, 198, 20), '#10231a', INKC, 8);
+  text(pic.h + ':' + (pic.m < 10 ? '0' : '') + pic.m, 512, 228, 170, { fill: '#9df5b9', weight: 900 });
+  for (const px of [232, 792]) { fillStroke(circ(px, 222, 30), '#f4f6f9'); line(px, 222, px, 198, INKC, 6); }
+  fillStroke(rr(210, 400, 604, 280, 20), '#f4f6f9'); fillStroke(rr(260, 452, 504, 190, 16), '#27313d'); fillStroke(rr(280, 414, 464, 22, 11), '#8a93a1', INKC, 5);
+  if (mode !== 'ask') clockFace(512, 547, 86, pic.h, pic.m, { few: true, deco: true, glow: true });
+}
+/** A clock face for a button: the hands, the hour marks and 12, 3, 6 and 9. */
+function clockSvg(h, m) {
+  const s = svg('-52 -52 104 104'), [ha, ma] = handAngle(h, m);
+  svgEl(s, 'circle', { cx: 0, cy: 0, r: 48, fill: '#ffffff', stroke: INKC, 'stroke-width': 4 });
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; if (i % 3) svgEl(s, 'line', { x1: 40 * Math.sin(a), y1: -40 * Math.cos(a), x2: 45 * Math.sin(a), y2: -45 * Math.cos(a), stroke: INKC, 'stroke-width': 2.4, 'stroke-linecap': 'round' }); }
+  for (const n of [12, 3, 6, 9]) { const a = n * Math.PI / 6, t = svgEl(s, 'text', { x: 36 * Math.sin(a), y: -36 * Math.cos(a) + 4.6, 'font-size': 13, 'font-weight': 900, 'text-anchor': 'middle', fill: INKC }); t.textContent = n; }
+  svgEl(s, 'line', { x1: 0, y1: 0, x2: 39 * Math.sin(ma), y2: -39 * Math.cos(ma), stroke: '#2f6fd6', 'stroke-width': 4, 'stroke-linecap': 'round' });
+  svgEl(s, 'line', { x1: 0, y1: 0, x2: 23 * Math.sin(ha), y2: -23 * Math.cos(ha), stroke: INKC, 'stroke-width': 6.5, 'stroke-linecap': 'round' });
+  svgEl(s, 'circle', { cx: 0, cy: 0, r: 3.6, fill: WARN, stroke: INKC, 'stroke-width': 1.4 });
+  return s;
+}
+
+/* ---- the tip jar: coins told apart by size, colour and the value written on each; a dollar bill ---- */
+const COINS = { p: { r: 0.8, fill: '#c8773a', rim: '#8f4f1f', label: '1¢' }, n: { r: 0.94, fill: '#b9b4a6', rim: '#7d786b', label: '5¢' }, d: { r: 0.72, fill: '#e3eaf2', rim: '#8794a6', label: '10¢' }, q: { r: 1.12, fill: '#c3cad4', rim: '#5d6775', label: '25¢' } };
+function coin(c, px, py, r0) {
+  const K = COINS[c], r = K.r * r0;
+  fillStroke(circ(px, py, r), K.fill, INKC, 9);
+  X.strokeStyle = K.rim; X.lineWidth = 6; X.beginPath(); X.arc(px, py, r * 0.82, 0, Math.PI * 2); X.stroke();
+  if (c === 'q') for (let i = 0; i < 36; i++) { const a = i * Math.PI / 18; line(px + r * 0.88 * Math.cos(a), py + r * 0.88 * Math.sin(a), px + r * 0.97 * Math.cos(a), py + r * 0.97 * Math.sin(a), K.rim, 4); }
+  text(K.label, px, py + 2, r * 0.62, { weight: 900 });
+}
+function paintCoins(pic, mode) {
+  const order = ['q', 'd', 'n', 'p'], coins = pic.coins.slice().sort((a, b) => order.indexOf(a) - order.indexOf(b)), list = (pic.bill ? ['bill'] : []).concat(coins);
+  // a jar behind them, pale: this is the tip jar tipped out on the counter
+  fillStroke(rr(60, 60, 904, 648, 60), 'rgba(143,193,245,0.16)', 'rgba(20,20,20,0.25)', 5); fillStroke(rr(40, 34, 944, 46, 18), 'rgba(20,20,20,0.12)', 'rgba(20,20,20,0.25)', 5);
+  const rows = list.length > 3 ? [list.slice(0, Math.ceil(list.length / 2)), list.slice(Math.ceil(list.length / 2))] : [list], gap = 24, wide = c => (c === 'bill' ? 3.4 : COINS[c].r * 2);
+  // as big as the board allows: every row fits across, and two rows fit down
+  const r0 = Math.min(rows.length === 1 ? 140 : 112, ...rows.map(row => (880 - gap * (row.length - 1)) / row.reduce((a, c) => a + wide(c), 0)));
+  let run = 0;
+  rows.forEach((row, ri) => {
+    const widths = row.map(c => wide(c) * r0), tw = widths.reduce((a, b) => a + b, 0) + gap * (row.length - 1), cy = rows.length === 1 ? 372 : ri === 0 ? 224 : 520;
+    let px = (CW - tw) / 2;
+    row.forEach((c, i) => {
+      const mid = px + widths[i] / 2, hw = widths[i] / 2, hh = r0 * 0.84;
+      if (c === 'bill') { fillStroke(rr(px, cy - hh, hw * 2, hh * 2, 14), '#8fd09a'); fillStroke(rr(px + 18, cy - hh + 18, hw * 2 - 36, hh * 2 - 36, 8), null, '#2f6d3b', 6); fillStroke(circ(mid, cy, hh * 0.62), '#d3ecd3', '#2f6d3b', 6); text('$1', mid, cy + 3, r0 * 0.66, { weight: 900 }); run += 100; }
+      else { coin(c, mid, cy, r0); run += KR.COIN[c]; }
+      // why: count on from the biggest value, the running total under each one
+      if (mode !== 'ask') badge(pic.bill ? '$' + Math.floor(run / 100) + '.' + (run % 100 < 10 ? '0' : '') + run % 100 : run, mid, cy + (c === 'bill' ? hh : COINS[c].r * r0) + 20, 44, mode === 'found' ? '#66C792' : SUN);
+      px += widths[i] + gap;
+    });
+  });
+}
+
+/* ---- sorting and graphs ---- */
+/** A jumble: every piece on the counter in a seeded muddle, over empty bins named by a picture. */
+function paintJumble(pic) {
+  const all = []; pic.kinds.forEach((k, i) => { for (let j = 0; j < pic.counts[i]; j++) all.push(k); });
+  let seed = pic.counts.reduce((a, c, i) => a * 31 + c * (i + 7), 17); const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+  const cols = Math.ceil(all.length / 2), cw = Math.min(190, 920 / cols), x0 = (CW - cols * cw) / 2;
+  all.forEach((k, i) => food(k, x0 + (i % cols + 0.5) * cw + (rnd() - 0.5) * 16, 128 + Math.floor(i / cols) * 176 + (rnd() - 0.5) * 20, Math.min(150, cw * 0.86)));
+  const bw = 300, gap = 60, bx0 = (CW - pic.kinds.length * bw - (pic.kinds.length - 1) * gap) / 2;
+  pic.kinds.forEach((k, i) => { const bx = bx0 + i * (bw + gap); fillStroke(rr(bx, 500, bw, 220, 18), '#e8c489'); fillStroke(rr(bx + 14, 514, bw - 28, 192, 10), '#f7e3bd', '#b7772f', 5); fillStroke(circ(bx + bw / 2, 610, 70), '#ffffff'); food(k, bx + bw / 2, 610, 96); });
+}
+/** Bins as columns standing on one line, so they can be compared: each piece in its own place, the kind under it. */
+function paintBins(pic, mode, kind) {
+  const n = pic.kinds.length, top = Math.max(...pic.counts), cell = Math.min(104, 548 / top), base = 606, cw = Math.min(300, 920 / n), x0 = (CW - n * cw) / 2, on = mode !== 'ask';
+  const lo = pic.mark.length === 2 ? Math.min(...pic.mark.map(k => pic.counts[pic.kinds.indexOf(k)])) : 0;
+  pic.kinds.forEach((k, i) => {
+    const cx = x0 + (i + 0.5) * cw, c = pic.counts[i], marked = pic.mark.includes(k);
+    fillStroke(rr(cx - cw * 0.36, base - top * cell - 14, cw * 0.72, top * cell + 26, 16), '#f7e3bd', '#b7772f', 6);
+    for (let j = 0; j < c; j++) {
+      // why (how many more): the pieces past the shorter bin are the extra ones
+      if (on && kind === 'more' && marked && j >= lo) fillStroke(rr(cx - cell * 0.56, base - (j + 1) * cell, cell * 1.12, cell, 10), 'rgba(255,210,63,0.75)', WARN, 4);
+      food(k, cx, base - (j + 0.5) * cell, cell * 0.92);
+    }
+    fillStroke(circ(cx - 30, base + 84, 60), '#ffffff'); food(k, cx - 30, base + 84, 84);
+    if (on && (kind !== 'sort' || marked || mode === 'found')) badge(c, cx + 80, base + 84, 54, mode === 'found' && marked ? '#66C792' : SUN);
+  });
+  line(x0 - 10, base + 12, x0 + n * cw + 10, base + 12, INKC, 7);
+  if (on && kind === 'more' && lo) line(x0, base - lo * cell, x0 + n * cw, base - lo * cell, WARN, 5, [14, 10]);
+}
+/** A picture graph: a row for each fruit, one picture for each one. */
+function paintPicGraph(pic, mode) {
+  text(fmt('show.graph'), 512, 62, 46, { weight: 900 });
+  const rowH = 132, y0 = 112, on = mode !== 'ask';
+  pic.kinds.forEach((k, i) => {
+    const cy = y0 + (i + 0.5) * rowH, marked = pic.mark.includes(k);
+    if (on && marked) fillStroke(rr(196, cy - rowH / 2 + 6, 800, rowH - 12, 14), 'rgba(255,210,63,0.5)', null);
+    fillStroke(rr(40, cy - 54, 130, 108, 16), '#ffffff'); food(k, 105, cy, 86);
+    for (let j = 0; j < pic.counts[i]; j++) { food(k, 252 + j * 100, cy - (on && marked ? 14 : 0), on && marked ? 84 : 94); if (on && marked) text(String(j + 1), 252 + j * 100, cy + 46, 38, { weight: 900, fill: LEAF }); }
+    if (mode === 'found' && marked) badge(pic.counts[i], Math.min(950, 252 + pic.counts[i] * 100 + 6), cy, 46);
+    line(190, cy + rowH / 2, 990, cy + rowH / 2, 'rgba(20,20,20,0.25)', 3);
+  });
+  line(190, y0, 190, y0 + 4 * rowH, INKC, 7);
+  fillStroke(rr(372, 652, 300, 84, 18), '#ffffff', 'rgba(20,20,20,0.5)', 5); food(pic.kinds[0], 422, 694, 60); text(fmt('show.key'), 470, 696, 42, { align: 'left', weight: 800 });
+}
+/** A bar graph with a scale that goes up by ones. */
+function paintBarGraph(pic, mode) {
+  const max = Math.max(8, ...pic.counts), ox = 150, oy = 600, step = 500 / max, on = mode !== 'ask', bw = 124, gapX = 198;
+  text(fmt('show.graph'), 560, 46, 44, { weight: 900 });
+  for (let v = 0; v <= max; v++) { line(ox, oy - v * step, 960, oy - v * step, v ? 'rgba(20,20,20,0.22)' : INKC, v ? 3 : 7); text(String(v), ox - 22, oy - v * step, 42, { align: 'right', weight: 900 }); }
+  line(ox, oy, ox, oy - max * step - 10, INKC, 7);
+  const tone = { apple: '#e2665e', banana: '#f6d33c', pear: '#9ccc3c', plum: '#9a78c9' };
+  pic.kinds.forEach((k, i) => {
+    const cx = ox + 110 + i * gapX, v = pic.counts[i], marked = pic.mark.includes(k), y = oy - v * step;
+    fillStroke(rr(cx - bw / 2, y, bw, v * step, 6), tone[k], INKC, 6);
+    fillStroke(circ(cx, oy + 78, 58), '#ffffff'); food(k, cx, oy + 78, 80);
+    // why: each bar's top is read across to the scale
+    if (on && marked) { line(ox, y, cx - bw / 2, y, WARN, 6, [14, 10]); badge(v, cx, y - 44, 44, mode === 'found' ? '#66C792' : SUN); }
+  });
+}
+
+/* ---- The Garden Gate feast: the earlier units, with the kitchen's own things ---- */
+function tray(px, py, cell, filled, o = {}) {
+  fillStroke(rr(px - 12, py - 12, cell * 5 + 24, cell * 2 + 24, 18), '#cfd6de');
+  for (let i = 0; i < 10; i++) { const cx = px + (i % 5 + 0.5) * cell, cy = py + (Math.floor(i / 5) + 0.5) * cell; fillStroke(rr(cx - cell / 2 + 4, cy - cell / 2 + 4, cell - 8, cell - 8, 10), '#f4f6f9', 'rgba(20,20,20,0.3)', 3); if (i < filled) food(o.kind || 'bun', cx, cy, cell * 0.8); else if (o.ghost && i < filled + o.ghost) food(o.kind || 'bun', cx, cy, cell * 0.8, { ghost: true }); }
+}
+function paintTeen(pic, mode) {
+  const cell = 118, px = (CW - cell * 5) / 2 - 60, extra = pic.n - 10, on = mode !== 'ask';
+  tray(px, 70, cell, 10); tray(px, 420, cell, extra);
+  if (on) { badge(10, px + cell * 5 + 110, 70 + cell, 64); for (let i = 0; i < extra; i++) text(String(11 + i), px + (i % 5 + 0.5) * cell, 420 + (Math.floor(i / 5) + 0.5) * cell + cell * 0.36, 38, { weight: 900, fill: LEAF, halo: '#ffffff' }); }
+  if (mode === 'found') badge(pic.n, px + cell * 5 + 110, 420 + cell, 64);
+}
+function paintAdd(pic, mode) {
+  const cell = 118, px = (CW - cell * 5) / 2, on = mode !== 'ask', move = 10 - pic.a;
+  // why: make ten first (the empty places of the first tray take some of the second group), then count on
+  tray(px, 70, cell, pic.a, { kind: 'carrot', ghost: on ? move : 0 });
+  tray(px, 420, cell, pic.b, { kind: 'carrot' });
+  if (on) { for (let i = 0; i < move; i++) { const cx = px + (i % 5 + 0.5) * cell, cy = 420 + (Math.floor(i / 5) + 0.5) * cell; fillStroke(rr(cx - cell / 2 + 6, cy - cell / 2 + 6, cell - 12, cell - 12, 10), 'rgba(255,210,63,0.6)', WARN, 5); food('carrot', cx, cy, cell * 0.8); } badge(10, px - 76, 70 + cell, 56, SUN); badge('+' + (pic.b - move), px - 76, 420 + cell, 50, SUN); }
+  if (mode === 'found') badge(pic.a + pic.b, px + cell * 5 + 86, 250 + cell, 60);
+}
+function paintTens(pic, mode) {
+  const on = mode !== 'ask', bw = Math.min(150, 920 / pic.t), k = bw / 96, x0 = (CW - pic.t * bw) / 2;
+  for (let i = 0; i < pic.t; i++) {
+    const px = x0 + i * bw + 6 * k, w = 84 * k, p = new Path2D(); p.moveTo(px, 100); for (let j = 1; j <= 6; j++) p.lineTo(px + j * w / 6, j % 2 ? 80 : 100); p.lineTo(px + w, 100 + 250 * Math.min(k, 1.2)); p.lineTo(px, 100 + 250 * Math.min(k, 1.2)); p.closePath();
+    fillStroke(p, '#e8c489'); food('bun', px + w / 2, 170, 60 * Math.min(k, 1.3)); text('10', px + w / 2, 100 + 180 * Math.min(k, 1.2), 54 * Math.min(k, 1.3), { weight: 900 });
+    if (on) text(String((i + 1) * 10), px + w / 2, 440, 46, { weight: 900, fill: LEAF });
+  }
+  const rw = Math.min(124, 920 / pic.o), rx = (CW - pic.o * rw) / 2;
+  for (let i = 0; i < pic.o; i++) { food('bun', rx + (i + 0.5) * rw, 550, rw * 0.9); if (on) text(String(pic.t * 10 + i + 1), rx + (i + 0.5) * rw, 630, 42, { weight: 900, fill: LEAF }); }
+  if (mode === 'found') badge(pic.t * 10 + pic.o, 512, 706, 50);
+}
+function dots(n, px, py, fill, per = 4, r = 29) { for (let i = 0; i < n; i++) fillStroke(circ(px + (i % per) * (r * 2 + 8) + r, py + Math.floor(i / per) * (r * 2 + 8) + r, r), fill, INKC, 5); }
+function paintEqual(pic, mode) {
+  const on = mode !== 'ask', found = mode === 'found', side = (px, x, y, yTone, hide) => {
+    text(String(x), px + 96, 100, 84, { weight: 900 }); text('+', px + 206, 100, 70, { weight: 900 });
+    if (hide) { fillStroke(rr(px + 262, 46, 108, 108, 18), SUN); text('?', px + 316, 102, 80, { weight: 900 }); } else text(String(y), px + 316, 100, 84, { weight: 900, fill: yTone || INKC });
+    dots(x, px, 172, '#8fc1f5', 3); if (!hide) dots(y, px + 222, 172, '#f2a65a', 3);
+    else { fillStroke(rr(px + 222, 172, 190, 190, 18), 'rgba(20,20,20,0.06)', 'rgba(20,20,20,0.45)', 6); text('?', px + 317, 270, 110, { weight: 900, fill: 'rgba(20,20,20,0.5)' }); }
+    fillStroke(rr(px - 14, 460, 440, 26, 10), '#b7772f');
+  };
+  side(40, pic.a, pic.b, null, false); side(560, pic.c, pic.d, LEAF, !found);
+  text('=', 512, 100, 90, { weight: 900 });
+  // the scale: level only when both sides make the same number
+  const lean = found ? 0 : 0.06;
+  X.save(); X.translate(512, 560); X.rotate(-lean); fillStroke(rr(-470, -14, 940, 28, 12), '#8a93a1'); X.restore();
+  const tri = new Path2D(); tri.moveTo(512, 560); tri.lineTo(452, 690); tri.lineTo(572, 690); tri.closePath(); fillStroke(tri, '#c9ced6');
+  line(260, 486, 260, 548 - (found ? 0 : 14), INKC, 7); line(780, 486, 780, 548 + (found ? 0 : 14), INKC, 7);
+  if (on) { badge(pic.a + pic.b, 260, 640, 60, found ? '#66C792' : SUN); if (found) badge(pic.c + pic.d, 780, 640, 60); }
+}
+function paintStory(pic, mode) {
+  const on = mode !== 'ask', w = Math.min(104, 900 / pic.a), x0 = (CW - pic.a * w) / 2;
+  for (let i = 0; i < pic.a; i++) {
+    const cx = x0 + (i + 0.5) * w;
+    // why: every spoon is matched with a fork, and the forks left over are the extra ones
+    if (on && i >= pic.b) fillStroke(rr(cx - w * 0.46, 96, w * 0.92, 250, 14), 'rgba(255,210,63,0.7)', WARN, 5);
+    food('forkpic', cx, 220, Math.min(200, w * 2.1));
+    if (i < pic.b) { food('spoonpic', cx, 540, Math.min(200, w * 2.1)); if (on) line(cx, 350, cx, 420, LEAF, 7, [12, 8]); }
+  }
+  if (mode === 'found') badge(pic.a - pic.b, x0 + (pic.b + (pic.a - pic.b) / 2) * w, 540, 60);
+}
+function paintHund(pic, mode) {
+  const on = mode !== 'ask';
+  for (let i = 0; i < pic.h; i++) { const px = 34 + (i % 2) * 184, py = 44 + Math.floor(i / 2) * 208; fillStroke(rr(px, py, 172, 190, 14), '#e8c489'); line(px, py + 44, px + 172, py + 44, '#b7772f', 6); food('cup', px + 44, py + 118, 62); text('100', px + 114, py + 120, 48, { weight: 900 }); }
+  for (let i = 0; i < pic.t; i++) { const px = 426 + i * 34; fillStroke(rr(px, 44, 28, 340, 8), '#8fc1f5', INKC, 5); for (let j = 1; j < 10; j++) line(px + 3, 44 + j * 34, px + 25, 44 + j * 34, '#3f78b8', 4); }
+  if (pic.t) text('10', 426 + (pic.t * 34 - 6) / 2, 424, 46, { weight: 900 });
+  for (let i = 0; i < pic.o; i++) food('cup', 800 + (i % 3) * 78, 90 + Math.floor(i / 3) * 112, 78);
+  // why: each place has its own name and its own digit, even an empty one
+  [[212, 300, 'hundreds', pic.h], [576, 300, 'tens', pic.t], [878, 236, 'ones', pic.o]].forEach(([px, w, k, v]) => {
+    fillStroke(rr(px - w / 2, 480, w, on ? 240 : 84, 18), '#ffffff', 'rgba(20,20,20,0.5)', 5); text(fmt('show.' + k), px, 522, 44, { weight: 800 });
+    if (on) text(String(v), px, 640, 120, { weight: 900, fill: mode === 'found' ? LEAF : INKC });
+  });
+}
+function paintShare(pic, mode) {
+  const cx = 512, cy = 392, R = 250, n = pic.parts, on = mode !== 'ask';
+  fillStroke(circ(cx, cy, R + 46), '#f4f6f9');
+  for (let k = 0; k < n; k++) {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / n, b = a + 2 * Math.PI / n, mid = (a + b) / 2, far = k === 0 ? 46 : 0, p = new Path2D(), ox = cx + far * Math.cos(mid), oy = cy + far * Math.sin(mid);
+    p.moveTo(ox, oy); p.arc(ox, oy, R, a, b); p.closePath();
+    if (k === 0) { X.strokeStyle = SUN; X.lineWidth = 30; X.lineJoin = 'round'; X.stroke(p); }
+    X.save(); X.clip(p); fillStroke(circ(ox, oy, R), '#c98a4b', null); fillStroke(circ(ox, oy, R * 0.82), '#b8436b', null); fillStroke(circ(ox, oy, R * 0.5), '#cf5d83', null); X.restore();
+    fillStroke(p, null, INKC, 9);
+    // why: the equal shares are counted
+    if (on) badge(k + 1, ox + R * 0.56 * Math.cos(mid), oy + R * 0.56 * Math.sin(mid), 50, k === 0 && mode === 'found' ? '#66C792' : SUN);
+  }
+}
+function paintShape(pic, mode) {
+  const cx = 512, cy = 384, R = 260, on = mode !== 'ask', reg = (n, a0) => Array.from({ length: n }, (_, i) => [cx + R * Math.cos(a0 + i * 2 * Math.PI / n), cy + R * Math.sin(a0 + i * 2 * Math.PI / n)]);
+  const pts = pic.shape === 'triangle' ? [[cx, cy - R * 0.92], [cx + R * 1.0, cy + R * 0.72], [cx - R * 1.0, cy + R * 0.72]] : pic.shape === 'square' ? [[cx - 220, cy - 220], [cx + 220, cy - 220], [cx + 220, cy + 220], [cx - 220, cy + 220]]
+    : pic.shape === 'rectangle' ? [[cx - 380, cy - 190], [cx + 380, cy - 190], [cx + 380, cy + 190], [cx - 380, cy + 190]] : pic.shape === 'hexagon' ? reg(6, 0) : null;
+  const fills = { plate: '#f4f6f9', napkin: '#f58fb5', cracker: '#e8c489', tray: '#cfd6de', cookie: '#c98a4b' };
+  if (!pts) { fillStroke(circ(cx, cy, R), fills.plate, INKC, 10); X.strokeStyle = '#8fc1f5'; X.lineWidth = 14; X.beginPath(); X.arc(cx, cy, R * 0.7, 0, Math.PI * 2); X.stroke(); return; }
+  const p = new Path2D(); pts.forEach(([px, py], i) => (i ? p.lineTo(px, py) : p.moveTo(px, py))); p.closePath(); fillStroke(p, fills[pic.thing], INKC, 10);
+  if (pic.thing === 'cracker') for (const dx of [-110, 0, 110]) for (const dy of [-110, 0, 110]) fillStroke(circ(cx + dx, cy + dy, 12), '#b7772f', null);
+  if (pic.thing === 'cookie') for (const [dx, dy] of [[-90, -60], [70, -90], [110, 50], [-40, 90], [0, -10], [-140, 30]]) fillStroke(circ(cx + dx, cy + dy, 22), '#5b3a1e', null);
+  if (pic.thing === 'tray') fillStroke(rr(cx - 330, cy - 140, 660, 280, 12), null, '#8a93a1', 8);
+  // why: the sides are counted
+  if (on) pts.forEach(([px, py], i) => { const [qx, qy] = pts[(i + 1) % pts.length], mx = (px + qx) / 2, my = (py + qy) / 2, k = 54 / Math.hypot(mx - cx, my - cy); line(px, py, qx, qy, WARN, 12); badge(i + 1, mx - (mx - cx) * k, my - (my - cy) * k, 44, SUN); });
+}
+
+/** Draw the board for a round and one of its three looks ('ask', 'hint', 'found'). */
+function paint(Rd, mode) {
+  smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
+  fillStroke(rr(8, 8, CW - 16, CH - 16, 44), CREAM, INKC, 14);
+  if (!Rd) { food('carrot', 300, 384, 240); food('tomato', 512, 400, 220); food('apple', 724, 384, 230); }
+  else {
+    const k = Rd.kind, p = Rd.pic;
+    if (k === 'units' || k === 'fair') paintUnits(p, mode, k === 'fair'); else if (k === 'ruler') paintRuler(p, mode); else if (k === 'longer') paintLonger(p, mode);
+    else if (k === 'read' || k === 'five') paintClock(p, mode, k === 'five'); else if (k === 'match') paintOven(p, mode); else if (k === 'coins' || k === 'dollar') paintCoins(p, mode);
+    else if (k === 'sort' && mode === 'ask') paintJumble(p); else if (k === 'sort' || k === 'most' || k === 'more' || k === 'total') paintBins(p, mode, k);
+    else if (k === 'pic') paintPicGraph(p, mode); else if (k === 'bar') paintBarGraph(p, mode);
+    else if (k === 'teen') paintTeen(p, mode); else if (k === 'add') paintAdd(p, mode); else if (k === 'tens') paintTens(p, mode); else if (k === 'equal') paintEqual(p, mode);
+    else if (k === 'story') paintStory(p, mode); else if (k === 'hund') paintHund(p, mode); else if (k === 'share') paintShare(p, mode); else paintShape(p, mode);
+  }
+  boardTex.needsUpdate = true; S.mode = mode; S.small = smallest;
+}
+
+// Moving things: a hop from one place to another, a pop into place, a shake, a wait. With reduced motion (and in the
+// tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these, run by the game
+// loop, so a slow device plays the same steps in the same order.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const back = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };   // a little past, then back
+function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+/** A thing pops into its place: it grows from nothing, a little past its size, and settles. */
+function pop(o, { wait = 0, then, from = 0.001 } = {}) {
+  const s = o.scale.clone();
+  anim(o, 0.34, k => { o.scale.copy(s).multiplyScalar(Math.max(0.001, from + (1 - from) * back(k))); if (k >= 1) o.scale.copy(s); }, then, wait);
+}
+/** A wrong pick: the board shakes its head. */
+function shake(o, then) {
+  const x = o.position.x;
+  anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
+}
+/** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+/** A tall screen that is not very tall (a small phone, or a phone with the browser's bars showing): the helper and the
+ *  party table are smaller and tucked in under the board, so the board keeps the whole width. */
+const squat = () => tall && innerHeight < innerWidth * 1.95;
+const heroSize = () => (squat() ? 0.5 : tall ? 0.7 : 0.92);
+/** The helper's place: beside the board on a wide screen, under it on a tall one. */
+const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -1.2 : -0.5) : V3(-3.55, 0, -1.3));
+const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];   // as wide as the Wizard's hat
+/** The party table: on the other side of the board from the helper, or beside the helper (under the board) on a tall screen. */
+const tableSize = () => (squat() ? 0.44 : tall ? 0.56 : 0.8);
+const tableSpot = () => (tall ? V3(0.98, 0, squat() ? -1.2 : -0.5) : V3(3.85, 0, -1.2));
+function placeTable() {
+  const k = tableSize(), at = tableSpot(); table.scale.setScalar(k); table.position.copy(at);
+  feast.children.forEach(o => { const i = o.userData.dish; o.scale.setScalar(k * DISH_K[DISHES[i]]); o.position.copy(dishSpot(i)); });
+}
+const dishSpot = i => { const k = tableSize(), at = tableSpot(); return V3(at.x + ((i % 3) - 1) * 0.9 * k, k * 1.0, at.z + (i < 3 ? -0.42 : 0.42) * k); };
+/** The points the camera keeps in view while a chapter plays: the board, the helper, the party table. */
+function stagePts() {
+  const pts = [], hw = BW / 2 + 0.06, k = tableSize(), t = tableSpot();
+  for (const x of [-hw, hw]) pts.push(V3(x, BOARD.y + BH / 2 + 0.08, BOARD.z), V3(x, BOARD.y - BH / 2 - 0.08, BOARD.z));
+  pts.push(V3(t.x - 1.5 * k, 0, t.z), V3(t.x + 1.5 * k, 0, t.z), V3(t.x + 1.5 * k, 1.6 * k, t.z), V3(t.x - 1.5 * k, 1.6 * k, t.z));
+  return pts.concat(heroBox(heroSpot(), heroSize()));
+}
+// The camera looks across the kitchen at the back wall, from a little above, and backs off until everything a round
+// uses fits between the words at the top and the buttons at the bottom, on any screen shape.
+const view = { pts: [] };
+function frame() {
+  if (!g || !view.pts.length) return;
+  const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
+  const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
+  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  let bx;
+  const fits = d => {
+    look.copy(mid);
+    for (let i = 0; i < 6; i++) {
+      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (i === 5) break;
+      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+    }
+    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  };
+  let near = 3, far = 120;
+  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+let wasSquat = squat();
+addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
+
+/* ---------- tapping a helper in the kitchen: the nearest one under the finger ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+
+/* ---------- the stage: the board on the wall, and the dishes on the party table ---------- */
+function clearStage() {
+  for (const o of [...stage.children]) stage.remove(o);
+  tweens.length = 0; targets.length = 0;
+  sizeBoard(); board.visible = true;
+  placeTable();
+  feast.children.forEach(o => { o.visible = true; });
+}
+/** The board on the wall with this round's picture (or, with no round, a few things from the garden). */
+function putBoard(Rd, mode, first) {
+  paint(Rd, mode); stage.add(board);
+  if (first) pop(board, { wait: 0.1, from: 0.6 });
+}
+/** Dishes on the party table: one for each round already finished. */
+function setDishes(n) {
+  while (feast.children.length > n) feast.remove(feast.children[feast.children.length - 1]);
+  for (let i = feast.children.length; i < n; i++) { const o = piece(DISHES[i], 0, 0, 0, 1); o.userData.dish = i; feast.add(o); }
+  S.dishes = n; placeTable();
+}
+/** A finished round's dish comes from the cooker to the party table. */
+function serve(then) {
+  const i = S.dishes; if (i >= DISHES.length) return then();
+  const o = piece(DISHES[i], 0, 0, 0, 1); o.userData.dish = i; feast.add(o); S.dishes = i + 1; placeTable();
+  const to = dishSpot(i); o.position.set(tall ? to.x + 1.2 : 4.1, 1.5, tall ? to.z - 1.6 : -2.6);
+  fly(o, to, { dur: 0.6, arc: 0.9, then: () => { sfx('land'); then(); } });
+}
+
+/* ---------- the helper ---------- */
+let lineup = [];
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(heroSpot()); h.object.rotation.y = tall ? 0 : 0.5; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage(); setDishes(0); table.visible = false;   // the helpers stand in the middle of the kitchen: no board yet
+  // a row of five on a wide screen; on a tall one three at the back and two in front, so each is big enough to tap
+  const k = tall ? 0.82 : 1.0, at = tall ? [[-1.3, 0.3], [-0.65, 1.7], [0, 0.3], [0.65, 1.7], [1.3, 0.3]] : [-2, -1, 0, 1, 2].map(i => [i * 1.85, 0.9]), far = Math.max(...at.map(q => q[0])) + 0.95 * k;
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(k); h.position.set(at[i][0], 0, at[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1 * k), r: 0.7 * k, go: () => chooseHero(h.id) }));
+  view.pts = [V3(-far, 0, at[1][1]), V3(far, 0, at[1][1]), V3(-far, 2.3 * k, at[0][1]), V3(far, 2.3 * k, at[0][1])];
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+
+/* ---------- cards: the helper picker, the picture menu, the end of a chapter ---------- */
+function button({ id, label, icon, big, pic, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'kr-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, text) => { const s = document.createElement('span'); s.className = c; if (text != null) s.textContent = text; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (pic) b.append(pic);
+  if (big != null) b.append(span('big' + (String(big).length > 5 ? ' long' : ''), big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'kr-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '⭐'; top.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  const a = document.createElement('div'); a.className = 'kr-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'kr-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'kr-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'kr-menu' : 'kr-pick'; row.append(...buttons.map(button));
+  el.card.className = 'kr-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.line = [line, null]; speak(line);
+}
+/** The helper in the kitchen by the board and the party table: the menu and the end of a chapter. */
+function solo(dishes) {
+  clearStage(); putBoard(null, 'ask'); table.visible = true; setDishes(dishes); placeHero();
+  view.pts = stagePts();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: KR.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!KR.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  table.visible = true; setDishes(0);
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots2() {
+  el.dots.replaceChildren(...Array.from({ length: KR.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: KR.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+function nextRound() {
+  if (S.round >= KR.ROUNDS) return finish();
+  S.round++; S.R = KR.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.shown = false; S.tick++;
+  const Rd = S.R;
+  hint(); dots2(); chip(Rd.show);
+  say(Rd.ask[0], Rd.ask[1]);   // the words first: the camera fits the kitchen under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  const gate = S.chapter === 'gate';
+  S.R = null; solo(KR.ROUNDS);
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🏠', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: gate ? 'win.gate' : 'win.card', buttons, star: true });
+  frame();
+}
+
+/** One button for an option of the round: a number, a time, an amount, a clock face, a kind of food, a word. */
+function optButton(o, i, cls) {
+  const base = { id: 'kr-n' + i, cls, go: b => answer(i, b) };
+  if (o.clock) return button({ ...base, pic: clockSvg(o.h, o.m), aria: fmt('btn.clock', { n: i + 1 }) });
+  if (o.pic) return button({ ...base, pic: foodSvg(o.pic), label: fmt(o.key) });
+  if (o.key && o.t) return button({ ...base, big: o.t, label: fmt(o.key) });
+  if (o.key) return button({ ...base, icon: o.v === 'yes' ? '✔️' : o.v === 'no' ? '✖️' : '', label: fmt(o.key) });
+  return button({ ...base, big: o.t, aria: fmt('btn.num', { n: o.t }) });
+}
+/** Draw the round from its state (also after the screen turns): the board, the helper, the dishes, the buttons. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? KR.ROUNDS : 0); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++;
+  el.card.hidden = true; el.bar.classList.remove('wait');
+  putBoard(Rd, found ? 'found' : S.mode, first); setDishes(S.round - 1 + (found ? 1 : 0));
+  placeHero(); view.pts = stagePts();
+  el.bar.hidden = false;
+  el.bar.className = 'kr-bar' + (Rd.choices.length === 2 ? ' two' : '') + (Rd.opts[0].clock ? ' clocks' : '');
+  el.bar.replaceChildren(...Rd.opts.map((o, i) => optButton(o, i, found && i === Rd.answer ? 'go' : '')));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
+
+/** The child picks one of the buttons. */
+function answer(v, b) {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play') return;
+  const Rd = S.R;
+  if (!Rd.choices.includes(v)) return;
+  b = b || document.getElementById('kr-n' + v);
+  if (v !== Rd.answer) {
+    // a wrong answer: the button wobbles, the board shows why (its counting marks, rings and guides) and the hint says it
+    wobble(b); hint(Rd.hints[v]);
+    paint(Rd, 'hint'); drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.visible = true; shake(board);
+    return;
+  }
+  S.phase = 'right'; S.tick++; hint(); sfx('coin');
+  if (b) b.classList.add('go');
+  chip(Rd.shown, Rd.opts[Rd.answer].v === 'no' ? 'bad' : 'ok');
+  say(Rd.said[0][0], Rd.said[0][1], { queue: true });
+  for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
+  paint(Rd, 'found'); drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); pop(board, { from: 0.9 });
+  // the round's dish goes to the party table, the helper cheers, and only then the next round
+  serve(guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.4 : 2.1, guard(nextRound)); }));
+}
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+/** The screen box (left, top, right, bottom in CSS pixels) of the board. */
+function boxOf(o) {
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
+  const mid = o.getWorldPosition(V3(0, 0, 0));
+  const [sx, sy] = scr(mid), [rx] = scr(mid.clone().addScaledVector(right, w / 2)), [, uy] = scr(mid.clone().addScaledVector(up, h / 2));
+  return [sx - (rx - sx), uy, rx, sy + (sy - uy)].map(n => Math.round(n));
+}
+const shown = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+const ray = new THREE.Raycaster();
+/** Whether nothing of the kitchen stands between the camera and a point (the furniture never hides the board). */
+function clearTo(p) {
+  const from = g.camera.position, dir = p.clone().sub(from), dist = dir.length();
+  ray.set(from, dir.normalize()); ray.near = 0.1; ray.far = dist - 0.12;
+  return !ray.intersectObjects([room, props, feast], true).some(hit => shown(hit.object));
+}
+const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
+window.__kr = window.__brbTest = {
+  state: () => ({ game: 'kitchen-rush', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: KR.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, moving: tweens.length, onStage: { board: stage.children.includes(board) && board.visible, dishes: feast.children.length } } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  act: (name, arg) => answer(arg),
+  /** Where things are on the screen (CSS pixels): the box round the helper (as wide as the Wizard's hat), the board
+   *  (its box, whether the kitchen leaves it in full view, and the smallest words on it in screen pixels) and the
+   *  party table. */
+  spot: () => {
+    const bx = boxOf(board), k = 0.46;
+    return {
+      hero: S.hero ? boxPts(heroBox(S.hero.position, S.hero.object.scale.x)) : null,
+      board: { box: bx, small: Math.round(S.small * (bx[2] - bx[0]) / CW * 10) / 10,
+        clear: [[0, 0], [-k, -k], [k, -k], [k, k], [-k, k], [0, -k], [0, k]].every(([dx, dy]) => clearTo(V3(BOARD.x + dx * BW, BOARD.y + dy * BH, BOARD.z))) },
+      table: table.visible ? (() => { const s = tableSize(), t = tableSpot(); return boxPts([V3(t.x - 1.5 * s, 0, t.z), V3(t.x + 1.5 * s, 0, t.z), V3(t.x - 1.5 * s, 1.5 * s, t.z), V3(t.x + 1.5 * s, 1.5 * s, t.z)]); })() : null,
+    };
+  },
+};
+
+el.load.hidden = true; el.load.remove(); el.kr.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>

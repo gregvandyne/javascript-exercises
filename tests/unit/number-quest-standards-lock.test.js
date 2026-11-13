@@ -141,7 +141,8 @@ test('crosswalk: an entry profile per unit door, monotone across units, ties res
 // The Launchpad tier's lock (kindergarten to grade 2): the same rules as Explorer's, against its own code set
 // (standards.json launchpadCodes). A Launchpad step may cite only codes locked there, every locked code is a
 // well-formed K-2 statement code in a real cluster, and step order starts at 1 in the tier.
-const LP_CODE = /^(K|[12])\.(CC|OA|NBT|MD|G)\.([A-D])\.(\d)[a-z]?$/;
+// A statement number may have two digits (2.MD.D.10, the graphs standard of Launchpad Unit 7).
+const LP_CODE = /^(K|[12])\.(CC|OA|NBT|MD|G)\.([A-D])\.(\d{1,2})[a-z]?$/;
 const lpLocked = new Set(Object.keys(reg.launchpadCodes.codes));
 
 test('Launchpad registry: locked codes are well-formed K-2 statement codes in real clusters', () => {
