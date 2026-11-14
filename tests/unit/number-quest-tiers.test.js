@@ -126,12 +126,15 @@ test('the catalogue: all three tiers are declared; Explorer is exactly its 23 st
   assert.deepEqual(w.check, ['nq-launchpad-0.1-e1', 'nq-launchpad-0.1-e2', 'nq-launchpad-0.1-e3']);
   assert.equal(w.standards.flag, 'framing'); assert.equal(w.mp, 'MP1');
   assert.notEqual(C.getStep(course, 'explorer-0.1').title, w.title, 'two tiers, two different steps numbered 0.1');
-  // Pro: its welcome is a real step with a real deck; its seven units are planned, so none of their steps exists.
-  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1']);
-  assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'the Pro welcome deck has no problems');
+  // Pro: its welcome and Unit 1 (The Mixing Tower, played in Lantern Mix) are real steps with real decks; its six
+  // other units are planned, so none of their steps exists.
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3']);
+  assert.deepEqual(C.steps(course, 'pro').slice(1).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Ratios and equal mixes', 1, 'lantern-mix', 'chapter=mix&lock=1', 'MP7'],
+    ['Unit rates', 1, 'lantern-mix', 'chapter=rate&lock=1', 'MP2'], ['Percent and changing units', 1, 'lantern-mix', 'chapter=percent&lock=1', 'MP6']]);
+  assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'the Pro decks have no problems');
   assert.equal(T.firstKey('pro'), 'pro-0.1');
-  for (const key of ['pro-1.1', 'pro-4.3', 'pro-7.4']) assert.equal(C.getStep(course, key), null, `${key} is planned, not built: it is no step`);
-  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => u.n), [1, 2, 3, 4, 5, 6, 7]);
+  for (const key of ['pro-2.1', 'pro-4.3', 'pro-7.4']) assert.equal(C.getStep(course, key), null, `${key} is planned, not built: it is no step`);
+  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 1]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => u.n), [2, 3, 4, 5, 6, 7]);
   assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer'], 'and nobody but the admin is offered the band');
   // The other courses know nothing of tier keys, and Number Quest nothing of theirs.
   assert.equal(C.getStep(C.getCourse('cs-quest'), 'launchpad-0.1'), null);
@@ -155,7 +158,8 @@ test('standards tags read every tier, keyed by full step key', () => {
   const steps = tags.numberQuestSteps();
   assert.deepEqual(steps.get('explorer-1.1'), ['4.NBT.A.1', '4.NBT.A.2']);
   assert.equal(steps.has('launchpad-0.1'), false, 'a framing step cites no code');
-  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), [], 'Pro: its welcome is framing and its units are planned, so no play can be credited to a Pro step yet');
+  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), ['pro-1.1', 'pro-1.2', 'pro-1.3'], 'Pro: its welcome is framing and its planned units have no steps; Unit 1 is built, so its three steps are credited');
+  assert.deepEqual(steps.get('pro-1.1'), ['6.RP.A.1', '6.RP.A.3a']);
   assert.ok([...steps.keys()].every(k => /^(launchpad|explorer|pro)-\d\.\d$/.test(k)));
   assert.equal([...steps.keys()].filter(k => k.startsWith('explorer-')).length, 21, 'Explorer: 23 steps less the intro and the enrichment step');
 });
@@ -248,7 +252,8 @@ test('Launchpad building: placement behaves exactly as with Explorer alone, even
   assert.equal(P.overrideStartNode(kid, 'launchpad-0.1'), null, 'a building tier names no start node');
   assert.equal(P.overrideStartNode(kid, 'pro-1.1'), null);
   assert.equal(P.nodeInfo('launchpad-0.1').node, 'explorer-0.1', 'an unnameable node reads as the Explorer welcome');
-  assert.deepEqual(P.testOutItems(1, 'fixed', 'pro'), []);
+  assert.deepEqual(P.testOutItems(2, 'fixed', 'pro'), [], 'a planned unit has no test-out');
+  assert.equal(P.testOutItems(1, 'fixed', 'pro').length, 5, 'a built unit has its profile and its items, though the route deals them to nobody while the tier is building (below)');
   assert.equal(P.placedUnitWords('explorer-3.1'), 'Unit 3: Groups & Shares');
 });
 
@@ -279,7 +284,7 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   assert.match(street.text, /id="step-launchpad-6\.3"/); assert.match(street.text, /The Shape Shed/);
   assert.match(street.text, /id="step-launchpad-7\.3"/); assert.match(street.text, /The Measuring Meadow/);
   assert.match(street.text, /id="step-launchpad-7\.4"/, 'the finale door is on the street');
-  assert.equal(C.numberQuestCatalogue(admin).units.length, 17, 'Launchpad 8, Explorer 8 and the Pro welcome unit');
+  assert.equal(C.numberQuestCatalogue(admin).units.length, 18, 'Launchpad 8, Explorer 8, the Pro welcome unit and Pro Unit 1');
   // Unit 1's first step opens for the admin, with its mission in Garden Count.
   const one = await get('/courses/number-quest/launchpad-1.1', cookie);
   assert.equal(one.status, 200);
@@ -359,7 +364,7 @@ test('Launchpad open: the switcher renders, a learner picks the band and walks t
   const teach = await get('/teachers/number-quest');
   assert.match(teach.text, /Launchpad · Welcome to the Gardens/); assert.match(teach.text, /Explorer · Unit 1 · The Counting House/);
   // Pro is still nobody's but the admin's.
-  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null); assert.equal(C.getStep(course, 'pro-1.1'), null);
+  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null); assert.equal(C.stepFor(kid, course, 'pro-1.1'), null); assert.equal(C.getStep(course, 'pro-2.1'), null);
 });
 
 test('Launchpad open: placement lands a rung under 2.5 on a Launchpad node once entry profiles exist', () => {
