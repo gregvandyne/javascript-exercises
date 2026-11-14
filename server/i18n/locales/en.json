@@ -1603,7 +1603,8 @@
         "cosy-home": "Cosy Home",
         "busy-kitchen": "Busy Kitchen",
         "pirate-cove": "Pirate Cove",
-        "wild-woods": "Wild Woods"
+        "wild-woods": "Wild Woods",
+        "under-the-sea": "Under the Sea"
       }
     },
     "heroes": {
@@ -1626,7 +1627,30 @@
         "deer": "Deer",
         "stag": "Stag",
         "fox": "Fox",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Dolphin",
+        "turtle": "Sea Turtle",
+        "clownfish": "Clownfish",
+        "blue-tang": "Blue Tang",
+        "barb": "Barb",
+        "goldfish": "Goldfish",
+        "little-clownfish": "Little Clownfish",
+        "reef-fish": "Reef Fish",
+        "bass": "Bass",
+        "sardine": "Sardine",
+        "snapper": "Red Snapper",
+        "swordfish": "Swordfish",
+        "squid": "Squid",
+        "butterfly-fish": "Butterfly Fish",
+        "yellow-tang": "Yellow Tang",
+        "mandarin-fish": "Mandarin Fish",
+        "koi": "Koi",
+        "lionfish": "Lionfish",
+        "pufferfish": "Pufferfish",
+        "seahorse": "Seahorse",
+        "jellyfish": "Jellyfish",
+        "little-shark": "Little Shark",
+        "crab": "Crab"
       }
     },
     "animals": {
@@ -1654,7 +1678,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolphin",
+        "turtle": "Sea Turtle",
+        "clownfish": "Clownfish",
+        "blue-tang": "Blue Tang",
+        "barb": "Barb",
+        "goldfish": "Goldfish",
+        "little-clownfish": "Little Clownfish",
+        "reef-fish": "Reef Fish",
+        "bass": "Bass",
+        "sardine": "Sardine",
+        "snapper": "Red Snapper",
+        "swordfish": "Swordfish",
+        "squid": "Squid",
+        "butterfly-fish": "Butterfly Fish",
+        "yellow-tang": "Yellow Tang",
+        "mandarin-fish": "Mandarin Fish",
+        "koi": "Koi",
+        "lionfish": "Lionfish",
+        "pufferfish": "Pufferfish",
+        "seahorse": "Seahorse",
+        "jellyfish": "Jellyfish",
+        "little-shark": "Little Shark",
+        "crab": "Crab"
       }
     },
     "lesson": {

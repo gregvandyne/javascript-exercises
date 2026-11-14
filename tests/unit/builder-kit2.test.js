@@ -67,7 +67,8 @@ test('the catalogue says exactly what kit2/SHIPPED.json and the theme manifests 
   const shipped = {};
   for (const tv of Object.keys(V.KIT2_LOCK.themes)) { const [t, v] = tv.split('/'); (shipped[t] = shipped[t] || []).push(v); }
   assert.deepEqual(Object.keys(CAT.KIT2_VERSIONS).sort(), Object.keys(shipped).sort(), 'every shipped theme, and only those');
-  assert.ok(CAT.KIT2_WORLDS.length >= 10);
+  assert.ok(CAT.KIT2_WORLDS.length >= 11);
+  assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'under-the-sea' && w.version === '1.0.0'), 'Under the Sea is offered');
   assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'pirate-cove' && w.version === '1.0.0'), 'Pirate Cove is offered');
   assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'wild-woods' && w.version === '1.0.0'), 'Wild Woods is offered');
   for (const w of CAT.KIT2_WORLDS) {
@@ -81,7 +82,7 @@ test('the catalogue says exactly what kit2/SHIPPED.json and the theme manifests 
     assert.deepEqual(w.creatures, (m.creatures || []).map(h => ({ id: h.id, name: h.name, kind: h.kind, size: h.size, moves: h.moves, playable: h.playable })), `${w.id}: creatures, with what the Builder needs to use them well`);
     assert.deepEqual(w.pieces.map(p => p.id), m.pieces.map(p => p.id), `${w.id}: pieces`);
     assert.deepEqual(w.sounds, m.sounds.map(s => s.id), `${w.id}: sounds`);
-    assert.deepEqual(w.moves, Object.keys(m.moves.clips), `${w.id}: moves`);
+    assert.deepEqual(w.moves, Object.keys((m.moves && m.moves.clips) || {}), `${w.id}: moves (a world with no walking heroes, Under the Sea, has no shared moves)`);
     // every model the catalogue names is a file that shipped with the theme
     for (const x of [...m.heroes, ...(m.creatures || []), ...m.pieces]) assert.ok(m.files[x.file] !== undefined || (Array.isArray(m.files) && m.files.includes(x.file)), `${w.id}: ${x.file} is a shipped file`);
   }
@@ -103,7 +104,7 @@ test('animals and dinosaurs: none has shipped yet, and the Builder says so inste
   if (creatures.length) {
     for (const c of creatures) assert.ok(P.KIT2_RULES.includes(c.id) && fs.existsSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)), c.id);
     // and an animal no world has (a dinosaur today) still gets the honest "not yet", never an invented one
-    assert.match(P.KIT2_SHORT, /No dinosaurs, fish or other animals yet/);
+    assert.match(P.KIT2_SHORT, /No dinosaurs, birds or other animals yet/);   // fish came with Under the Sea 1.0.0
     assert.match(P.KIT2_RULES, /Never invent a creature name[\s\S]*not listed[\s\S]*say so kindly[\s\S]*Never pretend/);
     const dino = K.wantsKit2({}, 'a dinosaur game on the moon', null);
     assert.equal(dino.wantsCreature, true);
@@ -464,6 +465,29 @@ test('mock: "a maths game in the forest" builds a Kit 2 game in Wild Woods', asy
   t = await turn(u, g.id, 'change the hero to the ranger');
   v = current(g.id);
   assert.equal(k2Read(v.html, 'hero'), 'rogue'); assert.equal(K.kit2Of(v.html).world, 'wild-woods');
+  for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
+});
+
+test('mock: "a maths game under the sea" builds a Kit 2 game in Under the Sea, swum by the dolphin', async () => {
+  const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
+  let t = await turn(u, g.id, 'a maths game under the sea');
+  assert.equal(t.of('version').length, 1, 'built straight away'); assert.equal(t.of('version')[0].status, 'pass');
+  let v = current(g.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'under-the-sea', version: '1.0.0', hero: 'dolphin' });
+  assert.ok(v.html.includes(V.kit2ImportMap()) && !usesKit(v.html));
+  assert.equal(games.getGame(g.id).title, 'Under the Sea');
+  assert.match(t.text, /Under the Sea world with Dolphin as the hero/); assert.match(t.text, /Swim along the reef/); assert.doesNotMatch(t.text, /has no|Hop along/);
+  assert.match(v.html, /\n  swim: true,\n/); assert.match(v.html, /\n  weather: 'bubbles',\n/); assert.match(v.html, /goal: \{ piece: "chest", scale: 1\.3 \},/);
+  assert.equal(scanVersion(v.html).status, 'pass'); assert.deepEqual(scanVersion(v.html).lint, []);
+  // nothing a sea game is made of is about teeth, fishing or hurting an animal (the import map's hashes are not words)
+  assert.doesNotMatch(v.html.replace(V.kit2ImportMap(), ''), /skull|\bbones?\b|\btraps?\b|\bgun|weapon|enemy|enemies|fight|\bhunt|fish ?hooks?|hooked|\bbait\b|fishing|\bbite|teeth|barracuda|piranha/i);
+  t = await turn(u, g.id, 'change the hero to the sea turtle');
+  v = current(g.id);
+  assert.equal(k2Read(v.html, 'hero'), 'turtle'); assert.equal(K.kit2Of(v.html).world, 'under-the-sea');
+  // a walking hero is not in the sea: said kindly, and a sea animal stays the hero
+  t = await turn(u, g.id, 'change the hero to the knight');
+  assert.match(t.text, /Under the Sea has no Knight/);
+  assert.ok(K.heroesOf('under-the-sea').some(h => h.id === k2Read(current(g.id).html, 'hero')));
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
 

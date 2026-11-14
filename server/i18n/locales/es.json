@@ -1602,7 +1602,8 @@
         "cosy-home": "Casa Acogedora",
         "busy-kitchen": "Cocina Ajetreada",
         "pirate-cove": "Cala Pirata",
-        "wild-woods": "Bosque Salvaje"
+        "wild-woods": "Bosque Salvaje",
+        "under-the-sea": "Bajo el Mar"
       }
     },
     "heroes": {
@@ -1625,7 +1626,30 @@
         "deer": "Cierva",
         "stag": "Ciervo",
         "fox": "Zorro",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Delfín",
+        "turtle": "Tortuga marina",
+        "clownfish": "Pez payaso",
+        "blue-tang": "Pez cirujano azul",
+        "barb": "Barbo",
+        "goldfish": "Pez dorado",
+        "little-clownfish": "Pez payaso pequeño",
+        "reef-fish": "Pez de arrecife",
+        "bass": "Lubina",
+        "sardine": "Sardina",
+        "snapper": "Pargo rojo",
+        "swordfish": "Pez espada",
+        "squid": "Calamar",
+        "butterfly-fish": "Pez mariposa",
+        "yellow-tang": "Pez cirujano amarillo",
+        "mandarin-fish": "Pez mandarín",
+        "koi": "Carpa koi",
+        "lionfish": "Pez león",
+        "pufferfish": "Pez globo",
+        "seahorse": "Caballito de mar",
+        "jellyfish": "Medusa",
+        "little-shark": "Tiburoncito",
+        "crab": "Cangrejo"
       }
     },
     "animals": {
@@ -1653,7 +1677,30 @@
         "stegosaurus": "Estegosaurio",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolofo",
-        "velociraptor": "Velocirraptor"
+        "velociraptor": "Velocirraptor",
+        "dolphin": "Delfín",
+        "turtle": "Tortuga marina",
+        "clownfish": "Pez payaso",
+        "blue-tang": "Pez cirujano azul",
+        "barb": "Barbo",
+        "goldfish": "Pez dorado",
+        "little-clownfish": "Pez payaso pequeño",
+        "reef-fish": "Pez de arrecife",
+        "bass": "Lubina",
+        "sardine": "Sardina",
+        "snapper": "Pargo rojo",
+        "swordfish": "Pez espada",
+        "squid": "Calamar",
+        "butterfly-fish": "Pez mariposa",
+        "yellow-tang": "Pez cirujano amarillo",
+        "mandarin-fish": "Pez mandarín",
+        "koi": "Carpa koi",
+        "lionfish": "Pez león",
+        "pufferfish": "Pez globo",
+        "seahorse": "Caballito de mar",
+        "jellyfish": "Medusa",
+        "little-shark": "Tiburoncito",
+        "crab": "Cangrejo"
       }
     },
     "lesson": {

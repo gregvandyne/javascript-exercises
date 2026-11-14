@@ -4,7 +4,7 @@
 // ART2D_WORLDS: the newest version of every 2D world with every sprite a game may name (size in game cells).
 // ART2D_CHARACTERS: every hero and animal that has a sprite sheet (idle, run and jump frames).
 export const ART2D_HELPER = "1.0.0";
-export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0"};
+export const ART2D_VERSIONS = {"animals":"1.1.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0","under-the-sea":"1.0.0"};
 export const ART2D_WORLDS = [
  {
   "id": "busy-kitchen",
@@ -968,6 +968,114 @@ export const ART2D_WORLDS = [
     "size": 0.79
    }
   ]
+ },
+ {
+  "id": "under-the-sea",
+  "version": "1.0.0",
+  "name": "Under the Sea",
+  "heroes": [],
+  "sprites": [
+   {
+    "name": "kelp",
+    "kind": "prop",
+    "size": 3.66
+   },
+   {
+    "name": "seaweed-tall",
+    "kind": "prop",
+    "size": 2.49
+   },
+   {
+    "name": "seaweed",
+    "kind": "prop",
+    "size": 1.7
+   },
+   {
+    "name": "coral-branch",
+    "kind": "prop",
+    "size": 1.29
+   },
+   {
+    "name": "coral-fan",
+    "kind": "prop",
+    "size": 1.47
+   },
+   {
+    "name": "coral-tube",
+    "kind": "prop",
+    "size": 1.22
+   },
+   {
+    "name": "coral-brain",
+    "kind": "prop",
+    "size": 1.03
+   },
+   {
+    "name": "anemone",
+    "kind": "prop",
+    "size": 0.86
+   },
+   {
+    "name": "clam",
+    "kind": "prop",
+    "size": 0.89
+   },
+   {
+    "name": "conch",
+    "kind": "prop",
+    "size": 1.04
+   },
+   {
+    "name": "starfish",
+    "kind": "prop",
+    "size": 0.48
+   },
+   {
+    "name": "amphora",
+    "kind": "prop",
+    "size": 1.16
+   },
+   {
+    "name": "anchor",
+    "kind": "prop",
+    "size": 1.66
+   },
+   {
+    "name": "ship-wheel",
+    "kind": "prop",
+    "size": 1.7
+   },
+   {
+    "name": "bubbles",
+    "kind": "prop",
+    "size": 2.07
+   },
+   {
+    "name": "goal",
+    "kind": "goal",
+    "size": 1.52
+   },
+   {
+    "name": "coin",
+    "kind": "coin",
+    "size": 0.61
+   },
+   {
+    "name": "obstacle-1",
+    "kind": "obstacle",
+    "size": 0.61
+   },
+   {
+    "name": "obstacle-2",
+    "kind": "obstacle",
+    "size": 0.91
+   },
+   {
+    "name": "obstacle-3",
+    "kind": "obstacle",
+    "size": 0.81
+   }
+  ]
  }
 ];
 export const ART2D_CHARACTERS = [
@@ -1253,6 +1361,282 @@ export const ART2D_CHARACTERS = [
   "kind": "animal",
   "pack": "animals",
   "group": "dinosaur",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "dolphin",
+  "name": "Dolphin",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "turtle",
+  "name": "Sea Turtle",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "clownfish",
+  "name": "Clownfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "blue-tang",
+  "name": "Blue Tang",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "barb",
+  "name": "Barb",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "goldfish",
+  "name": "Goldfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "little-clownfish",
+  "name": "Little Clownfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "reef-fish",
+  "name": "Reef Fish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "bass",
+  "name": "Bass",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "sardine",
+  "name": "Sardine",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "snapper",
+  "name": "Red Snapper",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "swordfish",
+  "name": "Swordfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "squid",
+  "name": "Squid",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "butterfly-fish",
+  "name": "Butterfly Fish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "yellow-tang",
+  "name": "Yellow Tang",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "mandarin-fish",
+  "name": "Mandarin Fish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "koi",
+  "name": "Koi",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "lionfish",
+  "name": "Lionfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "pufferfish",
+  "name": "Pufferfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "seahorse",
+  "name": "Seahorse",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "jellyfish",
+  "name": "Jellyfish",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "little-shark",
+  "name": "Little Shark",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
+  "frames": {
+   "idle": 4,
+   "run": 8,
+   "jump": 2
+  }
+ },
+ {
+  "id": "crab",
+  "name": "Crab",
+  "kind": "animal",
+  "pack": "animals",
+  "group": "sea",
   "frames": {
    "idle": 4,
    "run": 8,

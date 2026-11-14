@@ -1,0 +1,148 @@
+{
+ "dir": "ocean-animals",
+ "name": "Ocean Animals",
+ "author": "THEUNSEENVULGA",
+ "url": "https://theunseenvulga.itch.io/ocean-animals",
+ "licence": "custom (stated on the page as CC0 with a note: do not resell the unmodified assets as-is or claim you made them; not plain CC0)",
+ "licenceFile": "LICENSE-NOTE.txt",
+ "redistribute": false,
+ "credit": "Ocean Animals by THEUNSEENVULGA (not required, given anyway)",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true
+ },
+ "creatures": {
+  "turtle": {
+   "id": "turtle",
+   "name": "Sea Turtle"
+  },
+  "squid": {
+   "id": "squid",
+   "name": "Squid"
+  },
+  "swordfish": {
+   "id": "swordfish",
+   "name": "Swordfish"
+  }
+ },
+ "items": {
+  "swordfish": {
+   "swimRig": {
+    "length": 4.5
+   },
+   "colours": {
+    ".": "#4f7fd0"
+   }
+  },
+  "squid": {
+   "swimRig": {
+    "length": 3,
+    "turn": 180,
+    "amp": 0.3,
+    "swim": 1.2
+   },
+   "colours": {
+    ".": "#f2879a"
+   }
+  },
+  "shark": {
+   "swimRig": {
+    "length": 6
+   }
+  },
+  "sea urchin": {
+   "swimRig": {
+    "length": 1
+   }
+  },
+  "rock fish": {
+   "swimRig": {
+    "length": 2
+   }
+  },
+  "red deep sea fish": {
+   "swimRig": {
+    "length": 3
+   }
+  },
+  "purple fat deep sea fish": {
+   "swimRig": {
+    "length": 2
+   }
+  },
+  "purple deep sea fish": {
+   "swimRig": {
+    "length": 3
+   }
+  },
+  "lobster": {
+   "swimRig": {
+    "length": 1.8
+   }
+  },
+  "hammerhead shark": {
+   "swimRig": {
+    "length": 5
+   }
+  },
+  "green deep sea fish": {
+   "swimRig": {
+    "length": 3
+   }
+  },
+  "brown fat deep sea fish": {
+   "swimRig": {
+    "length": 2
+   }
+  },
+  "black fat deep sea fish": {
+   "swimRig": {
+    "length": 2
+   }
+  },
+  "black deep sea fish": {
+   "swimRig": {
+    "length": 3
+   }
+  },
+  "baracuda": {
+   "swimRig": {
+    "length": 3.5
+   }
+  },
+  "turtle": {
+   "swimRig": {
+    "length": 2.6,
+    "amp": 0.12,
+    "idle": 3.2,
+    "swim": 1.6,
+    "flap": {
+     "from": 0.5,
+     "amp": 0.7,
+     "at": 0.4
+    }
+   },
+   "colours": {
+    "^Turtle": "#58b368",
+    "^shark eyes$": "#141414",
+    "^Material": "#f3efe2"
+   }
+  }
+ },
+ "exclude": {
+  "baracuda": "Kid-safe: a long jaw full of pointed teeth",
+  "(black|green|purple|red) deep sea fish": "Kid-safe: a gaping mouth of long fangs (deep-sea dragonfish)",
+  "(black|brown|purple) fat deep sea fish": "Kid-safe: a row of teeth shows in its mouth, and it is near black",
+  "shark": "Kid-safe: teeth show in its mouth",
+  "hammerhead shark": "Kid-safe, in doubt: small teeth show under its head; and its picture was not uploaded (it draws plain white)",
+  "rock fish": "Its pictures were not uploaded (it draws as a plain white lump with a grumpy face) and it is 8,180 triangles",
+  "lobster": "18,304 triangles (367 KB) for a small seabed animal, and its picture was not uploaded (plain white)",
+  "sea urchin": "A ball of spines with no picture uploaded; 5,856 triangles"
+ },
+ "source": "branch asset-packs, folder ocean-animals/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "No model has a clip, and the pictures (textures) the FBX files name were not in the upload, so every model draws in plain material colours: the three that ship get one colour each (defaults per item: colours).",
+  "Each model's skeleton is baked into its rest pose and replaced by the swimRig spine (idle and swim made in the pipeline); the turtle's flippers beat (flap).",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models in public/vendor/themes/ and the pictures in public/vendor/art2d/ reviewed: the licence forbids redistributing the files as assets."
+ ]
+}

@@ -1,0 +1,1065 @@
+{
+ "id": "under-the-sea",
+ "name": "Under the Sea",
+ "description": "A sunny coral reef to swim through as a dolphin, a turtle or a fish: corals, kelp, a rock arch, a sunken ship, schools of fish and treasure on the sandy sea floor.",
+ "goodFor": [
+  "maths",
+  "science",
+  "sea life",
+  "adventures"
+ ],
+ "packs": [
+  {
+   "id": "reodesuxz-underwater",
+   "name": "Low Poly Underwater Pack",
+   "author": "reodesuxz",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder underwater-pack/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-reodesuxz",
+   "licenceFile": "LICENSES/reodesuxz-underwater.txt",
+   "redistribute": false,
+   "aiTraining": false,
+   "credit": "Low Poly Underwater Pack by reodesuxz (appreciated, not required)",
+   "dir": "underwater-pack/",
+   "steps": {
+    "matte": true,
+    "scale": 2.5,
+    "inkNormals": true
+   }
+  },
+  {
+   "id": "sea-life-sample",
+   "name": "Low Poly Sea Life (sample: dolphin and crab)",
+   "author": "MuteAssets",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder muteassets-sea-life-sample/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-muteassets-sea-life",
+   "licenceFile": "LICENSES/muteassets-sea-life.txt",
+   "redistribute": false,
+   "credit": "Low Poly Sea Life by MuteAssets (welcome, not required)"
+  },
+  {
+   "id": "stylized-fish-sampler",
+   "name": "Stylized Fish Pack Free Sampler",
+   "author": "aletheiamask",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder pipothai-fish-sampler/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-aletheiamask-standard-asset",
+   "licenceFile": "LICENSES/stylized-fish-sampler.txt",
+   "redistribute": false,
+   "aiTraining": false,
+   "credit": "Stylized Fish Pack Free Sampler by aletheiamask (appreciated, not required)"
+  },
+  {
+   "id": "free-fish-sampler",
+   "name": "Free Fish Sampler",
+   "author": "SageGlint",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder sageglint-fish-sampler/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-free-fish-sampler-1.1",
+   "licenceFile": "LICENSES/free-fish-sampler.txt",
+   "redistribute": false,
+   "aiTraining": false,
+   "credit": "Free Fish Sampler by SageGlint (appreciated, not required)"
+  },
+  {
+   "id": "alstra-fish",
+   "name": "Fish - PolyPack Asset",
+   "author": "ALSTRA INFINITE",
+   "url": "https://alstrainfinite.itch.io/fish",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder alstra-fish-polypack/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-alstra-free-asset",
+   "licenceFile": "LICENSES/alstra-fish-polypack.txt",
+   "redistribute": false,
+   "creditRequired": true,
+   "credit": "Fish - PolyPack Asset by ALSTRA INFINITE, alstrainfinite.itch.io/fish (credit is required)"
+  },
+  {
+   "id": "ocean-animals",
+   "name": "Ocean Animals",
+   "author": "THEUNSEENVULGA",
+   "url": "https://theunseenvulga.itch.io/ocean-animals",
+   "source": "uploaded by the owner as FBX to branch asset-packs, folder ocean-animals/",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "LicenseRef-theunseenvulga-ocean-animals",
+   "licenceFile": "LICENSES/ocean-animals.txt",
+   "redistribute": false,
+   "credit": "Ocean Animals by THEUNSEENVULGA (not required, given anyway)"
+  },
+  {
+   "id": "quaternius-cute-fish",
+   "name": "Quaternius Cute Fish",
+   "author": "Quaternius",
+   "url": "https://quaternius.com",
+   "commit": "3e9121133905ea04d88208483b2591fd9812e958",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-cute-fish.txt",
+   "credit": "Quaternius, www.quaternius.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-pirate",
+   "name": "Kenney Pirate Kit 2.1",
+   "author": "Kenney",
+   "url": "https://kenney.nl/assets/pirate-kit",
+   "commit": "1d1dbb18a46bc9e8cdfc181ed83b88b095cdd173",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-pirate.txt",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "heroes": [],
+ "look": {
+  "sky": {
+   "top": "#56c4ee",
+   "middle": "#2794d6",
+   "bottom": "#0f66ae"
+  },
+  "fog": {
+   "color": "#2a97d8",
+   "near": 10,
+   "far": 90
+  },
+  "hemisphere": {
+   "sky": "#e6f8ff",
+   "ground": "#4f93b8",
+   "intensity": 1.3
+  },
+  "sun": {
+   "color": "#eafcff",
+   "intensity": 2.3
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#2f9ad9",
+   "emissive": "#2f9ad9",
+   "emissiveIntensity": 1
+  },
+  "ground": "#ead9a6",
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  },
+  "weather": "bubbles"
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. The sandy sea floor is at y 0 (g.world.ground()); pieces stand on it. Every animal's own y is its lowest point, so a fish at y 2 swims 2 above the sand. There are no walking heroes: the player is one of the sea animals, with g.controls(me, { swim: true }).",
+ "sounds": [
+  [
+   "jump",
+   "theme:busy-kitchen/1.0.0/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "theme:busy-kitchen/1.0.0/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "theme:busy-kitchen/1.0.0/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "theme:busy-kitchen/1.0.0/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "theme:busy-kitchen/1.0.0/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "theme:busy-kitchen/1.0.0/sounds/walk.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer",
+ "creatures": [
+  {
+   "id": "dolphin",
+   "name": "Dolphin",
+   "from": "muteassets-sea-life-sample/dolphin.glb",
+   "pack": "sea-life-sample",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    2.2,
+    1.6,
+    3.6
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "textures": {
+    "^WaterPalette$": "muteassets-sea-life-sample/Textures/water_animal_texture.png"
+   },
+   "floor": true,
+   "scale": 2.3377,
+   "anims": {
+    "idle": "Dolphin_Armature|Idle",
+    "swim": "Dolphin_Armature|Swim",
+    "leap": "Dolphin_Armature|Jump",
+    "spin": "Dolphin_Armature|Spin",
+    "chatter": "Dolphin_Armature|Chatter"
+   }
+  },
+  {
+   "id": "turtle",
+   "name": "Sea Turtle",
+   "from": "ocean-animals/turtle.glb",
+   "pack": "ocean-animals",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.8,
+    0.9,
+    2.6
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 2.6,
+    "amp": 0.12,
+    "idle": 3.2,
+    "swim": 1.6,
+    "flap": {
+     "from": 0.5,
+     "amp": 0.7,
+     "at": 0.4
+    }
+   },
+   "colours": {
+    "^Turtle": "#58b368",
+    "^shark eyes$": "#141414",
+    "^Material": "#f3efe2"
+   }
+  },
+  {
+   "id": "clownfish",
+   "name": "Clownfish",
+   "from": "pipothai-fish-sampler/fish_clownfish.glb",
+   "pack": "stylized-fish-sampler",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.7,
+    0.8,
+    1.2
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 5.3571,
+   "anims": {
+    "idle": "fish_clownfish_Rig|SwimIdle",
+    "swim": "fish_clownfish_Rig|SwimFast"
+   }
+  },
+  {
+   "id": "blue-tang",
+   "name": "Blue Tang",
+   "from": "pipothai-fish-sampler/fish_bluetang.glb",
+   "pack": "stylized-fish-sampler",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.5,
+    1.0,
+    1.4
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 4.5455,
+   "anims": {
+    "idle": "fish_bluetang_Rig|SwimIdle",
+    "swim": "fish_bluetang_Rig|SwimFast"
+   }
+  },
+  {
+   "id": "barb",
+   "name": "Barb",
+   "from": "pipothai-fish-sampler/fish_barb.glb",
+   "pack": "stylized-fish-sampler",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.3,
+    0.9,
+    1.4
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 4.6125,
+   "anims": {
+    "idle": "fish_barb_Rig|SwimIdle",
+    "swim": "fish_barb_Rig|SwimFast"
+   }
+  },
+  {
+   "id": "goldfish",
+   "name": "Goldfish",
+   "from": "sageglint-fish-sampler/Fish_Goldfish.glb",
+   "pack": "free-fish-sampler",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.9,
+    1.1,
+    1.4
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "dropMeshes": [
+    "^Outline$"
+   ],
+   "swimRig": {
+    "length": 1.4,
+    "turn": 180
+   }
+  },
+  {
+   "id": "little-clownfish",
+   "name": "Little Clownfish",
+   "from": "sageglint-fish-sampler/Fish_Clownfish.glb",
+   "pack": "free-fish-sampler",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.7,
+    0.8,
+    1.1
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "dropMeshes": [
+    "^Outline$"
+   ],
+   "swimRig": {
+    "length": 1.1,
+    "turn": 180
+   }
+  },
+  {
+   "id": "reef-fish",
+   "name": "Reef Fish",
+   "from": "alstra-fish-polypack/FishV1.glb",
+   "pack": "alstra-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.3,
+    0.6,
+    1.5
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "id": "bass",
+   "name": "Bass",
+   "from": "alstra-fish-polypack/FishV2.glb",
+   "pack": "alstra-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.5,
+    0.7,
+    1.6
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.6,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "id": "sardine",
+   "name": "Sardine",
+   "from": "alstra-fish-polypack/FishV3.glb",
+   "pack": "alstra-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.3,
+    0.4,
+    1.5
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     2.4,
+     1.5,
+     1
+    ]
+   }
+  },
+  {
+   "id": "snapper",
+   "name": "Red Snapper",
+   "from": "alstra-fish-polypack/FishV4.glb",
+   "pack": "alstra-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.3,
+    0.9,
+    1.5
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "id": "swordfish",
+   "name": "Swordfish",
+   "from": "ocean-animals/swordfish.glb",
+   "pack": "ocean-animals",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.8,
+    1.4,
+    4.5
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 4.5
+   },
+   "colours": {
+    ".": "#4f7fd0"
+   }
+  },
+  {
+   "id": "squid",
+   "name": "Squid",
+   "from": "ocean-animals/squid.glb",
+   "pack": "ocean-animals",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.9,
+    0.9,
+    3.0
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 3,
+    "turn": 180,
+    "amp": 0.3,
+    "swim": 1.2
+   },
+   "colours": {
+    ".": "#f2879a"
+   }
+  },
+  {
+   "id": "butterfly-fish",
+   "name": "Butterfly Fish",
+   "from": "cute-fish/ButterflyFish.glb",
+   "pack": "quaternius-cute-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.0,
+    0.8,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2917,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   }
+  },
+  {
+   "id": "yellow-tang",
+   "name": "Yellow Tang",
+   "from": "cute-fish/YellowTang.glb",
+   "pack": "quaternius-cute-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.0,
+    0.9,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.3114,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   }
+  },
+  {
+   "id": "mandarin-fish",
+   "name": "Mandarin Fish",
+   "from": "cute-fish/MandarinFish.glb",
+   "pack": "quaternius-cute-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.8,
+    0.6,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2928,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   }
+  },
+  {
+   "id": "koi",
+   "name": "Koi",
+   "from": "cute-fish/Koi.glb",
+   "pack": "quaternius-cute-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.8,
+    1.1,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2467,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   }
+  },
+  {
+   "id": "lionfish",
+   "name": "Lionfish",
+   "from": "cute-fish/Lionfish.glb",
+   "pack": "quaternius-cute-fish",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.8,
+    1.2,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2204,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   }
+  },
+  {
+   "id": "pufferfish",
+   "name": "Pufferfish",
+   "from": "underwater-pack/pufferfish.glb",
+   "pack": "reodesuxz-underwater",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.1,
+    1.1,
+    1.3
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1.3,
+    "amp": 0.25
+   }
+  },
+  {
+   "id": "seahorse",
+   "name": "Seahorse",
+   "from": "underwater-pack/seahorse.glb",
+   "pack": "reodesuxz-underwater",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    0.5,
+    1.9,
+    1
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1.0,
+    "amp": 0.2,
+    "idle": 2.8,
+    "swim": 1.4
+   },
+   "dropMaterials": [
+    "^sand$"
+   ]
+  },
+  {
+   "id": "jellyfish",
+   "name": "Jellyfish",
+   "from": "underwater-pack/jellyfish.glb",
+   "pack": "reodesuxz-underwater",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.2,
+    1.6,
+    1.1
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1.1,
+    "amp": 0.25,
+    "idle": 3,
+    "swim": 1.6
+   }
+  },
+  {
+   "id": "little-shark",
+   "name": "Little Shark",
+   "from": "underwater-pack/shark.glb",
+   "pack": "reodesuxz-underwater",
+   "kind": "water",
+   "playable": true,
+   "size": [
+    1.8,
+    1.7,
+    3.2
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 3.2
+   }
+  },
+  {
+   "id": "crab",
+   "name": "Crab",
+   "from": "muteassets-sea-life-sample/crab.glb",
+   "pack": "sea-life-sample",
+   "kind": "land",
+   "playable": false,
+   "size": [
+    1.5,
+    0.4,
+    1.3
+   ],
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "textures": {
+    "^WaterPalette$": "muteassets-sea-life-sample/Textures/water_animal_texture.png"
+   },
+   "floor": true,
+   "scale": 1.0603,
+   "anims": {
+    "idle": "Crab_Armature|Idle",
+    "stroll": "Crab_Armature|ScuttleRight"
+   }
+  }
+ ],
+ "pieces": [
+  [
+   "sand",
+   "theme:pirate-cove/1.0.0/world/sand-patch.glb",
+   "decor",
+   [
+    "sand",
+    "patch",
+    "floor"
+   ],
+   "A thin patch of sand, about 10 by 8 (the 2D pictures of this world use it as their ground). In 3D the sea floor is g.world.ground().",
+   "kenney-pirate"
+  ],
+  [
+   "coral-table",
+   "underwater-pack/coral_table.glb",
+   "world",
+   [
+    "ground",
+    "platform",
+    "step",
+    "coral"
+   ],
+   "A flat-topped coral to rest on or to hold an answer. This world has no ground tiles: the sandy sea floor is g.world.ground().",
+   "reodesuxz-underwater"
+  ],
+  [
+   "rock-big",
+   "underwater-pack/sea_rock_big.glb",
+   "world",
+   [
+    "platform",
+    "rock"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "rock",
+   "underwater-pack/sea_rock_small.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "arch",
+   "underwater-pack/sea_arch.glb",
+   "world",
+   [
+    "arch",
+    "rock",
+    "gate"
+   ],
+   "A rock arch to swim through.",
+   "reodesuxz-underwater",
+   {
+    "scale": 4
+   }
+  ],
+  [
+   "shipwreck",
+   "underwater-pack/shipwreck_hull.glb",
+   "world",
+   [
+    "wreck",
+    "ship",
+    "landmark"
+   ],
+   "An old sunken ship, covered in moss.",
+   "reodesuxz-underwater",
+   {
+    "scale": 4.5
+   }
+  ],
+  [
+   "coral-brain",
+   "underwater-pack/coral_brain.glb",
+   "decor",
+   [
+    "coral"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "coral-branch",
+   "underwater-pack/coral_branch.glb",
+   "decor",
+   [
+    "coral"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "coral-fan",
+   "underwater-pack/coral_fan.glb",
+   "decor",
+   [
+    "coral"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "coral-tube",
+   "underwater-pack/coral_tube.glb",
+   "decor",
+   [
+    "coral"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "anemone",
+   "underwater-pack/sea_anemone.glb",
+   "decor",
+   [
+    "anemone",
+    "plant"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "kelp",
+   "underwater-pack/kelp.glb",
+   "decor",
+   [
+    "kelp",
+    "plant",
+    "tall"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "seaweed",
+   "underwater-pack/seaweed_bush.glb",
+   "decor",
+   [
+    "seaweed",
+    "plant"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "seaweed-tall",
+   "underwater-pack/seaweed_tall.glb",
+   "decor",
+   [
+    "seaweed",
+    "plant",
+    "tall"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "bubbles",
+   "underwater-pack/bubbles.glb",
+   "decor",
+   [
+    "bubbles"
+   ],
+   "A string of bubbles rising from the sea floor.",
+   "reodesuxz-underwater"
+  ],
+  [
+   "starfish",
+   "underwater-pack/starfish.glb",
+   "decor",
+   [
+    "animal",
+    "starfish",
+    "still"
+   ],
+   "A still starfish for the sea floor (it does not move).",
+   "reodesuxz-underwater"
+  ],
+  [
+   "clam",
+   "underwater-pack/clam_shell.glb",
+   "prop",
+   [
+    "shell",
+    "pearl"
+   ],
+   "An open clam with a pearl.",
+   "reodesuxz-underwater"
+  ],
+  [
+   "conch",
+   "underwater-pack/conch_shell.glb",
+   "prop",
+   [
+    "shell"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "amphora",
+   "underwater-pack/amphora.glb",
+   "prop",
+   [
+    "jar",
+    "treasure"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "barrel",
+   "underwater-pack/barrel.glb",
+   "prop",
+   [
+    "barrel",
+    "cargo"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "anchor",
+   "underwater-pack/ship_anchor.glb",
+   "prop",
+   [
+    "anchor",
+    "ship"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "ship-wheel",
+   "underwater-pack/ship_wheel.glb",
+   "prop",
+   [
+    "wheel",
+    "ship"
+   ],
+   null,
+   "reodesuxz-underwater"
+  ],
+  [
+   "chest",
+   "underwater-pack/treasure_chest.glb",
+   "prop",
+   [
+    "goal",
+    "treasure",
+    "chest"
+   ],
+   "The sunken treasure to find.",
+   "reodesuxz-underwater"
+  ],
+  [
+   "coin",
+   "theme:castle-quest/1.0.0/props/coin.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ],
+   null,
+   "kaykit-dungeon"
+  ]
+ ]
+}

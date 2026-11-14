@@ -1603,7 +1603,8 @@
         "cosy-home": "Gemütliches Zuhause",
         "busy-kitchen": "Wuselküche",
         "pirate-cove": "Piratenbucht",
-        "wild-woods": "Wilder Wald"
+        "wild-woods": "Wilder Wald",
+        "under-the-sea": "Unter dem Meer"
       }
     },
     "heroes": {
@@ -1626,7 +1627,30 @@
         "deer": "Reh",
         "stag": "Hirsch",
         "fox": "Fuchs",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Delfin",
+        "turtle": "Meeresschildkröte",
+        "clownfish": "Clownfisch",
+        "blue-tang": "Blauer Doktorfisch",
+        "barb": "Barbe",
+        "goldfish": "Goldfisch",
+        "little-clownfish": "Kleiner Clownfisch",
+        "reef-fish": "Rifffisch",
+        "bass": "Barsch",
+        "sardine": "Sardine",
+        "snapper": "Roter Schnapper",
+        "swordfish": "Schwertfisch",
+        "squid": "Tintenfisch",
+        "butterfly-fish": "Falterfisch",
+        "yellow-tang": "Gelber Doktorfisch",
+        "mandarin-fish": "Mandarinfisch",
+        "koi": "Koi",
+        "lionfish": "Feuerfisch",
+        "pufferfish": "Kugelfisch",
+        "seahorse": "Seepferdchen",
+        "jellyfish": "Qualle",
+        "little-shark": "Kleiner Hai",
+        "crab": "Krabbe"
       }
     },
     "animals": {
@@ -1654,7 +1678,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Delfin",
+        "turtle": "Meeresschildkröte",
+        "clownfish": "Clownfisch",
+        "blue-tang": "Blauer Doktorfisch",
+        "barb": "Barbe",
+        "goldfish": "Goldfisch",
+        "little-clownfish": "Kleiner Clownfisch",
+        "reef-fish": "Rifffisch",
+        "bass": "Barsch",
+        "sardine": "Sardine",
+        "snapper": "Roter Schnapper",
+        "swordfish": "Schwertfisch",
+        "squid": "Tintenfisch",
+        "butterfly-fish": "Falterfisch",
+        "yellow-tang": "Gelber Doktorfisch",
+        "mandarin-fish": "Mandarinfisch",
+        "koi": "Koi",
+        "lionfish": "Feuerfisch",
+        "pufferfish": "Kugelfisch",
+        "seahorse": "Seepferdchen",
+        "jellyfish": "Qualle",
+        "little-shark": "Kleiner Hai",
+        "crab": "Krabbe"
       }
     },
     "lesson": {

@@ -12,3 +12,20 @@ real licence).
 
 Everything else in the videos is the site itself (recorded from the real app with made-up names, see
 `scripts/demo-video/README.md`). The original synthesized track (`scripts/demo-video/compose-music.py`) is ours.
+
+## 3D models and the 2D pictures drawn from them (Kit 2 worlds)
+
+Each world's own `SOURCES.md` and `LICENSES/` folder (`public/vendor/themes/<world>/<version>/`) is the full record. This
+table lists the packs that are **not CC0**: they may be used inside games but their files may never be passed on as
+assets (no download link, no export, no asset pack), and where the licence says so, never used to train a
+machine-learning model. If the repository ever becomes public, their raw files (branch `asset-packs`) must be removed
+first and the built files reviewed. No lawyer has read these licences: the reading is the owner's.
+
+| Used in | What | Source and licence | Attribution |
+|---|---|---|---|
+| Under the Sea 1.0.0 (3D); 2D pack `animals` 1.1.0 | Reef fish, bass, sardine, red snapper | Fish - PolyPack Asset by ALSTRA INFINITE, https://alstrainfinite.itch.io/fish. Free Asset License: free to use with credit; no reselling or redistribution. | **Required.** "Fish - PolyPack Asset by ALSTRA INFINITE", here, in the world's `SOURCES.md` and `theme.json`, and in the 2D pack's `pack.json`. |
+| Under the Sea 1.0.0 (3D); 2D packs `under-the-sea` 1.0.0 and `animals` 1.1.0 | Corals, kelp, rocks, the arch, the shipwreck, shells, the chest; pufferfish, seahorse, jellyfish, little shark | Low Poly Underwater Pack by reodesuxz (uploaded by the owner). Custom licence: no redistribution of the files, no AI training. | Not required; given: "Low Poly Underwater Pack by reodesuxz". |
+| Under the Sea 1.0.0 (3D); 2D pack `animals` 1.1.0 | Dolphin, crab | Low Poly Sea Life (sample) by MuteAssets (uploaded by the owner; the author's name is from the upload's folder name). Custom licence: only inside a finished project. | Not required; given. |
+| Under the Sea 1.0.0 (3D); 2D pack `animals` 1.1.0 | Clownfish, blue tang, barb | Stylized Fish Pack Free Sampler by aletheiamask (uploaded by the owner). Standard Asset License: packed form only, no redistribution, no AI training. | Not required; given. |
+| Under the Sea 1.0.0 (3D); 2D pack `animals` 1.1.0 | Goldfish, little clownfish | Free Fish Sampler by SageGlint (uploaded by the owner; the author's name is from the upload's folder name). Licence version 1.1: no redistribution of the raw files, no machine-learning training. | Not required; given. |
+| Under the Sea 1.0.0 (3D); 2D pack `animals` 1.1.0 | Sea turtle, swordfish, squid | Ocean Animals by THEUNSEENVULGA, https://theunseenvulga.itch.io/ocean-animals. Stated as CC0 on its page with a "do not resell the unmodified assets as-is" note, so treated as restricted. | Not required; given. |

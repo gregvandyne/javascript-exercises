@@ -5,7 +5,8 @@
 // A new version of a shipped theme names it as "base": "<theme>/<version>": every file the base already has is copied
 // from it byte for byte (its catalogue entry too), and only what is new is built. "creatures" (Oomba3D 1.2.0) are
 // animated animals with their own clips: { id, name, from, pack, kind, playable, size, ...build-theme/pack-steps fields
-// (scale, anims, brighten, inkNormals, meshopt …) }; "moves" in the catalogue is the list of clips kept. pace (how fast
+// (scale, anims, brighten, inkNormals, meshopt …) }; "moves" in the catalogue is the list of clips kept. A still fish given
+// its clips by the swimRig step has idle and swim. pace (how fast
 // the ground passes under a standing foot in walk and run, units a second) and jumpAir (the part of the jump clip, 0 to
 // 1, in which the animal is off the ground) are measured from the built file and let Oomba3D keep feet from sliding.
 // Packs converted from FBX (kit2/packs/, docs/kit2-packs-plan.md) may carry "steps": the pack-steps.mjs fields every
@@ -24,12 +25,12 @@ const baseDir = def.base ? path.resolve(dir, '../../../public/vendor/themes', de
 const base = baseDir ? JSON.parse(fs.readFileSync(path.join(baseDir, 'theme.json'), 'utf8')) : null;
 const inBase = to => !!(base && base.files[to]);
 const recipe = { _: `How ${def.name} ${def.version} is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.`, models: [], copy: [] };
-const heroes = def.heroes.map(h => {
+const heroes = (def.heroes || []).map(h => {   // a world may have none: Under the Sea is played as one of its animals
   const to = `heroes/${h.id}.glb`;
   if (h.from.startsWith('theme:')) recipe.copy.push({ from: h.from, to }); else recipe.models.push({ from: h.from, to, keepMeshes: h.keepMeshes });
   return { id: h.id, name: h.name, file: to, pack: h.pack, ...(sizes[to] ? { size: sizes[to].size } : {}) };
 });
-if (def.moves.from.startsWith('theme:')) recipe.copy.push({ from: def.moves.from, to: 'heroes/moves.glb' });
+if (!def.moves) { /* no heroes, no shared moves */ } else if (def.moves.from.startsWith('theme:')) recipe.copy.push({ from: def.moves.from, to: 'heroes/moves.glb' });
 else recipe.models.push({ from: def.moves.from, to: 'heroes/moves.glb', animsOnly: true, keepAnims: Object.values(def.moves.clips) });
 const pieces = def.pieces.map(([id, from, kind, tags, note, packId, steps]) => {
   const to = `${folder[kind] || 'world'}/${id}.glb`;
@@ -45,11 +46,11 @@ const creatures = (def.creatures || []).map(({ id, name, from, pack, kind = 'lan
   const to = `creatures/${id}.glb`;
   if (!def.packs.some(p => p.id === pack)) throw new Error(`${id}: no pack ${pack}`);
   recipe.models.push({ from, to, ...steps, keepAnims: Object.values(steps.anims || {}) });
-  return { id, name, file: to, pack, kind, size, moves: Object.keys(steps.anims || {}), playable, ...(pace ? { pace } : {}), ...(jumpAir ? { jumpAir } : {}) };
+  return { id, name, file: to, pack, kind, size, moves: steps.swimRig ? ['idle', 'swim'] : Object.keys(steps.anims || {}), playable, ...(pace ? { pace } : {}), ...(jumpAir ? { jumpAir } : {}) };
 });
 const sounds = def.sounds.map(([id, from]) => { const to = `sounds/${id}.ogg`; recipe.copy.push({ from: inBase(to) ? `theme:${def.base}/${to}` : from, to }); return { id, file: `sounds/${id}.ogg`, pack: def.soundPack }; });
 fs.writeFileSync(path.join(dir, 'recipe.json'), JSON.stringify(recipe, null, 1) + '\n');
 const { pieces: _p, heroes: _h, sounds: _s, creatures: _c, base: _b, moves, soundPack, ...head } = def;
 head.packs = def.packs.map(({ dir, steps, ...p }) => p);
-fs.writeFileSync(path.join(dir, 'theme.src.json'), JSON.stringify({ ...head, heroes, moves: { file: 'heroes/moves.glb', pack: moves.pack, clips: moves.clips }, ...(creatures.length ? { creatures } : {}), pieces, sounds }, null, 1) + '\n');
+fs.writeFileSync(path.join(dir, 'theme.src.json'), JSON.stringify({ ...head, heroes, ...(moves ? { moves: { file: 'heroes/moves.glb', pack: moves.pack, clips: moves.clips } } : {}), ...(creatures.length ? { creatures } : {}), pieces, sounds }, null, 1) + '\n');
 console.log(`${def.id}: ${heroes.length} heroes, ${creatures.length} creatures, ${pieces.length} pieces, ${sounds.length} sounds${sizesFile ? ' (sized)' : ''}`);

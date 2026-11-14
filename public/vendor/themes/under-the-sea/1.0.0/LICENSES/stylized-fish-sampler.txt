@@ -1,0 +1,19 @@
+STANDARD ASSET LICENSE - Stylized Fish Pack Free Sampler - 3 Fish
+Copyright (c) 2026 aletheiamask. All rights reserved.
+
+This pack is free. By downloading it, you (one person, or one team / company working on its own projects)
+receive a non-exclusive, worldwide, perpetual license to:
+  - use the models, textures and animations in unlimited personal and commercial projects
+    (games, apps, films, renders, streams, marketing for your project);
+  - modify them in any way for use inside those projects.
+
+You may NOT:
+  - resell, redistribute, sublicense or share the source files (models, textures, .blend, .fbx, .glb),
+    modified or not, on their own or as part of another asset pack / template / marketplace listing;
+  - use the files to train or fine-tune AI / machine-learning models;
+  - claim the original assets as your own creation.
+
+Shipping a game or app that contains the assets is fine when they are included in compiled / packed form
+(e.g. inside the engine's build), not as standalone source files. Credit is appreciated but not required.
+
+The assets are provided "as is", without warranty of any kind.

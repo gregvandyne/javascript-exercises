@@ -5140,3 +5140,73 @@ The owner asked: "Can we also make these worlds available in 2d?" Branch `kit2-a
   cute fish; the T-Rex (not decided); the results card shows the sprite but the kit's small pictures elsewhere (an
   NPC bubble) do not; clouds are few. **Not verified:** a real phone or Chromebook GPU (software WebGL and the 2D
   canvas backend only) and a build with the real model.
+
+## Under the Sea 1.0.0: a coral reef world with 23 sea animals, and their 2D sprites (14 Nov 2026)
+
+The owner uploaded five sea packs to branch `asset-packs` and asked for them to be added. Under the Sea is built from
+them, from the reodesuxz Low Poly Underwater Pack (the scenery) and from five of the Quaternius Cute Fish, on Oomba3D
+1.2.0 with no engine change (`g.creature`, `g.school`, an animal as the hero, `g.world.ground`, swim controls and
+bubbles were all in 1.2.0, waiting for this world).
+
+- **Licences: the first world that is not all CC0.** Six of its ten packs allow use in games and modification but
+  forbid passing the files on as assets; three of them forbid machine-learning training; **ALSTRA INFINITE's requires
+  credit** (given in `docs/media-credits.md`, the world's `SOURCES.md` and `theme.json`, the 2D pack's `pack.json`, and
+  `kit2/packs/alstra-fish-polypack.json`). What that means here: the models are served only to running games from
+  `/vendor/themes/` and as drawn pictures from `/vendor/art2d/`, exactly like every other theme file; nothing links to a
+  model as a download and there is no export. Every restricted pack is marked `redistribute: false` in its pack config,
+  in `theme.json` and in the 2D manifest, and each config says the raw files must be removed if the repository ever
+  becomes public. `tests/unit/kit2-themes.test.js` and `tests/unit/art2d.test.js` used to accept only CC0: they now
+  also accept six licences BY NAME, each matched against words only its own licence text has, each needing the
+  `redistribute: false` mark, a credit and a source. Any other non-CC0 licence still fails. No lawyer has read these
+  licences; the reading is the owner's (`docs/kit2-packs-plan.md` section 1).
+- **Three packs came with no source address and two with no author's name in the licence** (`sageglint`, `muteassets`:
+  the names are the upload's folder names; `pipothai`'s licence names aletheiamask). The owner should confirm them.
+- **No walking heroes.** `docs/kit2-packs-plan.md` question 7 recommended it: the player is a sea animal. The theme has
+  an empty `heroes` list and no shared moves; every one of its 22 swimmers is `playable` (the dolphin is the default),
+  the crab is not. A hero asked for by name ("a wizard under the sea") gets the honest "Under the Sea has no Wizard"
+  and the dolphin. `from-def.mjs` learned that a definition may have no heroes and no moves.
+- **Kid-safe, looked at face by face** (side on and face on, on contact sheets). Left out for teeth showing: the
+  sageglint reef shark, the ALSTRA shark, and from Ocean Animals the barracuda, the shark, the hammerhead (in doubt) and
+  all seven deep-sea fish. Left out for other reasons: lobster (18,304 triangles), sea urchin and rock fish (their
+  pictures were not uploaded). The Cute Fish parrot fish was caught by the new test, not by eye: its beak is a material
+  named `ParrotFish_Teeth`, so the mandarin fish took its place and the parrot fish is now left out in that pack's
+  config. The one shark that ships is the underwater pack's toy-like model, as **Little Shark**: no mouth is modelled
+  at all. The word "shark" alone still gets the honest "not yet" in the Builder (only its name or chip picks it): the
+  owner can open that up. No fishing rod, hook, lure, bait or net is in the theme. Clips dropped: Death, Hit, Ram and
+  Nudge (dolphin), Death, Hit, Pinch, Threat and Grab (crab), Hooked, Flop and Display (the three stylized fish),
+  Attack, Death and Out_Of_Water (cute fish). The dolphin's Jump is kept as `leap` (a trick; a swimmer does not jump).
+- **Fish that arrived still now swim.** Twelve models have no clips (the sageglint, ALSTRA and Ocean Animals packs, and
+  the underwater pack's animals). A new opt-in pack step, `swimRig`, bakes any old skeleton into the rest pose, turns
+  the model to face +z, makes it a given length, stands it on y 0 and gives it a spine of five joints with two clips
+  made in the pipeline: `idle` (a slow sway) and `swim` (a wave that runs to the tail); `flap` adds two flipper joints
+  (the turtle). Two smaller steps: `floor` (an animated model stood on its lowest point, so every animal's y is its
+  underside like the land animals') and `dropMaterials`. A recipe that names none of them builds as before: the 2D
+  `animals` 1.0.0 pack was rebuilt from the staged land packs with the changed pipeline and came out byte for byte.
+- **Pictures that were not uploaded.** The Ocean Animals FBX files name textures that are not in the upload, so the
+  turtle, swordfish and squid have one plain colour each (green, blue, pink). The sageglint models carry their own
+  black outline shell, which is dropped (Oomba3D draws the ink).
+- **The world:** 24 pieces (22 from the underwater pack at 2.5 times, the arch 4, the shipwreck 4.5; a sand patch from
+  Pirate Cove for the 2D ground; the shared coin), blue fog from 10 to 90, a sandy `look.ground`, `look.weather:
+  'bubbles'` (a theme's suggested weather: the tour and the 2D pictures read it). 1.73 MB first load.
+- **The starter is swum.** `templates/oomba3d.html` has a second layout, used when `LAYOUT.swim` is set: one sandy floor
+  (`g.world.ground`), the way marked by rocks with coins floating at different depths, answers over coral tables, the
+  chest in front of the shipwreck; `g.controls(me, { swim: true, floor: 0.4, ceiling: 9 })`; swimming up to an answer
+  or the goal is what landing on it is in a walking world. Three shoals (`g.school`) and five friends (`wander`) are
+  beside the way and are never solid. The words say "Swim" in all 13 languages. Every other world's starter is the
+  same bytes as before.
+- **Builder:** place words (under the sea, underwater, coral reef, in the ocean, sea floor, sea animals), sea animal
+  words (a "sea horse" is the seahorse, not the horse; "a fish" is the clownfish), names in the 12 locale files, picker
+  pictures, the rules for an underwater world. The tour learned an underwater theme: no ground tiles, swimmers side on
+  at different depths, a shoal.
+- **2D:** `under-the-sea` 1.0.0 (far and mid strips, sand ground, 15 props, chest, coin, three obstacles) and `animals`
+  1.1.0: the 24 land sheets unchanged byte for byte plus 23 sea sheets in group `sea` (idle 4, swim as run 8 and as
+  jump 2 frames), drawn 1.4 m tall or more so a sardine is still a hero-sized sprite. `animals` 1.0.0 stays for games
+  saved on it. Oomba2D 1.0.0 finds animals only in a pack called `animals`, which is why the sea animals are a new
+  version of that pack and not a pack of their own.
+- **Not done:** the Quaternius "Animated Fish" pack (whale, manta ray, a bigger dolphin) is still out: no licence file
+  was uploaded with it. Some swimmers are several meshes (the goldfish is seven): a shoal of those costs more draw
+  calls, so the starter's shoals are single-mesh fish. The 2D runner makes a fish "run" along the sand: it swims
+  along the bottom and its jump is a swim stroke.
+- **Not verified:** a real GPU or Chromebook (software WebGL only), motion by eye (the clips were checked as still
+  frames at several times, not watched), sound, a build with the real model, and the translations of the animal names
+  by a native speaker.

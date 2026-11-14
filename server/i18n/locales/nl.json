@@ -1603,7 +1603,8 @@
         "cosy-home": "Gezellig Huis",
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
-        "wild-woods": "Wilde Woud"
+        "wild-woods": "Wilde Woud",
+        "under-the-sea": "Onder de Zee"
       }
     },
     "heroes": {
@@ -1626,7 +1627,30 @@
         "deer": "Ree",
         "stag": "Hert",
         "fox": "Vos",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Dolfijn",
+        "turtle": "Zeeschildpad",
+        "clownfish": "Clownvis",
+        "blue-tang": "Blauwe doktersvis",
+        "barb": "Barbeel",
+        "goldfish": "Goudvis",
+        "little-clownfish": "Kleine clownvis",
+        "reef-fish": "Rifvis",
+        "bass": "Baars",
+        "sardine": "Sardine",
+        "snapper": "Rode snapper",
+        "swordfish": "Zwaardvis",
+        "squid": "Inktvis",
+        "butterfly-fish": "Koraalvlinder",
+        "yellow-tang": "Gele doktersvis",
+        "mandarin-fish": "Mandarijnpitvis",
+        "koi": "Koi",
+        "lionfish": "Koraalduivel",
+        "pufferfish": "Kogelvis",
+        "seahorse": "Zeepaardje",
+        "jellyfish": "Kwal",
+        "little-shark": "Haaitje",
+        "crab": "Krab"
       }
     },
     "animals": {
@@ -1654,7 +1678,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolfijn",
+        "turtle": "Zeeschildpad",
+        "clownfish": "Clownvis",
+        "blue-tang": "Blauwe doktersvis",
+        "barb": "Barbeel",
+        "goldfish": "Goudvis",
+        "little-clownfish": "Kleine clownvis",
+        "reef-fish": "Rifvis",
+        "bass": "Baars",
+        "sardine": "Sardine",
+        "snapper": "Rode snapper",
+        "swordfish": "Zwaardvis",
+        "squid": "Inktvis",
+        "butterfly-fish": "Koraalvlinder",
+        "yellow-tang": "Gele doktersvis",
+        "mandarin-fish": "Mandarijnpitvis",
+        "koi": "Koi",
+        "lionfish": "Koraalduivel",
+        "pufferfish": "Kogelvis",
+        "seahorse": "Zeepaardje",
+        "jellyfish": "Kwal",
+        "little-shark": "Haaitje",
+        "crab": "Krab"
       }
     },
     "lesson": {

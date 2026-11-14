@@ -1603,7 +1603,8 @@
         "cosy-home": "Casa Aconchegante",
         "busy-kitchen": "Cozinha Agitada",
         "pirate-cove": "Enseada dos Piratas",
-        "wild-woods": "Bosque Selvagem"
+        "wild-woods": "Bosque Selvagem",
+        "under-the-sea": "Fundo do Mar"
       }
     },
     "heroes": {
@@ -1626,7 +1627,30 @@
         "deer": "Veado",
         "stag": "Cervo",
         "fox": "Raposa",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Golfinho",
+        "turtle": "Tartaruga-marinha",
+        "clownfish": "Peixe-palhaço",
+        "blue-tang": "Cirurgião-azul",
+        "barb": "Barbo",
+        "goldfish": "Peixinho-dourado",
+        "little-clownfish": "Peixe-palhaço Pequeno",
+        "reef-fish": "Peixe de Recife",
+        "bass": "Robalo",
+        "sardine": "Sardinha",
+        "snapper": "Pargo Vermelho",
+        "swordfish": "Peixe-espada",
+        "squid": "Lula",
+        "butterfly-fish": "Peixe-borboleta",
+        "yellow-tang": "Cirurgião-amarelo",
+        "mandarin-fish": "Peixe-mandarim",
+        "koi": "Carpa Koi",
+        "lionfish": "Peixe-leão",
+        "pufferfish": "Baiacu",
+        "seahorse": "Cavalo-marinho",
+        "jellyfish": "Água-viva",
+        "little-shark": "Tubarãozinho",
+        "crab": "Caranguejo"
       }
     },
     "animals": {
@@ -1654,7 +1678,30 @@
         "stegosaurus": "Estegossauro",
         "triceratops": "Tricerátops",
         "parasaurolophus": "Parassaurolofo",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Golfinho",
+        "turtle": "Tartaruga-marinha",
+        "clownfish": "Peixe-palhaço",
+        "blue-tang": "Cirurgião-azul",
+        "barb": "Barbo",
+        "goldfish": "Peixinho-dourado",
+        "little-clownfish": "Peixe-palhaço Pequeno",
+        "reef-fish": "Peixe de Recife",
+        "bass": "Robalo",
+        "sardine": "Sardinha",
+        "snapper": "Pargo Vermelho",
+        "swordfish": "Peixe-espada",
+        "squid": "Lula",
+        "butterfly-fish": "Peixe-borboleta",
+        "yellow-tang": "Cirurgião-amarelo",
+        "mandarin-fish": "Peixe-mandarim",
+        "koi": "Carpa Koi",
+        "lionfish": "Peixe-leão",
+        "pufferfish": "Baiacu",
+        "seahorse": "Cavalo-marinho",
+        "jellyfish": "Água-viva",
+        "little-shark": "Tubarãozinho",
+        "crab": "Caranguejo"
       }
     },
     "lesson": {

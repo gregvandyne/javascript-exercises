@@ -1,0 +1,2049 @@
+{
+ "id": "animals",
+ "version": "1.1.0",
+ "kind": "animals",
+ "name": "Animals",
+ "cell": 96,
+ "from": {
+  "packs": [
+   {
+    "id": "ultimate-animated-animals",
+    "name": "Quaternius Ultimate Animated Animals",
+    "author": "Quaternius",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "farm-animals",
+    "name": "Quaternius Farm Animals",
+    "author": "Quaternius",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "dinosaurs",
+    "name": "Quaternius Animated Dinosaurs",
+    "author": "Quaternius",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "sea-life-sample",
+    "name": "Low Poly Sea Life (sample: dolphin and crab)",
+    "author": "MuteAssets",
+    "licence": "LicenseRef-muteassets-sea-life",
+    "redistribute": false
+   },
+   {
+    "id": "stylized-fish-sampler",
+    "name": "Stylized Fish Pack Free Sampler",
+    "author": "aletheiamask",
+    "licence": "LicenseRef-aletheiamask-standard-asset",
+    "redistribute": false
+   },
+   {
+    "id": "free-fish-sampler",
+    "name": "Free Fish Sampler",
+    "author": "SageGlint",
+    "licence": "LicenseRef-free-fish-sampler-1.1",
+    "redistribute": false
+   },
+   {
+    "id": "alstra-fish",
+    "name": "Fish - PolyPack Asset",
+    "author": "ALSTRA INFINITE",
+    "licence": "LicenseRef-alstra-free-asset",
+    "redistribute": false,
+    "credit": "Fish - PolyPack Asset by ALSTRA INFINITE, alstrainfinite.itch.io/fish (credit is required)"
+   },
+   {
+    "id": "ocean-animals",
+    "name": "Ocean Animals",
+    "author": "THEUNSEENVULGA",
+    "licence": "LicenseRef-theunseenvulga-ocean-animals",
+    "redistribute": false
+   },
+   {
+    "id": "quaternius-cute-fish",
+    "name": "Quaternius Cute Fish",
+    "author": "Quaternius",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "reodesuxz-underwater",
+    "name": "Low Poly Underwater Pack",
+    "author": "reodesuxz",
+    "licence": "LicenseRef-reodesuxz",
+    "redistribute": false
+   }
+  ]
+ },
+ "sprites": {
+  "horse": {
+   "image": "horse.webp",
+   "fw": 310,
+   "fh": 241,
+   "ax": 0.5427,
+   "ay": 0.9554,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Horse",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "horse-white": {
+   "image": "horse-white.webp",
+   "fw": 310,
+   "fh": 241,
+   "ax": 0.5427,
+   "ay": 0.9554,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "White Horse",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "donkey": {
+   "image": "donkey.webp",
+   "fw": 270,
+   "fh": 227,
+   "ax": 0.5439,
+   "ay": 0.9609,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Donkey",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "cow": {
+   "image": "cow.webp",
+   "fw": 388,
+   "fh": 248,
+   "ax": 0.5637,
+   "ay": 0.9507,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Cow",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "bull": {
+   "image": "bull.webp",
+   "fw": 398,
+   "fh": 256,
+   "ax": 0.5626,
+   "ay": 0.9468,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Bull",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "alpaca": {
+   "image": "alpaca.webp",
+   "fw": 206,
+   "fh": 224,
+   "ax": 0.5109,
+   "ay": 0.9583,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Alpaca",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "deer": {
+   "image": "deer.webp",
+   "fw": 238,
+   "fh": 219,
+   "ax": 0.522,
+   "ay": 0.9632,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Deer",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "stag": {
+   "image": "stag.webp",
+   "fw": 231,
+   "fh": 247,
+   "ax": 0.5231,
+   "ay": 0.9655,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Stag",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "fox": {
+   "image": "fox.webp",
+   "fw": 249,
+   "fh": 157,
+   "ax": 0.509,
+   "ay": 0.9425,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Fox",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "wolf": {
+   "image": "wolf.webp",
+   "fw": 275,
+   "fh": 182,
+   "ax": 0.4983,
+   "ay": 0.9447,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Wolf",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "husky": {
+   "image": "husky.webp",
+   "fw": 182,
+   "fh": 160,
+   "ax": 0.523,
+   "ay": 0.9543,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Husky",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "shiba": {
+   "image": "shiba.webp",
+   "fw": 175,
+   "fh": 148,
+   "ax": 0.5038,
+   "ay": 0.9524,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Shiba Inu",
+   "kind": "animal",
+   "group": "woodland"
+  },
+  "cow-spotted": {
+   "image": "cow-spotted.webp",
+   "fw": 372,
+   "fh": 198,
+   "ax": 0.5599,
+   "ay": 0.9361,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Spotted Cow",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "pony": {
+   "image": "pony.webp",
+   "fw": 294,
+   "fh": 207,
+   "ax": 0.5295,
+   "ay": 0.9467,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Pony",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "zebra": {
+   "image": "zebra.webp",
+   "fw": 287,
+   "fh": 208,
+   "ax": 0.528,
+   "ay": 0.9454,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Zebra",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "llama": {
+   "image": "llama.webp",
+   "fw": 263,
+   "fh": 203,
+   "ax": 0.5377,
+   "ay": 0.9496,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 9
+   },
+   "name": "Llama",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "pig": {
+   "image": "pig.webp",
+   "fw": 305,
+   "fh": 145,
+   "ax": 0.5557,
+   "ay": 0.9259,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 9
+   },
+   "name": "Pig",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "sheep": {
+   "image": "sheep.webp",
+   "fw": 265,
+   "fh": 148,
+   "ax": 0.5564,
+   "ay": 0.9326,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 9
+   },
+   "name": "Sheep",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "pug": {
+   "image": "pug.webp",
+   "fw": 164,
+   "fh": 108,
+   "ax": 0.5438,
+   "ay": 0.9449,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 9
+   },
+   "name": "Pug",
+   "kind": "animal",
+   "group": "farm"
+  },
+  "apatosaurus": {
+   "image": "apatosaurus.webp",
+   "fw": 493,
+   "fh": 256,
+   "ax": 0.5116,
+   "ay": 0.9611,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Apatosaurus",
+   "kind": "animal",
+   "group": "dinosaur"
+  },
+  "stegosaurus": {
+   "image": "stegosaurus.webp",
+   "fw": 349,
+   "fh": 260,
+   "ax": 0.5073,
+   "ay": 0.9481,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Stegosaurus",
+   "kind": "animal",
+   "group": "dinosaur"
+  },
+  "triceratops": {
+   "image": "triceratops.webp",
+   "fw": 364,
+   "fh": 267,
+   "ax": 0.515,
+   "ay": 0.9508,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Triceratops",
+   "kind": "animal",
+   "group": "dinosaur"
+  },
+  "parasaurolophus": {
+   "image": "parasaurolophus.webp",
+   "fw": 358,
+   "fh": 270,
+   "ax": 0.5234,
+   "ay": 0.9634,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Parasaurolophus",
+   "kind": "animal",
+   "group": "dinosaur"
+  },
+  "velociraptor": {
+   "image": "velociraptor.webp",
+   "fw": 262,
+   "fh": 161,
+   "ax": 0.5316,
+   "ay": 0.9521,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Velociraptor",
+   "kind": "animal",
+   "group": "dinosaur"
+  },
+  "dolphin": {
+   "image": "dolphin.webp",
+   "fw": 223,
+   "fh": 131,
+   "ax": 0.5068,
+   "ay": 0.8748,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Dolphin",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "turtle": {
+   "image": "turtle.webp",
+   "fw": 220,
+   "fh": 105,
+   "ax": 0.5094,
+   "ay": 0.8895,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Sea Turtle",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "clownfish": {
+   "image": "clownfish.webp",
+   "fw": 157,
+   "fh": 112,
+   "ax": 0.5669,
+   "ay": 0.9451,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Clownfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "blue-tang": {
+   "image": "blue-tang.webp",
+   "fw": 141,
+   "fh": 105,
+   "ax": 0.5491,
+   "ay": 0.9634,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Blue Tang",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "barb": {
+   "image": "barb.webp",
+   "fw": 155,
+   "fh": 103,
+   "ax": 0.5541,
+   "ay": 0.9693,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Barb",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "goldfish": {
+   "image": "goldfish.webp",
+   "fw": 138,
+   "fh": 101,
+   "ax": 0.5395,
+   "ay": 0.9809,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Goldfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "little-clownfish": {
+   "image": "little-clownfish.webp",
+   "fw": 148,
+   "fh": 106,
+   "ax": 0.5495,
+   "ay": 0.9337,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Little Clownfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "reef-fish": {
+   "image": "reef-fish.webp",
+   "fw": 240,
+   "fh": 113,
+   "ax": 0.5484,
+   "ay": 0.9696,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Reef Fish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "bass": {
+   "image": "bass.webp",
+   "fw": 236,
+   "fh": 104,
+   "ax": 0.5386,
+   "ay": 0.9667,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Bass",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "sardine": {
+   "image": "sardine.webp",
+   "fw": 325,
+   "fh": 105,
+   "ax": 0.5472,
+   "ay": 0.9738,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Sardine",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "snapper": {
+   "image": "snapper.webp",
+   "fw": 160,
+   "fh": 103,
+   "ax": 0.5437,
+   "ay": 0.9713,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Red Snapper",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "swordfish": {
+   "image": "swordfish.webp",
+   "fw": 283,
+   "fh": 102,
+   "ax": 0.5507,
+   "ay": 0.9355,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Swordfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "squid": {
+   "image": "squid.webp",
+   "fw": 301,
+   "fh": 105,
+   "ax": 0.522,
+   "ay": 0.9768,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Squid",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "butterfly-fish": {
+   "image": "butterfly-fish.webp",
+   "fw": 162,
+   "fh": 103,
+   "ax": 0.549,
+   "ay": 0.9927,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Butterfly Fish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "yellow-tang": {
+   "image": "yellow-tang.webp",
+   "fw": 152,
+   "fh": 103,
+   "ax": 0.5583,
+   "ay": 0.9991,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Yellow Tang",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "mandarin-fish": {
+   "image": "mandarin-fish.webp",
+   "fw": 226,
+   "fh": 104,
+   "ax": 0.5532,
+   "ay": 0.9855,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Mandarin Fish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "koi": {
+   "image": "koi.webp",
+   "fw": 125,
+   "fh": 99,
+   "ax": 0.5498,
+   "ay": 0.9996,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Koi",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "lionfish": {
+   "image": "lionfish.webp",
+   "fw": 123,
+   "fh": 99,
+   "ax": 0.5438,
+   "ay": 0.9983,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Lionfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "pufferfish": {
+   "image": "pufferfish.webp",
+   "fw": 119,
+   "fh": 102,
+   "ax": 0.5158,
+   "ay": 0.9917,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Pufferfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "seahorse": {
+   "image": "seahorse.webp",
+   "fw": 54,
+   "fh": 102,
+   "ax": 0.529,
+   "ay": 0.9819,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Seahorse",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "jellyfish": {
+   "image": "jellyfish.webp",
+   "fw": 76,
+   "fh": 105,
+   "ax": 0.5146,
+   "ay": 0.9562,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Jellyfish",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "little-shark": {
+   "image": "little-shark.webp",
+   "fw": 187,
+   "fh": 103,
+   "ax": 0.5411,
+   "ay": 0.9603,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Little Shark",
+   "kind": "animal",
+   "group": "sea"
+  },
+  "crab": {
+   "image": "crab.webp",
+   "fw": 345,
+   "fh": 117,
+   "ax": 0.5035,
+   "ay": 0.8362,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Crab",
+   "kind": "animal",
+   "group": "sea"
+  }
+ },
+ "files": {
+  "LICENSES/alstra-fish.txt": {
+   "bytes": 1043,
+   "sha384": "sha384-kQhJl0zN1nIkiUkGVqsNJGQDb58zd7jUIz+cyMD/d6C434CNgBjkOvimAq5T9Bel"
+  },
+  "LICENSES/dinosaurs.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "LICENSES/farm-animals.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "LICENSES/free-fish-sampler.txt": {
+   "bytes": 1450,
+   "sha384": "sha384-IlLn5vHC6DTzrbvHh0ZLZI9+hXzanH0vBawWMoSMrwN4uVH+Lac4pXgQN1GAX4ko"
+  },
+  "LICENSES/ocean-animals.txt": {
+   "bytes": 834,
+   "sha384": "sha384-iN62KvYYrrTvRElmqBtyHotLl3Oq5233Gj2yylUFQJBIIBhBqh+oshQJnwd7ZUKK"
+  },
+  "LICENSES/quaternius-cute-fish.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "LICENSES/reodesuxz-underwater.txt": {
+   "bytes": 565,
+   "sha384": "sha384-lpwrAK50BYQhbmWPwLEfoVRrNJBIJBjHQoYPR+bXXqOTO2LdxZtF5cYmLOeAyyw6"
+  },
+  "LICENSES/sea-life-sample.txt": {
+   "bytes": 1066,
+   "sha384": "sha384-Rcr/Khk27jUlBsL1ColsGVnBZHZud6rAZ0hliroM+Tb5g6qjMSI9WItSlXZkfXGH"
+  },
+  "LICENSES/stylized-fish-sampler.txt": {
+   "bytes": 1140,
+   "sha384": "sha384-tC2N0b9xJux1tpKR6z6HRQITcTowMAtAUuU5ithF5NAdpOonaDyqGaaAdbFy65HR"
+  },
+  "LICENSES/ultimate-animated-animals.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "alpaca.webp": {
+   "bytes": 54562,
+   "sha384": "sha384-RJX+VyDDwU6j0/6jxJ9NRWW/qLsjGMMhErpugvcmn3PwZxS2GouQIi+5OrWppHnX"
+  },
+  "apatosaurus.webp": {
+   "bytes": 80840,
+   "sha384": "sha384-NioMdinZxXfRwYpgFChZoP2x2QlgDmbUnHhO9922cecGAXv39eXr7IfUO2OoFM15"
+  },
+  "barb.webp": {
+   "bytes": 45100,
+   "sha384": "sha384-S61HrW4mHk6nvb5+UTP3lC0qjhbLqyAKq+IDI1sDVHSjemPpVjFUpeuahNtvhpwZ"
+  },
+  "bass.webp": {
+   "bytes": 47470,
+   "sha384": "sha384-jVXAZnZAfkLW6d+Lgx7x/31SWJKZNt0s/x/X8Wk6SnFWEUFG73WDAFdRi5ZEw/z7"
+  },
+  "blue-tang.webp": {
+   "bytes": 44464,
+   "sha384": "sha384-3BMafB/Iru1/nbfhZfwgwKk29qU04T4yCH4PuHfpGIGNWr0R26kqL4Ho+ijvHYMZ"
+  },
+  "bull.webp": {
+   "bytes": 74550,
+   "sha384": "sha384-ie1koHx0I3y054XMDAQI/W6O4whoxNuBEz6XHp70rI9ZJuJTWlWr7FJq94WRaq2C"
+  },
+  "butterfly-fish.webp": {
+   "bytes": 39326,
+   "sha384": "sha384-0rmq/Plwc7Do6bK6GuvBD+uw6lLkaNFSEzitsQo/wFVK0mrowgZqI3urVdHPXD9s"
+  },
+  "clownfish.webp": {
+   "bytes": 56048,
+   "sha384": "sha384-VYMjglT1bLEPjXbu0uPC9gBQcaYzgL3HJkRdjYUNDnesIxY4nkPmfU8p+X1cJF0A"
+  },
+  "cow-spotted.webp": {
+   "bytes": 100786,
+   "sha384": "sha384-eW5zxkh6eab5wi5dGvpU1ZweAVjE2pP2PNK/Cx50adg83Xxuw8+pCkCzHsvl1Zu8"
+  },
+  "cow.webp": {
+   "bytes": 110102,
+   "sha384": "sha384-0DOSKaXryMfLMLxUTKdIlOwwsSLgdmd7uqFLBbTpgQMgDNj4BXpT1+DFqnedeFms"
+  },
+  "crab.webp": {
+   "bytes": 94380,
+   "sha384": "sha384-LowYDy2QQGaQSrdsc1Jm+H/u6xMXW67o2bzjCWd5uUMg2D5DZhaLwX89wPkJzSth"
+  },
+  "deer.webp": {
+   "bytes": 72242,
+   "sha384": "sha384-lT0xYyNzxBkE8QGhgwpH7XQv8o85M2G3Yd38ew+G7+nCNF3Z9OFGaOUjTP71xbRp"
+  },
+  "dolphin.webp": {
+   "bytes": 40572,
+   "sha384": "sha384-lXHannW6Jq3bB4ikwwkxoifN7Kfc2KvCjFSksZbdHm6EBGJZ+HkgnnFVJ+xERpm5"
+  },
+  "donkey.webp": {
+   "bytes": 74484,
+   "sha384": "sha384-lOEJNmH4lPGrGrYFJ3Qoos7grUvznjO+FrpPkkYLCncpGLUj9G/GI1ZPSYly4Zkz"
+  },
+  "fox.webp": {
+   "bytes": 69460,
+   "sha384": "sha384-Vhpk1osgHhEBDI6sZnB7N2ZTT8ARpFm40mZQf0YJWHG1VY5E+v0OhXJ8AY2hU0AJ"
+  },
+  "goldfish.webp": {
+   "bytes": 53586,
+   "sha384": "sha384-U6z09bMfI1GWyDDuYtmgkti3bCUbOfRB4ctTqVp1On2ae5tVnnCx/Kk39kM3S9bY"
+  },
+  "horse-white.webp": {
+   "bytes": 95820,
+   "sha384": "sha384-ODLM5kGKYxlBvk7pOcq9j02i0hiILwZkcZzMHeizTUCe01GZiOgQl6ULpxDQHTKR"
+  },
+  "horse.webp": {
+   "bytes": 84298,
+   "sha384": "sha384-EvSU5HwQLykd/qmVwLPsLhuxxYGOaDpiSauMoKXbpTbv3Q6OaI9d/BzQ1kuY2KTG"
+  },
+  "husky.webp": {
+   "bytes": 55134,
+   "sha384": "sha384-QZBN1QV7k3u5Fh5nHbyudc5WtIcxjF9p2oYRKHfWu6+0GroySmbJODIdE3GvjeO5"
+  },
+  "jellyfish.webp": {
+   "bytes": 45360,
+   "sha384": "sha384-T5EXqeM9iZ+40lTB5ztP3O6MOOvjW58H0HT/d8OUsf0BK3B7JJPN3oeXjmhsxY5t"
+  },
+  "koi.webp": {
+   "bytes": 31100,
+   "sha384": "sha384-SG/b2TGYHxgQ4JCD6bReqV2GU2AcX6H3YemVdg1UU3kQnyGAei5tr/0AfO7nyjnF"
+  },
+  "lionfish.webp": {
+   "bytes": 52662,
+   "sha384": "sha384-FoXxNkX3dB8P0Ia7eblrY6V9zoJ6GRmhUZn0pSY+NspzfbmR9l2abkURqk1Yk2zw"
+  },
+  "little-clownfish.webp": {
+   "bytes": 50066,
+   "sha384": "sha384-sCwtiWIYYmjHJVd+BoqIk5Gl68rlGy9dahv9BlMnLV1fK9RcqbIYEvmRTDr0y4zF"
+  },
+  "little-shark.webp": {
+   "bytes": 34724,
+   "sha384": "sha384-trGyB+FPvSln9mf0I4Ar8mLqNJ+aObhATDWPnuyBLSEdw1SrVgbsZ63tTYZtw4zw"
+  },
+  "llama.webp": {
+   "bytes": 66164,
+   "sha384": "sha384-czzuw/2/8R4Hx6iw8Lsn0fanm//KMyOh3mqBzU26mL3yj653rX17vyFZjP+cLZgw"
+  },
+  "mandarin-fish.webp": {
+   "bytes": 61060,
+   "sha384": "sha384-Yn7CmpiWUd8v1LwnU4k0063/b6zO6L8QJEgqd3EFxJZu+nz3QdsN1iY9Gi3YNHmg"
+  },
+  "parasaurolophus.webp": {
+   "bytes": 75668,
+   "sha384": "sha384-pzRGssFxMCnMjLMhmYYup2rJoXKqDrQeH9yxG7tRZuVytKF3cnjw64ORrlhPoawN"
+  },
+  "pig.webp": {
+   "bytes": 73822,
+   "sha384": "sha384-62OzfMxcS1kkpz38f1pS1RogycakInBr+puoWbqddPRynmZgEM+0/cPsRg10ChYk"
+  },
+  "pony.webp": {
+   "bytes": 75318,
+   "sha384": "sha384-KPKvUqPWNtGZbSvdR2F7zpV1KY3hUM/jS9ROb2TZtlUcS7R8ASMY5HfcnVygo8ML"
+  },
+  "pufferfish.webp": {
+   "bytes": 49354,
+   "sha384": "sha384-tolM6uoDZc3hkvRCFbd4R8Rqax6RSjLPQMJWv+3BHXi+4ghmxXspwHWSFvbcUmAP"
+  },
+  "pug.webp": {
+   "bytes": 51296,
+   "sha384": "sha384-X7UFVNHCIH3mUAWm+8xz4aNNoSE4a/M+BWEqiAEN+mJ6kuLLtBA8BBp5rEZ16FTF"
+  },
+  "reef-fish.webp": {
+   "bytes": 36548,
+   "sha384": "sha384-8T4SNn2PEOP59iy3oWNTR2OmMaTmxEOeaTQ6MHSLswceeieDIMU/Q3HcL9WOR+Bz"
+  },
+  "sardine.webp": {
+   "bytes": 40698,
+   "sha384": "sha384-204ol1EQLtS/27kq9HCx8PoV6lwMjThWRWbJWHxcljCBiNVYCHo0KSv5w+HsMV6G"
+  },
+  "seahorse.webp": {
+   "bytes": 22076,
+   "sha384": "sha384-6H52o4PcW6bmwmHFWH5Q/1eYZtG1sKC/vyfQt5U65gbzJk//NCOvrg011YApNUCb"
+  },
+  "sheep.webp": {
+   "bytes": 56580,
+   "sha384": "sha384-IKKQwQt55U09J6tx+63fmn9Ho6dKEFSmNmJoHSlYm3oKRd/CfDtXj5sWKkT3DTkk"
+  },
+  "shiba.webp": {
+   "bytes": 59816,
+   "sha384": "sha384-b41mn/0RXDJcS3PCFyFJ0qZVB7ED83giooVY2XIwJmBZazDD77Gq4HcpnDpL6BLr"
+  },
+  "snapper.webp": {
+   "bytes": 30334,
+   "sha384": "sha384-CjmOrauhzuhiOUjkdO4Or+TKxnm0E9nLO0CUskpkoQcuXLSzbm0WD9dgFxOpFR16"
+  },
+  "squid.webp": {
+   "bytes": 79758,
+   "sha384": "sha384-QIF0kic49AMia3bNcUr6lH0Lcje7SFuJ39B24uBcuIaRYCAedi6OPZ6wf7ZcN6J4"
+  },
+  "stag.webp": {
+   "bytes": 87240,
+   "sha384": "sha384-arzCiWvfpsw4+AAM5h34l0CoO2/qzh31sQ3mPA56AB+n1We3TK+SEJxwdObkev4I"
+  },
+  "stegosaurus.webp": {
+   "bytes": 106190,
+   "sha384": "sha384-iY/WkxAVqAAAcocTHHtUvUiFrlPRCq+99LzJ10lBkVTotua3GYtcYUm90Uwxb2gv"
+  },
+  "swordfish.webp": {
+   "bytes": 46810,
+   "sha384": "sha384-ffDQFOzL7gnS6dawyvaX90QdKEJs9SArBlm8F0xXUqAHxMWxpBlowldmmlD+ML2f"
+  },
+  "triceratops.webp": {
+   "bytes": 91754,
+   "sha384": "sha384-/nbR9zauJt6J/KCatbcnI/zB6/zZjCiUdRiflytIrNZN69btGMcmAs5KDiwMMQp6"
+  },
+  "turtle.webp": {
+   "bytes": 48466,
+   "sha384": "sha384-sbnIYA2bZp9Mhf7+sPEXyHbHqt4gPmCm/U3jgx7GSy3G7d7XUgCufUg0iwQBp2E3"
+  },
+  "velociraptor.webp": {
+   "bytes": 47594,
+   "sha384": "sha384-bn7uENAr1PfTaAeIM/QXihwMJBWbsuoPeoIXFcwvSnhN1qOMJhMdtss2kotwDjz5"
+  },
+  "wolf.webp": {
+   "bytes": 74922,
+   "sha384": "sha384-TC3jdR9Lm0D0r1EAG2wp0vXc0nPf48y4Ffgd079bULMXuwUPixR5qPoHF8aGvNhe"
+  },
+  "yellow-tang.webp": {
+   "bytes": 38708,
+   "sha384": "sha384-uXyBTHl4a8iwV5zAPA3MTvUe5n5lQVOFnij/n80IoXxznq3lkyjb+cA3nri74gI/"
+  },
+  "zebra.webp": {
+   "bytes": 110680,
+   "sha384": "sha384-vLScRNSfUpgMkP7X81mDNw/UCOHMFVKa2dc20X20VZpAHZiWjw1tSypRJ7zAk2D0"
+  }
+ }
+}

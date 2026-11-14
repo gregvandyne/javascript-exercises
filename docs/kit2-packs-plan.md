@@ -301,6 +301,11 @@ Quest 1.1.0 4.23 MB, Medieval Village 1.0.0 4.72 MB, Sky Islands 1.0.1 1.68 MB.
 4. **Toy Town 1.2.0** with the suburban houses.
 
 **Round B (after 1; the three worlds in parallel):** Dino Valley 1.0.0, Under the Sea 1.0.0, Planet Explorers 1.0.0.
+**Under the Sea 1.0.0 was built 14 Nov 2026** (branch `kit2-under-the-sea`, `docs/decisions.md` "Under the Sea 1.0.0"):
+1.73 MB, 23 sea animals from seven packs (five of them uploaded after this plan: `sageglint-fish-sampler`,
+`pipothai-fish-sampler`, `ocean-animals`, `muteassets-sea-life-sample`, `alstra-fish-polypack`), no walking heroes (the
+dolphin or any swimmer is the player), and the licence test extended as section 1 asked. The `fish` pack is still out:
+its licence file was never uploaded.
 
 **Round C (parallel):** the megakit prefab step then Farm & Friends 1.0.0; Desert Oasis 1.0.0; forest pieces into
 Castle Quest 1.2.0, Medieval Village 1.1.0 and Spooky Hollow 1.1.0.

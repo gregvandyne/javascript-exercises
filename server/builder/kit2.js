@@ -43,7 +43,7 @@ export const DEFAULT_WORLD = 'sky-islands';
 /** A character this world has: the one asked for, or the world's first. */
 export const heroFor = (world, hero) => { const list = heroesOf(world); return (list.find(h => h.id === hero) || list[0] || { id: '' }).id; };
 /** An emoji and a cover colour for each world: a new game's icon and card until its own picture is taken. */
-const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'], 'wild-woods': ['🌲', 'forest'] };
+const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'], 'wild-woods': ['🌲', 'forest'], 'under-the-sea': ['🐬', 'ocean'] };
 export const worldLook = id => LOOKS[id] || ['🌍', 'ocean'];
 /** Is this exact theme version shipped (kit2/SHIPPED.json)? */
 export const isShipped = (world, version) => !!KIT2_LOCK.themes[`${world}/${version}`];
@@ -73,7 +73,9 @@ export function hasAnimals(html) {
 // hexagon tiles (laid as a honeycomb). sea: the colour of the water far below ('' for none). time: the sky.
 // seaY: the water's height when the world stands IN the sea (default: far below, at -5). afloat: ships and boats put
 // out on that sea, [piece, scale] each. lake: that water is a lake, not the sea (Wild Woods: meadow blocks and stepping
-// stones standing in a forest lake).
+// stones standing in a forest lake). swim: the world is under water (Under the Sea): the hero is a sea animal that swims
+// along a sandy floor the library makes, ground is the coral it rests by, weather is 'bubbles', shoals are [creature,
+// how many] circling beside the way and friends are creatures drifting about.
 const L = (ground, step, pad, goal, landmark, scenery, o = {}) => ({ ground, step, pad, goal, landmark, scenery, side: ground, hex: false, sea: '', time: 'day', plaza: 3, ...o });
 export const STARTERS = {
   'sky-islands': L(['island-round', 3], ['platform-medium', 1.3], ['island-round', 0.9], ['flag', 3], ['cloud', 5],
@@ -98,6 +100,9 @@ export const STARTERS = {
   'wild-woods': L(['meadow', 1], ['stone-block', 0.7], ['meadow', 0.8], ['tent', 1], ['cliff-waterfall', 2],
     [['pine-tall', 1], ['mushrooms-red', 1.6], ['birch', 0.8], ['log-pile', 1], ['oak', 1], ['berry-bush', 1], ['sign', 1], ['round-tree-autumn', 0.8], ['rock', 0.7], ['flower-yellow', 1.6]],
     { sea: '#1f8ad0', seaY: -1.5, lake: true, side: ['meadow', 0.8] }),
+  'under-the-sea': L(['coral-table', 1.5], ['rock', 1.2], ['coral-table', 1], ['chest', 1.3], ['shipwreck', 1],
+    [['kelp', 1], ['coral-branch', 1.3], ['seaweed-tall', 1.2], ['coral-fan', 1], ['anemone', 1.5], ['coral-tube', 1.3], ['starfish', 1.4], ['clam', 1.1], ['seaweed', 1.3], ['coral-brain', 1.2], ['arch', 0.7], ['amphora', 1], ['anchor', 1], ['conch', 0.9]],
+    { swim: true, weather: 'bubbles', shoals: [['sardine', 9], ['yellow-tang', 6], ['barb', 7]], friends: ['turtle', 'jellyfish', 'seahorse', 'pufferfish', 'crab'] }),
 };
 /** The starter layout for a world: its own, or one made from its catalogue tags (a world shipped after this file). */
 export function starterFor(world) {
@@ -128,6 +133,7 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '', comp
     `  ground: ${one(lay.ground)},`, `  side: ${one(lay.side)},`, `  step: ${one(lay.step)},`, `  pad: ${one(lay.pad)},`, `  goal: ${one(lay.goal)},`, `  landmark: ${one(lay.landmark)},`,
     `  scenery: [${lay.scenery.map(one).join(', ')}],`, `  plaza: ${lay.plaza},`, `  hex: ${lay.hex},`, `  sea: ${js(lay.sea)},`,
     ...(lay.seaY == null ? [] : [`  seaY: ${lay.seaY},`]), ...(lay.afloat ? [`  afloat: [${lay.afloat.map(one).join(', ')}],`] : []),
+    ...(lay.swim ? [`  swim: true,`, `  shoals: ${js(lay.shoals || [])},`, `  friends: ${js(lay.friends || [])},`] : []),
   ].join('\n');
   const name = title || w.name;
   const setLine = (src, key, value) => src.replace(new RegExp(`\\n(  ${key}: )[^\\n]*,\\n`), (m, a) => `\n${a}${value},\n`);
@@ -135,7 +141,7 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '', comp
     .replace(/<script type="importmap">[\s\S]*?<\/script>/, () => kit2ImportMap())
     .replace(/<title>[^<]*<\/title>/, () => `<title>${name.replace(/[<>&]/g, '')}</title>`)
     .replace(/\nconst LAYOUT = \{\n[\s\S]*?\n\};\n/, () => `\nconst LAYOUT = {\n${layout}\n};\n`);
-  for (const [key, value] of [['title', `'${name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[<>\n\r]/g, '')}'`], ['world', `'${w.id}'`], ['version', `'${w.version}'`], ['hero', `'${heroFor(w.id, hero)}'`], ['time', `'${lay.time}'`], ...(creatureFor(w.id, companion) ? [['companion', `'${creatureFor(w.id, companion)}'`]] : [])]) out = setLine(out, key, value);
+  for (const [key, value] of [['title', `'${name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[<>\n\r]/g, '')}'`], ['world', `'${w.id}'`], ['version', `'${w.version}'`], ['hero', `'${heroFor(w.id, hero)}'`], ['time', `'${lay.time}'`], ...(lay.weather ? [['weather', `'${lay.weather}'`]] : []), ...(creatureFor(w.id, companion) ? [['companion', `'${creatureFor(w.id, companion)}'`]] : [])]) out = setLine(out, key, value);
   return out;
 }
 
@@ -193,6 +199,8 @@ function lastNamed(list, t) {
 const PLACE_WORDS = [
   ['sky-islands', /\b(sky|floating|flying|cloud) islands?\b|\bislands? in the (sky|clouds)\b|\b(in|above|over|on) the clouds\b/],
   ['space-base', /\b(on|to) (the moon|mars|a planet|another planet)\b|\bmoon ?base\b|\bspace ?(base|station|ship)\b|\bouter space\b|\b(in|into) space\b|\bred planet\b|\bastronauts?\b|\brovers?\b|\brocket ?ship\b|\bthe moon\b/],
+  // Before the cove: "a shipwreck under the sea" is the sea floor, not the harbour.
+  ['under-the-sea', /\bunder ?(the )?(sea|water|ocean|waves)\b|\bunderwater\b|\bundersea\b|\b(coral )?reefs?\b|\b(in|into|through|across) the (deep )?(ocean|sea)\b|\b(ocean|sea) ?(floor|bed)\b|\bdeep (blue )?sea\b|\bsea (animals?|creatures?|life)\b/],
   // Before the castle: "a pirate treasure chest" is a cove, not a dungeon. (A space ship is already Space Base above.)
   ['pirate-cove', /\bpirates?\b|\btreasure (islands?|maps?|hunts?|coves?)\b|\b(desert|tropical|sandy) islands?\b|\bisland[- ]hopping\b|\b(on|aboard|sailing) (a|the|my) (sailing |big |wooden )?(ship|boat)s?\b|\bsailing ships?\b|\b(at|on|by|in) the (docks?|harbou?r)\b|\bcoves?\b|\bshipwrecks?\b/],
   ['castle-quest', /\bcastles?\b|\bdungeons?\b|\btreasure chests?\b/],
@@ -213,18 +221,30 @@ const HERO_WORDS = [
 // Animals a child may ask for (English; other languages use the chips or the animal's name) -> the creatures that are
 // one, kept only while a shipped world has them. "A dog" is the husky in the village and the shiba at the castle.
 const ANIMAL_WORDS = [
+  // Sea animals first: "a sea horse" is the seahorse, not the horse. ("Shark" alone is not here: the only one is the Little Shark, by its name or chip.)
+  [['seahorse'], /\bsea ?horses?\b/], [['dolphin'], /\bdolphins?\b/], [['turtle'], /\b(sea )?turtles?\b/], [['clownfish', 'little-clownfish'], /\bclown ?fish(es)?\b/], [['goldfish'], /\bgold ?fish(es)?\b/],
+  [['swordfish'], /\bsword ?fish(es)?\b/], [['squid'], /\bsquids?\b/], [['jellyfish'], /\bjelly ?fish(es)?\b/], [['pufferfish'], /\bpuffer ?fish(es)?\b|\bblow ?fish(es)?\b/], [['crab'], /\bcrabs?\b/],
+  [['lionfish'], /\blion ?fish(es)?\b/], [['koi'], /\bkoi\b/], [['sardine'], /\bsardines?\b/], [['blue-tang'], /\bblue tangs?\b/],
+  [['clownfish', 'goldfish', 'blue-tang', 'barb', 'koi'], /\bfish(es|y)?\b/],
   [['horse'], /\bhorses?\b|\bpon(y|ies)\b|\bstallions?\b/], [['donkey'], /\bdonkeys?\b/], [['cow'], /\bcows?\b|\bcattle\b/], [['pig'], /\bpig(s|gy|gies|let|lets)?\b/],
   [['sheep'], /\bsheep\b|\blambs?\b/], [['husky', 'shiba'], /\bdogs?\b|\bpupp(y|ies)\b/], [['husky'], /\bhusk(y|ies)\b/], [['shiba'], /\bshibas?\b/],
   [['fox'], /\bfox(es)?\b/], [['stag'], /\bstags?\b|\breindeers?\b/], [['deer'], /\bdeer\b/],
 ].map(([ids, re]) => [ids.filter(id => (KIT2_CHARACTERS.find(c => c.id === id) || {}).kind === 'creature'), re]).filter(([ids]) => ids.length);
 // "With my dog", "a pet fox", "followed by a horse": the animal comes along. Otherwise an animal that can be the hero is the hero.
 const COMPANION_WORDS = /\b(pet|companion|friend|buddy|sidekick|helper)\b|\bfollow(s|ed|ing)?\b|\b(with|and|has|have|bring|add) (a|an|my|his|her|their|the) /;
-// Animals and dinosaurs in general: when the one asked for is not in any shipped world (a dinosaur, a cat, a fish
+// Animals and dinosaurs in general: when the one asked for is not in any shipped world (a dinosaur, a cat, a bird
 // today) the Builder says so kindly instead of pretending.
 const CREATURE_WORDS = /\bdino(saur)?s?\b|\bt-?rex\b|\braptors?\b|\btriceratops\b|\banimals?\b|\bdogs?\b|\bpupp(y|ies)\b|\bcats?\b|\bkittens?\b|\bhorses?\b|\bpon(y|ies)\b|\bcows?\b|\bpigs?\b|\bsheep\b|\bchickens?\b|\bfox(es)?\b|\bbears?\b|\bwol(f|ves)\b|\bdeer\b|\brabbits?\b|\bbunn(y|ies)\b|\bfish\b|\bsharks?\b|\bdragons?\b|\bbirds?\b|\bfrogs?\b|\bmonkeys?\b|\blions?\b|\btigers?\b|\belephants?\b|\bpenguins?\b|\bunicorns?\b/;
 const TWO_D_ONLY = /\b2 ?-?d\b|\bmemory\b|\bmatching\b|\bpairs\b|\bflip\b|\bcards?\b|\bboard ?games?\b|\bdice\b|\bword (game|search|puzzle)s?\b|\bspell(ing)?\b|\bhangman\b|\b(two|2)[ -]?players?\b|\bduel\b|\bversus\b|\bcatch(ing)?\b|\bfalling\b|\bbasket\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/;
 const THREE_D = /(^|[^a-z0-9])(3\s?-?d|three[- ]?d)([^a-z0-9]|$)/;
 
+const PHRASE_WORLDS = ['under-the-sea'];
+const writtenAsName = (text, id) => {
+  const raw = String(text || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, ''), low = raw.toLowerCase();
+  if (low.includes(id)) return true;
+  for (const [name, wid] of NAMES.worlds) { if (wid !== id) continue; const i = low.indexOf(name); if (i < 0) continue; const said = raw.slice(i, i + name.length); if (said !== said.toLowerCase() || said === said.toUpperCase()) return true; }
+  return false;
+};
 /**
  * What a message picks -> { world, hero, by, wantsCreature } (world/hero '' when not named).
  * by: 'chip' (a Studio 3D chip), 'name' (a world named), 'place' (a place described: new games only), or '' (nothing
@@ -237,7 +257,10 @@ export function pickKit2(text) {
   const chipOf = kind => { for (const re of NAMES.chips[kind]) { const m = re.exec(t); if (m) return m[1]; } return null; };
   const worldChip = chipOf('world'), heroChip = chipOf('hero');
   const chipWorld = worldChip ? lastNamed(NAMES.worlds, worldChip) : '', chipAnimal = heroChip ? lastNamed(NAMES.animals, heroChip) : '', chipHero = (heroChip ? lastNamed(NAMES.heroes, heroChip) : '') || chipAnimal;
-  const named = lastNamed(NAMES.worlds, t);
+  // A world whose name is also an everyday phrase ("under the sea") is NAMED only when it is written as a name, with a
+  // capital letter ("Under the Sea"), or in a script without capitals; in plain lower case it is a place described, so
+  // "a 2D game under the sea" stays 2D and "a game under the sea" is a new 3D game, like "a game in the forest".
+  const namedAny = lastNamed(NAMES.worlds, t), named = PHRASE_WORLDS.includes(namedAny) && !writtenAsName(text, namedAny) ? '' : namedAny;
   const classicChip = chipOf('classic'), classic = (!!classicChip && !chipWorld && !chipHero && !named) || /(^|[^a-z0-9])2 ?-?d\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/.test(t);
   let place = ''; for (const [id, re] of PLACE_WORDS) if (re.test(t)) { place = id; break; }
   const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], namedHero = (chipAnimal ? '' : chipHero) || lastNamed(NAMES.heroes, t), person = namedHero || heroWord;
@@ -304,17 +327,18 @@ const size = p => p.size.join('x');
 const worldText = w => [
   `## ${w.id} ${w.version} ("${w.name}"): ${w.description} Good for: ${w.goodFor.join(', ')}.`,
   `Heroes: ${w.heroes.map(h => `${h.id} (${h.name})`).join(', ')}.`,
-  w.creatures.length ? `Creatures (animals for g.creature and g.school: id (name) widthxheightxlength, its moves, and whether it can be the hero): ${w.creatures.map(h => `${h.id} (${h.name}) ${h.size.join('x')} moves ${h.moves.join('/')}${h.playable ? ' playable' : ' not playable (no walk: it hops)'}`).join('; ')}.` : 'Creatures: none in this world.',
+  w.creatures.length ? `Creatures (animals for g.creature and g.school: id (name) widthxheightxlength, its moves, and whether it can be the hero): ${w.creatures.map(h => `${h.id} (${h.name}) ${h.size.join('x')} moves ${h.moves.join('/')}${h.playable ? ' playable' : h.moves.includes('stroll') ? ' not playable (it only strolls along the sea floor)' : ' not playable (no walk: it hops)'}`).join('; ')}.` : 'Creatures: none in this world.',
   `Pieces (id widthxheightxdepth in metres at scale 1, tags): ${w.pieces.map(p => `${p.id} ${size(p)} ${p.tags.join('/')}${p.note ? ` [${p.note}]` : ''}`).join('; ')}.`,
   `Sounds: ${w.sounds.join(', ')}, cheer, wrong. Moves: ${w.moves.join(', ')}.`,
   STARTERS[w.id] ? `Starter layout: ground ${STARTERS[w.id].ground.join(' x')}, step ${STARTERS[w.id].step.join(' x')}, pad ${STARTERS[w.id].pad.join(' x')}, goal ${STARTERS[w.id].goal.join(' x')}, landmark ${STARTERS[w.id].landmark.join(' x')}.` : '',
   STARTERS[w.id] && STARTERS[w.id].seaY != null && !STARTERS[w.id].lake ? `This world stands in the sea: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), tops of islands and docks at 0, pieces tagged afloat out on the water (LAYOUT.afloat).` : '',
+  STARTERS[w.id] && STARTERS[w.id].swim ? `This world is under water and has no walking heroes: the hero is one of its playable sea animals, with g.controls(me, { swim: true, floor, ceiling }) and weather 'bubbles'. The sea floor is g.world.ground() at y 0 (its sand colour comes with the world); there are no ground tiles, no gaps and no jumping: the starter (LAYOUT.swim) marks the way with pieces on the sand and coins floating at different depths, and answers and the goal are reached by swimming up to them. An animal's y is its lowest point: keep swimmers 1 to 8 above the sand. LAYOUT.shoals are [creature, how many] for g.school beside the way, LAYOUT.friends are creatures that drift about (wander). Water animals play idle and swim (the dolphin also leap, spin and chatter); the crab walks on the sand.` : '',
   STARTERS[w.id] && STARTERS[w.id].lake ? `The starter stands in a forest lake: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), grass tops at 0; use pieces at least 2 deep (meadow, stone-block, hill, cliff-block) for anything standing in it. On dry land drop LAYOUT.sea and tile meadow blocks.` : '',
 ].filter(Boolean).join('\n');
 export const KIT2_CATALOG_TEXT = KIT2_WORLDS.map(worldText).join('\n\n');
 const ANIMALS = KIT2_CHARACTERS.filter(c => c.kind === 'creature');
 const NO_CREATURES = ANIMALS.length
-  ? `\n- Animals: the only animals are the creatures listed for a world below (${ANIMALS.map(c => c.id).join(', ')}). Never invent a creature name, and never use one in a world that does not list it: g.creature() stops the game with an error. If the builder asks for an animal that is not listed (a dinosaur, a cat, a fish: not yet), say so kindly in one short sentence, offer the animals there are, and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game.
+  ? `\n- Animals: the only animals are the creatures listed for a world below (${ANIMALS.map(c => c.id).join(', ')}). Never invent a creature name, and never use one in a world that does not list it: g.creature() stops the game with an error. If the builder asks for an animal that is not listed (a dinosaur, a cat, a bird: not yet), say so kindly in one short sentence, offer the animals there are, and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game.
 - An animal in a game: CONFIG.companion (the starter's line: a creature id of this world, or '') makes it trail the hero; CONFIG.hero may be a creature marked playable (the player IS the horse); more animals with g.creature(id, { x, y, z }) and then wander(), follow(path), walkTo(), onMeet(fn) (the hero came close: a toast, a question, a count; never a penalty). Use only the moves listed for that creature: one that is "not playable" has no walk, so it hops, and it can be a companion or scenery but never the hero. Animals are never enemies or obstacles: nothing an animal does may cost points, lives or time, there is no chasing, biting or hitting, and no game is about hurting, hunting, catching or selling one. Keep it light: at most 8 animals in a game.`
   : '\n- There are no animal or dinosaur characters yet. If the builder asks for one, say so kindly in one short sentence, pick the closest hero (an outfit colour helps: a green cape for a dinosaur fan) and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game.';
 
@@ -322,11 +346,11 @@ const NO_CREATURES = ANIMALS.length
 export const KIT2_SHORT = `# 3D worlds with real characters (Kit 2)
 Oomba Academy has ready-made 3D worlds with animated characters. Each is a whole look (ground, buildings, props, sky):
 ${KIT2_WORLDS.map(w => `- ${w.id} ("${w.name}"): ${w.description}`).join('\n')}
-Characters: ${KIT2_CHARACTERS.map(c => `${c.id} (${c.name})`).join(', ')}.${ANIMALS.length ? ` The animals (${ANIMALS.map(c => `${c.id}: ${c.worlds.join(' and ')}`).join('; ')}) live only in the worlds named; the playable ones can be the hero, any of them can be a companion that follows the hero. No dinosaurs, fish or other animals yet.` : ' No animals or dinosaurs yet.'}
+Characters: ${KIT2_CHARACTERS.map(c => `${c.id} (${c.name})`).join(', ')}.${ANIMALS.length ? ` The animals (${ANIMALS.map(c => `${c.id}: ${c.worlds.join(' and ')}`).join('; ')}) live only in the worlds named; the playable ones can be the hero, any of them can be a companion that follows the hero. No dinosaurs, birds or other animals yet.` : ' No animals or dinosaurs yet.'}
 - Use one when the builder picks or names a world or character from this list, or describes a place that is one of them
   (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky, a pirate cove or
-  treasure island, a forest, meadow or camp) for a game where a hero
-  walks, jumps, collects and answers. Then call start_from_template with template "oomba3d", the world and the hero
+  treasure island, a forest, meadow or camp, under the sea or a coral reef) for a game where a hero
+  walks (or, under the sea, swims), jumps, collects and answers. Then call start_from_template with template "oomba3d", the world and the hero
   (and companion: an animal of that world that follows the hero, when they ask for one):
   the KIT 2 RULES arrive with the starter. These games are NOT on the Oomba Kit and NOT on the world3d starter.
 - Stay on the Oomba Kit (2D) for card, board, word, catching and two-player games and for anything the builder wants in

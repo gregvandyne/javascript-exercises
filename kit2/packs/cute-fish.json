@@ -269,7 +269,8 @@
   "Lure_\\d": "Kid-safe: fishing lure with a hook",
   "Worm": "Bait for the fishing rods, no use without them",
   "Flatfish": "Kid-safe: drawn with a mouth full of pointed teeth",
-  "Turbot": "Kid-safe: drawn with a mouth full of pointed teeth"
+  "Turbot": "Kid-safe: drawn with a mouth full of pointed teeth",
+  "ParrotFish": "Kid-safe: its beak is modelled as a row of teeth (material ParrotFish_Teeth); found when Under the Sea was built"
  },
  "source": "branch asset-packs, folder cute-fish/ (uploaded by the owner, November 2026)"
 }

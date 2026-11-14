@@ -1602,7 +1602,8 @@
         "cosy-home": "溫馨小屋",
         "busy-kitchen": "忙碌廚房",
         "pirate-cove": "海盜灣",
-        "wild-woods": "野外森林"
+        "wild-woods": "野外森林",
+        "under-the-sea": "海底世界"
       }
     },
     "heroes": {
@@ -1625,7 +1626,30 @@
         "deer": "小鹿",
         "stag": "雄鹿",
         "fox": "狐狸",
-        "shiba": "柴犬"
+        "shiba": "柴犬",
+        "dolphin": "海豚",
+        "turtle": "海龜",
+        "clownfish": "小丑魚",
+        "blue-tang": "藍倒吊",
+        "barb": "四鬚魮",
+        "goldfish": "金魚",
+        "little-clownfish": "小小丑魚",
+        "reef-fish": "珊瑚礁魚",
+        "bass": "鱸魚",
+        "sardine": "沙丁魚",
+        "snapper": "紅鯛",
+        "swordfish": "旗魚",
+        "squid": "魷魚",
+        "butterfly-fish": "蝴蝶魚",
+        "yellow-tang": "黃倒吊",
+        "mandarin-fish": "麒麟魚",
+        "koi": "錦鯉",
+        "lionfish": "獅子魚",
+        "pufferfish": "河豚",
+        "seahorse": "海馬",
+        "jellyfish": "水母",
+        "little-shark": "小鯊魚",
+        "crab": "螃蟹"
       }
     },
     "animals": {
@@ -1653,7 +1677,30 @@
         "stegosaurus": "劍龍",
         "triceratops": "三角龍",
         "parasaurolophus": "副櫛龍",
-        "velociraptor": "迅猛龍"
+        "velociraptor": "迅猛龍",
+        "dolphin": "海豚",
+        "turtle": "海龜",
+        "clownfish": "小丑魚",
+        "blue-tang": "藍倒吊",
+        "barb": "四鬚魮",
+        "goldfish": "金魚",
+        "little-clownfish": "小小丑魚",
+        "reef-fish": "珊瑚礁魚",
+        "bass": "鱸魚",
+        "sardine": "沙丁魚",
+        "snapper": "紅鯛",
+        "swordfish": "旗魚",
+        "squid": "魷魚",
+        "butterfly-fish": "蝴蝶魚",
+        "yellow-tang": "黃倒吊",
+        "mandarin-fish": "麒麟魚",
+        "koi": "錦鯉",
+        "lionfish": "獅子魚",
+        "pufferfish": "河豚",
+        "seahorse": "海馬",
+        "jellyfish": "水母",
+        "little-shark": "小鯊魚",
+        "crab": "螃蟹"
       }
     },
     "lesson": {

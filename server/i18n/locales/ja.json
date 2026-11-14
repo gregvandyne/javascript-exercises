@@ -1602,7 +1602,8 @@
         "cosy-home": "ぽかぽかのおうち",
         "busy-kitchen": "にぎやかキッチン",
         "pirate-cove": "かいぞくの入り江",
-        "wild-woods": "わくわくの森"
+        "wild-woods": "わくわくの森",
+        "under-the-sea": "うみのなか"
       }
     },
     "heroes": {
@@ -1625,7 +1626,30 @@
         "deer": "シカ",
         "stag": "オスジカ",
         "fox": "キツネ",
-        "shiba": "しばいぬ"
+        "shiba": "しばいぬ",
+        "dolphin": "イルカ",
+        "turtle": "ウミガメ",
+        "clownfish": "カクレクマノミ",
+        "blue-tang": "ナンヨウハギ",
+        "barb": "バルブ",
+        "goldfish": "きんぎょ",
+        "little-clownfish": "ちびクマノミ",
+        "reef-fish": "サンゴのさかな",
+        "bass": "バス",
+        "sardine": "イワシ",
+        "snapper": "あかいタイ",
+        "swordfish": "メカジキ",
+        "squid": "イカ",
+        "butterfly-fish": "チョウチョウウオ",
+        "yellow-tang": "キイロハギ",
+        "mandarin-fish": "ニシキテグリ",
+        "koi": "コイ",
+        "lionfish": "ミノカサゴ",
+        "pufferfish": "フグ",
+        "seahorse": "タツノオトシゴ",
+        "jellyfish": "クラゲ",
+        "little-shark": "ちびザメ",
+        "crab": "カニ"
       }
     },
     "animals": {
@@ -1653,7 +1677,30 @@
         "stegosaurus": "ステゴサウルス",
         "triceratops": "トリケラトプス",
         "parasaurolophus": "パラサウロロフス",
-        "velociraptor": "ヴェロキラプトル"
+        "velociraptor": "ヴェロキラプトル",
+        "dolphin": "イルカ",
+        "turtle": "ウミガメ",
+        "clownfish": "カクレクマノミ",
+        "blue-tang": "ナンヨウハギ",
+        "barb": "バルブ",
+        "goldfish": "きんぎょ",
+        "little-clownfish": "ちびクマノミ",
+        "reef-fish": "サンゴのさかな",
+        "bass": "バス",
+        "sardine": "イワシ",
+        "snapper": "あかいタイ",
+        "swordfish": "メカジキ",
+        "squid": "イカ",
+        "butterfly-fish": "チョウチョウウオ",
+        "yellow-tang": "キイロハギ",
+        "mandarin-fish": "ニシキテグリ",
+        "koi": "コイ",
+        "lionfish": "ミノカサゴ",
+        "pufferfish": "フグ",
+        "seahorse": "タツノオトシゴ",
+        "jellyfish": "クラゲ",
+        "little-shark": "ちびザメ",
+        "crab": "カニ"
       }
     },
     "lesson": {

@@ -1602,7 +1602,8 @@
         "cosy-home": "Maison Douillette",
         "busy-kitchen": "Cuisine Animée",
         "pirate-cove": "Crique des Pirates",
-        "wild-woods": "Forêt Sauvage"
+        "wild-woods": "Forêt Sauvage",
+        "under-the-sea": "Sous la Mer"
       }
     },
     "heroes": {
@@ -1625,7 +1626,30 @@
         "deer": "Biche",
         "stag": "Cerf",
         "fox": "Renard",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "dolphin": "Dauphin",
+        "turtle": "Tortue de mer",
+        "clownfish": "Poisson-clown",
+        "blue-tang": "Chirurgien bleu",
+        "barb": "Barbeau",
+        "goldfish": "Poisson rouge",
+        "little-clownfish": "Petit Poisson-clown",
+        "reef-fish": "Poisson de récif",
+        "bass": "Bar",
+        "sardine": "Sardine",
+        "snapper": "Vivaneau rouge",
+        "swordfish": "Espadon",
+        "squid": "Calmar",
+        "butterfly-fish": "Poisson-papillon",
+        "yellow-tang": "Chirurgien jaune",
+        "mandarin-fish": "Poisson-mandarin",
+        "koi": "Carpe koï",
+        "lionfish": "Poisson-lion",
+        "pufferfish": "Poisson-globe",
+        "seahorse": "Hippocampe",
+        "jellyfish": "Méduse",
+        "little-shark": "Petit Requin",
+        "crab": "Crabe"
       }
     },
     "animals": {
@@ -1653,7 +1677,30 @@
         "stegosaurus": "Stégosaure",
         "triceratops": "Tricératops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Vélociraptor"
+        "velociraptor": "Vélociraptor",
+        "dolphin": "Dauphin",
+        "turtle": "Tortue de mer",
+        "clownfish": "Poisson-clown",
+        "blue-tang": "Chirurgien bleu",
+        "barb": "Barbeau",
+        "goldfish": "Poisson rouge",
+        "little-clownfish": "Petit Poisson-clown",
+        "reef-fish": "Poisson de récif",
+        "bass": "Bar",
+        "sardine": "Sardine",
+        "snapper": "Vivaneau rouge",
+        "swordfish": "Espadon",
+        "squid": "Calmar",
+        "butterfly-fish": "Poisson-papillon",
+        "yellow-tang": "Chirurgien jaune",
+        "mandarin-fish": "Poisson-mandarin",
+        "koi": "Carpe koï",
+        "lionfish": "Poisson-lion",
+        "pufferfish": "Poisson-globe",
+        "seahorse": "Hippocampe",
+        "jellyfish": "Méduse",
+        "little-shark": "Petit Requin",
+        "crab": "Crabe"
       }
     },
     "lesson": {

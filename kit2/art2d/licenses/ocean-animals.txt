@@ -1,0 +1,17 @@
+Ocean Animals by THEUNSEENVULGA
+Source: https://theunseenvulga.itch.io/ocean-animals
+Staged 2026-11-14 from the free download on that page.
+
+License as stated on the page (no license file was included in the zip):
+"CC0 - Free for Personal & Commercial Use. You are free to: use the
+assets in personal projects; use the assets in commercial projects;
+modify and customize the assets; use them without attribution.
+No attribution is required."
+
+Please note, also from the page: "These assets are released under CC0.
+You can use them freely, but please do not resell the unmodified
+assets as-is or claim that you originally created them."
+
+This pack is therefore NOT plain CC0: it carries the author's
+do-not-resell-the-unmodified-assets-as-is note. The assets are used
+here as part of the Oomba Academy asset library, not resold as-is.

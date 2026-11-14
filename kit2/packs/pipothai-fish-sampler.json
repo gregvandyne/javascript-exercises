@@ -1,0 +1,50 @@
+{
+ "dir": "pipothai-fish-sampler",
+ "name": "Stylized Fish Pack Free Sampler",
+ "author": "aletheiamask",
+ "licence": "custom (Standard Asset License: games and modification allowed, shipped only in packed form; no redistribution of the source files, no AI or machine-learning training)",
+ "licenceFile": "LICENSE.txt",
+ "redistribute": false,
+ "aiTraining": false,
+ "credit": "Stylized Fish Pack Free Sampler by aletheiamask (appreciated, not required)",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true,
+  "textureSize": 256,
+  "floor": true
+ },
+ "clips": {
+  "idle": "\\|SwimIdle$",
+  "swim": "\\|SwimFast$"
+ },
+ "creatures": {
+  "fish_clownfish": {
+   "id": "clownfish",
+   "name": "Clownfish",
+   "size": {
+    "length": 1.2
+   }
+  },
+  "fish_bluetang": {
+   "id": "blue-tang",
+   "name": "Blue Tang",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "fish_barb": {
+   "id": "barb",
+   "name": "Barb",
+   "size": {
+    "length": 1.4
+   }
+  }
+ },
+ "exclude": {},
+ "source": "branch asset-packs, folder pipothai-fish-sampler/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "The folder is named pipothai; the licence file names aletheiamask as the copyright holder, which is what the credit uses. No source URL was uploaded with the pack.",
+  "Clips dropped from every fish: Hooked (a fish on a hook), Flop (a fish out of water) and Display (a trophy pose). Kept: SwimIdle as idle, SwimFast as swim.",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models in public/vendor/themes/ and the pictures in public/vendor/art2d/ reviewed: the licence forbids redistributing the files as assets."
+ ]
+}

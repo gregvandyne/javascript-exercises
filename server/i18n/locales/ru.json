@@ -1602,7 +1602,8 @@
         "cosy-home": "Уютный дом",
         "busy-kitchen": "Шумная кухня",
         "pirate-cove": "Пиратская бухта",
-        "wild-woods": "Дикий лес"
+        "wild-woods": "Дикий лес",
+        "under-the-sea": "Морское дно"
       }
     },
     "heroes": {
@@ -1625,7 +1626,30 @@
         "deer": "Лань",
         "stag": "Олень",
         "fox": "Лиса",
-        "shiba": "Сиба-ину"
+        "shiba": "Сиба-ину",
+        "dolphin": "Дельфин",
+        "turtle": "Морская черепаха",
+        "clownfish": "Рыба-клоун",
+        "blue-tang": "Синий хирург",
+        "barb": "Барбус",
+        "goldfish": "Золотая рыбка",
+        "little-clownfish": "Маленькая рыба-клоун",
+        "reef-fish": "Рифовая рыбка",
+        "bass": "Окунь",
+        "sardine": "Сардина",
+        "snapper": "Красный луциан",
+        "swordfish": "Рыба-меч",
+        "squid": "Кальмар",
+        "butterfly-fish": "Рыба-бабочка",
+        "yellow-tang": "Жёлтый хирург",
+        "mandarin-fish": "Мандаринка",
+        "koi": "Карп кои",
+        "lionfish": "Крылатка",
+        "pufferfish": "Рыба-ёж",
+        "seahorse": "Морской конёк",
+        "jellyfish": "Медуза",
+        "little-shark": "Акулёнок",
+        "crab": "Краб"
       }
     },
     "animals": {
@@ -1653,7 +1677,30 @@
         "stegosaurus": "Стегозавр",
         "triceratops": "Трицератопс",
         "parasaurolophus": "Паразауролоф",
-        "velociraptor": "Велоцираптор"
+        "velociraptor": "Велоцираптор",
+        "dolphin": "Дельфин",
+        "turtle": "Морская черепаха",
+        "clownfish": "Рыба-клоун",
+        "blue-tang": "Синий хирург",
+        "barb": "Барбус",
+        "goldfish": "Золотая рыбка",
+        "little-clownfish": "Маленькая рыба-клоун",
+        "reef-fish": "Рифовая рыбка",
+        "bass": "Окунь",
+        "sardine": "Сардина",
+        "snapper": "Красный луциан",
+        "swordfish": "Рыба-меч",
+        "squid": "Кальмар",
+        "butterfly-fish": "Рыба-бабочка",
+        "yellow-tang": "Жёлтый хирург",
+        "mandarin-fish": "Мандаринка",
+        "koi": "Карп кои",
+        "lionfish": "Крылатка",
+        "pufferfish": "Рыба-ёж",
+        "seahorse": "Морской конёк",
+        "jellyfish": "Медуза",
+        "little-shark": "Акулёнок",
+        "crab": "Краб"
       }
     },
     "lesson": {

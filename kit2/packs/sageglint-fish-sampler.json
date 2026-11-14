@@ -1,0 +1,62 @@
+{
+ "dir": "sageglint-fish-sampler",
+ "name": "Free Fish Sampler",
+ "author": "SageGlint",
+ "licence": "custom (games and modification allowed; no redistribution of the files as assets, no machine-learning training)",
+ "licenceFile": "LICENSE.txt",
+ "redistribute": false,
+ "aiTraining": false,
+ "credit": "Free Fish Sampler by SageGlint (appreciated, not required)",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true,
+  "textureSize": 256,
+  "dropMeshes": [
+   "^Outline$"
+  ]
+ },
+ "creatures": {
+  "Fish_Clownfish": {
+   "id": "little-clownfish",
+   "name": "Little Clownfish"
+  },
+  "Fish_Goldfish": {
+   "id": "goldfish",
+   "name": "Goldfish"
+  },
+  "Fish_ReefShark": {
+   "id": "reef-shark",
+   "name": "Reef Shark"
+  }
+ },
+ "items": {
+  "Fish_Clownfish": {
+   "swimRig": {
+    "length": 1.1,
+    "turn": 180
+   }
+  },
+  "Fish_Goldfish": {
+   "swimRig": {
+    "length": 1.4,
+    "turn": 180
+   }
+  },
+  "Fish_ReefShark": {
+   "swimRig": {
+    "length": 4.2,
+    "turn": 180
+   }
+  }
+ },
+ "exclude": {
+  "Fish_ReefShark": "Kid-safe: its open mouth shows a row of small white teeth (seen face on)"
+ },
+ "source": "branch asset-packs, folder sageglint-fish-sampler/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "The licence names no author (\"the creator of the itch.io page\"): SageGlint is taken from the folder name the owner uploaded it under. No source URL was uploaded with the pack.",
+  "The three fish arrive still (no skeleton, no clips): the swimRig pack step gives each a spine and two clips made in the pipeline, idle and swim.",
+  "Each model carries its own black outline shell (a mesh named Outline, for engines without outlines): it is dropped, because Oomba3D draws its own ink.",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models in public/vendor/themes/ and the pictures in public/vendor/art2d/ reviewed: the licence forbids redistributing the files as assets."
+ ]
+}

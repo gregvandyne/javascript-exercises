@@ -66,6 +66,17 @@ const merge = (a, b) => { const o = { ...a }; for (const [k, v] of Object.entrie
 const words = code => merge(EN, JSON.parse(fs.readFileSync(path.join(LOCALES_DIR, `${code}.json`), 'utf8')));
 const fails = html => scanVersion(html).issues.filter(i => i.level === 'fail').map(i => i.code);
 
+// The sea packs' licences (not CC0): each named, with words only its own licence text has (the same list as
+// tests/unit/kit2-themes.test.js keeps for the 3D world).
+const SEA_LICENCES = {
+  'LicenseRef-reodesuxz': [/Copyright \(c\) 2026 reodesuxz/, /redistributing the asset files/i],
+  'LicenseRef-muteassets-sea-life': [/Low Poly Sea Life/, /sell, give away or share the assets themselves/],
+  'LicenseRef-aletheiamask-standard-asset': [/STANDARD ASSET LICENSE/, /aletheiamask/],
+  'LicenseRef-free-fish-sampler-1.1': [/Free Fish Sampler - LICENSE/, /Version 1\.1/],
+  'LicenseRef-alstra-free-asset': [/ALSTRA INFINITE/, /with credit/],
+  'LicenseRef-theunseenvulga-ocean-animals': [/THEUNSEENVULGA/, /do not resell the unmodified\s+assets as-is/],
+};
+
 // ---------------------------------------------------------------- the lock
 test('lock: every file under /vendor/art2d/ is locked with its hash, and a locked file never changes', () => {
   const onDisk = walk(DIR).sort(), locked = [];
@@ -78,7 +89,7 @@ test('lock: every file under /vendor/art2d/ is locked with its hash, and a locke
   assert.deepEqual(onDisk, locked.sort(), 'a file under public/vendor/art2d/ is not in kit2/ART2D.json (run node kit2/pipeline/art2d-lock.mjs)');
   // the helper's source is the newest shipped helper (a change to it ships as a new version)
   assert.equal(sri(fs.readFileSync(path.join(ROOT, 'kit2/src2d/oomba2d.js'))), LOCK.helper[S.OOMBA2D_VERSION], 'kit2/src2d/oomba2d.js differs from the shipped Oomba2D: bump its VERSION and lock the new one');
-  assert.equal(packs.length, 12); assert.equal(worlds.length, 10);
+  assert.equal(packs.length, 14); assert.equal(worlds.length, 11);   // ten worlds, heroes, animals 1.0.0; then Under the Sea and animals 1.1.0 (the sea animals)
   assert.deepEqual(worlds.map(w => w.id).sort(), K.WORLD_IDS.slice().sort(), 'every 3D world has its 2D pack');
   // no raw model and nothing but pictures, manifests and licence texts ships
   for (const f of onDisk) assert.match(f, /\.(webp|json|js|txt)$/, f);
@@ -95,12 +106,23 @@ test('manifests: every file listed with its size and hash, pack.js is the same m
     const js = fs.readFileSync(path.join(dir, 'pack.js'), 'utf8'), body = /Oomba2D\.pack\((\{[\s\S]*\})\);\n$/.exec(js);
     assert.ok(body, `${p.key}: pack.js calls Oomba2D.pack`); assert.deepEqual(JSON.parse(body[1]), m, `${p.key}: pack.js carries pack.json`);
     assert.doesNotMatch(js.replace(body[1], ''), /\bfetch\b|\bimport\b|XMLHttpRequest|\beval\b/, 'pack.js is data only');
-    // CC0 only; a world comes from one shipped theme version (which holds the licence files)
-    assert.ok(m.from.packs.length); for (const s of m.from.packs) assert.equal(s.licence, 'CC0-1.0', `${p.key}: ${s.id}`);
+    // CC0, or one of the named restricted licences of the sea packs (use in games yes, the files never passed on: these
+    // pictures are drawn from the models, they are not the models), and those only in the two packs that hold sea art.
+    // A world comes from one shipped theme version (which holds the licence files).
+    assert.ok(m.from.packs.length);
+    for (const s of m.from.packs) {
+      if (s.licence === 'CC0-1.0') continue;
+      assert.ok(SEA_LICENCES[s.licence], `${p.key}: ${s.id} is ${s.licence}`);
+      assert.ok(p.id === 'under-the-sea' || (p.id === 'animals' && p.version !== '1.0.0'), `${p.key}: only the sea packs carry a restricted licence`);
+      if (!m.from.theme) { assert.equal(s.redistribute, false, `${p.key}: ${s.id}`); for (const re of SEA_LICENCES[s.licence]) assert.match(fs.readFileSync(path.join(dir, 'LICENSES', `${s.id}.txt`), 'utf8'), re, `${p.key}: licence text of ${s.id}`); }
+    }
     if (m.from.theme) { const lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit2/SHIPPED.json'), 'utf8')); assert.ok(lock.themes[m.from.theme], `${p.key}: drawn from a shipped theme`); assert.ok(fs.existsSync(path.join(ROOT, 'public/vendor/themes', m.from.theme, 'LICENSES'))); }
-    else for (const s of m.from.packs) assert.match(fs.readFileSync(path.join(dir, 'LICENSES', `${s.id}.txt`), 'utf8'), /CC0 1\.0 Universal/, `${p.key}: licence text of ${s.id}`);
-    // never the custom-licence packs, never the T-Rex (the owner has not decided)
-    assert.doesNotMatch(JSON.stringify(m), /desert-oasis|sky-islands-pack|underwater-pack|reodesuxz|t-rex|tyrannosaurus/i, p.key);
+    else for (const s of m.from.packs.filter(s => s.licence === 'CC0-1.0')) assert.match(fs.readFileSync(path.join(dir, 'LICENSES', `${s.id}.txt`), 'utf8'), /CC0 1\.0 Universal/, `${p.key}: licence text of ${s.id}`);
+    // never the other custom-licence packs, never the T-Rex (the owner has not decided); the underwater pack only in
+    // the two packs that hold sea art; ALSTRA INFINITE, whose licence requires credit, is credited in the manifest
+    assert.doesNotMatch(JSON.stringify(m), /desert-oasis|sky-islands-pack|t-rex|tyrannosaurus/i, p.key);
+    if (!(p.id === 'under-the-sea' || (p.id === 'animals' && p.version !== '1.0.0'))) assert.doesNotMatch(JSON.stringify(m), /underwater-pack|reodesuxz|LicenseRef/i, p.key);
+    for (const s of m.from.packs.filter(s => /ALSTRA/.test(s.author || ''))) if (!m.from.theme) assert.match(s.credit || '', /ALSTRA INFINITE.*required/, `${p.key}: the required credit`);
   }
 });
 
@@ -139,9 +161,14 @@ test('manifests: every sprite, frame and strip is inside its picture; anchors an
       }
     }
   }
-  const animals = packs.find(p => p.id === 'animals').m.sprites;
-  assert.equal(Object.keys(animals).length, 24);
-  for (const g of ['woodland', 'farm', 'dinosaur']) assert.ok(Object.values(animals).some(a => a.group === g), g);
+  // animals 1.0.0 (locked): the 24 land animals. animals 1.1.0: the same 24, byte for byte, and the 23 sea animals.
+  const animals10 = packs.find(p => p.key === 'animals/1.0.0').m, animals = packs.find(p => p.key === 'animals/1.1.0').m.sprites;
+  assert.equal(Object.keys(animals10.sprites).length, 24); assert.equal(Object.keys(animals).length, 47);
+  for (const [id, s0] of Object.entries(animals10.sprites)) { assert.deepEqual(animals[id], s0, `${id} is the same sprite in 1.1.0`); assert.equal(packs.find(p => p.key === 'animals/1.1.0').m.files[s0.image].sha384, animals10.files[s0.image].sha384, `${id}: the same picture`); }
+  for (const g of ['woodland', 'farm', 'dinosaur', 'sea']) assert.ok(Object.values(animals).some(a => a.group === g), g);
+  const sea = Object.entries(animals).filter(([, a]) => a.group === 'sea').map(([id]) => id);
+  assert.deepEqual(sea.slice().sort(), K.worldById('under-the-sea').creatures.map(c => c.id).sort(), 'every animal of the 3D sea world has its sprite, in group "sea"');
+  assert.ok(!sea.some(id => /shark/.test(id) && id !== 'little-shark'), 'the only shark is the Little Shark (no mouth modelled)');
   assert.deepEqual(Object.keys(packs.find(p => p.id === 'heroes').m.sprites), K.KIT2_CHARACTERS.filter(c => c.kind === 'hero').map(c => c.id), 'every 3D hero has a sheet');
 });
 
@@ -459,7 +486,7 @@ async function play(html, { size = [960, 600], reduced = false, backend = 'paper
 }
 const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 
-for (const [key, world, hero] of [['runner', 'pirate-cove', 'fox'], ['runner', 'castle-quest', 'knight'], ['runner', 'space-base', 'mage'], ['catch', 'pirate-cove', 'knight'], ['catch', 'castle-quest', 'cow'], ['catch', 'space-base', 'skelly']]) {
+for (const [key, world, hero] of [['runner', 'pirate-cove', 'fox'], ['runner', 'castle-quest', 'knight'], ['runner', 'space-base', 'mage'], ['catch', 'pirate-cove', 'knight'], ['catch', 'castle-quest', 'cow'], ['catch', 'space-base', 'skelly'], ['runner', 'under-the-sea', 'dolphin'], ['catch', 'under-the-sea', 'clownfish']]) {
   test(`in the frame: a ${key} game in ${world} with ${hero} draws the pack's pictures`, { skip, timeout: 120_000 }, async () => {
     const html = T.loadTemplate(key, { world, hero }), { R, seen, errors } = await play(html);
     assert.deepEqual(errors, [], 'no errors, nothing refused by the CSP');
@@ -467,7 +494,7 @@ for (const [key, world, hero] of [['runner', 'pirate-cove', 'fox'], ['runner', '
     const m = S.art2dManifest(world), c = A.art2dCharacter(hero);
     // every picture of the world and the hero's sheet were fetched from the pack's folder, and nothing else from /vendor/art2d/
     const art = seen.filter(u => u.includes('/vendor/art2d/')).map(u => u.replace(HOST + '/vendor/art2d/', '')).sort();
-    assert.deepEqual(art, [`${c.pack}/1.0.0/${hero}.webp`, `${c.pack}/1.0.0/pack.js`, `oomba2d/${S.OOMBA2D_VERSION}/oomba2d.js`, ...['far.webp', 'ground.webp', 'mid.webp', 'pack.js', 'props.webp'].map(f => `${world}/1.0.0/${f}`)].sort());
+    assert.deepEqual(art, [`${c.pack}/${S.ART2D_PACKS[c.pack]}/${hero}.webp`, `${c.pack}/${S.ART2D_PACKS[c.pack]}/pack.js`, `oomba2d/${S.OOMBA2D_VERSION}/oomba2d.js`, ...['far.webp', 'ground.webp', 'mid.webp', 'pack.js', 'props.webp'].map(f => `${world}/1.0.0/${f}`)].sort());
     assert.equal(R.stats.images, 5, 'five pictures decoded');
     assert.equal(R.stats.define, Object.keys(m.sprites).length + 6, 'every sprite, the ground, two strips, the sky, the under colour and the hero are kit sprites');
     assert.ok(R.stats.draws >= 12, `the kit drew them (${R.stats.draws} bakes from the pack's pictures)`);
