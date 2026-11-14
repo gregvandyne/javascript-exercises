@@ -198,11 +198,11 @@
      ]
     },
     {
-     "cue": "One jar takes 3/4 of a liter.",
+     "cue": "Each jar takes 3/4 of a liter.",
      "box": [
       5.1,
       51.7,
-      16,
+      30.7,
       18.3
      ]
     },
