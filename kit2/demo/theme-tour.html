@@ -14,7 +14,11 @@ const has = (p, tag) => p.tags.includes(tag);
 // The ground: the theme's first 'ground' piece, tiled under everything.
 const ground = T.pieces.find(p => has(p, 'ground'));
 const [gw, , gd] = ground.size;
-for (let ix = -3; ix <= 3; ix++) for (let iz = -4; iz <= 1; iz++) await W.island({ piece: ground.id, scale: 1, x: ix * gw, y: -ground.size[1], z: iz * gd });
+// A theme that stands in the sea (look.water: Pirate Cove) gets its sea, and a smaller patch of ground with open water round it.
+const sea = T.look.water || null;
+if (sea) W.water(sea);
+const [nx, nz0, nz1] = sea ? [1, -3, 0] : [3, -4, 1];
+for (let ix = -nx; ix <= nx; ix++) for (let iz = nz0; iz <= nz1; iz++) await W.island({ piece: ground.id, scale: 1, x: ix * gw, y: -ground.size[1], z: iz * gd });
 
 // Every hero in a row, each doing something different.
 const moves = ['cheer', 'wave', 'idle', 'ready', 'jumpAir', 'cast', 'pickUp', 'use', 'sit'];
@@ -28,16 +32,26 @@ const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id
 animals.forEach((a, i) => a.play(a.moves.includes('eat') && i % 2 ? 'eat' : 'idle'));
 
 // A spread of the theme's other pieces behind them: big ones far back, small ones nearer.
-const rest = T.pieces.filter(p => p !== ground && !has(p, 'ground') && !has(p, 'road') && !has(p, 'floor') && !has(p, 'path') && p.kind !== 'effect');
+// (In a sea theme, ships and boats, tagged 'afloat', go out on the water round the ground, biggest furthest back; other
+// islands stand in the sea in front; and the big pieces get a third row and more room.)
+const afloat = sea ? T.pieces.filter(p => has(p, 'afloat')) : [], islets = sea ? T.pieces.filter(p => p !== ground && has(p, 'island')) : [];
+const rest = T.pieces.filter(p => p !== ground && !afloat.includes(p) && !islets.includes(p) && !has(p, 'ground') && !has(p, 'road') && !has(p, 'floor') && !has(p, 'path') && p.kind !== 'effect');
 rest.sort((a, b) => Math.max(...b.size) - Math.max(...a.size));
 const placed = [];
+afloat.sort((a, b) => Math.max(...b.size) - Math.max(...a.size));
+const edge = (nx + 0.5) * gw;
+for (const [i, p] of islets.entries()) placed.push(W.piece(p.id, { x: (i % 2 ? -1 : 1) * (edge + 6), y: -p.size[1], z: -16 - i * 3 }));
+for (const [i, p] of afloat.entries()) {
+  const side = i % 2 ? 1 : -1, far = Math.max(...p.size) > 6, k = i >> 1;
+  placed.push(W.piece(p.id, far ? { x: side * (edge + 7 + k * 3), y: sea.y - 0.5, z: -20 - k * 14, turn: side * -0.5 } : { x: side * (edge + 2.5), y: sea.y - 0.5, z: -9 + k * 4, turn: side * 1.2 }));
+}
 for (const [i, p] of rest.entries()) {
-  const big = Math.max(...p.size) > 3, row = big ? -12 - (i % 2) * 6 : -4 - (i % 3) * 2.2;
-  const x = ((i * 7) % 15 - 7) * (big ? 1.8 : 1.4);
+  const big = Math.max(...p.size) > 3, row = big ? -12 - (i % (sea ? 3 : 2)) * 6 : -4 - (i % 3) * 2.2;
+  const x = ((i * 7) % 15 - 7) * (big ? (sea ? 2 : 1.8) : 1.4);
   placed.push(W.piece(p.id, { x, y: 0, z: row, turn: (i % 4) * 0.4 }));
 }
 await Promise.all(placed);
 g.camera.position.set(0, 4.2, 12.5); g.camera.lookAt(0, 1.6, -2);
-window.__tour = { heroes: heroes.length, creatures: animals.length, pieces: rest.length + 1, g };
+window.__tour = { heroes: heroes.length, creatures: animals.length, pieces: rest.length + afloat.length + islets.length + 1, g };
 window.__ready = true;
 </script>

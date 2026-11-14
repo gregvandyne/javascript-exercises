@@ -300,6 +300,20 @@ test('the animals demo in Medieval Village: spawn, walk, hop, follow a path, tra
   }
   assert.equal(info.cow.large, true, 'the cow is a big animal'); assert.equal(info.husky.large, false);
   assert.ok(await frame.evaluate(() => { const g = __demo.g; let n = 0; g.scene.traverse(o => { if (o.isSkinnedMesh && o.material && o.material.flatShading) n++; }); return n; }) >= 5, 'flat-shaded as their makers drew them');
+  // A real rendered frame of the cow (flat-shaded, palette colours, ink outline): not a blank or all-white picture.
+  const px = await frame.evaluate(() => {
+    const g = __demo.g, c = __demo.all.cow.position, cam = g.camera.clone();
+    cam.position.set(c.x + 1, 2.2, c.z + 8); cam.lookAt(c.x, 1.3, c.z); cam.updateMatrixWorld();
+    g.renderer.setRenderTarget(null); g.renderer.render(g.scene, cam);
+    const gl = g.renderer.getContext(), w = gl.drawingBufferWidth, h = gl.drawingBufferHeight, buf = new Uint8Array(w * h * 4);
+    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+    let white = 0, ink = 0, brown = 0, n = 0;
+    for (let i = 0; i < buf.length; i += 16) { const r = buf[i], gr = buf[i + 1], b = buf[i + 2]; n++; if (r > 245 && gr > 245 && b > 245) white++; if (r < 45 && gr < 45 && b < 45) ink++; if (r > 110 && r > gr + 25 && gr > b + 15) brown++; }
+    return { white: white / n, ink: ink / n, brown: brown / n };
+  });
+  assert.ok(px.white < 0.3, `the picture is not washed out (${(px.white * 100).toFixed(1)}% white)`);
+  assert.ok(px.brown > 0.01, `the cow is brown (${(px.brown * 100).toFixed(2)}% of the picture)`);
+  assert.ok(px.ink > 0.0008, `with an ink outline (${(px.ink * 100).toFixed(2)}%)`);
   // The hero stands on the ground the library made.
   await until(() => Math.abs(__demo.me.position.y) < 0.01);
   if (shots) { await p.waitForTimeout(1500); await p.screenshot({ path: path.join(shots, 'creatures-mv-1-row.png') }); }
@@ -438,6 +452,34 @@ window.__ready = true;</script>`;
   assert.match(no.hero, /no hero "dragon"/);
   assert.match(no.before, /no creature "cow" in medieval-village 1\.0\.0\. Creatures: none in this world/);
   await ctx.close();
+});
+
+test('a piece with its own clips: the Pirate Cove chest opens and closes on Oomba3D 1.2.0, and stays a plain piece on 1.1.0', { skip, timeout: 240_000 }, async () => {
+  const pc = versions.filter(v => v.theme === 'pirate-cove').pop();
+  assert.deepEqual(clipsOf(path.join(pc.dir, 'props/chest.glb')).sort(), ['close', 'open']);
+  const game = v => `<title>chest</title>${V.kit2ImportMap(v)}<script type="module">import { start } from 'oomba3d';
+const g = await start({ theme: 'pirate-cove', version: '${pc.version}', graphics: 'low', settings: false });
+const chest = await g.world.piece('chest', { x: 0, y: 0, z: -4 }), palm = await g.world.piece('palm', { x: 3, y: 0, z: -4 });
+const pose = () => { const out = []; chest.object.traverse(o => out.push(...o.quaternion.toArray(), ...o.position.toArray())); return out.map(n => +n.toFixed(4)).join(','); };
+window.__chest = { g, chest, palm, pose, shut: pose() }; window.__ready = true;</script>`;
+  for (const v of ['1.1.0', '1.2.0']) {
+    assert.equal(scanVersion(game(v)).status, 'pass');
+    const { frame, errors, ctx } = await open(game(v));
+    await frame.waitForFunction(() => window.__ready === true, null, { timeout: 120_000 });
+    if (v === '1.1.0') assert.deepEqual(await frame.evaluate(() => [typeof __chest.chest.play, __chest.chest.moves]), ['undefined', undefined]);
+    else {
+      assert.deepEqual(await frame.evaluate(() => [[...__chest.chest.moves].sort(), __chest.palm.moves, __chest.palm.play('open'), __chest.chest.play('explode')]), [['close', 'open'], [], null, null]);
+      assert.equal(await frame.evaluate(() => __chest.chest.play('open').getClip().name), 'open');
+      await frame.waitForFunction(() => __chest.pose() !== __chest.shut, null, { timeout: 60_000 });   // the lid moved
+      await frame.waitForFunction(() => { const p = __chest.pose(); const same = p === window.__last; window.__last = p; return same; }, null, { timeout: 90_000, polling: 700 });   // and came to rest, open
+      const open1 = await frame.evaluate(() => __chest.pose());
+      assert.notEqual(open1, await frame.evaluate(() => __chest.shut), 'it stays open');
+      await frame.evaluate(() => { __chest.chest.play('close'); });
+      await frame.waitForFunction(o => __chest.pose() !== o, open1, { timeout: 60_000 });
+    }
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
 });
 
 test('reduced motion: nobody strolls about by themselves, a hopper glides, a school stands still', { skip, timeout: 240_000 }, async () => {

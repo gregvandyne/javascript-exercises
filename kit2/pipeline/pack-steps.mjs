@@ -11,6 +11,8 @@
 //   cutout: ['Leaves', 'Flowers']  materials (name starts with) drawn as cut-outs (alphaMode MASK, both sides) instead of blended
 //   dropMeshes: ['^Gun']           remove every mesh node whose name matches (held items)
 //   dropVertexColours: true        ignore COLOR_0
+//   stretch: [1, 6, 1]             the model stretched along x, y and z about its origin, before anything else (a thin
+//                                  sand patch made into an island thick enough to stand in the sea); for still models
 //   inkNormals: true               for flat-shaded low-poly models: give every corner one shared, averaged normal and mark
 //                                  the materials extras.flat = true. An ink outline (a copy pushed out along the normals)
 //                                  then stays in one piece instead of cracking at every hard edge; whoever draws the model
@@ -27,6 +29,13 @@ const picture = async () => sharp || (sharp = (await import('sharp')).default);
 export async function packSteps(doc, item, recipe, recipeDir) {
   const root = doc.getRoot();
   if (item.dropMeshes) for (const n of root.listNodes()) if (n.getMesh() && item.dropMeshes.some(k => new RegExp(k).test(n.getName()) || new RegExp(k).test(n.getMesh().getName()))) n.setMesh(null).setSkin(null);
+  if (item.stretch) {
+    const done = new Set();
+    for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
+      const acc = p.getAttribute('POSITION'); if (!acc || done.has(acc)) continue; done.add(acc);
+      const a = new Float32Array(acc.getArray()); for (let i = 0; i < a.length; i++) a[i] *= item.stretch[i % 3]; acc.setArray(a);
+    }
+  }
   if (item.anims) {
     const first = new Map(); for (const a of root.listAnimations()) if (!first.has(a.getName())) first.set(a.getName(), a);
     const keep = new Map();

@@ -1,0 +1,1496 @@
+{
+ "id": "pirate-cove",
+ "name": "Pirate Cove",
+ "description": "A sunny cove to explore: sandy islands, palm trees, docks, a harbour fort and sailing ships, with treasure to find and share.",
+ "goodFor": [
+  "maths",
+  "geography",
+  "treasure maps",
+  "adventures"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-pirate",
+   "name": "Kenney Pirate Kit 2.1",
+   "author": "Kenney",
+   "url": "https://kenney.nl/assets/pirate-kit",
+   "commit": "1d1dbb18a46bc9e8cdfc181ed83b88b095cdd173",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-pirate.txt",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "look": {
+  "sky": {
+   "top": "#3fa9f5",
+   "middle": "#a9ddff",
+   "bottom": "#fff3cf"
+  },
+  "fog": {
+   "color": "#c8e9ff",
+   "near": 90,
+   "far": 280
+  },
+  "hemisphere": {
+   "sky": "#f3fbff",
+   "ground": "#c9b98a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#fff2cf",
+   "intensity": 2.7
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "water": {
+   "y": -1.5,
+   "color": "#0077c8"
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise. The sea is g.world.water({ y: -1.5 }): islands and docks stand in it with their tops at 0.",
+ "heroes": [
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "island-sand",
+   "file": "world/island-sand.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "island",
+    "sand",
+    "platform"
+   ],
+   "size": [
+    10.06,
+    3.9,
+    7.85
+   ],
+   "pack": "kenney-pirate",
+   "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+  },
+  {
+   "id": "island-grass",
+   "file": "world/island-grass.glb",
+   "kind": "world",
+   "tags": [
+    "island",
+    "grass",
+    "platform"
+   ],
+   "size": [
+    6.85,
+    3.9,
+    5.35
+   ],
+   "pack": "kenney-pirate",
+   "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+  },
+  {
+   "id": "dock",
+   "file": "world/dock.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    1.71,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "A square of dock on posts: tile them for a pier."
+  },
+  {
+   "id": "dock-small",
+   "file": "world/dock-small.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.47,
+    1.71,
+    3.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "pier",
+   "file": "world/pier.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    1.21,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "Like dock, without the mooring posts."
+  },
+  {
+   "id": "pier-small",
+   "file": "world/pier-small.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.47,
+    1.17,
+    3.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "deck",
+   "file": "world/deck.glb",
+   "kind": "world",
+   "tags": [
+    "planks",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    0.3,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "A flat square of planks: a raft, a ship deck to stand on, an answer pad."
+  },
+  {
+   "id": "planks",
+   "file": "world/planks.glb",
+   "kind": "world",
+   "tags": [
+    "planks",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.46,
+    0.56,
+    3.51
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "sand-patch",
+   "file": "world/sand-patch.glb",
+   "kind": "decor",
+   "tags": [
+    "sand",
+    "patch"
+   ],
+   "size": [
+    10.06,
+    0.33,
+    7.85
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "sand-patch-shells",
+   "file": "world/sand-patch-shells.glb",
+   "kind": "decor",
+   "tags": [
+    "sand",
+    "patch"
+   ],
+   "size": [
+    10.06,
+    0.73,
+    7.85
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-patch",
+   "file": "world/grass-patch.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "patch"
+   ],
+   "size": [
+    6.85,
+    0.32,
+    5.35
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-patch-plants",
+   "file": "world/grass-patch-plants.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "patch"
+   ],
+   "size": [
+    6.85,
+    0.73,
+    5.35
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower",
+   "file": "world/tower.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "building"
+   ],
+   "size": [
+    4.72,
+    13.29,
+    4.72
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-small",
+   "file": "world/tower-small.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "building"
+   ],
+   "size": [
+    4.36,
+    8.82,
+    4.75
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-base",
+   "file": "world/tower-base.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    4.11,
+    2.6,
+    4.11
+   ],
+   "pack": "kenney-pirate",
+   "note": "Tower parts stack: base, middle, then top, roof or lookout."
+  },
+  {
+   "id": "tower-base-door",
+   "file": "world/tower-base-door.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "door"
+   ],
+   "size": [
+    4.11,
+    2.6,
+    4.63
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-middle",
+   "file": "world/tower-middle.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    3.97,
+    2.6,
+    3.97
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-middle-windows",
+   "file": "world/tower-middle-windows.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "window"
+   ],
+   "size": [
+    3.68,
+    2.6,
+    3.99
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-top",
+   "file": "world/tower-top.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    4.36,
+    3.62,
+    4.36
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-roof",
+   "file": "world/tower-roof.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "roof"
+   ],
+   "size": [
+    4.72,
+    4.47,
+    4.72
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-lookout",
+   "file": "world/tower-lookout.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "lookout"
+   ],
+   "size": [
+    3.96,
+    3.62,
+    3.96
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-wall",
+   "file": "world/fort-wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    3.64
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-gate",
+   "file": "world/fort-gate.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "gate"
+   ],
+   "size": [
+    5.2,
+    5.72,
+    4.68
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-door",
+   "file": "world/fort-door.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "door"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    4.16
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-window",
+   "file": "world/fort-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "window"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    3.64
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut",
+   "file": "world/hut.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "building"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-fence",
+   "file": "world/hut-fence.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "fence"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-fence-sides",
+   "file": "world/hut-fence-sides.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "fence"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-roof",
+   "file": "world/hut-roof.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "roof",
+    "building"
+   ],
+   "size": [
+    4.01,
+    4.42,
+    4.2
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "ship",
+   "file": "world/ship.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    13.78
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "ship-large",
+   "file": "world/ship-large.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    17.03
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "ship-small",
+   "file": "world/ship-small.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    11.44
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "shipwreck",
+   "file": "world/shipwreck.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "wreck",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    13.78
+   ],
+   "pack": "kenney-pirate",
+   "note": "An old wreck with plants growing on it: on a beach, or half in the sea."
+  },
+  {
+   "id": "rowing-boat",
+   "file": "world/rowing-boat.glb",
+   "kind": "world",
+   "tags": [
+    "boat",
+    "rowing",
+    "afloat"
+   ],
+   "size": [
+    3.57,
+    1.1,
+    3.71
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "rowing-boat-small",
+   "file": "world/rowing-boat-small.glb",
+   "kind": "world",
+   "tags": [
+    "boat",
+    "rowing",
+    "afloat"
+   ],
+   "size": [
+    3.57,
+    1.1,
+    3.08
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "mast",
+   "file": "world/mast.glb",
+   "kind": "world",
+   "tags": [
+    "mast",
+    "ship"
+   ],
+   "size": [
+    5.7,
+    10.22,
+    2.26
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "mast-ropes",
+   "file": "world/mast-ropes.glb",
+   "kind": "world",
+   "tags": [
+    "mast",
+    "ship",
+    "ropes"
+   ],
+   "size": [
+    5.7,
+    10.25,
+    3.05
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm",
+   "file": "world/palm.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.24,
+    5.48,
+    3.24
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-bend",
+   "file": "world/palm-bend.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    5.53,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-tall",
+   "file": "world/palm-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.18,
+    5.48,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-tall-bend",
+   "file": "world/palm-tall-bend.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    5.53,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks",
+   "file": "world/rocks.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    6.65,
+    3.77,
+    5.7
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-tall",
+   "file": "world/rocks-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    5.77,
+    4.75,
+    6.12
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-small",
+   "file": "world/rocks-small.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    4.74,
+    2.99,
+    4.77
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand",
+   "file": "world/rocks-sand.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    6.65,
+    4.18,
+    5.7
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand-tall",
+   "file": "world/rocks-sand-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    5.69,
+    4.83,
+    6.12
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand-small",
+   "file": "world/rocks-sand-small.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    4.82,
+    3.4,
+    4.84
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass",
+   "file": "world/grass.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    0.67,
+    0.41,
+    0.71
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-plant",
+   "file": "world/grass-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.45,
+    0.68,
+    1.61
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-tuft",
+   "file": "world/grass-tuft.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.71,
+    0.61,
+    1.65
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "chest",
+   "file": "props/chest.glb",
+   "kind": "prop",
+   "tags": [
+    "goal",
+    "treasure",
+    "chest"
+   ],
+   "size": [
+    1.27,
+    1.15,
+    1.28
+   ],
+   "pack": "kenney-pirate",
+   "note": "The treasure to find. It is shut in this version (its lid opens in a later Oomba3D)."
+  },
+  {
+   "id": "barrel",
+   "file": "props/barrel.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel",
+    "cargo"
+   ],
+   "size": [
+    1.34,
+    1.23,
+    1.34
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "crate",
+   "file": "props/crate.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "cargo"
+   ],
+   "size": [
+    1.08,
+    0.77,
+    1.31
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "dig-spot",
+   "file": "props/dig-spot.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "dig",
+    "sand"
+   ],
+   "size": [
+    3.72,
+    0.46,
+    3.52
+   ],
+   "pack": "kenney-pirate",
+   "note": "A hole dug in the sand: X marks the spot."
+  },
+  {
+   "id": "shovel",
+   "file": "props/shovel.glb",
+   "kind": "prop",
+   "tags": [
+    "tool",
+    "dig"
+   ],
+   "size": [
+    0.86,
+    3.05,
+    0.37
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "paddle",
+   "file": "props/paddle.glb",
+   "kind": "prop",
+   "tags": [
+    "tool",
+    "boat"
+   ],
+   "size": [
+    0.86,
+    3.05,
+    0.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag",
+   "file": "props/flag.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    1.74,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-pennant",
+   "file": "props/flag-pennant.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    2.29,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-high",
+   "file": "props/flag-high.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    1.74,
+    4.68,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-high-pennant",
+   "file": "props/flag-high-pennant.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    2.29,
+    4.68,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-black",
+   "file": "props/flag-black.glb",
+   "kind": "prop",
+   "tags": [
+    "flag"
+   ],
+   "size": [
+    1.74,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate",
+   "note": "A plain black flag (no picture on it)."
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kenney-pirate.txt": {
+   "bytes": 699,
+   "sha384": "sha384-XGFN1sap8KNNGlfke+P+YWPuB28BvE1vV+u1FhrB/wReTZUQlKwK/hd3tfD2BhXp"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "SOURCES.md": {
+   "bytes": 2854,
+   "sha384": "sha384-v0PFOQxIzzgOK5a1exPs7XasGVsU8wvGeI1Aa7/mGnAaxes1xS0aKZwC2LJ7jDu3"
+  },
+  "cover.webp": {
+   "bytes": 37760,
+   "sha384": "sha384-CHLONK7Dv6+WnO0fmh5D0XPvnRVxoz6mEpAjAhpX7YZNhIp9QSRqeNf5z32kHWpo"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "props/barrel.glb": {
+   "bytes": 16948,
+   "sha384": "sha384-1uMZ3Sx+NTOs1Nxqd3gqbK1Hc0XR1FwhNItcW6F5MwlNWNs0fbX4QEW72JCtawYZ"
+  },
+  "props/chest.glb": {
+   "bytes": 22216,
+   "sha384": "sha384-T2fj7NOh285IzbkjjzzunLVR/zlyQtzT/zLwhSOw7r2nkVHQmclCWXfzoSLZIDWm"
+  },
+  "props/coin.glb": {
+   "bytes": 20184,
+   "sha384": "sha384-c1uMDiDQnmgzdSY3ilYv+EcIQps4Lj+kBzXDHk4nIXUuxB7QjNh6IvWk8TUaS95D"
+  },
+  "props/crate.glb": {
+   "bytes": 15152,
+   "sha384": "sha384-s2t/Ny1jdEu7jgY6QcTssEiDh+70SrCCBdd6Y7ciLZudUHs4+W3tN1CYCF4GfLkU"
+  },
+  "props/dig-spot.glb": {
+   "bytes": 23652,
+   "sha384": "sha384-kvXXtMsD4IhrqWTaAPVNVjEZtGeLlhknLXCwiHFBHZbIMAUcOAurp2bGozvDv0Fg"
+  },
+  "props/flag-black.glb": {
+   "bytes": 17492,
+   "sha384": "sha384-liPSoPSvtiRJY7XxKQe/p97kRVu0VFofGfjq78M2Nxqf2+8v5AkVxWw3w0bjA374"
+  },
+  "props/flag-high-pennant.glb": {
+   "bytes": 16904,
+   "sha384": "sha384-77Qk4RvjvVBw1xIg+tyJAS7GeXox4tnC8FzjUNg0gZpIuNa80athWZbOczbIE66E"
+  },
+  "props/flag-high.glb": {
+   "bytes": 17488,
+   "sha384": "sha384-tqqDKODnNJPMXEMIlQwEv6yOGflIyvsPibY+cnWlTNeuezLHB6pTjDtX+j6GBBee"
+  },
+  "props/flag-pennant.glb": {
+   "bytes": 16892,
+   "sha384": "sha384-UY8V3TDuVfyldGtmKL2F6au5xcUS3FjtFgoeDhWCULJGO2FUDq81b7SuwGFoyCAC"
+  },
+  "props/flag.glb": {
+   "bytes": 17476,
+   "sha384": "sha384-AtVy1DZiUzg5X3DZkOSK+y8WI10mpCeSY6AOB6eunPmWzjFA/Uw5SlTvx2Yg7/EJ"
+  },
+  "props/paddle.glb": {
+   "bytes": 13820,
+   "sha384": "sha384-koxeCf19s2EzMNq55I9G3PLlZkzj+L3DzrUHVQiP2W+yURhlKV9xCiO4GW81wO+L"
+  },
+  "props/shovel.glb": {
+   "bytes": 17676,
+   "sha384": "sha384-dKj6ZCpofvSy8+RsBFML+rOgBNT2sygAC3KrTx3pBRUJ5z6Lk7qxLdVHsbl9vXJP"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/deck.glb": {
+   "bytes": 14420,
+   "sha384": "sha384-r1GxkkdkMMjY208/QRh4IWfzL35C7ERgGA2hQwSdYhkA0U85YRijx5yyBSiP9vE5"
+  },
+  "world/dock-small.glb": {
+   "bytes": 24780,
+   "sha384": "sha384-o8VfTl8+0xu8MayVgjNJYSp+7Eul0QAFrFX93T79DY1tHqducVeSiuigb9AOOAjD"
+  },
+  "world/dock.glb": {
+   "bytes": 25320,
+   "sha384": "sha384-3MxTi5o1biv2cdIhDq3Svr6KLapuNpFXwjPlk1NomH/6SOdXj0wadnUOZqUg/t77"
+  },
+  "world/fort-door.glb": {
+   "bytes": 25840,
+   "sha384": "sha384-IVFiXTT1SKu18A/lajAmEbwKUh+xzAMZoF5vUMLQLtzmLwgp1zkNSMD/W0814Uir"
+  },
+  "world/fort-gate.glb": {
+   "bytes": 37952,
+   "sha384": "sha384-QFCK0Jv8DUHghlSXgUWfD24fwt5Ixp7jSIYCBJP9xathKcHoOD3471U5KPDr7uGI"
+  },
+  "world/fort-wall.glb": {
+   "bytes": 23068,
+   "sha384": "sha384-p14OG3Yx8Sdn/y5QaSOCna9qL3ZZHTBw3vGx4QZeVSmM3OnKIzmiyAbUbwazOnyv"
+  },
+  "world/fort-window.glb": {
+   "bytes": 22344,
+   "sha384": "sha384-CMyvi+IszPkdUE/ukrAMSotMhZhVdqI0cxnshIhapZTp2htLpF/Vwm9SgEDJ0B9X"
+  },
+  "world/grass-patch-plants.glb": {
+   "bytes": 23688,
+   "sha384": "sha384-EsymRWU1OuUDxjayA5AjOrUPxl9Og3d7GiramfRCQsT9gJv1jjNnsW6xvV8mG5ih"
+  },
+  "world/grass-patch.glb": {
+   "bytes": 14812,
+   "sha384": "sha384-TYsb736F8ahj21o2jfAcLx7hcJnJgarC4gTvBnFfyDTcCZVERdv7XnuACXkFJ8g3"
+  },
+  "world/grass-plant.glb": {
+   "bytes": 17608,
+   "sha384": "sha384-sH7S808Xcow5uDagjN3j/7cVGCKeW+jBheNpJs7WqB++Kg62WTwVb3Tdy+HAEJio"
+  },
+  "world/grass-tuft.glb": {
+   "bytes": 26352,
+   "sha384": "sha384-/t6+WVwbNK3c/6D6tLOhC9Pn2tDODqEh0ZLQddeL9Ie7NApJpDivrX0PCTIYztud"
+  },
+  "world/grass.glb": {
+   "bytes": 14608,
+   "sha384": "sha384-Tops21HO0iB3/9VnzhqQ96BRo4qGLY+q81fWpni5aqXM8WzZ3dtxzjcfhZ3d7m8I"
+  },
+  "world/hut-fence-sides.glb": {
+   "bytes": 30776,
+   "sha384": "sha384-QB2+6sARon8licJpo4Si0jlYkoLaqwlDzZotXNg5Y1kflolkUjwchcX8rznaJ5l3"
+  },
+  "world/hut-fence.glb": {
+   "bytes": 26420,
+   "sha384": "sha384-Tjzj9YTs/M0rM/Q4Uyd9dKhgJ9M6Rco183bfDV0OACGb48LC7nqhFYa1IfN58aa6"
+  },
+  "world/hut-roof.glb": {
+   "bytes": 25756,
+   "sha384": "sha384-qGAAjGYZNqbL4+qAH+8FkFMl4NXcH5xgojEBL5qDr5+IPgsHg2oSTiP2Y4M3QLZN"
+  },
+  "world/hut.glb": {
+   "bytes": 22884,
+   "sha384": "sha384-80Wy41bjpuURgA7v6bL6OEwcID07cAGET4zCI4gENFlbkXCAe1aO4a/aK1pb3gHp"
+  },
+  "world/island-grass.glb": {
+   "bytes": 14812,
+   "sha384": "sha384-KutLTGTABVge5U25vff8v13q5HRpClGshdLDfeyLVrhNZz977nEjIG/OMnv7QmGl"
+  },
+  "world/island-sand.glb": {
+   "bytes": 15672,
+   "sha384": "sha384-J0ZJt5XdS9PSmd8VMOMONarjBbtizZe7kIQ60aepFLeij6/s2ghLp0ezxEXc56ol"
+  },
+  "world/mast-ropes.glb": {
+   "bytes": 26828,
+   "sha384": "sha384-w6GYf3yZEWzcCrUjmdFPCOaN470QUy3AdKMaXqzZjeEpvyCiz7NGbHxEz/k0uZCb"
+  },
+  "world/mast.glb": {
+   "bytes": 24428,
+   "sha384": "sha384-l4H3a7dHuvVgh0/QA7R7LN7pNggnzRm+k4rj2nRpypFMC7O4nGk4lQWMHAGxZ+pK"
+  },
+  "world/palm-bend.glb": {
+   "bytes": 26356,
+   "sha384": "sha384-GO9bSHcv5lUR9xRpRti7CiKMJY5nY7H3vaodS9bR6gfsS523ZYowTL+xfZDXL4qB"
+  },
+  "world/palm-tall-bend.glb": {
+   "bytes": 32680,
+   "sha384": "sha384-f8tJkwXsNS9ueiizdpVN3lREQbVUORpLTUIMMLbQq17ap5DRltlHnQf4pMoeiuKv"
+  },
+  "world/palm-tall.glb": {
+   "bytes": 32928,
+   "sha384": "sha384-VqHpz8SMY2MnYL/aDtUzodxun4bCY7ffqU265lH2awNKNaREp7Kik9V7aLDhe9WN"
+  },
+  "world/palm.glb": {
+   "bytes": 26628,
+   "sha384": "sha384-nukb23Z+Z3jP5gopkaJdc8np+QaPjEnqmEzgnSV5SfkDytlGvvXj9Tbp866eE6ZD"
+  },
+  "world/pier-small.glb": {
+   "bytes": 20624,
+   "sha384": "sha384-xbO4X2iA3kw9/3z4Uztg13Z2lko0okG2YPuF0/FvLMb5eBRDl/IwH4rMNRk1CF29"
+  },
+  "world/pier.glb": {
+   "bytes": 21164,
+   "sha384": "sha384-N6N61wXrn3gdUabpDFNCCBb079nE2IQwT5ls/2ZMXfGFAMhZcHCrZ1UGjXEAUbgE"
+  },
+  "world/planks.glb": {
+   "bytes": 13900,
+   "sha384": "sha384-yYflhT49rQ97xgwFbgV1f14lplMGJDKG/4tDoT86MnsxgJeKGbyIY8tadvHx5Kx6"
+  },
+  "world/rocks-sand-small.glb": {
+   "bytes": 30800,
+   "sha384": "sha384-EWB531RMeIPq5arqzRWdnqopwn9GOFxFNPOamlIWrZYyl8wVWqsmGnvotooqIsuL"
+  },
+  "world/rocks-sand-tall.glb": {
+   "bytes": 33808,
+   "sha384": "sha384-jBHJocwRXQ7KnIQ+rpx84L8x8yFl6wN16RRSfTmEMgiYVVeM+Bdiv7iwhlceb/Db"
+  },
+  "world/rocks-sand.glb": {
+   "bytes": 35172,
+   "sha384": "sha384-QEBvjbMDRbgpYArrGNup0y8/IsYctOBEZHPLclGphtDhSGxNTSLmS16xBmgl59tf"
+  },
+  "world/rocks-small.glb": {
+   "bytes": 21968,
+   "sha384": "sha384-YliEPo/c+xtvlp/morzC1s7YDv4cIp8YUJld4a/gwOPptrzXQ+MHWJcwdr8wByXG"
+  },
+  "world/rocks-tall.glb": {
+   "bytes": 25016,
+   "sha384": "sha384-yKmnwaAQ4Ak0tkEod+yzq3koG7qWqK7XdbUCEWhP3KJXbO5niIaO2BgCT7wlGBjh"
+  },
+  "world/rocks.glb": {
+   "bytes": 23364,
+   "sha384": "sha384-OGBGiQaQ4qD1Jxkx4lNn4ft25L7FCndqg441kGA1Aov8zNaA7u3Fs9nqFvlt5wde"
+  },
+  "world/rowing-boat-small.glb": {
+   "bytes": 18980,
+   "sha384": "sha384-oXqtijsQ6CVwAUzKtCTBII1unX7pOR6kMoWzfbhSdwPiy4KM+t2clk5/YDa3e02W"
+  },
+  "world/rowing-boat.glb": {
+   "bytes": 18540,
+   "sha384": "sha384-B2WRetSxmMOHk0MeMsxNHoZ+JMeLZrrtnapQrOE4yfdhH+UbVdyyRuaOfz46UMB2"
+  },
+  "world/sand-patch-shells.glb": {
+   "bytes": 37860,
+   "sha384": "sha384-QM7tD5BCEwkBpeMyWiLb8F4kFkltBzo9pi1ZLtoipjinfb3WIIdm0ZIzdmhlJIkL"
+  },
+  "world/sand-patch.glb": {
+   "bytes": 15672,
+   "sha384": "sha384-oCT7LYj2hlauaG+zXo+/hj/5cWJJswAm3ZWjr7MpwiwXofbVGVOcGTYB8oZpn28s"
+  },
+  "world/ship-large.glb": {
+   "bytes": 72384,
+   "sha384": "sha384-bi+ttCfZ3T5ACBw6eszoIOXqGJS2bFi7SzA8qkZwElGYQHl1yr5ZY6mF35V0foHq"
+  },
+  "world/ship-small.glb": {
+   "bytes": 58024,
+   "sha384": "sha384-7MjQx9mso4PTBbSTG0sI7VguR2UT3pOGpSiZx7r3yDz6eC97WFf3V44cpDPKOivz"
+  },
+  "world/ship.glb": {
+   "bytes": 67764,
+   "sha384": "sha384-m6V2GivLemRMTUuM7wpMrp0GBQIB1ndUU2L1fZuKHtfShGt9Ie80ZPXcmIyn1uht"
+  },
+  "world/shipwreck.glb": {
+   "bytes": 84552,
+   "sha384": "sha384-iuWFL/7g1vVPBJ/qMlhU17iUmVoXabKkdfbVs5sD8qN21cRwSBj+jph2LQasbw4z"
+  },
+  "world/tower-base-door.glb": {
+   "bytes": 16316,
+   "sha384": "sha384-drV8NFteJCTv4ACSyUyv20GhO/rO3cmLs+dAz+1Gpo03tODDfhHUBHEI8SN3P3JU"
+  },
+  "world/tower-base.glb": {
+   "bytes": 13524,
+   "sha384": "sha384-we47nifosNoIsfaFHOBsUppChLHATX+2ooKWr0+55fhpsKu7JVJhEPF1LSz6LCBX"
+  },
+  "world/tower-lookout.glb": {
+   "bytes": 20836,
+   "sha384": "sha384-T9WlW8O3fHpKUMUgDkaqkVsKwHLaQVN33Sm1iRUSntJJHqzoLPZa5ASOspmjZri0"
+  },
+  "world/tower-middle-windows.glb": {
+   "bytes": 20684,
+   "sha384": "sha384-p9FpHejEXeD5ui3Jy305ctGI0UgzOvs+n2DVrRI+LghcmMqbkYwCd6hmalAbsnyV"
+  },
+  "world/tower-middle.glb": {
+   "bytes": 20136,
+   "sha384": "sha384-J5PVAKbUI2tYBHTyAbLnprrXGH5og3YlLLlgyQ+DqpEFu449iIJXd4wTdPhNmbaP"
+  },
+  "world/tower-roof.glb": {
+   "bytes": 16328,
+   "sha384": "sha384-LzWRxsKl8/jz3eStapzWT/j032oU14s91/9cKPwCiUHyHcWKv1LfXNeNpQ0B5PrY"
+  },
+  "world/tower-small.glb": {
+   "bytes": 36252,
+   "sha384": "sha384-AwLJgFXb7/+zUk/mPZw7hl9NTpdfFhv9wIHSkKCVDg28TohGwTM2CvWEaownRi2Q"
+  },
+  "world/tower-top.glb": {
+   "bytes": 23912,
+   "sha384": "sha384-oEgf5J2yTIKwois5/BSLKMR8q5GNepb0iaO2p2rp8HUOK3kAAbOnFQRzsw9jEnaz"
+  },
+  "world/tower.glb": {
+   "bytes": 34832,
+   "sha384": "sha384-zo6l2mGCWz8IDEs71vQG/GXiw4Qjm6OhG3PZLceQ/WCmqq7oR0Avj2XoUl79lBrw"
+  }
+ },
+ "firstLoadBytes": 2998640
+}

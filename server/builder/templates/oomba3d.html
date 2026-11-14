@@ -166,6 +166,8 @@ async function plaza(x, z, n) {
   return Promise.all(tiles);
 }
 
+// The sea's height (a world may give its own in LAYOUT.seaY), and how far a hero falls before coming back.
+const SEA_Y = LAYOUT.seaY ?? -5, FALL_Y = LAYOUT.seaY == null ? -7 : LAYOUT.seaY - 2.5;
 let goalTiles = [];
 async function buildWorld() {
   const [gw, , gd] = sizeOf(LAYOUT.ground.piece, LAYOUT.ground.scale), n = LAYOUT.plaza;
@@ -178,7 +180,7 @@ async function buildWorld() {
     const s = scenery[k % scenery.length], x = (k % 2 ? 1 : -1) * (Math.max(sw, pw * 1.5) / 2 + dw / 2 + 2.5 + far); k++;
     jobs.push(stand(LAYOUT.side.piece, x, z, LAYOUT.side.scale, -0.4).then(() => put(s.piece, x, z, s.scale, (k % 4) * 0.5, -0.4)));
   };
-  if (LAYOUT.sea) W.water({ y: -5, color: LAYOUT.sea });
+  if (LAYOUT.sea) W.water({ y: SEA_Y, color: LAYOUT.sea });
 
   // The start: a place to stand, with two pieces of scenery at its far corners.
   jobs.push(plaza(0, 0, n));
@@ -218,6 +220,11 @@ async function buildWorld() {
   jobs.push(stand(LAYOUT.ground.piece, 0, z - half - gd / 2, LAYOUT.ground.scale, -0.2).then(() => put(LAYOUT.landmark.piece, 0, z - half - Math.max(gd, ld) / 2, LAYOUT.landmark.scale, 0, -0.2)));
   side(z + half * 0.5, 1); side(z - half * 0.5, 1);
   spots.goal = [0, 0.2, z];
+  // Ships and boats (LAYOUT.afloat, in a world with a sea): out on the water on both sides, along the whole way.
+  (LAYOUT.afloat || []).forEach((s, i, all) => {
+    const x = (i % 2 ? 1 : -1) * (15 + sizeOf(s.piece, s.scale)[0] / 2 + (i % 3) * 3);
+    jobs.push(put(s.piece, x, (z - half) * (i + 0.6) / all.length, s.scale, (i % 2 ? -1 : 1) * (0.5 + (i % 3) * 0.4), SEA_Y - 0.45 * s.scale));
+  });
   await Promise.all(jobs);
 }
 
@@ -228,7 +235,7 @@ function answerPad(gate, solid, answer, x, z) {
   c.fillStyle = '#FFFDF2'; c.strokeStyle = '#141414'; c.lineWidth = 14; c.beginPath(); c.arc(128, 128, 112, 0, Math.PI * 2); c.fill(); c.stroke();
   c.fillStyle = '#141414'; c.font = `900 ${label.length > 5 ? 52 : label.length > 3 ? 72 : 120}px system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(label, 128, 136);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false, transparent: true }));
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false, transparent: true, alphaTest: 0.5 }));
   const baseY = solid.top() + 3.4; sprite.scale.set(2.4, 2.4, 1); sprite.position.set(x, baseY, z); g.scene.add(sprite);
   const bob = gate.pads.length;
   // An answer shows once its question is the one being asked (later questions wait their turn).
@@ -277,7 +284,7 @@ g.coins(spots.coins, { value: CONFIG.coinValue, onCollect: c => { taken.push(c);
 g.camera.position.set(0, 3.6, 10.5); g.camera.lookAt(0, 3.6, -6);
 // A kind fall: back to the last safe place passed, never to the very start.
 g.onUpdate(() => {
-  if (!me || scene !== 'play' || me.position.y > -7) return;
+  if (!me || scene !== 'play' || me.position.y > FALL_Y) return;
   const back = spots.checkpoints.filter(c => c[2] >= me.position.z - 3).pop() || spots.checkpoints[0];
   me.position.set(...back); g.sound('fall'); g.toast(say('fell'));
 });

@@ -1,0 +1,1173 @@
+{
+ "id": "pirate-cove",
+ "name": "Pirate Cove",
+ "description": "A sunny cove to explore: sandy islands, palm trees, docks, a harbour fort and sailing ships, with treasure to find and share.",
+ "goodFor": [
+  "maths",
+  "geography",
+  "treasure maps",
+  "adventures"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-pirate",
+   "name": "Kenney Pirate Kit 2.1",
+   "author": "Kenney",
+   "url": "https://kenney.nl/assets/pirate-kit",
+   "commit": "1d1dbb18a46bc9e8cdfc181ed83b88b095cdd173",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-pirate.txt",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "look": {
+  "sky": {
+   "top": "#3fa9f5",
+   "middle": "#a9ddff",
+   "bottom": "#fff3cf"
+  },
+  "fog": {
+   "color": "#c8e9ff",
+   "near": 90,
+   "far": 280
+  },
+  "hemisphere": {
+   "sky": "#f3fbff",
+   "ground": "#c9b98a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#fff2cf",
+   "intensity": 2.7
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "water": {
+   "y": -1.5,
+   "color": "#0077c8"
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise. The sea is g.world.water({ y: -1.5 }): islands and docks stand in it with their tops at 0.",
+ "heroes": [
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "pieces": [
+  {
+   "id": "island-sand",
+   "file": "world/island-sand.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "island",
+    "sand",
+    "platform"
+   ],
+   "size": [
+    10.06,
+    3.9,
+    7.85
+   ],
+   "pack": "kenney-pirate",
+   "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+  },
+  {
+   "id": "island-grass",
+   "file": "world/island-grass.glb",
+   "kind": "world",
+   "tags": [
+    "island",
+    "grass",
+    "platform"
+   ],
+   "size": [
+    6.85,
+    3.9,
+    5.35
+   ],
+   "pack": "kenney-pirate",
+   "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+  },
+  {
+   "id": "dock",
+   "file": "world/dock.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    1.71,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "A square of dock on posts: tile them for a pier."
+  },
+  {
+   "id": "dock-small",
+   "file": "world/dock-small.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.47,
+    1.71,
+    3.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "pier",
+   "file": "world/pier.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    1.21,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "Like dock, without the mooring posts."
+  },
+  {
+   "id": "pier-small",
+   "file": "world/pier-small.glb",
+   "kind": "world",
+   "tags": [
+    "dock",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.47,
+    1.17,
+    3.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "deck",
+   "file": "world/deck.glb",
+   "kind": "world",
+   "tags": [
+    "planks",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.25,
+    0.3,
+    3.27
+   ],
+   "pack": "kenney-pirate",
+   "note": "A flat square of planks: a raft, a ship deck to stand on, an answer pad."
+  },
+  {
+   "id": "planks",
+   "file": "world/planks.glb",
+   "kind": "world",
+   "tags": [
+    "planks",
+    "platform",
+    "step"
+   ],
+   "size": [
+    2.46,
+    0.56,
+    3.51
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "sand-patch",
+   "file": "world/sand-patch.glb",
+   "kind": "decor",
+   "tags": [
+    "sand",
+    "patch"
+   ],
+   "size": [
+    10.06,
+    0.33,
+    7.85
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "sand-patch-shells",
+   "file": "world/sand-patch-shells.glb",
+   "kind": "decor",
+   "tags": [
+    "sand",
+    "patch"
+   ],
+   "size": [
+    10.06,
+    0.73,
+    7.85
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-patch",
+   "file": "world/grass-patch.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "patch"
+   ],
+   "size": [
+    6.85,
+    0.32,
+    5.35
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-patch-plants",
+   "file": "world/grass-patch-plants.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "patch"
+   ],
+   "size": [
+    6.85,
+    0.73,
+    5.35
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower",
+   "file": "world/tower.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "building"
+   ],
+   "size": [
+    4.72,
+    13.29,
+    4.72
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-small",
+   "file": "world/tower-small.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "building"
+   ],
+   "size": [
+    4.36,
+    8.82,
+    4.75
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-base",
+   "file": "world/tower-base.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    4.11,
+    2.6,
+    4.11
+   ],
+   "pack": "kenney-pirate",
+   "note": "Tower parts stack: base, middle, then top, roof or lookout."
+  },
+  {
+   "id": "tower-base-door",
+   "file": "world/tower-base-door.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "door"
+   ],
+   "size": [
+    4.11,
+    2.6,
+    4.63
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-middle",
+   "file": "world/tower-middle.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    3.97,
+    2.6,
+    3.97
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-middle-windows",
+   "file": "world/tower-middle-windows.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "window"
+   ],
+   "size": [
+    3.68,
+    2.6,
+    3.99
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-top",
+   "file": "world/tower-top.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part"
+   ],
+   "size": [
+    4.36,
+    3.62,
+    4.36
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-roof",
+   "file": "world/tower-roof.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "roof"
+   ],
+   "size": [
+    4.72,
+    4.47,
+    4.72
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "tower-lookout",
+   "file": "world/tower-lookout.glb",
+   "kind": "world",
+   "tags": [
+    "tower",
+    "fort",
+    "part",
+    "lookout"
+   ],
+   "size": [
+    3.96,
+    3.62,
+    3.96
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-wall",
+   "file": "world/fort-wall.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    3.64
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-gate",
+   "file": "world/fort-gate.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "gate"
+   ],
+   "size": [
+    5.2,
+    5.72,
+    4.68
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-door",
+   "file": "world/fort-door.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "door"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    4.16
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "fort-window",
+   "file": "world/fort-window.glb",
+   "kind": "world",
+   "tags": [
+    "wall",
+    "fort",
+    "window"
+   ],
+   "size": [
+    2.6,
+    5.72,
+    3.64
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut",
+   "file": "world/hut.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "building"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-fence",
+   "file": "world/hut-fence.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "fence"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-fence-sides",
+   "file": "world/hut-fence-sides.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "fence"
+   ],
+   "size": [
+    3.25,
+    2.86,
+    3.25
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "hut-roof",
+   "file": "world/hut-roof.glb",
+   "kind": "world",
+   "tags": [
+    "hut",
+    "shelter",
+    "roof",
+    "building"
+   ],
+   "size": [
+    4.01,
+    4.42,
+    4.2
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "ship",
+   "file": "world/ship.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    13.78
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "ship-large",
+   "file": "world/ship-large.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    17.03
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "ship-small",
+   "file": "world/ship-small.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "sailing",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    11.44
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "shipwreck",
+   "file": "world/shipwreck.glb",
+   "kind": "world",
+   "tags": [
+    "ship",
+    "wreck",
+    "afloat"
+   ],
+   "size": [
+    6.24,
+    12.95,
+    13.78
+   ],
+   "pack": "kenney-pirate",
+   "note": "An old wreck with plants growing on it: on a beach, or half in the sea."
+  },
+  {
+   "id": "rowing-boat",
+   "file": "world/rowing-boat.glb",
+   "kind": "world",
+   "tags": [
+    "boat",
+    "rowing",
+    "afloat"
+   ],
+   "size": [
+    3.57,
+    1.1,
+    3.71
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "rowing-boat-small",
+   "file": "world/rowing-boat-small.glb",
+   "kind": "world",
+   "tags": [
+    "boat",
+    "rowing",
+    "afloat"
+   ],
+   "size": [
+    3.57,
+    1.1,
+    3.08
+   ],
+   "pack": "kenney-pirate",
+   "note": "Floats: put it on the sea, its y about 0.5 below the water."
+  },
+  {
+   "id": "mast",
+   "file": "world/mast.glb",
+   "kind": "world",
+   "tags": [
+    "mast",
+    "ship"
+   ],
+   "size": [
+    5.7,
+    10.22,
+    2.26
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "mast-ropes",
+   "file": "world/mast-ropes.glb",
+   "kind": "world",
+   "tags": [
+    "mast",
+    "ship",
+    "ropes"
+   ],
+   "size": [
+    5.7,
+    10.25,
+    3.05
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm",
+   "file": "world/palm.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.24,
+    5.48,
+    3.24
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-bend",
+   "file": "world/palm-bend.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    5.53,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-tall",
+   "file": "world/palm-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.18,
+    5.48,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "palm-tall-bend",
+   "file": "world/palm-tall-bend.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    5.53,
+    4.18
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks",
+   "file": "world/rocks.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    6.65,
+    3.77,
+    5.7
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-tall",
+   "file": "world/rocks-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    5.77,
+    4.75,
+    6.12
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-small",
+   "file": "world/rocks-small.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks"
+   ],
+   "size": [
+    4.74,
+    2.99,
+    4.77
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand",
+   "file": "world/rocks-sand.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    6.65,
+    4.18,
+    5.7
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand-tall",
+   "file": "world/rocks-sand-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    5.69,
+    4.83,
+    6.12
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "rocks-sand-small",
+   "file": "world/rocks-sand-small.glb",
+   "kind": "decor",
+   "tags": [
+    "rocks",
+    "sand"
+   ],
+   "size": [
+    4.82,
+    3.4,
+    4.84
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass",
+   "file": "world/grass.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    0.67,
+    0.41,
+    0.71
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-plant",
+   "file": "world/grass-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.45,
+    0.68,
+    1.61
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "grass-tuft",
+   "file": "world/grass-tuft.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.71,
+    0.61,
+    1.65
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "chest",
+   "file": "props/chest.glb",
+   "kind": "prop",
+   "tags": [
+    "goal",
+    "treasure",
+    "chest"
+   ],
+   "size": [
+    1.27,
+    1.15,
+    1.28
+   ],
+   "pack": "kenney-pirate",
+   "note": "The treasure to find. It is shut in this version (its lid opens in a later Oomba3D)."
+  },
+  {
+   "id": "barrel",
+   "file": "props/barrel.glb",
+   "kind": "prop",
+   "tags": [
+    "barrel",
+    "cargo"
+   ],
+   "size": [
+    1.34,
+    1.23,
+    1.34
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "crate",
+   "file": "props/crate.glb",
+   "kind": "prop",
+   "tags": [
+    "crate",
+    "cargo"
+   ],
+   "size": [
+    1.08,
+    0.77,
+    1.31
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "dig-spot",
+   "file": "props/dig-spot.glb",
+   "kind": "prop",
+   "tags": [
+    "treasure",
+    "dig",
+    "sand"
+   ],
+   "size": [
+    3.72,
+    0.46,
+    3.52
+   ],
+   "pack": "kenney-pirate",
+   "note": "A hole dug in the sand: X marks the spot."
+  },
+  {
+   "id": "shovel",
+   "file": "props/shovel.glb",
+   "kind": "prop",
+   "tags": [
+    "tool",
+    "dig"
+   ],
+   "size": [
+    0.86,
+    3.05,
+    0.37
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "paddle",
+   "file": "props/paddle.glb",
+   "kind": "prop",
+   "tags": [
+    "tool",
+    "boat"
+   ],
+   "size": [
+    0.86,
+    3.05,
+    0.27
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag",
+   "file": "props/flag.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    1.74,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-pennant",
+   "file": "props/flag-pennant.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    2.29,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-high",
+   "file": "props/flag-high.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    1.74,
+    4.68,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-high-pennant",
+   "file": "props/flag-high-pennant.glb",
+   "kind": "prop",
+   "tags": [
+    "flag",
+    "checkpoint"
+   ],
+   "size": [
+    2.29,
+    4.68,
+    0.52
+   ],
+   "pack": "kenney-pirate"
+  },
+  {
+   "id": "flag-black",
+   "file": "props/flag-black.glb",
+   "kind": "prop",
+   "tags": [
+    "flag"
+   ],
+   "size": [
+    1.74,
+    2.73,
+    0.52
+   ],
+   "pack": "kenney-pirate",
+   "note": "A plain black flag (no picture on it)."
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ]
+}

@@ -67,7 +67,8 @@ test('the catalogue says exactly what kit2/SHIPPED.json and the theme manifests 
   const shipped = {};
   for (const tv of Object.keys(V.KIT2_LOCK.themes)) { const [t, v] = tv.split('/'); (shipped[t] = shipped[t] || []).push(v); }
   assert.deepEqual(Object.keys(CAT.KIT2_VERSIONS).sort(), Object.keys(shipped).sort(), 'every shipped theme, and only those');
-  assert.ok(CAT.KIT2_WORLDS.length >= 8);
+  assert.ok(CAT.KIT2_WORLDS.length >= 9);
+  assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'pirate-cove' && w.version === '1.0.0'), 'Pirate Cove is offered');
   for (const w of CAT.KIT2_WORLDS) {
     assert.deepEqual([...CAT.KIT2_VERSIONS[w.id]].sort(), [...shipped[w.id]].sort(), `${w.id}: every shipped version`);
     const newest = CAT.KIT2_VERSIONS[w.id].at(-1);
@@ -130,6 +131,11 @@ test('engine choice: a new game uses Kit 2 when a world is picked, named or plai
     ['a maths quiz in a medieval village', 'medieval-village'],
     ['space-base', 'space-base'],
     ['a 3D game with a skeleton', 'castle-quest', 'skelly'], ['a 3D wizard adventure', 'sky-islands', 'mage'],
+    // Pirate Cove: pirates, treasure islands, ships and docks
+    ['a pirate treasure game', 'pirate-cove'], ['a treasure island adventure', 'pirate-cove'], ['a maths game on a ship', 'pirate-cove'],
+    ['count the barrels at the docks', 'pirate-cove'], ['find the pirate treasure chest', 'pirate-cove'], ['a treasure map game with a wizard', 'pirate-cove', 'mage'],
+    ['island hopping to share the treasure', 'pirate-cove'], ['Make it a 3D game in the Pirate Cove world.', 'pirate-cove'], ['a 3D pirate game', 'pirate-cove'],
+    ['a pirate game in Castle Quest', 'castle-quest', 'captain-clank'], ['a game on a space ship', 'space-base'],
   ]) {
     const p = want(text);
     assert.ok(p, `Kit 2: ${text}`); assert.equal(p.world, world, text);
@@ -143,7 +149,13 @@ test('engine choice: everything else stays on the old kit, as before', () => {
     'hi', 'a catching game about sharks', 'a wizard quiz', 'a knight memory game', 'make a 3D game with a fox', 'a quiz about space', 'a racing game with cars',
     'make a memory game about castles', 'a board game in a haunted house', 'two players on one phone in a castle', 'a 2D game on the moon',
     'Use the Space theme.', 'Use the Castle theme.', 'Utilise le thème Château (castle).', 'a spelling game in the kitchen', 'catch the falling pumpkins',
+    'a pirate memory game', 'a 2D pirate game', 'catch the falling treasure', 'Use the Pirate theme.', 'a treasure quiz',
   ]) assert.equal(want(text), null, `old kit: ${text}`);
+  // "pirate" is a place (Pirate Cove), which has no Captain Clank: nobody is reported missing, the Explorer plays
+  const cove = want('a pirate treasure game');
+  assert.deepEqual([cove.world, cove.hero, cove.by, cove.missing], ['pirate-cove', 'barbarian', 'place', undefined]);
+  assert.doesNotMatch(K.kit2Note(cove), /has no/);
+  assert.equal(want('a pirate game with Captain Clank').missing, 'captain-clank', 'asked for by name, he is missed kindly');
   // a character named in words is only a Kit 2 character inside a Kit 2 build
   assert.equal(want('make the hero a wizard', { html: '<title>x</title><script src="/vendor/oomba-kit/1.2.0/oomba-kit.js"></script>' }), null);
 });
@@ -410,6 +422,25 @@ test('mock: "a dinosaur game on the moon" builds a Kit 2 game in Space Base, and
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
 
+test('mock: "a pirate treasure game" builds a Kit 2 game in Pirate Cove', async () => {
+  const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
+  let t = await turn(u, g.id, 'a pirate treasure game');
+  assert.equal(t.of('version').length, 1, 'built straight away'); assert.equal(t.of('version')[0].status, 'pass');
+  let v = current(g.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'pirate-cove', version: '1.0.0', hero: 'barbarian' });
+  assert.ok(v.html.includes(V.kit2ImportMap()) && !usesKit(v.html));
+  assert.equal(games.getGame(g.id).title, 'Pirate Cove');
+  assert.match(t.text, /Pirate Cove world with Explorer as the hero/); assert.doesNotMatch(t.text, /has no|Captain Clank/);
+  assert.match(v.html, /seaY: -1\.5,/); assert.match(v.html, /afloat: \[\{ piece: "ship-large"/);
+  assert.equal(scanVersion(v.html).status, 'pass'); assert.deepEqual(scanVersion(v.html).lint, []);
+  // nothing a cove game is made of is a weapon, a bottle or a skull, and no words about fighting or buying
+  assert.doesNotMatch(v.html, /cannon|bottle|skull|ghost|enemy|enemies|fight|sword|\bbuy\b|\bsell\b|price/i);
+  t = await turn(u, g.id, 'change the hero to the wizard');
+  v = current(g.id);
+  assert.equal(k2Read(v.html, 'hero'), 'mage'); assert.equal(K.kit2Of(v.html).world, 'pirate-cove');
+  for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
+});
+
 test('mock: the chips build the picked world with the picked hero', async () => {
   const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
   const t = await turn(u, g.id, 'Make it a 3D game in the Spooky Hollow world.\nUse the 3D hero Captain Clank.');
@@ -594,7 +625,7 @@ async function openGame(html, { width = 960, height = 600, touch = false, lang =
 
 // At least two worlds and three characters (the brief asks for an animal and a dinosaur among them: none has shipped,
 // see the test above; an adventurer, a wizard and two skeleton pals are played instead). Each plays a whole round.
-const PLAYS = [['sky-islands', 'knight'], ['castle-quest', 'skelly'], ['space-base', 'mage'], ['busy-kitchen', 'captain-clank']];
+const PLAYS = [['sky-islands', 'knight'], ['castle-quest', 'skelly'], ['space-base', 'mage'], ['busy-kitchen', 'captain-clank'], ['pirate-cove', 'barbarian'], ['pirate-cove', 'mage']];
 for (const [world, hero] of PLAYS) {
   test(`${world} with ${hero}: the starter loads and plays a whole round in the production frame`, { skip, timeout: 420_000 }, async () => {
     const w = K.worldById(world);

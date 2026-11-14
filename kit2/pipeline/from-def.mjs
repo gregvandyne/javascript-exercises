@@ -8,6 +8,9 @@
 // (scale, anims, brighten, inkNormals, meshopt …) }; "moves" in the catalogue is the list of clips kept. pace (how fast
 // the ground passes under a standing foot in walk and run, units a second) and jumpAir (the part of the jump clip, 0 to
 // 1, in which the animal is off the ground) are measured from the built file and let Oomba3D keep feet from sliding.
+// Packs converted from FBX (kit2/packs/, docs/kit2-packs-plan.md) may carry "steps": the pack-steps.mjs fields every
+// model from that pack is built with (scale, matte, textures, inkNormals…), and a piece may add its own as a 7th
+// field: [id, file, kind, tags, note, pack, { stretch: [1, 6, 1] }]. A definition that names neither builds as before.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -28,14 +31,14 @@ const heroes = def.heroes.map(h => {
 });
 if (def.moves.from.startsWith('theme:')) recipe.copy.push({ from: def.moves.from, to: 'heroes/moves.glb' });
 else recipe.models.push({ from: def.moves.from, to: 'heroes/moves.glb', animsOnly: true, keepAnims: Object.values(def.moves.clips) });
-const pieces = def.pieces.map(([id, from, kind, tags, note, packId]) => {
+const pieces = def.pieces.map(([id, from, kind, tags, note, packId, steps]) => {
   const to = `${folder[kind] || 'world'}/${id}.glb`;
   if (inBase(to)) { recipe.copy.push({ from: `theme:${def.base}/${to}`, to }); const was = base.pieces.find(p => p.id === id && p.file === to); if (was) return was; }
-  else recipe.models.push({ from, to });
   const m = sizes[to];
   // A piece from a built theme names its pack in a 6th field: [id, 'theme:<theme>/<v>/<file>', kind, tags, note, pack].
   const pack = def.packs.find(p => (p.dir && from.startsWith(p.dir)) || (packId && p.id === packId));
   if (!pack) throw new Error(`${id}: no pack has a dir that ${from} starts with (a piece from a built theme names its pack as the 6th field)`);
+  if (!inBase(to)) recipe.models.push({ from, to, ...(from.startsWith('theme:') ? {} : pack.steps || {}), ...(steps || {}) });
   return { id, file: to, kind, tags, ...(m ? { size: m.size } : {}), pack: pack.id, ...(m && Math.abs(m.minY) > 0.05 ? { note: `${note ? note + ' ' : ''}Its base is ${m.minY} below its y.` } : note ? { note } : {}) };
 });
 const creatures = (def.creatures || []).map(({ id, name, from, pack, kind = 'land', playable = false, size, pace, jumpAir, ...steps }) => {
@@ -47,6 +50,6 @@ const creatures = (def.creatures || []).map(({ id, name, from, pack, kind = 'lan
 const sounds = def.sounds.map(([id, from]) => { const to = `sounds/${id}.ogg`; recipe.copy.push({ from: inBase(to) ? `theme:${def.base}/${to}` : from, to }); return { id, file: `sounds/${id}.ogg`, pack: def.soundPack }; });
 fs.writeFileSync(path.join(dir, 'recipe.json'), JSON.stringify(recipe, null, 1) + '\n');
 const { pieces: _p, heroes: _h, sounds: _s, creatures: _c, base: _b, moves, soundPack, ...head } = def;
-head.packs = def.packs.map(({ dir, ...p }) => p);
+head.packs = def.packs.map(({ dir, steps, ...p }) => p);
 fs.writeFileSync(path.join(dir, 'theme.src.json'), JSON.stringify({ ...head, heroes, moves: { file: 'heroes/moves.glb', pack: moves.pack, clips: moves.clips }, ...(creatures.length ? { creatures } : {}), pieces, sounds }, null, 1) + '\n');
 console.log(`${def.id}: ${heroes.length} heroes, ${creatures.length} creatures, ${pieces.length} pieces, ${sounds.length} sounds${sizesFile ? ' (sized)' : ''}`);
