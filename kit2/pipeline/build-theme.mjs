@@ -12,9 +12,10 @@ import { prune, dedup, resample, quantize, weld, reorder, unpartition, getBounds
 import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import { packSteps } from './pack-steps.mjs';
 
-const [recipeFile, packsDir, outDir, sizesFile] = process.argv.slice(2);   // sizesFile: optional, gets each model's measured size
+const [recipeFile, packsDir, outDir, sizesFile, texturesDir] = process.argv.slice(2);   // sizesFile: optional, gets each model's measured size; texturesDir: optional, where a recipe's "textures" pictures are (the uploaded packs)
 const measured = {};
 const recipe = JSON.parse(fs.readFileSync(recipeFile, 'utf8'));
+if (texturesDir) recipe.texturesDir = path.resolve(texturesDir);
 await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
 fs.mkdirSync(outDir, { recursive: true });

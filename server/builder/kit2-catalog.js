@@ -4,7 +4,7 @@
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
 // name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
 // reference the Builder reads.
-export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"]};
+export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"],"pirate-cove":["1.0.0"]};
 export const KIT2_WORLDS = [
  {
   "id": "sky-islands",
@@ -4282,6 +4282,926 @@ export const KIT2_WORLDS = [
      "goal",
      "answer"
     ]
+   }
+  ],
+  "sounds": [
+   "jump",
+   "land",
+   "coin",
+   "fall",
+   "break",
+   "walk"
+  ],
+  "moves": [
+   "idle",
+   "ready",
+   "walk",
+   "run",
+   "jumpStart",
+   "jumpAir",
+   "jumpLand",
+   "jump",
+   "cheer",
+   "wave",
+   "pickUp",
+   "use",
+   "bump",
+   "sit",
+   "cast"
+  ]
+ },
+ {
+  "id": "pirate-cove",
+  "version": "1.0.0",
+  "name": "Pirate Cove",
+  "description": "A sunny cove to explore: sandy islands, palm trees, docks, a harbour fort and sailing ships, with treasure to find and share.",
+  "goodFor": [
+   "maths",
+   "geography",
+   "treasure maps",
+   "adventures"
+  ],
+  "engine": "three",
+  "heroes": [
+   {
+    "id": "barbarian",
+    "name": "Explorer"
+   },
+   {
+    "id": "knight",
+    "name": "Knight"
+   },
+   {
+    "id": "mage",
+    "name": "Wizard"
+   },
+   {
+    "id": "rogue",
+    "name": "Ranger"
+   },
+   {
+    "id": "rogue-hooded",
+    "name": "Hooded Ranger"
+   }
+  ],
+  "creatures": [],
+  "pieces": [
+   {
+    "id": "island-sand",
+    "kind": "world",
+    "size": [
+     10.1,
+     3.9,
+     7.9
+    ],
+    "tags": [
+     "ground",
+     "island",
+     "sand",
+     "platform"
+    ],
+    "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+   },
+   {
+    "id": "island-grass",
+    "kind": "world",
+    "size": [
+     6.9,
+     3.9,
+     5.4
+    ],
+    "tags": [
+     "island",
+     "grass",
+     "platform"
+    ],
+    "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+   },
+   {
+    "id": "dock",
+    "kind": "world",
+    "size": [
+     3.3,
+     1.7,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ],
+    "note": "A square of dock on posts: tile them for a pier."
+   },
+   {
+    "id": "dock-small",
+    "kind": "world",
+    "size": [
+     2.5,
+     1.7,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "pier",
+    "kind": "world",
+    "size": [
+     3.3,
+     1.2,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ],
+    "note": "Like dock, without the mooring posts."
+   },
+   {
+    "id": "pier-small",
+    "kind": "world",
+    "size": [
+     2.5,
+     1.2,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "deck",
+    "kind": "world",
+    "size": [
+     3.3,
+     0.3,
+     3.3
+    ],
+    "tags": [
+     "planks",
+     "platform",
+     "step"
+    ],
+    "note": "A flat square of planks: a raft, a ship deck to stand on, an answer pad."
+   },
+   {
+    "id": "planks",
+    "kind": "world",
+    "size": [
+     2.5,
+     0.6,
+     3.5
+    ],
+    "tags": [
+     "planks",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "sand-patch",
+    "kind": "decor",
+    "size": [
+     10.1,
+     0.3,
+     7.9
+    ],
+    "tags": [
+     "sand",
+     "patch"
+    ]
+   },
+   {
+    "id": "sand-patch-shells",
+    "kind": "decor",
+    "size": [
+     10.1,
+     0.7,
+     7.9
+    ],
+    "tags": [
+     "sand",
+     "patch"
+    ]
+   },
+   {
+    "id": "grass-patch",
+    "kind": "decor",
+    "size": [
+     6.9,
+     0.3,
+     5.4
+    ],
+    "tags": [
+     "grass",
+     "patch"
+    ]
+   },
+   {
+    "id": "grass-patch-plants",
+    "kind": "decor",
+    "size": [
+     6.9,
+     0.7,
+     5.4
+    ],
+    "tags": [
+     "grass",
+     "patch"
+    ]
+   },
+   {
+    "id": "tower",
+    "kind": "world",
+    "size": [
+     4.7,
+     13.3,
+     4.7
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "building"
+    ]
+   },
+   {
+    "id": "tower-small",
+    "kind": "world",
+    "size": [
+     4.4,
+     8.8,
+     4.8
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "building"
+    ]
+   },
+   {
+    "id": "tower-base",
+    "kind": "world",
+    "size": [
+     4.1,
+     2.6,
+     4.1
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ],
+    "note": "Tower parts stack: base, middle, then top, roof or lookout."
+   },
+   {
+    "id": "tower-base-door",
+    "kind": "world",
+    "size": [
+     4.1,
+     2.6,
+     4.6
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "door"
+    ]
+   },
+   {
+    "id": "tower-middle",
+    "kind": "world",
+    "size": [
+     4,
+     2.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ]
+   },
+   {
+    "id": "tower-middle-windows",
+    "kind": "world",
+    "size": [
+     3.7,
+     2.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "window"
+    ]
+   },
+   {
+    "id": "tower-top",
+    "kind": "world",
+    "size": [
+     4.4,
+     3.6,
+     4.4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ]
+   },
+   {
+    "id": "tower-roof",
+    "kind": "world",
+    "size": [
+     4.7,
+     4.5,
+     4.7
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "roof"
+    ]
+   },
+   {
+    "id": "tower-lookout",
+    "kind": "world",
+    "size": [
+     4,
+     3.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "lookout"
+    ]
+   },
+   {
+    "id": "fort-wall",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     3.6
+    ],
+    "tags": [
+     "wall",
+     "fort"
+    ]
+   },
+   {
+    "id": "fort-gate",
+    "kind": "world",
+    "size": [
+     5.2,
+     5.7,
+     4.7
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "gate"
+    ]
+   },
+   {
+    "id": "fort-door",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     4.2
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "door"
+    ]
+   },
+   {
+    "id": "fort-window",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     3.6
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "window"
+    ]
+   },
+   {
+    "id": "hut",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "building"
+    ]
+   },
+   {
+    "id": "hut-fence",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "fence"
+    ]
+   },
+   {
+    "id": "hut-fence-sides",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "fence"
+    ]
+   },
+   {
+    "id": "hut-roof",
+    "kind": "world",
+    "size": [
+     4,
+     4.4,
+     4.2
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "roof",
+     "building"
+    ]
+   },
+   {
+    "id": "ship",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     13.8
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "ship-large",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     17
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "ship-small",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     11.4
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "shipwreck",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     13.8
+    ],
+    "tags": [
+     "ship",
+     "wreck",
+     "afloat"
+    ],
+    "note": "An old wreck with plants growing on it: on a beach, or half in the sea."
+   },
+   {
+    "id": "rowing-boat",
+    "kind": "world",
+    "size": [
+     3.6,
+     1.1,
+     3.7
+    ],
+    "tags": [
+     "boat",
+     "rowing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "rowing-boat-small",
+    "kind": "world",
+    "size": [
+     3.6,
+     1.1,
+     3.1
+    ],
+    "tags": [
+     "boat",
+     "rowing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "mast",
+    "kind": "world",
+    "size": [
+     5.7,
+     10.2,
+     2.3
+    ],
+    "tags": [
+     "mast",
+     "ship"
+    ]
+   },
+   {
+    "id": "mast-ropes",
+    "kind": "world",
+    "size": [
+     5.7,
+     10.3,
+     3.1
+    ],
+    "tags": [
+     "mast",
+     "ship",
+     "ropes"
+    ]
+   },
+   {
+    "id": "palm",
+    "kind": "decor",
+    "size": [
+     3.2,
+     5.5,
+     3.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-bend",
+    "kind": "decor",
+    "size": [
+     3.7,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-tall",
+    "kind": "decor",
+    "size": [
+     4.2,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-tall-bend",
+    "kind": "decor",
+    "size": [
+     3.7,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "rocks",
+    "kind": "decor",
+    "size": [
+     6.7,
+     3.8,
+     5.7
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-tall",
+    "kind": "decor",
+    "size": [
+     5.8,
+     4.8,
+     6.1
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-small",
+    "kind": "decor",
+    "size": [
+     4.7,
+     3,
+     4.8
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-sand",
+    "kind": "decor",
+    "size": [
+     6.7,
+     4.2,
+     5.7
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "rocks-sand-tall",
+    "kind": "decor",
+    "size": [
+     5.7,
+     4.8,
+     6.1
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "rocks-sand-small",
+    "kind": "decor",
+    "size": [
+     4.8,
+     3.4,
+     4.8
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "grass",
+    "kind": "decor",
+    "size": [
+     0.7,
+     0.4,
+     0.7
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "grass-plant",
+    "kind": "decor",
+    "size": [
+     1.5,
+     0.7,
+     1.6
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "grass-tuft",
+    "kind": "decor",
+    "size": [
+     1.7,
+     0.6,
+     1.7
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "chest",
+    "kind": "prop",
+    "size": [
+     1.3,
+     1.2,
+     1.3
+    ],
+    "tags": [
+     "goal",
+     "treasure",
+     "chest"
+    ],
+    "note": "The treasure to find. It is shut in this version (its lid opens in a later Oomba3D)."
+   },
+   {
+    "id": "barrel",
+    "kind": "prop",
+    "size": [
+     1.3,
+     1.2,
+     1.3
+    ],
+    "tags": [
+     "barrel",
+     "cargo"
+    ]
+   },
+   {
+    "id": "crate",
+    "kind": "prop",
+    "size": [
+     1.1,
+     0.8,
+     1.3
+    ],
+    "tags": [
+     "crate",
+     "cargo"
+    ]
+   },
+   {
+    "id": "dig-spot",
+    "kind": "prop",
+    "size": [
+     3.7,
+     0.5,
+     3.5
+    ],
+    "tags": [
+     "treasure",
+     "dig",
+     "sand"
+    ],
+    "note": "A hole dug in the sand: X marks the spot."
+   },
+   {
+    "id": "shovel",
+    "kind": "prop",
+    "size": [
+     0.9,
+     3.1,
+     0.4
+    ],
+    "tags": [
+     "tool",
+     "dig"
+    ]
+   },
+   {
+    "id": "paddle",
+    "kind": "prop",
+    "size": [
+     0.9,
+     3.1,
+     0.3
+    ],
+    "tags": [
+     "tool",
+     "boat"
+    ]
+   },
+   {
+    "id": "flag",
+    "kind": "prop",
+    "size": [
+     1.7,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-pennant",
+    "kind": "prop",
+    "size": [
+     2.3,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-high",
+    "kind": "prop",
+    "size": [
+     1.7,
+     4.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-high-pennant",
+    "kind": "prop",
+    "size": [
+     2.3,
+     4.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-black",
+    "kind": "prop",
+    "size": [
+     1.7,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag"
+    ],
+    "note": "A plain black flag (no picture on it)."
+   },
+   {
+    "id": "coin",
+    "kind": "prop",
+    "size": [
+     0.4,
+     0.1,
+     0.4
+    ],
+    "tags": [
+     "collectible",
+     "coin"
+    ],
+    "note": "Its base is -0.06 below its y."
    }
   ],
   "sounds": [

@@ -1,0 +1,626 @@
+{
+ "_": "How Pirate Cove 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "pirate-kit/patch-sand.glb",
+   "to": "world/island-sand.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   },
+   "stretch": [
+    1,
+    12,
+    1
+   ]
+  },
+  {
+   "from": "pirate-kit/patch-grass.glb",
+   "to": "world/island-grass.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   },
+   "stretch": [
+    1,
+    12,
+    1
+   ]
+  },
+  {
+   "from": "pirate-kit/structure-platform-dock.glb",
+   "to": "world/dock.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-platform-dock-small.glb",
+   "to": "world/dock-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-platform.glb",
+   "to": "world/pier.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-platform-small.glb",
+   "to": "world/pier-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/platform.glb",
+   "to": "world/deck.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/platform-planks.glb",
+   "to": "world/planks.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/patch-sand.glb",
+   "to": "world/sand-patch.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/patch-sand-foliage.glb",
+   "to": "world/sand-patch-shells.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/patch-grass.glb",
+   "to": "world/grass-patch.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/patch-grass-foliage.glb",
+   "to": "world/grass-patch-plants.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-complete-large.glb",
+   "to": "world/tower.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-complete-small.glb",
+   "to": "world/tower-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-base.glb",
+   "to": "world/tower-base.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-base-door.glb",
+   "to": "world/tower-base-door.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-middle.glb",
+   "to": "world/tower-middle.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-middle-windows.glb",
+   "to": "world/tower-middle-windows.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-top.glb",
+   "to": "world/tower-top.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-roof.glb",
+   "to": "world/tower-roof.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tower-watch.glb",
+   "to": "world/tower-lookout.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/castle-wall.glb",
+   "to": "world/fort-wall.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/castle-gate.glb",
+   "to": "world/fort-gate.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/castle-door.glb",
+   "to": "world/fort-door.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/castle-window.glb",
+   "to": "world/fort-window.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure.glb",
+   "to": "world/hut.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-fence.glb",
+   "to": "world/hut-fence.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-fence-sides.glb",
+   "to": "world/hut-fence-sides.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/structure-roof.glb",
+   "to": "world/hut-roof.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/ship-medium.glb",
+   "to": "world/ship.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/ship-large.glb",
+   "to": "world/ship-large.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/ship-small.glb",
+   "to": "world/ship-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/ship-wreck.glb",
+   "to": "world/shipwreck.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/boat-row-large.glb",
+   "to": "world/rowing-boat.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/boat-row-small.glb",
+   "to": "world/rowing-boat-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/mast.glb",
+   "to": "world/mast.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/mast-ropes.glb",
+   "to": "world/mast-ropes.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/palm-straight.glb",
+   "to": "world/palm.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/palm-bend.glb",
+   "to": "world/palm-bend.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/palm-detailed-straight.glb",
+   "to": "world/palm-tall.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/palm-detailed-bend.glb",
+   "to": "world/palm-tall-bend.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-a.glb",
+   "to": "world/rocks.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-b.glb",
+   "to": "world/rocks-tall.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-c.glb",
+   "to": "world/rocks-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-sand-a.glb",
+   "to": "world/rocks-sand.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-sand-b.glb",
+   "to": "world/rocks-sand-tall.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/rocks-sand-c.glb",
+   "to": "world/rocks-sand-small.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/grass.glb",
+   "to": "world/grass.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/grass-plant.glb",
+   "to": "world/grass-plant.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/grass-patch.glb",
+   "to": "world/grass-tuft.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/chest.glb",
+   "to": "props/chest.glb",
+   "scale": 1,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   },
+   "anims": {
+    "open": "open",
+    "close": "close"
+   },
+   "keepAnims": [
+    "open",
+    "close"
+   ]
+  },
+  {
+   "from": "pirate-kit/barrel.glb",
+   "to": "props/barrel.glb",
+   "scale": 1,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/crate.glb",
+   "to": "props/crate.glb",
+   "scale": 1,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/hole.glb",
+   "to": "props/dig-spot.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tool-shovel.glb",
+   "to": "props/shovel.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/tool-paddle.glb",
+   "to": "props/paddle.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/flag.glb",
+   "to": "props/flag.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/flag-pennant.glb",
+   "to": "props/flag-pennant.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/flag-high.glb",
+   "to": "props/flag-high.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/flag-high-pennant.glb",
+   "to": "props/flag-high-pennant.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "pirate-kit/flag-pirate.glb",
+   "to": "props/flag-black.glb",
+   "scale": 1.3,
+   "matte": true,
+   "textures": {
+    "^colormap$": "pirate-kit/Textures/colormap.png"
+   }
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/props/coin.glb",
+   "to": "props/coin.glb"
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/walk.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

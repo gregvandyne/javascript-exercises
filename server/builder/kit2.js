@@ -34,7 +34,7 @@ export const DEFAULT_WORLD = 'sky-islands';
 /** A character this world has: the one asked for, or the world's first. */
 export const heroFor = (world, hero) => { const list = charactersOf(world); return (list.find(h => h.id === hero) || list[0] || { id: '' }).id; };
 /** An emoji and a cover colour for each world: a new game's icon and card until its own picture is taken. */
-const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'] };
+const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'] };
 export const worldLook = id => LOOKS[id] || ['🌍', 'ocean'];
 /** Is this exact theme version shipped (kit2/SHIPPED.json)? */
 export const isShipped = (world, version) => !!KIT2_LOCK.themes[`${world}/${version}`];
@@ -55,6 +55,8 @@ export function kit2Of(html) {
 // tiles of the start and goal places; side: the small ground a piece of scenery stands on beside the way; step: the stones to hop along; pad: what an answer floats over; goal: what
 // marks the finish; landmark: the big thing behind the goal; scenery: what stands beside the way. hex: the ground is
 // hexagon tiles (laid as a honeycomb). sea: the colour of the water far below ('' for none). time: the sky.
+// seaY: the water's height when the world stands IN the sea (default: far below, at -5). afloat: ships and boats put
+// out on that sea, [piece, scale] each.
 const L = (ground, step, pad, goal, landmark, scenery, o = {}) => ({ ground, step, pad, goal, landmark, scenery, side: ground, hex: false, sea: '', time: 'day', plaza: 3, ...o });
 export const STARTERS = {
   'sky-islands': L(['island-round', 3], ['platform-medium', 1.3], ['island-round', 0.9], ['flag', 3], ['cloud', 5],
@@ -73,6 +75,9 @@ export const STARTERS = {
     [['lamp', 1.2], ['armchair', 1.2], ['cactus', 1.6], ['couch', 1.1], ['lamp-table', 1.4], ['bed-small', 1], ['books', 2], ['chair', 1.3]]),
   'busy-kitchen': L(['floor', 1], ['counter', 1.4], ['floor-small', 1.5], ['burger', 2.2], ['fridge', 1.6],
     [['crate-carrots', 1], ['stool', 1.4], ['tomato', 1.8], ['oven', 1.1], ['crate-tomatoes', 1], ['cheese', 1.8], ['stove', 1.1], ['carrot', 1.8]]),
+  'pirate-cove': L(['island-sand', 1], ['dock', 1.3], ['island-grass', 0.7], ['chest', 1.4], ['tower', 1],
+    [['palm-tall', 1], ['barrel', 1.1], ['palm-bend', 1], ['hut-roof', 0.9], ['flag-high', 1], ['rocks-sand-small', 0.8], ['palm', 1], ['crate', 1.1]],
+    { sea: '#0077c8', seaY: -1.5, plaza: 1, side: ['island-grass', 0.9], afloat: [['ship-large', 1], ['rowing-boat', 1], ['ship-small', 1], ['shipwreck', 1], ['rowing-boat-small', 1], ['ship', 1]] }),
 };
 /** The starter layout for a world: its own, or one made from its catalogue tags (a world shipped after this file). */
 export function starterFor(world) {
@@ -102,6 +107,7 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '' } = {
   const layout = [
     `  ground: ${one(lay.ground)},`, `  side: ${one(lay.side)},`, `  step: ${one(lay.step)},`, `  pad: ${one(lay.pad)},`, `  goal: ${one(lay.goal)},`, `  landmark: ${one(lay.landmark)},`,
     `  scenery: [${lay.scenery.map(one).join(', ')}],`, `  plaza: ${lay.plaza},`, `  hex: ${lay.hex},`, `  sea: ${js(lay.sea)},`,
+    ...(lay.seaY == null ? [] : [`  seaY: ${lay.seaY},`]), ...(lay.afloat ? [`  afloat: [${lay.afloat.map(one).join(', ')}],`] : []),
   ].join('\n');
   const name = title || w.name;
   const setLine = (src, key, value) => src.replace(new RegExp(`\\n(  ${key}: )[^\\n]*,\\n`), (m, a) => `\n${a}${value},\n`);
