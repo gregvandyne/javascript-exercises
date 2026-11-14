@@ -418,6 +418,38 @@ test('mock: the chips build the picked world with the picked hero', async () => 
   assert.equal(games.getGame(g.id).title, 'Spooky Hollow');
 });
 
+test('mock: an animal that exists is built in: a pet as a companion, a horse as the hero; a saved game from before the animals is moved up first', async () => {
+  const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
+  let t = await turn(u, g.id, 'a castle game where a knight has a pet fox');
+  assert.equal(t.of('version').length, 1); assert.equal(t.of('version')[0].status, 'pass');
+  let v = current(g.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'castle-quest', version: K.worldById('castle-quest').version, hero: 'knight', companion: 'fox' });
+  assert.match(t.text, /with Knight as the hero and a Fox who follows you/); assert.doesNotMatch(t.text, /do not have that animal/);
+  assert.deepEqual(scanVersion(v.html).lint, []);
+  t = await turn(u, g.id, 'change the hero to the horse');
+  v = current(g.id);
+  assert.deepEqual([K.kit2Of(v.html).hero, K.kit2Of(v.html).companion], ['horse', 'fox']); assert.equal(v.safety_status, 'pass');
+  t = await turn(u, g.id, 'change the hero to a dinosaur');
+  assert.match(t.text, /do not have that animal yet/); assert.equal(K.kit2Of(current(g.id).html).hero, 'horse', 'nothing is pretended');
+  // a game saved on Oomba3D 1.1.0 (before the animals): asking for one moves it to a fresh starter, with its title and numbers kept
+  const g2 = games.createGame(u.id, { title: 'Old Village' });
+  const old = K.kit2Starter({ world: 'medieval-village', hero: 'mage', title: 'Old Village' }).replace(V.kit2ImportMap(), V.kit2ImportMap('1.1.0')).replace("version: '1.1.0',", "version: '1.0.0',").replace('  steps: 4,', '  steps: 6,').replace(/\n  companion: '',/, '');
+  assert.equal(scanVersion(old).status, 'pass'); assert.equal(K.hasAnimals(old), false);
+  games.addVersion(g2.id, old, { notes: 'made before the animals', createdBy: u.id, safetyStatus: 'pass', safetyReport: scanVersion(old) });
+  t = await turn(u, g2.id, 'add a cow that follows me');
+  v = current(g2.id);
+  assert.equal(V.oomba3dVersionOf(v.html), V.OOMBA3D_VERSION);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'medieval-village', version: K.worldById('medieval-village').version, hero: 'mage', companion: 'cow' });
+  assert.equal(k2Read(v.html, 'steps'), 6); assert.equal(k2Read(v.html, 'title'), 'Old Village'); assert.equal(v.safety_status, 'pass');
+  assert.match(t.text, /newest version of its world[\s\S]*Cow who follows you/);
+  // and a game that stays as it was keeps the Oomba3D and world version it named
+  const g3 = games.createGame(u.id, { title: 'Stays' });
+  games.addVersion(g3.id, old, { notes: 'made before the animals', createdBy: u.id, safetyStatus: 'pass', safetyReport: scanVersion(old) });
+  t = await turn(u, g3.id, 'make it night time');
+  v = current(g3.id);
+  assert.equal(V.oomba3dVersionOf(v.html), '1.1.0'); assert.equal(K.kit2Of(v.html).version, '1.0.0'); assert.equal(k2Read(v.html, 'time'), 'night');
+});
+
 test('mock: with no Kit 2 thing asked for, the game is an old-kit game, built and changed as before', async () => {
   const u = newUser(), g = games.createGame(u.id, { title: 'Untitled' });
   let t = await turn(u, g.id, 'hi');

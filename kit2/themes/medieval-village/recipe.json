@@ -14,6 +14,7 @@
     "saturate": 1.15
    },
    "meshopt": true,
+   "oneDraw": true,
    "anims": {
     "idle": "Idle",
     "eat": "Eating",
@@ -42,6 +43,7 @@
     "saturate": 1.15
    },
    "meshopt": true,
+   "oneDraw": true,
    "anims": {
     "idle": "Idle",
     "eat": "Eating",
@@ -70,6 +72,7 @@
     "saturate": 1.15
    },
    "meshopt": true,
+   "oneDraw": true,
    "anims": {
     "idle": "Idle",
     "eat": "Eating",
@@ -97,6 +100,7 @@
     "saturate": 1.15
    },
    "meshopt": true,
+   "oneDraw": true,
    "anims": {
     "idle": "Armature|Idle",
     "jump": "Armature|Jump"
@@ -118,6 +122,7 @@
     "saturate": 1.15
    },
    "meshopt": true,
+   "oneDraw": true,
    "anims": {
     "idle": "Armature|Idle",
     "jump": "Armature|Jump"

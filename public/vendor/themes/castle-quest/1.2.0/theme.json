@@ -1157,32 +1157,32 @@
    "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
   },
   "SOURCES.md": {
-   "bytes": 3828,
-   "sha384": "sha384-xY3tjcIAllY78QHfl6XCcqQyToIyyTZqd506MeD3hYenSj0+k8JWpfhx8yG4JOaq"
+   "bytes": 3944,
+   "sha384": "sha384-gGOY7hV3BfTyczzGBjkz9F3aHIU1Yvg6ZtKW4I2xSsXakroH9NsIrwQr3sEvBP9t"
   },
   "cover.webp": {
    "bytes": 27782,
    "sha384": "sha384-PdMM5RNolcrTwYG7aNG4BcsaSKErhnzLgCTOa/EZMZ2LDmwNYM/2Pe9HXOULjoho"
   },
   "creatures/deer.glb": {
-   "bytes": 113236,
-   "sha384": "sha384-Vem0W7PhU/fI8q/JX7vK0XscFQv4JWcsra0B/Q7m7WwNDgfvpjp0ZPNTKKwXVU8w"
+   "bytes": 103224,
+   "sha384": "sha384-zVLl5dQBFZ+yS0fL+ly0X0Irny8B2oSHjtlf7uaAjcFvepK+g22wsrA91oh+d/fH"
   },
   "creatures/fox.glb": {
-   "bytes": 115016,
-   "sha384": "sha384-bo04Zmx3+LTFAa5v7PhUHPF3QQHIyOd+vig4SE1saWiz3EkS5hsOw8pV4YO05Zkk"
+   "bytes": 108496,
+   "sha384": "sha384-bbcn63smZjfhpNx3w8d+Clu9dOJO468vWaWVokbjJFxreyyvcevpwAOG5q5KqIg4"
   },
   "creatures/horse.glb": {
-   "bytes": 129532,
-   "sha384": "sha384-J94Z30pMRAn3kTjZnwBltanCKunVk7QXZRtxmtphForuILFRwgQOhHWujRqHeIG+"
+   "bytes": 117212,
+   "sha384": "sha384-J5eXcbAPi7AdiIoAsvnvxwCHWWJJMo5TYp5iHOifj4D78oXYI9UHS2fdRlBy4d/L"
   },
   "creatures/shiba.glb": {
-   "bytes": 103360,
-   "sha384": "sha384-sQGz6qTQPmGYFOkPJr/Gbggy1ufGKP0TphvAwPxBxWHcDx31KeaBcxzCmEQXu2ao"
+   "bytes": 95232,
+   "sha384": "sha384-i+N1QsxaNSJimJ44CE5GUGHmHFs+QSCeblOME3uAUEUyluKXGrDVEnvnucbm4L8D"
   },
   "creatures/stag.glb": {
-   "bytes": 105712,
-   "sha384": "sha384-ckJ64IrUcr/0cuQ4JCooi5nCQsoVMBFWYhmJYGQdtXjKR+g1z33kduBAl9pxgsBI"
+   "bytes": 99860,
+   "sha384": "sha384-ldoTEXCq0Qru1NnrG8f2QbTnAdV0kexKHx1MtH/FfCuLM5DIVCWAUiLXr1AaAp2+"
   },
   "heroes/barbarian.glb": {
    "bytes": 181212,
@@ -1445,5 +1445,5 @@
    "sha384": "sha384-gjzv2U8zi74MySomfSpa+uqc5SNY4rJ1Vn/GUPA9he2/0GoZZc9J80/b8Y+pOtS5"
   }
  },
- "firstLoadBytes": 4796232
+ "firstLoadBytes": 4753400
 }

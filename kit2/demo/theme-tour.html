@@ -22,9 +22,9 @@ const n = T.heroes.length;
 const heroes = await Promise.all(T.heroes.map((h, i) => g.hero(h.id, { x: (i - (n - 1) / 2) * 1.9, y: 0, z: 2 - Math.abs(i - (n - 1) / 2) * 0.35 })));
 heroes.forEach((h, i) => h.play(moves[i % moves.length]));
 
-// The theme's animals (Oomba3D 1.2.0, for themes that have any) in a row behind the heroes, each showing one of its moves.
+// The theme's animals (Oomba3D 1.2.0, for themes that have any) in a row in front of the heroes, eating or standing.
 const zoo = T.creatures || [];
-const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, { x: (i - (zoo.length - 1) / 2) * 4.4, y: 0, z: -2.2 - (i % 2) * 0.8, face: 0.8 - i * 0.35 }))) : [];
+const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, { x: (i - (zoo.length - 1) / 2) * 2.5, y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 }))) : [];
 animals.forEach((a, i) => a.play(a.moves.includes('eat') && i % 2 ? 'eat' : 'idle'));
 
 // A spread of the theme's other pieces behind them: big ones far back, small ones nearer.

@@ -63,7 +63,7 @@ g.scene.fog = null;   // a clear portrait: no haze, and high above the soft clou
 ${c.kind === 'creature' ? `const me = await g.creature('${c.id}', { x: 0, y: 40, z: 0, face: 0.85 });
 const [, h, l] = me.size, r = Math.max(h, l * 0.85);
 g.camera.fov = 26; g.camera.updateProjectionMatrix();
-g.camera.position.set(r * 0.25, 40 + h * 0.75, r * 2.5); g.camera.lookAt(0, 40 + h * 0.5, 0);` : `const me = await g.hero('${c.id}', { x: 0, y: 40, z: 0, face: 0.3 });
+g.camera.position.set(r * 0.25, 40 + h * 0.75, r * 2.8); g.camera.lookAt(0, 40 + h * 0.5, 0);` : `const me = await g.hero('${c.id}', { x: 0, y: 40, z: 0, face: 0.3 });
 me.play('wave');
 g.camera.fov = 26; g.camera.updateProjectionMatrix();
 g.camera.position.set(0.5, 41.9, 5.4); g.camera.lookAt(0, 41.45, 0);`}

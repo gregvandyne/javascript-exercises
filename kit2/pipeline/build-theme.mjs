@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
-import { prune, dedup, resample, quantize, weld, reorder, unpartition, getBounds } from '@gltf-transform/functions';
+import { prune, dedup, resample, quantize, weld, reorder, unpartition, getBounds, palette, joinPrimitives } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import { packSteps } from './pack-steps.mjs';
 
@@ -23,7 +23,20 @@ fs.mkdirSync(outDir, { recursive: true });
 // does not allow: docs/safety.md). Without it the models are quantized only (KHR_mesh_quantization, decoded by Three.js
 // itself) and the server sends them brotli-compressed.
 // An item's own "meshopt": true does the same for that one model (creatures: their many clips shrink to less than half).
+// An item's "oneDraw": true (flat-coloured models with many materials: the animals) puts every material's colour into
+// one tiny palette picture and joins the parts, so the model is one draw call instead of one per colour.
 async function compress(doc, item = {}) {
+  if (item.oneDraw) {
+    const flat = doc.getRoot().listMaterials().some(m => m.getExtras().flat);
+    // one roughness, no glow: the palette then needs a single picture (colour)
+    for (const m of doc.getRoot().listMaterials()) m.setRoughnessFactor(0.9).setMetallicFactor(0).setEmissiveFactor([0, 0, 0]);
+    await doc.transform(palette({ min: 1, blockSize: 4 }), weld());
+    for (const mesh of doc.getRoot().listMeshes()) {
+      const prims = mesh.listPrimitives(); if (prims.length < 2 || new Set(prims.map(q => q.getMaterial())).size > 1) continue;
+      const one = joinPrimitives(prims); for (const q of prims) { mesh.removePrimitive(q); q.dispose(); } mesh.addPrimitive(one);
+    }
+    if (flat) for (const m of doc.getRoot().listMaterials()) m.setExtras({ ...m.getExtras(), flat: true });
+  }
   await doc.transform(dedup(), weld(), resample(), prune({ keepAttributes: false }), reorder({ encoder: MeshoptEncoder }), quantize(), unpartition());
   if (recipe.meshopt || item.meshopt) doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
   return doc;
