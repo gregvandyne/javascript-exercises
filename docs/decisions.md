@@ -5321,3 +5321,7 @@ bubbles were all in 1.2.0, waiting for this world).
 - **2D friends (Oomba2D 1.1.0, merged from main the same day):** the sea animals are in `animals` 1.1.0, so they can be
   picked as the friends of a 2D game like any other sprite animal; `tests/unit/kit2-under-the-sea.test.js` drives the
   helper with the dolphin as the player and three sea friends.
+- **Open: "Select all" and the cap of 40 friends.** With the sea animals there are 56 sprite characters, and a 2D game
+  takes at most 40 friends (`friendsMax` in the locked Oomba2D 1.1.0, `ART2D_FRIENDS_MAX`). Everyone picked beyond the
+  first 40 in catalogue order is left out. `tests/unit/art2d-friends.test.js` now says so instead of "everyone". A
+  bigger cap needs a new helper version: the owner's call.

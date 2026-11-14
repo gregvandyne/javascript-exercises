@@ -40,7 +40,7 @@ function world({ reduced = false, failing = [] } = {}) {
   const window = { Oomba: { art: { define: (n, d) => { defined[n] = d; } }, settings: { reduced } } };
   const sandbox = { window, document, Image, setTimeout, Promise, console };
   vm.createContext(sandbox); vm.runInContext(HELPER, sandbox);
-  for (const id of ['castle-quest', 'animals', 'heroes']) { document.currentScript = { src: `http://x.invalid/vendor/art2d/${id}/1.0.0/pack.js` }; window.Oomba2D.pack(JSON.parse(JSON.stringify(S.art2dManifest(id)))); }
+  for (const id of ['castle-quest', 'animals', 'heroes']) { document.currentScript = { src: `http://x.invalid/vendor/art2d/${id}/${S.ART2D_PACKS[id]}/pack.js` }; window.Oomba2D.pack(JSON.parse(JSON.stringify(S.art2dManifest(id)))); }
   return { O2: window.Oomba2D, defined, loads };
 }
 /** A flat level `cols` wide (cell 48), the hero at column 2, with the kit's ground tiles; items: [{ c, spec }]. */
@@ -158,16 +158,20 @@ test('tags and templates: friends2d beside hero2d, each friend\'s pack loaded on
   assert.equal(A.art2dTags({ hero: 'fox', friends: ['knight'] }), [S.oomba2dTag(), S.art2dPackTag('animals'), S.art2dPackTag('heroes')].join('\n'));
   assert.equal(A.art2dTags({ friends: ['knight'] }), [S.oomba2dTag(), S.art2dPackTag('heroes')].join('\n'));
   assert.deepEqual(A.art2dFriends(['fox', 'fox', 'nope', 'knight', 'zebra'], 'fox').map(c => c.id), ['knight', 'zebra']);
-  assert.equal(A.art2dFriends(A.ART2D_CHARACTER_IDS.concat(A.ART2D_CHARACTER_IDS)).length, A.ART2D_CHARACTER_IDS.length);
+  // Everyone once, up to the most a game takes (40: Oomba2D 1.1.0's own friendsMax, a locked file). Since the 23 sea
+  // animals joined (animals 1.1.0) there are more sprite characters than that: "Select all" keeps the first 40.
+  assert.ok(A.ART2D_CHARACTER_IDS.length > A.ART2D_FRIENDS_MAX, 'more characters than one game takes');
+  assert.equal(A.art2dFriends(A.ART2D_CHARACTER_IDS.concat(A.ART2D_CHARACTER_IDS)).length, Math.min(A.ART2D_CHARACTER_IDS.length, A.ART2D_FRIENDS_MAX));
+  assert.equal(new Set(A.art2dFriends(A.ART2D_CHARACTER_IDS.concat(A.ART2D_CHARACTER_IDS)).map(c => c.id)).size, A.ART2D_FRIENDS_MAX, 'nobody twice');
   for (const key of A.ART2D_TEMPLATES) {
     const plain = T.loadTemplate(key);
     assert.match(plain, /\n  hero2d: '',\n  friends2d: \[\],\n/); assert.ok(!plain.includes('art2d/'), 'no friends, no art: the game as it always was');
     assert.equal(T.loadTemplate(key, { world: 'toy-town', hero: 'pig' }).includes("friends2d: [],"), true);
-    const all = A.ART2D_CHARACTER_IDS.filter(id => id !== 'pig'), g = T.loadTemplate(key, { world: 'toy-town', hero: 'pig', friends: A.ART2D_CHARACTER_IDS });
-    assert.ok(g.includes(`\n  hero2d: 'pig',\n  friends2d: [${all.map(id => `'${id}'`).join(', ')}],\n`), `${key}: everyone picked is in the game`);
+    const all = A.ART2D_CHARACTER_IDS.filter(id => id !== 'pig').slice(0, A.ART2D_FRIENDS_MAX), g = T.loadTemplate(key, { world: 'toy-town', hero: 'pig', friends: A.ART2D_CHARACTER_IDS });
+    assert.ok(g.includes(`\n  hero2d: 'pig',\n  friends2d: [${all.map(id => `'${id}'`).join(', ')}],\n`), `${key}: everyone picked is in the game, up to the 40 a game takes`);
     assert.ok(g.includes('friends: CONFIG.friends2d'));
     assert.equal(scanVersion(g).status, 'pass', `${key} with every character passes the safety scan`);
-    assert.equal((g.match(/\/vendor\/art2d\/[a-z0-9-]+\/\d+\.\d+\.\d+\/(pack|oomba2d)\.js/g) || []).length, 4, 'Oomba2D, the world, animals and heroes: each once');
+    assert.equal((g.match(/\/vendor\/art2d\/[a-z0-9-]+\/\d+\.\d+\.\d+\/(pack|oomba2d)\.js/g) || []).length, 2 + new Set(['pig', ...all].map(id => A.art2dCharacter(id).pack)).size, 'Oomba2D, the world, and the pack of everyone in the game: each once');
   }
   assert.match(T.loadTemplate('catch', { hero: 'pig', friends: ['fox'] }), /art\.dress\(w, \{ every: 4, friends: 'sides' \}\)/);
 });
@@ -224,8 +228,8 @@ for (const [key, size] of [['runner', [960, 600]], ['catch', [390, 844]]]) {
     assert.ok(now.list.length >= 1 && now.list.length <= 4, `${now.list.length} friends drawn`);
     for (const f of now.list) { assert.ok(friends.includes(f.id)); assert.equal(f.solid, false); }
     const art = seen.filter(u => u.includes('/vendor/art2d/')).map(u => u.replace(HOST + '/vendor/art2d/', ''));
-    assert.ok(art.includes('oomba2d/1.1.0/oomba2d.js') && art.includes('animals/1.0.0/fox.webp') && art.some(u => /^(animals|heroes)\/1\.0\.0\/(zebra|knight|cow|stegosaurus)\.webp$/.test(u)), 'the friends\' own pictures, from the locked packs');
-    assert.ok(art.every(u => /^(oomba2d\/1\.1\.0\/oomba2d\.js|(castle-quest|animals|heroes)\/1\.0\.0\/[a-z0-9-]+\.(webp|js))$/.test(u)), 'nothing else is fetched');
+    assert.ok(art.includes('oomba2d/1.1.0/oomba2d.js') && art.includes(`animals/${S.ART2D_PACKS.animals}/fox.webp`) && art.some(u => /^(animals|heroes)\/1\.\d\.0\/(zebra|knight|cow|stegosaurus)\.webp$/.test(u)), 'the friends\' own pictures, from the locked packs');
+    assert.ok(art.every(u => /^(oomba2d\/1\.1\.0\/oomba2d\.js|(castle-quest|heroes)\/1\.0\.0\/[a-z0-9-]+\.(webp|js)|animals\/1\.1\.0\/[a-z0-9-]+\.(webp|js))$/.test(u)), 'nothing else is fetched (the animals pack is 1.1.0 since the sea animals joined)');
     await ctx.close();
   });
 }
