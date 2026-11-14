@@ -1,0 +1,32 @@
+{
+ "dir": "pirate-kit",
+ "name": "Kenney Pirate Kit",
+ "author": "Kenney",
+ "licence": "CC0-1.0",
+ "url": "https://kenney.nl",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "textures": {
+   "^colormap$": "colormap.png"
+  },
+  "inkNormals": true
+ },
+ "clips": {
+  "open": "(^|\\|)open$",
+  "close": "(^|\\|)close$"
+ },
+ "exclude": {
+  "cannon(-mobile)?": "Kid-safe: a weapon (a cannon as harbour scenery is a judgement call for the owner)",
+  "cannon-ball": "Kid-safe: ammunition for the cannon",
+  "bottle(-large)?": "Kid-safe: rum bottle (alcohol)",
+  "crate-bottles": "Kid-safe: crate of rum bottles (alcohol)",
+  "ship-pirate-.*": "Kid-safe: skull-and-crossbones on the sails and flag",
+  "ship-ghost": "Kid-safe: ghost ship (spooky; tattered sails)"
+ },
+ "source": "branch asset-packs, folder pirate-kit/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "The four flag-pirate pieces are plain black flags with no skull, so they are kept.",
+  "bottle, bottle-large and crate-bottles are plain bottles; in a pirate kit they read as rum, so they are left out (a \"message in a bottle\" prop would be the reason to bring one back)."
+ ]
+}

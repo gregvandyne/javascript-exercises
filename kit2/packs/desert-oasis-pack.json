@@ -1,0 +1,18 @@
+{
+ "dir": "desert-oasis-pack",
+ "name": "Low Poly Desert Oasis Pack",
+ "author": "reodesuxz",
+ "licence": "custom (games and modification allowed; no redistribution of the asset files, no AI training)",
+ "licenceFile": "LICENSE.txt",
+ "defaults": {
+  "matte": true,
+  "scale": 1.2,
+  "inkNormals": true
+ },
+ "exclude": {
+  "animal_skull": "Kid-safe: a skull (bones)",
+  "hookah": "Kid-safe: a water pipe (smoking)",
+  "domed_mosque": "A religious building: left out so a faith is not shown as game scenery by accident (owner to decide)"
+ },
+ "source": "branch asset-packs, folder desert-oasis-pack/ (uploaded by the owner, November 2026)"
+}

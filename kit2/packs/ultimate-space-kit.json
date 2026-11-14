@@ -1,0 +1,50 @@
+{
+ "dir": "ultimate-space-kit",
+ "name": "Quaternius Ultimate Space Kit",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "scale": 0.77,
+  "matte": true,
+  "inkNormals": true,
+  "dropMeshes": [
+   "^Pistol$"
+  ]
+ },
+ "clips": {
+  "idle": "(^|\\|)Idle$",
+  "walk": "(^|\\|)Walk$",
+  "run": "(^|\\|)Run$",
+  "jump": "(^|\\|)Jump$",
+  "jumpAir": "Jump_Idle$",
+  "jumpLand": "Jump_Land(ing)?$",
+  "wave": "(Wave|Hello)$",
+  "yes": "(^|\\|)Yes$",
+  "no": "(^|\\|)No$",
+  "duck": "Duck$",
+  "dance": "Dance$",
+  "pickUp": "Pickup$",
+  "fly": "Flying_Idle$",
+  "flyFast": "Fast_Flying$"
+ },
+ "exclude": {
+  "Pickup_Bullets": "Kid-safe: ammunition",
+  "Mech_.*": "Kid-safe: a walking machine with gun barrels modelled into its arms or shoulders (they cannot be taken off; the red panda and flamingo ones are the mildest: owner to decide)"
+ },
+ "source": "branch asset-packs, folder ultimate-space-kit/ (uploaded by the owner, November 2026)",
+ "rename": {
+  "Enemy_ExtraSmall": "alien-tiny",
+  "Enemy_Flying": "alien-flying",
+  "Enemy_Large": "alien-big",
+  "Astronaut_BarbaraTheBee": "astronaut-bee",
+  "Astronaut_FernandoTheFlamingo": "astronaut-flamingo",
+  "Astronaut_FinnTheFrog": "astronaut-frog"
+ },
+ "notes": [
+  "Each astronaut holds a pistol as a separate mesh: it is removed (dropMeshes), and the gun clips are not kept.",
+  "The pack calls its aliens Enemy_*: they are staged as friendly aliens (alien-tiny, alien-flying, alien-big) with no punch, headbutt, hit or death clip.",
+  "There are four mechs and spaceships (bee, flamingo, frog, red panda) but only three astronauts: no red panda astronaut was uploaded."
+ ]
+}
