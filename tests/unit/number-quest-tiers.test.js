@@ -126,12 +126,14 @@ test('the catalogue: all three tiers are declared; Explorer is exactly its 23 st
   assert.deepEqual(w.check, ['nq-launchpad-0.1-e1', 'nq-launchpad-0.1-e2', 'nq-launchpad-0.1-e3']);
   assert.equal(w.standards.flag, 'framing'); assert.equal(w.mp, 'MP1');
   assert.notEqual(C.getStep(course, 'explorer-0.1').title, w.title, 'two tiers, two different steps numbered 0.1');
-  // Pro: its welcome is a real step with a real deck; its seven units are planned, so none of their steps exists.
-  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1']);
+  // Pro: its welcome is a real step with a real deck; Unit 2 is built (The Cold Store, Sub Zero); the other six units are planned, so none of their steps exists.
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-2.1', 'pro-2.2', 'pro-2.3']);
+  assert.deepEqual(C.steps(course, 'pro').slice(1).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Divide by a fraction', 2, 'sub-zero', 'chapter=pour&lock=1', 'MP4'],
+    ['Below zero: opposites and absolute value', 2, 'sub-zero', 'chapter=below&lock=1', 'MP2'], ['Add, subtract, multiply and divide with negatives', 2, 'sub-zero', 'chapter=change&lock=1', 'MP8']]);
   assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'the Pro welcome deck has no problems');
   assert.equal(T.firstKey('pro'), 'pro-0.1');
   for (const key of ['pro-1.1', 'pro-4.3', 'pro-7.4']) assert.equal(C.getStep(course, key), null, `${key} is planned, not built: it is no step`);
-  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => u.n), [1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 2]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => u.n), [1, 3, 4, 5, 6, 7]);
   assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer'], 'and nobody but the admin is offered the band');
   // The other courses know nothing of tier keys, and Number Quest nothing of theirs.
   assert.equal(C.getStep(C.getCourse('cs-quest'), 'launchpad-0.1'), null);
@@ -155,7 +157,8 @@ test('standards tags read every tier, keyed by full step key', () => {
   const steps = tags.numberQuestSteps();
   assert.deepEqual(steps.get('explorer-1.1'), ['4.NBT.A.1', '4.NBT.A.2']);
   assert.equal(steps.has('launchpad-0.1'), false, 'a framing step cites no code');
-  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), [], 'Pro: its welcome is framing and its units are planned, so no play can be credited to a Pro step yet');
+  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), ['pro-2.1', 'pro-2.2', 'pro-2.3'], 'Pro: its welcome is framing and its planned units have no steps, so play is credited only to the built units (Unit 2)');
+  assert.deepEqual(steps.get('pro-2.2'), ['6.NS.C.5', '6.NS.C.6', '6.NS.C.7']);
   assert.ok([...steps.keys()].every(k => /^(launchpad|explorer|pro)-\d\.\d$/.test(k)));
   assert.equal([...steps.keys()].filter(k => k.startsWith('explorer-')).length, 21, 'Explorer: 23 steps less the intro and the enrichment step');
 });
@@ -279,7 +282,7 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   assert.match(street.text, /id="step-launchpad-6\.3"/); assert.match(street.text, /The Shape Shed/);
   assert.match(street.text, /id="step-launchpad-7\.3"/); assert.match(street.text, /The Measuring Meadow/);
   assert.match(street.text, /id="step-launchpad-7\.4"/, 'the finale door is on the street');
-  assert.equal(C.numberQuestCatalogue(admin).units.length, 17, 'Launchpad 8, Explorer 8 and the Pro welcome unit');
+  assert.equal(C.numberQuestCatalogue(admin).units.length, 18, 'Launchpad 8, Explorer 8, the Pro welcome unit and Pro Unit 2');
   // Unit 1's first step opens for the admin, with its mission in Garden Count.
   const one = await get('/courses/number-quest/launchpad-1.1', cookie);
   assert.equal(one.status, 200);

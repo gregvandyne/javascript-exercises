@@ -107,6 +107,11 @@ const SHOTS = [
   { tier: 'launchpad', step: '7.2', state: 'clocks-and-coins', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=clock&lock=1', prep: kitchenRush, cdp: true },
   { tier: 'launchpad', step: '7.3', state: 'sort-and-chart', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=chart&lock=1', prep: kitchenRush, cdp: true },
   { tier: 'launchpad', step: '7.4', state: 'the-garden-gate', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=gate&lock=1', prep: kitchenRush, cdp: true },
+  // Pro Unit 2, The Cold Store: Sub Zero, a 3D game, in each step's own chapter, the whole phone screen as the band (the
+  // words on top, the lab screen on the wall, the helper and the deep freezer under it, the stepper or the tiles below).
+  { tier: 'pro', step: '2.1', state: 'pour-and-count', slug: 'sub-zero', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=pour&lock=1', prep: subZero, cdp: true },
+  { tier: 'pro', step: '2.2', state: 'below-zero', slug: 'sub-zero', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=below&lock=1', prep: subZero, cdp: true },
+  { tier: 'pro', step: '2.3', state: 'change-the-reading', slug: 'sub-zero', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=change&lock=1', prep: subZero, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -286,6 +291,17 @@ async function kitchenRush(f) {
   // four more (The Garden Gate).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function subZero(f) {
+  // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
+  // the lab screen has popped in: a pot of 3 liters and the first jar of 1/2 liter (Pour and Count), the thermometer
+  // with its marker at zero and "set −8°" (Below Zero), a sample at −6° and its target at 4° (Change the Reading).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#start');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
   await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
   await wait(2200);

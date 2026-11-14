@@ -893,3 +893,64 @@ card, the teacher page's units, map and counts, the placement matrix and explain
 "Just Play" follow the data. What the opening PR still writes by hand: the course copy in the 13 locale files (two
 streets, kindergarten to grade 5, the game list, the lock paragraph, the FAQ), the teacher page's list of what Pro
 does not cover (from `proCoverage`), `units.json` `program.standards`, and a decisions entry.
+
+## Pro Unit 2 — The Cold Store (2026-11-14, tier still `building`)
+
+The second Pro unit, built side by side with Units 1 and 3. Its `planned` flag is gone, so its three steps are real
+steps for the platform admin (and nobody else: the tier is `building`).
+
+| File | What |
+|---|---|
+| `course/pro/2.1.json`, `2.2.json`, `2.3.json` | the three decks, inside the Pro limits above: **2.1 Divide by a fraction** (6.NS.A.1, also 6.NS.B.3), **2.2 Below zero: opposites and absolute value** (6.NS.C.5, 6.NS.C.6, 6.NS.C.7), **2.3 Add, subtract, multiply and divide with negatives** (7.NS.A.1, 7.NS.A.2, also 7.NS.A.3). A story slide with Tally, drawn diagrams with guided focus, one worked example, four words, the mission last |
+| `sets/u2-pro.json` | nine exit items (`nq-pro-2.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it, every item with a `why` |
+| `units.json` | Unit 2's own object: the flags deleted, `tool: "sub-zero"`, the three `game.pro` specs, three teacher notes |
+| `seed-games/sub-zero.html` | **Sub Zero**, the unit's game (Oomba3D 1.2.0, Busy Kitchen theme 1.0.0): chapter `pour` for 2.1, `below` for 2.2, `change` for 2.3, six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**What each chapter plays.** `pour` (Pour and Count): a pot poured into jars that each hold a fraction of a liter. Set
+the number of jars and pour (3 ÷ 1/2, then 4 1/2 ÷ 3/4): too few and the pot is not empty, too many and jars stay
+empty; then which division the pour is, one liter into jars of 2/3 (1 1/2 jars: dividing by 2/3 is multiplying by
+3/2), less than one jar (1/2 ÷ 3/4 = 2/3 of the jar), and decimals on the same model (2.4 ÷ 0.3). `below` (Below
+Zero): put the marker on −8° and on −2.5°, the opposite of a reading, the coldest (or warmest) of three readings, the
+reading farthest from zero (absolute value), and a reading colder than a limit of −12° (less than −12, and more than
+12 below zero). `change` (Change the Reading): the change that takes a sample from −6° to 4° and from 3° to −5°, a
+cold pack worth −5° taken out of a chamber at −2° (subtracting a negative: the reading goes up), which sum equals
+4 − (−3), a cooling rate over minutes (4 × (−2.5)), and a drop in equal steps (−12 ÷ 4) or, on a replay, the film run
+backward ((−3) × (−2) = 6). The first lap is always the same; a replay takes other numbers (`pour` turns through
+three set problems a round, written out so the voice can say them).
+
+**Plan, then run.** There are two ways to answer and no typing: a stepper with a run button (Pour, Lock in, Run; the
+marker can also be dragged on the thermometer), or one of three tiles. A wrong plan is run and drawn as it really
+turns out (`SubZero.judge`): the jars the pot could not fill, the reading where the change really lands, the marker
+where it was put, each with a spoken hint, and the round stays open. No timer, no lives, no fail state, no reward
+currency; nothing is priced, bought or sold. Keys: the arrows (or + and −) move the stepper, Enter runs, 1 to 3 pick a
+tile; every control is also a button.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game, and the speaker button says a line again. A spoken line is written the way it is
+said ("negative 6 degrees", "4 and 1 half", "3 fourths", "divided by"), with digits only in its number places, so the
+voice allowlist (`server/services/tts-lines.js`) never sees a sign; the screen prints the same line with the real
+signs (`SubZero.shown`: −6°, 4 1/2, 3/4, ÷), a true minus sign and fractions set one number over the other. The
+game's wording is the wording `math-text.js` gives a deck's read-aloud, so the street says maths one way.
+
+**A lab, not Kitchen Rush.** Launchpad Unit 7's Kitchen Rush plays the same world by day, with a helper to pick, a
+cream board and dishes for a party table. Sub Zero is the same theme at night with every piece washed in steel (a
+small shader patch on a copy of each material; the shipped theme files are untouched), no food piece loaded, a dark
+lab screen, one lab partner and no picker, and a game-made deep freezer whose rack takes a sample vial for each
+finished round. The thermometer, the pot and the jars are drawn face on, on the lab screen, so perspective never bends
+the number line; zero is always on it, between its ends. The test holds the screen to its 4 by 3 shape, in full view,
+clear of the helper and the freezer, and its smallest numbers to a readable size at 960, 390 and 360 px.
+
+**Diagrams.** The unit adds no diagram type and no option. 2.1 draws the measurement model of fraction division with
+`bars` (the pot as a tape of liters over a tape of jars: how many 1/2 fit in 3, how many 3/4 fit in 4 1/2), which is
+the fraction-division model the plan asked for; 2.2 uses the upright `numberline` as a thermometer and the flat one
+for opposites; 2.3 the upright line with a hop (−6 + 10) and the thermometer with the cold pack's hop (−2 to 3). All
+15 focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/sub-zero/<state>` phone-width captures (`scripts/nq-shots.js`, shots
+marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/sub-zero.recipe.js`.
+
+**Gear.** The unit's stamp is the Zero Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit covers,
+the three misconceptions it meets (dividing always makes smaller; −8 is greater than −2; subtracting a negative makes
+smaller) and how the game checks each idea by doing. Pro stays `status: "building"`: Units 1 and 3 to 7 are still
+planned, and no learner, parent or visitor sees any of this.

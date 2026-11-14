@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 169, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck');
-  assert.equal(steps, 394, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck');
+  assert.equal(slides, 175, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 6 in Pro Unit 2');
+  assert.equal(steps, 409, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 15 in Pro Unit 2');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -523,14 +523,33 @@ const REGISTRY = [
   ['pro-0.1', 2, 2, [82.45, 70.76, 89.44, 82.13], [81.7, 69.3, 8.6, 14.2]],
   ['pro-0.1', 3, 0, [60.79, 37.42, 70.15, 62.49], [59.6, 35.6, 12, 28.4]],
   ['pro-0.1', 3, 1, [44.6, 32.63, 56.64, 42.45], [43.6, 31.1, 14.1, 12.9]],
+  // Pro Unit 2, The Cold Store (2026-11-14): 2.1 two tape diagrams of fraction division (the pot's liters over the jars: 3 over
+  // six halves; 4 1/2 over six jars of 3/4); 2.2 a thermometer (0°, the point at −8°C, the mark 3°) and a flat line with the two
+  // 6-step hops to 6 and −6; 2.3 an upright line (the +10 hop from −6, the point at 4) and a thermometer (the mark −2°, the +5
+  // hop). Measured with getBoundingClientRect on the rendered step pages at 390 px, as the welcome's were.
+  ['pro-2.1', 1, 0, [6.06, 23.11, 93.93, 38.22], [5.1, 21.5, 89.8, 18.3]],
+  ['pro-2.1', 1, 1, [6.06, 53.33, 35.34, 68.44], [5.1, 51.7, 30.7, 18.3]],
+  ['pro-2.1', 1, 2, [6.06, 53.33, 93.9, 68.44], [5.1, 51.7, 89.8, 18.3]],
+  ['pro-2.1', 2, 0, [6.06, 23.11, 93.93, 38.22], [5.1, 21.5, 89.8, 18.3]],
+  ['pro-2.1', 2, 1, [6.06, 53.33, 20.7, 68.44], [5.1, 51.7, 16, 18.3]],
+  ['pro-2.1', 2, 2, [6.06, 53.33, 93.9, 68.44], [5.1, 51.7, 89.8, 18.3]],
+  ['pro-2.2', 1, 0, [31.91, 35.14, 39.4, 42.77], [30.9, 34.4, 9.5, 9.1]],
+  ['pro-2.2', 1, 1, [44.6, 63.44, 59.18, 73.26], [43.6, 61.8, 16.6, 13.1]],
+  ['pro-2.2', 1, 2, [32.12, 24.13, 39.4, 31.77], [31.1, 23.4, 9.3, 9.1]],
+  ['pro-2.2', 2, 0, [50, 25.1, 82.95, 60.44], [49, 23.5, 35, 38.5]],
+  ['pro-2.2', 2, 1, [17.05, 25.1, 50, 60.44], [16.1, 23.5, 34.9, 38.5]],
+  ['pro-2.3', 1, 0, [60.79, 36.56, 70.02, 72.3], [59.8, 35, 11.2, 38.9]],
+  ['pro-2.3', 1, 1, [39.7, 31.79, 49.67, 41.58], [38.7, 30.2, 12, 13]],
+  ['pro-2.3', 2, 0, [30.39, 54.2, 39.4, 61.83], [29.4, 52.6, 11, 10.8]],
+  ['pro-2.3', 2, 1, [60.79, 28.62, 68.6, 59.56], [59.8, 27, 9.8, 34.2]],
 ];
-test('every authored box contains its measured target with a small margin (394-step registry)', () => {
+test('every authored box contains its measured target with a small margin (409-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 394);
+  assert.equal(REGISTRY.length, 409);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -548,7 +567,7 @@ test('every authored box contains its measured target with a small margin (394-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 394);
+  assert.equal(total, 409);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

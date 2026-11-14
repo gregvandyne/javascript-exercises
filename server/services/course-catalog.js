@@ -46,7 +46,8 @@ export const COURSES = Object.freeze([
     // ones, skip counting and comparing to 1000, adding and taking away within 100). Shape Hunt is its sixth (Unit 6,
     // The Shape Shed: naming shapes by what defines them, building shapes from shapes, halves and fourths). Kitchen
     // Rush is its seventh (Unit 7, The Measuring Meadow: measuring length, clocks and coins, sorting and graphs) and
-    // also plays the tier's finale, The Garden Gate, in its own fourth chapter.
+    // also plays the tier's finale, The Garden Gate, in its own fourth chapter. Sub Zero is the Pro tier's Unit 2 game
+    // (The Cold Store: dividing by a fraction, numbers below zero, operations with negatives).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -60,6 +61,7 @@ export const COURSES = Object.freeze([
       { slug: 'rocket-supply', topic: 'numbers', shared: true },
       { slug: 'shape-hunt', topic: 'numbers', shared: true },
       { slug: 'kitchen-rush', topic: 'numbers', shared: true },
+      { slug: 'sub-zero', topic: 'numbers', shared: true },
     ],
   },
 ]);

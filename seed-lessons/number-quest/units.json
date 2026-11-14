@@ -1885,23 +1885,20 @@
    "emoji": "❄️",
    "group": "unit-2",
    "n": 2,
-   "planned": true,
-   "reserved": {
-    "game": "sub-zero",
-    "world": "busy-kitchen"
-   },
    "stamp": "Zero Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Pour and Count",
+       "chapterTitle": "Pour and Count",
+       "params": "chapter=pour&lock=1",
+       "slug": "sub-zero"
+      }
      },
      "mp": "MP4",
      "n": "2.1",
      "order": 5,
-     "reserved": {
-      "params": "chapter=pour&lock=1"
-     },
      "shorts": {
       "pro": "Dividing fractions"
      },
@@ -1923,14 +1920,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Below Zero",
+       "chapterTitle": "Below Zero",
+       "params": "chapter=below&lock=1",
+       "slug": "sub-zero"
+      }
      },
      "mp": "MP2",
      "n": "2.2",
      "order": 6,
-     "reserved": {
-      "params": "chapter=below&lock=1"
-     },
      "shorts": {
       "pro": "Negative numbers"
      },
@@ -1952,14 +1951,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Change the Reading",
+       "chapterTitle": "Change the Reading",
+       "params": "chapter=change&lock=1",
+       "slug": "sub-zero"
+      }
      },
      "mp": "MP8",
      "n": "2.3",
      "order": 7,
-     "reserved": {
-      "params": "chapter=change&lock=1"
-     },
      "shorts": {
       "pro": "Rational arithmetic"
      },
@@ -1981,10 +1982,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers the number system work of grades 6 and 7: dividing by a fraction with a model and with the reciprocal, negative numbers on upright and flat number lines, opposites, absolute value and order, and then adding, subtracting, multiplying and dividing with negative numbers. Dividing decimals is checked on the same pouring model.",
+    "Common misconceptions: that dividing always makes a number smaller (3 ÷ 1/2 is 6, not 1 1/2); that −8 is greater than −2 because 8 is greater than 2; and that subtracting a negative makes a number smaller. Ask \"how many halves fit in 3?\", \"which reading is lower on the thermometer?\" and \"if you take cold away, does it get warmer or colder?\"",
+    "Sub Zero checks each idea by doing. The learner plans a move (a number of jars, a place for the marker, a change in degrees), runs it and sees what the plan really does: jars left empty, or a reading that lands short. There is no timer, and nothing is bought or sold. Every instruction is read aloud by default, with the signs said in words, and six finished rounds complete a step."
+   ],
    "tier": "pro",
    "title": "The Cold Store",
-   "tool": null
+   "tool": "sub-zero"
   },
   {
    "emoji": "⚙️",

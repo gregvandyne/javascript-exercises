@@ -1,0 +1,215 @@
+{
+ "key": "pro-2.3",
+ "n": "2.3",
+ "band": "pro",
+ "title": "Add, subtract, multiply and divide with negatives",
+ "topic": "Rational arithmetic",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "The reading has to move",
+   "text": "A sample in the Cold Store sits at −6°C, and Tally needs it at 4°C. Every move on the thermometer is a number: a move up is positive and a move down is negative. Adding a number means making that move.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Adding is moving along the line",
+   "text": "Start at −6 and add 10. Climb 6 to reach zero, then 4 more, and you land on 4. Adding a negative number moves down instead: 3 + (−8) lands on −5. A number and its opposite cancel out, so −6 + 6 = 0.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "From negative six, add ten",
+    "min": -10,
+    "max": 10,
+    "upright": true,
+    "marks": [
+     {
+      "at": -10,
+      "label": "−10"
+     },
+     {
+      "at": -6,
+      "label": "−6"
+     },
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 4,
+      "label": "4"
+     },
+     {
+      "at": 10,
+      "label": "10"
+     }
+    ],
+    "point": {
+     "at": 4,
+     "label": "4"
+    },
+    "hops": [
+     {
+      "from": -6,
+      "to": 4,
+      "label": "+10"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start at −6. Adding 10 is a move of 10 up.",
+     "box": [
+      59.8,
+      35,
+      11.2,
+      38.9
+     ]
+    },
+    {
+     "cue": "The move passes zero and lands on 4.",
+     "box": [
+      38.7,
+      30.2,
+      12,
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Take away a cold pack",
+   "text": "A chamber reads −2°C with a cold pack inside worth −5°. Lift the pack out and you have subtracted −5. Taking cold away makes the chamber warmer, so the reading climbs by 5. That is why −2 − (−5) is the same as −2 + 5.",
+   "art": "box",
+   "steps": [
+    "The chamber reads −2",
+    "Remove the pack: subtract −5",
+    "Less cold means warmer: up 5",
+    "−2 − (−5) = −2 + 5 = 3"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A cold pack is taken out",
+    "min": -5,
+    "max": 5,
+    "upright": true,
+    "tube": true,
+    "marks": [
+     {
+      "at": -5,
+      "label": "−5°"
+     },
+     {
+      "at": -2,
+      "label": "−2°"
+     },
+     {
+      "at": 0,
+      "label": "0°"
+     },
+     {
+      "at": 5,
+      "label": "5°"
+     }
+    ],
+    "point": {
+     "at": 3,
+     "label": "3°C"
+    },
+    "hops": [
+     {
+      "from": -2,
+      "to": 3,
+      "label": "+5"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The reading starts at −2, below zero.",
+     "box": [
+      29.4,
+      52.6,
+      11,
+      10.8
+     ]
+    },
+    {
+     "cue": "Taking away −5 moves the reading up 5, to 3.",
+     "box": [
+      59.8,
+      27,
+      9.8,
+      34.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Subtracting is adding the opposite",
+   "text": "The cold pack shows a rule that always holds: to subtract a number, add its opposite. So 4 − (−3) = 4 + 3 = 7, and 3 − 8 = 3 + (−8) = −5. The distance between two readings is the absolute value of their difference. From −6 to 4 the distance is 10.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Times and divided by a negative",
+   "text": "Cooling 2.5° each minute for 4 minutes is 4 × (−2.5) = −10: four equal moves down. Run the film backward and each minute undoes a drop, so (−4) × (−2.5) = 10. A drop of 12° shared into 4 equal steps is −12 ÷ 4 = −3. Different signs give a negative answer, and the same signs give a positive one.",
+   "art": "clock"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for working with negative numbers.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "additive inverse",
+     "means": "another name for the opposite: a number and its additive inverse add to 0"
+    },
+    {
+     "word": "difference",
+     "means": "the result of subtracting, such as 7 in 4 − (−3) = 7"
+    },
+    {
+     "word": "product",
+     "means": "the result of multiplying, such as −10 in 4 × (−2.5) = −10"
+    },
+    {
+     "word": "rational number",
+     "means": "any number that can be written as a fraction, such as −2.5, 3/4 or 7"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sub Zero at Change the Reading. Plan each change, run it and see where the sample lands. Take out the cold pack to subtract a negative.",
+   "art": "trophy",
+   "img": "nq/sub-zero/change-the-reading",
+   "alt": "Sub Zero on a phone: a thermometer with a sample at −6 degrees and a target at 4 degrees, and a stepper to set the change.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-2.3-e1",
+  "nq-pro-2.3-e2",
+  "nq-pro-2.3-e3"
+ ],
+ "game": {
+  "slug": "sub-zero",
+  "chapter": "Change the Reading",
+  "params": "chapter=change&lock=1"
+ }
+}
