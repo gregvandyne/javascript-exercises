@@ -19,8 +19,10 @@ Every game, whether it came from our team or from a kid, runs the same way.
   else on the site and no other host; `connect-src` also has `blob:`, data the frame already holds, which the model loader
   reads textures from), no forms (`form-action 'none'`), no other pages may embed it,
   scripts only inline, from `cdnjs.cloudflare.com`, or from the site's own `/vendor/three/`, `/vendor/oomba-kit/`,
-  `/vendor/data/` and `/vendor/kit2/` folders (pinned libraries, named by the site's origin plus that path, so no other
-  script on the site can run in a game), styles and fonts only from Google Fonts and the kit.
+  `/vendor/data/`, `/vendor/kit2/` and `/vendor/art2d/` folders (pinned libraries, named by the site's origin plus that
+  path, so no other script on the site can run in a game), styles and fonts only from Google Fonts and the kit.
+  Pictures may also come from `/vendor/art2d/` (`img-src`, since 14 Nov 2026): the 2D art packs, read-only files that the
+  pinned Oomba2D helper loads as `<img>` (nothing there is fetched: the path is not in `connect-src` or `media-src`).
 - The token in the frame link is signed and expires. Studio previews use a preview token, which also switches
   saving off.
 - **Two network gaps the CSP cannot cover are closed in code, before any game code runs** (`public/sdk/brb-sdk.js`,

@@ -20,6 +20,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { frameDocument, frameCsp, SANDBOX } from './frame.js';
 import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE, KIT2_PATH, THEMES_PATH } from './vendor.js';
+import { ART2D_PATH } from './art2d.js';
 import { KIT_PATH } from './kit.js';
 import { config } from '../config.js';
 
@@ -35,8 +36,8 @@ function vendorFile(url) {
     const dir = path.join(PUBLIC_DIR, 'vendor', 'data'), f = path.join(dir, d[1], d[2], d[3]);
     return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
   }
-  // Kit 2: /vendor/kit2/<engine>/<v>/<path> and /vendor/themes/<theme>/<v>/<path> (up to three folders deep, plain names).
-  const k = /^\/vendor\/(kit2|themes)\/((?:[a-z0-9][a-z0-9._-]{0,40}\/){2,5}[a-z0-9][a-z0-9._-]{0,60})$/i.exec(p);
+  // Kit 2: /vendor/kit2/<engine>/<v>/<path>, /vendor/themes/<theme>/<v>/<path> and the 2D art /vendor/art2d/<pack>/<v>/<file> (up to three folders deep, plain names).
+  const k = /^\/vendor\/(kit2|themes|art2d)\/((?:[a-z0-9][a-z0-9._-]{0,40}\/){2,5}[a-z0-9][a-z0-9._-]{0,60})$/i.exec(p);
   if (k) {
     if (k[2].split('/').some(x => x === '..' || x.startsWith('.'))) return null;
     const dir = path.join(PUBLIC_DIR, 'vendor', k[1]), f = path.join(dir, k[2]);
@@ -301,7 +302,7 @@ async function capture(gameHtml, opts) {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
       if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`) || u.startsWith(`${HOST}${KIT2_PATH}`) || u.startsWith(`${HOST}${THEMES_PATH}`)) {
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`) || u.startsWith(`${HOST}${KIT2_PATH}`) || u.startsWith(`${HOST}${THEMES_PATH}`) || u.startsWith(`${HOST}${ART2D_PATH}`)) {
         const f = vendorFile(u);
         if (!f) return route.fulfill({ status: 404, body: '' });
         return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });

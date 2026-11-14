@@ -53,7 +53,7 @@ test('frame CSP: Kit 2 scripts, and theme art only from /vendor/themes/ on our o
   assert.ok(!dir('script-src').includes("'unsafe-eval'"), 'never eval or new Function');
   assert.ok(!/worker-src/.test(csp), 'no workers');
   assert.deepEqual(dir('connect-src'), ['blob:', 'https://oomba.ai/vendor/themes/']);
-  assert.deepEqual(dir('img-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/']);
+  assert.deepEqual(dir('img-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/', 'https://oomba.ai/vendor/art2d/']);   // the 2D art packs' pictures (art2d.js)
   assert.deepEqual(dir('media-src'), ['data:', 'blob:', 'https://oomba.ai/vendor/themes/']);
   // With no origin known, nothing is reachable.
   assert.match(FRAME_CSP, /connect-src 'none'/);

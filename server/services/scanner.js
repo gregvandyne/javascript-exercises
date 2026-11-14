@@ -6,6 +6,8 @@ import { checkThree, checkKit2 } from './vendor.js';
 import { checkKit } from './kit.js';
 import { lintGame } from './stylelint.js';
 import { lintKit2 } from './kit2-lint.js';
+import { checkArt2d } from './art2d.js';
+import { lintArt2d } from './art2d-lint.js';
 import { checkHtml as liveCheckHtml } from './classlive-lint.js';
 
 const ALLOWED_URL = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)(\/|$)/i;
@@ -165,9 +167,12 @@ export function scanVersion(html) {
   // shipped theme version.
   const kit2 = checkKit2(kit.rest);
   for (const i of kit2.issues) add(i.level, i.code, i.message);
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(kit2.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
+  // 2D art packs (art2d.js): exactly the pinned Oomba2D and pack tags pass and are taken out; any other mention fails.
+  const art2d = checkArt2d(kit2.rest);
+  for (const i of art2d.issues) add(i.level, i.code, i.message);
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(art2d.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
   // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity, or the Kit 2 map); any other Three.js fails.
-  for (const i of checkThree(kit2.rest)) add(i.level, i.code, i.message);
+  for (const i of checkThree(art2d.rest)) add(i.level, i.code, i.message);
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);
@@ -188,7 +193,7 @@ export function scanVersion(html) {
   for (const f of flashing(src)) issues.push({ level: 'flag', code: 'flashing', message: f + ' Fast flashing can hurt some players.' });
   const status = issues.some(i => i.level === 'fail') ? 'fail' : issues.some(i => i.level === 'flag') ? 'flag' : 'pass';
   // Style notes for kit games (never change the status): see stylelint.js.
-  let lint = []; try { lint = [...lintGame(src), ...lintKit2(src)]; } catch { lint = []; }
+  let lint = []; try { lint = [...lintGame(src), ...lintKit2(src), ...lintArt2d(src)]; } catch { lint = []; }
   // Oomba Live: is this version live-ready (a teacher can host it live)? Only for games that load the live pack.
   let live; try { live = /\/packs\/live\.js/.test(src) ? liveCheckHtml(src).ready : undefined; } catch { live = false; }
   return { status, issues, lint, ...(live === undefined ? {} : { live }), bytes: Buffer.byteLength(src), scannedAt: Date.now() };

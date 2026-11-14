@@ -5098,3 +5098,45 @@ new build. Two other uploads are NOT used: `amir-forest-nature-pack` (its licenc
 - **No animals in this version.** Oomba3D 1.2.0 can show them; woodland animals join as a new theme version.
 - **Not verified:** a real GPU or Chromebook (software WebGL only), sound by ear, a build with the real model, and the
   walk of a whole level by hand on a phone. The cover's bridge stands at the right edge of the picture.
+
+## 2D art packs: the Kit 2 worlds, heroes and animals for 2D games (14 Nov 2026)
+
+The owner asked: "Can we also make these worlds available in 2d?" Branch `kit2-art2d` (no pull request yet).
+
+- **What ships:** twelve versioned packs under `public/vendor/art2d/<pack>/1.0.0/`: one per world (all ten, Wild Woods
+  added after it shipped), `heroes`
+  (the nine heroes) and `animals` (24: woodland, farm, dinosaurs). Worlds and heroes are drawn only from shipped theme
+  files; the animals from the staged conversions of the uploaded Quaternius packs (CC0; the licence texts ship in the
+  pack). `kit2/pipeline/art2d.mjs` draws them in headless Chromium with the 3D look and writes WebP; the same input gives
+  the same bytes (the test draws Pirate Cove and the heroes again and compares with the lock). The animals need the
+  staged models (`--stage`), which are not in the repository, so their rebuild is not in the test; their files are
+  locked like the rest.
+- **The old kit stays the engine, frozen.** Oomba2D (`public/vendor/art2d/oomba2d/1.0.0/oomba2d.js`) only registers
+  pictures as kit sprites (`Oomba.art.define`) and moves a few ordinary stage entities: the world's sky, strips and
+  under-colour sit on the kit's layer between its own hills and the ground, the ground tiles and the hero are given
+  the world's sprites, and the hero's frame follows what the kit's physics is doing. The kit does everything else
+  (physics, HUD, pause, results, sound, read-aloud, languages, reduced motion, the low-power governor). No shipped kit
+  file changes. Oomba2D reads a few stage fields the kit's docs do not list (an entity's `sprite`, `variant`, `par`,
+  `sx`/`sy`, the `ground:` sprite name, `stage.view`): the frame tests play real games on the current kit, so a kit
+  version that changes them fails a test before it ships; a game whose art cannot load plays with the kit's own look.
+- **Loading and the frame:** a game loads Oomba2D and its packs with pinned tags (integrity, crossorigin) after the
+  kit's tag; the scanner accepts exactly those tags and refuses any other mention of `/vendor/art2d/` (a game never
+  names a picture). The pictures are `<img>` loads made by Oomba2D (with `crossOrigin`, or the kit's WebGL canvases
+  would be tainted in the opaque-origin frame). **The frame CSP gained one path, `/vendor/art2d/` on our own origin, in
+  `script-src` and `img-src`**, and nowhere else (not `connect-src`: nothing is fetched). It could not be avoided:
+  `/vendor/themes/` and `/vendor/kit2/` are locked folder by folder to theme and engine versions. The exact-policy
+  assertions in `vendor.test.js`, `kit-platform.test.js` and `kit2-hosting.test.js` name the new source.
+- **Engine choice: 3D stays 3D.** Everything `kit2.js` sent to a 3D world before still goes there ("a running game in a
+  spooky forest", "a pirate quiz"). The 2D art is used when the build is a 2D one and names a world or an animal: a
+  kind of game only 2D makes ("a pirate catching game"), "2D", the Classic tab's new world and animal chips, or a
+  running or catching game with a sprite animal that the described 3D world does not have ("a running game with a fox on
+  the moon"). Since Castle Quest 1.2.0 and Medieval Village 1.1.0 have animals of their own, "a running game with a fox
+  in the castle" is a 3D game with the fox as a friend; "a 2D running game with a fox in the castle" is the 2D one. A request for an animal with no sprite (a shark, a T-Rex) gets
+  one honest sentence, as in 3D.
+- **Safety:** obstacles are the world's things (barrels, crates, rocks, pumpkins); the bee and the rolling spike ball
+  are taken out of a level that draws a world, and animals are only the hero or scenery. Nothing new is stored, no
+  network, no text box, no prices.
+- **Left for later:** the quiz, word, memory, duel and board templates do not draw the worlds; the sea creatures and
+  cute fish; the T-Rex (not decided); the results card shows the sprite but the kit's small pictures elsewhere (an
+  NPC bubble) do not; clouds are few. **Not verified:** a real phone or Chromebook GPU (software WebGL and the 2D
+  canvas backend only) and a build with the real model.

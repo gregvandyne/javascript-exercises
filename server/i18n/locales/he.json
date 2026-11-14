@@ -1629,6 +1629,34 @@
         "shiba": "שיבה אינו"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "סוס",
+        "horse-white": "סוס לבן",
+        "donkey": "חמור",
+        "cow": "פרה",
+        "bull": "שור",
+        "alpaca": "אלפקה",
+        "deer": "איילה",
+        "stag": "אייל",
+        "fox": "שועל",
+        "wolf": "זאב",
+        "husky": "האסקי",
+        "shiba": "כלב שיבא",
+        "cow-spotted": "פרה מנומרת",
+        "pony": "פוני",
+        "zebra": "זברה",
+        "llama": "למה",
+        "pig": "חזיר",
+        "sheep": "כבשה",
+        "pug": "פאג",
+        "apatosaurus": "אפטוזאורוס",
+        "stegosaurus": "סטגוזאורוס",
+        "triceratops": "טריצרטופס",
+        "parasaurolophus": "פרזאורולופוס",
+        "velociraptor": "ולוצירפטור"
+      }
+    },
     "lesson": {
       "step": "שלב בשיעור: {title}",
       "back": "חזרה לשיעור",
@@ -2405,6 +2433,8 @@
       "themeUse": "השתמשו בנושא {name}.",
       "worldUse": "תהפוך את זה למשחק תלת־ממד בעולם {name}.",
       "heroUse": "השתמש בגיבור התלת־ממד {name}.",
+      "world2dUse": "השתמשו בעולם הדו־ממדי {name}.",
+      "animal2dUse": "שהגיבור יהיה החיה הזאת: {name}.",
       "sparks": "{n, plural, one {הודעה אחת מחבילות ניצוצות} two {שתי הודעות מחבילות ניצוצות} other {# הודעות מחבילות ניצוצות}}"
     },
     "character": {

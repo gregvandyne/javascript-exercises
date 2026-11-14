@@ -1,0 +1,339 @@
+{
+ "id": "wild-woods",
+ "version": "1.0.0",
+ "kind": "world",
+ "name": "Wild Woods",
+ "world": "wild-woods",
+ "heroes": [
+  "barbarian",
+  "knight",
+  "mage",
+  "rogue",
+  "rogue-hooded"
+ ],
+ "cell": 96,
+ "from": {
+  "theme": "wild-woods/1.0.0",
+  "packs": [
+   {
+    "id": "kaykit-adventurers",
+    "name": "KayKit Adventurers Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-nature",
+    "name": "Kenney Nature Kit 2.1",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "quaternius-nature",
+    "name": "Quaternius Ultimate Nature Pack",
+    "author": "Quaternius",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-dungeon",
+    "name": "KayKit Dungeon Remastered Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-platformer",
+    "name": "Kenney Starter Kit 3D Platformer (sounds)",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   }
+  ]
+ },
+ "sprites": {
+  "oak": {
+   "kind": "prop",
+   "piece": "oak",
+   "ax": 0.497,
+   "ay": 0.9616,
+   "size": 3.61,
+   "rect": [
+    361,
+    2,
+    204,
+    347
+   ]
+  },
+  "pine": {
+   "kind": "prop",
+   "piece": "pine",
+   "ax": 0.4994,
+   "ay": 0.9734,
+   "size": 3.71,
+   "rect": [
+    174,
+    2,
+    185,
+    356
+   ]
+  },
+  "birch": {
+   "kind": "prop",
+   "piece": "birch",
+   "ax": 0.4959,
+   "ay": 0.9758,
+   "size": 4.31,
+   "rect": [
+    2,
+    2,
+    170,
+    414
+   ]
+  },
+  "bush": {
+   "kind": "prop",
+   "piece": "bush",
+   "ax": 0.497,
+   "ay": 0.9391,
+   "size": 1.09,
+   "rect": [
+    379,
+    418,
+    119,
+    105
+   ]
+  },
+  "berry-bush": {
+   "kind": "prop",
+   "piece": "berry-bush",
+   "ax": 0.5044,
+   "ay": 0.9582,
+   "size": 1.21,
+   "rect": [
+    2,
+    418,
+    126,
+    116
+   ]
+  },
+  "fern": {
+   "kind": "prop",
+   "piece": "fern",
+   "ax": 0.5021,
+   "ay": 0.9697,
+   "size": 0.75,
+   "rect": [
+    232,
+    536,
+    62,
+    72
+   ]
+  },
+  "flower-red": {
+   "kind": "prop",
+   "piece": "flower-red",
+   "ax": 0.5011,
+   "ay": 0.9622,
+   "size": 0.64,
+   "rect": [
+    403,
+    536,
+    36,
+    61
+   ]
+  },
+  "flowers-blue": {
+   "kind": "prop",
+   "piece": "flowers-blue",
+   "ax": 0.5078,
+   "ay": 0.9969,
+   "size": 0.83,
+   "rect": [
+    729,
+    418,
+    48,
+    80
+   ]
+  },
+  "mushrooms-red": {
+   "kind": "prop",
+   "piece": "mushrooms-red",
+   "ax": 0.4959,
+   "ay": 0.9472,
+   "size": 0.64,
+   "rect": [
+    441,
+    536,
+    67,
+    61
+   ]
+  },
+  "mossy-rock": {
+   "kind": "prop",
+   "piece": "mossy-rock",
+   "ax": 0.4988,
+   "ay": 0.8552,
+   "size": 0.91,
+   "rect": [
+    500,
+    418,
+    129,
+    87
+   ]
+  },
+  "stump": {
+   "kind": "prop",
+   "piece": "stump",
+   "ax": 0.497,
+   "ay": 0.875,
+   "size": 0.75,
+   "rect": [
+    296,
+    536,
+    105,
+    72
+   ]
+  },
+  "sign": {
+   "kind": "prop",
+   "piece": "sign",
+   "ax": 0.491,
+   "ay": 0.9757,
+   "size": 1.33,
+   "rect": [
+    890,
+    2,
+    93,
+    128
+   ]
+  },
+  "fence": {
+   "kind": "prop",
+   "piece": "fence",
+   "ax": 0.4952,
+   "ay": 0.7443,
+   "size": 1.1,
+   "rect": [
+    130,
+    418,
+    247,
+    106
+   ]
+  },
+  "goal": {
+   "kind": "goal",
+   "piece": "tent",
+   "ax": 0.4949,
+   "ay": 0.8895,
+   "size": 2.16,
+   "rect": [
+    567,
+    2,
+    321,
+    207
+   ]
+  },
+  "coin": {
+   "kind": "coin",
+   "piece": "coin",
+   "ax": 0.5036,
+   "ay": 0.9887,
+   "size": 0.61,
+   "rect": [
+    510,
+    536,
+    53,
+    59
+   ]
+  },
+  "obstacle-1": {
+   "kind": "obstacle",
+   "piece": "log",
+   "ax": 0.5035,
+   "ay": 0.8453,
+   "size": 0.76,
+   "rect": [
+    2,
+    536,
+    228,
+    73
+   ]
+  },
+  "obstacle-2": {
+   "kind": "obstacle",
+   "piece": "boulder",
+   "ax": 0.5,
+   "ay": 0.9483,
+   "size": 0.85,
+   "rect": [
+    631,
+    418,
+    96,
+    82
+   ]
+  },
+  "obstacle-3": {
+   "kind": "obstacle",
+   "piece": "stump-old",
+   "ax": 0.4964,
+   "ay": 0.8974,
+   "size": 0.79,
+   "rect": [
+    779,
+    418,
+    97,
+    76
+   ]
+  }
+ },
+ "sky": [
+  "#4aa8f0",
+  "#b5e2ff",
+  "#f6f7d4"
+ ],
+ "under": "#a1763e",
+ "layers": {
+  "far": {
+   "image": "far.webp",
+   "w": 1024,
+   "h": 320,
+   "cells": 11.11,
+   "speed": 0.12,
+   "base": 26
+  },
+  "mid": {
+   "image": "mid.webp",
+   "w": 2048,
+   "h": 512,
+   "cells": 7.41,
+   "speed": 0.35,
+   "base": 44
+  }
+ },
+ "ground": {
+  "image": "ground.webp",
+  "cells": 3,
+  "over": 15,
+  "fill": "#a1763e"
+ },
+ "props": {
+  "image": "props.webp",
+  "w": 1024,
+  "h": 611
+ },
+ "files": {
+  "far.webp": {
+   "bytes": 14168,
+   "sha384": "sha384-CPU+vltMJe0r8sjTYa0EaFEeOdTot8ohpIzUbYDb0yRFn9MH3kDhbO2pJ3Kv8/QH"
+  },
+  "ground.webp": {
+   "bytes": 780,
+   "sha384": "sha384-0xsw5aVEkrSKA0ftyF48ozrZFLEnRGkiOXM/gPeMzudgcEP8mc81VOfBWWM9qTpF"
+  },
+  "mid.webp": {
+   "bytes": 41844,
+   "sha384": "sha384-cY1qW46MyhkRFApoHbbooLXADpdiIHKPDdBLg/dJzvPo4RchkZXN5XCXBV+sSJqY"
+  },
+  "props.webp": {
+   "bytes": 50112,
+   "sha384": "sha384-rlvglGdFWDfVg3By2cN7lUjAGEzCRXjqnXItqwjelZLkOf4DMxBk3meO9XRlL16w"
+  }
+ }
+}

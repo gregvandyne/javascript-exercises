@@ -3,6 +3,7 @@
 <!--KIT-->
 <!--PACK:dress-->
 <!--PACK:art-school-->
+<!--ART2D-->
 <script>
 // Catch the Falling Things, on the Oomba Kit: one Oomba.game call. The kit does the hero, the controls (keys, stick,
 // jump button), the catching (a pickup magnet), getting hurt, the HUD, pause, results and every screen. This file only
@@ -12,6 +13,8 @@ const CONFIG = {
   title: 'Fruit Catch',
   hero: { species: 'bunny' },
   biome: 'meadow',
+  world: '',
+  hero2d: '',
   good: ['apple', 'banana', 'grapes', 'melon', 'cupcake', 'carrot'],
   bad: ['rock', 'spikeball'],
   extraLife: 'heart',
@@ -74,15 +77,19 @@ function drop(w, k) {
   e.fall = lerp(CONFIG.startFall, CONFIG.endFall, k) * c * r.range(0.85, 1.15);
 }
 
-const game = O.game({
-  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero,
+// CONFIG.world and CONFIG.hero2d: one of the ready-made 2D worlds (its sky, scenery and ground) and a hero or animal
+// drawn as a sprite, from the 2D art packs (Oomba2D). With neither, or when the art cannot load, art is null and the
+// game has the kit's own look (CONFIG.biome and CONFIG.hero).
+function begin(art) {
+O.game({
+  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero, dress: art && art.world ? 'off' : 'auto',
   controls: 'platformer:snappy',
   hud: ['score', 'lives:' + CONFIG.lives, 'timer:' + CONFIG.roundSeconds, 'combo'],
   howTo: [{ icon: 'move', text: 'move' }, { icon: 'spark', text: 'catch' }, { icon: 'heart', text: 'dodge' }],
   strings: WORDS,
   level: O.level.grid(FIELD),
   stars: w => CONFIG.stars.filter(s => w.points >= s).length,
-  setup() { clock = 0; wait = 0.8; },
+  setup(w) { clock = 0; wait = 0.8; if (art) art.dress(w, { every: 4 }); },
   update(w, dt) {
     if (w.scene !== 'play' || w.busy) return;
     clock += dt; wait -= dt;
@@ -102,4 +109,7 @@ const game = O.game({
     timeup(w) { w.win(); return false; },   // the round ends on time: results, with stars from the score
   },
 });
+}
+const A = window.Oomba2D;
+if (A && (CONFIG.world || CONFIG.hero2d)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d }).then(begin); else begin(null);
 </script>
