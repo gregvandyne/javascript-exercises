@@ -22,11 +22,11 @@ export function namesOf(world, version) {
   if (!KIT2_LOCK.themes[key]) return null;
   if (cache.has(key)) return cache.get(key);
   let m = KIT2_WORLDS.find(w => w.id === world && w.version === version);
-  if (m) m = { heroes: [...m.heroes, ...m.creatures.filter(c => c.playable)].map(h => h.id), creatures: m.creatures.map(c => c.id), pieces: m.pieces.map(p => p.id), sounds: m.sounds };
+  if (m) m = { heroes: [...m.heroes, ...m.creatures.filter(c => c.playable)].map(h => h.id), creatures: m.creatures.map(c => c.id), hoppers: m.creatures.filter(c => !c.moves.includes('walk')).map(c => c.id), pieces: m.pieces.map(p => p.id), sounds: m.sounds };
   else {
-    try { const t = JSON.parse(fs.readFileSync(path.join(THEMES_DIR, world, version, 'theme.json'), 'utf8')); m = { heroes: [...(t.heroes || []), ...(t.creatures || []).filter(c => c.playable)].map(h => h.id), creatures: (t.creatures || []).map(c => c.id), pieces: (t.pieces || []).map(p => p.id), sounds: (t.sounds || []).map(s => s.id) }; } catch { return null; }
+    try { const t = JSON.parse(fs.readFileSync(path.join(THEMES_DIR, world, version, 'theme.json'), 'utf8')); m = { heroes: [...(t.heroes || []), ...(t.creatures || []).filter(c => c.playable)].map(h => h.id), creatures: (t.creatures || []).map(c => c.id), hoppers: (t.creatures || []).filter(c => !(c.moves || []).includes('walk')).map(c => c.id), pieces: (t.pieces || []).map(p => p.id), sounds: (t.sounds || []).map(s => s.id) }; } catch { return null; }
   }
-  const out = { heroes: new Set(m.heroes), creatures: new Set(m.creatures), pieces: new Set(m.pieces), sounds: new Set([...m.sounds, 'cheer', 'wrong']) };
+  const out = { heroes: new Set(m.heroes), creatures: new Set(m.creatures), hoppers: new Set(m.hoppers), pieces: new Set(m.pieces), sounds: new Set([...m.sounds, 'cheer', 'wrong']) };
   cache.set(key, out);
   return out;
 }
@@ -45,7 +45,7 @@ export function lintKit2(html) {
   const heroes = [...all(src, new RegExp(`\\.hero\\(\\s*['"]${NAME}['"]`, 'g')), ...all(src, new RegExp(`\\bhero\\s*:\\s*['"]${NAME}['"]`, 'g'))].filter(n => !names.heroes.has(n));
   const cannot = heroes.filter(n => names.creatures.has(n)), unknown = heroes.filter(n => !names.creatures.has(n));
   if (unknown.length) add('kit2_hero', `${world} ${version} has no hero called ${[...new Set(unknown)].slice(0, 3).map(n => `"${n}"`).join(', ')}: the game stops with an error when it asks for one. Its heroes: ${list(names.heroes)}.`);
-  if (cannot.length) add('kit2_hero', `In ${world} ${version} the ${[...new Set(cannot)].slice(0, 3).join(', ')} cannot be the hero (no walk: it only hops): the game stops with an error. Make it a companion or scenery (g.creature) and pick a hero from: ${list(names.heroes)}.`);
+  if (cannot.length) add('kit2_hero', `In ${world} ${version} the ${[...new Set(cannot)].slice(0, 3).join(', ')} cannot be the hero (${cannot.some(n => names.hoppers.has(n)) ? 'no walk: it only hops' : 'it is too big'}): the game stops with an error. Make it a companion or scenery (g.creature) and pick a hero from: ${list(names.heroes)}.`);
   // Animals: only this world version's own creatures exist (g.creature, g.school, the starter's companion line).
   const animals = [...all(src, new RegExp(`\\.(?:creature|school)\\(\\s*['"]${NAME}['"]`, 'g')), ...all(src, new RegExp(`\\bcompanion\\s*:\\s*['"]${NAME}['"]`, 'g'))].filter(n => !names.creatures.has(n));
   if (animals.length) add('kit2_creature', `${world} ${version} has no animal called ${[...new Set(animals)].slice(0, 3).map(n => `"${n}"`).join(', ')}: the game stops with an error when it asks for one. ${names.creatures.size ? `Its animals: ${list(names.creatures)}. There are no others` : 'This world has no animals yet'}: never invent one.`);

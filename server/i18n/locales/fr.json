@@ -1602,7 +1602,8 @@
         "cosy-home": "Maison Douillette",
         "busy-kitchen": "Cuisine Animée",
         "pirate-cove": "Crique des Pirates",
-        "wild-woods": "Forêt Sauvage"
+        "wild-woods": "Forêt Sauvage",
+        "dino-valley": "Vallée des Dinos"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "Biche",
         "stag": "Cerf",
         "fox": "Renard",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Tricératops",
+        "stegosaurus": "Stégosaure",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaure",
+        "velociraptor": "Vélociraptor"
       }
     },
     "animals": {

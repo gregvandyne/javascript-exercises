@@ -32,7 +32,7 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Under the Sea | 1 | Quaternius fish and sea creatures | Three.js | Science, counting |
 | Castle Quest | 1 | KayKit Dungeon + Adventurers | Three.js | Reading, history, adventures |
 | Pixel World | 2 | Kenney pixel platformer (2D) | Phaser | Classic 2D games, low-power devices |
-| Dino Valley | 2 | Quaternius dinosaurs + nature | Three.js | Science, history |
+| Dino Valley | 2 (built 14 Nov, see below) | Quaternius dinosaurs + nature | Three.js | Science, history |
 | Space Station | 2 | Kenney / KayKit space | Three.js | Science, maths |
 | Farm & Friends | 3 | Quaternius animals + Kenney nature | Three.js | Younger kids, counting |
 | City Builder | 3 | Kenney / KayKit city | Three.js | Geography, money |
@@ -45,6 +45,7 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Busy Kitchen | added 12 Nov | KayKit Restaurant | Three.js | Maths, fractions, healthy eating |
 | Pirate Cove | added 14 Nov | Kenney Pirate Kit + KayKit Adventurers | Three.js | Maths, geography, treasure maps |
 | Wild Woods | added 14 Nov | Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Maths, science, nature |
+| Dino Valley | added 14 Nov | Quaternius Animated Dinosaurs (five, no T-Rex) + Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Science, maths, nature |
 
 ## How it fits together
 

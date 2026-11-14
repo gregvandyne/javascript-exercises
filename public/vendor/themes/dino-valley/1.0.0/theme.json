@@ -1,0 +1,2161 @@
+{
+ "id": "dino-valley",
+ "name": "Dino Valley",
+ "description": "A sunny prehistoric valley with friendly dinosaurs: palms and giant ferns, big rocks, cliffs with a waterfall and a cave, a river with stepping stones, and a great egg to find.",
+ "goodFor": [
+  "science",
+  "maths",
+  "nature",
+  "adventures"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-nature",
+   "name": "Kenney Nature Kit 2.1",
+   "author": "Kenney",
+   "url": "https://kenney.nl/assets/nature-kit",
+   "commit": "6de6ee07a0b8b77f125534477d13d73159d447b4",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-nature.txt",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "quaternius-nature",
+   "name": "Quaternius Ultimate Nature Pack",
+   "author": "Quaternius",
+   "url": "https://quaternius.com/packs/ultimatenature.html",
+   "commit": "6de6ee07a0b8b77f125534477d13d73159d447b4",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-nature.txt",
+   "credit": "Quaternius, www.quaternius.com (not required, given anyway)"
+  },
+  {
+   "id": "quaternius-dinosaurs",
+   "name": "Quaternius Animated Dinosaurs",
+   "author": "Quaternius",
+   "url": "https://quaternius.com",
+   "commit": "branch asset-packs at 6de6ee07a0b8b77f125534477d13d73159d447b4, folder dinosaurs/ (FBX uploaded by the owner)",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-dinosaurs.txt",
+   "credit": "Quaternius, quaternius.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "look": {
+  "sky": {
+   "top": "#3fa9f2",
+   "middle": "#aee3ff",
+   "bottom": "#fdf3c8"
+  },
+  "fog": {
+   "color": "#dff3e2",
+   "near": 80,
+   "far": 260
+  },
+  "hemisphere": {
+   "sky": "#f6fbff",
+   "ground": "#b5d08a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#fff1c8",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise. Ground tiles are 4 wide: valley-ground blocks at y -3 (grass at 0), and thin path and river tiles at y 0 level with them. The dinosaurs are friendly animals (g.creature): never enemies, never obstacles.",
+ "heroes": [
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "file": "heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "file": "heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "file": "heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "file": "heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "file": "heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "moves": {
+  "file": "heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "creatures": [
+  {
+   "id": "triceratops",
+   "name": "Triceratops",
+   "file": "creatures/triceratops.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "size": [
+    1.9,
+    2.8,
+    6.7
+   ],
+   "moves": [
+    "idle",
+    "walk",
+    "run",
+    "jump"
+   ],
+   "playable": true,
+   "pace": {
+    "walk": 0.8,
+    "run": 4.68
+   },
+   "jumpAir": [
+    0.23,
+    0.43
+   ]
+  },
+  {
+   "id": "stegosaurus",
+   "name": "Stegosaurus",
+   "file": "creatures/stegosaurus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "size": [
+    1.6,
+    3.2,
+    7
+   ],
+   "moves": [
+    "idle",
+    "walk",
+    "run",
+    "jump"
+   ],
+   "playable": true,
+   "pace": {
+    "walk": 0.71,
+    "run": 4.47
+   },
+   "jumpAir": [
+    0.23,
+    0.44
+   ]
+  },
+  {
+   "id": "parasaurolophus",
+   "name": "Parasaurolophus",
+   "file": "creatures/parasaurolophus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "size": [
+    1,
+    3,
+    6.5
+   ],
+   "moves": [
+    "idle",
+    "walk",
+    "run",
+    "jump"
+   ],
+   "playable": true,
+   "pace": {
+    "walk": 2.4,
+    "run": 8.1
+   },
+   "jumpAir": [
+    0.23,
+    0.46
+   ]
+  },
+  {
+   "id": "apatosaurus",
+   "name": "Apatosaurus",
+   "file": "creatures/apatosaurus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "size": [
+    1.7,
+    3.4,
+    15
+   ],
+   "moves": [
+    "idle",
+    "walk",
+    "run",
+    "jump"
+   ],
+   "playable": false,
+   "pace": {
+    "walk": 0.81,
+    "run": 3.59
+   },
+   "jumpAir": [
+    0.26,
+    0.44
+   ]
+  },
+  {
+   "id": "velociraptor",
+   "name": "Velociraptor",
+   "file": "creatures/velociraptor.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "size": [
+    0.7,
+    1.4,
+    3.6
+   ],
+   "moves": [
+    "idle",
+    "walk",
+    "run",
+    "jump"
+   ],
+   "playable": true,
+   "pace": {
+    "walk": 0.59,
+    "run": 4.19
+   },
+   "jumpAir": [
+    0.27,
+    0.54
+   ]
+  }
+ ],
+ "pieces": [
+  {
+   "id": "valley-ground",
+   "file": "world/valley-ground.glb",
+   "kind": "world",
+   "tags": [
+    "ground",
+    "grass",
+    "platform"
+   ],
+   "size": [
+    4,
+    3,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A block of grassy ground, 4 wide and 3 deep: tile them for the valley floor, with y at -3 so the grass is at 0. Deep enough to stand in a lake."
+  },
+  {
+   "id": "hill",
+   "file": "world/hill.glb",
+   "kind": "world",
+   "tags": [
+    "hill",
+    "grass",
+    "platform"
+   ],
+   "size": [
+    4,
+    2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A grassy block 2 high: a low hill, a ledge."
+  },
+  {
+   "id": "cliff-block",
+   "file": "world/cliff-block.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "grass",
+    "platform"
+   ],
+   "size": [
+    4,
+    4,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A grassy block 4 high: stack and tile them for the valley walls."
+  },
+  {
+   "id": "cliff-slope",
+   "file": "world/cliff-slope.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "slope"
+   ],
+   "size": [
+    4.8,
+    4,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A grassy slope from the ground up to the top of a cliff block."
+  },
+  {
+   "id": "cliff-steps",
+   "file": "world/cliff-steps.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "steps"
+   ],
+   "size": [
+    4,
+    4,
+    4.2
+   ],
+   "pack": "kenney-nature",
+   "note": "Grassy steps cut into the cliff (scenery: a hero stands on a piece's whole box)."
+  },
+  {
+   "id": "cliff-wall",
+   "file": "world/cliff-wall.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    0.67
+   ],
+   "pack": "kenney-nature",
+   "note": "A thin rock face 4 high: put it against the side of high ground."
+  },
+  {
+   "id": "cliff-wall-top",
+   "file": "world/cliff-wall-top.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    1.07
+   ],
+   "pack": "kenney-nature",
+   "note": "A rock face with grass along its top."
+  },
+  {
+   "id": "cliff-waterfall",
+   "file": "world/cliff-waterfall.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "waterfall",
+    "water"
+   ],
+   "size": [
+    4,
+    4,
+    0.67
+   ],
+   "pack": "kenney-nature",
+   "note": "A rock face with a waterfall running down it."
+  },
+  {
+   "id": "cliff-waterfall-top",
+   "file": "world/cliff-waterfall-top.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "waterfall",
+    "water"
+   ],
+   "size": [
+    4,
+    4,
+    1.07
+   ],
+   "pack": "kenney-nature",
+   "note": "The top of a waterfall: put it on a cliff-waterfall."
+  },
+  {
+   "id": "cave",
+   "file": "world/cave.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "cave"
+   ],
+   "size": [
+    4,
+    4,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A cliff block with a cosy cave in its side (scenery: nothing lives in it)."
+  },
+  {
+   "id": "cave-arch",
+   "file": "world/cave-arch.glb",
+   "kind": "world",
+   "tags": [
+    "cliff",
+    "cave",
+    "wall"
+   ],
+   "size": [
+    4,
+    4,
+    0.67
+   ],
+   "pack": "kenney-nature",
+   "note": "A thin rock face with a cave mouth: put it against a cliff."
+  },
+  {
+   "id": "stone-block",
+   "file": "world/stone-block.glb",
+   "kind": "world",
+   "tags": [
+    "stone",
+    "platform",
+    "step"
+   ],
+   "size": [
+    4,
+    3,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A grassy block of pale stone, 4 wide and 3 deep: smaller, a stepping stone across a lake."
+  },
+  {
+   "id": "grass-patch",
+   "file": "world/grass-patch.glb",
+   "kind": "world",
+   "tags": [
+    "grass",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.57,
+    0.33,
+    2.9
+   ],
+   "pack": "kenney-nature",
+   "note": "A small round patch of grass to stand on."
+  },
+  {
+   "id": "stone-patch",
+   "file": "world/stone-patch.glb",
+   "kind": "world",
+   "tags": [
+    "stone",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.57,
+    0.33,
+    2.9
+   ],
+   "pack": "kenney-nature",
+   "note": "A flat stepping stone."
+  },
+  {
+   "id": "sand-patch",
+   "file": "world/sand-patch.glb",
+   "kind": "world",
+   "tags": [
+    "sand",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "size": [
+    3.57,
+    0.33,
+    2.9
+   ],
+   "pack": "kenney-nature",
+   "note": "A small patch of sand: a river beach."
+  },
+  {
+   "id": "path",
+   "file": "world/path.glb",
+   "kind": "world",
+   "tags": [
+    "path",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A thin ground tile with a dirt trail across it, 4 wide: lay it at y 0 in place of a valley-ground block (over a lake, with a valley-ground under it at y -3.2). Its base is -0.2 below its y."
+  },
+  {
+   "id": "path-bend",
+   "file": "world/path-bend.glb",
+   "kind": "world",
+   "tags": [
+    "path",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "path-end",
+   "file": "world/path-end.glb",
+   "kind": "world",
+   "tags": [
+    "path",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "river",
+   "file": "world/river.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A thin ground tile with a shallow stream across it, 4 wide: lay it at y 0 in place of a valley-ground block (over a lake, with a valley-ground under it at y -3.2). Its base is -0.2 below its y."
+  },
+  {
+   "id": "river-bend",
+   "file": "world/river-bend.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "river-end",
+   "file": "world/river-end.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "Where a stream starts: a spring. Its base is -0.2 below its y."
+  },
+  {
+   "id": "river-split",
+   "file": "world/river-split.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "Its base is -0.2 below its y."
+  },
+  {
+   "id": "river-rocks",
+   "file": "world/river-rocks.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A stream with rocks in it. Its base is -0.2 below its y."
+  },
+  {
+   "id": "pond",
+   "file": "world/pond.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile",
+    "pond"
+   ],
+   "size": [
+    4,
+    0.2,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A ground tile with a small pond in it: a drinking place. Its base is -0.2 below its y."
+  },
+  {
+   "id": "water",
+   "file": "world/water.glb",
+   "kind": "world",
+   "tags": [
+    "river",
+    "water",
+    "tile"
+   ],
+   "size": [
+    4,
+    0,
+    4
+   ],
+   "pack": "kenney-nature",
+   "note": "A flat square of water, 4 wide: tile them for a pool. Its base is -0.2 below its y."
+  },
+  {
+   "id": "stepping-stones",
+   "file": "world/stepping-stones.glb",
+   "kind": "decor",
+   "tags": [
+    "path",
+    "stones",
+    "step"
+   ],
+   "size": [
+    4,
+    0.2,
+    2.31
+   ],
+   "pack": "kenney-nature",
+   "note": "Flat stones to lay on the grass or in shallow water as a path."
+  },
+  {
+   "id": "stone-circle",
+   "file": "world/stone-circle.glb",
+   "kind": "decor",
+   "tags": [
+    "path",
+    "stones"
+   ],
+   "size": [
+    3.73,
+    0.2,
+    3.51
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "bridge",
+   "file": "world/bridge.glb",
+   "kind": "world",
+   "tags": [
+    "bridge",
+    "wood"
+   ],
+   "size": [
+    4.16,
+    1.6,
+    4.16
+   ],
+   "pack": "kenney-nature",
+   "note": "A wooden bridge one tile long: put it over a river tile."
+  },
+  {
+   "id": "palm",
+   "file": "world/palm.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    6.06,
+    4.05
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "palm-bend",
+   "file": "world/palm-bend.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    3.74,
+    5.52,
+    4.05
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "palm-bushy",
+   "file": "world/palm-bushy.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.14,
+    5.69,
+    4.14
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "palm-short",
+   "file": "world/palm-short.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.14,
+    4.5,
+    4.14
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "palm-giant",
+   "file": "world/palm-giant.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    5.75,
+    8.94,
+    5.22
+   ],
+   "pack": "quaternius-nature",
+   "note": "A very tall palm."
+  },
+  {
+   "id": "palm-leaning",
+   "file": "world/palm-leaning.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.68,
+    6.94,
+    5.18
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "palm-curly",
+   "file": "world/palm-curly.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "palm"
+   ],
+   "size": [
+    4.64,
+    5.82,
+    6.36
+   ],
+   "pack": "quaternius-nature",
+   "note": "A low palm with a curled trunk. Its base is -0.07 below its y."
+  },
+  {
+   "id": "big-tree",
+   "file": "world/big-tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    3.02,
+    4.6,
+    2.62
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "flat-top-tree",
+   "file": "world/flat-top-tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree"
+   ],
+   "size": [
+    2.45,
+    5,
+    2.62
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "conifer",
+   "file": "world/conifer.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "pine"
+   ],
+   "size": [
+    1.54,
+    6.12,
+    1.57
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "conifer-round",
+   "file": "world/conifer-round.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "pine"
+   ],
+   "size": [
+    1.92,
+    5.01,
+    2.22
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "jungle-tree",
+   "file": "world/jungle-tree.glb",
+   "kind": "decor",
+   "tags": [
+    "tree",
+    "jungle"
+   ],
+   "size": [
+    2.63,
+    4.7,
+    3.96
+   ],
+   "pack": "quaternius-nature",
+   "note": "A tree with hanging leaves."
+  },
+  {
+   "id": "fern",
+   "file": "world/fern.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "fern"
+   ],
+   "size": [
+    1.09,
+    1.14,
+    1.09
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "fern-small",
+   "file": "world/fern-small.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "fern"
+   ],
+   "size": [
+    1.11,
+    0.94,
+    1.11
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "fern-big",
+   "file": "world/fern-big.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "fern"
+   ],
+   "size": [
+    1.8,
+    0.76,
+    1.42
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "leafy-plant",
+   "file": "world/leafy-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "bush"
+   ],
+   "size": [
+    2.41,
+    1.44,
+    2.41
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "broad-leaf",
+   "file": "world/broad-leaf.glb",
+   "kind": "decor",
+   "tags": [
+    "plant"
+   ],
+   "size": [
+    1.5,
+    0.97,
+    1.34
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "jungle-plant",
+   "file": "world/jungle-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "jungle"
+   ],
+   "size": [
+    2.3,
+    0.97,
+    2.54
+   ],
+   "pack": "quaternius-nature",
+   "note": "Big round leaves."
+  },
+  {
+   "id": "spiky-plant",
+   "file": "world/spiky-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "jungle"
+   ],
+   "size": [
+    1.63,
+    1.42,
+    1.46
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "flower-plant",
+   "file": "world/flower-plant.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "flower"
+   ],
+   "size": [
+    1.74,
+    1.39,
+    1.72
+   ],
+   "pack": "quaternius-nature",
+   "note": "A yellow plant with a pink flower spike."
+  },
+  {
+   "id": "bamboo",
+   "file": "world/bamboo.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "bamboo"
+   ],
+   "size": [
+    1.36,
+    3.56,
+    1.23
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "bamboo-young",
+   "file": "world/bamboo-young.glb",
+   "kind": "decor",
+   "tags": [
+    "plant",
+    "bamboo"
+   ],
+   "size": [
+    1.36,
+    2.2,
+    1.23
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "sprout",
+   "file": "world/sprout.glb",
+   "kind": "decor",
+   "tags": [
+    "plant"
+   ],
+   "size": [
+    1.56,
+    2.71,
+    1.56
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "bush",
+   "file": "world/bush.glb",
+   "kind": "decor",
+   "tags": [
+    "bush"
+   ],
+   "size": [
+    1.86,
+    1.74,
+    2.37
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "grass",
+   "file": "world/grass.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.52,
+    1.02,
+    1.57
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "grass-tall",
+   "file": "world/grass-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant"
+   ],
+   "size": [
+    1.64,
+    1.02,
+    1.63
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "reeds",
+   "file": "world/reeds.glb",
+   "kind": "decor",
+   "tags": [
+    "grass",
+    "plant",
+    "reeds"
+   ],
+   "size": [
+    0.56,
+    1.52,
+    0.49
+   ],
+   "pack": "quaternius-nature",
+   "note": "Tall reeds for the water's edge."
+  },
+  {
+   "id": "flower-red",
+   "file": "world/flower-red.glb",
+   "kind": "decor",
+   "tags": [
+    "flower"
+   ],
+   "size": [
+    0.54,
+    0.7,
+    0.54
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "flower-yellow",
+   "file": "world/flower-yellow.glb",
+   "kind": "decor",
+   "tags": [
+    "flower"
+   ],
+   "size": [
+    0.54,
+    0.4,
+    0.54
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "lily-pad",
+   "file": "world/lily-pad.glb",
+   "kind": "decor",
+   "tags": [
+    "lily",
+    "water",
+    "plant"
+   ],
+   "size": [
+    0.76,
+    0.16,
+    0.87
+   ],
+   "pack": "kenney-nature",
+   "note": "Floats on a pond or river tile."
+  },
+  {
+   "id": "lily-pad-flower",
+   "file": "world/lily-pad-flower.glb",
+   "kind": "decor",
+   "tags": [
+    "lily",
+    "water",
+    "plant",
+    "flower"
+   ],
+   "size": [
+    1.09,
+    0.39,
+    1.26
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "giant-mushroom",
+   "file": "world/giant-mushroom.glb",
+   "kind": "decor",
+   "tags": [
+    "mushroom"
+   ],
+   "size": [
+    1.24,
+    2.5,
+    1.43
+   ],
+   "pack": "kenney-nature",
+   "note": "A mushroom as tall as a hero."
+  },
+  {
+   "id": "mushrooms-red",
+   "file": "world/mushrooms-red.glb",
+   "kind": "decor",
+   "tags": [
+    "mushroom"
+   ],
+   "size": [
+    0.81,
+    0.75,
+    0.76
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock",
+   "file": "world/rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    3.14,
+    1.04,
+    4.06
+   ],
+   "pack": "kenney-nature",
+   "note": "A sandy rock with grass on top."
+  },
+  {
+   "id": "rock-big",
+   "file": "world/rock-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    4.28,
+    2.27,
+    4.12
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock-round",
+   "file": "world/rock-round.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    1.85,
+    1.63,
+    1.85
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock-flat",
+   "file": "world/rock-flat.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    1.98,
+    0.26,
+    1.72
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock-tall",
+   "file": "world/rock-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    1.82,
+    3.13,
+    1.75
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock-tower",
+   "file": "world/rock-tower.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    3.93,
+    3.98,
+    2.73
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "rock-spire",
+   "file": "world/rock-spire.glb",
+   "kind": "decor",
+   "tags": [
+    "rock"
+   ],
+   "size": [
+    1.7,
+    3.13,
+    1.96
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "boulder",
+   "file": "world/boulder.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "boulder"
+   ],
+   "size": [
+    2.65,
+    2.61,
+    3.66
+   ],
+   "pack": "quaternius-nature",
+   "note": "A big grey boulder. Its base is -0.25 below its y."
+  },
+  {
+   "id": "boulder-big",
+   "file": "world/boulder-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "boulder"
+   ],
+   "size": [
+    2.81,
+    3.23,
+    2.83
+   ],
+   "pack": "quaternius-nature",
+   "note": "A boulder taller than a hero. Its base is -0.45 below its y."
+  },
+  {
+   "id": "standing-stone",
+   "file": "world/standing-stone.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "boulder"
+   ],
+   "size": [
+    2.43,
+    4.39,
+    2.33
+   ],
+   "pack": "quaternius-nature",
+   "note": "A tall standing rock. Its base is -0.26 below its y."
+  },
+  {
+   "id": "mossy-rock",
+   "file": "world/mossy-rock.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "moss"
+   ],
+   "size": [
+    1.48,
+    1.11,
+    1.61
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "mossy-rock-big",
+   "file": "world/mossy-rock-big.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "moss",
+    "boulder"
+   ],
+   "size": [
+    3.65,
+    2.83,
+    4.57
+   ],
+   "pack": "quaternius-nature"
+  },
+  {
+   "id": "mossy-rock-tall",
+   "file": "world/mossy-rock-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "moss",
+    "boulder"
+   ],
+   "size": [
+    1.94,
+    3.8,
+    1.87
+   ],
+   "pack": "quaternius-nature",
+   "note": "Its base is -0.69 below its y."
+  },
+  {
+   "id": "stone",
+   "file": "world/stone.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "stone"
+   ],
+   "size": [
+    3.07,
+    1.72,
+    4.06
+   ],
+   "pack": "kenney-nature",
+   "note": "A pale stone."
+  },
+  {
+   "id": "stone-small",
+   "file": "world/stone-small.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "stone"
+   ],
+   "size": [
+    2.37,
+    0.98,
+    2.74
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "stone-tall",
+   "file": "world/stone-tall.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "stone"
+   ],
+   "size": [
+    1.77,
+    2.29,
+    2.05
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "stone-tower",
+   "file": "world/stone-tower.glb",
+   "kind": "decor",
+   "tags": [
+    "rock",
+    "stone"
+   ],
+   "size": [
+    3.93,
+    3.98,
+    2.73
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "log-hollow",
+   "file": "props/log-hollow.glb",
+   "kind": "prop",
+   "tags": [
+    "log",
+    "wood"
+   ],
+   "size": [
+    4,
+    1.67,
+    2.2
+   ],
+   "pack": "kenney-nature",
+   "note": "A big hollow log."
+  },
+  {
+   "id": "log",
+   "file": "props/log.glb",
+   "kind": "prop",
+   "tags": [
+    "log",
+    "wood"
+   ],
+   "size": [
+    0.95,
+    1.12,
+    4.01
+   ],
+   "pack": "quaternius-nature",
+   "note": "A fallen log."
+  },
+  {
+   "id": "stump",
+   "file": "props/stump.glb",
+   "kind": "prop",
+   "tags": [
+    "stump",
+    "wood"
+   ],
+   "size": [
+    1.43,
+    2.67,
+    1.48
+   ],
+   "pack": "kenney-nature"
+  },
+  {
+   "id": "egg",
+   "file": "props/egg.glb",
+   "kind": "prop",
+   "tags": [
+    "goal",
+    "egg"
+   ],
+   "size": [
+    1.74,
+    2.28,
+    1.74
+   ],
+   "pack": "kenney-nature",
+   "note": "The great egg to find at the end of the valley: the goal. It is looked at, never taken or broken."
+  },
+  {
+   "id": "egg-blue",
+   "file": "props/egg-blue.glb",
+   "kind": "prop",
+   "tags": [
+    "egg"
+   ],
+   "size": [
+    0.87,
+    1.14,
+    0.87
+   ],
+   "pack": "kenney-nature",
+   "note": "A blue egg: scenery for a nest."
+  },
+  {
+   "id": "egg-pink",
+   "file": "props/egg-pink.glb",
+   "kind": "prop",
+   "tags": [
+    "egg"
+   ],
+   "size": [
+    0.87,
+    1.14,
+    0.87
+   ],
+   "pack": "kenney-nature",
+   "note": "A pink egg: scenery for a nest."
+  },
+  {
+   "id": "nest",
+   "file": "props/nest.glb",
+   "kind": "prop",
+   "tags": [
+    "nest"
+   ],
+   "size": [
+    3.38,
+    1.2,
+    2.93
+   ],
+   "pack": "kenney-nature",
+   "note": "A round nest of straw: put eggs in it."
+  },
+  {
+   "id": "sign",
+   "file": "props/sign.glb",
+   "kind": "prop",
+   "tags": [
+    "sign",
+    "checkpoint"
+   ],
+   "size": [
+    1.5,
+    2.04,
+    0.35
+   ],
+   "pack": "kenney-nature",
+   "note": "A wooden signpost: a checkpoint, a trail marker."
+  },
+  {
+   "id": "coin",
+   "file": "props/coin.glb",
+   "kind": "prop",
+   "tags": [
+    "collectible",
+    "coin"
+   ],
+   "size": [
+    0.36,
+    0.12,
+    0.36
+   ],
+   "pack": "kaykit-dungeon",
+   "note": "Its base is -0.06 below its y."
+  }
+ ],
+ "sounds": [
+  {
+   "id": "jump",
+   "file": "sounds/jump.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "land",
+   "file": "sounds/land.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "coin",
+   "file": "sounds/coin.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "fall",
+   "file": "sounds/fall.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "break",
+   "file": "sounds/break.ogg",
+   "pack": "kenney-platformer"
+  },
+  {
+   "id": "walk",
+   "file": "sounds/walk.ogg",
+   "pack": "kenney-platformer"
+  }
+ ],
+ "files": {
+  "LICENSES/kaykit-adventurers.txt": {
+   "bytes": 891,
+   "sha384": "sha384-q8dkSYuPouWIeO0olIIOzQ4IPP6se16E9vNADa22kGtUZWro2wrb+Co79J0pIkis"
+  },
+  "LICENSES/kaykit-dungeon.txt": {
+   "bytes": 829,
+   "sha384": "sha384-Yp39gUxSp4sSfz3WbdRtBG7N7KbYQuHZj37x1cd59F2tkUIVLwsT9cEEBchotlbZ"
+  },
+  "LICENSES/kenney-nature.txt": {
+   "bytes": 611,
+   "sha384": "sha384-aA1thoXl2xKySzIIG+NJ83pX+IjPtH8R3x39lhO9E18OvHb4+aQlFGMA8uUWWYSn"
+  },
+  "LICENSES/kenney-platformer.md": {
+   "bytes": 1623,
+   "sha384": "sha384-BiRXmAweG5CLIadvX6v9Gj3tZa8PSGs5/y3QLsc5GfIdJ3Yp0hCmg0SVQJ7BIWpl"
+  },
+  "LICENSES/quaternius-dinosaurs.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "LICENSES/quaternius-nature.txt": {
+   "bytes": 364,
+   "sha384": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4"
+  },
+  "SOURCES.md": {
+   "bytes": 5062,
+   "sha384": "sha384-BvPWQG+SDhcnkXHMH4/CZuC0mp9ZW0/Ku+7IDwFIrjoxSQm+que8LVffhaSzZc+I"
+  },
+  "cover.webp": {
+   "bytes": 37328,
+   "sha384": "sha384-5a/l6mJkEzoxuo3KJ+m9GaFORgMNTQAj4a6tRXejIkPhWB3ce4Sc6B0vnDn3TtOE"
+  },
+  "creatures/apatosaurus.glb": {
+   "bytes": 80936,
+   "sha384": "sha384-waQs709BtqxuI4o2KmKIbqwv5l1/GbWG/21h98n7piyjjrtyGgatKEhcf4ikktE2"
+  },
+  "creatures/parasaurolophus.glb": {
+   "bytes": 70124,
+   "sha384": "sha384-YcIjJF4GemhabAvWQ2YOdYbgLJ6hAH8nDvM7iyfuoSxluzHh126Igxr3SRPMS2Pn"
+  },
+  "creatures/stegosaurus.glb": {
+   "bytes": 86788,
+   "sha384": "sha384-9s0iuUa1s2F3f+gCc3ocmOn7BUtmExmK6YmRRIb1V+u45Cn1m1qOh2JrQVU7IZD6"
+  },
+  "creatures/triceratops.glb": {
+   "bytes": 80504,
+   "sha384": "sha384-hV9SaG+XOco3H6SwajfMWaBJJu3vrjflHNa8Tx9YoVhDZpg7Nqw8ChCTAAftXM5/"
+  },
+  "creatures/velociraptor.glb": {
+   "bytes": 68800,
+   "sha384": "sha384-6MOxYH+vfw31iC3ANUItPO/AolC5VQ+Xfc2ZTRCyoegYVTDnTVeeXK5weHYQcIDM"
+  },
+  "heroes/barbarian.glb": {
+   "bytes": 181212,
+   "sha384": "sha384-0Q0bLfofgXBnUUgcCzgV/m7uJWz47+IORkyhzq5C9H0y1Q0n3C2hluUzzWUWYGLy"
+  },
+  "heroes/knight.glb": {
+   "bytes": 189920,
+   "sha384": "sha384-cUc6vlNGmnPy1pLKKDPe6eFCg9nUVJ6vsgTmtNobXDce+CWxfMWgjoMCjCAXqdBD"
+  },
+  "heroes/mage.glb": {
+   "bytes": 178540,
+   "sha384": "sha384-FAvxePnhsEiAy9N1qXNZ/FMOm1bwLFKM6ISH249TX2iUP/sQnridYyftpkJ8VzHB"
+  },
+  "heroes/moves.glb": {
+   "bytes": 466152,
+   "sha384": "sha384-VDppi+wRwvrocUE8EnzgrDL/aUaOvLyRmtjJoSbcfNBsuYkh5j2yaXWzW4oWQriX"
+  },
+  "heroes/rogue-hooded.glb": {
+   "bytes": 162672,
+   "sha384": "sha384-fHRegmViSplyLJXVAmHCU5IxFKG5LoNHyhryVq8WA9+dWifEaFpAI/rL+J23NCd8"
+  },
+  "heroes/rogue.glb": {
+   "bytes": 173536,
+   "sha384": "sha384-17tVnbjfWn/Qn0F2W277dskv8K7wirrE43A5zZ7QxLA26ia7dDu1eyhNhlTT+79t"
+  },
+  "props/coin.glb": {
+   "bytes": 20184,
+   "sha384": "sha384-c1uMDiDQnmgzdSY3ilYv+EcIQps4Lj+kBzXDHk4nIXUuxB7QjNh6IvWk8TUaS95D"
+  },
+  "props/egg-blue.glb": {
+   "bytes": 3472,
+   "sha384": "sha384-6IBi6jxTxliSDRRi5KvSeX1l5CHts3tz5Mw72WzCQ4Nbz7mD35f6xICNwxToZb7a"
+  },
+  "props/egg-pink.glb": {
+   "bytes": 3456,
+   "sha384": "sha384-RbHRvE0aRfkHcf8Yl8Aht4dC+Mj/IAHIDE7CjxyB8+VIRDQn4NdyICYKVUH5sAG6"
+  },
+  "props/egg.glb": {
+   "bytes": 3456,
+   "sha384": "sha384-usWk5uWTwUcaQV7x2EVtqhme2ef7zp++TTVdVW1hRvSdGXUOwB3dukIMl0wNpZ/9"
+  },
+  "props/log-hollow.glb": {
+   "bytes": 5032,
+   "sha384": "sha384-aMeITjU+MIjFHiRZROdn7BieYq+Jph329l72Aarq133/HS44KOvCA+r32MM9ctp9"
+  },
+  "props/log.glb": {
+   "bytes": 20792,
+   "sha384": "sha384-AV3HyThCB3ugALqp/+VpyVLrD1lKt3d9R3JEoggINqH8hwV0gR8y43rctgg1y/R6"
+  },
+  "props/nest.glb": {
+   "bytes": 4156,
+   "sha384": "sha384-yj/w2Ynqys2yBRuNsIndZgBMQMwKdEoXjRlRDOYWKMIQ+rdUm3CjmIgD0HdaNnx5"
+  },
+  "props/sign.glb": {
+   "bytes": 4052,
+   "sha384": "sha384-e5AvEgWIn2BrBdBlZyBEtPQvXwqZLsJVz8NEEqjczX3Fl+1dMIPGaB4jYjhPQpcr"
+  },
+  "props/stump.glb": {
+   "bytes": 5392,
+   "sha384": "sha384-NAqv8L1tlrsIOSQpmPU4VPVAATV7pjxtyNvt9MtPOoOYdI2db5e5wou04DuoUsk3"
+  },
+  "sounds/break.ogg": {
+   "bytes": 10784,
+   "sha384": "sha384-rWZH1X5C8AKFR2uZ+V4W236yxMRMLMaeDCBYxusY0bpw5WC7rEKqUoYciqJW0mIX"
+  },
+  "sounds/coin.ogg": {
+   "bytes": 6620,
+   "sha384": "sha384-6ti08c5SgvYu0ec84eiaOaWX1rqZrp1szu/sVl0a8sZ+Kfi+8TWzb0qPi9nUlMNr"
+  },
+  "sounds/fall.ogg": {
+   "bytes": 11313,
+   "sha384": "sha384-OwNbwL8W8lkH2XhZHb/wNl/vvGY2og7wt92SW1YPTBd6X762CDn6izdH1J9q/ffz"
+  },
+  "sounds/jump.ogg": {
+   "bytes": 5805,
+   "sha384": "sha384-Nf8X5ohN1JNCvNDOEFmG1D6d7K9nghSGipT48pkGK1jAqRRAtACjP7QvaW6fCbQs"
+  },
+  "sounds/land.ogg": {
+   "bytes": 5885,
+   "sha384": "sha384-XCjVLbL2uX7gYFJNgC+8uAMuzzyZF12GBf3ktzVV0ssM7UH8c83OrUDpRk6LC4YG"
+  },
+  "sounds/walk.ogg": {
+   "bytes": 10929,
+   "sha384": "sha384-In5GGjSV4PrRx851W/VoeZsVFAG8oJi/DkY1JJVoDhU5+LtoESvs6B2Y00E9pEC4"
+  },
+  "world/bamboo-young.glb": {
+   "bytes": 11668,
+   "sha384": "sha384-dTpeaSF5J/bCs+r3fZM0gYeoT0TRqVrI8fDu0QWiPGtVUlRKrIZd6DTczHe6VeVK"
+  },
+  "world/bamboo.glb": {
+   "bytes": 20696,
+   "sha384": "sha384-BQ4ndnAK3ktjAgkTQ7DlcbMmIE8olHI99aV5GB8b1dnheGD/XSp1/JSzcZ1l5USe"
+  },
+  "world/big-tree.glb": {
+   "bytes": 3836,
+   "sha384": "sha384-HfDVwxTHbVhq4XOJVoJGaoxmucAEoN35yX/TPmd5wqi0z8BwbhclNU80Mndo/cXv"
+  },
+  "world/boulder-big.glb": {
+   "bytes": 4504,
+   "sha384": "sha384-EdNK8tgGVnVp5B+cRyl9q1MKb4cIzekqRWbnyALAq6tWaI9Z+PBy4PcUXmqxWup/"
+  },
+  "world/boulder.glb": {
+   "bytes": 4880,
+   "sha384": "sha384-/rmfqkxWSgz67IZkIRGao/hnybnncnvhoXrb3p4stEreDxlxEoiCokrxm5o+SNjf"
+  },
+  "world/bridge.glb": {
+   "bytes": 9460,
+   "sha384": "sha384-+7rw5caHekE0X3+L2gIJOHGfCIW3Dz/GL/O6uCQYjVo3p+GygCdOe319VtCx9Je4"
+  },
+  "world/broad-leaf.glb": {
+   "bytes": 3800,
+   "sha384": "sha384-jijenmMZYpD79mcNRCngQCWFquRm2RW4K2zBxVg5LUi4HsC1c9L3NkKaZWttPGVh"
+  },
+  "world/bush.glb": {
+   "bytes": 15224,
+   "sha384": "sha384-ld5ydcDzSXuWn+7P9tCJsJyD6PE6UUw0fooz7OPNATtTx3vUb+XAbtCh+MahRDIz"
+  },
+  "world/cave-arch.glb": {
+   "bytes": 3356,
+   "sha384": "sha384-34trf34mKIgKmMnOfmDJmwN+waCs463yy//53RWSX6Yf0hUWRv7Sqxpy5ocmAqe9"
+  },
+  "world/cave.glb": {
+   "bytes": 3796,
+   "sha384": "sha384-vJVF0yNPVW+OD8GYqiBZPD6nac3jV4mueXUV6A+qXTXSl6P1PUEzdrxfm/UJq1iv"
+  },
+  "world/cliff-block.glb": {
+   "bytes": 2460,
+   "sha384": "sha384-e3dFemLUQRrX8hNpfvoZMubPFuL+bdX/V8bjII8tSF77O8QLS+CfRPJdCq0AS2AO"
+  },
+  "world/cliff-slope.glb": {
+   "bytes": 4432,
+   "sha384": "sha384-GCO/2D8cALMZykRtqG7sKlKZiuMGQUtMkK6X3DUXrdF7j0u1j1GQfWDGy9FB2FAA"
+  },
+  "world/cliff-steps.glb": {
+   "bytes": 9068,
+   "sha384": "sha384-O7G6CBEiA3qrJMJfqVgOnaxqZMBr9u4TJM6CfLbyt82i7U+IZ2vsC5jylEZZi7Yw"
+  },
+  "world/cliff-wall-top.glb": {
+   "bytes": 3732,
+   "sha384": "sha384-tY1LPz/v/WgIPGCzjYWbp1X43tr1nlv35mNw/mFVp2tm/Z9RCJOyqjF6Muy8FaHF"
+  },
+  "world/cliff-wall.glb": {
+   "bytes": 2384,
+   "sha384": "sha384-9DcPdwQdd8ubb4IUxoKKcNSCAPL0g8tqt6GmvRqPpByTlHA3GmKUHMyBE4yv2lR/"
+  },
+  "world/cliff-waterfall-top.glb": {
+   "bytes": 6044,
+   "sha384": "sha384-48gkliOIwYwILTsT+ryC4I0SghEpWRU7RVRSSCLxuPPT8RovZxBDtOzVknizo3zr"
+  },
+  "world/cliff-waterfall.glb": {
+   "bytes": 3740,
+   "sha384": "sha384-tQYrq3zRo3UX4e0pds/0sYNQgLNccH/xxybRlPs/S/coDp7enjllUCb9zA1ugW8y"
+  },
+  "world/conifer-round.glb": {
+   "bytes": 8732,
+   "sha384": "sha384-2rmTxiL3hJWc+7UBhdVSz7/4mFf9z/fK9VbELiMrB/6HOd0xmG2mfWE6kJhHoBMf"
+  },
+  "world/conifer.glb": {
+   "bytes": 6464,
+   "sha384": "sha384-OsFpVhwI+Zo/7CNoBJaIcqnSBP8ur5XH1jEbHXL2tOcJbG1GSe17ILyNkdgieSop"
+  },
+  "world/fern-big.glb": {
+   "bytes": 13148,
+   "sha384": "sha384-xu4aDrwWHAUBbGF4rI9ewwyp2qnM5S1WPvFYPQEctl1MTkqBYqgRdbmYqVDCwqsQ"
+  },
+  "world/fern-small.glb": {
+   "bytes": 2552,
+   "sha384": "sha384-auyqwimtAuyyqpH6oPdz2rFJbaB5uQLPEtJdPSGMdWSJ0YWALkPWQa4Rx69rV0w8"
+  },
+  "world/fern.glb": {
+   "bytes": 2316,
+   "sha384": "sha384-9LJv8idLf22r0ZPd2ha214IMfbs8FLOWMwJwl0oUA5MshyBz+52RzXk1Gfc/MPdy"
+  },
+  "world/flat-top-tree.glb": {
+   "bytes": 9248,
+   "sha384": "sha384-XeLqTqHcTQEMeAYucJBlGIqBZBqZrMpMHRO+sOhXRnYNKlZItdq407sEGA/L8zYH"
+  },
+  "world/flower-plant.glb": {
+   "bytes": 26168,
+   "sha384": "sha384-cL7lHXqfVQdOsUrUIT6OeqRnADgBIknhsJlvTX+plyEZEfXH7e9KiJx3j5nWQWFC"
+  },
+  "world/flower-red.glb": {
+   "bytes": 5300,
+   "sha384": "sha384-j0lpGximk/3l1SZ9Gh81mjF4r/9CKrn6YWOm/zggRT2nkD5aTbc/WC3CFj3PwWdG"
+  },
+  "world/flower-yellow.glb": {
+   "bytes": 5292,
+   "sha384": "sha384-J9B+xSFDXGn/kJ41kJioO5ddWIFQcNoi5oMeFeFNv9pbQBVW2mi9wHgiK+GzC9Vu"
+  },
+  "world/giant-mushroom.glb": {
+   "bytes": 4108,
+   "sha384": "sha384-0H7hiifibBABSyIReARY75kial3MOgUO5caxFYLNH4WAAoToRNRejUqaq+BlHiKE"
+  },
+  "world/grass-patch.glb": {
+   "bytes": 7556,
+   "sha384": "sha384-h8apEDR5LjddHW0FGXasTNlj+Lpvpp3xvWlAJ5EdCxGmjHQUQ5+RgAH7xzbQwTM8"
+  },
+  "world/grass-tall.glb": {
+   "bytes": 9872,
+   "sha384": "sha384-VmoVMdAgs9rebEvN1wmGphSLiepCYarhsq98m3yqT8S+x2/UVMNR9FVDnFAYsFHc"
+  },
+  "world/grass.glb": {
+   "bytes": 6360,
+   "sha384": "sha384-hCJGz0vJizq8puVthkrfjIoU+oxqcTs1qKN/uSEiLc+iSBYUONOgyDMVAMMEePM/"
+  },
+  "world/hill.glb": {
+   "bytes": 2468,
+   "sha384": "sha384-gahnd5uFTddWTODz+CoQCZlSD9a7eDVwwLmvmTS9NXPOCXuoGXStYkp0ACX/hPfC"
+  },
+  "world/jungle-plant.glb": {
+   "bytes": 20740,
+   "sha384": "sha384-IqM0g1mmhaELzjhqbcr1+MoolE7wLHW3ClTgvlvlXYq3EwZAgi7wnGBPElpNVMT/"
+  },
+  "world/jungle-tree.glb": {
+   "bytes": 41800,
+   "sha384": "sha384-tJ96Y1lihXaj3mGNU0WLAZeCBvnwm7uiaLUK/ctqN0yKKLmM5ajl73fQ0T8MtO47"
+  },
+  "world/leafy-plant.glb": {
+   "bytes": 5668,
+   "sha384": "sha384-ZX9f8X0vKaCOKKunBV/rqpxsxicjXb+PSBFTjPeCdWmJYAEc/nzSvpvYHhvjuJGk"
+  },
+  "world/lily-pad-flower.glb": {
+   "bytes": 5560,
+   "sha384": "sha384-DoXPBHviCWmHGK9TSxpRqwccBX9VuNLkgPSq58itwdbgBjJ+aOtlfGOv8C3C922e"
+  },
+  "world/lily-pad.glb": {
+   "bytes": 3884,
+   "sha384": "sha384-t9u2BBf3GI3VrRc2aJye2dgb0aFGDDgVUFKOyFaVoOPJKWVq6CXGEDCSk9thrfkM"
+  },
+  "world/mossy-rock-big.glb": {
+   "bytes": 6400,
+   "sha384": "sha384-VWWBuJsANIjzdtcdQI9JsCBWKitRFHagqFU4Fr5+S98OjGHQYelCLCUsh6N2LofB"
+  },
+  "world/mossy-rock-tall.glb": {
+   "bytes": 4808,
+   "sha384": "sha384-x5wtb9bKT87ewAODiGNJmk10+nJKWpSNCMlQRfXAsKg3XDdPlgJv8O3suZR3VOuv"
+  },
+  "world/mossy-rock.glb": {
+   "bytes": 4688,
+   "sha384": "sha384-u2MhrCm2LaK6ozCwxnQtbRqhXLLsp1w8UQ1uskMBYP5lO2pwE5w5j/q7Rp4zEVcX"
+  },
+  "world/mushrooms-red.glb": {
+   "bytes": 8276,
+   "sha384": "sha384-lSq2OQmVgTRN62J9SYLrOOa1GNdhgPEtPLjmaG7ahTflLLy9bTWhDZYQoH9aC2Ra"
+  },
+  "world/palm-bend.glb": {
+   "bytes": 8468,
+   "sha384": "sha384-GMn/Y4WF1CgGJitkDhjm379ZWx6FHYV7qZZ/dhQCsTb0pSlO+rDY07ReSg2yhbUv"
+  },
+  "world/palm-bushy.glb": {
+   "bytes": 12008,
+   "sha384": "sha384-E3/ix5vOkdMqVIy2PGJl5kw391GjytekdrV0EbzRkypXoQLeqddomn/U5ExmYnIB"
+  },
+  "world/palm-curly.glb": {
+   "bytes": 50236,
+   "sha384": "sha384-JzXx0BlkrDEgmeHCROGG+4n9dv0WA+I4GivkWdxn81UpZuR4C4/gYirBUNPrPqbT"
+  },
+  "world/palm-giant.glb": {
+   "bytes": 71076,
+   "sha384": "sha384-qBmZu3Q22E4rl2Xl/90GssTYErPGTQHxjzU0PbCfP6VYVqwq45wM3AZAD8+zb5a6"
+  },
+  "world/palm-leaning.glb": {
+   "bytes": 44944,
+   "sha384": "sha384-HPLNxe3rXuUP8T6FqwDwswVRz4nLMHdFhBGBxuIq29Qc20PLTMEu+/YrQ9V2Pv0l"
+  },
+  "world/palm-short.glb": {
+   "bytes": 12008,
+   "sha384": "sha384-Yb9QAHR47r5ypM7v4oPSTMOI4Ti32v7ic9O9b2f25va0tPIe2+D4n9IKGq+1K57G"
+  },
+  "world/palm.glb": {
+   "bytes": 7856,
+   "sha384": "sha384-kfj3G4khQOdytaNPY5y2pLHb/IcXb7AhC4IcBOY/5DN7ik8ElZLLPyoLMT9HEPvf"
+  },
+  "world/path-bend.glb": {
+   "bytes": 3724,
+   "sha384": "sha384-CxqhGJHr243dzLMhoAe0aRAr55ZEqqDuVyTP22CzSlN6nblP9BrUMFnPDN2GyqRA"
+  },
+  "world/path-end.glb": {
+   "bytes": 4256,
+   "sha384": "sha384-aWhvGgYhIl5TesXik+hveIm8KB4S9mw7FC1Oy4BidsU6M+Yio2LrPIeAx1tgsiMW"
+  },
+  "world/path.glb": {
+   "bytes": 4552,
+   "sha384": "sha384-7wpg4G4Dv7+R3oRltUYe5G4Fpx4f97bxLefSER5EufZK3OYFyE19YoGOpEifoa/F"
+  },
+  "world/pond.glb": {
+   "bytes": 6916,
+   "sha384": "sha384-dgKz/CuctLJvUja/LQllryxt7oCc1APZqKpVmuz+yTOIPvU+CrbBWdP+tuS9l+CG"
+  },
+  "world/reeds.glb": {
+   "bytes": 9084,
+   "sha384": "sha384-XTUwJBNLVY3QZh+VVXNYaADZjVMI/cOg5zuSb+Zgi3ezDnbioowtiBM02MjsLUKJ"
+  },
+  "world/river-bend.glb": {
+   "bytes": 5028,
+   "sha384": "sha384-tvFYZG7KuValekI9vElRKhq9YpgdWXX64T7gmtt4QazYUjtbEoMGTbgAIYQJDlWU"
+  },
+  "world/river-end.glb": {
+   "bytes": 4944,
+   "sha384": "sha384-F/3IgiJNkwKXsyyW6+8/wq/5t1SP+8FVcMFwp6kWCtl4FXFIDPBmkS/kVqayJsN1"
+  },
+  "world/river-rocks.glb": {
+   "bytes": 7120,
+   "sha384": "sha384-jRUf6eUXquNK+UHl8yMFp3GfsRBCD6VzRbKvE/8wUpeafqHcHz4hy/1UyFmFmGHg"
+  },
+  "world/river-split.glb": {
+   "bytes": 5388,
+   "sha384": "sha384-RINbAq7SQcC9luubAWgTutIf0yk/JNxLFiZ+e9wbfaH41zf8V++rk+NZ6YquxXCn"
+  },
+  "world/river.glb": {
+   "bytes": 5240,
+   "sha384": "sha384-O4/WoHmQSwjs6YCcoeK0kFfcFZkBqjG2midCulI1+ppnfX+FBSsvkVAjT8Nv79oK"
+  },
+  "world/rock-big.glb": {
+   "bytes": 5392,
+   "sha384": "sha384-4GPCzkzhNwF2vy0xYB9UK87341kZP7s1bzmmiakx4VPTJRTyk3vTuV872iam6SNC"
+  },
+  "world/rock-flat.glb": {
+   "bytes": 2700,
+   "sha384": "sha384-SA1VLxepo1gA3gMdEuEVHRmxxLBc9iMxO9teParqqAYhV4CF5uWYaHrDIinpJkfY"
+  },
+  "world/rock-round.glb": {
+   "bytes": 4156,
+   "sha384": "sha384-cHSUC9Ylz+UcuUnTVrJAco1A940fHqDSs9tvIfG9PTrkB8v/VV04DlsZKfm01n7k"
+  },
+  "world/rock-spire.glb": {
+   "bytes": 4812,
+   "sha384": "sha384-/4yCI8Ki5Ad13j+8ZrRvfg+hKo2hIPraH0LZJiGXJJ1NfWC0xIYeHRWWwQb3YtGe"
+  },
+  "world/rock-tall.glb": {
+   "bytes": 4020,
+   "sha384": "sha384-HU/lT4RZdxz0idkkCEIgUg216+QiqK2lYLNfMrJHP3XW+47gRIleAW4jIgO0AcBh"
+  },
+  "world/rock-tower.glb": {
+   "bytes": 7308,
+   "sha384": "sha384-mGvk5maTpYrQLSsPK4vtm31ccg0SdxD9Eggw7+o+p3AudTmNfSg3prVthyVY7daB"
+  },
+  "world/rock.glb": {
+   "bytes": 4820,
+   "sha384": "sha384-4Ero1GrM7lBbFdXImRqInCINnBjrWT2rtxgShuWrwPO7jD3evVJzqc5r35gx6UQJ"
+  },
+  "world/sand-patch.glb": {
+   "bytes": 7224,
+   "sha384": "sha384-HYvCpw9dPjzyeAc31QCyyLDOdJe/e41gN2cXbGJ8J1QyzFttDh0ygJxw29znX7iY"
+  },
+  "world/spiky-plant.glb": {
+   "bytes": 24728,
+   "sha384": "sha384-B9AtNFPRS8KVbf0KCP3MJ2UYsjfQGGoptOizS4b+K6D5xxPyabyhcPuT4U41optJ"
+  },
+  "world/sprout.glb": {
+   "bytes": 4460,
+   "sha384": "sha384-vt9gIaMYgkVJlJdS++WDc3F16YLUEd8h+LxeTmqZdR3+JN2jO6fXernP9mCyzDNi"
+  },
+  "world/standing-stone.glb": {
+   "bytes": 4092,
+   "sha384": "sha384-RvGJeSjRmaahAEIvjYzqVYejVWVumBH7+7x8/Nb0lo0cAB7BE1v0VZXPMfT9W5QC"
+  },
+  "world/stepping-stones.glb": {
+   "bytes": 7548,
+   "sha384": "sha384-cqCFktck1cUvu9lgb6RlTCCrF5aeYT9Vyc8xTgSq+XeMuVTiFp/8lgnzTbgBjcat"
+  },
+  "world/stone-block.glb": {
+   "bytes": 2460,
+   "sha384": "sha384-fboZcbXp7cw1y8+zHQAxxdHA4e/wgg1eeMg9r3FqMtm8xA+0h5rd50wEoWMFEW/2"
+  },
+  "world/stone-circle.glb": {
+   "bytes": 7612,
+   "sha384": "sha384-vd9HxnsO219cuY0lCKckQ9dPt+iwqS59RMNRSvw+haN78B6l+xjQZadxe7VzQknJ"
+  },
+  "world/stone-patch.glb": {
+   "bytes": 7908,
+   "sha384": "sha384-yr8nlh3vselkTiGA1h5iqWpDgiTDWgBWA8GZoOHajT/rT4AbEIn2zqBoMLWcRyiE"
+  },
+  "world/stone-small.glb": {
+   "bytes": 2468,
+   "sha384": "sha384-9IvtToYuTgmCayYuwwmUrbbo1V/LjWvPuZjGYbuBOyH1v8xa40l9t7jVuhDtxg5q"
+  },
+  "world/stone-tall.glb": {
+   "bytes": 3548,
+   "sha384": "sha384-bVKhghIZDlAu8K3eLYZx5Wuti1sGrpkNQnLhlHO2H/BXmywqZ5DDD0hHPWb/nfLj"
+  },
+  "world/stone-tower.glb": {
+   "bytes": 6620,
+   "sha384": "sha384-Fd1m5XOZp6LUFDX9+dju0DwFjEWwlT6KXIXOQlqz+ff7Mp4YpfwYLvm5KNXlG4eE"
+  },
+  "world/stone.glb": {
+   "bytes": 4936,
+   "sha384": "sha384-li1OyEVo12kQgjy35SmW3RLSgCBiJi6zPxRiLJCaOoz/G1Ae63gVHrek8OpGx5ap"
+  },
+  "world/valley-ground.glb": {
+   "bytes": 2460,
+   "sha384": "sha384-epnlF3adKGYJ/6o76whW2Y+GHapu76ykT8gN9IWZeqZDxp+gXT1qjF9pkLjJxH+M"
+  },
+  "world/water.glb": {
+   "bytes": 1524,
+   "sha384": "sha384-sDNIO0v2kHwzvOpEoQv5b79+VO7n3+d2sngs1PzXokZFejdUe+0HrzjViwQ2dceN"
+  }
+ },
+ "firstLoadBytes": 2568644
+}

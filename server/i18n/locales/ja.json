@@ -1602,7 +1602,8 @@
         "cosy-home": "ぽかぽかのおうち",
         "busy-kitchen": "にぎやかキッチン",
         "pirate-cove": "かいぞくの入り江",
-        "wild-woods": "わくわくの森"
+        "wild-woods": "わくわくの森",
+        "dino-valley": "きょうりゅうの谷"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "シカ",
         "stag": "オスジカ",
         "fox": "キツネ",
-        "shiba": "しばいぬ"
+        "shiba": "しばいぬ",
+        "triceratops": "トリケラトプス",
+        "stegosaurus": "ステゴサウルス",
+        "parasaurolophus": "パラサウロロフス",
+        "apatosaurus": "アパトサウルス",
+        "velociraptor": "ヴェロキラプトル"
       }
     },
     "animals": {

@@ -127,6 +127,14 @@
    "pack.js": "sha384-KyhAXAEsAIGeJ/xCa+k4SEgV7WpsXBWsU6gAs7GZGd4BOfaSFbGKOJOIEwG0BRys",
    "pack.json": "sha384-/expLqL6B9NxmVIi4DalbZW6pQeWwG7pW4FbtOYUePMv76RHdy486QCBDlcyxHlb",
    "props.webp": "sha384-rlvglGdFWDfVg3By2cN7lUjAGEzCRXjqnXItqwjelZLkOf4DMxBk3meO9XRlL16w"
+  },
+  "dino-valley/1.0.0": {
+   "far.webp": "sha384-ffPLsOC8tMQ+ZPIbWF1r9c3xgAcS/7CculGruPp32tOB9R+Ih5vCvImwoB0CvcZc",
+   "ground.webp": "sha384-H4n9Md8J6MyD6EQ/O/EglGPoQUI3d/F4mrTNwUgAV1bSg/8lM9R17bWsIqlj3Xkp",
+   "mid.webp": "sha384-y2kO8bPDLB6RMjCy8VsXoQcBgrWcOJVCfbpr070/M9OWZzQ7oBrZTYwJMt6HyVJu",
+   "pack.js": "sha384-wdBNqZRjevnQQbekDO167XU4d4w7bcsRR55W48wsUapOQD09Qew6CS+Xm14tLfjl",
+   "pack.json": "sha384-79bRh4D196FXBrPJwSnh+vO/bulgkYNJy3V6HGqmpNHsZF9znjae+FZ0baBIHw7c",
+   "props.webp": "sha384-oWOyWlwVgFZKPChuGgyC46XyBV/Pizv7XAGbCdHcFKW/ub0BylwP9xNimPgWTwAz"
   }
  }
 }

@@ -6,7 +6,7 @@
 // One picture per world and character in the generated catalogue (server/builder/kit2-catalog.js), so a newly shipped
 // theme gets its pictures by running this again: node scripts/kit2-thumbs.js   (--only cow,pig,castle-quest draws just
 // those worlds and characters and leaves every other picture as it is). An animal is drawn with g.creature(), turned a
-// little to the side and framed by its own size.
+// little to the side and framed by its own size (a very long one, a dinosaur, turned more towards the camera).
 // Needs the Playwright Chromium (BRB_CHROMIUM, or the one Playwright installed). Chromium itself encodes the WebP.
 // tests/unit/builder-kit2.test.js fails when a world or character has no picture.
 process.env.BRB_DB = process.env.BRB_DB || ':memory:'; process.env.BRB_SILENT = '1';
@@ -61,7 +61,8 @@ import { start } from 'oomba3d';
 const g = await start({ theme: '${w.id}', version: '${w.version}', graphics: 'high', outline: true, settings: false, reducedMotion: true });
 g.scene.fog = null;   // a clear portrait: no haze, and high above the soft clouds
 ${c.kind === 'creature' ? `const me = await g.creature('${c.id}', { x: 0, y: 40, z: 0, face: 0.85 });
-const [, h, l] = me.size, r = Math.max(h, l * 0.85);
+const [, h, l] = me.size, long = l > h * 2.1, r = Math.max(h, l * (long ? 0.56 : 0.85));
+if (long) me.object.rotation.y = 0.5;   // a very long animal (a dinosaur) turns more towards the camera, so it fills its picture
 g.camera.fov = 26; g.camera.updateProjectionMatrix();
 g.camera.position.set(r * 0.25, 40 + h * 0.75, r * 2.8); g.camera.lookAt(0, 40 + h * 0.5, 0);` : `const me = await g.hero('${c.id}', { x: 0, y: 40, z: 0, face: 0.3 });
 me.play('wave');

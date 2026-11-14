@@ -1603,7 +1603,8 @@
         "cosy-home": "Gezellig Huis",
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
-        "wild-woods": "Wilde Woud"
+        "wild-woods": "Wilde Woud",
+        "dino-valley": "Dinovallei"
       }
     },
     "heroes": {
@@ -1626,7 +1627,12 @@
         "deer": "Ree",
         "stag": "Hert",
         "fox": "Vos",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Stegosaurus",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaurus",
+        "velociraptor": "Velociraptor"
       }
     },
     "animals": {

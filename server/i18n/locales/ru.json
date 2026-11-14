@@ -1602,7 +1602,8 @@
         "cosy-home": "Уютный дом",
         "busy-kitchen": "Шумная кухня",
         "pirate-cove": "Пиратская бухта",
-        "wild-woods": "Дикий лес"
+        "wild-woods": "Дикий лес",
+        "dino-valley": "Долина динозавров"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "Лань",
         "stag": "Олень",
         "fox": "Лиса",
-        "shiba": "Сиба-ину"
+        "shiba": "Сиба-ину",
+        "triceratops": "Трицератопс",
+        "stegosaurus": "Стегозавр",
+        "parasaurolophus": "Паразауролоф",
+        "apatosaurus": "Апатозавр",
+        "velociraptor": "Велоцираптор"
       }
     },
     "animals": {

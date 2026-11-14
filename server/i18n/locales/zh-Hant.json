@@ -1602,7 +1602,8 @@
         "cosy-home": "溫馨小屋",
         "busy-kitchen": "忙碌廚房",
         "pirate-cove": "海盜灣",
-        "wild-woods": "野外森林"
+        "wild-woods": "野外森林",
+        "dino-valley": "恐龍谷"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "小鹿",
         "stag": "雄鹿",
         "fox": "狐狸",
-        "shiba": "柴犬"
+        "shiba": "柴犬",
+        "triceratops": "三角龍",
+        "stegosaurus": "劍龍",
+        "parasaurolophus": "副櫛龍",
+        "apatosaurus": "迷惑龍",
+        "velociraptor": "伶盜龍"
       }
     },
     "animals": {

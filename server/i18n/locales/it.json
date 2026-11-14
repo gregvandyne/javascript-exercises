@@ -1603,7 +1603,8 @@
         "cosy-home": "Casa Accogliente",
         "busy-kitchen": "Cucina Indaffarata",
         "pirate-cove": "Baia dei Pirati",
-        "wild-woods": "Bosco Selvaggio"
+        "wild-woods": "Bosco Selvaggio",
+        "dino-valley": "Valle dei Dinosauri"
       }
     },
     "heroes": {
@@ -1626,7 +1627,12 @@
         "deer": "Cerva",
         "stag": "Cervo",
         "fox": "Volpe",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratopo",
+        "stegosaurus": "Stegosauro",
+        "parasaurolophus": "Parasaurolofo",
+        "apatosaurus": "Apatosauro",
+        "velociraptor": "Velociraptor"
       }
     },
     "animals": {

@@ -13,6 +13,9 @@
 //   dropVertexColours: true        ignore COLOR_0
 //   stretch: [1, 6, 1]             the model stretched along x, y and z about its origin, before anything else (a thin
 //                                  sand patch made into an island thick enough to stand in the sea); for still models
+//   taper: 0.5                     the model made narrower towards its top (x and z times 1 at its base and this at its
+//                                  top, more and more the higher up), after any stretch: a round stone made into an
+//                                  egg; for still models
 //   shift: [0, 0.05, 0]            the model moved by this much before it is scaled (a kit whose models all sit a little
 //                                  below their own floor: the Kenney Nature Kit)
 //   colours: { '^grass$': '#5fbf4a' }  the plain colour of every material whose name matches, as an sRGB hex colour (FBX
@@ -39,6 +42,11 @@ export async function packSteps(doc, item, recipe, recipeDir) {
       const acc = p.getAttribute('POSITION'); if (!acc || done.has(acc)) continue; done.add(acc);
       const a = new Float32Array(acc.getArray()); for (let i = 0; i < a.length; i++) a[i] *= item.stretch[i % 3]; acc.setArray(a);
     }
+  }
+  if (item.taper) {
+    const accs = new Set(); for (const m of root.listMeshes()) for (const p of m.listPrimitives()) if (p.getAttribute('POSITION')) accs.add(p.getAttribute('POSITION'));
+    let lo = Infinity, hi = -Infinity; for (const acc of accs) { const a = acc.getArray(); for (let i = 1; i < a.length; i += 3) { lo = Math.min(lo, a[i]); hi = Math.max(hi, a[i]); } }
+    for (const acc of accs) { const a = new Float32Array(acc.getArray()); for (let i = 0; i < a.length; i += 3) { const t = (a[i + 1] - lo) / (hi - lo || 1), k = 1 + (item.taper - 1) * t * t; a[i] *= k; a[i + 2] *= k; } acc.setArray(a); }
   }
   if (item.shift) for (const sc of root.listScenes()) for (const n of sc.listChildren()) n.setTranslation(n.getTranslation().map((v, i) => v + item.shift[i]));
   if (item.colours) {

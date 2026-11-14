@@ -1,0 +1,2654 @@
+{
+ "_": "How Dino Valley 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "kenney-nature-kit/cliff_block_rock.glb",
+   "to": "world/valley-ground.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   },
+   "stretch": [
+    1,
+    0.75,
+    1
+   ]
+  },
+  {
+   "from": "kenney-nature-kit/cliff_blockHalf_rock.glb",
+   "to": "world/hill.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_block_rock.glb",
+   "to": "world/cliff-block.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_blockSlope_rock.glb",
+   "to": "world/cliff-slope.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_steps_rock.glb",
+   "to": "world/cliff-steps.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_rock.glb",
+   "to": "world/cliff-wall.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_top_rock.glb",
+   "to": "world/cliff-wall-top.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_waterfall_rock.glb",
+   "to": "world/cliff-waterfall.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_waterfallTop_rock.glb",
+   "to": "world/cliff-waterfall-top.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_blockCave_rock.glb",
+   "to": "world/cave.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_cave_rock.glb",
+   "to": "world/cave-arch.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/cliff_block_stone.glb",
+   "to": "world/stone-block.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   },
+   "stretch": [
+    1,
+    0.75,
+    1
+   ]
+  },
+  {
+   "from": "kenney-nature-kit/platform_grass.glb",
+   "to": "world/grass-patch.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/platform_stone.glb",
+   "to": "world/stone-patch.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/platform_beach.glb",
+   "to": "world/sand-patch.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_pathStraight.glb",
+   "to": "world/path.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_pathBend.glb",
+   "to": "world/path-bend.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_pathEnd.glb",
+   "to": "world/path-end.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverStraight.glb",
+   "to": "world/river.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverBend.glb",
+   "to": "world/river-bend.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverEnd.glb",
+   "to": "world/river-end.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverSplit.glb",
+   "to": "world/river-split.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverRocks.glb",
+   "to": "world/river-rocks.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverTile.glb",
+   "to": "world/pond.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/ground_riverOpen.glb",
+   "to": "world/water.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/path_stone.glb",
+   "to": "world/stepping-stones.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/path_stoneCircle.glb",
+   "to": "world/stone-circle.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/bridge_wood.glb",
+   "to": "world/bridge.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_palm.glb",
+   "to": "world/palm.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_palmBend.glb",
+   "to": "world/palm-bend.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_palmDetailedTall.glb",
+   "to": "world/palm-bushy.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_palmDetailedShort.glb",
+   "to": "world/palm-short.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/PalmTree_1.glb",
+   "to": "world/palm-giant.glb",
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/PalmTree_4.glb",
+   "to": "world/palm-leaning.glb",
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/PalmTree_2.glb",
+   "to": "world/palm-curly.glb",
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_fat.glb",
+   "to": "world/big-tree.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_plateau.glb",
+   "to": "world/flat-top-tree.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_pineTallA_detailed.glb",
+   "to": "world/conifer.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/tree_pineRoundC.glb",
+   "to": "world/conifer-round.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Willow_3.glb",
+   "to": "world/jungle-tree.glb",
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/plant_flatTall.glb",
+   "to": "world/fern.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/plant_flatShort.glb",
+   "to": "world/fern-small.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Plant_1.glb",
+   "to": "world/fern-big.glb",
+   "scale": 1.5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/plant_bushDetailed.glb",
+   "to": "world/leafy-plant.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/plant_bushLarge.glb",
+   "to": "world/broad-leaf.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Plant_4.glb",
+   "to": "world/jungle-plant.glb",
+   "scale": 1.2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Plant_3.glb",
+   "to": "world/spiky-plant.glb",
+   "scale": 1.5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Plant_5.glb",
+   "to": "world/flower-plant.glb",
+   "scale": 1,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/crops_bambooStageB.glb",
+   "to": "world/bamboo.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/crops_bambooStageA.glb",
+   "to": "world/bamboo-young.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/crops_leafsStageB.glb",
+   "to": "world/sprout.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Bush_1.glb",
+   "to": "world/bush.glb",
+   "scale": 1.4,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/grass.glb",
+   "to": "world/grass.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/grass_large.glb",
+   "to": "world/grass-tall.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Grass.glb",
+   "to": "world/reeds.glb",
+   "scale": 1.5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/flower_redC.glb",
+   "to": "world/flower-red.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 3,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/flower_yellowC.glb",
+   "to": "world/flower-yellow.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 3,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/lily_small.glb",
+   "to": "world/lily-pad.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/lily_large.glb",
+   "to": "world/lily-pad-flower.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/mushroom_tanTall.glb",
+   "to": "world/giant-mushroom.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 10,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/mushroom_redGroup.glb",
+   "to": "world/mushrooms-red.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 3,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_largeA.glb",
+   "to": "world/rock.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_largeD.glb",
+   "to": "world/rock-big.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_smallH.glb",
+   "to": "world/rock-round.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_smallFlatA.glb",
+   "to": "world/rock-flat.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_tallC.glb",
+   "to": "world/rock-tall.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_tallA.glb",
+   "to": "world/rock-tower.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/rock_tallG.glb",
+   "to": "world/rock-spire.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_5.glb",
+   "to": "world/boulder.glb",
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_2.glb",
+   "to": "world/boulder-big.glb",
+   "scale": 5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_1.glb",
+   "to": "world/standing-stone.glb",
+   "scale": 5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_Moss_3.glb",
+   "to": "world/mossy-rock.glb",
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_Moss_6.glb",
+   "to": "world/mossy-rock-big.glb",
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/Rock_Moss_1.glb",
+   "to": "world/mossy-rock-tall.glb",
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stone_largeB.glb",
+   "to": "world/stone.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stone_smallG.glb",
+   "to": "world/stone-small.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stone_tallF.glb",
+   "to": "world/stone-tall.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stone_tallA.glb",
+   "to": "world/stone-tower.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/log_large.glb",
+   "to": "props/log-hollow.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "quaternius-ultimate-nature/WoodLog.glb",
+   "to": "props/log.glb",
+   "scale": 1.5,
+   "matte": true,
+   "colours": {
+    "^Green": "#55b340",
+    "^DarkGreen": "#2f9148",
+    "^Wood": "#8f5e3c",
+    "^Rock": "#b3ad9f",
+    "^Yellow$": "#f6cf4f",
+    "^Pink$": "#ee6aa7",
+    "^Leaves$": "#5fa33f",
+    "^Coconuts$": "#a8703f",
+    "^Mushroom_Top$": "#d9694a",
+    "^Mushroom_Bottom$": "#efe0c6",
+    "^Brown": "#8f5e3c",
+    "^Black": "#4a4a4a",
+    "^White": "#ece7d8"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stump_oldTall.glb",
+   "to": "props/stump.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/stone_smallH.glb",
+   "to": "props/egg.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 4,
+   "matte": true,
+   "colours": {
+    "^stone$": "#fff1cf",
+    "^stoneDark$": "#e9d6a8"
+   },
+   "stretch": [
+    1,
+    1.4,
+    1
+   ],
+   "taper": 0.45
+  },
+  {
+   "from": "kenney-nature-kit/stone_smallH.glb",
+   "to": "props/egg-blue.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^stone$": "#bfe8f5",
+    "^stoneDark$": "#93cbe0"
+   },
+   "stretch": [
+    1,
+    1.4,
+    1
+   ],
+   "taper": 0.45
+  },
+  {
+   "from": "kenney-nature-kit/stone_smallH.glb",
+   "to": "props/egg-pink.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 2,
+   "matte": true,
+   "colours": {
+    "^stone$": "#ffd0dc",
+    "^stoneDark$": "#f0a8bd"
+   },
+   "stretch": [
+    1,
+    1.4,
+    1
+   ],
+   "taper": 0.45
+  },
+  {
+   "from": "kenney-nature-kit/pot_large.glb",
+   "to": "props/nest.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 6,
+   "matte": true,
+   "colours": {
+    "^wood$": "#e8c873",
+    "^woodBarkDark$": "#c59a4a"
+   }
+  },
+  {
+   "from": "kenney-nature-kit/sign.glb",
+   "to": "props/sign.glb",
+   "shift": [
+    0,
+    0.05,
+    0
+   ],
+   "scale": 5,
+   "matte": true,
+   "colours": {
+    "^grass$": "#7ccf52",
+    "^leafsGreen$": "#43b85a",
+    "^leafsDark$": "#229158",
+    "^dirt$": "#e0a868",
+    "^dirtDark$": "#c08450",
+    "^stone$": "#c9c4b6",
+    "^stoneDark$": "#a39c8f",
+    "^water$": "#3ec6ea",
+    "^wood$": "#c98a55",
+    "^woodDark$": "#a86a3d",
+    "^woodBark$": "#a8703f",
+    "^woodBarkDark$": "#85563a",
+    "^woodInner$": "#ecd3a6",
+    "^colorRed$": "#f0604f",
+    "^colorRedDark$": "#cf4440",
+    "^colorTan$": "#efb57e",
+    "^colorYellow$": "#ffc93c",
+    "^colorWhite$": "#ffffff"
+   }
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/props/coin.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "dinosaurs/Triceratops.glb",
+   "to": "creatures/triceratops.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3196,
+   "colours": {
+    "^LightBrown$": "#f6e9c8",
+    "^Purple$": "#58b4d6",
+    "^Brown$": "#3f93b5"
+   },
+   "anims": {
+    "idle": "Armature|Triceratops_Idle",
+    "walk": "Armature|Triceratops_Walk",
+    "run": "Armature|Triceratops_Run",
+    "jump": "Armature|Triceratops_Jump"
+   },
+   "keepAnims": [
+    "Armature|Triceratops_Idle",
+    "Armature|Triceratops_Walk",
+    "Armature|Triceratops_Run",
+    "Armature|Triceratops_Jump"
+   ]
+  },
+  {
+   "from": "dinosaurs/Stegosaurus.glb",
+   "to": "creatures/stegosaurus.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3037,
+   "colours": {
+    "^LightBrown$": "#f9d58a",
+    "^DarkBrown$": "#f39c45",
+    "^Brown$": "#e9654a"
+   },
+   "anims": {
+    "idle": "Armature|Stegosaurus_Idle",
+    "walk": "Armature|Stegosaurus_Walk",
+    "run": "Armature|Stegosaurus_Run",
+    "jump": "Armature|Stegosaurus_Jump"
+   },
+   "keepAnims": [
+    "Armature|Stegosaurus_Idle",
+    "Armature|Stegosaurus_Walk",
+    "Armature|Stegosaurus_Run",
+    "Armature|Stegosaurus_Jump"
+   ]
+  },
+  {
+   "from": "dinosaurs/Parasaurolophus.glb",
+   "to": "creatures/parasaurolophus.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.5208,
+   "colours": {
+    "^LightYellow$": "#f8e08a",
+    "^Green$": "#a585e0",
+    "^LightGreen$": "#c4adf0",
+    "^Red$": "#ff9466"
+   },
+   "anims": {
+    "idle": "Armature|Parasaurolophus_Idle",
+    "walk": "Armature|Parasaurolophus_Walk",
+    "run": "Armature|Parasaurolophus_Run",
+    "jump": "Armature|Parasaurolophus_Jump"
+   },
+   "keepAnims": [
+    "Armature|Parasaurolophus_Idle",
+    "Armature|Parasaurolophus_Walk",
+    "Armature|Parasaurolophus_Run",
+    "Armature|Parasaurolophus_Jump"
+   ]
+  },
+  {
+   "from": "dinosaurs/Apatosaurus.glb",
+   "to": "creatures/apatosaurus.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3016,
+   "colours": {
+    "^Material$": "#dceca0",
+    "^Brown$": "#6fc05e"
+   },
+   "anims": {
+    "idle": "Armature|Apatosaurus_Idle",
+    "walk": "Armature|Apatosaurus_Walk",
+    "run": "Armature|Apatosaurus_Run",
+    "jump": "Armature|Apatosaurus_Jump"
+   },
+   "keepAnims": [
+    "Armature|Apatosaurus_Idle",
+    "Armature|Apatosaurus_Walk",
+    "Armature|Apatosaurus_Run",
+    "Armature|Apatosaurus_Jump"
+   ]
+  },
+  {
+   "from": "dinosaurs/Velociraptor.glb",
+   "to": "creatures/velociraptor.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.2711,
+   "colours": {
+    "^LightBrown$": "#fbe7a2",
+    "^Brown$": "#f4c23f",
+    "^Black$": "#5a4326"
+   },
+   "anims": {
+    "idle": "Armature|Velociraptor_Idle",
+    "walk": "Armature|Velociraptor_Walk",
+    "run": "Armature|Velociraptor_Run",
+    "jump": "Armature|Velociraptor_Jump"
+   },
+   "keepAnims": [
+    "Armature|Velociraptor_Idle",
+    "Armature|Velociraptor_Walk",
+    "Armature|Velociraptor_Run",
+    "Armature|Velociraptor_Jump"
+   ]
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "to": "heroes/barbarian.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "to": "heroes/knight.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "to": "heroes/mage.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "to": "heroes/rogue.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "to": "heroes/rogue-hooded.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+   "to": "heroes/moves.glb"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/walk.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

@@ -63,7 +63,7 @@ export async function buildKit2(ctx, m, pick, say, o = {}) {
   const theme = detectTheme(text), col = detectColor(text), [icon, cover] = lookOf(w.id);
   const rename = String(text).match(/\b(?:call it|name it|title it)\s+["“']?([^"”'\n]{2,40})/i), named = rename && cleanText(rename[1].trim(), 40);
   const kept = o.replaces && o.replaces.title && !/^(new game|my game)$/i.test(o.replaces.title) ? o.replaces.title : '';
-  const title = (named && named.ok && named.value) || kept || (pick.wantsCreature && theme ? `${theme.name} ${w.name}` : w.name);
+  const title = (named && named.ok && named.value) || kept || (pick.wantsCreature && theme && !w.name.includes(theme.name) ? `${theme.name} ${w.name}` : w.name);
   const outfit = col ? col.hex : pick.wantsCreature ? '#66C792' : '';
   const friend = characterById(creatureFor(w.id, pick.companion));
   let html = kit2Starter({ world: w.id, hero, title, companion: friend ? friend.id : '' });
