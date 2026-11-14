@@ -158,7 +158,7 @@ function resolve(req, b) {
     if (!slide) return { error: [404, 'off'] };
     const g = step.game && lines.GAMES[step.game.slug];
     // Lesson slides are English (the course content is English first): read with the English voice.
-    return { text: sayOf(slide), locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
+    return { text: sayOf(slide, step.band), locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'placement') {
     if (!req.user) return { error: [404, 'off'] };

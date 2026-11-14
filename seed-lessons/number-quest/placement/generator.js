@@ -15,9 +15,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { PRO_ARCHETYPES } from './generator-pro.js';
+import { sayMath } from '../math-text.js';
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+/** The bank: every template the game may serve. */
 export const TEMPLATES = JSON.parse(fs.readFileSync(path.join(HERE, 'templates.json'), 'utf8')).templates;
-export const BY_ID = new Map(TEMPLATES.map(t => [t.id, t]));
+/** Templates the game served once and no longer serves (retired.json: the rung 6.0-8.0 items the Pro lock of
+ *  2026-11-14 replaced). They are never dealt again, but an item already on a learner's screen when the bank
+ *  changed is still graded and read aloud from the template it was dealt from, so they stay findable by id. */
+export const RETIRED = JSON.parse(fs.readFileSync(path.join(HERE, 'retired.json'), 'utf8')).templates;
+/** Every template by id, served or retired: what grading and read-aloud look an item up in. */
+export const BY_ID = new Map([...RETIRED, ...TEMPLATES].map(t => [t.id, t]));
 
 // Small seeded RNG (mulberry32). Never Math.random in item generation.
 export function rngFromSeed(seed) {
@@ -375,6 +384,10 @@ export const ARCHETYPES = {
   },
 };
 
+// The archetypes for rungs 6.0-8.0 (grades 6-8) live in generator-pro.js and join the table here. Nothing above
+// this line changed when they were added, and no template below rung 6 names one of them.
+Object.assign(ARCHETYPES, PRO_ARCHETYPES);
+
 /** "1 loose counter", "1 more counter", "1 cup of flour", "1 notebook": a count of one names one thing, wherever
  *  an archetype built the sentence from a number. Words between the number and its noun (loose, more, red) stay. */
 const COUNT_NOUNS = 'counter|cup|ball|marble|sticker|treat|friend|group|frame|hour|minute|apple|piece|point|seed|shell|star|block|bird|cube|square|side|layer|row|pile|notebook|triangle|hexagon|angle|unit|meter|metre|gram|kilogram|cent|dollar|circle|day|book|tile|coin';
@@ -423,7 +436,9 @@ export function generateItem(template, seed) {
     });
   }
   out.prompt = pluralFix(out.prompt);
-  const spokenPrompt = out.prompt.replace(/[_]{2,}/g, 'blank');
+  // What the voice says. From rung 6.0 the prompts carry signs a voice drops or garbles (−8, 3/4, √81, x + 4 > 10),
+  // so they are said in words (math-text.js sayMath). Below rung 6 the spoken prompt is exactly what it always was.
+  const spokenPrompt = template.rung >= 6 ? sayMath(out.prompt) : out.prompt.replace(/[_]{2,}/g, 'blank');
   if (template.responseType !== 'pick' && typedOk) {
     return { templateId: template.id, strand: template.strand, rung: template.rung, prompt: out.prompt, spokenPrompt,
       responseType: template.responseType, answer: out.answer, choices: null, answerIndex: null,

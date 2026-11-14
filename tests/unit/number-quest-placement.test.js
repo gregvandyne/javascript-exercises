@@ -1,6 +1,7 @@
-// Number Quest placement bank (seed-lessons/number-quest/placement): 252 templates across four strands
+// Number Quest placement bank (seed-lessons/number-quest/placement): 266 templates across four strands
 // and half-grade rungs K.0-8.0 (spec §4.3; repair round 3 added 12 mid-rung hands-on templates, six
-// each for Number and Shape & Measure). Checks the bank's shape, its Launchpad audio-first rules
+// each for Number and Shape & Measure; the Pro lock of 2026-11-14 rebuilt rungs 6.0-8.0: 63 of the 72
+// templates there were retired and 77 written, see tests/unit/number-quest-placement-pro.test.js). Checks the bank's shape, its Launchpad audio-first rules
 // (§9), and that the generator produces solvable items with correct, unique keys for every template.
 import './_setup.js';
 import test from 'node:test';
@@ -14,24 +15,26 @@ const DIR = path.join(ROOT, 'seed-lessons/number-quest/placement');
 const BANK = JSON.parse(fs.readFileSync(path.join(DIR, 'templates.json'), 'utf8'));
 const PLACE = JSON.parse(fs.readFileSync(path.join(DIR, '..', 'placement.json'), 'utf8'));
 const CROSSWALK = PLACE.crosswalk;
-const { generateItem, generateById, BY_ID } = await import('../../seed-lessons/number-quest/placement/generator.js');
+const { generateItem, generateById, BY_ID, RETIRED } = await import('../../seed-lessons/number-quest/placement/generator.js');
 
-test('bank holds 252 templates, no thin strand x rung cell', () => {
-  assert.equal(BANK.templates.length, 252);
+test('bank holds 266 templates, no thin strand x rung cell', () => {
+  assert.equal(BANK.templates.length, 266);
+  assert.equal(BANK.templates.filter(t => t.rung < 6).length, 180, 'the 180 templates below rung 6 are the ones the bank has always had');
   const perStrand = {}, cells = new Map(), ids = new Set();
   for (const t of BANK.templates) {
     perStrand[t.strand] = (perStrand[t.strand] || 0) + 1;
     const k = `${t.strand}@${t.rungLabel}`; cells.set(k, (cells.get(k) || 0) + 1);
     assert.ok(!ids.has(t.id), `duplicate ${t.id}`); ids.add(t.id);
   }
-  assert.deepEqual(perStrand, { number: 66, algebra: 60, 'shape-measure': 66, 'data-chance': 60 });
+  assert.deepEqual(perStrand, { number: 70, algebra: 63, 'shape-measure': 70, 'data-chance': 63 });
   assert.equal(cells.size, 4 * 17);
   for (const [k, n] of cells) assert.ok(n >= 3, `thin cell ${k}=${n}`);
+  for (const [k, n] of cells) if (/@[678]\./.test(k)) assert.ok(n >= 4, `a rung 6.0-8.0 cell holds at least four templates (${k}=${n})`);
 });
 
 test('every template is fully tagged (strand, rung, CCSS, misconception, response type, reading load)', () => {
   for (const t of BANK.templates) {
-    for (const f of ['id', 'strand', 'rung', 'rungLabel', 'grade', 'ccss', 'ccssDomain', 'ccssCluster', 'misconception', 'responseType', 'readingLoad', 'archetype']) assert.ok(t[f] !== undefined && t[f] !== '', `${t.id} missing ${f}`);
+    for (const f of ['id', 'strand', 'rung', 'rungLabel', 'grade', 'ccss', 'ccssDomain', 'ccssCluster', 'ccssClusterCode', 'lockStatus', 'misconception', 'responseType', 'readingLoad', 'archetype']) assert.ok(t[f] !== undefined && t[f] !== '' && t[f] !== null, `${t.id} missing ${f}`);
     assert.ok(['pick', 'numeric', 'count-out', 'drag', 'build'].includes(t.responseType), t.id);
     assert.ok(['none', 'low', 'standard'].includes(t.readingLoad), t.id);
     assert.ok(t.gen && typeof t.gen === 'object', t.id);
@@ -79,7 +82,8 @@ test('generation is reproducible per seed and varies across seeds', () => {
   assert.deepEqual(generateById(t.id, 7), generateById(t.id, 7));
   const prompts = new Set(Array.from({ length: 20 }, (_, i) => generateById(t.id, i + 1).prompt));
   assert.ok(prompts.size >= 5, 'items should vary per attempt');
-  assert.ok(BY_ID.size === 252);
+  // BY_ID also finds the retired templates (retired.json): never served, still gradable for an item already dealt.
+  assert.equal(BY_ID.size, 266 + RETIRED.length); assert.equal(RETIRED.length, 63);
 });
 
 test('crosswalk (in placement.json, the strand lock) routes to the lower unit and never certifies', () => {
@@ -88,16 +92,16 @@ test('crosswalk (in placement.json, the strand lock) routes to the lower unit an
   assert.ok(CROSSWALK.entryProfiles['explorer-1.1']);
 });
 
-test('templates respect the standards lock: locked rungs cite locked clusters, deferred cite none', () => {
+test('templates respect the standards lock: every rung is locked, and every template cites a cluster its rung names', () => {
+  // Until the Pro lock (2026-11-14) rungs 6.0-8.0 were "deferred-pro-phase" with no cluster code, yet served. Now
+  // all 17 rungs are locked, so the one rule holds for every template in the bank.
   for (const t of BANK.templates) {
-    if (t.rung <= 5.5) {
-      assert.equal(t.lockStatus, 'locked', t.id);
-      assert.ok(PLACE.strands[t.strandLabel].lockedRungs[t.rungLabel].clusters.includes(t.ccssClusterCode), t.id);
-    } else {
-      assert.equal(t.lockStatus, 'deferred-pro-phase', t.id);
-      assert.equal(t.ccssClusterCode, null, t.id);
-    }
+    assert.equal(t.lockStatus, 'locked', t.id);
+    assert.equal(typeof t.ccssClusterCode, 'string', `${t.id}: tagged with its cluster code`);
+    assert.ok(PLACE.strands[t.strandLabel].lockedRungs[t.rungLabel].clusters.includes(t.ccssClusterCode), t.id);
+    assert.equal(/^[678]\./.test(t.ccssClusterCode), t.rung >= 6, `${t.id}: a grade 6-8 cluster sits at a rung of 6.0 or over, and nowhere else`);
   }
+  for (const strand of Object.values(PLACE.strands)) assert.equal(strand.deferredRungs, undefined, 'no rung is deferred any more');
 });
 
 test('structure promised in words is the structure rendered: "R rows of P" items carry rows x perRow', () => {
