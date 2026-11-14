@@ -58,6 +58,10 @@ export const GAMES = Object.freeze({
   // picture graphs and bar graphs (its three measuring chapters, KITCHEN_CHAPTERS below). Its fourth chapter, The
   // Garden Gate, is the Launchpad finale: one round from each earlier unit, credited only to a step locked to it.
   'kitchen-rush': { 'ccss-math': ['1.MD.A.2', '2.MD.A.1', '1.MD.B.3', '2.MD.C.7', '2.MD.C.8', 'K.MD.B.3', '1.MD.C.4', '2.MD.D.10'] },
+  // Lantern Mix (grade 6): a ratio as a comparison of two amounts and equivalent ratios in tables, unit rates and
+  // constant speed, percent as a rate per 100 and changing units with a ratio (its three chapters, LANTERN_CHAPTERS
+  // below).
+  'lantern-mix': { 'ccss-math': ['6.RP.A.1', '6.RP.A.3a', '6.RP.A.2', '6.RP.A.3b', '6.RP.A.3c', '6.RP.A.3d'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -102,8 +106,12 @@ export const KITCHEN_CHAPTERS = Object.freeze({
   measure: ['1.MD.A.2', '2.MD.A.1'], clock: ['1.MD.B.3', '2.MD.C.7', '2.MD.C.8'], chart: ['K.MD.B.3', '1.MD.C.4', '2.MD.D.10'],
   gate: ['1.OA.C.6', '1.NBT.B.2', '2.NBT.A.1', 'K.NBT.A.1', '1.OA.D.7', '1.G.A.3'],
 });
+/** Lantern Mix's chapters (seed-games/lantern-mix.html LanternMix.CHAPTERS), for a step locked to one. */
+export const LANTERN_CHAPTERS = Object.freeze({
+  mix: ['6.RP.A.1', '6.RP.A.3a'], rate: ['6.RP.A.2', '6.RP.A.3b'], percent: ['6.RP.A.3c', '6.RP.A.3d'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -120,6 +128,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'rocket-supply') { const ch = p.get('chapter') || ''; return Object.hasOwn(ROCKET_CHAPTERS, ch) ? [...ROCKET_CHAPTERS[ch]] : null; }
   if (slug === 'shape-hunt') { const ch = p.get('chapter') || ''; return Object.hasOwn(SHAPE_CHAPTERS, ch) ? [...SHAPE_CHAPTERS[ch]] : null; }
   if (slug === 'kitchen-rush') { const ch = p.get('chapter') || ''; return Object.hasOwn(KITCHEN_CHAPTERS, ch) ? [...KITCHEN_CHAPTERS[ch]] : null; }
+  if (slug === 'lantern-mix') { const ch = p.get('chapter') || ''; return Object.hasOwn(LANTERN_CHAPTERS, ch) ? [...LANTERN_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

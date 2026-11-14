@@ -1,0 +1,286 @@
+{
+ "key": "pro-1.2",
+ "n": "1.2",
+ "band": "pro",
+ "title": "Unit rates",
+ "topic": "Unit rates",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "Dark before morning",
+   "text": "Lanterns on the tower stair keep going dark before morning. Nobody has checked how fast each one burns its oil. Tally taps a tank: 12 milliliters gone in 4 hours. How much is that for each hour?",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 0,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A rate for just 1",
+   "text": "A rate compares two different units, such as milliliters and hours. Share the 12 milliliters equally over the 4 hours: 12 ÷ 4 = 3. The unit rate is 3 milliliters per hour, the amount for exactly 1 hour.",
+   "art": "clock",
+   "visual": {
+    "type": "double",
+    "label": "A double number line of oil burned over time: 3 milliliters in 1 hour, 6 in 2, 9 in 3 and 12 in 4",
+    "top": "Milliliters of oil",
+    "bottom": "Hours",
+    "ticks": [
+     [
+      0,
+      0
+     ],
+     [
+      3,
+      1
+     ],
+     [
+      6,
+      2
+     ],
+     [
+      9,
+      3
+     ],
+     [
+      12,
+      4
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "What the tank showed: 12 milliliters in 4 hours.",
+     "box": [
+      83,
+      24.1,
+      5.9,
+      58.7
+     ]
+    },
+    {
+     "cue": "Shared equally, each hour burns 3: the unit rate.",
+     "box": [
+      28.3,
+      24.1,
+      4.5,
+      58.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Use the unit rate",
+   "text": "Once you know the amount for 1 hour, any number of hours is one multiplication. At 3 milliliters per hour, 7 hours needs 7 × 3 = 21 milliliters. Adding 3 and 7 would answer a different question.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "table",
+    "label": "A rate table at 3 milliliters per hour: 1 hour burns 3, 2 hours 6, 4 hours 12 and 7 hours 21",
+    "head": [
+     "Hours",
+     "1",
+     "2",
+     "4",
+     "7"
+    ],
+    "rows": [
+     [
+      "Oil (ml)",
+      "3",
+      "6",
+      "12",
+      "21"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The unit rate: 1 hour burns 3 milliliters.",
+     "box": [
+      22.6,
+      19.7,
+      19.6,
+      30.3
+     ]
+    },
+    {
+     "cue": "7 hours burn 7 times as much: 21 milliliters.",
+     "box": [
+      75.4,
+      19.7,
+      12.6,
+      30.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "From 4 hours to 10 hours",
+   "text": "Another lantern burns 6 milliliters in 4 hours, and its tank must last 10 hours. The rate is not given for 1 hour, so find that first. Then multiply by the hours you need.",
+   "art": "chart",
+   "steps": [
+    "6 ml in 4 hours",
+    "1 hour: 6 ÷ 4 = 1.5 ml",
+    "10 hours: 10 × 1.5 = 15 ml",
+    "check: 4 × 1.5 = 6"
+   ],
+   "visual": {
+    "type": "double",
+    "label": "A double number line at 1.5 milliliters per hour: 3 milliliters in 2 hours, 6 in 4, 9 in 6, 12 in 8 and 15 in 10",
+    "top": "Milliliters of oil",
+    "bottom": "Hours",
+    "ticks": [
+     [
+      0,
+      0
+     ],
+     [
+      3,
+      2
+     ],
+     [
+      6,
+      4
+     ],
+     [
+      9,
+      6
+     ],
+     [
+      12,
+      8
+     ],
+     [
+      15,
+      10
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The lantern burns 6 milliliters in 4 hours.",
+     "box": [
+      39.2,
+      24.1,
+      4.9,
+      58.7
+     ]
+    },
+    {
+     "cue": "Half of that: 3 milliliters in 2 hours.",
+     "box": [
+      24.6,
+      24.1,
+      4.5,
+      58.7
+     ]
+    },
+    {
+     "cue": "Five steps of 2 hours make 10 hours: 15 milliliters.",
+     "box": [
+      82.8,
+      24.1,
+      6.3,
+      58.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Compare with unit rates",
+   "text": "Lantern A burns 9 milliliters in 3 hours. Lantern B burns 10 milliliters in 5 hours. Their unit rates are 3 and 2 milliliters per hour, so B burns less each hour and the same tank lasts longer.",
+   "art": "magnifier",
+   "visual": {
+    "type": "chart",
+    "label": "A bar chart of two unit rates: lantern A burns 3 milliliters per hour and lantern B burns 2",
+    "max": 4,
+    "step": 1,
+    "unit": "ml per hour",
+    "bars": [
+     {
+      "label": "Lantern A",
+      "value": 3,
+      "tone": 1
+     },
+     {
+      "label": "Lantern B",
+      "value": 2,
+      "tone": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Lantern A: 9 ÷ 3 = 3 milliliters per hour.",
+     "box": [
+      28.6,
+      28.7,
+      18.9,
+      61.6
+     ]
+    },
+    {
+     "cue": "Lantern B: 10 ÷ 5 = 2 per hour. It burns less.",
+     "box": [
+      64.5,
+      41.6,
+      18.9,
+      48.7
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for working with rates.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "rate",
+     "means": "a ratio that compares two different units, such as milliliters and hours"
+    },
+    {
+     "word": "unit rate",
+     "means": "the amount for exactly 1 of the second unit, such as 3 milliliters per hour"
+    },
+    {
+     "word": "per",
+     "means": "for each one, as in 50 meters per minute"
+    },
+    {
+     "word": "double number line",
+     "means": "two number lines, one above the other, whose matching marks are equal ratios"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lantern Mix at Burn Rate. Find what each lantern burns in 1 hour, then fill its tank so it lasts the night. Six lanterns finish the step.",
+   "art": "trophy",
+   "img": "nq/lantern-mix/burn-rate",
+   "alt": "Lantern Mix on a phone: a double number line of 12 milliliters in 4 hours on the board, and a dial to set.",
+   "view": [
+    0,
+    0,
+    34.28,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-1.2-e1",
+  "nq-pro-1.2-e2",
+  "nq-pro-1.2-e3"
+ ],
+ "game": {
+  "slug": "lantern-mix",
+  "chapter": "Burn Rate",
+  "params": "chapter=rate&lock=1"
+ }
+}
