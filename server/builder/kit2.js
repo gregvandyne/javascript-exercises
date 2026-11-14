@@ -172,6 +172,8 @@ function lastNamed(list, t) {
 const PLACE_WORDS = [
   ['sky-islands', /\b(sky|floating|flying|cloud) islands?\b|\bislands? in the (sky|clouds)\b|\b(in|above|over|on) the clouds\b/],
   ['space-base', /\b(on|to) (the moon|mars|a planet|another planet)\b|\bmoon ?base\b|\bspace ?(base|station|ship)\b|\bouter space\b|\b(in|into) space\b|\bred planet\b|\bastronauts?\b|\brovers?\b|\brocket ?ship\b|\bthe moon\b/],
+  // Before the castle: "a pirate treasure chest" is a cove, not a dungeon. (A space ship is already Space Base above.)
+  ['pirate-cove', /\bpirates?\b|\btreasure (islands?|maps?|hunts?|coves?)\b|\b(desert|tropical|sandy) islands?\b|\bisland[- ]hopping\b|\b(on|aboard|sailing) (a|the|my) (sailing |big |wooden )?(ship|boat)s?\b|\bsailing ships?\b|\b(at|on|by|in) the (docks?|harbou?r)\b|\bcoves?\b|\bshipwrecks?\b/],
   ['castle-quest', /\bcastles?\b|\bdungeons?\b|\btreasure chests?\b/],
   ['spooky-hollow', /\bspooky\b|\bhaunted\b|\bhalloween\b|\bpumpkins?\b/],
   ['medieval-village', /\bvillages?\b|\bwindmills?\b|\bmedieval\b|\bwatermills?\b/],
@@ -204,11 +206,14 @@ export function pickKit2(text) {
   const named = lastNamed(NAMES.worlds, t);
   const classicChip = chipOf('classic'), classic = (!!classicChip && !chipWorld && !chipHero && !named) || /(^|[^a-z0-9])2 ?-?d\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/.test(t);
   let place = ''; for (const [id, re] of PLACE_WORDS) if (re.test(t)) { place = id; break; }
-  const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], heroName = chipHero || lastNamed(NAMES.heroes, t) || heroWord;
+  const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], namedHero = chipHero || lastNamed(NAMES.heroes, t), heroName = namedHero || heroWord;
+  // "pirate" alone is a place as much as a character (Pirate Cove has no Captain Clank): the hero it suggests is a soft
+  // pick, kept only in a world that has him ("a pirate game in Castle Quest"), never reported as missing.
+  const soft = !namedHero && heroWord === 'captain-clank' && !/\bcaptains?\b/.test(t);
   const threeD = THREE_D.test(t);
   // "a 3D game with a knight": a 3D request that names one of the characters is a pick of that character.
   const by = chipWorld || chipHero ? 'chip' : named || (threeD && heroName && !classic) ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
-  return { world: chipWorld || named || (by ? place : ''), hero: heroName, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
+  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
 }
 
 /**
@@ -233,6 +238,7 @@ export function wantsKit2(state, text, version) {
   // With no world named: the game's own, the one picked before, or the first world that has the character asked for.
   const asked = characterById(p.hero), home = asked && !asked.worlds.includes(DEFAULT_WORLD) ? asked.worlds[0] : DEFAULT_WORLD;
   const world = p.world || (cur && WORLD_IDS.includes(cur.world) ? cur.world : '') || before.world || home;
+  if (p.soft && heroFor(world, p.hero) !== p.hero) p.hero = '';
   // A character named in words counts here, inside a Kit 2 build; it must be one this world has.
   const hero = heroFor(world, p.hero || (cur && cur.hero) || before.hero || '');
   if (state) state.kit2 = { world, hero };
@@ -260,7 +266,8 @@ Oomba Academy has ready-made 3D worlds with animated characters. Each is a whole
 ${KIT2_WORLDS.map(w => `- ${w.id} ("${w.name}"): ${w.description}`).join('\n')}
 Characters: ${KIT2_CHARACTERS.map(c => `${c.id} (${c.name})`).join(', ')}.${NO_CREATURES ? ' No animals or dinosaurs yet.' : ''}
 - Use one when the builder picks or names a world or character from this list, or describes a place that is one of them
-  (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky) for a game where a hero
+  (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky, a pirate cove or
+  treasure island) for a game where a hero
   walks, jumps, collects and answers. Then call start_from_template with template "oomba3d", the world and the hero:
   the KIT 2 RULES arrive with the starter. These games are NOT on the Oomba Kit and NOT on the world3d starter.
 - Stay on the Oomba Kit (2D) for card, board, word, catching and two-player games and for anything the builder wants in
