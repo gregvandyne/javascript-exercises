@@ -1613,7 +1613,17 @@
         "skelly": "スケリー",
         "rattles": "ラトルズ",
         "bonzo": "ボンゾ",
-        "captain-clank": "キャプテン・クランク"
+        "captain-clank": "キャプテン・クランク",
+        "donkey": "ロバ",
+        "cow": "ウシ",
+        "husky": "ハスキー",
+        "pig": "ブタ",
+        "sheep": "ヒツジ",
+        "horse": "ウマ",
+        "deer": "シカ",
+        "stag": "オスジカ",
+        "fox": "キツネ",
+        "shiba": "しばいぬ"
       }
     },
     "lesson": {

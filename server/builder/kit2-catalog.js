@@ -4,7 +4,7 @@
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
 // name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
 // reference the Builder reads.
-export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"]};
+export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0","1.2.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0","1.1.0"]};
 export const KIT2_WORLDS = [
  {
   "id": "sky-islands",
@@ -255,7 +255,7 @@ export const KIT2_WORLDS = [
  },
  {
   "id": "castle-quest",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "Castle Quest",
   "description": "Explore a cosy castle: climb stairs, light torches, find the keys and open the treasure chests, with forests, hills and a castle on the hill.",
   "goodFor": [
@@ -302,7 +302,98 @@ export const KIT2_WORLDS = [
     "name": "Captain Clank"
    }
   ],
-  "creatures": [],
+  "creatures": [
+   {
+    "id": "horse",
+    "name": "Horse",
+    "kind": "land",
+    "size": [
+     1.1,
+     3.2,
+     3.8
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "deer",
+    "name": "Deer",
+    "kind": "land",
+    "size": [
+     0.9,
+     2.6,
+     2.7
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "stag",
+    "name": "Stag",
+    "kind": "land",
+    "size": [
+     1.6,
+     3.3,
+     3
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "fox",
+    "name": "Fox",
+    "kind": "land",
+    "size": [
+     0.5,
+     1.3,
+     2.7
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "shiba",
+    "name": "Shiba Inu",
+    "kind": "land",
+    "size": [
+     0.5,
+     1.3,
+     1.8
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   }
+  ],
   "pieces": [
    {
     "id": "floor-stone",
@@ -3487,7 +3578,7 @@ export const KIT2_WORLDS = [
  },
  {
   "id": "medieval-village",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Medieval Village",
   "description": "A storybook village on hexagon tiles: castle, windmill, watermill, market and rivers, with forests and hills all around.",
   "goodFor": [
@@ -3534,7 +3625,92 @@ export const KIT2_WORLDS = [
     "name": "Captain Clank"
    }
   ],
-  "creatures": [],
+  "creatures": [
+   {
+    "id": "donkey",
+    "name": "Donkey",
+    "kind": "land",
+    "size": [
+     0.9,
+     2.7,
+     3.1
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "cow",
+    "name": "Cow",
+    "kind": "land",
+    "size": [
+     1.5,
+     2.6,
+     4.6
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "husky",
+    "name": "Husky",
+    "kind": "land",
+    "size": [
+     0.5,
+     1.5,
+     1.8
+    ],
+    "moves": [
+     "idle",
+     "eat",
+     "walk",
+     "run",
+     "jump"
+    ],
+    "playable": true
+   },
+   {
+    "id": "pig",
+    "name": "Pig",
+    "kind": "land",
+    "size": [
+     1.1,
+     1.5,
+     3.2
+    ],
+    "moves": [
+     "idle",
+     "jump"
+    ],
+    "playable": false
+   },
+   {
+    "id": "sheep",
+    "name": "Sheep",
+    "kind": "land",
+    "size": [
+     0.9,
+     1.7,
+     2.3
+    ],
+    "moves": [
+     "idle",
+     "jump"
+    ],
+    "playable": false
+   }
+  ],
   "pieces": [
    {
     "id": "ground",
@@ -4311,4 +4487,4 @@ export const KIT2_WORLDS = [
   ]
  }
 ];
-export const KIT2_API_SOURCE = "# `start(options)`\n\n`start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`\n\nLoads the theme's `theme.json`, makes the renderer, the sky (the theme's colours), fog, light, glow and soft clouds,\nand starts the game loop. Also exported: `VERSION` (`'1.1.0'`), `API` (the names below), `GRAPHICS`, `TIMES`, `WEATHER`\n(the allowed values) and `THREE` (the same Three.js). Games saved on Oomba3D 1.0.0 keep working: everything in it is in\n1.1.0, and 1.0.0's `lowPower: true` means `graphics: 'low'`.\n\n- `graphics`: `'auto'`, `'low'` (shown to players as Fast), `'medium'` (Balanced) or `'high'` (Beautiful); see\n  `g.graphics()`. `'auto'` starts at low on devices with 4 or fewer CPU cores or 4 GB or less of memory, otherwise high,\n  and steps down a level after two 3-second spells under 30 frames a second.\n- `time`: `'morning'`, `'day'` (the theme's own look), `'sunset'` or `'night'` (with stars); see `g.sky()`.\n- `weather`: `'clear'`, `'snow'`, `'rain'`, `'sparkles'` or `'leaves'`; see `g.weather()`.\n- `outline`: `true` draws a thin ink outline round every hero and piece (the Oomba look). It doubles the meshes drawn, so\n  keep it for scenes with up to a few hundred pieces.\n- `settings`: `true` shows the gear button (top right). Players use it to pick Auto, Fast, Balanced or Beautiful\n  graphics and to turn weather effects off, for this game only.\n- `reducedMotion`: defaults to the player's `prefers-reduced-motion`. When on: clouds do not drift, coins do not spin,\n  answer tokens do not bob, a wrong island disappears instead of sinking, and there is no confetti.\n\n`g` also has `THREE`, `scene`, `camera`, `renderer`, `theme` (the theme's `theme.json`: `heroes`, `pieces`, `sounds`,\n`moves`, `look`), `lowPower` (read-only: whether the level is low now) and `reducedMotion`.\n\nLevel · Pixel ratio · Shadows · Glow · Smoothing (SMAA) · Clouds · Weather · Confetti\nlow (Fast) · 1 · off · off · off · a third · 35% · off\nmedium (Balanced) · up to 1.5 · 1024 · on · off · all · 70% · on\nhigh (Beautiful) · up to 2 · 2048, soft · on · on · all · all · on\n\n# `g.hero(id, options)`\n\n`g.hero(id, { x = 0, y = 0, z = 0, face = 0, outfit })` → `Promise<hero>`\n\nAdds one of the theme's heroes (`g.theme.heroes`; Sky Islands: `knight`, `barbarian` \"Explorer\", `mage` \"Wizard\",\n`rogue` \"Ranger\", `rogue-hooded` \"Hooded Ranger\"). `face` turns it (radians). A hero has `id`, `name`, `object`,\n`position` and `play(move, { once = false, fade = 0.2 })`. Moves: `idle`, `ready`, `walk`, `run`, `jumpStart`,\n`jumpAir`, `jumpLand`, `jump`, `cheer`, `wave`, `pickUp`, `use`, `bump`, `sit`, `cast` (`g.theme.moves.clips`). Heroes\ncarry no weapons. `outfit` (any CSS colour: `'#66C792'`, `'gold'`) recolours the hero's cape (and the Wizard's hat), so\none hero can be many characters: a green Knight, a gold Wizard, a team in matching capes.\n\n# `g.world.island(options)`\n\n`g.world.island({ x = 0, y = 0, z = 0, scale = 3, turn = 0, piece = 'island-round' })` → `Promise<solid>`\n\nA piece the hero can stand on (any piece id works with `piece`; Sky Islands' standing pieces: `island-round`,\n`platform`, `platform-medium`, `platform-large`, `platform-falling`, `brick`, `coin-block`). At scale 1 a\n`island-round` is 5 wide and 0.5 tall; scale 3 is a big start island, 0.9 to 1.3 a stepping stone. A solid has\n`object`, `box`, `top()` (the y to stand at), `onLand` (set it to `hero => {}`: called each time the hero lands on it)\nand `sink()` (it falls away and can no longer be stood on).\n\n# `g.world.piece(id, options)`\n\n`g.world.piece(id, { x = 0, y = 0, z = 0, scale = 1, turn = 0, solid = false })` → `Promise<{ object }>` (or a solid\nwith `solid: true`)\n\nDecoration and props: Sky Islands has `grass`, `grass-small`, `cloud`, `flag`, `coin`, `coin-block`, `dust`, `brick-bit`\nand the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Pieces stand on their `y`.\n\n# `g.world.water(options)`\n\n`g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`\n\nA sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it\nagain replaces the sea.\n\n# `g.followCamera(target, options)`\n\n`g.followCamera(target, { distance = 10, height = 5.5 })`\n\nThe camera glides behind and above the target (a hero) and the sun's shadows follow it. Tall phone screens get a wider\nview automatically.\n\n# `g.controls(hero, options)`\n\n`g.controls(hero, { speed = 7, jump = 9.5, gravity = 24, fallY = -12, spawn, tryAgain = 'Try again!' })` → `{ keys }`\n\nArrows or WASD move, Space jumps; on touch screens an on-screen pad (four arrows and a big Jump button) appears.\nLandings are wide and kind. Falling below `fallY` puts the hero back at `spawn` (default: where it stood) and shows\n`tryAgain` (`''` for nothing). Plays `run`, `idle` and `jump`, and the `jump`, `land` and `fall` sounds.\n\n# `g.coins(spots, options)`\n\n`g.coins([[x, y, z], …], { piece = 'coin', scale = 2.6, value = 1, onCollect })` → `{ left() }`\n\nSpinning coins; touching one adds `value` to the score, plays `coin` and calls `onCollect(coin)`. `left()` is how many\nare still there.\n\n# `g.askQuestion(options)`\n\n`g.askQuestion({ question, answers, correct, at = { x: 0, y: 3, z: -38 }, spacing = 8, prompt = 'Jump to the answer:', notIt = a => 'Not ' + a + '! Try another island', rightText = 'Correct! +5', bonus = 5, onRight, onWrong })`\n→ `Promise<{ islands, answered() }>`\n\nShows `prompt question` at the top and makes one island per answer in a row at `at`, `spacing` apart, each with its\nanswer floating above it on a big token. Landing on `correct`: the token turns green, `bonus` is added, the hero cheers\nand `onRight()` is called. Landing on another: it sinks, `notIt(answer)` shows and `onWrong(answer)` is called. Answers\ncan be numbers or short words (up to about 6 characters read well). The answer islands are made from the piece\n`island-round`, so this works in Sky Islands only: in every other world a game makes its own answer pads from that\nworld's pieces (the Builder's starter does: a solid with `onLand`, and the answer on a sprite above it).\n\n# `g.sound(name)`\n\n`g.sound(name)`\n\nPlays a theme sound (Sky Islands: `jump`, `land`, `coin`, `fall`, `break`, `walk`) or one made in code: `cheer`,\n`wrong`. Nothing plays until the player has pressed a key or tapped (browsers require it).\n\n# `g.celebrate(hero, text)`\n\n`g.celebrate(hero, text = 'You did it!')`\n\nThe hero cheers, the `cheer` sound plays, `text` shows big, and confetti bursts (not in low-power or reduced motion).\n\n# `g.toast(text, ms)`\n\n`g.toast(text, ms = 1400)`\n\nBig outlined words in the middle of the screen for `ms` milliseconds.\n\n# `g.score(add)`\n\n`g.score(add)` → the score\n\nAdds `add` (a number) and shows the score at the top; with no number, just returns it.\n\n# `g.onUpdate(fn)`\n\n`g.onUpdate(dt => { … })`\n\nRuns `fn` every frame with the seconds since the last frame (at most 1/30), before the camera moves and the frame draws.\n\n# `g.graphics(level)`\n\n`g.graphics(level)` → the level now\n\nSets `'auto'`, `'low'`, `'medium'` or `'high'` (the table above) while the game runs; with no level, returns it (`'auto (high)'`\nwhile on auto). The gear button calls this too.\n\n# `g.sky(time)`\n\n`g.sky(time = 'day')` → the time\n\nChanges the sky, sun, light, fog and cloud colours to `'morning'`, `'day'`, `'sunset'` or `'night'` (stars come out at\nnight, a few at sunset), at once. Good for a level that ends at sunset, or a night level.\n\n# `g.weather(kind)`\n\n`g.weather(kind = 'clear')` → the kind\n\n`'snow'`, `'rain'`, `'sparkles'` (gold, rising), `'leaves'` (green and orange) or `'clear'`. The particles travel with the\nhero. None with reduced motion, or when a player turns weather effects off in the gear menu; fewer at lower levels.\n\n# `g.physics(options)`\n\n`g.physics({ gravity = -24 })` → `Promise<{ RAPIER, world, add }>`\n\nReal physics with Rapier 0.21 (WebAssembly), loaded the first time a game asks (about 1.5 MB, so only games that need\nit pay for it). `add(object, { type = 'dynamic', shape = 'box', bounce = 0.3, friction = 0.8 })` puts a body round an\nobject (a piece's `object`) from its size and keeps the object on it every frame; `type: 'fixed'` makes ground and walls,\n`shape: 'ball'` rolls. `world` and `RAPIER` are Rapier's own, for joints, forces and anything else. Heroes moved by\n`g.controls` are not in the physics world.";
+export const KIT2_API_SOURCE = "# `start(options)`\n\n`start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`\n\nLoads the theme's `theme.json`, makes the renderer, the sky (the theme's colours), fog, light, glow and soft clouds,\nand starts the game loop. Also exported: `VERSION` (`'1.2.0'`), `API` (the names below), `GRAPHICS`, `TIMES`, `WEATHER`\n(the allowed values), `CREATURE_LIMITS` and `THREE` (the same Three.js). Everything in 1.1.0 and 1.0.0 is in 1.2.0 and\nworks the same (1.0.0's `lowPower: true` means `graphics: 'low'`); what 1.2.0 adds is opt-in: animals (`g.creature`,\n`g.school`, an animal as the hero), `g.world.ground`, a piece's own clips, `'bubbles'` weather and swim controls.\n\n- `graphics`: `'auto'`, `'low'` (shown to players as Fast), `'medium'` (Balanced) or `'high'` (Beautiful); see\n  `g.graphics()`. `'auto'` starts at low on devices with 4 or fewer CPU cores or 4 GB or less of memory, otherwise high,\n  and steps down a level after two 3-second spells under 30 frames a second.\n- `time`: `'morning'`, `'day'` (the theme's own look), `'sunset'` or `'night'` (with stars); see `g.sky()`.\n- `weather`: `'clear'`, `'snow'`, `'rain'`, `'sparkles'`, `'leaves'` or `'bubbles'`; see `g.weather()`.\n- `outline`: `true` draws a thin ink outline round every hero and piece (the Oomba look). It doubles the meshes drawn, so\n  keep it for scenes with up to a few hundred pieces.\n- `settings`: `true` shows the gear button (top right). Players use it to pick Auto, Fast, Balanced or Beautiful\n  graphics and to turn weather effects off, for this game only.\n- `reducedMotion`: defaults to the player's `prefers-reduced-motion`. When on: clouds do not drift, coins do not spin,\n  answer tokens do not bob, a wrong island disappears instead of sinking, and there is no confetti.\n\n`g` also has `THREE`, `scene`, `camera`, `renderer`, `theme` (the theme's `theme.json`: `heroes`, `creatures`, `pieces`,\n`sounds`, `moves`, `look`), `lowPower` (read-only: whether the level is low now) and `reducedMotion`.\n\nLevel · Pixel ratio · Shadows · Glow · Smoothing (SMAA) · Clouds · Weather · Confetti · Animals animating / drawn / in a school\nlow (Fast) · 1 · off · off · off · a third · 35% · off · 6 / 10 / 12\nmedium (Balanced) · up to 1.5 · 1024 · on · off · all · 70% · on · 12 / 20 / 20\nhigh (Beautiful) · up to 2 · 2048, soft · on · on · all · all · on · 20 / 32 / 30\n\n# `g.hero(id, options)`\n\n`g.hero(id, { x = 0, y = 0, z = 0, face = 0, outfit })` → `Promise<hero>`\n\nAdds one of the theme's heroes (`g.theme.heroes`; Sky Islands: `knight`, `barbarian` \"Explorer\", `mage` \"Wizard\",\n`rogue` \"Ranger\", `rogue-hooded` \"Hooded Ranger\"). `face` turns it (radians). A hero has `id`, `name`, `object`,\n`position` and `play(move, { once = false, fade = 0.2 })`. Moves: `idle`, `ready`, `walk`, `run`, `jumpStart`,\n`jumpAir`, `jumpLand`, `jump`, `cheer`, `wave`, `pickUp`, `use`, `bump`, `sit`, `cast` (`g.theme.moves.clips`). Heroes\ncarry no weapons. `outfit` (any CSS colour: `'#66C792'`, `'gold'`) recolours the hero's cape (and the Wizard's hat), so\none hero can be many characters: a green Knight, a gold Wizard, a team in matching capes.\n\nAn animal as the hero (1.2.0): `id` may be a creature the theme marks `playable` (`g.hero('horse')`); the result\nworks with `g.controls`, `g.followCamera`, `g.coins` and `g.celebrate` like any hero, and also has `creature: true`\nand `moves`. Its own clips do the hero's moves: `idle`, `walk`, `run` and `jump` are its own (run and walk keep step\nwith its speed, and the jump is fitted to the time it is in the air); `jumpStart`, `jumpAir`, `jumpLand` and `cheer`\nare its jump; any other move plays `idle` and returns `null`. `outfit` does nothing for an animal. An animal that is\nnot playable (the pig and sheep: no walk) throws an error that lists the playable ones.\n\n# `g.world.island(options)`\n\n`g.world.island({ x = 0, y = 0, z = 0, scale = 3, turn = 0, piece = 'island-round' })` → `Promise<solid>`\n\nA piece the hero can stand on (any piece id works with `piece`; Sky Islands' standing pieces: `island-round`,\n`platform`, `platform-medium`, `platform-large`, `platform-falling`, `brick`, `coin-block`). At scale 1 a\n`island-round` is 5 wide and 0.5 tall; scale 3 is a big start island, 0.9 to 1.3 a stepping stone. A solid has\n`object`, `box`, `top()` (the y to stand at), `onLand` (set it to `hero => {}`: called each time the hero lands on it)\nand `sink()` (it falls away and can no longer be stood on).\n\n# `g.world.piece(id, options)`\n\n`g.world.piece(id, { x = 0, y = 0, z = 0, scale = 1, turn = 0, solid = false })` → `Promise<{ object }>` (or a solid\nwith `solid: true`)\n\nDecoration and props: Sky Islands has `grass`, `grass-small`, `cloud`, `flag`, `coin`, `coin-block`, `dust`, `brick-bit`\nand the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Pieces stand on their `y`.\n1.2.0: the result also has `moves` (the piece's own clips: `[]` for every piece shipped so far) and\n`play(move, { once = true })` (a chest that opens; with reduced motion it goes straight to the end pose).\n\n# `g.world.ground(options)`\n\n`g.world.ground({ x = 0, y = 0, z = 0, size = 120, color = '#7cc46a', hills = 0 })` → `solid`\n\nGround the library makes, for a meadow or a field when the theme's tiles are not what you want: one flat-coloured\nsquare, `size` wide, to stand and walk on, with its top at `y`. `hills` (a height, like `2`) rolls the outer part up\nand down; the middle third stays level. The hero and the animals walk over it. Calling it again replaces it.\n\n# `g.world.water(options)`\n\n`g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`\n\nA sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it\nagain replaces the sea.\n\n# `g.followCamera(target, options)`\n\n`g.followCamera(target, { distance = 10, height = 5.5 })`\n\nThe camera glides behind and above the target (a hero) and the sun's shadows follow it. Tall phone screens get a wider\nview automatically.\n\n# `g.controls(hero, options)`\n\n`g.controls(hero, { speed = 7, jump = 9.5, gravity = 24, fallY = -12, spawn, tryAgain = 'Try again!', swim = false, floor, ceiling })` → `{ keys }`\n\nArrows or WASD move, Space jumps; on touch screens an on-screen pad (four arrows and a big Jump button) appears.\nLandings are wide and kind. Falling below `fallY` puts the hero back at `spawn` (default: where it stood) and shows\n`tryAgain` (`''` for nothing). Plays `run`, `idle` and `jump`, and the `jump`, `land` and `fall` sounds.\n`swim: true` (1.2.0, for an underwater world): no falling. Space (or E, or the pad's up button) swims up, Q (or Shift,\nor the pad's down button) swims down, letting go sinks very slowly; `floor` and `ceiling` (heights) keep the hero in.\n\n# `g.coins(spots, options)`\n\n`g.coins([[x, y, z], …], { piece = 'coin', scale = 2.6, value = 1, onCollect })` → `{ left() }`\n\nSpinning coins; touching one adds `value` to the score, plays `coin` and calls `onCollect(coin)`. `left()` is how many\nare still there.\n\n# `g.askQuestion(options)`\n\n`g.askQuestion({ question, answers, correct, at = { x: 0, y: 3, z: -38 }, spacing = 8, prompt = 'Jump to the answer:', notIt = a => 'Not ' + a + '! Try another island', rightText = 'Correct! +5', bonus = 5, onRight, onWrong })`\n→ `Promise<{ islands, answered() }>`\n\nShows `prompt question` at the top and makes one island per answer in a row at `at`, `spacing` apart, each with its\nanswer floating above it on a big token. Landing on `correct`: the token turns green, `bonus` is added, the hero cheers\nand `onRight()` is called. Landing on another: it sinks, `notIt(answer)` shows and `onWrong(answer)` is called. Answers\ncan be numbers or short words (up to about 6 characters read well). The answer islands are made from the piece\n`island-round`, so this works in Sky Islands only: in every other world a game makes its own answer pads from that\nworld's pieces (the Builder's starter does: a solid with `onLand`, and the answer on a sprite above it).\n\n# `g.sound(name)`\n\n`g.sound(name)`\n\nPlays a theme sound (Sky Islands: `jump`, `land`, `coin`, `fall`, `break`, `walk`) or one made in code: `cheer`,\n`wrong`. Nothing plays until the player has pressed a key or tapped (browsers require it).\n\n# `g.celebrate(hero, text)`\n\n`g.celebrate(hero, text = 'You did it!')`\n\nThe hero cheers, the `cheer` sound plays, `text` shows big, and confetti bursts (not in low-power or reduced motion).\n\n# `g.toast(text, ms)`\n\n`g.toast(text, ms = 1400)`\n\nBig outlined words in the middle of the screen for `ms` milliseconds.\n\n# `g.score(add)`\n\n`g.score(add)` → the score\n\nAdds `add` (a number) and shows the score at the top; with no number, just returns it.\n\n# `g.onUpdate(fn)`\n\n`g.onUpdate(dt => { … })`\n\nRuns `fn` every frame with the seconds since the last frame (at most 1/30), before the camera moves and the frame draws.\n\n# `g.graphics(level)`\n\n`g.graphics(level)` → the level now\n\nSets `'auto'`, `'low'`, `'medium'` or `'high'` (the table above) while the game runs; with no level, returns it (`'auto (high)'`\nwhile on auto). The gear button calls this too.\n\n# `g.sky(time)`\n\n`g.sky(time = 'day')` → the time\n\nChanges the sky, sun, light, fog and cloud colours to `'morning'`, `'day'`, `'sunset'` or `'night'` (stars come out at\nnight, a few at sunset), at once. Good for a level that ends at sunset, or a night level.\n\n# `g.weather(kind)`\n\n`g.weather(kind = 'clear')` → the kind\n\n`'snow'`, `'rain'`, `'sparkles'` (gold, rising), `'leaves'` (green and orange), `'bubbles'` (rising, for under water) or `'clear'`. The particles travel with the\nhero. None with reduced motion, or when a player turns weather effects off in the gear menu; fewer at lower levels.\n\n# `g.physics(options)`\n\n`g.physics({ gravity = -24 })` → `Promise<{ RAPIER, world, add }>`\n\nReal physics with Rapier 0.21 (WebAssembly), loaded the first time a game asks (about 1.5 MB, so only games that need\nit pay for it). `add(object, { type = 'dynamic', shape = 'box', bounce = 0.3, friction = 0.8 })` puts a body round an\nobject (a piece's `object`) from its size and keeps the object on it every frame; `type: 'fixed'` makes ground and walls,\n`shape: 'ball'` rolls. `world` and `RAPIER` are Rapier's own, for joints, forces and anything else. Heroes moved by\n`g.controls` are not in the physics world.\n\n# `g.creature(id, options)`\n\n`g.creature(id, { x = 0, y = 0, z = 0, face = 0, scale = 1 })` → `Promise<creature>`\n\nAdds one of the theme's animals (`g.theme.creatures`: each has `id`, `name`, `kind`, `size` as width, height and\nlength, `moves` and `playable`). A world with no creatures throws an error that says so. Animals are kind by\nconstruction: they are never solid (the hero walks straight through), they never push, chase, bite or hurt, nothing\nan animal does can make the player lose, and the library never plays an attack, hit or death clip. Big animals (3 or\nmore tall, or 4.5 or more long: the horse, stag and cow) stroll slowly and never go faster than 2.5 a second on their\nown (the hero runs at 7); no animal walks into the hero: when its next step would come nearer than its calm distance\n(about 0.6 of its length, at least 3 for a big one) it waits. A creature has `id`, `name`, `kind`, `object`,\n`position`, `moves`, `size`, `large`, `playable` and:\n\n- `play(move, { once = false, fade = 0.2, speed = 1 })`: one of its `moves` (`idle`, `eat`, `walk`, `run`, `jump`). A\n  move it does not have plays the nearest it has (`run` ↔ `walk`, `cheer` → `jump`, `graze` ↔ `eat`), else `idle`, and\n  then returns `null`.\n- `walkTo(x, z, { speed })` or `walkTo({ x, z }, { speed })` → `Promise<boolean>`: turns, walks there, then idles.\n  `true` when it arrived, `false` when another order replaced this one.\n- `follow(path, { speed, loop = false })` → `Promise<boolean>`: walks through `[[x, z], …]` in turn; `loop: true` keeps\n  going round (a patrol).\n- `wander({ x, z, radius = 6, speed })`: strolls to spots near that place (its own, by default), stopping to eat or\n  look around. With reduced motion it stays where it is.\n- `followHero(hero, { distance })`: a companion that trails the hero (the one under `g.controls` by default) and stops\n  a little behind; it keeps up by running, and joins the hero again after a long jump or a respawn.\n- `onMeet((hero, creature) => {}, { distance })`: called once each time the hero comes close (then again after the\n  hero has walked away and come back). The place for a spoken line, a question or a count.\n- `stop()` (stand still), `remove()` (take it out of the world).\n\nAn animal with no `walk` (the pig and the sheep: `idle` and `jump` only) hops: it travels while it is in the air\nand stands between hops, so its feet never slide; with reduced motion it glides in its idle pose. Speeds are clamped\n(`speed` up to 5, big animals 2.5). Only animals on screen animate, the nearest first, up to the level's limit (the\ntable above); past the drawing limit the farthest are hidden. Geometry, materials and clips are shared by every copy.\n\n# `g.school(id, count, options)`\n\n`g.school(id, count = 8, { around = { x: 0, y: 0, z: 0 }, radius = 5, speed, scale = 1 })` → `Promise<school>`\n\nMany of one animal moving together (a shoal of fish, a flock) for the price of one: they share one skeleton and one\nanimation. Water animals (`kind` other than `land`) circle `around` at different depths; land animals that can walk\ncircle on the ground; ones that cannot walk, and everyone with reduced motion, stand together. `count` is at most 40,\nand each graphics level shows only so many (the table above). A school has `id`, `name`, `kind`, `count`, `objects`,\n`position` (move it to move the school), `onMeet(fn, { distance })` and `remove()`. Never solid, like every animal.";

@@ -22,9 +22,10 @@ fs.mkdirSync(outDir, { recursive: true });
 // recipe.meshopt: true adds EXT_meshopt_compression (smaller files, but its decoder needs WebAssembly, which the game frame
 // does not allow: docs/safety.md). Without it the models are quantized only (KHR_mesh_quantization, decoded by Three.js
 // itself) and the server sends them brotli-compressed.
-async function compress(doc) {
+// An item's own "meshopt": true does the same for that one model (creatures: their many clips shrink to less than half).
+async function compress(doc, item = {}) {
   await doc.transform(dedup(), weld(), resample(), prune({ keepAttributes: false }), reorder({ encoder: MeshoptEncoder }), quantize(), unpartition());
-  if (recipe.meshopt) doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
+  if (recipe.meshopt || item.meshopt) doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
   return doc;
 }
 
@@ -43,7 +44,7 @@ for (const item of recipe.models) {
   // asset packs: kit2/packs/) ask for more with opt-in fields (scale, clip names, textures by material name, …), which do
   // nothing for a recipe that does not name them, so a shipped theme rebuilds to the same bytes.
   await packSteps(doc, item, recipe, path.dirname(recipeFile));
-  await compress(doc);
+  await compress(doc, item);
   const file = path.join(outDir, item.to);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, await io.writeBinary(doc));

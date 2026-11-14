@@ -56,9 +56,9 @@ for (const { theme, version, dir } of versions) {
     assert.ok(manifest.files['SOURCES.md'], 'SOURCES.md source log');
   });
 
-  test(`${name}: every hero, piece and sound is one of its files, from a listed pack`, () => {
+  test(`${name}: every hero, creature, piece and sound is one of its files, from a listed pack`, () => {
     const packs = new Set(manifest.packs.map(p => p.id));
-    const items = [...(manifest.heroes || []), ...(manifest.pieces || []), ...(manifest.sounds || []), ...(manifest.moves ? [manifest.moves] : [])];
+    const items = [...(manifest.heroes || []), ...(manifest.creatures || []), ...(manifest.pieces || []), ...(manifest.sounds || []), ...(manifest.moves ? [manifest.moves] : [])];
     assert.ok(items.length > 0);
     const ids = new Set();
     for (const it of items) {

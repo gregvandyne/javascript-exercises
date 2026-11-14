@@ -28,7 +28,9 @@
   "three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
   "three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
   "oomba3d/1.1.0/LICENSE": "sha384-d1LSX0WDHWkcFsstp9CaZCATdNA97s8zQAbGOShgOGiWTwyEnQ+GWBVHa0jZBmLE",
-  "oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH"
+  "oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "oomba3d/1.2.0/LICENSE": "sha384-sucugycF+0biQtIULh1QO6PR8E7S1f0oOZx2zLI8MjecCxPtBqg3hFiYXy9XtedQ",
+  "oomba3d/1.2.0/oomba3d.js": "sha384-Xw15OzdR+e9IApCgIhC6UzhTozI16t5S5TfpgpG/mMcNVWCrU7YNaCy/See+dyzv"
  },
  "themes": {
   "sky-islands/1.0.0": "sha384-8VQ0ivDr2OkOzP7RQHLq85R0vYP8LOkh4UhPJ4Nj2UmKZ/flJLw4ArPfaICCyiXO",
@@ -41,6 +43,8 @@
   "castle-quest/1.1.0": "sha384-uHHcqdMKy6R+ojrS9elp8nbgueSDI/chWAswV8pBGtli/gyWPPzjNyrtWrdoY0hS",
   "cosy-home/1.0.0": "sha384-qss4vfebzXILd0wXig04Z9dB+9wP6NvPhsWV0gvp21DlQ9pVTdFVfugj9mBSERpA",
   "medieval-village/1.0.0": "sha384-SUd/JFVrlO1jDewd7/P+LCVlEOyucuFQs/A29tZjvJyEH5dWXc/u0dtR1ZUlme07",
-  "toy-town/1.1.0": "sha384-NdDQo5ZJCIvo1bX9qwKORxbfLkWAjshSoy5EUlLhF1Tir1j+kHfajbwIVhEp4oVy"
+  "toy-town/1.1.0": "sha384-NdDQo5ZJCIvo1bX9qwKORxbfLkWAjshSoy5EUlLhF1Tir1j+kHfajbwIVhEp4oVy",
+  "castle-quest/1.2.0": "sha384-2zrQfA+ZHS2Z9FvmCqWvHA2LhKvVqNmzMRl9/mSNPhJCVxTfRlFzPJBT+FzIWlmR",
+  "medieval-village/1.1.0": "sha384-qV3/l8tzb5ZtNuhx6BNp9RV4oupsJqWWPZWxUCFZsrLuHheI24a5GAe4zpFfnh0V"
  }
 }

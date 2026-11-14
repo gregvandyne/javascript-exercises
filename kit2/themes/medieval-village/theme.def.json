@@ -63,6 +63,28 @@
    "licence": "CC0-1.0",
    "licenceFile": "LICENSES/kenney-platformer.md",
    "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  },
+  {
+   "id": "quaternius-animals",
+   "name": "Quaternius Ultimate Animated Animals",
+   "author": "Quaternius",
+   "url": "https://quaternius.com",
+   "commit": "branch asset-packs at 1d1dbb18a46bc9e8cdfc181ed83b88b095cdd173, folder ultimate-animated-animals/ (FBX uploaded by the owner)",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-animals.txt",
+   "credit": "Quaternius, quaternius.com (not required, given anyway)"
+  },
+  {
+   "id": "quaternius-farm",
+   "name": "Quaternius Farm Animals",
+   "author": "Quaternius",
+   "url": "https://quaternius.com",
+   "commit": "branch asset-packs at 1d1dbb18a46bc9e8cdfc181ed83b88b095cdd173, folder farm-animals/ (FBX uploaded by the owner)",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-farm.txt",
+   "credit": "Quaternius, quaternius.com (not required, given anyway)"
   }
  ],
  "pieces": [
@@ -704,7 +726,7 @@
   }
  },
  "engine": "three",
- "version": "1.0.0",
+ "version": "1.1.0",
  "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise.",
  "sounds": [
   [
@@ -732,5 +754,182 @@
    "Starter-Kit-3D-Platformer/sounds/walking.ogg"
   ]
  ],
- "soundPack": "kenney-platformer"
+ "soundPack": "kenney-platformer",
+ "base": "medieval-village/1.0.0",
+ "creatures": [
+  {
+   "id": "donkey",
+   "name": "Donkey",
+   "from": "ultimate-animated-animals/Donkey.glb",
+   "pack": "quaternius-animals",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    0.9,
+    2.7,
+    3.1
+   ],
+   "pace": {
+    "walk": 1.75,
+    "run": 7.1
+   },
+   "jumpAir": [
+    0.35,
+    0.82
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.6576,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   }
+  },
+  {
+   "id": "cow",
+   "name": "Cow",
+   "from": "ultimate-animated-animals/Cow.glb",
+   "pack": "quaternius-animals",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    1.5,
+    2.6,
+    4.6
+   ],
+   "pace": {
+    "walk": 1.5,
+    "run": 5.46
+   },
+   "jumpAir": [
+    0.26,
+    0.56
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.5669,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   }
+  },
+  {
+   "id": "husky",
+   "name": "Husky",
+   "from": "ultimate-animated-animals/Husky.glb",
+   "pack": "quaternius-animals",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    0.5,
+    1.5,
+    1.8
+   ],
+   "pace": {
+    "walk": 1.02,
+    "run": 3.27
+   },
+   "jumpAir": [
+    0.61,
+    1
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.4701,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   }
+  },
+  {
+   "id": "pig",
+   "name": "Pig",
+   "from": "farm-animals/Pig.glb",
+   "pack": "quaternius-farm",
+   "kind": "land",
+   "playable": false,
+   "size": [
+    1.1,
+    1.5,
+    3.2
+   ],
+   "jumpAir": [
+    0.29,
+    0.55
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "scale": 0.3268,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "anims": {
+    "idle": "Armature|Idle",
+    "jump": "Armature|Jump"
+   }
+  },
+  {
+   "id": "sheep",
+   "name": "Sheep",
+   "from": "farm-animals/Sheep.glb",
+   "pack": "quaternius-farm",
+   "kind": "land",
+   "playable": false,
+   "size": [
+    0.9,
+    1.7,
+    2.3
+   ],
+   "jumpAir": [
+    0.3,
+    0.54
+   ],
+   "matte": true,
+   "inkNormals": true,
+   "scale": 0.3899,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "anims": {
+    "idle": "Armature|Idle",
+    "jump": "Armature|Jump"
+   }
+  }
+ ]
 }
