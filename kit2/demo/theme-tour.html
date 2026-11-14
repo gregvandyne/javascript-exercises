@@ -35,7 +35,14 @@ heroes.forEach((h, i) => h.play(moves[i % moves.length]));
 
 // The theme's animals (Oomba3D 1.2.0, for themes that have any) in a row in front of the heroes, eating or standing.
 const zoo = T.creatures || [];
-const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, { x: (i - (zoo.length - 1) / 2) * 2.5, y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 }))) : [];
+// A big animal (longer than 5: a dinosaur) stands further back among the scenery, side on, the longest furthest away.
+const small = zoo.filter(c => !(c.size[2] > 5)), big = zoo.filter(c => c.size[2] > 5).sort((a, b) => a.size[2] - b.size[2]);
+const spot = c => {
+  const i = small.indexOf(c), k = big.indexOf(c), side = k % 2 ? 1 : -1;
+  if (i >= 0) return { x: (i - (small.length - 1) / 2) * 2.5 + (big.length ? -4.4 : 0), y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 + (big.length ? 0.7 : 0) };
+  return k < 2 ? { x: side * 9, y: 0, z: -3.5, face: -side * 1.15 } : { x: side * 4.5, y: 0, z: (side < 0 ? -6.5 : -11) - (k >> 2) * 6, face: -side * 1.3 };
+};
+const animals = g.creature ? await Promise.all(zoo.map(c => g.creature(c.id, spot(c)))) : [];
 animals.forEach((a, i) => a.play(a.moves.includes('eat') && i % 2 ? 'eat' : 'idle'));
 
 // A spread of the theme's other pieces behind them: big ones far back, small ones nearer.

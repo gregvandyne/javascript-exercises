@@ -44,12 +44,15 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
   | `busy-kitchen` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `counter`, `kitchen-table`, `table-round` |
   | `pirate-cove` | `1.0.0` | the 5 adventurers | `island-sand`, `island-grass` (islands that stand in the sea), `dock`, `dock-small`, `pier`, `pier-small`, `deck`, `planks` |
   | `wild-woods` | `1.0.0` | the 5 adventurers | `meadow` (4 m blocks of ground, 3 deep: lay them at y -3), `hill`, `cliff-block`, `stone-block`, `grass-patch`, `stone-patch`; thin path and river tiles (`path`, `river`, `pond`...) lie at y 0 beside them |
+  | `dino-valley` | `1.0.0` (with dinosaurs: `triceratops`, `stegosaurus`, `parasaurolophus`, `apatosaurus`, `velociraptor`) | the 5 adventurers | `valley-ground` (4 m blocks of ground, 3 deep: lay them at y -3), `hill`, `cliff-block`, `cave`, `stone-block`, `grass-patch`, `stone-patch`, `sand-patch`; thin path and river tiles (`path`, `river`, `pond`...) lie at y 0 beside them |
 
   Adventurers: `knight`, `barbarian` (Explorer), `mage` (Wizard), `rogue` (Ranger), `rogue-hooded` (Hooded Ranger).
   Skeleton pals: `skelly`, `rattles`, `bonzo`, `captain-clank` (friendly cartoon skeletons, no weapons). Every hero plays
   every move, and `outfit` recolours capes, so there are many more looks than heroes.
-  Animals (`g.theme.creatures`, Oomba3D 1.2.0 `g.creature()`): only the two worlds above have them so far. Each has its
-  own moves; the pig and the sheep have only `idle` and `jump`, so they hop. No dinosaurs or fish have shipped yet.
+  Animals (`g.theme.creatures`, Oomba3D 1.2.0 `g.creature()`): only the three worlds above have them so far. Each has its
+  own moves; the pig and the sheep have only `idle` and `jump`, so they hop. The dinosaurs have `idle`, `walk`, `run` and
+  `jump`; every one but the velociraptor is a big animal (slow, and it keeps its calm distance), and the apatosaurus
+  (15 m) is too big to be the hero. No T-Rex and no fish have shipped.
 - WebAssembly is allowed, so `g.physics()` gives real physics (Rapier) and meshopt-compressed models load. Heroes still
   use Oomba3D's own simple platform physics (`g.controls`), which is kinder to young players.
 - Words a player sees (questions, toasts) come from the game; keep them kind and short, as on the rest of the site.

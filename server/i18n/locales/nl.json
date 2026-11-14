@@ -1603,7 +1603,8 @@
         "cosy-home": "Gezellig Huis",
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
-        "wild-woods": "Wilde Woud"
+        "wild-woods": "Wilde Woud",
+        "dino-valley": "Dinovallei"
       }
     },
     "heroes": {
@@ -1626,7 +1627,12 @@
         "deer": "Ree",
         "stag": "Hert",
         "fox": "Vos",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Stegosaurus",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaurus",
+        "velociraptor": "Velociraptor"
       }
     },
     "animals": {
@@ -8545,7 +8551,8 @@
       "cosy-home": "Een knus huisje met banken, lampen en boeken.",
       "medieval-village": "Een sprookjesdorp met een molen en een markt.",
       "pirate-cove": "Zandeilanden, palmbomen, steigers en zeilschepen.",
-      "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp."
+      "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp.",
+      "dino-valley": "Een zonnige vallei met vriendelijke dinosaurussen, palmen en een reuzenei."
     },
     "groups": {
       "heroes": "Helden",

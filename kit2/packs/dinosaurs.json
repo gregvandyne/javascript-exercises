@@ -17,18 +17,11 @@
   "jump": "_Jump$"
  },
  "creatures": {
-  "Trex": {
-   "id": "t-rex",
-   "name": "T-Rex",
-   "size": {
-    "length": 9
-   }
-  },
   "Apatosaurus": {
    "id": "apatosaurus",
    "name": "Apatosaurus",
    "size": {
-    "length": 18
+    "length": 15
    }
   },
   "Stegosaurus": {
@@ -60,5 +53,13 @@
    }
   }
  },
+ "exclude": {
+  "Trex": "Held back by the owner: its mouth is modelled open with a row of teeth and the skeleton has no jaw to close it (docs/kit2-packs-plan.md). It ships in no form until the head is re-modelled."
+ },
+ "notes": [
+  "Dino Valley 1.0.0 ships five of the six: Triceratops, Stegosaurus, Parasaurolophus, Apatosaurus, Velociraptor (closed mouths, no teeth showing; looked at face on and side on beside a hero).",
+  "Kept clips: idle, walk, run, jump. Dropped from every model: Attack and Death (the Apatosaurus file carries a clip misnamed Stegosaurus_Death; it is dropped like the others).",
+  "The pack's own colours are dark olive and brown: Dino Valley gives each material one bright colour (the colours step in its theme.def.json)."
+ ],
  "source": "branch asset-packs, folder dinosaurs/ (uploaded by the owner, November 2026)"
 }

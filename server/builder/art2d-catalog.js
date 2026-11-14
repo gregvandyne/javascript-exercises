@@ -4,7 +4,7 @@
 // ART2D_WORLDS: the newest version of every 2D world with every sprite a game may name (size in game cells).
 // ART2D_CHARACTERS: every hero and animal that has a sprite sheet (idle, run and jump frames).
 export const ART2D_HELPER = "1.1.0";
-export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0"};
+export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0","dino-valley":"1.0.0"};
 export const ART2D_WORLDS = [
  {
   "id": "busy-kitchen",
@@ -966,6 +966,120 @@ export const ART2D_WORLDS = [
     "name": "obstacle-3",
     "kind": "obstacle",
     "size": 0.79
+   }
+  ]
+ },
+ {
+  "id": "dino-valley",
+  "version": "1.0.0",
+  "name": "Dino Valley",
+  "heroes": [
+   "barbarian",
+   "knight",
+   "mage",
+   "rogue",
+   "rogue-hooded"
+  ],
+  "sprites": [
+   {
+    "name": "palm",
+    "kind": "prop",
+    "size": 3.79
+   },
+   {
+    "name": "palm-bend",
+    "kind": "prop",
+    "size": 3.81
+   },
+   {
+    "name": "conifer",
+    "kind": "prop",
+    "size": 3.69
+   },
+   {
+    "name": "bush",
+    "kind": "prop",
+    "size": 1.09
+   },
+   {
+    "name": "fern",
+    "kind": "prop",
+    "size": 0.75
+   },
+   {
+    "name": "jungle-plant",
+    "kind": "prop",
+    "size": 0.97
+   },
+   {
+    "name": "bamboo",
+    "kind": "prop",
+    "size": 2.05
+   },
+   {
+    "name": "flower-red",
+    "kind": "prop",
+    "size": 0.65
+   },
+   {
+    "name": "flower-plant",
+    "kind": "prop",
+    "size": 0.93
+   },
+   {
+    "name": "giant-mushroom",
+    "kind": "prop",
+    "size": 1.48
+   },
+   {
+    "name": "mossy-rock",
+    "kind": "prop",
+    "size": 0.91
+   },
+   {
+    "name": "stump",
+    "kind": "prop",
+    "size": 1.18
+   },
+   {
+    "name": "sign",
+    "kind": "prop",
+    "size": 1.33
+   },
+   {
+    "name": "nest",
+    "kind": "prop",
+    "size": 0.98
+   },
+   {
+    "name": "egg-blue",
+    "kind": "prop",
+    "size": 0.76
+   },
+   {
+    "name": "goal",
+    "kind": "goal",
+    "size": 1.71
+   },
+   {
+    "name": "coin",
+    "kind": "coin",
+    "size": 0.61
+   },
+   {
+    "name": "obstacle-1",
+    "kind": "obstacle",
+    "size": 0.67
+   },
+   {
+    "name": "obstacle-2",
+    "kind": "obstacle",
+    "size": 0.91
+   },
+   {
+    "name": "obstacle-3",
+    "kind": "obstacle",
+    "size": 0.82
    }
   ]
  }

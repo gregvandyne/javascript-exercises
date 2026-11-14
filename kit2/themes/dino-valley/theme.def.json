@@ -1,0 +1,1460 @@
+{
+ "id": "dino-valley",
+ "name": "Dino Valley",
+ "description": "A sunny prehistoric valley with friendly dinosaurs: palms and giant ferns, big rocks, cliffs with a waterfall and a cave, a river with stepping stones, and a great egg to find.",
+ "goodFor": [
+  "science",
+  "maths",
+  "nature",
+  "adventures"
+ ],
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "name": "KayKit Adventurers Character Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+   "commit": "672074b73ba276876a19e8816ecdc5241817ab47",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-adventurers.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-nature",
+   "name": "Kenney Nature Kit 2.1",
+   "author": "Kenney",
+   "url": "https://kenney.nl/assets/nature-kit",
+   "commit": "6de6ee07a0b8b77f125534477d13d73159d447b4",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-nature.txt",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)",
+   "dir": "kenney-nature-kit/",
+   "steps": {
+    "shift": [
+     0,
+     0.05,
+     0
+    ],
+    "scale": 4,
+    "matte": true,
+    "colours": {
+     "^grass$": "#7ccf52",
+     "^leafsGreen$": "#43b85a",
+     "^leafsDark$": "#229158",
+     "^dirt$": "#e0a868",
+     "^dirtDark$": "#c08450",
+     "^stone$": "#c9c4b6",
+     "^stoneDark$": "#a39c8f",
+     "^water$": "#3ec6ea",
+     "^wood$": "#c98a55",
+     "^woodDark$": "#a86a3d",
+     "^woodBark$": "#a8703f",
+     "^woodBarkDark$": "#85563a",
+     "^woodInner$": "#ecd3a6",
+     "^colorRed$": "#f0604f",
+     "^colorRedDark$": "#cf4440",
+     "^colorTan$": "#efb57e",
+     "^colorYellow$": "#ffc93c",
+     "^colorWhite$": "#ffffff"
+    }
+   }
+  },
+  {
+   "id": "quaternius-nature",
+   "name": "Quaternius Ultimate Nature Pack",
+   "author": "Quaternius",
+   "url": "https://quaternius.com/packs/ultimatenature.html",
+   "commit": "6de6ee07a0b8b77f125534477d13d73159d447b4",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-nature.txt",
+   "credit": "Quaternius, www.quaternius.com (not required, given anyway)",
+   "dir": "quaternius-ultimate-nature/",
+   "steps": {
+    "scale": 2,
+    "matte": true,
+    "colours": {
+     "^Green": "#55b340",
+     "^DarkGreen": "#2f9148",
+     "^Wood": "#8f5e3c",
+     "^Rock": "#b3ad9f",
+     "^Yellow$": "#f6cf4f",
+     "^Pink$": "#ee6aa7",
+     "^Leaves$": "#5fa33f",
+     "^Coconuts$": "#a8703f",
+     "^Mushroom_Top$": "#d9694a",
+     "^Mushroom_Bottom$": "#efe0c6",
+     "^Brown": "#8f5e3c",
+     "^Black": "#4a4a4a",
+     "^White": "#ece7d8"
+    }
+   }
+  },
+  {
+   "id": "quaternius-dinosaurs",
+   "name": "Quaternius Animated Dinosaurs",
+   "author": "Quaternius",
+   "url": "https://quaternius.com",
+   "commit": "branch asset-packs at 6de6ee07a0b8b77f125534477d13d73159d447b4, folder dinosaurs/ (FBX uploaded by the owner)",
+   "downloaded": "2026-11-14",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/quaternius-dinosaurs.txt",
+   "credit": "Quaternius, quaternius.com (not required, given anyway)"
+  },
+  {
+   "id": "kaykit-dungeon",
+   "name": "KayKit Dungeon Remastered Pack 1.0",
+   "author": "Kay Lousberg",
+   "url": "https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0",
+   "commit": "b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kaykit-dungeon.txt",
+   "credit": "Kay Lousberg, www.kaylousberg.com (not required, given anyway)"
+  },
+  {
+   "id": "kenney-platformer",
+   "name": "Kenney Starter Kit 3D Platformer (sounds)",
+   "author": "Kenney",
+   "url": "https://github.com/KenneyNL/Starter-Kit-3D-Platformer",
+   "commit": "3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0",
+   "downloaded": "2026-11-12",
+   "licence": "CC0-1.0",
+   "licenceFile": "LICENSES/kenney-platformer.md",
+   "credit": "Kenney, www.kenney.nl (not required, given anyway)"
+  }
+ ],
+ "cover": "cover.webp",
+ "heroes": [
+  {
+   "id": "barbarian",
+   "name": "Explorer",
+   "from": "theme:castle-quest/1.0.0/heroes/barbarian.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "knight",
+   "name": "Knight",
+   "from": "theme:castle-quest/1.0.0/heroes/knight.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "mage",
+   "name": "Wizard",
+   "from": "theme:castle-quest/1.0.0/heroes/mage.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue",
+   "name": "Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue.glb",
+   "pack": "kaykit-adventurers"
+  },
+  {
+   "id": "rogue-hooded",
+   "name": "Hooded Ranger",
+   "from": "theme:castle-quest/1.0.0/heroes/rogue-hooded.glb",
+   "pack": "kaykit-adventurers"
+  }
+ ],
+ "moves": {
+  "from": "theme:castle-quest/1.0.0/heroes/moves.glb",
+  "pack": "kaykit-adventurers",
+  "clips": {
+   "idle": "Unarmed_Idle",
+   "ready": "Idle",
+   "walk": "Walking_A",
+   "run": "Running_A",
+   "jumpStart": "Jump_Start",
+   "jumpAir": "Jump_Idle",
+   "jumpLand": "Jump_Land",
+   "jump": "Jump_Full_Short",
+   "cheer": "Cheer",
+   "wave": "Interact",
+   "pickUp": "PickUp",
+   "use": "Use_Item",
+   "bump": "Hit_A",
+   "sit": "Sit_Floor_Idle",
+   "cast": "Spellcasting"
+  }
+ },
+ "look": {
+  "sky": {
+   "top": "#3fa9f2",
+   "middle": "#aee3ff",
+   "bottom": "#fdf3c8"
+  },
+  "fog": {
+   "color": "#dff3e2",
+   "near": 80,
+   "far": 260
+  },
+  "hemisphere": {
+   "sky": "#f6fbff",
+   "ground": "#b5d08a",
+   "intensity": 1.2
+  },
+  "sun": {
+   "color": "#fff1c8",
+   "intensity": 2.6
+  },
+  "toneMapping": "ACESFilmic",
+  "exposure": 1,
+  "glow": {
+   "strength": 0.12,
+   "radius": 0.4,
+   "threshold": 0.98
+  },
+  "clouds": {
+   "color": "#ffffff",
+   "emissive": "#eef8ff",
+   "emissiveIntensity": 0.15
+  },
+  "hud": {
+   "ink": "#141414",
+   "cream": "#FFFDF2",
+   "mint": "#66C792",
+   "spark": "#FFD23F",
+   "correct": "#9df5b9"
+  }
+ },
+ "engine": "three",
+ "version": "1.0.0",
+ "units": "1 unit = 1 metre. Pieces stand on y = 0 unless a note says otherwise. Ground tiles are 4 wide: valley-ground blocks at y -3 (grass at 0), and thin path and river tiles at y 0 level with them. The dinosaurs are friendly animals (g.creature): never enemies, never obstacles.",
+ "sounds": [
+  [
+   "jump",
+   "theme:busy-kitchen/1.0.0/sounds/jump.ogg"
+  ],
+  [
+   "land",
+   "theme:busy-kitchen/1.0.0/sounds/land.ogg"
+  ],
+  [
+   "coin",
+   "theme:busy-kitchen/1.0.0/sounds/coin.ogg"
+  ],
+  [
+   "fall",
+   "theme:busy-kitchen/1.0.0/sounds/fall.ogg"
+  ],
+  [
+   "break",
+   "theme:busy-kitchen/1.0.0/sounds/break.ogg"
+  ],
+  [
+   "walk",
+   "theme:busy-kitchen/1.0.0/sounds/walk.ogg"
+  ]
+ ],
+ "soundPack": "kenney-platformer",
+ "pieces": [
+  [
+   "valley-ground",
+   "kenney-nature-kit/cliff_block_rock.glb",
+   "world",
+   [
+    "ground",
+    "grass",
+    "platform"
+   ],
+   "A block of grassy ground, 4 wide and 3 deep: tile them for the valley floor, with y at -3 so the grass is at 0. Deep enough to stand in a lake.",
+   "kenney-nature",
+   {
+    "stretch": [
+     1,
+     0.75,
+     1
+    ]
+   }
+  ],
+  [
+   "hill",
+   "kenney-nature-kit/cliff_blockHalf_rock.glb",
+   "world",
+   [
+    "hill",
+    "grass",
+    "platform"
+   ],
+   "A grassy block 2 high: a low hill, a ledge."
+  ],
+  [
+   "cliff-block",
+   "kenney-nature-kit/cliff_block_rock.glb",
+   "world",
+   [
+    "cliff",
+    "grass",
+    "platform"
+   ],
+   "A grassy block 4 high: stack and tile them for the valley walls."
+  ],
+  [
+   "cliff-slope",
+   "kenney-nature-kit/cliff_blockSlope_rock.glb",
+   "world",
+   [
+    "cliff",
+    "slope"
+   ],
+   "A grassy slope from the ground up to the top of a cliff block."
+  ],
+  [
+   "cliff-steps",
+   "kenney-nature-kit/cliff_steps_rock.glb",
+   "world",
+   [
+    "cliff",
+    "steps"
+   ],
+   "Grassy steps cut into the cliff (scenery: a hero stands on a piece's whole box)."
+  ],
+  [
+   "cliff-wall",
+   "kenney-nature-kit/cliff_rock.glb",
+   "world",
+   [
+    "cliff",
+    "wall"
+   ],
+   "A thin rock face 4 high: put it against the side of high ground."
+  ],
+  [
+   "cliff-wall-top",
+   "kenney-nature-kit/cliff_top_rock.glb",
+   "world",
+   [
+    "cliff",
+    "wall"
+   ],
+   "A rock face with grass along its top."
+  ],
+  [
+   "cliff-waterfall",
+   "kenney-nature-kit/cliff_waterfall_rock.glb",
+   "world",
+   [
+    "cliff",
+    "waterfall",
+    "water"
+   ],
+   "A rock face with a waterfall running down it."
+  ],
+  [
+   "cliff-waterfall-top",
+   "kenney-nature-kit/cliff_waterfallTop_rock.glb",
+   "world",
+   [
+    "cliff",
+    "waterfall",
+    "water"
+   ],
+   "The top of a waterfall: put it on a cliff-waterfall."
+  ],
+  [
+   "cave",
+   "kenney-nature-kit/cliff_blockCave_rock.glb",
+   "world",
+   [
+    "cliff",
+    "cave"
+   ],
+   "A cliff block with a cosy cave in its side (scenery: nothing lives in it)."
+  ],
+  [
+   "cave-arch",
+   "kenney-nature-kit/cliff_cave_rock.glb",
+   "world",
+   [
+    "cliff",
+    "cave",
+    "wall"
+   ],
+   "A thin rock face with a cave mouth: put it against a cliff."
+  ],
+  [
+   "stone-block",
+   "kenney-nature-kit/cliff_block_stone.glb",
+   "world",
+   [
+    "stone",
+    "platform",
+    "step"
+   ],
+   "A grassy block of pale stone, 4 wide and 3 deep: smaller, a stepping stone across a lake.",
+   "kenney-nature",
+   {
+    "stretch": [
+     1,
+     0.75,
+     1
+    ]
+   }
+  ],
+  [
+   "grass-patch",
+   "kenney-nature-kit/platform_grass.glb",
+   "world",
+   [
+    "grass",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "A small round patch of grass to stand on."
+  ],
+  [
+   "stone-patch",
+   "kenney-nature-kit/platform_stone.glb",
+   "world",
+   [
+    "stone",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "A flat stepping stone."
+  ],
+  [
+   "sand-patch",
+   "kenney-nature-kit/platform_beach.glb",
+   "world",
+   [
+    "sand",
+    "patch",
+    "platform",
+    "step"
+   ],
+   "A small patch of sand: a river beach."
+  ],
+  [
+   "path",
+   "kenney-nature-kit/ground_pathStraight.glb",
+   "world",
+   [
+    "path",
+    "tile"
+   ],
+   "A thin ground tile with a dirt trail across it, 4 wide: lay it at y 0 in place of a valley-ground block (over a lake, with a valley-ground under it at y -3.2)."
+  ],
+  [
+   "path-bend",
+   "kenney-nature-kit/ground_pathBend.glb",
+   "world",
+   [
+    "path",
+    "tile"
+   ],
+   null
+  ],
+  [
+   "path-end",
+   "kenney-nature-kit/ground_pathEnd.glb",
+   "world",
+   [
+    "path",
+    "tile"
+   ],
+   null
+  ],
+  [
+   "river",
+   "kenney-nature-kit/ground_riverStraight.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   "A thin ground tile with a shallow stream across it, 4 wide: lay it at y 0 in place of a valley-ground block (over a lake, with a valley-ground under it at y -3.2)."
+  ],
+  [
+   "river-bend",
+   "kenney-nature-kit/ground_riverBend.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   null
+  ],
+  [
+   "river-end",
+   "kenney-nature-kit/ground_riverEnd.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   "Where a stream starts: a spring."
+  ],
+  [
+   "river-split",
+   "kenney-nature-kit/ground_riverSplit.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   null
+  ],
+  [
+   "river-rocks",
+   "kenney-nature-kit/ground_riverRocks.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   "A stream with rocks in it."
+  ],
+  [
+   "pond",
+   "kenney-nature-kit/ground_riverTile.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile",
+    "pond"
+   ],
+   "A ground tile with a small pond in it: a drinking place."
+  ],
+  [
+   "water",
+   "kenney-nature-kit/ground_riverOpen.glb",
+   "world",
+   [
+    "river",
+    "water",
+    "tile"
+   ],
+   "A flat square of water, 4 wide: tile them for a pool."
+  ],
+  [
+   "stepping-stones",
+   "kenney-nature-kit/path_stone.glb",
+   "decor",
+   [
+    "path",
+    "stones",
+    "step"
+   ],
+   "Flat stones to lay on the grass or in shallow water as a path."
+  ],
+  [
+   "stone-circle",
+   "kenney-nature-kit/path_stoneCircle.glb",
+   "decor",
+   [
+    "path",
+    "stones"
+   ],
+   null
+  ],
+  [
+   "bridge",
+   "kenney-nature-kit/bridge_wood.glb",
+   "world",
+   [
+    "bridge",
+    "wood"
+   ],
+   "A wooden bridge one tile long: put it over a river tile."
+  ],
+  [
+   "palm",
+   "kenney-nature-kit/tree_palm.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   null
+  ],
+  [
+   "palm-bend",
+   "kenney-nature-kit/tree_palmBend.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   null
+  ],
+  [
+   "palm-bushy",
+   "kenney-nature-kit/tree_palmDetailedTall.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   null
+  ],
+  [
+   "palm-short",
+   "kenney-nature-kit/tree_palmDetailedShort.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   null
+  ],
+  [
+   "palm-giant",
+   "quaternius-ultimate-nature/PalmTree_1.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   "A very tall palm."
+  ],
+  [
+   "palm-leaning",
+   "quaternius-ultimate-nature/PalmTree_4.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   null
+  ],
+  [
+   "palm-curly",
+   "quaternius-ultimate-nature/PalmTree_2.glb",
+   "decor",
+   [
+    "tree",
+    "palm"
+   ],
+   "A low palm with a curled trunk."
+  ],
+  [
+   "big-tree",
+   "kenney-nature-kit/tree_fat.glb",
+   "decor",
+   [
+    "tree"
+   ],
+   null
+  ],
+  [
+   "flat-top-tree",
+   "kenney-nature-kit/tree_plateau.glb",
+   "decor",
+   [
+    "tree"
+   ],
+   null
+  ],
+  [
+   "conifer",
+   "kenney-nature-kit/tree_pineTallA_detailed.glb",
+   "decor",
+   [
+    "tree",
+    "pine"
+   ],
+   null
+  ],
+  [
+   "conifer-round",
+   "kenney-nature-kit/tree_pineRoundC.glb",
+   "decor",
+   [
+    "tree",
+    "pine"
+   ],
+   null
+  ],
+  [
+   "jungle-tree",
+   "quaternius-ultimate-nature/Willow_3.glb",
+   "decor",
+   [
+    "tree",
+    "jungle"
+   ],
+   "A tree with hanging leaves."
+  ],
+  [
+   "fern",
+   "kenney-nature-kit/plant_flatTall.glb",
+   "decor",
+   [
+    "plant",
+    "fern"
+   ],
+   null
+  ],
+  [
+   "fern-small",
+   "kenney-nature-kit/plant_flatShort.glb",
+   "decor",
+   [
+    "plant",
+    "fern"
+   ],
+   null
+  ],
+  [
+   "fern-big",
+   "quaternius-ultimate-nature/Plant_1.glb",
+   "decor",
+   [
+    "plant",
+    "fern"
+   ],
+   null,
+   "quaternius-nature",
+   {
+    "scale": 1.5
+   }
+  ],
+  [
+   "leafy-plant",
+   "kenney-nature-kit/plant_bushDetailed.glb",
+   "decor",
+   [
+    "plant",
+    "bush"
+   ],
+   null
+  ],
+  [
+   "broad-leaf",
+   "kenney-nature-kit/plant_bushLarge.glb",
+   "decor",
+   [
+    "plant"
+   ],
+   null
+  ],
+  [
+   "jungle-plant",
+   "quaternius-ultimate-nature/Plant_4.glb",
+   "decor",
+   [
+    "plant",
+    "jungle"
+   ],
+   "Big round leaves.",
+   "quaternius-nature",
+   {
+    "scale": 1.2
+   }
+  ],
+  [
+   "spiky-plant",
+   "quaternius-ultimate-nature/Plant_3.glb",
+   "decor",
+   [
+    "plant",
+    "jungle"
+   ],
+   null,
+   "quaternius-nature",
+   {
+    "scale": 1.5
+   }
+  ],
+  [
+   "flower-plant",
+   "quaternius-ultimate-nature/Plant_5.glb",
+   "decor",
+   [
+    "plant",
+    "flower"
+   ],
+   "A yellow plant with a pink flower spike.",
+   "quaternius-nature",
+   {
+    "scale": 1
+   }
+  ],
+  [
+   "bamboo",
+   "kenney-nature-kit/crops_bambooStageB.glb",
+   "decor",
+   [
+    "plant",
+    "bamboo"
+   ],
+   null
+  ],
+  [
+   "bamboo-young",
+   "kenney-nature-kit/crops_bambooStageA.glb",
+   "decor",
+   [
+    "plant",
+    "bamboo"
+   ],
+   null
+  ],
+  [
+   "sprout",
+   "kenney-nature-kit/crops_leafsStageB.glb",
+   "decor",
+   [
+    "plant"
+   ],
+   null
+  ],
+  [
+   "bush",
+   "quaternius-ultimate-nature/Bush_1.glb",
+   "decor",
+   [
+    "bush"
+   ],
+   null,
+   "quaternius-nature",
+   {
+    "scale": 1.4
+   }
+  ],
+  [
+   "grass",
+   "kenney-nature-kit/grass.glb",
+   "decor",
+   [
+    "grass",
+    "plant"
+   ],
+   null
+  ],
+  [
+   "grass-tall",
+   "kenney-nature-kit/grass_large.glb",
+   "decor",
+   [
+    "grass",
+    "plant"
+   ],
+   null
+  ],
+  [
+   "reeds",
+   "quaternius-ultimate-nature/Grass.glb",
+   "decor",
+   [
+    "grass",
+    "plant",
+    "reeds"
+   ],
+   "Tall reeds for the water's edge.",
+   "quaternius-nature",
+   {
+    "scale": 1.5
+   }
+  ],
+  [
+   "flower-red",
+   "kenney-nature-kit/flower_redC.glb",
+   "decor",
+   [
+    "flower"
+   ],
+   null,
+   "kenney-nature",
+   {
+    "scale": 3
+   }
+  ],
+  [
+   "flower-yellow",
+   "kenney-nature-kit/flower_yellowC.glb",
+   "decor",
+   [
+    "flower"
+   ],
+   null,
+   "kenney-nature",
+   {
+    "scale": 3
+   }
+  ],
+  [
+   "lily-pad",
+   "kenney-nature-kit/lily_small.glb",
+   "decor",
+   [
+    "lily",
+    "water",
+    "plant"
+   ],
+   "Floats on a pond or river tile."
+  ],
+  [
+   "lily-pad-flower",
+   "kenney-nature-kit/lily_large.glb",
+   "decor",
+   [
+    "lily",
+    "water",
+    "plant",
+    "flower"
+   ],
+   null
+  ],
+  [
+   "giant-mushroom",
+   "kenney-nature-kit/mushroom_tanTall.glb",
+   "decor",
+   [
+    "mushroom"
+   ],
+   "A mushroom as tall as a hero.",
+   "kenney-nature",
+   {
+    "scale": 10
+   }
+  ],
+  [
+   "mushrooms-red",
+   "kenney-nature-kit/mushroom_redGroup.glb",
+   "decor",
+   [
+    "mushroom"
+   ],
+   null,
+   "kenney-nature",
+   {
+    "scale": 3
+   }
+  ],
+  [
+   "rock",
+   "kenney-nature-kit/rock_largeA.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   "A sandy rock with grass on top."
+  ],
+  [
+   "rock-big",
+   "kenney-nature-kit/rock_largeD.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "rock-round",
+   "kenney-nature-kit/rock_smallH.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "rock-flat",
+   "kenney-nature-kit/rock_smallFlatA.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "rock-tall",
+   "kenney-nature-kit/rock_tallC.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "rock-tower",
+   "kenney-nature-kit/rock_tallA.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "rock-spire",
+   "kenney-nature-kit/rock_tallG.glb",
+   "decor",
+   [
+    "rock"
+   ],
+   null
+  ],
+  [
+   "boulder",
+   "quaternius-ultimate-nature/Rock_5.glb",
+   "decor",
+   [
+    "rock",
+    "boulder"
+   ],
+   "A big grey boulder.",
+   "quaternius-nature",
+   {
+    "scale": 4
+   }
+  ],
+  [
+   "boulder-big",
+   "quaternius-ultimate-nature/Rock_2.glb",
+   "decor",
+   [
+    "rock",
+    "boulder"
+   ],
+   "A boulder taller than a hero.",
+   "quaternius-nature",
+   {
+    "scale": 5
+   }
+  ],
+  [
+   "standing-stone",
+   "quaternius-ultimate-nature/Rock_1.glb",
+   "decor",
+   [
+    "rock",
+    "boulder"
+   ],
+   "A tall standing rock.",
+   "quaternius-nature",
+   {
+    "scale": 5
+   }
+  ],
+  [
+   "mossy-rock",
+   "quaternius-ultimate-nature/Rock_Moss_3.glb",
+   "decor",
+   [
+    "rock",
+    "moss"
+   ],
+   null
+  ],
+  [
+   "mossy-rock-big",
+   "quaternius-ultimate-nature/Rock_Moss_6.glb",
+   "decor",
+   [
+    "rock",
+    "moss",
+    "boulder"
+   ],
+   null,
+   "quaternius-nature",
+   {
+    "scale": 4
+   }
+  ],
+  [
+   "mossy-rock-tall",
+   "quaternius-ultimate-nature/Rock_Moss_1.glb",
+   "decor",
+   [
+    "rock",
+    "moss",
+    "boulder"
+   ],
+   null,
+   "quaternius-nature",
+   {
+    "scale": 4
+   }
+  ],
+  [
+   "stone",
+   "kenney-nature-kit/stone_largeB.glb",
+   "decor",
+   [
+    "rock",
+    "stone"
+   ],
+   "A pale stone."
+  ],
+  [
+   "stone-small",
+   "kenney-nature-kit/stone_smallG.glb",
+   "decor",
+   [
+    "rock",
+    "stone"
+   ],
+   null
+  ],
+  [
+   "stone-tall",
+   "kenney-nature-kit/stone_tallF.glb",
+   "decor",
+   [
+    "rock",
+    "stone"
+   ],
+   null
+  ],
+  [
+   "stone-tower",
+   "kenney-nature-kit/stone_tallA.glb",
+   "decor",
+   [
+    "rock",
+    "stone"
+   ],
+   null
+  ],
+  [
+   "log-hollow",
+   "kenney-nature-kit/log_large.glb",
+   "prop",
+   [
+    "log",
+    "wood"
+   ],
+   "A big hollow log."
+  ],
+  [
+   "log",
+   "quaternius-ultimate-nature/WoodLog.glb",
+   "prop",
+   [
+    "log",
+    "wood"
+   ],
+   "A fallen log.",
+   "quaternius-nature",
+   {
+    "scale": 1.5
+   }
+  ],
+  [
+   "stump",
+   "kenney-nature-kit/stump_oldTall.glb",
+   "prop",
+   [
+    "stump",
+    "wood"
+   ],
+   null
+  ],
+  [
+   "egg",
+   "kenney-nature-kit/stone_smallH.glb",
+   "prop",
+   [
+    "goal",
+    "egg"
+   ],
+   "The great egg to find at the end of the valley: the goal. It is looked at, never taken or broken.",
+   "kenney-nature",
+   {
+    "stretch": [
+     1,
+     1.4,
+     1
+    ],
+    "taper": 0.45,
+    "colours": {
+     "^stone$": "#fff1cf",
+     "^stoneDark$": "#e9d6a8"
+    }
+   }
+  ],
+  [
+   "egg-blue",
+   "kenney-nature-kit/stone_smallH.glb",
+   "prop",
+   [
+    "egg"
+   ],
+   "A blue egg: scenery for a nest.",
+   "kenney-nature",
+   {
+    "stretch": [
+     1,
+     1.4,
+     1
+    ],
+    "taper": 0.45,
+    "colours": {
+     "^stone$": "#bfe8f5",
+     "^stoneDark$": "#93cbe0"
+    },
+    "scale": 2
+   }
+  ],
+  [
+   "egg-pink",
+   "kenney-nature-kit/stone_smallH.glb",
+   "prop",
+   [
+    "egg"
+   ],
+   "A pink egg: scenery for a nest.",
+   "kenney-nature",
+   {
+    "stretch": [
+     1,
+     1.4,
+     1
+    ],
+    "taper": 0.45,
+    "colours": {
+     "^stone$": "#ffd0dc",
+     "^stoneDark$": "#f0a8bd"
+    },
+    "scale": 2
+   }
+  ],
+  [
+   "nest",
+   "kenney-nature-kit/pot_large.glb",
+   "prop",
+   [
+    "nest"
+   ],
+   "A round nest of straw: put eggs in it.",
+   "kenney-nature",
+   {
+    "scale": 6,
+    "colours": {
+     "^wood$": "#e8c873",
+     "^woodBarkDark$": "#c59a4a"
+    }
+   }
+  ],
+  [
+   "sign",
+   "kenney-nature-kit/sign.glb",
+   "prop",
+   [
+    "sign",
+    "checkpoint"
+   ],
+   "A wooden signpost: a checkpoint, a trail marker.",
+   "kenney-nature",
+   {
+    "scale": 5
+   }
+  ],
+  [
+   "coin",
+   "theme:castle-quest/1.0.0/props/coin.glb",
+   "prop",
+   [
+    "collectible",
+    "coin"
+   ],
+   null,
+   "kaykit-dungeon"
+  ]
+ ],
+ "creatures": [
+  {
+   "id": "triceratops",
+   "name": "Triceratops",
+   "from": "dinosaurs/Triceratops.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    1.9,
+    2.8,
+    6.7
+   ],
+   "pace": {
+    "walk": 0.8,
+    "run": 4.68
+   },
+   "jumpAir": [
+    0.23,
+    0.43
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3196,
+   "colours": {
+    "^LightBrown$": "#f6e9c8",
+    "^Purple$": "#58b4d6",
+    "^Brown$": "#3f93b5"
+   },
+   "anims": {
+    "idle": "Armature|Triceratops_Idle",
+    "walk": "Armature|Triceratops_Walk",
+    "run": "Armature|Triceratops_Run",
+    "jump": "Armature|Triceratops_Jump"
+   }
+  },
+  {
+   "id": "stegosaurus",
+   "name": "Stegosaurus",
+   "from": "dinosaurs/Stegosaurus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    1.6,
+    3.2,
+    7
+   ],
+   "pace": {
+    "walk": 0.71,
+    "run": 4.47
+   },
+   "jumpAir": [
+    0.23,
+    0.44
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3037,
+   "colours": {
+    "^LightBrown$": "#f9d58a",
+    "^DarkBrown$": "#f39c45",
+    "^Brown$": "#e9654a"
+   },
+   "anims": {
+    "idle": "Armature|Stegosaurus_Idle",
+    "walk": "Armature|Stegosaurus_Walk",
+    "run": "Armature|Stegosaurus_Run",
+    "jump": "Armature|Stegosaurus_Jump"
+   }
+  },
+  {
+   "id": "parasaurolophus",
+   "name": "Parasaurolophus",
+   "from": "dinosaurs/Parasaurolophus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    1,
+    3,
+    6.5
+   ],
+   "pace": {
+    "walk": 2.4,
+    "run": 8.1
+   },
+   "jumpAir": [
+    0.23,
+    0.46
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.5208,
+   "colours": {
+    "^LightYellow$": "#f8e08a",
+    "^Green$": "#a585e0",
+    "^LightGreen$": "#c4adf0",
+    "^Red$": "#ff9466"
+   },
+   "anims": {
+    "idle": "Armature|Parasaurolophus_Idle",
+    "walk": "Armature|Parasaurolophus_Walk",
+    "run": "Armature|Parasaurolophus_Run",
+    "jump": "Armature|Parasaurolophus_Jump"
+   }
+  },
+  {
+   "id": "apatosaurus",
+   "name": "Apatosaurus",
+   "from": "dinosaurs/Apatosaurus.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "playable": false,
+   "size": [
+    1.7,
+    3.4,
+    15
+   ],
+   "pace": {
+    "walk": 0.81,
+    "run": 3.59
+   },
+   "jumpAir": [
+    0.26,
+    0.44
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.3016,
+   "colours": {
+    "^Material$": "#dceca0",
+    "^Brown$": "#6fc05e"
+   },
+   "anims": {
+    "idle": "Armature|Apatosaurus_Idle",
+    "walk": "Armature|Apatosaurus_Walk",
+    "run": "Armature|Apatosaurus_Run",
+    "jump": "Armature|Apatosaurus_Jump"
+   }
+  },
+  {
+   "id": "velociraptor",
+   "name": "Velociraptor",
+   "from": "dinosaurs/Velociraptor.glb",
+   "pack": "quaternius-dinosaurs",
+   "kind": "land",
+   "playable": true,
+   "size": [
+    0.7,
+    1.4,
+    3.6
+   ],
+   "pace": {
+    "walk": 0.59,
+    "run": 4.19
+   },
+   "jumpAir": [
+    0.27,
+    0.54
+   ],
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "meshopt": true,
+   "oneDraw": true,
+   "scale": 0.2711,
+   "colours": {
+    "^LightBrown$": "#fbe7a2",
+    "^Brown$": "#f4c23f",
+    "^Black$": "#5a4326"
+   },
+   "anims": {
+    "idle": "Armature|Velociraptor_Idle",
+    "walk": "Armature|Velociraptor_Walk",
+    "run": "Armature|Velociraptor_Run",
+    "jump": "Armature|Velociraptor_Jump"
+   }
+  }
+ ]
+}

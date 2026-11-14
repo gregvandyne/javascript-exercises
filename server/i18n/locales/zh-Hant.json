@@ -1602,7 +1602,8 @@
         "cosy-home": "溫馨小屋",
         "busy-kitchen": "忙碌廚房",
         "pirate-cove": "海盜灣",
-        "wild-woods": "野外森林"
+        "wild-woods": "野外森林",
+        "dino-valley": "恐龍谷"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "小鹿",
         "stag": "雄鹿",
         "fox": "狐狸",
-        "shiba": "柴犬"
+        "shiba": "柴犬",
+        "triceratops": "三角龍",
+        "stegosaurus": "劍龍",
+        "parasaurolophus": "副櫛龍",
+        "apatosaurus": "迷惑龍",
+        "velociraptor": "伶盜龍"
       }
     },
     "animals": {
@@ -8544,7 +8550,8 @@
       "cosy-home": "溫暖的小屋，有沙發、檯燈和書。",
       "medieval-village": "童話般的村莊，有風車和市場。",
       "pirate-cove": "沙灘小島、椰子樹、碼頭和帆船。",
-      "wild-woods": "陽光森林，有小河、岩石和營地。"
+      "wild-woods": "陽光森林，有小河、岩石和營地。",
+      "dino-valley": "陽光山谷，有友善的恐龍、棕櫚樹和一顆大蛋。"
     },
     "groups": {
       "heroes": "英雄",

@@ -48,6 +48,7 @@
   "Nothing in this kit is a weapon or scary. The campfires have no flames.",
   "The kit has no pictures: each material is one plain colour, which FBX2glTF reads too pale, so defaults.colours gives every material its colour (Wild Woods' woodland palette).",
   "Every model sits 0.05 below its own floor: defaults.shift lifts it.",
-  "Wild Woods 1.0.0 uses 89 of the 329 models; the rest that are not left out above (the stone cliff set, more rocks, trees, fences, bridges and path tiles) are near-duplicates held back to keep the world small."
+  "Wild Woods 1.0.0 uses 89 of the 329 models; the rest that are not left out above (the stone cliff set, more rocks, trees, fences, bridges and path tiles) are near-duplicates held back to keep the world small.",
+  "Dino Valley 1.0.0 uses 69 models: the palms (left out of Wild Woods, kept for this world), bamboo and a leafy sprout from the crop set, the rock cliff set with its cave, river and path tiles, rocks and stones, and the round stone and the large pot remade as eggs and a nest. Cacti, statues and the carved head stay out there too."
  ]
 }

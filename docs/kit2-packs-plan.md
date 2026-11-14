@@ -297,6 +297,9 @@ Quest 1.1.0 4.23 MB, Medieval Village 1.0.0 4.72 MB, Sky Islands 1.0.1 1.68 MB.
    **Wild Woods 1.0.0** (not in this plan: built 14 Nov 2026 from two packs uploaded later, the Kenney Nature Kit and
    the Quaternius Ultimate Nature Pack, both CC0; branch `kit2-wild-woods`, `docs/decisions.md` "Wild Woods 1.0.0") is
    the same kind of world: on Oomba3D 1.1.0, five heroes, 2.29 MB, animals to follow in a later version.
+   **Dino Valley 1.0.0** (Round B) was **built 14 Nov 2026** (branch `kit2-dino-valley`, `docs/decisions.md` "Dino Valley
+   1.0.0"): five dinosaurs, **no T-Rex** (the owner's answer to open question 1: held back until its head is
+   re-modelled), scenery from the two flat-colour nature packs instead of the nature megakit, five heroes, 2.45 MB.
 3. **Sky Islands 1.1.0** and the licence test change for the reodesuxz packs.
 4. **Toy Town 1.2.0** with the suburban houses.
 
@@ -312,7 +315,8 @@ Each theme is its own pull request, as before, with its contact sheet in the des
 
 ## 9. Open questions for the owner, with a recommendation
 
-1. **T-Rex with teeth showing.** Recommend: ship Dino Valley with five dinosaurs plus the T-Rex as a calm, slow animal,
+1. **T-Rex with teeth showing.** *Decided 14 Nov 2026: held back; Dino Valley 1.0.0 ships without it in any form.*
+   Recommend: ship Dino Valley with five dinosaurs plus the T-Rex as a calm, slow animal,
    and commission a closed-mouth head later; or hold it back if you would rather not have teeth at all.
 2. **The nine heroes in every world (2.26 MB of 5 MB).** Recommend: new worlds carry five heroes (the adventurers),
    and Planet Explorers carries only its astronauts. Otherwise Dino Valley and Farm are at the limit.

@@ -1602,7 +1602,8 @@
         "cosy-home": "Casa Acogedora",
         "busy-kitchen": "Cocina Ajetreada",
         "pirate-cove": "Cala Pirata",
-        "wild-woods": "Bosque Salvaje"
+        "wild-woods": "Bosque Salvaje",
+        "dino-valley": "Valle de los Dinos"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "Cierva",
         "stag": "Ciervo",
         "fox": "Zorro",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Estegosaurio",
+        "parasaurolophus": "Parasaurolofus",
+        "apatosaurus": "Apatosaurio",
+        "velociraptor": "Velocirraptor"
       }
     },
     "animals": {
@@ -8544,7 +8550,8 @@
       "cosy-home": "Una casita cálida con sofás, lámparas y libros.",
       "medieval-village": "Una aldea de cuento con un molino y un mercado.",
       "pirate-cove": "Islas de arena, palmeras, muelles y barcos de vela.",
-      "wild-woods": "Un bosque soleado con un río, rocas y un campamento."
+      "wild-woods": "Un bosque soleado con un río, rocas y un campamento.",
+      "dino-valley": "Un valle soleado con dinosaurios amigables, palmeras y un huevo gigante."
     },
     "groups": {
       "heroes": "Héroes",

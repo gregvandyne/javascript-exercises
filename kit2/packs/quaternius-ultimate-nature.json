@@ -37,6 +37,7 @@
  "notes": [
   "Nothing in this pack is a weapon or scary; Cactus_1 has spines and is left out with the other cacti.",
   "The pack has no pictures: each material is one plain colour, which FBX2glTF reads too dark, so defaults.colours gives every material its colour (Wild Woods' woodland palette).",
-  "Trees are 40 to 110 KB each (the Kenney ones 4 to 17 KB), so Wild Woods 1.0.0 takes five trees and 12 smaller pieces."
+  "Trees are 40 to 110 KB each (the Kenney ones 4 to 17 KB), so Wild Woods 1.0.0 takes five trees and 12 smaller pieces.",
+  "Dino Valley 1.0.0 uses 17 models: three palms (left out of Wild Woods, kept for this world), a willow as its jungle tree, four plants, a bush, reeds, six rocks made 4 to 5 times bigger as boulders, and a log. Dead trees, snow and cacti stay out there too."
  ]
 }
