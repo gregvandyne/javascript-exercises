@@ -44,6 +44,7 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Cosy Home | added 12 Nov | KayKit Furniture + Restaurant | Three.js | Reading, maths, life skills |
 | Busy Kitchen | added 12 Nov | KayKit Restaurant | Three.js | Maths, fractions, healthy eating |
 | Pirate Cove | added 14 Nov | Kenney Pirate Kit + KayKit Adventurers | Three.js | Maths, geography, treasure maps |
+| Wild Woods | added 14 Nov | Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Maths, science, nature |
 
 ## How it fits together
 

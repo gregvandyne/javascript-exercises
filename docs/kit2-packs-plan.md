@@ -289,6 +289,9 @@ Quest 1.1.0 4.23 MB, Medieval Village 1.0.0 4.72 MB, Sky Islands 1.0.1 1.68 MB.
 2. **Pirate Cove 1.0.0** on Oomba3D 1.1.0: theme, cover, sounds, tour test. The first new world a child can play.
    **Built 14 Nov 2026** (branch `kit2-pirate-cove`, `docs/decisions.md` "Pirate Cove 1.0.0"): 2.86 MB with five heroes;
    the `inkNormals` step was not used (it blanks the picture on Oomba3D 1.1.0), and the chest stays shut until 1.2.0.
+   **Wild Woods 1.0.0** (not in this plan: built 14 Nov 2026 from two packs uploaded later, the Kenney Nature Kit and
+   the Quaternius Ultimate Nature Pack, both CC0; branch `kit2-wild-woods`, `docs/decisions.md` "Wild Woods 1.0.0") is
+   the same kind of world: on Oomba3D 1.1.0, five heroes, 2.29 MB, animals to follow in a later version.
 3. **Sky Islands 1.1.0** and the licence test change for the reodesuxz packs.
 4. **Toy Town 1.2.0** with the suburban houses.
 

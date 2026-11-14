@@ -13,6 +13,10 @@
 //   dropVertexColours: true        ignore COLOR_0
 //   stretch: [1, 6, 1]             the model stretched along x, y and z about its origin, before anything else (a thin
 //                                  sand patch made into an island thick enough to stand in the sea); for still models
+//   shift: [0, 0.05, 0]            the model moved by this much before it is scaled (a kit whose models all sit a little
+//                                  below their own floor: the Kenney Nature Kit)
+//   colours: { '^grass$': '#5fbf4a' }  the plain colour of every material whose name matches, as an sRGB hex colour (FBX
+//                                  files here carry their colours in a way the converter reads too pale or too dark)
 //   inkNormals: true               for flat-shaded low-poly models: give every corner one shared, averaged normal and mark
 //                                  the materials extras.flat = true. An ink outline (a copy pushed out along the normals)
 //                                  then stays in one piece instead of cracking at every hard edge; whoever draws the model
@@ -31,6 +35,14 @@ export async function packSteps(doc, item, recipe, recipeDir) {
     for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
       const acc = p.getAttribute('POSITION'); if (!acc || done.has(acc)) continue; done.add(acc);
       const a = new Float32Array(acc.getArray()); for (let i = 0; i < a.length; i++) a[i] *= item.stretch[i % 3]; acc.setArray(a);
+    }
+  }
+  if (item.shift) for (const sc of root.listScenes()) for (const n of sc.listChildren()) n.setTranslation(n.getTranslation().map((v, i) => v + item.shift[i]));
+  if (item.colours) {
+    const linear = hex => [1, 3, 5].map(i => { const v = parseInt(hex.slice(i, i + 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    for (const m of root.listMaterials()) {
+      const hit = Object.entries(item.colours).find(([k]) => new RegExp(k).test(m.getName()));
+      if (hit) m.setBaseColorFactor([...linear(hit[1]), m.getBaseColorFactor()[3]]);
     }
   }
   if (item.anims) {

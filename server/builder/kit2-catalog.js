@@ -4,7 +4,7 @@
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
 // name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
 // reference the Builder reads.
-export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"],"pirate-cove":["1.0.0"]};
+export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"],"pirate-cove":["1.0.0"],"wild-woods":["1.0.0"]};
 export const KIT2_WORLDS = [
  {
   "id": "sky-islands",
@@ -5188,6 +5188,1500 @@ export const KIT2_WORLDS = [
      "flag"
     ],
     "note": "A plain black flag (no picture on it)."
+   },
+   {
+    "id": "coin",
+    "kind": "prop",
+    "size": [
+     0.4,
+     0.1,
+     0.4
+    ],
+    "tags": [
+     "collectible",
+     "coin"
+    ],
+    "note": "Its base is -0.06 below its y."
+   }
+  ],
+  "sounds": [
+   "jump",
+   "land",
+   "coin",
+   "fall",
+   "break",
+   "walk"
+  ],
+  "moves": [
+   "idle",
+   "ready",
+   "walk",
+   "run",
+   "jumpStart",
+   "jumpAir",
+   "jumpLand",
+   "jump",
+   "cheer",
+   "wave",
+   "pickUp",
+   "use",
+   "bump",
+   "sit",
+   "cast"
+  ]
+ },
+ {
+  "id": "wild-woods",
+  "version": "1.0.0",
+  "name": "Wild Woods",
+  "description": "A sunny forest to explore: meadows, tall trees, a river with a bridge, rocky cliffs, flowers, mushrooms and a cosy camp.",
+  "goodFor": [
+   "maths",
+   "science",
+   "nature",
+   "adventures"
+  ],
+  "engine": "three",
+  "heroes": [
+   {
+    "id": "barbarian",
+    "name": "Explorer"
+   },
+   {
+    "id": "knight",
+    "name": "Knight"
+   },
+   {
+    "id": "mage",
+    "name": "Wizard"
+   },
+   {
+    "id": "rogue",
+    "name": "Ranger"
+   },
+   {
+    "id": "rogue-hooded",
+    "name": "Hooded Ranger"
+   }
+  ],
+  "creatures": [],
+  "pieces": [
+   {
+    "id": "meadow",
+    "kind": "world",
+    "size": [
+     4,
+     3,
+     4
+    ],
+    "tags": [
+     "ground",
+     "grass",
+     "platform"
+    ],
+    "note": "A block of meadow, 4 wide and 3 deep: tile them for the ground, with y at -3 so the grass is at 0. Deep enough to stand in a lake."
+   },
+   {
+    "id": "hill",
+    "kind": "world",
+    "size": [
+     4,
+     2,
+     4
+    ],
+    "tags": [
+     "hill",
+     "grass",
+     "platform"
+    ],
+    "note": "A grassy block 2 high: a low hill, a ledge."
+   },
+   {
+    "id": "cliff-block",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     4
+    ],
+    "tags": [
+     "cliff",
+     "grass",
+     "platform"
+    ],
+    "note": "A grassy block 4 high: stack and tile them for high ground."
+   },
+   {
+    "id": "cliff-slope",
+    "kind": "world",
+    "size": [
+     4.8,
+     4,
+     4
+    ],
+    "tags": [
+     "cliff",
+     "slope"
+    ],
+    "note": "A grassy slope from the ground up to the top of a cliff block."
+   },
+   {
+    "id": "cliff-cave",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     4
+    ],
+    "tags": [
+     "cliff",
+     "cave"
+    ],
+    "note": "A cliff block with a little cave in its side."
+   },
+   {
+    "id": "cliff-steps",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     4.2
+    ],
+    "tags": [
+     "cliff",
+     "steps"
+    ],
+    "note": "Grassy steps cut into the cliff (scenery: a hero stands on a piece's whole box)."
+   },
+   {
+    "id": "cliff-wall",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     0.7
+    ],
+    "tags": [
+     "cliff",
+     "wall"
+    ],
+    "note": "A thin rock face 4 high: put it against the side of high ground."
+   },
+   {
+    "id": "cliff-wall-top",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     1.1
+    ],
+    "tags": [
+     "cliff",
+     "wall"
+    ],
+    "note": "A rock face with grass along its top."
+   },
+   {
+    "id": "cliff-waterfall",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     0.7
+    ],
+    "tags": [
+     "cliff",
+     "waterfall",
+     "water"
+    ],
+    "note": "A rock face with a waterfall running down it."
+   },
+   {
+    "id": "cliff-waterfall-top",
+    "kind": "world",
+    "size": [
+     4,
+     4,
+     1.1
+    ],
+    "tags": [
+     "cliff",
+     "waterfall",
+     "water"
+    ],
+    "note": "The top of a waterfall: put it on a cliff-waterfall."
+   },
+   {
+    "id": "stone-block",
+    "kind": "world",
+    "size": [
+     4,
+     3,
+     4
+    ],
+    "tags": [
+     "stone",
+     "platform",
+     "step"
+    ],
+    "note": "A grassy block of grey stone, 4 wide and 3 deep: smaller, a stepping stone across a lake."
+   },
+   {
+    "id": "grass-patch",
+    "kind": "world",
+    "size": [
+     3.6,
+     0.3,
+     2.9
+    ],
+    "tags": [
+     "grass",
+     "patch",
+     "platform",
+     "step"
+    ],
+    "note": "A small round patch of grass to stand on."
+   },
+   {
+    "id": "stone-patch",
+    "kind": "world",
+    "size": [
+     3.6,
+     0.3,
+     2.9
+    ],
+    "tags": [
+     "stone",
+     "patch",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "path",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "path",
+     "tile"
+    ],
+    "note": "A thin ground tile with a dirt path across it, 4 wide: lay it at y 0 in place of a meadow block (over a lake, with a meadow under it at y -3.2). Its base is -0.2 below its y."
+   },
+   {
+    "id": "path-bend",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "path",
+     "tile"
+    ],
+    "note": "Its base is -0.2 below its y."
+   },
+   {
+    "id": "path-end",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "path",
+     "tile"
+    ],
+    "note": "Its base is -0.2 below its y."
+   },
+   {
+    "id": "path-split",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "path",
+     "tile"
+    ],
+    "note": "Its base is -0.2 below its y."
+   },
+   {
+    "id": "river",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "A thin ground tile with a shallow stream across it, 4 wide: lay it at y 0 in place of a meadow block (over a lake, with a meadow under it at y -3.2). Its base is -0.2 below its y."
+   },
+   {
+    "id": "river-bend",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "Its base is -0.2 below its y."
+   },
+   {
+    "id": "river-end",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "Where a stream starts: a spring. Its base is -0.2 below its y."
+   },
+   {
+    "id": "river-split",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "Its base is -0.2 below its y."
+   },
+   {
+    "id": "river-rocks",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "A stream with rocks in it. Its base is -0.2 below its y."
+   },
+   {
+    "id": "pond",
+    "kind": "world",
+    "size": [
+     4,
+     0.2,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "A ground tile with a small pond in it. Its base is -0.2 below its y."
+   },
+   {
+    "id": "water",
+    "kind": "world",
+    "size": [
+     4,
+     0,
+     4
+    ],
+    "tags": [
+     "river",
+     "water",
+     "tile"
+    ],
+    "note": "A flat square of water, 4 wide: tile them for a pool. Its base is -0.2 below its y."
+   },
+   {
+    "id": "stepping-stones",
+    "kind": "decor",
+    "size": [
+     4,
+     0.2,
+     2.3
+    ],
+    "tags": [
+     "path",
+     "stones"
+    ],
+    "note": "Flat stones to lay on the grass as a path."
+   },
+   {
+    "id": "stone-circle",
+    "kind": "decor",
+    "size": [
+     3.7,
+     0.2,
+     3.5
+    ],
+    "tags": [
+     "path",
+     "stones"
+    ]
+   },
+   {
+    "id": "plank-path",
+    "kind": "decor",
+    "size": [
+     4,
+     0.2,
+     2.1
+    ],
+    "tags": [
+     "path",
+     "planks"
+    ],
+    "note": "Wooden planks to lay on the grass as a path."
+   },
+   {
+    "id": "bridge",
+    "kind": "world",
+    "size": [
+     4.2,
+     1.6,
+     4.2
+    ],
+    "tags": [
+     "bridge",
+     "wood"
+    ],
+    "note": "A wooden bridge one tile long: put it over a river tile."
+   },
+   {
+    "id": "bridge-arched",
+    "kind": "world",
+    "size": [
+     4.2,
+     1.8,
+     4.2
+    ],
+    "tags": [
+     "bridge",
+     "wood"
+    ]
+   },
+   {
+    "id": "bridge-stone",
+    "kind": "world",
+    "size": [
+     4.2,
+     1.6,
+     4.2
+    ],
+    "tags": [
+     "bridge",
+     "stone"
+    ]
+   },
+   {
+    "id": "oak",
+    "kind": "decor",
+    "size": [
+     2.6,
+     4.9,
+     3
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "oak-autumn",
+    "kind": "decor",
+    "size": [
+     2.6,
+     4.9,
+     3
+    ],
+    "tags": [
+     "tree",
+     "autumn"
+    ]
+   },
+   {
+    "id": "round-tree",
+    "kind": "decor",
+    "size": [
+     3,
+     6.8,
+     2.6
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "round-tree-autumn",
+    "kind": "decor",
+    "size": [
+     3,
+     6.8,
+     2.6
+    ],
+    "tags": [
+     "tree",
+     "autumn"
+    ]
+   },
+   {
+    "id": "bushy-tree",
+    "kind": "decor",
+    "size": [
+     3.4,
+     5.3,
+     3.1
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "big-tree",
+    "kind": "decor",
+    "size": [
+     3,
+     4.6,
+     2.6
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "cone-tree",
+    "kind": "decor",
+    "size": [
+     2.1,
+     5.7,
+     2.1
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "flat-top-tree",
+    "kind": "decor",
+    "size": [
+     2.5,
+     5,
+     2.6
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "twin-tree",
+    "kind": "decor",
+    "size": [
+     2.7,
+     6,
+     2.5
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "tall-tree",
+    "kind": "decor",
+    "size": [
+     1.6,
+     6.8,
+     1.9
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "small-tree",
+    "kind": "decor",
+    "size": [
+     1.4,
+     4.4,
+     1.6
+    ],
+    "tags": [
+     "tree"
+    ]
+   },
+   {
+    "id": "pine",
+    "kind": "decor",
+    "size": [
+     2.5,
+     5.5,
+     2.9
+    ],
+    "tags": [
+     "tree",
+     "pine"
+    ]
+   },
+   {
+    "id": "pine-tall",
+    "kind": "decor",
+    "size": [
+     1.5,
+     6.1,
+     1.6
+    ],
+    "tags": [
+     "tree",
+     "pine"
+    ]
+   },
+   {
+    "id": "pine-small",
+    "kind": "decor",
+    "size": [
+     2,
+     3.9,
+     2
+    ],
+    "tags": [
+     "tree",
+     "pine"
+    ]
+   },
+   {
+    "id": "pine-young",
+    "kind": "decor",
+    "size": [
+     1.9,
+     3.7,
+     2.2
+    ],
+    "tags": [
+     "tree",
+     "pine"
+    ]
+   },
+   {
+    "id": "leafy-tree",
+    "kind": "decor",
+    "size": [
+     3.2,
+     5.6,
+     3.6
+    ],
+    "tags": [
+     "tree"
+    ],
+    "note": "Its base is -0.22 below its y."
+   },
+   {
+    "id": "leafy-tree-autumn",
+    "kind": "decor",
+    "size": [
+     3.2,
+     5.6,
+     3.6
+    ],
+    "tags": [
+     "tree",
+     "autumn"
+    ],
+    "note": "Its base is -0.22 below its y."
+   },
+   {
+    "id": "birch",
+    "kind": "decor",
+    "size": [
+     2.9,
+     8.1,
+     3.4
+    ],
+    "tags": [
+     "tree",
+     "birch"
+    ],
+    "note": "Its base is -0.08 below its y."
+   },
+   {
+    "id": "willow",
+    "kind": "decor",
+    "size": [
+     2.6,
+     4.7,
+     4
+    ],
+    "tags": [
+     "tree",
+     "willow"
+    ]
+   },
+   {
+    "id": "fir",
+    "kind": "decor",
+    "size": [
+     3,
+     5.4,
+     2.7
+    ],
+    "tags": [
+     "tree",
+     "pine"
+    ]
+   },
+   {
+    "id": "bush",
+    "kind": "decor",
+    "size": [
+     1.9,
+     1.7,
+     2.4
+    ],
+    "tags": [
+     "bush"
+    ]
+   },
+   {
+    "id": "bush-round",
+    "kind": "decor",
+    "size": [
+     1.9,
+     1.6,
+     1.9
+    ],
+    "tags": [
+     "bush"
+    ],
+    "note": "Its base is -0.11 below its y."
+   },
+   {
+    "id": "berry-bush",
+    "kind": "decor",
+    "size": [
+     2,
+     1.8,
+     2.4
+    ],
+    "tags": [
+     "bush",
+     "berries"
+    ],
+    "note": "A bush with red berries."
+   },
+   {
+    "id": "leafy-plant",
+    "kind": "decor",
+    "size": [
+     2.4,
+     1.4,
+     2.4
+    ],
+    "tags": [
+     "plant",
+     "bush"
+    ]
+   },
+   {
+    "id": "fern",
+    "kind": "decor",
+    "size": [
+     1.1,
+     1.1,
+     1.1
+    ],
+    "tags": [
+     "plant"
+    ]
+   },
+   {
+    "id": "fern-big",
+    "kind": "decor",
+    "size": [
+     1.8,
+     0.8,
+     1.4
+    ],
+    "tags": [
+     "plant"
+    ]
+   },
+   {
+    "id": "grass",
+    "kind": "decor",
+    "size": [
+     1.5,
+     1,
+     1.6
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "grass-tall",
+    "kind": "decor",
+    "size": [
+     1.6,
+     1,
+     1.6
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "flower-red",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.9,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flower-red-open",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.7,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flower-yellow",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.6,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flower-yellow-open",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.4,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flower-purple",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.7,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flower-purple-open",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.6,
+     0.5
+    ],
+    "tags": [
+     "flower"
+    ]
+   },
+   {
+    "id": "flowers-blue",
+    "kind": "decor",
+    "size": [
+     0.7,
+     1.2,
+     0.9
+    ],
+    "tags": [
+     "flower"
+    ],
+    "note": "Three tall blue flowers."
+   },
+   {
+    "id": "lily-pad",
+    "kind": "decor",
+    "size": [
+     0.8,
+     0.2,
+     0.9
+    ],
+    "tags": [
+     "lily",
+     "water",
+     "plant"
+    ],
+    "note": "Floats on a pond or river tile."
+   },
+   {
+    "id": "lily-pad-flower",
+    "kind": "decor",
+    "size": [
+     1.1,
+     0.4,
+     1.3
+    ],
+    "tags": [
+     "lily",
+     "water",
+     "plant",
+     "flower"
+    ]
+   },
+   {
+    "id": "water-lily",
+    "kind": "decor",
+    "size": [
+     1.8,
+     0.3,
+     1.8
+    ],
+    "tags": [
+     "lily",
+     "water",
+     "plant",
+     "flower"
+    ],
+    "note": "Lily pads with a pink flower."
+   },
+   {
+    "id": "mushroom-red",
+    "kind": "decor",
+    "size": [
+     0.5,
+     0.6,
+     0.6
+    ],
+    "tags": [
+     "mushroom"
+    ]
+   },
+   {
+    "id": "mushroom-red-tall",
+    "kind": "decor",
+    "size": [
+     0.4,
+     0.8,
+     0.4
+    ],
+    "tags": [
+     "mushroom"
+    ]
+   },
+   {
+    "id": "mushrooms-red",
+    "kind": "decor",
+    "size": [
+     0.8,
+     0.8,
+     0.8
+    ],
+    "tags": [
+     "mushroom"
+    ]
+   },
+   {
+    "id": "mushroom-tan",
+    "kind": "decor",
+    "size": [
+     0.6,
+     0.5,
+     0.7
+    ],
+    "tags": [
+     "mushroom"
+    ]
+   },
+   {
+    "id": "mushrooms-tan",
+    "kind": "decor",
+    "size": [
+     0.8,
+     0.8,
+     0.8
+    ],
+    "tags": [
+     "mushroom"
+    ]
+   },
+   {
+    "id": "rock",
+    "kind": "decor",
+    "size": [
+     3.1,
+     1,
+     4.1
+    ],
+    "tags": [
+     "rock"
+    ],
+    "note": "A brown rock with grass on top."
+   },
+   {
+    "id": "rock-big",
+    "kind": "decor",
+    "size": [
+     4.3,
+     2.3,
+     4.1
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "rock-small",
+    "kind": "decor",
+    "size": [
+     1.4,
+     0.8,
+     1.4
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "rock-round",
+    "kind": "decor",
+    "size": [
+     1.9,
+     1.6,
+     1.9
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "rock-flat",
+    "kind": "decor",
+    "size": [
+     2,
+     0.3,
+     1.7
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "rock-tall",
+    "kind": "decor",
+    "size": [
+     1.8,
+     3.1,
+     1.8
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "rock-tower",
+    "kind": "decor",
+    "size": [
+     3.9,
+     4,
+     2.7
+    ],
+    "tags": [
+     "rock"
+    ]
+   },
+   {
+    "id": "stone",
+    "kind": "decor",
+    "size": [
+     3.1,
+     1.7,
+     4.1
+    ],
+    "tags": [
+     "rock",
+     "stone"
+    ],
+    "note": "A grey stone."
+   },
+   {
+    "id": "stone-small",
+    "kind": "decor",
+    "size": [
+     2.4,
+     1,
+     2.7
+    ],
+    "tags": [
+     "rock",
+     "stone"
+    ]
+   },
+   {
+    "id": "stone-tall",
+    "kind": "decor",
+    "size": [
+     1.8,
+     2.3,
+     2.1
+    ],
+    "tags": [
+     "rock",
+     "stone"
+    ]
+   },
+   {
+    "id": "mossy-rock",
+    "kind": "decor",
+    "size": [
+     1.5,
+     1.1,
+     1.6
+    ],
+    "tags": [
+     "rock",
+     "moss"
+    ]
+   },
+   {
+    "id": "mossy-rock-tall",
+    "kind": "decor",
+    "size": [
+     1,
+     1.9,
+     0.9
+    ],
+    "tags": [
+     "rock",
+     "moss"
+    ],
+    "note": "Its base is -0.34 below its y."
+   },
+   {
+    "id": "mossy-rock-big",
+    "kind": "decor",
+    "size": [
+     1.8,
+     1.4,
+     2.3
+    ],
+    "tags": [
+     "rock",
+     "moss"
+    ]
+   },
+   {
+    "id": "boulder",
+    "kind": "decor",
+    "size": [
+     1.3,
+     1.3,
+     1.8
+    ],
+    "tags": [
+     "rock"
+    ],
+    "note": "Its base is -0.13 below its y."
+   },
+   {
+    "id": "log",
+    "kind": "prop",
+    "size": [
+     0.9,
+     0.7,
+     2.8
+    ],
+    "tags": [
+     "log",
+     "wood"
+    ]
+   },
+   {
+    "id": "log-hollow",
+    "kind": "prop",
+    "size": [
+     4,
+     1.7,
+     2.2
+    ],
+    "tags": [
+     "log",
+     "wood"
+    ],
+    "note": "A big hollow log."
+   },
+   {
+    "id": "log-pile",
+    "kind": "prop",
+    "size": [
+     1.7,
+     1.4,
+     2.8
+    ],
+    "tags": [
+     "log",
+     "wood"
+    ]
+   },
+   {
+    "id": "mossy-log",
+    "kind": "prop",
+    "size": [
+     1.3,
+     1,
+     4
+    ],
+    "tags": [
+     "log",
+     "wood",
+     "moss"
+    ],
+    "note": "A fallen log with moss and little mushrooms on it."
+   },
+   {
+    "id": "stump",
+    "kind": "prop",
+    "size": [
+     1.3,
+     0.8,
+     1.5
+    ],
+    "tags": [
+     "stump",
+     "wood"
+    ],
+    "note": "A tree stump: a seat by the campfire."
+   },
+   {
+    "id": "stump-old",
+    "kind": "prop",
+    "size": [
+     1.4,
+     1.1,
+     1.5
+    ],
+    "tags": [
+     "stump",
+     "wood"
+    ]
+   },
+   {
+    "id": "mossy-stump",
+    "kind": "prop",
+    "size": [
+     2,
+     0.9,
+     1.6
+    ],
+    "tags": [
+     "stump",
+     "wood",
+     "moss"
+    ]
+   },
+   {
+    "id": "tent",
+    "kind": "prop",
+    "size": [
+     4.4,
+     2.8,
+     3.3
+    ],
+    "tags": [
+     "goal",
+     "camp",
+     "tent"
+    ],
+    "note": "The camp to reach: an open tent."
+   },
+   {
+    "id": "tent-closed",
+    "kind": "prop",
+    "size": [
+     4.4,
+     2.8,
+     3.2
+    ],
+    "tags": [
+     "camp",
+     "tent"
+    ]
+   },
+   {
+    "id": "campfire",
+    "kind": "prop",
+    "size": [
+     1.2,
+     0.3,
+     1.2
+    ],
+    "tags": [
+     "camp",
+     "campfire"
+    ],
+    "note": "Logs laid for a cosy campfire (no flames): put it inside a campfire-ring."
+   },
+   {
+    "id": "campfire-ring",
+    "kind": "prop",
+    "size": [
+     2.2,
+     0.3,
+     2.1
+    ],
+    "tags": [
+     "camp",
+     "campfire"
+    ],
+    "note": "A ring of stones round the campfire."
+   },
+   {
+    "id": "sleeping-mat",
+    "kind": "prop",
+    "size": [
+     1.3,
+     0.4,
+     3
+    ],
+    "tags": [
+     "camp",
+     "bed"
+    ],
+    "note": "A camp bed for the tent."
+   },
+   {
+    "id": "canoe",
+    "kind": "prop",
+    "size": [
+     1.2,
+     0.7,
+     4.6
+    ],
+    "tags": [
+     "boat",
+     "canoe",
+     "water"
+    ],
+    "note": "A canoe for the river or the lake."
+   },
+   {
+    "id": "paddle",
+    "kind": "prop",
+    "size": [
+     0.3,
+     0.1,
+     2.4
+    ],
+    "tags": [
+     "boat",
+     "canoe",
+     "tool"
+    ]
+   },
+   {
+    "id": "sign",
+    "kind": "prop",
+    "size": [
+     1.5,
+     2,
+     0.4
+    ],
+    "tags": [
+     "sign",
+     "checkpoint"
+    ],
+    "note": "A wooden signpost: a checkpoint, a trail marker."
+   },
+   {
+    "id": "fence",
+    "kind": "prop",
+    "size": [
+     4,
+     1.4,
+     0.3
+    ],
+    "tags": [
+     "fence"
+    ],
+    "note": "One tile (4) long."
+   },
+   {
+    "id": "fence-corner",
+    "kind": "prop",
+    "size": [
+     4,
+     1.4,
+     4
+    ],
+    "tags": [
+     "fence",
+     "corner"
+    ]
+   },
+   {
+    "id": "fence-gate",
+    "kind": "prop",
+    "size": [
+     4,
+     1.4,
+     0.3
+    ],
+    "tags": [
+     "fence",
+     "gate"
+    ]
+   },
+   {
+    "id": "fence-planks",
+    "kind": "prop",
+    "size": [
+     4,
+     1.4,
+     0.4
+    ],
+    "tags": [
+     "fence"
+    ]
    },
    {
     "id": "coin",

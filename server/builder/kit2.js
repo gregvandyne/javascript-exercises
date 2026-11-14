@@ -34,7 +34,7 @@ export const DEFAULT_WORLD = 'sky-islands';
 /** A character this world has: the one asked for, or the world's first. */
 export const heroFor = (world, hero) => { const list = charactersOf(world); return (list.find(h => h.id === hero) || list[0] || { id: '' }).id; };
 /** An emoji and a cover colour for each world: a new game's icon and card until its own picture is taken. */
-const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'] };
+const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'], 'wild-woods': ['🌲', 'forest'] };
 export const worldLook = id => LOOKS[id] || ['🌍', 'ocean'];
 /** Is this exact theme version shipped (kit2/SHIPPED.json)? */
 export const isShipped = (world, version) => !!KIT2_LOCK.themes[`${world}/${version}`];
@@ -56,7 +56,8 @@ export function kit2Of(html) {
 // marks the finish; landmark: the big thing behind the goal; scenery: what stands beside the way. hex: the ground is
 // hexagon tiles (laid as a honeycomb). sea: the colour of the water far below ('' for none). time: the sky.
 // seaY: the water's height when the world stands IN the sea (default: far below, at -5). afloat: ships and boats put
-// out on that sea, [piece, scale] each.
+// out on that sea, [piece, scale] each. lake: that water is a lake, not the sea (Wild Woods: meadow blocks and stepping
+// stones standing in a forest lake).
 const L = (ground, step, pad, goal, landmark, scenery, o = {}) => ({ ground, step, pad, goal, landmark, scenery, side: ground, hex: false, sea: '', time: 'day', plaza: 3, ...o });
 export const STARTERS = {
   'sky-islands': L(['island-round', 3], ['platform-medium', 1.3], ['island-round', 0.9], ['flag', 3], ['cloud', 5],
@@ -78,6 +79,9 @@ export const STARTERS = {
   'pirate-cove': L(['island-sand', 0.8], ['dock', 1.3], ['island-grass', 0.7], ['chest', 1.4], ['tower', 1],
     [['palm-tall', 1], ['barrel', 1.1], ['palm-bend', 1], ['hut-roof', 0.9], ['flag-high', 1], ['rocks-sand-small', 0.8], ['palm', 1], ['crate', 1.1]],
     { sea: '#0077c8', seaY: -1.5, plaza: 1, side: ['island-grass', 0.9], afloat: [['ship-large', 1], ['rowing-boat', 1], ['ship-small', 1], ['shipwreck', 1], ['rowing-boat-small', 1], ['ship', 1]] }),
+  'wild-woods': L(['meadow', 1], ['stone-block', 0.7], ['meadow', 0.8], ['tent', 1], ['cliff-waterfall', 2],
+    [['pine-tall', 1], ['mushrooms-red', 1.6], ['birch', 0.8], ['log-pile', 1], ['oak', 1], ['berry-bush', 1], ['sign', 1], ['round-tree-autumn', 0.8], ['rock', 0.7], ['flower-yellow', 1.6]],
+    { sea: '#1f8ad0', seaY: -1.5, lake: true, side: ['meadow', 0.8] }),
 };
 /** The starter layout for a world: its own, or one made from its catalogue tags (a world shipped after this file). */
 export function starterFor(world) {
@@ -177,6 +181,8 @@ const PLACE_WORDS = [
   ['castle-quest', /\bcastles?\b|\bdungeons?\b|\btreasure chests?\b/],
   ['spooky-hollow', /\bspooky\b|\bhaunted\b|\bhalloween\b|\bpumpkins?\b/],
   ['medieval-village', /\bvillages?\b|\bwindmills?\b|\bmedieval\b|\bwatermills?\b/],
+  // After the spooky wood ("a spooky forest" is Spooky Hollow): a sunny forest, a meadow, a camp by the river.
+  ['wild-woods', /\bforests?\b|\bwoods\b|\bwoodlands?\b|\bin the wood\b|\bmeadows?\b|\bcamp(ing|sites?|fires?)\b|\b(nature|forest|woodland) (trails?|walks?|hikes?)\b|\bhik(e|es|ing)\b|\bwaterfalls?\b|\b(by|across|along|over) the (river|stream)\b/],
   ['toy-town', /\btoy town\b|\b(in|around|through) (a|the|my) (town|city)\b|\bcity streets?\b|\btraffic\b|\btaxis?\b/],
   ['busy-kitchen', /\bkitchens?\b|\brestaurants?\b|\bburgers?\b|\bchef\b/],
   ['cosy-home', /\b(cosy|cozy) (home|house)\b|\b(in|around|inside) (a|the|my) (house|home|bedroom|living room)\b|\btidy[- ]up\b/],
@@ -255,7 +261,8 @@ const worldText = w => [
   `Pieces (id widthxheightxdepth in metres at scale 1, tags): ${w.pieces.map(p => `${p.id} ${size(p)} ${p.tags.join('/')}${p.note ? ` [${p.note}]` : ''}`).join('; ')}.`,
   `Sounds: ${w.sounds.join(', ')}, cheer, wrong. Moves: ${w.moves.join(', ')}.`,
   STARTERS[w.id] ? `Starter layout: ground ${STARTERS[w.id].ground.join(' x')}, step ${STARTERS[w.id].step.join(' x')}, pad ${STARTERS[w.id].pad.join(' x')}, goal ${STARTERS[w.id].goal.join(' x')}, landmark ${STARTERS[w.id].landmark.join(' x')}.` : '',
-  STARTERS[w.id] && STARTERS[w.id].seaY != null ? `This world stands in the sea: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), tops of islands and docks at 0, pieces tagged afloat out on the water (LAYOUT.afloat).` : '',
+  STARTERS[w.id] && STARTERS[w.id].seaY != null && !STARTERS[w.id].lake ? `This world stands in the sea: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), tops of islands and docks at 0, pieces tagged afloat out on the water (LAYOUT.afloat).` : '',
+  STARTERS[w.id] && STARTERS[w.id].lake ? `The starter stands in a forest lake: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), grass tops at 0; use pieces at least 2 deep (meadow, stone-block, hill, cliff-block) for anything standing in it. On dry land drop LAYOUT.sea and tile meadow blocks.` : '',
 ].filter(Boolean).join('\n');
 export const KIT2_CATALOG_TEXT = KIT2_WORLDS.map(worldText).join('\n\n');
 const NO_CREATURES = KIT2_CHARACTERS.some(c => c.kind === 'creature') ? ''
@@ -268,7 +275,7 @@ ${KIT2_WORLDS.map(w => `- ${w.id} ("${w.name}"): ${w.description}`).join('\n')}
 Characters: ${KIT2_CHARACTERS.map(c => `${c.id} (${c.name})`).join(', ')}.${NO_CREATURES ? ' No animals or dinosaurs yet.' : ''}
 - Use one when the builder picks or names a world or character from this list, or describes a place that is one of them
   (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky, a pirate cove or
-  treasure island) for a game where a hero
+  treasure island, a forest, meadow or camp) for a game where a hero
   walks, jumps, collects and answers. Then call start_from_template with template "oomba3d", the world and the hero:
   the KIT 2 RULES arrive with the starter. These games are NOT on the Oomba Kit and NOT on the world3d starter.
 - Stay on the Oomba Kit (2D) for card, board, word, catching and two-player games and for anything the builder wants in

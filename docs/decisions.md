@@ -4919,3 +4919,46 @@ those packs make complete without a new Oomba3D, so it ships first, on Oomba3D 1
   Heroes stand on a piece's bounding box, so near the rounded corners of an island a hero can stand a little past the
   sand (as on Sky Islands' round island). The hero cannot walk on a ship's deck: a ship's box reaches its mast top, so
   ships are scenery in this version (a `deck` square at deck height is the way to make one walkable).
+
+## Wild Woods 1.0.0: a nature world from two uploaded packs (14 Nov 2026)
+
+Two more CC0 packs were uploaded to branch `asset-packs`: the Kenney Nature Kit 2.1 (329 models) and the Quaternius
+Ultimate Nature Pack (150). Wild Woods is built from them the way Pirate Cove was, on Oomba3D 1.1.0 with no engine
+change. Two other uploads are NOT used: `amir-forest-nature-pack` (its licence is unclear) and the `reodesuxz-*` packs.
+
+- **The theme** (`public/vendor/themes/wild-woods/1.0.0/`, 2.29 MB first load, limit 5 MB): 107 pieces. 89 from the
+  Kenney kit (meadow, hill and cliff blocks, rock faces, a waterfall, path and river tiles, three bridges, 15 trees,
+  rocks and stones, flowers, mushrooms, logs, stumps, tents, a campfire, a camp bed, a canoe, a signpost, fences), 17
+  from the Quaternius pack (five trees, bushes with and without berries, mossy rocks, a mossy log and stump, a fern,
+  blue flowers, a water lily), and the coin and sounds every theme reuses. The same five heroes as Pirate Cove.
+- **Left out** (listed in `kit2/packs/kenney-nature-kit.json` and `quaternius-ultimate-nature.json`, checked by
+  `tests/unit/kit2-wild-woods.test.js` by name, by source and inside every built model): neither pack has a weapon, a
+  trap, a skull or a bone. Left out because they do not suit a sunny wood for young children: the 30 bare "dead" trees
+  (they read as spooky), the carved stone head and the other statues and columns. Left out because they belong to
+  another world: every snow piece, cacti, palms, crops and field rows. Left out to keep the world small: the kit's
+  second (grey stone) cliff set, pots, hanging moss and near-duplicates of what is in. The campfire is logs in a ring of
+  stones with no flames: a cosy prop, nothing burns.
+- **Colours:** both packs carry plain material colours, no pictures. FBX2glTF reads the Kenney colours too pale (mint
+  grass, pink wood) and the Quaternius ones too dark (near-black leaves), and the two packs' greens do not match. A new
+  opt-in pipeline step, `colours`, gives every material one sRGB colour by name, from one woodland palette in
+  `theme.def.json`; the test checks every material of every model has its palette colour. A second new step, `shift`,
+  lifts the Kenney models by the 0.05 they all sit below their own floor. A recipe that names neither builds as before
+  (Pirate Cove still rebuilds to its bytes).
+- **Size and scale:** the Kenney kit is drawn on a 1-unit grid, baked 4 times bigger for the 2.4 m heroes: ground tiles
+  are 4 m, trees 4 to 7 m, fences 1.4 m, tents (5 times) 2.8 m high. Flowers and mushrooms are 3 times (0.4 to 0.9 m,
+  storybook size). The Quaternius models are 2 times (trees 5 to 8 m), bushes 1.4, small plants 1.5.
+- **Ground:** `meadow` and `stone-block` are the kit's 1-unit cliff blocks made 4 wide and 3 deep, so the same block is
+  the ground of a dry wood (tiled, y -3) and an island or stepping stone in a lake. Path and river tiles are the kit's
+  own thin tiles (0.2), laid at y 0 in place of a meadow block. Bridges, steps and slopes are scenery in this version:
+  a hero stands on a piece's bounding box (as with Pirate Cove's ships), so a bridge's box is as high as its posts.
+- **`inkNormals` is not used** (unverified on Oomba3D 1.1.0, see Pirate Cove). Both packs' own flat normals draw
+  right and the ink outline holds.
+- **Builder:** place words (English: "forest", "woods", "woodland", "meadow", "camping", "campfire", "nature trail",
+  "hiking", "waterfall", "across the river") choose Wild Woods for a new game, after Spooky Hollow so "a spooky forest"
+  stays there; a card, word, 2D or catching game stays on the old kit. The starter is meadow islands in a forest lake
+  (`seaY` -1.5, `lake: true`), grey stone blocks to hop along, the tent as the goal with a waterfall behind it. Names in
+  the 12 locale files, picker chip and Build card from the cover. The theme tour learned one thing: a theme with stream
+  tiles (tags `river` and `tile`) gets a stream across the front row and its first bridge over it.
+- **No animals in this version.** They come with a later Oomba3D (creatures), as a new theme version.
+- **Not verified:** a real GPU or Chromebook (software WebGL only), sound by ear, a build with the real model, and the
+  walk of a whole level by hand on a phone. The cover's bridge stands at the right edge of the picture.
