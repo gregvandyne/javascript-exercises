@@ -1,0 +1,275 @@
+{
+ "dir": "cute-fish",
+ "name": "Quaternius Cute Fish",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "scale": 0.3,
+  "inkNormals": true
+ },
+ "clips": {
+  "swim": "Swimming_Normal$",
+  "swimFast": "Swimming_Fast$",
+  "dart": "Swimming_Impulse$"
+ },
+ "creatures": {
+  "Anglerfish": {
+   "id": "anglerfish",
+   "name": "Anglerfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "ArmoredCatfish": {
+   "id": "armored-catfish",
+   "name": "Armored Catfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Betta": {
+   "id": "betta",
+   "name": "Betta",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "BlackLionFish": {
+   "id": "black-lion-fish",
+   "name": "Black Lion Fish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Blobfish": {
+   "id": "blobfish",
+   "name": "Blobfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "BlueGoldfish": {
+   "id": "blue-goldfish",
+   "name": "Blue Goldfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "BlueTang": {
+   "id": "blue-tang",
+   "name": "Blue Tang",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "ButterflyFish": {
+   "id": "butterfly-fish",
+   "name": "Butterfly Fish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "CardinalFish": {
+   "id": "cardinal-fish",
+   "name": "Cardinal Fish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Clownfish": {
+   "id": "clownfish",
+   "name": "Clownfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "CoralGrouper": {
+   "id": "coral-grouper",
+   "name": "Coral Grouper",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Cowfish": {
+   "id": "cowfish",
+   "name": "Cowfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Flatfish": {
+   "id": "flatfish",
+   "name": "Flatfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "FlowerHorn": {
+   "id": "flower-horn",
+   "name": "Flower Horn",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "GoblinShark": {
+   "id": "goblin-shark",
+   "name": "Goblin Shark",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Goldfish": {
+   "id": "goldfish",
+   "name": "Goldfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Humphead": {
+   "id": "humphead",
+   "name": "Humphead",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Koi": {
+   "id": "koi",
+   "name": "Koi",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Lionfish": {
+   "id": "lionfish",
+   "name": "Lionfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "MandarinFish": {
+   "id": "mandarin-fish",
+   "name": "Mandarin Fish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "MoorishIdol": {
+   "id": "moorish-idol",
+   "name": "Moorish Idol",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "ParrotFish": {
+   "id": "parrot-fish",
+   "name": "Parrot Fish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Piranha": {
+   "id": "piranha",
+   "name": "Piranha",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Puffer": {
+   "id": "puffer",
+   "name": "Puffer",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "RedSnapper": {
+   "id": "red-snapper",
+   "name": "Red Snapper",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "RoyalGramma": {
+   "id": "royal-gramma",
+   "name": "Royal Gramma",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Shark": {
+   "id": "shark",
+   "name": "Shark",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Sunfish": {
+   "id": "sunfish",
+   "name": "Sunfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Swordfish": {
+   "id": "swordfish",
+   "name": "Swordfish",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Tang": {
+   "id": "tang",
+   "name": "Tang",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Tetra": {
+   "id": "tetra",
+   "name": "Tetra",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Tuna": {
+   "id": "tuna",
+   "name": "Tuna",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "Turbot": {
+   "id": "turbot",
+   "name": "Turbot",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "YellowTang": {
+   "id": "yellow-tang",
+   "name": "Yellow Tang",
+   "size": {
+    "length": 1.4
+   }
+  },
+  "ZebraClownFish": {
+   "id": "zebra-clown-fish",
+   "name": "Zebra Clown Fish",
+   "size": {
+    "length": 1.4
+   }
+  }
+ },
+ "exclude": {
+  "Anglerfish": "Kid-safe: a deep-sea fish with long bare teeth",
+  "Piranha": "Kid-safe: a toothy biting fish",
+  "FishingRod_Lvl\\d": "Kid-safe: fishing rod (hooking animals)",
+  "Lure_\\d": "Kid-safe: fishing lure with a hook",
+  "Worm": "Bait for the fishing rods, no use without them",
+  "Flatfish": "Kid-safe: drawn with a mouth full of pointed teeth",
+  "Turbot": "Kid-safe: drawn with a mouth full of pointed teeth"
+ },
+ "source": "branch asset-packs, folder cute-fish/ (uploaded by the owner, November 2026)"
+}

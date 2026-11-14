@@ -2,6 +2,9 @@
 // writes recipe.json and theme.src.json beside it. Pieces are [id, file in a pack, kind, [tags], note?]; heroes and
 // moves may come from an already built theme (from: "theme:<theme>/<version>/<file>"). After build-theme.mjs has run with
 // a sizes file, run again with that file as the second argument to fill in each piece's measured size.
+// Packs converted from FBX (kit2/packs/, docs/kit2-packs-plan.md) may carry "steps": the pack-steps.mjs fields every
+// model from that pack is built with (scale, matte, textures, inkNormals…), and a piece may add its own as a 7th
+// field: [id, file, kind, tags, note, pack, { stretch: [1, 6, 1] }]. A definition that names neither builds as before.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -19,18 +22,18 @@ const heroes = def.heroes.map(h => {
 });
 if (def.moves.from.startsWith('theme:')) recipe.copy.push({ from: def.moves.from, to: 'heroes/moves.glb' });
 else recipe.models.push({ from: def.moves.from, to: 'heroes/moves.glb', animsOnly: true, keepAnims: Object.values(def.moves.clips) });
-const pieces = def.pieces.map(([id, from, kind, tags, note, packId]) => {
+const pieces = def.pieces.map(([id, from, kind, tags, note, packId, steps]) => {
   const to = `${folder[kind] || 'world'}/${id}.glb`;
-  recipe.models.push({ from, to });
   const m = sizes[to];
   // A piece from a built theme names its pack in a 6th field: [id, 'theme:<theme>/<v>/<file>', kind, tags, note, pack].
   const pack = def.packs.find(p => (p.dir && from.startsWith(p.dir)) || (packId && p.id === packId));
   if (!pack) throw new Error(`${id}: no pack has a dir that ${from} starts with (a piece from a built theme names its pack as the 6th field)`);
+  recipe.models.push({ from, to, ...(from.startsWith('theme:') ? {} : pack.steps || {}), ...(steps || {}) });
   return { id, file: to, kind, tags, ...(m ? { size: m.size } : {}), pack: pack.id, ...(m && Math.abs(m.minY) > 0.05 ? { note: `${note ? note + ' ' : ''}Its base is ${m.minY} below its y.` } : note ? { note } : {}) };
 });
 const sounds = def.sounds.map(([id, from]) => { recipe.copy.push({ from, to: `sounds/${id}.ogg` }); return { id, file: `sounds/${id}.ogg`, pack: def.soundPack }; });
 fs.writeFileSync(path.join(dir, 'recipe.json'), JSON.stringify(recipe, null, 1) + '\n');
 const { pieces: _p, heroes: _h, sounds: _s, moves, soundPack, ...head } = def;
-head.packs = def.packs.map(({ dir, ...p }) => p);
+head.packs = def.packs.map(({ dir, steps, ...p }) => p);
 fs.writeFileSync(path.join(dir, 'theme.src.json'), JSON.stringify({ ...head, heroes, moves: { file: 'heroes/moves.glb', pack: moves.pack, clips: moves.clips }, pieces, sounds }, null, 1) + '\n');
 console.log(`${def.id}: ${heroes.length} heroes, ${pieces.length} pieces, ${sounds.length} sounds${sizesFile ? ' (sized)' : ''}`);
