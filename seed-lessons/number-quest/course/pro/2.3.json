@@ -154,7 +154,7 @@
   },
   {
    "title": "Subtracting is adding the opposite",
-   "text": "The cold pack shows a rule that always holds: to subtract a number, add its opposite. So 4 − (−3) = 4 + 3 = 7, and 3 − 8 = 3 + (−8) = −5. The distance between two readings is the absolute value of their difference. From −6 to 4 the distance is 10.",
+   "text": "The cold pack shows a rule that always holds: to subtract a number, add its opposite. So 4 − (−3) = 4 + 3, which is 7, and 3 − 8 means 3 + (−8), which is −5. The distance between two readings is the absolute value of their difference. From −6 to 4 the distance is 10.",
    "art": "lightbulb"
   },
   {

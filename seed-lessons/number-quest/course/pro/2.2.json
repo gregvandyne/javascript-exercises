@@ -119,33 +119,33 @@
     ],
     "hops": [
      {
-      "from": 0,
-      "to": 6,
+      "from": -6,
+      "to": 0,
       "label": "6 steps"
      },
      {
       "from": 0,
-      "to": -6,
+      "to": 6,
       "label": "6 steps"
      }
     ]
    },
    "focus": [
     {
-     "cue": "6 is 6 steps to the right of zero.",
-     "box": [
-      49,
-      23.5,
-      35,
-      38.5
-     ]
-    },
-    {
-     "cue": "−6 is 6 steps to the left: the opposite of 6.",
+     "cue": "−6 is 6 steps to the left of zero.",
      "box": [
       16.1,
       23.5,
       34.9,
+      38.5
+     ]
+    },
+    {
+     "cue": "6 is 6 steps to the right: the opposite of −6.",
+     "box": [
+      49,
+      23.5,
+      35,
       38.5
      ]
     }
