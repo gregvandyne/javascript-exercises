@@ -1,0 +1,269 @@
+// The game plan: what a builder chose in the step-by-step setup (/build/new, routes/build-setup.js) before the Builder.
+// It reaches the Builder as STRUCTURED DATA beside the first message, never only as words:
+//   { v: 1, type, look, world, characters: [...], learn: [...], notes }
+//   type, world and each character are a choice: { from: 'pack', id } (one of ours: a game type the Builder has a
+//   starter for, a shipped 3D world, a character of the catalogue) or { from: 'custom', text } (typed under "Something
+//   else": OUTSIDE the packs, so the Builder makes that part from scratch). null / [] / '' means "the Builder decides".
+//   look: '3d' | '2d' | 'auto' | null.   learn: [{ id }] from LEARN, or { text } typed.
+// This module: what the steps offer (from the Builder's own catalogue, never typed twice), the check of a plan that
+// came from a page (normalisePlan: unknown ids are dropped, typed text is trimmed), the sentence the builder reads and
+// sends (planSentence, their language), the engine the plan means (planEngine, engineFor) and the block the model reads
+// (planNote). Pure (no database). The typed parts are screened as part of the message, like any typed message
+// (builder/agent.js): nothing here skips or adds a check.
+import { KIT2_WORLDS, KIT2_CHARACTERS, KIT2_CREATURE_GROUPS, KIT2_GROUP_LIST, WORLD_IDS, DEFAULT_WORLD, worldById, characterById, heroesOf, heroFor, kit2Of, wantsKit2 } from './kit2.js';
+import { ART2D_CHARACTERS, ART2D_WORLD_IDS, ART2D_TEMPLATES, art2dCharacter, isArt2dGame, wantsArt2d } from './art2d.js';
+import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
+import { tEn } from '../i18n/index.js';
+
+export const PLAN_VERSION = 1;
+export const LIMITS = { idea: 80, notes: 300, characters: 6, learn: 5 };
+/** The game types the steps offer. template: the Builder's ready-made starter for it (builder/catalog.js), when it has
+ *  one; flat: a kind that is only made in 2D (cards, a board, words, two players, catching). */
+const TYPES = [['adventure', '', false], ['runner', 'runner', false], ['catch', 'catch', true], ['quiz', 'quiz', true], ['memory', 'memory', true], ['word', 'word', true], ['duel', 'duel', true], ['board', 'board', true]];
+export const GAME_TYPES = TYPES.map(([id, template, flat]) => ({ id, template: BUILDER_TEMPLATE_KEYS.includes(template) ? template : '', flat }));
+export const TYPE_IDS = GAME_TYPES.map(t => t.id);
+export const LOOKS = ['3d', '2d', 'auto'];
+export const LEARN = ['math', 'reading', 'science', 'geography', 'fun'];
+/** The sections of "Who is in it?": the heroes, then every animal group of the catalogue (kit2/creature-groups.json). */
+export const CHARACTER_GROUPS = ['heroes', ...KIT2_CREATURE_GROUPS];
+/** A 2D sprite's group: the list's (kit2/creature-groups.json), else its pack's ('dinosaur'), else wild. */
+const group2d = c => (c.kind === 'hero' ? 'heroes' : KIT2_GROUP_LIST[c.id] || { dinosaur: 'dinosaurs', sea: 'sea', fish: 'sea' }[c.group] || 'wild');
+/**
+ * Everyone the steps can offer, from BOTH catalogues, once each: the 3D worlds' heroes and animals (kit2.js) and the
+ * 2D sprites (art2d.js). [{ id, name, kind: 'hero' | 'creature', group, worlds (the 3D worlds that have it: [] when it
+ * is only a 2D sprite), in3d, in2d }]. A character of both keeps its 3D name and group.
+ */
+export function setupCharacters(k2 = KIT2_CHARACTERS, a2 = ART2D_CHARACTERS) {
+  const out = new Map();
+  for (const c of k2) out.set(c.id, { id: c.id, name: c.name, kind: c.kind, group: c.group, worlds: c.worlds, in3d: true, in2d: false });
+  for (const c of a2) {
+    if (out.has(c.id)) out.get(c.id).in2d = true;
+    else out.set(c.id, { id: c.id, name: c.name, kind: c.kind === 'hero' ? 'hero' : 'creature', group: group2d(c), worlds: [], in3d: false, in2d: true });
+  }
+  return [...out.values()];
+}
+export const SETUP_CHARACTERS = setupCharacters();
+export const CHARACTER_IDS = SETUP_CHARACTERS.map(c => c.id);
+export const setupCharacter = id => SETUP_CHARACTERS.find(c => c.id === id) || null;
+/** [{ id, items: [character], soon, only2d }]: soon = nothing of this group is in either catalogue (listed, never
+ *  pickable); only2d = it has sprites for 2D games and nothing in a 3D world yet ("Coming soon in 3D" unless the game
+ *  is 2D). A group lights up by itself when a theme or a 2D pack ships one: this reads the catalogues only. */
+export const characterGroups = (characters = SETUP_CHARACTERS, groups = CHARACTER_GROUPS) => groups.map(id => {
+  const items = characters.filter(c => c.group === id);
+  return { id, items, soon: !items.length, only2d: items.length > 0 && !items.some(c => c.in3d) };
+});
+/** The kinds of game that draw a 2D world and a sprite character today (the 2D art's templates; an adventure, or no
+ *  kind picked, is made as a running game). */
+export const art2dTemplateFor = type => (!type ? 'runner' : type.from !== 'pack' ? '' : type.id === 'adventure' ? 'runner' : ART2D_TEMPLATES.includes(type.id) ? type.id : '');
+
+const clean = (s, max) => String(s ?? '').normalize('NFC').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2060-\u2064\ufeff]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+const choice = (v, ids) => {
+  if (!v || typeof v !== 'object') return null;
+  if (v.from === 'pack') return typeof v.id === 'string' && ids.includes(v.id) ? { from: 'pack', id: v.id } : null;
+  if (v.from === 'custom') { const text = clean(v.text, LIMITS.idea); return text ? { from: 'custom', text } : null; }
+  return null;
+};
+/**
+ * A plan as the Builder may use it, from anything a page sent: only known ids, typed text trimmed and cut to length, at
+ * most one custom character line, no duplicates. -> the plan, or null when nothing was chosen at all.
+ */
+export function normalisePlan(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const characters = [], seen = new Set();
+  for (const c of Array.isArray(raw.characters) ? raw.characters.slice(0, 40) : []) {
+    const v = choice(c, CHARACTER_IDS); if (!v) continue;
+    const key = v.from === 'pack' ? v.id : '*custom'; if (seen.has(key) || characters.length >= LIMITS.characters) continue;
+    seen.add(key); characters.push(v);
+  }
+  const learn = [], had = new Set();
+  for (const l of Array.isArray(raw.learn) ? raw.learn.slice(0, 20) : []) {
+    if (!l || typeof l !== 'object') continue;
+    const v = typeof l.id === 'string' && LEARN.includes(l.id) ? { id: l.id } : clean(l.text, LIMITS.idea) ? { text: clean(l.text, LIMITS.idea) } : null;
+    const key = v && (v.id || '*text'); if (!v || had.has(key) || learn.length >= LIMITS.learn) continue;
+    had.add(key); learn.push(v);
+  }
+  const plan = {
+    v: PLAN_VERSION, type: choice(raw.type, TYPE_IDS), look: LOOKS.includes(raw.look) ? raw.look : null, world: choice(raw.world, WORLD_IDS),
+    characters, learn, notes: clean(raw.notes, LIMITS.notes),
+  };
+  return plan.type || plan.look || plan.world || characters.length || learn.length || plan.notes ? plan : null;
+}
+/** The parts of a plan that are outside the packs: ['type', 'world', 'character'] (each at most once). */
+export const customParts = plan => [plan.type && plan.type.from === 'custom' && 'type', plan.world && plan.world.from === 'custom' && 'world', plan.characters.some(c => c.from === 'custom') && 'character'].filter(Boolean);
+
+// ---- The sentence the builder reads on the summary and sends as their first message ------------------------------
+const listOf = (items, locale) => { try { return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
+/** A choice in the reader's words: our own name for a pack choice, their own words for a custom one. */
+export const characterName = (id, t = tEn) => t(characterById(id) ? `studio.heroes.names.${id}` : `studio.animals.names.${id}`);
+export const choiceLabel = (kind, c, t = tEn) => (c.from === 'custom' ? c.text : kind === 'type' ? t(`buildSetup.types.${c.id}.title`) : kind === 'world' ? t(`studio.worlds.names.${c.id}`) : characterName(c.id, t));
+export const learnLabel = (l, t = tEn) => (l.id ? t(`buildSetup.learn.${l.id}.title`) : l.text);
+/**
+ * The plan as short plain sentences in the builder's language ("Here is my game plan. Kind of game: Adventure. Make it
+ * 3D. World: Castle Quest. In it: Knight and Fox. It teaches: Math."). files: how many files they added.
+ */
+export function planSentence(plan, t = tEn, { files = 0 } = {}) {
+  const loc = t.locale || 'en', out = [t('buildSetup.say.start')];
+  if (plan.type) out.push(t('buildSetup.say.type', { value: choiceLabel('type', plan.type, t) }));
+  if (plan.look === '3d' || plan.look === '2d') out.push(t(`buildSetup.say.look${plan.look}`));
+  if (plan.world) out.push(t('buildSetup.say.world', { value: choiceLabel('world', plan.world, t) }));
+  if (plan.characters.length) out.push(t('buildSetup.say.characters', { list: listOf(plan.characters.map(c => choiceLabel('character', c, t)), loc) }));
+  if (plan.learn.length) out.push(t('buildSetup.say.learn', { list: listOf(plan.learn.map(l => learnLabel(l, t)), loc) }));
+  if (files > 0) out.push(t('buildSetup.say.file'));
+  if (plan.notes) out.push(/[.!?。！？]$/.test(plan.notes) ? plan.notes : `${plan.notes}.`);
+  return out.join(' ');
+}
+
+// ---- The engine a plan means ---------------------------------------------------------------------------------------
+/** The world that has the most of these characters (the first such world; the default world when it has them all or
+ *  none were picked). */
+function homeOf(chars) {
+  if (!chars.length) return DEFAULT_WORLD;
+  let best = DEFAULT_WORLD, n = chars.filter(c => c.worlds.includes(DEFAULT_WORLD)).length;
+  for (const w of KIT2_WORLDS) { const k = chars.filter(c => c.worlds.includes(w.id)).length; if (k > n) { n = k; best = w.id; } }
+  return best;
+}
+/**
+ * What kind of build a plan is. ->
+ *   { engine: 'kit2', world, chosenWorld, customWorld, hero, companion, more, friends, missing }  a ready-made 3D world
+ *       (Oomba3D): world + 3D always is one; so is a 3D or "you pick" plan with a pack character (they only exist
+ *       there). customWorld: the place is their own idea, built from scratch inside that engine. hero: who the player
+ *       is; companion: the animal that follows; more: other animals of this world; friends: other heroes of this world
+ *       who stand in it; missing: pack characters this world does not have.
+ *   { engine: 'world3d' }   a 3D world of their own with no pack character: the Builder's own 3D starter
+ *   { engine: '2d', template, art, extra, plain }   the Oomba Kit (2D picked, a kind only made in 2D, or a character
+ *       that is only a 2D sprite, and no 3D picked). art: { world, sprite } when the kind of game draws the 2D art (a
+ *       running or catching game: template): the world in 2D and ONE sprite character; extra: pack characters that
+ *       cannot be drawn too; plain: a world or character was picked but this kind of game does not draw them yet
+ *   { engine: 'scratch' }   "you pick" with a world of their own: the Builder decides 2D or its own 3D, never a pack world
+ *   { engine: 'open' }      nothing here decides: the message is read as any typed message is today
+ */
+export function planEngine(plan) {
+  const picked = plan.characters.filter(c => c.from === 'pack').map(c => c.id);
+  const chars = picked.map(characterById).filter(Boolean), only2d = picked.filter(id => !characterById(id));
+  const type = plan.type && plan.type.from === 'pack' ? GAME_TYPES.find(x => x.id === plan.type.id) : null;
+  const packWorld = plan.world && plan.world.from === 'pack' ? plan.world.id : '', customWorld = !!plan.world && plan.world.from === 'custom';
+  // 2D: the world's own 2D art and ONE sprite character, in the kinds of game that draw them (running, catching).
+  const flatGame = () => {
+    const template = art2dTemplateFor(plan.type), sprites = picked.filter(id => art2dCharacter(id));
+    const world = template && ART2D_WORLD_IDS.includes(packWorld) ? packWorld : '', sprite = template ? sprites[0] || '' : '';
+    return { engine: '2d', template, art: world || sprite ? { world, sprite } : null, extra: picked.filter(id => id !== sprite), plain: !template && (!!packWorld || picked.length > 0) };
+  };
+  if (plan.look === '2d') return flatGame();
+  if (plan.look !== '3d') {
+    if ((type && type.flat) || only2d.length) return flatGame();
+    if (!packWorld && !chars.length) return { engine: customWorld ? 'scratch' : 'open' };
+  }
+  if (customWorld && !chars.length) return { engine: 'world3d' };
+  const world = packWorld || homeOf(chars), here = c => c.worlds.includes(world);
+  const canPlay = new Set(heroesOf(world).map(h => h.id));
+  const lead = chars.find(c => c.kind === 'hero' && here(c)) || chars.find(c => here(c) && canPlay.has(c.id)) || null;
+  const hero = lead ? lead.id : heroFor(world, '');
+  const animals = chars.filter(c => c.kind === 'creature' && here(c) && c.id !== hero).map(c => c.id);
+  return {
+    engine: 'kit2', world, chosenWorld: !!packWorld, customWorld, hero, heroChosen: !!lead,
+    companion: animals[0] || '', more: animals.slice(1), friends: chars.filter(c => c.kind === 'hero' && here(c) && c.id !== hero).map(c => c.id),
+    missing: [...chars.filter(c => !here(c)).map(c => c.id), ...only2d],
+  };
+}
+/**
+ * The engine for this round of a build (the same answer wantsKit2 gives for a typed message): a Kit 2 pick
+ * { world, hero, companion?, by } or null. With a plan, the plan decides; without one, the words do, as before.
+ * state: the Builder's saved state (state.kit2 remembers a pick; state.wants3d a 3D world of their own).
+ */
+export function engineFor(state, plan, text, version) {
+  if (!plan) return wantsKit2(state, text, version);
+  const e = planEngine(plan), cur = version ? kit2Of(version.html) : null;
+  if (e.engine === 'open') return wantsKit2(state, text, version);
+  if (e.engine === 'kit2') {
+    const pick = { world: e.world, hero: e.hero, ...(e.companion ? { companion: e.companion } : {}) };
+    if (state) state.kit2 = { ...pick };
+    return { ...pick, by: cur && cur.world === e.world ? 'game' : e.chosenWorld ? 'plan' : 'home', changed: false, wantsCreature: false };
+  }
+  // 2D, their own 3D world, or their own place: never a ready-made world in this build.
+  if (cur) return wantsKit2(state, '', version);
+  if (state) { delete state.kit2; if (e.engine === 'world3d') state.wants3d = true; }
+  return null;
+}
+
+/**
+ * The 2D art for this round of a plan's build (the same answer wantsArt2d gives for a typed message):
+ * { world, hero, by } or null. The plan's 2D world and its one sprite character, for a running or catching game.
+ */
+export function art2dFor(state, plan, version) {
+  if (version) return isArt2dGame(version.html) ? wantsArt2d(state, '', version, {}) : null;
+  const e = planEngine(plan);
+  if (e.engine !== '2d' || !e.art) { if (state) delete state.art2d; return null; }
+  if (state) state.art2d = { world: e.art.world, hero: e.art.sprite };
+  return { world: e.art.world, hero: e.art.sprite, by: 'plan', missing: false, force2d: false, soft: false, changed: false };
+}
+
+// ---- What the model reads ------------------------------------------------------------------------------------------
+const q = s => JSON.stringify(String(s));
+const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
+const who = id => { const c = setupCharacter(id); return c ? `${c.id} (${c.name})` : id; };
+/** One line for the transcript of later turns (builder/claude.js historyToMessages): what was pack and what was custom. */
+export function planBrief(plan) {
+  if (!plan) return '';
+  const part = (name, c) => (c ? `${name} ${c.from === 'pack' ? `pack ${c.id}` : `custom ${q(c.text)}`}` : '');
+  const bits = [part('type', plan.type), plan.look && plan.look !== 'auto' ? `look ${plan.look.toUpperCase()}` : '', part('world', plan.world), ...plan.characters.map(c => part('character', c))].filter(Boolean);
+  return bits.length ? `[Setup choices: ${bits.join('; ')}. Pack parts are used as given; custom parts are outside the packs and built from scratch.]` : '';
+}
+/**
+ * The block the model reads with a plan's first message (not cached: it is this build's own). Pack choices are named
+ * with their ids and are used as given; custom ones are marked CUSTOM and built from scratch.
+ */
+export function planNote(plan) {
+  if (!plan) return '';
+  const e = planEngine(plan), lines = [];
+  const t = plan.type, w = plan.world, type = t && t.from === 'pack' ? GAME_TYPES.find(x => x.id === t.id) : null;
+  lines.push(!t ? '- Game type: not chosen (you decide).'
+    : t.from === 'custom' ? `- Game type: CUSTOM ${q(t.text)}. It is outside the packs: there is no ready-made starter for it, so design and build this kind of game from scratch.`
+      : `- Game type: PACK ${q(t.id)}${type && type.template ? ` (the ready-made starter: start_from_template ${q(type.template)})` : ' (explore, collect things and reach the goal)'}.`);
+  lines.push(`- Look: ${plan.look === '3d' ? '3D' : plan.look === '2d' ? '2D' : 'not chosen (you decide)'}.`);
+  lines.push(!w ? '- World: not chosen (you decide).'
+    : w.from === 'custom' ? `- World: CUSTOM ${q(w.text)}. It is outside the packs: no ready-made world is this place, so build the place from scratch.`
+      : `- World: PACK ${q(w.id)} ("${worldById(w.id).name}"): ${worldById(w.id).description}`);
+  if (!plan.characters.length) lines.push('- Characters: not chosen (you decide).');
+  for (const c of plan.characters) {
+    lines.push(c.from === 'custom' ? `- Character: CUSTOM ${q(c.text)}. Outside the packs: build it from scratch.`
+      : `- Character: PACK ${who(c.id)}, ${setupCharacter(c.id).kind === 'creature' ? 'an animal' : 'a hero'}${setupCharacter(c.id).in3d ? ` of the 3D worlds ${setupCharacter(c.id).worlds.join(', ')}` : ''}${setupCharacter(c.id).in2d ? `${setupCharacter(c.id).in3d ? ', and' : ','} a 2D sprite` : ''}.`);
+  }
+  const learn = plan.learn.filter(l => l.id !== 'fun').map(l => (l.id ? l.id : q(l.text)));
+  lines.push(plan.learn.some(l => l.id === 'fun') && !learn.length ? '- Teaches: nothing, it is just for fun (no quiz unless the game type needs questions).'
+    : learn.length ? `- Teaches: ${learn.join(', ')}${plan.learn.some(l => l.id === 'fun') ? ' (kept light: they also said just for fun)' : ''}.` : '- Teaches: not chosen (you decide; a learning twist is welcome, never forced).');
+  if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
+  const how = [];
+  if (e.engine === 'kit2') {
+    const wd = worldById(e.world);
+    how.push(`Build it as a Kit 2 game on Oomba3D: start_from_template "oomba3d" with world ${q(e.world)}, hero ${q(e.hero)}${e.companion ? ` and companion ${q(e.companion)}` : ''}, then make it theirs.`
+      + (e.heroChosen ? '' : ` They picked no hero for the player, so ${who(e.hero)} (this world's first) plays.`));
+    if (e.more.length) how.push(`More animals to add with g.creature(): ${e.more.map(who).join(', ')}.`);
+    if (e.friends.length) how.push(`More pack heroes who stand in the world as friends (g.hero() at a place of their own, not controlled, a wave or idle move): ${e.friends.map(who).join(', ')}.`);
+    if (e.missing.length) how.push(`${wd.name} does not have ${e.missing.map(who).join(', ')}: say so kindly in one short sentence and name where each lives; never fake one.`);
+    if (e.customWorld) how.push(`The PLACE is their own idea (${q(w.text)}), not ${wd.name}: Oomba3D and the theme ${q(e.world)} are used only so the pack characters can be in it. Do not present the game as ${wd.name} and do not keep its buildings and landmark. Rebuild LAYOUT and buildWorld() as their place from scratch: ground from g.world.ground({ color, hills }), scenery from simple g.THREE shapes added to g.scene, a sky, time and weather that fit. Keep the starter's stones, answer pads, coins and goal working so the game still plays.`);
+    else if (!e.chosenWorld) how.push(`They picked no world: ${wd.name} is used because it has their characters.`);
+    if (plan.characters.some(c => c.from === 'custom')) how.push('A CUSTOM character in this 3D world is the one exception to "never draw a character from shapes": build it from scratch as a simple, friendly figure of g.THREE shapes about as tall as the hero, standing near the start as a friend (it may bob or turn; it is never the player, never solid, never an enemy). Do not pass it off as a pack character.');
+    if (t && !(t.from === 'pack' && ['adventure', 'runner'].includes(t.id))) how.push('A game in a ready-made 3D world is a walk, jump, collect and answer game: shape its goal and questions like the game type they chose as far as that fits, and say in one short sentence what is different.');
+  } else if (e.engine === 'world3d') {
+    how.push('Build it as a 3D world of their own: start_from_template "world3d" and build the place from scratch (the 3D RULES). It is not one of the ready-made worlds: never start from "oomba3d" for it.');
+  } else if (e.engine === '2d') {
+    if (e.art) {
+      how.push(`Build it in 2D on the Oomba Kit with the 2D art: start_from_template ${q(e.template)}${e.art.world ? ` with world ${q(e.art.world)}` : ''}${e.art.sprite ? `${e.art.world ? ' and' : ' with'} sprite ${q(e.art.sprite)}` : ''} (the 2D ART RULES), then make it theirs. Never start from "oomba3d" or "world3d" in this build.`);
+      if (!e.art.world && w && w.from === 'pack') how.push(`There is no 2D art of ${q(w.id)} yet: keep the kit's own look and say so in one short sentence.`);
+      if (e.extra.length) how.push(`A 2D game draws ONE sprite character (the hero) for now: ${who(e.art.sprite || e.extra[0])} plays, and ${e.extra.filter(id => id !== e.art.sprite).map(who).join(', ') || 'no other'} cannot be drawn too. Say so kindly in one short sentence; never draw one from shapes or emoji.`);
+    } else {
+      how.push(`Build it in 2D on the Oomba Kit, exactly as a 2D game is built today${type && type.template ? ` (start_from_template ${q(type.template)})` : ''}. Never start from "oomba3d" or "world3d" in this build.`);
+      if (e.plain) how.push(`Only running and catching games draw the ready-made worlds and sprite characters in 2D so far: this kind of game keeps the kit's own look. Use ${w && w.from === 'pack' ? `the world ${q(w.id)} ` : ''}${w && w.from === 'pack' && picked(plan).length ? 'and ' : ''}${picked(plan).length ? 'the characters ' : ''}as the game's idea (its name, questions and words), keep ${w && w.from === 'pack' ? `the id ${q(w.id)}` : 'their ids'} in the game's tags (set_game), and say in one short, kind sentence that this kind of game does not draw them yet.`);
+    }
+  } else if (e.engine === 'scratch') {
+    how.push('The place is their own idea: decide between 2D on the Oomba Kit and a 3D world of their own ("world3d"), and build the place from scratch. Never use a ready-made 3D world ("oomba3d") for it.');
+  }
+  const custom = customParts(plan);
+  return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
+${lines.join('\n')}
+How to use them:
+- A PACK choice is used exactly as given, by its id: never swap it for something else, never rebuild it from scratch.
+- A CUSTOM choice is OUTSIDE the builder packs: no ready-made world, character or starter is it. Build only that part from scratch, as well as the engine allows.${custom.length ? ' Tell the builder in one short, kind sentence which part you made from scratch and that it may look simpler.' : ''}
+- Everything "not chosen" is yours to decide. Do not ask the setup questions again (kind of game, look, world, characters, what it teaches): say your short plan and build now.
+${how.map(x => `- ${x}`).join('\n')}`;
+}

@@ -57,7 +57,7 @@ const settled = async (page, timeout = 40_000) => { await expect(page.locator('.
 async function newGame(page, lang = '') {
   const who = await signup(page, uniq('Bg'));
   await page.goto(`/build${lang ? `?lang=${lang}` : ''}`);
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   return { id: page.url().split('/studio/')[1], ...who };
 }
 /** Send FOX and wait until the build is past screening (the building blocks are working). */

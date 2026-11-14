@@ -49,13 +49,15 @@ const uploadMeta = u => ({ id: u.id, name: u.name, kind: u.kind, mime: u.mime })
 
 /**
  * Run one build inside its Job. opts: { user, game, text, pro, wanted (upload rows), t, prescreened?, resume?, uploads?,
- * continueOf? (the row of the build being carried on), provider?, maxRounds?, carried? }.
+ * continueOf? (the row of the build being carried on), provider?, maxRounds?, carried?, plan? }.
+ * plan: the setup steps' choices (builder/plan.js), already checked; text is then the plan's own sentence. It is screened
+ * exactly like a typed message (below), saved on the builder's message, and handed to the provider beside the words.
  * resume: { versions, original?, cont? } for an attempt carried on after a restart (no screening, no charge, no user
  * entry). carried: a follow-on build started by follow-ups that arrived too late for the build before (already screened
  * and charged by the runner; they wait in job.waiting). t: the builder's language. Never throws for model errors (they
  * are streamed as 'error').
  */
-export async function executeTurn(job, { user, game, text = '', pro = false, wanted = [], t = tEn, prescreened = null, resume = null, uploads = [], continueOf = null, provider = null, maxRounds = null, carried = false }) {
+export async function executeTurn(job, { user, game, text = '', pro = false, wanted = [], t = tEn, prescreened = null, resume = null, uploads = [], continueOf = null, provider = null, maxRounds = null, carried = false, plan = null }) {
   const locale = t.locale || 'en';
   const emit = job.emit, steps = job.steps;
   job.ctx = { user, t, pro: !!pro, name: null };
@@ -86,7 +88,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       if (!charge) return null;
       if (!provider) name = providerName(charge.pool);   // the pool that pays this very message
       const ups = takeForTurn(game.id, wanted.map(u => u.id));
-      appendChat(game.id, user.id, [{ role: 'user', text, at: Date.now(), uploads: ups.map(uploadMeta), turn: job.id }]);
+      appendChat(game.id, user.id, [{ role: 'user', text, at: Date.now(), uploads: ups.map(uploadMeta), turn: job.id, ...(plan ? { plan } : {}) }]);
       job.base = turns.newestVersion(game.id);
       turns.markRunning(job.id, { chargedDay: day, provider: providerKind(name), attempt: 1, baseVersion: job.base, chargedTo: charge.source, weight: charge.weight });
       job.pool = charge.pool;
@@ -127,7 +129,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t, turn: job.id,
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
       pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
-      resume: carry, maxRounds, trusted: trustedMaker(user),
+      resume: carry, maxRounds, trusted: trustedMaker(user), plan,
       // the automatic playtest's fix rounds (autotest.js), and when the build's time cap ends it
       autoFixes: autotest.fixRounds(user), deadline: job.t0 + turnCapMs(user),
     })) };

@@ -35,6 +35,7 @@ import * as search from './search.js';
 import { getUser } from '../auth.js';
 import { cleanText } from '../services/textfilter.js';
 import * as autotest from './autotest.js';
+import { engineFor, art2dFor, planNote, planBrief } from './plan.js';
 
 export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
 export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
@@ -92,7 +93,8 @@ export function historyToMessages(history) {
   for (const m of history.filter(x => !x.refused && !(x.followUp && x.status !== 'read'))) {
     if (m.role === 'user') {
       const notes = (m.uploads || []).map(transcriptNote).join(' ');
-      const text = [notes, m.text].filter(Boolean).join('\n') || '(sent a picture)';
+      // A message that came from the setup steps: one line saying which parts were pack choices and which were custom.
+      const text = [notes, m.text, m.plan ? planBrief(m.plan) : ''].filter(Boolean).join('\n') || '(sent a picture)';
       out.push({ role: 'user', content: text });
     } else {
       const text = [m.text, summariseEvents(m.events)].filter(Boolean).join('\n');
@@ -199,10 +201,12 @@ export async function run(ctx) {
     // 2D art (art2d.js): a 2D game that picks or names one of the worlds, a sprite hero or an animal gets the 2D ART
     // RULES. A new running or catching game with a sprite animal that the described 3D world does not have is built
     // in 2D; every other choice of engine is kit2.js's, as before.
-    const st = ctx.state || {}, a2pick = wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
+    // A build that came from the setup steps (ctx.plan, builder/plan.js): the plan decides the engine and the 2D art,
+    // not the words.
+    const st = ctx.state || {}, a2pick = ctx.plan ? null : wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
     if (a2pick && a2pick.force2d) delete st.kit2;
-    const k2 = a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
-    const a2 = k2 ? null : a2pick; if (k2) delete st.art2d;
+    const k2 = ctx.plan ? engineFor(st, ctx.plan, ctx.text, cur) : a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
+    const a2 = k2 ? null : ctx.plan ? art2dFor(st, ctx.plan, cur) : a2pick; if (k2) delete st.art2d;
     const system = [
       { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
       // Fixed, and only while web search is on: it is cached with the block after it.
@@ -218,6 +222,8 @@ export async function run(ctx) {
       // The 2D art rules and this turn's pick: after the cached blocks (at most four cache points are allowed, and
       // the blocks before this keep their places), only on turns that pick a 2D world, a sprite hero or an animal.
       ...(a2 ? [{ type: 'text', text: ART2D_RULES }, { type: 'text', text: art2dNote(a2) }] : []),
+      // The setup steps' choices as data: which parts are pack choices (used as given) and which are custom (from scratch).
+      ...(ctx.plan ? [{ type: 'text', text: planNote(ctx.plan) }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).

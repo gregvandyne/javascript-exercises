@@ -10,7 +10,7 @@ const FOX = 'Make a catch game about a fox. Just build it.';
 async function newGame(page) {
   await signup(page, uniq('Liv'));
   await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   return page.url().split('/studio/')[1];
 }
 const turnOf = (extra = {}) => ({ id: 'T1', attempt: 1, chain: 0, carried: 0, provider: 'blocks', mine: true, cid: 'cid-live-0001', elapsed: 2000,

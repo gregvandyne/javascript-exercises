@@ -2,9 +2,14 @@
 // (public/vendor/themes/<theme>/<version>/theme.json) and docs/kit2-api.md. Do not edit: ship a theme version (or change
 // the page) and run `node scripts/build-kit2-rules.js`. tests/unit/builder-kit2.test.js checks it.
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
-// name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
-// reference the Builder reads.
+// name. KIT2_VERSIONS: every shipped version of each world (saved games
+// keep theirs). KIT2_CREATURE_GROUPS: the animal groups the setup step lists; KIT2_CREATURE_GROUP: each animal's group;
+// KIT2_GROUP_LIST: the whole list (the 2D sprite animals are grouped from it too: builder/plan.js).
+// KIT2_API_SOURCE: the Oomba3D reference the Builder reads.
 export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0","1.2.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0","1.1.0"],"pirate-cove":["1.0.0"],"wild-woods":["1.0.0"]};
+export const KIT2_CREATURE_GROUPS = ["farm","wild","dinosaurs","sea"];
+export const KIT2_CREATURE_GROUP = {"horse":"farm","deer":"wild","stag":"wild","fox":"wild","shiba":"farm","donkey":"farm","cow":"farm","husky":"farm","pig":"farm","sheep":"farm"};
+export const KIT2_GROUP_LIST = {"donkey":"farm","cow":"farm","pig":"farm","sheep":"farm","horse":"farm","husky":"farm","shiba":"farm","deer":"wild","stag":"wild","fox":"wild","horse-white":"farm","pony":"farm","bull":"farm","cow-spotted":"farm","alpaca":"farm","llama":"farm","pug":"farm","wolf":"wild","zebra":"wild","apatosaurus":"dinosaurs","stegosaurus":"dinosaurs","triceratops":"dinosaurs","parasaurolophus":"dinosaurs","velociraptor":"dinosaurs"};
 export const KIT2_WORLDS = [
  {
   "id": "sky-islands",
