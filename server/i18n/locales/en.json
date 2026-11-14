@@ -2664,7 +2664,7 @@
         "otherWorld": "Lives in a different world",
         "only2d": "Only in 2D games so far",
         "only3d": "Only in 3D games so far",
-        "one2d": "One character in a 2D game for now"
+        "youPlay": "You play as this one"
       },
       "extras": {
         "remove": "Remove",
@@ -2683,7 +2683,16 @@
         "nothing": "Nothing added",
         "empty": "You have not picked anything yet. The Builder will ask you what to make."
       },
-      "gettingReady": "Getting ready…"
+      "gettingReady": "Getting ready…",
+      "all": {
+        "select": "Select all",
+        "clear": "Clear all",
+        "selectLabel": "Select all: {name}",
+        "clearLabel": "Clear all: {name}",
+        "picked": "{count, plural, one {# picked} other {# picked}}",
+        "pickedWorld": "{count} picked. They all live in {world}.",
+        "cleared": "Cleared"
+      }
     }
   },
   "favorites": {

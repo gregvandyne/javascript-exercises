@@ -28,24 +28,31 @@ export const art2dCharacter = id => ART2D_CHARACTERS.find(c => c.id === id) || n
 export const ART2D_TEMPLATES = ['runner', 'catch'];
 const MARK = '<!--ART2D-->';
 
-/** The pinned tags for a world and a hero or animal: Oomba2D, then each pack once. '' when neither exists. */
-export function art2dTags({ world = '', hero = '' } = {}) {
-  const w = art2dWorld(world), c = art2dCharacter(hero);
-  if (!w && !c) return '';
-  return [oomba2dTag(), ...(w ? [art2dPackTag(w.id)] : []), ...(c ? [art2dPackTag(c.pack)] : [])].join('\n');
+/** How many friends a game may name (CONFIG.friends2d); Oomba2D draws a few at once and the rest take turns. */
+export const ART2D_FRIENDS_MAX = 40;
+/** The friends of a list that exist, once each, without the hero: [character]. */
+export const art2dFriends = (friends, hero = '') => { const out = []; for (const id of Array.isArray(friends) ? friends : []) { const c = art2dCharacter(String(id)); if (c && c.id !== hero && !out.includes(c) && out.length < ART2D_FRIENDS_MAX) out.push(c); } return out; };
+/** The pinned tags for a world, a hero or animal and friends: Oomba2D, then each pack once. '' when none exists. */
+export function art2dTags({ world = '', hero = '', friends = [] } = {}) {
+  const w = art2dWorld(world), c = art2dCharacter(hero), fr = art2dFriends(friends, c ? c.id : '');
+  if (!w && !c && !fr.length) return '';
+  const packs = [...new Set([...(c ? [c.pack] : []), ...fr.map(f => f.pack)])];
+  return [oomba2dTag(), ...(w ? [art2dPackTag(w.id)] : []), ...packs.map(id => art2dPackTag(id))].join('\n');
 }
 /**
- * A template that takes the 2D art (it holds the <!--ART2D--> marker and the CONFIG lines world and hero2d) with a
- * world and a hero or animal put in; names that do not exist are left out. With neither, the marker just goes: the
+ * A template that takes the 2D art (it holds the <!--ART2D--> marker and the CONFIG lines world, hero2d and friends2d)
+ * with a world, a hero or animal and friends (more heroes and animals who are in the game too) put in; names that do
+ * not exist are left out. With neither, the marker just goes: the
  * game is the template as it always was. A template without the marker is returned untouched.
  */
-export function art2dConfig(html, { world = '', hero = '' } = {}) {
+export function art2dConfig(html, { world = '', hero = '', friends = [] } = {}) {
   const src = String(html);
   if (!src.includes(MARK)) return src;
-  const w = art2dWorld(world), c = art2dCharacter(hero), tags = art2dTags({ world, hero });
+  const w = art2dWorld(world), c = art2dCharacter(hero), fr = art2dFriends(friends, c ? c.id : ''), tags = art2dTags({ world, hero, friends });
   let out = src.replace(MARK + '\n', () => (tags ? tags + '\n' : ''));
   if (w) out = out.replace(/\n  world: '[^'\n]*',\n/, () => `\n  world: '${w.id}',\n`);
   if (c) out = out.replace(/\n  hero2d: '[^'\n]*',\n/, () => `\n  hero2d: '${c.id}',\n`);
+  if (fr.length) out = out.replace(/\n  friends2d: \[[^\]\n]*\],\n/, () => `\n  friends2d: [${fr.map(f => `'${f.id}'`).join(', ')}],\n`);
   return out;
 }
 /** The edit_game edits that move a game that already draws with the 2D art to another world or hero: its two CONFIG
@@ -203,6 +210,12 @@ ${Object.keys(ART2D_PACKS).map(id => art2dPackTag(id)).join('\n')}
 - The templates "runner" and "catch" already do all of it: CONFIG.world (a 2D world id, or '' for the kit's own look)
   and CONFIG.hero2d (a sprite hero or animal id, or '' for the kit's hero). Change those two lines and the pack tags to
   change the world or the hero; keep the rest of begin(art) as it is.
+- More than one character: CONFIG.friends2d is a list of more sprite heroes and animals (['fox', 'zebra', 'knight']) who
+  are IN the game beside the player: in the runner they stand along the way and hop as the player runs by, in the
+  catching game they watch from the two sides. start_from_template takes them as friends. Oomba2D draws up to four at
+  once and the others take turns, so every one shows up; they are pictures only (never solid, never a hazard, never
+  moving towards the player). Each friend's pack tag ("heroes", "animals") must be loaded. In your own code:
+  Oomba2D.use({ world, hero, friends }) and art.dress(w) (or art.dress(w, { friends: 'sides' }) for a one-screen game).
 - In your own code: Oomba2D.use({ world, hero }).then(art => ...) gives art (or null when it cannot load: the game
   must then still play with the kit's look). art.dress(w) in setup(w) draws the sky, scenery, ground, props and the
   sprite hero; art.level(level) swaps a level's coins, flag and hazards for the world's; art.sprite('name') is a legend
@@ -223,7 +236,9 @@ export function art2dNote(pick) {
   if (!pick) return '';
   const w = art2dWorld(pick.world), c = art2dCharacter(pick.hero);
   const how = { chip: 'The builder picked', word: 'The builder asked for', place: 'The builder described', kept: 'Earlier the builder picked', game: 'This game uses' }[pick.by] || 'This build uses';
+  const fr = art2dFriends(pick.friends, c ? c.id : '');
   return `2D ART CHOICE: ${how}${w ? ` the 2D world ${w.id} ("${w.name}")` : ''}${w && c ? ' and' : ''}${c ? ` the sprite ${c.kind} ${c.id} (${c.name})` : ''}${!w && !c ? ' an animal' : ''}. `
+    + (fr.length ? `Friends who are in the game too (start_from_template friends, CONFIG.friends2d): ${fr.map(f => f.id).join(', ')}. ` : '')
     + (pick.soft ? `Only if this is a running or catching game: start_from_template "runner" or "catch" with sprite "${c ? c.id : ''}". For any other kind of game use the kit's own characters and say nothing about sprites.` : pick.by === 'game' && !pick.changed ? 'Keep them unless they ask for another.' : w || c ? `For a runner or a catching game call start_from_template with template "runner" or "catch"${w ? `, world "${w.id}"` : ''}${c ? `, sprite "${c.id}"` : ''}; other kinds of 2D game do not draw the worlds yet (say so in one short sentence if they asked for one).` : '')
     + (pick.missing ? ' They asked for an animal that has no sprite yet: say that kindly in one short sentence and use the kit\'s own characters.' : '');
 }

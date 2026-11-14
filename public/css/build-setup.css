@@ -71,7 +71,12 @@
 
 /* who is in it: the picker's own pictures (96 px, shown at their real size), in groups */
 .su-group{display:flex;flex-direction:column;gap:10px}
-.su-group h2{margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.su-group h2{margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
+/* a section's heading with its "Select all" button at the far end (wraps under the heading when there is no room) */
+.su-ghead{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;min-height:44px}
+.su-ghead-end{justify-content:flex-end;margin-bottom:-8px}
+.su-ghead-end:not(:has(.su-all:not([hidden]))){display:none}
+.su-all{flex:none}
 .su-soon-text{margin:0}
 .su-grid-char{--cols:5;--name-lines:1;--desc-lines:2}
 .su-grid-char .su-pick{align-items:center;text-align:center}

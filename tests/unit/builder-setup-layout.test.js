@@ -80,6 +80,16 @@ for (const width of [390, 834, 1280]) {
       assert.deepEqual(m.clipped, [], `${key}: no English name is cut off`);
       if (key === 'world') assert.ok(m.pics[0][0] >= 280, `world pictures are large (${m.pics[0][0]} px wide at ${width})`);
       if (key === 'chars') assert.equal(`${m.pics[0][0]}x${m.pics[0][1]}`, '96x96', 'character pictures at their real size');
+      // "Select all" (the sections that have one) changes no card's size, fits the phone and is a full-size target
+      for (const b of await page.$$('.su-screen:not([hidden]) .su-all:not([hidden])')) {
+        await b.click();
+        const box = await b.boundingBox(); assert.ok(box.height >= 44 && box.x >= 15.5 && box.x + box.width <= width - 15.5, `${key}: Select all is a 44 px target inside the gutters`);
+        const m3 = await measure(page);
+        assert.equal(sizes(m3.cards).join(), sizes(m.cards).join(), `${key}: Select all changes no card's size`);
+        assert.ok(m3.scrollW <= m3.clientW, `${key}: no horizontal scroll with Select all`); assert.deepEqual(m3.small, []);
+        await b.click();   // Clear all: back to nothing picked
+      }
+      if (key === 'chars' || key === 'learn') assert.ok((await page.$$('.su-screen:not([hidden]) .su-all:not([hidden])')).length >= 1, `${key} has Select all`);
       // a picked card and an open "Something else" box change no card's size
       await page.click(`.su-pick[data-step="${key}"]:not([data-id="else"])`);
       if (key !== 'look') { await page.click(`.su-pick[data-step="${key}"][data-id="else"]`); assert.equal(await page.isVisible(`#su-idea-${key}`), true); }
@@ -179,11 +189,13 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   assert.equal(await page.isVisible('#su-world-2d'), false, 'no kind of game picked: a running game, which draws worlds'); await next(page);
   assert.equal(await card('cow').getAttribute('aria-pressed'), 'true', 'a pick that still fits is kept');
   assert.equal(await page.isVisible('.su-group[data-group="dinosaurs"] [data-soon3d]'), false);
-  assert.equal(await card('triceratops').isDisabled(), true); assert.equal(await card('triceratops').locator('.su-desc').textContent(), 'One character in a 2D game for now');
-  await card('cow').click();
-  for (const id of ['fox', 'triceratops', 'zebra', 'knight']) assert.equal(await card(id).isDisabled(), false, id);
-  await card('triceratops').click();
-  assert.equal(await card('triceratops').getAttribute('aria-pressed'), 'true'); assert.equal(await card('fox').isDisabled(), true);
+  // 2D: as many as they like; the first one picked is who they play as, and its card says so
+  assert.equal(await card('cow').locator('.su-desc').textContent(), 'You play as this one');
+  for (const id of ['fox', 'triceratops', 'zebra', 'knight']) { assert.equal(await card(id).isDisabled(), false, id); await card(id).click(); assert.equal(await card(id).getAttribute('aria-pressed'), 'true', id); }
+  assert.equal(await card('fox').locator('.su-desc').textContent(), ''); assert.equal(await card('cow').locator('.su-desc').textContent(), 'You play as this one');
+  await card('cow').click();   // the player is taken out: the next one picked plays
+  assert.equal(await card('fox').locator('.su-desc').textContent(), 'You play as this one');
+  assert.equal(await page.locator('.su-pick[data-step="chars"]:disabled').count(), 0, 'nothing is blocked in 2D');
   // a quiz in 2D does not draw worlds or characters yet: the page says so on the world, the characters and the plan
   for (let i = 0; i < 3; i++) await page.click('.su-screen:not([hidden]) [data-go="back"]');
   await page.click('.su-pick[data-step="type"][data-id="quiz"]'); await next(page); await next(page);
@@ -194,6 +206,67 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   // back to 3D: the dinosaur is taken out again
   await page.click('[data-change="look"]'); await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page);
   assert.doesNotMatch(await page.textContent('#su-rows'), /Triceratops/); assert.equal(await page.isVisible('#su-plan-2d'), false);
+  await ctx.close();
+});
+
+test('"Select all" per section: picks what can be picked, reads "Clear all" when done, and in 3D keeps to one world', { skip }, async () => {
+  const { ctx, page } = await open(390);
+  const all = scope => page.locator(`.su-all[data-all="${scope}"]`), live = () => page.textContent('#su-live');
+  const picked = group => page.locator(`.su-group[data-group="${group}"] .su-pick[aria-pressed="true"]`).count();
+  const settle = () => page.waitForTimeout(80);
+  await page.click('#su-guide'); await next(page);
+  // 2D: everyone in the group, with the keyboard; the first is the player; Clear all clears this group only
+  await page.click('.su-pick[data-step="look"][data-id="2d"]'); await next(page); await next(page);
+  const farm = plan.characterGroups().find(g => g.id === 'farm').items.filter(c => c.in2d).length;
+  assert.equal(await all('chars:farm').textContent(), 'Select all'); assert.equal(await all('chars:farm').getAttribute('aria-label'), 'Select all: Farm animals');
+  assert.equal(await all('chars:farm').getAttribute('aria-pressed'), 'false');
+  await all('chars:farm').focus(); await page.keyboard.press('Enter'); await settle();
+  assert.equal(await picked('farm'), farm); assert.equal(await live(), `${farm} picked`);
+  assert.equal(await all('chars:farm').textContent(), 'Clear all'); assert.equal(await all('chars:farm').getAttribute('aria-pressed'), 'true'); assert.equal(await all('chars:farm').getAttribute('aria-label'), 'Clear all: Farm animals');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.all), 'chars:farm', 'focus stays on the button');
+  assert.equal(await page.locator('.su-group[data-group="farm"] .su-pick[aria-pressed="true"] .su-desc', { hasText: 'You play as this one' }).count(), 1);
+  await all('chars:dinosaurs').click(); await all('chars:heroes').click(); await settle();
+  assert.equal(await picked('dinosaurs'), 5); assert.ok(await picked('heroes') >= 9);
+  await page.keyboard.press('Space');   // nothing: focus is on the heroes button, pressed -> clears heroes only
+  await settle(); assert.equal(await picked('heroes'), 0); assert.equal(await picked('farm'), farm); assert.equal(await picked('dinosaurs'), 5); assert.equal(await live(), 'Cleared');
+  // one card un-picked by hand: the button offers "Select all" again
+  await page.click('.su-pick[data-step="chars"][data-id="pig"]'); assert.equal(await all('chars:farm').textContent(), 'Select all');
+  await all('chars:farm').click(); await settle(); assert.equal(await picked('farm'), farm);
+  assert.equal(await page.getAttribute('.su-pick[data-step="chars"][data-id="else"]', 'aria-pressed'), 'false', 'never "Something else"');
+  // the plan and the Builder get every one of them
+  await next(page);
+  await all('learn').click(); await settle();
+  assert.equal(await page.locator('.su-pick[data-step="learn"][aria-pressed="true"]').count(), 5); assert.equal(await page.getAttribute('.su-pick[data-step="learn"][data-id="else"]', 'aria-pressed'), 'false');
+  assert.equal(await all('learn').textContent(), 'Clear all'); assert.equal(await all('learn').getAttribute('aria-label'), 'Clear all: It teaches');
+  await all('learn').click(); await settle(); assert.equal(await page.locator('.su-pick[data-step="learn"][aria-pressed="true"]').count(), 0);
+  // 3D, nothing chosen yet: the largest set of the group that shares one world, and the message names the world
+  await page.click('[data-go="back"]:visible'); await page.click('[data-go="back"]:visible'); await page.click('[data-go="back"]:visible');
+  await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page); await next(page);
+  // the picks made for 2D: the sprites that are in no 3D world went, and of the rest only those that share a world stay
+  const kept = await page.evaluate(() => [...document.querySelectorAll('.su-pick[data-step="chars"][aria-pressed="true"]')].map(b => b.dataset.id));
+  assert.ok(kept.length >= 1 && kept.every(id => plan.setupCharacter(id).in3d)); assert.ok(kit2.WORLD_IDS.some(w => kept.every(id => plan.setupCharacter(id).worlds.includes(w))), `they share a world: ${kept}`);
+  assert.equal(await all('chars:farm').textContent(), 'Clear all'); await all('chars:farm').click(); await settle();
+  assert.equal(await page.locator('.su-pick[data-step="chars"][aria-pressed="true"]').count(), 0);
+  const village = kit2.creaturesOf('medieval-village').filter(c => plan.setupCharacter(c.id).group === 'farm').map(c => c.id).sort();
+  await all('chars:farm').click(); await settle();
+  const got = await page.evaluate(() => [...document.querySelectorAll('.su-group[data-group="farm"] .su-pick[aria-pressed="true"]')].map(b => b.dataset.id).sort());
+  assert.deepEqual(got, village, 'the farm animals of the world that has the most of them');
+  assert.equal(await live(), `${village.length} picked. They all live in Medieval Village.`);
+  assert.equal(await all('chars:farm').textContent(), 'Clear all', 'everything that can be picked now is picked');
+  const horse = page.locator('.su-pick[data-step="chars"][data-id="horse"]');
+  assert.equal(await horse.isDisabled(), true); assert.equal(await horse.locator('.su-desc').textContent(), 'Lives in a different world', 'the other-world cards grey out as after single picks');
+  // the wild animals live in another world: none can be picked now, so that group has no button
+  assert.equal(await all('chars:wild').isHidden(), true); assert.equal(await all('chars:dinosaurs').isHidden(), true);
+  // heroes: only those the village has
+  await all('chars:heroes').click(); await settle();
+  const heroes = await page.evaluate(() => [...document.querySelectorAll('.su-group[data-group="heroes"] .su-pick[aria-pressed="true"]')].map(b => b.dataset.id).sort());
+  assert.deepEqual(heroes, kit2.worldById('medieval-village').heroes.map(h => h.id).sort()); assert.match(await live(), /^\d+ picked$/);
+  await all('chars:farm').click(); await all('chars:heroes').click(); await settle();
+  assert.equal(await page.locator('.su-pick[data-step="chars"][aria-pressed="true"]').count(), 0); assert.equal(await horse.isDisabled(), false);
+  // with a world chosen: exactly that world's, and no word about a world
+  await page.click('[data-go="back"]:visible'); await page.click('.su-pick[data-step="world"][data-id="castle-quest"]'); await next(page);
+  await all('chars:wild').click(); await settle();
+  assert.equal(await picked('wild'), kit2.creaturesOf('castle-quest').filter(c => plan.setupCharacter(c.id).group === 'wild').length); assert.match(await live(), /^\d+ picked$/);
   await ctx.close();
 });
 

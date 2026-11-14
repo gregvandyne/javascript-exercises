@@ -2645,7 +2645,7 @@
         "otherWorld": "Vive en otro mundo",
         "only2d": "Por ahora solo en juegos 2D",
         "only3d": "Por ahora solo en juegos 3D",
-        "one2d": "Por ahora, un solo personaje en 2D"
+        "youPlay": "Juegas con este"
       },
       "extras": {
         "remove": "Quitar",
@@ -2664,7 +2664,16 @@
         "nothing": "Nada añadido",
         "empty": "Todavía no has elegido nada. El Constructor te preguntará qué hacer."
       },
-      "gettingReady": "Preparando…"
+      "gettingReady": "Preparando…",
+      "all": {
+        "select": "Elegir todos",
+        "clear": "Quitar todos",
+        "selectLabel": "Elegir todos: {name}",
+        "clearLabel": "Quitar todos: {name}",
+        "picked": "{count, plural, one {# elegido} other {# elegidos}}",
+        "pickedWorld": "{count} elegidos. Todos viven en {world}.",
+        "cleared": "Quitados"
+      }
     }
   },
   "favorites": {

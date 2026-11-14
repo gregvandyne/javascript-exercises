@@ -1,0 +1,372 @@
+{
+ "key": "pro-1.1",
+ "n": "1.1",
+ "band": "pro",
+ "title": "Ratios and equal mixes",
+ "topic": "Ratios",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "The Mixing Tower",
+   "text": "The first tower smells of lamp oil. Every lantern in Netville was mixed here, and each glow has its own recipe. The Jumble has muddled the recipes, so no two lanterns match. Tally hands you two dials.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 0,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A ratio compares two amounts",
+   "text": "The gate lantern is mixed from 2 parts amber oil for every 3 parts blue oil. That comparison is a ratio, written 2 : 3. Order matters: 3 : 2 would be a different, more amber glow.",
+   "art": "scale",
+   "visual": {
+    "type": "bars",
+    "label": "A tape diagram of the gate glow: 5 equal parts in a row, 2 of amber oil and then 3 of blue oil",
+    "big": true,
+    "rows": [
+     {
+      "label": "2 parts amber, then 3 parts blue",
+      "parts": [
+       {
+        "w": 0.2,
+        "tone": 1
+       },
+       {
+        "w": 0.2,
+        "tone": 1
+       },
+       {
+        "w": 0.2,
+        "tone": 2
+       },
+       {
+        "w": 0.2,
+        "tone": 2
+       },
+       {
+        "w": 0.2,
+        "tone": 2
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 parts of amber oil. Every part is the same size.",
+     "box": [
+      5,
+      35.7,
+      37.2,
+      18.3
+     ]
+    },
+    {
+     "cue": "3 parts of blue oil go with them: the ratio is 2 : 3.",
+     "box": [
+      40.2,
+      35.7,
+      54.8,
+      18.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Equal ratios, same glow",
+   "text": "Multiply both parts by the same number and the mix stays the same: 4 : 6 glows exactly like 2 : 3. Adding the same amount to both parts does not work. 3 : 4 is a new glow, with more amber in it.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "double",
+    "label": "A double number line of equal ratios: 2 parts amber with 3 parts blue, then 4 with 6, 6 with 9 and 8 with 12",
+    "top": "Parts of amber",
+    "bottom": "Parts of blue",
+    "ticks": [
+     [
+      0,
+      0
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      4,
+      6
+     ],
+     [
+      6,
+      9
+     ],
+     [
+      8,
+      12
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One batch of the glow: 2 parts amber with 3 parts blue.",
+     "box": [
+      28.3,
+      24.1,
+      4.5,
+      58.7
+     ]
+    },
+    {
+     "cue": "Both parts doubled: 4 and 6. The same glow, twice as much.",
+     "box": [
+      46.6,
+      24.1,
+      4.9,
+      58.7
+     ]
+    },
+    {
+     "cue": "Both parts times 4: 8 and 12. Still 2 : 3.",
+     "box": [
+      83,
+      24.1,
+      5.9,
+      58.7
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Fill a lantern of 15 parts",
+   "text": "A big lantern holds 15 parts and needs the 2 : 3 glow. One batch of 2 and 3 makes 5 parts. Build a ratio table, one more batch in each row, until the total reaches 15.",
+   "art": "table",
+   "steps": [
+    "one batch: 2 + 3 = 5 parts",
+    "15 ÷ 5 = 3 batches",
+    "amber: 3 × 2 = 6 parts",
+    "blue: 3 × 3 = 9 parts",
+    "6 : 9 fills all 15 parts"
+   ],
+   "visual": {
+    "type": "table",
+    "label": "A ratio table for the 2 : 3 glow: 2, 3 and 5 parts in all; 4, 6 and 10; 6, 9 and 15",
+    "head": [
+     "Amber",
+     "Blue",
+     "Total"
+    ],
+    "rows": [
+     [
+      "2",
+      "3",
+      "5"
+     ],
+     [
+      "4",
+      "6",
+      "10"
+     ],
+     [
+      "6",
+      "9",
+      "15"
+     ]
+    ],
+    "mark": 2
+   },
+   "focus": [
+    {
+     "cue": "One batch: 2 parts amber, 3 parts blue, 5 parts in all.",
+     "box": [
+      5,
+      33.2,
+      90,
+      16.8
+     ]
+    },
+    {
+     "cue": "Three batches reach 15 parts: 6 amber and 9 blue.",
+     "box": [
+      5,
+      60.2,
+      90,
+      16.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Which glow has more amber?",
+   "text": "To compare two mixes, give them the same total. In 10 parts, the 2 : 3 glow has 4 parts amber. A mix of 5 and 5 has more amber in the same 10 parts, so it glows more amber.",
+   "art": "magnifier",
+   "visual": {
+    "type": "bars",
+    "label": "Two mixes of 10 parts each: 4 amber with 6 blue, and 5 amber with 5 blue",
+    "big": true,
+    "rows": [
+     {
+      "label": "The 2 : 3 glow in 10 parts: 4 amber, 6 blue",
+      "parts": [
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       }
+      ]
+     },
+     {
+      "label": "A 1 : 1 glow in 10 parts: 5 amber, 5 blue",
+      "parts": [
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       },
+       {
+        "w": 0.1,
+        "tone": 2
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The 2 : 3 glow, doubled to 10 parts: 4 are amber.",
+     "box": [
+      5,
+      11.8,
+      90,
+      28
+     ]
+    },
+    {
+     "cue": "This mix has 5 amber parts in 10: more amber.",
+     "box": [
+      5,
+      42,
+      90,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for mixing by ratio.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ratio",
+     "means": "a comparison of two amounts, such as 2 parts amber for every 3 parts blue"
+    },
+    {
+     "word": "equivalent ratios",
+     "means": "ratios that describe the same mix, such as 2 : 3 and 4 : 6"
+    },
+    {
+     "word": "ratio table",
+     "means": "rows of equivalent ratios, each made by multiplying both parts by one number"
+    },
+    {
+     "word": "tape diagram",
+     "means": "a bar cut into equal parts that shows the parts of a ratio"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lantern Mix at Match the Glow. Set the two dials, light the lantern and match the gate glow. Six lanterns finish the step.",
+   "art": "trophy",
+   "img": "nq/lantern-mix/match-the-glow",
+   "alt": "Lantern Mix on a phone: the gate lantern's gauge of 2 amber and 3 blue parts on the board, and two dials to set.",
+   "view": [
+    0,
+    0,
+    34.28,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-1.1-e1",
+  "nq-pro-1.1-e2",
+  "nq-pro-1.1-e3"
+ ],
+ "game": {
+  "slug": "lantern-mix",
+  "chapter": "Match the Glow",
+  "params": "chapter=mix&lock=1"
+ }
+}
