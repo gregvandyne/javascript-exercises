@@ -1,0 +1,201 @@
+{
+ "key": "pro-3.2",
+ "n": "3.2",
+ "band": "pro",
+ "title": "Expressions that are equal",
+ "topic": "Equal expressions",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "Two lines, one output",
+   "text": "Tally finds two lines in the Machine Hall. One adds 2 and then multiplies by 3. The other multiplies by 3 and then adds 6. Every box she sends through comes out the same from both.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Equal for every input",
+   "text": "The first line is 3(x + 2) and the second is 3x + 6. They are equivalent expressions: the same value for every x. The 3 multiplies both parts of the sum, 3 times x and 3 times 2. That is the distributive property.",
+   "art": "table",
+   "visual": {
+    "type": "table",
+    "label": "Two lines that always match",
+    "head": [
+     "x",
+     "0",
+     "1",
+     "2",
+     "5"
+    ],
+    "rows": [
+     [
+      "3(x + 2)",
+      "6",
+      "9",
+      "12",
+      "21"
+     ],
+     [
+      "3x + 6",
+      "6",
+      "9",
+      "12",
+      "21"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Each column is one input sent down both lines.",
+     "box": [
+      5.1,
+      19.7,
+      89.8,
+      16.7
+     ]
+    },
+    {
+     "cue": "Both rows give 9 when x is 1.",
+     "box": [
+      40.2,
+      19.7,
+      19.6,
+      43.8
+     ]
+    },
+    {
+     "cue": "The rows match in every column: 21 and 21 for x = 5.",
+     "box": [
+      75.4,
+      19.7,
+      19.5,
+      43.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A few matches are not proof",
+   "text": "Now compare 2x with x². They match when x is 0 and when x is 2, so two tests could fool you. For x = 3 they give 6 and 9. Expressions are equivalent only when a rule shows they match for every number.",
+   "art": "magnifier",
+   "visual": {
+    "type": "table",
+    "label": "Two lines that match only sometimes",
+    "head": [
+     "x",
+     "0",
+     "1",
+     "2",
+     "3"
+    ],
+    "rows": [
+     [
+      "2x",
+      "0",
+      "2",
+      "4",
+      "6"
+     ],
+     [
+      "x²",
+      "0",
+      "1",
+      "4",
+      "9"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "For x = 2 both rows say 4.",
+     "box": [
+      57.8,
+      19.7,
+      19.6,
+      43.8
+     ]
+    },
+    {
+     "cue": "For x = 3 the rows differ: 6 and 9.",
+     "box": [
+      75.4,
+      19.7,
+      19.5,
+      43.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Factor: the same rule, backward",
+   "text": "Start with 4x + 12. Both terms are 4 times something: 4 × x and 4 × 3. Take the 4 outside and write 4(x + 3). To check, expand it again: 4 times x is 4x, and 4 × 3 = 12.",
+   "art": "wrench",
+   "steps": [
+    "4x + 12",
+    "4x = 4 × x and 12 = 4 × 3",
+    "4 is a factor of both terms",
+    "4x + 12 = 4(x + 3)"
+   ]
+  },
+  {
+   "title": "Like terms join, a sum leaves whole",
+   "text": "Terms with the same letter are like terms: 2x + 3x + 4 = 5x + 4, and the 4 stays apart. Taking away a sum takes away every term in it, so 8x − (3x + 2) = 5x − 2. A new form can show something new: x + 0.2x = 1.2x says that adding 20% is multiplying by 1.2.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for expressions that are equal.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "equivalent expressions",
+     "means": "expressions with the same value for every number, such as 3(x + 2) and 3x + 6"
+    },
+    {
+     "word": "distributive property",
+     "means": "multiplying a sum multiplies each part: 3(x + 2) = 3x + 6"
+    },
+    {
+     "word": "like terms",
+     "means": "terms with the same variable, such as 2x and 3x, which add to 5x"
+    },
+    {
+     "word": "factor",
+     "means": "to write a sum as a product, such as 4x + 12 = 4(x + 3)"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Machine Line at Same Output. Decide if two lines always match, then rebuild a line another way and run both to check.",
+   "art": "trophy",
+   "img": "nq/machine-line/same-output",
+   "alt": "Machine Line on a phone: line A adds 2 and then multiplies by 3, line B multiplies by 3 and then adds 6, and three tiles ask if they always match.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-3.2-e1",
+  "nq-pro-3.2-e2",
+  "nq-pro-3.2-e3"
+ ],
+ "game": {
+  "slug": "machine-line",
+  "chapter": "Same Output",
+  "params": "chapter=same&lock=1"
+ }
+}

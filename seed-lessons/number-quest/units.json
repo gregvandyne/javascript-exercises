@@ -2000,23 +2000,20 @@
    "emoji": "⚙️",
    "group": "unit-3",
    "n": 3,
-   "planned": true,
-   "reserved": {
-    "game": "machine-line",
-    "world": "toy-town"
-   },
    "stamp": "Variable Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Build the Line",
+       "chapterTitle": "Build the Line",
+       "params": "chapter=build&lock=1",
+       "slug": "machine-line"
+      }
      },
      "mp": "MP6",
      "n": "3.1",
      "order": 8,
-     "reserved": {
-      "params": "chapter=build&lock=1"
-     },
      "shorts": {
       "pro": "Expressions"
      },
@@ -2039,14 +2036,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Same Output",
+       "chapterTitle": "Same Output",
+       "params": "chapter=same&lock=1",
+       "slug": "machine-line"
+      }
      },
      "mp": "MP7",
      "n": "3.2",
      "order": 9,
-     "reserved": {
-      "params": "chapter=same&lock=1"
-     },
      "shorts": {
       "pro": "Equal expressions"
      },
@@ -2070,14 +2069,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Run It Back",
+       "chapterTitle": "Run It Back",
+       "params": "chapter=undo&lock=1",
+       "slug": "machine-line"
+      }
      },
      "mp": "MP1",
      "n": "3.3",
      "order": 10,
-     "reserved": {
-      "params": "chapter=undo&lock=1"
-     },
      "shorts": {
       "pro": "Equations"
      },
@@ -2101,10 +2102,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers the expressions and equations work of grades 6 and 7: writing, reading and evaluating expressions with a letter for a number (and whole-number exponents), generating and recognizing equivalent expressions by expanding, combining like terms, factoring and subtracting a sum, and solving one-step and two-step equations and inequalities.",
+    "Common misconceptions: that 3(x + 2) is 3x + 2 (the 3 multiplies both parts); that two expressions are equal because they match for one or two inputs (2x and x² match for 0 and 2 only); that 2n² means (2n)²; and that the machines of a two-step equation are undone in the order they were done. Ask \"what does the line do first?\", \"does it match for every input, or only for these?\" and \"which machine came last?\"",
+    "Machine Line checks each idea by planning and running. The learner builds a line from machine blocks, sets the number that went in, or marks a ray on a number line, runs it and sees what the plan really gives beside what was wanted. Two lines are compared for every input, never by how they are written. There is no timer, nothing is bought or sold, every instruction is read aloud by default, and six finished rounds complete a step."
+   ],
    "tier": "pro",
    "title": "The Machine Hall",
-   "tool": null
+   "tool": "machine-line"
   },
   {
    "emoji": "🗺️",

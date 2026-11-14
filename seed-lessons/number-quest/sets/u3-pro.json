@@ -1,0 +1,226 @@
+{
+ "id": "nq-u3-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "Pro",
+ "title": "Number Quest Unit 3 · The Machine Hall (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6.EE.A.2",
+   "topic": "Expressions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Which expression means 4 less than 6 times n?",
+   "choices": [
+    "6(n − 4)",
+    "4 − 6n",
+    "6n − 4",
+    "6n + 4"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "subtracted 4 from n before multiplying by 6",
+    "wrote the subtraction the wrong way round",
+    "correct",
+    "added 4 instead of subtracting it"
+   ],
+   "why": "6 times n is 6n. \"4 less than\" that means start with 6n and take 4 away: 6n − 4. For n = 2 that is 12 − 4 = 8."
+  },
+  {
+   "id": "nq-pro-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6.EE.A.2",
+   "topic": "Expressions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "What is the value of 2n² + 3 when n = 4?",
+   "choices": [
+    "67",
+    "35",
+    "19",
+    "98"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "squared 2n instead of only n",
+    "correct",
+    "doubled 4 instead of squaring it",
+    "added 3 to n before squaring"
+   ],
+   "why": "Only n is squared: 4² = 4 × 4 = 16. Then multiply: 2 × 16 = 32. Then add: 32 + 3 = 35."
+  },
+  {
+   "id": "nq-pro-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6.EE.B.6",
+   "topic": "Expressions",
+   "kind": "scenario",
+   "secs": 30,
+   "q": "A crate holds 8 toys. A truck carries c full crates and 5 loose toys. Which expression gives the number of toys on the truck?",
+   "choices": [
+    "8(c + 5)",
+    "c + 13",
+    "5c + 8",
+    "8c + 5"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "grouped the loose toys with the crates before multiplying",
+    "added 8 and 5 instead of multiplying 8 by c",
+    "swapped the toys in a crate with the loose toys",
+    "correct"
+   ],
+   "why": "Each of the c crates holds 8 toys, which is 8c. The 5 loose toys are added once: 8c + 5. With 2 crates that is 16 + 5 = 21 toys."
+  },
+  {
+   "id": "nq-pro-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "6.EE.A.3",
+   "topic": "Equal expressions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Which expression is equivalent to 5(x + 3)?",
+   "choices": [
+    "5x + 3",
+    "5x + 15",
+    "5x + 8",
+    "x + 15"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "multiplied only the first term by 5",
+    "correct",
+    "added 5 and 3 instead of multiplying them",
+    "multiplied only the second term by 5"
+   ],
+   "why": "The 5 multiplies both parts of the sum: 5 × x and 5 × 3. So 5(x + 3) = 5x + 15. Check with x = 1: 5 × 4 = 20 and 5 + 15 = 20."
+  },
+  {
+   "id": "nq-pro-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "6.EE.A.4",
+   "topic": "Equal expressions",
+   "kind": "recall",
+   "secs": 30,
+   "q": "Which pair of expressions has the same value for every number x?",
+   "choices": [
+    "x + 3 and 3x",
+    "x² and 2x",
+    "x + x + x and 3x",
+    "3(x + 1) and 3x + 1"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "confused adding 3 with multiplying by 3",
+    "confused squaring with doubling",
+    "correct",
+    "multiplied only the first term by 3"
+   ],
+   "why": "Three of the same thing added is 3 of it: x + x + x = 3x for every x. The other pairs differ for x = 3: 6 and 9, 9 and 6, 12 and 10."
+  },
+  {
+   "id": "nq-pro-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "7.EE.A.1",
+   "topic": "Equal expressions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Which expression is equivalent to 7x − (2x + 3)?",
+   "choices": [
+    "5x + 3",
+    "9x − 3",
+    "2x",
+    "5x − 3"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "subtracted the 2x but added the 3",
+    "added the x terms instead of subtracting",
+    "combined the 3 with the x terms",
+    "correct"
+   ],
+   "why": "The whole sum is taken away, so both terms are subtracted: 7x − 2x − 3 = 5x − 3. Check with x = 1: 7 − 5 = 2 and 5 − 3 = 2."
+  },
+  {
+   "id": "nq-pro-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "6.EE.B.7",
+   "topic": "Equations",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A line multiplies its input by 6, and the output is 42. Which input solves 6x = 42?",
+   "choices": [
+    "36",
+    "7",
+    "48",
+    "252"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "subtracted 6 instead of dividing by 6",
+    "correct",
+    "added 6 instead of dividing by 6",
+    "multiplied by 6 again instead of undoing it"
+   ],
+   "why": "Dividing undoes multiplying: 42 ÷ 6 = 7. Check by putting it back: 6 × 7 = 42, so x = 7."
+  },
+  {
+   "id": "nq-pro-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "7.EE.B.4a",
+   "topic": "Equations",
+   "kind": "apply",
+   "secs": 30,
+   "q": "What is the solution of 2x + 9 = 3?",
+   "choices": [
+    "6",
+    "−6",
+    "−3",
+    "3"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added 9 instead of subtracting it",
+    "stopped after subtracting 9 and did not divide by 2",
+    "correct",
+    "dropped the negative sign of the answer"
+   ],
+   "why": "Undo plus 9 first: 3 − 9 = −6, so 2x = −6. Then undo times 2: −6 ÷ 2 = −3. Check: 2 × (−3) + 9 = 3."
+  },
+  {
+   "id": "nq-pro-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "7.EE.B.4a",
+   "topic": "Equations",
+   "kind": "apply",
+   "secs": 30,
+   "q": "What is the solution of 4(x + 3) = 32?",
+   "choices": [
+    "8",
+    "7 1/4",
+    "11",
+    "5"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "divided by 4 and stopped before subtracting 3",
+    "subtracted 3 before dividing by 4",
+    "added 3 after dividing instead of subtracting it",
+    "correct"
+   ],
+   "why": "The line adds 3 and then multiplies by 4, so undo times 4 first: 32 ÷ 4 = 8. Then undo plus 3: 8 − 3 = 5. Check: 4 × (5 + 3) = 32."
+  }
+ ]
+}

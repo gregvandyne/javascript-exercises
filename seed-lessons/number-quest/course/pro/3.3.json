@@ -1,0 +1,195 @@
+{
+ "key": "pro-3.3",
+ "n": "3.3",
+ "band": "pro",
+ "title": "Solve equations and inequalities",
+ "topic": "Equations",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "What went in?",
+   "text": "A box comes off the line marked 23, and the note with its starting number is lost. The line multiplied by 3 and then added 5. Tally can find the number by running the line backward.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Undo the last machine first",
+   "text": "An equation says two things are equal: 3x + 5 = 23. To solve it, undo each machine with its inverse, and undo the last machine first. Subtract 5 to get 18, then divide by 3 to get 6.",
+   "art": "gears",
+   "visual": {
+    "type": "flow",
+    "label": "Run the line backward",
+    "inName": "in",
+    "outName": "out",
+    "values": [
+     "?",
+     "18",
+     "23"
+    ],
+    "ops": [
+     "× 3",
+     "+ 5"
+    ],
+    "undo": [
+     "÷ 3",
+     "− 5"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The output is 23, and the input is unknown.",
+     "box": [
+      78,
+      24.9,
+      17,
+      24.9
+     ]
+    },
+    {
+     "cue": "Undo plus 5 first: 23 − 5 = 18.",
+     "box": [
+      50.8,
+      47.3,
+      34.9,
+      24.9
+     ]
+    },
+    {
+     "cue": "Then undo times 3: 18 ÷ 3 = 6.",
+     "box": [
+      14.3,
+      47.3,
+      34.9,
+      24.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Brackets first, then check",
+   "text": "In 5(x + 2) = 35 the line adds 2 and then multiplies by 5, so divide by 5 first and then subtract 2. A solution makes the equation true, so put it back to check. An answer can be negative: 2x + 9 = 3 gives 2x = −6, so x = −3.",
+   "art": "box",
+   "steps": [
+    "5(x + 2) = 35",
+    "35 ÷ 5 = 7, so x + 2 = 7",
+    "7 − 2 = 5, so x = 5",
+    "Check: 5 × (5 + 2) = 35"
+   ]
+  },
+  {
+   "title": "An inequality has many solutions",
+   "text": "2x + 4 < 20 asks for every input that keeps the output under 20. Solve it like an equation: subtract 4, then divide by 2, so x < 8. On the number line the circle at 8 is open, because 8 gives exactly 20.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "The inputs that keep the output under 20",
+    "min": 0,
+    "max": 12,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 4,
+      "label": "4"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     },
+     {
+      "at": 12,
+      "label": "12"
+     }
+    ],
+    "ray": {
+     "at": 8,
+     "dir": "left",
+     "open": true
+    }
+   },
+   "focus": [
+    {
+     "cue": "The open circle: 8 is not a solution.",
+     "box": [
+      61.4,
+      58.1,
+      6.6,
+      11.7
+     ]
+    },
+    {
+     "cue": "Every number to the left of 8 is a solution.",
+     "box": [
+      3.2,
+      58.1,
+      64.8,
+      11.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "At least, at most, more than",
+   "text": "The sign x ≥ 6 means 6 or more, and its circle is filled because 6 counts. The sign x > 6 means more than 6, with an open circle. A rule such as \"a rider must be at least 10 years old\" is the inequality a ≥ 10.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for solving.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "equation",
+     "means": "a statement that two expressions are equal, such as 3x + 5 = 23"
+    },
+    {
+     "word": "solution",
+     "means": "a number that makes an equation or an inequality true"
+    },
+    {
+     "word": "inverse operation",
+     "means": "the operation that undoes another: subtracting undoes adding"
+    },
+    {
+     "word": "inequality",
+     "means": "a statement with <, >, ≤ or ≥, such as x < 8, which many numbers can solve"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Machine Line at Run It Back. The output is known: set what went in, run the line and see if it lands. Then mark every input that works.",
+   "art": "trophy",
+   "img": "nq/machine-line/run-it-back",
+   "alt": "Machine Line on a phone: a line that adds 7 gives the output 12, with a stepper to set the number that went in.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-3.3-e1",
+  "nq-pro-3.3-e2",
+  "nq-pro-3.3-e3"
+ ],
+ "game": {
+  "slug": "machine-line",
+  "chapter": "Run It Back",
+  "params": "chapter=undo&lock=1"
+ }
+}
