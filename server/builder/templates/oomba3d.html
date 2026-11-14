@@ -277,6 +277,14 @@ async function buildWorld() {
     const x = (i % 2 ? 1 : -1) * (15 + sizeOf(s.piece, s.scale)[0] / 2 + (i % 3) * 3);
     jobs.push(put(s.piece, x, (z - half) * (i + 0.6) / all.length, s.scale, (i % 2 ? -1 : 1) * (0.5 + (i % 3) * 0.4), SEA_Y - 0.45 * s.scale));
   });
+  // Friendly animals standing in the water beside the way (LAYOUT.wading, in a world that has them): scenery that
+  // looks on. They never come onto the path, and nothing they do changes the game.
+  const zoo = g.theme.creatures || [];
+  (LAYOUT.wading || []).forEach((id, i, all) => {
+    const c = zoo.find(a => a.id === id); if (!c) return;
+    const sideOf = i % 2 ? 1 : -1, [, h, l] = c.size;
+    jobs.push(g.creature(id, { x: sideOf * (11 + l * 0.5), y: SEA_Y - h * 0.3, z: (z - half) * (i + 0.5) / all.length, face: -sideOf * 1.25 }));
+  });
   await Promise.all(jobs);
 }
 

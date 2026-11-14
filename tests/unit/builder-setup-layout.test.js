@@ -167,10 +167,11 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   assert.equal(await page.locator('.su-group[data-group="sea"] .su-pick').count(), 23);
   assert.doesNotMatch(await page.locator('.su-group[data-group="sea"] h2').textContent(), /Coming soon/);
   assert.equal(await card('dolphin').isDisabled(), true); assert.equal(await card('dolphin').locator('.su-desc').textContent(), 'Not in Castle Quest yet');
-  // dinosaurs are 2D sprites so far: listed, marked "Coming soon in 3D", and not pickable for a 3D game
-  assert.match(await page.locator('.su-group[data-group="dinosaurs"] h2').textContent(), /Dinosaurs\s*Coming soon in 3D/);
-  assert.equal(await card('triceratops').isDisabled(), true); assert.equal(await card('triceratops').locator('.su-desc').textContent(), 'Only in 2D games so far');
-  assert.equal(await card('zebra').isDisabled(), true);
+  // the dinosaurs live in Dino Valley (3D since its 1.0.0): the group is no longer "Coming soon in 3D", and at the
+  // castle a dinosaur is simply an animal of another world; the zebra is still a 2D sprite only
+  assert.doesNotMatch(await page.locator('.su-group[data-group="dinosaurs"] h2').textContent(), /Coming soon/);
+  assert.equal(await card('triceratops').isDisabled(), true); assert.equal(await card('triceratops').locator('.su-desc').textContent(), 'Not in Castle Quest yet');
+  assert.equal(await card('zebra').isDisabled(), true); assert.equal(await card('zebra').locator('.su-desc').textContent(), 'Only in 2D games so far');
   await card('fox').click(); assert.equal(await card('fox').getAttribute('aria-pressed'), 'true');
   // back to another world: the fox does not live there, so it is taken out again
   await page.click('.su-screen:not([hidden]) [data-go="back"]');
@@ -203,9 +204,9 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   assert.match(await page.textContent('#su-world-2d'), /Only running and catching games can use our worlds and characters in 2D so far/);
   await next(page); assert.equal(await page.isVisible('#su-chars-2d'), true);
   await next(page); await next(page); await next(page); assert.equal(await page.isVisible('#su-plan-2d'), true);
-  // back to 3D: the dinosaur is taken out again
+  // back to 3D: the zebra (a 2D sprite only) is taken out again
   await page.click('[data-change="look"]'); await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page);
-  assert.doesNotMatch(await page.textContent('#su-rows'), /Triceratops/); assert.equal(await page.isVisible('#su-plan-2d'), false);
+  assert.doesNotMatch(await page.textContent('#su-rows'), /Zebra/); assert.equal(await page.isVisible('#su-plan-2d'), false);
   await ctx.close();
 });
 

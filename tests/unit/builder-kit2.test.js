@@ -67,10 +67,11 @@ test('the catalogue says exactly what kit2/SHIPPED.json and the theme manifests 
   const shipped = {};
   for (const tv of Object.keys(V.KIT2_LOCK.themes)) { const [t, v] = tv.split('/'); (shipped[t] = shipped[t] || []).push(v); }
   assert.deepEqual(Object.keys(CAT.KIT2_VERSIONS).sort(), Object.keys(shipped).sort(), 'every shipped theme, and only those');
-  assert.ok(CAT.KIT2_WORLDS.length >= 11);
+  assert.ok(CAT.KIT2_WORLDS.length >= 12);
   assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'under-the-sea' && w.version === '1.0.0'), 'Under the Sea is offered');
   assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'pirate-cove' && w.version === '1.0.0'), 'Pirate Cove is offered');
   assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'wild-woods' && w.version === '1.0.0'), 'Wild Woods is offered');
+  assert.ok(CAT.KIT2_WORLDS.some(w => w.id === 'dino-valley' && w.version === '1.0.0' && w.creatures.length === 5), 'Dino Valley is offered, with its five dinosaurs');
   for (const w of CAT.KIT2_WORLDS) {
     assert.deepEqual([...CAT.KIT2_VERSIONS[w.id]].sort(), [...shipped[w.id]].sort(), `${w.id}: every shipped version`);
     const newest = CAT.KIT2_VERSIONS[w.id].at(-1);
@@ -103,10 +104,10 @@ test('animals and dinosaurs: none has shipped yet, and the Builder says so inste
   // The day a theme ships a creature this test changes sides: it must then be in the catalogue, the rules and the picker.
   if (creatures.length) {
     for (const c of creatures) assert.ok(P.KIT2_RULES.includes(c.id) && fs.existsSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)), c.id);
-    // and an animal no world has (a dinosaur today) still gets the honest "not yet", never an invented one
-    assert.match(P.KIT2_SHORT, /No dinosaurs, birds or other animals yet/);   // fish came with Under the Sea 1.0.0
+    // and an animal no world has (the T-Rex, held back; a cat, a bird) still gets the honest "not yet", never an invented one
+    assert.match(P.KIT2_SHORT, /No T-Rex, birds or other animals yet/);   // fish came with Under the Sea 1.0.0
     assert.match(P.KIT2_RULES, /Never invent a creature name[\s\S]*not listed[\s\S]*say so kindly[\s\S]*Never pretend/);
-    const dino = K.wantsKit2({}, 'a dinosaur game on the moon', null);
+    const dino = K.wantsKit2({}, 'a t-rex game on the moon', null);
     assert.equal(dino.wantsCreature, true);
     assert.match(K.kit2Note(dino), /an animal that is not in any world yet: say that kindly/);
     return;
@@ -143,6 +144,10 @@ test('engine choice: a new game uses Kit 2 when a world is picked, named or plai
     ['a nature trail with a ranger', 'wild-woods', 'rogue'], ['jump across the river to the campfire', 'wild-woods'], ['a meadow full of flowers to count', 'wild-woods'],
     ['a hiking game to the waterfall', 'wild-woods'], ['Make it a 3D game in the Wild Woods world.', 'wild-woods'], ['a 3D woodland game with a wizard', 'wild-woods', 'mage'],
     ['a haunted forest', 'spooky-hollow'], ['a forest on the moon', 'space-base'],
+    // Dino Valley: dinosaurs, by any of their names (another place named too keeps that place: the moon, above)
+    ['a dinosaur game', 'dino-valley', 'triceratops'], ['a dino maths adventure', 'dino-valley'], ['a prehistoric adventure', 'dino-valley'], ['a jurassic jumping game', 'dino-valley'],
+    ['dinosaurs in the forest', 'dino-valley'], ['a stegosaurus by the river', 'dino-valley', 'stegosaurus'], ['a velociraptor race', 'dino-valley', 'velociraptor'],
+    ['Make it a 3D game in the Dino Valley world.', 'dino-valley', 'barbarian'], ['a t-rex game', 'dino-valley', 'barbarian'],
   ]) {
     const p = want(text);
     assert.ok(p, `Kit 2: ${text}`); assert.equal(p.world, world, text);
@@ -158,6 +163,7 @@ test('engine choice: everything else stays on the old kit, as before', () => {
     'Use the Space theme.', 'Use the Castle theme.', 'Utilise le thème Château (castle).', 'a spelling game in the kitchen', 'catch the falling pumpkins',
     'a pirate memory game', 'a 2D pirate game', 'catch the falling treasure', 'Use the Pirate theme.', 'a treasure quiz',
     'a forest memory game', 'a 2D game in the woods', 'catch the falling leaves', 'Use the Forest theme.', 'a quiz about trees', 'a word search about camping',
+    'a dinosaur memory game', 'a 2D dinosaur game', 'catch the falling dinosaur eggs', 'a dino word search',
   ]) assert.equal(want(text), null, `old kit: ${text}`);
   // "pirate" is a place (Pirate Cove), which has no Captain Clank: nobody is reported missing, the Explorer plays
   const cove = want('a pirate treasure game');
@@ -303,8 +309,8 @@ test('a starter for every world: the literal import map, pinned versions, only n
   assert.ok(raw.includes(V.kit2ImportMap()), 'templates/oomba3d.html carries the literal Kit 2 import map (vendor.js kit2ImportMap())');
   assert.equal(raw, K.kit2Starter({ world: 'sky-islands', hero: 'knight' }), 'templates/oomba3d.html is the Sky Islands starter as served (newest version, its layout)');
   assert.equal(scanVersion(raw).status, 'pass');
-  assert.throws(() => T.loadTemplate('oomba3d', { world: 'dino-valley' }), /Unknown world/);
-  assert.equal(K.kit2Starter({ world: 'dino-valley' }), null);
+  assert.throws(() => T.loadTemplate('oomba3d', { world: 'candy-land' }), /Unknown world/);
+  assert.equal(K.kit2Starter({ world: 'candy-land' }), null);
   // the words a player reads: every site language
   const html = starter('sky-islands');
   for (const code of CODES) assert.ok(new RegExp(`\\n  (?:'${code}'|${code}): \\{ sub: `).test(html), `WORDS has ${code}`);
@@ -336,9 +342,9 @@ test('the scanner still refuses what it refused before, in a Kit 2 game too', ()
   const cq = K.worldById('castle-quest').version;
   assert.ok(html.includes(`version: '${cq}',`), 'the starter names the newest Castle Quest');
   assert.deepEqual(fails(html.replace(`version: '${cq}',`, "version: '9.9.9',")), ['kit2_theme']);
-  assert.deepEqual(fails(html.replace("world: 'castle-quest',", "world: 'dino-valley',")), ['kit2_theme']);
+  assert.deepEqual(fails(html.replace("world: 'castle-quest',", "world: 'candy-land',")), ['kit2_theme']);
   assert.deepEqual(fails(html.replace(`version: '${cq}',`, "version: '1.0.0',")), [], 'an older shipped version stays allowed: saved games keep theirs');
-  assert.ok(fails(add("const art = '/vendor/themes/dino-valley/1.0.0/heroes/rex.glb';")).includes('kit2_theme'));
+  assert.ok(fails(add("const art = '/vendor/themes/candy-land/1.0.0/heroes/rex.glb';")).includes('kit2_theme'));
 });
 
 test('the frame policy for built Kit 2 games is the one official Kit 2 games get', () => {
@@ -372,8 +378,8 @@ const newUser = () => auth.createUser({ username: `K2_${String.fromCharCode(97 +
 test('start_from_template "oomba3d": a shipped world and one of its characters, or a refusal with the real names', async () => {
   const u = newUser(), g = games.createGame(u.id, {}), state = {};
   const tb = toolbox({ user: u, gameId: g.id, emit: () => {}, state, locale: 'en' });
-  let r = await tb.exec('start_from_template', { template: 'oomba3d', world: 'dino-valley', hero: 'knight', notes: 'x' });
-  assert.equal(r.ok, false); assert.match(r.forModel, /no 3D world called "dino-valley"[\s\S]*sky-islands, castle-quest/);
+  let r = await tb.exec('start_from_template', { template: 'oomba3d', world: 'candy-land', hero: 'knight', notes: 'x' });
+  assert.equal(r.ok, false); assert.match(r.forModel, /no 3D world called "candy-land"[\s\S]*sky-islands, castle-quest/);
   r = await tb.exec('start_from_template', { template: 'oomba3d', world: 'space-base', hero: 't-rex', notes: 'x' });
   assert.equal(r.ok, false); assert.match(r.forModel, /space-base has no character called "t-rex"[\s\S]*knight, barbarian[\s\S]*There are no others/);
   r = await tb.exec('start_from_template', { template: 'oomba3d', world: 'sky-islands', hero: 'skelly', notes: 'x' });
@@ -399,14 +405,14 @@ async function turn(user, gameId, text) {
 }
 const current = id => games.getVersion(games.getGame(id).current_version_id);
 
-test('mock: "a dinosaur game on the moon" builds a Kit 2 game in Space Base, and says there is no dinosaur yet', async () => {
+test('mock: "a t-rex game on the moon" builds a Kit 2 game in Space Base, and says that animal is not here yet', async () => {
   const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
-  let t = await turn(u, g.id, 'a dinosaur game on the moon');
+  let t = await turn(u, g.id, 'a t-rex game on the moon');
   assert.equal(t.of('version').length, 1, 'built straight away'); assert.equal(t.of('version')[0].status, 'pass');
   let v = current(g.id);
   assert.deepEqual(K.kit2Of(v.html), { world: 'space-base', version: '1.0.0', hero: 'knight' });
   assert.ok(v.html.includes(V.kit2ImportMap()) && !usesKit(v.html));
-  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [A-Z]/, 'the honest "not yet" for a dinosaur');
+  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [A-Z]/, 'the honest "not yet" for the T-Rex (the dinosaurs that exist are in Dino Valley)');
   assert.equal(games.getGame(g.id).title, 'Dino Space Base');
   assert.equal(k2Read(v.html, 'outfit'), '#66C792');
   assert.equal(t.of('ask').length, 1); assert.equal(t.of('ask')[0].options.length, 3);
@@ -425,7 +431,7 @@ test('mock: "a dinosaur game on the moon" builds a Kit 2 game in Space Base, and
   assert.deepEqual(K.kit2Of(v.html), { world: 'toy-town', version: '1.1.0', hero: 'mage' });
   assert.equal(k2Read(v.html, 'title'), 'Moon Hop'); assert.equal(k2Read(v.html, 'weather'), 'snow'); assert.equal(k2Read(v.html, 'steps'), 6); assert.equal(k2Read(v.html, 'outfit'), '#66C792');
   assert.equal(scanVersion(v.html).status, 'pass'); assert.deepEqual(scanVersion(v.html).lint, []);
-  t = await turn(u, g.id, 'change the hero to a dinosaur');
+  t = await turn(u, g.id, 'change the hero to a t-rex');
   assert.match(t.text, /kept your hero \(the 3D worlds do not have that animal yet\)/); assert.equal(t.of('version').length, 0, 'nothing is pretended');
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
@@ -491,6 +497,43 @@ test('mock: "a maths game under the sea" builds a Kit 2 game in Under the Sea, s
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
 
+test('mock: "a dinosaur game" builds a Kit 2 game in Dino Valley with a dinosaur as the hero; the T-Rex is answered honestly', async () => {
+  const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
+  let t = await turn(u, g.id, 'a dinosaur game');
+  assert.equal(t.of('version').length, 1, 'built straight away'); assert.equal(t.of('version')[0].status, 'pass');
+  let v = current(g.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'dino-valley', version: '1.0.0', hero: 'triceratops' });
+  assert.ok(v.html.includes(V.kit2ImportMap()) && !usesKit(v.html));
+  assert.equal(games.getGame(g.id).title, 'Dino Valley');
+  assert.match(t.text, /Dino Valley world with Triceratops as the hero/); assert.doesNotMatch(t.text, /has no|do not have that animal/);
+  assert.match(v.html, /ground: \{ piece: "valley-ground", scale: 1 \},/); assert.match(v.html, /goal: \{ piece: "egg", scale: 1 \},/); assert.match(v.html, /wading: \["apatosaurus","parasaurolophus","triceratops"\],/);
+  assert.equal(scanVersion(v.html).status, 'pass'); assert.deepEqual(scanVersion(v.html).lint, []);
+  // nothing a dinosaur game is made of is a bone, a weapon or anything scary; no words about fighting, hunting or biting
+  assert.doesNotMatch(v.html, /skull|\bbones?\b|fossil|\blava\b|volcano|\btraps?\b|\baxe|\bgun|weapon|ghost|enemy|enemies|fight|sword|\bhunt|\bdead\b|\bbit(e|es|ing)\b|\broar|t-?rex|tyrannosaur/i);
+  // a little one comes along when asked
+  t = await turn(u, g.id, 'add a raptor that follows me');
+  v = current(g.id);
+  assert.deepEqual([K.kit2Of(v.html).hero, K.kit2Of(v.html).companion], ['triceratops', 'velociraptor']); assert.match(t.text, /Velociraptor who follows you/);
+  // the one that is held back: never pretended, in a game that exists or a new one
+  const n = games.listVersions(g.id).length;
+  t = await turn(u, g.id, 'change the hero to a t-rex');
+  assert.match(t.text, /kept your hero \(the 3D worlds do not have that animal yet\)/); assert.equal(games.listVersions(g.id).length, n, 'nothing is pretended');
+  assert.equal(K.kit2Of(current(g.id).html).hero, 'triceratops');
+  for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
+  const g2 = games.createGame(u.id, { title: 'New game' });
+  t = await turn(u, g2.id, 'a t-rex game');
+  v = current(g2.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'dino-valley', version: '1.0.0', hero: 'barbarian' }, 'a person is the hero, and no dinosaur stands in');
+  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [^.]*Triceratops[^.]*Velociraptor\. So Explorer is your hero/);
+  assert.doesNotMatch(t.text, /T-?Rex|Tyrannosaur/i); assert.equal(games.getGame(g2.id).title, 'Dino Valley');
+  assert.doesNotMatch(v.html, /t-?rex|tyrannosaur/i);
+  // on the moon, a dinosaur is one Space Base does not have: said kindly, a person plays
+  const g3 = games.createGame(u.id, { title: 'New game' });
+  t = await turn(u, g3.id, 'a dinosaur game on the moon');
+  assert.deepEqual(K.kit2Of(current(g3.id).html), { world: 'space-base', version: '1.0.0', hero: 'knight' });
+  assert.match(t.text, /Space Base has no Triceratops, so Knight is your hero/);
+});
+
 test('mock: the chips build the picked world with the picked hero', async () => {
   const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
   const t = await turn(u, g.id, 'Make it a 3D game in the Spooky Hollow world.\nUse the 3D hero Captain Clank.');
@@ -510,7 +553,7 @@ test('mock: an animal that exists is built in: a pet as a companion, a horse as 
   t = await turn(u, g.id, 'change the hero to the horse');
   v = current(g.id);
   assert.deepEqual([K.kit2Of(v.html).hero, K.kit2Of(v.html).companion], ['horse', 'fox']); assert.equal(v.safety_status, 'pass');
-  t = await turn(u, g.id, 'change the hero to a dinosaur');
+  t = await turn(u, g.id, 'change the hero to a cat');
   assert.match(t.text, /do not have that animal yet/); assert.equal(K.kit2Of(current(g.id).html).hero, 'horse', 'nothing is pretended');
   // a game saved on Oomba3D 1.1.0 (before the animals): asking for one moves it to a fresh starter, with its title and numbers kept
   const g2 = games.createGame(u.id, { title: 'Old Village' });
@@ -596,7 +639,7 @@ test('the Build page and the Studio offer every world and character, with pictur
   const build = await c('/build');
   for (const w of CAT.KIT2_WORLDS) assert.match(build.text, new RegExp(`data-template="oomba3d" data-world="${w.id}"[^>]*>\\s*<span class="tplcover tplpic"><img src="/img/kit2/worlds/${w.id}-card\\.webp"`), w.id);
   assert.match(build.text, /Start in a 3D world/);
-  assert.equal((await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'dino-valley' } })).status, 400);
+  assert.equal((await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'candy-land' } })).status, 400);
   assert.equal((await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d' } })).status, 400);
   const made = await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'medieval-village' } });
   assert.equal(made.status, 200, made.text);
@@ -673,9 +716,9 @@ async function openGame(html, { width = 960, height = 600, touch = false, lang =
   return { ctx, page, frame, errors, outside, asked, state: () => frame.evaluate(() => window.__brbTest.state()) };
 }
 
-// At least two worlds and three characters (the brief asks for an animal and a dinosaur among them: none has shipped,
-// see the test above; an adventurer, a wizard and two skeleton pals are played instead). Each plays a whole round.
-const PLAYS = [['sky-islands', 'knight'], ['castle-quest', 'skelly'], ['space-base', 'mage'], ['busy-kitchen', 'captain-clank'], ['pirate-cove', 'barbarian'], ['pirate-cove', 'mage'], ['wild-woods', 'barbarian'], ['wild-woods', 'rogue']];
+// At least two worlds and three characters: an adventurer, a wizard and two skeleton pals. Each plays a whole round.
+// (An animal or a dinosaur as the hero is played in kit2-creatures.test.js and kit2-dino-valley.test.js.)
+const PLAYS = [['sky-islands', 'knight'], ['castle-quest', 'skelly'], ['space-base', 'mage'], ['busy-kitchen', 'captain-clank'], ['pirate-cove', 'barbarian'], ['pirate-cove', 'mage'], ['wild-woods', 'barbarian'], ['wild-woods', 'rogue'], ['dino-valley', 'barbarian']];
 for (const [world, hero] of PLAYS) {
   test(`${world} with ${hero}: the starter loads and plays a whole round in the production frame`, { skip, timeout: 420_000 }, async () => {
     const w = K.worldById(world);

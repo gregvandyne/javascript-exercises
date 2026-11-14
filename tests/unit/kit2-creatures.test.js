@@ -60,9 +60,12 @@ test('at least two worlds ship animals, and the T-Rex is not one of them', () =>
   assert.ok(withCreatures.length >= 2);
   const ids = new Set(withCreatures.flatMap(v => v.manifest.creatures.map(c => c.id)));
   for (const id of ['donkey', 'cow', 'husky', 'pig', 'sheep', 'horse', 'deer', 'stag', 'fox', 'shiba']) assert.ok(ids.has(id), id);
+  // The velociraptor joined with Dino Valley 1.0.0: its mouth is closed and no teeth show (looked at face on and side on,
+  // docs/decisions.md "Dino Valley"). The T-Rex, whose mouth cannot be closed, the wolf and every shark with teeth are still out.
   // The one shark is Under the Sea's Little Shark: the underwater pack's toy-like model has no mouth at all (looked at
-  // face on and side on, docs/decisions.md "Under the Sea"). Every shark with teeth showing was left out.
-  assert.ok(![...ids].some(id => /rex|raptor|shark|wolf/.test(id) && id !== 'little-shark'), 'nothing with teeth showing ships here');
+  // face on and side on, docs/decisions.md "Under the Sea").
+  assert.ok(![...ids].some(id => /rex|tyranno|shark|wolf/.test(id) && id !== 'little-shark'), 'nothing with teeth showing ships here');
+  for (const id of [...ids].filter(id => /raptor/.test(id))) assert.equal(id, 'velociraptor');
 });
 
 for (const { theme, version, dir, manifest } of withCreatures) {
@@ -82,7 +85,8 @@ for (const { theme, version, dir, manifest } of withCreatures) {
       assert.equal(typeof c.playable, 'boolean');
       // (A water animal is played with the swim controls, which play idle and swim: it needs those two, and no walk.)
       if (c.playable) for (const m of c.kind === 'water' ? ['idle', 'swim'] : ['idle', 'walk', 'run', 'jump']) assert.ok(c.moves.includes(m), `${c.id} is playable, so it has ${m}`);
-      else assert.ok(!c.moves.includes('walk'), `${c.id} is not playable only because it cannot walk`);
+      // Not playable: it cannot walk (it hops), or it walks but is far too long to read as a hero (the 15 m apatosaurus).
+      else assert.ok(!c.moves.includes('walk') || c.size[2] > 10, `${c.id} is not playable only because it cannot walk, or is too long to be a hero`);
       // What keeps feet from sliding: the clip's own speed over the ground, and the part of the jump spent in the air.
       if (c.moves.includes('walk')) assert.ok(c.pace && c.pace.walk > 0.3 && c.pace.run > c.pace.walk, `${c.id} pace`);
       if (c.moves.includes('jump')) assert.ok(Array.isArray(c.jumpAir) && c.jumpAir[0] >= 0 && c.jumpAir[1] <= 1 && c.jumpAir[1] - c.jumpAir[0] > 0.15, `${c.id} jumpAir`);
@@ -92,7 +96,7 @@ for (const { theme, version, dir, manifest } of withCreatures) {
 
   test(`${theme} ${version}: everything the version before it had is still here, byte for byte`, () => {
     const before = versions.filter(v => v.theme === theme && v.version.localeCompare(version, undefined, { numeric: true }) < 0).sort((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true })).pop();
-    // A world born with its animals (Under the Sea 1.0.0) has no version before it: nothing older to keep, only its lock.
+    // A world born with its animals (Dino Valley 1.0.0, Under the Sea 1.0.0) has no version before it: nothing older to keep, only its lock.
     if (!before) { assert.equal(version, '1.0.0', 'only a first version has none before it'); assert.ok(LOCK.themes[`${theme}/${version}`], 'it is locked'); return; }
     for (const [f, info] of Object.entries(before.manifest.files)) if (/\.(glb|ogg)$/.test(f)) assert.equal(manifest.files[f] && manifest.files[f].sha384, info.sha384, `${f} is unchanged from ${before.version}`);
     for (const key of ['heroes', 'pieces', 'sounds', 'moves', 'look']) assert.deepEqual(manifest[key], before.manifest[key], `${key} are the same as in ${before.version}`);
@@ -219,7 +223,7 @@ test('the Builder: an animal that exists is used, one that does not gets the hon
   assert.deepEqual([p.world, p.companion, p.missing], ['medieval-village', undefined, 'fox']);
   assert.match(K.kit2Note(p), /Medieval Village has no Fox: say so kindly/);
   // one no world has: never invented
-  for (const text of ['a dinosaur game on the moon', 'a castle game with a dragon', 'a village game with a t-rex and a cat']) {
+  for (const text of ['a t-rex game on the moon', 'a castle game with a dragon', 'a village game with a t-rex and a cat']) {
     p = want(text);
     assert.equal(p.wantsCreature, true, text); assert.equal(p.companion, undefined); assert.ok(K.heroesOf(p.world).some(h => h.id === p.hero));
     assert.match(K.kit2Note(p), /not in any world yet: say that kindly/);

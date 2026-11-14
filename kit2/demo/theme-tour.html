@@ -36,14 +36,21 @@ heroes.forEach((h, i) => h.play(moves[i % moves.length]));
 
 // The theme's animals (Oomba3D 1.2.0, for themes that have any) in a row in front of the heroes, eating or standing.
 const zoo = T.creatures || [];
+// A big animal (longer than 5: a dinosaur) stands further back among the scenery, side on, the longest furthest away.
+const small = zoo.filter(c => !(c.size[2] > 5)), big = zoo.filter(c => c.size[2] > 5).sort((a, b) => a.size[2] - b.size[2]);
+const spot = c => {
+  const i = small.indexOf(c), k = big.indexOf(c), side = k % 2 ? 1 : -1;
+  if (i >= 0) return { x: (i - (small.length - 1) / 2) * 2.5 + (big.length ? -4.4 : 0), y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 + (big.length ? 0.7 : 0) };
+  return k < 2 ? { x: side * 9, y: 0, z: -3.5, face: -side * 1.15 } : { x: side * 4.5, y: 0, z: (side < 0 ? -6.5 : -11) - (k >> 2) * 6, face: -side * 1.3 };
+};
 // (An underwater theme: an endless sandy floor, bubbles, and its water animals side on at
 // different depths all over the picture, the big ones further back, with a shoal of the smallest behind them.)
 if (undersea) { W.ground({ y: 0, size: 400 }); g.weather('bubbles'); g.graphics('high'); }   // high: every animal is drawn
 const swimmers = undersea ? zoo.filter(c => c.kind !== 'land').sort((a, b) => a.size[2] - b.size[2]) : [];
 const spotOf = (c, i) => {
-  const k = swimmers.indexOf(c); if (k < 0) return { x: (i - (zoo.length - 1) / 2) * 2.5, y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 };
-  const big = c.size[2] > 2.5, side = k % 2 ? 1 : -1, col = (k * 5) % 9 - 4;
-  return big ? { x: side * (2.5 + (k % 3) * 2.6), y: 2.8 + (k % 3) * 1.4, z: -3 - (k % 4) * 2.2, face: -side * 1.25 } : { x: col * 1.75 + side * 0.4, y: 0.5 + (k % 4) * 1.15, z: 5.6 - (k % 3) * 2.1, face: side * 1.15 };
+  const k = swimmers.indexOf(c); if (k < 0) return spot(c);
+  const far = c.size[2] > 2.5, side = k % 2 ? 1 : -1, col = (k * 5) % 9 - 4;
+  return far ? { x: side * (2.5 + (k % 3) * 2.6), y: 2.8 + (k % 3) * 1.4, z: -3 - (k % 4) * 2.2, face: -side * 1.25 } : { x: col * 1.75 + side * 0.4, y: 0.5 + (k % 4) * 1.15, z: 5.6 - (k % 3) * 2.1, face: side * 1.15 };
 };
 const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, spotOf(c, i)))) : [];
 if (swimmers.length) await g.school([...swimmers].sort((a, b) => a.size[1] - b.size[1])[0].id, 9, { around: { x: 7, y: 5.5, z: -9 }, radius: 4 });   // the slimmest fish

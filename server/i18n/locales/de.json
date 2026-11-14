@@ -1604,6 +1604,7 @@
         "busy-kitchen": "Wuselküche",
         "pirate-cove": "Piratenbucht",
         "wild-woods": "Wilder Wald",
+        "dino-valley": "Dino-Tal",
         "under-the-sea": "Unter dem Meer"
       }
     },
@@ -1628,6 +1629,11 @@
         "stag": "Hirsch",
         "fox": "Fuchs",
         "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Stegosaurus",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaurus",
+        "velociraptor": "Velociraptor",
         "dolphin": "Delfin",
         "turtle": "Meeresschildkröte",
         "clownfish": "Clownfisch",
@@ -8593,6 +8599,7 @@
       "medieval-village": "Ein Märchendorf mit Windmühle und Markt.",
       "pirate-cove": "Sandinseln, Palmen, Stege und Segelschiffe.",
       "wild-woods": "Ein sonniger Wald mit Fluss, Felsen und Zeltlager.",
+      "dino-valley": "Ein sonniges Tal mit freundlichen Dinosauriern, Palmen und einem riesigen Ei.",
       "under-the-sea": "Ein Korallenriff, durch das du als Delfin, Schildkröte oder Fisch schwimmst."
     },
     "groups": {

@@ -1603,6 +1603,7 @@
         "busy-kitchen": "にぎやかキッチン",
         "pirate-cove": "かいぞくの入り江",
         "wild-woods": "わくわくの森",
+        "dino-valley": "きょうりゅうの谷",
         "under-the-sea": "うみのなか"
       }
     },
@@ -1627,6 +1628,11 @@
         "stag": "オスジカ",
         "fox": "キツネ",
         "shiba": "しばいぬ",
+        "triceratops": "トリケラトプス",
+        "stegosaurus": "ステゴサウルス",
+        "parasaurolophus": "パラサウロロフス",
+        "apatosaurus": "アパトサウルス",
+        "velociraptor": "ヴェロキラプトル",
         "dolphin": "イルカ",
         "turtle": "ウミガメ",
         "clownfish": "カクレクマノミ",
@@ -8592,6 +8598,7 @@
       "medieval-village": "風車と市場がある、おとぎ話の村。",
       "pirate-cove": "すなの島、ヤシの木、さんばし、ほ船。",
       "wild-woods": "川と岩とキャンプがある、明るい森。",
+      "dino-valley": "やさしいきょうりゅうとヤシの木、大きなたまごのある明るい谷。",
       "under-the-sea": "イルカや カメや さかなに なって およぐ サンゴしょう。"
     },
     "groups": {

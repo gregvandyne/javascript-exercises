@@ -1603,6 +1603,7 @@
         "busy-kitchen": "忙碌廚房",
         "pirate-cove": "海盜灣",
         "wild-woods": "野外森林",
+        "dino-valley": "恐龍谷",
         "under-the-sea": "海底世界"
       }
     },
@@ -1627,6 +1628,11 @@
         "stag": "雄鹿",
         "fox": "狐狸",
         "shiba": "柴犬",
+        "triceratops": "三角龍",
+        "stegosaurus": "劍龍",
+        "parasaurolophus": "副櫛龍",
+        "apatosaurus": "迷惑龍",
+        "velociraptor": "伶盜龍",
         "dolphin": "海豚",
         "turtle": "海龜",
         "clownfish": "小丑魚",
@@ -8592,6 +8598,7 @@
       "medieval-village": "童話般的村莊，有風車和市場。",
       "pirate-cove": "沙灘小島、椰子樹、碼頭和帆船。",
       "wild-woods": "陽光森林，有小河、岩石和營地。",
+      "dino-valley": "陽光山谷，有友善的恐龍、棕櫚樹和一顆大蛋。",
       "under-the-sea": "變成海豚、海龜或小魚，在珊瑚礁裡游泳。"
     },
     "groups": {

@@ -1604,6 +1604,7 @@
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
         "wild-woods": "Wilde Woud",
+        "dino-valley": "Dinovallei",
         "under-the-sea": "Onder de Zee"
       }
     },
@@ -1628,6 +1629,11 @@
         "stag": "Hert",
         "fox": "Vos",
         "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Stegosaurus",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaurus",
+        "velociraptor": "Velociraptor",
         "dolphin": "Dolfijn",
         "turtle": "Zeeschildpad",
         "clownfish": "Clownvis",
@@ -8593,6 +8599,7 @@
       "medieval-village": "Een sprookjesdorp met een molen en een markt.",
       "pirate-cove": "Zandeilanden, palmbomen, steigers en zeilschepen.",
       "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp.",
+      "dino-valley": "Een zonnige vallei met vriendelijke dinosaurussen, palmen en een reuzenei.",
       "under-the-sea": "Een koraalrif waar je zwemt als dolfijn, schildpad of vis."
     },
     "groups": {
