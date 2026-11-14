@@ -1,19 +1,18 @@
-// /build: "New game", the "Start from" template cards and the 3D world cards create a game and open the Studio; My games can be renamed or deleted.
+// /build: the "Start from" template cards and the 3D world cards create a game and open the Studio; My games can be
+// renamed or deleted. "New game" is a link to the setup steps (/build/new, buildsetup.js).
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 
 async function create(template, btn, world) {
-  $$('.tplcard, #newgame').forEach(b => (b.disabled = true));
+  $$('.tplcard').forEach(b => (b.disabled = true));
   const old = btn.innerHTML;
-  if (btn.id === 'newgame') btn.textContent = `✨ ${t('js.build.gettingReady')}`;
   try {
     const r = await api('/api/studio/new', { method: 'POST', body: template ? { template, ...(world ? { world } : {}) } : {} });
     location.href = r.url;
   } catch (e) {
     toast(e.message, { bad: true });
-    btn.innerHTML = old; $$('.tplcard, #newgame').forEach(b => (b.disabled = false));
+    btn.innerHTML = old; $$('.tplcard').forEach(b => (b.disabled = false));
   }
 }
-const nb = $('#newgame'); if (nb) nb.addEventListener('click', () => create(null, nb));
 // A 3D world card (data-world) starts the Kit 2 starter in that world.
 $$('.tplcard').forEach(b => b.addEventListener('click', () => create(b.dataset.template, b, b.dataset.world)));
 

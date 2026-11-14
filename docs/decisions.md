@@ -5141,6 +5141,42 @@ The owner asked: "Can we also make these worlds available in 2d?" Branch `kit2-a
   NPC bubble) do not; clouds are few. **Not verified:** a real phone or Chromebook GPU (software WebGL and the 2D
   canvas backend only) and a build with the real model.
 
+## Step-by-step game setup before the Builder (14 Nov 2026)
+
+"New game" on `/build` now opens `/build/new` (`server/routes/build-setup.js`, `public/js/buildsetup.js`,
+`public/css/build-setup.css`): "Help me choose" (six steps, then "Here is your game plan") or "I know what I want"
+(an empty game and the Studio, as before). Every step has "Skip to the Builder". The starter and world cards on
+`/build`, and opening a game in progress, are unchanged.
+
+- **The plan is data** (`server/builder/plan.js`): `{ type, look, world, characters, learn, notes }`. Game type, world
+  and each character are `{ from: 'pack', id }` or `{ from: 'custom', text }`. "Open the Builder" posts it as
+  `plan` with the game's first chat message; the server writes the message itself from the plan, in the builder's
+  language, so the typed words pass the same screening as any typed message. The plan is kept on the build's row and
+  on the builder's message. Nothing is stored by the setup page, and nothing on it uses the voice service.
+- **Pack choices are used as given; custom ones are built from scratch.** The model reads a `SETUP CHOICES` block
+  (`planNote`), and the engine comes from the plan, not from the words (`engineFor`, `art2dFor`): a pack world with 3D
+  is always a Kit 2 game in that world; a world of their own is never a ready-made world. A 3D plan with a pack
+  character and a world of their own runs on Oomba3D (the characters only exist there) with the place built from
+  scratch. The one new exception in the Kit 2 rules: a character marked CUSTOM may be built from simple shapes.
+- **2D uses the 2D art packs** (`art2d.js`): a running or catching game (an adventure, or no kind picked, is a running
+  game) starts from that template with the plan's world and ONE sprite character (`start_from_template` world and
+  sprite, the 2D ART RULES). Quiz, word, memory, two-player and board games do not draw worlds or sprites yet: the
+  page says so on the world step, the characters step and the plan, and the Builder is told to keep the kit's look,
+  use the choices as the game's idea and say so.
+- **Who is in it** is grouped from BOTH catalogues (`setupCharacters`): the 3D worlds' heroes and animals and the 2D
+  sprites, once each. `kit2/creature-groups.json` gives each animal a group (the generator writes the list into
+  `kit2-catalog.js`; a 2D sprite falls back to its pack's group). What can be picked follows the 2D or 3D choice:
+  for 3D (or no choice, or "You pick for me") the 3D characters, limited by the world and by sharing a world; an
+  animal that is only a sprite (the dinosaurs, zebra, llama...) says "Only in 2D games so far", and its group
+  "Coming soon in 3D". For 2D every sprite, one of them. "Coming soon" stays only for a group neither catalogue
+  has (fish and sea animals).
+- **Cards** on one screen are one size by construction (equal columns, fixed picture shape, clamped lines).
+  World cards use the real cover; "Preview" opens a dialog with a 1280x720 picture of the Builder's own starter in
+  that world (`public/img/kit2/worlds/<world>-preview.webp`, made by `node scripts/kit2-thumbs.js --previews`).
+- **Files:** the extras step takes worksheets and notes (PDF, text) through the Studio's own upload, after the game
+  exists. Pictures are not taken on this page; they are added in the Studio as before.
+- **Not verified:** a build with the real model (no key here), so the `SETUP CHOICES` wording is untested against it.
+
 ## Dino Valley 1.0.0: a prehistoric valley with five friendly dinosaurs (14 Nov 2026)
 
 The first world born with its animals: Round B of `docs/kit2-packs-plan.md`, built the way Wild Woods and the first
@@ -5205,6 +5241,10 @@ ten animals were, on Oomba3D 1.2.0 (unchanged, like 1.0.0 and 1.1.0 and every sh
   one (`tests/unit/art2d.test.js`), so the valley is drawn for 2D runner and catching games too: palms, the waterfall
   and the cave far off, palms, bamboo, boulders and a giant mushroom nearer, the great egg as the goal, a log and two
   rocks as the things to jump. The five dinosaurs were already in the 2D `animals` pack.
+- **The setup steps (/build/new):** the five dinosaurs are in the Dinosaurs group of `kit2/creature-groups.json`, so with
+  the theme shipped the group no longer says "Coming soon in 3D" (no group does today; the state is still tested with a
+  made-up list). Dino Valley is on the world step with its line in 12 languages and its 1280 by 720 preview
+  (`scripts/kit2-thumbs.js --previews`). A dinosaur picked alone is the hero in Dino Valley; the apatosaurus comes along.
 - **The theme tour** stands big animals (longer than 5) further back, side on; worlds with small animals are laid out
   as before.
 - **Not verified:** motion (walks, runs and jumps were judged from still frames and from positions and speeds read in

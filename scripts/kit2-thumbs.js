@@ -1,11 +1,15 @@
 // The small pictures of the Kit 2 worlds and characters for the Studio picker and the Build page:
 //   public/img/kit2/worlds/<world>.webp        96x64 (shown at 48x32 on a chip), from the world's own cover picture
 //   public/img/kit2/worlds/<world>-card.webp   320x200 (a card on /build), from the same cover
+//   public/img/kit2/worlds/<world>-preview.webp 1280x720 (the close-up view of a world in the setup steps, /build/new):
+//                                              the Builder's own starter game in that world (kit2.js kit2Starter),
+//                                              just after Play, drawn by Oomba3D in the real game frame
 //   public/img/kit2/heroes/<id>.webp           96x96 (shown at 36x36 on a chip): the character itself, waving, drawn by
 //                                              Oomba3D in the real game frame (the same frame and CSP players get)
 // One picture per world and character in the generated catalogue (server/builder/kit2-catalog.js), so a newly shipped
 // theme gets its pictures by running this again: node scripts/kit2-thumbs.js   (--only cow,pig,castle-quest draws just
-// those worlds and characters and leaves every other picture as it is). An animal is drawn with g.creature(), turned a
+// those worlds and characters and leaves every other picture as it is; --previews draws only the worlds' close-up
+// views). An animal is drawn with g.creature(), turned a
 // little to the side and framed by its own size (a very long one, a dinosaur, turned more towards the camera).
 // Needs the Playwright Chromium (BRB_CHROMIUM, or the one Playwright installed). Chromium itself encodes the WebP.
 // tests/unit/builder-kit2.test.js fails when a world or character has no picture.
@@ -16,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const { KIT2_WORLDS, KIT2_CHARACTERS } = await import('../server/builder/kit2.js');
+const { KIT2_WORLDS, KIT2_CHARACTERS, kit2Starter } = await import('../server/builder/kit2.js');
 const { kit2ImportMap } = await import('../server/services/vendor.js');
 const { frameDocument, frameCsp, SANDBOX } = await import('../server/services/frame.js');
 const { vendorFile } = await import('../server/services/snapshot.js');
@@ -41,9 +45,38 @@ async function webp(page, buf, mime, w, h, q = 0.82) {
 const save = (rel, buf) => { fs.writeFileSync(path.join(OUT, rel), buf); console.log(`public/img/kit2/${rel}`, buf.length, 'bytes'); };
 
 const onlyAt = process.argv.indexOf('--only'), only = onlyAt > 0 ? new Set(String(process.argv[onlyAt + 1] || '').split(',')) : null;
+const previewsOnly = process.argv.includes('--previews');
 const blank = await (await browser.newContext()).newPage();
 await blank.setContent('<!doctype html><title>t</title>');
+/** A game document in the real game frame (the same frame, sandbox and CSP players get), served from memory. */
+async function framed(ctx, game, title) {
+  const doc = frameDocument(game, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title }, save: {}, canSave: false });
+  const outer = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
+  const page = await ctx.newPage();
+  await page.route('**/*', route => {
+    const u = route.request().url();
+    if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: outer });
+    if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
+    const f = u.startsWith(HOST + '/vendor/') && vendorFile(u);
+    const types = { js: 'text/javascript', mjs: 'text/javascript', glb: 'model/gltf-binary', ogg: 'audio/ogg', json: 'application/json', webp: 'image/webp' };
+    if (f) return route.fulfill({ status: 200, headers: { 'content-type': types[f.split('.').pop()] || 'application/octet-stream', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) });
+    return route.abort();
+  });
+  await page.goto(HOST + '/');
+  return { page, frame: page.frames().find(f => f.url() === HOST + '/frame') };
+}
+// The close-up view of each world: its starter game, a moment after Play (the hero on the start place, the way ahead).
+const wide = await browser.newContext({ viewport: { width: 1280, height: 720 } });
 for (const w of KIT2_WORLDS) {
+  if (only && !only.has(w.id)) continue;
+  const { page, frame } = await framed(wide, kit2Starter({ world: w.id }), w.name);
+  await frame.waitForFunction(() => !!(window.__brbTest && window.__brbTest.state().scene === 'title'), null, { timeout: 120_000 });
+  await frame.evaluate(() => window.__brbTest.start());
+  await page.waitForTimeout(2500);
+  save(`worlds/${w.id}-preview.webp`, await webp(blank, await page.screenshot({ type: 'png' }), 'image/png', 1280, 720, 0.8));
+  await page.close();
+}
+for (const w of previewsOnly ? [] : KIT2_WORLDS) {
   if (only && !only.has(w.id)) continue;
   const cover = fs.readFileSync(path.join(ROOT, 'public/vendor/themes', w.id, w.version, 'cover.webp'));
   save(`worlds/${w.id}.webp`, await webp(blank, cover, 'image/webp', 96, 64));
@@ -52,7 +85,7 @@ for (const w of KIT2_WORLDS) {
 
 // Each character alone, close up, in the first world that has it.
 const ctx = await browser.newContext({ viewport: { width: 384, height: 384 } });
-for (const c of KIT2_CHARACTERS) {
+for (const c of previewsOnly ? [] : KIT2_CHARACTERS) {
   if (only && !only.has(c.id)) continue;
   const w = KIT2_WORLDS.find(x => x.id === c.worlds[0]);
   const game = `<title>${c.id}</title>\n${kit2ImportMap()}\n<style>html, body { margin: 0; height: 100%; overflow: hidden; }</style>
@@ -70,20 +103,7 @@ g.camera.fov = 26; g.camera.updateProjectionMatrix();
 g.camera.position.set(0.5, 41.9, 5.4); g.camera.lookAt(0, 41.45, 0);`}
 setTimeout(() => { window.__ready = true; }, 900);
 </script>`;
-  const doc = frameDocument(game, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: c.id }, save: {}, canSave: false });
-  const outer = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
-  const page = await ctx.newPage();
-  await page.route('**/*', route => {
-    const u = route.request().url();
-    if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: outer });
-    if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-    const f = u.startsWith(HOST + '/vendor/') && vendorFile(u);
-    const types = { js: 'text/javascript', mjs: 'text/javascript', glb: 'model/gltf-binary', ogg: 'audio/ogg', json: 'application/json', webp: 'image/webp' };
-    if (f) return route.fulfill({ status: 200, headers: { 'content-type': types[f.split('.').pop()] || 'application/octet-stream', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) });
-    return route.abort();
-  });
-  await page.goto(HOST + '/');
-  const frame = page.frames().find(f => f.url() === HOST + '/frame');
+  const { page, frame } = await framed(ctx, game, c.id);
   await frame.waitForFunction(() => window.__ready === true, null, { timeout: 90_000 });
   save(`heroes/${c.id}.webp`, await webp(blank, await page.screenshot({ type: 'png' }), 'image/png', 96, 96, 0.85));
   await page.close();

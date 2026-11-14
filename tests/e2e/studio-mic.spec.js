@@ -79,7 +79,7 @@ const AUDIO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../sup
 async function studio(page) {
   await signup(page, uniq('Mic'));
   await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   await expect(page.locator('#st-send')).toBeEnabled({ timeout: 20000 });
 }
 const log = page => page.locator('#st-log');

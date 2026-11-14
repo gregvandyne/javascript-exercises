@@ -2580,6 +2580,50 @@
       "drafted": "已草擬 {n} 題，請逐題檢查。",
       "backConfirm": "要重新開始嗎？此頁面上草擬的題目將會消失。",
       "assigned": "已指派。"
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "遊戲類型",
+        "look": "樣子",
+        "world": "世界",
+        "chars": "角色",
+        "learn": "可以學到",
+        "extras": "補充"
+      },
+      "world": {
+        "choose": "選這個世界",
+        "close": "關閉",
+        "gameAlt": "「{name}」裡的遊戲，從主角背後看過去",
+        "coverAlt": "從遠處看「{name}」",
+        "chosen": "已選「{name}」。"
+      },
+      "chars": {
+        "hero": "英雄",
+        "livesIn": "住在{worlds}",
+        "notIn": "「{world}」裡還沒有",
+        "otherWorld": "住在別的世界",
+        "only2d": "目前只有 2D 遊戲有",
+        "only3d": "目前只有 3D 遊戲有",
+        "one2d": "2D 遊戲目前只能選一個角色"
+      },
+      "extras": {
+        "remove": "移除",
+        "removeLabel": "移除 {name}",
+        "tooMany": "這裡最多可以加入 {max} 個檔案。",
+        "wrongType": "這種檔案在這裡不能用。請試試 PDF 或文字檔。",
+        "tooBig": "這個檔案太大了。請試試小一點的。"
+      },
+      "plan": {
+        "change": "更改",
+        "changeLabel": "更改：{name}",
+        "decides": "小幫手決定",
+        "scratch": "從頭做出來",
+        "opening": "正在打開小幫手…",
+        "files": "{count} 個檔案",
+        "nothing": "沒有加入東西",
+        "empty": "你還沒有選任何東西。小幫手會問你想做什麼。"
+      },
+      "gettingReady": "準備中…"
     }
   },
   "favorites": {
@@ -8383,5 +8427,181 @@
     "warn": "需要重新連結",
     "connect": "連結",
     "reconnect": "重新連結"
+  },
+  "buildSetup": {
+    "title": "製作遊戲",
+    "skipAll": "直接找小幫手",
+    "back": "上一步",
+    "skip": "跳過這一步",
+    "next": "下一步",
+    "progress": "第 {n} 步，共 {total} 步",
+    "start": {
+      "heading": "你想怎麼開始？",
+      "text": "兩種方式最後都會到小幫手那裡。到時候什麼都可以改。",
+      "guide": "幫我選",
+      "guideText": "用六個簡單的步驟選好遊戲類型、世界和角色。",
+      "direct": "我知道我要什麼",
+      "directText": "直接去找小幫手，用自己的話說出你的遊戲。"
+    },
+    "else": {
+      "title": "其他",
+      "text": "寫下你自己的點子",
+      "label": "告訴我們你的點子",
+      "packNote": "這個不在我們的素材包裡，所以小幫手會從頭做出來。看起來可能會比較簡單。"
+    },
+    "steps": {
+      "type": {
+        "title": "要做哪一種遊戲？",
+        "hint": "選一個。之後還可以改。",
+        "placeholder": "例如：迷宮、煮菜遊戲、賽跑"
+      },
+      "look": {
+        "title": "2D 還是 3D？",
+        "hint": "選一選遊戲的樣子。"
+      },
+      "world": {
+        "title": "故事發生在哪裡？",
+        "hint": "選一個世界，或是自己想一個。",
+        "placeholder": "例如：火山裡面、糖果星球"
+      },
+      "chars": {
+        "title": "遊戲裡有誰？",
+        "hint": "想選幾個都可以。",
+        "placeholder": "例如：企鵝廚師、機器狗"
+      },
+      "learn": {
+        "title": "這個遊戲要教什麼？",
+        "hint": "想選幾個都可以。",
+        "placeholder": "例如：12 以內的乘法表、水的循環"
+      },
+      "extras": {
+        "title": "還有要加的嗎？",
+        "hint": "這一步可以跳過。"
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "冒險",
+        "text": "探索、收集東西，走到終點"
+      },
+      "runner": {
+        "title": "跑酷",
+        "text": "跑、跳、閃開"
+      },
+      "catch": {
+        "title": "接東西遊戲",
+        "text": "接住掉下來的正確東西"
+      },
+      "quiz": {
+        "title": "問答",
+        "text": "回答問題來獲勝"
+      },
+      "memory": {
+        "title": "記憶配對",
+        "text": "翻開卡片，找出一對"
+      },
+      "word": {
+        "title": "文字遊戲",
+        "text": "拼字、排順序、猜一猜"
+      },
+      "duel": {
+        "title": "雙人遊戲",
+        "text": "和朋友在同一個螢幕上比賽"
+      },
+      "board": {
+        "title": "桌上遊戲",
+        "text": "擲骰子、前進、回答"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "3D 世界",
+        "text": "到處走走、探索"
+      },
+      "2d": {
+        "title": "2D 世界",
+        "text": "平面的，像一本圖畫書"
+      },
+      "auto": {
+        "title": "幫我決定",
+        "text": "小幫手會選最適合的"
+      }
+    },
+    "world": {
+      "preview": "看大圖",
+      "previewLabel": "看「{name}」的大圖"
+    },
+    "worlds": {
+      "sky-islands": "飄在雲朵上方的青草小島。",
+      "castle-quest": "山丘上的城堡，有火把、鑰匙和寶藏。",
+      "space-base": "紅色星球上的基地，有火箭和探測車。",
+      "spooky-hollow": "友善的秋天夜晚，有南瓜和燈籠。",
+      "toy-town": "明亮的小鎮，有馬路、車子和商店。",
+      "busy-kitchen": "大大的廚房，裡面有好多食物和鍋子。",
+      "cosy-home": "溫暖的小屋，有沙發、檯燈和書。",
+      "medieval-village": "童話般的村莊，有風車和市場。",
+      "pirate-cove": "沙灘小島、椰子樹、碼頭和帆船。",
+      "wild-woods": "陽光森林，有小河、岩石和營地。",
+      "dino-valley": "陽光山谷，有友善的恐龍、棕櫚樹和一顆大蛋。"
+    },
+    "groups": {
+      "heroes": "英雄",
+      "farm": "農場動物",
+      "wild": "動物園和野生動物",
+      "dinosaurs": "恐龍",
+      "sea": "魚和海洋動物"
+    },
+    "chars": {
+      "soon": "即將推出",
+      "soonText": "現在還沒有。牠們正在路上。",
+      "soon3d": "3D 版即將推出"
+    },
+    "learn": {
+      "math": {
+        "title": "數學",
+        "text": "數數、加法、分數等等"
+      },
+      "reading": {
+        "title": "閱讀和字詞",
+        "text": "寫字、新字詞、故事"
+      },
+      "science": {
+        "title": "自然",
+        "text": "動物、太空、東西怎麼運作"
+      },
+      "geography": {
+        "title": "地方和地圖",
+        "text": "國家、首都、有名的地方"
+      },
+      "fun": {
+        "title": "只是好玩",
+        "text": "沒有題目，只有玩"
+      }
+    },
+    "extras": {
+      "notesLabel": "還有什麼要讓小幫手知道的嗎？",
+      "notesPlaceholder": "例如：做難一點、加一個祕密關卡",
+      "fileTitle": "加入學習單或筆記",
+      "fileText": "小幫手可以用它來出題或編故事。",
+      "choose": "選擇檔案",
+      "fileKinds": "PDF 或文字檔。圖片可以之後在小幫手那裡加入。"
+    },
+    "plan": {
+      "heading": "這是你的遊戲計畫",
+      "text": "想改什麼都可以，或是打開小幫手繼續做。",
+      "told": "我們會這樣告訴小幫手",
+      "open": "打開小幫手"
+    },
+    "say": {
+      "start": "這是我的遊戲計畫。",
+      "type": "遊戲類型：{value}。",
+      "look3d": "請做成 3D。",
+      "look2d": "請做成 2D。",
+      "world": "世界：{value}。",
+      "characters": "裡面有：{list}。",
+      "learn": "可以學到：{list}。",
+      "file": "請使用我加入的檔案。"
+    },
+    "flatNote": "在 2D 裡，目前只有跑酷和接東西遊戲可以使用我們的世界和角色。其他遊戲小幫手會用經典樣式。"
   }
 }

@@ -1,4 +1,5 @@
 // Build mode: the /build page (my games + "Start from" templates), the Studio (/studio/:id) and its APIs.
+// "New game" opens the setup steps first (/build/new, routes/build-setup.js): help choosing, or straight to the Studio.
 // Owner or admin only for everything under a game id (404 otherwise). A Builder build runs in the Builder runner
 // (builder/runner.js), apart from any request, so a closed page or a sign-out never stops it: POST /chat starts it and
 // answers at once, and each Studio tab follows it on GET /live (builder/live.js), which replays a running build in full.
@@ -199,7 +200,7 @@ router.get('/build', requireBuilder, async (req, res) => {
   <div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>
   <section class="build-hero panel">
     <div class="build-hero-text"><h2>${t('build.hero.heading')}</h2><p>${t('build.hero.text')}</p></div>
-    <button class="btn btn-primary btn-big" type="button" id="newgame">✨ ${t('build.newGame')}</button>
+    <a class="btn btn-primary btn-big" href="/build/new" id="newgame">✨ ${t('build.newGame')}</a>
   </section>
   <section aria-labelledby="k2-h" class="build-sec">
     <h2 id="k2-h">${t('build.worlds')}</h2>
@@ -349,7 +350,9 @@ router.get('/api/studio/:id', requireBuilder, (req, res) => {
   res.json(studioState(req.user, g.id, req.t, req));
 });
 
-// The Builder chat. Body: { text, pro, uploads, cid, continueOf?, detach? }.
+// The Builder chat. Body: { text, pro, uploads, cid, continueOf?, detach?, plan? }.
+//   plan: the choices of the setup steps (/build/new, builder/plan.js), for a game's first build only: the message is
+//     then the plan's own sentence (made here, in the builder's language) and goes through the same checks as typed text.
 //   detach: true (the Studio page): starts the build and answers at once, 202 { ok, turn: { id, status } }, or an error
 //     as JSON ({ error, code }: 400 empty, 403 disabled, 409 cantContinue, 429 tooMany / limit, 503 restarting).
 //     The page follows the build on GET /live. A retried message (the same cid) gets the same build back.
@@ -364,7 +367,7 @@ router.post('/api/studio/:id/chat', requireBuilder, rateLimit('builder', 20, 60e
   const b = req.body || {};
   // Shutting down: nothing is stored, and the page keeps the message (runner.drain).
   if (builderLife.draining) return res.status(503).json({ error: req.t('studio.api.restarting'), code: 'restarting' });
-  const opts = { user: req.user, game: g, text: b.text, pro: !!b.pro, uploadIds: b.uploads, cid: b.cid, continueOf: b.continueOf, t: req.t };
+  const opts = { user: req.user, game: g, text: b.text, pro: !!b.pro, uploadIds: b.uploads, cid: b.cid, continueOf: b.continueOf, t: req.t, plan: b.plan };
   if (b.detach) {
     const r = await submit(opts);
     return res.status(r.status).json(r.body);
