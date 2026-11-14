@@ -263,8 +263,9 @@ own (the hero runs at 7); no animal walks into the hero: when its next step woul
   going round (a patrol).
 - `wander({ x, z, radius = 6, speed })`: strolls to spots near that place (its own, by default), stopping to eat or
   look around. With reduced motion it stays where it is.
-- `followHero(hero, { distance })`: a companion that trails the hero (the one under `g.controls` by default) and stops
-  a little behind; it keeps up by running, and joins the hero again after a long jump or a respawn.
+- `followHero(hero, { distance })`: a companion that goes where the hero goes (the one under `g.controls` by default)
+  and walks at their side (behind, on a narrow path), `distance` away and never nearer than its calm distance; it keeps up by running, and joins
+  the hero again after a long jump or a respawn.
 - `onMeet((hero, creature) => {}, { distance })`: called once each time the hero comes close (then again after the
   hero has walked away and come back). The place for a spoken line, a question or a count.
 - `stop()` (stand still), `remove()` (take it out of the world).

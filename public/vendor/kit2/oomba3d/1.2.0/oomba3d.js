@@ -440,7 +440,7 @@ export async function start({ theme, version, graphics, lowPower, time = 'day', 
       walkTo: (a, b, o) => { const pt = point(a, b), opt = (a && typeof a === 'object' ? b : o) || {}; return new Promise(res => { go('path', { path: [pt], at: 0, loop: false, speed: pace(opt.speed) }); st.done = res; }); },
       follow: (path, { speed, loop = false } = {}) => new Promise(res => { const pts = (path || []).map(q => point(q)); if (!pts.length) return res(false); go('path', { path: pts, at: 0, loop, speed: pace(speed) }); st.done = res; }),
       wander: (area = {}) => { go('wander', { home: [area.x ?? c.position.x, area.z ?? c.position.z], radius: Math.max(1, area.radius ?? 6), speed: pace(area.speed), wait: 0.4 + rand() * 2 }); return c; },
-      followHero: (hero = player, { distance } = {}) => { if (!hero || !hero.position) throw new Error('Oomba3D: followHero() needs a hero (make one with g.hero first)'); go('heel', { heel: { hero, distance: Math.max(calm, distance ?? calm + 0.6) } }); return c; },
+      followHero: (hero = player, { distance } = {}) => { if (!hero || !hero.position) throw new Error('Oomba3D: followHero() needs a hero (make one with g.hero first)'); go('heel', { heel: { hero, distance: Math.max(calm, distance ?? calm + 0.6), side: c.position.x < hero.position.x ? -1 : 1 } }); return c; },
       onMeet: (fn, { distance, hero } = {}) => { st.meets.push({ fn, distance: Math.max(1.5, distance ?? calm + 1), hero, near: false }); return c; },
       remove: () => { end(false); r.mixer.stopAllAction(); scene.remove(r.root); const i = creatures.indexOf(st); if (i >= 0) creatures.splice(i, 1); },
     };
@@ -451,11 +451,12 @@ export async function start({ theme, version, graphics, lowPower, time = 'day', 
       if (p.y !== st.wrote) st.y = p.y;   // the game put it somewhere itself
       let t = null, speed = st.speed, arrive = 0.1;
       if (st.mode === 'heel') {
-        const hp = st.heel.hero.position, d = Math.hypot(hp.x - p.x, hp.z - p.z);
-        if (d > (hops ? 16 : 26)) {   // left far behind (a long jump, a respawn): it joins the hero again just behind, not by racing after
-          const back = st.heel.hero.object ? st.heel.hero.object.rotation.y : 0;
-          p.x = hp.x - Math.sin(back) * (st.heel.distance + 1); p.z = hp.z - Math.cos(back) * (st.heel.distance + 1); st.y = hp.y;
-        } else if (d > st.heel.distance + (st.auto ? 0.05 : 0.9)) { t = [hp.x, hp.z]; arrive = st.heel.distance; speed = Math.min(heelTop, Math.max(stroll, (d - st.heel.distance) * 2.2)); }
+        // A companion walks at the hero's side (not behind, where it would stand between the hero and the camera), or
+        // behind when there is no ground at the side (a narrow path of stepping stones).
+        const hp = st.heel.hero.position, D = st.heel.distance, beside = groundAt(hp.x + st.heel.side * D, hp.z + 0.5, hp.y + 0.5) !== null;
+        const gx = beside ? hp.x + st.heel.side * D : hp.x, gz = beside ? hp.z + 0.5 : hp.z + D, d = Math.hypot(gx - p.x, gz - p.z);
+        if (d > (hops ? 16 : 26)) { p.x = gx; p.z = gz; st.y = hp.y; }   // left far behind (a long jump, a respawn): it joins the hero again, not by racing after
+        else if (d > (st.auto ? 0.12 : 1)) { t = [gx, gz]; speed = Math.min(heelTop, Math.max(stroll, d * 2.2)); }
       } else if (st.mode === 'path') t = st.path[st.at];
       else if (st.mode === 'wander' && !motionOff) {   // strolls to a spot nearby, stops to eat or look around, then another
         if (st.wait > 0) { st.wait -= dt; if (st.wait <= 0) { const a = rand() * Math.PI * 2, d = Math.sqrt(rand()) * st.radius; st.path = [st.home[0] + Math.cos(a) * d, st.home[1] + Math.sin(a) * d]; } }
@@ -472,7 +473,7 @@ export async function start({ theme, version, graphics, lowPower, time = 'day', 
           // An animal with no walk (pig, sheep: idle and jump only) hops: it travels while it is in the air and stands
           // still between hops, so its feet never slide. With reduced motion it glides in its idle pose instead.
           // Calm: an animal never walks into the hero. When its next step would bring it nearer than its calm distance, it waits.
-          const who = st.mode === 'heel' ? null : player, probe = Math.min(d - arrive, speed * dt);
+          const who = st.mode === 'heel' ? st.heel.hero : player, probe = Math.min(d - arrive, speed * dt);
           const near = (x1, z1) => Math.hypot(who.position.x - x1, who.position.z - z1);
           const blocked = !!who && Math.abs(who.position.y - st.y) < 4 && near(p.x + dx / d * probe, p.z + dz / d * probe) < calm && near(p.x + dx / d * probe, p.z + dz / d * probe) < near(p.x, p.z);
           let gait = 1;
