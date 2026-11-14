@@ -811,5 +811,12 @@
     "student": {
       "standardsLine": "{meets} met · {developing} developing · {practiced} practised"
     }
+  },
+  "buildSetup": {
+    "learn": {
+      "math": {
+        "title": "Maths"
+      }
+    }
   }
 }

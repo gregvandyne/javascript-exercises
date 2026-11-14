@@ -1,0 +1,133 @@
+/* /build/new: the step-by-step setup before the Builder (server/routes/build-setup.js, public/js/buildsetup.js).
+   Tokens and components from app.css; nothing here names a colour of its own, so light and dark both come for free.
+   The owner's rule for the cards: every card on one screen is exactly the same size, at every width. That is done by
+   construction, not by luck: a grid of equal columns, a picture box with a fixed shape, and text boxes with a fixed
+   number of lines (longer words are cut with an ellipsis). tests/unit/builder-setup-layout.test.js measures it. */
+.setup-page .wrap{padding-top:12px}
+.su{display:flex;flex-direction:column;gap:16px}
+.su-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.su-brand{margin:0;font-weight:800;font-size:1.15rem;letter-spacing:-.01em}
+.su-screen{display:flex;flex-direction:column;gap:16px}
+.su-screen[hidden]{display:none}
+.su-screen h1{margin:0}
+.su-screen h1:focus-visible{outline-offset:4px}
+.su-hint{margin:-8px 0 0;color:var(--text-2)}
+
+/* start: two equal ways in */
+.su-start{align-items:center;text-align:center;padding-block:clamp(8px,6vh,56px)}
+.su-ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:16px;width:min(100%,760px);text-align:start}
+.su-way{display:flex;flex-direction:column;gap:8px;min-height:132px;padding:24px;border:0;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--edge);color:var(--text);font:inherit;text-align:start;cursor:pointer}
+.su-way:hover{background:var(--hover)}
+.su-way-go{background:var(--accent);color:var(--on-accent);box-shadow:0 4px 0 var(--accent-press)}
+.su-way-go:hover{background:var(--accent-hover)}
+.su-way-t{font-size:1.4rem;font-weight:800;line-height:1.15}
+.su-way-d{color:inherit}
+.su-way:not(.su-way-go) .su-way-d{color:var(--text-2)}
+@media (max-width:560px){.su-ways{grid-template-columns:minmax(0,1fr)}}
+
+/* progress */
+.su-progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.su-dots{display:flex;gap:6px}
+.su-dots i{display:block;width:28px;height:8px;border-radius:999px;background:var(--line);box-shadow:inset 0 0 0 1px var(--edge)}
+.su-dots i.on{background:var(--accent-line);box-shadow:none}
+.su-count{font-size:.9rem;color:var(--muted);font-weight:700}
+
+/* the cards */
+.su-grid{--cols:3;--name-lines:2;--desc-lines:2;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:1fr;gap:12px}
+.su-card{display:flex;flex-direction:column;gap:8px;min-width:0;padding:10px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.su-card.is-on{background:var(--accent-soft);box-shadow:inset 0 0 0 3px var(--accent-line)}
+.su-pick:disabled{opacity:.55}
+.su-pick{position:relative;flex:1;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0;min-height:44px;padding:0;border:0;border-radius:var(--r-sm);background:transparent;color:var(--text);font:inherit;text-align:start;cursor:pointer}
+.su-pick:disabled{cursor:not-allowed}
+.su-pic{display:block;width:100%;aspect-ratio:16/9;border-radius:var(--r-sm);overflow:hidden;background:var(--card-2)}
+.su-pic img{display:block;width:100%;height:100%;object-fit:cover}
+.su-art{display:grid;place-items:center;color:var(--accent-ink);background:var(--accent-soft)}
+.su-card.is-on .su-art{background:var(--card)}
+.su-name,.su-desc{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.su-name{font-weight:800;line-height:1.2;-webkit-line-clamp:var(--name-lines);height:calc(var(--name-lines)*1.2em)}
+.su-desc{font-size:.88rem;line-height:1.35;color:var(--text-2);-webkit-line-clamp:var(--desc-lines);height:calc(var(--desc-lines)*1.35em)}
+/* picked: a tick as well as the colour */
+.su-tick{position:absolute;top:6px;inset-inline-end:6px;display:none;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-line);color:var(--card)}
+.su-pick[aria-pressed="true"] .su-tick{display:grid}
+
+/* text cards (game type, 2D or 3D, what it teaches): a small drawing, a name and a line */
+.su-grid-text .su-art{aspect-ratio:auto;height:72px}
+.su-grid-text{--desc-lines:2}
+@media (max-width:640px){
+  /* a phone: one card per row, the drawing beside the words, so nothing is squeezed */
+  .su-grid-text{--cols:1;--name-lines:1;--desc-lines:2}
+  .su-grid-text .su-pick{display:grid;grid-template-columns:64px minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;row-gap:2px;align-items:center;padding-inline-end:34px}
+  .su-grid-text .su-art{grid-row:1 / span 2;width:64px;height:64px}
+  .su-grid-text .su-tick{top:50%;margin-top:-14px}
+}
+
+/* worlds: big pictures (the real cover), a Preview button under each */
+.su-grid-world{--cols:3;--name-lines:1;--desc-lines:2}
+.su-grid-world .su-name{font-size:1.1rem}
+.su-preview,.su-preview-gap{align-self:flex-start;min-height:44px}
+.su-preview-gap{display:block;width:1px}
+@media (max-width:900px){.su-grid-world{--cols:2}}
+@media (max-width:600px){.su-grid-world{--cols:1}}
+
+/* who is in it: the picker's own pictures (96 px, shown at their real size), in groups */
+.su-group{display:flex;flex-direction:column;gap:10px}
+.su-group h2{margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.su-soon-text{margin:0}
+.su-grid-char{--cols:5;--name-lines:1;--desc-lines:2}
+.su-grid-char .su-pick{align-items:center;text-align:center}
+.su-grid-char .su-pic{width:96px;aspect-ratio:1}
+.su-grid-char .su-pic-2d img{object-fit:contain}
+.su-grid-char .su-name,.su-grid-char .su-desc{width:100%}
+@media (max-width:900px){.su-grid-char{--cols:4}}
+@media (max-width:640px){.su-grid-char{--cols:2}}
+
+/* notes on a step, "Something else" */
+.su-flag,.su-note{margin:0;padding:10px 14px;border-radius:var(--r-sm);background:var(--warn-bg);color:var(--warn-ink);font-weight:600;font-size:.95rem;line-height:1.4}
+.su-else{display:flex;flex-direction:column;gap:6px}
+.su-else[hidden]{display:none}
+.su-else label{font-weight:700}
+
+/* extras */
+.su-extras{display:flex;flex-direction:column;gap:16px}
+.su-extras .field{margin:0}
+.su-file{display:flex;flex-direction:column;align-items:flex-start;gap:10px;box-shadow:inset 0 0 0 2px var(--line)}
+.su-file h2,.su-file p{margin:0}
+.su-file-text{color:var(--text-2)}
+.su-files{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;width:100%}
+.su-files:empty{display:none}
+.su-filerow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 4px 14px;border-radius:var(--r-sm);background:var(--ok-bg);font-weight:700}
+.su-fname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Back, Skip this step, Next: always in reach (above the phone tab bar) */
+.su-nav{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0 calc(12px + env(safe-area-inset-bottom));margin-top:4px;background:var(--bg);border-top:1px solid var(--line)}
+.su-nav-end{display:flex;align-items:center;gap:8px}
+.su-skipstep{color:var(--link);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:820px){.su-nav{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom));padding-bottom:12px}}
+@media (max-width:420px){.su-nav .btn{padding-inline:14px}}
+
+/* the plan */
+.su-rows{margin:0;padding:4px 20px}
+.su-row{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) auto;align-items:center;gap:6px 16px;min-height:56px;padding:6px 0;border-bottom:1px solid var(--line)}
+.su-row:last-child{border-bottom:0}
+.su-row dt{color:var(--muted);font-size:.92rem;font-weight:700}
+.su-row dd{margin:0;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.su-change{color:var(--link);text-decoration:underline;text-underline-offset:3px}
+.su-scratch{white-space:normal}
+@media (max-width:560px){
+  .su-rows{padding:4px 14px}
+  .su-row{grid-template-columns:minmax(0,1fr) auto}
+  .su-row dt{grid-column:1}.su-row dd{grid-column:1;grid-row:2}.su-change{grid-column:2;grid-row:1 / span 2}
+}
+.su-told{padding:14px 18px;border-radius:var(--r-sm);background:var(--spark-soft)}
+.su-told p{margin:0}
+.su-told-h{font-size:.9rem;font-weight:700;color:var(--warn-ink)}
+.su-told-t{font-weight:700;overflow-wrap:anywhere}
+.su-open{min-height:52px;padding-inline:28px;font-size:1.05rem}
+
+/* a world's close-up (app.js sheet, made wide) */
+.sheet.su-sheet{width:min(100%,1040px)}
+.su-zoom{display:flex;flex-direction:column;gap:12px}
+.su-zoom p{margin:0;font-size:1.1rem}
+.su-zoom img{display:block;width:100%;height:auto;border-radius:var(--r-sm);background:var(--card-2)}
+.su-zoom-cover{max-width:640px}
+.su-zoom-btns{position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:12px 0 calc(12px + env(safe-area-inset-bottom));background:var(--card)}
