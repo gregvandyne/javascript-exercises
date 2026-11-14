@@ -237,6 +237,31 @@ test('the Builder: sea places and sea animals choose this world; an animal is ne
   assert.deepEqual(K.worldLook('under-the-sea'), ['🐬', 'ocean']);
 });
 
+test('2D: the sea world and every sea animal are in the 2D packs, and sea animals can be the friends of a 2D game (Oomba2D 1.1.0)', async () => {
+  const vm = await import('node:vm');
+  const S = await import('../../server/services/art2d.js'), A = await import('../../server/builder/art2d.js');
+  assert.equal(S.ART2D_PACKS['under-the-sea'], '1.0.0'); assert.equal(S.ART2D_PACKS.animals, '1.1.0');
+  const sea = A.ART2D_ANIMALS.filter(c => c.group === 'sea');
+  assert.deepEqual(sea.map(c => c.id).sort(), manifest.creatures.map(c => c.id).sort()); assert.ok(sea.every(c => c.pack === 'animals'));
+  for (const c of sea) assert.ok(fs.existsSync(path.join(ROOT, 'public/img/art2d/animals', `${c.id}.webp`)) && fs.existsSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)), `${c.id}: picker pictures`);
+  assert.equal(A.art2dTags({ world: 'under-the-sea', hero: 'dolphin', friends: ['turtle', 'crab'] }), [S.oomba2dTag(), S.art2dPackTag('under-the-sea'), S.art2dPackTag('animals')].join('\n'));
+  // the helper itself, with the real manifests: the dolphin plays, three sea friends are in the game, pictures only
+  const loads = [], defined = {};
+  class Image { set src(v) { loads.push(v); setTimeout(() => this.onload && this.onload(), 0); } }
+  const ctx2d = { drawImage() {}, fillRect() {}, createLinearGradient: () => ({ addColorStop() {} }) };
+  const document = { currentScript: null, createElement: () => ({ width: 0, height: 0, getContext: () => ctx2d, style: {}, setAttribute() {} }), querySelectorAll: () => [], documentElement: {} };
+  const window = { Oomba: { art: { define: (n, d) => { defined[n] = d; } }, settings: { reduced: false } } };
+  const sandbox = { window, document, Image, setTimeout, Promise, console };
+  vm.createContext(sandbox); vm.runInContext(read(path.join(ROOT, 'public/vendor/art2d/oomba2d', S.OOMBA2D_VERSION, 'oomba2d.js')), sandbox);
+  for (const id of ['under-the-sea', 'animals']) { document.currentScript = { src: `http://x.invalid/vendor/art2d/${id}/${S.ART2D_PACKS[id]}/pack.js` }; window.Oomba2D.pack(JSON.parse(JSON.stringify(S.art2dManifest(id)))); }
+  const art = await window.Oomba2D.use({ world: 'under-the-sea', hero: 'dolphin', friends: ['turtle', 'clownfish', 'crab', 'dolphin', 'no-such-fish'] });
+  await new Promise(r => setTimeout(r, 30));
+  assert.deepEqual([...art.friends], ['turtle', 'clownfish', 'crab'], 'the player is not its own friend; a made-up fish is left out');
+  for (const id of ['dolphin', 'turtle', 'clownfish', 'crab']) assert.ok(loads.some(u => u.endsWith(`/vendor/art2d/animals/1.1.0/${id}.webp`)), `${id}'s sheet is loaded from the pack's folder`);
+  assert.ok(loads.some(u => u.endsWith('/vendor/art2d/under-the-sea/1.0.0/mid.webp')));
+  assert.ok(Object.keys(defined).some(n => n.startsWith('a2d:friend:')), 'the friends are kit sprites');
+});
+
 // ---------------------------------------------------------------- real Chromium, inside the production frame
 const LOCAL = ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
 const exe = process.env.BRB_CHROMIUM || LOCAL.find(f => fs.existsSync(f));

@@ -5318,3 +5318,6 @@ bubbles were all in 1.2.0, waiting for this world).
   with the wild animals), so the group is no longer "Coming soon"; Under the Sea is on the world step with its line in
   12 languages and a 1280 x 720 preview picture. The setup tests pinned the sea as the empty group: they now check it
   is live with 23 animals, and that a group with nothing shipped still shows "Coming soon".
+- **2D friends (Oomba2D 1.1.0, merged from main the same day):** the sea animals are in `animals` 1.1.0, so they can be
+  picked as the friends of a 2D game like any other sprite animal; `tests/unit/kit2-under-the-sea.test.js` drives the
+  helper with the dolphin as the player and three sea friends.
