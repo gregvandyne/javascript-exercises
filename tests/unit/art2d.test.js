@@ -78,7 +78,7 @@ test('lock: every file under /vendor/art2d/ is locked with its hash, and a locke
   assert.deepEqual(onDisk, locked.sort(), 'a file under public/vendor/art2d/ is not in kit2/ART2D.json (run node kit2/pipeline/art2d-lock.mjs)');
   // the helper's source is the newest shipped helper (a change to it ships as a new version)
   assert.equal(sri(fs.readFileSync(path.join(ROOT, 'kit2/src2d/oomba2d.js'))), LOCK.helper[S.OOMBA2D_VERSION], 'kit2/src2d/oomba2d.js differs from the shipped Oomba2D: bump its VERSION and lock the new one');
-  assert.equal(packs.length, 11); assert.equal(worlds.length, 9);
+  assert.equal(packs.length, 12); assert.equal(worlds.length, 10);
   assert.deepEqual(worlds.map(w => w.id).sort(), K.WORLD_IDS.slice().sort(), 'every 3D world has its 2D pack');
   // no raw model and nothing but pictures, manifests and licence texts ships
   for (const f of onDisk) assert.match(f, /\.(webp|json|js|txt)$/, f);

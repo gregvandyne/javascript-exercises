@@ -119,6 +119,14 @@
    "pack.js": "sha384-4jOZ6W/+yaWkGO5EMi6gHrxiOHfd+3V9ISYgoslhSC6zsCW1hPm1D2fa/tQU429R",
    "pack.json": "sha384-w2aXG21G6jhFNF7Le0KnRM5/4qVEb35j8TCTwVmnHb0VEOv3P7m1V7Fd7NlJ0cDL",
    "props.webp": "sha384-dvgwo20nwE1vL2zQhQtnJ8smeaBkzC4OMVHf8PyvQOEVc7lfQK5PsiCjQqVDxvFZ"
+  },
+  "wild-woods/1.0.0": {
+   "far.webp": "sha384-CPU+vltMJe0r8sjTYa0EaFEeOdTot8ohpIzUbYDb0yRFn9MH3kDhbO2pJ3Kv8/QH",
+   "ground.webp": "sha384-0xsw5aVEkrSKA0ftyF48ozrZFLEnRGkiOXM/gPeMzudgcEP8mc81VOfBWWM9qTpF",
+   "mid.webp": "sha384-cY1qW46MyhkRFApoHbbooLXADpdiIHKPDdBLg/dJzvPo4RchkZXN5XCXBV+sSJqY",
+   "pack.js": "sha384-KyhAXAEsAIGeJ/xCa+k4SEgV7WpsXBWsU6gAs7GZGd4BOfaSFbGKOJOIEwG0BRys",
+   "pack.json": "sha384-/expLqL6B9NxmVIi4DalbZW6pQeWwG7pW4FbtOYUePMv76RHdy486QCBDlcyxHlb",
+   "props.webp": "sha384-rlvglGdFWDfVg3By2cN7lUjAGEzCRXjqnXItqwjelZLkOf4DMxBk3meO9XRlL16w"
   }
  }
 }

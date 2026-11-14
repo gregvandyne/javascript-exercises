@@ -86,7 +86,7 @@ test('every quick-check item in every course step carries a why, and a miss retu
   // Number Quest's bands are its tiers: every tier that has a deck folder is read (course/<tier>/).
   const nqRoot = path.join(ROOT, 'seed-lessons', 'number-quest', 'course');
   const nqTiers = fs.readdirSync(nqRoot).filter(x => fs.statSync(path.join(nqRoot, x)).isDirectory()).sort();
-  assert.deepEqual(nqTiers, ['explorer', 'launchpad'], 'the Number Quest tiers that have decks');
+  assert.deepEqual(nqTiers, ['explorer', 'launchpad', 'pro'], 'the Number Quest tiers that have decks (Pro: its welcome deck, since 2026-11-14)');
   const nq = nqTiers.flatMap(band => fs.readdirSync(path.join(nqRoot, band)).filter(x => x.endsWith('.json')).sort()
     .map(f => ({ course: 'number-quest', band, deck: JSON.parse(fs.readFileSync(path.join(nqRoot, band, f), 'utf8')) })));
   let checked = 0;
@@ -102,7 +102,7 @@ test('every quick-check item in every course step carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 387, 'the three courses hold 387 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 138: Explorer 69, Launchpad 69)');
+  assert.equal(checked, 390, 'the three courses hold 390 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 141: Explorer 69, Launchpad 69, Pro 3 for its welcome)');
 });
 
 test('every exit item in every question-set file carries a why', () => {
@@ -125,8 +125,8 @@ test('every exit item in every question-set file carries a why', () => {
       }
     }
   }
-  assert.equal(files, 44, 'the three programs hold 44 question-set files');
-  assert.equal(exits, 396, 'and 396 exit items, every one with a why');
+  assert.equal(files, 45, 'the three programs hold 45 question-set files (Number Quest: sets/u0-pro.json joined on 2026-11-14)');
+  assert.equal(exits, 399, 'and 399 exit items, every one with a why');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).

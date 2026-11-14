@@ -44,6 +44,7 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Cosy Home | added 12 Nov | KayKit Furniture + Restaurant | Three.js | Reading, maths, life skills |
 | Busy Kitchen | added 12 Nov | KayKit Restaurant | Three.js | Maths, fractions, healthy eating |
 | Pirate Cove | added 14 Nov | Kenney Pirate Kit + KayKit Adventurers | Three.js | Maths, geography, treasure maps |
+| Wild Woods | added 14 Nov | Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Maths, science, nature |
 
 ## How it fits together
 
@@ -99,7 +100,7 @@ The worlds, heroes and the uploaded animals are also drawn as 2D art, so games o
 | Part | What it is | Where it lives |
 |---|---|---|
 | Pipeline | Draws a shipped theme's models from the side in headless Chromium with the Oomba look (ink outline, the theme's own light, the same tone mapping), twice the size and scaled down, and packs the pictures | `kit2/pipeline/art2d.mjs`, `art2d-page.js`; recipes in `kit2/art2d/packs.json`; sheets with `art2d-sheet.mjs` |
-| World pack (nine, one per world) | Sky colours, a far and a mid strip of scenery that tile sideways, a ground strip a whole number of game cells wide, an atlas of props with the goal, the coin and the obstacles | `public/vendor/art2d/<world>/<version>/`: `far.webp`, `mid.webp`, `ground.webp`, `props.webp`, `pack.json`, `pack.js` |
+| World pack (ten, one per world, Wild Woods included) | Sky colours, a far and a mid strip of scenery that tile sideways, a ground strip a whole number of game cells wide, an atlas of props with the goal, the coin and the obstacles | `public/vendor/art2d/<world>/<version>/`: `far.webp`, `mid.webp`, `ground.webp`, `props.webp`, `pack.json`, `pack.js` |
 | `heroes` pack | The nine heroes as sprite sheets: idle 4, run 8, jump 2 frames, facing right (the kit mirrors them) | `public/vendor/art2d/heroes/<version>/<hero>.webp` |
 | `animals` pack | 24 animals the same way: 12 woodland, 7 farm, 5 dinosaurs (no T-Rex), brightened | `public/vendor/art2d/animals/<version>/<animal>.webp` with the three CC0 licence texts |
 | Oomba2D | A small helper (about 14 KB) that registers the pictures as Oomba Kit sprites: the kit stays the engine | `kit2/src2d/oomba2d.js`, shipped to `public/vendor/art2d/oomba2d/<version>/` |

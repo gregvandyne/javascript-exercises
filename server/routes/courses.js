@@ -72,6 +72,9 @@ router.get('/courses/:slug', (req, res) => {
         daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, street).map(l => [l.unit, l])),
         placement: placement && placement.startNode ? { ...placement, workshop: NQP.nodeInfo(placement.startNode).workshop } : placement,
         testedOut: NQP.testedOutUnits(user, street), canPick: !isGrownup(user), bandSet, locked: lockedKey(req),
+        // Units the street has reserved and not built (units.json `planned`): listed for the platform admin
+        // previewing a street that is still being built, and for nobody else.
+        planned: user && user.role === 'admin' && !NQT.isOpen(street) ? NQT.plannedUnitsOf(street) : [],
         hasProgress: ov.done > 0 || !!(placement && placement.startNode) }),
       description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
   }

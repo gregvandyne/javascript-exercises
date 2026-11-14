@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge), Unit 5, The Hundreds Hedge (5.1-5.3, grade 2: hundreds, tens and ones, skip counting and comparing to 1000, adding and subtracting within 100, played in Rocket Supply), Unit 6, The Shape Shed (6.1-6.3, kindergarten to grade 2: naming shapes by what defines them, building shapes from shapes, halves, fourths and thirds, played in Shape Hunt) and Unit 7, The Measuring Meadow (7.1-7.3, kindergarten to grade 2: measuring length, clocks and coins, sorting and graphs, played in Kitchen Rush), with the tier's finale, The Garden Gate (7.4, a mixed review of Units 1-7, played in Kitchen Rush's fourth chapter; tiers.launchpad.finale names it); its codes lock in standards.json launchpadCodes. OPEN (2026-11-13): tiers.launchpad.status is \"open\", so the Launchpad street is there for everyone; placement.json carries its entry profiles (launchpad-<unit>.1).",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'. TIERS (2026-11-12): every unit names its tier (\"tier\"); a tier's units live in this one array with their own n (unit identity is tier + n, and n may repeat across tiers), step fields are keyed by the unit's own tier, and order starts at 1 in each tier. tiers.<tier>.status is \"open\" or \"building\": a building tier is visible to the platform admin only. Launchpad holds its welcome step (0.1), Unit 1, The Counting Patch (1.1-1.3, kindergarten counting, played in Garden Count) Unit 2, The Joining Pond (2.1-2.3, putting together, number partners and adding and taking away to 20, played in Lily Hop), Unit 3, The Tens Trellis (3.1-3.3, grade 1 tens and ones, comparing two-digit numbers and adding within 100, played in Crate Stacker), Unit 4, The Balance Bridge (4.1-4.3, grades 1-2: what the equals sign means, story problems, odd and even numbers and equal groups, played in Balance Bridge), Unit 5, The Hundreds Hedge (5.1-5.3, grade 2: hundreds, tens and ones, skip counting and comparing to 1000, adding and subtracting within 100, played in Rocket Supply), Unit 6, The Shape Shed (6.1-6.3, kindergarten to grade 2: naming shapes by what defines them, building shapes from shapes, halves, fourths and thirds, played in Shape Hunt) and Unit 7, The Measuring Meadow (7.1-7.3, kindergarten to grade 2: measuring length, clocks and coins, sorting and graphs, played in Kitchen Rush), with the tier's finale, The Garden Gate (7.4, a mixed review of Units 1-7, played in Kitchen Rush's fourth chapter; tiers.launchpad.finale names it); its codes lock in standards.json launchpadCodes. OPEN (2026-11-13): tiers.launchpad.status is \"open\", so the Launchpad street is there for everyone; placement.json carries its entry profiles (launchpad-<unit>.1). PRO (2026-11-14, owner-approved plan): tiers.pro is declared with status \"building\" (the platform admin alone sees it): district The Towers, grades 6-8, seven Gears, finale 7.4 (The Great Clock). Its welcome step (0.1, Welcome to the Towers) is built. Units 1-7 (22 steps, order 2-23) are RESERVED with \"planned\": true: their numbers, titles, stones, step order, MP spotlights and CCSS-M codes are fixed here so the seven units can be built in parallel, but a planned unit is not in the tier for the engine (no steps, no doors, no placement, no tags) until its decks, bank and game exist and the flag is deleted. \"reserved\" names the game slug, world and chapter params each unit is expected to use; it is a note for the builders and nothing reads it. Pro codes lock in standards.json proCodes; the README section \"Pro tier\" lists exactly what a unit PR touches.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -39,6 +39,22 @@
     "Hundreds Seed",
     "Shape Seed",
     "Measuring Seed"
+   ]
+  },
+  "pro": {
+   "district": "The Towers",
+   "finale": "7.4",
+   "grades": "6-8",
+   "inGame": "Pro",
+   "status": "building",
+   "stones": [
+    "Ratio Gear",
+    "Zero Gear",
+    "Variable Gear",
+    "Scale Gear",
+    "Slope Gear",
+    "Angle Gear",
+    "Chance Gear"
    ]
   }
  },
@@ -1726,6 +1742,833 @@
    "tier": "launchpad",
    "title": "The Measuring Meadow",
    "tool": "kitchen-rush"
+  },
+  {
+   "emoji": "🗼",
+   "group": "unit-0",
+   "n": 0,
+   "stamp": null,
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP1",
+     "n": "0.1",
+     "order": 1,
+     "shorts": {
+      "pro": "Welcome"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "framing",
+       "primary": []
+      }
+     },
+     "titles": {
+      "pro": "Welcome to the Towers"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Pro is written for ages 11 to 14: longer sentences than the lower streets, real vocabulary (ratio, rate, variable, slope), and worked examples that show the reasoning. Every slide can still be read aloud with the Listen button.",
+    "The welcome frames the Towers, the seven gears and the Great Clock. It teaches no standard: its check is a recap of the story and of what a ratio table shows, never assessed coverage."
+   ],
+   "tier": "pro",
+   "title": "Welcome to the Towers",
+   "tool": null
+  },
+  {
+   "emoji": "🏮",
+   "group": "unit-1",
+   "n": 1,
+   "planned": true,
+   "reserved": {
+    "game": "lantern-mix",
+    "world": "spooky-hollow"
+   },
+   "stamp": "Ratio Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP7",
+     "n": "1.1",
+     "order": 2,
+     "reserved": {
+      "params": "chapter=mix&lock=1"
+     },
+     "shorts": {
+      "pro": "Ratios"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.RP.A.1",
+        "6.RP.A.3a"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Ratios and equal mixes"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP2",
+     "n": "1.2",
+     "order": 3,
+     "reserved": {
+      "params": "chapter=rate&lock=1"
+     },
+     "shorts": {
+      "pro": "Unit rates"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.RP.A.2",
+        "6.RP.A.3b"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Unit rates"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP6",
+     "n": "1.3",
+     "order": 4,
+     "reserved": {
+      "params": "chapter=percent&lock=1"
+     },
+     "shorts": {
+      "pro": "Percent and units"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.RP.A.3c",
+        "6.RP.A.3d"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Percent and changing units"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Mixing Tower",
+   "tool": null
+  },
+  {
+   "emoji": "❄️",
+   "group": "unit-2",
+   "n": 2,
+   "planned": true,
+   "reserved": {
+    "game": "sub-zero",
+    "world": "busy-kitchen"
+   },
+   "stamp": "Zero Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP4",
+     "n": "2.1",
+     "order": 5,
+     "reserved": {
+      "params": "chapter=pour&lock=1"
+     },
+     "shorts": {
+      "pro": "Dividing fractions"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.NS.B.3"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.NS.A.1"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Divide by a fraction"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP2",
+     "n": "2.2",
+     "order": 6,
+     "reserved": {
+      "params": "chapter=below&lock=1"
+     },
+     "shorts": {
+      "pro": "Negative numbers"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.NS.C.5",
+        "6.NS.C.6",
+        "6.NS.C.7"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Below zero: opposites and absolute value"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP8",
+     "n": "2.3",
+     "order": 7,
+     "reserved": {
+      "params": "chapter=change&lock=1"
+     },
+     "shorts": {
+      "pro": "Rational arithmetic"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.NS.A.3"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.NS.A.1",
+        "7.NS.A.2"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Add, subtract, multiply and divide with negatives"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Cold Store",
+   "tool": null
+  },
+  {
+   "emoji": "⚙️",
+   "group": "unit-3",
+   "n": 3,
+   "planned": true,
+   "reserved": {
+    "game": "machine-line",
+    "world": "toy-town"
+   },
+   "stamp": "Variable Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP6",
+     "n": "3.1",
+     "order": 8,
+     "reserved": {
+      "params": "chapter=build&lock=1"
+     },
+     "shorts": {
+      "pro": "Expressions"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.EE.A.1"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.EE.A.2",
+        "6.EE.B.6"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Write and work out expressions"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP7",
+     "n": "3.2",
+     "order": 9,
+     "reserved": {
+      "params": "chapter=same&lock=1"
+     },
+     "shorts": {
+      "pro": "Equal expressions"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.EE.A.2"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.EE.A.3",
+        "6.EE.A.4",
+        "7.EE.A.1"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Expressions that are equal"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP1",
+     "n": "3.3",
+     "order": 10,
+     "reserved": {
+      "params": "chapter=undo&lock=1"
+     },
+     "shorts": {
+      "pro": "Equations"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.EE.B.5",
+        "6.EE.B.8",
+        "7.EE.B.4b"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.EE.B.7",
+        "7.EE.B.4a"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Solve equations and inequalities"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Machine Hall",
+   "tool": null
+  },
+  {
+   "emoji": "🗺️",
+   "group": "unit-4",
+   "n": 4,
+   "planned": true,
+   "reserved": {
+    "game": "scale-scout",
+    "world": "medieval-village"
+   },
+   "stamp": "Scale Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP7",
+     "n": "4.1",
+     "order": 11,
+     "reserved": {
+      "params": "chapter=constant&lock=1"
+     },
+     "shorts": {
+      "pro": "Proportional or not"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.RP.A.1"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.RP.A.2a",
+        "7.RP.A.2b"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Is it proportional? Find the constant"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP4",
+     "n": "4.2",
+     "order": 12,
+     "reserved": {
+      "params": "chapter=scale&lock=1"
+     },
+     "shorts": {
+      "pro": "Scale drawings"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.RP.A.2d"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.G.A.1",
+        "7.RP.A.2c"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Scale drawings and maps"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP2",
+     "n": "4.3",
+     "order": 13,
+     "reserved": {
+      "params": "chapter=percent&lock=1"
+     },
+     "shorts": {
+      "pro": "Percent problems"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.EE.B.3"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.RP.A.3"
+       ],
+       "primaryNote": "CONTEXT RULE (owner decision 3, 2026-11-14): 7.RP.A.3 names tax, markups, tips, commissions and simple interest. The game and the deck use neutral contexts only (recipes, maps, sports stats, science data, measurement error). At most one or two tax or discount items may appear, in this step's lesson check only, worded about a third person. No interest and no commission item anywhere. Kids are never sold to."
+      }
+     },
+     "titles": {
+      "pro": "Percent problems"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Map Room",
+   "tool": null
+  },
+  {
+   "emoji": "📈",
+   "group": "unit-5",
+   "n": 5,
+   "planned": true,
+   "reserved": {
+    "game": "sky-lines",
+    "world": "sky-islands"
+   },
+   "stamp": "Slope Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP7",
+     "n": "5.1",
+     "order": 14,
+     "reserved": {
+      "params": "chapter=slope&lock=1"
+     },
+     "shorts": {
+      "pro": "Slope"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.NS.C.8"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "8.EE.B.5",
+        "8.EE.B.6"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Slope: the steepness of a line"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP4",
+     "n": "5.2",
+     "order": 15,
+     "reserved": {
+      "params": "chapter=rule&lock=1"
+     },
+     "shorts": {
+      "pro": "Linear rules"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "8.F.A.1",
+        "8.F.A.3",
+        "6.EE.C.9"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "8.F.B.4"
+       ],
+       "primaryNote": "FUNCTIONS (owner decision 5, 2026-11-14): this step claims 8.F.B.4 as its primary and 8.F.A.1 and 8.F.A.3 as also-covers, and no other 8.F statement: the learner builds y = mx + b from two values and reads the rate of change and the starting value from a table, a graph or a story. 8.F.A.2 and 8.F.B.5 are not covered and are listed among the tier's gaps."
+      }
+     },
+     "titles": {
+      "pro": "y = mx + b: a line as a rule"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP1",
+     "n": "5.3",
+     "order": 16,
+     "reserved": {
+      "params": "chapter=meet&lock=1"
+     },
+     "shorts": {
+      "pro": "Linear equations"
+     },
+     "standards": {
+      "pro": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "8.EE.C.7",
+        "8.EE.C.8"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Solve linear equations and find where two lines meet"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Sky Wires",
+   "tool": null
+  },
+  {
+   "emoji": "📐",
+   "group": "unit-6",
+   "n": 6,
+   "planned": true,
+   "reserved": {
+    "game": "keep-builder",
+    "world": "castle-quest"
+   },
+   "stamp": "Angle Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP4",
+     "n": "6.1",
+     "order": 17,
+     "reserved": {
+      "params": "chapter=build&lock=1"
+     },
+     "shorts": {
+      "pro": "Area and volume"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.G.B.6"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.G.A.1",
+        "6.G.A.2",
+        "6.G.A.4"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Area, surface area and volume"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP5",
+     "n": "6.2",
+     "order": 18,
+     "reserved": {
+      "params": "chapter=move&lock=1"
+     },
+     "shorts": {
+      "pro": "Angles and moves"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "8.G.A.2",
+        "8.G.A.4"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.G.B.5",
+        "8.G.A.1",
+        "8.G.A.3"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Angles and moves: slide, flip, turn, resize"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP3",
+     "n": "6.3",
+     "order": 19,
+     "reserved": {
+      "params": "chapter=span&lock=1"
+     },
+     "shorts": {
+      "pro": "Pythagorean theorem"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "8.G.B.6",
+        "8.EE.A.2"
+       ],
+       "buildsToward": [
+        "8.NS.A"
+       ],
+       "flag": "coverage",
+       "primary": [
+        "8.G.B.7",
+        "8.G.B.8"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "The Pythagorean theorem"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Drafting Keep",
+   "tool": null
+  },
+  {
+   "emoji": "🎯",
+   "group": "unit-7",
+   "n": 7,
+   "planned": true,
+   "reserved": {
+    "game": "launch-lab",
+    "world": "space-base"
+   },
+   "stamp": "Chance Gear",
+   "steps": [
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP6",
+     "n": "7.1",
+     "order": 20,
+     "reserved": {
+      "params": "chapter=spread&lock=1"
+     },
+     "shorts": {
+      "pro": "Center and spread"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.SP.A.2"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "6.SP.A.3",
+        "6.SP.B.4",
+        "6.SP.B.5"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Center and spread"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP5",
+     "n": "7.2",
+     "order": 21,
+     "reserved": {
+      "params": "chapter=chance&lock=1"
+     },
+     "shorts": {
+      "pro": "Probability"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.SP.C.8"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.SP.C.5",
+        "7.SP.C.6",
+        "7.SP.C.7"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Chance: experiments and models"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP3",
+     "n": "7.3",
+     "order": 22,
+     "reserved": {
+      "params": "chapter=trend&lock=1"
+     },
+     "shorts": {
+      "pro": "Comparing data"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "7.SP.B.3",
+        "7.SP.A.2",
+        "8.SP.A.2"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.SP.B.4",
+        "8.SP.A.1"
+       ]
+      }
+     },
+     "titles": {
+      "pro": "Compare two data sets and spot a trend"
+     }
+    },
+    {
+     "game": {
+      "pro": null
+     },
+     "mp": "MP1",
+     "n": "7.4",
+     "order": 23,
+     "reserved": {
+      "params": "chapter=clock&lock=1"
+     },
+     "shorts": {
+      "pro": "The seven gears"
+     },
+     "standards": {
+      "pro": {
+       "also": [
+        "6.RP.A.3b",
+        "7.NS.A.3",
+        "7.EE.B.4a",
+        "7.RP.A.3",
+        "8.EE.B.5",
+        "8.G.B.7",
+        "6.SP.B.5"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "7.EE.B.3"
+       ],
+       "primaryNote": "The Pro finale: a mixed review, nothing new. Its checked spine is multi-step problems with rational numbers (7.EE.B.3). The other gears are reviewed, not re-taught, with one representative code each as also-covers: a unit rate (6.RP.A.3b), a signed change (7.NS.A.3), an equation (7.EE.B.4a), a percent or scale (7.RP.A.3), a slope (8.EE.B.5), a span (8.G.B.7) and a data read (6.SP.B.5). Its mission is the fourth chapter of the Unit 7 game (owner decision 7, 2026-11-14), as Launchpad's finale is."
+      }
+     },
+     "titles": {
+      "pro": "The Great Clock"
+     }
+    }
+   ],
+   "teacherNotes": [],
+   "tier": "pro",
+   "title": "The Test Range",
+   "tool": null
   }
  ]
 }

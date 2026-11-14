@@ -1,0 +1,741 @@
+{
+ "about": "Number Quest placement: templates the Sorting Game no longer serves. These 63 sat at rungs 6.0-8.0 until the Pro lock of 2026-11-14. They were sound items but not grade 6-8 content (fraction addition with like denominators, rectangle area and perimeter, symmetry, reading a bar chart: earlier grades' work with bigger numbers), a few used a hyphen for a minus sign, and one priced a notebook; 15 were filed under grade and domain pairs that do not exist in CCSS-M (6.NF, 7.NF, 8.NF, 6.MD, 7.MD, 8.MD, 8.RP), so the wrong labels are not kept here. The game never deals them (generator.js TEMPLATES is templates.json alone). They stay findable by id (generator.js BY_ID) for one reason: an item that was already on a learner's screen, or stored on a run in progress, when the bank changed is still graded and read aloud from the template it was dealt from. Their archetypes in generator.js are untouched. This file can be deleted once no run from before 2026-11-14 is still active.",
+ "retiredOn": "2026-11-14",
+ "templates": [
+  {
+   "id": "nq-place-num-6_0-1",
+   "strand": "number",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "intCompare",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-6_0-2",
+   "strand": "number",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "fractionAdd",
+   "context": "",
+   "gen": {
+    "denoms": [
+     6,
+     8,
+     10,
+     12
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-6_0-3",
+   "strand": "number",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "percentOf",
+   "context": "",
+   "gen": {
+    "percents": [
+     10,
+     50
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-6_0-4",
+   "strand": "number",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "divide",
+   "context": "share",
+   "gen": {
+    "lo": 3,
+    "hi": 12
+   }
+  },
+  {
+   "id": "nq-place-num-6_5-1",
+   "strand": "number",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "fractionAdd",
+   "context": "",
+   "gen": {
+    "denoms": [
+     6,
+     8,
+     10,
+     12
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-6_5-2",
+   "strand": "number",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "numeric",
+   "archetype": "percentOf",
+   "context": "",
+   "gen": {
+    "percents": [
+     10,
+     50
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-6_5-3",
+   "strand": "number",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "divide",
+   "context": "share",
+   "gen": {
+    "lo": 5,
+    "hi": 16
+   }
+  },
+  {
+   "id": "nq-place-num-7_0-1",
+   "strand": "number",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "intAdd",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-7_0-2",
+   "strand": "number",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "percentOf",
+   "context": "",
+   "gen": {
+    "percents": [
+     25,
+     75,
+     10,
+     50
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-7_0-3",
+   "strand": "number",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "decimalAdd",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-7_0-4",
+   "strand": "number",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "fractionCompare",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-7_5-1",
+   "strand": "number",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "percentOf",
+   "context": "",
+   "gen": {
+    "percents": [
+     25,
+     75,
+     10,
+     50
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-7_5-2",
+   "strand": "number",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "numeric",
+   "archetype": "decimalAdd",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-7_5-3",
+   "strand": "number",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "fractionCompare",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-8_0-1",
+   "strand": "number",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "intAdd",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-8_0-2",
+   "strand": "number",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "percentOf",
+   "context": "",
+   "gen": {
+    "percents": [
+     20,
+     40,
+     60,
+     80
+    ]
+   }
+  },
+  {
+   "id": "nq-place-num-8_0-3",
+   "strand": "number",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "mixedOps",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-num-8_0-4",
+   "strand": "number",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "fractionEquiv",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-6_0-2",
+   "strand": "algebra",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "unitRate",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-6_0-4",
+   "strand": "algebra",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "equation",
+   "context": "",
+   "gen": {
+    "form": "x+b"
+   }
+  },
+  {
+   "id": "nq-place-alg-6_5-1",
+   "strand": "algebra",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "unitRate",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-7_0-2",
+   "strand": "algebra",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "equation",
+   "context": "",
+   "gen": {
+    "form": "ax+b"
+   }
+  },
+  {
+   "id": "nq-place-alg-7_0-3",
+   "strand": "algebra",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "unitRate",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-7_0-4",
+   "strand": "algebra",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "exprEval",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-7_5-2",
+   "strand": "algebra",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "numeric",
+   "archetype": "unitRate",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-7_5-3",
+   "strand": "algebra",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "exprEval",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-8_0-1",
+   "strand": "algebra",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "equation",
+   "context": "",
+   "gen": {
+    "form": "ax+b"
+   }
+  },
+  {
+   "id": "nq-place-alg-8_0-2",
+   "strand": "algebra",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "seqNext",
+   "context": "",
+   "gen": {
+    "lo": 5,
+    "hi": 40,
+    "neg": true
+   }
+  },
+  {
+   "id": "nq-place-alg-8_0-3",
+   "strand": "algebra",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "propSolve",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-alg-8_0-4",
+   "strand": "algebra",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "mixedOps",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-6_0-1",
+   "strand": "shape-measure",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "volume",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-6_0-2",
+   "strand": "shape-measure",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "angle",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-6_0-3",
+   "strand": "shape-measure",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "area",
+   "context": "",
+   "gen": {
+    "lo": 15,
+    "hi": 40
+   }
+  },
+  {
+   "id": "nq-place-shp-6_0-4",
+   "strand": "shape-measure",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "convert",
+   "context": "",
+   "gen": {
+    "convs": [
+     [
+      "hours",
+      "minutes",
+      60
+     ],
+     [
+      "kilograms",
+      "grams",
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "nq-place-shp-6_5-1",
+   "strand": "shape-measure",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "angle",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-6_5-2",
+   "strand": "shape-measure",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "numeric",
+   "archetype": "area",
+   "context": "",
+   "gen": {
+    "lo": 17,
+    "hi": 44
+   }
+  },
+  {
+   "id": "nq-place-shp-6_5-3",
+   "strand": "shape-measure",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "convert",
+   "context": "",
+   "gen": {
+    "convs": [
+     [
+      "hours",
+      "minutes",
+      60
+     ],
+     [
+      "kilograms",
+      "grams",
+      1000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "nq-place-shp-7_0-1",
+   "strand": "shape-measure",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "volume",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-7_0-2",
+   "strand": "shape-measure",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "symmetry",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-7_0-3",
+   "strand": "shape-measure",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "area",
+   "context": "",
+   "gen": {
+    "lo": 20,
+    "hi": 60
+   }
+  },
+  {
+   "id": "nq-place-shp-7_0-4",
+   "strand": "shape-measure",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "angle",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-7_5-1",
+   "strand": "shape-measure",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "symmetry",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-7_5-2",
+   "strand": "shape-measure",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "numeric",
+   "archetype": "area",
+   "context": "",
+   "gen": {
+    "lo": 22,
+    "hi": 64
+   }
+  },
+  {
+   "id": "nq-place-shp-8_0-1",
+   "strand": "shape-measure",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "volume",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-shp-8_0-2",
+   "strand": "shape-measure",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "area",
+   "context": "",
+   "gen": {
+    "lo": 25,
+    "hi": 80
+   }
+  },
+  {
+   "id": "nq-place-shp-8_0-3",
+   "strand": "shape-measure",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "perimeter",
+   "context": "",
+   "gen": {
+    "lo": 20,
+    "hi": 50
+   }
+  },
+  {
+   "id": "nq-place-shp-8_0-4",
+   "strand": "shape-measure",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "angle",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-6_0-1",
+   "strand": "data-chance",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "meanCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-6_0-3",
+   "strand": "data-chance",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "pick",
+   "archetype": "prob",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-6_0-4",
+   "strand": "data-chance",
+   "rung": 6,
+   "rungLabel": "6.0",
+   "responseType": "numeric",
+   "archetype": "graphRead",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-6_5-2",
+   "strand": "data-chance",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "numeric",
+   "archetype": "prob",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-6_5-3",
+   "strand": "data-chance",
+   "rung": 6.5,
+   "rungLabel": "6.5",
+   "responseType": "pick",
+   "archetype": "graphRead",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_0-1",
+   "strand": "data-chance",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "prob",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_0-2",
+   "strand": "data-chance",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "meanCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_0-3",
+   "strand": "data-chance",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "pick",
+   "archetype": "medianCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_0-4",
+   "strand": "data-chance",
+   "rung": 7,
+   "rungLabel": "7.0",
+   "responseType": "numeric",
+   "archetype": "graphCompare",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_5-1",
+   "strand": "data-chance",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "meanCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_5-2",
+   "strand": "data-chance",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "numeric",
+   "archetype": "medianCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-7_5-3",
+   "strand": "data-chance",
+   "rung": 7.5,
+   "rungLabel": "7.5",
+   "responseType": "pick",
+   "archetype": "graphCompare",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-8_0-1",
+   "strand": "data-chance",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "prob",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-8_0-2",
+   "strand": "data-chance",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "medianCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-8_0-3",
+   "strand": "data-chance",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "pick",
+   "archetype": "meanCalc",
+   "context": "",
+   "gen": {}
+  },
+  {
+   "id": "nq-place-dat-8_0-4",
+   "strand": "data-chance",
+   "rung": 8,
+   "rungLabel": "8.0",
+   "responseType": "numeric",
+   "archetype": "prob",
+   "context": "",
+   "gen": {}
+  }
+ ]
+}

@@ -1,5 +1,10 @@
 # Number Quest catalog — Phase 0 standards lock
 
+> **Pro (grades 6–8)** was declared on 2026-11-14 as a tier that is still being built. Everything about it (its
+> names, its seven reserved units, its 69 locked codes, what it does not cover, and exactly what a unit's pull
+> request touches) is in the section **"Pro tier (The Towers)"** at the end of this file. Where an older section
+> below says rungs 6.0–8.0 or the grade 6–8 clusters are "deferred", that was true until that date.
+
 The content registry of Oomba Academy's math course (grades K–8, three tiers on one path:
 **Launchpad** K–2 · **Explorer** 3–5 · **Pro** 6–8), set in Netville's Numberworks with
 Tally the cat as guide. Spec: `goals/oomba-academy-leading-interactive-educational-app/files/math-course-spec.md` (v2);
@@ -14,10 +19,13 @@ end of this file.
 
 | File | What |
 |---|---|
-| `standards.json` | the registry: CCSS-M framework facts, the eight Mathematical Practices, every verified grades K–5 cluster heading, the LOCKED statement-level code set for Explorer Units 1–7 + the finale (`explorerCodes`; Units 1–4 locked in Phase 0, Units 5–7 + finale in Phase 2), the grades 6–8 cluster headings flagged DEFERRED (`deferredClusters`), and the corrections this lock makes to the spec's shorthand |
+| `standards.json` | the registry: CCSS-M framework facts, the eight Mathematical Practices, every verified cluster heading for grades K–8 (`clusters`; grades 6–8 since the Pro lock of 2026-11-14, `deferredClusters` is empty), the LOCKED statement-level code sets (`explorerCodes`: Units 1–4 locked in Phase 0, Units 5–7 + finale in Phase 2; `launchpadCodes`; `proCodes`, 69 statements), what Pro does not cover (`proCoverage`), and the corrections this lock makes to the spec's shorthand |
 | `units.json` | the catalog slice: Explorer intro 0.1 + Units 1–7 + the Vault finale (23 steps), each step's locked codes as `primary` / `also` / `buildsToward` (the CS Quest idiom), its MP spotlight, its Measure Stone, the game mission named in spec §5.2, and per-unit teacher notes |
-| `placement.json` | Tally's Sorting Game strand lock: the four strands, the half-grade rung convention, LOCKED rungs K.0–5.5 at cluster level, DEFERRED rungs 6.0–8.0, and the strand→unit crosswalk with per-unit entry profiles and the soft-landing rule |
-| `placement/templates.json` | the placement item bank (spec §4.3): 240 item templates, 60 per strand across rungs K.0–8.0 (3–4 per strand × rung cell). Each template carries strand + `strandLabel` (the `placement.json` strand name), rung, `ccssClusterCode` + cluster heading for locked rungs (`lockStatus: "locked"`, 168 templates), `ccssClusterCode: null` + a DEFERRED orientation heading for rungs 6.0–8.0 (`lockStatus: "deferred-pro-phase"`, 72 templates — authored now, not taggable as coverage until the Pro lock), the misconception its main distractor diagnoses, response type (`pick`/`numeric`/`count-out`/`drag`/`build`), reading load (`none`/`low`/`standard`), `audioFirst`/`launchpadSafe` flags, and a `gen` block of randomised-number constraints |
+| `placement.json` | Tally's Sorting Game strand lock: the four strands, the half-grade rung convention, all 17 rungs K.0–8.0 LOCKED at cluster level (6.0–8.0 since 2026-11-14), and the strand→unit crosswalk with per-unit entry profiles, the Pro starting line (`crosswalk.proLine`) and the soft-landing rule |
+| `placement/templates.json` | the placement item bank (spec §4.3): 266 item templates across the four strands and rungs K.0–8.0 (180 below rung 6, unchanged since repair round 3; 86 at rungs 6.0–8.0, at least four a strand × rung cell, rebuilt on 2026-11-14). Each template carries strand + `strandLabel` (the `placement.json` strand name), rung, `ccssClusterCode` + the cluster's heading (`lockStatus: "locked"`, every template), the misconception its main distractor diagnoses, response type (`pick`/`numeric`/`count-out`/`drag`/`build`), reading load (`none`/`low`/`standard`), `audioFirst`/`launchpadSafe` flags, and a `gen` block of randomised-number constraints |
+| `placement/generator-pro.js` | the 73 item archetypes for rungs 6.0–8.0 (grades 6–8), merged into `generator.js`'s table; nothing below rung 6 uses one |
+| `placement/retired.json` | the 63 templates the game served at rungs 6.0–8.0 before 2026-11-14 and never serves again; kept findable by id so an item already dealt still grades |
+| `math-text.js` | Pro's maths in running text: `mathText` (typed stand-ins printed with the real signs) and `sayMath` (the same said in words for read-aloud) |
 | `placement/generator.js` | turns a template into one concrete item (seeded, reproducible): pick items get 4 choices — the key plus three misconception-tagged distractors; other response types return the worked key plus distractor misconceptions. The worked answer key is the generator output (`answer`, plus `answerIndex` for pick); items never exist as files |
 
 ## Lock rules (enforced by `tests/unit/number-quest-standards-lock.test.js`)
@@ -42,13 +50,15 @@ end of this file.
   `standards.json` `launchpadCodes`), and the tier opened on 2026-11-13 (see "Launchpad opens" at
   the end of this file). Still owed: a purpose-built K–2 placement item form (the game plays its
   short audio-first form over the locked K.0–2.5 rungs meanwhile).
-- **Pro tier** statement lock, placement rungs 6.0–8.0 — Phase 3/4. Bridges stay flagged:
-  8.F and 8.NS are builds-toward, 8.SP partial (spec §2.5 notes 7, 9, 10).
+- ~~**Pro tier** statement lock, placement rungs 6.0–8.0~~ — landed 2026-11-14 (`proCodes`, the rung 6.0–8.0 locks; see
+  "Pro tier (The Towers)" at the end of this file). 8.NS stays builds-toward and 8.SP partial (spec §2.5 notes 7, 9);
+  for 8.F the owner replaced note 10: step 5.2 claims 8.F.B.4, 8.F.A.1 and 8.F.A.3 and nothing else in the domain.
 
 ## Placement bank rules (enforced by `scripts/number-quest-placement-check.js` + `tests/unit/number-quest-placement.test.js`)
 
-- 240 templates, 60 per strand, no strand × rung cell below 3. The check samples 120 seeds per
-  template (28,800 items): prompts render fully, keys are present and unique among choices,
+- 266 templates (Number 70, Algebra & Patterns 63, Shape & Measure 70, Data & Chance 63), no strand × rung cell
+  below 3, and none below 4 at rungs 6.0–8.0. The check samples 120 seeds per
+  template (31,920 items): prompts render fully, keys are present and unique among choices,
   `answerIndex` points at the key, every distractor carries a misconception tag, and keys for the
   core arithmetic archetypes are independently re-derived from the rendered prompt.
 - Every template at rung ≤ 2.5 is `audioFirst`; every rung < 3 template is `launchpadSafe`;
@@ -159,16 +169,26 @@ slide with exactly 3 words (each meaning 6-80 chars, at most 12 words), the miss
 carries 1-4 focus steps with cues of at most 12 words; exit `q` at most 90 chars, 4 distinct choices of at
 most 24 chars, `why` 20-160 chars; deck `minutes` 3-8.
 
-**Opening a tier.** Launchpad has been `"open"` since 2026-11-13; Pro has no units yet. `tiers.<tier>.status` is `"building"` or `"open"`. While building, the tier's steps,
+**Opening a tier.** Launchpad has been `"open"` since 2026-11-13; Pro is `"building"` since 2026-11-14 (its welcome is built, its seven units are planned). `tiers.<tier>.status` is `"building"` or `"open"`. While building, the tier's steps,
 band, street and teacher-page rows exist for the platform admin only; for everyone else the tier does not
 exist. Set it to `"open"` and the street switcher, the band card, the teacher page and placement all pick
-it up. A tier with no units does not exist at all, whatever its status.
+it up. A tier with no built unit does not exist at all, whatever its status.
+
+**Planned units (reserving a tier).** A unit object may carry `planned: true`: its number, title, stone, `group`, emoji,
+step numbers, `order` numbers, titles, shorts, MP spotlights and standards are final, and it has no decks, bank or game
+(`tool: null`, every step's `game.<tier>` is `null`). `reserved` (on the unit: `{ game, world }`; on a step: `{ params }`)
+names the game slug, world and chapter the plan expects; nothing reads it. For the engine a planned unit is **not in the
+tier**: `unitsOf()` and `stepsOf()` leave it out, so it has no steps, no door, no start node, no test-out, no standards
+tag and no page, for anyone. `plannedUnitsOf(tier)` lists it, and only the platform admin's preview of a building street
+shows it (a "Planned" block under the path, a "Planned units" table on the teacher page). A tier with a planned unit is
+never open, whatever its status line says. **Building a planned unit is deleting the flag** in the same change that brings
+its decks, bank and game (the deck checker reports "no deck" for a step whose flag is lifted without one).
 
 **Placement.** `placement.json` `crosswalk.entryProfiles` is keyed by a unit's door,
 `"<tier>-<unit>.1"`: `{ "Number": rung, "Algebra & Patterns": rung, "Shape & Measure": rung, "Data & Chance": rung }`.
 A learner with any rung under 2.5 walks the Launchpad profiles (locked 2026-11-13, one per unit; under the
 first profile: the tier's first step; else the first unit whose profile is not met; all met: the Explorer
-welcome). A profile that is met moves the walk past its unit, exactly as on the Explorer street. Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open.
+welcome). A profile that is met moves the walk past its unit, exactly as on the Explorer street. Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open, for a learner with every strand at or over the Pro starting line (rung 5.5).
 The same profiles drive each unit's test-out.
 
 **Game lesson modes.** Brain Board and Quest Race read the step from `mode`: `nq-<unit>-<step>` is the
@@ -657,3 +677,219 @@ text. Four real gaps were closed, none of which changes an existing deck:
 Regenerate it (`node scripts/nq-diagram-baseline.js`) only when a drawing is changed on purpose.
 
 **Not in the pack:** algebra tiles, a tree diagram (a `table` stands in), a fraction-division model, a pyramid net.
+
+## Pro tier (The Towers), grades 6–8: foundations (2026-11-14, tier `building`)
+
+The owner approved the Pro plan on 2026-11-14 with seven decisions (recorded in `docs/decisions.md`, "Number Quest
+Pro: foundations"). This build declares the tier and reserves everything the seven units need, so they can be built
+side by side. **No Pro game and no Pro unit deck exists yet.** For everyone but the platform admin, Pro does not exist.
+
+**Names.** District **The Towers**; the stones are **Gears** (Ratio, Zero, Variable, Scale, Slope, Angle, Chance); the
+finale is **The Great Clock**, step 7.4, a fourth chapter of the Unit 7 game, as Launchpad's finale is. Seven gears
+start the Numberworks clock.
+
+**What is built.** `tiers.pro` in `units.json` (`status: "building"`); the welcome unit and its step `pro-0.1`,
+**Welcome to the Towers** (`course/pro/0.1.json`, `sets/u0-pro.json`: framing, no game, a talk question, a double
+number line and an upright number line from the diagram pack, five measured focus steps); the 69 locked codes; the
+rung 6.0–8.0 item bank; the Pro starting line and entry profiles (inert); the Pro deck limits; maths in text and in
+read-aloud; the admin's preview.
+
+### The seven units (reserved, `planned: true`)
+
+| Unit | Title | Gear | Reserved game | World | Chapters, in step order |
+|---|---|---|---|---|---|
+| 1 | The Mixing Tower | Ratio Gear | `lantern-mix` | spooky-hollow | `mix`, `rate`, `percent` |
+| 2 | The Cold Store | Zero Gear | `sub-zero` | busy-kitchen | `pour`, `below`, `change` |
+| 3 | The Machine Hall | Variable Gear | `machine-line` | toy-town | `build`, `same`, `undo` |
+| 4 | The Map Room | Scale Gear | `scale-scout` | medieval-village | `constant`, `scale`, `percent` |
+| 5 | The Sky Wires | Slope Gear | `sky-lines` | sky-islands | `slope`, `rule`, `meet` |
+| 6 | The Drafting Keep | Angle Gear | `keep-builder` | castle-quest | `build`, `move`, `span` |
+| 7 | The Test Range | Chance Gear | `launch-lab` | space-base | `spread`, `chance`, `trend`, `clock` |
+
+Unit 7 has four chapters: the fourth, `clock`, is the finale. No two units in a row share a world. A reserved game slug
+is a name only: nothing is registered for it, and no file exists.
+
+### The 23 steps and their codes (final: a unit PR changes none of this)
+
+| Step | Title | `order` | Primary | Also covers | MP |
+|---|---|---|---|---|---|
+| 0.1 | Welcome to the Towers | 1 | (framing) | — | MP1 |
+| 1.1 | Ratios and equal mixes | 2 | 6.RP.A.1, 6.RP.A.3a | — | MP7 |
+| 1.2 | Unit rates | 3 | 6.RP.A.2, 6.RP.A.3b | — | MP2 |
+| 1.3 | Percent and changing units | 4 | 6.RP.A.3c, 6.RP.A.3d | — | MP6 |
+| 2.1 | Divide by a fraction | 5 | 6.NS.A.1 | 6.NS.B.3 | MP4 |
+| 2.2 | Below zero: opposites and absolute value | 6 | 6.NS.C.5, 6.NS.C.6, 6.NS.C.7 | — | MP2 |
+| 2.3 | Add, subtract, multiply and divide with negatives | 7 | 7.NS.A.1, 7.NS.A.2 | 7.NS.A.3 | MP8 |
+| 3.1 | Write and work out expressions | 8 | 6.EE.A.2, 6.EE.B.6 | 6.EE.A.1 | MP6 |
+| 3.2 | Expressions that are equal | 9 | 6.EE.A.3, 6.EE.A.4, 7.EE.A.1 | 7.EE.A.2 | MP7 |
+| 3.3 | Solve equations and inequalities | 10 | 6.EE.B.7, 7.EE.B.4a | 6.EE.B.5, 6.EE.B.8, 7.EE.B.4b | MP1 |
+| 4.1 | Is it proportional? Find the constant | 11 | 7.RP.A.2a, 7.RP.A.2b | 7.RP.A.1 | MP7 |
+| 4.2 | Scale drawings and maps | 12 | 7.G.A.1, 7.RP.A.2c | 7.RP.A.2d | MP4 |
+| 4.3 | Percent problems | 13 | 7.RP.A.3 | 7.EE.B.3 | MP2 |
+| 5.1 | Slope: the steepness of a line | 14 | 8.EE.B.5, 8.EE.B.6 | 6.NS.C.8 | MP7 |
+| 5.2 | y = mx + b: a line as a rule | 15 | 8.F.B.4 | 8.F.A.1, 8.F.A.3, 6.EE.C.9 | MP4 |
+| 5.3 | Solve linear equations and find where two lines meet | 16 | 8.EE.C.7, 8.EE.C.8 | — | MP1 |
+| 6.1 | Area, surface area and volume | 17 | 6.G.A.1, 6.G.A.2, 6.G.A.4 | 7.G.B.6 | MP4 |
+| 6.2 | Angles and moves: slide, flip, turn, resize | 18 | 7.G.B.5, 8.G.A.1, 8.G.A.3 | 8.G.A.2, 8.G.A.4 | MP5 |
+| 6.3 | The Pythagorean theorem | 19 | 8.G.B.7, 8.G.B.8 | 8.G.B.6, 8.EE.A.2 | MP3 |
+| 7.1 | Center and spread | 20 | 6.SP.A.3, 6.SP.B.4, 6.SP.B.5 | 6.SP.A.2 | MP6 |
+| 7.2 | Chance: experiments and models | 21 | 7.SP.C.5, 7.SP.C.6, 7.SP.C.7 | 7.SP.C.8 | MP5 |
+| 7.3 | Compare two data sets and spot a trend | 22 | 7.SP.B.4, 8.SP.A.1 | 7.SP.B.3, 7.SP.A.2, 8.SP.A.2 | MP3 |
+| 7.4 | The Great Clock | 23 | 7.EE.B.3 | 6.RP.A.3b, 7.NS.A.3, 7.EE.B.4a, 7.RP.A.3, 8.EE.B.5, 8.G.B.7, 6.SP.B.5 | MP1 |
+
+Step 6.3 also carries `8.NS.A` as a cluster-level builds-toward (preparation, never coverage). The finale's primary is
+7.EE.B.3; its seven also-covers are one code from each unit. All 69 codes are in `standards.json` `proCodes.codes` with
+the published statement text (checked word for word against `server/standards/ccss-math.json`): RP 12, NS 9, EE 19,
+F 3, G 13, SP 13.
+
+### What Pro does not cover
+
+Pro ships as **"the major work of grades 6–8"** (owner decision 2). Of the 81 grade 6–8 statements (lettered parts
+folded into their parent) the seven units cite 62. The other 19 are recorded in `standards.json` `proCoverage.notCovered`,
+grouped in plain words, so the teacher page's list can be generated from the data when the tier opens:
+
+| Not covered | Statements |
+|---|---|
+| Circles: area and circumference **(named on the page first)** | 7.G.B.4 |
+| Volume of cylinders, cones and spheres **(named on the page first)** | 8.G.C.9 |
+| Exponent rules and scientific notation **(named on the page first)** | 8.EE.A.1, 8.EE.A.3, 8.EE.A.4 |
+| Irrational numbers **(named on the page first)** | 8.NS.A.1, 8.NS.A.2 |
+| Long division, greatest common factor and least common multiple | 6.NS.B.2, 6.NS.B.4 |
+| Polygons drawn on the coordinate plane | 6.G.A.3 |
+| Drawing shapes from given conditions and slicing solids | 7.G.A.2, 7.G.A.3 |
+| Angle sums of triangles and angles made by parallel lines | 8.G.A.5 |
+| Statistical questions and random sampling | 6.SP.A.1, 7.SP.A.1 |
+| The equation of a trend line and two-way tables | 8.SP.A.3, 8.SP.A.4 |
+| Comparing two functions and describing a graph in words | 8.F.A.2, 8.F.B.5 |
+
+Partly covered (`proCoverage.partial`): 8.F (three statements, step 5.2: 8.F.B.4 primary, 8.F.A.1 and 8.F.A.3 also;
+owner decision 5, replacing the spec's "bridges it, never claims it"), 8.SP.A (8.SP.A.1 and 8.SP.A.2 only), 8.EE.A
+(8.EE.A.2 only), 8.NS.A (builds-toward only). The lock test recomputes the 19 from the published file, so a statement
+can be neither hidden nor invented.
+
+### Rules every Pro unit keeps
+
+- **Percent contexts (owner decision 3).** Games and decks use neutral contexts: recipes, maps, sports statistics,
+  science data, measurement error. Nothing is priced, bought or sold. At most one or two tax or discount items may
+  appear in the whole tier, in step 4.3's lesson check only, worded about a third person. No interest and no commission
+  item anywhere. Kids are never sold to. (`tests/unit/number-quest-pro-decks.test.js` holds every Pro deck and bank to this.)
+- **Read-aloud is ON by default in Pro games (owner decision 6**; the standing rule: every game has the AI voiceover by
+  default), with the usual replay button and the Launchpad voice setup (`server/services/tts-lines.js`, fixed and
+  scanned lines only). Lesson decks keep the Listen button on every slide, as on the other streets.
+- **Entering Pro (owner decision 4).** Every strand at rung 5.5 or above, else the Explorer finale door as today.
+- **Functions (owner decision 5).** Only 8.F.B.4, 8.F.A.1 and 8.F.A.3, in step 5.2.
+- **The finale (owner decision 7)** is the fourth chapter of the Unit 7 game.
+- **Games** are Kit 2 games, three chapters each (Unit 7: four), locked with `chapter=<id>&lock=1`; no fail state, no
+  clock that ends a round, answers by dragging, dials, steppers and tiles (no typing, no names), no reward currency.
+
+### Pro deck limits (ages 11–14; `tests/unit/number-quest-pro-decks.test.js`, every file in `course/pro/`)
+
+Slide title 3–60 chars; text 20–320 chars, at most 4 sentences of at most 28 words; a deck reads at grade 9 or under
+(Flesch-Kincaid estimate); 5–7 slides; exactly one example slide (2–8 chips of at most 60 chars); exactly one words
+slide with 3–5 words (a meaning of 10–140 chars); the mission last; a diagram carries 1–4 focus steps with cues of 8–80
+chars and at most 18 words; `minutes` 4–12; exit `q` at most 220 chars, 4 distinct choices of at most 70 chars, `why`
+30–240 chars, every distractor tagged with a misconception that starts with a past-tense verb. (Launchpad, for
+comparison: text to 160 chars, two sentences of twelve words.)
+
+**Maths in text.** Write `−3` or `-3`, `x²` or `x^2`, `√16` or `sqrt(16)`, `3 × 4` or `3 x 4`, `≤` or `<=`, `65°`,
+`3/4`, `4 1/2`: the loader prints a Pro deck's and a Pro check item's text with the real signs (`math-text.js`
+`mathText`; a true minus sign, never a hyphen), and read-aloud says them in words (`sayMath`: "negative 3", "x
+squared", "the square root of 16", "3 fourths", "65 degrees"). Write a ratio with spaces round its colon (`2 : 3`, said
+"2 to 3"); a clock time has none. A diagram's labels follow the diagram pack's own rules, and read-aloud never speaks
+a diagram. Only Pro text passes through `math-text.js`: every Launchpad and Explorer line is printed and said exactly
+as before (`tests/unit/number-quest-math-text.test.js` compares every slide of both streets).
+
+### Placement: the rung 6.0–8.0 bank, the Pro starting line and the profiles
+
+**The bank.** Until 2026-11-14 the 72 templates at rungs 6.0–8.0 were "deferred" with no cluster code and yet served;
+15 named grade and domain pairs CCSS-M does not have (6.NF, 7.NF, 8.NF, 6.MD, 7.MD, 8.MD, 8.RP); most repeated earlier
+grades' work with bigger numbers; nothing asked about slope, the Pythagorean theorem, transformations, surface area,
+dividing by a fraction, box plots or scatter plots. Now:
+
+- 63 were **retired** (`placement/retired.json`): never dealt again, still graded for an item already on a screen.
+  Their wrong labels were not kept. 9 sound ones **stay** with their real cluster: `ratioScale` (6.RP.A), `exprEval` ×2
+  (6.EE.A), `equation` x + b (6.EE.B), `propSolve` (7.RP.A), `equation` ax + b (7.EE.B), `angle` (7.G.B), `medianCalc`
+  ×2 (6.SP.A, 6.SP.B). 77 are **new**: 76 from the 73 archetypes in `placement/generator-pro.js`, and one more `percentOf` template (6.RP.A) on the Algebra strand, where ratios belong.
+- Every rung 6.0–8.0 cell holds at least four templates (Number 5/5/4/4/4, Algebra 5/4/4/4/4, Shape 4/4/4/5/5,
+  Data 5/4/4/4/4 at rungs 6.0/6.5/7.0/7.5/8.0), each locked to a cluster its rung names in `placement.json`.
+- Every item is **solved independently** from its prompt (`tests/support/nq-pro-solvers.js`): exactly one choice is
+  correct, it is the key, and every wrong choice is what a named mistake produces. A negative number is printed with
+  the true minus sign; nothing is priced; the spoken prompt says every sign in words; an answer is typed only when it
+  is a whole number from 0 to 99, as everywhere in the game.
+- **Nothing below rung 6 changed.** `tests/unit/number-quest-placement-pro.test.js` pins the 180 templates there and
+  every item they deal for 40 seeds each by hash, the outcome of 324 simulated runs, and the whole game of the 245 of
+  those runs that stay under rung 6; `number-quest-pro-foundations.test.js` pins where all 88,434 possible sets of
+  placed rungs start. (One honest footnote: a learner who climbs to rung 6 and comes back may once be dealt a
+  different sub-6 template than before, because the game never repeats an item and the old rung 6 items were verbatim
+  copies of sub-6 ones. The outcome is the same.)
+- A rung names **clusters**, never statements, and samples curriculum order to route a learner. So a rung may sample a
+  statement the Pro units do not teach (greatest common factor at Number 6.5, a statistical question at Data 6.0, a
+  root between two whole numbers at Number 8.0 under 8.NS.A). That is routing, not coverage.
+
+**The Pro starting line** (`P.PRO_LINE`, `crosswalk.proLine`): every strand at rung **5.5** or above. Explorer's
+highest profile asks rung 4.0, so without the line a strong fourth grader who meets all seven Explorer profiles would
+be walked into Pro. Under the line in any strand, the start is the Explorer finale door, as today.
+
+**The seven profiles** (`crosswalk.entryProfiles`, `pro-<unit>.1`; the evidence is in `crosswalk.proProfiles`), as
+Number / Algebra & Patterns / Shape & Measure / Data & Chance: Unit 1 5.5 / 6 / 5.5 / 5.5 · Unit 2 7 / 6 / 5.5 / 5.5 ·
+Unit 3 7 / 6.5 / 5.5 / 5.5 · Unit 4 7 / 7 / 5.5 / 5.5 · Unit 5 7 / 8 / 5.5 / 5.5 · Unit 6 7 / 8 / 7.5 / 5.5 ·
+Unit 7 7 / 8 / 7.5 / 7.5. Monotone, never under Explorer 7.1.
+
+**Inert while building.** Placement never lands a learner on a street that is not open, and a planned unit's profile
+cannot be asked for (`P.entryProfile` is null for it), so today every start is exactly what it is on main. Once Pro is
+open: under the first profile the start is `pro-0.1`; else the first unit whose profile is not met; all seven met, the
+Great Clock door; "Just Play" with grade 6–8 starts at `pro-0.1`. **Existing learners are never moved**, by the
+declaration or by the opening: nothing is written (tested as #323 was).
+
+### What a unit PR touches (the exact list)
+
+Each unit is one PR. Everything in it is the unit's own, except these shared lines, which is why units can be built
+side by side and registered one at a time on top of the latest main.
+
+**In `units.json`, the unit's own object only** (no other line of the file):
+
+1. delete `"planned": true` and `"reserved"` (the unit's, and each of its steps');
+2. set `"tool"` to the game slug;
+3. set each step's `"game": { "pro": { "slug", "chapter", "chapterTitle", "params": "chapter=<id>&lock=1" } }`;
+4. write `"teacherNotes"` (three notes; Unit 7: four, the last about the finale).
+
+Do **not** touch: `tiers.pro`, another unit, any `n`, `order`, `titles`, `shorts`, `mp` or `standards`. Do not touch
+`standards.json` (every code is locked) or `placement.json` and the bank (already locked).
+
+**New files, all the unit's own:** `course/pro/<n>.1.json`, `.2.json`, `.3.json` (Unit 7: and `7.4.json`);
+`sets/u<n>-pro.json` (nine items; Unit 7: twelve); `seed-games/<slug>.html` and `.json`; `tests/unit/<slug>.test.js`;
+`public/img/nq/<slug>/*.webp`; `public/covers/<slug>.jpg`, `public/og/<slug>.jpg`; `scripts/covers/<slug>.recipe.js`.
+
+**One line or block each in shared files** (the "register" commit, made at merge time on the latest main, one unit at
+a time, as the Launchpad units did):
+
+| File | What the unit adds |
+|---|---|
+| `scripts/seed.js`, `server/db.js` (the Learn list) | the game |
+| `server/learn.js`, `server/services/course-catalog.js` | the game's grades and its course line |
+| `server/standards/official-tags.js` | the game's codes, its chapters, `LEVELLED` |
+| `server/services/tts-lines.js` | the game's spoken lines (read-aloud on by default) |
+| `scripts/nq-shots.js`, `public/img/nq/manifest.json` | the mission shots (`tier: 'pro'`, `band: "pro"`) |
+| this README | a section for the unit, like the Launchpad ones |
+| `tests/unit/course-mission-truth.test.js` | the pinned totals: deck-check items (+9; Unit 7: +12), set files (+1), exit items (+9; Unit 7: +12) |
+| `tests/unit/number-quest-guided-focus.test.js` | the unit's measured focus steps in `REGISTRY`, and the two totals |
+| `tests/unit/number-quest-standards-lock.test.js` | in "Pro units cite only codes in proCodes": the unit's `planned` flag in the pinned list (`true` to `false`) |
+| `tests/unit/number-quest-tiers.test.js`, `number-quest-pro-foundations.test.js` | the pinned lists of built and planned Pro units and steps |
+| `tests/unit/shelves.test.js`, `scanner.test.js`, `vendor.test.js`, `tts-lines.test.js`, `number-quest-parity-repair.test.js` | the pinned game lists and counts |
+
+A unit PR adds **no** diagram type (the diagram pack is in), **no** code to `proCodes`, **no** placement template, and
+**no** learner-facing mention of Pro outside its own decks.
+
+**Which units can be built at the same time.** All seven are independent once this is in: the game, the decks, the bank
+and the unit's own object in `units.json` never collide. The plan's sets are **{1, 2, 3}**, then **{4, 5}**, then
+**{6, 7}**: three at a time is what review and the shared machine can carry, Unit 5 comes before Unit 7 because the
+scatter plot reuses the coordinate-plane work, and Unit 7 is last because it carries the finale. Only the register
+commit is serial.
+
+### Opening the tier (later, its own PR)
+
+Set `tiers.pro.status` to `"open"` once no unit is planned. That is the only switch: the street switcher, the band
+card, the teacher page's units, map and counts, the placement matrix and explainer (`proPlacementWords`), placement and
+"Just Play" follow the data. What the opening PR still writes by hand: the course copy in the 13 locale files (two
+streets, kindergarten to grade 5, the game list, the lock paragraph, the FAQ), the teacher page's list of what Pro
+does not cover (from `proCoverage`), `units.json` `program.standards`, and a decisions entry.

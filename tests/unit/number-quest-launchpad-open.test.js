@@ -1,8 +1,8 @@
 // Number Quest: the Launchpad tier (grades K-2) is open to everyone (2026-11-13). The tier's own mechanics are in
 // tests/unit/number-quest-tiers.test.js (which asks for the open or building state by its test hook); this file
 // pins what the opening means with the data exactly as it ships (units.json, placement.json), no hooks:
-//   - a learner who is not the admin sees Launchpad (band, street switcher, steps, teacher page); Pro still
-//     does not exist for anyone;
+//   - a learner who is not the admin sees Launchpad (band, street switcher, steps, teacher page); Pro (declared
+//     as "building" on 2026-11-14) exists for the platform admin alone and for nobody else;
 //   - where a brand-new K-2 learner starts (the Just Play door and the Sorting Game's short form);
 //   - the locked Launchpad entry profiles: each garden is a landing, and a learner who meets all seven starts
 //     at the Explorer welcome, never at the Launchpad finale;
@@ -64,13 +64,15 @@ const snapshot = kid => JSON.stringify({
   marks: NQ.totalMarks(kid, course),
 });
 
-test('the data: Launchpad is open, Pro is still nobody’s, and nothing in the app says Launchpad is being built', () => {
+test('the data: Launchpad is open, Pro is building and only the admin’s, and nothing in the app says Launchpad is being built', () => {
   assert.equal(UNITS.tiers.launchpad.status, 'open'); assert.equal(UNITS.tiers.explorer.status, 'open');
-  assert.equal(UNITS.tiers.pro, undefined, 'Pro has no line and no units yet');
-  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer']);
-  assert.equal(T.statusOf('pro'), null); assert.equal(T.exists('pro'), false);
-  for (const who of [null, newKid(), parent, admin]) assert.equal(T.visibleTo(who, 'pro'), false, 'Pro is hidden from everyone, the admin included: it has no units');
-  assert.deepEqual(T.visibleTiers(newKid()), ['launchpad', 'explorer']);
+  assert.equal(UNITS.tiers.pro.status, 'building', 'Pro has its line since 2026-11-14, and it is not open');
+  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer'], 'the open streets are the two they were');
+  assert.equal(T.statusOf('pro'), 'building'); assert.equal(T.exists('pro'), true); assert.equal(T.isOpen('pro'), false);
+  for (const who of [null, newKid(), parent]) assert.equal(T.visibleTo(who, 'pro'), false, 'Pro is hidden from everyone who is not the platform admin: a visitor, a learner, a parent');
+  assert.equal(T.visibleTo(admin, 'pro'), true, 'the platform admin previews the street while it is built');
+  assert.deepEqual(T.visibleTiers(newKid()), ['launchpad', 'explorer']); assert.deepEqual(T.visibleTiers(parent), ['launchpad', 'explorer']); assert.deepEqual(T.visibleTiers(null), ['launchpad', 'explorer']);
+  assert.deepEqual(T.visibleTiers(admin), ['launchpad', 'explorer', 'pro']);
   // The copy that said the gardens were unbuilt is gone from the code that wrote it.
   for (const f of ['server/services/number-quest-placement.js', 'server/routes/number-quest.js', 'server/views/number-quest-teacher.js', 'server/views/number-quest-path.js']) {
     const src = fs.readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8');
@@ -85,7 +87,7 @@ test('a learner who is not the admin sees Launchpad: the band, the street, its s
   assert.deepEqual(C.bandsFor(course, kid), ['launchpad', 'explorer']);
   assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer'], 'a signed-out visitor too');
   assert.equal(C.stepFor(kid, course, 'launchpad-0.1').key, 'launchpad-0.1');
-  assert.equal(C.stepFor(kid, course, 'pro-1.1'), null);
+  assert.equal(C.stepFor(kid, course, 'pro-1.1'), null); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null, 'the Pro welcome exists, and reads to a learner as a step that does not');
   // A brand-new learner: both street cards, the Sorting Game invitation, the switcher, and the Explorer street
   // drawn until they choose (it is the course's default street).
   const home = await get('/courses/number-quest', cookie);
@@ -109,6 +111,9 @@ test('a learner who is not the admin sees Launchpad: the band, the street, its s
   const step = await get('/courses/number-quest/launchpad-0.1', cookie);
   assert.equal(step.status, 200); assert.match(step.text, /Meet Tally in the Gardens/);
   assert.equal((await get('/courses/number-quest/pro-1.1', cookie)).status, 404);
+  assert.equal((await get('/courses/number-quest/pro-0.1', cookie)).status, 404, 'the built Pro welcome is a 404 for a learner');
+  assert.equal((await get('/courses/number-quest/pro-0.1')).status, 404, 'and for a signed-out visitor');
+  assert.doesNotMatch((await get('/courses/number-quest?street=pro', cookie)).text, /The Towers|Welcome to the Towers|street-pro|nqp-planned|Ratio Gear/, 'asking for the Pro street by name shows nothing of it');
   assert.equal((await post('/courses/number-quest/band', cookie, { band: 'pro' }, 'application/x-www-form-urlencoded')).status, 303);
   assert.equal(C.getBand(kid, course), 'launchpad', 'the Pro band cannot be picked');
   // Signed out: the same two streets, and the Launchpad welcome is a real page.
@@ -127,12 +132,14 @@ test('a learner who is not the admin sees Launchpad: the band, the street, its s
 test('the teacher page publishes both streets, with every count worked out from the catalogue, and no price', async () => {
   const cat = C.numberQuestCatalogue();
   const facts = nqFacts(cat);
-  const steps = UNITS.units.reduce((k, u) => k + u.steps.length, 0);
+  // The public counts are the OPEN streets' (Pro is declared in the file since 2026-11-14, building, and counted nowhere public).
+  const OPEN = UNITS.units.filter(u => ['launchpad', 'explorer'].includes(u.tier));
+  const steps = OPEN.reduce((k, u) => k + u.steps.length, 0);
   assert.deepEqual({ streets: facts.streets, units: facts.units, steps: facts.steps, grades: facts.grades, gradesPlain: facts.gradesPlain }, { streets: 2, units: 14, steps, grades: 'K–5', gradesPlain: 'K-5' });
   assert.equal(steps, 46);
   assert.deepEqual(facts.games.map(g => g.slug), ['garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'brain-board', 'sum-racer', 'quest-race', 'fraction-factory', 'data-detective']);
   // Every game a step plays is on the list, and nothing else is.
-  const played = new Set(UNITS.units.flatMap(u => u.steps.map(s => (s.game[u.tier] || {}).slug).filter(Boolean)));
+  const played = new Set(OPEN.flatMap(u => u.steps.map(s => (s.game[u.tier] || {}).slug).filter(Boolean)));
   assert.deepEqual([...played].sort(), facts.games.map(g => g.slug).sort());
   const page = await get('/teachers/number-quest');
   assert.equal(page.status, 200);
@@ -146,6 +153,7 @@ test('the teacher page publishes both streets, with every count worked out from 
   assert.match(page.text, /"educationalLevel":"Grades K-5"/);
   assert.match(page.text, /K\.CC\.A\.1/, 'the Launchpad codes are on the map');
   assert.doesNotMatch(page.text, /grades 3–5, mapped|23 short steps|Twenty-three steps|Six games|Five games|not built yet, and their codes/);
+  assert.doesNotMatch(page.text, /The Towers|Welcome to the Towers|Pro ·|Ratio Gear|Planned units|6\.RP\.A\.1|grades K–8, mapped/, 'nothing of the Pro street is on the public teacher page');
   assert.doesNotMatch(page.text, /gardens[^<]{0,80}still being built|tier is still being built/);
   assert.match(page.text, /A rung under the Explorer starting line starts in the Launchpad gardens/, 'the placement matrix says where K-2 lands');
   // Kids are never sold to: no price on the public Number Quest pages.
@@ -388,7 +396,7 @@ test('the Garden Gate leads on: a Launchpad street walked to its end offers Expl
   assert.match(home.text, /href="\/courses\/number-quest\/explorer-0\.1" id="cmap-go"/);
   assert.doesNotMatch(home.text, /id="nqp-onward"/);
   assert.equal(C.overview(kid, course, 'launchpad').done, 23);
-  // The end of the last open street offers nothing further (Pro is not there).
+  // The end of the last open street offers nothing further (Pro is being built: it is not a street a learner can walk on to).
   const top = newKid(); C.setBand(top, course, 'explorer');
   C.steps(course, 'explorer').forEach(s => finish(top, s.key));
   assert.doesNotMatch((await get('/courses/number-quest', cookieFor(top.id))).text, /id="nqp-onward"/);

@@ -24,7 +24,8 @@ const RUNGS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8
 const RESPONSE_TYPES = ['pick', 'numeric', 'count-out', 'drag', 'build'];
 const READING_LOADS = ['none', 'low', 'standard'];
 const REQUIRED = ['id', 'strand', 'strandLabel', 'rung', 'rungLabel', 'grade', 'ccss', 'ccssDomain', 'ccssCluster', 'ccssClusterCode', 'lockStatus', 'misconception', 'responseType', 'readingLoad', 'audioFirst', 'launchpadSafe', 'archetype', 'gen'];
-// Standards-lock alignment: locked rungs must cite a cluster the strand lock allows; deferred rungs cite none.
+// Standards-lock alignment: every rung, K.0-8.0, is locked (rungs 6.0-8.0 since the Pro lock of 2026-11-14), so
+// every template must cite a cluster its strand's lock names for its rung, with the registry's own heading.
 const PLACE = JSON.parse(fs.readFileSync(path.join(DIR, '..', 'placement.json'), 'utf8'));
 const STD = JSON.parse(fs.readFileSync(path.join(DIR, '..', 'standards.json'), 'utf8'));
 
@@ -41,14 +42,11 @@ for (const t of TEMPLATES) {
   if (t.rung < 3 && t.launchpadSafe !== true) fail(`${t.id}: rung < 3 template must be launchpadSafe`);
   if (t.rung < 1 && t.readingLoad !== 'none') fail(`${t.id}: kindergarten template readingLoad must be "none"`);
   const locked = PLACE.strands[t.strandLabel]?.lockedRungs?.[t.rungLabel];
-  if (t.rung <= 5.5) {
-    if (t.lockStatus !== 'locked') fail(`${t.id}: rung <= 5.5 must be lockStatus "locked"`);
-    if (!locked || !locked.clusters.includes(t.ccssClusterCode)) fail(`${t.id}: cluster ${t.ccssClusterCode} not in the strand lock for ${t.rungLabel}`);
-    else if (STD.clusters[t.grade]?.[t.ccssClusterCode] !== t.ccssCluster) fail(`${t.id}: cluster heading does not match standards.json`);
-  } else {
-    if (t.lockStatus !== 'deferred-pro-phase') fail(`${t.id}: rung >= 6.0 must be lockStatus "deferred-pro-phase"`);
-    if (t.ccssClusterCode !== null) fail(`${t.id}: deferred rung must not cite a taggable cluster code`);
-  }
+  if (t.lockStatus !== 'locked') fail(`${t.id}: every template must be lockStatus "locked"`);
+  if (!locked || !locked.clusters.includes(t.ccssClusterCode)) fail(`${t.id}: cluster ${t.ccssClusterCode} not in the strand lock for ${t.rungLabel}`);
+  else if (STD.clusters[t.grade]?.[t.ccssClusterCode] !== t.ccssCluster) fail(`${t.id}: cluster heading does not match standards.json`);
+  // A template's own grade and domain are its cluster's (15 templates once named pairs CCSS-M does not have).
+  if (t.ccssClusterCode && (t.ccss !== t.ccssClusterCode.split('.').slice(0, 2).join('.') && t.rung >= 6)) fail(`${t.id}: ccss ${t.ccss} is not the grade and domain of ${t.ccssClusterCode}`);
 }
 
 // Independent key re-derivation for core arithmetic archetypes, from prompt text.
@@ -75,7 +73,7 @@ for (const t of TEMPLATES) {
     let item;
     try { item = generateItem(t, s); } catch (e) { fail(`${t.id} seed ${s}: ${e.message}`); break; }
     generated++;
-    distinctPrompts.add(item.prompt); distinctAnswers.add(String(item.answer));
+    distinctPrompts.add(`${item.prompt} => ${item.answer}`); distinctAnswers.add(String(item.answer)); // prompt and key: what the game's no-repeat rule compares
     if (!item.prompt || /\{|\}|___.*___.*___/.test(item.prompt.replace('___', '')) && item.prompt.includes('{')) fail(`${t.id} seed ${s}: prompt has unrendered placeholder`);
     if (item.prompt.includes('{') || item.prompt.includes('}')) fail(`${t.id} seed ${s}: prompt has braces: ${item.prompt}`);
     if (item.answer === undefined || item.answer === null || item.answer === '') fail(`${t.id} seed ${s}: empty key`);

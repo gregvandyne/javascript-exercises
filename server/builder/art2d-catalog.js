@@ -4,7 +4,7 @@
 // ART2D_WORLDS: the newest version of every 2D world with every sprite a game may name (size in game cells).
 // ART2D_CHARACTERS: every hero and animal that has a sprite sheet (idle, run and jump frames).
 export const ART2D_HELPER = "1.0.0";
-export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0"};
+export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0"};
 export const ART2D_WORLDS = [
  {
   "id": "busy-kitchen",
@@ -862,6 +862,110 @@ export const ART2D_WORLDS = [
     "name": "obstacle-3",
     "kind": "obstacle",
     "size": 0.72
+   }
+  ]
+ },
+ {
+  "id": "wild-woods",
+  "version": "1.0.0",
+  "name": "Wild Woods",
+  "heroes": [
+   "barbarian",
+   "knight",
+   "mage",
+   "rogue",
+   "rogue-hooded"
+  ],
+  "sprites": [
+   {
+    "name": "oak",
+    "kind": "prop",
+    "size": 3.61
+   },
+   {
+    "name": "pine",
+    "kind": "prop",
+    "size": 3.71
+   },
+   {
+    "name": "birch",
+    "kind": "prop",
+    "size": 4.31
+   },
+   {
+    "name": "bush",
+    "kind": "prop",
+    "size": 1.09
+   },
+   {
+    "name": "berry-bush",
+    "kind": "prop",
+    "size": 1.21
+   },
+   {
+    "name": "fern",
+    "kind": "prop",
+    "size": 0.75
+   },
+   {
+    "name": "flower-red",
+    "kind": "prop",
+    "size": 0.64
+   },
+   {
+    "name": "flowers-blue",
+    "kind": "prop",
+    "size": 0.83
+   },
+   {
+    "name": "mushrooms-red",
+    "kind": "prop",
+    "size": 0.64
+   },
+   {
+    "name": "mossy-rock",
+    "kind": "prop",
+    "size": 0.91
+   },
+   {
+    "name": "stump",
+    "kind": "prop",
+    "size": 0.75
+   },
+   {
+    "name": "sign",
+    "kind": "prop",
+    "size": 1.33
+   },
+   {
+    "name": "fence",
+    "kind": "prop",
+    "size": 1.1
+   },
+   {
+    "name": "goal",
+    "kind": "goal",
+    "size": 2.16
+   },
+   {
+    "name": "coin",
+    "kind": "coin",
+    "size": 0.61
+   },
+   {
+    "name": "obstacle-1",
+    "kind": "obstacle",
+    "size": 0.76
+   },
+   {
+    "name": "obstacle-2",
+    "kind": "obstacle",
+    "size": 0.85
+   },
+   {
+    "name": "obstacle-3",
+    "kind": "obstacle",
+    "size": 0.79
    }
   ]
  }
