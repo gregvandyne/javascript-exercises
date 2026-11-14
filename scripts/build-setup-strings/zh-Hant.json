@@ -76,6 +76,7 @@
   "worlds.medieval-village": "童話般的村莊，有風車和市場。",
   "worlds.pirate-cove": "沙灘小島、椰子樹、碼頭和帆船。",
   "worlds.wild-woods": "陽光森林，有小河、岩石和營地。",
+  "worlds.dino-valley": "陽光山谷，有友善的恐龍、棕櫚樹和一顆大蛋。",
   "groups.heroes": "英雄",
   "groups.farm": "農場動物",
   "groups.wild": "動物園和野生動物",
@@ -133,5 +134,12 @@
   "chars.soon3d": "3D 版即將推出",
   "client.chars.only2d": "目前只有 2D 遊戲有",
   "client.chars.only3d": "目前只有 3D 遊戲有",
-  "client.chars.one2d": "2D 遊戲目前只能選一個角色"
+  "client.chars.youPlay": "你操控這個角色",
+  "client.all.select": "全選",
+  "client.all.clear": "全部取消",
+  "client.all.selectLabel": "全選：{name}",
+  "client.all.clearLabel": "全部取消：{name}",
+  "client.all.picked": "已選 {count} 個",
+  "client.all.pickedWorld": "已選 {count} 個。牠們都住在「{world}」。",
+  "client.all.cleared": "已取消"
 }

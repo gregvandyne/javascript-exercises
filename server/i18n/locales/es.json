@@ -1602,7 +1602,8 @@
         "cosy-home": "Casa Acogedora",
         "busy-kitchen": "Cocina Ajetreada",
         "pirate-cove": "Cala Pirata",
-        "wild-woods": "Bosque Salvaje"
+        "wild-woods": "Bosque Salvaje",
+        "dino-valley": "Valle de los Dinos"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "Cierva",
         "stag": "Ciervo",
         "fox": "Zorro",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Estegosaurio",
+        "parasaurolophus": "Parasaurolofus",
+        "apatosaurus": "Apatosaurio",
+        "velociraptor": "Velocirraptor"
       }
     },
     "animals": {
@@ -2598,7 +2604,7 @@
         "otherWorld": "Vive en otro mundo",
         "only2d": "Por ahora solo en juegos 2D",
         "only3d": "Por ahora solo en juegos 3D",
-        "one2d": "Por ahora, un solo personaje en 2D"
+        "youPlay": "Juegas con este"
       },
       "extras": {
         "remove": "Quitar",
@@ -2617,7 +2623,16 @@
         "nothing": "Nada añadido",
         "empty": "Todavía no has elegido nada. El Constructor te preguntará qué hacer."
       },
-      "gettingReady": "Preparando…"
+      "gettingReady": "Preparando…",
+      "all": {
+        "select": "Elegir todos",
+        "clear": "Quitar todos",
+        "selectLabel": "Elegir todos: {name}",
+        "clearLabel": "Quitar todos: {name}",
+        "picked": "{count, plural, one {# elegido} other {# elegidos}}",
+        "pickedWorld": "{count} elegidos. Todos viven en {world}.",
+        "cleared": "Quitados"
+      }
     }
   },
   "favorites": {
@@ -8535,7 +8550,8 @@
       "cosy-home": "Una casita cálida con sofás, lámparas y libros.",
       "medieval-village": "Una aldea de cuento con un molino y un mercado.",
       "pirate-cove": "Islas de arena, palmeras, muelles y barcos de vela.",
-      "wild-woods": "Un bosque soleado con un río, rocas y un campamento."
+      "wild-woods": "Un bosque soleado con un río, rocas y un campamento.",
+      "dino-valley": "Un valle soleado con dinosaurios amigables, palmeras y un huevo gigante."
     },
     "groups": {
       "heroes": "Héroes",

@@ -1603,7 +1603,8 @@
         "cosy-home": "Gezellig Huis",
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
-        "wild-woods": "Wilde Woud"
+        "wild-woods": "Wilde Woud",
+        "dino-valley": "Dinovallei"
       }
     },
     "heroes": {
@@ -1626,7 +1627,12 @@
         "deer": "Ree",
         "stag": "Hert",
         "fox": "Vos",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Triceratops",
+        "stegosaurus": "Stegosaurus",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaurus",
+        "velociraptor": "Velociraptor"
       }
     },
     "animals": {
@@ -2599,7 +2605,7 @@
         "otherWorld": "Woont in een andere wereld",
         "only2d": "Voorlopig alleen in 2D-games",
         "only3d": "Voorlopig alleen in 3D-games",
-        "one2d": "Voorlopig één figuur in 2D"
+        "youPlay": "Hiermee speel jij"
       },
       "extras": {
         "remove": "Weghalen",
@@ -2618,7 +2624,16 @@
         "nothing": "Niets toegevoegd",
         "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken."
       },
-      "gettingReady": "Even klaarmaken…"
+      "gettingReady": "Even klaarmaken…",
+      "all": {
+        "select": "Alles kiezen",
+        "clear": "Alles weghalen",
+        "selectLabel": "Alles kiezen: {name}",
+        "clearLabel": "Alles weghalen: {name}",
+        "picked": "{count, plural, one {# gekozen} other {# gekozen}}",
+        "pickedWorld": "{count} gekozen. Ze wonen allemaal in {world}.",
+        "cleared": "Weggehaald"
+      }
     }
   },
   "favorites": {
@@ -8536,7 +8551,8 @@
       "cosy-home": "Een knus huisje met banken, lampen en boeken.",
       "medieval-village": "Een sprookjesdorp met een molen en een markt.",
       "pirate-cove": "Zandeilanden, palmbomen, steigers en zeilschepen.",
-      "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp."
+      "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp.",
+      "dino-valley": "Een zonnige vallei met vriendelijke dinosaurussen, palmen en een reuzenei."
     },
     "groups": {
       "heroes": "Helden",

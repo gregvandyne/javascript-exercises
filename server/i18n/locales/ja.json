@@ -1602,7 +1602,8 @@
         "cosy-home": "ぽかぽかのおうち",
         "busy-kitchen": "にぎやかキッチン",
         "pirate-cove": "かいぞくの入り江",
-        "wild-woods": "わくわくの森"
+        "wild-woods": "わくわくの森",
+        "dino-valley": "きょうりゅうの谷"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "シカ",
         "stag": "オスジカ",
         "fox": "キツネ",
-        "shiba": "しばいぬ"
+        "shiba": "しばいぬ",
+        "triceratops": "トリケラトプス",
+        "stegosaurus": "ステゴサウルス",
+        "parasaurolophus": "パラサウロロフス",
+        "apatosaurus": "アパトサウルス",
+        "velociraptor": "ヴェロキラプトル"
       }
     },
     "animals": {
@@ -2598,7 +2604,7 @@
         "otherWorld": "べつのワールドにいるよ",
         "only2d": "いまは2Dゲームだけ",
         "only3d": "いまは3Dゲームだけ",
-        "one2d": "2Dではいまは1人だけ"
+        "youPlay": "きみがあやつるキャラ"
       },
       "extras": {
         "remove": "はずす",
@@ -2617,7 +2623,16 @@
         "nothing": "ついかなし",
         "empty": "まだなにもえらんでいないよ。ビルダーがなにを作るか聞いてくれるよ。"
       },
-      "gettingReady": "じゅんび中…"
+      "gettingReady": "じゅんび中…",
+      "all": {
+        "select": "ぜんぶえらぶ",
+        "clear": "ぜんぶはずす",
+        "selectLabel": "ぜんぶえらぶ：{name}",
+        "clearLabel": "ぜんぶはずす：{name}",
+        "picked": "{count} こえらんだよ",
+        "pickedWorld": "{count} こえらんだよ。みんな {world} にいるよ。",
+        "cleared": "はずしたよ"
+      }
     }
   },
   "favorites": {
@@ -8535,7 +8550,8 @@
       "cosy-home": "ソファとランプと本がある、あたたかい家。",
       "medieval-village": "風車と市場がある、おとぎ話の村。",
       "pirate-cove": "すなの島、ヤシの木、さんばし、ほ船。",
-      "wild-woods": "川と岩とキャンプがある、明るい森。"
+      "wild-woods": "川と岩とキャンプがある、明るい森。",
+      "dino-valley": "やさしいきょうりゅうとヤシの木、大きなたまごのある明るい谷。"
     },
     "groups": {
       "heroes": "ヒーロー",

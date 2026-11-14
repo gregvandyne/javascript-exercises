@@ -5254,3 +5254,102 @@ three decks, nine exit items, the game Sub Zero in the Busy Kitchen world, and t
   route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
 - **Left for the opening PR**, as for Unit 1: the teacher page's game list (`NQ_CREW`) and its locale strings do not
   name Sub Zero. The game itself is a library game on the Learn shelf (math, grades 6-7) from the day it is registered.
+## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
+
+- **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are
+  byte for byte as they were, and saved games keep their 1.0.0 tag). It adds friends: `Oomba2D.use({ world, hero,
+  friends })` and `CONFIG.friends2d` in the runner and catching templates (not locked files). The first character
+  picked is the player (`hero2d`); the others are friends who are in the game: in the runner they stand along the way
+  (one every four columns, never where there is something to jump over, a spring, a checkpoint or the goal), look at
+  the player and hop on the spot as the player runs by; in the catching game they stand at the two edges of the view
+  and take turns. They are pictures only: no body, no parts, never a hazard, and a friend never leaves its place.
+- **Cap:** at most 4 friends are drawn at once (`FRIENDS_SHOWN`); a phone-wide catching game shows 2. More than that
+  take turns (along the way the next one stands at the next place; at the sides a place changes hands every 7 to 9
+  seconds; the turn carries over from round to round), so every pick shows up. A game may name up to 40 friends; the
+  first four pictures are waited for, the others load one at a time while the game plays. With reduced motion they
+  stand still (no hop, one frame).
+- **Plan, tool, mock, model:** the plan's 2D art is `{ world, sprite, friends }`; `start_from_template` takes
+  `friends`; the SETUP CHOICES block and the 2D ART RULES say who the player is and that the others are friends.
+  The "one character in a 2D game" limit and its words are gone; the first picked card says "You play as this one".
+- **"Select all"** sits in the heading of every multi-select section (each character group that has members, and
+  "What should it teach?"). It picks every card of the section that can be picked now, never "Something else"; when
+  they all are picked it reads "Clear all" and clears that section only; it is hidden while fewer than two cards can
+  be picked. In 3D, where characters picked together must share a world, it picks the largest set of the section that
+  shares one world with what is already picked (the first such world on a tie); the others grey out as after single
+  picks, and the live message names the world ("5 picked. They all live in Medieval Village.").
+- **Not verified:** a real phone or GPU (software rendering only), a build with the real model.
+
+## Dino Valley 1.0.0: a prehistoric valley with five friendly dinosaurs (14 Nov 2026)
+
+The first world born with its animals: Round B of `docs/kit2-packs-plan.md`, built the way Wild Woods and the first
+ten animals were, on Oomba3D 1.2.0 (unchanged, like 1.0.0 and 1.1.0 and every shipped theme: only a lock entry is added).
+
+- **The T-Rex is held back (the owner's decision) and ships in no form.** Its mouth is modelled open with a row of
+  teeth and its skeleton has no jaw to close it. `kit2/packs/dinosaurs.json` leaves it out by name; no file, id, name,
+  node, material or clip of it is in the theme, the catalogue, the picker or the locale files
+  (`tests/unit/kit2-dino-valley.test.js`). In the Builder "t-rex" and "tyrannosaurus" lead to Dino Valley (it is where
+  dinosaurs are) with the existing honest "that animal is not in any world yet" line; a person is the hero, no other
+  dinosaur is made the hero or the companion because of it ("a dinosaur game with a T-Rex" picks no stand-in), and the
+  note to the model says never to use another animal as if it were the one asked for.
+- **Five dinosaurs ship:** triceratops, stegosaurus, parasaurolophus, apatosaurus, velociraptor. Each was looked at
+  beside the Knight, face on and side on, standing, walking and running: closed mouths, no teeth showing. The
+  velociraptor passes that (closed mouth; it is the size of a big dog, 1.4 m high, lower than the hero); the old
+  creature test's "no raptor" line was written before anyone had looked at it closely, and now names the T-Rex, the
+  shark and the wolf. Kept clips: `idle`, `walk`, `run`, `jump` (the pack has no eating clip). Dropped from every
+  file: `Attack` and `Death`.
+- **Colour.** The pack's own colours are dark olive and brown and read as gloomy even brightened. Each material gets
+  one bright colour with the `colours` step (Wild Woods' palette approach) instead of `brighten`: a blue triceratops,
+  an orange stegosaurus with coral plates, a purple parasaurolophus with a coral crest, a green apatosaurus, a yellow
+  velociraptor (its black toes and eyes made soft brown), all with pale bellies. One draw call each (`oneDraw`),
+  meshopt, 67 to 85 KB a file, 0.38 MB for the five.
+- **Size.** Triceratops 6.7 m long and 2.8 high, stegosaurus 7 and 3.2, parasaurolophus 6.5 and 3, apatosaurus 15
+  and 3.4, velociraptor 3.6 and 1.4, beside the 2.4 m hero. Every one but the velociraptor is what Oomba3D 1.2.0 calls
+  a big animal: it strolls, never above 2.5 a second, and stops at its calm distance (0.6 of its length: 9 m for the
+  apatosaurus). Nothing in the engine was changed or loosened for them. `pace` and `jumpAir` were measured in the
+  browser from the built files (foot bones on the ground; the same method gives the shipped horse and deer numbers).
+- **Playable:** triceratops, stegosaurus, parasaurolophus and velociraptor (each has a real walk and reads well from
+  behind as the hero). **The apatosaurus is not:** it walks, but a 15 m hero fills the screen with its back. So "not
+  playable" now has two reasons, no walk (the pig, the sheep) or too big, and the creature test, the rules text and the
+  `kit2_hero` note say which. Oomba3D 1.2.0's own error still says "(it has no walk)" for it: the library is frozen,
+  and the text is only seen by someone who writes `g.hero('apatosaurus')` by hand.
+- **The world:** 87 pieces, 2.45 MB first load with the dinosaurs and the same five heroes as Pirate Cove and Wild
+  Woods (limit 5 MB; nothing had to be cut). 69 from the Kenney Nature Kit and 17 from the Quaternius Ultimate Nature
+  Pack, the flat-colour CC0 packs Wild Woods uses, with a warmer palette (sandstone cliffs, jungle greens): ground,
+  hill and cliff blocks, rock faces, a waterfall, a cave block and a cave mouth (empty hollows: scenery), river and
+  pond tiles, path tiles, stepping stones and patches, a bridge, seven palms and five other trees, ferns, bamboo, big
+  leaves, reeds, flowers, a giant mushroom, 17 rocks (six of them boulders 2.6 to 4.4 m high), logs, a signpost
+  (checkpoint) and the shared coin. The nature megakit was not needed; `amir-forest-nature-pack` and the `reodesuxz-*`
+  packs are not used. No bones, skulls, skeletons, fossils, lava, volcano or weapons (the packs used have none).
+- **The goal is a great egg.** No pack has an egg or a nest, so the kit's round stone is made taller and narrower
+  towards the top (a new opt-in pack step, `taper`; a recipe without it builds as before) and given an egg colour:
+  `egg` (2.3 m, the goal: looked at, never taken or broken), two small coloured eggs, and a straw `nest` from the
+  kit's large pot. They are faceted, low-poly eggs: they read as eggs at game distance, less so close up.
+- **Builder.** Place words (English: "dinosaur", "dino", "prehistoric", "jurassic", each dinosaur's name, "raptor",
+  "brontosaurus") choose Dino Valley for a new game, before Wild Woods ("dinosaurs in the forest" is the valley) and
+  after the moon, the castle and the village ("a dinosaur game on the moon" stays on the moon and is told kindly that
+  Space Base has no Triceratops). A dinosaur named alone is the hero when it can be; "a dinosaur" is the triceratops;
+  the apatosaurus, or any dinosaur beside a named hero or "with my", comes along (of "a dinosaur" the smallest: it
+  keeps up). Animal words are no longer read inside a world's own name ("the Dino Valley world" asks for no dinosaur).
+  A card, word, 2D or catching game stays on the old kit. Tests that used `dino-valley` as "a world that has not
+  shipped" now say `candy-land`, and those that used "a dinosaur" as "an animal no world has" now say the T-Rex or a cat.
+- **Starter:** the lake starter of Wild Woods with the valley's pieces, the great egg as the goal and the cave behind
+  it, and three big dinosaurs standing in the lake beside the way (`LAYOUT.wading`, a new optional starter field:
+  creature ids, scenery only, off the path, nothing they do changes the game). No animal comes along unless asked for.
+- **Names and pictures:** the world and the five dinosaurs in the 12 locale files; picker chips and the Build card from
+  the cover. The dinosaurs are in the "3D heroes" tab with the other animals; the 3D catalogue has no group field (the
+  2D art catalogue has, and already calls its sprites of the same five `dinosaur`), so none is added here.
+  `scripts/kit2-thumbs.js` turns a very long animal more towards the camera so it fills its picture.
+- **Its 2D pack** (`public/vendor/art2d/dino-valley/1.0.0/`, 119 KB, locked in `kit2/ART2D.json`): every 3D world has
+  one (`tests/unit/art2d.test.js`), so the valley is drawn for 2D runner and catching games too: palms, the waterfall
+  and the cave far off, palms, bamboo, boulders and a giant mushroom nearer, the great egg as the goal, a log and two
+  rocks as the things to jump. The five dinosaurs were already in the 2D `animals` pack.
+- **The setup steps (/build/new):** the five dinosaurs are in the Dinosaurs group of `kit2/creature-groups.json`, so with
+  the theme shipped the group no longer says "Coming soon in 3D" (no group does today; the state is still tested with a
+  made-up list). Dino Valley is on the world step with its line in 12 languages and its 1280 by 720 preview
+  (`scripts/kit2-thumbs.js --previews`). A dinosaur picked alone is the hero in Dino Valley; the apatosaurus comes along.
+- **The theme tour** stands big animals (longer than 5) further back, side on; worlds with small animals are laid out
+  as before.
+- **Not verified:** motion (walks, runs and jumps were judged from still frames and from positions and speeds read in
+  tests; a sliding foot or a popping clip would not show); a real GPU, phone or Chromebook (software WebGL only);
+  frame rates; sound by ear; a build with the real model; the translated dinosaur names by a native speaker. The jump
+  clips were measured and looked at as one still frame each, not frame by frame.

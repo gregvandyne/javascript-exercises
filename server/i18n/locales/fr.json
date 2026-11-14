@@ -1602,7 +1602,8 @@
         "cosy-home": "Maison Douillette",
         "busy-kitchen": "Cuisine Animée",
         "pirate-cove": "Crique des Pirates",
-        "wild-woods": "Forêt Sauvage"
+        "wild-woods": "Forêt Sauvage",
+        "dino-valley": "Vallée des Dinos"
       }
     },
     "heroes": {
@@ -1625,7 +1626,12 @@
         "deer": "Biche",
         "stag": "Cerf",
         "fox": "Renard",
-        "shiba": "Shiba Inu"
+        "shiba": "Shiba Inu",
+        "triceratops": "Tricératops",
+        "stegosaurus": "Stégosaure",
+        "parasaurolophus": "Parasaurolophus",
+        "apatosaurus": "Apatosaure",
+        "velociraptor": "Vélociraptor"
       }
     },
     "animals": {
@@ -2598,7 +2604,7 @@
         "otherWorld": "Vit dans un autre monde",
         "only2d": "Seulement en 2D pour l’instant",
         "only3d": "Seulement en 3D pour l’instant",
-        "one2d": "Un seul personnage en 2D pour l’instant"
+        "youPlay": "Tu joues avec lui"
       },
       "extras": {
         "remove": "Retirer",
@@ -2617,7 +2623,16 @@
         "nothing": "Rien d’ajouté",
         "empty": "Tu n’as encore rien choisi. Le Constructeur te demandera quoi faire."
       },
-      "gettingReady": "Préparation…"
+      "gettingReady": "Préparation…",
+      "all": {
+        "select": "Tout choisir",
+        "clear": "Tout enlever",
+        "selectLabel": "Tout choisir : {name}",
+        "clearLabel": "Tout enlever : {name}",
+        "picked": "{count, plural, one {# choisi} other {# choisis}}",
+        "pickedWorld": "{count} choisis. Ils vivent tous dans {world}.",
+        "cleared": "Enlevés"
+      }
     }
   },
   "favorites": {
@@ -8535,7 +8550,8 @@
       "cosy-home": "Une petite maison douillette avec canapés, lampes et livres.",
       "medieval-village": "Un village de conte avec un moulin et un marché.",
       "pirate-cove": "Îles de sable, palmiers, quais et bateaux à voiles.",
-      "wild-woods": "Une forêt ensoleillée avec une rivière, des falaises et un camp."
+      "wild-woods": "Une forêt ensoleillée avec une rivière, des falaises et un camp.",
+      "dino-valley": "Une vallée ensoleillée avec des dinosaures gentils, des palmiers et un œuf géant."
     },
     "groups": {
       "heroes": "Héros",

@@ -76,6 +76,7 @@
   "worlds.medieval-village": "風車と市場がある、おとぎ話の村。",
   "worlds.pirate-cove": "すなの島、ヤシの木、さんばし、ほ船。",
   "worlds.wild-woods": "川と岩とキャンプがある、明るい森。",
+  "worlds.dino-valley": "やさしいきょうりゅうとヤシの木、大きなたまごのある明るい谷。",
   "groups.heroes": "ヒーロー",
   "groups.farm": "ぼくじょうの動物",
   "groups.wild": "動物園と野生の動物",
@@ -133,5 +134,12 @@
   "chars.soon3d": "3Dはもうすぐ",
   "client.chars.only2d": "いまは2Dゲームだけ",
   "client.chars.only3d": "いまは3Dゲームだけ",
-  "client.chars.one2d": "2Dではいまは1人だけ"
+  "client.chars.youPlay": "きみがあやつるキャラ",
+  "client.all.select": "ぜんぶえらぶ",
+  "client.all.clear": "ぜんぶはずす",
+  "client.all.selectLabel": "ぜんぶえらぶ：{name}",
+  "client.all.clearLabel": "ぜんぶはずす：{name}",
+  "client.all.picked": "{count} こえらんだよ",
+  "client.all.pickedWorld": "{count} こえらんだよ。みんな {world} にいるよ。",
+  "client.all.cleared": "はずしたよ"
 }

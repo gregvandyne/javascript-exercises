@@ -1,8 +1,14 @@
-// Oomba2D 1.0.0: the 2D art of the Kit 2 worlds, heroes and animals, for games on the Oomba Kit.
+// Oomba2D 1.1.0: the 2D art of the Kit 2 worlds, heroes and animals, for games on the Oomba Kit.
 // A game loads this file and the art packs it uses (pinned tags, after the kit's own tag); each pack file hands its
-// manifest to Oomba2D.pack(). Oomba2D.use({ world, hero }) then loads the pictures and gives the game an `art` object:
+// manifest to Oomba2D.pack(). Oomba2D.use({ world, hero, friends }) then loads the pictures and gives the game an `art`
+// object:
 //   art.level(level)   swaps a level's coins, flag and hazards for the world's coin, goal and obstacles
-//   art.dress(w)       in setup(w): the world's sky, far and mid scenery, ground, props and the animated hero
+//   art.dress(w)       in setup(w): the world's sky, far and mid scenery, ground, props, the animated hero and friends
+// 1.1.0 adds friends: more heroes and animals (use({ friends: [ids] })) who are IN the game beside the player. They
+// stand along the way and hop when the player comes by (dress(w), a level that scrolls), or stand at the two sides
+// and take turns (dress(w, { friends: 'sides' }), a one-screen game). Friends are pictures only: never solid, never a
+// hazard, they never move towards the player. At most FRIENDS_SHOWN are drawn at once; when more were picked they take
+// turns, so every one shows up. Everything in 1.0.0 works the same.
 //   art.sprite(name)   a legend / w.spawn entry for one of the world's props; art.coin(), art.goal(), art.obstacle(i)
 // The Oomba Kit stays the engine (physics, HUD, screens, sound, languages): the pictures are registered as kit sprites
 // (Oomba.art.define), so they sort, flash and squash like everything else. use() resolves to null when the kit, a pack
@@ -11,11 +17,15 @@
 (function () {
   'use strict';
   if (window.Oomba2D) return;
-  var VERSION = '1.0.0', packs = {}, INK = '#141414', PX = 96;
+  var VERSION = '1.1.0', packs = {}, INK = '#141414', PX = 96;
+  // Friends: how many are drawn at once, how many a game may name, and how many pictures are waited for before the
+  // game starts (the others load one by one while it plays).
+  var FRIENDS_SHOWN = 4, FRIENDS_MAX = 40, FRIENDS_FIRST = 4;
   // The kit's layer just above its own sky and hills and below the ground, the cast and their shadows: the world's
   // backdrop covers the kit's.
   var BACK = 4;
   var calls = { define: 0, draws: 0, images: 0 };          // for tests: how much art was really drawn
+  var now = function () { return []; };                     // for tests: the friends standing in the game now
   function pack(m) {
     if (!m || typeof m.id !== 'string') return;
     var s = document.currentScript; m._base = s && s.src ? s.src.replace(/[^/]*$/, '') : '';
@@ -35,24 +45,32 @@
   }
   var names = function (kind) { var out = []; for (var k in packs) if (packs[k].kind === kind) out.push(k); return out; };
 
-  /** use({ world, hero }) -> Promise<art | null>. world: a world pack's id; hero: a hero or animal id (either may be left out). */
+  /** use({ world, hero, friends }) -> Promise<art | null>. world: a world pack's id; hero: a hero or animal id; friends:
+   *  more hero and animal ids, who are in the game beside the player (any of the three may be left out). */
   function use(o) {
     o = o || {};
     var O = window.Oomba, W = o.world ? packs[o.world] : null, H = o.hero ? character(o.hero) : null;
-    if (!O || !O.art || typeof O.art.define !== 'function' || (!W && !H) || (o.world && (!W || W.kind !== 'world'))) return Promise.resolve(null);
+    var F = [], seen = {};
+    (Array.isArray(o.friends) ? o.friends : []).forEach(function (id) {
+      if (typeof id !== 'string' || seen[id] || id === o.hero || F.length >= FRIENDS_MAX) return;
+      var c = character(id); if (c) { seen[id] = 1; F.push({ id: id, pack: c.pack, sprite: c.sprite, img: null }); }
+    });
+    if (!O || !O.art || typeof O.art.define !== 'function' || (!W && !H && !F.length) || (o.world && (!W || W.kind !== 'world'))) return Promise.resolve(null);
     var jobs = [];
     if (W) jobs.push(loadImage(W, W.props.image), loadImage(W, W.ground.image), W.layers.far ? loadImage(W, W.layers.far.image) : null, W.layers.mid ? loadImage(W, W.layers.mid.image) : null);
     else jobs.push(null, null, null, null);
     jobs.push(H ? loadImage(H.pack, H.sprite.image) : null);
+    // the first few friends' pictures are waited for; the others load one at a time while the game plays
+    F.slice(0, FRIENDS_FIRST).forEach(function (f) { jobs.push(loadImage(f.pack, f.sprite.image).then(function (i) { f.img = i; f.tried = true; })); });
     return Promise.all(jobs).then(function (im) {
       if (W && (!im[0] || !im[1] || (W.layers.far && !im[2]) || (W.layers.mid && !im[3]))) return null;
       if (H && !im[4]) H = null;
-      if (!W && !H) return null;
-      return makeArt(O, W, H, { props: im[0], ground: im[1], far: im[2], mid: im[3], hero: im[4] }, o);
+      if (!W && !H && !F.some(function (f) { return f.img; })) return null;
+      return makeArt(O, W, H, { props: im[0], ground: im[1], far: im[2], mid: im[3], hero: im[4] }, o, F);
     }).catch(function () { return null; });
   }
 
-  function makeArt(O, W, H, im, o) {
+  function makeArt(O, W, H, im, o, F) {
     var def = function (name, d) { calls.define++; var draw = d.draw; d.draw = function (ctx, k) { calls.draws++; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; draw(ctx, k); }; O.art.define(name, d); };
     var N = function (n) { return 'a2d:' + (W ? W.id : 'x') + ':' + n; };
     var heroName = H ? 'a2d:hero:' + o.hero : '';
@@ -91,6 +109,22 @@
       var S = H.sprite;
       def(heroName, { w: S.fw, h: S.fh, ax: S.ax, ay: S.ay, draw: function (ctx, k) { var f = +k.v || 0; ctx.drawImage(im.hero, (f % S.cols) * S.fw, Math.floor(f / S.cols) * S.fh, S.fw, S.fh, 0, 0, S.fw, S.fh); } });
     }
+    // Friends: one sprite each, defined when its picture is there. ready(): the friends that can be drawn now.
+    var friendName = function (f) { return 'a2d:friend:' + f.id; };
+    var defFriend = function (f) {
+      if (!f.img || f.defined) return; f.defined = true;
+      var S = f.sprite, img = f.img;
+      def(friendName(f), { w: S.fw, h: S.fh, ax: S.ax, ay: S.ay, draw: function (ctx, k) { var n = +k.v || 0; ctx.drawImage(img, (n % S.cols) * S.fw, Math.floor(n / S.cols) * S.fh, S.fw, S.fh, 0, 0, S.fw, S.fh); } });
+    };
+    var ready = function () { return F.filter(function (f) { return f.defined; }); };
+    if (F.length) def('a2d:friend:none', { w: 2, h: 2, ax: 0.5, ay: 1, draw: function () {} });   // a place nobody stands at yet
+    F.forEach(defFriend);
+    (function next() {
+      var f = F.filter(function (x) { return !x.tried; })[0]; if (!f) return;
+      f.tried = true; loadImage(f.pack, f.sprite.image).then(function (i) { f.img = i; defFriend(f); next(); });
+    })();
+    var turn = 0;                                             // whose turn it is: kept from round to round, so everyone shows up
+    now = function () { return state ? state.friends.filter(function (p) { return p.f && p.e.visible; }).map(function (p) { return { id: p.f.id, x: p.e.x, y: p.e.y, hop: p.hop > 0, solid: !!(p.e.parts && p.e.parts.length) || !!p.e.body }; }) : []; };
     // The kit shows the game's hero as a picture on the title, results and try-again cards: with a sprite hero those
     // pictures show the sprite (its first standing frame), the same height.
     if (H && window.MutationObserver) {
@@ -112,6 +146,8 @@
 
     var art = {
       world: W ? W.id : '', hero: H ? o.hero : '', props: propNames,
+      /** The friends this game named that the packs have (drawn as their pictures arrive). */
+      friends: F.map(function (f) { return f.id; }),
       /** A legend or w.spawn entry for one of the world's sprites (null for a name the world does not have). */
       sprite: function (n, extra) { return spec(n, extra); },
       coin: function () { return spec('coin', { place: 'center', z: 2, parts: [{ collectible: { value: 5 } }, { bob: { amp: 4 } }] }); },
@@ -131,12 +167,22 @@
         });
         level.items = out; return level;
       },
-      /** In setup(w): dress this round of the level. opts.scenery: false for no props along the way; opts.hero: false to keep the kit hero. */
+      /** In setup(w): dress this round of the level. opts.scenery: false for no props along the way; opts.hero: false to keep the kit hero;
+       *  opts.friends: 'route' (along the way, the default), 'sides' (at the two sides of a one-screen game) or false. */
       dress: function (w, opts) {
         opts = opts || {};
         var stage = w && w.stage; if (!stage || !stage.entities || !stage.view || !stage.camera) return false;
         var cell = w.cell || 48, mine = [], add = function (name, a) { var e = stage.add(name, a); e.a2d = true; mine.push(e); if (w.ents) w.ents.push(e); return e; };
-        state = { w: w, cell: cell, cap: stage.gov && stage.gov.tier === 'low' ? 384 : 640, layers: [], sky: null, under: null, hero: null, t: 0, groundY: (w.level ? w.level.h : 540) - 2 * cell };
+        state = { w: w, cell: cell, cap: stage.gov && stage.gov.tier === 'low' ? 384 : 640, layers: [], sky: null, under: null, hero: null, t: 0, groundY: (w.level ? w.level.h : 540) - 2 * cell, friends: [] };
+        // where there is ground to stand on (before the world's art takes the tiles over): column -> the y of its top
+        var floor = {}, floorY = w.hero ? w.hero.y : null;
+        stage.entities.forEach(function (e) {
+          if (typeof e.sprite !== 'string' || e.sprite.indexOf('ground:') !== 0) return;
+          var m0 = +String(e.variant || '0').split('.')[0] || 0; if (m0 & 1) return;
+          var c0 = Math.floor(e.x / cell), y0 = Math.floor(e.y / cell) * cell;
+          if (floorY != null && y0 < floorY - 2) return;
+          if (floor[c0] === undefined || y0 < floor[c0]) floor[c0] = y0;
+        });
         if (W) {
           // the ground: every kit ground tile becomes a slice of the world's strip
           var G = W.ground, GH = G.over + PX, tops = [], top = Infinity;
@@ -170,6 +216,32 @@
           }
         }
         if (H && opts.hero !== false) attach(w.hero);
+        // friends: places to stand on the floor line; who stands where is decided as each place comes into view (step)
+        if (F.length && opts.friends !== false && w.level) {
+          var fy = W ? state.groundY : (floorY != null ? floorY : state.groundY), cols3 = w.level.cols || 0, spots = [];
+          var anyFloor = Object.keys(floor).length > 0;        // a game with no ground tiles of its own (one flat floor): every column will do
+          var flat = function (c) { return !anyFloor || (floor[c] === fy && floor[c - 1] === fy && floor[c + 1] === fy); };
+          // never where the level has something to jump over, bounce on or reach; things to collect float above a friend
+          var busy = {}; (w.level.items || []).forEach(function (it) {
+            var k = typeof it.spec === 'string' ? it.spec : String((it.spec && it.spec.kind) || '');
+            if (/(^|:)(coin|spark|heart|gem|star)$/.test(k)) return;
+            busy[it.c] = 1; busy[it.c - 1] = 1; busy[it.c + 1] = 1;
+          });
+          if (opts.friends === 'sides') {
+            // a game whose floor fills the screen: places at the two edges of the VIEW (they keep their place on the
+            // screen as the view moves): one at each side, and a second pair further in when the view is wide enough
+            spots = [0.11, 0.89, 0.25, 0.75];
+          } else {
+            var gap = opts.friendGap || 4, startC = w.hero ? Math.floor(w.hero.x / cell) : 0;
+            for (var c3 = startC + 3; c3 < cols3 - 1 && spots.length < 24; c3++) if (flat(c3) && !busy[c3]) { spots.push(c3); c3 += gap - 1; }
+          }
+          state.sides = opts.friends === 'sides';
+          spots.forEach(function (c, i) {
+            var e = add('a2d:friend:none', { x: state.sides ? 0 : (c + 0.5) * cell, y: fy, size: cell, layer: 5, z: -1 - (i % 2) * 0.1, shadow: false, variant: '0' });
+            e.visible = false; e.a2dFriend = true;
+            state.friends.push({ e: e, y: fy, f: null, since: 0, hop: 0, phase: i * 0.37, at: state.sides ? c : -1, inner: state.sides && i > 1 });
+          });
+        }
         if (hooked !== stage) { hooked = stage; stage.update(step); }
         step(0);
         return true;
@@ -207,17 +279,58 @@
         // what shows through a gap in the ground: from behind the nearer strip's base band down, far past the view
         if (s.under) { var uh = Math.max(8, vh - bottom) * 2 + 80; place(s.under, vw / 2, bottom, uh, 64, V, zoom); s.under.sx = vw * 3 / (s.under.size / 8); s.under.visible = bottom < vh + 4; }
       }
-      var h = s.w.hero;
+      var h = s.w.hero; s.t += dt;
       if (H && h && state.hero) {
         if (h !== s.hero || h.sprite !== heroName) attach(h);
         var S = H.sprite, body = s.w.body, air = body ? !body.grounded : !h.grounded, moved = dt > 0 ? Math.abs(h.x - s.lastX) / dt : 0, f;
-        s.lastX = h.x; s.t += dt;
+        s.lastX = h.x;
         var reduced = !!(window.Oomba && window.Oomba.settings && window.Oomba.settings.reduced);
         if (air) f = S.anims.jump[(body && body.vy > 0) || (!body && h.vy > 0) ? 1 : 0];
         else if (moved > 20) f = S.anims.run[Math.floor(s.t * (S.fps.run || 12)) % S.anims.run.length];
         else f = reduced ? S.anims.idle[0] : S.anims.idle[Math.floor(s.t * (S.fps.idle || 5)) % S.anims.idle.length];
         h.variant = String(f);
       }
+      if (s.friends.length) friendsStep(s, dt, stage, V, C, zoom, h);
+    }
+    /** Who stands at a place, and what they do: idle; a hop on the spot when the player comes by (never towards the
+     *  player); in a one-screen game they take turns. Nothing here touches the player, the score or the physics. */
+    function friendsStep(s, dt, stage, V, C, zoom, h) {
+      var list = ready(); if (!list.length) return;
+      var reduced = !!(window.Oomba && window.Oomba.settings && window.Oomba.settings.reduced);
+      var half = V.vw / zoom / 2 + s.cell * 2, shown = 0, standing = {};
+      s.friends.forEach(function (p) { if (p.f) standing[p.f.id] = 1; });
+      s.friends.forEach(function (p) {
+        var e = p.e;
+        if (s.sides) {                                        // a place at the edge of the view: it goes where the view goes
+          var wide = V.vw / zoom;
+          if (p.inner && wide < s.cell * 13) { if (p.f) { delete standing[p.f.id]; p.f = null; } e.visible = false; return; }
+          e.x = C.x + (p.at - 0.5) * wide; e.px = e.x;
+        }
+        var near = Math.abs(e.x - C.x) < half;
+        p.since += dt;
+        // a place far behind lets its friend go, so that friend can turn up again further on
+        if (p.f && !s.sides && e.x < C.x - half - s.cell * 4) { delete standing[p.f.id]; p.f = null; e.visible = false; }
+        // a one-screen game: every so often the next friend takes this place (only when there are more than places)
+        if (p.f && s.sides && list.length > s.friends.length && p.since > 7 + p.phase * 4) { delete standing[p.f.id]; p.f = null; }
+        if (!p.f && (near || s.sides) && shown < FRIENDS_SHOWN) {
+          for (var k = 0; k < list.length; k++) { var cand = list[(turn + k) % list.length]; if (!standing[cand.id]) { p.f = cand; turn = (turn + k + 1) % list.length; break; } }
+          if (p.f) { standing[p.f.id] = 1; p.since = 0; e.sprite = friendName(p.f); e.size = p.f.sprite.fh * s.cell / PX * 0.92; e.variant = '0'; e.px = e.x; e.py = p.y; }
+        }
+        if (!p.f) { e.visible = false; return; }
+        if (near || s.sides) shown++;
+        e.visible = (near || s.sides) && shown <= FRIENDS_SHOWN;   // never more than the cap, and nobody out of sight
+        var S = p.f.sprite, dx = h ? h.x - e.x : 1e9, close = Math.abs(dx) < s.cell * 2.2;
+        if (h) e.flip = dx < 0;                               // they look at the player
+        if (close && !p.hop && !p.done && !reduced) { p.hop = 0.001; p.done = true; }
+        if (!close) p.done = false;
+        if (s.sides && !reduced && !p.hop && Math.floor((s.t + p.phase * 9) / 4) !== Math.floor((s.t - dt + p.phase * 9) / 4)) p.hop = 0.001;   // a little cheer now and then
+        if (p.hop) {
+          p.hop += dt; var u = p.hop / 0.5;
+          if (u >= 1) { p.hop = 0; e.y = p.y; } else { e.y = p.y - Math.sin(u * Math.PI) * s.cell * 0.55; e.variant = String(S.anims.jump[u < 0.5 ? 0 : 1]); return; }
+        }
+        e.y = p.y;
+        e.variant = String(reduced ? S.anims.idle[0] : S.anims.idle[Math.floor((s.t + p.phase) * (S.fps.idle || 5)) % S.anims.idle.length]);
+      });
     }
     return art;
   }
@@ -227,5 +340,9 @@
     /** Every hero and animal a loaded pack has. */
     get characters() { var out = []; for (var k of ['heroes', 'animals']) if (packs[k]) out = out.concat(Object.keys(packs[k].sprites)); return out; },
     /** Test hook: how many sprites were defined, drawn from the packs' pictures, and how many pictures loaded. */
-    get stats() { return { define: calls.define, draws: calls.draws, images: calls.images }; } };
+    get stats() { return { define: calls.define, draws: calls.draws, images: calls.images }; },
+    /** Test hook: the friends drawn now: [{ id, x, y, hop, solid }] (solid is always false: they are pictures). */
+    get friendsNow() { return now(); },
+    /** How many friends are drawn at once (more than that take turns). */
+    friendsShown: FRIENDS_SHOWN, friendsMax: FRIENDS_MAX };
 })();

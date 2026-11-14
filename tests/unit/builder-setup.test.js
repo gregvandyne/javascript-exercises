@@ -23,6 +23,7 @@ const turns = await import('../../server/builder/turns.js');
 const plan = await import('../../server/builder/plan.js');
 const kit2 = await import('../../server/builder/kit2.js');
 const art2d = await import('../../server/builder/art2d.js');
+const art2dSvc = await import('../../server/services/art2d.js');
 const catalog = await import('../../server/builder/kit2-catalog.js');
 const { SYSTEM_PROMPT } = await import('../../server/builder/prompt.js');
 const { historyToMessages } = await import('../../server/builder/claude.js');
@@ -91,17 +92,28 @@ test('the engine a plan means: world + 3D is always a ready-made 3D world; 2D st
   // no world picked: the world that has their characters
   assert.equal(e({ look: '3d', characters: [pack('cow')] }).world, 'medieval-village');
   assert.equal(e({ look: '3d' }).world, kit2.DEFAULT_WORLD);
-  // 2D: a running or catching game draws the world's 2D art and ONE sprite character; other kinds keep the classic look
-  assert.deepEqual(e({ type: pack('runner'), look: '2d', world: pack('castle-quest'), characters: [pack('triceratops'), pack('knight')] }),
-    { engine: '2d', template: 'runner', art: { world: 'castle-quest', sprite: 'triceratops' }, extra: ['knight'], plain: false });
-  assert.deepEqual(e({ look: '2d', world: pack('wild-woods') }).art, { world: 'wild-woods', sprite: '' }, 'no kind picked: a running game');
+  // 2D: a running or catching game draws the world's 2D art and every sprite picked: the first is the player, the
+  // others are friends in the game; other kinds keep the classic look
+  assert.deepEqual(e({ type: pack('runner'), look: '2d', world: pack('castle-quest'), characters: [pack('triceratops'), pack('knight'), pack('zebra')] }),
+    { engine: '2d', template: 'runner', art: { world: 'castle-quest', sprite: 'triceratops', friends: ['knight', 'zebra'] }, extra: [], plain: false });
+  const everyone = e({ type: pack('catch'), look: '2d', characters: plan.SETUP_CHARACTERS.filter(c => c.in2d).map(c => pack(c.id)) });
+  assert.equal(plan.LIMITS.characters >= plan.SETUP_CHARACTERS.length + 1, true, 'as many as they like: everyone can be picked');
+  assert.equal(everyone.art.friends.length, plan.SETUP_CHARACTERS.filter(c => c.in2d).length - 1);
+  assert.deepEqual(e({ look: '2d', world: pack('wild-woods') }).art, { world: 'wild-woods', sprite: '', friends: [] }, 'no kind picked: a running game');
   assert.equal(e({ type: pack('adventure'), look: '2d', characters: [pack('fox')] }).template, 'runner');
-  assert.deepEqual(e({ type: pack('catch'), look: 'auto', world: pack('toy-town'), characters: [pack('zebra')] }).art, { world: 'toy-town', sprite: 'zebra' });
+  assert.deepEqual(e({ type: pack('catch'), look: 'auto', world: pack('toy-town'), characters: [pack('zebra')] }).art, { world: 'toy-town', sprite: 'zebra', friends: [] });
   const quiz = e({ type: pack('quiz'), look: '2d', world: pack('castle-quest'), characters: [pack('knight')] });
   assert.deepEqual([quiz.engine, quiz.art, quiz.plain], ['2d', null, true], 'a quiz does not draw worlds yet');
   assert.equal(e({ type: custom('a maze'), look: '2d', world: pack('castle-quest') }).plain, true);
   // an animal that is only a 2D sprite: 2D on "You pick for me", and missing (said honestly) when 3D was picked
-  assert.equal(e({ look: 'auto', characters: [pack('stegosaurus')] }).art.sprite, 'stegosaurus');
+  assert.equal(e({ look: 'auto', characters: [pack('zebra')] }).art.sprite, 'zebra');
+  assert.deepEqual(e({ look: '3d', world: pack('castle-quest'), characters: [pack('zebra')] }).missing, ['zebra']);
+  // the dinosaurs live in a 3D world since Dino Valley 1.0.0: one picked alone is the hero there (the apatosaurus, too
+  // big to be the hero, comes along); in another world it is missing, said honestly
+  const dv = e({ look: 'auto', characters: [pack('stegosaurus')] });
+  assert.deepEqual([dv.engine, dv.world, dv.hero, dv.missing], ['kit2', 'dino-valley', 'stegosaurus', []]);
+  const ap = e({ look: '3d', world: pack('dino-valley'), characters: [pack('apatosaurus')] });
+  assert.deepEqual([ap.world, ap.hero, ap.companion, ap.missing], ['dino-valley', 'barbarian', 'apatosaurus', []]);
   assert.deepEqual(e({ look: '3d', world: pack('castle-quest'), characters: [pack('stegosaurus')] }).missing, ['stegosaurus']);
   // 2D, and kinds only made in 2D
   assert.equal(e({ look: '2d', world: pack('castle-quest'), characters: [pack('knight')] }).engine, '2d');
@@ -127,10 +139,11 @@ test('engineFor: the plan decides the engine, not the words; without a plan the 
   const st2 = { kit2: { world: 'castle-quest', hero: 'knight' } };
   assert.equal(plan.engineFor(st2, p2, text, null), null); assert.equal(st2.kit2, undefined);
   // the 2D art for a plan's build, as data for the 2D ART RULES and the template tool
-  const st4 = {}, p4 = plan.normalisePlan({ type: pack('catch'), look: '2d', world: pack('pirate-cove'), characters: [pack('velociraptor')] });
+  const st4 = {}, p4 = plan.normalisePlan({ type: pack('catch'), look: '2d', world: pack('pirate-cove'), characters: [pack('velociraptor'), pack('pug'), pack('mage')] });
   assert.equal(plan.engineFor(st4, p4, plan.planSentence(p4), null), null);
-  assert.deepEqual(plan.art2dFor(st4, p4, null), { world: 'pirate-cove', hero: 'velociraptor', by: 'plan', missing: false, force2d: false, soft: false, changed: false });
-  assert.deepEqual(st4.art2d, { world: 'pirate-cove', hero: 'velociraptor' });
+  assert.deepEqual(plan.art2dFor(st4, p4, null), { world: 'pirate-cove', hero: 'velociraptor', friends: ['pug', 'mage'], by: 'plan', missing: false, force2d: false, soft: false, changed: false });
+  assert.deepEqual(st4.art2d, { world: 'pirate-cove', hero: 'velociraptor', friends: ['pug', 'mage'] });
+  assert.match(art2d.art2dNote(plan.art2dFor({}, p4, null)), /Friends who are in the game too \(start_from_template friends, CONFIG\.friends2d\): pug, mage\./);
   assert.match(art2d.art2dNote(plan.art2dFor({}, p4, null)), /the 2D world pirate-cove \("Pirate Cove"\) and the sprite animal velociraptor/);
   assert.equal(plan.art2dFor({}, plan.normalisePlan({ type: pack('quiz'), look: '2d', world: pack('pirate-cove') }), null), null);
   assert.equal(plan.art2dFor({}, p3, null), null, 'a 3D plan has no 2D art');
@@ -159,9 +172,11 @@ test('what the model reads: pack choices by id (used as given), custom ones mark
   assert.match(flat, /Build it in 2D on the Oomba Kit, exactly as a 2D game is built today \(start_from_template "quiz"\)/);
   assert.match(flat, /keep the id "toy-town" in the game's tags/); assert.match(flat, /Only running and catching games draw the ready-made worlds and sprite characters in 2D so far/);
   const art = plan.planNote(plan.normalisePlan({ type: pack('runner'), look: '2d', world: pack('toy-town'), characters: [pack('triceratops'), pack('knight')] }));
-  assert.match(art, /start_from_template "runner" with world "toy-town" and sprite "triceratops" \(the 2D ART RULES\)/);
-  assert.match(art, /draws ONE sprite character.*triceratops \(Triceratops\) plays, and knight \(Knight\) cannot be drawn too/);
-  assert.match(art, /Character: PACK triceratops \(Triceratops\), an animal, a 2D sprite\./); assert.match(art, /Character: PACK knight \(Knight\), a hero of the 3D worlds [a-z, -]+, and a 2D sprite\./);
+  assert.match(art, /start_from_template "runner" with world "toy-town" and sprite "triceratops" and friends \["knight"\] \(the 2D ART RULES\)/);
+  assert.match(art, /They picked 2 characters for a 2D game: triceratops \(Triceratops\) \(the first one picked\) is the player, and the others are friends who are IN the game too/);
+  assert.match(art, /Keep every one of them in friends2d; they are never obstacles or enemies/); assert.doesNotMatch(art, /ONE sprite character/);
+  assert.match(art2d.ART2D_RULES, /CONFIG\.friends2d is a list of more sprite heroes and animals/);
+  assert.match(art, /Character: PACK triceratops \(Triceratops\), an animal of the 3D worlds dino-valley, and a 2D sprite\./); assert.match(art, /Character: PACK knight \(Knight\), a hero of the 3D worlds [a-z, -]+, and a 2D sprite\./);
   assert.match(plan.planNote(plan.normalisePlan({ look: '3d', world: custom('a candy planet') })), /start_from_template "world3d".*never start from "oomba3d"/);
   // the fixed rules know the block, and later turns keep one line of it
   assert.match(SYSTEM_PROMPT, /SETUP CHOICES block/); assert.match(SYSTEM_PROMPT, /CUSTOM choice \(their own words\) is outside the builder packs/);
@@ -182,12 +197,17 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
   assert.deepEqual(by.farm.items.filter(c => !c.in3d).map(c => c.id).sort(), ['alpaca', 'bull', 'cow-spotted', 'horse-white', 'llama', 'pony', 'pug']);
   assert.deepEqual(by.wild.items.filter(c => !c.in3d).map(c => c.id).sort(), ['wolf', 'zebra']);
   assert.deepEqual(by.dinosaurs.items.map(c => c.id).sort(), ['apatosaurus', 'parasaurolophus', 'stegosaurus', 'triceratops', 'velociraptor']);
-  assert.ok(by.dinosaurs.items.every(c => c.in2d && !c.in3d && c.worlds.length === 0));
+  // the five dinosaurs are 2D sprites and, since Dino Valley 1.0.0, animals of a 3D world too
+  assert.ok(by.dinosaurs.items.every(c => c.in2d && c.in3d && c.worlds.length === 1 && c.worlds[0] === 'dino-valley'));
+  assert.ok(!groups.flatMap(g => g.items).some(c => /rex|tyranno/i.test(c.id + c.name)), 'the T-Rex is in neither catalogue');
   assert.ok(by.heroes.items.length >= 9 && by.heroes.items.every(c => c.kind === 'hero' && c.in3d && c.in2d));
   assert.equal(groups.flatMap(g => g.items).length, new Set([...kit2.CHARACTER_IDS, ...art2d.ART2D_CHARACTER_IDS]).size, 'everyone of both catalogues, once');
   for (const c of art2d.ART2D_ANIMALS) assert.ok(groups.some(g => g.items.some(x => x.id === c.id && x.in2d)), `${c.id} is offered`);
-  // "Coming soon" only where neither catalogue has anything; "Coming soon in 3D" where there are only 2D sprites
-  assert.deepEqual(groups.map(g => [g.id, g.soon, g.only2d]), [['heroes', false, false], ['farm', false, false], ['wild', false, false], ['dinosaurs', false, true], ['sea', true, false]]);
+  // "Coming soon" only where neither catalogue has anything; "Coming soon in 3D" where there are only 2D sprites (no
+  // group today: the dinosaurs were, until Dino Valley shipped; the made-up lists below show both states)
+  assert.deepEqual(groups.map(g => [g.id, g.soon, g.only2d]), [['heroes', false, false], ['farm', false, false], ['wild', false, false], ['dinosaurs', false, false], ['sea', true, false]]);
+  const before = plan.characterGroups(plan.setupCharacters(kit2.KIT2_CHARACTERS.filter(c => c.group !== 'dinosaurs'), art2d.ART2D_CHARACTERS));
+  assert.equal(before.find(g => g.id === 'dinosaurs').only2d, true, 'with no 3D dinosaur the group says "Coming soon in 3D"');
   // every catalogue creature has a group the step lists (the generator writes it: kit2/creature-groups.json)
   for (const id of kit2.CREATURE_IDS) assert.ok(CREATURE_GROUPS.includes(catalog.KIT2_CREATURE_GROUP[id]) && kit2.characterById(id).group === catalog.KIT2_CREATURE_GROUP[id], `${id} has a group`);
   assert.deepEqual(Object.keys(catalog.KIT2_CREATURE_GROUP).sort(), [...kit2.CREATURE_IDS].sort());
@@ -216,7 +236,7 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   assert.equal((h.match(/data-go="back"/g) || []).length, 7); assert.equal((h.match(/data-go="skip"/g) || []).length, 6); assert.equal((h.match(/data-go="next"/g) || []).length, 6);
   assert.match(h, /Step 1 of 6/); assert.match(h, /Step 6 of 6/);
   // ten live worlds (Wild Woods too), each with its real cover and a Preview button; every preview picture exists, large
-  assert.equal(kit2.KIT2_WORLDS.length, 10);
+  assert.equal(kit2.KIT2_WORLDS.length, 11);
   for (const w of kit2.KIT2_WORLDS) {
     assert.ok(h.includes(`src="/vendor/themes/${w.id}/${w.version}/cover.webp"`), `${w.id} cover`);
     assert.ok(h.includes(`data-preview="${w.id}"`), `${w.id} preview button`);
@@ -239,9 +259,16 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   const group = id => (new RegExp(`<section class="su-group[^"]*" data-group="${id}"[\\s\\S]*?</section>`).exec(h) || [''])[0];
   for (const [id, name] of [['heroes', 'Heroes'], ['farm', 'Farm animals'], ['wild', 'Zoo and wild animals'], ['dinosaurs', 'Dinosaurs'], ['sea', 'Fish and sea animals']]) assert.ok(group(id).includes(name), name);
   assert.match(group('sea'), /Coming soon</); assert.ok(!group('sea').includes('su-pick'), 'sea animals cannot be picked');
-  assert.match(group('dinosaurs'), /data-soon3d>Coming soon in 3D</); assert.ok(group('dinosaurs').includes('data-id="triceratops"'));
+  assert.doesNotMatch(group('dinosaurs'), /Coming soon/); assert.ok(group('dinosaurs').includes('data-id="triceratops"') && group('dinosaurs').includes('data-id="velociraptor"'));
+  assert.ok(h.includes('data-preview="dino-valley"') && h.includes('aria-label="Preview Dino Valley"'));
+  assert.doesNotMatch(h, /t-?rex|tyrannosaur/i);
   assert.ok(group('farm').includes('data-id="cow"') && group('farm').includes('data-id="llama"') && !/Coming soon/.test(group('farm')) && group('wild').includes('data-id="fox"') && group('wild').includes('data-id="zebra"'));
   assert.equal((h.match(/Only running and catching games can use our worlds and characters in 2D so far/g) || []).length, 3, 'the honest 2D note: world, characters and plan');
+  // "Select all" on every multi-select section: each group that has members, and what it teaches (one list, one button)
+  const alls = [...h.matchAll(/<button type="button" class="btn btn-sm su-all" data-all="([^"]+)" data-name="([^"]+)" aria-pressed="false" hidden>Select all<\/button>/g)].map(m => m[1]);
+  assert.deepEqual(alls, [...plan.characterGroups().filter(g => !g.soon).map(g => `chars:${g.id}`), 'learn']);
+  for (const g of plan.characterGroups()) assert.equal(group(g.id).includes('su-all'), !g.soon, `${g.id}: a button only where there is something to pick`);
+  assert.ok(!/data-all="(type|look|world)"/.test(h), 'never on a pick-one step');
   // a file: worksheets and notes only (the Studio's own upload does the rest); no picture types here
   const accept = (/id="su-file"[^>]*accept="([^"]+)"/.exec(h) || [])[1] || '';
   assert.ok(accept.includes('application/pdf') && !/image|png|jpe?g/.test(accept));
@@ -299,7 +326,13 @@ test('hand-off: 2D keeps today\'s 2D build (the world is carried along); custom 
   const run = await build(await signup('SetupRun'), { plan: { type: pack('runner'), look: '2d', world: pack('castle-quest'), characters: [pack('triceratops'), pack('knight')] } });
   assert.equal(kit2.isKit2Game(run.html), false); assert.equal(art2d.isArt2dGame(run.html), true);
   assert.deepEqual([art2d.art2dOf(run.html).world, art2d.art2dOf(run.html).hero], ['castle-quest', 'triceratops']);
-  assert.match(said(run.chat), /It is set in Castle Quest, and the triceratops is your hero/); assert.match(said(run.chat), /shows one of our characters for now/);
+  assert.match(said(run.chat), /It is set in Castle Quest, and the triceratops is your hero/); assert.match(said(run.chat), /The knight is in the game too, along the way/);
+  assert.match(run.html, /\n  friends2d: \['knight'\],\n/); assert.ok(run.html.includes(art2dSvc.art2dPackTag('heroes')) && run.html.includes(art2dSvc.art2dPackTag('animals')) && run.html.includes(art2dSvc.oomba2dTag('1.1.0')));
+  // many: every pick is in the game (the first is the player), and a version that names them passes the safety scan
+  const many = await build(await signup('SetupMany'), { plan: { type: pack('catch'), look: '2d', world: pack('pirate-cove'), characters: ['pug', 'zebra', 'knight', 'cow', 'stegosaurus', 'pig', 'fox'].map(pack) } });
+  assert.match(many.html, /\n  hero2d: 'pug',\n  friends2d: \['zebra', 'knight', 'cow', 'stegosaurus', 'pig', 'fox'\],\n/);
+  assert.match(said(many.chat), /6 friends are in the game too, watching from the sides \(a few at a time, taking turns\)/);
+  assert.equal(games.getVersion(many.game.current_version_id).safety_status, 'pass');
   const cat = await build(await signup('SetupCatch'), { plan: { type: pack('catch'), look: '2d', world: pack('wild-woods'), characters: [pack('zebra')] } });
   assert.deepEqual([art2d.art2dOf(cat.html).world, art2d.art2dOf(cat.html).hero], ['wild-woods', 'zebra']);
   assert.ok(!flat.chat.some(m => (m.events || []).some(e => e[0] === 'ask' && /kind of game|hero|learn/i.test(e[1].question))));

@@ -15,6 +15,7 @@ const CONFIG = {
   biome: 'meadow',
   world: '',
   hero2d: '',
+  friends2d: [],
   good: ['apple', 'banana', 'grapes', 'melon', 'cupcake', 'carrot'],
   bad: ['rock', 'spikeball'],
   extraLife: 'heart',
@@ -78,7 +79,8 @@ function drop(w, k) {
 }
 
 // CONFIG.world and CONFIG.hero2d: one of the ready-made 2D worlds (its sky, scenery and ground) and a hero or animal
-// drawn as a sprite, from the 2D art packs (Oomba2D). With neither, or when the art cannot load, art is null and the
+// drawn as a sprite, from the 2D art packs (Oomba2D). CONFIG.friends2d: more heroes and animals who watch from the two
+// sides and take turns (pictures only: never in the way). With none, or when the art cannot load, art is null and the
 // game has the kit's own look (CONFIG.biome and CONFIG.hero).
 function begin(art) {
 O.game({
@@ -89,7 +91,7 @@ O.game({
   strings: WORDS,
   level: O.level.grid(FIELD),
   stars: w => CONFIG.stars.filter(s => w.points >= s).length,
-  setup(w) { clock = 0; wait = 0.8; if (art) art.dress(w, { every: 4 }); },
+  setup(w) { clock = 0; wait = 0.8; if (art) art.dress(w, { every: 4, friends: 'sides' }); },
   update(w, dt) {
     if (w.scene !== 'play' || w.busy) return;
     clock += dt; wait -= dt;
@@ -111,5 +113,5 @@ O.game({
 });
 }
 const A = window.Oomba2D;
-if (A && (CONFIG.world || CONFIG.hero2d)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d }).then(begin); else begin(null);
+if (A && (CONFIG.world || CONFIG.hero2d || CONFIG.friends2d.length)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d, friends: CONFIG.friends2d }).then(begin); else begin(null);
 </script>
