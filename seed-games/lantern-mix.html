@@ -1,0 +1,1219 @@
+<title>Lantern Mix</title>
+<!-- Lantern Mix: Number Quest Unit 1 of the grades 6-8 street, The Mixing Tower (ages 11-14). Night in Spooky Hollow,
+     on Oomba3D 1.2.0 in the Spooky Hollow theme: a lamplighter's workbench where a lantern's glow comes from the
+     ratio of two oils. The player plans with dials (a slider and plus and minus buttons, never typing), then lights
+     the lantern: the plan is run and its result is shown, right or wrong. Three chapters of six rounds:
+       mix     (1.1) match the gate lantern's glow (2 : 3), make the same glow bigger with one oil set, fill a lantern
+                     that holds 15 parts, mix the missing lantern of a ratio table, work back from the other oil, and
+                     use every part to glow more amber (or more blue) than the gate;
+       rate    (1.2) a burn rate for 1 hour, a tank for 7 hours, 6 ml in 4 hours stretched to 10 hours on a double
+                     number line, how long a tank lasts, two lanterns' unit rates, and a steady walking pace;
+       percent (1.3) fill a tank to a percent, name the percent a tank is full, find the whole tank from a part and
+                     its percent, change kilometers, liters and hours into smaller units, and count the lanterns a
+                     path needs.
+     A match is decided by the ratio (LanternMix.judge), never by the colour on screen, and colour is never the only
+     signal: every lantern has a parts gauge (amber is striped, blue is dotted) with its numbers. Read-aloud is on by
+     default: every instruction, hint and answer line is shown and spoken (BRB.speak, the shared path; the speaker
+     button says it again). No timer, no lives, no fail state, nothing bought or sold: a wrong plan lights the wrong
+     glow, the board shows what the plan really made, and a spoken hint says why; then another try. Nothing moves about
+     on its own or stands in the way: the hollow is a quiet night garden. Lesson mode: BRB.params { chapter: mix | rate | percent,
+     lock: 1 } opens that chapter only; finishing its six rounds reports game over, won, once (the course step's
+     completion signal). With no parameters the game offers the three chapters from a menu. Saves only which chapters
+     are finished (BRB.storage 'lantern-mix-v1'). The import map below is exactly kit2ImportMap()
+     (server/services/vendor.js); tests/unit/lantern-mix.test.js fails if a library bump leaves it behind. English
+     only, like Number Quest's other lesson games. Test handle: window.__lm (also window.__brbTest, the name the
+     picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.2.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.2.0/oomba3d.js": "sha384-ltHvhMM3qs7Hg8yrTCMKv3MBsY7QO3iMiXAf5rKSB17QJbVzVuZN73OAhjCIAk4T",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #171332; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #FFF6DA; }
+  .lm[hidden], .lm-load[hidden] { display: none; }
+  .lm { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .lm button, .lm input { font: inherit; color: inherit; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .lm button { cursor: pointer; }
+  .lm button:focus-visible, .lm input:focus-visible { outline: 4px solid #FFD23F; outline-offset: 3px; }
+  .lm-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  .lm-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .lm-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .lm-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 62px); box-sizing: border-box; background: #10182b; border: 3px solid #FFF6DA; border-radius: 18px; box-shadow: 0 4px 0 #05070f; padding: 6px 14px 6px 6px; }
+  .lm-ask[hidden], .lm-hint[hidden], .lm-sum[hidden], .lm-bar[hidden], .lm-card[hidden], .lm-dots[hidden], .lm-row2[hidden] { display: none; }
+  .lm .lm-say { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 3px solid #05070f; background: #FFD23F; color: #141414; font-size: 22px; line-height: 1; box-shadow: 0 3px 0 #05070f; }
+  .lm .lm-say:active, .lm .lm-btn:active, .lm .lm-step:active { transform: translateY(3px); box-shadow: 0 1px 0 #05070f; }
+  .lm-askt { font-weight: 700; font-size: clamp(16px, 4.2vw, 22px); line-height: 1.2; min-width: 0; }
+  .lm-sum { flex: 0 1 auto; min-width: 0; background: #FFD23F; color: #141414; border: 3px solid #05070f; border-radius: 14px; box-shadow: 0 4px 0 #05070f; padding: 4px 12px; font-weight: 900; font-size: clamp(16px, 4.2vw, 24px); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .lm-sum.ok { background: #7CF0A8; }
+  .lm-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .lm-hint { background: #FFF6DA; color: #141414; border: 3px solid #05070f; border-radius: 14px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(15px, 3.6vw, 20px); line-height: 1.25; text-align: center; max-width: min(calc(100% - 20px), 620px); box-sizing: border-box; }
+  .lm-dots { flex: none; display: flex; gap: 6px; padding: 2px; }
+  .lm-dots i { width: 14px; height: 14px; border-radius: 50%; border: 3px solid #FFF6DA; background: #10182b; box-sizing: border-box; }
+  .lm-dots i.on { background: #FFD23F; } .lm-dots i.now { background: #7CF0A8; }
+  /* The workbench: one or two dials and the Light button. On a phone the dials stack and the button sits under them;
+     on a wide screen they share one row. */
+  .lm-bar { display: flex; flex-direction: column; gap: 8px; align-self: stretch; box-sizing: border-box; margin: 0 auto; width: min(100%, 860px); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); background: rgba(16, 24, 43, 0.92); border-top: 3px solid #FFF6DA; pointer-events: auto; }
+  .lm-dials { display: flex; flex-direction: column; gap: 6px; }
+  .lm-dial { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; grid-template-areas: "d r u"; column-gap: 8px; align-items: end; min-width: 0; height: 56px; }
+  .lm-dl { grid-area: r; align-self: start; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 700; font-size: 14px; line-height: 20px; pointer-events: none; white-space: nowrap; }
+  .lm-dv { font-weight: 900; font-size: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lm-dial[data-tone="amber"] .lm-dv { color: #FFC233; } .lm-dial[data-tone="blue"] .lm-dv { color: #7DBBFF; }
+  .lm .lm-step { width: 48px; height: 48px; border-radius: 14px; border: 3px solid #05070f; background: #FFF6DA; color: #141414; font-weight: 900; font-size: 28px; line-height: 1; box-shadow: 0 3px 0 #05070f; padding: 0; }
+  .lm-step.dn { grid-area: d; } .lm-step.up { grid-area: u; }
+  .lm-dial input[type="range"] { grid-area: r; width: 100%; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+  .lm-dial input[type="range"]::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; background: #3a4566; border: 2px solid #FFF6DA; }
+  .lm-dial input[type="range"]::-moz-range-track { height: 12px; border-radius: 6px; background: #3a4566; border: 2px solid #FFF6DA; }
+  .lm-dial input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -11px; border-radius: 50%; background: #FFD23F; border: 3px solid #05070f; }
+  .lm-dial input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: #FFD23F; border: 3px solid #05070f; }
+  .lm-dial[data-tone="blue"] input[type="range"]::-webkit-slider-thumb { background: #4DA3FF; } .lm-dial[data-tone="blue"] input[type="range"]::-moz-range-thumb { background: #4DA3FF; }
+  .lm-dial.lock { height: 28px; grid-template-columns: minmax(0, 1fr); } .lm-dial.lock .lm-step, .lm-dial.lock input { display: none; }
+  .lm .lm-btn { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 6px 16px; background: #FFF6DA; color: #141414; border: 3px solid #05070f; border-radius: 16px; box-shadow: 0 4px 0 #05070f; font-weight: 800; font-size: 18px; line-height: 1.1; }
+  .lm-btn.go { background: #FFD23F; } .lm-btn.ok { background: #7CF0A8; }
+  .lm-btn.no { animation: lm-no .45s ease; }
+  .lm-bar.wait .lm-btn, .lm-bar.wait .lm-step { opacity: .6; }
+  @keyframes lm-no { 20% { transform: translateX(-7px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } 80% { transform: translateX(-3px); } }
+  .lm-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .lm-card h1 { margin: 0; font-size: clamp(32px, 8vw, 56px); line-height: 1; color: #FFD23F; text-shadow: 0 4px 0 #05070f, 0 -2px 0 #05070f, 2px 0 0 #05070f, -2px 0 0 #05070f; }
+  .lm-card .lm-ask { margin-top: 10px; max-width: 100%; }
+  .lm-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 760px; }
+  .lm-pick .lm-btn { min-width: 104px; min-height: 56px; }
+  .lm-pick .lm-btn.go { min-width: 190px; min-height: 64px; font-size: 20px; }
+  .lm-menu { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: min(820px, 100%); }
+  .lm-menu .lm-btn { flex: 1 1 0; flex-direction: column; max-width: 240px; min-height: 104px; font-size: 19px; }
+  .lm-btn .i { font-size: 30px; line-height: 1.1; }
+  .lm-star { font-size: 64px; line-height: 1; }
+  .lm-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; text-align: center; padding: 20px; }
+  @media (min-aspect-ratio: 9/10) {
+    .lm-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 62px; box-sizing: border-box; }
+    .lm-ask { flex: 0 1 auto; max-width: 100%; } .lm-row2 { flex: none; max-width: 44%; }
+    .lm-askt { font-size: clamp(15px, 1.9vw, 22px); } .lm-sum { font-size: clamp(15px, 2vw, 24px); }
+    .lm-bar { flex-direction: row; align-items: flex-end; gap: 14px; border: 3px solid #FFF6DA; border-bottom: 0; border-radius: 18px 18px 0 0; }
+    .lm-dials { flex: 1 1 auto; flex-direction: row; gap: 16px; min-width: 0; } .lm-dial { flex: 1 1 0; }
+    .lm-bar .lm-btn { flex: none; min-width: 150px; }
+  }
+  @media (max-width: 480px) { .lm-menu .lm-btn { flex: 1 1 100%; max-width: 100%; min-height: 72px; flex-direction: row; } .lm-star { font-size: 52px; } .lm-pick .lm-btn { min-width: 96px; font-size: 16px; padding: 6px 10px; } }
+  @media (max-height: 700px) { .lm .lm-say { width: 44px; height: 44px; } .lm .lm-btn { min-height: 48px; } .lm-askt { font-size: clamp(15px, 4vw, 20px); } .lm-bar { gap: 6px; padding-top: 6px; } }
+  @media (prefers-reduced-motion: reduce) { .lm .lm-btn.no { animation: none; outline: 5px dashed #FF8A6B; outline-offset: 2px; } .lm .lm-say:active, .lm .lm-btn:active, .lm .lm-step:active { transform: none; } }
+</style>
+<div class="lm-load" id="load" role="status">Lighting the hollow…</div>
+<div class="lm" id="lm" hidden>
+  <div class="lm-top">
+    <div class="lm-line" id="line">
+      <div class="lm-ask" id="ask" hidden><button class="lm-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="lm-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="lm-row2" id="row2" hidden>
+        <div class="lm-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="lm-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="lm-low">
+    <div class="lm-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="lm-bar" id="bar" hidden>
+      <div class="lm-dials" id="dials"></div>
+      <button class="lm-btn go" id="light" type="button"></button>
+    </div>
+  </div>
+  <div class="lm-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Lantern Mix's rounds: plain data and functions (no DOM, no 3D), so tests/unit/lantern-mix.test.js can run this
+   block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through, so the
+   first six rounds are always the same; a replay gets new numbers). Every round has `kind`, `pic` (the numbers the
+   board draws), `dials` (what the player may set: id, label key, unit, min, max, step, start; a dial whose min is its
+   max is locked), `want` (one setting that is right), `ask` (a line of the words table, with its numbers) and `show`
+   (what the chip shows). `judge(round, values)` runs a plan: { ok: true, said, shown } or { ok: false, why, hint },
+   where `why` names the mistake and `hint` is the lines that say it. A mix is judged by its ratio alone. ===== */
+/* lantern-mix:begin */
+(function (root) {
+  var CHAPTERS = ['mix', 'rate', 'percent'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function one(r, a) { return a[Math.floor(r() * a.length)]; }
+  function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  function L(key, vars) { return [key, vars || {}]; }
+  function gcd(a, b) { while (b) { var t = a % b; a = b; b = t; } return a; }
+  /** The glow of a mix of `a` parts amber and `b` parts blue: its ratio in lowest terms and the colour that ratio
+   *  alone gives (amber through green to blue), so 2 : 3 and 4 : 6 are the same glow to the last digit. */
+  function glow(a, b) {
+    if (!(a >= 0) || !(b >= 0) || a + b === 0) return null;
+    var g = gcd(a, b), p = a / g, q = b / g, hue = Math.round((215 - 173 * p / (p + q)) * 10) / 10;
+    return { p: p, q: q, hue: hue, css: 'hsl(' + hue + ', 100%, 60%)' };
+  }
+  function dial(id, name, unit, min, max, step, start) { return { id: id, key: 'dial.' + name, unit: unit, min: min, max: max, step: step, start: start === undefined ? min : start, lock: min === max }; }
+  function good(said, shown) { return { ok: true, said: said, shown: shown }; }
+  function bad(why, hint) { return { ok: false, why: why, hint: hint }; }
+
+  /* ---- mix: a glow is a ratio of amber parts to blue parts ---- */
+  var RATIOS = [[2, 3], [1, 2], [3, 2], [1, 3], [3, 4], [2, 5], [3, 5], [4, 3], [5, 2], [2, 1]];
+  var TABLES = [[1, 3], [2, 3], [1, 2], [3, 4], [3, 2], [1, 4], [4, 3], [2, 1]];
+  function mixRound(n, lap, r, out) {
+    var pq = lap === 0 ? [[2, 3], [2, 3], [2, 3], [1, 3], [3, 4], [2, 3]][n - 1] : one(r, n === 4 ? TABLES : RATIOS), p = pq[0], q = pq[1], k, t, m, more;
+    if (n === 1) {
+      // the gate lantern's glow, copied: any mix in the same ratio matches
+      out.kind = 'copy'; out.pic = { p: p, q: q };
+      out.dials = [dial('a', 'amber', 'parts', 0, 12, 1), dial('b', 'blue', 'parts', 0, 12, 1)];
+      out.want = { a: p, b: q }; out.ask = L('x.ask.copy', { p: p, q: q }); out.show = L('show.mix', { p: p, q: q });
+    } else if (n === 2) {
+      // the same glow, bigger: the amber is set, the blue must keep the ratio (not the difference)
+      k = lap === 0 ? 3 : between(r, 2, 4);
+      out.kind = 'scale'; out.pic = { p: p, q: q, k: k };
+      out.dials = [dial('a', 'amber', 'parts', k * p, k * p, 1), dial('b', 'blue', 'parts', 0, 20, 1)];
+      out.want = { a: k * p, b: k * q }; out.ask = L('x.ask.scale', { p: p, q: q, a: k * p }); out.show = L('show.scale', { p: p, q: q, a: k * p });
+    } else if (n === 3) {
+      // a lantern that holds so many parts: the ratio and the total together
+      k = lap === 0 ? 3 : between(r, 2, 3); t = k * (p + q);
+      out.kind = 'fill'; out.pic = { p: p, q: q, k: k, t: t };
+      out.dials = [dial('a', 'amber', 'parts', 0, 20, 1), dial('b', 'blue', 'parts', 0, 20, 1)];
+      out.want = { a: k * p, b: k * q }; out.ask = L('x.ask.fill', { p: p, q: q, t: t }); out.show = L('show.fill', { p: p, q: q, t: t });
+    } else if (n === 4) {
+      // a ratio table of five lanterns with one missing
+      m = lap === 0 ? 4 : between(r, 2, 5);
+      out.kind = 'table'; out.pic = { p: p, q: q, m: m, cols: 5 };
+      out.dials = [dial('a', 'amber', 'parts', 0, 20, 1), dial('b', 'blue', 'parts', 0, 20, 1)];
+      out.want = { a: m * p, b: m * q }; out.ask = L('x.ask.table'); out.show = L('show.table', { p: p, q: q });
+    } else if (n === 5) {
+      // working back: the blue is set, the amber must keep the ratio
+      k = lap === 0 ? 3 : between(r, 2, 4);
+      out.kind = 'back'; out.pic = { p: p, q: q, k: k };
+      out.dials = [dial('a', 'amber', 'parts', 0, 20, 1), dial('b', 'blue', 'parts', k * q, k * q, 1)];
+      out.want = { a: k * p, b: k * q }; out.ask = L('x.ask.back', { p: p, q: q, b: k * q }); out.show = L('show.back', { p: p, q: q, b: k * q });
+    } else {
+      // comparing ratios: every part used, and more amber (or more blue) than the gate. Many plans are right.
+      t = 2 * (p + q); more = lap % 2 === 0 ? 'amber' : 'blue';
+      out.kind = 'warmer'; out.pic = { p: p, q: q, t: t, more: more };
+      out.dials = [dial('a', 'amber', 'parts', 0, t, 1), dial('b', 'blue', 'parts', 0, t, 1)];
+      out.want = more === 'amber' ? { a: 2 * p + 1, b: 2 * q - 1 } : { a: 2 * p - 1, b: 2 * q + 1 };
+      out.ask = L('x.ask.warmer.' + more, { p: p, q: q, t: t }); out.show = L('show.warmer.' + more, { p: p, q: q });
+    }
+  }
+  function judgeMix(R, v) {
+    var p = R.pic.p, q = R.pic.q, t = R.pic.t, a = v.a, b = v.b, side, k;
+    if (!(a > 0) || !(b > 0)) return bad('none', [L('x.hint.none')]);
+    side = a * q - b * p;   // above 0: more amber than the gate; 0: the same glow, whatever the size
+    if (R.kind === 'warmer') {
+      if (a + b !== t) return bad('total', [L('x.hint.all', { t: t, s: a + b })]);
+      if (side === 0) return bad('same', [L('x.hint.same', { a: a, b: b, p: p, q: q })]);
+      if ((side > 0) !== (R.pic.more === 'amber')) return bad(side > 0 ? 'amber' : 'blue', [L('x.hint.side.' + R.pic.more)]);
+      return good([L('x.said.warmer.' + R.pic.more, { a: a, b: b, p: p, q: q })], L('show.warmer.yes.' + R.pic.more, { a: a, b: b, p: p, q: q }));
+    }
+    if (side !== 0) {
+      if (a === q && b === p) return bad('swap', [L('x.hint.swap', { a: a, b: b })]);
+      if ((R.kind === 'scale' || R.kind === 'back') && a - p === b - q && a > p) return bad('add', [L('x.hint.add'), L('x.hint.times')]);
+      return bad(side > 0 ? 'amber' : 'blue', [L('x.hint.' + (side > 0 ? 'amber' : 'blue')), L('x.hint.every', { p: p, q: q })]);
+    }
+    if (R.kind === 'fill' && a + b !== t) return bad('total', [L('x.hint.glow'), L('x.hint.holds', { t: t, s: a + b })]);
+    if (R.kind === 'table' && a !== R.pic.m * p) return bad('row', [L('x.hint.glow'), L('x.hint.row')]);
+    k = a / p;
+    if (R.kind === 'fill') return good([L('x.said.fill', { k: k, p: p, q: q, t: t })], L('show.same', { a: a, b: b, p: p, q: q }));
+    if (k === 1) return good([L('x.said.copy', { p: p, q: q })], L('show.same', { a: a, b: b, p: p, q: q }));
+    return good([L('x.said.same', { a: a, b: b, p: p, q: q }), L('x.said.times', { k: k })], L('show.same', { a: a, b: b, p: p, q: q }));
+  }
+
+  /* ---- rate: so much for each 1 (milliliters an hour, meters a minute) ---- */
+  function rateRound(n, lap, r, out) {
+    var x, h, u, t, v, u2, h2, hs;
+    if (n === 1) {
+      // a unit rate: so many milliliters in so many hours is how many in 1 hour?
+      u = lap === 0 ? 3 : between(r, 2, 6); h = lap === 0 ? 4 : between(r, 2, 5); x = u * h;
+      out.kind = 'unit'; out.pic = { x: x, h: h, u: u, top: 'ml', bot: 'h', known: [[x, h]], ask: 'top', at: 1, max: h };
+      out.dials = [dial('a', 'ml1', 'ml', 0, 20, 1)];
+      out.want = { a: u }; out.ask = L('r.ask.unit', { x: x, h: h }); out.show = L('show.unit', { x: x, h: h });
+    } else if (n === 2) {
+      // a unit rate used: so many each hour, for so many hours
+      u = lap === 0 ? 3 : between(r, 2, 5); t = lap === 0 ? 7 : between(r, 4, 9);
+      out.kind = 'tank'; out.pic = { u: u, t: t, top: 'ml', bot: 'h', known: [[u, 1]], ask: 'top', at: t, max: t };
+      out.dials = [dial('a', 'tank', 'ml', 0, 50, 1)];
+      out.want = { a: u * t }; out.ask = L('r.ask.tank', { r: u, t: t }); out.show = L('show.tank', { r: u, t: t });
+    } else if (n === 3) {
+      // the rate is not given for 1 hour (6 ml in 4 hours), and the answer is for another time (10 hours)
+      u = lap === 0 ? 1.5 : one(r, [0.5, 1.5, 2.5]); h = lap === 0 ? 4 : one(r, [2, 4, 6]);
+      t = lap === 0 ? 10 : one(r, [6, 8, 10, 12].filter(function (y) { return y !== h; })); x = u * h;
+      out.kind = 'scale'; out.pic = { x: x, h: h, u: u, t: t, top: 'ml', bot: 'h', known: [[x, h]], ask: 'top', at: t, max: Math.max(t, h) };
+      out.dials = [dial('a', 'tank', 'ml', 0, 40, 1)];
+      out.want = { a: u * t }; out.ask = L('r.ask.scale', { x: x, h: h, t: t }); out.show = L('show.scale.rate', { x: x, h: h, t: t });
+    } else if (n === 4) {
+      // the other way: how many hours does a tank last?
+      u = lap === 0 ? 4 : between(r, 2, 5); h = lap === 0 ? 2 : between(r, 2, 3);
+      t = lap === 0 ? 5 : one(r, [4, 5, 6, 7, 8, 9].filter(function (y) { return y !== h; })); x = u * h; v = u * t;
+      out.kind = 'hours'; out.pic = { x: x, h: h, u: u, v: v, t: t, top: 'ml', bot: 'h', known: [[x, h]], ask: 'bot', at: v, max: Math.max(t, 10) };
+      out.dials = [dial('a', 'hours', 'h', 0, 12, 1)];
+      out.want = { a: t }; out.ask = L('r.ask.hours', { x: x, h: h, v: v }); out.show = L('show.hours', { x: x, h: h, v: v });
+    } else if (n === 5) {
+      // two lanterns, two unit rates: which burns less each hour?
+      u = lap === 0 ? 3 : between(r, 2, 6); u2 = lap === 0 ? 2 : one(r, [2, 3, 4, 5, 6].filter(function (y) { return y !== u; }));
+      hs = [2, 3, 4, 5]; h = lap === 0 ? 3 : one(r, hs); h2 = lap === 0 ? 5 : one(r, hs.filter(function (y) { return y !== h; }));
+      out.kind = 'two'; out.pic = { a: { x: u * h, h: h, u: u }, b: { x: u2 * h2, h: h2, u: u2 } };
+      out.dials = [dial('a', 'lanta', 'ml', 0, 12, 1), dial('b', 'lantb', 'ml', 0, 12, 1)];
+      out.want = { a: u, b: u2 }; out.ask = L('r.ask.two', { a: u * h, b: h, c: u2 * h2, d: h2 }); out.show = L('show.two');
+    } else {
+      // constant speed: so many meters in so many minutes, kept up for longer
+      u = lap === 0 ? 50 : one(r, [50, 100, 150]); h = lap === 0 ? 3 : between(r, 2, 4);
+      t = lap === 0 ? 8 : one(r, [5, 6, 7, 8, 9].filter(function (y) { return y !== h; })); x = u * h;
+      out.kind = 'speed'; out.pic = { x: x, h: h, u: u, t: t, top: 'm', bot: 'min', known: [[x, h]], ask: 'top', at: t, max: t };
+      out.dials = [dial('a', 'meters', 'm', 0, u * 12, 50)];
+      out.want = { a: u * t }; out.ask = L('r.ask.speed', { d: x, t: h, m: t }); out.show = L('show.speed', { d: x, t: h, m: t });
+    }
+  }
+  function judgeRate(R, v) {
+    var p = R.pic, a = v.a, b = v.b, hint, less;
+    if (R.kind === 'two') {
+      hint = [];
+      if (a !== p.a.u) hint.push(L('r.hint.lanta', { x: p.a.x, h: p.a.h }));
+      if (b !== p.b.u) hint.push(L('r.hint.lantb', { x: p.b.x, h: p.b.h }));
+      if (hint.length) return bad(a !== p.a.u && b !== p.b.u ? 'both' : a !== p.a.u ? 'a' : 'b', hint);
+      less = p.a.u < p.b.u ? 'a' : 'b';
+      return good([L('r.said.two', { a: a, b: b }), L('r.said.less.' + less)], L('show.two.yes', { a: a, b: b }));
+    }
+    if (!(a > 0)) return bad('zero', [L('r.hint.zero')]);
+    if (R.kind === 'unit') {
+      if (a === p.u) return good([L('r.said.unit', { x: p.x, h: p.h, u: p.u })], L('show.unit.yes', { u: p.u }));
+      if (a === p.x - p.h) return bad('subtract', [L('r.hint.nosub'), L('r.hint.share', { x: p.x, h: p.h })]);
+      return bad(a < p.u ? 'low' : 'high', [L('r.hint.would', { v: a, h: p.h, w: a * p.h, x: p.x })]);
+    }
+    if (R.kind === 'tank') {
+      if (a === p.u * p.t) return good([L('r.said.tank', { t: p.t, r: p.u, v: a })], L('show.tank.yes', { t: p.t, v: a }));
+      if (a === p.u + p.t) return bad('add', [L('r.hint.noadd'), L('r.hint.each', { r: p.u, t: p.t })]);
+      return bad(a < p.u * p.t ? 'low' : 'high', [L(a < p.u * p.t ? 'r.hint.dry' : 'r.hint.over'), L('r.hint.each', { r: p.u, t: p.t })]);
+    }
+    if (R.kind === 'scale') {
+      if (a === p.u * p.t) return good([L('r.said.scale', { u: p.u, t: p.t, v: a })], L('show.tank.yes', { t: p.t, v: a }));
+      if (a === p.x + (p.t - p.h)) return bad('add', [L('r.hint.noadd'), L('r.hint.one', { u: p.u })]);
+      return bad(a < p.u * p.t ? 'low' : 'high', [L(a < p.u * p.t ? 'r.hint.dry' : 'r.hint.over'), L('r.hint.one', { u: p.u })]);
+    }
+    if (R.kind === 'hours') {
+      if (a === p.t) return good([L('r.said.hours', { v: p.v, u: p.u, t: p.t })], L('show.hours.yes', { v: p.v, t: p.t }));
+      return bad(a < p.t ? 'low' : 'high', [L('r.hint.after', { a: a, w: a * p.u, v: p.v }), L('r.hint.rate', { u: p.u })]);
+    }
+    if (a === p.u * p.t) return good([L('r.said.speed', { u: p.u, m: p.t, v: a })], L('show.speed.yes', { m: p.t, v: a }));
+    return bad(a < p.u * p.t ? 'low' : 'high', [L(a < p.u * p.t ? 'r.hint.short' : 'r.hint.far'), L('r.hint.minute', { u: p.u })]);
+  }
+
+  /* ---- percent: a rate for each 100; and changing units ---- */
+  var UNITS = { km: { f: 1000, to: 'm', xs: [1.5, 2.5, 3.5, 4], step: 250, max: 5000 }, l: { f: 1000, to: 'ml', xs: [0.5, 1.5, 2.5, 3], step: 250, max: 5000 }, h: { f: 60, to: 'min', xs: [0.5, 1.5, 2.5, 3], step: 10, max: 300 } };
+  function percentRound(n, lap, r, out) {
+    var w, p, v, type, U, x, k, s;
+    if (n <= 2) {
+      // a percent of a quantity: fill the tank to so many percent
+      if (n === 1) { w = lap === 0 ? 80 : one(r, [80, 120, 200]); p = lap === 0 ? 50 : one(r, [25, 50, 75]); }
+      else { w = lap === 0 ? 250 : one(r, [150, 200, 250]); p = lap === 0 ? 30 : one(r, [10, 20, 30, 40, 60, 70]); }
+      out.kind = 'of'; out.pic = { w: w, p: p };
+      out.dials = [dial('a', 'fill', 'ml', 0, w, 5)];
+      out.want = { a: p * w / 100 }; out.ask = L('p.ask.of', { w: w, p: p }); out.show = L('show.of', { w: w, p: p });
+    } else if (n === 3) {
+      // what percent is it? the part compared with the whole
+      w = lap === 0 ? 200 : one(r, [200, 400]); p = lap === 0 ? 25 : one(r, [10, 20, 25, 40, 60, 75]); v = p * w / 100;
+      out.kind = 'what'; out.pic = { w: w, v: v, p: p };
+      out.dials = [dial('a', 'pct', 'pct', 0, 100, 5)];
+      out.want = { a: p }; out.ask = L('p.ask.what', { w: w, v: v }); out.show = L('show.what', { w: w, v: v });
+    } else if (n === 4) {
+      // the whole, from a part and its percent
+      p = lap === 0 ? 25 : one(r, [10, 20, 25, 50]); w = lap === 0 ? 80 : one(r, [40, 60, 80, 120, 160, 200]); v = p * w / 100;
+      out.kind = 'whole'; out.pic = { w: w, v: v, p: p };
+      out.dials = [dial('a', 'full', 'ml', 0, 400, 20)];
+      out.want = { a: w }; out.ask = L('p.ask.whole', { v: v, p: p }); out.show = L('show.whole', { v: v, p: p });
+    } else if (n === 5) {
+      // changing units with a ratio: 1 kilometer is 1000 meters, 1 liter is 1000 milliliters, 1 hour is 60 minutes
+      type = ['km', 'l', 'h'][lap % 3]; U = UNITS[type]; x = lap === 0 ? 2.5 : one(r, U.xs);
+      out.kind = 'convert'; out.pic = { type: type, x: x, f: U.f, u: U.f, top: U.to, bot: type, known: [[U.f, 1]], ask: 'top', at: x, max: Math.max(Math.ceil(x), 2) };
+      out.dials = [dial('a', 'to.' + type, U.to, 0, U.max, U.step)];
+      out.want = { a: x * U.f }; out.ask = L('p.ask.convert.' + type, { x: x }); out.show = L('show.convert.' + type, { x: x });
+    } else {
+      // two steps: change the units, then divide
+      k = lap === 0 ? 3 : between(r, 2, 4); s = lap === 0 ? 250 : one(r, [200, 250, 500]);
+      out.kind = 'posts'; out.pic = { k: k, s: s, m: k * 1000 };
+      out.dials = [dial('a', 'count', 'count', 0, 24, 1)];
+      out.want = { a: k * 1000 / s }; out.ask = L('p.ask.posts', { k: k, s: s }); out.show = L('show.posts', { k: k, s: s });
+    }
+  }
+  function judgePercent(R, v) {
+    var p = R.pic, a = v.a, right;
+    if (!(a > 0)) return bad('zero', [L('r.hint.zero')]);
+    if (R.kind === 'of') {
+      right = p.p * p.w / 100;
+      if (a === right) return good([L('p.said.of', { p: p.p, w: p.w, v: a })], L('show.of.yes', { p: p.p, w: p.w, v: a }));
+      if (a === p.p) return bad('label', [L('p.hint.notml', { p: p.p }), L('p.hint.ten', { w: p.w, x: p.w / 10 })]);
+      return bad(a < right ? 'low' : 'high', [L(a < right ? 'p.hint.low' : 'p.hint.high', { p: p.p }), L('p.hint.ten', { w: p.w, x: p.w / 10 })]);
+    }
+    if (R.kind === 'what') {
+      if (a === p.p) return good([L('p.said.what', { v: p.v, w: p.w, p: a })], L('show.what.yes', { v: p.v, w: p.w, p: a }));
+      if (a === p.v) return bad('label', [L('p.hint.notpct', { v: p.v }), L('p.hint.would', { p: a, w: p.w, x: a * p.w / 100 })]);
+      return bad(a < p.p ? 'low' : 'high', [L('p.hint.would', { p: a, w: p.w, x: a * p.w / 100 })]);
+    }
+    if (R.kind === 'whole') {
+      if (a === p.w) return good([L('p.said.whole', { v: p.v, p: p.p, w: a })], L('show.whole.yes', { v: p.v, p: p.p, w: a }));
+      if (a <= p.v) return bad('part', [L('p.hint.bigger'), L('p.hint.parts', { p: p.p, k: 100 / p.p })]);
+      return bad(a < p.w ? 'low' : 'high', [L('p.hint.would', { p: p.p, w: a, x: p.p * a / 100 }), L('p.hint.parts', { p: p.p, k: 100 / p.p })]);
+    }
+    if (R.kind === 'convert') {
+      right = p.x * p.f;
+      if (a === right) return good([L('p.said.convert.' + p.type, { x: p.x, v: a })], L('show.convert.yes.' + p.type, { x: p.x, v: a }));
+      if (a === p.x * 100) return bad('hundred', [L('p.hint.f.' + p.type)]);
+      return bad(a < right ? 'low' : 'high', [L('p.hint.unit.' + p.type), L('p.hint.times', { x: p.x, f: p.f })]);
+    }
+    right = p.m / p.s;
+    if (a === right) return good([L('p.said.posts', { m: p.m, s: p.s, v: a })], L('show.posts.yes', { v: a }));
+    return bad(a < right ? 'low' : 'high', [L('p.hint.first', { k: p.k, m: p.m }), L(a < right ? 'p.hint.light.low' : 'p.hint.light.high', { v: a, x: a * p.s })]);
+  }
+
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'mix') mixRound(n, lap, r, out); else if (chapter === 'rate') rateRound(n, lap, r, out); else percentRound(n, lap, r, out);
+    return out;
+  }
+  /** Run a plan: the values of the round's dials, by id. Values off a dial's own stops are never right. */
+  function judge(R, v) {
+    v = v || {};
+    for (var i = 0; i < R.dials.length; i++) { var d = R.dials[i], x = v[d.id]; if (typeof x !== 'number' || x < d.min || x > d.max || (x - d.min) % d.step !== 0) return bad('off', [L('r.hint.zero')]); }
+    return R.chapter === 'mix' ? judgeMix(R, v) : R.chapter === 'rate' ? judgeRate(R, v) : judgePercent(R, v);
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.LanternMix = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, judge: judge, glow: glow, params: params, RATIOS: RATIOS, TABLES: TABLES, UNITS: UNITS };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* lantern-mix:end */
+</script>
+<script>
+/* ===== Lantern Mix's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. A line with {n}
+   takes a number in its place (never a word). Spoken lines spell units out (milliliters, meters) so the voice reads
+   them well; the show.* lines are what the chip and the board show, the dial.* and unit.* lines label the dials and
+   the btn.* lines are button labels: shown, never spoken. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Lantern Mix",
+    "loading": "Lighting the hollow.",
+    "hero.pick": "Pick your lamplighter.",
+    "menu.pick": "Pick a workbench.",
+    "ch.mix": "Match the Glow",
+    "ch.rate": "Burn Rate",
+    "ch.percent": "Fill and Convert",
+    "x.ask.copy": "The gate lantern mixes amber to blue as {p} to {q}. Mix the same glow.",
+    "x.ask.scale": "Same glow, bigger lantern: {p} to {q}. Amber is set to {a} parts. Set the blue.",
+    "x.ask.fill": "The big lantern holds {t} parts. Fill it with the gate glow, {p} to {q}.",
+    "x.ask.table": "Five lanterns share one glow. Mix the missing lantern.",
+    "x.ask.back": "The glow is {p} amber to {q} blue. Blue is set to {b} parts. Set the amber.",
+    "x.ask.warmer.amber": "Use all {t} parts and both oils. Glow more amber than the gate, {p} to {q}.",
+    "x.ask.warmer.blue": "Use all {t} parts and both oils. Glow more blue than the gate, {p} to {q}.",
+    "x.hint.none": "Pour some of each oil first.",
+    "x.hint.swap": "That is {a} amber to {b} blue. The order of a ratio matters.",
+    "x.hint.add": "Adding the same amount to both parts changes the glow.",
+    "x.hint.times": "Multiply both parts by the same number instead.",
+    "x.hint.amber": "Too amber. Compare the two bars on the board.",
+    "x.hint.blue": "Too blue. Compare the two bars on the board.",
+    "x.hint.every": "The gate pours {p} of amber for every {q} of blue.",
+    "x.hint.glow": "The glow matches.",
+    "x.hint.holds": "But the lantern holds {t} parts, and you poured {s}.",
+    "x.hint.row": "But that lantern is already in the row. Mix the missing one.",
+    "x.hint.all": "Use all {t} parts. You poured {s}.",
+    "x.hint.same": "{a} to {b} is the same glow as {p} to {q}.",
+    "x.hint.side.amber": "That glows more blue than the gate. Pour more amber.",
+    "x.hint.side.blue": "That glows more amber than the gate. Pour more blue.",
+    "x.said.copy": "A match! Amber to blue is {p} to {q}.",
+    "x.said.same": "A match! {a} to {b} glows just like {p} to {q}.",
+    "x.said.times": "Both parts were multiplied by {k}.",
+    "x.said.fill": "A match! {k} batches of {p} and {q} fill all {t} parts.",
+    "x.said.warmer.amber": "Yes! {a} to {b} is more amber than {p} to {q}.",
+    "x.said.warmer.blue": "Yes! {a} to {b} is more blue than {p} to {q}.",
+    "r.ask.unit": "This lantern burns {x} milliliters in {h} hours. How much does it burn in 1 hour?",
+    "r.ask.tank": "It burns {r} milliliters each hour. Fill the tank to last {t} hours.",
+    "r.ask.scale": "It burns {x} milliliters in {h} hours. Fill the tank to last {t} hours.",
+    "r.ask.hours": "It burns {x} milliliters in {h} hours. The tank holds {v} milliliters. How many hours will it glow?",
+    "r.ask.two": "Lantern A burns {a} milliliters in {b} hours. Lantern B burns {c} in {d}. Set each rate for 1 hour.",
+    "r.ask.speed": "The lamplighter walks {d} meters in {t} minutes at a steady pace. How far in {m} minutes?",
+    "r.hint.zero": "Turn the dial above zero.",
+    "r.hint.nosub": "Do not subtract the hours.",
+    "r.hint.share": "Share {x} milliliters equally over {h} hours.",
+    "r.hint.would": "At a rate of {v}, {h} hours would burn {w} milliliters, not {x}.",
+    "r.hint.each": "It needs {r} milliliters for each of the {t} hours.",
+    "r.hint.dry": "That tank runs dry too soon.",
+    "r.hint.over": "That is more oil than it needs.",
+    "r.hint.noadd": "Adding does not keep the rate.",
+    "r.hint.one": "In 1 hour it burns {u} milliliters. Build on that.",
+    "r.hint.after": "By hour {a} it has burned {w} milliliters, not {v}.",
+    "r.hint.rate": "It burns {u} milliliters each hour.",
+    "r.hint.lanta": "Lantern A: share {x} milliliters equally over {h} hours.",
+    "r.hint.lantb": "Lantern B: share {x} milliliters equally over {h} hours.",
+    "r.hint.short": "That is not far enough.",
+    "r.hint.far": "That is too far.",
+    "r.hint.minute": "In 1 minute the lamplighter walks {u} meters.",
+    "r.said.unit": "Yes! {x} divided by {h} is {u} milliliters an hour.",
+    "r.said.tank": "Yes! {t} hours at {r} milliliters an hour is {v} milliliters.",
+    "r.said.scale": "Yes! {u} milliliters an hour for {t} hours is {v} milliliters.",
+    "r.said.hours": "Yes! {v} milliliters at {u} an hour lasts {t} hours.",
+    "r.said.two": "Yes! A burns {a} and B burns {b} milliliters an hour.",
+    "r.said.less.a": "A burns less each hour, so its oil lasts longer.",
+    "r.said.less.b": "B burns less each hour, so its oil lasts longer.",
+    "r.said.speed": "Yes! {u} meters a minute for {m} minutes is {v} meters.",
+    "p.ask.of": "The tank holds {w} milliliters. Fill it to {p} percent.",
+    "p.ask.what": "The tank holds {w} milliliters and has {v} in it. What percent full is it?",
+    "p.ask.whole": "{v} milliliters fills {p} percent of a tank. How much does the full tank hold?",
+    "p.ask.convert.km": "The path is {x} kilometers long. Set its length in meters.",
+    "p.ask.convert.l": "The flask holds {x} liters. Set that amount in milliliters.",
+    "p.ask.convert.h": "The lantern glows for {x} hours. Set that time in minutes.",
+    "p.ask.posts": "The path is {k} kilometers long. One lantern lights {s} meters of it. How many lanterns light it all?",
+    "p.hint.notml": "{p} percent is not the same as {p} milliliters.",
+    "p.hint.ten": "10 percent of {w} milliliters is {x} milliliters.",
+    "p.hint.low": "That is under {p} percent of the tank.",
+    "p.hint.high": "That is over {p} percent of the tank.",
+    "p.hint.notpct": "{v} milliliters is not {v} percent. Compare it with the full tank.",
+    "p.hint.would": "{p} percent of {w} milliliters would be {x} milliliters.",
+    "p.hint.bigger": "The full tank holds more than the part you see.",
+    "p.hint.parts": "{p} percent is 1 of {k} equal parts.",
+    "p.hint.f.km": "1 kilometer is 1000 meters, not 100.",
+    "p.hint.f.l": "1 liter is 1000 milliliters, not 100.",
+    "p.hint.f.h": "1 hour is 60 minutes, not 100.",
+    "p.hint.unit.km": "Each kilometer is 1000 meters.",
+    "p.hint.unit.l": "Each liter is 1000 milliliters.",
+    "p.hint.unit.h": "Each hour is 60 minutes.",
+    "p.hint.times": "Multiply {x} by {f}.",
+    "p.hint.first": "First change {k} kilometers to {m} meters.",
+    "p.hint.light.low": "A count of {v} lights only {x} meters.",
+    "p.hint.light.high": "A count of {v} lights {x} meters. That is more than the path.",
+    "p.said.of": "Yes! {p} percent of {w} is {v} milliliters.",
+    "p.said.what": "Yes! {v} out of {w} is {p} percent.",
+    "p.said.whole": "Yes! {v} is {p} percent of {w} milliliters.",
+    "p.said.convert.km": "Yes! {x} kilometers is {v} meters.",
+    "p.said.convert.l": "Yes! {x} liters is {v} milliliters.",
+    "p.said.convert.h": "Yes! {x} hours is {v} minutes.",
+    "p.said.posts": "Yes! {m} meters divided by {s} is {v} lanterns.",
+    "win": "All six lit!",
+    "win.card": "Six lanterns glow on the rack. Well done.",
+    "round": "Round {n} of {m}",
+    "show.mix": "gate {p} : {q}",
+    "show.scale": "{p} : {q} = {a} : ?",
+    "show.back": "{p} : {q} = ? : {b}",
+    "show.fill": "{p} : {q}, {t} parts",
+    "show.table": "{p} : {q} = ? : ?",
+    "show.warmer.amber": "more amber than {p} : {q}",
+    "show.warmer.blue": "more blue than {p} : {q}",
+    "show.warmer.yes.amber": "{a} : {b} is more amber",
+    "show.warmer.yes.blue": "{a} : {b} is more blue",
+    "show.same": "{p} : {q} = {a} : {b}",
+    "show.unit": "{x} ml in {h} h",
+    "show.unit.yes": "{u} ml in 1 h",
+    "show.tank": "{r} ml an hour, {t} h",
+    "show.tank.yes": "{v} ml for {t} h",
+    "show.scale.rate": "{x} ml in {h} h, {t} h",
+    "show.hours": "{x} ml in {h} h, {v} ml",
+    "show.hours.yes": "{v} ml lasts {t} h",
+    "show.two": "ml in 1 h?",
+    "show.two.yes": "A {a} ml, B {b} ml in 1 h",
+    "show.speed": "{d} m in {t} min, {m} min",
+    "show.speed.yes": "{v} m in {m} min",
+    "show.of": "{p}% of {w} ml",
+    "show.of.yes": "{p}% of {w} ml = {v} ml",
+    "show.what": "{v} of {w} ml = ? %",
+    "show.what.yes": "{v} of {w} ml = {p}%",
+    "show.whole": "{v} ml is {p}%",
+    "show.whole.yes": "{v} ml is {p}% of {w} ml",
+    "show.convert.km": "{x} km = ? m",
+    "show.convert.l": "{x} L = ? ml",
+    "show.convert.h": "{x} h = ? min",
+    "show.convert.yes.km": "{x} km = {v} m",
+    "show.convert.yes.l": "{x} L = {v} ml",
+    "show.convert.yes.h": "{x} h = {v} min",
+    "show.posts": "{k} km, {s} m each",
+    "show.posts.yes": "{v} lanterns",
+    "show.gate": "Gate",
+    "show.yours": "Yours",
+    "show.holds": "holds {t}",
+    "show.amber": "amber",
+    "show.blue": "blue",
+    "show.plan": "Set the dials. Then light it.",
+    "show.lasts": "lasts {t} h",
+    "show.each": "each lights {s} m",
+    "show.full": "full",
+    "unit.parts": "",
+    "unit.ml": "ml",
+    "unit.h": "h",
+    "unit.m": "m",
+    "unit.min": "min",
+    "unit.pct": "%",
+    "unit.count": "",
+    "unit.km": "km",
+    "unit.l": "L",
+    "dial.amber": "Amber parts",
+    "dial.blue": "Blue parts",
+    "dial.ml1": "Burned in 1 hour",
+    "dial.tank": "Oil in the tank",
+    "dial.hours": "Hours it glows",
+    "dial.lanta": "Lantern A, in 1 hour",
+    "dial.lantb": "Lantern B, in 1 hour",
+    "dial.meters": "Distance",
+    "dial.fill": "Oil in the tank",
+    "dial.pct": "Percent full",
+    "dial.full": "Full tank",
+    "dial.to.km": "Meters",
+    "dial.to.l": "Milliliters",
+    "dial.to.h": "Minutes",
+    "dial.count": "Lanterns",
+    "btn.say": "Say it again",
+    "btn.less": "{name}: less",
+    "btn.more": "{name}: more",
+    "btn.light": "Light it",
+    "btn.again": "Play again",
+    "btn.menu": "More benches"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).LanternMixI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the lamplighter's guide, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const LM = window.LanternMix, T = (window.LanternMixI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'lm', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'dials', 'light', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HEROES = ['skelly', 'rattles', 'captain-clank', 'mage', 'rogue-hooded'];   // three of the hollow's friendly skeleton pals and two adventurers
+const SAVE_KEY = 'lantern-mix-v1';
+const ICON = { mix: '🏮', rate: '⏳', percent: '🧪' };
+
+/* ---------- state ---------- */
+const P = LM.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, vals: {}, phase: 'idle', mode: 'ask', hero: null, fast: false, line: null, reported: 0, done: {}, tick: 0, lit: 0, runs: 0, small: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of LM.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak. Read-aloud is
+   on by default; the player's sound switch (BRB.sfx.muted) turns the automatic reading off, and the speaker button
+   still says the line. ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show a line in the words box and say it; the speaker button says it again. */
+function say(key, vars, o) {
+  S.line = [key, vars];
+  el.askt.textContent = fmt(key, vars); el.ask.hidden = false;
+  speak(key, vars, o);
+}
+/** The chip: what the round is working out ("2 : 3 = 6 : ?"), and what was found. */
+function chip(line, tone) { el.sum.textContent = line ? fmt(line[0], line[1]) : ''; el.sum.hidden = !line; el.sum.className = 'lm-sum' + (tone ? ' ' + tone : ''); }
+/** A hint: one or two of the game's lines, shown together and said one after the other. It stays until the next plan. */
+function hint(lines) {
+  if (!lines || !lines.length) { el.hint.hidden = true; el.hint.textContent = ''; return; }
+  el.hint.textContent = lines.map(([k, v]) => fmt(k, v)).join(' '); el.hint.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { queue: i > 0 }));
+}
+el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1], { auto: false }); });
+/** A plan that did not work: a small wobble on the Light button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D hollow, at night ---------- */
+let g;
+try {
+  g = await start({ theme: 'spooky-hollow', version: '1.0.0', graphics: 'auto', time: 'night', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its ground, paths, fences, trees, pumpkins and lanterns are the hollow.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['ground', 'path', 'path-stones', 'fence', 'fence-gate', 'fence-post', 'arch', 'pillar', 'bench', 'pumpkin', 'pumpkin-lantern', 'pumpkin-yellow', 'pumpkin-yellow-lantern', 'pumpkin-small',
+  'candle', 'candles', 'lantern', 'lantern-hanging', 'tree-bare', 'tree-bare-medium', 'tree-pine-orange', 'tree-pine-orange-small', 'tree-pine-yellow'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+const BG = '#10182b', FG = '#FFF6DA', DIM = '#9aa6c4', AMBER = '#FFC233', BLUE = '#4DA3FF', GOOD = '#7CF0A8', WARN = '#FF8A6B', SUN = '#FFD23F';
+
+/* ---------- the hollow: the theme's ground, a path to the arch, fences, bare trees and pumpkin lanterns, round a clear
+   place for the board. Night, with a lab's cool work light so nothing is lost in the dark. ---------- */
+const room = new THREE.Group(), props = new THREE.Group(), rack = new THREE.Group();
+{
+  for (const x of [-12, -8, -4, 0, 4, 8, 12]) for (const z of [-10, -6, -2, 2, 6, 10]) room.add(piece('ground', x, -0.5, z));
+  for (const z of [-1.4, 0.5, 2.4, 4.3, 6.2, 8.1]) room.add(piece(z > 3 ? 'path-stones' : 'path', 0, 0, z));
+  for (const [id, x, y, z, s = 1, turn = 0] of [
+    // the back: the arch the path runs to, a fence either side, and trees behind it
+    ['arch', 0, 0, -4.6, 1.5], ['fence', -5.4, 0, -4.4, 1.1], ['fence', -9.8, 0, -4.4, 1.1], ['fence', 5.4, 0, -4.4, 1.1], ['fence', 9.8, 0, -4.4, 1.1],
+    ['pillar', -3.2, 0, -4.4, 1.0], ['pillar', 3.2, 0, -4.4, 1.0], ['lantern-hanging', -3.2, 4.4, -4.4, 1.3], ['lantern-hanging', 3.2, 4.4, -4.4, 1.3],
+    ['tree-pine-orange', -8.5, 0, -8.2, 1.0], ['tree-pine-yellow', 8.8, 0, -8.0, 1.05], ['tree-bare', -4.4, 0, -7.4, 1.1], ['tree-bare-medium', 5.0, 0, -7.2, 1.2], ['tree-pine-orange-small', 11.5, 0, -6.2, 1.2],
+    ['tree-pine-orange-small', -12, 0, -6.4, 1.1], ['tree-bare', 12.2, 0, -1.6, 1.0, 1.2], ['tree-bare-medium', -12.2, 0, -0.8, 1.2, 0.6],
+    // the sides: pumpkin lanterns, pumpkins and candles
+    ['pumpkin-lantern', -8.2, 0, -2.8, 1.1, 0.5], ['pumpkin-yellow-lantern', 8.3, 0, -2.6, 1.1, -0.5], ['pumpkin', -9.6, 0, -1.9, 1.0], ['pumpkin-small', -7.2, 0, -1.8, 1.0], ['pumpkin-yellow', 9.7, 0, -1.6, 1.0],
+    ['pumpkin-small', 7.3, 0, -1.7, 1.0], ['candles', -6.4, 0, -3.4, 1.4], ['candles', 6.5, 0, -3.4, 1.4], ['candle', -10.6, 0, -3.2, 1.4], ['candle', 10.7, 0, -3.1, 1.4],
+    ['fence-post', -11.9, 0, 2.4, 1.0], ['fence-post', 11.9, 0, 2.4, 1.0], ['pumpkin', 11.2, 0, 3.4, 1.1], ['pumpkin-yellow', -11.0, 0, 3.6, 1.1]])
+    room.add(piece(id, x, y, z, s, turn));
+  g.scene.add(room, props, rack);
+  // The work light: a cool fill and a warm lamp over the bench, so heroes and pieces read clearly at night.
+  g.scene.add(new THREE.HemisphereLight('#b9c6ff', '#3a2f5a', 1.5));
+  const lamp = new THREE.DirectionalLight('#ffe2b0', 1.2); lamp.position.set(2, 9, 8); g.scene.add(lamp);
+}
+// The lantern rack: a bench the finished lanterns stand on (one for each round), moved with the screen's shape.
+const bench = piece('bench', 0, 0, 0, 1); props.add(bench);
+const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the hollow: the board
+
+/* ---------- the board: one picture, drawn by the game, always face on (so a number line stays straight), redrawn for
+   each plan and for each of its three looks: planned (ask), run and wrong (hint: it shows what the plan really made)
+   and run and right (found) ---------- */
+const CW = 1024, CH = 768, BOARD = V3(0, 2.2, -3.05);
+let BW = 4.8, BH = 3.6;
+const LIGHT = new THREE.Color(1.15, 1.15, 1.15);   // a little brighter than white: the board is the bench's lit panel
+const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = CH;
+const X = canvas.getContext('2d');
+const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
+const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
+board.renderOrder = 2;
+function sizeBoard() { BW = tall ? 4.0 : 4.8; BH = BW * 0.75; BOARD.y = squat() ? 2.72 : tall ? 3.12 : 2.2; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH]; }
+/** The smallest words and numbers a player must read on the board, in board pixels (the test turns it into screen pixels). */
+let smallest = 999;
+function text(s, px, py, size, o = {}) {
+  X.font = `${o.weight || 800} ${size}px "Bricolage Grotesque", system-ui, sans-serif`; X.textAlign = o.align || 'center'; X.textBaseline = o.base || 'middle';
+  X.fillStyle = o.fill || FG; X.fillText(s, px, py);
+  if (!o.deco) smallest = Math.min(smallest, size);
+}
+const rr = (x0, y0, w, h, r) => { const p = new Path2D(); p.roundRect(x0, y0, w, h, r); return p; };
+const circ = (cx, cy, r) => { const p = new Path2D(); p.arc(cx, cy, r, 0, Math.PI * 2); return p; };
+function fillStroke(p, fill, stroke = FG, width = 6) { if (fill) { X.fillStyle = fill; X.fill(p); } if (stroke) { X.strokeStyle = stroke; X.lineWidth = width; X.lineJoin = 'round'; X.stroke(p); } }
+function line(x0, y0, x1, y1, color = FG, width = 6, dash) { X.save(); X.strokeStyle = color; X.lineWidth = width; X.lineCap = 'round'; if (dash) X.setLineDash(dash); X.beginPath(); X.moveTo(x0, y0); X.lineTo(x1, y1); X.stroke(); X.restore(); }
+/** A number in a rounded badge: the player's plan (yellow), a result (green or red). */
+function badge(s, px, py, size, fill = SUN) { X.font = `900 ${size}px "Bricolage Grotesque", system-ui, sans-serif`; const w = Math.max(size * 1.5, X.measureText(s).width + size * 0.7); fillStroke(rr(px - w / 2, py - size * 0.72, w, size * 1.44, size * 0.4), fill, '#05070f', 5); text(s, px, py + size * 0.04, size, { weight: 900, fill: '#141414' }); }
+const num = v => String(Math.round(v * 100) / 100);
+/** One part of a gauge. Colour is never the only signal: amber is striped, blue is dotted, an empty slot is an outline. */
+function cell(x0, y0, w, h, tone) {
+  const p = rr(x0 + 2, y0 + 2, w - 4, h - 4, Math.min(12, w * 0.22));
+  if (tone === 'e') { X.save(); X.setLineDash([10, 8]); fillStroke(p, null, DIM, 4); X.restore(); return; }
+  fillStroke(p, tone === 'a' ? AMBER : BLUE, FG, 4);
+  X.save(); X.clip(p); X.strokeStyle = X.fillStyle = 'rgba(16,24,43,0.5)'; X.lineWidth = 5;
+  if (tone === 'a') for (let i = -h; i < w; i += 17) { X.beginPath(); X.moveTo(x0 + i, y0 + h); X.lineTo(x0 + i + h, y0); X.stroke(); }
+  else for (let i = 10; i < w; i += 18) for (let j = 10; j < h; j += 18) { X.beginPath(); X.arc(x0 + i, y0 + j, 3.6, 0, Math.PI * 2); X.fill(); }
+  X.restore();
+}
+/** A parts gauge: `a` amber parts, then `b` blue parts, then empty slots up to `slots`. */
+function gauge(x0, y0, w, h, a, b, slots = 0) {
+  const n = Math.max(a + b, slots, 1), cw = Math.min(h, w / n);
+  for (let i = 0; i < n; i++) cell(x0 + i * cw, y0, cw, h, i < a ? 'a' : i < a + b ? 'b' : 'e');
+}
+/** A lantern, lit in a glow's colour or dark. */
+function lampPic(cx, cy, k, color) {
+  if (color) { const gr = X.createRadialGradient(cx, cy, 8 * k, cx, cy, 92 * k); gr.addColorStop(0, color); gr.addColorStop(1, 'rgba(16,24,43,0)'); X.save(); X.globalAlpha = 0.75; X.fillStyle = gr; X.fillRect(cx - 95 * k, cy - 95 * k, 190 * k, 190 * k); X.restore(); }
+  const cap = new Path2D(); cap.moveTo(cx - 26 * k, cy - 46 * k); cap.lineTo(cx + 26 * k, cy - 46 * k); cap.lineTo(cx + 38 * k, cy - 30 * k); cap.lineTo(cx - 38 * k, cy - 30 * k); cap.closePath();
+  X.strokeStyle = FG; X.lineWidth = 5; X.beginPath(); X.arc(cx, cy - 58 * k, 13 * k, Math.PI, 0); X.stroke();
+  fillStroke(rr(cx - 32 * k, cy - 30 * k, 64 * k, 72 * k, 10 * k), color || '#2a3350', FG, 5);
+  fillStroke(cap, '#56607f', FG, 5); fillStroke(rr(cx - 38 * k, cy + 42 * k, 76 * k, 14 * k, 5 * k), '#56607f', FG, 5);
+  if (!color) line(cx - 12 * k, cy + 6 * k, cx + 12 * k, cy + 6 * k, DIM, 5);
+}
+/** The amber share of a mix as one bar: equal ratios make equal bars, whatever the number of parts. */
+function share(x0, y0, w, h, a, b, label, ok) {
+  const f = a / (a + b);
+  text(label, x0 - 16, y0 + h / 2, 44, { align: 'right', fill: DIM });
+  X.save(); X.beginPath(); X.roundRect(x0, y0, w, h, 10); X.clip();
+  cell(x0 - 4, y0 - 4, w * f + 4, h + 8, 'a'); cell(x0 + w * f, y0 - 4, w * (1 - f) + 4, h + 8, 'b'); X.restore();
+  fillStroke(rr(x0, y0, w, h, 10), null, ok ? GOOD : FG, ok ? 8 : 5);
+  line(x0 + w * f, y0 - 8, x0 + w * f, y0 + h + 8, ok ? GOOD : FG, 7);
+}
+
+function paintMix(R, mode, v) {
+  const { p, q, t } = R.pic, a = v.a || 0, b = v.b || 0, run = mode !== 'ask', G = LM.glow(a, b), found = mode === 'found';
+  text(fmt('show.gate'), 44, 70, 44, { align: 'left', fill: DIM });
+  if (R.kind === 'table') {
+    // a ratio table: five lanterns in one glow, the amber parts over the blue parts, one lantern missing
+    cell(60, 108, 84, 84, 'a'); cell(60, 204, 84, 84, 'b');
+    for (let i = 1; i <= R.pic.cols; i++) {
+      const cx = 246 + (i - 1) * 162, miss = i === R.pic.m;
+      fillStroke(rr(cx - 72, 100, 144, 196, 18), miss ? '#2a3350' : '#1b2540', miss ? (found ? GOOD : SUN) : DIM, miss ? 7 : 4);
+      text(miss ? (found ? String(a) : '?') : String(i * p), cx, 152, 64, { weight: 900, fill: miss ? (found ? GOOD : SUN) : AMBER });
+      text(miss ? (found ? String(b) : '?') : String(i * q), cx, 246, 64, { weight: 900, fill: miss ? (found ? GOOD : SUN) : BLUE });
+    }
+  } else {
+    lampPic(118, 205, 1.1, LM.glow(p, q).css); gauge(230, 148, 520, 112, p, q);
+    text(`${p} : ${q}`, 890, 206, 78, { weight: 900 });
+  }
+  text(fmt('show.yours') + (t ? '  ·  ' + fmt('show.holds', { t }) : ''), 44, 352, 44, { align: 'left', fill: DIM });
+  lampPic(118, 485, 1.1, run && G ? G.css : null); gauge(230, 428, 520, 112, a, b, t || 0);
+  text(`${a} : ${b}`, 890, 486, a > 9 && b > 9 ? 62 : 78, { weight: 900, fill: found ? GOOD : SUN });
+  if (!run || !G) return void text(fmt('show.plan'), 512, 660, 44, { fill: DIM });
+  // the plan, run: the two glows as shares of amber. The same ratio makes the same split.
+  share(230, 590, 620, 50, p, q, fmt('show.gate'), found); share(230, 668, 620, 50, a, b, fmt('show.yours'), found);
+}
+
+/** A double number line: two measures that keep step (milliliters over hours, meters over minutes, meters over
+ *  kilometers). `known` pairs are given; the asked value is the player's dial, shown at its place as planned; once the
+ *  plan is run, a wrong value is also drawn where it really belongs on the line. */
+function paintLine(R, mode, v) {
+  const p = R.pic, a = v.a || 0, run = mode !== 'ask', found = mode === 'found', u = p.u, yT = 330, yB = 520, x0 = 170, x1 = 930, far = p.max * 1.06;
+  const px = bot => x0 + (x1 - x0) * Math.min(bot, far) / far;
+  text(fmt(R.show[0], R.show[1]), 512, 110, 50, { weight: 900 });
+  text(fmt('unit.' + p.top), 84, yT, 44, { fill: DIM }); text(fmt('unit.' + p.bot), 84, yB, 44, { fill: DIM });
+  line(x0, yT, x1, yT, FG, 7); line(x0, yB, x1, yB, FG, 7);
+  const tick = (bot, top, colT, colB, big) => { const cx = px(bot); line(cx, yT - 22, cx, yT + 22, FG, 6); line(cx, yB - 22, cx, yB + 22, FG, 6); line(cx, yT + 22, cx, yB - 22, 'rgba(255,246,218,0.25)', 4, [8, 10]);
+    if (top != null) text(top, cx, yT - 58, big ? 58 : 48, { weight: 900, fill: colT || FG }); if (bot != null) text(num(bot), cx, yB + 60, big ? 58 : 48, { weight: 900, fill: colB || FG }); };
+  tick(0, '0');
+  for (const [top, bot] of p.known) tick(bot, num(top));
+  if (run && !found && (R.kind === 'scale' || R.kind === 'speed')) tick(1, num(u), GOOD, GOOD);   // the wrong plan's way back in: the rate for 1
+  // the asked pair: the plan sits where the answer belongs
+  const want = p.ask === 'top' ? p.at : p.at / u, cx = px(want);
+  line(cx, yT - 22, cx, yT + 22, SUN, 7); line(cx, yB - 22, cx, yB + 22, SUN, 7); line(cx, yT + 22, cx, yB - 22, SUN, 4, [8, 10]);
+  if (p.ask === 'top') { badge(num(a), cx, yT - 64, 54, found ? GOOD : SUN); text(num(p.at), cx, yB + 60, 58, { weight: 900 }); }
+  else { text(num(p.at), cx, yT - 58, 58, { weight: 900 }); badge(num(a), cx, yB + 66, 54, found ? GOOD : SUN); }
+  if (!run || found) return;
+  // what the plan really makes: its own place on the line
+  const real = p.ask === 'top' ? a / u : a, rx = px(real), over = real > far;
+  line(rx, yT - 30, rx, yB + 30, WARN, 7, [14, 10]);
+  const label = p.ask === 'top' ? `${num(a)} ${fmt('unit.' + p.top)} → ${num(real)} ${fmt('unit.' + p.bot)}` : `${num(a)} ${fmt('unit.' + p.bot)} → ${num(a * u)} ${fmt('unit.' + p.top)}`;
+  badge(label + (over ? ' →' : ''), 512, 690, 44, WARN);
+}
+function paintTwo(R, mode, v) {
+  const run = mode !== 'ask', found = mode === 'found', top = Math.max(R.pic.a.u, R.pic.b.u, v.a || 0, v.b || 0, 1);
+  [['a', 'A', 230], ['b', 'B', 520]].forEach(([id, name, y]) => {
+    const d = R.pic[id], val = v[id] || 0, ok = val === d.u;
+    lampPic(110, y, 1.0, LM.glow(id === 'a' ? 3 : 1, id === 'a' ? 1 : 3).css); text(name, 110, y + 96, 44, { weight: 900 });
+    text(`${d.x} ml in ${d.h} h`, 220, y - 40, 54, { align: 'left', weight: 900 });
+    badge(`${val} ml in 1 h`, 760, y - 40, 48, run ? (ok ? GOOD : WARN) : SUN);
+    // run: what an hour at the planned rate burns, against the lantern's own hours
+    if (run) { text(ok ? `${val} × ${d.h} = ${d.x}` : `${val} × ${d.h} = ${val * d.h}, not ${d.x}`, 220, y + 44, 44, { align: 'left', fill: ok ? GOOD : WARN }); }
+    else { fillStroke(rr(220, y + 20, 700 * (found ? d.u / top : 1) * 0.6, 40, 10), '#2a3350', DIM, 4); }
+  });
+}
+/** A tank: oil to a level, milliliters on the left, percents on the right. */
+function paintTank(R, mode, v) {
+  const p = R.pic, a = v.a || 0, run = mode !== 'ask', found = mode === 'found', tx = 392, tw = 240, ty = 150, th = 540, lvl = f => ty + th * (1 - Math.max(0, Math.min(1, f)));
+  text(fmt(R.show[0], R.show[1]), 512, 78, 50, { weight: 900 });
+  const f = R.kind === 'of' ? a / p.w : R.kind === 'what' ? p.v / p.w : p.p / 100;
+  fillStroke(rr(tx, ty, tw, th, 22), '#1b2540', null);
+  X.save(); X.beginPath(); X.roundRect(tx, ty, tw, th, 22); X.clip(); X.fillStyle = AMBER; X.fillRect(tx, lvl(f), tw, th); X.restore();
+  fillStroke(rr(tx, ty, tw, th, 22), null, FG, 8);
+  const left = (frac, s, col, bg) => { const y = lvl(frac); line(tx - 26, y, tx, y, col || FG, 6); if (bg) badge(s, tx - 130, y, 46, bg); else text(s, tx - 40, y, 46, { align: 'right', weight: 900, fill: col || FG }); };
+  const right = (frac, s, col, bg) => { const y = lvl(frac); line(tx + tw, y, tx + tw + 26, y, col || FG, 6); if (bg) badge(s, tx + tw + 130, y, 46, bg); else text(s, tx + tw + 40, y, 46, { align: 'left', weight: 900, fill: col || FG }); };
+  const tone = found ? GOOD : SUN;
+  if (R.kind === 'of') {
+    left(1, `${p.w} ml`); right(1, '100%'); if (f > 0.1 || !a) left(0, '0'); right(0, '0%');
+    if (a > 0 && f < 0.9) left(f, `${a} ml`, null, tone); else if (a > 0) badge(`${a} ml`, tx + tw / 2, lvl(f) + 60, 46, tone);
+    if (run) { const y = lvl(p.p / 100); line(tx - 10, y, tx + tw + 26, y, GOOD, 7, [14, 10]); right(p.p / 100, `${p.p}%`, GOOD); for (let i = 1; i < 10; i++) line(tx + tw, lvl(i / 10), tx + tw + 14, lvl(i / 10), DIM, 4); }
+  } else if (R.kind === 'what') {
+    left(1, `${p.w} ml`); left(f, `${p.v} ml`); left(0, '0'); right(1, '100%'); right(0, '0%');
+    if (!run || found) right(f, `${a}%`, null, tone);
+    else { const y = lvl(a / 100); line(tx - 10, y, tx + tw + 26, y, WARN, 7, [14, 10]); right(a / 100, `${a}%`, null, WARN); for (let i = 1; i < 10; i++) line(tx + tw, lvl(i / 10), tx + tw + 14, lvl(i / 10), DIM, 4); }
+  } else {
+    left(f, `${p.v} ml`); right(f, `${p.p}%`); right(1, '100%'); left(0, '0'); right(0, '0%');
+    left(1, `${a} ml`, null, run && !found ? WARN : tone);
+    if (run) for (let i = 1; i * p.p < 100; i++) line(tx, lvl(i * p.p / 100), tx + tw, lvl(i * p.p / 100), found ? GOOD : FG, 5, [12, 10]);
+  }
+}
+/** The path and its lanterns: planned as a count; run, each lantern lights its stretch of the path. */
+function paintPosts(R, mode, v) {
+  const p = R.pic, a = v.a || 0, run = mode !== 'ask', found = mode === 'found', x0 = 90, x1 = 934, y = 300, w = x1 - x0;
+  text(fmt(R.show[0], R.show[1]), 512, 100, 50, { weight: 900 });
+  fillStroke(rr(x0, y, w, 70, 14), '#2a3350', FG, 6);
+  text('0', x0, y - 44, 46, { weight: 900 }); text(`${p.k} km`, x1 - 10, y - 44, 46, { weight: 900, align: 'right' });
+  if (run) {
+    const lit = Math.min(a * p.s, p.m), n = Math.min(a, Math.ceil(p.m / p.s));
+    X.save(); X.beginPath(); X.roundRect(x0, y, w, 70, 14); X.clip();
+    for (let i = 0; i < n; i++) { X.fillStyle = i % 2 ? '#ffd76b' : AMBER; X.fillRect(x0 + w * i * p.s / p.m, y, w * p.s / p.m, 70); }
+    X.restore(); fillStroke(rr(x0, y, w, 70, 14), null, found ? GOOD : FG, found ? 9 : 6);
+    for (let i = 0; i <= n && i * p.s <= p.m; i++) line(x0 + w * i * p.s / p.m, y, x0 + w * i * p.s / p.m, y + 70, '#141414', 4);
+    text(`0 m`, x0, y + 116, 44, { align: 'left', fill: DIM }); text(`${p.m} m`, x1, y + 116, 44, { align: 'right', fill: DIM });
+    badge(`${a} × ${p.s} m = ${a * p.s} m`, 512, 500, 50, found ? GOOD : WARN);
+    if (!found && lit < p.m) line(x0 + w * lit / p.m, y - 20, x0 + w * lit / p.m, y + 90, WARN, 8, [12, 10]);
+  } else {
+    text(fmt('show.each', { s: p.s }), 512, y + 124, 44, { fill: DIM });
+    const per = 12, k = a > 12 ? 0.42 : 0.5;
+    for (let i = 0; i < a; i++) lampPic(512 + ((i % per) - (Math.min(a, per) - 1) / 2) * 70, 530 + Math.floor(i / per) * 108, k, LM.glow(1, 0).css);
+  }
+  badge(String(a), 512, 690, 54, found ? GOOD : SUN);
+}
+function paint(R, mode) {
+  smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
+  fillStroke(rr(8, 8, CW - 16, CH - 16, 40), BG, FG, 12);
+  if (!R) { lampPic(300, 384, 2.0, LM.glow(1, 0).css); lampPic(512, 384, 2.0, LM.glow(1, 1).css); lampPic(724, 384, 2.0, LM.glow(0, 1).css); }
+  else if (R.chapter === 'mix') paintMix(R, mode, S.vals);
+  else if (R.kind === 'two') paintTwo(R, mode, S.vals);
+  else if (R.kind === 'of' || R.kind === 'what' || R.kind === 'whole') paintTank(R, mode, S.vals);
+  else if (R.kind === 'posts') paintPosts(R, mode, S.vals);
+  else paintLine(R, mode, S.vals);
+  boardTex.needsUpdate = true; S.mode = mode; S.small = smallest;
+}
+
+// Moving things: a pop into place, a shake, a wait. With reduced motion (and in the tests' fast mode) a thing is
+// simply where it belongs. Every step of a round is one of these, run by the game loop.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const back = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+function pop(o, { wait = 0, then, from = 0.001 } = {}) {
+  const s = o.scale.clone();
+  anim(o, 0.34, k => { o.scale.copy(s).multiplyScalar(Math.max(0.001, from + (1 - from) * back(k))); if (k >= 1) o.scale.copy(s); }, then, wait);
+}
+function shake(o, then) {
+  const x = o.position.x;
+  anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
+}
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+const squat = () => tall && innerHeight < innerWidth * 1.95;
+const heroSize = () => (squat() ? 0.5 : tall ? 0.7 : 0.92);
+const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -2.3 : -0.5) : V3(-3.55, 0, -1.3));
+const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];
+const rackSize = () => (squat() ? 0.6 : tall ? 0.78 : 1.1);
+const rackSpot = () => (tall ? V3(0.98, 0, squat() ? -2.3 : -0.5) : V3(3.85, 0, -1.2));
+const lampSpot = i => { const k = rackSize(), at = rackSpot(); return V3(at.x + ((i % 3) - 1) * 0.62 * k, k * 0.5 + (i < 3 ? 0 : 0.02), at.z + (i < 3 ? -0.16 : 0.2) * k); };
+function placeRack() {
+  const k = rackSize(), at = rackSpot(); bench.scale.setScalar(k); bench.position.copy(at);
+  rack.children.forEach(o => { o.scale.setScalar(k * (o.userData.i < 3 ? 0.9 : 0.8)); o.position.copy(lampSpot(o.userData.i)); });
+}
+function stagePts() {
+  const pts = [], hw = BW / 2 + 0.06, k = rackSize(), t = rackSpot();
+  for (const x of [-hw, hw]) pts.push(V3(x, BOARD.y + BH / 2 + 0.08, BOARD.z), V3(x, BOARD.y - BH / 2 - 0.08, BOARD.z));
+  // a small phone keeps the board big: the camera holds the lamplighter's head and the lanterns on the rack, and
+  // their feet may stand behind the workbench
+  const low = squat() ? 0.55 : 0, hs = heroSize();
+  pts.push(V3(t.x - 1.1 * k, 1.5 * k * low, t.z), V3(t.x + 1.1 * k, 1.5 * k * low, t.z), V3(t.x + 1.1 * k, 1.5 * k, t.z), V3(t.x - 1.1 * k, 1.5 * k, t.z));
+  return pts.concat(heroBox(heroSpot(), hs).map(p => (p.y === 0 ? p.setY(2.1 * hs * low) : p)));
+}
+// The camera looks across the hollow at the board, from a little above, and backs off until everything a round uses
+// fits between the words at the top and the workbench at the bottom, on any screen shape.
+const view = { pts: [] };
+function frame() {
+  fit(false);
+  if (S.screen === 'play' && !el.hint.hidden && board.visible && boxOf(board)[3] > el.hint.getBoundingClientRect().top - 4) fit(true);
+}
+function fit(withHint) {
+  if (!g || !view.pts.length) return;
+  const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
+  const low = play ? Math.min(el.bar.hidden ? Hd : el.bar.getBoundingClientRect().top, withHint ? el.hint.getBoundingClientRect().top : Hd) : 0;
+  const botPx = play ? Hd - low + 10 : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
+  const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
+  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  let bx;
+  const fits = d => {
+    look.copy(mid);
+    for (let i = 0; i < 6; i++) {
+      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (i === 5) break;
+      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+    }
+    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  };
+  let near = 3, far = 120;
+  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+let wasSquat = squat();
+addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
+
+/* ---------- tapping a lamplighter in the hollow: the nearest one under the finger ---------- */
+const targets = [];   // { at: () => Vector3, r: world radius, go }
+g.renderer.domElement.addEventListener('pointerdown', ev => {
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), v = V3(0, 0, 0), right = V3(1, 0, 0).applyQuaternion(cam.quaternion);
+  const px = p => { v.copy(p).project(cam); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+  let best = null, bd = 1e9;
+  for (const t of targets) {
+    const p = t.at(), [sx, sy] = px(p), [ex, ey] = px(p.clone().addScaledVector(right, t.r));
+    const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
+    if (dist <= reach && dist < bd) { bd = dist; best = t; }
+  }
+  if (best) best.go();
+});
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+
+/* ---------- the stage: the board, and the lanterns on the rack ---------- */
+// A lantern's glow: a soft round light in the colour its plan made (a sprite, so it costs nothing and never blinds).
+const haloTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+function rackLamp(i, css, trial) {
+  const o = new THREE.Group(), body = PT.lantern.clone(true), halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: new THREE.Color(css), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  halo.scale.setScalar(trial ? 0.8 : 1.05); halo.position.y = 0.42; o.add(body, halo); o.userData = { i, trial: !!trial, css };
+  return o;
+}
+function clearStage() {
+  for (const o of [...stage.children]) stage.remove(o);
+  tweens.length = 0; targets.length = 0;
+  sizeBoard(); board.visible = true;
+  placeRack();
+}
+function putBoard(R, mode, first) {
+  paint(R, mode); stage.add(board);
+  if (first) pop(board, { wait: 0.1, from: 0.6 });
+}
+/** The glow a finished round leaves on the rack: the mix it made, or (rate and percent) a warm glow of its own. */
+const roundGlow = (R, v) => (R && R.chapter === 'mix' ? LM.glow(v.a, v.b) : LM.glow(6 - ((R ? R.n : 1) - 1), (R ? R.n : 1) - 1)) || LM.glow(1, 0);
+const dropTrial = () => { for (const o of [...rack.children]) if (o.userData.trial) rack.remove(o); };
+/** Lanterns on the rack: one for each round already finished (their glows are kept). */
+function setLit(n) {
+  dropTrial();
+  while (rack.children.length > n) rack.remove(rack.children[rack.children.length - 1]);
+  for (let i = rack.children.length; i < n; i++) rack.add(rackLamp(i, (S.glows[i] || LM.glow(1, 0)).css));
+  S.lit = n; placeRack();
+}
+S.glows = [];
+
+/* ---------- the lamplighter ---------- */
+let lineup = [];
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(heroSpot()); h.object.rotation.y = tall ? 0 : 0.5; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+async function showHeroes() {
+  S.screen = 'hero';
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  clearStage(); setLit(0); bench.visible = false;
+  const k = tall ? 0.82 : 1.0, at = tall ? [[-1.3, 0.3], [-0.65, 1.7], [0, 0.3], [0.65, 1.7], [1.3, 0.3]] : [-2, -1, 0, 1, 2].map(i => [i * 1.85, 0.9]), far = Math.max(...at.map(q => q[0])) + 0.95 * k;
+  lineup.forEach((h, i) => { h.object.visible = true; h.object.scale.setScalar(k); h.position.set(at[i][0], 0, at[i][1]); h.object.rotation.y = 0; h.play(i % 2 ? 'wave' : 'idle'); });
+  lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1 * k), r: 0.7 * k, go: () => chooseHero(h.id) }));
+  view.pts = [V3(-far, 0, at[1][1]), V3(far, 0, at[1][1]), V3(-far, 2.3 * k, at[0][1]), V3(far, 2.3 * k, at[0][1])];
+  card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  frame();
+}
+function chooseHero(id) {
+  if (S.screen !== 'hero') return;
+  S.hero = lineup.find(h => h.id === id);
+  for (const h of lineup) if (h !== S.hero) h.object.visible = false;
+  sfx('coin');
+  if (P.chapter) startChapter(P.chapter); else showMenu();
+}
+
+/* ---------- cards: the lamplighter picker, the menu, the end of a chapter ---------- */
+function button({ id, label, icon, cls, go }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'lm-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, s) => { const e = document.createElement('span'); e.className = c; e.textContent = s; return e; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  b.append(span('l', label)); b.setAttribute('aria-label', label);
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, line: key, buttons, star }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const head = document.createElement('div'), row = document.createElement('div');
+  if (star) { const s = document.createElement('div'); s.className = 'lm-star'; s.setAttribute('aria-hidden', 'true'); s.textContent = '🏮'; head.append(s); }
+  const h = document.createElement('h1'); h.textContent = title; head.append(h);
+  const a = document.createElement('div'); a.className = 'lm-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'lm-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(key, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'lm-askt'; t.textContent = fmt(key); a.append(sb, t); head.append(a);
+  row.className = kind === 'menu' ? 'lm-menu' : 'lm-pick'; row.append(...buttons.map(button));
+  el.card.className = 'lm-card';
+  el.card.replaceChildren(head, row); el.card.hidden = false;
+  S.line = [key, null]; speak(key);
+}
+/** The lamplighter in the hollow by the board and the rack: the menu and the end of a chapter. */
+function solo(lit) {
+  clearStage(); S.vals = {}; putBoard(null, 'ask'); bench.visible = true; setLit(lit); placeHero();
+  view.pts = stagePts();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; S.glows = []; solo(0);
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: LM.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- the dials: a slider with a minus and a plus button each (no typing). A locked dial shows its value only. ---------- */
+function unitText(d, v) { const u = fmt('unit.' + d.unit); return num(v) + (u ? (d.unit === 'pct' ? '' : ' ') + u : ''); }
+function setDial(id, v, from) {
+  const d = S.R && S.R.dials.find(q => q.id === id); if (!d || d.lock || S.phase !== 'play') return;
+  v = Math.max(d.min, Math.min(d.max, d.min + Math.round((v - d.min) / d.step) * d.step));
+  if (v === S.vals[id]) return;
+  S.vals[id] = v;
+  const r = document.getElementById('dial-' + id + '-range'), o = document.getElementById('dial-' + id + '-val');
+  if (r && from !== 'range') r.value = String(v);
+  if (r) r.setAttribute('aria-valuetext', unitText(d, v));
+  if (o) o.textContent = unitText(d, v);
+  dropTrial();   // a new plan: the last trial's glow goes out; the hint stays until the plan is run
+  paint(S.R, 'ask');
+}
+function dialEl(d) {
+  const box = document.createElement('div'), name = fmt(d.key); box.className = 'lm-dial' + (d.lock ? ' lock' : ''); box.id = 'dial-' + d.id;
+  box.dataset.tone = d.key === 'dial.amber' ? 'amber' : d.key === 'dial.blue' ? 'blue' : 'plain';
+  const lab = document.createElement('label'); lab.className = 'lm-dl'; lab.htmlFor = 'dial-' + d.id + '-range';
+  const nm = document.createElement('span'); nm.textContent = name + (d.lock ? ' 🔒' : '');
+  const out = document.createElement('output'); out.className = 'lm-dv'; out.id = 'dial-' + d.id + '-val'; out.textContent = unitText(d, S.vals[d.id]);
+  lab.append(nm, out); box.append(lab);
+  if (d.lock) return box;
+  const step = (cls, sign, label, by) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'lm-step ' + cls; b.id = 'dial-' + d.id + '-' + cls; b.textContent = sign; b.setAttribute('aria-label', fmt(label, { name }));
+    b.addEventListener('click', () => setDial(d.id, S.vals[d.id] + by * d.step)); return b; };
+  const r = document.createElement('input'); r.type = 'range'; r.id = 'dial-' + d.id + '-range'; r.min = String(d.min); r.max = String(d.max); r.step = String(d.step); r.value = String(S.vals[d.id]);
+  r.setAttribute('aria-valuetext', unitText(d, S.vals[d.id]));
+  r.addEventListener('input', () => setDial(d.id, +r.value, 'range'));
+  box.append(step('dn', '−', 'btn.less', -1), r, step('up', '+', 'btn.more', 1));
+  return box;
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!LM.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; S.glows = []; el.card.hidden = true; el.card.replaceChildren();
+  bench.visible = true; setLit(0);
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots2() {
+  el.dots.replaceChildren(...Array.from({ length: LM.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: LM.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+function nextRound() {
+  if (S.round >= LM.ROUNDS) return finish();
+  S.round++; S.R = LM.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.shown = false; S.runs = 0; S.tick++;
+  S.vals = Object.fromEntries(S.R.dials.map(d => [d.id, d.start]));
+  const R = S.R;
+  hint(); dots2(); chip(R.show);
+  say(R.ask[0], R.ask[1]);   // the words first: the camera fits the hollow under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  S.R = null; solo(LM.ROUNDS);
+  g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🏠', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
+  frame();
+}
+/** Draw the round from its state (also after the screen turns): the board, the lamplighter, the rack, the dials. */
+function redraw() {
+  if (S.screen === 'hero') return void showHeroes();
+  if (S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? LM.ROUNDS : 0); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const R = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++;
+  el.card.hidden = true; el.bar.classList.toggle('wait', found);
+  putBoard(R, found ? 'found' : S.mode, first); setLit(S.round - 1 + (found ? 1 : 0));
+  placeHero(); view.pts = stagePts();
+  el.bar.hidden = false;
+  el.dials.replaceChildren(...R.dials.map(dialEl));
+  el.light.className = 'lm-btn go' + (found ? ' ok' : ''); el.light.replaceChildren(Object.assign(document.createElement('span'), { className: 'i', textContent: '🔥' }), Object.assign(document.createElement('span'), { className: 'l', textContent: fmt('btn.light') }));
+  el.light.firstChild.setAttribute('aria-hidden', 'true'); el.light.setAttribute('aria-label', fmt('btn.light'));
+  if (focus) { const b = document.getElementById(focus) || el.light; if (b) b.focus(); }   // a keyboard player stays on the workbench
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
+
+/** The player lights the lantern: the plan on the dials is run, and what it really makes is shown. */
+function light() {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play') return;
+  const R = S.R, v = { ...S.vals }, res = LM.judge(R, v), i = S.round - 1;
+  S.runs++; dropTrial();
+  if (!res.ok) {
+    // a plan that does not work: the lantern lights in the glow the plan made (a small, wrong light on the rack), the
+    // board shows what the plan really did, and the hint says why. The round stays open.
+    S.last = res.why;
+    const G = R.chapter === 'mix' ? LM.glow(v.a, v.b) : null;
+    if (G || R.chapter !== 'mix') { const o = rackLamp(i, G ? G.css : '#8f9bb8', true); rack.add(o); placeRack(); }
+    wobble(el.light); hint(res.hint);
+    paint(R, 'hint'); drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.visible = true; shake(board);
+    frame();
+    return;
+  }
+  S.phase = 'right'; S.tick++; hint(); sfx('coin'); S.last = '';
+  el.light.classList.add('ok'); el.bar.classList.add('wait');
+  chip(res.shown, 'ok');
+  say(res.said[0][0], res.said[0][1], { queue: true });
+  for (const [key, vars] of res.said.slice(1)) speak(key, vars, { queue: true });
+  paint(R, 'found'); drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); pop(board, { from: 0.9 });
+  // the round's lantern stays lit on the rack, the lamplighter cheers, and only then the next round
+  S.glows[i] = roundGlow(R, v);
+  const o = rackLamp(i, S.glows[i].css); rack.add(o); S.lit = i + 1; placeRack(); frame();
+  pop(o, { then: guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.4 : 2.1, guard(nextRound)); }) });
+}
+el.light.addEventListener('click', light);
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+function boxOf(o) {
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
+  const mid = o.getWorldPosition(V3(0, 0, 0));
+  const [sx, sy] = scr(mid), [rx] = scr(mid.clone().addScaledVector(right, w / 2)), [, uy] = scr(mid.clone().addScaledVector(up, h / 2));
+  return [sx - (rx - sx), uy, rx, sy + (sy - uy)].map(n => Math.round(n));
+}
+const shown = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+const ray = new THREE.Raycaster();
+/** Whether nothing of the hollow stands between the camera and a point (the scenery never hides the board). */
+function clearTo(p) {
+  const from = g.camera.position, dir = p.clone().sub(from), dist = dir.length();
+  ray.set(from, dir.normalize()); ray.near = 0.1; ray.far = dist - 0.12;
+  return !ray.intersectObjects([room, props], true).some(hit => shown(hit.object));
+}
+const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
+window.__lm = window.__brbTest = {
+  state: () => ({ game: 'lantern-mix', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: LM.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, vals: { ...S.vals }, runs: S.runs, last: S.last || '', moving: tweens.length,
+      onStage: { board: stage.children.includes(board) && board.visible, lit: rack.children.filter(o => !o.userData.trial).length, trial: rack.children.filter(o => o.userData.trial).map(o => o.userData.css), glows: rack.children.filter(o => !o.userData.trial).map(o => o.userData.css) } } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  hero: id => chooseHero(id || HEROES[0]),
+  /** act('set', { a, b }) turns the dials; act('light') runs the plan; act('solve') sets a right plan and runs it. */
+  act: (name, arg) => { if (name === 'set') { for (const k in arg) setDial(k, arg[k]); } else if (name === 'solve') { for (const k in S.R.want) setDial(k, S.R.want[k]); light(); } else light(); },
+  /** Where things are on the screen (CSS pixels): the box round the lamplighter, the board (its box, whether the
+   *  hollow leaves it in full view, and the smallest words on it in screen pixels) and the lantern rack. */
+  spot: () => {
+    const bx = boxOf(board), k = 0.46;
+    return {
+      hero: S.hero ? boxPts(heroBox(S.hero.position, S.hero.object.scale.x)) : null,
+      board: { box: bx, small: Math.round(S.small * (bx[2] - bx[0]) / CW * 10) / 10,
+        clear: [[0, 0], [-k, -k], [k, -k], [k, k], [-k, k], [0, -k], [0, k]].every(([dx, dy]) => clearTo(V3(BOARD.x + dx * BW, BOARD.y + dy * BH, BOARD.z))) },
+      rack: bench.visible ? (() => { const s = rackSize(), t = rackSpot(); return boxPts([V3(t.x - 1.1 * s, 0, t.z), V3(t.x + 1.1 * s, 0, t.z), V3(t.x - 1.1 * s, 1.4 * s, t.z), V3(t.x + 1.1 * s, 1.4 * s, t.z)]); })() : null,
+    };
+  },
+};
+
+el.load.hidden = true; el.load.remove(); el.lm.hidden = false;
+await showHeroes();
+window.__ready = true;
+</script>

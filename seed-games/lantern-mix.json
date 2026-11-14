@@ -1,0 +1,16 @@
+{
+  "slug": "lantern-mix",
+  "title": "Lantern Mix",
+  "icon": "🏮",
+  "cover": "sunset",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "ratios,ratio,equivalent ratios,ratio table,tape diagram,double number line,rates,unit rate,constant speed,percent,percentage,percent of a number,find the whole,unit conversion,convert units,kilometers,meters,milliliters,liters,proportional reasoning,sixth grade,grade 6,middle school,math,maths,3d,lanterns,night,read aloud,learning",
+  "description": "Night in the hollow, and every lantern needs its glow. Mix two oils by ratio to match the gate lantern (2 : 3 and 4 : 6 really do glow the same), work out how fast a lantern burns and how big a tank it needs, fill tanks to a percent and change kilometers to meters to light the whole path. Set the dials, light the lantern and see what your plan really made. Nothing is timed, and every instruction is read aloud.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest, the grades 6-8 street, Unit 1, The Mixing Tower (ratios, unit rates, percent as a rate, unit conversion; grade 6): a Kit 2 game on Oomba3D 1.2.0 in the Spooky Hollow theme 1.0.0 (night, ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/lantern-mix.test.js checks the literal map). The hollow (ground, path, arch, fences, bare trees, pumpkin lanterns, candles, a bench) is the theme's own pieces, with a work light so nothing is lost in the dark; nothing moves about on its own, chases or blocks. Gauges, ratio tables, double number lines, tanks and the path are drawn by the game on one board that always faces the player. The player plans with dials (a slider with a minus and a plus button each; no typing) and then lights the lantern: the plan is run and its result shown. Three chapters of six rounds (lesson mode: chapter=mix|rate|percent and lock=1): Match the Glow (1.1: copy 2 : 3, scale it with one oil set, fill 15 parts, the missing lantern of a ratio table, work back from the other oil, use every part to glow more amber or more blue than the gate), Burn Rate (1.2: milliliters for 1 hour, a tank for 7 hours, 6 ml in 4 hours stretched to 10, how long a tank lasts, two lanterns' unit rates, a steady walking pace) and Fill and Convert (1.3: a percent of a tank, what percent full, the whole from a part and its percent, kilometers, liters and hours into smaller units, how many lanterns light a path). A match is decided by the ratio (cross-multiplied whole numbers), never by the colour on screen, and colour is never the only signal: amber parts are striped, blue parts are dotted, and every gauge has its numbers. A wrong plan lights the wrong glow, the board shows what the plan really made, and a spoken hint names the mistake (kept the difference, swapped the order, read the percent as an amount, used 100 for 1000); the round stays open. No timer, no lives, no fail state, no reward currency; nothing is bought, sold or priced. Read-aloud is on by default (BRB.speak, friendly voice; units are spelled out in spoken lines). Each right round leaves a lit lantern on the rack, and the sixth reports game over (won) once, which completes the course step. Saves only which chapters are finished. English only.",
+  "l10n": {}
+}

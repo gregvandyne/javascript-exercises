@@ -1,0 +1,226 @@
+{
+ "id": "nq-u1-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 1,
+ "band": "Pro",
+ "title": "Number Quest Unit 1 · The Mixing Tower (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-1.1-e1",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "6.RP.A.1",
+   "topic": "Ratios",
+   "kind": "recall",
+   "secs": 30,
+   "q": "A glow is mixed from 2 parts amber oil for every 3 parts blue oil. What is the ratio of blue to amber?",
+   "choices": [
+    "2 : 3",
+    "3 : 2",
+    "3 : 5",
+    "2 : 5"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "kept the order the parts were first named in",
+    "correct",
+    "compared the blue with the total instead of with the amber",
+    "compared the amber with the total"
+   ],
+   "why": "A ratio follows the order of the words. Blue to amber puts the 3 parts of blue first and the 2 parts of amber second, so the ratio is 3 : 2."
+  },
+  {
+   "id": "nq-pro-1.1-e2",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "6.RP.A.3a",
+   "topic": "Ratios",
+   "kind": "apply",
+   "secs": 40,
+   "q": "The 2 : 3 glow is made bigger. The amber is now 6 parts. How many parts of blue keep the same glow?",
+   "choices": [
+    "7 parts",
+    "12 parts",
+    "9 parts",
+    "4 parts"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added 4 to both parts instead of multiplying",
+    "used the difference of 4 as the multiplier",
+    "correct",
+    "swapped the two parts and scaled the blue down"
+   ],
+   "why": "The amber went from 2 parts to 6, which is 3 times as much. The blue must be 3 times as much too: 3 × 3 = 9 parts. Adding 4 to each part would change the glow."
+  },
+  {
+   "id": "nq-pro-1.1-e3",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "6.RP.A.3a",
+   "topic": "Ratios",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A ratio table for one glow shows amber 1, 2, 3 and blue 3, 6, 9. A lantern uses 5 parts amber. How many parts blue does it need?",
+   "choices": [
+    "15 parts",
+    "11 parts",
+    "12 parts",
+    "8 parts"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "added 2 to the last blue number, as the amber went up by 2",
+    "took the next row of the table, the one for 4 parts amber",
+    "added 3 to the amber instead of multiplying by 3"
+   ],
+   "why": "In every column the blue is 3 times the amber: 3 is 3 × 1, 6 is 3 × 2, 9 is 3 × 3. For 5 parts amber the blue is 3 × 5 = 15 parts."
+  },
+  {
+   "id": "nq-pro-1.2-e1",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "6.RP.A.2",
+   "topic": "Unit rates",
+   "kind": "recall",
+   "secs": 30,
+   "q": "A lantern burns 12 milliliters of oil in 4 hours. What is its unit rate?",
+   "choices": [
+    "48 milliliters per hour",
+    "8 milliliters per hour",
+    "4 milliliters per hour",
+    "3 milliliters per hour"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "multiplied the two numbers instead of dividing",
+    "subtracted the hours from the milliliters",
+    "used the number of hours as the rate",
+    "correct"
+   ],
+   "why": "A unit rate is the amount for 1 hour. Share 12 milliliters equally over 4 hours: 12 ÷ 4 = 3, so the lantern burns 3 milliliters per hour."
+  },
+  {
+   "id": "nq-pro-1.2-e2",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "6.RP.A.3b",
+   "topic": "Unit rates",
+   "kind": "apply",
+   "secs": 45,
+   "q": "A lantern burns 6 milliliters of oil in 4 hours. At that rate, how much oil does it burn in 10 hours?",
+   "choices": [
+    "12 milliliters",
+    "15 milliliters",
+    "60 milliliters",
+    "24 milliliters"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "added the 6 extra hours to the 6 milliliters",
+    "correct",
+    "multiplied by 10 as if 6 milliliters were burned every hour",
+    "multiplied the 6 milliliters by the 4 hours"
+   ],
+   "why": "Find 1 hour first: 6 ÷ 4 = 1.5 milliliters per hour. Then 10 hours burn 10 × 1.5 = 15 milliliters. Adding 6 more would not keep the rate."
+  },
+  {
+   "id": "nq-pro-1.2-e3",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "6.RP.A.3b",
+   "topic": "Unit rates",
+   "kind": "apply",
+   "secs": 45,
+   "q": "A lamplighter walks 150 meters in 3 minutes at a steady pace. How far does she walk in 8 minutes?",
+   "choices": [
+    "400 meters",
+    "155 meters",
+    "1200 meters",
+    "50 meters"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "added the 5 extra minutes to the distance",
+    "multiplied by 8 as if she walked 150 meters every minute",
+    "found the unit rate and stopped there"
+   ],
+   "why": "Her unit rate is 150 ÷ 3 = 50 meters per minute. At a steady pace, 8 minutes cover 8 × 50 = 400 meters."
+  },
+  {
+   "id": "nq-pro-1.3-e1",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "6.RP.A.3c",
+   "topic": "Percent and units",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A tank holds 250 milliliters. How much oil fills it to 30%?",
+   "choices": [
+    "30 milliliters",
+    "25 milliliters",
+    "220 milliliters",
+    "75 milliliters"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "read the percent as an amount in milliliters",
+    "found 10% of the tank and stopped there",
+    "subtracted 30 from 250",
+    "correct"
+   ],
+   "why": "Percent is a rate per 100. 10% of 250 is 25 milliliters, and 30% is three of those: 3 × 25 = 75 milliliters."
+  },
+  {
+   "id": "nq-pro-1.3-e2",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "6.RP.A.3c",
+   "topic": "Percent and units",
+   "kind": "apply",
+   "secs": 45,
+   "q": "20 milliliters of oil fills 25% of a tank. How much does the full tank hold?",
+   "choices": [
+    "5 milliliters",
+    "80 milliliters",
+    "45 milliliters",
+    "500 milliliters"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "found 25% of the 20 milliliters instead of the whole tank",
+    "correct",
+    "added the 25 and the 20",
+    "multiplied 20 by 25 and forgot the percent is per 100"
+   ],
+   "why": "25% is one of four equal parts of the whole. If one part is 20 milliliters, the whole tank is 4 × 20 = 80 milliliters."
+  },
+  {
+   "id": "nq-pro-1.3-e3",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "6.RP.A.3d",
+   "topic": "Percent and units",
+   "kind": "apply",
+   "secs": 45,
+   "q": "A path is 3 kilometers long. One lantern lights 250 meters of it. How many lanterns light the whole path?",
+   "choices": [
+    "750 lanterns",
+    "3000 lanterns",
+    "12 lanterns",
+    "120 lanterns"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "multiplied 3 by 250 instead of converting and dividing",
+    "converted the path to meters and stopped there",
+    "correct",
+    "used 10,000 meters for each kilometer"
+   ],
+   "why": "Change the units first: 3 kilometers is 3 × 1000 = 3000 meters. Then divide by what one lantern lights: 3000 ÷ 250 = 12 lanterns."
+  }
+ ]
+}
