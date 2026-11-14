@@ -1,0 +1,17 @@
+{
+ "dir": "city-kit-suburban",
+ "name": "Kenney City Kit Suburban 2.0",
+ "author": "Kenney",
+ "licence": "CC0-1.0",
+ "url": "https://kenney.nl",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "scale": 4,
+  "matte": true,
+  "textures": {
+   "^colormap$": "colormap.png"
+  },
+  "inkNormals": true
+ },
+ "source": "branch asset-packs, folder city-kit-suburban/ (uploaded by the owner, November 2026)"
+}

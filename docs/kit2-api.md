@@ -38,6 +38,7 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
   | `medieval-village` | `1.0.0` | adventurers + skeleton pals | `ground` (hexagon tiles), `ground-high`, `road`, `river-crossing`, `bridge` |
   | `cosy-home` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `bed`, `couch`, `table`, `cabinet` |
   | `busy-kitchen` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `counter`, `kitchen-table`, `table-round` |
+  | `pirate-cove` | `1.0.0` | the 5 adventurers | `island-sand`, `island-grass` (islands that stand in the sea), `dock`, `dock-small`, `pier`, `pier-small`, `deck`, `planks` |
 
   Adventurers: `knight`, `barbarian` (Explorer), `mage` (Wizard), `rogue` (Ranger), `rogue-hooded` (Hooded Ranger).
   Skeleton pals: `skelly`, `rattles`, `bonzo`, `captain-clank` (friendly cartoon skeletons, no weapons). Every hero plays
@@ -117,7 +118,9 @@ and the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Piec
 `g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`
 
 A sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it
-again replaces the sea.
+again replaces the sea. The default is a sea far below the world. In Pirate Cove the world stands in the sea:
+`g.world.water({ y: -1.5, color: '#0077c8' })` with island and dock tops at 0 (the waves rise and fall about a metre, so
+keep the water at least 1.5 below anything to walk on), and ships and boats at about `y: -2`.
 
 ### `g.followCamera(target, options)`
 

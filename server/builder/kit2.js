@@ -34,7 +34,7 @@ export const DEFAULT_WORLD = 'sky-islands';
 /** A character this world has: the one asked for, or the world's first. */
 export const heroFor = (world, hero) => { const list = charactersOf(world); return (list.find(h => h.id === hero) || list[0] || { id: '' }).id; };
 /** An emoji and a cover colour for each world: a new game's icon and card until its own picture is taken. */
-const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'] };
+const LOOKS = { 'sky-islands': ['🏝️', 'ocean'], 'castle-quest': ['🏰', 'gold'], 'spooky-hollow': ['🎃', 'sunset'], 'space-base': ['🚀', 'night'], 'toy-town': ['🏙️', 'mint'], 'medieval-village': ['🏡', 'forest'], 'cosy-home': ['🛋️', 'candy'], 'busy-kitchen': ['🍔', 'lava'], 'pirate-cove': ['⛵', 'ocean'] };
 export const worldLook = id => LOOKS[id] || ['🌍', 'ocean'];
 /** Is this exact theme version shipped (kit2/SHIPPED.json)? */
 export const isShipped = (world, version) => !!KIT2_LOCK.themes[`${world}/${version}`];
@@ -55,6 +55,8 @@ export function kit2Of(html) {
 // tiles of the start and goal places; side: the small ground a piece of scenery stands on beside the way; step: the stones to hop along; pad: what an answer floats over; goal: what
 // marks the finish; landmark: the big thing behind the goal; scenery: what stands beside the way. hex: the ground is
 // hexagon tiles (laid as a honeycomb). sea: the colour of the water far below ('' for none). time: the sky.
+// seaY: the water's height when the world stands IN the sea (default: far below, at -5). afloat: ships and boats put
+// out on that sea, [piece, scale] each.
 const L = (ground, step, pad, goal, landmark, scenery, o = {}) => ({ ground, step, pad, goal, landmark, scenery, side: ground, hex: false, sea: '', time: 'day', plaza: 3, ...o });
 export const STARTERS = {
   'sky-islands': L(['island-round', 3], ['platform-medium', 1.3], ['island-round', 0.9], ['flag', 3], ['cloud', 5],
@@ -73,6 +75,9 @@ export const STARTERS = {
     [['lamp', 1.2], ['armchair', 1.2], ['cactus', 1.6], ['couch', 1.1], ['lamp-table', 1.4], ['bed-small', 1], ['books', 2], ['chair', 1.3]]),
   'busy-kitchen': L(['floor', 1], ['counter', 1.4], ['floor-small', 1.5], ['burger', 2.2], ['fridge', 1.6],
     [['crate-carrots', 1], ['stool', 1.4], ['tomato', 1.8], ['oven', 1.1], ['crate-tomatoes', 1], ['cheese', 1.8], ['stove', 1.1], ['carrot', 1.8]]),
+  'pirate-cove': L(['island-sand', 0.8], ['dock', 1.3], ['island-grass', 0.7], ['chest', 1.4], ['tower', 1],
+    [['palm-tall', 1], ['barrel', 1.1], ['palm-bend', 1], ['hut-roof', 0.9], ['flag-high', 1], ['rocks-sand-small', 0.8], ['palm', 1], ['crate', 1.1]],
+    { sea: '#0077c8', seaY: -1.5, plaza: 1, side: ['island-grass', 0.9], afloat: [['ship-large', 1], ['rowing-boat', 1], ['ship-small', 1], ['shipwreck', 1], ['rowing-boat-small', 1], ['ship', 1]] }),
 };
 /** The starter layout for a world: its own, or one made from its catalogue tags (a world shipped after this file). */
 export function starterFor(world) {
@@ -102,6 +107,7 @@ export function kit2Starter({ world = DEFAULT_WORLD, hero = '', title = '' } = {
   const layout = [
     `  ground: ${one(lay.ground)},`, `  side: ${one(lay.side)},`, `  step: ${one(lay.step)},`, `  pad: ${one(lay.pad)},`, `  goal: ${one(lay.goal)},`, `  landmark: ${one(lay.landmark)},`,
     `  scenery: [${lay.scenery.map(one).join(', ')}],`, `  plaza: ${lay.plaza},`, `  hex: ${lay.hex},`, `  sea: ${js(lay.sea)},`,
+    ...(lay.seaY == null ? [] : [`  seaY: ${lay.seaY},`]), ...(lay.afloat ? [`  afloat: [${lay.afloat.map(one).join(', ')}],`] : []),
   ].join('\n');
   const name = title || w.name;
   const setLine = (src, key, value) => src.replace(new RegExp(`\\n(  ${key}: )[^\\n]*,\\n`), (m, a) => `\n${a}${value},\n`);
@@ -166,6 +172,8 @@ function lastNamed(list, t) {
 const PLACE_WORDS = [
   ['sky-islands', /\b(sky|floating|flying|cloud) islands?\b|\bislands? in the (sky|clouds)\b|\b(in|above|over|on) the clouds\b/],
   ['space-base', /\b(on|to) (the moon|mars|a planet|another planet)\b|\bmoon ?base\b|\bspace ?(base|station|ship)\b|\bouter space\b|\b(in|into) space\b|\bred planet\b|\bastronauts?\b|\brovers?\b|\brocket ?ship\b|\bthe moon\b/],
+  // Before the castle: "a pirate treasure chest" is a cove, not a dungeon. (A space ship is already Space Base above.)
+  ['pirate-cove', /\bpirates?\b|\btreasure (islands?|maps?|hunts?|coves?)\b|\b(desert|tropical|sandy) islands?\b|\bisland[- ]hopping\b|\b(on|aboard|sailing) (a|the|my) (sailing |big |wooden )?(ship|boat)s?\b|\bsailing ships?\b|\b(at|on|by|in) the (docks?|harbou?r)\b|\bcoves?\b|\bshipwrecks?\b/],
   ['castle-quest', /\bcastles?\b|\bdungeons?\b|\btreasure chests?\b/],
   ['spooky-hollow', /\bspooky\b|\bhaunted\b|\bhalloween\b|\bpumpkins?\b/],
   ['medieval-village', /\bvillages?\b|\bwindmills?\b|\bmedieval\b|\bwatermills?\b/],
@@ -198,11 +206,14 @@ export function pickKit2(text) {
   const named = lastNamed(NAMES.worlds, t);
   const classicChip = chipOf('classic'), classic = (!!classicChip && !chipWorld && !chipHero && !named) || /(^|[^a-z0-9])2 ?-?d\b|\bclassic (kit|look|theme)\b|\bold (kit|look)\b/.test(t);
   let place = ''; for (const [id, re] of PLACE_WORDS) if (re.test(t)) { place = id; break; }
-  const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], heroName = chipHero || lastNamed(NAMES.heroes, t) || heroWord;
+  const heroWord = (HERO_WORDS.find(([, re]) => re.test(t)) || [''])[0], namedHero = chipHero || lastNamed(NAMES.heroes, t), heroName = namedHero || heroWord;
+  // "pirate" alone is a place as much as a character (Pirate Cove has no Captain Clank): the hero it suggests is a soft
+  // pick, kept only in a world that has him ("a pirate game in Castle Quest"), never reported as missing.
+  const soft = !namedHero && heroWord === 'captain-clank' && !/\bcaptains?\b/.test(t);
   const threeD = THREE_D.test(t);
   // "a 3D game with a knight": a 3D request that names one of the characters is a pick of that character.
   const by = chipWorld || chipHero ? 'chip' : named || (threeD && heroName && !classic) ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
-  return { world: chipWorld || named || (by ? place : ''), hero: heroName, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
+  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
 }
 
 /**
@@ -227,6 +238,7 @@ export function wantsKit2(state, text, version) {
   // With no world named: the game's own, the one picked before, or the first world that has the character asked for.
   const asked = characterById(p.hero), home = asked && !asked.worlds.includes(DEFAULT_WORLD) ? asked.worlds[0] : DEFAULT_WORLD;
   const world = p.world || (cur && WORLD_IDS.includes(cur.world) ? cur.world : '') || before.world || home;
+  if (p.soft && heroFor(world, p.hero) !== p.hero) p.hero = '';
   // A character named in words counts here, inside a Kit 2 build; it must be one this world has.
   const hero = heroFor(world, p.hero || (cur && cur.hero) || before.hero || '');
   if (state) state.kit2 = { world, hero };
@@ -243,6 +255,7 @@ const worldText = w => [
   `Pieces (id widthxheightxdepth in metres at scale 1, tags): ${w.pieces.map(p => `${p.id} ${size(p)} ${p.tags.join('/')}${p.note ? ` [${p.note}]` : ''}`).join('; ')}.`,
   `Sounds: ${w.sounds.join(', ')}, cheer, wrong. Moves: ${w.moves.join(', ')}.`,
   STARTERS[w.id] ? `Starter layout: ground ${STARTERS[w.id].ground.join(' x')}, step ${STARTERS[w.id].step.join(' x')}, pad ${STARTERS[w.id].pad.join(' x')}, goal ${STARTERS[w.id].goal.join(' x')}, landmark ${STARTERS[w.id].landmark.join(' x')}.` : '',
+  STARTERS[w.id] && STARTERS[w.id].seaY != null ? `This world stands in the sea: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), tops of islands and docks at 0, pieces tagged afloat out on the water (LAYOUT.afloat).` : '',
 ].filter(Boolean).join('\n');
 export const KIT2_CATALOG_TEXT = KIT2_WORLDS.map(worldText).join('\n\n');
 const NO_CREATURES = KIT2_CHARACTERS.some(c => c.kind === 'creature') ? ''
@@ -254,7 +267,8 @@ Oomba Academy has ready-made 3D worlds with animated characters. Each is a whole
 ${KIT2_WORLDS.map(w => `- ${w.id} ("${w.name}"): ${w.description}`).join('\n')}
 Characters: ${KIT2_CHARACTERS.map(c => `${c.id} (${c.name})`).join(', ')}.${NO_CREATURES ? ' No animals or dinosaurs yet.' : ''}
 - Use one when the builder picks or names a world or character from this list, or describes a place that is one of them
-  (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky) for a game where a hero
+  (a castle, the moon, a spooky wood, a village, a town, a kitchen, a house, islands in the sky, a pirate cove or
+  treasure island) for a game where a hero
   walks, jumps, collects and answers. Then call start_from_template with template "oomba3d", the world and the hero:
   the KIT 2 RULES arrive with the starter. These games are NOT on the Oomba Kit and NOT on the world3d starter.
 - Stay on the Oomba Kit (2D) for card, board, word, catching and two-player games and for anything the builder wants in

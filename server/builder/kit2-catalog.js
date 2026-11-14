@@ -4,7 +4,7 @@
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
 // name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
 // reference the Builder reads.
-export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"]};
+export const KIT2_VERSIONS = {"sky-islands":["1.0.0","1.0.1"],"castle-quest":["1.0.0","1.1.0"],"space-base":["1.0.0"],"spooky-hollow":["1.0.0"],"toy-town":["1.0.0","1.1.0"],"busy-kitchen":["1.0.0"],"cosy-home":["1.0.0"],"medieval-village":["1.0.0"],"pirate-cove":["1.0.0"]};
 export const KIT2_WORLDS = [
  {
   "id": "sky-islands",
@@ -4309,6 +4309,926 @@ export const KIT2_WORLDS = [
    "sit",
    "cast"
   ]
+ },
+ {
+  "id": "pirate-cove",
+  "version": "1.0.0",
+  "name": "Pirate Cove",
+  "description": "A sunny cove to explore: sandy islands, palm trees, docks, a harbour fort and sailing ships, with treasure to find and share.",
+  "goodFor": [
+   "maths",
+   "geography",
+   "treasure maps",
+   "adventures"
+  ],
+  "engine": "three",
+  "heroes": [
+   {
+    "id": "barbarian",
+    "name": "Explorer"
+   },
+   {
+    "id": "knight",
+    "name": "Knight"
+   },
+   {
+    "id": "mage",
+    "name": "Wizard"
+   },
+   {
+    "id": "rogue",
+    "name": "Ranger"
+   },
+   {
+    "id": "rogue-hooded",
+    "name": "Hooded Ranger"
+   }
+  ],
+  "creatures": [],
+  "pieces": [
+   {
+    "id": "island-sand",
+    "kind": "world",
+    "size": [
+     10.1,
+     3.9,
+     7.9
+    ],
+    "tags": [
+     "ground",
+     "island",
+     "sand",
+     "platform"
+    ],
+    "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+   },
+   {
+    "id": "island-grass",
+    "kind": "world",
+    "size": [
+     6.9,
+     3.9,
+     5.4
+    ],
+    "tags": [
+     "island",
+     "grass",
+     "platform"
+    ],
+    "note": "An island: thick enough to stand in the sea (water about 1.5 below its top)."
+   },
+   {
+    "id": "dock",
+    "kind": "world",
+    "size": [
+     3.3,
+     1.7,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ],
+    "note": "A square of dock on posts: tile them for a pier."
+   },
+   {
+    "id": "dock-small",
+    "kind": "world",
+    "size": [
+     2.5,
+     1.7,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "pier",
+    "kind": "world",
+    "size": [
+     3.3,
+     1.2,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ],
+    "note": "Like dock, without the mooring posts."
+   },
+   {
+    "id": "pier-small",
+    "kind": "world",
+    "size": [
+     2.5,
+     1.2,
+     3.3
+    ],
+    "tags": [
+     "dock",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "deck",
+    "kind": "world",
+    "size": [
+     3.3,
+     0.3,
+     3.3
+    ],
+    "tags": [
+     "planks",
+     "platform",
+     "step"
+    ],
+    "note": "A flat square of planks: a raft, a ship deck to stand on, an answer pad."
+   },
+   {
+    "id": "planks",
+    "kind": "world",
+    "size": [
+     2.5,
+     0.6,
+     3.5
+    ],
+    "tags": [
+     "planks",
+     "platform",
+     "step"
+    ]
+   },
+   {
+    "id": "sand-patch",
+    "kind": "decor",
+    "size": [
+     10.1,
+     0.3,
+     7.9
+    ],
+    "tags": [
+     "sand",
+     "patch"
+    ]
+   },
+   {
+    "id": "sand-patch-shells",
+    "kind": "decor",
+    "size": [
+     10.1,
+     0.7,
+     7.9
+    ],
+    "tags": [
+     "sand",
+     "patch"
+    ]
+   },
+   {
+    "id": "grass-patch",
+    "kind": "decor",
+    "size": [
+     6.9,
+     0.3,
+     5.4
+    ],
+    "tags": [
+     "grass",
+     "patch"
+    ]
+   },
+   {
+    "id": "grass-patch-plants",
+    "kind": "decor",
+    "size": [
+     6.9,
+     0.7,
+     5.4
+    ],
+    "tags": [
+     "grass",
+     "patch"
+    ]
+   },
+   {
+    "id": "tower",
+    "kind": "world",
+    "size": [
+     4.7,
+     13.3,
+     4.7
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "building"
+    ]
+   },
+   {
+    "id": "tower-small",
+    "kind": "world",
+    "size": [
+     4.4,
+     8.8,
+     4.8
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "building"
+    ]
+   },
+   {
+    "id": "tower-base",
+    "kind": "world",
+    "size": [
+     4.1,
+     2.6,
+     4.1
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ],
+    "note": "Tower parts stack: base, middle, then top, roof or lookout."
+   },
+   {
+    "id": "tower-base-door",
+    "kind": "world",
+    "size": [
+     4.1,
+     2.6,
+     4.6
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "door"
+    ]
+   },
+   {
+    "id": "tower-middle",
+    "kind": "world",
+    "size": [
+     4,
+     2.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ]
+   },
+   {
+    "id": "tower-middle-windows",
+    "kind": "world",
+    "size": [
+     3.7,
+     2.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "window"
+    ]
+   },
+   {
+    "id": "tower-top",
+    "kind": "world",
+    "size": [
+     4.4,
+     3.6,
+     4.4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part"
+    ]
+   },
+   {
+    "id": "tower-roof",
+    "kind": "world",
+    "size": [
+     4.7,
+     4.5,
+     4.7
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "roof"
+    ]
+   },
+   {
+    "id": "tower-lookout",
+    "kind": "world",
+    "size": [
+     4,
+     3.6,
+     4
+    ],
+    "tags": [
+     "tower",
+     "fort",
+     "part",
+     "lookout"
+    ]
+   },
+   {
+    "id": "fort-wall",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     3.6
+    ],
+    "tags": [
+     "wall",
+     "fort"
+    ]
+   },
+   {
+    "id": "fort-gate",
+    "kind": "world",
+    "size": [
+     5.2,
+     5.7,
+     4.7
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "gate"
+    ]
+   },
+   {
+    "id": "fort-door",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     4.2
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "door"
+    ]
+   },
+   {
+    "id": "fort-window",
+    "kind": "world",
+    "size": [
+     2.6,
+     5.7,
+     3.6
+    ],
+    "tags": [
+     "wall",
+     "fort",
+     "window"
+    ]
+   },
+   {
+    "id": "hut",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "building"
+    ]
+   },
+   {
+    "id": "hut-fence",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "fence"
+    ]
+   },
+   {
+    "id": "hut-fence-sides",
+    "kind": "world",
+    "size": [
+     3.3,
+     2.9,
+     3.3
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "fence"
+    ]
+   },
+   {
+    "id": "hut-roof",
+    "kind": "world",
+    "size": [
+     4,
+     4.4,
+     4.2
+    ],
+    "tags": [
+     "hut",
+     "shelter",
+     "roof",
+     "building"
+    ]
+   },
+   {
+    "id": "ship",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     13.8
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "ship-large",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     17
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "ship-small",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     11.4
+    ],
+    "tags": [
+     "ship",
+     "sailing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "shipwreck",
+    "kind": "world",
+    "size": [
+     6.2,
+     13,
+     13.8
+    ],
+    "tags": [
+     "ship",
+     "wreck",
+     "afloat"
+    ],
+    "note": "An old wreck with plants growing on it: on a beach, or half in the sea."
+   },
+   {
+    "id": "rowing-boat",
+    "kind": "world",
+    "size": [
+     3.6,
+     1.1,
+     3.7
+    ],
+    "tags": [
+     "boat",
+     "rowing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "rowing-boat-small",
+    "kind": "world",
+    "size": [
+     3.6,
+     1.1,
+     3.1
+    ],
+    "tags": [
+     "boat",
+     "rowing",
+     "afloat"
+    ],
+    "note": "Floats: put it on the sea, its y about 0.5 below the water."
+   },
+   {
+    "id": "mast",
+    "kind": "world",
+    "size": [
+     5.7,
+     10.2,
+     2.3
+    ],
+    "tags": [
+     "mast",
+     "ship"
+    ]
+   },
+   {
+    "id": "mast-ropes",
+    "kind": "world",
+    "size": [
+     5.7,
+     10.3,
+     3.1
+    ],
+    "tags": [
+     "mast",
+     "ship",
+     "ropes"
+    ]
+   },
+   {
+    "id": "palm",
+    "kind": "decor",
+    "size": [
+     3.2,
+     5.5,
+     3.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-bend",
+    "kind": "decor",
+    "size": [
+     3.7,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-tall",
+    "kind": "decor",
+    "size": [
+     4.2,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "palm-tall-bend",
+    "kind": "decor",
+    "size": [
+     3.7,
+     5.5,
+     4.2
+    ],
+    "tags": [
+     "tree",
+     "palm"
+    ]
+   },
+   {
+    "id": "rocks",
+    "kind": "decor",
+    "size": [
+     6.7,
+     3.8,
+     5.7
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-tall",
+    "kind": "decor",
+    "size": [
+     5.8,
+     4.8,
+     6.1
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-small",
+    "kind": "decor",
+    "size": [
+     4.7,
+     3,
+     4.8
+    ],
+    "tags": [
+     "rocks"
+    ]
+   },
+   {
+    "id": "rocks-sand",
+    "kind": "decor",
+    "size": [
+     6.7,
+     4.2,
+     5.7
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "rocks-sand-tall",
+    "kind": "decor",
+    "size": [
+     5.7,
+     4.8,
+     6.1
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "rocks-sand-small",
+    "kind": "decor",
+    "size": [
+     4.8,
+     3.4,
+     4.8
+    ],
+    "tags": [
+     "rocks",
+     "sand"
+    ]
+   },
+   {
+    "id": "grass",
+    "kind": "decor",
+    "size": [
+     0.7,
+     0.4,
+     0.7
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "grass-plant",
+    "kind": "decor",
+    "size": [
+     1.5,
+     0.7,
+     1.6
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "grass-tuft",
+    "kind": "decor",
+    "size": [
+     1.7,
+     0.6,
+     1.7
+    ],
+    "tags": [
+     "grass",
+     "plant"
+    ]
+   },
+   {
+    "id": "chest",
+    "kind": "prop",
+    "size": [
+     1.3,
+     1.2,
+     1.3
+    ],
+    "tags": [
+     "goal",
+     "treasure",
+     "chest"
+    ],
+    "note": "The treasure to find. It is shut in this version (its lid opens in a later Oomba3D)."
+   },
+   {
+    "id": "barrel",
+    "kind": "prop",
+    "size": [
+     1.3,
+     1.2,
+     1.3
+    ],
+    "tags": [
+     "barrel",
+     "cargo"
+    ]
+   },
+   {
+    "id": "crate",
+    "kind": "prop",
+    "size": [
+     1.1,
+     0.8,
+     1.3
+    ],
+    "tags": [
+     "crate",
+     "cargo"
+    ]
+   },
+   {
+    "id": "dig-spot",
+    "kind": "prop",
+    "size": [
+     3.7,
+     0.5,
+     3.5
+    ],
+    "tags": [
+     "treasure",
+     "dig",
+     "sand"
+    ],
+    "note": "A hole dug in the sand: X marks the spot."
+   },
+   {
+    "id": "shovel",
+    "kind": "prop",
+    "size": [
+     0.9,
+     3.1,
+     0.4
+    ],
+    "tags": [
+     "tool",
+     "dig"
+    ]
+   },
+   {
+    "id": "paddle",
+    "kind": "prop",
+    "size": [
+     0.9,
+     3.1,
+     0.3
+    ],
+    "tags": [
+     "tool",
+     "boat"
+    ]
+   },
+   {
+    "id": "flag",
+    "kind": "prop",
+    "size": [
+     1.7,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-pennant",
+    "kind": "prop",
+    "size": [
+     2.3,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-high",
+    "kind": "prop",
+    "size": [
+     1.7,
+     4.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-high-pennant",
+    "kind": "prop",
+    "size": [
+     2.3,
+     4.7,
+     0.5
+    ],
+    "tags": [
+     "flag",
+     "checkpoint"
+    ]
+   },
+   {
+    "id": "flag-black",
+    "kind": "prop",
+    "size": [
+     1.7,
+     2.7,
+     0.5
+    ],
+    "tags": [
+     "flag"
+    ],
+    "note": "A plain black flag (no picture on it)."
+   },
+   {
+    "id": "coin",
+    "kind": "prop",
+    "size": [
+     0.4,
+     0.1,
+     0.4
+    ],
+    "tags": [
+     "collectible",
+     "coin"
+    ],
+    "note": "Its base is -0.06 below its y."
+   }
+  ],
+  "sounds": [
+   "jump",
+   "land",
+   "coin",
+   "fall",
+   "break",
+   "walk"
+  ],
+  "moves": [
+   "idle",
+   "ready",
+   "walk",
+   "run",
+   "jumpStart",
+   "jumpAir",
+   "jumpLand",
+   "jump",
+   "cheer",
+   "wave",
+   "pickUp",
+   "use",
+   "bump",
+   "sit",
+   "cast"
+  ]
  }
 ];
-export const KIT2_API_SOURCE = "# `start(options)`\n\n`start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`\n\nLoads the theme's `theme.json`, makes the renderer, the sky (the theme's colours), fog, light, glow and soft clouds,\nand starts the game loop. Also exported: `VERSION` (`'1.1.0'`), `API` (the names below), `GRAPHICS`, `TIMES`, `WEATHER`\n(the allowed values) and `THREE` (the same Three.js). Games saved on Oomba3D 1.0.0 keep working: everything in it is in\n1.1.0, and 1.0.0's `lowPower: true` means `graphics: 'low'`.\n\n- `graphics`: `'auto'`, `'low'` (shown to players as Fast), `'medium'` (Balanced) or `'high'` (Beautiful); see\n  `g.graphics()`. `'auto'` starts at low on devices with 4 or fewer CPU cores or 4 GB or less of memory, otherwise high,\n  and steps down a level after two 3-second spells under 30 frames a second.\n- `time`: `'morning'`, `'day'` (the theme's own look), `'sunset'` or `'night'` (with stars); see `g.sky()`.\n- `weather`: `'clear'`, `'snow'`, `'rain'`, `'sparkles'` or `'leaves'`; see `g.weather()`.\n- `outline`: `true` draws a thin ink outline round every hero and piece (the Oomba look). It doubles the meshes drawn, so\n  keep it for scenes with up to a few hundred pieces.\n- `settings`: `true` shows the gear button (top right). Players use it to pick Auto, Fast, Balanced or Beautiful\n  graphics and to turn weather effects off, for this game only.\n- `reducedMotion`: defaults to the player's `prefers-reduced-motion`. When on: clouds do not drift, coins do not spin,\n  answer tokens do not bob, a wrong island disappears instead of sinking, and there is no confetti.\n\n`g` also has `THREE`, `scene`, `camera`, `renderer`, `theme` (the theme's `theme.json`: `heroes`, `pieces`, `sounds`,\n`moves`, `look`), `lowPower` (read-only: whether the level is low now) and `reducedMotion`.\n\nLevel · Pixel ratio · Shadows · Glow · Smoothing (SMAA) · Clouds · Weather · Confetti\nlow (Fast) · 1 · off · off · off · a third · 35% · off\nmedium (Balanced) · up to 1.5 · 1024 · on · off · all · 70% · on\nhigh (Beautiful) · up to 2 · 2048, soft · on · on · all · all · on\n\n# `g.hero(id, options)`\n\n`g.hero(id, { x = 0, y = 0, z = 0, face = 0, outfit })` → `Promise<hero>`\n\nAdds one of the theme's heroes (`g.theme.heroes`; Sky Islands: `knight`, `barbarian` \"Explorer\", `mage` \"Wizard\",\n`rogue` \"Ranger\", `rogue-hooded` \"Hooded Ranger\"). `face` turns it (radians). A hero has `id`, `name`, `object`,\n`position` and `play(move, { once = false, fade = 0.2 })`. Moves: `idle`, `ready`, `walk`, `run`, `jumpStart`,\n`jumpAir`, `jumpLand`, `jump`, `cheer`, `wave`, `pickUp`, `use`, `bump`, `sit`, `cast` (`g.theme.moves.clips`). Heroes\ncarry no weapons. `outfit` (any CSS colour: `'#66C792'`, `'gold'`) recolours the hero's cape (and the Wizard's hat), so\none hero can be many characters: a green Knight, a gold Wizard, a team in matching capes.\n\n# `g.world.island(options)`\n\n`g.world.island({ x = 0, y = 0, z = 0, scale = 3, turn = 0, piece = 'island-round' })` → `Promise<solid>`\n\nA piece the hero can stand on (any piece id works with `piece`; Sky Islands' standing pieces: `island-round`,\n`platform`, `platform-medium`, `platform-large`, `platform-falling`, `brick`, `coin-block`). At scale 1 a\n`island-round` is 5 wide and 0.5 tall; scale 3 is a big start island, 0.9 to 1.3 a stepping stone. A solid has\n`object`, `box`, `top()` (the y to stand at), `onLand` (set it to `hero => {}`: called each time the hero lands on it)\nand `sink()` (it falls away and can no longer be stood on).\n\n# `g.world.piece(id, options)`\n\n`g.world.piece(id, { x = 0, y = 0, z = 0, scale = 1, turn = 0, solid = false })` → `Promise<{ object }>` (or a solid\nwith `solid: true`)\n\nDecoration and props: Sky Islands has `grass`, `grass-small`, `cloud`, `flag`, `coin`, `coin-block`, `dust`, `brick-bit`\nand the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Pieces stand on their `y`.\n\n# `g.world.water(options)`\n\n`g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`\n\nA sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it\nagain replaces the sea.\n\n# `g.followCamera(target, options)`\n\n`g.followCamera(target, { distance = 10, height = 5.5 })`\n\nThe camera glides behind and above the target (a hero) and the sun's shadows follow it. Tall phone screens get a wider\nview automatically.\n\n# `g.controls(hero, options)`\n\n`g.controls(hero, { speed = 7, jump = 9.5, gravity = 24, fallY = -12, spawn, tryAgain = 'Try again!' })` → `{ keys }`\n\nArrows or WASD move, Space jumps; on touch screens an on-screen pad (four arrows and a big Jump button) appears.\nLandings are wide and kind. Falling below `fallY` puts the hero back at `spawn` (default: where it stood) and shows\n`tryAgain` (`''` for nothing). Plays `run`, `idle` and `jump`, and the `jump`, `land` and `fall` sounds.\n\n# `g.coins(spots, options)`\n\n`g.coins([[x, y, z], …], { piece = 'coin', scale = 2.6, value = 1, onCollect })` → `{ left() }`\n\nSpinning coins; touching one adds `value` to the score, plays `coin` and calls `onCollect(coin)`. `left()` is how many\nare still there.\n\n# `g.askQuestion(options)`\n\n`g.askQuestion({ question, answers, correct, at = { x: 0, y: 3, z: -38 }, spacing = 8, prompt = 'Jump to the answer:', notIt = a => 'Not ' + a + '! Try another island', rightText = 'Correct! +5', bonus = 5, onRight, onWrong })`\n→ `Promise<{ islands, answered() }>`\n\nShows `prompt question` at the top and makes one island per answer in a row at `at`, `spacing` apart, each with its\nanswer floating above it on a big token. Landing on `correct`: the token turns green, `bonus` is added, the hero cheers\nand `onRight()` is called. Landing on another: it sinks, `notIt(answer)` shows and `onWrong(answer)` is called. Answers\ncan be numbers or short words (up to about 6 characters read well). The answer islands are made from the piece\n`island-round`, so this works in Sky Islands only: in every other world a game makes its own answer pads from that\nworld's pieces (the Builder's starter does: a solid with `onLand`, and the answer on a sprite above it).\n\n# `g.sound(name)`\n\n`g.sound(name)`\n\nPlays a theme sound (Sky Islands: `jump`, `land`, `coin`, `fall`, `break`, `walk`) or one made in code: `cheer`,\n`wrong`. Nothing plays until the player has pressed a key or tapped (browsers require it).\n\n# `g.celebrate(hero, text)`\n\n`g.celebrate(hero, text = 'You did it!')`\n\nThe hero cheers, the `cheer` sound plays, `text` shows big, and confetti bursts (not in low-power or reduced motion).\n\n# `g.toast(text, ms)`\n\n`g.toast(text, ms = 1400)`\n\nBig outlined words in the middle of the screen for `ms` milliseconds.\n\n# `g.score(add)`\n\n`g.score(add)` → the score\n\nAdds `add` (a number) and shows the score at the top; with no number, just returns it.\n\n# `g.onUpdate(fn)`\n\n`g.onUpdate(dt => { … })`\n\nRuns `fn` every frame with the seconds since the last frame (at most 1/30), before the camera moves and the frame draws.\n\n# `g.graphics(level)`\n\n`g.graphics(level)` → the level now\n\nSets `'auto'`, `'low'`, `'medium'` or `'high'` (the table above) while the game runs; with no level, returns it (`'auto (high)'`\nwhile on auto). The gear button calls this too.\n\n# `g.sky(time)`\n\n`g.sky(time = 'day')` → the time\n\nChanges the sky, sun, light, fog and cloud colours to `'morning'`, `'day'`, `'sunset'` or `'night'` (stars come out at\nnight, a few at sunset), at once. Good for a level that ends at sunset, or a night level.\n\n# `g.weather(kind)`\n\n`g.weather(kind = 'clear')` → the kind\n\n`'snow'`, `'rain'`, `'sparkles'` (gold, rising), `'leaves'` (green and orange) or `'clear'`. The particles travel with the\nhero. None with reduced motion, or when a player turns weather effects off in the gear menu; fewer at lower levels.\n\n# `g.physics(options)`\n\n`g.physics({ gravity = -24 })` → `Promise<{ RAPIER, world, add }>`\n\nReal physics with Rapier 0.21 (WebAssembly), loaded the first time a game asks (about 1.5 MB, so only games that need\nit pay for it). `add(object, { type = 'dynamic', shape = 'box', bounce = 0.3, friction = 0.8 })` puts a body round an\nobject (a piece's `object`) from its size and keeps the object on it every frame; `type: 'fixed'` makes ground and walls,\n`shape: 'ball'` rolls. `world` and `RAPIER` are Rapier's own, for joints, forces and anything else. Heroes moved by\n`g.controls` are not in the physics world.";
+export const KIT2_API_SOURCE = "# `start(options)`\n\n`start({ theme, version, graphics = 'auto', time = 'day', weather = 'clear', outline = false, settings = true, reducedMotion, parent = document.body })` → `Promise<g>`\n\nLoads the theme's `theme.json`, makes the renderer, the sky (the theme's colours), fog, light, glow and soft clouds,\nand starts the game loop. Also exported: `VERSION` (`'1.1.0'`), `API` (the names below), `GRAPHICS`, `TIMES`, `WEATHER`\n(the allowed values) and `THREE` (the same Three.js). Games saved on Oomba3D 1.0.0 keep working: everything in it is in\n1.1.0, and 1.0.0's `lowPower: true` means `graphics: 'low'`.\n\n- `graphics`: `'auto'`, `'low'` (shown to players as Fast), `'medium'` (Balanced) or `'high'` (Beautiful); see\n  `g.graphics()`. `'auto'` starts at low on devices with 4 or fewer CPU cores or 4 GB or less of memory, otherwise high,\n  and steps down a level after two 3-second spells under 30 frames a second.\n- `time`: `'morning'`, `'day'` (the theme's own look), `'sunset'` or `'night'` (with stars); see `g.sky()`.\n- `weather`: `'clear'`, `'snow'`, `'rain'`, `'sparkles'` or `'leaves'`; see `g.weather()`.\n- `outline`: `true` draws a thin ink outline round every hero and piece (the Oomba look). It doubles the meshes drawn, so\n  keep it for scenes with up to a few hundred pieces.\n- `settings`: `true` shows the gear button (top right). Players use it to pick Auto, Fast, Balanced or Beautiful\n  graphics and to turn weather effects off, for this game only.\n- `reducedMotion`: defaults to the player's `prefers-reduced-motion`. When on: clouds do not drift, coins do not spin,\n  answer tokens do not bob, a wrong island disappears instead of sinking, and there is no confetti.\n\n`g` also has `THREE`, `scene`, `camera`, `renderer`, `theme` (the theme's `theme.json`: `heroes`, `pieces`, `sounds`,\n`moves`, `look`), `lowPower` (read-only: whether the level is low now) and `reducedMotion`.\n\nLevel · Pixel ratio · Shadows · Glow · Smoothing (SMAA) · Clouds · Weather · Confetti\nlow (Fast) · 1 · off · off · off · a third · 35% · off\nmedium (Balanced) · up to 1.5 · 1024 · on · off · all · 70% · on\nhigh (Beautiful) · up to 2 · 2048, soft · on · on · all · all · on\n\n# `g.hero(id, options)`\n\n`g.hero(id, { x = 0, y = 0, z = 0, face = 0, outfit })` → `Promise<hero>`\n\nAdds one of the theme's heroes (`g.theme.heroes`; Sky Islands: `knight`, `barbarian` \"Explorer\", `mage` \"Wizard\",\n`rogue` \"Ranger\", `rogue-hooded` \"Hooded Ranger\"). `face` turns it (radians). A hero has `id`, `name`, `object`,\n`position` and `play(move, { once = false, fade = 0.2 })`. Moves: `idle`, `ready`, `walk`, `run`, `jumpStart`,\n`jumpAir`, `jumpLand`, `jump`, `cheer`, `wave`, `pickUp`, `use`, `bump`, `sit`, `cast` (`g.theme.moves.clips`). Heroes\ncarry no weapons. `outfit` (any CSS colour: `'#66C792'`, `'gold'`) recolours the hero's cape (and the Wizard's hat), so\none hero can be many characters: a green Knight, a gold Wizard, a team in matching capes.\n\n# `g.world.island(options)`\n\n`g.world.island({ x = 0, y = 0, z = 0, scale = 3, turn = 0, piece = 'island-round' })` → `Promise<solid>`\n\nA piece the hero can stand on (any piece id works with `piece`; Sky Islands' standing pieces: `island-round`,\n`platform`, `platform-medium`, `platform-large`, `platform-falling`, `brick`, `coin-block`). At scale 1 a\n`island-round` is 5 wide and 0.5 tall; scale 3 is a big start island, 0.9 to 1.3 a stepping stone. A solid has\n`object`, `box`, `top()` (the y to stand at), `onLand` (set it to `hero => {}`: called each time the hero lands on it)\nand `sink()` (it falls away and can no longer be stood on).\n\n# `g.world.piece(id, options)`\n\n`g.world.piece(id, { x = 0, y = 0, z = 0, scale = 1, turn = 0, solid = false })` → `Promise<{ object }>` (or a solid\nwith `solid: true`)\n\nDecoration and props: Sky Islands has `grass`, `grass-small`, `cloud`, `flag`, `coin`, `coin-block`, `dust`, `brick-bit`\nand the platforms above (`g.theme.pieces`, with sizes at scale 1 and tags). Pieces stand on their `y`.\n\n# `g.world.water(options)`\n\n`g.world.water({ y = -6, color = '#3fa7d6', size = 600 })` → `{ object, y }`\n\nA sea with gentle waves made in the shader (no texture), tinted by the sky. Still when reduced motion is on. Calling it\nagain replaces the sea. The default is a sea far below the world. In Pirate Cove the world stands in the sea:\n`g.world.water({ y: -1.5, color: '#0077c8' })` with island and dock tops at 0 (the waves rise and fall about a metre, so\nkeep the water at least 1.5 below anything to walk on), and ships and boats at about `y: -2`.\n\n# `g.followCamera(target, options)`\n\n`g.followCamera(target, { distance = 10, height = 5.5 })`\n\nThe camera glides behind and above the target (a hero) and the sun's shadows follow it. Tall phone screens get a wider\nview automatically.\n\n# `g.controls(hero, options)`\n\n`g.controls(hero, { speed = 7, jump = 9.5, gravity = 24, fallY = -12, spawn, tryAgain = 'Try again!' })` → `{ keys }`\n\nArrows or WASD move, Space jumps; on touch screens an on-screen pad (four arrows and a big Jump button) appears.\nLandings are wide and kind. Falling below `fallY` puts the hero back at `spawn` (default: where it stood) and shows\n`tryAgain` (`''` for nothing). Plays `run`, `idle` and `jump`, and the `jump`, `land` and `fall` sounds.\n\n# `g.coins(spots, options)`\n\n`g.coins([[x, y, z], …], { piece = 'coin', scale = 2.6, value = 1, onCollect })` → `{ left() }`\n\nSpinning coins; touching one adds `value` to the score, plays `coin` and calls `onCollect(coin)`. `left()` is how many\nare still there.\n\n# `g.askQuestion(options)`\n\n`g.askQuestion({ question, answers, correct, at = { x: 0, y: 3, z: -38 }, spacing = 8, prompt = 'Jump to the answer:', notIt = a => 'Not ' + a + '! Try another island', rightText = 'Correct! +5', bonus = 5, onRight, onWrong })`\n→ `Promise<{ islands, answered() }>`\n\nShows `prompt question` at the top and makes one island per answer in a row at `at`, `spacing` apart, each with its\nanswer floating above it on a big token. Landing on `correct`: the token turns green, `bonus` is added, the hero cheers\nand `onRight()` is called. Landing on another: it sinks, `notIt(answer)` shows and `onWrong(answer)` is called. Answers\ncan be numbers or short words (up to about 6 characters read well). The answer islands are made from the piece\n`island-round`, so this works in Sky Islands only: in every other world a game makes its own answer pads from that\nworld's pieces (the Builder's starter does: a solid with `onLand`, and the answer on a sprite above it).\n\n# `g.sound(name)`\n\n`g.sound(name)`\n\nPlays a theme sound (Sky Islands: `jump`, `land`, `coin`, `fall`, `break`, `walk`) or one made in code: `cheer`,\n`wrong`. Nothing plays until the player has pressed a key or tapped (browsers require it).\n\n# `g.celebrate(hero, text)`\n\n`g.celebrate(hero, text = 'You did it!')`\n\nThe hero cheers, the `cheer` sound plays, `text` shows big, and confetti bursts (not in low-power or reduced motion).\n\n# `g.toast(text, ms)`\n\n`g.toast(text, ms = 1400)`\n\nBig outlined words in the middle of the screen for `ms` milliseconds.\n\n# `g.score(add)`\n\n`g.score(add)` → the score\n\nAdds `add` (a number) and shows the score at the top; with no number, just returns it.\n\n# `g.onUpdate(fn)`\n\n`g.onUpdate(dt => { … })`\n\nRuns `fn` every frame with the seconds since the last frame (at most 1/30), before the camera moves and the frame draws.\n\n# `g.graphics(level)`\n\n`g.graphics(level)` → the level now\n\nSets `'auto'`, `'low'`, `'medium'` or `'high'` (the table above) while the game runs; with no level, returns it (`'auto (high)'`\nwhile on auto). The gear button calls this too.\n\n# `g.sky(time)`\n\n`g.sky(time = 'day')` → the time\n\nChanges the sky, sun, light, fog and cloud colours to `'morning'`, `'day'`, `'sunset'` or `'night'` (stars come out at\nnight, a few at sunset), at once. Good for a level that ends at sunset, or a night level.\n\n# `g.weather(kind)`\n\n`g.weather(kind = 'clear')` → the kind\n\n`'snow'`, `'rain'`, `'sparkles'` (gold, rising), `'leaves'` (green and orange) or `'clear'`. The particles travel with the\nhero. None with reduced motion, or when a player turns weather effects off in the gear menu; fewer at lower levels.\n\n# `g.physics(options)`\n\n`g.physics({ gravity = -24 })` → `Promise<{ RAPIER, world, add }>`\n\nReal physics with Rapier 0.21 (WebAssembly), loaded the first time a game asks (about 1.5 MB, so only games that need\nit pay for it). `add(object, { type = 'dynamic', shape = 'box', bounce = 0.3, friction = 0.8 })` puts a body round an\nobject (a piece's `object`) from its size and keeps the object on it every frame; `type: 'fixed'` makes ground and walls,\n`shape: 'ball'` rolls. `world` and `RAPIER` are Rapier's own, for joints, forces and anything else. Heroes moved by\n`g.controls` are not in the physics world.";

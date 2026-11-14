@@ -1,0 +1,13 @@
+{
+ "dir": "sky-islands-pack",
+ "name": "Low Poly Sky Islands Pack",
+ "author": "reodesuxz",
+ "licence": "custom (games and modification allowed; no redistribution of the asset files, no AI training)",
+ "licenceFile": "LICENSE.txt",
+ "defaults": {
+  "matte": true,
+  "inkNormals": true
+ },
+ "exclude": {},
+ "source": "branch asset-packs, folder sky-islands-pack/ (uploaded by the owner, November 2026)"
+}

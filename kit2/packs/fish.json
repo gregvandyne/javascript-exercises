@@ -1,0 +1,67 @@
+{
+ "dir": "fish",
+ "name": "Quaternius Animated Fish (no licence file was uploaded with this pack)",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": null,
+ "defaults": {
+  "matte": true,
+  "inkNormals": true
+ },
+ "clips": {
+  "swim": "\\|Swim$"
+ },
+ "creatures": {
+  "Dolphin": {
+   "id": "dolphin",
+   "name": "Dolphin",
+   "size": {
+    "length": 4
+   }
+  },
+  "Whale": {
+   "id": "whale",
+   "name": "Whale",
+   "size": {
+    "length": 12
+   }
+  },
+  "Shark": {
+   "id": "shark",
+   "name": "Shark",
+   "size": {
+    "length": 6
+   }
+  },
+  "Manta ray": {
+   "id": "manta-ray",
+   "name": "Manta Ray",
+   "size": {
+    "length": 5
+   }
+  },
+  "Fish1": {
+   "id": "fish-pink",
+   "name": "Pink Fish",
+   "size": {
+    "length": 1.2
+   }
+  },
+  "Fish2": {
+   "id": "fish-blue",
+   "name": "Blue Fish",
+   "size": {
+    "length": 1
+   }
+  },
+  "Fish3": {
+   "id": "clownfish",
+   "name": "Clownfish",
+   "size": {
+    "length": 0.9
+   }
+  }
+ },
+ "source": "branch asset-packs, folder fish/ (uploaded by the owner, November 2026)"
+}
