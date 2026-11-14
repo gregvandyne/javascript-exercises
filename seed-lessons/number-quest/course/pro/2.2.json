@@ -1,0 +1,221 @@
+{
+ "key": "pro-2.2",
+ "n": "2.2",
+ "band": "pro",
+ "title": "Below zero: opposites and absolute value",
+ "topic": "Negative numbers",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "The line goes below zero",
+   "text": "Inside the Cold Store the big thermometer runs past zero and keeps going down. Tally reads −8°C in the freezer and 3°C by the door. The numbers below zero are negative numbers, and they are just as real as the ones above.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A number line that stands up",
+   "text": "A thermometer is a number line turned on its end. Zero sits in the middle, positive numbers climb above it and negative numbers go down below it. Lower means colder, and lower means less. So −8 is less than −2.5, and −2.5 is less than 3.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "Three readings on a thermometer",
+    "min": -10,
+    "max": 6,
+    "upright": true,
+    "tube": true,
+    "marks": [
+     {
+      "at": -10,
+      "label": "−10°"
+     },
+     {
+      "at": -2.5,
+      "label": "−2.5°"
+     },
+     {
+      "at": 0,
+      "label": "0°"
+     },
+     {
+      "at": 3,
+      "label": "3°"
+     },
+     {
+      "at": 6,
+      "label": "6°"
+     }
+    ],
+    "point": {
+     "at": -8,
+     "label": "−8°C"
+    }
+   },
+   "focus": [
+    {
+     "cue": "Zero is in the middle. Negative numbers sit below it.",
+     "box": [
+      30.9,
+      34.4,
+      9.5,
+      9.1
+     ]
+    },
+    {
+     "cue": "−8 is the lowest reading, so it is the least.",
+     "box": [
+      43.6,
+      61.8,
+      16.6,
+      13.1
+     ]
+    },
+    {
+     "cue": "3 is above zero: greater than any negative number.",
+     "box": [
+      31.1,
+      23.4,
+      9.3,
+      9.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Opposites: same distance, other side",
+   "text": "Every number has an opposite: the number just as far from zero on the other side. The opposite of 6 is −6, and the opposite of −6 is 6. Zero is its own opposite. Take the opposite twice and you are back where you began: −(−6) = 6.",
+   "art": "scale",
+   "visual": {
+    "type": "numberline",
+    "label": "Six and its opposite",
+    "min": -8,
+    "max": 8,
+    "marks": [
+     {
+      "at": -8,
+      "label": "−8"
+     },
+     {
+      "at": -6,
+      "label": "−6"
+     },
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 6,
+      "label": "6"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     }
+    ],
+    "hops": [
+     {
+      "from": -6,
+      "to": 0,
+      "label": "6 steps"
+     },
+     {
+      "from": 0,
+      "to": 6,
+      "label": "6 steps"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "−6 is 6 steps to the left of zero.",
+     "box": [
+      16.1,
+      23.5,
+      34.9,
+      38.5
+     ]
+    },
+    {
+     "cue": "6 is 6 steps to the right: the opposite of −6.",
+     "box": [
+      49,
+      23.5,
+      35,
+      38.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "How far from zero?",
+   "text": "The absolute value of a number is its distance from zero, and a distance is never negative. It is written with two bars: |−7| = 7 and |5| = 5. So −7 is farther from zero than 5, even though −7 is the lesser number.",
+   "art": "ruler",
+   "steps": [
+    "|−7| = 7: seven steps below zero",
+    "|5| = 5: five steps above zero",
+    "7 > 5, so −7 is farther from zero",
+    "But −7 < 5: it is lower on the line"
+   ]
+  },
+  {
+   "title": "Colder than a limit",
+   "text": "A deep freezer must stay colder than −12°C. A reading of −15°C is safe, because −15 is less than −12. Notice that its absolute value is greater: 15 is more than 12. Below zero, the farther a number is from zero, the less it is.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for the numbers on both sides of zero.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "negative number",
+     "means": "a number less than zero, written with a minus sign, such as −8"
+    },
+    {
+     "word": "integer",
+     "means": "a whole number, its opposite or zero, such as −3, 0 and 12"
+    },
+    {
+     "word": "opposite",
+     "means": "the number the same distance from zero on the other side: 6 and −6"
+    },
+    {
+     "word": "absolute value",
+     "means": "a number's distance from zero, such as |−7| = 7; it is never negative"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sub Zero at Below Zero. Set the marker on negative readings, find opposites and pick the coldest sample. Six rounds finish the job.",
+   "art": "trophy",
+   "img": "nq/sub-zero/below-zero",
+   "alt": "Sub Zero on a phone: a thermometer from −10 to 10 with its marker at zero, and a stepper to set it to −8 degrees.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-2.2-e1",
+  "nq-pro-2.2-e2",
+  "nq-pro-2.2-e3"
+ ],
+ "game": {
+  "slug": "sub-zero",
+  "chapter": "Below Zero",
+  "params": "chapter=below&lock=1"
+ }
+}

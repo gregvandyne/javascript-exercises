@@ -1,0 +1,226 @@
+{
+ "id": "nq-u2-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "Pro",
+ "title": "Number Quest Unit 2 · The Cold Store (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6.NS.A.1",
+   "topic": "Dividing fractions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A pot holds 6 liters. Each jar holds 3/4 of a liter. How many jars can be filled?",
+   "choices": [
+    "4 1/2",
+    "8",
+    "24",
+    "2"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "multiplied 6 by 3/4 instead of dividing",
+    "correct",
+    "multiplied by 4 but forgot to divide by 3",
+    "divided by 3 and ignored the fourths"
+   ],
+   "why": "Each liter is 4 fourths, so 6 liters are 24 fourths. Jars of 3 fourths: 24 ÷ 3 = 8. Check: 8 × 3/4 = 6."
+  },
+  {
+   "id": "nq-pro-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6.NS.A.1",
+   "topic": "Dividing fractions",
+   "kind": "recall",
+   "secs": 30,
+   "q": "Which multiplication gives the same answer as 5 ÷ 2/3?",
+   "choices": [
+    "5 × 3/2",
+    "5 × 2/3",
+    "1/5 × 2/3",
+    "1/5 × 3/2"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "kept the divisor as it was instead of using its reciprocal",
+    "flipped the dividend instead of the divisor",
+    "flipped both numbers, not only the divisor"
+   ],
+   "why": "Dividing by a fraction is multiplying by its reciprocal. Only the divisor turns over: 5 ÷ 2/3 = 5 × 3/2 = 15/2 = 7 1/2."
+  },
+  {
+   "id": "nq-pro-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6.NS.A.1",
+   "topic": "Dividing fractions",
+   "kind": "apply",
+   "secs": 30,
+   "q": "You have 1/2 of a liter. A jar holds 3/4 of a liter. What fraction of the jar is filled?",
+   "choices": [
+    "3/8",
+    "1 1/2",
+    "2/3",
+    "1/4"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "multiplied the two fractions instead of dividing",
+    "divided 3/4 by 1/2, the wrong way round",
+    "correct",
+    "subtracted 1/2 from 3/4 instead of dividing"
+   ],
+   "why": "1/2 ÷ 3/4 = 1/2 × 4/3 = 4/6 = 2/3. The jar holds more than you have, so it must be less than full."
+  },
+  {
+   "id": "nq-pro-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6.NS.C.5",
+   "topic": "Negative numbers",
+   "kind": "scenario",
+   "secs": 30,
+   "q": "A diver is 12 meters below sea level and a bird is 9 meters above it. Sea level is 0. Which pair of numbers shows the two positions?",
+   "choices": [
+    "−12 and 9",
+    "12 and −9",
+    "12 and 9",
+    "−12 and −9"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped which side of zero is negative",
+    "ignored that below sea level is negative",
+    "made both numbers negative"
+   ],
+   "why": "Sea level is zero. Below it is negative and above it is positive, so the diver is at −12 meters and the bird is at 9 meters."
+  },
+  {
+   "id": "nq-pro-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6.NS.C.6",
+   "topic": "Negative numbers",
+   "kind": "apply",
+   "secs": 30,
+   "q": "What is the opposite of the opposite of −4?",
+   "choices": [
+    "4",
+    "−4",
+    "0",
+    "−8"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "stopped after taking the opposite once",
+    "correct",
+    "added the number to its opposite",
+    "doubled the number instead of reflecting it twice"
+   ],
+   "why": "The opposite of −4 is 4, and the opposite of 4 is −4. Taking the opposite twice always returns the number you started with."
+  },
+  {
+   "id": "nq-pro-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6.NS.C.7",
+   "topic": "Negative numbers",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Three freezers read −15°C, −9°C and 12°C. Which statement puts the readings in order?",
+   "choices": [
+    "−9 < −15 < 12",
+    "−15 < −9 < 12",
+    "−9 < 12 < −15",
+    "12 < −9 < −15"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "compared 9 and 15 and ignored the negative signs",
+    "correct",
+    "ordered the readings by their distance from zero",
+    "wrote the order from greatest to least"
+   ],
+   "why": "Lower on the thermometer is less. −15 is below −9, and both are below 12, so −15 < −9 < 12. The coldest reading is the least number."
+  },
+  {
+   "id": "nq-pro-2.3-e1",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "7.NS.A.1",
+   "topic": "Rational arithmetic",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A sample is at −6°C. What change brings it to 4°C?",
+   "choices": [
+    "+2°",
+    "−10°",
+    "+10°",
+    "−2°"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "subtracted 4 from 6 instead of adding the two distances",
+    "gave the right size with the wrong direction",
+    "correct",
+    "added −6 and 4 instead of finding the change between them"
+   ],
+   "why": "From −6 it takes 6 steps up to reach zero and 4 more to reach 4, so the change is +10. Check: −6 + 10 = 4."
+  },
+  {
+   "id": "nq-pro-2.3-e2",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "7.NS.A.1",
+   "topic": "Rational arithmetic",
+   "kind": "recall",
+   "secs": 30,
+   "q": "Which expression is equal to 4 − (−3)?",
+   "choices": [
+    "4 + 3",
+    "4 − 3",
+    "−4 + 3",
+    "−4 − 3"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "dropped the negative sign of the number being subtracted",
+    "changed the sign of the wrong number",
+    "changed both signs instead of one"
+   ],
+   "why": "Subtracting a number is adding its opposite. The opposite of −3 is 3, so 4 − (−3) = 4 + 3 = 7."
+  },
+  {
+   "id": "nq-pro-2.3-e3",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "7.NS.A.2",
+   "topic": "Rational arithmetic",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A freezer cools 2.5°C each minute. What is the change in temperature after 4 minutes?",
+   "choices": [
+    "10°C",
+    "−6.5°C",
+    "−1.5°C",
+    "−10°C"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "ignored that cooling is a negative change",
+    "added 4 and 2.5 instead of multiplying",
+    "subtracted 4 from 2.5 instead of multiplying",
+    "correct"
+   ],
+   "why": "Cooling is a negative change, repeated 4 times: 4 × (−2.5) = −10. A positive number times a negative number is negative."
+  }
+ ]
+}

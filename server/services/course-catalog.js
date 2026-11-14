@@ -47,7 +47,8 @@ export const COURSES = Object.freeze([
     // The Shape Shed: naming shapes by what defines them, building shapes from shapes, halves and fourths). Kitchen
     // Rush is its seventh (Unit 7, The Measuring Meadow: measuring length, clocks and coins, sorting and graphs) and
     // also plays the tier's finale, The Garden Gate, in its own fourth chapter. Lantern Mix is the first game of the
-    // grades 6-8 street (Unit 1, The Mixing Tower: ratios and equal mixes, unit rates, percent and changing units).
+    // grades 6-8 street (Unit 1, The Mixing Tower: ratios and equal mixes, unit rates, percent and changing units) and Sub Zero its second
+    // (Unit 2, The Cold Store: dividing by a fraction, numbers below zero, operations with negatives).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -62,6 +63,7 @@ export const COURSES = Object.freeze([
       { slug: 'shape-hunt', topic: 'numbers', shared: true },
       { slug: 'kitchen-rush', topic: 'numbers', shared: true },
       { slug: 'lantern-mix', topic: 'numbers', shared: true },
+      { slug: 'sub-zero', topic: 'numbers', shared: true },
     ],
   },
 ]);

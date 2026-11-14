@@ -25,7 +25,7 @@ const course = C.getCourse('number-quest');
 const steps = C.steps(course, 'explorer');
 const byN = n => steps.find(s => s.n === n);
 
-test('every mission game reports completion: gameOver call sites in all twelve mission games', () => {
+test('every mission game reports completion: gameOver call sites in all thirteen mission games', () => {
   // Fraction Factory fires only at chapter completion (its own test pins the single call site).
   assert.equal((read('seed-games/fraction-factory.html').match(/BRB\.gameOver\(/g) || []).length, 1);
   // Sum Racer fires at race end with won = place 1.
@@ -96,6 +96,12 @@ test('every mission game reports completion: gameOver call sites in all twelve m
   assert.match(mix, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
   assert.match(mix, /if \(S\.round >= LM\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
   assert.equal((mix.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
+  // Sub Zero (Pro Unit 2): the same shape (tests/unit/sub-zero.test.js plays every chapter and counts the message).
+  const zero = read('seed-games/sub-zero.html');
+  assert.equal((zero.match(/BRB\.gameOver\(/g) || []).length, 1);
+  assert.match(zero, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
+  assert.match(zero, /if \(S\.round >= SZ\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
+  assert.equal((zero.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
 });
 
 test('Sum Racer missions are locked to the taught skill in units.json and in every deck', () => {
@@ -250,13 +256,13 @@ test('lesson identity survives the frame for Launchpad too: Garden Count’s, Li
   }
 });
 
-test('lesson identity survives the frame for the built Pro units too: Lantern Mix’s chapter and lock pass the allow-list intact', () => {
+test('lesson identity survives the frame for the built Pro units too: Lantern Mix’s and Sub Zero’s chapter and lock pass the allow-list intact', () => {
   const pro = C.steps(course, 'pro').filter(s => s.game);
-  assert.deepEqual(pro.map(s => s.n), ['1.1', '1.2', '1.3']);
+  assert.deepEqual(pro.map(s => s.n), ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3']);
   for (const s of pro) {
-    const slug = { 1: 'lantern-mix' }[s.unit];
+    const slug = { 1: 'lantern-mix', 2: 'sub-zero' }[s.unit];
     assert.equal(s.game.slug, slug, s.n);
-    const want = { chapter: { '1.1': 'mix', '1.2': 'rate', '1.3': 'percent' }[s.n], lock: 1 };
+    const want = { chapter: { '1.1': 'mix', '1.2': 'rate', '1.3': 'percent', '2.1': 'pour', '2.2': 'below', '2.3': 'change' }[s.n], lock: 1 };
     assert.deepEqual(PP.parseParams(Object.fromEntries(new URLSearchParams(s.game.params))), want, `${s.n}: params parse`);
     assert.deepEqual(PP.unpackParams(PP.packParams(want)), want, `${s.n}: chapter and lock survive the signed token`);
     assert.equal(C.playHref(course, C.getStep(course, `pro-${s.n}`)), `/play/${slug}?course=number-quest&cstep=pro-${s.n}&chapter=${want.chapter}&lock=1`, `${s.n}: the Play link carries the step and the chapter`);

@@ -1,0 +1,1194 @@
+<title>Sub Zero</title>
+<!-- Sub Zero: Number Quest Pro Unit 2, The Cold Store (grades 6-7, ages 11-13). A food-science lab at night, on
+     Oomba3D 1.2.0 in the Busy Kitchen theme washed in steel: no meals, a lab screen on the wall, a deep freezer
+     with a rack of sample vials. The thermometer on the screen is a number line that stands up, with zero in the
+     middle. Three chapters of six rounds:
+       pour   (2.1) dividing by a fraction: a pot poured into jars of a fraction of a liter (how many jars, which
+                    division it is, one liter into jars of 2/3, less than one jar, and decimals);
+       below  (2.2) numbers below zero: place a negative number and a negative half, the opposite of a number,
+                    which reading is colder, which is farther from zero (absolute value), colder than a limit;
+       change (2.3) operations with negatives as moves on the thermometer: reach a target across zero, take out a
+                    cold pack (subtracting a negative), a cooling rate over minutes, a drop in equal steps, and
+                    the film run backward (negative times negative).
+     Made for ages 11 to 14: plan first, then run. The player sets a stepper (or drags the marker) and runs the
+     plan, or picks one of three tiles; a wrong plan is shown as it really turns out (jars left empty, the pot
+     not empty, the reading landing somewhere else) with a spoken hint, and the round stays open. No timer, no
+     lives, no fail state, nothing typed, nothing bought or sold. Read-aloud is on by default (BRB.speak, the
+     shared path; the speaker button says a line again): lines are written the way they are said and printed with
+     the real signs. Keys: arrows or + and - move the stepper, Enter runs, 1 to 3 pick a tile. Lesson mode:
+     BRB.params { chapter: pour | below | change, lock: 1 } opens that chapter only; finishing its six rounds
+     reports game over, won, once (the course step's completion signal). With no parameters the game offers the
+     three chapters from a menu. Saves only which chapters are finished (BRB.storage 'sub-zero-v1'). The import
+     map below is exactly kit2ImportMap() (server/services/vendor.js); tests/unit/sub-zero.test.js fails if a
+     library bump leaves it behind. English only, like Number Quest's other lesson games. Test handle:
+     window.__sz (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.2.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.2.0/oomba3d.js": "sha384-ltHvhMM3qs7Hg8yrTCMKv3MBsY7QO3iMiXAf5rKSB17QJbVzVuZN73OAhjCIAk4T",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1626; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #EAF6FF; }
+  .sz[hidden], .sz-load[hidden] { display: none; }
+  .sz { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .sz button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .sz button:focus-visible { outline: 4px solid #FFD23F; outline-offset: 3px; }
+  .sz-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the chip and the round dots. On a phone: the words on one row (clear of the gear button), the chip
+     and the dots on the next. On a wide screen: all three on one row that never wraps. */
+  .sz-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .sz-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .sz-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #10233a; border: 2px solid #7FD3FF; border-radius: 14px; box-shadow: 0 0 0 3px rgba(13, 22, 38, .85); padding: 6px 14px 6px 6px; }
+  .sz-ask[hidden], .sz-hint[hidden], .sz-sum[hidden], .sz-bar[hidden], .sz-card[hidden], .sz-dots[hidden], .sz-row2[hidden] { display: none; }
+  .sz .sz-say { flex: none; width: 48px; height: 48px; border-radius: 12px; border: 2px solid #7FD3FF; background: #17304d; font-size: 22px; line-height: 1; }
+  .sz .sz-say:active, .sz .sz-btn:active { transform: translateY(2px); }
+  .sz-askt { font-weight: 700; font-size: clamp(16px, 4.2vw, 23px); line-height: 1.2; min-width: 0; }
+  .sz-sum { flex: 0 1 auto; min-width: 0; background: #17304d; border: 2px solid #7FD3FF; border-radius: 10px; padding: 5px 12px; font-weight: 800; font-size: clamp(17px, 4.6vw, 26px); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .sz-sum.ok { background: #124a35; border-color: #66E0A3; }
+  .sz-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sz-hint { background: #FFD23F; color: #141414; border-radius: 12px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(16px, 3.6vw, 21px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 620px); }
+  .sz-dots { flex: none; display: flex; gap: 6px; padding: 2px; }
+  .sz-dots i { width: 22px; height: 8px; border-radius: 4px; background: #24405f; }
+  .sz-dots i.on { background: #66E0A3; } .sz-dots i.now { background: #7FD3FF; }
+  .sz-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .sz .sz-btn { flex: 1 1 0; min-width: 0; max-width: 230px; min-height: clamp(68px, 11vh, 92px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px; background: #17304d; border: 2px solid #7FD3FF; border-radius: 14px; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .sz-btn .big { font-size: clamp(24px, 6.2vw, 34px); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-flex; align-items: center; gap: .28em; }
+  .sz-btn .i { font-size: 30px; line-height: 1.1; }
+  /* a fraction, one number over the other */
+  .fr { display: inline-flex; flex-direction: column; align-items: center; font-size: .72em; line-height: 1.05; vertical-align: middle; }
+  .fr > b { font-weight: inherit; padding: 0 .18em; } .fr > b + b { border-top: .09em solid currentColor; }
+  .sz .sz-btn.step { flex: 0 0 auto; width: clamp(64px, 17vw, 96px); }
+  .sz .sz-btn.step .big { font-size: 40px; }
+  .sz-val { flex: 1 1 0; min-width: 0; max-width: 250px; display: flex; align-items: center; justify-content: center; background: #0a1320; border: 2px solid #3d5f85; border-radius: 14px; font-weight: 800; font-size: clamp(26px, 7vw, 40px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sz .sz-btn.go { background: #1f7a55; border-color: #66E0A3; flex: 0 1 150px; }
+  .sz .sz-btn.right { background: #1f7a55; border-color: #66E0A3; }
+  .sz-btn.no { animation: sz-no .45s ease; border-color: #FFB454; }
+  @keyframes sz-no { 20% { transform: translateX(-7px); } 50% { transform: translateX(6px); } 80% { transform: translateX(-3px); } }
+  .sz-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .sz-card > div:first-child { background: rgba(13, 22, 38, .84); border: 2px solid rgba(127, 211, 255, .45); border-radius: 18px; padding: 12px 18px 14px; max-width: 100%; box-sizing: border-box; }
+  .sz-card h1 { margin: 0; font-size: clamp(34px, 8vw, 58px); line-height: 1; letter-spacing: .02em; text-shadow: 0 0 18px rgba(127, 211, 255, .7); }
+  .sz-card h2 { margin: 6px 0 0; font-size: clamp(18px, 4.4vw, 26px); color: #7FD3FF; font-weight: 700; }
+  .sz-card .sz-ask { margin-top: 10px; max-width: 100%; text-align: left; box-shadow: none; }
+  .sz-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .sz-pick .sz-btn { flex: 0 1 auto; min-width: 190px; min-height: 72px; font-size: 21px; }
+  .sz-menu { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: min(820px, 100%); }
+  .sz-menu .sz-btn { flex: 1 1 0; max-width: 240px; min-height: 104px; font-size: 20px; gap: 6px; }
+  .sz-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  @media (min-aspect-ratio: 9/10) {
+    .sz-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .sz-ask { flex: 0 1 auto; max-width: 100%; } .sz-row2 { flex: none; max-width: 40%; }
+    .sz-askt { font-size: clamp(16px, 1.9vw, 23px); } .sz-sum { font-size: clamp(17px, 2.1vw, 26px); }
+  }
+  @media (max-width: 480px) { .sz-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .sz .sz-btn { min-height: 70px; padding: 6px 3px; } .sz-dots i { width: 16px; } .sz-menu .sz-btn { flex: 1 1 100%; max-width: 100%; min-height: 70px; flex-direction: row; gap: 12px; } .sz .sz-btn.go { flex-basis: 96px; } }
+  @media (max-height: 520px) { .sz .sz-btn { min-height: 60px; } .sz .sz-say { width: 42px; height: 42px; font-size: 19px; } }
+  @media (prefers-reduced-motion: reduce) { .sz .sz-btn.no { animation: none; outline: 5px dashed #FFB454; outline-offset: 2px; } .sz .sz-say:active, .sz .sz-btn:active { transform: none; } }
+</style>
+<div class="sz-load" id="load" role="status">Cooling the lab…</div>
+<div class="sz" id="sz" hidden>
+  <div class="sz-top">
+    <div class="sz-line" id="line">
+      <div class="sz-ask" id="ask" hidden><button class="sz-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="sz-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="sz-row2" id="row2" hidden>
+        <div class="sz-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="sz-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sz-low">
+    <div class="sz-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="sz-bar" id="bar" hidden></div>
+  </div>
+  <div class="sz-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Sub Zero's rounds: plain data and functions (no DOM, no 3D), so tests/unit/sub-zero.test.js can run this
+   block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through, so
+   the first six rounds are always the same; a replay gets other numbers). Every round has `ask` and `said` (lines
+   of the words table with their numbers, said one after the other), `chip` and `chipDone` (what the chip shows
+   before and after), `pic` (what the lab screen draws: a thermometer or the pot and its jars, as asked and as
+   found) and one of two ways to answer: `input: 'step'` (a stepper with `step` { min, max, by, start, show } and
+   the right value in `answer`) or `input: 'tiles'` (`opts`, their places in `choices`, the place of the right one
+   in `answer`). `judge(round, value)` says whether a plan is right and, when it is not, what the plan really does
+   (`draw`, for the screen) and the lines that say why (`lines`). ===== */
+/* sub-zero:begin */
+(function (root) {
+  var CHAPTERS = ['pour', 'below', 'change'], ROUNDS = 6, MINUS = '−';
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function one(r, a) { return a[Math.floor(r() * a.length)]; }
+  function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  function shuffle(r, a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function L(key, vars) { return [key, vars || {}]; }
+  /** A spoken line about a signed number: the key's .pos or .neg form, with the number's size in its place (the
+   *  voice is only ever handed digits, so "negative" is a word of the line, never a sign). */
+  function S(key, v, more) { var o = { n: Math.abs(v) }, k; for (k in (more || {})) o[k] = more[k]; return [key + (v < 0 ? '.neg' : '.pos'), o]; }
+  /** Numbers as the screen prints them: the true minus sign, a degree sign, a change with its sign, brackets round
+   *  a negative number after an operation. */
+  function nt(v) { return (v < 0 ? MINUS : '') + String(Math.abs(v)); }
+  function deg(v) { return nt(v) + '°'; }
+  function chg(v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v) + '°'; }
+  function par(v) { return v < 0 ? '(' + nt(v) + ')' : String(v); }
+  var DEN = { half: 2, halves: 2, third: 3, thirds: 3, fourth: 4, fourths: 4, fifth: 5, fifths: 5, sixth: 6, sixths: 6, eighth: 8, eighths: 8, tenth: 10, tenths: 10 };
+  /** A spoken line as the screen prints it: "negative 6 degrees" is −6°, "4 and 1 half" is 4 1/2, "3 fourths" is
+   *  3/4, "divided by", "times", "plus", "minus" and "equals" between numbers are their signs, "is less than" is <. */
+  function shown(s) {
+    return String(s)
+      .replace(/(\d+) (half|halves|thirds?|fourths?|fifths?|sixths?|eighths?|tenths?)\b/g, function (m, a, w) { return a + '/' + DEN[w]; })
+      .replace(/(\d+) and (\d+\/\d+)/g, '$1 $2')
+      .replace(/[Tt]he absolute value of negative (\d+(?:\.\d+)?)/g, '|' + MINUS + '$1|').replace(/[Tt]he absolute value of (\d+(?:\.\d+)?)/g, '|$1|')
+      .replace(/\b[Nn]egative (\d)/g, MINUS + '$1')
+      .replace(/(\d) degrees?\b/g, '$1°')
+      .replace(/ (plus|minus|times|divided by) (−\d+(?:\.\d+)?°?)/g, ' $1 ($2)')
+      .replace(/([\d°)|]) plus (?=[\d(])/g, '$1 + ').replace(/([\d°)|]) minus (?=[\d(])/g, '$1 ' + MINUS + ' ')
+      .replace(/([\d°)|]) times (?=[\d(])/g, '$1 × ').replace(/([\d°)|]) divided by (?=[\d(])/g, '$1 ÷ ')
+      .replace(/([\d°)|]) equals (?=[\d(−])/g, '$1 = ')
+      .replace(/([\d°)|]) is less than (?=[\d−])/g, '$1 < ').replace(/([\d°)|]) is greater than (?=[\d−])/g, '$1 > ');
+  }
+  function opt(v, t) { return { v: v, t: t === undefined ? String(v) : t }; }
+  /** The tiles of a round: the right one and the wrong ones (each with the lines that say why it is wrong and,
+   *  where the plan can be run, what it really does), in a seeded order. */
+  function offer(r, out, right, wrongs) {
+    var all = shuffle(r, [{ o: right, ok: true }].concat(wrongs.map(function (w) { return { o: w[0], hint: w[1], draw: w[2] || null }; }))), i;
+    out.input = 'tiles'; out.opts = []; out.choices = []; out.hints = {}; out.draws = {};
+    for (i = 0; i < all.length; i++) { out.opts.push(all[i].o); out.choices.push(i); if (all[i].ok) out.answer = i; else { out.hints[i] = all[i].hint; out.draws[i] = all[i].draw; } }
+  }
+  function th(min, max, by, tick) { return { min: min, max: max, by: by, tick: tick || 1 }; }
+  function mark(at, tone, t) { return { at: at, t: t === undefined ? deg(at) : t, tone: tone || 'ice' }; }
+  function arrow(from, to, tone, t) { return { from: from, to: to, t: t === undefined ? chg(to - from) : t, tone: tone || 'ok' }; }
+  /** `m` equal hops of `d` from `from`, one after the other. */
+  function hops(from, d, m, tone) { var a = [], i; for (i = 0; i < m; i++) a.push(arrow(from + d * i, from + d * (i + 1), tone, nt(d))); return a; }
+
+  /* ---- pour: how many jars of a fraction of a liter does the pot fill? Nine set problems a round kind, in words the
+     voice can say (the screen prints them with fraction bars): [pot, jar, quotient] as numbers and as printed. ---- */
+  var POUR = {
+    1: [[3, '3', 1 / 2, '1/2', 6], [2, '2', 1 / 4, '1/4', 8], [4, '4', 2 / 3, '2/3', 6]],
+    2: [[4.5, '4 1/2', 3 / 4, '3/4', 6], [2.5, '2 1/2', 1 / 2, '1/2', 5], [8 / 3, '2 2/3', 2 / 3, '2/3', 4]],
+    3: [[2, '2', 2 / 5, '2/5', 5], [6, '6', 3 / 4, '3/4', 8], [1.5, '1 1/2', 1 / 4, '1/4', 6]],
+    4: [[1, '1', 2 / 3, '2/3', 1.5, '1 1/2', '3', 2], [1, '1', 3 / 4, '3/4', 4 / 3, '1 1/3', '4', 3], [1, '1', 2 / 5, '2/5', 2.5, '2 1/2', '5', 2]],
+    5: [[1 / 2, '1/2', 3 / 4, '3/4', 2 / 3, '2/3', '1 1/2', '3/8'], [1 / 4, '1/4', 1 / 2, '1/2', 1 / 2, '1/2', '2', '1/8'], [1 / 3, '1/3', 1 / 2, '1/2', 2 / 3, '2/3', '1 1/2', '1/6']],
+    6: [[2.4, '2.4', 0.3, '0.3', 8], [4.5, '4.5', 0.75, '0.75', 6], [3.6, '3.6', 0.4, '0.4', 9]],
+  };
+  function pourPic(P, noun, ask, found) { return { type: 'pour', pot: { v: P[0], t: P[1] }, jar: { v: P[2], t: P[3] }, noun: noun, ask: ask, found: found }; }
+  function pourRound(n, lap, r, out) {
+    var v = lap % 3, P = POUR[n][v], q = P[4], id = n + '.' + v, eq;
+    if (n === 1 || n === 2 || n === 6) {
+      // set the number of jars, then pour: too few leaves the pot part full, too many leaves jars empty
+      var noun = n === 6 ? 'tube' : 'jar';
+      eq = P[1] + ' ÷ ' + P[3] + ' = ' + q;
+      out.kind = n === 6 ? 'dec' : 'jars'; out.input = 'step'; out.answer = q;
+      out.step = { min: 1, max: 12, by: 1, start: 1, show: noun, live: 'jars' };
+      out.pic = pourPic(P, noun, { jars: 1, fill: 0, left: P[0], lines: [] }, { jars: q, fill: q, left: 0, tone: 'ok', lines: [eq] });
+      out.ask = n === 6 ? [L('p.ask.dec', { a: P[1], b: P[3] })] : [L('p.ask.' + id)];
+      out.said = n === 6 ? [L('p.said.dec', { a: P[1], b: P[3], n: q })] : [L('p.said.' + id)];
+      out.chip = P[1] + ' ÷ ' + P[3] + ' = ?'; out.chipDone = eq;
+    } else if (n === 3) {
+      // which division is the pour? The pot is what is shared out; the jar is the size of one share
+      eq = P[1] + ' ÷ ' + P[3];
+      out.kind = 'expr';
+      out.pic = pourPic(P, 'jar', { jars: '?', fill: 0, left: P[0], lines: [] }, { jars: q, fill: q, left: 0, tone: 'ok', lines: [eq + ' = ' + q] });
+      offer(r, out, opt('div', eq), [[opt('swap', P[3] + ' ÷ ' + P[1]), [L('p.hint.swap')]], [opt('times', P[1] + ' × ' + P[3]), [L('p.hint.times')]]]);
+      out.ask = [L('p.ask.' + id)]; out.said = [L('p.said.expr'), L('p.said.' + id)];
+      out.chip = L('show.q.expr'); out.chipDone = eq + ' = ' + q;
+    } else if (n === 4) {
+      // one liter into jars of a/b of a liter: b/a jars (dividing by a fraction is multiplying by it turned over)
+      out.kind = 'unit';
+      out.pic = pourPic(P, 'jar', { jars: '?', fill: 0, left: 1, lines: [] }, { jars: Math.ceil(q), fill: q, left: 0, tone: 'ok', lines: ['1 ÷ ' + P[3] + ' = ' + P[5]] });
+      offer(r, out, opt('flip', P[5]), [[opt('same', P[3]), [L('p.hint.size')]], [opt('den', P[6]), [L('p.hint.den.' + id)], { jars: +P[6], fill: q, left: 0, tone: 'warn', lines: [L('show.notfull')] }]]);
+      out.ask = [L('p.ask.' + id)]; out.said = [L('p.said.' + id), L('p.said.flip.' + id)];
+      out.chip = '1 ÷ ' + P[3] + ' = ?'; out.chipDone = '1 ÷ ' + P[3] + ' = ' + P[5];
+    } else {
+      // less than one jar: what part of the jar does it fill?
+      out.kind = 'part';
+      out.pic = pourPic(P, 'jar', { jars: 1, fill: 0, left: P[0], lines: [] }, { jars: 1, fill: q, left: 0, tone: 'ok', lines: [P[1] + ' ÷ ' + P[3] + ' = ' + P[5]] });
+      offer(r, out, opt('part', P[5]), [[opt('flip', P[6]), [L('p.hint.bigger')], { jars: 1, fill: q, left: 0, tone: 'warn', lines: [L('show.notfull')] }], [opt('times', P[7]), [L('p.hint.product.' + id)]]]);
+      out.ask = [L('p.ask.' + id)]; out.said = [L('p.said.' + id)];
+      out.chip = P[1] + ' ÷ ' + P[3] + ' = ?'; out.chipDone = P[1] + ' ÷ ' + P[3] + ' = ' + P[5];
+    }
+  }
+
+  /* ---- below: the thermometer is a number line that stands up, with zero in the middle ---- */
+  function belowRound(n, lap, r, out) {
+    var t, a, b, c, vals, lo, hi;
+    if (n <= 2) {
+      // put the marker on a number below zero: whole degrees, then halves
+      var half = n === 2;
+      t = half ? (lap === 0 ? -2.5 : -(between(r, 1, 4) + 0.5)) : (lap === 0 ? -8 : -between(r, 2, 9));
+      lo = Math.floor(-t); hi = lo + 1;
+      out.kind = 'place'; out.input = 'step'; out.answer = t; out.half = half;
+      out.step = { min: half ? -5 : -10, max: half ? 5 : 10, by: half ? 0.5 : 1, start: 0, show: 'deg', live: 'marker' };
+      out.pic = { type: 'thermo', th: half ? th(-5, 5, 1, 0.5) : th(-10, 10, 5, 1), ask: { lines: [L('show.set', { t: deg(t) })] },
+        found: { marks: [mark(t, 'ok')], arrows: [arrow(0, t, 'ok', String(-t))], lines: [deg(t), L('show.below', { n: -t })] } };
+      out.ask = [L('b.ask.place', { n: -t })];
+      out.said = half ? [L('b.said.half', { n: -t, a: lo, b: hi })] : [L('b.said.place', { n: -t })];
+      out.chip = L('show.set', { t: deg(t) }); out.chipDone = deg(t);
+    } else if (n === 3) {
+      // the opposite of a number: the same distance from zero, on the other side
+      a = lap === 0 ? 6 : one(r, [-9, -8, -7, -5, -4, -3, 3, 4, 5, 7, 8, 9]);
+      out.kind = 'opp'; out.input = 'step'; out.answer = -a; out.given = a;
+      out.step = { min: -10, max: 10, by: 1, start: 0, show: 'deg', live: 'marker' };
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(a)], lines: [L('show.opp', { t: deg(a) })] },
+        found: { marks: [mark(a), mark(-a, 'ok')], arrows: [arrow(0, a, 'ice', String(Math.abs(a))), arrow(0, -a, 'ok', String(Math.abs(a)))], lines: [L('show.pair', { a: deg(a), b: deg(-a) }), L('show.same', { n: Math.abs(a) })] } };
+      out.ask = [S('b.ask.opp', a)]; out.said = [L('b.said.opp', { n: Math.abs(a) })];
+      out.chip = L('show.opp', { t: deg(a) }); out.chipDone = deg(-a);
+    } else if (n === 4) {
+      // order: lower on the thermometer is colder, and is the lesser number
+      var warm = lap % 2 === 1;
+      if (lap === 0) { a = -8; b = -2.5; c = 3; } else { a = -between(r, 6, 9); b = -(between(r, 1, 4) + (r() < 0.5 ? 0.5 : 0)); c = warm ? -5 : between(r, 2, 9); }
+      // colder: a (the lowest) is right; b is a negative above it; c is above zero. warmer: all three below zero, b (the highest) is right.
+      out.kind = 'order'; out.want = warm ? 'warmer' : 'colder'; vals = warm ? [b, c, a] : [a, b, c];
+      var sorted = [a, b, c].sort(function (x, y) { return x - y; });
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { lines: [L('show.q.' + out.want)] },
+        found: { marks: [mark(vals[0], 'ok'), mark(vals[1], 'ice'), mark(vals[2], 'ice')], lines: [nt(sorted[0]) + ' < ' + nt(sorted[1]) + ' < ' + nt(sorted[2])] } };
+      offer(r, out, opt(vals[0], deg(vals[0])), warm
+        ? [[opt(c, deg(c)), [L('b.hint.higher'), L('b.hint.below', { a: -c, b: -b })], { marks: [mark(c, 'warn'), mark(b, 'ice')] }], [opt(a, deg(a)), [L('b.hint.higher'), L('b.hint.below', { a: -a, b: -b })], { marks: [mark(a, 'warn'), mark(b, 'ice')] }]]
+        : [[opt(b, deg(b)), [L('b.hint.lower'), L('b.hint.above', { a: -b, b: -a })], { marks: [mark(b, 'warn'), mark(a, 'ice')] }], [opt(c, deg(c)), [L('b.hint.posneg')], { marks: [mark(c, 'warn'), mark(a, 'ice')] }]]);
+      out.ask = [L('b.ask.' + out.want)];
+      out.said = warm ? [L('b.said.warmer', { a: -b, b: -c })] : [L('b.said.colder', { a: -a, b: -b })];
+      out.chip = L('show.q.' + out.want); out.chipDone = warm ? nt(b) + ' > ' + nt(c) : nt(a) + ' < ' + nt(b);
+    } else if (n === 5) {
+      // absolute value: how far from zero, whichever side
+      if (lap === 0) { a = -7; b = 5; c = -3; } else {
+        var big = between(r, 6, 9), mid = between(r, 3, big - 1), small = between(r, 1, mid - 1);
+        if (lap % 2 === 1) { a = big; b = -mid; c = -small; } else { a = -big; b = mid; c = -small; }
+      }
+      out.kind = 'abs';
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { lines: [L('show.q.far')] },
+        found: { marks: [mark(a, 'ok'), mark(b), mark(c)], arrows: [arrow(0, a, 'ok', String(Math.abs(a)))], lines: ['|' + nt(a) + '| = ' + Math.abs(a)] } };
+      offer(r, out, opt(a, deg(a)), [b, c].map(function (w) { return [opt(w, deg(w)), [S('b.hint.steps', w), L('b.hint.count')], { marks: [mark(w, 'warn')], arrows: [arrow(0, w, 'warn', String(Math.abs(w)))] }]; }));
+      out.ask = [L('b.ask.far')]; out.said = [S('b.said.abs', a)];
+      out.chip = L('show.q.far'); out.chipDone = '|' + nt(a) + '| = ' + Math.abs(a);
+    } else {
+      // colder than a limit below zero: less than it, and more than its size below zero
+      var lim = lap === 0 ? 12 : one(r, [8, 10, 12, 14]), d = lap === 0 ? 3 : between(r, 2, 4);
+      a = -(lim + d); b = -(lim - d); c = lim;
+      out.kind = 'safe'; out.limit = -lim;
+      out.pic = { type: 'thermo', th: th(-20, 20, 10, 5), ask: { limit: -lim, lines: [L('show.limit', { t: deg(-lim) })] },
+        found: { limit: -lim, zone: true, marks: [mark(a, 'ok')], lines: [nt(a) + ' < ' + nt(-lim)] } };
+      offer(r, out, opt(a, deg(a)), [[opt(b, deg(b)), [L('b.hint.above', { a: -b, b: lim }), L('b.hint.warmer')], { limit: -lim, marks: [mark(b, 'warn')] }], [opt(c, deg(c)), [L('b.hint.posneg')], { limit: -lim, marks: [mark(c, 'warn')] }]]);
+      out.ask = [L('b.ask.safe', { n: lim })]; out.said = [L('b.said.safe', { a: -a, b: lim })];
+      out.chip = L('show.limit', { t: deg(-lim) }); out.chipDone = nt(a) + ' < ' + nt(-lim);
+    }
+  }
+
+  /* ---- change: adding, subtracting, multiplying and dividing with negative numbers, as moves on the thermometer ---- */
+  function changeRound(n, lap, r, out) {
+    var s, t, d, a, b, m, p, tot;
+    if (n <= 2) {
+      // from one reading to another across zero: the change is what is added (up is positive, down is negative)
+      if (n === 1) { s = lap === 0 ? -6 : -between(r, 3, 8); t = lap === 0 ? 4 : between(r, 2, 7); } else { s = lap === 0 ? 3 : between(r, 2, 7); t = lap === 0 ? -5 : -between(r, 3, 8); }
+      d = t - s;
+      out.kind = 'reach'; out.input = 'step'; out.answer = d; out.from = s; out.to = t;
+      out.step = { min: -15, max: 15, by: 1, start: 0, show: 'chg', live: null };
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(s), mark(t, 'goal')], lines: [deg(s) + ' → ' + deg(t), L('show.q.change')] },
+        found: { marks: [mark(s), mark(t, 'ok')], arrows: [arrow(s, t, 'ok')], lines: [nt(s) + ' + ' + par(d) + ' = ' + nt(t)] } };
+      out.ask = [S('c.at', s), S('c.reach', t), L('c.pick')];
+      out.said = n === 1 ? [L('c.said.up', { a: -s, n: d, b: t })] : [L('c.said.down', { a: s, n: -d, b: -t }), L('c.said.down2', { a: s, n: -d })];
+      out.chip = nt(s) + ' + ? = ' + nt(t); out.chipDone = nt(s) + ' + ' + par(d) + ' = ' + nt(t);
+    } else if (n === 3) {
+      // subtracting a negative: a cold pack is taken out of the chamber, so the reading goes up by its size
+      s = lap === 0 ? -2 : -between(r, 1, 8); p = lap === 0 ? 5 : between(r, 2, 6); t = s + p;
+      out.kind = 'pack'; out.input = 'step'; out.answer = t; out.from = s; out.pack = -p;
+      out.step = { min: -10, max: 10, by: 1, start: s, show: 'deg', live: 'marker' };
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(s)], pack: -p, lines: [L('show.pack', { t: deg(-p) }), L('show.pack.out')] },
+        found: { marks: [mark(s), mark(t, 'ok')], arrows: [arrow(s, t, 'ok')], lines: [nt(s) + ' ' + MINUS + ' ' + par(-p) + ' = ' + nt(t), nt(s) + ' + ' + p + ' = ' + nt(t)] } };
+      out.ask = [L('c.ask.pack.at', { n: -s }), L('c.ask.pack', { n: p })];
+      out.said = [S('c.said.pack', t, { a: -s, m: p }), L('c.said.pack2', { a: -s, m: p })];
+      out.chip = nt(s) + ' ' + MINUS + ' ' + par(-p) + ' = ?'; out.chipDone = nt(s) + ' ' + MINUS + ' ' + par(-p) + ' = ' + nt(t);
+    } else if (n === 4) {
+      // which sum is the same as subtracting a negative?
+      a = lap === 0 ? 4 : between(r, 2, 6); b = lap === 0 ? 3 : one(r, [2, 3, 4].filter(function (x) { return x !== a; }));
+      out.kind = 'same';
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(a, 'ice', String(a))], lines: [a + ' ' + MINUS + ' ' + par(-b), L('show.q.same')] },
+        found: { marks: [mark(a, 'ice', String(a)), mark(a + b, 'ok', String(a + b))], arrows: [arrow(a, a + b, 'ok', '+' + b)], lines: [a + ' ' + MINUS + ' ' + par(-b) + ' = ' + a + ' + ' + b, '= ' + (a + b)] } };
+      offer(r, out, opt('plus', a + ' + ' + b), [
+        [opt('minus', a + ' ' + MINUS + ' ' + b), [L('c.hint.same.minus')], { marks: [mark(a, 'ice', String(a)), mark(a - b, 'warn', nt(a - b))], arrows: [arrow(a, a - b, 'warn', nt(-b))] }],
+        [opt('both', nt(-a) + ' + ' + b), [L('c.hint.same.both')], { marks: [mark(a, 'ice', String(a)), mark(-a + b, 'warn', nt(-a + b))] }]]);
+      out.ask = [L('c.ask.same', { a: a, b: b })]; out.said = [L('c.said.same', { a: a, b: b, n: a + b })];
+      out.chip = a + ' ' + MINUS + ' ' + par(-b) + ' = ?'; out.chipDone = a + ' ' + MINUS + ' ' + par(-b) + ' = ' + (a + b);
+    } else if (n === 5) {
+      // a rate of cooling: so many degrees a minute, for so many minutes (a positive number times a negative one)
+      if (lap === 0) { d = 2.5; m = 4; } else { do { d = one(r, [1.5, 2, 2.5, 3]); m = between(r, 2, 4); } while (d * m > 10 || d + m === d * m); }
+      tot = -d * m;
+      out.kind = 'rate'; out.rate = -d; out.minutes = m;
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(0)], lines: [L('show.rate', { t: deg(-d) }), L('show.for', { n: m })] },
+        found: { marks: [mark(0), mark(tot, 'ok')], arrows: hops(0, -d, m, 'ok'), lines: [m + ' × ' + par(-d) + ' = ' + nt(tot)] } };
+      offer(r, out, opt(tot, deg(tot)), [[opt(-tot, deg(-tot)), [L('c.hint.cool')], { marks: [mark(0), mark(-tot, 'warn')], arrows: [arrow(0, -tot, 'warn')] }],
+        [opt(-(d + m), deg(-(d + m))), [L('c.hint.times', { n: m })], { marks: [mark(0), mark(-(d + m), 'warn')], arrows: [arrow(0, -d, 'warn', nt(-d))] }]]);
+      out.ask = [L('c.ask.rate', { a: d, n: m })]; out.said = [L('c.said.rate', { n: m, a: d, b: -tot })];
+      out.chip = m + ' × ' + par(-d) + ' = ?'; out.chipDone = m + ' × ' + par(-d) + ' = ' + nt(tot);
+    } else if (lap % 2 === 0) {
+      // a fall shared into equal steps (a negative number divided by a positive one)
+      var pairs = [[12, 4], [10, 2], [12, 3], [15, 3], [8, 2], [15, 5], [9, 3]], pr = lap === 0 ? pairs[0] : one(r, pairs);
+      tot = pr[0]; m = pr[1]; d = tot / m;
+      out.kind = 'div'; out.total = -tot; out.steps = m;
+      out.pic = { type: 'thermo', th: th(-15, 5, 5, 1), ask: { marks: [mark(0), mark(-tot, 'goal')], lines: [L('show.steps', { n: m })] },
+        found: { marks: [mark(0), mark(-tot, 'ok')], arrows: hops(0, -d, m, 'ok'), lines: [nt(-tot) + ' ÷ ' + m + ' = ' + nt(-d)] } };
+      offer(r, out, opt(-d, deg(-d)), [[opt(d, deg(d)), [L('c.hint.down')], { marks: [mark(0), mark(-tot, 'goal')], arrows: [arrow(0, d, 'warn', nt(d))] }],
+        [opt(-(tot - m), deg(-(tot - m))), [L('c.hint.share', { n: m })], { marks: [mark(0), mark(-tot, 'goal')], arrows: [arrow(0, -(tot - m), 'warn', nt(-(tot - m)))] }]]);
+      out.ask = [L('c.ask.div', { a: tot, n: m })]; out.said = [L('c.said.div', { a: tot, n: m, b: d })];
+      out.chip = nt(-tot) + ' ÷ ' + m + ' = ?'; out.chipDone = nt(-tot) + ' ÷ ' + m + ' = ' + nt(-d);
+    } else {
+      // the film run backward: it cools each minute and reads 0 now, so some minutes ago it was warmer (negative times negative)
+      do { d = between(r, 2, 3); m = between(r, 2, 4); } while (d * m > 10 || d + m === d * m);
+      tot = d * m;
+      out.kind = 'back'; out.rate = -d; out.minutes = m;
+      out.pic = { type: 'thermo', th: th(-10, 10, 5, 1), ask: { marks: [mark(0)], lines: [L('show.rate', { t: deg(-d) }), L('show.ago', { n: m })] },
+        found: { marks: [mark(tot, 'ok'), mark(0)], arrows: hops(tot, -d, m, 'ok'), lines: [par(-m) + ' × ' + par(-d) + ' = ' + tot] } };
+      offer(r, out, opt(tot, deg(tot)), [[opt(-tot, deg(-tot)), [L('c.hint.back')], { marks: [mark(0), mark(-tot, 'warn')] }], [opt(d + m, deg(d + m)), [L('c.hint.times', { n: m })], { marks: [mark(0), mark(d + m, 'warn')] }]]);
+      out.ask = [L('c.ask.back', { a: d, n: m })]; out.said = [L('c.said.back', { n: m, a: d, b: tot })];
+      out.chip = par(-m) + ' × ' + par(-d) + ' = ?'; out.chipDone = par(-m) + ' × ' + par(-d) + ' = ' + tot;
+    }
+  }
+
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'pour') pourRound(n, lap, r, out); else if (chapter === 'below') belowRound(n, lap, r, out); else changeRound(n, lap, r, out);
+    return out;
+  }
+  /** Is this plan right? For a wrong one: the lines that say why, and what the plan really does (for the screen). */
+  function judge(R, v) {
+    var p = R.pic, t = R.answer, s, land, lines, q;
+    if (R.input === 'tiles') return v === R.answer ? { ok: true } : (R.choices.indexOf(v) >= 0 ? { ok: false, lines: R.hints[v], draw: R.draws[v] || null } : null);
+    if (typeof v !== 'number' || !(v >= R.step.min && v <= R.step.max)) return null;
+    if (v === t) return { ok: true };
+    if (R.kind === 'jars' || R.kind === 'dec') {
+      q = p.pot.v / p.jar.v;
+      return v < t ? { ok: false, lines: [L('p.hint.few')], draw: { jars: v, fill: v, left: p.pot.v - v * p.jar.v, tone: 'warn', lines: [L('show.left')] } }
+        : { ok: false, lines: [L('p.hint.many')], draw: { jars: v, fill: q, left: 0, tone: 'warn', lines: [L('show.empty', { n: v - t })] } };
+    }
+    if (R.kind === 'place') {
+      lines = v === -t ? [L('b.hint.mirror', { n: v })] : R.half && v === t - 1 ? [L('b.hint.between', { a: Math.floor(-t), b: Math.floor(-t) + 1 })] : [L(v > t ? 'b.hint.down' : 'b.hint.up')];
+      return { ok: false, lines: lines, draw: { marks: [mark(v, 'warn')], lines: [L('show.set', { t: deg(t) }), L('show.here', { t: deg(v) })] } };
+    }
+    if (R.kind === 'opp') {
+      lines = v === R.given ? [L('b.hint.same')] : [L('b.hint.dist', { n: Math.abs(R.given) })];
+      return { ok: false, lines: lines, draw: { marks: [mark(R.given), mark(v, 'warn')], arrows: [arrow(0, R.given, 'ice', String(Math.abs(R.given)))], lines: [L('show.opp', { t: deg(R.given) })] } };
+    }
+    if (R.kind === 'reach') {
+      s = R.from; land = s + v;
+      if (v === 0) lines = [L('c.hint.none')];
+      else if ((v > 0) !== (t > 0)) lines = [L(t > 0 ? 'c.hint.sign.up' : 'c.hint.sign.down')];
+      else if (land > p.th.max || land < p.th.min) lines = [L('c.hint.off'), L('c.hint.zero', { a: Math.abs(s), b: Math.abs(R.to) })];
+      else lines = [S('c.hint.land', land), L('c.hint.zero', { a: Math.abs(s), b: Math.abs(R.to) })];
+      land = Math.max(p.th.min, Math.min(p.th.max, land));
+      return { ok: false, lines: lines, draw: { marks: [mark(s), mark(R.to, 'goal')].concat(v === 0 ? [] : [mark(land, 'warn')]), arrows: v === 0 ? [] : [arrow(s, land, 'warn', chg(v))], lines: [L('show.landed', { t: deg(s + v) }), L('show.target', { t: deg(R.to) })] } };
+    }
+    // pack: the reading after the cold pack is taken out
+    s = R.from;
+    lines = v < s ? [L('c.hint.pack.cold')] : v === s ? [L('c.hint.pack.move')] : [L('c.hint.pack.by', { n: -R.pack })];
+    return { ok: false, lines: lines, draw: { marks: [mark(s)].concat(v === s ? [] : [mark(v, 'warn')]), arrows: v === s ? [] : [arrow(s, v, 'warn')], pack: R.pack, lines: [L('show.pack', { t: deg(R.pack) }), L('show.pack.out')] } };
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.SubZero = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, judge: judge, params: params, shown: shown, nt: nt, deg: deg, chg: chg, par: par, POUR: POUR };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* sub-zero:end */
+</script>
+<script>
+/* ===== Sub Zero's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. Spoken lines are
+   written the way they are said ("negative 6 degrees", "3 fourths", "divided by"): the screen prints the same line
+   with the real signs (SubZero.shown: −6°, 3/4, ÷). A line with {n} takes a number in its place (digits only, so a
+   negative number is the line's own word "negative" and the number's size). The show.* lines are what the chip and
+   the lab screen show and the btn.* lines are button labels: shown, never spoken. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Sub Zero",
+    "loading": "Cooling the lab.",
+    "menu.pick": "Pick a lab job.",
+    "start.line": "Plan each move, then run it. A wrong plan shows you what it does.",
+    "ch.pour": "Pour and Count",
+    "ch.below": "Below Zero",
+    "ch.change": "Change the Reading",
+    "p.ask.1.0": "Pour 3 liters into jars that hold 1 half of a liter each. How many jars do you fill?",
+    "p.ask.1.1": "Pour 2 liters into jars that hold 1 fourth of a liter each. How many jars do you fill?",
+    "p.ask.1.2": "Pour 4 liters into jars that hold 2 thirds of a liter each. How many jars do you fill?",
+    "p.ask.2.0": "Pour 4 and 1 half liters into jars that hold 3 fourths of a liter each. How many jars do you fill?",
+    "p.ask.2.1": "Pour 2 and 1 half liters into jars that hold 1 half of a liter each. How many jars do you fill?",
+    "p.ask.2.2": "Pour 2 and 2 thirds liters into jars that hold 2 thirds of a liter each. How many jars do you fill?",
+    "p.ask.3.0": "The pot holds 2 liters. Each jar holds 2 fifths of a liter. Which division counts the jars?",
+    "p.ask.3.1": "The pot holds 6 liters. Each jar holds 3 fourths of a liter. Which division counts the jars?",
+    "p.ask.3.2": "The pot holds 1 and 1 half liters. Each jar holds 1 fourth of a liter. Which division counts the jars?",
+    "p.ask.4.0": "You have 1 liter. Each jar holds 2 thirds of a liter. How many jars does it fill?",
+    "p.ask.4.1": "You have 1 liter. Each jar holds 3 fourths of a liter. How many jars does it fill?",
+    "p.ask.4.2": "You have 1 liter. Each jar holds 2 fifths of a liter. How many jars does it fill?",
+    "p.ask.5.0": "You have 1 half of a liter. The jar holds 3 fourths of a liter. How full is the jar?",
+    "p.ask.5.1": "You have 1 fourth of a liter. The jar holds 1 half of a liter. How full is the jar?",
+    "p.ask.5.2": "You have 1 third of a liter. The jar holds 1 half of a liter. How full is the jar?",
+    "p.ask.dec": "Pour {a} liters into tubes that hold {b} of a liter each. How many tubes do you fill?",
+    "p.hint.few": "The pot is not empty yet. Fill more.",
+    "p.hint.many": "The pot runs dry first. Some stay empty.",
+    "p.hint.swap": "That divides the jar by the pot. Start with what you pour.",
+    "p.hint.times": "Multiplying finds a part of the pot. You are counting jars.",
+    "p.hint.size": "That is the size of one jar, not the number of jars.",
+    "p.hint.den.4.0": "3 jars would hold 2 liters. You have 1 liter.",
+    "p.hint.den.4.1": "4 jars would hold 3 liters. You have 1 liter.",
+    "p.hint.den.4.2": "5 jars would hold 2 liters. You have 1 liter.",
+    "p.hint.bigger": "The jar holds more than you have. It cannot be full.",
+    "p.hint.product.5.0": "1 half times 3 fourths is 3 eighths. Divide instead.",
+    "p.hint.product.5.1": "1 fourth times 1 half is 1 eighth. Divide instead.",
+    "p.hint.product.5.2": "1 third times 1 half is 1 sixth. Divide instead.",
+    "p.said.1.0": "Yes! 3 divided by 1 half equals 6.",
+    "p.said.1.1": "Yes! 2 divided by 1 fourth equals 8.",
+    "p.said.1.2": "Yes! 4 divided by 2 thirds equals 6.",
+    "p.said.2.0": "Yes! 4 and 1 half divided by 3 fourths equals 6.",
+    "p.said.2.1": "Yes! 2 and 1 half divided by 1 half equals 5.",
+    "p.said.2.2": "Yes! 2 and 2 thirds divided by 2 thirds equals 4.",
+    "p.said.expr": "Yes! Divide what you pour by the size of one jar.",
+    "p.said.3.0": "2 divided by 2 fifths equals 5.",
+    "p.said.3.1": "6 divided by 3 fourths equals 8.",
+    "p.said.3.2": "1 and 1 half divided by 1 fourth equals 6.",
+    "p.said.4.0": "Yes! 1 divided by 2 thirds equals 1 and 1 half.",
+    "p.said.4.1": "Yes! 1 divided by 3 fourths equals 1 and 1 third.",
+    "p.said.4.2": "Yes! 1 divided by 2 fifths equals 2 and 1 half.",
+    "p.said.flip.4.0": "Dividing by 2 thirds is the same as multiplying by 3 halves.",
+    "p.said.flip.4.1": "Dividing by 3 fourths is the same as multiplying by 4 thirds.",
+    "p.said.flip.4.2": "Dividing by 2 fifths is the same as multiplying by 5 halves.",
+    "p.said.5.0": "Yes! 1 half divided by 3 fourths equals 2 thirds.",
+    "p.said.5.1": "Yes! 1 fourth divided by 1 half equals 1 half.",
+    "p.said.5.2": "Yes! 1 third divided by 1 half equals 2 thirds.",
+    "p.said.dec": "Yes! {a} divided by {b} equals {n}.",
+    "b.ask.place": "Set the marker to negative {n} degrees.",
+    "b.ask.opp.pos": "The sample is at {n} degrees. Set the marker to its opposite.",
+    "b.ask.opp.neg": "The sample is at negative {n} degrees. Set the marker to its opposite.",
+    "b.ask.colder": "Three readings. Which one is the coldest?",
+    "b.ask.warmer": "Three readings. Which one is the warmest?",
+    "b.ask.far": "Which reading is farthest from zero?",
+    "b.ask.safe": "The freezer must stay colder than negative {n} degrees. Which reading is safe?",
+    "b.hint.mirror": "That is {n} above zero. Negative numbers sit below zero.",
+    "b.hint.between": "It sits between negative {a} and negative {b}.",
+    "b.hint.down": "Too warm. Move the marker down.",
+    "b.hint.up": "Too cold. Move the marker up.",
+    "b.hint.same": "That is the same number. Its opposite is across zero.",
+    "b.hint.dist": "The opposite is just as far from zero: {n} steps.",
+    "b.hint.lower": "Colder is lower on the thermometer.",
+    "b.hint.higher": "Warmer is higher on the thermometer.",
+    "b.hint.above": "Negative {a} is above negative {b}.",
+    "b.hint.below": "Negative {a} is below negative {b}.",
+    "b.hint.posneg": "Any reading above zero is warmer than one below zero.",
+    "b.hint.warmer": "That is warmer, not colder.",
+    "b.hint.steps.pos": "{n} degrees is {n} steps from zero.",
+    "b.hint.steps.neg": "Negative {n} degrees is {n} steps from zero.",
+    "b.hint.count": "Count the steps for each one.",
+    "b.said.place": "Yes! Negative {n} degrees is {n} below zero.",
+    "b.said.half": "Yes! Negative {n} is halfway between negative {a} and negative {b}.",
+    "b.said.opp": "Yes! {n} and negative {n} are opposites, each {n} from zero.",
+    "b.said.colder": "Yes! Negative {a} is less than negative {b}.",
+    "b.said.warmer": "Yes! Negative {a} is greater than negative {b}.",
+    "b.said.abs.pos": "Yes! The absolute value of {n} equals {n}.",
+    "b.said.abs.neg": "Yes! The absolute value of negative {n} equals {n}.",
+    "b.said.safe": "Yes! Negative {a} is less than negative {b}: more than {b} below zero.",
+    "c.at.pos": "The sample is at {n} degrees.",
+    "c.at.neg": "The sample is at negative {n} degrees.",
+    "c.reach.pos": "Reach {n} degrees.",
+    "c.reach.neg": "Reach negative {n} degrees.",
+    "c.pick": "Set the change, then run it.",
+    "c.ask.pack.at": "The chamber reads negative {n} degrees.",
+    "c.ask.pack": "Take out the cold pack worth negative {n} degrees. Set the new reading.",
+    "c.ask.same": "Which sum is the same as {a} minus negative {b}?",
+    "c.ask.rate": "It cools {a} degrees each minute for {n} minutes. What is the total change?",
+    "c.ask.div": "The reading drops from 0 to negative {a} degrees in {n} equal steps. How big is each step?",
+    "c.ask.back": "It cools {a} degrees each minute and reads 0 now. What did it read {n} minutes ago?",
+    "c.hint.none": "A change of 0 goes nowhere.",
+    "c.hint.sign.up": "The target is higher. Warming is a positive change.",
+    "c.hint.sign.down": "The target is lower. Cooling is a negative change.",
+    "c.hint.off": "That goes off the thermometer.",
+    "c.hint.land.pos": "You landed on {n} degrees.",
+    "c.hint.land.neg": "You landed on negative {n} degrees.",
+    "c.hint.zero": "Count {a} to reach zero, then {b} more.",
+    "c.hint.pack.cold": "Taking cold away makes it warmer. The reading goes up.",
+    "c.hint.pack.move": "Taking the pack out changes the reading.",
+    "c.hint.pack.by": "Removing negative {n} moves the reading up by {n}.",
+    "c.hint.same.minus": "Taking away a negative is not taking away. It adds.",
+    "c.hint.same.both": "Only the number you subtract changes sign.",
+    "c.hint.cool": "Cooling is a negative change.",
+    "c.hint.times": "It happens {n} times. Multiply, do not add.",
+    "c.hint.down": "The reading goes down. Each step is negative.",
+    "c.hint.share": "Share the drop into {n} equal steps. Divide, do not subtract.",
+    "c.hint.back": "Going back undoes the cooling. It was warmer then.",
+    "c.said.up": "Yes! Negative {a} plus {n} equals {b}.",
+    "c.said.down": "Yes! {a} plus negative {n} equals negative {b}.",
+    "c.said.down2": "That is the same as {a} minus {n}.",
+    "c.said.pack.pos": "Yes! Negative {a} minus negative {m} equals {n}.",
+    "c.said.pack.neg": "Yes! Negative {a} minus negative {m} equals negative {n}.",
+    "c.said.pack2": "That is the same as negative {a} plus {m}.",
+    "c.said.same": "Yes! {a} minus negative {b} equals {a} plus {b}, which is {n}.",
+    "c.said.rate": "Yes! {n} times negative {a} equals negative {b}.",
+    "c.said.div": "Yes! Negative {a} divided by {n} equals negative {b}.",
+    "c.said.back": "Yes! Negative {n} times negative {a} equals {b}.",
+    "win": "Job done!",
+    "win.card": "Six samples are in the deep freeze. Well done.",
+    "round": "Round {n} of {m}",
+    "show.pot": "{t} L",
+    "show.each": "each holds {t} L",
+    "show.left": "still in the pot",
+    "show.empty": "{n} left empty",
+    "show.notfull": "not full",
+    "show.q.expr": "which division?",
+    "show.count.jar": "{n} jars",
+    "show.count.jar.1": "1 jar",
+    "show.count.tube": "{n} tubes",
+    "show.count.tube.1": "1 tube",
+    "show.set": "set {t}",
+    "show.here": "marker at {t}",
+    "show.below": "{n} below zero",
+    "show.opp": "opposite of {t}",
+    "show.pair": "{a} and {b}",
+    "show.same": "both {n} from zero",
+    "show.q.colder": "coldest?",
+    "show.q.warmer": "warmest?",
+    "show.q.far": "farthest from 0?",
+    "show.limit": "colder than {t}",
+    "show.q.change": "change = ?",
+    "show.landed": "landed on {t}",
+    "show.target": "target {t}",
+    "show.pack": "cold pack {t}",
+    "show.pack.out": "take it out",
+    "show.q.same": "same as?",
+    "show.rate": "{t} each minute",
+    "show.for": "for {n} minutes",
+    "show.ago": "{n} minutes ago?",
+    "show.steps": "{n} equal steps",
+    "show.idle": "deep freeze",
+    "btn.say": "Say it again",
+    "btn.up": "Up",
+    "btn.down": "Down",
+    "btn.run": "Run",
+    "btn.set": "Lock in",
+    "btn.pour": "Pour",
+    "btn.start": "Start",
+    "btn.again": "Play again",
+    "btn.menu": "More jobs"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).SubZeroI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the lab's own guide voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const SZ = window.SubZero, T = (window.SubZeroI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'sz', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+/** What the screen prints for a line of the words table (a spoken line with its real signs), or for plain maths. */
+const printed = l => (typeof l === 'string' ? l : SZ.shown(fmt(l[0], l[1])));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SAVE_KEY = 'sub-zero-v1';
+const ICON = { pour: '🧪', below: '🌡️', change: '❄️' };
+
+/* ---------- state ---------- */
+const P = SZ.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', mode: 'ask', value: null, draw: null, hero: null, fast: false, lines: null, reported: 0, done: {}, tick: 0, vials: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of SZ.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: read-aloud is on unless the player has muted the game; every line is the game's own
+   (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show lines in the words box (printed with their signs) and say them one after the other; the speaker button says them again. */
+function say(lines, o = {}) {
+  S.lines = lines;
+  el.askt.textContent = lines.map(printed).join(' '); el.ask.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { auto: o.auto, queue: !!o.queue || i > 0 }));
+}
+/** The chip: what the round is working out, and what was found. */
+function chip(line, tone) { el.sum.textContent = line ? printed(line) : ''; el.sum.hidden = !line; el.sum.className = 'sz-sum' + (tone ? ' ' + tone : ''); }
+let hintTimer = 0;
+/** A hint: one or two of the game's lines, shown together and said one after the other. */
+function hint(lines) {
+  clearTimeout(hintTimer);
+  if (!lines || !lines.length) { el.hint.hidden = true; return; }
+  el.hint.textContent = lines.map(printed).join(' '); el.hint.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { queue: i > 0 }));
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 9000);
+}
+el.say.addEventListener('click', () => { if (S.lines) S.lines.forEach(([k, v], i) => speak(k, v, { auto: false, queue: i > 0 })); });
+/** A wrong plan: a small shake of the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D lab: the Busy Kitchen at night, in steel ---------- */
+let g;
+try {
+  g = await start({ theme: 'busy-kitchen', version: '1.0.0', graphics: 'auto', time: 'night', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once, washed in steel blue and copied: its floor, walls, counters, fridge and oven are the
+// lab. No food is loaded: this is a cold store, not a kitchen at dinner time.
+// Steel: every piece keeps its light and shade but loses most of its color (a red oven and a teal fridge become
+// brushed metal with a blue cast), so the room reads as a lab at night and the only strong colors are the game's own.
+const STEEL_GLSL = '#include <map_fragment>\n  { float szl = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)); diffuseColor.rgb = mix(vec3(szl), diffuseColor.rgb, 0.22) * vec3(0.74, 0.86, 1.0); }';
+const wash = x => { const c = x.clone(); c.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', STEEL_GLSL); }; c.customProgramCacheKey = () => 'sz-steel'; return c; };
+const steel = o => { o.traverse(m => { if (m.isMesh && m.material) m.material = Array.isArray(m.material) ? m.material.map(wash) : wash(m.material); }); return o; };
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return steel(o); };
+const PIECES = ['floor', 'wall', 'wall-window', 'counter', 'counter-sink', 'counter-corner', 'oven', 'stove', 'fridge', 'cupboard', 'stool', 'pot', 'pan', 'bowl', 'jar', 'plate'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
+
+const C = { bg: '#0d1b2e', deep: '#081120', ink: '#EAF6FF', dim: '#86a6c4', ice: '#7FD3FF', wet: '#2F9BE0', mint: '#2FBF86', ok: '#66E0A3', warn: '#FFB454', goal: '#FFD23F', hot: '#FF8A5B', dark: '#141414' };
+
+/* ---------- the room: the theme's floor, walls, counters, fridge and oven round a clear wall for the lab screen ---------- */
+const room = new THREE.Group(), props = new THREE.Group();
+{
+  for (const x of [-8, -4, 0, 4, 8]) for (const z of [-2, 2, 6, 10, 14]) room.add(piece('floor', x, -0.5, z));
+  // the back wall (two storeys, so no sky shows over it on a tall screen) and the side walls
+  [['wall-window', -8], ['wall', -4], ['wall', 0], ['wall', 4], ['wall-window', 8]].forEach(([id, x]) => room.add(piece(id, x, 0, -4), piece('wall', x, 4, -4)));
+  for (const s of [-1, 1]) for (const z of [-2, 2, 6, 10]) room.add(piece(z === 2 ? 'wall-window' : 'wall', s * 10, 0, z, 1, s * Math.PI / 2), piece('wall', s * 10, 4, z, 1, s * Math.PI / 2));
+  for (const [id, x, y, z, s = 1, turn = 0] of [
+    // along the back wall, either side of the screen: the cold side on the left, the warm side on the right
+    ['fridge', -7.9, 0, -2.75, 1.15], ['counter-sink', -5.5, 0, -2.85, 1.15], ['cupboard', -5.5, 3.2, -3.4, 1.1],
+    ['counter', 5.5, 0, -2.85, 1.15], ['oven', 7.9, 0, -2.8, 1.15], ['cupboard', 5.5, 3.2, -3.4, 1.1],
+    ['pot', 7.9, 2.32, -2.7, 0.85], ['jar', 5.0, 1.15, -2.8, 1.1], ['jar', 5.6, 1.15, -3.0, 0.9], ['jar', 6.1, 1.15, -2.7, 1.0],
+    // the floor in front: a bench with empty jars, and stools
+    ['counter', -7.4, 0, 1.4, 1.0, Math.PI / 2], ['jar', -7.4, 1.0, 1.1, 1.0], ['jar', -7.4, 1.0, 1.8, 0.8], ['stool', -5.6, 0, 1.4, 1.2], ['stool', 7.6, 0, 2.2, 1.2], ['pan', 5.5, 1.15, -2.2, 0.8, 0.5]])
+    room.add(piece(id, x, y, z, s, turn));
+  g.scene.add(room, props);
+  // cold lab light: the night sky gives little, so the room has its own lamps
+  const fill = new THREE.HemisphereLight('#cfeaff', '#1b2a44', 1.5); g.scene.add(fill);
+  const lamp = new THREE.PointLight('#9fdcff', 60, 26, 1.6); lamp.position.set(0, 6.5, 2.5); g.scene.add(lamp);
+}
+// On a tall screen the lab screen hangs higher, over a run of counters; on a wide one it comes down between the
+// sink and the bench, and these counters step aside.
+const under = new THREE.Group(), tops = new THREE.Group();   // `tops`: what stands on those counters
+for (const [id, x, y, z, s = 1, turn = 0] of [['counter', -1.16, 0, -2.85, 1.15], ['counter', 1.16, 0, -2.85, 1.15], ['cupboard', -1.12, 4.95, -3.4, 1.1], ['cupboard', 1.12, 4.95, -3.4, 1.1]]) under.add(piece(id, x, y, z, s, turn));
+for (const [id, x, y, z, s = 1] of [['bowl', -1.5, 1.15, -2.7, 1.0], ['plate', 0.5, 1.15, -2.6, 0.9], ['plate', 1.6, 1.15, -2.7, 1.0]]) tops.add(piece(id, x, y, z, s));   // low things only: nothing stands up in front of the screen
+under.add(tops); props.add(under);
+
+// The deep freezer (game-made: steel boxes with a frost-blue glow) and its rack of six sample vials, one for each
+// finished round. It moves with the screen's shape, so it is its own group.
+const chest = new THREE.Group(), rack = new THREE.Group();
+const MAT = {
+  steel: new THREE.MeshStandardMaterial({ color: '#b4c4d6', metalness: 0.5, roughness: 0.38 }),
+  dark: new THREE.MeshStandardMaterial({ color: '#1c2c44', metalness: 0.3, roughness: 0.6 }),
+  ice: new THREE.MeshStandardMaterial({ color: '#7FD3FF', emissive: '#2fa8ea', emissiveIntensity: 1.1, roughness: 0.3 }),
+  edge: new THREE.LineBasicMaterial({ color: '#141414' }),
+};
+const solid = (geo, mat, x, y, z) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), MAT.edge)); return o; };
+chest.add(solid(new THREE.BoxGeometry(2.7, 1.0, 1.35), MAT.steel, 0, 0.5, 0), solid(new THREE.BoxGeometry(2.45, 0.08, 1.1), MAT.dark, 0, 1.04, 0), solid(new THREE.BoxGeometry(2.3, 0.1, 0.06), MAT.ice, 0, 0.72, 0.7));
+{ const lid = solid(new THREE.BoxGeometry(2.7, 0.12, 1.35), MAT.steel, 0, 1.62, -0.98); lid.rotation.x = 1.15; lid.add(solid(new THREE.BoxGeometry(2.3, 0.05, 0.9), MAT.ice, 0, -0.08, 0)); chest.add(lid); }
+chest.add(rack); props.add(chest);
+const VIAL = new THREE.CylinderGeometry(0.15, 0.15, 0.52, 14), CAP = new THREE.CylinderGeometry(0.17, 0.17, 0.1, 14);
+function vial() { const o = new THREE.Group(); o.add(solid(VIAL, MAT.ice, 0, 0.26, 0), solid(CAP, MAT.dark, 0, 0.57, 0)); return o; }
+const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the lab: the screen
+
+/* ---------- the lab screen: one picture, drawn by the game, always face on (so the thermometer stands straight and a
+   jar stays a jar), redrawn for each round and for each of its three looks: asked, tried (a wrong plan, as it really
+   turns out) and found ---------- */
+const CW = 1024, CH = 768, BOARD = V3(0, 2.2, -3.05);
+let BW = 6.4, BH = 4.8;   // a wide screen's; a tall screen's is 4 by 3, higher on the wall (sizeBoard)
+const LIGHT = new THREE.Color(1.12, 1.12, 1.12);
+const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = CH;
+const X = canvas.getContext('2d');
+const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
+const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
+board.renderOrder = 2;
+function sizeBoard() { under.visible = tall && !squat(); BW = tall ? 4.0 : 6.4; BH = BW * 0.75; BOARD.y = squat() ? 2.44 : tall ? 3.12 : 2.75; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH]; }
+/** The smallest words and numbers a player must read on the screen, in its own pixels (the test turns it into screen pixels). */
+let smallest = 999;
+const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
+function text(s, px, py, size, o = {}) {
+  X.font = `${o.weight || 800} ${size}px ${FONT}`; X.textAlign = o.align || 'center'; X.textBaseline = o.base || 'middle';
+  X.fillStyle = o.fill || C.ink; X.fillText(s, px, py);
+  if (!o.deco) smallest = Math.min(smallest, size);
+}
+/** Maths with its fractions set one number over the other ("4 1/2 ÷ 3/4"), shrunk to fit `max` wide but never under `min`. */
+function maths(s, px, py, size, o = {}) {
+  const parts = String(s).split(/(\d+\/\d+)/).filter(x => x !== ''), k = 0.68;
+  const widthAt = z => parts.reduce((w, p) => { if (/^\d+\/\d+$/.test(p)) { X.font = `${o.weight || 800} ${z * k}px ${FONT}`; const [a, b] = p.split('/'); return w + Math.max(X.measureText(a).width, X.measureText(b).width) + z * 0.22; } X.font = `${o.weight || 800} ${z}px ${FONT}`; return w + X.measureText(p).width; }, 0);
+  let z = size; while (o.max && z > (o.min || 34) && widthAt(z) > o.max) z -= 2;
+  const total = widthAt(z); let x = o.align === 'left' ? px : o.align === 'right' ? px - total : px - total / 2;
+  for (const p of parts) {
+    if (/^\d+\/\d+$/.test(p)) {
+      const [a, b] = p.split('/'); X.font = `${o.weight || 800} ${z * k}px ${FONT}`; const w = Math.max(X.measureText(a).width, X.measureText(b).width) + z * 0.22;
+      text(a, x + w / 2, py - z * 0.36, z * k, o); text(b, x + w / 2, py + z * 0.4, z * k, o);
+      X.strokeStyle = o.fill || C.ink; X.lineWidth = Math.max(3, z * 0.07); X.beginPath(); X.moveTo(x + z * 0.05, py + z * 0.02); X.lineTo(x + w - z * 0.05, py + z * 0.02); X.stroke(); x += w;
+    } else { X.font = `${o.weight || 800} ${z}px ${FONT}`; const w = X.measureText(p).width; text(p, x, py, z, { ...o, align: 'left' }); x += w; }
+  }
+  return total;
+}
+const rr = (x0, y0, w, h, r) => { const p = new Path2D(); p.roundRect(x0, y0, w, h, r); return p; };
+function fillStroke(p, fill, stroke = C.ink, width = 6) { if (fill) { X.fillStyle = fill; X.fill(p); } if (stroke) { X.strokeStyle = stroke; X.lineWidth = width; X.lineJoin = 'round'; X.stroke(p); } }
+function line(x0, y0, x1, y1, color = C.ink, width = 6, dash) { X.save(); X.strokeStyle = color; X.lineWidth = width; X.lineCap = 'round'; if (dash) X.setLineDash(dash); X.beginPath(); X.moveTo(x0, y0); X.lineTo(x1, y1); X.stroke(); X.restore(); }
+const TONE = { ice: C.ice, ok: C.ok, warn: C.warn, goal: C.goal, ink: C.ink };
+
+/* The thermometer: a number line that stands up. Numbers on its left, marks and the marker on its right, moves as
+   arrows beside it, and the round's own words and sums on the right half of the screen. */
+const TX = 215, TT = 74, TB = 694, TW = 56, MX = TX + TW / 2 + 40, AX = 524, PX0 = 624, PXM = 818, LANE = 126;
+const yOf = (t, v) => TB - (v - t.min) / (t.max - t.min) * (TB - TT);
+function paintThermo(pic, ov, marker) {
+  const t = pic.th, y0 = yOf(t, 0), marks = ov.marks || [], arrows = ov.arrows || [];
+  // colder than a limit: everything under the dashed line
+  if (ov.limit != null) {
+    const yl = yOf(t, ov.limit);
+    if (ov.zone) { X.fillStyle = 'rgba(102, 224, 163, 0.16)'; X.fillRect(TX + TW / 2 + 6, yl, PX0 - 30 - TX - TW / 2, TB + 20 - yl); }
+    line(TX - TW / 2 - 6, yl, PX0 - 24, yl, C.goal, 5, [16, 12]);
+  }
+  // the tube, filled to its reading: blue under zero, warm over it
+  fillStroke(rr(TX - TW / 2, TT - 26, TW, TB - TT + 52, TW / 2), C.deep, C.ink, 6);
+  const first = tone => (marks.find(m => m.tone === tone) || {}).at;
+  const level = marker != null ? marker : first('ok') != null ? first('ok') : first('warn') != null ? first('warn') : first('ice');
+  if (level != null) {
+    const yl = Math.max(TT - 14, Math.min(TB + 14, yOf(t, level)));
+    X.save(); X.clip(rr(TX - TW / 2 + 7, TT - 19, TW - 14, TB - TT + 38, TW / 2 - 7));
+    if (level > 0) { X.fillStyle = C.hot; X.fillRect(TX - TW / 2, yl, TW, y0 - yl); }
+    X.fillStyle = C.wet; X.fillRect(TX - TW / 2, Math.max(yl, y0), TW, TB + 30 - Math.max(yl, y0)); X.restore();
+  }
+  for (let i = 0, n = Math.round((t.max - t.min) / t.tick); i <= n; i++) {
+    const v = t.min + i * t.tick, y = yOf(t, v), major = Math.abs(v / t.by - Math.round(v / t.by)) < 1e-9;
+    line(TX + TW / 2 + 5, y, TX + TW / 2 + (major ? 24 : 13), y, major ? C.ink : C.dim, major ? 5 : 3);
+    if (major) text(SZ.nt(v), TX - TW / 2 - 16, y, v === 0 ? 52 : 44, { align: 'right', fill: v === 0 ? C.goal : C.ink, weight: v === 0 ? 900 : 700 });
+  }
+  line(TX - TW / 2 - 10, y0, TX + TW / 2 + 28, y0, C.goal, 6);
+  // moves: arrows beside the line, each with its size
+  for (const a of arrows) {
+    const ya = yOf(t, a.from), yb = yOf(t, a.to), col = TONE[a.tone] || C.ok, dir = yb < ya ? -1 : 1;
+    line(AX, ya, AX, yb - dir * 6, col, 8); line(AX - 16, ya, AX + 16, ya, col, 5);
+    X.fillStyle = col; X.beginPath(); X.moveTo(AX, yb); X.lineTo(AX - 15, yb - dir * 24); X.lineTo(AX + 15, yb - dir * 24); X.closePath(); X.fill();
+    if (a.t) text(a.t, AX + 24, (ya + yb) / 2, 40, { align: 'left', fill: col });
+  }
+  // marks: a pointer and its number; two marks at nearly the same height stand side by side
+  const placed = [];
+  const lane = y => { const k = placed.filter(q => Math.abs(q - y) < 46).length; placed.push(y); return k; };
+  for (const m of marks) {
+    const y = yOf(t, m.at), col = TONE[m.tone] || C.ice, x = MX + lane(y) * LANE;
+    X.fillStyle = col; X.beginPath(); X.moveTo(x - 30, y); X.lineTo(x - 6, y - 15); X.lineTo(x - 6, y + 15); X.closePath();
+    if (m.tone === 'goal') { X.strokeStyle = col; X.lineWidth = 4; X.stroke(); } else X.fill();
+    text(m.t, x, y, 46, { align: 'left', fill: col });
+  }
+  // the marker the player moves: a bar across the tube and its reading
+  if (marker != null) {
+    const y = yOf(t, marker), x = MX - 30 + lane(y) * LANE;
+    line(TX - TW / 2 - 12, y, TX + TW / 2 + 12, y, C.goal, 12);
+    fillStroke(rr(x, y - 36, 156, 72, 14), C.goal, C.dark, 4); text(SZ.deg(marker), x + 78, y + 2, 50, { fill: C.dark, weight: 900 });
+  }
+  // the cold pack, while it is still in the chamber
+  if (ov.pack != null) { fillStroke(rr(PXM - 110, 520, 220, 120, 18), '#17304d', C.ice, 6); text('❄', PXM - 62, 582, 54, { fill: C.ice, deco: true }); text(SZ.deg(ov.pack), PXM + 30, 582, 56, { fill: C.ice }); }
+  const lines = (ov.lines || pic.ask.lines || []).map(printed), top = ov.pack != null ? 170 : 384 - (lines.length - 1) * 48;
+  lines.forEach((s, i) => maths(s, PXM, top + i * 96, i === 0 ? 68 : 54, { max: 372, min: 38, fill: i === 0 ? C.ink : C.ice }));
+}
+
+/* The pot and its jars: the pot's level, a row or two of jars filled as far as the pour really goes, and the sum. */
+function beaker(x, y, w, h, level, col, o = {}) {
+  X.save(); X.clip(rr(x, y, w, h, o.r || 14)); X.fillStyle = C.deep; X.fillRect(x, y, w, h);
+  if (level > 0) { X.fillStyle = col; X.fillRect(x, y + h * (1 - Math.min(1, level)), w, h); }
+  X.restore();
+  fillStroke(rr(x, y, w, h, o.r || 14), null, C.ink, o.width || 6);
+  line(x - 6, y, x + w + 6, y, C.ink, o.width || 6);
+}
+function paintPour(pic, ov) {
+  const wet = ov.tone === 'ok' ? C.mint : C.wet, n = ov.jars, each = fmt('show.each', { t: pic.jar.t });
+  maths(fmt('show.pot', { t: pic.pot.t }), 190, 104, 68, { max: 300, min: 46 });
+  beaker(74, 170, 232, 460, ov.left / pic.pot.v, C.wet, { r: 26, width: 8 });
+  for (let i = 1; i < 4; i++) line(74, 170 + 115 * i, 112, 170 + 115 * i, C.dim, 4);
+  maths(each, 680, 104, 58, { max: 600, min: 42, fill: C.ice });
+  if (n === '?') { beaker(450, 240, 150, 270, 0, wet, { width: 8 }); text('× ?', 760, 380, 120, { fill: C.goal }); }
+  else {
+    const rows = n > 6 ? 2 : 1, per = rows === 2 ? Math.ceil(n / 2) : n, gap = 16, w = Math.min(rows === 2 ? 88 : 130, (620 - (per - 1) * gap) / per), h = rows === 2 ? 190 : 300, x0 = 680 - (per * w + (per - 1) * gap) / 2;
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / per), c = i % per, f = Math.max(0, Math.min(1, ov.fill - i)), x = x0 + c * (w + gap), y = (rows === 2 ? 176 : 210) + r * (h + 32);
+      beaker(x, y, w, h, f, wet, { width: 7 });
+      if (ov.tone === 'warn' && f < 1) { X.save(); X.setLineDash([12, 9]); fillStroke(rr(x - 7, y - 7, w + 14, h + 14, 18), null, C.warn, 5); X.restore(); }   // a jar the pour did not fill
+    }
+  }
+  const lines = (ov.lines || []).map(printed);
+  if (lines.length) maths(lines[0], 680, 690, 64, { max: 620, min: 42, fill: ov.tone === 'warn' ? C.warn : ov.tone === 'ok' ? C.ok : C.ink });
+  if (ov.tone === 'warn' && ov.left > 0) { X.save(); X.setLineDash([12, 9]); fillStroke(rr(62, 158, 256, 484, 30), null, C.warn, 5); X.restore(); }   // the pot is not empty
+}
+/** Draw the lab screen for a round and one of its three looks ('ask', 'hint', 'found'). */
+function paint(Rd, mode) {
+  smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
+  fillStroke(rr(8, 8, CW - 16, CH - 16, 36), C.bg, C.ice, 10);
+  X.strokeStyle = 'rgba(127, 211, 255, 0.07)'; X.lineWidth = 2; X.beginPath(); for (let x = 72; x < CW - 20; x += 64) { X.moveTo(x, 20); X.lineTo(x, CH - 20); } for (let y = 64; y < CH - 20; y += 64) { X.moveTo(20, y); X.lineTo(CW - 20, y); } X.stroke();
+  if (!Rd) paintThermo({ th: { min: -10, max: 10, by: 5, tick: 1 }, ask: {} }, { marks: [{ at: -8, t: SZ.deg(-8), tone: 'ice' }], lines: [fmt('title'), fmt('show.idle')] }, null);
+  else {
+    const p = Rd.pic, live = mode === 'ask' && Rd.input === 'step' ? Rd.step.live : null;
+    const ov = mode === 'found' ? p.found : mode === 'hint' && S.draw ? S.draw : p.ask;
+    if (p.type === 'thermo') paintThermo(p, ov, live === 'marker' ? S.value : null);
+    else paintPour(p, live === 'jars' ? { ...ov, jars: S.value } : ov);
+  }
+  boardTex.needsUpdate = true; S.mode = mode; S.small = smallest;
+}
+
+// Moving things: a hop from one place to another, a pop into place, a shake, a wait. With reduced motion (and in the
+// tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these, run by the game loop.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const back = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+function pop(o, { wait = 0, then, from = 0.001 } = {}) {
+  const s = o.scale.clone();
+  anim(o, 0.34, k => { o.scale.copy(s).multiplyScalar(Math.max(0.001, from + (1 - from) * back(k))); if (k >= 1) o.scale.copy(s); }, then, wait);
+}
+function shake(o, then) {
+  const x = o.position.x;
+  anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
+}
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+});
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+/** A tall screen that is not very tall (a small phone, or a phone with the browser's bars showing): the lab screen hangs
+ *  lower, the counters under it step aside, and the helper and the freezer stand small right under it, so the screen
+ *  keeps the whole width. */
+const squat = () => tall && innerHeight < innerWidth * 1.95;
+const heroSize = () => (squat() ? 0.4 : tall ? 0.7 : 0.92);
+const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -2.5 : -0.5) : V3(-4.75, 0, -1.3));
+const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];
+const chestSize = () => (squat() ? 0.36 : tall ? 0.56 : 0.8);
+const chestSpot = () => (tall ? V3(0.98, 0, squat() ? -2.5 : -0.5) : V3(5.05, 0, -1.2));
+const chestBox = () => { const k = chestSize(), t = chestSpot(); return [V3(t.x - 1.4 * k, 0, t.z), V3(t.x + 1.4 * k, 0, t.z), V3(t.x + 1.4 * k, 2.3 * k, t.z), V3(t.x - 1.4 * k, 2.3 * k, t.z)]; };
+const slot = i => V3(((i % 3) - 1) * 0.72, 1.08, i < 3 ? -0.22 : 0.26);   // in the freezer's own space
+function placeChest() { chest.scale.setScalar(chestSize()); chest.position.copy(chestSpot()); }
+function stagePts() {
+  const pts = [], hw = BW / 2 + 0.06;
+  for (const x of [-hw, hw]) pts.push(V3(x, BOARD.y + BH / 2 + 0.08, BOARD.z), V3(x, BOARD.y - BH / 2 - 0.08, BOARD.z));
+  return pts.concat(chestBox(), heroBox(heroSpot(), heroSize()));
+}
+// The camera looks across the lab at the back wall, from a little above, and backs off until everything a round uses
+// fits between the words at the top and the controls at the bottom, on any screen shape.
+const view = { pts: [] };
+function frame() {
+  if (!g || !view.pts.length) return;
+  const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
+  const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
+  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  let bx;
+  const fits = d => {
+    look.copy(mid);
+    for (let i = 0; i < 6; i++) {
+      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (i === 5) break;
+      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+    }
+    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  };
+  let near = 3, far = 120;
+  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+let wasSquat = squat();
+addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+/** The screen box (left, top, right, bottom in CSS pixels) of the lab screen. */
+function boxOf(o) {
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
+  const mid = o.getWorldPosition(V3(0, 0, 0));
+  const [sx, sy] = scr(mid), [rx] = scr(mid.clone().addScaledVector(right, w / 2)), [, uy] = scr(mid.clone().addScaledVector(up, h / 2));
+  return [sx - (rx - sx), uy, rx, sy + (sy - uy)].map(n => Math.round(n));
+}
+
+/* ---------- dragging the marker: a finger or the mouse on the thermometer puts the marker there ---------- */
+let dragging = false;
+function boardValue(ev) {
+  const R = S.R; if (!R || S.screen !== 'play' || S.phase !== 'play' || R.input !== 'step' || R.step.live !== 'marker' || !stage.children.includes(board)) return null;
+  const [l, t, r, b] = boxOf(board), px = (ev.clientX - l) / (r - l) * CW, py = (ev.clientY - t) / (b - t) * CH, m = R.pic.th;
+  if (px < 40 || px > AX + 60 || py < 10 || py > CH - 10) return null;
+  const v = m.min + (TB - py) / (TB - TT) * (m.max - m.min);
+  return Math.max(R.step.min, Math.min(R.step.max, Math.round(v / R.step.by) * R.step.by));
+}
+const cnv = g.renderer.domElement;
+cnv.addEventListener('pointerdown', ev => { const v = boardValue(ev); if (v != null) { dragging = true; setValue(v); } });
+cnv.addEventListener('pointermove', ev => { if (!dragging) return; const v = boardValue(ev); if (v != null && v !== S.value) setValue(v); });
+for (const name of ['pointerup', 'pointercancel', 'pointerleave']) cnv.addEventListener(name, () => { dragging = false; });
+
+/* ---------- the stage: the lab screen on the wall, and the vials in the deep freezer ---------- */
+function clearStage() {
+  for (const o of [...stage.children]) stage.remove(o);
+  tweens.length = 0;
+  sizeBoard(); board.visible = true;
+  placeChest();
+  rack.children.forEach(o => { o.visible = true; });
+}
+function putBoard(Rd, mode, first) {
+  paint(Rd, mode); stage.add(board);
+  if (first) pop(board, { wait: 0.1, from: 0.6 });
+}
+/** Vials in the freezer's rack: one for each round already finished. */
+function setVials(n) {
+  while (rack.children.length > n) rack.remove(rack.children[rack.children.length - 1]);
+  for (let i = rack.children.length; i < n; i++) { const o = vial(); o.position.copy(slot(i)); rack.add(o); }
+  S.vials = n;
+}
+/** A finished round's sample goes from the screen into the deep freezer. */
+function storeVial(then) {
+  const i = S.vials; if (i >= SZ.ROUNDS) return then();
+  const o = vial(), to = slot(i); rack.add(o); S.vials = i + 1;
+  o.position.set(to.x - 2.2, 2.4, to.z - 0.6);
+  fly(o, to, { dur: 0.6, arc: 0.9, then: () => { sfx('land'); then(); } });
+}
+
+/* ---------- the helper: one lab partner in an ice-blue cape (no picker: the lab starts at once) ---------- */
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(heroSpot()); h.object.rotation.y = tall ? 0 : 0.5; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+
+/* ---------- cards: the start of a lesson, the menu, the end of a chapter ---------- */
+/** Maths on a button, its fractions set one number over the other. */
+function mathsNode(s) {
+  const out = document.createElement('span'); out.className = 'big';
+  for (const p of String(s).split(/(\d+\/\d+)/).filter(x => x !== '')) {
+    if (/^\d+\/\d+$/.test(p)) { const f = document.createElement('span'); f.className = 'fr'; for (const n of p.split('/')) { const b = document.createElement('b'); b.textContent = n; f.append(b); } out.append(f); } else out.append(p.trim());
+  }
+  return out;
+}
+function button({ id, label, icon, big, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'sz-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, t) => { const s = document.createElement('span'); s.className = c; if (t != null) s.textContent = t; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (big != null) b.append(mathsNode(big));
+  if (label) b.append(span('l', label));
+  b.setAttribute('aria-label', aria || label || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, sub, line, buttons }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  if (sub) { const h2 = document.createElement('h2'); h2.textContent = sub; top.append(h2); }
+  const a = document.createElement('div'); a.className = 'sz-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'sz-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(line, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'sz-askt'; t.textContent = fmt(line); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'sz-menu' : 'sz-pick'; row.append(...buttons.map(button));
+  el.card.className = 'sz-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.lines = [[line, null]]; speak(line);
+}
+/** The helper in the lab by the screen and the freezer: the start, the menu and the end of a chapter. */
+function solo(vials) {
+  clearStage(); putBoard(null, 'ask'); setVials(vials); placeHero();
+  view.pts = stagePts();
+}
+function showStart() {
+  S.screen = 'start'; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  card('start', { title: fmt('title'), sub: fmt('ch.' + P.chapter), line: 'start.line', buttons: [{ id: 'start', icon: ICON[P.chapter], label: fmt('btn.start'), cls: 'go', go: () => startChapter(P.chapter) }] });
+  frame();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; solo(0); g.weather('clear');
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: SZ.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!SZ.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren(); g.weather('clear');
+  setVials(0);
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots2() {
+  el.dots.replaceChildren(...Array.from({ length: SZ.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: SZ.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+function nextRound() {
+  if (S.round >= SZ.ROUNDS) return finish();
+  S.round++; S.R = SZ.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.draw = null; S.shown = false; S.tick++;
+  const Rd = S.R; S.value = Rd.input === 'step' ? Rd.step.start : null;
+  hint(); dots2(); chip(Rd.chip);
+  say(Rd.ask);   // the words first: the camera fits the lab under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  S.R = null; solo(SZ.ROUNDS);
+  g.celebrate(S.hero, ''); g.weather('snow');   // the cheer, and frost in the air; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🧊', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), sub: fmt('ch.' + S.chapter), line: 'win.card', buttons });
+  frame();
+}
+
+/** What the stepper shows for its value: a reading, a change with its sign, or a count of jars. */
+function valueText(Rd, v) { const k = Rd.step.show; return k === 'deg' ? SZ.deg(v) : k === 'chg' ? SZ.chg(v) : fmt('show.count.' + k + (v === 1 ? '.1' : ''), { n: v }); }
+/** The controls of a round: a stepper and its run button, or three tiles. */
+function controls(Rd, found) {
+  if (Rd.input === 'tiles') return Rd.opts.map((o, i) => button({ id: 'sz-n' + i, big: o.t, aria: o.t, cls: found && i === Rd.answer ? 'right' : '', go: b => answer(i, b) }));
+  const val = document.createElement('output'); val.id = 'sz-val'; val.className = 'sz-val'; val.setAttribute('aria-live', 'polite'); val.textContent = valueText(Rd, S.value);
+  const live = Rd.step.live;
+  return [button({ id: 'sz-dn', big: '−', aria: fmt('btn.down'), cls: 'step', go: () => bump(-1) }), val, button({ id: 'sz-up', big: '+', aria: fmt('btn.up'), cls: 'step', go: () => bump(1) }),
+    button({ id: 'sz-go', icon: '▶', label: fmt(live === 'jars' ? 'btn.pour' : live === 'marker' ? 'btn.set' : 'btn.run'), cls: 'go', go: b => run(b) })];
+}
+/** Draw the round from its state (also after the screen turns): the lab screen, the helper, the vials, the controls. */
+function redraw() {
+  if (S.screen === 'start' || S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? SZ.ROUNDS : 0); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++;
+  el.card.hidden = true;
+  putBoard(Rd, found ? 'found' : S.mode, first); setVials(S.round - 1 + (found ? 1 : 0));
+  placeHero(); view.pts = stagePts();
+  el.bar.hidden = false; el.bar.className = 'sz-bar ' + Rd.input;
+  el.bar.replaceChildren(...controls(Rd, found));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the controls
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
+const still = () => { drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.visible = true; };
+
+/** The stepper: a new value is a new plan, so the screen goes back to the question with the plan on it. */
+function setValue(v) {
+  const Rd = S.R; if (!Rd || S.screen !== 'play' || S.phase !== 'play' || Rd.input !== 'step') return;
+  v = Math.max(Rd.step.min, Math.min(Rd.step.max, Math.round(v / Rd.step.by) * Rd.step.by));
+  if (v === S.value && S.mode === 'ask') return;
+  S.value = v; S.draw = null; hint();
+  const out = document.getElementById('sz-val'); if (out) out.textContent = valueText(Rd, v);
+  still(); paint(Rd, 'ask');
+}
+function bump(dir) { const Rd = S.R; if (Rd && Rd.input === 'step') setValue(S.value + dir * Rd.step.by); }
+/** Run the plan the stepper holds. */
+function run(b) { const Rd = S.R; if (Rd && Rd.input === 'step') settle(SZ.judge(Rd, S.value), b || document.getElementById('sz-go')); }
+/** Pick a tile. */
+function answer(i, b) { const Rd = S.R; if (Rd && Rd.input === 'tiles') settle(SZ.judge(Rd, i), b || document.getElementById('sz-n' + i)); }
+function settle(res, b) {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play' || !res) return;
+  const Rd = S.R;
+  if (!res.ok) {
+    // a wrong plan: the screen shows what it really does, the hint says why, and the round stays open
+    wobble(b); S.draw = res.draw || null; hint(res.lines);
+    paint(Rd, 'hint'); still(); shake(board);
+    return;
+  }
+  S.phase = 'right'; S.tick++; S.draw = null; hint(); sfx('coin');
+  if (b) b.classList.add('right');
+  chip(Rd.chipDone, 'ok');
+  say(Rd.said, { queue: true });
+  paint(Rd, 'found'); still(); pop(board, { from: 0.9 });
+  // the round's sample goes into the deep freezer, the helper cheers, and only then the next round
+  storeVial(guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.6 : 2.4, guard(nextRound)); }));
+}
+// Keys: the arrows (or + and −) move the stepper, Enter runs the plan, 1 to 3 pick a tile. Every control is also a
+// button, so Tab, Enter and Space work too.
+addEventListener('keydown', ev => {
+  const Rd = S.R; if (!Rd || S.screen !== 'play' || S.phase !== 'play' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  const k = ev.key, onButton = document.activeElement && document.activeElement.tagName === 'BUTTON';
+  if (Rd.input === 'step') {
+    if (k === 'ArrowUp' || k === 'ArrowRight' || k === '+' || k === '=') { bump(1); ev.preventDefault(); }
+    else if (k === 'ArrowDown' || k === 'ArrowLeft' || k === '-' || k === '_') { bump(-1); ev.preventDefault(); }
+    else if (k === 'Enter' && !onButton) { run(); ev.preventDefault(); }
+  } else if (/^[1-3]$/.test(k) && +k <= Rd.opts.length) { answer(+k - 1); ev.preventDefault(); }
+});
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+const shownIn = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+const ray = new THREE.Raycaster();
+/** Whether nothing of the lab stands between the camera and a point (the furniture never hides the screen). */
+function clearTo(p) {
+  const from = g.camera.position, dir = p.clone().sub(from), dist = dir.length();
+  ray.set(from, dir.normalize()); ray.near = 0.1; ray.far = dist - 0.12;
+  return !ray.intersectObjects([room, props], true).some(hit => shownIn(hit.object));
+}
+const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
+window.__sz = window.__brbTest = {
+  state: () => ({ game: 'sub-zero', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: SZ.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, value: S.value, tried: S.draw, moving: tweens.length, onStage: { board: stage.children.includes(board) && board.visible, vials: rack.children.length } } : {}) }),
+  fast: on => { S.fast = on !== false; },
+  /** 'set' a stepper value, 'run' the plan, 'answer' a tile, or 'solve' the round the right way. */
+  act: (name, arg) => {
+    const Rd = S.R; if (!Rd) return;
+    if (name === 'set') setValue(arg); else if (name === 'run') run(); else if (name === 'answer') answer(arg);
+    else if (name === 'solve') { if (Rd.input === 'step') { setValue(Rd.answer); run(); } else answer(Rd.answer); }
+  },
+  /** Where things are on the screen (CSS pixels): the helper, the lab screen (its box, whether the lab leaves it in
+   *  full view, and the smallest words on it in screen pixels) and the freezer. */
+  spot: () => {
+    const bx = boxOf(board), k = 0.46;
+    return {
+      hero: S.hero ? boxPts(heroBox(S.hero.position, S.hero.object.scale.x)) : null,
+      board: { box: bx, small: Math.round(S.small * (bx[2] - bx[0]) / CW * 10) / 10,
+        clear: [[0, 0], [-k, -k], [k, -k], [k, k], [-k, k], [0, -k], [0, k]].every(([dx, dy]) => clearTo(V3(BOARD.x + dx * BW, BOARD.y + dy * BH, BOARD.z))) },
+      chest: boxPts(chestBox()),
+    };
+  },
+  /** The point of the page (CSS pixels) that stands for a value on the thermometer: where a finger would put the marker. */
+  at: v => { const m = S.R && S.R.pic.th, bx = boxOf(board); return m ? [Math.round(bx[0] + TX / CW * (bx[2] - bx[0])), Math.round(bx[1] + yOf(m, v) / CH * (bx[3] - bx[1]))] : null; },
+};
+
+S.hero = await g.hero('rogue-hooded', { x: 0, y: 0, z: 0, outfit: '#7FD3FF' });
+el.load.hidden = true; el.load.remove(); el.sz.hidden = false;
+if (P.chapter) showStart(); else showMenu();
+window.__ready = true;
+</script>
