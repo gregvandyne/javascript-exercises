@@ -1,0 +1,14 @@
+{
+ "dir": "underwater-pack",
+ "name": "Low Poly Underwater Pack",
+ "author": "reodesuxz",
+ "licence": "custom (games and modification allowed; no redistribution of the asset files, no AI training)",
+ "licenceFile": "LICENSE.txt",
+ "defaults": {
+  "matte": true,
+  "scale": 2.5,
+  "inkNormals": true
+ },
+ "exclude": {},
+ "source": "branch asset-packs, folder underwater-pack/ (uploaded by the owner, November 2026)"
+}

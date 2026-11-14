@@ -1,0 +1,19 @@
+{
+ "dir": "forest-nature-pack",
+ "name": "KayKit Forest Nature Pack 1.0",
+ "author": "Kay Lousberg",
+ "licence": "CC0-1.0",
+ "url": "https://kaylousberg.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "textures": {
+   "^forest$": "forest_texture.png"
+  }
+ },
+ "source": "branch asset-packs, folder forest-nature-pack/ (uploaded by the owner, November 2026)",
+ "exclude": {
+  ".*_Single[sS]ided_.*": "Duplicate: a one-sided copy of the grass beside it (an ink outline shows black through its open back)",
+  "Grass_\\d_Mesh": "Duplicate: the bare, uncoloured mesh of the grass blade beside it"
+ }
+}

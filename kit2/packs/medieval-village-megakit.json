@@ -1,0 +1,32 @@
+{
+ "dir": "medieval-village-megakit",
+ "name": "Quaternius Medieval Village MegaKit (free version)",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License_Standard.txt",
+ "defaults": {
+  "scale": 1.3,
+  "matte": true,
+  "colourOnly": true,
+  "textureSize": 256,
+  "cutout": [
+   "MI_Vine"
+  ],
+  "textures": {
+   "^MI_WoodTrim(_Wear)?$": "T_WoodTrim_BaseColor.png",
+   "^MI_Plaster$": "T_Plaster_BaseColor.png",
+   "^MI_RockTrim$": "T_RockTrim_BaseColor.png",
+   "^MI_Brick$": "T_Brick_BaseColor.png",
+   "^MI_RoundTiles$": "T_RoundTiles_BaseColor.png",
+   "^MI_UnevenBrick$": "T_UnevenBrick_BaseColor.png",
+   "^MI_MetalOrnaments$": "T_MetalOrnaments_BaseColor.png",
+   "^MI_RedBrick$": "T_RedBrick_BaseColor.png",
+   "^MI_Vine$": "T_VineLeaf.png"
+  },
+  "keepColour": [
+   "MI_Vine"
+  ]
+ },
+ "source": "branch asset-packs, folder medieval-village-megakit/ (uploaded by the owner, November 2026)"
+}

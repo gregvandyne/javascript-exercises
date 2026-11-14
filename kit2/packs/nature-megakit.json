@@ -1,0 +1,34 @@
+{
+ "dir": "nature-megakit",
+ "name": "Quaternius Stylized Nature MegaKit (free version)",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License_Standard.txt",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true,
+  "dropVertexColours": true,
+  "textureSize": 256,
+  "cutout": [
+   "Leaves",
+   "Flowers",
+   "Grass"
+  ],
+  "textures": {
+   "^Leaves$": "Leaves.png",
+   "^Leaves_TwistedTree$": "Leaves_TwistedTree_C.png",
+   "^Leaves_NormalTree$": "Leaves_NormalTree_C.png",
+   "^Leaves_Pine$": "Leaf_Pine_C.png",
+   "^Flowers$": "Flowers.png",
+   "^PathRocks$": "PathRocks_Diffuse.png",
+   "^Bark_NormalTree$": "Bark_NormalTree.png",
+   "^Bark_DeadTree$": "Bark_DeadTree.png",
+   "^Bark_TwistedTree$": "Bark_TwistedTree.png",
+   "^Grass$": "Grass.png",
+   "^Rocks$": "Rocks_Diffuse.png",
+   "^Mushrooms$": "Mushrooms.png"
+  }
+ },
+ "source": "branch asset-packs, folder nature-megakit/ (uploaded by the owner, November 2026)"
+}
