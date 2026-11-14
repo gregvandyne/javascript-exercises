@@ -19,6 +19,22 @@ Kit 2 is the next game kit: real engines (Three.js, Phaser) and free professiona
 | `demo/theme-tour.html` | One scene for any theme from its catalogue: the covers, and `tests/unit/kit2-worlds.test.js` plays it for every theme. |
 | `demo/sky-islands-prototype.html` | The first prototype (no library), for reference. |
 
+## 2D art packs
+
+The worlds, heroes and animals drawn as 2D pictures for games on the old kit (`docs/kit2-themes-plan.md` "2D versions").
+
+| File | What |
+|---|---|
+| `art2d/packs.json` | The recipes: for each world the piece its ground is made of, what stands in its far and mid strips, its props, goal, coin and obstacles; the heroes; the animals with their clips, heights and light. |
+| `pipeline/art2d.mjs`, `pipeline/art2d-page.js` | Draws the packs in headless Chromium (software WebGL) into `public/vendor/art2d/<pack>/<version>/`. `node kit2/pipeline/art2d.mjs` builds every pack that is not there yet (worlds and heroes from shipped themes; add `--stage <staged packs>` for the animals); `--check` compares with what is on disk. |
+| `pipeline/art2d-sheet.mjs` | A contact sheet of built packs (strips shown one and a half times to see the seam, frames with the feet line): look at every picture before it ships. |
+| `pipeline/art2d-lock.mjs`, `ART2D.json` | Copies `src2d/oomba2d.js` to its version folder and locks every new file by sha384. A locked file never changes: bump the version in `art2d/packs.json` (or `VERSION` in the helper). |
+| `src2d/oomba2d.js` | Oomba2D, the helper that registers the pictures as Oomba Kit sprites (`docs/kit-api.md` "2D art of the Kit 2 worlds"). |
+| `art2d/licenses/` | The CC0 licence texts of the uploaded animal packs (copied into the `animals` pack). |
+
+After a new pack version: `node kit2/pipeline/art2d-lock.mjs`, `node scripts/build-art2d-rules.js` (the Builder's catalogue),
+`node scripts/art2d-thumbs.js` (the picker's animal pictures), then `node --test tests/unit/art2d.test.js`.
+
 Engines live in `public/vendor/kit2/` (Three.js add-ons, Rapier, Phaser, and our own game library Oomba3D: `docs/kit2-api.md`), loaded with `kit2ImportMap()` / `phaserTag()` from `server/services/vendor.js`. Built themes live in `public/vendor/themes/<theme>/<version>/` with `theme.json`, `SOURCES.md` and `LICENSES/`. `tests/unit/kit2-themes.test.js` checks each one: every file listed with its hash, every pack CC0 with its licence file, every piece from a listed pack, and the first load under 5 MB.
 
 ## Adding or rebuilding a theme

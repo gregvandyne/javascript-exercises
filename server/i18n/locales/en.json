@@ -1618,6 +1618,34 @@
         "captain-clank": "Captain Clank"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "Horse",
+        "horse-white": "White Horse",
+        "donkey": "Donkey",
+        "cow": "Cow",
+        "bull": "Bull",
+        "alpaca": "Alpaca",
+        "deer": "Deer",
+        "stag": "Stag",
+        "fox": "Fox",
+        "wolf": "Wolf",
+        "husky": "Husky",
+        "shiba": "Shiba Dog",
+        "cow-spotted": "Spotted Cow",
+        "pony": "Pony",
+        "zebra": "Zebra",
+        "llama": "Llama",
+        "pig": "Pig",
+        "sheep": "Sheep",
+        "pug": "Pug",
+        "apatosaurus": "Apatosaurus",
+        "stegosaurus": "Stegosaurus",
+        "triceratops": "Triceratops",
+        "parasaurolophus": "Parasaurolophus",
+        "velociraptor": "Velociraptor"
+      }
+    },
     "lesson": {
       "step": "Lesson step: {title}",
       "back": "Back to the lesson",
@@ -2406,6 +2434,8 @@
       "themeUse": "Use the {name} theme.",
       "worldUse": "Make it a 3D game in the {name} world.",
       "heroUse": "Use the 3D hero {name}.",
+      "world2dUse": "Use the 2D world {name}.",
+      "animal2dUse": "Make the hero this animal: {name}.",
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}"
     },
     "character": {

@@ -1617,6 +1617,34 @@
         "captain-clank": "Capitán Clank"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "Caballo",
+        "horse-white": "Caballo blanco",
+        "donkey": "Burro",
+        "cow": "Vaca",
+        "bull": "Toro",
+        "alpaca": "Alpaca",
+        "deer": "Cierva",
+        "stag": "Ciervo",
+        "fox": "Zorro",
+        "wolf": "Lobo",
+        "husky": "Husky",
+        "shiba": "Perro shiba",
+        "cow-spotted": "Vaca con manchas",
+        "pony": "Poni",
+        "zebra": "Cebra",
+        "llama": "Llama",
+        "pig": "Cerdo",
+        "sheep": "Oveja",
+        "pug": "Carlino",
+        "apatosaurus": "Apatosaurio",
+        "stegosaurus": "Estegosaurio",
+        "triceratops": "Triceratops",
+        "parasaurolophus": "Parasaurolofo",
+        "velociraptor": "Velocirraptor"
+      }
+    },
     "lesson": {
       "step": "Paso de la lección: {title}",
       "back": "Volver a la lección",
@@ -2393,6 +2421,8 @@
       "themeUse": "Usa el tema {name}.",
       "worldUse": "Hazlo un juego 3D en el mundo {name}.",
       "heroUse": "Usa el héroe 3D {name}.",
+      "world2dUse": "Usa el mundo 2D {name}.",
+      "animal2dUse": "Que el héroe sea este animal: {name}.",
       "sparks": "{n, plural, one {# mensaje de Paquetes Chispa} other {# mensajes de Paquetes Chispa}}"
     },
     "character": {

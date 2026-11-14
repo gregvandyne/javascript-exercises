@@ -19,6 +19,7 @@ import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
 import { WORLD_IDS, worldById, charactersOf, heroFor, DEFAULT_WORLD } from './kit2.js';
+import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter } from './art2d.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
@@ -219,12 +220,26 @@ export function toolbox(ctx) {
         if (asked && !heroes.includes(asked)) return { ok: false, forModel: `${w.id} has no character called "${asked.slice(0, 40)}". Its characters are: ${heroes.join(', ')}. There are no others: pick one of these.` };
         k2 = { world, hero: heroFor(world, asked) };
       }
-      const [{ html, fallback }, info] = await Promise.all([templateHtml(key, k2 || undefined), templateInfo(key)]);
+      // A 2D template with the 2D art (art2d.js): a world drawn in 2D and a sprite hero or animal, asked for here or
+      // picked earlier in the chat. An invented name is refused with the real names; a template that does not draw the
+      // worlds yet starts as it always did.
+      let a2 = null;
+      if (key !== 'oomba3d' && key !== 'world3d') {
+        const kept = (ctx.state && ctx.state.art2d) || {}, world = String((input && input.world) || kept.world || ''), hero = String((input && (input.sprite || input.hero)) || kept.hero || '');
+        if (ART2D_TEMPLATES.includes(key)) {
+          if (world && !art2dWorld(world)) return { ok: false, forModel: `There is no 2D world called "${world.slice(0, 40)}". The 2D worlds are: ${ART2D_WORLD_IDS.join(', ')}.` };
+          if (hero && !art2dCharacter(hero)) return { ok: false, forModel: `There is no sprite hero or animal called "${hero.slice(0, 40)}". They are: ${ART2D_CHARACTER_IDS.join(', ')}. There are no others: pick one of these, or leave hero out for the kit's own characters.` };
+          if (world || hero) a2 = { world, hero };
+        }
+      }
+      const [{ html, fallback }, info] = await Promise.all([templateHtml(key, k2 || a2 || undefined), templateInfo(key)]);
       if (fallback) return { ok: false, forModel: 'That template is not available right now. Write the game with write_game instead.' };
       if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${k2 ? worldById(k2.world).name : info ? info.title : key}`);
       if (k2 && r.version && ctx.state) ctx.state.kit2 = k2;   // remembered: the next turns are Kit 2 turns
+      if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''} (CONFIG.world, CONFIG.hero2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
+      else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
       if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
       else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'

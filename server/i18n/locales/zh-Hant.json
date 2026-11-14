@@ -1617,6 +1617,34 @@
         "captain-clank": "克朗克船長"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "馬兒",
+        "horse-white": "白馬",
+        "donkey": "驢子",
+        "cow": "乳牛",
+        "bull": "公牛",
+        "alpaca": "羊駝",
+        "deer": "小鹿",
+        "stag": "雄鹿",
+        "fox": "狐狸",
+        "wolf": "野狼",
+        "husky": "哈士奇",
+        "shiba": "柴犬",
+        "cow-spotted": "花斑牛",
+        "pony": "小馬",
+        "zebra": "斑馬",
+        "llama": "駱馬",
+        "pig": "小豬",
+        "sheep": "綿羊",
+        "pug": "巴哥犬",
+        "apatosaurus": "迷惑龍",
+        "stegosaurus": "劍龍",
+        "triceratops": "三角龍",
+        "parasaurolophus": "副櫛龍",
+        "velociraptor": "迅猛龍"
+      }
+    },
     "lesson": {
       "step": "課程步驟：{title}",
       "back": "回到課程",
@@ -2393,6 +2421,8 @@
       "themeUse": "使用「{name}」主題。",
       "worldUse": "做成「{name}」世界的 3D 遊戲。",
       "heroUse": "用 3D 英雄「{name}」。",
+      "world2dUse": "使用 2D 世界「{name}」。",
+      "animal2dUse": "讓這隻動物當主角：{name}。",
       "sparks": "{n, plural, other {火花包 # 次}}"
     },
     "character": {

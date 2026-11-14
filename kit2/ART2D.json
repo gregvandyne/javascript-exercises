@@ -1,0 +1,124 @@
+{
+ "_": "2D art that has shipped (kit2/pipeline/art2d-lock.mjs). helper: the Oomba2D library by version. packs: every pack version with the hash of each of its files. Nothing listed here may ever change: a fix or new art ships as a new version.",
+ "helper": {
+  "1.0.0": "sha384-Mdn7RMe4vrkg77dp6tG/17bpJEeWL9h7aoDOCuK+RJ2MA5W+ZYHsK2NCP9BKeGT/"
+ },
+ "packs": {
+  "animals/1.0.0": {
+   "LICENSES/dinosaurs.txt": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4",
+   "LICENSES/farm-animals.txt": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4",
+   "LICENSES/ultimate-animated-animals.txt": "sha384-78nDgPx6v7m+RgzqfVHsgvlb0yfajCWL2l2cLhwtxDdRd4NMe9n2FD1oQXi+Q5U4",
+   "alpaca.webp": "sha384-RJX+VyDDwU6j0/6jxJ9NRWW/qLsjGMMhErpugvcmn3PwZxS2GouQIi+5OrWppHnX",
+   "apatosaurus.webp": "sha384-NioMdinZxXfRwYpgFChZoP2x2QlgDmbUnHhO9922cecGAXv39eXr7IfUO2OoFM15",
+   "bull.webp": "sha384-ie1koHx0I3y054XMDAQI/W6O4whoxNuBEz6XHp70rI9ZJuJTWlWr7FJq94WRaq2C",
+   "cow-spotted.webp": "sha384-eW5zxkh6eab5wi5dGvpU1ZweAVjE2pP2PNK/Cx50adg83Xxuw8+pCkCzHsvl1Zu8",
+   "cow.webp": "sha384-0DOSKaXryMfLMLxUTKdIlOwwsSLgdmd7uqFLBbTpgQMgDNj4BXpT1+DFqnedeFms",
+   "deer.webp": "sha384-lT0xYyNzxBkE8QGhgwpH7XQv8o85M2G3Yd38ew+G7+nCNF3Z9OFGaOUjTP71xbRp",
+   "donkey.webp": "sha384-lOEJNmH4lPGrGrYFJ3Qoos7grUvznjO+FrpPkkYLCncpGLUj9G/GI1ZPSYly4Zkz",
+   "fox.webp": "sha384-Vhpk1osgHhEBDI6sZnB7N2ZTT8ARpFm40mZQf0YJWHG1VY5E+v0OhXJ8AY2hU0AJ",
+   "horse-white.webp": "sha384-ODLM5kGKYxlBvk7pOcq9j02i0hiILwZkcZzMHeizTUCe01GZiOgQl6ULpxDQHTKR",
+   "horse.webp": "sha384-EvSU5HwQLykd/qmVwLPsLhuxxYGOaDpiSauMoKXbpTbv3Q6OaI9d/BzQ1kuY2KTG",
+   "husky.webp": "sha384-QZBN1QV7k3u5Fh5nHbyudc5WtIcxjF9p2oYRKHfWu6+0GroySmbJODIdE3GvjeO5",
+   "llama.webp": "sha384-czzuw/2/8R4Hx6iw8Lsn0fanm//KMyOh3mqBzU26mL3yj653rX17vyFZjP+cLZgw",
+   "pack.js": "sha384-7wq1FMfxfeaLbiqNgZp5Vej0I5G6jWlPtFumCGhPzpH6HrWmHT/nmCrzMinDENuh",
+   "pack.json": "sha384-x7qWEZu9dfkJExPQUDjOtulNdte2/bMsAAY0i9khzw7Y4QYk22d2Vug3nDEi1587",
+   "parasaurolophus.webp": "sha384-pzRGssFxMCnMjLMhmYYup2rJoXKqDrQeH9yxG7tRZuVytKF3cnjw64ORrlhPoawN",
+   "pig.webp": "sha384-62OzfMxcS1kkpz38f1pS1RogycakInBr+puoWbqddPRynmZgEM+0/cPsRg10ChYk",
+   "pony.webp": "sha384-KPKvUqPWNtGZbSvdR2F7zpV1KY3hUM/jS9ROb2TZtlUcS7R8ASMY5HfcnVygo8ML",
+   "pug.webp": "sha384-X7UFVNHCIH3mUAWm+8xz4aNNoSE4a/M+BWEqiAEN+mJ6kuLLtBA8BBp5rEZ16FTF",
+   "sheep.webp": "sha384-IKKQwQt55U09J6tx+63fmn9Ho6dKEFSmNmJoHSlYm3oKRd/CfDtXj5sWKkT3DTkk",
+   "shiba.webp": "sha384-b41mn/0RXDJcS3PCFyFJ0qZVB7ED83giooVY2XIwJmBZazDD77Gq4HcpnDpL6BLr",
+   "stag.webp": "sha384-arzCiWvfpsw4+AAM5h34l0CoO2/qzh31sQ3mPA56AB+n1We3TK+SEJxwdObkev4I",
+   "stegosaurus.webp": "sha384-iY/WkxAVqAAAcocTHHtUvUiFrlPRCq+99LzJ10lBkVTotua3GYtcYUm90Uwxb2gv",
+   "triceratops.webp": "sha384-/nbR9zauJt6J/KCatbcnI/zB6/zZjCiUdRiflytIrNZN69btGMcmAs5KDiwMMQp6",
+   "velociraptor.webp": "sha384-bn7uENAr1PfTaAeIM/QXihwMJBWbsuoPeoIXFcwvSnhN1qOMJhMdtss2kotwDjz5",
+   "wolf.webp": "sha384-TC3jdR9Lm0D0r1EAG2wp0vXc0nPf48y4Ffgd079bULMXuwUPixR5qPoHF8aGvNhe",
+   "zebra.webp": "sha384-vLScRNSfUpgMkP7X81mDNw/UCOHMFVKa2dc20X20VZpAHZiWjw1tSypRJ7zAk2D0"
+  },
+  "busy-kitchen/1.0.0": {
+   "far.webp": "sha384-/sY9zEVIrfaRMe7c6MNlLbtHIwKfTINl8YJjV45S0QTHsuOEPVyAL3hzxg3zagL+",
+   "ground.webp": "sha384-FtvSdgWtPnenHQJnWVLDtHVF6u2mZGkstV+OsWhJuh8doVZ+Qo/NNdGhJn8vq9nJ",
+   "mid.webp": "sha384-j6+95+2R3JlxwAf2rpUzgVF7JAEHvCi9PXlW40SLwK5wBXpBjkpqkw8FQ94ird9d",
+   "pack.js": "sha384-f2jWA65rSqNOFB6NxUdFDlkye4rYkriiXQFMz0vcXZ3F0isxlQFMKhEFfDsDXEaC",
+   "pack.json": "sha384-mMTpe+jZaPwH6FgjDiLP9y2T0aKByRvY/LfwjrpQLM0IH07bW50rmSNERv8IbWJO",
+   "props.webp": "sha384-YkA5qW+cK2fO2RCq/AkB79Nd9uIb3Ccr6J8zFQknSLjwmDcK4mkI2Lnq7/ZMqUci"
+  },
+  "castle-quest/1.0.0": {
+   "far.webp": "sha384-2uzBzbnclMsiO/LPaCUzNpBgqnAUADzyRXH9rVhbY1JLE3vHXCh+NvKc/vU4vO5S",
+   "ground.webp": "sha384-XqP5zThhBaYZoI4WnoexP85OX/ZYm7FebXf0Lljbs2Lqp09ZpxcRZIxhOFffaRY1",
+   "mid.webp": "sha384-40PIp2TFxM8CeULQhdc1yafww48b4/vLl69+N7uug4Kb2zf0oAZaX2jmRSKGTB6r",
+   "pack.js": "sha384-JgwqAclWYfrMLE7rShAK1jerNfanG3OHCSmJZvpdAdjKuq7iPpAGxF/qa5nAVjul",
+   "pack.json": "sha384-SVzayX++SaGRhN+3Ejalt1omx8Rx6VdWM1QyETks0OoiWqt6EuBvIAHQ9QRfC+AP",
+   "props.webp": "sha384-mXuLnopKOSZmQ5X3Q0Lxhr7wNSOCANJ+971saX6gSGATyt7wdnjkZL8YLwaqrj6a"
+  },
+  "cosy-home/1.0.0": {
+   "far.webp": "sha384-T0n6Mg1CtRtt+uit9EIuCBswH70grm162Xxv8RjYRA/wqx2VdTHuCQ6RQhxPdqR2",
+   "ground.webp": "sha384-c/khJkUQII4XVe3VdYJXWsH5RrmYZAlnmNopKAc133WgORHsaUJxe0n23aWbx2tP",
+   "mid.webp": "sha384-Tf4LP3HtfBjZxo5UmdAnzZbRHWa6wGkd1EkS8LzudM1NplEjf+lrfUqZWdOu6F2G",
+   "pack.js": "sha384-d0wcqUxmBB2XcNx4z/8ab7GCwvr9+N3erYExRRRCrFlR7Vxx3fuTk9IL+5TGXiAw",
+   "pack.json": "sha384-msObgFVHckHB9Q2N8r1R9V1CKKV3s8hr4/ueciRfWE7dQSYdAg6BJaTHHCSeZr7v",
+   "props.webp": "sha384-J8ijV89L4s5fxyObxknXY+uMDcqbXNkDC/BzvbN/WArJhlm2Gr/lwaIEQN3jn5jt"
+  },
+  "heroes/1.0.0": {
+   "barbarian.webp": "sha384-yqPMq9L/TowVqSS8+jFJ1051qE3kexL77Wfi1D4xaFbFzCM/Xf46HCIzFIK3YcWp",
+   "bonzo.webp": "sha384-VtiVVsMsDnbpnvcyOUTtW6xw7x7DEdEvNXeyYF8DieZnZ1soK0IPqM1iLekk952K",
+   "captain-clank.webp": "sha384-QyV3LdGUOmXY6M64fRq74GolOCcXAi2+f5Um+H6Z3oonWqk6QggUjI3TkluLfskT",
+   "knight.webp": "sha384-KkG9j+iyONTPBxhqPSYUjPhKl3xHEySPNXTzKRzbMHFRGDCit2satO7TNKxA0528",
+   "mage.webp": "sha384-zyDnJlHxT/puJFLkdiscS7rCs5Eql1fjXeaJf17uK0HBKbTa8aDlAEZkEKYzyv0o",
+   "pack.js": "sha384-iIGB31xGf/aF/jLc/JfdZ+AU9S5FyUId3BOTDosW5cUygBEZzHr1MrzILj05+q1X",
+   "pack.json": "sha384-295yGA8YiNG732rqDNl/Wuq7uPz6ao3f8xquZ9e+mG8/q6/lEK7399RYCDjrxT+S",
+   "rattles.webp": "sha384-CWzK804U0OApc/xpowkhnxpulpLe8rFp3EseMgjyatjB1KVDqsvuzYqvTX/roBSM",
+   "rogue-hooded.webp": "sha384-7Rgf6p02AnihXND1thFSaztWFRAeJHsc7dfbSKD9PXsi/tne7H3IVhNarF2H642S",
+   "rogue.webp": "sha384-oq/pyLXzwe8mH5j1sOWO5q4KZQr9g3aoQGu7r5JPV2rCHr5zfJ2PZsLG8r4j7e2c",
+   "skelly.webp": "sha384-zlNPyRv47L28dpPrZA1O+pZllsf8M4gI4KEAIij3cA38aUELKskRGsASpoOJ6Xrr"
+  },
+  "medieval-village/1.0.0": {
+   "far.webp": "sha384-9dKkpMWMoM2Z6pMaWXWamSxGZ/W4vNvYT8VLVzPfUVuD3kHr5waWk9JC83AnkwKR",
+   "ground.webp": "sha384-95/ycGrjuajuSzkJqk6F/FYspyZpV6tKQOrOL6g/mkXMek2WAADYiLuUcUzJKH+j",
+   "mid.webp": "sha384-YMPOZUKTIA38sF76NQZk/Nvmz8iSIR6lMmjJqGBul4JdnmW1BXyifW0BKRzjPk3J",
+   "pack.js": "sha384-3x2wrFlUIWiJlSnAtx94sMHCJ87bUHzDBxQyndCLSgNyXuT6emmi4hxgJa3vFD/g",
+   "pack.json": "sha384-KCGDa2lCCc65nKEVMDqM3oi72pUWknWh1gSZTq6h0evbHOBVNqK+V9rf2wlK3VSt",
+   "props.webp": "sha384-XxAaMD2VkoBSIDL8R+8NqDcJvZUx9KQgcg0SVntrMHSAQbKGfamkjMhebbzjtJGZ"
+  },
+  "pirate-cove/1.0.0": {
+   "far.webp": "sha384-Jr63wJW2Ex8cFU/q5Z6M7lf7V7Gw6b1uHVeLZ8LMezBpTIOIKrs7haQpZ42iVhmV",
+   "ground.webp": "sha384-wKnHb1ibbMoa30vvVzwRLD5H7AwobXYSxbJsGjh47ZXITy3gBc+sdN1prOA5TZua",
+   "mid.webp": "sha384-bSkQLF03ridMMxoSzVF09HVfEwlc0AIv2qmecLH8PQGQ13lRSmLlTyjnUXYIk6ny",
+   "pack.js": "sha384-fnlXu0XIHqw6wc0+fu6oP5St0a0gRbf3kIukyHL7lgm5pw/HLt280iqURlGtIG1P",
+   "pack.json": "sha384-JDSkeP3kO7ItxSPW+LrETu5FBL8G2evhjzkRsDfj5/5Vz/SvCNj4jfDT0LFgLeDU",
+   "props.webp": "sha384-0YxKZUEsRhyVA7zNWTfEE6TWV8eJvfr+iGYkaM1VqZacvD6mqXOiFtzB0+EbYdG8"
+  },
+  "sky-islands/1.0.0": {
+   "far.webp": "sha384-84G6548txVXOk6+H243k+ejkr7P+GuTQOFG7kbWShuGbwdy7H++iSZHqisS0oCzc",
+   "ground.webp": "sha384-RhWGAd2LumGLJAvVp+bWMpes9b6gRRZ5QWTvB+ISJV6ZYsgXw5C9raSJGliCTKsq",
+   "mid.webp": "sha384-ZSIqVijSE6kpaHnYgHM/Sjo2IC13+MetxMAp6s6da9FWwcvs2CtSeD/aHxR/koRW",
+   "pack.js": "sha384-WRqJ6GWKalnlhQRExITKQPjLZDxTSwoQtFis12kk2jNNx/Nieg8JGe1Mx8OJp3/r",
+   "pack.json": "sha384-zJCI2+JfIzUv72hjavk5KHzFNDh19ZatMlDm+4GGZSudzOpuywWQPD59FoL5GxFH",
+   "props.webp": "sha384-0Mz0wmo8Fc8rFC52fuEISuloDMx4y2wLA6VGGgmCH08aKs4g/2PILfTEOANTXH2S"
+  },
+  "space-base/1.0.0": {
+   "far.webp": "sha384-p8Mny6hNmT1czcc0iaoV5lhhSt5z4NcdcguKA4mhLAWM/WHNCpRfDOaTfEXx8u/6",
+   "ground.webp": "sha384-WXXgb4CEuJfBbGeNNa9Ctj1guggQbapzrVF5J30At3gJdWc0Fz9zrbhjbrqnWdh/",
+   "mid.webp": "sha384-gx8xsGo7clCm7Mo/9L5Hv42d6smBLY4a0tUiacHpOxSCLxCxWfgD33LmfJ9YRGvh",
+   "pack.js": "sha384-nYh+DvGgxA96FxNf1cYImAKY/BJBkWJ/+2+occrnEXZH1dNt8dwSiCktMpr5/0xs",
+   "pack.json": "sha384-MnIMWmpjCtR6XjqkswkK+a5I+n+DGdt5J5oVY3uYv3Rj7P9Oi5SaPp8otvPGAiOY",
+   "props.webp": "sha384-0fWkNmuwfU3mx9mvoTqLEwvsdG0DxByzAL/wHOe4AT5skypo7XM3JtObNNpDz+lA"
+  },
+  "spooky-hollow/1.0.0": {
+   "far.webp": "sha384-QSdZ6Ji2JoPMQCto3l+jTU6OjJGYvibh5pe3nKwS0TDAusvJnbr5rv7aMl5QLA89",
+   "ground.webp": "sha384-wiE7fkrmjwq84hX0n9a27nI2a/weEpT4Ti3NpF4TEaFSK/8HpE7IaRm06ABBr6lp",
+   "mid.webp": "sha384-UKftV1x6XZIW7hXkl+XtdTxa14kRhxWfPRnGhkg/P+APAdHJwIjr29IpdNQjsyLG",
+   "pack.js": "sha384-ksC76n57/r+eO3GEkilnKy1YLWdruH83XjX7chKJuVzj7RG1ZJPXCmQgi9i/S1RL",
+   "pack.json": "sha384-R70JwZcTO8loVbXueFxGyu/icRLeA7gt07/1gmmVz121bM7Td3bMSkyLUFt2+kVG",
+   "props.webp": "sha384-SfomdGEInKVmVZgXwaEdnUeMNarcUuMXAW+LQznJGcT9pXl/6VbB3bA8vsxv6cou"
+  },
+  "toy-town/1.0.0": {
+   "far.webp": "sha384-tJTdVOzP8Cu47QN43RCrbP6D+WgAF3f/8QSc/kWdNMSQbNACq399R3JpND03iqd9",
+   "ground.webp": "sha384-+sgP92KF6Tzq5J86+NpA4+OxDnM37t6gtKKusxiqniXyLt81/PZg+MPmbSfRIO3Q",
+   "mid.webp": "sha384-CkBWUggfLG+PQENr+SpmnEKZU40cb87UVwdYCVsQ/poBwVfI+uuYa9HXYkks5bVE",
+   "pack.js": "sha384-4jOZ6W/+yaWkGO5EMi6gHrxiOHfd+3V9ISYgoslhSC6zsCW1hPm1D2fa/tQU429R",
+   "pack.json": "sha384-w2aXG21G6jhFNF7Le0KnRM5/4qVEb35j8TCTwVmnHb0VEOv3P7m1V7Fd7NlJ0cDL",
+   "props.webp": "sha384-dvgwo20nwE1vL2zQhQtnJ8smeaBkzC4OMVHf8PyvQOEVc7lfQK5PsiCjQqVDxvFZ"
+  }
+ }
+}

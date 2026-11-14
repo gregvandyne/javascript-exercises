@@ -1,0 +1,323 @@
+{
+ "id": "toy-town",
+ "version": "1.0.0",
+ "kind": "world",
+ "name": "Toy Town",
+ "world": "toy-town",
+ "heroes": [
+  "knight",
+  "barbarian",
+  "mage",
+  "rogue",
+  "rogue-hooded",
+  "skelly",
+  "rattles",
+  "bonzo",
+  "captain-clank"
+ ],
+ "cell": 96,
+ "from": {
+  "theme": "toy-town/1.1.0",
+  "packs": [
+   {
+    "id": "kaykit-adventurers",
+    "name": "KayKit Adventurers Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-skeletons",
+    "name": "KayKit Skeletons Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-city-builder",
+    "name": "KayKit City Builder Bits 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-dungeon",
+    "name": "KayKit Dungeon Remastered Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-platformer",
+    "name": "Kenney Starter Kit 3D Platformer (sounds)",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-medieval",
+    "name": "KayKit Medieval Hexagon Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   }
+  ]
+ },
+ "sprites": {
+  "car-taxi": {
+   "kind": "prop",
+   "piece": "car-taxi",
+   "ax": 0.4997,
+   "ay": 0.9131,
+   "size": 1.01,
+   "rect": [
+    557,
+    388,
+    205,
+    97
+   ]
+  },
+  "car-police": {
+   "kind": "prop",
+   "piece": "car-police",
+   "ax": 0.501,
+   "ay": 0.9103,
+   "size": 1.03,
+   "rect": [
+    340,
+    388,
+    215,
+    99
+   ]
+  },
+  "car-hatchback": {
+   "kind": "prop",
+   "piece": "car-hatchback",
+   "ax": 0.499,
+   "ay": 0.9095,
+   "size": 1.07,
+   "rect": [
+    126,
+    388,
+    212,
+    103
+   ]
+  },
+  "streetlight": {
+   "kind": "prop",
+   "piece": "streetlight",
+   "ax": 0.4995,
+   "ay": 0.9927,
+   "size": 2.39,
+   "rect": [
+    2,
+    388,
+    65,
+    229
+   ]
+  },
+  "traffic-light": {
+   "kind": "prop",
+   "piece": "traffic-light",
+   "ax": 0.4994,
+   "ay": 0.9935,
+   "size": 2.1,
+   "rect": [
+    69,
+    388,
+    55,
+    202
+   ]
+  },
+  "fire-hydrant": {
+   "kind": "prop",
+   "piece": "fire-hydrant",
+   "ax": 0.4948,
+   "ay": 0.9549,
+   "size": 0.63,
+   "rect": [
+    304,
+    619,
+    36,
+    60
+   ]
+  },
+  "bench": {
+   "kind": "prop",
+   "piece": "bench",
+   "ax": 0.4983,
+   "ay": 0.9,
+   "size": 0.66,
+   "rect": [
+    104,
+    619,
+    198,
+    63
+   ]
+  },
+  "bush": {
+   "kind": "prop",
+   "piece": "bush",
+   "ax": 0.4942,
+   "ay": 0.971,
+   "size": 0.82,
+   "rect": [
+    872,
+    388,
+    42,
+    79
+   ]
+  },
+  "tree": {
+   "kind": "prop",
+   "piece": "tree",
+   "ax": 0.5008,
+   "ay": 0.9852,
+   "size": 3.22,
+   "rect": [
+    515,
+    2,
+    144,
+    309
+   ]
+  },
+  "tree-round": {
+   "kind": "prop",
+   "piece": "tree-round",
+   "ax": 0.5005,
+   "ay": 0.9852,
+   "size": 2.83,
+   "rect": [
+    661,
+    2,
+    162,
+    272
+   ]
+  },
+  "building-a": {
+   "kind": "prop",
+   "piece": "building-a",
+   "ax": 0.4993,
+   "ay": 0.9014,
+   "size": 4,
+   "rect": [
+    2,
+    2,
+    511,
+    384
+   ]
+  },
+  "goal": {
+   "kind": "goal",
+   "piece": "water-tower",
+   "ax": 0.4989,
+   "ay": 0.9573,
+   "size": 2.49,
+   "rect": [
+    825,
+    2,
+    179,
+    239
+   ]
+  },
+  "coin": {
+   "kind": "coin",
+   "piece": "coin",
+   "ax": 0.5036,
+   "ay": 0.9887,
+   "size": 0.61,
+   "rect": [
+    342,
+    619,
+    53,
+    59
+   ]
+  },
+  "obstacle-1": {
+   "kind": "obstacle",
+   "piece": "fire-hydrant",
+   "ax": 0.5022,
+   "ay": 0.9576,
+   "size": 0.73,
+   "rect": [
+    916,
+    388,
+    43,
+    70
+   ]
+  },
+  "obstacle-2": {
+   "kind": "obstacle",
+   "piece": "box",
+   "ax": 0.5005,
+   "ay": 0.9078,
+   "size": 0.91,
+   "rect": [
+    764,
+    388,
+    106,
+    87
+   ]
+  },
+  "obstacle-3": {
+   "kind": "obstacle",
+   "piece": "rock-big",
+   "ax": 0.5035,
+   "ay": 0.8948,
+   "size": 0.72,
+   "rect": [
+    2,
+    619,
+    100,
+    69
+   ]
+  }
+ },
+ "sky": [
+  "#4fb0ff",
+  "#bfe6ff",
+  "#fff4d6"
+ ],
+ "under": "#454c46",
+ "layers": {
+  "far": {
+   "image": "far.webp",
+   "w": 1024,
+   "h": 320,
+   "cells": 11.11,
+   "speed": 0.12,
+   "base": 24
+  },
+  "mid": {
+   "image": "mid.webp",
+   "w": 2048,
+   "h": 512,
+   "cells": 7.41,
+   "speed": 0.35,
+   "base": 44
+  }
+ },
+ "ground": {
+  "image": "ground.webp",
+  "cells": 2,
+  "over": 15,
+  "fill": "#454c46"
+ },
+ "props": {
+  "image": "props.webp",
+  "w": 1024,
+  "h": 690
+ },
+ "files": {
+  "far.webp": {
+   "bytes": 26180,
+   "sha384": "sha384-tJTdVOzP8Cu47QN43RCrbP6D+WgAF3f/8QSc/kWdNMSQbNACq399R3JpND03iqd9"
+  },
+  "ground.webp": {
+   "bytes": 744,
+   "sha384": "sha384-+sgP92KF6Tzq5J86+NpA4+OxDnM37t6gtKKusxiqniXyLt81/PZg+MPmbSfRIO3Q"
+  },
+  "mid.webp": {
+   "bytes": 49182,
+   "sha384": "sha384-CkBWUggfLG+PQENr+SpmnEKZU40cb87UVwdYCVsQ/poBwVfI+uuYa9HXYkks5bVE"
+  },
+  "props.webp": {
+   "bytes": 50262,
+   "sha384": "sha384-dvgwo20nwE1vL2zQhQtnJ8smeaBkzC4OMVHf8PyvQOEVc7lfQK5PsiCjQqVDxvFZ"
+  }
+ }
+}

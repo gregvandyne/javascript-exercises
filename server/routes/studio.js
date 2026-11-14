@@ -44,6 +44,7 @@ import * as sparks from '../services/sparks.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { KIT2_WORLDS, KIT2_CHARACTERS, WORLD_IDS, kit2Of, worldById, heroFor, worldLook } from '../builder/kit2.js';
+import { ART2D_WORLDS, ART2D_ANIMALS } from '../builder/art2d.js';
 import { builderMicOn } from '../services/mic-games.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
 import { tEn } from '../i18n/index.js';
@@ -123,7 +124,12 @@ function themePicker(t, current, k2, hasGame) {
     <div class="st-tabs" role="tablist" aria-label="${t('studio.picker.label')}">${tab('worlds', '🌍')}${tab('heroes', '🦸')}${tab('classic', '🎨')}</div>
     ${row('worlds', KIT2_WORLDS.map(w => chip('st-pick st-world', 'world', w.id, t(`studio.worlds.names.${w.id}`), `/img/kit2/worlds/${w.id}.webp`, !!k2 && k2.world === w.id, [48, 32])))}
     ${row('heroes', heroes.map(c => chip('st-pick st-hero', 'hero', c.id, t(`studio.heroes.names.${c.id}`), `/img/kit2/heroes/${c.id}.webp`, !!k2 && k2.hero === c.id, [32, 32], ` data-worlds="${c.worlds.join(' ')}"`)))}
-    ${row('classic', Object.keys(THEMES).map(id => chip('st-theme', 'theme', id, t(`studio.themes.names.${id}`), `/img/themes/${id}.webp`, id === current, [48, 32])))}
+    ${row('classic', [
+      // The worlds drawn in 2D and the sprite animals (builder/art2d.js, from the locked 2D art packs), then the kit's themes.
+      ...ART2D_WORLDS.map(w => chip('st-pick st-world2d', 'world2d', w.id, `${t(`studio.worlds.names.${w.id}`)} · 2D`, `/img/kit2/worlds/${w.id}.webp`, false, [48, 32], ` data-say="${t(`studio.worlds.names.${w.id}`)}"`)),
+      ...ART2D_ANIMALS.map(c => chip('st-pick st-animal', 'animal', c.id, t(`studio.animals.names.${c.id}`), `/img/art2d/animals/${c.id}.webp`, false, [48, 32])),
+      ...Object.keys(THEMES).map(id => chip('st-theme', 'theme', id, t(`studio.themes.names.${id}`), `/img/themes/${id}.webp`, id === current, [48, 32])),
+    ])}
   </div>`;
 }
 /** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).

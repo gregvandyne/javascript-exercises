@@ -1618,6 +1618,34 @@
         "captain-clank": "Kapitein Clank"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "Paard",
+        "horse-white": "Wit paard",
+        "donkey": "Ezel",
+        "cow": "Koe",
+        "bull": "Stier",
+        "alpaca": "Alpaca",
+        "deer": "Ree",
+        "stag": "Hert",
+        "fox": "Vos",
+        "wolf": "Wolf",
+        "husky": "Husky",
+        "shiba": "Shiba-hond",
+        "cow-spotted": "Gevlekte koe",
+        "pony": "Pony",
+        "zebra": "Zebra",
+        "llama": "Lama",
+        "pig": "Varken",
+        "sheep": "Schaap",
+        "pug": "Mopshond",
+        "apatosaurus": "Apatosaurus",
+        "stegosaurus": "Stegosaurus",
+        "triceratops": "Triceratops",
+        "parasaurolophus": "Parasaurolophus",
+        "velociraptor": "Velociraptor"
+      }
+    },
     "lesson": {
       "step": "Stap van de les: {title}",
       "back": "Terug naar de les",
@@ -2394,6 +2422,8 @@
       "themeUse": "Gebruik het thema {name}.",
       "worldUse": "Maak er een 3D-spel van in de wereld {name}.",
       "heroUse": "Gebruik de 3D-held {name}.",
+      "world2dUse": "Gebruik de 2D-wereld {name}.",
+      "animal2dUse": "Maak dit dier de held: {name}.",
       "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}"
     },
     "character": {

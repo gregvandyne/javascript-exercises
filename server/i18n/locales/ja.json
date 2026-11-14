@@ -1617,6 +1617,34 @@
         "captain-clank": "キャプテン・クランク"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "うま",
+        "horse-white": "しろい うま",
+        "donkey": "ロバ",
+        "cow": "うし",
+        "bull": "おうし",
+        "alpaca": "アルパカ",
+        "deer": "しか",
+        "stag": "おすの しか",
+        "fox": "きつね",
+        "wolf": "おおかみ",
+        "husky": "ハスキー",
+        "shiba": "しばいぬ",
+        "cow-spotted": "ぶちの うし",
+        "pony": "ポニー",
+        "zebra": "シマウマ",
+        "llama": "ラマ",
+        "pig": "ぶた",
+        "sheep": "ひつじ",
+        "pug": "パグ",
+        "apatosaurus": "アパトサウルス",
+        "stegosaurus": "ステゴサウルス",
+        "triceratops": "トリケラトプス",
+        "parasaurolophus": "パラサウロロフス",
+        "velociraptor": "ヴェロキラプトル"
+      }
+    },
     "lesson": {
       "step": "レッスンのステップ: {title}",
       "back": "レッスンにもどる",
@@ -2393,6 +2421,8 @@
       "themeUse": "「{name}」のテーマにして。",
       "worldUse": "「{name}」の3Dワールドの ゲームにして。",
       "heroUse": "3Dヒーローは「{name}」にして。",
+      "world2dUse": "2Dワールド「{name}」を つかって。",
+      "animal2dUse": "ヒーローを この どうぶつに して：{name}。",
       "sparks": "{n, plural, other {スパークパック #回分}}"
     },
     "character": {

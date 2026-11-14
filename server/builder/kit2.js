@@ -12,6 +12,7 @@ import { KIT2_WORLDS, KIT2_VERSIONS, KIT2_API_SOURCE } from './kit2-catalog.js';
 import { kit2ImportMap, OOMBA3D_VERSION, OOMBA3D_MODULE, KIT2_LOCK } from '../services/vendor.js';
 import { fileURLToPath } from 'node:url';
 import { LOCALES_DIR, CODES } from '../i18n/index.js';
+import { isArt2dChip } from './art2d.js';
 
 export { KIT2_WORLDS, KIT2_VERSIONS };
 export const WORLD_IDS = KIT2_WORLDS.map(w => w.id);
@@ -200,6 +201,8 @@ const THREE_D = /(^|[^a-z0-9])(3\s?-?d|three[- ]?d)([^a-z0-9]|$)/;
  */
 export function pickKit2(text) {
   const t = norm(text);
+  // A Classic-tab 2D chip (a 2D world or an animal, art2d.js) names a world too, but it is a pick for a 2D game.
+  if (isArt2dChip(text)) return { world: '', hero: '', soft: false, by: '', classic: true, threeD: false, wantsCreature: false, place: '' };
   const chipOf = kind => { for (const re of NAMES.chips[kind]) { const m = re.exec(t); if (m) return m[1]; } return null; };
   const worldChip = chipOf('world'), heroChip = chipOf('hero');
   const chipWorld = worldChip ? lastNamed(NAMES.worlds, worldChip) : '', chipHero = heroChip ? lastNamed(NAMES.heroes, heroChip) : '';
@@ -213,7 +216,7 @@ export function pickKit2(text) {
   const threeD = THREE_D.test(t);
   // "a 3D game with a knight": a 3D request that names one of the characters is a pick of that character.
   const by = chipWorld || chipHero ? 'chip' : named || (threeD && heroName && !classic) ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
-  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
+  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, by, classic, threeD, place, wantsCreature: CREATURE_WORDS.test(t) && !KIT2_CHARACTERS.some(c => c.kind === 'creature') };
 }
 
 /**

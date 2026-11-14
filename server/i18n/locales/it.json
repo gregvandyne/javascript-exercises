@@ -1618,6 +1618,34 @@
         "captain-clank": "Capitan Clank"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "Cavallo",
+        "horse-white": "Cavallo bianco",
+        "donkey": "Asino",
+        "cow": "Mucca",
+        "bull": "Toro",
+        "alpaca": "Alpaca",
+        "deer": "Cerva",
+        "stag": "Cervo",
+        "fox": "Volpe",
+        "wolf": "Lupo",
+        "husky": "Husky",
+        "shiba": "Cane shiba",
+        "cow-spotted": "Mucca pezzata",
+        "pony": "Pony",
+        "zebra": "Zebra",
+        "llama": "Lama",
+        "pig": "Maiale",
+        "sheep": "Pecora",
+        "pug": "Carlino",
+        "apatosaurus": "Apatosauro",
+        "stegosaurus": "Stegosauro",
+        "triceratops": "Triceratopo",
+        "parasaurolophus": "Parasaurolofo",
+        "velociraptor": "Velociraptor"
+      }
+    },
     "lesson": {
       "step": "Passaggio della lezione: {title}",
       "back": "Torna alla lezione",
@@ -2394,6 +2422,8 @@
       "themeUse": "Usa il tema {name}.",
       "worldUse": "Fanne un gioco 3D nel mondo {name}.",
       "heroUse": "Usa l’eroe 3D {name}.",
+      "world2dUse": "Usa il mondo 2D {name}.",
+      "animal2dUse": "Fai di questo animale l’eroe: {name}.",
       "sparks": "{n, plural, one {# messaggio dai Pacchetti Scintilla} other {# messaggi dai Pacchetti Scintilla}}"
     },
     "character": {

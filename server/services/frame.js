@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
 import { deviceNeeds, VENDOR_PATH, DATA_PATH, KIT2_PATH, THEMES_PATH } from './vendor.js';
 import { KIT_PATH, upgradeKitPins } from './kit.js';
+import { ART2D_PATH } from './art2d.js';
 import { config } from '../config.js';
 
 const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/sdk/brb-sdk.js');
@@ -24,8 +25,8 @@ export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock'
 const ORIGIN_URL_RE = /^https?:\/\/(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;
 export function frameCsp(origins = '') {
   const own = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))];
-  // Scripts: the 3D library, the Oomba Kit and the reviewed game data packs. Fonts: the kit's self-hosted font files.
-  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH}`).join('');
+  // Scripts: the 3D library, the Oomba Kit, the reviewed game data packs, Kit 2's engines and the 2D art packs. Fonts: the kit's self-hosted font files.
+  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH} ${o}${ART2D_PATH}`).join('');
   const fonts = own.map(o => ` ${o}${KIT_PATH}`).join('');
   // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for
   // connect, img and media: never any other path or host. connect-src also allows blob:, a URL for data the frame already
@@ -33,7 +34,11 @@ export function frameCsp(origins = '') {
   // games run WebAssembly (Rapier physics, the meshopt decoder): it compiles WebAssembly only, never eval or
   // new Function, and WebAssembly has no network of its own. (Still no workers.)
   const themes = own.map(o => ` ${o}${THEMES_PATH}`).join('');
-  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}; media-src data: blob:${themes}; connect-src ${themes ? 'blob:' + themes : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
+  // 2D art packs (art2d.js): the Oomba2D helper and each pack's manifest are pinned scripts under /vendor/art2d/ (in
+  // the script list above), and the pack's pictures are <img> loads from that same path. One path, our own origin,
+  // scripts and images only: it is not in connect-src (nothing there is fetched) or media-src.
+  const art2d = own.map(o => ` ${o}${ART2D_PATH}`).join('');
+  return `sandbox ${SANDBOX}; default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com${vendor}; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:${fonts}; img-src data: blob:${themes}${art2d}; media-src data: blob:${themes}; connect-src ${themes ? 'blob:' + themes : "'none'"}; frame-ancestors 'self'; form-action 'none'; base-uri 'none'`;
 }
 export const FRAME_CSP = frameCsp();
 const ORIGIN_RE = /^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;

@@ -2,6 +2,7 @@
 <div id="game"></div>
 <!--KIT-->
 <!--PACK:dress-->
+<!--ART2D-->
 <script>
 // Endless Runner, on the Oomba Kit: one Oomba.game call. The hero runs by itself; the player jumps (tap, Space or the
 // jump button) over spikes, gaps and bees, grabs sparks and coins, and races to the flag. Level 1 is drawn below, one
@@ -12,6 +13,8 @@ const CONFIG = {
   title: 'Zippy Dash',
   hero: { species: 'fox', wear: ['scarf'] },
   biome: 'meadow',
+  world: '',
+  hero2d: '',
   autoRun: true,
   controls: 'platformer:kid-easy',
   lives: 3,
@@ -50,25 +53,34 @@ const LEVEL = [
 
 const O = window.Oomba;
 let rest = 0;   // seconds the hero waits after a bump before running on
-const game = O.game({
-  api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero,
-  controls: CONFIG.controls,
-  hud: ['score', 'lives:' + CONFIG.lives, 'timer:' + CONFIG.roundSeconds, 'progress'],
-  howTo: [{ icon: 'move', text: 'run' }, { icon: 'jump', text: 'jump' }, { icon: 'flag', text: 'goal' }],
-  strings: WORDS,
-  level: [
-    O.level.grid(LEVEL),
-    O.level.generate({ seed: 21, length: CONFIG.levelLength, difficulty: CONFIG.level2 }),
-    O.level.generate({ seed: 34, length: CONFIG.levelLength, difficulty: CONFIG.level3 }),
-  ],
-  setup() { rest = 0; },
-  update(w, dt) {
-    // auto-run: keep "right" pressed while playing (the arrows still steer); after a bump, wait a moment first
-    rest = Math.max(0, rest - dt);
-    if (CONFIG.autoRun && w.scene === 'play' && !w.busy && !rest && !O.input.down('right')) O.input.hold('right', 400);
-  },
-  on: { hit() { rest = 1.2; } },
-});
-// a tap anywhere on the world jumps (the touch jump button and Space work too)
-O.input.on('tap', () => { if (game.state === 'play') O.input.hold('jump', 220); });
+// CONFIG.world and CONFIG.hero2d: one of the ready-made 2D worlds (its sky, scenery, ground, coins, goal and obstacles)
+// and a hero or animal drawn as a sprite, from the 2D art packs (Oomba2D). With neither, or when the art cannot load,
+// art is null and the game has the kit's own look (CONFIG.biome and CONFIG.hero).
+function begin(art) {
+  const made = l => (art ? art.level(l) : l);
+  const legend = art && art.world ? { o: art.coin(), G: art.goal(), '^': art.obstacle(0) } : {};
+  const game = O.game({
+    api: 1, title: CONFIG.title, subtitle: 'sub', biome: CONFIG.biome, hero: CONFIG.hero, dress: art && art.world ? 'off' : 'auto',
+    controls: CONFIG.controls,
+    hud: ['score', 'lives:' + CONFIG.lives, 'timer:' + CONFIG.roundSeconds, 'progress'],
+    howTo: [{ icon: 'move', text: 'run' }, { icon: 'jump', text: 'jump' }, { icon: 'flag', text: 'goal' }],
+    strings: WORDS,
+    level: [
+      O.level.grid(art && art.world ? LEVEL.map(r => r.replace(/B/g, ' ')) : LEVEL, legend),
+      made(O.level.generate({ seed: 21, length: CONFIG.levelLength, difficulty: CONFIG.level2 })),
+      made(O.level.generate({ seed: 34, length: CONFIG.levelLength, difficulty: CONFIG.level3 })),
+    ],
+    setup(w) { rest = 0; if (art) art.dress(w); },
+    update(w, dt) {
+      // auto-run: keep "right" pressed while playing (the arrows still steer); after a bump, wait a moment first
+      rest = Math.max(0, rest - dt);
+      if (CONFIG.autoRun && w.scene === 'play' && !w.busy && !rest && !O.input.down('right')) O.input.hold('right', 400);
+    },
+    on: { hit() { rest = 1.2; } },
+  });
+  // a tap anywhere on the world jumps (the touch jump button and Space work too)
+  O.input.on('tap', () => { if (game.state === 'play') O.input.hold('jump', 220); });
+}
+const A = window.Oomba2D;
+if (A && (CONFIG.world || CONFIG.hero2d)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d }).then(begin); else begin(null);
 </script>

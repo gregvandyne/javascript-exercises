@@ -1618,6 +1618,34 @@
         "captain-clank": "Käpt’n Clank"
       }
     },
+    "animals": {
+      "names": {
+        "horse": "Pferd",
+        "horse-white": "Schimmel",
+        "donkey": "Esel",
+        "cow": "Kuh",
+        "bull": "Stier",
+        "alpaca": "Alpaka",
+        "deer": "Reh",
+        "stag": "Hirsch",
+        "fox": "Fuchs",
+        "wolf": "Wolf",
+        "husky": "Husky",
+        "shiba": "Shiba-Hund",
+        "cow-spotted": "Gefleckte Kuh",
+        "pony": "Pony",
+        "zebra": "Zebra",
+        "llama": "Lama",
+        "pig": "Schwein",
+        "sheep": "Schaf",
+        "pug": "Mops",
+        "apatosaurus": "Apatosaurus",
+        "stegosaurus": "Stegosaurus",
+        "triceratops": "Triceratops",
+        "parasaurolophus": "Parasaurolophus",
+        "velociraptor": "Velociraptor"
+      }
+    },
     "lesson": {
       "step": "Schritt der Stunde: {title}",
       "back": "Zurück zur Stunde",
@@ -2394,6 +2422,8 @@
       "themeUse": "Nimm das Thema {name}.",
       "worldUse": "Mach daraus ein 3D-Spiel in der Welt {name}.",
       "heroUse": "Nimm den 3D-Helden {name}.",
+      "world2dUse": "Nimm die 2D-Welt {name}.",
+      "animal2dUse": "Mach dieses Tier zum Helden: {name}.",
       "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}"
     },
     "character": {

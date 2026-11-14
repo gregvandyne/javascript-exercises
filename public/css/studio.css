@@ -334,6 +334,7 @@ button.stp-line{cursor:pointer}
 .st-theme,.st-pick{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:3px 12px 3px 3px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .85rem var(--font);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
 .st-theme img,.st-pick img{width:48px;height:32px;border-radius:999px;object-fit:cover;background:var(--card-2);flex:none}
 .st-hero img{width:36px;height:36px;border-radius:50%}
+.st-animal img{object-fit:contain;border-radius:10px;background:var(--card-2)}
 .st-theme:hover,.st-pick:hover{border-color:var(--accent-line)}
 .st-theme[aria-pressed="true"],.st-pick[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
 .st-theme.is-current,.st-pick.is-current{border-color:var(--accent-line)}

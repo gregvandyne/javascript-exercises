@@ -32,7 +32,8 @@ import { isThreeGame } from '../services/vendor.js';
 import { NO_STEPS } from './steps.js';
 import { asksForLive } from './prompt.js';
 import { kitPackTag } from '../services/kit.js';
-import { wantsKit2, isKit2Game } from './kit2.js';
+import { wantsKit2, isKit2Game, pickKit2, worldLook } from './kit2.js';
+import { wantsArt2d, isArt2dGame, art2dEdits, art2dWorld, art2dCharacter, ART2D_TEMPLATES } from './art2d.js';
 import { buildKit2, followUpKit2 } from './mock-kit2.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -111,17 +112,23 @@ async function build(ctx, m) {
   const kind = a.kind || DEFAULT_KIND;
   const theme = a.theme ? themeByKey(a.theme) : null;
   const info = await templateInfo(kind);
-  const { html: base, fallback } = await templateHtml(kind);
+  // The 2D art (art2d.js): the running and catching games draw a picked world and a sprite hero or animal.
+  const pick = m.art2d || null, art = pick && ART2D_TEMPLATES.includes(kind) && (art2dWorld(pick.world) || art2dCharacter(pick.hero)) ? pick : null;
+  const aw = art && art2dWorld(art.world), ac = art && art2dCharacter(art.hero);
+  const { html: base, fallback } = await templateHtml(kind, art ? { world: art.world, hero: art.hero } : undefined);
   const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
-  const title = titleFor(kind, theme);
+  const title = aw && !theme ? `${aw.name} ${kind === 'runner' ? 'Dash' : 'Catch'}` : titleFor(kind, theme);
   const html = personalise(base, title, theme, info.icon);
+  if (pick && pick.missing) await say(ctx, 'There is no picture of that animal yet, so one of the game’s own heroes plays for now. ');
+  if (pick && !art && art2dWorld(pick.world)) await say(ctx, `The ${art2dWorld(pick.world).name} pictures are for running and catching games so far, so this one keeps the classic look. `);
+  if (art) await say(ctx, `${aw ? `It is set in ${aw.name}` : 'It keeps the classic world'}${ac ? `${aw ? ', and' : ', and'} the ${ac.name.toLowerCase()} is your hero` : ''}. `);
   const learnBit = a.learn && a.learn !== 'none' ? ` It sneaks in some ${a.learn} too.` : '';
   await say(ctx, `Here's my plan for ${title} ${theme ? theme.emoji : info.icon}: ${PLANS[realKind] || PLANS.catch}${learnBit} Building it now…\n\n`);
   tools.exec('set_game', {
-    title, icon: theme ? theme.emoji : info.icon,
+    title, icon: theme ? theme.emoji : aw ? worldLook(aw.id)[0] : info.icon,
     description: `${theme ? `A ${theme.name.toLowerCase()} game! ` : ''}${info.description}`.slice(0, 300),
     category: a.learn && a.learn !== 'none' ? 'learning' : (CATEGORY_FOR[kind] || info.category),
-    tags: [kind, theme && theme.key, a.learn !== 'none' && a.learn].filter(Boolean),
+    tags: [kind, theme && theme.key, a.learn !== 'none' && a.learn, aw && aw.id, ac && ac.id].filter(Boolean),
     players: a.players === 'two' || a.players === 'pass' || kind === 'duel' ? 2 : (info.players || 1),
     cover: theme ? theme.cover : info.cover,
   });
@@ -136,6 +143,18 @@ async function build(ctx, m) {
 // ---- Game exists: edits ---------------------------------------------------------------------------
 async function followUp(ctx, m, cur) {
   const { text, tools } = ctx; const g = tools.game();
+  // A game that draws with the 2D art: another world or sprite hero is two CONFIG lines and a pack tag.
+  if (m.art2d && (m.art2d.changed || (m.art2d.by === 'chip' && !isArt2dGame(cur.html)))) {
+    const edits = art2dEdits(cur.html, m.art2d), aw = art2dWorld(m.art2d.world), ac = art2dCharacter(m.art2d.hero);
+    if (edits.length) {
+      const r = tools.exec('edit_game', { edits, notes: `${aw ? `Now in ${aw.name}` : 'A new hero'}${aw && ac ? ` with the ${ac.name.toLowerCase()}` : ''}`.slice(0, 120) });
+      await say(ctx, r.ok ? `Done! ${aw ? `It is in ${aw.name} now` : 'New hero'}${ac ? `${aw ? ', with' : ':'} the ${ac.name.toLowerCase()}` : ''}. Press Play to see it.` : 'Hmm, I could not change that. Try asking another way.');
+      if (r.ok) tools.exec('ask_user', { question: 'What should we change next?', options: nextChips(readTune(cur.html)) });
+      return;
+    }
+    if (m.art2d.by === 'chip') { await say(ctx, 'Those pictures are for running and catching games so far. Start a new running or catching game and pick them there!'); return; }
+  }
+  if (m.art2d && m.art2d.missing && isArt2dGame(cur.html)) { await say(ctx, 'There is no picture of that animal yet. '); }
   const t = text.toLowerCase();
   const tune = readTune(cur.html); const changes = {}; const said = [];
   if (/\b(fix|repair)\b/.test(t) && cur.safety_status === 'fail') return fixSafety(ctx, m, cur);
@@ -403,7 +422,12 @@ export async function run(ctx) {
     else {
       // The engine choice (kit2.js): a Kit 2 game, or a pick of one of the ready-made 3D worlds or characters, goes to
       // the Kit 2 side (mock-kit2.js); everything else is the old kit, exactly as before.
-      const k2 = wantsKit2(st, text, cur), c2 = { ...ctx, text };
+      // The 2D art (art2d.js): a 2D game that picks or names a world, a sprite hero or an animal draws with it. A new
+      // running or catching game with an animal that exists as a sprite is built in 2D (no 3D world has an animal yet).
+      const a2 = wantsArt2d(st, text, cur, pickKit2(text));
+      if (a2 && a2.force2d) delete st.kit2;
+      const k2 = a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
+      m.art2d = k2 ? null : a2; if (k2) delete st.art2d;
       if (cur && isKit2Game(cur.html)) await followUpKit2(c2, m, cur, k2 || {}, say);
       else if (cur && k2) await buildKit2(c2, m, k2, say, { replaces: ctx.tools.game() });
       else if (k2) await buildKit2(c2, m, k2, say);

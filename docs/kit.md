@@ -114,8 +114,10 @@ A Builder game becomes `CONFIG` + `Oomba.game({...})` + a one-character ASCII le
 
 - **Frame CSP** (`server/services/frame.js` `frameCsp`):
   - `script-src`: inline scripts, cdnjs, `<origin>/vendor/three/` and `<origin>/vendor/oomba-kit/`;
+    (since the 2D art packs: also `<origin>/vendor/art2d/`, the pinned Oomba2D helper and pack manifests);
   - `font-src`: gstatic, `data:` and `<origin>/vendor/oomba-kit/` (the kit's own font);
-  - images only from `data:`/`blob:` (and, since Kit 2, the read-only `<origin>/vendor/themes/` theme art);
+  - images only from `data:`/`blob:` (and, since Kit 2, the read-only `<origin>/vendor/themes/` theme art, and
+    `<origin>/vendor/art2d/`, the 2D art packs' pictures);
   - `connect-src 'none'` (since Kit 2: only `<origin>/vendor/themes/`);
   - opaque origin.
 

@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { kitTag, kitPackTag } from '../../services/kit.js';
 import { kit2Starter } from '../kit2.js';
+import { art2dTags, art2dConfig } from '../art2d.js';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -45,12 +46,16 @@ export const TEMPLATES = [
 
 const cache = new Map();
 
-/** Returns the template's HTML. Throws on an unknown key. opts (oomba3d only): { world, hero, title }. */
+/** Returns the template's HTML. Throws on an unknown key. opts: { world, hero, title } for oomba3d; { world, hero } for a
+ *  2D template that takes the 2D art (runner, catch): a 2D world and a hero or animal (../art2d.js). */
 export function loadTemplate(key, opts = {}) {
   if (!TEMPLATES.some(t => t.key === key)) throw new Error(`Unknown template: ${key}`);
   if (key === 'oomba3d') { const h = kit2Starter(opts || {}); if (!h) throw new Error(`Unknown world: ${opts && opts.world}`); return h; }
   if (!cache.has(key)) cache.set(key, withKitTags(fs.readFileSync(path.join(DIR, `${key}.html`), 'utf8')));
-  return cache.get(key);
+  // A 2D world or a sprite hero (opts.world, opts.hero): the 2D art tags go in at <!--ART2D--> and the two CONFIG lines
+  // are filled in (../art2d.js). With neither, the marker goes and the game is the template as it always was.
+  return art2dConfig(cache.get(key), opts || {});
 }
 /** The template source with the kit's pinned tags in place of <!--KIT--> and <!--PACK:name-->. */
 export const withKitTags = src => String(src).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));
+export { art2dTags };

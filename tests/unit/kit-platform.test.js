@@ -213,7 +213,7 @@ test('the frame CSP allows the kit in script-src and font-src (images: data:/blo
   const csp = frameCsp('https://oomba.example');
   assert.match(csp.match(/script-src[^;]*/)[0], /https:\/\/oomba\.example\/vendor\/oomba-kit\//);
   assert.match(csp.match(/font-src[^;]*/)[0], /https:\/\/oomba\.example\/vendor\/oomba-kit\//);
-  assert.match(csp, /img-src data: blob: https:\/\/oomba\.example\/vendor\/themes\/;/); assert.match(csp, /connect-src blob: https:\/\/oomba\.example\/vendor\/themes\/;/);
+  assert.match(csp, /img-src data: blob: https:\/\/oomba\.example\/vendor\/themes\/ https:\/\/oomba\.example\/vendor\/art2d\/;/); assert.match(csp, /connect-src blob: https:\/\/oomba\.example\/vendor\/themes\/;/);
 });
 
 test('scanner: exactly the pinned tag passes; any other kit reference fails with an actionable message', () => {

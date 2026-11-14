@@ -1,0 +1,217 @@
+{
+ "id": "sky-islands",
+ "version": "1.0.0",
+ "kind": "world",
+ "name": "Sky Islands",
+ "world": "sky-islands",
+ "heroes": [
+  "knight",
+  "barbarian",
+  "mage",
+  "rogue",
+  "rogue-hooded"
+ ],
+ "cell": 96,
+ "from": {
+  "theme": "sky-islands/1.0.1",
+  "packs": [
+   {
+    "id": "kaykit-adventurers",
+    "name": "KayKit Adventurers Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-platformer",
+    "name": "Kenney Starter Kit 3D Platformer (models and sounds)",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   }
+  ]
+ },
+ "sprites": {
+  "grass": {
+   "kind": "prop",
+   "piece": "grass",
+   "ax": 0.4968,
+   "ay": 0.9104,
+   "size": 0.68,
+   "rect": [
+    2,
+    170,
+    95,
+    65
+   ]
+  },
+  "grass-small": {
+   "kind": "prop",
+   "piece": "grass-small",
+   "ax": 0.4984,
+   "ay": 0.9424,
+   "size": 0.56,
+   "rect": [
+    164,
+    170,
+    62,
+    54
+   ]
+  },
+  "brick": {
+   "kind": "prop",
+   "piece": "brick",
+   "ax": 0.4997,
+   "ay": 0.9174,
+   "size": 1.19,
+   "rect": [
+    188,
+    2,
+    122,
+    114
+   ]
+  },
+  "coin-block": {
+   "kind": "prop",
+   "piece": "coin-block",
+   "ax": 0.4966,
+   "ay": 0.9247,
+   "size": 1.17,
+   "rect": [
+    312,
+    2,
+    123,
+    112
+   ]
+  },
+  "cloud": {
+   "kind": "prop",
+   "piece": "cloud",
+   "ax": 0.5005,
+   "ay": 0.9392,
+   "size": 1.35,
+   "rect": [
+    49,
+    2,
+    137,
+    130
+   ]
+  },
+  "platform": {
+   "kind": "prop",
+   "piece": "platform",
+   "ax": 0.5007,
+   "ay": 0.784,
+   "size": 0.78,
+   "rect": [
+    804,
+    2,
+    217,
+    75
+   ]
+  },
+  "goal": {
+   "kind": "goal",
+   "piece": "flag",
+   "ax": 0.4901,
+   "ay": 0.9798,
+   "size": 1.73,
+   "rect": [
+    2,
+    2,
+    45,
+    166
+   ]
+  },
+  "coin": {
+   "kind": "coin",
+   "piece": "coin",
+   "ax": 0.4924,
+   "ay": 0.9515,
+   "size": 0.65,
+   "rect": [
+    99,
+    170,
+    63,
+    62
+   ]
+  },
+  "obstacle-1": {
+   "kind": "obstacle",
+   "piece": "brick",
+   "ax": 0.5002,
+   "ay": 0.9197,
+   "size": 1,
+   "rect": [
+    437,
+    2,
+    105,
+    96
+   ]
+  },
+  "obstacle-2": {
+   "kind": "obstacle",
+   "piece": "platform-falling",
+   "ax": 0.4989,
+   "ay": 0.7837,
+   "size": 0.85,
+   "rect": [
+    544,
+    2,
+    258,
+    82
+   ]
+  }
+ },
+ "sky": [
+  "#5fb8ff",
+  "#bfe6ff",
+  "#fff4d6"
+ ],
+ "under": "",
+ "layers": {
+  "far": {
+   "image": "far.webp",
+   "w": 1024,
+   "h": 320,
+   "cells": 11.11,
+   "speed": 0.12,
+   "base": 0
+  },
+  "mid": {
+   "image": "mid.webp",
+   "w": 2048,
+   "h": 512,
+   "cells": 7.41,
+   "speed": 0.35,
+   "base": 0
+  }
+ },
+ "ground": {
+  "image": "ground.webp",
+  "cells": 3,
+  "over": 15,
+  "fill": "#603b8b"
+ },
+ "props": {
+  "image": "props.webp",
+  "w": 1024,
+  "h": 237
+ },
+ "files": {
+  "far.webp": {
+   "bytes": 8462,
+   "sha384": "sha384-84G6548txVXOk6+H243k+ejkr7P+GuTQOFG7kbWShuGbwdy7H++iSZHqisS0oCzc"
+  },
+  "ground.webp": {
+   "bytes": 2754,
+   "sha384": "sha384-RhWGAd2LumGLJAvVp+bWMpes9b6gRRZ5QWTvB+ISJV6ZYsgXw5C9raSJGliCTKsq"
+  },
+  "mid.webp": {
+   "bytes": 21486,
+   "sha384": "sha384-ZSIqVijSE6kpaHnYgHM/Sjo2IC13+MetxMAp6s6da9FWwcvs2CtSeD/aHxR/koRW"
+  },
+  "props.webp": {
+   "bytes": 20346,
+   "sha384": "sha384-0Mz0wmo8Fc8rFC52fuEISuloDMx4y2wLA6VGGgmCH08aKs4g/2PILfTEOANTXH2S"
+  }
+ }
+}

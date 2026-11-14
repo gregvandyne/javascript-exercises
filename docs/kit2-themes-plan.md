@@ -91,6 +91,32 @@ Six stages, each its own pull request that ships on its own; the build starts 12
 
 Wave 2 and 3 themes follow the same steps 1 and 6 for each new theme.
 
+## 2D versions (built 14 Nov 2026)
+
+The worlds, heroes and the uploaded animals are also drawn as 2D art, so games on the old kit can use them. Branch
+`kit2-art2d`; details and what is left in `docs/decisions.md` ("2D art packs").
+
+| Part | What it is | Where it lives |
+|---|---|---|
+| Pipeline | Draws a shipped theme's models from the side in headless Chromium with the Oomba look (ink outline, the theme's own light, the same tone mapping), twice the size and scaled down, and packs the pictures | `kit2/pipeline/art2d.mjs`, `art2d-page.js`; recipes in `kit2/art2d/packs.json`; sheets with `art2d-sheet.mjs` |
+| World pack (nine, one per world) | Sky colours, a far and a mid strip of scenery that tile sideways, a ground strip a whole number of game cells wide, an atlas of props with the goal, the coin and the obstacles | `public/vendor/art2d/<world>/<version>/`: `far.webp`, `mid.webp`, `ground.webp`, `props.webp`, `pack.json`, `pack.js` |
+| `heroes` pack | The nine heroes as sprite sheets: idle 4, run 8, jump 2 frames, facing right (the kit mirrors them) | `public/vendor/art2d/heroes/<version>/<hero>.webp` |
+| `animals` pack | 24 animals the same way: 12 woodland, 7 farm, 5 dinosaurs (no T-Rex), brightened | `public/vendor/art2d/animals/<version>/<animal>.webp` with the three CC0 licence texts |
+| Oomba2D | A small helper (about 14 KB) that registers the pictures as Oomba Kit sprites: the kit stays the engine | `kit2/src2d/oomba2d.js`, shipped to `public/vendor/art2d/oomba2d/<version>/` |
+| Lock | Every file by sha384; a locked version never changes | `kit2/ART2D.json`, `kit2/pipeline/art2d-lock.mjs`, `tests/unit/art2d.test.js` |
+| Builder | Catalogue generated from the manifests, the 2D ART RULES, the lint, the mock, the picker | `scripts/build-art2d-rules.js`, `server/builder/art2d.js`, `server/services/art2d.js`, `art2d-lint.js` |
+
+- **Sizes.** One game cell is 96 px (1.37 m; a hero is 168 px, 1.75 cells). A world pack is 55 to 140 KB, a hero sheet
+  about 60 KB, an animal sheet 45 to 110 KB. A game's first load (helper, world, one sheet) is under 520 KB (the test's
+  budget; most are near 250 KB).
+- **Which games.** The runner and the catching game draw a world and a sprite hero today (`CONFIG.world`,
+  `CONFIG.hero2d`); with neither they are the games they always were and do not load Oomba2D at all. Quiz, word, memory,
+  duel and board games do not draw the worlds yet.
+- **Not in the packs:** the T-Rex (not decided), the sea creatures and cute fish (next), and the three reodesuxz packs
+  (desert oasis, sky islands pack, underwater pack: a custom licence, never offered as files, not needed here).
+- **Pixel World on Phaser** (stage 6) is still its own later stage: these packs are the kit's worlds in 2D, not a new
+  2D engine.
+
 ## Rules that do not bend
 
 - **Kit 1 is untouched.** Every file listed in `kit/SHIPPED.json` keeps its bytes; Kit 1 lives on as the Classic theme.
