@@ -4870,3 +4870,52 @@ what the builder named the reply says so (what was made instead and how to chang
 32,000-character budget (a few existing lines were tightened). Tried and ruled out for now: drawing a missing
 creature with `Oomba.art.define` (a defined name is not a species, so a hero falls back to the mascot and a spawned
 kind to a placeholder); custom creatures need the kit's creature maker first.
+
+## Pirate Cove 1.0.0: the first world from an uploaded pack (14 Nov 2026)
+
+The owner uploaded 14 asset packs (branch `asset-packs`, plan: `docs/kit2-packs-plan.md`). Pirate Cove is the one world
+those packs make complete without a new Oomba3D, so it ships first, on Oomba3D 1.1.0 with no engine change.
+
+- **The theme** (`public/vendor/themes/pirate-cove/1.0.0/`, 2.86 MB first load, limit 5 MB): 59 models of the Kenney
+  Pirate Kit 2.1 (CC0), two sea islands made from the kit's sand and grass patches, the coin and sounds every theme
+  reuses. A sunny cove: sand and grass islands, palms, rocks, docks and plank platforms, towers and wall pieces for a
+  harbour fort, huts, rowing boats, three sailing ships and a shipwreck, barrels, crates, a treasure chest, flags.
+- **Left out, kid-safe** (listed in `kit2/packs/pirate-kit.json`, checked by `tests/unit/kit2-pirate-cove.test.js` by
+  name, by source and inside every built model): `cannon`, `cannon-mobile`, `cannon-ball` (weapons, even as scenery);
+  `bottle`, `bottle-large`, `crate-bottles` (they read as rum); `ship-pirate-small`, `-medium`, `-large` (skull and
+  crossbones on the sails); `ship-ghost` (a ghost ship). The kit's four black flags are plain black with no skull; one is
+  kept (`flag-black`) beside four cream ones, three are left out. The world's icon is a sailing boat, not the skull flag.
+- **What the world is about:** treasure maps, sailing and island hopping. Treasure is found, counted and shared: no
+  weapons, no fighting, no "enemy" words, nothing bought or sold and no prices, in the catalogue, the starter and the
+  Builder's words (the test reads them).
+- **Five heroes, not nine** (the plan's recommendation for new worlds: the nine cost 2.26 MB of every theme's 5 MB):
+  the adventurers, with the Explorer first (the default for "a pirate treasure game"), then Knight, Wizard, Ranger and
+  Hooded Ranger. Their files are the same bytes as in every other world. The skeleton pals are not here, so the word
+  "pirate" is a place first: it suggests Captain Clank only in a world that has him, and nobody is told he is missing
+  unless they asked for him by name.
+- **Size and scale:** the kit is drawn for small figures, so the pieces are baked 1.3 times bigger for the 2.4 m heroes
+  (barrel, crate and chest keep the kit's size). The islands are the kit's flat patches made 12 times thicker, because
+  Oomba3D's sea rises and falls about a metre: the world stands IN the sea (`look.water`: y -1.5), tops at 0.
+- **Flat faces, Oomba3D 1.1.0:** the pack config's `inkNormals` step (smooth normals for a crack-free ink outline, with
+  the faces marked flat for a later Oomba3D) is NOT used: on 1.1.0 it draws the models smooth, and in a test scene the
+  whole picture went white. The kit's own flat normals look right on 1.1.0 and the outline holds. Revisit in a new
+  theme version once Oomba3D 1.2.0 honours the flat mark.
+- **The chest stays shut:** its `open` and `close` clips are kept in `props/chest.glb`, but Oomba3D 1.1.0 does not play
+  a piece's clips. For 1.2.0 (piece clips): open it at the goal.
+- **Pipeline** (all opt-in, a definition that names none builds as before): a pack in `theme.def.json` may carry
+  `steps` (the `pack-steps.mjs` fields for every model from it) and a piece its own as a 7th field; a `stretch` step;
+  `build-theme.mjs` takes the folder of the packs' pictures as a 5th argument. The raw FBX and converted GLB stay out of
+  the repository; rebuilt from the FBX, every model came out byte for byte the same (the test does this where the
+  converted pack is: `KIT2_RAW_PACKS`, `KIT2_PACKS`, `KIT2_TOOLS`).
+- **Builder:** place words ("pirate", "treasure island", "treasure map", "on a ship", "at the docks", "a cove"...)
+  choose Pirate Cove for a new game, before the castle's "treasure chest"; "a space ship" stays Space Base; a card,
+  cover, 2D or word game about pirates stays on the old kit's Pirate theme as before. The starter is a sand island, docks
+  to hop along, grass islets for the answers, the chest in front of a fort tower, ships and rowing boats on the water.
+  For that the starter template learned two optional LAYOUT fields, `seaY` and `afloat`, a fall that ends just under the
+  water, and answer tokens that no longer cut a square out of the sea behind them (a fix for every world with water);
+  the theme tour puts a sea theme's ships on its sea. Names in the 12 locale files, picker chip and Build card from the
+  cover (`scripts/kit2-thumbs.js`).
+- **Not verified:** a real GPU or Chromebook (software WebGL only), sound by ear, and a build with the real model.
+  Heroes stand on a piece's bounding box, so near the rounded corners of an island a hero can stand a little past the
+  sand (as on Sky Islands' round island). The hero cannot walk on a ship's deck: a ship's box reaches its mast top, so
+  ships are scenery in this version (a `deck` square at deck height is the way to make one walkable).

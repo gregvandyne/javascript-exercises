@@ -287,6 +287,8 @@ Quest 1.1.0 4.23 MB, Medieval Village 1.0.0 4.72 MB, Sky Islands 1.0.1 1.68 MB.
 1. **Oomba3D 1.2.0**: `g.creature`, paths, companion, playable creatures, own-clip heroes, flat materials and cut-outs
    in the outline, `g.world.ground`, piece clips, bubbles and swim controls, docs and tests. The long pole.
 2. **Pirate Cove 1.0.0** on Oomba3D 1.1.0: theme, cover, sounds, tour test. The first new world a child can play.
+   **Built 14 Nov 2026** (branch `kit2-pirate-cove`, `docs/decisions.md` "Pirate Cove 1.0.0"): 2.86 MB with five heroes;
+   the `inkNormals` step was not used (it blanks the picture on Oomba3D 1.1.0), and the chest stays shut until 1.2.0.
 3. **Sky Islands 1.1.0** and the licence test change for the reodesuxz packs.
 4. **Toy Town 1.2.0** with the suburban houses.
 

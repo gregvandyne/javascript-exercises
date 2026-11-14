@@ -75,7 +75,7 @@ export const STARTERS = {
     [['lamp', 1.2], ['armchair', 1.2], ['cactus', 1.6], ['couch', 1.1], ['lamp-table', 1.4], ['bed-small', 1], ['books', 2], ['chair', 1.3]]),
   'busy-kitchen': L(['floor', 1], ['counter', 1.4], ['floor-small', 1.5], ['burger', 2.2], ['fridge', 1.6],
     [['crate-carrots', 1], ['stool', 1.4], ['tomato', 1.8], ['oven', 1.1], ['crate-tomatoes', 1], ['cheese', 1.8], ['stove', 1.1], ['carrot', 1.8]]),
-  'pirate-cove': L(['island-sand', 1], ['dock', 1.3], ['island-grass', 0.7], ['chest', 1.4], ['tower', 1],
+  'pirate-cove': L(['island-sand', 0.8], ['dock', 1.3], ['island-grass', 0.7], ['chest', 1.4], ['tower', 1],
     [['palm-tall', 1], ['barrel', 1.1], ['palm-bend', 1], ['hut-roof', 0.9], ['flag-high', 1], ['rocks-sand-small', 0.8], ['palm', 1], ['crate', 1.1]],
     { sea: '#0077c8', seaY: -1.5, plaza: 1, side: ['island-grass', 0.9], afloat: [['ship-large', 1], ['rowing-boat', 1], ['ship-small', 1], ['shipwreck', 1], ['rowing-boat-small', 1], ['ship', 1]] }),
 };
@@ -255,6 +255,7 @@ const worldText = w => [
   `Pieces (id widthxheightxdepth in metres at scale 1, tags): ${w.pieces.map(p => `${p.id} ${size(p)} ${p.tags.join('/')}${p.note ? ` [${p.note}]` : ''}`).join('; ')}.`,
   `Sounds: ${w.sounds.join(', ')}, cheer, wrong. Moves: ${w.moves.join(', ')}.`,
   STARTERS[w.id] ? `Starter layout: ground ${STARTERS[w.id].ground.join(' x')}, step ${STARTERS[w.id].step.join(' x')}, pad ${STARTERS[w.id].pad.join(' x')}, goal ${STARTERS[w.id].goal.join(' x')}, landmark ${STARTERS[w.id].landmark.join(' x')}.` : '',
+  STARTERS[w.id] && STARTERS[w.id].seaY != null ? `This world stands in the sea: water at y ${STARTERS[w.id].seaY} (LAYOUT.seaY), tops of islands and docks at 0, pieces tagged afloat out on the water (LAYOUT.afloat).` : '',
 ].filter(Boolean).join('\n');
 export const KIT2_CATALOG_TEXT = KIT2_WORLDS.map(worldText).join('\n\n');
 const NO_CREATURES = KIT2_CHARACTERS.some(c => c.kind === 'creature') ? ''
