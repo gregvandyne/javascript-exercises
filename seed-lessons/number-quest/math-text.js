@@ -60,7 +60,8 @@ export function sayMath(printed) {
   s = s.replace(/∛\s*/g, ' the cube root of ').replace(/√\s*/g, ' the square root of ')
     .replace(/²/g, ' squared').replace(/³/g, ' cubed').replace(/([⁰¹⁴-⁹]+)/g, m => ` to the power ${[...m].map(c => SUP[c]).join('')}`);
   // degrees
-  s = s.replace(/°\s?C\b/g, ' degrees Celsius').replace(/°\s?F\b/g, ' degrees Fahrenheit').replace(/(?<=(?:^|[^\d.])1)°/g, ' degree').replace(/°/g, ' degrees');
+  s = s.replace(/(?<=(?:^|[^\d.])1)°\s?C\b/g, ' degree Celsius').replace(/(?<=(?:^|[^\d.])1)°\s?F\b/g, ' degree Fahrenheit')
+    .replace(/°\s?C\b/g, ' degrees Celsius').replace(/°\s?F\b/g, ' degrees Fahrenheit').replace(/(?<=(?:^|[^\d.])1)°/g, ' degree').replace(/°/g, ' degrees');
   // mixed numbers and fractions (written without spaces: 4 1/2, 3/4, x/3)
   s = s.replace(/(\d+) (\d+)\/(\d+)\b/g, (_, w, n, d) => `${w} and ${fractionWords(n, d)}`)
     .replace(/\b(\d+|[a-z])\/(\d+|[a-z])\b/gi, (_, n, d) => fractionWords(n, d));

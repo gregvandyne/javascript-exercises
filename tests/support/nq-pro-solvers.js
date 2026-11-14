@@ -115,7 +115,7 @@ export const SOLVERS = {
   slopeTwoPoints(p) { const [a, b] = points(p); return numIs((b[1] - a[1]) / (b[0] - a[0])); },
   lineFromTable(p) { const ys = listed(p, 'and y = ', '\\. Which'); return v => { try { return [0, 1, 2, 3].every(x => eq(evalExpr(v, { x }), ys[x])); } catch { return false; } }; },
   linearSolve(p) { const m = need(/Solve: (.+) = (.+)\. What is x\?/.exec(p), p); for (let x = -100; x <= 100; x++) if (eq(evalExpr(m[1], { x }), evalExpr(m[2], { x }))) return numIs(x); throw new Error(`no whole solution: ${p}`); },
-  systemMeet(p) { const m = need(/Line A is (.+?)\. Line B is (.+?)\. At what/.exec(p), p); for (let x = -100; x <= 100; x++) if (eq(evalExpr(m[1], { x }), evalExpr(m[2], { x }))) return numIs(x); throw new Error(`the lines do not cross at a whole x: ${p}`); },
+  systemMeet(p) { const m = need(/Line P is (.+?)\. Line Q is (.+?)\. At what/.exec(p), p); for (let x = -100; x <= 100; x++) if (eq(evalExpr(m[1], { x }), evalExpr(m[2], { x }))) return numIs(x); throw new Error(`the lines do not cross at a whole x: ${p}`); },
   // ---------------------------------------------------------------------------------------------- Shape & Measure
   triangleArea(p) { const [b, h] = nums(p); return numIs(b * h / 2); },
   volumeFrac(p) { const m = need(/is (\d+ 1\/2) m long, (\d+) m wide and (\d+) m high/.exec(p), p); return numIs(numOf(m[1]) * +m[2] * +m[3]); },
@@ -146,7 +146,7 @@ export const SOLVERS = {
   // A second, separately written key: the statistical question is the one about a whole group, whose answers vary.
   statQuestion() { return v => /each student in the class|are the sunflowers in the school garden|do the grade 6 students take|in each game of a season|do the students in grade 7 sleep/.test(String(v)); },
   meanFive(p) { const v = listed(p, 'plants are ', ' cm tall'); return numIs(v.reduce((s, x) => s + x, 0) / v.length); },
-  rangeCalc(p) { const v = listed(p, 'runs are ', ' seconds'); return numIs(Math.max(...v) - Math.min(...v)); },
+  rangeCalc(p) { const v = listed(p, 'run times: ', ' seconds'); return numIs(Math.max(...v) - Math.min(...v)); },
   moreConsistent(p) {
     const A = listed(p, 'Team A jumped ', ' cm\\. Team B'), B = listed(p, 'Team B jumped ', ' cm\\. Both');
     const spread = v => { const m = v.reduce((s, x) => s + x, 0) / v.length; return v.reduce((s, x) => s + Math.abs(x - m), 0) / v.length; };
@@ -157,7 +157,7 @@ export const SOLVERS = {
   medianEven(p) { return numIs(median(listed(p, 'median of ', '\\?'))); },
   iqrBox(p) { const m = need(/lower quartile (\d+), median \d+, upper quartile (\d+)/.exec(p), p); return numIs(+m[2] - +m[1]); },
   madCalc(p) { const v = listed(p, 'The values ', ' have a mean'), m = v.reduce((s, x) => s + x, 0) / v.length; if (!eq(m, +need(/mean of (\d+)/.exec(p), p)[1])) throw new Error(`the stated mean is wrong: ${p}`); return numIs(v.reduce((s, x) => s + Math.abs(x - m), 0) / v.length); },
-  sampleScale(p) { const m = need(/sample of (\d+) students, (\d+) walk to school\. The school has (\d+) students/.exec(p), p); return numIs(+m[2] / +m[1] * +m[3]); },
+  sampleScale(p) { const m = need(/sample of (\d+) students: (\d+) of them walk to school\. The school has (\d+) students/.exec(p), p); return numIs(+m[2] / +m[1] * +m[3]); },
   randomSample() { return v => /picked at random from the list of all students/.test(String(v)); },
   meansInMads(p) { const m = need(/is (\d+) cm and Team B's is (\d+) cm\. For both teams the mean absolute deviation is (\d+) cm/.exec(p), p); return numIs(Math.abs(+m[2] - +m[1]) / +m[3]); },
   compareMedians(p) {

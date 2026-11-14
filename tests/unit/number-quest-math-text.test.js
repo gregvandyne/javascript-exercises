@@ -67,7 +67,7 @@ test('sayMath: every sign is said in words', () => {
     ['√16 = 4', 'the square root of 16 equals 4'], ['c = √(a² + b²)', 'c equals the square root of (a squared plus b squared)'], ['What is √81?', 'What is the square root of 81?'],
     [`${M}√9`, 'negative the square root of 9'], ['x^2', 'x squared'], ['sqrt(49)', 'the square root of 49'],
     // degrees
-    ['65°', '65 degrees'], ['1° more', '1 degree more'], ['21° and 31°', '21 degrees and 31 degrees'], ['72°F', '72 degrees Fahrenheit'], [`${M}5°C`, 'negative 5 degrees Celsius'],
+    ['65°', '65 degrees'], ['1° more', '1 degree more'], ['21° and 31°', '21 degrees and 31 degrees'], ['72°F', '72 degrees Fahrenheit'], [`${M}5°C`, 'negative 5 degrees Celsius'], [`${M}1°C or 1°C, 11°C, 21°F and 1°F`, 'negative 1 degree Celsius or 1 degree Celsius, 11 degrees Celsius, 21 degrees Fahrenheit and 1 degree Fahrenheit'],
     // operators and relations
     ['3 × 4 = 12', '3 times 4 equals 12'], ['12 ÷ 4 = 3', '12 divided by 4 equals 3'], ['2 + 2 = 4', '2 plus 2 equals 4'],
     ['x ≤ 4', 'x less than or equal to 4'], [`x ≥ ${M}2`, 'x greater than or equal to negative 2'], ['x + 4 > 10', 'x plus 4 greater than 10'], [`Is ${M}3 < 2?`, 'Is negative 3 less than 2?'],

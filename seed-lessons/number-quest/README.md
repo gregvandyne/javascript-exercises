@@ -188,7 +188,7 @@ its decks, bank and game (the deck checker reports "no deck" for a step whose fl
 `"<tier>-<unit>.1"`: `{ "Number": rung, "Algebra & Patterns": rung, "Shape & Measure": rung, "Data & Chance": rung }`.
 A learner with any rung under 2.5 walks the Launchpad profiles (locked 2026-11-13, one per unit; under the
 first profile: the tier's first step; else the first unit whose profile is not met; all met: the Explorer
-welcome). A profile that is met moves the walk past its unit, exactly as on the Explorer street. Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open.
+welcome). A profile that is met moves the walk past its unit, exactly as on the Explorer street. Pro's profiles (`pro-<unit>.1`) continue the walk after Explorer's seven once Pro is open, for a learner with every strand at or over the Pro starting line (rung 5.5).
 The same profiles drive each unit's test-out.
 
 **Game lesson modes.** Brain Board and Quest Race read the step from `mode`: `nq-<unit>-<step>` is the

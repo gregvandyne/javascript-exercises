@@ -41,6 +41,7 @@ const sup = n => [...String(n)].map(c => SUPS[+c]).join('');
 /** y = mx + b as it is printed: "y = 2x + 1", "y = −x + 7", "y = 3x − 2", "y = 4x". */
 export const lineEq = (m, b) => `y = ${m === 1 ? '' : m === -1 ? MINUS : tx(m)}x${b === 0 ? '' : b > 0 ? ` + ${b}` : ` ${MINUS} ${-b}`}`;
 const list = a => `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`;
+const orList = a => `${a.slice(0, -1).join(', ')} or ${a[a.length - 1]}`; // the things a "which" question chooses between
 const d3 = (...pairs) => pairs.map(([value, misconception]) => ({ value, misconception }));
 /** The first three candidates that differ from the key and from each other, and are not a bare number of 0 or
  *  less (see the house rules). An archetype lists its mistakes in order of interest; a spare covers a collision. */
@@ -69,10 +70,10 @@ export const PRO_ARCHETYPES = {
   signedOrder(rng, g) {
     const pool = shuffled(rng, [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12]).slice(0, 4), s = [...pool].sort((x, y) => x - y);
     if (g.ask === 'coldest') {
-      return { prompt: `Which temperature is the coldest: ${list(pool.map(n => `${tx(n)}°C`))}?`, answer: `${tx(s[0])}°C`,
+      return { prompt: `Which temperature is the coldest: ${orList(pool.map(n => `${tx(n)}°C`))}?`, answer: `${tx(s[0])}°C`,
         distractors: d3([`${tx(s[3])}°C`, 'picked-the-number-nearest-zero-as-the-least'], [`${tx(s[2])}°C`, 'ordered-the-negative-numbers-backwards'], [`${tx(s[1])}°C`, 'missed-the-least-by-one-place']) };
     }
-    return { prompt: `Which number is the greatest: ${list(pool.map(tx))}?`, answer: tx(s[3]),
+    return { prompt: `Which number is the greatest: ${orList(pool.map(tx))}?`, answer: tx(s[3]),
       distractors: d3([tx(s[0]), 'bigger-absolute-value-means-bigger-number'], [tx(s[1]), 'ordered-the-negative-numbers-backwards'], [tx(s[2]), 'missed-the-greatest-by-one-place']) };
   },
   /** 6.NS.C: absolute value as distance from zero. */
@@ -80,7 +81,7 @@ export const PRO_ARCHETYPES = {
     const mags = shuffled(rng, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).slice(0, 4).sort((x, y) => y - x); // biggest first
     const nums = [-mags[0], mags[1], -mags[3], mags[2]]; // the farthest is negative; the greatest number is mags[1]
     const shown = shuffled(rng, nums);
-    return { prompt: `Which number is farthest from zero on a number line: ${list(shown.map(tx))}?`, answer: tx(nums[0]),
+    return { prompt: `Which number is farthest from zero on a number line: ${orList(shown.map(tx))}?`, answer: tx(nums[0]),
       distractors: d3([mags[1], 'picked-the-greatest-number-not-the-farthest'], [tx(-mags[3]), 'picked-the-number-nearest-zero'], [mags[2], 'ignored-the-negative-numbers']) };
   },
   /** 6.NS.C: the opposite of a number. */
@@ -318,7 +319,7 @@ export const PRO_ARCHETYPES = {
   /** 8.EE.C: where two lines cross. */
   systemMeet(rng) {
     const m1 = ri(rng, 1, 4), m2 = -ri(rng, 1, 3), x = ri(rng, 1, 6), b1 = ri(rng, 1, 6), y = m1 * x + b1, b2 = y - m2 * x;
-    return { prompt: `Line A is ${lineEq(m1, b1)}. Line B is ${lineEq(m2, b2)}. At what value of x do the two lines cross?`, answer: x,
+    return { prompt: `Line P is ${lineEq(m1, b1)}. Line Q is ${lineEq(m2, b2)}. At what value of x do the two lines cross?`, answer: x,
       distractors: take3(x, [[y, 'gave-y-instead-of-x'], [b2 - b1, 'subtracted-the-constants-and-stopped'], [b2, 'gave-a-starting-value'], [b1 + b2, 'added-the-starting-values'], [x + 1, 'slipped-on-the-division-fact'], [x + 2, 'miscounted-along-the-line']]) };
   },
 
@@ -444,14 +445,14 @@ export const PRO_ARCHETYPES = {
   reflectPoint(rng) {
     let x, y; do { x = ri(rng, 1, 7) * (rng() < 0.5 ? -1 : 1); y = ri(rng, 1, 7) * (rng() < 0.5 ? -1 : 1); } while (Math.abs(x) === Math.abs(y));
     const overX = rng() < 0.5;
-    return { prompt: `Point P is at ${pt(x, y)}. It is reflected across the ${overX ? 'x' : 'y'}-axis. Where is its image?`, answer: overX ? pt(x, -y) : pt(-x, y),
+    return { prompt: `A corner of a shape is at ${pt(x, y)}. The shape is reflected across the ${overX ? 'x' : 'y'}-axis. Where does that corner go?`, answer: overX ? pt(x, -y) : pt(-x, y),
       distractors: d3([overX ? pt(-x, y) : pt(x, -y), 'reflected-across-the-other-axis'], [pt(-x, -y), 'changed-both-signs'], [pt(y, x), 'swapped-the-coordinates']) };
   },
   /** 8.G.A: slide a point. */
   translatePoint(rng) {
     const x = ri(rng, -5, 5), y = ri(rng, -5, 5); let dx, dy; do { dx = ri(rng, 1, 6); dy = ri(rng, 1, 6); } while (dx === dy);
     const left = rng() < 0.5, down = rng() < 0.5, vx = left ? -dx : dx, vy = down ? -dy : dy;
-    return { prompt: `Point P is at ${pt(x, y)}. It slides ${dx} units ${left ? 'left' : 'right'} and ${dy} units ${down ? 'down' : 'up'}. Where is its image?`, answer: pt(x + vx, y + vy),
+    return { prompt: `A corner of a shape is at ${pt(x, y)}. The shape slides ${dx} units ${left ? 'left' : 'right'} and ${dy} units ${down ? 'down' : 'up'}. Where does that corner go?`, answer: pt(x + vx, y + vy),
       distractors: d3([pt(x - vx, y + vy), 'moved-the-wrong-way-across'], [pt(x + vx, y - vy), 'moved-the-wrong-way-up-or-down'], [pt(x + vy, y + vx), 'swapped-across-and-up']) };
   },
   /** 8.G.A: enlarge from the origin. */
@@ -486,7 +487,7 @@ export const PRO_ARCHETYPES = {
   rangeCalc(rng) {
     let vals; do { vals = shuffled(rng, Array.from({ length: 28 }, (_, i) => i + 3)).slice(0, 5); } while (Math.abs(vals[0] - vals[4]) === Math.max(...vals) - Math.min(...vals));
     const sorted = [...vals].sort((x, y) => x - y), ans = sorted[4] - sorted[0];
-    return { prompt: `The times for five runs are ${list(vals)} seconds. What is the range of the times, in seconds?`, answer: ans,
+    return { prompt: `A data set holds five run times: ${list(vals)} seconds. What is the range of the data, in seconds?`, answer: ans,
       distractors: take3(ans, [[sorted[4], 'gave-the-largest-value'], [Math.abs(vals[0] - vals[4]), 'subtracted-the-first-and-last-without-ordering'], [sorted[2], 'gave-the-median'], [sorted[0], 'gave-the-smallest-value'], [sorted[4] + sorted[0], 'added-the-largest-and-the-smallest'], [sorted[3] - sorted[0], 'used-the-second-largest-value']]) };
   },
   /** 6.SP.A: the same center, a different spread. */
@@ -507,7 +508,7 @@ export const PRO_ARCHETYPES = {
   /** 6.SP.B: the interquartile range from a box plot's five numbers. */
   iqrBox(rng) {
     const lo = ri(rng, 5, 20), q1 = lo + ri(rng, 3, 8), med = q1 + ri(rng, 2, 8), q3 = med + ri(rng, 2, 8), hi = q3 + ri(rng, 3, 12), ans = q3 - q1;
-    return { prompt: `A box plot shows: lowest value ${lo}, lower quartile ${q1}, median ${med}, upper quartile ${q3}, highest value ${hi}. What is the interquartile range?`, answer: ans,
+    return { prompt: `A box plot of some data shows: lowest value ${lo}, lower quartile ${q1}, median ${med}, upper quartile ${q3}, highest value ${hi}. What is the interquartile range?`, answer: ans,
       distractors: take3(ans, [[hi - lo, 'gave-the-full-range'], [med, 'gave-the-median'], [q3, 'gave-the-upper-quartile'], [q3 - med, 'measured-from-the-median'], [q1, 'gave-the-lower-quartile'], [hi - q1, 'measured-to-the-highest-value']]) };
   },
   /** 6.SP.B: mean absolute deviation. */
@@ -521,19 +522,19 @@ export const PRO_ARCHETYPES = {
   /** 7.SP.A: scale a random sample up to the population. */
   sampleScale(rng) {
     const n = pickOne(rng, [20, 25, 40, 50]), k = ri(rng, 4, 12), hits = ri(rng, 3, Math.floor(n / 2) - 1), pop = n * k, ans = hits * k;
-    return { prompt: `In a random sample of ${n} students, ${hits} walk to school. The school has ${pop} students. About how many students in the whole school walk to school?`, answer: ans,
+    return { prompt: `A survey collects data from a random sample of ${n} students: ${hits} of them walk to school. The school has ${pop} students. About how many students in the whole school walk to school?`, answer: ans,
       distractors: take3(ans, [[hits, 'gave-the-sample-count'], [pop - (n - hits), 'took-the-sample-walkers-as-everyone-else'], [Math.round(pop / hits), 'divided-the-wrong-pair-of-numbers'], [ans + hits, 'one-sample-too-many']]) };
   },
   /** 7.SP.A: which sample is likely to represent a population. */
   randomSample(rng) {
     const n = pickOne(rng, [40, 50, 60, 80]);
     const [want, handy] = pickOne(rng, [
-      ['which lunch its students like best', `The first ${n} students in the lunch line on pizza day`],
-      ['which sport its students like best', `The ${n} members of the soccer club`],
+      ['the lunch its students like best', `The first ${n} students in the lunch line on pizza day`],
+      ['the sport its students like best', `The ${n} members of the soccer club`],
       ['how many hours its students sleep', `${n} students who stayed for the late study club`],
       ['how its students travel to school', `The first ${n} students to step off the school buses`],
     ]);
-    return { prompt: `A school wants to know ${want}. Which sample is most likely to represent the whole school?`, answer: `${n} students picked at random from the list of all students`,
+    return { prompt: `A school wants data on ${want}. Which sample is most likely to represent the whole school?`, answer: `${n} students picked at random from the list of all students`,
       distractors: d3([handy, 'handy-group-read-as-a-fair-sample'], ['All the students in one grade 6 class', 'one-class-read-as-the-whole-school'], [`${n} students who chose to answer a poster`, 'volunteers-read-as-a-random-sample']) };
   },
   /** 7.SP.B: a difference between two means measured in spreads. */
@@ -570,7 +571,7 @@ export const PRO_ARCHETYPES = {
   complementProb(rng) {
     const tenths = pickOne(rng, [1, 2, 3, 4, 6, 7, 8, 9]), p = tenths / 10, ans = (10 - tenths) / 10;
     const [event, not] = pickOne(rng, [['a seed sprouts', 'it does not sprout'], ['the next bus is late', 'it is not late'], ['a traffic light is green', 'it is not green'], ['it rains tomorrow', 'it does not rain']]);
-    return { prompt: `The probability that ${event} is ${p}. What is the probability that ${not}?`, answer: ans,
+    return { prompt: `The chance (probability) that ${event} is ${p}. What is the probability that ${not}?`, answer: ans,
       distractors: d3([p, 'repeated-the-given-probability'], [(10 + tenths) / 10, 'added-to-one-instead-of-subtracting'], [tenths, 'treated-the-probability-as-a-count']) };
   },
   /** 7.SP.C: the size of a sample space for two stages. */
@@ -592,21 +593,21 @@ export const PRO_ARCHETYPES = {
       : wrong === 'none' ? 'missed-the-pattern-in-the-points'
         : kind === 'curve' ? 'forced-a-straight-line-onto-a-curve'
           : wrong === 'curve' ? 'called-a-straight-pattern-a-curve' : 'read-the-direction-backwards');
-    return { prompt: `A scatter plot compares ${x} and ${y}. The points ${SEE[kind]}. What kind of association is this?`, answer: KIND[kind],
+    return { prompt: `A scatter plot of data compares ${x} and ${y}. The points ${SEE[kind]}. What kind of association is this?`, answer: KIND[kind],
       distractors: Object.keys(KIND).filter(w => w !== kind).map(w => ({ value: KIND[w], misconception: why(w) })) };
   },
   /** 8.SP.A: use a trend line to predict. */
   trendPredict(rng) {
     const [what, xu, yu, ask] = pickOne(rng, TREND);
     const m = ri(rng, 2, 6), b = ri(rng, 1, 12), x = ri(rng, 3, 9), ans = m * x + b;
-    return { prompt: `A trend line for ${what} is ${lineEq(m, b)}, where x is the number of ${xu}s and y is the ${yu}. What ${ask} does the line predict for ${xu} ${x}?`, answer: ans,
+    return { prompt: `A trend line on a graph of ${what} is ${lineEq(m, b)}, where x is the number of ${xu}s and y is the ${yu}. What ${ask} does the line predict for ${xu} ${x}?`, answer: ans,
       distractors: take3(ans, [[m * x, 'left-out-the-starting-value'], [(m + b) * x, 'added-before-multiplying'], [m + b + x, 'added-all-three-numbers'], [b * x + m, 'swapped-the-rate-and-the-starting-value'], [ans + m, 'counted-one-step-too-many'], [ans + b, 'added-the-starting-value-twice']]) };
   },
   /** 8.SP.A: what the slope of a trend line means. */
   trendSlopeMeaning(rng) {
     const [what, xu, yu, , subject, unit] = pickOne(rng, TREND);
     let m, b; do { m = ri(rng, 2, 6); b = ri(rng, 1, 12); } while (m === b);
-    return { prompt: `A trend line for ${what} is ${lineEq(m, b)}, where x is the number of ${xu}s and y is the ${yu}. What does the ${m} tell you?`, answer: `${subject} goes up about ${m} ${unit} each ${xu}`,
+    return { prompt: `A trend line on a graph of ${what} is ${lineEq(m, b)}, where x is the number of ${xu}s and y is the ${yu}. What does the ${m} tell you?`, answer: `${subject} goes up about ${m} ${unit} each ${xu}`,
       distractors: d3([`${subject} was ${m} ${unit} at ${xu} 0`, 'read-the-rate-as-the-starting-value'], [`${subject} goes up about ${b} ${unit} each ${xu}`, 'read-the-starting-value-as-the-rate'], [`${subject} changes for only ${m} ${xu}s`, 'read-the-rate-as-an-amount-of-time']) };
   },
   /** 8.SP.A: the point that does not follow the trend. */
@@ -614,7 +615,7 @@ export const PRO_ARCHETYPES = {
     const m = ri(rng, 2, 3), b = ri(rng, 0, 3), out = ri(rng, 2, 4), bump = ri(rng, 8, 12);
     const P = [1, 2, 3, 4, 5].map(x => [x, m * x + b + (x === out ? bump : 0)]), show = p => `(${p[0]}, ${p[1]})`;
     const other = P.find(p => p[0] !== out && p[0] !== 1 && p[0] !== 5);
-    return { prompt: `A scatter plot has the points ${list(P.map(show))}. Which point is an outlier?`, answer: show(P[out - 1]),
+    return { prompt: `A scatter plot of data has the points ${list(P.map(show))}. Which point is an outlier?`, answer: show(P[out - 1]),
       distractors: d3([show(P[4]), 'picked-the-point-farthest-to-the-right'], [show(P[0]), 'picked-the-point-with-the-smallest-values'], [show(other), 'picked-a-point-that-follows-the-trend']) };
   },
 };

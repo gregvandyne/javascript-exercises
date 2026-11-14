@@ -142,7 +142,7 @@ test('the solvers are honest: they reject wrong answers and tell equal forms apa
   assert.equal(SOLVERS.pythagHyp('A right triangle has legs of 6 cm and 8 cm. How long is its longest side, in cm?')(10), true);
   assert.equal(SOLVERS.pythagHyp('A right triangle has legs of 6 cm and 8 cm. How long is its longest side, in cm?')(14), false);
   assert.equal(SOLVERS.signedSub('What is 4 − (−7)?')(11), true); assert.equal(SOLVERS.signedSub('What is 4 − (−7)?')('−3'), false);
-  assert.equal(SOLVERS.scatterOutlier('A scatter plot has the points (1, 3), (2, 5), (3, 7), (4, 20) and (5, 11). Which point is an outlier?')('(4, 20)'), true);
+  assert.equal(SOLVERS.scatterOutlier('A scatter plot of data has the points (1, 3), (2, 5), (3, 7), (4, 20) and (5, 11). Which point is an outlier?')('(4, 20)'), true);
   assert.throws(() => SOLVERS.sqrtPerfect('What is √80?'), /not a perfect square/);
   assert.throws(() => SOLVERS.fracDivide('nonsense'), /could not read/);
 });
