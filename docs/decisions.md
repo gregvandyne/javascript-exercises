@@ -5177,6 +5177,48 @@ The owner asked: "Can we also make these worlds available in 2d?" Branch `kit2-a
   exists. Pictures are not taken on this page; they are added in the Studio as before.
 - **Not verified:** a build with the real model (no key here), so the `SETUP CHOICES` wording is untested against it.
 
+## Number Quest Pro Unit 1: The Mixing Tower and Lantern Mix (14 Nov 2026)
+
+The first Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Lantern Mix in Spooky Hollow at night, and the one-line registrations. Pro stays
+`building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default**, with the speaker button to repeat a line. The plan said a button, off by default;
+  the owner's decision 6 replaced that.
+- **Oomba3D 1.2.0**, the newest, not the 1.1.0 the plan named (it was written before 1.2.0 shipped). No kit file
+  changed and no helper was added to the library: the dials, the board and the camera fit are the game's own code.
+- **Plan, then run.** The plan had a double number line that "fills as the player works". A board that shows the
+  outcome while a dial is turning invites sliding until it looks right, so the board shows only the plan (the parts
+  poured, the amount set) until Light it is pressed. Then the plan is run, right or wrong, and its real result is
+  drawn: the two mixes as shares of amber, where the amount lands on the number line, the stretch of path lit.
+- **A match is decided by the ratio.** `LanternMix.judge` cross-multiplies whole numbers and never reads a colour;
+  the glow's hue is a function of the ratio in lowest terms, so equal ratios glow identically. Colour is never the
+  only signal: amber parts are striped, blue parts dotted, and every gauge has its numbers beside it.
+- **Dials** are a slider with a minus and a plus button (a native range input, so the arrow keys and touch work with
+  no extra code). At most 50 stops a dial. Nothing is typed.
+- **Rounds the plan did not list**, added so each chapter has six and each code is played more than one way: working
+  back from the other oil, "use all 10 parts and glow more amber than the gate" (comparing ratios, several right
+  plans), two lanterns' unit rates compared, a steady walking pace (constant speed, 6.RP.A.3b), what percent a tank
+  is full, and the whole tank from a part and its percent (6.RP.A.3c names all three).
+- **"Lanterns every 250 m along 3 km"** became "one lantern lights 250 m of the path". Posts at each end make the
+  plan's wording 12 or 13 depending on how it is read; a stretch of path lit by each lantern is 12 with no argument.
+- **The ratio table** is a round of its own (the missing lantern of five), not a second task inside the 15-part round.
+- **Contexts are neutral** (decision 3): oil, burning time, distance. No prices, tax, discount, interest or commission
+  in the decks, the bank or the game, and the game uses neither the theme's coin nor its chest: there is no reward
+  currency, only a rack of six lit lanterns.
+- **A built unit's entry profile is live in the engine.** `P.testOutItems(1, _, 'pro')` now deals items, because
+  Unit 1 is no longer planned. The route still refuses a Pro test-out and placement still lands nobody on Pro while the
+  tier is building (the foundations tests hold both).
+- **Left for the opening PR:** the teacher page's game list (`NQ_CREW` in `server/routes/number-quest.js`) and its
+  locale strings do not name Lantern Mix. Adding it means new copy in 13 locale files, which the contract keeps out of
+  a unit PR. Until then the admin's preview of the teacher page shows Unit 1's steps without the game's card.
+- **Public surface.** As the contract says, the game itself is a library game from the day it is registered: it is on
+  the Learn shelf (math, grade 6) and in the Number Quest course's game list. Its title, description and tags never
+  name the Pro tier. Every Number Quest page is byte for byte what it was for anyone who is not the admin.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear (the test checks every line is sent and is on the allowlist, not how "1.5 milliliters" sounds), and play by a
+  student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

@@ -107,6 +107,12 @@ const SHOTS = [
   { tier: 'launchpad', step: '7.2', state: 'clocks-and-coins', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=clock&lock=1', prep: kitchenRush, cdp: true },
   { tier: 'launchpad', step: '7.3', state: 'sort-and-chart', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=chart&lock=1', prep: kitchenRush, cdp: true },
   { tier: 'launchpad', step: '7.4', state: 'the-garden-gate', slug: 'kitchen-rush', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=gate&lock=1', prep: kitchenRush, cdp: true },
+  // The grades 6-8 street, Unit 1, The Mixing Tower: Lantern Mix, a 3D game, in each step's own chapter, the whole phone
+  // screen as the band (the words on top, the board in the night hollow, the lamplighter and the lantern rack under
+  // it, the dials and the Light button below).
+  { tier: 'pro', step: '1.1', state: 'match-the-glow', slug: 'lantern-mix', narrow: { width: 390, height: 640, from: 0, to: 640 }, params: 'chapter=mix&lock=1', prep: lanternMix, cdp: true },
+  { tier: 'pro', step: '1.2', state: 'burn-rate', slug: 'lantern-mix', narrow: { width: 390, height: 640, from: 0, to: 640 }, params: 'chapter=rate&lock=1', prep: lanternMix, cdp: true },
+  { tier: 'pro', step: '1.3', state: 'fill-and-convert', slug: 'lantern-mix', narrow: { width: 390, height: 640, from: 0, to: 640 }, params: 'chapter=percent&lock=1', prep: lanternMix, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -286,6 +292,18 @@ async function kitchenRush(f) {
   // four more (The Garden Gate).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#hero-mage');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function lanternMix(f) {
+  // A lesson arrival: pick the lamplighter, and the locked chapter opens on its first round. Each is photographed as it
+  // is asked, once the board has popped in: the gate lantern's 2 : 3 gauge over an empty one (Match the Glow), a double
+  // number line of 12 milliliters in 4 hours (Burn Rate), an empty tank of 80 milliliters to fill to 50% (Fill and
+  // Convert).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#hero-skelly');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
   await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
   await wait(2200);
