@@ -2622,6 +2622,50 @@
       "drafted": "{n} vragen opgesteld. Controleer ze allemaal.",
       "backConfirm": "Opnieuw beginnen? De opgestelde vragen op deze pagina gaan verloren.",
       "assigned": "Opgegeven."
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "Soort game",
+        "look": "Uiterlijk",
+        "world": "Wereld",
+        "chars": "Figuren",
+        "learn": "Je leert",
+        "extras": "Extra’s"
+      },
+      "world": {
+        "choose": "Kies deze wereld",
+        "close": "Sluiten",
+        "gameAlt": "Een game in {name}, gezien van achter de held",
+        "coverAlt": "{name} van ver weg",
+        "chosen": "{name} is gekozen."
+      },
+      "chars": {
+        "hero": "Held",
+        "livesIn": "Woont in {worlds}",
+        "notIn": "Nog niet in {world}",
+        "otherWorld": "Woont in een andere wereld",
+        "only2d": "Voorlopig alleen in 2D-games",
+        "only3d": "Voorlopig alleen in 3D-games",
+        "one2d": "Voorlopig één figuur in 2D"
+      },
+      "extras": {
+        "remove": "Weghalen",
+        "removeLabel": "{name} weghalen",
+        "tooMany": "Je kunt hier tot {max} bestanden toevoegen.",
+        "wrongType": "Dat soort bestand werkt hier niet. Probeer een PDF of een tekstbestand.",
+        "tooBig": "Dat bestand is te groot. Probeer een kleiner bestand."
+      },
+      "plan": {
+        "change": "Veranderen",
+        "changeLabel": "Veranderen: {name}",
+        "decides": "De Bouwer kiest",
+        "scratch": "Helemaal zelf gemaakt",
+        "opening": "De Bouwer wordt geopend…",
+        "files": "{count, plural, one {# bestand} other {# bestanden}}",
+        "nothing": "Niets toegevoegd",
+        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken."
+      },
+      "gettingReady": "Even klaarmaken…"
     }
   },
   "favorites": {
@@ -8425,5 +8469,181 @@
     "warn": "Opnieuw koppelen",
     "connect": "Koppelen",
     "reconnect": "Opnieuw koppelen"
+  },
+  "buildSetup": {
+    "title": "Maak een game",
+    "skipAll": "Direct naar de Bouwer",
+    "back": "Terug",
+    "skip": "Overslaan",
+    "next": "Volgende",
+    "progress": "Stap {n} van {total}",
+    "start": {
+      "heading": "Hoe wil je beginnen?",
+      "text": "Beide manieren eindigen bij de Bouwer. Daar kun je alles nog veranderen.",
+      "guide": "Help me kiezen",
+      "guideText": "Kies in zes snelle stappen een soort game, een wereld en figuren.",
+      "direct": "Ik weet wat ik wil",
+      "directText": "Ga direct naar de Bouwer en vertel in je eigen woorden over je game."
+    },
+    "else": {
+      "title": "Iets anders",
+      "text": "Typ je eigen idee",
+      "label": "Vertel ons je idee",
+      "packNote": "Dit zit niet in onze pakketten. De Bouwer maakt het daarom helemaal zelf. Het ziet er misschien simpeler uit."
+    },
+    "steps": {
+      "type": {
+        "title": "Wat voor game?",
+        "hint": "Kies er één. Je kunt het later veranderen.",
+        "placeholder": "Bijvoorbeeld: een doolhof, een kookgame, een race"
+      },
+      "look": {
+        "title": "2D of 3D?",
+        "hint": "Kies hoe je game eruitziet."
+      },
+      "world": {
+        "title": "Waar speelt het zich af?",
+        "hint": "Kies een wereld, of verzin er zelf een.",
+        "placeholder": "Bijvoorbeeld: in een vulkaan, een snoepplaneet"
+      },
+      "chars": {
+        "title": "Wie doet er mee?",
+        "hint": "Kies er zoveel als je wilt.",
+        "placeholder": "Bijvoorbeeld: een pinguïn die kookt, een robothond"
+      },
+      "learn": {
+        "title": "Wat moet je ervan leren?",
+        "hint": "Kies er zoveel als je wilt.",
+        "placeholder": "Bijvoorbeeld: tafels tot 12, de waterkringloop"
+      },
+      "extras": {
+        "title": "Nog iets toevoegen?",
+        "hint": "Je mag deze stap overslaan."
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "Avontuur",
+        "text": "Ontdek, verzamel dingen en haal het doel"
+      },
+      "runner": {
+        "title": "Rengame",
+        "text": "Ren, spring en ontwijk"
+      },
+      "catch": {
+        "title": "Vanggame",
+        "text": "Vang de goede dingen die vallen"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "text": "Beantwoord vragen om te winnen"
+      },
+      "memory": {
+        "title": "Memory",
+        "text": "Draai kaarten om en vind de paren"
+      },
+      "word": {
+        "title": "Woordgame",
+        "text": "Spel, zet op volgorde en raad"
+      },
+      "duel": {
+        "title": "Game voor twee",
+        "text": "Speel tegen een vriend op één scherm"
+      },
+      "board": {
+        "title": "Bordspel",
+        "text": "Gooi, loop en geef antwoord"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "3D-wereld",
+        "text": "Loop rond en ontdek"
+      },
+      "2d": {
+        "title": "2D-wereld",
+        "text": "Plat, zoals een prentenboek"
+      },
+      "auto": {
+        "title": "Kies jij maar",
+        "text": "De Bouwer kiest wat het beste past"
+      }
+    },
+    "world": {
+      "preview": "Bekijk",
+      "previewLabel": "Bekijk {name} van dichtbij"
+    },
+    "worlds": {
+      "sky-islands": "Graseilanden die hoog boven de wolken zweven.",
+      "castle-quest": "Een kasteel op een heuvel met fakkels, sleutels en schatten.",
+      "space-base": "Een basis op een rode planeet met raketten en karretjes.",
+      "spooky-hollow": "Een vriendelijke herfstnacht met pompoenen en lantaarns.",
+      "toy-town": "Een vrolijk stadje met wegen, auto’s en winkels.",
+      "busy-kitchen": "Een grote keuken vol eten, potten en pannen.",
+      "cosy-home": "Een knus huisje met banken, lampen en boeken.",
+      "medieval-village": "Een sprookjesdorp met een molen en een markt.",
+      "pirate-cove": "Zandeilanden, palmbomen, steigers en zeilschepen.",
+      "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp.",
+      "under-the-sea": "Een koraalrif waar je zwemt als dolfijn, schildpad of vis."
+    },
+    "groups": {
+      "heroes": "Helden",
+      "farm": "Boerderijdieren",
+      "wild": "Dierentuin- en wilde dieren",
+      "dinosaurs": "Dinosaurussen",
+      "sea": "Vissen en zeedieren"
+    },
+    "chars": {
+      "soon": "Komt eraan",
+      "soonText": "Nog geen. Ze zijn onderweg.",
+      "soon3d": "Komt eraan in 3D"
+    },
+    "learn": {
+      "math": {
+        "title": "Rekenen",
+        "text": "Tellen, optellen, breuken en meer"
+      },
+      "reading": {
+        "title": "Lezen en woorden",
+        "text": "Spelling, nieuwe woorden, verhalen"
+      },
+      "science": {
+        "title": "Natuur en techniek",
+        "text": "Dieren, ruimte, hoe dingen werken"
+      },
+      "geography": {
+        "title": "Plekken en kaarten",
+        "text": "Landen, hoofdsteden, bekende plekken"
+      },
+      "fun": {
+        "title": "Gewoon voor de lol",
+        "text": "Geen vragen, alleen spelen"
+      }
+    },
+    "extras": {
+      "notesLabel": "Moet de Bouwer nog iets weten?",
+      "notesPlaceholder": "Bijvoorbeeld: maak het lastig, voeg een geheim level toe",
+      "fileTitle": "Voeg een werkblad of aantekeningen toe",
+      "fileText": "De Bouwer kan het gebruiken voor de vragen of het verhaal.",
+      "choose": "Kies een bestand",
+      "fileKinds": "Een PDF of een tekstbestand. Plaatjes kun je later toevoegen, in de Bouwer."
+    },
+    "plan": {
+      "heading": "Dit is je gameplan",
+      "text": "Verander wat je wilt, of open de Bouwer en ga daar verder.",
+      "told": "Dit krijgt de Bouwer te horen",
+      "open": "Open de Bouwer"
+    },
+    "say": {
+      "start": "Dit is mijn gameplan.",
+      "type": "Soort game: {value}.",
+      "look3d": "Maak het in 3D.",
+      "look2d": "Maak het in 2D.",
+      "world": "Wereld: {value}.",
+      "characters": "Erin: {list}.",
+      "learn": "Je leert: {list}.",
+      "file": "Gebruik het bestand dat ik heb toegevoegd."
+    },
+    "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk."
   }
 }

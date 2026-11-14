@@ -518,7 +518,7 @@
    "pack": "reodesuxz-underwater",
    "kind": "water",
    "size": [
-    0.5,
+    0.3,
     1.9,
     1
    ],
@@ -1031,8 +1031,8 @@
    "sha384": "sha384-TKoIiqiwGD3XtrsmiLHo81UsLEWJDyjYAgLmIV/E4tDBP1FsOa94BrDbUmZfLgbX"
   },
   "cover.webp": {
-   "bytes": 26152,
-   "sha384": "sha384-Pz8nSksl6pgrnhAl6wPzNXHF7xvO3MEMe0uIS/lRvxYODrXbrzvGnx/ON+XuSzyz"
+   "bytes": 26000,
+   "sha384": "sha384-kFKJt5fJkCpmeH0gBpX8TvNc4iLfzIiDb3yiLwvDmGNhgxe4moK7jAbJtRuX0+Wr"
   },
   "creatures/barb.glb": {
    "bytes": 62948,

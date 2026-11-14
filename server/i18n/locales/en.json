@@ -2640,6 +2640,50 @@
       "drafted": "{n} questions drafted. Check each one.",
       "backConfirm": "Start again? The drafted questions on this page will be lost.",
       "assigned": "Assigned."
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "Game type",
+        "look": "Look",
+        "world": "World",
+        "chars": "Characters",
+        "learn": "It teaches",
+        "extras": "Extras"
+      },
+      "world": {
+        "choose": "Choose this world",
+        "close": "Close",
+        "gameAlt": "A game in {name}, seen from behind the hero",
+        "coverAlt": "{name} from far away",
+        "chosen": "{name} is picked."
+      },
+      "chars": {
+        "hero": "Hero",
+        "livesIn": "Lives in {worlds}",
+        "notIn": "Not in {world} yet",
+        "otherWorld": "Lives in a different world",
+        "only2d": "Only in 2D games so far",
+        "only3d": "Only in 3D games so far",
+        "one2d": "One character in a 2D game for now"
+      },
+      "extras": {
+        "remove": "Remove",
+        "removeLabel": "Remove {name}",
+        "tooMany": "You can add up to {max} files here.",
+        "wrongType": "That kind of file does not work here. Try a PDF or a text file.",
+        "tooBig": "That file is too big. Try a smaller one."
+      },
+      "plan": {
+        "change": "Change",
+        "changeLabel": "Change: {name}",
+        "decides": "Builder decides",
+        "scratch": "Made from scratch",
+        "opening": "Opening the Builder…",
+        "files": "{count, plural, one {# file} other {# files}}",
+        "nothing": "Nothing added",
+        "empty": "You have not picked anything yet. The Builder will ask you what to make."
+      },
+      "gettingReady": "Getting ready…"
     }
   },
   "favorites": {
@@ -8841,5 +8885,181 @@
     "warn": "Connect again",
     "connect": "Connect",
     "reconnect": "Connect again"
+  },
+  "buildSetup": {
+    "title": "Make a game",
+    "skipAll": "Skip to the Builder",
+    "back": "Back",
+    "skip": "Skip this step",
+    "next": "Next",
+    "progress": "Step {n} of {total}",
+    "start": {
+      "heading": "How do you want to start?",
+      "text": "Both ways end in the Builder. You can change anything there.",
+      "guide": "Help me choose",
+      "guideText": "Pick a game type, a world and characters in six quick steps.",
+      "direct": "I know what I want",
+      "directText": "Go straight to the Builder and describe your game in your own words."
+    },
+    "else": {
+      "title": "Something else",
+      "text": "Type your own idea",
+      "label": "Tell us your idea",
+      "packNote": "This is not in our packs, so the Builder will make it from scratch. It may look simpler."
+    },
+    "steps": {
+      "type": {
+        "title": "What kind of game?",
+        "hint": "Pick one. You can change it later.",
+        "placeholder": "Like: a maze, a cooking game, a race"
+      },
+      "look": {
+        "title": "2D or 3D?",
+        "hint": "Pick how your game looks."
+      },
+      "world": {
+        "title": "Where does it happen?",
+        "hint": "Pick a world, or dream up your own.",
+        "placeholder": "Like: inside a volcano, a candy planet"
+      },
+      "chars": {
+        "title": "Who is in it?",
+        "hint": "Pick as many as you like.",
+        "placeholder": "Like: a penguin chef, a robot dog"
+      },
+      "learn": {
+        "title": "What should it teach?",
+        "hint": "Pick as many as you like.",
+        "placeholder": "Like: times tables to 12, the water cycle"
+      },
+      "extras": {
+        "title": "Anything to add?",
+        "hint": "You can skip this step."
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "Adventure",
+        "text": "Explore, collect things and reach the goal"
+      },
+      "runner": {
+        "title": "Runner",
+        "text": "Run, jump and dodge"
+      },
+      "catch": {
+        "title": "Catching game",
+        "text": "Catch the right ones as they fall"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "text": "Answer questions to win"
+      },
+      "memory": {
+        "title": "Memory match",
+        "text": "Flip cards and find the pairs"
+      },
+      "word": {
+        "title": "Word game",
+        "text": "Spell, unscramble and guess"
+      },
+      "duel": {
+        "title": "Two-player game",
+        "text": "Play against a friend on one screen"
+      },
+      "board": {
+        "title": "Board game",
+        "text": "Roll, move and answer"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "3D world",
+        "text": "Walk around and explore"
+      },
+      "2d": {
+        "title": "2D world",
+        "text": "Flat, like a picture book"
+      },
+      "auto": {
+        "title": "You pick for me",
+        "text": "The Builder chooses what fits best"
+      }
+    },
+    "world": {
+      "preview": "Preview",
+      "previewLabel": "Preview {name}"
+    },
+    "worlds": {
+      "sky-islands": "Grassy islands floating high above the clouds.",
+      "castle-quest": "A castle on a hill with torches, keys and treasure.",
+      "space-base": "A base on a red planet with rockets and rovers.",
+      "spooky-hollow": "A friendly autumn night with pumpkins and lanterns.",
+      "toy-town": "A bright little town with roads, cars and shops.",
+      "busy-kitchen": "A big kitchen full of food, pots and pans.",
+      "cosy-home": "A warm little house with sofas, lamps and books.",
+      "medieval-village": "A storybook village with a windmill and a market.",
+      "pirate-cove": "Sandy islands, palm trees, docks and sailing ships.",
+      "wild-woods": "A sunny forest with a river, cliffs and a camp.",
+      "under-the-sea": "A coral reef to swim through as a dolphin, a turtle or a fish."
+    },
+    "groups": {
+      "heroes": "Heroes",
+      "farm": "Farm animals",
+      "wild": "Zoo and wild animals",
+      "dinosaurs": "Dinosaurs",
+      "sea": "Fish and sea animals"
+    },
+    "chars": {
+      "soon": "Coming soon",
+      "soonText": "None yet. They are on their way.",
+      "soon3d": "Coming soon in 3D"
+    },
+    "learn": {
+      "math": {
+        "title": "Math",
+        "text": "Counting, adding, fractions and more"
+      },
+      "reading": {
+        "title": "Reading and words",
+        "text": "Spelling, new words, stories"
+      },
+      "science": {
+        "title": "Science",
+        "text": "Animals, space, how things work"
+      },
+      "geography": {
+        "title": "Places and maps",
+        "text": "Countries, capitals, landmarks"
+      },
+      "fun": {
+        "title": "Just for fun",
+        "text": "No questions, only play"
+      }
+    },
+    "extras": {
+      "notesLabel": "Anything else the Builder should know?",
+      "notesPlaceholder": "Like: make it tricky, add a secret level",
+      "fileTitle": "Add a worksheet or notes",
+      "fileText": "The Builder can use it for the questions or the story.",
+      "choose": "Choose a file",
+      "fileKinds": "A PDF or a text file. You can add pictures later, in the Builder."
+    },
+    "plan": {
+      "heading": "Here is your game plan",
+      "text": "Change anything, or open the Builder and keep going there.",
+      "told": "What the Builder will be told",
+      "open": "Open the Builder"
+    },
+    "say": {
+      "start": "Here is my game plan.",
+      "type": "Kind of game: {value}.",
+      "look3d": "Make it 3D.",
+      "look2d": "Make it 2D.",
+      "world": "World: {value}.",
+      "characters": "In it: {list}.",
+      "learn": "It teaches: {list}.",
+      "file": "Use the file I added."
+    },
+    "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look."
   }
 }

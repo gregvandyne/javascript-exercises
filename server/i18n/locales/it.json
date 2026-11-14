@@ -2622,6 +2622,50 @@
       "drafted": "{n} domande preparate. Controllale una per una.",
       "backConfirm": "Ricominciare? Le domande preparate in questa pagina andranno perse.",
       "assigned": "Assegnato."
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "Tipo di gioco",
+        "look": "Aspetto",
+        "world": "Mondo",
+        "chars": "Personaggi",
+        "learn": "Insegna",
+        "extras": "Extra"
+      },
+      "world": {
+        "choose": "Scegli questo mondo",
+        "close": "Chiudi",
+        "gameAlt": "Un gioco in {name}, visto da dietro l’eroe",
+        "coverAlt": "{name} visto da lontano",
+        "chosen": "{name} è stato scelto."
+      },
+      "chars": {
+        "hero": "Eroe",
+        "livesIn": "Vive in {worlds}",
+        "notIn": "Non ancora in {world}",
+        "otherWorld": "Vive in un altro mondo",
+        "only2d": "Per ora solo nei giochi 2D",
+        "only3d": "Per ora solo nei giochi 3D",
+        "one2d": "Per ora un solo personaggio in 2D"
+      },
+      "extras": {
+        "remove": "Togli",
+        "removeLabel": "Togli {name}",
+        "tooMany": "Qui puoi aggiungere fino a {max} file.",
+        "wrongType": "Questo tipo di file qui non funziona. Prova con un PDF o un file di testo.",
+        "tooBig": "Questo file è troppo grande. Prova con uno più piccolo."
+      },
+      "plan": {
+        "change": "Cambia",
+        "changeLabel": "Cambia: {name}",
+        "decides": "Decide il Costruttore",
+        "scratch": "Fatto da zero",
+        "opening": "Apro il Costruttore…",
+        "files": "{count, plural, one {# file} other {# file}}",
+        "nothing": "Niente di aggiunto",
+        "empty": "Non hai ancora scelto niente. Il Costruttore ti chiederà che cosa fare."
+      },
+      "gettingReady": "Preparazione…"
     }
   },
   "favorites": {
@@ -8425,5 +8469,181 @@
     "warn": "Da ricollegare",
     "connect": "Collega",
     "reconnect": "Ricollega"
+  },
+  "buildSetup": {
+    "title": "Crea un gioco",
+    "skipAll": "Vai al Costruttore",
+    "back": "Indietro",
+    "skip": "Salta",
+    "next": "Avanti",
+    "progress": "Passo {n} di {total}",
+    "start": {
+      "heading": "Come vuoi iniziare?",
+      "text": "Tutte e due le strade portano al Costruttore. Lì puoi cambiare tutto.",
+      "guide": "Aiutami a scegliere",
+      "guideText": "Scegli un tipo di gioco, un mondo e i personaggi in sei passi veloci.",
+      "direct": "So già cosa voglio",
+      "directText": "Vai subito dal Costruttore e racconta il tuo gioco con parole tue."
+    },
+    "else": {
+      "title": "Qualcos’altro",
+      "text": "Scrivi la tua idea",
+      "label": "Raccontaci la tua idea",
+      "packNote": "Questo non è nei nostri pacchetti, quindi il Costruttore lo farà da zero. Potrebbe sembrare più semplice."
+    },
+    "steps": {
+      "type": {
+        "title": "Che tipo di gioco?",
+        "hint": "Scegline uno. Puoi cambiarlo dopo.",
+        "placeholder": "Per esempio: un labirinto, un gioco di cucina, una gara"
+      },
+      "look": {
+        "title": "2D o 3D?",
+        "hint": "Scegli l’aspetto del tuo gioco."
+      },
+      "world": {
+        "title": "Dove succede?",
+        "hint": "Scegli un mondo, o inventane uno tuo.",
+        "placeholder": "Per esempio: dentro un vulcano, un pianeta di caramelle"
+      },
+      "chars": {
+        "title": "Chi c’è dentro?",
+        "hint": "Scegline quanti vuoi.",
+        "placeholder": "Per esempio: un pinguino cuoco, un cane robot"
+      },
+      "learn": {
+        "title": "Che cosa deve insegnare?",
+        "hint": "Scegline quanti vuoi.",
+        "placeholder": "Per esempio: le tabelline fino al 12, il ciclo dell’acqua"
+      },
+      "extras": {
+        "title": "Qualcosa da aggiungere?",
+        "hint": "Puoi saltare questo passo."
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "Avventura",
+        "text": "Esplora, raccogli oggetti e arriva al traguardo"
+      },
+      "runner": {
+        "title": "Corsa",
+        "text": "Corri, salta e schiva"
+      },
+      "catch": {
+        "title": "Gioco di presa",
+        "text": "Prendi le cose giuste mentre cadono"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "text": "Rispondi alle domande per vincere"
+      },
+      "memory": {
+        "title": "Memory",
+        "text": "Gira le carte e trova le coppie"
+      },
+      "word": {
+        "title": "Gioco di parole",
+        "text": "Scrivi, riordina e indovina"
+      },
+      "duel": {
+        "title": "Gioco per due",
+        "text": "Gioca contro un amico sullo stesso schermo"
+      },
+      "board": {
+        "title": "Gioco da tavolo",
+        "text": "Tira il dado, muoviti e rispondi"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "Mondo 3D",
+        "text": "Cammina ed esplora"
+      },
+      "2d": {
+        "title": "Mondo 2D",
+        "text": "Piatto, come un libro illustrato"
+      },
+      "auto": {
+        "title": "Scegli tu per me",
+        "text": "Il Costruttore sceglie quello che sta meglio"
+      }
+    },
+    "world": {
+      "preview": "Guarda",
+      "previewLabel": "Guarda {name} da vicino"
+    },
+    "worlds": {
+      "sky-islands": "Isole d’erba che volano sopra le nuvole.",
+      "castle-quest": "Un castello su una collina con torce, chiavi e tesori.",
+      "space-base": "Una base su un pianeta rosso con razzi e rover.",
+      "spooky-hollow": "Una notte d’autunno amichevole con zucche e lanterne.",
+      "toy-town": "Una cittadina colorata con strade, auto e negozi.",
+      "busy-kitchen": "Una grande cucina piena di cibo, pentole e padelle.",
+      "cosy-home": "Una casetta accogliente con divani, lampade e libri.",
+      "medieval-village": "Un villaggio da fiaba con un mulino e un mercato.",
+      "pirate-cove": "Isole di sabbia, palme, moli e velieri.",
+      "wild-woods": "Un bosco pieno di sole con un fiume, rocce e un campo.",
+      "under-the-sea": "Una barriera corallina dove nuotare come delfino, tartaruga o pesce."
+    },
+    "groups": {
+      "heroes": "Eroi",
+      "farm": "Animali della fattoria",
+      "wild": "Animali dello zoo e selvatici",
+      "dinosaurs": "Dinosauri",
+      "sea": "Pesci e animali del mare"
+    },
+    "chars": {
+      "soon": "In arrivo",
+      "soonText": "Ancora nessuno. Stanno arrivando.",
+      "soon3d": "In arrivo in 3D"
+    },
+    "learn": {
+      "math": {
+        "title": "Matematica",
+        "text": "Contare, sommare, frazioni e altro"
+      },
+      "reading": {
+        "title": "Lettura e parole",
+        "text": "Ortografia, parole nuove, storie"
+      },
+      "science": {
+        "title": "Scienze",
+        "text": "Animali, spazio, come funzionano le cose"
+      },
+      "geography": {
+        "title": "Luoghi e mappe",
+        "text": "Paesi, capitali, luoghi famosi"
+      },
+      "fun": {
+        "title": "Solo per divertirsi",
+        "text": "Niente domande, solo gioco"
+      }
+    },
+    "extras": {
+      "notesLabel": "C’è altro che il Costruttore deve sapere?",
+      "notesPlaceholder": "Per esempio: fallo difficile, aggiungi un livello segreto",
+      "fileTitle": "Aggiungi una scheda o degli appunti",
+      "fileText": "Il Costruttore può usarli per le domande o per la storia.",
+      "choose": "Scegli un file",
+      "fileKinds": "Un PDF o un file di testo. Puoi aggiungere immagini dopo, nel Costruttore."
+    },
+    "plan": {
+      "heading": "Ecco il piano del tuo gioco",
+      "text": "Cambia quello che vuoi, oppure apri il Costruttore e continua lì.",
+      "told": "Che cosa diremo al Costruttore",
+      "open": "Apri il Costruttore"
+    },
+    "say": {
+      "start": "Ecco il piano del mio gioco.",
+      "type": "Tipo di gioco: {value}.",
+      "look3d": "Fallo in 3D.",
+      "look2d": "Fallo in 2D.",
+      "world": "Mondo: {value}.",
+      "characters": "Dentro ci sono: {list}.",
+      "learn": "Insegna: {list}.",
+      "file": "Usa il file che ho aggiunto."
+    },
+    "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico."
   }
 }

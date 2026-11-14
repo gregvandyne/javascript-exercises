@@ -8,20 +8,21 @@
 // Pure module (no database).
 import fs from 'node:fs';
 import path from 'node:path';
-import { KIT2_WORLDS, KIT2_VERSIONS, KIT2_API_SOURCE } from './kit2-catalog.js';
+import { KIT2_WORLDS, KIT2_VERSIONS, KIT2_API_SOURCE, KIT2_CREATURE_GROUPS, KIT2_CREATURE_GROUP, KIT2_GROUP_LIST } from './kit2-catalog.js';
 import { kit2ImportMap, OOMBA3D_VERSION, OOMBA3D_MODULE, KIT2_LOCK, oomba3dVersionOf } from '../services/vendor.js';
 import { fileURLToPath } from 'node:url';
 import { LOCALES_DIR, CODES } from '../i18n/index.js';
 import { isArt2dChip } from './art2d.js';
 
-export { KIT2_WORLDS, KIT2_VERSIONS };
+export { KIT2_WORLDS, KIT2_VERSIONS, KIT2_CREATURE_GROUPS, KIT2_GROUP_LIST };
 export const WORLD_IDS = KIT2_WORLDS.map(w => w.id);
 export const worldById = id => KIT2_WORLDS.find(w => w.id === id) || null;
-/** Every hero and creature of the newest worlds, once each, in the order they first appear: [{ id, name, kind, worlds }]. */
+/** Every hero and creature of the newest worlds, once each, in the order they first appear: [{ id, name, kind, worlds }].
+ *  group: 'heroes', or an animal's group from the catalogue (KIT2_CREATURE_GROUPS: the setup step's sections). */
 export const KIT2_CHARACTERS = (() => {
   const out = new Map();
   for (const w of KIT2_WORLDS) for (const [kind, list] of [['hero', w.heroes], ['creature', w.creatures]]) for (const h of list) {
-    if (!out.has(h.id)) out.set(h.id, { id: h.id, name: h.name, kind, worlds: [], ...(kind === 'creature' ? { playable: !!h.playable, moves: h.moves || [] } : {}) });
+    if (!out.has(h.id)) out.set(h.id, { id: h.id, name: h.name, kind, group: kind === 'creature' ? KIT2_CREATURE_GROUP[h.id] || 'wild' : 'heroes', worlds: [], ...(kind === 'creature' ? { playable: !!h.playable, moves: h.moves || [] } : {}) });
     out.get(h.id).worlds.push(w.id);
   }
   return [...out.values()];
@@ -338,7 +339,7 @@ const worldText = w => [
 export const KIT2_CATALOG_TEXT = KIT2_WORLDS.map(worldText).join('\n\n');
 const ANIMALS = KIT2_CHARACTERS.filter(c => c.kind === 'creature');
 const NO_CREATURES = ANIMALS.length
-  ? `\n- Animals: the only animals are the creatures listed for a world below (${ANIMALS.map(c => c.id).join(', ')}). Never invent a creature name, and never use one in a world that does not list it: g.creature() stops the game with an error. If the builder asks for an animal that is not listed (a dinosaur, a cat, a bird: not yet), say so kindly in one short sentence, offer the animals there are, and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game.
+  ? `\n- Animals: the only animals are the creatures listed for a world below (${ANIMALS.map(c => c.id).join(', ')}). Never invent a creature name, and never use one in a world that does not list it: g.creature() stops the game with an error. If the builder asks for an animal that is not listed (a dinosaur, a cat, a bird: not yet), say so kindly in one short sentence, offer the animals there are, and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game (the one exception: a character a SETUP CHOICES block marks CUSTOM, built as that block says).
 - An animal in a game: CONFIG.companion (the starter's line: a creature id of this world, or '') makes it trail the hero; CONFIG.hero may be a creature marked playable (the player IS the horse); more animals with g.creature(id, { x, y, z }) and then wander(), follow(path), walkTo(), onMeet(fn) (the hero came close: a toast, a question, a count; never a penalty). Use only the moves listed for that creature: one that is "not playable" has no walk, so it hops, and it can be a companion or scenery but never the hero. Animals are never enemies or obstacles: nothing an animal does may cost points, lives or time, there is no chasing, biting or hitting, and no game is about hurting, hunting, catching or selling one. Keep it light: at most 8 animals in a game.`
   : '\n- There are no animal or dinosaur characters yet. If the builder asks for one, say so kindly in one short sentence, pick the closest hero (an outfit colour helps: a green cape for a dinosaur fan) and make the WORLD about their idea (its name, its questions, what there is to collect). Never pretend a hero is an animal, and never draw one from shapes in a Kit 2 game.';
 
@@ -409,7 +410,7 @@ ${KIT2_CATALOG_TEXT}`;
 export function kit2Note(pick) {
   if (!pick) return '';
   const w = worldById(pick.world), h = characterById(pick.hero);
-  const how = { chip: 'The builder picked', name: 'The builder named', place: 'The builder described a place that is', kept: 'Earlier the builder picked', game: 'This game is in' }[pick.by] || 'This build uses';
+  const how = { chip: 'The builder picked', plan: 'In the setup steps the builder picked', name: 'The builder named', place: 'The builder described a place that is', kept: 'Earlier the builder picked', game: 'This game is in' }[pick.by] || 'This build uses';
   return `KIT 2 CHOICE: ${how} the 3D world ${w ? `${w.id} ("${w.name}") ${w.version}` : pick.world}${h ? `, with the hero ${h.id} (${h.name})` : ''}. `
     + (pick.by === 'game' && !pick.changed ? 'Keep it a Kit 2 game in this world unless they ask for another.' : pick.by === 'place' ? 'Build it as a Kit 2 game (start_from_template "oomba3d" with this world) unless they clearly want a flat 2D game.' : 'Build it as a Kit 2 game: start_from_template "oomba3d" with this world and hero, then make it theirs.')
     + (pick.companion && characterById(pick.companion) ? ` The animal that comes along: ${pick.companion} (${characterById(pick.companion).name}), as CONFIG.companion (start_from_template takes it as companion).` : '')

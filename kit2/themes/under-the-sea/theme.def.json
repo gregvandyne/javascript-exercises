@@ -707,9 +707,9 @@
    "kind": "water",
    "playable": true,
    "size": [
-    0.5,
+    0.3,
     1.9,
-    1
+    1.0
    ],
    "matte": true,
    "inkNormals": true,
