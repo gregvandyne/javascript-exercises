@@ -134,5 +134,12 @@
   "chars.soon3d": "3Dはもうすぐ",
   "client.chars.only2d": "いまは2Dゲームだけ",
   "client.chars.only3d": "いまは3Dゲームだけ",
-  "client.chars.one2d": "2Dではいまは1人だけ"
+  "client.chars.youPlay": "きみがあやつるキャラ",
+  "client.all.select": "ぜんぶえらぶ",
+  "client.all.clear": "ぜんぶはずす",
+  "client.all.selectLabel": "ぜんぶえらぶ：{name}",
+  "client.all.clearLabel": "ぜんぶはずす：{name}",
+  "client.all.picked": "{count} こえらんだよ",
+  "client.all.pickedWorld": "{count} こえらんだよ。みんな {world} にいるよ。",
+  "client.all.cleared": "はずしたよ"
 }

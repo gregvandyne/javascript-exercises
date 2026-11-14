@@ -2605,7 +2605,7 @@
         "otherWorld": "Lebt in einer anderen Welt",
         "only2d": "Bisher nur in 2D-Spielen",
         "only3d": "Bisher nur in 3D-Spielen",
-        "one2d": "In 2D vorerst nur eine Figur"
+        "youPlay": "Mit dieser Figur spielst du"
       },
       "extras": {
         "remove": "Entfernen",
@@ -2624,7 +2624,16 @@
         "nothing": "Nichts dazugegeben",
         "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll."
       },
-      "gettingReady": "Wird vorbereitet…"
+      "gettingReady": "Wird vorbereitet…",
+      "all": {
+        "select": "Alle auswählen",
+        "clear": "Alle abwählen",
+        "selectLabel": "Alle auswählen: {name}",
+        "clearLabel": "Alle abwählen: {name}",
+        "picked": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
+        "pickedWorld": "{count} ausgewählt. Alle leben in {world}.",
+        "cleared": "Abgewählt"
+      }
     }
   },
   "favorites": {

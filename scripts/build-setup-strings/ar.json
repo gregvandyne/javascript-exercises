@@ -134,5 +134,12 @@
   "chars.soon3d": "قريبًا في 3D",
   "client.chars.only2d": "حاليًا في ألعاب 2D فقط",
   "client.chars.only3d": "حاليًا في ألعاب 3D فقط",
-  "client.chars.one2d": "شخصية واحدة في لعبة 2D حاليًا"
+  "client.chars.youPlay": "هذه الشخصية التي تلعب بها",
+  "client.all.select": "اختر الكل",
+  "client.all.clear": "أزل الكل",
+  "client.all.selectLabel": "اختر الكل: {name}",
+  "client.all.clearLabel": "أزل الكل: {name}",
+  "client.all.picked": "{count, plural, zero {لم يُختر شيء} one {تم اختيار واحد} two {تم اختيار اثنين} few {تم اختيار #} many {تم اختيار #} other {تم اختيار #}}",
+  "client.all.pickedWorld": "تم اختيار {count}. كلها تعيش في {world}.",
+  "client.all.cleared": "تمت الإزالة"
 }

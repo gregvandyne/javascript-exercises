@@ -51,15 +51,16 @@ function pick(key, id) {
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
   if (id === 'else' && !had) { const inp = $(`#su-idea-${key}`); inp.focus(); inp.scrollIntoView({ block: 'nearest' }); }
-  if (key === 'chars' || key === 'world' || key === 'look' || key === 'type') refreshLimits();
+  if (key === 'chars' || key === 'world' || key === 'look' || key === 'type') refreshLimits(); else refreshAll();
 }
 
 // What can be picked follows the 2D or 3D choice, so the plan never promises what the Builder cannot do (a card that
 // cannot be picked says why):
 //   3D (or not chosen, or "You pick for me"): the characters of the 3D worlds. A world limits who lives in it, and
 //     characters picked together must share a world. An animal that is only a 2D sprite so far (the dinosaurs) waits.
-//   2D: the 2D sprites, ONE of them (a 2D game draws one of our characters, the hero). Only running and catching
-//     games draw our worlds and characters in 2D so far: for the other kinds a note says the classic look is used.
+//   2D: the 2D sprites, as many as they like. The first one picked is who they play as (its card says so); the others
+//     are friends who are in the game too. Only running and catching games draw our worlds and characters in 2D so
+//     far: for the other kinds a note says the classic look is used.
 const charById = id => D.characters.find(c => c.id === id);
 const worldName = id => (D.worlds.find(w => w.id === id) || { name: id }).name;
 const isFlat = () => S.sel.look[0] === '2d';
@@ -70,17 +71,18 @@ function refreshLimits() {
   const world = !flat && S.sel.world[0] && S.sel.world[0] !== 'else' ? S.sel.world[0] : '';
   // Picks that no longer fit are taken out (the look or the world changed after they were picked).
   S.sel.chars = S.sel.chars.filter(id => { const c = charById(id); return !c || (flat ? c.in2d : c.in3d && (!world || c.worlds.includes(world))); });
-  if (flat) { const first = S.sel.chars.find(id => id !== 'else'); S.sel.chars = S.sel.chars.filter(id => id === 'else' || id === first); }
+  // 3D: the picks must share a world. In the order they were picked, one that shares no world with those before it
+  // is taken out (picks made for a 2D game, then the look changed).
   let ok = world ? [world] : D.worlds.map(w => w.id);
-  for (const id of S.sel.chars) { const c = charById(id); if (c && !flat) ok = ok.filter(w => c.worlds.includes(w)); }
-  const one = flat && S.sel.chars.some(id => id !== 'else');
+  if (!flat) S.sel.chars = S.sel.chars.filter(id => { const c = charById(id); if (!c) return true; const both = ok.filter(w => c.worlds.includes(w)); if (!both.length) return false; ok = both; return true; });
+  const player = flat ? S.sel.chars.find(id => id !== 'else') : '';
   for (const b of cardsOf('chars')) {
     const c = charById(b.dataset.id); if (!c) continue;
     const picked = S.sel.chars.includes(c.id);
     let line = c.kind === 'creature' ? '' : t('js.buildsetup.chars.hero'), can = true;
     if (flat) {
       if (!c.in2d) { can = false; line = t('js.buildsetup.chars.only3d'); }
-      else if (one && !picked) { can = false; line = t('js.buildsetup.chars.one2d'); }
+      else if (c.id === player) line = t('js.buildsetup.chars.youPlay');
     } else if (!c.in3d) { can = false; line = t('js.buildsetup.chars.only2d'); }
     else if (!picked && !c.worlds.some(w => ok.includes(w))) { can = false; line = world ? t('js.buildsetup.chars.notIn', { world: worldName(world) }) : t('js.buildsetup.chars.otherWorld'); }
     else if (c.kind === 'creature') line = t('js.buildsetup.chars.livesIn', { worlds: list(c.worlds.map(worldName)) });
@@ -90,6 +92,48 @@ function refreshLimits() {
   paint('chars');
   for (const chip of $$('[data-soon3d]')) chip.hidden = flat;
   for (const id of ['su-chars-2d', 'su-world-2d', 'su-plan-2d']) $(`#${id}`).hidden = !flatPlain();
+  refreshAll();
+}
+
+// "Select all" on a multi-select section (a group of characters, or what it teaches): picks every card of the section
+// that can be picked right now (never a blocked one, never "Something else"); when they all are picked it reads "Clear
+// all" and clears that section only. Hidden while fewer than two cards can be picked.
+// In 3D, characters picked together must share a world. So "Select all" there picks the largest set of the section
+// that shares one world with what is already picked (the first such world when two tie); the rest then grey out exactly
+// as they do after single picks, and the message says which world it is.
+const allCards = scope => (scope === 'learn' ? cardsOf('learn') : $$(`.su-group[data-group="${scope.split(':')[1]}"] .su-pick`)).filter(b => b.dataset.id !== 'else');
+const allKey = scope => (scope === 'learn' ? 'learn' : 'chars');
+function refreshAll() {
+  for (const btn of $$('.su-all')) {
+    const key = allKey(btn.dataset.all), cards = allCards(btn.dataset.all), can = cards.filter(b => !b.disabled);
+    const done = can.length > 0 && can.every(b => S.sel[key].includes(b.dataset.id));
+    btn.hidden = can.length < 2;
+    btn.textContent = t(done ? 'js.buildsetup.all.clear' : 'js.buildsetup.all.select');
+    btn.setAttribute('aria-pressed', String(done));
+    btn.setAttribute('aria-label', t(done ? 'js.buildsetup.all.clearLabel' : 'js.buildsetup.all.selectLabel', { name: btn.dataset.name }));
+  }
+}
+function selectAll(btn) {
+  const scope = btn.dataset.all, key = allKey(scope), ids = allCards(scope).filter(b => !b.disabled).map(b => b.dataset.id);
+  if (btn.getAttribute('aria-pressed') === 'true') {
+    S.sel[key] = S.sel[key].filter(id => !ids.includes(id));
+    paint(key); if (key === 'chars') refreshLimits(); else refreshAll();
+    say(t('js.buildsetup.all.cleared')); btn.focus(); return;
+  }
+  let take = ids, world = '';
+  if (key === 'chars' && !isFlat()) {
+    // the worlds everything picked so far shares (and the chosen world, when there is one)
+    const chosen = S.sel.world[0] && S.sel.world[0] !== 'else' ? S.sel.world[0] : '';
+    let ok = chosen ? [chosen] : D.worlds.map(w => w.id);
+    for (const id of S.sel.chars) { const c = charById(id); if (c) ok = ok.filter(w => c.worlds.includes(w)); }
+    let best = []; for (const w of ok) { const set = ids.filter(id => charById(id).worlds.includes(w)); if (set.length > best.length) { best = set; world = w; } }
+    take = best; if (take.length === ids.length || chosen) world = '';
+  }
+  S.sel[key] = [...S.sel[key], ...take.filter(id => !S.sel[key].includes(id))];
+  paint(key); if (key === 'chars') refreshLimits(); else refreshAll();
+  const n = take.length;
+  say(world ? t('js.buildsetup.all.pickedWorld', { count: n, world: worldName(world) }) : t('js.buildsetup.all.picked', { count: n }));
+  btn.focus();
 }
 
 // ---------------------------------------------------------------- the plan
@@ -208,6 +252,7 @@ function preview(id) {
 // ---------------------------------------------------------------- events
 document.addEventListener('click', e => {
   const p = e.target.closest('.su-pick'); if (p) { if (!p.disabled) pick(p.dataset.step, p.dataset.id); return; }
+  const all = e.target.closest('.su-all'); if (all) { selectAll(all); return; }
   const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); return; }
   const pv = e.target.closest('[data-preview]'); if (pv) { preview(pv.dataset.preview); return; }
   const ch = e.target.closest('[data-change]'); if (ch) { S.back = 'plan'; show(ch.dataset.change); return; }

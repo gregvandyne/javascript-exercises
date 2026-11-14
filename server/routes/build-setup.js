@@ -78,6 +78,9 @@ router.get('/build/new', requireBuilder, (req, res) => {
     <label for="su-idea-${s.key}">${t('buildSetup.else.label')}</label>
     <input class="input" id="su-idea-${s.key}" data-idea="${s.key}" maxlength="${LIMITS.idea}" dir="auto" autocomplete="off" placeholder="${t(`buildSetup.steps.${s.key}.placeholder`)}"${s.pack ? raw(` aria-describedby="su-note-${s.key}"`) : ''}>
     ${s.pack ? html`<p class="su-note" id="su-note-${s.key}">${t('buildSetup.else.packNote')}</p>` : ''}</div>`;
+  // "Select all" for one multi-select section (a group of characters, or what it teaches): every card of it that can be
+  // picked right now; "Clear all" once they all are. Hidden by the page's script while fewer than two can be picked.
+  const allBtn = (scope, name) => html`<button type="button" class="btn btn-sm su-all" data-all="${scope}" data-name="${name}" aria-pressed="false" hidden>${t('js.buildsetup.all.select')}</button>`;
   const nav = html`<div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end"><button type="button" class="btn btn-ghost su-skipstep" data-go="skip">${t('buildSetup.skip')}</button><button type="button" class="btn btn-primary" data-go="next">${t('buildSetup.next')}</button></span></div>`;
   const head = (s, i) => html`<div class="su-progress"><span class="su-dots" aria-hidden="true">${STEPS.map((x, k) => raw(`<i${k <= i ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 1, total })}</span></div>
     <h1 id="su-h-${s.key}" tabindex="-1">${t(`buildSetup.steps.${s.key}.title`)}</h1><p class="su-hint">${t(`buildSetup.steps.${s.key}.hint`)}</p>`;
@@ -91,7 +94,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
         extra: html`<button type="button" class="btn btn-sm su-preview" data-preview="${w.id}" aria-label="${t('buildSetup.world.previewLabel', { name })}">${t('buildSetup.world.preview')}</button>` }); })}${card({ step: 'world', id: 'else', pic: art('else'), title: t('buildSetup.else.title'), text: t('buildSetup.else.text'), attrs: ' aria-controls="su-else-world" aria-expanded="false"', extra: raw('<span class="su-preview-gap" aria-hidden="true"></span>') })}</div>`,
     chars: () => html`<p class="su-flag" id="su-chars-2d" hidden>${t('buildSetup.flatNote')}</p>
       ${characterGroups().map(g => html`<section class="su-group${g.soon ? ' is-soon' : ''}" data-group="${g.id}" aria-labelledby="su-g-${g.id}">
-        <h2 id="su-g-${g.id}">${t(`buildSetup.groups.${g.id}`)}${g.soon ? html` <span class="stchip su-soon">${t('buildSetup.chars.soon')}</span>` : g.only2d ? html` <span class="stchip su-soon" data-soon3d>${t('buildSetup.chars.soon3d')}</span>` : ''}</h2>
+        <div class="su-ghead"><h2 id="su-g-${g.id}">${t(`buildSetup.groups.${g.id}`)}${g.soon ? html` <span class="stchip su-soon">${t('buildSetup.chars.soon')}</span>` : g.only2d ? html` <span class="stchip su-soon" data-soon3d>${t('buildSetup.chars.soon3d')}</span>` : ''}</h2>${g.soon ? '' : allBtn(`chars:${g.id}`, t(`buildSetup.groups.${g.id}`))}</div>
         ${g.soon ? html`<p class="su-soon-text muted">${t('buildSetup.chars.soonText')}</p>`
           : html`<div class="su-grid su-grid-char" role="group" aria-labelledby="su-g-${g.id}">${g.items.map(c => card({ step: 'chars', id: c.id, title: characterName(c.id, t), text: '',
             // the 3D picker's picture, or the 2D picker's for an animal that is only a sprite so far
@@ -99,7 +102,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
               : html`<span class="su-pic su-pic-2d"><img src="/img/art2d/animals/${c.id}.webp" alt="" width="96" height="64" loading="lazy" decoding="async"></span>` }))}</div>`}
       </section>`)}
       <section class="su-group" aria-labelledby="su-g-else"><h2 id="su-g-else" class="sr-only">${t('buildSetup.else.title')}</h2><div class="su-grid su-grid-char">${elseCard('chars')}</div></section>`,
-    learn: () => html`<div class="su-grid su-grid-text" role="group" aria-labelledby="su-h-learn">${LEARN.map(id => card({ step: 'learn', id, pic: art(id), title: t(`buildSetup.learn.${id}.title`), text: t(`buildSetup.learn.${id}.text`) }))}${elseCard('learn')}</div>`,
+    learn: () => html`<div class="su-ghead su-ghead-end">${allBtn('learn', t('js.buildsetup.stepNames.learn'))}</div><div class="su-grid su-grid-text" role="group" aria-labelledby="su-h-learn">${LEARN.map(id => card({ step: 'learn', id, pic: art(id), title: t(`buildSetup.learn.${id}.title`), text: t(`buildSetup.learn.${id}.text`) }))}${elseCard('learn')}</div>`,
     extras: () => html`<div class="su-extras">
       <div class="field"><label for="su-notes">${t('buildSetup.extras.notesLabel')}</label>
         <input class="input" id="su-notes" maxlength="${LIMITS.notes}" dir="auto" autocomplete="off" placeholder="${t('buildSetup.extras.notesPlaceholder')}"></div>
