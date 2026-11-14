@@ -524,7 +524,7 @@ test('mock: "a dinosaur game" builds a Kit 2 game in Dino Valley with a dinosaur
   t = await turn(u, g2.id, 'a t-rex game');
   v = current(g2.id);
   assert.deepEqual(K.kit2Of(v.html), { world: 'dino-valley', version: '1.0.0', hero: 'barbarian' }, 'a person is the hero, and no dinosaur stands in');
-  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [^.]*Triceratops[^.]*Velociraptor\. So Explorer is your hero/);
+  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [^.]*Triceratops[^.]*Velociraptor[^.]*\. So Explorer is your hero/);
   assert.doesNotMatch(t.text, /T-?Rex|Tyrannosaur/i); assert.equal(games.getGame(g2.id).title, 'Dino Valley');
   assert.doesNotMatch(v.html, /t-?rex|tyrannosaur/i);
   // on the moon, a dinosaur is one Space Base does not have: said kindly, a person plays

@@ -222,8 +222,8 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
   const later = plan.characterGroups(plan.setupCharacters([...kit2.KIT2_CHARACTERS, { id: 'trex', name: 'T. rex', kind: 'creature', group: 'dinosaurs', worlds: ['wild-woods'] }], [...art2d.ART2D_CHARACTERS, { id: 'clownfish', name: 'Clownfish', kind: 'animal', group: 'sea' }]));
   assert.deepEqual([later.find(g => g.id === 'dinosaurs').only2d, later.find(g => g.id === 'sea').soon, later.find(g => g.id === 'sea').only2d], [false, false, false]);
   // and a group nothing has shipped for is still "Coming soon": the sea was, until its world shipped
-  const before = plan.characterGroups(plan.setupCharacters(kit2.KIT2_CHARACTERS.filter(c => c.group !== 'sea'), art2d.ART2D_CHARACTERS.filter(c => c.group !== 'sea')));
-  assert.deepEqual([before.find(g => g.id === 'sea').soon, before.find(g => g.id === 'sea').items.length], [true, 0]);
+  const noSea = plan.characterGroups(plan.setupCharacters(kit2.KIT2_CHARACTERS.filter(c => c.group !== 'sea'), art2d.ART2D_CHARACTERS.filter(c => c.group !== 'sea')));
+  assert.deepEqual([noSea.find(g => g.id === 'sea').soon, noSea.find(g => g.id === 'sea').items.length], [true, 0]);
 });
 
 // ---------------------------------------------------------------- the page

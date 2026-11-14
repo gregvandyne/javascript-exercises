@@ -384,12 +384,12 @@ test('the Builder: dinosaur words lead to Dino Valley; the T-Rex gets the honest
   assert.deepEqual([p.world, p.wantsCreature, p.companion], ['medieval-village', true, undefined]);
   // what the model is told
   const P = K.KIT2_RULES;
-  assert.match(K.KIT2_SHORT, /No T-Rex, fish or other animals yet/);
+  assert.match(K.KIT2_SHORT, /No T-Rex, birds or other animals yet/);
   assert.match(K.KIT2_SHORT, /dino-valley \("Dino Valley"\)/);
   assert.match(P, /## dino-valley 1\.0\.0 \("Dino Valley"\)/);
   assert.match(P, /apatosaurus \(Apatosaurus\) 1\.7x3\.4x15 moves idle\/walk\/run\/jump not playable \(too big to be the hero: a companion or scenery\)/);
   assert.match(P, /triceratops \(Triceratops\) [\dx.]+ moves idle\/walk\/run\/jump playable/);
-  assert.match(P, /not listed \(a T-Rex, a cat, a fish: not yet\)/);
+  assert.match(P, /not listed \(a T-Rex, a cat, a bird: not yet\)/);
   assert.doesNotMatch(K.KIT2_CATALOG_TEXT, REX);
   assert.match(P, /Animals are never enemies or obstacles/); assert.match(P, /Big animals[^.]*stroll slowly and keep their calm distance by themselves/);
 });
