@@ -1,0 +1,42 @@
+{
+ "dir": "quaternius-ultimate-nature",
+ "name": "Quaternius Ultimate Nature Pack",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com/packs/ultimatenature.html",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "scale": 2,
+  "matte": true,
+  "colours": {
+   "^Green": "#58a83e",
+   "^DarkGreen": "#3f8a3a",
+   "^Wood": "#8a5a3a",
+   "^LightWood$": "#b98a5a",
+   "^White": "#ece7d8",
+   "^Black": "#4a4a4a",
+   "^Rock": "#9aa1a8",
+   "^Berry$": "#e0323f",
+   "^Orange$": "#e9822c",
+   "^LightOrange$": "#f4ad3d",
+   "^Yellow$": "#f6cf4f",
+   "^Cyan$": "#58c7f2",
+   "^Pink$": "#ee6aa7",
+   "^Mushroom_Top$": "#d9694a",
+   "^Mushroom_Bottom$": "#efe0c6",
+   "^Leaves$": "#5c9a3e"
+  }
+ },
+ "exclude": {
+  ".*_Dead_.*": "Kid-safe: bare dead trees read as spooky (Spooky Hollow has its own)",
+  ".*_Snow.*": "Winter pieces: kept for a snow world",
+  "Cactus.*|PalmTree_.*": "Not a woodland plant (desert and beach): kept for a later world",
+  "Corn_.*|Wheat": "Farm crops: kept for a farm world"
+ },
+ "source": "branch asset-packs, folder quaternius-ultimate-nature/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "Nothing in this pack is a weapon or scary; Cactus_1 has spines and is left out with the other cacti.",
+  "The pack has no pictures: each material is one plain colour, which FBX2glTF reads too dark, so defaults.colours gives every material its colour (Wild Woods' woodland palette).",
+  "Trees are 40 to 110 KB each (the Kenney ones 4 to 17 KB), so Wild Woods 1.0.0 takes five trees and 12 smaller pieces."
+ ]
+}

@@ -43,6 +43,7 @@ Rules the frame and scanner hold every Kit 2 game to (`docs/safety.md`):
   | `cosy-home` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `bed`, `couch`, `table`, `cabinet` |
   | `busy-kitchen` | `1.0.0` | adventurers + skeleton pals | `floor`, `floor-small`, `counter`, `kitchen-table`, `table-round` |
   | `pirate-cove` | `1.0.0` | the 5 adventurers | `island-sand`, `island-grass` (islands that stand in the sea), `dock`, `dock-small`, `pier`, `pier-small`, `deck`, `planks` |
+  | `wild-woods` | `1.0.0` | the 5 adventurers | `meadow` (4 m blocks of ground, 3 deep: lay them at y -3), `hill`, `cliff-block`, `stone-block`, `grass-patch`, `stone-patch`; thin path and river tiles (`path`, `river`, `pond`...) lie at y 0 beside them |
 
   Adventurers: `knight`, `barbarian` (Explorer), `mage` (Wizard), `rogue` (Ranger), `rogue-hooded` (Hooded Ranger).
   Skeleton pals: `skelly`, `rattles`, `bonzo`, `captain-clank` (friendly cartoon skeletons, no weapons). Every hero plays

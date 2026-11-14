@@ -1,0 +1,53 @@
+{
+ "dir": "kenney-nature-kit",
+ "name": "Kenney Nature Kit 2.1",
+ "author": "Kenney",
+ "licence": "CC0-1.0",
+ "url": "https://kenney.nl/assets/nature-kit",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "shift": [
+   0,
+   0.05,
+   0
+  ],
+  "scale": 4,
+  "matte": true,
+  "colours": {
+   "^grass$": "#6cc04a",
+   "^leafsGreen$": "#4cae4f",
+   "^leafsDark$": "#2f8f4e",
+   "^leafsFall$": "#f29a38",
+   "^dirt$": "#c9905c",
+   "^dirtDark$": "#a8703f",
+   "^stone$": "#b7c0c7",
+   "^stoneDark$": "#8e9aa3",
+   "^water$": "#4fc3ee",
+   "^wood$": "#c98a55",
+   "^woodDark$": "#a86a3d",
+   "^woodBark$": "#9c6540",
+   "^woodBarkDark$": "#7f5136",
+   "^woodBirch$": "#efe6d0",
+   "^woodInner$": "#ecd3a6",
+   "^colorRed$": "#e8504f",
+   "^colorRedDark$": "#c93c3f",
+   "^colorTan$": "#efb57e",
+   "^colorYellow$": "#ffc93c",
+   "^colorPurple$": "#a07cf0",
+   "^colorWhite$": "#ffffff"
+  }
+ },
+ "exclude": {
+  "cactus_.*|tree_palm.*": "Not a woodland plant (desert and beach): kept for a later world",
+  "crops?_.*": "Farm crops and field rows: kept for a farm world",
+  "statue_.*": "Stone statues, columns and a carved head: ruins, not woods (the head could read as eerie)",
+  "pot_.*|hanging_moss|bed": "Not needed in a forest camp (bed_floor is the camp bed that is in)"
+ },
+ "source": "branch asset-packs, folder kenney-nature-kit/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "Nothing in this kit is a weapon or scary. The campfires have no flames.",
+  "The kit has no pictures: each material is one plain colour, which FBX2glTF reads too pale, so defaults.colours gives every material its colour (Wild Woods' woodland palette).",
+  "Every model sits 0.05 below its own floor: defaults.shift lifts it.",
+  "Wild Woods 1.0.0 uses 89 of the 329 models; the rest that are not left out above (the stone cliff set, more rocks, trees, fences, bridges and path tiles) are near-duplicates held back to keep the world small."
+ ]
+}
