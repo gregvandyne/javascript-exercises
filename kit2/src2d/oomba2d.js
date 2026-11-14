@@ -56,7 +56,15 @@
     var def = function (name, d) { calls.define++; var draw = d.draw; d.draw = function (ctx, k) { calls.draws++; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; draw(ctx, k); }; O.art.define(name, d); };
     var N = function (n) { return 'a2d:' + (W ? W.id : 'x') + ':' + n; };
     var heroName = H ? 'a2d:hero:' + o.hero : '';
+    // A strip that repeats, with EDGE more pixels of itself at each end (copied 1:1): a slice is then drawn in one
+    // piece with a little of its neighbours, so scaling never leaves a soft, see-through line where two slices meet.
+    var EDGE = 8, wide = {}, widen = function (img) {
+      var c = document.createElement('canvas'), w = img.width, h = img.height; c.width = w + 2 * EDGE; c.height = h;
+      var g = c.getContext('2d'); g.drawImage(img, EDGE, 0); g.drawImage(img, w - EDGE, 0, EDGE, h, 0, 0, EDGE, h); g.drawImage(img, 0, 0, EDGE, h, w + EDGE, 0, EDGE, h);
+      return c;
+    };
     if (W) {
+      wide.ground = widen(im.ground); if (im.far) wide.far = widen(im.far); if (im.mid) wide.mid = widen(im.mid);
       Object.keys(W.sprites).forEach(function (n) {
         var s = W.sprites[n], r = s.rect;
         def(N(n), { w: r[2], h: r[3], ax: s.ax, ay: s.ay, draw: function (ctx) { ctx.drawImage(im.props, r[0], r[1], r[2], r[3], 0, 0, r[2], r[3]); } });
@@ -65,7 +73,8 @@
       // variant "col.deep.mask": which slice of the strip, whether ground lies above it, and its neighbours
       def(N('ground'), { w: PX, h: GH, ax: 0.5, ay: (G.over + PX / 2) / GH, draw: function (ctx, k) {
         var v = String(k.v || '0.0.15').split('.'), col = (+v[0] || 0) % G.cells, deep = v[1] === '1', mask = +v[2] || 0;
-        if (!deep) for (var d = -1; d <= 1; d++) { if (d < 0 && !(mask & 8)) continue; if (d > 0 && !(mask & 2)) continue; ctx.drawImage(im.ground, ((col + d + G.cells) % G.cells) * PX, 0, PX, GH, d * PX, 0, PX, GH); }   // its neighbours too: a slice's soft edge is never see-through
+        // one continuous piece of the widened strip, a little past each side that has a neighbour: no soft, see-through edge
+        if (!deep) { var l = mask & 8 ? EDGE : 0, r = mask & 2 ? EDGE : 0; ctx.drawImage(wide.ground, col * PX + EDGE - l, 0, PX + l + r, GH, -l, 0, PX + l + r, GH); }
         else if (G.fill) { ctx.fillStyle = G.fill; ctx.fillRect(-2, G.over, PX + 4, PX + 2); }
         if (G.open) return;                                   // a pier over water: no earth to outline
         ctx.fillStyle = INK;
@@ -73,7 +82,7 @@
       } });
       ['far', 'mid'].forEach(function (n) {
         var L = W.layers[n]; if (!L) return; var cw = L.w / 4;
-        def(N(n), { w: cw, h: L.h, ax: 0, ay: 1, draw: function (ctx, k) { var i = (+k.v || 0) % 4; for (var d = -1; d <= 1; d++) ctx.drawImage(im[n], ((i + d + 4) % 4) * cw, 0, cw, L.h, d * cw, 0, cw, L.h); } });
+        def(N(n), { w: cw, h: L.h, ax: 0, ay: 1, draw: function (ctx, k) { var i = (+k.v || 0) % 4; ctx.drawImage(wide[n], i * cw, 0, cw + 2 * EDGE, L.h, -EDGE, 0, cw + 2 * EDGE, L.h); } });
       });
       def(N('sky'), { w: 8, h: 64, ax: 0.5, ay: 0.5, draw: function (ctx) { var g = ctx.createLinearGradient(0, 11, 0, 53); g.addColorStop(0, W.sky[0]); g.addColorStop(0.62, W.sky[1]); g.addColorStop(1, W.sky[2]); ctx.fillStyle = g; ctx.fillRect(-1, -1, 10, 66); } });
       if (W.under) def(N('under'), { w: 8, h: 64, ax: 0.5, ay: 0, draw: function (ctx) { ctx.fillStyle = W.under; ctx.fillRect(-1, 0, 10, 66); } });

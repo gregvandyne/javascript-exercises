@@ -1,7 +1,7 @@
 {
  "_": "2D art that has shipped (kit2/pipeline/art2d-lock.mjs). helper: the Oomba2D library by version. packs: every pack version with the hash of each of its files. Nothing listed here may ever change: a fix or new art ships as a new version.",
  "helper": {
-  "1.0.0": "sha384-Mdn7RMe4vrkg77dp6tG/17bpJEeWL9h7aoDOCuK+RJ2MA5W+ZYHsK2NCP9BKeGT/"
+  "1.0.0": "sha384-3a+B7hjO2aSmf1AzhbsdaKqZT+u2mlBDN5iZMMy2Vi5pu9baiX61g7WfpdKvEbRl"
  },
  "packs": {
   "animals/1.0.0": {

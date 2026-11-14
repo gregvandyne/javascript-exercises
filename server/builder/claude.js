@@ -213,11 +213,11 @@ export async function run(ctx) {
       ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
       // (Live class games are built on the Oomba Kit's live pack: not for Kit 2 games yet, whose rules say so.)
       ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
-      // The 2D art rules: fixed text with no cache point of its own (at most four are allowed): the game's block caches it.
-      ...(a2 ? [{ type: 'text', text: ART2D_RULES }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       ...(k2 ? [{ type: 'text', text: kit2Note(k2) }] : []),
-      ...(a2 ? [{ type: 'text', text: art2dNote(a2) }] : []),
+      // The 2D art rules and this turn's pick: after the cached blocks (at most four cache points are allowed, and
+      // the blocks before this keep their places), only on turns that pick a 2D world, a sprite hero or an animal.
+      ...(a2 ? [{ type: 'text', text: ART2D_RULES }, { type: 'text', text: art2dNote(a2) }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).

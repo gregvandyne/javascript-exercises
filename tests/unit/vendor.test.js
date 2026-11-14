@@ -179,7 +179,7 @@ test('/vendor is served with a year of immutable caching and CORS; a 3D frame ge
   assert.match(doc, /"device":\{"webgl2":true,"importmap":true,"title":"This game needs a newer device or browser"/);
   assert.ok(doc.includes(V.threeImportMap()), 'the import map reaches the frame intact');
   const direct = await call(src);
-  assert.match(direct.headers.get('content-security-policy'), new RegExp(`${BASE.replace(/[.:/]/g, '\\$&')}/vendor/three/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/oomba-kit/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/data/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/kit2/;`));
+  assert.match(direct.headers.get('content-security-policy'), new RegExp(`${BASE.replace(/[.:/]/g, '\\$&')}/vendor/three/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/oomba-kit/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/data/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/kit2/ ${BASE.replace(/[.:/]/g, '\\$&')}/vendor/art2d/;`));
   // It publishes like any game (for friends straight away; Everyone would go to review), and its play frame is 3D too.
   const pub = await call(`/api/studio/${made.id}/publish`, { method: 'POST', body: JSON.stringify({ visibility: 'friends' }) });
   const pj = await pub.json();
