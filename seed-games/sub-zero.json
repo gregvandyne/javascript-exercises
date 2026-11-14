@@ -1,0 +1,16 @@
+{
+  "slug": "sub-zero",
+  "title": "Sub Zero",
+  "icon": "❄️",
+  "cover": "night",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "negative numbers,integers,below zero,number line,thermometer,temperature,opposites,absolute value,ordering,comparing,adding integers,subtracting integers,subtracting a negative,multiplying negatives,dividing negatives,rational numbers,dividing fractions,fraction division,reciprocal,decimals,sixth grade,seventh grade,grade 6,grade 7,middle school,math,maths,number system,3d,lab,science,read aloud,learning",
+  "description": "A food-science lab at night, and a thermometer that goes below zero. Work out how many jars a pot fills when each jar holds 3/4 of a liter, set the marker on negative readings, find opposites and distances from zero, then plan the change that takes a sample from −6° to 4°. Take out a cold pack to see why subtracting a negative adds. Plan a move, run it, and see what it really does. Every instruction is read aloud.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest Pro Unit 2, The Cold Store (grades 6-7): a Kit 2 game on Oomba3D 1.2.0 in the Busy Kitchen theme 1.0.0, dressed as a lab (night, every theme piece washed in steel by a small shader patch on a copy of its material, no food, ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/sub-zero.test.js checks the literal map). The room (floor, walls, counters, sink, fridge, oven, cupboards, jars) is the theme's own pieces; the deep freezer, its rack and the sample vials are the game's own simple meshes. The thermometer, the pot and the jars are drawn by the game on one lab screen that always faces the player, so perspective never bends the number line. Three chapters of six rounds (lesson mode: chapter=pour|below|change and lock=1): Pour and Count (2.1: how many jars of a fraction of a liter a pot fills, which division it is, one liter into jars of 2/3, less than one jar, decimals), Below Zero (2.2: placing negative numbers and halves, opposites, colder and warmer, absolute value, colder than a limit) and Change the Reading (2.3: a change across zero, taking out a cold pack as subtracting a negative, a cooling rate, a drop in equal steps, the film run backward). Plan first, then run: a stepper (or a drag on the thermometer) and a run button, or three tiles; a wrong plan is drawn as it really turns out, with a spoken hint, and the round stays open. No timer, no lives, no fail state, nothing typed, nothing bought or sold. Read-aloud is on by default (BRB.speak, friendly voice): lines are written the way they are said and printed with the real signs. Keys: arrows or + and - move the stepper, Enter runs, 1 to 3 pick a tile. Each right round stores a sample vial in the freezer, and the sixth reports game over (won) once, which completes the course step. Saves only which chapters are finished. English only.",
+  "l10n": {}
+}

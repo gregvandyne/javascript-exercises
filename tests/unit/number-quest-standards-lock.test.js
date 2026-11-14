@@ -274,7 +274,7 @@ test('Pro registry: 69 locked codes, each a well-formed grade 6-8 statement in a
 
 test('Pro units cite only codes in proCodes; the welcome cites none; all 23 steps are reserved in order', () => {
   const units = tierUnits('pro'), steps = tierSteps('pro');
-  assert.deepEqual(units.map(u => [u.n, u.title, u.stamp, u.planned === true]), [[0, 'Welcome to the Towers', null, false], [1, 'The Mixing Tower', 'Ratio Gear', false], [2, 'The Cold Store', 'Zero Gear', true],
+  assert.deepEqual(units.map(u => [u.n, u.title, u.stamp, u.planned === true]), [[0, 'Welcome to the Towers', null, false], [1, 'The Mixing Tower', 'Ratio Gear', false], [2, 'The Cold Store', 'Zero Gear', false],
     [3, 'The Machine Hall', 'Variable Gear', true], [4, 'The Map Room', 'Scale Gear', true], [5, 'The Sky Wires', 'Slope Gear', true], [6, 'The Drafting Keep', 'Angle Gear', true], [7, 'The Test Range', 'Chance Gear', true]]);
   assert.deepEqual(units.slice(1).map(u => u.stamp), cat.tiers.pro.stones, 'the unit stones are the tier line\'s gears, in order');
   assert.deepEqual(steps.map(s => s.n), ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4']);
@@ -294,7 +294,7 @@ test('Pro units cite only codes in proCodes; the welcome cites none; all 23 step
       for (const s of u.steps) assert.ok(!fs.existsSync(path.join(NQ, 'course/pro', `${s.n}.json`)), `pro ${s.n}: a planned step has no deck`);
     }
   }
-  assert.equal(new Set(units.filter(u => u.planned).map(u => u.reserved.game)).size, 6, 'six reserved games, one a planned unit');
+  assert.equal(new Set(units.filter(u => u.planned).map(u => u.reserved.game)).size, 5, 'five reserved games, one a planned unit');
   assert.equal(new Set(units.filter(u => u.n >= 1).map(u => (u.planned ? u.reserved.game : u.tool))).size, 7, 'seven games, built or reserved, one a unit');
   for (const s of steps) {
     const st = s.standards.pro;

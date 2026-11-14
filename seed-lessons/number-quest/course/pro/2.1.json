@@ -1,0 +1,280 @@
+{
+ "key": "pro-2.1",
+ "n": "2.1",
+ "band": "pro",
+ "title": "Divide by a fraction",
+ "topic": "Dividing fractions",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "Jars for the Cold Store",
+   "text": "The second tower is the Cold Store, where Tally keeps samples on ice. A pot holds 3 liters of salt water, and each jar holds 1/2 of a liter. Before she pours, she wants to know how many jars to set out.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Division asks how many fit",
+   "text": "You already know that 12 ÷ 4 asks how many 4s fit in 12. A fraction works the same way: 3 ÷ 1/2 asks how many halves fit in 3. Each liter holds 2 halves, so 3 liters hold 6 halves. The answer is bigger than 3, because each piece is smaller than 1.",
+   "art": "cake",
+   "visual": {
+    "type": "bars",
+    "label": "Three liters cut into halves",
+    "rows": [
+     {
+      "label": "The pot: 3 liters",
+      "parts": [
+       {
+        "w": 0.3333,
+        "label": "1 L"
+       },
+       {
+        "w": 0.3333,
+        "label": "1 L"
+       },
+       {
+        "w": 0.3333,
+        "label": "1 L"
+       }
+      ]
+     },
+     {
+      "label": "Jars of 1/2 liter: 6 fit",
+      "parts": [
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "1/2",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The pot holds 3 whole liters.",
+     "box": [
+      5.1,
+      21.5,
+      89.8,
+      18.3
+     ]
+    },
+    {
+     "cue": "Each liter is the same as 2 halves.",
+     "box": [
+      5.1,
+      51.7,
+      30.7,
+      18.3
+     ]
+    },
+    {
+     "cue": "Count the halves in 3 liters: 6 jars.",
+     "box": [
+      5.1,
+      51.7,
+      89.8,
+      18.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "A bigger pot, jars of 3/4",
+   "text": "A bigger pot holds 4 1/2 liters, and each jar holds 3/4 of a liter. Cut every liter into fourths, so both amounts are counted in the same piece. Then count how many groups of 3 fourths you can make.",
+   "art": "scale",
+   "steps": [
+    "4 1/2 liters = 18 fourths",
+    "One jar = 3 fourths",
+    "18 fourths ÷ 3 fourths = 6",
+    "So 4 1/2 ÷ 3/4 = 6 jars"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "Six jars of three fourths fill four and a half liters",
+    "rows": [
+     {
+      "label": "The pot: 4 1/2 liters",
+      "parts": [
+       {
+        "w": 0.2222,
+        "label": "1 L"
+       },
+       {
+        "w": 0.2222,
+        "label": "1 L"
+       },
+       {
+        "w": 0.2222,
+        "label": "1 L"
+       },
+       {
+        "w": 0.2222,
+        "label": "1 L"
+       },
+       {
+        "w": 0.1111,
+        "label": "half"
+       }
+      ]
+     },
+     {
+      "label": "Jars of 3/4 liter",
+      "parts": [
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       },
+       {
+        "w": 0.1666,
+        "label": "3/4",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The pot holds four whole liters and one half.",
+     "box": [
+      5.1,
+      21.5,
+      89.8,
+      18.3
+     ]
+    },
+    {
+     "cue": "Each jar takes 3/4 of a liter.",
+     "box": [
+      5.1,
+      51.7,
+      30.7,
+      18.3
+     ]
+    },
+    {
+     "cue": "Six jars use it all: 6 × 3/4 = 4 1/2.",
+     "box": [
+      5.1,
+      51.7,
+      89.8,
+      18.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Why you can flip and multiply",
+   "text": "Pour 1 liter into jars of 3/4 of a liter. It fills one jar and a third of the next: 4/3 jars. So every liter you pour counts as 4/3 jars, and dividing by 3/4 is the same as multiplying by 4/3. The fraction 4/3 is the reciprocal of 3/4.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Check it by multiplying",
+   "text": "A quotient can always be checked. The pot of 4 1/2 liters filled 6 jars, so 6 jars of 3/4 must make 4 1/2 liters, and they do. The same check works for decimals: 2.4 ÷ 0.3 = 8, because 8 × 0.3 = 2.4.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for dividing with fractions.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "dividend",
+     "means": "the amount being shared out, such as the 3 liters in the pot"
+    },
+    {
+     "word": "divisor",
+     "means": "the size of one group, such as the 1/2 liter each jar holds"
+    },
+    {
+     "word": "quotient",
+     "means": "the answer to a division, such as 6 in 3 ÷ 1/2 = 6"
+    },
+    {
+     "word": "reciprocal",
+     "means": "a fraction turned over: the reciprocal of 3/4 is 4/3"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sub Zero at Pour and Count. Plan how many jars each pot will fill, then pour to test your plan. Six samples must reach the deep freeze.",
+   "art": "trophy",
+   "img": "nq/sub-zero/pour-and-count",
+   "alt": "Sub Zero on a phone: the lab screen shows a pot of 3 liters and one empty jar, with a stepper and a Pour button.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-2.1-e1",
+  "nq-pro-2.1-e2",
+  "nq-pro-2.1-e3"
+ ],
+ "game": {
+  "slug": "sub-zero",
+  "chapter": "Pour and Count",
+  "params": "chapter=pour&lock=1"
+ }
+}

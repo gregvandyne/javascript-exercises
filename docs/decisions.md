@@ -5219,6 +5219,41 @@ three decks, nine exit items, the game Lantern Mix in Spooky Hollow at night, an
   ear (the test checks every line is sent and is on the allowlist, not how "1.5 milliliters" sounds), and play by a
   student of the age.
 
+## Number Quest Pro Unit 2: The Cold Store and Sub Zero (14 Nov 2026)
+
+The second Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Sub Zero in the Busy Kitchen world, and the one-line registrations. Pro stays
+`building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default** (owner decision 6), not a button that is off by default as the plan said. So that
+  the voice allowlist only ever sees digits in a number's place, a spoken line is written the way it is said
+  ("negative 6 degrees", "3 fourths", "divided by") and the screen prints the same line with the real signs
+  (`SubZero.shown`). The wording is the one `math-text.js` gives a deck's read-aloud.
+- **Oomba3D 1.2.0**, the newest, not the 1.1.0 the plan named. No kit or theme file changed: the steel look is a
+  small shader patch on a copy of each piece's material, made by the game.
+- **Not Kitchen Rush.** The two games share a world, so Sub Zero is the kitchen at night, washed in steel, with no
+  food piece loaded, a dark lab screen, no helper picker, a game-made deep freezer with a rack of sample vials, and
+  steppers and tiles instead of three picture buttons.
+- **Plan, then run.** A stepper (or a drag of the marker on the thermometer) and a run button, or three tiles. A wrong
+  plan is run and drawn as it turns out: jars left empty, the pot not empty, the reading landing short. In the "reach a
+  target" rounds the screen does not show where a change would land until it is run, so the change has to be worked out.
+- **The pours are nine set problems a round kind**, three a round, turned through on replays, not random numbers:
+  each has its own lines so the voice can say the fractions in words, and fixed lines can be warmed ahead.
+- **Subtracting a negative is the cold pack**, as the plan asked: a chamber at −2° holds a cold pack worth −5°; the
+  player takes it out and sets the new reading. A lower reading gets "Taking cold away makes it warmer".
+- **Rounds the plan did not list**, so each chapter has six: which division a pour is, one liter into jars of 2/3
+  (the reciprocal), less than one jar, decimals on the same model (6.NS.B.3), the opposite of a reading, colder than a
+  limit (order against absolute value, 6.NS.C.7d, with no debt in it), a drop in equal steps, and on a replay the film
+  run backward (negative times negative).
+- **No new diagram type.** The plan marked a thermometer and a fraction-division model as missing. The upright
+  `numberline` (with `tube`) shipped in the diagram pack, and the measurement model of fraction division is drawn with
+  the existing `bars` (the pot as a tape of liters over a tape of jars).
+- **Contexts are neutral** (decision 3): liters, jars, temperatures, a diver and a bird. Nothing is priced or sold,
+  and there is no reward currency.
+- **A built unit's entry profile is live in the engine**, as Unit 1's is: `P.entryProfile('pro', 2)` now answers. The
+  route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as for Unit 1: the teacher page's game list (`NQ_CREW`) and its locale strings do not
+  name Sub Zero. The game itself is a library game on the Learn shelf (math, grades 6-7) from the day it is registered.
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are
