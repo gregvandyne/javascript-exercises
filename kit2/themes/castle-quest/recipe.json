@@ -1,201 +1,150 @@
 {
- "_": "How Castle Quest 1.1.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "_": "How Castle Quest 1.2.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
  "models": [
   {
-   "from": "theme:castle-quest/1.0.0/world/floor-stone.glb",
-   "to": "world/floor-stone.glb"
+   "from": "ultimate-animated-animals/Horse.glb",
+   "to": "creatures/horse.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.6634,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "oneDraw": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   },
+   "keepAnims": [
+    "Idle",
+    "Eating",
+    "Walk",
+    "Gallop",
+    "Gallop_Jump"
+   ]
   },
   {
-   "from": "theme:castle-quest/1.0.0/world/floor-wood.glb",
-   "to": "world/floor-wood.glb"
+   "from": "ultimate-animated-animals/Deer.glb",
+   "to": "creatures/deer.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.6083,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "oneDraw": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   },
+   "keepAnims": [
+    "Idle",
+    "Eating",
+    "Walk",
+    "Gallop",
+    "Gallop_Jump"
+   ]
   },
   {
-   "from": "theme:castle-quest/1.0.0/world/floor-dirt.glb",
-   "to": "world/floor-dirt.glb"
+   "from": "ultimate-animated-animals/Stag.glb",
+   "to": "creatures/stag.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.6149,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "oneDraw": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   },
+   "keepAnims": [
+    "Idle",
+    "Eating",
+    "Walk",
+    "Gallop",
+    "Gallop_Jump"
+   ]
   },
   {
-   "from": "theme:castle-quest/1.0.0/world/block.glb",
-   "to": "world/block.glb"
+   "from": "ultimate-animated-animals/Fox.glb",
+   "to": "creatures/fox.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.4857,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "oneDraw": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   },
+   "keepAnims": [
+    "Idle",
+    "Eating",
+    "Walk",
+    "Gallop",
+    "Gallop_Jump"
+   ]
   },
   {
-   "from": "theme:castle-quest/1.0.0/world/stairs.glb",
-   "to": "world/stairs.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/stairs-wide.glb",
-   "to": "world/stairs-wide.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall.glb",
-   "to": "world/wall.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall-doorway.glb",
-   "to": "world/wall-doorway.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall-window.glb",
-   "to": "world/wall-window.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall-arched.glb",
-   "to": "world/wall-arched.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall-corner.glb",
-   "to": "world/wall-corner.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/pillar.glb",
-   "to": "world/pillar.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/column.glb",
-   "to": "world/column.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/spikes.glb",
-   "to": "world/spikes.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/chest.glb",
-   "to": "props/chest.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/chest-gold.glb",
-   "to": "props/chest-gold.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/coin.glb",
-   "to": "props/coin.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/coin-pile.glb",
-   "to": "props/coin-pile.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/key.glb",
-   "to": "props/key.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/barrel.glb",
-   "to": "props/barrel.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/barrel-small.glb",
-   "to": "props/barrel-small.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/crate.glb",
-   "to": "props/crate.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/props/crates.glb",
-   "to": "props/crates.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/torch.glb",
-   "to": "world/torch.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/wall-torch.glb",
-   "to": "world/wall-torch.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/candles.glb",
-   "to": "world/candles.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/banner-blue.glb",
-   "to": "world/banner-blue.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/banner-red.glb",
-   "to": "world/banner-red.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/banner-yellow.glb",
-   "to": "world/banner-yellow.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/table.glb",
-   "to": "world/table.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/chair.glb",
-   "to": "world/chair.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/shelf.glb",
-   "to": "world/shelf.glb"
-  },
-  {
-   "from": "theme:castle-quest/1.0.0/world/feast.glb",
-   "to": "world/feast.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf",
-   "to": "world/tree.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_B.gltf",
-   "to": "world/tree-round.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_medium.gltf",
-   "to": "world/trees.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_A_large.gltf",
-   "to": "world/forest.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_large.gltf",
-   "to": "world/forest-round.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/trees_B_small.gltf",
-   "to": "world/bushes.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hill_single_A.gltf",
-   "to": "world/hill.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hills_A_trees.gltf",
-   "to": "world/hills-trees.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/mountain_A_grass_trees.gltf",
-   "to": "world/mountain.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_A.gltf",
-   "to": "world/rock.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/rock_single_C.gltf",
-   "to": "world/rock-big.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_castle_blue.gltf",
-   "to": "world/castle-building.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_tower_A_blue.gltf",
-   "to": "world/tower.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_well_blue.gltf",
-   "to": "world/well.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/fence_wood_straight.gltf",
-   "to": "world/fence.glb"
-  },
-  {
-   "from": "KayKit-Medieval-Hexagon-Pack-1.0/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/neutral/building_bridge_A.gltf",
-   "to": "world/bridge.glb"
+   "from": "ultimate-animated-animals/ShibaInu.glb",
+   "to": "creatures/shiba.glb",
+   "matte": true,
+   "dropVertexColours": true,
+   "inkNormals": true,
+   "scale": 0.42,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "meshopt": true,
+   "oneDraw": true,
+   "anims": {
+    "idle": "Idle",
+    "eat": "Eating",
+    "walk": "Walk",
+    "run": "Gallop",
+    "jump": "Gallop_Jump"
+   },
+   "keepAnims": [
+    "Idle",
+    "Eating",
+    "Walk",
+    "Gallop",
+    "Gallop_Jump"
+   ]
   }
  ],
  "copy": [
@@ -240,27 +189,223 @@
    "to": "heroes/moves.glb"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/jump.ogg",
+   "from": "theme:castle-quest/1.1.0/world/floor-stone.glb",
+   "to": "world/floor-stone.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/floor-wood.glb",
+   "to": "world/floor-wood.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/floor-dirt.glb",
+   "to": "world/floor-dirt.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/block.glb",
+   "to": "world/block.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/stairs.glb",
+   "to": "world/stairs.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/stairs-wide.glb",
+   "to": "world/stairs-wide.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall.glb",
+   "to": "world/wall.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall-doorway.glb",
+   "to": "world/wall-doorway.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall-window.glb",
+   "to": "world/wall-window.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall-arched.glb",
+   "to": "world/wall-arched.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall-corner.glb",
+   "to": "world/wall-corner.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/pillar.glb",
+   "to": "world/pillar.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/column.glb",
+   "to": "world/column.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/spikes.glb",
+   "to": "world/spikes.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/chest.glb",
+   "to": "props/chest.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/chest-gold.glb",
+   "to": "props/chest-gold.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/coin.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/coin-pile.glb",
+   "to": "props/coin-pile.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/key.glb",
+   "to": "props/key.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/barrel.glb",
+   "to": "props/barrel.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/barrel-small.glb",
+   "to": "props/barrel-small.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/crate.glb",
+   "to": "props/crate.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/props/crates.glb",
+   "to": "props/crates.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/torch.glb",
+   "to": "world/torch.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/wall-torch.glb",
+   "to": "world/wall-torch.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/candles.glb",
+   "to": "world/candles.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/banner-blue.glb",
+   "to": "world/banner-blue.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/banner-red.glb",
+   "to": "world/banner-red.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/banner-yellow.glb",
+   "to": "world/banner-yellow.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/table.glb",
+   "to": "world/table.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/chair.glb",
+   "to": "world/chair.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/shelf.glb",
+   "to": "world/shelf.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/feast.glb",
+   "to": "world/feast.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/tree.glb",
+   "to": "world/tree.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/tree-round.glb",
+   "to": "world/tree-round.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/trees.glb",
+   "to": "world/trees.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/forest.glb",
+   "to": "world/forest.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/forest-round.glb",
+   "to": "world/forest-round.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/bushes.glb",
+   "to": "world/bushes.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/hill.glb",
+   "to": "world/hill.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/hills-trees.glb",
+   "to": "world/hills-trees.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/mountain.glb",
+   "to": "world/mountain.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/rock.glb",
+   "to": "world/rock.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/rock-big.glb",
+   "to": "world/rock-big.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/castle-building.glb",
+   "to": "world/castle-building.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/tower.glb",
+   "to": "world/tower.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/well.glb",
+   "to": "world/well.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/fence.glb",
+   "to": "world/fence.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/world/bridge.glb",
+   "to": "world/bridge.glb"
+  },
+  {
+   "from": "theme:castle-quest/1.1.0/sounds/jump.ogg",
    "to": "sounds/jump.ogg"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/land.ogg",
+   "from": "theme:castle-quest/1.1.0/sounds/land.ogg",
    "to": "sounds/land.ogg"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/coin.ogg",
+   "from": "theme:castle-quest/1.1.0/sounds/coin.ogg",
    "to": "sounds/coin.ogg"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/fall.ogg",
+   "from": "theme:castle-quest/1.1.0/sounds/fall.ogg",
    "to": "sounds/fall.ogg"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/break.ogg",
+   "from": "theme:castle-quest/1.1.0/sounds/break.ogg",
    "to": "sounds/break.ogg"
   },
   {
-   "from": "Starter-Kit-3D-Platformer/sounds/walking.ogg",
+   "from": "theme:castle-quest/1.1.0/sounds/walk.ogg",
    "to": "sounds/walk.ogg"
   }
  ]
