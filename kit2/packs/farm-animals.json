@@ -1,0 +1,71 @@
+{
+ "dir": "farm-animals",
+ "name": "Quaternius Farm Animals",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "inkNormals": true
+ },
+ "clips": {
+  "idle": "\\|Idle$",
+  "walk": "\\|Walk$",
+  "stroll": "\\|WalkSlow$",
+  "run": "\\|Run$",
+  "jump": "\\|Jump$"
+ },
+ "creatures": {
+  "Cow": {
+   "id": "cow-spotted",
+   "name": "Spotted Cow",
+   "size": {
+    "height": 2.6
+   }
+  },
+  "Horse": {
+   "id": "pony",
+   "name": "Pony",
+   "size": {
+    "height": 3
+   }
+  },
+  "Zebra": {
+   "id": "zebra",
+   "name": "Zebra",
+   "size": {
+    "height": 3
+   }
+  },
+  "Llama": {
+   "id": "llama",
+   "name": "Llama",
+   "size": {
+    "height": 3
+   }
+  },
+  "Pig": {
+   "id": "pig",
+   "name": "Pig",
+   "size": {
+    "height": 1.5
+   }
+  },
+  "Sheep": {
+   "id": "sheep",
+   "name": "Sheep",
+   "size": {
+    "height": 1.7
+   }
+  },
+  "Pug": {
+   "id": "pug",
+   "name": "Pug",
+   "size": {
+    "height": 1
+   }
+  }
+ },
+ "source": "branch asset-packs, folder farm-animals/ (uploaded by the owner, November 2026)"
+}

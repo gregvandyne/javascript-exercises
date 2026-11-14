@@ -10,6 +10,7 @@ import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
 import { prune, dedup, resample, quantize, weld, reorder, unpartition, getBounds } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
+import { packSteps } from './pack-steps.mjs';
 
 const [recipeFile, packsDir, outDir, sizesFile] = process.argv.slice(2);   // sizesFile: optional, gets each model's measured size
 const measured = {};
@@ -38,7 +39,10 @@ for (const item of recipe.models) {
   // An animation's samplers and channels go with it, or prune() keeps their keyframe data.
   for (const a of root.listAnimations()) if (!(item.keepAnims || []).includes(a.getName())) { const parts = [...a.listSamplers(), ...a.listChannels()]; a.dispose(); parts.forEach(p => p.dispose()); }
   if (item.animsOnly) for (const n of root.listNodes()) if (n.getMesh()) n.setMesh(null).setSkin(null);
-  // Textures stay as they are: every pack here uses one small shared colour map.
+  // Textures stay as they are: every pack here uses one small shared colour map. Packs converted from FBX (the staged
+  // asset packs: kit2/packs/) ask for more with opt-in fields (scale, clip names, textures by material name, …), which do
+  // nothing for a recipe that does not name them, so a shipped theme rebuilds to the same bytes.
+  await packSteps(doc, item, recipe, path.dirname(recipeFile));
   await compress(doc);
   const file = path.join(outDir, item.to);
   fs.mkdirSync(path.dirname(file), { recursive: true });

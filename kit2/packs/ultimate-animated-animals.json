@@ -1,0 +1,110 @@
+{
+ "dir": "ultimate-animated-animals",
+ "name": "Quaternius Ultimate Animated Animals",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "dropVertexColours": true,
+  "inkNormals": true
+ },
+ "clips": {
+  "idle": "^Idle$",
+  "look": "^Idle_2$",
+  "graze": "^Idle_(2_)?Head[Ll]ow$",
+  "eat": "^Eating$",
+  "walk": "^Walk$",
+  "run": "^Gallop$",
+  "jump": "^Gallop_Jump$",
+  "land": "^Jump_[tT]oIdle$"
+ },
+ "creatures": {
+  "Horse": {
+   "id": "horse",
+   "name": "Horse",
+   "size": {
+    "height": 3.2
+   }
+  },
+  "Horse_White": {
+   "id": "horse-white",
+   "name": "White Horse",
+   "size": {
+    "height": 3.2
+   }
+  },
+  "Donkey": {
+   "id": "donkey",
+   "name": "Donkey",
+   "size": {
+    "height": 2.6
+   }
+  },
+  "Cow": {
+   "id": "cow",
+   "name": "Cow",
+   "size": {
+    "height": 2.6
+   }
+  },
+  "Bull": {
+   "id": "bull",
+   "name": "Bull",
+   "size": {
+    "height": 2.7
+   }
+  },
+  "Alpaca": {
+   "id": "alpaca",
+   "name": "Alpaca",
+   "size": {
+    "height": 2.8
+   }
+  },
+  "Deer": {
+   "id": "deer",
+   "name": "Deer",
+   "size": {
+    "height": 2.6
+   }
+  },
+  "Stag": {
+   "id": "stag",
+   "name": "Stag",
+   "size": {
+    "height": 3.3
+   }
+  },
+  "Fox": {
+   "id": "fox",
+   "name": "Fox",
+   "size": {
+    "height": 1.3
+   }
+  },
+  "Wolf": {
+   "id": "wolf",
+   "name": "Wolf",
+   "size": {
+    "height": 1.7
+   }
+  },
+  "Husky": {
+   "id": "husky",
+   "name": "Husky",
+   "size": {
+    "height": 1.5
+   }
+  },
+  "ShibaInu": {
+   "id": "shiba",
+   "name": "Shiba Inu",
+   "size": {
+    "height": 1.3
+   }
+  }
+ },
+ "source": "branch asset-packs, folder ultimate-animated-animals/ (uploaded by the owner, November 2026)"
+}

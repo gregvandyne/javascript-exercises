@@ -1,0 +1,64 @@
+{
+ "dir": "dinosaurs",
+ "name": "Quaternius Animated Dinosaurs",
+ "author": "Quaternius",
+ "licence": "CC0-1.0",
+ "url": "https://quaternius.com",
+ "licenceFile": "License.txt",
+ "defaults": {
+  "matte": true,
+  "dropVertexColours": true,
+  "inkNormals": true
+ },
+ "clips": {
+  "idle": "_Idle$",
+  "walk": "_Walk$",
+  "run": "_Run$",
+  "jump": "_Jump$"
+ },
+ "creatures": {
+  "Trex": {
+   "id": "t-rex",
+   "name": "T-Rex",
+   "size": {
+    "length": 9
+   }
+  },
+  "Apatosaurus": {
+   "id": "apatosaurus",
+   "name": "Apatosaurus",
+   "size": {
+    "length": 18
+   }
+  },
+  "Stegosaurus": {
+   "id": "stegosaurus",
+   "name": "Stegosaurus",
+   "size": {
+    "length": 7
+   }
+  },
+  "Triceratops": {
+   "id": "triceratops",
+   "name": "Triceratops",
+   "size": {
+    "length": 6.5
+   }
+  },
+  "Parasaurolophus": {
+   "id": "parasaurolophus",
+   "name": "Parasaurolophus",
+   "size": {
+    "length": 7
+   }
+  },
+  "Velociraptor": {
+   "id": "velociraptor",
+   "name": "Velociraptor",
+   "size": {
+    "length": 3.6
+   }
+  }
+ },
+ "source": "branch asset-packs, folder dinosaurs/ (uploaded by the owner, November 2026)"
+}
