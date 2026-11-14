@@ -1,0 +1,304 @@
+{
+ "id": "space-base",
+ "version": "1.0.0",
+ "kind": "world",
+ "name": "Space Base",
+ "world": "space-base",
+ "heroes": [
+  "knight",
+  "barbarian",
+  "mage",
+  "rogue",
+  "rogue-hooded",
+  "skelly",
+  "rattles",
+  "bonzo",
+  "captain-clank"
+ ],
+ "cell": 96,
+ "from": {
+  "theme": "space-base/1.0.0",
+  "packs": [
+   {
+    "id": "kaykit-adventurers",
+    "name": "KayKit Adventurers Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-skeletons",
+    "name": "KayKit Skeletons Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-space-base",
+    "name": "KayKit Space Base Bits 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-dungeon",
+    "name": "KayKit Dungeon Remastered Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-platformer",
+    "name": "Kenney Starter Kit 3D Platformer (sounds)",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   }
+  ]
+ },
+ "sprites": {
+  "rover": {
+   "kind": "prop",
+   "piece": "rover",
+   "ax": 0.4998,
+   "ay": 0.9365,
+   "size": 1.18,
+   "rect": [
+    256,
+    586,
+    133,
+    113
+   ]
+  },
+  "rover-big": {
+   "kind": "prop",
+   "piece": "rover-big",
+   "ax": 0.5029,
+   "ay": 0.9499,
+   "size": 1.39,
+   "rect": [
+    699,
+    351,
+    126,
+    133
+   ]
+  },
+  "solar-panel": {
+   "kind": "prop",
+   "piece": "solar-panel",
+   "ax": 0.5003,
+   "ay": 0.9101,
+   "size": 1.2,
+   "rect": [
+    2,
+    586,
+    252,
+    115
+   ]
+  },
+  "cargo-stack": {
+   "kind": "prop",
+   "piece": "cargo-stack",
+   "ax": 0.4969,
+   "ay": 0.9272,
+   "size": 1.27,
+   "rect": [
+    827,
+    351,
+    132,
+    122
+   ]
+  },
+  "lights": {
+   "kind": "prop",
+   "piece": "lights",
+   "ax": 0.4996,
+   "ay": 0.9694,
+   "size": 2.03,
+   "rect": [
+    304,
+    351,
+    123,
+    195
+   ]
+  },
+  "rocks": {
+   "kind": "prop",
+   "piece": "rocks",
+   "ax": 0.5015,
+   "ay": 0.7359,
+   "size": 0.76,
+   "rect": [
+    812,
+    586,
+    193,
+    73
+   ]
+  },
+  "lander": {
+   "kind": "prop",
+   "piece": "lander",
+   "ax": 0.4998,
+   "ay": 0.8948,
+   "size": 2.01,
+   "rect": [
+    429,
+    351,
+    268,
+    193
+   ]
+  },
+  "containers": {
+   "kind": "prop",
+   "piece": "containers",
+   "ax": 0.5007,
+   "ay": 0.8621,
+   "size": 0.82,
+   "rect": [
+    478,
+    586,
+    172,
+    79
+   ]
+  },
+  "base-dome": {
+   "kind": "prop",
+   "piece": "base-dome",
+   "ax": 0.4995,
+   "ay": 0.8454,
+   "size": 3.25,
+   "rect": [
+    188,
+    2,
+    541,
+    312
+   ]
+  },
+  "wind-turbine": {
+   "kind": "prop",
+   "piece": "wind-turbine",
+   "ax": 0.4995,
+   "ay": 0.9785,
+   "size": 3.61,
+   "rect": [
+    2,
+    2,
+    184,
+    347
+   ]
+  },
+  "goal": {
+   "kind": "goal",
+   "piece": "rocket-lander",
+   "ax": 0.4999,
+   "ay": 0.9041,
+   "size": 2.43,
+   "rect": [
+    2,
+    351,
+    300,
+    233
+   ]
+  },
+  "coin": {
+   "kind": "coin",
+   "piece": "coin",
+   "ax": 0.5036,
+   "ay": 0.9887,
+   "size": 0.61,
+   "rect": [
+    118,
+    703,
+    53,
+    59
+   ]
+  },
+  "obstacle-1": {
+   "kind": "obstacle",
+   "piece": "rock",
+   "ax": 0.4976,
+   "ay": 0.8721,
+   "size": 0.68,
+   "rect": [
+    2,
+    703,
+    114,
+    65
+   ]
+  },
+  "obstacle-2": {
+   "kind": "obstacle",
+   "piece": "cargo",
+   "ax": 0.5005,
+   "ay": 0.9248,
+   "size": 0.83,
+   "rect": [
+    391,
+    586,
+    85,
+    80
+   ]
+  },
+  "obstacle-3": {
+   "kind": "obstacle",
+   "piece": "containers",
+   "ax": 0.5008,
+   "ay": 0.863,
+   "size": 0.76,
+   "rect": [
+    652,
+    586,
+    158,
+    73
+   ]
+  }
+ },
+ "sky": [
+  "#05081a",
+  "#1b2550",
+  "#3a2a5a"
+ ],
+ "under": "#893a1e",
+ "layers": {
+  "far": {
+   "image": "far.webp",
+   "w": 1024,
+   "h": 320,
+   "cells": 11.11,
+   "speed": 0.12,
+   "base": 26
+  },
+  "mid": {
+   "image": "mid.webp",
+   "w": 2048,
+   "h": 512,
+   "cells": 7.41,
+   "speed": 0.35,
+   "base": 44
+  }
+ },
+ "ground": {
+  "image": "ground.webp",
+  "cells": 2,
+  "over": 15,
+  "fill": "#893a1e"
+ },
+ "props": {
+  "image": "props.webp",
+  "w": 1024,
+  "h": 770
+ },
+ "files": {
+  "far.webp": {
+   "bytes": 15778,
+   "sha384": "sha384-p8Mny6hNmT1czcc0iaoV5lhhSt5z4NcdcguKA4mhLAWM/WHNCpRfDOaTfEXx8u/6"
+  },
+  "ground.webp": {
+   "bytes": 818,
+   "sha384": "sha384-WXXgb4CEuJfBbGeNNa9Ctj1guggQbapzrVF5J30At3gJdWc0Fz9zrbhjbrqnWdh/"
+  },
+  "mid.webp": {
+   "bytes": 39210,
+   "sha384": "sha384-gx8xsGo7clCm7Mo/9L5Hv42d6smBLY4a0tUiacHpOxSCLxCxWfgD33LmfJ9YRGvh"
+  },
+  "props.webp": {
+   "bytes": 62864,
+   "sha384": "sha384-0fWkNmuwfU3mx9mvoTqLEwvsdG0DxByzAL/wHOe4AT5skypo7XM3JtObNNpDz+lA"
+  }
+ }
+}

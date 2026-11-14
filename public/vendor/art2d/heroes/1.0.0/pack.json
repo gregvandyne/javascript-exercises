@@ -1,0 +1,406 @@
+{
+ "id": "heroes",
+ "version": "1.0.0",
+ "kind": "heroes",
+ "name": "Heroes",
+ "cell": 96,
+ "from": {
+  "theme": "castle-quest/1.1.0",
+  "packs": [
+   {
+    "id": "kaykit-adventurers",
+    "name": "KayKit Adventurers Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-skeletons",
+    "name": "KayKit Skeletons Character Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-dungeon",
+    "name": "KayKit Dungeon Remastered Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kenney-platformer",
+    "name": "Kenney Starter Kit 3D Platformer (sounds)",
+    "author": "Kenney",
+    "licence": "CC0-1.0"
+   },
+   {
+    "id": "kaykit-medieval",
+    "name": "KayKit Medieval Hexagon Pack 1.0",
+    "author": "Kay Lousberg",
+    "licence": "CC0-1.0"
+   }
+  ]
+ },
+ "sprites": {
+  "knight": {
+   "image": "knight.webp",
+   "fw": 128,
+   "fh": 184,
+   "ax": 0.4521,
+   "ay": 0.9649,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Knight",
+   "kind": "hero"
+  },
+  "barbarian": {
+   "image": "barbarian.webp",
+   "fw": 133,
+   "fh": 186,
+   "ax": 0.4476,
+   "ay": 0.9712,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Explorer",
+   "kind": "hero"
+  },
+  "mage": {
+   "image": "mage.webp",
+   "fw": 163,
+   "fh": 183,
+   "ax": 0.4623,
+   "ay": 0.9719,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Wizard",
+   "kind": "hero"
+  },
+  "rogue": {
+   "image": "rogue.webp",
+   "fw": 130,
+   "fh": 185,
+   "ax": 0.4928,
+   "ay": 0.9677,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Ranger",
+   "kind": "hero"
+  },
+  "rogue-hooded": {
+   "image": "rogue-hooded.webp",
+   "fw": 127,
+   "fh": 184,
+   "ax": 0.4879,
+   "ay": 0.9689,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Hooded Ranger",
+   "kind": "hero"
+  },
+  "skelly": {
+   "image": "skelly.webp",
+   "fw": 146,
+   "fh": 181,
+   "ax": 0.4598,
+   "ay": 0.9719,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Skelly",
+   "kind": "hero"
+  },
+  "rattles": {
+   "image": "rattles.webp",
+   "fw": 120,
+   "fh": 184,
+   "ax": 0.5168,
+   "ay": 0.9702,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Rattles",
+   "kind": "hero"
+  },
+  "bonzo": {
+   "image": "bonzo.webp",
+   "fw": 124,
+   "fh": 186,
+   "ax": 0.4891,
+   "ay": 0.9555,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Bonzo",
+   "kind": "hero"
+  },
+  "captain-clank": {
+   "image": "captain-clank.webp",
+   "fw": 121,
+   "fh": 189,
+   "ax": 0.4449,
+   "ay": 0.9613,
+   "cols": 7,
+   "anims": {
+    "idle": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "run": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "jump": [
+     12,
+     13
+    ]
+   },
+   "fps": {
+    "idle": 5,
+    "run": 12
+   },
+   "name": "Captain Clank",
+   "kind": "hero"
+  }
+ },
+ "files": {
+  "barbarian.webp": {
+   "bytes": 60018,
+   "sha384": "sha384-yqPMq9L/TowVqSS8+jFJ1051qE3kexL77Wfi1D4xaFbFzCM/Xf46HCIzFIK3YcWp"
+  },
+  "bonzo.webp": {
+   "bytes": 56430,
+   "sha384": "sha384-VtiVVsMsDnbpnvcyOUTtW6xw7x7DEdEvNXeyYF8DieZnZ1soK0IPqM1iLekk952K"
+  },
+  "captain-clank.webp": {
+   "bytes": 58698,
+   "sha384": "sha384-QyV3LdGUOmXY6M64fRq74GolOCcXAi2+f5Um+H6Z3oonWqk6QggUjI3TkluLfskT"
+  },
+  "knight.webp": {
+   "bytes": 61006,
+   "sha384": "sha384-KkG9j+iyONTPBxhqPSYUjPhKl3xHEySPNXTzKRzbMHFRGDCit2satO7TNKxA0528"
+  },
+  "mage.webp": {
+   "bytes": 60334,
+   "sha384": "sha384-zyDnJlHxT/puJFLkdiscS7rCs5Eql1fjXeaJf17uK0HBKbTa8aDlAEZkEKYzyv0o"
+  },
+  "rattles.webp": {
+   "bytes": 65642,
+   "sha384": "sha384-CWzK804U0OApc/xpowkhnxpulpLe8rFp3EseMgjyatjB1KVDqsvuzYqvTX/roBSM"
+  },
+  "rogue-hooded.webp": {
+   "bytes": 57844,
+   "sha384": "sha384-7Rgf6p02AnihXND1thFSaztWFRAeJHsc7dfbSKD9PXsi/tne7H3IVhNarF2H642S"
+  },
+  "rogue.webp": {
+   "bytes": 57242,
+   "sha384": "sha384-oq/pyLXzwe8mH5j1sOWO5q4KZQr9g3aoQGu7r5JPV2rCHr5zfJ2PZsLG8r4j7e2c"
+  },
+  "skelly.webp": {
+   "bytes": 63906,
+   "sha384": "sha384-zlNPyRv47L28dpPrZA1O+pZllsf8M4gI4KEAIij3cA38aUELKskRGsASpoOJ6Xrr"
+  }
+ }
+}

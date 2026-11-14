@@ -1924,10 +1924,14 @@ if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.fo
 // theme takes the place of both (one game, one engine). The builder sees and can edit the sentences before sending;
 // they go to the Builder as their words.
 {
-  const said = { world: '', hero: '', theme: '' };
-  const kindOf = b => (b.dataset.world ? 'world' : b.dataset.hero ? 'hero' : 'theme');
+  // The Classic tab also has the worlds drawn in 2D and the sprite animals ("Use the 2D world Pirate Cove.", "Make the
+  // hero this animal: Fox."): they go together with each other and a classic theme, and take the place of a 3D pick.
+  const said = { world: '', hero: '', theme: '', world2d: '', animal: '' };
+  const kindOf = b => (b.dataset.world ? 'world' : b.dataset.hero ? 'hero' : b.dataset.world2d ? 'world2d' : b.dataset.animal ? 'animal' : 'theme');
   const lineOf = b => {
     const kind = kindOf(b), id = b.dataset[kind], name = b.dataset.name || id;
+    if (kind === 'world2d') return t('js.studio.world2dUse', { name: b.dataset.say || name });
+    if (kind === 'animal') return t('js.studio.animal2dUse', { name });
     if (kind === 'world') return t('js.studio.worldUse', { name });
     if (kind === 'hero') return t('js.studio.heroUse', { name });
     return t('js.studio.themeUse', { name: name.toLowerCase() === id ? name : `${name} (${id})` });
@@ -1949,7 +1953,7 @@ if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.fo
     const b = e.target.closest('.st-theme, .st-pick'); if (!b) return;
     const kind = kindOf(b), on = b.getAttribute('aria-pressed') !== 'true';
     let text = takeOut(input.value, kind);
-    for (const other of kind === 'theme' ? ['world', 'hero'] : ['theme']) text = takeOut(text, other);
+    for (const other of kind === 'theme' ? ['world', 'hero'] : kind === 'world2d' || kind === 'animal' ? ['world', 'hero'] : ['theme', 'world2d', 'animal']) text = takeOut(text, other);
     if (on) { said[kind] = lineOf(b); b.setAttribute('aria-pressed', 'true'); text = text ? `${text}\n${said[kind]}` : said[kind]; }
     // A picked world shows only the heroes it has (Sky Islands has no skeleton pals); a hero it lacks is taken out again.
     const picked = [...chips('world')].find(x => x.getAttribute('aria-pressed') === 'true');

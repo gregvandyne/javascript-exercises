@@ -26,7 +26,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note, ART2D_RULES, wantsArt2d, art2dNote, pickKit2 } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -196,7 +196,13 @@ export async function run(ctx) {
     // The fixed 3D rules sit between the system prompt and the game, only for 3D requests and 3D games.
     // Kit 2 (kit2.js): a game in one of the ready-made 3D worlds gets the KIT 2 RULES in place of the 3D RULES (never
     // both: they are two different ways to build a 3D game), and a short note naming this turn's world and hero.
-    const k2 = wantsKit2(ctx.state || {}, ctx.text, cur);
+    // 2D art (art2d.js): a 2D game that picks or names one of the worlds, a sprite hero or an animal gets the 2D ART
+    // RULES. A new running or catching game with a sprite animal that the described 3D world does not have is built
+    // in 2D; every other choice of engine is kit2.js's, as before.
+    const st = ctx.state || {}, a2pick = wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
+    if (a2pick && a2pick.force2d) delete st.kit2;
+    const k2 = a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
+    const a2 = k2 ? null : a2pick; if (k2) delete st.art2d;
     const system = [
       { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
       // Fixed, and only while web search is on: it is cached with the block after it.
@@ -209,6 +215,9 @@ export async function run(ctx) {
       ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       ...(k2 ? [{ type: 'text', text: kit2Note(k2) }] : []),
+      // The 2D art rules and this turn's pick: after the cached blocks (at most four cache points are allowed, and
+      // the blocks before this keep their places), only on turns that pick a 2D world, a sprite hero or an animal.
+      ...(a2 ? [{ type: 'text', text: ART2D_RULES }, { type: 'text', text: art2dNote(a2) }] : []),
       { type: 'text', text: languageBlock(ctx.locale || 'en') },
     ];
     // After a round that ran out of room before using a tool, the next one thinks less (see cutOff below).

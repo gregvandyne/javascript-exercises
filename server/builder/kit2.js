@@ -12,6 +12,7 @@ import { KIT2_WORLDS, KIT2_VERSIONS, KIT2_API_SOURCE } from './kit2-catalog.js';
 import { kit2ImportMap, OOMBA3D_VERSION, OOMBA3D_MODULE, KIT2_LOCK, oomba3dVersionOf } from '../services/vendor.js';
 import { fileURLToPath } from 'node:url';
 import { LOCALES_DIR, CODES } from '../i18n/index.js';
+import { isArt2dChip } from './art2d.js';
 
 export { KIT2_WORLDS, KIT2_VERSIONS };
 export const WORLD_IDS = KIT2_WORLDS.map(w => w.id);
@@ -231,6 +232,8 @@ const THREE_D = /(^|[^a-z0-9])(3\s?-?d|three[- ]?d)([^a-z0-9]|$)/;
  */
 export function pickKit2(text) {
   const t = norm(text);
+  // A Classic-tab 2D chip (a 2D world or an animal, art2d.js) names a world too, but it is a pick for a 2D game.
+  if (isArt2dChip(text)) return { world: '', hero: '', soft: false, by: '', classic: true, threeD: false, wantsCreature: false, place: '', animals: [], along: false };
   const chipOf = kind => { for (const re of NAMES.chips[kind]) { const m = re.exec(t); if (m) return m[1]; } return null; };
   const worldChip = chipOf('world'), heroChip = chipOf('hero');
   const chipWorld = worldChip ? lastNamed(NAMES.worlds, worldChip) : '', chipAnimal = heroChip ? lastNamed(NAMES.animals, heroChip) : '', chipHero = (heroChip ? lastNamed(NAMES.heroes, heroChip) : '') || chipAnimal;
@@ -253,7 +256,7 @@ export function pickKit2(text) {
   const by = chipWorld || chipHero ? 'chip' : named || (threeD && heroName && !classic) ? 'name' : place && !classic && !TWO_D_ONLY.test(t) ? 'place' : '';
   // animals: the creature(s) the words can mean (one per world at most); along: it comes along instead of being the hero.
   // wantsCreature: an animal was asked for that no shipped world has (a dinosaur today).
-  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, animals, along, by, classic, threeD, wantsCreature: CREATURE_WORDS.test(t) && !animals.length };
+  return { world: chipWorld || named || (by ? place : ''), hero: heroName, soft, animals, along, by, classic, threeD, place, wantsCreature: CREATURE_WORDS.test(t) && !animals.length };
 }
 
 /**
