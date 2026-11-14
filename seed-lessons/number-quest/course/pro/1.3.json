@@ -154,7 +154,7 @@
     "big": true,
     "rows": [
      {
-      "label": "25% is 20 ml, so 100% is 4 × 20 = 80 ml",
+      "label": "Each part is 20 ml: 4 × 20 = 80 ml",
       "parts": [
        {
         "w": 0.25,

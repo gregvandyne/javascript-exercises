@@ -216,19 +216,19 @@
     {
      "cue": "Lantern A: 9 ÷ 3 = 3 milliliters per hour.",
      "box": [
-      28.5,
-      28.8,
-      19,
-      61.5
+      28.6,
+      28.7,
+      18.9,
+      61.6
      ]
     },
     {
      "cue": "Lantern B: 10 ÷ 5 = 2 per hour. It burns less.",
      "box": [
-      64.6,
+      64.5,
       41.6,
-      18.8,
-      48.6
+      18.9,
+      48.7
      ]
     }
    ]

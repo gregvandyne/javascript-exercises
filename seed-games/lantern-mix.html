@@ -926,6 +926,8 @@ function frame() {
 }
 function fit(withHint) {
   if (!g || !view.pts.length) return;
+  // a small phone with a hint showing: the board alone is kept in view, as big as it can be (the hint covers the rack)
+  const pts = withHint && squat() && S.screen === 'play' ? view.pts.slice(0, 4) : view.pts;
   const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
   const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
   const low = play ? Math.min(el.bar.hidden ? Hd : el.bar.getBoundingClientRect().top, withHint ? el.hint.getBoundingClientRect().top : Hd) : 0;
@@ -934,14 +936,14 @@ function fit(withHint) {
   const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
   if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
   const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
-  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  const mid = V3(0, 0, 0); for (const p of pts) mid.addScaledVector(p, 1 / pts.length);
   let bx;
   const fits = d => {
     look.copy(mid);
     for (let i = 0; i < 6; i++) {
       cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
       bx = [9, -9, 9, -9];
-      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      for (const p of pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
       if (i === 5) break;
       look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
     }

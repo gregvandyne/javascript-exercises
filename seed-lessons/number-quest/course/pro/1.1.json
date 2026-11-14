@@ -24,11 +24,11 @@
    "art": "scale",
    "visual": {
     "type": "bars",
-    "label": "A tape diagram of the gate glow: 2 equal parts of amber oil over 3 equal parts of blue oil",
+    "label": "A tape diagram of the gate glow: 5 equal parts in a row, 2 of amber oil and then 3 of blue oil",
     "big": true,
     "rows": [
      {
-      "label": "Amber oil: 2 parts",
+      "label": "2 parts amber, then 3 parts blue",
       "parts": [
        {
         "w": 0.2,
@@ -37,12 +37,7 @@
        {
         "w": 0.2,
         "tone": 1
-       }
-      ]
-     },
-     {
-      "label": "Blue oil: 3 parts",
-      "parts": [
+       },
        {
         "w": 0.2,
         "tone": 2
@@ -64,18 +59,18 @@
      "cue": "2 parts of amber oil. Every part is the same size.",
      "box": [
       5,
-      11.8,
-      37.4,
-      28
+      35.7,
+      37.2,
+      18.3
      ]
     },
     {
      "cue": "3 parts of blue oil go with them: the ratio is 2 : 3.",
      "box": [
-      5,
-      42,
+      40.2,
+      35.7,
       54.8,
-      28
+      18.3
      ]
     }
    ]
