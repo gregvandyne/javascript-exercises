@@ -7,7 +7,9 @@
 //     Crate Stacker), its Unit 4, The Balance Bridge (4.1-4.3, played in Balance Bridge), and its Unit 5, The Hundreds
 //     Hedge (5.1-5.3, played in Rocket Supply), its Unit 6, The Shape Shed (6.1-6.3, played in Shape Hunt), and its Unit 7,
 //     The Measuring Meadow (7.1-7.3, played in Kitchen Rush) with the tier's finale, The Garden Gate (7.4, Kitchen Rush's
-//     fourth chapter), load with no deck problems; Pro has no units, so it does not exist;
+//     fourth chapter), load with no deck problems; Pro (2026-11-14) is declared and "building": its welcome step
+//     is built and its seven units are reserved as planned, so for the engine the tier is one step long and
+//     only the platform admin sees it (tests/unit/number-quest-pro-foundations.test.js pins Pro itself);
 //   - Launchpad is "open" in units.json since 2026-11-13 (tests/unit/number-quest-launchpad-open.test.js pins what
 //     that means for real learners); the building state is still the engine's to keep, for Pro's turn, so the
 //     "building" tests below ask for it by the test-only status hook;
@@ -69,13 +71,14 @@ function withLaunchpadUnits() {
 }
 
 // ------------------------------------------------------------------------------------------------- the catalogue
-test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly its 23 steps; Launchpad opens with its welcome', () => {
+test('the catalogue: all three tiers are declared; Explorer is exactly its 23 steps; Launchpad opens with its welcome; Pro is building', () => {
   assert.deepEqual(T.TIERS, ['launchpad', 'explorer', 'pro']);
-  assert.deepEqual(T.existingTiers(), ['launchpad', 'explorer']);
+  assert.deepEqual(T.existingTiers(), ['launchpad', 'explorer', 'pro'], 'Pro exists since 2026-11-14: it has a built unit (its welcome)');
   assert.equal(T.statusOf('explorer'), 'open');
   assert.equal(T.statusOf('launchpad'), 'open', 'Launchpad opened to everyone on 2026-11-13, with all seven units and its finale');
-  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer']);
-  assert.equal(T.statusOf('pro'), null, 'a tier with no units has no status: it does not exist');
+  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer'], 'what any learner may walk is what it was');
+  assert.equal(T.statusOf('pro'), 'building', 'Pro is being built: the platform admin alone sees it');
+  assert.equal(T.isOpen('pro'), false);
   assert.deepEqual({ district: T.tierInfo('launchpad').district, grades: T.tierInfo('launchpad').grades, inGame: T.tierInfo('launchpad').inGame, stones: T.tierInfo('launchpad').stones },
     { district: 'The Gardens', grades: 'K-2', inGame: 'Launchpad', stones: ['Counting Seed', 'Joining Seed', 'Tens Seed', 'Balance Seed', 'Hundreds Seed', 'Shape Seed', 'Measuring Seed'] });
   assert.equal(T.tierInfo('launchpad').finale, '7.4', 'the tier ends on a finale door, as Explorer does');
@@ -123,10 +126,13 @@ test('the catalogue: Launchpad and Explorer are declared; Explorer is exactly it
   assert.deepEqual(w.check, ['nq-launchpad-0.1-e1', 'nq-launchpad-0.1-e2', 'nq-launchpad-0.1-e3']);
   assert.equal(w.standards.flag, 'framing'); assert.equal(w.mp, 'MP1');
   assert.notEqual(C.getStep(course, 'explorer-0.1').title, w.title, 'two tiers, two different steps numbered 0.1');
-  // Pro: no units, so nothing.
-  assert.equal(C.getStep(course, 'pro-1.1'), null);
-  assert.deepEqual(C.steps(course, 'pro'), []);
-  assert.equal(T.firstKey('pro'), null);
+  // Pro: its welcome is a real step with a real deck; its seven units are planned, so none of their steps exists.
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1']);
+  assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'the Pro welcome deck has no problems');
+  assert.equal(T.firstKey('pro'), 'pro-0.1');
+  for (const key of ['pro-1.1', 'pro-4.3', 'pro-7.4']) assert.equal(C.getStep(course, key), null, `${key} is planned, not built: it is no step`);
+  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => u.n), [1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer'], 'and nobody but the admin is offered the band');
   // The other courses know nothing of tier keys, and Number Quest nothing of theirs.
   assert.equal(C.getStep(C.getCourse('cs-quest'), 'launchpad-0.1'), null);
   assert.equal(C.getStep(course, '1b-1.1'), null);
@@ -149,6 +155,7 @@ test('standards tags read every tier, keyed by full step key', () => {
   const steps = tags.numberQuestSteps();
   assert.deepEqual(steps.get('explorer-1.1'), ['4.NBT.A.1', '4.NBT.A.2']);
   assert.equal(steps.has('launchpad-0.1'), false, 'a framing step cites no code');
+  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), [], 'Pro: its welcome is framing and its units are planned, so no play can be credited to a Pro step yet');
   assert.ok([...steps.keys()].every(k => /^(launchpad|explorer|pro)-\d\.\d$/.test(k)));
   assert.equal([...steps.keys()].filter(k => k.startsWith('explorer-')).length, 21, 'Explorer: 23 steps less the intro and the enrichment step');
 });
@@ -248,7 +255,7 @@ test('Launchpad building: placement behaves exactly as with Explorer alone, even
 test('Launchpad building: the platform admin sees the tier and can open its welcome', async () => {
   T.setTierStatus('launchpad', 'building'); // units.json says "open" since 2026-11-13: the building state is asked for by name
   const cookie = cookieFor(admin.id);
-  assert.deepEqual(C.bandsFor(course, admin), ['launchpad', 'explorer']);
+  assert.deepEqual(C.bandsFor(course, admin), ['launchpad', 'explorer', 'pro'], 'the admin sees every street that exists, building or not');
   assert.equal(C.stepFor(admin, course, 'launchpad-0.1').key, 'launchpad-0.1');
   assert.equal(C.stateOf(admin, course, 'launchpad-0.1').open, true);
   const page = await get('/courses/number-quest/launchpad-0.1', cookie);
@@ -272,7 +279,7 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   assert.match(street.text, /id="step-launchpad-6\.3"/); assert.match(street.text, /The Shape Shed/);
   assert.match(street.text, /id="step-launchpad-7\.3"/); assert.match(street.text, /The Measuring Meadow/);
   assert.match(street.text, /id="step-launchpad-7\.4"/, 'the finale door is on the street');
-  assert.equal(C.numberQuestCatalogue(admin).units.length, 16);
+  assert.equal(C.numberQuestCatalogue(admin).units.length, 17, 'Launchpad 8, Explorer 8 and the Pro welcome unit');
   // Unit 1's first step opens for the admin, with its mission in Garden Count.
   const one = await get('/courses/number-quest/launchpad-1.1', cookie);
   assert.equal(one.status, 200);
@@ -351,8 +358,8 @@ test('Launchpad open: the switcher renders, a learner picks the band and walks t
   // The teacher page now publishes both streets.
   const teach = await get('/teachers/number-quest');
   assert.match(teach.text, /Launchpad · Welcome to the Gardens/); assert.match(teach.text, /Explorer · Unit 1 · The Counting House/);
-  // Still no Pro.
-  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.getStep(course, 'pro-1.1'), null);
+  // Pro is still nobody's but the admin's.
+  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null); assert.equal(C.getStep(course, 'pro-1.1'), null);
 });
 
 test('Launchpad open: placement lands a rung under 2.5 on a Launchpad node once entry profiles exist', () => {

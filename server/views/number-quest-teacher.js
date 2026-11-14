@@ -1,7 +1,8 @@
 // The Number Quest teacher page (/teachers/number-quest): the public program page, built like Cyber
 // Defenders' (routes/cyber-defenders.js) from the course data (seed-lessons/number-quest, via
 // courses.numberQuestCatalogue()): the overview, the games, the units and steps, the published CCSS-M
-// map for every open street (Launchpad and Explorer, each with Units 1-7 and its finale) (primary / also covers / builds toward kept
+// map for every street the reader may see (the open ones: Launchpad and Explorer today, each with Units 1-7 and its
+// finale; Pro joins when it opens, and until then only the platform admin sees it) (primary / also covers / builds toward kept
 // separate and labelled — builds toward is preparation, never coverage; step 7.3 is flagged enrichment
 // and cites no code), each step's Mathematical Practice spotlight, the per-unit teacher
 // notes, and the printed pack (?print=1: the map and the notes on their own page). Copy under teachers.nq.*
@@ -54,10 +55,27 @@ export function mapTable(req, cat) {
   return html`<div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>${t(`${K}.map.cols.step`)}</th><th>${t(`${K}.map.cols.title`)}</th><th>${t(`${K}.map.cols.primary`)}</th><th>${t(`${K}.map.cols.also`)}</th><th>${t(`${K}.map.cols.toward`)}</th><th>${t(`${K}.map.cols.mp`)}</th></tr></thead><tbody>${raw(rows)}</tbody></table></div>`;
 }
 
+/** The third street in the placement copy: nothing at all until the Pro tier is open with entry profiles
+ *  (P.proEntry() is null while it is being built), then sentences made from the catalogue and the placement
+ *  service's own constants, so opening the tier is a data change and the page cannot drift from the game.
+ *  `landing`: added to a matrix row of grades 3-8; `walk` and `justPlay`: added to the explainer's crosswalk item. */
+export function proPlacementWords() {
+  const pro = P.proEntry();
+  if (!pro) return { landing: '', walk: '', justPlay: '', finaleIf: '' };
+  const line = P.rungLabel(pro.line), end = pro.finale ? `${pro.finale} (its finale door) when all ${pro.units} are met` : `its last unit when all ${pro.units} are met`;
+  return {
+    landing: `. With every strand at rung ${line} or over and all seven Explorer profiles met, the start is on the ${pro.name} street instead: ${pro.welcome} when its first entry profile is not met, else the first ${pro.name} unit (1–${pro.units}) whose entry profile is not fully met, or ${end}`,
+    walk: ` A learner who meets every Explorer profile and has every strand at rung ${line} or over (the ${pro.name} starting line) starts on the ${pro.name} street the same way: its welcome, the first unit whose profile is not met, or ${end}.`,
+    justPlay: `, and with grade 6 to 8 at the ${pro.name} welcome`,
+    finaleIf: ` with any strand under rung ${line}`,
+  };
+}
+
 /** The K–8 placement matrix: one row per grade a learner can name, built from the placement service's
  *  own constants (the form, the strands visited, the seed rung the first questions start from), so the
  *  table can never drift from the game it describes. */
 export function placementMatrix() {
+  const pro = proPlacementWords();
   const rows = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(g => {
     const form = P.formForGrade(g);
     const strands = P.strandsForForm(form).map(k => P.STRAND_LABELS[k]).join(', ');
@@ -66,7 +84,7 @@ export function placementMatrix() {
       <td>${strands}</td>
       <td dir="ltr">${P.rungLabel(P.seedRung(g))}</td>
       <td>${g <= 2 ? (T.isOpen('launchpad') ? 'A rung under the Explorer starting line starts in the Launchpad gardens: the welcome when nothing is settled yet, else the first garden (Units 1–7) whose entry profile is not fully met, or the Explorer welcome when all seven are met. With every rung at or over the line: the first Explorer unit (1–7) whose entry profile is not fully met'
-        : 'Starts at Welcome to the Numberworks; a start below the Explorer starting line is flagged on the note, because the Launchpad gardens are not open') : `The first Explorer unit (1–7) whose entry profile the four rungs do not fully meet, or the Vault of Measures door (the finale) when all seven are met${T.isOpen('launchpad') ? '. A rung that lands under the Explorer starting line starts in the Launchpad gardens instead' : ''}`}</td></tr>`;
+        : 'Starts at Welcome to the Numberworks; a start below the Explorer starting line is flagged on the note, because the Launchpad gardens are not open') : `The first Explorer unit (1–7) whose entry profile the four rungs do not fully meet, or the Vault of Measures door (the finale) when all seven are met${T.isOpen('launchpad') ? '. A rung that lands under the Explorer starting line starts in the Launchpad gardens instead' : ''}${pro.landing}`}</td></tr>`;
   }).join('');
   return html`<div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>Grade named</th><th>Form played</th><th>Strands visited</th><th>First questions start at rung</th><th>Where the start point can land</th></tr></thead><tbody>${raw(rows)}</tbody></table></div>`;
 }
@@ -75,6 +93,7 @@ export function placementMatrix() {
  *  routes a learner, the caveat in the service's own words (P.CAVEAT, so no page can soften it), the
  *  absolute override, and the K–8 matrix. English course data, rendered lang="en" like the map. */
 export function placementSection() {
+  const pro = proPlacementWords();
   return html`
   <section class="lp-sec" id="placement" aria-labelledby="placement-h" lang="en" dir="ltr">
     <h2 id="placement-h">How placement works: Tally's Sorting Game</h2>
@@ -84,7 +103,7 @@ export function placementSection() {
       <li>Four strands, visited in turn rather than as four exams: Number, Algebra &amp; Patterns, Shape &amp; Measure, and Data &amp; Chance. Each strand is its own small staircase over half-grade rungs, seeded half a rung below the named grade so the first questions feel winnable. A right answer steps up half a rung, a wrong one steps down; a rung counts as settled on two right answers at it. Grades K–2 play a shorter, audio-first form (3–4 questions a strand, Algebra folded into Number); grades 3–8 play up to 5 a strand, at most 20 questions in all, and a strand stops sooner once both its ends are found.</li>
       <li>Every third question is a hands-on one where the bank has one at that rung: count-out items the learner taps as they count, and build items shown as counters and ten-frames, not bare text.</li>
       <li>The child never sees a score, a percentage, a timer or a rung. Tally reacts to the trying, shows how far along the game they are, and at the end simply names a starting workshop. A "Stop and start playing" button is always there: a stopped game still places, strand by strand, and the street can be started from the very beginning instead, always.</li>
-      <li>The four placed rungs combine into one start point through the course's locked crosswalk: the first unit whose entry profile is not fully met, with near-misses resolving to the lower unit.${T.isOpen('launchpad') ? ' A learner with any strand under the Explorer starting line (rung 2.5, about the middle of grade 2) starts on the Launchpad street, in the first garden whose profile is not met; everyone else starts on the Explorer street. Choosing "Just Play" with a grade of K, 1 or 2 starts at the Launchpad welcome, and with grade 3 to 5 at Explorer Unit 1.' : ''} If every strand points past Explorer Unit 7, the start is the Vault of Measures, the finale door at the end of the street: the child hears that every workshop is open and the Vault is waiting. Workshops before the start point stay open for games, laps and test-out. If the first two checks at the placed start go badly, Tally quietly suggests warming up in the previous unit first; the placement itself does not move, and nothing is recorded as a failure.</li>
+      <li>The four placed rungs combine into one start point through the course's locked crosswalk: the first unit whose entry profile is not fully met, with near-misses resolving to the lower unit.${T.isOpen('launchpad') ? ' A learner with any strand under the Explorer starting line (rung 2.5, about the middle of grade 2) starts on the Launchpad street, in the first garden whose profile is not met; everyone else starts on the Explorer street. Choosing "Just Play" with a grade of K, 1 or 2 starts at the Launchpad welcome, and with grade 3 to 5 at Explorer Unit 1' + pro.justPlay + '.' : ''}${pro.walk} If every strand points past Explorer Unit 7${pro.finaleIf}, the start is the Vault of Measures, the finale door at the end of the street: the child hears that every workshop is open and the Vault is waiting. Workshops before the start point stay open for games, laps and test-out. If the first two checks at the placed start go badly, Tally quietly suggests warming up in the previous unit first; the placement itself does not move, and nothing is recorded as a failure.</li>
     </ul>
     <p class="nq-caveat">${P.CAVEAT}</p>
     <p>Rungs are curriculum-order judgements by the course writers, refined by item data after launch. They are not certified grades, and the Starting Point note a parent or teacher sees says the same, strand by strand, in plain words.</p>

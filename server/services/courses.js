@@ -563,6 +563,8 @@ function proSlide(x) {
   return out;
 }
 const proItem = it => ({ ...it, q: mt(it.q), choices: Array.isArray(it.choices) ? it.choices.map(mt) : it.choices, why: mt(it.why) });
+/** The two Pro text passes, for the tests that pin them (a deck or a bank is only ever read through the loader). */
+export const proText = Object.freeze({ slide: proSlide, item: proItem });
 /** One Number Quest deck, cleaned and checked against its units.json entry (the same rules as fromCyberDeck;
  *  its check items are the step's own bank items, ids "nq-<tier>-<n>-e<k>", each tagged to a locked code). */
 function fromNqDeck(key, s, tier, d, game, items, problems) {
