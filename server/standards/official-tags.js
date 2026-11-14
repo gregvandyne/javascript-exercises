@@ -167,7 +167,8 @@ export function numberQuestSteps() {
   if (nqSteps) return nqSteps;
   const units = JSON.parse(fs.readFileSync(UNITS, 'utf8')).units || [];
   nqSteps = new Map();
-  for (const u of units) for (const s of u.steps || []) {
+  // (a unit marked `planned` is reserved, not built: it has no step a play could be credited to)
+  for (const u of units.filter(x => x.planned !== true)) for (const s of u.steps || []) {
     const tier = ['launchpad', 'explorer', 'pro'].includes(u.tier) ? u.tier : 'explorer';
     const st = ((s.standards || {})[tier]) || {};
     const codes = (st.primary || []).filter(c => /^(K|\d)\.[A-Z]+\.[A-D]\.\d+[a-z]?$/.test(c));

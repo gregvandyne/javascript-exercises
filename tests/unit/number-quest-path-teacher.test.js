@@ -1,6 +1,6 @@
 // Number Quest surfaces (the Duolingo-lite UI + the teacher map): the course registered on the
 // platform machinery with its tiers as bands (a learner sees two streets, Launchpad and Explorer, since
-// Launchpad opened on 2026-11-13, and no Pro tier exists; tests/unit/number-quest-tiers.test.js covers the
+// Launchpad opened on 2026-11-13, and the Pro tier (declared 2026-11-14) is still being built, so no learner sees it; tests/unit/number-quest-tiers.test.js covers the
 // tiers themselves), the path home rendering the street (nodes, lap rings,
 // Tally Marks, the daily goal), and the teacher map publishing the locked CCSS-M
 // statements for Units 1-7 plus the finale (Phase 2, 2026-11-05) with primary / also / builds-toward kept separate. The in-lesson moment wiring
@@ -25,7 +25,7 @@ test('the course is registered: a learner sees the Launchpad and Explorer bands,
   assert.ok(course);
   assert.equal(course.teacherPath, '/teachers/number-quest');
   // The bands a learner is offered: Launchpad and Explorer, in path order. (Launchpad opened on 2026-11-13;
-  // Pro has no units, so it is nobody's band.)
+  // Pro is being built, so it is the platform admin's band alone.)
   assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer']);
   assert.deepEqual(C.bandsFor(course, newKid()), ['launchpad', 'explorer']);
   assert.equal(C.defaultBand(course, newKid()), 'explorer', 'a viewer with no band and no placement is still shown the Explorer street');
@@ -42,14 +42,15 @@ test('the course is registered: a learner sees the Launchpad and Explorer bands,
   assert.equal(C.getStep(course, 'explorer-7.4').game.slug, 'quest-race', 'the finale rides the Vault Run');
   assert.equal(C.getStep(course, 'explorer-6.1').game.params, 'mode=nq-6-1&lock=1', '6.1 plays the Shape Hunt board until Builders Yard ships');
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
-  assert.equal(C.getStep(course, 'pro-1.1'), null, 'no Pro tier exists yet');
-  assert.deepEqual(C.steps(course, 'pro'), []);
+  assert.equal(C.getStep(course, 'pro-1.1'), null, 'Pro Unit 1 is planned, not built: it has no steps');
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1'], 'the Pro street is its welcome step so far');
+  assert.equal(C.stepFor(newKid(), course, 'pro-0.1'), null, 'and a learner cannot reach even that while the street is being built');
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);
   // Band choice is per course: '2' is refused for Number Quest, 'explorer' for CS Quest.
   const kid = newKid();
   assert.equal(C.setBand(kid, course, '2'), false);
-  assert.equal(C.setBand(kid, course, 'pro'), false, 'a tier with no units is no band');
+  assert.equal(C.setBand(kid, course, 'pro'), false, 'a tier that is still being built is no band for a learner');
   assert.equal(C.getBand(kid, course), null);
   assert.equal(C.setBand(kid, course, 'launchpad'), true, 'an open tier is a band a learner may pick');
   assert.equal(C.getBand(kid, course), 'launchpad');

@@ -20,17 +20,21 @@ const decks = fs.readdirSync(COURSE).filter(t => fs.statSync(path.join(COURSE, t
   .flatMap(tier => fs.readdirSync(path.join(COURSE, tier)).filter(f => f.endsWith('.json')).sort()
     .map(f => ({ file: tier === 'explorer' ? f : `${tier}/${f}`, deck: JSON.parse(fs.readFileSync(path.join(COURSE, tier, f), 'utf8')) })));
 
-const rat = s => { const t = s.trim(); const mx = /^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/.exec(t); if (mx) return Number(mx[1]) + Number(mx[2]) / Number(mx[3]); const m = /^(-?\d+)\s*\/\s*(\d+)$/.exec(t); if (m) return Number(m[1]) / Number(m[2]); const n = Number(t.replace(/,/g, '')); return Number.isNaN(n) ? null : n; };
-const NUM = String.raw`-?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?`;
+// A label may be printed the Pro way: the true minus sign (U+2212) and a degree unit ("−10°", "3°C").
+const rat = s => { const t = s.trim().replace(/\u2212/g, '-').replace(/°[CF]?$/, ''); const mx = /^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/.exec(t); if (mx) return Number(mx[1]) + Number(mx[2]) / Number(mx[3]); const m = /^(-?\d+)\s*\/\s*(\d+)$/.exec(t); if (m) return Number(m[1]) / Number(m[2]); const n = Number(t.replace(/,/g, '')); return Number.isNaN(n) ? null : n; };
+const NUM = String.raw`[-\u2212]?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?`; // a number may be negative, with either minus sign
 const EQ = new RegExp(`(${NUM}(?:\\s*[+\\-−x×/÷]\\s*${NUM})+)\\s*=\\s*(${NUM})`, 'g');
 function evalSide(side) {
   // Tokenize with fraction bars binding tighter than the operators: "2/8" is one operand.
   const toks = side.replace(/−/g, '-').replace(/÷/g, '/').match(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?|[+\-x×/]/g);
   if (!toks) return null;
-  let acc = null, op = '+';
+  let acc = null, op = '+', neg = false, afterOp = true;
   for (const tk of toks) {
-    if (/^[+\-x×/]$/.test(tk)) { op = tk; continue; }
-    const v = rat(tk); if (v == null) return null;
+    // A minus straight after another operator (or first of all) is a sign, not a subtraction: "3 × −2", "−5 + 8".
+    if (/^[+\-x×/]$/.test(tk)) { if (tk === '-' && afterOp && acc != null) neg = !neg; else op = tk; afterOp = true; continue; }
+    let v = rat(tk); if (v == null) return null;
+    if (neg) { v = -v; neg = false; }
+    afterOp = false;
     if (acc == null) acc = op === '-' ? -v : v;
     else if (op === '+') acc += v; else if (op === '-') acc -= v;
     else if (op === 'x' || op === '×') acc *= v; else acc /= v;
@@ -120,7 +124,9 @@ test('number lines: points, marks and hops sit where their labels say', () => {
     hops.forEach((h, j) => {
       assert.ok(h.from >= v.min && h.to <= v.max, `${where}: hop out of range`);
       if (j > 0) assert.equal(h.from, hops[j - 1].to, `${where}: hops must chain`);
-      const lead = /^(\d+)/.exec(h.label || ''); if (lead) assert.equal(Number(lead[1]), Math.abs(h.to - h.from), `${where}: hop label ${h.label} vs length`);
+      const lead = /^[+\u2212-]?(\d+(?:\.\d+)?(?:\/\d+)?)/.exec(h.label || ''); if (lead) assert.ok(Math.abs(rat(lead[1]) - Math.abs(h.to - h.from)) < 1e-9, `${where}: hop label ${h.label} vs length ${Math.abs(h.to - h.from)}`);
+      // a signed hop label ("+8°", "−7") says which way it goes
+      const sign = /^([+\u2212-])\d/.exec(h.label || ''); if (sign) assert.equal(sign[1] === '+', h.to > h.from, `${where}: hop label ${h.label} vs direction`);
     });
   });
 });

@@ -21,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { q, uid, now } from '../db.js';
-import { TEMPLATES, generateItem, rngFromSeed } from '../../seed-lessons/number-quest/placement/generator.js';
+import { TEMPLATES, BY_ID, generateItem, rngFromSeed } from '../../seed-lessons/number-quest/placement/generator.js';
 import * as NQ from './number-quest-progress.js';
 import * as T from './number-quest-tiers.js';
 import { onAccountMerge } from './schools.js';
@@ -263,7 +263,9 @@ export function serveNext(state) {
 /** Grade one served item by regenerating it (the key never left the server). Pick items grade by choice
  *  index; every other type grades the typed/shown value against the worked key, numbers numerically. */
 export function gradeServed(templateId, itemSeed, answer) {
-  const template = TEMPLATES.find(t => t.id === templateId);
+  // BY_ID, not the served bank: an item dealt from a template that has since been retired is still graded
+  // by the key it was dealt with (a run in flight when the bank changed loses nothing).
+  const template = BY_ID.get(templateId);
   if (!template) return null;
   const full = generateItem(template, itemSeed);
   let correct = false;
@@ -289,8 +291,10 @@ let profileOverrides = null;
  *  Nothing in the app calls this: a tier's profiles are locked for real in placement.json. */
 export function setEntryProfilesForTests(extra) { profileOverrides = extra && typeof extra === 'object' ? { ...extra } : null; }
 const entryProfiles = () => (profileOverrides ? { ...profilesLock(), ...profileOverrides } : profilesLock());
-/** A unit's locked entry profile ({ strand label: rung }), or null: the key is its door, "<tier>-<n>.1". */
-export const entryProfile = (tier, unit) => entryProfiles()[`${tier}-${unit}.1`] || null;
+/** A unit's locked entry profile ({ strand label: rung }), or null: the key is its door, "<tier>-<n>.1". Only a
+ *  BUILT unit has one to ask for: a profile recorded for a unit that is still planned (Pro's seven, 2026-11-14) is
+ *  on file and inert, so such a unit can be neither a landing nor a test-out. */
+export const entryProfile = (tier, unit) => (T.unitsOf(tier).some(u => u.n === unit) && entryProfiles()[`${tier}-${unit}.1`]) || null;
 /** A tier's units that have an entry profile, in path order: the units the walk (and test-out) can name. */
 const profiledUnits = tier => T.unitsOf(tier).filter(u => entryProfile(tier, u.n));
 /** May placement land a learner in this tier? Only an OPEN tier: a tier that is not open is nobody's start. */
@@ -339,6 +343,21 @@ const profileMet = (profile, eff) => Object.entries(profile).every(([label, need
 });
 /** The rung under which a learner belongs to the Launchpad tier (the Explorer starting line, spec §4.4). */
 export const EXPLORER_LINE = 2.5;
+/** The Pro starting line (owner decision 4, 2026-11-14; placement.json crosswalk.proLine): a learner enters the Pro
+ *  tier only with EVERY strand at this rung or above. Explorer's highest entry profile asks only rung 4.0, so
+ *  without the line a strong fourth grader who meets all seven Explorer profiles would be walked into Pro. Under the
+ *  line in any strand, such a learner starts at the Explorer finale door, exactly as before Pro existed. */
+export const PRO_LINE = 5.5;
+/** The Pro street as placement may use it, or null while it cannot be anybody's start: the tier must be OPEN (a
+ *  street still being built is nobody's landing, whatever profiles are recorded for it) and have at least one built
+ *  unit with an entry profile. { name, line, units (built units with a profile), welcome, finale (its title, or null) } */
+export function proEntry() {
+  if (!placeable('pro')) return null;
+  const units = profiledUnits('pro');
+  if (!units.length) return null;
+  const fin = finaleOf('pro'), first = T.stepsOf('pro')[0];
+  return { name: T.tierName('pro'), line: PRO_LINE, units: units.length, welcome: first ? T.stepTitle('pro', first.s) : '', finale: fin ? fin.workshop : null };
+}
 
 /** The locked crosswalk (placement.json): the start node is the first unit whose entry profile the four
  *  placed rungs do not fully meet — a near-miss counts as not met, so ties resolve to the LOWER unit.
@@ -352,9 +371,12 @@ export const EXPLORER_LINE = 2.5;
  *    met → the Explorer intro, with no gap (never the Launchpad finale: the Garden Gate is a review door a
  *    learner walks to, not a start). Should Launchpad ever be closed again (or lose its profiles), the
  *    learner starts at the Explorer intro and the note flags the gap (`launchpadGap`).
- *  - Pro, once open with profiles (keys "pro-<n>.1"), continues the walk after Explorer's seven: below its
- *    first profile → Pro's first step; else its first unmet unit; all met → Pro's finale door when it has
- *    one, else its last unit's door.
+ *  - Pro, once open with profiles (keys "pro-<n>.1"), continues the walk after Explorer's seven, but only for a
+ *    learner with EVERY strand at or over the Pro starting line (PRO_LINE, rung 5.5): below Pro's first profile
+ *    → Pro's first step; else its first unmet unit; all met → Pro's finale door when it has one, else its last
+ *    unit's door. A learner who meets all seven Explorer profiles with any strand under the line starts at
+ *    the Explorer finale door, as before. While Pro is not open (it is "building" today, and its units are
+ *    planned), none of this runs: the recorded Pro profiles are inert and every start is what it was.
  *  `tier` names the street the node sits on.
  *  The Launchpad form has no Algebra staircase: its Number rung speaks for the folded strand. */
 export function crosswalk(rungs) {
@@ -377,7 +399,7 @@ export function crosswalk(rungs) {
   // Explorer's own walk is exactly the locked rule: a miss at Unit 1's profile names Unit 1's door.
   const inExplorer = walk('explorer', { belowFirst: false });
   if (inExplorer) return at(inExplorer);
-  if (placeable('pro') && profiledUnits('pro').length) {
+  if (proEntry() && STRANDS.every(k => typeof eff[k] === 'number' && eff[k] >= PRO_LINE)) {
     const inPro = walk('pro', { belowFirst: true });
     if (inPro) return at(inPro);
     const fin = finaleOf('pro'), units = T.unitsOf('pro');
@@ -625,7 +647,7 @@ export function currentSpoken(user, runId) {
   if (!row || row.status !== 'active' || !row.current_item) return null;
   const current = parse(row.current_item, null);
   if (!current || !current.templateId || !current.itemSeed) return null;
-  const template = TEMPLATES.find(t => t.id === current.templateId);
+  const template = BY_ID.get(current.templateId); // served or retired: the item on screen is the one read aloud
   if (!template) return null;
   const full = generateItem(template, current.itemSeed);
   return full.spokenPrompt || full.prompt || null;

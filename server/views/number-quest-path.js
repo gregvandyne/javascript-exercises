@@ -13,6 +13,7 @@ import { html, raw } from './html.js';
 import { current } from '../i18n/index.js';
 import * as NQ from '../services/number-quest-progress.js';
 import { subLine, lockedNote, bandEmoji } from './courses.js';
+import * as T from '../services/number-quest-tiers.js';
 
 /** Tally Marks as tally bundles (spec §6.1: five-bar gates, legible to a five-year-old): full bundles of
  *  five, then the loose marks, then the number in words for anyone counting along. */
@@ -66,6 +67,26 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut, welcome }) 
   </li>`;
 }
 
+/** A unit the catalogue has reserved and nobody has built yet (units.json `planned`): its banner and its steps
+ *  as plain rows with no doors. Only the platform admin's preview of a street still being built lists these;
+ *  a learner never sees one (the route passes none). English, like the rest of the street. */
+function plannedWorkshop(u) {
+  const steps = T.plannedStepsOf(u);
+  return html`<li class="nqp-unit nqp-unit-planned" id="planned-${u.group}">
+    <header class="nqp-unit-h">
+      <span class="nqp-medal" style="--ring:0%" aria-hidden="true"><span class="nqp-medal-in">${u.emoji || '🔢'}</span></span>
+      <div class="nqp-unit-t">
+        <h2 lang="en" dir="ltr">Unit ${u.n} · ${u.title}</h2>
+        <p class="small muted nqp-laps">Planned: not built yet. No lesson, check or mission exists for this unit.</p>
+      </div>
+      ${u.stamp ? html`<span class="nqp-stone">🪨 <span lang="en" dir="ltr">${u.stamp}</span></span>` : ''}
+    </header>
+    <ol class="nqp-nodes">${steps.map(s => html`<li class="nqp-step nqp-step-planned" id="planned-${s.key}">
+      <span class="nqp-door"><span class="nqp-node nqp-node-locked" aria-hidden="true">${s.n}</span>
+        <span class="nqp-node-t">${s.title}</span><span class="nqp-started">Planned</span></span></li>`)}</ol>
+  </li>`;
+}
+
 /** Grades as a street's card prints them: the catalogue's "3-5" with an en dash. */
 const gradesLine = g => `Grades ${String(g || '').replace('-', '–')}`;
 const EXPLORER_STREET = Object.freeze({ key: 'explorer', name: 'Explorer', grades: '3-5', district: 'The Workshops', building: false });
@@ -87,7 +108,8 @@ function streetSwitcher(c, streets, street, canPick) {
 /** The path home. d: { course, ov (the overview of the street on screen), units (that street's units),
  *  street (its tier key), streets (the tiers this viewer may see: [{ key, name, grades, district,
  *  building }]), marks, daily, laps (unit -> lapState, that street's), placement, testedOut (that street's
- *  unit numbers), canPick, bandSet }. Without street/streets it is the Explorer street alone. */
+ *  unit numbers), canPick, bandSet, planned (the street's reserved, unbuilt units: the admin's preview only) }.
+ *  Without street/streets it is the Explorer street alone. */
 export function pathPage(d) {
   const { t } = current();
   const { course: c, ov, daily, placement } = d;
@@ -99,6 +121,7 @@ export function pathPage(d) {
   const groups = new Map();
   for (const s of ov.list) { if (!groups.has(s.step.unit)) groups.set(s.step.unit, []); groups.get(s.step.unit).push(s); }
   const units = d.units;
+  const planned = d.planned || []; // reserved, unbuilt units: the admin's preview of a building street only
   // A street walked to its end leads on: when every step of the street on screen is done and a later
   // street is open (Launchpad's Garden Gate leads to Explorer), the page says so and offers the way.
   const onward = ov.total > 0 && ov.done === ov.total ? streets.slice(streets.indexOf(here) + 1).find(x => !x.building) || null : null;
@@ -148,7 +171,12 @@ export function pathPage(d) {
     ${streetSwitcher(c, streets, here.key, d.canPick)}
     <ol class="nqp-path" aria-label="The Numberworks street, ${here.name}">
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}
-    </ol>
+    </ol>${planned.length ? html`
+    <section class="nqp-planned" id="nqp-planned" aria-labelledby="nqp-planned-h" lang="en" dir="ltr">
+      <h2 id="nqp-planned-h">🛠️ Planned for ${here.name}: ${planned.length} ${planned.length === 1 ? 'unit' : 'units'} not built yet</h2>
+      <p class="small muted">Admin preview. These units are reserved in the catalogue (titles, stones, step numbers and standards) so they can be built side by side. Nothing here can be opened, and no learner sees this street until it opens.</p>
+      <ol class="nqp-path" aria-label="Planned units of ${here.name}">${planned.map(plannedWorkshop)}</ol>
+    </section>` : ''}
 
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
       <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>

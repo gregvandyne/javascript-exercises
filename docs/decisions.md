@@ -4920,6 +4920,67 @@ those packs make complete without a new Oomba3D, so it ships first, on Oomba3D 1
   sand (as on Sky Islands' round island). The hero cannot walk on a ship's deck: a ship's box reaches its mast top, so
   ships are scenery in this version (a `deck` square at deck height is the way to make one walkable).
 
+## Number Quest Pro: foundations (14 Nov 2026)
+
+The owner approved the plan for the Pro tier (grades 6 to 8) today. This is the first build: the tier is declared
+as `building` (the platform admin alone sees it), and everything its seven units need is reserved up front so they
+can be built side by side. No Pro game and no Pro unit deck exists yet. The owner's seven decisions:
+
+1. **Names.** The district is The Towers; the stones are Gears (Ratio, Zero, Variable, Scale, Slope, Angle, Chance);
+   the finale is The Great Clock.
+2. **Coverage.** Pro ships as "the major work of grades 6-8", not all of it. The known gaps (circles 7.G.B.4,
+   cylinders, cones and spheres 8.G.C.9, exponent rules and scientific notation 8.EE.A, irrational numbers 8.NS) are
+   listed honestly on the teacher page when the tier opens. All 19 uncited statements are recorded now in
+   `standards.json` `proCoverage`, so that copy is generated from data.
+3. **Percent contexts.** Games use neutral contexts (recipes, maps, sports statistics, science data). At most one or
+   two tax or discount items, in step 4.3's lesson check only. No interest or commission anywhere. Kids are never
+   sold to.
+4. **Entering Pro.** A learner must be at rung 5.5 or above in every strand; otherwise the Explorer finale door, as
+   today.
+5. **Functions.** Step 5.2 claims 8.F.B.4, with 8.F.A.1 and 8.F.A.3 as also-covers, and nothing else in 8.F. This
+   replaces the spec's rule that Number Quest "bridges it, never claims it" (section 2.5 note 10); the registry's note
+   and `correctionsToSpec` say so.
+6. **Read-aloud is on by default in Pro games** (the standing rule: every game has the AI voiceover by default),
+   with the usual replay button.
+7. **The finale is a fourth chapter of the Unit 7 game**, as in Launchpad.
+
+What the build decided, and why:
+
+- **Planned units.** The seven units and their 22 steps are in `units.json` now, with their final numbers, titles,
+  gears, step `order` numbers and CCSS-M codes, each marked `planned: true`. Launchpad never had this: its units were
+  added one after another, each with its decks, which is why they could not be built in parallel. A planned unit is
+  not in the tier for the engine (`unitsOf` and `stepsOf` leave it out), so it has no step, door, start node, test-out
+  or standards tag for anyone, and nothing downstream had to learn a new state. Only the admin's preview lists the
+  planned units. A tier with a planned unit is never open. Building a unit is deleting the flag in the change that
+  brings its decks, bank and game; the README lists exactly what that change touches.
+- **The lock.** The grade 6-8 cluster headings moved from `deferredClusters` to `clusters` (one heading, 8.EE.A, was
+  corrected to the published text). `proCodes` holds the 69 statements, each with the published wording, checked
+  against `server/standards/ccss-math.json`.
+- **The Sorting Game's rungs 6.0-8.0 were rebuilt, because they were already being served.** The 72 templates there
+  had no cluster code, 15 named grade and domain pairs that do not exist, and most were earlier grades' work with
+  bigger numbers. 63 were retired (kept findable by id so an item already on a screen still grades), 9 sound ones
+  kept with their real cluster, and 77 written from 73 new generators (slope, the Pythagorean theorem, moves on the
+  plane, surface area, dividing by a fraction, negative numbers, proportionality, box plots, scatter plots,
+  probability). A test solves every generated item independently from its prompt and demands exactly one correct
+  choice. Nothing below rung 6 changed: the 180 templates there and every item they deal are pinned by hash, and so
+  is where every possible set of placed rungs starts.
+- **Placement is recorded and inert.** The Pro starting line (`PRO_LINE`, 5.5) and the seven entry profiles are in
+  `placement.json`. While Pro is building they change no start: placement only lands on an open street, and a planned
+  unit's profile cannot be asked for. Existing learners are never moved, now or when the tier opens.
+- **Maths in text.** Pro decks print the real signs (a true minus sign, ², √, ×) whatever the author typed, and
+  read-aloud says them in words ("negative 3", "x squared"). Only Pro text and rung 6.0-8.0 prompts pass through
+  this; every line a learner hears on the two open streets is what it was.
+- **Pro deck limits** are their own (up to four sentences of 28 words a slide, grade 9 reading or under), held by a
+  test for every file in `course/pro/`.
+- **Copy.** Nothing learner-facing mentions Pro. The teacher page's placement matrix and explainer now take the third
+  street from the data, so opening Pro is a data change; today's pages are byte for byte what they were for anyone who
+  is not the admin.
+
+Known and left alone: the teacher page's lock note still says the Pro tier "is specced but not built yet, and its
+codes are not cited here until its own lock lands". The lock has landed; the codes are still not cited there, and the
+sentence changes with the rest of the course copy when the tier opens. The locale copy ("two streets", "kindergarten
+to grade 5") is likewise the opening's work.
+
 ## Oomba3D 1.2.0: animals, and a saved game keeps its own Oomba3D (14 Nov 2026)
 
 The owner uploaded animal packs (`docs/kit2-packs-plan.md`). This is the plan's "long pole": the library that can show

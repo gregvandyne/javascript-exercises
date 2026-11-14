@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 167, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck)');
-  assert.equal(steps, 389, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck)');
+  assert.equal(slides, 169, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck');
+  assert.equal(steps, 394, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -514,14 +514,23 @@ const REGISTRY = [
   ['launchpad-7.4', 3, 1, [43.72, 25.1, 81.38, 60.44], [42.7, 23.5, 39.7, 38.5]],
   ['launchpad-7.4', 4, 0, [23.97, 38.4, 36.14, 96.6], [23.0, 36.8, 14.1, 61.4]],
   ['launchpad-7.4', 4, 1, [64.09, 45.16, 75.86, 96.6], [63.1, 43.6, 13.8, 54.6]],
+  // The Pro welcome, Welcome to the Towers (2026-11-14): the first two drawings of the Pro diagram pack in a deck, a double
+  // number line (2 : 3 scaled; its pairs "2 over 3" and "4 over 6", and the "?" under 8) and an upright number line drawn as
+  // a thermometer (the +8° hop from −5, and the point at 3°C). Measured with getBoundingClientRect on the rendered step
+  // page at 390 px (and 1280): each target is the union of the drawn elements its box wraps.
+  ['pro-0.1', 2, 0, [29.26, 25.74, 31.8, 81.24], [28.2, 24.2, 4.7, 58.6]],
+  ['pro-0.1', 2, 1, [47.62, 25.74, 50.45, 81.24], [46.6, 24.2, 4.9, 58.6]],
+  ['pro-0.1', 2, 2, [82.45, 70.76, 89.44, 82.13], [81.7, 69.3, 8.6, 14.2]],
+  ['pro-0.1', 3, 0, [60.79, 37.42, 70.15, 62.49], [59.6, 35.6, 12, 28.4]],
+  ['pro-0.1', 3, 1, [44.6, 32.63, 56.64, 42.45], [43.6, 31.1, 14.1, 12.9]],
 ];
-test('every authored box contains its measured target with a small margin (389-step registry)', () => {
+test('every authored box contains its measured target with a small margin (394-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 389);
+  assert.equal(REGISTRY.length, 394);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -539,7 +548,7 @@ test('every authored box contains its measured target with a small margin (389-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 389);
+  assert.equal(total, 394);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at
