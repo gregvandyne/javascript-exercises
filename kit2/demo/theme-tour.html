@@ -1,6 +1,6 @@
 <title>Theme tour</title>
-<!-- One scene for any Kit 2 theme, laid out from its own catalogue: its ground, every hero (cheering, waving…) and a
-     spread of its props. Used for each theme's cover picture and by tests/unit/kit2-worlds.test.js, which plays it in
+<!-- One scene for any Kit 2 theme, laid out from its own catalogue: its ground, every hero (cheering, waving…), its
+     animals if it has any, and a spread of its props. Used for each theme's cover picture and by tests/unit/kit2-worlds.test.js, which plays it in
      the real game frame for every theme. The test fills in the import map and the theme on the marker lines below. -->
 <!-- KIT2_IMPORT_MAP -->
 <style>html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; }</style>
@@ -26,6 +26,11 @@ const n = T.heroes.length;
 const heroes = await Promise.all(T.heroes.map((h, i) => g.hero(h.id, { x: (i - (n - 1) / 2) * 1.9, y: 0, z: 2 - Math.abs(i - (n - 1) / 2) * 0.35 })));
 heroes.forEach((h, i) => h.play(moves[i % moves.length]));
 
+// The theme's animals (Oomba3D 1.2.0, for themes that have any) in a row in front of the heroes, eating or standing.
+const zoo = T.creatures || [];
+const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, { x: (i - (zoo.length - 1) / 2) * 2.5, y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 }))) : [];
+animals.forEach((a, i) => a.play(a.moves.includes('eat') && i % 2 ? 'eat' : 'idle'));
+
 // A spread of the theme's other pieces behind them: big ones far back, small ones nearer.
 // (In a sea theme, ships and boats, tagged 'afloat', go out on the water round the ground, biggest furthest back; other
 // islands stand in the sea in front; and the big pieces get a third row and more room.)
@@ -47,6 +52,6 @@ for (const [i, p] of rest.entries()) {
 }
 await Promise.all(placed);
 g.camera.position.set(0, 4.2, 12.5); g.camera.lookAt(0, 1.6, -2);
-window.__tour = { heroes: heroes.length, pieces: rest.length + afloat.length + islets.length + 1, g };
+window.__tour = { heroes: heroes.length, creatures: animals.length, pieces: rest.length + afloat.length + islets.length + 1, g };
 window.__ready = true;
 </script>

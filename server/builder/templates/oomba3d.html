@@ -11,7 +11,7 @@
   "three": "/vendor/three/0.185.1/three.module.min.js",
   "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
   "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
-  "oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"
+  "oomba3d": "/vendor/kit2/oomba3d/1.2.0/oomba3d.js"
  },
  "integrity": {
   "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
@@ -35,7 +35,7 @@
   "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
   "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
   "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
-  "/vendor/kit2/oomba3d/1.1.0/oomba3d.js": "sha384-qlle91fvPUmtVUbNenduw1SFbOyT5911T8KsVxb3Dl2b7qmqChvJ3Zh8yoxe9brH",
+  "/vendor/kit2/oomba3d/1.2.0/oomba3d.js": "sha384-ltHvhMM3qs7Hg8yrTCMKv3MBsY7QO3iMiXAf5rKSB17QJbVzVuZN73OAhjCIAk4T",
   "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
  }
 }
@@ -69,6 +69,7 @@ const CONFIG = {
   world: 'sky-islands',
   version: '1.0.1',
   hero: 'knight',
+  companion: '',
   outfit: '',
   time: 'day',
   weather: 'clear',
@@ -77,8 +78,10 @@ const CONFIG = {
   bonus: 5,
 };
 // world + version: one of the ready-made worlds and its exact shipped version (always change both together).
-// hero: one of that world's heroes. outfit: a colour for the hero's cape ('' keeps its own, or 'gold', '#66C792').
-// time: 'morning' | 'day' | 'sunset' | 'night'. weather: 'clear' | 'snow' | 'rain' | 'sparkles' | 'leaves'.
+// hero: one of that world's heroes, or one of its playable animals. companion: an animal of that world that follows
+// the hero ('' for none; only worlds that list creatures have any). outfit: a colour for the hero's cape ('' keeps its
+// own, or 'gold', '#66C792'; animals have none).
+// time: 'morning' | 'day' | 'sunset' | 'night'. weather: 'clear' | 'snow' | 'rain' | 'sparkles' | 'leaves' | 'bubbles'.
 // steps: stones to hop along before each question. coinValue / bonus: points for a coin / for a right answer.
 
 // ---- QUESTIONS: one gate per question, in order. Answers are numbers or short words (up to about 6 letters). ------
@@ -125,11 +128,11 @@ if ((window.BRB && BRB.user && BRB.user.dir) === 'rtl') for (const el of documen
 
 // ---- The round's state, and the platform's test hook (state() and start(): the playtest and the cover picture use
 // them; a start() that comes while the world is still loading starts the round as soon as it is ready) ------------------
-let scene = 'loading', g = null, me = null, answered = 0, coinsGot = 0, taken = [], controlsOn = false, startWhenReady = false;
+let scene = 'loading', g = null, me = null, friend = null, answered = 0, coinsGot = 0, taken = [], controlsOn = false, startWhenReady = false;
 const spots = { coins: [], gates: [], checkpoints: [], goal: [0, 0, 0], spawn: [0, 0, 1] };
 const gates = [];      // one per question: { q, pads: [{ solid, sprite, answer }], done }
 window.__brbTest = {
-  state: () => ({ scene, score: g ? g.score() : 0, coins: coinsGot, coinsTotal: spots.coins.length, answered, questions: QUESTIONS.length, world: CONFIG.world, heroId: CONFIG.hero, hero: me ? { x: me.position.x, y: me.position.y, z: me.position.z } : null }),
+  state: () => ({ scene, score: g ? g.score() : 0, coins: coinsGot, coinsTotal: spots.coins.length, answered, questions: QUESTIONS.length, world: CONFIG.world, heroId: CONFIG.hero, companion: friend ? { id: friend.id, x: friend.position.x, y: friend.position.y, z: friend.position.z } : null, hero: me ? { x: me.position.x, y: me.position.y, z: me.position.z } : null }),
   start: () => { if (scene === 'loading') startWhenReady = true; else if (scene === 'title' || scene === 'win') play(); },
   spots: () => ({ ...spots, gate: spots.gates[Math.min(answered, spots.gates.length - 1)], pads: gates.map(gt => gt.pads.map(p => ({ answer: p.answer, right: p.answer === gt.q.correct, at: [p.sprite.position.x, p.solid.top() + 2, p.sprite.position.z] }))) }),
   put: (x, y, z) => { me.position.set(x, y, z); },
@@ -275,6 +278,8 @@ function play() {
 await buildWorld();
 me = await g.hero(CONFIG.hero, { x: spots.spawn[0], y: spots.spawn[1], z: spots.spawn[2], ...(CONFIG.outfit ? { outfit: CONFIG.outfit } : {}) });
 me.play('wave');
+// The animal friend: it trails the hero, floats over the gaps with them and never gets in the way.
+if (CONFIG.companion) { friend = await g.creature(CONFIG.companion, { x: spots.spawn[0] + 2.2, y: spots.spawn[1], z: spots.spawn[2] + 1.2 }); friend.followHero(me); }
 g.coins(spots.coins, { value: CONFIG.coinValue, onCollect: c => { taken.push(c); coinsGot++; } });
 g.camera.position.set(0, 3.6, 10.5); g.camera.lookAt(0, 3.6, -6);
 // A kind fall: back to the last safe place passed, never to the very start.

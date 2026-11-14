@@ -74,7 +74,9 @@ export const KIT2_PATH = '/vendor/kit2/';
 export const THEMES_PATH = '/vendor/themes/';
 export const KIT2_ADDONS_DIR = `${KIT2_PATH}three-addons/${THREE_VERSION}/`;
 // Oomba3D, the Kit 2 game library (docs/kit2-api.md): imported as 'oomba3d' through the Kit 2 import map.
-export const OOMBA3D_VERSION = '1.1.0';
+// OOMBA3D_VERSION is what a NEW game gets. A saved game keeps the version its own import map names: every shipped
+// version stays on disk unchanged (kit2/SHIPPED.json) and the scanner accepts the import map of each (kit2ImportMap(v)).
+export const OOMBA3D_VERSION = '1.2.0';
 export const RAPIER_VERSION = '0.21.0';
 export const RAPIER_MODULE = `${KIT2_PATH}rapier/${RAPIER_VERSION}/rapier.mjs`;
 export const OOMBA3D_MODULE = `${KIT2_PATH}oomba3d/${OOMBA3D_VERSION}/oomba3d.js`;
@@ -85,19 +87,36 @@ const KIT2_LOCK_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 export const KIT2_LOCK = (() => { try { return JSON.parse(fs.readFileSync(KIT2_LOCK_FILE, 'utf8')); } catch { return { engines: {}, themes: {} }; } })();
 const kit2Sri = url => KIT2_LOCK.engines[url.slice(KIT2_PATH.length)];
 export const PHASER_SRI = kit2Sri(PHASER_SCRIPT);
-/** The one import map a Kit 2 3D game may use (every add-on file, Rapier and Oomba3D listed with its integrity). */
-export const KIT2_IMPORT_MAP = (() => {
+/** Every shipped Oomba3D version, oldest first (read from the lock: a version exists when its file is locked). */
+export const OOMBA3D_VERSIONS = Object.keys(KIT2_LOCK.engines).map(rel => (/^oomba3d\/(\d+\.\d+\.\d+)\/oomba3d\.js$/.exec(rel) || [])[1]).filter(Boolean)
+  .sort((a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); return x[0] - y[0] || x[1] - y[1] || x[2] - y[2]; });
+const oomba3dModule = version => `${KIT2_PATH}oomba3d/${version}/oomba3d.js`;
+/** The import map for one Oomba3D version (every add-on file, Rapier and that Oomba3D listed with its integrity). */
+const mapFor = version => {
   const integrity = { [THREE_MODULE]: THREE_SRI[THREE_MODULE], [THREE_CORE]: THREE_SRI[THREE_CORE] };
   const addons = KIT2_ADDONS_DIR.slice(KIT2_PATH.length);
   for (const [rel, sri] of Object.entries(KIT2_LOCK.engines)) if (rel.startsWith(addons) && rel.endsWith('.js')) integrity[KIT2_PATH + rel] = sri;
-  for (const m of [OOMBA3D_MODULE, RAPIER_MODULE]) if (kit2Sri(m)) integrity[m] = kit2Sri(m);
-  return { imports: { three: THREE_MODULE, 'three/addons/': KIT2_ADDONS_DIR, '@dimforge/rapier3d-compat': RAPIER_MODULE, oomba3d: OOMBA3D_MODULE }, integrity };
-})();
-export const kit2ImportMap = () => `<script type="importmap">\n${JSON.stringify(KIT2_IMPORT_MAP, null, 1)}\n</script>`;
+  for (const m of [oomba3dModule(version), RAPIER_MODULE]) if (kit2Sri(m)) integrity[m] = kit2Sri(m);
+  return { imports: { three: THREE_MODULE, 'three/addons/': KIT2_ADDONS_DIR, '@dimforge/rapier3d-compat': RAPIER_MODULE, oomba3d: oomba3dModule(version) }, integrity };
+};
+/** The import map a new Kit 2 3D game gets (Oomba3D OOMBA3D_VERSION). */
+export const KIT2_IMPORT_MAP = mapFor(OOMBA3D_VERSION);
+/** The import maps a Kit 2 3D game may carry: one per shipped Oomba3D version, { version: map }. */
+export const KIT2_IMPORT_MAPS = Object.fromEntries([...new Set([...OOMBA3D_VERSIONS, OOMBA3D_VERSION])].map(v => [v, mapFor(v)]));
+/** The literal import map: the newest Oomba3D for a new game, or the one a saved game pinned (kit2ImportMap('1.1.0')). */
+export const kit2ImportMap = (version = OOMBA3D_VERSION) => {
+  if (!KIT2_IMPORT_MAPS[version]) throw new Error(`Oomba3D ${version} has not shipped`);
+  return `<script type="importmap">\n${JSON.stringify(KIT2_IMPORT_MAPS[version], null, 1)}\n</script>`;
+};
+/** The Oomba3D version a game's import map pins ('' when it carries none, or one that names no shipped version). */
+export function oomba3dVersionOf(html) {
+  const m = /["']oomba3d["']\s*:\s*["']\/vendor\/kit2\/oomba3d\/(\d+\.\d+\.\d+)\/oomba3d\.js["']/.exec(String(html || ''));
+  return m && KIT2_IMPORT_MAPS[m[1]] ? m[1] : '';
+}
 /** The one tag a Kit 2 2D game loads Phaser with. */
 export const phaserTag = () => `<script src="${PHASER_SCRIPT}" integrity="${PHASER_SRI}" crossorigin="anonymous"></script>`;
 const sameKeys = (a, b) => a && b && typeof a === 'object' && !Array.isArray(a) && Object.keys(a).length === Object.keys(b).length && Object.keys(b).every(k => a[k] === b[k]);
-const isKit2Map = m => !!m && typeof m === 'object' && Object.keys(m).sort().join(',') === 'imports,integrity' && sameKeys(m.imports, KIT2_IMPORT_MAP.imports) && sameKeys(m.integrity, KIT2_IMPORT_MAP.integrity);
+const isKit2Map = m => !!m && typeof m === 'object' && Object.keys(m).sort().join(',') === 'imports,integrity' && Object.values(KIT2_IMPORT_MAPS).some(k => sameKeys(m.imports, k.imports) && sameKeys(m.integrity, k.integrity));
 const PHASER_TAG_RE = /<script\b([^>]*)>\s*<\/script\s*>/gi;
 const attr = (attrs, name) => { const m = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i').exec(attrs); return m ? (m[1] ?? m[2] ?? m[3]) : null; };
 const THEME_REF_RE = /\/vendor\/themes\/([^\s"'`)<>]*)/g;

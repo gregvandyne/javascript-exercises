@@ -1489,7 +1489,7 @@
   "studio.picker.heroes": "Tab in the Studio picker: the animated 3D characters. Short (one or two words).",
   "studio.picker.classic": "Tab in the Studio picker: the older 2D kit themes (studio.themes.names.*). One word.",
   "studio.worlds.names.sky-islands": "The names of the 3D worlds (studio.worlds.names.*): a made-up place name of two or three words, the same everywhere on the site. The Builder recognises a world by this name, so keep it distinctive (not one everyday word).",
-  "studio.heroes.names.knight": "The names of the 3D characters (studio.heroes.names.*). Skelly, Rattles, Bonzo and Captain Clank are friendly cartoon skeletons with made-up names: keep or transliterate them.",
+  "studio.heroes.names.knight": "The names of the 3D characters (studio.heroes.names.*). Skelly, Rattles, Bonzo and Captain Clank are friendly cartoon skeletons with made-up names: keep or transliterate them. The animals (donkey, cow, husky, pig, sheep, horse, deer, stag, fox, shiba) are the everyday word for that animal, as a small child would say it; deer and stag need two different words.",
   "js.studio.worldUse": "Put into the kid's message to the Builder when they tap a 3D world chip in the Studio. {name} is the world's name (studio.worlds.names.*). Short, like the kid would say it; keep \"3D\".",
   "js.studio.heroUse": "Put into the kid's message to the Builder when they tap a 3D hero chip in the Studio. {name} is the character's name (studio.heroes.names.*). Short, like the kid would say it; keep \"3D\".",
   "build.worlds": "Heading on the Build page over the cards that start a new game in one of the ready-made 3D worlds.",
