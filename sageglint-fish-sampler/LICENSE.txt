@@ -1,0 +1,23 @@
+Free Fish Sampler - LICENSE
+Version 1.1, 2026-10-25. Licensor: the creator of the itch.io page you downloaded this pack from.
+
+DRAFT FOR OWNER AND LAWYER REVIEW. THIS IS NOT LEGAL ADVICE.
+
+1. What you may do
+ - Use the files in this pack (models, textures) in your own games and apps, free or commercial, on any platform, including Roblox experiences you publish.
+ - Modify the models and textures for your own use (recolour, rescale, re-rig, merge, edit).
+ - Use the files in a team project. Each person who works with the raw files needs their own copy of the pack; passing on only the finished game is fine.
+
+2. What you may not do
+ - Resell, redistribute, sublicense or share the raw files from this pack (original or modified) as stand-alone files, as part of another asset pack, template or kit, or as a listing on any marketplace (free or paid), including the Roblox Creator Store as a model or mesh that others can take.
+ - Claim you made the original models.
+ - Use the files to train a machine-learning model.
+
+3. Credit
+ Credit is appreciated and not required: a link to the itch.io page you downloaded the pack from.
+
+4. No warranty
+ The files are provided as is, without warranty of any kind. The licensor is not liable for any damages from their use. Test the files in your own engine before you ship.
+
+5. Ownership
+ The licensor keeps all rights not granted here. Downloading the pack grants a license; it does not transfer ownership.
