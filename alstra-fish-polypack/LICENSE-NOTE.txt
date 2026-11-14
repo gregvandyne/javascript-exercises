@@ -1,0 +1,22 @@
+Fish - PolyPack Asset by ALSTRA INFINITE
+Source: https://alstrainfinite.itch.io/fish
+Staged 2026-11-14 from the free downloads on that page.
+
+License as stated on the page (no license file was included in the
+downloads). Free Asset License (FAL):
+"Free to use in commercial and non-commercial projects with credit.
+Reselling or redistribution is not allowed."
+Full license: https://alstrainfinite.com (linked from the page as
+"The Full License").
+
+This is NOT a CC0 pack. Credit to ALSTRA INFINITE is required when
+the assets are used, and reselling or redistribution is not allowed.
+Greg approved adding this pack on 2026-11-14 knowing of that bar,
+the same class of restriction as the reodesuxz packs already on the
+branch.
+
+Note: the five FBX files reference a texture as "PolyPackFish.png"
+(the author's local filename). The texture shipped with the pack is
+Texture.png (256x256, same file, 48 kB per the page); it is staged
+here as Textures/Texture.png and may need renaming to
+PolyPackFish.png at build time so the FBX files link to it.
