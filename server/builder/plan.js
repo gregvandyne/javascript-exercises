@@ -16,7 +16,8 @@ import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
 import { tEn } from '../i18n/index.js';
 
 export const PLAN_VERSION = 1;
-export const LIMITS = { idea: 80, notes: 300, characters: 6, learn: 5 };
+// characters: as many as they like ("Select all" on every group picks everyone there is), with room to grow.
+export const LIMITS = { idea: 80, notes: 300, characters: 80, learn: 5 };
 /** The game types the steps offer. template: the Builder's ready-made starter for it (builder/catalog.js), when it has
  *  one; flat: a kind that is only made in 2D (cards, a board, words, two players, catching). */
 const TYPES = [['adventure', '', false], ['runner', 'runner', false], ['catch', 'catch', true], ['quiz', 'quiz', true], ['memory', 'memory', true], ['word', 'word', true], ['duel', 'duel', true], ['board', 'board', true]];
@@ -70,7 +71,7 @@ const choice = (v, ids) => {
 export function normalisePlan(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const characters = [], seen = new Set();
-  for (const c of Array.isArray(raw.characters) ? raw.characters.slice(0, 40) : []) {
+  for (const c of Array.isArray(raw.characters) ? raw.characters.slice(0, 200) : []) {
     const v = choice(c, CHARACTER_IDS); if (!v) continue;
     const key = v.from === 'pack' ? v.id : '*custom'; if (seen.has(key) || characters.length >= LIMITS.characters) continue;
     seen.add(key); characters.push(v);
@@ -132,8 +133,8 @@ function homeOf(chars) {
  *   { engine: 'world3d' }   a 3D world of their own with no pack character: the Builder's own 3D starter
  *   { engine: '2d', template, art, extra, plain }   the Oomba Kit (2D picked, a kind only made in 2D, or a character
  *       that is only a 2D sprite, and no 3D picked). art: { world, sprite } when the kind of game draws the 2D art (a
- *       running or catching game: template): the world in 2D and ONE sprite character; extra: pack characters that
- *       cannot be drawn too; plain: a world or character was picked but this kind of game does not draw them yet
+ *       running or catching game: template): the world in 2D, the sprite the player is (the first picked) and the
+ *       friends who are in the game too (the other sprites picked); extra: pack characters that have no sprite; plain: a world or character was picked but this kind of game does not draw them yet
  *   { engine: 'scratch' }   "you pick" with a world of their own: the Builder decides 2D or its own 3D, never a pack world
  *   { engine: 'open' }      nothing here decides: the message is read as any typed message is today
  */
@@ -142,11 +143,13 @@ export function planEngine(plan) {
   const chars = picked.map(characterById).filter(Boolean), only2d = picked.filter(id => !characterById(id));
   const type = plan.type && plan.type.from === 'pack' ? GAME_TYPES.find(x => x.id === plan.type.id) : null;
   const packWorld = plan.world && plan.world.from === 'pack' ? plan.world.id : '', customWorld = !!plan.world && plan.world.from === 'custom';
-  // 2D: the world's own 2D art and ONE sprite character, in the kinds of game that draw them (running, catching).
+  // 2D: the world's own 2D art and the sprite characters, in the kinds of game that draw them (running, catching):
+  // the first one picked is the player, the others are friends who are in the game too.
   const flatGame = () => {
     const template = art2dTemplateFor(plan.type), sprites = picked.filter(id => art2dCharacter(id));
     const world = template && ART2D_WORLD_IDS.includes(packWorld) ? packWorld : '', sprite = template ? sprites[0] || '' : '';
-    return { engine: '2d', template, art: world || sprite ? { world, sprite } : null, extra: picked.filter(id => id !== sprite), plain: !template && (!!packWorld || picked.length > 0) };
+    const friends = template ? sprites.slice(1) : [];
+    return { engine: '2d', template, art: world || sprite ? { world, sprite, friends } : null, extra: picked.filter(id => id !== sprite && !friends.includes(id)), plain: !template && (!!packWorld || picked.length > 0) };
   };
   if (plan.look === '2d') return flatGame();
   if (plan.look !== '3d') {
@@ -187,14 +190,16 @@ export function engineFor(state, plan, text, version) {
 
 /**
  * The 2D art for this round of a plan's build (the same answer wantsArt2d gives for a typed message):
- * { world, hero, by } or null. The plan's 2D world and its one sprite character, for a running or catching game.
+ * { world, hero, friends?, by } or null. The plan's 2D world, the sprite the player is and the friends who are in the
+ * game too, for a running or catching game.
  */
 export function art2dFor(state, plan, version) {
   if (version) return isArt2dGame(version.html) ? wantsArt2d(state, '', version, {}) : null;
   const e = planEngine(plan);
   if (e.engine !== '2d' || !e.art) { if (state) delete state.art2d; return null; }
-  if (state) state.art2d = { world: e.art.world, hero: e.art.sprite };
-  return { world: e.art.world, hero: e.art.sprite, by: 'plan', missing: false, force2d: false, soft: false, changed: false };
+  const friends = e.art.friends.length ? { friends: e.art.friends } : {};
+  if (state) state.art2d = { world: e.art.world, hero: e.art.sprite, ...friends };
+  return { world: e.art.world, hero: e.art.sprite, ...friends, by: 'plan', missing: false, force2d: false, soft: false, changed: false };
 }
 
 // ---- What the model reads ------------------------------------------------------------------------------------------
@@ -248,9 +253,10 @@ export function planNote(plan) {
     how.push('Build it as a 3D world of their own: start_from_template "world3d" and build the place from scratch (the 3D RULES). It is not one of the ready-made worlds: never start from "oomba3d" for it.');
   } else if (e.engine === '2d') {
     if (e.art) {
-      how.push(`Build it in 2D on the Oomba Kit with the 2D art: start_from_template ${q(e.template)}${e.art.world ? ` with world ${q(e.art.world)}` : ''}${e.art.sprite ? `${e.art.world ? ' and' : ' with'} sprite ${q(e.art.sprite)}` : ''} (the 2D ART RULES), then make it theirs. Never start from "oomba3d" or "world3d" in this build.`);
+      how.push(`Build it in 2D on the Oomba Kit with the 2D art: start_from_template ${q(e.template)}${e.art.world ? ` with world ${q(e.art.world)}` : ''}${e.art.sprite ? `${e.art.world ? ' and' : ' with'} sprite ${q(e.art.sprite)}` : ''}${e.art.friends.length ? ` and friends ${JSON.stringify(e.art.friends)}` : ''} (the 2D ART RULES), then make it theirs. Never start from "oomba3d" or "world3d" in this build.`);
+      if (e.art.friends.length) how.push(`They picked ${e.art.friends.length + 1} characters for a 2D game: ${who(e.art.sprite)} (the first one picked) is the player, and the others are friends who are IN the game too (CONFIG.friends2d: in a running game they stand along the way and hop as the player runs by, in a catching game they watch from the sides; up to four are drawn at once and the rest take turns). Keep every one of them in friends2d; they are never obstacles or enemies. Tell the builder in one short sentence who they play as and that the others are in the game as friends.`);
       if (!e.art.world && w && w.from === 'pack') how.push(`There is no 2D art of ${q(w.id)} yet: keep the kit's own look and say so in one short sentence.`);
-      if (e.extra.length) how.push(`A 2D game draws ONE sprite character (the hero) for now: ${who(e.art.sprite || e.extra[0])} plays, and ${e.extra.filter(id => id !== e.art.sprite).map(who).join(', ') || 'no other'} cannot be drawn too. Say so kindly in one short sentence; never draw one from shapes or emoji.`);
+      if (e.extra.length) how.push(`${e.extra.map(who).join(', ')} ${e.extra.length > 1 ? 'have' : 'has'} no 2D sprite yet and cannot be drawn in a 2D game: say so kindly in one short sentence; never draw one from shapes or emoji.`);
     } else {
       how.push(`Build it in 2D on the Oomba Kit, exactly as a 2D game is built today${type && type.template ? ` (start_from_template ${q(type.template)})` : ''}. Never start from "oomba3d" or "world3d" in this build.`);
       if (e.plain) how.push(`Only running and catching games draw the ready-made worlds and sprite characters in 2D so far: this kind of game keeps the kit's own look. Use ${w && w.from === 'pack' ? `the world ${q(w.id)} ` : ''}${w && w.from === 'pack' && picked(plan).length ? 'and ' : ''}${picked(plan).length ? 'the characters ' : ''}as the game's idea (its name, questions and words), keep ${w && w.from === 'pack' ? `the id ${q(w.id)}` : 'their ids'} in the game's tags (set_game), and say in one short, kind sentence that this kind of game does not draw them yet.`);

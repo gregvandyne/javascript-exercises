@@ -1,6 +1,6 @@
 // Pictures of 2D games that draw the 2D art packs, played in the real game frame (frameDocument + the frame CSP + the
 // sandbox) in Chromium: for looking at the art in play (seams, feet on the ground, sprite size on a phone).
-//   node scripts/art2d-shots.js <out-dir> runner:pirate-cove:fox catch:castle-quest:knight ... [--sizes 960x600,390x844] [--wait 2500] [--title] [--backend glaze] [--sheet all.png] [--max 2900]
+//   node scripts/art2d-shots.js <out-dir> runner:pirate-cove:fox catch:castle-quest:knight runner:wild-woods:fox:zebra+knight ... [--sizes 960x600,390x844] [--wait 2500] [--title] [--backend glaze] [--sheet all.png] [--max 2900]
 // Each game is started with its test hook (window.__brbTest.start()) unless --title; one PNG per game and size.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,8 +23,8 @@ fs.mkdirSync(outDir, { recursive: true });
 const browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const made = [];
 for (const g of games) {
-  const [key, world = '', hero = ''] = g.split(':');
-  const html = loadTemplate(key, { world, hero });
+  const [key, world = '', hero = '', pals = ''] = g.split(':'), friends = pals ? pals.split('+') : [];   // runner:castle-quest:fox:zebra+knight (friends)
+  const html = loadTemplate(key, { world, hero, friends });
   for (const [w, h] of sizes) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: w < 500 ? 2 : 1, hasTouch: w < 500, isMobile: w < 500 });
     const doc = frameDocument(html, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: 'K' }, save: {}, canSave: false });
@@ -46,7 +46,7 @@ for (const g of games) {
     if (!title) await frame.waitForFunction(() => { const T = window.__brbTest, s = T.state().scene; if (s !== 'play' && T.start) T.start(); return s === 'play'; }, null, { timeout: 30_000, polling: 500 }).catch(() => errors.push('never reached play'));
     await p.waitForTimeout(wait);
     const stats = await frame.evaluate(() => (window.Oomba2D ? window.Oomba2D.stats : null)).catch(() => null);
-    const file = path.join(outDir, `${key}-${world || 'classic'}-${hero || 'kit'}-${w}x${h}.png`);
+    const file = path.join(outDir, `${key}-${world || 'classic'}-${hero || 'kit'}${friends.length ? `-with-${friends.length}` : ''}-${w}x${h}.png`);
     await p.screenshot({ path: file }); made.push({ file, w, h, label: `${key} · ${world || 'classic'} · ${hero || 'kit hero'}` });
     console.log(file, JSON.stringify(stats), errors.slice(0, 4).join(' | '));
     await ctx.close();

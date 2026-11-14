@@ -133,5 +133,12 @@
   "chars.soon3d": "בקרוב ב־3D",
   "client.chars.only2d": "בינתיים רק במשחקי 2D",
   "client.chars.only3d": "בינתיים רק במשחקי 3D",
-  "client.chars.one2d": "בינתיים דמות אחת במשחק 2D"
+  "client.chars.youPlay": "זו הדמות שמשחקים בה",
+  "client.all.select": "לבחור הכול",
+  "client.all.clear": "לנקות הכול",
+  "client.all.selectLabel": "לבחור הכול: {name}",
+  "client.all.clearLabel": "לנקות הכול: {name}",
+  "client.all.picked": "{count, plural, one {נבחר אחד} two {נבחרו שניים} other {נבחרו #}}",
+  "client.all.pickedWorld": "נבחרו {count}. כולם חיים בעולם {world}.",
+  "client.all.cleared": "נוקה"
 }

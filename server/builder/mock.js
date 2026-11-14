@@ -120,13 +120,15 @@ async function build(ctx, m) {
   // The 2D art (art2d.js): the running and catching games draw a picked world and a sprite hero or animal.
   const pick = m.art2d || null, art = pick && ART2D_TEMPLATES.includes(kind) && (art2dWorld(pick.world) || art2dCharacter(pick.hero)) ? pick : null;
   const aw = art && art2dWorld(art.world), ac = art && art2dCharacter(art.hero);
-  const { html: base, fallback } = await templateHtml(kind, art ? { world: art.world, hero: art.hero } : undefined);
+  const { html: base, fallback } = await templateHtml(kind, art ? { world: art.world, hero: art.hero, friends: art.friends || [] } : undefined);
+  const pals = art ? (art.friends || []).map(art2dCharacter).filter(c => c && c !== ac) : [];
   const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
   const title = aw && !theme ? `${aw.name} ${kind === 'runner' ? 'Dash' : 'Catch'}` : titleFor(kind, theme);
   const html = personalise(base, title, theme, info.icon);
   if (pick && pick.missing) await say(ctx, 'There is no picture of that animal yet, so one of the game’s own heroes plays for now. ');
   if (pick && !art && art2dWorld(pick.world)) await say(ctx, `The ${art2dWorld(pick.world).name} pictures are for running and catching games so far, so this one keeps the classic look. `);
   if (art) await say(ctx, `${aw ? `It is set in ${aw.name}` : 'It keeps the classic world'}${ac ? `${aw ? ', and' : ', and'} the ${ac.name.toLowerCase()} is your hero` : ''}. `);
+  if (pals.length) await say(ctx, `${pals.length === 1 ? `The ${pals[0].name.toLowerCase()} is` : `${pals.length} friends are`} in the game too, ${kind === 'runner' ? 'along the way' : 'watching from the sides'}${pals.length > 4 ? ' (a few at a time, taking turns)' : ''}. `);
   const learnBit = a.learn && a.learn !== 'none' ? ` It sneaks in some ${a.learn} too.` : '';
   await say(ctx, `Here's my plan for ${title} ${theme ? theme.emoji : info.icon}: ${PLANS[realKind] || PLANS.catch}${learnBit} Building it now…\n\n`);
   tools.exec('set_game', {
@@ -427,7 +429,6 @@ async function buildFromPlan(ctx, m, k2) {
     return buildKit2(ctx, m, k2, say);
   }
   if (e.engine === '2d' && e.plain) await say(ctx, 'Only running and catching games draw our worlds and characters in 2D so far, so this one keeps the classic look. ');
-  if (e.engine === '2d' && e.art && e.extra.length) await say(ctx, 'A 2D game shows one of our characters for now, so I could not add the others. ');
   return build(ctx, m);
 }
 

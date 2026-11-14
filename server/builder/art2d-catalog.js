@@ -3,7 +3,7 @@
 // `node scripts/build-art2d-rules.js`. tests/unit/art2d.test.js checks it.
 // ART2D_WORLDS: the newest version of every 2D world with every sprite a game may name (size in game cells).
 // ART2D_CHARACTERS: every hero and animal that has a sprite sheet (idle, run and jump frames).
-export const ART2D_HELPER = "1.0.0";
+export const ART2D_HELPER = "1.1.0";
 export const ART2D_VERSIONS = {"animals":"1.0.0","busy-kitchen":"1.0.0","castle-quest":"1.0.0","cosy-home":"1.0.0","heroes":"1.0.0","medieval-village":"1.0.0","pirate-cove":"1.0.0","sky-islands":"1.0.0","space-base":"1.0.0","spooky-hollow":"1.0.0","toy-town":"1.0.0","wild-woods":"1.0.0"};
 export const ART2D_WORLDS = [
  {

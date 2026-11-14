@@ -133,5 +133,12 @@
   "chars.soon3d": "In arrivo in 3D",
   "client.chars.only2d": "Per ora solo nei giochi 2D",
   "client.chars.only3d": "Per ora solo nei giochi 3D",
-  "client.chars.one2d": "Per ora un solo personaggio in 2D"
+  "client.chars.youPlay": "Giochi con questo",
+  "client.all.select": "Scegli tutti",
+  "client.all.clear": "Togli tutti",
+  "client.all.selectLabel": "Scegli tutti: {name}",
+  "client.all.clearLabel": "Togli tutti: {name}",
+  "client.all.picked": "{count, plural, one {# scelto} other {# scelti}}",
+  "client.all.pickedWorld": "{count} scelti. Vivono tutti in {world}.",
+  "client.all.cleared": "Tolti"
 }

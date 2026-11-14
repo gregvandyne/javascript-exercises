@@ -133,5 +133,12 @@
   "chars.soon3d": "3D 版即將推出",
   "client.chars.only2d": "目前只有 2D 遊戲有",
   "client.chars.only3d": "目前只有 3D 遊戲有",
-  "client.chars.one2d": "2D 遊戲目前只能選一個角色"
+  "client.chars.youPlay": "你操控這個角色",
+  "client.all.select": "全選",
+  "client.all.clear": "全部取消",
+  "client.all.selectLabel": "全選：{name}",
+  "client.all.clearLabel": "全部取消：{name}",
+  "client.all.picked": "已選 {count} 個",
+  "client.all.pickedWorld": "已選 {count} 個。牠們都住在「{world}」。",
+  "client.all.cleared": "已取消"
 }
