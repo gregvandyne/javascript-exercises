@@ -107,7 +107,10 @@ export function mapAndNotes(req, cat, el) {
     ${el(t, 'p', `${K}.map.p`)}
     <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${locked}</b>${el(t, 'span', `${K}.map.codes`)}</div><div class="csq-stat"><b dir="ltr">${cat.units.reduce((n, u) => n + (u.steps || []).length, 0)}</b>${el(t, 'span', `${K}.map.statSteps`)}</div><div class="csq-stat"><b dir="ltr">${cat.units.filter(u => u.stamp).length}</b>${el(t, 'span', `${K}.map.statUnits`)}</div></div>
     ${mapTable(req, cat)}
-    ${el(t, 'p', `${K}.map.lock`, {}, ' class="small muted"')}</section>
+    ${el(t, 'p', `${K}.map.lock`, {}, ' class="small muted"')}</section>${(cat.planned || []).length ? html`
+  <section class="lp-sec" id="planned" aria-labelledby="planned-h" lang="en" dir="ltr"><h2 id="planned-h">Planned units (admin preview)</h2>
+    <p>These ${cat.planned.length} units are reserved in the catalogue and not built yet: no lesson, check or mission exists for them, and they are not counted above. Only the platform admin sees this section, and only while the street is being built.</p>
+    ${mapTable(req, { ...cat, units: cat.planned })}</section>` : ''}
   <section class="lp-sec" id="notes" aria-labelledby="notes-h">${el(t, 'h2', `${K}.notes.h`, {}, ' id="notes-h"')}
     ${el(t, 'p', `${K}.notes.p`)}
     ${cat.units.map(u => html`<article class="panel"><h3 lang="en" dir="ltr">${unitHead(cat, u, n => t('cs.unit.n', { n }))}</h3>${V.enList(u.teacherNotes)}</article>`)}</section>`;

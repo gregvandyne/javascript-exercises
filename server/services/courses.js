@@ -33,6 +33,7 @@ import { COURSES, courseOfSlug } from './course-catalog.js';
 import { DIAGRAM_TYPES, cleanDiagram } from './diagrams.js';
 import { numberlineOptions } from './diagrams-pro.js';
 import * as NQT from './number-quest-tiers.js';
+import { mathText } from '../../seed-lessons/number-quest/math-text.js';
 export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 
@@ -504,7 +505,9 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
 function loadNumberQuest(items) {
   NQT.reload();
   for (const f of fs.readdirSync(path.join(NQD, 'sets')).filter(f => /^u\d-(launchpad|explorer|pro)\.json$/.test(f))) {
-    for (const it of readJson(path.join(NQD, 'sets', f)).items || []) items.set(it.id, it);
+    // A Pro item's words go through mathText like its deck's (a true minus sign, ², √, ×): see proText below.
+    const pro = f.endsWith('-pro.json');
+    for (const it of readJson(path.join(NQD, 'sets', f)).items || []) items.set(it.id, pro ? proItem(it) : it);
   }
   const reg = NQT.catalogue();
   const registry = readJson(path.join(NQD, 'standards.json'));
@@ -534,16 +537,36 @@ function loadNumberQuest(items) {
 }
 /** Number Quest's teacher-facing catalogue as one viewer may see it: the units of the tiers they may see (the
  *  open ones; a tier still being built only for the platform admin), in path order, each unit carrying its
- *  `tier`; `tiers` lists those tiers with their catalogue line and status; `tier` is Explorer's line. */
+ *  `tier`; `tiers` lists those tiers with their catalogue line and status; `tier` is Explorer's line; `planned`
+ *  lists the units a building tier has reserved but not built (the admin's preview only). */
 function nqCatalogue(nq, user) {
   const seen = NQT.visibleTiers(user);
   return { program: nq.reg.program, units: seen.flatMap(t => NQT.unitsOf(t)), registry: nq.registry, tier: NQT.tierInfo('explorer'),
-    tiers: seen.map(t => ({ key: t, ...(NQT.tierInfo(t) || {}), status: NQT.statusOf(t), name: NQT.tierName(t), units: NQT.unitsOf(t) })) };
+    tiers: seen.map(t => ({ key: t, ...(NQT.tierInfo(t) || {}), status: NQT.statusOf(t), name: NQT.tierName(t), units: NQT.unitsOf(t) })),
+    // Units reserved in the catalogue and not built yet (units.json `planned`): only ever those of a tier that is
+    // still being built, which only the platform admin sees. For everyone else this list is empty.
+    planned: seen.filter(t => !NQT.isOpen(t)).flatMap(t => NQT.plannedUnitsOf(t)) };
 }
+/** Pro (grades 6-8) text is printed with the real signs: a true minus sign, ², ³, √, ×, ÷, ≤, ≥. An author may
+ *  type "-3", "x^2", "sqrt(16)" or "3 x 4"; mathText (seed-lessons/number-quest/math-text.js) prints them properly.
+ *  Applied to what a Pro learner reads in a deck (title, text, the read-aloud line, example chips and rows, word
+ *  meanings, focus cues) and in a check item (question, choices, why). A diagram's own labels are handled by the
+ *  diagram cleaners. The other tiers' text never passes through here. */
+const mt = v => (typeof v === 'string' ? mathText(v) : v);
+function proSlide(x) {
+  const out = { ...x, title: mt(x.title), text: mt(x.text) };
+  if (typeof x.say === 'string') out.say = mt(x.say);
+  if (Array.isArray(x.steps)) out.steps = x.steps.map(c => mt(typeof c === 'number' ? String(c) : c));
+  for (const k of ['rows', 'table']) if (Array.isArray(x[k])) out[k] = x[k].map(r => (Array.isArray(r) ? r.map(c => mt(typeof c === 'number' ? String(c) : c)) : r));
+  if (Array.isArray(x.words)) out.words = x.words.map(w => (w && typeof w === 'object' ? { ...w, means: mt(w.means) } : w));
+  if (Array.isArray(x.focus)) out.focus = x.focus.map(f => (f && typeof f === 'object' ? { ...f, cue: mt(f.cue) } : f));
+  return out;
+}
+const proItem = it => ({ ...it, q: mt(it.q), choices: Array.isArray(it.choices) ? it.choices.map(mt) : it.choices, why: mt(it.why) });
 /** One Number Quest deck, cleaned and checked against its units.json entry (the same rules as fromCyberDeck;
  *  its check items are the step's own bank items, ids "nq-<tier>-<n>-e<k>", each tagged to a locked code). */
 function fromNqDeck(key, s, tier, d, game, items, problems) {
-  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(x => x && typeof x === 'object').map(cleanSlide);
+  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(x => x && typeof x === 'object').map(x => cleanSlide(tier === 'pro' ? proSlide(x) : x));
   const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : [];
   const say = m => problems.push(`${key}: ${m}`);
   if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);

@@ -7,6 +7,7 @@ import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
 import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
 import { diagramAlt, uprightSvg, uprightExtent, raySvg } from './nq-diagrams-pro.js';
+import { sayMath } from '../../seed-lessons/number-quest/math-text.js';
 
 // CS Quest and Cyber Defenders name their bands '1b' (labelled Explorer) and '2' (labelled Pro). Number Quest's
 // bands are its tiers, stored under their own literal keys: 'launchpad', 'explorer' and 'pro' — so 'pro' here is
@@ -646,15 +647,21 @@ function slideArt(t, s) {
     ${gf ? html`${gfStrip(t, s)}${vf ? gfReplay(t) : ''}${gfCues(s)}` : ''}
   </figure>`;
 }
-/** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words). */
-export function sayOf(s) {
-  if (s.say) return s.say;
-  const words = s.words ? s.words.map(w => `${w.word}${w.means ? `: ${w.means}` : ''}.`).join(' ') : '';
-  const steps = s.steps ? s.steps.join(', ') + '.' : '';
-  return [s.title + '.', s.text, steps, words].filter(Boolean).join(' ');
+/** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words).
+ *  `band` names the step's band where it is known. Number Quest's Pro tier ('pro', grades 6-8) writes maths in
+ *  its text (−3, x², √16, 65°, 3/4), which a voice drops or garbles, so its line is said through sayMath
+ *  ("negative 3", "x squared"). Every other band is said exactly as written, as before. */
+export function sayOf(s, band = null) {
+  const line = () => {
+    if (s.say) return s.say;
+    const words = s.words ? s.words.map(w => `${w.word}${w.means ? `: ${w.means}` : ''}.`).join(' ') : '';
+    const steps = s.steps ? s.steps.join(', ') + '.' : '';
+    return [s.title + '.', s.text, steps, words].filter(Boolean).join(' ');
+  };
+  return band === 'pro' ? sayMath(line()) : line();
 }
 function slide(t, s, i, n, step) {
-  return html`<section class="slide slide--${s.kind}" id="slide-${i + 1}" aria-roledescription="slide" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}" data-say="${sayOf(s)}">
+  return html`<section class="slide slide--${s.kind}" id="slide-${i + 1}" aria-roledescription="slide" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}" data-say="${sayOf(s, step && step.band)}">
     ${slideArt(t, s)}
     <div class="slide-body">
       <h2 class="slide-h">${s.title}</h2>

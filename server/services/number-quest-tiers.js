@@ -14,6 +14,13 @@
 // - A tier's `status` (units.json tiers.<tier>.status) is "open" or "building". A building tier is
 //   visible to the platform admin only (who walks the courses with every step open); for everyone else
 //   it does not exist. A tier with units and no status is treated as building, except Explorer.
+// - A unit marked `planned: true` is RESERVED, not built: its number, title, stone, step numbers, `order`
+//   numbers and standards are fixed in the catalogue so later work cannot collide, but it has no decks, no
+//   bank and no game. A planned unit is not in the tier for the engine: unitsOf() and stepsOf() leave it
+//   out, so it has no steps, no doors, no band progress, no placement landing and no standards tags, for
+//   anyone. plannedUnitsOf() lists it, and only the platform admin's preview of a building tier shows it
+//   (marked "planned"). A tier that still has a planned unit is never open, whatever its status line says.
+//   Building a unit is: write its decks, bank and game, fill in its fields, and delete `planned`.
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -38,16 +45,24 @@ export function setCatalogueForTests(catalogueObject) { testReg = catalogueObjec
 export const catalogue = () => registry();
 
 export const tierOfUnit = u => (u && TIERS.includes(u.tier) ? u.tier : DEFAULT_TIER);
-/** A tier's units, in the catalogue's order. */
-export const unitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier) : []);
+/** Is this unit only reserved in the catalogue (declared so nothing collides, not built yet)? */
+export const isPlanned = u => !!u && u.planned === true;
+/** A tier's BUILT units, in the catalogue's order (a planned unit is not in the tier yet: see the rules above). */
+export const unitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier && !isPlanned(u)) : []);
+/** A tier's planned units (reserved, not built), in the catalogue's order: shown to the platform admin only. */
+export const plannedUnitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier && isPlanned(u)) : []);
+/** A planned unit's steps as reserved, in path order: [{ key, n, order, title, standards }]. No step here can be opened. */
+export const plannedStepsOf = unit => [...((unit && unit.steps) || [])].sort((a, b) => a.order - b.order)
+  .map(s => { const tier = tierOfUnit(unit); return { key: `${tier}-${s.n}`, n: s.n, order: s.order, title: ((s.titles || {})[tier]) || s.n, standards: ((s.standards || {})[tier]) || null }; });
 /** A tier's own line in the catalogue (district, grades, inGame, stones, status, finale), or null. */
 export const tierInfo = tier => (TIERS.includes(tier) && (registry().tiers || {})[tier]) || null;
-/** Does the tier have any unit? A tier without units behaves as not existing. */
+/** Does the tier have any built unit? A tier without one behaves as not existing. */
 export const exists = tier => unitsOf(tier).length > 0;
 /** "open" or "building" (see the rules above), or null for a tier that does not exist. */
 export function statusOf(tier) {
   if (!exists(tier)) return null;
   if (overrides.has(tier)) return overrides.get(tier);
+  if (plannedUnitsOf(tier).length) return 'building'; // a tier with a unit still to build is never open
   const s = (tierInfo(tier) || {}).status;
   return STATUSES.includes(s) ? s : (tier === DEFAULT_TIER ? 'open' : 'building');
 }

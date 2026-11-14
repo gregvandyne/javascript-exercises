@@ -21,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { q, uid, now } from '../db.js';
-import { TEMPLATES, generateItem, rngFromSeed } from '../../seed-lessons/number-quest/placement/generator.js';
+import { TEMPLATES, BY_ID, generateItem, rngFromSeed } from '../../seed-lessons/number-quest/placement/generator.js';
 import * as NQ from './number-quest-progress.js';
 import * as T from './number-quest-tiers.js';
 import { onAccountMerge } from './schools.js';
@@ -263,7 +263,9 @@ export function serveNext(state) {
 /** Grade one served item by regenerating it (the key never left the server). Pick items grade by choice
  *  index; every other type grades the typed/shown value against the worked key, numbers numerically. */
 export function gradeServed(templateId, itemSeed, answer) {
-  const template = TEMPLATES.find(t => t.id === templateId);
+  // BY_ID, not the served bank: an item dealt from a template that has since been retired is still graded
+  // by the key it was dealt with (a run in flight when the bank changed loses nothing).
+  const template = BY_ID.get(templateId);
   if (!template) return null;
   const full = generateItem(template, itemSeed);
   let correct = false;
@@ -625,7 +627,7 @@ export function currentSpoken(user, runId) {
   if (!row || row.status !== 'active' || !row.current_item) return null;
   const current = parse(row.current_item, null);
   if (!current || !current.templateId || !current.itemSeed) return null;
-  const template = TEMPLATES.find(t => t.id === current.templateId);
+  const template = BY_ID.get(current.templateId); // served or retired: the item on screen is the one read aloud
   if (!template) return null;
   const full = generateItem(template, current.itemSeed);
   return full.spokenPrompt || full.prompt || null;

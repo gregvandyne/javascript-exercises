@@ -1,0 +1,211 @@
+{
+ "key": "pro-0.1",
+ "n": "0.1",
+ "band": "pro",
+ "title": "Welcome to the Towers",
+ "topic": "Welcome",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Above the Workshops",
+   "text": "Past the last workshop, the street climbs. Seven towers stand over the Numberworks, and above them all hangs the Great Clock. Tally the cat keeps the keys to every one of them.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The clock has stopped",
+   "text": "The Great Clock runs on seven gears, one kept in each tower. The Jumble has knocked them out of line, so the hands stand still and nobody in Netville agrees on the time.",
+   "art": "gears",
+   "story": {
+    "scene": "street",
+    "lit": 0,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "Numbers that move together",
+   "text": "Down the street you counted and measured one thing at a time. Up here, two amounts change together. A mix of 2 cups of oats for every 3 cups of milk stays the same mix when both are scaled.",
+   "art": "scale",
+   "steps": [
+    "2 cups of oats go with 3 cups of milk",
+    "4 go with 6: both doubled",
+    "6 go with 9: both tripled",
+    "8 go with how many? Scale again"
+   ],
+   "visual": {
+    "type": "double",
+    "label": "Oats and milk in one mix",
+    "top": "Cups of oats",
+    "bottom": "Cups of milk",
+    "ticks": [
+     [
+      0,
+      0
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      4,
+      6
+     ],
+     [
+      6,
+      9
+     ],
+     [
+      8,
+      "?"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Each pair is one mix: 2 cups of oats go with 3 cups of milk.",
+     "box": [
+      21.9,
+      24.2,
+      17.3,
+      58.3
+     ]
+    },
+    {
+     "cue": "Double both amounts and the mix is the same: 4 and 6.",
+     "box": [
+      40.4,
+      24.2,
+      17.3,
+      58.3
+     ]
+    },
+    {
+     "cue": "8 cups of oats is 4 times as much. How much milk?",
+     "box": [
+      81.7,
+      69.3,
+      8.6,
+      14.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Numbers below zero",
+   "text": "Some numbers up here sit below zero. The Cold Store keeps a sample at −5°C. Warm it by 8° and it climbs past zero to 3°C. A number line that stands upright shows the whole trip.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "A sample warming from below zero",
+    "min": -10,
+    "max": 10,
+    "upright": true,
+    "tube": true,
+    "marks": [
+     {
+      "at": -10,
+      "label": "−10°"
+     },
+     {
+      "at": -5,
+      "label": "−5°"
+     },
+     {
+      "at": 0,
+      "label": "0°"
+     },
+     {
+      "at": 5,
+      "label": "5°"
+     },
+     {
+      "at": 10,
+      "label": "10°"
+     }
+    ],
+    "point": {
+     "at": 3,
+     "label": "3°C"
+    },
+    "hops": [
+     {
+      "from": -5,
+      "to": 3,
+      "label": "+8°"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The sample starts at −5°C and warms by 8°: up the line.",
+     "box": [
+      59.6,
+      35.6,
+      12,
+      27
+     ]
+    },
+    {
+     "cue": "It passes zero and stops at 3°C.",
+     "box": [
+      38.8,
+      31.4,
+      18.7,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "How a tower works",
+   "text": "Each tower has three steps. A step is a short lesson, three questions and a mission that puts the idea to work. Nothing is timed. A wrong try earns a hint, and you can always go again.",
+   "art": "map"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words you will use in every tower.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "ratio",
+     "means": "a comparison of two amounts, such as 2 cups of oats for every 3 cups of milk"
+    },
+    {
+     "word": "scale",
+     "means": "to multiply every part by the same number, so the mix stays the same"
+    },
+    {
+     "word": "negative number",
+     "means": "a number less than zero, such as −5"
+    },
+    {
+     "word": "variable",
+     "means": "a letter, such as x, that stands for a number you have not found yet"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game in this step. Answer the three questions, then look for the first tower on the path. Seven gears are waiting, and the Great Clock will not start without all of them.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-pro-0.1-e1",
+  "nq-pro-0.1-e2",
+  "nq-pro-0.1-e3"
+ ],
+ "game": null,
+ "talk": "Where have you seen a number below zero, or two amounts that had to stay in the same ratio?"
+}
