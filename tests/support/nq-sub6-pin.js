@@ -40,3 +40,14 @@ export function sub6RunsHash(P, { TEMPLATES }) {
   }
   return { runs: outcomes.length, outcomes: sha(outcomes), belowRuns: below.length, below: sha(below) };
 }
+
+/** Where EVERY possible set of placed rungs starts, today: all 17 rungs in each of the four strands (83,521 sets),
+ *  then the short K-2 form's three strands (4,913 sets), each through the locked crosswalk; and where "Just Play"
+ *  starts for each named grade. A tier that is recorded but not open must change none of it. */
+export function crosswalkHash(P) {
+  const R = Array.from({ length: 17 }, (_, i) => i / 2), out = [];
+  for (const n of R) for (const a of R) for (const s of R) for (const d of R) { const c = P.crosswalk({ number: n, algebra: a, 'shape-measure': s, 'data-chance': d }); out.push(`${c.node}|${c.tier}|${+c.launchpadGap}|${+c.finaleDoor}`); }
+  for (const n of R) for (const s of R) for (const d of R) { const c = P.crosswalk({ number: n, 'shape-measure': s, 'data-chance': d }); out.push(`${c.node}|${c.tier}|${+c.launchpadGap}|${+c.finaleDoor}`); }
+  const begin = ['K', 1, 2, 3, 4, 5, 6, 7, 8].map(g => P.beginningNode(g));
+  return { sets: out.length, hash: crypto.createHash('sha256').update(out.join('\n')).digest('hex'), nodes: [...new Set(out.map(x => x.split('|')[0]))].sort(), begin, startNodes: P.startNodes().map(x => x.node) };
+}

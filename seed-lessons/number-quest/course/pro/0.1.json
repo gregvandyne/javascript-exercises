@@ -73,19 +73,19 @@
     {
      "cue": "Each pair is one mix: 2 cups of oats go with 3 cups of milk.",
      "box": [
-      21.9,
+      28.2,
       24.2,
-      17.3,
-      58.3
+      4.7,
+      58.6
      ]
     },
     {
      "cue": "Double both amounts and the mix is the same: 4 and 6.",
      "box": [
-      40.4,
+      46.6,
       24.2,
-      17.3,
-      58.3
+      4.9,
+      58.6
      ]
     },
     {
@@ -151,16 +151,16 @@
       59.6,
       35.6,
       12,
-      27
+      28.4
      ]
     },
     {
      "cue": "It passes zero and stops at 3°C.",
      "box": [
-      38.8,
-      31.4,
-      18.7,
-      12.1
+      43.6,
+      31.1,
+      14.1,
+      12.9
      ]
     }
    ]
