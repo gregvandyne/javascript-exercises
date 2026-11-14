@@ -1784,23 +1784,20 @@
    "emoji": "🏮",
    "group": "unit-1",
    "n": 1,
-   "planned": true,
-   "reserved": {
-    "game": "lantern-mix",
-    "world": "spooky-hollow"
-   },
    "stamp": "Ratio Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Match the Glow",
+       "chapterTitle": "Match the Glow",
+       "params": "chapter=mix&lock=1",
+       "slug": "lantern-mix"
+      }
      },
      "mp": "MP7",
      "n": "1.1",
      "order": 2,
-     "reserved": {
-      "params": "chapter=mix&lock=1"
-     },
      "shorts": {
       "pro": "Ratios"
      },
@@ -1821,14 +1818,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Burn Rate",
+       "chapterTitle": "Burn Rate",
+       "params": "chapter=rate&lock=1",
+       "slug": "lantern-mix"
+      }
      },
      "mp": "MP2",
      "n": "1.2",
      "order": 3,
-     "reserved": {
-      "params": "chapter=rate&lock=1"
-     },
      "shorts": {
       "pro": "Unit rates"
      },
@@ -1849,14 +1848,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Fill and Convert",
+       "chapterTitle": "Fill and Convert",
+       "params": "chapter=percent&lock=1",
+       "slug": "lantern-mix"
+      }
      },
      "mp": "MP6",
      "n": "1.3",
      "order": 4,
-     "reserved": {
-      "params": "chapter=percent&lock=1"
-     },
      "shorts": {
       "pro": "Percent and units"
      },
@@ -1876,10 +1877,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers grade 6 ratios and rates: a ratio as a comparison of two amounts, equivalent ratios in tables and on double number lines, unit rates and constant speed, percent as a rate per 100 (a part, a percent or the whole), and changing units with a ratio. Nothing is priced, bought or sold: the contexts are lamp oil, burning time and distance.",
+    "A common misconception: keeping the difference, not the ratio. A student who makes 2 : 3 bigger as 6 : 7 added 4 to both parts. Ask \"how many times as much?\" and build the ratio table one batch at a time. With percents, the percent is read as an amount (30% of 250 as 30): find 10% first, then count the parts.",
+    "Lantern Mix checks each idea by doing. The student plans with dials (no typing), then lights the lantern: a wrong plan is run too, and the board shows what it really made (the wrong glow, the hour the tank runs dry) beside a spoken hint. Color is never the only signal: every lantern has a parts gauge with its numbers. Every instruction is read aloud, nothing is timed, and six finished rounds complete the step."
+   ],
    "tier": "pro",
    "title": "The Mixing Tower",
-   "tool": null
+   "tool": "lantern-mix"
   },
   {
    "emoji": "❄️",

@@ -277,6 +277,39 @@
       "state": "the-garden-gate"
     },
     {
+      "alt": "Lantern Mix on a phone: a double number line of 12 milliliters in 4 hours on the board, and a dial to set.",
+      "band": "pro",
+      "capturedAt": "2026-11-14",
+      "chapter": "1.2",
+      "commit": "bc74c70b",
+      "concept": "Pro 1.2, Burn Rate round 1 (This lantern burns 12 milliliters in 4 hours. How much does it burn in 1 hour?): a double number line of ml over h on the board with 12 over 4 and the dial's 0 over 1, the chip reading 12 ml in 4 h, the Burned in 1 hour dial and the Light it button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lantern-mix",
+      "key": "nq/lantern-mix/burn-rate",
+      "state": "burn-rate"
+    },
+    {
+      "alt": "Lantern Mix on a phone: an empty tank of 80 milliliters to fill to 50% on the board, and a dial to set.",
+      "band": "pro",
+      "capturedAt": "2026-11-14",
+      "chapter": "1.3",
+      "commit": "bc74c70b",
+      "concept": "Pro 1.3, Fill and Convert round 1 (The tank holds 80 milliliters. Fill it to 50 percent.): an empty tank on the board marked 80 ml and 100% at the top and 0 and 0% at the bottom, the chip reading 50% of 80 ml, the Oil in the tank dial at 0 ml and the Light it button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lantern-mix",
+      "key": "nq/lantern-mix/fill-and-convert",
+      "state": "fill-and-convert"
+    },
+    {
+      "alt": "Lantern Mix on a phone: the gate lantern's gauge of 2 amber and 3 blue parts on the board, and two dials to set.",
+      "band": "pro",
+      "capturedAt": "2026-11-14",
+      "chapter": "1.1",
+      "commit": "bc74c70b",
+      "concept": "Pro 1.1, Match the Glow round 1 (The gate lantern mixes amber to blue as 2 to 3): the board in the night hollow with the gate lantern lit over its gauge of 2 striped amber parts and 3 dotted blue parts, the unlit lantern and its empty gauge under it, Skelly the lamplighter and the empty lantern rack, the chip reading gate 2 : 3, the Amber parts and Blue parts dials at 0 and the Light it button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "lantern-mix",
+      "key": "nq/lantern-mix/match-the-glow",
+      "state": "match-the-glow"
+    },
+    {
       "alt": "Lily Hop on a phone: a helper on a row of numbered lily pads, a flag on pad 10, and three number buttons.",
       "band": "launchpad",
       "capturedAt": "2026-11-12",

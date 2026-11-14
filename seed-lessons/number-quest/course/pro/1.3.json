@@ -1,0 +1,303 @@
+{
+ "key": "pro-1.3",
+ "n": "1.3",
+ "band": "pro",
+ "title": "Percent and changing units",
+ "topic": "Percent and units",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "Fill to the mark",
+   "text": "The top room of the Mixing Tower holds tall glass tanks. Each label gives a percent, not an amount: fill to 30%. Tally shrugs. A percent is only a rate, and you have just met rates.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Percent means per 100",
+   "text": "Percent means for each 100. In a tank that holds 100 milliliters, 30% is 30 milliliters. A percent is a rate per 100, so it scales like any other ratio: in a tank of 200 milliliters, 30% is 60.",
+   "art": "grid",
+   "visual": {
+    "type": "split",
+    "label": "A percent bar for a tank of 100 milliliters: 30% filled with oil and 70% empty",
+    "whole": "100 ml",
+    "parts": [
+     {
+      "w": 0.3,
+      "label": "30%",
+      "tone": 1
+     },
+     {
+      "w": 0.7,
+      "label": "70%",
+      "tone": 0
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "30% of the tank: 30 of its 100 milliliters.",
+     "box": [
+      5.1,
+      37.5,
+      28.3,
+      32.9
+     ]
+    },
+    {
+     "cue": "The rest, 70%, is still empty.",
+     "box": [
+      31.4,
+      37.5,
+      63.5,
+      32.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "30% of 250 milliliters",
+   "text": "Fill a 250 milliliter tank to 30%. Find 10% first by dividing by 10, then take three of those parts. The answer is 75 milliliters, not 30: the 30 is a rate, not an amount.",
+   "art": "chart",
+   "steps": [
+    "100% is 250 ml",
+    "10% is 250 ÷ 10 = 25 ml",
+    "30% is 3 × 25 = 75 ml",
+    "check: 75 is less than half of 250"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "A percent bar for a tank of 250 milliliters cut into ten parts of 25 milliliters, with three parts filled",
+    "big": true,
+    "rows": [
+     {
+      "label": "Ten equal parts: each is 10%, or 25 ml",
+      "parts": [
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": 1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       },
+       {
+        "w": 0.1,
+        "tone": -1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One part is 10% of the tank: 25 milliliters.",
+     "box": [
+      5,
+      35.7,
+      10.8,
+      18.3
+     ]
+    },
+    {
+     "cue": "Three parts are 30%: 3 × 25 = 75 milliliters.",
+     "box": [
+      5,
+      35.7,
+      28.4,
+      18.3
+     ]
+    }
+   ]
+  },
+  {
+   "title": "From a part to the whole",
+   "text": "Sometimes you know the part and its percent, and need the whole. If 20 milliliters is 25% of a tank, then 20 is one of four equal parts. Four parts of 20 make a full tank of 80 milliliters.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "bars",
+    "label": "A tank as four equal parts of 25% each: one part is 20 milliliters, so four parts are 80 milliliters",
+    "big": true,
+    "rows": [
+     {
+      "label": "Each part is 20 ml: 4 × 20 = 80 ml",
+      "parts": [
+       {
+        "w": 0.25,
+        "tone": 1,
+        "label": "20 ml"
+       },
+       {
+        "w": 0.25,
+        "tone": 2,
+        "label": "20 ml"
+       },
+       {
+        "w": 0.25,
+        "tone": 2,
+        "label": "20 ml"
+       },
+       {
+        "w": 0.25,
+        "tone": 2,
+        "label": "20 ml"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The part you know: 20 milliliters is 25%.",
+     "box": [
+      5,
+      35.7,
+      24,
+      18.3
+     ]
+    },
+    {
+     "cue": "Four parts of 25% make 100%: 80 milliliters.",
+     "box": [
+      5,
+      26,
+      90,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Changing units is a rate too",
+   "text": "Units change at a fixed rate: 1 kilometer is 1000 meters. A path of 3 kilometers is 3 × 1000 = 3000 meters. If each lantern lights 250 meters, the path needs 3000 ÷ 250 = 12 lanterns. Change the units first, then divide.",
+   "art": "ruler",
+   "visual": {
+    "type": "double",
+    "label": "A double number line of kilometers and meters: 1 kilometer is 1000 meters, 2 is 2000 and 3 is 3000",
+    "top": "Kilometers",
+    "bottom": "Meters",
+    "ticks": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      1000
+     ],
+     [
+      2,
+      2000
+     ],
+     [
+      3,
+      3000
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The rate: every 1 kilometer is 1000 meters.",
+     "box": [
+      30.8,
+      24.1,
+      11.8,
+      58.7
+     ]
+    },
+    {
+     "cue": "So 3 kilometers is 3000 meters.",
+     "box": [
+      79.5,
+      24.1,
+      12.9,
+      58.7
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for percents and units.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "percent",
+     "means": "a rate for each 100, written with the sign %"
+    },
+    {
+     "word": "whole",
+     "means": "the full amount, which is 100%"
+    },
+    {
+     "word": "part",
+     "means": "some of the whole, such as the 75 milliliters in a tank of 250"
+    },
+    {
+     "word": "convert",
+     "means": "to write the same measure in a different unit, such as kilometers as meters"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Lantern Mix at Fill and Convert. Fill each tank to its percent, find the full tank, and change units to light the path. Six lanterns finish the step.",
+   "art": "trophy",
+   "img": "nq/lantern-mix/fill-and-convert",
+   "alt": "Lantern Mix on a phone: an empty tank of 80 milliliters to fill to 50% on the board, and a dial to set.",
+   "view": [
+    0,
+    0,
+    34.28,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-1.3-e1",
+  "nq-pro-1.3-e2",
+  "nq-pro-1.3-e3"
+ ],
+ "game": {
+  "slug": "lantern-mix",
+  "chapter": "Fill and Convert",
+  "params": "chapter=percent&lock=1"
+ }
+}

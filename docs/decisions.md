@@ -5140,3 +5140,117 @@ The owner asked: "Can we also make these worlds available in 2d?" Branch `kit2-a
   cute fish; the T-Rex (not decided); the results card shows the sprite but the kit's small pictures elsewhere (an
   NPC bubble) do not; clouds are few. **Not verified:** a real phone or Chromebook GPU (software WebGL and the 2D
   canvas backend only) and a build with the real model.
+
+## Step-by-step game setup before the Builder (14 Nov 2026)
+
+"New game" on `/build` now opens `/build/new` (`server/routes/build-setup.js`, `public/js/buildsetup.js`,
+`public/css/build-setup.css`): "Help me choose" (six steps, then "Here is your game plan") or "I know what I want"
+(an empty game and the Studio, as before). Every step has "Skip to the Builder". The starter and world cards on
+`/build`, and opening a game in progress, are unchanged.
+
+- **The plan is data** (`server/builder/plan.js`): `{ type, look, world, characters, learn, notes }`. Game type, world
+  and each character are `{ from: 'pack', id }` or `{ from: 'custom', text }`. "Open the Builder" posts it as
+  `plan` with the game's first chat message; the server writes the message itself from the plan, in the builder's
+  language, so the typed words pass the same screening as any typed message. The plan is kept on the build's row and
+  on the builder's message. Nothing is stored by the setup page, and nothing on it uses the voice service.
+- **Pack choices are used as given; custom ones are built from scratch.** The model reads a `SETUP CHOICES` block
+  (`planNote`), and the engine comes from the plan, not from the words (`engineFor`, `art2dFor`): a pack world with 3D
+  is always a Kit 2 game in that world; a world of their own is never a ready-made world. A 3D plan with a pack
+  character and a world of their own runs on Oomba3D (the characters only exist there) with the place built from
+  scratch. The one new exception in the Kit 2 rules: a character marked CUSTOM may be built from simple shapes.
+- **2D uses the 2D art packs** (`art2d.js`): a running or catching game (an adventure, or no kind picked, is a running
+  game) starts from that template with the plan's world and ONE sprite character (`start_from_template` world and
+  sprite, the 2D ART RULES). Quiz, word, memory, two-player and board games do not draw worlds or sprites yet: the
+  page says so on the world step, the characters step and the plan, and the Builder is told to keep the kit's look,
+  use the choices as the game's idea and say so.
+- **Who is in it** is grouped from BOTH catalogues (`setupCharacters`): the 3D worlds' heroes and animals and the 2D
+  sprites, once each. `kit2/creature-groups.json` gives each animal a group (the generator writes the list into
+  `kit2-catalog.js`; a 2D sprite falls back to its pack's group). What can be picked follows the 2D or 3D choice:
+  for 3D (or no choice, or "You pick for me") the 3D characters, limited by the world and by sharing a world; an
+  animal that is only a sprite (the dinosaurs, zebra, llama...) says "Only in 2D games so far", and its group
+  "Coming soon in 3D". For 2D every sprite, one of them. "Coming soon" stays only for a group neither catalogue
+  has (fish and sea animals).
+- **Cards** on one screen are one size by construction (equal columns, fixed picture shape, clamped lines).
+  World cards use the real cover; "Preview" opens a dialog with a 1280x720 picture of the Builder's own starter in
+  that world (`public/img/kit2/worlds/<world>-preview.webp`, made by `node scripts/kit2-thumbs.js --previews`).
+- **Files:** the extras step takes worksheets and notes (PDF, text) through the Studio's own upload, after the game
+  exists. Pictures are not taken on this page; they are added in the Studio as before.
+- **Not verified:** a build with the real model (no key here), so the `SETUP CHOICES` wording is untested against it.
+
+## Number Quest Pro Unit 1: The Mixing Tower and Lantern Mix (14 Nov 2026)
+
+The first Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Lantern Mix in Spooky Hollow at night, and the one-line registrations. Pro stays
+`building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default**, with the speaker button to repeat a line. The plan said a button, off by default;
+  the owner's decision 6 replaced that.
+- **Oomba3D 1.2.0**, the newest, not the 1.1.0 the plan named (it was written before 1.2.0 shipped). No kit file
+  changed and no helper was added to the library: the dials, the board and the camera fit are the game's own code.
+- **Plan, then run.** The plan had a double number line that "fills as the player works". A board that shows the
+  outcome while a dial is turning invites sliding until it looks right, so the board shows only the plan (the parts
+  poured, the amount set) until Light it is pressed. Then the plan is run, right or wrong, and its real result is
+  drawn: the two mixes as shares of amber, where the amount lands on the number line, the stretch of path lit.
+- **A match is decided by the ratio.** `LanternMix.judge` cross-multiplies whole numbers and never reads a colour;
+  the glow's hue is a function of the ratio in lowest terms, so equal ratios glow identically. Colour is never the
+  only signal: amber parts are striped, blue parts dotted, and every gauge has its numbers beside it.
+- **Dials** are a slider with a minus and a plus button (a native range input, so the arrow keys and touch work with
+  no extra code). At most 50 stops a dial. Nothing is typed.
+- **Rounds the plan did not list**, added so each chapter has six and each code is played more than one way: working
+  back from the other oil, "use all 10 parts and glow more amber than the gate" (comparing ratios, several right
+  plans), two lanterns' unit rates compared, a steady walking pace (constant speed, 6.RP.A.3b), what percent a tank
+  is full, and the whole tank from a part and its percent (6.RP.A.3c names all three).
+- **"Lanterns every 250 m along 3 km"** became "one lantern lights 250 m of the path". Posts at each end make the
+  plan's wording 12 or 13 depending on how it is read; a stretch of path lit by each lantern is 12 with no argument.
+- **The ratio table** is a round of its own (the missing lantern of five), not a second task inside the 15-part round.
+- **Contexts are neutral** (decision 3): oil, burning time, distance. No prices, tax, discount, interest or commission
+  in the decks, the bank or the game, and the game uses neither the theme's coin nor its chest: there is no reward
+  currency, only a rack of six lit lanterns.
+- **A built unit's entry profile is live in the engine.** `P.testOutItems(1, _, 'pro')` now deals items, because
+  Unit 1 is no longer planned. The route still refuses a Pro test-out and placement still lands nobody on Pro while the
+  tier is building (the foundations tests hold both).
+- **Left for the opening PR:** the teacher page's game list (`NQ_CREW` in `server/routes/number-quest.js`) and its
+  locale strings do not name Lantern Mix. Adding it means new copy in 13 locale files, which the contract keeps out of
+  a unit PR. Until then the admin's preview of the teacher page shows Unit 1's steps without the game's card.
+- **Public surface.** As the contract says, the game itself is a library game from the day it is registered: it is on
+  the Learn shelf (math, grade 6) and in the Number Quest course's game list. Its title, description and tags never
+  name the Pro tier. Every Number Quest page is byte for byte what it was for anyone who is not the admin.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear (the test checks every line is sent and is on the allowlist, not how "1.5 milliliters" sounds), and play by a
+  student of the age.
+
+## Number Quest Pro Unit 2: The Cold Store and Sub Zero (14 Nov 2026)
+
+The second Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Sub Zero in the Busy Kitchen world, and the one-line registrations. Pro stays
+`building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default** (owner decision 6), not a button that is off by default as the plan said. So that
+  the voice allowlist only ever sees digits in a number's place, a spoken line is written the way it is said
+  ("negative 6 degrees", "3 fourths", "divided by") and the screen prints the same line with the real signs
+  (`SubZero.shown`). The wording is the one `math-text.js` gives a deck's read-aloud.
+- **Oomba3D 1.2.0**, the newest, not the 1.1.0 the plan named. No kit or theme file changed: the steel look is a
+  small shader patch on a copy of each piece's material, made by the game.
+- **Not Kitchen Rush.** The two games share a world, so Sub Zero is the kitchen at night, washed in steel, with no
+  food piece loaded, a dark lab screen, no helper picker, a game-made deep freezer with a rack of sample vials, and
+  steppers and tiles instead of three picture buttons.
+- **Plan, then run.** A stepper (or a drag of the marker on the thermometer) and a run button, or three tiles. A wrong
+  plan is run and drawn as it turns out: jars left empty, the pot not empty, the reading landing short. In the "reach a
+  target" rounds the screen does not show where a change would land until it is run, so the change has to be worked out.
+- **The pours are nine set problems a round kind**, three a round, turned through on replays, not random numbers:
+  each has its own lines so the voice can say the fractions in words, and fixed lines can be warmed ahead.
+- **Subtracting a negative is the cold pack**, as the plan asked: a chamber at −2° holds a cold pack worth −5°; the
+  player takes it out and sets the new reading. A lower reading gets "Taking cold away makes it warmer".
+- **Rounds the plan did not list**, so each chapter has six: which division a pour is, one liter into jars of 2/3
+  (the reciprocal), less than one jar, decimals on the same model (6.NS.B.3), the opposite of a reading, colder than a
+  limit (order against absolute value, 6.NS.C.7d, with no debt in it), a drop in equal steps, and on a replay the film
+  run backward (negative times negative).
+- **No new diagram type.** The plan marked a thermometer and a fraction-division model as missing. The upright
+  `numberline` (with `tube`) shipped in the diagram pack, and the measurement model of fraction division is drawn with
+  the existing `bars` (the pot as a tape of liters over a tape of jars).
+- **Contexts are neutral** (decision 3): liters, jars, temperatures, a diver and a bird. Nothing is priced or sold,
+  and there is no reward currency.
+- **A built unit's entry profile is live in the engine**, as Unit 1's is: `P.entryProfile('pro', 2)` now answers. The
+  route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as for Unit 1: the teacher page's game list (`NQ_CREW`) and its locale strings do not
+  name Sub Zero. The game itself is a library game on the Learn shelf (math, grades 6-7) from the day it is registered.

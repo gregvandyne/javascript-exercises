@@ -21,7 +21,7 @@ test('build with the mock Builder, edit, restore, publish, review, update', asyn
   test.setTimeout(120_000);
   await signup(page, uniq('Bld'));
   await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   const id = page.url().split('/studio/')[1];
 
   // A new game starts with one simple message and no starter chips: type an idea, then tap the Builder's question chips
@@ -121,7 +121,7 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
 test('a picture attached in the Studio shows in the chat and is private to the builder', async ({ page, browser }) => {
   await signup(page, uniq('Pic'));
   await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   await page.setInputFiles('#st-file', { name: 'drawing.png', mimeType: 'image/png', buffer: PNG });
   await expect(page.locator('#st-attach .att:not(.loading) [data-rm]')).toBeVisible();
   await say(page, 'A catch game about my drawing');
@@ -142,7 +142,7 @@ test('a dropped connection mid-build still shows what the Builder made; a messag
   test.setTimeout(90_000);
   await signup(page, uniq('Drp'));
   await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   // The phone loses the stream after the server has the message: the server finishes the turn and saves it,
   // and the page (seeing a network error) waits for the Builder and redraws the chat from the saved state.
   await page.route('**/api/studio/*/chat', async route => { await route.fetch(); await route.abort('connectionreset'); });
@@ -164,7 +164,7 @@ test('a dropped connection mid-build still shows what the Builder made; a messag
 test('My games: rename and delete right from the Build page (phone size)', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await signup(page, uniq('Del'));
-  for (let i = 0; i < 2; i++) { await page.goto('/build'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]); }
+  for (let i = 0; i < 2; i++) { await page.goto('/build'); await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]); }
   await page.goto('/build');
   const cards = page.locator('.mygame');
   await expect(cards).toHaveCount(2);

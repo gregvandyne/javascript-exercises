@@ -7,6 +7,9 @@
 //                -> "it's ready" / "polish" -> polish pass with a checklist
 //                -> "upgrade it" / "the new look" (an older game, before the Oomba Kit) -> rebuilt on the kit template of
 //                   its kind, keeping its title and tune-ups; only when asked, never on its own
+//   a setup plan -> the first message came from the setup steps (ctx.plan, plan.js): no questions; pack choices are
+//                   used as given (the type's own starter, the 3D world, its hero and animal), and for a custom part
+//                   it says honestly that it is not in the packs and makes the closest simple thing it can
 //   a Kit 2 pick -> one of the ready-made 3D worlds or characters picked, named or described (kit2.js wantsKit2), or a
 //                   game that is already one: mock-kit2.js builds it from the Kit 2 starter and changes it (hero, world,
 //                   sky, weather, cape, length, title). Anything else is the old kit, as before.
@@ -35,6 +38,8 @@ import { kitPackTag } from '../services/kit.js';
 import { wantsKit2, isKit2Game, pickKit2, worldLook } from './kit2.js';
 import { wantsArt2d, isArt2dGame, art2dEdits, art2dWorld, art2dCharacter, ART2D_TEMPLATES } from './art2d.js';
 import { buildKit2, followUpKit2 } from './mock-kit2.js';
+import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES } from './plan.js';
+import { characterById, worldById } from './kit2.js';   // (the plan's own lines, below)
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** Milliseconds between streamed chunks of three words (BRB_MOCK_DELAY_MS, 12 by default). */
@@ -388,6 +393,44 @@ async function fixSafety(ctx, m, cur) {
   if (r.ok) ctx.tools.exec('ask_user', { question: 'All fixed! What next?', options: nextChips(readTune(html)) });
 }
 
+// ---- A first message from the setup steps (plan.js): the answers are already there ---------------------------------
+const LEARN_WORDS = { math: 'maths', reading: 'reading and words', science: 'science', geography: 'places and maps' };
+const PART_WORDS = { type: 'kind of game', world: 'world', character: 'character' };
+/** What the plan already answers, in the mock's own terms (kind, theme, what to learn), so it asks nothing. */
+function answersFromPlan(p, e) {
+  const a = {}, type = p.type && p.type.from === 'pack' ? GAME_TYPES.find(x => x.id === p.type.id) : null;
+  a.kind = e.engine === '2d' && e.art ? e.template : type ? type.template || (e.engine === 'world3d' ? 'island' : 'runner') : (p.type && detectKind(p.type.text)) || (e.engine === 'world3d' ? 'island' : DEFAULT_KIND);
+  if (e.engine === '2d' && a.kind === 'island') a.kind = DEFAULT_KIND;
+  const names = [...p.characters.map(c => choiceLabel('character', c)), p.world ? choiceLabel('world', p.world) : ''].filter(Boolean);
+  let theme = null; for (const n of names) { theme = detectTheme(n); if (theme) break; }
+  a.theme = theme ? theme.key : '';
+  const learn = p.learn.find(l => l.id !== 'fun');
+  a.learn = learn ? (learn.id ? LEARN_WORDS[learn.id] : learn.text) : 'none';
+  a.players = a.kind === 'duel' ? 'two' : 'solo';
+  return a;
+}
+/** The honest line about the parts that are not in the packs (said before the plan). */
+function customLine(p, e) {
+  const parts = customParts(p); if (!parts.length) return '';
+  const said = parts.map(k => `${PART_WORDS[k]} (${k === 'type' ? p.type.text : k === 'world' ? p.world.text : p.characters.find(c => c.from === 'custom').text})`);
+  return `Your own ${said.join(' and ')} ${parts.length > 1 ? 'are' : 'is'} not in our packs. I can only use my simple building blocks right now, so I made the closest simple thing I can${e.engine === 'kit2' && p.world && p.world.from === 'custom' ? `, starting in ${worldById(e.world).name} so your characters can be in it` : ''}. `;
+}
+/** The first build of a game that came from the setup steps. k2: the plan's Kit 2 pick, or null. */
+async function buildFromPlan(ctx, m, k2) {
+  const p = ctx.plan, e = planEngine(p);
+  m.plan = { engine: e.engine, custom: customParts(p) };
+  m.answers = { ...m.answers, ...answersFromPlan(p, e) }; m.skip = true;
+  const line = customLine(p, e); if (line) await say(ctx, line);
+  if (k2) {
+    const cant = [...e.missing, ...e.more, ...e.friends].map(id => characterById(id)).filter(Boolean).map(c => c.name);
+    if (cant.length) await say(ctx, `I could not add ${cant.join(', ')} this time. `);
+    return buildKit2(ctx, m, k2, say);
+  }
+  if (e.engine === '2d' && e.plain) await say(ctx, 'Only running and catching games draw our worlds and characters in 2D so far, so this one keeps the classic look. ');
+  if (e.engine === '2d' && e.art && e.extra.length) await say(ctx, 'A 2D game shows one of our characters for now, so I could not add the others. ');
+  return build(ctx, m);
+}
+
 /** The runner's checkpoint: null when the build was stopped, else the new messages (read and used at once). */
 async function readNew(ctx, round, wait = false) {
   const b = ctx.between ? await ctx.between(round, { waitMs: wait ? inboxWait() : 0 }) : { add: [] };
@@ -424,11 +467,14 @@ export async function run(ctx) {
       // the Kit 2 side (mock-kit2.js); everything else is the old kit, exactly as before.
       // The 2D art (art2d.js): a 2D game that picks or names a world, a sprite hero or an animal draws with it. A new
       // running or catching game with a sprite animal the described 3D world does not have is built in 2D.
-      const a2 = wantsArt2d(st, text, cur, pickKit2(text));
+      // A first message from the setup steps: the plan decides (pack choices as given), and nothing is asked.
+      const planned = !!ctx.plan && !cur && pass === 0;
+      const a2 = planned ? null : wantsArt2d(st, text, cur, pickKit2(text));
       if (a2 && a2.force2d) delete st.kit2;
-      const k2 = a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
-      m.art2d = k2 ? null : a2; if (k2) delete st.art2d;
-      if (cur && isKit2Game(cur.html)) await followUpKit2(c2, m, cur, k2 || {}, say);
+      const k2 = planned ? engineFor(st, ctx.plan, text, cur) : a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
+      m.art2d = k2 ? null : planned ? art2dFor(st, ctx.plan, cur) : a2; if (k2) delete st.art2d;
+      if (planned) await buildFromPlan(c2, m, k2);
+      else if (cur && isKit2Game(cur.html)) await followUpKit2(c2, m, cur, k2 || {}, say);
       else if (cur && k2) await buildKit2(c2, m, k2, say, { replaces: ctx.tools.game() });
       else if (k2) await buildKit2(c2, m, k2, say);
       else if (cur) await followUp(c2, m, cur);

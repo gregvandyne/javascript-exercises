@@ -709,6 +709,9 @@ read-aloud; the admin's preview.
 Unit 7 has four chapters: the fourth, `clock`, is the finale. No two units in a row share a world. A reserved game slug
 is a name only: nothing is registered for it, and no file exists.
 
+**Built so far:** Unit 1, The Mixing Tower, with Lantern Mix (2026-11-14; see "Pro Unit 1" at the end of this file). Its
+`planned` and `reserved` flags are gone from `units.json`; the other six units are still planned.
+
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
 | Step | Title | `order` | Primary | Also covers | MP |
@@ -894,9 +897,79 @@ card, the teacher page's units, map and counts, the placement matrix and explain
 streets, kindergarten to grade 5, the game list, the lock paragraph, the FAQ), the teacher page's list of what Pro
 does not cover (from `proCoverage`), `units.json` `program.standards`, and a decisions entry.
 
+## Pro Unit 1 — The Mixing Tower (2026-11-14, tier still `building`)
+
+The first Pro unit, built to the contract above ("What a unit PR touches"). Grade 6 ratios and rates: 6.RP.A.1 to
+6.RP.A.3d. Pro stays closed: only the platform admin can open these steps.
+
+| File | What |
+|---|---|
+| `course/pro/1.1.json`, `1.2.json`, `1.3.json` | the three decks, inside the Pro limits above: **1.1 Ratios and equal mixes** (6.RP.A.1, 6.RP.A.3a), **1.2 Unit rates** (6.RP.A.2, 6.RP.A.3b), **1.3 Percent and changing units** (6.RP.A.3c, 6.RP.A.3d). Seven slides each: a story slide with Tally, four drawn diagrams with guided focus (one of them the worked example), four words, the mission last |
+| `sets/u1-pro.json` | nine exit items (`nq-pro-1.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (kept the difference instead of the ratio, read a percent as an amount, multiplied without finding the rate for 1, converted and stopped) |
+| `units.json` | Unit 1's own object only: the flags deleted, `tool: "lantern-mix"`, each step's `game.pro`, three teacher notes |
+| `seed-games/lantern-mix.html` | **Lantern Mix**, the unit's game (Oomba3D 1.2.0, Spooky Hollow theme 1.0.0, at night): chapter `mix` for 1.1 (Match the Glow), `rate` for 1.2 (Burn Rate), `percent` for 1.3 (Fill and Convert), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**Plan, then run.** The player sets one or two dials (a slider with a minus and a plus button each; nothing is typed),
+then presses Light it. The plan is run whatever it is: a right plan leaves a lit lantern on the rack, and a wrong one
+lights a small trial lantern in the glow the plan really made, the board shows the plan's result (the two mixes as
+shares of amber, where the amount really lands on the double number line, the percent the level really is, the stretch
+of path the lanterns really light) and a spoken hint names the mistake. The round stays open. No timer, no lives, no
+score, no reward currency; nothing is bought, sold or priced.
+
+**What each chapter plays.** `mix`: copy the gate lantern's 2 : 3 (any equal ratio matches, so 4 : 6 is right), the
+same glow with the amber set to 6 (6 : 7, the difference kept, is named as adding), a lantern that holds 15 parts
+(the ratio and the total together), the missing lantern of a five-column ratio table, working back from a set amount
+of blue, and "use all 10 parts and glow more amber than the gate" (several plans are right; an equal ratio is not
+"more"). `rate`: 12 ml in 4 hours as a rate for 1 hour, a tank for 7 hours at 3 ml an hour, 6 ml in 4 hours stretched
+to 10 hours (the plan's own example: the unit rate is 1.5), how many hours 20 ml lasts, two lanterns' unit rates
+compared, and a steady walking pace (150 m in 3 minutes, how far in 8). `percent`: 50% of 80 ml and 30% of 250 ml (30
+ml is named as reading the percent as an amount), what percent 50 of 200 ml is, the full tank when 20 ml is 25%,
+2.5 km in meters (liters and hours on replays), and how many lanterns light 3 km at 250 m each. The first lap is
+always the same; a replay draws new numbers from a seeded generator.
+
+**Color is never the only signal.** A match is decided by the ratio (`LanternMix.judge` cross-multiplies whole
+numbers; it never reads a color). `LanternMix.glow(a, b)` gives a mix its hue from the ratio in lowest terms, so equal
+ratios glow identically and no two different ratios on the dials share a hue. On the board amber parts are striped and
+blue parts are dotted, every gauge has its count beside it, and after a run the two mixes are also drawn as bars. The
+test judges every plan the dials allow (over 100,000 of them) independently from the board's numbers.
+
+**Read-aloud is on by default** (owner decision 6): every instruction, hint and answer line goes through `BRB.speak` in
+the friendly voice, with the speaker button to say it again. Spoken lines spell units out (milliliters, meters,
+percent); the chip, the board and the dials use the short forms and are never read (`server/services/tts-lines.js`).
+
+**Kid-safe.** The hollow is a quiet night garden with a work light: the theme's ground, path, arch, fences, trees,
+pumpkin lanterns and candles. No animals, no physics, nothing that moves by itself, chases or blocks; the heroes are
+three of the theme's friendly skeleton pals and two adventurers. The game's page never names the Pro tier.
+
+**Layouts.** One board, always face on, 4 by 3. On a wide screen the lamplighter and the lantern rack stand either
+side of it and the workbench is one row; on a phone they stand under it and the dials stack; on a short phone the
+camera keeps the board big and holds only the lamplighter's head and the lanterns on the rack. The test holds the
+board in full view between the words and the workbench at 1280, 390 and 360 px, every control to 44 px or more, and
+the smallest words on the board to a readable size, also with a hint showing and with reduced motion.
+
+**Diagrams.** The unit adds no diagram type. 1.1 uses `bars` (a tape diagram, and two mixes of 10 parts), `double` and
+`table`; 1.2 `double` (twice), `table` and `chart`; 1.3 `split`, `bars` (a percent bar in tenths, and a part with its
+whole) and `double` (kilometers over meters). All 26 focus steps are measured and pinned in
+`tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/lantern-mix/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/lantern-mix.recipe.js`.
+
+**Registered** as the contract lists: `scripts/seed.js`, `server/db.js`, `server/learn.js` (math, grade 6),
+`server/services/course-catalog.js`, `server/standards/official-tags.js` (`LANTERN_CHAPTERS`, `LEVELLED`),
+`server/services/tts-lines.js`, and the pinned lists and totals in the tests it names. Not touched: `standards.json`,
+`placement.json`, the Sorting Game bank, any other unit, and the course copy. **Left for the opening:** the teacher
+page's game list (`NQ_CREW` in `server/routes/number-quest.js`) and its locale strings do not name Lantern Mix yet, so
+the admin's preview of that page counts the game's steps but does not list the game.
+
+**Gear.** The unit's stamp is the Ratio Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit covers,
+the "kept the difference, not the ratio" misconception (and a percent read as an amount), and how the game checks each
+idea by planning and running. Pro stays `status: "building"`.
+
 ## Pro Unit 2 — The Cold Store (2026-11-14, tier still `building`)
 
-The second Pro unit, built side by side with Units 1 and 3. Its `planned` flag is gone, so its three steps are real
+The second Pro unit, built side by side with Unit 1. Its `planned` flag is gone, so its three steps are real
 steps for the platform admin (and nobody else: the tier is `building`).
 
 | File | What |
@@ -952,5 +1025,5 @@ marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share pict
 
 **Gear.** The unit's stamp is the Zero Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit covers,
 the three misconceptions it meets (dividing always makes smaller; −8 is greater than −2; subtracting a negative makes
-smaller) and how the game checks each idea by doing. Pro stays `status: "building"`: Units 1 and 3 to 7 are still
+smaller) and how the game checks each idea by doing. Pro stays `status: "building"`: Units 3 to 7 are still
 planned, and no learner, parent or visitor sees any of this.

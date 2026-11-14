@@ -102,7 +102,7 @@ test('every quick-check item in every course step carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 399, 'the three courses hold 399 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 150: Explorer 69, Launchpad 69, Pro 12: 3 for its welcome and 9 for Unit 2)');
+  assert.equal(checked, 408, 'the three courses hold 408 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 159: Explorer 69, Launchpad 69, Pro 21: 3 for its welcome and 9 each for Units 1 and 2)');
 });
 
 test('every exit item in every question-set file carries a why', () => {
@@ -125,8 +125,8 @@ test('every exit item in every question-set file carries a why', () => {
       }
     }
   }
-  assert.equal(files, 46, 'the three programs hold 46 question-set files (Number Quest: sets/u0-pro.json and sets/u2-pro.json joined on 2026-11-14)');
-  assert.equal(exits, 408, 'and 408 exit items, every one with a why');
+  assert.equal(files, 47, 'the three programs hold 47 question-set files (Number Quest: sets/u0-pro.json, sets/u1-pro.json and sets/u2-pro.json joined on 2026-11-14)');
+  assert.equal(exits, 417, 'and 417 exit items, every one with a why');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).
