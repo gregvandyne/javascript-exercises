@@ -106,3 +106,16 @@ test('the production image carries the Kit 2 lock (vendor.js reads it at start)'
   assert.match(fs.readFileSync(path.join(ROOT, 'Dockerfile'), 'utf8'), /^COPY kit2\/SHIPPED\.json \.\/kit2\/SHIPPED\.json$/m);
   assert.ok(V.PHASER_SRI && Object.keys(V.KIT2_IMPORT_MAP.integrity).length > 2, 'the lock was read');
 });
+
+test('the production image carries every kit2/ file the server reads at start (the 2D art lock too)', () => {
+  const docker = fs.readFileSync(path.join(ROOT, 'Dockerfile'), 'utf8');
+  const read = new Set();
+  const walk = dir => { for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const p = path.join(dir, e.name); if (e.isDirectory()) walk(p); else if (e.name.endsWith('.js')) for (const m of fs.readFileSync(p, 'utf8').matchAll(/['"](?:\.\.\/)+(kit2\/[\w./-]+)['"]/g)) read.add(m[1]); } };
+  walk(path.join(ROOT, 'server'));
+  assert.ok(read.has('kit2/SHIPPED.json') && read.has('kit2/ART2D.json'), 'the scan finds both locks');
+  for (const f of read) {
+    const top = f.split('/').slice(0, 2).join('/');
+    const copied = docker.split('\n').some(l => l.startsWith('COPY ') && (l.includes(`COPY ${f} `) || l.includes(`COPY ${top} `)));
+    assert.ok(copied, `Dockerfile copies ${f}`);
+  }
+});
