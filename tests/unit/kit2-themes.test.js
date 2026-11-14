@@ -1,5 +1,5 @@
 // Kit 2 themes (public/vendor/themes/<theme>/<version>/): every file is listed in theme.json with its size and hash, every
-// pack is CC0 with its licence file on hand, every hero, piece and sound comes from a listed pack, the source log is there,
+// pack is CC0 (or one of the few named restricted licences) with its licence file on hand, every hero, piece and sound comes from a listed pack, the source log is there,
 // and a theme's first load stays under 5 MB (docs/kit2-themes-plan.md, "Rules that do not bend").
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,6 +12,18 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const THEMES = path.join(ROOT, 'public/vendor/themes');
 const FIRST_LOAD_LIMIT = 5 * 1024 * 1024;
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+
+// Licences that are not CC0 but may ship inside a built theme (docs/kit2-packs-plan.md "Licences", docs/decisions.md
+// "Under the Sea"): use in games and modification allowed, redistribution of the files as assets forbidden. Each is
+// named here with words only its own licence text has; anything else that is not CC0 fails.
+const RESTRICTED = {
+  'LicenseRef-reodesuxz': [/Copyright \(c\) 2026 reodesuxz/, /redistributing the asset files/i],
+  'LicenseRef-muteassets-sea-life': [/Low Poly Sea Life/, /sell, give away or share the assets themselves/],
+  'LicenseRef-aletheiamask-standard-asset': [/STANDARD ASSET LICENSE/, /aletheiamask/, /resell, redistribute, sublicense or share the source files/],
+  'LicenseRef-free-fish-sampler-1.1': [/Free Fish Sampler - LICENSE/, /Version 1\.1/, /Resell, redistribute, sublicense or share the raw files/],
+  'LicenseRef-alstra-free-asset': [/ALSTRA INFINITE/, /with credit/, /Reselling or redistribution is not allowed/],
+  'LicenseRef-theunseenvulga-ocean-animals': [/THEUNSEENVULGA/, /do not resell the unmodified\s+assets as-is/],
+};
 
 const versions = fs.existsSync(THEMES)
   ? fs.readdirSync(THEMES).flatMap(t => fs.readdirSync(path.join(THEMES, t)).map(v => ({ theme: t, version: v, dir: path.join(THEMES, t, v) })))
@@ -44,14 +56,31 @@ for (const { theme, version, dir } of versions) {
     }
   });
 
-  test(`${name}: every pack is CC0 with its licence file and source`, () => {
+  test(`${name}: every pack is CC0 or one of the named restricted licences, with its licence file and source`, () => {
     assert.ok(manifest.packs.length > 0);
+    const sources = manifest.files['SOURCES.md'] ? fs.readFileSync(path.join(dir, 'SOURCES.md'), 'utf8') : '';
     for (const p of manifest.packs) {
-      assert.equal(p.licence, 'CC0-1.0', `${p.id} licence`);
       assert.ok(manifest.files[p.licenceFile], `${p.id} licence file ${p.licenceFile}`);
-      assert.match(fs.readFileSync(path.join(dir, p.licenceFile), 'utf8'), /CC0|Creative Commons Zero|publicdomain\/zero/i, `${p.id} licence text`);
-      assert.match(p.url, /^https:\/\//, `${p.id} source`);
+      const text = fs.readFileSync(path.join(dir, p.licenceFile), 'utf8');
       assert.match(p.downloaded, /^\d{4}-\d{2}-\d{2}$/, `${p.id} download date`);
+      if (p.licence === 'CC0-1.0') {
+        assert.match(text, /CC0|Creative Commons Zero|publicdomain\/zero/i, `${p.id} licence text`);
+        assert.match(p.url, /^https:\/\//, `${p.id} source`);
+        continue;
+      }
+      // Not CC0: only these licences, each by name, each with ITS OWN licence text in the theme. Such a pack says it may
+      // not be passed on as files (redistribute: false), carries a credit, and says where it came from (a page, or the
+      // upload it arrived in). One that requires credit is credited in SOURCES.md too.
+      const mark = RESTRICTED[p.licence];
+      assert.ok(mark, `${p.id}: ${p.licence} is not CC0 and not one of the named restricted licences`);
+      for (const re of mark) assert.match(text, re, `${p.id} licence text is the ${p.licence} text`);
+      assert.equal(p.redistribute, false, `${p.id}: marked as never to be redistributed as files`);
+      assert.ok(typeof p.credit === 'string' && p.credit.includes(p.author), `${p.id} credit names ${p.author}`);
+      assert.ok(/^https:\/\//.test(p.url || '') || /branch asset-packs, folder [a-z0-9-]+\//.test(p.source || ''), `${p.id} source`);
+      assert.match(p.commit, /^[0-9a-f]{40}$/, `${p.id}: the commit of the upload`);
+      assert.ok(sources.includes(p.author), `${p.id}: ${p.author} is named in SOURCES.md`);
+      assert.match(sources, /NOT CC0/, 'SOURCES.md says the world is not all CC0');
+      if (/with credit/i.test(text)) { assert.equal(p.creditRequired, true, `${p.id}: credit is required`); assert.match(sources, new RegExp(`${p.author} \\(required\\)`), `${p.id}: the required credit is in SOURCES.md`); }
     }
     assert.ok(manifest.files['SOURCES.md'], 'SOURCES.md source log');
   });

@@ -10,5 +10,12 @@
   "inkNormals": true
  },
  "exclude": {},
- "source": "branch asset-packs, folder underwater-pack/ (uploaded by the owner, November 2026)"
+ "source": "branch asset-packs, folder underwater-pack/ (uploaded by the owner, November 2026)",
+ "redistribute": false,
+ "aiTraining": false,
+ "credit": "Low Poly Underwater Pack by reodesuxz (appreciated, not required)",
+ "notes": [
+  "Under the Sea 1.0.0 uses 22 pieces at this scale, and four of the still animals (pufferfish, seahorse, jellyfish, shark) as swimming creatures through the swimRig step. Not used: crab, fish_clown, fish_small and sea_turtle (the world has animated ones).",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models reviewed: the licence forbids redistributing the files as assets."
+ ]
 }

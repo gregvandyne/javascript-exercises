@@ -1604,7 +1604,8 @@
         "busy-kitchen": "Busy Kitchen",
         "pirate-cove": "Pirate Cove",
         "wild-woods": "Wild Woods",
-        "dino-valley": "Dino Valley"
+        "dino-valley": "Dino Valley",
+        "under-the-sea": "Under the Sea"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "Stegosaurus",
         "parasaurolophus": "Parasaurolophus",
         "apatosaurus": "Apatosaurus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolphin",
+        "turtle": "Sea Turtle",
+        "clownfish": "Clownfish",
+        "blue-tang": "Blue Tang",
+        "barb": "Barb",
+        "goldfish": "Goldfish",
+        "little-clownfish": "Little Clownfish",
+        "reef-fish": "Reef Fish",
+        "bass": "Bass",
+        "sardine": "Sardine",
+        "snapper": "Red Snapper",
+        "swordfish": "Swordfish",
+        "squid": "Squid",
+        "butterfly-fish": "Butterfly Fish",
+        "yellow-tang": "Yellow Tang",
+        "mandarin-fish": "Mandarin Fish",
+        "koi": "Koi",
+        "lionfish": "Lionfish",
+        "pufferfish": "Pufferfish",
+        "seahorse": "Seahorse",
+        "jellyfish": "Jellyfish",
+        "little-shark": "Little Shark",
+        "crab": "Crab"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolphin",
+        "turtle": "Sea Turtle",
+        "clownfish": "Clownfish",
+        "blue-tang": "Blue Tang",
+        "barb": "Barb",
+        "goldfish": "Goldfish",
+        "little-clownfish": "Little Clownfish",
+        "reef-fish": "Reef Fish",
+        "bass": "Bass",
+        "sardine": "Sardine",
+        "snapper": "Red Snapper",
+        "swordfish": "Swordfish",
+        "squid": "Squid",
+        "butterfly-fish": "Butterfly Fish",
+        "yellow-tang": "Yellow Tang",
+        "mandarin-fish": "Mandarin Fish",
+        "koi": "Koi",
+        "lionfish": "Lionfish",
+        "pufferfish": "Pufferfish",
+        "seahorse": "Seahorse",
+        "jellyfish": "Jellyfish",
+        "little-shark": "Little Shark",
+        "crab": "Crab"
       }
     },
     "lesson": {
@@ -8968,7 +9015,8 @@
       "medieval-village": "A storybook village with a windmill and a market.",
       "pirate-cove": "Sandy islands, palm trees, docks and sailing ships.",
       "wild-woods": "A sunny forest with a river, cliffs and a camp.",
-      "dino-valley": "A sunny valley with friendly dinosaurs, palms and a great egg."
+      "dino-valley": "A sunny valley with friendly dinosaurs, palms and a great egg.",
+      "under-the-sea": "A coral reef to swim through as a dolphin, a turtle or a fish."
     },
     "groups": {
       "heroes": "Heroes",

@@ -104,21 +104,24 @@ const LAYOUT = {
   sea: "#3fa7d6",
 };
 
+// An underwater world's LAYOUT also has swim: true (the hero is a sea animal that swims: no jumping, nothing to fall
+// off; ground is the coral it rests by), shoals: [[creature, how many], …] and friends: [creature, …] beside the way.
+
 // ---- WORDS: everything the player reads, in the 13 site languages -----------------------------------------------
 const WORDS = {
-  en: { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!' },
-  'en-GB': { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!' },
-  pt: { sub: 'Pule, pegue as moedas e salte na resposta certa!', play: 'Jogar', again: 'Jogar de novo', won: 'Você conseguiu!', score: 'Pontos: {n}', ask: 'Pule na resposta:', right: 'Certo! +{n}', wrong: 'Não é {a}! Tente outra', first: 'Responda à pergunta primeiro!', fell: 'Tente de novo!' },
-  fr: { sub: 'Saute, attrape les pièces et saute sur la bonne réponse !', play: 'Jouer', again: 'Rejouer', won: 'Bravo, tu as réussi !', score: 'Score : {n}', ask: 'Saute sur la réponse :', right: 'Correct ! +{n}', wrong: 'Pas {a} ! Essaie une autre', first: 'Réponds d’abord à la question !', fell: 'Essaie encore !' },
-  es: { sub: '¡Salta, coge las monedas y salta a la respuesta correcta!', play: 'Jugar', again: 'Jugar otra vez', won: '¡Lo lograste!', score: 'Puntos: {n}', ask: 'Salta a la respuesta:', right: '¡Correcto! +{n}', wrong: '¡No es {a}! Prueba otra', first: '¡Primero responde la pregunta!', fell: '¡Inténtalo de nuevo!' },
-  de: { sub: 'Hüpf los, sammle die Münzen und spring auf die richtige Antwort!', play: 'Spielen', again: 'Noch mal spielen', won: 'Geschafft!', score: 'Punkte: {n}', ask: 'Spring zur Antwort:', right: 'Richtig! +{n}', wrong: 'Nicht {a}! Probier eine andere', first: 'Beantworte zuerst die Frage!', fell: 'Versuch es noch mal!' },
-  he: { sub: 'קפצו, אספו מטבעות וקפצו אל התשובה הנכונה!', play: 'שחקו', again: 'שחקו שוב', won: 'הצלחתם!', score: 'ניקוד: {n}', ask: 'קפצו אל התשובה:', right: 'נכון! +{n}', wrong: 'לא {a}! נסו אחרת', first: 'קודם ענו על השאלה!', fell: 'נסו שוב!' },
-  ja: { sub: 'ぴょんぴょん すすんで、コインを あつめて、せいかいに ジャンプ！', play: 'あそぶ', again: 'もういちど', won: 'やったね！', score: 'スコア: {n}', ask: 'こたえに ジャンプ:', right: 'せいかい！ +{n}', wrong: '{a} じゃないよ！ ほかを ためそう', first: 'さきに もんだいに こたえてね！', fell: 'もういちど！' },
-  ar: { sub: 'اقفز واجمع العملات واقفز إلى الإجابة الصحيحة!', play: 'العب', again: 'العب مرة أخرى', won: 'أحسنت!', score: 'النقاط: {n}', ask: 'اقفز إلى الإجابة:', right: 'صحيح! +{n}', wrong: 'ليست {a}! جرّب غيرها', first: 'أجب عن السؤال أولاً!', fell: 'حاول مرة أخرى!' },
-  ru: { sub: 'Прыгай, собирай монеты и прыгай на правильный ответ!', play: 'Играть', again: 'Играть ещё', won: 'Получилось!', score: 'Очки: {n}', ask: 'Прыгни на ответ:', right: 'Верно! +{n}', wrong: 'Не {a}! Попробуй другой', first: 'Сначала ответь на вопрос!', fell: 'Попробуй ещё раз!' },
-  it: { sub: 'Salta, prendi le monete e salta sulla risposta giusta!', play: 'Gioca', again: 'Gioca ancora', won: 'Ce l’hai fatta!', score: 'Punti: {n}', ask: 'Salta sulla risposta:', right: 'Giusto! +{n}', wrong: 'Non è {a}! Prova un’altra', first: 'Prima rispondi alla domanda!', fell: 'Riprova!' },
-  'zh-Hant': { sub: '跳過去，收集金幣，跳到正確的答案上！', play: '開始玩', again: '再玩一次', won: '你做到了！', score: '分數：{n}', ask: '跳到答案上：', right: '答對了！+{n}', wrong: '不是 {a}！試試別的', first: '先回答問題！', fell: '再試一次！' },
-  nl: { sub: 'Spring, pak de munten en spring naar het goede antwoord!', play: 'Spelen', again: 'Nog een keer', won: 'Het is gelukt!', score: 'Score: {n}', ask: 'Spring naar het antwoord:', right: 'Goed zo! +{n}', wrong: 'Niet {a}! Probeer een andere', first: 'Beantwoord eerst de vraag!', fell: 'Probeer het nog eens!' },
+  en: { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!', swimSub: 'Swim along, grab the coins and swim to the right answer!', swimAsk: 'Swim to the answer:' },
+  'en-GB': { sub: 'Hop along, grab the coins and jump to the right answer!', play: 'Play', again: 'Play again', won: 'You did it!', score: 'Score: {n}', ask: 'Jump to the answer:', right: 'Correct! +{n}', wrong: 'Not {a}! Try another one', first: 'Answer the question first!', fell: 'Try again!', swimSub: 'Swim along, grab the coins and swim to the right answer!', swimAsk: 'Swim to the answer:' },
+  pt: { sub: 'Pule, pegue as moedas e salte na resposta certa!', play: 'Jogar', again: 'Jogar de novo', won: 'Você conseguiu!', score: 'Pontos: {n}', ask: 'Pule na resposta:', right: 'Certo! +{n}', wrong: 'Não é {a}! Tente outra', first: 'Responda à pergunta primeiro!', fell: 'Tente de novo!', swimSub: 'Nade, pegue as moedas e nade até a resposta certa!', swimAsk: 'Nade até a resposta:' },
+  fr: { sub: 'Saute, attrape les pièces et saute sur la bonne réponse !', play: 'Jouer', again: 'Rejouer', won: 'Bravo, tu as réussi !', score: 'Score : {n}', ask: 'Saute sur la réponse :', right: 'Correct ! +{n}', wrong: 'Pas {a} ! Essaie une autre', first: 'Réponds d’abord à la question !', fell: 'Essaie encore !', swimSub: 'Nage, attrape les pièces et nage jusqu’à la bonne réponse !', swimAsk: 'Nage jusqu’à la réponse :' },
+  es: { sub: '¡Salta, coge las monedas y salta a la respuesta correcta!', play: 'Jugar', again: 'Jugar otra vez', won: '¡Lo lograste!', score: 'Puntos: {n}', ask: 'Salta a la respuesta:', right: '¡Correcto! +{n}', wrong: '¡No es {a}! Prueba otra', first: '¡Primero responde la pregunta!', fell: '¡Inténtalo de nuevo!', swimSub: '¡Nada, coge las monedas y nada hasta la respuesta correcta!', swimAsk: 'Nada hasta la respuesta:' },
+  de: { sub: 'Hüpf los, sammle die Münzen und spring auf die richtige Antwort!', play: 'Spielen', again: 'Noch mal spielen', won: 'Geschafft!', score: 'Punkte: {n}', ask: 'Spring zur Antwort:', right: 'Richtig! +{n}', wrong: 'Nicht {a}! Probier eine andere', first: 'Beantworte zuerst die Frage!', fell: 'Versuch es noch mal!', swimSub: 'Schwimm los, sammle die Münzen und schwimm zur richtigen Antwort!', swimAsk: 'Schwimm zur Antwort:' },
+  he: { sub: 'קפצו, אספו מטבעות וקפצו אל התשובה הנכונה!', play: 'שחקו', again: 'שחקו שוב', won: 'הצלחתם!', score: 'ניקוד: {n}', ask: 'קפצו אל התשובה:', right: 'נכון! +{n}', wrong: 'לא {a}! נסו אחרת', first: 'קודם ענו על השאלה!', fell: 'נסו שוב!', swimSub: 'שחו, אספו מטבעות ושחו אל התשובה הנכונה!', swimAsk: 'שחו אל התשובה:' },
+  ja: { sub: 'ぴょんぴょん すすんで、コインを あつめて、せいかいに ジャンプ！', play: 'あそぶ', again: 'もういちど', won: 'やったね！', score: 'スコア: {n}', ask: 'こたえに ジャンプ:', right: 'せいかい！ +{n}', wrong: '{a} じゃないよ！ ほかを ためそう', first: 'さきに もんだいに こたえてね！', fell: 'もういちど！', swimSub: 'およいで すすんで、コインを あつめて、せいかいまで およごう！', swimAsk: 'こたえまで およごう:' },
+  ar: { sub: 'اقفز واجمع العملات واقفز إلى الإجابة الصحيحة!', play: 'العب', again: 'العب مرة أخرى', won: 'أحسنت!', score: 'النقاط: {n}', ask: 'اقفز إلى الإجابة:', right: 'صحيح! +{n}', wrong: 'ليست {a}! جرّب غيرها', first: 'أجب عن السؤال أولاً!', fell: 'حاول مرة أخرى!', swimSub: 'اسبح واجمع العملات واسبح إلى الإجابة الصحيحة!', swimAsk: 'اسبح إلى الإجابة:' },
+  ru: { sub: 'Прыгай, собирай монеты и прыгай на правильный ответ!', play: 'Играть', again: 'Играть ещё', won: 'Получилось!', score: 'Очки: {n}', ask: 'Прыгни на ответ:', right: 'Верно! +{n}', wrong: 'Не {a}! Попробуй другой', first: 'Сначала ответь на вопрос!', fell: 'Попробуй ещё раз!', swimSub: 'Плыви, собирай монеты и плыви к правильному ответу!', swimAsk: 'Плыви к ответу:' },
+  it: { sub: 'Salta, prendi le monete e salta sulla risposta giusta!', play: 'Gioca', again: 'Gioca ancora', won: 'Ce l’hai fatta!', score: 'Punti: {n}', ask: 'Salta sulla risposta:', right: 'Giusto! +{n}', wrong: 'Non è {a}! Prova un’altra', first: 'Prima rispondi alla domanda!', fell: 'Riprova!', swimSub: 'Nuota, prendi le monete e nuota fino alla risposta giusta!', swimAsk: 'Nuota fino alla risposta:' },
+  'zh-Hant': { sub: '跳過去，收集金幣，跳到正確的答案上！', play: '開始玩', again: '再玩一次', won: '你做到了！', score: '分數：{n}', ask: '跳到答案上：', right: '答對了！+{n}', wrong: '不是 {a}！試試別的', first: '先回答問題！', fell: '再試一次！', swimSub: '游過去，收集金幣，游到正確的答案那裡！', swimAsk: '游到答案那裡：' },
+  nl: { sub: 'Spring, pak de munten en spring naar het goede antwoord!', play: 'Spelen', again: 'Nog een keer', won: 'Het is gelukt!', score: 'Score: {n}', ask: 'Spring naar het antwoord:', right: 'Goed zo! +{n}', wrong: 'Niet {a}! Probeer een andere', first: 'Beantwoord eerst de vraag!', fell: 'Probeer het nog eens!', swimSub: 'Zwem, pak de munten en zwem naar het goede antwoord!', swimAsk: 'Zwem naar het antwoord:' },
 };
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const W0 = WORDS[LANG] || WORDS[LANG.split('-')[0]] || WORDS.en;
@@ -166,10 +169,59 @@ async function plaza(x, z, n) {
   return Promise.all(tiles);
 }
 
+// ---- An underwater world (LAYOUT.swim): one sandy sea floor, and a way marked by this world's pieces with coins
+// floating over them at different depths. Answers float over their pads, and the goal waits at the end: the hero
+// swims to them. Shoals of fish circle beside the way and a few friendly animals drift about; none is ever in the way.
+const SWIM = !!LAYOUT.swim;
+async function buildSea() {
+  W.ground({ y: 0, size: 500 });
+  const jobs = [], scenery = LAYOUT.scenery.slice(), [, sh] = sizeOf(LAYOUT.step.piece, LAYOUT.step.scale), [pw, ph] = sizeOf(LAYOUT.pad.piece, LAYOUT.pad.scale);
+  let k = 0, z = 0;
+  const side = (at, far = 0) => { if (!scenery.length) return; const s = scenery[k % scenery.length], x = (k % 2 ? 1 : -1) * (5.5 + far + (k % 3) * 1.5); k++; jobs.push(put(s.piece, x, at, s.scale, (k % 4) * 0.5)); };
+  const rest = at => { jobs.push(put(LAYOUT.ground.piece, 3.4, at - 1, LAYOUT.ground.scale)); spots.checkpoints.push([0, 1.6, at]); side(at, 1); side(at - 2, 4); };
+  spots.spawn = [0, 1.6, 1]; rest(1);
+  spots.coins.push([0, 2, -2.4], [0, 2.6, -4.8]);
+  z = -4.8;
+  for (const q of QUESTIONS) {
+    for (let i = 0; i < CONFIG.steps; i++) {
+      z -= 5;
+      const x = (i % 2 ? 1 : -1) * 1.7;
+      jobs.push(put(LAYOUT.step.piece, x, z, LAYOUT.step.scale, i * 0.7));
+      spots.coins.push([x, sh + 1.3 + (i % 3) * 1.1, z]);   // up and down: swim over each marker to its coin
+      side(z); if (i % 2) side(z - 2.5, 3.5);
+    }
+    z -= 7;
+    const gate = { q, pads: [], done: false, z }, sp = pw + 2.8, gz = z;
+    q.answers.forEach((answer, i) => {
+      const x = (i - (q.answers.length - 1) / 2) * sp;
+      jobs.push(stand(LAYOUT.pad.piece, x, gz, LAYOUT.pad.scale, ph).then(solid => gate.pads.push(answerPad(gate, solid, answer, x, gz))));
+    });
+    gates.push(gate); spots.gates.push([0, 2, z + 4.5]);
+    z -= 7; rest(z);
+  }
+  z -= 9;
+  const [, , ld] = sizeOf(LAYOUT.landmark.piece, LAYOUT.landmark.scale);
+  jobs.push(put(LAYOUT.goal.piece, 0, z - 1.5, LAYOUT.goal.scale), put(LAYOUT.landmark.piece, 0, z - 7 - ld / 2, LAYOUT.landmark.scale, 0.25));
+  side(z + 2, 1); side(z - 2, 1);
+  spots.goal = [0, 0.4, z];
+  const zoo = (g.theme.creatures || []).map(c => c.id);
+  (LAYOUT.shoals || []).filter(([id]) => zoo.includes(id)).forEach(([id, n], i, all) => jobs.push(g.school(id, n, { around: { x: (i % 2 ? 1 : -1) * 9.5, y: 3 + (i % 3) * 1.2, z: z * (i + 0.5) / all.length }, radius: 3.6 })));
+  (LAYOUT.friends || []).filter(id => zoo.includes(id)).forEach((id, i, all) => jobs.push(g.creature(id, { x: (i % 2 ? -1 : 1) * 8, y: 1.2 + (i % 3) * 1.6, z: z * (i + 0.7) / all.length, face: (i % 2 ? 1 : -1) * 1.2 }).then(c => c.wander({ radius: 3 }))));
+  await Promise.all(jobs);
+  // Swimming up to an answer or to the goal is what landing on it is in a walking world (once each time the hero comes).
+  g.onUpdate(() => {
+    if (!me || scene !== 'play') return;
+    const p = me.position;
+    for (const gate of gates) for (const pad of gate.pads) { const near = Math.hypot(p.x - pad.sprite.position.x, p.z - pad.sprite.position.z) < 1.8 && p.y < pad.solid.top() + 4.4; if (near && !pad.near) pad.solid.onLand(me); pad.near = near; }
+    const there = Math.hypot(p.x - spots.goal[0], p.z - spots.goal[2]) < 3.2; if (there && !spots.there) reachGoal(me); spots.there = there;
+  });
+}
+
 // The sea's height (a world may give its own in LAYOUT.seaY), and how far a hero falls before coming back.
 const SEA_Y = LAYOUT.seaY ?? -5, FALL_Y = LAYOUT.seaY == null ? -7 : LAYOUT.seaY - 2.5;
 let goalTiles = [];
 async function buildWorld() {
+  if (SWIM) return buildSea();
   const [gw, , gd] = sizeOf(LAYOUT.ground.piece, LAYOUT.ground.scale), n = LAYOUT.plaza;
   const half = (n * (LAYOUT.hex ? gd * 0.75 : gd)) / 2;
   const [sw, , sd] = sizeOf(LAYOUT.step.piece, LAYOUT.step.scale), [pw, , pd] = sizeOf(LAYOUT.pad.piece, LAYOUT.pad.scale);
@@ -260,7 +312,7 @@ function answerPad(gate, solid, answer, x, z) {
 }
 
 // ---- The round --------------------------------------------------------------------------------------------------
-const showAsk = () => { const gate = gates[answered]; $('ask').textContent = scene === 'play' && gate ? `${say('ask')} ${gate.q.question}` : ''; };
+const showAsk = () => { const gate = gates[answered]; $('ask').textContent = scene === 'play' && gate ? `${say(SWIM ? 'swimAsk' : 'ask')} ${gate.q.question}` : ''; };
 function reachGoal(hero) {
   if (scene !== 'play') return;
   if (answered < gates.length) { g.toast(say('first')); return; }
@@ -280,7 +332,7 @@ function play() {
   $('title').hidden = true; $('end').hidden = true;
   if (scene === 'win') reset();
   scene = 'play'; showAsk();
-  if (!controlsOn) { controlsOn = true; g.controls(me, { fallY: -60, tryAgain: '' }); g.followCamera(me); }
+  if (!controlsOn) { controlsOn = true; g.controls(me, SWIM ? { swim: true, floor: 0.4, ceiling: 9, fallY: -60, tryAgain: '' } : { fallY: -60, tryAgain: '' }); g.followCamera(me); }
 }
 
 await buildWorld();
@@ -298,7 +350,7 @@ g.onUpdate(() => {
 });
 
 document.title = CONFIG.title;
-$('t-title').textContent = CONFIG.title; $('t-sub').textContent = say('sub');
+$('t-title').textContent = CONFIG.title; $('t-sub').textContent = say(SWIM ? 'swimSub' : 'sub');
 $('play').textContent = `▶ ${say('play')}`; $('again').textContent = `↻ ${say('again')}`;
 $('play').onclick = play; $('again').onclick = play;
 $('loading').remove(); $('title').hidden = false; scene = 'title'; $('play').focus();

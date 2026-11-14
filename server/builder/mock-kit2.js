@@ -3,7 +3,7 @@
 // starter's CONFIG lines ("change the hero to the wizard", "make it night", "make it snow", "a blue cape", "make it
 // harder", "call it ..."), or a new version from the starter when the world changes ("move it to Toy Town"), carrying
 // the title, the hero's look, the questions and the words over. Deterministic, no model, the same tools as the AI.
-import { worldById, characterById, heroesOf, heroFor, creatureFor, hasAnimals, kit2Starter, kit2Of, isKit2Game, worldLook, KIT2_WORLDS, KIT2_CHARACTERS } from './kit2.js';
+import { worldById, characterById, heroesOf, heroFor, creatureFor, hasAnimals, kit2Starter, starterFor, kit2Of, isKit2Game, worldLook, KIT2_WORLDS, KIT2_CHARACTERS } from './kit2.js';
 import { detectTheme, detectColor } from './themes.js';
 import { cleanText } from '../services/textfilter.js';
 import { asksForLive } from './prompt.js';
@@ -72,7 +72,7 @@ export async function buildKit2(ctx, m, pick, say, o = {}) {
   if (o.replaces) await say(ctx, 'This will be a brand new 3D game. Your old game stays in Versions if you want it back. ');
   if (pick.wantsCreature) await say(ctx, `${NO_CREATURE}So ${who.name} is your hero${outfit && !col ? ', in a green cape' : ''}. `);
   else if (pick.missing && characterById(pick.missing)) await say(ctx, `${w.name} has no ${characterById(pick.missing).name}, so ${who.name} is your hero. `);
-  await say(ctx, `Here's my plan for ${title} ${icon}: a 3D game in the ${w.name} world with ${who.name} as the hero${friend ? ` and a ${friend.name} who follows you` : ''}. Hop along the path, grab the coins, jump to the right answer and reach the goal.${learnBit} Building it now…\n\n`);
+  await say(ctx, `Here's my plan for ${title} ${icon}: a 3D game in the ${w.name} world with ${who.name} as the hero${friend ? ` and a ${friend.name} who follows you` : ''}. ${starterFor(w.id) && starterFor(w.id).swim ? 'Swim along the reef, grab the coins, swim to the right answer and find the treasure.' : 'Hop along the path, grab the coins, jump to the right answer and reach the goal.'}${learnBit} Building it now…\n\n`);
   tools.exec('set_game', { title, icon: pick.wantsCreature && theme ? theme.emoji : icon, description: w.description.slice(0, 300), category: a.learn && a.learn !== 'none' ? 'learning' : 'adventure', tags: ['3d', w.id, hero, ...(friend ? [friend.id] : [])], players: 1, cover, orientation: 'any' });
   const r = tools.exec('write_game', { html, notes: `${o.replaces ? 'A new 3D game' : 'First version'}: ${title === w.name ? `the ${w.name} world` : `${title} in the ${w.name} world`}` });
   m.built = true; m.answers = { ...a, kind: 'oomba3d' };

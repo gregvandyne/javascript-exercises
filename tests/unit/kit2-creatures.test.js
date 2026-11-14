@@ -61,8 +61,10 @@ test('at least two worlds ship animals, and the T-Rex is not one of them', () =>
   const ids = new Set(withCreatures.flatMap(v => v.manifest.creatures.map(c => c.id)));
   for (const id of ['donkey', 'cow', 'husky', 'pig', 'sheep', 'horse', 'deer', 'stag', 'fox', 'shiba']) assert.ok(ids.has(id), id);
   // The velociraptor joined with Dino Valley 1.0.0: its mouth is closed and no teeth show (looked at face on and side on,
-  // docs/decisions.md "Dino Valley"). The T-Rex, whose mouth cannot be closed, the shark and the wolf are still out.
-  assert.ok(![...ids].some(id => /rex|tyranno|shark|wolf/.test(id)), 'nothing with teeth showing ships here');
+  // docs/decisions.md "Dino Valley"). The T-Rex, whose mouth cannot be closed, the wolf and every shark with teeth are still out.
+  // The one shark is Under the Sea's Little Shark: the underwater pack's toy-like model has no mouth at all (looked at
+  // face on and side on, docs/decisions.md "Under the Sea").
+  assert.ok(![...ids].some(id => /rex|tyranno|shark|wolf/.test(id) && id !== 'little-shark'), 'nothing with teeth showing ships here');
   for (const id of [...ids].filter(id => /raptor/.test(id))) assert.equal(id, 'velociraptor');
 });
 
@@ -81,7 +83,8 @@ for (const { theme, version, dir, manifest } of withCreatures) {
       assert.ok(Array.isArray(c.size) && c.size.length === 3 && c.size.every(n => n > 0.2 && n < 20), `${c.id} size (width, height, length)`);
       // Playable: what the hero's controls play. An animal without a walk (it hops) is never playable.
       assert.equal(typeof c.playable, 'boolean');
-      if (c.playable) for (const m of ['idle', 'walk', 'run', 'jump']) assert.ok(c.moves.includes(m), `${c.id} is playable, so it has ${m}`);
+      // (A water animal is played with the swim controls, which play idle and swim: it needs those two, and no walk.)
+      if (c.playable) for (const m of c.kind === 'water' ? ['idle', 'swim'] : ['idle', 'walk', 'run', 'jump']) assert.ok(c.moves.includes(m), `${c.id} is playable, so it has ${m}`);
       // Not playable: it cannot walk (it hops), or it walks but is far too long to read as a hero (the 15 m apatosaurus).
       else assert.ok(!c.moves.includes('walk') || c.size[2] > 10, `${c.id} is not playable only because it cannot walk, or is too long to be a hero`);
       // What keeps feet from sliding: the clip's own speed over the ground, and the part of the jump spent in the air.
@@ -93,7 +96,7 @@ for (const { theme, version, dir, manifest } of withCreatures) {
 
   test(`${theme} ${version}: everything the version before it had is still here, byte for byte`, () => {
     const before = versions.filter(v => v.theme === theme && v.version.localeCompare(version, undefined, { numeric: true }) < 0).sort((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true })).pop();
-    // A world born with its animals (Dino Valley 1.0.0) has no version before it: nothing older to keep, only its lock.
+    // A world born with its animals (Dino Valley 1.0.0, Under the Sea 1.0.0) has no version before it: nothing older to keep, only its lock.
     if (!before) { assert.equal(version, '1.0.0', 'only a first version has none before it'); assert.ok(LOCK.themes[`${theme}/${version}`], 'it is locked'); return; }
     for (const [f, info] of Object.entries(before.manifest.files)) if (/\.(glb|ogg)$/.test(f)) assert.equal(manifest.files[f] && manifest.files[f].sha384, info.sha384, `${f} is unchanged from ${before.version}`);
     for (const key of ['heroes', 'pieces', 'sounds', 'moves', 'look']) assert.deepEqual(manifest[key], before.manifest[key], `${key} are the same as in ${before.version}`);

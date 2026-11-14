@@ -1,0 +1,104 @@
+{
+ "dir": "alstra-fish-polypack",
+ "name": "Fish - PolyPack Asset",
+ "author": "ALSTRA INFINITE",
+ "url": "https://alstrainfinite.itch.io/fish",
+ "licence": "custom (Free Asset License: free to use in commercial and non-commercial projects WITH CREDIT; reselling or redistribution is not allowed)",
+ "licenceFile": "LICENSE-NOTE.txt",
+ "redistribute": false,
+ "creditRequired": true,
+ "credit": "Fish - PolyPack Asset by ALSTRA INFINITE (alstrainfinite.itch.io/fish): credit is REQUIRED",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true,
+  "textures": {
+   "^Material$": "Texture.png"
+  },
+  "inkNormals": true,
+  "textureSize": 128
+ },
+ "creatures": {
+  "FishV1": {
+   "id": "reef-fish",
+   "name": "Reef Fish"
+  },
+  "FishV2": {
+   "id": "bass",
+   "name": "Bass"
+  },
+  "FishV3": {
+   "id": "sardine",
+   "name": "Sardine"
+  },
+  "FishV4": {
+   "id": "snapper",
+   "name": "Red Snapper"
+  },
+  "SharkV1": {
+   "id": "grey-shark",
+   "name": "Grey Shark"
+  }
+ },
+ "items": {
+  "FishV1": {
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  "FishV2": {
+   "swimRig": {
+    "turn": -90,
+    "length": 1.6,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  "FishV3": {
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     2.4,
+     1.5,
+     1
+    ]
+   }
+  },
+  "FishV4": {
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   }
+  },
+  "SharkV1": {
+   "swimRig": {
+    "turn": -90,
+    "length": 4.4
+   }
+  }
+ },
+ "exclude": {
+  "SharkV1": "Kid-safe: an open red mouth with teeth"
+ },
+ "source": "branch asset-packs, folder alstra-fish-polypack/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "The FBX files name their picture PolyPackFish.png; the pack ships it as Textures/Texture.png, so defaults.textures binds it by material name.",
+  "The five models arrive still, lying along x: swimRig turns them to face +z and gives each a spine and the idle and swim clips made in the pipeline.",
+  "Credit to ALSTRA INFINITE is required wherever these models are used: docs/media-credits.md, the theme's SOURCES.md and theme.json, and the 2D pack's pack.json.",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models in public/vendor/themes/ and the pictures in public/vendor/art2d/ reviewed: the licence forbids redistributing the files as assets."
+ ]
+}

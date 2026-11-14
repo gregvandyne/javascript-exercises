@@ -1604,7 +1604,8 @@
         "busy-kitchen": "Drukke Keuken",
         "pirate-cove": "Piratenbaai",
         "wild-woods": "Wilde Woud",
-        "dino-valley": "Dinovallei"
+        "dino-valley": "Dinovallei",
+        "under-the-sea": "Onder de Zee"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "Stegosaurus",
         "parasaurolophus": "Parasaurolophus",
         "apatosaurus": "Apatosaurus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolfijn",
+        "turtle": "Zeeschildpad",
+        "clownfish": "Clownvis",
+        "blue-tang": "Blauwe doktersvis",
+        "barb": "Barbeel",
+        "goldfish": "Goudvis",
+        "little-clownfish": "Kleine clownvis",
+        "reef-fish": "Rifvis",
+        "bass": "Baars",
+        "sardine": "Sardine",
+        "snapper": "Rode snapper",
+        "swordfish": "Zwaardvis",
+        "squid": "Inktvis",
+        "butterfly-fish": "Koraalvlinder",
+        "yellow-tang": "Gele doktersvis",
+        "mandarin-fish": "Mandarijnpitvis",
+        "koi": "Koi",
+        "lionfish": "Koraalduivel",
+        "pufferfish": "Kogelvis",
+        "seahorse": "Zeepaardje",
+        "jellyfish": "Kwal",
+        "little-shark": "Haaitje",
+        "crab": "Krab"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Dolfijn",
+        "turtle": "Zeeschildpad",
+        "clownfish": "Clownvis",
+        "blue-tang": "Blauwe doktersvis",
+        "barb": "Barbeel",
+        "goldfish": "Goudvis",
+        "little-clownfish": "Kleine clownvis",
+        "reef-fish": "Rifvis",
+        "bass": "Baars",
+        "sardine": "Sardine",
+        "snapper": "Rode snapper",
+        "swordfish": "Zwaardvis",
+        "squid": "Inktvis",
+        "butterfly-fish": "Koraalvlinder",
+        "yellow-tang": "Gele doktersvis",
+        "mandarin-fish": "Mandarijnpitvis",
+        "koi": "Koi",
+        "lionfish": "Koraalduivel",
+        "pufferfish": "Kogelvis",
+        "seahorse": "Zeepaardje",
+        "jellyfish": "Kwal",
+        "little-shark": "Haaitje",
+        "crab": "Krab"
       }
     },
     "lesson": {
@@ -8552,7 +8599,8 @@
       "medieval-village": "Een sprookjesdorp met een molen en een markt.",
       "pirate-cove": "Zandeilanden, palmbomen, steigers en zeilschepen.",
       "wild-woods": "Een zonnig bos met een rivier, rotsen en een kamp.",
-      "dino-valley": "Een zonnige vallei met vriendelijke dinosaurussen, palmen en een reuzenei."
+      "dino-valley": "Een zonnige vallei met vriendelijke dinosaurussen, palmen en een reuzenei.",
+      "under-the-sea": "Een koraalrif waar je zwemt als dolfijn, schildpad of vis."
     },
     "groups": {
       "heroes": "Helden",

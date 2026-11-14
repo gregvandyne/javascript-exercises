@@ -1604,7 +1604,8 @@
         "busy-kitchen": "المطبخ المزدحم",
         "pirate-cove": "خليج القراصنة",
         "wild-woods": "الغابة البرية",
-        "dino-valley": "وادي الديناصورات"
+        "dino-valley": "وادي الديناصورات",
+        "under-the-sea": "تحت البحر"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "ستيغوصور",
         "parasaurolophus": "باراسورولوفوس",
         "apatosaurus": "أباتوصور",
-        "velociraptor": "فيلوسيرابتور"
+        "velociraptor": "فيلوسيرابتور",
+        "dolphin": "دلفين",
+        "turtle": "سلحفاة بحرية",
+        "clownfish": "سمكة المهرج",
+        "blue-tang": "الجراح الأزرق",
+        "barb": "سمكة البارب",
+        "goldfish": "سمكة ذهبية",
+        "little-clownfish": "سمكة المهرج الصغيرة",
+        "reef-fish": "سمكة الشعاب",
+        "bass": "سمكة القاروص",
+        "sardine": "سردين",
+        "snapper": "النهاش الأحمر",
+        "swordfish": "سمكة أبو سيف",
+        "squid": "حبار",
+        "butterfly-fish": "سمكة الفراشة",
+        "yellow-tang": "الجراح الأصفر",
+        "mandarin-fish": "سمكة الماندرين",
+        "koi": "سمكة الكوي",
+        "lionfish": "سمكة الأسد",
+        "pufferfish": "السمكة المنتفخة",
+        "seahorse": "فرس البحر",
+        "jellyfish": "قنديل البحر",
+        "little-shark": "القرش الصغير",
+        "crab": "سلطعون"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "ستيغوصور",
         "triceratops": "ترايسيراتوبس",
         "parasaurolophus": "باراصورولوفوس",
-        "velociraptor": "فيلوسيرابتور"
+        "velociraptor": "فيلوسيرابتور",
+        "dolphin": "دلفين",
+        "turtle": "سلحفاة بحرية",
+        "clownfish": "سمكة المهرج",
+        "blue-tang": "الجراح الأزرق",
+        "barb": "سمكة البارب",
+        "goldfish": "سمكة ذهبية",
+        "little-clownfish": "سمكة المهرج الصغيرة",
+        "reef-fish": "سمكة الشعاب",
+        "bass": "سمكة القاروص",
+        "sardine": "سردين",
+        "snapper": "النهاش الأحمر",
+        "swordfish": "سمكة أبو سيف",
+        "squid": "حبار",
+        "butterfly-fish": "سمكة الفراشة",
+        "yellow-tang": "الجراح الأصفر",
+        "mandarin-fish": "سمكة الماندرين",
+        "koi": "سمكة الكوي",
+        "lionfish": "سمكة الأسد",
+        "pufferfish": "السمكة المنتفخة",
+        "seahorse": "فرس البحر",
+        "jellyfish": "قنديل البحر",
+        "little-shark": "القرش الصغير",
+        "crab": "سلطعون"
       }
     },
     "lesson": {
@@ -8552,7 +8599,8 @@
       "medieval-village": "قرية من الحكايات فيها طاحونة وسوق.",
       "pirate-cove": "جزر رملية ونخيل وأرصفة وسفن شراعية.",
       "wild-woods": "غابة مشمسة فيها نهر وصخور ومخيّم.",
-      "dino-valley": "وادٍ مشمس فيه ديناصورات لطيفة ونخيل وبيضة عملاقة."
+      "dino-valley": "وادٍ مشمس فيه ديناصورات لطيفة ونخيل وبيضة عملاقة.",
+      "under-the-sea": "شعاب مرجانية تسبح فيها كدلفين أو سلحفاة أو سمكة."
     },
     "groups": {
       "heroes": "الأبطال",

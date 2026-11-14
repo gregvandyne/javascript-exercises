@@ -1604,7 +1604,8 @@
         "busy-kitchen": "Cozinha Agitada",
         "pirate-cove": "Enseada dos Piratas",
         "wild-woods": "Bosque Selvagem",
-        "dino-valley": "Vale dos Dinos"
+        "dino-valley": "Vale dos Dinos",
+        "under-the-sea": "Fundo do Mar"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "Estegossauro",
         "parasaurolophus": "Parassaurolofo",
         "apatosaurus": "Apatossauro",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Golfinho",
+        "turtle": "Tartaruga-marinha",
+        "clownfish": "Peixe-palhaço",
+        "blue-tang": "Cirurgião-azul",
+        "barb": "Barbo",
+        "goldfish": "Peixinho-dourado",
+        "little-clownfish": "Peixe-palhaço Pequeno",
+        "reef-fish": "Peixe de Recife",
+        "bass": "Robalo",
+        "sardine": "Sardinha",
+        "snapper": "Pargo Vermelho",
+        "swordfish": "Peixe-espada",
+        "squid": "Lula",
+        "butterfly-fish": "Peixe-borboleta",
+        "yellow-tang": "Cirurgião-amarelo",
+        "mandarin-fish": "Peixe-mandarim",
+        "koi": "Carpa Koi",
+        "lionfish": "Peixe-leão",
+        "pufferfish": "Baiacu",
+        "seahorse": "Cavalo-marinho",
+        "jellyfish": "Água-viva",
+        "little-shark": "Tubarãozinho",
+        "crab": "Caranguejo"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "Estegossauro",
         "triceratops": "Tricerátops",
         "parasaurolophus": "Parassaurolofo",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Golfinho",
+        "turtle": "Tartaruga-marinha",
+        "clownfish": "Peixe-palhaço",
+        "blue-tang": "Cirurgião-azul",
+        "barb": "Barbo",
+        "goldfish": "Peixinho-dourado",
+        "little-clownfish": "Peixe-palhaço Pequeno",
+        "reef-fish": "Peixe de Recife",
+        "bass": "Robalo",
+        "sardine": "Sardinha",
+        "snapper": "Pargo Vermelho",
+        "swordfish": "Peixe-espada",
+        "squid": "Lula",
+        "butterfly-fish": "Peixe-borboleta",
+        "yellow-tang": "Cirurgião-amarelo",
+        "mandarin-fish": "Peixe-mandarim",
+        "koi": "Carpa Koi",
+        "lionfish": "Peixe-leão",
+        "pufferfish": "Baiacu",
+        "seahorse": "Cavalo-marinho",
+        "jellyfish": "Água-viva",
+        "little-shark": "Tubarãozinho",
+        "crab": "Caranguejo"
       }
     },
     "lesson": {
@@ -8553,7 +8600,8 @@
       "medieval-village": "Uma vila de conto com um moinho e uma feira.",
       "pirate-cove": "Ilhas de areia, palmeiras, cais e barcos a vela.",
       "wild-woods": "Uma floresta ensolarada com rio, pedras e acampamento.",
-      "dino-valley": "Um vale ensolarado com dinossauros amigáveis, palmeiras e um ovo gigante."
+      "dino-valley": "Um vale ensolarado com dinossauros amigáveis, palmeiras e um ovo gigante.",
+      "under-the-sea": "Um recife de coral para nadar como golfinho, tartaruga ou peixe."
     },
     "groups": {
       "heroes": "Heróis",

@@ -1,0 +1,24 @@
+Low Poly Sea Life: Shrimp, Lobster, Crab, Octopus, Seal, Turtle, Dolphin, Eel, Tuna
+License for buyers
+
+When you buy this pack, you may:
+
+- use the models, animations and textures in any number of your own projects, commercial or
+  non-commercial: games, apps, films, renders, prototypes, game jams;
+- change them in any way: edit, re-rig, re-texture, combine with other assets;
+- ship them inside your finished project, in a form that is part of that project.
+
+You may not:
+
+- sell, give away or share the assets themselves, changed or unchanged, on their own or as part of
+  another asset pack, template, kit or library;
+- put the assets anywhere others can download them as assets (asset stores, model sites, public
+  repositories) unless they are packed into a finished project;
+- claim you made the assets.
+
+Credit is welcome but not required.
+
+The assets are provided as they are, with no warranty.
+
+If you bought this pack through a marketplace (for example the Unity Asset Store, CGTrader or Fab),
+that marketplace's own license applies instead of this one.

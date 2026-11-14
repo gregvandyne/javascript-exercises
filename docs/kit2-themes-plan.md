@@ -46,6 +46,7 @@ Three themes ship first; the rest follow once the first three are proven on scho
 | Pirate Cove | added 14 Nov | Kenney Pirate Kit + KayKit Adventurers | Three.js | Maths, geography, treasure maps |
 | Wild Woods | added 14 Nov | Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Maths, science, nature |
 | Dino Valley | added 14 Nov | Quaternius Animated Dinosaurs (five, no T-Rex) + Kenney Nature Kit + Quaternius Ultimate Nature + KayKit Adventurers | Three.js | Science, maths, nature |
+| Under the Sea | added 14 Nov | Seven uploaded sea packs, six of them NOT CC0 (use in games only, files never passed on; one requires credit): `docs/media-credits.md` | Three.js | Maths, science, sea life |
 
 ## How it fits together
 
@@ -114,8 +115,11 @@ The worlds, heroes and the uploaded animals are also drawn as 2D art, so games o
 - **Which games.** The runner and the catching game draw a world and a sprite hero today (`CONFIG.world`,
   `CONFIG.hero2d`); with neither they are the games they always were and do not load Oomba2D at all. Quiz, word, memory,
   duel and board games do not draw the worlds yet.
-- **Not in the packs:** the T-Rex (not decided), the sea creatures and cute fish (next), and the three reodesuxz packs
-  (desert oasis, sky islands pack, underwater pack: a custom licence, never offered as files, not needed here).
+- **Not in the packs:** the T-Rex (not decided) and two of the reodesuxz packs (desert oasis, sky islands pack).
+- **The sea (added 14 Nov 2026 with Under the Sea 1.0.0):** an `under-the-sea` world pack and `animals` 1.1.0, which is
+  the 24 land animals byte for byte plus the 23 sea animals in a new group, `sea` (`animals` 1.0.0 stays as it is for
+  games saved on it). These pictures are drawn from packs that are not CC0: use in games is allowed, the model files
+  are never offered, and each pack's licence text and credit travel in the pack (`docs/media-credits.md`).
 - **Pixel World on Phaser** (stage 6) is still its own later stage: these packs are the kit's worlds in 2D, not a new
   2D engine.
 

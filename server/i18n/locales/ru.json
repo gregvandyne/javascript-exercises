@@ -1603,7 +1603,8 @@
         "busy-kitchen": "Шумная кухня",
         "pirate-cove": "Пиратская бухта",
         "wild-woods": "Дикий лес",
-        "dino-valley": "Долина динозавров"
+        "dino-valley": "Долина динозавров",
+        "under-the-sea": "Морское дно"
       }
     },
     "heroes": {
@@ -1631,7 +1632,30 @@
         "stegosaurus": "Стегозавр",
         "parasaurolophus": "Паразауролоф",
         "apatosaurus": "Апатозавр",
-        "velociraptor": "Велоцираптор"
+        "velociraptor": "Велоцираптор",
+        "dolphin": "Дельфин",
+        "turtle": "Морская черепаха",
+        "clownfish": "Рыба-клоун",
+        "blue-tang": "Синий хирург",
+        "barb": "Барбус",
+        "goldfish": "Золотая рыбка",
+        "little-clownfish": "Маленькая рыба-клоун",
+        "reef-fish": "Рифовая рыбка",
+        "bass": "Окунь",
+        "sardine": "Сардина",
+        "snapper": "Красный луциан",
+        "swordfish": "Рыба-меч",
+        "squid": "Кальмар",
+        "butterfly-fish": "Рыба-бабочка",
+        "yellow-tang": "Жёлтый хирург",
+        "mandarin-fish": "Мандаринка",
+        "koi": "Карп кои",
+        "lionfish": "Крылатка",
+        "pufferfish": "Рыба-ёж",
+        "seahorse": "Морской конёк",
+        "jellyfish": "Медуза",
+        "little-shark": "Акулёнок",
+        "crab": "Краб"
       }
     },
     "animals": {
@@ -1659,7 +1683,30 @@
         "stegosaurus": "Стегозавр",
         "triceratops": "Трицератопс",
         "parasaurolophus": "Паразауролоф",
-        "velociraptor": "Велоцираптор"
+        "velociraptor": "Велоцираптор",
+        "dolphin": "Дельфин",
+        "turtle": "Морская черепаха",
+        "clownfish": "Рыба-клоун",
+        "blue-tang": "Синий хирург",
+        "barb": "Барбус",
+        "goldfish": "Золотая рыбка",
+        "little-clownfish": "Маленькая рыба-клоун",
+        "reef-fish": "Рифовая рыбка",
+        "bass": "Окунь",
+        "sardine": "Сардина",
+        "snapper": "Красный луциан",
+        "swordfish": "Рыба-меч",
+        "squid": "Кальмар",
+        "butterfly-fish": "Рыба-бабочка",
+        "yellow-tang": "Жёлтый хирург",
+        "mandarin-fish": "Мандаринка",
+        "koi": "Карп кои",
+        "lionfish": "Крылатка",
+        "pufferfish": "Рыба-ёж",
+        "seahorse": "Морской конёк",
+        "jellyfish": "Медуза",
+        "little-shark": "Акулёнок",
+        "crab": "Краб"
       }
     },
     "lesson": {
@@ -8551,7 +8598,8 @@
       "medieval-village": "Сказочная деревня с мельницей и рынком.",
       "pirate-cove": "Песчаные острова, пальмы, причалы и парусники.",
       "wild-woods": "Солнечный лес с рекой, скалами и лагерем.",
-      "dino-valley": "Солнечная долина с дружелюбными динозаврами, пальмами и огромным яйцом."
+      "dino-valley": "Солнечная долина с дружелюбными динозаврами, пальмами и огромным яйцом.",
+      "under-the-sea": "Коралловый риф, где ты плывёшь дельфином, черепахой или рыбкой."
     },
     "groups": {
       "heroes": "Герои",

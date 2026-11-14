@@ -1,0 +1,53 @@
+{
+ "dir": "muteassets-sea-life-sample",
+ "name": "Low Poly Sea Life (sample: dolphin and crab)",
+ "author": "MuteAssets",
+ "licence": "custom (games and modification allowed, shipped only as part of a finished project; the assets may not be given away, shared or put anywhere others can download them as assets)",
+ "licenceFile": "LICENSE.txt",
+ "redistribute": false,
+ "credit": "Low Poly Sea Life by MuteAssets (welcome, not required)",
+ "defaults": {
+  "matte": true,
+  "colourOnly": true,
+  "textures": {
+   "^WaterPalette$": "water_animal_texture.png"
+  },
+  "textureSize": 256,
+  "floor": true
+ },
+ "creatures": {
+  "dolphin": {
+   "id": "dolphin",
+   "name": "Dolphin",
+   "size": {
+    "length": 3.6
+   },
+   "clips": {
+    "idle": "\\|Idle$",
+    "swim": "\\|Swim$",
+    "spin": "\\|Spin$",
+    "chatter": "\\|Chatter$",
+    "leap": "\\|Jump$"
+   }
+  },
+  "crab": {
+   "id": "crab",
+   "name": "Crab",
+   "size": {
+    "longest": 1.5
+   },
+   "clips": {
+    "idle": "\\|Idle$",
+    "stroll": "\\|ScuttleRight$"
+   }
+  }
+ },
+ "exclude": {},
+ "source": "branch asset-packs, folder muteassets-sea-life-sample/ (uploaded by the owner, November 2026)",
+ "notes": [
+  "The licence names no author: MuteAssets is taken from the folder name the owner uploaded it under. No source URL was uploaded with the pack.",
+  "Clips dropped: Death, Hit and Ram (dolphin); Death, Hit, Pinch, Threat and Grab (crab); Nudge (dolphin) too, so that nothing the dolphin does reads as pushing. ScuttleLeft is the mirror of ScuttleRight: one is kept, as stroll.",
+  "If this repository ever becomes public, the raw files of this pack (branch asset-packs) must be removed first, and the built models in public/vendor/themes/ and the pictures in public/vendor/art2d/ reviewed: the licence forbids redistributing the files as assets.",
+  "The dolphin's Jump clip (a leap out of the water) is kept as \"leap\": \"jump\" is what a walking animal does under the hero's controls."
+ ]
+}

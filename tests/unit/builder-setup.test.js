@@ -205,9 +205,12 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
   for (const c of art2d.ART2D_ANIMALS) assert.ok(groups.some(g => g.items.some(x => x.id === c.id && x.in2d)), `${c.id} is offered`);
   // "Coming soon" only where neither catalogue has anything; "Coming soon in 3D" where there are only 2D sprites (no
   // group today: the dinosaurs were, until Dino Valley shipped; the made-up lists below show both states)
-  assert.deepEqual(groups.map(g => [g.id, g.soon, g.only2d]), [['heroes', false, false], ['farm', false, false], ['wild', false, false], ['dinosaurs', false, false], ['sea', true, false]]);
+  assert.deepEqual(groups.map(g => [g.id, g.soon, g.only2d]), [['heroes', false, false], ['farm', false, false], ['wild', false, false], ['dinosaurs', false, false], ['sea', false, false]]);
   const before = plan.characterGroups(plan.setupCharacters(kit2.KIT2_CHARACTERS.filter(c => c.group !== 'dinosaurs'), art2d.ART2D_CHARACTERS));
   assert.equal(before.find(g => g.id === 'dinosaurs').only2d, true, 'with no 3D dinosaur the group says "Coming soon in 3D"');
+  // the sea lit up by itself with Under the Sea 1.0.0 (3D) and animals 1.1.0 (2D): every sea animal is in both
+  assert.equal(by.sea.items.length, 23); assert.ok(by.sea.items.every(c => c.in3d && c.in2d && c.worlds.join() === 'under-the-sea'), 'the sea animals, in 3D and as sprites');
+  assert.ok(by.sea.items.some(c => c.id === 'crab'), 'the crab walks, and is still a sea animal (kit2/creature-groups.json)');
   // every catalogue creature has a group the step lists (the generator writes it: kit2/creature-groups.json)
   for (const id of kit2.CREATURE_IDS) assert.ok(CREATURE_GROUPS.includes(catalog.KIT2_CREATURE_GROUP[id]) && kit2.characterById(id).group === catalog.KIT2_CREATURE_GROUP[id], `${id} has a group`);
   assert.deepEqual(Object.keys(catalog.KIT2_CREATURE_GROUP).sort(), [...kit2.CREATURE_IDS].sort());
@@ -217,7 +220,10 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
   // a theme ships a dinosaur: the group is no longer "Coming soon", with nothing else to change
   // a theme ships a 3D dinosaur, a 2D pack ships a fish: the groups light up with nothing else to change
   const later = plan.characterGroups(plan.setupCharacters([...kit2.KIT2_CHARACTERS, { id: 'trex', name: 'T. rex', kind: 'creature', group: 'dinosaurs', worlds: ['wild-woods'] }], [...art2d.ART2D_CHARACTERS, { id: 'clownfish', name: 'Clownfish', kind: 'animal', group: 'sea' }]));
-  assert.deepEqual([later.find(g => g.id === 'dinosaurs').only2d, later.find(g => g.id === 'sea').soon, later.find(g => g.id === 'sea').only2d], [false, false, true]);
+  assert.deepEqual([later.find(g => g.id === 'dinosaurs').only2d, later.find(g => g.id === 'sea').soon, later.find(g => g.id === 'sea').only2d], [false, false, false]);
+  // and a group nothing has shipped for is still "Coming soon": the sea was, until its world shipped
+  const noSea = plan.characterGroups(plan.setupCharacters(kit2.KIT2_CHARACTERS.filter(c => c.group !== 'sea'), art2d.ART2D_CHARACTERS.filter(c => c.group !== 'sea')));
+  assert.deepEqual([noSea.find(g => g.id === 'sea').soon, noSea.find(g => g.id === 'sea').items.length], [true, 0]);
 });
 
 // ---------------------------------------------------------------- the page
@@ -235,8 +241,8 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
   assert.equal((h.match(/data-go="back"/g) || []).length, 7); assert.equal((h.match(/data-go="skip"/g) || []).length, 6); assert.equal((h.match(/data-go="next"/g) || []).length, 6);
   assert.match(h, /Step 1 of 6/); assert.match(h, /Step 6 of 6/);
-  // ten live worlds (Wild Woods too), each with its real cover and a Preview button; every preview picture exists, large
-  assert.equal(kit2.KIT2_WORLDS.length, 11);
+  // twelve live worlds (Wild Woods, Dino Valley and Under the Sea too), each with its real cover and a Preview button; every preview picture exists, large
+  assert.equal(kit2.KIT2_WORLDS.length, 12);
   for (const w of kit2.KIT2_WORLDS) {
     assert.ok(h.includes(`src="/vendor/themes/${w.id}/${w.version}/cover.webp"`), `${w.id} cover`);
     assert.ok(h.includes(`data-preview="${w.id}"`), `${w.id} preview button`);
@@ -258,7 +264,8 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   assert.equal((h.match(/data-step="chars" data-id="(?!else)/g) || []).length, plan.SETUP_CHARACTERS.length);
   const group = id => (new RegExp(`<section class="su-group[^"]*" data-group="${id}"[\\s\\S]*?</section>`).exec(h) || [''])[0];
   for (const [id, name] of [['heroes', 'Heroes'], ['farm', 'Farm animals'], ['wild', 'Zoo and wild animals'], ['dinosaurs', 'Dinosaurs'], ['sea', 'Fish and sea animals']]) assert.ok(group(id).includes(name), name);
-  assert.match(group('sea'), /Coming soon</); assert.ok(!group('sea').includes('su-pick'), 'sea animals cannot be picked');
+  // the sea animals shipped with Under the Sea 1.0.0: the group is live, with its animals to pick
+  assert.doesNotMatch(group('sea'), /Coming soon/); assert.ok(group('sea').includes('data-id="dolphin"') && group('sea').includes('data-id="crab"') && group('sea').includes('su-pick'), 'sea animals can be picked');
   assert.doesNotMatch(group('dinosaurs'), /Coming soon/); assert.ok(group('dinosaurs').includes('data-id="triceratops"') && group('dinosaurs').includes('data-id="velociraptor"'));
   assert.ok(h.includes('data-preview="dino-valley"') && h.includes('aria-label="Preview Dino Valley"'));
   assert.doesNotMatch(h, /t-?rex|tyrannosaur/i);

@@ -1604,7 +1604,8 @@
         "busy-kitchen": "Cucina Indaffarata",
         "pirate-cove": "Baia dei Pirati",
         "wild-woods": "Bosco Selvaggio",
-        "dino-valley": "Valle dei Dinosauri"
+        "dino-valley": "Valle dei Dinosauri",
+        "under-the-sea": "In Fondo al Mare"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "Stegosauro",
         "parasaurolophus": "Parasaurolofo",
         "apatosaurus": "Apatosauro",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Delfino",
+        "turtle": "Tartaruga marina",
+        "clownfish": "Pesce pagliaccio",
+        "blue-tang": "Pesce chirurgo blu",
+        "barb": "Barbo",
+        "goldfish": "Pesce rosso",
+        "little-clownfish": "Piccolo pesce pagliaccio",
+        "reef-fish": "Pesce di barriera",
+        "bass": "Spigola",
+        "sardine": "Sardina",
+        "snapper": "Dentice rosso",
+        "swordfish": "Pesce spada",
+        "squid": "Calamaro",
+        "butterfly-fish": "Pesce farfalla",
+        "yellow-tang": "Pesce chirurgo giallo",
+        "mandarin-fish": "Pesce mandarino",
+        "koi": "Carpa koi",
+        "lionfish": "Pesce leone",
+        "pufferfish": "Pesce palla",
+        "seahorse": "Cavalluccio marino",
+        "jellyfish": "Medusa",
+        "little-shark": "Squaletto",
+        "crab": "Granchio"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "Stegosauro",
         "triceratops": "Triceratopo",
         "parasaurolophus": "Parasaurolofo",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Delfino",
+        "turtle": "Tartaruga marina",
+        "clownfish": "Pesce pagliaccio",
+        "blue-tang": "Pesce chirurgo blu",
+        "barb": "Barbo",
+        "goldfish": "Pesce rosso",
+        "little-clownfish": "Piccolo pesce pagliaccio",
+        "reef-fish": "Pesce di barriera",
+        "bass": "Spigola",
+        "sardine": "Sardina",
+        "snapper": "Dentice rosso",
+        "swordfish": "Pesce spada",
+        "squid": "Calamaro",
+        "butterfly-fish": "Pesce farfalla",
+        "yellow-tang": "Pesce chirurgo giallo",
+        "mandarin-fish": "Pesce mandarino",
+        "koi": "Carpa koi",
+        "lionfish": "Pesce leone",
+        "pufferfish": "Pesce palla",
+        "seahorse": "Cavalluccio marino",
+        "jellyfish": "Medusa",
+        "little-shark": "Squaletto",
+        "crab": "Granchio"
       }
     },
     "lesson": {
@@ -8552,7 +8599,8 @@
       "medieval-village": "Un villaggio da fiaba con un mulino e un mercato.",
       "pirate-cove": "Isole di sabbia, palme, moli e velieri.",
       "wild-woods": "Un bosco pieno di sole con un fiume, rocce e un campo.",
-      "dino-valley": "Una valle soleggiata con dinosauri amichevoli, palme e un uovo gigante."
+      "dino-valley": "Una valle soleggiata con dinosauri amichevoli, palme e un uovo gigante.",
+      "under-the-sea": "Una barriera corallina dove nuotare come delfino, tartaruga o pesce."
     },
     "groups": {
       "heroes": "Eroi",

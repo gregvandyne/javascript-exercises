@@ -21,7 +21,8 @@ const [nx, nz0, nz1] = sea ? [1, -3, 0] : [3, -4, 1];
 // A theme whose ground has tiles with a stream on them (tags 'river' and 'tile': Wild Woods) gets one across the front
 // row instead, with its first bridge over it, off to one side.
 const stream = T.pieces.find(p => has(p, 'river') && has(p, 'tile')), bridge = stream && T.pieces.find(p => has(p, 'bridge'));
-for (let ix = -nx; ix <= nx; ix++) for (let iz = nz0; iz <= nz1; iz++) {
+const undersea = T.look.weather === 'bubbles';   // an underwater theme: no ground tiles, one sandy floor the library makes
+if (!undersea) for (let ix = -nx; ix <= nx; ix++) for (let iz = nz0; iz <= nz1; iz++) {
   if (stream && iz === nz1) await W.piece(stream.id, { x: ix * gw, y: 0, z: iz * gd, turn: Math.PI / 2 });
   else await W.island({ piece: ground.id, scale: 1, x: ix * gw, y: -ground.size[1], z: iz * gd });
 }
@@ -42,14 +43,24 @@ const spot = c => {
   if (i >= 0) return { x: (i - (small.length - 1) / 2) * 2.5 + (big.length ? -4.4 : 0), y: 0, z: 4.6 + (i % 2) * 0.9, face: 0.5 - i * 0.25 + (big.length ? 0.7 : 0) };
   return k < 2 ? { x: side * 9, y: 0, z: -3.5, face: -side * 1.15 } : { x: side * 4.5, y: 0, z: (side < 0 ? -6.5 : -11) - (k >> 2) * 6, face: -side * 1.3 };
 };
-const animals = g.creature ? await Promise.all(zoo.map(c => g.creature(c.id, spot(c)))) : [];
+// (An underwater theme: an endless sandy floor, bubbles, and its water animals side on at
+// different depths all over the picture, the big ones further back, with a shoal of the smallest behind them.)
+if (undersea) { W.ground({ y: 0, size: 400 }); g.weather('bubbles'); g.graphics('high'); }   // high: every animal is drawn
+const swimmers = undersea ? zoo.filter(c => c.kind !== 'land').sort((a, b) => a.size[2] - b.size[2]) : [];
+const spotOf = (c, i) => {
+  const k = swimmers.indexOf(c); if (k < 0) return spot(c);
+  const far = c.size[2] > 2.5, side = k % 2 ? 1 : -1, col = (k * 5) % 9 - 4;
+  return far ? { x: side * (2.5 + (k % 3) * 2.6), y: 2.8 + (k % 3) * 1.4, z: -3 - (k % 4) * 2.2, face: -side * 1.25 } : { x: col * 1.75 + side * 0.4, y: 0.5 + (k % 4) * 1.15, z: 5.6 - (k % 3) * 2.1, face: side * 1.15 };
+};
+const animals = g.creature ? await Promise.all(zoo.map((c, i) => g.creature(c.id, spotOf(c, i)))) : [];
+if (swimmers.length) await g.school([...swimmers].sort((a, b) => a.size[1] - b.size[1])[0].id, 9, { around: { x: 7, y: 5.5, z: -9 }, radius: 4 });   // the slimmest fish
 animals.forEach((a, i) => a.play(a.moves.includes('eat') && i % 2 ? 'eat' : 'idle'));
 
 // A spread of the theme's other pieces behind them: big ones far back, small ones nearer.
 // (In a sea theme, ships and boats, tagged 'afloat', go out on the water round the ground, biggest furthest back; other
 // islands stand in the sea in front; and the big pieces get a third row and more room.)
 const afloat = sea ? T.pieces.filter(p => has(p, 'afloat')) : [], islets = sea ? T.pieces.filter(p => p !== ground && has(p, 'island')) : [];
-const rest = T.pieces.filter(p => p !== ground && p !== bridge && !afloat.includes(p) && !islets.includes(p) && !has(p, 'tile') && !has(p, 'ground') && !has(p, 'road') && !has(p, 'floor') && !has(p, 'path') && p.kind !== 'effect');
+const rest = T.pieces.filter(p => (undersea || p !== ground) && p !== bridge && !afloat.includes(p) && !islets.includes(p) && !has(p, 'tile') && (undersea || !has(p, 'ground')) && !has(p, 'road') && !has(p, 'floor') && !has(p, 'path') && p.kind !== 'effect');
 rest.sort((a, b) => Math.max(...b.size) - Math.max(...a.size));
 const placed = [];
 afloat.sort((a, b) => Math.max(...b.size) - Math.max(...a.size));
@@ -66,6 +77,6 @@ for (const [i, p] of rest.entries()) {
 }
 await Promise.all(placed);
 g.camera.position.set(0, 4.2, 12.5); g.camera.lookAt(0, 1.6, -2);
-window.__tour = { heroes: heroes.length, creatures: animals.length, pieces: rest.length + afloat.length + islets.length + 1 + (stream ? 1 : 0) + (bridge ? 1 : 0), g };
+window.__tour = { heroes: heroes.length, creatures: animals.length, pieces: rest.length + afloat.length + islets.length + (undersea ? 0 : 1) + (stream ? 1 : 0) + (bridge ? 1 : 0), g };
 window.__ready = true;
 </script>

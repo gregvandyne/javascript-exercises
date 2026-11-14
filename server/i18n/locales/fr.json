@@ -1603,7 +1603,8 @@
         "busy-kitchen": "Cuisine Animée",
         "pirate-cove": "Crique des Pirates",
         "wild-woods": "Forêt Sauvage",
-        "dino-valley": "Vallée des Dinos"
+        "dino-valley": "Vallée des Dinos",
+        "under-the-sea": "Sous la Mer"
       }
     },
     "heroes": {
@@ -1631,7 +1632,30 @@
         "stegosaurus": "Stégosaure",
         "parasaurolophus": "Parasaurolophus",
         "apatosaurus": "Apatosaure",
-        "velociraptor": "Vélociraptor"
+        "velociraptor": "Vélociraptor",
+        "dolphin": "Dauphin",
+        "turtle": "Tortue de mer",
+        "clownfish": "Poisson-clown",
+        "blue-tang": "Chirurgien bleu",
+        "barb": "Barbeau",
+        "goldfish": "Poisson rouge",
+        "little-clownfish": "Petit Poisson-clown",
+        "reef-fish": "Poisson de récif",
+        "bass": "Bar",
+        "sardine": "Sardine",
+        "snapper": "Vivaneau rouge",
+        "swordfish": "Espadon",
+        "squid": "Calmar",
+        "butterfly-fish": "Poisson-papillon",
+        "yellow-tang": "Chirurgien jaune",
+        "mandarin-fish": "Poisson-mandarin",
+        "koi": "Carpe koï",
+        "lionfish": "Poisson-lion",
+        "pufferfish": "Poisson-globe",
+        "seahorse": "Hippocampe",
+        "jellyfish": "Méduse",
+        "little-shark": "Petit Requin",
+        "crab": "Crabe"
       }
     },
     "animals": {
@@ -1659,7 +1683,30 @@
         "stegosaurus": "Stégosaure",
         "triceratops": "Tricératops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Vélociraptor"
+        "velociraptor": "Vélociraptor",
+        "dolphin": "Dauphin",
+        "turtle": "Tortue de mer",
+        "clownfish": "Poisson-clown",
+        "blue-tang": "Chirurgien bleu",
+        "barb": "Barbeau",
+        "goldfish": "Poisson rouge",
+        "little-clownfish": "Petit Poisson-clown",
+        "reef-fish": "Poisson de récif",
+        "bass": "Bar",
+        "sardine": "Sardine",
+        "snapper": "Vivaneau rouge",
+        "swordfish": "Espadon",
+        "squid": "Calmar",
+        "butterfly-fish": "Poisson-papillon",
+        "yellow-tang": "Chirurgien jaune",
+        "mandarin-fish": "Poisson-mandarin",
+        "koi": "Carpe koï",
+        "lionfish": "Poisson-lion",
+        "pufferfish": "Poisson-globe",
+        "seahorse": "Hippocampe",
+        "jellyfish": "Méduse",
+        "little-shark": "Petit Requin",
+        "crab": "Crabe"
       }
     },
     "lesson": {
@@ -8551,7 +8598,8 @@
       "medieval-village": "Un village de conte avec un moulin et un marché.",
       "pirate-cove": "Îles de sable, palmiers, quais et bateaux à voiles.",
       "wild-woods": "Une forêt ensoleillée avec une rivière, des falaises et un camp.",
-      "dino-valley": "Une vallée ensoleillée avec des dinosaures gentils, des palmiers et un œuf géant."
+      "dino-valley": "Une vallée ensoleillée avec des dinosaures gentils, des palmiers et un œuf géant.",
+      "under-the-sea": "Un récif de corail à explorer à la nage en dauphin, en tortue ou en poisson."
     },
     "groups": {
       "heroes": "Héros",

@@ -1604,7 +1604,8 @@
         "busy-kitchen": "Wuselküche",
         "pirate-cove": "Piratenbucht",
         "wild-woods": "Wilder Wald",
-        "dino-valley": "Dino-Tal"
+        "dino-valley": "Dino-Tal",
+        "under-the-sea": "Unter dem Meer"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "Stegosaurus",
         "parasaurolophus": "Parasaurolophus",
         "apatosaurus": "Apatosaurus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Delfin",
+        "turtle": "Meeresschildkröte",
+        "clownfish": "Clownfisch",
+        "blue-tang": "Blauer Doktorfisch",
+        "barb": "Barbe",
+        "goldfish": "Goldfisch",
+        "little-clownfish": "Kleiner Clownfisch",
+        "reef-fish": "Rifffisch",
+        "bass": "Barsch",
+        "sardine": "Sardine",
+        "snapper": "Roter Schnapper",
+        "swordfish": "Schwertfisch",
+        "squid": "Tintenfisch",
+        "butterfly-fish": "Falterfisch",
+        "yellow-tang": "Gelber Doktorfisch",
+        "mandarin-fish": "Mandarinfisch",
+        "koi": "Koi",
+        "lionfish": "Feuerfisch",
+        "pufferfish": "Kugelfisch",
+        "seahorse": "Seepferdchen",
+        "jellyfish": "Qualle",
+        "little-shark": "Kleiner Hai",
+        "crab": "Krabbe"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "Stegosaurus",
         "triceratops": "Triceratops",
         "parasaurolophus": "Parasaurolophus",
-        "velociraptor": "Velociraptor"
+        "velociraptor": "Velociraptor",
+        "dolphin": "Delfin",
+        "turtle": "Meeresschildkröte",
+        "clownfish": "Clownfisch",
+        "blue-tang": "Blauer Doktorfisch",
+        "barb": "Barbe",
+        "goldfish": "Goldfisch",
+        "little-clownfish": "Kleiner Clownfisch",
+        "reef-fish": "Rifffisch",
+        "bass": "Barsch",
+        "sardine": "Sardine",
+        "snapper": "Roter Schnapper",
+        "swordfish": "Schwertfisch",
+        "squid": "Tintenfisch",
+        "butterfly-fish": "Falterfisch",
+        "yellow-tang": "Gelber Doktorfisch",
+        "mandarin-fish": "Mandarinfisch",
+        "koi": "Koi",
+        "lionfish": "Feuerfisch",
+        "pufferfish": "Kugelfisch",
+        "seahorse": "Seepferdchen",
+        "jellyfish": "Qualle",
+        "little-shark": "Kleiner Hai",
+        "crab": "Krabbe"
       }
     },
     "lesson": {
@@ -8552,7 +8599,8 @@
       "medieval-village": "Ein Märchendorf mit Windmühle und Markt.",
       "pirate-cove": "Sandinseln, Palmen, Stege und Segelschiffe.",
       "wild-woods": "Ein sonniger Wald mit Fluss, Felsen und Zeltlager.",
-      "dino-valley": "Ein sonniges Tal mit freundlichen Dinosauriern, Palmen und einem riesigen Ei."
+      "dino-valley": "Ein sonniges Tal mit freundlichen Dinosauriern, Palmen und einem riesigen Ei.",
+      "under-the-sea": "Ein Korallenriff, durch das du als Delfin, Schildkröte oder Fisch schwimmst."
     },
     "groups": {
       "heroes": "Helden",

@@ -1604,7 +1604,8 @@
         "busy-kitchen": "מטבח שוקק",
         "pirate-cove": "מפרץ הפיראטים",
         "wild-woods": "היער הפראי",
-        "dino-valley": "עמק הדינוזאורים"
+        "dino-valley": "עמק הדינוזאורים",
+        "under-the-sea": "מתחת לים"
       }
     },
     "heroes": {
@@ -1632,7 +1633,30 @@
         "stegosaurus": "סטגוזאורוס",
         "parasaurolophus": "פרזאורולופוס",
         "apatosaurus": "אפטוזאורוס",
-        "velociraptor": "ולוצירפטור"
+        "velociraptor": "ולוצירפטור",
+        "dolphin": "דולפין",
+        "turtle": "צב ים",
+        "clownfish": "דג ליצן",
+        "blue-tang": "דג מנתח כחול",
+        "barb": "ברבוס",
+        "goldfish": "דג זהב",
+        "little-clownfish": "דג ליצן קטן",
+        "reef-fish": "דג שונית",
+        "bass": "בס",
+        "sardine": "סרדין",
+        "snapper": "דג אדום",
+        "swordfish": "דג חרב",
+        "squid": "דיונון",
+        "butterfly-fish": "דג פרפר",
+        "yellow-tang": "דג מנתח צהוב",
+        "mandarin-fish": "דג מנדרין",
+        "koi": "קוי",
+        "lionfish": "דג אריה",
+        "pufferfish": "אבו נפחא",
+        "seahorse": "סוסון ים",
+        "jellyfish": "מדוזה",
+        "little-shark": "כריש קטן",
+        "crab": "סרטן"
       }
     },
     "animals": {
@@ -1660,7 +1684,30 @@
         "stegosaurus": "סטגוזאורוס",
         "triceratops": "טריצרטופס",
         "parasaurolophus": "פרזאורולופוס",
-        "velociraptor": "ולוצירפטור"
+        "velociraptor": "ולוצירפטור",
+        "dolphin": "דולפין",
+        "turtle": "צב ים",
+        "clownfish": "דג ליצן",
+        "blue-tang": "דג מנתח כחול",
+        "barb": "ברבוס",
+        "goldfish": "דג זהב",
+        "little-clownfish": "דג ליצן קטן",
+        "reef-fish": "דג שונית",
+        "bass": "בס",
+        "sardine": "סרדין",
+        "snapper": "דג אדום",
+        "swordfish": "דג חרב",
+        "squid": "דיונון",
+        "butterfly-fish": "דג פרפר",
+        "yellow-tang": "דג מנתח צהוב",
+        "mandarin-fish": "דג מנדרין",
+        "koi": "קוי",
+        "lionfish": "דג אריה",
+        "pufferfish": "אבו נפחא",
+        "seahorse": "סוסון ים",
+        "jellyfish": "מדוזה",
+        "little-shark": "כריש קטן",
+        "crab": "סרטן"
       }
     },
     "lesson": {
@@ -8553,7 +8600,8 @@
       "medieval-village": "כפר מהאגדות עם טחנת רוח ושוק.",
       "pirate-cove": "איי חול, עצי דקל, רציפים וספינות מפרש.",
       "wild-woods": "יער שטוף שמש עם נהר, סלעים ומחנה.",
-      "dino-valley": "עמק שטוף שמש עם דינוזאורים ידידותיים, דקלים וביצה ענקית."
+      "dino-valley": "עמק שטוף שמש עם דינוזאורים ידידותיים, דקלים וביצה ענקית.",
+      "under-the-sea": "שונית אלמוגים לשחות בה כדולפין, צב או דג."
     },
     "groups": {
       "heroes": "גיבורים",

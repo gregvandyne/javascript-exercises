@@ -163,8 +163,10 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   assert.equal(await card('fox').isDisabled(), false); assert.equal(await card('fox').locator('.su-desc').textContent(), 'Lives in Castle Quest');
   assert.equal(await card('cow').isDisabled(), true); assert.equal(await card('cow').locator('.su-desc').textContent(), 'Not in Castle Quest yet');
   assert.equal(await card('knight').locator('.su-desc').textContent(), 'Hero');
-  assert.equal(await page.locator('.su-group[data-group="sea"] .su-pick').count(), 0);
-  assert.match(await page.locator('.su-group[data-group="sea"]').textContent(), /Fish and sea animals\s*Coming soon/);
+  // the sea animals live in Under the Sea: listed and pickable there, said to live elsewhere here
+  assert.equal(await page.locator('.su-group[data-group="sea"] .su-pick').count(), 23);
+  assert.doesNotMatch(await page.locator('.su-group[data-group="sea"] h2').textContent(), /Coming soon/);
+  assert.equal(await card('dolphin').isDisabled(), true); assert.equal(await card('dolphin').locator('.su-desc').textContent(), 'Not in Castle Quest yet');
   // the dinosaurs live in Dino Valley (3D since its 1.0.0): the group is no longer "Coming soon in 3D", and at the
   // castle a dinosaur is simply an animal of another world; the zebra is still a 2D sprite only
   assert.doesNotMatch(await page.locator('.su-group[data-group="dinosaurs"] h2').textContent(), /Coming soon/);

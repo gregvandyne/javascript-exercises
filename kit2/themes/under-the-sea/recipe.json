@@ -1,0 +1,621 @@
+{
+ "_": "How Under the Sea 1.0.0 is built (see SOURCES.md). Generated from theme.def.json by kit2/pipeline/from-def.mjs.",
+ "models": [
+  {
+   "from": "theme:pirate-cove/1.0.0/world/sand-patch.glb",
+   "to": "world/sand.glb"
+  },
+  {
+   "from": "underwater-pack/coral_table.glb",
+   "to": "world/coral-table.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/sea_rock_big.glb",
+   "to": "world/rock-big.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/sea_rock_small.glb",
+   "to": "world/rock.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/sea_arch.glb",
+   "to": "world/arch.glb",
+   "matte": true,
+   "scale": 4,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/shipwreck_hull.glb",
+   "to": "world/shipwreck.glb",
+   "matte": true,
+   "scale": 4.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/coral_brain.glb",
+   "to": "world/coral-brain.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/coral_branch.glb",
+   "to": "world/coral-branch.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/coral_fan.glb",
+   "to": "world/coral-fan.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/coral_tube.glb",
+   "to": "world/coral-tube.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/sea_anemone.glb",
+   "to": "world/anemone.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/kelp.glb",
+   "to": "world/kelp.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/seaweed_bush.glb",
+   "to": "world/seaweed.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/seaweed_tall.glb",
+   "to": "world/seaweed-tall.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/bubbles.glb",
+   "to": "world/bubbles.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/starfish.glb",
+   "to": "world/starfish.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/clam_shell.glb",
+   "to": "props/clam.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/conch_shell.glb",
+   "to": "props/conch.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/amphora.glb",
+   "to": "props/amphora.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/barrel.glb",
+   "to": "props/barrel.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/ship_anchor.glb",
+   "to": "props/anchor.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/ship_wheel.glb",
+   "to": "props/ship-wheel.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "underwater-pack/treasure_chest.glb",
+   "to": "props/chest.glb",
+   "matte": true,
+   "scale": 2.5,
+   "inkNormals": true
+  },
+  {
+   "from": "theme:castle-quest/1.0.0/props/coin.glb",
+   "to": "props/coin.glb"
+  },
+  {
+   "from": "muteassets-sea-life-sample/dolphin.glb",
+   "to": "creatures/dolphin.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "textures": {
+    "^WaterPalette$": "muteassets-sea-life-sample/Textures/water_animal_texture.png"
+   },
+   "floor": true,
+   "scale": 2.3377,
+   "anims": {
+    "idle": "Dolphin_Armature|Idle",
+    "swim": "Dolphin_Armature|Swim",
+    "leap": "Dolphin_Armature|Jump",
+    "spin": "Dolphin_Armature|Spin",
+    "chatter": "Dolphin_Armature|Chatter"
+   },
+   "keepAnims": [
+    "Dolphin_Armature|Idle",
+    "Dolphin_Armature|Swim",
+    "Dolphin_Armature|Jump",
+    "Dolphin_Armature|Spin",
+    "Dolphin_Armature|Chatter"
+   ]
+  },
+  {
+   "from": "ocean-animals/turtle.glb",
+   "to": "creatures/turtle.glb",
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 2.6,
+    "amp": 0.12,
+    "idle": 3.2,
+    "swim": 1.6,
+    "flap": {
+     "from": 0.5,
+     "amp": 0.7,
+     "at": 0.4
+    }
+   },
+   "colours": {
+    "^Turtle": "#58b368",
+    "^shark eyes$": "#141414",
+    "^Material": "#f3efe2"
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "pipothai-fish-sampler/fish_clownfish.glb",
+   "to": "creatures/clownfish.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 5.3571,
+   "anims": {
+    "idle": "fish_clownfish_Rig|SwimIdle",
+    "swim": "fish_clownfish_Rig|SwimFast"
+   },
+   "keepAnims": [
+    "fish_clownfish_Rig|SwimIdle",
+    "fish_clownfish_Rig|SwimFast"
+   ]
+  },
+  {
+   "from": "pipothai-fish-sampler/fish_bluetang.glb",
+   "to": "creatures/blue-tang.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 4.5455,
+   "anims": {
+    "idle": "fish_bluetang_Rig|SwimIdle",
+    "swim": "fish_bluetang_Rig|SwimFast"
+   },
+   "keepAnims": [
+    "fish_bluetang_Rig|SwimIdle",
+    "fish_bluetang_Rig|SwimFast"
+   ]
+  },
+  {
+   "from": "pipothai-fish-sampler/fish_barb.glb",
+   "to": "creatures/barb.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "floor": true,
+   "scale": 4.6125,
+   "anims": {
+    "idle": "fish_barb_Rig|SwimIdle",
+    "swim": "fish_barb_Rig|SwimFast"
+   },
+   "keepAnims": [
+    "fish_barb_Rig|SwimIdle",
+    "fish_barb_Rig|SwimFast"
+   ]
+  },
+  {
+   "from": "sageglint-fish-sampler/Fish_Goldfish.glb",
+   "to": "creatures/goldfish.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "dropMeshes": [
+    "^Outline$"
+   ],
+   "swimRig": {
+    "length": 1.4,
+    "turn": 180
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "sageglint-fish-sampler/Fish_Clownfish.glb",
+   "to": "creatures/little-clownfish.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "dropMeshes": [
+    "^Outline$"
+   ],
+   "swimRig": {
+    "length": 1.1,
+    "turn": 180
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "alstra-fish-polypack/FishV1.glb",
+   "to": "creatures/reef-fish.glb",
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "alstra-fish-polypack/FishV2.glb",
+   "to": "creatures/bass.glb",
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.6,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "alstra-fish-polypack/FishV3.glb",
+   "to": "creatures/sardine.glb",
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     2.4,
+     1.5,
+     1
+    ]
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "alstra-fish-polypack/FishV4.glb",
+   "to": "creatures/snapper.glb",
+   "matte": true,
+   "colourOnly": true,
+   "inkNormals": true,
+   "textures": {
+    "^Material$": "alstra-fish-polypack/Textures/Texture.png"
+   },
+   "textureSize": 128,
+   "swimRig": {
+    "turn": -90,
+    "length": 1.5,
+    "stretch": [
+     1.8,
+     1,
+     1
+    ]
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "ocean-animals/swordfish.glb",
+   "to": "creatures/swordfish.glb",
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 4.5
+   },
+   "colours": {
+    ".": "#4f7fd0"
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "ocean-animals/squid.glb",
+   "to": "creatures/squid.glb",
+   "matte": true,
+   "colourOnly": true,
+   "swimRig": {
+    "length": 3,
+    "turn": 180,
+    "amp": 0.3,
+    "swim": 1.2
+   },
+   "colours": {
+    ".": "#f2879a"
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "cute-fish/ButterflyFish.glb",
+   "to": "creatures/butterfly-fish.glb",
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2917,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   },
+   "keepAnims": [
+    "Fish_Armature|Swimming_Normal",
+    "Fish_Armature|Swimming_Fast",
+    "Fish_Armature|Swimming_Impulse"
+   ]
+  },
+  {
+   "from": "cute-fish/YellowTang.glb",
+   "to": "creatures/yellow-tang.glb",
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.3114,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   },
+   "keepAnims": [
+    "Fish_Armature|Swimming_Normal",
+    "Fish_Armature|Swimming_Fast",
+    "Fish_Armature|Swimming_Impulse"
+   ]
+  },
+  {
+   "from": "cute-fish/MandarinFish.glb",
+   "to": "creatures/mandarin-fish.glb",
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2928,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   },
+   "keepAnims": [
+    "Fish_Armature|Swimming_Normal",
+    "Fish_Armature|Swimming_Fast",
+    "Fish_Armature|Swimming_Impulse"
+   ]
+  },
+  {
+   "from": "cute-fish/Koi.glb",
+   "to": "creatures/koi.glb",
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2467,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   },
+   "keepAnims": [
+    "Fish_Armature|Swimming_Normal",
+    "Fish_Armature|Swimming_Fast",
+    "Fish_Armature|Swimming_Impulse"
+   ]
+  },
+  {
+   "from": "cute-fish/Lionfish.glb",
+   "to": "creatures/lionfish.glb",
+   "matte": true,
+   "inkNormals": true,
+   "floor": true,
+   "brighten": {
+    "gamma": 0.8,
+    "gain": 1.12,
+    "saturate": 1.15
+   },
+   "scale": 0.2204,
+   "anims": {
+    "idle": "Fish_Armature|Swimming_Normal",
+    "swim": "Fish_Armature|Swimming_Fast",
+    "dart": "Fish_Armature|Swimming_Impulse"
+   },
+   "keepAnims": [
+    "Fish_Armature|Swimming_Normal",
+    "Fish_Armature|Swimming_Fast",
+    "Fish_Armature|Swimming_Impulse"
+   ]
+  },
+  {
+   "from": "underwater-pack/pufferfish.glb",
+   "to": "creatures/pufferfish.glb",
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1.3,
+    "amp": 0.25
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "underwater-pack/seahorse.glb",
+   "to": "creatures/seahorse.glb",
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1,
+    "amp": 0.2,
+    "idle": 2.8,
+    "swim": 1.4
+   },
+   "dropMaterials": [
+    "^sand$"
+   ],
+   "keepAnims": []
+  },
+  {
+   "from": "underwater-pack/jellyfish.glb",
+   "to": "creatures/jellyfish.glb",
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 1.1,
+    "amp": 0.25,
+    "idle": 3,
+    "swim": 1.6
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "underwater-pack/shark.glb",
+   "to": "creatures/little-shark.glb",
+   "matte": true,
+   "inkNormals": true,
+   "swimRig": {
+    "length": 3.2
+   },
+   "keepAnims": []
+  },
+  {
+   "from": "muteassets-sea-life-sample/crab.glb",
+   "to": "creatures/crab.glb",
+   "matte": true,
+   "colourOnly": true,
+   "textureSize": 256,
+   "textures": {
+    "^WaterPalette$": "muteassets-sea-life-sample/Textures/water_animal_texture.png"
+   },
+   "floor": true,
+   "scale": 1.0603,
+   "anims": {
+    "idle": "Crab_Armature|Idle",
+    "stroll": "Crab_Armature|ScuttleRight"
+   },
+   "keepAnims": [
+    "Crab_Armature|Idle",
+    "Crab_Armature|ScuttleRight"
+   ]
+  }
+ ],
+ "copy": [
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/jump.ogg",
+   "to": "sounds/jump.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/land.ogg",
+   "to": "sounds/land.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/coin.ogg",
+   "to": "sounds/coin.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/fall.ogg",
+   "to": "sounds/fall.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/break.ogg",
+   "to": "sounds/break.ogg"
+  },
+  {
+   "from": "theme:busy-kitchen/1.0.0/sounds/walk.ogg",
+   "to": "sounds/walk.ogg"
+  }
+ ]
+}

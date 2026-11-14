@@ -1603,7 +1603,8 @@
         "busy-kitchen": "にぎやかキッチン",
         "pirate-cove": "かいぞくの入り江",
         "wild-woods": "わくわくの森",
-        "dino-valley": "きょうりゅうの谷"
+        "dino-valley": "きょうりゅうの谷",
+        "under-the-sea": "うみのなか"
       }
     },
     "heroes": {
@@ -1631,7 +1632,30 @@
         "stegosaurus": "ステゴサウルス",
         "parasaurolophus": "パラサウロロフス",
         "apatosaurus": "アパトサウルス",
-        "velociraptor": "ヴェロキラプトル"
+        "velociraptor": "ヴェロキラプトル",
+        "dolphin": "イルカ",
+        "turtle": "ウミガメ",
+        "clownfish": "カクレクマノミ",
+        "blue-tang": "ナンヨウハギ",
+        "barb": "バルブ",
+        "goldfish": "きんぎょ",
+        "little-clownfish": "ちびクマノミ",
+        "reef-fish": "サンゴのさかな",
+        "bass": "バス",
+        "sardine": "イワシ",
+        "snapper": "あかいタイ",
+        "swordfish": "メカジキ",
+        "squid": "イカ",
+        "butterfly-fish": "チョウチョウウオ",
+        "yellow-tang": "キイロハギ",
+        "mandarin-fish": "ニシキテグリ",
+        "koi": "コイ",
+        "lionfish": "ミノカサゴ",
+        "pufferfish": "フグ",
+        "seahorse": "タツノオトシゴ",
+        "jellyfish": "クラゲ",
+        "little-shark": "ちびザメ",
+        "crab": "カニ"
       }
     },
     "animals": {
@@ -1659,7 +1683,30 @@
         "stegosaurus": "ステゴサウルス",
         "triceratops": "トリケラトプス",
         "parasaurolophus": "パラサウロロフス",
-        "velociraptor": "ヴェロキラプトル"
+        "velociraptor": "ヴェロキラプトル",
+        "dolphin": "イルカ",
+        "turtle": "ウミガメ",
+        "clownfish": "カクレクマノミ",
+        "blue-tang": "ナンヨウハギ",
+        "barb": "バルブ",
+        "goldfish": "きんぎょ",
+        "little-clownfish": "ちびクマノミ",
+        "reef-fish": "サンゴのさかな",
+        "bass": "バス",
+        "sardine": "イワシ",
+        "snapper": "あかいタイ",
+        "swordfish": "メカジキ",
+        "squid": "イカ",
+        "butterfly-fish": "チョウチョウウオ",
+        "yellow-tang": "キイロハギ",
+        "mandarin-fish": "ニシキテグリ",
+        "koi": "コイ",
+        "lionfish": "ミノカサゴ",
+        "pufferfish": "フグ",
+        "seahorse": "タツノオトシゴ",
+        "jellyfish": "クラゲ",
+        "little-shark": "ちびザメ",
+        "crab": "カニ"
       }
     },
     "lesson": {
@@ -8551,7 +8598,8 @@
       "medieval-village": "風車と市場がある、おとぎ話の村。",
       "pirate-cove": "すなの島、ヤシの木、さんばし、ほ船。",
       "wild-woods": "川と岩とキャンプがある、明るい森。",
-      "dino-valley": "やさしいきょうりゅうとヤシの木、大きなたまごのある明るい谷。"
+      "dino-valley": "やさしいきょうりゅうとヤシの木、大きなたまごのある明るい谷。",
+      "under-the-sea": "イルカや カメや さかなに なって およぐ サンゴしょう。"
     },
     "groups": {
       "heroes": "ヒーロー",

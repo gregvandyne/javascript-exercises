@@ -119,6 +119,10 @@ function lastNamed(list, t) {
 // Animals a child may ask for in words (English; other languages use the chips or the animal's name) -> the sprite.
 // Only animals that HAVE a sprite are here: any other animal is "not yet" (MORE_ANIMALS).
 const ANIMAL_WORDS = [
+  // Sea animals ("shark" alone is not here: the only one is the Little Shark, by its name or chip).
+  ['seahorse', /\bsea ?horses?\b/], ['dolphin', /\bdolphins?\b/], ['turtle', /\b(sea )?turtles?\b/], ['goldfish', /\bgold ?fish(es)?\b/], ['swordfish', /\bsword ?fish(es)?\b/],
+  ['squid', /\bsquids?\b/], ['jellyfish', /\bjelly ?fish(es)?\b/], ['pufferfish', /\bpuffer ?fish(es)?\b|\bblow ?fish(es)?\b/], ['crab', /\bcrabs?\b/], ['lionfish', /\blion ?fish(es)?\b/],
+  ['koi', /\bkoi\b/], ['sardine', /\bsardines?\b/], ['blue-tang', /\bblue tangs?\b/], ['clownfish', /\bclown ?fish(es)?\b|\bfish(es|y)?\b/],
   ['fox', /\bfox(es)?\b/], ['wolf', /\bwol(f|ves)\b/], ['husky', /\bhusk(y|ies)\b/], ['shiba', /\bshibas?\b|\bdogs?\b|\bpupp(y|ies)\b/], ['pug', /\bpugs?\b/],
   ['horse-white', /\bwhite horses?\b/], ['pony', /\bpon(y|ies)\b/], ['horse', /\bhorses?\b/], ['donkey', /\bdonkeys?\b/], ['zebra', /\bzebras?\b/],
   ['cow-spotted', /\bspotted cows?\b/], ['cow', /\bcows?\b/], ['bull', /\bbulls?\b/], ['alpaca', /\balpacas?\b/], ['llama', /\bllamas?\b/],
