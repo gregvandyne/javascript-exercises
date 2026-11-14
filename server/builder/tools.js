@@ -19,7 +19,7 @@ import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
 import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
-import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter } from './art2d.js';
+import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends } from './art2d.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
@@ -233,7 +233,11 @@ export function toolbox(ctx) {
         if (ART2D_TEMPLATES.includes(key)) {
           if (world && !art2dWorld(world)) return { ok: false, forModel: `There is no 2D world called "${world.slice(0, 40)}". The 2D worlds are: ${ART2D_WORLD_IDS.join(', ')}.` };
           if (hero && !art2dCharacter(hero)) return { ok: false, forModel: `There is no sprite hero or animal called "${hero.slice(0, 40)}". They are: ${ART2D_CHARACTER_IDS.join(', ')}. There are no others: pick one of these, or leave hero out for the kit's own characters.` };
-          if (world || hero) a2 = { world, hero };
+          // friends: more sprite heroes and animals who are in the game beside the hero (CONFIG.friends2d)
+          const asked2 = Array.isArray(input && input.friends) ? input.friends.map(String) : kept.friends || [], unknown = asked2.filter(id => !art2dCharacter(id));
+          if (unknown.length) return { ok: false, forModel: `There is no sprite hero or animal called "${unknown[0].slice(0, 40)}". They are: ${ART2D_CHARACTER_IDS.join(', ')}. There are no others: take it out of friends.` };
+          const friends = art2dFriends(asked2, hero).map(f => f.id);
+          if (world || hero || friends.length) a2 = { world, hero, ...(friends.length ? { friends } : {}) };
         }
       }
       const [{ html, fallback }, info] = await Promise.all([templateHtml(key, k2 || a2 || undefined), templateInfo(key)]);
@@ -242,7 +246,7 @@ export function toolbox(ctx) {
       steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${k2 ? worldById(k2.world).name : info ? info.title : key}`);
       if (k2 && r.version && ctx.state) ctx.state.kit2 = k2;   // remembered: the next turns are Kit 2 turns
-      if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''} (CONFIG.world, CONFIG.hero2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
+      if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''}${a2.friends ? ` and ${a2.friends.length} friend${a2.friends.length > 1 ? 's' : ''} in the game too (CONFIG.friends2d: ${a2.friends.join(', ')})` : ''} (CONFIG.world, CONFIG.hero2d, CONFIG.friends2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
       if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}${k2.companion ? ` and the animal friend ${k2.companion} (CONFIG.companion)` : ''}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, companion, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
       else if (r.ok) r.forModel += key === 'world3d'

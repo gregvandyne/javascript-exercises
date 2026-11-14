@@ -15,6 +15,7 @@ const CONFIG = {
   biome: 'meadow',
   world: '',
   hero2d: '',
+  friends2d: [],
   autoRun: true,
   controls: 'platformer:kid-easy',
   lives: 3,
@@ -54,7 +55,8 @@ const LEVEL = [
 const O = window.Oomba;
 let rest = 0;   // seconds the hero waits after a bump before running on
 // CONFIG.world and CONFIG.hero2d: one of the ready-made 2D worlds (its sky, scenery, ground, coins, goal and obstacles)
-// and a hero or animal drawn as a sprite, from the 2D art packs (Oomba2D). With neither, or when the art cannot load,
+// and a hero or animal drawn as a sprite, from the 2D art packs (Oomba2D). CONFIG.friends2d: more heroes and animals who
+// stand along the way and hop as the player runs by (pictures only: never in the way). With none, or when the art cannot load,
 // art is null and the game has the kit's own look (CONFIG.biome and CONFIG.hero).
 function begin(art) {
   const made = l => (art ? art.level(l) : l);
@@ -82,5 +84,5 @@ function begin(art) {
   O.input.on('tap', () => { if (game.state === 'play') O.input.hold('jump', 220); });
 }
 const A = window.Oomba2D;
-if (A && (CONFIG.world || CONFIG.hero2d)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d }).then(begin); else begin(null);
+if (A && (CONFIG.world || CONFIG.hero2d || CONFIG.friends2d.length)) A.use({ world: CONFIG.world, hero: CONFIG.hero2d, friends: CONFIG.friends2d }).then(begin); else begin(null);
 </script>

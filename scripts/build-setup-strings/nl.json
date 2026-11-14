@@ -133,5 +133,12 @@
   "chars.soon3d": "Komt eraan in 3D",
   "client.chars.only2d": "Voorlopig alleen in 2D-games",
   "client.chars.only3d": "Voorlopig alleen in 3D-games",
-  "client.chars.one2d": "Voorlopig één figuur in 2D"
+  "client.chars.youPlay": "Hiermee speel jij",
+  "client.all.select": "Alles kiezen",
+  "client.all.clear": "Alles weghalen",
+  "client.all.selectLabel": "Alles kiezen: {name}",
+  "client.all.clearLabel": "Alles weghalen: {name}",
+  "client.all.picked": "{count, plural, one {# gekozen} other {# gekozen}}",
+  "client.all.pickedWorld": "{count} gekozen. Ze wonen allemaal in {world}.",
+  "client.all.cleared": "Weggehaald"
 }

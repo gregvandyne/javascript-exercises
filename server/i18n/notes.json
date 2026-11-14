@@ -1548,5 +1548,12 @@
   "buildSetup.chars.soon3d": "A small label beside a group of animals that exist for 2D games only so far (the dinosaurs): they are coming to the 3D worlds later. Keep \"3D\". Max ~20 chars.",
   "js.buildsetup.chars.only2d": "Under an animal that cannot be picked for a 3D game because it only exists for 2D games so far. Short (two lines on a small card). Keep \"2D\".",
   "js.buildsetup.chars.only3d": "Under a character that cannot be picked for a 2D game because it only exists in the 3D worlds so far. Keep \"3D\".",
-  "js.buildsetup.chars.one2d": "Under the other characters once one is picked for a 2D game: a 2D game can show only one of our characters for now."
+  "js.buildsetup.chars.youPlay": "Under the first character picked for a 2D game: this is the one the child controls; the others they pick are friends who are in the game too. Short (two lines on a small card).",
+  "js.buildsetup.all.select": "Button in the heading of a group of cards (Farm animals, Heroes, what it teaches): picks every card of that group that can be picked. Max ~14 chars.",
+  "js.buildsetup.all.clear": "The same button once every card of the group is picked: un-picks that group only. Max ~14 chars.",
+  "js.buildsetup.all.selectLabel": "Screen-reader label of the Select all button. {name} is the group's name (Farm animals).",
+  "js.buildsetup.all.clearLabel": "Screen-reader label of the Clear all button. {name} is the group's name.",
+  "js.buildsetup.all.picked": "Read out by screen readers after Select all. {count} is how many cards are now picked in that group.",
+  "js.buildsetup.all.pickedWorld": "Read out after Select all in a 3D game when only the characters of one world could be picked together. {count} is how many, {world} the 3D world's name.",
+  "js.buildsetup.all.cleared": "Read out by screen readers after Clear all."
 }

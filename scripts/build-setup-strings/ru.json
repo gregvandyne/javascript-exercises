@@ -133,5 +133,12 @@
   "chars.soon3d": "Скоро в 3D",
   "client.chars.only2d": "Пока только в 2D-играх",
   "client.chars.only3d": "Пока только в 3D-играх",
-  "client.chars.one2d": "В 2D пока только один герой"
+  "client.chars.youPlay": "Ты играешь за него",
+  "client.all.select": "Выбрать всех",
+  "client.all.clear": "Убрать всех",
+  "client.all.selectLabel": "Выбрать всех: {name}",
+  "client.all.clearLabel": "Убрать всех: {name}",
+  "client.all.picked": "{count, plural, one {Выбран #} few {Выбрано #} many {Выбрано #} other {Выбрано #}}",
+  "client.all.pickedWorld": "Выбрано: {count}. Все они живут в мире «{world}».",
+  "client.all.cleared": "Убрано"
 }

@@ -5218,3 +5218,28 @@ three decks, nine exit items, the game Lantern Mix in Spooky Hollow at night, an
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear (the test checks every line is sent and is on the allowlist, not how "1.5 milliliters" sounds), and play by a
   student of the age.
+
+## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
+
+- **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are
+  byte for byte as they were, and saved games keep their 1.0.0 tag). It adds friends: `Oomba2D.use({ world, hero,
+  friends })` and `CONFIG.friends2d` in the runner and catching templates (not locked files). The first character
+  picked is the player (`hero2d`); the others are friends who are in the game: in the runner they stand along the way
+  (one every four columns, never where there is something to jump over, a spring, a checkpoint or the goal), look at
+  the player and hop on the spot as the player runs by; in the catching game they stand at the two edges of the view
+  and take turns. They are pictures only: no body, no parts, never a hazard, and a friend never leaves its place.
+- **Cap:** at most 4 friends are drawn at once (`FRIENDS_SHOWN`); a phone-wide catching game shows 2. More than that
+  take turns (along the way the next one stands at the next place; at the sides a place changes hands every 7 to 9
+  seconds; the turn carries over from round to round), so every pick shows up. A game may name up to 40 friends; the
+  first four pictures are waited for, the others load one at a time while the game plays. With reduced motion they
+  stand still (no hop, one frame).
+- **Plan, tool, mock, model:** the plan's 2D art is `{ world, sprite, friends }`; `start_from_template` takes
+  `friends`; the SETUP CHOICES block and the 2D ART RULES say who the player is and that the others are friends.
+  The "one character in a 2D game" limit and its words are gone; the first picked card says "You play as this one".
+- **"Select all"** sits in the heading of every multi-select section (each character group that has members, and
+  "What should it teach?"). It picks every card of the section that can be picked now, never "Something else"; when
+  they all are picked it reads "Clear all" and clears that section only; it is hidden while fewer than two cards can
+  be picked. In 3D, where characters picked together must share a world, it picks the largest set of the section that
+  shares one world with what is already picked (the first such world on a tie); the others grey out as after single
+  picks, and the live message names the world ("5 picked. They all live in Medieval Village.").
+- **Not verified:** a real phone or GPU (software rendering only), a build with the real model.

@@ -2599,7 +2599,7 @@
         "otherWorld": "חי בעולם אחר",
         "only2d": "בינתיים רק במשחקי 2D",
         "only3d": "בינתיים רק במשחקי 3D",
-        "one2d": "בינתיים דמות אחת במשחק 2D"
+        "youPlay": "זו הדמות שמשחקים בה"
       },
       "extras": {
         "remove": "הסרה",
@@ -2618,7 +2618,16 @@
         "nothing": "לא נוסף דבר",
         "empty": "עדיין לא בחרתם דבר. הבנאי ישאל אתכם מה ליצור."
       },
-      "gettingReady": "מתכוננים…"
+      "gettingReady": "מתכוננים…",
+      "all": {
+        "select": "לבחור הכול",
+        "clear": "לנקות הכול",
+        "selectLabel": "לבחור הכול: {name}",
+        "clearLabel": "לנקות הכול: {name}",
+        "picked": "{count, plural, one {נבחר אחד} two {נבחרו שניים} other {נבחרו #}}",
+        "pickedWorld": "נבחרו {count}. כולם חיים בעולם {world}.",
+        "cleared": "נוקה"
+      }
     }
   },
   "favorites": {

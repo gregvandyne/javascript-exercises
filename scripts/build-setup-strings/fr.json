@@ -133,5 +133,12 @@
   "chars.soon3d": "Bientôt en 3D",
   "client.chars.only2d": "Seulement en 2D pour l’instant",
   "client.chars.only3d": "Seulement en 3D pour l’instant",
-  "client.chars.one2d": "Un seul personnage en 2D pour l’instant"
+  "client.chars.youPlay": "Tu joues avec lui",
+  "client.all.select": "Tout choisir",
+  "client.all.clear": "Tout enlever",
+  "client.all.selectLabel": "Tout choisir : {name}",
+  "client.all.clearLabel": "Tout enlever : {name}",
+  "client.all.picked": "{count, plural, one {# choisi} other {# choisis}}",
+  "client.all.pickedWorld": "{count} choisis. Ils vivent tous dans {world}.",
+  "client.all.cleared": "Enlevés"
 }
