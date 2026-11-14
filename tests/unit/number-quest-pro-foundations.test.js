@@ -418,6 +418,36 @@ test('the teacher page\'s placement copy is made from the data: two streets toda
   assert.doesNotMatch(street.text.replace(/<script[\s\S]*?<\/script>/g, ''), /undefined|NaN|nqp-planned/);
 });
 
+test('for everyone who is not the admin, every Number Quest page is byte for byte the page of a course with no Pro tier in it', async () => {
+  const kid = newKid(), kc = cookieFor(kid.id), pc = cookieFor(parent.id);
+  C.setBand(kid, course, 'explorer');
+  const PAGES = [['/courses/number-quest', null], ['/courses/number-quest?street=launchpad', null], ['/courses/number-quest?street=pro', null], ['/courses/number-quest', kc], ['/courses/number-quest?street=launchpad', kc],
+    ['/courses/number-quest?street=pro', kc], ['/courses/number-quest?street=launchpad', pc], ['/teachers/number-quest', null], ['/teachers/number-quest', kc], ['/teachers/number-quest?print=1', null],
+    ['/number-quest/sorting-game', kc], ['/courses/number-quest/explorer-0.1', kc], ['/courses/number-quest/launchpad-0.1', kc], ['/courses/number-quest/explorer-1.1', kc], ['/courses/number-quest/pro-0.1', kc], ['/courses/number-quest/pro-0.1', null], ['/teachers', null]];
+  // What differs between any two requests for one page (a per-request nonce) is set aside; nothing else is.
+  const norm = t => t.replace(/nonce="[^"]*"/g, 'nonce=""');
+  // The quick check shuffles its choices for each request, so a step page is compared without its check form.
+  const stable = (path, t) => (/\/(explorer|launchpad)-\d\.\d$/.test(path) ? norm(t).replace(/<form class="qcheck"[\s\S]*?<\/form>/, '').replace(/<script[^>]*type="application\/json"[\s\S]*?<\/script>/g, '') : norm(t));
+  const grab = async () => { const out = []; for (const [path, c] of PAGES) { const r = await get(path, c); out.push([path, r.status, stable(path, r.text)]); } return out; };
+  const withPro = await grab();
+  for (const [i, x] of (await grab()).entries()) assert.ok(x[2] === withPro[i][2], `${x[0]}: the page is stable from one request to the next`);
+  // The same course with the Pro tier taken out of the catalogue altogether: its line and all eight of its units.
+  const cat = structuredClone(T.catalogue());
+  delete cat.tiers.pro; cat.units = cat.units.filter(u => u.tier !== 'pro');
+  T.setCatalogueForTests(cat); C.reload();
+  assert.deepEqual(T.existingTiers(), ['launchpad', 'explorer']); assert.equal(T.exists('pro'), false);
+  const without = await grab();
+  restore();
+  for (const [i, [path, status, text]] of withPro.entries()) {
+    assert.equal(status, without[i][1], `${path}: the same status`);
+    assert.ok(text === without[i][2], `${path}: the page is identical with and without the Pro tier in the catalogue (${text.length} and ${without[i][2].length} characters)`);
+  }
+  assert.deepEqual(withPro.map(x => x[1]), [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 302, 404, 404, 200], 'the pages open (a locked step redirects to the map), and the Pro welcome is a 404');
+  // The one piece of copy this build rewired to read the tiers from the data is, today, exactly the text main rendered.
+  const { createHash } = await import('node:crypto');
+  assert.equal(createHash('sha256').update(String(placementSection())).digest('hex'), '20324454343ee4e778f39d914495e9374bd3bf3cc8a677e92a61f2225bc92e53', 'the placement explainer and its K-8 matrix are character for character what main rendered (9edb96e7); re-pin only when that copy is changed on purpose');
+});
+
 // ------------------------------------------------------------------------------------------------- the written record
 test('the README\'s Pro section says what the data says: units, steps, codes, gaps, bank cells, profiles, and what a unit PR touches', () => {
   const readme = fs.readFileSync(new URL('../../seed-lessons/number-quest/README.md', import.meta.url), 'utf8');
