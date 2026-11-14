@@ -5,10 +5,10 @@
 //     exactly kit2ImportMap() (so a library bump that leaves the game behind fails here);
 //   - its rounds (the pure block between lantern-mix:begin and lantern-mix:end): six a chapter, the same first lap
 //     every time, and EVERY plan the dials allow judged here independently from what the board draws: a mix by its
-//     ratio (cross-multiplied, never by colour), a rate by the unit rate, a percent by the part and the whole. A wrong
+//     ratio (cross-multiplied, never by color), a rate by the unit rate, a percent by the part and the whole. A wrong
 //     plan names its mistake and gets the game's own hint lines;
-//   - colour is never the only signal: equal ratios give the same glow, different ratios differ, the judge never reads
-//     a colour, and every gauge is patterned and numbered;
+//   - color is never the only signal: equal ratios give the same glow, different ratios differ, the judge never reads
+//     a color, and every gauge is patterned and numbered;
 //   - its words: every line it says is one of its own registered lines (the AI-voice allowlist), what the chip, the
 //     board and the dials show is never sent to be spoken, and nothing is bought, sold or priced;
 //   - its registration: seeded, in the Number Quest course, tagged chapter by chapter with the codes units.json gives
@@ -250,7 +250,7 @@ test('rounds: six a chapter, the first lap always the same, and every plan the d
 });
 function gcd(a, b) { while (b) [a, b] = [b, a % b]; return a; }
 
-test('colour is never the only signal: a match is decided by the ratio, equal ratios glow the same, and every gauge is patterned and numbered', () => {
+test('color is never the only signal: a match is decided by the ratio, equal ratios glow the same, and every gauge is patterned and numbered', () => {
   // the glow is a function of the ratio alone
   assert.deepEqual(LM.glow(2, 3), LM.glow(4, 6)); assert.deepEqual(LM.glow(2, 3), LM.glow(200, 300)); assert.deepEqual(LM.glow(6, 9), { p: 2, q: 3, hue: 145.8, css: 'hsl(145.8, 100%, 60%)' });
   assert.notDeepEqual(LM.glow(2, 3), LM.glow(3, 2)); assert.equal(LM.glow(0, 0), null); assert.equal(LM.glow(-1, 2), null);
@@ -265,21 +265,21 @@ test('colour is never the only signal: a match is decided by the ratio, equal ra
   assert.ok(hues.size > 200, `${hues.size} different glows on the dials`);
   // more amber is always a warmer hue (toward 42), more blue a cooler one (toward 215)
   assert.ok(LM.glow(3, 2).hue < LM.glow(1, 1).hue && LM.glow(1, 1).hue < LM.glow(2, 3).hue);
-  // the judge works from the numbers: it never asks for a glow, a hue or a colour
+  // the judge works from the numbers: it never asks for a glow, a hue or a color
   const judges = PURE.slice(PURE.indexOf('function judgeMix'), PURE.indexOf('/* ---- rate'));
-  assert.match(judges, /side = a \* q - b \* p/, 'cross-multiplied whole numbers: no rounding, no colour');
+  assert.match(judges, /side = a \* q - b \* p/, 'cross-multiplied whole numbers: no rounding, no color');
   assert.doesNotMatch(judges, /glow\(|hue|css|hsl|color|colour/i);
   assert.doesNotMatch(PURE.slice(PURE.indexOf('function judge(')), /glow\(|hue|css/);
   // what the player sees: amber parts are striped and blue parts are dotted (drawn, not only tinted), each gauge has
   // its count written beside it, and the two glows are also compared as bars
-  assert.match(HTML, /Colour is never the only signal: amber is striped, blue is dotted, an empty slot is an outline/);
+  assert.match(HTML, /Color is never the only signal: amber is striped, blue is dotted, an empty slot is an outline/);
   assert.match(HTML, /if \(tone === 'a'\) for \(let i = -h; i < w; i \+= 17\)[^\n]*X\.stroke\(\)/, 'stripes on amber');
   assert.match(HTML, /else for \(let i = 10; i < w; i \+= 18\)[^\n]*X\.arc\(/, 'dots on blue');
   assert.match(HTML, /text\(`\$\{a\} : \$\{b\}`/, 'the plan in numbers beside its gauge');
   assert.match(HTML, /share\(230, 590, 620, 50, p, q,[^\n]*share\(230, 668, 620, 50, a, b,/, 'the gate and the plan as two bars');
   // the dials are named in words (Amber parts, Blue parts), and their values are numbers
   assert.equal(T['dial.amber'], 'Amber parts'); assert.equal(T['dial.blue'], 'Blue parts');
-  // the hints say which way the glow is off in words, never "the wrong colour"
+  // the hints say which way the glow is off in words, never "the wrong color"
   for (const k of ['x.hint.amber', 'x.hint.blue', 'x.hint.side.amber', 'x.hint.side.blue']) assert.match(T[k], /amber|blue/);
 });
 
@@ -596,7 +596,7 @@ test('keyboard, phones and reduced motion: every dial works from the keyboard an
   // sits between the words and the workbench with nothing of the hollow in front of it, and the lamplighter and the
   // rack never cover any of it; the smallest number or word on it is big enough to read. The same holds with a hint
   // showing (the hint box sits over the workbench, and the board moves up to clear it).
-  const SIZES = [[1280, 800, 'no-preference', false, 420, 16], [390, 844, 'no-preference', true, 330, 11.5], [360, 640, 'reduce', true, 250, 9]];
+  const SIZES = [[1280, 800, 'no-preference', false, 500, 20], [390, 844, 'no-preference', true, 330, 12], [360, 640, 'reduce', true, 270, 11]];
   for (const [width, height, reducedMotion, touch, wide, small] of SIZES) {
     for (const chapter of CHAPTERS) {
       const m = await open({ params: `chapter=${chapter}&lock=1`, width, height, reducedMotion, touch });

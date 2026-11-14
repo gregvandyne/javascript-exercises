@@ -11,7 +11,7 @@
        percent (1.3) fill a tank to a percent, name the percent a tank is full, find the whole tank from a part and
                      its percent, change kilometers, liters and hours into smaller units, and count the lanterns a
                      path needs.
-     A match is decided by the ratio (LanternMix.judge), never by the colour on screen, and colour is never the only
+     A match is decided by the ratio (LanternMix.judge), never by the color on screen, and color is never the only
      signal: every lantern has a parts gauge (amber is striped, blue is dotted) with its numbers. Read-aloud is on by
      default: every instruction, hint and answer line is shown and spoken (BRB.speak, the shared path; the speaker
      button says it again). No timer, no lives, no fail state, nothing bought or sold: a wrong plan lights the wrong
@@ -160,7 +160,7 @@
   function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
   function L(key, vars) { return [key, vars || {}]; }
   function gcd(a, b) { while (b) { var t = a % b; a = b; b = t; } return a; }
-  /** The glow of a mix of `a` parts amber and `b` parts blue: its ratio in lowest terms and the colour that ratio
+  /** The glow of a mix of `a` parts amber and `b` parts blue: its ratio in lowest terms and the color that ratio
    *  alone gives (amber through green to blue), so 2 : 3 and 4 : 6 are the same glow to the last digit. */
   function glow(a, b) {
     if (!(a >= 0) || !(b >= 0) || a + b === 0) return null;
@@ -710,7 +710,7 @@ function line(x0, y0, x1, y1, color = FG, width = 6, dash) { X.save(); X.strokeS
 /** A number in a rounded badge: the player's plan (yellow), a result (green or red). */
 function badge(s, px, py, size, fill = SUN) { X.font = `900 ${size}px "Bricolage Grotesque", system-ui, sans-serif`; const w = Math.max(size * 1.5, X.measureText(s).width + size * 0.7); fillStroke(rr(px - w / 2, py - size * 0.72, w, size * 1.44, size * 0.4), fill, '#05070f', 5); text(s, px, py + size * 0.04, size, { weight: 900, fill: '#141414' }); }
 const num = v => String(Math.round(v * 100) / 100);
-/** One part of a gauge. Colour is never the only signal: amber is striped, blue is dotted, an empty slot is an outline. */
+/** One part of a gauge. Color is never the only signal: amber is striped, blue is dotted, an empty slot is an outline. */
 function cell(x0, y0, w, h, tone) {
   const p = rr(x0 + 2, y0 + 2, w - 4, h - 4, Math.min(12, w * 0.22));
   if (tone === 'e') { X.save(); X.setLineDash([10, 8]); fillStroke(p, null, DIM, 4); X.restore(); return; }
@@ -725,7 +725,7 @@ function gauge(x0, y0, w, h, a, b, slots = 0) {
   const n = Math.max(a + b, slots, 1), cw = Math.min(h, w / n);
   for (let i = 0; i < n; i++) cell(x0 + i * cw, y0, cw, h, i < a ? 'a' : i < a + b ? 'b' : 'e');
 }
-/** A lantern, lit in a glow's colour or dark. */
+/** A lantern, lit in a glow's color or dark. */
 function lampPic(cx, cy, k, color) {
   if (color) { const gr = X.createRadialGradient(cx, cy, 8 * k, cx, cy, 92 * k); gr.addColorStop(0, color); gr.addColorStop(1, 'rgba(16,24,43,0)'); X.save(); X.globalAlpha = 0.75; X.fillStyle = gr; X.fillRect(cx - 95 * k, cy - 95 * k, 190 * k, 190 * k); X.restore(); }
   const cap = new Path2D(); cap.moveTo(cx - 26 * k, cy - 46 * k); cap.lineTo(cx + 26 * k, cy - 46 * k); cap.lineTo(cx + 38 * k, cy - 30 * k); cap.lineTo(cx - 38 * k, cy - 30 * k); cap.closePath();
@@ -970,7 +970,7 @@ g.renderer.domElement.addEventListener('pointerdown', ev => {
 const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
 
 /* ---------- the stage: the board, and the lanterns on the rack ---------- */
-// A lantern's glow: a soft round light in the colour its plan made (a sprite, so it costs nothing and never blinds).
+// A lantern's glow: a soft round light in the color its plan made (a sprite, so it costs nothing and never blinds).
 const haloTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
 function rackLamp(i, css, trial) {
   const o = new THREE.Group(), body = PT.lantern.clone(true), halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTex, color: new THREE.Color(css), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
