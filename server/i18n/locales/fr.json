@@ -1615,7 +1615,17 @@
         "skelly": "Skelly",
         "rattles": "Rattles",
         "bonzo": "Bonzo",
-        "captain-clank": "Capitaine Clank"
+        "captain-clank": "Capitaine Clank",
+        "donkey": "Âne",
+        "cow": "Vache",
+        "husky": "Husky",
+        "pig": "Cochon",
+        "sheep": "Mouton",
+        "horse": "Cheval",
+        "deer": "Biche",
+        "stag": "Cerf",
+        "fox": "Renard",
+        "shiba": "Shiba Inu"
       }
     },
     "lesson": {

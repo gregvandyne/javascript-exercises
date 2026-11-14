@@ -8,14 +8,16 @@ Kit 2 is the next game kit: real engines (Three.js, Phaser) and free professiona
 | `themes/<theme>/recipe.json` | Which pack files go into the theme and what is stripped (held weapons, unused animations). |
 | `themes/<theme>/theme.src.json` | The theme's catalogue by hand: names, tags, sizes, animation names, look, packs and licences. |
 | `pipeline/build-theme.mjs` | Builds a theme's models and sounds from its packs (glTF Transform; quantized; `"meshopt": true` in a recipe adds meshopt compression, which games decode with WebAssembly). |
-| `pipeline/pack-steps.mjs` | Opt-in steps `build-theme.mjs` runs for packs that arrive as FBX: scale, kid-safe clip names, textures by material name, texture size, cut-out leaves, held items removed, ink-friendly normals, a stretch along one axis, a lift (`shift`), plain colours by material name (`colours`). A pack in a `theme.def.json` names them once as `steps` (and a piece may add its own as a 7th field); `build-theme.mjs` takes the folder of the packs' pictures as a 5th argument. A recipe that names none of them builds exactly as before. |
+| `pipeline/pack-steps.mjs` | Opt-in steps `build-theme.mjs` runs for packs that arrive as FBX: scale, kid-safe clip names, textures by material name, texture size, cut-out leaves, held items removed, ink-friendly normals, a stretch along one axis, a brightness lift for flat colours (`brighten`), a lift (`shift`), plain colours by material name (`colours`); `build-theme.mjs` itself takes `meshopt` and `oneDraw` (one draw call for a many-coloured model) on a single model. A pack in a `theme.def.json` names them once as `steps` (and a piece may add its own as a 7th field); `build-theme.mjs` takes the folder of the packs' pictures as a 5th argument. A recipe that names none of them builds exactly as before. |
 | `packs/<pack>.json` | One uploaded pack (branch `asset-packs`): its licence, scale, textures, creatures with their clips, and every model left out with the reason. Staging only: a theme still picks its pieces in its own `theme.def.json`. |
 | `pipeline/fbx-to-glb.mjs`, `pipeline/stage-pack.mjs` | FBX to raw GLB (FBX2glTF 0.9.7), then a pack to optimised GLBs plus `stage.json` (kept, left out, sizes, clips) in a scratch folder. |
 | `pipeline/contact-sheet.mjs` | Contact sheets with the Oomba look (ink outlines, daytime light): every model of a folder, or each creature idle and mid-step beside a hero, or faces close up. |
+| `themes/<theme>/theme.def.json` `base`, `creatures` | A new version of a shipped theme names it as `"base": "<theme>/<version>"`: `from-def.mjs` then copies every file the base has byte for byte and builds only what is new. `creatures` are animals with their own clips (`id`, `name`, `from`, `pack`, `kind`, `playable`, `size`, `pace`, `jumpAir`, and pack steps such as `scale`, `anims`, `inkNormals`, `brighten`, `meshopt`). |
 | `pipeline/lock.mjs` | Adds new engine files and theme versions to `SHIPPED.json` (never rewrites a shipped one). |
 | `SHIPPED.json` | The lock: every file under `public/vendor/kit2/` and every theme version's `theme.json`, by sha384. |
 | `pipeline/manifest.mjs` | Writes the built theme's `theme.json`: the catalogue plus every file's size and hash. |
 | `demo/sky-islands.html` | The Sky Islands demo on Oomba3D (62 lines); `tests/unit/kit2-oomba3d.test.js` plays it. |
+| `demo/creatures.html` | The animals of any theme version that has creatures, on Oomba3D 1.2.0: every creature in a row, one strolling, one on a loop, a companion, a small school, and a hero or a playable animal; `tests/unit/kit2-creatures.test.js` plays it. |
 | `demo/theme-tour.html` | One scene for any theme from its catalogue: the covers, and `tests/unit/kit2-worlds.test.js` plays it for every theme. |
 | `demo/sky-islands-prototype.html` | The first prototype (no library), for reference. |
 
@@ -39,5 +41,17 @@ The plan for the packs on branch `asset-packs` is `docs/kit2-packs-plan.md`. Raw
    `node fbx-to-glb.mjs <packs-dir> <raw-dir>` and, for each pack, `node stage-pack.mjs <repo>/kit2/packs/<pack>.json <raw-dir> <packs-dir> <stage-dir> --all`.
 3. From the repository: `node kit2/pipeline/contact-sheet.mjs <stage-dir>/<pack> sheet.png --title "…"` (add
    `--creatures` for the animals, `--sub excluded` for what was left out) and look at every model.
+
+## A new version of a shipped theme with animals (Medieval Village 1.1.0, Castle Quest 1.2.0)
+
+1. Stage the pack as above (`fbx-to-glb.mjs` gives `<raw-dir>/<pack>/<Model>.glb`).
+2. In `themes/<theme>/theme.def.json`: bump `version`, set `base` to the shipped version, add the pack to `packs` and the
+   animals to `creatures` (clip names from the pack's config in `kit2/packs/`; never an attack, hit or death clip).
+3. `node kit2/pipeline/from-def.mjs kit2/themes/<theme>/theme.def.json`, then from the scratch folder with the pipeline
+   scripts `node build-theme.mjs <repo>/kit2/themes/<theme>/recipe.json <raw-dir> <repo>/public/vendor/themes/<theme>/<version>`.
+4. Look at them (`contact-sheet.mjs <out>/ sheet.png --creatures`), measure `size`, `pace` and `jumpAir` in the browser
+   (how fast the ground passes under a standing foot in walk and run; the part of the jump clip spent in the air) and
+   write them into the definition; copy the licences, write `SOURCES.md`, then `manifest.mjs` and `lock.mjs`.
+5. `node scripts/build-kit2-rules.js` and `node scripts/kit2-thumbs.js --only <ids>` for the Builder.
 
 A shipped theme version never changes; a fix or new pieces ship as a new version.

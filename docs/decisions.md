@@ -4920,11 +4920,86 @@ those packs make complete without a new Oomba3D, so it ships first, on Oomba3D 1
   sand (as on Sky Islands' round island). The hero cannot walk on a ship's deck: a ship's box reaches its mast top, so
   ships are scenery in this version (a `deck` square at deck height is the way to make one walkable).
 
+## Oomba3D 1.2.0: animals, and a saved game keeps its own Oomba3D (14 Nov 2026)
+
+The owner uploaded animal packs (`docs/kit2-packs-plan.md`). This is the plan's "long pole": the library that can show
+them, and a first set of ten animals to prove it, with no new world.
+
+- **Oomba3D 1.2.0 is a new file beside 1.0.0 and 1.1.0**, which are unchanged (their hashes are written out in
+  `tests/unit/kit2-creatures.test.js`). It adds `g.creature(id)` (`play`, `walkTo`, `follow`, `wander`, `followHero`,
+  `onMeet`, `stop`, `remove`), `g.school(id, n)`, an animal as the hero (`g.hero('horse')`), `g.world.ground()`, a
+  piece's own clips, `'bubbles'` weather and `g.controls(hero, { swim: true })`. Everything is opt-in: a game that
+  calls none of it draws and plays as on 1.1.0 (the seven seed games and every world tour run on 1.2.0 unchanged).
+- **A game picks its Oomba3D with its import map and keeps it.** Until now the scanner accepted one import map, so a
+  library bump would have failed every saved Kit 2 game the next time it was scanned. Now `kit2ImportMap(version)`
+  exists for every shipped Oomba3D, the scanner accepts each of those maps and nothing else (a version that has not
+  shipped, or one version's file with another's integrity, fails), and `kit2ImportMap()` is the newest, for new games.
+  The Builder's starter and the seed games carry the 1.2.0 map (their own tests require the newest map after a bump);
+  games already built keep theirs.
+- **Kind by construction, not by convention.** Creatures are never added to what the hero stands on or bumps into;
+  the creature code never touches the score or the hero's position; the library filters out any clip whose name
+  matches attack, death, hit, punch, kick, shoot, gun or bite before it can be played; big animals (the horse, stag and
+  cow) stroll and never exceed 2.5 a second by themselves (the hero runs at 7); and no animal takes a step that would
+  bring it inside its calm distance of the hero: it waits. `followHero` is a companion that stops behind the hero, not
+  a chase. A test reads every built `.glb` for clip names: the only match anywhere is `Hit_A`, the heroes' "bump" move
+  in the shared `moves.glb` that shipped with Sky Islands 1.0.0 and cannot change; no creature file has one.
+- **Animals live per theme** (`theme.json` `creatures`), as the plan recommended: the catalogue, lint, scanner, 5 MB
+  test and picker already work theme by theme. They joined existing worlds as new versions, built with
+  `"base": "<theme>/<version>"` in the definition so every older file is copied byte for byte:
+  **Medieval Village 1.1.0** (donkey, cow, husky, pig, sheep; 4.88 MB) and **Castle Quest 1.2.0** (horse, deer, stag,
+  fox, shiba; 4.53 MB). The brief proposed all eight woodland animals in Medieval Village: that world had 0.49 MB left
+  under the 5 MB limit and the eight are 0.8 MB even compressed, so they are split by where they fit, and the pig and
+  sheep (Farm Animals pack: `idle` and `jump` only) were added so the "no walk" case ships and is tested. Sky Islands
+  was left alone: its 1.1.0 is planned for the sky pack.
+- **Size.** A creature was 210 to 290 KB (eight clips, mostly JSON and keyframes). Three clips nobody needs yet were
+  dropped (`look`, `graze`, `land`; kept: `idle`, `eat`, `walk`, `run`, `jump`) and creature files are
+  meshopt-compressed (allowed since WebAssembly was; the heroes and pieces stay as they were): 93 to 114 KB, about 40 KB
+  on the wire. Farm animals: 36 KB.
+- **One draw call an animal.** A cow has seven flat colours, so it was seven meshes (fourteen with the ink outline,
+  twenty-one with shadows). The pipeline's `oneDraw` puts the colours into a 32 by 4 palette picture and joins the
+  parts: one mesh, so two draw calls with the outline and three with shadows. Measured in the animals demo (six
+  animals, a school of four): Fast 150 draw calls and 73,000 triangles against 130 and 49,000 with no animals;
+  Balanced 372 and 153,000 against 342 and 117,000. With 30 animals and a school of 30 asked for, Fast still draws
+  150 calls (10 animals shown), Balanced 401 (20), Beautiful 525 (all).
+- **Colour.** The FBX colours draw darker than the store pictures. `brighten` (a pack step: gamma, gain, saturation in
+  sRGB, near-black materials left alone) was tuned on contact sheets to gamma 0.8, gain 1.12, saturation 1.15.
+- **Feet.** Each walker carries `pace` (how fast the ground passes under a standing foot in its walk and run clips,
+  measured from the built file) so the library plays the clip at the speed the animal really moves, and `jumpAir` (the
+  part of its jump clip spent off the ground). **The pig and sheep hop:** they travel only while their jump clip has
+  them in the air and stand between hops; with reduced motion they glide in their idle pose. A playable animal's jump
+  skips the clip's crouch and is fitted to the time the hero is in the air.
+- **Chromebooks.** Per graphics level only so many animals animate and are drawn (Fast: 6 and 10, and 12 in a school);
+  animation is paused off screen; copies share geometry, materials and clips; a school shares one skeleton and one
+  animation. Draw calls and triangles were measured (below); frame rates were not: the build machine renders in
+  software.
+- **The Builder.** New builds are on 1.2.0. The catalogue lists each creature with `kind`, `size`, `moves` and
+  `playable`; the rules give the creature API, say never to invent a creature name and that animals are never enemies
+  or obstacles; `kit2-lint` notes an unknown animal (`kit2_creature`), a hopper as the hero, and creature calls in a
+  game pinned to an older Oomba3D (`kit2_engine`). The starter has `companion` in CONFIG, and
+  `start_from_template "oomba3d"` takes a `companion` and a playable animal as `hero`. An animal a world has is used
+  (a playable one named alone is the hero; "with my dog", a named hero, or a hopper make it a companion; "a dog" is the
+  husky in the village and the shiba at the castle); one no world has (a dinosaur, a cat) still gets the honest "not
+  yet". As for hero words, an animal word alone does not turn a 2D or other 3D request into a 3D-world game. A saved
+  game on an older Oomba3D or world version is never edited into creature calls it cannot run: it is moved to a fresh
+  starter with its title, questions and words carried over.
+- **Left for later:** an "Animals" tab in the picker (the ten animals are in the 3D heroes tab, named in every site
+  language; a fourth tab needs new strings and a "comes along" chip sentence in 13 languages and a narrower tab bar on
+  phones); dinosaurs, sea creatures and the T-Rex question (their worlds); the three dropped clips.
+- **Not verified:** motion was judged from still frames and from positions and clip states read in tests, in software
+  rendering; no real Chromebook; a build with the real model. A piece's own clips run against Pirate Cove's chest
+  (`open`, `close`) in the test, but no game or starter opens it yet.
+- **`inkNormals` and the white picture.** Pirate Cove found that models built with `inkNormals` drew a blank white
+  picture on Oomba3D 1.1.0 (cause not looked into). The animals are built with it, and only Oomba3D 1.2.0 can load
+  them (`g.creature`, `g.school`, an animal hero): 1.1.0 has no call that reaches a `creatures/` file, and the two new
+  theme versions copy every hero and piece from the version before, byte for byte. On 1.2.0 a test reads the pixels of
+  a rendered frame of the cow: not washed out, brown, with ink.
+
 ## Wild Woods 1.0.0: a nature world from two uploaded packs (14 Nov 2026)
 
 Two more CC0 packs were uploaded to branch `asset-packs`: the Kenney Nature Kit 2.1 (329 models) and the Quaternius
-Ultimate Nature Pack (150). Wild Woods is built from them the way Pirate Cove was, on Oomba3D 1.1.0 with no engine
-change. Two other uploads are NOT used: `amir-forest-nature-pack` (its licence is unclear) and the `reodesuxz-*` packs.
+Ultimate Nature Pack (150). Wild Woods is built from them the way Pirate Cove was, with no engine change: it needs
+nothing newer than Oomba3D 1.1.0 (it was built and looked at on 1.1.0), and new games in it are on 1.2.0 like every
+new build. Two other uploads are NOT used: `amir-forest-nature-pack` (its licence is unclear) and the `reodesuxz-*` packs.
 
 - **The theme** (`public/vendor/themes/wild-woods/1.0.0/`, 2.29 MB first load, limit 5 MB): 107 pieces. 89 from the
   Kenney kit (meadow, hill and cliff blocks, rock faces, a waterfall, path and river tiles, three bridges, 15 trees,
@@ -4951,7 +5026,7 @@ change. Two other uploads are NOT used: `amir-forest-nature-pack` (its licence i
   the ground of a dry wood (tiled, y -3) and an island or stepping stone in a lake. Path and river tiles are the kit's
   own thin tiles (0.2), laid at y 0 in place of a meadow block. Bridges, steps and slopes are scenery in this version:
   a hero stands on a piece's bounding box (as with Pirate Cove's ships), so a bridge's box is as high as its posts.
-- **`inkNormals` is not used** (unverified on Oomba3D 1.1.0, see Pirate Cove). Both packs' own flat normals draw
+- **`inkNormals` is not used** (it blanked the picture on Oomba3D 1.1.0, see Pirate Cove; nor `meshopt` or `oneDraw`). Both packs' own flat normals draw
   right and the ink outline holds.
 - **Builder:** place words (English: "forest", "woods", "woodland", "meadow", "camping", "campfire", "nature trail",
   "hiking", "waterfall", "across the river") choose Wild Woods for a new game, after Spooky Hollow so "a spooky forest"
@@ -4959,6 +5034,6 @@ change. Two other uploads are NOT used: `amir-forest-nature-pack` (its licence i
   (`seaY` -1.5, `lake: true`), grey stone blocks to hop along, the tent as the goal with a waterfall behind it. Names in
   the 12 locale files, picker chip and Build card from the cover. The theme tour learned one thing: a theme with stream
   tiles (tags `river` and `tile`) gets a stream across the front row and its first bridge over it.
-- **No animals in this version.** They come with a later Oomba3D (creatures), as a new theme version.
+- **No animals in this version.** Oomba3D 1.2.0 can show them; woodland animals join as a new theme version.
 - **Not verified:** a real GPU or Chromebook (software WebGL only), sound by ear, a build with the real model, and the
   walk of a whole level by hand on a phone. The cover's bridge stands at the right edge of the picture.

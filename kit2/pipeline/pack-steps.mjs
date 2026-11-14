@@ -21,6 +21,9 @@
 //                                  the materials extras.flat = true. An ink outline (a copy pushed out along the normals)
 //                                  then stays in one piece instead of cracking at every hard edge; whoever draws the model
 //                                  sets flatShading on a material marked flat, so the faces still look flat.
+//   brighten: { gamma: 0.8, gain: 1.1, saturate: 1.15, floor: 0.02 }  lift flat material colours (packs whose FBX colours
+//                                  draw darker than their store pictures): in sRGB, colour^gamma * gain, then more or less
+//                                  colourful; materials darker than floor (eyes, noses, hooves) stay as they are
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -73,6 +76,18 @@ export async function packSteps(doc, item, recipe, recipeDir) {
         p.setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(out).setBuffer(root.listBuffers()[0]));
         if (p.getMaterial()) p.getMaterial().setExtras({ ...p.getMaterial().getExtras(), flat: true });
       }
+    }
+  }
+  if (item.brighten) {
+    const { gamma = 1, gain = 1, saturate = 1, floor = 0.02 } = item.brighten;
+    const toS = v => v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055, toL = v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    for (const m of root.listMaterials()) {
+      const [r, g, b, a] = m.getBaseColorFactor();
+      if (Math.max(r, g, b) < floor) continue;
+      let c = [r, g, b].map(v => Math.min(1, Math.pow(toS(v), gamma) * gain));
+      const y = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      c = c.map(v => Math.min(1, Math.max(0, y + (v - y) * saturate)));
+      m.setBaseColorFactor([...c.map(v => +toL(v).toFixed(4)), a]);
     }
   }
   if (item.dropVertexColours) for (const m of root.listMeshes()) for (const p of m.listPrimitives()) if (p.getAttribute('COLOR_0')) p.setAttribute('COLOR_0', null);

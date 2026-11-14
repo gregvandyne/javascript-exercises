@@ -4,7 +4,9 @@
 //   public/img/kit2/heroes/<id>.webp           96x96 (shown at 36x36 on a chip): the character itself, waving, drawn by
 //                                              Oomba3D in the real game frame (the same frame and CSP players get)
 // One picture per world and character in the generated catalogue (server/builder/kit2-catalog.js), so a newly shipped
-// theme gets its pictures by running this again: node scripts/kit2-thumbs.js
+// theme gets its pictures by running this again: node scripts/kit2-thumbs.js   (--only cow,pig,castle-quest draws just
+// those worlds and characters and leaves every other picture as it is). An animal is drawn with g.creature(), turned a
+// little to the side and framed by its own size.
 // Needs the Playwright Chromium (BRB_CHROMIUM, or the one Playwright installed). Chromium itself encodes the WebP.
 // tests/unit/builder-kit2.test.js fails when a world or character has no picture.
 process.env.BRB_DB = process.env.BRB_DB || ':memory:'; process.env.BRB_SILENT = '1';
@@ -38,9 +40,11 @@ async function webp(page, buf, mime, w, h, q = 0.82) {
 }
 const save = (rel, buf) => { fs.writeFileSync(path.join(OUT, rel), buf); console.log(`public/img/kit2/${rel}`, buf.length, 'bytes'); };
 
+const onlyAt = process.argv.indexOf('--only'), only = onlyAt > 0 ? new Set(String(process.argv[onlyAt + 1] || '').split(',')) : null;
 const blank = await (await browser.newContext()).newPage();
 await blank.setContent('<!doctype html><title>t</title>');
 for (const w of KIT2_WORLDS) {
+  if (only && !only.has(w.id)) continue;
   const cover = fs.readFileSync(path.join(ROOT, 'public/vendor/themes', w.id, w.version, 'cover.webp'));
   save(`worlds/${w.id}.webp`, await webp(blank, cover, 'image/webp', 96, 64));
   save(`worlds/${w.id}-card.webp`, await webp(blank, cover, 'image/webp', 320, 200));
@@ -49,16 +53,20 @@ for (const w of KIT2_WORLDS) {
 // Each character alone, close up, in the first world that has it.
 const ctx = await browser.newContext({ viewport: { width: 384, height: 384 } });
 for (const c of KIT2_CHARACTERS) {
+  if (only && !only.has(c.id)) continue;
   const w = KIT2_WORLDS.find(x => x.id === c.worlds[0]);
   const game = `<title>${c.id}</title>\n${kit2ImportMap()}\n<style>html, body { margin: 0; height: 100%; overflow: hidden; }</style>
 <script type="module">
 import { start } from 'oomba3d';
 const g = await start({ theme: '${w.id}', version: '${w.version}', graphics: 'high', outline: true, settings: false, reducedMotion: true });
 g.scene.fog = null;   // a clear portrait: no haze, and high above the soft clouds
-const me = await g.hero('${c.id}', { x: 0, y: 40, z: 0, face: 0.3 });
+${c.kind === 'creature' ? `const me = await g.creature('${c.id}', { x: 0, y: 40, z: 0, face: 0.85 });
+const [, h, l] = me.size, r = Math.max(h, l * 0.85);
+g.camera.fov = 26; g.camera.updateProjectionMatrix();
+g.camera.position.set(r * 0.25, 40 + h * 0.75, r * 2.8); g.camera.lookAt(0, 40 + h * 0.5, 0);` : `const me = await g.hero('${c.id}', { x: 0, y: 40, z: 0, face: 0.3 });
 me.play('wave');
 g.camera.fov = 26; g.camera.updateProjectionMatrix();
-g.camera.position.set(0.5, 41.9, 5.4); g.camera.lookAt(0, 41.45, 0);
+g.camera.position.set(0.5, 41.9, 5.4); g.camera.lookAt(0, 41.45, 0);`}
 setTimeout(() => { window.__ready = true; }, 900);
 </script>`;
   const doc = frameDocument(game, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: c.id }, save: {}, canSave: false });

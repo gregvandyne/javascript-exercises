@@ -78,7 +78,7 @@ test('the catalogue says exactly what kit2/SHIPPED.json and the theme manifests 
     const m = manifest(w.id, w.version);
     assert.equal(w.name, m.name); assert.equal(w.description, m.description);
     assert.deepEqual(w.heroes, m.heroes.map(h => ({ id: h.id, name: h.name })), `${w.id}: heroes`);
-    assert.deepEqual(w.creatures, (m.creatures || []).map(h => ({ id: h.id, name: h.name })), `${w.id}: creatures`);
+    assert.deepEqual(w.creatures, (m.creatures || []).map(h => ({ id: h.id, name: h.name, kind: h.kind, size: h.size, moves: h.moves, playable: h.playable })), `${w.id}: creatures, with what the Builder needs to use them well`);
     assert.deepEqual(w.pieces.map(p => p.id), m.pieces.map(p => p.id), `${w.id}: pieces`);
     assert.deepEqual(w.sounds, m.sounds.map(s => s.id), `${w.id}: sounds`);
     assert.deepEqual(w.moves, Object.keys(m.moves.clips), `${w.id}: moves`);
@@ -100,7 +100,16 @@ test('characters: every hero and creature of every world, with the worlds that h
 test('animals and dinosaurs: none has shipped yet, and the Builder says so instead of inventing one', () => {
   const creatures = K.KIT2_CHARACTERS.filter(c => c.kind === 'creature');
   // The day a theme ships a creature this test changes sides: it must then be in the catalogue, the rules and the picker.
-  if (creatures.length) { for (const c of creatures) assert.ok(P.KIT2_RULES.includes(c.id) && fs.existsSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)), c.id); return; }
+  if (creatures.length) {
+    for (const c of creatures) assert.ok(P.KIT2_RULES.includes(c.id) && fs.existsSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)), c.id);
+    // and an animal no world has (a dinosaur today) still gets the honest "not yet", never an invented one
+    assert.match(P.KIT2_SHORT, /No dinosaurs, fish or other animals yet/);
+    assert.match(P.KIT2_RULES, /Never invent a creature name[\s\S]*not listed[\s\S]*say so kindly[\s\S]*Never pretend/);
+    const dino = K.wantsKit2({}, 'a dinosaur game on the moon', null);
+    assert.equal(dino.wantsCreature, true);
+    assert.match(K.kit2Note(dino), /an animal that is not in any world yet: say that kindly/);
+    return;
+  }
   assert.match(P.KIT2_SHORT, /No animals or dinosaurs yet/);
   assert.match(P.KIT2_RULES, /There are no animal or dinosaur characters yet[\s\S]*say so kindly[\s\S]*Never pretend/);
   const pick = K.wantsKit2({}, 'a dinosaur game on the moon', null);
@@ -200,7 +209,9 @@ test('engine choice: the Studio chips are understood in every site language', ()
     }
     for (const h of K.CHARACTER_IDS) {
       const p = K.pickKit2(heroUse.replace('{name}', heroes[h]));
-      assert.deepEqual([p.by, p.hero], ['chip', h], `${code}: the ${h} chip`);
+      // an animal that cannot be the hero (the pig, the sheep: no walk) comes along as a companion instead
+      if (K.characterById(h).kind === 'creature' && !K.characterById(h).playable) assert.deepEqual([p.by, p.hero, p.animals, p.along], ['chip', '', [h], true], `${code}: the ${h} chip`);
+      else assert.deepEqual([p.by, p.hero], ['chip', h], `${code}: the ${h} chip`);
     }
     // world and hero together, as the page writes them; and the classic chip stays classic
     const both = K.wantsKit2({}, `${worldUse.replace('{name}', names['castle-quest'])}\n${heroUse.replace('{name}', heroes.skelly)}`, null);
@@ -315,13 +326,17 @@ test('the scanner still refuses what it refused before, in a Kit 2 game too', ()
   assert.ok(fails(html.replace('</style>', '</style><p>Type your phone number here</p>')).includes('personal_info'), 'asking for personal details');
   assert.ok(fails(html.replace('</style>', '</style><script src="https://evil.example/x.js"></script>')).length, 'a script from outside');
   // the import map must be the pinned one, byte for byte in what it says
-  assert.ok(fails(html.replace('oomba3d/1.1.0/oomba3d.js": "sha384-', 'oomba3d/1.1.0/oomba3d.js": "sha384-AAAA')).length, 'a changed integrity');
-  assert.ok(fails(html.replace('"oomba3d": "/vendor/kit2/oomba3d/1.1.0/oomba3d.js"', '"oomba3d": "https://cdn.example/oomba3d.js"')).length, 'Oomba3D from another host');
+  const lib = `oomba3d/${V.OOMBA3D_VERSION}/oomba3d.js`;
+  assert.ok(html.includes(`${lib}": "sha384-`) && html.includes(`"oomba3d": "/vendor/kit2/${lib}"`), 'the starter pins the newest Oomba3D');
+  assert.ok(fails(html.replace(`${lib}": "sha384-`, `${lib}": "sha384-AAAA`)).length, 'a changed integrity');
+  assert.ok(fails(html.replace(`"oomba3d": "/vendor/kit2/${lib}"`, '"oomba3d": "https://cdn.example/oomba3d.js"')).length, 'Oomba3D from another host');
   assert.ok(fails(html.replace(V.kit2ImportMap(), '')).length, 'no import map');
   // a world or version that has not shipped
-  assert.deepEqual(fails(html.replace("version: '1.1.0',", "version: '9.9.9',")), ['kit2_theme']);
+  const cq = K.worldById('castle-quest').version;
+  assert.ok(html.includes(`version: '${cq}',`), 'the starter names the newest Castle Quest');
+  assert.deepEqual(fails(html.replace(`version: '${cq}',`, "version: '9.9.9',")), ['kit2_theme']);
   assert.deepEqual(fails(html.replace("world: 'castle-quest',", "world: 'dino-valley',")), ['kit2_theme']);
-  assert.deepEqual(fails(html.replace("version: '1.1.0',", "version: '1.0.0',")), [], 'an older shipped version stays allowed: saved games keep theirs');
+  assert.deepEqual(fails(html.replace(`version: '${cq}',`, "version: '1.0.0',")), [], 'an older shipped version stays allowed: saved games keep theirs');
   assert.ok(fails(add("const art = '/vendor/themes/dino-valley/1.0.0/heroes/rex.glb';")).includes('kit2_theme'));
 });
 
@@ -343,7 +358,7 @@ test('Kit 2 notes: an invented hero, piece or sound name, and askQuestion outsid
   const codes = scanVersion(bad).lint.map(l => l.code);
   assert.deepEqual(codes, ['kit2_hero', 'kit2_piece', 'kit2_sound', 'kit2_ask']);
   assert.equal(scanVersion(bad).status, 'pass', 'notes never change the safety result');
-  assert.match(lintKit2(bad)[0].message, /castle-quest 1\.1\.0 has no hero called "t-rex"[\s\S]*knight, barbarian/);
+  assert.match(lintKit2(bad)[0].message, new RegExp(`castle-quest ${K.worldById('castle-quest').version.replace(/\./g, '\\.')} has no hero called "t-rex"[\\s\\S]*knight, barbarian`));
   assert.deepEqual(lintKit2(starter('sky-islands') + '<script type="module">g.askQuestion({});</script>'), [], 'Sky Islands has island-round');
   // an older shipped version is read from its own manifest
   assert.ok(namesOf('castle-quest', '1.0.0').pieces.has('chest') && !namesOf('castle-quest', '1.0.0').pieces.has('castle-building'));
@@ -390,7 +405,7 @@ test('mock: "a dinosaur game on the moon" builds a Kit 2 game in Space Base, and
   let v = current(g.id);
   assert.deepEqual(K.kit2Of(v.html), { world: 'space-base', version: '1.0.0', hero: 'knight' });
   assert.ok(v.html.includes(V.kit2ImportMap()) && !usesKit(v.html));
-  assert.match(t.text, /no animal or dinosaur characters yet/);
+  assert.match(t.text, /The 3D worlds do not have that animal yet\. The animals so far: [A-Z]/, 'the honest "not yet" for a dinosaur');
   assert.equal(games.getGame(g.id).title, 'Dino Space Base');
   assert.equal(k2Read(v.html, 'outfit'), '#66C792');
   assert.equal(t.of('ask').length, 1); assert.equal(t.of('ask')[0].options.length, 3);
@@ -410,7 +425,7 @@ test('mock: "a dinosaur game on the moon" builds a Kit 2 game in Space Base, and
   assert.equal(k2Read(v.html, 'title'), 'Moon Hop'); assert.equal(k2Read(v.html, 'weather'), 'snow'); assert.equal(k2Read(v.html, 'steps'), 6); assert.equal(k2Read(v.html, 'outfit'), '#66C792');
   assert.equal(scanVersion(v.html).status, 'pass'); assert.deepEqual(scanVersion(v.html).lint, []);
   t = await turn(u, g.id, 'change the hero to a dinosaur');
-  assert.match(t.text, /no animal or dinosaur characters/); assert.equal(t.of('version').length, 0, 'nothing is pretended');
+  assert.match(t.text, /kept your hero \(the 3D worlds do not have that animal yet\)/); assert.equal(t.of('version').length, 0, 'nothing is pretended');
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
 
@@ -458,6 +473,38 @@ test('mock: the chips build the picked world with the picked hero', async () => 
   assert.equal(t.of('version').length, 1);
   assert.deepEqual(K.kit2Of(current(g.id).html), { world: 'spooky-hollow', version: '1.0.0', hero: 'captain-clank' });
   assert.equal(games.getGame(g.id).title, 'Spooky Hollow');
+});
+
+test('mock: an animal that exists is built in: a pet as a companion, a horse as the hero; a saved game from before the animals is moved up first', async () => {
+  const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
+  let t = await turn(u, g.id, 'a castle game where a knight has a pet fox');
+  assert.equal(t.of('version').length, 1); assert.equal(t.of('version')[0].status, 'pass');
+  let v = current(g.id);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'castle-quest', version: K.worldById('castle-quest').version, hero: 'knight', companion: 'fox' });
+  assert.match(t.text, /with Knight as the hero and a Fox who follows you/); assert.doesNotMatch(t.text, /do not have that animal/);
+  assert.deepEqual(scanVersion(v.html).lint, []);
+  t = await turn(u, g.id, 'change the hero to the horse');
+  v = current(g.id);
+  assert.deepEqual([K.kit2Of(v.html).hero, K.kit2Of(v.html).companion], ['horse', 'fox']); assert.equal(v.safety_status, 'pass');
+  t = await turn(u, g.id, 'change the hero to a dinosaur');
+  assert.match(t.text, /do not have that animal yet/); assert.equal(K.kit2Of(current(g.id).html).hero, 'horse', 'nothing is pretended');
+  // a game saved on Oomba3D 1.1.0 (before the animals): asking for one moves it to a fresh starter, with its title and numbers kept
+  const g2 = games.createGame(u.id, { title: 'Old Village' });
+  const old = K.kit2Starter({ world: 'medieval-village', hero: 'mage', title: 'Old Village' }).replace(V.kit2ImportMap(), V.kit2ImportMap('1.1.0')).replace("version: '1.1.0',", "version: '1.0.0',").replace('  steps: 4,', '  steps: 6,').replace(/\n  companion: '',/, '');
+  assert.equal(scanVersion(old).status, 'pass'); assert.equal(K.hasAnimals(old), false);
+  games.addVersion(g2.id, old, { notes: 'made before the animals', createdBy: u.id, safetyStatus: 'pass', safetyReport: scanVersion(old) });
+  t = await turn(u, g2.id, 'add a cow that follows me');
+  v = current(g2.id);
+  assert.equal(V.oomba3dVersionOf(v.html), V.OOMBA3D_VERSION);
+  assert.deepEqual(K.kit2Of(v.html), { world: 'medieval-village', version: K.worldById('medieval-village').version, hero: 'mage', companion: 'cow' });
+  assert.equal(k2Read(v.html, 'steps'), 6); assert.equal(k2Read(v.html, 'title'), 'Old Village'); assert.equal(v.safety_status, 'pass');
+  assert.match(t.text, /newest version of its world[\s\S]*Cow who follows you/);
+  // and a game that stays as it was keeps the Oomba3D and world version it named
+  const g3 = games.createGame(u.id, { title: 'Stays' });
+  games.addVersion(g3.id, old, { notes: 'made before the animals', createdBy: u.id, safetyStatus: 'pass', safetyReport: scanVersion(old) });
+  t = await turn(u, g3.id, 'make it night time');
+  v = current(g3.id);
+  assert.equal(V.oomba3dVersionOf(v.html), '1.1.0'); assert.equal(K.kit2Of(v.html).version, '1.0.0'); assert.equal(k2Read(v.html, 'time'), 'night');
 });
 
 test('mock: with no Kit 2 thing asked for, the game is an old-kit game, built and changed as before', async () => {
@@ -530,7 +577,7 @@ test('the Build page and the Studio offer every world and character, with pictur
   const made = await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'medieval-village' } });
   assert.equal(made.status, 200, made.text);
   const state = (await c(`/api/studio/${made.json.id}`)).json;
-  assert.deepEqual(state.kit2, { world: 'medieval-village', version: '1.0.0', hero: 'knight' });
+  assert.deepEqual(state.kit2, { world: 'medieval-village', version: K.worldById('medieval-village').version, hero: 'knight' });
   assert.equal(state.current.safety, 'pass'); assert.equal(state.game.title, 'Medieval Village');
   // the Studio of a Kit 2 game: the 3D worlds tab first, its world and hero marked, every chip with its picture
   let page = (await c(`/studio/${made.json.id}`)).text;

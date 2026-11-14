@@ -98,8 +98,8 @@ test('only the two CC0 nature packs and what every theme reuses', () => {
   for (const m of recipe.models) assert.match(m.from, /^(kenney-nature-kit|quaternius-ultimate-nature)\/[A-Za-z0-9_]+\.glb$|^theme:castle-quest\/1\.0\.0\//, m.from);
   for (const c of recipe.copy) assert.match(c.from, /^theme:(castle-quest|busy-kitchen)\/1\.0\.0\//, c.from);
   assert.doesNotMatch(JSON.stringify([def, recipe, manifest.packs]), /amir|reodesuxz|megakit|forest-nature-pack/i);
-  // built on the shipped Oomba3D (1.1.0): no animal list, no flat-shading mark from the unverified inkNormals step
-  assert.doesNotMatch(JSON.stringify(recipe), /inkNormals/);
+  // needs nothing newer than Oomba3D 1.1.0: no animal list, no meshopt, no flat-shading mark from the inkNormals step
+  assert.doesNotMatch(JSON.stringify(recipe), /inkNormals|meshopt|oneDraw/);
 });
 
 test('the starter layout and the tour use only this world\'s pieces', async () => {
@@ -118,7 +118,7 @@ test('the starter layout and the tour use only this world\'s pieces', async () =
     const r = scanVersion(html);
     assert.equal(r.status, 'pass', JSON.stringify(r.issues)); assert.deepEqual(r.lint, []);
     assert.deepEqual(K.kit2Of(html), { world: 'wild-woods', version: '1.0.0', hero });
-    assert.match(html, /oomba3d\/1\.1\.0\/oomba3d\.js/, 'on Oomba3D 1.1.0');
+    assert.ok(html.includes(V.kit2ImportMap()), 'on the newest shipped Oomba3D, as every new build');
     assert.doesNotMatch(html, /new Worker|\beval\(|new Function/, 'nothing the frame forbids');
   }
   const tour = read(path.join(ROOT, 'kit2/demo/theme-tour.html')).replace('<!-- KIT2_IMPORT_MAP -->', V.kit2ImportMap()).replace("'THEME_ID'", "'wild-woods'").replace("'THEME_VERSION'", "'1.0.0'").replace("'THEME_TIME'", "'day'");
