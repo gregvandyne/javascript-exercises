@@ -18,7 +18,7 @@ import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS } from './catalog.js'
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
-import { WORLD_IDS, worldById, charactersOf, heroFor, DEFAULT_WORLD } from './kit2.js';
+import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter } from './art2d.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
@@ -216,9 +216,13 @@ export function toolbox(ctx) {
         const kept = (ctx.state && ctx.state.kit2) || {};
         const world = String((input && input.world) || kept.world || DEFAULT_WORLD), w = worldById(world);
         if (!w) return { ok: false, forModel: `There is no 3D world called "${world.slice(0, 40)}". The worlds are: ${WORLD_IDS.join(', ')}.` };
-        const asked = String((input && input.hero) || (kept.world === world ? kept.hero : '') || ''), heroes = charactersOf(world).map(h => h.id);
+        const asked = String((input && input.hero) || (kept.world === world ? kept.hero : '') || ''), heroes = heroesOf(world).map(h => h.id), animals = creaturesOf(world).map(c => c.id);
+        if (asked && animals.includes(asked) && !heroes.includes(asked)) return { ok: false, forModel: `The ${asked} cannot be the hero (it has no walk, it only hops): make it the companion instead (companion: "${asked}") and pick a hero from: ${heroes.join(', ')}.` };
         if (asked && !heroes.includes(asked)) return { ok: false, forModel: `${w.id} has no character called "${asked.slice(0, 40)}". Its characters are: ${heroes.join(', ')}. There are no others: pick one of these.` };
-        k2 = { world, hero: heroFor(world, asked) };
+        // An animal friend: one of this world's own creatures, never an invented one.
+        const friend = String((input && input.companion) || (kept.world === world ? kept.companion : '') || '');
+        if (input && input.companion && !creatureFor(world, friend)) return { ok: false, forModel: animals.length ? `${w.id} has no animal called "${friend.slice(0, 40)}". Its animals are: ${animals.join(', ')}. There are no others: pick one of these, or leave companion out.` : `${w.id} has no animals yet, so it cannot have a companion. Leave companion out (and tell the builder kindly), or use a world that has animals.` };
+        k2 = { world, hero: heroFor(world, asked), ...(creatureFor(world, friend) ? { companion: creatureFor(world, friend) } : {}) };
       }
       // A 2D template with the 2D art (art2d.js): a world drawn in 2D and a sprite hero or animal, asked for here or
       // picked earlier in the chat. An invented name is refused with the real names; a template that does not draw the
@@ -240,7 +244,7 @@ export function toolbox(ctx) {
       if (k2 && r.version && ctx.state) ctx.state.kit2 = k2;   // remembered: the next turns are Kit 2 turns
       if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''} (CONFIG.world, CONFIG.hero2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
-      if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
+      if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}${k2.companion ? ` and the animal friend ${k2.companion} (CONFIG.companion)` : ''}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, companion, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
       else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
         : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;

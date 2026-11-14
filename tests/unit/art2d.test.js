@@ -282,8 +282,8 @@ test('engine choice: 3D stays 3D; a 2D request that names a world or an animal g
   }
   for (const [text, world, hero, force] of [
     ['a pirate catching game', 'pirate-cove', ''], ['a catching game on a treasure island', 'pirate-cove', ''], ['a 2D game on the moon', 'space-base', ''], ['a 2D pirate game', 'pirate-cove', ''],
-    ['a running game with a fox in the castle', 'castle-quest', 'fox', true], ['a running game with a triceratops on the moon', 'space-base', 'triceratops', true],
-    ['a catching game with a fox', '', 'fox'], ['a jumping game with a cow', '', 'cow'], ['catch the falling pumpkins', 'spooky-hollow', ''], ['a catching game with a pony in the village', 'medieval-village', 'pony'],
+    ['a running game with a fox on the moon', 'space-base', 'fox', true], ['a 2D running game with a fox in the castle', 'castle-quest', 'fox'], ['a running game with a triceratops on the moon', 'space-base', 'triceratops', true],
+    ['a catching game with a fox', '', 'fox'], ['a jumping game with a cow', '', 'cow'], ['catch the falling pumpkins', 'spooky-hollow', ''], ['a catching game with a pony in the village', 'medieval-village', 'pony'], ['a catching game with a cow in the village', 'medieval-village', 'cow'],
     ['Use the 2D world Pirate Cove.', 'pirate-cove', ''], ['Use the 2D world Toy Town.\nMake the hero this animal: Zebra.', 'toy-town', 'zebra'],
   ]) {
     const p = pick(text); assert.equal(p.k2, null, `2D: ${text}`); assert.ok(p.a2, text);
@@ -370,9 +370,12 @@ test('mock: "a pirate catching game" is a 2D catching game with the Pirate Cove 
   for (const ver of games.listVersions(g.id)) assert.equal(ver.safety_status, 'pass');
 });
 
-test('mock: "a running game with a fox in the castle" is a 2D runner with the Castle Quest and animals packs', async () => {
+// (Castle Quest's 3D world has had a fox since 1.2.0, so "a running game with a fox in the castle" alone is a 3D game
+// with the fox as a friend: 3D stays 3D. Said as a 2D game, it is this one.)
+test('mock: "a 2D running game with a fox in the castle" is a 2D runner with the Castle Quest and animals packs', async () => {
   const u = newUser(), g = games.createGame(u.id, { title: 'New game' });
-  const t = await turn(u, g.id, 'a running game with a fox in the castle');
+  assert.equal(pick('a running game with a fox in the castle').k2.companion, 'fox', 'the 3D world has the fox: 3D stays 3D');
+  const t = await turn(u, g.id, 'a 2D running game with a fox in the castle');
   assert.equal(t.of('version').length, 1); assert.equal(t.of('version')[0].status, 'pass');
   const v = current(g.id);
   assert.ok(usesKit(v.html) && !K.isKit2Game(v.html)); assert.match(v.html, /Endless Runner, on the Oomba Kit/);

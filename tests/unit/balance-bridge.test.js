@@ -71,13 +71,13 @@ test('the file: the scanner passes it, nothing leaves the site, and its import m
   assert.deepEqual(V.checkThree(HTML), []); assert.deepEqual(V.checkKit2(HTML).issues, []);
   assert.deepEqual(V.deviceNeeds(HTML), { webgl2: true, importmap: true }, 'a device without WebGL2 or import maps gets the standard card');
   assert.doesNotMatch(HTML, /https?:\/\/|\bfetch\(|XMLHttpRequest|speechSynthesis|localStorage|\bWorker\(|\beval\(|new Function/, 'no outside address, no network call, no device speech, no local store, no worker, no eval');
-  assert.match(HTML, /start\(\{ theme: 'castle-quest', version: '1\.1\.0', graphics: 'auto', time: 'day', outline: true, settings: true \}\)/);
+  assert.match(HTML, /start\(\{ theme: 'castle-quest', version: '1\.2\.0', graphics: 'auto', time: 'day', outline: true, settings: true \}\)/);
   // the newest shipped Castle Quest, and every piece the game asks the theme for is one the theme has
   const shipped = fs.readdirSync(path.join(ROOT, 'public/vendor/themes/castle-quest')).sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
-  assert.equal(shipped[shipped.length - 1], '1.1.0');
-  const theme = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/themes/castle-quest/1.1.0/theme.json'), 'utf8')), have = new Set(theme.pieces.map(p => p.id));
+  assert.equal(shipped[shipped.length - 1], '1.2.0');
+  const theme = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/themes/castle-quest/1.2.0/theme.json'), 'utf8')), have = new Set(theme.pieces.map(p => p.id));
   const asked = /const PIECES = \[([^\]]+)\]/.exec(HTML)[1].match(/'[a-z-]+'/g).map(x => x.slice(1, -1));
-  assert.ok(asked.length >= 20); for (const id of asked) assert.ok(have.has(id), `Castle Quest 1.1.0 has the piece ${id}`);
+  assert.ok(asked.length >= 20); for (const id of asked) assert.ok(have.has(id), `Castle Quest 1.2.0 has the piece ${id}`);
   for (const m of HTML.matchAll(/(?:piece\(|\[)'((?:castle|tower|wall|pillar|floor|tree|forest|bush|hill|mountain|rock|well|banner|barrel|crate|torch|chest|block)[a-z-]*)'/g)) assert.ok(asked.includes(m[1]), `${m[1]} is loaded before it is used`);
   for (const id of ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded']) assert.ok(theme.heroes.some(h => h.id === id), `the theme has the adventurer ${id}`);
   // the bridge is a Rapier body on a hinge, asked for through Oomba3D, with the game's own spring behind it

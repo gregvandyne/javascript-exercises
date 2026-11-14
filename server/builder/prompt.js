@@ -10,7 +10,7 @@ import { THREE_VERSION, threeImportMap, isThreeGame } from '../services/vendor.j
 import { kitTag, kitPackTag } from '../services/kit.js';
 import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE, KIT_LIVE_RULES_SOURCE } from './kit-rules.js';
 import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
-import { KIT2_SHORT, KIT2_RULES, WORLD_IDS, CHARACTER_IDS, wantsKit2, kit2Note } from './kit2.js';
+import { KIT2_SHORT, KIT2_RULES, WORLD_IDS, CHARACTER_IDS, CREATURE_IDS, wantsKit2, kit2Note } from './kit2.js';
 export { KIT2_SHORT, KIT2_RULES, wantsKit2, kit2Note };
 import { ART2D_SHORT, ART2D_RULES, ART2D_CHARACTER_IDS, wantsArt2d, art2dNote } from './art2d.js';
 import { pickKit2 } from './kit2.js';
@@ -264,12 +264,13 @@ export const TOOLS = [
   },
   {
     name: 'start_from_template',
-    description: 'Start the game from a ready-made template, saved at once as a new version (you do not write it out). Then make it theirs with edit_game on its CONFIG and WORDS blocks. catch: catch the falling things; runner: an auto-running platformer; quiz: a host asks questions; memory: flip cards to find pairs; word: spell words from pictures; duel: two players, one screen, fastest tap; board: a dice race board game (those seven are 2D Oomba Kit games); oomba3d: a 3D game in one of the ready-made 3D worlds with an animated hero (Kit 2, not on the kit): give world and hero, both from the lists, never a made-up name (see the KIT 2 RULES); world3d: the starter for every OTHER 3D game, not on the kit: a walking player, camera, controls and screens with an example world you replace with the world the builder asked for (see the 3D RULES).',
+    description: 'Start the game from a ready-made template, saved at once as a new version (you do not write it out). Then make it theirs with edit_game on its CONFIG and WORDS blocks. catch: catch the falling things; runner: an auto-running platformer; quiz: a host asks questions; memory: flip cards to find pairs; word: spell words from pictures; duel: two players, one screen, fastest tap; board: a dice race board game (those seven are 2D Oomba Kit games); oomba3d: a 3D game in one of the ready-made 3D worlds with an animated hero (Kit 2, not on the kit): give world and hero (and companion, for an animal friend that follows the hero), all from the lists, never a made-up name (see the KIT 2 RULES); world3d: the starter for every OTHER 3D game, not on the kit: a walking player, camera, controls and screens with an example world you replace with the world the builder asked for (see the 3D RULES).',
     input_schema: { type: 'object', additionalProperties: false, required: ['template', 'notes'], properties: {
       template: { type: 'string', enum: BUILDER_TEMPLATE_KEYS },
       notes: str('One short sentence for the version history, e.g. "Started a 3D world".'),
       world: { type: 'string', enum: WORLD_IDS, description: 'oomba3d: the ready-made 3D world. runner or catch: the same world drawn in 2D (optional).' },
-      hero: { type: 'string', enum: CHARACTER_IDS, description: 'oomba3d only: one of that world\'s characters.' },
+      hero: { type: 'string', enum: CHARACTER_IDS, description: 'oomba3d only: one of that world\'s heroes, or one of its playable creatures.' },
+      ...(CREATURE_IDS.length ? { companion: { type: 'string', enum: CREATURE_IDS, description: 'oomba3d only, optional: one of that world\'s creatures, as an animal friend that follows the hero.' } } : {}),
       sprite: { type: 'string', enum: ART2D_CHARACTER_IDS, description: 'runner or catch only: a sprite hero or animal from the 2D art list, drawn as the hero (optional).' },
     } },
   },

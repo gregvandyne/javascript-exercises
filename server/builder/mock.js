@@ -423,7 +423,7 @@ export async function run(ctx) {
       // The engine choice (kit2.js): a Kit 2 game, or a pick of one of the ready-made 3D worlds or characters, goes to
       // the Kit 2 side (mock-kit2.js); everything else is the old kit, exactly as before.
       // The 2D art (art2d.js): a 2D game that picks or names a world, a sprite hero or an animal draws with it. A new
-      // running or catching game with an animal that exists as a sprite is built in 2D (no 3D world has an animal yet).
+      // running or catching game with a sprite animal the described 3D world does not have is built in 2D.
       const a2 = wantsArt2d(st, text, cur, pickKit2(text));
       if (a2 && a2.force2d) delete st.kit2;
       const k2 = a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };

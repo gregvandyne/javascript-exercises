@@ -1,0 +1,43 @@
+<title>Creature meadow</title>
+<!-- Oomba3D 1.2.0's animals in one scene, for any theme version that has creatures: every creature of the theme stands
+     in a row on ground the library makes; one strolls about (wander), one walks a loop (follow), one trails the hero
+     (followHero), each says hello when the hero comes close (onMeet), a few of the last one move as a group (school),
+     and the hero is one of the theme's heroes or a playable animal. tests/unit/kit2-creatures.test.js plays it in the
+     real game frame; it fills in the import map and the marker lines below. -->
+<!-- KIT2_IMPORT_MAP -->
+<style>html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe3ff; }</style>
+<script type="module">
+import { start } from 'oomba3d';
+const THEME = { id: 'THEME_ID', version: 'THEME_VERSION', hero: 'PLAY_AS', graphics: 'GRAPHICS', outline: true };
+const g = await start({ theme: THEME.id, version: THEME.version, graphics: THEME.graphics, outline: THEME.outline });
+const T = g.theme, list = T.creatures;
+const field = g.world.ground({ size: 90, color: '#8fce6e' });
+
+// A little scenery from the theme's own pieces, behind the animals.
+const scenery = T.pieces.filter(p => ['decor', 'prop'].includes(p.kind) && Math.max(...p.size) > 0.8).slice(0, 6);
+await Promise.all(scenery.map((p, i) => g.world.piece(p.id, { x: (i - 2.5) * 5, y: 0, z: -15 - (i % 2) * 3, scale: Math.min(3, 3 / Math.max(...p.size)) })));
+
+// The hero: a theme hero, or a playable animal (THEME.hero).
+const me = await g.hero(THEME.hero, { x: 0, y: 0, z: 9 });
+g.controls(me, { fallY: -30 });
+g.followCamera(me, { distance: 12, height: 6 });
+
+// Every creature in a row. Each greets the hero.
+const met = [];
+const all = {};
+for (const [i, c] of list.entries()) {
+  const a = await g.creature(c.id, { x: (i - (list.length - 1) / 2) * 5, y: 0, z: -2, face: 0 });
+  a.onMeet(() => { met.push(c.id); g.toast(`Hello, ${c.name}!`); });
+  all[c.id] = a;
+}
+const ids = list.map(c => c.id), walkers = list.filter(c => c.moves.includes('walk')).map(c => c.id);
+const stroller = all[ids[ids.length - 1]];                 // the last one strolls about (a hopper hops)
+stroller.wander({ radius: 5 });
+const walker = all[walkers[0]];                            // the first walker goes round a loop
+walker.follow([[-12, 4], [-18, 4], [-18, -8], [-12, -8]], { loop: true });
+const friend = await g.creature(walkers[walkers.length - 1], { x: 3, y: 0, z: 12 });   // a companion that trails the hero
+friend.followHero(me);
+const herd = await g.school(ids[ids.length - 1], 4, { around: { x: 16, y: 0, z: 6 }, radius: 3.5 });
+window.__demo = { g, me, all, stroller, walker, friend, herd, met, field };
+window.__ready = true;
+</script>

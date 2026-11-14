@@ -175,6 +175,11 @@ friendly `alien-*`, no hitting clips), and the bull. No gravestones, alcohol or 
 
 ## 6. How creatures should enter Kit 2
 
+**Status, 14 Nov 2026: Oomba3D 1.2.0 is built** (`docs/kit2-api.md`, `docs/decisions.md` "Oomba3D 1.2.0"), with the API
+below (plus `stop()`, and `walkTo(x, z)` as well as `walkTo({ x, z })`), creatures per theme as recommended, and a
+first ten animals in new versions of two shipped worlds: Medieval Village 1.1.0 (donkey, cow, husky, pig, sheep) and
+Castle Quest 1.2.0 (horse, deer, stag, fox, shiba). Dinosaurs, sea animals and the T-Rex wait for their worlds.
+
 **Recommendation: Oomba3D 1.2.0, with creatures listed per theme in `theme.json` (`creatures`), not a separate shared
 pack.** Shipped engines and themes are frozen, so everything below is a new engine version and new theme versions.
 

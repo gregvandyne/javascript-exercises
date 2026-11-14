@@ -1615,7 +1615,17 @@
         "skelly": "Skelly",
         "rattles": "Rattles",
         "bonzo": "Bonzo",
-        "captain-clank": "Käpt’n Clank"
+        "captain-clank": "Käpt’n Clank",
+        "donkey": "Esel",
+        "cow": "Kuh",
+        "husky": "Husky",
+        "pig": "Schwein",
+        "sheep": "Schaf",
+        "horse": "Pferd",
+        "deer": "Reh",
+        "stag": "Hirsch",
+        "fox": "Fuchs",
+        "shiba": "Shiba Inu"
       }
     },
     "animals": {

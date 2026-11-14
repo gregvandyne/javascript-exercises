@@ -14,7 +14,11 @@ import { oomba2dTag, art2dPackTag, ART2D_PACKS } from '../services/art2d.js';
 import { art2dOf } from '../services/art2d-lint.js';
 import { LOCALES_DIR, CODES } from '../i18n/index.js';
 
+import { KIT2_WORLDS } from './kit2-catalog.js';
+
 export { ART2D_WORLDS, ART2D_CHARACTERS, art2dOf };
+/** Does this 3D world have one of these animals itself (kit2.js then builds it in 3D, the animal as a friend)? */
+const in3d = (world, animals) => { const w = KIT2_WORLDS.find(x => x.id === world); return !!w && (animals || []).some(id => (w.creatures || []).some(c => c.id === id)); };
 export const ART2D_WORLD_IDS = ART2D_WORLDS.map(w => w.id);
 export const ART2D_CHARACTER_IDS = ART2D_CHARACTERS.map(c => c.id);
 export const ART2D_ANIMALS = ART2D_CHARACTERS.filter(c => c.kind === 'animal');
@@ -144,9 +148,10 @@ export const isArt2dChip = text => pickArt2d(text).by === 'chip';
  * questions); version: the current version (or null); p: kit2.js pickKit2(text) (its place and named world).
  * -> { world, hero, by, missing, force2d } or null. by: 'game' (the game already draws with the art), 'chip', 'word'
  * (an animal named), 'place' (a world named or described in a 2D request) or 'kept'.
- * force2d: a NEW game that names a 2D kind of game and an animal that exists as a sprite ("a running game with a fox
- * in the castle"): it is built in 2D with that world's art, because no 3D world has an animal yet. Every other
- * described place stays a 3D build, as before (the caller asks kit2.js first unless force2d).
+ * force2d: a NEW running or catching game with an animal that exists as a sprite, in a described world whose 3D
+ * version does not have that animal ("a running game with a fox on the moon"): it is built in 2D with that world's
+ * art. Where the 3D world has the animal ("a fox in the castle": kit2.js p.animals), and for every other described
+ * place, it stays a 3D build, as before (the caller asks kit2.js first unless force2d).
  */
 export function wantsArt2d(state, text, version, p = {}) {
   const a = pickArt2d(text), cur = version && isArt2dGame(version.html) ? art2dOf(version.html) : null;
@@ -168,7 +173,7 @@ export function wantsArt2d(state, text, version, p = {}) {
   const hero = heroWord || (cur ? cur.hero : '') || before.hero || '';
   if (!world && !hero) return null;
   if (state && !version) state.art2d = { world, hero };
-  const force2d = !version && !p.threeD && p.by === 'place' && a.kind2d && isAnimal(a.hero);
+  const force2d = !version && !p.threeD && p.by === 'place' && a.kind2d && isAnimal(a.hero) && !in3d(p.place, p.animals);
   return { world, hero, by, missing: a.missing, force2d, soft: by === 'word' && !a.kind2d && !world, changed: !!cur && (world !== cur.world || hero !== cur.hero) };
 }
 

@@ -38,9 +38,9 @@ export function worldEntry(theme, version) {
   return {
     id: m.id, version: m.version, name: m.name, description: m.description, goodFor: m.goodFor || [], engine: m.engine,
     heroes: (m.heroes || []).map(who),
-    // Animals, dinosaurs and other creatures a theme ships (none has shipped yet: the list is here so they appear in
-    // the Builder the day a theme has them).
-    creatures: (m.creatures || []).map(who),
+    // Animals a theme ships (Oomba3D 1.2.0 g.creature): what kind it is, how big (width, height, length), the moves its
+    // own file has (a pig has no walk: the Builder must never ask one to) and whether it can be the hero.
+    creatures: (m.creatures || []).map(c => ({ ...who(c), kind: c.kind || 'land', size: (c.size || []).map(round), moves: c.moves || [], playable: !!c.playable })),
     pieces: (m.pieces || []).map(p => ({ id: p.id, kind: p.kind, size: (p.size || []).map(round), tags: p.tags || [], ...(p.note ? { note: p.note } : {}) })),
     sounds: (m.sounds || []).map(s => s.id),
     moves: Object.keys((m.moves && m.moves.clips) || {}),

@@ -197,8 +197,8 @@ export async function run(ctx) {
     // Kit 2 (kit2.js): a game in one of the ready-made 3D worlds gets the KIT 2 RULES in place of the 3D RULES (never
     // both: they are two different ways to build a 3D game), and a short note naming this turn's world and hero.
     // 2D art (art2d.js): a 2D game that picks or names one of the worlds, a sprite hero or an animal gets the 2D ART
-    // RULES. A new running or catching game that names an animal which exists as a sprite is built in 2D (no 3D world
-    // has an animal yet); every other choice of engine is kit2.js's, as before.
+    // RULES. A new running or catching game with a sprite animal that the described 3D world does not have is built
+    // in 2D; every other choice of engine is kit2.js's, as before.
     const st = ctx.state || {}, a2pick = wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
     if (a2pick && a2pick.force2d) delete st.kit2;
     const k2 = a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
