@@ -1,0 +1,9 @@
+Amir Forest Nature Pack (https://ahmedamirdev.itch.io/amir-forest-nature-pack)
+
+No license file is included in the downloaded archive (FREE.rar, 15,085,083 bytes).
+The download page states: "CC0 - Use in personal & commercial projects (games, animations, apps).
+No resale or redistribution of the raw assets."
+
+The CC0 claim and the no-redistribution clause contradict each other, and with no license
+file in the archive the terms cannot be verified. Do NOT upload the raw files to a public
+branch until the author clarifies the license.
