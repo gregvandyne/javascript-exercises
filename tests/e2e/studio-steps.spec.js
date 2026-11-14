@@ -10,7 +10,7 @@ const settled = async page => { await expect(page.locator('.st-busy')).toHaveCou
 async function newGame(page, lang) {
   await signup(page, uniq('Stp'));
   await page.goto(`/build${lang ? `?lang=${lang}` : ''}`);
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('#newgame')]);
+  await page.click('#newgame'); await Promise.all([page.waitForURL(/\/studio\//), page.click('#su-direct')]);   // New game, then "I know what I want"
   return page.url().split('/studio/')[1];
 }
 /** Tap the Builder's chips until it has built a game (the mock asks a question or two first). */

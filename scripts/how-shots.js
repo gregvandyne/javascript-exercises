@@ -243,7 +243,7 @@ async function parentShots({ person, shot }) {
   {
     const desk = await person('desk', 'PixelPanda');
     await desk.goto('/build');
-    await Promise.all([desk.waitForURL(/\/studio\//), desk.click('#newgame')]);
+    await desk.click('#newgame'); await Promise.all([desk.waitForURL(/\/studio\//), desk.click('#su-direct')]);   // New game, then "I know what I want"
     const studio = desk.url();
     await idle(desk);
     await say(desk, 'a game where a panda catches falling stars');

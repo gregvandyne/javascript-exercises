@@ -2575,6 +2575,50 @@
       "drafted": "{n} perguntas rascunhadas. Confira cada uma.",
       "backConfirm": "Começar de novo? As perguntas rascunhadas nesta página serão perdidas.",
       "assigned": "Atribuído."
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "Tipo de jogo",
+        "look": "Visual",
+        "world": "Mundo",
+        "chars": "Personagens",
+        "learn": "Ensina",
+        "extras": "Extras"
+      },
+      "world": {
+        "choose": "Escolher este mundo",
+        "close": "Fechar",
+        "gameAlt": "Um jogo em {name}, visto de trás do herói",
+        "coverAlt": "{name} visto de longe",
+        "chosen": "{name} foi escolhido."
+      },
+      "chars": {
+        "hero": "Herói",
+        "livesIn": "Vive em {worlds}",
+        "notIn": "Ainda não está em {world}",
+        "otherWorld": "Vive em outro mundo",
+        "only2d": "Por enquanto só em jogos 2D",
+        "only3d": "Por enquanto só em jogos 3D",
+        "one2d": "Por enquanto, um personagem em 2D"
+      },
+      "extras": {
+        "remove": "Remover",
+        "removeLabel": "Remover {name}",
+        "tooMany": "Aqui você pode adicionar até {max} arquivos.",
+        "wrongType": "Esse tipo de arquivo não funciona aqui. Tente um PDF ou um arquivo de texto.",
+        "tooBig": "Esse arquivo é grande demais. Tente um menor."
+      },
+      "plan": {
+        "change": "Mudar",
+        "changeLabel": "Mudar: {name}",
+        "decides": "O Construtor decide",
+        "scratch": "Feito do zero",
+        "opening": "Abrindo o Construtor…",
+        "files": "{count, plural, one {# arquivo} other {# arquivos}}",
+        "nothing": "Nada adicionado",
+        "empty": "Você ainda não escolheu nada. O Construtor vai perguntar o que fazer."
+      },
+      "gettingReady": "Preparando…"
     }
   },
   "favorites": {
@@ -8379,5 +8423,180 @@
     "warn": "Conectar de novo",
     "connect": "Conectar",
     "reconnect": "Conectar de novo"
+  },
+  "buildSetup": {
+    "title": "Criar um jogo",
+    "skipAll": "Ir para o Construtor",
+    "back": "Voltar",
+    "skip": "Pular",
+    "next": "Próximo",
+    "progress": "Passo {n} de {total}",
+    "start": {
+      "heading": "Como você quer começar?",
+      "text": "Os dois caminhos levam ao Construtor. Lá você pode mudar tudo.",
+      "guide": "Me ajude a escolher",
+      "guideText": "Escolha um tipo de jogo, um mundo e personagens em seis passos rápidos.",
+      "direct": "Já sei o que quero",
+      "directText": "Vá direto para o Construtor e conte seu jogo com as suas palavras."
+    },
+    "else": {
+      "title": "Outra coisa",
+      "text": "Escreva a sua ideia",
+      "label": "Conte a sua ideia",
+      "packNote": "Isso não está nos nossos pacotes, então o Construtor vai criar do zero. Pode ficar mais simples."
+    },
+    "steps": {
+      "type": {
+        "title": "Que tipo de jogo?",
+        "hint": "Escolha um. Você pode mudar depois.",
+        "placeholder": "Por exemplo: um labirinto, um jogo de cozinha, uma corrida"
+      },
+      "look": {
+        "title": "2D ou 3D?",
+        "hint": "Escolha o visual do seu jogo."
+      },
+      "world": {
+        "title": "Onde acontece?",
+        "hint": "Escolha um mundo, ou invente o seu.",
+        "placeholder": "Por exemplo: dentro de um vulcão, um planeta de doces"
+      },
+      "chars": {
+        "title": "Quem aparece?",
+        "hint": "Escolha quantos quiser.",
+        "placeholder": "Por exemplo: um pinguim cozinheiro, um cachorro robô"
+      },
+      "learn": {
+        "title": "O que o jogo deve ensinar?",
+        "hint": "Escolha quantos quiser.",
+        "placeholder": "Por exemplo: tabuada até 12, o ciclo da água"
+      },
+      "extras": {
+        "title": "Algo a acrescentar?",
+        "hint": "Você pode pular este passo."
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "Aventura",
+        "text": "Explore, colete coisas e chegue ao fim"
+      },
+      "runner": {
+        "title": "Corrida",
+        "text": "Corra, pule e desvie"
+      },
+      "catch": {
+        "title": "Jogo de pegar",
+        "text": "Pegue as coisas certas quando caírem"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "text": "Responda perguntas para ganhar"
+      },
+      "memory": {
+        "title": "Jogo da memória",
+        "text": "Vire as cartas e ache os pares"
+      },
+      "word": {
+        "title": "Jogo de palavras",
+        "text": "Soletre, desembaralhe e adivinhe"
+      },
+      "duel": {
+        "title": "Jogo para dois",
+        "text": "Jogue contra um amigo na mesma tela"
+      },
+      "board": {
+        "title": "Jogo de tabuleiro",
+        "text": "Jogue o dado, ande e responda"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "Mundo 3D",
+        "text": "Ande por aí e explore"
+      },
+      "2d": {
+        "title": "Mundo 2D",
+        "text": "Plano, como um livro de figuras"
+      },
+      "auto": {
+        "title": "Escolha por mim",
+        "text": "O Construtor escolhe o que combina mais"
+      }
+    },
+    "world": {
+      "preview": "Ver",
+      "previewLabel": "Ver {name} de perto"
+    },
+    "worlds": {
+      "sky-islands": "Ilhas de grama flutuando acima das nuvens.",
+      "castle-quest": "Um castelo no morro com tochas, chaves e tesouros.",
+      "space-base": "Uma base num planeta vermelho com foguetes e jipes.",
+      "spooky-hollow": "Uma noite de outono amigável com abóboras e lanternas.",
+      "toy-town": "Uma cidadezinha colorida com ruas, carros e lojas.",
+      "busy-kitchen": "Uma cozinha grande cheia de comida e panelas.",
+      "cosy-home": "Uma casinha aconchegante com sofás, abajures e livros.",
+      "medieval-village": "Uma vila de conto com um moinho e uma feira.",
+      "pirate-cove": "Ilhas de areia, palmeiras, cais e barcos a vela.",
+      "wild-woods": "Uma floresta ensolarada com rio, pedras e acampamento."
+    },
+    "groups": {
+      "heroes": "Heróis",
+      "farm": "Animais da fazenda",
+      "wild": "Animais do zoológico e selvagens",
+      "dinosaurs": "Dinossauros",
+      "sea": "Peixes e animais do mar"
+    },
+    "chars": {
+      "soon": "Em breve",
+      "soonText": "Ainda não tem. Eles estão a caminho.",
+      "soon3d": "Em breve em 3D"
+    },
+    "learn": {
+      "math": {
+        "title": "Matemática",
+        "text": "Contar, somar, frações e mais"
+      },
+      "reading": {
+        "title": "Leitura e palavras",
+        "text": "Ortografia, palavras novas, histórias"
+      },
+      "science": {
+        "title": "Ciências",
+        "text": "Animais, espaço, como as coisas funcionam"
+      },
+      "geography": {
+        "title": "Lugares e mapas",
+        "text": "Países, capitais, lugares famosos"
+      },
+      "fun": {
+        "title": "Só por diversão",
+        "text": "Sem perguntas, só brincar"
+      }
+    },
+    "extras": {
+      "notesLabel": "Mais alguma coisa que o Construtor deve saber?",
+      "notesPlaceholder": "Por exemplo: deixe difícil, ponha uma fase secreta",
+      "fileTitle": "Adicionar uma folha de atividades ou anotações",
+      "fileText": "O Construtor pode usar para as perguntas ou a história.",
+      "choose": "Escolher um arquivo",
+      "fileKinds": "Um PDF ou um arquivo de texto. Você pode adicionar imagens depois, no Construtor."
+    },
+    "plan": {
+      "heading": "Este é o plano do seu jogo",
+      "text": "Mude o que quiser, ou abra o Construtor e continue por lá.",
+      "told": "O que vamos dizer ao Construtor",
+      "open": "Abrir o Construtor"
+    },
+    "say": {
+      "start": "Este é o plano do meu jogo.",
+      "type": "Tipo de jogo: {value}.",
+      "look3d": "Faça em 3D.",
+      "look2d": "Faça em 2D.",
+      "world": "Mundo: {value}.",
+      "characters": "Aparecem: {list}.",
+      "learn": "Ensina: {list}.",
+      "file": "Use o arquivo que eu adicionei."
+    },
+    "flatNote": "Em 2D, por enquanto só os jogos de corrida e de pegar podem usar nossos mundos e personagens. Nos outros jogos o Construtor usa o visual clássico."
   }
 }

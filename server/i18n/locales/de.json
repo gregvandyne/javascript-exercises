@@ -2575,6 +2575,50 @@
       "drafted": "{n} Fragen entworfen. Prüfe jede einzelne.",
       "backConfirm": "Neu anfangen? Die entworfenen Fragen auf dieser Seite gehen verloren.",
       "assigned": "Aufgegeben."
+    },
+    "buildsetup": {
+      "stepNames": {
+        "type": "Spielart",
+        "look": "Aussehen",
+        "world": "Welt",
+        "chars": "Figuren",
+        "learn": "Zum Lernen",
+        "extras": "Extras"
+      },
+      "world": {
+        "choose": "Diese Welt nehmen",
+        "close": "Schließen",
+        "gameAlt": "Ein Spiel in {name}, von hinter der Spielfigur gesehen",
+        "coverAlt": "{name} von weitem",
+        "chosen": "{name} ist ausgesucht."
+      },
+      "chars": {
+        "hero": "Held",
+        "livesIn": "Lebt in {worlds}",
+        "notIn": "Noch nicht in {world}",
+        "otherWorld": "Lebt in einer anderen Welt",
+        "only2d": "Bisher nur in 2D-Spielen",
+        "only3d": "Bisher nur in 3D-Spielen",
+        "one2d": "In 2D vorerst nur eine Figur"
+      },
+      "extras": {
+        "remove": "Entfernen",
+        "removeLabel": "{name} entfernen",
+        "tooMany": "Hier kannst du bis zu {max} Dateien dazugeben.",
+        "wrongType": "Diese Art Datei geht hier nicht. Nimm ein PDF oder eine Textdatei.",
+        "tooBig": "Die Datei ist zu groß. Nimm eine kleinere."
+      },
+      "plan": {
+        "change": "Ändern",
+        "changeLabel": "Ändern: {name}",
+        "decides": "Baumeister entscheidet",
+        "scratch": "Ganz neu gebaut",
+        "opening": "Baumeister wird geöffnet…",
+        "files": "{count, plural, one {# Datei} other {# Dateien}}",
+        "nothing": "Nichts dazugegeben",
+        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll."
+      },
+      "gettingReady": "Wird vorbereitet…"
     }
   },
   "favorites": {
@@ -8378,5 +8422,180 @@
     "warn": "Neu verbinden",
     "connect": "Verbinden",
     "reconnect": "Erneut verbinden"
+  },
+  "buildSetup": {
+    "title": "Ein Spiel machen",
+    "skipAll": "Direkt zum Baumeister",
+    "back": "Zurück",
+    "skip": "Überspringen",
+    "next": "Weiter",
+    "progress": "Schritt {n} von {total}",
+    "start": {
+      "heading": "Wie möchtest du anfangen?",
+      "text": "Beide Wege führen zum Baumeister. Dort kannst du alles ändern.",
+      "guide": "Hilf mir beim Aussuchen",
+      "guideText": "Such in sechs kurzen Schritten eine Spielart, eine Welt und Figuren aus.",
+      "direct": "Ich weiß, was ich will",
+      "directText": "Geh direkt zum Baumeister und beschreib dein Spiel mit deinen Worten."
+    },
+    "else": {
+      "title": "Etwas anderes",
+      "text": "Schreib deine eigene Idee",
+      "label": "Erzähl uns deine Idee",
+      "packNote": "Das ist nicht in unseren Paketen. Der Baumeister baut es deshalb ganz neu. Es sieht vielleicht einfacher aus."
+    },
+    "steps": {
+      "type": {
+        "title": "Was für ein Spiel?",
+        "hint": "Such eins aus. Du kannst es später ändern.",
+        "placeholder": "Zum Beispiel: ein Labyrinth, ein Kochspiel, ein Rennen"
+      },
+      "look": {
+        "title": "2D oder 3D?",
+        "hint": "Such aus, wie dein Spiel aussieht."
+      },
+      "world": {
+        "title": "Wo spielt es?",
+        "hint": "Such eine Welt aus oder denk dir eine eigene aus.",
+        "placeholder": "Zum Beispiel: in einem Vulkan, ein Planet aus Süßigkeiten"
+      },
+      "chars": {
+        "title": "Wer macht mit?",
+        "hint": "Such so viele aus, wie du magst.",
+        "placeholder": "Zum Beispiel: ein Pinguin als Koch, ein Roboterhund"
+      },
+      "learn": {
+        "title": "Was soll man lernen?",
+        "hint": "Such so viele aus, wie du magst.",
+        "placeholder": "Zum Beispiel: das Einmaleins bis 12, der Wasserkreislauf"
+      },
+      "extras": {
+        "title": "Noch etwas dazu?",
+        "hint": "Du kannst diesen Schritt überspringen."
+      }
+    },
+    "types": {
+      "adventure": {
+        "title": "Abenteuer",
+        "text": "Erkunde, sammle Dinge und erreiche das Ziel"
+      },
+      "runner": {
+        "title": "Laufspiel",
+        "text": "Lauf, spring und weich aus"
+      },
+      "catch": {
+        "title": "Fangspiel",
+        "text": "Fang die richtigen Dinge, die herunterfallen"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "text": "Beantworte Fragen und gewinne"
+      },
+      "memory": {
+        "title": "Memory",
+        "text": "Dreh Karten um und finde die Paare"
+      },
+      "word": {
+        "title": "Wortspiel",
+        "text": "Buchstabiere, sortiere und rate"
+      },
+      "duel": {
+        "title": "Spiel für zwei",
+        "text": "Spiel gegen einen Freund auf einem Bildschirm"
+      },
+      "board": {
+        "title": "Brettspiel",
+        "text": "Würfle, zieh und antworte"
+      }
+    },
+    "looks": {
+      "3d": {
+        "title": "3D-Welt",
+        "text": "Lauf herum und erkunde"
+      },
+      "2d": {
+        "title": "2D-Welt",
+        "text": "Flach, wie ein Bilderbuch"
+      },
+      "auto": {
+        "title": "Such du für mich aus",
+        "text": "Der Baumeister nimmt, was am besten passt"
+      }
+    },
+    "world": {
+      "preview": "Ansehen",
+      "previewLabel": "{name} groß ansehen"
+    },
+    "worlds": {
+      "sky-islands": "Grasinseln, die hoch über den Wolken schweben.",
+      "castle-quest": "Eine Burg auf einem Hügel mit Fackeln, Schlüsseln und Schätzen.",
+      "space-base": "Eine Station auf einem roten Planeten mit Raketen und Rovern.",
+      "spooky-hollow": "Eine freundliche Herbstnacht mit Kürbissen und Laternen.",
+      "toy-town": "Eine bunte kleine Stadt mit Straßen, Autos und Läden.",
+      "busy-kitchen": "Eine große Küche voller Essen, Töpfe und Pfannen.",
+      "cosy-home": "Ein gemütliches Häuschen mit Sofas, Lampen und Büchern.",
+      "medieval-village": "Ein Märchendorf mit Windmühle und Markt.",
+      "pirate-cove": "Sandinseln, Palmen, Stege und Segelschiffe.",
+      "wild-woods": "Ein sonniger Wald mit Fluss, Felsen und Zeltlager."
+    },
+    "groups": {
+      "heroes": "Helden",
+      "farm": "Tiere vom Bauernhof",
+      "wild": "Zoo- und Wildtiere",
+      "dinosaurs": "Dinosaurier",
+      "sea": "Fische und Meerestiere"
+    },
+    "chars": {
+      "soon": "Kommt bald",
+      "soonText": "Noch keine da. Sie sind unterwegs.",
+      "soon3d": "Kommt bald in 3D"
+    },
+    "learn": {
+      "math": {
+        "title": "Mathe",
+        "text": "Zählen, Plusrechnen, Brüche und mehr"
+      },
+      "reading": {
+        "title": "Lesen und Wörter",
+        "text": "Rechtschreibung, neue Wörter, Geschichten"
+      },
+      "science": {
+        "title": "Sachkunde",
+        "text": "Tiere, Weltraum, wie Dinge funktionieren"
+      },
+      "geography": {
+        "title": "Orte und Karten",
+        "text": "Länder, Hauptstädte, berühmte Orte"
+      },
+      "fun": {
+        "title": "Nur zum Spaß",
+        "text": "Keine Fragen, nur spielen"
+      }
+    },
+    "extras": {
+      "notesLabel": "Soll der Baumeister noch etwas wissen?",
+      "notesPlaceholder": "Zum Beispiel: mach es knifflig, bau ein Geheimlevel ein",
+      "fileTitle": "Arbeitsblatt oder Notizen dazugeben",
+      "fileText": "Der Baumeister kann es für die Fragen oder die Geschichte nutzen.",
+      "choose": "Datei auswählen",
+      "fileKinds": "Ein PDF oder eine Textdatei. Bilder kannst du später im Baumeister dazugeben."
+    },
+    "plan": {
+      "heading": "Das ist dein Spielplan",
+      "text": "Ändere, was du willst, oder öffne den Baumeister und mach dort weiter.",
+      "told": "Das erfährt der Baumeister",
+      "open": "Baumeister öffnen"
+    },
+    "say": {
+      "start": "Das ist mein Spielplan.",
+      "type": "Spielart: {value}.",
+      "look3d": "Mach es in 3D.",
+      "look2d": "Mach es in 2D.",
+      "world": "Welt: {value}.",
+      "characters": "Mit dabei: {list}.",
+      "learn": "Zum Lernen: {list}.",
+      "file": "Nimm die Datei, die ich dazugegeben habe."
+    },
+    "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen."
   }
 }

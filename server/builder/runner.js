@@ -35,6 +35,7 @@ import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { maxStepsFor } from './claude.js';
 import { executeTurn, endBuild, refundable, providerName, providerKind, hooks, MAX_INPUT } from './agent.js';
+import { normalisePlan, planSentence } from './plan.js';
 export { registerProvider } from './agent.js';
 
 export const LIMITS = {
@@ -111,19 +112,24 @@ const fail = (t, status, key, code, vars) => ({ status, body: { error: t(key, va
 const wake = job => { const w = job.waiters.splice(0); for (const f of w) f(); };
 
 /**
- * Start a build (or answer why not). opts: { user, game, text, pro, uploadIds, cid, continueOf, t, provider?, compat? }.
+ * Start a build (or answer why not). opts: { user, game, text, pro, uploadIds, cid, continueOf, t, provider?, compat?, plan? }.
+ * plan: the choices of the setup steps (builder/plan.js). The message is then the plan's own sentence, in the builder's
+ * language (whatever text came with it is not used), screened like any typed message; the plan rides on the build's row.
+ * A plan only ever starts a game's first build: it is dropped when the game already has a version or is building.
  * -> { status, body, code?, job? }: 202 with the job when a build started. compat: the streamed POST of old pages and
  * runTurn, which answers builder.errors.busy while the game is building. Steps 3-6 never await, so two requests at
  * once can never start two builds: the second one sees the first job.
  */
-export async function submit({ user, game, text = '', pro = false, uploadIds = [], cid = null, continueOf = null, t = tEn, provider = null, compat = false }) {
+export async function submit({ user, game, text = '', pro = false, uploadIds = [], cid = null, continueOf = null, t = tEn, provider = null, compat = false, plan = null }) {
   const err = (status, key, code, vars) => fail(t, status, key, code, vars);
   // 1. Checks, in the order the Builder always had.
   if (!user.builder_enabled) return err(403, 'builder.errors.disabled', 'disabled');
   // Trusted makers (the admin, school staff, class teachers) always build with the Pro model (usage.js trustedMaker).
   if (trustedMaker(user)) pro = true;
+  plan = plan && !game.current_version_id && !jobs.has(game.id) ? normalisePlan(plan) : null;
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, UPLOADS.perMessage).map(getUpload).filter(u => u && u.game_id === game.id && !u.used_at);
+  if (plan) text = planSentence(plan, t, { files: wanted.length }).slice(0, MAX_INPUT);
   if (!text && !wanted.length) return err(400, 'builder.errors.empty', 'empty');
   cid = typeof cid === 'string' && CID.test(cid) ? cid : null;
   // 2. Shutting down: the text goes back in the box.
@@ -138,10 +144,10 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   }
   // A follow-up sent again after its build ended (its answer was lost): it was stored then, so it gets that answer.
   const had = cid && !compat && sent(game.id, cid, user.id); if (had) return had;
-  return begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat });
+  return begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, plan });
 }
 /** submit steps 3b-8: a new build for an idle game. prescreened: a follow-up's screening, when its build ended meanwhile. */
-function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, prescreened = null }) {
+function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, compat, prescreened = null, plan = null }) {
   const err = (status, key, code, vars) => fail(t, status, key, code, vars);
   // 3b. Builds no longer need an open tab: at most 2 at once per builder.
   let mine = 0; for (const j of jobs.values()) if (j.userId === user.id) mine++;
@@ -163,7 +169,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   // 5. The row (queued, not charged yet).
   let row;
   try {
-    row = turns.create({ gameId: game.id, userId: user.id, request: { text, uploadIds: wanted.map(u => u.id), cid, ...(orig ? { continueOf: orig.id } : {}) }, locale: t.locale || 'en', pro });
+    row = turns.create({ gameId: game.id, userId: user.id, request: { text, uploadIds: wanted.map(u => u.id), cid, ...(orig ? { continueOf: orig.id } : {}), ...(plan ? { plan } : {}) }, locale: t.locale || 'en', pro });
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) return err(409, 'studio.api.builderWorking', 'builderWorking');
     throw e;
@@ -174,7 +180,7 @@ function begin({ user, game, text, pro, wanted, cid, continueOf, t, provider, co
   job.provider = providerKind(provider || providerName(allowance.pool)); job.providerArg = provider;
   jobs.set(game.id, job);
   job.emit('turn', {});
-  start(job, { user, game, text, pro, wanted, t, provider, continueOf: orig, prescreened });
+  start(job, { user, game, text, pro, wanted, t, provider, continueOf: orig, prescreened, plan });
   return { status: 202, body: { ok: true, turn: { id: job.id, status: 'queued' } }, job };
 }
 
@@ -650,7 +656,7 @@ function runQueued(row) {
   job.emit('turn', {});
   const wanted = (row.request.uploadIds || []).map(getUpload).filter(x => x && x.game_id === row.game_id && !x.used_at);
   const orig = row.request.continueOf ? turns.get(row.request.continueOf) : null;
-  start(job, { user: u, game: g, text: row.request.text || '', pro: !!row.pro, wanted, t: tFor(row.locale), continueOf: orig });
+  start(job, { user: u, game: g, text: row.request.text || '', pro: !!row.pro, wanted, t: tFor(row.locale), continueOf: orig, plan: normalisePlan(row.request.plan) });
   return true;
 }
 function giveUpQueued(row) {
@@ -700,7 +706,7 @@ function resume(row, g, u) {
   job.carried = row.chain ? (row.request.followUpIds || []).length : 0;
   const orig = row.request.continueOf ? turns.get(row.request.continueOf) : null;
   start(job, {
-    user: u, game: g, text: row.request.text || '', pro: !!row.pro, t: tFor(row.locale),
+    user: u, game: g, text: row.request.text || '', pro: !!row.pro, t: tFor(row.locale), plan: normalisePlan(row.request.plan),
     uploads: (row.request.uploadIds || []).map(getUpload).filter(x => x && x.game_id === row.game_id),
     resume: { versions: turns.versionsSince(row.game_id, row.base_version), ...(orig && orig.request.text ? { original: orig.request.text, cont: true } : {}) },
     maxRounds: Math.max(LIMITS.maxRoundsOnResume, maxStepsFor(trustedMaker(u)) - (row.model_calls || 0)),

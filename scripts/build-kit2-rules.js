@@ -19,6 +19,12 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const OUT = path.join(ROOT, 'server/builder/kit2-catalog.js');
 const THEMES_DIR = path.join(ROOT, 'public/vendor/themes');
 
+// The group each animal is offered under on the Builder's setup step (kit2/creature-groups.json, see its note).
+const GROUPS = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit2/creature-groups.json'), 'utf8'));
+export const CREATURE_GROUPS = GROUPS.groups;
+/** A creature's group: the manifest's own, else the list's, else by its kind (water animals: sea; any other: wild). */
+export const groupOf = c => (CREATURE_GROUPS.includes(c.group) ? c.group : GROUPS.creatures[c.id] || ((c.kind || 'land') !== 'land' ? 'sea' : 'wild'));
+
 const cmp = (a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); return 0; };
 const round = n => Math.round(n * 10) / 10;
 
@@ -50,7 +56,11 @@ export function worldEntry(theme, version) {
 /** The worlds the Builder offers: the newest shipped version of each theme, in the order they shipped. */
 export function buildCatalog() {
   const versions = shippedVersions();
-  return { versions, worlds: Object.keys(versions).map(t => worldEntry(t, versions[t][versions[t].length - 1])) };
+  const worlds = Object.keys(versions).map(t => worldEntry(t, versions[t][versions[t].length - 1]));
+  // The group of every animal the newest worlds have, read from each manifest (its own creature.group, when it has one).
+  const groupBy = {};
+  for (const w of worlds) for (const c of JSON.parse(fs.readFileSync(path.join(THEMES_DIR, w.id, w.version, 'theme.json'), 'utf8')).creatures || []) if (!groupBy[c.id]) groupBy[c.id] = groupOf(c);
+  return { versions, worlds, groupBy };
 }
 
 /** docs/kit2-api.md from `start(options)` on, as compact plain text (tables as lines, no emphasis). */
@@ -72,9 +82,14 @@ export const fileText = (cat = buildCatalog(), api = buildApi()) => `// Generate
 // (public/vendor/themes/<theme>/<version>/theme.json) and docs/kit2-api.md. Do not edit: ship a theme version (or change
 // the page) and run \`node scripts/build-kit2-rules.js\`. tests/unit/builder-kit2.test.js checks it.
 // KIT2_WORLDS: the newest shipped version of every world, with every hero, creature, piece, sound and move a game may
-// name. KIT2_VERSIONS: every shipped version of each world (saved games keep theirs). KIT2_API_SOURCE: the Oomba3D
-// reference the Builder reads.
+// name. KIT2_VERSIONS: every shipped version of each world (saved games
+// keep theirs). KIT2_CREATURE_GROUPS: the animal groups the setup step lists; KIT2_CREATURE_GROUP: each animal's group;
+// KIT2_GROUP_LIST: the whole list (the 2D sprite animals are grouped from it too: builder/plan.js).
+// KIT2_API_SOURCE: the Oomba3D reference the Builder reads.
 export const KIT2_VERSIONS = ${JSON.stringify(cat.versions)};
+export const KIT2_CREATURE_GROUPS = ${JSON.stringify(CREATURE_GROUPS)};
+export const KIT2_CREATURE_GROUP = ${JSON.stringify(cat.groupBy)};
+export const KIT2_GROUP_LIST = ${JSON.stringify(GROUPS.creatures)};
 export const KIT2_WORLDS = ${JSON.stringify(cat.worlds, null, 1)};
 export const KIT2_API_SOURCE = ${JSON.stringify(api)};
 `;
