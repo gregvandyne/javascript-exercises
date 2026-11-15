@@ -359,7 +359,8 @@ instead: start_from_template "oomba3d" with the world and a hero. The rules belo
   specific (a few landmarks you can see from far away, paths that lead somewhere, details near the start), not a flat
   plain with boxes. Put the goal in reach and in view of the start.
 - Live or closed world: before you build a new 3D world (or turn a game into one), ask with ask_user whether other players
-  can join the world live, unless the builder already said so. This question counts toward the three, and you ask it even
+  can join the world live, unless the builder already said so (the setup steps' "How it is played" counts: never ask
+  again when SETUP CHOICES or [Setup choices: ...] answered it). This question counts toward the three, and you ask it even
   when the first message says enough. Ask in the builder's language, for example "Should other players be able to join
   your world live, or is it your own closed world?", with exactly two options: one that keeps the words "Oomba Live"
   exactly as they are (for example "🌍 Live: others join with Oomba Live") and one for a closed world (for example

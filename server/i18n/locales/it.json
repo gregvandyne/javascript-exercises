@@ -2050,14 +2050,20 @@
         "pendingNew": "La versione {number} aspetta un rapido controllo di sicurezza. La condivideremo appena lo supera.",
         "reviewer": "Il revisore dice: «{note}» Chiedi al Costruttore di cambiarlo, poi premi di nuovo Aggiorna o Pubblica.",
         "waitingFamily": "In attesa di un breve controllo di sicurezza prima che la vostra famiglia possa giocare. Fino ad allora resta condiviso come adesso.",
-        "ready": "Pronto per il dal vivo",
         "host": "Gioca dal vivo",
-        "publishFirst": "Pubblicalo, poi potrai avviarlo dal vivo.",
-        "teacher": "Un insegnante o un adulto può avviarlo dal vivo per la tua classe. Prima condividilo con la tua classe.",
-        "notYet": "Non ancora pronto per il dal vivo: {issue}.",
-        "make": "Trasformalo in un gioco di classe dal vivo",
         "waitingReview": "In attesa di controllo",
         "teamCheck": "Qualcuno del team Oomba controlla ogni gioco prima che tutti possano giocarci. Intanto puoi continuare a giocare, condividerlo con gli amici e modificarlo. Ti manderemo un messaggio quando abbiamo finito."
+      },
+      "liveLine": {
+        "ready": "Pronto da avviare dal vivo",
+        "kidReady": "Un insegnante o un adulto può avviarlo dal vivo",
+        "publish": "Pubblicalo per avviarlo dal vivo",
+        "kidPublish": "Pubblicalo così un insegnante o un adulto può avviarlo dal vivo",
+        "publishBtn": "Pubblica",
+        "fix": "Dal vivo, ma c’è da sistemare: {issue}",
+        "fixBtn": "Sistemalo",
+        "off": "Non è un gioco dal vivo",
+        "make": "Rendilo dal vivo"
       },
       "safety": {
         "chipPass": "Sicuro",
@@ -2636,6 +2642,7 @@
         "look": "Aspetto",
         "world": "Mondo",
         "chars": "Personaggi",
+        "play": "Come si gioca",
         "learn": "Insegna",
         "extras": "Extra"
       },
@@ -5999,6 +6006,7 @@
       "joinText": "Hai un codice di gioco dal tuo insegnante? Scrivilo qui.",
       "joinShort": "Hai un codice? Scrivilo qui.",
       "studioAskText": "Trasformalo in un gioco di classe dal vivo con Oomba Live: tutta la classe gioca insieme e si vede, e l’insegnante vede i punteggi.",
+      "studioFixText": "Sistema la parte dal vivo di questo gioco per Oomba Live, così un insegnante o un adulto può avviarlo: {issue}.",
       "badge": "Live",
       "badgeLong": "Gioco live per la classe",
       "howJoin": "Il tuo insegnante mostra un codice alla lavagna. Scrivilo qui per entrare.",
@@ -8528,6 +8536,10 @@
         "hint": "Scegline quanti vuoi.",
         "placeholder": "Per esempio: un pinguino cuoco, un cane robot"
       },
+      "play": {
+        "title": "Come si giocherà?",
+        "hint": "Scegline uno. Puoi cambiarlo dopo."
+      },
       "learn": {
         "title": "Che cosa deve insegnare?",
         "hint": "Scegline quanti vuoi.",
@@ -8648,6 +8660,26 @@
       "soonText": "Ancora nessuno. Stanno arrivando.",
       "soon3d": "In arrivo in 3D"
     },
+    "play": {
+      "live": {
+        "title": "Dal vivo con la mia classe o il mio gruppo",
+        "text": "Ognuno gioca sul proprio dispositivo. Un insegnante o un adulto lo guida dal grande schermo con Oomba Live."
+      },
+      "screen": {
+        "title": "Su un solo schermo",
+        "text": "La classe gioca insieme alla lavagna, oppure ci si passa un dispositivo."
+      },
+      "solo": {
+        "title": "Da solo",
+        "text": "Un giocatore, sul proprio dispositivo."
+      },
+      "why": {
+        "kit2": "I mondi 3D già pronti non si possono ancora giocare dal vivo.",
+        "board": "Questo funziona su un solo schermo per tutta la stanza.",
+        "survey": "Le risposte del sondaggio restano su questo dispositivo e non vengono mai inviate, quindi non si gioca dal vivo.",
+        "exitticket": "Un biglietto di uscita resta su un solo dispositivo. Per le risposte di ogni studente, usa un passo con domanda in una lezione di classe."
+      }
+    },
     "learn": {
       "math": {
         "title": "Matematica",
@@ -8692,7 +8724,10 @@
       "world": "Mondo: {value}.",
       "characters": "Dentro ci sono: {list}.",
       "learn": "Insegna: {list}.",
-      "file": "Usa il file che ho aggiunto."
+      "file": "Usa il file che ho aggiunto.",
+      "playlive": "Lo giochiamo dal vivo con la mia classe o il mio gruppo su Oomba Live.",
+      "playscreen": "Lo giochiamo insieme su un solo schermo.",
+      "playsolo": "Ci gioco da solo."
     },
     "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico.",
     "typeGroups": {

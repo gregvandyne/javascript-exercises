@@ -293,8 +293,8 @@ test('a Builder game made live-ready in the Studio (mock Builder), shared with t
   const game = await templateGame(kid);
   await expect(kid.locator('#st-liveclass [data-act="make-live"]')).toBeVisible();
   await kid.click('#st-liveclass [data-act="make-live"]');
-  await expect(kid.locator('#st-liveclass')).toContainText('Live-ready', { timeout: 60_000 });
-  await expect(kid.locator('#st-liveclass')).toContainText('teacher');   // a kid never hosts: a teacher or grown-up does
+  await expect(kid.locator('#st-liveclass')).toContainText('Publish it so a teacher or grown-up can host it live', { timeout: 60_000 });   // a kid never hosts
+  await expect(kid.locator('#st-liveclass [data-act="host-live"]')).toHaveCount(0);
   await kid.click('#st-publish');
   const sheet = kid.locator('.sheet').filter({ has: kid.locator('#vis-go') });
   await sheet.locator('[data-vis="class"]').click();

@@ -20,7 +20,7 @@ import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
 import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
-import { planArt2d } from './plan.js';
+import { planArt2d, playFor } from './plan.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
@@ -79,6 +79,9 @@ export function toolbox(ctx) {
   // picked. start_from_template starts with exactly these, and no version of this build is saved without them: the
   // model can never swap the picked animals for the kit's own characters.
   const planned = planArt2d(ctx.plan);
+  // The plan's "How will it be played?" (plan.js playFor): Live sets state.wantsLive, one screen or on my own clears it,
+  // and state.play remembers that it was answered, so the live-or-closed question is never asked again (ask_user).
+  if (ctx.plan && ctx.state) playFor(ctx.state, ctx.plan);
   const plannedCast = () => (planned ? [planned.hero, ...planned.friends].filter(Boolean) : []);
   const plannedStart = () => `start_from_template with template "runner" or "catch"${planned.world ? `, world "${planned.world}"` : ''}${planned.hero ? `, sprite "${planned.hero}"` : ''}${planned.friends.length ? ` and friends ${JSON.stringify(planned.friends)}` : ''}`;
   function saveVersion(rawHtml, notes, { evenIfStopped = false } = {}) {
@@ -123,6 +126,8 @@ export function toolbox(ctx) {
       const options = (Array.isArray(input && input.options) ? input.options : []).map(o => stripLinks(String(o)).trim().slice(0, 48)).filter(o => o && cleanText(o, 48).ok).slice(0, 8);
       if (!question) return { ok: false, forModel: 'ask_user needs a question.' };
       if (!cleanText(question, 200).ok) return { ok: false, forModel: 'That question was not shown: it had personal details, contact details or words that are not allowed. Never ask for personal details. Ask again in your own simple words.' };
+      // The live-or-closed question (its live option names "Oomba Live") when the setup steps already answered it.
+      if (ctx.state && ctx.state.play && options.some(o => /oomba live/i.test(o))) return { ok: false, forModel: `That question was not shown: the builder already answered how it is played in the setup steps (${ctx.state.play.how === 'live' ? 'LIVE with Oomba Live: make it live-ready with the LIVE RULES' : ctx.state.play.how === 'screen' ? 'on one screen: not a live game, a closed world' : 'on my own: not a live game, a closed world'}). Do not ask whether it should be live or closed: build it as they chose.` };
       steps.start('ask');
       return { ok: true, forModel: 'The question is on screen. Stop now and wait for the builder to answer.', event: ['ask', { question, options }], stop: true };
     },

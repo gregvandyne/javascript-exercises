@@ -1,5 +1,6 @@
 // /build/new: the step-by-step setup before the Builder (server/routes/build-setup.js). One screen at a time: start,
-// six steps (game type, 2D or 3D, world, who is in it, what it teaches, extras), then "Here is your game plan".
+// seven steps (game type, 2D or 3D, world, who is in it, how it is played, what it teaches, extras), then "Here is your
+// game plan".
 // The choices live in this page only (nothing is stored, here or on the server) until "Open the Builder": that makes
 // the game, adds a chosen file with the Studio's own upload, and starts the first build with the plan as data
 // ({ plan }: each of game type, world and character is { from: 'pack', id } or { from: 'custom', text }). The server
@@ -11,7 +12,7 @@ import { LANG } from '/js/i18n.js';
 const D = JSON.parse($('#page-data').textContent);
 const STEPS = D.steps, KEYS = STEPS.map(s => s.key), ORDER = ['start', ...KEYS, 'plan'];
 const stepOf = key => STEPS.find(s => s.key === key);
-const S = { screen: 'start', sel: { type: [], look: [], world: [], chars: [], learn: [] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false };
+const S = { screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -40,7 +41,7 @@ function show(screen, { focus = true, push = true } = {}) {
   paintProgress();
   for (const el of $$('.su-screen')) el.hidden = el.dataset.screen !== screen;
   $('#su-skipall').hidden = screen === 'start';
-  if (screen === 'world' || screen === 'chars' || screen === 'plan') refreshLimits();
+  if (screen === 'world' || screen === 'chars' || screen === 'play' || screen === 'plan') refreshLimits();
   if (screen === 'plan') renderPlan();
   if (push) history.pushState({ su: screen }, '', screen === 'start' ? location.pathname : `#${screen}`);
   if (focus) { const h = $(`#su-h-${screen}`); if (h) h.focus({ preventScroll: true }); scrollTo({ top: 0, behavior: 'instant' }); }
@@ -78,6 +79,7 @@ function pick(key, id) {
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
   if (key === 'type') paintProgress();
+  if (key === 'play') S.playPicked = true;
   if (id === 'else' && !had) { const inp = $(`#su-idea-${key}`); inp.focus(); inp.scrollIntoView({ block: 'nearest' }); }
   if (key === 'chars' || key === 'world' || key === 'look' || key === 'type') refreshLimits(); else refreshAll();
 }
@@ -120,7 +122,41 @@ function refreshLimits() {
   paint('chars');
   for (const chip of $$('[data-soon3d]')) chip.hidden = flat;
   for (const id of ['su-chars-2d', 'su-world-2d', 'su-plan-2d']) $(`#${id}`).hidden = !flatPlain();
+  refreshPlay();
   refreshAll();
+}
+
+// "How will it be played?": Live with my class or group, On one screen, On my own. A kind of game that cannot be live
+// (a tool for the board, the survey, the exit ticket) or a ready-made 3D world keeps its Live card, greyed out, with the
+// reason as its line. Until they pick one themselves, the step follows the kind of game (D.play.def: for a teacher the
+// classroom types that work live start on Live, for a kid On my own); a pick that no longer fits goes back to that.
+const playText = new Map(cardsOf('play').map(b => [b.dataset.id, $('.su-desc', b).textContent]));
+/** Is this plan a ready-made 3D world (Kit 2)? The same answer as plan.js planEngine. */
+function isKit2() {
+  const type = S.sel.type[0] && S.sel.type[0] !== 'else' ? S.sel.type[0] : '';
+  if (type && D.skip[type] && D.skip[type].includes('world')) return false;   // a classroom starter
+  const look = S.sel.look[0], flat = look === '2d';
+  if (flat) return false;
+  const picked = S.sel.chars.filter(id => id !== 'else').map(charById).filter(Boolean), in3d = picked.filter(c => c.in3d);
+  const world = S.sel.world[0], packWorld = world && world !== 'else', customWorld = world === 'else' && !!ideaOf('world');
+  if (look !== '3d') {
+    if ((type && D.play.flat.includes(type)) || picked.some(c => !c.in3d)) return false;
+    if (!packWorld && !in3d.length) return false;
+  }
+  return !(customWorld && !in3d.length);
+}
+function refreshPlay() {
+  const type = S.sel.type[0] && S.sel.type[0] !== 'else' ? S.sel.type[0] : '';
+  const why = (type && D.play.not[type]) || (isKit2() ? D.play.kit2 : '');
+  for (const b of cardsOf('play')) {
+    const off = b.dataset.id === 'live' && !!why;
+    b.disabled = off; b.closest('.su-card').classList.toggle('is-off', off);
+    $('.su-desc', b).textContent = off ? D.play.why[why] : playText.get(b.dataset.id);
+  }
+  let def = D.play.def[type] || 'solo';
+  if (def === 'live' && why) def = type && D.play.not[type] ? 'screen' : 'solo';
+  if (!S.playPicked || (why && S.sel.play[0] === 'live')) S.sel.play = [def];
+  paint('play');
 }
 
 // "Select all" on a multi-select section (a group of characters, or what it teaches): picks every card of the section
@@ -174,10 +210,11 @@ function buildPlan() {
     type: one('type'), look: skip.includes('look') ? null : S.sel.look[0] || null, world: one('world'),
     characters: skip.includes('chars') ? [] : S.sel.chars.map(id => (id === 'else' ? (ideaOf('chars') ? { from: 'custom', text: ideaOf('chars') } : null) : { from: 'pack', id })).filter(Boolean),
     learn: skip.includes('learn') ? [] : S.sel.learn.map(id => (id === 'else' ? (ideaOf('learn') ? { text: ideaOf('learn') } : null) : { id })).filter(Boolean),
-    notes: S.notes.trim(),
+    notes: S.notes.trim(), play: S.sel.play[0] || null,
   };
 }
-const isEmpty = p => !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length;
+// How it is played starts on an answer by itself: alone, it is a plan only once they picked it.
+const isEmpty = p => !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length && !(p.play && S.playPicked);
 const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id="${id}"] .su-name`); return el ? el.textContent : id; };
 function renderPlan() {
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {

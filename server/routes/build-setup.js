@@ -1,5 +1,5 @@
 // The step-by-step game setup before the Builder: /build/new (the "New game" button on /build opens it).
-//   Start: "Help me choose" (six steps, then "Here is your game plan") or "I know what I want" (a new, empty game and
+//   Start: "Help me choose" (seven steps, then "Here is your game plan") or "I know what I want" (a new, empty game and
 //   straight to the Studio, exactly as "New game" always did). Every step also has "Skip to the Builder".
 // What the steps offer comes from the Builder's own lists (builder/plan.js: game types, the shipped 3D worlds, the
 // heroes and animals of both catalogues by group: the 3D worlds' and the 2D sprites'), so a newly shipped world or
@@ -14,7 +14,7 @@ import { page } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
-import { GAME_TYPES, LOOKS, LEARN, LIMITS, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups } from '../builder/plan.js';
+import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault } from '../builder/plan.js';
 import { teacherHost } from '../services/classlive-access.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
@@ -28,6 +28,7 @@ export const STEPS = [
   { key: 'look' },
   { key: 'world', other: true, pack: true },
   { key: 'chars', other: true, pack: true, multi: true },
+  { key: 'play' },
   { key: 'learn', other: true, multi: true },
   { key: 'extras' },
 ];
@@ -57,6 +58,10 @@ const ART = {
   scoreboard: svg('<rect x="6" y="10" width="36" height="28" rx="4"/><path d="M24 10v28"/><path d="M13 20v10M14 20h-2"/><path d="M31 21a3 3 0 1 1 5 2l-5 7h6"/>'),
   '3d': svg('<path d="M24 5l16 9v20l-16 9-16-9V14z"/><path d="M8 14l16 9 16-9M24 23v20"/>'),
   '2d': svg('<rect x="6" y="10" width="36" height="28" rx="4"/><path d="M6 31l10-9 8 7 6-5 12 9"/><circle cx="33" cy="18" r="3"/>'),
+  // how it is played: live (a big screen and everyone's own devices), on one screen, on my own
+  live: svg('<rect x="9" y="5" width="30" height="19" rx="2"/><path d="M24 24v4"/><rect x="4" y="32" width="9" height="12" rx="2"/><rect x="19.5" y="32" width="9" height="12" rx="2"/><rect x="35" y="32" width="9" height="12" rx="2"/>'),
+  screen: svg('<rect x="5" y="6" width="38" height="24" rx="3"/><circle cx="13" cy="39" r="3"/><circle cx="24" cy="39" r="3"/><circle cx="35" cy="39" r="3"/>'),
+  solo: svg('<circle cx="24" cy="12" r="6"/><rect x="15" y="23" width="18" height="20" rx="3"/><path d="M21 38h6"/>'),
   auto: svg('<path d="M24 6l4 12 12 4-12 4-4 12-4-12-12-4 12-4z"/><path d="M38 6v6M35 9h6"/>'),
   math: svg('<path d="M8 15h12M14 9v12"/><path d="M28 15h12"/><path d="M9 29l10 10M19 29L9 39"/><path d="M28 31h12M28 37h12"/>'),
   reading: svg('<path d="M24 12c-4-3-10-4-16-3v27c6-1 12 0 16 3 4-3 10-4 16-3V9c-6-1-12 0-16 3z"/><path d="M24 12v27"/>'),
@@ -77,6 +82,14 @@ export function setupData(t, { teacher = false } = {}) {
     skip: Object.fromEntries(GAME_TYPES.filter(x => x.skip.length).map(x => [x.id, x.skip])), learn: LEARN, limits: LIMITS, files: SETUP_FILES,
     worlds: KIT2_WORLDS.map(w => ({ id: w.id, name: t(`studio.worlds.names.${w.id}`) })),
     characters: characterGroups().flatMap(g => g.items.map(c => ({ id: c.id, name: characterName(c.id, t), group: g.id, kind: c.kind, worlds: c.worlds, in3d: c.in3d, in2d: c.in2d }))),
+    // "How will it be played?": the answers, the one each kind of game starts on for this viewer ('' : no kind picked),
+    // the kinds that cannot be live (and why), why a ready-made 3D world cannot, and the kinds made only in 2D (the
+    // page works out whether the plan is a ready-made 3D world the way plan.js planEngine does).
+    play: {
+      plays: PLAYS, kit2: LIVE_NOT_ENGINE.kit2, not: LIVE_NOT, flat: GAME_TYPES.filter(x => x.flat).map(x => x.id),
+      def: Object.fromEntries(['', ...GAME_TYPES.map(x => x.id)].map(id => [id, playDefault({ type: id ? { from: 'pack', id } : null, look: null, world: null, characters: [], learn: [], notes: '' }, { forKid: !teacher })])),
+      why: Object.fromEntries([...new Set([...Object.values(LIVE_NOT), ...Object.values(LIVE_NOT_ENGINE)])].map(c => [c, t(`buildSetup.play.why.${c}`)])),
+    },
     // 2D: the kinds of game that draw a world and one sprite character today, and the worlds that have 2D art
     art2d: { types: ['adventure', ...ART2D_TEMPLATES], worlds: ART2D_WORLD_IDS },
   };
@@ -124,6 +137,9 @@ router.get('/build/new', requireBuilder, (req, res) => {
               : html`<span class="su-pic su-pic-2d"><img src="/img/art2d/animals/${c.id}.webp" alt="" width="96" height="64" loading="lazy" decoding="async"></span>` }))}</div>`}
       </section>`)}
       <section class="su-group" aria-labelledby="su-g-else"><h2 id="su-g-else" class="sr-only">${t('buildSetup.else.title')}</h2><div class="su-grid su-grid-char">${elseCard('chars')}</div></section>`,
+    // Live with my class or group / On one screen / On my own. A Live that this kind of game (or a ready-made 3D world)
+    // cannot be yet stays on the page, greyed out, with the reason in its line (public/js/buildsetup.js).
+    play: () => html`<div class="su-grid su-grid-text su-grid-3 su-grid-play" role="group" aria-labelledby="su-h-play">${PLAYS.map(id => card({ step: 'play', id, pic: art(id), title: t(`buildSetup.play.${id}.title`), text: t(`buildSetup.play.${id}.text`) }))}</div>`,
     learn: () => html`<div class="su-ghead su-ghead-end">${allBtn('learn', t('js.buildsetup.stepNames.learn'))}</div><div class="su-grid su-grid-text" role="group" aria-labelledby="su-h-learn">${LEARN.map(id => card({ step: 'learn', id, pic: art(id), title: t(`buildSetup.learn.${id}.title`), text: t(`buildSetup.learn.${id}.text`) }))}${elseCard('learn')}</div>`,
     extras: () => html`<div class="su-extras">
       <div class="field"><label for="su-notes">${t('buildSetup.extras.notesLabel')}</label>

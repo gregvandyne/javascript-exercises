@@ -133,7 +133,9 @@ async function build(ctx, m) {
   const pals = art ? (art.friends || []).map(art2dCharacter).filter(c => c && c !== ac) : [];
   const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
   const title = aw && !theme ? `${aw.name} ${kind === 'runner' ? 'Dash' : 'Catch'}` : titleFor(kind, theme);
-  const html = personalise(base, title, theme, info.icon);
+  // "Live with my class or group" in the setup steps (plan.js playFor: state.wantsLive): made live-ready from the start.
+  const plain = personalise(base, title, theme, info.icon), html = (ctx.state && ctx.state.wantsLive && withLive(plain)) || plain;
+  if (html !== plain) await say(ctx, 'It is a live class game too 📡: a teacher or grown-up can host it once it is published. ');
   if (pick && pick.missing) await say(ctx, 'There is no picture of that animal yet, so one of the game’s own heroes plays for now. ');
   if (pick && !art && art2dWorld(pick.world)) await say(ctx, `The ${art2dWorld(pick.world).name} pictures are for running and catching games so far, so this one keeps the classic look. `);
   if (art) await say(ctx, `${aw ? `It is set in ${aw.name}` : 'It keeps the classic world'}${ac ? `${aw ? ', and' : ', and'} the ${ac.name.toLowerCase()} is your hero` : ''}. `);
