@@ -79,6 +79,25 @@ export function ttsBlob(body, { pre = false } = {}) {
   return p;
 }
 
+/** Would the server read this line with the AI voice? body: the POST /api/tts body; the server runs the same checks
+ *  with check: true and makes no audio. -> true / false (any error: false). Remembered while the page is open. */
+const checked = new Map();
+export function ttsCheck(body) {
+  const key = JSON.stringify(body);
+  if (checked.has(key)) return checked.get(key);
+  const p = (async () => {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), WAIT_MS);
+    try {
+      const r = await fetch('/api/tts', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, check: true }), signal: ctl.signal });
+      let d = null; try { d = await r.json(); } catch { /* none */ }
+      return r.ok && !!d && d.ok === true;
+    } catch { return false; } finally { clearTimeout(timer); }
+  })();
+  checked.set(key, p);
+  p.then(ok => { if (!ok) checked.delete(key); });
+  return p;
+}
+
 // ---- reading on a page (Oomba Live, lesson quizzes) ----
 // iPhone and iPad only let a page play sound (and speechSynthesis talk) after a play() / speak() inside a tap. The AI
 // audio comes back after two fetches, outside the tap, so the shared Audio element and the device voice are unlocked

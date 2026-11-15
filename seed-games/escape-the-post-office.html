@@ -90,11 +90,11 @@
   @media (orientation: landscape) and (max-height: 520px) { .ep { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .ep-main { gap: 6px; } .ep-say { min-height: 44px; padding: 4px 8px; } .ep-board { height: min(52vh, 320px); } }
 </style>
 <div id="game"></div>
-<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-props.js" integrity="sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/style-bold.js" integrity="sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-props.js" integrity="sha384-15lO/ZwSfeAh04Aa+YtX/dsTuj3G3IXsVt5R8AmX1LfIhHjaNxocJbJRHpZaZpwR" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-animals.js" integrity="sha384-AkEEw+ya/FaEVyxGO8XslaJBEuViplREiQXUbbMYYVbwcKxZSNQYzaGQQ8KDPagd" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-school.js" integrity="sha384-9jinyC/87OG+BSf0TLgW7uh4a9WMS5/SH/QrB8Xji1XCK1v704dnxG5KRJE9WKTW" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/style-bold.js" integrity="sha384-y/4P0N49x2in0xC2gTy9JIejxDajHK68XM7bhJVa2BZsgcA7s7ctHaYAw/XyuDOp" crossorigin="anonymous"></script>
 <script>
 /* ===== Escape the Post Office engine: the six trick locks, their runs, the hint feathers and the shield.
    Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
@@ -343,6 +343,32 @@ function solveRun(lock, band, seed) { const r = new Run(lock, band, seed); let g
 root.EscapePostOffice = { LOCKS, ACTIONS, DATA, Run, Escape, caesar, rng, seedOf, solveRun };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
+<script>
+/* ===== Escape the Post Office's how-to cards in the 13 site languages (en-GB uses en). The kit shows them in the player's language
+   (Oomba.game strings, keys how.*). The AI voice reads them only when the player taps the card's speaker button;
+   server/services/tts-lines.js reads this block for the lines it may voice. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: { "how.locks": "Open six trick locks, in stamp order", "how.stamps": "Your six stamps are the keys", "how.retry": "No timer, no failing: keep trying" },
+  es: { "how.locks": "Abre seis candados trampa, en el orden de los sellos", "how.stamps": "Tus seis sellos son las llaves", "how.retry": "Sin reloj y sin perder: sigue intentándolo" },
+  fr: { "how.locks": "Ouvre six cadenas pièges, dans l’ordre des timbres", "how.stamps": "Tes six timbres sont les clés", "how.retry": "Pas de chrono, pas d’échec : continue d’essayer" },
+  de: { "how.locks": "Öffne sechs Trickschlösser, in der Reihenfolge der Briefmarken", "how.stamps": "Deine sechs Briefmarken sind die Schlüssel", "how.retry": "Keine Uhr, kein Verlieren: versuch es weiter" },
+  it: { "how.locks": "Apri sei lucchetti trabocchetto, nell’ordine dei francobolli", "how.stamps": "I tuoi sei francobolli sono le chiavi", "how.retry": "Niente timer, niente sconfitte: continua a provare" },
+  pt: { "how.locks": "Abre seis cadeados com truque, pela ordem dos selos", "how.stamps": "Os teus seis selos são as chaves", "how.retry": "Sem relógio, sem perder: continua a tentar" },
+  nl: { "how.locks": "Open zes trucsloten, in de volgorde van de postzegels", "how.stamps": "Je zes postzegels zijn de sleutels", "how.retry": "Geen klok, geen verliezen: blijf het proberen" },
+  ru: { "how.locks": "Открой шесть хитрых замков по порядку марок", "how.stamps": "Твои шесть марок и есть ключи", "how.retry": "Без таймера и без проигрышей: пробуй снова" },
+  ja: { "how.locks": "6つの しかけロックを きっての じゅんに あけよう", "how.stamps": "6まいの きってが かぎに なるよ", "how.retry": "じかんせいげんも しっぱいも なし。なんども やってみよう" },
+  'zh-Hant': { "how.locks": "照郵票的順序，打開六道機關鎖", "how.stamps": "你的六張郵票就是鑰匙", "how.retry": "不計時，也不會失敗：繼續試試看" },
+  ar: { "how.locks": "افتح ستة أقفال خادعة بترتيب الطوابع", "how.stamps": "طوابعك الستة هي المفاتيح", "how.retry": "لا مؤقت ولا خسارة: واصل المحاولة" },
+  he: { "how.locks": "פתחו שישה מנעולים מתוחכמים לפי סדר הבולים", "how.stamps": "ששת הבולים שלכם הם המפתחות", "how.retry": "בלי שעון ובלי פסילה: המשיכו לנסות" },
+};
+(typeof window !== 'undefined' ? window : globalThis).EscapePostOfficeI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// Pim the owl reads them, in the wise voice (the role tts-lines GAMES gives this game).
+const VOICE_ROLES = { story: 'wise' };
+// ==== VOICES END ====
+</script>
 <script type="module">
 /* ===== Escape the Post Office: the room shell on the Oomba Kit (Packet Post is the model). Pim is the kit's
    owl with Packet Post's own look (species owl, backpack, cocoa/spark): the character comes from its own game,
@@ -381,7 +407,8 @@ let game = O.game({
   api: 1, title: CONFIG.title, subtitle: tr('Six locks. Six stamps. One way out.'), biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
   hud: ['progress', 'count:star'],
-  howTo: [{ icon: 'lock', text: tr('Open six trick locks, in stamp order') }, { icon: 'tap', text: tr('Your six stamps are the keys') }, { icon: 'star', text: tr('No timer, no failing: keep trying') }],
+  howTo: [{ icon: 'lock', text: 'how.locks' }, { icon: 'tap', text: 'how.stamps' }, { icon: 'star', text: 'how.retry' }],
+  strings: window.EscapePostOfficeI18n,   // keys: the how-to cards are in every site language
   level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, CONFIG.pim) }),
   update: frame, testState: () => testState(),
   on: { start: onStart, title: hideAll, results: hideAll, lose: hideAll },

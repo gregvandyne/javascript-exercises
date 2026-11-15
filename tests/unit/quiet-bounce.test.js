@@ -234,7 +234,7 @@ test('the words: every key in all 13 languages, the same placeholders, no Remi',
 
 test('the scan passes, the kit is pinned, and the json describes the game in every language', () => {
   assert.equal(scanVersion(html).status, 'pass', JSON.stringify(scanVersion(html).issues));
-  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-'), 'kit 1.1.5, pinned');
+  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-'), 'kit 1.1.6, pinned');
   const kitTag = s => s.match(/<script src="\/vendor\/oomba-kit\/[^"]+" integrity="[^"]+"/)[0];
   assert.equal(kitTag(html), kitTag(remi), 'the same kit as Remi');
   assert.ok(!/packs\//.test(html), 'no packs');

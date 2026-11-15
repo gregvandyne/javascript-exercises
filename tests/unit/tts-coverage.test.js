@@ -28,11 +28,12 @@ test('every game named by a course is registered for AI voices', () => {
 });
 
 test('a registered game yields its lines, unless it is one of the known no-table games', () => {
-  // These four keep their words outside a marked I18N block (identity-keyed string tables, or the kit's
-  // literal strings), so the warm-up cannot read their lines yet. They are still registered: course
-  // read-aloud takes their role from GAMES, and any future marked block is picked up automatically.
-  // Adding a fifth name here needs the owner's say-so, not just a failing game.
-  const NO_TABLE = new Set(['atlas-quest', 'code-isle', 'escape-the-post-office', 'trick-inbox']);
+  // These two keep their words outside a marked I18N block (identity-keyed string tables), so the warm-up
+  // cannot read their lines yet. They are still registered: course read-aloud takes their role from GAMES, and
+  // any future marked block is picked up automatically (Escape the Post Office and Trick Inbox left this list
+  // when their how-to cards got a marked block in every language, kit 1.1.6). Adding a name here needs the
+  // owner's say-so, not just a failing game.
+  const NO_TABLE = new Set(['atlas-quest', 'code-isle']);
   for (const slug of lines.TTS_GAMES) {
     const g = lines.readGame(slug);
     if (!g) { assert.ok(NO_TABLE.has(slug), `${slug} is registered but its lines cannot be read`); continue; }

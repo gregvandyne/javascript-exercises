@@ -46,5 +46,6 @@ test('the I18N block carries every spoken line, identical to the displayed line'
 test('every I18N key fits one spoken-key regex, so tts-lines registration is a single entry', () => {
   const keys = Object.keys(en);
   assert.ok(keys.length >= 90, `expected the full spoken set, got ${keys.length}`);
-  for (const k of keys) assert.match(k, /^(say|intro|hint|why)\.[a-z0-9.-]+$/, `key ${k} would escape a one-line registration`);
+  // how.*: the how-to cards (kit 1.1.6), the only keys with other languages in the block
+  for (const k of keys) assert.match(k, /^(say|intro|hint|why|how)\.[a-z0-9.-]+$/, `key ${k} would escape a one-line registration`);
 });

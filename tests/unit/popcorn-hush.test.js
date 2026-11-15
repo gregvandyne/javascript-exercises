@@ -246,7 +246,7 @@ test('AI voices: only the calm lines can be spoken (the title, the setup card, t
 
 test('the scan passes, the kit is pinned, and the json describes the game in every language', () => {
   assert.equal(scanVersion(html).status, 'pass');
-  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-'), 'kit 1.1.5, pinned (as Remi)');
+  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-'), 'kit 1.1.6, pinned (as Remi)');
   assert.ok(!/packs\//.test(html), 'no packs');
   const j = JSON.parse(fs.readFileSync('seed-games/popcorn-hush.json', 'utf8'));
   assert.equal(j.slug, 'popcorn-hush'); assert.equal(j.title, 'Popcorn Hush'); assert.equal(j.icon, '🍿'); assert.equal(j.category, 'learning'); assert.equal(j.shelf, 'play');

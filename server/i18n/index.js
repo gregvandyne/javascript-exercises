@@ -292,6 +292,17 @@ export function middleware(req, res, next) {
   // anon: a signed-out visitor (search engines are one). Shared view helpers leave children's names out for them.
   als.run({ t: req.t, fmt: req.fmt, locale: code, anon: !req.user }, next);
 }
+/**
+ * A Play link on a page read at its /<code>/ address (/es/g/sudoku: a search result, a shared link). /play has no
+ * /<code>/ address, so without this it opens in the visitor's other language (the cookie, the account, the phone):
+ * Spanish page, English game. A visitor who never chose a language gets `?lang=<code>` on the link, which is the
+ * picker's own mechanism (the tap on Play remembers it). A language already chosen (the cookie or the account) wins,
+ * as everywhere else; the /<code>/ page itself still writes no cookie.
+ */
+export function keepLang(req, href) {
+  if (!req || req.localeSource !== 'path' || normalizeCode(readCookie(req, COOKIE)) || normalizeCode(req.user && req.user.lang)) return href;
+  return href + (href.includes('?') ? '&' : '?') + 'lang=' + encodeURIComponent(req.locale);
+}
 /** t for a request, even one that failed before the middleware ran. */
 export const tReq = req => (req && req.t) || tEn;
 

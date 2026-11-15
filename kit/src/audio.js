@@ -107,6 +107,30 @@ export class KitAudio {
     });
     const p = this.queue.then(run, run); this.queue = p; return p;
   }
+  /** aiCheck(lines, lang) -> Promise<boolean>: would the platform's AI voice read every line (BRB.aiVoiceCheck)? false
+   *  without an SDK that can tell (an older SDK, a preview, the kit outside the platform). Never the device's voice. */
+  aiCheck(lines, lang) {
+    const b = this.brb;
+    if (!b || typeof b.aiVoiceCheck !== 'function' || typeof b.speak !== 'function') return Promise.resolve(false);
+    try { return Promise.resolve(b.aiVoiceCheck(lines, { lang })).then(ok => ok === true, () => false); } catch (e) { return Promise.resolve(false); }
+  }
+  /** aiRead(lines, {lang, done(ok)}) -> {stop()} or null: the lines, one after another, with the AI voice only
+   *  (BRB.speak ai: 'only'; all asked at once so the next is ready). done(true) after the last, done(false) when a line
+   *  gets no AI voice (nothing is read by the device instead). stop() ends it quietly (no done). A tap, so the player
+   *  hears it even with the game's sound off. */
+  aiRead(lines, o = {}) {
+    const b = this.brb, list = lines.map(s => String(s || '')).filter(Boolean);
+    if (!b || typeof b.speak !== 'function' || !list.length) return null;
+    let over = false;
+    const end = ok => { if (over) return; over = true; this.duck(false); if (!ok) { try { b.stopSpeaking(); } catch (e) { /* ignore */ } } if (o.done) o.done(ok); };
+    this.duck(true);
+    for (let i = 0; i < list.length && !over; i++) {
+      let ok = false;
+      try { ok = !!b.speak(list[i], { lang: o.lang, ai: 'only', queue: i > 0, onend: i === list.length - 1 ? () => end(true) : null, onfail: () => end(false) }); } catch (e) { ok = false; }
+      if (!ok) { end(false); return null; }
+    }
+    return { stop: () => { if (over) return; over = true; this.duck(false); try { b.stopSpeaking(); } catch (e) { /* ignore */ } } };
+  }
 }
 
 // The kit's 12 voices: short, soft, friendly. Never a buzzer.

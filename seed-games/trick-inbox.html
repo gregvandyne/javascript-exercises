@@ -87,11 +87,11 @@
   .ti-clue.ti-found, .ti-seg button[aria-pressed="true"] { color: var(--ti-ink); }
 </style>
 <div id="game"></div>
-<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-props.js" integrity="sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/style-bold.js" integrity="sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-props.js" integrity="sha384-15lO/ZwSfeAh04Aa+YtX/dsTuj3G3IXsVt5R8AmX1LfIhHjaNxocJbJRHpZaZpwR" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-animals.js" integrity="sha384-AkEEw+ya/FaEVyxGO8XslaJBEuViplREiQXUbbMYYVbwcKxZSNQYzaGQQ8KDPagd" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-school.js" integrity="sha384-9jinyC/87OG+BSf0TLgW7uh4a9WMS5/SH/QrB8Xji1XCK1v704dnxG5KRJE9WKTW" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/style-bold.js" integrity="sha384-y/4P0N49x2in0xC2gTy9JIejxDajHK68XM7bhJVa2BZsgcA7s7ctHaYAw/XyuDOp" crossorigin="anonymous"></script>
 <script>
 /* ===== Trick Inbox engine and content: the message sets, the trickster motives, the judging and the scoring.
    Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
@@ -494,6 +494,32 @@ function cleanParams(raw, sets) {
 root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, ACTORS, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
+<script>
+/* ===== Trick Inbox's how-to cards in the 13 site languages (en-GB uses en). The kit shows them in the player's language
+   (Oomba.game strings, keys how.*). The AI voice reads them only when the player taps the card's speaker button;
+   server/services/tts-lines.js reads this block for the lines it may voice. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: { "how.clues": "Tap every clue hiding in a message", "how.choose": "Then choose: deliver, bin it, show Pim, or report & block", "how.adult": "Show Pim means ask a trusted adult" },
+  es: { "how.clues": "Toca cada pista escondida en un mensaje", "how.choose": "Luego elige: entregar, a la papelera, mostrar a Pim, o denunciar y bloquear", "how.adult": "Mostrar a Pim es pedir ayuda a un adulto de confianza" },
+  fr: { "how.clues": "Touche chaque indice caché dans un message", "how.choose": "Puis choisis : livrer, à la poubelle, montrer à Pim, ou signaler et bloquer", "how.adult": "Montrer à Pim, c’est demander à un adulte de confiance" },
+  de: { "how.clues": "Tippe auf jeden Hinweis, der in einer Nachricht steckt", "how.choose": "Dann wähle: zustellen, wegwerfen, Pim zeigen oder melden und blockieren", "how.adult": "Pim zeigen heißt: frag einen Erwachsenen, dem du vertraust" },
+  it: { "how.clues": "Tocca ogni indizio nascosto in un messaggio", "how.choose": "Poi scegli: consegna, cestina, mostra a Pim, o segnala e blocca", "how.adult": "Mostrare a Pim vuol dire chiedere a un adulto di fiducia" },
+  pt: { "how.clues": "Toca em cada pista escondida numa mensagem", "how.choose": "Depois escolhe: entregar, deitar fora, mostrar à Pim, ou denunciar e bloquear", "how.adult": "Mostrar à Pim é pedir ajuda a um adulto de confiança" },
+  nl: { "how.clues": "Tik op elke aanwijzing die in een bericht verstopt zit", "how.choose": "Kies dan: bezorgen, weggooien, aan Pim laten zien, of melden en blokkeren", "how.adult": "Aan Pim laten zien betekent: vraag het een volwassene die je vertrouwt" },
+  ru: { "how.clues": "Нажми на каждую подсказку, спрятанную в письме", "how.choose": "Потом выбери: доставить, в корзину, показать Пим или пожаловаться и заблокировать", "how.adult": "Показать Пим значит спросить взрослого, которому доверяешь" },
+  ja: { "how.clues": "メッセージに かくれた ヒントを ぜんぶ タップしよう", "how.choose": "それから えらぼう：とどける、すてる、ピムに 見せる、つうほうして ブロック", "how.adult": "「ピムに 見せる」は、しんらいできる 大人に きくこと" },
+  'zh-Hant': { "how.clues": "點出訊息裡藏著的每一條線索", "how.choose": "再選一個：送出、丟掉、給皮姆看，或檢舉並封鎖", "how.adult": "給皮姆看，就是去問你信任的大人" },
+  ar: { "how.clues": "انقر على كل دليل مخبأ في الرسالة", "how.choose": "ثم اختر: سلّمها، أو ارمها، أو أرِها لبيم، أو أبلغ واحظر", "how.adult": "أرِها لبيم تعني: اسأل شخصًا بالغًا تثق به" },
+  he: { "how.clues": "הקישו על כל רמז שמסתתר בהודעה", "how.choose": "ואז בחרו: למסור, לזרוק, להראות לפים, או לדווח ולחסום", "how.adult": "להראות לפים זה לשאול מבוגר שסומכים עליו" },
+};
+(typeof window !== 'undefined' ? window : globalThis).TrickInboxI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// Pim the owl reads them, in the wise voice (the role tts-lines GAMES gives this game).
+const VOICE_ROLES = { story: 'wise' };
+// ==== VOICES END ====
+</script>
 <script type="module">
 const E = window.TrickInbox, O = window.Oomba;
 const CONFIG = {
@@ -572,7 +598,8 @@ game = O.game({
   api: 1, title: CONFIG.title, subtitle: tr('Spot the clues. Choose the move.'), biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
   hud: ['progress', 'count:star'],
-  howTo: [{ icon: 'tap', text: tr('Tap every clue hiding in a message') }, { icon: 'question', text: tr('Then choose: deliver, bin it, show Pim, or report & block') }, { icon: 'lock', text: tr('Show Pim means ask a trusted adult') }],
+  howTo: [{ icon: 'tap', text: 'how.clues' }, { icon: 'question', text: 'how.choose' }, { icon: 'lock', text: 'how.adult' }],
+  strings: window.TrickInboxI18n,   // keys: the how-to cards are in every site language
   level: O.level.grid(SET_GRID, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, CONFIG.pim) }),
   update: frame,
   testState: () => testState(),

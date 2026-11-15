@@ -5908,3 +5908,48 @@ The owner asked: "Build a sudoku game in oomba for varying levels of difficulty.
   in the strategy subject page, whose words are about chess and four in a row. The AI voice reads only the title, the
   how-to cards and a few fixed lines, never the board.
 - **Open:** a native speaker's read of the new translations, and a real low-end phone for the Expert timing.
+
+## How-to cards: read aloud only on a tap, with the AI voice (kit 1.1.6, 15 Nov 2026)
+
+The owner asked: "These instructions never seem to be translated into the correct language. Also, make sure they are
+not automatically read aloud. Only read them aloud if the user selects a button you put on that window pop up with a
+speaker. Also make sure this is always done with the AI voices." (the Oomba Kit's "How to play" card after the title).
+
+- **Translation.** The kit translates a card only when its text is a key in the game's strings. Sudoku (its I18N block)
+  and Packet Post (its language packs) were right. Fraction Factory, Escape the Post Office and Trick Inbox passed
+  English sentences with no table behind them, so every player saw English. Their cards are now keys (`how.*`) in a
+  marked I18N block in all 13 languages (en-GB uses en), passed as `strings`; the rest of those three games is still
+  English only. The Builder rules say `howTo` texts go in all 13 site languages, and the templates already have them.
+- **Never by itself.** Kit 1.1.6 drops the `say()` of the joined cards as the card opens. Kit 1.1.3, 1.1.4 and 1.1.5
+  are served on 1.1.6 (`KIT_PATCHES`), and every official game and the live lobby now pin 1.1.6. Games pinned to older
+  kits (1.0.x, 1.1.0 to 1.1.2) keep their files, so the SDK drops their read instead: a line that is exactly the open
+  kit how-to card's cards joined by spaces is not spoken (`kitHowtoRead`), by the AI voice or the device's.
+- **The player's language in the frame.** The play page signs `req.locale` into the frame token (`l`): ?lang=, then
+  the /<code>/ address, the lang cookie (the picker), the account's language, then Accept-Language (an iPhone's
+  `es-MX` is `es`, `zh-TW` is `zh-Hant`, `en-GB` stays). The site codes are the kit's own, so `O.lang` and the kit's
+  i18n agree. One gap: /play has no /<code>/ address, so Play from a page read at one (/es/g/sudoku, a search result)
+  opened the game in the visitor's other language. Play links on those pages now carry `?lang=<code>` when the visitor
+  has not chosen a language (`keepLang`, i18n/index.js); the /<code>/ page itself still writes no cookie.
+  `tests/unit/frame-lang.test.js` pins the whole path.
+- **The speaker button** (round, top corner of the card, label "Read it to me" / "Stop reading" in 13 languages) reads
+  the title and the cards one after another; a tap while reading stops, and closing the card stops it too. It is
+  hidden until `BRB.aiVoiceCheck(lines)` says yes: the play page asks `POST /api/tts` with `check: true`, which runs
+  every check of a real read (the game's token and player, the language switched on, the allowlist, the backstops) and
+  answers `{ ok: true }` without making audio or counting characters. No INIT.tts (TTS off, a preview, a game not
+  allowed), a language that is off, the player's "this device's voice" choice, a refused line or no answer in 4 s:
+  no button. Reading uses `BRB.speak(text, { ai: 'only' })`: the AI voice or nothing; a line that does not come ends
+  with `onfail` and hides the button. The device's voice is never used for it. The frame still has no network: the
+  check goes through the play page like every AI line.
+- **The kit's own title.** "How to play" is the kit's word, not the game's, so the server allows the kit's
+  `howTo` string (`tts-lines KIT_SPOKEN`, from `kit/src/strings.js`) in its own language for any game that may use AI
+  voices, in that game's role.
+- **Versions.** 1.1.5 was live (Sudoku and the other official games pin it) but missing from `kit/SHIPPED.json`, which
+  is meant to gain a version in the change that ships it; it is locked now with the packs 1.1.4 locks (`live`,
+  `art-pixel` and `style-pixel` stay unlocked, as in 1.1.4). 1.1.6 is the new `KIT_LATEST`; it is not locked until it
+  ships. The core is 95.9 KB brotli (cap 96).
+- Tests: `tests/unit/kit-howto-voice.test.js` (Chromium, the production frame: nothing spoken on open, the button's
+  five cases, a tap through the AI path, stop, a refused line, kits 1.0.0 and 1.1.2 kept quiet, the five games' cards
+  in es, ja and ar), `voice.test.js` (`ai: 'only'`, `aiVoiceCheck`, the old-kit filter), `tts-route.test.js` (`check`
+  and the kit title).
+- **Open:** a native speaker's read of the new card translations; the other words of Fraction Factory, Escape the Post
+  Office and Trick Inbox are still English.

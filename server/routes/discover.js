@@ -9,7 +9,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, LEARN_FUN, CLASS_TOOLS } from '../learn.js';
-import { availableCodes } from '../i18n/index.js';
+import { availableCodes, keepLang } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { liveOn } from '../services/classlive-sessions.js';
@@ -129,7 +129,7 @@ function playPage(req, res, { landing }) {
       <h2 class="hero-title">${hero.title}</h2>
       <p>${firstSentence(hero.description)}</p>
       <div class="row">
-        <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : `/play/${hero.slug}`}">▶ ${t('home.hero.play')}</a>
+        <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : keepLang(req, `/play/${hero.slug}`)}">▶ ${t('home.hero.play')}</a>
         <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>
       </div>
     </div>

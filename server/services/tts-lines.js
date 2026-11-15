@@ -21,6 +21,7 @@ import * as V from './tts-voices.js';
 import * as usage from './tts-usage.js';
 import { audit } from '../db.js';
 import { config } from '../config.js';
+import { chromeStrings } from '../../kit/src/strings.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const SEED_DIR = path.join(ROOT, 'seed-games');
@@ -301,6 +302,28 @@ export function allowedLine(slug, locale, text, askedRole = null) {
   if (GAMES[slug] && GAMES[slug].pack) { const r = joined(a, s); if (r) return pick(r); }
   return null;
 }
+// ---------------------------------------------------------------- the Oomba Kit's own spoken words
+// The kit's how-to card has a speaker button (kit 1.1.6) that reads the card's title and its cards with the AI voice.
+// The cards are the game's own lines (above, or a Builder game's fixed strings); the title is the kit's: "How to play"
+// in the player's language, from the kit's 13-language table (kit/src/strings.js, our own words). Only these keys, only
+// in the line's own language, word for word.
+export const KIT_SPOKEN = Object.freeze(['howTo']);
+let kitTable = null;
+/** Is this one of the kit's spoken chrome lines in this locale? -> the text to read, or null. */
+export function kitLine(locale, text) {
+  if (typeof text !== 'string' || typeof locale !== 'string') return null;
+  if (!kitTable) kitTable = chromeStrings();
+  const row = kitTable[locale] || kitTable[locale.split('-')[0]]; if (!row) return null;
+  const s = tts.tidy(text);
+  return s && KIT_SPOKEN.some(k => typeof row[k] === 'string' && tts.tidy(row[k]) === s) ? s : null;
+}
+/** kitLine for a listed game: -> { text, role } (the role the game's own story lines have), or null. */
+export function kitChromeLine(slug, locale, text) {
+  const s = GAMES[slug] ? kitLine(locale, text) : null; if (!s) return null;
+  const g = readGame(slug);
+  return { text: s, role: g ? roleOf('howTo', g.roles, g.keyRoles) : (GAMES[slug].role || 'narrator') };
+}
+
 const MAX_PARTS = 4;
 function joined(a, s) {
   const cuts = [0]; const re = /[.!?…。！？](?=\s)/gu; let m;

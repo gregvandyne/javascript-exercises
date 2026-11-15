@@ -75,6 +75,10 @@ export const SCREEN_CSS = `
 .ok-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;width:100%}
 .ok-howcard{background:var(--ok-bg2);border:2px solid var(--ok-edge);border-radius:20px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:600;line-height:1.3;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1) both}
 .ok-howcard svg{width:44px;height:44px;color:var(--ok-text)}
+.ok-howto .ok-h2{padding-inline:44px}
+.ok-speak{position:absolute;top:14px;inset-inline-end:14px}.ok-speak[hidden]{display:none}
+.ok-speak.ok-reading{background:${P.spark[2]};--ok-press:${P.spark[3]};animation:ok-pulse 1.2s ease-in-out infinite}
+.ok-rm .ok-speak.ok-reading{animation:none}
 .ok-count{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:25}
 .ok-count b{font-weight:800;font-size:clamp(5rem,30vmin,14rem);color:${CREAM};-webkit-text-stroke:max(3px,1.4vmin) ${INK};paint-order:stroke fill;font-variant-numeric:tabular-nums;animation:ok-countpop 700ms cubic-bezier(.34,1.56,.64,1) both}
 .ok-count b.ok-go{color:${P.mint[2]}}
@@ -247,6 +251,26 @@ export function screens(kit) {
     return { root, card, close, done };
   }
   const announce = s => ui.announce(s);
+  /** A round speaker button for a card's words: hidden (and disabled) until kit.audio.aiCheck says the AI voice reads
+   *  every line; a tap reads them (aria-pressed, the label becomes "Stop reading"), a tap while reading stops. A line the
+   *  AI voice does not read after all hides the button again: never the device's voice. -> {el, stop} */
+  function speaker(lines) {
+    const A = kit.audio, lang = kit.i18n.lang;
+    let run = null;
+    const b = btn(T('readToMe'), 'icon', () => toggle(), { icon: icon('sound') });
+    b.classList.add('ok-speak'); b.hidden = true; b.disabled = true; b.setAttribute('aria-pressed', 'false');
+    const set = on => { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', T(on ? 'stopReading' : 'readToMe')); b.classList.toggle('ok-reading', on); };
+    const off = () => { b.hidden = true; b.disabled = true; };
+    const stop = () => { if (run) { run.stop(); run = null; } set(false); };
+    function toggle() {
+      if (run) return stop();
+      set(true);
+      run = A.aiRead(lines, { lang, done: ok => { run = null; set(false); if (!ok) off(); } });
+      if (!run && b.getAttribute('aria-pressed') === 'true') { set(false); off(); }
+    }
+    A.aiCheck(lines, lang).then(ok => { if (ok && b.isConnected) { b.hidden = false; b.disabled = false; } });
+    return { el: b, stop };
+  }
   /** A character portrait as a canvas element (DOM screens, the Builder preview). */
   function portrait(spec, o = {}) {
     const px = o.size || 160, dpr = Math.min(2, kit.win.devicePixelRatio || 1);
@@ -277,11 +301,14 @@ export function screens(kit) {
       const corner = el('div', 'ok-corner'); corner.appendChild(btn(T('settings'), 'icon', () => S.settings(), { icon: icon('settings') })); m.root.appendChild(corner);
       return m.done;
     },
+    /** The how-to card. It never speaks by itself: its speaker button reads the title and the cards with the platform's
+     *  AI voice when tapped (tap again: stop), and it shows only once the platform says the AI voice reads them all. */
     howTo(cards = []) {
       const m = modal('howto'); m.card.appendChild(txt('h2', 'ok-h2', T('howTo')));
-      const g = el('div', 'ok-cards');
-      cards.slice(0, 3).forEach((c, i) => { const d = el('div', 'ok-howcard', icon(c.icon || 'tap')); d.appendChild(gtxt('span', '', c.text || '')); d.style.animationDelay = (i * 90) + 'ms'; g.appendChild(d); });
-      m.card.appendChild(g);
+      const g = el('div', 'ok-cards'), list = cards.slice(0, 3);
+      list.forEach((c, i) => { const d = el('div', 'ok-howcard', icon(c.icon || 'tap')); d.appendChild(gtxt('span', '', c.text || '')); d.style.animationDelay = (i * 90) + 'ms'; g.appendChild(d); });
+      const sp = speaker([T('howTo')].concat(list.map(c => String(c.text || ''))));
+      m.card.append(sp.el, g); m.done.then(sp.stop);
       const go = btn(T('go'), 'hot', () => m.close(), { big: true }); go.setAttribute('data-ok-focus', ''); m.card.appendChild(go);
       return m.done;
     },

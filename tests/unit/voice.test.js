@@ -412,7 +412,7 @@ test('BRB.speak utterances pass through the wrapper untouched; the wrapper is in
 // ---- AI voices: the SDK's tts-client block (docs/tts-design.md), with a fake parent page and a fake Audio ---------------
 // Only official games get INIT.tts; then BRB.speak asks the play page (brb:tts) and plays the bytes it gets back, and falls
 // back to the device's voice on a refusal, a missing answer (4 s) or audio that won't play. onend comes exactly once.
-function fakeTts({ voices = LISTS.chromeOS, synth = true, langs = ['en', 'fr', 'zh-Hant'], user = { lang: 'en' }, playFails = false } = {}) {
+function fakeTts({ voices = LISTS.chromeOS, synth = true, langs = ['en', 'fr', 'zh-Hant'], user = { lang: 'en' }, playFails = false, doc = undefined } = {}) {
   const log = [], sent = [], listeners = {}, winListeners = {}, timers = [], audios = [];
   const ss = { paused: false, list: voices, getVoices() { return this.list; }, speak(u) { log.push(['speak', u]); }, cancel() { log.push(['cancel']); }, resume() {},
     addEventListener(n, f) { (listeners[n] = listeners[n] || []).push(f); } };
@@ -430,9 +430,9 @@ function fakeTts({ voices = LISTS.chromeOS, synth = true, langs = ['en', 'fr', '
   let tid = 0;
   const st = (f, ms) => { timers.push({ f, ms, id: ++tid, done: false }); return tid; };
   const ct = id => { const t = timers.find(x => x.id === id); if (t) t.done = true; };
-  const api = new Function('window', 'INIT', 'setTimeout', 'clearTimeout', 'send', 'parentWin', 'Audio', 'URL',
-    SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, prefetchSpeech: prefetchSpeech, aiVoice: aiVoice, ttsLocale: ttsLocale };')(
-    win, { user, tts: langs ? { langs } : undefined }, st, ct, (type, m) => sent.push({ type, ...m }), parent, FakeAudio, FakeURL);
+  const api = new Function('window', 'INIT', 'setTimeout', 'clearTimeout', 'send', 'parentWin', 'Audio', 'URL', 'document',
+    SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, prefetchSpeech: prefetchSpeech, aiVoice: aiVoice, aiVoiceCheck: aiVoiceCheck, ttsLocale: ttsLocale };')(
+    win, { user, tts: langs ? { langs } : undefined }, st, ct, (type, m) => sent.push({ type, ...m }), parent, FakeAudio, FakeURL, doc);
   const run = ms => timers.filter(t => !t.done && (ms === undefined || t.ms === ms)).forEach(t => { t.done = true; t.f(); });
   const reply = (m, source = parent) => (winListeners.message || []).forEach(f => f({ source, data: { brb: 1, type: 'brb:tts', ...m } }));
   const mode = m => (winListeners.message || []).forEach(f => f({ source: parent, data: { brb: 1, type: 'brb:tts-mode', mode: m } }));
@@ -545,4 +545,71 @@ test('AI voices: an official game\'s own speechSynthesis.speak is read by the AI
   // a language that is off: straight to the device
   const x = new f.win.SpeechSynthesisUtterance('Hallo'); x.lang = 'de-DE'; const n = f.sent.length;
   f.win.speechSynthesis.speak(x); assert.equal(f.sent.length, n); assert.equal(f.spoken().at(-1), x);
+});
+
+// ---- The Oomba Kit's how-to card (kit 1.1.6): read only on a tap, with the AI voice only ----------------------------
+test('AI voices: speak(text, {ai: \'only\'}) is the AI voice or nothing: a refusal ends with onfail, never the device', async () => {
+  const f = fakeTts();
+  let ends = 0, fails = 0;
+  assert.equal(f.api.speak('How to play', { ai: 'only', onend: () => ends++, onfail: () => fails++ }), true);
+  assert.deepEqual(f.sent.map(m => m.text), ['How to play']);
+  f.reply({ id: 1, ok: true, buf: buf() }); await f.flush();
+  f.audios[0].end(); assert.deepEqual([ends, fails], [1, 0]);
+  // refused, no answer in 4 s, audio that will not play: onfail once, no onend, nothing for the device's voice
+  f.api.speak('Not one of its lines', { ai: 'only', onend: () => ends++, onfail: () => fails++ });
+  f.reply({ id: 2, ok: false, why: 'filtered' });
+  f.api.speak('Slow', { ai: 'only', onend: () => ends++, onfail: () => fails++ }); f.run(4000);
+  const g = fakeTts({ playFails: true }); let gf = 0;
+  g.api.speak('Blocked', { ai: 'only', onfail: () => gf++ }); g.reply({ id: 1, ok: true, buf: buf() }); await g.flush(); await g.flush();
+  assert.deepEqual([ends, fails, gf], [1, 2, 1]);
+  assert.equal(f.spoken().length + g.spoken().length, 0, 'never the device voice');
+  // the next queued AI-only line still follows a refused one
+  const q = fakeTts(); let qe = 0;
+  q.api.speak('One', { ai: 'only', onfail() {} }); q.api.speak('Two', { ai: 'only', queue: true, onend: () => qe++ });
+  q.reply({ id: 1, ok: false }); q.reply({ id: 2, ok: true, buf: buf() }); await q.flush();
+  q.audios[0].end(); assert.equal(qe, 1);
+  // false at once (and silent) without AI voices for the game, for a language that is off, or with the device's voice chosen
+  const h = fakeTts({ langs: null });
+  assert.equal(h.api.speak('Hello', { ai: 'only' }), false);
+  assert.equal(f.api.speak('Hallo', { ai: 'only', lang: 'de' }), false);
+  f.mode('device'); assert.equal(f.api.speak('Hello', { ai: 'only' }), false); f.mode('ai');
+  assert.equal(h.spoken().length + f.spoken().length + h.sent.length, 0);
+});
+
+test('AI voices: aiVoiceCheck asks the play page (check: true) whether every line gets the AI voice', async () => {
+  const f = fakeTts({ user: { lang: 'fr' } });
+  const p = f.api.aiVoiceCheck(['Comment jouer', ' Touche une case ', ''], {});
+  assert.deepEqual(f.sent.map(m => [m.text, m.lang, m.check]), [['Comment jouer', 'fr', true], ['Touche une case', 'fr', true]]);
+  f.reply({ id: 1, ok: true, check: true }); f.reply({ id: 2, ok: true, check: true });
+  assert.equal(await p, true);
+  assert.equal(f.audios.length + f.spoken().length, 0, 'a check plays nothing');
+  // a yes is remembered: asked once only
+  assert.equal(await f.api.aiVoiceCheck(['Comment jouer'], {}), true); assert.equal(f.sent.length, 2);
+  // one line refused: false (and asked again next time)
+  const q = f.api.aiVoiceCheck(['Comment jouer', 'Pas une ligne du jeu'], {});
+  f.reply({ id: 3, ok: false, check: true }); assert.equal(await q, false);
+  // no answer in 4 s: false; a speak reply for the same id does not count as an answer
+  const r = f.api.aiVoiceCheck(['Encore'], {}); f.reply({ id: 4, ok: true, buf: buf() }); f.run(4000); assert.equal(await r, false);
+  // without AI voices, for a language that is off, with the device's voice: false, and nothing is asked
+  const n = f.sent.length;
+  assert.equal(await f.api.aiVoiceCheck(['Hallo'], { lang: 'de' }), false);
+  f.mode('device'); assert.equal(await f.api.aiVoiceCheck(['Comment jouer x'], {}), false); f.mode('ai');
+  assert.equal(await fakeTts({ langs: null }).api.aiVoiceCheck(['Hello'], {}), false);
+  assert.equal(await f.api.aiVoiceCheck([], {}), false);
+  assert.equal(f.sent.length, n);
+});
+
+test('older kits: the how-to card\'s own automatic read (all its cards in one line) is not spoken; anything else is', () => {
+  const cards = ['Tap the thing', ' Jump  up high '];
+  const doc = { querySelector: s => (s === '.ok-modal.ok-howto' ? { querySelectorAll: () => cards.map(t => ({ textContent: t })) } : null) };
+  const f = fakeTts({ langs: null, doc });
+  assert.equal(f.api.speak(cards.join(' ')), false, 'the joined cards: dropped');
+  assert.equal(f.spoken().length, 0);
+  assert.equal(f.api.speak('Tap the thing'), true, 'one card on its own is the game\'s own line: spoken');
+  assert.equal(f.api.speak('Welcome!'), true);
+  const g = fakeTts({ doc });   // with AI voices: nothing is asked for it either
+  assert.equal(g.api.speak('Tap the thing Jump up high'), false); assert.equal(g.sent.length, 0);
+  // no how-to card open: as before
+  const h = fakeTts({ langs: null, doc: { querySelector: () => null } });
+  assert.equal(h.api.speak(cards.join(' ')), true);
 });

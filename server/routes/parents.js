@@ -19,7 +19,7 @@ import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
-import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE } from '../i18n/index.js';
+import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE, keepLang } from '../i18n/index.js';
 import { familiesOn, madeOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
@@ -58,7 +58,7 @@ function ctaRow(req, { game = tryGame() } = {}) {
   const t = req.t; const g = game; const setup = setupLink(req);
   return html`<div class="row lp-cta">
     <a class="btn btn-primary btn-big" href="${setup.href}"${fb(t, setup.key)}>${setup.label}</a>
-    ${g ? html`<a class="btn btn-big" href="/play/${g.slug}" rel="nofollow">▶ ${t('parents.cta.try')}</a>` : ''}
+    ${g ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${g.slug}`)}" rel="nofollow">▶ ${t('parents.cta.try')}</a>` : ''}
   </div>`;
 }
 /** The end of a parent page, after the details and questions: a one-line lead and the same buttons. */
@@ -306,7 +306,7 @@ router.get('/learn/:slug', (req, res, next) => {
       <div class="lp-hubgame-text">
         <h2 id="g-${g.slug}"><a href="${lp(req, `/g/${g.slug}`)}">${g.title}</a></h2>
         ${raw(`<p class="lp-fit"${fb(t, `${k}.fit.${key}`)}><b>${tHtml(t, 'learn.ages.fit')}</b> ${tHtml(t, `${k}.fit.${key}`)}</p>`)}
-        <div class="row"><a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
+        <div class="row"><a class="btn btn-primary" href="${keepLang(req, `/play/${g.slug}`)}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
       </div></article>`;
   };
   const make = html`<section class="panel lp-make" id="make" aria-labelledby="make-h">${el(t, 'h2', 'learn.ages.make.h', {}, ' id="make-h"')}${el(t, 'p', `${k}.make.p`)}

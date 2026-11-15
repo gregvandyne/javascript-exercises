@@ -570,7 +570,7 @@ export class Game {
     if (sp.howTo && sp.howTo.length) {
       this._scene('howto');
       const cards = sp.howTo.slice(0, 3).map(c => ({ icon: c.icon, text: T(kit, c.text) }));
-      kit.say(cards.map(c => c.text).join(' '));
+      // never read aloud by itself: the card's speaker button reads it with the AI voice when tapped (screens.howTo)
       await kit.screens.howTo(cards);
       if (id !== this.flow) return;
     }

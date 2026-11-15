@@ -323,7 +323,8 @@ test('a kid\'s Builder game has AI voices by default: a fixed line plays; typed 
     }
     // The player's name never goes with a line.
     expect(bodies.length).toBeGreaterThan(5);
-    for (const b of bodies) expect(Object.keys(b).sort()).toEqual(['ctx', 'lang', 'rate', 'role', 'text', 'tok']);
+    // (a how-to card's speaker button first asks whether its lines get the AI voice: the same body with check: true)
+    for (const b of bodies) expect(Object.keys(b).filter(k => k !== 'check').sort()).toEqual(['ctx', 'lang', 'rate', 'role', 'text', 'tok']);
   } finally { await kctx.close(); }
 });
 
