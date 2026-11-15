@@ -24,7 +24,8 @@ export const KIT_RULES = withTags(KIT_RULES_SOURCE);
 export const CLASSROOM_RULES = `CLASSROOM RULES (the classroom starters: quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard)
 - They are for a teacher's classroom board (a projector or big screen, readable from the back of the room, keyboard and
   clicker keys) and for phones. They are plain HTML, not Oomba Kit games: keep their big type, keys, Sound and Full
-  screen buttons, CONFIG block (one key per line; CONFIG.lang is the language their questions are written in) and WORDS.
+  screen buttons, CONFIG block (one key per line; CONFIG.lang is the language their content is written in), content list
+  (QUESTIONS, CATEGORIES, ITEMS or CARDS: their questions and items go there) and WORDS.
 - When someone asks for a quiet game or noise meter, a quiz board with categories and points ("Jeopardy"), a class
   survey or poll, bingo, flashcards, an exit ticket, a spinner or random picker, or a team scoreboard, start from that
   starter. "Jeopardy" is a trademark: build the categories starter and call it Category Board or a name of its own,
