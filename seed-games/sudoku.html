@@ -1,0 +1,1218 @@
+<title>Sudoku</title>
+<style>
+  /* Sudoku on the Oomba Kit: only the game's own DOM pieces are styled here, with the kit's variables (the accent
+     colors are set from Oomba.color at start, for light and dark). The board always reads left to right. */
+  .sd, .sd * { box-sizing: border-box; }
+  /* the HUD here is only the pause (and sound) button, so the game starts right under it, not under the kit's whole band */
+  .sd { position: fixed; left: 0; right: 0; top: min(var(--ok-safe-top), 70px); bottom: 0; display: flex; flex-direction: column; align-items: center;
+    padding: 0 8px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; color: var(--ok-text); line-height: 1.2; }
+  .sd > * { pointer-events: auto; }
+  .sd[hidden] { display: none; }
+  .sd :where(button) { font: inherit; color: var(--ok-text); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .sd button:focus-visible { outline: 4px solid var(--ok-focus); outline-offset: 2px; }
+
+  /* the level picker */
+  .sd-scroll { width: 100%; flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; padding: 4px 2px 12px; }
+  .sd-pick { width: min(100%, 640px); margin: 0 auto auto; padding: 16px 14px 18px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 26px;
+    box-shadow: 0 5px 0 var(--ok-edge); display: flex; flex-direction: column; gap: 14px; }
+  .sd-pick h2 { margin: 0; font-size: 1.45em; font-weight: 900; text-align: center; line-height: 1.1; }
+  .sd-cont { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; border-radius: 18px; border: 3px solid var(--ok-edge);
+    background: var(--sd-go-t); box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; text-align: start; width: 100%; }
+  .sd-cont svg { width: 30px; height: 30px; flex: none; }
+  .sd-cont b { display: block; font-size: 1.1em; font-weight: 900; }
+  .sd-cont small { display: block; font-weight: 700; opacity: .85; }
+  .sd-group { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 20px; background: var(--ok-bg2); border: 2px solid var(--ok-line); }
+  .sd-gh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .sd-gh .sd-mini { flex: none; }
+  .sd-gh div { flex: 1; min-width: 140px; }
+  .sd-gh h3 { margin: 0; font-size: 1.15em; font-weight: 900; }
+  .sd-gh p { margin: 2px 0 0; font-weight: 700; font-size: .9em; opacity: .85; }
+  .sd-diffs { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
+  .sd-lv { position: relative; min-height: 58px; padding: 6px 10px; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card);
+    box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer; font-weight: 900; font-size: 1.05em; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .sd-lv:active, .sd-key:active, .sd-tool:active, .sd-cont:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .sd-lv small { font-size: .72em; font-weight: 800; letter-spacing: 1px; min-height: 1em; }
+  .sd-lv .sd-dot { position: absolute; top: -8px; inset-inline-end: -6px; font-size: .62em; font-weight: 900; padding: 1px 7px; border-radius: 999px;
+    background: var(--sd-go); color: var(--sd-ink); border: 2px solid var(--ok-edge); white-space: nowrap; }
+  .sd-pics { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 4px 6px 4px 12px; border-radius: 16px;
+    border: 3px solid var(--ok-edge); background: var(--ok-card); cursor: pointer; text-align: start; width: 100%; font-weight: 800; }
+  .sd-pics .sd-pv { display: flex; gap: 2px; }
+  .sd-pics .sd-pv canvas { width: 30px; height: 30px; }
+  .sd-pics .sd-sw { flex: none; width: 54px; height: 32px; border-radius: 999px; border: 3px solid var(--ok-edge); background: var(--ok-bg2); position: relative; }
+  .sd-pics .sd-sw::after { content: ''; position: absolute; top: 2px; inset-inline-start: 2px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok-edge); transition: inset-inline-start .15s; }
+  .sd-pics[aria-pressed="true"] .sd-sw { background: var(--sd-go); }
+  .sd-pics[aria-pressed="true"] .sd-sw::after { inset-inline-start: 24px; }
+
+  /* the puzzle */
+  .sd-play { flex: 1; min-height: 0; width: 100%; display: grid; grid-template-areas: "bar" "board" "ctrl"; grid-template-rows: auto auto auto; justify-content: center; justify-items: center; align-content: start; row-gap: 8px; }
+  .sd-play.land { grid-template-areas: "board bar" "board ctrl"; grid-template-columns: auto auto; grid-template-rows: auto 1fr; column-gap: 16px; align-content: center; align-items: start; }
+  .sd-bar { grid-area: bar; display: flex; align-items: center; gap: 8px; width: var(--sd-pw, 100%); min-height: 46px; }
+  .sd-bar .sd-sp { flex: 1; min-width: 0; }
+  .sd-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge);
+    font-weight: 900; min-width: 0; max-width: 100%; }
+  .sd-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sd-pill svg { width: 20px; height: 20px; flex: none; }
+  .sd-clock { font-variant-numeric: tabular-nums; flex: none; }
+  .sd-back { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .sd-back svg { width: 24px; height: 24px; }
+  .sd-board { grid-area: board; width: var(--sd-b); height: var(--sd-b); display: grid; grid-template-columns: repeat(var(--sd-bx), 1fr); grid-template-rows: repeat(var(--sd-by), 1fr);
+    gap: 3px; padding: 3px; background: var(--ok-edge); border-radius: 14px; box-shadow: 0 5px 0 var(--ok-edge); direction: ltr; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .sd-box { display: grid; grid-template-columns: repeat(var(--sd-bc), 1fr); grid-template-rows: repeat(var(--sd-br), 1fr); gap: 1px; background: var(--sd-line); min-width: 0; min-height: 0; }
+  .sd-box:first-child { border-top-left-radius: 11px; overflow: hidden; }
+  .sd-cell { position: relative; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0; background: var(--ok-card); display: grid; place-items: center; cursor: pointer;
+    font-size: var(--sd-fs) !important; font-weight: 700; line-height: 1; border-radius: 0; }
+  .sd-cell .sd-v { display: grid; place-items: center; width: 100%; height: 100%; color: var(--sd-user); }
+  .sd-cell.given .sd-v { color: var(--ok-text); font-weight: 900; }
+  .sd-cell.hinted .sd-v { color: var(--sd-hint); font-weight: 900; }
+  .sd-cell.peer { background: var(--sd-peer); }
+  .sd-cell.same { background: var(--sd-same); }
+  .sd-cell.same .sd-v { text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .12em; }
+  .sd-cell.sel { background: var(--sd-sel); box-shadow: inset 0 0 0 3px var(--ok-edge); z-index: 1; }
+  .sd .sd-cell:focus-visible { outline: 3px solid var(--ok-focus); outline-offset: -7px; z-index: 2; }
+  .sd-cell canvas { width: 76%; height: 76%; display: block; }
+  .sd-cell.clash { background: var(--sd-bad); }
+  .sd-cell.clash.sel { background: var(--sd-bad-s); }
+  .sd-cell.clash::after { content: '!'; position: absolute; top: 1px; right: 1px; width: max(11px, .36em); height: max(11px, .36em); border-radius: 50%; display: grid; place-items: center;
+    font-size: max(8px, .26em); font-weight: 900; line-height: 1; background: var(--sd-coral); color: var(--sd-ink); border: 2px solid var(--ok-edge); }
+  .sd-cell.wrong .sd-v { color: var(--sd-wrong); text-decoration: line-through; text-decoration-thickness: .07em; }
+  .sd-cell.wrong::before { content: '✕'; position: absolute; bottom: 1px; left: 2px; font-size: max(9px, .3em); font-weight: 900; color: var(--sd-wrong); line-height: 1; }
+  .sd-notes { position: absolute; inset: 5%; display: grid; grid-template-columns: repeat(var(--sd-nc), 1fr); grid-template-rows: repeat(var(--sd-nr), 1fr); pointer-events: none; }
+  .sd-notes span { display: grid; place-items: center; font-size: var(--sd-nfs); font-weight: 900; color: var(--sd-note); line-height: 1; min-width: 0; min-height: 0; }
+  .sd-notes span.on-same { background: var(--sd-same); border-radius: 4px; color: var(--ok-text); }
+  .sd-notes canvas { width: 88%; height: 88%; }
+  .sd-cell.pop .sd-v { animation: sd-pop .22s ease-out; }
+  .sd-cell.wave { animation: sd-wave .5s ease-out both; animation-delay: var(--sd-d, 0ms); }
+  @keyframes sd-pop { 0% { transform: scale(.6); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  @keyframes sd-wave { 0% { background: var(--ok-card); } 45% { background: var(--sd-go); transform: scale(1.08); } 100% { background: var(--sd-go-t); transform: scale(1); } }
+  .ok-rm .sd-cell, .ok-rm .sd-cell .sd-v, .ok-rm .sd-pics .sd-sw::after { animation: none !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .sd-cell, .sd-cell .sd-v { animation: none !important; } }
+
+  .sd-ctrl { grid-area: ctrl; display: flex; flex-direction: column; gap: 8px; width: var(--sd-pw, 100%); }
+  .sd-pad { display: grid; grid-template-columns: repeat(var(--sd-pc), 1fr); gap: 6px; direction: ltr; }
+  .sd-key { min-height: var(--sd-kh, 52px); border-radius: 14px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer;
+    font-size: var(--sd-kf, 1.6em); font-weight: 900; display: flex; align-items: center; justify-content: center; padding: 0; min-width: 0; position: relative; }
+  .sd-key canvas { width: min(52px, 72%); height: auto; aspect-ratio: 1; }
+  .sd-key.done { background: var(--ok-bg2); color: color-mix(in srgb, var(--ok-text) 45%, var(--ok-bg2)); box-shadow: 0 1px 0 var(--ok-edge); }
+  .sd-key.done canvas { opacity: .45; }
+  .sd-key.done::after { content: '✓'; position: absolute; top: 2px; right: 6px; font-size: 14px; font-weight: 900; color: var(--ok-text); }
+  .sd-key.erase svg { width: 26px; height: 26px; }
+  .sd-ctrl.noting .sd-key:not(.erase) { background: var(--sd-note-bg); font-size: calc(var(--sd-kf, 1.6em) * .78); }
+  .sd-tools { display: grid; grid-template-columns: repeat(var(--sd-tc, 5), 1fr); gap: 6px; }
+  .sd-tool { min-height: 56px; border-radius: 14px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 3px 2px; font-size: .78em; font-weight: 800; min-width: 0; position: relative; }
+  .sd-tool span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sd-tool svg { width: 22px; height: 22px; flex: none; }
+  .sd-tool[aria-pressed="true"] { background: var(--sd-go); color: var(--sd-ink); }
+  .sd-tool .sd-n { position: absolute; top: -8px; inset-inline-end: -4px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: var(--sd-grape-t); border: 2px solid var(--ok-edge);
+    font-size: 12px; display: grid; place-items: center; color: var(--ok-text); }
+  .sd-tool .sd-n:empty { display: none; }
+  .sd-card { margin: auto; padding: 22px 26px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 24px; box-shadow: 0 5px 0 var(--ok-edge); font-weight: 900; font-size: 1.2em;
+    display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .sd-card .sd-mini { width: 72px; height: 72px; }
+  @media (min-width: 900px) and (min-height: 600px) {
+    .sd-pick { font-size: 1.1em; }
+  }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
+<script>
+/* sudoku-core:begin */
+/* The puzzle maker, the solver and the grader: plain functions, no DOM and no kit, so the unit test runs this block
+   on its own (node:vm). Grids are arrays of n*n numbers read row by row: 0 is an empty box, 1..n a digit. */
+(function (root) {
+  'use strict';
+  // The levels. givens: how many boxes are filled at the start (both ends included). tier: the hardest way of
+  // thinking the puzzle may need, and the least it must need (0 naked singles, 1 hidden singles, 2 pointing and
+  // claiming, naked and hidden pairs, 3 triples, X-wing and XY-wing). par: seconds for the time star; base: points.
+  var LEVELS = [
+    { id: 'tiny-easy', group: 'tiny', diff: 'easy', size: 4, givens: [10, 11], tier: [0, 0], par: 150, base: 100 },
+    { id: 'tiny-medium', group: 'tiny', diff: 'medium', size: 4, givens: [7, 8], tier: [0, 1], par: 240, base: 150 },
+    { id: 'small-easy', group: 'small', diff: 'easy', size: 6, givens: [20, 22], tier: [0, 0], par: 360, base: 250 },
+    { id: 'small-medium', group: 'small', diff: 'medium', size: 6, givens: [13, 15], tier: [1, 1], par: 600, base: 400 },
+    { id: 'classic-easy', group: 'classic', diff: 'easy', size: 9, givens: [38, 42], tier: [0, 1], par: 900, base: 600 },
+    { id: 'classic-medium', group: 'classic', diff: 'medium', size: 9, givens: [32, 36], tier: [1, 2], par: 1500, base: 900 },
+    { id: 'classic-hard', group: 'classic', diff: 'hard', size: 9, givens: [28, 31], tier: [2, 2], par: 2100, base: 1300 },
+    { id: 'classic-expert', group: 'classic', diff: 'expert', size: 9, givens: [23, 27], tier: [3, 3], par: 3000, base: 1800 }
+  ];
+  var BY_ID = {};
+  LEVELS.forEach(function (l) { BY_ID[l.id] = l; });
+  function level(id) { return BY_ID[id] || null; }
+
+  // mulberry32: small, fast and the same on every device.
+  var TWO32 = Math.pow(2, 32);
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    function f() { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; }
+    return { float: f, int: function (lo, hi) { return lo + Math.floor(f() * (hi - lo + 1)); }, shuffle: function (arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(f() * (i + 1)), x = arr[i]; arr[i] = arr[j]; arr[j] = x; } return arr; } };
+  }
+
+  // The shape of a board: 4x4 has 2x2 boxes, 6x6 boxes of 2 rows by 3 columns, 9x9 3x3 boxes.
+  var GEOM = {};
+  function geom(n) {
+    if (GEOM[n]) return GEOM[n];
+    var br = n === 4 ? 2 : n === 6 ? 2 : 3, bc = n === 4 ? 2 : 3, N = n * n, units = [], unitsOf = [], peers = [], i, r, c, u;
+    for (r = 0; r < n; r++) { u = []; for (c = 0; c < n; c++) u.push(r * n + c); units.push(u); }
+    for (c = 0; c < n; c++) { u = []; for (r = 0; r < n; r++) u.push(r * n + c); units.push(u); }
+    for (var b = 0; b < n; b++) {
+      var r0 = Math.floor(b / (n / bc)) * br, c0 = (b % (n / bc)) * bc; u = [];
+      for (r = r0; r < r0 + br; r++) for (c = c0; c < c0 + bc; c++) u.push(r * n + c);
+      units.push(u);
+    }
+    var boxOf = [];
+    for (i = 0; i < N; i++) { unitsOf.push([]); boxOf.push(0); }
+    units.forEach(function (un, k) { un.forEach(function (x) { unitsOf[x].push(k); if (k >= 2 * n) boxOf[x] = k - 2 * n; }); });
+    for (i = 0; i < N; i++) {
+      var seen = {}, p = [];
+      unitsOf[i].forEach(function (k) { units[k].forEach(function (x) { if (x !== i && !seen[x]) { seen[x] = 1; p.push(x); } }); });
+      peers.push(p);
+    }
+    GEOM[n] = { n: n, N: N, br: br, bc: bc, units: units, unitsOf: unitsOf, peers: peers, boxOf: boxOf, all: (1 << n) - 1 };
+    return GEOM[n];
+  }
+  function bits(m) { var k = 0; while (m) { m &= m - 1; k++; } return k; }
+  function low(m) { var d = 1; while (!(m & 1)) { m >>= 1; d++; } return d; }   // the smallest digit in a mask
+  var rowOf = function (g, i) { return Math.floor(i / g.n); }, colOf = function (g, i) { return i % g.n; };
+
+  /** The digits box i could still take (a bit mask: bit d-1 for digit d). */
+  function candidates(grid, n, i) {
+    var g = geom(n), m = g.all, p = g.peers[i];
+    for (var k = 0; k < p.length; k++) if (grid[p[k]]) m &= ~(1 << (grid[p[k]] - 1));
+    return m;
+  }
+
+  /** How many solutions the grid has, counting no further than `limit` (2 is enough to know it is unique). */
+  function count(grid, n, limit) {
+    var g = geom(n), N = g.N, v = grid.slice(), used = [], i, k, found = 0;
+    limit = limit || 2;
+    for (i = 0; i < 3 * n; i++) used.push(0);
+    for (i = 0; i < N; i++) if (v[i]) {
+      var b = 1 << (v[i] - 1), us = g.unitsOf[i];
+      for (k = 0; k < 3; k++) { if (used[us[k]] & b) return 0; used[us[k]] |= b; }
+    }
+    var empty = []; for (i = 0; i < N; i++) if (!v[i]) empty.push(i);
+    function rec(left) {
+      if (!left) { found++; return found >= limit; }
+      var best = -1, bm = 0, bc = 99;
+      for (var e = 0; e < empty.length; e++) {
+        var x = empty[e]; if (v[x]) continue;
+        var u = g.unitsOf[x], m = g.all & ~(used[u[0]] | used[u[1]] | used[u[2]]), c = bits(m);
+        if (c < bc) { bc = c; bm = m; best = x; if (c <= 1) break; }
+      }
+      if (!bc) return false;
+      var uu = g.unitsOf[best];
+      while (bm) {
+        var bit = bm & -bm; bm ^= bit;
+        v[best] = low(bit); used[uu[0]] |= bit; used[uu[1]] |= bit; used[uu[2]] |= bit;
+        if (rec(left - 1)) return true;
+        used[uu[0]] &= ~bit; used[uu[1]] &= ~bit; used[uu[2]] &= ~bit; v[best] = 0;
+      }
+      return false;
+    }
+    rec(empty.length);
+    return found;
+  }
+  /** The first solution of a grid (or null). */
+  function solve(grid, n) {
+    var g = geom(n), v = grid.slice(), out = null;
+    if (count(v, n, 1) < 1) return null;
+    (function rec() {
+      var best = -1, bm = 0, bc = 99;
+      for (var x = 0; x < g.N; x++) if (!v[x]) { var m = candidates(v, n, x), c = bits(m); if (c < bc) { bc = c; bm = m; best = x; } }
+      if (best < 0) { out = v.slice(); return true; }
+      while (bm) { var bit = bm & -bm; bm ^= bit; v[best] = low(bit); if (rec()) return true; v[best] = 0; }
+      return false;
+    })();
+    return out;
+  }
+
+  /** A full, valid board, filled box by box with the digits in a random order. */
+  function fullGrid(n, rand) {
+    var g = geom(n), v = [], i;
+    for (i = 0; i < g.N; i++) v.push(0);
+    (function rec(i) {
+      if (i === g.N) return true;
+      var ds = []; for (var d = 1; d <= n; d++) ds.push(d);
+      rand.shuffle(ds);
+      var m = candidates(v, n, i);
+      for (var k = 0; k < n; k++) if (m & (1 << (ds[k] - 1))) { v[i] = ds[k]; if (rec(i + 1)) return true; }
+      v[i] = 0; return false;
+    })(0);
+    return v;
+  }
+
+  /** Every box that repeats a digit in its row, column or box (the clashes the board shows). */
+  function conflicts(grid, n) {
+    var g = geom(n), bad = {};
+    g.units.forEach(function (u) {
+      var at = {};
+      u.forEach(function (x) { var d = grid[x]; if (!d) return; if (at[d] != null) { bad[x] = 1; bad[at[d]] = 1; } else at[d] = x; });
+    });
+    return Object.keys(bad).map(Number).sort(function (a, b) { return a - b; });
+  }
+  /** A full board with no clashes. */
+  function valid(grid, n) {
+    var g = geom(n);
+    if (grid.length !== g.N) return false;
+    for (var i = 0; i < g.N; i++) if (!(grid[i] >= 1 && grid[i] <= n)) return false;
+    return conflicts(grid, n).length === 0;
+  }
+
+  /** Solve the way a person does, and say the hardest step that was needed: { tier, solved, steps }. tier 4: our
+   *  steps were not enough (the game never deals such a puzzle). */
+  function grade(grid, n) {
+    var g = geom(n), N = g.N, v = grid.slice(), c = [], i, tier = 0, steps = 0, bad = false;
+    for (i = 0; i < N; i++) c.push(v[i] ? 0 : g.all);
+    function place(i, d) {
+      v[i] = d; c[i] = 0; var b = ~(1 << (d - 1)), p = g.peers[i];
+      for (var k = 0; k < p.length; k++) { c[p[k]] &= b; if (!v[p[k]] && !c[p[k]]) bad = true; }
+    }
+    for (i = 0; i < N; i++) if (v[i]) { var d0 = v[i]; v[i] = 0; place(i, d0); }
+    function left() { for (var x = 0; x < N; x++) if (!v[x]) return true; return false; }
+    function elim(x, mask) { if (c[x] & mask) { c[x] &= ~mask; if (!c[x]) bad = true; return true; } return false; }
+    function nakedSingle() {
+      var any = false;
+      for (var x = 0; x < N; x++) if (!v[x] && c[x] && !(c[x] & (c[x] - 1))) { place(x, low(c[x])); any = true; }
+      return any;
+    }
+    function hiddenSingle() {
+      for (var k = 0; k < g.units.length; k++) {
+        var u = g.units[k];
+        for (var d = 1; d <= n; d++) {
+          var b = 1 << (d - 1), at = -1, cnt = 0, done = false;
+          for (var e = 0; e < u.length; e++) { if (v[u[e]] === d) { done = true; break; } if (c[u[e]] & b) { cnt++; at = u[e]; } }
+          if (!done && cnt === 1) { place(at, d); return true; }
+        }
+      }
+      return false;
+    }
+    function locked() {   // pointing (a box's digit on one line) and claiming (a line's digit in one box)
+      var ch = false, k, d, e;
+      for (k = 0; k < g.units.length; k++) {
+        var u = g.units[k], isBox = k >= 2 * n;
+        for (d = 1; d <= n; d++) {
+          var b = 1 << (d - 1), cells = [];
+          for (e = 0; e < u.length; e++) if (c[u[e]] & b) cells.push(u[e]);
+          if (cells.length < 2) continue;
+          var targets = [];
+          if (isBox) {
+            var r = rowOf(g, cells[0]), cl = colOf(g, cells[0]), sameR = true, sameC = true;
+            cells.forEach(function (x) { if (rowOf(g, x) !== r) sameR = false; if (colOf(g, x) !== cl) sameC = false; });
+            if (sameR) targets.push(r); if (sameC) targets.push(n + cl);
+          } else {
+            var bx = g.boxOf[cells[0]], sameB = true;
+            cells.forEach(function (x) { if (g.boxOf[x] !== bx) sameB = false; });
+            if (sameB) targets.push(2 * n + bx);
+          }
+          targets.forEach(function (t) { g.units[t].forEach(function (x) { if (u.indexOf(x) < 0 && elim(x, b)) ch = true; }); });
+          if (ch) return true;
+        }
+      }
+      return false;
+    }
+    function combos(arr, k, fn) {   // fn(list) returns true to stop
+      var pick = [];
+      return (function rec(s) {
+        if (pick.length === k) return fn(pick);
+        for (var a = s; a < arr.length; a++) { pick.push(arr[a]); if (rec(a + 1)) return true; pick.pop(); }
+        return false;
+      })(0);
+    }
+    function nakedSubset(k) {
+      for (var un = 0; un < g.units.length; un++) {
+        var u = g.units[un], open = u.filter(function (x) { return !v[x] && bits(c[x]) >= 2 && bits(c[x]) <= k; });
+        if (open.length < k) continue;
+        var hit = combos(open, k, function (set) {
+          var m = 0; set.forEach(function (x) { m |= c[x]; });
+          if (bits(m) !== k) return false;
+          var ch = false; u.forEach(function (x) { if (!v[x] && set.indexOf(x) < 0 && elim(x, m)) ch = true; });
+          return ch;
+        });
+        if (hit) return true;
+      }
+      return false;
+    }
+    function hiddenSubset(k) {
+      for (var un = 0; un < g.units.length; un++) {
+        var u = g.units[un], ds = [];
+        for (var d = 1; d <= n; d++) {
+          var b = 1 << (d - 1), cnt = 0, placed = false;
+          u.forEach(function (x) { if (v[x] === d) placed = true; else if (c[x] & b) cnt++; });
+          if (!placed && cnt >= 2 && cnt <= k) ds.push(d);
+        }
+        if (ds.length < k) continue;
+        var hit = combos(ds, k, function (set) {
+          var m = 0; set.forEach(function (d) { m |= 1 << (d - 1); });
+          var cells = u.filter(function (x) { return c[x] & m; });
+          if (cells.length !== k) return false;
+          var ch = false; cells.forEach(function (x) { if (elim(x, ~m & g.all)) ch = true; });
+          return ch;
+        });
+        if (hit) return true;
+      }
+      return false;
+    }
+    function xwing() {
+      for (var d = 1; d <= n; d++) {
+        var b = 1 << (d - 1);
+        for (var dir = 0; dir < 2; dir++) {
+          var lines = [];
+          for (var a = 0; a < n; a++) {
+            var pos = [];
+            for (var e = 0; e < n; e++) { var x = dir ? e * n + a : a * n + e; if (c[x] & b) pos.push(e); }
+            lines.push(pos.length === 2 ? pos[0] * 16 + pos[1] : -1);
+          }
+          for (var p = 0; p < n; p++) for (var q = p + 1; q < n; q++) if (lines[p] >= 0 && lines[p] === lines[q]) {
+            var cols = [lines[p] >> 4, lines[p] & 15], ch = false;
+            for (var o = 0; o < n; o++) if (o !== p && o !== q) cols.forEach(function (e) { var x = dir ? o * n + e : e * n + o; if (elim(x, b)) ch = true; });
+            if (ch) return true;
+          }
+        }
+      }
+      return false;
+    }
+    function sees(a, b) { return g.peers[a].indexOf(b) >= 0; }
+    function xywing() {
+      for (var p = 0; p < N; p++) {
+        if (v[p] || bits(c[p]) !== 2) continue;
+        var ps = g.peers[p].filter(function (x) { return !v[x] && bits(c[x]) === 2 && bits(c[x] & c[p]) === 1; });
+        for (var a = 0; a < ps.length; a++) for (var b2 = a + 1; b2 < ps.length; b2++) {
+          var A = ps[a], B = ps[b2], z = c[A] & c[B] & ~c[p];
+          if (bits(z) !== 1 || (c[A] & c[p]) === (c[B] & c[p]) || ((c[A] | c[B]) & c[p]) !== c[p]) continue;
+          var ch = false;
+          for (var x = 0; x < N; x++) if (x !== A && x !== B && x !== p && !v[x] && sees(x, A) && sees(x, B) && elim(x, z)) ch = true;
+          if (ch) return true;
+        }
+      }
+      return false;
+    }
+    while (left() && !bad) {
+      steps++;
+      if (nakedSingle()) continue;
+      if (hiddenSingle()) { if (tier < 1) tier = 1; continue; }
+      if (locked() || nakedSubset(2) || hiddenSubset(2)) { if (tier < 2) tier = 2; continue; }
+      if (nakedSubset(3) || hiddenSubset(3) || xwing() || xywing()) { tier = 3; continue; }
+      return { tier: 4, solved: false, steps: steps, grid: v };
+    }
+    return { tier: bad ? 4 : tier, solved: !bad, steps: steps, grid: v };
+  }
+
+  /** A puzzle for a level from a seed: the same seed always makes the same puzzle. Each try makes a full board and
+   *  takes digits away (in matching pairs on the 9x9, like a classic puzzle) while it keeps exactly one solution; a try
+   *  is kept when its givens and its grade fit the level. Bounded by tries, never by the clock, so it is the same on
+   *  every device. */
+  function generate(id, seed) {
+    var L = level(id) || LEVELS[0], n = L.size, g = geom(n), N = g.N, rand = rng((seed >>> 0) ^ 0x5D0C1A), best = null, tries = 0;
+    var maxTries = n === 9 ? (L.tier[0] >= 3 ? 400 : 150) : 300;
+    for (; tries < maxTries; tries++) {
+      var sol = fullGrid(n, rand), p = sol.slice(), target = L.tier[0] >= 3 ? L.givens[0] : rand.int(L.givens[0], L.givens[1]), have = N;
+      var order = []; for (var i = 0; i < N; i++) order.push(i);
+      rand.shuffle(order);
+      for (var k = 0; k < order.length && have > target; k++) {
+        var a = order[k], b = n === 9 && L.tier[0] < 3 ? N - 1 - a : a;
+        if (!p[a] || (b !== a && !p[b])) continue;
+        if (b !== a && have - 2 < L.givens[0]) continue;
+        var va = p[a], vb = p[b]; p[a] = 0; p[b] = 0;
+        if (count(p, n, 2) === 1) have -= b === a ? 1 : 2; else { p[a] = va; p[b] = vb; }
+      }
+      if (have < L.givens[0] || have > L.givens[1]) continue;
+      var gr = grade(p, n);
+      if (!gr.solved) continue;
+      var fit = gr.tier >= L.tier[0] && gr.tier <= L.tier[1];
+      var cand = { id: L.id, seed: seed >>> 0, size: n, puzzle: p, solution: sol, givens: have, tier: gr.tier, tries: tries + 1 };
+      if (fit) return cand;
+      if (!best || Math.abs(gr.tier - L.tier[0]) < Math.abs(best.tier - L.tier[0])) best = cand;
+    }
+    return best || generate(id, (seed + 7919) >>> 0);
+  }
+
+  /** Stars for a solved puzzle: 3 with no hints, no mistakes and inside the par time; a star off for any help or
+   *  mistakes, another for a lot of them (4 or more), and one for going over the time. Never below 1. */
+  function stars(id, r) {
+    var L = level(id) || LEVELS[0], help = (r.hints || 0) + (r.mistakes || 0), s = 3;
+    if (help > 0) s--; if (help > 3) s--; if ((r.time || 0) > L.par) s--;
+    return Math.max(1, s);
+  }
+  /** Points: the level's base, plus up to half again for speed, minus a little for each hint and mistake. */
+  function score(id, r) {
+    var L = level(id) || LEVELS[0], t = Math.max(0, r.time || 0), base = L.base;
+    var s = base + base * 0.5 * Math.max(0, L.par - t) / L.par - base * 0.1 * (r.hints || 0) - base * 0.05 * (r.mistakes || 0);
+    return Math.max(Math.round(base * 0.2), Math.round(s));
+  }
+  // A grid as text: one character a box, '0' for empty (a saved puzzle is a short string, not a long array).
+  function encode(v) { var s = ''; for (var i = 0; i < v.length; i++) s += String.fromCharCode(48 + (v[i] > 0 && v[i] <= 9 ? v[i] : 0)); return s; }
+  function decode(s, N) { var v = []; s = String(s || ''); for (var i = 0; i < N; i++) { var d = s.charCodeAt(i) - 48; v.push(d >= 1 && d <= 9 ? d : 0); } return v; }
+
+  root.SudokuCore = { LEVELS: LEVELS, level: level, rng: rng, geom: geom, bits: bits, candidates: candidates, count: count, solve: solve, fullGrid: fullGrid, conflicts: conflicts, valid: valid, grade: grade, generate: generate, stars: stars, score: score, encode: encode, decode: decode };
+})(typeof window !== 'undefined' ? window : this);
+/* sudoku-core:end */
+</script>
+<script>
+/* Every word the game shows, in the 13 site languages (en-GB only where it differs). Digits on the board, the pad
+   and the clock stay 1 to 9 in every language. server/services/tts-lines.js reads this block for the AI voices. */
+// ==== I18N START ====
+var I18N = {
+  en: {
+    title: 'Sudoku', tag: 'Fill every row, column and box!',
+    how1: 'Tap a box, then tap a number', how2: 'Every row, column and box gets each number once', how3: 'Stuck? Jot notes or ask for a hint',
+    pickH: 'Pick a puzzle', cont: 'Continue', contSub: '{name} · {time}',
+    g_tiny: 'Tiny 4×4', g_tiny_p: 'Numbers 1 to 4 · ages 5 to 7', g_small: 'Small 6×6', g_small_p: 'Numbers 1 to 6', g_classic: 'Classic 9×9', g_classic_p: 'Numbers 1 to 9',
+    d_easy: 'Easy', d_medium: 'Medium', d_hard: 'Hard', d_expert: 'Expert', lvl: '{group} · {diff}',
+    pics: 'Pictures', picsHint: 'Play the 4×4 puzzles with pictures', saved: 'In progress', bestS: 'Best: {n} of 3 stars',
+    making: 'Making your puzzle…', levels: 'Levels',
+    notes: 'Notes', erase: 'Erase', undo: 'Undo', hint: 'Hint', check: 'Check',
+    notesOn: 'Notes on: tap numbers to jot them down', notesOff: 'Notes off', checkOn: 'Mistakes will show a ✕', checkOff: 'Mistakes stay hidden',
+    clock: 'Time {t}', board: 'Sudoku board, {n} by {n}',
+    cell: 'Row {r}, column {c}, {v}', cellEmpty: 'Row {r}, column {c}, empty', cellNotes: 'notes: {list}',
+    fixedL: 'part of the puzzle', hintedL: 'filled by a hint', clashL: 'repeats in its row, column or box', wrongL: 'not right',
+    fixed: 'That box is part of the puzzle.', hinted: 'Here is a hint!', notDone: 'Every box is full, but some numbers repeat. Find the boxes marked !',
+    allPlaced: '{v}: all placed', undoNone: 'Nothing to undo', solvedH: 'Solved!', winSay: 'You solved {name}! Time {t}, hints {h}, mistakes {m}.',
+    pic1: 'apple', pic2: 'banana', pic3: 'grapes', pic4: 'carrot'
+  },
+  es: {
+    title: 'Sudoku', tag: '¡Llena cada fila, columna y caja!',
+    how1: 'Toca una casilla y luego un número', how2: 'Cada fila, columna y caja tiene cada número una vez', how3: '¿Te atascaste? Usa notas o pide una pista',
+    pickH: 'Elige un sudoku', cont: 'Continuar', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Números del 1 al 4 · de 5 a 7 años', g_small: 'Pequeño 6×6', g_small_p: 'Números del 1 al 6', g_classic: 'Clásico 9×9', g_classic_p: 'Números del 1 al 9',
+    d_easy: 'Fácil', d_medium: 'Medio', d_hard: 'Difícil', d_expert: 'Experto', lvl: '{group} · {diff}',
+    pics: 'Dibujos', picsHint: 'Juega los 4×4 con dibujos', saved: 'Empezado', bestS: 'Récord: {n} de 3 estrellas',
+    making: 'Preparando tu sudoku…', levels: 'Niveles',
+    notes: 'Notas', erase: 'Borrar', undo: 'Deshacer', hint: 'Pista', check: 'Revisar',
+    notesOn: 'Notas activadas: toca números para apuntarlos', notesOff: 'Notas desactivadas', checkOn: 'Los errores mostrarán una ✕', checkOff: 'Los errores quedan ocultos',
+    clock: 'Tiempo {t}', board: 'Tablero de sudoku de {n} por {n}',
+    cell: 'Fila {r}, columna {c}, {v}', cellEmpty: 'Fila {r}, columna {c}, vacía', cellNotes: 'notas: {list}',
+    fixedL: 'parte del sudoku', hintedL: 'puesta con una pista', clashL: 'se repite en su fila, columna o caja', wrongL: 'no es correcta',
+    fixed: 'Esa casilla es parte del sudoku.', hinted: '¡Aquí tienes una pista!', notDone: 'Todo está lleno, pero algunos números se repiten. Busca las casillas con !',
+    allPlaced: '{v}: todos puestos', undoNone: 'No hay nada que deshacer', solvedH: '¡Resuelto!', winSay: '¡Resolviste {name}! Tiempo {t}, pistas {h}, errores {m}.',
+    pic1: 'manzana', pic2: 'plátano', pic3: 'uvas', pic4: 'zanahoria'
+  },
+  fr: {
+    title: 'Sudoku', tag: 'Remplis chaque ligne, colonne et carré !',
+    how1: 'Touche une case, puis un chiffre', how2: 'Chaque ligne, colonne et carré a chaque chiffre une fois', how3: 'Bloqué ? Prends des notes ou demande un indice',
+    pickH: 'Choisis une grille', cont: 'Continuer', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Chiffres de 1 à 4 · de 5 à 7 ans', g_small: 'Petit 6×6', g_small_p: 'Chiffres de 1 à 6', g_classic: 'Classique 9×9', g_classic_p: 'Chiffres de 1 à 9',
+    d_easy: 'Facile', d_medium: 'Moyen', d_hard: 'Difficile', d_expert: 'Expert', lvl: '{group} · {diff}',
+    pics: 'Images', picsHint: 'Joue les 4×4 avec des images', saved: 'En cours', bestS: 'Record : {n} sur 3 étoiles',
+    making: 'Je prépare ta grille…', levels: 'Niveaux',
+    notes: 'Notes', erase: 'Effacer', undo: 'Annuler', hint: 'Indice', check: 'Vérifier',
+    notesOn: 'Notes activées : touche des chiffres pour les noter', notesOff: 'Notes désactivées', checkOn: 'Les erreurs auront une ✕', checkOff: 'Les erreurs restent cachées',
+    clock: 'Temps {t}', board: 'Grille de sudoku de {n} sur {n}',
+    cell: 'Ligne {r}, colonne {c}, {v}', cellEmpty: 'Ligne {r}, colonne {c}, vide', cellNotes: 'notes : {list}',
+    fixedL: 'fait partie de la grille', hintedL: 'remplie par un indice', clashL: 'se répète dans sa ligne, sa colonne ou son carré', wrongL: 'pas juste',
+    fixed: 'Cette case fait partie de la grille.', hinted: 'Voici un indice !', notDone: 'Tout est rempli, mais des chiffres se répètent. Cherche les cases avec un !',
+    allPlaced: '{v} : tous placés', undoNone: 'Rien à annuler', solvedH: 'Réussi !', winSay: 'Tu as résolu {name} ! Temps {t}, indices {h}, erreurs {m}.',
+    pic1: 'pomme', pic2: 'banane', pic3: 'raisin', pic4: 'carotte'
+  },
+  de: {
+    title: 'Sudoku', tag: 'Füll jede Reihe, jede Spalte und jedes Kästchen!',
+    how1: 'Tippe auf ein Feld und dann auf eine Zahl', how2: 'In jeder Reihe, Spalte und jedem Kästchen steht jede Zahl genau einmal', how3: 'Steckst du fest? Mach Notizen oder hol dir einen Tipp',
+    pickH: 'Wähle ein Rätsel', cont: 'Weiterspielen', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Zahlen 1 bis 4 · 5 bis 7 Jahre', g_small: 'Klein 6×6', g_small_p: 'Zahlen 1 bis 6', g_classic: 'Klassisch 9×9', g_classic_p: 'Zahlen 1 bis 9',
+    d_easy: 'Leicht', d_medium: 'Mittel', d_hard: 'Schwer', d_expert: 'Profi', lvl: '{group} · {diff}',
+    pics: 'Bilder', picsHint: 'Spiel die 4×4-Rätsel mit Bildern', saved: 'Angefangen', bestS: 'Bestes: {n} von 3 Sternen',
+    making: 'Dein Rätsel wird gemacht…', levels: 'Stufen',
+    notes: 'Notizen', erase: 'Löschen', undo: 'Zurück', hint: 'Tipp', check: 'Prüfen',
+    notesOn: 'Notizen an: Tippe Zahlen, um sie zu notieren', notesOff: 'Notizen aus', checkOn: 'Fehler bekommen ein ✕', checkOff: 'Fehler bleiben versteckt',
+    clock: 'Zeit {t}', board: 'Sudoku-Feld, {n} mal {n}',
+    cell: 'Reihe {r}, Spalte {c}, {v}', cellEmpty: 'Reihe {r}, Spalte {c}, leer', cellNotes: 'Notizen: {list}',
+    fixedL: 'gehört zum Rätsel', hintedL: 'mit einem Tipp gefüllt', clashL: 'kommt in Reihe, Spalte oder Kästchen doppelt vor', wrongL: 'nicht richtig',
+    fixed: 'Dieses Feld gehört zum Rätsel.', hinted: 'Hier ist ein Tipp!', notDone: 'Alles ist voll, aber manche Zahlen kommen doppelt vor. Such die Felder mit !',
+    allPlaced: '{v}: alle gesetzt', undoNone: 'Nichts zum Zurücknehmen', solvedH: 'Gelöst!', winSay: 'Du hast {name} gelöst! Zeit {t}, Tipps {h}, Fehler {m}.',
+    pic1: 'Apfel', pic2: 'Banane', pic3: 'Trauben', pic4: 'Karotte'
+  },
+  it: {
+    title: 'Sudoku', tag: 'Riempi ogni riga, colonna e riquadro!',
+    how1: 'Tocca una casella, poi un numero', how2: 'In ogni riga, colonna e riquadro ogni numero c’è una volta sola', how3: 'Sei bloccato? Usa le note o chiedi un aiuto',
+    pickH: 'Scegli un sudoku', cont: 'Continua', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Numeri da 1 a 4 · dai 5 ai 7 anni', g_small: 'Piccolo 6×6', g_small_p: 'Numeri da 1 a 6', g_classic: 'Classico 9×9', g_classic_p: 'Numeri da 1 a 9',
+    d_easy: 'Facile', d_medium: 'Medio', d_hard: 'Difficile', d_expert: 'Esperto', lvl: '{group} · {diff}',
+    pics: 'Figure', picsHint: 'Gioca i 4×4 con le figure', saved: 'Iniziato', bestS: 'Record: {n} su 3 stelle',
+    making: 'Sto preparando il tuo sudoku…', levels: 'Livelli',
+    notes: 'Note', erase: 'Cancella', undo: 'Annulla', hint: 'Aiuto', check: 'Controlla',
+    notesOn: 'Note attive: tocca i numeri per segnarli', notesOff: 'Note spente', checkOn: 'Gli errori avranno una ✕', checkOff: 'Gli errori restano nascosti',
+    clock: 'Tempo {t}', board: 'Griglia di sudoku {n} per {n}',
+    cell: 'Riga {r}, colonna {c}, {v}', cellEmpty: 'Riga {r}, colonna {c}, vuota', cellNotes: 'note: {list}',
+    fixedL: 'fa parte del sudoku', hintedL: 'riempita con un aiuto', clashL: 'si ripete nella sua riga, colonna o riquadro', wrongL: 'non è giusto',
+    fixed: 'Questa casella fa parte del sudoku.', hinted: 'Ecco un aiuto!', notDone: 'È tutto pieno, ma alcuni numeri si ripetono. Cerca le caselle con il !',
+    allPlaced: '{v}: tutti messi', undoNone: 'Niente da annullare', solvedH: 'Risolto!', winSay: 'Hai risolto {name}! Tempo {t}, aiuti {h}, errori {m}.',
+    pic1: 'mela', pic2: 'banana', pic3: 'uva', pic4: 'carota'
+  },
+  pt: {
+    title: 'Sudoku', tag: 'Preencha cada linha, coluna e quadrado!',
+    how1: 'Toque em uma casa e depois em um número', how2: 'Cada linha, coluna e quadrado tem cada número uma vez', how3: 'Travou? Use anotações ou peça uma dica',
+    pickH: 'Escolha um sudoku', cont: 'Continuar', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Números de 1 a 4 · de 5 a 7 anos', g_small: 'Pequeno 6×6', g_small_p: 'Números de 1 a 6', g_classic: 'Clássico 9×9', g_classic_p: 'Números de 1 a 9',
+    d_easy: 'Fácil', d_medium: 'Médio', d_hard: 'Difícil', d_expert: 'Especialista', lvl: '{group} · {diff}',
+    pics: 'Figuras', picsHint: 'Jogue os 4×4 com figuras', saved: 'Começado', bestS: 'Recorde: {n} de 3 estrelas',
+    making: 'Preparando seu sudoku…', levels: 'Níveis',
+    notes: 'Notas', erase: 'Apagar', undo: 'Desfazer', hint: 'Dica', check: 'Conferir',
+    notesOn: 'Notas ligadas: toque nos números para anotar', notesOff: 'Notas desligadas', checkOn: 'Os erros vão mostrar um ✕', checkOff: 'Os erros ficam escondidos',
+    clock: 'Tempo {t}', board: 'Tabuleiro de sudoku {n} por {n}',
+    cell: 'Linha {r}, coluna {c}, {v}', cellEmpty: 'Linha {r}, coluna {c}, vazia', cellNotes: 'notas: {list}',
+    fixedL: 'faz parte do sudoku', hintedL: 'preenchida com uma dica', clashL: 'se repete na linha, na coluna ou no quadrado', wrongL: 'não está certo',
+    fixed: 'Essa casa faz parte do sudoku.', hinted: 'Aqui está uma dica!', notDone: 'Está tudo cheio, mas alguns números se repetem. Procure as casas com !',
+    allPlaced: '{v}: todos colocados', undoNone: 'Nada para desfazer', solvedH: 'Resolvido!', winSay: 'Você resolveu {name}! Tempo {t}, dicas {h}, erros {m}.',
+    pic1: 'maçã', pic2: 'banana', pic3: 'uvas', pic4: 'cenoura'
+  },
+  nl: {
+    title: 'Sudoku', tag: 'Vul elke rij, elke kolom en elk blok!',
+    how1: 'Tik op een vakje en dan op een getal', how2: 'In elke rij, kolom en elk blok staat elk getal één keer', how3: 'Zit je vast? Maak notities of vraag een hint',
+    pickH: 'Kies een puzzel', cont: 'Verder', contSub: '{name} · {time}',
+    g_tiny: 'Mini 4×4', g_tiny_p: 'Getallen 1 tot en met 4 · 5 tot 7 jaar', g_small: 'Klein 6×6', g_small_p: 'Getallen 1 tot en met 6', g_classic: 'Klassiek 9×9', g_classic_p: 'Getallen 1 tot en met 9',
+    d_easy: 'Makkelijk', d_medium: 'Gemiddeld', d_hard: 'Moeilijk', d_expert: 'Expert', lvl: '{group} · {diff}',
+    pics: 'Plaatjes', picsHint: 'Speel de 4×4-puzzels met plaatjes', saved: 'Bezig', bestS: 'Beste: {n} van 3 sterren',
+    making: 'Je puzzel wordt gemaakt…', levels: 'Niveaus',
+    notes: 'Notities', erase: 'Wissen', undo: 'Terug', hint: 'Hint', check: 'Controle',
+    notesOn: 'Notities aan: tik getallen om ze op te schrijven', notesOff: 'Notities uit', checkOn: 'Fouten krijgen een ✕', checkOff: 'Fouten blijven verborgen',
+    clock: 'Tijd {t}', board: 'Sudokubord, {n} bij {n}',
+    cell: 'Rij {r}, kolom {c}, {v}', cellEmpty: 'Rij {r}, kolom {c}, leeg', cellNotes: 'notities: {list}',
+    fixedL: 'hoort bij de puzzel', hintedL: 'ingevuld met een hint', clashL: 'staat dubbel in de rij, de kolom of het blok', wrongL: 'niet goed',
+    fixed: 'Dat vakje hoort bij de puzzel.', hinted: 'Hier is een hint!', notDone: 'Alles is vol, maar sommige getallen staan dubbel. Zoek de vakjes met !',
+    allPlaced: '{v}: allemaal geplaatst', undoNone: 'Niets om terug te zetten', solvedH: 'Opgelost!', winSay: 'Je hebt {name} opgelost! Tijd {t}, hints {h}, fouten {m}.',
+    pic1: 'appel', pic2: 'banaan', pic3: 'druiven', pic4: 'wortel'
+  },
+  ru: {
+    title: 'Судоку', tag: 'Заполни каждую строку, столбец и квадрат!',
+    how1: 'Нажми на клетку, а потом на число', how2: 'В каждой строке, столбце и квадрате каждое число стоит один раз', how3: 'Не получается? Делай заметки или возьми подсказку',
+    pickH: 'Выбери судоку', cont: 'Продолжить', contSub: '{name} · {time}',
+    g_tiny: 'Мини 4×4', g_tiny_p: 'Числа от 1 до 4 · от 5 до 7 лет', g_small: 'Малое 6×6', g_small_p: 'Числа от 1 до 6', g_classic: 'Классика 9×9', g_classic_p: 'Числа от 1 до 9',
+    d_easy: 'Легко', d_medium: 'Средне', d_hard: 'Трудно', d_expert: 'Эксперт', lvl: '{group} · {diff}',
+    pics: 'Картинки', picsHint: 'Играй в 4×4 с картинками', saved: 'Начато', bestS: 'Рекорд: {n} из 3 звёзд',
+    making: 'Готовлю твоё судоку…', levels: 'Уровни',
+    notes: 'Заметки', erase: 'Стереть', undo: 'Отменить', hint: 'Подсказка', check: 'Проверка',
+    notesOn: 'Заметки включены: нажимай числа, чтобы записать их', notesOff: 'Заметки выключены', checkOn: 'Ошибки будут отмечены ✕', checkOff: 'Ошибки скрыты',
+    clock: 'Время {t}', board: 'Поле судоку {n} на {n}',
+    cell: 'Строка {r}, столбец {c}, {v}', cellEmpty: 'Строка {r}, столбец {c}, пусто', cellNotes: 'заметки: {list}',
+    fixedL: 'дано в задаче', hintedL: 'заполнено подсказкой', clashL: 'повторяется в строке, столбце или квадрате', wrongL: 'неверно',
+    fixed: 'Эта клетка уже дана в задаче.', hinted: 'Вот подсказка!', notDone: 'Всё заполнено, но некоторые числа повторяются. Найди клетки со знаком !',
+    allPlaced: '{v}: все расставлены', undoNone: 'Нечего отменять', solvedH: 'Решено!', winSay: 'Готово: {name}! Время {t}, подсказок {h}, ошибок {m}.',
+    pic1: 'яблоко', pic2: 'банан', pic3: 'виноград', pic4: 'морковь'
+  },
+  ja: {
+    title: 'すうどく', tag: 'たて・よこ・ブロックをうめよう！',
+    how1: 'マスをタップして、つぎに数字をタップ', how2: 'たて、よこ、ブロックには、どの数字も1回ずつ', how3: 'こまったら、メモやヒントをつかおう',
+    pickH: 'パズルをえらぼう', cont: 'つづける', contSub: '{name} · {time}',
+    g_tiny: 'ミニ 4×4', g_tiny_p: '数字は1から4 · 5さいから7さい', g_small: 'スモール 6×6', g_small_p: '数字は1から6', g_classic: 'クラシック 9×9', g_classic_p: '数字は1から9',
+    d_easy: 'かんたん', d_medium: 'ふつう', d_hard: 'むずかしい', d_expert: 'エキスパート', lvl: '{group} · {diff}',
+    pics: 'イラスト', picsHint: '4×4をイラストであそぶ', saved: 'とちゅう', bestS: 'ベスト: 星{n}/3',
+    making: 'パズルをつくっています…', levels: 'レベル',
+    notes: 'メモ', erase: 'けす', undo: 'もどす', hint: 'ヒント', check: 'チェック',
+    notesOn: 'メモ オン: 数字をタップしてメモしよう', notesOff: 'メモ オフ', checkOn: 'まちがいに ✕ がつきます', checkOff: 'まちがいはかくれています',
+    clock: 'じかん {t}', board: 'すうどくのばん、{n}×{n}',
+    cell: '{r}ぎょう、{c}れつ、{v}', cellEmpty: '{r}ぎょう、{c}れつ、から', cellNotes: 'メモ: {list}',
+    fixedL: 'さいしょからある数字', hintedL: 'ヒントでうめた', clashL: 'たて・よこ・ブロックでかぶっています', wrongL: 'ちがいます',
+    fixed: 'そのマスは、さいしょからある数字です。', hinted: 'ヒントだよ！', notDone: 'ぜんぶうまったけど、かぶっている数字があるよ。「!」のマスをさがそう。',
+    allPlaced: '{v}: ぜんぶおいた', undoNone: 'もどせるものがありません', solvedH: 'クリア！', winSay: '{name}をクリア！ じかん {t}、ヒント {h}、まちがい {m}。',
+    pic1: 'りんご', pic2: 'バナナ', pic3: 'ぶどう', pic4: 'にんじん'
+  },
+  'zh-Hant': {
+    title: '數獨', tag: '把每一橫排、每一直行和每一宮都填滿！',
+    how1: '點一個格子，再點一個數字', how2: '每一橫排、直行和宮裡，每個數字都只出現一次', how3: '卡住了嗎？寫筆記或請求提示',
+    pickH: '選一道題目', cont: '繼續', contSub: '{name} · {time}',
+    g_tiny: '迷你 4×4', g_tiny_p: '數字 1 到 4 · 5 到 7 歲', g_small: '小型 6×6', g_small_p: '數字 1 到 6', g_classic: '經典 9×9', g_classic_p: '數字 1 到 9',
+    d_easy: '簡單', d_medium: '中等', d_hard: '困難', d_expert: '專家', lvl: '{group} · {diff}',
+    pics: '圖案', picsHint: '用圖案玩 4×4', saved: '進行中', bestS: '最佳：{n}/3 顆星',
+    making: '正在出題…', levels: '關卡',
+    notes: '筆記', erase: '擦掉', undo: '復原', hint: '提示', check: '檢查',
+    notesOn: '筆記開啟：點數字把它記下來', notesOff: '筆記關閉', checkOn: '錯誤會標上 ✕', checkOff: '錯誤會隱藏',
+    clock: '時間 {t}', board: '數獨盤面，{n} 乘 {n}',
+    cell: '第 {r} 排，第 {c} 行，{v}', cellEmpty: '第 {r} 排，第 {c} 行，空格', cellNotes: '筆記：{list}',
+    fixedL: '題目給的', hintedL: '用提示填的', clashL: '在同一排、同一行或同一宮裡重複了', wrongL: '不對',
+    fixed: '這一格是題目給的。', hinted: '給你一個提示！', notDone: '都填滿了，但有些數字重複了。找找標著 ! 的格子。',
+    allPlaced: '{v}：全部填好了', undoNone: '沒有可以復原的', solvedH: '解開了！', winSay: '你解開了{name}！時間 {t}，提示 {h}，錯誤 {m}。',
+    pic1: '蘋果', pic2: '香蕉', pic3: '葡萄', pic4: '紅蘿蔔'
+  },
+  ar: {
+    title: 'سودوكو', tag: 'املأ كل صف وكل عمود وكل مربع!',
+    how1: 'المس خانة، ثم المس رقمًا', how2: 'في كل صف وعمود ومربع يأتي كل رقم مرة واحدة', how3: 'هل علقت؟ دوّن ملاحظات أو اطلب تلميحًا',
+    pickH: 'اختر لغزًا', cont: 'تابع', contSub: '{name} · {time}',
+    g_tiny: 'صغير جدًا 4×4', g_tiny_p: 'الأرقام من 1 إلى 4 · من 5 إلى 7 سنوات', g_small: 'صغير 6×6', g_small_p: 'الأرقام من 1 إلى 6', g_classic: 'كلاسيكي 9×9', g_classic_p: 'الأرقام من 1 إلى 9',
+    d_easy: 'سهل', d_medium: 'متوسط', d_hard: 'صعب', d_expert: 'خبير', lvl: '{group} · {diff}',
+    pics: 'صور', picsHint: 'العب ألغاز 4×4 بالصور', saved: 'لم يكتمل', bestS: 'الأفضل: {n} من 3 نجوم',
+    making: 'نجهّز لغزك…', levels: 'المستويات',
+    notes: 'ملاحظات', erase: 'امسح', undo: 'تراجع', hint: 'تلميح', check: 'تحقق',
+    notesOn: 'الملاحظات مفعّلة: المس الأرقام لتدوينها', notesOff: 'الملاحظات متوقفة', checkOn: 'ستظهر علامة ✕ على الأخطاء', checkOff: 'الأخطاء مخفية',
+    clock: 'الوقت {t}', board: 'لوحة سودوكو {n} في {n}',
+    cell: 'الصف {r}، العمود {c}، {v}', cellEmpty: 'الصف {r}، العمود {c}، فارغة', cellNotes: 'ملاحظات: {list}',
+    fixedL: 'جزء من اللغز', hintedL: 'مُلئت بتلميح', clashL: 'يتكرر في صفه أو عموده أو مربعه', wrongL: 'غير صحيح',
+    fixed: 'هذه الخانة جزء من اللغز.', hinted: 'إليك تلميحًا!', notDone: 'امتلأت كل الخانات، لكن بعض الأرقام تتكرر. ابحث عن الخانات التي عليها !',
+    allPlaced: '{v}: وُضعت كلها', undoNone: 'لا شيء للتراجع عنه', solvedH: 'تم الحل!', winSay: 'حللت {name}! الوقت {t}، التلميحات {h}، الأخطاء {m}.',
+    pic1: 'تفاحة', pic2: 'موزة', pic3: 'عنب', pic4: 'جزرة'
+  },
+  he: {
+    title: 'סודוקו', tag: 'מלאו כל שורה, כל עמודה וכל ריבוע!',
+    how1: 'הקישו על משבצת ואז על מספר', how2: 'בכל שורה, עמודה וריבוע כל מספר מופיע פעם אחת', how3: 'נתקעתם? רשמו הערות או בקשו רמז',
+    pickH: 'בחרו חידה', cont: 'להמשיך', contSub: '{name} · {time}',
+    g_tiny: 'זעיר 4×4', g_tiny_p: 'מספרים 1 עד 4 · גילאי 5 עד 7', g_small: 'קטן 6×6', g_small_p: 'מספרים 1 עד 6', g_classic: 'קלאסי 9×9', g_classic_p: 'מספרים 1 עד 9',
+    d_easy: 'קל', d_medium: 'בינוני', d_hard: 'קשה', d_expert: 'מומחה', lvl: '{group} · {diff}',
+    pics: 'תמונות', picsHint: 'לשחק ב־4×4 עם תמונות', saved: 'בתהליך', bestS: 'הכי טוב: {n} מתוך 3 כוכבים',
+    making: 'מכינים לכם חידה…', levels: 'שלבים',
+    notes: 'הערות', erase: 'מחיקה', undo: 'ביטול', hint: 'רמז', check: 'בדיקה',
+    notesOn: 'הערות פועלות: הקישו על מספרים כדי לרשום אותם', notesOff: 'הערות כבויות', checkOn: 'טעויות יסומנו ב־✕', checkOff: 'טעויות מוסתרות',
+    clock: 'זמן {t}', board: 'לוח סודוקו {n} על {n}',
+    cell: 'שורה {r}, עמודה {c}, {v}', cellEmpty: 'שורה {r}, עמודה {c}, ריקה', cellNotes: 'הערות: {list}',
+    fixedL: 'חלק מהחידה', hintedL: 'מולאה ברמז', clashL: 'חוזר בשורה, בעמודה או בריבוע', wrongL: 'לא נכון',
+    fixed: 'המשבצת הזאת היא חלק מהחידה.', hinted: 'הנה רמז!', notDone: 'הכול מלא, אבל יש מספרים שחוזרים. חפשו את המשבצות עם !',
+    allPlaced: '{v}: כולם במקום', undoNone: 'אין מה לבטל', solvedH: 'נפתר!', winSay: 'פתרתם את {name}! זמן {t}, רמזים {h}, טעויות {m}.',
+    pic1: 'תפוח', pic2: 'בננה', pic3: 'ענבים', pic4: 'גזר'
+  }
+};
+I18N['en-GB'] = Object.assign({}, I18N.en);
+// ==== I18N END ====
+// ==== VOICES START ====
+// The kit reads the how-to cards aloud with read-aloud on: one friendly voice for every line (tts-lines.js reads this).
+var VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script>
+(function () {
+  'use strict';
+  var O = window.Oomba, C = window.SudokuCore;
+  var LANG = O.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en;
+  /** A word from the table; {x} takes vars.x. Numbers stay plain Western digits (the board's digits in every language). */
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+
+  var CONFIG = {
+    title: 'Sudoku',
+    theme: 'meadow',
+    pictures: ['apple', 'banana', 'grapes', 'carrot'],
+    saveKey: 'sudoku-v1',
+    undoMax: 300,
+  };
+  var reduced = function () { return !!O.settings.reduced; };
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function icon(name, size) { var s = el('span'); s.setAttribute('aria-hidden', 'true'); s.style.display = 'contents'; s.innerHTML = O.icon(name, { size: size || 22 }); return s; }
+  function announce(s) { try { O.ui.announce(s); } catch (e) { /* no live region */ } }
+  function toast(s) { try { O.ui.toast(s, { ms: 2200 }); } catch (e) { /* no toast */ } }
+  function clock(sec) { sec = Math.max(0, Math.floor(sec)); var m = Math.floor(sec / 60), s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+  function levelName(L) { return t('lvl', { group: t('g_' + L.group), diff: t('d_' + L.diff) }); }
+
+  /* ---------- saved progress: settings, the puzzle in progress for each level, best stars (BRB.storage) ---------- */
+  function load() { try { var s = window.BRB && BRB.storage && BRB.storage.get(CONFIG.saveKey); return s && typeof s === 'object' ? s : {}; } catch (e) { return {}; } }
+  var SAVE = load();
+  SAVE = { pics: !!SAVE.pics, check: !!SAVE.check, last: typeof SAVE.last === 'string' ? SAVE.last : '', games: SAVE.games && typeof SAVE.games === 'object' ? SAVE.games : {}, best: SAVE.best && typeof SAVE.best === 'object' ? SAVE.best : {} };
+  Object.keys(SAVE.games).forEach(function (id) { var g = SAVE.games[id], L = C.level(id); if (!L || !g || typeof g.p !== 'string' || g.p.length !== L.size * L.size || typeof g.s !== 'string' || !C.valid(C.decode(g.s, L.size * L.size), L.size)) delete SAVE.games[id]; });
+  function persist() { try { if (window.BRB && BRB.storage) BRB.storage.set(CONFIG.saveKey, SAVE); } catch (e) { /* the save is full or off */ } }
+
+  /* ---------- state ---------- */
+  var S = {
+    screen: 'title', w: null, L: null, n: 0, N: 0, seed: 0, tier: 0,
+    puzzle: [], sol: [], v: [], notes: [], hinted: {}, sel: -1, noting: false, check: SAVE.check, pics: SAVE.pics,
+    hints: 0, mistakes: 0, time: 0, undo: [], again: false, restart: false, pending: null, shown: -1,
+  };
+  var D = {};   // the DOM pieces of the screen on show
+
+  /* ---------- colors (kit roles, never codes), for light and dark ---------- */
+  function paint() {
+    var root = O.ui.root(), dark = O.theme.mode === 'dark';
+    var col = function (r, s) { try { return O.color(r, s); } catch (e) { return null; } };
+    var set = {
+      sky: col('interact', 'base'), coral: col('wrong', 'base'), go: col('go', 'light'), ink: col('ink'), grape: col('magic', 'base'),
+      user: col('interact', dark ? 'light' : 'shade'), hint: col('magic', dark ? 'light' : 'shade'), wrong: col('wrong', dark ? 'light' : 'shade'),
+    };
+    for (var k in set) if (set[k]) root.style.setProperty('--sd-' + k, set[k]);
+    var mix = function (v, p) { return 'color-mix(in srgb, var(--sd-' + v + ') ' + p + '%, var(--ok-card))'; };
+    root.style.setProperty('--sd-peer', mix('sky', dark ? 18 : 13));
+    root.style.setProperty('--sd-same', mix('sky', dark ? 40 : 34));
+    root.style.setProperty('--sd-sel', mix('sky', dark ? 62 : 58));
+    root.style.setProperty('--sd-bad', mix('coral', dark ? 38 : 30));
+    root.style.setProperty('--sd-bad-s', mix('coral', 55));
+    root.style.setProperty('--sd-go-t', mix('go', 40));
+    root.style.setProperty('--sd-grape-t', mix('grape', 35));
+    root.style.setProperty('--sd-note-bg', mix('grape', 18));
+    root.style.setProperty('--sd-note', 'color-mix(in srgb, var(--ok-text) 72%, var(--ok-card))');
+    root.style.setProperty('--sd-line', 'color-mix(in srgb, var(--ok-text) 30%, var(--ok-card))');
+  }
+  O.theme.on('change', function () { paint(); redrawPictures(); });
+
+  /* ---------- pictures for the 4x4 picture mode: kit props (art-school food), drawn once and copied ---------- */
+  var PIC = [];
+  function picMaster(d) {
+    if (!PIC[d]) { try { PIC[d] = O.art.toCanvas(CONFIG.pictures[d - 1], 128); } catch (e) { PIC[d] = null; } }
+    return PIC[d];
+  }
+  function picCanvas(d, px) {
+    var c = el('canvas'), m = picMaster(d), dpr = Math.min(2, window.devicePixelRatio || 1), size = Math.max(16, Math.round(px * dpr));
+    c.width = size; c.height = size; c.setAttribute('aria-hidden', 'true'); c.dataset.pic = String(d);
+    if (m && m.width) { var g = c.getContext('2d'), k = Math.min(size / m.width, size / m.height); g.drawImage(m, (size - m.width * k) / 2, (size - m.height * k) / 2, m.width * k, m.height * k); }
+    return c;
+  }
+  function redrawPictures() { if (S.screen === 'play') refresh(true); }
+  function usePics() { return S.pics && S.n === 4; }
+  function valueWord(d) { return usePics() ? t('pic' + d) : String(d); }
+
+  /* ---------- the kit game: the title, pause and results; the play screen is the game's own DOM ---------- */
+  var SET = [
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '     P              ',
+    '####################',
+    '####################',
+  ];
+  function badge() {   // the title's badge: a little 4x4 puzzle
+    var px = 120, c = el('canvas'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = px * dpr; c.height = px * dpr; c.style.width = px + 'px'; c.style.height = px + 'px';
+    function draw() {
+      var g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, px, px);
+      var ink = O.color('ink'), card = O.color('cream'), sky = O.color('interact', 'shade'), cell = (px - 12) / 4, x0 = 6, y0 = 6;
+      g.fillStyle = ink; g.beginPath(); if (g.roundRect) g.roundRect(2, 2, px - 4, px - 4, 14); else g.rect(2, 2, px - 4, px - 4); g.fill();
+      var digits = [1, 0, 3, 0, 0, 4, 0, 2, 2, 0, 4, 0, 0, 1, 0, 3];
+      var fam = getComputedStyle(document.documentElement).getPropertyValue('--ok-font') || 'sans-serif';
+      for (var i = 0; i < 16; i++) {
+        var r = Math.floor(i / 4), cl = i % 4, x = x0 + cl * cell + (cl >= 2 ? 2 : 0) - 1, y = y0 + r * cell + (r >= 2 ? 2 : 0) - 1;
+        g.fillStyle = i === 6 ? O.color('interact', 'light') : card; g.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+        var d = digits[i] || (i === 6 ? 1 : 0);
+        if (d) { g.fillStyle = digits[i] ? ink : sky; g.font = '800 ' + Math.round(cell * 0.62) + 'px ' + fam; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(d), x + cell / 2, y + cell / 2 + 1); }
+      }
+    }
+    try { draw(); } catch (e) { /* drawn again when the font is ready */ }
+    if (O.fonts && O.fonts.ready) O.fonts.ready.then(function () { try { draw(); } catch (e) { /* no canvas */ } });
+    return c;
+  }
+  var game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), theme: CONFIG.theme, titleHue: 'sky', titleBadge: badge(),
+    controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 0,
+    howTo: [{ icon: 'tap', text: t('how1') }, { icon: 'check', text: t('how2') }, { icon: 'hint', text: t('how3') }],
+    level: O.level.grid(SET, {}),
+    update: function (w, dt) { frame(w, dt); },
+    testState: function () { return testState(); },
+    on: {
+      start: function (w) { begin(w); },
+      title: function () { S.again = false; S.restart = false; hide(); },
+      results: function () { hide(); },
+    },
+  });
+  O.on('pause', function (r) { if (r === 'restart' && S.screen === 'play') S.restart = true; if (r === 'quit') { S.again = false; save(); } });
+  function frame(w, dt) {
+    var V = w.stage.view, z = Math.min(V.vw / (12 * w.cell), V.vh / (w.level.h + w.cell));
+    w.cam.bounds(null); w.cam.zoom = z; w.cam.x = w.level.w / 2; w.cam.y = w.level.h - 0.4 * w.cell - V.vh / z / 2;
+    if (S.screen === 'play' && !w.ended) {
+      S.time += dt;
+      var sec = Math.floor(S.time);
+      if (sec !== S.shown && D.clock) { S.shown = sec; D.clockT.textContent = clock(sec); D.clock.setAttribute('aria-label', t('clock', { t: clock(sec) })); if (sec % 5 === 0) save(); }
+    }
+  }
+
+  /* ---------- the screens ---------- */
+  function build() {
+    if (D.sd) return D.sd;
+    paint();
+    var sd = el('div', 'sd'); sd.hidden = true; sd.dir = O.dir || 'ltr';
+    O.ui.root().appendChild(sd);
+    D.sd = sd;
+    window.addEventListener('resize', function () { layout(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(sd);
+    return sd;
+  }
+  function screen(name) { var sd = build(); sd.innerHTML = ''; sd.hidden = false; sd.dataset.screen = name; S.screen = name; D.play = null; D.clock = null; return sd; }
+  function hide() { if (D.sd) { D.sd.hidden = true; D.sd.innerHTML = ''; } D.play = null; D.clock = null; if (S.screen !== 'won') S.screen = 'title'; }
+
+  function begin(w) {
+    S.w = w;
+    if (S.pending) { var p = S.pending; S.pending = null; return startLevel(p.id, p); }
+    if (S.restart && S.L && S.puzzle.length) { S.restart = false; return resetPuzzle(); }
+    S.restart = false;
+    if (S.again && S.L) { S.again = false; return startLevel(S.L.id, {}); }
+    showPicker();
+  }
+
+  /* The level picker: Continue (the last unfinished puzzle), then the three board sizes and their levels. */
+  function showPicker() {
+    var sd = screen('pick'), sc = el('div', 'sd-scroll'), card = el('div', 'sd-pick');
+    sd.appendChild(sc); sc.appendChild(card);
+    card.appendChild(el('h2', '', t('pickH')));
+    var last = SAVE.games[SAVE.last] ? SAVE.last : Object.keys(SAVE.games)[0];
+    if (last && C.level(last)) {
+      var g = SAVE.games[last], cb = el('button', 'sd-cont'); cb.type = 'button'; cb.id = 'sd-continue';
+      cb.appendChild(icon('play', 30));
+      var tx = el('span'); tx.appendChild(el('b', '', t('cont'))); tx.appendChild(el('small', '', t('contSub', { name: levelName(C.level(last)), time: clock(g.t || 0) })));
+      cb.appendChild(tx); cb.addEventListener('click', function () { sfx('select'); startLevel(last, { resume: true }); });
+      card.appendChild(cb);
+    }
+    ['tiny', 'small', 'classic'].forEach(function (grp) {
+      var box = el('section', 'sd-group'), head = el('div', 'sd-gh'), size = grp === 'tiny' ? 4 : grp === 'small' ? 6 : 9;
+      box.setAttribute('aria-labelledby', 'sd-g-' + grp);
+      var h = el('div'), h3 = el('h3', '', t('g_' + grp)); h3.id = 'sd-g-' + grp; h.appendChild(h3); h.appendChild(el('p', '', t('g_' + grp + '_p')));
+      head.appendChild(miniBoard(size, 44)); head.appendChild(h); box.appendChild(head);
+      var row = el('div', 'sd-diffs');
+      C.LEVELS.filter(function (L) { return L.group === grp; }).forEach(function (L) {
+        var b = el('button', 'sd-lv'); b.type = 'button'; b.id = 'lv-' + L.id; b.dataset.level = L.id;
+        b.appendChild(el('span', '', t('d_' + L.diff)));
+        var best = SAVE.best[L.id];
+        if (best) { var st = el('small', '', '★★★'.slice(0, best.stars) + '☆☆☆'.slice(0, 3 - best.stars)); st.setAttribute('aria-hidden', 'true'); b.appendChild(st); }
+        var label = levelName(L) + (best ? ', ' + t('bestS', { n: best.stars }) : '');
+        if (SAVE.games[L.id]) { var dot = el('span', 'sd-dot', t('saved')); b.appendChild(dot); label += ', ' + t('saved'); }
+        b.setAttribute('aria-label', label);
+        b.addEventListener('click', function () { sfx('select'); startLevel(L.id, { resume: !!SAVE.games[L.id] }); });
+        row.appendChild(b);
+      });
+      box.appendChild(row);
+      if (grp === 'tiny') {
+        var pb = el('button', 'sd-pics'); pb.type = 'button'; pb.id = 'sd-pics'; pb.setAttribute('aria-pressed', String(S.pics)); pb.setAttribute('aria-label', t('picsHint'));
+        var pl = el('span', '', t('pics')), pv = el('span', 'sd-pv');
+        for (var d = 1; d <= 4; d++) pv.appendChild(picCanvas(d, 30));
+        var left = el('span'); left.style.display = 'flex'; left.style.alignItems = 'center'; left.style.gap = '10px'; left.appendChild(pv); left.appendChild(pl);
+        pb.appendChild(left); pb.appendChild(el('span', 'sd-sw'));
+        pb.addEventListener('click', function () { S.pics = !S.pics; SAVE.pics = S.pics; persist(); pb.setAttribute('aria-pressed', String(S.pics)); sfx('select'); });
+        box.appendChild(pb);
+      }
+      card.appendChild(box);
+    });
+    var first = card.querySelector('#sd-continue') || card.querySelector('.sd-lv');
+    O.time.real.after(0, function () { try { if (first && !('ontouchstart' in window)) first.focus({ preventScroll: true }); } catch (e) { /* gone */ } });
+  }
+  /** A little board picture for a size (the picker's group heads and the making card). */
+  function miniBoard(size, px) {
+    var c = el('canvas', 'sd-mini'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = px * dpr; c.height = px * dpr; c.style.width = px + 'px'; c.style.height = px + 'px'; c.setAttribute('aria-hidden', 'true');
+    var g = c.getContext('2d'), G = C.geom(size), cell = (px - 6) / size;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = O.color('ink'); g.fillRect(0, 0, px, px);
+    for (var i = 0; i < size * size; i++) {
+      var r = Math.floor(i / size), cl = i % size, x = 3 + cl * cell, y = 3 + r * cell, k = (r * 7 + cl * 3) % 5;
+      g.fillStyle = k === 0 ? O.color('interact', 'light') : O.color('cream'); g.fillRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+    }
+    g.fillStyle = O.color('ink');
+    for (var a = G.bc; a < size; a += G.bc) g.fillRect(3 + a * cell - 1, 3, 2, px - 6);
+    for (var b = G.br; b < size; b += G.br) g.fillRect(3, 3 + b * cell - 1, px - 6, 2);
+    return c;
+  }
+
+  /* Starting a level: the saved puzzle (resume), else a new one from a seed (a short "making" card first, so the
+   * phone draws it before the work). */
+  function startLevel(id, o) {
+    o = o || {};
+    var L = C.level(id); if (!L) return showPicker();
+    var saved = SAVE.games[id];
+    if (o.resume && saved) return play(L, { puzzle: C.decode(saved.p, L.size * L.size), solution: C.decode(saved.s, L.size * L.size), seed: saved.seed || 0, tier: saved.tier || 0 }, saved);
+    var seed = o.seed != null ? (o.seed >>> 0) : (S.w && S.w.rand ? S.w.rand.int(1, 0x7FFFFFFE) : 1 + Math.floor(Math.random() * 0x7FFFFFFE));
+    var sd = screen('making'), card = el('div', 'sd-card'); card.setAttribute('role', 'status');
+    card.appendChild(miniBoard(L.size, 72)); card.appendChild(el('span', '', t('making'))); sd.appendChild(card);
+    O.time.real.after(o.fast ? 0 : 60, function () {
+      if (S.screen !== 'making') return;
+      var p = C.generate(id, seed);
+      play(L, p, null);
+    });
+  }
+  function play(L, p, saved) {
+    S.L = L; S.n = L.size; S.N = L.size * L.size; S.puzzle = p.puzzle.slice(); S.sol = p.solution.slice(); S.seed = p.seed; S.tier = p.tier;
+    S.v = saved ? C.decode(saved.v, S.N) : S.puzzle.slice();
+    for (var i = 0; i < S.N; i++) if (S.puzzle[i]) S.v[i] = S.puzzle[i];
+    S.notes = []; for (i = 0; i < S.N; i++) S.notes.push(saved && saved.n && saved.n[i] ? (saved.n[i] & ((1 << S.n) - 1)) : 0);
+    S.hinted = {}; if (saved && saved.hi) saved.hi.forEach(function (x) { if (x >= 0 && x < S.N && !S.puzzle[x]) { S.hinted[x] = 1; S.v[x] = S.sol[x]; } });
+    S.hints = saved ? +saved.h || 0 : 0; S.mistakes = saved ? +saved.m || 0 : 0; S.time = saved ? +saved.t || 0 : 0;
+    S.undo = []; S.noting = false; S.sel = -1; S.shown = -1;
+    for (i = 0; i < S.N; i++) if (!S.puzzle[i] && !S.v[i]) { S.sel = i; break; }
+    if (S.sel < 0) S.sel = 0;
+    buildPlay();
+    save();
+  }
+  function resetPuzzle() {
+    S.v = S.puzzle.slice(); S.notes = S.notes.map(function () { return 0; }); S.hinted = {}; S.hints = 0; S.mistakes = 0; S.time = 0; S.undo = []; S.noting = false;
+    buildPlay(); save();
+  }
+
+  /* The play screen: the bar (levels, the level's name, the clock), the board, the pad and the tools. */
+  function buildPlay() {
+    var sd = screen('play'), L = S.L, n = S.n, G = C.geom(n);
+    var pl = el('div', 'sd-play'); sd.appendChild(pl); D.play = pl;
+    var bar = el('div', 'sd-bar');
+    var back = el('button', 'sd-back'); back.type = 'button'; back.id = 'sd-levels'; back.setAttribute('aria-label', t('levels')); back.title = t('levels'); back.appendChild(icon('menu', 24));
+    back.addEventListener('click', function () { sfx('select'); save(); showPicker(); });
+    var name = el('div', 'sd-pill'); name.setAttribute('aria-label', levelName(L)); var nt = el('span', '', n + '×' + n + ' · ' + t('d_' + L.diff)); nt.setAttribute('aria-hidden', 'true'); name.appendChild(nt);
+    var ck = el('div', 'sd-pill sd-clock'); ck.setAttribute('role', 'timer'); ck.appendChild(icon('clock', 20)); D.clockT = el('span', '', clock(S.time)); ck.appendChild(D.clockT); D.clock = ck;
+    ck.dir = 'ltr'; ck.setAttribute('aria-label', t('clock', { t: clock(S.time) }));
+    bar.appendChild(back); bar.appendChild(name); bar.appendChild(el('span', 'sd-sp')); bar.appendChild(ck);
+    pl.appendChild(bar);
+    // the board: boxes of cells, read left to right in every language
+    var board = el('div', 'sd-board'); board.dir = 'ltr'; board.setAttribute('role', 'group'); board.setAttribute('aria-label', t('board', { n: n }));
+    board.style.setProperty('--sd-bx', String(n / G.bc)); board.style.setProperty('--sd-by', String(n / G.br));
+    board.style.setProperty('--sd-bc', String(G.bc)); board.style.setProperty('--sd-br', String(G.br));
+    board.style.setProperty('--sd-nc', String(G.bc)); board.style.setProperty('--sd-nr', String(G.br));
+    D.cells = [];
+    for (var b = 0; b < n; b++) {
+      var bx = el('div', 'sd-box');
+      G.units[2 * n + b].forEach(function (i) {
+        var c = el('button', 'sd-cell'); c.type = 'button'; c.dataset.i = String(i); c.tabIndex = -1;
+        c.appendChild(el('span', 'sd-v'));
+        c.addEventListener('click', function () { select(i, true); });
+        D.cells[i] = c; bx.appendChild(c);
+      });
+      board.appendChild(bx);
+    }
+    board.addEventListener('keydown', onBoardKey);
+    D.board = board; pl.appendChild(board);
+    // the number pad (pictures in picture mode) and the tools
+    var ctrl = el('div', 'sd-ctrl'); D.ctrl = ctrl;
+    var pad = el('div', 'sd-pad'); D.pad = pad; D.keys = [];
+    var cols = n === 9 ? 5 : n;
+    pad.style.setProperty('--sd-pc', String(cols));
+    for (var d = 1; d <= n; d++) (function (d) {
+      var k = el('button', 'sd-key'); k.type = 'button'; k.id = 'sd-k' + d; k.dataset.d = String(d);
+      k.addEventListener('click', function () { input(d); });
+      D.keys[d] = k; pad.appendChild(k);
+    })(d);
+    var tools = el('div', 'sd-tools');
+    function tool(id, ic, label, fn, pressable) {
+      var b2 = el('button', 'sd-tool'); b2.type = 'button'; b2.id = 'sd-' + id; b2.appendChild(icon(ic, 22)); b2.appendChild(el('span', '', label));
+      if (pressable) b2.setAttribute('aria-pressed', 'false');
+      b2.addEventListener('click', fn); return b2;
+    }
+    var er = tool('erase', 'cross', t('erase'), function () { erase(); });
+    if (n === 9) { er.className = 'sd-key erase'; er.setAttribute('aria-label', t('erase')); er.title = t('erase'); er.innerHTML = ''; er.appendChild(icon('cross', 26)); pad.appendChild(er); }
+    D.undoB = tool('undo', 'restart', t('undo'), function () { undo(); });
+    D.notesB = tool('notes', 'pencil', t('notes'), function () { toggleNotes(); }, true);
+    D.hintB = tool('hint', 'hint', t('hint'), function () { hint(); }); var hn = el('span', 'sd-n'); D.hintB.appendChild(hn); D.hintN = hn;
+    D.checkB = tool('check', 'eye', t('check'), function () { toggleCheck(); }, true);
+    tools.appendChild(D.undoB); if (n !== 9) tools.appendChild(er); tools.appendChild(D.notesB); tools.appendChild(D.hintB); tools.appendChild(D.checkB);
+    tools.style.setProperty('--sd-tc', String(tools.children.length));
+    ctrl.appendChild(pad); ctrl.appendChild(tools); pl.appendChild(ctrl);
+    layout();
+    refresh(true);
+    focusSel();
+  }
+
+  /* Sizes: the board stays square and as big as it can; the pad goes under it in portrait and beside it in landscape. */
+  function layout() {
+    if (!D.play || !D.play.isConnected) return;
+    var sd = D.sd, Wd = sd.clientWidth - 16, Ht = sd.clientHeight - 10, n = S.n, pl = D.play;
+    if (Wd <= 0 || Ht <= 0) return;
+    var land = Wd > Ht * 1.15 && Wd >= 520;
+    pl.classList.toggle('land', land);
+    var root = pl.style, board, padW, kh;
+    if (land) {
+      padW = Math.max(230, Math.min(400, Wd * 0.38));
+      kh = Math.max(46, Math.min(64, Ht / 9));
+      root.setProperty('--sd-kh', kh + 'px'); root.setProperty('--sd-pw', padW + 'px');
+      board = Math.min(Ht - 14, Wd - padW - 20, 760);
+    } else {
+      padW = Math.min(Wd, 560);
+      kh = n === 9 ? 50 : n === 6 ? 58 : 68;
+      root.setProperty('--sd-pw', padW + 'px'); root.setProperty('--sd-kh', kh + 'px');
+      var barH = 48, ctrlH = D.ctrl ? D.ctrl.offsetHeight : 180;
+      board = Math.min(Wd, Ht - barH - ctrlH - 20, 640);
+      if (board < Wd * 0.86 && kh > 46) { root.setProperty('--sd-kh', '46px'); ctrlH = D.ctrl.offsetHeight; board = Math.min(Wd, Ht - barH - ctrlH - 20, 640); kh = 46; }
+    }
+    board = Math.max(160, Math.floor(board));
+    var cell = (board - 6) / n;
+    root.setProperty('--sd-b', board + 'px');
+    root.setProperty('--sd-fs', Math.round(cell * 0.6) + 'px');
+    root.setProperty('--sd-nfs', Math.max(9, Math.round(cell * (n === 9 ? 0.31 : 0.26))) + 'px');
+    root.setProperty('--sd-kf', Math.round(Math.min(kh * 0.62, 30)) + 'px');
+    if (S.cellPx !== Math.round(cell)) { S.cellPx = Math.round(cell); if (usePics()) refresh(true); }
+  }
+
+  /* ---------- drawing the board from the state ---------- */
+  function refresh(full) {
+    if (!D.cells || S.screen !== 'play' && S.screen !== 'won') return;
+    var n = S.n, G = C.geom(n), sel = S.sel, sv = sel >= 0 ? S.v[sel] : 0;
+    var bad = {}; C.conflicts(S.v, n).forEach(function (x) { bad[x] = 1; });
+    var peers = {}; if (sel >= 0) G.peers[sel].forEach(function (x) { peers[x] = 1; });
+    var pics = usePics(), px = (S.cellPx || 36) * 0.76;
+    for (var i = 0; i < S.N; i++) {
+      var c = D.cells[i], v = S.v[i], given = !!S.puzzle[i], hinted = !!S.hinted[i], wrong = S.check && v && !given && !hinted && v !== S.sol[i];
+      var cls = 'sd-cell' + (given ? ' given' : '') + (hinted ? ' hinted' : '') + (i === sel ? ' sel' : peers[i] ? ' peer' : '') + (sv && v === sv && i !== sel ? ' same' : '') + (bad[i] ? ' clash' : '') + (wrong ? ' wrong' : '');
+      if (c.className.replace(' pop', '').replace(' wave', '') !== cls) c.className = cls + (c.classList.contains('wave') ? ' wave' : '');
+      var key = (pics ? 'p' : 'd') + v + ':' + (v ? 0 : S.notes[i]) + ':' + (sv || 0) + (full ? ':' + Math.random() : '');
+      if (c.dataset.k !== key) {
+        c.dataset.k = key;
+        var box = c.firstChild; box.innerHTML = '';
+        var old = c.querySelector('.sd-notes'); if (old) old.remove();
+        if (v) { if (pics) box.appendChild(picCanvas(v, px)); else box.textContent = String(v); }
+        else if (S.notes[i]) {
+          var nb = el('div', 'sd-notes');
+          for (var d = 1; d <= n; d++) {
+            var s = el('span');
+            if (S.notes[i] & (1 << (d - 1))) { if (pics) s.appendChild(picCanvas(d, px * 0.42)); else s.textContent = String(d); if (d === sv) s.className = 'on-same'; }
+            nb.appendChild(s);
+          }
+          c.appendChild(nb);
+        }
+      }
+      var label = v ? t('cell', { r: Math.floor(i / n) + 1, c: i % n + 1, v: valueWord(v) }) : t('cellEmpty', { r: Math.floor(i / n) + 1, c: i % n + 1 });
+      if (!v && S.notes[i]) { var list = []; for (var q = 1; q <= n; q++) if (S.notes[i] & (1 << (q - 1))) list.push(valueWord(q)); label += ', ' + t('cellNotes', { list: list.join(' ') }); }
+      if (given) label += ', ' + t('fixedL'); else if (hinted) label += ', ' + t('hintedL');
+      if (bad[i]) label += ', ' + t('clashL');
+      if (wrong) label += ', ' + t('wrongL');
+      if (c.getAttribute('aria-label') !== label) c.setAttribute('aria-label', label);
+      c.tabIndex = i === sel ? 0 : -1;
+    }
+    // the pad: a digit whose n are all on the board is dimmed (still pressable for notes and fixes)
+    var placed = []; for (i = 0; i < S.N; i++) if (S.v[i]) placed[S.v[i]] = (placed[S.v[i]] || 0) + 1;
+    for (var k = 1; k <= n; k++) {
+      var b = D.keys[k], done = placed[k] >= n, kk = (pics ? 'p' : 'd') + (done ? 1 : 0) + (full ? Math.random() : '');
+      if (b.dataset.k !== kk) {
+        b.dataset.k = kk; b.innerHTML = '';
+        if (pics) b.appendChild(picCanvas(k, 40)); else b.textContent = String(k);
+        b.classList.toggle('done', done);
+        b.setAttribute('aria-label', done ? t('allPlaced', { v: valueWord(k) }) : valueWord(k));
+      }
+    }
+    D.notesB.setAttribute('aria-pressed', String(S.noting)); D.ctrl.classList.toggle('noting', S.noting);
+    D.checkB.setAttribute('aria-pressed', String(S.check));
+    D.hintN.textContent = S.hints ? String(S.hints) : '';
+  }
+  function focusSel() { var c = D.cells && D.cells[S.sel]; if (c && document.activeElement !== c && !('ontouchstart' in window && !matchMedia('(pointer: fine)').matches)) { try { c.focus({ preventScroll: true }); } catch (e) { /* gone */ } } }
+  function select(i, tap) {
+    if (S.screen !== 'play' || i < 0 || i >= S.N) return;
+    S.sel = i; refresh(); if (tap) sfx('select', { volume: 0.4 });
+    var c = D.cells[i]; if (c && (!tap || document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('sd-cell'))) { try { c.focus({ preventScroll: true }); } catch (e) { /* gone */ } }
+  }
+
+  /* ---------- moves ---------- */
+  function locked(i) { return !!S.puzzle[i] || !!S.hinted[i]; }
+  function record(cells) { S.undo.push(cells); if (S.undo.length > CONFIG.undoMax) S.undo.shift(); }
+  function pop(i) { var c = D.cells[i]; if (!c || reduced()) return; c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
+  /** A number (or picture) from the pad or the keyboard: a note in notes mode, else the box's value. */
+  function input(d) {
+    if (S.screen !== 'play' || !(d >= 1 && d <= S.n)) return;
+    var i = S.sel; if (i < 0) return;
+    if (locked(i)) { toast(t('fixed')); sfx('wrong', { volume: 0.35 }); return; }
+    if (S.noting) {
+      if (S.v[i]) { sfx('wrong', { volume: 0.3 }); return; }
+      record([[i, S.v[i], S.notes[i]]]);
+      S.notes[i] ^= 1 << (d - 1); sfx('pop', { volume: 0.4, pitch: 1.2 });
+      save(); refresh(); return;
+    }
+    if (S.v[i] === d) return;
+    var ch = [[i, S.v[i], S.notes[i]]];
+    S.v[i] = d; S.notes[i] = 0;
+    // the number leaves the notes of every box that sees it
+    C.geom(S.n).peers[i].forEach(function (x) { var b = 1 << (d - 1); if (S.notes[x] & b) { ch.push([x, S.v[x], S.notes[x]]); S.notes[x] &= ~b; } });
+    record(ch);
+    if (d !== S.sol[i]) S.mistakes++;
+    var clash = C.conflicts(S.v, S.n).indexOf(i) >= 0;
+    if (clash || (S.check && d !== S.sol[i])) sfx('wrong', { volume: 0.5 }); else sfx('pop', { volume: 0.6 });
+    pop(i); save(); refresh(); afterMove();
+  }
+  function erase() {
+    if (S.screen !== 'play') return;
+    var i = S.sel; if (i < 0) return;
+    if (locked(i)) { toast(t('fixed')); return; }
+    if (!S.v[i] && !S.notes[i]) return;
+    record([[i, S.v[i], S.notes[i]]]); S.v[i] = 0; S.notes[i] = 0; sfx('whoosh', { volume: 0.4 }); save(); refresh();
+  }
+  function undo() {
+    if (S.screen !== 'play') return;
+    var last = S.undo.pop(); if (!last) { toast(t('undoNone')); return; }
+    for (var k = last.length - 1; k >= 0; k--) { var a = last[k]; if (locked(a[0])) continue; S.v[a[0]] = a[1]; S.notes[a[0]] = a[2]; }
+    S.sel = last[0][0]; sfx('whoosh', { volume: 0.4, pitch: 0.8 }); save(); refresh(); focusSel();
+  }
+  function toggleNotes(on) { if (S.screen !== 'play') return; S.noting = on == null ? !S.noting : !!on; sfx('select'); refresh(); announce(t(S.noting ? 'notesOn' : 'notesOff')); }
+  function toggleCheck(on) { if (S.screen !== 'play') return; S.check = on == null ? !S.check : !!on; SAVE.check = S.check; sfx('select'); save(); refresh(); toast(t(S.check ? 'checkOn' : 'checkOff')); }
+  /** A hint fills one box with its answer: the chosen box if it is empty or wrong, else the box with the fewest
+   *  possible numbers. It is counted and locked (it cannot be undone). */
+  function hint() {
+    if (S.screen !== 'play') return;
+    var i = S.sel, n = S.n;
+    if (i < 0 || locked(i) || S.v[i] === S.sol[i]) {
+      i = -1; var best = 99;
+      for (var x = 0; x < S.N; x++) if (!locked(x) && S.v[x] !== S.sol[x]) {
+        var m = C.bits(C.candidates(S.v.map(function (v, k) { return v === S.sol[k] ? v : 0; }), n, x)); if (S.v[x]) m += 10;
+        if (m < best) { best = m; i = x; }
+      }
+    }
+    if (i < 0) return;
+    var d = S.sol[i];
+    S.v[i] = d; S.notes[i] = 0; S.hinted[i] = 1; S.hints++;
+    C.geom(n).peers[i].forEach(function (x) { S.notes[x] &= ~(1 << (d - 1)); });
+    S.sel = i; sfx('spark', { volume: 0.6 }); pop(i); save(); refresh(); focusSel();
+    announce(t('hinted') + ' ' + t('cell', { r: Math.floor(i / n) + 1, c: i % n + 1, v: valueWord(d) }));
+    afterMove();
+  }
+  function afterMove() {
+    for (var i = 0; i < S.N; i++) if (!S.v[i]) return;
+    for (i = 0; i < S.N; i++) if (S.v[i] !== S.sol[i]) { toast(t('notDone')); announce(t('notDone')); return; }
+    win();
+  }
+
+  /* ---------- solved: a wave across the board, then the kit's results card (stars, points, BRB.gameOver) ---------- */
+  function win() {
+    var L = S.L, w = S.w, r = { hints: S.hints, mistakes: S.mistakes, time: Math.floor(S.time) };
+    var stars = C.stars(L.id, r), points = C.score(L.id, r);
+    S.screen = 'won'; S.sel = -1; refresh();
+    delete SAVE.games[L.id]; if (SAVE.last === L.id) SAVE.last = '';
+    var prev = SAVE.best[L.id]; if (!prev || stars > prev.stars || stars === prev.stars && r.time < prev.time) SAVE.best[L.id] = { stars: stars, time: r.time };
+    persist();
+    S.lastWin = { id: L.id, stars: stars, score: points, time: r.time, hints: r.hints, mistakes: r.mistakes };
+    announce(t('winSay', { name: levelName(L), t: clock(r.time), h: r.hints, m: r.mistakes }));
+    if (!reduced()) D.cells.forEach(function (c, i) { var rr = Math.floor(i / S.n), cc = i % S.n; c.style.setProperty('--sd-d', ((rr + cc) * 45) + 'ms'); c.classList.add('wave'); });
+    sfx('levelup');
+    S.again = true;
+    var finish = function () { if (w && !w.ended) w.win({ stars: stars, score: points, title: t('solvedH') }); };
+    if (S.fast) finish(); else if (w) w.after(reduced() ? 400 : 900 + S.n * 2 * 45, finish); else finish();
+  }
+
+  /* ---------- the keyboard: arrows, 1 to n, Backspace or Delete, N for notes, Z or U to undo, H for a hint ---------- */
+  function onBoardKey(e) { if (handleKey(e)) { e.preventDefault(); e.stopPropagation(); } }
+  window.addEventListener('keydown', function (e) {
+    if (S.screen !== 'play' || game.state !== 'play' || (O.ui.open && O.ui.open > 0)) return;
+    var tg = e.target; if (tg && tg.closest && tg.closest('.sd-board')) return;   // the board's own handler
+    if (handleKey(e)) e.preventDefault();
+  });
+  function handleKey(e) {
+    if (S.screen !== 'play' || e.altKey) return false;
+    var k = e.key, n = S.n, i = S.sel < 0 ? 0 : S.sel, r = Math.floor(i / n), c = i % n;
+    if ((e.ctrlKey || e.metaKey) && (k === 'z' || k === 'Z')) { undo(); return true; }
+    if (e.ctrlKey || e.metaKey) return false;
+    var mv = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[k];
+    if (mv) { r = Math.min(n - 1, Math.max(0, r + mv[0])); c = Math.min(n - 1, Math.max(0, c + mv[1])); select(r * n + c, false); focusSel(); return true; }
+    if (k === 'Home') { select(r * n, false); focusSel(); return true; }
+    if (k === 'End') { select(r * n + n - 1, false); focusSel(); return true; }
+    var d = /^[1-9]$/.test(k) ? +k : /^(Digit|Numpad)[1-9]$/.test(e.code || '') ? +e.code.slice(-1) : 0;
+    if (d) { if (d <= n) input(d); return true; }
+    if (k === 'Backspace' || k === 'Delete' || k === '0') { erase(); return true; }
+    if (k === 'n' || k === 'N') { toggleNotes(); return true; }
+    if (k === 'u' || k === 'U' || k === 'z' || k === 'Z') { undo(); return true; }
+    if (k === 'h' || k === 'H') { hint(); return true; }
+    return false;
+  }
+
+  /* ---------- the save: the puzzle in progress (digits as text), notes, hints, mistakes and time ---------- */
+  function save() {
+    if (!S.L || S.screen !== 'play') return;
+    var hi = Object.keys(S.hinted).map(Number);
+    SAVE.games[S.L.id] = { p: C.encode(S.puzzle), s: C.encode(S.sol), v: C.encode(S.v), n: S.notes.slice(), h: S.hints, m: S.mistakes, t: Math.floor(S.time), hi: hi, seed: S.seed, tier: S.tier };
+    SAVE.last = S.L.id;
+    persist();
+  }
+  document.addEventListener('visibilitychange', function () { if (document.hidden && S.screen === 'play') save(); });
+
+  /* ---------- test hooks (window.__brbTest, merged with the kit's) ---------- */
+  function testState() {
+    return {
+      screen: S.screen, level: S.L ? S.L.id : null, size: S.n, seed: S.seed, tier: S.tier,
+      givens: S.puzzle.filter(Boolean).length, filled: S.v.filter(Boolean).length,
+      puzzle: C.encode(S.puzzle), values: C.encode(S.v), solution: S.screen === 'play' || S.screen === 'won' ? C.encode(S.sol) : '',
+      notes: S.notes.slice(), noting: S.noting, check: S.check, pics: S.pics, sel: S.sel,
+      hints: S.hints, mistakes: S.mistakes, time: Math.floor(S.time), conflicts: S.v.length ? C.conflicts(S.v, S.n) : [],
+      saved: Object.keys(SAVE.games), last: SAVE.last, best: SAVE.best, lastWin: S.lastWin || null, kit: game.state,
+    };
+  }
+  Object.assign(window.__brbTest, {
+    state: testState,
+    core: C,
+    pick: function (id, o) { o = Object.assign({ fast: true }, o || {}); if (game.state === 'play') startLevel(id, o); else { S.pending = Object.assign({ id: id }, o); game.start(); } return testState(); },
+    picker: function () { if (game.state === 'play') showPicker(); else game.start(); return testState(); },
+    select: function (i) { select(i, false); return testState(); },
+    press: function (d) { input(d); return testState(); },
+    erase: function () { erase(); return testState(); },
+    undo: function () { undo(); return testState(); },
+    hint: function () { hint(); return testState(); },
+    notes: function (on) { toggleNotes(on); return testState(); },
+    checkMistakes: function (on) { toggleCheck(on); return testState(); },
+    pictures: function (on) { S.pics = on !== false; SAVE.pics = S.pics; persist(); if (S.screen === 'play') refresh(true); else if (S.screen === 'pick') showPicker(); return testState(); },
+    /** Fills the board with the answer, leaving `leave` boxes empty (the last ones in reading order). */
+    fill: function (leave) { var left = leave || 0; for (var i = S.N - 1; i >= 0; i--) { if (S.puzzle[i] || S.hinted[i]) continue; if (left > 0) { left--; S.v[i] = 0; continue; } S.v[i] = S.sol[i]; S.notes[i] = 0; } save(); refresh(); return testState(); },
+    jot: function (i, ds) { S.notes[i] = 0; (ds || []).forEach(function (d) { S.notes[i] |= 1 << (d - 1); }); save(); refresh(); return testState(); },
+    skipAnimations: function () { S.fast = true; return testState(); },
+    setTime: function (s) { S.time = +s || 0; S.shown = -1; return testState(); },
+  });
+})();
+</script>

@@ -128,6 +128,9 @@ export const GAMES = {
   // What the chip and the lab screen show (show.*), the button labels (btn.*), the chapter names and the round counter
   // are shown, never read.
   'sub-zero': { title: 'Sub Zero', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
+  // Sudoku: the title, the how-to cards (read aloud with read-aloud on) and the few fixed lines, in the friendly voice
+  // (its VOICES block). The board, the pad, the labels a screen reader reads and the lines with numbers are never spoken.
+  'sudoku': { title: 'Sudoku', role: 'friendly', spoken: /^(?:title|tag|how\d|pickH|making|fixed|hinted|notDone|solvedH)$/ },
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },
   'swish-flick': { title: 'Swish Flick', role: 'narrator', spoken: /./ },
   'trick-inbox': { title: 'Trick Inbox', role: 'wise', spoken: /./ },
