@@ -340,7 +340,7 @@ test('registration: seeded, in the Number Quest course, and tagged chapter by ch
   assert.equal(UNIT.title, 'The Mixing Tower'); assert.equal(UNIT.stamp, 'Ratio Gear'); assert.equal(UNIT.tool, 'lantern-mix');
   assert.ok(!('planned' in UNIT) && !('reserved' in UNIT)); for (const s of STEPS) assert.ok(!('reserved' in s), s.n);
   assert.equal(UNIT.teacherNotes.length, 3);
-  assert.ok(UNITS.tiers.pro.stones.includes('Ratio Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'the grades 6-8 street stays closed: only the platform admin sees it');
+  assert.ok(UNITS.tiers.pro.stones.includes('Ratio Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro, s.mp]), [['1.1', 2, 'Ratios and equal mixes', 'MP7'], ['1.2', 3, 'Unit rates', 'MP2'], ['1.3', 4, 'Percent and changing units', 'MP6']]);
   // the statements the unit locks carry the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;

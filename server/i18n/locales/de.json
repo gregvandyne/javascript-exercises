@@ -3268,7 +3268,7 @@
       "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat.",
       "find": "Lektion suchen",
       "readyMade": "Fertige Kurse",
-      "numberQuest": "Number Quest (Mathe, Vorschule bis Klasse 5)"
+      "numberQuest": "Number Quest (Mathe, Vorschule bis Klasse 8)"
     },
     "folder": {
       "name": "Ordnername",
@@ -4467,7 +4467,7 @@
       "q4": "Wie schützen Sie die Daten der Schüler?",
       "a4": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Es gibt keine Werbung und keine Tracking-Cookies, und den echten Namen eines Schülers sieht nur das Personal seiner Schule. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
       "q5": "Für welches Alter und welche Klassen ist es gedacht?",
-      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, beginnt in der Vorschule, CS Quest und Cyber Defenders beginnen ab Klasse 3.",
+      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, reicht von der Vorschule bis Klasse 8, CS Quest und Cyber Defenders beginnen ab Klasse 3.",
       "q6": "Wie füge ich meine Klasse hinzu?",
       "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
       "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
@@ -7076,7 +7076,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Mathe in den Numberworks · Vorschule bis Klasse 5"
+      "sub": "Mathe in den Numberworks · Vorschule bis Klasse 8"
     },
     "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}",
     "gamesN": "{count, plural, one {Das # Spiel ansehen} other {Die # Spiele ansehen}}"
@@ -7383,8 +7383,8 @@
       "lead": "Kurze Foliensätze, schnelle Checks und Spielmissionen auf einem Weg. Jedes Kind lernt im eigenen Tempo; du siehst den Fortschritt in der Notenübersicht.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Mathe · Vorschule bis Klasse 5",
-        "p": "Zählen, Stellenwerte, Brüche, Messen, Formen und Daten im Numberworks von Netville mit Katze Tally, von der Vorschule bis Klasse 5. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
+        "tag": "Mathe · Vorschule bis Klasse 8",
+        "p": "Zählen, Stellenwerte, Brüche, Verhältnisse, Gleichungen, Formen und Daten im Numberworks von Netville mit Katze Tally, von der Vorschule bis Klasse 8. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
       },
       "cs": {
         "name": "CS Quest",

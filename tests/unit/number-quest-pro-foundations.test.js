@@ -1,5 +1,8 @@
-// Number Quest Pro (grades 6-8, The Towers): the tier's foundations, with the data exactly as it ships
-// (units.json tiers.pro.status "building", 2026-11-14). The plan is the owner's, approved the same day. Pinned here:
+// Number Quest Pro (grades 6-8, The Towers): the tier's foundations. The plan is the owner's, approved on 2026-11-14,
+// when the tier was declared "building"; it OPENED on 2026-11-15 (units.json tiers.pro.status "open"). What the
+// building state meant is still pinned, through the test hook that reads the tier as "building"
+// (T.setTierStatus('pro', 'building')) and through copies of the catalogue with a unit or the finale planned again;
+// the open state is pinned with the data exactly as it ships (and in number-quest-pro-open.test.js). Pinned here:
 //   - PLANNED UNITS: the seven Pro units and their 22 steps are reserved in the catalogue (`planned: true`) so they
 //     can be built side by side. For the engine a planned unit is not in the tier: no steps, no doors, no start
 //     node, no test-out, no standards tag, for anyone. Deleting the flag is what puts a unit on the street;
@@ -7,19 +10,19 @@
 //     until it was built. Every Pro unit and step is built now, so the planned-unit behaviour is pinned through a copy
 //     with Unit 7 planned again, and the planned-step behaviour through a copy with the finale planned again;
 //   - a tier with a planned unit is never open, whatever its status line says;
-//   - NOBODY BUT THE PLATFORM ADMIN sees Pro: not a visitor, a learner, a parent or school staff; not as a band, a
-//     street, a step, an API, a start node, a test-out, a teacher-page row or a word on a public page;
+//   - while Pro is building (the hook), NOBODY BUT THE PLATFORM ADMIN sees it: not a visitor, a learner, a parent or
+//     school staff; not as a band, a street, a step, an API, a start node, a test-out or a teacher-page row;
 //   - the admin previews a sensible street: the welcome step opens, the seven planned units are listed as planned
 //     (no doors), the teacher page shows them in their own section, and nothing reads "undefined";
 //   - PLACEMENT IS UNCHANGED while Pro is building: every one of the 88,434 possible sets of placed rungs starts
 //     exactly where it starts on main (a hash), the recorded Pro profiles and starting line are inert, and "Just
 //     Play" for grades 6-8 still starts at Explorer Unit 7;
-//   - with Pro FORCED OPEN (the test hooks: the planned flags lifted, the status read as open) the walk follows the
+//   - with Pro OPEN (as it ships since 2026-11-15) the walk follows the
 //     seven profiles, a learner enters only with every strand at rung 5.5 or over, and a strong fourth grader with
 //     any strand under it still starts at the Explorer finale door;
 //   - EXISTING LEARNERS ARE NEVER MOVED, building or open: nothing stored about them changes;
-//   - the teacher page's placement copy is made from the data: unchanged today, and it names the third street
-//     the moment it is open.
+//   - the teacher page's placement copy is made from the data: unchanged while Pro is building, and it names the
+//     third street now that it is open.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -94,14 +97,6 @@ function withFinalePlanned(then) {
   T.setCatalogueForTests(cat); C.reload();
 }
 const UNIT_NAMES = [[6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']];
-/** FOR THIS FILE: Pro as it will be once its units are built and it opens. The planned flags are lifted in a copy of
- *  the catalogue (the steps then load with the placeholder deck a step without a deck file gets) and the tier's
- *  status is read as open. Nothing in the app can do either: a unit is built by a change to units.json. */
-function forceProOpen() {
-  const cat = structuredClone(T.catalogue());
-  for (const u of cat.units) if (u.tier === 'pro') { delete u.planned; for (const s of u.steps) delete s.planned; }
-  T.setCatalogueForTests(cat); T.setTierStatus('pro', 'open'); C.reload();
-}
 /** Everything the platform stores about one learner's Number Quest, as rows: what "not moved" is compared on. */
 const snapshot = kid => JSON.stringify({
   progress: q.all('SELECT * FROM course_progress WHERE user_id=? AND course=? ORDER BY step', kid.id, 'number-quest'),
@@ -178,16 +173,19 @@ test('planned units: reserved in the catalogue, absent from the engine; the tier
   assert.equal(C.stepFor(admin, course, 'pro-7.4'), null, 'not even for the admin');
   assert.equal(T.statusOf('pro'), 'building');
   restore();
-  // The file itself: every Pro unit and step is built, the finale too; the tier stays building by its status line.
+  // The file itself: every Pro unit and step is built, the finale too; the tier is open by its status line (2026-11-15).
   assert.deepEqual(T.stepsOf('pro').map(s => s.key), REAL_BUILT_KEYS);
   assert.deepEqual(T.plannedUnitsOf('pro'), []);
   assert.equal(C.getStep(course, 'pro-7.1').game.slug, 'launch-lab'); assert.equal(C.getStep(course, 'pro-7.4').game.slug, 'launch-lab', 'the finale is built: Launch Lab\'s fourth chapter');
   assert.equal(C.getStep(course, 'pro-7.4').game.params, 'chapter=clock&lock=1'); assert.equal(C.getStep(course, 'pro-7.4').deck, true);
-  assert.deepEqual(P.entryProfile('pro', 7), PLACE.crosswalk.entryProfiles['pro-7.1'], 'Unit 7 is built: its profile can be asked for'); assert.equal(P.testOutItems(7, 'seed', 'pro').length, 5, 'and it has its test-out items, though the route deals them to nobody while the tier is building');
+  assert.deepEqual(P.entryProfile('pro', 7), PLACE.crosswalk.entryProfiles['pro-7.1'], 'Unit 7 is built: its profile can be asked for'); assert.equal(P.testOutItems(7, 'seed', 'pro').length, 5, 'and it has its test-out items');
+  assert.deepEqual(P.startNodes().filter(x => x.tier === 'pro').map(x => x.node), ['pro-0.1', 'pro-1.1', 'pro-2.1', 'pro-3.1', 'pro-4.1', 'pro-5.1', 'pro-6.1', 'pro-7.1', 'pro-7.4'], 'the street is open: its doors are start nodes');
+  // Read as building again (the hook), the same built tier has no start node.
+  T.setTierStatus('pro', 'building');
   assert.ok(!P.startNodes().some(x => x.tier === 'pro'));
 });
 
-test('all seven Pro units and the finale are built; no step is planned or reserved in Pro; the tier stays building by its status line', () => {
+test('all seven Pro units and the finale are built; no step is planned or reserved in Pro; the tier is open by its status line', () => {
   const pro = UNITS.units.filter(u => u.tier === 'pro' && u.n >= 1);
   assert.deepEqual(pro.map(u => u.n), [1, 2, 3, 4, 5, 6, 7]);
   assert.deepEqual(UNITS.units.filter(u => u.planned === true), [], 'no unit of any tier is planned: all seven Pro units are built');
@@ -197,9 +195,12 @@ test('all seven Pro units and the finale are built; no step is planned or reserv
   assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 1, 2, 3, 4, 5, 6, 7]);
   assert.deepEqual(T.plannedUnitsOf('pro'), []);
   assert.deepEqual(T.stepsOf('pro').map(s => s.key), REAL_BUILT_KEYS); assert.equal(REAL_BUILT_KEYS.length, 23);
-  // Nothing is planned now, and the tier is still not open: its status line, "building", is what governs.
-  assert.equal(UNITS.tiers.pro.status, 'building'); assert.equal(T.statusOf('pro'), 'building'); assert.equal(T.isOpen('pro'), false);
-  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer']);
+  // Nothing is planned, and the status line is "open" (2026-11-15): the tier is open.
+  assert.equal(UNITS.tiers.pro.status, 'open'); assert.equal(T.statusOf('pro'), 'open'); assert.equal(T.isOpen('pro'), true);
+  assert.deepEqual(T.openTiers(), ['launchpad', 'explorer', 'pro']);
+  // The status line still governs: read as "building" (the hook), the same built tier is closed.
+  T.setTierStatus('pro', 'building');
+  assert.equal(T.statusOf('pro'), 'building'); assert.deepEqual(T.openTiers(), ['launchpad', 'explorer']);
 });
 
 test('a tier with a planned unit is never open, whatever its status line says; lifting the flag is what builds a unit', () => {
@@ -234,15 +235,22 @@ test('a tier with a planned unit is never open, whatever its status line says; l
   assert.equal(C.getStep(course, 'pro-7.1').title, 'Center and spread'); assert.equal(C.getStep(course, 'pro-7.1').deck, true, 'Unit 7 brought its decks');
   assert.equal(C.getStep(course, 'pro-7.4').deck, true, 'and the finale its deck');
   assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'every Pro step has its deck');
-  // And back: the file is what it was, and building by its status line alone.
+  // And back: the file is what it was, and open by its status line.
   restore();
-  assert.equal(T.statusOf('pro'), 'building'); assert.deepEqual(C.steps(course, 'pro').map(s => s.key), REAL_BUILT_KEYS);
+  assert.equal(T.statusOf('pro'), 'open'); assert.deepEqual(C.steps(course, 'pro').map(s => s.key), REAL_BUILT_KEYS);
   // The data never does this by accident: an open tier has no planned unit and no planned step.
   for (const [tier, line] of Object.entries(UNITS.tiers)) if (line.status === 'open') assert.deepEqual(UNITS.units.filter(u => u.tier === tier && (u.planned || u.steps.some(s => s.planned))), [], `${tier} is open, so nothing in it is planned`);
 });
 
 // ------------------------------------------------------------------------------------------------- who sees Pro
-test('nobody but the platform admin sees Pro: no band, street, step, API, start node, test-out or word on a public page', async () => {
+// The course's fixed copy (courses.nq.about and courses.nq.teachers, en.json) names the three streets since the opening, whatever
+// the test hook says: set aside by its exact text when a page is read for what the DATA put on it.
+const EN = JSON.parse(fs.readFileSync(new URL('../../server/i18n/locales/en.json', import.meta.url), 'utf8'));
+const escHtml = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const staticCopyOut = text => [EN.courses.nq.about, EN.courses.nq.teachers].reduce((t, x) => t.split(escHtml(x)).join('').split(x).join(''), text);
+test('while Pro is building, nobody but the platform admin sees it: no band, street, step, API, start node or test-out', async () => {
+  // The building state, as it was from 2026-11-14 to the opening on 2026-11-15 (the hook; restore() puts the file back).
+  T.setTierStatus('pro', 'building');
   const kid = newKid(), cookie = cookieFor(kid.id), pc = cookieFor(parent.id);
   for (const who of [null, kid, parent]) {
     assert.deepEqual(C.bandsFor(course, who), ['launchpad', 'explorer']);
@@ -257,10 +265,17 @@ test('nobody but the platform admin sees Pro: no band, street, step, API, start 
   // Pages: the path (also asked for by name), the step, the planned steps.
   const TOWERS = /The Towers|Welcome to the Towers|Great Clock|Ratio Gear|Mixing Tower|street-pro|band-pro|nqp-planned|Planned units|pro-0\.1|grades K–8, mapped|6–8<\/span>/;
   for (const [path, c] of [['/courses/number-quest', null], ['/courses/number-quest', cookie], ['/courses/number-quest?street=pro', null], ['/courses/number-quest?street=pro', cookie], ['/courses/number-quest?street=pro', pc],
-    ['/teachers/number-quest', null], ['/teachers/number-quest', cookie], ['/teachers/number-quest?print=1', null], ['/number-quest/sorting-game', cookie]]) {
+    ['/number-quest/sorting-game', cookie]]) {
     const r = await get(path, c);
     assert.equal(r.status, 200, path);
-    assert.doesNotMatch(r.text.replace(/<script[\s\S]*?<\/script>/g, ''), TOWERS, `${path}: nothing of the Pro street`);
+    assert.doesNotMatch(staticCopyOut(r.text.replace(/<script[\s\S]*?<\/script>/g, '')), TOWERS, `${path}: nothing of the Pro street`);
+  }
+  // The teacher page: no Pro row, unit, code, game card, gap list or count for a non-admin. (Its fixed course copy in the
+  // locale files names the three streets since the opening, whatever the hook says, so the page is read by its data parts.)
+  for (const [path, c] of [['/teachers/number-quest', null], ['/teachers/number-quest', cookie], ['/teachers/number-quest?print=1', null]]) {
+    const r = await get(path, c);
+    assert.equal(r.status, 200, path);
+    assert.doesNotMatch(r.text.replace(/<script[\s\S]*?<\/script>/g, ''), /Welcome to the Towers|Ratio Gear|Mixing Tower|Pro · |Planned units|6\.RP\.A\.1|id="pro-gaps"|Lantern Mix<\/h3>|grades K–8, mapped|3 streets/, `${path}: nothing of the Pro street`);
   }
   assert.match((await get('/courses/number-quest?street=pro', cookie)).text, /aria-label="The Numberworks street, Explorer"/, 'asking for the Pro street shows the street the learner would see anyway');
   for (const key of ['pro-0.1', 'pro-1.1', 'pro-7.4']) {
@@ -281,12 +296,7 @@ test('nobody but the platform admin sees Pro: no band, street, step, API, start 
   assert.equal((await post('/api/number-quest/testout/start', cookie, { unit: 7, tier: 'pro' })).status, 400, 'Unit 7, built, is no test-out either');
   const api = await get('/api/number-quest/placement', cookie);
   assert.deepEqual(Object.keys(JSON.parse(api.text).testedOutByTier), ['launchpad', 'explorer']);
-  // Nothing learner-facing says "Pro" about Number Quest: the course strings still describe two streets, K to 5.
-  const en = JSON.parse(fs.readFileSync(new URL('../../server/i18n/locales/en.json', import.meta.url), 'utf8'));
-  const nqStrings = JSON.stringify([en.teachers.nq, en.courses.numberQuest]);
-  assert.doesNotMatch(nqStrings, /The Towers|Great Clock|Gear\b|grade 8|K–8|three streets|Welcome to the Towers/);
-  // The one sentence that has always named the tier (the map's lock note, on the teacher page since the Launchpad opening) is still the only one.
-  assert.deepEqual(nqStrings.match(/[^.]*\bPro\b[^.]*\./g).map(x => x.trim()), ['The Pro tier (grades 6–8) is specced but not built yet, and its codes are not cited here until its own lock lands.']);
+  // (The course copy in the locale files describes the three streets since the opening: pinned in number-quest-pro-open.test.js.)
 });
 
 test('the platform admin previews a sensible Pro street: the welcome and the built units open, the other units are listed as planned, nothing is broken', async () => {
@@ -392,6 +402,8 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
 
 // ------------------------------------------------------------------------------------------------- placement
 test('placement is unchanged while Pro is building: all 88,434 possible sets of rungs start where they start on main', () => {
+  // Building, as it was until 2026-11-15 (the hook). The same sets with Pro open: number-quest-pro-open.test.js.
+  T.setTierStatus('pro', 'building');
   assert.deepEqual(crosswalkHash(P), MAIN);
   // Said out loud for the learners the Pro line is about: strong today means the Explorer finale door, today.
   for (const r of [all(4), all(5.5), all(6), all(8), rungs(8, 8, 8, 5), rungs(7, 8, 7.5, 7.5)]) {
@@ -410,8 +422,8 @@ test('placement is unchanged while Pro is building: all 88,434 possible sets of 
   assert.equal(P.PRO_LINE, 5.5); assert.equal(P.PRO_LINE, PLACE.crosswalk.proLine); assert.ok(P.PRO_LINE > P.EXPLORER_LINE);
 });
 
-test('Pro forced open: the walk follows the seven profiles, and a learner enters only with every strand at rung 5.5 or over', () => {
-  forceProOpen();
+test('Pro open (as it ships): the walk follows the seven profiles, and a learner enters only with every strand at rung 5.5 or over', () => {
+  assert.equal(T.isOpen('pro'), true, 'the file itself, no hook');
   assert.deepEqual(P.proEntry(), { name: 'Pro', line: 5.5, units: 7, welcome: 'Welcome to the Towers', finale: 'The Great Clock' });
   const at = (node, extra = {}) => ({ node, tier: 'pro', launchpadGap: false, finaleDoor: false, ...extra });
   const vault = { node: 'explorer-7.4', tier: 'explorer', launchpadGap: false, finaleDoor: true };
@@ -480,13 +492,14 @@ test('existing learners are never moved: not by Pro being declared, and not by P
   P.placeAtBeginning(small, 1); C.setBand(small, course, 'launchpad'); finish(small, 'launchpad-0.1');
   const kids = [strong, mid, small], before = kids.map(snapshot);
   const readEverything = async () => { for (const k of kids) { const c = cookieFor(k.id); await get('/courses/number-quest', c); await get('/api/number-quest/placement', c); await get('/number-quest/sorting-game', c); P.getPlacement(k); C.overview(k, course); } };
-  // 1. With the data as it ships (Pro building): reading every page changes nothing.
+  // 1. With Pro building, as it was until 2026-11-15 (the hook): reading every page changes nothing.
+  T.setTierStatus('pro', 'building');
   await readEverything();
   assert.deepEqual(kids.map(snapshot), before, 'Pro being declared wrote nothing');
   assert.equal(P.getPlacement(strong).startNode, 'explorer-7.4');
   assert.match((await get('/courses/number-quest', cookieFor(strong.id))).text, /aria-label="The Numberworks street, Explorer"/);
-  // 2. With Pro open: the same rungs would now start a NEW learner on the Great Clock door, and this one is left alone.
-  forceProOpen();
+  // 2. With Pro open (the file as it ships): the same rungs would now start a NEW learner on the Great Clock door, and this one is left alone.
+  T.setTierStatus('pro', null);
   assert.equal(P.crosswalk(all(8)).node, 'pro-7.4', 'a new run with these rungs would land in Pro');
   await readEverything();
   assert.deepEqual(kids.map(snapshot), before, 'Pro opening wrote nothing: no migration, no backfill, no move');
@@ -501,16 +514,17 @@ test('existing learners are never moved: not by Pro being declared, and not by P
   assert.equal(C.setBand(strong, course, 'pro'), true);
   assert.equal(P.getPlacement(strong).startNode, 'explorer-7.4', 'choosing the street does not rewrite the start');
   assert.equal(P.overrideStartNode(mid, 'pro-2.1').startNode, 'pro-2.1', 'a grown-up may place a learner on any open door');
-  restore();
-  // 3. And closed again (as it ships): the learner who chose Pro reads as having no band; their rows are still there.
+  // 3. And were it ever closed again (the hook): the learner who chose Pro reads as having no band; their rows are still there.
+  T.setTierStatus('pro', 'building');
   assert.equal(C.getBand(strong, course), null);
   assert.equal(q.get('SELECT band FROM course_bands WHERE user_id=? AND course=?', strong.id, 'number-quest').band, 'pro', 'nothing is deleted');
   assert.equal(P.getPlacement(strong).startNode, 'explorer-7.4');
 });
 
 // ------------------------------------------------------------------------------------------------- copy from data
-test('the teacher page\'s placement copy is made from the data: two streets today, the third the moment it opens', async () => {
-  // Today: not a word about a third street, in the function, the matrix, the explainer or the page.
+test('the teacher page\'s placement copy is made from the data: two streets while Pro is building, the third now that it is open', async () => {
+  // Building (the hook, as until 2026-11-15): not a word about a third street, in the function, the matrix, the explainer or the page.
+  T.setTierStatus('pro', 'building');
   assert.deepEqual(proPlacementWords(), { landing: '', walk: '', justPlay: '', finaleIf: '' });
   const today = String(placementSection()); // the explainer, with the matrix inside it
   assert.ok(today.includes(String(placementMatrix())));
@@ -518,9 +532,9 @@ test('the teacher page\'s placement copy is made from the data: two streets toda
   assert.match(today, /or the Vault of Measures door \(the finale\) when all seven are met\. A rung that lands under the Explorer starting line starts in the Launchpad gardens instead<\/td>/);
   assert.match(today, /and with grade 3 to 5 at Explorer Unit 1\. If every strand points past Explorer Unit 7, the start is the Vault of Measures/);
   const page = await get('/teachers/number-quest');
-  assert.doesNotMatch(page.text, /Pro street|Pro starting line|Great Clock/);
-  // Open: the same functions name the street, its line, its welcome, its finale and its unit count, all from the catalogue.
-  forceProOpen();
+  assert.doesNotMatch(page.text, /the start is on the Pro street|Pro starting line|What the Pro street does not cover|id="pro-gaps"/);
+  // Open (the file as it ships): the same functions name the street, its line, its welcome, its finale and its unit count, all from the catalogue.
+  T.setTierStatus('pro', null);
   const w = proPlacementWords();
   assert.equal(w.landing, '. With every strand at rung 5.5 or over and all seven Explorer profiles met, the start is on the Pro street instead: Welcome to the Towers when its first entry profile is not met, else the first Pro unit (1–7) whose entry profile is not fully met, or The Great Clock (its finale door) when all 7 are met');
   assert.equal(w.justPlay, ', and with grade 6 to 8 at the Pro welcome'); assert.equal(w.finaleIf, ' with any strand under rung 5.5');
@@ -534,14 +548,16 @@ test('the teacher page\'s placement copy is made from the data: two streets toda
   const opened = await get('/teachers/number-quest');
   assert.equal(opened.status, 200); assert.match(opened.text, />3 streets · 21 units</); assert.match(opened.text, /Pro · Unit 1 · The Mixing Tower/);
   assert.doesNotMatch(opened.text, /Planned units \(admin preview\)/, 'nothing is planned once every unit is built');
-  // A learner on the open street sees a path, not an error (the decks are placeholders in this test).
+  // A learner on the open street sees a path, not an error.
   const kid = newKid();
   const street = await get('/courses/number-quest?street=pro', cookieFor(kid.id));
   assert.equal(street.status, 200); assert.match(street.text, /aria-label="The Numberworks street, Pro"/); assert.match(street.text, /id="step-pro-7\.4"/);
   assert.doesNotMatch(street.text.replace(/<script[\s\S]*?<\/script>/g, ''), /undefined|NaN|nqp-planned/);
 });
 
-test('for everyone who is not the admin, every Number Quest page is byte for byte the page of a course with no Pro tier in it', async () => {
+test('while Pro is building, for everyone who is not the admin, every Number Quest page is byte for byte the page of a course with no Pro tier in it', async () => {
+  // Building (the hook): what the tier's declaration promised until the opening on 2026-11-15.
+  T.setTierStatus('pro', 'building');
   const kid = newKid(), kc = cookieFor(kid.id), pc = cookieFor(parent.id);
   C.setBand(kid, course, 'explorer');
   const PAGES = [['/courses/number-quest', null], ['/courses/number-quest?street=launchpad', null], ['/courses/number-quest?street=pro', null], ['/courses/number-quest', kc], ['/courses/number-quest?street=launchpad', kc],
@@ -566,7 +582,8 @@ test('for everyone who is not the admin, every Number Quest page is byte for byt
     assert.ok(text === without[i][2], `${path}: the page is identical with and without the Pro tier in the catalogue (${text.length} and ${without[i][2].length} characters)`);
   }
   assert.deepEqual(withPro.map(x => x[1]), [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 302, 404, 404, 200], 'the pages open (a locked step redirects to the map), and the Pro welcome is a 404');
-  // The one piece of copy this build rewired to read the tiers from the data is, today, exactly the text main rendered.
+  // The one piece of copy this build rewired to read the tiers from the data is, with Pro building, exactly the text main rendered.
+  T.setTierStatus('pro', 'building');
   const { createHash } = await import('node:crypto');
   assert.equal(createHash('sha256').update(String(placementSection())).digest('hex'), '20324454343ee4e778f39d914495e9374bd3bf3cc8a677e92a61f2225bc92e53', 'the placement explainer and its K-8 matrix are character for character what main rendered (9edb96e7); re-pin only when that copy is changed on purpose');
 });

@@ -1,8 +1,9 @@
 // The Number Quest teacher page (/teachers/number-quest): the public program page, built like Cyber
 // Defenders' (routes/cyber-defenders.js) from the course data (seed-lessons/number-quest, via
 // courses.numberQuestCatalogue()): the overview, the games, the units and steps, the published CCSS-M
-// map for every street the reader may see (the open ones: Launchpad and Explorer today, each with Units 1-7 and its
-// finale; Pro joins when it opens, and until then only the platform admin sees it) (primary / also covers / builds toward kept
+// map for every street the reader may see (the open ones: Launchpad, Explorer and, since 2026-11-15, Pro, each with
+// Units 1-7 and its finale; a street still being built shows to the platform admin only), what Pro does not cover
+// (standards.json proCoverage, generated from the data) (primary / also covers / builds toward kept
 // separate and labelled — builds toward is preparation, never coverage; step 7.3 is flagged enrichment
 // and cites no code), each step's Mathematical Practice spotlight, the per-unit teacher
 // notes, and the printed pack (?print=1: the map and the notes on their own page). Copy under teachers.nq.*
@@ -115,6 +116,29 @@ export function placementSection() {
   </section>`;
 }
 
+/** What the Pro street does not cover (owner decision 2: Pro is "the major work of grades 6-8"), generated from
+ *  standards.json proCoverage, so the list cannot drift from the lock: the headline gaps first (circles; cylinders,
+ *  cones and spheres; exponents and scientific notation; irrational numbers), then every other grade 6-8 statement
+ *  no Pro step cites, each code with its published statement as its title. Empty unless the Pro street is on the
+ *  page (open, or the admin's preview). English course data, rendered lang="en" like the map. */
+export function proCoverageSection(cat) {
+  const cov = cat && cat.registry && cat.registry.proCoverage;
+  if (!cov || !(cat.tiers || []).some(x => x.key === 'pro')) return '';
+  const groups = [...(cov.notCovered || [])].sort((a, b) => (b.headline ? 1 : 0) - (a.headline ? 1 : 0));
+  const head = groups.filter(g => g.headline).map(g => (g.topic.charAt(0).toLowerCase() + g.topic.slice(1)).replace(/: (.+)$/, ' ($1)'));
+  const n = groups.reduce((k, g) => k + Object.keys(g.codes || {}).length, 0);
+  const chips = g => raw(Object.entries(g.codes || {}).map(([code, stmt]) => `<span class="csq-badge csq-ids" lang="en" dir="ltr" title="${esc(stmt)}">${esc(code)}</span>`).join(' '));
+  const list = head.length > 1 ? `${head.slice(0, -1).join('; ')}; and ${head[head.length - 1]}` : head.join('');
+  return html`
+  <section class="lp-sec" id="pro-gaps" aria-labelledby="pro-gaps-h" lang="en" dir="ltr">
+    <h2 id="pro-gaps-h">What the ${T.tierName('pro')} street does not cover</h2>
+    <p>${T.tierName('pro')} teaches ${String(cov.claim || 'the major work of grades 6-8').replace(/(\d)-(\d)/g, '$1–$2')}, not every grade 6–8 statement. It does not teach ${list}. In all, ${n} grade 6–8 statements are not cited by any ${T.tierName('pro')} step, check or mission; plan these from your own materials.</p>
+    <div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>Not covered</th><th>Statements</th></tr></thead><tbody>
+      ${groups.map(g => html`<tr><td>${g.headline ? html`<b>${g.topic}</b>` : g.topic}</td><td><span class="csq-idrow">${chips(g)}</span></td></tr>`)}
+    </tbody></table></div>
+  </section>`;
+}
+
 /** The standards map and the teacher notes, shared by the page and its print view. el/lp/faqBlock come from
  *  routes/teachers.js (the landing-page helpers, as on the Cyber page); they are passed in to keep this
  *  view free of a route import. */
@@ -126,7 +150,7 @@ export function mapAndNotes(req, cat, el) {
     ${el(t, 'p', `${K}.map.p`)}
     <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${locked}</b>${el(t, 'span', `${K}.map.codes`)}</div><div class="csq-stat"><b dir="ltr">${cat.units.reduce((n, u) => n + (u.steps || []).length, 0)}</b>${el(t, 'span', `${K}.map.statSteps`)}</div><div class="csq-stat"><b dir="ltr">${cat.units.filter(u => u.stamp).length}</b>${el(t, 'span', `${K}.map.statUnits`)}</div></div>
     ${mapTable(req, cat)}
-    ${el(t, 'p', `${K}.map.lock`, {}, ' class="small muted"')}</section>${(cat.planned || []).length ? html`
+    ${el(t, 'p', `${K}.map.lock`, {}, ' class="small muted"')}</section>${proCoverageSection(cat)}${(cat.planned || []).length ? html`
   <section class="lp-sec" id="planned" aria-labelledby="planned-h" lang="en" dir="ltr"><h2 id="planned-h">Planned units (admin preview)</h2>
     <p>These ${cat.planned.length} units are reserved in the catalogue and not built yet: no lesson, check or mission exists for them, and they are not counted above. Only the platform admin sees this section, and only while the street is being built.</p>
     ${mapTable(req, { ...cat, units: cat.planned })}</section>` : ''}

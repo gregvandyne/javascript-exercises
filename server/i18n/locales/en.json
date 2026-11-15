@@ -3287,7 +3287,7 @@
       "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared.",
       "find": "Find a lesson",
       "readyMade": "Ready-made",
-      "numberQuest": "Number Quest (math, grades K–5)"
+      "numberQuest": "Number Quest (math, grades K–8)"
     },
     "folder": {
       "name": "Folder name",
@@ -4495,7 +4495,7 @@
       "q4": "How do you protect student privacy?",
       "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q5": "What ages and grades is it for?",
-      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, starts in kindergarten, and CS Quest and Cyber Defenders start in grade 3.",
+      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
       "q6": "How do I add my class?",
       "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
       "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
@@ -4786,7 +4786,7 @@
       "crumb": "Number Quest",
       "kicker": "For teachers · grades {grades}",
       "h1": "Number Quest: math with a map you can show anyone",
-      "lead": "A winding path through Netville's Numberworks with Tally the cat, on two streets. The Launchpad gardens, for kindergarten to grade 2: counting, joining, tens and ones, the equals sign, hundreds, shapes and measuring, with the Garden Gate at the end. The Explorer street, for grades 3 to 5: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
+      "lead": "A winding path through Netville's Numberworks with Tally the cat, on three streets. The Launchpad gardens, for kindergarten to grade 2: counting, joining, tens and ones, the equals sign, hundreds, shapes and measuring, with the Garden Gate at the end. The Explorer street, for grades 3 to 5: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. The Pro towers, for grades 6 to 8: ratios and rates, negative numbers, expressions and equations, proportion and scale, slope and lines, geometry and the Pythagorean theorem, and data and chance, with the Great Clock at the end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
       "badges": {
         "steps": "{steps} steps",
         "units": "{streets, plural, one {One street} other {# streets}} · {units} units",
@@ -4799,7 +4799,7 @@
       },
       "promise": {
         "h": "What you get",
-        "li1": "One town all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how. The Launchpad gardens lead on to the Explorer street, and a learner can move between them at any time.",
+        "li1": "One town all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how. The Launchpad gardens lead on to the Explorer street and the Explorer street to the Pro towers, and a learner can move between them at any time.",
         "li2": "Every worked example opens with an estimate: the course's “Rough first” habit, so checking whether an answer is the right size becomes reflex.",
         "li3": "Short reading decks, then a three-question check, then the game mission itself. A step counts as finished only when the mission is actually completed, not just opened.",
         "li4": "Tally Marks for doing, never for being first or fastest: checks passed, missions completed, mastery laps and reviews all earn them, and they are never spent or ranked.",
@@ -4808,7 +4808,7 @@
       },
       "crew": {
         "h": "{games} games carry the course",
-        "p": "Seven were built for the Launchpad gardens, one for each unit, from Garden Count to Kitchen Rush: every instruction in them is read aloud, so a child can play before they can read well. On the Explorer street, three are quiz, race and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows a fifth: Data Detective from CS Quest for its data cases.",
+        "p": "Seven were built for the Launchpad gardens, one for each unit, from Garden Count to Kitchen Rush: every instruction in them is read aloud, so a child can play before they can read well. On the Explorer street, three are quiz, race and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows a fifth: Data Detective from CS Quest for its data cases. Seven more were built for the Pro towers, one for each unit, from Lantern Mix to Launch Lab: each round is planned first and then run, a wrong plan is shown as it really turns out, and every line is read aloud unless the student turns the voice off.",
         "gardenCount": "Launchpad Unit 1, The Counting Patch (kindergarten). Count apples in a sunny garden: pick the number your helper asks for (step 1.1), find the bed with more or fewer (1.2), and build teen numbers on a ten-frame (1.3). Each chapter is six rounds, and the sixth right round completes the mission.",
         "lilyHop": "Launchpad Unit 2, The Joining Pond (kindergarten to grade 1). Frogs hop together and hop away within 10 (step 2.1), a number is split into its partners and made up to 10 (2.2), and a row of numbered lily pads carries adding and taking away to 20 (2.3). Every round is answered by hopping to one of three pads.",
         "crateStacker": "Launchpad Unit 3, The Tens Trellis (grade 1). A crate is a one and a tower of ten crates is a ten: build and read two-digit numbers (step 3.1), say which truck has more and pick the sign (3.2), and add tens and ones with totals under 100 (3.3).",
@@ -4820,13 +4820,20 @@
         "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only Trading Post races with 3- and 4-digit trades in Unit 2, and the all-tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
         "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it carries steps 1.3 (patterns), 5.2 (timetables) and the finale 7.4, the Vault Run: the deck and check teach the skill, and finishing the whole race, all the way to the podium, is what completes it.",
         "dataDetective": "CS Quest's data cases, borrowed for the Fairground: sort a messy table, chart it, and spot the claim the data does not support. In Number Quest it carries steps 7.1 (Chart It) and 7.2 (My Data, the student's own class survey), with its cases untouched.",
+        "lanternMix": "Pro Unit 1, The Mixing Tower (grade 6). Lanterns glow by the ratio of two oils: match a glow with an equal ratio (step 1.1), set a tank from a unit rate (1.2), and fill to a percent or change units along a lit path (1.3). A match is decided by the ratio, never by color alone.",
+        "subZero": "Pro Unit 2, The Cold Store (grades 6 and 7). A night-time lab with a thermometer that goes below zero: pour a pot into jars to divide by a fraction (step 2.1), place and compare readings and their distance from zero (2.2), and plan changes that add, subtract, multiply and divide with negatives (2.3).",
+        "machineLine": "Pro Unit 3, The Machine Hall (grades 6 and 7). A line of machines does one thing each to a number: build the line for an expression and run it (step 3.1), say whether two lines always give the same output (3.2), and run a line backward to solve an equation or an inequality (3.3).",
+        "scaleScout": "Pro Unit 4, The Map Room (grade 7). A surveyor's map on a board: find which walker's distance is proportional to the time and its constant (step 4.1), turn map centimeters into real meters and back (4.2), and work out percent change and percent error (4.3). Nothing in it is priced.",
+        "skyLines": "Pro Unit 5, The Sky Wires (grade 8). Zip wires between floating islands on a coordinate grid: set a wire's steepness from rise and run (step 5.1), write it as y = mx + b from a table, a story or a graph (5.2), and find where two wires meet, or show they never do (5.3).",
+        "keepBuilder": "Pro Unit 6, The Drafting Keep (grades 6 to 8). A castle builder's plan: fill rooms with crates and cover towers from their nets (step 6.1), find angles and move stones by a slide, flip, turn or resize (6.2), and size ladders and spans with the Pythagorean theorem (6.3).",
+        "launchLab": "Pro Unit 7, The Test Range (grades 6 to 8). A launcher on a test range makes the data: read center and spread from dot and box plots (step 7.1), predict from a chance model and compare with a run (7.2), and compare two data sets and use a trend line (7.3). Its fourth chapter is the Great Clock (7.4), the street's finale: one multi-step problem for each of the seven units.",
         "fractionFactory": "Tally's Bakery production line: cut wholes into fair shares, re-slice to make sizes match, and add slices for real orders. The whole of Unit 4, and the course's flagship Jumble beat: adding the bottoms too.",
         "try": "Try it",
         "inCourse": "Play it in the course"
       },
       "units": {
         "h": "The streets, their units and their steps",
-        "p": "{steps} steps on {streets, plural, one {one street} other {# streets}}, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done. Each street ends inside its Unit 7, at a finale: the Garden Gate on Launchpad and the Vault of Measures on Explorer.",
+        "p": "{steps} steps on {streets, plural, one {one street} other {# streets}}, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done. Each street ends inside its Unit 7, at a finale: the Garden Gate on Launchpad, the Vault of Measures on Explorer and the Great Clock on Pro.",
         "stamp": "{stamp}"
       },
       "map": {
@@ -4843,7 +4850,7 @@
         "codes": "locked CCSS-M statements, every unit and finale shown",
         "statSteps": "steps in the map",
         "statUnits": "stones to plant",
-        "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05), the Explorer Units 1–7 and finale statement codes, and the Launchpad lock (unit by unit, 2026-11-12 and 2026-11-13), the Launchpad Units 1–7 and finale statement codes, all verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Explorer step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. The Pro tier (grades 6–8) is specced but not built yet, and its codes are not cited here until its own lock lands."
+        "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05), the Explorer Units 1–7 and finale statement codes; the Launchpad lock (unit by unit, 2026-11-12 and 2026-11-13), the Launchpad Units 1–7 and finale statement codes; and the Pro lock (2026-11-14), the Pro Units 1–7 and finale statement codes, all verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Explorer step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. Pro is the major work of grades 6–8, not every statement: the list below the map names what it does not cover."
       },
       "notes": {
         "h": "Teacher notes",
@@ -4866,7 +4873,7 @@
         "q1": "Do I need to be a math specialist?",
         "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you the habit to open with and the trap to watch for.",
         "q2": "Which standards does it teach?",
-        "a2": "The Common Core State Standards for Mathematics for kindergarten to grade 5: the Launchpad street covers kindergarten to grade 2 and the Explorer street grades 3 to 5. Every step lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labeled. One step lists none: Explorer 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
+        "a2": "The Common Core State Standards for Mathematics for kindergarten to grade 8: the Launchpad street covers kindergarten to grade 2, the Explorer street grades 3 to 5, and the Pro street the major work of grades 6 to 8 (circles, cylinders, cones and spheres, exponents and scientific notation, and irrational numbers are not in it, and this page lists every statement it leaves out). Every step lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labeled. One step lists none: Explorer 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
         "q3": "How long does a step take?",
         "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. A street is a welcome, seven units and a finale, so one street is just under four hours of lessons; the course has {steps} steps in all, and mastery laps stretch it much further for students who finish early.",
         "q4": "What are Tally Marks and laps?",
@@ -4876,8 +4883,8 @@
       },
       "start": {
         "h": "Start when you are ready",
-        "p": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street and grades 3 to 5 on the Explorer street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for both welcomes are above.",
-        "staff": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street and grades 3 to 5 on the Explorer street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for both welcomes are above."
+        "p": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street, grades 3 to 5 on the Explorer street and grades 6 to 8 on the Pro street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for every welcome are above.",
+        "staff": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street, grades 3 to 5 on the Explorer street and grades 6 to 8 on the Pro street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for every welcome are above."
       }
     },
     "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free.",
@@ -7480,9 +7487,9 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Math through the Numberworks · grades K–5",
-      "about": "Walk the Numberworks in the town of Netville with Tally the cat. The Launchpad gardens, for kindergarten to grade 2, grow counting, adding and taking away, tens and ones, shapes and measuring. The Explorer street, for grades 3 to 5, goes on to big numbers, groups and shares, fractions at the Bakery, then measures, shapes, charts and chance. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
-      "teachers": "Every step of Launchpad Units 1–7 and the Garden Gate finale (grades K–2), and of Explorer Units 1–7 and the Vault of Measures finale (grades 3–5), is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
+      "sub": "Math through the Numberworks · grades K–8",
+      "about": "Walk the Numberworks in the town of Netville with Tally the cat. The Launchpad gardens, for kindergarten to grade 2, grow counting, adding and taking away, tens and ones, shapes and measuring. The Explorer street, for grades 3 to 5, goes on to big numbers, groups and shares, fractions at the Bakery, then measures, shapes, charts and chance. The Pro towers, for grades 6 to 8, take on ratios, negative numbers, equations, slope, geometry and data. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
+      "teachers": "Every step of Launchpad Units 1–7 and the Garden Gate finale (grades K–2), of Explorer Units 1–7 and the Vault of Measures finale (grades 3–5), and of Pro Units 1–7 and the Great Clock finale (grades 6–8), is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
     },
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",
@@ -7893,8 +7900,8 @@
       "lead": "Short slide decks, quick checks and game missions in one path. Students work at their own pace; you see progress in the gradebook.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Math · grades K–5",
-        "p": "Counting, place value, fractions, measuring, shapes and data along Netville’s Numberworks with Tally the cat, from kindergarten to grade 5. Every step is mapped to the Common Core State Standards for Mathematics."
+        "tag": "Math · grades K–8",
+        "p": "Counting, place value, fractions, ratios, equations, shapes and data along Netville’s Numberworks with Tally the cat, from kindergarten to grade 8. Every step is mapped to the Common Core State Standards for Mathematics."
       },
       "cs": {
         "name": "CS Quest",

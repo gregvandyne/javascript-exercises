@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 const { q } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');
 const P = await import('../../server/services/number-quest-placement.js');
+const T = await import('../../server/services/number-quest-tiers.js');
 const { generateItem, TEMPLATES } = await import('../../seed-lessons/number-quest/placement/generator.js');
 
 let n = 0;
@@ -197,8 +198,8 @@ test('soft landing: two failed checks at the placed start offer the previous uni
 });
 
 test('full runs: always-right lands at the finale door (past every workshop, honestly flagged), always-wrong in the Launchpad gardens', () => {
-  const run = (kid, wantCorrect) => {
-    const out = P.startRun(kid, { grade: 4 });
+  const run = (kid, wantCorrect, grade = 4) => {
+    const out = P.startRun(kid, { grade });
     let res = null, guard = 0;
     while (guard++ < 40) {
       const { full } = currentFull(out.runId, kid);
@@ -207,8 +208,10 @@ test('full runs: always-right lands at the finale door (past every workshop, hon
     }
     return res;
   };
+  // A grade 3 run that gets everything right climbs to rung 4.5 in every strand: past every Explorer workshop, under the
+  // Pro starting line (5.5), so the Explorer finale door. (Grade 4 always-right reaches 5.5 everywhere: below.)
   const hiKid = newKid();
-  const hi = run(hiKid, true);
+  const hi = run(hiKid, true, 3);
   assert.ok(hi); assert.equal(hi.startNode, 'explorer-7.4');
   // The strongest student lands on the finale door, a real step on the street, and both audiences
   // hear the honest version: the street is finished and the Vault is waiting (Phase 2).
@@ -219,6 +222,15 @@ test('full runs: always-right lands at the finale door (past every workshop, hon
   assert.ok(!JSON.stringify(hi).includes('The next workshops on the street'), 'no fallback label anywhere');
   assert.ok(!JSON.stringify(hi).match(/score|percent/i)); // no score in anything the child is shown
   assert.equal(P.getPlacement(hiKid).startNode, 'explorer-7.4');
+  assert.match(hi.note.proLine, /under the Pro starting line \(rung 5\.5 in every strand\), so the start is The Vault of Measures/, 'the note says why it is not the Pro street');
+  // Grade 4, everything right: rung 5.5 in all four strands, on the Pro starting line since Pro opened (2026-11-15), and
+  // under Pro Unit 1's profile (Algebra 6.0): the Pro welcome. Read as building (the hook), the same run is the Vault, as before.
+  const hi4 = run(newKid(), true);
+  assert.deepEqual(hi4.rungs, { number: 5.5, algebra: 5.5, 'shape-measure': 5.5, 'data-chance': 5.5 });
+  assert.equal(hi4.startNode, 'pro-0.1'); assert.equal(hi4.tier, 'pro'); assert.equal(hi4.workshop, 'Welcome to the Towers'); assert.equal(hi4.finaleDoor, false);
+  assert.equal(hi4.note.placedUnit, 'Pro · Welcome to the Towers');
+  T.setTierStatus('pro', 'building');
+  try { assert.equal(run(newKid(), true).startNode, 'explorer-7.4'); } finally { T.setTierStatus('pro', null); }
   const loKid = newKid();
   const lo = run(loKid, false);
   // A grade 4 run that misses everything steps down from rung 3.5 to 1.5 in its five questions a strand and
@@ -308,9 +320,12 @@ test('Phase 2: a stored explorer-5.1 start node reads as itself now that Unit 5 
   q.run(`INSERT INTO nq_placement(user_id, course, grade, rungs, start_node, source, start_fails, soft_land_node, updated_at) VALUES (?,?,?,?,?,?,0,NULL,?)`,
     kid.id, 'number-quest', 4, '{}', 'explorer-5.1', 'sorting-game', Date.now());
   assert.equal(P.getPlacement(kid).startNode, 'explorer-5.1'); // the door those runs always aimed at
-  // The "very beginning" door for grades 6-8 lands on the furthest built workshop door now.
+  // The "very beginning" door for grades 6-8 is the Pro welcome since Pro opened (2026-11-15); read as building
+  // (the hook), it is the furthest built Explorer workshop door, as it was.
   const g7 = newKid();
-  assert.equal(P.placeAtBeginning(g7, 7).startNode, 'explorer-7.1');
+  assert.equal(P.placeAtBeginning(g7, 7).startNode, 'pro-0.1');
+  T.setTierStatus('pro', 'building');
+  try { assert.equal(P.placeAtBeginning(newKid(), 7).startNode, 'explorer-7.1'); } finally { T.setTierStatus('pro', null); }
   // And no route can name an unbuilt start node: the override list is built workshops plus the finale.
   assert.ok(P.START_NODES.every(n => n.built), 'every nameable start node is built');
   assert.ok(P.START_NODES.some(n => n.node === 'explorer-5.1' && n.workshop === 'The Measure Shop'));

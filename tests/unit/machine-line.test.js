@@ -460,7 +460,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.gameCodes('machine-line', 'ccss-math'), Object.values(TAGS.MACHINE_CHAPTERS).flat());
   assert.ok(TAGS.LEVELLED.includes('machine-line'));
   assert.equal(UNIT.title, 'The Machine Hall'); assert.equal(UNIT.stamp, 'Variable Gear'); assert.equal(UNIT.tool, 'machine-line'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Variable Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Variable Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['3.1', 8, 'Write and work out expressions'], ['3.2', 9, 'Expressions that are equal'], ['3.3', 10, 'Solve equations and inequalities']]);
   // the statements the unit's steps cite are locked with the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;

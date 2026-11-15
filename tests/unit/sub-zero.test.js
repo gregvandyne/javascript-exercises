@@ -318,7 +318,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.gameCodes('sub-zero', 'ccss-math'), Object.values(TAGS.SUBZERO_CHAPTERS).flat());
   assert.ok(TAGS.LEVELLED.includes('sub-zero'));
   assert.equal(UNIT.title, 'The Cold Store'); assert.equal(UNIT.stamp, 'Zero Gear'); assert.equal(UNIT.tool, 'sub-zero'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Zero Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Zero Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['2.1', 5, 'Divide by a fraction'], ['2.2', 6, 'Below zero: opposites and absolute value'], ['2.3', 7, 'Add, subtract, multiply and divide with negatives']]);
   // the statements the unit's steps cite are locked with the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;

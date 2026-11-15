@@ -407,7 +407,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.gameCodes('launch-lab', 'ccss-math'), [...TAGS.LAB_CHAPTERS.spread, ...TAGS.LAB_CHAPTERS.chance, ...TAGS.LAB_CHAPTERS.trend]);
   assert.ok(TAGS.LEVELLED.includes('launch-lab'));
   assert.equal(UNIT.title, 'The Test Range'); assert.equal(UNIT.stamp, 'Chance Gear'); assert.equal(UNIT.tool, 'launch-lab'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 4); assert.match(UNIT.teacherNotes[3], /^The Great Clock \(7\.4\) is the tier's finale/); assert.ok(UNITS.tiers.pro.stones.includes('Chance Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.equal(UNIT.teacherNotes.length, 4); assert.match(UNIT.teacherNotes[3], /^The Great Clock \(7\.4\) is the tier's finale/); assert.ok(UNITS.tiers.pro.stones.includes('Chance Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['7.1', 20, 'Center and spread'], ['7.2', 21, 'Chance: experiments and models'], ['7.3', 22, 'Compare two data sets and spot a trend'], ['7.4', 23, 'The Great Clock']]);
   // The finale is built: step 7.4 is an ordinary fourth step, as Launchpad's is, named by the tier's finale line.
   const fin = UNIT.steps.find(s => s.n === '7.4');

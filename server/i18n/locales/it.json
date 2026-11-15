@@ -3268,7 +3268,7 @@
       "emptyText": "Crei una nuova lezione, lasci che l'IA ne prepari una bozza, oppure copi una lezione condivisa da un collega.",
       "find": "Cerca una lezione",
       "readyMade": "Già pronti",
-      "numberQuest": "Number Quest (matematica, dall’infanzia alla 5ª)"
+      "numberQuest": "Number Quest (matematica, dall’infanzia alla terza media)"
     },
     "folder": {
       "name": "Nome della cartella",
@@ -4467,7 +4467,7 @@
       "q4": "Come proteggete la privacy degli studenti?",
       "a4": "Non chiediamo mai agli studenti indirizzo email, età o indirizzo di casa. Non ci sono pubblicità né cookie di tracciamento, e il nome vero di uno studente è visibile solo al personale della sua scuola. La nostra <a href=\"{href}\">informativa sulla privacy</a> elenca esattamente cosa conserviamo.",
       "q5": "Per quali età e classi è pensato?",
-      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli. Number Quest, il corso di matematica, inizia dall’ultimo anno della scuola dell’infanzia, mentre CS Quest e Cyber Defenders iniziano dalla terza elementare.",
+      "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli. Number Quest, il corso di matematica, va dall’ultimo anno della scuola dell’infanzia alla terza media, mentre CS Quest e Cyber Defenders iniziano dalla terza elementare.",
       "q6": "Come aggiungo la mia classe?",
       "a6": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso.",
       "a6google": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso. Le scuole che usano Google possono far accedere gli studenti con Google.",
@@ -7076,7 +7076,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "La matematica nei Numberworks · dall’infanzia alla 5ª elementare"
+      "sub": "La matematica nei Numberworks · dall’infanzia alla terza media"
     },
     "unitsN": "{count, plural, one {Vedi l’unità} other {Vedi le # unità}}",
     "gamesN": "{count, plural, one {Vedi il gioco} other {Vedi i # giochi}}"
@@ -7383,8 +7383,8 @@
       "lead": "Brevi presentazioni, verifiche veloci e missioni di gioco in un unico percorso. Ogni studente va al suo ritmo; tu vedi i progressi nel registro.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matematica · dall’infanzia alla quinta",
-        "p": "Contare, valore posizionale, frazioni, misure, figure e dati nel Numberworks di Netville con la gatta Tally, dall’ultimo anno della scuola dell’infanzia alla quinta elementare. Ogni passo è collegato ai Common Core State Standards di matematica."
+        "tag": "Matematica · dall’infanzia alla terza media",
+        "p": "Contare, valore posizionale, frazioni, rapporti, equazioni, figure e dati nel Numberworks di Netville con la gatta Tally, dall’ultimo anno della scuola dell’infanzia alla terza media. Ogni passo è collegato ai Common Core State Standards di matematica."
       },
       "cs": {
         "name": "CS Quest",

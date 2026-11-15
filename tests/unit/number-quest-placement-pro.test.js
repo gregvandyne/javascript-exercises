@@ -19,6 +19,7 @@ import fs from 'node:fs';
 const G = await import('../../seed-lessons/number-quest/placement/generator.js');
 const { PRO_ARCHETYPE_NAMES } = await import('../../seed-lessons/number-quest/placement/generator-pro.js');
 const P = await import('../../server/services/number-quest-placement.js');
+const T = await import('../../server/services/number-quest-tiers.js');
 const { sub6BankHash, sub6RunsHash } = await import('../support/nq-sub6-pin.js');
 const { SOLVERS, numOf, evalExpr } = await import('../support/nq-pro-solvers.js');
 const { TEMPLATES, RETIRED, BY_ID, ARCHETYPES, generateItem } = G;
@@ -41,7 +42,11 @@ test('below rung 6 the bank is unchanged: the same 180 templates deal the same i
 });
 
 test('below rung 6 placement is unchanged: 324 simulated runs end where they ended, and a run that stays under rung 6 is the same game', () => {
-  assert.deepEqual(sub6RunsHash(P, G), PIN.runs);
+  // Pinned with Pro read as building, as it was when the bank was rebuilt: since Pro opened (2026-11-15) a run that
+  // places every strand at rung 5.5 starts on the Pro street, by design. Every run's open-state outcome is compared
+  // with this one, run by run, in number-quest-pro-open.test.js.
+  T.setTierStatus('pro', 'building');
+  try { assert.deepEqual(sub6RunsHash(P, G), PIN.runs); } finally { T.setTierStatus('pro', null); }
 });
 
 test('rungs 6.0-8.0: every template is locked to a real grade 6-8 cluster that its rung names; no wrong or deferred label is left', () => {

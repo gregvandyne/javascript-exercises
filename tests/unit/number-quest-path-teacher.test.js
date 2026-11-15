@@ -21,13 +21,13 @@ const course = C.getCourse('number-quest');
 let n = 0;
 const newKid = () => auth.createUser({ username: `nqp${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
 
-test('the course is registered: a learner sees the Launchpad and Explorer bands, 23 steps each, no deck problems, other courses untouched', () => {
+test('the course is registered: a learner sees the Launchpad, Explorer and Pro bands, 23 steps each, no deck problems, other courses untouched', () => {
   assert.ok(course);
   assert.equal(course.teacherPath, '/teachers/number-quest');
-  // The bands a learner is offered: Launchpad and Explorer, in path order. (Launchpad opened on 2026-11-13;
-  // Pro is being built, so it is the platform admin's band alone.)
-  assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer']);
-  assert.deepEqual(C.bandsFor(course, newKid()), ['launchpad', 'explorer']);
+  // The bands a learner is offered: Launchpad, Explorer and Pro, in path order. (Launchpad opened on 2026-11-13,
+  // Pro on 2026-11-15.)
+  assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer', 'pro']);
+  assert.deepEqual(C.bandsFor(course, newKid()), ['launchpad', 'explorer', 'pro']);
   assert.equal(C.defaultBand(course, newKid()), 'explorer', 'a viewer with no band and no placement is still shown the Explorer street');
   assert.equal(C.steps(course, 'launchpad').length, 23);
   assert.equal(C.steps(course, 'launchpad')[0].key, 'launchpad-0.1'); assert.equal(C.steps(course, 'launchpad').at(-1).key, 'launchpad-7.4');
@@ -44,14 +44,14 @@ test('the course is registered: a learner sees the Launchpad and Explorer bands,
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
   assert.equal(C.getStep(course, 'pro-7.4').game.slug, 'launch-lab', 'the Pro finale is built: a step played in Launch Lab');
   assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3', 'pro-5.1', 'pro-5.2', 'pro-5.3', 'pro-6.1', 'pro-6.2', 'pro-6.3', 'pro-7.1', 'pro-7.2', 'pro-7.3', 'pro-7.4'], 'the Pro street is its welcome step, all seven units and the finale');
-  assert.equal(C.stepFor(newKid(), course, 'pro-0.1'), null, 'and a learner cannot reach even that while the street is being built');
+  assert.equal(C.stepFor(newKid(), course, 'pro-0.1').key, 'pro-0.1', 'and a learner can open it: the street is open');
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);
   // Band choice is per course: '2' is refused for Number Quest, 'explorer' for CS Quest.
   const kid = newKid();
   assert.equal(C.setBand(kid, course, '2'), false);
-  assert.equal(C.setBand(kid, course, 'pro'), false, 'a tier that is still being built is no band for a learner');
-  assert.equal(C.getBand(kid, course), null);
+  assert.equal(C.setBand(kid, course, 'pro'), true, 'an open tier is a band a learner may pick (Pro, since 2026-11-15)');
+  assert.equal(C.getBand(kid, course), 'pro');
   assert.equal(C.setBand(kid, course, 'launchpad'), true, 'an open tier is a band a learner may pick');
   assert.equal(C.getBand(kid, course), 'launchpad');
   assert.equal(C.setBand(kid, course, 'explorer'), true);
@@ -60,8 +60,8 @@ test('the course is registered: a learner sees the Launchpad and Explorer bands,
 
 test('the catalogue carries the locked map: 53 Explorer statements, every cited code locked in its own tier, practices named', () => {
   const cat = C.numberQuestCatalogue();
-  assert.deepEqual(cat.tiers.map(t => t.key), ['launchpad', 'explorer']);
-  assert.equal(cat.units.length, 16, 'a welcome and seven units on each of the two open streets');
+  assert.deepEqual(cat.tiers.map(t => t.key), ['launchpad', 'explorer', 'pro']);
+  assert.equal(cat.units.length, 24, 'a welcome and seven units on each of the three open streets');
   assert.equal(cat.units.filter(u => (u.tier || 'explorer') === 'explorer').length, 8);
   assert.equal(Object.keys(cat.registry.explorerCodes.codes).length, 53);
   const clusters = new Set(Object.values(cat.registry.clusters).flatMap(g => Object.keys(g)));

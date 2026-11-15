@@ -324,7 +324,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.gameCodes('scale-scout', 'ccss-math'), Object.values(TAGS.SCOUT_CHAPTERS).flat());
   assert.ok(TAGS.LEVELLED.includes('scale-scout'));
   assert.equal(UNIT.title, 'The Map Room'); assert.equal(UNIT.stamp, 'Scale Gear'); assert.equal(UNIT.tool, 'scale-scout'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Scale Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Scale Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['4.1', 11, 'Is it proportional? Find the constant'], ['4.2', 12, 'Scale drawings and maps'], ['4.3', 13, 'Percent problems']]);
   // the statements the unit's steps cite are locked with the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;

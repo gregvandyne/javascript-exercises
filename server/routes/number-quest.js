@@ -155,9 +155,13 @@ function rebuildNote(placement) {
   const { node, finaleDoor } = P.crosswalk(placement.rungs);
   // The finale wording belongs to a start that IS the finale door: a start a grown-up moved elsewhere
   // (or one set before a tier opened) reads as the stored node, never as what the rungs would say now.
-  const atFinale = finaleDoor && node === placement.startNode;
-  return { lines, placedUnit: atFinale ? P.finaleWords(node) : P.placedUnitWords(placement.startNode),
-    launchpadLine: P.launchpadNoteLine(placement.rungs, placement.startNode, placement.source), partial: null };
+  // A run placed at the Explorer finale door before the Pro street opened (2026-11-15) whose rungs now point into
+  // Pro still reads as the finale door it is stored at; the Pro line on the note says where it would start today.
+  const atFinale = (finaleDoor && node === placement.startNode)
+    || (placement.source !== 'override' && NQT.parseKey(node) && NQT.parseKey(node).tier === 'pro' && P.isFinaleNode(placement.startNode));
+  return { lines, placedUnit: atFinale ? P.finaleWords(placement.startNode) : P.placedUnitWords(placement.startNode),
+    launchpadLine: P.launchpadNoteLine(placement.rungs, placement.startNode, placement.source),
+    proLine: P.proNoteLine(placement.rungs, placement.startNode, placement.source), partial: null };
 }
 // ------------------------------------------------------------------------------------------------- the daily goal
 /** The student's own daily-goal choice (1, 2 or 3 activities, progress service §6.1) from the path home's
@@ -172,8 +176,8 @@ router.post('/api/number-quest/daily-goal', ...api, form, (req, res) => {
 
 // ------------------------------------------------------------------------------------------------- the teacher page
 /** /teachers/number-quest: the public program page (Cyber Defenders' page is the model): overview, the
- *  games, the units and steps, the locked CCSS-M map of every open street (Launchpad K-2 and Explorer 3-5,
- *  each with its Units 1-7 and its finale), the teacher notes and the printed pack (?print=1). Anyone may
+ *  games, the units and steps, the locked CCSS-M map of every open street (Launchpad K-2, Explorer 3-5 and,
+ *  since 2026-11-15, Pro 6-8, each with its Units 1-7 and its finale), what Pro does not cover, the teacher notes and the printed pack (?print=1). Anyone may
  *  read it; the course stands alone. Every count on the page (steps, units, streets, games, the grade
  *  range) is worked out from the catalogue this reader may see, never typed. */
 /** The games that carry the course, in street order. A game is listed only when a step this reader may
@@ -191,6 +195,13 @@ const NQ_CREW = Object.freeze([
   { slug: 'quest-race', key: 'questRace', emoji: '🏝️', title: 'Quest Race' },
   { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
   { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
+  { slug: 'lantern-mix', key: 'lanternMix', emoji: '🏮', title: 'Lantern Mix' },
+  { slug: 'sub-zero', key: 'subZero', emoji: '🧊', title: 'Sub Zero' },
+  { slug: 'machine-line', key: 'machineLine', emoji: '⚙️', title: 'Machine Line' },
+  { slug: 'scale-scout', key: 'scaleScout', emoji: '🗺️', title: 'Scale Scout' },
+  { slug: 'sky-lines', key: 'skyLines', emoji: '📈', title: 'Sky Lines' },
+  { slug: 'keep-builder', key: 'keepBuilder', emoji: '🏰', title: 'Keep Builder' },
+  { slug: 'launch-lab', key: 'launchLab', emoji: '🛰️', title: 'Launch Lab' },
 ]);
 /** What the page counts, from the catalogue a reader may see: its streets, numbered units, steps, the
  *  games those steps play, and the grades the streets span ("K–5", from each tier's own "K-2" / "3-5"). */

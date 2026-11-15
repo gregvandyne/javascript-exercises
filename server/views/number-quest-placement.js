@@ -91,6 +91,7 @@ export function startingPointPage({ child, placement, note, canManage }) {
     ${note ? html`<ul class="nq-note-lines">${note.lines.map(l => html`<li>${esc(l)}</li>`)}</ul>
     <p><b>Placed start:</b> ${esc(note.placedUnit)}</p>
     ${note.launchpadLine ? html`<p>${esc(note.launchpadLine)}</p>` : ''}
+    ${note.proLine ? html`<p id="nq-pro-line">${note.proLine}</p>` : ''}
     ${note.partial ? html`<p>${esc(note.partial)}</p>` : ''}` : html`<p><b>Start point:</b> ${esc(info.workshop)} (${esc(placement.startNode)}), set by ${esc(placement.source)}.</p>`}
     <p class="nq-caveat">${esc(P.CAVEAT)}</p>
     ${placement.softLandNode ? html`<p>Tally is currently suggesting a warm-up at <b>${esc(P.nodeInfo(placement.softLandNode).workshop)}</b> first, after two tricky checks at the placed start. The placement itself has not moved.</p>` : ''}
