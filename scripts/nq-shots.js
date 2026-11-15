@@ -143,6 +143,8 @@ const SHOTS = [
   { tier: 'pro', step: '7.1', state: 'spread-test', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=spread&lock=1', prep: launchLab, cdp: true },
   { tier: 'pro', step: '7.2', state: 'drop-tower', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=chance&lock=1', prep: launchLab, cdp: true },
   { tier: 'pro', step: '7.3', state: 'trend-watch', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=trend&lock=1', prep: launchLab, cdp: true },
+  // The Pro finale, The Great Clock: Launch Lab's fourth chapter, on its first gear (the lantern's oil on a double number line).
+  { tier: 'pro', step: '7.4', state: 'the-great-clock', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=clock&lock=1', prep: launchLab, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -397,7 +399,8 @@ async function keepBuilder(f) {
 async function launchLab(f) {
   // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
   // the board has popped in: nine landings on a dot plot (Spread Test), the drop tower's ten bins with three stars and
-  // its line from 0 to 1 (Drop Tower), launchers A and B on one axis (Trend Watch).
+  // its line from 0 to 1 (Drop Tower), launchers A and B on one axis (Trend Watch), the lantern's hours and milliliters on
+  // a double number line (The Great Clock's first gear).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#start');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);

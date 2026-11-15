@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 219, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5, 8 in Pro Unit 6 and 6 in Pro Unit 7');
-  assert.equal(steps, 523, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5, 23 in Pro Unit 6 and 17 in Pro Unit 7');
+  assert.equal(slides, 221, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5, 8 in Pro Unit 6 and 8 in Pro Unit 7 (6, and 2 in the finale deck)');
+  assert.equal(steps, 529, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5, 23 in Pro Unit 6 and 23 in Pro Unit 7 (17, and 6 in the finale deck)');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -683,14 +683,23 @@ const REGISTRY = [
   ['pro-7.3', 3, 0, [21.21, 24, 88.19, 70.33], [20.2, 22.4, 69.0, 49.6]],
   ['pro-7.3', 3, 1, [15.76, 19.95, 93.63, 72.57], [14.7, 18.3, 80.0, 55.9]],
   ['pro-7.3', 3, 2, [61.45, 60.27, 64.04, 64.89], [60.4, 58.6, 4.7, 7.9]],
+  // The Pro finale, 7.4 The Great Clock (2026-11-15): the cold store on an upright line (the warming hop from −6 with its
+  // label, the cooling hop with its label, the end at 1°C) and the ladder's right triangle (the wall's 8 m, the ground's
+  // 6 m, the ladder's ?). Measured with getBoundingClientRect on the drawn diagrams at 390 px, as Unit 7's were.
+  ['pro-7.4', 1, 0, [60.8, 34.5, 71.5, 65.4], [59.8, 32.9, 12.7, 34.1]],
+  ['pro-7.4', 1, 1, [72.8, 32.9, 81.8, 43.3], [71.8, 31.3, 11.0, 13.6]],
+  ['pro-7.4', 1, 2, [44.6, 38.5, 55.5, 48.3], [43.6, 36.9, 12.9, 13.0]],
+  ['pro-7.4', 3, 0, [31.2, 48.1, 39.4, 57.4], [30.2, 46.5, 10.2, 12.5]],
+  ['pro-7.4', 3, 1, [48.9, 83.5, 57.1, 92.7], [47.9, 81.9, 10.2, 12.4]],
+  ['pro-7.4', 3, 2, [55.7, 41.9, 57.9, 53.4], [54.7, 40.3, 4.2, 14.7]],
 ];
-test('every authored box contains its measured target with a small margin (523-step registry)', () => {
+test('every authored box contains its measured target with a small margin (529-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 523);
+  assert.equal(REGISTRY.length, 529);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -708,7 +717,7 @@ test('every authored box contains its measured target with a small margin (523-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 523);
+  assert.equal(total, 529);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

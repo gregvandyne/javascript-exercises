@@ -128,9 +128,9 @@ test('the catalogue: all three tiers are declared; Explorer is exactly its 23 st
   assert.notEqual(C.getStep(course, 'explorer-0.1').title, w.title, 'two tiers, two different steps numbered 0.1');
   // Pro: its welcome, Unit 1 (The Mixing Tower, played in Lantern Mix), Unit 2 (The Cold Store, played in Sub Zero), Unit 3
   // (The Machine Hall, played in Machine Line), Unit 4 (The Map Room, played in Scale Scout), Unit 5 (The Sky Wires, played in Sky Lines) and
-  // Unit 6 (The Drafting Keep, played in Keep Builder) and Unit 7 (The Test Range, played in Launch Lab) are real steps with real decks; only
-  // the finale step, 7.4 The Great Clock, is reserved (planned inside built Unit 7), so it is no step.
-  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3', 'pro-5.1', 'pro-5.2', 'pro-5.3', 'pro-6.1', 'pro-6.2', 'pro-6.3', 'pro-7.1', 'pro-7.2', 'pro-7.3']);
+  // Unit 6 (The Drafting Keep, played in Keep Builder) and Unit 7 (The Test Range, played in Launch Lab) are real steps with real decks, and
+  // so is the finale, 7.4 The Great Clock, played in Launch Lab's fourth chapter. No step is planned or reserved in Pro.
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3', 'pro-5.1', 'pro-5.2', 'pro-5.3', 'pro-6.1', 'pro-6.2', 'pro-6.3', 'pro-7.1', 'pro-7.2', 'pro-7.3', 'pro-7.4']);
   assert.deepEqual(C.steps(course, 'pro').slice(1).map(s => [s.title, s.unit, s.game.slug, s.game.params, s.mp]), [['Ratios and equal mixes', 1, 'lantern-mix', 'chapter=mix&lock=1', 'MP7'],
     ['Unit rates', 1, 'lantern-mix', 'chapter=rate&lock=1', 'MP2'], ['Percent and changing units', 1, 'lantern-mix', 'chapter=percent&lock=1', 'MP6'], ['Divide by a fraction', 2, 'sub-zero', 'chapter=pour&lock=1', 'MP4'],
     ['Below zero: opposites and absolute value', 2, 'sub-zero', 'chapter=below&lock=1', 'MP2'], ['Add, subtract, multiply and divide with negatives', 2, 'sub-zero', 'chapter=change&lock=1', 'MP8'],
@@ -138,11 +138,13 @@ test('the catalogue: all three tiers are declared; Explorer is exactly its 23 st
     ['Is it proportional? Find the constant', 4, 'scale-scout', 'chapter=constant&lock=1', 'MP7'], ['Scale drawings and maps', 4, 'scale-scout', 'chapter=scale&lock=1', 'MP4'], ['Percent problems', 4, 'scale-scout', 'chapter=percent&lock=1', 'MP2'],
     ['Slope: the steepness of a line', 5, 'sky-lines', 'chapter=slope&lock=1', 'MP7'], ['y = mx + b: a line as a rule', 5, 'sky-lines', 'chapter=rule&lock=1', 'MP4'], ['Solve linear equations and find where two lines meet', 5, 'sky-lines', 'chapter=meet&lock=1', 'MP1'],
     ['Area, surface area and volume', 6, 'keep-builder', 'chapter=build&lock=1', 'MP4'], ['Angles and moves: slide, flip, turn, resize', 6, 'keep-builder', 'chapter=move&lock=1', 'MP5'], ['The Pythagorean theorem', 6, 'keep-builder', 'chapter=span&lock=1', 'MP3'],
-    ['Center and spread', 7, 'launch-lab', 'chapter=spread&lock=1', 'MP6'], ['Chance: experiments and models', 7, 'launch-lab', 'chapter=chance&lock=1', 'MP5'], ['Compare two data sets and spot a trend', 7, 'launch-lab', 'chapter=trend&lock=1', 'MP3']]);
+    ['Center and spread', 7, 'launch-lab', 'chapter=spread&lock=1', 'MP6'], ['Chance: experiments and models', 7, 'launch-lab', 'chapter=chance&lock=1', 'MP5'], ['Compare two data sets and spot a trend', 7, 'launch-lab', 'chapter=trend&lock=1', 'MP3'],
+    ['The Great Clock', 7, 'launch-lab', 'chapter=clock&lock=1', 'MP1']]);
   assert.deepEqual(C.deckProblems('pro', 'number-quest'), [], 'the Pro decks have no problems');
   assert.equal(T.firstKey('pro'), 'pro-0.1');
-  assert.equal(C.getStep(course, 'pro-7.4'), null, 'pro-7.4, the finale, is planned, not built: it is no step');
-  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 1, 2, 3, 4, 5, 6, 7]); assert.deepEqual(T.plannedUnitsOf('pro').map(u => [u.n, u.partial === true, u.steps.map(x => x.n)]), [[7, true, ['7.4']]], 'every unit is built; the finale step alone is reserved');
+  assert.equal(C.getStep(course, 'pro-7.4').title, 'The Great Clock', 'pro-7.4, the finale, is built: a real step');
+  assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 1, 2, 3, 4, 5, 6, 7]); assert.deepEqual(T.plannedUnitsOf('pro'), [], 'no step is planned or reserved in Pro');
+  assert.equal(T.statusOf('pro'), 'building', 'and the tier stays building: its status line governs');
   assert.deepEqual(C.bandsFor(course), ['launchpad', 'explorer'], 'and nobody but the admin is offered the band');
   // The other courses know nothing of tier keys, and Number Quest nothing of theirs.
   assert.equal(C.getStep(C.getCourse('cs-quest'), 'launchpad-0.1'), null);
@@ -166,8 +168,8 @@ test('standards tags read every tier, keyed by full step key', () => {
   const steps = tags.numberQuestSteps();
   assert.deepEqual(steps.get('explorer-1.1'), ['4.NBT.A.1', '4.NBT.A.2']);
   assert.equal(steps.has('launchpad-0.1'), false, 'a framing step cites no code');
-  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), ['pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3', 'pro-5.1', 'pro-5.2', 'pro-5.3', 'pro-6.1', 'pro-6.2', 'pro-6.3', 'pro-7.1', 'pro-7.2', 'pro-7.3'], 'Pro: its welcome is framing and its reserved finale has no step; all seven units are built, so their twenty-one steps are credited');
-  assert.deepEqual(steps.get('pro-7.2'), ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7']); assert.equal(steps.has('pro-7.4'), false, 'the reserved finale is credited with nothing');
+  assert.deepEqual([...steps.keys()].filter(k => k.startsWith('pro-')), ['pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3', 'pro-5.1', 'pro-5.2', 'pro-5.3', 'pro-6.1', 'pro-6.2', 'pro-6.3', 'pro-7.1', 'pro-7.2', 'pro-7.3', 'pro-7.4'], 'Pro: its welcome is framing; all seven units and the finale are built, so their twenty-two steps are credited');
+  assert.deepEqual(steps.get('pro-7.2'), ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7']); assert.deepEqual(steps.get('pro-7.4'), ['7.EE.B.3'], 'the finale is credited with its spine');
   assert.deepEqual(steps.get('pro-6.3'), ['8.G.B.7', '8.G.B.8']);
   assert.deepEqual(steps.get('pro-4.2'), ['7.G.A.1', '7.RP.A.2c']);
   assert.deepEqual(steps.get('pro-5.2'), ['8.F.B.4']);
@@ -382,7 +384,7 @@ test('Launchpad open: the switcher renders, a learner picks the band and walks t
   const teach = await get('/teachers/number-quest');
   assert.match(teach.text, /Launchpad · Welcome to the Gardens/); assert.match(teach.text, /Explorer · Unit 1 · The Counting House/);
   // Pro is still nobody's but the admin's.
-  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null); assert.equal(C.stepFor(kid, course, 'pro-1.1'), null); assert.equal(C.stepFor(kid, course, 'pro-2.1'), null); assert.equal(C.stepFor(kid, course, 'pro-3.1'), null); assert.equal(C.stepFor(kid, course, 'pro-4.1'), null); assert.equal(C.stepFor(kid, course, 'pro-5.1'), null); assert.equal(C.stepFor(kid, course, 'pro-6.1'), null); assert.equal(C.stepFor(kid, course, 'pro-7.1'), null); assert.equal(C.getStep(course, 'pro-7.4'), null);
+  assert.equal(C.setBand(kid, course, 'pro'), false); assert.equal(C.stepFor(kid, course, 'pro-0.1'), null); assert.equal(C.stepFor(kid, course, 'pro-1.1'), null); assert.equal(C.stepFor(kid, course, 'pro-2.1'), null); assert.equal(C.stepFor(kid, course, 'pro-3.1'), null); assert.equal(C.stepFor(kid, course, 'pro-4.1'), null); assert.equal(C.stepFor(kid, course, 'pro-5.1'), null); assert.equal(C.stepFor(kid, course, 'pro-6.1'), null); assert.equal(C.stepFor(kid, course, 'pro-7.1'), null); assert.equal(C.stepFor(kid, course, 'pro-7.4'), null);
 });
 
 test('Launchpad open: placement lands a rung under 2.5 on a Launchpad node once entry profiles exist', () => {

@@ -221,6 +221,78 @@
     "correct"
    ],
    "why": "The other points go up by 3 each time: 5, 8, 11, then 14, 17, 20. At 4 the pattern gives 14, but the point is at 2, far below. So (4, 2) is the outlier."
+  },
+  {
+   "id": "nq-pro-7.4-e1",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "7.EE.B.3",
+   "topic": "The seven gears",
+   "kind": "scenario",
+   "secs": 40,
+   "q": "A sample in the cold store is at −4°C. It warms 1.5°C each minute for 6 minutes, then cools 2°C. What is its temperature now?",
+   "choices": [
+    "3°C",
+    "7°C",
+    "−4.5°C",
+    "−15°C"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "added the cooling instead of taking it away",
+    "warmed it for one minute only",
+    "treated the warming as more cooling"
+   ],
+   "why": "The warming is 6 × 1.5 = 9 degrees, so −4 + 9 = 5. Then it cools 2 degrees: 5 − 2 = 3°C."
+  },
+  {
+   "id": "nq-pro-7.4-e2",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "7.EE.B.3",
+   "topic": "The seven gears",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A lantern burns 9 milliliters of oil in 6 hours. At that rate, how many milliliters does it burn in 10 hours?",
+   "choices": [
+    "13 milliliters",
+    "15 milliliters",
+    "54 milliliters",
+    "90 milliliters"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "added the extra hours as extra milliliters",
+    "correct",
+    "multiplied the oil by the hours it took",
+    "used the 9 milliliters as the rate for one hour"
+   ],
+   "why": "The unit rate is 9 ÷ 6 = 1.5 milliliters an hour, so 10 hours take 1.5 × 10 = 15 milliliters. Estimate: 10 hours is a bit under 2 × 6, so a bit under 18."
+  },
+  {
+   "id": "nq-pro-7.4-e3",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "7.EE.B.3",
+   "topic": "The seven gears",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A machine line multiplies a number by 4, then adds 2.5. The number 18.5 comes out. What number went in?",
+   "choices": [
+    "2.125",
+    "16",
+    "4",
+    "76.5"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "worked backward in the wrong order",
+    "took away 2.5 and stopped there",
+    "correct",
+    "ran the machine forward on the output"
+   ],
+   "why": "Undo the last machine first: 18.5 − 2.5 = 16. Then undo times 4: 16 ÷ 4 = 4. Check: 4 × 4 + 2.5 = 18.5."
   }
  ]
 }

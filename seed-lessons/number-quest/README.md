@@ -714,8 +714,9 @@ Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3
 `planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, and Unit 5, The Sky
 Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"), and Unit 6, The
 Drafting Keep, with Keep Builder, the same day ("Pro Unit 6"). Unit 7, The Test Range, with Launch Lab, was built the
-same day without its finale step ("Pro Unit 7"): 7.4, The Great Clock, stays reserved inside the built unit. No Pro unit
-is planned now; the finale step alone is.
+same day without its finale step ("Pro Unit 7"), and the finale, 7.4 The Great Clock, Launch Lab's fourth chapter,
+after it ("Pro finale"). No Pro unit and no Pro step is planned or reserved now; the tier stays `building` until its
+opening PR.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1420,3 +1421,56 @@ the finale, waits for the finale) say what the unit covers, the misconceptions i
 by planning and running. Pro stays `status: "building"`, and no learner, parent or visitor sees any of this. **Left for
 the opening**, as for the other units: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
 Launch Lab.
+
+## Pro finale — The Great Clock (2026-11-15, tier still `building`)
+
+The tier's last step, built the way Launchpad's finale (The Garden Gate, Kitchen Rush's fourth chapter) and Explorer's
+(The Vault of Measures) were: an ordinary fourth step of Unit 7, named by `tiers.pro.finale`, with its own deck, three
+exit items in the unit bank and a mission, here Launch Lab's fourth chapter, `clock`. A mixed review, nothing new.
+
+| File | What |
+|---|---|
+| `course/pro/7.4.json` | **7.4 The Great Clock** (7.EE.B.3; also 6.RP.A.3b, 7.NS.A.3, 7.EE.B.4a, 7.RP.A.3, 8.EE.B.5, 8.G.B.7, 6.SP.B.5). Seven slides, inside the Pro limits: the story (seven gears, one from each tower), a chain of small steps on the cold store's upright line, a worked example that estimates first and then checks (the lantern's unit rate), the ladder's right triangle, percent error compared with the real length, four words, the mission |
+| `sets/u7-pro.json` | three more exit items (`nq-pro-7.4-e1..3`), twelve for the unit, as the plan had: a warming in equal steps then a cooling, a unit rate for a longer time, a two-machine line undone. Each `cat` 7.EE.B.3, every distractor tagged with its misconception, every key worked out in `tests/unit/launch-lab.test.js` from the numbers in its question |
+| `units.json` | step 7.4's `planned` and `reserved` deleted (as no other built step has them), its `game.pro` set to Launch Lab's `chapter=clock&lock=1`, and the unit's fourth teacher note, about the finale |
+| `seed-games/launch-lab.html` | the fourth chapter, `clock`, **The Great Clock**: seven rounds (the other chapters keep six), one for each gear |
+| `server/standards/official-tags.js` | `LAB_CHAPTERS.clock`: the step's eight codes, credited only to a step locked to the chapter; the game's own library tags stay its three teaching chapters' codes |
+
+**What the clock plays.** One mission: the Great Clock has stopped, and each tower's problem sets one gear. Every round
+is a problem of more than one step with rational numbers, told in its own unit's world: the Ratio Gear (a lantern burns
+6 mL in 4 hours: how much in 10? On a double number line of hours over milliliters), the Zero Gear (the cold store at
+6 below zero warms 2.5° an hour for 4 hours, then cools 3°: on an upright thermometer), the Variable Gear (the machine
+line, times 3 then plus 5, gives 23: what went in?), the Scale Gear (a survey map's 48 m against a real 60 m: the
+percent error), the Slope Gear (a zip wire to a platform 4 across and 6 up: the rise for each 1 across, on the plane),
+the Angle Gear (a ladder to the clock face 8 m up, its foot 6 m out) and the Chance Gear (the mean of five landings is
+14 m, four are given: where did the fifth land? On a dot plot). Every round is planned on the stepper and run; a
+replay gets other numbers from the seeded generator, and the test checks each data set (a whole Pythagorean triple, a
+net warming from below zero, five landings that really have the mean the words give).
+
+**Plan, then run.** As in the other chapters, the board shows only the question until Run, and a wrong plan is run and
+drawn as it really turns out: an amount put where it really falls on the milliliter line, an end temperature undone back
+to the start it would need, a number sent through the machines, a percent of the real length, a wire at the planned
+slope, a ladder of the planned length reaching only as high as it really does, the mean five landings would really have.
+Named slips get their own hint: adding hours as milliliters, the warming without the cooling, the machines undone in
+the wrong order, dividing by the survey's length, across over up, adding the two sides, the mean itself.
+
+**The clock on the deck.** In this chapter the results deck carries the Great Clock instead of the cargo rack: an
+upright plate with seven sockets and a dial. A solved round sets its gear (each its own color) in the next socket; the
+gears turn and, with all seven in, the dial's hand goes round (none of it moves with reduced motion). The end card says
+"All seven gears are turning. The Great Clock runs again."
+
+**Words.** Read-aloud stays on by default; every new line is written as it is said ("6 below zero", "6 squared plus 8
+squared", "20 percent"), with a plain number in each place and no sign, and is registered through the game's words
+block (`server/services/tts-lines.js`). The chip and the board carry the signs. Nothing is bought, sold or wagered.
+
+**Diagrams.** No new type or option: an upright `numberline` with two hops, and a `righttriangle`. Six focus steps,
+measured at 390 px and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Picture.** The mission slide carries `nq/launch-lab/the-great-clock` (the first gear, at phone width;
+`scripts/nq-shots.js`, `band: "pro"`).
+
+**The engine.** The planned-step support Unit 7 added stays: a step may still carry `planned: true` inside a built
+unit, and the tests keep exercising it through a copy of the catalogue with 7.4 planned again
+(`number-quest-pro-foundations.test.js`, `withFinalePlanned`). With no step planned, nothing opens the tier by itself:
+`statusOf` falls through to `tiers.pro.status`, which stays `"building"`. **Left for the opening PR**: the status, the
+teacher page's game list (`NQ_CREW`), the locale copy and `program.standards`.

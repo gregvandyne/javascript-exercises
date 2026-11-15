@@ -2561,15 +2561,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "The Great Clock",
+       "chapterTitle": "The Great Clock",
+       "params": "chapter=clock&lock=1",
+       "slug": "launch-lab"
+      }
      },
      "mp": "MP1",
      "n": "7.4",
      "order": 23,
-     "planned": true,
-     "reserved": {
-      "params": "chapter=clock&lock=1"
-     },
      "shorts": {
       "pro": "The seven gears"
      },
@@ -2600,7 +2601,8 @@
    "teacherNotes": [
     "This unit covers the grade 6 to 8 work on data and chance: center (median and mean) and spread (range, interquartile range and mean absolute deviation) read from dot plots, box plots and histograms; probability as a number from 0 to 1, from a model with equal outcomes, from the results of many trials and for two-stage events in a table; comparing two data sets by how far apart their centers are in units of spread; inferring from a random sample; and scatter plots, their association, outliers and an informal trend line used to predict.",
     "Common misconceptions: that the median is the middle of the axis or of the range rather than of the ordered data; that the larger values mean less spread; that every outcome is equally likely just because there are four bins; that a count is a probability; that the outcomes of two stages add (2 + 3) instead of multiply (2 × 3); and that a scatter plot with points going up means one causes the other. Ask \"how many are below it and above it?\", \"out of how many?\" and \"what does the line say at that point?\"",
-    "Launch Lab checks each idea by planning and running. The learner sets a number on a stepper or picks a tile, runs the plan and sees what it really gives: a median line with more probes on one side, a total that does not match, a prediction that is not the rate of the run, a point off the trend line. The data come from probes launched on a test range and dropped through a peg tower; nothing is bought, sold, bet or won. There is no timer, every instruction is read aloud by default, and six finished rounds complete a step. The unit's fourth step, The Great Clock (the Pro finale), is reserved and not built yet."
+    "Launch Lab checks each idea by planning and running. The learner sets a number on a stepper or picks a tile, runs the plan and sees what it really gives: a median line with more probes on one side, a total that does not match, a prediction that is not the rate of the run, a point off the trend line. The data come from probes launched on a test range and dropped through a peg tower; nothing is bought, sold, bet or won. There is no timer, every instruction is read aloud by default, and six finished rounds complete a step.",
+    "The Great Clock (7.4) is the tier's finale: a mixed review with no new ideas. Its spine is multi-step problems with rational numbers, and its mission is Launch Lab's fourth chapter, seven rounds, one for each tower's gear: a unit rate (a lantern's oil), a signed change (a cold store below zero), an equation (a machine line run backwards), a percent error (a survey map), a slope (a zip wire), a span (a ladder, by the Pythagorean theorem) and a data read (a missing landing from a mean). A wrong plan is run and shown as it really turns out, and the clock gains a gear for each round solved."
    ],
    "tier": "pro",
    "title": "The Test Range",

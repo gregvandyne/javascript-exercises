@@ -293,15 +293,15 @@ test('Pro units cite only codes in proCodes; the welcome cites none; all 23 step
       for (const s of u.steps) { assert.equal(s.game.pro, null, `pro ${s.n}: planned, so no game`); assert.match(s.reserved.params, /^chapter=[a-z]+&lock=1$/); }
       for (const s of u.steps) assert.ok(!fs.existsSync(path.join(NQ, 'course/pro', `${s.n}.json`)), `pro ${s.n}: a planned step has no deck`);
     }
-    // A built unit may keep one step reserved (Pro's finale, 7.4, in Unit 7): it says so the same way.
+    // A built unit may keep a step reserved (as Pro's finale, 7.4, was in Unit 7 until it was built): it says so the same way.
     for (const s of u.steps.filter(x => x.planned === true)) {
       assert.ok(!u.planned, `pro ${s.n}: a step is planned on its own only inside a built unit`);
       assert.equal(s.game.pro, null, `pro ${s.n}: planned, so no game`); assert.match(s.reserved.params, /^chapter=[a-z]+&lock=1$/);
       assert.ok(!fs.existsSync(path.join(NQ, 'course/pro', `${s.n}.json`)), `pro ${s.n}: a planned step has no deck`);
     }
   }
-  assert.deepEqual(units.flatMap(u => u.steps.filter(s => s.planned === true && !u.planned).map(s => s.n)), ['7.4'], 'the one step reserved inside a built unit is the finale');
-  assert.deepEqual(units.filter(u => u.planned), [], 'no unit is planned: all seven are built (only the finale step is reserved)');
+  assert.deepEqual(units.flatMap(u => u.steps.filter(s => s.planned !== undefined || s.reserved !== undefined).map(s => s.n)), [], 'no step is planned or reserved in Pro: the finale is built');
+  assert.deepEqual(units.filter(u => u.planned), [], 'no unit is planned: all seven are built, and the finale too');
   assert.equal(new Set(units.filter(u => u.n >= 1).map(u => u.tool)).size, 7, 'seven games, one a unit');
   for (const s of steps) {
     const st = s.standards.pro;
