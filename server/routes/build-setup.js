@@ -1,5 +1,5 @@
 // The step-by-step game setup before the Builder: /build/new (the "New game" button on /build opens it).
-//   Start: "Help me choose" (six steps, then "Here is your game plan") or "I know what I want" (a new, empty game and
+//   Start: "Help me choose" (seven steps, then "Here is your game plan") or "I know what I want" (a new, empty game and
 //   straight to the Studio, exactly as "New game" always did). Every step also has "Skip to the Builder".
 // What the steps offer comes from the Builder's own lists (builder/plan.js: game types, the shipped 3D worlds, the
 // heroes and animals of both catalogues by group: the 3D worlds' and the 2D sprites'), so a newly shipped world or
@@ -14,7 +14,8 @@ import { page } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
-import { GAME_TYPES, LOOKS, LEARN, LIMITS, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts } from '../builder/plan.js';
+import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault } from '../builder/plan.js';
+import { teacherHost } from '../services/classlive-access.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
 
@@ -27,6 +28,7 @@ export const STEPS = [
   { key: 'look' },
   { key: 'world', other: true, pack: true },
   { key: 'chars', other: true, pack: true, multi: true },
+  { key: 'play' },
   { key: 'learn', other: true, multi: true },
   { key: 'extras' },
 ];
@@ -45,8 +47,21 @@ const ART = {
   word: svg('<rect x="5" y="14" width="17" height="20" rx="3"/><rect x="26" y="14" width="17" height="20" rx="3"/><path d="M10 29l3.5-10 3.5 10M11.5 26h4"/><path d="M31 19v10h3a2.5 2.5 0 0 0 0-5h-3 2.5a2.5 2.5 0 0 0 0-5z"/>'),
   duel: svg('<circle cx="14" cy="14" r="5"/><circle cx="34" cy="14" r="5"/><path d="M5 38c0-8 4-12 9-12s9 4 9 12"/><path d="M25 38c0-8 4-12 9-12s9 4 9 12"/>'),
   board: svg('<rect x="8" y="8" width="32" height="32" rx="6"/><path d="M17 17v.5M31 17v.5M24 24v.5M17 31v.5M31 31v.5"/>'),
+  // the classroom types
+  quiet: svg('<path d="M30 8a15 15 0 1 0 10 25A12 12 0 0 1 30 8z"/><path d="M38 10v4M36 12h4"/>'),
+  categories: svg('<rect x="5" y="8" width="38" height="32" rx="4"/><path d="M5 18h38M18 8v32M31 8v32M5 29h38"/>'),
+  survey: svg('<path d="M8 40h32"/><rect x="11" y="24" width="6" height="12" rx="1"/><rect x="21" y="12" width="6" height="24" rx="1"/><rect x="31" y="18" width="6" height="18" rx="1"/>'),
+  bingo: svg('<rect x="7" y="7" width="34" height="34" rx="4"/><path d="M18 7v34M30 7v34M7 18h34M7 30h34"/><circle cx="24" cy="24" r="3"/>'),
+  flashcards: svg('<rect x="12" y="6" width="28" height="20" rx="3"/><rect x="8" y="16" width="28" height="24" rx="3"/><path d="M15 28h14M15 33h9"/>'),
+  exitticket: svg('<path d="M6 14h36v7a3 3 0 0 0 0 6v7H6v-7a3 3 0 0 0 0-6z"/><path d="M17 24l4 4 9-9"/>'),
+  spinner: svg('<circle cx="24" cy="26" r="16"/><path d="M24 26V10M24 26l13 8M24 26l-13 8"/><path d="M20 4h8l-4 6z"/>'),
+  scoreboard: svg('<rect x="6" y="10" width="36" height="28" rx="4"/><path d="M24 10v28"/><path d="M13 20v10M14 20h-2"/><path d="M31 21a3 3 0 1 1 5 2l-5 7h6"/>'),
   '3d': svg('<path d="M24 5l16 9v20l-16 9-16-9V14z"/><path d="M8 14l16 9 16-9M24 23v20"/>'),
   '2d': svg('<rect x="6" y="10" width="36" height="28" rx="4"/><path d="M6 31l10-9 8 7 6-5 12 9"/><circle cx="33" cy="18" r="3"/>'),
+  // how it is played: live (a big screen and everyone's own devices), on one screen, on my own
+  live: svg('<rect x="9" y="5" width="30" height="19" rx="2"/><path d="M24 24v4"/><rect x="4" y="32" width="9" height="12" rx="2"/><rect x="19.5" y="32" width="9" height="12" rx="2"/><rect x="35" y="32" width="9" height="12" rx="2"/>'),
+  screen: svg('<rect x="5" y="6" width="38" height="24" rx="3"/><circle cx="13" cy="39" r="3"/><circle cx="24" cy="39" r="3"/><circle cx="35" cy="39" r="3"/>'),
+  solo: svg('<circle cx="24" cy="12" r="6"/><rect x="15" y="23" width="18" height="20" rx="3"/><path d="M21 38h6"/>'),
   auto: svg('<path d="M24 6l4 12 12 4-12 4-4 12-4-12-12-4 12-4z"/><path d="M38 6v6M35 9h6"/>'),
   math: svg('<path d="M8 15h12M14 9v12"/><path d="M28 15h12"/><path d="M9 29l10 10M19 29L9 39"/><path d="M28 31h12M28 37h12"/>'),
   reading: svg('<path d="M24 12c-4-3-10-4-16-3v27c6-1 12 0 16 3 4-3 10-4 16-3V9c-6-1-12 0-16 3z"/><path d="M24 12v27"/>'),
@@ -58,20 +73,36 @@ const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>
 const check = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
 
 /** What the page's script needs (ids and facts only; every word comes from the locale files). */
-export function setupData(t) {
+export function setupData(t, { teacher = false } = {}) {
   return {
-    steps: STEPS, types: GAME_TYPES.map(x => x.id), looks: LOOKS, learn: LEARN, limits: LIMITS, files: SETUP_FILES,
+    steps: STEPS, types: GAME_TYPES.map(x => x.id), looks: LOOKS,
+    // the game-type step's groups for this viewer (the first one shows first), and the steps each type skips (a survey
+    // or a scoreboard has no 2D or 3D, world or characters)
+    typeGroups: typeGroups({ teacher }).map(g => ({ id: g.id, items: g.items.map(x => x.id) })), teacher,
+    skip: Object.fromEntries(GAME_TYPES.filter(x => x.skip.length).map(x => [x.id, x.skip])), learn: LEARN, limits: LIMITS, files: SETUP_FILES,
     worlds: KIT2_WORLDS.map(w => ({ id: w.id, name: t(`studio.worlds.names.${w.id}`) })),
     characters: characterGroups().flatMap(g => g.items.map(c => ({ id: c.id, name: characterName(c.id, t), group: g.id, kind: c.kind, worlds: c.worlds, in3d: c.in3d, in2d: c.in2d }))),
+    // "How will it be played?": the answers, the one each kind of game starts on for this viewer ('' : no kind picked),
+    // the kinds that cannot be live (and why), why a ready-made 3D world cannot, and the kinds made only in 2D (the
+    // page works out whether the plan is a ready-made 3D world the way plan.js planEngine does).
+    play: {
+      plays: PLAYS, kit2: LIVE_NOT_ENGINE.kit2, not: LIVE_NOT, flat: GAME_TYPES.filter(x => x.flat).map(x => x.id),
+      def: Object.fromEntries(['', ...GAME_TYPES.map(x => x.id)].map(id => [id, playDefault({ type: id ? { from: 'pack', id } : null, look: null, world: null, characters: [], learn: [], notes: '' }, { forKid: !teacher })])),
+      why: Object.fromEntries([...new Set([...Object.values(LIVE_NOT), ...Object.values(LIVE_NOT_ENGINE)])].map(c => [c, t(`buildSetup.play.why.${c}`)])),
+    },
     // 2D: the kinds of game that draw a world and one sprite character today, and the worlds that have 2D art
     art2d: { types: ['adventure', ...ART2D_TEMPLATES], worlds: ART2D_WORLD_IDS },
   };
 }
 
+/** The setup page's viewer is a teacher (school staff, the platform admin, or a teacher of a class): the classroom
+ *  types come first for them, and the teacher-only ones (a survey, an exit ticket) are offered. */
+export const setupTeacher = u => !!u && !u.is_guest && teacherHost(u);
+
 router.get('/build/new', requireBuilder, (req, res) => {
-  const t = req.t, total = STEPS.length;
+  const t = req.t, total = STEPS.length, teacher = setupTeacher(req.user), groups = typeGroups({ teacher });
   // One card: a real button (aria-pressed), a picture or drawing, a name of at most two lines and a line under it.
-  const card = ({ step, id, pic, title, text = '', extra = '', attrs = '' }) => html`<div class="su-card${extra ? ' has-more' : ''}" data-card="${id}">
+  const card = ({ step, id, pic, title, text = '', extra = '', attrs = '', wrap = '' }) => html`<div class="su-card${extra ? ' has-more' : ''}" data-card="${id}"${raw(wrap)}>
     <button type="button" class="su-pick" data-step="${step}" data-id="${id}" aria-pressed="false"${raw(attrs)}>${pic}<span class="su-name">${title}</span><span class="su-desc">${text}</span>${check}</button>${extra}</div>`;
   const elseCard = step => card({ step, id: 'else', pic: art('else'), title: t('buildSetup.else.title'), text: t('buildSetup.else.text'), attrs: ` aria-controls="su-else-${step}" aria-expanded="false"` });
   const elseBox = s => html`<div class="su-else" id="su-else-${s.key}" hidden>
@@ -86,7 +117,11 @@ router.get('/build/new', requireBuilder, (req, res) => {
     <h1 id="su-h-${s.key}" tabindex="-1">${t(`buildSetup.steps.${s.key}.title`)}</h1><p class="su-hint">${t(`buildSetup.steps.${s.key}.hint`)}</p>`;
 
   const grids = {
-    type: () => html`<div class="su-grid su-grid-text" role="group" aria-labelledby="su-h-type">${GAME_TYPES.map(x => card({ step: 'type', id: x.id, pic: art(x.id), title: t(`buildSetup.types.${x.id}.title`), text: t(`buildSetup.types.${x.id}.text`) }))}${elseCard('type')}</div>`,
+    // Two groups ("For your class" and "Games"), one shown at a time; the first is shown at first: for a teacher "For
+    // your class", for everyone else the games (in the order they always had) and then the classroom types for kids.
+    type: () => html`<div class="su-tabs" role="group" aria-label="${t('buildSetup.typeGroups.label')}">${groups.map((g, i) => html`<button type="button" class="su-tab" data-tgroup-btn="${g.id}" aria-pressed="${i === 0 ? 'true' : 'false'}" aria-controls="su-grid-type">${t(`buildSetup.typeGroups.${g.id}`)}</button>`)}</div>
+      ${groups.map((g, i) => html`<p class="su-thint" data-tgroup-hint="${g.id}"${i ? raw(' hidden') : ''}>${t(`buildSetup.typeGroups.${g.id}Text`)}</p>`)}
+      <div class="su-grid su-grid-text" id="su-grid-type" role="group" aria-labelledby="su-h-type">${groups.map((g, i) => g.items.map(x => card({ step: 'type', id: x.id, pic: art(x.id), title: t(`buildSetup.types.${x.id}.title`), text: t(`buildSetup.types.${x.id}.text`), wrap: ` data-tgroup="${g.id}"${i ? ' hidden' : ''}` })))}${elseCard('type')}</div>`,
     look: () => html`<div class="su-grid su-grid-text su-grid-3" role="group" aria-labelledby="su-h-look">${LOOKS.map(id => card({ step: 'look', id, pic: art(id), title: t(`buildSetup.looks.${id}.title`), text: t(`buildSetup.looks.${id}.text`) }))}</div>`,
     world: () => html`<p class="su-flag" id="su-world-2d" hidden>${t('buildSetup.flatNote')}</p>
       <div class="su-grid su-grid-world" role="group" aria-labelledby="su-h-world">${KIT2_WORLDS.map(w => { const name = t(`studio.worlds.names.${w.id}`); return card({ step: 'world', id: w.id, title: name, text: t(`buildSetup.worlds.${w.id}`),
@@ -102,6 +137,9 @@ router.get('/build/new', requireBuilder, (req, res) => {
               : html`<span class="su-pic su-pic-2d"><img src="/img/art2d/animals/${c.id}.webp" alt="" width="96" height="64" loading="lazy" decoding="async"></span>` }))}</div>`}
       </section>`)}
       <section class="su-group" aria-labelledby="su-g-else"><h2 id="su-g-else" class="sr-only">${t('buildSetup.else.title')}</h2><div class="su-grid su-grid-char">${elseCard('chars')}</div></section>`,
+    // Live with my class or group / On one screen / On my own. A Live that this kind of game (or a ready-made 3D world)
+    // cannot be yet stays on the page, greyed out, with the reason in its line (public/js/buildsetup.js).
+    play: () => html`<div class="su-grid su-grid-text su-grid-3 su-grid-play" role="group" aria-labelledby="su-h-play">${PLAYS.map(id => card({ step: 'play', id, pic: art(id), title: t(`buildSetup.play.${id}.title`), text: t(`buildSetup.play.${id}.text`) }))}</div>`,
     learn: () => html`<div class="su-ghead su-ghead-end">${allBtn('learn', t('js.buildsetup.stepNames.learn'))}</div><div class="su-grid su-grid-text" role="group" aria-labelledby="su-h-learn">${LEARN.map(id => card({ step: 'learn', id, pic: art(id), title: t(`buildSetup.learn.${id}.title`), text: t(`buildSetup.learn.${id}.text`) }))}${elseCard('learn')}</div>`,
     extras: () => html`<div class="su-extras">
       <div class="field"><label for="su-notes">${t('buildSetup.extras.notesLabel')}</label>
@@ -136,7 +174,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>
   </div>
-  ${jsonData('page-data', setupData(t))}`;
+  ${jsonData('page-data', setupData(t, { teacher }))}`;
   page(req, res, { title: t('buildSetup.title'), active: 'build', back: '/build', backLabel: t('nav.build'), body, mid: true, bodyClass: 'setup-page',
     head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/build-setup.css">'), scripts: ['/js/buildsetup.js'], });
 });
@@ -145,7 +183,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
 // opens it: runner.submit). Nothing is stored; the typed words are only trimmed here, and screened when they are sent.
 // Body: { plan, files } -> { plan (as the Builder will use it), text, custom: ['type' | 'world' | 'character'], engine }.
 router.post('/api/build/plan', requireBuilder, rateLimit('build-plan', 60, 60e3), (req, res) => {
-  const b = req.body || {}, plan = normalisePlan(b.plan);
+  const b = req.body || {}, plan = normalisePlan(b.plan, { forKid: !setupTeacher(req.user) });
   if (!plan) return res.json({ plan: null, text: '', custom: [], engine: 'open' });
   const e = planEngine(plan), files = Math.max(0, Math.min(SETUP_FILES.max, Math.round(+b.files || 0)));
   res.json({ plan, text: planSentence(plan, req.t, { files }), custom: customParts(plan), engine: e.engine, ...(e.engine === 'kit2' ? { world: e.world, worldName: req.t(`studio.worlds.names.${worldById(e.world).id}`) } : {}) });

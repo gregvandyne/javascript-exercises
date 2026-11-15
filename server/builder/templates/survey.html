@@ -1,0 +1,239 @@
+<title>Class Survey</title>
+<style>
+/* Class Survey: fixed-choice questions written by the teacher. "Count hands" (the teacher taps how many hands are up)
+   or "Pass the device" (each student taps a choice in private). Only counts, only in this page's memory: no names, no
+   typing, nothing saved or sent. Big type for the board, keyboard and clicker keys. */
+:root{--bg:#fff7ec;--bg2:#ffe9cf;--ink:#2b1d12;--soft:#6b5443;--card:#ffffff;--edge:#2b1d12;--hot:#ff7a45;--hot-ink:#ffffff;
+  --c0:#ff7a45;--c1:#2fb5a5;--c2:#7a6cff;--c3:#f2b600}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+body{background:linear-gradient(180deg,var(--bg),var(--bg2)) fixed}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:14px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--c2);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+button:disabled{opacity:.45;cursor:default}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.hot{background:var(--hot);color:var(--hot-ink)}
+.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
+[hidden]{display:none!important}
+.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2.4vmin,24px);min-height:0}
+.card{margin:auto;width:min(100%,820px);background:var(--card);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 8px 0 var(--edge)}
+.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6.4vmin,4.2rem);line-height:1.1}
+.card p{margin:10px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
+.note{font-weight:800;color:var(--ink)!important;background:var(--bg2);border-radius:14px;padding:8px 14px}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.count{font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem);margin:0}
+.q{margin:0;text-align:center;font-size:clamp(1.6rem,6.4vmin,4.6rem);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
+.choices{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,2vmin,20px);align-content:center}
+.choice{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag lab" "ctl ctl";align-items:center;gap:10px 14px;padding:12px 14px;border:4px solid var(--edge);border-radius:22px;background:var(--card);box-shadow:0 6px 0 var(--edge);min-height:84px}
+.choice .tag{grid-area:tag;display:grid;place-items:center;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);border-radius:50%;color:#fff;font-weight:900;font-size:clamp(1.2rem,4vmin,2.6rem)}
+.choice .lab{grid-area:lab;min-width:0;font-weight:900;font-size:clamp(1.2rem,4vmin,2.8rem);overflow-wrap:anywhere;text-align:start}
+.choice .num{font-weight:900;font-size:clamp(1.8rem,7vmin,5rem);font-variant-numeric:tabular-nums;min-width:1.6em;text-align:center}
+.choice .ctl{grid-area:ctl;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vmin,32px)}
+.choice .ctl button{min-width:clamp(56px,9vmin,84px);min-height:clamp(56px,9vmin,84px);font-size:clamp(1.4rem,4.4vmin,3rem);padding:0}
+.pick{width:100%;grid-template-areas:"tag lab";text-align:start;font-size:inherit}
+.bars{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(10px,2vmin,20px)}
+.barrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center}
+.barrow .lab{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);overflow-wrap:anywhere}
+.barrow .val{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);font-variant-numeric:tabular-nums}
+.track{grid-column:1/-1;height:clamp(22px,4.6vmin,48px);border-radius:999px;background:var(--bg2);border:3px solid var(--edge);overflow:hidden}
+.fill{height:100%;width:0;border-radius:999px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.summary{display:grid;gap:18px;width:min(100%,980px);margin:0 auto}
+.summary h3{margin:0 0 6px;font-size:clamp(1.2rem,3.6vmin,2.4rem)}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+
+  <section class="screen" id="start">
+    <div class="card"><h2 id="startH"></h2><p id="startP"></p><p class="note" id="privacy"></p>
+      <div class="row"><button class="big hot" id="hands"></button><button class="big" id="private"></button></div>
+      <p id="handsP"></p><p id="privateP"></p></div>
+  </section>
+
+  <section class="screen" id="ask" hidden>
+    <p class="count" id="askN"></p>
+    <h2 class="q" id="askQ"></h2>
+    <div class="choices" id="choices"></div>
+    <div class="row"><button class="big" id="prev"></button><button class="big hot" id="show"></button></div>
+    <p class="keys" id="askKeys"></p>
+  </section>
+
+  <section class="screen" id="ready" hidden>
+    <div class="card"><p class="count" id="readyN"></p><h2 id="readyH"></h2><p id="readyP"></p>
+      <div class="row"><button class="big hot" id="readyBtn"></button><button class="big" id="readyShow"></button></div></div>
+  </section>
+
+  <section class="screen" id="thanks" hidden>
+    <div class="card" aria-live="polite"><h2 id="thanksH"></h2><p id="thanksP"></p></div>
+  </section>
+
+  <section class="screen" id="results" hidden>
+    <p class="count" id="resN"></p>
+    <h2 class="q" id="resQ"></h2>
+    <div class="bars" id="bars"></div>
+    <p class="note" id="tooFew" hidden></p>
+    <div class="row"><button class="big" id="resBack"></button><button class="big hot" id="next"></button></div>
+  </section>
+
+  <section class="screen" id="all" hidden>
+    <h2 class="q" id="allH"></h2>
+    <div class="summary" id="summary"></div>
+    <div class="row"><button class="big hot" id="restart"></button></div>
+  </section>
+</main>
+<script>
+// Class Survey. Answers are only counted: an array of numbers per question, in this page's memory. Nothing about who
+// chose what exists anywhere, nothing is typed, nothing is saved (no BRB.storage, no localStorage) or sent (no
+// BRB.poll). "Pass the device" shows the results only once CONFIG.minShown people have answered, so nobody in a tiny
+// group can be picked out. Keys: 1-4 count a hand (Shift takes one away), Enter or Page Down goes on, Page Up back.
+'use strict';
+const CONFIG = {
+  title: 'Class Survey',
+  lang: 'en',
+  minShown: 5,
+  showPercent: true,
+  thanksSeconds: 1.5,
+  readAloud: true,
+};
+// The questions: each has 2 to 4 short fixed choices. Students never type anything.
+const QUESTIONS = [
+  { q: 'How did today’s lesson feel?', choices: ['Easy', 'Just right', 'Tricky', 'Very hard'] },
+  { q: 'Which topic should we do next?', choices: ['Fractions', 'Shapes', 'Measuring'] },
+  { q: 'Would you like more group work?', choices: ['Yes', 'No', 'Not sure'] },
+];
+// {n} and {total} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startH: 'Class survey', startP: 'Answer with fixed choices. Only the counts are shown.', privacy: 'No names, no typing. The answers are counted on this device only and nothing is saved.', hands: 'Count hands', private: 'Pass the device', handsP: 'Count hands: read each question, then tap the number of raised hands.', privateP: 'Pass the device: each student taps a choice in private.', qn: 'Question {n} of {total}', show: 'Show results', prev: 'Back', next: 'Next question', finish: 'See all results', back: 'Back to answering', readyH: 'Your turn', readyP: 'Take the device, then tap Ready. Nobody will see your choice.', ready: 'Ready', thanksH: 'Thank you!', thanksP: 'Your answer is counted. Pass the device on.', answers: 'Answers: {n}', tooFew: 'Results show once {n} people have answered, so nobody can be picked out.', allH: 'All results', restart: 'New survey', askKeys: 'Keys: 1-4 add a hand · Shift + 1-4 take one away · Enter results · Page Up back', minus: 'One less', plus: 'One more' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startH: 'Encuesta de clase', startP: 'Se responde con opciones fijas. Solo se muestran los recuentos.', privacy: 'Sin nombres y sin escribir. Las respuestas se cuentan solo en este dispositivo y no se guarda nada.', hands: 'Contar manos', private: 'Pasar el dispositivo', handsP: 'Contar manos: lee cada pregunta y toca el número de manos levantadas.', privateP: 'Pasar el dispositivo: cada estudiante elige en privado.', qn: 'Pregunta {n} de {total}', show: 'Ver resultados', prev: 'Atrás', next: 'Siguiente pregunta', finish: 'Ver todos los resultados', back: 'Volver a responder', readyH: 'Te toca', readyP: 'Toma el dispositivo y toca Listo. Nadie verá tu elección.', ready: 'Listo', thanksH: '¡Gracias!', thanksP: 'Tu respuesta está contada. Pasa el dispositivo.', answers: 'Respuestas: {n}', tooFew: 'Los resultados aparecen cuando respondan {n} personas, para que nadie pueda ser señalado.', allH: 'Todos los resultados', restart: 'Nueva encuesta', askKeys: 'Teclas: 1-4 suman una mano · Mayús + 1-4 quitan una · Intro resultados · RePág atrás', minus: 'Una menos', plus: 'Una más' },
+  fr: { sound: 'Son', full: 'Plein écran', startH: 'Sondage de classe', startP: 'On répond avec des choix fixes. Seuls les totaux s’affichent.', privacy: 'Pas de noms, rien à écrire. Les réponses sont comptées sur cet appareil seulement et rien n’est gardé.', hands: 'Compter les mains', private: 'Passer l’appareil', handsP: 'Compter les mains : lis chaque question, puis touche le nombre de mains levées.', privateP: 'Passer l’appareil : chaque élève choisit en privé.', qn: 'Question {n} sur {total}', show: 'Voir les résultats', prev: 'Retour', next: 'Question suivante', finish: 'Voir tous les résultats', back: 'Revenir aux réponses', readyH: 'À toi', readyP: 'Prends l’appareil, puis touche Prêt. Personne ne verra ton choix.', ready: 'Prêt', thanksH: 'Merci !', thanksP: 'Ta réponse est comptée. Passe l’appareil.', answers: 'Réponses : {n}', tooFew: 'Les résultats s’affichent quand {n} personnes ont répondu, pour que personne ne soit repéré.', allH: 'Tous les résultats', restart: 'Nouveau sondage', askKeys: 'Touches : 1-4 ajoutent une main · Maj + 1-4 en enlèvent une · Entrée résultats · Page préc. retour', minus: 'Une de moins', plus: 'Une de plus' },
+  de: { sound: 'Ton', full: 'Vollbild', startH: 'Klassenumfrage', startP: 'Geantwortet wird mit festen Antworten. Nur die Anzahl wird gezeigt.', privacy: 'Keine Namen, nichts tippen. Die Antworten werden nur auf diesem Gerät gezählt und nichts wird gespeichert.', hands: 'Hände zählen', private: 'Gerät weitergeben', handsP: 'Hände zählen: Lies jede Frage vor und tippe die Zahl der Hände ein.', privateP: 'Gerät weitergeben: Jedes Kind wählt geheim.', qn: 'Frage {n} von {total}', show: 'Ergebnis zeigen', prev: 'Zurück', next: 'Nächste Frage', finish: 'Alle Ergebnisse', back: 'Weiter antworten', readyH: 'Du bist dran', readyP: 'Nimm das Gerät und tippe auf Bereit. Niemand sieht deine Wahl.', ready: 'Bereit', thanksH: 'Danke!', thanksP: 'Deine Antwort ist gezählt. Gib das Gerät weiter.', answers: 'Antworten: {n}', tooFew: 'Das Ergebnis erscheint, wenn {n} geantwortet haben, damit niemand erkannt wird.', allH: 'Alle Ergebnisse', restart: 'Neue Umfrage', askKeys: 'Tasten: 1-4 zählen eine Hand · Umschalt + 1-4 ziehen eine ab · Enter Ergebnis · Bild auf zurück', minus: 'Eine weniger', plus: 'Eine mehr' },
+  it: { sound: 'Suono', full: 'Schermo intero', startH: 'Sondaggio di classe', startP: 'Si risponde con scelte fisse. Si vedono solo i totali.', privacy: 'Niente nomi, niente da scrivere. Le risposte sono contate solo su questo dispositivo e non si salva nulla.', hands: 'Conta le mani', private: 'Passa il dispositivo', handsP: 'Conta le mani: leggi ogni domanda e tocca il numero di mani alzate.', privateP: 'Passa il dispositivo: ognuno sceglie in privato.', qn: 'Domanda {n} di {total}', show: 'Mostra i risultati', prev: 'Indietro', next: 'Domanda successiva', finish: 'Tutti i risultati', back: 'Torna alle risposte', readyH: 'Tocca a te', readyP: 'Prendi il dispositivo e tocca Pronto. Nessuno vedrà la tua scelta.', ready: 'Pronto', thanksH: 'Grazie!', thanksP: 'La tua risposta è contata. Passa il dispositivo.', answers: 'Risposte: {n}', tooFew: 'I risultati si vedono quando avranno risposto {n} persone, così nessuno può essere individuato.', allH: 'Tutti i risultati', restart: 'Nuovo sondaggio', askKeys: 'Tasti: 1-4 aggiungono una mano · Maiusc + 1-4 ne tolgono una · Invio risultati · Pag su indietro', minus: 'Una in meno', plus: 'Una in più' },
+  pt: { sound: 'Som', full: 'Tela cheia', startH: 'Pesquisa da turma', startP: 'Responda com opções fixas. Só aparecem as contagens.', privacy: 'Sem nomes e sem digitar. As respostas são contadas só neste aparelho e nada é salvo.', hands: 'Contar mãos', private: 'Passar o aparelho', handsP: 'Contar mãos: leia cada pergunta e toque no número de mãos levantadas.', privateP: 'Passar o aparelho: cada aluno escolhe em segredo.', qn: 'Pergunta {n} de {total}', show: 'Ver resultados', prev: 'Voltar', next: 'Próxima pergunta', finish: 'Ver todos os resultados', back: 'Voltar a responder', readyH: 'Sua vez', readyP: 'Pegue o aparelho e toque em Pronto. Ninguém vai ver sua escolha.', ready: 'Pronto', thanksH: 'Obrigado!', thanksP: 'Sua resposta foi contada. Passe o aparelho.', answers: 'Respostas: {n}', tooFew: 'Os resultados aparecem quando {n} pessoas responderem, para ninguém ser identificado.', allH: 'Todos os resultados', restart: 'Nova pesquisa', askKeys: 'Teclas: 1-4 somam uma mão · Shift + 1-4 tiram uma · Enter resultados · Page Up voltar', minus: 'Uma a menos', plus: 'Uma a mais' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startH: 'Klassenenquête', startP: 'Antwoord met vaste keuzes. Alleen de aantallen worden getoond.', privacy: 'Geen namen, niets typen. De antwoorden worden alleen op dit apparaat geteld en er wordt niets bewaard.', hands: 'Handen tellen', private: 'Apparaat doorgeven', handsP: 'Handen tellen: lees elke vraag voor en tik het aantal opgestoken handen in.', privateP: 'Apparaat doorgeven: iedere leerling kiest in het geheim.', qn: 'Vraag {n} van {total}', show: 'Toon uitslag', prev: 'Terug', next: 'Volgende vraag', finish: 'Alle uitslagen', back: 'Verder antwoorden', readyH: 'Jouw beurt', readyP: 'Pak het apparaat en tik op Klaar. Niemand ziet je keuze.', ready: 'Klaar', thanksH: 'Dank je!', thanksP: 'Je antwoord is geteld. Geef het apparaat door.', answers: 'Antwoorden: {n}', tooFew: 'De uitslag verschijnt als {n} mensen hebben geantwoord, zodat niemand herkend kan worden.', allH: 'Alle uitslagen', restart: 'Nieuwe enquête', askKeys: 'Toetsen: 1-4 tellen een hand · Shift + 1-4 halen er een af · Enter uitslag · Page Up terug', minus: 'Een minder', plus: 'Een meer' },
+  ru: { sound: 'Звук', full: 'Весь экран', startH: 'Опрос класса', startP: 'Отвечают готовыми вариантами. Видно только количество.', privacy: 'Без имён и без набора текста. Ответы считаются только на этом устройстве, ничего не сохраняется.', hands: 'Считать руки', private: 'Передавать устройство', handsP: 'Считать руки: прочитайте вопрос и нажмите, сколько поднято рук.', privateP: 'Передавать устройство: каждый ученик выбирает втайне.', qn: 'Вопрос {n} из {total}', show: 'Показать итоги', prev: 'Назад', next: 'Следующий вопрос', finish: 'Все итоги', back: 'Вернуться к ответам', readyH: 'Твоя очередь', readyP: 'Возьми устройство и нажми «Готов». Никто не увидит твой выбор.', ready: 'Готов', thanksH: 'Спасибо!', thanksP: 'Твой ответ засчитан. Передай устройство дальше.', answers: 'Ответов: {n}', tooFew: 'Итоги появятся, когда ответят {n} человек, чтобы никого нельзя было узнать.', allH: 'Все итоги', restart: 'Новый опрос', askKeys: 'Клавиши: 1-4 добавляют руку · Shift + 1-4 убирают · Enter итоги · Page Up назад', minus: 'На одну меньше', plus: 'На одну больше' },
+  he: { sound: 'צליל', full: 'מסך מלא', startH: 'סקר כיתתי', startP: 'עונים בבחירה מתוך תשובות קבועות. רק הספירה מוצגת.', privacy: 'בלי שמות ובלי הקלדה. התשובות נספרות רק במכשיר הזה ושום דבר לא נשמר.', hands: 'לספור ידיים', private: 'להעביר את המכשיר', handsP: 'לספור ידיים: קוראים כל שאלה ומקישים את מספר הידיים המורמות.', privateP: 'להעביר את המכשיר: כל תלמיד בוחר בפרטיות.', qn: 'שאלה {n} מתוך {total}', show: 'להראות תוצאות', prev: 'חזרה', next: 'השאלה הבאה', finish: 'כל התוצאות', back: 'לחזור לענות', readyH: 'התור שלך', readyP: 'קחו את המכשיר והקישו מוכן. אף אחד לא יראה את הבחירה שלכם.', ready: 'מוכן', thanksH: 'תודה!', thanksP: 'התשובה נספרה. העבירו את המכשיר הלאה.', answers: 'תשובות: {n}', tooFew: 'התוצאות יוצגו אחרי ש-{n} ענו, כדי שאי אפשר יהיה לזהות אף אחד.', allH: 'כל התוצאות', restart: 'סקר חדש', askKeys: 'מקשים: 1-4 מוסיפים יד · Shift + 1-4 מורידים · Enter תוצאות · Page Up חזרה', minus: 'אחת פחות', plus: 'אחת יותר' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startH: 'استطلاع الفصل', startP: 'الإجابة باختيارات ثابتة. لا يظهر إلا العدد.', privacy: 'لا أسماء ولا كتابة. تُعدّ الإجابات على هذا الجهاز فقط ولا يُحفَظ شيء.', hands: 'عُدّ الأيدي', private: 'مرّر الجهاز', handsP: 'عُدّ الأيدي: اقرأ كل سؤال ثم اضغط عدد الأيدي المرفوعة.', privateP: 'مرّر الجهاز: يختار كل طالب سرًّا.', qn: 'السؤال {n} من {total}', show: 'أظهر النتائج', prev: 'رجوع', next: 'السؤال التالي', finish: 'كل النتائج', back: 'عودة إلى الإجابة', readyH: 'دورك', readyP: 'خذ الجهاز ثم اضغط جاهز. لن يرى أحد اختيارك.', ready: 'جاهز', thanksH: 'شكرًا!', thanksP: 'تم عدّ إجابتك. مرّر الجهاز.', answers: 'الإجابات: {n}', tooFew: 'تظهر النتائج بعد أن يجيب {n} أشخاص، حتى لا يُعرَف أحد.', allH: 'كل النتائج', restart: 'استطلاع جديد', askKeys: 'المفاتيح: 1-4 تضيف يدًا · Shift + 1-4 تُنقص · Enter النتائج · Page Up رجوع', minus: 'واحدة أقل', plus: 'واحدة أكثر' },
+  ja: { sound: 'サウンド', full: '全画面', startH: 'クラスアンケート', startP: 'えらぶ答えで回答します。人数だけが表示されます。', privacy: '名前も入力もありません。答えはこの端末でだけ数え、何も保存しません。', hands: '手を数える', private: '端末を回す', handsP: '手を数える：質問を読んで、手をあげた人数をタップします。', privateP: '端末を回す：一人ずつ、ひみつでえらびます。', qn: '質問 {n} / {total}', show: '結果を見る', prev: 'もどる', next: '次の質問', finish: 'すべての結果', back: '回答にもどる', readyH: 'あなたの番', readyP: '端末をもったら「じゅんびOK」をタップ。えらんだ答えはだれにも見えません。', ready: 'じゅんびOK', thanksH: 'ありがとう！', thanksP: '答えを数えました。次の人に回してね。', answers: '回答 {n}', tooFew: '{n}人が答えたら結果が出ます。だれの答えかわからないようにするためです。', allH: 'すべての結果', restart: '新しいアンケート', askKeys: 'キー：1〜4で1人ふやす・Shift＋1〜4でへらす・Enter 結果・Page Up もどる', minus: '1人へらす', plus: '1人ふやす' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startH: '班級調查', startP: '用固定選項作答，只顯示人數。', privacy: '不用名字，也不用打字。答案只在這台裝置上計算，什麼都不會儲存。', hands: '數舉手', private: '傳遞裝置', handsP: '數舉手：讀出每一題，再點舉手的人數。', privateP: '傳遞裝置：每位學生私下選擇。', qn: '第 {n} 題，共 {total} 題', show: '看結果', prev: '返回', next: '下一題', finish: '所有結果', back: '回到作答', readyH: '輪到你了', readyP: '拿到裝置後點「準備好了」。沒有人會看到你的選擇。', ready: '準備好了', thanksH: '謝謝！', thanksP: '你的答案已經算進去了，請把裝置傳下去。', answers: '答案數：{n}', tooFew: '等 {n} 個人回答後才會顯示結果，這樣就沒有人會被認出來。', allH: '所有結果', restart: '新的調查', askKeys: '按鍵：1-4 加一隻手・Shift + 1-4 減一隻・Enter 看結果・Page Up 返回', minus: '少一個', plus: '多一個' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const QS = QUESTIONS.map(x => ({ q: x.q, choices: x.choices.slice(0, 4) })).filter(x => x.choices.length >= 2);
+
+// ---- the state: only counts ---------------------------------------------------------------------------------------
+const S = { screen: 'start', mode: '', i: 0, counts: [] };
+const total = i => S.counts[i].reduce((a, b) => a + b, 0);
+const canShow = i => S.mode === 'hands' || total(i) >= CONFIG.minShown;
+function go(name) {
+  S.screen = name;
+  for (const id of ['start', 'ask', 'ready', 'thanks', 'results', 'all']) $(id).hidden = id !== name;
+  const f = $(name).querySelector('button.hot') || $(name).querySelector('button'); if (f) f.focus({ preventScroll: true });
+}
+function begin(mode) { S.mode = mode; S.i = 0; S.counts = QS.map(x => x.choices.map(() => 0)); sfx('click'); question(); }
+function question() {
+  const x = QS[S.i];
+  if (S.mode === 'private') { $('readyN').textContent = tr('qn', { n: S.i + 1, total: QS.length }); go('ready'); return; }
+  $('askN').textContent = tr('qn', { n: S.i + 1, total: QS.length }); $('askQ').textContent = x.q; $('askKeys').hidden = false;
+  const box = $('choices'); box.innerHTML = '';
+  x.choices.forEach((c, k) => {
+    // Count hands: the number, with - and + (keys 1-4, Shift takes one away)
+    const row = document.createElement('div'); row.className = 'choice';
+    row.innerHTML = '<span class="tag"></span><span class="lab"></span><span class="ctl"><button class="minus">−</button><span class="num" aria-live="polite"></span><button class="hot plus">+</button></span>';
+    row.querySelector('.minus').setAttribute('aria-label', `${tr('minus')}: ${c}`); row.querySelector('.plus').setAttribute('aria-label', `${tr('plus')}: ${c}`);
+    row.querySelector('.minus').onclick = () => bump(k, -1); row.querySelector('.plus').onclick = () => bump(k, 1);
+    row.querySelector('.num').textContent = String(S.counts[S.i][k]);
+    row.querySelector('.tag').textContent = String(k + 1); row.querySelector('.tag').style.background = `var(--c${k})`; row.querySelector('.lab').textContent = c;
+    box.appendChild(row);
+  });
+  $('prev').disabled = S.i === 0; $('prev').hidden = false; $('show').hidden = false;
+  go('ask');
+}
+function bump(k, d) { if (S.screen !== 'ask' || S.mode !== 'hands' || !QS[S.i].choices[k]) return; S.counts[S.i][k] = Math.max(0, S.counts[S.i][k] + d); sfx(d > 0 ? 'coin' : 'click'); $('choices').children[k].querySelector('.num').textContent = String(S.counts[S.i][k]); }
+/** A private answer: one more in that choice's count, and straight to "Thank you" (the choice is never shown again). */
+function answer(k) {
+  if (S.screen !== 'ask' || S.mode !== 'private' || !QS[S.i].choices[k]) return;
+  S.counts[S.i][k] += 1; sfx('coin'); $('choices').innerHTML = '';
+  go('thanks'); setTimeout(() => { if (S.screen === 'thanks') question(); }, CONFIG.thanksSeconds * 1000);
+}
+function results() {
+  const x = QS[S.i], n = total(S.i);
+  $('resN').textContent = `${tr('qn', { n: S.i + 1, total: QS.length })} · ${tr('answers', { n })}`; $('resQ').textContent = x.q;
+  $('bars').innerHTML = ''; $('tooFew').hidden = canShow(S.i); $('tooFew').textContent = tr('tooFew', { n: CONFIG.minShown });
+  if (canShow(S.i)) $('bars').appendChild(barsFor(S.i));
+  $('next').textContent = S.i < QS.length - 1 ? tr('next') : tr('finish');
+  $('resBack').textContent = S.mode === 'private' ? tr('back') : tr('prev');
+  go('results'); sfx('powerup');
+  requestAnimationFrame(() => requestAnimationFrame(() => { for (const f of $('bars').querySelectorAll('.fill')) f.style.width = f.dataset.w; }));
+}
+function barsFor(i) {
+  const n = total(i), max = Math.max(1, ...S.counts[i]), wrap = document.createElement('div'); wrap.className = 'bars';
+  QS[i].choices.forEach((c, k) => {
+    const v = S.counts[i][k], row = document.createElement('div'); row.className = 'barrow';
+    row.innerHTML = '<span class="lab"></span><span class="val"></span><div class="track"><div class="fill"></div></div>';
+    row.querySelector('.lab').textContent = c;
+    row.querySelector('.val').textContent = CONFIG.showPercent && n ? `${v} · ${Math.round((v / n) * 100)}%` : String(v);
+    const f = row.querySelector('.fill'); f.style.background = `var(--c${k})`; f.dataset.w = `${(v / max) * 100}%`;
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+function next() {
+  if (S.i < QS.length - 1) { S.i += 1; question(); return; }
+  $('summary').innerHTML = '';
+  QS.forEach((x, i) => {
+    const sec = document.createElement('section'), h = document.createElement('h3'); h.textContent = `${x.q} (${tr('answers', { n: total(i) })})`; sec.appendChild(h);
+    if (canShow(i)) sec.appendChild(barsFor(i)); else { const p = document.createElement('p'); p.className = 'note'; p.textContent = tr('tooFew', { n: CONFIG.minShown }); sec.appendChild(p); }
+    $('summary').appendChild(sec);
+  });
+  go('all'); sfx('win');
+  requestAnimationFrame(() => requestAnimationFrame(() => { for (const f of $('summary').querySelectorAll('.fill')) f.style.width = f.dataset.w; }));
+  try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('hands').onclick = () => begin('hands'); $('private').onclick = () => begin('private');
+$('show').onclick = results; $('readyShow').onclick = results; $('next').onclick = next;
+$('prev').onclick = () => { if (S.i > 0) { S.i -= 1; question(); } };
+$('resBack').onclick = question;
+$('readyBtn').onclick = () => {
+  const x = QS[S.i]; $('askN').textContent = tr('qn', { n: S.i + 1, total: QS.length }); $('askQ').textContent = x.q;
+  const box = $('choices'); box.innerHTML = '';
+  x.choices.forEach((c, k) => { const b = document.createElement('button'); b.className = 'choice pick'; b.innerHTML = '<span class="tag"></span><span class="lab"></span>'; b.querySelector('.tag').textContent = String(k + 1); b.querySelector('.tag').style.background = `var(--c${k})`; b.querySelector('.lab').textContent = c; b.onclick = () => answer(k); box.appendChild(b); });
+  $('prev').hidden = true; $('show').hidden = true; $('askKeys').hidden = true; go('ask'); say(x.q);
+};
+$('restart').onclick = () => { S.counts = []; go('start'); };
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (e.key === 'f' || e.key === 'F') { $('full').click(); return; }
+  const digit = /^Digit([1-4])$/.exec(e.code || '') || /^Numpad([1-4])$/.exec(e.code || '');
+  if (S.screen === 'ask' && digit) { e.preventDefault(); const k = +digit[1] - 1; if (S.mode === 'hands') bump(k, e.shiftKey ? -1 : 1); else answer(k); return; }
+  if (e.key === 'PageDown' || e.key === 'ArrowRight' && document.documentElement.dir !== 'rtl' || e.key === 'ArrowLeft' && document.documentElement.dir === 'rtl') {
+    if (S.screen === 'ask' && S.mode === 'hands') { e.preventDefault(); results(); }
+    else if (S.screen === 'results') { e.preventDefault(); next(); }
+  } else if (e.key === 'PageUp') {
+    if (S.screen === 'ask' && S.mode === 'hands') { e.preventDefault(); $('prev').click(); }
+    else if (S.screen === 'results') { e.preventDefault(); question(); }
+  }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['privacy', 'privacy'], ['hands', 'hands'], ['private', 'private'], ['handsP', 'handsP'], ['privateP', 'privateP'], ['show', 'show'], ['prev', 'prev'], ['readyH', 'readyH'], ['readyP', 'readyP'], ['readyBtn', 'ready'], ['readyShow', 'show'], ['thanksH', 'thanksH'], ['thanksP', 'thanksP'], ['allH', 'allH'], ['restart', 'restart'], ['askKeys', 'askKeys']]) $(id).textContent = tr(k);
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ screen: S.screen, mode: S.mode, question: S.i + 1, counts: S.counts.map(c => c.slice()), total: S.counts.length ? total(S.i) : 0, shown: S.screen === 'results' && $('bars').children.length > 0 }), start() { begin('hands'); } };
+go('start');
+</script>

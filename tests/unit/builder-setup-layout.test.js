@@ -43,14 +43,16 @@ async function open(width, height = 844, extra = {}) {
   return { ctx, page };
 }
 const next = page => page.click('.su-screen:not([hidden]) [data-go="next"]');
-const STEP_KEYS = ['type', 'look', 'world', 'chars', 'learn', 'extras'];
+const STEP_KEYS = ['type', 'look', 'world', 'chars', 'play', 'learn', 'extras'];
 /** The boxes of the cards and pictures on the screen that shows now, plus the page's own measures. */
 const measure = page => page.evaluate(() => {
+  const shown = el => el.offsetParent !== null;
   const scr = document.querySelector('.su-screen:not([hidden])'), box = el => { const r = el.getBoundingClientRect(); return [Math.round(r.width * 10) / 10, Math.round(r.height * 10) / 10, r.left, r.right]; };   // to a tenth of a pixel (thirds of a row differ in the last float digit)
   const small = [...scr.querySelectorAll('button, a[href], input:not(.sr-only)'), document.querySelector('#su-skipall')].filter(el => el && el.offsetParent !== null).map(el => ({ t: (el.textContent || el.id).trim().slice(0, 30), h: el.getBoundingClientRect().height })).filter(x => x.h < 44);
   return {
-    key: scr.dataset.screen, cards: [...scr.querySelectorAll('.su-card')].map(box), pics: [...scr.querySelectorAll('.su-card .su-pic')].map(box),
-    names: [...scr.querySelectorAll('.su-card .su-name')].map(box), clipped: [...scr.querySelectorAll('.su-card .su-name')].filter(el => el.scrollHeight > el.clientHeight + 1).map(el => el.textContent),
+    // the cards on screen (the game-type step shows one group at a time: "Games" or "For your class")
+    key: scr.dataset.screen, cards: [...scr.querySelectorAll('.su-card')].filter(shown).map(box), pics: [...scr.querySelectorAll('.su-card .su-pic')].filter(shown).map(box),
+    names: [...scr.querySelectorAll('.su-card .su-name')].filter(shown).map(box), clipped: [...scr.querySelectorAll('.su-card .su-name')].filter(shown).filter(el => el.scrollHeight > el.clientHeight + 1).map(el => el.textContent),
     scrollW: document.documentElement.scrollWidth, clientW: document.documentElement.clientWidth, small,
     left: Math.min(...[...scr.children].filter(el => el.offsetParent !== null).map(el => el.getBoundingClientRect().left)), right: Math.max(...[...scr.children].filter(el => el.offsetParent !== null).map(el => el.getBoundingClientRect().right)),
   };
@@ -71,7 +73,7 @@ for (const width of [390, 834, 1280]) {
       assert.ok(m.left >= 15.5 && m.right <= width - 15.5, `${key}: 16 px side gutters (${m.left} .. ${m.right})`);
       assert.deepEqual(m.small, [], `${key}: every target is at least 44 px tall`);
       if (key === 'extras') { await next(page); continue; }
-      const want = { type: 9, look: 3, world: kit2.KIT2_WORLDS.length + 1, chars: plan.SETUP_CHARACTERS.length + 1, learn: 6 }[key];
+      const want = { type: 9, look: 3, world: kit2.KIT2_WORLDS.length + 1, chars: plan.SETUP_CHARACTERS.length + 1, play: 3, learn: 6 }[key];
       assert.equal(m.cards.length, want, `${key}: ${want} cards`); assert.equal(m.pics.length, want);
       const sizes = list => [...new Set(list.map(b => `${b[0]}x${b[1]}`))];
       assert.equal(sizes(m.cards).length, 1, `${key}: all cards one size at ${width}, got ${sizes(m.cards).join(' / ')}`);
@@ -91,8 +93,8 @@ for (const width of [390, 834, 1280]) {
       }
       if (key === 'chars' || key === 'learn') assert.ok((await page.$$('.su-screen:not([hidden]) .su-all:not([hidden])')).length >= 1, `${key} has Select all`);
       // a picked card and an open "Something else" box change no card's size
-      await page.click(`.su-pick[data-step="${key}"]:not([data-id="else"])`);
-      if (key !== 'look') { await page.click(`.su-pick[data-step="${key}"][data-id="else"]`); assert.equal(await page.isVisible(`#su-idea-${key}`), true); }
+      await page.click(`.su-pick[data-step="${key}"]:not([data-id="else"]):not(:disabled)`);
+      if (key !== 'look' && key !== 'play') { await page.click(`.su-pick[data-step="${key}"][data-id="else"]`); assert.equal(await page.isVisible(`#su-idea-${key}`), true); }
       const m2 = await measure(page);
       assert.equal(sizes(m2.cards).join(), sizes(m.cards).join(), `${key}: picking changes no size`);
       await next(page);
@@ -108,7 +110,7 @@ test('the words of every language keep the cards one size (text is clamped, neve
   const { ctx, page } = await open(390);
   for (const lang of ['de', 'ru', 'ar', 'ja']) {
     await page.goto(`${BASE}/build/new?lang=${lang}`); await page.click('#su-guide');
-    for (const key of STEP_KEYS.slice(0, 5)) {
+    for (const key of STEP_KEYS.slice(0, 6)) {
       const m = await measure(page);
       assert.equal(new Set(m.cards.map(b => `${b[0]}x${b[1]}`)).size, 1, `${lang} ${key}`);
       assert.ok(m.scrollW <= m.clientW, `${lang} ${key}: no horizontal scroll`);
@@ -203,7 +205,7 @@ test('a world limits who is in it (said on the card), "Coming soon" groups canno
   assert.equal(await page.isVisible('#su-world-2d'), true);
   assert.match(await page.textContent('#su-world-2d'), /Only running and catching games can use our worlds and characters in 2D so far/);
   await next(page); assert.equal(await page.isVisible('#su-chars-2d'), true);
-  await next(page); await next(page); await next(page); assert.equal(await page.isVisible('#su-plan-2d'), true);
+  await next(page); await next(page); await next(page); await next(page); assert.equal(await page.isVisible('#su-plan-2d'), true);
   // back to 3D: the zebra (a 2D sprite only) is taken out again
   await page.click('[data-change="look"]'); await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page);
   assert.doesNotMatch(await page.textContent('#su-rows'), /Zebra/); assert.equal(await page.isVisible('#su-plan-2d'), false);
@@ -235,13 +237,13 @@ test('"Select all" per section: picks what can be picked, reads "Clear all" when
   await all('chars:farm').click(); await settle(); assert.equal(await picked('farm'), farm);
   assert.equal(await page.getAttribute('.su-pick[data-step="chars"][data-id="else"]', 'aria-pressed'), 'false', 'never "Something else"');
   // the plan and the Builder get every one of them
-  await next(page);
+  await next(page); await next(page);   // how it is played: as it starts
   await all('learn').click(); await settle();
   assert.equal(await page.locator('.su-pick[data-step="learn"][aria-pressed="true"]').count(), 5); assert.equal(await page.getAttribute('.su-pick[data-step="learn"][data-id="else"]', 'aria-pressed'), 'false');
   assert.equal(await all('learn').textContent(), 'Clear all'); assert.equal(await all('learn').getAttribute('aria-label'), 'Clear all: It teaches');
   await all('learn').click(); await settle(); assert.equal(await page.locator('.su-pick[data-step="learn"][aria-pressed="true"]').count(), 0);
   // 3D, nothing chosen yet: the largest set of the group that shares one world, and the message names the world
-  await page.click('[data-go="back"]:visible'); await page.click('[data-go="back"]:visible'); await page.click('[data-go="back"]:visible');
+  for (let i = 0; i < 4; i++) await page.click('[data-go="back"]:visible');
   await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page); await next(page);
   // the picks made for 2D: the sprites that are in no 3D world went, and of the rest only those that share a world stay
   const kept = await page.evaluate(() => [...document.querySelectorAll('.su-pick[data-step="chars"][aria-pressed="true"]')].map(b => b.dataset.id));
@@ -284,6 +286,10 @@ test('keyboard only: through the steps to the plan; the plan marks custom rows; 
   await page.click('.su-pick[data-step="look"][data-id="3d"]'); await next(page);
   await page.click('.su-pick[data-step="world"][data-id="toy-town"]'); await next(page);
   await page.click('.su-pick[data-step="chars"][data-id="mage"]'); await next(page);
+  // how it is played: a ready-made 3D world cannot be live yet (greyed out, with why), so it starts on their own
+  assert.equal(await page.isDisabled('.su-pick[data-step="play"][data-id="live"]'), true);
+  assert.equal(await page.getAttribute('.su-pick[data-step="play"][data-id="solo"]', 'aria-pressed'), 'true');
+  await page.focus('.su-screen:not([hidden]) [data-go="next"]'); await page.keyboard.press('Enter');
   await page.click('.su-screen:not([hidden]) [data-go="skip"]');                // what it teaches: left blank
   await page.fill('#su-notes', 'add a secret door');
   await page.setInputFiles('#su-file', { name: 'words.txt', mimeType: 'text/plain', buffer: Buffer.from('cat\ndog\n') });
@@ -295,10 +301,10 @@ test('keyboard only: through the steps to the plan; the plan marks custom rows; 
   const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent, !!r.querySelector('.su-scratch'), r.querySelector('.su-change').getAttribute('aria-label')]));
   assert.deepEqual(rows, [
     ['Game type', 'a maze', true, 'Change: Game type'], ['Look', '3D world', false, 'Change: Look'], ['World', 'Toy Town', false, 'Change: World'],
-    ['Characters', 'Wizard', false, 'Change: Characters'], ['It teaches', 'Builder decides', false, 'Change: It teaches'], ['Extras', '1 file · add a secret door', false, 'Change: Extras'],
+    ['Characters', 'Wizard', false, 'Change: Characters'], ['How it is played', 'On my own', false, 'Change: How it is played'], ['It teaches', 'Builder decides', false, 'Change: It teaches'], ['Extras', '1 file · add a secret door', false, 'Change: Extras'],
   ]);
   assert.equal(await page.textContent('.su-row .su-scratch'), 'Made from scratch');
-  assert.equal(await page.textContent('#su-told'), 'Here is my game plan. Kind of game: a maze. Make it 3D. World: Toy Town. In it: Wizard. Use the file I added. add a secret door.');
+  assert.equal(await page.textContent('#su-told'), 'Here is my game plan. Kind of game: a maze. Make it 3D. World: Toy Town. In it: Wizard. It is played on my own. Use the file I added. add a secret door.');
   // Change goes to that step and comes straight back
   await page.click('[data-change="world"]'); await page.waitForSelector('.su-screen[data-screen="world"]:not([hidden])');
   await page.click('.su-pick[data-step="world"][data-id="castle-quest"]'); await next(page);
@@ -307,7 +313,7 @@ test('keyboard only: through the steps to the plan; the plan marks custom rows; 
   const id = page.url().split('/').pop();
   await runner.idle(id);
   const chat = loadChat(id).messages, first = chat[0];
-  assert.deepEqual(first.plan, { v: 1, type: { from: 'custom', text: 'a maze' }, look: '3d', world: { from: 'pack', id: 'castle-quest' }, characters: [{ from: 'pack', id: 'mage' }], learn: [], notes: 'add a secret door' });
+  assert.deepEqual(first.plan, { v: 1, type: { from: 'custom', text: 'a maze' }, look: '3d', world: { from: 'pack', id: 'castle-quest' }, characters: [{ from: 'pack', id: 'mage' }], learn: [], notes: 'add a secret door', play: 'solo' });
   assert.equal(first.uploads.length, 1); assert.equal(first.uploads[0].name, 'words.txt');
   const k = kit2.kit2Of(games.getVersion(games.getGame(id).current_version_id).html);
   assert.equal(`${k.world} ${k.hero}`, 'castle-quest mage');
@@ -327,5 +333,44 @@ test('"I know what I want" and "Skip to the Builder" go straight to an empty Stu
   assert.deepEqual(loadChat(page.url().split('/').pop()).messages, [], 'skipping sends nothing');
   // reduced motion is honoured by the site's own rule, and the page has no animation of its own
   assert.ok(!/animation|transition/.test(fs.readFileSync(new URL('../../public/css/build-setup.css', import.meta.url), 'utf8')));
+  await ctx.close();
+});
+
+// The reported bug: on an iPhone, 2D and "Select all" on the Sea section, and the game showed the kit's own characters.
+// The whole way through in the browser: every sea animal is picked and sent as the plan, the build draws the dolphin
+// (the first one picked) as the hero with the other 22 as friends from the animals 1.1.0 pack, and in the game frame
+// the title shows the dolphin sprite (not the kit's hero) and sea animals stand along the way.
+test('iPhone, 2D, "Select all" on Sea: the game draws the dolphin and the other 22 sea animals, never the kit\'s own characters', { skip, timeout: 180_000 }, async () => {
+  const { devices } = await import('playwright-core');
+  const { ctx, page } = await open(390, 844, { ...devices['iPhone 13'] });
+  const sent = []; page.on('request', r => { if (/\/api\/studio\/[\w-]+\/chat$/.test(r.url())) sent.push(JSON.parse(r.postData() || '{}')); });
+  await page.click('#su-guide'); await page.click('.su-screen:not([hidden]) [data-go="skip"]');   // game type: left to the Builder
+  await page.click('.su-pick[data-step="look"][data-id="2d"]'); await next(page);
+  await page.click('.su-screen:not([hidden]) [data-go="skip"]');                                      // world: left to the Builder
+  const SEA = plan.characterGroups().find(g => g.id === 'sea').items.map(c => c.id);
+  await page.click('.su-all[data-all="chars:sea"]');
+  const picked = await page.evaluate(() => [...document.querySelectorAll('.su-pick[data-step="chars"][aria-pressed="true"]')].map(b => b.dataset.id));
+  assert.deepEqual(picked, SEA, 'Select all picks all 23 sea animals in 2D, none taken out');
+  assert.equal(await page.textContent('.su-pick[data-step="chars"][data-id="dolphin"] .su-desc'), 'You play as this one');
+  await next(page); await next(page); await page.click('.su-screen:not([hidden]) [data-go="skip"]'); await next(page);
+  await page.waitForFunction(() => /Here is my game plan/.test(document.querySelector('#su-told').textContent));
+  await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
+  const id = page.url().split('/').pop();
+  await runner.idle(id);
+  assert.equal(sent.length, 1); assert.equal(sent[0].plan.look, '2d'); assert.deepEqual(sent[0].plan.characters.map(c => c.id), SEA, 'the plan with every animal reaches the chat');
+  const html = games.getVersion(games.getGame(id).current_version_id).html;
+  assert.ok(html.includes("\n  hero2d: 'dolphin',\n") && html.includes(`\n  friends2d: [${SEA.slice(1).map(x => `'${x}'`).join(', ')}],\n`));
+  assert.ok(html.includes('/vendor/art2d/animals/1.1.0/pack.js') && html.includes('/vendor/art2d/oomba2d/1.1.0/oomba2d.js'));
+  // the game itself, at phone size
+  await page.reload(); await page.waitForSelector('#st-frame[src*="/frame/"]');
+  const game = await ctx.newPage(); const errors = []; game.on('pageerror', e => errors.push(String(e)));
+  await game.goto(BASE + await page.getAttribute('#st-frame', 'src'));
+  await game.waitForFunction(() => window.Oomba2D && document.querySelector('canvas.a2d-portrait'), null, { timeout: 60_000 });
+  assert.equal(await game.evaluate(() => document.querySelectorAll('.ok-title-hero canvas.ok-portrait').length), 0, 'the title shows the dolphin sprite, not the kit\'s hero');
+  await game.waitForFunction(() => { const X = window.__brbTest; if (!X || !X.state) return false; const s = X.state().scene; if (s !== 'play' && X.start) X.start(); return s === 'play'; }, null, { timeout: 60_000, polling: 400 });
+  await game.waitForFunction(() => window.Oomba2D.friendsNow.length >= 1, null, { timeout: 60_000, polling: 300 });
+  const now = await game.evaluate(() => window.Oomba2D.friendsNow.map(f => f.id));
+  for (const f of now) assert.ok(SEA.slice(1).includes(f), `${f} is one of the sea animals`);
+  assert.deepEqual(errors, []);
   await ctx.close();
 });

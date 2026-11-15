@@ -1,0 +1,199 @@
+<title>Class Bingo</title>
+<style>
+/* Class Bingo. "Call on the board": the board shows each call big (a math fact, a definition), with the answer a tap
+   away and every call so far. "Play a card": a random card on a player's own device, tap to mark, five in a row wins.
+   Nothing is sent between devices and nobody is named. Big type, keyboard and clicker keys. */
+:root{--bg:#1d1a3a;--bg2:#2a2552;--ink:#fffaf2;--soft:#d6d0ff;--edge:#0d0b20;--card:#fffaf2;--card-ink:#231f3d;--hot:#ff5fa2;--hot-ink:#ffffff;--mark:#ffcf3f;--good:#5be3a1}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+body{background:radial-gradient(circle at 20% 10%,var(--bg2),var(--bg) 60%) fixed}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--bg2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--mark);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--mark);color:var(--card-ink)}
+button:disabled{opacity:.45;cursor:default}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.hot{background:var(--hot);color:var(--hot-ink)}
+.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
+[hidden]{display:none!important}
+.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2vmin,20px);min-height:0}
+.card{margin:auto;width:min(100%,800px);background:var(--bg2);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 8px 0 var(--edge)}
+.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6.4vmin,4.2rem)}
+.card p{margin:10px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.count{margin:0;text-align:center;font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem)}
+.call{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:var(--card);color:var(--card-ink);border:5px solid var(--edge);border-radius:32px;padding:16px;box-shadow:0 8px 0 var(--edge);min-height:180px}
+.call .now{font-size:clamp(2.4rem,14vmin,10rem);font-weight:900;line-height:1.05;overflow-wrap:anywhere}
+.call .ans{font-size:clamp(1.4rem,6vmin,4rem);font-weight:900;color:var(--hot)}
+.called{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0;padding:0;list-style:none}
+.called li{padding:6px 12px;border-radius:999px;background:var(--edge);font-weight:800;font-size:clamp(.9rem,2.2vmin,1.4rem)}
+.grid{margin:auto;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:clamp(5px,1.2vmin,10px);width:min(100%,calc(100dvh - 230px),720px);aspect-ratio:1}
+.cell{aspect-ratio:1;min-width:0;padding:2px;border-radius:14px;background:var(--card);color:var(--card-ink);font-size:clamp(1rem,calc(min(100vw,100dvh) / var(--n) / 3.4),3rem);font-weight:900;overflow-wrap:anywhere;line-height:1.05}
+.cell[aria-pressed="true"]{background:var(--mark);color:var(--card-ink);box-shadow:inset 0 0 0 6px var(--hot),0 4px 0 var(--edge)}
+.cell.free{background:var(--good)}
+.bingo{position:fixed;inset:0;display:grid;place-items:center;background:rgba(13,11,32,.6);z-index:5;pointer-events:none}
+.bingo b{font-size:clamp(3rem,18vmin,12rem);font-weight:900;color:var(--mark);text-shadow:0 8px 0 var(--edge);transform:rotate(-6deg)}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <section class="screen" id="start">
+    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+      <div class="row"><button class="big hot" id="caller"></button><button class="big" id="player"></button></div>
+      <p id="callerP"></p><p id="playerP"></p></div>
+  </section>
+  <section class="screen" id="calling" hidden>
+    <p class="count" id="callN"></p>
+    <div class="call" aria-live="polite"><div class="now" id="now"></div><div class="ans" id="ans" hidden></div></div>
+    <div class="row"><button class="big" id="undo"></button><button class="big" id="showAns"></button><button class="big" id="read"></button><button class="big hot" id="nextCall"></button></div>
+    <ul class="called" id="called" aria-label=""></ul>
+    <p class="keys" id="callKeys"></p>
+  </section>
+  <section class="screen" id="playing" hidden>
+    <p class="count" id="cardP"></p>
+    <div class="grid" id="grid" role="grid"></div>
+    <div class="row"><button class="big" id="newCard"></button></div>
+  </section>
+  <div class="bingo" id="bingo" hidden><b id="bingoW"></b></div>
+</main>
+<script>
+// Class Bingo. The caller deals the items in a random order, one at a time; a player's card is CONFIG.size by
+// CONFIG.size marks dealt at random on their own device (with a free middle square when CONFIG.free and the size is
+// odd). A line across, down or corner to corner is Bingo. Nothing is saved or sent.
+// Keys (caller): Space, Enter, Page Down or the right arrow: next call · A: the answer · Page Up or the left arrow: undo.
+'use strict';
+const CONFIG = {
+  title: 'Class Bingo',
+  lang: 'en',
+  size: 5,
+  free: true,
+  readAloud: true,
+};
+// Each item: the call (shown and read out on the board) and the mark (what is on the cards). Marks must all differ,
+// and there must be at least size × size of them (one fewer with a free middle).
+const ITEMS = [
+  { call: '2 × 3', mark: '6' }, { call: '2 × 4', mark: '8' }, { call: '3 × 3', mark: '9' }, { call: '2 × 5', mark: '10' },
+  { call: '3 × 4', mark: '12' }, { call: '2 × 7', mark: '14' }, { call: '3 × 5', mark: '15' }, { call: '4 × 4', mark: '16' },
+  { call: '3 × 6', mark: '18' }, { call: '4 × 5', mark: '20' }, { call: '3 × 7', mark: '21' }, { call: '4 × 6', mark: '24' },
+  { call: '5 × 5', mark: '25' }, { call: '3 × 9', mark: '27' }, { call: '4 × 7', mark: '28' }, { call: '5 × 6', mark: '30' },
+  { call: '4 × 8', mark: '32' }, { call: '5 × 7', mark: '35' }, { call: '6 × 6', mark: '36' }, { call: '5 × 8', mark: '40' },
+  { call: '6 × 7', mark: '42' }, { call: '5 × 9', mark: '45' }, { call: '6 × 8', mark: '48' }, { call: '7 × 7', mark: '49' },
+  { call: '6 × 9', mark: '54' }, { call: '7 × 8', mark: '56' },
+];
+// {n} and {total} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startH: 'Bingo', startP: 'One screen calls, everyone marks their own card.', caller: 'Call on the board', player: 'Play a card', callerP: 'Call on the board: show each call big for the class.', playerP: 'Play a card: a card of your own on this device. Tap what is called.', callN: 'Call {n} of {total}', ready: 'Press Next call to start', next: 'Next call', undo: 'Undo', showAns: 'Answer', read: 'Read aloud', allDone: 'That was the last call!', cardP: 'Tap a square when it is called. Five in a row wins!', cardP4: 'Tap a square when it is called. A full line wins!', newCard: 'New card', free: 'Free', bingo: 'Bingo!', calledList: 'Called so far', callKeys: 'Keys: Space next · A answer · Page Up undo · F full screen' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startH: 'Bingo', startP: 'Una pantalla canta y cada uno marca su cartón.', caller: 'Cantar en la pizarra', player: 'Jugar un cartón', callerP: 'Cantar en la pizarra: muestra cada número en grande para la clase.', playerP: 'Jugar un cartón: un cartón propio en este dispositivo. Toca lo que se cante.', callN: 'Bola {n} de {total}', ready: 'Pulsa Siguiente para empezar', next: 'Siguiente', undo: 'Deshacer', showAns: 'Respuesta', read: 'Leer en voz alta', allDone: '¡Esa fue la última!', cardP: 'Toca una casilla cuando la canten. ¡Cinco en línea gana!', cardP4: 'Toca una casilla cuando la canten. ¡Una línea completa gana!', newCard: 'Nuevo cartón', free: 'Libre', bingo: '¡Bingo!', calledList: 'Ya cantados', callKeys: 'Teclas: Espacio siguiente · A respuesta · RePág deshacer · F pantalla completa' },
+  fr: { sound: 'Son', full: 'Plein écran', startH: 'Loto', startP: 'Un écran annonce, chacun coche sa propre grille.', caller: 'Annoncer au tableau', player: 'Jouer une grille', callerP: 'Annoncer au tableau : chaque tirage en grand pour la classe.', playerP: 'Jouer une grille : ta grille sur cet appareil. Touche ce qui est annoncé.', callN: 'Tirage {n} sur {total}', ready: 'Appuie sur Suivant pour commencer', next: 'Suivant', undo: 'Annuler', showAns: 'Réponse', read: 'Lire à voix haute', allDone: 'C’était le dernier tirage !', cardP: 'Touche une case quand elle est annoncée. Cinq alignées, c’est gagné !', cardP4: 'Touche une case quand elle est annoncée. Une ligne complète, c’est gagné !', newCard: 'Nouvelle grille', free: 'Libre', bingo: 'Gagné !', calledList: 'Déjà annoncés', callKeys: 'Touches : Espace suivant · A réponse · Page préc. annuler · F plein écran' },
+  de: { sound: 'Ton', full: 'Vollbild', startH: 'Bingo', startP: 'Ein Bildschirm ruft aus, alle kreuzen auf ihrer eigenen Karte an.', caller: 'An der Tafel ausrufen', player: 'Eine Karte spielen', callerP: 'An der Tafel ausrufen: jede Aufgabe groß für die Klasse.', playerP: 'Eine Karte spielen: deine eigene Karte auf diesem Gerät. Tippe an, was ausgerufen wird.', callN: 'Aufruf {n} von {total}', ready: 'Drück auf Weiter, um zu starten', next: 'Weiter', undo: 'Rückgängig', showAns: 'Lösung', read: 'Vorlesen', allDone: 'Das war der letzte Aufruf!', cardP: 'Tippe ein Feld an, wenn es aufgerufen wird. Fünf in einer Reihe gewinnen!', cardP4: 'Tippe ein Feld an, wenn es aufgerufen wird. Eine volle Reihe gewinnt!', newCard: 'Neue Karte', free: 'Frei', bingo: 'Bingo!', calledList: 'Schon aufgerufen', callKeys: 'Tasten: Leertaste weiter · A Lösung · Bild auf rückgängig · F Vollbild' },
+  it: { sound: 'Suono', full: 'Schermo intero', startH: 'Tombola', startP: 'Uno schermo estrae, ognuno segna la propria cartella.', caller: 'Estrai alla lavagna', player: 'Gioca una cartella', callerP: 'Estrai alla lavagna: ogni estrazione in grande per la classe.', playerP: 'Gioca una cartella: la tua cartella su questo dispositivo. Tocca ciò che viene estratto.', callN: 'Estrazione {n} di {total}', ready: 'Premi Avanti per iniziare', next: 'Avanti', undo: 'Annulla', showAns: 'Risposta', read: 'Leggi ad alta voce', allDone: 'Era l’ultima estrazione!', cardP: 'Tocca una casella quando viene estratta. Cinque in fila vince!', cardP4: 'Tocca una casella quando viene estratta. Una fila completa vince!', newCard: 'Nuova cartella', free: 'Libera', bingo: 'Tombola!', calledList: 'Già estratti', callKeys: 'Tasti: Spazio avanti · A risposta · Pag su annulla · F schermo intero' },
+  pt: { sound: 'Som', full: 'Tela cheia', startH: 'Bingo', startP: 'Uma tela canta e cada um marca a própria cartela.', caller: 'Cantar no quadro', player: 'Jogar uma cartela', callerP: 'Cantar no quadro: cada pedra em tamanho grande para a turma.', playerP: 'Jogar uma cartela: sua própria cartela neste aparelho. Toque no que for cantado.', callN: 'Pedra {n} de {total}', ready: 'Aperte Próxima para começar', next: 'Próxima', undo: 'Desfazer', showAns: 'Resposta', read: 'Ler em voz alta', allDone: 'Essa foi a última pedra!', cardP: 'Toque num quadrado quando ele for cantado. Cinco em linha ganha!', cardP4: 'Toque num quadrado quando ele for cantado. Uma linha completa ganha!', newCard: 'Nova cartela', free: 'Livre', bingo: 'Bingo!', calledList: 'Já cantadas', callKeys: 'Teclas: Espaço próxima · A resposta · Page Up desfazer · F tela cheia' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startH: 'Bingo', startP: 'Eén scherm roept om, iedereen streept af op een eigen kaart.', caller: 'Omroepen op het bord', player: 'Een kaart spelen', callerP: 'Omroepen op het bord: elke beurt groot voor de klas.', playerP: 'Een kaart spelen: je eigen kaart op dit apparaat. Tik aan wat wordt omgeroepen.', callN: 'Beurt {n} van {total}', ready: 'Druk op Volgende om te beginnen', next: 'Volgende', undo: 'Ongedaan maken', showAns: 'Antwoord', read: 'Voorlezen', allDone: 'Dat was de laatste beurt!', cardP: 'Tik een vakje aan als het wordt omgeroepen. Vijf op een rij wint!', cardP4: 'Tik een vakje aan als het wordt omgeroepen. Een volle rij wint!', newCard: 'Nieuwe kaart', free: 'Vrij', bingo: 'Bingo!', calledList: 'Al omgeroepen', callKeys: 'Toetsen: spatie volgende · A antwoord · Page Up ongedaan · F volledig scherm' },
+  ru: { sound: 'Звук', full: 'Весь экран', startH: 'Бинго', startP: 'Один экран называет, каждый отмечает на своей карточке.', caller: 'Называть на доске', player: 'Играть карточкой', callerP: 'Называть на доске: каждое задание крупно для класса.', playerP: 'Играть карточкой: своя карточка на этом устройстве. Нажимайте то, что назвали.', callN: 'Ход {n} из {total}', ready: 'Нажмите «Дальше», чтобы начать', next: 'Дальше', undo: 'Отменить', showAns: 'Ответ', read: 'Прочитать вслух', allDone: 'Это был последний ход!', cardP: 'Нажмите клетку, когда её назовут. Пять в ряд — победа!', cardP4: 'Нажмите клетку, когда её назовут. Полный ряд — победа!', newCard: 'Новая карточка', free: 'Свободно', bingo: 'Бинго!', calledList: 'Уже названо', callKeys: 'Клавиши: пробел дальше · A ответ · Page Up отменить · F весь экран' },
+  he: { sound: 'צליל', full: 'מסך מלא', startH: 'בינגו', startP: 'מסך אחד מכריז, וכל אחד מסמן בכרטיס שלו.', caller: 'להכריז על הלוח', player: 'לשחק בכרטיס', callerP: 'להכריז על הלוח: כל הכרזה בגדול לכל הכיתה.', playerP: 'לשחק בכרטיס: כרטיס משלכם במכשיר הזה. הקישו על מה שהוכרז.', callN: 'הכרזה {n} מתוך {total}', ready: 'לחצו הבא כדי להתחיל', next: 'הבא', undo: 'ביטול', showAns: 'תשובה', read: 'להקריא', allDone: 'זו הייתה ההכרזה האחרונה!', cardP: 'הקישו על משבצת כשהיא מוכרזת. חמש בשורה מנצחות!', cardP4: 'הקישו על משבצת כשהיא מוכרזת. שורה מלאה מנצחת!', newCard: 'כרטיס חדש', free: 'חופשי', bingo: 'בינגו!', calledList: 'הוכרזו עד עכשיו', callKeys: 'מקשים: רווח הבא · A תשובה · Page Up ביטול · F מסך מלא' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startH: 'بينغو', startP: 'شاشة واحدة تنادي، وكل واحد يعلّم بطاقته.', caller: 'النداء على اللوح', player: 'العب ببطاقة', callerP: 'النداء على اللوح: كل نداء بخط كبير للفصل.', playerP: 'العب ببطاقة: بطاقة خاصة بك على هذا الجهاز. اضغط على ما يُنادى.', callN: 'النداء {n} من {total}', ready: 'اضغط التالي لتبدأ', next: 'التالي', undo: 'تراجع', showAns: 'الإجابة', read: 'اقرأ بصوت عالٍ', allDone: 'كان هذا آخر نداء!', cardP: 'اضغط على مربع عندما يُنادى. خمسة في صف تفوز!', cardP4: 'اضغط على مربع عندما يُنادى. صف كامل يفوز!', newCard: 'بطاقة جديدة', free: 'خانة حرة', bingo: 'بينغو!', calledList: 'ما نودي حتى الآن', callKeys: 'المفاتيح: المسافة التالي · A الإجابة · Page Up تراجع · F ملء الشاشة' },
+  ja: { sound: 'サウンド', full: '全画面', startH: 'ビンゴ', startP: '1つの画面でよび、みんなは自分のカードにしるしをつけます。', caller: 'ボードでよぶ', player: 'カードであそぶ', callerP: 'ボードでよぶ：クラスに大きく見せます。', playerP: 'カードであそぶ：この端末に自分だけのカード。よばれたものをタップ。', callN: '{n}回目／{total}', ready: '「次」をおしてはじめよう', next: '次', undo: 'もどす', showAns: '答え', read: '読み上げる', allDone: 'これでさいごです！', cardP: 'よばれたマスをタップ。5つならんだら勝ち！', cardP4: 'よばれたマスをタップ。1列そろったら勝ち！', newCard: '新しいカード', free: 'フリー', bingo: 'ビンゴ！', calledList: 'これまでによんだもの', callKeys: 'キー：スペース 次・A 答え・Page Up もどす・F 全画面' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startH: '賓果', startP: '一個螢幕負責唸，每個人在自己的卡上做記號。', caller: '在黑板上唸', player: '玩一張卡', callerP: '在黑板上唸：每一題都大大顯示給全班看。', playerP: '玩一張卡：在這台裝置上有你自己的卡，唸到的就點一下。', callN: '第 {n} 個，共 {total} 個', ready: '按「下一個」開始', next: '下一個', undo: '復原', showAns: '答案', read: '朗讀', allDone: '這是最後一個了！', cardP: '唸到的格子點一下。連成五格就贏了！', cardP4: '唸到的格子點一下。連成一整排就贏了！', newCard: '換一張卡', free: '自由格', bingo: '賓果！', calledList: '已經唸過', callKeys: '按鍵：空白鍵 下一個・A 答案・Page Up 復原・F 全螢幕' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const N = Math.max(3, Math.min(6, CONFIG.size | 0)), FREE = !!CONFIG.free && N % 2 === 1;
+
+// ---- the state ----------------------------------------------------------------------------------------------------
+const S = { screen: 'start', deck: [], at: -1, answer: false, card: [], marked: [], bingo: false };
+function go(name) {
+  S.screen = name; for (const id of ['start', 'calling', 'playing']) $(id).hidden = id !== name;
+  const f = $(name).querySelector('button.hot') || $(name).querySelector('button'); if (f) f.focus({ preventScroll: true });
+}
+
+// ---- calling ------------------------------------------------------------------------------------------------------
+function startCalling() { S.deck = shuffle(ITEMS.slice()); S.at = -1; S.answer = false; go('calling'); paintCall(); }
+function paintCall() {
+  const cur = S.deck[S.at];
+  $('callN').textContent = S.at < 0 ? tr('ready') : tr('callN', { n: S.at + 1, total: S.deck.length });
+  $('now').textContent = cur ? cur.call : '?';
+  $('ans').textContent = cur ? cur.mark : ''; $('ans').hidden = !cur || !S.answer || cur.mark === cur.call;
+  $('showAns').disabled = !cur || cur.mark === cur.call; $('showAns').setAttribute('aria-pressed', String(S.answer)); $('read').disabled = !cur;
+  $('undo').disabled = S.at < 0; $('nextCall').disabled = S.at >= S.deck.length - 1;
+  if (S.at >= S.deck.length - 1 && cur) $('callN').textContent = `${tr('callN', { n: S.at + 1, total: S.deck.length })} · ${tr('allDone')}`;
+  const list = $('called'); list.innerHTML = '';
+  for (let i = S.at - 1; i >= 0; i--) { const li = document.createElement('li'); const x = S.deck[i]; li.textContent = x.mark === x.call ? x.call : `${x.call} = ${x.mark}`; list.appendChild(li); }
+}
+function nextCall() { if (S.screen !== 'calling' || S.at >= S.deck.length - 1) return; S.at += 1; S.answer = false; sfx('coin'); paintCall(); say(S.deck[S.at].call); }
+function undoCall() { if (S.screen !== 'calling' || S.at < 0) return; S.at -= 1; S.answer = false; sfx('click'); paintCall(); }
+function toggleAnswer() { if (S.screen !== 'calling' || S.at < 0) return; S.answer = !S.answer; paintCall(); }
+
+// ---- a card -------------------------------------------------------------------------------------------------------
+function newCard() {
+  const need = N * N - (FREE ? 1 : 0), marks = shuffle(ITEMS.map(x => x.mark)).slice(0, need);
+  S.card = []; S.marked = []; S.bingo = false;
+  for (let i = 0; i < N * N; i++) {
+    const free = FREE && i === Math.floor((N * N) / 2);
+    S.card.push(free ? null : marks.shift() || '');
+    S.marked.push(free);
+  }
+  go('playing'); paintCard();
+}
+function paintCard() {
+  const g = $('grid'); g.style.setProperty('--n', N); g.innerHTML = '';
+  S.card.forEach((m, i) => {
+    const b = document.createElement('button'); b.className = `cell${m === null ? ' free' : ''}`;
+    b.textContent = m === null ? tr('free') : m; b.setAttribute('aria-pressed', String(S.marked[i])); b.disabled = m === null;
+    b.onclick = () => { S.marked[i] = !S.marked[i]; b.setAttribute('aria-pressed', String(S.marked[i])); sfx(S.marked[i] ? 'click' : 'jump'); check(); };
+    g.appendChild(b);
+  });
+  $('cardP').textContent = N === 5 ? tr('cardP') : tr('cardP4');
+}
+function lines() {
+  const out = [];
+  for (let r = 0; r < N; r++) out.push([...Array(N)].map((_, c) => r * N + c));
+  for (let c = 0; c < N; c++) out.push([...Array(N)].map((_, r) => r * N + c));
+  out.push([...Array(N)].map((_, i) => i * N + i), [...Array(N)].map((_, i) => i * N + (N - 1 - i)));
+  return out;
+}
+function check() {
+  const got = lines().some(l => l.every(i => S.marked[i]));
+  if (got && !S.bingo) {
+    S.bingo = true; $('bingoW').textContent = tr('bingo'); $('bingo').hidden = false; sfx('win');
+    try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+    setTimeout(() => { $('bingo').hidden = true; }, 2200);
+    try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+  } else if (!got) S.bingo = false;
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('caller').onclick = () => { sfx('click'); startCalling(); }; $('player').onclick = () => { sfx('click'); newCard(); };
+$('nextCall').onclick = nextCall; $('undo').onclick = undoCall; $('showAns').onclick = toggleAnswer; $('newCard').onclick = newCard;
+$('read').onclick = () => { if (S.at >= 0) say(S.deck[S.at].call); };
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  const k = e.key, rtl = document.documentElement.dir === 'rtl';
+  if (k === 'f' || k === 'F') { $('full').click(); return; }
+  if (S.screen !== 'calling') return;
+  const fwd = k === ' ' || k === 'Enter' || k === 'PageDown' || k === (rtl ? 'ArrowLeft' : 'ArrowRight');
+  const back = k === 'PageUp' || k === (rtl ? 'ArrowRight' : 'ArrowLeft');
+  if (fwd && !(document.activeElement && document.activeElement.tagName === 'BUTTON' && document.activeElement !== $('nextCall') && (k === ' ' || k === 'Enter'))) { e.preventDefault(); nextCall(); }
+  else if (back) { e.preventDefault(); undoCall(); }
+  else if (k === 'a' || k === 'A') toggleAnswer();
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['caller', 'caller'], ['player', 'player'], ['callerP', 'callerP'], ['playerP', 'playerP'], ['nextCall', 'next'], ['undo', 'undo'], ['showAns', 'showAns'], ['read', 'read'], ['newCard', 'newCard'], ['callKeys', 'callKeys']]) $(id).textContent = tr(k);
+$('called').setAttribute('aria-label', tr('calledList')); $('read').hidden = !(CONFIG.readAloud && B.speak);
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ screen: S.screen, called: S.at + 1, current: S.at >= 0 ? S.deck[S.at].call : null, marked: S.marked.filter(Boolean).length, bingo: S.bingo, size: N }), start() { startCalling(); nextCall(); } };
+go('start');
+</script>

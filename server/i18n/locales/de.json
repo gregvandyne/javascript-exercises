@@ -1739,6 +1739,7 @@
     "scanStillFailing": "Der Sicherheitscheck ist noch nicht zufrieden. Tipp auf „Baumeister soll's reparieren“, um es noch mal zu versuchen.",
     "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
     "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht an den Baumeister verbraucht, du kannst es also noch mal versuchen.",
+    "planStarted": "Ich habe dein Spiel mit den Figuren gestartet, die du ausgesucht hast.",
     "errors": {
       "disabled": "Bauen ist für dieses Konto ausgeschaltet. Ein Erwachsener kann uns bitten, es wieder einzuschalten.",
       "empty": "Schreib zuerst eine Nachricht oder tipp auf eine Idee.",
@@ -2049,14 +2050,20 @@
         "pendingNew": "Version {number} wartet auf einen kurzen Sicherheitscheck. Sobald sie geprüft ist, teilen wir sie.",
         "reviewer": "Der Prüfer sagt: „{note}“ Bitte den Baumeister, das zu ändern, und tipp dann noch mal auf Aktualisieren oder Freigeben.",
         "waitingFamily": "Wartet auf eine kurze Sicherheitsprüfung, bevor Ihre Familie spielen kann. Bis dahin bleibt es so freigegeben wie jetzt.",
-        "ready": "Live-bereit",
         "host": "Live spielen",
-        "publishFirst": "Veröffentliche es, dann kannst du es live spielen.",
-        "teacher": "Eine Lehrkraft oder ein Erwachsener kann es live mit deiner Klasse spielen. Teile es zuerst mit deiner Klasse.",
-        "notYet": "Noch nicht live-bereit: {issue}.",
-        "make": "Ein Live-Klassenspiel daraus machen",
         "waitingReview": "Wartet auf Prüfung",
         "teamCheck": "Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können. Du kannst weiter spielen, es mit Freunden teilen und es bearbeiten. Wir schicken dir eine Nachricht, wenn es fertig ist."
+      },
+      "liveLine": {
+        "ready": "Bereit zum Live-Spielen",
+        "kidReady": "Eine Lehrkraft oder ein Erwachsener kann es live leiten",
+        "publish": "Veröffentliche es, um es live zu leiten",
+        "kidPublish": "Veröffentliche es, damit eine Lehrkraft oder ein Erwachsener es live leiten kann",
+        "publishBtn": "Veröffentlichen",
+        "fix": "Live, aber etwas muss repariert werden: {issue}",
+        "fixBtn": "Reparieren",
+        "off": "Kein Live-Spiel",
+        "make": "Live machen"
       },
       "safety": {
         "chipPass": "Sicher",
@@ -2635,6 +2642,7 @@
         "look": "Aussehen",
         "world": "Welt",
         "chars": "Figuren",
+        "play": "So wird gespielt",
         "learn": "Zum Lernen",
         "extras": "Extras"
       },
@@ -2680,7 +2688,8 @@
         "picked": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
         "pickedWorld": "{count} ausgewählt. Alle leben in {world}.",
         "cleared": "Abgewählt"
-      }
+      },
+      "progress": "Schritt {n} von {total}"
     }
   },
   "favorites": {
@@ -5997,6 +6006,7 @@
       "joinText": "Hast du einen Spielcode von deiner Lehrkraft? Gib ihn hier ein.",
       "joinShort": "Spielcode? Hier eingeben.",
       "studioAskText": "Mach daraus ein Live-Klassenspiel mit Oomba Live: Die ganze Klasse spielt zusammen und sieht sich, und die Lehrkraft sieht die Punkte.",
+      "studioFixText": "Repariere den Live-Teil dieses Spiels für Oomba Live, damit eine Lehrkraft oder ein Erwachsener es leiten kann: {issue}.",
       "badge": "Live",
       "badgeLong": "Live-Klassenspiel",
       "howJoin": "Deine Lehrkraft zeigt einen Code an der Tafel. Tippe ihn hier ein, um mitzuspielen.",
@@ -8526,6 +8536,10 @@
         "hint": "Such so viele aus, wie du magst.",
         "placeholder": "Zum Beispiel: ein Pinguin als Koch, ein Roboterhund"
       },
+      "play": {
+        "title": "Wie wird gespielt?",
+        "hint": "Wähle eins. Du kannst es später ändern."
+      },
       "learn": {
         "title": "Was soll man lernen?",
         "hint": "Such so viele aus, wie du magst.",
@@ -8568,6 +8582,38 @@
       "board": {
         "title": "Brettspiel",
         "text": "Würfle, zieh und antworte"
+      },
+      "quiet": {
+        "title": "Leisespiel",
+        "text": "Der Himmel füllt sich mit Sternen, solange es in der Klasse leise ist"
+      },
+      "categories": {
+        "title": "Kategorien-Tafel",
+        "text": "Teams wählen eine Kategorie und Punkte"
+      },
+      "survey": {
+        "title": "Klassenumfrage",
+        "text": "Feste Antworten, nur die Anzahl wird gezeigt"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Rechenaufgaben oder Wörter ausrufen, Karten ankreuzen"
+      },
+      "flashcards": {
+        "title": "Lernkarten",
+        "text": "Große Karten umdrehen, üben und sortieren"
+      },
+      "exitticket": {
+        "title": "Exit-Ticket",
+        "text": "Eine kurze Abfrage am Ende der Stunde"
+      },
+      "spinner": {
+        "title": "Glücksrad",
+        "text": "Ein Team, eine Zahl oder ein Thema auslosen"
+      },
+      "scoreboard": {
+        "title": "Team-Punktetafel",
+        "text": "Große Teampunkte für die Tafel"
       }
     },
     "looks": {
@@ -8614,6 +8660,26 @@
       "soonText": "Noch keine da. Sie sind unterwegs.",
       "soon3d": "Kommt bald in 3D"
     },
+    "play": {
+      "live": {
+        "title": "Live mit meiner Klasse oder Gruppe",
+        "text": "Alle spielen auf dem eigenen Gerät. Eine Lehrkraft oder ein Erwachsener leitet es mit Oomba Live vom großen Bildschirm aus."
+      },
+      "screen": {
+        "title": "Auf einem Bildschirm",
+        "text": "Die Klasse spielt zusammen an der Tafel, oder ein Gerät wird weitergegeben."
+      },
+      "solo": {
+        "title": "Allein",
+        "text": "Ein Spieler, auf dem eigenen Gerät."
+      },
+      "why": {
+        "kit2": "In den fertigen 3D-Welten kann man noch nicht live spielen.",
+        "board": "Das läuft auf einem Bildschirm für den ganzen Raum.",
+        "survey": "Umfrage-Antworten bleiben auf diesem Gerät und werden nie gesendet, darum wird sie nicht live gespielt.",
+        "exitticket": "Ein Exit-Ticket bleibt auf einem Gerät. Für die Antworten jedes Kindes nimm einen Frageschritt in einer Klassenstunde."
+      }
+    },
     "learn": {
       "math": {
         "title": "Mathe",
@@ -8658,8 +8724,18 @@
       "world": "Welt: {value}.",
       "characters": "Mit dabei: {list}.",
       "learn": "Zum Lernen: {list}.",
-      "file": "Nimm die Datei, die ich dazugegeben habe."
+      "file": "Nimm die Datei, die ich dazugegeben habe.",
+      "playlive": "Wir spielen es live mit meiner Klasse oder Gruppe mit Oomba Live.",
+      "playscreen": "Wir spielen es zusammen auf einem Bildschirm.",
+      "playsolo": "Ich spiele es allein."
     },
-    "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen."
+    "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
+    "typeGroups": {
+      "label": "Spielarten",
+      "class": "Für deine Klasse",
+      "games": "Spiele",
+      "classText": "Aktivitäten für die Tafel im Klassenzimmer und für Handys.",
+      "gamesText": "Spiele zum Spielen und Teilen."
+    }
   }
 }

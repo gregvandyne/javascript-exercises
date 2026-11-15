@@ -1739,6 +1739,7 @@
     "scanStillFailing": "De veiligheidscheck is nog niet tevreden. Tik op “Laat de Bouwer het repareren” om het opnieuw te proberen.",
     "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
     "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Het heeft geen bericht aan de Bouwer gekost, dus je kunt het nog eens proberen.",
+    "planStarted": "Ik ben je spel begonnen met de figuren die je hebt gekozen.",
     "errors": {
       "disabled": "Bouwen staat uit voor dit account. Een volwassene kan ons vragen het weer aan te zetten.",
       "empty": "Typ eerst een bericht of tik op een idee.",
@@ -2049,14 +2050,20 @@
         "pendingNew": "Versie {number} wacht op een snelle veiligheidscheck. We delen hem zodra hij is goedgekeurd.",
         "reviewer": "De controleur zegt: “{note}” Vraag de Bouwer om het te veranderen en druk dan nog eens op Bijwerken of Publiceren.",
         "waitingFamily": "Wacht op een korte veiligheidscheck voordat je gezin kan spelen. Tot die tijd blijft het gedeeld zoals nu.",
-        "ready": "Klaar voor live",
         "host": "Live spelen",
-        "publishFirst": "Publiceer het, dan kun je het live spelen.",
-        "teacher": "Een leraar of volwassene kan het live spelen met je klas. Deel het eerst met je klas.",
-        "notYet": "Nog niet klaar voor live: {issue}.",
-        "make": "Maak er een live klassenspel van",
         "waitingReview": "Wacht op controle",
         "teamCheck": "Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen. Je kunt intussen gewoon spelen, het delen met vrienden en het aanpassen. We sturen je een bericht als het klaar is."
+      },
+      "liveLine": {
+        "ready": "Klaar om live te leiden",
+        "kidReady": "Een leraar of volwassene kan dit live leiden",
+        "publish": "Publiceer het om het live te leiden",
+        "kidPublish": "Publiceer het zodat een leraar of volwassene het live kan leiden",
+        "publishBtn": "Publiceren",
+        "fix": "Live, maar er moet iets gerepareerd worden: {issue}",
+        "fixBtn": "Repareren",
+        "off": "Geen live spel",
+        "make": "Maak het live"
       },
       "safety": {
         "chipPass": "Veilig",
@@ -2635,6 +2642,7 @@
         "look": "Uiterlijk",
         "world": "Wereld",
         "chars": "Figuren",
+        "play": "Zo wordt het gespeeld",
         "learn": "Je leert",
         "extras": "Extra’s"
       },
@@ -2680,7 +2688,8 @@
         "picked": "{count, plural, one {# gekozen} other {# gekozen}}",
         "pickedWorld": "{count} gekozen. Ze wonen allemaal in {world}.",
         "cleared": "Weggehaald"
-      }
+      },
+      "progress": "Stap {n} van {total}"
     }
   },
   "favorites": {
@@ -5997,6 +6006,7 @@
       "joinText": "Heb je een spelcode van je juf of meester? Typ hem hier.",
       "joinShort": "Een spelcode? Typ hem hier.",
       "studioAskText": "Maak hier een live klassenspel van met Oomba Live: de hele klas speelt samen en ziet elkaar, en de leraar ziet de scores.",
+      "studioFixText": "Repareer het live deel van dit spel voor Oomba Live, zodat een leraar of volwassene het kan leiden: {issue}.",
       "badge": "Live",
       "badgeLong": "Live klassenspel",
       "howJoin": "Je leraar laat een code op het bord zien. Typ hem hier om mee te doen.",
@@ -8526,6 +8536,10 @@
         "hint": "Kies er zoveel als je wilt.",
         "placeholder": "Bijvoorbeeld: een pinguïn die kookt, een robothond"
       },
+      "play": {
+        "title": "Hoe wordt het gespeeld?",
+        "hint": "Kies er een. Je kunt het later nog veranderen."
+      },
       "learn": {
         "title": "Wat moet je ervan leren?",
         "hint": "Kies er zoveel als je wilt.",
@@ -8568,6 +8582,38 @@
       "board": {
         "title": "Bordspel",
         "text": "Gooi, loop en geef antwoord"
+      },
+      "quiet": {
+        "title": "Stiltespel",
+        "text": "De lucht vult zich met sterren zolang de klas stil is"
+      },
+      "categories": {
+        "title": "Categorieënbord",
+        "text": "Teams kiezen een categorie en punten"
+      },
+      "survey": {
+        "title": "Klassenenquête",
+        "text": "Vaste keuzes, alleen de aantallen worden getoond"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Roep sommen of woorden om, streep ze af op de kaart"
+      },
+      "flashcards": {
+        "title": "Flitskaarten",
+        "text": "Grote kaarten omdraaien, oefenen en sorteren"
+      },
+      "exitticket": {
+        "title": "Exitkaart",
+        "text": "Een snelle check aan het eind van de les"
+      },
+      "spinner": {
+        "title": "Draaiwiel",
+        "text": "Kies een team, een getal of een onderwerp"
+      },
+      "scoreboard": {
+        "title": "Teamscorebord",
+        "text": "Grote teampunten voor het bord"
       }
     },
     "looks": {
@@ -8614,6 +8660,26 @@
       "soonText": "Nog geen. Ze zijn onderweg.",
       "soon3d": "Komt eraan in 3D"
     },
+    "play": {
+      "live": {
+        "title": "Live met mijn klas of groep",
+        "text": "Iedereen speelt op een eigen apparaat. Een leraar of volwassene leidt het vanaf het grote scherm met Oomba Live."
+      },
+      "screen": {
+        "title": "Op één scherm",
+        "text": "De klas speelt samen op het bord, of één apparaat gaat rond."
+      },
+      "solo": {
+        "title": "In mijn eentje",
+        "text": "Eén speler, op een eigen apparaat."
+      },
+      "why": {
+        "kit2": "De kant-en-klare 3D-werelden kun je nog niet live spelen.",
+        "board": "Dit draait op één scherm voor de hele klas.",
+        "survey": "Antwoorden van de enquête blijven op dit apparaat en worden nooit verstuurd, dus hij wordt niet live gespeeld.",
+        "exitticket": "Een exitkaart blijft op één apparaat. Voor de antwoorden van elke leerling gebruik je een vraagstap in een klasles."
+      }
+    },
     "learn": {
       "math": {
         "title": "Rekenen",
@@ -8658,8 +8724,18 @@
       "world": "Wereld: {value}.",
       "characters": "Erin: {list}.",
       "learn": "Je leert: {list}.",
-      "file": "Gebruik het bestand dat ik heb toegevoegd."
+      "file": "Gebruik het bestand dat ik heb toegevoegd.",
+      "playlive": "We spelen het live met mijn klas of groep op Oomba Live.",
+      "playscreen": "We spelen het samen op één scherm.",
+      "playsolo": "Ik speel het in mijn eentje."
     },
-    "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk."
+    "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
+    "typeGroups": {
+      "label": "Soorten spellen",
+      "class": "Voor je klas",
+      "games": "Spellen",
+      "classText": "Activiteiten voor het digibord en voor telefoons.",
+      "gamesText": "Spellen om te spelen en te delen."
+    }
   }
 }

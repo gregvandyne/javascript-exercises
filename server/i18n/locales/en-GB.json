@@ -817,6 +817,14 @@
       "math": {
         "title": "Maths"
       }
+    },
+    "types": {
+      "flashcards": {
+        "text": "Flip, practise and sort big cards"
+      },
+      "bingo": {
+        "text": "Call maths facts or words, mark the cards"
+      }
     }
   }
 }

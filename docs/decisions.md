@@ -5733,3 +5733,114 @@ bubbles were all in 1.2.0, waiting for this world).
   takes at most 40 friends (`friendsMax` in the locked Oomba2D 1.1.0, `ART2D_FRIENDS_MAX`). Everyone picked beyond the
   first 40 in catalogue order is left out. `tests/unit/art2d-friends.test.js` now says so instead of "everyone". A
   bigger cap needs a new helper version: the owner's call.
+
+## Classroom activities in the Builder, first for teachers (15 Nov 2026)
+
+The owner asked: "Can we also list Quiet Games as part of the builder options, as well as, Jeopardy, Surveys, and any
+other classroom type activities. Let's make sure these are frontloaded in the builder options for teachers."
+
+- **The game-type step of `/build/new` has two groups**, "For your class" and "Games", one shown at a time
+  (`plan.js typeGroups`, `routes/build-setup.js`, `public/js/buildsetup.js`). A teacher (`classlive-access.js
+  teacherHost`: school staff, the platform admin or a teacher of a class) gets "For your class" first and shown: quiet
+  game, Category Board, class survey, bingo, flashcards, exit ticket, spinner, team scoreboard, then quiz, word game and
+  memory match; the other games are one tap away. Kids and families keep the games in today's order, shown first, and
+  "For your class" after it with the types that suit kids (no survey, no exit ticket; `normalisePlan(…, { forKid })`
+  drops those two for them on the server too, in `/api/build/plan` and the runner).
+- **Steps that do not apply are skipped.** A classroom starter has no 2D or 3D, world or characters; the survey, quiet
+  game, spinner and scoreboard also skip "What should it teach?" (`GAME_TYPES[].skip`). The page jumps over them,
+  counts only the steps left ("Step 2 of 2"), leaves them out of the plan, and `normalisePlan` drops whatever a page sent
+  for them, so the engine is always `classroom` and never a 3D world. Quiz, word and memory keep every step.
+- **New starters, plain HTML for the board** (`server/builder/templates/{quiet,categories,survey,bingo,flashcards,
+  exitticket,spinner,scoreboard}.html`, builder-only, `catalog.js CLASSROOM_TEMPLATE_KEYS`). Not on the Oomba Kit: the
+  kit's title / play / results game loop does not fit tools a teacher runs on a projector. Each has big type readable
+  from the back of the room, keyboard and clicker keys (arrows, Page Up / Page Down, Space, Enter, number keys), Sound
+  and Full screen buttons, a one-key-per-line CONFIG with `lang` (the language of the teacher's content) and a WORDS
+  table in the 13 site languages. Read-aloud speaks only CONFIG strings exactly as written, so the existing rules hold
+  (only fixed lines of a published, scanned version get the AI voice). `planNote` tells the model how to build each
+  (`CLASSROOM_NOTES`), the system prompt has short CLASSROOM RULES, and `start_from_template` says it is not a kit game.
+- **"Jeopardy" is a trademark.** The product says Category Board (translated). The word may be typed: under "Something
+  else" it becomes the Category Board type (`CLASSROOM_WORDS`, as do "exit ticket", "noise meter", "bingo"...), and the
+  Builder is told to build the categories starter and never use the name, the show's blue-and-gold look, its music,
+  money signs or "answer in the form of a question". The board is sticky notes on a chalkboard, points without "$".
+- **The class survey counts on the device; it does not use `BRB.poll`.** Considered: letting a published Builder game
+  owned by staff keep poll counts on the server. Not done, because (1) `game_poll_votes` stores a row per player with
+  their choice: "who chose what" would exist on our server for questions a teacher writes freely (feelings, home life),
+  which is far more sensitive than "would you rather"; (2) polls are cumulative across every player of the game forever,
+  while a class wants this lesson's answers; (3) only two choices, so a migration would be needed; (4) it would add a
+  role check on every vote. Instead the survey has "Count hands" (the teacher taps how many hands are up) and "Pass the
+  device" (each student taps a choice in private; the screen says thanks and never shows the choice back). Answers are an
+  array of counts in the page's memory: no names, no typing, no saving, nothing sent, nothing to an AI. In "Pass the
+  device" results show only from `CONFIG.minShown` answers, 5 like `polls.js MIN_SHOWN`, so nobody in a tiny group can be
+  picked out; "Count hands" shows at once (the hands were up in the room). `POLL_GAMES` is unchanged, and a test checks
+  that a teacher's published Builder survey still gets 404 from `/api/games/:id/poll`.
+- **The quiet game** (Quiet Stars: a night sky that fills with stars while the room is quiet) uses `BRB.loudness` the way
+  the official noise meters do, with their consent words, after the "Start listening" tap; it calibrates to the room's
+  quiet (median of 3 s) and waits (a cloud over the moon, no flashing) while the room is over the line. Refused, no
+  device, busy, a page that cannot listen, or the teacher's Stop: it carries on as a calm quiet timer with a "Too loud"
+  button (L). No sounds play while it listens.
+- **The exit ticket** stores nothing per student and submits no score (`gameOver` with `score: null`). A teacher who wants
+  each student's answers uses what class lessons already do safely (a question step, or a question set as homework); the
+  model is told to say so. **The spinner** offers teams, numbers or the teacher's own topics, never students' names.
+- **Main's 2D-art guard (PR #343) and the classroom types:** `planArt2d` is null for every classroom type (the plan has no
+  look, world or characters), so a classroom type with characters picked on the page is never forced into a running game;
+  it starts from its own starter, and `planFallback` does nothing for it. Tested in `tests/unit/builder-classroom.test.js`.
+- Tests: `tests/unit/builder-classroom.test.js` (order for teacher and kid, plan normalisation, planNote per type, the
+  2D guard, the hand-off, the survey's gating, counts and threshold, the starters' scan, CONFIG and WORDS),
+  `tests/unit/classroom-templates.test.js` (every starter in Chromium at 1280 and 390 and right to left, no console errors,
+  no network; the quiet game with the microphone refused; the survey threshold; the keys), and
+  `tests/unit/builder-classroom-layout.test.js` (the step on a desktop and an iPhone).
+- **Open:** a real projector and clicker, a real classroom microphone (the thresholds are the official meters' kind of
+  numbers, not tuned in a room), a build with the real model from each starter, and a native speaker's read of the
+  new translations.
+
+## Live or not, said once: "How will it be played?" and the Studio's live line (15 Nov 2026)
+
+The owner asked: "How does the builder know if a game should be offered live or not? This is also not super clear."
+Until now the Builder knew in three unrelated ways: typed words that name Oomba Live (`prompt.js LIVE_WORDS`, kept in
+`state.wantsLive`), a game that already loads the live pack, and, for a 3D world of their own only, an ask_user
+"Live or closed world?". The setup steps never asked, Kit 2 worlds silently could not be live, and the Studio showed
+"Make it a live class game" with no word on why a game was or was not live.
+
+- **A step in `/build/new`: "How will it be played?"** (after "Who is in it?", before "What should it teach?"; a
+  classroom starter skips the scene steps, so for it this is step 2). Three answers (`plan.js PLAYS`): **Live with my
+  class or group** (everyone on their own device; a teacher or grown-up runs it from the big screen with Oomba Live),
+  **On one screen** (the board, or one device passed around) and **On my own**. The plan carries it as `play`
+  (`normalisePlan`; left out when a page did not answer, so older plans read exactly as before), the sentence says it
+  (`planSentence`; only the Live sentence names "Oomba Live", so the words check agrees with the plan, tested in all 13
+  languages), the transcript line of later turns says it (`planBrief`), and `planNote` tells the model: Live = build it
+  live-ready in the same build with the LIVE RULES; one screen or on my own = NOT a live game, no live pack.
+- **Defaults, decided per type** (`playDefault`). Teachers (`teacherHost`): Live for quiz, word, memory, Category Board,
+  bingo (each player marks their own card) and the adventure, running and catching games; On one screen for flashcards
+  (one big card for the room), the quiet game, spinner, scoreboard, class survey, two-player duel and board game; On my
+  own for the exit ticket. Kids and families: On my own, except the one-screen-by-nature types (quiet game, spinner,
+  scoreboard, duel: On one screen). A kid may still pick Live: the card says a teacher or grown-up runs it, and kids
+  still never host (`classlive-access.js canHost`, unchanged). No kind of game picked: Live for a teacher, On my own
+  for a kid.
+- **Where Live cannot be, it is shown greyed out with a one-line reason, never hidden** (`LIVE_NOT`, `liveNot`): the quiet
+  game, spinner and scoreboard (a tool the whole room shares on one screen), the class survey (its answers are counted
+  on the device and never sent: the survey's own safety decision above stands), the exit ticket (stores nothing per
+  student; each student's answers belong in a class lesson's question step), and a ready-made 3D world (Kit 2 has no
+  live play yet; the page works this out from the look, world and characters exactly as `planEngine` does). A plan that
+  says Live anyway (an old or edited page) gets this viewer's default instead, on the server.
+- **The Builder.** `playFor` (from `engineFor` every plan turn, and from the toolbox) sets `state.wantsLive` for Live, so
+  the LIVE RULES go with every turn of that game, and clears it for one screen or on my own (a later typed "make it a
+  live class game" still turns it on). `state.play` remembers the answer, and while it is set the toolbox refuses an
+  ask_user whose options name "Oomba Live" (the live-or-closed question), telling the model the answer; the 3D RULES say
+  the setup steps' answer counts. A classroom starter that goes live loads the kit tag and the live pack only for the
+  connection, as an own 3D world does. The mock Builder makes a Live plan's kit game live-ready from its first version.
+- **The Studio's live line** (`routes/studio.js liveClassState`, `public/js/studio.js renderLiveClass`): one line under
+  the safety line, with one action, from the existing live-ready check (`classlive-check.js`) and its issue codes:
+  "Ready to host live" + Host (hosts only; a kid reads "A teacher or grown-up can host this live" and gets no Host),
+  "Publish it to host it live" (a kid: "so a teacher or grown-up can host it live") + Publish, "Live, but needs a fix:
+  <the check's first reason>" + Fix it (a fixed, translated Builder message that names Oomba Live, `live.entry.
+  studioFixText`), and "Not a live game" + Make it live (the existing fixed message; where the game cannot be live, the
+  button shows why instead and sends nothing). The line is read again after every new version, not only after the build.
+- **Unchanged safety:** no free text or chat between players (the LIVE RULES and the run-time text-entry lock); names
+  only from `Oomba.live.players()`; nothing about students goes to an AI (the step sends only one of three fixed words).
+- Tests: `tests/unit/builder-live-choice.test.js` (defaults for every type and both accounts, normalisation, planNote /
+  planBrief / the sentence in every language, `wantsLive` from the plan, the refused second question, the page data and
+  `/api/build/plan`, every live line from `GET /api/studio/:id` for a teacher and a kid, and in Chromium on a desktop
+  and an iPhone: the step for both, the greyed-out Live with its reason, the plan rows, each Studio line, no Host for
+  kids, "Make it live" on a 3D world sending nothing); the setup and classroom layout tests count the new step.
+- **Open:** a real model build from a Live plan of each classroom type (bingo and the Category Board live are new
+  ground for the model), and a native speaker's read of the new words.

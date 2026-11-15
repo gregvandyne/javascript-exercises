@@ -201,19 +201,39 @@ function waitingText() {
   if (isGroup(S.live.visibility) || (S.grownup && S.live.visibility === 'friends')) return E('js.studio.live.waitingPublic');
   return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
-// Oomba Live: "Make it a live class game" (a fixed Builder message), then "Live-ready" and, for hosts, "Host live".
+// Oomba Live: one line under the safety line that says where this version stands, with the one thing to do next
+// (server/routes/studio.js liveClassState): Ready to host live (Host, for hosts only: a kid is told a teacher or grown-up
+// hosts it), Publish it to host it live, Live but needs a fix (Fix it), or Not a live game (Make it live, or why it
+// cannot be live yet).
 function renderLiveClass() {
   let box = $('#st-liveclass');
   const L = S.liveClass;
   if (!L) { if (box) box.remove(); return; }
   if (!box) { box = document.createElement('div'); box.id = 'st-liveclass'; box.className = 'st-liveclass'; box.setAttribute('aria-live', 'polite'); $('#st-safety').after(box); }
-  if (L.ready) {
-    box.innerHTML = `<span class="stchip good">📡 ${E('js.studio.live.ready')}</span> `
-      + (L.canHost ? (L.published ? `<a class="btn btn-sm btn-primary" href="${esc(L.host)}">📡 ${E('js.studio.live.host')}</a>` : `<span class="small muted">${E('js.studio.live.publishFirst')}</span>`)
-        : `<span class="small muted">${E('js.studio.live.teacher')}</span>`);
+  box.dataset.line = L.line;
+  const chip = (tone, words) => `<span class="stchip ${tone}"><span aria-hidden="true">📡</span> ${words}</span>`;
+  if (L.line === 'host') {
+    box.innerHTML = L.canHost ? `${chip('good', E('js.studio.liveLine.ready'))} <a class="btn btn-sm btn-primary" href="${esc(L.host)}" data-act="host-live">${E('js.studio.live.host')}</a>`
+      : `${chip('good', E('js.studio.liveLine.kidReady'))}`;
+  } else if (L.line === 'publish') {
+    box.innerHTML = `${chip('', E(L.canHost ? 'js.studio.liveLine.publish' : 'js.studio.liveLine.kidPublish'))} <button class="btn btn-sm" type="button" data-act="live-publish">${E('js.studio.liveLine.publishBtn')}</button>`;
+  } else if (L.line === 'fix') {
+    box.innerHTML = `${chip('warn', E('js.studio.liveLine.fix', { issue: L.issue }))} <button class="btn btn-sm" type="button" data-act="fix-live">${E('js.studio.liveLine.fixBtn')}</button>`;
   } else {
-    box.innerHTML = `${L.issue ? `<span class="small muted">${E('js.studio.live.notYet', { issue: L.issue })}</span> ` : ''}<button class="btn btn-sm" type="button" data-act="make-live">📡 ${E('js.studio.live.make')}</button>`;
+    box.innerHTML = `${chip('', E('js.studio.liveLine.off'))} <button class="btn btn-sm" type="button" data-act="make-live" aria-expanded="false" aria-controls="st-live-why">${E('js.studio.liveLine.make')}</button>`
+      + (L.why ? `<p class="small muted st-live-why" id="st-live-why" hidden>${esc(L.why)}</p>` : '');
   }
+}
+/** "Make it live": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
+function makeLive(btn) {
+  const L = S.liveClass; if (!L) return;
+  const why = $('#st-live-why');
+  if (L.why && why) { why.hidden = false; btn.setAttribute('aria-expanded', 'true'); return; }
+  send(L.ask);
+}
+/** After each new version: read the live line again (the check runs on the saved version). */
+async function refreshLiveLine() {
+  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; renderLiveClass(); } catch { /* the next resync redraws it */ }
 }
 function renderSafety() {
   renderLiveClass();
@@ -1106,7 +1126,7 @@ function onEvent(ev, d) {
     syncStrip();
   }
   else if (ev === 'ask') { askBlock(d, true, botCur || bubble('bot', '')); botCur = null; }
-  else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else setPreview(d.preview, d.id); }
+  else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else { setPreview(d.preview, d.id); refreshLiveLine(); } }
   else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
   else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
   else if (ev === 'playtest') endBubble();   // not drawn, but the saved reply starts a new part after it, as after any card
@@ -1388,7 +1408,9 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'update') updateLive();
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
-  else if (a.dataset.act === 'make-live' && S.liveClass) send(S.liveClass.ask);
+  else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
+  else if (a.dataset.act === 'fix-live' && S.liveClass && S.liveClass.fixAsk) send(S.liveClass.fixAsk);
+  else if (a.dataset.act === 'live-publish') $('#st-publish').click();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
   else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }
   else if (a.dataset.act === 'fu-putback') { const b = a.closest('.msg.fu'); if (b) { input.value = b.dataset.text || ''; autosize(); input.focus(); } }

@@ -1739,6 +1739,7 @@
     "scanStillFailing": "The safety check still is not happy. Tap “Ask the Builder to fix it” to try again.",
     "turnTimeout": "⏱️ This build took longer than our time limit, so I stopped. Your newest version is saved. Tell me what to change next!",
     "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a Builder message, so you can try again.",
+    "planStarted": "I started your game with the characters you picked.",
     "errors": {
       "disabled": "Building is switched off for this account. A grown-up can ask us to turn it back on.",
       "empty": "Type a message or tap an idea first.",
@@ -2061,14 +2062,20 @@
         "pendingNew": "Version {number} is waiting for a quick safety check. We will share it as soon as it passes.",
         "reviewer": "Reviewer says: “{note}” Ask the Builder to change it, then press Update or Publish again.",
         "waitingFamily": "Waiting for a quick safety check before your family can play. Until then, it stays shared the way it is now.",
-        "ready": "Live-ready",
         "host": "Host live",
-        "publishFirst": "Publish it, then you can host it live.",
-        "teacher": "A teacher or grown-up can host it live for your class. Share it with your class first.",
-        "notYet": "Not live-ready yet: {issue}.",
-        "make": "Make it a live class game",
         "waitingReview": "Waiting for review",
         "teamCheck": "Someone from the Oomba team checks every game before everyone can play it. You can keep playing, sharing with friends and editing. We'll send you a message when it's done."
+      },
+      "liveLine": {
+        "ready": "Ready to host live",
+        "kidReady": "A teacher or grown-up can host this live",
+        "publish": "Publish it to host it live",
+        "kidPublish": "Publish it so a teacher or grown-up can host it live",
+        "publishBtn": "Publish",
+        "fix": "Live, but needs a fix: {issue}",
+        "fixBtn": "Fix it",
+        "off": "Not a live game",
+        "make": "Make it live"
       },
       "safety": {
         "chipPass": "Safe",
@@ -2653,6 +2660,7 @@
         "look": "Look",
         "world": "World",
         "chars": "Characters",
+        "play": "How it is played",
         "learn": "It teaches",
         "extras": "Extras"
       },
@@ -2698,7 +2706,8 @@
         "picked": "{count, plural, one {# picked} other {# picked}}",
         "pickedWorld": "{count} picked. They all live in {world}.",
         "cleared": "Cleared"
-      }
+      },
+      "progress": "Step {n} of {total}"
     }
   },
   "favorites": {
@@ -6351,6 +6360,7 @@
       "joinText": "Got a game code from your teacher? Type it here.",
       "joinShort": "Have a game code? Type it here.",
       "studioAskText": "Make this a live class game with Oomba Live: everyone in the class plays together and sees each other, and the teacher sees the scores.",
+      "studioFixText": "Fix the live part of this game for Oomba Live so a teacher or grown-up can host it: {issue}.",
       "badge": "Live",
       "badgeLong": "Live class game",
       "howJoin": "Your teacher shows a code on the board. Type it here to join.",
@@ -8942,6 +8952,10 @@
         "hint": "Pick as many as you like.",
         "placeholder": "Like: a penguin chef, a robot dog"
       },
+      "play": {
+        "title": "How will it be played?",
+        "hint": "Pick one. You can change it later."
+      },
       "learn": {
         "title": "What should it teach?",
         "hint": "Pick as many as you like.",
@@ -8984,6 +8998,38 @@
       "board": {
         "title": "Board game",
         "text": "Roll, move and answer"
+      },
+      "quiet": {
+        "title": "Quiet game",
+        "text": "Stars fill the sky while the room is quiet"
+      },
+      "categories": {
+        "title": "Category Board",
+        "text": "Teams pick a category and points"
+      },
+      "survey": {
+        "title": "Class survey",
+        "text": "Fixed choices, only the counts are shown"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Call math facts or words, mark the cards"
+      },
+      "flashcards": {
+        "title": "Flashcards",
+        "text": "Flip, practice and sort big cards"
+      },
+      "exitticket": {
+        "title": "Exit ticket",
+        "text": "A quick check at the end of a lesson"
+      },
+      "spinner": {
+        "title": "Spinner",
+        "text": "Pick a team, a number or a topic"
+      },
+      "scoreboard": {
+        "title": "Team scoreboard",
+        "text": "Big team points for the board"
       }
     },
     "looks": {
@@ -9030,6 +9076,26 @@
       "soonText": "None yet. They are on their way.",
       "soon3d": "Coming soon in 3D"
     },
+    "play": {
+      "live": {
+        "title": "Live with my class or group",
+        "text": "Everyone plays on their own device. A teacher or grown-up runs it from the big screen with Oomba Live."
+      },
+      "screen": {
+        "title": "On one screen",
+        "text": "The class plays together on the board, or one device is passed around."
+      },
+      "solo": {
+        "title": "On my own",
+        "text": "One player, on their own device."
+      },
+      "why": {
+        "kit2": "The ready-made 3D worlds can't be played live yet.",
+        "board": "This one runs on one screen for the whole room.",
+        "survey": "Survey answers stay on this device and are never sent, so it isn't played live.",
+        "exitticket": "An exit ticket stays on one device. For each student's answers, use a question step in a class lesson."
+      }
+    },
     "learn": {
       "math": {
         "title": "Math",
@@ -9074,8 +9140,18 @@
       "world": "World: {value}.",
       "characters": "In it: {list}.",
       "learn": "It teaches: {list}.",
-      "file": "Use the file I added."
+      "file": "Use the file I added.",
+      "playlive": "Play it live with my class or group on Oomba Live.",
+      "playscreen": "We play it together on one screen.",
+      "playsolo": "It is played on my own."
     },
-    "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look."
+    "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
+    "typeGroups": {
+      "label": "Kinds of game",
+      "class": "For your class",
+      "games": "Games",
+      "classText": "Activities for the classroom board and for phones.",
+      "gamesText": "Games to play and share."
+    }
   }
 }

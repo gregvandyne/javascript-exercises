@@ -308,7 +308,8 @@ Like live frames, the transport is a private `MessagePort` handed to the page wi
 
 ## Polls (`BRB.poll`)
 
-For official games on the list (`server/services/polls.js` POLL_GAMES). `BRB.poll(item, choice, seat)` counts a choice
+For official games on the list (`server/services/polls.js` POLL_GAMES). Builder games never get it, a teacher's included:
+the Builder's class survey starter counts on the device instead (docs/decisions.md "Classroom activities in the Builder"). `BRB.poll(item, choice, seat)` counts a choice
 (`item`: `/^[a-z0-9][a-z0-9-]{0,39}$/`, `choice` 0 or 1, `seat` 0-5 for pass-and-play players) once per player and seat,
 and resolves to `{ a, b, total, min }` (show a percentage only when `total >= min`), or `null` when polls are off, the
 player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, seat, n}` to the page and
@@ -341,7 +342,8 @@ frame `{type:'brb:loudState', state}` and `{type:'brb:level', db}`.
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),
 `edit_game(edits[{find, replace}], notes)` (each `find` must appear exactly once in the current game, otherwise nothing
 changes and the Builder is told why), `set_game(title, icon, description, category, tags, orientation, players)`,
-`playtest_game()`, `start_from_template(template, notes)` (3D only: copies Star Island in as a new version on the server)
+`playtest_game()`, `start_from_template(template, notes)` (copies a starter in as a new version on the server: the 2D kit templates, the 3D
+starters, and the classroom starters quiet, categories, survey, bingo, flashcards, exitticket, spinner and scoreboard)
 and `test_notes(checklist)`. Every `write_game` / `edit_game` / `start_from_template` makes a new, safety-scanned version.
 The 3D rules are a separate fixed system block, sent only when the builder asks for 3D or the game is already 3D.
 

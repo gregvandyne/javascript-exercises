@@ -71,7 +71,8 @@ test('KIT_RULES ends the cached system prompt, with the pinned kit and pack tags
   // The tool may start from the 2D kit templates, from oomba3d (the Kit 2 starter: a ready-made 3D world and hero, no kit)
   // and from world3d (its own 3D starter, no kit) for every other 3D game; never Star Island.
   const start = TOOLS.find(t => t.name === 'start_from_template');
-  assert.deepEqual(start.input_schema.properties.template.enum, ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d']);
+  // and from the classroom starters (plain HTML for the classroom board, not on the kit: builder-classroom.test.js)
+  assert.deepEqual(start.input_schema.properties.template.enum, ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d', 'quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard']);
 });
 
 test('the three example games in the rules run in the kit with only the packs they load: straight into play, no warnings', async () => {

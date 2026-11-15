@@ -84,7 +84,9 @@ test('the engine a plan means: world + 3D is always a ready-made 3D world; 2D st
   assert.deepEqual({ engine: cq.engine, world: cq.world, hero: cq.hero, companion: cq.companion, more: cq.more, friends: cq.friends, missing: cq.missing },
     { engine: 'kit2', world: 'castle-quest', hero: 'knight', companion: 'fox', more: ['horse'], friends: ['mage'], missing: ['cow'] });
   // every game type in 3D with a pack world is a Kit 2 game in that world
-  for (const t of plan.TYPE_IDS) for (const w of kit2.WORLD_IDS) { const x = e({ type: pack(t), look: '3d', world: pack(w) }); assert.equal(`${x.engine} ${x.world}`, `kit2 ${w}`); assert.ok(kit2.heroesOf(w).some(h => h.id === x.hero)); }
+  for (const t of plan.GAME_TYPES.filter(x => !x.starter).map(x => x.id)) for (const w of kit2.WORLD_IDS) { const x = e({ type: pack(t), look: '3d', world: pack(w) }); assert.equal(`${x.engine} ${x.world}`, `kit2 ${w}`); assert.ok(kit2.heroesOf(w).some(h => h.id === x.hero)); }
+  // a classroom starter (a survey, a scoreboard...) is never a 3D world, whatever a page sent with it (tests/unit/builder-classroom.test.js)
+  for (const t of plan.GAME_TYPES.filter(x => x.starter).map(x => x.id)) assert.deepEqual(e({ type: pack(t), look: '3d', world: pack('castle-quest') }), { engine: 'classroom', template: t });
   // an animal that can be the hero plays when no hero is picked; one that cannot (a pig) comes along instead
   assert.equal(e({ look: '3d', world: pack('castle-quest'), characters: [pack('horse')] }).hero, 'horse');
   const pig = e({ look: '3d', world: pack('medieval-village'), characters: [pack('pig')] });
@@ -227,7 +229,7 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
 });
 
 // ---------------------------------------------------------------- the page
-test('/build/new: the start, six steps, every live world with a Preview, groups, and no way to it without an account', async () => {
+test('/build/new: the start, seven steps, every live world with a Preview, groups, and no way to it without an account', async () => {
   const anon = client(); const a = await anon('/build/new');
   assert.equal(a.status, 302);
   const b = await kid('/build');
@@ -237,10 +239,10 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   assert.match(h, /id="su-guide"[^>]*><span class="su-way-t">Help me choose</, 'help me choose');
   assert.match(h, /id="su-direct"[^>]*><span class="su-way-t">I know what I want</, 'the bypass');
   assert.match(h, /id="su-skipall" hidden>Skip to the Builder</);
-  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'type', 'look', 'world', 'chars', 'learn', 'extras', 'plan']);
-  for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
-  assert.equal((h.match(/data-go="back"/g) || []).length, 7); assert.equal((h.match(/data-go="skip"/g) || []).length, 6); assert.equal((h.match(/data-go="next"/g) || []).length, 6);
-  assert.match(h, /Step 1 of 6/); assert.match(h, /Step 6 of 6/);
+  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
+  for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'How will it be played?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
+  assert.equal((h.match(/data-go="back"/g) || []).length, 8); assert.equal((h.match(/data-go="skip"/g) || []).length, 7); assert.equal((h.match(/data-go="next"/g) || []).length, 7);
+  assert.match(h, /Step 1 of 7/); assert.match(h, /Step 7 of 7/);
   // twelve live worlds (Wild Woods, Dino Valley and Under the Sea too), each with its real cover and a Preview button; every preview picture exists, large
   assert.equal(kit2.KIT2_WORLDS.length, 12);
   for (const w of kit2.KIT2_WORLDS) {

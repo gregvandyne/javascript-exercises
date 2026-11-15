@@ -199,7 +199,16 @@ page waits for its own tap). A start the game sent before a reload is dropped, a
 after the game's own `start()`. The game frame itself is unchanged: opaque, `microphone=()`, the same sandbox and CSP
 as every game; browsers refuse the microphone in opaque frames anyway. Every other game's page answers `off`, and the
 scanner still fails any game that asks for the microphone (no exemption). Tests: `tests/unit/mic-scope.test.js`,
-`tests/unit/loudness.test.js`, `tests/e2e/remis-quiet-meadow.spec.js`.
+`tests/unit/loudness.test.js`, `tests/e2e/remis-quiet-meadow.spec.js`. The Builder's classroom "Quiet game" starter
+(`server/builder/templates/quiet.html`, 15 Nov 2026) is such a Builder game: it starts listening only from its "Start
+listening" tap, says the official meters' words ("only listens for how loud it is. Nothing is recorded or saved."), and
+with the microphone refused, missing, busy or stopped it is a calm quiet timer (`tests/unit/classroom-templates.test.js`).
+
+**Classroom starters** (15 Nov 2026; docs/decisions.md "Classroom activities in the Builder"): the Builder's quiet game,
+Category Board, class survey, bingo, flashcards, exit ticket, spinner and team scoreboard are plain games in the same
+sandbox. None of them takes typed text from students, names a student (teams and numbers only), saves or sends an
+answer: the survey counts on the device only (never `BRB.poll`, which stays official-games-only on the server) and shows
+"Pass the device" results only from 5 answers; the exit ticket submits no score.
 
 *Live mode* (`server/services/stt-live.js`; off with `STT_LIVE=0`): the words show in the box while the child speaks.
 The page streams the mic as 16-bit PCM over a same-origin WebSocket to our server, which relays it to the provider's
