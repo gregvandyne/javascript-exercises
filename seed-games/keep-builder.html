@@ -1,0 +1,1455 @@
+<title>Keep Builder</title>
+<!-- Keep Builder: Number Quest Pro Unit 6, The Drafting Keep (grades 6-8, ages 11-14). A castle courtyard at sunset
+     where a keep is being built, on Oomba3D 1.2.0 in the Castle Quest theme 1.2.0: the architect's plan on a board
+     shows boxes, nets, banners, beams, a plan grid, ladders and squares, a builder stands by it, and a stone block is
+     set on the keep for each finished round. Three chapters of six rounds:
+       build (6.1) crates of half a meter in a store room, a tower block's net and the stone that covers it, a
+                   trapezoid banner cut into a rectangle and two triangles, an earth ramp (a prism with a right
+                   triangle end), the height of a cistern that must hold a set volume, and a roof's net;
+       move  (6.2) the angle next to a known one where two beams cross, the equation for a brace in a square corner,
+                   and the gate stone moved into a gap on the plan grid: a slide, a flip and a turn by their rules in
+                   coordinates, and a window copied bigger or smaller from the origin (a scale factor);
+       span  (6.3) the Pythagorean theorem: a ladder, a plank ramp, a rope between two towers on the grid, squares on
+                   the three sides, the longest pole in a room, and which three beams make a square corner.
+     Made for ages 11 to 14: plan first, then run. The player sets a stepper or picks one of three tiles and runs
+     the plan; a wrong plan is run too and shown as it really turns out (the stone runs out before the net is
+     covered, the beam bends, the stone misses the gap, the ladder reaches somewhere else) with a spoken hint, and the
+     round stays open. Nothing is priced, bought or sold. No timer, no lives, no fail state, nothing typed.
+     Read-aloud is on by default (BRB.speak, the shared path; the speaker button says a line again): lines are
+     written the way they are said. Keys: arrows or + and - move the stepper, Enter runs, 1 to 3 pick a tile. Lesson
+     mode: BRB.params { chapter: build | move | span, lock: 1 } opens that chapter only; finishing its six rounds
+     reports game over, won, once (the course step's completion signal). With no parameters the game offers the
+     three chapters from a menu. Saves only which chapters are finished (BRB.storage 'keep-builder-v1'). The import
+     map below is exactly kit2ImportMap() (server/services/vendor.js); tests/unit/keep-builder.test.js fails if a
+     library bump leaves it behind. English only, like Number Quest's other lesson games. Test handle: window.__kb
+     (also window.__brbTest, the name the picture scripts wait for). -->
+<script type="importmap">
+{
+ "imports": {
+  "three": "/vendor/three/0.185.1/three.module.min.js",
+  "three/addons/": "/vendor/kit2/three-addons/0.185.1/",
+  "@dimforge/rapier3d-compat": "/vendor/kit2/rapier/0.21.0/rapier.mjs",
+  "oomba3d": "/vendor/kit2/oomba3d/1.2.0/oomba3d.js"
+ },
+ "integrity": {
+  "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+  "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48",
+  "/vendor/kit2/three-addons/0.185.1/loaders/GLTFLoader.js": "sha384-3CnKaFWE2emo2DOUQi/yFm4SMemUgSZ9IAJe/V2pyJTw9KXWYSmR0MiX/7RoPyiJ",
+  "/vendor/kit2/three-addons/0.185.1/math/SimplexNoise.js": "sha384-IwC6d45K1GYEOKIe6xPySXxRzXCN862+MGz2r55ZDvPrc1LxaLCbaKWCRGLAFk16",
+  "/vendor/kit2/three-addons/0.185.1/objects/Sky.js": "sha384-BSkGNgIk3CVTUk7HJNI3TdBMeGhoUHG/CVlbGsAivMSgM1UEI+SuvmXOKb51ko6n",
+  "/vendor/kit2/three-addons/0.185.1/objects/Water.js": "sha384-eI0zvePMSN+5bCSpRfROZDQ5NgbiHaJLZYekNzrD6Dg2vUlHNgSsA45bgBmOSI2H",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/EffectComposer.js": "sha384-9Rdp95mYHRj8gGxPz4TqkDaCUh8rd67b7V5slkjz7GA9uNXtykhptQdEPPOocbUn",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/MaskPass.js": "sha384-5MFlCMNYgjI2KQDXH12DjwyKtWiXRsrFMMGKIP3pCQemWtt1INLwPKwZDF0TEKG9",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/OutputPass.js": "sha384-3IFYrRLOw90S3gt5Xi3JVTJrETpklthjLSmnmeyqxQmh1knUIaGPwbRsk35kgNoW",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/Pass.js": "sha384-927X5fcqlqKPsXZV1w3tv5BZx797OXX3D/TDJk0FHwJd12z58B5aqS77g5LZoprI",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/RenderPass.js": "sha384-uXlYrFHzQTAiW5xsJFs0kB/Pym7jA0qunZ+aS1V25CJ1MjaKbgNQv5SjoEzNoa4F",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/ShaderPass.js": "sha384-0DjIyth2/18aCmCo4x7GEOqSJTu3uNx5ptRg+rlkZ7zs9MlNfUXVEhbUuzVzglaG",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/UnrealBloomPass.js": "sha384-HZL+5ILFcHlBFu9mQNWD9y0+a1Soe3WyoO6G350cB6WhhmkttNSftznMx5wP2QWd",
+  "/vendor/kit2/three-addons/0.185.1/shaders/CopyShader.js": "sha384-Hxod3deUgRexb42wOr+7J8ySu/QNr1oXlCfY9bivrSKBseng+R34eirHq/Rvvxee",
+  "/vendor/kit2/three-addons/0.185.1/shaders/LuminosityHighPassShader.js": "sha384-pJrfb1+CmauCtIjocA5YIJaosvBlTpTYBJLn6km9pktlMGoyTXhviuXjgzV2jcns",
+  "/vendor/kit2/three-addons/0.185.1/shaders/OutputShader.js": "sha384-7B5u2okAR4bArb4emcYnTiZPFpV3wPNvV3ZY9xre0xp3cNKs2TeaYiOyMDa/bDAi",
+  "/vendor/kit2/three-addons/0.185.1/utils/BufferGeometryUtils.js": "sha384-05mkYituMJObxUkTK7xbW9SA45DEaxOge7FQUGrhW3dsFz0fckzykM6RMAPN26rD",
+  "/vendor/kit2/three-addons/0.185.1/utils/SkeletonUtils.js": "sha384-Pozn8j5+YFr3ak8Pm90ayqDrGYn/DV7vVs/YIIqzJhzeJT0LQksoS1fZQ5lfsYlw",
+  "/vendor/kit2/three-addons/0.185.1/libs/meshopt_decoder.module.js": "sha384-YKlVxw0Ht6uxCaezkIewhHjoClZrdlnGlSNqpPmMueyfs69BYllzxpCFMLSR7ox8",
+  "/vendor/kit2/three-addons/0.185.1/postprocessing/SMAAPass.js": "sha384-XObh8MSfejI2yQTnB0uC2O1XkdLJMTe8R5UW546TuwmRjjEL0kv367zVSzbhihqr",
+  "/vendor/kit2/three-addons/0.185.1/shaders/SMAAShader.js": "sha384-OjA3eJHhEhL7Ggc/82fZIWV8f5WamiiWzpcNZbw0UHxLHSJjkz8Sy+nlT+7j7YuT",
+  "/vendor/kit2/oomba3d/1.2.0/oomba3d.js": "sha384-ltHvhMM3qs7Hg8yrTCMKv3MBsY7QO3iMiXAf5rKSB17QJbVzVuZN73OAhjCIAk4T",
+  "/vendor/kit2/rapier/0.21.0/rapier.mjs": "sha384-oPyJtSnZbl4qLdnQQ+3vWOQFLDFyMOcSgLr1xxtO2B2JUahMwj6wRA6I7pbueGxx"
+ }
+}
+</script><style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1b2130; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #FFF6E5; }
+  .kb[hidden], .kb-load[hidden] { display: none; }
+  .kb { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .kb button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .kb button:focus-visible { outline: 4px solid #FFD23F; outline-offset: 3px; }
+  .kb-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
+  /* The words, then the chip and the round dots. On a phone: the words on one row (clear of the gear button), the chip
+     and the dots on the next. On a wide screen: all three on one row that never wraps. */
+  .kb-line { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+  .kb-row2 { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 100%; }
+  .kb-ask { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: calc(100% - 58px); box-sizing: border-box; background: #232b3d; border: 2px solid #E9C46A; border-radius: 14px; box-shadow: 0 0 0 3px rgba(27, 33, 48, .85); padding: 6px 14px 6px 6px; }
+  .kb-ask[hidden], .kb-hint[hidden], .kb-sum[hidden], .kb-bar[hidden], .kb-card[hidden], .kb-dots[hidden], .kb-row2[hidden] { display: none; }
+  .kb .kb-say { flex: none; width: 48px; height: 48px; border-radius: 12px; border: 2px solid #E9C46A; background: #2e3950; font-size: 22px; line-height: 1; }
+  .kb .kb-say:active, .kb .kb-btn:active { transform: translateY(2px); }
+  .kb-askt { font-weight: 700; font-size: clamp(16px, 4.2vw, 23px); line-height: 1.2; min-width: 0; }
+  .kb-sum { flex: 0 1 auto; min-width: 0; background: #2e3950; border: 2px solid #E9C46A; border-radius: 10px; padding: 5px 12px; font-weight: 800; font-size: clamp(17px, 4.6vw, 26px); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .kb-sum.ok { background: #145238; border-color: #66E0A3; }
+  .kb-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .kb-hint { background: #FFD23F; color: #141414; border-radius: 12px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(16px, 3.6vw, 21px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 620px); }
+  .kb-dots { flex: none; display: flex; gap: 6px; padding: 2px; }
+  .kb-dots i { width: 22px; height: 8px; border-radius: 4px; background: #434e66; }
+  .kb-dots i.on { background: #66E0A3; } .kb-dots i.now { background: #E9C46A; }
+  .kb-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .kb .kb-btn { flex: 1 1 0; min-width: 0; max-width: 230px; min-height: clamp(68px, 11vh, 92px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px; background: #2e3950; border: 2px solid #E9C46A; border-radius: 14px; font-weight: 800; font-size: clamp(15px, 2.3vh, 20px); line-height: 1.1; }
+  .kb-btn .big { font-size: clamp(24px, 6.2vw, 34px); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-flex; align-items: center; gap: .28em; }
+  .kb-btn .i { font-size: 30px; line-height: 1.1; }
+  .kb .kb-btn.step { flex: 0 0 auto; width: clamp(64px, 17vw, 96px); }
+  .kb .kb-btn.step .big { font-size: 40px; }
+  .kb-val { flex: 1 1 0; min-width: 0; max-width: 250px; display: flex; align-items: center; justify-content: center; background: #121722; border: 2px solid #7d8aa3; border-radius: 14px; font-weight: 800; font-size: clamp(26px, 7vw, 40px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kb-btn .l { font-size: clamp(13px, 1.9vh, 17px); font-weight: 700; }
+  .kb .kb-btn.long .big { font-size: clamp(17px, 4.5vw, 30px); }
+  .kb .kb-btn.longer .big { font-size: clamp(14px, 3.6vw, 24px); white-space: normal; text-align: center; }
+  .kb .kb-btn.go { background: #1f7a55; border-color: #66E0A3; flex: 0 1 150px; }
+  .kb .kb-btn.right { background: #1f7a55; border-color: #66E0A3; }
+  .kb-btn.no { animation: kb-no .45s ease; border-color: #FFB454; }
+  @keyframes kb-no { 20% { transform: translateX(-7px); } 50% { transform: translateX(6px); } 80% { transform: translateX(-3px); } }
+  .kb-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+  .kb-card > div:first-child { background: rgba(27, 33, 48, .84); border: 2px solid rgba(233, 196, 106, .45); border-radius: 18px; padding: 12px 18px 14px; max-width: 100%; box-sizing: border-box; }
+  .kb-card h1 { margin: 0; font-size: clamp(34px, 8vw, 58px); line-height: 1; letter-spacing: .02em; text-shadow: 0 0 18px rgba(233, 196, 106, .7); }
+  .kb-card h2 { margin: 6px 0 0; font-size: clamp(18px, 4.4vw, 26px); color: #E9C46A; font-weight: 700; }
+  .kb-card .kb-ask { margin-top: 10px; max-width: 100%; text-align: left; box-shadow: none; }
+  .kb-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; }
+  .kb-pick .kb-btn { flex: 0 1 auto; min-width: 190px; min-height: 72px; font-size: 21px; }
+  .kb-menu { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: min(820px, 100%); }
+  .kb-menu .kb-btn { flex: 1 1 0; max-width: 240px; min-height: 104px; font-size: 20px; gap: 6px; }
+  .kb-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  @media (min-aspect-ratio: 9/10) {
+    .kb-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
+    .kb-ask { flex: 0 1 auto; max-width: 100%; } .kb-row2 { flex: none; max-width: 40%; }
+    .kb-askt { font-size: clamp(16px, 1.9vw, 23px); } .kb-sum { font-size: clamp(17px, 2.1vw, 26px); }
+  }
+  @media (max-width: 480px) { .kb-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .kb .kb-btn { min-height: 70px; padding: 6px 3px; } .kb-dots i { width: 16px; } .kb-menu .kb-btn { flex: 1 1 100%; max-width: 100%; min-height: 70px; flex-direction: row; gap: 12px; } .kb .kb-btn.go { flex-basis: 96px; } .kb .kb-btn.step { width: clamp(56px, 17vw, 96px); } }
+  @media (max-height: 520px) { .kb .kb-btn { min-height: 60px; } .kb .kb-say { width: 42px; height: 42px; font-size: 19px; } }
+  @media (prefers-reduced-motion: reduce) { .kb .kb-btn.no { animation: none; outline: 5px dashed #FFB454; outline-offset: 2px; } .kb .kb-say:active, .kb .kb-btn:active { transform: none; } }
+</style>
+<div class="kb-load" id="load" role="status">Unrolling the plans…</div>
+<div class="kb" id="kb" hidden>
+  <div class="kb-top">
+    <div class="kb-line" id="line">
+      <div class="kb-ask" id="ask" hidden><button class="kb-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="kb-askt" id="askt" role="status" aria-live="polite"></span></div>
+      <div class="kb-row2" id="row2" hidden>
+        <div class="kb-sum" id="sum" hidden role="status" aria-live="polite"></div>
+        <div class="kb-dots" id="dots" hidden role="img"></div>
+      </div>
+    </div>
+  </div>
+  <div class="kb-low">
+    <div class="kb-hint" id="hint" hidden role="status" aria-live="polite"></div>
+    <div class="kb-bar" id="bar" hidden></div>
+  </div>
+  <div class="kb-card" id="card" hidden></div>
+</div>
+<script>
+/* ===== Keep Builder's rounds: plain data and functions (no DOM, no 3D), so tests/unit/keep-builder.test.js can run
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
+   so the first six rounds are always the same; a replay gets other numbers). Every round has `ask` and `said` (lines
+   of the words table with their numbers, said one after the other), `chip` and `chipDone` (what the chip shows
+   before and after), `p` (its numbers), `pic` (what the board draws as asked and as found) and one of two ways to
+   answer:
+     input 'tiles'  pick one of three tiles (`opts`, their places in `choices`);
+     input 'step'   set a number with a stepper (`step`: min, max, by, start; `unit`), then run it. The number stays
+                    on the stepper until it is run: the board shows only the question.
+   The right plan is in `answer`. `judge(round, plan)` says whether a plan is right and, when it is not, what the plan
+   really gives (`draw`, for the board) and the lines that say why (`lines`). `view(round, mode, plan)` is the board
+   for a round as asked ('ask'), as a plan really turns out ('try') and as found ('found'): a list of parts (a box, a
+   floor of crates, a net, a banner, a ramp, beams, a corner, a plan grid, a ladder, squares, a triangle) over lines
+   of maths. ===== */
+/* keep-builder:begin */
+(function (root) {
+  var CHAPTERS = ['build', 'move', 'span'], ROUNDS = 6;
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function one(r, a) { return a[Math.floor(r() * a.length)]; }
+  function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
+  function shuffle(r, a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function L(key, vars) { return [key, vars || {}]; }
+  /** A number as the board and the words print it: at most two decimals, no zeros after them. */
+  function nt(v) { return String(Math.round(v * 100) / 100); }
+  /** A length to one decimal, for "about" (a square root that does not come out even). */
+  function d1(v) { return String(Math.round(v * 10) / 10); }
+  /** The square root of a whole number as the board prints it: 5, or √13 when it does not come out even. */
+  function root2(n) { var s = Math.round(Math.sqrt(n)); return s * s === n ? String(s) : '√' + n; }
+  /** A square root as the board prints it: 2.5 when it comes out even (to two decimals), else √13. */
+  function sqrtText(x) { var q = Math.sqrt(x); return Math.abs(q - Math.round(q * 100) / 100) < 1e-9 ? nt(q) : '√' + nt(x); }
+  function isSquare(n) { var s = Math.round(Math.sqrt(n)); return s * s === n; }
+  /** A spoken line as the words box prints it: "65 degrees" is 65°, and "times", "divided by", "plus" and "minus"
+   *  between two numbers are their signs. Everything else stays in words. */
+  function shown(s) {
+    return String(s)
+      .replace(/(\d) degrees\b/g, '$1°')
+      .replace(/(\d) times (?=\d)/g, '$1 × ').replace(/(\d) divided by (?=\d)/g, '$1 ÷ ')
+      .replace(/(\d) plus (?=\d)/g, '$1 + ').replace(/(\d) minus (?=\d)/g, '$1 − ');
+  }
+  function opt(v, t) { return { v: v, t: t === undefined ? String(v) : t }; }
+  /** The tiles of a round: the right one and the wrong ones (each with the lines that say why it is wrong), in a
+   *  seeded order, or in the order of `keep` when it is given. */
+  function offer(r, out, right, wrongs, keep) {
+    var all = [{ o: right, ok: true }].concat(wrongs.map(function (w) { return { o: w[0], hint: w[1] }; })), i;
+    if (keep) all.sort(function (p, q) { return keep.indexOf(p.o.v) - keep.indexOf(q.o.v); }); else all = shuffle(r, all);
+    out.input = 'tiles'; out.opts = []; out.choices = []; out.hints = {};
+    for (i = 0; i < all.length; i++) { out.opts.push(all[i].o); out.choices.push(i); if (all[i].ok) out.answer = i; else out.hints[i] = all[i].hint; }
+  }
+  function stepper(out, answer, unit, min, max, by, start) { out.input = 'step'; out.answer = answer; out.unit = unit; out.step = { min: min, max: max, by: by, start: start }; out.onBoard = false; out.slips = {}; }
+  /** A start for the stepper: a few presses from the answer, never on it, inside the stepper. */
+  function startNear(r, answer, by, min, max) {
+    var k = between(r, 3, 6) * (r() < 0.5 ? -1 : 1), s = answer + k * by;
+    if (s < min || s > max) s = answer - k * by;
+    return Math.round(s * 1000) / 1000;
+  }
+
+  /* ---- build (6.1): area, surface area and volume. A store room, a tower block, a banner, a ramp, a cistern, a roof ---- */
+  var ROOMS = [[2.5, 3, 2], [1.5, 2, 3], [2, 3, 2.5], [3, 2, 1.5], [2, 2.5, 2], [3, 1.5, 2], [2.5, 2, 3], [2, 3, 3.5]];
+  var BLOCKS = [[3, 2, 2], [4, 2, 3], [3, 3, 2], [5, 2, 2], [4, 3, 2], [2, 2, 4], [5, 3, 2], [4, 4, 3]];
+  var CISTERNS = [[4, 2.5, 3], [5, 2, 2.5], [3, 2, 4.5], [6, 1.5, 2], [4, 3, 1.5], [2.5, 2, 4], [5, 3, 2], [6, 2.5, 2]];
+  var ROOFS = [[6, 4, 5], [8, 3, 5], [16, 6, 10], [12, 8, 10]];
+  /** The six faces of a box's net, in the order stone covers them: [name, across, down, area]. */
+  function boxFaces(l, w, h) { return [['bottom', l, w], ['front', l, h], ['top', l, w], ['back', l, h], ['left', w, h], ['right', w, h]].map(function (f) { return [f[0], f[1], f[2], f[1] * f[2]]; }); }
+  function buildRound(n, lap, r, out) {
+    var d, l, w, h, b, s, a, v, sa, c, t;
+    if (n === 1) {
+      // crates of half a meter in a store room with half-meter edges
+      d = lap === 0 ? ROOMS[0] : one(r, ROOMS.slice(1)); l = d[0]; w = d[1]; h = d[2]; v = l * w * h; c = 8 * v;
+      out.kind = 'crates'; out.p = { l: l, w: w, h: h, v: v, count: c, cols: 2 * l, rows: 2 * w, high: 2 * h };
+      offer(r, out, opt('count', String(c)), [
+        [opt('volume', nt(v)), [L('b.hint.volume', { n: nt(v) })]],
+        [opt('half', nt(2 * v)), [L('b.hint.half')]]]);
+      out.ask = [L('b.ask.crates', { l: nt(l), w: nt(w), h: nt(h) }), L('b.ask.crates2')]; out.said = [L('b.said.crates', { a: 2 * l, b: 2 * w, c: 2 * h, n: c })];
+      out.chip = L('show.q.crates'); out.chipDone = 2 * l + ' × ' + 2 * w + ' × ' + 2 * h + ' = ' + c;
+    } else if (n === 2) {
+      // a tower block unfolded into its net: the stone that covers all six faces
+      d = lap === 0 ? BLOCKS[0] : one(r, BLOCKS.slice(1)); l = d[0]; w = d[1]; h = d[2]; sa = 2 * (l * w + l * h + w * h); v = l * w * h;
+      out.kind = 'net'; out.p = { l: l, w: w, h: h, sa: sa, v: v, faces: boxFaces(l, w, h) };
+      stepper(out, sa, 'm²', 0, 120, 2, lap === 0 ? 20 : startNear(r, sa, 2, 0, 120));
+      if (v % 2 === 0 && v !== sa && v <= 120) out.slips[v] = [L('b.hint.inside', { n: v })];
+      if (sa / 2 % 2 === 0) out.slips[sa / 2] = [L('b.hint.three', { n: sa / 2 })];
+      out.ask = [L('b.ask.net', { l: l, w: w, h: h }), L('b.ask.net2')]; out.said = [L('b.said.net', { a: l * w, b: l * h, c: w * h, n: sa })];
+      out.chip = L('show.q.net'); out.chipDone = '2 × (' + l * w + ' + ' + l * h + ' + ' + w * h + ') = ' + sa + ' m²';
+    } else if (n === 3) {
+      // a trapezoid banner cut into a rectangle and two triangles
+      if (lap === 0) { a = 2; s = 2; h = 3; } else { a = between(r, 2, 4); s = between(r, 1, 2); h = between(r, 2, 4); }
+      b = a + 2 * s; t = (a + b) * h / 2;
+      out.kind = 'banner'; out.p = { a: a, b: b, s: s, h: h, area: t, rect: a * h, tri: s * h / 2 };
+      offer(r, out, opt('cut', t + ' m²'), [
+        [opt('rect', a * h + ' m²'), [L('b.hint.rect')]],
+        [opt('box', b * h + ' m²'), [L('b.hint.box')]]]);
+      out.ask = [L('b.ask.banner', { h: h }), L('b.ask.banner2', { a: a, b: b })]; out.said = [L('b.said.banner', { r: a * h, t: nt(s * h / 2), n: t })];
+      out.chip = L('show.q.area'); out.chipDone = nt(a * h) + ' + ' + nt(s * h / 2) + ' + ' + nt(s * h / 2) + ' = ' + t + ' m²';
+    } else if (n === 4) {
+      // an earth ramp: a prism with a right-triangle end
+      if (lap === 0) { b = 4; h = 3; l = 5; } else { b = one(r, [2, 3, 4, 6]); h = one(r, b % 2 ? [2, 4] : [2, 3, 4]); l = between(r, 3, 8); }
+      a = b * h / 2; v = a * l;
+      out.kind = 'ramp'; out.p = { b: b, h: h, l: l, end: a, v: v };
+      offer(r, out, opt('prism', v + ' m³'), [
+        [opt('box', b * h * l + ' m³'), [L('b.hint.halve')]],
+        [opt('end', a + ' m³'), [L('b.hint.end', { l: l })]]]);
+      out.ask = [L('b.ask.ramp', { l: l }), L('b.ask.ramp2', { b: b, h: h })]; out.said = [L('b.said.ramp', { a: a, l: l, n: v })];
+      out.chip = L('show.q.volume'); out.chipDone = a + ' × ' + l + ' = ' + v + ' m³';
+    } else if (n === 5) {
+      // a cistern: the height that holds a set volume
+      d = lap === 0 ? CISTERNS[0] : one(r, CISTERNS.slice(1)); l = d[0]; w = d[1]; h = d[2]; v = l * w * h;
+      out.kind = 'cistern'; out.p = { l: l, w: w, h: h, base: l * w, v: v };
+      stepper(out, h, 'm', 0, 6, 0.5, lap === 0 ? 1 : startNear(r, h, 0.5, 0.5, 6));
+      out.ask = [L('b.ask.cistern', { l: nt(l), w: nt(w), v: nt(v) })]; out.said = [L('b.said.cistern', { a: nt(l * w), h: nt(h), n: nt(v) })];
+      out.chip = nt(l) + ' × ' + nt(w) + ' × ? = ' + nt(v) + ' m³'; out.chipDone = nt(l) + ' × ' + nt(w) + ' × ' + nt(h) + ' = ' + nt(v) + ' m³';
+    } else {
+      // a roof: a prism with a triangle end, unfolded into its net
+      d = lap === 0 ? ROOFS[0] : one(r, ROOFS); b = d[0]; h = d[1]; s = d[2]; l = lap === 0 ? 8 : one(r, [4, 5, 6, 8, 10]);
+      a = b * h / 2; sa = 2 * a + (2 * s + b) * l;
+      out.kind = 'roof'; out.p = { b: b, h: h, s: s, l: l, tri: a, sides: (2 * s + b) * l, sa: sa };
+      offer(r, out, opt('net', sa + ' m²'), [
+        [opt('noends', (2 * s + b) * l + ' m²'), [L('b.hint.noends')]],
+        [opt('boxends', 2 * b * h + (2 * s + b) * l + ' m²'), [L('b.hint.boxends')]]]);
+      out.ask = [L('b.ask.roof', { l: l }), L('b.ask.roof2', { b: b, h: h, s: s })]; out.said = [L('b.said.roof', { t: 2 * a, r: (2 * s + b) * l, n: sa })];
+      out.chip = L('show.q.net'); out.chipDone = '2 × ' + a + ' + ' + (2 * s + b) * l + ' = ' + sa + ' m²';
+    }
+  }
+  /** Crates laid on the floor row by row, then the next layer: how many stand on each cell. */
+  function stack(p, count) { var cells = p.cols * p.rows, full = Math.floor(count / cells), rem = count - full * cells, out = [], i; for (i = 0; i < cells; i++) out.push(full + (i < rem ? 1 : 0)); return out; }
+  function boxOf(p, more) { var o = { k: 'box', l: p.l, w: p.w, h: p.h, lt: nt(p.l) + ' m', wt: nt(p.w) + ' m', ht: nt(p.h) + ' m' }, q; for (q in (more || {})) o[q] = more[q]; return o; }
+  function buildView(R, mode, v) {
+    var p = R.p, key = R.input === 'tiles' && mode === 'try' ? R.opts[v].v : '', n, cover, i, left;
+    if (R.kind === 'crates') {
+      if (mode === 'ask') return { parts: [boxOf(p, { crate: true })], lines: [L('show.crate')] };
+      n = mode === 'found' ? p.count : +R.opts[v].t;
+      return { parts: [{ k: 'floor', cols: p.cols, rows: p.rows, cells: stack(p, n), high: p.high, tone: mode === 'found' ? 'ok' : 'warn' }],
+        lines: mode === 'found' ? [p.cols + ' × ' + p.rows + ' × ' + p.high + ' = ' + p.count] : [L('show.layers', { n: R.opts[v].t, a: nt(n / (p.cols * p.rows)), b: p.high }), L('show.crate')] };
+    }
+    if (R.kind === 'net') {
+      if (mode === 'ask') return { parts: [{ k: 'netbox', faces: p.faces, fill: p.faces.map(function () { return 0; }) }], lines: [] };
+      if (mode === 'found') return { parts: [{ k: 'netbox', faces: p.faces, fill: p.faces.map(function () { return 1; }), areas: true, tone: 'ok' }], lines: ['2 × (' + p.l * p.w + ' + ' + p.l * p.h + ' + ' + p.w * p.h + ') = ' + p.sa] };
+      // the stone is laid face by face, in order, until it runs out
+      cover = []; left = v;
+      for (i = 0; i < p.faces.length; i++) { var f = p.faces[i][3], k = Math.max(0, Math.min(1, left / f)); cover.push(k); left -= f; }
+      return { parts: [{ k: 'netbox', faces: p.faces, fill: cover, areas: true, tone: 'warn', spare: v > p.sa ? v - p.sa : 0 }],
+        lines: [v + ' m² of stone', L(v > p.sa ? 'show.spare' : 'show.ranout', { n: v - p.sa })] };
+    }
+    if (R.kind === 'banner') {
+      if (mode === 'ask') return { parts: [{ k: 'trap', a: p.a, b: p.b, h: p.h, at: p.a + ' m', bt: p.b + ' m', htx: p.h + ' m', cuts: true }], lines: [] };
+      if (mode === 'found') return { parts: [{ k: 'trap', a: p.a, b: p.b, h: p.h, at: p.a + ' m', bt: p.b + ' m', htx: p.h + ' m', cuts: true, fill: 'all', mid: nt(p.rect), side: nt(p.tri), tone: 'ok' }], lines: [nt(p.rect) + ' + ' + nt(p.tri) + ' + ' + nt(p.tri) + ' = ' + p.area] };
+      if (key === 'rect') return { parts: [{ k: 'trap', a: p.a, b: p.b, h: p.h, at: p.a + ' m', bt: p.b + ' m', htx: p.h + ' m', cuts: true, fill: 'mid', mid: nt(p.rect), side: '?', tone: 'warn' }], lines: [p.a + ' × ' + p.h + ' = ' + p.rect, L('show.missing')] };
+      return { parts: [{ k: 'trap', a: p.a, b: p.b, h: p.h, at: p.a + ' m', bt: p.b + ' m', htx: p.h + ' m', cuts: true, fill: 'boxes', mid: nt(p.rect), side: nt(p.s * p.h), tone: 'warn' }], lines: [nt(p.rect) + ' + ' + nt(p.s * p.h) + ' + ' + nt(p.s * p.h) + ' = ' + p.b * p.h, L('show.outside')] };
+    }
+    if (R.kind === 'ramp') {
+      var base = { k: 'prism', b: p.b, h: p.h, l: p.l, bt: p.b + ' m', htx: p.h + ' m', lt: p.l + ' m' };
+      if (mode === 'ask') return { parts: [base], lines: [] };
+      if (mode === 'found') return { parts: [Object.assign({}, base, { end: p.end + ' m²', fill: 'all', tone: 'ok' })], lines: [p.b + ' × ' + p.h + ' ÷ 2 = ' + p.end, p.end + ' × ' + p.l + ' = ' + p.v] };
+      if (key === 'box') return { parts: [Object.assign({}, base, { fill: 'box', tone: 'warn' })], lines: [p.b + ' × ' + p.h + ' × ' + p.l + ' = ' + p.b * p.h * p.l, L('show.wholebox')] };
+      return { parts: [Object.assign({}, base, { end: p.end + ' m²', fill: 'end', tone: 'warn' })], lines: [p.b + ' × ' + p.h + ' ÷ 2 = ' + p.end, L('show.oneend')] };
+    }
+    if (R.kind === 'cistern') {
+      if (mode === 'ask') return { parts: [boxOf(p, { ht: '?', h: 0 })], lines: ['V = ' + nt(p.v) + ' m³'] };
+      if (mode === 'found') return { parts: [boxOf(p, { tone: 'ok' })], lines: [nt(p.l) + ' × ' + nt(p.w) + ' × ' + nt(p.h) + ' = ' + nt(p.v)] };
+      return { parts: [boxOf(p, { h: v, ht: nt(v) + ' m', tone: 'warn' })], lines: [nt(p.l) + ' × ' + nt(p.w) + ' × ' + nt(v) + ' = ' + nt(p.base * v) + ' ≠ ' + nt(p.v)] };
+    }
+    // roof
+    var roof = { k: 'netroof', b: p.b, h: p.h, s: p.s, l: p.l };
+    if (mode === 'ask') return { parts: [roof], lines: [] };
+    if (mode === 'found') return { parts: [Object.assign({}, roof, { fill: 'all', areas: true, tone: 'ok' })], lines: ['2 × ' + p.tri + ' + (' + p.s + ' + ' + p.b + ' + ' + p.s + ') × ' + p.l + ' = ' + p.sa] };
+    if (key === 'noends') return { parts: [Object.assign({}, roof, { fill: 'sides', areas: true, tone: 'warn' })], lines: ['(' + p.s + ' + ' + p.b + ' + ' + p.s + ') × ' + p.l + ' = ' + p.sides, L('show.noends')] };
+    return { parts: [Object.assign({}, roof, { fill: 'boxends', areas: true, tone: 'warn' })], lines: ['2 × ' + p.b * p.h + ' + ' + p.sides + ' = ' + (2 * p.b * p.h + p.sides), L('show.outside')] };
+  }
+  function buildWhy(R, v) {
+    var p = R.p;
+    if (R.kind === 'net') return L(v > p.sa ? 'b.hint.over' : 'b.hint.short', { n: v, e: v - p.sa });
+    return L('b.hint.cistern', { n: nt(v), a: nt(p.base * v), b: nt(p.v) });
+  }
+
+  /* ---- move (6.2): angles, and moving a stone piece: slide, flip, turn and resize ---- */
+  var STONE = [[0, 0], [3, 0], [3, 1], [1, 1], [1, 2], [0, 2]];   // the gate stone: an L, the same no way round
+  var WINDOWS = [[[1, 1], [3, 1], [3, 3], [2, 4], [1, 3]], [[2, 1], [4, 1], [4, 3], [3, 4], [2, 3]], [[1, 2], [3, 2], [3, 4], [2, 5], [1, 4]]];
+  var BIG = [[4, 4], [8, 4], [8, 8], [6, 10], [4, 8]];
+  var PLANE = { x: [-7, 7], y: [-6, 6] }, QUAD = { x: [0, 12], y: [0, 12] };
+  function moved(pts, f) { return pts.map(function (q) { var m = f(q[0], q[1]); return [m[0] + 0, m[1] + 0]; }); }
+  function at(pts, x, y) { return moved(pts, function (a, b) { return [a + x, b + y]; }); }
+  function fits(pts, pl) { return pts.every(function (q) { return q[0] >= pl.x[0] && q[0] <= pl.x[1] && q[1] >= pl.y[0] && q[1] <= pl.y[1]; }); }
+  var RULES = {
+    flipy: { t: '(−x, y)', f: function (x, y) { return [-x, y]; } }, flipx: { t: '(x, −y)', f: function (x, y) { return [x, -y]; } }, half: { t: '(−x, −y)', f: function (x, y) { return [-x, -y]; } },
+    ccw: { t: '90° counterclockwise', rule: '(x, y) → (−y, x)', f: function (x, y) { return [-y, x]; } }, cw: { t: '90° clockwise', rule: '(x, y) → (y, −x)', f: function (x, y) { return [y, -x]; } }, turn2: { t: '180°', rule: '(x, y) → (−x, −y)', f: function (x, y) { return [-x, -y]; } },
+  };
+  /** A slide rule as the tile prints it: (x + 4, y − 2). */
+  function slideText(dx, dy) { var s = function (c, d) { return d < 0 ? c + ' − ' + -d : c + ' + ' + d; }; return '(' + s('x', dx) + ', ' + s('y', dy) + ')'; }
+  function pt(q, name) { return (name ? name + ' ' : '') + '(' + nt(q[0]).replace('-', '−') + ', ' + nt(q[1]).replace('-', '−') + ')'; }
+  function moveRound(n, lap, r, out) {
+    var a, x, dx, dy, piece, gap, k, win, tries, odd = lap % 2 === 1, rule, others;
+    if (n === 1) {
+      // two beams cross: the angle next to the one that is known
+      a = lap === 0 ? 65 : one(r, [40, 45, 50, 55, 60, 65, 70, 75, 80, 100, 105, 110, 115, 120, 125, 130, 135, 140]);
+      out.kind = 'beams'; out.p = { a: a, x: 180 - a };
+      stepper(out, 180 - a, '°', 0, 180, 5, 90);
+      out.slips[a] = [L('v.hint.across', { n: a })];
+      if (a < 90) out.slips[90 - a] = [L('v.hint.square', { n: 90 - a })];
+      out.ask = [L('v.ask.beams', { a: a })]; out.said = [L('v.said.beams', { a: a, n: 180 - a })];
+      out.chip = 'x + ' + a + '° = ?'; out.chipDone = 'x + ' + a + '° = 180°, x = ' + (180 - a) + '°';
+    } else if (n === 2) {
+      // a brace in a square corner: the equation for the other part
+      a = lap === 0 ? 35 : one(r, [20, 25, 30, 35, 40, 50, 55, 60, 65, 70]);
+      out.kind = 'corner'; out.p = { a: a, x: 90 - a };
+      offer(r, out, opt('square', 'x + ' + a + ' = 90'), [
+        [opt('line', 'x + ' + a + ' = 180'), [L('v.hint.line')]],
+        [opt('same', 'x = ' + a), [L('v.hint.same')]]]);
+      out.ask = [L('v.ask.corner', { a: a })]; out.said = [L('v.said.corner', { a: a, n: 90 - a })];
+      out.chip = L('show.q.equation'); out.chipDone = 'x + ' + a + ' = 90, x = ' + (90 - a);
+    } else if (n === 3) {
+      // slide the gate stone into the gap: which rule?
+      for (tries = 0; tries < 200; tries++) {
+        if (lap === 0) { x = [-2, -3]; dx = 3; dy = 4; } else { x = [between(r, -6, 3), between(r, -5, 3)]; dx = between(r, -6, 6); dy = between(r, -6, 6); }
+        piece = at(STONE, x[0], x[1]);
+        if (dx && dy && Math.abs(dx) !== Math.abs(dy) && [[dx, dy], [dy, dx], [-dx, dy]].every(function (m) { return fits(at(piece, m[0], m[1]), PLANE); })) break;
+      }
+      gap = at(piece, dx, dy);
+      out.kind = 'slide'; out.p = { piece: piece, gap: gap, dx: dx, dy: dy, plane: PLANE, moves: { slide: [dx, dy], swap: [dy, dx], back: [-dx, dy] } };
+      offer(r, out, opt('slide', slideText(dx, dy)), [
+        [opt('swap', slideText(dy, dx)), [L('v.hint.swap')]],
+        [opt('back', slideText(-dx, dy)), [L('v.hint.back')]]]);
+      out.ask = [L('v.ask.slide')]; out.said = [L('v.said.slide')];
+      out.chip = L('show.q.rule'); out.chipDone = pt(piece[0], 'A') + ' → ' + pt(gap[0], 'A′');
+    } else if (n === 4) {
+      // flip the gate stone over an axis into the gap
+      x = lap === 0 ? [1, 1] : [between(r, 1, 3), between(r, 1, 3)];
+      piece = at(STONE, x[0], x[1]); rule = odd ? 'flipx' : 'flipy'; gap = moved(piece, RULES[rule].f);
+      out.kind = 'flip'; out.p = { piece: piece, gap: gap, plane: PLANE, rule: rule };
+      others = ['flipy', 'flipx', 'half'].filter(function (q) { return q !== rule; });
+      offer(r, out, opt(rule, RULES[rule].t), others.map(function (q) { return [opt(q, RULES[q].t), [L('v.hint.' + q)]]; }), ['flipy', 'flipx', 'half']);
+      out.ask = [L('v.ask.flip')]; out.said = [L('v.said.flip')];
+      out.chip = L('show.q.rule'); out.chipDone = pt(piece[0], 'A') + ' → ' + pt(gap[0], 'A′');
+    } else if (n === 5) {
+      // turn the gate stone about the origin into the gap
+      x = lap === 0 ? [1, 1] : [between(r, 1, 3), between(r, 1, 3)];
+      piece = at(STONE, x[0], x[1]); rule = odd ? 'cw' : 'ccw'; gap = moved(piece, RULES[rule].f);
+      out.kind = 'turn'; out.p = { piece: piece, gap: gap, plane: PLANE, rule: rule };
+      others = ['ccw', 'cw', 'turn2'].filter(function (q) { return q !== rule; });
+      offer(r, out, opt(rule, RULES[rule].t), others.map(function (q) { return [opt(q, RULES[q].t), [L('v.hint.' + q)]]; }), ['ccw', 'cw', 'turn2']);
+      out.ask = [L('v.ask.turn')]; out.said = [L('v.said.turn')];
+      out.chip = L('show.q.turn'); out.chipDone = RULES[rule].rule;
+    } else {
+      // a window copied bigger (or smaller) from the origin: set the scale factor
+      if (lap === 0) { win = WINDOWS[0]; k = 2; } else if (odd && r() < 0.5) { win = BIG; k = 0.5; } else { win = one(r, WINDOWS); k = one(r, win === WINDOWS[2] ? [1.5, 2] : [1.5, 2, 2.5, 3]); }
+      gap = moved(win, function (a2, b2) { return [a2 * k, b2 * k]; });
+      out.kind = 'grow'; out.p = { piece: win, gap: gap, k: k, plane: QUAD, corner: 2 };
+      stepper(out, k, '×', 0.5, 4, 0.5, k === 0.5 ? 2 : 1);
+      out.ask = [L(k < 1 ? 'v.ask.shrink' : 'v.ask.grow')]; out.said = [L('v.said.grow', { k: nt(k) })];
+      out.chip = L('show.q.factor'); out.chipDone = nt(k) + ' × ' + pt(win[2]) + ' = ' + pt(gap[2]);
+    }
+  }
+  function planeOf(p, more) { var o = { k: 'plane', x: p.plane.x, y: p.plane.y, polys: [], pts: [], segs: [] }, q; for (q in (more || {})) o[q] = more[q]; return o; }
+  function moveView(R, mode, v) {
+    var p = R.p, key = R.input === 'tiles' && mode === 'try' ? R.opts[v].v : '', img, bent;
+    if (R.kind === 'beams') {
+      if (mode === 'ask') return { parts: [{ k: 'cross', a: p.a, b: 180, labels: [p.a + '°', '?'] }], lines: [] };
+      if (mode === 'found') return { parts: [{ k: 'cross', a: p.a, b: 180, labels: [p.a + '°', p.x + '°'], tone: 'ok' }], lines: ['x + ' + p.a + ' = 180', 'x = ' + p.x] };
+      bent = p.a + v;
+      return { parts: [{ k: 'cross', a: p.a, b: bent, labels: [p.a + '°', v + '°'], tone: 'warn' }], lines: [p.a + ' + ' + v + ' = ' + bent + ' ≠ 180', L('show.bends')] };
+    }
+    if (R.kind === 'corner') {
+      if (mode === 'ask') return { parts: [{ k: 'corner', a: p.a, wall: 90, labels: [p.a + '°', 'x'] }], lines: [] };
+      if (mode === 'found') return { parts: [{ k: 'corner', a: p.a, wall: 90, labels: [p.a + '°', p.x + '°'], tone: 'ok' }], lines: ['x + ' + p.a + ' = 90', 'x = ' + p.x] };
+      img = key === 'line' ? 180 - p.a : p.a;
+      return { parts: [{ k: 'corner', a: p.a, wall: p.a + img, labels: [p.a + '°', img + '°'], tone: 'warn' }], lines: ['x = ' + img + ': ' + p.a + ' + ' + img + ' = ' + (p.a + img), L(key === 'line' ? 'show.flat' : 'show.notsquare')] };
+    }
+    if (R.kind === 'slide' || R.kind === 'flip' || R.kind === 'turn') {
+      var base = [{ pts: p.piece, tone: 'stone', name: 'A' }, { pts: p.gap, tone: 'gap' }];
+      if (mode === 'ask') return { parts: [planeOf(p, { polys: base })], lines: [] };
+      if (mode === 'found') return { parts: [planeOf(p, { polys: [{ pts: p.piece, tone: 'stone', name: 'A', dim: true }, { pts: p.gap, tone: 'ok', name: 'A′' }] })], lines: [pt(p.piece[0], 'A') + ' → ' + pt(p.gap[0], 'A′')] };
+      if (R.kind === 'slide') { var m = p.moves[key]; img = at(p.piece, m[0], m[1]); } else img = moved(p.piece, RULES[key].f);
+      return { parts: [planeOf(p, { polys: base.concat([{ pts: img, tone: 'warn', name: 'A′' }]) })], lines: [pt(p.piece[0], 'A') + ' → ' + pt(img[0], 'A′'), L('show.notgap')] };
+    }
+    // grow
+    var c = p.corner;
+    if (mode === 'ask') return { parts: [planeOf(p, { polys: [{ pts: p.piece, tone: 'stone', name: 'C', at: c }, { pts: p.gap, tone: 'gap' }], pts: [{ x: 0, y: 0, t: 'O' }] })], lines: [] };
+    if (mode === 'found') return { parts: [planeOf(p, { polys: [{ pts: p.piece, tone: 'stone', dim: true }, { pts: p.gap, tone: 'ok', name: 'C′', at: c }], pts: [{ x: 0, y: 0, t: 'O' }], segs: [{ a: [0, 0], b: p.gap[c], tone: 'ok', dash: true }] })], lines: [nt(p.k) + ' × ' + pt(p.piece[c]) + ' = ' + pt(p.gap[c])] };
+    img = moved(p.piece, function (a2, b2) { return [a2 * v, b2 * v]; });
+    return { parts: [planeOf(p, { polys: [{ pts: p.piece, tone: 'stone', dim: true }, { pts: p.gap, tone: 'gap' }, { pts: img, tone: 'warn', name: 'C′', at: c }], pts: [{ x: 0, y: 0, t: 'O' }], segs: [{ a: [0, 0], b: img[c], tone: 'warn', dash: true }] })], lines: [nt(v) + ' × ' + pt(p.piece[c]) + ' = ' + pt(img[c]), L(v < p.k ? 'show.small' : 'show.big')] };
+  }
+  function moveWhy(R, v) {
+    var p = R.p;
+    if (R.kind === 'beams') return L('v.hint.bends', { n: v, a: p.a, s: p.a + v });
+    return L(v < p.k ? 'v.hint.small' : 'v.hint.big', { n: nt(v) });
+  }
+
+  /* ---- span (6.3): the Pythagorean theorem. Ladders, ramps, ropes on the plan, squares on the sides, a pole, a corner ---- */
+  var TRIPLES = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17], [8, 6, 10], [12, 9, 15], [4, 3, 5]];
+  var POLES = [[3, 4, 12, 13], [2, 3, 6, 7], [2, 6, 9, 11], [4, 4, 7, 9], [2, 4, 4, 6], [6, 8, 24, 26], [1.5, 2, 6, 6.5]];
+  var RIGHT = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17], [7, 24, 25]];
+  var NOT = [[4, 5, 6], [5, 6, 7], [4, 6, 8], [6, 7, 9], [7, 8, 10], [5, 7, 9], [6, 9, 12], [5, 8, 10], [6, 8, 11]];
+  /** The corner between the two short sides of a triangle with sides a, b, c (c the longest), in degrees. */
+  function cornerOf(a, b, c) { return Math.acos((a * a + b * b - c * c) / (2 * a * b)) * 180 / Math.PI; }
+  function spanRound(n, lap, r, out) {
+    var t, a, b, c, h, f, A, B, s, i, set, wr;
+    if (n === 1) {
+      // a ladder against a wall: the long side
+      t = lap === 0 ? [3, 4, 5] : one(r, TRIPLES.slice(1)); f = t[0]; h = t[1]; c = t[2];
+      out.kind = 'ladder'; out.p = { f: f, h: h, c: c };
+      stepper(out, c, 'm', 0, 20, 1, f);
+      if (f + h <= 20) out.slips[f + h] = [L('s.hint.added', { a: f, b: h })];
+      out.ask = [L('s.ask.ladder', { h: h, f: f })]; out.said = [L('s.said.ladder', { f: f, h: h, a: f * f, b: h * h, s: c * c, n: c })];
+      out.chip = f + '² + ' + h + '² = ?²'; out.chipDone = f + '² + ' + h + '² = ' + c + '²';
+    } else if (n === 2) {
+      // a plank ramp up to a ledge: a short side
+      t = lap === 0 ? [12, 5, 13] : one(r, [[8, 6, 10], [6, 8, 10], [4, 3, 5], [3, 4, 5], [12, 9, 15], [15, 8, 17], [8, 15, 17], [5, 12, 13]]); f = t[0]; h = t[1]; c = t[2];
+      out.kind = 'plank'; out.p = { f: f, h: h, c: c };
+      stepper(out, f, 'm', 0, 20, 1, h);
+      if (c - h !== f) out.slips[c - h] = [L('s.hint.minus', { a: c, b: h })];
+      out.ask = [L('s.ask.ramp', { c: c, h: h })]; out.said = [L('s.said.ramp', { c: c, h: h, a: c * c, b: h * h, s: f * f, n: f })];
+      out.chip = '?² + ' + h + '² = ' + c + '²'; out.chipDone = f + '² + ' + h + '² = ' + c + '²';
+    } else if (n === 3) {
+      // a rope between two towers on the plan grid: the distance between two points
+      for (i = 0; i < 200; i++) {
+        t = lap === 0 ? [3, 4, 5] : one(r, [[3, 4, 5], [4, 3, 5], [6, 8, 10], [8, 6, 10], [5, 12, 13]]);
+        var sx = lap === 0 ? 1 : (r() < 0.5 ? -1 : 1), sy = lap === 0 ? 1 : (r() < 0.5 ? -1 : 1);
+        A = lap === 0 ? [1, 2] : [between(r, -6, 8), between(r, -4, 8)]; B = [A[0] + sx * t[0], A[1] + sy * t[1]];
+        if (fits([A, B], { x: [-6, 8], y: [-4, 8] }) && !(A[0] === 0 && A[1] === 0)) break;
+      }
+      c = t[2];
+      out.kind = 'rope'; out.p = { A: A, B: B, dx: t[0], dy: t[1], c: c, plane: { x: [-6, 8], y: [-4, 8] } };
+      stepper(out, c, 'm', 0, 20, 1, lap === 0 ? 1 : startNear(r, c, 1, 0, 20));
+      out.slips[t[0] + t[1]] = [L('s.hint.grid', { a: t[0], b: t[1] })];
+      out.ask = [L('s.ask.rope')]; out.said = [L('s.said.rope', { a: t[0], b: t[1], s: c * c, n: c })];
+      out.chip = 'A → B: ? m'; out.chipDone = '√(' + t[0] + '² + ' + t[1] + '²) = ' + c + ' m';
+    } else if (n === 4) {
+      // squares on the three sides of a right triangle
+      t = lap === 0 ? [6, 8, 10] : one(r, [[3, 4, 5], [5, 12, 13], [8, 15, 17], [9, 12, 15], [12, 5, 13], [4, 3, 5]]); a = t[0]; b = t[1]; c = t[2];
+      out.kind = 'squares'; out.p = { a: a, b: b, c: c };
+      offer(r, out, opt('sum', String(c * c)), [
+        [opt('sides', String((a + b) * (a + b))), [L('s.hint.sides', { a: a, b: b })]],
+        [opt('diff', String(Math.abs(b * b - a * a))), [L('s.hint.diff')]]]);
+      out.ask = [L('s.ask.squares'), L('s.ask.squares2', { p: a * a, q: b * b })]; out.said = [L('s.said.squares', { p: a * a, q: b * b, n: c * c, c: c })];
+      out.chip = a * a + ' + ' + b * b + ' = ?'; out.chipDone = a * a + ' + ' + b * b + ' = ' + c * c;
+    } else if (n === 5) {
+      // the longest pole in a room: two right triangles, one after the other
+      s = lap === 0 ? POLES[0] : one(r, POLES.slice(1)); a = s[0]; b = s[1]; h = s[2]; c = s[3];
+      var fl = a * a + b * b;
+      out.kind = 'pole'; out.p = { a: a, b: b, h: h, c: c, floor: fl };
+      offer(r, out, opt('space', nt(c) + ' m'), [
+        [opt('floor', sqrtText(fl) + ' m'), [L('s.hint.floor')]],
+        [opt('edges', nt(a + b + h) + ' m'), [L('s.hint.edges')]]]);
+      out.ask = [L('s.ask.pole', { a: nt(a), b: nt(b), h: nt(h) }), L('s.ask.pole2')]; out.said = [L('s.said.pole', { f: nt(fl), h: nt(h * h), s: nt(c * c), n: nt(c) })];
+      out.chip = L('show.q.pole'); out.chipDone = '√(' + nt(fl) + ' + ' + nt(h * h) + ') = ' + nt(c) + ' m';
+    } else {
+      // three beams: which three make a square corner? (the converse)
+      set = lap === 0 ? [6, 8, 10] : one(r, RIGHT);
+      wr = lap === 0 ? [[5, 6, 7], [4, 6, 8]] : shuffle(r, NOT).slice(0, 2);
+      out.kind = 'corner3'; out.p = { right: set, wrong: wr };
+      var txt = function (q) { return q[0] + ' m, ' + q[1] + ' m, ' + q[2] + ' m'; };
+      offer(r, out, opt('r', txt(set)), wr.map(function (q, j) { return [opt('w' + j, txt(q)), [L('s.hint.notsquare', { a: q[0], b: q[1], c: q[2], s: q[0] * q[0] + q[1] * q[1], t: q[2] * q[2] })]]; }));
+      out.ask = [L('s.ask.corner')]; out.said = [L('s.said.corner', { a: set[0], b: set[1], c: set[2], s: set[0] * set[0] + set[1] * set[1] })];
+      out.chip = L('show.q.square'); out.chipDone = set[0] + '² + ' + set[1] + '² = ' + set[2] + '²';
+    }
+  }
+  /** Where a ladder of length len, with its foot `foot` out from the wall, really reaches: its top's height (0 when it
+   *  cannot reach the wall and lies on the ground). */
+  function reach(len, foot) { return len > foot ? Math.sqrt(len * len - foot * foot) : 0; }
+  function spanView(R, mode, v) {
+    var p = R.p, key = R.input === 'tiles' && mode === 'try' ? R.opts[v].v : '', t, e, q;
+    if (R.kind === 'ladder') {
+      var lean = { k: 'lean', wall: p.h, foot: p.f, wt: p.h + ' m', ft: p.f + ' m' };
+      if (mode === 'ask') return { parts: [Object.assign({}, lean, { len: null, lt: '? m' })], lines: [] };
+      if (mode === 'found') return { parts: [Object.assign({}, lean, { len: p.c, top: p.h, lt: p.c + ' m', tone: 'ok' })], lines: [p.f + '² + ' + p.h + '² = ' + p.f * p.f + ' + ' + p.h * p.h + ' = ' + p.c * p.c, '√' + p.c * p.c + ' = ' + p.c] };
+      t = reach(v, p.f);
+      return { parts: [Object.assign({}, lean, { len: v, top: t, lt: v + ' m', reach: t > 0 ? '≈ ' + d1(t) + ' m' : '', tone: 'warn' })], lines: t > 0 ? [v + '² − ' + p.f + '² = ' + (v * v - p.f * p.f), '√' + (v * v - p.f * p.f) + (isSquare(v * v - p.f * p.f) ? ' = ' : ' ≈ ') + d1(t) + ' ≠ ' + p.h] : [L('show.noreach')] };
+    }
+    if (R.kind === 'plank') {
+      var ramp = { k: 'lean', wall: p.h, wt: p.h + ' m', lt: p.c + ' m', len: p.c, ledge: true };
+      if (mode === 'ask') return { parts: [Object.assign({}, ramp, { foot: null, ft: '? m' })], lines: [] };
+      if (mode === 'found') return { parts: [Object.assign({}, ramp, { foot: p.f, ft: p.f + ' m', top: p.h, tone: 'ok' })], lines: [p.c + '² − ' + p.h + '² = ' + p.c * p.c + ' − ' + p.h * p.h + ' = ' + p.f * p.f, '√' + p.f * p.f + ' = ' + p.f] };
+      t = reach(p.c, v);
+      return { parts: [Object.assign({}, ramp, { foot: v, ft: v + ' m', top: t, reach: t > 0 ? '≈ ' + d1(t) + ' m' : '', tone: 'warn' })], lines: t > 0 ? [p.c + '² − ' + v + '² = ' + (p.c * p.c - v * v), '√' + (p.c * p.c - v * v) + (isSquare(p.c * p.c - v * v) ? ' = ' : ' ≈ ') + d1(t) + ' ≠ ' + p.h] : [L('show.noreach')] };
+    }
+    if (R.kind === 'rope') {
+      var towers = [{ x: p.A[0], y: p.A[1], t: pt(p.A, 'A') }, { x: p.B[0], y: p.B[1], t: pt(p.B, 'B') }];
+      if (mode === 'ask') return { parts: [planeOf(p, { pts: towers })], lines: [] };
+      if (mode === 'found') return { parts: [planeOf(p, { pts: towers, segs: [{ a: p.A, b: p.B, tone: 'ok', t: p.c + ' m' }], legs: { a: p.A, b: p.B, across: String(p.dx), up: String(p.dy) } })], lines: [p.dx + '² + ' + p.dy + '² = ' + p.c * p.c, '√' + p.c * p.c + ' = ' + p.c] };
+      e = [p.A[0] + (p.B[0] - p.A[0]) * v / p.c, p.A[1] + (p.B[1] - p.A[1]) * v / p.c];
+      return { parts: [planeOf(p, { pts: towers, segs: [{ a: p.A, b: e, tone: 'warn', dash: true, t: v + ' m', end: true }] })], lines: [L(v < p.c ? 'show.short' : 'show.past')] };
+    }
+    if (R.kind === 'squares') {
+      var sq = { k: 'sqtri', a: p.a, b: p.b, c: p.c, at: String(p.a * p.a), bt: String(p.b * p.b) };
+      if (mode === 'ask') return { parts: [Object.assign({}, sq, { ct: '?', cs: p.c })], lines: [] };
+      if (mode === 'found') return { parts: [Object.assign({}, sq, { ct: String(p.c * p.c), cs: p.c, tone: 'ok' })], lines: [p.a * p.a + ' + ' + p.b * p.b + ' = ' + p.c * p.c] };
+      q = +R.opts[v].t;
+      return { parts: [Object.assign({}, sq, { ct: String(q), cs: Math.sqrt(q), tone: 'warn' })], lines: [L(q > p.c * p.c ? 'show.sqbig' : 'show.sqsmall', { n: root2(q) })] };
+    }
+    if (R.kind === 'pole') {
+      var room = { k: 'box', l: p.a, w: p.b, h: p.h, lt: nt(p.a) + ' m', wt: nt(p.b) + ' m', ht: nt(p.h) + ' m' };
+      if (mode === 'ask') return { parts: [Object.assign({}, room, { diag: 'space', dt: '?' })], lines: [] };
+      if (mode === 'found') return { parts: [Object.assign({}, room, { diag: 'both', dt: nt(p.c) + ' m', ft: sqrtText(p.floor) + ' m', tone: 'ok' })], lines: [nt(p.a) + '² + ' + nt(p.b) + '² = ' + nt(p.floor), nt(p.floor) + ' + ' + nt(p.h) + '² = ' + nt(p.c * p.c) + ', √' + nt(p.c * p.c) + ' = ' + nt(p.c)] };
+      if (key === 'floor') return { parts: [Object.assign({}, room, { diag: 'floor', ft: R.opts[v].t, tone: 'warn' })], lines: [L('show.floor')] };
+      return { parts: [Object.assign({}, room, { diag: 'edges', dt: R.opts[v].t, tone: 'warn' })], lines: [nt(p.a) + ' + ' + nt(p.b) + ' + ' + nt(p.h) + ' = ' + nt(p.a + p.b + p.h), L('show.edges')] };
+    }
+    // corner3
+    var tri = function (s, tone, ang) { return { k: 'tri3', sides: s, tone: tone, ang: ang }; };
+    if (mode === 'ask') return { parts: [{ k: 'beams3', sets: R.opts.map(function (o) { return o.t; }) }], lines: [] };
+    if (mode === 'found') return { parts: [tri(p.right, 'ok', '90°')], lines: [p.right[0] + '² + ' + p.right[1] + '² = ' + (p.right[0] * p.right[0] + p.right[1] * p.right[1]) + ' = ' + p.right[2] + '²'] };
+    q = p.wrong[+key.slice(1)];
+    return { parts: [tri(q, 'warn', '≈ ' + Math.round(cornerOf(q[0], q[1], q[2])) + '°')], lines: [q[0] + '² + ' + q[1] + '² = ' + (q[0] * q[0] + q[1] * q[1]) + ' ≠ ' + q[2] * q[2]] };
+  }
+  function spanWhy(R, v) {
+    var p = R.p, t;
+    if (R.kind === 'ladder') { t = reach(v, p.f); return t > 0 ? L('s.hint.ladder', { n: v, f: p.f, t: d1(t), h: p.h }) : L('s.hint.flat', { n: v, f: p.f }); }
+    if (R.kind === 'plank') { t = reach(p.c, v); return t > 0 ? L('s.hint.ramp', { n: v, c: p.c, t: d1(t), h: p.h }) : L('s.hint.toofar', { n: v }); }
+    return L(v < p.c ? 's.hint.short' : 's.hint.past', { n: v });
+  }
+
+  /** The board of a round: as asked ('ask'), as a plan really turns out ('try') and as found ('found'). */
+  function view(R, mode, v) { return R.chapter === 'build' ? buildView(R, mode, v) : R.chapter === 'move' ? moveView(R, mode, v) : spanView(R, mode, v); }
+  function round(chapter, n, lap) {
+    var ci = CHAPTERS.indexOf(chapter);
+    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    lap = lap || 0;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
+    if (chapter === 'build') buildRound(n, lap, r, out); else if (chapter === 'move') moveRound(n, lap, r, out); else spanRound(n, lap, r, out);
+    out.pic = { ask: view(out, 'ask', null), found: view(out, 'found', null) };
+    return out;
+  }
+  /** Is this plan right? For a wrong one: the lines that say why, and what the plan really gives (for the board). */
+  function judge(R, v) {
+    var s;
+    if (R.input === 'tiles') return v === R.answer ? { ok: true } : (R.choices.indexOf(v) >= 0 ? { ok: false, lines: R.hints[v], draw: view(R, 'try', v) } : null);
+    s = R.step;
+    if (typeof v !== 'number' || !(v >= s.min && v <= s.max) || Math.abs(Math.round((v - s.min) / s.by) * s.by + s.min - v) > 1e-9) return null;
+    if (Math.abs(v - R.answer) < 1e-9) return { ok: true };
+    return { ok: false, lines: R.slips[v] || [R.chapter === 'build' ? buildWhy(R, v) : R.chapter === 'move' ? moveWhy(R, v) : spanWhy(R, v)], draw: view(R, 'try', v) };
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
+  root.KeepBuilder = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, judge: judge, view: view, params: params, shown: shown, nt: nt, cornerOf: cornerOf, reach: reach };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* keep-builder:end */
+</script>
+<script>
+/* ===== Keep Builder's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
+   allowlist (server/services/tts-lines.js) read this block; speech goes through BRB.speak only. Spoken lines are
+   written the way they are said ("65 degrees", "3 squared plus 4 squared", "half a meter"): the words box prints the
+   same line with its signs (KeepBuilder.shown: 65°, 3 + 4, 180 − 65). A line with {n} takes a number in its place
+   (digits only, so the voice allowlist never sees a sign or a letter it was not given). The show.* lines are what the
+   chip and the board show and the btn.* lines are button labels: shown, never spoken. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "title": "Keep Builder",
+    "loading": "Unrolling the plans.",
+    "menu.pick": "Pick a job at the keep.",
+    "start.line": "Plan each answer, then run it. A wrong plan shows you what it really gives.",
+    "ch.build": "Fill and Cover",
+    "ch.move": "Slide, Flip, Turn",
+    "ch.span": "Ladders and Spans",
+    "b.ask.crates": "The store room is {l} meters long, {w} meters wide and {h} meters high.",
+    "b.ask.crates2": "Crates are cubes half a meter on each side. How many crates fill the room?",
+    "b.ask.net": "The tower block is a box {l} meters by {w} meters by {h} meters.",
+    "b.ask.net2": "Its net is on the plan. How many square meters of stone cover it?",
+    "b.ask.banner": "A banner is a trapezoid, {h} meters tall.",
+    "b.ask.banner2": "Its top edge is {a} meters and its bottom edge is {b} meters. What is its area?",
+    "b.ask.ramp": "The earth ramp is a triangular prism, {l} meters long.",
+    "b.ask.ramp2": "Its end is a right triangle {b} meters across and {h} meters high. How many cubic meters of earth fill it?",
+    "b.ask.cistern": "The rain cistern is {l} meters long and {w} meters wide. It must hold {v} cubic meters. How tall must it be?",
+    "b.ask.roof": "The roof is a triangular prism, {l} meters long. Its net has 3 rectangles and 2 triangles.",
+    "b.ask.roof2": "Each triangle is {b} meters across and {h} meters high, with sloping sides of {s} meters. How many square meters is the net?",
+    "b.hint.volume": "{n} is the room's volume in cubic meters. Each crate is only 1 eighth of a cubic meter.",
+    "b.hint.half": "That divides by one half only once. A crate is half a meter each way: across, deep and high.",
+    "b.hint.inside": "{n} is the space inside, in cubic meters. Stone covers the outside: all 6 faces.",
+    "b.hint.three": "{n} covers only 3 faces. Each face has a twin on the other side of the box.",
+    "b.hint.short": "Stone for {n} square meters runs out before the net is covered.",
+    "b.hint.over": "Stone for {n} square meters covers the whole net and leaves {e} spare.",
+    "b.hint.rect": "That is only the rectangle in the middle. Add the two triangles at the sides.",
+    "b.hint.box": "That makes each side triangle a whole rectangle. A triangle is half of its rectangle.",
+    "b.hint.halve": "That is a whole box. A right triangle is half a rectangle, so the ramp is half the box.",
+    "b.hint.end": "That is the area of one end only. The ramp goes back {l} meters.",
+    "b.hint.cistern": "At a height of {n}, the cistern holds {a} cubic meters. It must hold {b}.",
+    "b.hint.noends": "That leaves out the two triangle ends of the roof.",
+    "b.hint.boxends": "That makes each triangle a whole rectangle. A triangle is half of its rectangle.",
+    "b.said.crates": "Yes! {a} crates across, {b} deep and {c} high. {a} times {b} times {c} is {n}.",
+    "b.said.net": "Yes! The faces come in pairs: {a}, {b} and {c}, twice each. That is {n} square meters.",
+    "b.said.banner": "Yes! The rectangle is {r} and each triangle is {t}. Together they make {n} square meters.",
+    "b.said.ramp": "Yes! The end is {a} square meters, and {a} times {l} is {n} cubic meters.",
+    "b.said.cistern": "Yes! The floor is {a} square meters, and {a} times {h} is {n} cubic meters.",
+    "b.said.roof": "Yes! The two triangles make {t}, the three rectangles make {r}, and the net is {n} square meters.",
+    "v.ask.beams": "Two straight beams cross. One angle is {a} degrees. What is the angle next to it?",
+    "v.ask.corner": "A brace splits a square corner into two angles. One is {a} degrees. Which equation finds the other angle, x?",
+    "v.ask.slide": "The gate stone must slide into the gap without turning. Which rule moves every corner there?",
+    "v.ask.flip": "The gate stone must flip over an axis into the gap. Which rule does it?",
+    "v.ask.turn": "Turn the gate stone about the origin to fill the gap. Which turn does it?",
+    "v.ask.grow": "The new window is a bigger copy of the old one, made from the origin. Set the scale factor.",
+    "v.ask.shrink": "The new window is a smaller copy of the old one, made from the origin. Set the scale factor.",
+    "v.hint.across": "{n} degrees is the angle across from it. The angle next to it makes a straight line with it.",
+    "v.hint.square": "That makes a square corner with it. Along a straight beam, the two angles make 180 degrees.",
+    "v.hint.bends": "{n} and {a} make {s} degrees, so that beam would bend. A straight line is 180 degrees.",
+    "v.hint.line": "That is for angles on a straight line. These two make a square corner.",
+    "v.hint.same": "The two parts are not always equal. Together they make a square corner.",
+    "v.hint.swap": "That swaps the two moves. The first number moves across, the second moves up or down.",
+    "v.hint.back": "That moves the stone the wrong way across. Look which side the gap is on.",
+    "v.hint.flipy": "That flips the stone left to right, over the y axis. Look again at where the gap is.",
+    "v.hint.flipx": "That flips the stone top to bottom, over the x axis. Look again at where the gap is.",
+    "v.hint.half": "Changing both signs turns the stone half way round the origin. That is a turn, not a flip.",
+    "v.hint.ccw": "That turns it counterclockwise, against a clock's hands. The gap is the other way.",
+    "v.hint.cw": "That turns it clockwise, the way a clock's hands go. The gap is the other way.",
+    "v.hint.turn2": "A half turn goes twice as far. The gap is a quarter turn away.",
+    "v.hint.small": "At a scale factor of {n}, the copy comes out too small for the gap.",
+    "v.hint.big": "At a scale factor of {n}, the copy comes out too big for the gap.",
+    "v.said.beams": "Yes! Angles on a straight line make 180 degrees, and 180 minus {a} is {n}.",
+    "v.said.corner": "Yes! A square corner is 90 degrees, so x is 90 minus {a}, which is {n}.",
+    "v.said.slide": "Yes! A slide moves every corner the same way, so the stone keeps its size and shape.",
+    "v.said.flip": "Yes! A flip keeps every length and angle. The stone is the same shape, the other way round.",
+    "v.said.turn": "Yes! A turn keeps every length and angle, so the stone fits the gap exactly.",
+    "v.said.grow": "Yes! Every corner is {k} times as far from the origin, and every side is {k} times as long.",
+    "s.ask.ladder": "The wall is {h} meters high. The ladder's foot stands {f} meters out. How long must it be to reach the top?",
+    "s.ask.ramp": "A plank ramp is {c} meters long. Its top rests on a ledge {h} meters high. How far from the ledge is its foot?",
+    "s.ask.rope": "Two towers stand on the plan grid, where each square is 1 meter. How long is a straight rope between them?",
+    "s.ask.squares": "Squares are built on the three sides of a right triangle.",
+    "s.ask.squares2": "The two small squares have areas of {p} and {q} square meters. What is the area of the big one?",
+    "s.ask.pole": "A store room is {a} meters by {b} meters, and {h} meters tall.",
+    "s.ask.pole2": "How long is the longest pole that fits from a floor corner to the far top corner?",
+    "s.ask.corner": "Each tile is a set of three beams for a triangle. Which set makes a square corner?",
+    "s.hint.added": "That adds the two sides, {a} plus {b}. Square them, add the squares, then take the square root.",
+    "s.hint.ladder": "A ladder of length {n}, with its foot {f} meters out, reaches about {t} meters up. The wall is {h} meters.",
+    "s.hint.flat": "With its foot {f} meters out, a ladder of length {n} cannot reach the wall.",
+    "s.hint.minus": "That takes {b} from {a}. Subtract their squares instead, then find the square root.",
+    "s.hint.ramp": "With the foot out {n} from the ledge, the plank of {c} meters reaches about {t} meters up. The ledge is {h} meters.",
+    "s.hint.toofar": "With the foot out {n} from the ledge, the plank cannot reach the ledge at all.",
+    "s.hint.grid": "That walks along the grid lines, {a} across and {b} up or down. A rope goes straight.",
+    "s.hint.short": "Laid straight from tower A, a rope of length {n} stops short of tower B.",
+    "s.hint.past": "Laid straight from tower A, a rope of length {n} goes past tower B.",
+    "s.hint.sides": "That adds the two sides, {a} plus {b}, and then squares. Add the two areas instead.",
+    "s.hint.diff": "That takes one square from the other. The big square is the two small ones together.",
+    "s.hint.floor": "That is the floor's diagonal only. Use it with the height in a second right triangle.",
+    "s.hint.edges": "That adds three edges. The pole goes straight, as the long side of a right triangle.",
+    "s.hint.notsquare": "{a} squared plus {b} squared is {s}, but {c} squared is {t}. Those beams do not make a square corner.",
+    "s.said.ladder": "Yes! {f} squared plus {h} squared is {a} plus {b}, which is {s}. The square root of {s} is {n}.",
+    "s.said.ramp": "Yes! {c} squared minus {h} squared is {a} minus {b}, which is {s}. The square root of {s} is {n}.",
+    "s.said.rope": "Yes! It is {a} across and {b} up or down. {a} squared plus {b} squared is {s}, and its square root is {n}.",
+    "s.said.squares": "Yes! {p} plus {q} is {n}. The big square has sides of {c} meters.",
+    "s.said.pole": "Yes! The floor's diagonal squared is {f}, and the height squared is {h}. Together they make {s}, whose square root is {n}.",
+    "s.said.corner": "Yes! {a} squared plus {b} squared is {s}, and so is {c} squared. That makes a square corner.",
+    "win": "Keep built!",
+    "win.card": "Six stones are on the keep. Well done.",
+    "round": "Round {n} of {m}",
+    "show.q.crates": "how many crates?",
+    "show.q.net": "stone: ? m²",
+    "show.q.area": "area: ? m²",
+    "show.q.volume": "earth: ? m³",
+    "show.q.equation": "which equation?",
+    "show.q.rule": "which rule?",
+    "show.q.turn": "which turn?",
+    "show.q.factor": "scale factor?",
+    "show.q.pole": "longest pole?",
+    "show.q.square": "a square corner?",
+    "show.crate": "1 crate: 1/2 m each way",
+    "show.layers": "{n} crates: {a} of {b} layers",
+    "show.ranout": "the stone runs out",
+    "show.spare": "{n} m² spare",
+    "show.missing": "the two triangles are missing",
+    "show.outside": "the corners stick out",
+    "show.wholebox": "that fills a whole box",
+    "show.oneend": "that is one end only",
+    "show.noends": "the two ends are missing",
+    "show.bends": "the beam bends",
+    "show.flat": "the corner opens flat",
+    "show.notsquare": "not a square corner",
+    "show.notgap": "it misses the gap",
+    "show.small": "too small for the gap",
+    "show.big": "too big for the gap",
+    "show.noreach": "it cannot reach",
+    "show.short": "short of tower B",
+    "show.past": "past tower B",
+    "show.sqbig": "side {n}: longer than the long side",
+    "show.sqsmall": "side {n}: shorter than the long side",
+    "show.floor": "only the floor's diagonal",
+    "show.edges": "along three edges, not straight",
+    "show.idle": "the keep's plans",
+    "show.wall": "wall",
+    "show.ledge": "ledge",
+    "show.ladder": "ladder",
+    "show.plank": "plank",
+    "show.gap": "gap",
+    "btn.say": "Say it again",
+    "btn.up": "Up",
+    "btn.down": "Down",
+    "btn.run": "Run",
+    "btn.start": "Start",
+    "btn.again": "Play again",
+    "btn.menu": "More jobs"
+  }
+};
+(typeof window !== 'undefined' ? window : globalThis).KeepBuilderI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line is the builder's own guide voice, the role the game's BRB.speak calls ask for.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+import { start } from 'oomba3d';
+
+const KB = window.KeepBuilder, T = (window.KeepBuilderI18n || {}).en || {};
+const B = window.BRB || null;
+const el = Object.fromEntries(['load', 'kb', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
+/** What the screen prints for a line of the words table (a spoken line with its signs), or for plain maths. */
+const printed = l => (typeof l === 'string' ? l : KB.shown(fmt(l[0], l[1])));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SAVE_KEY = 'keep-builder-v1';
+const ICON = { build: '🧱', move: '🔄', span: '🪜' };
+
+/* ---------- state ---------- */
+const P = KB.params(B && B.params);
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', mode: 'ask', value: null, draw: null, hero: null, fast: false, lines: null, reported: 0, done: {}, tick: 0, stones: 0 };
+try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of KB.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+
+/* ---------- speech and sound: read-aloud is on unless the player has muted the game; every line is the game's own
+   (the I18N block), read through BRB.speak ---------- */
+const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+function speak(key, vars, o = {}) {
+  if (o.auto !== false && muted()) return false;
+  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+}
+/** Show lines in the words box (printed with their signs) and say them one after the other; the speaker button says them again. */
+function say(lines, o = {}) {
+  S.lines = lines;
+  el.askt.textContent = lines.map(printed).join(' '); el.ask.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { auto: o.auto, queue: !!o.queue || i > 0 }));
+}
+/** The chip: what the round is working out, and what was found. */
+function chip(line, tone) { el.sum.textContent = line ? printed(line) : ''; el.sum.hidden = !line; el.sum.className = 'kb-sum' + (tone ? ' ' + tone : ''); }
+let hintTimer = 0;
+/** A hint: one or two of the game's lines, shown together and said one after the other. */
+function hint(lines) {
+  clearTimeout(hintTimer);
+  if (!lines || !lines.length) { el.hint.hidden = true; return; }
+  el.hint.textContent = lines.map(printed).join(' '); el.hint.hidden = false;
+  lines.forEach(([k, v], i) => speak(k, v, { queue: i > 0 }));
+  hintTimer = setTimeout(() => { el.hint.hidden = true; }, 9000);
+}
+el.say.addEventListener('click', () => { if (S.lines) S.lines.forEach(([k, v], i) => speak(k, v, { auto: false, queue: i > 0 })); });
+/** A wrong plan: a small shake of the button (a dashed outline with reduced motion). Never a buzzer. */
+function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
+
+/* ---------- the 3D courtyard: Castle Quest at sunset, a keep being built ---------- */
+let g;
+try {
+  g = await start({ theme: 'castle-quest', version: '1.2.0', graphics: 'auto', time: 'sunset', outline: true, settings: true });
+} catch (e) {
+  el.load.textContent = 'This game needs a newer device.';
+  throw e;
+}
+const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const sfx = name => { if (!muted()) g.sound(name); };
+
+// The theme's pieces, loaded once and copied: its stone floor, walls, pillars, towers, stairs, banners, crates and
+// trees are the courtyard, and its stone block is what a finished round sets on the keep.
+const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
+const PIECES = ['floor-stone', 'wall', 'wall-window', 'wall-arched', 'wall-doorway', 'wall-corner', 'pillar', 'column', 'stairs', 'block', 'banner-blue', 'banner-red', 'banner-yellow', 'crate', 'crates', 'barrel', 'barrel-small', 'torch', 'table', 'chair', 'shelf', 'castle-building', 'tower', 'tree', 'tree-round', 'trees', 'forest-round', 'bushes', 'hills-trees', 'mountain'];
+const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+/** A copy of a theme piece standing on the ground with its middle at (x, z) (some pieces are modelled off-centre). */
+function piece(id, x, y, z, s = 1, turn = 0) {
+  const o = PT[id].clone(true); o.scale.setScalar(s); o.rotation.y = turn; o.position.set(0, 0, 0); o.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(o), c = box.getCenter(V3(0, 0, 0));
+  o.position.set(x - c.x, y - Math.min(0, box.min.y) * 0.5, z - c.z);
+  return o;
+}
+
+/* ---------- the courtyard: a stone floor, a wall with windows and arches behind the board, towers and the castle beyond ---------- */
+const room = new THREE.Group(), props = new THREE.Group();
+{
+  for (let iz = -3; iz <= 1; iz++) for (let ix = -5; ix <= 5; ix++) { const o = PT['floor-stone'].clone(true); o.position.set(ix * 4, 0, iz * 4 - 2); room.add(o); }
+  for (const [id, x, y, z, s = 1.2, turn = 0] of [
+    // the courtyard wall, behind the board and to its sides, never in front of it
+    ['wall-window', -14.4, 0, -11], ['wall', -9.6, 0, -11], ['wall-arched', -4.8, 0, -11], ['wall-doorway', 0, 0, -11], ['wall-arched', 4.8, 0, -11], ['wall', 9.6, 0, -11], ['wall-window', 14.4, 0, -11],
+    ['pillar', -12, 0, -10.4], ['pillar', -7.2, 0, -10.4], ['pillar', 7.2, 0, -10.4], ['pillar', 12, 0, -10.4], ['wall-corner', -18, 0, -10.4], ['wall-corner', 18, 0, -10.4],
+    ['banner-blue', -9.6, 0, -10.2, 1], ['banner-yellow', 0, 0, -10.2, 1], ['banner-red', 9.6, 0, -10.2, 1],
+    ['torch', -4.8, 0, -9.8, 1.2], ['torch', 4.8, 0, -9.8, 1.2],
+    // beyond the wall: the castle, two towers, trees and hills
+    ['castle-building', 0, 0, -24, 5.2], ['tower', -13, 0, -19, 4.6], ['tower', 13.5, 0, -19.5, 4.6, 1], ['trees', -22, 0, -16, 5], ['forest-round', 22, 0, -17, 5, 0.6],
+    ['hills-trees', -9, 0, -30, 7], ['hills-trees', 10, 0, -31, 7, 1], ['mountain', -20, 0, -36, 8], ['mountain', 20, 0, -37, 8, 1], ['tree', -19, 0, -8, 4.6], ['tree-round', 19.5, 0, -7.5, 4.6],
+    // the builder's yard, beside the place where the board stands
+    ['stairs', -16.5, 0, -6.2, 0.9, Math.PI / 2], ['table', -8.6, 0, -1.8, 1.1, 0.3], ['chair', -9.8, 0, -0.6, 1.1, 2.4], ['shelf', -11.6, 0, -4.2, 1.4, 0.4],
+    ['crates', 8.6, 0, -2.2, 1.1, 0.4], ['crate', 10.4, 0, -0.8, 1, 0.2], ['barrel', 11, 0, -3.6, 0.9], ['barrel-small', 9.2, 0, 0.4, 1], ['column', -6.6, 0, -6.6, 1.3], ['column', 6.6, 0, -6.6, 1.3], ['bushes', -15, 0, -2.6, 4], ['bushes', 15.5, 0, -2.2, 4, 2]])
+    room.add(piece(id, x, y, z, s, turn));
+  g.scene.add(room, props);
+  // the board and the builder are lit by the game's own lamps, so they read the same whatever the sunset does
+  g.scene.add(new THREE.HemisphereLight('#fff1dc', '#5a4a3a', 0.9));
+  const lamp = new THREE.DirectionalLight('#fff0d4', 0.9); lamp.position.set(2, 9, 8); g.scene.add(lamp);
+}
+
+// The keep (game-made: a plank plinth with the theme's ink edge), where a stone block is set for each finished
+// round: three, then two, then one. It moves with the screen's shape, so it is its own group.
+const chest = new THREE.Group(), rack = new THREE.Group();
+const MAT = {
+  dark: new THREE.MeshStandardMaterial({ color: '#3b2f22', roughness: 0.8 }),
+  wood: new THREE.MeshStandardMaterial({ color: '#c9a36b', roughness: 0.8 }),
+  edge: new THREE.LineBasicMaterial({ color: '#141414' }),
+};
+const solid = (geo, mat, x, y, z) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), MAT.edge)); return o; };
+const STONE = 0.52;   // one block's edge on the keep
+const slot = i => (i < 3 ? V3((i - 1) * 0.56, 0.14, 0) : i < 5 ? V3((i - 3.5) * 0.56, 0.14 + STONE, 0) : V3(0, 0.14 + 2 * STONE, 0));
+chest.add(solid(new THREE.BoxGeometry(2.1, 0.14, 0.8), MAT.wood, 0, 0.07, 0));
+for (const x of [-0.9, 0.9]) chest.add(solid(new THREE.BoxGeometry(0.12, 0.05, 0.84), MAT.dark, x, 0.16, 0));
+chest.add(rack); props.add(chest);
+function block() { const o = PT.block.clone(true); o.scale.setScalar(STONE / 2.2); const holder = new THREE.Group(); o.position.set(0, 0, 0); holder.add(o); return holder; }
+const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the courtyard: the board
+// The board's two posts (they follow its size)
+const posts = new THREE.Group(); g.scene.add(posts);
+for (const s of [-1, 1]) { const p = solid(new THREE.CylinderGeometry(0.09, 0.09, 1, 10), MAT.dark, s, 0.5, 0); p.userData.side = s; posts.add(p); }
+
+/* ---------- the board: the architect's plan, drawn by the game, always face on (so a right angle stays square and a
+   grid stays even), redrawn for each round and for each of its three looks: asked, tried (a wrong plan, as it really
+   turns out) and found ---------- */
+const C = { bg: '#E9EEF5', cell: '#F7FAFD', ink: '#1C2533', dim: '#5E6B7D', stone: '#B9A98E', plan: '#1D5FA8', ok: '#1F7A4D', warn: '#C2410C', goal: '#8A4B00', wood: '#9A6A33', grid: 'rgba(28, 37, 51, 0.13)', paper: '#FFFFFF' };
+const CW = 1024, CH = 768, BOARD = V3(0, 2.2, -3.05);
+let BW = 6.4, BH = 4.8;   // a wide screen's; a tall screen's is 4 by 3, higher up (sizeBoard)
+const LIGHT = new THREE.Color(1.04, 1.04, 1.04);
+const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = CH;
+const X = canvas.getContext('2d');
+const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
+const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT, toneMapped: false }));
+board.renderOrder = 2;
+function sizeBoard() {
+  BW = tall ? 4.0 : 6.4; BH = BW * 0.75; BOARD.y = squat() ? 2.44 : tall ? 3.12 : 2.75; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH];
+  const foot = BOARD.y - BH / 2 + 0.1;
+  for (const p of posts.children) { p.scale.set(1, foot, 1); p.position.set(p.userData.side * (BW / 2 - 0.5), foot / 2, BOARD.z - 0.08); }
+}
+/** The smallest words and numbers a player must read on the board, in its own pixels (the test turns it into screen pixels). */
+let smallest = 999;
+const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
+function text(s, px, py, size, o = {}) {
+  X.font = `${o.weight || 800} ${size}px ${FONT}`; X.textAlign = o.align || 'center'; X.textBaseline = o.base || 'middle';
+  X.fillStyle = o.fill || C.ink; X.fillText(s, px, py);
+  if (!o.deco) smallest = Math.min(smallest, size);
+}
+const widthOf = (s, size, weight = 800) => { X.font = `${weight} ${size}px ${FONT}`; return X.measureText(s).width; };
+/** Words or maths on one line, shrunk to fit `max` wide but never under `min`. */
+function label(s, px, py, size, o = {}) {
+  let z = size;
+  while (o.max && z > (o.min || 40) && widthOf(s, z, o.weight) > o.max) z -= 2;
+  text(s, px, py, z, o);
+}
+const rr = (x0, y0, w, h, r) => { const p = new Path2D(); p.roundRect(x0, y0, w, h, r); return p; };
+const poly = pts => { const p = new Path2D(); pts.forEach(([x, y], i) => (i ? p.lineTo(x, y) : p.moveTo(x, y))); p.closePath(); return p; };
+function fillStroke(p, fill, stroke = C.ink, width = 6, dash) { if (fill) { X.fillStyle = fill; X.fill(p); } if (stroke) { X.save(); X.strokeStyle = stroke; X.lineWidth = width; X.lineJoin = 'round'; if (dash) X.setLineDash(dash); X.stroke(p); X.restore(); } }
+function line(x0, y0, x1, y1, color = C.ink, width = 6, dash) { X.save(); X.strokeStyle = color; X.lineWidth = width; X.lineCap = 'round'; if (dash) X.setLineDash(dash); X.beginPath(); X.moveTo(x0, y0); X.lineTo(x1, y1); X.stroke(); X.restore(); }
+function dot(x, y, r, fill, stroke) { X.beginPath(); X.arc(x, y, r, 0, Math.PI * 2); if (fill) { X.fillStyle = fill; X.fill(); } if (stroke) { X.strokeStyle = stroke; X.lineWidth = 6; X.stroke(); } }
+/** Hatching inside a path: a part that is missing or left out (never color alone). */
+function hatch(p, col = C.dim) { X.save(); X.clip(p); for (let q = -CH; q < CW + CH; q += 22) line(q, CH, q + CH, 0, col, 3); X.restore(); }
+/** Words in a white tag (so they stay readable over a line or a grid). */
+function tagged(s, px, py, size, col, o = {}) {
+  const w = widthOf(s, size) + 28, x0 = o.align === 'left' ? px : o.align === 'right' ? px - w : px - w / 2;
+  fillStroke(rr(x0, py - size * 0.68, w, size * 1.36, 14), C.paper, col, 5, o.dash ? [14, 10] : null); text(s, x0 + w / 2, py + 2, size, { fill: col });
+}
+const TONE = { ok: C.ok, warn: C.warn, plan: C.plan };
+const TINT = { ok: 'rgba(31, 122, 77, 0.30)', warn: 'rgba(194, 65, 12, 0.26)', plan: 'rgba(29, 95, 168, 0.22)', none: 'rgba(185, 169, 142, 0.55)', stone: 'rgba(150, 132, 104, 0.62)' };
+const DASH = tone => (tone === 'warn' ? [20, 12] : null);
+/** Fit a drawing given in meters into a box on the board: [scale, offset x, offset y] so that x and y (up) land inside. */
+function fitIn(pts, x0, y0, w, h, most = 200) {
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const k = Math.min(most, w / Math.max(1e-6, maxx - minx), h / Math.max(1e-6, maxy - miny));
+  const ox = x0 + (w - (maxx - minx) * k) / 2 - minx * k, oy = y0 + (h - (maxy - miny) * k) / 2 + maxy * k;
+  return { k, at: (x, y) => [ox + x * k, oy - y * k] };
+}
+const angleArc = (cx, cy, r, a0, a1, col, width = 5) => { X.save(); X.strokeStyle = col; X.lineWidth = width; X.beginPath(); X.arc(cx, cy, r, -a0 * Math.PI / 180, -a1 * Math.PI / 180, true); X.stroke(); X.restore(); };
+const ray = (cx, cy, deg, len) => [cx + Math.cos(deg * Math.PI / 180) * len, cy - Math.sin(deg * Math.PI / 180) * len];
+
+/* A box (a room, a tower block, a cistern), drawn in oblique view: the front face, the top and the right side, with
+   the three edges named. A room may show its floor diagonal, the pole from corner to corner, or the path along three
+   edges; a cistern of unknown height has dashed sides and a question mark. */
+function paintBox(part, top) {
+  const known = part.h > 0, hh = known ? part.h : Math.max(part.l, part.w) * 0.7, cos = 0.5 * Math.cos(Math.PI / 6), sin = 0.5 * Math.sin(Math.PI / 6);
+  const pts = [[0, 0], [part.l + part.w * cos, hh + part.w * sin]], f = fitIn(pts, 150, top + 20, 640, 380, 150), P = (x, y, z) => f.at(x + z * cos, y + z * sin);
+  const col = TONE[part.tone] || C.ink, front = [P(0, 0, 0), P(part.l, 0, 0), P(part.l, hh, 0), P(0, hh, 0)], side = [P(part.l, 0, 0), P(part.l, 0, part.w), P(part.l, hh, part.w), P(part.l, hh, 0)], roof = [P(0, hh, 0), P(part.l, hh, 0), P(part.l, hh, part.w), P(0, hh, part.w)];
+  const dash = known ? DASH(part.tone) : [18, 12];
+  // the hidden back edges, faint and dashed
+  for (const [a, b] of [[P(0, 0, 0), P(0, 0, part.w)], [P(0, 0, part.w), P(part.l, 0, part.w)], [P(0, 0, part.w), P(0, hh, part.w)]]) line(a[0], a[1], b[0], b[1], C.dim, 3, [10, 10]);
+  fillStroke(poly(side), known ? 'rgba(185, 169, 142, 0.42)' : null, col, 6, dash);
+  fillStroke(poly(roof), known ? 'rgba(185, 169, 142, 0.28)' : null, col, 6, dash);
+  fillStroke(poly(front), part.tone ? TINT[part.tone] : TINT.none, col, 6, dash);
+  if (!known) { const fl = [P(0, 0, 0), P(part.l, 0, 0), P(part.l, 0, part.w), P(0, 0, part.w)]; fillStroke(poly(fl), TINT.plan, C.plan, 5); }
+  const D = part.diag, far = P(part.l, hh, part.w), floorFar = P(part.l, 0, part.w), o = P(0, 0, 0);
+  if (D === 'floor' || D === 'both') { line(o[0], o[1], floorFar[0], floorFar[1], D === 'both' ? C.dim : col, 7, [16, 10]); if (part.ft) tagged(part.ft, o[0] - 34, o[1] - 50, 42, D === 'both' ? C.dim : col, { align: 'right', dash: part.tone === 'warn' }); }
+  if (D === 'space' || D === 'both') { line(o[0], o[1], far[0], far[1], part.tone ? col : C.plan, 9, part.tone === 'warn' ? [20, 12] : null); dot(o[0], o[1], 12, part.tone ? col : C.plan); dot(far[0], far[1], 12, part.tone ? col : C.plan); if (part.dt) tagged(part.dt, (o[0] + far[0]) / 2 - 20, (o[1] + far[1]) / 2 - 40, 46, part.tone ? col : C.goal); }
+  if (D === 'edges') { const a = P(part.l, 0, 0); X.save(); X.strokeStyle = col; X.lineWidth = 11; X.setLineDash([20, 12]); X.beginPath(); X.moveTo(o[0], o[1]); X.lineTo(a[0], a[1]); X.lineTo(floorFar[0], floorFar[1]); X.lineTo(far[0], far[1]); X.stroke(); X.restore(); if (part.dt) tagged(part.dt, far[0] + 10, far[1] - 34, 46, col, { align: 'left', dash: true }); }
+  // the three edges
+  const b0 = P(0, 0, 0), b1 = P(part.l, 0, 0), s1 = P(part.l, 0, part.w), h1 = P(0, hh, 0);
+  label(part.lt, (b0[0] + b1[0]) / 2, b0[1] + 40, 46, { max: 300 });
+  label(part.wt, (b1[0] + s1[0]) / 2 + 22, (b1[1] + s1[1]) / 2 + 26, 46, { align: 'left', max: 200 });
+  label(part.ht, b0[0] - 18, (b0[1] + h1[1]) / 2, 46, { align: 'right', fill: part.ht === '?' ? C.goal : C.ink, max: 140 });
+}
+/* The floor of a store room seen from above, a grid of cells: the number on each cell is how many crates stand on it. */
+function paintFloor(part, top) {
+  const z = Math.min(92, 620 / part.cols, 440 / part.rows), w = part.cols * z, h = part.rows * z, x0 = (CW - w) / 2, y0 = top + 8, col = TONE[part.tone] || C.ink;
+  fillStroke(rr(x0, y0, w, h, 8), C.cell, null);
+  part.cells.forEach((n, i) => {
+    const cx = x0 + (i % part.cols) * z, cy = y0 + Math.floor(i / part.cols) * z;
+    if (n > 0) { X.fillStyle = n >= part.high ? TINT.ok.replace('0.30', '0.45') : TINT.stone; X.fillRect(cx + 4, cy + 4, z - 8, z - 8); }
+    text(String(n), cx + z / 2, cy + z / 2 + 2, Math.min(48, z * 0.62), { fill: n ? C.ink : C.dim });
+  });
+  for (let i = 1; i < part.cols; i++) line(x0 + i * z, y0 + 4, x0 + i * z, y0 + h - 4, C.dim, 3);
+  for (let i = 1; i < part.rows; i++) line(x0 + 4, y0 + i * z, x0 + w - 4, y0 + i * z, C.dim, 3);
+  fillStroke(rr(x0, y0, w, h, 8), null, col, 6, DASH(part.tone));
+}
+const floorH = part => Math.min(92, 620 / part.cols, 440 / part.rows) * part.rows + 16;
+/* A box's net: four faces in a strip (left, front, right, back) with the top over the front and the bottom under it.
+   Each face names its size, or its area; stone laid on it fills it from the left. */
+function paintNetBox(part, top) {
+  const [bottom, front, tp, back, left, right] = part.faces, l = front[1], h = front[2], w = left[1];
+  const k = Math.min(860 / (2 * l + 2 * w), 470 / (h + 2 * w)), x0 = (CW - (2 * l + 2 * w) * k) / 2, y0 = top + 6 + (470 - (h + 2 * w) * k) / 2;
+  const at = { left: [0, w], front: [w, w], right: [w + l, w], back: [2 * w + l, w], top: [w, 0], bottom: [w, w + h] };
+  const col = TONE[part.tone] || C.ink;
+  part.faces.forEach((f, i) => {
+    const [fx, fy] = at[f[0]], x = x0 + fx * k, y = y0 + fy * k, fw = f[1] * k, fh = f[2] * k, fill = part.fill[i];
+    fillStroke(rr(x, y, fw, fh, 3), C.cell, null);
+    if (fill > 0) { X.fillStyle = TINT.stone; X.fillRect(x + 3, y + 3, (fw - 6) * fill, fh - 6); }
+    fillStroke(rr(x, y, fw, fh, 3), null, fill >= 1 && part.tone === 'ok' ? C.ok : C.ink, 5, fill < 1 && part.tone === 'warn' ? [16, 10] : null);
+    label(part.areas ? f[3] + ' m²' : f[1] + ' × ' + f[2], x + fw / 2, y + fh / 2 + 2, 44, { max: fw - 14, fill: fill >= 1 && part.tone ? col : C.ink });
+  });
+}
+const netH = () => 482;
+/* A trapezoid banner: the top and bottom edges, the height, the two cuts that make a rectangle and two triangles, and
+   what each piece is worth. A left-out piece is hatched; a triangle taken as a whole rectangle sticks out, dashed. */
+function paintTrap(part, top) {
+  const k = Math.min(660 / part.b, 330 / part.h), w = part.b * k, h = part.h * k, x0 = (CW - w) / 2, y0 = top + 64, s = (part.b - part.a) / 2 * k, col = TONE[part.tone] || C.ink;
+  const L = [[x0, y0 + h], [x0 + s, y0], [x0 + s, y0 + h]], Rt = [[x0 + w - s, y0], [x0 + w, y0 + h], [x0 + w - s, y0 + h]], M = [[x0 + s, y0], [x0 + w - s, y0], [x0 + w - s, y0 + h], [x0 + s, y0 + h]];
+  const shape = poly([[x0, y0 + h], [x0 + s, y0], [x0 + w - s, y0], [x0 + w, y0 + h]]);
+  fillStroke(shape, C.cell, null);
+  if (part.fill === 'boxes') for (const bx of [[x0, y0, s, h], [x0 + w - s, y0, s, h]]) fillStroke(rr(bx[0], bx[1], bx[2], bx[3], 2), TINT.warn, C.warn, 5, [18, 12]);
+  if (part.fill === 'all' || part.fill === 'mid' || part.fill === 'boxes') fillStroke(poly(M), TINT[part.tone] || TINT.none, null);
+  if (part.fill === 'all') for (const t of [L, Rt]) fillStroke(poly(t), TINT.ok, null);
+  if (part.fill === 'mid') for (const t of [L, Rt]) hatch(poly(t));
+  fillStroke(shape, null, part.fill === 'boxes' ? C.ink : col, 7, part.fill === 'mid' ? [20, 12] : null);
+  if (part.cuts) { line(x0 + s, y0, x0 + s, y0 + h, C.dim, 4, [12, 10]); line(x0 + w - s, y0, x0 + w - s, y0 + h, C.dim, 4, [12, 10]); }
+  label(part.at, CW / 2, y0 - 34, 48, {}); label(part.bt, CW / 2, y0 + h + 40, 48, {});
+  label(part.htx, x0 + w - s + 18, y0 + h / 2, 44, { align: 'left', fill: C.dim, max: s + 60 });
+  if (part.mid) label(part.mid, CW / 2 - 20, y0 + h / 2 + 2, 52, { max: w - 2 * s - 110, fill: col });
+  if (part.side) for (const cx of [x0 + s * (part.fill === 'boxes' ? 0.5 : 0.66), x0 + w - s * (part.fill === 'boxes' ? 0.5 : 0.66)]) label(part.side, cx, y0 + h * 0.68, 44, { max: Math.max(s, 60), fill: part.side === '?' ? C.goal : col });
+}
+/* An earth ramp: a prism whose end is a right triangle, in oblique view. Its whole box is dashed around it when the
+   plan took the box; the end alone is tinted when the plan stopped at the end. */
+function paintPrism(part, top) {
+  const cos = 0.5 * Math.cos(Math.PI / 6), sin = 0.5 * Math.sin(Math.PI / 6), f = fitIn([[0, 0], [part.b + part.l * cos, part.h + part.l * sin]], 170, top + 30, 620, 340, 120), P = (x, y, z) => f.at(x + z * cos, y + z * sin);
+  const col = TONE[part.tone] || C.ink, end = [P(0, 0, 0), P(part.b, 0, 0), P(0, part.h, 0)], backEnd = [P(0, 0, part.l), P(part.b, 0, part.l), P(0, part.h, part.l)];
+  if (part.fill === 'box') { const bx = [[P(0, 0, 0), P(part.b, 0, 0), P(part.b, part.h, 0), P(0, part.h, 0)], [P(part.b, 0, 0), P(part.b, 0, part.l), P(part.b, part.h, part.l), P(part.b, part.h, 0)], [P(0, part.h, 0), P(part.b, part.h, 0), P(part.b, part.h, part.l), P(0, part.h, part.l)]]; for (const q of bx) fillStroke(poly(q), TINT.warn, C.warn, 5, [18, 12]); }
+  line(backEnd[0][0], backEnd[0][1], backEnd[1][0], backEnd[1][1], C.dim, 3, [10, 10]); line(backEnd[0][0], backEnd[0][1], backEnd[2][0], backEnd[2][1], C.dim, 3, [10, 10]); line(end[0][0], end[0][1], backEnd[0][0], backEnd[0][1], C.dim, 3, [10, 10]);
+  const slope = [P(part.b, 0, 0), P(part.b, 0, part.l), P(0, part.h, part.l), P(0, part.h, 0)];
+  fillStroke(poly(slope), part.fill === 'all' ? TINT.ok : 'rgba(185, 169, 142, 0.38)', part.fill === 'box' ? C.ink : col, 6);
+  fillStroke(poly(end), part.fill === 'end' || part.fill === 'all' ? TINT[part.tone] : TINT.none, part.fill === 'box' ? C.ink : col, 6, part.fill === 'end' ? [20, 12] : null);
+  X.save(); X.strokeStyle = C.ink; X.lineWidth = 4; const q0 = P(0, 0, 0), sq = 26; X.strokeRect(q0[0], q0[1] - sq, sq, sq); X.restore();
+  label(part.bt, (end[0][0] + end[1][0]) / 2, end[0][1] + 40, 46, {}); label(part.htx, end[0][0] - 18, (end[0][1] + end[2][1]) / 2, 46, { align: 'right' });
+  const r0 = P(part.b, 0, 0), r1 = P(part.b, 0, part.l); label(part.lt, (r0[0] + r1[0]) / 2 + 24, (r0[1] + r1[1]) / 2 + 26, 46, { align: 'left' });
+  if (part.end) tagged(part.end, (end[0][0] * 2 + end[1][0]) / 3 + 10, (end[0][1] * 2 + end[2][1]) / 3 + 6, 42, col, { dash: part.tone === 'warn' });
+}
+/* A roof's net: three rectangles side by side (a slope, the base, a slope) and a triangle on each end of the base. */
+function paintNetRoof(part, top) {
+  const b = part.b, h = part.h, s = part.s, l = part.l, k = Math.min(860 / (2 * s + b), 470 / (l + 2 * h)), x0 = (CW - (2 * s + b) * k) / 2, y0 = top + 6 + (470 - (l + 2 * h) * k) / 2 + h * k, col = TONE[part.tone] || C.ink;
+  const rects = [[x0, s], [x0 + s * k, b], [x0 + (s + b) * k, s]];
+  rects.forEach(([x, rw], i) => {
+    fillStroke(rr(x, y0, rw * k, l * k, 3), part.fill === 'all' || part.fill === 'sides' || part.fill === 'boxends' ? TINT[part.tone] || TINT.none : C.cell, col === C.ink ? C.ink : part.fill === 'all' ? C.ok : C.ink, 5);
+    label(part.areas ? rw * l + ' m²' : rw + ' × ' + l, x + rw * k / 2, y0 + l * k / 2 + 2, 44, { max: rw * k - 14 });
+  });
+  const bx = x0 + s * k, bw = b * k;
+  for (const [ey, dir] of [[y0, -1], [y0 + l * k, 1]]) {
+    const tri = poly([[bx, ey], [bx + bw, ey], [bx + bw / 2, ey + dir * h * k]]);
+    if (part.fill === 'boxends') fillStroke(rr(bx, dir < 0 ? ey - h * k : ey, bw, h * k, 3), TINT.warn, C.warn, 5, [18, 12]);
+    fillStroke(tri, part.fill === 'all' ? TINT.ok : part.fill === 'boxends' ? null : C.cell, part.fill === 'all' ? C.ok : C.ink, 5, part.fill === 'sides' ? [18, 12] : null);
+    if (part.fill === 'sides') hatch(tri);
+    line(bx + bw / 2, ey, bx + bw / 2, ey + dir * h * k, C.dim, 3, [10, 8]);
+    const t = part.areas ? (part.fill === 'sides' ? '?' : part.fill === 'boxends' ? b * h + ' m²' : b * h / 2 + ' m²') : String(h);
+    label(t, bx + bw / 2 + (part.areas ? 0 : 30), ey + dir * h * k * (part.areas ? 0.36 : 0.5), part.areas ? 40 : 40, { align: part.areas ? 'center' : 'left', fill: t === '?' ? C.goal : C.ink, max: bw * 0.55 });
+  }
+}
+/* Two beams crossing at one point. The known angle and the asked one each have an arc and a number. A plan that does
+   not make a straight line bends the beam: its left half is drawn where the plan puts it, dashed. */
+function paintCross(part, top) {
+  const cx = CW / 2, cy = top + 250, R = 300, col = TONE[part.tone] || C.ink;
+  const [a1, a2] = ray(cx, cy, part.a, R), [a3, a4] = ray(cx, cy, part.a + 180, R), [b1, b2] = ray(cx, cy, part.b, R);
+  line(cx, cy, cx + R, cy, C.wood, 22); line(a3, a4, a1, a2, C.wood, 22);
+  if (part.b !== 180) { line(cx, cy, cx - R, cy, C.dim, 4, [8, 12]); line(cx, cy, b1, b2, C.warn, 18, [26, 14]); } else line(cx, cy, cx - R, cy, C.wood, 22);
+  angleArc(cx, cy, 80, 0, part.a, C.ink); angleArc(cx, cy, 118, part.a, part.b, col);
+  const [l1x, l1y] = ray(cx, cy, part.a / 2, 168), [l2x, l2y] = ray(cx, cy, (part.a + part.b) / 2, 186);
+  tagged(part.labels[0], l1x, l1y, 48, C.ink); tagged(part.labels[1], l2x, l2y, 48, part.labels[1] === '?' ? C.goal : col, { dash: part.tone === 'warn' });
+  dot(cx, cy, 12, C.ink);
+}
+/* A square corner: the floor and the wall, and a brace between them. A plan that is not 90 degrees moves the wall. */
+function paintCorner(part, top) {
+  const cx = 300, cy = top + 400, R = 360, col = TONE[part.tone] || C.ink, [w1, w2] = ray(cx, cy, part.wall, R), [b1, b2] = ray(cx, cy, part.a, R);
+  line(cx - 20, cy, cx + R + 60, cy, C.stone, 26);
+  if (part.wall !== 90) { line(cx, cy + 20, cx, cy - R, C.dim, 4, [8, 12]); line(cx, cy, w1, w2, C.warn, 20, [26, 14]); } else { line(cx, cy + 20, cx, cy - R, C.stone, 26); X.save(); X.strokeStyle = C.ink; X.lineWidth = 4; X.strokeRect(cx, cy - 34, 34, 34); X.restore(); }
+  line(cx, cy, b1, b2, C.wood, 16);
+  angleArc(cx, cy, 120, 0, part.a, C.ink); angleArc(cx, cy, 170, part.a, part.wall, col);
+  const [l1x, l1y] = ray(cx, cy, part.a / 2, 222), [l2x, l2y] = ray(cx, cy, (part.a + part.wall) / 2, 240);
+  tagged(part.labels[0], l1x, l1y, 48, C.ink); tagged(part.labels[1], l2x, l2y, 48, part.labels[1] === 'x' ? C.goal : col, { dash: part.tone === 'warn' });
+  dot(cx, cy, 12, C.ink);
+}
+/* The plan grid: a coordinate plane with square units, every second number named, the gate stone, the gap it must
+   fill (dashed, hatched), a plan's stone where its rule really puts it (dashed), points and ropes. */
+function paintPlane(part, top) {
+  const nx = part.x[1] - part.x[0], ny = part.y[1] - part.y[0], u = Math.min(880 / nx, 500 / ny), w = nx * u, h = ny * u, x0 = (CW - w) / 2 + 12, y0 = top + 6;
+  const px = v => x0 + (v - part.x[0]) * u, py = v => y0 + (part.y[1] - v) * u;
+  fillStroke(rr(x0, y0, w, h, 4), C.paper, null);
+  for (let v = part.x[0]; v <= part.x[1]; v++) line(px(v), y0, px(v), y0 + h, C.grid, 3);
+  for (let v = part.y[0]; v <= part.y[1]; v++) line(x0, py(v), x0 + w, py(v), C.grid, 3);
+  line(x0, py(0), x0 + w, py(0), C.ink, 5); line(px(0), y0, px(0), y0 + h, C.ink, 5);
+  for (let v = part.x[0]; v <= part.x[1]; v++) if (v % 2 === 0 && v !== 0) text(String(v).replace('-', '−'), px(v), py(0) + 26, 38, { weight: 700, fill: C.dim });
+  for (let v = part.y[0]; v <= part.y[1]; v++) if (v % 2 === 0 && v !== 0) text(String(v).replace('-', '−'), px(0) - 12, py(v), 38, { weight: 700, fill: C.dim, align: 'right' });
+  text('x', x0 + w - 16, py(0) - 26, 40, { fill: C.dim }); text('y', px(0) + 24, y0 + 22, 40, { fill: C.dim });
+  X.save(); X.beginPath(); X.rect(x0, y0, w, h); X.clip();
+  for (const q of part.polys) {
+    const path = poly(q.pts.map(([a, b]) => [px(a), py(b)]));
+    if (q.tone === 'gap') { fillStroke(path, 'rgba(138, 75, 0, 0.10)', null); hatch(path, 'rgba(138, 75, 0, 0.45)'); fillStroke(path, null, C.goal, 5, [14, 10]); }
+    else if (q.tone === 'stone') fillStroke(path, q.dim ? 'rgba(150, 132, 104, 0.28)' : TINT.stone, q.dim ? C.dim : C.ink, 5, q.dim ? [8, 8] : null);
+    else fillStroke(path, TINT[q.tone], TONE[q.tone], 7, DASH(q.tone));
+  }
+  for (const s of part.segs) line(px(s.a[0]), py(s.a[1]), px(s.b[0]), py(s.b[1]), TONE[s.tone] || C.plan, s.dash ? 7 : 9, s.dash ? [18, 12] : null);
+  if (part.legs) { const L2 = part.legs; line(px(L2.a[0]), py(L2.a[1]), px(L2.b[0]), py(L2.a[1]), C.dim, 5, [12, 10]); line(px(L2.b[0]), py(L2.a[1]), px(L2.b[0]), py(L2.b[1]), C.dim, 5, [12, 10]); }
+  X.restore();
+  if (part.legs) { const L2 = part.legs; tagged(L2.across, (px(L2.a[0]) + px(L2.b[0])) / 2, py(L2.a[1]) + (L2.b[1] > L2.a[1] ? 30 : -30), 40, C.dim); tagged(L2.up, px(L2.b[0]) + (L2.b[0] > L2.a[0] ? 34 : -34), (py(L2.a[1]) + py(L2.b[1])) / 2, 40, C.dim); }
+  for (const s of part.segs) { if (s.end) dot(px(s.b[0]), py(s.b[1]), 13, TONE[s.tone] || C.plan); if (s.t) tagged(s.t, (px(s.a[0]) + px(s.b[0])) / 2 + 40, (py(s.a[1]) + py(s.b[1])) / 2 - 30, 42, TONE[s.tone] || C.plan, { dash: s.dash }); }
+  for (const q of part.polys) if (q.name) { const [a, b] = q.pts[q.at || 0]; dot(px(a), py(b), 10, TONE[q.tone] || C.ink); tagged(q.name, px(a) + (a > 0 ? 34 : -34), py(b) + (b >= 0 ? -30 : 30), 38, TONE[q.tone] || C.ink); }
+  for (const q of part.pts) { dot(px(q.x), py(q.y), q.t === 'O' ? 9 : 15, C.ink); if (q.t !== 'O') { const right = px(q.x) < x0 + w - 230; tagged(q.t, px(q.x) + (right ? 26 : -26), py(q.y) - 34, 40, C.ink, { align: right ? 'left' : 'right' }); } }
+}
+const planeH = part => Math.min(880 / (part.x[1] - part.x[0]), 500 / (part.y[1] - part.y[0])) * (part.y[1] - part.y[0]) + 12;
+/* A wall (or a ledge), the ground, and a ladder (or a plank) leaning on it from its foot. A plan's ladder is drawn as
+   it really stands: its top where its length takes it, or flat on the ground when it cannot reach. */
+function paintLean(part, top) {
+  const foot = part.foot == null ? Math.sqrt(Math.max(0, part.len * part.len - part.wall * part.wall)) : part.foot, len = part.len == null ? Math.sqrt(foot * foot + part.wall * part.wall) : part.len;
+  const reachUp = part.top == null ? part.wall : part.top, flat = part.top === 0;
+  const f = fitIn([[-Math.max(foot, flat ? len : 0) - 0.3, -0.6], [1.2, Math.max(part.wall, reachUp) + 0.3]], 120, top + 20, 700, 400, 140), at = f.at, col = TONE[part.tone] || C.plan;
+  const g0 = at(-Math.max(foot, flat ? len : 0) - 0.3, 0), g1 = at(1.2, 0), w0 = at(0, 0), w1 = at(0, part.wall);
+  line(g0[0], g0[1], g1[0], g1[1], C.dim, 8);
+  fillStroke(rr(w0[0], w1[1], Math.max(36, f.k * 0.8), w0[1] - w1[1], 4), TINT.stone, C.ink, 6);
+  const F = at(-foot, 0), Tp = flat ? at(-foot - len, 0) : at(0, reachUp);
+  const known = part.len != null && part.foot != null;
+  line(F[0], F[1], Tp[0], Tp[1], col === C.plan ? C.wood : col, 16, part.tone === 'warn' || !known ? [26, 14] : null);
+  dot(F[0], F[1], 12, C.ink);
+  label(part.wt, w0[0] + Math.max(36, f.k * 0.8) + 18, (w0[1] + w1[1]) / 2, 46, { align: 'left', max: 140 });
+  label(part.ft, (F[0] + w0[0]) / 2, F[1] + 40, 46, { fill: part.ft === '? m' ? C.goal : C.ink, max: Math.max(140, w0[0] - F[0]) });
+  tagged(part.lt, (F[0] + Tp[0]) / 2 - 40, (F[1] + Tp[1]) / 2 - 34, 46, part.lt === '? m' ? C.goal : col, { align: 'right', dash: part.tone === 'warn' });
+  if (part.reach) tagged(part.reach, Tp[0] - 20, Tp[1] - 34, 42, col, { align: 'right', dash: true });
+}
+/* A right triangle with a square on each side and its area inside. A plan's square on the long side has the side its
+   area really gives, so it does not fit the side. */
+function paintSqTri(part, top) {
+  const a = part.a, b = part.b, c = part.c, cs = part.cs, ux = -a / c, uy = b / c, nx2 = b / c, ny2 = a / c;
+  const A0 = [0, b], A1 = [A0[0] - ux * cs, A0[1] - uy * cs];
+  const big = [A0, A1, [A1[0] + nx2 * cs, A1[1] + ny2 * cs], [A0[0] + nx2 * cs, A0[1] + ny2 * cs]];
+  const sa = [[0, 0], [a, 0], [a, -a], [0, -a]], sb = [[0, 0], [0, b], [-b, b], [-b, 0]];
+  const f = fitIn([...sa, ...sb, ...big], 110, top + 10, 800, 470, 60), at = f.at, col = TONE[part.tone] || C.ink, Pq = q => q.map(([x, y]) => at(x, y));
+  fillStroke(poly(Pq(sa)), TINT.none, C.ink, 5); fillStroke(poly(Pq(sb)), TINT.none, C.ink, 5);
+  fillStroke(poly(Pq(big)), part.tone ? TINT[part.tone] : 'rgba(29, 95, 168, 0.12)', part.tone ? col : C.plan, 6, part.tone === 'warn' ? [20, 12] : part.tone ? null : [16, 10]);
+  fillStroke(poly(Pq([[0, 0], [a, 0], [0, b]])), C.cell, C.ink, 7);
+  const o = at(0, 0), sq = 24; X.save(); X.strokeStyle = C.ink; X.lineWidth = 4; X.strokeRect(o[0], o[1] - sq, sq, sq); X.restore();
+  const mid = q => { const p = Pq(q); return [p.reduce((s2, v) => s2 + v[0], 0) / p.length, p.reduce((s2, v) => s2 + v[1], 0) / p.length]; };
+  let m = mid(sa); label(part.at, m[0], m[1], 46, { max: a * f.k - 10, min: 38 }); m = mid(sb); label(part.bt, m[0], m[1], 46, { max: b * f.k - 10, min: 38 });
+  m = mid(big); label(part.ct, m[0], m[1], 54, { fill: part.ct === '?' ? C.goal : part.tone ? col : C.ink, max: cs * f.k - 10, min: 40 });
+}
+/* A triangle drawn from its three sides, with the corner between the two short ones marked and measured. */
+function paintTri3(part, top) {
+  const [a, b, c] = part.sides, th = KB.cornerOf(a, b, c) * Math.PI / 180, Q = [b * Math.cos(th), b * Math.sin(th)];
+  const f = fitIn([[0, 0], [a, 0], Q], 200, top + 40, 620, 380, 80), at = f.at, col = TONE[part.tone] || C.ink;
+  const p0 = at(0, 0), p1 = at(a, 0), p2 = at(Q[0], Q[1]);
+  fillStroke(poly([p0, p1, p2]), TINT[part.tone] || TINT.none, col, 7, DASH(part.tone));
+  for (const [s, t] of [[[p0, p1], a], [[p1, p2], c], [[p0, p2], b]]) { const mx = (s[0][0] + s[1][0]) / 2, my = (s[0][1] + s[1][1]) / 2; tagged(t + ' m', mx + (s[0] === p0 && s[1] === p2 ? -40 : s[1] === p2 ? 44 : 0), my + (s[1] === p1 ? 40 : 0), 42, C.ink, { align: s[0] === p0 && s[1] === p2 ? 'right' : s[1] === p2 ? 'left' : 'center' }); }
+  angleArc(p0[0], p0[1], 64, 0, th * 180 / Math.PI, col, 6);
+  if (part.ang === '90°') { X.save(); X.strokeStyle = col; X.lineWidth = 4; X.strokeRect(p0[0], p0[1] - 30, 30, 30); X.restore(); }
+  const [lx, ly] = ray(p0[0], p0[1], th * 90 / Math.PI, 120); tagged(part.ang, lx + 30, ly, 44, col, { align: 'left', dash: part.tone === 'warn' });
+}
+/* Three sets of beams, each drawn as three bars to scale with its length. */
+function paintBeams3(part, top) {
+  const sets = part.sets.map(t => t.split(', ').map(x => parseFloat(x))), most = Math.max(...sets.flat()), cw = 300, x0 = (CW - 3 * cw) / 2;
+  sets.forEach((s, i) => s.forEach((v, j) => {
+    const x = x0 + i * cw + 20, y = top + 40 + j * 96, w = (cw - 110) * v / most;
+    fillStroke(rr(x, y, w, 34, 6), TINT.none, C.wood, 5); text(v + ' m', x + w + 14, y + 19, 40, { align: 'left' });
+  }));
+  for (let i = 1; i < 3; i++) line(x0 + i * cw, top + 26, x0 + i * cw, top + 300, C.grid, 4);
+}
+const PART = { box: [paintBox, () => 440], floor: [paintFloor, floorH], netbox: [paintNetBox, netH], trap: [paintTrap, () => 470], prism: [paintPrism, () => 430], netroof: [paintNetRoof, netH], cross: [paintCross, () => 500], corner: [paintCorner, () => 470], plane: [paintPlane, planeH], lean: [paintLean, () => 470], sqtri: [paintSqTri, () => 490], tri3: [paintTri3, () => 450], beams3: [paintBeams3, () => 320] };
+/** One look of the board: its parts and its lines of maths, set out from top to bottom. */
+function paintView(ov) {
+  const blocks = [], lines = (ov.lines || []).map(printed);
+  for (const part of ov.parts || []) blocks.push({ h: PART[part.k][1](part), draw: y => PART[part.k][0](part, y) });
+  lines.forEach((s, i) => blocks.push({ h: i === 0 ? 76 : 66, draw: y => label(s, CW / 2, y + (i === 0 ? 40 : 34), i === 0 ? 56 : 48, { fill: i === 0 ? C.ink : C.goal, max: 930 }) }));
+  const total = blocks.reduce((k, b) => k + b.h, 0), gap = Math.max(4, Math.min(36, (CH - 48 - total) / (blocks.length + 1)));
+  let y = 24 + (CH - 48 - total - gap * (blocks.length - 1)) / 2;
+  for (const b of blocks) { b.draw(y); y += b.h + gap; }
+}
+/** Draw the board for a round and one of its three looks ('ask', 'hint', 'found'). */
+function paint(Rd, mode) {
+  smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
+  fillStroke(rr(8, 8, CW - 16, CH - 16, 30), C.bg, C.ink, 10);
+  fillStroke(rr(24, 24, CW - 48, CH - 48, 20), null, 'rgba(29, 95, 168, 0.35)', 4);
+  for (let x = 48; x < CW - 30; x += 48) line(x, 30, x, CH - 30, 'rgba(29, 95, 168, 0.06)', 2);
+  for (let y = 48; y < CH - 30; y += 48) line(30, y, CW - 30, y, 'rgba(29, 95, 168, 0.06)', 2);
+  if (!Rd) paintView({ parts: [{ k: 'box', l: 3, w: 2, h: 2, lt: '3 m', wt: '2 m', ht: '2 m' }], lines: [fmt('title'), fmt('show.idle')] });
+  else {
+    // the board shows the question, and nothing of a plan until it is run
+    const p = Rd.pic, ov = mode === 'found' ? p.found : mode === 'hint' && S.draw ? S.draw : p.ask;
+    paintView(ov);
+  }
+  boardTex.needsUpdate = true; S.mode = mode; S.small = smallest;
+}
+
+// Moving things: a hop from one place to another, a pop into place, a shake, a wait. With reduced motion (and in the
+// tests' fast mode) a thing is simply where it belongs. Every step of a round is one of these, run by the game loop.
+const tweens = [];
+const drop = o => { for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].o === o) tweens.splice(i, 1); };
+function anim(o, dur, step, then, wait = 0) {
+  drop(o);
+  if (reduced || S.fast) { step(1); if (then) then(); return; }
+  if (wait) o.visible = false;
+  tweens.push({ o, dur, step, then, t: 0, wait });
+}
+const smooth = k => k * k * (3 - 2 * k);
+const back = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
+  let from = null;
+  anim(o, dur, k => { if (!from) from = o.position.clone(); const e = smooth(k); o.position.lerpVectors(from, to, e); o.position.y += Math.sin(Math.PI * e) * arc; if (k >= 1) o.position.copy(to); }, then, wait);
+}
+function pop(o, { wait = 0, then, from = 0.001 } = {}) {
+  const s = o.scale.clone();
+  anim(o, 0.34, k => { o.scale.copy(s).multiplyScalar(Math.max(0.001, from + (1 - from) * back(k))); if (k >= 1) o.scale.copy(s); }, then, wait);
+}
+function shake(o, then) {
+  const x = o.position.x;
+  anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
+}
+function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+let hold = null, held = false;   // a stepper button kept down repeats
+g.onUpdate(dt => {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const w = tweens[i];
+    if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
+    w.t = Math.min(1, w.t + dt / w.dur); w.step(w.t);
+    if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
+  }
+  if (hold) { hold.t -= dt; if (hold.t <= 0) { hold.t = 0.1; held = true; bump(hold.dir); } }
+});
+
+/* ---------- where things go, and the camera ---------- */
+const portrait = () => innerWidth < innerHeight * 0.9;
+let tall = portrait();
+/** A tall screen that is not very tall (a small phone, or a phone with the browser's bars showing): the board hangs
+ *  lower and the builder and the keep stand small right under it, so the board keeps the whole width. */
+const squat = () => tall && innerHeight < innerWidth * 1.95;
+const heroSize = () => (squat() ? 0.4 : tall ? 0.7 : 0.92);
+const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -2.5 : -0.5) : V3(-4.75, 0, -1.3));
+const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];
+const chestSize = () => (squat() ? 0.42 : tall ? 0.62 : 0.9);
+const chestSpot = () => (tall ? V3(0.98, 0, squat() ? -2.5 : -0.5) : V3(5.05, 0, -1.2));
+const chestBox = () => { const k = chestSize(), t = chestSpot(); return [V3(t.x - 1.1 * k, 0, t.z), V3(t.x + 1.1 * k, 0, t.z), V3(t.x + 1.1 * k, 1.75 * k, t.z), V3(t.x - 1.1 * k, 1.75 * k, t.z)]; };
+function placeChest() { chest.scale.setScalar(chestSize()); chest.position.copy(chestSpot()); }
+function stagePts() {
+  const pts = [], hw = BW / 2 + 0.06;
+  for (const x of [-hw, hw]) pts.push(V3(x, BOARD.y + BH / 2 + 0.08, BOARD.z), V3(x, BOARD.y - BH / 2 - 0.08, BOARD.z));
+  return pts.concat(chestBox(), heroBox(heroSpot(), heroSize()));
+}
+// The camera looks across the courtyard at the board, from a little above, and backs off until everything a round
+// uses fits between the words at the top and the controls at the bottom, on any screen shape.
+const view = { pts: [] };
+function frame() {
+  if (!g || !view.pts.length) return;
+  const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
+  const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
+  const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
+  if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
+  const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
+  const mid = V3(0, 0, 0); for (const p of view.pts) mid.addScaledVector(p, 1 / view.pts.length);
+  let bx;
+  const fits = d => {
+    look.copy(mid);
+    for (let i = 0; i < 6; i++) {
+      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+      bx = [9, -9, 9, -9];
+      for (const p of view.pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+      if (i === 5) break;
+      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+    }
+    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  };
+  let near = 3, far = 120;
+  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+  fits(far);
+}
+let wasSquat = squat();
+addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
+const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+/** The screen box (left, top, right, bottom in CSS pixels) of the board. */
+function boxOf(o) {
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
+  const mid = o.getWorldPosition(V3(0, 0, 0));
+  const [sx, sy] = scr(mid), [rx] = scr(mid.clone().addScaledVector(right, w / 2)), [, uy] = scr(mid.clone().addScaledVector(up, h / 2));
+  return [sx - (rx - sx), uy, rx, sy + (sy - uy)].map(n => Math.round(n));
+}
+
+/* ---------- the stage: the board in the courtyard, and the stones on the keep ---------- */
+function clearStage() {
+  for (const o of [...stage.children]) stage.remove(o);
+  tweens.length = 0;
+  sizeBoard(); board.visible = true;
+  placeChest();
+  rack.children.forEach(o => { o.visible = true; });
+}
+function putBoard(Rd, mode, first) {
+  paint(Rd, mode); stage.add(board);
+  if (first) pop(board, { wait: 0.1, from: 0.6 });
+}
+/** Stones on the keep: one for each round already finished. */
+function setStones(n) {
+  while (rack.children.length > n) rack.remove(rack.children[rack.children.length - 1]);
+  for (let i = rack.children.length; i < n; i++) { const o = block(); o.position.copy(slot(i)); rack.add(o); }
+  S.stones = n;
+}
+/** A finished round's stone comes down onto the next place on the keep. */
+function setStone(then) {
+  const i = S.stones; if (i >= KB.ROUNDS) return then();
+  const o = block(), to = slot(i); rack.add(o); S.stones = i + 1;
+  o.position.set(to.x, to.y + 1.5, to.z);
+  fly(o, to, { dur: 0.55, arc: 0.2, then: () => { sfx('land'); then(); } });
+}
+
+/* ---------- the builder: one helper by the board (no picker: the job starts at once) ---------- */
+function placeHero() { const h = S.hero; if (!h) return; drop(h.object); g.scene.add(h.object); h.object.visible = true; h.object.scale.setScalar(heroSize()); h.position.copy(heroSpot()); h.object.rotation.y = tall ? 0 : 0.5; }
+let heroBack = 0;
+function heroMove(move, ms = 1500) {
+  const h = S.hero; if (!h || reduced) return;
+  h.play(move, { once: true }); clearTimeout(heroBack); heroBack = setTimeout(() => h.play('idle'), ms);
+}
+
+/* ---------- cards: the start of a lesson, the menu, the end of a chapter ---------- */
+function button({ id, label: words, icon, big, cls, go, aria }) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'kb-btn' + (cls ? ' ' + cls : ''); if (id) b.id = id;
+  const span = (c, t) => { const s = document.createElement('span'); s.className = c; if (t != null) s.textContent = t; return s; };
+  if (icon) { const i = span('i', icon); i.setAttribute('aria-hidden', 'true'); b.append(i); }
+  if (big != null) b.append(span('big', big));
+  if (words) b.append(span('l', words));
+  b.setAttribute('aria-label', aria || words || String(big));
+  b.addEventListener('click', () => go(b));
+  return b;
+}
+function card(kind, { title, sub, line: words, buttons }) {
+  el.bar.hidden = true; el.row2.hidden = true; el.ask.hidden = true; hint();
+  const top = document.createElement('div'), row = document.createElement('div');
+  const h = document.createElement('h1'); h.textContent = title; top.append(h);
+  if (sub) { const h2 = document.createElement('h2'); h2.textContent = sub; top.append(h2); }
+  const a = document.createElement('div'); a.className = 'kb-ask'; a.style.display = 'inline-flex';
+  const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'kb-say'; sb.textContent = '🔊'; sb.setAttribute('aria-label', fmt('btn.say'));
+  sb.addEventListener('click', () => speak(words, null, { auto: false }));
+  const t = document.createElement('span'); t.className = 'kb-askt'; t.textContent = fmt(words); a.append(sb, t); top.append(a);
+  row.className = kind === 'menu' ? 'kb-menu' : 'kb-pick'; row.append(...buttons.map(button));
+  el.card.className = 'kb-card';
+  el.card.replaceChildren(top, row); el.card.hidden = false;
+  S.lines = [[words, null]]; speak(words);
+}
+/** The builder in the courtyard by the board and the keep: the start, the menu and the end of a chapter. */
+function solo(stones) {
+  clearStage(); putBoard(null, 'ask'); setStones(stones); placeHero();
+  view.pts = stagePts();
+}
+function showStart() {
+  S.screen = 'start'; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  card('start', { title: fmt('title'), sub: fmt('ch.' + P.chapter), line: 'start.line', buttons: [{ id: 'start', icon: ICON[P.chapter], label: fmt('btn.start'), cls: 'go', go: () => startChapter(P.chapter) }] });
+  frame();
+}
+function showMenu() {
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  if (S.hero) S.hero.play('wave');
+  card('menu', { title: fmt('title'), line: 'menu.pick', buttons: KB.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  frame();
+}
+
+/* ---------- a chapter: six rounds ---------- */
+function startChapter(chapter) {
+  if (!KB.CHAPTERS.includes(chapter)) return showMenu();
+  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  setStones(0);
+  if (S.hero) S.hero.play('idle');
+  nextRound();
+}
+function dots2() {
+  el.dots.replaceChildren(...Array.from({ length: KB.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: KB.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+}
+function nextRound() {
+  if (S.round >= KB.ROUNDS) return finish();
+  S.round++; S.R = KB.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.draw = null; S.shown = false; S.tick++;
+  const Rd = S.R; S.value = Rd.input === 'step' ? Rd.step.start : null;
+  hint(); dots2(); chip(Rd.chip);
+  say(Rd.ask);   // the words first: the camera fits the courtyard under them
+  redraw(); frame();
+}
+function finish() {
+  S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store(); S.tick++;
+  // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
+  S.reported++;
+  try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  S.R = null; solo(KB.ROUNDS);
+  g.celebrate(S.hero, '');   // the cheer; the words are on the card
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  if (!S.lock) buttons.push({ id: 'menu', icon: '🏰', label: fmt('btn.menu'), go: showMenu });
+  card('end', { title: fmt('win'), sub: fmt('ch.' + S.chapter), line: 'win.card', buttons });
+  frame();
+}
+
+/** What the stepper shows for the plan: the number and its unit. */
+function valueText(Rd, v) { return Rd.unit === '×' ? '× ' + KB.nt(v) : Rd.unit === '°' ? KB.nt(v) + '°' : KB.nt(v) + ' ' + Rd.unit; }
+/** The controls of a round: three tiles, or a stepper and a run button. */
+function controls(Rd, found) {
+  if (Rd.input === 'tiles') return Rd.opts.map((o, i) => button({ id: 'kb-n' + i, big: o.t, aria: o.t, cls: (o.t.length > 12 ? 'longer' : o.t.length > 5 ? 'long' : '') + (found && i === Rd.answer ? ' right' : ''), go: b => answer(i, b) }));
+  const go = button({ id: 'kb-go', icon: '▶', label: fmt('btn.run'), cls: 'go', go: b => run(b) });
+  const stepBtn = (id, sign, key, dir) => {
+    const b = button({ id, big: sign, aria: fmt(key), cls: 'step', go: () => { if (held) { held = false; return; } bump(dir); } });
+    b.addEventListener('pointerdown', () => { held = false; hold = { dir, t: 0.5 }; });
+    for (const name of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(name, () => { hold = null; });
+    return b;
+  };
+  const val = document.createElement('output'); val.id = 'kb-val'; val.className = 'kb-val'; val.setAttribute('aria-live', 'polite'); val.textContent = valueText(Rd, S.value);
+  return [stepBtn('kb-dn', '−', 'btn.down', -1), val, stepBtn('kb-up', '+', 'btn.up', 1), go];
+}
+/** Draw the round from its state (also after the screen turns): the board, the builder, the keep, the controls. */
+function redraw() {
+  if (S.screen === 'start' || S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? KB.ROUNDS : 0); return void frame(); }
+  if (S.screen !== 'play' || !S.R) return void frame();
+  const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
+  const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
+  clearStage(); S.tick++; hold = null;
+  el.card.hidden = true;
+  putBoard(Rd, found ? 'found' : S.mode, first); setStones(S.round - 1 + (found ? 1 : 0));
+  placeHero(); view.pts = stagePts();
+  el.bar.hidden = false; el.bar.className = 'kb-bar ' + Rd.input;
+  el.bar.replaceChildren(...controls(Rd, found));
+  if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the controls
+  S.shown = true;
+  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+}
+/** A step that only runs if the round it belongs to is still the one on screen. */
+const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
+const still = () => { drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.visible = true; };
+
+/** A new plan (a number on the stepper): the board goes back to the question, and the number stays on the stepper,
+ *  so the board never shows a result the plan has not earned. */
+function setPlan(v) {
+  const Rd = S.R; if (!Rd || S.screen !== 'play' || S.phase !== 'play' || Rd.input !== 'step' || typeof v !== 'number') return;
+  v = Math.max(Rd.step.min, Math.min(Rd.step.max, Math.round((v - Rd.step.min) / Rd.step.by) * Rd.step.by + Rd.step.min));
+  v = Math.round(v * 1000) / 1000;
+  S.value = v; S.draw = null; hint();
+  const out = document.getElementById('kb-val'); if (out) out.textContent = valueText(Rd, v);
+  still(); paint(Rd, 'ask');
+}
+function bump(dir) { const Rd = S.R; if (Rd && Rd.input === 'step' && S.phase === 'play') setPlan(S.value + dir * Rd.step.by); }
+/** Run the plan. */
+function run(b) { const Rd = S.R; if (Rd && Rd.input === 'step') settle(KB.judge(Rd, S.value), b || document.getElementById('kb-go')); }
+/** Pick a tile. */
+function answer(i, b) { const Rd = S.R; if (Rd && Rd.input === 'tiles') settle(KB.judge(Rd, i), b || document.getElementById('kb-n' + i)); }
+function settle(res, b) {
+  if (S.phase !== 'play' || !S.R || S.screen !== 'play' || !res) return;
+  const Rd = S.R; hold = null;
+  if (!res.ok) {
+    // a wrong plan: the board shows what it really gives, the hint says why, and the round stays open
+    wobble(b); S.draw = res.draw || null; hint(res.lines);
+    paint(Rd, 'hint'); still(); shake(board);
+    return;
+  }
+  S.phase = 'right'; S.tick++; S.draw = null; hint(); sfx('coin');
+  if (b) b.classList.add('right');
+  chip(Rd.chipDone, 'ok');
+  say(Rd.said, { queue: true });
+  paint(Rd, 'found'); still(); pop(board, { from: 0.9 });
+  // the round's stone is set on the keep, the builder cheers, and only then the next round
+  setStone(guard(() => { heroMove('cheer', 1700); pause(reduced ? 3.6 : 2.4, guard(nextRound)); }));
+}
+// Keys: the arrows (or + and −) move the stepper and Enter runs the plan; 1 to 3 pick a tile. Every control is also a
+// button, so Tab, Enter and Space work too.
+addEventListener('keydown', ev => {
+  const Rd = S.R; if (!Rd || S.screen !== 'play' || S.phase !== 'play' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  const k = ev.key, onButton = document.activeElement && document.activeElement.tagName === 'BUTTON';
+  if (Rd.input === 'tiles') { if (/^[1-3]$/.test(k) && +k <= Rd.opts.length) { answer(+k - 1); ev.preventDefault(); } return; }
+  if (k === 'Enter' && !onButton) { run(); ev.preventDefault(); }
+  else if (k === 'ArrowUp' || k === 'ArrowRight' || k === '+' || k === '=') { bump(1); ev.preventDefault(); }
+  else if (k === 'ArrowDown' || k === 'ArrowLeft' || k === '-' || k === '_') { bump(-1); ev.preventDefault(); }
+});
+
+/* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
+const shownIn = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+const caster = new THREE.Raycaster();
+/** Whether nothing of the courtyard stands between the camera and a point (the scenery never hides the board). */
+function clearTo(p) {
+  const from = g.camera.position, dir = p.clone().sub(from), dist = dir.length();
+  caster.set(from, dir.normalize()); caster.near = 0.1; caster.far = dist - 0.12;
+  return !caster.intersectObjects([room, props, posts], true).some(hit => shownIn(hit.object));
+}
+const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
+window.__kb = window.__brbTest = {
+  state: () => ({ game: 'keep-builder', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: KB.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, value: S.value, tried: S.draw, moving: tweens.length, onStage: { board: stage.children.includes(board) && board.visible, stones: rack.children.length } } : {}) }),
+  /** Fast: nothing waits and nothing moves. Turning it on also finishes whatever is moving now. */
+  fast: on => { S.fast = on !== false; for (let n = 0; S.fast && tweens.length && n < 50; n++) { const w = tweens.shift(); w.o.visible = true; w.step(1); if (w.then) w.then(); } },
+  /** 'set' a plan, 'run' it, 'answer' a tile, or 'solve' the round the right way. */
+  act: (name, arg) => {
+    const Rd = S.R; if (!Rd) return;
+    if (name === 'set') setPlan(arg); else if (name === 'run') run(); else if (name === 'answer') answer(arg);
+    else if (name === 'solve') { if (Rd.input === 'tiles') answer(Rd.answer); else { setPlan(Rd.answer); run(); } }
+  },
+  /** Where things are on the screen (CSS pixels): the builder, the board (its box, whether the courtyard leaves it in
+   *  full view, and the smallest words on it in screen pixels) and the keep. */
+  spot: () => {
+    const bx = boxOf(board), k = 0.46;
+    return {
+      hero: S.hero ? boxPts(heroBox(S.hero.position, S.hero.object.scale.x)) : null,
+      board: { box: bx, small: Math.round(S.small * (bx[2] - bx[0]) / CW * 10) / 10,
+        clear: [[0, 0], [-k, -k], [k, -k], [k, k], [-k, k], [0, -k], [0, k]].every(([dx, dy]) => clearTo(V3(BOARD.x + dx * BW, BOARD.y + dy * BH, BOARD.z))) },
+      chest: boxPts(chestBox()),
+    };
+  },
+};
+
+S.hero = await g.hero('barbarian', { x: 0, y: 0, z: 0, outfit: '#3E6FA8' });
+el.load.hidden = true; el.load.remove(); el.kb.hidden = false;
+if (P.chapter) showStart(); else showMenu();
+window.__ready = true;
+</script>

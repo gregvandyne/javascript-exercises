@@ -74,6 +74,10 @@ export const GAMES = Object.freeze({
   // unit rate from fractions), a map's scale used both ways and as an equation, real areas and a plan redrawn at another
   // scale, and multi-step percent problems: percent change and percent error (its three chapters, SCOUT_CHAPTERS below).
   'scale-scout': { 'ccss-math': ['7.RP.A.2a', '7.RP.A.2b', '7.RP.A.1', '7.G.A.1', '7.RP.A.2c', '7.RP.A.2d', '7.RP.A.3', '7.EE.B.3'] },
+  // Keep Builder (grades 6-8, Number Quest Pro Unit 6): area by cutting shapes up, volume with fractional edges, nets and
+  // surface area; angle facts and slides, flips, turns and dilations in coordinates; the Pythagorean theorem, its converse
+  // and distance on a grid (its three chapters, KEEP_CHAPTERS below).
+  'keep-builder': { 'ccss-math': ['6.G.A.1', '6.G.A.2', '6.G.A.4', '7.G.B.6', '7.G.B.5', '8.G.A.1', '8.G.A.3', '8.G.A.2', '8.G.A.4', '8.G.B.7', '8.G.B.8', '8.G.B.6', '8.EE.A.2'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -134,8 +138,12 @@ export const MACHINE_CHAPTERS = Object.freeze({
 export const SCOUT_CHAPTERS = Object.freeze({
   constant: ['7.RP.A.2a', '7.RP.A.2b', '7.RP.A.1'], scale: ['7.G.A.1', '7.RP.A.2c', '7.RP.A.2d'], percent: ['7.RP.A.3', '7.EE.B.3'],
 });
+/** Keep Builder's chapters (seed-games/keep-builder.html KeepBuilder.CHAPTERS), for a step locked to one. */
+export const KEEP_CHAPTERS = Object.freeze({
+  build: ['6.G.A.1', '6.G.A.2', '6.G.A.4', '7.G.B.6'], move: ['7.G.B.5', '8.G.A.1', '8.G.A.3', '8.G.A.2', '8.G.A.4'], span: ['8.G.B.7', '8.G.B.8', '8.G.B.6', '8.EE.A.2'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'keep-builder']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -156,6 +164,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'sub-zero') { const ch = p.get('chapter') || ''; return Object.hasOwn(SUBZERO_CHAPTERS, ch) ? [...SUBZERO_CHAPTERS[ch]] : null; }
   if (slug === 'machine-line') { const ch = p.get('chapter') || ''; return Object.hasOwn(MACHINE_CHAPTERS, ch) ? [...MACHINE_CHAPTERS[ch]] : null; }
   if (slug === 'scale-scout') { const ch = p.get('chapter') || ''; return Object.hasOwn(SCOUT_CHAPTERS, ch) ? [...SCOUT_CHAPTERS[ch]] : null; }
+  if (slug === 'keep-builder') { const ch = p.get('chapter') || ''; return Object.hasOwn(KEEP_CHAPTERS, ch) ? [...KEEP_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

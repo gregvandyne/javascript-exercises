@@ -2334,23 +2334,20 @@
    "emoji": "📐",
    "group": "unit-6",
    "n": 6,
-   "planned": true,
-   "reserved": {
-    "game": "keep-builder",
-    "world": "castle-quest"
-   },
    "stamp": "Angle Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Fill and Cover",
+       "chapterTitle": "Fill and Cover",
+       "params": "chapter=build&lock=1",
+       "slug": "keep-builder"
+      }
      },
      "mp": "MP4",
      "n": "6.1",
      "order": 17,
-     "reserved": {
-      "params": "chapter=build&lock=1"
-     },
      "shorts": {
       "pro": "Area and volume"
      },
@@ -2374,14 +2371,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Slide, Flip, Turn",
+       "chapterTitle": "Slide, Flip, Turn",
+       "params": "chapter=move&lock=1",
+       "slug": "keep-builder"
+      }
      },
      "mp": "MP5",
      "n": "6.2",
      "order": 18,
-     "reserved": {
-      "params": "chapter=move&lock=1"
-     },
      "shorts": {
       "pro": "Angles and moves"
      },
@@ -2406,14 +2405,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Ladders and Spans",
+       "chapterTitle": "Ladders and Spans",
+       "params": "chapter=span&lock=1",
+       "slug": "keep-builder"
+      }
      },
      "mp": "MP3",
      "n": "6.3",
      "order": 19,
-     "reserved": {
-      "params": "chapter=span&lock=1"
-     },
      "shorts": {
       "pro": "Pythagorean theorem"
      },
@@ -2438,10 +2439,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers the geometry of grades 6 to 8: the area of triangles and trapezoids by cutting them into rectangles and triangles, the volume of boxes with fractional edges and of prisms, nets and surface area, angles on a line, in a square corner and across from each other, slides, flips, turns and dilations in coordinates, and the Pythagorean theorem and its converse, on a grid and in three dimensions.",
+    "Common misconceptions: that a box's volume in cubic meters is the number of half-meter cubes in it; that surface area counts each pair of faces once; that a triangle's area is base times height; that the two angles beside each other where lines cross are equal; that a flip and a half turn are the same move; and that the long side of a right triangle is the two short sides added. Ask \"how many fit along each edge?\", \"does every face have a twin?\" and \"did you square them first?\"",
+    "Keep Builder checks each idea by planning and running. The learner sets a number on a stepper or picks a tile, runs the plan and sees what it really gives: stone that runs out before a net is covered, a beam that bends, a stone that misses its gap, a ladder that reaches past the wall. There is no timer, every instruction is read aloud by default, and six finished rounds complete a step."
+   ],
    "tier": "pro",
    "title": "The Drafting Keep",
-   "tool": null
+   "tool": "keep-builder"
   },
   {
    "emoji": "🎯",

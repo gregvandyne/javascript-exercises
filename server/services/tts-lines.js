@@ -103,6 +103,11 @@ export const GAMES = {
   // to 250 meters"). What the chip and the map board show (show.*), the button labels (btn.*), the chapter names and the
   // round counter are shown, never read.
   'scale-scout': { title: 'Scale Scout', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
+  // Keep Builder (Number Quest Pro, grades 6-8): read-aloud is on by default. Every instruction, hint and answer line is
+  // spoken, in the friendly voice (its VOICES block), written the way it is said ("65 degrees", "3 squared plus 4
+  // squared"). What the chip and the board show (show.*), the button labels (btn.*), the chapter names and the round
+  // counter are shown, never read.
+  'keep-builder': { title: 'Keep Builder', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   // Shape Hunt (Number Quest Launchpad, grades K-2): every instruction, hint and answer line is spoken, in the friendly
   // voice (its VOICES block). What the chip shows (show.*), the button labels (btn.*), the chapter names and the round
   // counter are shown, never read.

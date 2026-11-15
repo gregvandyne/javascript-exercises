@@ -1,0 +1,218 @@
+{
+ "key": "pro-6.1",
+ "n": "6.1",
+ "band": "pro",
+ "title": "Area, surface area and volume",
+ "topic": "Area and volume",
+ "minutes": 11,
+ "slides": [
+  {
+   "title": "Plans for a new keep",
+   "text": "Tally finds the castle builder bent over a big plan. Before one stone is cut, the builder must know how much stone covers each wall and how much room is inside. Area and volume answer both.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Unfold a box into its net",
+   "text": "A box has six faces that come in three pairs. Unfold it flat and you get its net. The surface area is the area of all six faces: 2 × (6 + 6 + 4) = 32 square meters.",
+   "art": "box",
+   "visual": {
+    "type": "net",
+    "label": "A tower block, 3 m by 2 m by 2 m, unfolded",
+    "solid": "box",
+    "dims": [
+     3,
+     2,
+     2
+    ],
+    "labels": [
+     "3 m",
+     "2 m",
+     "2 m"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The front face: 3 m by 2 m, so 6 square meters.",
+     "box": [
+      32.8,
+      31.9,
+      21.4,
+      26.8
+     ]
+    },
+    {
+     "cue": "Its twin across the box, the back, is also 6.",
+     "box": [
+      64.5,
+      31.9,
+      21.4,
+      26.8
+     ]
+    },
+    {
+     "cue": "Each end face is 2 m by 2 m: 4 square meters.",
+     "box": [
+      20.1,
+      31.9,
+      15.1,
+      26.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Crates of half a meter",
+   "text": "A store room is 2 1/2 m long, 3 m wide and 2 m high. Crates are cubes with edges of 1/2 m. Count the crates along each edge, then multiply.",
+   "art": "lightbulb",
+   "steps": [
+    "Along each edge: 5, 6 and 4 crates",
+    "5 × 6 × 4 = 120 crates",
+    "Check: V = 2 1/2 × 3 × 2 = 15 m³",
+    "One crate is 1/8 m³, and 15 ÷ 1/8 = 120"
+   ]
+  },
+  {
+   "title": "A triangle is half a rectangle",
+   "text": "Draw a rectangle around a right triangle and the triangle fills half of it. So its area is base × height ÷ 2: here 4 × 3 ÷ 2 = 6 square meters. A trapezoid can be cut into a rectangle and two triangles.",
+   "art": "shapes",
+   "visual": {
+    "type": "righttriangle",
+    "label": "A right triangle, 4 m across and 3 m high",
+    "base": 4,
+    "height": 3,
+    "labels": {
+     "base": "4 m",
+     "height": "3 m"
+    }
+   },
+   "focus": [
+    {
+     "cue": "The triangle fills half of the 4 by 3 rectangle around it.",
+     "box": [
+      30.7,
+      22,
+      44.5,
+      60.8
+     ]
+    },
+    {
+     "cue": "The base: 4 meters across.",
+     "box": [
+      48.1,
+      81.8,
+      9.8,
+      12.1
+     ]
+    },
+    {
+     "cue": "The height: 3 meters, up from the square corner.",
+     "box": [
+      21.3,
+      46.4,
+      9.8,
+      12.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A prism: the end times the length",
+   "text": "A roof shaped like a prism has two triangle ends and three rectangles. Its volume is the area of one end times its length. Its net shows every face, so the surface area is the sum of five areas.",
+   "art": "ruler",
+   "visual": {
+    "type": "net",
+    "label": "A roof prism, unfolded",
+    "solid": "prism",
+    "dims": [
+     6,
+     4,
+     8
+    ],
+    "labels": [
+     "6 m",
+     "4 m",
+     "8 m"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Each triangle end is 6 × 4 ÷ 2 = 12 square meters.",
+     "box": [
+      44.3,
+      9.4,
+      17.4,
+      22
+     ]
+    },
+    {
+     "cue": "The bottom rectangle is 6 m by 8 m: 48 square meters.",
+     "box": [
+      44.3,
+      27.2,
+      17.4,
+      39.8
+     ]
+    },
+    {
+     "cue": "Each sloping side is a rectangle 8 m long.",
+     "box": [
+      31.8,
+      27.2,
+      14.9,
+      39.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for shapes and solids.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "area",
+     "means": "how many unit squares cover a flat shape, in square meters"
+    },
+    {
+     "word": "volume",
+     "means": "how many unit cubes fill a solid, in cubic meters"
+    },
+    {
+     "word": "net",
+     "means": "a solid unfolded flat, with every face showing"
+    },
+    {
+     "word": "surface area",
+     "means": "the total area of all the faces of a solid"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Keep Builder at Fill and Cover. Pack crates into a store room, cover a tower's net with stone, cut a banner into pieces and fill a ramp. Run each plan and see what it really gives.",
+   "art": "trophy",
+   "img": "nq/keep-builder/fill-and-cover",
+   "alt": "Keep Builder on a phone: a plan board with a store room drawn as a box, 2.5 m by 3 m by 2 m, and three tiles to pick from."
+  }
+ ],
+ "check": [
+  "nq-pro-6.1-e1",
+  "nq-pro-6.1-e2",
+  "nq-pro-6.1-e3"
+ ],
+ "game": {
+  "slug": "keep-builder",
+  "chapter": "Fill and Cover",
+  "params": "chapter=build&lock=1"
+ }
+}

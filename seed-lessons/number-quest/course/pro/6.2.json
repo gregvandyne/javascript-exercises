@@ -1,0 +1,319 @@
+{
+ "key": "pro-6.2",
+ "n": "6.2",
+ "band": "pro",
+ "title": "Angles and moves: slide, flip, turn, resize",
+ "topic": "Angles and moves",
+ "minutes": 11,
+ "slides": [
+  {
+   "title": "A stone that must fit",
+   "text": "At the gate, a cut stone lies beside the gap it must fill. The builder can slide it, flip it or turn it, but never bend it. Tally wants to know which move puts it exactly in place.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Where two beams cross",
+   "text": "Two straight lines that cross make four angles. Angles next to each other make a straight line, so they add to 180°. Angles across from each other are equal. If one is 65°, the one next to it is 180° − 65° = 115°.",
+   "art": "angle",
+   "visual": {
+    "type": "angles",
+    "label": "Two beams cross",
+    "layout": "cross",
+    "angles": [
+     {
+      "deg": 65
+     },
+     {
+      "deg": 115,
+      "label": "?"
+     },
+     {
+      "deg": 65
+     },
+     {
+      "deg": 115,
+      "blank": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The known angle: 65°.",
+     "box": [
+      49.2,
+      26.2,
+      15.9,
+      25.9
+     ]
+    },
+    {
+     "cue": "Next to it on a straight beam: 180° − 65° = 115°.",
+     "box": [
+      33.7,
+      24.3,
+      23.6,
+      27.8
+     ]
+    },
+    {
+     "cue": "Across from the 65° angle: equal, so also 65°.",
+     "box": [
+      34.9,
+      49.2,
+      15.9,
+      25.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A slide moves every corner the same way",
+   "text": "Slide a shape 6 right and 4 up and every corner moves by the same amount: (x, y) becomes (x + 6, y + 4). The new shape has the same side lengths and the same angles, so it is congruent.",
+   "art": "grid",
+   "visual": {
+    "type": "plane",
+    "label": "A slide of 6 right and 4 up",
+    "x": [
+     -6,
+     6
+    ],
+    "y": [
+     -4,
+     4
+    ],
+    "polygons": [
+     {
+      "pts": [
+       [
+        -5,
+        -3
+       ],
+       [
+        -2,
+        -3
+       ],
+       [
+        -2,
+        -1
+       ]
+      ],
+      "names": [
+       "A",
+       "B",
+       "C"
+      ]
+     },
+     {
+      "pts": [
+       [
+        1,
+        1
+       ],
+       [
+        4,
+        1
+       ],
+       [
+        4,
+        3
+       ]
+      ],
+      "names": [
+       "A′",
+       "B′",
+       "C′"
+      ],
+      "image": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The stone at A, B and C before the slide.",
+     "box": [
+      12.1,
+      55.4,
+      27.8,
+      35
+     ]
+    },
+    {
+     "cue": "After: every corner moved 6 right and 4 up.",
+     "box": [
+      50,
+      9.9,
+      27.6,
+      40.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rules for flips and turns",
+   "text": "Each move has a rule for the coordinates. A flip or a turn about the origin keeps every length and angle. Try each rule on the point (3, 1).",
+   "art": "lightbulb",
+   "steps": [
+    "Flip over the y-axis: (x, y) → (−x, y)",
+    "Flip over the x-axis: (x, y) → (x, −y)",
+    "Turn 90° counterclockwise: (x, y) → (−y, x)",
+    "Half turn: (x, y) → (−x, −y)",
+    "(3, 1) turned 90° counterclockwise is (−1, 3)"
+   ]
+  },
+  {
+   "title": "A bigger copy from the origin",
+   "text": "A dilation with scale factor 2 from the origin multiplies every coordinate by 2: (x, y) becomes (2x, 2y). Every side doubles and every angle stays the same, so the copy is similar but not congruent.",
+   "art": "scale",
+   "visual": {
+    "type": "plane",
+    "label": "A window and its copy at scale factor 2",
+    "x": [
+     0,
+     8
+    ],
+    "y": [
+     0,
+     7
+    ],
+    "polygons": [
+     {
+      "pts": [
+       [
+        1,
+        1
+       ],
+       [
+        3,
+        1
+       ],
+       [
+        3,
+        3
+       ],
+       [
+        1,
+        3
+       ]
+      ],
+      "names": [
+       "A",
+       "B",
+       "C",
+       "D"
+      ]
+     },
+     {
+      "pts": [
+       [
+        2,
+        2
+       ],
+       [
+        6,
+        2
+       ],
+       [
+        6,
+        6
+       ],
+       [
+        2,
+        6
+       ]
+      ],
+      "names": [
+       "A′",
+       "B′",
+       "C′",
+       "D′"
+      ],
+      "image": true
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The old window, 2 units wide.",
+     "box": [
+      24.5,
+      45.4,
+      22.6,
+      42.7
+     ]
+    },
+    {
+     "cue": "The copy: every coordinate times 2, so 4 units wide.",
+     "box": [
+      32.4,
+      10.2,
+      36.5,
+      62.2
+     ]
+    },
+    {
+     "cue": "The center of the dilation: the origin, (0, 0).",
+     "box": [
+      18.9,
+      85.7,
+      6,
+      12.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Five words for angles and moves.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "supplementary",
+     "means": "two angles that add to 180°, like angles on a straight line"
+    },
+    {
+     "word": "complementary",
+     "means": "two angles that add to 90°, like the parts of a square corner"
+    },
+    {
+     "word": "vertical angles",
+     "means": "angles across from each other where two lines cross; they are equal"
+    },
+    {
+     "word": "congruent",
+     "means": "the same size and shape; a slide, flip or turn keeps a shape congruent"
+    },
+    {
+     "word": "dilation",
+     "means": "a copy made bigger or smaller by a scale factor from a center point"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Keep Builder at Slide, Flip, Turn. Find the angle next to a known one, write the equation for a square corner, move the gate stone into its gap and set a scale factor.",
+   "art": "trophy",
+   "img": "nq/keep-builder/slide-flip-turn",
+   "alt": "Keep Builder on a phone: two beams cross on a plan board, one angle marked 65° and the next one a question mark, with a stepper in degrees."
+  }
+ ],
+ "check": [
+  "nq-pro-6.2-e1",
+  "nq-pro-6.2-e2",
+  "nq-pro-6.2-e3"
+ ],
+ "game": {
+  "slug": "keep-builder",
+  "chapter": "Slide, Flip, Turn",
+  "params": "chapter=move&lock=1"
+ }
+}
