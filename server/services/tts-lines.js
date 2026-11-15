@@ -98,6 +98,11 @@ export const GAMES = {
   // friendly voice (its VOICES block). What is shown in a spoken line's place (show.*), the button labels (btn.*),
   // the chapter names and the round counter are shown, never read.
   'rocket-supply': { title: 'Rocket Supply', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
+  // Scale Scout (Number Quest Pro, grade 7): read-aloud is on by default. Every instruction, hint and answer line is
+  // spoken, in the friendly voice (its VOICES block), written the way it is said ("25 percent of 80 is 20", "1 centimeter
+  // to 250 meters"). What the chip and the map board show (show.*), the button labels (btn.*), the chapter names and the
+  // round counter are shown, never read.
+  'scale-scout': { title: 'Scale Scout', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   // Shape Hunt (Number Quest Launchpad, grades K-2): every instruction, hint and answer line is spoken, in the friendly
   // voice (its VOICES block). What the chip shows (show.*), the button labels (btn.*), the chapter names and the round
   // counter are shown, never read.
