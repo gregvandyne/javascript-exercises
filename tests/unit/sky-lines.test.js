@@ -263,7 +263,7 @@ test('rounds: six a chapter, every answer right for the reason the unit teaches,
         wireOk(r, at, w => Math.abs(w(b) - a) < 1e-9 && w(0) === 0, v => x => v.m * x);
         assert.deepEqual(r.said[0][1], { a, b, k: a / b }, at);
       } else {
-        const A = r.pic.ask.pts.find(p => p.t === 'A'), w = wf(r.pic.ask.wires[0]); assert.ok(w(0) === 0 && w(A.x) === A.y, `${at}: car A's wire runs from the start through its island`);
+        const A = r.pic.ask.pts.find(p => p.x > 0), w = wf(r.pic.ask.wires[0]); assert.ok(r.pic.ask.wires[0].t === 'A' && w(0) === 0 && w(A.x) === A.y, `${at}: car A's wire runs from the start through its marked point`);
         const { a, b } = r.ask[0][1], ka = A.y / A.x, kb = a / b, want = ka > kb ? 'A' : kb > ka ? 'B' : 'same';
         tilesOk(r, at, o => o.v === want); assert.deepEqual(vals(r), ['A', 'B', 'same'], at);
         for (const i of r.choices.filter(v => v !== r.answer)) assert.deepEqual(SL.judge(r, i).lines, [L('p.hint.a', { a: A.y, b: A.x, k: ka }), L('p.hint.b', { a, b, k: kb })], `${at}: both rates, worked out`);

@@ -78,7 +78,7 @@
   .sl-sum.ok { background: #124a35; border-color: #66E0A3; }
   .sl-low { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .sl-hint { background: #FFD23F; color: #141414; border-radius: 12px; padding: 8px 14px; margin: 0 10px; font-weight: 700; font-size: clamp(16px, 3.6vw, 21px); line-height: 1.2; text-align: center; max-width: min(calc(100% - 20px), 620px); }
-  .sl-dots { flex: none; display: flex; gap: 6px; padding: 2px; }
+  .sl-dots { flex: none; display: flex; gap: 6px; padding: 7px 9px; background: rgba(21, 27, 38, .85); border-radius: 9px; }
   .sl-dots i { width: 22px; height: 8px; border-radius: 4px; background: #3a465c; }
   .sl-dots i.on { background: #66E0A3; } .sl-dots i.now { background: #FFC15E; }
   .sl-bar { display: flex; gap: 10px; justify-content: center; align-items: stretch; align-self: stretch; padding: 0 10px calc(12px + env(safe-area-inset-bottom, 0px)); }
@@ -261,8 +261,8 @@
       var P = [[4, 8], [2, 6], [2, 3]][v], Bm = [5, 9, 6][v], Bs = [2, 4, 4][v], ka = P[1] / P[0], kb = Bm / Bs, win = ka > kb ? 'A' : kb > ka ? 'B' : 'same';
       out.kind = 'compare'; out.win = Q1; out.task = { type: 'compare', A: { m: P[1], s: P[0] }, B: { m: Bm, s: Bs } };
       var two = [L('p.hint.a', { a: P[1], b: P[0], k: ka }), L('p.hint.b', { a: Bm, b: Bs, k: kb })];
-      var both = { win: Q1, pts: [isl(P, 'A')], wires: [wire(ka, 0, { t: 'A' }), wire(kb, 0, { t: 'B', dash: true })], lines: [L('show.each', { a: ka, b: kb })] };
-      out.pic = { ask: { win: Q1, pts: [isl([0, 0]), isl(P, 'A')], wires: [wire(ka, 0, { t: 'A' })], lines: [L('show.axes')] }, found: both };
+      var both = { win: Q1, pts: [isl(P)], wires: [wire(ka, 0, { t: 'A' }), wire(kb, 0, { t: 'B', dash: true })], lines: [L('show.each', { a: ka, b: kb })] };
+      out.pic = { ask: { win: Q1, pts: [isl([0, 0]), isl(P)], wires: [wire(ka, 0, { t: 'A' })], lines: [L('show.axes')] }, found: both };
       var T3 = { A: opt('A', 'car A'), B: opt('B', 'car B'), same: opt('same', 'the same') }, wrong = ['A', 'B', 'same'].filter(function (id) { return id !== win; });
       offer(r, out, T3[win], wrong.map(function (id) { return [T3[id], two, both]; }), ['A', 'B', 'same']);
       out.ask = [L('p.ask.compare', { a: Bm, b: Bs })];
