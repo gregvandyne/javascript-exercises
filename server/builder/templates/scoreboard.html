@@ -1,0 +1,143 @@
+<title>Team Scoreboard</title>
+<style>
+/* Team Scoreboard: one big column per team for the classroom board. + and - buttons, number keys (1-6 add, Shift
+   with a number takes away), Undo, and a reset that asks first. Teams are numbered or named by colour or animal,
+   never by students' names. Nothing is saved or sent. */
+:root{--bg:#151b2e;--bg2:#1f2840;--ink:#ffffff;--soft:#c3cbe6;--edge:#080b16;--hot:#ffd447;--hot-ink:#1b1400;
+  --t0:#ff5d5d;--t1:#3d9bff;--t2:#2fcf7f;--t3:#ffb02e;--t4:#b26bff;--t5:#ff6fc0}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--bg2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--hot);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--hot);color:var(--hot-ink)}
+button:disabled{opacity:.45;cursor:default}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.hot{background:var(--hot);color:var(--hot-ink)}
+[hidden]{display:none!important}
+.teams{flex:1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:clamp(8px,1.6vmin,18px);min-height:0}
+.team{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;padding:clamp(10px,2vmin,22px) 8px;border-radius:24px;background:var(--c);color:var(--edge);border:4px solid var(--edge);box-shadow:0 8px 0 var(--edge);min-width:0;position:relative}
+.team.lead::after{content:"";position:absolute;top:-14px;left:50%;width:44px;height:28px;transform:translateX(-50%);background:var(--hot);border:3px solid var(--edge);clip-path:polygon(0 100%,0 20%,25% 60%,50% 0,75% 60%,100% 20%,100% 100%)}
+.team .name{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);text-align:center;overflow-wrap:anywhere}
+.team .pts{font-weight:900;font-size:clamp(3rem,15vmin,12rem);line-height:1;font-variant-numeric:tabular-nums}
+.team .pts.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.team .btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.team button{background:var(--ink);color:var(--edge);font-size:clamp(1.1rem,3.2vmin,2rem);min-width:clamp(52px,8vmin,80px)}
+.team .key{font-weight:800;font-size:clamp(.8rem,1.8vmin,1.1rem);opacity:.8}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.ask{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:rgba(8,11,22,.8);z-index:5}
+.ask .card{width:min(100%,560px);text-align:center;background:var(--bg2);border:4px solid var(--edge);border-radius:24px;padding:24px}
+.ask p{font-size:clamp(1.2rem,3.4vmin,2rem);font-weight:800;margin:0 0 16px}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+@media (max-width:640px){.teams{grid-template-columns:repeat(min(var(--n),2),minmax(0,1fr))}.team .pts{font-size:clamp(2.4rem,14vw,5rem)}}
+@media (prefers-reduced-motion:reduce){.team .pts.pop{animation:none}}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="undo"></button><button class="small" id="reset"></button><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <div class="teams" id="teams"></div>
+  <p class="keys" id="keys"></p>
+</main>
+<section class="ask" id="ask" hidden><div class="card" role="alertdialog" aria-labelledby="askP"><p id="askP"></p><div class="row"><button class="hot" id="yes"></button><button id="no"></button></div></div></section>
+<script>
+// Team Scoreboard. CONFIG.teams columns, labelled "Team 1"... or CONFIG.labels (colours, animals: never students'
+// names). The buttons add CONFIG.step and CONFIG.bigStep; keys 1-6 add CONFIG.step to that team and Shift with the
+// number takes it away; U undoes; R resets after asking. Nothing is saved or sent.
+'use strict';
+const CONFIG = {
+  title: 'Team Scoreboard',
+  lang: 'en',
+  teams: 4,
+  labels: [],
+  step: 1,
+  bigStep: 5,
+  allowBelowZero: false,
+};
+// {n} is a team number, {pts} points.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', team: 'Team {n}', undo: 'Undo', reset: 'Reset', askReset: 'Set every team back to 0?', yes: 'Yes, reset', no: 'Keep the scores', key: 'Key {n}', add: 'Add {pts} to {team}', take: 'Take {pts} from {team}', keys: 'Keys: 1-6 add a point · Shift + 1-6 take one away · U undo · R reset · F full screen' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', team: 'Equipo {n}', undo: 'Deshacer', reset: 'Reiniciar', askReset: '¿Poner todos los equipos a 0?', yes: 'Sí, reiniciar', no: 'Mantener los puntos', key: 'Tecla {n}', add: 'Sumar {pts} a {team}', take: 'Quitar {pts} a {team}', keys: 'Teclas: 1-6 suman un punto · Mayús + 1-6 quitan uno · U deshacer · R reiniciar · F pantalla completa' },
+  fr: { sound: 'Son', full: 'Plein écran', team: 'Équipe {n}', undo: 'Annuler', reset: 'Remettre à zéro', askReset: 'Remettre toutes les équipes à 0 ?', yes: 'Oui, remettre à zéro', no: 'Garder les points', key: 'Touche {n}', add: 'Ajouter {pts} à {team}', take: 'Enlever {pts} à {team}', keys: 'Touches : 1-6 ajoutent un point · Maj + 1-6 en enlèvent un · U annuler · R remettre à zéro · F plein écran' },
+  de: { sound: 'Ton', full: 'Vollbild', team: 'Team {n}', undo: 'Rückgängig', reset: 'Zurücksetzen', askReset: 'Alle Teams auf 0 setzen?', yes: 'Ja, zurücksetzen', no: 'Punkte behalten', key: 'Taste {n}', add: '{pts} für {team}', take: '{pts} weg von {team}', keys: 'Tasten: 1-6 geben einen Punkt · Umschalt + 1-6 ziehen einen ab · U rückgängig · R zurücksetzen · F Vollbild' },
+  it: { sound: 'Suono', full: 'Schermo intero', team: 'Squadra {n}', undo: 'Annulla', reset: 'Azzera', askReset: 'Riportare tutte le squadre a 0?', yes: 'Sì, azzera', no: 'Tieni i punti', key: 'Tasto {n}', add: 'Aggiungi {pts} a {team}', take: 'Togli {pts} a {team}', keys: 'Tasti: 1-6 aggiungono un punto · Maiusc + 1-6 ne tolgono uno · U annulla · R azzera · F schermo intero' },
+  pt: { sound: 'Som', full: 'Tela cheia', team: 'Equipe {n}', undo: 'Desfazer', reset: 'Zerar', askReset: 'Voltar todas as equipes para 0?', yes: 'Sim, zerar', no: 'Manter os pontos', key: 'Tecla {n}', add: 'Somar {pts} para {team}', take: 'Tirar {pts} de {team}', keys: 'Teclas: 1-6 somam um ponto · Shift + 1-6 tiram um · U desfazer · R zerar · F tela cheia' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', team: 'Team {n}', undo: 'Ongedaan maken', reset: 'Op nul zetten', askReset: 'Alle teams terug naar 0?', yes: 'Ja, op nul', no: 'Punten houden', key: 'Toets {n}', add: '{pts} erbij voor {team}', take: '{pts} eraf voor {team}', keys: 'Toetsen: 1-6 geven een punt · Shift + 1-6 halen er een af · U ongedaan · R op nul · F volledig scherm' },
+  ru: { sound: 'Звук', full: 'Весь экран', team: 'Команда {n}', undo: 'Отменить', reset: 'Обнулить', askReset: 'Обнулить очки всех команд?', yes: 'Да, обнулить', no: 'Оставить очки', key: 'Клавиша {n}', add: 'Добавить {pts}: {team}', take: 'Убрать {pts}: {team}', keys: 'Клавиши: 1-6 добавляют очко · Shift + 1-6 убирают · U отменить · R обнулить · F весь экран' },
+  he: { sound: 'צליל', full: 'מסך מלא', team: 'קבוצה {n}', undo: 'ביטול', reset: 'איפוס', askReset: 'לאפס את כל הקבוצות ל-0?', yes: 'כן, לאפס', no: 'להשאיר את הניקוד', key: 'מקש {n}', add: 'להוסיף {pts} ל{team}', take: 'להוריד {pts} מ{team}', keys: 'מקשים: 1-6 מוסיפים נקודה · Shift + 1-6 מורידים · U ביטול · R איפוס · F מסך מלא' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', team: 'الفريق {n}', undo: 'تراجع', reset: 'تصفير', askReset: 'هل نعيد كل الفرق إلى 0؟', yes: 'نعم، صفّر', no: 'أبقِ النقاط', key: 'المفتاح {n}', add: 'أضف {pts} إلى {team}', take: 'انقص {pts} من {team}', keys: 'المفاتيح: 1-6 تضيف نقطة · Shift + 1-6 تُنقص نقطة · U تراجع · R تصفير · F ملء الشاشة' },
+  ja: { sound: 'サウンド', full: '全画面', team: 'チーム{n}', undo: 'もどす', reset: 'リセット', askReset: 'すべてのチームを0にもどしますか？', yes: 'はい、リセット', no: '点数をのこす', key: 'キー {n}', add: '{team}に{pts}点', take: '{team}から{pts}点へらす', keys: 'キー：1〜6で1点ふやす・Shift＋1〜6で1点へらす・U もどす・R リセット・F 全画面' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', team: '第 {n} 隊', undo: '復原', reset: '歸零', askReset: '要把所有隊伍都歸零嗎？', yes: '是，歸零', no: '保留分數', key: '按鍵 {n}', add: '給{team}加 {pts} 分', take: '從{team}減 {pts} 分', keys: '按鍵：1-6 加一分・Shift + 1-6 減一分・U 復原・R 歸零・F 全螢幕' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const N = Math.max(1, Math.min(6, CONFIG.teams | 0));
+const nameOf = i => (CONFIG.labels[i] ? String(CONFIG.labels[i]) : tr('team', { n: i + 1 }));
+
+// ---- the state ----------------------------------------------------------------------------------------------------
+const S = { scores: Array(N).fill(0), history: [], asking: false };
+function build() {
+  const box = $('teams'); box.style.setProperty('--n', N); box.innerHTML = '';
+  for (let i = 0; i < N; i++) {
+    const d = document.createElement('section'); d.className = 'team'; d.style.setProperty('--c', `var(--t${i % 6})`); d.setAttribute('aria-labelledby', `tn${i}`);
+    d.innerHTML = `<div class="name" id="tn${i}"></div><div class="pts" aria-live="polite"></div><div class="btns"></div><div class="key"></div>`;
+    d.querySelector('.name').textContent = nameOf(i); d.querySelector('.key').textContent = tr('key', { n: i + 1 });
+    for (const [d2, label] of [[-CONFIG.step, `−${CONFIG.step}`], [CONFIG.step, `+${CONFIG.step}`], [CONFIG.bigStep, `+${CONFIG.bigStep}`]]) {
+      if (!d2) continue;
+      const b = document.createElement('button'); b.textContent = label;
+      b.setAttribute('aria-label', tr(d2 > 0 ? 'add' : 'take', { pts: Math.abs(d2), team: nameOf(i) })); b.onclick = () => add(i, d2);
+      d.querySelector('.btns').appendChild(b);
+    }
+    box.appendChild(d);
+  }
+  paint();
+}
+function paint() {
+  const top = Math.max(...S.scores), lead = S.scores.filter(x => x === top).length === 1 && top > 0;
+  [...$('teams').children].forEach((d, i) => { d.querySelector('.pts').textContent = String(S.scores[i]); d.classList.toggle('lead', lead && S.scores[i] === top); });
+  $('undo').disabled = !S.history.length;
+}
+function add(i, d) {
+  if (S.asking || i >= N) return;
+  const before = S.scores[i], after = CONFIG.allowBelowZero ? before + d : Math.max(0, before + d);
+  if (after === before) return;
+  S.scores[i] = after; S.history.push([i, before]); if (S.history.length > 200) S.history.shift();
+  sfx(d > 0 ? 'coin' : 'click'); paint();
+  const p = $('teams').children[i].querySelector('.pts'); p.classList.remove('pop'); void p.offsetWidth; p.classList.add('pop');
+}
+function undo() { if (S.asking || !S.history.length) return; const [i, before] = S.history.pop(); S.scores[i] = before; sfx('click'); paint(); }
+function askReset() { S.asking = true; $('ask').hidden = false; $('no').focus(); }
+function closeAsk(reset) {
+  S.asking = false; $('ask').hidden = true;
+  if (reset) { S.scores = Array(N).fill(0); S.history = []; sfx('powerup'); paint(); }
+  $('reset').focus();
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('undo').onclick = undo; $('reset').onclick = askReset; $('yes').onclick = () => closeAsk(true); $('no').onclick = () => closeAsk(false);
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (S.asking) { if (e.key === 'Escape') closeAsk(false); return; }
+  const d = /^(Digit|Numpad)([1-6])$/.exec(e.code || '');
+  if (d) { e.preventDefault(); add(+d[2] - 1, e.shiftKey ? -CONFIG.step : CONFIG.step); }
+  else if (e.key === 'u' || e.key === 'U' || e.key === 'Backspace') { e.preventDefault(); undo(); }
+  else if (e.key === 'r' || e.key === 'R') askReset();
+  else if (e.key === 'f' || e.key === 'F') $('full').click();
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['undo', 'undo'], ['reset', 'reset'], ['askP', 'askReset'], ['yes', 'yes'], ['no', 'no'], ['keys', 'keys']]) $(id).textContent = tr(k);
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ scores: S.scores.slice(), teams: N, undo: S.history.length, asking: S.asking }), start() { S.scores = Array(N).fill(0); S.history = []; paint(); } };
+build();
+</script>

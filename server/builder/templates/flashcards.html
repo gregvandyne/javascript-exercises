@@ -1,0 +1,155 @@
+<title>Flashcards</title>
+<style>
+/* Flashcards: one big card at a time. Tap or Space flips it; Got it and Again sort it; the round ends with how many
+   were got, and the Again pile can be practised once more. Big type for the board and phones, keyboard and clicker keys. */
+:root{--bg:#e8f4ff;--bg2:#cfe6ff;--ink:#14233b;--soft:#4a5d7a;--card:#ffffff;--back:#fff4c9;--edge:#14233b;--hot:#2f6bff;--hot-ink:#ffffff;--good:#18a86b;--again:#ff8a3d}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+body{background:linear-gradient(160deg,var(--bg),var(--bg2)) fixed}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--again);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+button:disabled{opacity:.45;cursor:default}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
+.hot{background:var(--hot);color:var(--hot-ink)}
+.good{background:var(--good);color:#fff}
+.again{background:var(--again);color:#fff}
+[hidden]{display:none!important}
+.info{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem)}
+.stage{flex:1;display:grid;place-items:center;perspective:1400px;min-height:200px}
+.flip{position:relative;width:min(100%,1000px);height:100%;max-height:560px;min-height:220px;padding:0;border:0;background:none;box-shadow:none;border-radius:32px}
+.flip:active{transform:none}
+.inner{position:absolute;inset:0;transition:transform .5s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.flip.over .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:clamp(14px,3vmin,32px);border:5px solid var(--edge);border-radius:32px;box-shadow:0 10px 0 var(--edge);backface-visibility:hidden;background:var(--card);text-align:center}
+.face.b{background:var(--back);transform:rotateY(180deg)}
+.face .t{font-size:clamp(2rem,9vmin,7rem);font-weight:900;line-height:1.1;overflow-wrap:anywhere}
+.face .hint{font-weight:800;color:var(--soft);font-size:clamp(.9rem,2.4vmin,1.4rem)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.end{margin:auto;width:min(100%,760px);text-align:center;background:var(--card);border:5px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);box-shadow:0 10px 0 var(--edge)}
+.end h2{margin:0 0 8px;font-size:clamp(1.8rem,7vmin,4.6rem)}
+.end p{margin:8px 0 18px;font-size:clamp(1.1rem,3vmin,1.9rem);color:var(--soft);font-weight:700}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <section id="deck" style="display:contents">
+    <div class="info"><span id="pos" aria-live="polite"></span><span id="piles"></span></div>
+    <div class="stage"><button class="flip" id="flip"><span class="inner"><span class="face a"><span class="t" id="front"></span><span class="hint" id="hintA"></span></span><span class="face b"><span class="t" id="backT"></span><span class="hint" id="hintB"></span></span></span></button></div>
+    <div class="row" id="moveRow"><button class="big" id="prev"></button><button class="big" id="read"></button><button class="big hot" id="turn"></button><button class="big" id="next"></button></div>
+    <div class="row" id="sortRow" hidden><button class="big again" id="againBtn"></button><button class="big good" id="got"></button></div>
+    <p class="keys" id="keys"></p>
+  </section>
+  <section class="end" id="end" hidden><h2 id="endH"></h2><p id="endP"></p><div class="row"><button class="big again" id="practise"></button><button class="big hot" id="restart"></button></div></section>
+</main>
+<script>
+// Flashcards. The deck is CARDS (shuffled when CONFIG.shuffle). A card's front shows first; flip it, then sort it into
+// Got it or Again. At the end: how many were got, and the Again pile can be practised once more. Nothing is saved.
+// Keys: Space or Enter flips · right arrow or Page Down next · left arrow or Page Up back · 1 or G got it · 2 or A again.
+'use strict';
+const CONFIG = {
+  title: 'Flashcards',
+  lang: 'en',
+  shuffle: true,
+  readAloud: true,
+};
+// Each card: { front, back }.
+const CARDS = [
+  { front: 'Noun', back: 'A word that names a person, place or thing' },
+  { front: 'Verb', back: 'A doing word, like run or think' },
+  { front: 'Adjective', back: 'A word that describes a noun, like tall or bright' },
+  { front: '7 × 8', back: '56' },
+  { front: '9 × 6', back: '54' },
+  { front: 'Photosynthesis', back: 'How plants make food from sunlight, water and air' },
+  { front: 'Evaporation', back: 'When water turns into a gas' },
+  { front: 'Equator', back: 'The imaginary line around the middle of the Earth' },
+];
+// {n}, {total}, {got} and {again} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', pos: 'Card {n} of {total}', piles: 'Got it: {got} · Again: {again}', hintA: 'Tap to flip', hintB: 'Did you know it?', turn: 'Flip', prev: 'Back', next: 'Next', read: 'Read aloud', got: 'Got it', again: 'Again', endH: 'You got {got} of {total}!', endAll: 'Every card in the Got it pile. Brilliant!', endSome: '{again} to practise again.', practise: 'Practise the Again pile', restart: 'Start over', keys: 'Keys: Space flip · arrows move · G got it · A again · F full screen' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', pos: 'Tarjeta {n} de {total}', piles: 'Lo sé: {got} · Otra vez: {again}', hintA: 'Toca para dar la vuelta', hintB: '¿Lo sabías?', turn: 'Dar la vuelta', prev: 'Atrás', next: 'Siguiente', read: 'Leer en voz alta', got: 'Lo sé', again: 'Otra vez', endH: '¡Sabías {got} de {total}!', endAll: 'Todas las tarjetas en Lo sé. ¡Genial!', endSome: '{again} para practicar otra vez.', practise: 'Practicar Otra vez', restart: 'Empezar de nuevo', keys: 'Teclas: Espacio voltear · flechas mover · G lo sé · A otra vez · F pantalla completa' },
+  fr: { sound: 'Son', full: 'Plein écran', pos: 'Carte {n} sur {total}', piles: 'Je sais : {got} · Encore : {again}', hintA: 'Touche pour retourner', hintB: 'Tu le savais ?', turn: 'Retourner', prev: 'Retour', next: 'Suivante', read: 'Lire à voix haute', got: 'Je sais', again: 'Encore', endH: 'Tu en savais {got} sur {total} !', endAll: 'Toutes les cartes dans Je sais. Bravo !', endSome: '{again} à revoir.', practise: 'Revoir la pile Encore', restart: 'Recommencer', keys: 'Touches : Espace retourner · flèches avancer · G je sais · A encore · F plein écran' },
+  de: { sound: 'Ton', full: 'Vollbild', pos: 'Karte {n} von {total}', piles: 'Gewusst: {got} · Nochmal: {again}', hintA: 'Zum Umdrehen tippen', hintB: 'Hast du es gewusst?', turn: 'Umdrehen', prev: 'Zurück', next: 'Weiter', read: 'Vorlesen', got: 'Gewusst', again: 'Nochmal', endH: '{got} von {total} gewusst!', endAll: 'Alle Karten gewusst. Super!', endSome: '{again} zum Üben.', practise: 'Den Nochmal-Stapel üben', restart: 'Neu beginnen', keys: 'Tasten: Leertaste umdrehen · Pfeile blättern · G gewusst · A nochmal · F Vollbild' },
+  it: { sound: 'Suono', full: 'Schermo intero', pos: 'Carta {n} di {total}', piles: 'La so: {got} · Ancora: {again}', hintA: 'Tocca per girare', hintB: 'La sapevi?', turn: 'Gira', prev: 'Indietro', next: 'Avanti', read: 'Leggi ad alta voce', got: 'La so', again: 'Ancora', endH: 'Ne sapevi {got} su {total}!', endAll: 'Tutte le carte in La so. Bravissimo!', endSome: '{again} da ripassare.', practise: 'Ripassa la pila Ancora', restart: 'Ricomincia', keys: 'Tasti: Spazio gira · frecce avanti e indietro · G la so · A ancora · F schermo intero' },
+  pt: { sound: 'Som', full: 'Tela cheia', pos: 'Cartão {n} de {total}', piles: 'Já sei: {got} · De novo: {again}', hintA: 'Toque para virar', hintB: 'Você sabia?', turn: 'Virar', prev: 'Voltar', next: 'Próximo', read: 'Ler em voz alta', got: 'Já sei', again: 'De novo', endH: 'Você sabia {got} de {total}!', endAll: 'Todos os cartões em Já sei. Demais!', endSome: '{again} para praticar de novo.', practise: 'Praticar o monte De novo', restart: 'Recomeçar', keys: 'Teclas: Espaço vira · setas mudam · G já sei · A de novo · F tela cheia' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', pos: 'Kaart {n} van {total}', piles: 'Gekend: {got} · Nog eens: {again}', hintA: 'Tik om om te draaien', hintB: 'Wist je het?', turn: 'Omdraaien', prev: 'Terug', next: 'Volgende', read: 'Voorlezen', got: 'Gekend', again: 'Nog eens', endH: 'Je kende er {got} van de {total}!', endAll: 'Alle kaarten gekend. Top!', endSome: '{again} om nog eens te oefenen.', practise: 'Oefen de Nog eens-stapel', restart: 'Opnieuw beginnen', keys: 'Toetsen: spatie omdraaien · pijlen bladeren · G gekend · A nog eens · F volledig scherm' },
+  ru: { sound: 'Звук', full: 'Весь экран', pos: 'Карточка {n} из {total}', piles: 'Знаю: {got} · Ещё раз: {again}', hintA: 'Нажмите, чтобы перевернуть', hintB: 'Знали?', turn: 'Перевернуть', prev: 'Назад', next: 'Дальше', read: 'Прочитать вслух', got: 'Знаю', again: 'Ещё раз', endH: 'Знаете {got} из {total}!', endAll: 'Все карточки в стопке «Знаю». Отлично!', endSome: 'Повторить ещё: {again}.', practise: 'Повторить стопку «Ещё раз»', restart: 'Начать заново', keys: 'Клавиши: пробел перевернуть · стрелки листать · G знаю · A ещё раз · F весь экран' },
+  he: { sound: 'צליל', full: 'מסך מלא', pos: 'כרטיס {n} מתוך {total}', piles: 'יודעים: {got} · שוב: {again}', hintA: 'הקישו כדי להפוך', hintB: 'ידעתם?', turn: 'להפוך', prev: 'אחורה', next: 'הבא', read: 'להקריא', got: 'יודעים', again: 'שוב', endH: 'ידעתם {got} מתוך {total}!', endAll: 'כל הכרטיסים בערימת יודעים. מעולה!', endSome: '{again} לתרגל שוב.', practise: 'לתרגל את ערימת שוב', restart: 'להתחיל מחדש', keys: 'מקשים: רווח להפוך · חיצים לדפדף · G יודעים · A שוב · F מסך מלא' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', pos: 'البطاقة {n} من {total}', piles: 'أعرفها: {got} · مرة أخرى: {again}', hintA: 'اضغط لتقلب', hintB: 'هل عرفتها؟', turn: 'اقلب', prev: 'رجوع', next: 'التالي', read: 'اقرأ بصوت عالٍ', got: 'أعرفها', again: 'مرة أخرى', endH: 'عرفت {got} من {total}!', endAll: 'كل البطاقات في كومة أعرفها. رائع!', endSome: '{again} للتدرّب مرة أخرى.', practise: 'تدرّب على كومة مرة أخرى', restart: 'ابدأ من جديد', keys: 'المفاتيح: المسافة للقلب · الأسهم للتنقل · G أعرفها · A مرة أخرى · F ملء الشاشة' },
+  ja: { sound: 'サウンド', full: '全画面', pos: 'カード {n} / {total}', piles: 'わかった：{got}・もう一度：{again}', hintA: 'タップしてめくる', hintB: 'わかったかな？', turn: 'めくる', prev: 'もどる', next: '次へ', read: '読み上げる', got: 'わかった', again: 'もう一度', endH: '{total}まい中 {got}まいわかったね！', endAll: 'ぜんぶ「わかった」！すごい！', endSome: 'もう一度れんしゅう：{again}まい', practise: '「もう一度」のカードをれんしゅう', restart: 'さいしょから', keys: 'キー：スペース めくる・矢印 うごく・G わかった・A もう一度・F 全画面' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', pos: '第 {n} 張，共 {total} 張', piles: '會了：{got}・再一次：{again}', hintA: '點一下翻面', hintB: '你知道嗎？', turn: '翻面', prev: '上一張', next: '下一張', read: '朗讀', got: '會了', again: '再一次', endH: '{total} 張中你會了 {got} 張！', endAll: '每一張都會了，太棒了！', endSome: '還有 {again} 張要再練習。', practise: '練習「再一次」那疊', restart: '重新開始', keys: '按鍵：空白鍵 翻面・方向鍵 移動・G 會了・A 再一次・F 全螢幕' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+// ---- the state ----------------------------------------------------------------------------------------------------
+const S = { screen: 'deck', deck: [], at: 0, over: false, sorted: {} };
+function deal(cards) { S.deck = CONFIG.shuffle ? shuffle(cards.slice()) : cards.slice(); S.at = 0; S.over = false; S.sorted = {}; S.screen = 'deck'; $('deck').hidden = false; $('end').hidden = true; paint(); $('turn').focus({ preventScroll: true }); }
+const counts = () => { const v = Object.values(S.sorted); return { got: v.filter(x => x === 'got').length, again: v.filter(x => x === 'again').length }; };
+function paint() {
+  const c = S.deck[S.at], k = counts();
+  $('front').textContent = c.front; $('backT').textContent = c.back;
+  $('flip').classList.toggle('over', S.over); $('flip').setAttribute('aria-label', S.over ? c.back : c.front);
+  $('pos').textContent = tr('pos', { n: S.at + 1, total: S.deck.length }); $('piles').textContent = tr('piles', k);
+  $('moveRow').hidden = S.over; $('sortRow').hidden = !S.over;
+  $('prev').disabled = S.at === 0; $('next').disabled = S.at >= S.deck.length - 1;
+}
+function flip() { if (S.screen !== 'deck') return; S.over = !S.over; sfx('click'); paint(); (S.over ? $('got') : $('turn')).focus({ preventScroll: true }); }
+function move(d) { if (S.screen !== 'deck') return; const to = S.at + d; if (to < 0 || to >= S.deck.length) return; S.at = to; S.over = false; paint(); }
+function sort(pile) {
+  if (S.screen !== 'deck' || !S.over) return;
+  S.sorted[S.at] = pile; sfx(pile === 'got' ? 'coin' : 'jump');
+  const left = S.deck.findIndex((_, i) => !(i in S.sorted) && i > S.at), first = S.deck.findIndex((_, i) => !(i in S.sorted));
+  if (first < 0) return finish();
+  S.at = left >= 0 ? left : first; S.over = false; paint(); $('turn').focus({ preventScroll: true });
+}
+function finish() {
+  const k = counts(); S.screen = 'end'; $('deck').hidden = true; $('end').hidden = false;
+  $('endH').textContent = tr('endH', { got: k.got, total: S.deck.length }); $('endP').textContent = k.again ? tr('endSome', k) : tr('endAll');
+  $('practise').hidden = !k.again; sfx('win'); try { if (k.got && B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+  try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+  (k.again ? $('practise') : $('restart')).focus();
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('flip').onclick = flip; $('turn').onclick = flip; $('prev').onclick = () => move(-1); $('next').onclick = () => move(1);
+$('got').onclick = () => sort('got'); $('againBtn').onclick = () => sort('again');
+$('read').onclick = () => { const c = S.deck[S.at]; say(S.over ? c.back : c.front); };
+$('practise').onclick = () => deal(S.deck.filter((_, i) => S.sorted[i] === 'again')); $('restart').onclick = () => deal(CARDS);
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  const k = e.key, rtl = document.documentElement.dir === 'rtl';
+  if (k === 'f' || k === 'F') { $('full').click(); return; }
+  if (S.screen !== 'deck') return;
+  const onBtn = document.activeElement && document.activeElement.tagName === 'BUTTON';
+  if ((k === ' ' || k === 'Enter') && !onBtn) { e.preventDefault(); flip(); }
+  else if (k === 'PageDown' || k === (rtl ? 'ArrowLeft' : 'ArrowRight')) { e.preventDefault(); if (S.over) sort('got'); else move(1); }
+  else if (k === 'PageUp' || k === (rtl ? 'ArrowRight' : 'ArrowLeft')) { e.preventDefault(); move(-1); }
+  else if (k === 'g' || k === 'G' || k === '1') sort('got');
+  else if (k === 'a' || k === 'A' || k === '2') sort('again');
+  else if (k === 'ArrowUp' || k === 'ArrowDown') { e.preventDefault(); flip(); }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['hintA', 'hintA'], ['hintB', 'hintB'], ['turn', 'turn'], ['prev', 'prev'], ['next', 'next'], ['read', 'read'], ['got', 'got'], ['againBtn', 'again'], ['practise', 'practise'], ['restart', 'restart'], ['keys', 'keys']]) $(id).textContent = tr(k);
+$('read').hidden = !(CONFIG.readAloud && B.speak);
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ screen: S.screen, card: S.at + 1, cards: S.deck.length, over: S.over, ...counts() }), start() { deal(CARDS); } };
+deal(CARDS);
+</script>

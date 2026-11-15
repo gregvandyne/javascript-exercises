@@ -1,0 +1,160 @@
+<title>Exit Ticket</title>
+<style>
+/* Exit Ticket: a short fixed-choice check at the end of a lesson. One question at a time, no timer, then "Thank you".
+   Answers stay on this device: no score is submitted and nothing is saved per student. Big type, keys 1-4. */
+:root{--bg:#eefaf0;--bg2:#d5f2db;--ink:#163222;--soft:#466b55;--card:#ffffff;--edge:#163222;--hot:#1f9d55;--hot-ink:#ffffff;--right:#1f9d55;--wrong:#ff8a3d;
+  --c0:#4f7cff;--c1:#e0559b;--c2:#f0a81c;--c3:#16a3a3}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+body{background:linear-gradient(170deg,var(--bg),var(--bg2)) fixed}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--c0);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+button:disabled{cursor:default}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
+.hot{background:var(--hot);color:var(--hot-ink)}
+[hidden]{display:none!important}
+.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2.2vmin,22px);min-height:0}
+.card{margin:auto;width:min(100%,780px);background:var(--card);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 8px 0 var(--edge)}
+.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6.4vmin,4.4rem);line-height:1.1}
+.card p{margin:10px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
+.note{font-weight:800;color:var(--ink)!important;background:var(--bg2);border-radius:14px;padding:8px 14px}
+.dots{display:flex;justify-content:center;gap:8px}
+.dots i{width:clamp(14px,2.4vmin,22px);height:clamp(14px,2.4vmin,22px);border-radius:50%;background:var(--bg2);border:3px solid var(--edge)}
+.dots i.on{background:var(--hot)}
+.q{margin:0;text-align:center;font-size:clamp(1.6rem,6.4vmin,4.6rem);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
+.choices{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:clamp(10px,2vmin,20px);align-content:center}
+.choice{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:22px;min-height:clamp(64px,12vmin,120px);text-align:start;font-size:clamp(1.2rem,4.2vmin,3rem)}
+.choice .tag{flex:none;display:grid;place-items:center;width:clamp(40px,7vmin,64px);height:clamp(40px,7vmin,64px);border-radius:50%;color:#fff;font-weight:900}
+.choice .lab{flex:1;min-width:0;overflow-wrap:anywhere}
+.choice.right{background:var(--right);color:#fff}
+.choice.wrong{background:var(--wrong);color:#fff}
+.choice.dim{opacity:.55}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.score{font-size:clamp(2.4rem,10vmin,7rem);font-weight:900;color:var(--hot);margin:6px 0}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <section class="screen" id="start"><div class="card"><h2 id="startH"></h2><p id="startP"></p><p class="note" id="privacy"></p><div class="row"><button class="big hot" id="go"></button></div></div></section>
+  <section class="screen" id="ask" hidden>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <p class="keys" id="qn"></p>
+    <h2 class="q" id="q"></h2>
+    <div class="choices" id="choices"></div>
+    <p class="keys" id="feedback" aria-live="polite"></p>
+    <div class="row"><button class="big" id="read"></button><button class="big hot" id="next" hidden></button></div>
+  </section>
+  <section class="screen" id="done" hidden><div class="card"><h2 id="doneH"></h2><div class="score" id="score"></div><p id="doneP"></p><p class="note" id="doneNote"></p><div class="row"><button class="big" id="again"></button></div></div></section>
+</main>
+<script>
+// Exit Ticket. QUESTIONS: 3 to 5, each { q, choices (2-4), answer: the index of the right choice, or null when there is
+// no right answer (how did it feel?) }. One at a time, no timer; a question with an answer says right or not
+// (CONFIG.showRight). The end card thanks them and says how many were right. No score is submitted (BRB.gameOver with
+// score null) and nothing is stored per student. Keys: 1-4 choose · Enter or Page Down next.
+'use strict';
+const CONFIG = {
+  title: 'Exit Ticket',
+  lang: 'en',
+  showRight: true,
+  readAloud: true,
+};
+const QUESTIONS = [
+  { q: 'Which fraction is the same as one half?', choices: ['2/4', '1/3', '3/5', '2/3'], answer: 0 },
+  { q: 'Which is bigger?', choices: ['1/4', '1/2'], answer: 1 },
+  { q: 'How sure do you feel about fractions now?', choices: ['Very sure', 'A bit sure', 'Not sure yet'], answer: null },
+];
+// {n}, {total} and {right} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startH: 'Exit ticket', startP: 'A few quick questions about today’s lesson.', privacy: 'Your answers stay on this device. Nothing is saved.', go: 'Start', qn: 'Question {n} of {total}', next: 'Next', finish: 'Finish', read: 'Read aloud', right: 'That’s right!', notQuite: 'Not quite: the answer is highlighted.', thanks: 'Thanks for your answer.', doneH: 'Thank you!', doneP: 'You got {right} of {total} right.', doneNone: 'Your exit ticket is done.', doneNote: 'Show your teacher this screen.', again: 'Next student' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startH: 'Ticket de salida', startP: 'Unas preguntas rápidas sobre la clase de hoy.', privacy: 'Tus respuestas se quedan en este dispositivo. No se guarda nada.', go: 'Empezar', qn: 'Pregunta {n} de {total}', next: 'Siguiente', finish: 'Terminar', read: 'Leer en voz alta', right: '¡Correcto!', notQuite: 'Casi: la respuesta está marcada.', thanks: 'Gracias por tu respuesta.', doneH: '¡Gracias!', doneP: 'Acertaste {right} de {total}.', doneNone: 'Tu ticket de salida está listo.', doneNote: 'Enséñale esta pantalla a tu docente.', again: 'Siguiente estudiante' },
+  fr: { sound: 'Son', full: 'Plein écran', startH: 'Ticket de sortie', startP: 'Quelques questions rapides sur la leçon du jour.', privacy: 'Tes réponses restent sur cet appareil. Rien n’est gardé.', go: 'Commencer', qn: 'Question {n} sur {total}', next: 'Suivante', finish: 'Terminer', read: 'Lire à voix haute', right: 'C’est juste !', notQuite: 'Pas tout à fait : la bonne réponse est en couleur.', thanks: 'Merci pour ta réponse.', doneH: 'Merci !', doneP: 'Tu as {right} bonnes réponses sur {total}.', doneNone: 'Ton ticket de sortie est terminé.', doneNote: 'Montre cet écran à ton enseignant.', again: 'Élève suivant' },
+  de: { sound: 'Ton', full: 'Vollbild', startH: 'Exit-Ticket', startP: 'Ein paar kurze Fragen zur heutigen Stunde.', privacy: 'Deine Antworten bleiben auf diesem Gerät. Nichts wird gespeichert.', go: 'Los', qn: 'Frage {n} von {total}', next: 'Weiter', finish: 'Fertig', read: 'Vorlesen', right: 'Richtig!', notQuite: 'Nicht ganz: Die Lösung ist markiert.', thanks: 'Danke für deine Antwort.', doneH: 'Danke!', doneP: '{right} von {total} richtig.', doneNone: 'Dein Exit-Ticket ist fertig.', doneNote: 'Zeig diesen Bildschirm deiner Lehrkraft.', again: 'Nächstes Kind' },
+  it: { sound: 'Suono', full: 'Schermo intero', startH: 'Biglietto di uscita', startP: 'Qualche domanda veloce sulla lezione di oggi.', privacy: 'Le tue risposte restano su questo dispositivo. Non si salva nulla.', go: 'Inizia', qn: 'Domanda {n} di {total}', next: 'Avanti', finish: 'Fine', read: 'Leggi ad alta voce', right: 'Giusto!', notQuite: 'Quasi: la risposta giusta è evidenziata.', thanks: 'Grazie per la risposta.', doneH: 'Grazie!', doneP: 'Ne hai indovinate {right} su {total}.', doneNone: 'Il tuo biglietto di uscita è pronto.', doneNote: 'Mostra questa schermata all’insegnante.', again: 'Prossimo studente' },
+  pt: { sound: 'Som', full: 'Tela cheia', startH: 'Bilhete de saída', startP: 'Algumas perguntas rápidas sobre a aula de hoje.', privacy: 'Suas respostas ficam neste aparelho. Nada é salvo.', go: 'Começar', qn: 'Pergunta {n} de {total}', next: 'Próxima', finish: 'Terminar', read: 'Ler em voz alta', right: 'Certo!', notQuite: 'Quase: a resposta certa está destacada.', thanks: 'Obrigado pela resposta.', doneH: 'Obrigado!', doneP: 'Você acertou {right} de {total}.', doneNone: 'Seu bilhete de saída está pronto.', doneNote: 'Mostre esta tela para o seu professor.', again: 'Próximo aluno' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startH: 'Exitkaart', startP: 'Een paar snelle vragen over de les van vandaag.', privacy: 'Je antwoorden blijven op dit apparaat. Er wordt niets bewaard.', go: 'Start', qn: 'Vraag {n} van {total}', next: 'Volgende', finish: 'Klaar', read: 'Voorlezen', right: 'Goed zo!', notQuite: 'Bijna: het goede antwoord is gemarkeerd.', thanks: 'Bedankt voor je antwoord.', doneH: 'Dank je wel!', doneP: 'Je had er {right} van de {total} goed.', doneNone: 'Je exitkaart is klaar.', doneNote: 'Laat dit scherm aan je leerkracht zien.', again: 'Volgende leerling' },
+  ru: { sound: 'Звук', full: 'Весь экран', startH: 'Билет на выход', startP: 'Несколько быстрых вопросов о сегодняшнем уроке.', privacy: 'Ответы остаются на этом устройстве. Ничего не сохраняется.', go: 'Начать', qn: 'Вопрос {n} из {total}', next: 'Дальше', finish: 'Готово', read: 'Прочитать вслух', right: 'Верно!', notQuite: 'Почти: правильный ответ выделен.', thanks: 'Спасибо за ответ.', doneH: 'Спасибо!', doneP: 'Правильно: {right} из {total}.', doneNone: 'Билет на выход готов.', doneNote: 'Покажите этот экран учителю.', again: 'Следующий ученик' },
+  he: { sound: 'צליל', full: 'מסך מלא', startH: 'כרטיס יציאה', startP: 'כמה שאלות קצרות על השיעור של היום.', privacy: 'התשובות נשארות במכשיר הזה. שום דבר לא נשמר.', go: 'להתחיל', qn: 'שאלה {n} מתוך {total}', next: 'הבא', finish: 'סיום', read: 'להקריא', right: 'נכון!', notQuite: 'כמעט: התשובה הנכונה מסומנת.', thanks: 'תודה על התשובה.', doneH: 'תודה!', doneP: 'צדקתם ב-{right} מתוך {total}.', doneNone: 'כרטיס היציאה מוכן.', doneNote: 'הראו את המסך הזה למורה.', again: 'התלמיד הבא' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startH: 'بطاقة الخروج', startP: 'بعض الأسئلة السريعة عن درس اليوم.', privacy: 'تبقى إجاباتك على هذا الجهاز. لا يُحفَظ شيء.', go: 'ابدأ', qn: 'السؤال {n} من {total}', next: 'التالي', finish: 'إنهاء', read: 'اقرأ بصوت عالٍ', right: 'صحيح!', notQuite: 'ليس تمامًا: الإجابة الصحيحة مظلّلة.', thanks: 'شكرًا على إجابتك.', doneH: 'شكرًا!', doneP: 'أجبت {right} من {total} إجابة صحيحة.', doneNone: 'بطاقة الخروج جاهزة.', doneNote: 'أرِ هذه الشاشة لمعلّمك.', again: 'الطالب التالي' },
+  ja: { sound: 'サウンド', full: '全画面', startH: '出口チケット', startP: '今日の授業についてのかんたんな質問です。', privacy: '答えはこの端末だけにのこります。何も保存しません。', go: 'はじめる', qn: '質問 {n} / {total}', next: '次へ', finish: 'おわる', read: '読み上げる', right: '正解！', notQuite: 'おしい！正しい答えに色がついています。', thanks: '答えてくれてありがとう。', doneH: 'ありがとう！', doneP: '{total}問中 {right}問 正解。', doneNone: '出口チケットができました。', doneNote: 'この画面を先生に見せてね。', again: '次の人' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startH: '離場小卡', startP: '幾個關於今天課程的小問題。', privacy: '你的答案只留在這台裝置上，什麼都不會儲存。', go: '開始', qn: '第 {n} 題，共 {total} 題', next: '下一題', finish: '完成', read: '朗讀', right: '答對了！', notQuite: '差一點：正確答案已標出。', thanks: '謝謝你的回答。', doneH: '謝謝！', doneP: '{total} 題中答對 {right} 題。', doneNone: '你的離場小卡完成了。', doneNote: '把這個畫面給老師看。', again: '下一位學生' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const QS = QUESTIONS.map(x => ({ q: x.q, choices: x.choices.slice(0, 4), answer: Number.isInteger(x.answer) && x.answer >= 0 && x.answer < Math.min(4, x.choices.length) ? x.answer : null })).filter(x => x.choices.length >= 2);
+
+// ---- the state: this round only, in memory ------------------------------------------------------------------------
+const S = { screen: 'start', i: 0, chosen: null, right: 0, marked: 0 };
+function go(name) {
+  S.screen = name; for (const id of ['start', 'ask', 'done']) $(id).hidden = id !== name;
+  const f = $(name).querySelector('button.hot:not([hidden])') || $(name).querySelector('.choice') || $(name).querySelector('button'); if (f) f.focus({ preventScroll: true });
+}
+function begin() { S.i = 0; S.right = 0; S.marked = 0; sfx('click'); ask(); }
+function ask() {
+  const x = QS[S.i]; S.chosen = null;
+  $('qn').textContent = tr('qn', { n: S.i + 1, total: QS.length }); $('q').textContent = x.q; $('feedback').textContent = '';
+  $('dots').innerHTML = QS.map((_, k) => `<i${k <= S.i ? ' class="on"' : ''}></i>`).join('');
+  const box = $('choices'); box.innerHTML = '';
+  x.choices.forEach((c, k) => {
+    const b = document.createElement('button'); b.className = 'choice'; b.innerHTML = '<span class="tag"></span><span class="lab"></span>';
+    b.querySelector('.tag').textContent = String(k + 1); b.querySelector('.tag').style.background = `var(--c${k})`; b.querySelector('.lab').textContent = c;
+    b.onclick = () => choose(k); box.appendChild(b);
+  });
+  $('next').hidden = true; $('next').textContent = S.i < QS.length - 1 ? tr('next') : tr('finish');
+  go('ask');
+}
+function choose(k) {
+  const x = QS[S.i]; if (S.screen !== 'ask' || S.chosen !== null || !x.choices[k]) return;
+  S.chosen = k; const btns = [...$('choices').children];
+  btns.forEach((b, j) => { b.disabled = true; b.setAttribute('aria-pressed', String(j === k)); });
+  if (x.answer === null) { $('feedback').textContent = tr('thanks'); btns.forEach((b, j) => { if (j !== k) b.classList.add('dim'); }); sfx('click'); }
+  else {
+    S.marked += 1; const ok = k === x.answer; if (ok) S.right += 1;
+    if (CONFIG.showRight) { btns[x.answer].classList.add('right'); if (!ok) btns[k].classList.add('wrong'); btns.forEach((b, j) => { if (j !== k && j !== x.answer) b.classList.add('dim'); }); $('feedback').textContent = ok ? tr('right') : tr('notQuite'); }
+    else { btns.forEach((b, j) => { if (j !== k) b.classList.add('dim'); }); $('feedback').textContent = tr('thanks'); }
+    sfx(ok || !CONFIG.showRight ? 'coin' : 'jump');
+  }
+  $('next').hidden = false; $('next').focus({ preventScroll: true });
+}
+function next() {
+  if (S.screen !== 'ask' || S.chosen === null) return;
+  if (S.i < QS.length - 1) { S.i += 1; ask(); return; }
+  go('done'); $('score').hidden = !S.marked || !CONFIG.showRight;
+  $('score').textContent = `${S.right} / ${S.marked}`; $('doneP').textContent = S.marked && CONFIG.showRight ? tr('doneP', { right: S.right, total: S.marked }) : tr('doneNone');
+  sfx('win'); try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+  try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('go').onclick = begin; $('next').onclick = next; $('again').onclick = () => { S.screen = 'start'; go('start'); };
+$('read').onclick = () => say(QS[S.i].q);
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (e.key === 'f' || e.key === 'F') { $('full').click(); return; }
+  if (S.screen !== 'ask') return;
+  const d = /^(Digit|Numpad)([1-4])$/.exec(e.code || '');
+  if (d) { e.preventDefault(); choose(+d[2] - 1); }
+  else if ((e.key === 'PageDown' || e.key === 'Enter') && S.chosen !== null && document.activeElement !== $('next')) { e.preventDefault(); next(); }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['privacy', 'privacy'], ['go', 'go'], ['read', 'read'], ['doneH', 'doneH'], ['doneNote', 'doneNote'], ['again', 'again']]) $(id).textContent = tr(k);
+$('read').hidden = !(CONFIG.readAloud && B.speak);
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ screen: S.screen, question: S.i + 1, questions: QS.length, chosen: S.chosen, right: S.right, marked: S.marked }), start() { begin(); } };
+go('start');
+</script>

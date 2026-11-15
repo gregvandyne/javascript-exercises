@@ -42,6 +42,26 @@ export const TEMPLATES = [
   // classic "Start from" row).
   { key: 'oomba3d', title: 'My 3D World', icon: '🏰', cover: 'ocean', category: 'adventure', players: 1, threeD: true, builderOnly: true, kit2: true,
     description: 'A ready-made 3D world with a hero who runs, jumps, collects and answers.' },
+  // The classroom starters (catalog.js CLASSROOM_TEMPLATE_KEYS): plain HTML for the classroom board (big type, keyboard
+  // and clicker keys) and phones, not on the Oomba Kit. The Builder starts from them for the "For your class" types of
+  // /build/new (builder/plan.js). builderOnly: not in the classic "Start from" row. Nothing in them stores or sends a
+  // student's answer, and none of them uses names (teams and numbers only).
+  { key: 'quiet', title: 'Quiet Stars', icon: '🌙', cover: 'night', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'A classroom noise meter: the night sky fills with stars while the room is quiet. Works as a calm timer without a microphone.' },
+  { key: 'categories', title: 'Category Board', icon: '🗂️', cover: 'mint', category: 'learning', players: 2, builderOnly: true, classroom: true,
+    description: 'Teams take turns to pick a category and points, then answer the question on the board.' },
+  { key: 'survey', title: 'Class Survey', icon: '📊', cover: 'sunset', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'Fixed-choice questions: count hands or pass the device. Only counts, only on this device.' },
+  { key: 'bingo', title: 'Class Bingo', icon: '🔢', cover: 'gold', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'The board calls math facts or words, and everyone marks their own card.' },
+  { key: 'flashcards', title: 'Flashcards', icon: '🃏', cover: 'ocean', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'One big card at a time: flip it, then sort it into Got it or Again.' },
+  { key: 'exitticket', title: 'Exit Ticket', icon: '🎟️', cover: 'forest', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'A short fixed-choice check at the end of a lesson.' },
+  { key: 'spinner', title: 'Team Spinner', icon: '🎡', cover: 'candy', category: 'learning', players: 2, builderOnly: true, classroom: true,
+    description: 'Spin the wheel to pick a team, a number or a topic. Never names.' },
+  { key: 'scoreboard', title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, builderOnly: true, classroom: true,
+    description: 'Big team scores for the board, with number keys, Undo and Reset.' },
 ];
 
 const cache = new Map();

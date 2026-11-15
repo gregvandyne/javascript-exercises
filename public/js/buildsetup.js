@@ -16,9 +16,28 @@ const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', 
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
 // ---------------------------------------------------------------- screens
+/** The steps the chosen kind of game skips (a survey or a scoreboard has no 2D or 3D, world or characters), and the
+ *  steps that are left. */
+const skipped = () => D.skip[S.sel.type[0]] || [];
+const liveKeys = () => KEYS.filter(k => !skipped().includes(k));
+/** "Step 2 of 3" and the dots, counting only the steps that are left. */
+function paintProgress() {
+  const keys = liveKeys(), skip = skipped();
+  for (const key of KEYS) {
+    const scr = $(`.su-screen[data-screen="${key}"]`); if (!scr) continue;
+    const i = keys.indexOf(key), n = i < 0 ? KEYS.indexOf(key) + 1 : i + 1, total = i < 0 ? KEYS.length : keys.length;
+    $('.su-count', scr).textContent = t('js.buildsetup.progress', { n, total });
+    $$('.su-dots i', scr).forEach((dot, k) => {
+      const at = keys.indexOf(KEYS[k]);
+      dot.hidden = i >= 0 && skip.includes(KEYS[k]);
+      dot.classList.toggle('on', i < 0 ? k <= KEYS.indexOf(key) : at >= 0 && at <= i);
+    });
+  }
+}
 /** Show one screen. focus: move to its heading (a step change); push: add it to the browser's Back. */
 function show(screen, { focus = true, push = true } = {}) {
   S.screen = screen;
+  paintProgress();
   for (const el of $$('.su-screen')) el.hidden = el.dataset.screen !== screen;
   $('#su-skipall').hidden = screen === 'start';
   if (screen === 'world' || screen === 'chars' || screen === 'plan') refreshLimits();
@@ -31,9 +50,17 @@ history.replaceState({ su: 'start' }, '', location.pathname);   // a reload star
 
 /** Next / Skip this step / Back. A step opened with "Change" on the plan goes back to the plan. */
 function go(dir) {
-  const i = ORDER.indexOf(S.screen);
   if (S.back && S.screen !== 'plan') { const to = S.back; S.back = null; return show(to); }
-  show(ORDER[Math.max(0, Math.min(ORDER.length - 1, i + (dir === 'back' ? -1 : 1)))]);
+  const order = ORDER.filter(k => !skipped().includes(k)), i = order.indexOf(S.screen);
+  show(order[Math.max(0, Math.min(order.length - 1, i + (dir === 'back' ? -1 : 1)))]);
+}
+
+// ---------------------------------------------------------------- the two groups of game types
+/** Show one group of the game-type step ("For your class" or "Games"); a pick in the other group stays picked. */
+function showGroup(id) {
+  for (const b of $$('[data-tgroup-btn]')) b.setAttribute('aria-pressed', String(b.dataset.tgroupBtn === id));
+  for (const c of $$('.su-card[data-tgroup]')) c.hidden = c.dataset.tgroup !== id;
+  for (const p of $$('[data-tgroup-hint]')) p.hidden = p.dataset.tgroupHint !== id;
 }
 
 // ---------------------------------------------------------------- picking
@@ -50,6 +77,7 @@ function pick(key, id) {
   const st = stepOf(key), cur = S.sel[key], had = cur.includes(id);
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
+  if (key === 'type') paintProgress();
   if (id === 'else' && !had) { const inp = $(`#su-idea-${key}`); inp.focus(); inp.scrollIntoView({ block: 'nearest' }); }
   if (key === 'chars' || key === 'world' || key === 'look' || key === 'type') refreshLimits(); else refreshAll();
 }
@@ -140,18 +168,19 @@ function selectAll(btn) {
 const ideaOf = key => S.idea[key].trim().replace(/\s+/g, ' ');
 /** The choices as the Builder gets them: pack choices by id, typed ones as custom text; blank means it decides. */
 function buildPlan() {
-  const one = key => { const id = S.sel[key][0]; if (!id) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
+  const skip = skipped();
+  const one = key => { const id = S.sel[key][0]; if (!id || skip.includes(key)) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
   return {
-    type: one('type'), look: S.sel.look[0] || null, world: one('world'),
-    characters: S.sel.chars.map(id => (id === 'else' ? (ideaOf('chars') ? { from: 'custom', text: ideaOf('chars') } : null) : { from: 'pack', id })).filter(Boolean),
-    learn: S.sel.learn.map(id => (id === 'else' ? (ideaOf('learn') ? { text: ideaOf('learn') } : null) : { id })).filter(Boolean),
+    type: one('type'), look: skip.includes('look') ? null : S.sel.look[0] || null, world: one('world'),
+    characters: skip.includes('chars') ? [] : S.sel.chars.map(id => (id === 'else' ? (ideaOf('chars') ? { from: 'custom', text: ideaOf('chars') } : null) : { from: 'pack', id })).filter(Boolean),
+    learn: skip.includes('learn') ? [] : S.sel.learn.map(id => (id === 'else' ? (ideaOf('learn') ? { text: ideaOf('learn') } : null) : { id })).filter(Boolean),
     notes: S.notes.trim(),
   };
 }
 const isEmpty = p => !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length;
 const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id="${id}"] .su-name`); return el ? el.textContent : id; };
 function renderPlan() {
-  const rows = STEPS.map(s => {
+  const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
     const name = t(`js.buildsetup.stepNames.${s.key}`);
     let value, scratch = false;
     if (s.key === 'extras') {
@@ -252,6 +281,7 @@ function preview(id) {
 // ---------------------------------------------------------------- events
 document.addEventListener('click', e => {
   const p = e.target.closest('.su-pick'); if (p) { if (!p.disabled) pick(p.dataset.step, p.dataset.id); return; }
+  const tg = e.target.closest('[data-tgroup-btn]'); if (tg) { showGroup(tg.dataset.tgroupBtn); return; }
   const all = e.target.closest('.su-all'); if (all) { selectAll(all); return; }
   const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); return; }
   const pv = e.target.closest('[data-preview]'); if (pv) { preview(pv.dataset.preview); return; }
@@ -271,3 +301,5 @@ $('#su-notes').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.is
 $('#su-file-btn').addEventListener('click', () => $('#su-file').click());
 $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e.target.value = ''; });
 refreshLimits();
+if (D.typeGroups.length) showGroup(D.typeGroups[0].id);
+paintProgress();

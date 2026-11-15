@@ -1,0 +1,251 @@
+<title>Category Board</title>
+<style>
+/* Category Board: a classroom quiz board for the board. Teams take turns to pick a category and a points value, the
+   question opens big, the teacher shows the answer and gives the points. Sticky notes on a chalkboard; big type,
+   keyboard and clicker keys. An original game (no show's name, look or music). */
+:root{--board:#17342e;--board2:#1f4239;--ink:#fffaf0;--soft:#cfe8dc;--edge:#0b1d19;--note-ink:#1e1a14;--hot:#ffd65c;
+  --c0:#ff8f7e;--c1:#7fe0b3;--c2:#8fc9ff;--c3:#ffe27d;--c4:#c9a9ff;--c5:#ffb877}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--board);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+body{background:radial-gradient(ellipse at 50% 0%,var(--board2),var(--board) 70%) fixed}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:14px;border:3px solid var(--edge);background:var(--board2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:5px solid var(--hot);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--hot);color:var(--note-ink)}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.hot{background:var(--hot);color:var(--note-ink)}
+[hidden]{display:none!important}
+.board{flex:1;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:clamp(6px,1.4vmin,14px);min-height:0}
+.head{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;border-radius:12px;color:var(--note-ink);font-weight:900;font-size:clamp(.9rem,2.8vmin,2rem);line-height:1.1;overflow-wrap:anywhere;box-shadow:0 4px 0 var(--edge);border:3px solid var(--edge);min-height:56px}
+.cell{color:var(--note-ink);font-size:clamp(1.3rem,6vmin,4.4rem);font-weight:900;font-variant-numeric:tabular-nums;border-radius:12px;padding:4px;min-height:56px;transform:rotate(var(--tilt,0deg))}
+.cell.used{background:transparent!important;color:var(--soft);border-style:dashed;box-shadow:none;font-size:clamp(.9rem,2.4vmin,1.6rem)}
+.teams{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.team{flex:1 1 140px;min-width:0;max-width:300px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;border-radius:16px;background:var(--edge);border:4px solid transparent;font-weight:900;font-size:clamp(1.1rem,3.4vmin,2.4rem)}
+.team.turn{border-color:var(--hot)}
+.team .pts{font-variant-numeric:tabular-nums}
+.turnline{text-align:center;margin:0;font-weight:800;font-size:clamp(1rem,2.6vmin,1.7rem);color:var(--soft)}
+.clue{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vmin,22px);padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:var(--note,var(--c0));color:var(--note-ink);overflow:auto}
+.clue .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900;font-size:clamp(1.1rem,3.4vmin,2.4rem)}
+.clue .q{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;font-size:clamp(1.7rem,7.5vmin,5.6rem);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
+.clue .a{margin:0;text-align:center;font-size:clamp(1.5rem,6vmin,4.4rem);font-weight:900;background:var(--ink);border:4px solid var(--note-ink);border-radius:20px;padding:10px 16px}
+.clue button{background:var(--ink);color:var(--note-ink);border-color:var(--note-ink);box-shadow:0 4px 0 var(--note-ink)}
+.clue .hot{background:var(--note-ink);color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
+.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;opacity:.85}
+.end{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:rgba(11,29,25,.92)}
+.end .card{width:min(100%,760px);text-align:center;background:var(--board2);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px)}
+.end h2{margin:0 0 12px;font-size:clamp(2rem,7vmin,4.6rem)}
+.end ol{list-style:none;margin:0 0 16px;padding:0;font-size:clamp(1.2rem,4vmin,2.6rem);font-weight:800}
+@media (max-width:600px){.cell{font-size:clamp(1rem,5vmin,2rem)}.head{font-size:.72rem;padding:4px 2px;overflow-wrap:normal;word-break:normal;hyphens:auto}.team{flex-basis:96px;padding:6px 10px;font-size:1rem}.bar h1{font-size:1.1rem}.bar button{padding:6px 10px}}
+@media (prefers-reduced-motion:reduce){.cell{transform:none}}
+</style>
+<main class="app" id="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <p class="turnline" id="turnline" aria-live="polite"></p>
+  <div class="board" id="board" role="grid"></div>
+  <div class="teams" id="teams"></div>
+  <p class="keys" id="keys"></p>
+</main>
+<section class="clue" id="clue" role="dialog" aria-modal="true" aria-labelledby="clueQ" hidden>
+  <div class="top"><span id="clueCat"></span><span id="cluePts"></span></div>
+  <p class="q" id="clueQ"></p>
+  <p class="a" id="clueA" hidden></p>
+  <div class="row" id="clueBtns"><button class="big" id="read"></button><button class="big hot" id="reveal"></button><button class="big" id="back"></button></div>
+  <div class="row" id="award" hidden></div>
+</section>
+<section class="end" id="end" hidden><div class="card" role="dialog" aria-labelledby="endH"><h2 id="endH"></h2><ol id="endList"></ol><div class="row"><button class="big hot" id="again"></button></div></div></section>
+<script>
+// Category Board. Teams take turns: the team whose turn it is picks a category and a points value; the question opens
+// big; Show answer; then the teacher gives the points to a team, or to nobody. The board fills up; the end card lists
+// the teams by points. Teams are numbered (never students' names). Nothing is saved or sent.
+// Keys: arrows move on the board, Enter or Space opens; in a question Space, Enter or Page Down shows the answer, 1-9
+// give the points to that team, 0 gives them to nobody, Esc goes back without using the question; F full screen.
+'use strict';
+const CONFIG = {
+  title: 'Category Board',
+  lang: 'en',
+  teams: 3,
+  points: [100, 200, 300, 400],
+  takeTurns: true,
+  readAloud: true,
+};
+// Each category: a name and its questions from easy to hard (one for each value in CONFIG.points), each { q, a }.
+const CATEGORIES = [
+  { name: 'Animals', clues: [
+    { q: 'What do bees make?', a: 'Honey' },
+    { q: 'How many legs does a spider have?', a: 'Eight' },
+    { q: 'Which animal is the tallest in the world?', a: 'The giraffe' },
+    { q: 'What is a baby kangaroo called?', a: 'A joey' },
+  ] },
+  { name: 'Numbers', clues: [
+    { q: 'What is 7 + 8?', a: '15' },
+    { q: 'What is 6 × 7?', a: '42' },
+    { q: 'How many minutes are in two hours?', a: '120' },
+    { q: 'What is half of 250?', a: '125' },
+  ] },
+  { name: 'Space', clues: [
+    { q: 'What do we call the star at the middle of our solar system?', a: 'The Sun' },
+    { q: 'Which planet do we live on?', a: 'Earth' },
+    { q: 'Which planet is called the Red Planet?', a: 'Mars' },
+    { q: 'What is the biggest planet?', a: 'Jupiter' },
+  ] },
+  { name: 'Words', clues: [
+    { q: 'What is the opposite of hot?', a: 'Cold' },
+    { q: 'Spell the plural of mouse.', a: 'Mice' },
+    { q: 'What word means very big?', a: 'Huge (or enormous, giant)' },
+    { q: 'What do we call a word that names a thing?', a: 'A noun' },
+  ] },
+  { name: 'Maps', clues: [
+    { q: 'Which direction does the sun rise in?', a: 'East' },
+    { q: 'What is the biggest ocean?', a: 'The Pacific Ocean' },
+    { q: 'How many continents are there?', a: 'Seven' },
+    { q: 'What is the longest river in Africa?', a: 'The Nile' },
+  ] },
+];
+// {n} is a team number, {pts} points.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', team: 'Team {n}', picks: 'Team {n}, pick a question', pickAny: 'Pick a question', reveal: 'Show answer', read: 'Read aloud', back: 'Back', nobody: 'Nobody', give: 'Who got it?', pts: '{pts} points', won: 'Team {n} wins!', tie: 'It’s a tie!', again: 'Play again', keys: 'Keys: arrows and Enter pick · Space shows the answer · 1-9 give the points · 0 nobody · Esc back · F full screen', usedBy: 'Team {n}', usedNone: 'Done' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', team: 'Equipo {n}', picks: 'Equipo {n}, elige una pregunta', pickAny: 'Elige una pregunta', reveal: 'Mostrar respuesta', read: 'Leer en voz alta', back: 'Volver', nobody: 'Nadie', give: '¿Quién acertó?', pts: '{pts} puntos', won: '¡Gana el equipo {n}!', tie: '¡Empate!', again: 'Jugar otra vez', keys: 'Teclas: flechas e Intro eligen · Espacio muestra la respuesta · 1-9 dan los puntos · 0 nadie · Esc volver · F pantalla completa', usedBy: 'Equipo {n}', usedNone: 'Hecha' },
+  fr: { sound: 'Son', full: 'Plein écran', team: 'Équipe {n}', picks: 'Équipe {n}, choisis une question', pickAny: 'Choisis une question', reveal: 'Voir la réponse', read: 'Lire à voix haute', back: 'Retour', nobody: 'Personne', give: 'Qui a trouvé ?', pts: '{pts} points', won: 'L’équipe {n} gagne !', tie: 'Égalité !', again: 'Rejouer', keys: 'Touches : flèches et Entrée choisissent · Espace montre la réponse · 1-9 donnent les points · 0 personne · Échap retour · F plein écran', usedBy: 'Équipe {n}', usedNone: 'Faite' },
+  de: { sound: 'Ton', full: 'Vollbild', team: 'Team {n}', picks: 'Team {n}, wählt eine Frage', pickAny: 'Wählt eine Frage', reveal: 'Antwort zeigen', read: 'Vorlesen', back: 'Zurück', nobody: 'Niemand', give: 'Wer hatte es?', pts: '{pts} Punkte', won: 'Team {n} gewinnt!', tie: 'Unentschieden!', again: 'Nochmal spielen', keys: 'Tasten: Pfeile und Enter wählen · Leertaste zeigt die Antwort · 1-9 geben die Punkte · 0 niemand · Esc zurück · F Vollbild', usedBy: 'Team {n}', usedNone: 'Fertig' },
+  it: { sound: 'Suono', full: 'Schermo intero', team: 'Squadra {n}', picks: 'Squadra {n}, scegli una domanda', pickAny: 'Scegli una domanda', reveal: 'Mostra la risposta', read: 'Leggi ad alta voce', back: 'Indietro', nobody: 'Nessuno', give: 'Chi ha indovinato?', pts: '{pts} punti', won: 'Vince la squadra {n}!', tie: 'Pareggio!', again: 'Gioca ancora', keys: 'Tasti: frecce e Invio scelgono · Spazio mostra la risposta · 1-9 danno i punti · 0 nessuno · Esc indietro · F schermo intero', usedBy: 'Squadra {n}', usedNone: 'Fatta' },
+  pt: { sound: 'Som', full: 'Tela cheia', team: 'Equipe {n}', picks: 'Equipe {n}, escolha uma pergunta', pickAny: 'Escolha uma pergunta', reveal: 'Mostrar a resposta', read: 'Ler em voz alta', back: 'Voltar', nobody: 'Ninguém', give: 'Quem acertou?', pts: '{pts} pontos', won: 'A equipe {n} venceu!', tie: 'Empate!', again: 'Jogar de novo', keys: 'Teclas: setas e Enter escolhem · Espaço mostra a resposta · 1-9 dão os pontos · 0 ninguém · Esc voltar · F tela cheia', usedBy: 'Equipe {n}', usedNone: 'Feita' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', team: 'Team {n}', picks: 'Team {n}, kies een vraag', pickAny: 'Kies een vraag', reveal: 'Toon antwoord', read: 'Voorlezen', back: 'Terug', nobody: 'Niemand', give: 'Wie had het goed?', pts: '{pts} punten', won: 'Team {n} wint!', tie: 'Gelijkspel!', again: 'Nog een keer', keys: 'Toetsen: pijlen en Enter kiezen · spatie toont het antwoord · 1-9 geven de punten · 0 niemand · Esc terug · F volledig scherm', usedBy: 'Team {n}', usedNone: 'Klaar' },
+  ru: { sound: 'Звук', full: 'Весь экран', team: 'Команда {n}', picks: 'Команда {n}, выберите вопрос', pickAny: 'Выберите вопрос', reveal: 'Показать ответ', read: 'Прочитать вслух', back: 'Назад', nobody: 'Никто', give: 'Кто ответил?', pts: '{pts} очков', won: 'Победила команда {n}!', tie: 'Ничья!', again: 'Играть снова', keys: 'Клавиши: стрелки и Enter выбирают · пробел показывает ответ · 1-9 дают очки · 0 никто · Esc назад · F весь экран', usedBy: 'Команда {n}', usedNone: 'Готово' },
+  he: { sound: 'צליל', full: 'מסך מלא', team: 'קבוצה {n}', picks: 'קבוצה {n}, בחרו שאלה', pickAny: 'בחרו שאלה', reveal: 'להראות תשובה', read: 'להקריא', back: 'חזרה', nobody: 'אף אחד', give: 'מי צדק?', pts: '{pts} נקודות', won: 'קבוצה {n} ניצחה!', tie: 'תיקו!', again: 'לשחק שוב', keys: 'מקשים: חיצים ו-Enter בוחרים · רווח מראה תשובה · 1-9 נותנים נקודות · 0 אף אחד · Esc חזרה · F מסך מלא', usedBy: 'קבוצה {n}', usedNone: 'נעשה' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', team: 'الفريق {n}', picks: 'الفريق {n}، اختر سؤالًا', pickAny: 'اختر سؤالًا', reveal: 'أظهر الإجابة', read: 'اقرأ بصوت عالٍ', back: 'رجوع', nobody: 'لا أحد', give: 'من أجاب؟', pts: '{pts} نقطة', won: 'فاز الفريق {n}!', tie: 'تعادل!', again: 'العب مرة أخرى', keys: 'المفاتيح: الأسهم و Enter للاختيار · المسافة تُظهر الإجابة · 1-9 تعطي النقاط · 0 لا أحد · Esc رجوع · F ملء الشاشة', usedBy: 'الفريق {n}', usedNone: 'تم' },
+  ja: { sound: 'サウンド', full: '全画面', team: 'チーム{n}', picks: 'チーム{n}、もんだいをえらんでね', pickAny: 'もんだいをえらんでね', reveal: '答えを見る', read: '読み上げる', back: 'もどる', nobody: 'なし', give: 'だれが正解？', pts: '{pts}点', won: 'チーム{n}の勝ち！', tie: '引き分け！', again: 'もう一度', keys: 'キー：矢印とEnterでえらぶ・スペースで答え・1〜9で点をあげる・0 なし・Esc もどる・F 全画面', usedBy: 'チーム{n}', usedNone: 'おわり' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', team: '第 {n} 隊', picks: '第 {n} 隊，請選一題', pickAny: '請選一題', reveal: '看答案', read: '朗讀', back: '返回', nobody: '沒有人', give: '誰答對了？', pts: '{pts} 分', won: '第 {n} 隊獲勝！', tie: '平手！', again: '再玩一次', keys: '按鍵：方向鍵和 Enter 選題・空白鍵看答案・1-9 給分・0 沒有人・Esc 返回・F 全螢幕', usedBy: '第 {n} 隊', usedNone: '已完成' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const TEAMS = Math.max(1, Math.min(9, CONFIG.teams | 0));
+const ROWS = Math.min(CONFIG.points.length, ...CATEGORIES.map(c => c.clues.length));
+
+// ---- the state ----------------------------------------------------------------------------------------------------
+const S = { screen: 'board', used: {}, scores: [], turn: 0, open: null, shown: false, focus: [0, 0] };
+function reset() {
+  S.screen = 'board'; S.used = {}; S.scores = Array(TEAMS).fill(0); S.turn = 0; S.open = null; S.shown = false; S.focus = [0, 0];
+  $('end').hidden = true; $('clue').hidden = true; renderBoard(); renderTeams(); focusCell();
+}
+const keyOf = (c, r) => `${c}:${r}`;
+const left = () => CATEGORIES.length * ROWS - Object.keys(S.used).length;
+
+// ---- the board ----------------------------------------------------------------------------------------------------
+function renderBoard() {
+  const b = $('board'); b.style.setProperty('--cols', CATEGORIES.length); b.innerHTML = '';
+  CATEGORIES.forEach((c, i) => { const h = document.createElement('div'); h.className = 'head'; h.setAttribute('role', 'columnheader'); h.style.background = `var(--c${i % 6})`; h.textContent = c.name; b.appendChild(h); });
+  for (let r = 0; r < ROWS; r++) {
+    CATEGORIES.forEach((c, i) => {
+      const k = keyOf(i, r), used = k in S.used, btn = document.createElement('button');
+      btn.className = `cell${used ? ' used' : ''}`; btn.dataset.c = i; btn.dataset.r = r; btn.tabIndex = -1;
+      btn.style.background = `var(--c${i % 6})`; btn.style.setProperty('--tilt', `${((i * 7 + r * 3) % 5) - 2}deg`);
+      btn.textContent = used ? (S.used[k] ? tr('usedBy', { n: S.used[k] }) : tr('usedNone')) : String(CONFIG.points[r]);
+      btn.setAttribute('aria-label', `${c.name}, ${tr('pts', { pts: CONFIG.points[r] })}${used ? `, ${btn.textContent}` : ''}`);
+      btn.disabled = used; btn.onclick = () => openClue(i, r);
+      b.appendChild(btn);
+    });
+  }
+  $('turnline').textContent = CONFIG.takeTurns && TEAMS > 1 ? tr('picks', { n: S.turn + 1 }) : tr('pickAny');
+}
+function renderTeams() {
+  $('teams').innerHTML = '';
+  for (let i = 0; i < TEAMS; i++) {
+    const d = document.createElement('div'); d.className = `team${CONFIG.takeTurns && TEAMS > 1 && i === S.turn ? ' turn' : ''}`;
+    d.innerHTML = '<span></span><span class="pts"></span>'; d.children[0].textContent = tr('team', { n: i + 1 }); d.children[1].textContent = String(S.scores[i]);
+    $('teams').appendChild(d);
+  }
+}
+function cellAt(c, r) { return $('board').querySelector(`.cell[data-c="${c}"][data-r="${r}"]`); }
+function focusCell() {
+  for (const b of $('board').querySelectorAll('.cell')) b.tabIndex = -1;
+  let [c, r] = S.focus, b = cellAt(c, r);
+  if (!b || b.disabled) { const free = [...$('board').querySelectorAll('.cell:not(:disabled)')]; b = free[0]; if (b) S.focus = [+b.dataset.c, +b.dataset.r]; }
+  if (b) { b.tabIndex = 0; if (S.screen === 'board') b.focus({ preventScroll: true }); }
+}
+function moveFocus(dc, dr) {
+  let [c, r] = S.focus;
+  for (let i = 0; i < CATEGORIES.length * ROWS; i++) {
+    c = (c + dc + CATEGORIES.length) % CATEGORIES.length; r = (r + dr + ROWS) % ROWS;
+    const b = cellAt(c, r); if (b && !b.disabled) { S.focus = [c, r]; break; }
+    if (!dc && !dr) break;
+  }
+  focusCell();
+}
+
+// ---- a question ---------------------------------------------------------------------------------------------------
+function openClue(c, r) {
+  if (keyOf(c, r) in S.used) return;
+  const cat = CATEGORIES[c], clue = cat.clues[r];
+  S.open = [c, r]; S.shown = false; S.screen = 'clue'; S.focus = [c, r];
+  $('clue').style.setProperty('--note', `var(--c${c % 6})`);
+  $('clueCat').textContent = cat.name; $('cluePts').textContent = tr('pts', { pts: CONFIG.points[r] });
+  $('clueQ').textContent = clue.q; $('clueA').textContent = clue.a; $('clueA').hidden = true; $('award').hidden = true;
+  $('reveal').hidden = false; $('read').hidden = !(CONFIG.readAloud && B.speak);
+  $('clue').hidden = false; sfx('click'); $('reveal').focus();
+}
+function reveal() {
+  if (S.screen !== 'clue' || S.shown) return;
+  S.shown = true; $('clueA').hidden = false; $('reveal').hidden = true; sfx('powerup');
+  const a = $('award'); a.innerHTML = '';
+  const label = document.createElement('p'); label.className = 'keys'; label.style.width = '100%'; label.textContent = tr('give'); a.appendChild(label);
+  for (let i = 0; i < TEAMS; i++) { const b = document.createElement('button'); b.className = 'big hot'; b.textContent = tr('team', { n: i + 1 }); b.onclick = () => award(i + 1); a.appendChild(b); }
+  const no = document.createElement('button'); no.className = 'big'; no.textContent = tr('nobody'); no.onclick = () => award(0); a.appendChild(no);
+  a.hidden = false; a.querySelector('button').focus();
+}
+function award(team) {
+  if (S.screen !== 'clue' || !S.shown) return;
+  const [c, r] = S.open;
+  S.used[keyOf(c, r)] = team; if (team) { S.scores[team - 1] += CONFIG.points[r]; sfx('coin'); }
+  if (CONFIG.takeTurns && TEAMS > 1) S.turn = (S.turn + 1) % TEAMS;
+  closeClue();
+  if (!left()) finish();
+}
+function closeClue() { S.open = null; S.screen = 'board'; $('clue').hidden = true; try { if (B.stopSpeaking) B.stopSpeaking(); } catch (e) { /* no voice */ } renderBoard(); renderTeams(); moveFocus(0, 0); }
+function finish() {
+  S.screen = 'end'; const order = S.scores.map((p, i) => ({ n: i + 1, p })).sort((a, b) => b.p - a.p);
+  const top = order[0].p, winners = order.filter(x => x.p === top);
+  $('endH').textContent = winners.length > 1 ? tr('tie') : tr('won', { n: winners[0].n });
+  $('endList').innerHTML = ''; for (const x of order) { const li = document.createElement('li'); li.textContent = `${tr('team', { n: x.n })}: ${x.p}`; $('endList').appendChild(li); }
+  $('end').hidden = false; sfx('win'); try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+  try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+  $('again').focus();
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('reveal').onclick = reveal; $('back').onclick = closeClue; $('again').onclick = reset;
+$('read').onclick = () => { const [c, r] = S.open || []; if (S.open) say(CATEGORIES[c].clues[r].q); };
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key, rtl = document.documentElement.dir === 'rtl';
+  if (k === 'f' || k === 'F') { $('full').click(); return; }
+  if (S.screen === 'board') {
+    const m = { ArrowLeft: [rtl ? 1 : -1, 0], ArrowRight: [rtl ? -1 : 1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[k];
+    if (m) { e.preventDefault(); moveFocus(m[0], m[1]); }
+    else if ((k === 'Enter' || k === ' ' || k === 'PageDown') && !(document.activeElement && document.activeElement.classList.contains('cell'))) { e.preventDefault(); openClue(S.focus[0], S.focus[1]); }
+  } else if (S.screen === 'clue') {
+    if (k === 'Escape') { e.preventDefault(); closeClue(); }
+    else if (!S.shown && (k === ' ' || k === 'Enter' || k === 'PageDown')) { e.preventDefault(); reveal(); }
+    else if (S.shown && /^[0-9]$/.test(k) && +k <= TEAMS) { e.preventDefault(); award(+k); }
+  }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+$('sound').textContent = tr('sound'); $('full').textContent = tr('full'); $('reveal').textContent = tr('reveal'); $('read').textContent = tr('read'); $('back').textContent = tr('back'); $('again').textContent = tr('again'); $('keys').textContent = tr('keys');
+$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+window.__brbTest = { state: () => ({ screen: S.screen, used: Object.keys(S.used).length, left: left(), scores: S.scores.slice(), turn: S.turn + 1, open: S.open, shown: S.shown }), start() { reset(); } };
+reset();
+</script>

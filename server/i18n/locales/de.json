@@ -2680,7 +2680,8 @@
         "picked": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
         "pickedWorld": "{count} ausgewählt. Alle leben in {world}.",
         "cleared": "Abgewählt"
-      }
+      },
+      "progress": "Schritt {n} von {total}"
     }
   },
   "favorites": {
@@ -8568,6 +8569,38 @@
       "board": {
         "title": "Brettspiel",
         "text": "Würfle, zieh und antworte"
+      },
+      "quiet": {
+        "title": "Leisespiel",
+        "text": "Der Himmel füllt sich mit Sternen, solange es in der Klasse leise ist"
+      },
+      "categories": {
+        "title": "Kategorien-Tafel",
+        "text": "Teams wählen eine Kategorie und Punkte"
+      },
+      "survey": {
+        "title": "Klassenumfrage",
+        "text": "Feste Antworten, nur die Anzahl wird gezeigt"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Rechenaufgaben oder Wörter ausrufen, Karten ankreuzen"
+      },
+      "flashcards": {
+        "title": "Lernkarten",
+        "text": "Große Karten umdrehen, üben und sortieren"
+      },
+      "exitticket": {
+        "title": "Exit-Ticket",
+        "text": "Eine kurze Abfrage am Ende der Stunde"
+      },
+      "spinner": {
+        "title": "Glücksrad",
+        "text": "Ein Team, eine Zahl oder ein Thema auslosen"
+      },
+      "scoreboard": {
+        "title": "Team-Punktetafel",
+        "text": "Große Teampunkte für die Tafel"
       }
     },
     "looks": {
@@ -8660,6 +8693,13 @@
       "learn": "Zum Lernen: {list}.",
       "file": "Nimm die Datei, die ich dazugegeben habe."
     },
-    "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen."
+    "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
+    "typeGroups": {
+      "label": "Spielarten",
+      "class": "Für deine Klasse",
+      "games": "Spiele",
+      "classText": "Aktivitäten für die Tafel im Klassenzimmer und für Handys.",
+      "gamesText": "Spiele zum Spielen und Teilen."
+    }
   }
 }
