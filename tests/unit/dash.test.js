@@ -308,8 +308,8 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   assert.equal(q.get(`SELECT COUNT(*) n FROM chat_messages WHERE from_id IN (${marks}) AND to_id IN (${marks})`, ...people, ...people).n, 0);
   assert.equal(getUser(w.T.id).friend_code, null, 'the teacher still has no friend code');
   // The registry offers students nothing that sends text to others: their types are clock, their own goal, and (stage
-  // 2) a timer and a stopwatch that run in their own browser.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch']);
+  // 2) a timer, a stopwatch, dice and a random number that run in their own browser.
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random']);
 });
 
 test('account deletion forgets a person\'s screens and pictures', async () => {

@@ -58,7 +58,7 @@ function start() {
   }
 
   // ---------------------------------------------------------------- drawing
-  const tickers = new Map(), hooks = new Map(), destroyers = [];
+  const tickers = new Map(), hooks = new Map(), destroyers = new Map();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const projecting = () => document.body.classList.contains('dash-projector');
   /** What a widget's renderer gets besides its settings (public/js/dash-widgets.js says what each is for). */
@@ -71,6 +71,14 @@ function start() {
     type, intl: INTL, role: D.role, id: w.id, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
     get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
+    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
+    set: (key, value) => {
+      if (!TEACHER || w.pinned) return;
+      w.s = { ...w.s, [key]: value };
+      const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+      if (old) { const had = old.contains(document.activeElement) ? [...old.querySelectorAll('button')].indexOf(document.activeElement) : -1; const fresh = card(w, +old.style.order); old.replaceWith(fresh); if (had >= 0) fresh.querySelectorAll('button')[had]?.focus(); }
+      save();
+    },
   });
   function applyBg() {
     root.className = root.className.replace(/\bdash-bg-\S+/g, '').trim();
@@ -82,7 +90,8 @@ function start() {
   }
   function render() {
     tickers.clear(); hooks.clear();
-    while (destroyers.length) { try { destroyers.pop()(); } catch { /* gone */ } }
+    for (const f of destroyers.values()) { try { f(); } catch { /* gone */ } }
+    destroyers.clear();
     grid.textContent = '';
     const rows = Math.max(MIN_ROWS, rowsUsed() + (S.editing ? 1 : 0));
     grid.style.setProperty('--rows', rows);
@@ -115,10 +124,11 @@ function start() {
     c.setAttribute('aria-labelledby', title.id);
     const body = document.createElement('div'); body.className = 'dash-wb';
     c.appendChild(body);
+    if (destroyers.has(w.id)) { try { destroyers.get(w.id)(); } catch { /* gone */ } destroyers.delete(w.id); }
     const r = RENDER[w.type] ? RENDER[w.type](body, w.s || {}, ctxFor(w, type)) : null;
     if (r && r.tick) tickers.set(w.id, r.tick);
     if (r && r.live) hooks.set(w.id, r.live);
-    if (r && r.destroy) destroyers.push(r.destroy);
+    if (r && r.destroy) destroyers.set(w.id, r.destroy);
     if (S.editing) editChrome(c, w);
     return c;
   }
@@ -338,6 +348,7 @@ function start() {
     const commit = () => { if (pending) { S.undo.push(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } $('#dash-undo').disabled = !S.undo.length; };
     const redraw = () => { const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`); if (old) { const order = +old.style.order; old.replaceWith(card(w, order)); } save(); };
     for (const f of type.settings) {
+      if (f.hidden) continue;   // changed by the widget itself (scores, stickers)
       const id = `dset-${w.id}-${f.key}`;
       const field = document.createElement('div'); field.className = f.type === 'bool' ? 'dash-tog' : 'field';
       if (f.type === 'bool') {
@@ -383,6 +394,40 @@ function start() {
   let optsCache = null;
   const pushOpts = async (q = '') => { if (!q && optsCache) return optsCache; const r = await api(`/api/dash/${CID}/push-options${q ? `?q=${encodeURIComponent(q)}` : ''}`); if (!q) optsCache = r; return r; };
   const EDITORS = {
+    date(field, f, w, id, type, { commit, redraw }) {
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="date" min="2000-01-01" max="2100-12-31">`;
+      const inp = field.querySelector('input'); inp.value = w.s[f.key] || '';
+      inp.addEventListener('change', () => { w.s[f.key] = inp.value; commit(); redraw(); });
+    },
+    hhmm(field, f, w, id, type, { commit, redraw }) {
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="time">`;
+      const inp = field.querySelector('input'); inp.value = w.s[f.key] || f.def;
+      inp.addEventListener('change', () => { w.s[f.key] = inp.value || f.def; commit(); redraw(); });
+    },
+    marks(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-periods';
+      const draw = () => {
+        const list = w.s[f.key] || (w.s[f.key] = []);
+        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((m, i) => `<li class="dash-perrow" data-i="${i}">
+          <label class="sr-only" for="${id}-t${i}">${esc(W.label)} ${i + 1}</label><input class="input dash-pername" id="${id}-t${i}" data-k="label" maxlength="40" dir="auto" value="${esc(m.label)}" placeholder="${esc(W.label)}">
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">✖</button>
+          <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-d${i}">${esc(W.day)}</label><input class="input" id="${id}-d${i}" data-k="date" type="date" value="${esc(m.date)}"></span></span></li>`).join('')}</ol>
+          <button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addMark)}</button>`;
+      };
+      draw();
+      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
+      field.addEventListener('change', () => commit());
+      field.addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]');
+        if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]').focus(); }
+        if (e.target.closest('[data-addp]')) {
+          const list = w.s[f.key] || []; if (list.length >= 40) return;
+          list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: D.tz }).format(new Date()), label: '' });
+          w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
+        }
+      });
+    },
     number(field, f, w, id, type, { commit, redraw }) {
       field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="number" inputmode="numeric" min="${f.min}" max="${f.max}">`;
       const inp = field.querySelector('input'); inp.value = w.s[f.key] ?? f.def;

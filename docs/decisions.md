@@ -6068,7 +6068,19 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
 - Safety, access and limits follow stage 1 exactly: every new route uses `load()` (class role, 404 to others), the
   site's CSRF check, and a rate limit. Account deletion also forgets a person's help queue place, check answers and
   picker marks.
+- **More everyday widgets** (added to stage 2 on request; same rules): the timer's **shrinking ring** view; the
+  picker's **spinner wheel** mode (filled from the class's Oomba names through the server's pick, or from items the
+  teacher types, picked in the browser); **countdown to a day** (date and time in the school's time zone; days,
+  hours, minutes); **calendar** (the month in the school's time zone, today, and up to 40 teacher-marked days with a
+  short label); **work symbols** (five fixed icons and labels) and a **traffic light** (red, yellow, green, with the
+  teacher's own short words) the teacher switches with one tap and may pin; **dice** (1-6, total) and a **random
+  number** (teacher's smallest and biggest), both also addable by students on their own screen and never pinned;
+  a **group maker** (by group size or number of groups, from the class's Oomba names, leaving out students the
+  picker marks away; teacher only, never pinned, made in the teacher's browser); a **scoreboard** (teacher-typed
+  team names, + and −); **stickers** from a fixed set of 20 Oomba emoji (no uploads; stored as an index and a
+  place). Widgets the teacher taps save through the layout (`ctx.set`), so pinned ones reach students with the next
+  live check. Two hidden setting types hold the scores and the stickers.
 - Tests: `tests/unit/dash-stage2.test.js`. Screenshots checked by hand (teacher 1600 × 900, edit mode, projector,
-  student 1366 × 768 and 390 × 844, dark, Hebrew).
+  student 1366 × 768 and 390 × 844, dark, Hebrew, Arabic).
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.

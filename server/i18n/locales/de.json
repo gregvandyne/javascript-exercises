@@ -9005,7 +9005,8 @@
         "s": {
           "minutes": "Minuten zu Beginn",
           "chime": "Leiser Gong am Ende",
-          "bar": "Zeitbalken zeigen"
+          "bar": "Zeitbalken zeigen",
+          "view": "Ansicht"
         },
         "start": "Start",
         "pause": "Pause",
@@ -9018,7 +9019,13 @@
         "done": "Die Zeit ist um!",
         "left": "Noch {time}",
         "presets": "Schnelle Zeiten",
-        "mins": "{n} Minuten"
+        "mins": "{n} Minuten",
+        "o": {
+          "view": {
+            "digits": "Große Ziffern",
+            "ring": "Schrumpfender Ring"
+          }
+        }
       },
       "stopwatch": {
         "name": "Stoppuhr",
@@ -9094,7 +9101,10 @@
         "name": "Zufällige Auswahl",
         "desc": "Wählt ein Kind mit seinem Oomba-Namen aus.",
         "s": {
-          "norepeat": "Niemanden doppelt, bis alle dran waren"
+          "norepeat": "Niemanden doppelt, bis alle dran waren",
+          "mode": "Zeigen als",
+          "source": "Auswählen aus",
+          "items": "Deine Einträge (einer pro Zeile)"
         },
         "pick": "Kind auswählen",
         "again": "Noch mal",
@@ -9103,7 +9113,19 @@
         "awayTitle": "Wer ist heute nicht da?",
         "awayNote": "Angehakte Kinder werden heute nicht ausgewählt. Morgen ist das wieder zurückgesetzt.",
         "reset": "Neu anfangen",
-        "none": "Keine Kinder zum Auswählen."
+        "none": "Keine Kinder zum Auswählen.",
+        "o": {
+          "mode": {
+            "names": "Ein Name",
+            "wheel": "Ein Glücksrad"
+          },
+          "source": {
+            "class": "Die Klasse (Oomba-Namen)",
+            "items": "Deine Einträge"
+          }
+        },
+        "spin": "Drehen",
+        "noItems": "Schreib unter „Bildschirm bearbeiten“ ein paar Einträge."
       },
       "noise": {
         "name": "Lautstärke-Messer",
@@ -9188,6 +9210,132 @@
         "lessons": "Lektionen",
         "remove": "Entfernen",
         "gone": "Die sind gerade nicht offen."
+      },
+      "countdown": {
+        "name": "Countdown bis zu einem Tag",
+        "desc": "Tage und Stunden bis zum Ausflug, zur Aufführung oder zu den Ferien.",
+        "s": {
+          "label": "Was kommt",
+          "date": "Tag",
+          "time": "Uhrzeit"
+        },
+        "empty": "Wähle den Tag unter „Bildschirm bearbeiten“.",
+        "days": "Tage",
+        "hours": "Stunden",
+        "mins": "Minuten",
+        "today": "Heute ist es so weit!",
+        "past": "Dieser Tag ist schon vorbei."
+      },
+      "calendar": {
+        "name": "Kalender",
+        "desc": "Das heutige Datum, der Monat und Tage, die du markierst.",
+        "s": {
+          "marks": "Markierte Tage"
+        },
+        "today": "Heute",
+        "coming": "Bald",
+        "none": "In diesem Monat ist nichts markiert.",
+        "addMark": "Tag markieren",
+        "day": "Tag",
+        "label": "Beschriftung",
+        "remove": "Tag entfernen"
+      },
+      "symbols": {
+        "name": "Arbeitszeichen",
+        "desc": "Wie jetzt gearbeitet wird: still, flüstern, Partner, zusammen, Hand heben.",
+        "s": {
+          "mode": "Gerade jetzt"
+        },
+        "o": {
+          "mode": {
+            "silent": "Stillarbeit",
+            "whisper": "Flüsterstimme",
+            "partner": "Frag ein anderes Kind",
+            "together": "Zusammen arbeiten",
+            "hand": "Hand heben"
+          }
+        },
+        "change": "Arbeitsweise ändern"
+      },
+      "light": {
+        "name": "Ampel",
+        "desc": "Rot, Gelb oder Grün, mit deinen eigenen Worten für jede Farbe.",
+        "s": {
+          "color": "Licht gerade an",
+          "red": "Worte für Rot",
+          "yellow": "Worte für Gelb",
+          "green": "Worte für Grün"
+        },
+        "o": {
+          "color": {
+            "red": "Rot",
+            "yellow": "Gelb",
+            "green": "Grün"
+          }
+        },
+        "set": "Ampel umschalten"
+      },
+      "dice": {
+        "name": "Würfel",
+        "desc": "Würfle mit 1 bis 6 Würfeln und sieh die Summe.",
+        "s": {
+          "count": "Wie viele Würfel"
+        },
+        "roll": "Würfeln",
+        "total": "Summe: {n}",
+        "die": "Gewürfelt: {n}"
+      },
+      "random": {
+        "name": "Zufallszahl",
+        "desc": "Eine Zahl zwischen der kleinsten und der größten.",
+        "s": {
+          "min": "Kleinste",
+          "max": "Größte"
+        },
+        "go": "Zahl ziehen",
+        "between": "Von {min} bis {max}"
+      },
+      "groups": {
+        "name": "Gruppen bilden",
+        "desc": "Zufällige Gruppen aus der Klasse, mit Oomba-Namen.",
+        "s": {
+          "by": "Gruppen nach",
+          "n": "Zahl"
+        },
+        "o": {
+          "by": {
+            "size": "Kinder pro Gruppe",
+            "count": "Anzahl der Gruppen"
+          }
+        },
+        "make": "Gruppen bilden",
+        "again": "Neu mischen",
+        "group": "Gruppe {n}",
+        "none": "Keine Kinder für Gruppen.",
+        "note": "Kinder, die in der Auswahl als nicht da markiert sind, bleiben außen vor."
+      },
+      "score": {
+        "name": "Punktetafel",
+        "desc": "Teampunkte mit Plus- und Minus-Knöpfen.",
+        "s": {
+          "teams": "Teamnamen (einer pro Zeile)",
+          "scores": "Punkte"
+        },
+        "team": "Team {n}",
+        "plus": "Ein Punkt für {team}",
+        "minus": "Ein Punkt weniger für {team}",
+        "reset": "Punkte zurücksetzen"
+      },
+      "stickers": {
+        "name": "Sticker",
+        "desc": "Lustige Oomba-Sticker für den Bildschirm.",
+        "s": {
+          "stamps": "Sticker"
+        },
+        "add": "Sticker hinzufügen",
+        "remove": "{e} entfernen",
+        "clear": "Alle entfernen",
+        "empty": "Tippe unten auf einen Sticker, um ihn hierher zu setzen."
       }
     },
     "push": {

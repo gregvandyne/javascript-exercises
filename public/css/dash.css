@@ -273,6 +273,99 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-tileicon{font-size:2rem;line-height:1}
 .dw-tiletitle{overflow-wrap:anywhere;line-height:1.2}
 
+/* ---------- stage 2, second part ---------- */
+/* the visual timer: a shrinking ring */
+.dw-ring{position:relative;flex:1 1 auto;min-height:0;aspect-ratio:1;max-width:100%;display:grid;place-items:center}
+.dw-ring svg{position:absolute;inset:0;width:100%;height:100%}
+.dw-ringbg{fill:none;stroke:var(--card-2);stroke-width:9}
+.dw-ringfg{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.dw-timer.is-done .dw-ringfg{stroke:var(--danger)}
+.dw-ring .dw-digits{position:relative;font-size:clamp(1.4rem,min(16cqh,12cqi),6rem)}
+@media (prefers-reduced-motion:reduce){.dw-ringfg{transition:none}}
+/* the spinner wheel */
+.dw-wheelmode{justify-content:flex-start}
+.dw-wheel{flex:1 1 auto;min-height:0;aspect-ratio:1;max-width:100%}
+.dw-wheelsvg{display:block;width:100%;height:100%}
+.dw-wheelrot{transform-origin:0 0}
+.dw-seg{stroke:var(--card);stroke-width:.6}
+.dw-seg0{fill:var(--accent-soft)}.dw-seg1{fill:var(--spark-soft)}.dw-seg2{fill:color-mix(in srgb,#5AA9D6 30%,var(--card))}.dw-seg3{fill:var(--card-2)}
+.dw-segtext{fill:var(--text);font-weight:700;dominant-baseline:middle}
+.dw-pointer{fill:var(--text)}
+.dw-hub{fill:var(--text)}
+.dw-wheelmode .dw-pickname{font-size:clamp(1.2rem,min(12cqh,9cqi),3rem)}
+/* event countdown */
+.dw-count{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s2);height:100%;text-align:center}
+.dw-countlabel{font-weight:800;font-size:clamp(1rem,min(14cqh,6cqi),2.4rem);overflow-wrap:anywhere}
+.dw-countboxes{display:flex;gap:var(--s2)}
+.dw-countboxes[hidden]{display:none}
+.dw-countbox{display:flex;flex-direction:column;align-items:center;min-width:3.6em;padding:6px 10px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw-countn{font-size:clamp(1.4rem,min(26cqh,10cqi),5rem);font-variant-numeric:tabular-nums;line-height:1}
+.dw-countu{font-weight:700;color:var(--text-2);font-size:.85rem}
+.dw-countmsg{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(12cqh,6cqi),2rem)}
+/* calendar */
+.dw-cal{display:flex;flex-direction:column;gap:6px;height:100%;overflow:auto}
+.dw-caltitle{font-weight:800;font-size:clamp(1rem,min(8cqh,6cqi),1.8rem)}
+.dw-calgrid{display:flex;flex-direction:column;gap:2px}
+.dw-calrow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dw-calwd{text-align:center;font-weight:700;color:var(--muted);font-size:.8rem}
+.dw-calday{display:grid;place-items:center;min-height:1.9em;border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums;font-size:clamp(.8rem,min(5cqh,4cqi),1.4rem)}
+.dw-calday.is-marked{box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
+.dw-calday.is-today{background:var(--current);color:var(--on-current);box-shadow:none}
+.dw-calmarks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.dw-calmarks li{display:flex;gap:var(--s2)}
+.dw-calh{font-weight:700}
+/* work symbols */
+.dw-sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s2);height:100%;text-align:center}
+.dw-symbig{display:flex;flex-direction:column;align-items:center;gap:4px}
+.dw-symicon{font-size:clamp(2.4rem,min(42cqh,30cqi),9rem);line-height:1}
+.dw-symlabel{font-weight:800;font-size:clamp(1.1rem,min(14cqh,9cqi),3rem)}
+.dw-symrow{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.dw-symbtn{min-width:44px;padding:0 8px;font-size:1.3rem}
+.dw-symbtn[aria-pressed="true"],.dw-lightbtn[aria-pressed="true"]{background:var(--current);color:var(--on-current);box-shadow:none}
+@container (max-height:200px){.dw-symrow{display:none}}
+/* traffic light */
+.dw-light{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s2);height:100%;text-align:center}
+.dw-lamps{display:flex;gap:clamp(6px,3cqi,18px);padding:clamp(6px,3cqi,14px);border-radius:999px;background:var(--brand-ink)}
+.dw-lamp{width:clamp(28px,min(24cqh,18cqi),110px);aspect-ratio:1;border-radius:50%;opacity:.22}
+.dw-lamp-red{background:#E5483B}.dw-lamp-yellow{background:#FFD23F}.dw-lamp-green{background:#3DBE6E}
+.dw-lamp.is-on{opacity:1;box-shadow:0 0 0 3px var(--brand-cream)}
+.dw-lightlabel{font-weight:800;font-size:clamp(1.1rem,min(14cqh,8cqi),3rem);overflow-wrap:anywhere}
+.dw-lightrow{justify-content:center}
+@container (max-height:200px){.dw-lightrow{display:none}}
+/* dice and random number */
+.dw-dice,.dw-rand{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%;text-align:center;overflow:auto}
+.dw-dicerow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.dw-die{width:clamp(26px,min(30cqh,16cqi),120px);height:auto;display:block}
+.dw-dieface{fill:var(--card);stroke:var(--text);stroke-width:5}
+.dw-diedot{fill:var(--text)}
+.dw-dicetotal{font-weight:800;font-size:clamp(1rem,min(12cqh,6cqi),2rem);min-height:1.2em}
+@media (prefers-reduced-motion:no-preference){.dw-dicerow.is-rolling .dw-diewrap{animation:dw-shake .14s linear infinite}}
+@keyframes dw-shake{50%{transform:rotate(8deg)}}
+.dw-randn{font-weight:800;font-variant-numeric:tabular-nums;line-height:1;font-size:clamp(1.6rem,min(36cqh,26cqi),10rem)}
+/* group maker */
+.dw-groups{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
+.dw-grouplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s2)}
+.dw-group{padding:8px 10px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
+.dw-grouph{display:block;margin-bottom:4px;color:var(--accent-ink)}
+.dw-groupnames{margin:0;padding:0;list-style:none;font-weight:700}
+/* scoreboard */
+.dw-score{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
+.dw-teams{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s2);flex:1 1 auto}
+.dw-team{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:var(--s2);border-radius:var(--r);background:var(--card-2);text-align:center}
+.dw-team0{background:var(--accent-soft)}.dw-team1{background:var(--spark-soft)}.dw-team2{background:color-mix(in srgb,#5AA9D6 26%,var(--card))}
+.dw-teamname{flex:1 0 100%;font-weight:800;font-size:clamp(1rem,min(10cqh,5cqi),1.8rem);overflow-wrap:anywhere}
+.dw-teampts{font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.6rem,min(24cqh,10cqi),5rem);line-height:1;min-width:1.6em}
+.dw-pm{min-width:44px;padding:0;font-size:1.4rem}
+/* stickers */
+.dw-stickers{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
+.dw-stickarea{position:relative;flex:1 1 auto;min-height:60px;border-radius:var(--r-sm)}
+.dw-stamp{position:absolute;transform:translate(-50%,-50%);font-size:clamp(1.6rem,min(18cqh,12cqi),4rem);line-height:1;background:none;border:0;padding:4px;min-width:44px;min-height:44px;cursor:pointer}
+[dir="rtl"] .dw-stamp{transform:translate(50%,-50%)}
+span.dw-stamp{cursor:default}
+.dw-stamp:focus-visible{outline:3px solid var(--focus);border-radius:8px}
+.dw-palette{display:flex;flex-wrap:wrap;gap:4px}
+.dw-palbtn{min-width:44px;padding:0;font-size:1.2rem}
+
 /* ---------- settings editors (stage 2) ---------- */
 .dash-prows{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:var(--s2)}
 .dash-side{flex-basis:340px}

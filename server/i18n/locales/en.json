@@ -9428,7 +9428,8 @@
         "s": {
           "minutes": "Starting minutes",
           "chime": "Soft chime at the end",
-          "bar": "Show the time bar"
+          "bar": "Show the time bar",
+          "view": "Look"
         },
         "start": "Start",
         "pause": "Pause",
@@ -9441,7 +9442,13 @@
         "done": "Time's up!",
         "left": "{time} left",
         "presets": "Quick times",
-        "mins": "{n} minutes"
+        "mins": "{n} minutes",
+        "o": {
+          "view": {
+            "digits": "Big digits",
+            "ring": "Shrinking ring"
+          }
+        }
       },
       "stopwatch": {
         "name": "Stopwatch",
@@ -9517,7 +9524,10 @@
         "name": "Random student picker",
         "desc": "Picks a student by their Oomba name.",
         "s": {
-          "norepeat": "Don't repeat until everyone's had a turn"
+          "norepeat": "Don't repeat until everyone's had a turn",
+          "mode": "Show it as",
+          "source": "Pick from",
+          "items": "Your items (one per line)"
         },
         "pick": "Pick a student",
         "again": "Pick again",
@@ -9526,7 +9536,19 @@
         "awayTitle": "Who's away today?",
         "awayNote": "Ticked students aren't picked today. This resets tomorrow.",
         "reset": "Start over",
-        "none": "No students to pick from."
+        "none": "No students to pick from.",
+        "o": {
+          "mode": {
+            "names": "A name",
+            "wheel": "A spinner wheel"
+          },
+          "source": {
+            "class": "The class (Oomba names)",
+            "items": "Your items"
+          }
+        },
+        "spin": "Spin",
+        "noItems": "Type some items in Edit screen."
       },
       "noise": {
         "name": "Voice meter",
@@ -9611,6 +9633,132 @@
         "lessons": "Lessons",
         "remove": "Remove",
         "gone": "These aren't open right now."
+      },
+      "countdown": {
+        "name": "Countdown to a day",
+        "desc": "Days and hours until a field trip, a show or a holiday.",
+        "s": {
+          "label": "What's coming",
+          "date": "Day",
+          "time": "Time"
+        },
+        "empty": "Pick the day in Edit screen.",
+        "days": "Days",
+        "hours": "Hours",
+        "mins": "Minutes",
+        "today": "It's today!",
+        "past": "That day has come and gone."
+      },
+      "calendar": {
+        "name": "Calendar",
+        "desc": "Today's date, the month, and days you mark.",
+        "s": {
+          "marks": "Marked days"
+        },
+        "today": "Today",
+        "coming": "Coming up",
+        "none": "Nothing marked this month.",
+        "addMark": "Mark a day",
+        "day": "Day",
+        "label": "Label",
+        "remove": "Remove day"
+      },
+      "symbols": {
+        "name": "Work symbols",
+        "desc": "How to work right now: silent, whisper, partner, together, hand up.",
+        "s": {
+          "mode": "Right now"
+        },
+        "o": {
+          "mode": {
+            "silent": "Silent work",
+            "whisper": "Whisper voices",
+            "partner": "Ask a partner",
+            "together": "Work together",
+            "hand": "Raise your hand"
+          }
+        },
+        "change": "Change how we work"
+      },
+      "light": {
+        "name": "Traffic light",
+        "desc": "Red, yellow or green, with your own words for each.",
+        "s": {
+          "color": "Light on now",
+          "red": "Words for red",
+          "yellow": "Words for yellow",
+          "green": "Words for green"
+        },
+        "o": {
+          "color": {
+            "red": "Red",
+            "yellow": "Yellow",
+            "green": "Green"
+          }
+        },
+        "set": "Change the light"
+      },
+      "dice": {
+        "name": "Dice",
+        "desc": "Roll 1 to 6 dice and see the total.",
+        "s": {
+          "count": "How many dice"
+        },
+        "roll": "Roll",
+        "total": "Total: {n}",
+        "die": "You rolled {n}"
+      },
+      "random": {
+        "name": "Random number",
+        "desc": "A number between a smallest and a biggest.",
+        "s": {
+          "min": "Smallest",
+          "max": "Biggest"
+        },
+        "go": "Pick a number",
+        "between": "From {min} to {max}"
+      },
+      "groups": {
+        "name": "Group maker",
+        "desc": "Random groups from the class, by Oomba name.",
+        "s": {
+          "by": "Make groups by",
+          "n": "Number"
+        },
+        "o": {
+          "by": {
+            "size": "Students in each group",
+            "count": "Number of groups"
+          }
+        },
+        "make": "Make groups",
+        "again": "Shuffle again",
+        "group": "Group {n}",
+        "none": "No students to put in groups.",
+        "note": "Students marked away in the picker are left out."
+      },
+      "score": {
+        "name": "Scoreboard",
+        "desc": "Team points with plus and minus buttons.",
+        "s": {
+          "teams": "Team names (one per line)",
+          "scores": "Points"
+        },
+        "team": "Team {n}",
+        "plus": "One point for {team}",
+        "minus": "One point off {team}",
+        "reset": "Reset points"
+      },
+      "stickers": {
+        "name": "Stickers",
+        "desc": "Fun Oomba stickers to put on the screen.",
+        "s": {
+          "stamps": "Stickers"
+        },
+        "add": "Add a sticker",
+        "remove": "Take off {e}",
+        "clear": "Take them all off",
+        "empty": "Tap a sticker below to put it here."
       }
     },
     "push": {

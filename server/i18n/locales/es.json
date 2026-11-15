@@ -9004,7 +9004,8 @@
         "s": {
           "minutes": "Minutos al empezar",
           "chime": "Campanita suave al final",
-          "bar": "Mostrar la barra de tiempo"
+          "bar": "Mostrar la barra de tiempo",
+          "view": "Vista"
         },
         "start": "Empezar",
         "pause": "Pausa",
@@ -9017,7 +9018,13 @@
         "done": "¡Se acabó el tiempo!",
         "left": "Quedan {time}",
         "presets": "Tiempos rápidos",
-        "mins": "{n} minutos"
+        "mins": "{n} minutos",
+        "o": {
+          "view": {
+            "digits": "Números grandes",
+            "ring": "Anillo que se encoge"
+          }
+        }
       },
       "stopwatch": {
         "name": "Cronómetro",
@@ -9093,7 +9100,10 @@
         "name": "Elegir alumno al azar",
         "desc": "Elige un alumno por su nombre de Oomba.",
         "s": {
-          "norepeat": "No repetir hasta que todos hayan salido"
+          "norepeat": "No repetir hasta que todos hayan salido",
+          "mode": "Mostrar como",
+          "source": "Elegir de",
+          "items": "Tus elementos (uno por línea)"
         },
         "pick": "Elegir un alumno",
         "again": "Otra vez",
@@ -9102,7 +9112,19 @@
         "awayTitle": "¿Quién falta hoy?",
         "awayNote": "Los alumnos marcados no salen hoy. Mañana se reinicia.",
         "reset": "Empezar de nuevo",
-        "none": "No hay alumnos para elegir."
+        "none": "No hay alumnos para elegir.",
+        "o": {
+          "mode": {
+            "names": "Un nombre",
+            "wheel": "Una ruleta"
+          },
+          "source": {
+            "class": "La clase (nombres de Oomba)",
+            "items": "Tus elementos"
+          }
+        },
+        "spin": "Girar",
+        "noItems": "Escribe algunos elementos en Editar pantalla."
       },
       "noise": {
         "name": "Medidor de voz",
@@ -9187,6 +9209,132 @@
         "lessons": "Lecciones",
         "remove": "Quitar",
         "gone": "No están abiertos ahora."
+      },
+      "countdown": {
+        "name": "Cuenta atrás para un día",
+        "desc": "Días y horas hasta una excursión, una función o las vacaciones.",
+        "s": {
+          "label": "Lo que viene",
+          "date": "Día",
+          "time": "Hora"
+        },
+        "empty": "Elige el día en Editar pantalla.",
+        "days": "Días",
+        "hours": "Horas",
+        "mins": "Minutos",
+        "today": "¡Es hoy!",
+        "past": "Ese día ya pasó."
+      },
+      "calendar": {
+        "name": "Calendario",
+        "desc": "La fecha de hoy, el mes y los días que marques.",
+        "s": {
+          "marks": "Días marcados"
+        },
+        "today": "Hoy",
+        "coming": "Próximamente",
+        "none": "No hay nada marcado este mes.",
+        "addMark": "Marcar un día",
+        "day": "Día",
+        "label": "Nombre",
+        "remove": "Quitar día"
+      },
+      "symbols": {
+        "name": "Señales de trabajo",
+        "desc": "Cómo trabajar ahora: en silencio, susurrando, en pareja, en equipo, mano arriba.",
+        "s": {
+          "mode": "Ahora mismo"
+        },
+        "o": {
+          "mode": {
+            "silent": "Trabajo en silencio",
+            "whisper": "Voces de susurro",
+            "partner": "Pregunta a un compañero",
+            "together": "Trabajamos juntos",
+            "hand": "Levanta la mano"
+          }
+        },
+        "change": "Cambiar cómo trabajamos"
+      },
+      "light": {
+        "name": "Semáforo",
+        "desc": "Rojo, amarillo o verde, con tus propias palabras para cada uno.",
+        "s": {
+          "color": "Luz encendida",
+          "red": "Palabras para el rojo",
+          "yellow": "Palabras para el amarillo",
+          "green": "Palabras para el verde"
+        },
+        "o": {
+          "color": {
+            "red": "Rojo",
+            "yellow": "Amarillo",
+            "green": "Verde"
+          }
+        },
+        "set": "Cambiar la luz"
+      },
+      "dice": {
+        "name": "Dados",
+        "desc": "Lanza de 1 a 6 dados y mira el total.",
+        "s": {
+          "count": "Cuántos dados"
+        },
+        "roll": "Lanzar",
+        "total": "Total: {n}",
+        "die": "Sacaste {n}"
+      },
+      "random": {
+        "name": "Número al azar",
+        "desc": "Un número entre el más pequeño y el más grande.",
+        "s": {
+          "min": "El más pequeño",
+          "max": "El más grande"
+        },
+        "go": "Sacar un número",
+        "between": "Del {min} al {max}"
+      },
+      "groups": {
+        "name": "Hacer grupos",
+        "desc": "Grupos al azar de la clase, por nombre de Oomba.",
+        "s": {
+          "by": "Hacer grupos por",
+          "n": "Número"
+        },
+        "o": {
+          "by": {
+            "size": "Alumnos por grupo",
+            "count": "Número de grupos"
+          }
+        },
+        "make": "Hacer grupos",
+        "again": "Mezclar otra vez",
+        "group": "Grupo {n}",
+        "none": "No hay alumnos para hacer grupos.",
+        "note": "Los alumnos marcados como ausentes en el selector quedan fuera."
+      },
+      "score": {
+        "name": "Marcador",
+        "desc": "Puntos por equipo con botones de más y menos.",
+        "s": {
+          "teams": "Nombres de los equipos (uno por línea)",
+          "scores": "Puntos"
+        },
+        "team": "Equipo {n}",
+        "plus": "Un punto para {team}",
+        "minus": "Un punto menos para {team}",
+        "reset": "Reiniciar puntos"
+      },
+      "stickers": {
+        "name": "Pegatinas",
+        "desc": "Pegatinas divertidas de Oomba para la pantalla.",
+        "s": {
+          "stamps": "Pegatinas"
+        },
+        "add": "Añadir una pegatina",
+        "remove": "Quitar {e}",
+        "clear": "Quitarlas todas",
+        "empty": "Toca una pegatina de abajo para ponerla aquí."
       }
     },
     "push": {

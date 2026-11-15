@@ -91,9 +91,9 @@ test('the registry: every stage 2 type has a renderer and English words; who may
     }
   }
   // Students may add only things that stay on their own screen.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch']);
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random']);
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
-  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x)).map(x => x.id).sort(), ['check', 'noise', 'picker', 'qr']);
+  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x)).map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random']);
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');
@@ -104,7 +104,7 @@ test('the registry: every stage 2 type has a renderer and English words; who may
 test('settings are rebuilt on the server for every new type', () => {
   const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
   // timer: whole minutes 1-180; bools
-  assert.deepEqual(c('timer', { minutes: '999', chime: 'true', bar: 0, evil: 1 }), { minutes: 180, chime: true, bar: false });
+  assert.deepEqual(c('timer', { minutes: '999', chime: 'true', bar: 0, evil: 1 }), { minutes: 180, view: 'digits', chime: true, bar: false });
   assert.equal(c('timer', { minutes: -4 }).minutes, 1); assert.equal(c('timer', { minutes: 'x' }).minutes, 5); assert.equal(c('timer', {}).minutes, 5);
   // clock: a real time zone or nothing
   assert.equal(c('clock', { zone2: 'Europe/London' }).zone2, 'Europe/London');
@@ -128,7 +128,7 @@ test('settings are rebuilt on the server for every new type', () => {
   assert.equal(c('tiles', { tiles: Array.from({ length: 20 }, (_, i) => ({ kind: 'game', ref: `g${i}` })) }).tiles.length, D.MAX_TILES);
   // noise, picker: options and bools only
   assert.deepEqual(c('noise', { zone: 'rock concert' }), { zone: 'talk' });
-  assert.deepEqual(c('picker', { norepeat: 'no' }), { norepeat: false });
+  assert.equal(c('picker', { norepeat: 'no' }).norepeat, false);
 });
 
 test('access: every new address checks the class role (404 to others), needs sign-in, and refuses cross-site writes', async () => {
@@ -515,12 +515,78 @@ test('account deletion forgets a student\'s place in help queues, their check an
 test('every stage 2 string is translated into every locale', async () => {
   const { checkAll } = await import('../../server/i18n/check.js');
   const r = checkAll();
-  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
-  assert.ok(keys.length > 150, String(keys.length));
+  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles|countdown|calendar|symbols|light|dice|random|groups|score|stickers)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
+  assert.ok(keys.length > 240, String(keys.length));
   for (const l of r.locales) {
     if (l.code === 'en-GB') continue;
     const missing = l.missing.filter(k => keys.includes(k));
     assert.deepEqual(missing, [], l.code);
     assert.deepEqual([...l.placeholderErrors, ...l.parseErrors, ...l.extra], [], l.code);
   }
+});
+
+test('more everyday widgets: registry, settings rebuilt on the server, and the maths behind them', () => {
+  const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score', 'stickers'];
+  for (const id of ids) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
+  const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
+  // Visual timer and spinner wheel are modes of the timer and the picker.
+  assert.equal(c('timer', { view: 'ring' }).view, 'ring'); assert.equal(c('timer', { view: 'lava lamp' }).view, 'digits');
+  assert.deepEqual(c('picker', { mode: 'wheel', source: 'items', items: 'Volcanoes\nRivers\u0000', norepeat: false }), { mode: 'wheel', source: 'items', items: 'Volcanoes\nRivers', norepeat: false });
+  // Countdown: a real day and a time.
+  assert.deepEqual(c('countdown', { label: 'Field trip', date: '2026-12-04', time: '09:30' }), { label: 'Field trip', date: '2026-12-04', time: '09:30' });
+  for (const bad of ['2026-02-30', '26-12-04', '2026-13-01', '1999-12-31', 'tomorrow', '']) assert.equal(c('countdown', { date: bad }).date, '', bad);
+  assert.equal(c('countdown', { time: '25:00' }).time, '08:00');
+  // Calendar: real days with a label, one per day, sorted, at most 40.
+  assert.deepEqual(c('calendar', { marks: [{ date: '2026-11-20', label: 'Book fair' }, { date: '2026-11-03', label: 'Picture day‮' }, { date: '2026-11-20', label: 'Dup' }, { date: 'x', label: 'Bad' }, { date: '2026-11-21', label: '' }] }).marks,
+    [{ date: '2026-11-03', label: 'Picture day' }, { date: '2026-11-20', label: 'Dup' }]);
+  assert.equal(c('calendar', { marks: Array.from({ length: 60 }, (_, i) => ({ date: `2026-${String(1 + (i % 12)).padStart(2, '0')}-${String(1 + Math.floor(i / 12)).padStart(2, '0')}`, label: 'x' })) }).marks.length, D.MAX_MARKS);
+  // Work symbols and the traffic light: fixed options; the light's words are short teacher text.
+  assert.equal(c('symbols', { mode: 'dance' }).mode, 'whisper'); assert.equal(c('symbols', { mode: 'hand' }).mode, 'hand');
+  const lt = c('light', { color: 'blue', red: 'Stop and look'.repeat(9) });
+  assert.equal(lt.color, 'green'); assert.equal(lt.red.length, 40);
+  // Dice, random number and groups: clamped numbers.
+  assert.equal(c('dice', { count: 40 }).count, 6); assert.equal(c('dice', { count: 0 }).count, 1);
+  assert.deepEqual(c('random', { min: -1e9, max: '12' }), { min: -9999, max: 12 });
+  assert.deepEqual(c('groups', { by: 'count', n: 99 }), { by: 'count', n: 12 });
+  // Scoreboard: whole points, one per team (8 at most); team names are teacher text.
+  assert.deepEqual(c('score', { teams: 'Red\nBlue', scores: [3, '4.6', 'x', 1e9, -1e9, 0, 0, 0, 9, 9] }), { teams: 'Red\nBlue', scores: [3, 5, 0, 9999, -9999, 0, 0, 0] });
+  // Stickers: only the fixed set (no uploads), inside the widget, at most 30.
+  assert.deepEqual(c('stickers', { stamps: [{ e: 0, x: 10, y: 20 }, { e: 99, x: 1, y: 1 }, { e: 1, x: 120, y: 5 }, { e: 'https://evil.example/x.png', x: 1, y: 1 }, { e: 2.5, x: 1, y: 1 }] }).stamps, [{ e: 0, x: 10, y: 20 }]);
+  assert.equal(c('stickers', { stamps: Array.from({ length: 50 }, () => ({ e: 1, x: 5, y: 5 })) }).stamps.length, D.MAX_STAMPS);
+  assert.equal(W.STAMPS.length, D.STAMP_COUNT);
+  const widgets = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
+  const stickerCode = widgets.slice(widgets.indexOf('function stickers('), widgets.indexOf('/** id -> renderer.'));
+  assert.doesNotMatch(stickerCode, /type="?file|input|upload|FileReader|fetch|innerHTML/i, 'stickers: no uploads, no network, no markup');
+  // Countdown sums (the school's time zone) and calendar day.
+  assert.equal(W.zonedEpoch('2026-12-04', '09:30', 'America/New_York'), Date.UTC(2026, 11, 4, 14, 30));
+  assert.equal(W.zonedEpoch('2026-07-04', '09:30', 'America/New_York'), Date.UTC(2026, 6, 4, 13, 30), 'summer time');
+  assert.equal(W.zonedEpoch('2026-12-04', '09:30', 'Asia/Tokyo'), Date.UTC(2026, 11, 4, 0, 30));
+  assert.deepEqual(W.countdownParts(3 * 86400e3 + 5 * 3600e3 + 61e3), { days: 3, hours: 5, mins: 2 });
+  assert.equal(W.todayIn('Asia/Tokyo', new Date(Date.UTC(2026, 10, 15, 20))), '2026-11-16');
+  // Groups: everyone exactly once, sizes differ by at most one; by size and by count.
+  const kids = Array.from({ length: 23 }, (_, i) => `Kid${i}`);
+  for (const [by, n, k] of [['size', 4, 6], ['count', 5, 5], ['size', 30, 1], ['count', 40, 23]]) {
+    const g = W.makeGroups(kids, by, n);
+    assert.equal(g.length, k, `${by} ${n}`);
+    assert.deepEqual(g.flat().sort(), [...kids].sort());
+    const sizes = g.map(x => x.length); assert.ok(Math.max(...sizes) - Math.min(...sizes) <= 1);
+  }
+  assert.deepEqual(W.makeGroups([], 'size', 4), []);
+  // Groups and the wheel take names only from the picker's list (Oomba names), never anything else.
+  assert.match(widgets.slice(widgets.indexOf('function groups('), widgets.indexOf('function score(')), /ctx\.get\('\/picker'\)/);
+  assert.doesNotMatch(widgets, /roster|realName|real_name/i);
+});
+
+test('symbols, traffic light, scoreboard and stickers the teacher taps reach student screens when pinned; dice and groups never do', async () => {
+  const w = world(); const T = as(w.T);
+  await layout(w, [{ id: 'sy', type: 'symbols', s: { mode: 'silent' }, pin: true }, { id: 'tl', type: 'light', s: { color: 'red', red: 'Eyes on me' }, pin: true },
+    { id: 'sb', type: 'score', s: { teams: 'Comets\nRockets', scores: [2, 5] }, pin: true }, { id: 'st', type: 'stickers', s: { stamps: [{ e: 3, x: 50, y: 50 }] }, pin: true },
+    { id: 'dc', type: 'dice', pin: true }, { id: 'gr', type: 'groups', pin: true }, { id: 'rn', type: 'random', pin: true }]);
+  const pins = (await as(w.a1)(`/api/dash/${w.A.id}/pins`)).json.pins;
+  assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score', 'stickers']);
+  assert.equal(pins.find(p => p.type === 'light').s.red, 'Eyes on me');
+  assert.deepEqual(pins.find(p => p.type === 'score').s.scores, [2, 5]);
+  // A student can add dice and a random number to their own screen, but not a scoreboard or a light.
+  await as(w.a1)(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'd1', type: 'dice' }, { id: 'r1', type: 'random' }, { id: 's1', type: 'score' }, { id: 'l1', type: 'light' }, { id: 'g1', type: 'groups' }] }));
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets.map(x => x.type), ['dice', 'random']);
 });

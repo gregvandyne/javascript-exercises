@@ -9004,7 +9004,8 @@
         "s": {
           "minutes": "Minutes au départ",
           "chime": "Petit carillon à la fin",
-          "bar": "Afficher la barre de temps"
+          "bar": "Afficher la barre de temps",
+          "view": "Affichage"
         },
         "start": "Démarrer",
         "pause": "Pause",
@@ -9017,7 +9018,13 @@
         "done": "C’est l’heure !",
         "left": "Encore {time}",
         "presets": "Durées rapides",
-        "mins": "{n} minutes"
+        "mins": "{n} minutes",
+        "o": {
+          "view": {
+            "digits": "Gros chiffres",
+            "ring": "Anneau qui rétrécit"
+          }
+        }
       },
       "stopwatch": {
         "name": "Chronomètre",
@@ -9093,7 +9100,10 @@
         "name": "Tirage au sort d’un élève",
         "desc": "Choisit un élève par son nom Oomba.",
         "s": {
-          "norepeat": "Pas de répétition avant que tout le monde soit passé"
+          "norepeat": "Pas de répétition avant que tout le monde soit passé",
+          "mode": "Afficher comme",
+          "source": "Choisir parmi",
+          "items": "Tes éléments (un par ligne)"
         },
         "pick": "Tirer un élève",
         "again": "Encore",
@@ -9102,7 +9112,19 @@
         "awayTitle": "Qui est absent aujourd’hui ?",
         "awayNote": "Les élèves cochés ne sont pas tirés aujourd’hui. Tout repart à zéro demain.",
         "reset": "Recommencer",
-        "none": "Aucun élève à tirer."
+        "none": "Aucun élève à tirer.",
+        "o": {
+          "mode": {
+            "names": "Un nom",
+            "wheel": "Une roue"
+          },
+          "source": {
+            "class": "La classe (noms Oomba)",
+            "items": "Tes éléments"
+          }
+        },
+        "spin": "Tourner",
+        "noItems": "Écris quelques éléments dans Modifier l’écran."
       },
       "noise": {
         "name": "Mesure du bruit",
@@ -9187,6 +9209,132 @@
         "lessons": "Leçons",
         "remove": "Retirer",
         "gone": "Ils ne sont pas ouverts en ce moment."
+      },
+      "countdown": {
+        "name": "Compte à rebours jusqu’à un jour",
+        "desc": "Les jours et les heures avant une sortie, un spectacle ou les vacances.",
+        "s": {
+          "label": "Ce qui arrive",
+          "date": "Jour",
+          "time": "Heure"
+        },
+        "empty": "Choisis le jour dans Modifier l’écran.",
+        "days": "Jours",
+        "hours": "Heures",
+        "mins": "Minutes",
+        "today": "C’est aujourd’hui !",
+        "past": "Ce jour est passé."
+      },
+      "calendar": {
+        "name": "Calendrier",
+        "desc": "La date du jour, le mois et les jours que tu marques.",
+        "s": {
+          "marks": "Jours marqués"
+        },
+        "today": "Aujourd’hui",
+        "coming": "Bientôt",
+        "none": "Rien de marqué ce mois-ci.",
+        "addMark": "Marquer un jour",
+        "day": "Jour",
+        "label": "Nom",
+        "remove": "Retirer le jour"
+      },
+      "symbols": {
+        "name": "Consignes de travail",
+        "desc": "Comment travailler maintenant : en silence, en chuchotant, à deux, ensemble, main levée.",
+        "s": {
+          "mode": "En ce moment"
+        },
+        "o": {
+          "mode": {
+            "silent": "Travail en silence",
+            "whisper": "On chuchote",
+            "partner": "Demande à un camarade",
+            "together": "On travaille ensemble",
+            "hand": "Lève la main"
+          }
+        },
+        "change": "Changer la consigne"
+      },
+      "light": {
+        "name": "Feu tricolore",
+        "desc": "Rouge, orange ou vert, avec tes propres mots pour chacun.",
+        "s": {
+          "color": "Couleur allumée",
+          "red": "Mots pour le rouge",
+          "yellow": "Mots pour l’orange",
+          "green": "Mots pour le vert"
+        },
+        "o": {
+          "color": {
+            "red": "Rouge",
+            "yellow": "Orange",
+            "green": "Vert"
+          }
+        },
+        "set": "Changer la couleur"
+      },
+      "dice": {
+        "name": "Dés",
+        "desc": "Lance de 1 à 6 dés et vois le total.",
+        "s": {
+          "count": "Combien de dés"
+        },
+        "roll": "Lancer",
+        "total": "Total : {n}",
+        "die": "Tu as fait {n}"
+      },
+      "random": {
+        "name": "Nombre au hasard",
+        "desc": "Un nombre entre un plus petit et un plus grand.",
+        "s": {
+          "min": "Plus petit",
+          "max": "Plus grand"
+        },
+        "go": "Tirer un nombre",
+        "between": "De {min} à {max}"
+      },
+      "groups": {
+        "name": "Faire des groupes",
+        "desc": "Des groupes au hasard dans la classe, par nom Oomba.",
+        "s": {
+          "by": "Faire les groupes par",
+          "n": "Nombre"
+        },
+        "o": {
+          "by": {
+            "size": "Élèves par groupe",
+            "count": "Nombre de groupes"
+          }
+        },
+        "make": "Faire les groupes",
+        "again": "Mélanger encore",
+        "group": "Groupe {n}",
+        "none": "Aucun élève à mettre en groupe.",
+        "note": "Les élèves marqués absents dans le tirage au sort sont laissés de côté."
+      },
+      "score": {
+        "name": "Tableau des points",
+        "desc": "Points des équipes avec des boutons plus et moins.",
+        "s": {
+          "teams": "Noms des équipes (un par ligne)",
+          "scores": "Points"
+        },
+        "team": "Équipe {n}",
+        "plus": "Un point pour {team}",
+        "minus": "Un point de moins pour {team}",
+        "reset": "Remettre les points à zéro"
+      },
+      "stickers": {
+        "name": "Autocollants",
+        "desc": "Des autocollants Oomba à mettre sur l’écran.",
+        "s": {
+          "stamps": "Autocollants"
+        },
+        "add": "Ajouter un autocollant",
+        "remove": "Retirer {e}",
+        "clear": "Tout retirer",
+        "empty": "Touche un autocollant en dessous pour le mettre ici."
       }
     },
     "push": {

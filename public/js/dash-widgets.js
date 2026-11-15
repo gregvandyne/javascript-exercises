@@ -145,7 +145,8 @@ function chime() {
     }
   } catch { /* no sound: fine */ }
 }
-const localTimers = new Map();   // a student's own timers (their browser only)
+const localTimers = new Map();
+const RING = 2 * Math.PI * 44;   // a student's own timers (their browser only)
 function runner(body, s, ctx, down) {
   const W = ctx.type.words;
   const control = ctx.teacher || ctx.own;
@@ -159,10 +160,21 @@ function runner(body, s, ctx, down) {
   body.classList.add('dw-timer');
   const digits = el('div', 'dw-digits'); digits.setAttribute('role', 'timer');
   const doneMsg = el('div', 'dw-done', W.done || ''); doneMsg.hidden = true; doneMsg.setAttribute('role', 'status');
-  const bar = down && s.bar ? el('div', 'dw-bar') : null;
+  const ringView = down && s.view === 'ring';
+  const bar = down && s.bar && !ringView ? el('div', 'dw-bar') : null;
   const barFill = bar ? bar.appendChild(el('span', 'dw-barfill')) : null;
   if (bar) bar.setAttribute('aria-hidden', 'true');
-  body.append(digits, doneMsg);
+  // The visual timer: a ring that shrinks as time runs out, the digits inside it.
+  let arc = null;
+  if (ringView) {
+    const wrap = el('div', 'dw-ring');
+    const svg = svgEl('svg', { viewBox: '0 0 100 100', 'aria-hidden': 'true' });
+    svg.appendChild(svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringbg' }));
+    arc = svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringfg', 'stroke-dasharray': RING, transform: 'rotate(-90 50 50)' });
+    svg.appendChild(arc);
+    wrap.append(svg, digits);
+    body.append(wrap, doneMsg);
+  } else body.append(digits, doneMsg);
   if (bar) body.appendChild(bar);
   let go = null;
   if (control) {
@@ -216,6 +228,7 @@ function runner(body, s, ctx, down) {
     digits.textContent = mmss(ms, !down);
     digits.setAttribute('aria-label', down ? fill(W.left, { time: mmss(ms) }) : mmss(ms, true));
     if (barFill) barFill.style.inlineSize = `${st.dur ? (100 * v.left) / st.dur : 0}%`;
+    if (arc) arc.setAttribute('stroke-dashoffset', String(RING * (1 - (st.dur ? v.left / st.dur : 0))));
     body.classList.toggle('is-running', !!st.on);
     const done = down && v.done && (st.on || st.base > 0);
     body.classList.toggle('is-done', done);
@@ -330,42 +343,105 @@ function qr(body, s, ctx) {
 // server; the shuffle is only for fun and is skipped with reduced motion.
 function picker(body, s, ctx) {
   const W = ctx.type.words;
+  const wheelMode = s.mode === 'wheel', own = wheelMode && s.source === 'items';
+  const items = own ? String(s.items || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 40) : [];
   body.classList.add('dw-picker');
-  const name = el('div', 'dw-pickname', '🎲'); name.setAttribute('aria-live', 'polite'); name.dir = 'auto';
+  if (wheelMode) body.classList.add('dw-wheelmode');
+  const name = el('div', 'dw-pickname', wheelMode ? '' : '🎲'); name.setAttribute('aria-live', 'polite'); name.dir = 'auto';
+  let wheel = null, rot = 0;
+  if (wheelMode) { wheel = el('div', 'dw-wheel'); wheel.setAttribute('aria-hidden', 'true'); body.appendChild(wheel); }
   const left = el('div', 'dw-pickleft small muted');
   const row = el('div', 'dw-row');
-  const go = btn(`🎲 ${W.pick}`, 'btn btn-primary'), away = btn(W.away), reset = btn(W.reset);
-  row.append(go, away, reset);
+  const go = btn(wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`, 'btn btn-primary'), away = btn(W.away), reset = btn(W.reset);
+  row.append(go);
+  if (!own) row.append(away);
+  row.append(reset);
   body.append(name, left, row);
   let view = null, timer = 0;
+  const ownState = localPicks.get(ctx.id) || { picked: [] }; localPicks.set(ctx.id, ownState);
+  /** What the wheel shows: the teacher's items, or the class's Oomba names (away students left out). */
+  const entries = () => (own ? items : view ? view.students.filter(k => !view.away.includes(k.id)).map(k => k.name) : []);
+  const drawWheel = () => {
+    if (!wheel) return;
+    const list = entries();
+    wheel.textContent = '';
+    if (!list.length) return;
+    const svg = svgEl('svg', { viewBox: '-50 -50 100 100', class: 'dw-wheelsvg' });
+    const g = svgEl('g', { class: 'dw-wheelrot' }); g.style.transform = `rotate(${rot}deg)`;
+    const seg = 360 / list.length;
+    list.forEach((label, i) => {
+      const a0 = (i * seg - 90) * Math.PI / 180, a1 = ((i + 1) * seg - 90) * Math.PI / 180;
+      const big = seg > 180 ? 1 : 0;
+      const d = list.length === 1 ? 'M0 -48 A48 48 0 1 1 -0.01 -48 Z' : `M0 0 L${48 * Math.cos(a0)} ${48 * Math.sin(a0)} A48 48 0 ${big} 1 ${48 * Math.cos(a1)} ${48 * Math.sin(a1)} Z`;
+      g.appendChild(svgEl('path', { d, class: `dw-seg dw-seg${i % 4}` }));
+      const mid = (i + 0.5) * seg - 90;
+      const shown = label.length > 16 ? `${label.slice(0, 15)}…` : label;
+      const tx = svgEl('text', { x: 9, y: 0, transform: `rotate(${mid})`, class: 'dw-segtext', 'font-size': Math.max(2.6, Math.min(7, 70 / list.length, 66 / Math.max(1, shown.length))) });
+      tx.textContent = shown;
+      g.appendChild(tx);
+    });
+    svg.appendChild(g);
+    svg.appendChild(svgEl('path', { d: 'M-4 -50 L4 -50 L0 -41 Z', class: 'dw-pointer' }));
+    svg.appendChild(svgEl('circle', { cx: 0, cy: 0, r: 5, class: 'dw-hub' }));
+    wheel.appendChild(svg);
+  };
   const showLeft = () => {
+    if (own) { left.textContent = items.length ? '' : W.noItems; go.disabled = !items.length; drawWheel(); return; }
     if (!view) return;
     const here = view.students.filter(k => !view.away.includes(k.id));
     const n = s.norepeat ? here.filter(k => !view.picked.includes(k.id)).length || here.length : here.length;
     left.textContent = here.length ? fill(W.left, { n }) : W.none;
     go.disabled = !here.length;
+    drawWheel();
   };
-  const load = () => ctx.get('/picker').then(v => { view = v; showLeft(); }).catch(() => {});
+  const load = () => (own ? Promise.resolve(showLeft()) : ctx.get('/picker').then(v => { view = v; showLeft(); }).catch(() => {}));
   load();
+  /** Turn the wheel so the picked entry stops under the pointer (at once with reduced motion). */
+  const spinTo = (index, done) => {
+    const list = entries(), seg = 360 / list.length;
+    const g = wheel && wheel.querySelector('.dw-wheelrot');
+    if (!g || ctx.reduced()) { rot = -(index + 0.5) * seg; drawWheel(); done(); return; }
+    const base = Math.ceil(rot / 360) * 360 + 360 * 4;
+    rot = base - (index + 0.5) * seg + (Math.random() - 0.5) * seg * 0.6;
+    g.style.transition = 'transform 3.2s cubic-bezier(.17,.67,.21,1)';
+    requestAnimationFrame(() => { g.style.transform = `rotate(${rot}deg)`; });
+    timer = setTimeout(done, 3300);
+  };
   go.addEventListener('click', async () => {
     go.disabled = true;
+    name.classList.remove('is-picked');
     try {
-      const r = await ctx.act('/picker', { action: 'pick', norepeat: !!s.norepeat });
-      if (!r || !r.pick) return;
-      view = r;
+      let pickName, index;
+      if (own) {
+        // Teacher-typed items: picked here (no student data involved).
+        let pool = items.map((x, i) => i).filter(i => !s.norepeat || !ownState.picked.includes(i));
+        if (!pool.length) { ownState.picked = []; pool = items.map((x, i) => i); }
+        index = pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length];
+        ownState.picked.push(index); pickName = items[index];
+      } else {
+        const before = entries();
+        const r = await ctx.act('/picker', { action: 'pick', norepeat: !!s.norepeat });
+        if (!r || !r.pick) { go.disabled = false; return; }
+        view = r; pickName = r.pick.name; index = Math.max(0, before.indexOf(pickName));
+        if (wheelMode && before.join('\n') !== entries().join('\n')) { drawWheel(); index = entries().indexOf(pickName); }
+      }
+      const land = () => { name.removeAttribute('aria-busy'); name.textContent = pickName; name.classList.add('is-picked'); go.disabled = false; if (!own) showLeft(); if (!wheelMode) go.textContent = `🎲 ${W.again}`; };
+      name.setAttribute('aria-busy', 'true');
+      if (wheelMode) { spinTo(index, land); return; }
       const names = view.students.map(k => k.name);
-      const land = () => { name.removeAttribute('aria-busy'); name.textContent = r.pick.name; name.classList.add('is-picked'); showLeft(); go.textContent = `🎲 ${W.again}`; };
-      name.classList.remove('is-picked');
       if (ctx.reduced() || names.length < 2) land();
       else {
         let i = 0, wait = 60;
-        name.setAttribute('aria-busy', 'true');
         const spin = () => { name.textContent = names[Math.floor(Math.random() * names.length)]; i++; wait *= 1.18; if (i < 14) timer = setTimeout(spin, wait); else land(); };
         spin();
       }
-    } finally { go.disabled = false; }
+    } catch { go.disabled = false; }
   });
-  reset.addEventListener('click', async () => { const r = await ctx.act('/picker', { action: 'reset' }); if (r) { view = r; name.textContent = '🎲'; name.classList.remove('is-picked'); go.textContent = `🎲 ${W.pick}`; showLeft(); } });
+  reset.addEventListener('click', async () => {
+    if (own) { ownState.picked = []; name.textContent = ''; return; }
+    const r = await ctx.act('/picker', { action: 'reset' });
+    if (r) { view = r; name.textContent = wheelMode ? '' : '🎲'; name.classList.remove('is-picked'); go.textContent = wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`; showLeft(); }
+  });
   away.addEventListener('click', async () => {
     if (!view) await load();
     if (!view) return;
@@ -379,6 +455,7 @@ function picker(body, s, ctx) {
   });
   return { destroy() { clearTimeout(timer); } };
 }
+const localPicks = new Map();
 
 // ---------------------------------------------------------------- help queue
 // Students tap "I need help" or "I'm done" (no text). The teacher's widget shows the queue in order; on the projector
@@ -546,5 +623,292 @@ function tiles(body, s, ctx) {
   return null;
 }
 
+// ================================================================ stage 2, second part
+// Event countdown, calendar, work symbols, traffic light, dice, random number, group maker, scoreboard, stickers.
+// Widgets the teacher changes with a tap (symbols, light, score, stickers) save through ctx.set(key, value): the
+// layout saves, and a pinned one reaches student screens with the next /live check.
+
+/** Today in a time zone as YYYY-MM-DD. */
+export const todayIn = (tz, d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+/** The moment a wall-clock date and time happen in a time zone (ms). */
+export function zonedEpoch(ymd, hhmm, tz) {
+  const [y, m, d] = ymd.split('-').map(Number), [h, mi] = String(hhmm || '00:00').split(':').map(Number);
+  const guess = Date.UTC(y, m - 1, d, h, mi);
+  const offsetAt = t => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(t)).map(x => [x.type, x.value])); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t; };
+  let t = guess - offsetAt(guess);
+  t = guess - offsetAt(t);   // once more across a clock change
+  return t;
+}
+/** ms left -> { days, hours, mins } (whole, rounded up to the minute). */
+export function countdownParts(ms) {
+  const m = Math.max(0, Math.ceil(ms / 60e3));
+  return { days: Math.floor(m / 1440), hours: Math.floor((m % 1440) / 60), mins: m % 60 };
+}
+/** Random groups: by size (groups of about n) or by count (n groups); everyone in exactly one group, sizes differ by at
+ *  most one. rand() -> [0, 1). */
+export function makeGroups(names, by, n, rand = Math.random) {
+  const list = [...names];
+  for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
+  if (!list.length) return [];
+  const k = Math.max(1, Math.min(list.length, by === 'count' ? n : Math.round(list.length / Math.max(1, n)) || 1));
+  const groups = Array.from({ length: k }, () => []);
+  list.forEach((x, i) => groups[i % k].push(x));
+  return groups;
+}
+/** The fixed Oomba sticker set (no uploads). services/dash.js STAMP_COUNT must match. */
+export const STAMPS = ['⭐', '🌟', '🎉', '👏', '💯', '🏆', '🌈', '🔥', '💡', '❤️', '✅', '🎯', '🚀', '🍎', '📚', '✏️', '🌻', '🐸', '🦉', '🎵'];
+const rnd = n => (globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] % n : Math.floor(Math.random() * n));
+
+function countdown(body, s, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-count');
+  if (!s.date) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? W.empty : '')); return null; }
+  const tz = ctx.tz || 'America/New_York';
+  const at = zonedEpoch(s.date, s.time, tz);
+  if (s.label) body.appendChild(typed('div', 'dw-countlabel', s.label));
+  const boxes = el('div', 'dw-countboxes');
+  const part = key => { const b = el('div', 'dw-countbox'); const n = b.appendChild(el('b', 'dw-countn')); b.appendChild(el('span', 'dw-countu', W[key])); boxes.appendChild(b); return n; };
+  const nd = part('days'), nh = part('hours'), nm = part('mins');
+  const msg = el('div', 'dw-countmsg'); msg.setAttribute('role', 'status');
+  body.append(boxes, msg);
+  const tick = () => {
+    const now = ctx.now(), left = at - now;
+    const today = todayIn(tz, new Date(now)) === s.date;
+    if (left <= 0) { boxes.hidden = true; msg.textContent = today ? W.today : W.past; return; }
+    const p = countdownParts(left);
+    boxes.hidden = false; nd.textContent = p.days; nh.textContent = p.hours; nm.textContent = p.mins;
+    msg.textContent = today ? W.today : '';
+  };
+  tick();
+  return { tick };
+}
+
+function calendar(body, s, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-cal');
+  const tz = ctx.tz || 'America/New_York';
+  let shown = '';
+  const draw = () => {
+    const today = todayIn(tz, new Date(ctx.now()));
+    if (today === shown) return; shown = today;
+    body.textContent = '';
+    const [y, m] = today.split('-').map(Number);
+    const first = new Date(Date.UTC(y, m - 1, 1)), days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    let weekStart = /^en-US$/i.test(ctx.intl) || /^(he|ar|ja|zh|pt-BR)/i.test(ctx.intl) ? 0 : 1;
+    try { const wi = new Intl.Locale(ctx.intl); const info = wi.getWeekInfo ? wi.getWeekInfo() : wi.weekInfo; if (info && info.firstDay) weekStart = info.firstDay % 7; } catch { /* keep */ }
+    const title = el('div', 'dw-caltitle', new Intl.DateTimeFormat(ctx.intl, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(first));
+    const marks = new Map((s.marks || []).map(x => [x.date, x.label]));
+    const grid = el('div', 'dw-calgrid'); grid.setAttribute('role', 'grid'); grid.setAttribute('aria-label', title.textContent);
+    const wd = new Intl.DateTimeFormat(ctx.intl, { weekday: 'narrow', timeZone: 'UTC' });
+    const head = el('div', 'dw-calrow'); head.setAttribute('role', 'row');
+    for (let i = 0; i < 7; i++) { const c = el('span', 'dw-calwd', wd.format(new Date(Date.UTC(2023, 0, 1 + ((weekStart + i) % 7))))); c.setAttribute('role', 'columnheader'); head.appendChild(c); }
+    grid.appendChild(head);
+    const lead = (first.getUTCDay() - weekStart + 7) % 7;
+    const long = new Intl.DateTimeFormat(ctx.intl, { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' });
+    let row = null;
+    for (let i = 0; i < lead + days; i++) {
+      if (i % 7 === 0) { row = el('div', 'dw-calrow'); row.setAttribute('role', 'row'); grid.appendChild(row); }
+      const c = el('span', 'dw-calday'); c.setAttribute('role', 'gridcell');
+      if (i >= lead) {
+        const d = i - lead + 1, ymd = `${today.slice(0, 8)}${String(d).padStart(2, '0')}`;
+        c.textContent = d;
+        const label = [long.format(Date.UTC(y, m - 1, d))];
+        if (ymd === today) { c.classList.add('is-today'); c.setAttribute('aria-current', 'date'); label.push(W.today); }
+        if (marks.has(ymd)) { c.classList.add('is-marked'); label.push(marks.get(ymd)); }
+        c.setAttribute('aria-label', label.join(' · '));
+      }
+      row.appendChild(c);
+    }
+    const coming = (s.marks || []).filter(x => x.date >= today).slice(0, 4);
+    const list = el('ul', 'dw-calmarks');
+    const short = new Intl.DateTimeFormat(ctx.intl, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    for (const x of coming) { const li = el('li'); const [yy, mm, dd] = x.date.split('-').map(Number); li.append(el('b', null, short.format(Date.UTC(yy, mm - 1, dd))), typed('span', null, x.label)); list.appendChild(li); }
+    body.append(title, grid);
+    if (coming.length) { body.appendChild(el('div', 'dw-calh small muted', W.coming)); body.appendChild(list); }
+  };
+  draw();
+  return { tick: draw };
+}
+
+const SYMBOLS = { silent: '🤫', whisper: '🗣️', partner: '👥', together: '🧑‍🤝‍🧑', hand: '✋' };
+function symbols(body, s, ctx) {
+  const W = ctx.type.words, f = ctx.type.settings.find(x => x.key === 'mode');
+  body.classList.add('dw-sym', `dw-sym-${s.mode}`);
+  const big = el('div', 'dw-symbig'); big.setAttribute('role', 'status');
+  const ic = el('span', 'dw-symicon', SYMBOLS[s.mode] || '🤫'); ic.setAttribute('aria-hidden', 'true');
+  big.append(ic, el('span', 'dw-symlabel', f.labels[s.mode]));
+  body.appendChild(big);
+  if (ctx.teacher && !ctx.editing) {
+    const row = el('div', 'dw-symrow'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.change);
+    for (const m of f.options) {
+      const b = btn(SYMBOLS[m], 'btn btn-sm dw-symbtn', f.labels[m]); b.title = f.labels[m];
+      b.setAttribute('aria-pressed', String(m === s.mode));
+      b.addEventListener('click', () => { ctx.set('mode', m); ctx.say(f.labels[m]); });
+      row.appendChild(b);
+    }
+    body.appendChild(row);
+  }
+  return null;
+}
+
+function light(body, s, ctx) {
+  const W = ctx.type.words, f = ctx.type.settings.find(x => x.key === 'color');
+  body.classList.add('dw-light');
+  const lamp = el('div', 'dw-lamps'); lamp.setAttribute('aria-hidden', 'true');
+  for (const c of f.options) lamp.appendChild(el('span', `dw-lamp dw-lamp-${c}${c === s.color ? ' is-on' : ''}`));
+  const label = el('div', 'dw-lightlabel', s[s.color] || f.labels[s.color]); label.dir = 'auto'; label.setAttribute('role', 'status');
+  label.setAttribute('aria-label', `${f.labels[s.color]}${s[s.color] ? `: ${s[s.color]}` : ''}`);
+  body.append(lamp, label);
+  if (ctx.teacher && !ctx.editing) {
+    const row = el('div', 'dw-row dw-lightrow'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.set);
+    for (const c of f.options) {
+      const b = btn(f.labels[c], `btn btn-sm dw-lightbtn dw-lightbtn-${c}`); b.setAttribute('aria-pressed', String(c === s.color));
+      b.addEventListener('click', () => { ctx.set('color', c); ctx.say(s[c] || f.labels[c]); });
+      row.appendChild(b);
+    }
+    body.appendChild(row);
+  }
+  return null;
+}
+
+/** A die face as dots (an SVG; its number is in the label). */
+function die(n) {
+  const P = { 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[28, 28], [50, 50], [72, 72]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]], 5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]], 6: [[28, 25], [72, 25], [28, 50], [72, 50], [28, 75], [72, 75]] };
+  const svg = svgEl('svg', { viewBox: '0 0 100 100', class: 'dw-die', 'aria-hidden': 'true' });
+  svg.appendChild(svgEl('rect', { x: 4, y: 4, width: 92, height: 92, rx: 18, class: 'dw-dieface' }));
+  for (const [x, y] of P[n]) svg.appendChild(svgEl('circle', { cx: x, cy: y, r: 8.5, class: 'dw-diedot' }));
+  return svg;
+}
+const lastRolls = new Map();
+function dice(body, s, ctx) {
+  const W = ctx.type.words, n = Math.max(1, Math.min(6, s.count || 1));
+  body.classList.add('dw-dice');
+  const row = el('div', 'dw-dicerow');
+  const total = el('div', 'dw-dicetotal'); total.setAttribute('role', 'status');
+  const go = btn(`🎲 ${W.roll}`, 'btn btn-primary');
+  body.append(row, total, go);
+  let timer = 0;
+  const show = vals => {
+    row.textContent = '';
+    vals.forEach(v => { const d = die(v); const w = el('span', 'dw-diewrap'); w.appendChild(d); row.appendChild(w); });
+    total.textContent = vals.length > 1 ? fill(W.total, { n: vals.reduce((a, b) => a + b, 0) }) : fill(W.die, { n: vals[0] });
+  };
+  const roll = () => Array.from({ length: n }, () => rnd(6) + 1);
+  show(lastRolls.get(ctx.id) || Array.from({ length: n }, (_, i) => (i % 6) + 1).slice(0, n));
+  if (!lastRolls.has(ctx.id)) total.textContent = '';
+  go.addEventListener('click', () => {
+    const final = roll(); lastRolls.set(ctx.id, final);
+    if (ctx.reduced()) { show(final); return; }
+    let i = 0; row.classList.add('is-rolling');
+    const spin = () => { if (i++ < 8) { row.textContent = ''; roll().forEach(v => { const w = el('span', 'dw-diewrap'); w.appendChild(die(v)); row.appendChild(w); }); timer = setTimeout(spin, 70); } else { row.classList.remove('is-rolling'); show(final); } };
+    total.textContent = '';
+    spin();
+  });
+  return { destroy() { clearTimeout(timer); } };
+}
+
+const lastNumbers = new Map();
+function random(body, s, ctx) {
+  const W = ctx.type.words;
+  const lo = Math.min(s.min, s.max), hi = Math.max(s.min, s.max);
+  body.classList.add('dw-rand');
+  const out = el('div', 'dw-randn', lastNumbers.has(ctx.id) ? String(lastNumbers.get(ctx.id)) : '?'); out.setAttribute('role', 'status');
+  const range = el('div', 'dw-randrange small muted', fill(W.between, { min: lo, max: hi }));
+  const go = btn(`🔢 ${W.go}`, 'btn btn-primary');
+  body.append(out, range, go);
+  go.addEventListener('click', () => { const v = lo + rnd(hi - lo + 1); lastNumbers.set(ctx.id, v); out.textContent = String(v); });
+  return null;
+}
+
+// Group maker (teacher only, never pinned): the class's Oomba names, away students left out (the picker's "Away today"
+// list). Made in the teacher's browser, kept while the page is open.
+const madeGroups = new Map();
+function groups(body, s, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-groups');
+  const out = el('div', 'dw-grouplist');
+  const note = el('p', 'small muted dw-note', W.note);
+  const row = el('div', 'dw-row');
+  const go = btn(`👥 ${W.make}`, 'btn btn-primary');
+  row.appendChild(go);
+  body.append(row, out, note);
+  const show = list => {
+    out.textContent = '';
+    if (!list) return;
+    if (!list.length) { out.appendChild(el('p', 'dw-empty', W.none)); return; }
+    list.forEach((g, i) => {
+      const card = el('section', 'dw-group'); card.setAttribute('aria-label', fill(W.group, { n: i + 1 }));
+      card.appendChild(el('b', 'dw-grouph', fill(W.group, { n: i + 1 })));
+      const ul = el('ul', 'dw-groupnames'); for (const nm of g) ul.appendChild(typed('li', null, nm));
+      card.appendChild(ul); out.appendChild(card);
+    });
+    go.textContent = `🔀 ${W.again}`;
+  };
+  show(madeGroups.get(ctx.id));
+  go.addEventListener('click', async () => {
+    const v = await ctx.get('/picker').catch(() => null); if (!v) return;
+    const names = v.students.filter(k => !v.away.includes(k.id)).map(k => k.name);
+    const list = makeGroups(names, s.by, s.n || 4, () => rnd(1e6) / 1e6);
+    madeGroups.set(ctx.id, list); show(list);
+    ctx.say(list.length ? `${list.length} · ${fill(W.group, { n: list.length })}` : W.none);
+  });
+  return null;
+}
+
+function score(body, s, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-score');
+  let names = String(s.teams || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 8);
+  if (!names.length) names = [fill(W.team, { n: 1 }), fill(W.team, { n: 2 })];
+  const scores = names.map((_, i) => Number((s.scores || [])[i]) || 0);
+  const ul = el('ul', 'dw-teams');
+  const control = ctx.teacher && !ctx.editing;
+  names.forEach((nm, i) => {
+    const li = el('li', `dw-team dw-team${i % 4}`);
+    li.appendChild(typed('span', 'dw-teamname', nm));
+    const pts = el('b', 'dw-teampts', String(scores[i])); pts.setAttribute('aria-live', 'polite');
+    if (control) {
+      const minus = btn('−', 'btn btn-sm dw-pm', fill(W.minus, { team: nm })), plus = btn('+', 'btn btn-sm btn-primary dw-pm', fill(W.plus, { team: nm }));
+      const change = d => { const next = scores.slice(); next[i] = Math.max(-9999, Math.min(9999, next[i] + d)); ctx.set('scores', next); ctx.say(`${nm}: ${next[i]}`); };
+      minus.addEventListener('click', () => change(-1)); plus.addEventListener('click', () => change(1));
+      li.append(minus, pts, plus);
+    } else li.appendChild(pts);
+    ul.appendChild(li);
+  });
+  body.appendChild(ul);
+  if (control) { const r = btn(W.reset, 'btn btn-sm dw-linkbtn'); r.addEventListener('click', () => ctx.set('scores', names.map(() => 0))); body.appendChild(r); }
+  return null;
+}
+
+function stickers(body, s, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-stickers');
+  const area = el('div', 'dw-stickarea');
+  const list = s.stamps || [];
+  const control = ctx.teacher && !ctx.editing;
+  list.forEach((x, i) => {
+    const e = STAMPS[x.e] || '⭐';
+    const sp = el(control ? 'button' : 'span', 'dw-stamp', e);
+    sp.style.insetInlineStart = `${x.x}%`; sp.style.insetBlockStart = `${x.y}%`;
+    if (control) { sp.type = 'button'; sp.setAttribute('aria-label', fill(W.remove, { e })); sp.addEventListener('click', () => ctx.set('stamps', list.filter((_, j) => j !== i))); }
+    else sp.setAttribute('aria-hidden', 'true');
+    area.appendChild(sp);
+  });
+  body.appendChild(area);
+  if (!list.length && control) area.appendChild(el('p', 'dw-empty', W.empty));
+  if (control) {
+    const pal = el('div', 'dw-palette'); pal.setAttribute('role', 'group'); pal.setAttribute('aria-label', W.add);
+    STAMPS.forEach((e, i) => {
+      const b = btn(e, 'btn btn-sm dw-palbtn', `${W.add}: ${e}`);
+      b.addEventListener('click', () => { if (list.length >= 30) return; ctx.set('stamps', [...list, { e: i, x: 6 + rnd(80), y: 6 + rnd(70) }]); });
+      pal.appendChild(b);
+    });
+    const clear = btn(W.clear, 'btn btn-sm dw-linkbtn'); clear.disabled = !list.length; clear.addEventListener('click', () => ctx.set('stamps', []));
+    pal.appendChild(clear);
+    body.appendChild(pal);
+  }
+  return null;
+}
+
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles };
+export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers };

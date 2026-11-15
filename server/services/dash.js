@@ -33,7 +33,8 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'tools', 'check', 'oomba
  * strings its renderer shows (dash.w.<id>.<word>).
  * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
  * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
- * code opens), 'tiles' (Oomba games and lessons). Every type is rebuilt on the server (cleanSettings).
+ * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
+ * 'scores' and 'stamps' (hidden: changed by the widget itself). Every type is rebuilt on the server (cleanSettings).
  */
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [2, 1], words: [], settings: [
@@ -51,6 +52,7 @@ export const WIDGETS = [
   // ---- stage 2: everyday widgets
   { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 3], min: [3, 2], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins'], settings: [
     { key: 'minutes', type: 'number', min: 1, max: 180, def: 5 },
+    { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
     { key: 'chime', type: 'bool', def: false },
     { key: 'bar', type: 'bool', def: true }] },
   { id: 'stopwatch', icon: '⏱️', group: 'time', who: 'both', size: [3, 2], min: [2, 2], words: ['start', 'pause', 'resume', 'reset'], settings: [] },
@@ -62,13 +64,43 @@ export const WIDGETS = [
     { key: 'unit', type: 'select', options: ['auto', 'f', 'c'], def: 'auto' }] },
   { id: 'qr', icon: '🔳', group: 'join', who: 'teacher', pin: false, size: [4, 4], min: [3, 3], words: ['empty', 'gone', 'scan', 'nothing'], settings: [
     { key: 'target', type: 'target', def: null }] },
-  { id: 'picker', icon: '🎲', group: 'class', who: 'teacher', pin: false, size: [4, 3], min: [3, 2], words: ['pick', 'again', 'left', 'away', 'awayTitle', 'awayNote', 'reset', 'none'], settings: [
+  { id: 'picker', icon: '🙋', group: 'class', who: 'teacher', pin: false, size: [4, 3], min: [3, 2], words: ['pick', 'again', 'left', 'away', 'awayTitle', 'awayNote', 'reset', 'none', 'spin', 'noItems'], settings: [
+    { key: 'mode', type: 'select', options: ['names', 'wheel'], def: 'names' },
+    { key: 'source', type: 'select', options: ['class', 'items'], def: 'class' },
+    { key: 'items', type: 'textarea', max: 600, def: '' },
     { key: 'norepeat', type: 'bool', def: true }] },
   { id: 'noise', icon: '🎤', group: 'tools', who: 'teacher', pin: false, size: [4, 2], min: [3, 2], words: ['start', 'stop', 'on', 'off', 'note', 'denied', 'quiet', 'ok', 'loud'], settings: [
     { key: 'zone', type: 'select', options: ['silent', 'whisper', 'talk', 'busy'], def: 'talk' }] },
   { id: 'help', icon: '✋', group: 'class', who: 'teacher', pinDef: true, size: [4, 3], min: [3, 2], words: ['need', 'done', 'cancel', 'place', 'doneMine', 'empty', 'next', 'clear', 'waiting', 'finished', 'remove', 'hidden'], settings: [] },
   { id: 'check', icon: '✅', group: 'check', who: 'teacher', pin: false, size: [5, 3], min: [3, 2], words: ['empty', 'new', 'end', 'ended', 'names', 'save', 'saved', 'savedList', 'answered', 'send', 'kind', 'question', 'questionHint',
     'options', 'option', 'addOption', 'needOptions', 'nobody', 'notYet', 'savedNone', 'thumbs', 'fist', 'choice', 'scale', 'up', 'side', 'down'], settings: [] },
+  // ---- stage 2, second part: more everyday widgets
+  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 2], min: [3, 2], words: ['empty', 'days', 'hours', 'mins', 'today', 'past'], settings: [
+    { key: 'label', type: 'text', max: 60, def: '' },
+    { key: 'date', type: 'date', def: '' },
+    { key: 'time', type: 'hhmm', def: '08:00' }] },
+  { id: 'calendar', icon: '📆', group: 'time', who: 'teacher', size: [4, 4], min: [3, 3], words: ['today', 'coming', 'none', 'addMark', 'day', 'label', 'remove'], settings: [
+    { key: 'marks', type: 'marks', def: [] }] },
+  { id: 'symbols', icon: '🤫', group: 'class', who: 'teacher', size: [3, 3], min: [2, 2], words: ['change'], settings: [
+    { key: 'mode', type: 'select', options: ['silent', 'whisper', 'partner', 'together', 'hand'], def: 'whisper' }] },
+  { id: 'light', icon: '🚦', group: 'class', who: 'teacher', size: [3, 3], min: [2, 2], words: ['set'], settings: [
+    { key: 'color', type: 'select', options: ['red', 'yellow', 'green'], def: 'green' },
+    { key: 'red', type: 'text', max: 40, def: '' },
+    { key: 'yellow', type: 'text', max: 40, def: '' },
+    { key: 'green', type: 'text', max: 40, def: '' }] },
+  { id: 'dice', icon: '🎲', group: 'tools', who: 'both', pin: false, size: [3, 2], min: [2, 2], words: ['roll', 'total', 'die'], settings: [
+    { key: 'count', type: 'number', min: 1, max: 6, def: 2 }] },
+  { id: 'random', icon: '🔢', group: 'tools', who: 'both', pin: false, size: [3, 2], min: [2, 2], words: ['go', 'between'], settings: [
+    { key: 'min', type: 'number', min: -9999, max: 9999, def: 1 },
+    { key: 'max', type: 'number', min: -9999, max: 9999, def: 100 }] },
+  { id: 'groups', icon: '👥', group: 'class', who: 'teacher', pin: false, size: [6, 4], min: [4, 3], words: ['make', 'again', 'group', 'none', 'note'], settings: [
+    { key: 'by', type: 'select', options: ['size', 'count'], def: 'size' },
+    { key: 'n', type: 'number', min: 2, max: 12, def: 4 }] },
+  { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [3, 2], words: ['team', 'plus', 'minus', 'reset'], settings: [
+    { key: 'teams', type: 'textarea', max: 240, def: '' },
+    { key: 'scores', type: 'scores', hidden: true, def: [] }] },
+  { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [2, 2], words: ['add', 'remove', 'clear', 'empty'], settings: [
+    { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
   { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
     { key: 'tiles', type: 'tiles', def: [] }] },
 ];
@@ -101,7 +133,28 @@ export const cleanText = (v, max, multi = false) => {
   if (multi) s = s.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n');
   return [...s.trim()].slice(0, max).join('');
 };
-export const MAX_PERIODS = 16, MAX_TILES = 12;
+export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_STAMPS = 30, MAX_SCORE = 9999;
+/** How many stickers the fixed Oomba set has (public/js/dash-widgets.js STAMPS; no uploads). */
+export const STAMP_COUNT = 20;
+const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** A real calendar day as YYYY-MM-DD, or ''. */
+export const cleanDate = v => { const m = YMD.exec(String(v ?? '')); if (!m) return ''; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] && +m[1] >= 2000 && +m[1] <= 2100 ? m[0] : ''; };
+/** Teacher-marked calendar days: a day and a short label, one per day, in order. */
+export function cleanMarks(v) {
+  const out = new Map();
+  for (const x of Array.isArray(v) ? v : []) {
+    if (out.size >= MAX_MARKS) break;
+    const date = cleanDate(x && x.date), label = cleanText(x && x.label, 40);
+    if (date && label) out.set(date, { date, label });
+  }
+  return [...out.values()].sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+/** Scoreboard points: whole numbers, one per team. */
+export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
+/** Stickers: which one of the fixed set and where (percent of the widget). */
+export const cleanStamps = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').slice(0, MAX_STAMPS)
+  .map(x => ({ e: Number(x.e), x: Math.round(Number(x.x)), y: Math.round(Number(x.y)) }))
+  .filter(x => Number.isInteger(x.e) && x.e >= 0 && x.e < STAMP_COUNT && x.x >= 0 && x.x <= 100 && x.y >= 0 && x.y <= 100);
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 const ZONES = new Set(typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []);
 export const isZone = z => { if (ZONES.has(z)) return true; try { new Intl.DateTimeFormat('en', { timeZone: String(z) }); return /^[A-Za-z_]+\/[A-Za-z_/+-]+$/.test(String(z)); } catch { return false; } };
@@ -155,6 +208,11 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'place') out[f.key] = cleanPlace(v);
     else if (f.type === 'target') out[f.key] = cleanTarget(v);
     else if (f.type === 'tiles') out[f.key] = cleanTiles(v);
+    else if (f.type === 'date') out[f.key] = cleanDate(v);
+    else if (f.type === 'hhmm') out[f.key] = HHMM.test(String(v ?? '')) ? String(v) : f.def;
+    else if (f.type === 'marks') out[f.key] = cleanMarks(v);
+    else if (f.type === 'scores') out[f.key] = cleanScores(v);
+    else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else out[f.key] = v === undefined ? f.def : cleanText(v, f.max, f.type === 'textarea');
   }
   return out;

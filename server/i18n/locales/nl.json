@@ -9005,7 +9005,8 @@
         "s": {
           "minutes": "Minuten bij de start",
           "chime": "Zacht belletje aan het eind",
-          "bar": "Tijdbalk tonen"
+          "bar": "Tijdbalk tonen",
+          "view": "Weergave"
         },
         "start": "Start",
         "pause": "Pauze",
@@ -9018,7 +9019,13 @@
         "done": "De tijd is om!",
         "left": "Nog {time}",
         "presets": "Snelle tijden",
-        "mins": "{n} minuten"
+        "mins": "{n} minuten",
+        "o": {
+          "view": {
+            "digits": "Grote cijfers",
+            "ring": "Krimpende ring"
+          }
+        }
       },
       "stopwatch": {
         "name": "Stopwatch",
@@ -9094,7 +9101,10 @@
         "name": "Willekeurige leerling",
         "desc": "Kiest een leerling bij zijn Oomba-naam.",
         "s": {
-          "norepeat": "Niemand twee keer tot iedereen aan de beurt was"
+          "norepeat": "Niemand twee keer tot iedereen aan de beurt was",
+          "mode": "Tonen als",
+          "source": "Kiezen uit",
+          "items": "Je eigen items (één per regel)"
         },
         "pick": "Kies een leerling",
         "again": "Nog een keer",
@@ -9103,7 +9113,19 @@
         "awayTitle": "Wie is er vandaag niet?",
         "awayNote": "Aangevinkte leerlingen worden vandaag niet gekozen. Morgen begint het opnieuw.",
         "reset": "Opnieuw beginnen",
-        "none": "Geen leerlingen om uit te kiezen."
+        "none": "Geen leerlingen om uit te kiezen.",
+        "o": {
+          "mode": {
+            "names": "Een naam",
+            "wheel": "Een draaiwiel"
+          },
+          "source": {
+            "class": "De klas (Oomba-namen)",
+            "items": "Je eigen items"
+          }
+        },
+        "spin": "Draaien",
+        "noItems": "Typ een paar items bij Scherm bewerken."
       },
       "noise": {
         "name": "Stemmeter",
@@ -9188,6 +9210,132 @@
         "lessons": "Lessen",
         "remove": "Weghalen",
         "gone": "Die staan nu niet open."
+      },
+      "countdown": {
+        "name": "Aftellen naar een dag",
+        "desc": "Dagen en uren tot een uitje, een voorstelling of de vakantie.",
+        "s": {
+          "label": "Wat er komt",
+          "date": "Dag",
+          "time": "Tijd"
+        },
+        "empty": "Kies de dag bij Scherm bewerken.",
+        "days": "Dagen",
+        "hours": "Uren",
+        "mins": "Minuten",
+        "today": "Het is vandaag!",
+        "past": "Die dag is al voorbij."
+      },
+      "calendar": {
+        "name": "Kalender",
+        "desc": "De datum van vandaag, de maand en dagen die je markeert.",
+        "s": {
+          "marks": "Gemarkeerde dagen"
+        },
+        "today": "Vandaag",
+        "coming": "Binnenkort",
+        "none": "Niets gemarkeerd deze maand.",
+        "addMark": "Dag markeren",
+        "day": "Dag",
+        "label": "Naam",
+        "remove": "Dag weghalen"
+      },
+      "symbols": {
+        "name": "Werksymbolen",
+        "desc": "Hoe we nu werken: stil, fluisteren, maatje, samen, vinger opsteken.",
+        "s": {
+          "mode": "Nu"
+        },
+        "o": {
+          "mode": {
+            "silent": "Stil werken",
+            "whisper": "Fluisterstem",
+            "partner": "Vraag een maatje",
+            "together": "Samen werken",
+            "hand": "Vinger opsteken"
+          }
+        },
+        "change": "Werkwijze veranderen"
+      },
+      "light": {
+        "name": "Stoplicht",
+        "desc": "Rood, oranje of groen, met je eigen woorden voor elke kleur.",
+        "s": {
+          "color": "Licht dat nu brandt",
+          "red": "Woorden bij rood",
+          "yellow": "Woorden bij oranje",
+          "green": "Woorden bij groen"
+        },
+        "o": {
+          "color": {
+            "red": "Rood",
+            "yellow": "Oranje",
+            "green": "Groen"
+          }
+        },
+        "set": "Licht veranderen"
+      },
+      "dice": {
+        "name": "Dobbelstenen",
+        "desc": "Gooi met 1 tot 6 dobbelstenen en zie het totaal.",
+        "s": {
+          "count": "Hoeveel dobbelstenen"
+        },
+        "roll": "Gooien",
+        "total": "Totaal: {n}",
+        "die": "Je gooide {n}"
+      },
+      "random": {
+        "name": "Willekeurig getal",
+        "desc": "Een getal tussen het kleinste en het grootste.",
+        "s": {
+          "min": "Kleinste",
+          "max": "Grootste"
+        },
+        "go": "Kies een getal",
+        "between": "Van {min} tot {max}"
+      },
+      "groups": {
+        "name": "Groepjes maken",
+        "desc": "Willekeurige groepjes uit de klas, op Oomba-naam.",
+        "s": {
+          "by": "Groepjes maken op",
+          "n": "Getal"
+        },
+        "o": {
+          "by": {
+            "size": "Leerlingen per groepje",
+            "count": "Aantal groepjes"
+          }
+        },
+        "make": "Groepjes maken",
+        "again": "Opnieuw husselen",
+        "group": "Groepje {n}",
+        "none": "Geen leerlingen om groepjes mee te maken.",
+        "note": "Leerlingen die bij de kiezer afwezig staan, doen niet mee."
+      },
+      "score": {
+        "name": "Scorebord",
+        "desc": "Teampunten met plus- en minknoppen.",
+        "s": {
+          "teams": "Teamnamen (één per regel)",
+          "scores": "Punten"
+        },
+        "team": "Team {n}",
+        "plus": "Eén punt voor {team}",
+        "minus": "Eén punt eraf voor {team}",
+        "reset": "Punten op nul"
+      },
+      "stickers": {
+        "name": "Stickers",
+        "desc": "Leuke Oomba-stickers voor op het scherm.",
+        "s": {
+          "stamps": "Stickers"
+        },
+        "add": "Sticker toevoegen",
+        "remove": "{e} weghalen",
+        "clear": "Allemaal weghalen",
+        "empty": "Tik hieronder op een sticker om hem hier te zetten."
       }
     },
     "push": {
