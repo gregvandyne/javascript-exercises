@@ -52,6 +52,7 @@ export const COURSES = Object.freeze([
     // (Unit 3, The Machine Hall: writing and working out expressions, expressions that are equal, equations and inequalities).
     // Scale Scout is its fourth (Unit 4, The Map Room: proportional relationships and their constant, scale drawings and maps, percent problems).
     // Sky Lines is its fifth (Unit 5, The Sky Wires: slope, y = mx + b as a rule, linear equations and where two lines meet).
+    // Keep Builder is its sixth (Unit 6, The Drafting Keep: area, surface area and volume; angles and moves; the Pythagorean theorem).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -70,6 +71,7 @@ export const COURSES = Object.freeze([
       { slug: 'machine-line', topic: 'numbers', shared: true },
       { slug: 'scale-scout', topic: 'numbers', shared: true },
       { slug: 'sky-lines', topic: 'numbers', shared: true },
+      { slug: 'keep-builder', topic: 'numbers', shared: true },
     ],
   },
 ]);

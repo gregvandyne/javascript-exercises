@@ -1,0 +1,215 @@
+{
+ "key": "pro-6.3",
+ "n": "6.3",
+ "band": "pro",
+ "title": "The Pythagorean theorem",
+ "topic": "Pythagorean theorem",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "How long a ladder?",
+   "text": "The builder needs a ladder to reach the top of a new wall. The wall is 4 meters high, and the ladder's foot must stand 3 meters out. Tally wonders how long the ladder must be.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The long side of a right triangle",
+   "text": "In a right triangle, the square of the long side equals the sum of the squares of the two short sides: a² + b² = c². For the ladder, 3² + 4² = 9 + 16 = 25, and √25 = 5. The ladder is 5 meters long.",
+   "art": "angle",
+   "visual": {
+    "type": "righttriangle",
+    "label": "The wall, the ground and the ladder",
+    "base": 3,
+    "height": 4,
+    "labels": {
+     "base": "3 m",
+     "height": "4 m",
+     "hyp": "?"
+    }
+   },
+   "focus": [
+    {
+     "cue": "The wall: 4 meters high.",
+     "box": [
+      30.4,
+      46.4,
+      9.8,
+      12.1
+     ]
+    },
+    {
+     "cue": "The ladder's foot: 3 meters out.",
+     "box": [
+      48.1,
+      81.8,
+      9.8,
+      12.1
+     ]
+    },
+    {
+     "cue": "The ladder is the long side, across from the square corner.",
+     "box": [
+      54.1,
+      40.6,
+      5.3,
+      13.5
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Find a short side",
+   "text": "A plank ramp is 13 m long and rests on a ledge 5 m high. How far out is its foot? Subtract the squares this time.",
+   "art": "lightbulb",
+   "steps": [
+    "a² + 5² = 13²",
+    "a² = 169 − 25 = 144",
+    "a = √144 = 12",
+    "The foot is 12 m from the ledge"
+   ]
+  },
+  {
+   "title": "Distance on a grid",
+   "text": "To find the distance between two points, draw a right triangle under the line between them. Here it goes 3 across and 4 up. Then 3² + 4² = 25, so the points are √25 = 5 units apart.",
+   "art": "map",
+   "visual": {
+    "type": "plane",
+    "label": "Two towers on the plan grid",
+    "x": [
+     0,
+     6
+    ],
+    "y": [
+     0,
+     7
+    ],
+    "points": [
+     {
+      "x": 1,
+      "y": 2,
+      "label": "A (1, 2)"
+     },
+     {
+      "x": 4,
+      "y": 6,
+      "label": "B (4, 6)"
+     }
+    ],
+    "segments": [
+     {
+      "from": [
+       1,
+       2
+      ],
+      "to": [
+       4,
+       6
+      ]
+     }
+    ],
+    "slope": {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      4,
+      6
+     ],
+     "rise": "4 up",
+     "run": "3 across"
+    }
+   },
+   "focus": [
+    {
+     "cue": "Tower A at (1, 2).",
+     "box": [
+      32.6,
+      60,
+      23.3,
+      16.9
+     ]
+    },
+    {
+     "cue": "Tower B at (4, 6).",
+     "box": [
+      52.1,
+      8.9,
+      23.3,
+      16.9
+     ]
+    },
+    {
+     "cue": "3 across and 4 up make a right triangle under the rope.",
+     "box": [
+      33.6,
+      15.5,
+      32,
+      54.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Checking for a square corner",
+   "text": "The theorem works backward too. Beams of 6 m, 8 m and 10 m make a square corner, because 6² + 8² = 100 = 10². Beams of 5 m, 6 m and 7 m do not, since 25 + 36 = 61, not 49.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for right triangles.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "right triangle",
+     "means": "a triangle with one square corner, an angle of 90°"
+    },
+    {
+     "word": "hypotenuse",
+     "means": "the long side of a right triangle, across from the square corner"
+    },
+    {
+     "word": "legs",
+     "means": "the two shorter sides of a right triangle, which meet at the square corner"
+    },
+    {
+     "word": "square root",
+     "means": "the number that, multiplied by itself, gives the number: √25 = 5"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Keep Builder at Ladders and Spans. Find a ladder, a ramp and a rope between two towers, build squares on a triangle's sides and test three beams for a square corner.",
+   "art": "trophy",
+   "img": "nq/keep-builder/ladders-and-spans",
+   "alt": "Keep Builder on a phone: a wall 4 m high with a ladder leaning on it from 3 m out, and a stepper to set the ladder's length.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-6.3-e1",
+  "nq-pro-6.3-e2",
+  "nq-pro-6.3-e3"
+ ],
+ "game": {
+  "slug": "keep-builder",
+  "chapter": "Ladders and Spans",
+  "params": "chapter=span&lock=1"
+ }
+}

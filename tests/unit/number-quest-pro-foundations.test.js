@@ -62,8 +62,8 @@ const rungs = (number, algebra, shape, data) => ({ number, algebra, 'shape-measu
 const all = r => rungs(r, r, r, r);
 const PRO_KEYS = ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4'].map(k => `pro-${k}`);
 // Built so far: the welcome, Unit 1 (The Mixing Tower), Unit 2 (The Cold Store) and Unit 3 (The Machine Hall), 2026-11-14, and Unit 4
-// (The Map Room) and Unit 5 (The Sky Wires), 2026-11-15. A unit PR adds its number here. Units are built side by side, so the built ones need not be the first ones.
-const BUILT_UNITS = [0, 1, 2, 3, 4, 5];
+// (The Map Room), Unit 5 (The Sky Wires) and Unit 6 (The Drafting Keep), 2026-11-15. A unit PR adds its number here. Units are built side by side, so the built ones need not be the first ones.
+const BUILT_UNITS = [0, 1, 2, 3, 4, 5, 6];
 const BUILT_KEYS = PRO_KEYS.filter(k => BUILT_UNITS.includes(+k[4])), PLANNED_KEYS = PRO_KEYS.filter(k => !BUILT_KEYS.includes(k));
 /** FOR THIS FILE: Pro as it will be once its units are built and it opens. The planned flags are lifted in a copy of
  *  the catalogue (the steps then load with the placeholder deck a step without a deck file gets) and the tier's
@@ -94,11 +94,11 @@ const MAIN = Object.freeze({ sets: 88434, hash: '4e1e9f9978a499ee70c269aae79b7d4
   startNodes: ['launchpad-0.1', 'launchpad-1.1', 'launchpad-2.1', 'launchpad-3.1', 'launchpad-4.1', 'launchpad-5.1', 'launchpad-6.1', 'launchpad-7.1', 'launchpad-7.4', 'explorer-0.1', 'explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1', 'explorer-7.4'] });
 
 // ------------------------------------------------------------------------------------------------- planned units
-test('planned units: reserved in the catalogue, absent from the engine; the tier is its welcome step and its built units (Units 1 to 5 so far)', () => {
+test('planned units: reserved in the catalogue, absent from the engine; the tier is its welcome step and its built units (Units 1 to 6 so far)', () => {
   assert.equal(T.statusOf('pro'), 'building'); assert.equal(T.exists('pro'), true); assert.equal(T.isOpen('pro'), false);
-  assert.deepEqual(T.unitsOf('pro').map(u => [u.n, u.title]), [[0, 'Welcome to the Towers'], [1, 'The Mixing Tower'], [2, 'The Cold Store'], [3, 'The Machine Hall'], [4, 'The Map Room'], [5, 'The Sky Wires']]);
+  assert.deepEqual(T.unitsOf('pro').map(u => [u.n, u.title]), [[0, 'Welcome to the Towers'], [1, 'The Mixing Tower'], [2, 'The Cold Store'], [3, 'The Machine Hall'], [4, 'The Map Room'], [5, 'The Sky Wires'], [6, 'The Drafting Keep']]);
   assert.deepEqual(T.plannedUnitsOf('pro').map(u => [u.n, u.title, u.stamp]), [
-    [6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']]);
+    [7, 'The Test Range', 'Chance Gear']]);
   for (const tier of ['launchpad', 'explorer']) assert.deepEqual(T.plannedUnitsOf(tier), [], `${tier} has nothing planned: every unit is built`);
   assert.deepEqual(T.plannedUnitsOf('nowhere'), []); assert.equal(T.isPlanned(null), false); assert.equal(T.isPlanned({ planned: 'yes' }), false, 'only the literal true plans a unit');
   // The engine's view of the tier: the welcome and Unit 1's three steps, a first key; the finale the line names is not there yet.
@@ -109,8 +109,9 @@ test('planned units: reserved in the catalogue, absent from the engine; the tier
     ['pro-2.1', 'Divide by a fraction', true, 'sub-zero chapter=pour&lock=1', 4], ['pro-2.2', 'Below zero: opposites and absolute value', true, 'sub-zero chapter=below&lock=1', 5], ['pro-2.3', 'Add, subtract, multiply and divide with negatives', true, 'sub-zero chapter=change&lock=1', 6],
     ['pro-3.1', 'Write and work out expressions', true, 'machine-line chapter=build&lock=1', 7], ['pro-3.2', 'Expressions that are equal', true, 'machine-line chapter=same&lock=1', 8], ['pro-3.3', 'Solve equations and inequalities', true, 'machine-line chapter=undo&lock=1', 9],
     ['pro-4.1', 'Is it proportional? Find the constant', true, 'scale-scout chapter=constant&lock=1', 10], ['pro-4.2', 'Scale drawings and maps', true, 'scale-scout chapter=scale&lock=1', 11], ['pro-4.3', 'Percent problems', true, 'scale-scout chapter=percent&lock=1', 12],
-    ['pro-5.1', 'Slope: the steepness of a line', true, 'sky-lines chapter=slope&lock=1', 13], ['pro-5.2', 'y = mx + b: a line as a rule', true, 'sky-lines chapter=rule&lock=1', 14], ['pro-5.3', 'Solve linear equations and find where two lines meet', true, 'sky-lines chapter=meet&lock=1', 15]]);
-  assert.deepEqual(C.groupsFor(course, 'pro').map(g => g.id), ['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5']);
+    ['pro-5.1', 'Slope: the steepness of a line', true, 'sky-lines chapter=slope&lock=1', 13], ['pro-5.2', 'y = mx + b: a line as a rule', true, 'sky-lines chapter=rule&lock=1', 14], ['pro-5.3', 'Solve linear equations and find where two lines meet', true, 'sky-lines chapter=meet&lock=1', 15],
+    ['pro-6.1', 'Area, surface area and volume', true, 'keep-builder chapter=build&lock=1', 16], ['pro-6.2', 'Angles and moves: slide, flip, turn, resize', true, 'keep-builder chapter=move&lock=1', 17], ['pro-6.3', 'The Pythagorean theorem', true, 'keep-builder chapter=span&lock=1', 18]]);
+  assert.deepEqual(C.groupsFor(course, 'pro').map(g => g.id), ['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6']);
   for (const key of PLANNED_KEYS) {
     assert.equal(C.getStep(course, key), null, `${key}: planned, so no step`);
     assert.equal(C.stepFor(admin, course, key), null, `${key}: not even for the admin`);
@@ -122,14 +123,15 @@ test('planned units: reserved in the catalogue, absent from the engine; the tier
   assert.deepEqual(planned.map(s => s.order), PLANNED_KEYS.map(k => PRO_KEYS.indexOf(k) + 1), 'a planned step keeps its place among all 23: the welcome is 1, Unit 1 is 2 to 4, and so on to 23');
   assert.deepEqual(UNITS.units.filter(u => u.tier === 'pro' && !u.planned).flatMap(u => u.steps.map(s => s.order)), BUILT_KEYS.map(k => PRO_KEYS.indexOf(k) + 1), 'a built unit keeps the order numbers reserved for it');
   assert.deepEqual(UNITS.units.find(u => u.tier === 'pro' && u.n === 5).steps.map(s => s.order), [14, 15, 16], 'Unit 5 is 14 to 16, whether or not Unit 4 is built before it');
-  assert.deepEqual(planned.filter(s => s.n.startsWith('6.')).map(s => [s.n, s.title, s.standards.primary]), [['6.1', 'Area, surface area and volume', ['6.G.A.1', '6.G.A.2', '6.G.A.4']], ['6.2', 'Angles and moves: slide, flip, turn, resize', ['7.G.B.5', '8.G.A.1', '8.G.A.3']], ['6.3', 'The Pythagorean theorem', ['8.G.B.7', '8.G.B.8']]]);
+  assert.deepEqual(UNITS.units.find(u => u.tier === 'pro' && u.n === 6).steps.map(s => s.order), [17, 18, 19], 'Unit 6 is 17 to 19');
+  assert.deepEqual(planned.map(s => [s.n, s.title, s.standards.primary]), [['7.1', 'Center and spread', ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5']], ['7.2', 'Chance: experiments and models', ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7']], ['7.3', 'Compare two data sets and spot a trend', ['7.SP.B.4', '8.SP.A.1']], ['7.4', 'The Great Clock', ['7.EE.B.3']]]);
   assert.equal(planned.at(-1).title, 'The Great Clock');
   assert.deepEqual(T.plannedStepsOf(null), []);
   // No play can be credited to a planned step, and none is a start node or a test-out, even for the admin. A built
   // unit's steps are credited (to the admin, the only one who can reach them while the tier is building).
   assert.deepEqual([...tags.numberQuestSteps().keys()].filter(k => k.startsWith('pro-')), BUILT_KEYS.slice(1));
   assert.ok(!P.startNodes().some(x => x.tier === 'pro'));
-  const stillPlanned = T.plannedUnitsOf('pro').map(u => u.n); assert.ok(stillPlanned.includes(6) && stillPlanned.includes(7));
+  const stillPlanned = T.plannedUnitsOf('pro').map(u => u.n); assert.ok(stillPlanned.includes(7));
   for (const u of stillPlanned) { assert.equal(P.entryProfile('pro', u), null, `Pro Unit ${u}'s profile is on file and inert`); assert.deepEqual(P.testOutItems(u, 'seed', 'pro'), []); }
   assert.ok(PLACE.crosswalk.entryProfiles['pro-1.1'], 'though placement.json does record it');
   assert.equal(P.proEntry(), null, 'Pro is nobody\'s start while it is building');
@@ -155,8 +157,7 @@ test('a tier with a planned unit is never open, whatever its status line says; l
   assert.deepEqual(T.unitsOf('pro').map(u => u.n), [0, 1, 2, 3, 4, 5, 6]);
   assert.deepEqual(C.steps(course, 'pro').map(s => s.key), PRO_KEYS.slice(0, 19), 'a unit whose flag is lifted joins the street, in its reserved order');
   assert.deepEqual(C.steps(course, 'pro').map(s => s.index), PRO_KEYS.slice(0, 19).map((_, i) => i));
-  assert.equal(C.getStep(course, 'pro-6.1').title, 'Area, surface area and volume'); assert.equal(C.getStep(course, 'pro-6.1').deck, false, 'with no deck file it gets the placeholder, and the checker says so');
-  assert.ok(C.deckProblems('pro', 'number-quest').includes('pro-6.1: no deck at course/pro/6.1.json'), 'which is why a unit lifts its flag only in the change that brings its decks');
+  assert.equal(C.getStep(course, 'pro-6.1').title, 'Area, surface area and volume'); assert.equal(C.getStep(course, 'pro-6.1').deck, true, 'a built unit brings its decks');
   assert.equal(C.getStep(course, 'pro-7.1'), null);
   // All seven lifted and the line open: the tier is open.
   cat = structuredClone(T.catalogue());
@@ -164,6 +165,8 @@ test('a tier with a planned unit is never open, whatever its status line says; l
   T.setCatalogueForTests(cat); C.reload();
   assert.equal(T.statusOf('pro'), 'open'); assert.deepEqual(T.openTiers(), ['launchpad', 'explorer', 'pro']);
   assert.deepEqual(C.steps(course, 'pro').map(s => s.key), PRO_KEYS);
+  assert.equal(C.getStep(course, 'pro-7.1').title, 'Center and spread'); assert.equal(C.getStep(course, 'pro-7.1').deck, false, 'with no deck file it gets the placeholder, and the checker says so');
+  assert.ok(C.deckProblems('pro', 'number-quest').includes('pro-7.1: no deck at course/pro/7.1.json'), 'which is why a unit lifts its flag only in the change that brings its decks');
   // And back: the file is what it was.
   restore();
   assert.equal(T.statusOf('pro'), 'building'); assert.deepEqual(C.steps(course, 'pro').map(s => s.key), BUILT_KEYS);
@@ -237,13 +240,15 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.match(street.text, /href="\/courses\/number-quest\/pro-0\.1"/, 'the welcome is a door');
   assert.doesNotMatch(street.text, /id="step-explorer-|id="step-launchpad-/, 'a street renders only its own units');
   assert.match(street.text, /id="nqp-planned"/);
-  assert.match(street.text, /Planned for Pro: 2 units not built yet/);
+  assert.match(street.text, /Planned for Pro: 1 unit not built yet/);
   assert.match(street.text, /Admin preview\. These units are reserved in the catalogue/);
-  for (const [u, title, gear] of [[6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']]) {
+  for (const [u, title, gear] of [[7, 'The Test Range', 'Chance Gear']]) {
     assert.match(street.text, new RegExp(`id="planned-unit-${u}"[\\s\\S]*?Unit ${u} · ${title}[\\s\\S]*?${gear}`), `Unit ${u}`);
   }
   assert.equal((street.text.match(/class="nqp-step nqp-step-planned"/g) || []).length, PLANNED_KEYS.length, `all ${PLANNED_KEYS.length} planned steps are listed`);
-  assert.equal(PLANNED_KEYS.length, 7, 'seven steps are still planned: three in Unit 6 and four in Unit 7');
+  assert.equal(PLANNED_KEYS.length, 4, 'four steps are still planned, all in Unit 7');
+  assert.doesNotMatch(street.text, /id="planned-unit-6"/, 'Unit 6 is built: it is on the street, not in the planned list');
+  assert.match(street.text, /id="step-pro-6\.1"/); assert.match(street.text, /The Drafting Keep/); assert.match(street.text, /The Pythagorean theorem/);
   assert.doesNotMatch(street.text, /id="planned-unit-5"/, 'Unit 5 is built: it is on the street, not in the planned list');
   assert.match(street.text, /id="step-pro-5\.1"/); assert.match(street.text, /The Sky Wires/); assert.match(street.text, /Slope: the steepness of a line/);
   assert.doesNotMatch(street.text, /id="planned-unit-4"/, 'Unit 4 is built: it is on the street, not in the planned list');
@@ -256,7 +261,7 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.match(street.text, /The Mixing Tower/); assert.match(street.text, /Ratios and equal mixes/);
   assert.match(street.text, /id="planned-pro-7\.4"[\s\S]*?The Great Clock/);
   for (const key of PLANNED_KEYS) assert.doesNotMatch(street.text, new RegExp(`href="/courses/number-quest/${key.replace('.', '\\.')}"`), `${key} is not a door`);
-  assert.match(street.text, /of 16/, 'the street counts its sixteen built steps');
+  assert.match(street.text, /of 19/, 'the street counts its nineteen built steps');
   // The welcome step: the deck, its two diagrams, its check, read-aloud lines in words.
   const step = await get('/courses/number-quest/pro-0.1', cookie);
   assert.equal(step.status, 200);
@@ -267,7 +272,7 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.equal((step.text.match(/class="slide slide--/g) || []).length, 7);
   assert.equal((step.text.match(/<svg[^>]*class="vf-svg/g) || []).length, 2, 'two drawn diagrams');
   // A planned step is a 404 for the admin too: there is nothing to open.
-  for (const key of ['pro-6.1', 'pro-7.4']) assert.equal((await get(`/courses/number-quest/${key}`, cookie)).status, 404, key);
+  for (const key of ['pro-7.1', 'pro-7.4']) assert.equal((await get(`/courses/number-quest/${key}`, cookie)).status, 404, key);
   // The admin can walk the welcome like any step: the check passes and is recorded under the Pro band.
   const s = C.getStep(course, 'pro-0.1');
   const chk = await post('/api/courses/number-quest/pro-0.1/check', cookie, { answers: Object.fromEntries(s.check.map(id => [id, C.item(id).answer])) });
@@ -278,19 +283,19 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.equal(teach.status, 200);
   assert.doesNotMatch(clean(teach.text), /undefined|NaN|\[object Object\]/);
   assert.match(teach.text, /Pro · Welcome to the Towers/);
-  assert.match(teach.text, /id="planned"[\s\S]*?Planned units \(admin preview\)[\s\S]*?These 2 units are reserved in the catalogue and not built yet/);
+  assert.match(teach.text, /id="planned"[\s\S]*?Planned units \(admin preview\)[\s\S]*?These 1 units? are reserved in the catalogue and not built yet/, "the teacher page's planned section (its wording does not yet say \"unit\" for one)");
   const plannedHtml = teach.text.slice(teach.text.indexOf('id="planned"'), teach.text.indexOf('id="notes"'));
-  assert.match(plannedHtml, /Pro · Unit 6 · The Drafting Keep — Angle Gear/); assert.match(plannedHtml, /Pro · Unit 7 · The Test Range — Chance Gear/);
-  assert.match(plannedHtml, /title="[^"]{20,}"[^>]*>6\.G\.A\.1</, 'a planned step shows its locked codes, with the published statement');
-  assert.match(plannedHtml, /8\.G\.B\.7/); assert.match(plannedHtml, /The Great Clock/);
-  assert.equal((plannedHtml.match(/class="csq-map-unit"/g) || []).length, 2);
+  assert.match(plannedHtml, /Pro · Unit 7 · The Test Range — Chance Gear/);
+  assert.match(plannedHtml, /title="[^"]{20,}"[^>]*>6\.SP\.A\.3</, 'a planned step shows its locked codes, with the published statement');
+  assert.match(plannedHtml, /8\.SP\.A\.1/); assert.match(plannedHtml, /The Great Clock/);
+  assert.equal((plannedHtml.match(/class="csq-map-unit"/g) || []).length, 1);
   const mapHtml = teach.text.slice(teach.text.indexOf('id="map"'), teach.text.indexOf('id="planned"'));
-  assert.doesNotMatch(mapHtml, /The Drafting Keep|6\.G\.A\.1/, 'the published map holds built steps only');
+  assert.doesNotMatch(mapHtml, /The Test Range|6\.SP\.A\.3/, 'the published map holds built steps only');
   assert.match(mapHtml, /The Mixing Tower/); assert.match(mapHtml, /6\.RP\.A\.1/, 'and Unit 1, built, is in it for the admin');
-  assert.doesNotMatch(plannedHtml, /The Mixing Tower|The Cold Store|The Machine Hall|The Map Room|The Sky Wires/); assert.match(mapHtml, /The Map Room/); assert.match(mapHtml, /7\.RP\.A\.2a/); assert.match(mapHtml, /The Sky Wires/); assert.match(mapHtml, /8\.F\.B\.4/); assert.match(mapHtml, /The Cold Store/); assert.match(mapHtml, /6\.NS\.A\.1/); assert.match(mapHtml, /The Machine Hall/); assert.match(mapHtml, /6\.EE\.A\.2/);
+  assert.doesNotMatch(plannedHtml, /The Mixing Tower|The Cold Store|The Machine Hall|The Map Room|The Sky Wires|The Drafting Keep/); assert.match(mapHtml, /The Drafting Keep/); assert.match(mapHtml, /8\.G\.B\.7/); assert.match(mapHtml, /The Map Room/); assert.match(mapHtml, /7\.RP\.A\.2a/); assert.match(mapHtml, /The Sky Wires/); assert.match(mapHtml, /8\.F\.B\.4/); assert.match(mapHtml, /The Cold Store/); assert.match(mapHtml, /6\.NS\.A\.1/); assert.match(mapHtml, /The Machine Hall/); assert.match(mapHtml, /6\.EE\.A\.2/);
   assert.equal((await get('/teachers/number-quest?print=1', cookie)).status, 200);
   const cat = C.numberQuestCatalogue(admin);
-  assert.deepEqual(cat.planned.map(u => u.n), [6, 7]); assert.equal(cat.units.filter(u => u.tier === 'pro').length, BUILT_UNITS.length);
+  assert.deepEqual(cat.planned.map(u => u.n), [7]); assert.equal(cat.units.filter(u => u.tier === 'pro').length, BUILT_UNITS.length);
 });
 
 // ------------------------------------------------------------------------------------------------- placement

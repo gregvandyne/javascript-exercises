@@ -712,8 +712,9 @@ is a name only: nothing is registered for it, and no file exists.
 **Built so far:** Unit 1, The Mixing Tower, with Lantern Mix; Unit 2, The Cold Store, with Sub Zero; Unit 3, The
 Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3" at the end of this file). Their
 `planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, and Unit 5, The Sky
-Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"). A unit that has no
-section at the end of this file is still planned.
+Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"), and Unit 6, The
+Drafting Keep, with Keep Builder, the same day ("Pro Unit 6"). A unit that has no section at the end of this file is
+still planned.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1263,3 +1264,84 @@ covers, the misconceptions it meets (slope is across over up; a bigger stair is 
 slope; 2(x + 1) is 2x + 1; lines with one slope must meet) and how the game checks each idea by planning and running.
 Pro stays `status: "building"`, and no learner, parent or visitor sees any of this. **Left for the opening**, as for
 Units 1 to 3: the teacher page's game list (`NQ_CREW`) and its locale strings do not name Sky Lines.
+
+## Pro Unit 6 — The Drafting Keep (2026-11-15, tier still `building`)
+
+The sixth Pro unit, built to the contract above ("What a unit PR touches"), side by side with Unit 7. Geometry for
+grades 6 to 8: area, surface area and volume, angles and moves, and the Pythagorean theorem. Its `planned` flag is
+gone, so its three steps are real steps for the platform admin (and nobody else: the tier is `building`).
+
+| File | What |
+|---|---|
+| `course/pro/6.1.json`, `6.2.json`, `6.3.json` | the three decks, inside the Pro limits above: **6.1 Area, surface area and volume** (6.G.A.1, 6.G.A.2, 6.G.A.4, also 7.G.B.6), **6.2 Angles and moves: slide, flip, turn, resize** (7.G.B.5, 8.G.A.1, 8.G.A.3, also 8.G.A.2, 8.G.A.4), **6.3 The Pythagorean theorem** (8.G.B.7, 8.G.B.8, also 8.G.B.6, 8.EE.A.2; builds toward 8.NS.A). Seven slides each: a story slide with Tally, two or three drawn diagrams with guided focus, one worked example, four or five words, the mission last |
+| `sets/u6-pro.json` | nine exit items (`nq-pro-6.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (found the volume and stopped, counted three faces of six, forgot to halve, took the angle across for the one beside, reflected over the wrong axis, subtracted the lengths instead of their squares, found only the floor's diagonal), every item with a `why` that works the answer out. `tests/unit/keep-builder.test.js` solves all nine again from the numbers in each question |
+| `units.json` | Unit 6's own object: the flags deleted, `tool: "keep-builder"`, the three `game.pro` specs, three teacher notes |
+| `seed-games/keep-builder.html` | **Keep Builder**, the unit's game (Oomba3D 1.2.0, Castle Quest theme 1.2.0, at sunset): chapter `build` for 6.1 (Fill and Cover), `move` for 6.2 (Slide, Flip, Turn), `span` for 6.3 (Ladders and Spans), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**A builder's plan on a board.** A castle courtyard where a keep is being built, and one board that always faces the
+player. The game draws thirteen kinds of picture on it (`KeepBuilder.view`): a box in oblique view (a store room, a
+cistern, a room with its diagonals), a floor of crates seen from above, a box's net, a trapezoid banner with its cuts,
+an earth ramp, a roof's net, two crossing beams, a square corner with a brace, the plan grid (a coordinate plane with
+the gate stone, its gap and a window), a wall with a ladder or a plank, a right triangle with a square on each side, a
+triangle drawn from three beams, and three sets of beams. The 3D courtyard is the setting; nothing a player must read
+is drawn in perspective.
+
+**What each chapter plays.** `build`: cubes of half a meter in a store room 2.5 m by 3 m by 2 m (120; 15 is the
+volume in cubic meters and 30 divides by one half once); stone for a tower block's net (32 m², set on a stepper: a
+plan is laid face by face until the stone runs out, or with some left over; 16 is three faces, 12 the space inside);
+a trapezoid banner cut into a rectangle and two triangles (12 m²; 6 is the rectangle alone, 18 takes each triangle as
+a whole rectangle); an earth ramp with a right-triangle end (30 m³; 60 is the whole box, 6 the end); the height of a
+cistern that must hold 30 m³ (3 m, on a stepper by halves); and a roof prism's net (152 m²; 128 leaves out the ends).
+`move`: the angle next to 65° where two beams cross (115°: any other plan bends the beam; 65° is the angle across and
+25° makes a square corner); the equation for a brace in a square corner (x + 35 = 90, against x + 35 = 180 and x =
+35); the gate stone slid into its gap by a rule in coordinates ((x + 3, y + 4), against the moves swapped and the
+wrong way across); flipped over the y-axis or, on a replay, the x-axis ((−x, y), (x, −y) or the half turn (−x, −y));
+turned about the origin (90° counterclockwise, 90° clockwise or 180°); and a window copied from the origin at a scale
+factor set on a stepper (2; on some replays a smaller copy at 0.5). `span`: a ladder against a wall 4 m high from 3 m
+out (5 m; a plan's ladder is drawn as it really leans, its top where its length takes it, or flat when it cannot
+reach; 7 adds the sides); a plank ramp's foot (12 m for 13 m and 5 m; 8 subtracts the lengths); a rope between two
+towers on the plan grid (5 m; 7 walks along the grid); squares on a right triangle's sides (100, against 196 and 28,
+each drawn with the side its area really gives); the longest pole in a room 3 m by 4 m by 12 m (13 m, against the
+floor's diagonal 5 m and the three edges 19 m); and which of three sets of beams makes a square corner (6, 8 and 10;
+a wrong set is drawn from its sides with its real corner, about 104° or 78°). The first lap is always the same; a
+replay draws other numbers from a seeded generator.
+
+**Plan, then run.** Two ways to answer and no typing: a stepper with a Run button (a held button repeats), or one of
+three tiles. The board shows only the question until a plan is run; no plan is a drawing here, so every number stays on
+the stepper. A wrong plan is run and drawn as it really turns out (`KeepBuilder.judge`): the stone runs out on the
+net, the beam bends to 185°, the stone lands where its rule puts it and misses the gap, the copy comes out too big, the
+ladder reaches 5.2 m up a 4 m wall. The hint says the same in words, and the round stays open. No timer, no lives, no
+fail state, no reward currency; nothing is priced, bought or sold. Keys: the arrows (or + and −) move the stepper,
+Enter runs, 1 to 3 pick a tile; every control is also a button.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game, and the speaker button says a line again. A spoken line is written the way it
+is said ("65 degrees", "3 squared plus 4 squared is 9 plus 16", "half a meter"), with digits only in its number places,
+so the voice allowlist (`server/services/tts-lines.js`) never sees a sign; coordinates and rules are on the board and
+the tiles only, so no line needs a minus sign. The words box prints the signs (`KeepBuilder.shown`: 65°, 9 + 16). No
+line puts a plural unit after a number that can be 1. The chip, the board and the tiles carry the symbols and are
+never read.
+
+**Not Balance Bridge.** Launchpad Unit 4's Balance Bridge plays the same world by day, with a see-saw and a helper to
+pick. Keep Builder is the castle at sunset, seen from a building yard inside the courtyard wall, with a plan board on
+two posts, one builder and no picker, no coin, no chest, no key, no spikes and no animal, and a game-made plinth where
+the theme's stone block is set for each finished round (three, then two, then one). The test holds the board to its 4
+by 3 shape, in full view, clear of the builder and the keep, its smallest numbers to 12 px on a 390 px phone (10 px at
+360 px), every control to 56 px, and every word on a control inside it.
+
+**Diagrams.** The unit adds no diagram type and no option. 6.1 uses `net` (a box 3 by 2 by 2, and a roof prism) and
+`righttriangle` (a triangle is half its rectangle); 6.2 `angles` (two lines crossing: 65°, the unknown next to it, and
+65° across) and `plane` twice (a slide of 6 right and 4 up; a window and its copy at scale factor 2); 6.3
+`righttriangle` (the wall, the foot, the ladder) and `plane` (two towers, the segment and its slope triangle). All 23
+focus steps are pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/keep-builder/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/keep-builder.recipe.js`.
+
+**Gear.** The unit's stamp is the Angle Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit
+covers, the misconceptions it meets (cubic meters are half-meter cubes; surface area counts each pair once; a
+triangle's area is base times height; the angles beside each other are equal; a flip is a half turn; the long side is
+the two short sides added) and how the game checks each idea by planning and running. Pro stays `status: "building"`,
+and no learner, parent or visitor sees any of this. **Left for the opening**, as for Units 1 to 5: the teacher page's
+game list (`NQ_CREW`) and its locale strings do not name Keep Builder.

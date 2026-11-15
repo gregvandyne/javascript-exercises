@@ -233,6 +233,39 @@
       "state": "ten-and-more"
     },
     {
+      "alt": "Keep Builder on a phone: a plan board with a store room drawn as a box, 2.5 m by 3 m by 2 m, and three tiles to pick from.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "6.1",
+      "commit": "3f8de3c5",
+      "concept": "Pro 6.1, Fill and Cover round 1 (The store room is 2.5 meters long, 3 meters wide and 2 meters high. Crates are cubes half a meter on each side. How many crates fill the room?): the builder's plan board in the castle courtyard at sunset with the room drawn as a box, its edges 2.5 m, 3 m and 2 m, and 1 crate: 1/2 m each way under it, the builder and the keep's plinth below, the chip reading how many crates?, and the tiles 120, 30 and 15, shot at phone width (scripts/nq-shots.js band)",
+      "game": "keep-builder",
+      "key": "nq/keep-builder/fill-and-cover",
+      "state": "fill-and-cover"
+    },
+    {
+      "alt": "Keep Builder on a phone: a wall 4 m high with a ladder leaning on it from 3 m out, and a stepper to set the ladder's length.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "6.3",
+      "commit": "3f8de3c5",
+      "concept": "Pro 6.3, Ladders and Spans round 1 (The wall is 4 meters high. The ladder's foot stands 3 meters out. How long must it be to reach the top?): the plan board with a wall 4 m high, the ground and a dashed ladder marked ? m from its foot 3 m out, the builder and the keep's plinth below, the chip reading 3² + 4² = ?², the stepper at 3 m and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "keep-builder",
+      "key": "nq/keep-builder/ladders-and-spans",
+      "state": "ladders-and-spans"
+    },
+    {
+      "alt": "Keep Builder on a phone: two straight beams cross on a plan board, one angle marked 65° and the next one a question mark, with a stepper in degrees.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "6.2",
+      "commit": "3f8de3c5",
+      "concept": "Pro 6.2, Slide, Flip, Turn round 1 (Two straight beams cross. One angle is 65°. What is the angle next to it?): the plan board with two beams crossing, the angle of 65° and the angle next to it marked ?, the builder and the keep's plinth below, the chip reading x + 65° = ?, the stepper at 90° and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "keep-builder",
+      "key": "nq/keep-builder/slide-flip-turn",
+      "state": "slide-flip-turn"
+    },
+    {
       "alt": "Kitchen Rush on a phone: the kitchen clock at 3 o'clock on the board, and the buttons 12:15, 3:00 and 3:30.",
       "band": "launchpad",
       "capturedAt": "2026-11-13",
