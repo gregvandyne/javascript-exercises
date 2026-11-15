@@ -5309,6 +5309,62 @@ three decks, nine exit items, the game Machine Line in the Toy Town world, and t
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear, and play by a student of the age.
 
+## Number Quest Pro Unit 5: The Sky Wires and Sky Lines (15 Nov 2026)
+
+The fifth Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"), side
+by side with Unit 4: three decks, nine exit items, the game Sky Lines in the Sky Islands world, and the one-line
+registrations. Pro stays `building`; nobody but the platform admin can open a Pro step. Where the build left the plan,
+and why:
+
+- **Read-aloud is on by default** (owner decision 6), not a button that is off by default as the plan said. Spoken
+  lines are written as they are said, with digits only in the number places. A line that can meet a number below zero
+  has one wording for each case ("at height negative 6"), and island coordinates are never spoken: they are read off
+  the grid.
+- **Oomba3D 1.2.0 and Sky Islands 1.0.1**, the newest of each, not the 1.1.0 library the plan named. No kit or theme
+  file changed. The sky is shown at sunset with no coin, so it does not look like Lily Hop, which plays the same world
+  by day.
+- **The graph is drawn on a board, not built in 3D.** The plan had islands floating on a grid in the world, seen by a
+  fixed side-on camera, and named "a 3D scene that reads as an exact 2D graph" as the hardest thing. The standing rule
+  from Units 1 to 3 answers it: the working surface is one face-on board, readable on a phone, and the 3D world is the
+  setting. The grid is 12 by 8 squares, so every number on it is 12 px or more on a 390 px phone.
+- **The hero does not ride the wire.** The plan sent the hero down each finished wire. A ride in the 3D world would
+  not be the wire on the board, and a rider who comes off a wrong wire is a fall. A finished round plants a flag on a
+  far island instead, and a wrong wire is only drawn.
+- **No wire is drawn before Run.** The plan had the player string the wire by setting b and m. A wire that moves with
+  the stepper invites sliding it until it touches the island, so the board shows the islands and the plan's numbers,
+  and draws the wire only when the plan is run, right or wrong. A wrong wire is drawn where it really goes, with the
+  gap to where it should be.
+- **Steepness is set in halves** (−3 to 3), with one stepper. The plan asked for fraction slopes without typing; halves
+  keep every height on the board exact and every spoken number a short decimal. Slopes in thirds and quarters appear
+  where nothing has to be set: on tiles (2/3, −3/4) and in the deck.
+- **A wire with two numbers has one stepper and a dial button**, not two steppers: two do not fit a phone at 56 px a
+  control. The board writes the plan as a rule (y = 2x + 1), so both numbers are always in view.
+- **The game says "steepness" and "start height"**; the decks teach slope, rise, run and y-intercept. The game's words
+  are the ones a wire has, and the lines stay easy to hear.
+- **The stair rounds do not draw the wire all the way.** With the whole wire drawn, "how far up does the big stair
+  go" is read off the grid. The wire is drawn as far as the small stair, so the ratio has to be used.
+- **Rounds the plan did not list**, so each chapter has six: a steady rate as a wire through the start and two rates
+  compared (8.EE.B.5), reading a drawn wire's steepness, the height after so many steps, a rule from a table, from a
+  story and from a drawn wire, the table that is not a straight wire (8.F.A.3), reading the crossing off two drawn
+  wires (8.EE.C.8a), and an equation with brackets and x on both sides (8.EE.C.7b).
+- **8.F.A.1 is in deck 5.2** (a function gives one output for each input); in the game it is only what every wire does.
+- **Replays use three set problems a round**, turned through by lap, with the tiles shuffled, as Sub Zero's pours do:
+  each set was checked by hand to keep every point on the grid and every hint true.
+- **No new diagram type.** The plan marked a four-quadrant coordinate plane as missing; it shipped in the diagram pack,
+  and all six of the unit's drawings use it.
+- **Contexts are neutral** (decision 3): wires, islands, a cable car, a glider, a balloon, a candle. Nothing is priced
+  or sold, and there is no reward currency.
+- **Built before Unit 4 merged.** Units 4 and 5 were built at the same time, so on this branch the built Pro units are
+  0, 1, 2, 3 and 5. The foundations test now names the built units as a list (`BUILT_UNITS`) instead of "the first
+  ten steps", and the tests that need "a planned unit" use Unit 6, which stays planned after both land.
+- **A built unit's entry profile is live in the engine**, as for Units 1 to 3: `P.entryProfile('pro', 5)` now answers.
+  The route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as before: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
+  Sky Lines. The game itself is a library game on the Learn shelf (math, grade 8) from the day it is registered; its
+  title, description and tags never name the Pro tier.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear, and play by a student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

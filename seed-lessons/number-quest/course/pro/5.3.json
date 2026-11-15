@@ -1,0 +1,201 @@
+{
+ "key": "pro-5.3",
+ "n": "5.3",
+ "band": "pro",
+ "title": "Solve linear equations and find where two lines meet",
+ "topic": "Linear equations",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "Where do the wires cross?",
+   "text": "Two wires leave the same wall of pylons. Wire A starts low and climbs fast, and wire B starts high and comes down. Tally must build one platform that both wires reach, so it has to stand at exactly the right point.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 3,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "One point on both lines",
+   "text": "Wire A is y = 2x + 1 and wire B is y = −x + 7. The point where they cross is on both lines, so it makes both rules true. Here that point is (2, 5): 2 × 2 + 1 = 5 and −2 + 7 = 5.",
+   "art": "grid",
+   "visual": {
+    "type": "plane",
+    "label": "Two lines that cross at one point",
+    "x": [
+     0,
+     8
+    ],
+    "y": [
+     0,
+     8
+    ],
+    "lines": [
+     {
+      "m": 2,
+      "b": 1,
+      "label": "A"
+     },
+     {
+      "m": -1,
+      "b": 7,
+      "label": "B"
+     }
+    ],
+    "points": [
+     {
+      "x": 2,
+      "y": 5
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Wire A climbs 2 for each step across.",
+     "box": [
+      25.1,
+      6.6,
+      24.5,
+      74.1
+     ]
+    },
+    {
+     "cue": "Wire B drops 1 for each step across.",
+     "box": [
+      25.2,
+      14.4,
+      41.9,
+      76.4
+     ]
+    },
+    {
+     "cue": "They cross at (2, 5), the one point on both.",
+     "box": [
+      35,
+      34.1,
+      5.2,
+      8.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Set the rules equal",
+   "text": "At the crossing the two heights are equal, so write 2x + 1 = −x + 7 and solve it. Collect the x terms on one side and the plain numbers on the other. Then use either rule to find y.",
+   "art": "pencil",
+   "steps": [
+    "2x + 1 = −x + 7",
+    "Add x to both sides: 3x + 1 = 7",
+    "Subtract 1: 3x = 6, so x = 2",
+    "y = 2 × 2 + 1 = 5"
+   ]
+  },
+  {
+   "title": "No crossing, or every point",
+   "text": "Lines with the same slope and different starts are parallel. The equation 2x + 1 = 2x + 4 leads to 1 = 4, which is never true, so there is no solution. When both rules make the same line, such as 2x + 4 and 2(x + 2), every point is a solution.",
+   "art": "lightbulb",
+   "visual": {
+    "type": "plane",
+    "label": "Two parallel lines that never cross",
+    "x": [
+     0,
+     8
+    ],
+    "y": [
+     0,
+     8
+    ],
+    "lines": [
+     {
+      "m": 2,
+      "b": 1,
+      "label": "y = 2x + 1"
+     },
+     {
+      "m": 2,
+      "b": 4,
+      "label": "y = 2x + 4"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "This line starts at 1 and climbs 2 each step.",
+     "box": [
+      25.1,
+      6.6,
+      37.7,
+      74.1
+     ]
+    },
+    {
+     "cue": "This one starts at 4 and climbs 2 as well: always 3 higher.",
+     "box": [
+      6.6,
+      6.6,
+      32.1,
+      43.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Brackets and both sides",
+   "text": "Some equations need tidying first. In 2(x + 1) = x + 5, multiply out the brackets to get 2x + 2 = x + 5. Subtract x from both sides and then subtract 2, which leaves x = 3. Put it back to check: 2 × 4 = 8 and 3 + 5 = 8.",
+   "art": "box"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for equations and crossing lines.",
+   "art": "star",
+   "words": [
+    {
+     "word": "linear equation",
+     "means": "an equation whose letters have no powers, such as 2x + 1 = 7"
+    },
+    {
+     "word": "solution",
+     "means": "a value, or a pair of values, that makes every equation true"
+    },
+    {
+     "word": "system of equations",
+     "means": "two or more equations that must be true at the same time"
+    },
+    {
+     "word": "parallel lines",
+     "means": "lines with the same slope that never meet"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sky Lines at Meeting Point. Find how far across two wires are level, then put the platform where they cross. Watch for wires that never meet.",
+   "art": "trophy",
+   "img": "nq/sky-lines/meeting-point",
+   "alt": "Sky Lines on a phone: a grid with the starts of wire A and wire B, the equation 2x + 1 = x + 4 and a stepper to set how far across.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-5.3-e1",
+  "nq-pro-5.3-e2",
+  "nq-pro-5.3-e3"
+ ],
+ "game": {
+  "slug": "sky-lines",
+  "chapter": "Meeting Point",
+  "params": "chapter=meet&lock=1"
+ }
+}

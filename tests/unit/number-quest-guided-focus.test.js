@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 193, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2 and 6 in Pro Unit 3');
-  assert.equal(steps, 451, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2 and 16 in Pro Unit 3');
+  assert.equal(slides, 199, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3 and 6 in Pro Unit 5');
+  assert.equal(steps, 467, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3 and 16 in Pro Unit 5');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -590,14 +590,35 @@ const REGISTRY = [
   ['pro-3.3', 1, 2, [14.28, 48.89, 48.2, 70.4], [14.3, 47.3, 34.9, 24.9]],
   ['pro-3.3', 3, 0, [62.65, 60.44, 66.65, 67.56], [61.4, 58.1, 6.6, 11.7]],
   ['pro-3.3', 3, 1, [4.07, 60.44, 66.65, 67.56], [3.2, 58.1, 64.8, 11.7]],
+  // Pro Unit 5, The Sky Wires (2026-11-15): six coordinate planes. 5.1 a line from A to B (island B with its letter, the rise and run
+  // with their two labels, the line with its arrowheads) and a small stair and a big stair under one line; 5.2 the line y = 0.5x + 2
+  // (its start on the y-axis, its rise and run, the point at x = 6) and four points of y = x²; 5.3 two lines that cross (each line with
+  // its letter, the crossing point) and two parallel lines with their rules. Measured with getBoundingClientRect on the rendered step
+  // pages at 390 px: each target is the drawn part together with its own label, and each box is that target with the usual margin.
+  ['pro-5.1', 1, 0, [44.13,17.5,50.6,31.29], [43.1,15.9,8.5,17]],
+  ['pro-5.1', 1, 1, [26.23,28.44,61.68,89.24], [25.2,26.8,37.5,64]],
+  ['pro-5.1', 1, 2, [26.23,8.18,56.59,89.24], [25.2,6.6,32.4,84.2]],
+  ['pro-5.1', 2, 0, [33,50.84,41,57.95], [32,49.2,10,10.4]],
+  ['pro-5.1', 2, 1, [41,29.51,77.53,59.7], [40,27.9,38.5,33.4]],
+  ['pro-5.1', 2, 2, [25,22.24,73,65.22], [24,20.6,50,46.2]],
+  ['pro-5.2', 1, 0, [24.63,66.13,27.83,71.82], [23.6,64.5,5.2,8.9]],
+  ['pro-5.2', 1, 1, [37.62,38.58,72.91,67.7], [36.6,37,37.3,32.3]],
+  ['pro-5.2', 1, 2, [58.79,35.73,61.98,41.42], [57.8,34.1,5.2,8.9]],
+  ['pro-5.2', 4, 0, [43.8,78.29,46.99,83.98], [42.8,76.7,5.2,8.9]],
+  ['pro-5.2', 4, 1, [52.91,13.44,56.1,19.13], [51.9,11.8,5.2,8.9]],
+  ['pro-5.3', 1, 0, [26.14,8.18,48.63,79.11], [25.1,6.6,24.5,74.1]],
+  ['pro-5.3', 1, 1, [26.23,16,66.08,89.24], [25.2,14.4,41.9,76.4]],
+  ['pro-5.3', 1, 2, [36.02,35.73,39.21,41.42], [35,34.1,5.2,8.9]],
+  ['pro-5.3', 3, 0, [26.14,8.18,61.84,79.11], [25.1,6.6,37.7,74.1]],
+  ['pro-5.3', 3, 1, [7.59,8.18,37.71,48.71], [6.6,6.6,32.1,43.7]],
 ];
-test('every authored box contains its measured target with a small margin (451-step registry)', () => {
+test('every authored box contains its measured target with a small margin (467-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 451);
+  assert.equal(REGISTRY.length, 467);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -615,7 +636,7 @@ test('every authored box contains its measured target with a small margin (451-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 451);
+  assert.equal(total, 467);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

@@ -1,0 +1,223 @@
+{
+ "key": "pro-5.2",
+ "n": "5.2",
+ "band": "pro",
+ "title": "y = mx + b: a line as a rule",
+ "topic": "Linear rules",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "A rule for the whole wire",
+   "text": "Tally wants to know how high a wire is at any step across, without drawing it. The wire starts at height 2 and climbs 1 for every 2 steps. A short rule can give its height at step 6, and at step 600 just as easily.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Start, then a steady change",
+   "text": "The rule is y = 0.5x + 2. The number added, 2, is the height at x = 0, called the y-intercept. The number that multiplies x, 0.5, is the slope: the change in y for each step of x. In y = mx + b, the slope is m and the y-intercept is b.",
+   "art": "ruler",
+   "visual": {
+    "type": "plane",
+    "label": "The line y = 0.5x + 2 with its start and its slope",
+    "x": [
+     0,
+     8
+    ],
+    "y": [
+     0,
+     8
+    ],
+    "points": [
+     {
+      "x": 0,
+      "y": 2
+     },
+     {
+      "x": 2,
+      "y": 3
+     },
+     {
+      "x": 4,
+      "y": 4
+     },
+     {
+      "x": 6,
+      "y": 5
+     }
+    ],
+    "lines": [
+     {
+      "m": 0.5,
+      "b": 2
+     }
+    ],
+    "slope": {
+     "from": [
+      2,
+      3
+     ],
+     "to": [
+      6,
+      5
+     ]
+    }
+   },
+   "focus": [
+    {
+     "cue": "The line starts at 2 on the y-axis: b = 2.",
+     "box": [
+      23.6,
+      64.5,
+      5.2,
+      8.9
+     ]
+    },
+    {
+     "cue": "It rises 2 while it runs 4, so m = 2/4 = 0.5.",
+     "box": [
+      36.6,
+      37,
+      37.3,
+      32.3
+     ]
+    },
+    {
+     "cue": "At x = 6 the rule gives 0.5 × 6 + 2 = 5.",
+     "box": [
+      57.8,
+      34.1,
+      5.2,
+      8.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Build a rule from two points",
+   "text": "A line passes through (1, 3) and (3, 7). Find the slope first. Then step back from one point to x = 0 to find where the line starts, and check the rule with the other point.",
+   "art": "pencil",
+   "steps": [
+    "slope = (7 − 3)/(3 − 1) = 2",
+    "From (1, 3) go back 1 step: 3 − 2 = 1",
+    "The rule is y = 2x + 1",
+    "Check: 2 × 3 + 1 = 7"
+   ]
+  },
+  {
+   "title": "One output for each input",
+   "text": "A function is a rule that gives exactly one output for each input. A table shows it as pairs, and a graph shows the same pairs as points. A story can hold a function too: a tank with 20 liters that loses 2 liters each minute holds y = 20 − 2x liters after x minutes.",
+   "art": "table"
+  },
+  {
+   "title": "Not every rule is a line",
+   "text": "A linear function changes by the same amount for each step, so its graph is straight. The outputs 0, 1, 4, 9 of y = x² change by 1, then 3, then 5. Their points bend into a curve, so that function is not linear.",
+   "art": "chart",
+   "visual": {
+    "type": "plane",
+    "label": "Four points of y = x² that do not lie on one line",
+    "x": [
+     0,
+     4
+    ],
+    "y": [
+     0,
+     10
+    ],
+    "points": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 2,
+      "y": 4
+     },
+     {
+      "x": 3,
+      "y": 9
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "From x = 0 to x = 1 the output goes up 1.",
+     "box": [
+      42.8,
+      76.7,
+      5.2,
+      8.9
+     ]
+    },
+    {
+     "cue": "From x = 2 to x = 3 it goes up 5: the steps change.",
+     "box": [
+      51.9,
+      11.8,
+      5.2,
+      8.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for lines as rules.",
+   "art": "star",
+   "words": [
+    {
+     "word": "function",
+     "means": "a rule that gives exactly one output for each input"
+    },
+    {
+     "word": "linear function",
+     "means": "a function whose graph is a straight line, such as y = 2x + 1"
+    },
+    {
+     "word": "y-intercept",
+     "means": "the value of y where a line crosses the y-axis, at x = 0"
+    },
+    {
+     "word": "rate of change",
+     "means": "how much y changes for each step of 1 in x: the slope"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sky Lines at Wire Rules. Give each wire its start height and its steepness, from a table, a story or two islands. Then find the table that bends.",
+   "art": "trophy",
+   "img": "nq/sky-lines/wire-rules",
+   "alt": "Sky Lines on a phone: a grid with a wire's start marked at height 2, and a stepper to set its height at 6 across.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-5.2-e1",
+  "nq-pro-5.2-e2",
+  "nq-pro-5.2-e3"
+ ],
+ "game": {
+  "slug": "sky-lines",
+  "chapter": "Wire Rules",
+  "params": "chapter=rule&lock=1"
+ }
+}

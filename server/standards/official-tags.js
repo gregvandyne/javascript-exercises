@@ -70,6 +70,10 @@ export const GAMES = Object.freeze({
   // number (and a squaring machine), expressions that are equal (expand, combine like terms, factor, subtract a sum), and
   // equations and inequalities solved by undoing a line of operations (its three chapters, MACHINE_CHAPTERS below).
   'machine-line': { 'ccss-math': ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1', '6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2', '6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'] },
+  // Sky Lines (grade 8, Number Quest Pro Unit 5): the steepness of a line as up over across (also going down, in all four
+  // quadrants), a line as a rule with a start height and a steady change, and where two lines meet, never meet or are one
+  // line (its three chapters, SKY_CHAPTERS below).
+  'sky-lines': { 'ccss-math': ['8.EE.B.5', '8.EE.B.6', '6.NS.C.8', '8.F.B.4', '8.F.A.1', '8.F.A.3', '6.EE.C.9', '8.EE.C.7', '8.EE.C.8'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -126,8 +130,12 @@ export const SUBZERO_CHAPTERS = Object.freeze({
 export const MACHINE_CHAPTERS = Object.freeze({
   build: ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1'], same: ['6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2'], undo: ['6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'],
 });
+/** Sky Lines' chapters (seed-games/sky-lines.html SkyLines.CHAPTERS), for a step locked to one. */
+export const SKY_CHAPTERS = Object.freeze({
+  slope: ['8.EE.B.5', '8.EE.B.6', '6.NS.C.8'], rule: ['8.F.B.4', '8.F.A.1', '8.F.A.3', '6.EE.C.9'], meet: ['8.EE.C.7', '8.EE.C.8'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'sky-lines']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -147,6 +155,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'lantern-mix') { const ch = p.get('chapter') || ''; return Object.hasOwn(LANTERN_CHAPTERS, ch) ? [...LANTERN_CHAPTERS[ch]] : null; }
   if (slug === 'sub-zero') { const ch = p.get('chapter') || ''; return Object.hasOwn(SUBZERO_CHAPTERS, ch) ? [...SUBZERO_CHAPTERS[ch]] : null; }
   if (slug === 'machine-line') { const ch = p.get('chapter') || ''; return Object.hasOwn(MACHINE_CHAPTERS, ch) ? [...MACHINE_CHAPTERS[ch]] : null; }
+  if (slug === 'sky-lines') { const ch = p.get('chapter') || ''; return Object.hasOwn(SKY_CHAPTERS, ch) ? [...SKY_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one
