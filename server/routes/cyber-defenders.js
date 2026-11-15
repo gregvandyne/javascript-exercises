@@ -91,8 +91,8 @@ router.get('/teachers/cyber-defenders', (req, res) => {
     return page(req, res, { title: `${t(`${K}.title`)} — Spot the Trick pack`, body: trickPackBody(req, cat), head: V.CSS + TRICK_CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   if (req.query.print === '1') {
-    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🦉 ${esc(cat.program.name)} — ${t(`${K}.print.h`)}</h1>
-      <p class="muted" lang="en" dir="ltr">${esc(cat.program.standards)}</p>${mapAndNotes(req, cat)}</div>`;
+    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🦉 ${cat.program.name} — ${t(`${K}.print.h`)}</h1>
+      <p class="muted" lang="en" dir="ltr">${cat.program.standards}</p>${mapAndNotes(req, cat)}</div>`;
     return page(req, res, { title: `${t(`${K}.title`)} — ${t(`${K}.print.h`)}`, body, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   const staff = !!req.user && !req.user.is_guest && S.isSchoolStaff(req.user);
