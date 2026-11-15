@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 187, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1 and 6 in Pro Unit 2');
-  assert.equal(steps, 435, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1 and 15 in Pro Unit 2');
+  assert.equal(slides, 193, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2 and 6 in Pro Unit 3');
+  assert.equal(steps, 451, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2 and 16 in Pro Unit 3');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -569,14 +569,35 @@ const REGISTRY = [
   ['pro-2.3', 1, 1, [39.7, 31.79, 49.67, 41.58], [38.7, 30.2, 12, 13]],
   ['pro-2.3', 2, 0, [30.39, 54.2, 39.4, 61.83], [29.4, 52.6, 11, 10.8]],
   ['pro-2.3', 2, 1, [60.79, 28.62, 68.6, 59.56], [59.8, 27, 9.8, 34.2]],
+  // Pro Unit 3, The Machine Hall (2026-11-14): 3.1 two operation flows (n, then times 3 with 3n, then plus 5 with 3n + 5; the same
+  // line with 4, 12 and 17); 3.2 two tables of inputs and outputs (the head row, the column for x = 1 and the last column of 3(x + 2)
+  // and 3x + 6; the columns for x = 2 and x = 3 of 2x and x²); 3.3 a flow with its way back (the output 23, the undo of plus 5, the
+  // undo of times 3) and a number line with a ray (the open end at 8, the ray to its left). Measured with getBoundingClientRect on
+  // the rendered step pages at 390 px, as Unit 2's were; the flow and ray boxes are the ones diagramParts hands out.
+  ['pro-3.1', 1, 0, [6.05, 26.67, 21.03, 48], [5, 24.9, 17, 24.9]],
+  ['pro-3.1', 1, 1, [24.28, 26.67, 57.49, 48], [23.3, 24.9, 35.2, 24.9]],
+  ['pro-3.1', 1, 2, [60.74, 26.67, 93.95, 48], [59.8, 24.9, 35.2, 24.9]],
+  ['pro-3.1', 2, 0, [6.05, 26.67, 21.03, 48], [5, 24.9, 17, 24.9]],
+  ['pro-3.1', 2, 1, [24.28, 26.67, 57.49, 48], [23.3, 24.9, 35.2, 24.9]],
+  ['pro-3.1', 2, 2, [60.74, 26.67, 93.95, 48], [59.8, 24.9, 35.2, 24.9]],
+  ['pro-3.2', 1, 0, [6.05, 21.33, 93.95, 34.84], [5.1, 19.7, 89.8, 16.7]],
+  ['pro-3.2', 1, 1, [41.21, 21.33, 58.79, 61.87], [40.2, 19.7, 19.6, 43.8]],
+  ['pro-3.2', 1, 2, [76.37, 21.33, 93.95, 61.87], [75.4, 19.7, 19.5, 43.8]],
+  ['pro-3.2', 2, 0, [58.79, 21.33, 76.37, 61.87], [57.8, 19.7, 19.6, 43.8]],
+  ['pro-3.2', 2, 1, [76.37, 21.33, 93.95, 61.87], [75.4, 19.7, 19.5, 43.8]],
+  ['pro-3.3', 1, 0, [78.99, 26.67, 93.98, 48], [78, 24.9, 17, 24.9]],
+  ['pro-3.3', 1, 1, [50.76, 48.89, 84.69, 70.4], [50.8, 47.3, 34.9, 24.9]],
+  ['pro-3.3', 1, 2, [14.28, 48.89, 48.2, 70.4], [14.3, 47.3, 34.9, 24.9]],
+  ['pro-3.3', 3, 0, [62.65, 60.44, 66.65, 67.56], [61.4, 58.1, 6.6, 11.7]],
+  ['pro-3.3', 3, 1, [4.07, 60.44, 66.65, 67.56], [3.2, 58.1, 64.8, 11.7]],
 ];
-test('every authored box contains its measured target with a small margin (435-step registry)', () => {
+test('every authored box contains its measured target with a small margin (451-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 435);
+  assert.equal(REGISTRY.length, 451);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -594,7 +615,7 @@ test('every authored box contains its measured target with a small margin (435-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 435);
+  assert.equal(total, 451);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

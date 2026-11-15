@@ -1,0 +1,185 @@
+{
+ "key": "pro-3.1",
+ "n": "3.1",
+ "band": "pro",
+ "title": "Write and work out expressions",
+ "topic": "Expressions",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "A box with a number inside",
+   "text": "In the Machine Hall a box rides a belt through machines, and each machine does one thing to the number inside. Tally cannot see the number, so she writes a letter for it. A letter that stands for a number is called a variable.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 2,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A line of machines is an expression",
+   "text": "Send n through a machine that multiplies by 3, then one that adds 5. The line makes 3n + 5, which is 5 more than 3 times n. In 3n the 3 is the coefficient, and 3n and 5 are the two terms.",
+   "art": "gears",
+   "visual": {
+    "type": "flow",
+    "label": "The line for 3n + 5",
+    "inName": "in",
+    "outName": "out",
+    "values": [
+     "n",
+     "3n",
+     "3n + 5"
+    ],
+    "ops": [
+     "× 3",
+     "+ 5"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The letter n stands for the number that goes in.",
+     "box": [
+      5,
+      24.9,
+      17,
+      24.9
+     ]
+    },
+    {
+     "cue": "Times 3 comes first and turns n into 3n.",
+     "box": [
+      23.3,
+      24.9,
+      35.2,
+      24.9
+     ]
+    },
+    {
+     "cue": "Plus 5 comes last, so the line makes 3n + 5.",
+     "box": [
+      59.8,
+      24.9,
+      35.2,
+      24.9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Work it out for n = 4",
+   "text": "To evaluate an expression, put a number in place of the letter and follow the machines in order. For n = 4, multiply first: 3 × 4 = 12. Then add: 12 + 5 = 17.",
+   "art": "box",
+   "steps": [
+    "3n + 5 with n = 4",
+    "Multiply first: 3 × 4 = 12",
+    "Then add: 12 + 5 = 17"
+   ],
+   "visual": {
+    "type": "flow",
+    "label": "Four goes through the line",
+    "inName": "in",
+    "outName": "out",
+    "values": [
+     "4",
+     "12",
+     "17"
+    ],
+    "ops": [
+     "× 3",
+     "+ 5"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Put 4 in place of n.",
+     "box": [
+      5,
+      24.9,
+      17,
+      24.9
+     ]
+    },
+    {
+     "cue": "Times 3 makes 12.",
+     "box": [
+      23.3,
+      24.9,
+      35.2,
+      24.9
+     ]
+    },
+    {
+     "cue": "Plus 5 makes 17, the value of 3n + 5.",
+     "box": [
+      59.8,
+      24.9,
+      35.2,
+      24.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Brackets change the order",
+   "text": "3 times the sum of n and 4 is written 3(n + 4). The brackets say add first, then multiply the whole sum. Without them, 3n + 4 multiplies only the n. For n = 2 the first gives 18 and the second gives 10.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Powers: a number times itself",
+   "text": "An exponent says how many times a number is multiplied by itself. So 5² means 5 × 5 = 25, and 2³ means 2 × 2 × 2 = 8. In 2n² only the n is squared, so for n = 3 it is 2 × 9 = 18.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for reading and writing expressions.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "variable",
+     "means": "a letter that stands for a number, such as n"
+    },
+    {
+     "word": "expression",
+     "means": "numbers, letters and operations with no equals sign, such as 3n + 5"
+    },
+    {
+     "word": "term",
+     "means": "a part of an expression that is added or subtracted, such as 3n"
+    },
+    {
+     "word": "coefficient",
+     "means": "the number that multiplies a variable, such as the 3 in 3n"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Machine Line at Build the Line. Build each expression from machine blocks, then run the line and see what a number really becomes.",
+   "art": "trophy",
+   "img": "nq/machine-line/build-the-line",
+   "alt": "Machine Line on a phone: a board with a line of two empty machine slots between n and a question mark, and four machine blocks to choose from.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-3.1-e1",
+  "nq-pro-3.1-e2",
+  "nq-pro-3.1-e3"
+ ],
+ "game": {
+  "slug": "machine-line",
+  "chapter": "Build the Line",
+  "params": "chapter=build&lock=1"
+ }
+}

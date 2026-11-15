@@ -66,6 +66,10 @@ export const GAMES = Object.freeze({
   // below zero with opposites, order and absolute value, and the four operations with negative numbers (its three
   // chapters, SUBZERO_CHAPTERS below).
   'sub-zero': { 'ccss-math': ['6.NS.A.1', '6.NS.B.3', '6.NS.C.5', '6.NS.C.6', '6.NS.C.7', '7.NS.A.1', '7.NS.A.2', '7.NS.A.3'] },
+  // Machine Line (grades 6-7, Number Quest Pro Unit 3): writing, reading and working out expressions with a letter for a
+  // number (and a squaring machine), expressions that are equal (expand, combine like terms, factor, subtract a sum), and
+  // equations and inequalities solved by undoing a line of operations (its three chapters, MACHINE_CHAPTERS below).
+  'machine-line': { 'ccss-math': ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1', '6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2', '6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -118,8 +122,12 @@ export const LANTERN_CHAPTERS = Object.freeze({
 export const SUBZERO_CHAPTERS = Object.freeze({
   pour: ['6.NS.A.1', '6.NS.B.3'], below: ['6.NS.C.5', '6.NS.C.6', '6.NS.C.7'], change: ['7.NS.A.1', '7.NS.A.2', '7.NS.A.3'],
 });
+/** Machine Line's chapters (seed-games/machine-line.html MachineLine.CHAPTERS), for a step locked to one. */
+export const MACHINE_CHAPTERS = Object.freeze({
+  build: ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1'], same: ['6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2'], undo: ['6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -138,6 +146,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'kitchen-rush') { const ch = p.get('chapter') || ''; return Object.hasOwn(KITCHEN_CHAPTERS, ch) ? [...KITCHEN_CHAPTERS[ch]] : null; }
   if (slug === 'lantern-mix') { const ch = p.get('chapter') || ''; return Object.hasOwn(LANTERN_CHAPTERS, ch) ? [...LANTERN_CHAPTERS[ch]] : null; }
   if (slug === 'sub-zero') { const ch = p.get('chapter') || ''; return Object.hasOwn(SUBZERO_CHAPTERS, ch) ? [...SUBZERO_CHAPTERS[ch]] : null; }
+  if (slug === 'machine-line') { const ch = p.get('chapter') || ''; return Object.hasOwn(MACHINE_CHAPTERS, ch) ? [...MACHINE_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one

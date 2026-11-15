@@ -5254,6 +5254,61 @@ three decks, nine exit items, the game Sub Zero in the Busy Kitchen world, and t
   route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
 - **Left for the opening PR**, as for Unit 1: the teacher page's game list (`NQ_CREW`) and its locale strings do not
   name Sub Zero. The game itself is a library game on the Learn shelf (math, grades 6-7) from the day it is registered.
+## Number Quest Pro Unit 3: The Machine Hall and Machine Line (14 Nov 2026)
+
+The third Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Machine Line in the Toy Town world, and the one-line registrations. Pro stays
+`building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default** (owner decision 6), not a button that is off by default as the plan said. Spoken
+  lines are written as they are said, with digits only in the number places, so the voice allowlist sees no sign.
+  The letter is part of each line's own words (n in Build the Line, x in the other two chapters), because a
+  placeholder takes numbers only.
+- **Oomba3D 1.2.0 and Toy Town 1.1.0**, the newest of each, not the 1.1.0 library the plan named. No kit or theme file
+  changed. The town is shown at sunset, with no cars and no coin, so it does not look like Crate Stacker, which plays
+  the same world by day.
+- **The line is drawn on a board, not built in 3D.** The plan had a box riding a conveyor through machines on the
+  street. A row of machines seen in perspective is hard to read on a phone and its numbers would be small, so the
+  line, its value boxes and the number line are drawn face on, on one board, as Sub Zero's thermometer is. The 3D
+  conveyor is the loading dock: a crate rides it for each finished round.
+- **Plan, then run; the game picks the test number.** The plan had the player "test with numbers" freely. A free test
+  box invites trying inputs until the outputs agree, which is the very mistake chapter `same` is about. So a plan is
+  built and run, and a wrong one is run for the first whole input that tells it from the wanted line, with both
+  outputs shown. A number set on the stepper is not shown on the board before Run, so the board never states an
+  output the plan has not earned.
+- **Equal means equal as polynomials.** The plan named this as the hardest thing. `MachineLine.same` turns each line
+  into whole-number coefficients over one denominator and cross-multiplies, so 3(x + 2) and 3x + 6 are the same,
+  (x + 1)² and x² + 1 are not, and no rounding or text compare is involved. The test checks every plan a player can
+  build, on every lap it runs, against the meaning of the words worked out separately.
+- **"Do they always give the same output?" has three answers**: always, sometimes, never. "Times 2" against "square
+  it" match for 0 and 2 only, which is how the game shows that a few matching inputs are not proof.
+- **A line holds two machines at most.** Three do not fit a phone at a readable size. So "rebuild one line shorter" is
+  played as: an expression such as 2x + 3x + 4 or 8x − (3x + 2) is given as written, and the player builds the short
+  line for it. x + x + x is not a line of one-input machines, so it is in the deck and the check, not the game.
+- **Inequalities: the ray's end is a whole number from 0 to 12, and the multiplier is positive.** Whether the end is
+  open or filled follows from the words ("less than", "at least") and is drawn for the player; the player sets the end
+  and the side. Dividing an inequality by a negative number (the sign turns round) is not played or taught here.
+- **Answers in the game are zero or more.** Replays have answers that are halves, but no negative answer: a spoken
+  hint would need a second wording for every line. Deck 3.3 and one check item solve 2x + 9 = 3 (x = −3).
+- **7.EE.A.2 is in deck 3.2 only** (x + 0.2x = 1.2x: adding 20% is multiplying by 1.2). The game's rebuild rounds
+  practice the rewriting, not what a new form tells you about a situation.
+- **Rounds the plan did not list**, so each chapter has six: a story with a letter for a number, reading a line as an
+  expression, the squaring machine both ways round, never and sometimes equal, subtracting a sum, a bracketed equation
+  5(x + 2) = 35, and which line undoes another.
+- **No new diagram type.** The plan marked a flow diagram and an inequality ray as missing; both shipped in the
+  diagram pack. An area model for 3(x + 2) was not drawn: `squares` draws counted unit squares, which would give x a
+  size. Two tables of inputs and outputs carry the idea, and the plan's optional algebra tiles were left out.
+- **No balance**, as the plan asked, in the game, its words or its listing.
+- **Contexts are neutral** (decision 3): crates and toys on a truck, a rider's age. Nothing is priced or sold, and
+  there is no reward currency.
+- **A built unit's entry profile is live in the engine**, as for Units 1 and 2: `P.entryProfile('pro', 3)` now
+  answers. The route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as before: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
+  Machine Line. The game itself is a library game on the Learn shelf (math, grades 6-7) from the day it is
+  registered; its title, description and tags never name the Pro tier.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear, and play by a student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

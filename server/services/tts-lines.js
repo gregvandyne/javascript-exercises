@@ -79,6 +79,11 @@ export const GAMES = {
   // and the round counter are shown, never read.
   'lily-hop': { title: 'Lily Hop', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'loop-lab': { title: 'Loop Lab', role: 'narrator', spoken: /./ },
+  // Machine Line (Number Quest Pro, grades 6-7): read-aloud is on by default. Every instruction, hint and answer line is
+  // spoken, in the friendly voice (its VOICES block), written the way it is said ("3 times 4 is 12", "2 x plus 3 x").
+  // What the chip and the board show (show.*), the button labels (btn.*), the chapter names and the round counter are
+  // shown, never read.
+  'machine-line': { title: 'Machine Line', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'munch-maze': { title: 'Munch Maze', role: 'narrator', spoken: /./ },
   'quest-race': { title: 'Quest Race', role: 'narrator', spoken: /./ },
   'question-battle': { title: 'Question Battle', role: 'narrator', spoken: /./ },

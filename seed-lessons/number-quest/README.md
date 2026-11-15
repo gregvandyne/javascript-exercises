@@ -709,8 +709,9 @@ read-aloud; the admin's preview.
 Unit 7 has four chapters: the fourth, `clock`, is the finale. No two units in a row share a world. A reserved game slug
 is a name only: nothing is registered for it, and no file exists.
 
-**Built so far:** Unit 1, The Mixing Tower, with Lantern Mix (2026-11-14; see "Pro Unit 1" at the end of this file). Its
-`planned` and `reserved` flags are gone from `units.json`; the other six units are still planned.
+**Built so far:** Unit 1, The Mixing Tower, with Lantern Mix; Unit 2, The Cold Store, with Sub Zero; Unit 3, The
+Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3" at the end of this file). Their
+`planned` and `reserved` flags are gone from `units.json`; Units 4 to 7 are still planned.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1027,3 +1028,81 @@ marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share pict
 the three misconceptions it meets (dividing always makes smaller; −8 is greater than −2; subtracting a negative makes
 smaller) and how the game checks each idea by doing. Pro stays `status: "building"`: Units 3 to 7 are still
 planned, and no learner, parent or visitor sees any of this.
+
+## Pro Unit 3 — The Machine Hall (2026-11-14, tier still `building`)
+
+The third Pro unit, built to the contract above ("What a unit PR touches"). Expressions and equations for grades 6
+and 7. Its `planned` flag is gone, so its three steps are real steps for the platform admin (and nobody else: the tier
+is `building`).
+
+| File | What |
+|---|---|
+| `course/pro/3.1.json`, `3.2.json`, `3.3.json` | the three decks, inside the Pro limits above: **3.1 Write and work out expressions** (6.EE.A.2, 6.EE.B.6, also 6.EE.A.1), **3.2 Expressions that are equal** (6.EE.A.3, 6.EE.A.4, 7.EE.A.1, also 7.EE.A.2), **3.3 Solve equations and inequalities** (6.EE.B.7, 7.EE.B.4a, also 6.EE.B.5, 6.EE.B.8, 7.EE.B.4b). Seven slides each: a story slide with Tally, two drawn diagrams with guided focus, one worked example, four words, the mission last |
+| `sets/u3-pro.json` | nine exit items (`nq-pro-3.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (multiplied only the first term, squared 2n instead of only n, confused squaring with doubling, stopped after undoing one machine), every item with a `why` that checks the answer by putting it back |
+| `units.json` | Unit 3's own object: the flags deleted, `tool: "machine-line"`, the three `game.pro` specs, three teacher notes |
+| `seed-games/machine-line.html` | **Machine Line**, the unit's game (Oomba3D 1.2.0, Toy Town theme 1.1.0, at sunset): chapter `build` for 3.1 (Build the Line), `same` for 3.2 (Same Output), `undo` for 3.3 (Run It Back), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**A line of machines.** A board on the street shows value boxes joined by machines that each do one thing: `× 3`,
+`+ 5`, `− 2`, `÷ 2`, `( )²`. A line of machines is an expression (`MachineLine.expr` prints it the way the line is
+built: 3n + 5, 3(n + 5), (n + 6) ÷ 2, 2n², (2n)²), and **two lines are compared as polynomials** with whole-number
+arithmetic (`MachineLine.same`: coefficients over one denominator, cross-multiplied), never as text and never by
+trying a few inputs. So any plan that does what the words ask is right, however it is built. There is **no balance**
+in this game (Balance Bridge, for grades 1 and 2, owns the see-saw).
+
+**What each chapter plays.** `build`: put blocks in the line for "5 more than 3 times n" (four blocks, two slots: the
+right two the wrong way round make 3(n + 5), and are named as that), send 4 down 3n + 5 and say what comes out (27 is
+"that adds first", 12 is "times 3 means 3 groups of 4"), "3 times the sum of n and 4" (add first), read "plus 6, then
+divided by 2" as (n + 6) ÷ 2 (n + 6 ÷ 2 is offered: no brackets), a squaring machine (2n² for n = 3; on an odd lap
+(2n)²; doubling for squaring is offered), and a story with a letter for a number (n crates of 6 toys and 2 loose toys).
+`same`: do "plus 2, then times 3" and "times 3, then plus 6" always match (always; on a replay 3(x + b) against
+3x + b, never), rebuild 3(x + 2) as a line that multiplies first (expand: + 2 is offered and named), one short line
+for 2x + 3x + 4 (like terms), 4x + 12 as a line that adds first (factor; line A itself is refused as "line A again"),
+"times 2" against "square it" (sometimes: they match for 0 and 2 only, so one matching input is not proof), and
+8x − (3x + 2) (the sign of the 2). `undo`: the output is known and the stepper sets what went in, for x + 7 = 12,
+4x = 28, 3x + 5 = 23 and 5(x + 2) = 35 (on replays also x − b, ax − b, and answers that are halves); which line undoes
+"times 3, then plus 5" (the last machine first); and 2x + 4 < 20 as a ray on a number line from 0 to 12 (on an odd
+lap "at least", with a filled end). The first lap is always the same; a replay draws other numbers from a seeded
+generator.
+
+**Plan, then run.** Four ways to answer and no typing: machine blocks put into the line's slots (a block in the line
+comes out when it is pressed again), a stepper, a ray (the stepper moves its end, or a drag on the board's number
+line does, and a Flip button turns it round), each with a Run button, or one of three tiles. The board shows the plan
+and only the plan until Run is pressed: the blocks in their slots, the ray as set. A number on the stepper stays on
+the stepper, so the board never shows an output the plan has not earned. A wrong plan is run and drawn as it really
+turns out (`MachineLine.judge`): the first whole input that tells the built line from the wanted one rides the line
+with every value on the way ("1 in: your line gives 18. It should give 8."), a wrong input rides forward to the output
+it really gives, and a wrong ray is answered with a witness, one number the plan gets wrong and the output it gives
+("8 is in your set. It gives 20. 20 is not less than 20."). The round stays open. No timer, no lives, no fail state, no
+reward currency; nothing is priced, bought or sold. Keys: 1 to 4 put a block in or take it out and Backspace takes
+the last one out; the arrows (or + and −) move the stepper and F flips the ray; Enter runs; 1 to 3 pick a tile; every
+control is also a button.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game, and the speaker button says a line again. A spoken line is written the way it
+is said ("3 times 4 is 12", "2 x plus 3 x", "negative 2"), with digits only in its number places and the letter as a
+word of the line, so the voice allowlist (`server/services/tts-lines.js`) never sees a sign or a letter it was not
+given; the words box prints the signs between numbers (`MachineLine.shown`: 3 × 4 is 12, 2x + 3x). The chip, the
+board, the blocks and the tiles carry the symbols and are never read.
+
+**Not Crate Stacker.** Launchpad Unit 3's Crate Stacker plays the same world by day, with trucks, towers of ten and a
+helper to pick. Machine Line is the town at sunset with a dark board on two posts, one line engineer and no picker, no
+cars and no coin, and a game-made loading dock (a short conveyor, one machine with a slow gear, a pallet) where a
+crate, the theme's own box, lands for each finished round. The line, the value boxes and the number line are drawn
+face on, on the board, so perspective never bends them. The test holds the board to its 4 by 3 shape, in full view,
+clear of the engineer and the dock, its smallest numbers to 12 px on a 390 px phone (10 px at 360 px), every control
+to 56 px, and every word on a control inside it.
+
+**Diagrams.** The unit adds no diagram type and no option. 3.1 uses `flow` twice (n, 3n, 3n + 5; then 4, 12, 17);
+3.2 two `table`s of inputs and outputs (3(x + 2) and 3x + 6, which always match; 2x and x², which match for 0 and 2
+only); 3.3 a `flow` with its way back (÷ 3 and − 5 under × 3 and + 5) and a `numberline` with an open ray (x < 8).
+All 16 focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/machine-line/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/machine-line.recipe.js`.
+
+**Gear.** The unit's stamp is the Variable Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit
+covers, the misconceptions it meets (3(x + 2) is 3x + 2; two matches are proof; 2n² is (2n)²; undo in the order done)
+and how the game checks each idea by planning and running. Pro stays `status: "building"`: Units 4 to 7 are still
+planned, and no learner, parent or visitor sees any of this. **Left for the opening**, as for Units 1 and 2: the
+teacher page's game list (`NQ_CREW`) and its locale strings do not name Machine Line.
