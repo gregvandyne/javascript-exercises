@@ -5889,3 +5889,22 @@ Until now the Builder knew in three unrelated ways: typed words that name Oomba 
   kids, "Make it live" on a 3D world sending nothing); the setup and classroom layout tests count the new step.
 - **Open:** a real model build from a Live plan of each classroom type (bingo and the Category Board live are new
   ground for the model), and a native speaker's read of the new words.
+
+## Sudoku: an official logic puzzle from a 4x4 with pictures to the classic 9x9 (15 Nov 2026)
+
+The owner asked: "Build a sudoku game in oomba for varying levels of difficulty."
+
+- **One game, eight levels** (`seed-games/sudoku.html`, `SudokuCore.LEVELS`): Tiny 4x4 Easy and Medium (ages 5 to 7,
+  with an optional picture mode: the kit's apple, banana, grapes and carrot instead of 1 to 4, for children not reading
+  numbers yet), Small 6x6 (2x3 boxes) Easy and Medium, Classic 9x9 Easy, Medium, Hard and Expert. A picker after the
+  kit's title lists them, with Continue for an unfinished puzzle and each level's best stars.
+- **Puzzles are made in the game, never stored**: a seeded full board, then digits taken away while a counting solver
+  still finds exactly one solution; each try is graded by a human-style solver and kept only when its givens and its
+  hardest step fit the level (9x9 Medium needs more than naked singles, Hard pairs or pointing, Expert triples, an
+  X-wing or an XY-wing). It is bounded by tries, not by the clock, so a seed makes the same puzzle everywhere; Expert
+  takes well under half a second on a laptop. No bank of puzzles was needed. Digits are saved as text so the file has
+  no long digit strings (the scanner reads those as phone numbers).
+- **On the Learn shelf** as thinking, kindergarten to grade 8 (`learn.js SHELF_INFO`, `LEARNING`), category puzzle; not
+  in the strategy subject page, whose words are about chess and four in a row. The AI voice reads only the title, the
+  how-to cards and a few fixed lines, never the board.
+- **Open:** a native speaker's read of the new translations, and a real low-end phone for the Expert timing.
