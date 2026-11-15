@@ -55,17 +55,24 @@ export async function screenPhoto(buf) {
   return v && v !== 'allow' ? v : null;
 }
 
-/** Check and store a new photo for a user. screen: the AI check (tests may pass a stub). Returns photo_at. */
-export async function savePhoto(user, bytes, { screen = screenPhoto } = {}) {
-  if (!user || user.is_guest) throw new PhotoError('guest', 403);
+/** The file checks every uploaded picture passes (profile photos, dashboard backgrounds): a JPEG and nothing else, no
+ *  bigger than maxBytes and maxSide, with every metadata segment removed. Throws PhotoError; returns the clean bytes.
+ *  No AI here: the profile photo's AI check is a separate step (screen, below). */
+export function cleanJpeg(bytes, { maxBytes = MAX_BYTES, maxSide = MAX_SIDE } = {}) {
   const buf = Buffer.from(bytes || []);
   if (!buf.length) throw new PhotoError('badType');
-  if (buf.length > MAX_BYTES) throw new PhotoError('tooBig', 413);
+  if (buf.length > maxBytes) throw new PhotoError('tooBig', 413);
   const type = sniff(buf);
   if (!type || type.mime !== 'image/jpeg') throw new PhotoError('badType');
   const size = jpegSize(buf);
-  if (!size || !size.width || !size.height || size.width > MAX_SIDE || size.height > MAX_SIDE) throw new PhotoError('badType');
-  const clean = stripJpeg(buf);
+  if (!size || !size.width || !size.height || size.width > maxSide || size.height > maxSide) throw new PhotoError('badType');
+  return stripJpeg(buf);
+}
+
+/** Check and store a new photo for a user. screen: the AI check (tests may pass a stub). Returns photo_at. */
+export async function savePhoto(user, bytes, { screen = screenPhoto } = {}) {
+  if (!user || user.is_guest) throw new PhotoError('guest', 403);
+  const clean = cleanJpeg(bytes);
   const verdict = await screen(clean);
   if (verdict) {
     audit(user.id, 'user.photo_refused', user.id, { verdict });

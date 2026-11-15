@@ -2690,6 +2690,131 @@
         "cleared": "Abgewählt"
       },
       "progress": "Schritt {n} von {total}"
+    },
+    "dash": {
+      "dropHint": "Füg hier ein Widget aus der Bibliothek hinzu",
+      "pinnedBy": "Von deiner Lehrkraft",
+      "onStudents": "Auf den Schülerbildschirmen",
+      "widgetRole": "Widget",
+      "toolsFor": "{name} verschieben oder Größe ändern",
+      "keyHelp": "Die Pfeiltasten verschieben dieses Widget. Umschalt und Pfeiltasten ändern die Größe. Entf entfernt es. Strg und Z macht rückgängig.",
+      "tool": {
+        "up": "Nach oben",
+        "down": "Nach unten",
+        "left": "Nach links",
+        "right": "Nach rechts",
+        "narrower": "Schmaler",
+        "wider": "Breiter",
+        "shorter": "Niedriger",
+        "taller": "Höher",
+        "remove": "Entfernen"
+      },
+      "say": {
+        "moved": "{name}: Spalte {x}, Reihe {y}",
+        "resized": "{name}: {w} breit, {h} hoch",
+        "added": "{name} hinzugefügt",
+        "removed": "{name} entfernt. Rückgängig holt es zurück.",
+        "undone": "Änderung rückgängig gemacht",
+        "pinned": "Deine Lehrkraft hat {name} angeheftet. Du kannst es verschieben, aber nicht entfernen.",
+        "pinOn": "{name} ist jetzt auf den Schülerbildschirmen",
+        "pinOff": "{name} ist nicht mehr auf den Schülerbildschirmen",
+        "layout": "Layout: {name}",
+        "eyesOn": "„Augen nach vorn“ ist auf allen Schülerbildschirmen an",
+        "eyesOff": "„Augen nach vorn“ ist beendet",
+        "eyesUp": "Augen nach vorn",
+        "hidden": "Ausgeblendet. Es ist unter „Von deiner Lehrkraft“ gespeichert.",
+        "back": "Es ist wieder da"
+      },
+      "editing": "Bearbeiten: {name}",
+      "all": "Alle",
+      "add": "Hinzufügen",
+      "addName": "{name} hinzufügen",
+      "noneFound": "Kein Widget passt.",
+      "side": {
+        "none": "Dein Bildschirm",
+        "noneText": "Wähle ein Widget, um es zu ändern, oder füge eins aus der Bibliothek hinzu.",
+        "title": "Einstellungen: {name}",
+        "pinnedNote": "Deine Lehrkraft hat dieses Widget angeheftet. Du kannst es verschieben, aber nicht entfernen.",
+        "pin": "Auf Schülerbildschirmen anheften",
+        "pinHelp": "Angeheftete Widgets erscheinen auf jedem Schülerbildschirm, und die Kinder können sie nicht entfernen.",
+        "duplicate": "Duplizieren",
+        "remove": "Entfernen",
+        "pictures": "Hintergrundbilder der Kinder",
+        "picturesNote": "Jedes sehen nur du und das jeweilige Kind.",
+        "picturesNone": "Kein Kind nutzt ein Bild.",
+        "takeDown": "Entfernen",
+        "takenDown": "Bild entfernt"
+      },
+      "bgChanged": "Hintergrund geändert",
+      "uploading": "Dein Bild wird geprüft…",
+      "uploadBad": "Das Bild hat nicht geklappt. Versuch ein JPG- oder PNG-Foto.",
+      "eyes": "Augen nach vorn",
+      "eyesEnd": "„Augen nach vorn“ beenden",
+      "layouts": {
+        "name": "Name",
+        "copy": "Mit diesem Layout beginnen",
+        "save": "Speichern",
+        "needName": "Gib dem Layout einen Namen.",
+        "newTitle": "Neues Layout",
+        "manageTitle": "Layout: {name}",
+        "rename": "Umbenennen",
+        "del": "Dieses Layout löschen",
+        "delConfirm": "Das Layout „{name}“ löschen?",
+        "keepOne": "Behalte mindestens ein Layout."
+      },
+      "kind": {
+        "game": "Spiel",
+        "live": "Live-Spiel",
+        "lesson": "Lektion",
+        "link": "Link"
+      },
+      "act": {
+        "play": "Spielen",
+        "join": "Mitspielen",
+        "lesson": "Lektion öffnen",
+        "link": "Link öffnen"
+      },
+      "push": {
+        "title": "An die Klasse senden",
+        "sentToday": "Heute gesendet",
+        "noneYet": "Heute noch nichts gesendet.",
+        "end": "Beenden",
+        "endName": "{title} beenden",
+        "send": "Senden",
+        "sendName": "{title} senden",
+        "sent": "An jeden Schülerbildschirm gesendet",
+        "what": "Was senden",
+        "tab": {
+          "game": "Ein Spiel",
+          "live": "Live-Spiel",
+          "lesson": "Eine Lektion",
+          "link": "Ein Link"
+        },
+        "search": "Spiele suchen",
+        "gamesNone": "Keine Spiele gefunden, die deine Klasse öffnen kann.",
+        "liveOpen": "Dein Live-Spiel ist offen",
+        "liveNone": "Starte zuerst ein Live-Spiel und sende dann den Zugang an alle Bildschirme.",
+        "liveStart": "Live-Spiel starten",
+        "lessonsNone": "Heute ist in dieser Klasse keine Lektion offen.",
+        "linksNote": "Die Kinder können nur Links von dieser Liste öffnen.",
+        "linksNone": "Noch keine freigegebenen Links.",
+        "linkName": "Name",
+        "linkUrl": "Webadresse (https://…)",
+        "linkAdd": "Link freigeben",
+        "linkAdded": "Link freigegeben",
+        "linkRemoveName": "{title} von der freigegebenen Liste entfernen"
+      },
+      "banner": {
+        "from": "Von deiner Lehrkraft · {when}",
+        "hide": "Ausblenden",
+        "hidden": "Ausgeblendet: {title}. Es ist unter „Von deiner Lehrkraft“ gespeichert.",
+        "back": "Zurückholen"
+      },
+      "tray": {
+        "label": "Von deiner Lehrkraft: heute {count, plural, one {# Sache} other {# Sachen}}",
+        "show": "Zeigen",
+        "showing": "Wird gezeigt"
+      }
     }
   },
   "favorites": {
@@ -8737,6 +8862,151 @@
       "games": "Spiele",
       "classText": "Aktivitäten für die Tafel im Klassenzimmer und für Handys.",
       "gamesText": "Spiele zum Spielen und Teilen."
+    }
+  },
+  "dash": {
+    "title": "{name} · Klassen-Dashboard",
+    "myTitle": "{name} · Mein Dashboard",
+    "entry": {
+      "teacher": "Klassen-Dashboard",
+      "student": "Mein Dashboard"
+    },
+    "gridTeacher": "Widgets des Klassen-Dashboards",
+    "gridStudent": "Widgets meines Dashboards",
+    "noscript": "Das Dashboard braucht JavaScript. Schalte es ein, um es zu nutzen.",
+    "pick": {
+      "title": "Meine Dashboards"
+    },
+    "top": {
+      "backClass": "Zurück zur Klassenseite",
+      "backMyClass": "Zurück zu meiner Klassenseite",
+      "projector": "Beamer",
+      "edit": "Bildschirm bearbeiten",
+      "editMine": "Meinen Bildschirm ändern",
+      "editing": "Bearbeiten: {name}",
+      "editingMine": "Ich ändere meinen Bildschirm",
+      "editHint": "Ziehen zum Verschieben · an einer Ecke ziehen zum Ändern der Größe · oder Pfeiltasten",
+      "editHintMine": "Verschiebe deine Widgets, füge neue hinzu oder wähle einen Hintergrund. Angeheftete bleiben.",
+      "undo": "Rückgängig",
+      "done": "Fertig"
+    },
+    "layouts": {
+      "label": "Layout",
+      "new": "Neu",
+      "manage": "Dieses Layout umbenennen oder löschen",
+      "defaultName": "Alltag"
+    },
+    "foot": {
+      "eyes": "Augen nach vorn",
+      "push": "An die Klasse senden"
+    },
+    "tray": {
+      "button": "Von deiner Lehrkraft",
+      "heading": "Heute von deiner Lehrkraft",
+      "empty": "Heute noch nichts.",
+      "note": "Alles, was deine Lehrkraft schickt, bleibt hier bis zum Ende des Tages.",
+      "close": "Schließen"
+    },
+    "eyes": {
+      "title": "Augen nach vorn",
+      "text": "Deine Lehrkraft möchte dir etwas zeigen."
+    },
+    "lib": {
+      "heading": "Widget hinzufügen",
+      "search": "Widgets suchen",
+      "searchHint": "Uhr, Tagesplan…",
+      "groups": "Widget-Gruppen"
+    },
+    "side": {
+      "none": "Dein Bildschirm"
+    },
+    "bg": {
+      "heading": "Hintergrund",
+      "colors": "Farben",
+      "art": "Oomba-Bilder",
+      "upload": "Bild hochladen",
+      "note": "Nur JPEG-Fotos. Nur du und die Lehrkräfte deiner Klasse sehen deins, und deine Lehrkraft kann es entfernen.",
+      "cream": "Creme",
+      "mint": "Minzpunkte",
+      "spark": "Funkenpunkte",
+      "sky": "Himmel",
+      "leaf": "Blatt",
+      "ink": "Tinte",
+      "sparks": "Funken",
+      "eyes": "Oomba-Augen",
+      "hills": "Hügel",
+      "night": "Nachthimmel"
+    },
+    "groups": {
+      "join": "Beitreten und teilen",
+      "time": "Zeit",
+      "class": "Klasse",
+      "show": "Zeigen",
+      "tools": "Werkzeuge",
+      "check": "Abfragen",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "Uhr",
+        "desc": "Die Uhrzeit, groß genug für die letzte Reihe.",
+        "s": {
+          "face": "Zifferblatt",
+          "hour12": "12-Stunden-Format",
+          "seconds": "Sekunden zeigen",
+          "date": "Datum zeigen"
+        },
+        "o": {
+          "face": {
+            "digital": "Digital",
+            "analog": "Analog"
+          }
+        }
+      },
+      "text": {
+        "name": "Text und Tagesplan",
+        "desc": "Ansagen, der Plan für heute, Hausaufgaben.",
+        "empty": "Schreib deinen Tagesplan unter „Bildschirm bearbeiten“.",
+        "s": {
+          "title": "Überschrift",
+          "body": "Text (ein Punkt pro Zeile)",
+          "style": "Zeigen als"
+        },
+        "o": {
+          "style": {
+            "list": "Nummerierte Liste",
+            "text": "Einfacher Text"
+          }
+        }
+      },
+      "ican": {
+        "name": "Lernziel „Ich kann…“",
+        "desc": "Das Ziel von heute in Kinderworten.",
+        "lead": "Ich kann…",
+        "empty": "Trag das Ziel von heute unter „Bildschirm bearbeiten“ ein.",
+        "s": {
+          "goal": "Ziel von heute"
+        }
+      }
+    },
+    "push": {
+      "sent": "An jeden Schülerbildschirm gesendet"
+    },
+    "errors": {
+      "notFound": "Dieses Klassen-Dashboard haben wir nicht gefunden.",
+      "name": "Gib dem Layout einen Namen.",
+      "tooMany": "Du hast schon die meisten Layouts für eine Klasse. Lösche zuerst eins.",
+      "last": "Behalte mindestens ein Layout.",
+      "url": "Nimm eine vollständige Webadresse, die mit https:// beginnt.",
+      "tooManyLinks": "Diese Klasse hat schon die meisten freigegebenen Links. Entferne zuerst einen.",
+      "kind": "Wähle, was du senden willst.",
+      "game": "Deine Klasse kann dieses Spiel nicht öffnen.",
+      "noLive": "Starte zuerst ein Live-Spiel.",
+      "lesson": "Diese Lektion ist in dieser Klasse nicht offen.",
+      "link": "Dieser Link steht nicht auf der freigegebenen Liste.",
+      "tooManyPushes": "Das ist viel für einen Tag. Beende zuerst ein paar.",
+      "pic_badType": "Das Bild hat nicht geklappt. Versuch ein JPG- oder PNG-Foto.",
+      "pic_tooBig": "Das Bild ist zu groß."
     }
   }
 }

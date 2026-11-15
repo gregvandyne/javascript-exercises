@@ -2708,6 +2708,131 @@
         "cleared": "Cleared"
       },
       "progress": "Step {n} of {total}"
+    },
+    "dash": {
+      "dropHint": "Add a widget here from the library",
+      "pinnedBy": "From your teacher",
+      "onStudents": "On student screens",
+      "widgetRole": "widget",
+      "toolsFor": "Move or resize {name}",
+      "keyHelp": "Arrow keys move this widget. Shift and the arrow keys resize it. Delete removes it. Ctrl and Z undoes.",
+      "tool": {
+        "up": "Move up",
+        "down": "Move down",
+        "left": "Move left",
+        "right": "Move right",
+        "narrower": "Narrower",
+        "wider": "Wider",
+        "shorter": "Shorter",
+        "taller": "Taller",
+        "remove": "Remove"
+      },
+      "say": {
+        "moved": "{name}: column {x}, row {y}",
+        "resized": "{name}: {w} wide, {h} tall",
+        "added": "{name} added",
+        "removed": "{name} removed. Undo brings it back.",
+        "undone": "Change undone",
+        "pinned": "Your teacher pinned {name}. You can move it, but not remove it.",
+        "pinOn": "{name} is now on student screens",
+        "pinOff": "{name} is no longer on student screens",
+        "layout": "Layout: {name}",
+        "eyesOn": "Eyes up is on for every student screen",
+        "eyesOff": "Eyes up ended",
+        "eyesUp": "Eyes up front",
+        "hidden": "Hidden. It's saved in From your teacher.",
+        "back": "It's back"
+      },
+      "editing": "Editing: {name}",
+      "all": "All",
+      "add": "Add",
+      "addName": "Add {name}",
+      "noneFound": "No widgets match.",
+      "side": {
+        "none": "Your screen",
+        "noneText": "Pick a widget to change it, or add one from the library.",
+        "title": "{name} settings",
+        "pinnedNote": "Your teacher pinned this widget. You can move it, but not remove it.",
+        "pin": "Pin on student screens",
+        "pinHelp": "Pinned widgets show on every student's screen, and students can't remove them.",
+        "duplicate": "Duplicate",
+        "remove": "Remove",
+        "pictures": "Students' background pictures",
+        "picturesNote": "Only you and that student can see each one.",
+        "picturesNone": "No student is using a picture.",
+        "takeDown": "Take down",
+        "takenDown": "Picture taken down"
+      },
+      "bgChanged": "Background changed",
+      "uploading": "Checking your picture…",
+      "uploadBad": "That picture didn't work. Try a JPG or PNG photo.",
+      "eyes": "Eyes up",
+      "eyesEnd": "End Eyes up",
+      "layouts": {
+        "name": "Name",
+        "copy": "Start from this layout",
+        "save": "Save",
+        "needName": "Give the layout a name.",
+        "newTitle": "New layout",
+        "manageTitle": "Layout: {name}",
+        "rename": "Rename",
+        "del": "Delete this layout",
+        "delConfirm": "Delete the layout “{name}”?",
+        "keepOne": "Keep at least one layout."
+      },
+      "kind": {
+        "game": "Game",
+        "live": "Live game",
+        "lesson": "Lesson",
+        "link": "Link"
+      },
+      "act": {
+        "play": "Play",
+        "join": "Join game",
+        "lesson": "Open lesson",
+        "link": "Open link"
+      },
+      "push": {
+        "title": "Push to students",
+        "sentToday": "Sent today",
+        "noneYet": "Nothing sent yet today.",
+        "end": "End",
+        "endName": "End {title}",
+        "send": "Send",
+        "sendName": "Send {title}",
+        "sent": "Sent to every student screen",
+        "what": "What to send",
+        "tab": {
+          "game": "A game",
+          "live": "Live game",
+          "lesson": "A lesson",
+          "link": "A link"
+        },
+        "search": "Search games",
+        "gamesNone": "No games found that your students can open.",
+        "liveOpen": "Your live game is open",
+        "liveNone": "Start a live game first, then send its join to every screen.",
+        "liveStart": "Start a live game",
+        "lessonsNone": "No lessons are open in this class today.",
+        "linksNote": "Students can open only links on this list.",
+        "linksNone": "No approved links yet.",
+        "linkName": "Name",
+        "linkUrl": "Web address (https://…)",
+        "linkAdd": "Approve link",
+        "linkAdded": "Link approved",
+        "linkRemoveName": "Remove {title} from the approved list"
+      },
+      "banner": {
+        "from": "From your teacher · {when}",
+        "hide": "Hide",
+        "hidden": "Hidden: {title}. It's saved in From your teacher.",
+        "back": "Bring it back"
+      },
+      "tray": {
+        "label": "From your teacher: {count, plural, one {# thing} other {# things}} today",
+        "show": "Show",
+        "showing": "Showing"
+      }
     }
   },
   "favorites": {
@@ -9160,6 +9285,151 @@
       "games": "Games",
       "classText": "Activities for the classroom board and for phones.",
       "gamesText": "Games to play and share."
+    }
+  },
+  "dash": {
+    "title": "{name} · Class dashboard",
+    "myTitle": "{name} · My dashboard",
+    "entry": {
+      "teacher": "Class dashboard",
+      "student": "My dashboard"
+    },
+    "gridTeacher": "Class dashboard widgets",
+    "gridStudent": "My dashboard widgets",
+    "noscript": "The dashboard needs JavaScript. Turn it on to use it.",
+    "pick": {
+      "title": "My dashboards"
+    },
+    "top": {
+      "backClass": "Back to the class page",
+      "backMyClass": "Back to my class page",
+      "projector": "Projector",
+      "edit": "Edit screen",
+      "editMine": "Change my screen",
+      "editing": "Editing: {name}",
+      "editingMine": "Changing my screen",
+      "editHint": "Drag to move · drag a corner to resize · or use the arrow keys",
+      "editHintMine": "Move your widgets, add new ones or pick a background. Pinned ones stay.",
+      "undo": "Undo",
+      "done": "Done"
+    },
+    "layouts": {
+      "label": "Layout",
+      "new": "New",
+      "manage": "Rename or delete this layout",
+      "defaultName": "Everyday"
+    },
+    "foot": {
+      "eyes": "Eyes up",
+      "push": "Push to students"
+    },
+    "tray": {
+      "button": "From your teacher",
+      "heading": "From your teacher today",
+      "empty": "Nothing yet today.",
+      "note": "Everything your teacher sends stays here until the end of the day.",
+      "close": "Close"
+    },
+    "eyes": {
+      "title": "Eyes up front",
+      "text": "Your teacher has something to show you."
+    },
+    "lib": {
+      "heading": "Add a widget",
+      "search": "Search widgets",
+      "searchHint": "Clock, agenda…",
+      "groups": "Widget groups"
+    },
+    "side": {
+      "none": "Your screen"
+    },
+    "bg": {
+      "heading": "Background",
+      "colors": "Colors",
+      "art": "Oomba art",
+      "upload": "Upload a picture",
+      "note": "JPEG photos only. Only you and your class's teachers can see yours, and your teacher can take it down.",
+      "cream": "Cream",
+      "mint": "Mint dots",
+      "spark": "Spark dots",
+      "sky": "Sky",
+      "leaf": "Leaf",
+      "ink": "Ink",
+      "sparks": "Sparks",
+      "eyes": "Oomba eyes",
+      "hills": "Hills",
+      "night": "Night sky"
+    },
+    "groups": {
+      "join": "Join and share",
+      "time": "Time",
+      "class": "Class",
+      "show": "Show",
+      "tools": "Tools",
+      "check": "Check",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "Clock",
+        "desc": "The time, big enough to read from the back.",
+        "s": {
+          "face": "Clock face",
+          "hour12": "12-hour time",
+          "seconds": "Show seconds",
+          "date": "Show the date"
+        },
+        "o": {
+          "face": {
+            "digital": "Digital",
+            "analog": "Analog"
+          }
+        }
+      },
+      "text": {
+        "name": "Text and agenda",
+        "desc": "Announcements, today's agenda, homework.",
+        "empty": "Type your agenda in Edit screen.",
+        "s": {
+          "title": "Heading",
+          "body": "Text (one item per line)",
+          "style": "Show it as"
+        },
+        "o": {
+          "style": {
+            "list": "A numbered list",
+            "text": "Plain text"
+          }
+        }
+      },
+      "ican": {
+        "name": "I can… objective",
+        "desc": "Today's learning goal in kid words.",
+        "lead": "I can…",
+        "empty": "Add today's goal in Edit screen.",
+        "s": {
+          "goal": "Today's goal"
+        }
+      }
+    },
+    "push": {
+      "sent": "Sent to every student screen"
+    },
+    "errors": {
+      "notFound": "We couldn't find that class dashboard.",
+      "name": "Give the layout a name.",
+      "tooMany": "You have the most layouts a class can have. Delete one first.",
+      "last": "Keep at least one layout.",
+      "url": "Use a full web address that starts with https://",
+      "tooManyLinks": "This class has the most approved links it can have. Remove one first.",
+      "kind": "Pick what to send.",
+      "game": "Your students can't open that game.",
+      "noLive": "Start a live game first.",
+      "lesson": "That lesson isn't open in this class.",
+      "link": "That link isn't on the approved list.",
+      "tooManyPushes": "That's a lot for one day. End some first.",
+      "pic_badType": "That picture didn't work. Try a JPG or PNG photo.",
+      "pic_tooBig": "That picture is too big."
     }
   }
 }

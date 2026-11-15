@@ -35,6 +35,7 @@ import { uploadDir } from '../builder/uploads.js';
 import { forgetUser as forgetLive } from './classlive-results.js';
 import { storyDir } from './story-jobs.js';
 import { forgetUser as forgetClassroom } from './gclassroom.js';
+import { forgetUser as forgetDash } from './dash.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -101,6 +102,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
   });
   // The files, after the commit (a failure here leaves a file without a database row, never the other way round).
   photos.removePhoto(u.id, actor ? actor.id : u.id);
+  forgetDash(u.id);   // classroom dashboards: their own screens and background pictures
   for (const g of gameIds) { try { fs.rmSync(uploadDir(g), { recursive: true, force: true }); } catch { /* already gone */ } }
   for (const v of versionIds) { try { fs.unlinkSync(shots.fileFor(v)); } catch { /* no screenshot */ } }
   for (const id of storyIds) { try { fs.rmSync(storyDir(id), { recursive: true, force: true }); } catch { /* already gone */ } }

@@ -2690,6 +2690,131 @@
         "cleared": "Weggehaald"
       },
       "progress": "Stap {n} van {total}"
+    },
+    "dash": {
+      "dropHint": "Voeg hier een widget uit de bibliotheek toe",
+      "pinnedBy": "Van je leraar",
+      "onStudents": "Op leerlingschermen",
+      "widgetRole": "widget",
+      "toolsFor": "{name} verplaatsen of van grootte veranderen",
+      "keyHelp": "Pijltjestoetsen verplaatsen deze widget. Shift met pijltjes verandert de grootte. Delete haalt hem weg. Ctrl en Z maakt ongedaan.",
+      "tool": {
+        "up": "Omhoog",
+        "down": "Omlaag",
+        "left": "Naar links",
+        "right": "Naar rechts",
+        "narrower": "Smaller",
+        "wider": "Breder",
+        "shorter": "Lager",
+        "taller": "Hoger",
+        "remove": "Weghalen"
+      },
+      "say": {
+        "moved": "{name}: kolom {x}, rij {y}",
+        "resized": "{name}: {w} breed, {h} hoog",
+        "added": "{name} toegevoegd",
+        "removed": "{name} weggehaald. Ongedaan maken zet hem terug.",
+        "undone": "Wijziging ongedaan gemaakt",
+        "pinned": "Je leraar heeft {name} vastgezet. Je kunt hem verplaatsen, maar niet weghalen.",
+        "pinOn": "{name} staat nu op de leerlingschermen",
+        "pinOff": "{name} staat niet meer op de leerlingschermen",
+        "layout": "Indeling: {name}",
+        "eyesOn": "‘Ogen hierheen’ staat aan op elk leerlingscherm",
+        "eyesOff": "‘Ogen hierheen’ is gestopt",
+        "eyesUp": "Ogen naar voren",
+        "hidden": "Verborgen. Het staat bewaard bij Van je leraar.",
+        "back": "Het is terug"
+      },
+      "editing": "Bewerken: {name}",
+      "all": "Alle",
+      "add": "Toevoegen",
+      "addName": "{name} toevoegen",
+      "noneFound": "Geen widgets gevonden.",
+      "side": {
+        "none": "Je scherm",
+        "noneText": "Kies een widget om hem aan te passen, of voeg er een toe uit de bibliotheek.",
+        "title": "Instellingen van {name}",
+        "pinnedNote": "Je leraar heeft deze widget vastgezet. Je kunt hem verplaatsen, maar niet weghalen.",
+        "pin": "Vastzetten op leerlingschermen",
+        "pinHelp": "Vastgezette widgets staan op het scherm van elke leerling, en leerlingen kunnen ze niet weghalen.",
+        "duplicate": "Dupliceren",
+        "remove": "Weghalen",
+        "pictures": "Achtergrondafbeeldingen van leerlingen",
+        "picturesNote": "Elke afbeelding zien alleen jij en die leerling.",
+        "picturesNone": "Geen enkele leerling gebruikt een afbeelding.",
+        "takeDown": "Weghalen",
+        "takenDown": "Afbeelding weggehaald"
+      },
+      "bgChanged": "Achtergrond veranderd",
+      "uploading": "Je afbeelding wordt gecontroleerd…",
+      "uploadBad": "Die afbeelding werkte niet. Probeer een JPG- of PNG-foto.",
+      "eyes": "Ogen hierheen",
+      "eyesEnd": "‘Ogen hierheen’ stoppen",
+      "layouts": {
+        "name": "Naam",
+        "copy": "Begin met deze indeling",
+        "save": "Opslaan",
+        "needName": "Geef de indeling een naam.",
+        "newTitle": "Nieuwe indeling",
+        "manageTitle": "Indeling: {name}",
+        "rename": "Hernoemen",
+        "del": "Deze indeling verwijderen",
+        "delConfirm": "De indeling ‘{name}’ verwijderen?",
+        "keepOne": "Houd minstens één indeling."
+      },
+      "kind": {
+        "game": "Spel",
+        "live": "Live spel",
+        "lesson": "Les",
+        "link": "Link"
+      },
+      "act": {
+        "play": "Spelen",
+        "join": "Meedoen",
+        "lesson": "Les openen",
+        "link": "Link openen"
+      },
+      "push": {
+        "title": "Naar leerlingen sturen",
+        "sentToday": "Vandaag gestuurd",
+        "noneYet": "Vandaag nog niets gestuurd.",
+        "end": "Stoppen",
+        "endName": "{title} stoppen",
+        "send": "Sturen",
+        "sendName": "{title} sturen",
+        "sent": "Naar het scherm van elke leerling gestuurd",
+        "what": "Wat sturen",
+        "tab": {
+          "game": "Een spel",
+          "live": "Live spel",
+          "lesson": "Een les",
+          "link": "Een link"
+        },
+        "search": "Spellen zoeken",
+        "gamesNone": "Geen spellen gevonden die je leerlingen kunnen openen.",
+        "liveOpen": "Je live spel staat open",
+        "liveNone": "Start eerst een live spel en stuur dan de toegang naar elk scherm.",
+        "liveStart": "Live spel starten",
+        "lessonsNone": "Vandaag staan er geen lessen open in deze klas.",
+        "linksNote": "Leerlingen kunnen alleen links van deze lijst openen.",
+        "linksNone": "Nog geen goedgekeurde links.",
+        "linkName": "Naam",
+        "linkUrl": "Webadres (https://…)",
+        "linkAdd": "Link goedkeuren",
+        "linkAdded": "Link goedgekeurd",
+        "linkRemoveName": "{title} van de goedgekeurde lijst halen"
+      },
+      "banner": {
+        "from": "Van je leraar · {when}",
+        "hide": "Verbergen",
+        "hidden": "Verborgen: {title}. Het staat bewaard bij Van je leraar.",
+        "back": "Terughalen"
+      },
+      "tray": {
+        "label": "Van je leraar: vandaag {count, plural, one {# ding} other {# dingen}}",
+        "show": "Tonen",
+        "showing": "Zichtbaar"
+      }
     }
   },
   "favorites": {
@@ -8737,6 +8862,151 @@
       "games": "Spellen",
       "classText": "Activiteiten voor het digibord en voor telefoons.",
       "gamesText": "Spellen om te spelen en te delen."
+    }
+  },
+  "dash": {
+    "title": "{name} · Klasdashboard",
+    "myTitle": "{name} · Mijn dashboard",
+    "entry": {
+      "teacher": "Klasdashboard",
+      "student": "Mijn dashboard"
+    },
+    "gridTeacher": "Widgets van het klasdashboard",
+    "gridStudent": "Widgets van mijn dashboard",
+    "noscript": "Het dashboard heeft JavaScript nodig. Zet het aan om het te gebruiken.",
+    "pick": {
+      "title": "Mijn dashboards"
+    },
+    "top": {
+      "backClass": "Terug naar de klaspagina",
+      "backMyClass": "Terug naar mijn klaspagina",
+      "projector": "Beamer",
+      "edit": "Scherm bewerken",
+      "editMine": "Mijn scherm aanpassen",
+      "editing": "Bewerken: {name}",
+      "editingMine": "Mijn scherm aanpassen",
+      "editHint": "Sleep om te verplaatsen · sleep een hoek om de grootte te veranderen · of gebruik de pijltjestoetsen",
+      "editHintMine": "Verplaats je widgets, voeg nieuwe toe of kies een achtergrond. Vastgezette blijven staan.",
+      "undo": "Ongedaan maken",
+      "done": "Klaar"
+    },
+    "layouts": {
+      "label": "Indeling",
+      "new": "Nieuw",
+      "manage": "Deze indeling hernoemen of verwijderen",
+      "defaultName": "Elke dag"
+    },
+    "foot": {
+      "eyes": "Ogen hierheen",
+      "push": "Naar leerlingen sturen"
+    },
+    "tray": {
+      "button": "Van je leraar",
+      "heading": "Vandaag van je leraar",
+      "empty": "Nog niets vandaag.",
+      "note": "Alles wat je leraar stuurt, blijft hier tot het eind van de dag.",
+      "close": "Sluiten"
+    },
+    "eyes": {
+      "title": "Ogen naar voren",
+      "text": "Je leraar wil je iets laten zien."
+    },
+    "lib": {
+      "heading": "Widget toevoegen",
+      "search": "Widgets zoeken",
+      "searchHint": "Klok, dagplanning…",
+      "groups": "Groepen widgets"
+    },
+    "side": {
+      "none": "Je scherm"
+    },
+    "bg": {
+      "heading": "Achtergrond",
+      "colors": "Kleuren",
+      "art": "Oomba-tekeningen",
+      "upload": "Afbeelding uploaden",
+      "note": "Alleen JPEG-foto's. Alleen jij en de leerkrachten van je klas zien die van jou, en je leerkracht kan hem weghalen.",
+      "cream": "Crème",
+      "mint": "Muntstippen",
+      "spark": "Vonkstippen",
+      "sky": "Lucht",
+      "leaf": "Blad",
+      "ink": "Inkt",
+      "sparks": "Vonken",
+      "eyes": "Oomba-ogen",
+      "hills": "Heuvels",
+      "night": "Nachtlucht"
+    },
+    "groups": {
+      "join": "Meedoen en delen",
+      "time": "Tijd",
+      "class": "Klas",
+      "show": "Tonen",
+      "tools": "Hulpmiddelen",
+      "check": "Nagaan",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "Klok",
+        "desc": "De tijd, groot genoeg om achterin te lezen.",
+        "s": {
+          "face": "Wijzerplaat",
+          "hour12": "12-uursnotatie",
+          "seconds": "Seconden tonen",
+          "date": "Datum tonen"
+        },
+        "o": {
+          "face": {
+            "digital": "Digitaal",
+            "analog": "Met wijzers"
+          }
+        }
+      },
+      "text": {
+        "name": "Tekst en dagplanning",
+        "desc": "Mededelingen, de planning van vandaag, huiswerk.",
+        "empty": "Typ je dagplanning bij Scherm bewerken.",
+        "s": {
+          "title": "Kop",
+          "body": "Tekst (één punt per regel)",
+          "style": "Toon als"
+        },
+        "o": {
+          "style": {
+            "list": "Een genummerde lijst",
+            "text": "Gewone tekst"
+          }
+        }
+      },
+      "ican": {
+        "name": "Lesdoel ‘Ik kan…’",
+        "desc": "Het doel van vandaag in kindertaal.",
+        "lead": "Ik kan…",
+        "empty": "Voeg het doel van vandaag toe bij Scherm bewerken.",
+        "s": {
+          "goal": "Doel van vandaag"
+        }
+      }
+    },
+    "push": {
+      "sent": "Naar het scherm van elke leerling gestuurd"
+    },
+    "errors": {
+      "notFound": "We konden dat klasdashboard niet vinden.",
+      "name": "Geef de indeling een naam.",
+      "tooMany": "Je hebt al het maximum aantal indelingen voor een klas. Verwijder er eerst een.",
+      "last": "Houd minstens één indeling.",
+      "url": "Gebruik een volledig webadres dat begint met https://",
+      "tooManyLinks": "Deze klas heeft al het maximum aantal goedgekeurde links. Haal er eerst een weg.",
+      "kind": "Kies wat je wilt sturen.",
+      "game": "Je leerlingen kunnen dat spel niet openen.",
+      "noLive": "Start eerst een live spel.",
+      "lesson": "Die les staat niet open in deze klas.",
+      "link": "Die link staat niet op de goedgekeurde lijst.",
+      "tooManyPushes": "Dat is veel voor één dag. Beëindig er eerst een paar.",
+      "pic_badType": "Die afbeelding werkte niet. Probeer een JPG- of PNG-foto.",
+      "pic_tooBig": "Die afbeelding is te groot."
     }
   }
 }
