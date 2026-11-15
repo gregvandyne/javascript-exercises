@@ -11,7 +11,7 @@
 // (planNote). Pure (no database). The typed parts are screened as part of the message, like any typed message
 // (builder/agent.js): nothing here skips or adds a check.
 import { KIT2_WORLDS, KIT2_CHARACTERS, KIT2_CREATURE_GROUPS, KIT2_GROUP_LIST, WORLD_IDS, DEFAULT_WORLD, worldById, characterById, heroesOf, heroFor, kit2Of, wantsKit2 } from './kit2.js';
-import { ART2D_CHARACTERS, ART2D_WORLD_IDS, ART2D_TEMPLATES, art2dCharacter, isArt2dGame, wantsArt2d } from './art2d.js';
+import { ART2D_CHARACTERS, ART2D_WORLD_IDS, ART2D_TEMPLATES, art2dCharacter, art2dFriends, isArt2dGame, wantsArt2d } from './art2d.js';
 import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
 import { tEn } from '../i18n/index.js';
 
@@ -202,6 +202,20 @@ export function art2dFor(state, plan, version) {
   return { world: e.art.world, hero: e.art.sprite, ...friends, by: 'plan', missing: false, force2d: false, soft: false, changed: false };
 }
 
+/**
+ * The 2D art a plan's build must draw, whatever the model does: { world, hero, friends } (friends: the sprites picked
+ * after the first, as many as a game may name, art2d.js ART2D_FRIENDS_MAX), or null when the plan does not draw the 2D
+ * art (3D, a kind of game that does not draw it, nothing picked). builder/tools.js starts the template with exactly
+ * these and refuses any version of that build that leaves one out, so a picked animal is never swapped for the kit's
+ * own characters.
+ */
+export function planArt2d(plan) {
+  if (!plan) return null;
+  const e = planEngine(plan);
+  if (e.engine !== '2d' || !e.art || !e.template) return null;
+  return { world: e.art.world, hero: e.art.sprite, friends: art2dFriends(e.art.friends, e.art.sprite).map(c => c.id) };
+}
+
 // ---- What the model reads ------------------------------------------------------------------------------------------
 const q = s => JSON.stringify(String(s));
 const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
@@ -221,7 +235,7 @@ export function planNote(plan) {
   if (!plan) return '';
   const e = planEngine(plan), lines = [];
   const t = plan.type, w = plan.world, type = t && t.from === 'pack' ? GAME_TYPES.find(x => x.id === t.id) : null;
-  lines.push(!t ? '- Game type: not chosen (you decide).'
+  lines.push(!t ? (e.engine === '2d' && e.art ? '- Game type: not chosen: a running game ("runner") or a catching game ("catch"), you decide which. Only those two draw the 2D art and the characters they picked.' : '- Game type: not chosen (you decide).')
     : t.from === 'custom' ? `- Game type: CUSTOM ${q(t.text)}. It is outside the packs: there is no ready-made starter for it, so design and build this kind of game from scratch.`
       : `- Game type: PACK ${q(t.id)}${type && type.template ? ` (the ready-made starter: start_from_template ${q(type.template)})` : ' (explore, collect things and reach the goal)'}.`);
   lines.push(`- Look: ${plan.look === '3d' ? '3D' : plan.look === '2d' ? '2D' : 'not chosen (you decide)'}.`);
@@ -253,7 +267,7 @@ export function planNote(plan) {
     how.push('Build it as a 3D world of their own: start_from_template "world3d" and build the place from scratch (the 3D RULES). It is not one of the ready-made worlds: never start from "oomba3d" for it.');
   } else if (e.engine === '2d') {
     if (e.art) {
-      how.push(`Build it in 2D on the Oomba Kit with the 2D art: start_from_template ${q(e.template)}${e.art.world ? ` with world ${q(e.art.world)}` : ''}${e.art.sprite ? `${e.art.world ? ' and' : ' with'} sprite ${q(e.art.sprite)}` : ''}${e.art.friends.length ? ` and friends ${JSON.stringify(e.art.friends)}` : ''} (the 2D ART RULES), then make it theirs. Never start from "oomba3d" or "world3d" in this build.`);
+      how.push(`Build it in 2D on the Oomba Kit with the 2D art: start_from_template ${q(e.template)}${e.art.world ? ` with world ${q(e.art.world)}` : ''}${e.art.sprite ? `${e.art.world ? ' and' : ' with'} sprite ${q(e.art.sprite)}` : ''}${e.art.friends.length ? ` and friends ${JSON.stringify(e.art.friends)}` : ''} (the 2D ART RULES), then make it theirs with edit_game. Never start from "oomba3d" or "world3d" in this build, never write it from scratch with write_game, and never use the kit's own characters in their place: every version of this build must keep them (a version that leaves one out is not saved).`);
       if (e.art.friends.length) how.push(`They picked ${e.art.friends.length + 1} characters for a 2D game: ${who(e.art.sprite)} (the first one picked) is the player, and the others are friends who are IN the game too (CONFIG.friends2d: in a running game they stand along the way and hop as the player runs by, in a catching game they watch from the sides; up to four are drawn at once and the rest take turns). Keep every one of them in friends2d; they are never obstacles or enemies. Tell the builder in one short sentence who they play as and that the others are in the game as friends.`);
       if (!e.art.world && w && w.from === 'pack') how.push(`There is no 2D art of ${q(w.id)} yet: keep the kit's own look and say so in one short sentence.`);
       if (e.extra.length) how.push(`${e.extra.map(who).join(', ')} ${e.extra.length > 1 ? 'have' : 'has'} no 2D sprite yet and cannot be drawn in a 2D game: say so kindly in one short sentence; never draw one from shapes or emoji.`);

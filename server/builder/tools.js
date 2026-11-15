@@ -19,7 +19,8 @@ import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
 import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
-import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends } from './art2d.js';
+import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
+import { planArt2d } from './plan.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
@@ -67,19 +68,29 @@ export function applyEdits(html, edits) {
   return { ok: true, html: out };
 }
 
-/** ctx: { user, gameId, emit(name, data), state, locale, steps?, signal?, requests? (the builder's own messages: the style check respects them) } — state.scanFails counts failed scans this turn. */
+/** ctx: { user, gameId, emit(name, data), state, locale, steps?, signal?, requests? (the builder's own messages: the style check respects them), plan? (the setup steps' choices, a game's first build: plan.js) } — state.scanFails counts failed scans this turn. */
 export function toolbox(ctx) {
   const steps = ctx.steps || NO_STEPS;
   const game = () => games.getGame(ctx.gameId);
   const current = () => { const g = game(); return g && g.current_version_id ? games.getVersion(g.current_version_id) : null; };
 
   const stopped = () => !!(ctx.signal && ctx.signal.aborted);
+  // A build from the setup steps that draws the 2D art (ctx.plan, plan.js planArt2d): the world and the characters they
+  // picked. start_from_template starts with exactly these, and no version of this build is saved without them: the
+  // model can never swap the picked animals for the kit's own characters.
+  const planned = planArt2d(ctx.plan);
+  const plannedCast = () => (planned ? [planned.hero, ...planned.friends].filter(Boolean) : []);
+  const plannedStart = () => `start_from_template with template "runner" or "catch"${planned.world ? `, world "${planned.world}"` : ''}${planned.hero ? `, sprite "${planned.hero}"` : ''}${planned.friends.length ? ` and friends ${JSON.stringify(planned.friends)}` : ''}`;
   function saveVersion(rawHtml, notes) {
     // Checked here, not only in exec(): start_from_template awaits the template files before it saves.
     if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };
     const g0 = game(); if (!g0 || g0.status === 'deleted') return { ok: false, forModel: 'The game was deleted.', stop: true };
     if (typeof rawHtml !== 'string' || rawHtml.trim().length < 20) return { ok: false, forModel: 'The game was empty. Send the complete game document.' };
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
+    if (planned) {
+      const missing = art2dMissing(rawHtml, planned);
+      if (missing.length) return { ok: false, forModel: `Not saved: the builder picked ${plannedCast().length ? `these characters for their 2D game (${plannedCast().join(', ')})` : 'a 2D world'} in the setup steps, and every version of this build must draw them with the 2D art, never the kit's own characters. Problems: ${missing.join('; ')}. ${current() && art2dMissing(current().html, planned).length === 0 ? 'Keep the CONFIG lines world, hero2d and friends2d and the 2D art tags of the current version exactly as they are (edit_game on other lines).' : `Call ${plannedStart()}, then make it theirs with edit_game.`}` };
+    }
     // a game on a patched kit version (kit.js KIT_PATCHES) moves to the patch release whenever the Builder saves it
     const { html, removed } = sanitizeGameHtml(upgradeKitPins(rawHtml.replace(/^\s*<!doctype[^>]*>/i, '')));
     const report = scanVersion(html);
@@ -228,15 +239,24 @@ export function toolbox(ctx) {
       // picked earlier in the chat. An invented name is refused with the real names; a template that does not draw the
       // worlds yet starts as it always did.
       let a2 = null;
+      if (planned && !ART2D_TEMPLATES.includes(key)) return { ok: false, forModel: `Not started: the builder picked ${plannedCast().length ? `these characters for their 2D game (${plannedCast().join(', ')})` : 'a 2D world'} in the setup steps, and only "runner" and "catch" draw them. Call ${plannedStart()}.` };
       if (key !== 'oomba3d' && key !== 'world3d') {
-        const kept = (ctx.state && ctx.state.art2d) || {}, world = String((input && input.world) || kept.world || ''), hero = String((input && (input.sprite || input.hero)) || kept.hero || '');
+        const kept = (ctx.state && ctx.state.art2d) || {};
+        let world = String((input && input.world) || kept.world || ''), hero = String((input && (input.sprite || input.hero)) || kept.hero || '');
         if (ART2D_TEMPLATES.includes(key)) {
           if (world && !art2dWorld(world)) return { ok: false, forModel: `There is no 2D world called "${world.slice(0, 40)}". The 2D worlds are: ${ART2D_WORLD_IDS.join(', ')}.` };
           if (hero && !art2dCharacter(hero)) return { ok: false, forModel: `There is no sprite hero or animal called "${hero.slice(0, 40)}". They are: ${ART2D_CHARACTER_IDS.join(', ')}. There are no others: pick one of these, or leave hero out for the kit's own characters.` };
           // friends: more sprite heroes and animals who are in the game beside the hero (CONFIG.friends2d)
           const asked2 = Array.isArray(input && input.friends) ? input.friends.map(String) : kept.friends || [], unknown = asked2.filter(id => !art2dCharacter(id));
           if (unknown.length) return { ok: false, forModel: `There is no sprite hero or animal called "${unknown[0].slice(0, 40)}". They are: ${ART2D_CHARACTER_IDS.join(', ')}. There are no others: take it out of friends.` };
-          const friends = art2dFriends(asked2, hero).map(f => f.id);
+          let friends = art2dFriends(asked2, hero).map(f => f.id);
+          // A setup plan's build: its world and every character picked are in, whatever the call left out. The model may
+          // pick which of them is the player; anyone else is a friend, and friends it added stay after them.
+          if (planned) {
+            const cast = plannedCast(), lead = cast.includes(hero) ? hero : planned.hero || hero;
+            world = planned.world || world; hero = lead;
+            friends = art2dFriends([...cast, ...asked2], lead).map(f => f.id);
+          }
           if (world || hero || friends.length) a2 = { world, hero, ...(friends.length ? { friends } : {}) };
         }
       }
