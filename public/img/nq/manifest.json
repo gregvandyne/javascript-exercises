@@ -310,6 +310,39 @@
       "state": "match-the-glow"
     },
     {
+      "alt": "Launch Lab on a phone: a drop tower with ten equal bins, three with a star, a line from 0 to 1, and a stepper to set the probability.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "7.2",
+      "commit": "PENDING",
+      "concept": "Pro 7.2, Drop Tower round 1 (The drop tower has 10 equal bins. Stars mark 3 of them. A probe is equally likely to land in any bin. What is the probability of a star bin?): the data board with the drop tower: pegs over ten equal bins, three with a star, and the line from 0 to 1 under them, the lab tester and the results rack below, the chip reading P(★) = ?, the stepper at 0 and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "launch-lab",
+      "key": "nq/launch-lab/drop-tower",
+      "state": "drop-tower"
+    },
+    {
+      "alt": "Launch Lab on a phone: a data board with a dot plot of nine probe landings in meters, and a stepper to set the median.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "7.1",
+      "commit": "PENDING",
+      "concept": "Pro 7.1, Spread Test round 1 (9 probes landed on the test range. What is the median landing, in meters?): the data board on the range at sunset with a dot plot of nine probe landings from 8 to 20 meters, the lab tester and the results rack below, the chip reading median?, the stepper at 10 m and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "launch-lab",
+      "key": "nq/launch-lab/spread-test",
+      "state": "spread-test"
+    },
+    {
+      "alt": "Launch Lab on a phone: a data board with two dot plots, launchers A and B, on one axis in meters, and a stepper to set how far apart their medians are.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "7.3",
+      "commit": "PENDING",
+      "concept": "Pro 7.3, Trend Watch round 1 (Launchers A and B each sent 9 probes. How many meters farther is B's median than A's?): the data board with two dot plots, A over B, on one axis from 6 to 28 meters, the lab tester and the results rack below, the chip reading B − A = ?, the stepper at 0 m and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "launch-lab",
+      "key": "nq/launch-lab/trend-watch",
+      "state": "trend-watch"
+    },
+    {
       "alt": "Lily Hop on a phone: a helper on a row of numbered lily pads, a flag on pad 10, and three number buttons.",
       "band": "launchpad",
       "capturedAt": "2026-11-12",

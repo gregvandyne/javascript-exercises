@@ -275,7 +275,7 @@ test('Pro registry: 69 locked codes, each a well-formed grade 6-8 statement in a
 test('Pro units cite only codes in proCodes; the welcome cites none; all 23 steps are reserved in order', () => {
   const units = tierUnits('pro'), steps = tierSteps('pro');
   assert.deepEqual(units.map(u => [u.n, u.title, u.stamp, u.planned === true]), [[0, 'Welcome to the Towers', null, false], [1, 'The Mixing Tower', 'Ratio Gear', false], [2, 'The Cold Store', 'Zero Gear', false],
-    [3, 'The Machine Hall', 'Variable Gear', false], [4, 'The Map Room', 'Scale Gear', false], [5, 'The Sky Wires', 'Slope Gear', false], [6, 'The Drafting Keep', 'Angle Gear', true], [7, 'The Test Range', 'Chance Gear', true]]);
+    [3, 'The Machine Hall', 'Variable Gear', false], [4, 'The Map Room', 'Scale Gear', false], [5, 'The Sky Wires', 'Slope Gear', false], [6, 'The Drafting Keep', 'Angle Gear', true], [7, 'The Test Range', 'Chance Gear', false]]);
   assert.deepEqual(units.slice(1).map(u => u.stamp), cat.tiers.pro.stones, 'the unit stones are the tier line\'s gears, in order');
   assert.deepEqual(steps.map(s => s.n), ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4']);
   assert.deepEqual(steps.map(s => s.order), [...Array(23).keys()].map(i => i + 1), 'step order is 1..23 within the tier, fixed before any unit is built');
@@ -293,8 +293,15 @@ test('Pro units cite only codes in proCodes; the welcome cites none; all 23 step
       for (const s of u.steps) { assert.equal(s.game.pro, null, `pro ${s.n}: planned, so no game`); assert.match(s.reserved.params, /^chapter=[a-z]+&lock=1$/); }
       for (const s of u.steps) assert.ok(!fs.existsSync(path.join(NQ, 'course/pro', `${s.n}.json`)), `pro ${s.n}: a planned step has no deck`);
     }
+    // A built unit may keep one step reserved (Pro's finale, 7.4, in Unit 7): it says so the same way.
+    for (const s of u.steps.filter(x => x.planned === true)) {
+      assert.ok(!u.planned, `pro ${s.n}: a step is planned on its own only inside a built unit`);
+      assert.equal(s.game.pro, null, `pro ${s.n}: planned, so no game`); assert.match(s.reserved.params, /^chapter=[a-z]+&lock=1$/);
+      assert.ok(!fs.existsSync(path.join(NQ, 'course/pro', `${s.n}.json`)), `pro ${s.n}: a planned step has no deck`);
+    }
   }
-  assert.equal(new Set(units.filter(u => u.planned).map(u => u.reserved.game)).size, 2, 'two reserved games, one a planned unit');
+  assert.deepEqual(units.flatMap(u => u.steps.filter(s => s.planned === true && !u.planned).map(s => s.n)), ['7.4'], 'the one step reserved inside a built unit is the finale');
+  assert.equal(new Set(units.filter(u => u.planned).map(u => u.reserved.game)).size, units.filter(u => u.planned).length, 'each planned unit reserves its own game');
   assert.equal(new Set(units.filter(u => u.n >= 1).map(u => (u.planned ? u.reserved.game : u.tool))).size, 7, 'seven games, built or reserved, one a unit');
   for (const s of steps) {
     const st = s.standards.pro;

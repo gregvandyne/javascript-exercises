@@ -713,7 +713,8 @@ is a name only: nothing is registered for it, and no file exists.
 Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3" at the end of this file). Their
 `planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, and Unit 5, The Sky
 Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"). A unit that has no
-section at the end of this file is still planned.
+section at the end of this file is still planned. Unit 7, The Test Range, with Launch Lab, was built on 2026-11-15 without its
+finale step ("Pro Unit 7"): 7.4, The Great Clock, stays reserved inside the built unit.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1263,3 +1264,77 @@ covers, the misconceptions it meets (slope is across over up; a bigger stair is 
 slope; 2(x + 1) is 2x + 1; lines with one slope must meet) and how the game checks each idea by planning and running.
 Pro stays `status: "building"`, and no learner, parent or visitor sees any of this. **Left for the opening**, as for
 Units 1 to 3: the teacher page's game list (`NQ_CREW`) and its locale strings do not name Sky Lines.
+
+## Pro Unit 7 — The Test Range (2026-11-15, tier still `building`, finale not built)
+
+The seventh and last Pro unit, built to the contract above ("What a unit PR touches"), side by side with Unit 6. Data
+and chance for grades 6 to 8: center and spread, probability, two data sets compared, scatter plots. Its `planned`
+flag is gone, so its three teaching steps are real steps for the platform admin (and nobody else: the tier is
+`building`). **The finale, 7.4 The Great Clock, is not built**: it stays reserved inside the built unit (below).
+
+| File | What |
+|---|---|
+| `course/pro/7.1.json`, `7.2.json`, `7.3.json` | the three decks, inside the Pro limits above: **7.1 Center and spread** (6.SP.A.3, 6.SP.B.4, 6.SP.B.5, also 6.SP.A.2), **7.2 Chance: experiments and models** (7.SP.C.5, 7.SP.C.6, 7.SP.C.7, also 7.SP.C.8), **7.3 Compare two data sets and spot a trend** (7.SP.B.4, 8.SP.A.1, also 7.SP.B.3, 7.SP.A.2, 8.SP.A.2). Seven slides each: a story slide with Tally, two drawn diagrams with guided focus, one worked example, four words, the mission last |
+| `sets/u7-pro.json` | nine exit items (`nq-pro-7.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (took the middle of an unordered list, gave the range for the interquartile range, thought a bigger number means less likely, kept the count from the shorter run, gave the gap in meters for the gap in deviations, chose the point with the largest values as the outlier), every item with a `why` that checks the answer. Twelve items were the plan for Unit 7 with its finale; without the finale it is nine |
+| `units.json` | Unit 7's own object: the unit's flags deleted, `tool: "launch-lab"`, the three `game.pro` specs, three teacher notes; step 7.4 keeps `reserved` and gains `"planned": true` |
+| `seed-games/launch-lab.html` | **Launch Lab**, the unit's game (Oomba3D 1.2.0, Space Base theme 1.0.0, at sunset): chapter `spread` for 7.1 (Spread Test), `chance` for 7.2 (Drop Tower), `trend` for 7.3 (Trend Watch), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step. No `clock` chapter |
+
+**A reserved step inside a built unit.** The plan puts the finale in Unit 7 as a fourth chapter of its game, and the
+engine knew only whole planned units. Lifting Unit 7's flag would have made 7.4 a real step with the placeholder deck
+and no game. So a step may now carry `"planned": true` on its own (`server/services/number-quest-tiers.js`): the engine
+leaves it out of the built unit exactly as it leaves out a planned unit's steps (no step, door, tag, start node or
+test-out), lists the unit once more among the planned ones holding only that step (`partial: true`), and a tier with
+such a step is never open, whatever its status line says. The admin's street shows "Planned: the unit is built, and
+this step of it is not yet." The standards tags (`official-tags.js numberQuestSteps`) skip a planned step too.
+Building the finale is: write `course/pro/7.4.json` and three more items, add the `clock` chapter to Launch Lab,
+set the step's `game.pro`, and delete its `planned` and `reserved`.
+
+**What each chapter plays.** `spread`: the median of nine or eleven landings (a stepper; a wrong plan is a line with
+its landings below and above counted), the mean of five or six (a wrong plan's total does not match), which of two
+launchers with the same middle is more consistent, the interquartile range from a box plot, the mean absolute
+deviation of four landings around a given mean (in halves), and how many probes a histogram puts at 20 meters or
+farther (the tiles name the slips: one bar only, the 15 to 19 bar too). `chance`: a probability from equal bins with
+stars (the line from 0 to 1 names it unlikely, likely or as likely as not), a prediction from a run's rate (20 of 50 in
+bin C, so 80 of 200), a probability estimated from results (with "four bins, so 0.25" and "the count as a decimal" as
+the slips), the chance of no star, a gate then a bin in a table of outcomes (1/6, with 1/5 for adding the ways and 1/3
+for one stage), and a model's prediction beside a real run that comes out close but not exactly. `trend`: how far
+apart two launchers' medians are, how many mean absolute deviations apart two means are, a random sample's rate used
+for its batch, the association of a scatter plot (positive, negative or none), its outlier, and a prediction from a
+trend line through two named points. Every data set comes from a seeded generator; the first lap is always the same.
+
+**Plan, then run.** A stepper with a Run button, or three tiles. The board shows only the question until the plan is
+run. A wrong plan is run and drawn as it really turns out (`LaunchLab.judge`): the median line with more landings on
+one side, the total a mean would give, the bins a probability would mean, the rate a prediction would need, the
+trend a picked association would draw, the point a prediction would put off the line; with a spoken hint, and the round
+stays open. A rate that does not come out in two decimals is shown with ≈ and said "about". The launcher sends a probe
+out over the range on every run, and a right round sets a cargo pod on the results rack. No timer, no lives, no fail
+state, no reward currency; nothing is priced, bought, sold, bet or won, and chance is never a wager (bins, probes and
+fins only). Keys: the arrows (or + and −) move the stepper, Enter runs, 1 to 3 pick a tile; every control is also a
+button.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game; the speaker button says a line again. A spoken line is written the way it is said
+("20 divided by 50 is 0.4", "1 minus 0.3 is 0.7"), with digits only in its number places, so the voice allowlist
+(`server/services/tts-lines.js`) never sees a sign. The words box prints the signs (`LaunchLab.shown`). The chip, the
+board and the tiles carry the symbols (P, MAD, IQR, ★, fractions) and are never read.
+
+**Not Rocket Supply.** Launchpad Unit 5's Rocket Supply plays the same world by day with a hero picker and supply pods.
+Launch Lab is the base at sunset with one lab tester and no picker, a data board on two posts, a game-made launcher
+behind it and a results rack in front. The test holds the board to its 4 by 3 shape, in full view, clear of the tester
+and the rack, its smallest numbers to 12 px on a 390 px phone (10 px at 360 px), every control to 56 px, and every word
+on a control inside it.
+
+**Diagrams.** The unit adds no diagram type and no option: 7.1 a dot plot (`numberline` with `stacks`) and a `boxplot`;
+7.2 the probability line (`numberline` from 0 to 1) and a `table` of outcomes; 7.3 two box plots and a scatter plot
+(`plane` with a dashed trend line). All 17 focus steps are measured at 390 px and pinned in
+`tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/launch-lab/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/launch-lab.recipe.js`.
+
+**Gear.** The unit's stamp is the Chance Gear (`tiers.pro.stones`). **Teacher notes** (three; the plan's fourth, about
+the finale, waits for the finale) say what the unit covers, the misconceptions it meets and how the game checks each idea
+by planning and running. Pro stays `status: "building"`, and no learner, parent or visitor sees any of this. **Left for
+the opening**, as for the other units: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
+Launch Lab.

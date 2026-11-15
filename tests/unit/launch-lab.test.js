@@ -131,10 +131,10 @@ const HINTS = {
   'c.hint.model': (x, v, r) => near(+x.n, v) && near(+x.a, v * x.b) && x.k === r.p.k,
   'c.hint.freq': (x, v, r) => x.n === v && near(+x.a, v / x.t) && near(+x.b, x.c / x.m),
   'c.hint.not': (x, v, r) => near(+x.n, v) && near(+x.a, +x.p + v) && !near(+x.a, 1),
-  'c.hint.expect': (x, v) => x.n === v && near(+x.a, v / x.m), 'c.hint.expect.about': (x, v) => x.n === v && Math.abs(+x.a - v / x.m) < 0.005 && !near(+x.a, v / x.m),
+  'c.hint.expect': (x, v) => x.n === v && near(+x.a, v / x.m), 'c.hint.expect.about': (x, v) => x.n === v && Math.abs(+x.a - v / x.m) <= 0.005 + 1e-9 && !near(+x.a, v / x.m),
   't.hint.gap': (x, v) => x.n === v && x.b === x.a + v && x.b !== x.c,
   't.hint.mads': (x, v, r) => x.n === v && x.a === v * x.s && x.d === r.p.d && x.a !== x.d,
-  't.hint.sample': (x, v) => x.n === v && near(+x.a, v / x.t), 't.hint.sample.about': (x, v) => x.n === v && Math.abs(+x.a - v / x.t) < 0.005 && !near(+x.a, v / x.t),
+  't.hint.sample': (x, v) => x.n === v && near(+x.a, v / x.t), 't.hint.sample.about': (x, v) => x.n === v && Math.abs(+x.a - v / x.t) <= 0.005 + 1e-9 && !near(+x.a, v / x.t),
   't.hint.predict': (x, v, r) => x.c === r.p.yb - r.p.ya && x.x === r.p.x,
 };
 

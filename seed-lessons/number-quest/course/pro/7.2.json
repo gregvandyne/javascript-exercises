@@ -28,24 +28,51 @@
     "min": 0,
     "max": 1,
     "marks": [
-     { "at": 0, "label": "0" },
-     { "at": 0.5, "label": "1/2" },
-     { "at": 1, "label": "1" }
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 0.5,
+      "label": "1/2"
+     },
+     {
+      "at": 1,
+      "label": "1"
+     }
     ],
-    "point": { "at": 0.3, "label": "0.3" }
+    "point": {
+     "at": 0.3,
+     "label": "0.3"
+    }
    },
    "focus": [
     {
      "cue": "0 means it cannot happen.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      3.8,
+      57.7,
+      4.5,
+      25.6
+     ]
     },
     {
      "cue": "1 means it is certain.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      92.3,
+      57.7,
+      3.4,
+      25.6
+     ]
     },
     {
      "cue": "0.3 sits nearer 0: landing in a marked bin is unlikely.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      27.8,
+      41.4,
+      9.2,
+      28.3
+     ]
     }
    ]
   },
@@ -68,24 +95,54 @@
    "visual": {
     "type": "table",
     "label": "Every outcome of a gate and then a bin",
-    "head": ["Gate", "Bin 1", "Bin 2", "Bin 3"],
+    "head": [
+     "Gate",
+     "Bin 1",
+     "Bin 2",
+     "Bin 3"
+    ],
     "rows": [
-     ["Left", "L1", "L2", "L3"],
-     ["Right", "R1", "R2", "R3"]
+     [
+      "Left",
+      "L1",
+      "L2",
+      "L3"
+     ],
+     [
+      "Right",
+      "R1",
+      "R2",
+      "R3"
+     ]
     ]
    },
    "focus": [
     {
      "cue": "Two ways through the gate: two rows.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      11.1,
+      35.8,
+      11.9,
+      25.0
+     ]
     },
     {
      "cue": "Six cells: six equally likely outcomes.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      36.0,
+      35.8,
+      50.4,
+      25.0
+     ]
     },
     {
      "cue": "Right, then bin 3: one cell of six, 1/6.",
-     "box": [0, 0, 10, 10]
+     "box": [
+      79.5,
+      49.3,
+      6.9,
+      11.5
+     ]
     }
    ]
   },
@@ -100,10 +157,22 @@
    "text": "Four words for chance.",
    "art": "pencil",
    "words": [
-    { "word": "probability", "means": "a number from 0 to 1 that says how likely an event is" },
-    { "word": "outcome", "means": "one way an experiment can turn out, like landing in bin 3" },
-    { "word": "sample space", "means": "the list of every possible outcome" },
-    { "word": "relative frequency", "means": "the fraction of trials in which an event happened" }
+    {
+     "word": "probability",
+     "means": "a number from 0 to 1 that says how likely an event is"
+    },
+    {
+     "word": "outcome",
+     "means": "one way an experiment can turn out, like landing in bin 3"
+    },
+    {
+     "word": "sample space",
+     "means": "the list of every possible outcome"
+    },
+    {
+     "word": "relative frequency",
+     "means": "the fraction of trials in which an event happened"
+    }
    ]
   },
   {
@@ -113,7 +182,12 @@
    "art": "trophy",
    "img": "nq/launch-lab/drop-tower",
    "alt": "Launch Lab on a phone: a drop tower with ten equal bins, three with a star, a line from 0 to 1, and a stepper to set the probability.",
-   "view": [0, 0, 37.82, 100],
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
    "whole": true
   }
  ],
