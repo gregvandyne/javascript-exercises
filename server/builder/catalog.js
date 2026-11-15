@@ -14,7 +14,10 @@ export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel
 // Kit), whose example world it replaces with the world the builder asked for. The Builder never starts from Star Island.
 // 'oomba3d' is the Kit 2 starter: a 3D game in one of the ready-made worlds with an animated hero (kit2.js), started
 // with a world and a hero.
-export const BUILDER_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d'];
+// The classroom starters (plain HTML for the classroom board and phones, not on the kit; docs/decisions.md "Classroom
+// activities in the Builder"): the Builder starts from them for the "For your class" types of /build/new (plan.js).
+export const CLASSROOM_TEMPLATE_KEYS = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard'];
+export const BUILDER_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d', ...CLASSROOM_TEMPLATE_KEYS];
 const DEFAULTS = {
   quiz: { title: 'Quiz Show', icon: '❓', cover: 'sunset', category: 'learning', players: 1, description: 'Quick questions with a timer and a cheering crowd.' },
   runner: { title: 'Runner', icon: '🏃', cover: 'forest', category: 'arcade', players: 1, description: 'Jump over bumps and grab coins as the speed ramps up.' },
@@ -26,6 +29,14 @@ const DEFAULTS = {
   island: { title: 'Star Island', icon: '🏝️', cover: 'ocean', category: 'adventure', players: 1, description: 'A 3D island to explore and find the stars.' },
   world3d: { title: 'My 3D World', icon: '🌍', cover: 'ocean', category: 'adventure', players: 1, description: 'A 3D world of your own to explore.' },
   oomba3d: { title: 'My 3D World', icon: '🏰', cover: 'ocean', category: 'adventure', players: 1, description: 'A ready-made 3D world with a hero who runs, jumps, collects and answers.' },
+  quiet: { title: 'Quiet Stars', icon: '🌙', cover: 'night', category: 'learning', players: 1, description: 'A classroom noise meter: the night sky fills with stars while the room is quiet.' },
+  categories: { title: 'Category Board', icon: '🗂️', cover: 'mint', category: 'learning', players: 2, description: 'Teams pick a category and points, then answer the question on the board.' },
+  survey: { title: 'Class Survey', icon: '📊', cover: 'sunset', category: 'learning', players: 1, description: 'Fixed-choice questions; only the counts are shown, on this device.' },
+  bingo: { title: 'Class Bingo', icon: '🔢', cover: 'gold', category: 'learning', players: 1, description: 'The board calls, everyone marks their own card.' },
+  flashcards: { title: 'Flashcards', icon: '🃏', cover: 'ocean', category: 'learning', players: 1, description: 'Flip, sort and practise one big card at a time.' },
+  exitticket: { title: 'Exit Ticket', icon: '🎟️', cover: 'forest', category: 'learning', players: 1, description: 'A short check at the end of a lesson.' },
+  spinner: { title: 'Team Spinner', icon: '🎡', cover: 'candy', category: 'learning', players: 2, description: 'Spin to pick a team, a number or a topic.' },
+  scoreboard: { title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, description: 'Big team scores for the classroom board.' },
 };
 
 let modPromise = null;

@@ -2681,7 +2681,8 @@
         "picked": "{count, plural, one {# gekozen} other {# gekozen}}",
         "pickedWorld": "{count} gekozen. Ze wonen allemaal in {world}.",
         "cleared": "Weggehaald"
-      }
+      },
+      "progress": "Stap {n} van {total}"
     }
   },
   "favorites": {
@@ -8569,6 +8570,38 @@
       "board": {
         "title": "Bordspel",
         "text": "Gooi, loop en geef antwoord"
+      },
+      "quiet": {
+        "title": "Stiltespel",
+        "text": "De lucht vult zich met sterren zolang de klas stil is"
+      },
+      "categories": {
+        "title": "Categorieënbord",
+        "text": "Teams kiezen een categorie en punten"
+      },
+      "survey": {
+        "title": "Klassenenquête",
+        "text": "Vaste keuzes, alleen de aantallen worden getoond"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Roep sommen of woorden om, streep ze af op de kaart"
+      },
+      "flashcards": {
+        "title": "Flitskaarten",
+        "text": "Grote kaarten omdraaien, oefenen en sorteren"
+      },
+      "exitticket": {
+        "title": "Exitkaart",
+        "text": "Een snelle check aan het eind van de les"
+      },
+      "spinner": {
+        "title": "Draaiwiel",
+        "text": "Kies een team, een getal of een onderwerp"
+      },
+      "scoreboard": {
+        "title": "Teamscorebord",
+        "text": "Grote teampunten voor het bord"
       }
     },
     "looks": {
@@ -8661,6 +8694,13 @@
       "learn": "Je leert: {list}.",
       "file": "Gebruik het bestand dat ik heb toegevoegd."
     },
-    "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk."
+    "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
+    "typeGroups": {
+      "label": "Soorten spellen",
+      "class": "Voor je klas",
+      "games": "Spellen",
+      "classText": "Activiteiten voor het digibord en voor telefoons.",
+      "gamesText": "Spellen om te spelen en te delen."
+    }
   }
 }

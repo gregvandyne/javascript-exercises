@@ -2681,7 +2681,8 @@
         "picked": "{count, plural, one {# scelto} other {# scelti}}",
         "pickedWorld": "{count} scelti. Vivono tutti in {world}.",
         "cleared": "Tolti"
-      }
+      },
+      "progress": "Passo {n} di {total}"
     }
   },
   "favorites": {
@@ -8569,6 +8570,38 @@
       "board": {
         "title": "Gioco da tavolo",
         "text": "Tira il dado, muoviti e rispondi"
+      },
+      "quiet": {
+        "title": "Gioco del silenzio",
+        "text": "Il cielo si riempie di stelle finché la classe è in silenzio"
+      },
+      "categories": {
+        "title": "Tabellone delle categorie",
+        "text": "Le squadre scelgono una categoria e dei punti"
+      },
+      "survey": {
+        "title": "Sondaggio di classe",
+        "text": "Scelte fisse, si vedono solo i totali"
+      },
+      "bingo": {
+        "title": "Tombola",
+        "text": "Chiama operazioni o parole, segna le cartelle"
+      },
+      "flashcards": {
+        "title": "Flashcard",
+        "text": "Gira, ripassa e ordina carte grandi"
+      },
+      "exitticket": {
+        "title": "Biglietto di uscita",
+        "text": "Una verifica veloce alla fine della lezione"
+      },
+      "spinner": {
+        "title": "Ruota",
+        "text": "Estrai una squadra, un numero o un argomento"
+      },
+      "scoreboard": {
+        "title": "Tabellone dei punti",
+        "text": "Punti delle squadre in grande per la lavagna"
       }
     },
     "looks": {
@@ -8661,6 +8694,13 @@
       "learn": "Insegna: {list}.",
       "file": "Usa il file che ho aggiunto."
     },
-    "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico."
+    "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico.",
+    "typeGroups": {
+      "label": "Tipi di gioco",
+      "class": "Per la tua classe",
+      "games": "Giochi",
+      "classText": "Attività per la lavagna della classe e per i telefoni.",
+      "gamesText": "Giochi da fare e condividere."
+    }
   }
 }

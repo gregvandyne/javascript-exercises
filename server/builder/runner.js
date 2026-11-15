@@ -30,6 +30,7 @@ import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
+import { teacherHost } from '../services/classlive-access.js';
 import { turnsLeft, takeTurn, allowanceFor, limitMessage, limitKey, counter, trustedMaker, turnCapMs } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
@@ -126,7 +127,8 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   if (!user.builder_enabled) return err(403, 'builder.errors.disabled', 'disabled');
   // Trusted makers (the admin, school staff, class teachers) always build with the Pro model (usage.js trustedMaker).
   if (trustedMaker(user)) pro = true;
-  plan = plan && !game.current_version_id && !jobs.has(game.id) ? normalisePlan(plan) : null;
+  // The teacher-only classroom types (a class survey, an exit ticket) come only from staff and class teachers.
+  plan = plan && !game.current_version_id && !jobs.has(game.id) ? normalisePlan(plan, { forKid: !teacherHost(user) }) : null;
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, UPLOADS.perMessage).map(getUpload).filter(u => u && u.game_id === game.id && !u.used_at);
   if (plan) text = planSentence(plan, t, { files: wanted.length }).slice(0, MAX_INPUT);

@@ -2681,7 +2681,8 @@
         "picked": "{count, plural, one {# escolhido} other {# escolhidos}}",
         "pickedWorld": "{count} escolhidos. Todos vivem em {world}.",
         "cleared": "Tirados"
-      }
+      },
+      "progress": "Passo {n} de {total}"
     }
   },
   "favorites": {
@@ -8570,6 +8571,38 @@
       "board": {
         "title": "Jogo de tabuleiro",
         "text": "Jogue o dado, ande e responda"
+      },
+      "quiet": {
+        "title": "Jogo do silêncio",
+        "text": "O céu se enche de estrelas enquanto a sala está em silêncio"
+      },
+      "categories": {
+        "title": "Quadro de categorias",
+        "text": "As equipes escolhem uma categoria e os pontos"
+      },
+      "survey": {
+        "title": "Pesquisa da turma",
+        "text": "Opções fixas, só aparecem as contagens"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Cante contas ou palavras e marque as cartelas"
+      },
+      "flashcards": {
+        "title": "Cartões de estudo",
+        "text": "Vire, pratique e separe cartões grandes"
+      },
+      "exitticket": {
+        "title": "Bilhete de saída",
+        "text": "Uma checagem rápida no fim da aula"
+      },
+      "spinner": {
+        "title": "Roleta",
+        "text": "Sorteie uma equipe, um número ou um tema"
+      },
+      "scoreboard": {
+        "title": "Placar das equipes",
+        "text": "Pontos das equipes em tamanho grande para o quadro"
       }
     },
     "looks": {
@@ -8662,6 +8695,13 @@
       "learn": "Ensina: {list}.",
       "file": "Use o arquivo que eu adicionei."
     },
-    "flatNote": "Em 2D, por enquanto só os jogos de corrida e de pegar podem usar nossos mundos e personagens. Nos outros jogos o Construtor usa o visual clássico."
+    "flatNote": "Em 2D, por enquanto só os jogos de corrida e de pegar podem usar nossos mundos e personagens. Nos outros jogos o Construtor usa o visual clássico.",
+    "typeGroups": {
+      "label": "Tipos de jogo",
+      "class": "Para a sua turma",
+      "games": "Jogos",
+      "classText": "Atividades para o quadro da sala e para celulares.",
+      "gamesText": "Jogos para jogar e compartilhar."
+    }
   }
 }

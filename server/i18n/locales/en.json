@@ -2699,7 +2699,8 @@
         "picked": "{count, plural, one {# picked} other {# picked}}",
         "pickedWorld": "{count} picked. They all live in {world}.",
         "cleared": "Cleared"
-      }
+      },
+      "progress": "Step {n} of {total}"
     }
   },
   "favorites": {
@@ -8985,6 +8986,38 @@
       "board": {
         "title": "Board game",
         "text": "Roll, move and answer"
+      },
+      "quiet": {
+        "title": "Quiet game",
+        "text": "Stars fill the sky while the room is quiet"
+      },
+      "categories": {
+        "title": "Category Board",
+        "text": "Teams pick a category and points"
+      },
+      "survey": {
+        "title": "Class survey",
+        "text": "Fixed choices, only the counts are shown"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Call math facts or words, mark the cards"
+      },
+      "flashcards": {
+        "title": "Flashcards",
+        "text": "Flip, practice and sort big cards"
+      },
+      "exitticket": {
+        "title": "Exit ticket",
+        "text": "A quick check at the end of a lesson"
+      },
+      "spinner": {
+        "title": "Spinner",
+        "text": "Pick a team, a number or a topic"
+      },
+      "scoreboard": {
+        "title": "Team scoreboard",
+        "text": "Big team points for the board"
       }
     },
     "looks": {
@@ -9077,6 +9110,13 @@
       "learn": "It teaches: {list}.",
       "file": "Use the file I added."
     },
-    "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look."
+    "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
+    "typeGroups": {
+      "label": "Kinds of game",
+      "class": "For your class",
+      "games": "Games",
+      "classText": "Activities for the classroom board and for phones.",
+      "gamesText": "Games to play and share."
+    }
   }
 }

@@ -46,11 +46,13 @@ const next = page => page.click('.su-screen:not([hidden]) [data-go="next"]');
 const STEP_KEYS = ['type', 'look', 'world', 'chars', 'learn', 'extras'];
 /** The boxes of the cards and pictures on the screen that shows now, plus the page's own measures. */
 const measure = page => page.evaluate(() => {
+  const shown = el => el.offsetParent !== null;
   const scr = document.querySelector('.su-screen:not([hidden])'), box = el => { const r = el.getBoundingClientRect(); return [Math.round(r.width * 10) / 10, Math.round(r.height * 10) / 10, r.left, r.right]; };   // to a tenth of a pixel (thirds of a row differ in the last float digit)
   const small = [...scr.querySelectorAll('button, a[href], input:not(.sr-only)'), document.querySelector('#su-skipall')].filter(el => el && el.offsetParent !== null).map(el => ({ t: (el.textContent || el.id).trim().slice(0, 30), h: el.getBoundingClientRect().height })).filter(x => x.h < 44);
   return {
-    key: scr.dataset.screen, cards: [...scr.querySelectorAll('.su-card')].map(box), pics: [...scr.querySelectorAll('.su-card .su-pic')].map(box),
-    names: [...scr.querySelectorAll('.su-card .su-name')].map(box), clipped: [...scr.querySelectorAll('.su-card .su-name')].filter(el => el.scrollHeight > el.clientHeight + 1).map(el => el.textContent),
+    // the cards on screen (the game-type step shows one group at a time: "Games" or "For your class")
+    key: scr.dataset.screen, cards: [...scr.querySelectorAll('.su-card')].filter(shown).map(box), pics: [...scr.querySelectorAll('.su-card .su-pic')].filter(shown).map(box),
+    names: [...scr.querySelectorAll('.su-card .su-name')].filter(shown).map(box), clipped: [...scr.querySelectorAll('.su-card .su-name')].filter(shown).filter(el => el.scrollHeight > el.clientHeight + 1).map(el => el.textContent),
     scrollW: document.documentElement.scrollWidth, clientW: document.documentElement.clientWidth, small,
     left: Math.min(...[...scr.children].filter(el => el.offsetParent !== null).map(el => el.getBoundingClientRect().left)), right: Math.max(...[...scr.children].filter(el => el.offsetParent !== null).map(el => el.getBoundingClientRect().right)),
   };

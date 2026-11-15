@@ -14,7 +14,7 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
-import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS } from './catalog.js';
+import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
@@ -269,6 +269,7 @@ export function toolbox(ctx) {
       if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''}${a2.friends ? ` and ${a2.friends.length} friend${a2.friends.length > 1 ? 's' : ''} in the game too (CONFIG.friends2d: ${a2.friends.join(', ')})` : ''} (CONFIG.world, CONFIG.hero2d, CONFIG.friends2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
       if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}${k2.companion ? ` and the animal friend ${k2.companion} (CONFIG.companion)` : ''}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, companion, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
+      else if (r.ok && CLASSROOM_TEMPLATE_KEYS.includes(key)) r.forModel += ` It is ${info ? info.title : key}, a classroom starter: plain HTML for the classroom board and phones, not on the Oomba Kit (the KIT RULES do not apply to it). Now make it theirs with edit_game: lines of its CONFIG block (teams, numbers; CONFIG.lang is the language their content is written in), its content list (QUESTIONS, CATEGORIES, ITEMS or CARDS), its <title>, and the WORDS table only where a word should change (every language). Keep its big type, its keyboard and clicker keys and its Sound and Full screen buttons, and follow the CLASSROOM RULES.`;
       else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
         : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;

@@ -63,11 +63,20 @@ const PLANS = {
   duel: 'Two players share one screen: each one gets a big button. Wait for the signal, then tap first. Best of five wins.',
   board: 'Roll the die and race along the path with boosts and slides. Play with a friend on one phone or against the bot.',
   island: 'Walk around a 3D island with the arrow keys or by dragging, hop up the floating rocks and find every star before time runs out. Some stars float high, so jump!',
+  quiet: 'A calm night sky for the classroom board: while the room is quiet, stars fill the sky. It listens only for how loud the room is, and works as a quiet timer without a microphone.',
+  categories: 'A Category Board for the classroom: teams take turns to pick a category and points, the question opens big, and you give the points to the team that got it.',
+  survey: 'A class survey with fixed choices: count raised hands, or pass the device so each answer is private. Only the counts are shown, and nothing leaves this device.',
+  bingo: 'Class bingo: the board calls each item and everyone marks it on their own card. Five in a row wins.',
+  flashcards: 'Big flashcards: flip each card, then sort it into Got it or Again.',
+  exitticket: 'A short exit ticket: a few fixed-choice questions, one at a time, and a thank-you at the end.',
+  spinner: 'A big spinner to pick a team, a number or a topic. Press Space or tap to spin.',
+  scoreboard: 'A big team scoreboard: number keys add points, and Undo fixes a slip.',
 };
 const CHECK = {
   catch: ['Catch three good things in a row', 'Bump into a bad one and watch a heart go', 'Press ⏸ to pause, then keep going', 'Tap 🔊 to switch the sound off and on'],
   runner: ['Jump over the first few bumps', 'Grab some coins', 'Crash on purpose and press Play again', 'Tap 🔊 to switch the sound off and on'],
   island: ['Walk with the arrow keys, or drag on the screen', 'Hop up the floating rocks to the top star', 'Jump to grab a star that floats high', 'Tap 🔊 to switch the sound off and on'],
+  quiet: ['Press Start listening and stay quiet', 'Try it as a quiet timer without the microphone', 'Make a noise and watch the sky wait', 'Tap Sound to switch the sound off and on'],
   default: ['Play a whole round from start to finish', 'Try it with taps and with the keyboard', 'Press Play again at the end', 'Tap 🔊 to switch the sound off and on'],
 };
 const POLISH = ['Words are easy to read on a small phone', 'Every screen has a way forward (no dead ends)', 'Play again restarts cleanly', 'The mute button works', 'Nothing is mean or scary', 'It runs smoothly'];

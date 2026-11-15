@@ -2680,7 +2680,8 @@
         "picked": "{count, plural, one {# elegido} other {# elegidos}}",
         "pickedWorld": "{count} elegidos. Todos viven en {world}.",
         "cleared": "Quitados"
-      }
+      },
+      "progress": "Paso {n} de {total}"
     }
   },
   "favorites": {
@@ -8568,6 +8569,38 @@
       "board": {
         "title": "Juego de tablero",
         "text": "Tira el dado, avanza y responde"
+      },
+      "quiet": {
+        "title": "Juego del silencio",
+        "text": "El cielo se llena de estrellas mientras la clase está en silencio"
+      },
+      "categories": {
+        "title": "Tablero de categorías",
+        "text": "Los equipos eligen una categoría y unos puntos"
+      },
+      "survey": {
+        "title": "Encuesta de clase",
+        "text": "Opciones fijas; solo se muestran los recuentos"
+      },
+      "bingo": {
+        "title": "Bingo",
+        "text": "Canta operaciones o palabras y marca los cartones"
+      },
+      "flashcards": {
+        "title": "Tarjetas de estudio",
+        "text": "Da la vuelta, practica y ordena tarjetas grandes"
+      },
+      "exitticket": {
+        "title": "Ticket de salida",
+        "text": "Un repaso rápido al final de la clase"
+      },
+      "spinner": {
+        "title": "Ruleta",
+        "text": "Elige un equipo, un número o un tema"
+      },
+      "scoreboard": {
+        "title": "Marcador de equipos",
+        "text": "Puntos de equipo en grande para la pizarra"
       }
     },
     "looks": {
@@ -8660,6 +8693,13 @@
       "learn": "Enseña: {list}.",
       "file": "Usa el archivo que añadí."
     },
-    "flatNote": "En 2D, por ahora solo los juegos de carrera y de atrapar pueden usar nuestros mundos y personajes. En los otros juegos el Constructor usa su estilo clásico."
+    "flatNote": "En 2D, por ahora solo los juegos de carrera y de atrapar pueden usar nuestros mundos y personajes. En los otros juegos el Constructor usa su estilo clásico.",
+    "typeGroups": {
+      "label": "Tipos de juego",
+      "class": "Para tu clase",
+      "games": "Juegos",
+      "classText": "Actividades para la pizarra de clase y para móviles.",
+      "gamesText": "Juegos para jugar y compartir."
+    }
   }
 }

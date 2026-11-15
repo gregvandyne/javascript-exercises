@@ -2680,7 +2680,8 @@
         "picked": "{count, plural, one {# choisi} other {# choisis}}",
         "pickedWorld": "{count} choisis. Ils vivent tous dans {world}.",
         "cleared": "Enlevés"
-      }
+      },
+      "progress": "Étape {n} sur {total}"
     }
   },
   "favorites": {
@@ -8568,6 +8569,38 @@
       "board": {
         "title": "Jeu de plateau",
         "text": "Lance le dé, avance et réponds"
+      },
+      "quiet": {
+        "title": "Jeu du silence",
+        "text": "Le ciel se remplit d’étoiles tant que la classe reste calme"
+      },
+      "categories": {
+        "title": "Tableau des catégories",
+        "text": "Les équipes choisissent une catégorie et des points"
+      },
+      "survey": {
+        "title": "Sondage de classe",
+        "text": "Choix fixes, seuls les totaux s’affichent"
+      },
+      "bingo": {
+        "title": "Loto",
+        "text": "Annonce des calculs ou des mots, coche les grilles"
+      },
+      "flashcards": {
+        "title": "Cartes mémoire",
+        "text": "Retourne, révise et trie de grandes cartes"
+      },
+      "exitticket": {
+        "title": "Ticket de sortie",
+        "text": "Une vérification rapide en fin de leçon"
+      },
+      "spinner": {
+        "title": "Roue",
+        "text": "Tire au sort une équipe, un nombre ou un thème"
+      },
+      "scoreboard": {
+        "title": "Tableau des scores",
+        "text": "Les points des équipes en grand pour le tableau"
       }
     },
     "looks": {
@@ -8660,6 +8693,13 @@
       "learn": "On apprend : {list}.",
       "file": "Utilise le fichier que j’ai ajouté."
     },
-    "flatNote": "En 2D, seuls les jeux de course et d’attrape peuvent utiliser nos mondes et nos personnages pour l’instant. Pour les autres jeux, le Constructeur garde son style classique."
+    "flatNote": "En 2D, seuls les jeux de course et d’attrape peuvent utiliser nos mondes et nos personnages pour l’instant. Pour les autres jeux, le Constructeur garde son style classique.",
+    "typeGroups": {
+      "label": "Types de jeu",
+      "class": "Pour ta classe",
+      "games": "Jeux",
+      "classText": "Des activités pour le tableau de la classe et pour les téléphones.",
+      "gamesText": "Des jeux pour jouer et partager."
+    }
   }
 }

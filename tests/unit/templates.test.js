@@ -15,13 +15,16 @@ import * as biomes from '../../kit/packs/art-biomes.js';
 import * as dress from '../../kit/packs/dress.js';
 
 const KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island'];
-const ALL = [...KEYS, 'world3d'];   // world3d: the Builder's own 3D starter (no kit), not a "Start from" card
+const ALL = [...KEYS, 'world3d'];
+const CLASSROOM = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard'];   // world3d: the Builder's own 3D starter (no kit), not a "Start from" card
 const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
 const CATEGORIES = ['arcade', 'sports', 'puzzle', 'words', 'board', 'adventure', 'learning', 'music', 'silly'];
 
 test('TEMPLATES lists every template with valid metadata', () => {
-  assert.deepEqual(TEMPLATES.map(t => t.key), [...ALL, 'oomba3d']);
-  assert.deepEqual(TEMPLATES.filter(t => t.builderOnly).map(t => t.key), ['world3d', 'oomba3d']);   // oomba3d: the Kit 2 starter (tests/unit/builder-kit2.test.js)
+  assert.deepEqual(TEMPLATES.map(t => t.key), [...ALL, 'oomba3d', ...CLASSROOM]);
+  // oomba3d: the Kit 2 starter (tests/unit/builder-kit2.test.js); the classroom starters: tests/unit/builder-classroom.test.js
+  assert.deepEqual(TEMPLATES.filter(t => t.builderOnly).map(t => t.key), ['world3d', 'oomba3d', ...CLASSROOM]);
+  assert.deepEqual(TEMPLATES.filter(t => t.classroom).map(t => t.key), CLASSROOM);
   for (const t of TEMPLATES) {
     assert.ok(t.title && t.icon && t.description, `${t.key} has title/icon/description`);
     assert.ok(COVERS.includes(t.cover), `${t.key} cover`);

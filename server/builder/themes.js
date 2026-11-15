@@ -1,3 +1,4 @@
+import { classroomTypeFor } from './plan.js';
 // Words -> game ideas. Used by the mock Builder to understand a kid's request deterministically
 // (what kind of game, which hero/theme, who plays, anything to learn) and to name the game.
 const norm = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
@@ -20,6 +21,8 @@ export const DEFAULT_KIND = 'catch';
 export function detectKind(text) {
   const t = norm(text);
   if (/\bsurprise\b|\byou (pick|choose)\b|\banything\b|\bdon'?t know\b|\bidk\b/.test(t)) return 'runner';
+  // a classroom starter by name ("jeopardy", "exit ticket", "noise meter"): before "quiz" or "board" can match
+  const room = classroomTypeFor(t); if (room) return room;
   for (const [k, re] of KIND_WORDS) if (re.test(t)) return k;
   if (/\bsoccer\b|\bfootball\b|\bbasketball\b|\bsports?\b|\bgoal/.test(t)) return 'catch';
   return null;
@@ -96,9 +99,9 @@ export const tintFor = cover => COVER_TINT[cover] || '';
 const SUFFIX = { quiz: 'Quiz', runner: 'Dash', catch: 'Catch', memory: 'Memory', word: 'Words', duel: 'Duel', board: 'Race', island: 'Island' };
 export function titleFor(kind, theme) {
   const s = SUFFIX[kind] || 'Game';
-  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board', island: 'Star Island' }[kind] || 'My Game');
+  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board', island: 'Star Island', quiet: 'Quiet Stars', categories: 'Category Board', survey: 'Class Survey', bingo: 'Class Bingo', flashcards: 'Flashcards', exitticket: 'Exit Ticket', spinner: 'Team Spinner', scoreboard: 'Team Scoreboard' }[kind] || 'My Game');
 }
-export const CATEGORY_FOR = { quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board', island: 'adventure' };
+export const CATEGORY_FOR = { quiet: 'learning', categories: 'learning', survey: 'learning', bingo: 'learning', flashcards: 'learning', exitticket: 'learning', spinner: 'learning', scoreboard: 'learning', quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board', island: 'adventure' };
 
 // Chips the Builder offers (at most 8).
 export const KIND_CHIPS = ['🏃 A running and jumping game', '🧺 Catch the falling things', '❓ A quiz game', '🏝️ A 3D island adventure', '🔤 A word game', '⚔️ Two players on one phone', '🎲 A board game', '✨ Surprise me!'];

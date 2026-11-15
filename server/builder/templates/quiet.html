@@ -1,0 +1,309 @@
+<title>Quiet Stars</title>
+<style>
+/* Quiet Stars: a classroom noise meter for the board. A night sky fills with stars while the room is quiet. Big type
+   (readable from the back of the room), keyboard and clicker keys, and it works as a calm quiet timer with no microphone. */
+:root{--ink:#fffdf5;--soft:#d9e2ff;--card:#1d2552;--card2:#28316a;--edge:#0b0f2a;--hot:#ffd65c;--hot-ink:#2a2000;--good:#7ee0b5;--warn:#ffb37a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b1030;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+#sky{position:fixed;inset:0;width:100%;height:100%;display:block}
+.bar{position:fixed;inset-inline:0;top:0;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) 16px 10px;z-index:3}
+.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:800;text-shadow:0 2px 0 var(--edge);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
+button:focus-visible{outline:4px solid var(--hot);outline-offset:3px}
+button[aria-pressed="true"]{background:var(--hot);color:var(--hot-ink)}
+.hot{background:var(--hot);color:var(--hot-ink)}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.panel{position:fixed;inset:0;display:grid;place-items:center;padding:80px 16px 16px;z-index:2}
+.panel[hidden],[hidden]{display:none!important}
+.card{width:min(100%,760px);max-height:100%;overflow:auto;background:rgba(29,37,82,.94);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 10px 0 var(--edge)}
+.card h2{margin:0 0 8px;font-size:clamp(1.8rem,6vmin,4rem);line-height:1.1}
+.card p{margin:8px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:16px 0}
+.big{font-size:clamp(1.2rem,3.4vmin,2.2rem);min-height:64px;padding:10px 26px}
+.privacy{font-weight:700;color:var(--ink)!important;background:var(--edge);border-radius:14px;padding:8px 14px}
+.notice{color:var(--warn)!important;font-weight:800}
+.hud{position:fixed;inset-inline:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:16px 16px max(16px,env(safe-area-inset-bottom));z-index:2;pointer-events:none}
+.hud>*{pointer-events:auto}
+.clock{font-size:clamp(2.4rem,11vmin,8rem);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 4px 0 var(--edge)}
+.goal{font-size:clamp(1rem,2.8vmin,1.8rem);color:var(--soft);font-weight:700}
+.chip{display:inline-block;margin-top:6px;padding:6px 12px;border-radius:999px;background:var(--edge);font-weight:800;font-size:clamp(.9rem,2.2vmin,1.3rem)}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.stars{font-size:clamp(1.4rem,5vmin,3.2rem);font-weight:900;text-shadow:0 3px 0 var(--edge)}
+.gauge{width:clamp(180px,36vmin,420px);height:28px;border-radius:14px;background:var(--edge);position:relative;overflow:hidden;border:3px solid var(--edge)}
+.gauge i{position:absolute;inset-block:0;inset-inline-start:0;width:0;background:var(--good);border-radius:10px;transition:width .1s linear}
+.gauge.loud i{background:var(--warn)}
+.gauge b{position:absolute;inset-block:-2px;width:4px;background:var(--ink)}
+.zones{display:flex;justify-content:space-between;width:clamp(180px,36vmin,420px);font-weight:800;font-size:clamp(.85rem,2vmin,1.2rem);color:var(--soft)}
+.shh{position:fixed;inset-inline:0;top:24%;text-align:center;font-size:clamp(2rem,9vmin,6rem);font-weight:900;text-shadow:0 5px 0 var(--edge);z-index:2;pointer-events:none}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+@media (prefers-reduced-motion:reduce){.gauge i{transition:none}}
+</style>
+<canvas id="sky" aria-hidden="true"></canvas>
+<header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+
+<section class="panel" id="setup">
+  <div class="card" role="dialog" aria-labelledby="setupH">
+    <h2 id="setupH"></h2>
+    <p id="setupP"></p>
+    <p id="goalH"></p>
+    <div class="row" id="goals" role="group"></div>
+    <p class="privacy" id="privacy"></p>
+    <p class="notice" id="notice" hidden></p>
+    <div class="row"><button class="big hot" id="listen"></button><button class="big" id="timer"></button></div>
+    <p id="keys"></p>
+  </div>
+</section>
+
+<p class="shh" id="shh" hidden></p>
+<div class="hud" id="hud" hidden>
+  <div><div class="clock" id="clock">00:00</div><div class="goal" id="goalText"></div><span class="chip" id="modeChip"></span></div>
+  <div class="side">
+    <div class="stars" id="starCount"></div>
+    <div id="meter" hidden><div class="gauge" id="gauge"><i id="level"></i><b id="line"></b></div><div class="zones"><span id="zQuiet"></span><span id="zLoud"></span></div></div>
+    <div class="btns"><button class="small" id="tooLoud"></button><button class="small" id="pause"></button><button class="small" id="end"></button></div>
+  </div>
+</div>
+
+<section class="panel" id="done" hidden>
+  <div class="card" role="dialog" aria-labelledby="doneH">
+    <h2 id="doneH"></h2>
+    <p id="doneP"></p>
+    <div class="row"><button class="big hot" id="again"></button><button class="big" id="change"></button></div>
+  </div>
+</section>
+<script>
+// Quiet Stars. Screens: setup (the goal, the privacy note, Start listening or Use it as a quiet timer) -> the sky with
+// the quiet-time clock -> the end card. Loudness comes ONLY through BRB.loudness (the page listens after the tap and
+// passes one number, how loud the room is; nothing is recorded, stored or sent). With no microphone (refused, missing,
+// busy, or the teacher's choice) it is a calm quiet timer: the clock runs and the teacher can press Too loud (L).
+'use strict';
+const CONFIG = {
+  title: 'Quiet Stars',
+  lang: 'en',
+  goals: [2, 5, 10, 0],
+  goal: 5,
+  starEvery: 10,
+  loudBy: 14,
+  loudSeconds: 0.7,
+  calmSeconds: 2,
+  holdSeconds: 5,
+  calibrateSeconds: 3,
+  maxStars: 90,
+};
+// {n}, {time} and {goal} are numbers or a clock ("03:12").
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', setupH: 'Quiet time', setupP: 'Stars fill the sky while the room is quiet.', goalH: 'Quiet time goal', min: '{n} min', noGoal: 'No goal', privacy: 'The game only listens for how loud it is. Nothing is recorded or saved.', listen: 'Start listening', timer: 'Use it as a quiet timer', keys: 'Keys: Space pause · L too loud · E end · F full screen', denied: 'The microphone is blocked, so this is a quiet timer.', nodevice: 'No microphone here, so this is a quiet timer.', busy: 'The microphone is busy, so this is a quiet timer.', unavailable: 'This page can’t listen, so this is a quiet timer.', needsTap: 'One more tap: press Start listening again.', stoppedMic: 'Listening stopped, so this is a quiet timer now.', listening: 'Listening (only how loud)', timerMode: 'Quiet timer', waiting: 'Waiting for the microphone…', ofGoal: 'of {goal}', stars: 'Stars: {n}', shh: 'Shh… the stars are waiting', zQuiet: 'Shh', zLoud: 'Getting loud', tooLoud: 'Too loud', pause: 'Pause', resume: 'Go on', end: 'End', doneH: 'The sky is full of stars!', doneP: 'Quiet time {time} · Stars: {n}', again: 'Another quiet time', change: 'Change the goal', paused: 'Paused' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', setupH: 'Rato de silencio', setupP: 'El cielo se llena de estrellas mientras la clase está en silencio.', goalH: 'Meta de silencio', min: '{n} min', noGoal: 'Sin meta', privacy: 'El juego solo escucha cuánto ruido hay. No se graba ni se guarda nada.', listen: 'Empezar a escuchar', timer: 'Usarlo como temporizador', keys: 'Teclas: Espacio pausa · L mucho ruido · E terminar · F pantalla completa', denied: 'El micrófono está bloqueado, así que es un temporizador de silencio.', nodevice: 'No hay micrófono, así que es un temporizador de silencio.', busy: 'El micrófono está ocupado, así que es un temporizador de silencio.', unavailable: 'Esta página no puede escuchar, así que es un temporizador de silencio.', needsTap: 'Falta un toque: pulsa otra vez Empezar a escuchar.', stoppedMic: 'Se dejó de escuchar: ahora es un temporizador de silencio.', listening: 'Escuchando (solo el volumen)', timerMode: 'Temporizador de silencio', waiting: 'Esperando al micrófono…', ofGoal: 'de {goal}', stars: 'Estrellas: {n}', shh: 'Shh… las estrellas esperan', zQuiet: 'Shh', zLoud: 'Sube el ruido', tooLoud: 'Mucho ruido', pause: 'Pausa', resume: 'Seguir', end: 'Terminar', doneH: '¡El cielo está lleno de estrellas!', doneP: 'Silencio {time} · Estrellas: {n}', again: 'Otro rato de silencio', change: 'Cambiar la meta', paused: 'En pausa' },
+  fr: { sound: 'Son', full: 'Plein écran', setupH: 'Moment calme', setupP: 'Le ciel se remplit d’étoiles tant que la classe reste calme.', goalH: 'Objectif de calme', min: '{n} min', noGoal: 'Sans objectif', privacy: 'Le jeu écoute seulement le niveau de bruit. Rien n’est enregistré ni gardé.', listen: 'Commencer à écouter', timer: 'Utiliser comme minuteur', keys: 'Touches : Espace pause · L trop de bruit · E fin · F plein écran', denied: 'Le micro est bloqué : c’est donc un minuteur de calme.', nodevice: 'Pas de micro ici : c’est donc un minuteur de calme.', busy: 'Le micro est occupé : c’est donc un minuteur de calme.', unavailable: 'Cette page ne peut pas écouter : c’est donc un minuteur de calme.', needsTap: 'Encore un toucher : appuie de nouveau sur Commencer à écouter.', stoppedMic: 'L’écoute s’est arrêtée : c’est maintenant un minuteur de calme.', listening: 'À l’écoute (volume seulement)', timerMode: 'Minuteur de calme', waiting: 'En attente du micro…', ofGoal: 'sur {goal}', stars: 'Étoiles : {n}', shh: 'Chut… les étoiles attendent', zQuiet: 'Chut', zLoud: 'Ça monte', tooLoud: 'Trop de bruit', pause: 'Pause', resume: 'Continuer', end: 'Fin', doneH: 'Le ciel est plein d’étoiles !', doneP: 'Calme {time} · Étoiles : {n}', again: 'Un autre moment calme', change: 'Changer l’objectif', paused: 'En pause' },
+  de: { sound: 'Ton', full: 'Vollbild', setupH: 'Leise Zeit', setupP: 'Der Himmel füllt sich mit Sternen, solange es in der Klasse leise ist.', goalH: 'Ziel für die leise Zeit', min: '{n} Min.', noGoal: 'Kein Ziel', privacy: 'Das Spiel hört nur, wie laut es ist. Nichts wird aufgenommen oder gespeichert.', listen: 'Zuhören starten', timer: 'Als leisen Timer nutzen', keys: 'Tasten: Leertaste Pause · L zu laut · E Ende · F Vollbild', denied: 'Das Mikrofon ist blockiert, also ist es ein leiser Timer.', nodevice: 'Hier gibt es kein Mikrofon, also ist es ein leiser Timer.', busy: 'Das Mikrofon ist belegt, also ist es ein leiser Timer.', unavailable: 'Diese Seite kann nicht zuhören, also ist es ein leiser Timer.', needsTap: 'Noch ein Tipp: Drück noch einmal auf Zuhören starten.', stoppedMic: 'Das Zuhören wurde beendet, jetzt ist es ein leiser Timer.', listening: 'Hört zu (nur wie laut)', timerMode: 'Leiser Timer', waiting: 'Warte auf das Mikrofon…', ofGoal: 'von {goal}', stars: 'Sterne: {n}', shh: 'Pssst… die Sterne warten', zQuiet: 'Pssst', zLoud: 'Wird laut', tooLoud: 'Zu laut', pause: 'Pause', resume: 'Weiter', end: 'Ende', doneH: 'Der Himmel ist voller Sterne!', doneP: 'Leise Zeit {time} · Sterne: {n}', again: 'Noch eine leise Zeit', change: 'Ziel ändern', paused: 'Pause' },
+  it: { sound: 'Suono', full: 'Schermo intero', setupH: 'Momento di silenzio', setupP: 'Il cielo si riempie di stelle finché la classe è in silenzio.', goalH: 'Obiettivo di silenzio', min: '{n} min', noGoal: 'Nessun obiettivo', privacy: 'Il gioco ascolta solo quanto rumore c’è. Niente viene registrato o salvato.', listen: 'Inizia ad ascoltare', timer: 'Usalo come timer', keys: 'Tasti: Spazio pausa · L troppo rumore · E fine · F schermo intero', denied: 'Il microfono è bloccato, quindi è un timer del silenzio.', nodevice: 'Qui non c’è un microfono, quindi è un timer del silenzio.', busy: 'Il microfono è occupato, quindi è un timer del silenzio.', unavailable: 'Questa pagina non può ascoltare, quindi è un timer del silenzio.', needsTap: 'Serve un altro tocco: premi di nuovo Inizia ad ascoltare.', stoppedMic: 'L’ascolto si è fermato: ora è un timer del silenzio.', listening: 'In ascolto (solo il volume)', timerMode: 'Timer del silenzio', waiting: 'In attesa del microfono…', ofGoal: 'su {goal}', stars: 'Stelle: {n}', shh: 'Shh… le stelle aspettano', zQuiet: 'Shh', zLoud: 'Sale il rumore', tooLoud: 'Troppo rumore', pause: 'Pausa', resume: 'Continua', end: 'Fine', doneH: 'Il cielo è pieno di stelle!', doneP: 'Silenzio {time} · Stelle: {n}', again: 'Un altro momento di silenzio', change: 'Cambia obiettivo', paused: 'In pausa' },
+  pt: { sound: 'Som', full: 'Tela cheia', setupH: 'Hora do silêncio', setupP: 'O céu se enche de estrelas enquanto a sala está em silêncio.', goalH: 'Meta de silêncio', min: '{n} min', noGoal: 'Sem meta', privacy: 'O jogo só escuta o volume do barulho. Nada é gravado nem salvo.', listen: 'Começar a escutar', timer: 'Usar como cronômetro', keys: 'Teclas: Espaço pausa · L barulho demais · E encerrar · F tela cheia', denied: 'O microfone está bloqueado, então é um cronômetro de silêncio.', nodevice: 'Não há microfone aqui, então é um cronômetro de silêncio.', busy: 'O microfone está ocupado, então é um cronômetro de silêncio.', unavailable: 'Esta página não pode escutar, então é um cronômetro de silêncio.', needsTap: 'Falta um toque: aperte Começar a escutar de novo.', stoppedMic: 'A escuta parou: agora é um cronômetro de silêncio.', listening: 'Escutando (só o volume)', timerMode: 'Cronômetro de silêncio', waiting: 'Esperando o microfone…', ofGoal: 'de {goal}', stars: 'Estrelas: {n}', shh: 'Psiu… as estrelas estão esperando', zQuiet: 'Psiu', zLoud: 'Ficando alto', tooLoud: 'Barulho demais', pause: 'Pausar', resume: 'Continuar', end: 'Encerrar', doneH: 'O céu está cheio de estrelas!', doneP: 'Silêncio {time} · Estrelas: {n}', again: 'Mais uma hora do silêncio', change: 'Mudar a meta', paused: 'Pausado' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', setupH: 'Stille tijd', setupP: 'De lucht vult zich met sterren zolang de klas stil is.', goalH: 'Doel voor stille tijd', min: '{n} min', noGoal: 'Geen doel', privacy: 'Het spel luistert alleen hoe hard het is. Er wordt niets opgenomen of bewaard.', listen: 'Begin met luisteren', timer: 'Gebruik het als stille timer', keys: 'Toetsen: spatie pauze · L te druk · E stoppen · F volledig scherm', denied: 'De microfoon is geblokkeerd, dus dit is een stille timer.', nodevice: 'Hier is geen microfoon, dus dit is een stille timer.', busy: 'De microfoon is bezet, dus dit is een stille timer.', unavailable: 'Deze pagina kan niet luisteren, dus dit is een stille timer.', needsTap: 'Nog één tik: druk nog eens op Begin met luisteren.', stoppedMic: 'Het luisteren is gestopt, nu is het een stille timer.', listening: 'Luistert (alleen hoe hard)', timerMode: 'Stille timer', waiting: 'Wacht op de microfoon…', ofGoal: 'van {goal}', stars: 'Sterren: {n}', shh: 'Ssst… de sterren wachten', zQuiet: 'Ssst', zLoud: 'Wordt druk', tooLoud: 'Te druk', pause: 'Pauze', resume: 'Verder', end: 'Stoppen', doneH: 'De lucht staat vol sterren!', doneP: 'Stille tijd {time} · Sterren: {n}', again: 'Nog een stille tijd', change: 'Doel veranderen', paused: 'Gepauzeerd' },
+  ru: { sound: 'Звук', full: 'Весь экран', setupH: 'Время тишины', setupP: 'Небо наполняется звёздами, пока в классе тихо.', goalH: 'Цель тишины', min: '{n} мин', noGoal: 'Без цели', privacy: 'Игра слушает только, насколько громко. Ничего не записывается и не сохраняется.', listen: 'Начать слушать', timer: 'Просто таймер тишины', keys: 'Клавиши: пробел пауза · L слишком шумно · E конец · F весь экран', denied: 'Микрофон заблокирован, поэтому это таймер тишины.', nodevice: 'Здесь нет микрофона, поэтому это таймер тишины.', busy: 'Микрофон занят, поэтому это таймер тишины.', unavailable: 'Эта страница не может слушать, поэтому это таймер тишины.', needsTap: 'Ещё одно нажатие: снова нажмите «Начать слушать».', stoppedMic: 'Прослушивание остановлено, теперь это таймер тишины.', listening: 'Слушаю (только громкость)', timerMode: 'Таймер тишины', waiting: 'Ждём микрофон…', ofGoal: 'из {goal}', stars: 'Звёзды: {n}', shh: 'Тсс… звёзды ждут', zQuiet: 'Тсс', zLoud: 'Шумновато', tooLoud: 'Слишком шумно', pause: 'Пауза', resume: 'Дальше', end: 'Конец', doneH: 'Небо полно звёзд!', doneP: 'Тишина {time} · Звёзды: {n}', again: 'Ещё раз тишина', change: 'Изменить цель', paused: 'Пауза' },
+  he: { sound: 'צליל', full: 'מסך מלא', setupH: 'זמן שקט', setupP: 'השמיים מתמלאים בכוכבים כל עוד בכיתה שקט.', goalH: 'יעד זמן שקט', min: '{n} דק׳', noGoal: 'בלי יעד', privacy: 'המשחק מקשיב רק לעוצמת הרעש. שום דבר לא מוקלט ולא נשמר.', listen: 'להתחיל להקשיב', timer: 'להשתמש כטיימר שקט', keys: 'מקשים: רווח עצירה · L רועש מדי · E סיום · F מסך מלא', denied: 'המיקרופון חסום, אז זה טיימר שקט.', nodevice: 'אין כאן מיקרופון, אז זה טיימר שקט.', busy: 'המיקרופון תפוס, אז זה טיימר שקט.', unavailable: 'הדף הזה לא יכול להקשיב, אז זה טיימר שקט.', needsTap: 'עוד הקשה אחת: לחצו שוב על להתחיל להקשיב.', stoppedMic: 'ההקשבה נעצרה, עכשיו זה טיימר שקט.', listening: 'מקשיב (רק לעוצמה)', timerMode: 'טיימר שקט', waiting: 'מחכים למיקרופון…', ofGoal: 'מתוך {goal}', stars: 'כוכבים: {n}', shh: 'ששש… הכוכבים מחכים', zQuiet: 'ששש', zLoud: 'נהיה רועש', tooLoud: 'רועש מדי', pause: 'עצירה', resume: 'להמשיך', end: 'סיום', doneH: 'השמיים מלאים בכוכבים!', doneP: 'זמן שקט {time} · כוכבים: {n}', again: 'עוד זמן שקט', change: 'לשנות את היעד', paused: 'בהפסקה' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', setupH: 'وقت الهدوء', setupP: 'تمتلئ السماء بالنجوم ما دام الفصل هادئًا.', goalH: 'هدف وقت الهدوء', min: '{n} د', noGoal: 'بلا هدف', privacy: 'اللعبة تستمع فقط إلى مستوى الضجيج. لا يُسجَّل شيء ولا يُحفَظ.', listen: 'ابدأ الاستماع', timer: 'استخدمها مؤقّتًا للهدوء', keys: 'المفاتيح: المسافة إيقاف · L ضجيج كثير · E إنهاء · F ملء الشاشة', denied: 'الميكروفون محظور، لذا هذا مؤقّت للهدوء.', nodevice: 'لا يوجد ميكروفون هنا، لذا هذا مؤقّت للهدوء.', busy: 'الميكروفون مشغول، لذا هذا مؤقّت للهدوء.', unavailable: 'لا تستطيع هذه الصفحة الاستماع، لذا هذا مؤقّت للهدوء.', needsTap: 'لمسة أخرى: اضغط ابدأ الاستماع مرة ثانية.', stoppedMic: 'توقف الاستماع، والآن هذا مؤقّت للهدوء.', listening: 'يستمع (لمستوى الصوت فقط)', timerMode: 'مؤقّت الهدوء', waiting: 'بانتظار الميكروفون…', ofGoal: 'من {goal}', stars: 'النجوم: {n}', shh: 'هسس… النجوم تنتظر', zQuiet: 'هسس', zLoud: 'يعلو الصوت', tooLoud: 'ضجيج كثير', pause: 'إيقاف', resume: 'متابعة', end: 'إنهاء', doneH: 'امتلأت السماء بالنجوم!', doneP: 'وقت الهدوء {time} · النجوم: {n}', again: 'وقت هدوء آخر', change: 'غيّر الهدف', paused: 'متوقّف' },
+  ja: { sound: 'サウンド', full: '全画面', setupH: 'しずかな時間', setupP: 'クラスがしずかなあいだ、空に星がふえていきます。', goalH: 'しずかな時間のめあて', min: '{n}分', noGoal: 'めあてなし', privacy: 'ゲームは音の大きさだけをきいています。録音も保存もしません。', listen: 'きき始める', timer: 'タイマーとしてつかう', keys: 'キー：スペース 一時停止・L うるさい・E おわり・F 全画面', denied: 'マイクがブロックされているので、しずかタイマーになります。', nodevice: 'マイクがないので、しずかタイマーになります。', busy: 'マイクがつかわれているので、しずかタイマーになります。', unavailable: 'このページはきけないので、しずかタイマーになります。', needsTap: 'もう一度タップ：「きき始める」をもう一度おしてね。', stoppedMic: 'きくのをやめたので、しずかタイマーになりました。', listening: 'きいています（音の大きさだけ）', timerMode: 'しずかタイマー', waiting: 'マイクをまっています…', ofGoal: '／{goal}', stars: '星：{n}', shh: 'しーっ…星がまっているよ', zQuiet: 'しーっ', zLoud: 'うるさくなってきた', tooLoud: 'うるさい', pause: '一時停止', resume: 'つづける', end: 'おわり', doneH: '空が星でいっぱい！', doneP: 'しずかな時間 {time}・星：{n}', again: 'もう一度しずかな時間', change: 'めあてをかえる', paused: '一時停止中' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', setupH: '安靜時間', setupP: '教室安靜時，天空會布滿星星。', goalH: '安靜時間目標', min: '{n} 分鐘', noGoal: '不設目標', privacy: '遊戲只聽聲音有多大。不會錄音，也不會儲存。', listen: '開始聆聽', timer: '當作安靜計時器', keys: '按鍵：空白鍵 暫停・L 太吵了・E 結束・F 全螢幕', denied: '麥克風被封鎖了，所以這是安靜計時器。', nodevice: '這裡沒有麥克風，所以這是安靜計時器。', busy: '麥克風正在使用中，所以這是安靜計時器。', unavailable: '這個頁面無法聆聽，所以這是安靜計時器。', needsTap: '再點一下：請再按一次「開始聆聽」。', stoppedMic: '已停止聆聽，現在是安靜計時器。', listening: '聆聽中（只聽音量）', timerMode: '安靜計時器', waiting: '正在等待麥克風…', ofGoal: '／{goal}', stars: '星星：{n}', shh: '噓…星星在等你們', zQuiet: '噓', zLoud: '變吵了', tooLoud: '太吵了', pause: '暫停', resume: '繼續', end: '結束', doneH: '天空布滿了星星！', doneP: '安靜時間 {time}・星星：{n}', again: '再來一次安靜時間', change: '更改目標', paused: '已暫停' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const clock = s => { s = Math.max(0, Math.floor(s)); return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+
+// ---- the state ----------------------------------------------------------------------------------------------------
+const LD = B.loudness || null;
+let offDb = null;
+const S = { screen: 'setup', mode: '', goal: CONFIG.goal, quiet: 0, stars: [], slots: [], loud: false, overFor: 0, underFor: 0, hold: 0,
+  db: -100, smooth: -100, lastDb: 0, base: null, samples: [], calibUntil: 0, paused: false, notice: '' };
+const line = () => (S.base == null ? -100 : S.base + CONFIG.loudBy);
+const toPct = db => Math.max(0, Math.min(100, ((db + 70) / 60) * 100));   // -70 dBFS .. -10 dBFS -> 0 .. 100
+
+// ---- the words on screen ------------------------------------------------------------------------------------------
+function words() {
+  document.title = CONFIG.title; $('title').textContent = CONFIG.title;
+  $('sound').textContent = tr('sound'); $('full').textContent = tr('full');
+  $('setupH').textContent = tr('setupH'); $('setupP').textContent = tr('setupP'); $('goalH').textContent = tr('goalH');
+  $('privacy').textContent = tr('privacy'); $('listen').textContent = tr('listen'); $('timer').textContent = tr('timer'); $('keys').textContent = tr('keys');
+  $('zQuiet').textContent = tr('zQuiet'); $('zLoud').textContent = tr('zLoud'); $('tooLoud').textContent = tr('tooLoud'); $('end').textContent = tr('end');
+  $('again').textContent = tr('again'); $('change').textContent = tr('change'); $('shh').textContent = tr('shh');
+  $('goals').setAttribute('aria-labelledby', 'goalH');
+  $('goals').innerHTML = '';
+  for (const g of CONFIG.goals) {
+    const b = document.createElement('button'); b.className = 'big'; b.textContent = g ? tr('min', { n: g }) : tr('noGoal');
+    b.setAttribute('aria-pressed', String(g === S.goal)); b.onclick = () => { S.goal = g; words(); sfx('click'); };
+    $('goals').appendChild(b);
+  }
+  paintSound();
+}
+function paintSound() { $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); }
+
+// ---- screens ------------------------------------------------------------------------------------------------------
+function screen(name) {
+  S.screen = name;
+  $('setup').hidden = name !== 'setup'; $('hud').hidden = name !== 'play'; $('done').hidden = name !== 'done';
+  if (name !== 'play') $('shh').hidden = true;
+}
+function showNotice(key) { S.notice = key; $('notice').hidden = !key; $('notice').textContent = key ? tr(key) : ''; }
+/** Start the sky. mode: 'mic' (the page passes the room's loudness) or 'timer' (no microphone). */
+function begin(mode, why) {
+  S.mode = mode; S.quiet = 0; S.stars = []; S.slots = makeSlots(Math.min(CONFIG.maxStars, S.goal ? Math.ceil((S.goal * 60) / CONFIG.starEvery) : 30)); S.loud = false; S.overFor = 0; S.underFor = 0; S.hold = 0; S.paused = false;
+  S.base = null; S.samples = []; S.calibUntil = performance.now() + CONFIG.calibrateSeconds * 1000;
+  $('meter').hidden = mode !== 'mic'; $('tooLoud').hidden = mode === 'mic';
+  $('modeChip').textContent = why ? tr(why) : tr(mode === 'mic' ? 'listening' : 'timerMode');
+  $('pause').textContent = tr('pause');
+  $('goalText').textContent = S.goal ? tr('ofGoal', { goal: clock(S.goal * 60) }) : '';
+  screen('play'); paintHud();
+}
+async function startListening() {
+  showNotice('');
+  if (!LD) return begin('timer', 'unavailable');
+  let st = 'off';
+  try { st = await LD.start(); } catch (e) { st = 'unavailable'; }
+  if (st === 'on') {
+    if (offDb) offDb();
+    offDb = LD.on(db => { S.db = db; S.lastDb = performance.now(); });
+    return begin('mic');
+  }
+  if (st === 'needsTap') return showNotice('needsTap');   // the page wants one more tap of its own: Start listening again
+  begin('timer', { denied: 'denied', nodevice: 'nodevice', busy: 'busy' }[st] || 'unavailable');
+}
+if (LD && LD.onState) LD.onState(st => { if (st === 'stopped' && S.screen === 'play' && S.mode === 'mic') { S.mode = 'timer'; S.loud = false; $('meter').hidden = true; $('tooLoud').hidden = false; $('modeChip').textContent = tr('stoppedMic'); } });
+function stopListening() { try { if (LD && S.mode === 'mic') LD.stop(); } catch (e) { /* already stopped */ } }
+function finish() {
+  stopListening(); screen('done');
+  $('doneH').textContent = tr('doneH'); $('doneP').textContent = tr('doneP', { time: clock(S.quiet), n: S.stars.length });
+  sfx('win'); try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+  try { if (B.gameOver) B.gameOver({ won: true, score: null }); } catch (e) { /* preview */ }
+  $('again').focus();
+}
+function togglePause() {
+  if (S.screen !== 'play') return;
+  S.paused = !S.paused; $('pause').textContent = tr(S.paused ? 'resume' : 'pause');
+  $('modeChip').textContent = S.paused ? tr('paused') : tr(S.mode === 'mic' ? 'listening' : 'timerMode');
+}
+function tooLoud() { if (S.screen === 'play' && S.mode === 'timer') { S.hold = CONFIG.holdSeconds; S.loud = true; } }
+
+// ---- each step ----------------------------------------------------------------------------------------------------
+function step(dt, now) {
+  if (S.screen !== 'play' || S.paused) return;
+  let measuring = true;
+  if (S.mode === 'mic') {
+    measuring = now - S.lastDb < 600;   // the clock and the sky move only while the room is really measured
+    $('modeChip').textContent = measuring ? tr('listening') : tr('waiting');
+    if (measuring) {
+      S.smooth += (S.db - S.smooth) * (S.db > S.smooth ? 0.25 : 0.08);
+      if (S.base == null) {
+        S.samples.push(S.db);
+        if (now >= S.calibUntil && S.samples.length >= 10) { const v = S.samples.slice().sort((a, b) => a - b); S.base = Math.max(-75, Math.min(-35, v[Math.floor(v.length / 2)])); }
+      } else if (S.smooth > line()) { S.overFor += dt; S.underFor = 0; if (S.overFor >= CONFIG.loudSeconds) S.loud = true; }
+      else if (S.smooth < line() - 2) { S.underFor += dt; S.overFor = 0; if (S.underFor >= CONFIG.calmSeconds) S.loud = false; }
+    }
+  } else if (S.hold > 0) { S.hold -= dt; if (S.hold <= 0) S.loud = false; }
+  if (measuring && !S.loud) {
+    const before = Math.floor(S.quiet / CONFIG.starEvery);
+    S.quiet += dt;
+    if (Math.floor(S.quiet / CONFIG.starEvery) > before) addStar();
+    if (S.goal && S.quiet >= S.goal * 60) { S.quiet = S.goal * 60; paintHud(); return finish(); }
+  }
+  paintHud();
+}
+/** Where the stars will go: spread over the sky (a jittered grid, so they never pile up), shuffled. */
+function makeSlots(n) {
+  const cols = Math.max(4, Math.ceil(Math.sqrt(n * 2))), rows = Math.max(2, Math.ceil(n / cols)), r = Math.random, out = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) out.push({ x: 0.05 + ((x + 0.2 + r() * 0.6) / cols) * 0.9, y: 0.1 + ((y + 0.2 + r() * 0.6) / rows) * 0.5, s: 0.6 + r() * 0.9, tw: r() * 6.28 });
+  for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  return out.slice(0, n);
+}
+function addStar() {
+  if (S.stars.length >= S.slots.length) S.slots.push(...makeSlots(Math.min(30, CONFIG.maxStars - S.slots.length)));
+  const p = S.slots[S.stars.length];
+  S.stars.push(p ? { ...p, born: performance.now() } : null);
+}
+function paintHud() {
+  $('clock').textContent = clock(S.quiet); $('starCount').textContent = tr('stars', { n: S.stars.length });
+  $('shh').hidden = !(S.screen === 'play' && S.loud && !S.paused);
+  if (S.mode === 'mic') {
+    $('level').style.width = `${toPct(S.smooth)}%`; $('gauge').classList.toggle('loud', S.loud);
+    $('line').style.insetInlineStart = `${toPct(S.base == null ? -100 : line())}%`; $('line').hidden = S.base == null;
+  }
+}
+
+// ---- the sky (canvas) ---------------------------------------------------------------------------------------------
+const cv = $('sky'), ctx = cv.getContext('2d');
+let dim = 0, cloudX = 1.3;
+function fit() { const d = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.round(innerWidth * d); cv.height = Math.round(innerHeight * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+addEventListener('resize', fit); fit();
+const still = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function starShape(x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  ctx.closePath();
+}
+function draw(now) {
+  const w = innerWidth, h = innerHeight, u = Math.min(w, h), mx = w * 0.82, my = h * 0.2, mr = u * 0.07;
+  const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#0b1030'); g.addColorStop(0.6, '#26306e'); g.addColorStop(1, '#4b3d7a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  // the places of the stars still to earn (faint dots), then the stars the class has earned
+  ctx.fillStyle = 'rgba(220,226,255,0.28)';
+  for (let i = S.stars.length; i < S.slots.length; i++) { const p = S.slots[i]; ctx.beginPath(); ctx.arc(p.x * w, p.y * h, Math.max(1.5, u * 0.004), 0, 7); ctx.fill(); }
+  for (const s of S.stars) {
+    if (!s) continue;
+    const age = Math.min(1, (now - s.born) / 1200), tw = still() ? 1 : 0.8 + 0.2 * Math.sin(now / 1600 + s.tw);
+    ctx.globalAlpha = age * tw; ctx.fillStyle = '#ffe48a'; ctx.strokeStyle = '#fff8d8'; ctx.lineWidth = 2;
+    starShape(s.x * w, s.y * h, u * 0.018 * s.s * (0.6 + 0.4 * age)); ctx.fill(); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // the moon with a soft glow
+  const glow = ctx.createRadialGradient(mx, my, mr * 0.8, mx, my, mr * 2.4); glow.addColorStop(0, 'rgba(255,240,190,0.35)'); glow.addColorStop(1, 'rgba(255,240,190,0)');
+  ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(mx, my, mr * 2.4, 0, 7); ctx.fill();
+  ctx.fillStyle = '#fff3c4'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, 7); ctx.fill();
+  ctx.fillStyle = '#f1e2a6'; for (const [dx, dy, r] of [[-0.3, -0.2, 0.22], [0.25, 0.3, 0.16], [0.35, -0.35, 0.1]]) { ctx.beginPath(); ctx.arc(mx + dx * mr, my + dy * mr, r * mr, 0, 7); ctx.fill(); }
+  // two hills
+  ctx.fillStyle = '#2a2a5c'; ctx.beginPath(); ctx.moveTo(0, h); ctx.quadraticCurveTo(w * 0.25, h * 0.66, w * 0.55, h * 0.8); ctx.quadraticCurveTo(w * 0.8, h * 0.9, w, h * 0.74); ctx.lineTo(w, h); ctx.fill();
+  ctx.fillStyle = '#1b1c45'; ctx.beginPath(); ctx.moveTo(0, h * 0.86); ctx.quadraticCurveTo(w * 0.4, h * 0.78, w * 0.7, h * 0.9); ctx.quadraticCurveTo(w * 0.88, h * 0.96, w, h * 0.9); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+  // too loud: the sky dims a little and a cloud drifts over the moon (slowly, never a flash)
+  const want = S.loud && S.screen === 'play' ? 1 : 0; dim += (want - dim) * 0.04;
+  cloudX += ((want ? 0.78 : 1.3) - cloudX) * (still() ? 1 : 0.02);
+  if (dim > 0.01) { ctx.fillStyle = `rgba(6,8,24,${0.3 * dim})`; ctx.fillRect(0, 0, w, h); }
+  if (cloudX < 1.25) {
+    ctx.fillStyle = 'rgba(200,208,240,0.85)';
+    for (const [dx, dy, r] of [[0, 0, 1], [0.9, 0.15, 0.8], [-0.85, 0.2, 0.75], [0.3, -0.45, 0.7]]) { ctx.beginPath(); ctx.arc(cloudX * w + dx * mr, my + dy * mr, r * mr, 0, 7); ctx.fill(); }
+  }
+}
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  step(dt, now); draw(now);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('listen').onclick = () => { sfx('click'); startListening(); };
+$('timer').onclick = () => { sfx('click'); begin('timer'); };
+$('pause').onclick = togglePause; $('tooLoud').onclick = tooLoud; $('end').onclick = finish;
+$('again').onclick = () => { sfx('click'); if (S.mode === 'mic') startListening(); else begin('timer'); };
+$('change').onclick = () => { screen('setup'); words(); $('listen').focus(); };
+$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } paintSound(); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'f') { $('full').click(); return; }
+  if (S.screen !== 'play') return;
+  if (k === ' ' || k === 'p' || k === 'pagedown') { e.preventDefault(); togglePause(); }
+  else if (k === 'l') tooLoud();
+  else if (k === 'e' || k === 'escape') finish();
+});
+addEventListener('pagehide', stopListening);
+
+window.__brbTest = { state: () => ({ screen: S.screen, mode: S.mode, quietSeconds: Math.floor(S.quiet), stars: S.stars.length, loud: S.loud, goal: S.goal, notice: S.notice }), start() { begin('timer'); },
+  advance(sec) { for (let i = 0; i < sec * 10; i++) step(0.1, performance.now()); } };
+words(); screen('setup');
+</script>
