@@ -1,0 +1,130 @@
+{
+ "key": "pro-7.2",
+ "n": "7.2",
+ "band": "pro",
+ "title": "Chance: experiments and models",
+ "topic": "Probability",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "The drop tower",
+   "text": "At the Test Range there is a drop tower. A probe falls through rows of pegs and lands in one of the bins at the bottom. Nobody can say where the next probe will land, but Tally can say how likely each bin is, and check it against many real drops.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "From 0 to 1",
+   "text": "A probability is a number from 0 to 1. An event that cannot happen has probability 0, and one that is certain has probability 1. Near 0 is unlikely, 1/2 is as likely as not, and near 1 is likely. A tower with 10 equal bins, 3 of them marked, gives a marked bin a probability of 3/10 = 0.3.",
+   "art": "dice",
+   "visual": {
+    "type": "numberline",
+    "label": "The probability line from impossible to certain",
+    "min": 0,
+    "max": 1,
+    "marks": [
+     { "at": 0, "label": "0" },
+     { "at": 0.5, "label": "1/2" },
+     { "at": 1, "label": "1" }
+    ],
+    "point": { "at": 0.3, "label": "0.3" }
+   },
+   "focus": [
+    {
+     "cue": "0 means it cannot happen.",
+     "box": [0, 0, 10, 10]
+    },
+    {
+     "cue": "1 means it is certain.",
+     "box": [0, 0, 10, 10]
+    },
+    {
+     "cue": "0.3 sits nearer 0: landing in a marked bin is unlikely.",
+     "box": [0, 0, 10, 10]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Predict from a run of drops",
+   "text": "When a model is hard to work out, run the experiment many times. The relative frequency, the fraction of drops that land in a bin, estimates its probability. Use the same rate to predict a longer run.",
+   "art": "chart",
+   "steps": [
+    "50 drops: 20 landed in bin C",
+    "20 ÷ 50 = 0.4",
+    "0.4 × 200 = 80",
+    "About 80 of 200 drops should land in C"
+   ]
+  },
+  {
+   "title": "Two stages in a table",
+   "text": "A probe goes left or right at a gate, then into bin 1, 2 or 3, and each way is equally likely. A table lists every outcome: 2 rows times 3 columns makes 6. Right, then bin 3, is one cell of the six, so its probability is 1/6.",
+   "art": "table",
+   "visual": {
+    "type": "table",
+    "label": "Every outcome of a gate and then a bin",
+    "head": ["Gate", "Bin 1", "Bin 2", "Bin 3"],
+    "rows": [
+     ["Left", "L1", "L2", "L3"],
+     ["Right", "R1", "R2", "R3"]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Two ways through the gate: two rows.",
+     "box": [0, 0, 10, 10]
+    },
+    {
+     "cue": "Six cells: six equally likely outcomes.",
+     "box": [0, 0, 10, 10]
+    },
+    {
+     "cue": "Right, then bin 3: one cell of six, 1/6.",
+     "box": [0, 0, 10, 10]
+    }
+   ]
+  },
+  {
+   "title": "Model or experiment",
+   "text": "A model gives a probability you can work out, like 3/10 for a marked bin. A real run comes out close to the model, but not exactly, and a longer run usually comes out closer. If a long run is far from the model, the model may be wrong: the bins might not be equally likely.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for chance.",
+   "art": "pencil",
+   "words": [
+    { "word": "probability", "means": "a number from 0 to 1 that says how likely an event is" },
+    { "word": "outcome", "means": "one way an experiment can turn out, like landing in bin 3" },
+    { "word": "sample space", "means": "the list of every possible outcome" },
+    { "word": "relative frequency", "means": "the fraction of trials in which an event happened" }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Launch Lab at Drop Tower. Find probabilities from equal bins, predict from a run of drops, and count the outcomes of a gate and a bin in a table. A wrong plan shows you what it really gives.",
+   "art": "trophy",
+   "img": "nq/launch-lab/drop-tower",
+   "alt": "Launch Lab on a phone: a drop tower with ten equal bins, three with a star, a line from 0 to 1, and a stepper to set the probability.",
+   "view": [0, 0, 37.82, 100],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-7.2-e1",
+  "nq-pro-7.2-e2",
+  "nq-pro-7.2-e3"
+ ],
+ "game": {
+  "slug": "launch-lab",
+  "chapter": "Drop Tower",
+  "params": "chapter=chance&lock=1"
+ }
+}

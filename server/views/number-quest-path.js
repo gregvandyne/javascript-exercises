@@ -67,8 +67,8 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut, welcome }) 
   </li>`;
 }
 
-/** A unit the catalogue has reserved and nobody has built yet (units.json `planned`): its banner and its steps
- *  as plain rows with no doors. Only the platform admin's preview of a street still being built lists these;
+/** A unit the catalogue has reserved and nobody has built yet (units.json `planned`), or a built unit's reserved
+ *  step (`partial`: Pro's finale): its banner and its steps as plain rows with no doors. Only the platform admin's preview of a street still being built lists these;
  *  a learner never sees one (the route passes none). English, like the rest of the street. */
 function plannedWorkshop(u) {
   const steps = T.plannedStepsOf(u);
@@ -77,7 +77,7 @@ function plannedWorkshop(u) {
       <span class="nqp-medal" style="--ring:0%" aria-hidden="true"><span class="nqp-medal-in">${u.emoji || '🔢'}</span></span>
       <div class="nqp-unit-t">
         <h2 lang="en" dir="ltr">Unit ${u.n} · ${u.title}</h2>
-        <p class="small muted nqp-laps">Planned: not built yet. No lesson, check or mission exists for this unit.</p>
+        <p class="small muted nqp-laps">${u.partial ? 'Planned: the unit is built, and this step of it is not yet. No lesson, check or mission exists for it.' : 'Planned: not built yet. No lesson, check or mission exists for this unit.'}</p>
       </div>
       ${u.stamp ? html`<span class="nqp-stone">🪨 <span lang="en" dir="ltr">${u.stamp}</span></span>` : ''}
     </header>
