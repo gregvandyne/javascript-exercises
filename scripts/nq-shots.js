@@ -138,6 +138,11 @@ const SHOTS = [
   { tier: 'pro', step: '6.1', state: 'fill-and-cover', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: keepBuilder, cdp: true },
   { tier: 'pro', step: '6.2', state: 'slide-flip-turn', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=move&lock=1', prep: keepBuilder, cdp: true },
   { tier: 'pro', step: '6.3', state: 'ladders-and-spans', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=span&lock=1', prep: keepBuilder, cdp: true },
+  // Pro Unit 7, The Test Range: Launch Lab, a 3D game, in each step's own chapter, the whole phone screen as the band
+  // (the words on top, the data board on the range, the lab tester and the results rack under it, the stepper below).
+  { tier: 'pro', step: '7.1', state: 'spread-test', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=spread&lock=1', prep: launchLab, cdp: true },
+  { tier: 'pro', step: '7.2', state: 'drop-tower', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=chance&lock=1', prep: launchLab, cdp: true },
+  { tier: 'pro', step: '7.3', state: 'trend-watch', slug: 'launch-lab', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=trend&lock=1', prep: launchLab, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -382,6 +387,17 @@ async function keepBuilder(f) {
   // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
   // the board has popped in: a store room drawn as a box, 2.5 m by 3 m by 2 m (Fill and Cover), two beams crossing at 65°
   // (Slide, Flip, Turn), a wall 4 m high with a ladder's foot 3 m out (Ladders and Spans).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#start');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function launchLab(f) {
+  // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
+  // the board has popped in: nine landings on a dot plot (Spread Test), the drop tower's ten bins with three stars and
+  // its line from 0 to 1 (Drop Tower), launchers A and B on one axis (Trend Watch).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#start');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);

@@ -47,10 +47,21 @@ export const catalogue = () => registry();
 export const tierOfUnit = u => (u && TIERS.includes(u.tier) ? u.tier : DEFAULT_TIER);
 /** Is this unit only reserved in the catalogue (declared so nothing collides, not built yet)? */
 export const isPlanned = u => !!u && u.planned === true;
+// A built unit may still hold a reserved step: a step marked `planned: true` (Pro's finale, 7.4, The Great
+// Clock, is reserved inside Unit 7, which is built: 2026-11-15). Such a step is left out of the built unit
+// exactly as a planned unit's steps are (no step, no door, no tag, no placement), and the unit is listed once
+// more among the planned ones, holding that step only (`partial: true`), so the admin's preview names it and
+// the tier is never open while it is reserved. Building the step is: write its deck and its game's chapter,
+// fill in its fields, and delete its `planned`.
+const plannedStep = s => !!s && s.planned === true;
+const builtPart = u => ((u.steps || []).some(plannedStep) ? { ...u, steps: u.steps.filter(s => !plannedStep(s)) } : u);
+const plannedPart = u => ({ ...u, planned: true, partial: true, steps: u.steps.filter(plannedStep) });
 /** A tier's BUILT units, in the catalogue's order (a planned unit is not in the tier yet: see the rules above). */
-export const unitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier && !isPlanned(u)) : []);
-/** A tier's planned units (reserved, not built), in the catalogue's order: shown to the platform admin only. */
-export const plannedUnitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier && isPlanned(u)) : []);
+export const unitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier && !isPlanned(u)).map(builtPart) : []);
+/** A tier's planned units (reserved, not built), in the catalogue's order: shown to the platform admin only. A
+ *  built unit that still holds a reserved step is listed as well, with that step only (`partial: true`). */
+export const plannedUnitsOf = tier => (TIERS.includes(tier) ? (registry().units || []).filter(u => tierOfUnit(u) === tier)
+  .flatMap(u => (isPlanned(u) ? [u] : (u.steps || []).some(plannedStep) ? [plannedPart(u)] : [])) : []);
 /** A planned unit's steps as reserved, in path order: [{ key, n, order, title, standards }]. No step here can be opened. */
 export const plannedStepsOf = unit => [...((unit && unit.steps) || [])].sort((a, b) => a.order - b.order)
   .map(s => { const tier = tierOfUnit(unit); return { key: `${tier}-${s.n}`, n: s.n, order: s.order, title: ((s.titles || {})[tier]) || s.n, standards: ((s.standards || {})[tier]) || null }; });

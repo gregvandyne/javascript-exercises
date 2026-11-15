@@ -48,8 +48,10 @@ const cat = JSON.parse(fs.readFileSync(path.join(NQ, 'units.json'), 'utf8'));
 const reg = JSON.parse(fs.readFileSync(path.join(NQ, 'standards.json'), 'utf8'));
 const locked = new Set(Object.keys(reg.proCodes.codes));
 const UNITS = cat.units.filter(u => u.tier === TIER);
-const BUILT = UNITS.filter(u => !u.planned).flatMap(u => u.steps.map(s => ({ ...s, unit: u.n })));
-const PLANNED = UNITS.filter(u => u.planned).flatMap(u => u.steps.map(s => ({ ...s, unit: u.n })));
+// A built unit may still hold a reserved step (`planned` on the step: Pro's finale, 7.4, inside built Unit 7), which is
+// planned exactly as a planned unit's steps are.
+const BUILT = UNITS.filter(u => !u.planned).flatMap(u => u.steps.filter(s => s.planned !== true).map(s => ({ ...s, unit: u.n })));
+const PLANNED = UNITS.flatMap(u => u.steps.filter(s => u.planned || s.planned === true).map(s => ({ ...s, unit: u.n })));
 const deckDir = path.join(NQ, 'course', TIER);
 const files = fs.readdirSync(deckDir).filter(f => f.endsWith('.json')).sort();
 const course = C.getCourse('number-quest');

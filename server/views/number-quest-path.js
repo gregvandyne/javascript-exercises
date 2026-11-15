@@ -67,8 +67,8 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut, welcome }) 
   </li>`;
 }
 
-/** A unit the catalogue has reserved and nobody has built yet (units.json `planned`): its banner and its steps
- *  as plain rows with no doors. Only the platform admin's preview of a street still being built lists these;
+/** A unit the catalogue has reserved and nobody has built yet (units.json `planned`), or a built unit's reserved
+ *  step (`partial`: Pro's finale): its banner and its steps as plain rows with no doors. Only the platform admin's preview of a street still being built lists these;
  *  a learner never sees one (the route passes none). English, like the rest of the street. */
 function plannedWorkshop(u) {
   const steps = T.plannedStepsOf(u);
@@ -77,7 +77,7 @@ function plannedWorkshop(u) {
       <span class="nqp-medal" style="--ring:0%" aria-hidden="true"><span class="nqp-medal-in">${u.emoji || '🔢'}</span></span>
       <div class="nqp-unit-t">
         <h2 lang="en" dir="ltr">Unit ${u.n} · ${u.title}</h2>
-        <p class="small muted nqp-laps">Planned: not built yet. No lesson, check or mission exists for this unit.</p>
+        <p class="small muted nqp-laps">${u.partial ? 'Planned: the unit is built, and this step of it is not yet. No lesson, check or mission exists for it.' : 'Planned: not built yet. No lesson, check or mission exists for this unit.'}</p>
       </div>
       ${u.stamp ? html`<span class="nqp-stone">🪨 <span lang="en" dir="ltr">${u.stamp}</span></span>` : ''}
     </header>
@@ -87,6 +87,11 @@ function plannedWorkshop(u) {
   </li>`;
 }
 
+/** What the planned list holds, in words: "2 units", or for a built unit's reserved step (`partial`) "1 step of a built unit". */
+function plannedWords(planned) {
+  const full = planned.filter(u => !u.partial).length, part = planned.filter(u => u.partial).reduce((n, u) => n + (u.steps || []).length, 0);
+  return [full && `${full} ${full === 1 ? 'unit' : 'units'}`, part && `${part} ${part === 1 ? 'step' : 'steps'} of a built unit`].filter(Boolean).join(' and ');
+}
 /** Grades as a street's card prints them: the catalogue's "3-5" with an en dash. */
 const gradesLine = g => `Grades ${String(g || '').replace('-', '–')}`;
 const EXPLORER_STREET = Object.freeze({ key: 'explorer', name: 'Explorer', grades: '3-5', district: 'The Workshops', building: false });
@@ -173,7 +178,7 @@ export function pathPage(d) {
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}
     </ol>${planned.length ? html`
     <section class="nqp-planned" id="nqp-planned" aria-labelledby="nqp-planned-h" lang="en" dir="ltr">
-      <h2 id="nqp-planned-h">🛠️ Planned for ${here.name}: ${planned.length} ${planned.length === 1 ? 'unit' : 'units'} not built yet</h2>
+      <h2 id="nqp-planned-h">🛠️ Planned for ${here.name}: ${plannedWords(planned)} not built yet</h2>
       <p class="small muted">Admin preview. These units are reserved in the catalogue (titles, stones, step numbers and standards) so they can be built side by side. Nothing here can be opened, and no learner sees this street until it opens.</p>
       <ol class="nqp-path" aria-label="Planned units of ${here.name}">${planned.map(plannedWorkshop)}</ol>
     </section>` : ''}

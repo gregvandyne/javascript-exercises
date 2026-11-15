@@ -5466,6 +5466,57 @@ Where the build left the plan, and why:
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear, and play by a student of the age.
 
+## Number Quest Pro Unit 7: The Test Range and Launch Lab, without the finale (15 Nov 2026)
+
+The seventh and last Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR
+touches"), side by side with Unit 6: three decks, nine exit items, the game Launch Lab in the Space Base world, and the
+one-line registrations. Pro stays `building`; nobody but the platform admin can open a Pro step; the route still
+refuses a Pro test-out and placement lands nobody on Pro. Where the build left the plan, and why:
+
+- **The finale is not built.** The plan puts step 7.4, The Great Clock, in Unit 7 as the game's fourth chapter, with
+  twelve exit items for the unit and a fourth teacher note. This change was asked to build the unit without the
+  finale, so Launch Lab has three chapters, the bank nine items and the unit three notes.
+- **A step can be planned inside a built unit.** The engine knew only whole planned units: lifting Unit 7's flag would
+  have made 7.4 a step with the placeholder deck and no game, and the deck checker would have reported it. Step 7.4 now
+  carries `"planned": true` (with its `reserved` params kept), and `number-quest-tiers.js` treats it as it treats a
+  planned unit's steps: left out of the built unit, listed among the planned units as the unit with that one step
+  (`partial`), and a tier holding one is never open. The standards tags skip it, and the admin's street says the unit
+  is built and that step is not. Once Unit 6 is in, no Pro unit is planned, and the finale alone keeps the tier from
+  opening by mistake.
+- **The planned-unit tests keep a planned unit.** With Units 6 and 7 built, the real catalogue has none, so
+  `number-quest-pro-foundations.test.js` exercises the planned-unit behaviour (no steps, no tags, no test-out, the
+  admin's planned list and teacher section, a tier never open) through a copy of the catalogue with Unit 7 put back to
+  planned, loaded through the existing test hook (`setCatalogueForTests`). A placeholder deck is shown by lifting the
+  finale's flag in a copy. A new test pins that all seven Pro units are built and that the finale is the one reserved
+  and planned step (merged after Unit 6, which landed first).
+- **Read-aloud is on by default** (owner decision 6), not a button off by default. Spoken lines are written as said;
+  a rate that does not come out even is said "about".
+- **Oomba3D 1.2.0 and Space Base 1.0.0**, the newest of each. The base is shown at sunset, so it does not look like
+  Rocket Supply, which plays the same world by day. No kit or theme file changed.
+- **No physics.** The plan had probes thrown with Rapier and a little honest scatter on each shot, and named "random
+  enough to be real data, controlled enough for one right answer" as the hardest thing. Every data set comes from the
+  game's seeded generator and is checked in its test (a median really is the middle landing, a mean absolute deviation
+  the one the words give, a scatter plot's pattern clear by its correlation). The launcher's probe flies on every run
+  as a picture only.
+- **The plot is a face-on board**, the standing rule: dot plots, box plots, bars, the tower, the outcome table, a
+  sample and scatter plots are drawn on one board readable on a phone; the 3D base is the setting.
+- **Nothing is dragged.** The plan said "drag the marker to the median" and "place the trend line". A stepper with Run
+  (or three tiles) answers every round, as in the other Pro games, and the board shows only the question until Run.
+  Placing a trend line has no single right answer, so the trend line is given (through two named points) and used to
+  predict; fitting is in deck 7.3 and the trend line a found association draws.
+- **The drop tower's prediction is from a model** ("the model gives bin C 0.3: how many of 60?"), and a real run is
+  shown beside it after the answer, close but not exactly. The plan's "about how many" was reworded so exactly one
+  number is right.
+- **No gambling.** Chance is bins, probes, gates and fins; nothing is bet, staked, won or priced, and the test checks
+  every line for wager words.
+- **Contexts are neutral** (decision 3); no reward currency (the theme's coin is not loaded; a cargo pod marks a
+  finished round).
+- **Left for the finale and opening PRs**: the `clock` chapter, deck 7.4 and its three items, the fourth teacher note;
+  the teacher page's game list (`NQ_CREW`) and locale strings. The game is a library game on the Learn shelf (math,
+  grades 6 to 8) from the day it is registered; its title, description and tags never name the Pro tier.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear, and play by a student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

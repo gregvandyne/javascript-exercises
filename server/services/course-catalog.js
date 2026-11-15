@@ -53,6 +53,7 @@ export const COURSES = Object.freeze([
     // Scale Scout is its fourth (Unit 4, The Map Room: proportional relationships and their constant, scale drawings and maps, percent problems).
     // Sky Lines is its fifth (Unit 5, The Sky Wires: slope, y = mx + b as a rule, linear equations and where two lines meet).
     // Keep Builder is its sixth (Unit 6, The Drafting Keep: area, surface area and volume; angles and moves; the Pythagorean theorem).
+    // Launch Lab is its seventh (Unit 7, The Test Range: center and spread, chance, comparing two data sets and scatter plots).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -72,6 +73,7 @@ export const COURSES = Object.freeze([
       { slug: 'scale-scout', topic: 'numbers', shared: true },
       { slug: 'sky-lines', topic: 'numbers', shared: true },
       { slug: 'keep-builder', topic: 'numbers', shared: true },
+      { slug: 'launch-lab', topic: 'numbers', shared: true },
     ],
   },
 ]);

@@ -82,6 +82,11 @@ export const GAMES = Object.freeze({
   // surface area; angle facts and slides, flips, turns and dilations in coordinates; the Pythagorean theorem, its converse
   // and distance on a grid (its three chapters, KEEP_CHAPTERS below).
   'keep-builder': { 'ccss-math': ['6.G.A.1', '6.G.A.2', '6.G.A.4', '7.G.B.6', '7.G.B.5', '8.G.A.1', '8.G.A.3', '8.G.A.2', '8.G.A.4', '8.G.B.7', '8.G.B.8', '8.G.B.6', '8.EE.A.2'] },
+  // Launch Lab (grades 6-8, Number Quest Pro Unit 7): center and spread of probe landings (median, mean, interquartile range,
+  // mean absolute deviation, dot plots, box plots and histograms), probability from models and from runs of drops (two stages
+  // in a table), and two data sets compared in spreads, a random sample, and scatter plots with their association, outlier and
+  // trend line (its three chapters, LAB_CHAPTERS below).
+  'launch-lab': { 'ccss-math': ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2', '7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8', '7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -150,8 +155,12 @@ export const SKY_CHAPTERS = Object.freeze({
 export const KEEP_CHAPTERS = Object.freeze({
   build: ['6.G.A.1', '6.G.A.2', '6.G.A.4', '7.G.B.6'], move: ['7.G.B.5', '8.G.A.1', '8.G.A.3', '8.G.A.2', '8.G.A.4'], span: ['8.G.B.7', '8.G.B.8', '8.G.B.6', '8.EE.A.2'],
 });
+/** Launch Lab's chapters (seed-games/launch-lab.html LaunchLab.CHAPTERS), for a step locked to one. */
+export const LAB_CHAPTERS = Object.freeze({
+  spread: ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2'], chance: ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8'], trend: ['7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder', 'launch-lab']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -174,6 +183,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'scale-scout') { const ch = p.get('chapter') || ''; return Object.hasOwn(SCOUT_CHAPTERS, ch) ? [...SCOUT_CHAPTERS[ch]] : null; }
   if (slug === 'sky-lines') { const ch = p.get('chapter') || ''; return Object.hasOwn(SKY_CHAPTERS, ch) ? [...SKY_CHAPTERS[ch]] : null; }
   if (slug === 'keep-builder') { const ch = p.get('chapter') || ''; return Object.hasOwn(KEEP_CHAPTERS, ch) ? [...KEEP_CHAPTERS[ch]] : null; }
+  if (slug === 'launch-lab') { const ch = p.get('chapter') || ''; return Object.hasOwn(LAB_CHAPTERS, ch) ? [...LAB_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one
@@ -221,8 +231,8 @@ export function numberQuestSteps() {
   if (nqSteps) return nqSteps;
   const units = JSON.parse(fs.readFileSync(UNITS, 'utf8')).units || [];
   nqSteps = new Map();
-  // (a unit marked `planned` is reserved, not built: it has no step a play could be credited to)
-  for (const u of units.filter(x => x.planned !== true)) for (const s of u.steps || []) {
+  // (a unit or a step marked `planned` is reserved, not built: it has no step a play could be credited to)
+  for (const u of units.filter(x => x.planned !== true)) for (const s of (u.steps || []).filter(x => x.planned !== true)) {
     const tier = ['launchpad', 'explorer', 'pro'].includes(u.tier) ? u.tier : 'explorer';
     const st = ((s.standards || {})[tier]) || {};
     const codes = (st.primary || []).filter(c => /^(K|\d)\.[A-Z]+\.[A-D]\.\d+[a-z]?$/.test(c));

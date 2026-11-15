@@ -1,0 +1,237 @@
+{
+ "key": "pro-7.1",
+ "n": "7.1",
+ "band": "pro",
+ "title": "Center and spread",
+ "topic": "Center and spread",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "Nine probes on the test range",
+   "text": "The last tower is the Test Range. A launcher sends probes out over the red ground, and each one lands a little nearer or farther than the one before. Tally has the landings of nine probes and wants to know two things: what a typical landing is, and how much the landings vary.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "The middle landing",
+   "text": "A dot plot puts one dot over the number line for each landing. To find the median, put the nine landings in order and take the middle one: the 5th. Four probes landed at or before it and four at or after it. The median here is 14 meters.",
+   "art": "chart",
+   "say": "A dot plot puts one dot over the number line for each landing. To find the median, put the nine landings in order and take the middle one, the 5th. Four probes landed at or before it and four at or after it. The median here is 14 meters.",
+   "visual": {
+    "type": "numberline",
+    "label": "Nine landings on a dot plot, in meters",
+    "min": 10,
+    "max": 18,
+    "marks": [
+     {
+      "at": 10,
+      "label": "10"
+     },
+     {
+      "at": 11,
+      "label": "11"
+     },
+     {
+      "at": 12,
+      "label": "12"
+     },
+     {
+      "at": 13,
+      "label": "13"
+     },
+     {
+      "at": 14,
+      "label": "14"
+     },
+     {
+      "at": 15,
+      "label": "15"
+     },
+     {
+      "at": 16,
+      "label": "16"
+     },
+     {
+      "at": 17,
+      "label": "17"
+     },
+     {
+      "at": 18,
+      "label": "18"
+     }
+    ],
+    "stacks": [
+     {
+      "at": 11,
+      "n": 1
+     },
+     {
+      "at": 12,
+      "n": 2
+     },
+     {
+      "at": 13,
+      "n": 1
+     },
+     {
+      "at": 14,
+      "n": 3
+     },
+     {
+      "at": 15,
+      "n": 1
+     },
+     {
+      "at": 17,
+      "n": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Four landings come before 14: 11, 12, 12 and 13.",
+     "box": [
+      14.3,
+      43.3,
+      27.4,
+      16.8
+     ]
+    },
+    {
+     "cue": "The middle landing, the 5th in order, is at 14.",
+     "box": [
+      47.2,
+      35.9,
+      5.8,
+      47.4
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "The mean and how far landings stray",
+   "text": "The mean shares the total out equally. The mean absolute deviation, or MAD, is the average distance of the landings from the mean. A small MAD means the landings stay close together.",
+   "art": "ruler",
+   "steps": [
+    "Five landings: 10, 12, 13, 15, 15 m",
+    "Mean: 65 ÷ 5 = 13 m",
+    "Distances from 13: 3, 1, 0, 2, 2",
+    "MAD: 8 ÷ 5 = 1.6 m"
+   ]
+  },
+  {
+   "title": "Five numbers make a box plot",
+   "text": "A box plot shows the lowest landing, the lower quartile, the median, the upper quartile and the highest landing. The box holds the middle half of the data. Its width is the interquartile range: 16 − 11 = 5 meters.",
+   "art": "chart",
+   "visual": {
+    "type": "boxplot",
+    "label": "Where the probes landed, as a box plot",
+    "min": 6,
+    "max": 22,
+    "step": 2,
+    "unit": "Meters",
+    "plots": [
+     {
+      "five": [
+       8,
+       11,
+       14,
+       16,
+       20
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The box runs from the lower quartile, 11, to the upper quartile, 16.",
+     "box": [
+      32.7,
+      20.1,
+      30.2,
+      31.3
+     ]
+    },
+    {
+     "cue": "The line in the box is the median, 14.",
+     "box": [
+      47.2,
+      20.1,
+      5.8,
+      31.3
+     ]
+    },
+    {
+     "cue": "The whiskers reach the lowest and highest landings, 8 and 20.",
+     "box": [
+      17.8,
+      20.1,
+      65.6,
+      27.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Center, spread and shape",
+   "text": "To describe a set of data, give its center, its spread and its shape. Say how many values there are and what was measured. A landing far from the rest pulls the mean toward it but hardly moves the median, so the median can be the fairer center.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for center and spread.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "median",
+     "means": "the middle value when the data are put in order"
+    },
+    {
+     "word": "mean",
+     "means": "the total shared out equally: add the values, then divide by how many there are"
+    },
+    {
+     "word": "interquartile range",
+     "means": "the upper quartile minus the lower quartile: how wide the middle half is"
+    },
+    {
+     "word": "mean absolute deviation",
+     "means": "the average distance of the values from the mean"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Launch Lab at Spread Test. Find the median and the mean of the landings, pick the more consistent launcher, and read a box plot and a histogram. A wrong plan shows you what it really gives.",
+   "art": "trophy",
+   "img": "nq/launch-lab/spread-test",
+   "alt": "Launch Lab on a phone: a data board with a dot plot of nine probe landings in meters, and a stepper to set the median.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-7.1-e1",
+  "nq-pro-7.1-e2",
+  "nq-pro-7.1-e3"
+ ],
+ "game": {
+  "slug": "launch-lab",
+  "chapter": "Spread Test",
+  "params": "chapter=spread&lock=1"
+ }
+}

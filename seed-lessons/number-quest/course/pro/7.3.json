@@ -1,0 +1,250 @@
+{
+ "key": "pro-7.3",
+ "n": "7.3",
+ "band": "pro",
+ "title": "Compare two data sets and spot a trend",
+ "topic": "Comparing data",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "Two launchers, one question",
+   "text": "Two launchers stand side by side on the Test Range. Launcher B seems to send its probes farther, but every landing varies a little. Tally wants to know whether the difference is real or just the usual scatter, and how launch power and distance go together.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "How far apart, in spreads",
+   "text": "Put the two box plots over one number line. B's median is 21 meters and A's is 15, so they are 6 meters apart. Both boxes are 4 meters wide, so the medians are 6 ÷ 4 = 1.5 box widths apart. The two boxes do not even overlap: B's probes really do go farther.",
+   "art": "chart",
+   "visual": {
+    "type": "boxplot",
+    "label": "Landings of launchers A and B",
+    "min": 8,
+    "max": 28,
+    "step": 2,
+    "unit": "Meters",
+    "plots": [
+     {
+      "name": "A",
+      "five": [
+       10,
+       13,
+       15,
+       17,
+       20
+      ]
+     },
+     {
+      "name": "B",
+      "five": [
+       16,
+       19,
+       21,
+       23,
+       26
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A's median is 15 meters.",
+     "box": [
+      35.2,
+      11.5,
+      5.6,
+      25.4
+     ]
+    },
+    {
+     "cue": "B's median is 21 meters: 6 meters farther.",
+     "box": [
+      59.2,
+      46.4,
+      5.6,
+      25.3
+     ]
+    },
+    {
+     "cue": "B's box is 23 − 19 = 4 meters wide, the same as A's.",
+     "box": [
+      51.1,
+      46.4,
+      22.1,
+      25.3
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Means apart, counted in MADs",
+   "text": "When two data sets vary by about the same amount, divide the gap between their means by that spread. The answer says how many spreads apart they are.",
+   "art": "ruler",
+   "steps": [
+    "A: mean 14 m, MAD 2 m",
+    "B: mean 20 m, MAD 2 m",
+    "20 − 14 = 6 m",
+    "6 ÷ 2 = 3 MADs apart"
+   ]
+  },
+  {
+   "title": "A scatter plot and its trend",
+   "text": "Each point is one launch: its power across, its distance up. The points rise from left to right, a positive association. A trend line runs close to the points, with about as many above it as below. One point sits far below the rest: an outlier, a probe that hit a rock.",
+   "art": "chart",
+   "visual": {
+    "type": "plane",
+    "label": "Launch power and distance",
+    "x": [
+     0,
+     10
+    ],
+    "y": [
+     0,
+     40
+    ],
+    "step": [
+     1,
+     5
+    ],
+    "xName": "Power",
+    "yName": "Distance (m)",
+    "points": [
+     {
+      "x": 1,
+      "y": 7
+     },
+     {
+      "x": 2,
+      "y": 11
+     },
+     {
+      "x": 3,
+      "y": 12
+     },
+     {
+      "x": 4,
+      "y": 16
+     },
+     {
+      "x": 5,
+      "y": 20
+     },
+     {
+      "x": 6,
+      "y": 10
+     },
+     {
+      "x": 7,
+      "y": 25
+     },
+     {
+      "x": 8,
+      "y": 29
+     },
+     {
+      "x": 9,
+      "y": 30
+     }
+    ],
+    "lines": [
+     {
+      "m": 3,
+      "b": 4,
+      "dash": true,
+      "label": "trend"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The points rise from left to right: a positive association.",
+     "box": [
+      20.2,
+      22.4,
+      69.0,
+      49.6
+     ]
+    },
+    {
+     "cue": "The trend line runs close to the points.",
+     "box": [
+      14.7,
+      18.3,
+      80.0,
+      55.9
+     ]
+    },
+    {
+     "cue": "This point is far below the pattern: an outlier.",
+     "box": [
+      60.4,
+      58.6,
+      4.7,
+      7.9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A random sample speaks for the batch",
+   "text": "Testing every probe in a batch of 300 takes too long, so Tally tests a random sample of 20. Four of the 20 need a new fin. That is a rate of 4 ÷ 20 = 0.2, so about 0.2 × 300 = 60 probes in the batch need one. A random sample gives every probe the same chance of being picked.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for comparing data.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "association",
+     "means": "how two quantities go together: up together, one up and one down, or no pattern"
+    },
+    {
+     "word": "trend line",
+     "means": "a straight line drawn close to the points of a scatter plot"
+    },
+    {
+     "word": "outlier",
+     "means": "a value far from the rest of the data"
+    },
+    {
+     "word": "random sample",
+     "means": "a part of a group picked so that every member has the same chance"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Launch Lab at Trend Watch. Compare two launchers, estimate a batch from a sample, read the pattern of a scatter plot, find its outlier and predict from a trend line. A wrong plan shows you what it really gives.",
+   "art": "trophy",
+   "img": "nq/launch-lab/trend-watch",
+   "alt": "Launch Lab on a phone: a data board with two dot plots, launchers A and B, on one axis in meters, and a stepper to set how far apart their medians are.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-7.3-e1",
+  "nq-pro-7.3-e2",
+  "nq-pro-7.3-e3"
+ ],
+ "game": {
+  "slug": "launch-lab",
+  "chapter": "Trend Watch",
+  "params": "chapter=trend&lock=1"
+ }
+}

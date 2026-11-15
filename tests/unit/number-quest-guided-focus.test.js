@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 213, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5 and 8 in Pro Unit 6');
-  assert.equal(steps, 506, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5 and 23 in Pro Unit 6');
+  assert.equal(slides, 219, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5, 8 in Pro Unit 6 and 6 in Pro Unit 7');
+  assert.equal(steps, 523, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5, 23 in Pro Unit 6 and 17 in Pro Unit 7');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -661,14 +661,36 @@ const REGISTRY = [
   ['pro-6.3', 3, 0, [33.6, 61.6, 54.9, 75.3], [32.6, 60, 23.3, 16.9]],
   ['pro-6.3', 3, 1, [53.1, 10.5, 74.4, 24.2], [52.1, 8.9, 23.3, 16.9]],
   ['pro-6.3', 3, 2, [34.6, 17.1, 64.6, 68.7], [33.6, 15.5, 32, 54.8]],
+  // Pro Unit 7, The Test Range (2026-11-15): 7.1 a dot plot of nine landings (the four before the middle, the three at 14 with
+  // their label) and a box plot (the box with its quartiles, the median, the whiskers with the lowest and highest); 7.2 the
+  // probability line (0, 1, the point 0.3) and the table of a gate and a bin (the two rows, the six outcomes, R3); 7.3 two box
+  // plots (A's median, B's median, B's box with its quartiles) and a scatter plot (the points, the trend line, the outlier).
+  // Measured with getBoundingClientRect on the drawn diagrams at 390 px, as Unit 4's were.
+  ['pro-7.1', 1, 0, [15.31, 44.98, 40.7, 58.49], [14.3, 43.3, 27.4, 16.8]],
+  ['pro-7.1', 1, 1, [48.25, 37.51, 51.96, 81.64], [47.2, 35.9, 5.8, 47.4]],
+  ['pro-7.1', 3, 0, [33.71, 21.73, 61.9, 49.78], [32.7, 20.1, 30.2, 31.3]],
+  ['pro-7.1', 3, 1, [48.2, 21.73, 51.95, 49.78], [47.2, 20.1, 5.8, 31.3]],
+  ['pro-7.1', 3, 2, [18.83, 21.73, 82.33, 46.22], [17.8, 20.1, 65.6, 27.8]],
+  ['pro-7.2', 1, 0, [4.81, 59.38, 7.26, 81.64], [3.8, 57.7, 4.5, 25.6]],
+  ['pro-7.2', 1, 1, [93.37, 59.38, 94.62, 81.64], [92.3, 57.7, 3.4, 25.6]],
+  ['pro-7.2', 1, 2, [28.85, 43.03, 35.95, 68.09], [27.8, 41.4, 9.2, 28.3]],
+  ['pro-7.2', 3, 0, [12.13, 37.45, 21.97, 59.15], [11.1, 35.8, 11.9, 25.0]],
+  ['pro-7.2', 3, 1, [37.06, 37.45, 85.4, 59.15], [36.0, 35.8, 50.4, 25.0]],
+  ['pro-7.2', 3, 2, [80.53, 50.96, 85.4, 59.15], [79.5, 49.3, 6.9, 11.5]],
+  ['pro-7.3', 1, 0, [36.26, 13.19, 39.77, 35.2], [35.2, 11.5, 5.6, 25.4]],
+  ['pro-7.3', 1, 1, [60.23, 48.04, 63.74, 70.04], [59.2, 46.4, 5.6, 25.3]],
+  ['pro-7.3', 1, 2, [52.16, 48.04, 72.19, 70.04], [51.1, 46.4, 22.1, 25.3]],
+  ['pro-7.3', 3, 0, [21.21, 24, 88.19, 70.33], [20.2, 22.4, 69.0, 49.6]],
+  ['pro-7.3', 3, 1, [15.76, 19.95, 93.63, 72.57], [14.7, 18.3, 80.0, 55.9]],
+  ['pro-7.3', 3, 2, [61.45, 60.27, 64.04, 64.89], [60.4, 58.6, 4.7, 7.9]],
 ];
-test('every authored box contains its measured target with a small margin (506-step registry)', () => {
+test('every authored box contains its measured target with a small margin (523-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 506);
+  assert.equal(REGISTRY.length, 523);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -686,7 +708,7 @@ test('every authored box contains its measured target with a small margin (506-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 506);
+  assert.equal(total, 523);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at
