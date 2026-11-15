@@ -2,7 +2,7 @@
 // and turns allowed ones into server calls. Docs: docs/sdk.md
 import { api, toast, sheet, pageData, refreshLive, tappedJustNow, $, t, esc } from '/js/app.js';
 import { openLobby, startRelay } from '/js/match.js';
-import { ttsBlob, voiceMode, setVoiceMode, saveData } from '/js/tts.js';
+import { ttsBlob, ttsCheck, voiceMode, setVoiceMode, saveData } from '/js/tts.js';
 const d = pageData();
 // The game frame waits in a <template> until its 'load' listener is on (below), so its first load is never missed.
 const frame = document.importNode($('#gameframe-tpl').content.firstElementChild, true), stage = $('#stage');
@@ -119,7 +119,8 @@ const TYPES = {
   'brb:online': m => true,
   // AI voices (official games listed for voices, games the admin switched on and scanner-passed Builder games; public/js/tts.js): one line of the game's own words to read aloud.
   'brb:tts': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.text === 'string' && m.text.length > 0 && m.text.length <= 600 && typeof m.lang === 'string' && m.lang.length <= 16
-    && TTS_ROLES.includes(m.role) && Number.isFinite(m.rate) && m.rate >= 0.5 && m.rate <= 2 && (m.pre === undefined || m.pre === true),
+    && TTS_ROLES.includes(m.role) && Number.isFinite(m.rate) && m.rate >= 0.5 && m.rate <= 2 && (m.pre === undefined || m.pre === true)
+    && (m.check === undefined || m.check === true),
   // Loudness (BRB.loudness; only page-data.mic pages ever listen, public/js/loudness.js): hello / start / keep / stop.
   'brb:loud': m => LOUD_OPS.includes(m.op),
 };
@@ -306,6 +307,12 @@ function tellAiOnce() {
   toast(t('js.play.voicesNote', { provider: d.tts.provider || 'OpenAI' }), { ms: 9000 });
 }
 async function gameLine(m) {
+  // BRB.aiVoiceCheck: would this line get the AI voice? (the server checks it; no audio is made)
+  if (m.check) {
+    const ok = !!(d.tts && d.tts.tok) && voiceMode() === 'ai' && await ttsCheck({ ctx: 'game', tok: d.tts.tok, text: m.text, lang: m.lang, role: m.role, rate: m.rate });
+    toFrame({ type: 'brb:tts', id: m.id, ok, check: true });
+    return;
+  }
   const no = why => { if (!m.pre) toFrame({ type: 'brb:tts', id: m.id, ok: false, why }); };
   if (!d.tts || !d.tts.tok) return no('off');
   if (voiceMode() !== 'ai') return no('off');

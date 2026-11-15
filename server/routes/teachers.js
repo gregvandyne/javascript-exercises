@@ -17,7 +17,7 @@ import { courseRow } from '../views/courses.js';
 import * as courses from '../services/courses.js';
 import { log } from '../services/log.js';
 import { liveGameOf } from '../live/live-games.js';
-import { tHtml, availableLocales } from '../i18n/index.js';
+import { tHtml, availableLocales, keepLang } from '../i18n/index.js';
 import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { familiesOn } from '../services/family.js';
@@ -304,7 +304,7 @@ router.get('/teachers', (req, res) => {
     ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }) : ''}
     <div class="row">
       ${plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a> <a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
-      ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
+      ${list[0] ? html`<a class="btn" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
   </section>`;
@@ -320,7 +320,7 @@ router.get('/teachers', (req, res) => {
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
       ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">📡 ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
-      ${list[0] ? html`<a class="btn btn-big" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
+      ${list[0] ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${howArt(req, 'teachers')}
   </section>
@@ -573,7 +573,7 @@ router.get('/learn', (req, res) => {
     const l = liveGameOf(g);
     const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
       : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="${keepLang(req, `/play/${l ? l.solo : g.slug}`)}">▶ ${t('learn.tab.try')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
@@ -685,7 +685,7 @@ router.get('/learn/:hub', (req, res) => {
       <div class="lp-hubgame-text">
         <h2 id="g-${g.slug}"><a href="${lp(req, `/g/${g.slug}`)}">${g.title}</a></h2>
         ${t.own(`learn.games.${LEARNING[g.slug].key}`) ? html`<p class="lp-practise"><b>${t('learn.practise')}</b> ${t(`learn.games.${LEARNING[g.slug].key}`)}</p>` : html`<p class="ugc">${g.description}</p>`}
-        <div class="row"><a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
+        <div class="row"><a class="btn btn-primary" href="${keepLang(req, `/play/${g.slug}`)}" rel="nofollow">▶ ${t('learn.play')}</a><a class="btn" href="${lp(req, `/g/${g.slug}`)}">${t('learn.about')}</a></div>
       </div></article>`;
   // The make-a-game page's "How much does it cost?" names the optional plans (never a price) only while they are public.
   const paidKey = n => (familiesOn(req) && t.has(`${k}.faq.a${n}paid`) ? `${k}.faq.a${n}paid` : `${k}.faq.a${n}`);

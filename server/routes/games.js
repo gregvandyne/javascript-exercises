@@ -15,7 +15,7 @@ import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimi
 import { q, uid, now, audit } from '../db.js';
 import { alert as adminAlert } from '../services/admin-alerts.js';
 import { config } from '../config.js';
-import { tEn, tFor, normalizeCode, localeInfo } from '../i18n/index.js';
+import { tEn, tFor, normalizeCode, localeInfo, keepLang } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
 import { characterOf } from '../services/character.js';
@@ -106,7 +106,7 @@ router.get('/g/:slug', (req, res) => {
           <div class="stat"><b id="likecount">${f.num(g.likes)}</b>${t('game.stats.likes', { count: +g.likes || 0 })}</div>
         </div>
         ${liveEntry && playable ? '' : html`<div class="row actions">
-          ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
+          ${playable ? html`<a class="btn btn-primary btn-big playbig" href="${keepLang(req, `/play/${g.slug}`)}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
           ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
         </div>`}
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
@@ -173,7 +173,7 @@ function livePanel(req, g, entry) {
       <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
       <button class="btn btn-primary btn-big" type="submit" id="lpjoin">🎟️ ${t('live.entry.joinGo')}</button>
     </form>
-    <div class="row actions">${host}<a class="btn" href="/play/${entry.solo}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
+    <div class="row actions">${host}<a class="btn" href="${keepLang(req, `/play/${entry.solo}`)}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
   </section>`;
 }
 

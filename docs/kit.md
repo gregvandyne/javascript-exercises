@@ -49,7 +49,14 @@
   `kit/SHIPPED.json`, its `live` pack unlocked as before). The play page passes `?style=cartoon` to the frame as
   `?okStyle=cartoon` (only names in `FRAME_STYLES`, routes/games.js; the live page too); only a game that offers the
   style (`styles: ['cartoon']`, Hero of Sunvale) draws it. bridge-3d is 13.9 KB brotli (cap 14). 1.1.5 also carries
-  every 1.1.4 pack, Sum Racer's `style-pixel` and `art-pixel` (with their fonts) included.
+  every 1.1.4 pack, Sum Racer's `style-pixel` and `art-pixel` (with their fonts) included. 1.1.5 is locked in
+  `kit/SHIPPED.json` since 1.1.6 (it was live without its lock), with the packs 1.1.4 locks.
+> - **1.1.6 (how-to cards read only on a tap, with the AI voice):** the how-to card no longer reads itself aloud as it
+>   opens; a round speaker button in its corner reads the title and the cards with the platform's AI voice
+>   (`BRB.speak` `ai: 'only'`), shown only once `BRB.aiVoiceCheck` says every line gets it, never the device's voice
+>   (strings `readToMe`, `stopReading`). `KIT_PATCHES` maps 1.1.3, 1.1.4 and 1.1.5 → 1.1.6, and the official games and
+>   the live lobby moved with `scripts/kit-upgrade-seeds.js`. Older kits read the cards by themselves; the SDK drops that
+>   line (docs/decisions.md "How-to cards: read aloud only on a tap, with the AI voice"). Core 95.9 KB brotli.
 - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
@@ -1066,7 +1073,7 @@ One Celeron or MediaTek Chromebook, one iPad (iPadOS 15/16) and one mid Android 
 2. **Make your hero (8–20 s).**
    - A customiser card lists skin (8), hair (8), outfit (4) and a wear item. Each tap re-bakes the kid live, and the kid reacts: `cheer` + sparkle.
    - "Use my avatar" applies `Oomba.me()`.
-   - Then the 3-card how-to (move, jump, collect), read aloud, and the 3-2-1 countdown.
+   - Then the 3-card how-to (move, jump, collect), read aloud only when the player taps its speaker button (AI voice only, kit 1.1.6), and the 3-2-1 countdown.
 3. **Run (20–45 s).**
    - The kid runs right. The camera follows with look-ahead, and 4 parallax bands move.
    - Jumps show anticipation → stretch → land squash + dust. Coyote time is noticeable on ledge drops.

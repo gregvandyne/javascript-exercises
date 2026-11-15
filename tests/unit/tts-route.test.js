@@ -120,11 +120,45 @@ test('the all-games rule: a word game and a kit course game get tokens; only the
   assert.equal(r.json.u, tts.urlOf(tts.plan({ text: tag, locale: 'en', role: 'narrator' }).hash), 'read with the narrator role');
   // A word a kid could type is not one of its lines: refused, so it falls back to the device voice in the game.
   assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'elephant', lang: 'en' })).json, { code: 'filtered' });
-  // Trick Inbox (a kit-built course game, registered the same day): it is inside the system (token minted), but
-  // it has no extractable line table, so no text is readable in game context — never free text.
+  // Trick Inbox (a kit-built course game, registered the same day): it is inside the system (token minted); its line
+  // table holds only its how-to cards (kit 1.1.6), so nothing else is readable in game context, never free text.
   const td = R.playData(mia, trickGame);
   assert.ok(td && td.tok, 'trick-inbox gets a token now');
   assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Is this email safe?', lang: 'en' })).json, { code: 'filtered' });
+});
+
+test('the how-to card\'s speaker (kit 1.1.6): check: true answers without making audio; the kit\'s own title is readable in its language', async () => {
+  on(['en', 'es']);
+  const td = R.playData(mia, trickGame), card = lines.gameLines('trick-inbox', 'es').find(x => x.key === 'how.clues').text;
+  assert.match(card, /pista/, 'the Spanish card');
+  const chars = () => usage.todayUse().chars, rows = () => q.get('SELECT COUNT(*) n FROM tts_cache').n;
+  // a check: every check of a real read, then { ok: true }, with no audio made and nothing counted
+  for (const text of [card, 'Cómo se juega']) {
+    const r = await say(mia, { ctx: 'game', tok: td.tok, text, lang: 'es', role: 'narrator', check: true });
+    assert.equal(r.status, 200, r.text); assert.deepEqual(r.json, { ok: true });
+  }
+  assert.equal(chars(), 0); assert.equal(rows(), 0);
+  // refused the same way as a read: not its line, the title in another language, a language that is off, another player
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Is this email safe?', lang: 'es', check: true })).json, { code: 'filtered' });
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'How to play', lang: 'es', check: true })).json, { code: 'filtered' });
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Comment jouer', lang: 'fr', check: true })).json, { code: 'off' });
+  assert.equal((await say(leo, { ctx: 'game', tok: td.tok, text: card, lang: 'es', check: true })).status, 403);
+  // a real read of the card and of the kit's title: audio, in the game's own role (Pim: wise)
+  const r = await say(mia, { ctx: 'game', tok: td.tok, text: 'Cómo se juega', lang: 'es' });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(r.json.u, tts.urlOf(tts.plan({ text: 'Cómo se juega', locale: 'es', role: 'wise' }).hash));
+  assert.equal((await say(mia, { ctx: 'game', tok: td.tok, text: card, lang: 'es' })).status, 200);
+  // only the kit's how-to title, not its other words
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Inténtalo otra vez', lang: 'es' })).json, { code: 'filtered' });
+  // a Builder game: its own fixed lines and the kit's title, in its one friendly role
+  const kd = R.playData(mia, kidGame);
+  const k = await say(mia, { ctx: 'game', tok: kd.tok, text: 'How to play', lang: 'en' });
+  assert.equal(k.status, 200, k.text);
+  assert.equal(k.json.u, tts.urlOf(tts.plan({ text: 'How to play', locale: 'en', role: 'friendly' }).hash));
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: kd.tok, text: 'Hello there!', lang: 'en', check: true })).json, { ok: true });
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: kd.tok, text: 'Hello there, Mia!', lang: 'en', check: true })).json, { code: 'filtered' });
+  assert.deepEqual([lines.kitLine('en', 'How to play'), lines.kitLine('en-GB', 'How to play'), lines.kitLine('ar', 'طريقة اللعب'), lines.kitLine('ja', 'あそびかた'), lines.kitLine('en', 'Play'), lines.kitLine('xx', 'How to play')],
+    ['How to play', 'How to play', 'طريقة اللعب', 'あそびかた', null, null]);
 });
 
 test('play page and frame: the token and INIT.tts for an official game and a scanner-passed Builder game with a locale on', async () => {

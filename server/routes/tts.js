@@ -1,6 +1,8 @@
 // AI voices (docs/decisions.md "AI voices"; server/services/tts.js). The page asks for a line, gets back the URL of a
 // cached MP3 and plays it (a game frame gets the bytes from its play page, because frames can't fetch).
 //   POST /api/tts   { ctx, … }  -> 200 { u: '/tts/<sha256>.mp3' } | 404 off | 422 filtered/long | 429 fast/site | 503 busy
+//                   With check: true the same checks run and 200 is { ok: true }, without making audio (BRB.aiVoiceCheck:
+//                   a game asks before it offers a "read it to me" button that must use the AI voice).
 //     ctx 'game'   { tok, text, lang, role, rate }  tok: from the play page's page-data (official games listed in
 //                  tts-lines GAMES, and games the admin switched on (services/tts-games.js); bound to the signed-in
 //                  player, 2 hours). The text must be one of that game's own spoken lines in that language (tts-lines
@@ -10,6 +12,8 @@
 //                  Any other game made in the Builder (services/tts-built.js; the owner's decision of 2026-11-13): only
 //                  while its published version passed the safety scanner, and only a line that is EXACTLY one of the
 //                  fixed strings in that stored version (nothing filled in, nothing joined), in one fixed friendly role.
+//                  Every kind of game may also have the Oomba Kit's own spoken chrome read (tts-lines KIT_SPOKEN: the
+//                  how-to card's title, in that language, word for word from kit/src/strings.js).
 //     ctx 'live'   { sid, tok, i }  the live question i (only the one open now), by number: the server reads the
 //                  teacher's question and its answer choices, in the session's language. tok: the player's seat token or
 //                  the host/co-host token.
@@ -116,19 +120,19 @@ function resolve(req, b) {
     if (!locale || !tts.localeOn(locale)) return { error: [404, 'off'] };
     // Only the game's own words (never what a player typed), with the line's own role.
     if (listedGame(g)) {
-      const line = lines.allowedLine(g.slug, locale, b.text, b.role);
+      const line = lines.allowedLine(g.slug, locale, b.text, b.role) || lines.kitChromeLine(g.slug, locale, b.text);
       if (!line) return { error: [422, 'filtered'] };
       return { text: line.text, locale, role: line.role, rate: V.rateBucket(b.rate) };
     }
     // A game the admin switched on: words from its published version's own source only.
     if (TG.allowed(g)) {
-      const text = TG.allowedText(g, b.text);
+      const text = TG.allowedText(g, b.text) || lines.kitLine(locale, b.text);
       if (!text) return { error: [422, 'filtered'] };
       return { text, locale, role: V.ROLES.includes(b.role) ? b.role : 'narrator', rate: V.rateBucket(b.rate) };
     }
     // Any other Builder game: exactly one of the fixed lines of its published, scanner-passed version (never what a
     // player typed, never a string put together while playing), in the one fixed role, whatever the page asked for.
-    const fixed = BG.allowedText(g, b.text);
+    const fixed = BG.allowedText(g, b.text) || lines.kitLine(locale, b.text);
     if (!fixed) return { error: [422, 'filtered'] };
     return { text: fixed, locale, role: BG.ROLE, rate: V.rateBucket(b.rate) };
   }
@@ -204,6 +208,9 @@ router.post('/api/tts', async (req, res) => {
   if (!tts.localeOn(r.locale)) return fail(res, 404, 'off');
   const why = tts.speakable(r.text, { user: req.user, ctx: b.ctx });
   if (why) return fail(res, 422, why);
+  // check: true (BRB.aiVoiceCheck, through the play page): every check above passed, so this line would be read by the
+  // AI voice. No audio is made and nothing is counted against the day's characters.
+  if (b.check === true) return res.json({ ok: true });
   // New audio only: per person and per address, a minute and a day (a whole school behind one address still fits:
   // a class shares one question's audio). The day's characters are counted in memory under a salted hash.
   const gate = p => {

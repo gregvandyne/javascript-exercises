@@ -39,7 +39,7 @@ test('Oomba Quest: one Oomba.game call with three packs plays through talk, spri
   // The demo pages load every pack of the version (the 3D bridge too, which does nothing without three.js; the live pack, which does nothing outside a live session).
   // every pack of the kit version, the pixel-art pair (Sum Racer's ?style=pixel, #231) included
   const PACKS = ['art-animals', 'art-biomes', 'art-biomes-2', 'art-pixel', 'art-props', 'art-school', 'bridge-3d', 'dress', 'live', 'style-bold', 'style-pixel'];
-  expect(tags.map(t => t[0])).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', ...PACKS.map(n => `/vendor/oomba-kit/1.1.5/packs/${n}.js`)]);
+  expect(tags.map(t => t[0])).toEqual(['/vendor/oomba-kit/1.1.6/oomba-kit.js', ...PACKS.map(n => `/vendor/oomba-kit/1.1.6/packs/${n}.js`)]);
   for (const t of tags) expect([t[1], t[2]]).toEqual([true, 'anonymous']);
   expect(await f.evaluate(() => window.Oomba.packs.sort())).toEqual(PACKS);
   await expect(f.locator('.ok-title-screen .ok-h1')).toHaveText('Oomba Quest');

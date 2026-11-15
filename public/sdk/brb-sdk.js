@@ -751,10 +751,15 @@
   // voice instead, and falls back to the device's voice if that does not come. opts.voice: a character role for AI
   // voices ('narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'); opts.device: true = always the device's voice.
   // Once speak() has returned true, onend comes exactly once (unless the line is stopped by a new one or stopSpeaking).
+  // opts.ai: 'only' = the AI voice or nothing, never the device's voice: false when no AI voice is on for this game and
+  // language (or the player chose the device's voice); once started, a line the AI voice does not read ends with
+  // opts.onfail instead of onend (the Oomba Kit's how-to speaker button, kit 1.1.6).
   function speak(text, opts) {
     opts = opts || {};
     var s = speakableText(text); if (!s) return false;
     var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG;
+    if (opts.ai === 'only') { if (!ttsWanted(s, lang, opts)) return false; try { return ttsSpeak(s, opts, lang, null); } catch (e) { return false; } }
+    if (kitHowtoRead(s)) return false;
     if (ttsWanted(s, lang, opts)) { try { return ttsSpeak(s, opts, lang, null); } catch (e) { /* fall through to the device */ } }
     if (!synth || !Utter) return false;
     try {
@@ -762,6 +767,18 @@
       if (!voiceList.length) loadVoices();
       if (!voiceList.length) { if (voicesSettled) return false; pendingSpeech.push([s, opts, lang]); return true; }
       return startSpeech(s, opts, lang);
+    } catch (e) { return false; }
+  }
+  // The Oomba Kit's how-to cards are read only when the player taps the card's speaker button (the owner's decision,
+  // docs/decisions.md "How-to cards: read aloud only on a tap, with the AI voice"). Kits before 1.1.6 read them by
+  // themselves as the card opens, with one say() of the cards' words joined by spaces: that line is not spoken here.
+  // It is recognised exactly: a kit how-to modal (.ok-modal.ok-howto) is open and the line is its cards' text, joined.
+  function kitHowtoRead(s) {
+    try {
+      var m = document.querySelector('.ok-modal.ok-howto'); if (!m) return false;
+      var cards = m.querySelectorAll('.ok-howcard'), t = [];
+      for (var i = 0; i < cards.length; i++) t.push(cards[i].textContent || '');
+      return t.length > 0 && speakableText(t.join(' ')) === s;
     } catch (e) { return false; }
   }
   function stopSpeaking() { pendingSpeech = []; ttsStop(); try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } }
@@ -830,6 +847,13 @@
   function ttsFallback(it) {
     if (it.state === 'done' || it.state === 'stopped' || it.fell) return;
     it.fell = true; ttsForget(it);
+    // An AI-only line (speak opts.ai 'only') never goes to the device's voice: it ends with onfail, then the next line.
+    if (it.opts.ai === 'only') {
+      it.state = 'done'; if (ttsCur === it) ttsCur = null;
+      if (typeof it.opts.onfail === 'function') { try { it.opts.onfail(); } catch (e) { /* game's own error */ } }
+      if (!ttsCur) ttsNext();
+      return;
+    }
     // A watchdog: some devices never say the device's speech ended (iOS drops speech outside a tap without an event,
     // Chrome sometimes never fires onend). Without it, every later queued line would wait forever.
     var dog = setTimeout(function () { ttsDone(it); }, 4000 + it.s.length * 120);
@@ -883,6 +907,33 @@
   }
   // Is this line going to be read by an AI voice? (lang: as for speak). Games use it to leave out their own "voice" beeps.
   function aiVoice(lang) { return !!TTS && ttsMode === 'ai' && ttsWanted('x', typeof lang === 'string' && lang ? lang : USER_LANG, {}); }
+  // aiVoiceCheck(lines, { lang, voice }) -> Promise<boolean>: will the AI voice read every one of these lines? The play
+  // page asks the server (POST /api/tts with check: true: the same game, language and allowlist checks as a real
+  // read, but no audio is made), so a game can offer a "read it to me" button only where it would get the AI voice.
+  // false at once without INIT.tts, with the device's voice chosen, or for a language that is off. At most 8 lines;
+  // no answer in 4 s is false. A yes is remembered for the page's life, a no is asked again next time.
+  var ttsChecks = {}, ttsCheckMemo = {};
+  function aiVoiceCheck(lines, opts) {
+    opts = opts || {};
+    var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG, list = [];
+    if (lines && typeof lines.length === 'number') for (var i = 0; i < lines.length && list.length < 8; i++) { var s = speakableText(lines[i]); if (s) list.push(s); }
+    if (typeof Promise !== 'function') return null;
+    if (!list.length) return Promise.resolve(false);
+    for (var j = 0; j < list.length; j++) if (!ttsWanted(list[j], lang, opts)) return Promise.resolve(false);
+    var role = ttsRole(opts.voice), loc = ttsLocale(lang);
+    return Promise.all(list.map(function (s) {
+      var key = loc + '|' + role + '|' + s;
+      if (ttsCheckMemo[key]) return ttsCheckMemo[key];
+      var p = new Promise(function (res) {
+        var id = ++ttsSeq, timer = setTimeout(function () { delete ttsChecks[id]; res(false); }, TTS_WAIT_MS);
+        ttsChecks[id] = function (ok) { clearTimeout(timer); delete ttsChecks[id]; res(ok); };
+        send('brb:tts', { id: id, text: s, lang: loc, role: role, rate: 1, check: true });
+      });
+      ttsCheckMemo[key] = p;
+      p.then(function (ok) { if (!ok) delete ttsCheckMemo[key]; });
+      return p;
+    })).then(function (all) { return all.every(Boolean) && ttsMode === 'ai'; });
+  }
   var synthCancel = synth ? synth.cancel : null;
   if (TTS) {
     window.addEventListener('message', function (e) {
@@ -890,6 +941,7 @@
       var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1) return;
       if (m.type === 'brb:tts-mode') { if (m.mode === 'ai' || m.mode === 'device') { ttsMode = m.mode; if (ttsMode === 'device' && (ttsCur || ttsQueue.length)) { var w = ttsQueue.slice(); if (ttsCur && ttsCur.state === 'asked') w.unshift(ttsCur); w.forEach(function (it) { if (it.state === 'asked') it.state = 'failed'; }); if (ttsCur && ttsCur.state === 'failed') ttsFallback(ttsCur); } } return; }
       if (m.type !== 'brb:tts' || typeof m.id !== 'number') return;
+      if (m.check === true) { var ck = ttsChecks[m.id]; if (ck) ck(m.ok === true); return; }   // an aiVoiceCheck answer
       var it = ttsById[m.id]; if (!it || it.state !== 'asked') return;   // stopped, timed out or a prefetch: dropped
       if (m.ok === true && m.buf instanceof ArrayBuffer && m.buf.byteLength > 0) { it.buf = m.buf; it.state = 'ready'; if (ttsCur === it) { if (it.timer) clearTimeout(it.timer); it.timer = null; ttsPlay(it); } }
       else { it.state = 'failed'; if (ttsCur === it) ttsFallback(it); }
@@ -1100,7 +1152,9 @@
     stopSpeaking: stopSpeaking,
     // AI voices (official games, when on): fetch lines ahead, and whether a language is read by an AI voice now.
     prefetchSpeech: prefetchSpeech,
-    aiVoice: aiVoice
+    aiVoice: aiVoice,
+    // Whether the AI voice will read these lines (a Promise of true/false); speak(text, { ai: 'only' }) reads them.
+    aiVoiceCheck: aiVoiceCheck
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

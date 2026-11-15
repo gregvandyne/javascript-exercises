@@ -1,0 +1,40 @@
+{
+  "version": "1.1.6",
+  "api": 1,
+  "files": {
+    "oomba-kit.js": "sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC",
+    "packs/art-animals.js": "sha384-AkEEw+ya/FaEVyxGO8XslaJBEuViplREiQXUbbMYYVbwcKxZSNQYzaGQQ8KDPagd",
+    "packs/art-biomes.js": "sha384-Kka75VE6TuBU2aoxxCHO26i79P6XgJa0Pil45CAQugT7el87e7t2tdgwnOlo/Xrn",
+    "packs/art-biomes-2.js": "sha384-ickbHtrkbih80u7qLT9oMwU42IwJCkFsA6geZULdWhkAsIBfeeKMWNr/a0iD2Ao+",
+    "packs/art-pixel.js": "sha384-DgBLmy5KXLQVt3TJfbfuvM/CYiJaruWIR2LPUGR+P3PgPJKHCp2sSgSKcfxJKGlj",
+    "packs/art-props.js": "sha384-15lO/ZwSfeAh04Aa+YtX/dsTuj3G3IXsVt5R8AmX1LfIhHjaNxocJbJRHpZaZpwR",
+    "packs/art-school.js": "sha384-9jinyC/87OG+BSf0TLgW7uh4a9WMS5/SH/QrB8Xji1XCK1v704dnxG5KRJE9WKTW",
+    "packs/bridge-3d.js": "sha384-vuMNsq3lYZ1weNURi/5Rvg1QuVSvClBoL/3Y83uCIJguzkzmvTBH0DlYBb/1bps9",
+    "packs/dress.js": "sha384-mparmgq1wIeiUwg5wl0iNxyyBr886ZulubzlilnHahyy/KkrRkEFMnyg0Sp0LmYv",
+    "packs/live.js": "sha384-GU2LjTv73MySUFNEZZSQYbhLRRdVJi814cV0EXp3Y0I3MWBKzNpbi4ir2RemmV34",
+    "packs/style-bold.js": "sha384-y/4P0N49x2in0xC2gTy9JIejxDajHK68XM7bhJVa2BZsgcA7s7ctHaYAw/XyuDOp",
+    "packs/style-pixel.js": "sha384-Wc5sz3sLHz9puAPY7vRHBPQ6TXKdDQge4R4QKW175Wbc7PcMPomBooWMZirMyfj/",
+    "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
+    "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
+    "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd",
+    "fonts/pixelify-latin.woff2": "sha384-9LgS1jXlTrqp4y5z8NOeD9oWkJ/9/0oiq2nYylpN+8fyTLqwFzCEEIMbu3tAD2QV",
+    "fonts/pixelify-latin-ext.woff2": "sha384-qJgt6IdtfjRQL/J+E17QDBHKi7u4d7QqPRycybXxzI1rVZWrHEvuJ2RMfUpECuAC",
+    "fonts/pixelify-cyrillic.woff2": "sha384-imLxBn2EY6K/vol243I+8TTL28We5QtGshWEe05nNd7s3c56FKUvXTHkIVjiSgvn",
+    "fonts/OFL-pixelify.txt": "sha384-v3t+wd9dOEgOCrZWFQ8KVleCALDsUy1lO0Na7rVuQCFuo6jCv5tPsTJEHKhBccbD",
+    "fonts/oomba-pixel-digits.woff2": "sha384-gYAomhRR1gmvJuxJoBzmnFDKkWR4JvW4rQOir/9032bYZHuJvlXKnQ/zNhjkrW4s",
+    "LICENSE": "sha384-cI//oC3gy0+oTAoZ6c7iWpX9o2RAOwfo2sKWC9Lc1Ub0YwgVoosuW7eXMRaQGx+n"
+  },
+  "packs": [
+    "art-animals",
+    "art-biomes",
+    "art-biomes-2",
+    "art-pixel",
+    "art-props",
+    "art-school",
+    "bridge-3d",
+    "dress",
+    "live",
+    "style-bold",
+    "style-pixel"
+  ]
+}

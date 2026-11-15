@@ -84,11 +84,11 @@
   }
 </style>
 <div id="game"></div>
-<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-props.js" integrity="sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/style-bold.js" integrity="sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-props.js" integrity="sha384-15lO/ZwSfeAh04Aa+YtX/dsTuj3G3IXsVt5R8AmX1LfIhHjaNxocJbJRHpZaZpwR" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-animals.js" integrity="sha384-AkEEw+ya/FaEVyxGO8XslaJBEuViplREiQXUbbMYYVbwcKxZSNQYzaGQQ8KDPagd" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/art-school.js" integrity="sha384-9jinyC/87OG+BSf0TLgW7uh4a9WMS5/SH/QrB8Xji1XCK1v704dnxG5KRJE9WKTW" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/style-bold.js" integrity="sha384-y/4P0N49x2in0xC2gTy9JIejxDajHK68XM7bhJVa2BZsgcA7s7ctHaYAw/XyuDOp" crossorigin="anonymous"></script>
 <script>
 /* ===== Fraction Factory engine: fair shares, re-slicing, comparing and adding fractions by building them.
    Plain data and functions (no DOM, no kit), so the unit test can load this block on its own. ===== */
@@ -445,7 +445,23 @@ const I18N = {
     "why.compare": "Same whole, so compare the parts: which share is really bigger?",
     "why.pick-first": "Tap the bigger share!",
     "why.default": "A mistake is a clue about how your brain is thinking. Try again!",
+    // the how-to cards (the kit shows them in the player's language; read aloud only when the player taps their speaker)
+    "how.cut": "Cut the whole into equal parts",
+    "how.fill": "Tap parts to fill the order",
+    "how.serve": "Serve it and watch the tray",
   },
+  // The how-to cards in the other site languages (en-GB uses en). Every other line is still English only.
+  es: { "how.cut": "Corta el entero en partes iguales", "how.fill": "Toca partes para completar el pedido", "how.serve": "Sírvelo y mira la bandeja" },
+  fr: { "how.cut": "Coupe le tout en parts égales", "how.fill": "Touche des parts pour remplir la commande", "how.serve": "Sers la commande et regarde le plateau" },
+  de: { "how.cut": "Teile das Ganze in gleiche Teile", "how.fill": "Tippe Teile an, bis die Bestellung stimmt", "how.serve": "Serviere sie und schau aufs Tablett" },
+  it: { "how.cut": "Taglia l'intero in parti uguali", "how.fill": "Tocca le parti per completare l'ordine", "how.serve": "Servilo e guarda il vassoio" },
+  pt: { "how.cut": "Corta o todo em partes iguais", "how.fill": "Toca nas partes para completar o pedido", "how.serve": "Serve o pedido e olha para o tabuleiro" },
+  nl: { "how.cut": "Snijd het geheel in gelijke delen", "how.fill": "Tik op delen om de bestelling te vullen", "how.serve": "Serveer het en kijk naar het dienblad" },
+  ru: { "how.cut": "Разрежь целое на равные части", "how.fill": "Нажимай на части, чтобы собрать заказ", "how.serve": "Подай заказ и смотри на поднос" },
+  ja: { "how.cut": "ぜんたいを おなじ 大きさに 切ろう", "how.fill": "パーツを タップして ちゅうもんを そろえよう", "how.serve": "だしたら おぼんを 見よう" },
+  'zh-Hant': { "how.cut": "把整體切成一樣大的幾份", "how.fill": "點選幾份來完成訂單", "how.serve": "端出去，看看托盤" },
+  ar: { "how.cut": "قسّم الكل إلى أجزاء متساوية", "how.fill": "انقر على الأجزاء لتكمل الطلب", "how.serve": "قدّمه وراقب الصينية" },
+  he: { "how.cut": "חתכו את השלם לחלקים שווים", "how.fill": "הקישו על חלקים כדי למלא את ההזמנה", "how.serve": "הגישו והסתכלו על המגש" },
 };
 (typeof window !== 'undefined' ? window : globalThis).FractionFactoryI18n = I18N;
 // ==== I18N END ====
@@ -552,7 +568,8 @@ game = O.game({
   api: 1, title: CONFIG.title, subtitle: 'Cut it fair. Serve it right.', biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
   hud: ['progress', 'count:star'],
-  howTo: [{ icon: 'tap', text: 'Cut the whole into equal parts' }, { icon: 'tap', text: 'Tap parts to fill the order' }, { icon: 'check', text: 'Serve it and watch the tray' }],
+  howTo: [{ icon: 'tap', text: 'how.cut' }, { icon: 'tap', text: 'how.fill' }, { icon: 'check', text: 'how.serve' }],
+  strings: window.FractionFactoryI18n,   // keys: the how-to cards are in every site language
   level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'tally', flip: true, size: 2.1 }, CONFIG.tally) }),
   update: frame,
   testState: () => testState(),
