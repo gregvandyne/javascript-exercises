@@ -919,7 +919,7 @@ function paintBox(part, top) {
   const D = part.diag, far = P(part.l, hh, part.w), floorFar = P(part.l, 0, part.w), o = P(0, 0, 0);
   if (D === 'floor' || D === 'both') { line(o[0], o[1], floorFar[0], floorFar[1], D === 'both' ? C.dim : col, 7, [16, 10]); if (part.ft) tagged(part.ft, o[0] - 34, o[1] - 50, 42, D === 'both' ? C.dim : col, { align: 'right', dash: part.tone === 'warn' }); }
   if (D === 'space' || D === 'both') { line(o[0], o[1], far[0], far[1], part.tone ? col : C.plan, 9, part.tone === 'warn' ? [20, 12] : null); dot(o[0], o[1], 12, part.tone ? col : C.plan); dot(far[0], far[1], 12, part.tone ? col : C.plan); if (part.dt) tagged(part.dt, (o[0] + far[0]) / 2 - 20, (o[1] + far[1]) / 2 - 40, 46, part.tone ? col : C.goal); }
-  if (D === 'edges') { const a = P(part.l, 0, 0); X.save(); X.strokeStyle = col; X.lineWidth = 11; X.setLineDash([20, 12]); X.beginPath(); X.moveTo(o[0], o[1]); X.lineTo(a[0], a[1]); X.lineTo(floorFar[0], floorFar[1]); X.lineTo(far[0], far[1]); X.stroke(); X.restore(); if (part.dt) tagged(part.dt, far[0] + 10, far[1] - 34, 46, col, { align: 'left', dash: true }); }
+  if (D === 'edges') { const a = P(part.l, 0, 0); X.save(); X.strokeStyle = col; X.lineWidth = 11; X.setLineDash([20, 12]); X.beginPath(); X.moveTo(o[0], o[1]); X.lineTo(a[0], a[1]); X.lineTo(floorFar[0], floorFar[1]); X.lineTo(far[0], far[1]); X.stroke(); X.restore(); if (part.dt) tagged(part.dt, Math.max(floorFar[0], far[0]) + 40, (floorFar[1] + far[1]) / 2, 46, col, { align: 'left', dash: true }); }
   // the three edges
   const b0 = P(0, 0, 0), b1 = P(part.l, 0, 0), s1 = P(part.l, 0, part.w), h1 = P(0, hh, 0);
   label(part.lt, (b0[0] + b1[0]) / 2, b0[1] + 40, 46, { max: 300 });
