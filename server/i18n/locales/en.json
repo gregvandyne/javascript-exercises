@@ -2761,7 +2761,10 @@
         "picturesNote": "Only you and that student can see each one.",
         "picturesNone": "No student is using a picture.",
         "takeDown": "Take down",
-        "takenDown": "Picture taken down"
+        "takenDown": "Picture taken down",
+        "zoneNone": "None",
+        "placeNote": "Type a town or city. Oomba never uses anyone's location.",
+        "qrNote": "Only the class's approved links and Oomba pages can be shown."
       },
       "bgChanged": "Background changed",
       "uploading": "Checking your picture…",
@@ -2784,13 +2787,15 @@
         "game": "Game",
         "live": "Live game",
         "lesson": "Lesson",
-        "link": "Link"
+        "link": "Link",
+        "check": "Quick check"
       },
       "act": {
         "play": "Play",
         "join": "Join game",
         "lesson": "Open lesson",
-        "link": "Open link"
+        "link": "Open link",
+        "answer": "Answer"
       },
       "push": {
         "title": "Push to students",
@@ -2832,6 +2837,11 @@
         "label": "From your teacher: {count, plural, one {# thing} other {# things}} today",
         "show": "Show",
         "showing": "Showing"
+      },
+      "check": {
+        "title": "Quick check",
+        "tap": "Tap your answer.",
+        "thanks": "Thanks! You can change your answer until your teacher ends the check."
       }
     }
   },
@@ -9377,7 +9387,8 @@
           "face": "Clock face",
           "hour12": "12-hour time",
           "seconds": "Show seconds",
-          "date": "Show the date"
+          "date": "Show the date",
+          "zone2": "Second time zone"
         },
         "o": {
           "face": {
@@ -9410,6 +9421,196 @@
         "s": {
           "goal": "Today's goal"
         }
+      },
+      "timer": {
+        "name": "Timer",
+        "desc": "Count down with big digits and a time bar.",
+        "s": {
+          "minutes": "Starting minutes",
+          "chime": "Soft chime at the end",
+          "bar": "Show the time bar"
+        },
+        "start": "Start",
+        "pause": "Pause",
+        "resume": "Resume",
+        "reset": "Reset",
+        "custom": "Custom",
+        "min": "Minutes",
+        "sec": "Seconds",
+        "set": "Set",
+        "done": "Time's up!",
+        "left": "{time} left",
+        "presets": "Quick times",
+        "mins": "{n} minutes"
+      },
+      "stopwatch": {
+        "name": "Stopwatch",
+        "desc": "Count up from zero.",
+        "start": "Start",
+        "pause": "Pause",
+        "resume": "Resume",
+        "reset": "Reset"
+      },
+      "schedule": {
+        "name": "Schedule for the day",
+        "desc": "Today's periods, with the one on now lit up.",
+        "s": {
+          "periods": "Periods"
+        },
+        "empty": "Add today's periods in Edit screen.",
+        "now": "Now",
+        "next": "Next",
+        "left": "{n} min left",
+        "after": "That's the end of today's schedule.",
+        "before": "First up",
+        "addPeriod": "Add a period",
+        "period": "Period",
+        "from": "From",
+        "to": "To",
+        "remove": "Remove period"
+      },
+      "weather": {
+        "name": "Weather",
+        "desc": "Today's weather in your school's town.",
+        "s": {
+          "place": "Place",
+          "unit": "Temperature in"
+        },
+        "o": {
+          "unit": {
+            "auto": "Automatic",
+            "f": "°F",
+            "c": "°C"
+          }
+        },
+        "empty": "Pick your town in Edit screen.",
+        "resting": "Weather is resting",
+        "loading": "Looking at the sky…",
+        "hiLo": "High {hi} · Low {lo}",
+        "find": "Find",
+        "search": "Town or city",
+        "searchHint": "Type your town or city",
+        "none": "No place yet",
+        "place": "Place",
+        "clear": "Sunny and clear. A great day!",
+        "clearNight": "Clear skies tonight.",
+        "partly": "Some sun, some clouds.",
+        "cloudy": "Cloudy today.",
+        "fog": "Foggy. Take care outside.",
+        "drizzle": "A little drizzle. Bring a coat.",
+        "rain": "Rainy, bring a coat!",
+        "snow": "Snowy! Wear warm things.",
+        "storm": "Stormy. Stay inside if you can."
+      },
+      "qr": {
+        "name": "QR code",
+        "desc": "Put a link on screen for tablets to scan.",
+        "s": {
+          "target": "What the code opens"
+        },
+        "empty": "Pick what the code opens in Edit screen.",
+        "gone": "That link isn't available any more. Pick another in Edit screen.",
+        "scan": "QR code to scan",
+        "nothing": "Nothing yet"
+      },
+      "picker": {
+        "name": "Random student picker",
+        "desc": "Picks a student by their Oomba name.",
+        "s": {
+          "norepeat": "Don't repeat until everyone's had a turn"
+        },
+        "pick": "Pick a student",
+        "again": "Pick again",
+        "left": "Left this round: {n}",
+        "away": "Away today",
+        "awayTitle": "Who's away today?",
+        "awayNote": "Ticked students aren't picked today. This resets tomorrow.",
+        "reset": "Start over",
+        "none": "No students to pick from."
+      },
+      "noise": {
+        "name": "Voice meter",
+        "desc": "How loud is the room? Uses your mic; nothing is recorded.",
+        "s": {
+          "zone": "Target level"
+        },
+        "o": {
+          "zone": {
+            "silent": "Silent",
+            "whisper": "Whisper",
+            "talk": "Partner talk",
+            "busy": "Group work"
+          }
+        },
+        "start": "Turn the mic on",
+        "stop": "Turn the mic off",
+        "on": "Mic on",
+        "off": "Mic off",
+        "note": "Sound stays on this computer. Nothing is recorded, saved or sent.",
+        "denied": "The mic is blocked. Allow it in the browser to use the meter.",
+        "quiet": "Nice and calm",
+        "ok": "Getting louder",
+        "loud": "Too loud!"
+      },
+      "help": {
+        "name": "Help queue",
+        "desc": "Students tap \"I need help\" or \"I'm done\".",
+        "need": "I need help",
+        "done": "I'm done",
+        "cancel": "Never mind",
+        "place": "You're number {n} in line.",
+        "doneMine": "Your teacher can see you're done.",
+        "empty": "Nobody is waiting.",
+        "next": "Next",
+        "clear": "Clear all",
+        "waiting": "{n} waiting",
+        "finished": "{n} done",
+        "remove": "Remove {name}",
+        "hidden": "Names are hidden on the projector."
+      },
+      "check": {
+        "name": "Quick check",
+        "desc": "Ask the class: thumbs, fist to five, choices or 1 to 5.",
+        "empty": "Send a quick check to see how everyone's doing.",
+        "new": "New check",
+        "end": "End",
+        "ended": "Ended",
+        "names": "Who answered",
+        "save": "Save results",
+        "saved": "Saved",
+        "savedList": "Saved results",
+        "answered": "{n} of {total} answered",
+        "send": "Send to students",
+        "kind": "Kind of check",
+        "question": "Question (you can leave it out)",
+        "questionHint": "How do you feel about fractions?",
+        "options": "Choices",
+        "option": "Choice {n}",
+        "addOption": "Add a choice",
+        "needOptions": "Write at least two choices.",
+        "nobody": "Nobody",
+        "notYet": "Not answered yet",
+        "savedNone": "No saved results yet.",
+        "thumbs": "Thumbs",
+        "fist": "Fist to five",
+        "choice": "Multiple choice",
+        "scale": "1 to 5",
+        "up": "Got it",
+        "side": "Kind of",
+        "down": "Not yet"
+      },
+      "tiles": {
+        "name": "Oomba tiles",
+        "desc": "Games and lessons to open with one tap.",
+        "s": {
+          "tiles": "Tiles"
+        },
+        "empty": "Pick games and lessons in Edit screen.",
+        "add": "Add a tile",
+        "games": "Games",
+        "lessons": "Lessons",
+        "remove": "Remove",
+        "gone": "These aren't open right now."
       }
     },
     "push": {
@@ -9429,7 +9630,15 @@
       "link": "That link isn't on the approved list.",
       "tooManyPushes": "That's a lot for one day. End some first.",
       "pic_badType": "That picture didn't work. Try a JPG or PNG photo.",
-      "pic_tooBig": "That picture is too big."
+      "pic_tooBig": "That picture is too big.",
+      "timer": "That timer didn't work. Try again.",
+      "nobody": "There's nobody to pick.",
+      "checkKind": "Pick a kind of check.",
+      "checkOptions": "Write at least two choices.",
+      "checkClosed": "That check has ended.",
+      "checkValue": "Pick one of the answers.",
+      "resting": "Weather is resting. Try again in a little while.",
+      "qrGone": "That can't be shown as a QR code."
     }
   }
 }

@@ -6020,3 +6020,55 @@ page and on their Class tab; `/dashboard` takes a student with one class straigh
 - **Open / later stages:** stage 2 widgets (timers, weather, QR, picker...); layouts that follow the bell schedule;
   "who sees this widget" beyond pinning; a real-time socket if 4 s polling proves too slow; a native speaker's read of
   the new translations.
+
+## Classroom dashboards, stage 2 (15 Nov 2026)
+Everyday widgets on the stage 1 grid: each is a registry entry (`WIDGETS` in `server/services/dash.js`) and a
+renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.js`). Migration 0079.
+- **Registry additions.** New setting types, each rebuilt on the server (`cleanSettings`): `number` (clamped),
+  `zone` (a real IANA zone or nothing), `periods` (HH:MM, end after start, sorted, at most 16), `place` (a name and
+  coordinates rounded to 2 decimals), `target` (QR: link, live, lesson or game, by id only) and `tiles` (games and
+  lessons, at most 12). Two flags: `pin: false` (never on student screens: picker, noise meter, QR, quick check) and
+  `pinDef` (the help queue is pinned when added). Students may add only the clock, their goal, a timer and a
+  stopwatch, all of which stay on their own screen.
+- **Live state.** No new poller: `/api/dash/<class>/live` (every 4 s while in view) now also carries the server's
+  clock (`now`), the teacher's timers, the help queue (the teacher: the queue; a student: only `{ kind, place }`),
+  quick checks (the teacher: totals; a student: open checks and their own answer) and the weather of the places on
+  the screen. Renderers get it through a `live()` hook.
+- **Timers and stopwatch.** A teacher's timer is stored as `{ mode, dur, base, start, on }` in `dash_class.timers`
+  (a start time and a duration, never a ticking value). Each screen estimates the server's clock from the quickest of
+  its last 8 round trips, so a pinned countdown shows the same time everywhere (tested with clocks 90 s fast and
+  45 s slow). Presets 1/2/5/10 minutes and a custom time; the chime is off by default; the bar and the "Time's up"
+  pulse follow reduced motion. A student's own timer stays in their browser.
+- **Schedule** works in the school's time zone (as the stage 1 tray does); **clock** gained a second time zone.
+- **Weather** (Open-Meteo, no key). The teacher types a city; the server geocodes it; the widget keeps the name and
+  coordinates. Never the browser's or a student's location. Fetched on the server, cached per place for 20 minutes;
+  a failure or a 6 s timeout shows "Weather is resting" (a forecast under 2 hours old is kept through a short
+  outage). The live answer never waits for the network (a stale place is refreshed in the background). **Not
+  verified against the real service:** both Open-Meteo hosts were blocked from the build sandbox, so tests use a
+  stubbed fetch (`_setWeatherFetch`).
+- **QR.** Made on the server by our own `services/qr.js`, now up to version 6 (106 bytes; versions 1-4 unchanged
+  byte for byte). Only the class's approved links (the code holds the class's own `/class/<id>/dashboard/link/<id>`
+  address, so a removed link stops working), the class's live join, an open class lesson or a game every student can
+  open. The short text under the code is the destination without `https://`.
+- **Random picker** (teacher only, never pinned): the pick is made on the server from the class's students by their
+  Oomba (display) names, never roster names; "don't repeat until everyone's had a turn" and "away today" are kept
+  per class per school day. The shuffle is skipped with reduced motion.
+- **Noise meter** (teacher only): Web Audio levels in the teacher's browser after a tap; a "Mic on" chip and an off
+  button; the mic stops when the tab is hidden. Its module has no network, storage or recorder code (tested by
+  reading the file).
+- **Help queue:** fixed buttons ("I need help", "I'm done", "Never mind"), no text. Today only. On the teacher's
+  screen names hide in projector mode (`.dw-private`), leaving the counts. **Decided:** the teacher's screen shows
+  Oomba names otherwise, as live games' "needs help" does for the host.
+- **Quick checks:** thumbs, fist to five, multiple choice (2-6 teacher-written choices) or 1-5. Sent as a push
+  (kind `check`, so it is in the banner and the tray) and answered in a card under the banner; one open at a time.
+  The teacher's widget (and so the projector) shows totals only; names are in a sheet the teacher opens, hidden in
+  projector mode. Unsaved checks go when the school day changes; saved ones stay (with their answers) until the
+  class's data goes. No AI anywhere.
+- **Oomba tiles:** games every student can open and the class's open lessons, resolved for the reader each time.
+- Safety, access and limits follow stage 1 exactly: every new route uses `load()` (class role, 404 to others), the
+  site's CSRF check, and a rate limit. Account deletion also forgets a person's help queue place, check answers and
+  picker marks.
+- Tests: `tests/unit/dash-stage2.test.js`. Screenshots checked by hand (teacher 1600 × 900, edit mode, projector,
+  student 1366 × 768 and 390 × 844, dark, Hebrew).
+- **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
+  document camera.

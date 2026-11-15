@@ -50,9 +50,9 @@ function world() {
   return { oak, T, T2, SA, A, B, a1, a2, b1, stranger };
 }
 
-test('migration 0078 is the newest and its tables exist', () => {
+test('migration 0078 is there once and its tables exist (stage 2 adds 0079, tests/unit/dash-stage2.test.js)', () => {
   const names = MIGRATIONS.map(m => m[0]);
-  assert.equal(names.at(-1), '0078_class_dashboards');
+  assert.ok(names.includes('0078_class_dashboards'));
   assert.equal(names.filter(n => n.startsWith('0078')).length, 1);
   for (const tb of ['dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes', 'dash_push_hidden', 'dash_pictures']) assert.ok(q.get("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", tb), tb);
 });
@@ -60,7 +60,7 @@ test('migration 0078 is the newest and its tables exist', () => {
 test('the registry: every type has a renderer, labels in English, and layouts are rebuilt from the schema', () => {
   const t = tFor('en');
   const reg = D.registryFor(t, 'student');
-  assert.deepEqual(reg.types.map(x => x.id), ['clock', 'text', 'ican']);
+  assert.deepEqual(reg.types.map(x => x.id).slice(0, 3), ['clock', 'text', 'ican'], 'stage 1 types first; stage 2 adds more');
   for (const x of reg.types) { assert.ok(!/^dash\./.test(x.name) && !/^dash\./.test(x.desc), x.id); for (const s of x.settings) assert.ok(!/^dash\./.test(s.label), `${x.id}.${s.key}`); }
   assert.equal(reg.types.find(x => x.id === 'text').add, false, 'students cannot add the teacher text widget');
   const js = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
@@ -75,7 +75,7 @@ test('the registry: every type has a renderer, labels in English, and layouts ar
   const tw = D.cleanWidgets(raw, 'teacher');
   assert.deepEqual(tw.map(w => w.id), ['a', 'n']);
   assert.deepEqual([tw[0].x, tw[0].y, tw[0].w, tw[0].h], [0, 0, 12, D.MAX_H]);
-  assert.deepEqual(tw[0].s, { face: 'digital', hour12: true, seconds: false, date: true });
+  assert.deepEqual(tw[0].s, { face: 'digital', hour12: true, seconds: false, date: true, zone2: '' });
   assert.equal(tw[0].pin, true);
   assert.equal(tw[1].s.title.length, 40); assert.equal(tw[1].s.body, 'lineone\n\nb');
   const sw = D.cleanWidgets(raw, 'student');
@@ -307,8 +307,9 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   assert.equal(q.get(`SELECT COUNT(*) n FROM friends WHERE user_id IN (${marks}) AND friend_id IN (${marks})`, ...people, ...people).n, 0);
   assert.equal(q.get(`SELECT COUNT(*) n FROM chat_messages WHERE from_id IN (${marks}) AND to_id IN (${marks})`, ...people, ...people).n, 0);
   assert.equal(getUser(w.T.id).friend_code, null, 'the teacher still has no friend code');
-  // The registry offers students nothing that sends text to others: their types are clock and their own goal.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican']);
+  // The registry offers students nothing that sends text to others: their types are clock, their own goal, and (stage
+  // 2) a timer and a stopwatch that run in their own browser.
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch']);
 });
 
 test('account deletion forgets a person\'s screens and pictures', async () => {

@@ -1,6 +1,7 @@
 // A small QR code maker (ISO/IEC 18004) for the live host screen's join link, so no dependency and no outside service
-// is needed. Byte mode, error correction level M, versions 1-4 (up to 62 bytes: https://oomba.ai/join#1234567 is 30,
-// version 3). The mask with the lowest penalty is chosen. Pure module; the input is only our own join address.
+// is needed. Byte mode, error correction level M, versions 1-6 (up to 106 bytes: https://oomba.ai/join#1234567 is 30,
+// version 3; the classroom dashboard's QR widget uses up to version 6 for a class link). The mask with the lowest
+// penalty is chosen. Pure module; the input is only our own addresses.
 
 // ---------------------------------------------------------------- GF(256) and Reed-Solomon
 const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
@@ -27,9 +28,9 @@ export function rsEncode(data, n) {
   return rem;
 }
 
-// ---------------------------------------------------------------- versions 1-4, level M
+// ---------------------------------------------------------------- versions 1-6, level M (every block the same size)
 // [data codewords per block, blocks, EC codewords per block, alignment centre or 0]
-export const VERSIONS = { 1: [16, 1, 10, 0], 2: [28, 1, 16, 18], 3: [44, 1, 26, 22], 4: [32, 2, 18, 26] };
+export const VERSIONS = { 1: [16, 1, 10, 0], 2: [28, 1, 16, 18], 3: [44, 1, 26, 22], 4: [32, 2, 18, 26], 5: [43, 2, 24, 30], 6: [27, 4, 16, 34] };
 /** The 15 format bits for level M and a mask (BCH code, then the fixed XOR). */
 export function formatBits(mask) {
   const data = (0 << 3) | mask;   // level M is 00
@@ -88,7 +89,7 @@ function build(version, words, mask) {
   }
   // Timing patterns.
   for (let i = 8; i < size - 8; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
-  // The alignment pattern (versions 2-4 have one).
+  // The alignment pattern (versions 2-6 have one).
   const al = VERSIONS[version][3];
   if (al) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(al + dx, al + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
   // Format bits (reserved now, drawn after the data) and the dark module.
@@ -147,10 +148,10 @@ export function penalty(m) {
   return p;
 }
 
-/** text -> { version, size, mask, modules: boolean[][] } (true = dark). Throws for more than 62 bytes. */
+/** text -> { version, size, mask, modules: boolean[][] } (true = dark). Throws for more than 106 bytes. */
 export function qr(text) {
   const bytes = [...Buffer.from(String(text), 'utf8')];
-  const version = [1, 2, 3, 4].find(v => bytes.length <= VERSIONS[v][0] * VERSIONS[v][1] - 2);
+  const version = [1, 2, 3, 4, 5, 6].find(v => bytes.length <= VERSIONS[v][0] * VERSIONS[v][1] - 2);
   if (!version) throw new Error('too long for a small QR code');
   const words = codewords(bytes, version);
   let best = null;

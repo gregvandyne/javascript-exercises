@@ -12,6 +12,17 @@
 //   POST /api/dash/:id/links, /links/:lid/remove           approved links
 //   POST /api/dash/:id/eyes                   Eyes up on or off
 //   POST /api/dash/:id/pictures, GET /api/dash/:id/pictures, POST /api/dash/:id/pictures/:pid/remove
+// Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): everyday widgets. Their changing state (timers, help
+// queue, checks, weather) rides on /live; these only act or fetch once.
+//   POST /api/dash/:id/timers/:wid            a teacher starts, pauses, resets or sets a timer (server time)
+//   GET|POST /api/dash/:id/picker             the random student picker (teacher only)
+//   POST /api/dash/:id/help                   a student: I need help / I'm done / cancel (fixed buttons)
+//   POST /api/dash/:id/help/queue             the teacher: next, remove one, clear
+//   POST /api/dash/:id/checks, /checks/:cid/end|save, GET /checks/:cid/names, GET /checks/saved   quick checks (teacher)
+//   POST /api/dash/:id/checks/:cid/answer     a student taps an answer
+//   GET  /api/dash/:id/places?q=              the teacher looks up a city for the weather (server side)
+//   GET  /api/dash/:id/qr?kind=&ref=          a QR code for an allowed target (teacher)
+//   GET  /api/dash/:id/tiles?refs=            Oomba tiles the reader can open
 // Every route asks D.roleOf / D.isTeacher: only the class's own teacher changes the class screen, sends, approves links
 // or starts Eyes up; only the class's students and teachers read it. Everyone else gets 404. CSRF is the site's
 // same-origin check (auth.csrfCheck); every write has a rate limit.
@@ -26,6 +37,8 @@ import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as D from '../services/dash.js';
+import { qrSvg } from '../services/qr.js';
+import { origin } from '../seo.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/dash.css?v=${VERSION}">`);
@@ -71,7 +84,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t('dash.layouts.defaultName'));
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, registry: reg, layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -100,7 +113,7 @@ function dashPage(req, res, c, role) {
     </footer>`;
   } else {
     const st = D.studentState(c.id, u.id);
-    data = { role, classId: c.id, registry: reg, me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backMyClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -124,7 +137,8 @@ function dashPage(req, res, c, role) {
       <p class="small muted" id="dash-tray-empty">${t('dash.tray.empty')}</p>
       <p class="small muted">${t('dash.tray.note')}</p>
     </section>
-    <div class="dash-bannerslot" id="dash-banner" aria-live="polite"></div>`;
+    <div class="dash-bannerslot" id="dash-banner" aria-live="polite"></div>
+    <section class="dash-check" id="dash-check" aria-labelledby="dash-check-h" tabindex="-1" hidden></section>`;
   }
   const bodyHtml = html`<div class="dash dash-${role}" id="dash" data-role="${role}" data-class="${c.id}">
     ${top}
@@ -271,4 +285,84 @@ router.get('/api/dash/:id/pictures', requireUser, (req, res) => {
 router.post('/api/dash/:id/pictures/:pid/remove', requireUser, rateLimit('dash-picture', 60, 3600e3), (req, res) => {
   const x = load(req, res); if (!x) return;
   send(req, res, D.removePicture(req.user, x.c, req.params.pid));
+});
+
+// ================================================================ stage 2: everyday widgets
+router.post('/api/dash/:id/timers/:wid', requireUser, rateLimit('dash-timer', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.timerAction(req.user, x.c, req.params.wid, { action: b.action, ms: b.ms }));
+});
+
+router.get('/api/dash/:id/picker', requireUser, rateLimit('dash-picker', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  res.json(D.pickerView(x.c));
+});
+router.post('/api/dash/:id/picker', requireUser, rateLimit('dash-picker', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.pickerAction(req.user, x.c, { action: b.action, user: b.user, on: b.on !== false, norepeat: b.norepeat !== false }));
+});
+
+router.post('/api/dash/:id/help', requireUser, rateLimit('dash-help', 120, 3600e3), (req, res) => {
+  const x = load(req, res, { student: true }); if (!x) return;
+  send(req, res, D.helpAsk(req.user, x.c, String(body(req).kind || '')));
+});
+router.post('/api/dash/:id/help/queue', requireUser, rateLimit('dash-help-queue', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.helpTeacher(req.user, x.c, { action: b.action, user: b.user, kind: b.kind }));
+});
+
+router.post('/api/dash/:id/checks', requireUser, rateLimit('dash-check', 60, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.createCheck(req.user, x.c, { kind: b.kind, question: b.question, options: b.options }), { toast: req.t('dash.push.sent') });
+});
+router.get('/api/dash/:id/checks/saved', requireUser, rateLimit('dash-options', 120, 60e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  res.json({ checks: D.savedChecks(x.c) });
+});
+router.get('/api/dash/:id/checks/:cid/names', requireUser, rateLimit('dash-options', 120, 60e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  send(req, res, D.checkNames(x.c, req.params.cid));
+});
+router.post('/api/dash/:id/checks/:cid/end', requireUser, rateLimit('dash-check', 60, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  send(req, res, D.endCheck(req.user, x.c, req.params.cid));
+});
+router.post('/api/dash/:id/checks/:cid/save', requireUser, rateLimit('dash-check', 60, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  send(req, res, D.saveCheck(req.user, x.c, req.params.cid, body(req).saved !== false));
+});
+router.post('/api/dash/:id/checks/:cid/answer', requireUser, rateLimit('dash-answer', 240, 3600e3), (req, res) => {
+  const x = load(req, res, { student: true }); if (!x) return;
+  send(req, res, D.answerCheck(req.user, x.c, req.params.cid, body(req).value));
+});
+
+router.get('/api/dash/:id/places', requireUser, rateLimit('dash-places', 40, 3600e3), async (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  const r = await D.findPlaces(String(req.query.q || ''), req.locale || 'en');
+  if (r.error) return fail(req, res, 'resting', 503);
+  res.json(r);
+});
+
+router.get('/api/dash/:id/qr', requireUser, rateLimit('dash-qr', 240, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  const tg = D.qrTarget(x.c, { kind: String(req.query.kind || ''), ref: String(req.query.ref || '') }, origin(req));
+  if (!tg) return fail(req, res, 'qrGone', 404);
+  let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan') }); } catch { return fail(req, res, 'qrGone', 404); }
+  res.json({ svg, text: tg.text, title: tg.title });
+});
+
+router.get('/api/dash/:id/tiles', requireUser, rateLimit('dash-tiles', 240, 60e3), (req, res) => {
+  const x = load(req, res); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  const refs = String(req.query.refs || '').split(',').slice(0, D.MAX_TILES).map(r => { const [kind, ref] = r.split(':'); return { kind, ref }; });
+  res.json({ tiles: D.resolveTiles(x.c, refs) });
 });

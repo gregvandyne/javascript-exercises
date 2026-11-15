@@ -3,9 +3,12 @@
 // resize, remove, undo, settings) by mouse, touch or keyboard; backgrounds; the teacher's layouts, Push to students and
 // Eyes up; a student's banner, "From your teacher" tray and Eyes up card. Screens check /api/dash/<class>/live every few
 // seconds while they are in view (the way class pages learn about a live game, public/js/class-live.js).
+// Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): the everyday widgets' state (timers, the help queue,
+// quick checks, weather) rides on the same check; widgets get it through their live() hook. A student answers a quick
+// check in the card under the banner.
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
-import { RENDER } from '/js/dash-widgets.js';
+import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -42,7 +45,7 @@ function start() {
   // ---------------------------------------------------------------- state
   // widgets: what this screen shows. Teacher: the current layout's widgets. Student: the teacher's pinned widgets
   // (pinned: true, at the place this student moved them to) then their own.
-  const S = { editing: false, selected: null, undo: [], bg: null, live: D.live || { pushes: [] }, layoutId: D.current || null, layouts: D.layouts || [], active: D.active || null, pinsAt: (D.live || {}).pinsAt || 0, pins: D.pins || [] };
+  const S = { skew: D.live && D.live.now ? D.live.now - Date.now() : 0, samples: [], editing: false, selected: null, undo: [], bg: null, live: D.live || { pushes: [] }, layoutId: D.current || null, layouts: D.layouts || [], active: D.active || null, pinsAt: (D.live || {}).pinsAt || 0, pins: D.pins || [] };
   if (TEACHER) { const l = S.layouts.find(x => x.id === S.layoutId) || S.layouts[0]; S.widgets = clone(l.widgets); S.bg = l.bg; }
   else { S.mine = D.me; S.widgets = mergeStudent(); S.bg = D.me.bg; }
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
@@ -55,7 +58,20 @@ function start() {
   }
 
   // ---------------------------------------------------------------- drawing
-  const tickers = new Map();
+  const tickers = new Map(), hooks = new Map(), destroyers = [];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const projecting = () => document.body.classList.contains('dash-projector');
+  /** What a widget's renderer gets besides its settings (public/js/dash-widgets.js says what each is for). */
+  const api2 = path => api(`/api/dash/${CID}${path}`);
+  async function act(path, body, errEl) {
+    try { return await api(`/api/dash/${CID}${path}`, { method: 'POST', body: body || {} }); }
+    catch (err) { if (errEl) errEl.textContent = err.message; else toast(err.message, { bad: true }); return null; }
+  }
+  const ctxFor = (w, type) => ({
+    type, intl: INTL, role: D.role, id: w.id, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
+    reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
+    get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
+  });
   function applyBg() {
     root.className = root.className.replace(/\bdash-bg-\S+/g, '').trim();
     root.style.removeProperty('--dash-pic');
@@ -65,7 +81,8 @@ function start() {
     $$('[data-bg-kind]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bgKind === bg.kind && b.dataset.bgId === bg.id)));
   }
   function render() {
-    tickers.clear();
+    tickers.clear(); hooks.clear();
+    while (destroyers.length) { try { destroyers.pop()(); } catch { /* gone */ } }
     grid.textContent = '';
     const rows = Math.max(MIN_ROWS, rowsUsed() + (S.editing ? 1 : 0));
     grid.style.setProperty('--rows', rows);
@@ -98,8 +115,10 @@ function start() {
     c.setAttribute('aria-labelledby', title.id);
     const body = document.createElement('div'); body.className = 'dash-wb';
     c.appendChild(body);
-    const r = RENDER[w.type] ? RENDER[w.type](body, w.s || {}, { type, intl: INTL, role: D.role }) : null;
+    const r = RENDER[w.type] ? RENDER[w.type](body, w.s || {}, ctxFor(w, type)) : null;
     if (r && r.tick) tickers.set(w.id, r.tick);
+    if (r && r.live) hooks.set(w.id, r.live);
+    if (r && r.destroy) destroyers.push(r.destroy);
     if (S.editing) editChrome(c, w);
     return c;
   }
@@ -162,7 +181,7 @@ function start() {
     snapshot();
     const box = freeSpot(type.size[0], type.size[1]);
     const s = {}; for (const f of type.settings) s[f.key] = f.def;
-    const w = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s };
+    const w = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s, ...(TEACHER && type.pin && type.pinDef ? { pin: true } : {}) };
     S.widgets.push(w); S.selected = w.id;
     changed(t('js.dash.say.added', { name: type.name }));
     grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`)?.scrollIntoView({ block: 'nearest' });
@@ -327,6 +346,8 @@ function start() {
       } else if (f.type === 'select') {
         field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}">${f.options.map(o => `<option value="${esc(o)}"${w.s[f.key] === o ? ' selected' : ''}>${esc(f.labels[o])}</option>`).join('')}</select>`;
         field.querySelector('select').addEventListener('change', e => { w.s[f.key] = e.target.value; commit(); redraw(); });
+      } else if (EDITORS[f.type]) {
+        EDITORS[f.type](field, f, w, id, type, { commit, redraw });
       } else {
         const tag = f.type === 'textarea' ? `<textarea class="input" id="${id}" rows="${f.max > 300 ? 7 : 3}" maxlength="${f.max}"></textarea>` : `<input class="input" id="${id}" maxlength="${f.max}">`;
         field.innerHTML = `<label for="${id}">${esc(f.label)}</label>${tag}`;
@@ -336,7 +357,7 @@ function start() {
       }
       form.appendChild(field);
     }
-    if (TEACHER) {
+    if (TEACHER && type.pin) {
       const pin = document.createElement('div'); pin.className = 'dash-tog';
       pin.innerHTML = `<label for="dset-${w.id}-pin">${esc(t('js.dash.side.pin'))}</label><input type="checkbox" id="dset-${w.id}-pin"${w.pin ? ' checked' : ''}>`;
       pin.querySelector('input').addEventListener('change', e => { w.pin = e.target.checked; commit(); redraw(); announce(e.target.checked ? t('js.dash.say.pinOn', { name: type.name }) : t('js.dash.say.pinOff', { name: type.name })); });
@@ -352,6 +373,117 @@ function start() {
     form.appendChild(acts);
     box.appendChild(form);
   }
+  // ---------------------------------------------------------------- stage 2 settings editors
+  // number, zone, periods (schedule), place (weather: the teacher types a city, the server looks it up), target (what a
+  // QR code opens: approved links, the live game, open lessons, games) and tiles (Oomba games and lessons).
+  const ZONE_LIST = ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Phoenix', 'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu', 'America/Toronto', 'America/Mexico_City', 'America/Sao_Paulo',
+    'Europe/London', 'Europe/Dublin', 'Europe/Paris', 'Europe/Berlin', 'Europe/Madrid', 'Europe/Rome', 'Europe/Amsterdam', 'Europe/Moscow', 'Africa/Cairo', 'Africa/Lagos', 'Africa/Johannesburg', 'Asia/Jerusalem', 'Asia/Dubai',
+    'Asia/Kolkata', 'Asia/Shanghai', 'Asia/Taipei', 'Asia/Tokyo', 'Asia/Seoul', 'Asia/Singapore', 'Australia/Sydney', 'Pacific/Auckland'];
+  const cityOf = z => z.split('/').pop().replace(/_/g, ' ');
+  let optsCache = null;
+  const pushOpts = async (q = '') => { if (!q && optsCache) return optsCache; const r = await api(`/api/dash/${CID}/push-options${q ? `?q=${encodeURIComponent(q)}` : ''}`); if (!q) optsCache = r; return r; };
+  const EDITORS = {
+    number(field, f, w, id, type, { commit, redraw }) {
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="number" inputmode="numeric" min="${f.min}" max="${f.max}">`;
+      const inp = field.querySelector('input'); inp.value = w.s[f.key] ?? f.def;
+      inp.addEventListener('change', () => { const n = Math.round(+inp.value); w.s[f.key] = Number.isFinite(n) && inp.value !== '' ? Math.min(f.max, Math.max(f.min, n)) : f.def; inp.value = w.s[f.key]; commit(); redraw(); });
+    },
+    zone(field, f, w, id, type, { commit, redraw }) {
+      const list = [...new Set([...(w.s[f.key] ? [w.s[f.key]] : []), ...ZONE_LIST])].sort((a, b) => cityOf(a).localeCompare(cityOf(b)));
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}"><option value="">${esc(t('js.dash.side.zoneNone'))}</option>${list.map(z => `<option value="${esc(z)}"${w.s[f.key] === z ? ' selected' : ''}>${esc(cityOf(z))}</option>`).join('')}</select>`;
+      field.querySelector('select').addEventListener('change', e => { w.s[f.key] = e.target.value; commit(); redraw(); });
+    },
+    periods(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-periods';
+      const draw = () => {
+        const list = w.s[f.key] || (w.s[f.key] = []);
+        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((p, i) => `<li class="dash-perrow" data-i="${i}">
+          <label class="sr-only" for="${id}-n${i}">${esc(W.period)} ${i + 1}</label><input class="input dash-pername" id="${id}-n${i}" data-k="name" maxlength="40" dir="auto" value="${esc(p.name)}" placeholder="${esc(W.period)} ${i + 1}">
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">✖</button>
+          <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-s${i}">${esc(W.from)}</label><input class="input" id="${id}-s${i}" data-k="start" type="time" value="${esc(p.start)}"></span>
+          <span class="dash-pertime"><label for="${id}-e${i}">${esc(W.to)}</label><input class="input" id="${id}-e${i}" data-k="end" type="time" value="${esc(p.end)}"></span></span></li>`).join('')}</ol>
+          <button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addPeriod)}</button>`;
+      };
+      draw();
+      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
+      field.addEventListener('change', () => commit());
+      field.addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]'), addB = e.target.closest('[data-addp]');
+        if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]').focus(); }
+        if (addB) {
+          const list = w.s[f.key] || []; if (list.length >= 16) return;
+          const last = list[list.length - 1], start = last ? last.end : '08:30';
+          const [h, m] = start.split(':').map(Number), endMin = Math.min(23 * 60 + 59, h * 60 + m + 45);
+          list.push({ name: '', start, end: `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}` });
+          w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-n${list.length - 1}`)}`)?.focus();
+        }
+      });
+    },
+    place(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<span class="dash-lab">${esc(f.label)}</span><p class="dash-cur" dir="auto"></p>
+        <div class="row dash-findrow"><label class="sr-only" for="${id}">${esc(W.search)}</label><input class="input grow" id="${id}" type="search" maxlength="60" autocomplete="off" placeholder="${esc(W.searchHint)}"><button class="btn btn-sm" type="button">🔎 ${esc(W.find)}</button></div>
+        <ul class="plain dash-found" aria-live="polite"></ul><p class="small muted">${esc(t('js.dash.side.placeNote'))}</p>`;
+      const cur = field.querySelector('.dash-cur'), inp = field.querySelector('input'), found = field.querySelector('.dash-found');
+      const showCur = () => { cur.textContent = w.s[f.key] ? `📍 ${w.s[f.key].name}` : W.none; };
+      showCur();
+      const find = async () => {
+        const q = inp.value.trim(); if (q.length < 2) return;
+        found.innerHTML = '<li class="small muted">…</li>';
+        try {
+          const r = await api(`/api/dash/${CID}/places?q=${encodeURIComponent(q)}`);
+          found.innerHTML = r.places.map((p, i) => `<li><button class="btn btn-sm dash-placebtn" type="button" data-p="${i}" dir="auto">${esc(p.name)}</button></li>`).join('') || `<li class="small muted">${esc(W.none)}</li>`;
+          found.onclick = e => { const b = e.target.closest('[data-p]'); if (!b) return; w.s[f.key] = r.places[+b.dataset.p]; commit(); redraw(); showCur(); found.textContent = ''; inp.value = ''; announce(`${W.place}: ${w.s[f.key].name}`); inp.focus(); };
+        } catch (err) { found.innerHTML = `<li class="small muted">${esc(err.message)}</li>`; }
+      };
+      field.querySelector('button').addEventListener('click', find);
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); find(); } });
+    },
+    target(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}"><option value="">${esc(W.nothing)}</option></select><p class="small muted">${esc(t('js.dash.side.qrNote'))}</p>`;
+      const sel = field.querySelector('select');
+      const curKey = w.s[f.key] ? `${w.s[f.key].kind}:${w.s[f.key].ref}` : '';
+      pushOpts().then(o => {
+        const group = (kind, items) => (items.length ? `<optgroup label="${esc(t(`js.dash.kind.${kind}`))}">${items.map(x => `<option value="${esc(`${kind}:${x.ref}`)}">${esc(x.title)}</option>`).join('')}</optgroup>` : '');
+        sel.insertAdjacentHTML('beforeend', group('link', o.links.map(l => ({ ref: l.id, title: l.title }))) + group('live', o.live ? [{ ref: '', title: o.live.title }] : []) + group('lesson', o.lessons.map(l => ({ ref: l.id, title: l.title }))) + group('game', o.games.map(g => ({ ref: g.id, title: g.title }))));
+        if (curKey && !sel.querySelector(`option[value="${CSS.escape(curKey)}"]`)) sel.insertAdjacentHTML('beforeend', `<option value="${esc(curKey)}">${esc(W.gone)}</option>`);
+        sel.value = curKey;
+      }).catch(() => {});
+      sel.addEventListener('change', () => { const [kind, ref = ''] = sel.value.split(':'); w.s[f.key] = sel.value ? { kind, ref } : null; commit(); redraw(); });
+    },
+    tiles(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-tilesed';
+      field.innerHTML = `<span class="dash-lab">${esc(f.label)}</span><ul class="plain dash-plist dash-tilecur"></ul>
+        <label for="${id}">${esc(W.add)}</label><div class="row"><select class="input grow" id="${id}"></select><button class="btn btn-sm" type="button" data-addt>➕ ${esc(W.add)}</button></div>`;
+      const cur = field.querySelector('.dash-tilecur'), sel = field.querySelector('select');
+      let names = new Map();
+      const showCur = () => {
+        const list = w.s[f.key] || [];
+        cur.innerHTML = list.map((x, i) => `<li class="dash-prow"><span class="grow" dir="auto">${esc(names.get(`${x.kind}:${x.ref}`) || '…')}</span><button class="btn btn-sm" type="button" data-rmt="${i}" aria-label="${esc(W.remove)}: ${esc(names.get(`${x.kind}:${x.ref}`) || '')}">✖</button></li>`).join('') || `<li class="small muted">${esc(W.empty)}</li>`;
+      };
+      pushOpts().then(o => {
+        for (const g of o.games) names.set(`game:${g.id}`, `${g.icon || '🎮'} ${g.title}`);
+        for (const l of o.lessons) names.set(`lesson:${l.id}`, `📚 ${l.title}`);
+        sel.innerHTML = `<optgroup label="${esc(W.games)}">${o.games.map(g => `<option value="game:${esc(g.id)}">${esc(g.title)}</option>`).join('')}</optgroup><optgroup label="${esc(W.lessons)}">${o.lessons.map(l => `<option value="lesson:${esc(l.id)}">${esc(l.title)}</option>`).join('')}</optgroup>`;
+        const missing = (w.s[f.key] || []).filter(x => !names.has(`${x.kind}:${x.ref}`));
+        if (missing.length) api(`/api/dash/${CID}/tiles?refs=${encodeURIComponent(missing.map(x => `${x.kind}:${x.ref}`).join(','))}`).then(r => { for (const x of r.tiles) names.set(`${x.kind}:${x.ref}`, `${x.icon} ${x.title}`); showCur(); }).catch(() => {});
+        showCur();
+      }).catch(() => {});
+      showCur();
+      field.addEventListener('click', e => {
+        const rm = e.target.closest('[data-rmt]');
+        if (rm) { w.s[f.key].splice(+rm.dataset.rmt, 1); commit(); redraw(); showCur(); sel.focus(); }
+        if (e.target.closest('[data-addt]') && sel.value) {
+          const [kind, ref] = sel.value.split(':'); const list = w.s[f.key] || (w.s[f.key] = []);
+          if (list.length < 12 && !list.some(x => x.kind === kind && x.ref === ref)) { list.push({ kind, ref }); commit(); redraw(); showCur(); }
+        }
+      });
+    },
+  };
+
   async function studentPictures(box) {
     const sec = document.createElement('section'); sec.className = 'dash-pics';
     sec.innerHTML = `<h3 class="dash-h3">${esc(t('js.dash.side.pictures'))}</h3><p class="small muted">${esc(t('js.dash.side.picturesNote'))}</p><ul class="plain dash-piclist"></ul>`;
@@ -413,8 +545,14 @@ function start() {
   async function poll() {
     if (document.hidden) return;
     try {
+      const sent = Date.now();
       const live = await api(`/api/dash/${CID}/live`, { background: true });
+      const got = Date.now();
+      // The server's clock: the estimate from the quickest of the last few round trips (timers agree on every screen).
+      S.samples.push({ rtt: got - sent, skew: skewOf(live.now, sent, got) }); if (S.samples.length > 8) S.samples.shift();
+      S.skew = S.samples.reduce((a, b) => (b.rtt < a.rtt ? b : a)).skew;
       S.live = live; showLive();
+      for (const f of hooks.values()) { try { f(live); } catch { /* one widget */ } }
       if (!TEACHER && live.pinsAt !== S.pinsAt) {
         const r = await api(`/api/dash/${CID}/pins`, { background: true });
         S.pins = r.pins; S.pinsAt = r.pinsAt;
@@ -480,7 +618,8 @@ function start() {
     catch (err) { toast(err.message, { bad: true }); }
   });
 
-  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗' };
+  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅' };
+  const titleOf = p => p.title || t(`js.dash.kind.${p.kind}`);
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
   async function openPush(q = '') {
@@ -503,7 +642,7 @@ function start() {
           <p class="err form-err" role="alert"></p><div class="row"><button class="btn" type="submit">✅ ${esc(t('js.dash.push.linkAdd'))}</button></div></form>`,
     };
     const content = `<section class="dash-sent"><h3 class="dash-h3">${esc(t('js.dash.push.sentToday'))}</h3>
-      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', p.title, `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: p.title }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
+      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: p.title }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
       <div class="chips dash-ptabs" role="tablist" aria-label="${esc(t('js.dash.push.what'))}">${tabs.map(k => `<button class="chip" type="button" role="tab" id="dash-ptab-${k}" aria-controls="dash-ppanel" aria-selected="${k === pushTab}" tabindex="${k === pushTab ? 0 : -1}" data-ptab="${k}">${KIND_ICON[k]} ${esc(t(`js.dash.push.tab.${k}`))}</button>`).join('')}</div>
       <div class="dash-ppanel" id="dash-ppanel" role="tabpanel" aria-labelledby="dash-ptab-${pushTab}">${panel[pushTab]}</div>`;
     if (pushSheet) { $('.sheet-body', pushSheet.el).innerHTML = content; } else { pushSheet = sheet({ title: t('js.dash.push.title'), content, onClose: () => { pushSheet = null; } }); wirePush(); }
@@ -538,7 +677,7 @@ function start() {
   }
 
   // ---------------------------------------------------------------- what the live state shows
-  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link' };
+  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link', check: 'answer' };
   const openAttrs = p => (p.kind === 'link' ? ' target="_blank" rel="noopener noreferrer"' : '');
   function showLive() {
     const live = S.live || { pushes: [] };
@@ -553,10 +692,10 @@ function start() {
     if (slot.dataset.key !== key) {
       slot.dataset.key = key; slot.textContent = '';
       if (top && !top.hidden) {
-        slot.innerHTML = `<div class="dash-banner"><span class="dash-bicon" aria-hidden="true">📣</span><span class="dash-btext"><span class="dash-bfrom">${esc(t('js.dash.banner.from', { when: timeOf(top.at) }))}</span><b>${esc(top.title)}</b></span>
+        slot.innerHTML = `<div class="dash-banner"><span class="dash-bicon" aria-hidden="true">📣</span><span class="dash-btext"><span class="dash-bfrom">${esc(t('js.dash.banner.from', { when: timeOf(top.at) }))}</span><b dir="auto">${esc(titleOf(top))}</b></span>
           <a class="btn btn-hot" href="${esc(top.href)}"${openAttrs(top)}>${esc(t(`js.dash.act.${ACT[top.kind]}`))}</a><button class="btn dash-hide" type="button" data-hide="${esc(top.id)}">${esc(t('js.dash.banner.hide'))}</button></div>`;
       } else if (top) {
-        slot.innerHTML = `<div class="dash-hidden"><span class="grow">${t('js.dash.banner.hidden', { title: `<b>${esc(top.title)}</b>` })}</span><button class="btn btn-sm" type="button" data-unhide="${esc(top.id)}">${esc(t('js.dash.banner.back'))}</button></div>`;
+        slot.innerHTML = `<div class="dash-hidden"><span class="grow">${t('js.dash.banner.hidden', { title: `<b dir="auto">${esc(titleOf(top))}</b>` })}</span><button class="btn btn-sm" type="button" data-unhide="${esc(top.id)}">${esc(t('js.dash.banner.back'))}</button></div>`;
       }
     }
     const n = $('#dash-tray-n'); n.textContent = live.pushes.length;
@@ -571,10 +710,27 @@ function start() {
       const btn = isTop && !p.hidden ? `<span class="chip-s">${esc(t('js.dash.tray.showing'))}</span>`
         : isTop ? `<button class="btn btn-sm btn-hot" type="button" data-unhide="${esc(p.id)}">${esc(t('js.dash.tray.show'))}</button>`
           : `<a class="btn btn-sm" href="${esc(p.href)}"${openAttrs(p)}>${esc(t(`js.dash.act.${ACT[p.kind]}`))}</a>`;
-      li.innerHTML = `<span aria-hidden="true">${KIND_ICON[p.kind] || '📤'}</span><span class="grow"><b>${esc(p.title)}</b><span class="small muted">${esc(t(`js.dash.kind.${p.kind}`))} · ${esc(timeOf(p.at))}</span></span>${btn}`;
+      li.innerHTML = `<span aria-hidden="true">${KIND_ICON[p.kind] || '📤'}</span><span class="grow"><b dir="auto">${esc(titleOf(p))}</b><span class="small muted">${esc(t(`js.dash.kind.${p.kind}`))} · ${esc(timeOf(p.at))}</span></span>${btn}`;
       list.appendChild(li);
     }
+    showCheck(live);
     eyes(live.eyes);
+  }
+  // A quick check from the teacher: big tap buttons (no typing). Only this student's own answer is ever shown here.
+  function showCheck(live) {
+    const box = $('#dash-check'); if (!box) return;
+    const ch = (live.checks || [])[0] || null;
+    const key = ch ? `${ch.id}:${ch.mine}` : '';
+    if (box.dataset.key === key) return;
+    const had = box.contains(document.activeElement) ? document.activeElement.dataset.answer : null;
+    box.dataset.key = key; box.hidden = !ch; box.textContent = '';
+    if (!ch) return;
+    const W = (types.get('check') || { words: {} }).words;
+    const choices = checkChoices(ch, W);
+    box.innerHTML = `<h2 id="dash-check-h"><span aria-hidden="true">✅</span> ${esc(t('js.dash.check.title'))}</h2>${ch.q ? `<p class="dash-checkq" dir="auto">${esc(ch.q)}</p>` : ''}
+      <div class="dash-answers dash-answers-${esc(ch.kind)}" role="group" aria-labelledby="dash-check-h">${choices.map((c, i) => `<button class="dash-ans" type="button" data-answer="${i}" aria-pressed="${ch.mine === i}">${c.icon ? `<span class="dash-ansicon${c.rot ? ' dw-rot' : ''}" aria-hidden="true">${esc(c.icon)}</span>` : ''}<span class="dash-anslab"${c.typed ? ' dir="auto"' : ''}>${esc(c.label)}</span></button>`).join('')}</div>
+      <p class="small dash-checknote" role="status">${esc(ch.mine == null ? t('js.dash.check.tap') : t('js.dash.check.thanks'))}</p>`;
+    if (had != null) box.querySelector(`[data-answer="${had}"]`)?.focus();
   }
   // Eyes up: a card over the whole screen until the teacher ends it (or it ends by itself).
   let eyesTimer = null;
@@ -594,6 +750,16 @@ function start() {
     $('#dash-tray-close').addEventListener('click', () => { setTray(false); trayBtn.focus(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !tray.hidden) { setTray(false); trayBtn.focus(); } });
     document.addEventListener('click', async e => {
+      const go = e.target.closest('a[href^="#check-"]');
+      if (go) { e.preventDefault(); setTray(false); const box = $('#dash-check'); if (box && !box.hidden) { box.scrollIntoView({ block: 'nearest' }); (box.querySelector('.dash-ans[aria-pressed="false"]') || box).focus(); } return; }
+      const a = e.target.closest('[data-answer]');
+      if (a) {
+        const ch = (S.live.checks || [])[0]; if (!ch) return;
+        const value = +a.dataset.answer;
+        try { await api(`/api/dash/${CID}/checks/${ch.id}/answer`, { method: 'POST', body: { value } }); ch.mine = value; showCheck(S.live); announce(t('js.dash.check.thanks')); }
+        catch (err) { toast(err.message, { bad: true }); poll(); }
+        return;
+      }
       const h = e.target.closest('[data-hide],[data-unhide]'); if (!h) return;
       const id = h.dataset.hide || h.dataset.unhide, hidden = !!h.dataset.hide;
       const p = S.live.pushes.find(x => x.id === id); if (p) p.hidden = hidden;

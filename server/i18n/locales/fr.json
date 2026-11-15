@@ -2742,7 +2742,10 @@
         "picturesNote": "Seuls toi et cet élève pouvez voir chacune.",
         "picturesNone": "Aucun élève n’utilise d’image.",
         "takeDown": "Retirer",
-        "takenDown": "Image retirée"
+        "takenDown": "Image retirée",
+        "zoneNone": "Aucun",
+        "placeNote": "Tape une ville ou un village. Oomba n’utilise jamais la position de personne.",
+        "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés."
       },
       "bgChanged": "Fond changé",
       "uploading": "Vérification de ton image…",
@@ -2765,13 +2768,15 @@
         "game": "Jeu",
         "live": "Jeu en direct",
         "lesson": "Leçon",
-        "link": "Lien"
+        "link": "Lien",
+        "check": "Vérification rapide"
       },
       "act": {
         "play": "Jouer",
         "join": "Rejoindre le jeu",
         "lesson": "Ouvrir la leçon",
-        "link": "Ouvrir le lien"
+        "link": "Ouvrir le lien",
+        "answer": "Répondre"
       },
       "push": {
         "title": "Envoyer aux élèves",
@@ -2813,6 +2818,11 @@
         "label": "De ton enseignant : {count, plural, one {# chose} other {# choses}} aujourd’hui",
         "show": "Afficher",
         "showing": "Affiché"
+      },
+      "check": {
+        "title": "Vérification rapide",
+        "tap": "Touche ta réponse.",
+        "thanks": "Merci ! Tu peux changer ta réponse jusqu’à ce que ton enseignant termine la vérification."
       }
     }
   },
@@ -8953,7 +8963,8 @@
           "face": "Cadran",
           "hour12": "Format 12 heures",
           "seconds": "Afficher les secondes",
-          "date": "Afficher la date"
+          "date": "Afficher la date",
+          "zone2": "Deuxième fuseau horaire"
         },
         "o": {
           "face": {
@@ -8986,6 +8997,196 @@
         "s": {
           "goal": "Objectif du jour"
         }
+      },
+      "timer": {
+        "name": "Minuteur",
+        "desc": "Compte à rebours en gros chiffres, avec une barre de temps.",
+        "s": {
+          "minutes": "Minutes au départ",
+          "chime": "Petit carillon à la fin",
+          "bar": "Afficher la barre de temps"
+        },
+        "start": "Démarrer",
+        "pause": "Pause",
+        "resume": "Reprendre",
+        "reset": "Remettre à zéro",
+        "custom": "Autre durée",
+        "min": "Minutes",
+        "sec": "Secondes",
+        "set": "Régler",
+        "done": "C’est l’heure !",
+        "left": "Encore {time}",
+        "presets": "Durées rapides",
+        "mins": "{n} minutes"
+      },
+      "stopwatch": {
+        "name": "Chronomètre",
+        "desc": "Compte à partir de zéro.",
+        "start": "Démarrer",
+        "pause": "Pause",
+        "resume": "Reprendre",
+        "reset": "Remettre à zéro"
+      },
+      "schedule": {
+        "name": "Programme du jour",
+        "desc": "Les séances du jour ; celle en cours est mise en avant.",
+        "s": {
+          "periods": "Séances"
+        },
+        "empty": "Ajoute les séances du jour dans Modifier l’écran.",
+        "now": "Maintenant",
+        "next": "Ensuite",
+        "left": "encore {n} min",
+        "after": "C’est la fin du programme d’aujourd’hui.",
+        "before": "Pour commencer",
+        "addPeriod": "Ajouter une séance",
+        "period": "Séance",
+        "from": "De",
+        "to": "À",
+        "remove": "Retirer la séance"
+      },
+      "weather": {
+        "name": "Météo",
+        "desc": "La météo du jour dans la ville de ton école.",
+        "s": {
+          "place": "Lieu",
+          "unit": "Température en"
+        },
+        "o": {
+          "unit": {
+            "auto": "Automatique",
+            "f": "°F",
+            "c": "°C"
+          }
+        },
+        "empty": "Choisis ta ville dans Modifier l’écran.",
+        "resting": "La météo fait une pause",
+        "loading": "On regarde le ciel…",
+        "hiLo": "Max {hi} · Min {lo}",
+        "find": "Chercher",
+        "search": "Ville ou village",
+        "searchHint": "Tape ta ville ou ton village",
+        "none": "Pas encore de lieu",
+        "place": "Lieu",
+        "clear": "Ensoleillé et dégagé. Une super journée !",
+        "clearNight": "Ciel dégagé ce soir.",
+        "partly": "Un peu de soleil, un peu de nuages.",
+        "cloudy": "Nuageux aujourd’hui.",
+        "fog": "Brouillard. Fais attention dehors.",
+        "drizzle": "Un peu de bruine. Prends un manteau.",
+        "rain": "Pluvieux, prends un manteau !",
+        "snow": "De la neige ! Couvre-toi bien.",
+        "storm": "Orageux. Reste à l’intérieur si tu peux."
+      },
+      "qr": {
+        "name": "Code QR",
+        "desc": "Affiche un lien à scanner avec les tablettes.",
+        "s": {
+          "target": "Ce que le code ouvre"
+        },
+        "empty": "Choisis ce que le code ouvre dans Modifier l’écran.",
+        "gone": "Ce lien n’est plus disponible. Choisis-en un autre dans Modifier l’écran.",
+        "scan": "Code QR à scanner",
+        "nothing": "Rien pour l’instant"
+      },
+      "picker": {
+        "name": "Tirage au sort d’un élève",
+        "desc": "Choisit un élève par son nom Oomba.",
+        "s": {
+          "norepeat": "Pas de répétition avant que tout le monde soit passé"
+        },
+        "pick": "Tirer un élève",
+        "again": "Encore",
+        "left": "Restent pour ce tour : {n}",
+        "away": "Absents aujourd’hui",
+        "awayTitle": "Qui est absent aujourd’hui ?",
+        "awayNote": "Les élèves cochés ne sont pas tirés aujourd’hui. Tout repart à zéro demain.",
+        "reset": "Recommencer",
+        "none": "Aucun élève à tirer."
+      },
+      "noise": {
+        "name": "Mesure du bruit",
+        "desc": "Quel est le niveau sonore de la classe ? Utilise ton micro ; rien n’est enregistré.",
+        "s": {
+          "zone": "Niveau visé"
+        },
+        "o": {
+          "zone": {
+            "silent": "Silence",
+            "whisper": "Chuchotement",
+            "talk": "Travail à deux",
+            "busy": "Travail de groupe"
+          }
+        },
+        "start": "Allumer le micro",
+        "stop": "Éteindre le micro",
+        "on": "Micro allumé",
+        "off": "Micro éteint",
+        "note": "Le son reste sur cet ordinateur. Rien n’est enregistré, gardé ou envoyé.",
+        "denied": "Le micro est bloqué. Autorise-le dans le navigateur pour utiliser la mesure.",
+        "quiet": "Bien calme",
+        "ok": "Ça monte",
+        "loud": "Trop fort !"
+      },
+      "help": {
+        "name": "File d’aide",
+        "desc": "Les élèves touchent « J’ai besoin d’aide » ou « J’ai fini ».",
+        "need": "J’ai besoin d’aide",
+        "done": "J’ai fini",
+        "cancel": "Finalement non",
+        "place": "Tu es numéro {n} dans la file.",
+        "doneMine": "Ton enseignant voit que tu as fini.",
+        "empty": "Personne n’attend.",
+        "next": "Suivant",
+        "clear": "Tout effacer",
+        "waiting": "{n} en attente",
+        "finished": "{n} ont fini",
+        "remove": "Retirer {name}",
+        "hidden": "Les noms sont cachés sur le projecteur."
+      },
+      "check": {
+        "name": "Vérification rapide",
+        "desc": "Demande à la classe : pouces, doigts de 0 à 5, choix ou de 1 à 5.",
+        "empty": "Envoie une vérification rapide pour voir où en est chacun.",
+        "new": "Nouvelle vérification",
+        "end": "Terminer",
+        "ended": "Terminée",
+        "names": "Qui a répondu",
+        "save": "Garder les résultats",
+        "saved": "Gardés",
+        "savedList": "Résultats gardés",
+        "answered": "{n} sur {total} ont répondu",
+        "send": "Envoyer aux élèves",
+        "kind": "Type de vérification",
+        "question": "Question (facultative)",
+        "questionHint": "Comment te sens-tu avec les fractions ?",
+        "options": "Choix",
+        "option": "Choix {n}",
+        "addOption": "Ajouter un choix",
+        "needOptions": "Écris au moins deux choix.",
+        "nobody": "Personne",
+        "notYet": "Pas encore répondu",
+        "savedNone": "Aucun résultat gardé pour l’instant.",
+        "thumbs": "Pouces",
+        "fist": "De 0 à 5 doigts",
+        "choice": "Choix multiple",
+        "scale": "De 1 à 5",
+        "up": "J’ai compris",
+        "side": "Un peu",
+        "down": "Pas encore"
+      },
+      "tiles": {
+        "name": "Tuiles Oomba",
+        "desc": "Des jeux et des leçons à ouvrir d’un seul geste.",
+        "s": {
+          "tiles": "Tuiles"
+        },
+        "empty": "Choisis des jeux et des leçons dans Modifier l’écran.",
+        "add": "Ajouter une tuile",
+        "games": "Jeux",
+        "lessons": "Leçons",
+        "remove": "Retirer",
+        "gone": "Ils ne sont pas ouverts en ce moment."
       }
     },
     "push": {
@@ -9005,7 +9206,15 @@
       "link": "Ce lien n’est pas dans la liste approuvée.",
       "tooManyPushes": "C’est beaucoup pour une journée. Termines-en quelques-uns d’abord.",
       "pic_badType": "Cette image n’a pas marché. Essaie une photo JPG ou PNG.",
-      "pic_tooBig": "Cette image est trop grande."
+      "pic_tooBig": "Cette image est trop grande.",
+      "timer": "Ce minuteur n’a pas marché. Réessaie.",
+      "nobody": "Il n’y a personne à tirer.",
+      "checkKind": "Choisis un type de vérification.",
+      "checkOptions": "Écris au moins deux choix.",
+      "checkClosed": "Cette vérification est terminée.",
+      "checkValue": "Choisis une des réponses.",
+      "resting": "La météo fait une pause. Réessaie dans un petit moment.",
+      "qrGone": "Impossible d’afficher cela en code QR."
     }
   }
 }

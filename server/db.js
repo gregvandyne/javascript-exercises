@@ -962,6 +962,21 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS dash_pictures (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, class_id TEXT NOT NULL, bytes INTEGER NOT NULL,
       created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_dash_pictures_owner ON dash_pictures(owner_id, class_id);`],
+  // Classroom dashboards, stage 2 (services/dash.js; docs/decisions.md "Classroom dashboards, stage 2").
+  // dash_class.timers: the teacher's timers and stopwatches by widget id ({ mode, dur, base, start, on }: a start time
+  // and a duration, never a ticking value). dash_class.picker: today's random picker (who was picked, who is away).
+  // dash_help: the help queue (one row per student: help or done, today only). dash_checks / dash_answers: quick checks
+  // the teacher broadcast (a tap per student, no free text); kept for the school day unless the teacher saves them.
+  ['0079_dash_everyday', `
+    ALTER TABLE dash_class ADD COLUMN timers TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE dash_class ADD COLUMN picker TEXT NOT NULL DEFAULT '{}';
+    CREATE TABLE IF NOT EXISTS dash_help (class_id TEXT NOT NULL, user_id TEXT NOT NULL, kind TEXT NOT NULL, day TEXT NOT NULL, at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, user_id));
+    CREATE TABLE IF NOT EXISTS dash_checks (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, day TEXT NOT NULL, kind TEXT NOT NULL, question TEXT NOT NULL DEFAULT '',
+      options TEXT NOT NULL DEFAULT '[]', by_id TEXT NOT NULL, created_at INTEGER NOT NULL, ended_at INTEGER, saved_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_dash_checks_class ON dash_checks(class_id, day);
+    CREATE TABLE IF NOT EXISTS dash_answers (check_id TEXT NOT NULL, user_id TEXT NOT NULL, value INTEGER NOT NULL, at INTEGER NOT NULL,
+      PRIMARY KEY (check_id, user_id));`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

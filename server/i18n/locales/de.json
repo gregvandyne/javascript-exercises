@@ -2743,7 +2743,10 @@
         "picturesNote": "Jedes sehen nur du und das jeweilige Kind.",
         "picturesNone": "Kein Kind nutzt ein Bild.",
         "takeDown": "Entfernen",
-        "takenDown": "Bild entfernt"
+        "takenDown": "Bild entfernt",
+        "zoneNone": "Keine",
+        "placeNote": "Gib einen Ort oder eine Stadt ein. Oomba nutzt nie den Standort von jemandem.",
+        "qrNote": "Nur die freigegebenen Links der Klasse und Oomba-Seiten lassen sich zeigen."
       },
       "bgChanged": "Hintergrund geändert",
       "uploading": "Dein Bild wird geprüft…",
@@ -2766,13 +2769,15 @@
         "game": "Spiel",
         "live": "Live-Spiel",
         "lesson": "Lektion",
-        "link": "Link"
+        "link": "Link",
+        "check": "Schnelle Abfrage"
       },
       "act": {
         "play": "Spielen",
         "join": "Mitspielen",
         "lesson": "Lektion öffnen",
-        "link": "Link öffnen"
+        "link": "Link öffnen",
+        "answer": "Antworten"
       },
       "push": {
         "title": "An die Klasse senden",
@@ -2814,6 +2819,11 @@
         "label": "Von deiner Lehrkraft: heute {count, plural, one {# Sache} other {# Sachen}}",
         "show": "Zeigen",
         "showing": "Wird gezeigt"
+      },
+      "check": {
+        "title": "Schnelle Abfrage",
+        "tap": "Tippe auf deine Antwort.",
+        "thanks": "Danke! Du kannst deine Antwort ändern, bis deine Lehrkraft die Abfrage beendet."
       }
     }
   },
@@ -8954,7 +8964,8 @@
           "face": "Zifferblatt",
           "hour12": "12-Stunden-Format",
           "seconds": "Sekunden zeigen",
-          "date": "Datum zeigen"
+          "date": "Datum zeigen",
+          "zone2": "Zweite Zeitzone"
         },
         "o": {
           "face": {
@@ -8987,6 +8998,196 @@
         "s": {
           "goal": "Ziel von heute"
         }
+      },
+      "timer": {
+        "name": "Timer",
+        "desc": "Zählt mit großen Ziffern und einem Zeitbalken rückwärts.",
+        "s": {
+          "minutes": "Minuten zu Beginn",
+          "chime": "Leiser Gong am Ende",
+          "bar": "Zeitbalken zeigen"
+        },
+        "start": "Start",
+        "pause": "Pause",
+        "resume": "Weiter",
+        "reset": "Zurücksetzen",
+        "custom": "Eigene Zeit",
+        "min": "Minuten",
+        "sec": "Sekunden",
+        "set": "Stellen",
+        "done": "Die Zeit ist um!",
+        "left": "Noch {time}",
+        "presets": "Schnelle Zeiten",
+        "mins": "{n} Minuten"
+      },
+      "stopwatch": {
+        "name": "Stoppuhr",
+        "desc": "Zählt ab null hoch.",
+        "start": "Start",
+        "pause": "Pause",
+        "resume": "Weiter",
+        "reset": "Zurücksetzen"
+      },
+      "schedule": {
+        "name": "Tagesplan",
+        "desc": "Die Stunden von heute; die aktuelle leuchtet.",
+        "s": {
+          "periods": "Stunden"
+        },
+        "empty": "Füge die Stunden von heute unter „Bildschirm bearbeiten“ hinzu.",
+        "now": "Jetzt",
+        "next": "Danach",
+        "left": "noch {n} Min.",
+        "after": "Das war der Plan für heute.",
+        "before": "Als Erstes",
+        "addPeriod": "Stunde hinzufügen",
+        "period": "Stunde",
+        "from": "Von",
+        "to": "Bis",
+        "remove": "Stunde entfernen"
+      },
+      "weather": {
+        "name": "Wetter",
+        "desc": "Das Wetter von heute am Ort deiner Schule.",
+        "s": {
+          "place": "Ort",
+          "unit": "Temperatur in"
+        },
+        "o": {
+          "unit": {
+            "auto": "Automatisch",
+            "f": "°F",
+            "c": "°C"
+          }
+        },
+        "empty": "Wähle deinen Ort unter „Bildschirm bearbeiten“.",
+        "resting": "Das Wetter macht Pause",
+        "loading": "Wir schauen zum Himmel…",
+        "hiLo": "Höchstens {hi} · Tiefstens {lo}",
+        "find": "Suchen",
+        "search": "Ort oder Stadt",
+        "searchHint": "Gib deinen Ort oder deine Stadt ein",
+        "none": "Noch kein Ort",
+        "place": "Ort",
+        "clear": "Sonnig und klar. Ein toller Tag!",
+        "clearNight": "Klarer Himmel heute Nacht.",
+        "partly": "Etwas Sonne, etwas Wolken.",
+        "cloudy": "Heute bewölkt.",
+        "fog": "Neblig. Pass draußen gut auf.",
+        "drizzle": "Ein bisschen Nieselregen. Nimm eine Jacke mit.",
+        "rain": "Regnerisch, nimm eine Jacke mit!",
+        "snow": "Schnee! Zieh dich warm an.",
+        "storm": "Gewitter. Bleib drinnen, wenn du kannst."
+      },
+      "qr": {
+        "name": "QR-Code",
+        "desc": "Zeigt einen Link zum Scannen mit Tablets.",
+        "s": {
+          "target": "Was der Code öffnet"
+        },
+        "empty": "Wähle unter „Bildschirm bearbeiten“, was der Code öffnet.",
+        "gone": "Dieser Link geht nicht mehr. Wähle unter „Bildschirm bearbeiten“ einen anderen.",
+        "scan": "QR-Code zum Scannen",
+        "nothing": "Noch nichts"
+      },
+      "picker": {
+        "name": "Zufällige Auswahl",
+        "desc": "Wählt ein Kind mit seinem Oomba-Namen aus.",
+        "s": {
+          "norepeat": "Niemanden doppelt, bis alle dran waren"
+        },
+        "pick": "Kind auswählen",
+        "again": "Noch mal",
+        "left": "Noch in dieser Runde: {n}",
+        "away": "Heute nicht da",
+        "awayTitle": "Wer ist heute nicht da?",
+        "awayNote": "Angehakte Kinder werden heute nicht ausgewählt. Morgen ist das wieder zurückgesetzt.",
+        "reset": "Neu anfangen",
+        "none": "Keine Kinder zum Auswählen."
+      },
+      "noise": {
+        "name": "Lautstärke-Messer",
+        "desc": "Wie laut ist es im Raum? Nutzt dein Mikrofon; nichts wird aufgenommen.",
+        "s": {
+          "zone": "Ziel-Lautstärke"
+        },
+        "o": {
+          "zone": {
+            "silent": "Ganz still",
+            "whisper": "Flüstern",
+            "talk": "Partnerarbeit",
+            "busy": "Gruppenarbeit"
+          }
+        },
+        "start": "Mikrofon einschalten",
+        "stop": "Mikrofon ausschalten",
+        "on": "Mikrofon an",
+        "off": "Mikrofon aus",
+        "note": "Der Ton bleibt auf diesem Computer. Nichts wird aufgenommen, gespeichert oder verschickt.",
+        "denied": "Das Mikrofon ist blockiert. Erlaube es im Browser, um den Messer zu nutzen.",
+        "quiet": "Schön ruhig",
+        "ok": "Es wird lauter",
+        "loud": "Zu laut!"
+      },
+      "help": {
+        "name": "Hilfe-Schlange",
+        "desc": "Kinder tippen auf „Ich brauche Hilfe“ oder „Ich bin fertig“.",
+        "need": "Ich brauche Hilfe",
+        "done": "Ich bin fertig",
+        "cancel": "Doch nicht",
+        "place": "Du bist Nummer {n} in der Reihe.",
+        "doneMine": "Deine Lehrkraft sieht, dass du fertig bist.",
+        "empty": "Niemand wartet.",
+        "next": "Nächstes Kind",
+        "clear": "Alle löschen",
+        "waiting": "{n} warten",
+        "finished": "{n} fertig",
+        "remove": "{name} entfernen",
+        "hidden": "Auf dem Beamer sind die Namen versteckt."
+      },
+      "check": {
+        "name": "Schnelle Abfrage",
+        "desc": "Frag die Klasse: Daumen, Fünf-Finger, Auswahl oder 1 bis 5.",
+        "empty": "Schick eine schnelle Abfrage, um zu sehen, wie es allen geht.",
+        "new": "Neue Abfrage",
+        "end": "Beenden",
+        "ended": "Beendet",
+        "names": "Wer hat geantwortet",
+        "save": "Ergebnisse speichern",
+        "saved": "Gespeichert",
+        "savedList": "Gespeicherte Ergebnisse",
+        "answered": "{n} von {total} haben geantwortet",
+        "send": "An die Klasse schicken",
+        "kind": "Art der Abfrage",
+        "question": "Frage (kann leer bleiben)",
+        "questionHint": "Wie gut klappen Brüche bei dir?",
+        "options": "Antworten",
+        "option": "Antwort {n}",
+        "addOption": "Antwort hinzufügen",
+        "needOptions": "Schreib mindestens zwei Antworten.",
+        "nobody": "Niemand",
+        "notYet": "Noch keine Antwort",
+        "savedNone": "Noch keine gespeicherten Ergebnisse.",
+        "thumbs": "Daumen",
+        "fist": "Fünf-Finger",
+        "choice": "Auswahl",
+        "scale": "1 bis 5",
+        "up": "Verstanden",
+        "side": "Teilweise",
+        "down": "Noch nicht"
+      },
+      "tiles": {
+        "name": "Oomba-Kacheln",
+        "desc": "Spiele und Lektionen mit einem Tipp öffnen.",
+        "s": {
+          "tiles": "Kacheln"
+        },
+        "empty": "Wähle Spiele und Lektionen unter „Bildschirm bearbeiten“.",
+        "add": "Kachel hinzufügen",
+        "games": "Spiele",
+        "lessons": "Lektionen",
+        "remove": "Entfernen",
+        "gone": "Die sind gerade nicht offen."
       }
     },
     "push": {
@@ -9006,7 +9207,15 @@
       "link": "Dieser Link steht nicht auf der freigegebenen Liste.",
       "tooManyPushes": "Das ist viel für einen Tag. Beende zuerst ein paar.",
       "pic_badType": "Das Bild hat nicht geklappt. Versuch ein JPG- oder PNG-Foto.",
-      "pic_tooBig": "Das Bild ist zu groß."
+      "pic_tooBig": "Das Bild ist zu groß.",
+      "timer": "Dieser Timer hat nicht geklappt. Versuch es noch mal.",
+      "nobody": "Es gibt niemanden zum Auswählen.",
+      "checkKind": "Wähle eine Art der Abfrage.",
+      "checkOptions": "Schreib mindestens zwei Antworten.",
+      "checkClosed": "Diese Abfrage ist beendet.",
+      "checkValue": "Wähle eine der Antworten.",
+      "resting": "Das Wetter macht Pause. Versuch es gleich noch mal.",
+      "qrGone": "Das lässt sich nicht als QR-Code zeigen."
     }
   }
 }
