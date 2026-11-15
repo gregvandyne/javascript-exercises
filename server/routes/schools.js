@@ -33,6 +33,7 @@ import { liveOn, openForClass, hostSession } from '../services/classlive-session
 import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
+import * as DASH from '../services/dash.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -803,8 +804,8 @@ export function classHeader(req, c, active) {
   return html`
   <div class="pagehead classhead"><div><span class="small muted classschool">${s.name}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
-    ${(() => { const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user);
-      return chip || host ? html`<div class="row classacts">${chip}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''; })()}</div>
+    ${(() => { const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user), dash = DASH.isTeacher(req.user, c);
+      return chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''; })()}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>🗄️ ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
   <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 }
@@ -963,7 +964,7 @@ function studentClass(req, res, c) {
   const teachers = people.filter(p => p.role === 'teacher'), classmates = people.filter(p => p.role === 'student' && p.id !== req.user.id);
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
+    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.student')}</a>` : ''}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${classLiveBanner(req, c)}
   ${studentLessonsPanel(req, c)}
   ${studentGamesPanel(req, c, teachers)}
@@ -1175,6 +1176,7 @@ function classSection(req, c, i, many) {
       ${todo.length ? html`<ol class="plain ct-list">${todo.map(row)}</ol>` : html`<p class="ct-done">🎉 ${t('classes.tab.allDone')}</p>`}</section>
     <section class="ct-games" aria-labelledby="ct-${c.id}-games"><div class="rail-head"><h3 id="ct-${c.id}-games">🎮 ${t('classes.games.heading')}</h3>${list.length > 8 ? html`<a class="more" href="/class/${c.id}">${t('cards.seeAll')}</a>` : ''}</div>
       ${list.length ? cardGrid(list.slice(0, 8), { classPill: false }) : html`<p class="small muted">${t('classes.games.emptyText')}</p>`}</section>
+    ${DASH.isStudent(u, S.getClass(c.id)) ? html`<p class="ct-dash"><a class="btn btn-sm" href="/class/${c.id}/dashboard">🖥️ ${t('dash.entry.student')}</a></p>` : ''}
   </section>`;
 }
 router.get('/classes', requireUser, (req, res) => {

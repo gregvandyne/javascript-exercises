@@ -936,6 +936,32 @@ export const MIGRATIONS = [
   ['0077_trial_replaced', `
     ALTER TABLE teacher_trials ADD COLUMN replaced_by_school TEXT;
     ALTER TABLE teacher_trials ADD COLUMN replaced_at INTEGER;`],
+  // Classroom dashboards, stage 1 (services/dash.js; docs/decisions.md "Classroom dashboards, stage 1").
+  // dash_layouts: a teacher's named layouts per class (widgets and background as JSON). dash_class: per class, the layout
+  // students follow (layout_id), its pinned widgets as students get them (pins, pins_at), and Eyes up (eyes_until).
+  // dash_students: one student's own widgets, where they moved the pinned ones, their background. dash_links: the
+  // class's approved links (removed ones keep their row). dash_pushes: what the teacher sent today (day in the school's
+  // time zone; ended_at when ended). dash_push_hidden: which pushes a student hid. dash_pictures: background pictures
+  // (the file is <dataDir>/dash-pictures/<id>.jpg), seen only by the owner and the teachers of class_id.
+  ['0078_class_dashboards', `
+    CREATE TABLE IF NOT EXISTS dash_layouts (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, owner_id TEXT NOT NULL, name TEXT NOT NULL,
+      widgets TEXT NOT NULL DEFAULT '[]', bg TEXT NOT NULL DEFAULT '{}', position INTEGER NOT NULL DEFAULT 0, used_at INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_dash_layouts_owner ON dash_layouts(class_id, owner_id, position);
+    CREATE TABLE IF NOT EXISTS dash_class (class_id TEXT PRIMARY KEY, layout_id TEXT, pins TEXT NOT NULL DEFAULT '[]', pins_at INTEGER NOT NULL DEFAULT 0,
+      eyes_until INTEGER NOT NULL DEFAULT 0, eyes_by TEXT, eyes_at INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS dash_students (class_id TEXT NOT NULL, user_id TEXT NOT NULL, widgets TEXT NOT NULL DEFAULT '[]',
+      pins TEXT NOT NULL DEFAULT '{}', bg TEXT NOT NULL DEFAULT '{}', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE TABLE IF NOT EXISTS dash_links (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, url TEXT NOT NULL, title TEXT NOT NULL,
+      added_by TEXT NOT NULL, created_at INTEGER NOT NULL, removed_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_dash_links_class ON dash_links(class_id, removed_at);
+    CREATE TABLE IF NOT EXISTS dash_pushes (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, day TEXT NOT NULL, kind TEXT NOT NULL, ref TEXT NOT NULL,
+      title TEXT NOT NULL, by_id TEXT NOT NULL, created_at INTEGER NOT NULL, ended_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_dash_pushes_class ON dash_pushes(class_id, day);
+    CREATE TABLE IF NOT EXISTS dash_push_hidden (push_id TEXT NOT NULL, user_id TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (push_id, user_id));
+    CREATE TABLE IF NOT EXISTS dash_pictures (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, class_id TEXT NOT NULL, bytes INTEGER NOT NULL,
+      created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_dash_pictures_owner ON dash_pictures(owner_id, class_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
