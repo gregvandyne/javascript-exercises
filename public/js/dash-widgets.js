@@ -11,7 +11,10 @@
 // /api/dash/<class>.
 // Widgets render text with textContent only: never innerHTML with anything a person typed (the sheets escape it).
 // No widget talks to an AI. The noise meter (dash-noise.js) has no network code at all.
+// Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): the teaching tools, the whiteboard and the Picture widget
+// are in public/js/dash-tools.js (their maths in dash-math.js); ctx gains common, keep, send, copy, upload and checks.
 import { noise } from './dash-noise.js';
+import { TOOLS } from './dash-tools.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
@@ -991,4 +994,4 @@ function stickers(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers };
+export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS };

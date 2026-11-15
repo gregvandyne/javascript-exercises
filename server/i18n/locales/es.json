@@ -2769,14 +2769,16 @@
         "live": "Juego en vivo",
         "lesson": "Lección",
         "link": "Enlace",
-        "check": "Comprobación rápida"
+        "check": "Comprobación rápida",
+        "tool": "Herramienta de enseñanza"
       },
       "act": {
         "play": "Jugar",
         "join": "Unirme al juego",
         "lesson": "Abrir la lección",
         "link": "Abrir el enlace",
-        "answer": "Responder"
+        "answer": "Responder",
+        "open": "Abrir"
       },
       "push": {
         "title": "Enviar a los alumnos",
@@ -2825,7 +2827,10 @@
         "thanks": "¡Gracias! Puedes cambiar tu respuesta hasta que tu docente termine la comprobación."
       },
       "more": "Más",
-      "moreName": "Ver más de {name}"
+      "moreName": "Ver más de {name}",
+      "tools": {
+        "sent": "{name} enviado. Cada estudiante recibe su propia copia."
+      }
     }
   },
   "favorites": {
@@ -8955,7 +8960,8 @@
       "show": "Mostrar",
       "tools": "Herramientas",
       "check": "Comprobar",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Herramientas de enseñanza"
     },
     "w": {
       "clock": {
@@ -9337,6 +9343,265 @@
         "remove": "Quitar {e}",
         "clear": "Quitarlas todas",
         "empty": "Toca una pegatina de abajo para ponerla aquí."
+      },
+      "fractions": {
+        "name": "Barras de fracciones",
+        "desc": "Divide, colorea y compara. «Partes iguales» muestra por qué una es mayor. Grados 2.º–6.º.",
+        "bar": "Barras",
+        "circle": "Círculos",
+        "same": "Partes iguales",
+        "hide": "Ocultar la respuesta",
+        "add": "Añadir",
+        "remove": "Quitar",
+        "parts": "{n} partes",
+        "more": "Más partes",
+        "fewer": "Menos partes",
+        "shadedOf": "{n} de {d} partes coloreadas",
+        "sameText": "Cortado en {n} partes iguales: {list}.",
+        "tooSmall": "Serían {n} partes diminutas: demasiado pequeñas para dibujarlas.",
+        "samePrompt": "Pulsa «Partes iguales» para ver por qué.",
+        "which": "Fracción {n}",
+        "order": "¿Cuál es mayor?"
+      },
+      "numline": {
+        "name": "Recta numérica",
+        "desc": "Números enteros, fracciones, decimales y negativos. Toca para poner puntos, arrastra para saltar. Grados K–8.",
+        "from": "Empieza en",
+        "to": "Termina en",
+        "steps": "Pasos entre números enteros",
+        "mode": "Etiquetas",
+        "whole": "Números enteros",
+        "fraction": "Fracciones",
+        "decimal": "Decimales",
+        "point": "Punto",
+        "jump": "Salto",
+        "clear": "Borrar",
+        "cursor": "Recta numérica",
+        "placed": "Punto en {v}",
+        "removed": "Punto en {v} quitado",
+        "jumpFrom": "Salto desde {v}: ahora elige dónde cae",
+        "jumped": "De {a} a {b}: {d}",
+        "hint": "Toca la recta para poner un punto o arrastra a lo largo para saltar.",
+        "range": "En una recta caben hasta 240 pasos."
+      },
+      "coord": {
+        "name": "Plano cartesiano",
+        "desc": "Marca puntos y dibuja y = mx + b. Cambia la pendiente y el inicio, con una tabla de valores. Grados 5.º–8.º.",
+        "slope": "Pendiente",
+        "start": "Empieza en",
+        "quads": "Cuadrantes",
+        "four": "Cuatro cuadrantes",
+        "one": "Un cuadrante",
+        "size": "Tamaño de la cuadrícula",
+        "line": "Mostrar la recta",
+        "table": "Mostrar la tabla",
+        "plot": "Gráfica",
+        "plotted": "Punto marcado en {p}",
+        "unplotted": "Punto en {p} quitado",
+        "clear": "Borrar los puntos",
+        "rise": "sube",
+        "run": "avanza",
+        "hint": "Las flechas mueven, Intro marca un punto.",
+        "noLine": "Toca la cuadrícula para marcar puntos."
+      },
+      "graph": {
+        "name": "Creador de gráficas",
+        "desc": "Gráficas de barras, de líneas, de dibujos y de puntos con tus números o los totales de una pregunta rápida.",
+        "kind": "Tipo de gráfica",
+        "bar": "Gráfica de barras",
+        "line": "Gráfica de líneas",
+        "picture": "Pictograma",
+        "dot": "Diagrama de puntos",
+        "title": "Título",
+        "data": "Datos",
+        "label": "Etiqueta",
+        "value": "Número",
+        "addRow": "Añadir una fila",
+        "removeRow": "Quitar fila",
+        "fromCheck": "Usar los totales de una pregunta rápida",
+        "noChecks": "Aún no hay preguntas rápidas",
+        "counts": "Solo pasan los totales, nunca quién respondió qué.",
+        "per": "Cada dibujo vale",
+        "key": "{icon} = {n}",
+        "icon": "Dibujo",
+        "empty": "Añade tus números en Opciones."
+      },
+      "base10": {
+        "name": "Bloques de base diez",
+        "desc": "Unidades, decenas y centenas. Arrástralos, cambia 10 por 1 y al revés. Grados K–4.",
+        "hundreds": "Centenas",
+        "tens": "Decenas",
+        "ones": "Unidades",
+        "add": "Añadir uno",
+        "take": "Quitar uno",
+        "tradeUp": "10 unidades → 1 decena",
+        "tradeDown": "1 decena → 10 unidades",
+        "tradeUpT": "10 decenas → 1 centena",
+        "tradeDownH": "1 centena → 10 decenas",
+        "traded": "Cambiado.",
+        "hint": "10 de un tipo se cambian por 1 del siguiente.",
+        "drop": "Arrastra al tapete",
+        "clear": "Borrar"
+      },
+      "placeval": {
+        "name": "Tabla de valor posicional",
+        "desc": "De millares a milésimas, con fichas.",
+        "discs": "Mostrar fichas",
+        "decimals": "Mostrar décimas, centésimas y milésimas",
+        "times10": "Por 10",
+        "div10": "Entre 10",
+        "more": "Añadir uno",
+        "less": "Quitar uno",
+        "expanded": "Desarrollado",
+        "clear": "Borrar",
+        "thousands": "Millares",
+        "hundreds": "Centenas",
+        "tens": "Decenas",
+        "ones": "Unidades",
+        "tenths": "Décimas",
+        "hundredths": "Centésimas",
+        "thousandths": "Milésimas"
+      },
+      "tenframe": {
+        "name": "Marcos de diez",
+        "desc": "Uno o dos marcos de diez con fichas rojas y amarillas y descomposiciones. Grados K–2.",
+        "frames": "Marco de diez",
+        "red": "Rojo",
+        "yellow": "Amarillo",
+        "take": "Quitar una",
+        "clear": "Borrar",
+        "fill": "Llenar de rojo",
+        "bond": "Descomposición",
+        "cell": "Casilla {n}",
+        "empty": "vacía",
+        "counts": "{r} rojas y {y} amarillas: {n} en total",
+        "flip": "Cambiar los colores",
+        "makeTen": "Faltan {n} para la siguiente decena."
+      },
+      "hundreds": {
+        "name": "Tabla del cien",
+        "desc": "Colorea números, cuenta de tantos en tantos y oculta números para adivinar.",
+        "start": "Números",
+        "skip": "Contar de tantos en tantos",
+        "skipBy": "De {n} en {n}",
+        "hide": "Ocultar números",
+        "none": "Mostrar todos",
+        "shaded": "Ocultar los coloreados",
+        "all": "Ocultar todos",
+        "clear": "Borrar",
+        "shadedN": "{n} coloreados",
+        "hidden": "Número oculto",
+        "noSkip": "Sin saltos"
+      },
+      "area": {
+        "name": "Modelo de área y matrices",
+        "desc": "Filas por columnas. Divide un lado para ver los productos parciales.",
+        "rows": "Filas",
+        "cols": "Columnas",
+        "array": "Matriz",
+        "area": "Modelo de área",
+        "splitRows": "Dividir las filas después de",
+        "splitCols": "Dividir las columnas después de",
+        "place": "Dividir por valor posicional",
+        "noSplit": "0 significa sin dividir.",
+        "hint": "Divide un lado para partir el producto en partes más fáciles."
+      },
+      "times": {
+        "name": "Tabla de multiplicar",
+        "desc": "Hasta 12 × 12. Ilumina una operación, una fila, una columna o los cuadrados.",
+        "size": "Tamaño",
+        "fact": "Operación",
+        "row": "Fila",
+        "col": "Columna",
+        "squares": "Números cuadrados",
+        "turn": "Propiedad conmutativa",
+        "hide": "Ocultar resultados",
+        "pick": "Toca una casilla para iluminar una operación.",
+        "squaresAre": "Números cuadrados",
+        "clear": "Borrar"
+      },
+      "tclock": {
+        "name": "Reloj didáctico",
+        "desc": "Agujas que se mueven juntas, la hora digital y el tiempo transcurrido.",
+        "digital": "Mostrar la hora digital",
+        "h24": "Formato de 24 horas",
+        "elapsed": "Tiempo transcurrido",
+        "start": "Inicio",
+        "endTime": "Fin",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Arrastra una aguja o usa las flechas.",
+        "minutes": "minutos",
+        "hours": "h",
+        "time": "Reloj",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Fracción, decimal, porcentaje",
+        "desc": "Un número de tres formas, uno al lado del otro, con una cuadrícula de 10 × 10.",
+        "fraction": "Fracción",
+        "decimal": "Decimal",
+        "percent": "Porcentaje",
+        "grid": "Cuadrícula de centésimas",
+        "hint": "periódico",
+        "top": "Numerador",
+        "bottom": "Denominador",
+        "outOf": "{n} de 100"
+      },
+      "board": {
+        "name": "Pizarra",
+        "desc": "Dibuja y escribe en el proyector. Nunca se guarda ni se envía a ningún sitio.",
+        "s": {
+          "bg": "Fondo"
+        },
+        "o": {
+          "bg": {
+            "plain": "Liso",
+            "grid": "Cuadriculado",
+            "lined": "Rayado"
+          }
+        },
+        "pen": "Lápiz",
+        "marker": "Marcador",
+        "eraser": "Borrador",
+        "color": "Color",
+        "ink": "Negro",
+        "red": "Rojo",
+        "blue": "Azul",
+        "green": "Verde",
+        "orange": "Naranja",
+        "purple": "Morado",
+        "undo": "Deshacer",
+        "clear": "Borrar todo",
+        "note": "Los dibujos se quedan solo en esta pantalla y desaparecen al recargar la página.",
+        "canvas": "Zona de dibujo",
+        "down": "Lápiz abajo",
+        "up": "Lápiz arriba",
+        "keys": "Las flechas mueven el lápiz; Espacio lo apoya o lo levanta.",
+        "cleared": "Pizarra borrada"
+      },
+      "picture": {
+        "name": "Imagen",
+        "desc": "Muestra un diagrama, un cartel o una foto que subas.",
+        "s": {
+          "pic": "Imagen",
+          "alt": "Qué muestra la imagen (para lectores de pantalla)",
+          "fit": "Ajuste"
+        },
+        "o": {
+          "fit": {
+            "contain": "Mostrarla entera",
+            "cover": "Llenar el recuadro"
+          }
+        },
+        "empty": "Sube una imagen para mostrarla.",
+        "needAlt": "Primero añade una descripción corta. La clase verá la imagen cuando la tenga.",
+        "gone": "Esta imagen ya no está.",
+        "upload": "Subir una imagen",
+        "uploading": "Revisando tu imagen…",
+        "replace": "Cambiar la imagen",
+        "note": "Describir la imagen",
+        "bad": "Esa imagen no funcionó. Prueba con una foto JPG o PNG."
       }
     },
     "push": {
@@ -9364,7 +9629,18 @@
       "checkClosed": "Esa comprobación terminó.",
       "checkValue": "Elige una de las respuestas.",
       "resting": "El tiempo está descansando. Inténtalo de nuevo en un rato.",
-      "qrGone": "Eso no se puede mostrar como código QR."
+      "qrGone": "Eso no se puede mostrar como código QR.",
+      "tool": "Esa herramienta ya no está en tu pantalla."
+    },
+    "tools": {
+      "send": "Enviar a la clase",
+      "options": "Opciones",
+      "optionsFor": "{name}: opciones",
+      "pin": "Fijar en mi pantalla",
+      "pinned": "Ya está en tu pantalla.",
+      "copyNote": "Tu propia copia. Nadie más la ve.",
+      "yourCopy": "Esta es tu propia copia para practicar. Nadie más ve lo que haces con ella, y no se guarda a menos que la fijes en tu pantalla.",
+      "done": "Listo"
     }
   }
 }

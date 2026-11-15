@@ -2770,14 +2770,16 @@
         "live": "Jogo ao vivo",
         "lesson": "Aula",
         "link": "Link",
-        "check": "Checagem rápida"
+        "check": "Checagem rápida",
+        "tool": "Ferramenta de ensino"
       },
       "act": {
         "play": "Jogar",
         "join": "Entrar no jogo",
         "lesson": "Abrir a aula",
         "link": "Abrir o link",
-        "answer": "Responder"
+        "answer": "Responder",
+        "open": "Abrir"
       },
       "push": {
         "title": "Enviar aos alunos",
@@ -2826,7 +2828,10 @@
         "thanks": "Obrigado! Você pode mudar sua resposta até seu professor encerrar a checagem."
       },
       "more": "Mais",
-      "moreName": "Ver mais de {name}"
+      "moreName": "Ver mais de {name}",
+      "tools": {
+        "sent": "{name} enviado. Cada aluno recebe a própria cópia."
+      }
     }
   },
   "favorites": {
@@ -8957,7 +8962,8 @@
       "show": "Mostrar",
       "tools": "Ferramentas",
       "check": "Verificar",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Ferramentas de ensino"
     },
     "w": {
       "clock": {
@@ -9339,6 +9345,265 @@
         "remove": "Tirar {e}",
         "clear": "Tirar todos",
         "empty": "Toque num adesivo abaixo para colocá-lo aqui."
+      },
+      "fractions": {
+        "name": "Barras de frações",
+        "desc": "Divida, pinte e compare. “Partes iguais” mostra por que uma é maior. 2.º ao 6.º ano.",
+        "bar": "Barras",
+        "circle": "Círculos",
+        "same": "Partes iguais",
+        "hide": "Esconder a resposta",
+        "add": "Adicionar",
+        "remove": "Tirar",
+        "parts": "{n} partes",
+        "more": "Mais partes",
+        "fewer": "Menos partes",
+        "shadedOf": "{n} de {d} partes pintadas",
+        "sameText": "Cortado em {n} partes iguais: {list}.",
+        "tooSmall": "Seriam {n} partes minúsculas: pequenas demais para desenhar.",
+        "samePrompt": "Toque em “Partes iguais” para ver por quê.",
+        "which": "Fração {n}",
+        "order": "Qual é maior?"
+      },
+      "numline": {
+        "name": "Reta numérica",
+        "desc": "Números inteiros, frações, decimais e negativos. Toque para marcar pontos, arraste para pular. Educação infantil ao 8.º ano.",
+        "from": "Começa em",
+        "to": "Termina em",
+        "steps": "Passos entre números inteiros",
+        "mode": "Rótulos",
+        "whole": "Números inteiros",
+        "fraction": "Frações",
+        "decimal": "Decimais",
+        "point": "Ponto",
+        "jump": "Pulo",
+        "clear": "Limpar",
+        "cursor": "Reta numérica",
+        "placed": "Ponto em {v}",
+        "removed": "Ponto em {v} tirado",
+        "jumpFrom": "Pulo a partir de {v}: agora escolha onde ele cai",
+        "jumped": "De {a} até {b}: {d}",
+        "hint": "Toque na reta para marcar um ponto ou arraste ao longo dela para pular.",
+        "range": "Cabem até 240 passos em uma reta."
+      },
+      "coord": {
+        "name": "Plano cartesiano",
+        "desc": "Marque pontos e desenhe y = mx + b. Mude a inclinação e o início, com uma tabela de valores. 5.º ao 8.º ano.",
+        "slope": "Inclinação",
+        "start": "Começa em",
+        "quads": "Quadrantes",
+        "four": "Quatro quadrantes",
+        "one": "Um quadrante",
+        "size": "Tamanho da malha",
+        "line": "Mostrar a reta",
+        "table": "Mostrar a tabela",
+        "plot": "Gráfico",
+        "plotted": "Ponto marcado em {p}",
+        "unplotted": "Ponto em {p} tirado",
+        "clear": "Limpar os pontos",
+        "rise": "sobe",
+        "run": "anda",
+        "hint": "As setas movem, Enter marca um ponto.",
+        "noLine": "Toque na malha para marcar pontos."
+      },
+      "graph": {
+        "name": "Criador de gráficos",
+        "desc": "Gráficos de barras, de linhas, pictóricos e de pontos com seus números ou os totais de uma pergunta rápida.",
+        "kind": "Tipo de gráfico",
+        "bar": "Gráfico de barras",
+        "line": "Gráfico de linhas",
+        "picture": "Pictograma",
+        "dot": "Gráfico de pontos",
+        "title": "Título",
+        "data": "Dados",
+        "label": "Rótulo",
+        "value": "Número",
+        "addRow": "Adicionar uma linha",
+        "removeRow": "Tirar linha",
+        "fromCheck": "Usar os totais de uma pergunta rápida",
+        "noChecks": "Ainda não há perguntas rápidas",
+        "counts": "Só os totais vêm junto, nunca quem respondeu o quê.",
+        "per": "Cada figura vale",
+        "key": "{icon} = {n}",
+        "icon": "Figura",
+        "empty": "Coloque seus números em Opções."
+      },
+      "base10": {
+        "name": "Material dourado",
+        "desc": "Unidades, dezenas e centenas. Arraste, troque 10 por 1 e vice-versa. Educação infantil ao 4.º ano.",
+        "hundreds": "Centenas",
+        "tens": "Dezenas",
+        "ones": "Unidades",
+        "add": "Pôr um",
+        "take": "Tirar um",
+        "tradeUp": "10 unidades → 1 dezena",
+        "tradeDown": "1 dezena → 10 unidades",
+        "tradeUpT": "10 dezenas → 1 centena",
+        "tradeDownH": "1 centena → 10 dezenas",
+        "traded": "Trocado.",
+        "hint": "10 de um tipo podem ser trocados por 1 do próximo.",
+        "drop": "Arraste para o tapete",
+        "clear": "Limpar"
+      },
+      "placeval": {
+        "name": "Quadro de valor posicional",
+        "desc": "Dos milhares aos milésimos, com fichas.",
+        "discs": "Mostrar fichas",
+        "decimals": "Mostrar décimos, centésimos e milésimos",
+        "times10": "Vezes 10",
+        "div10": "Dividido por 10",
+        "more": "Pôr um",
+        "less": "Tirar um",
+        "expanded": "Decomposto",
+        "clear": "Limpar",
+        "thousands": "Milhares",
+        "hundreds": "Centenas",
+        "tens": "Dezenas",
+        "ones": "Unidades",
+        "tenths": "Décimos",
+        "hundredths": "Centésimos",
+        "thousandths": "Milésimos"
+      },
+      "tenframe": {
+        "name": "Quadros de dez",
+        "desc": "Um ou dois quadros de dez com fichas vermelhas e amarelas e decomposições. Educação infantil ao 2.º ano.",
+        "frames": "Quadro de dez",
+        "red": "Vermelho",
+        "yellow": "Amarelo",
+        "take": "Tirar um",
+        "clear": "Limpar",
+        "fill": "Encher de vermelho",
+        "bond": "Decomposição",
+        "cell": "Casa {n}",
+        "empty": "vazia",
+        "counts": "{r} vermelhas e {y} amarelas: {n} ao todo",
+        "flip": "Trocar as cores",
+        "makeTen": "Faltam {n} para a próxima dezena."
+      },
+      "hundreds": {
+        "name": "Quadro do cem",
+        "desc": "Pinte números, conte de tanto em tanto e esconda números para adivinhar.",
+        "start": "Números",
+        "skip": "Contar de tanto em tanto",
+        "skipBy": "De {n} em {n}",
+        "hide": "Esconder números",
+        "none": "Mostrar todos",
+        "shaded": "Esconder os pintados",
+        "all": "Esconder todos",
+        "clear": "Limpar",
+        "shadedN": "{n} pintados",
+        "hidden": "Número escondido",
+        "noSkip": "Sem pulos"
+      },
+      "area": {
+        "name": "Modelo de área e disposições",
+        "desc": "Linhas vezes colunas. Divida um lado para ver os produtos parciais.",
+        "rows": "Linhas",
+        "cols": "Colunas",
+        "array": "Disposição",
+        "area": "Modelo de área",
+        "splitRows": "Dividir as linhas depois de",
+        "splitCols": "Dividir as colunas depois de",
+        "place": "Dividir pelo valor posicional",
+        "noSplit": "0 quer dizer sem divisão.",
+        "hint": "Divida um lado para quebrar o produto em partes mais fáceis."
+      },
+      "times": {
+        "name": "Tabuada em grade",
+        "desc": "Até 12 × 12. Destaque uma conta, uma linha, uma coluna ou os quadrados.",
+        "size": "Tamanho",
+        "fact": "Conta",
+        "row": "Linha",
+        "col": "Coluna",
+        "squares": "Números quadrados",
+        "turn": "Contas invertidas",
+        "hide": "Esconder os resultados",
+        "pick": "Toque numa casa para destacar uma conta.",
+        "squaresAre": "Números quadrados",
+        "clear": "Limpar"
+      },
+      "tclock": {
+        "name": "Relógio de ensinar",
+        "desc": "Ponteiros que se movem juntos, a hora digital e o tempo decorrido.",
+        "digital": "Mostrar a hora digital",
+        "h24": "Formato 24 horas",
+        "elapsed": "Tempo decorrido",
+        "start": "Início",
+        "endTime": "Fim",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Arraste um ponteiro ou use as setas.",
+        "minutes": "minutos",
+        "hours": "h",
+        "time": "Relógio",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Fração, decimal, porcentagem",
+        "desc": "Um número de três jeitos, lado a lado, com uma malha de 10 × 10.",
+        "fraction": "Fração",
+        "decimal": "Decimal",
+        "percent": "Porcentagem",
+        "grid": "Malha de centésimos",
+        "hint": "periódico",
+        "top": "Numerador",
+        "bottom": "Denominador",
+        "outOf": "{n} de 100"
+      },
+      "board": {
+        "name": "Quadro branco",
+        "desc": "Desenhe e escreva no projetor. Nunca é salvo nem enviado a lugar nenhum.",
+        "s": {
+          "bg": "Fundo"
+        },
+        "o": {
+          "bg": {
+            "plain": "Liso",
+            "grid": "Quadriculado",
+            "lined": "Pautado"
+          }
+        },
+        "pen": "Caneta",
+        "marker": "Marca-texto",
+        "eraser": "Borracha",
+        "color": "Cor",
+        "ink": "Preto",
+        "red": "Vermelho",
+        "blue": "Azul",
+        "green": "Verde",
+        "orange": "Laranja",
+        "purple": "Roxo",
+        "undo": "Desfazer",
+        "clear": "Limpar tudo",
+        "note": "Os desenhos ficam só nesta tela e somem quando a página recarrega.",
+        "canvas": "Área de desenho",
+        "down": "Caneta abaixada",
+        "up": "Caneta levantada",
+        "keys": "As setas movem a caneta; Espaço abaixa ou levanta.",
+        "cleared": "Quadro limpo"
+      },
+      "picture": {
+        "name": "Imagem",
+        "desc": "Mostre um diagrama, um cartaz ou uma foto que você enviar.",
+        "s": {
+          "pic": "Imagem",
+          "alt": "O que a imagem mostra (para leitores de tela)",
+          "fit": "Ajuste"
+        },
+        "o": {
+          "fit": {
+            "contain": "Mostrar inteira",
+            "cover": "Preencher o espaço"
+          }
+        },
+        "empty": "Envie uma imagem para mostrar.",
+        "needAlt": "Primeiro adicione uma descrição curta. A turma vê a imagem quando ela tiver uma.",
+        "gone": "Esta imagem não existe mais.",
+        "upload": "Enviar uma imagem",
+        "uploading": "Verificando sua imagem…",
+        "replace": "Trocar a imagem",
+        "note": "Descrever a imagem",
+        "bad": "Essa imagem não funcionou. Tente uma foto JPG ou PNG."
       }
     },
     "push": {
@@ -9366,7 +9631,18 @@
       "checkClosed": "Essa checagem foi encerrada.",
       "checkValue": "Escolha uma das respostas.",
       "resting": "O tempo está descansando. Tente de novo daqui a pouco.",
-      "qrGone": "Isso não pode ser mostrado como código QR."
+      "qrGone": "Isso não pode ser mostrado como código QR.",
+      "tool": "Essa ferramenta não está mais na sua tela."
+    },
+    "tools": {
+      "send": "Enviar para a turma",
+      "options": "Opções",
+      "optionsFor": "{name}: opções",
+      "pin": "Fixar na minha tela",
+      "pinned": "Agora está na sua tela.",
+      "copyNote": "Sua própria cópia. Ninguém mais vê.",
+      "yourCopy": "Esta é a sua própria cópia para praticar. Ninguém mais vê o que você faz com ela, e ela só é salva se você fixá-la na sua tela.",
+      "done": "Pronto"
     }
   }
 }

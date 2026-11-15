@@ -2770,14 +2770,16 @@
         "live": "Gioco dal vivo",
         "lesson": "Lezione",
         "link": "Link",
-        "check": "Verifica veloce"
+        "check": "Verifica veloce",
+        "tool": "Strumento per insegnare"
       },
       "act": {
         "play": "Gioca",
         "join": "Entra nel gioco",
         "lesson": "Apri la lezione",
         "link": "Apri il link",
-        "answer": "Rispondi"
+        "answer": "Rispondi",
+        "open": "Apri"
       },
       "push": {
         "title": "Invia agli alunni",
@@ -2826,7 +2828,10 @@
         "thanks": "Grazie! Puoi cambiare risposta finché l’insegnante non termina la verifica."
       },
       "more": "Altro",
-      "moreName": "Vedi il resto di {name}"
+      "moreName": "Vedi il resto di {name}",
+      "tools": {
+        "sent": "{name} inviato. Ogni studente riceve la sua copia."
+      }
     }
   },
   "favorites": {
@@ -8956,7 +8961,8 @@
       "show": "Mostra",
       "tools": "Strumenti",
       "check": "Verifica",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Strumenti per insegnare"
     },
     "w": {
       "clock": {
@@ -9338,6 +9344,265 @@
         "remove": "Togli {e}",
         "clear": "Toglili tutti",
         "empty": "Tocca un adesivo qui sotto per metterlo qui."
+      },
+      "fractions": {
+        "name": "Strisce delle frazioni",
+        "desc": "Dividi, colora e confronta. «Parti uguali» mostra perché una è più grande. Classi 2ª–6ª.",
+        "bar": "Strisce",
+        "circle": "Cerchi",
+        "same": "Parti uguali",
+        "hide": "Nascondi la risposta",
+        "add": "Aggiungi",
+        "remove": "Togli",
+        "parts": "{n} parti",
+        "more": "Più parti",
+        "fewer": "Meno parti",
+        "shadedOf": "{n} parti colorate su {d}",
+        "sameText": "Diviso in {n} parti uguali: {list}.",
+        "tooSmall": "Sarebbero {n} parti minuscole: troppo piccole da disegnare.",
+        "samePrompt": "Premi «Parti uguali» per vedere perché.",
+        "which": "Frazione {n}",
+        "order": "Quale è più grande?"
+      },
+      "numline": {
+        "name": "Linea dei numeri",
+        "desc": "Numeri interi, frazioni, decimali e negativi. Tocca per mettere punti, trascina per saltare. Classi 1ª–8ª.",
+        "from": "Inizia da",
+        "to": "Finisce a",
+        "steps": "Passi tra due interi",
+        "mode": "Etichette",
+        "whole": "Numeri interi",
+        "fraction": "Frazioni",
+        "decimal": "Decimali",
+        "point": "Punto",
+        "jump": "Salto",
+        "clear": "Cancella",
+        "cursor": "Linea dei numeri",
+        "placed": "Punto su {v}",
+        "removed": "Punto su {v} tolto",
+        "jumpFrom": "Salto da {v}: ora scegli dove arriva",
+        "jumped": "Da {a} a {b}: {d}",
+        "hint": "Tocca la linea per mettere un punto o trascina lungo la linea per saltare.",
+        "range": "Su una linea stanno fino a 240 passi."
+      },
+      "coord": {
+        "name": "Piano cartesiano",
+        "desc": "Segna punti e disegna y = mx + b. Cambia pendenza e partenza, con una tabella di valori. Classi 5ª–8ª.",
+        "slope": "Pendenza",
+        "start": "Parte da",
+        "quads": "Quadranti",
+        "four": "Quattro quadranti",
+        "one": "Un quadrante",
+        "size": "Grandezza della griglia",
+        "line": "Mostra la retta",
+        "table": "Mostra la tabella",
+        "plot": "Grafico",
+        "plotted": "Punto segnato in {p}",
+        "unplotted": "Punto in {p} tolto",
+        "clear": "Cancella i punti",
+        "rise": "sale",
+        "run": "avanza",
+        "hint": "Le frecce spostano, Invio segna un punto.",
+        "noLine": "Tocca la griglia per segnare punti."
+      },
+      "graph": {
+        "name": "Crea grafici",
+        "desc": "Istogrammi, grafici a linee, ideogrammi e grafici a punti con i tuoi numeri o i totali di una domanda lampo.",
+        "kind": "Tipo di grafico",
+        "bar": "Istogramma",
+        "line": "Grafico a linee",
+        "picture": "Ideogramma",
+        "dot": "Grafico a punti",
+        "title": "Titolo",
+        "data": "Dati",
+        "label": "Etichetta",
+        "value": "Numero",
+        "addRow": "Aggiungi una riga",
+        "removeRow": "Togli la riga",
+        "fromCheck": "Usa i totali di una domanda lampo",
+        "noChecks": "Ancora nessuna domanda lampo",
+        "counts": "Passano solo i totali, mai chi ha risposto cosa.",
+        "per": "Ogni disegno vale",
+        "key": "{icon} = {n}",
+        "icon": "Disegno",
+        "empty": "Aggiungi i tuoi numeri in Opzioni."
+      },
+      "base10": {
+        "name": "Blocchi in base dieci",
+        "desc": "Unità, decine e centinaia. Trascinali, cambia 10 con 1 e viceversa. Classi 1ª–4ª.",
+        "hundreds": "Centinaia",
+        "tens": "Decine",
+        "ones": "Unità",
+        "add": "Aggiungine uno",
+        "take": "Togline uno",
+        "tradeUp": "10 unità → 1 decina",
+        "tradeDown": "1 decina → 10 unità",
+        "tradeUpT": "10 decine → 1 centinaio",
+        "tradeDownH": "1 centinaio → 10 decine",
+        "traded": "Cambiato.",
+        "hint": "10 di un tipo si cambiano con 1 del tipo dopo.",
+        "drop": "Trascina sul tappeto",
+        "clear": "Cancella"
+      },
+      "placeval": {
+        "name": "Tabella del valore posizionale",
+        "desc": "Dalle migliaia ai millesimi, con i gettoni.",
+        "discs": "Mostra i gettoni",
+        "decimals": "Mostra decimi, centesimi e millesimi",
+        "times10": "Per 10",
+        "div10": "Diviso 10",
+        "more": "Aggiungine uno",
+        "less": "Togline uno",
+        "expanded": "Scomposto",
+        "clear": "Cancella",
+        "thousands": "Migliaia",
+        "hundreds": "Centinaia",
+        "tens": "Decine",
+        "ones": "Unità",
+        "tenths": "Decimi",
+        "hundredths": "Centesimi",
+        "thousandths": "Millesimi"
+      },
+      "tenframe": {
+        "name": "Cornici del dieci",
+        "desc": "Una o due cornici del dieci con gettoni rossi e gialli e scomposizioni. Classi 1ª–2ª.",
+        "frames": "Cornice del dieci",
+        "red": "Rosso",
+        "yellow": "Giallo",
+        "take": "Togline uno",
+        "clear": "Cancella",
+        "fill": "Riempi di rosso",
+        "bond": "Scomposizione",
+        "cell": "Casella {n}",
+        "empty": "vuota",
+        "counts": "{r} rossi e {y} gialli: {n} in tutto",
+        "flip": "Scambia i colori",
+        "makeTen": "Ancora {n} per la prossima decina."
+      },
+      "hundreds": {
+        "name": "Tabella del cento",
+        "desc": "Colora numeri, conta a salti e nascondi numeri da indovinare.",
+        "start": "Numeri",
+        "skip": "Conta a salti",
+        "skipBy": "Conta di {n} in {n}",
+        "hide": "Nascondi numeri",
+        "none": "Mostra tutti",
+        "shaded": "Nascondi i colorati",
+        "all": "Nascondi tutti",
+        "clear": "Cancella",
+        "shadedN": "{n} colorati",
+        "hidden": "Numero nascosto",
+        "noSkip": "Senza salti"
+      },
+      "area": {
+        "name": "Modello d’area e schieramenti",
+        "desc": "Righe per colonne. Dividi un lato per vedere i prodotti parziali.",
+        "rows": "Righe",
+        "cols": "Colonne",
+        "array": "Schieramento",
+        "area": "Modello d’area",
+        "splitRows": "Dividi le righe dopo",
+        "splitCols": "Dividi le colonne dopo",
+        "place": "Dividi per valore posizionale",
+        "noSplit": "0 vuol dire: non dividere.",
+        "hint": "Dividi un lato per spezzare il prodotto in parti più facili."
+      },
+      "times": {
+        "name": "Tavola pitagorica",
+        "desc": "Fino a 12 × 12. Illumina un prodotto, una riga, una colonna o i quadrati.",
+        "size": "Grandezza",
+        "fact": "Prodotto",
+        "row": "Riga",
+        "col": "Colonna",
+        "squares": "Numeri quadrati",
+        "turn": "Proprietà commutativa",
+        "hide": "Nascondi i risultati",
+        "pick": "Tocca una casella per illuminare un prodotto.",
+        "squaresAre": "Numeri quadrati",
+        "clear": "Cancella"
+      },
+      "tclock": {
+        "name": "Orologio didattico",
+        "desc": "Lancette che si muovono insieme, l’ora digitale e il tempo trascorso.",
+        "digital": "Mostra l’ora digitale",
+        "h24": "Formato 24 ore",
+        "elapsed": "Tempo trascorso",
+        "start": "Inizio",
+        "endTime": "Fine",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Trascina una lancetta o usa le frecce.",
+        "minutes": "minuti",
+        "hours": "h",
+        "time": "Orologio",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Frazione, decimale, percentuale",
+        "desc": "Un numero in tre modi, uno accanto all’altro, con una griglia 10 × 10.",
+        "fraction": "Frazione",
+        "decimal": "Decimale",
+        "percent": "Percentuale",
+        "grid": "Griglia dei centesimi",
+        "hint": "periodico",
+        "top": "Numeratore",
+        "bottom": "Denominatore",
+        "outOf": "{n} su 100"
+      },
+      "board": {
+        "name": "Lavagna",
+        "desc": "Disegna e scrivi sul proiettore. Mai salvato né inviato da nessuna parte.",
+        "s": {
+          "bg": "Sfondo"
+        },
+        "o": {
+          "bg": {
+            "plain": "Liscio",
+            "grid": "A quadretti",
+            "lined": "A righe"
+          }
+        },
+        "pen": "Penna",
+        "marker": "Evidenziatore",
+        "eraser": "Gomma",
+        "color": "Colore",
+        "ink": "Nero",
+        "red": "Rosso",
+        "blue": "Blu",
+        "green": "Verde",
+        "orange": "Arancione",
+        "purple": "Viola",
+        "undo": "Annulla",
+        "clear": "Cancella tutto",
+        "note": "I disegni restano solo su questo schermo e spariscono quando la pagina si ricarica.",
+        "canvas": "Area di disegno",
+        "down": "Penna giù",
+        "up": "Penna su",
+        "keys": "Le frecce muovono la penna; Spazio la appoggia o la solleva.",
+        "cleared": "Lavagna cancellata"
+      },
+      "picture": {
+        "name": "Immagine",
+        "desc": "Mostra uno schema, un cartellone o una foto che carichi.",
+        "s": {
+          "pic": "Immagine",
+          "alt": "Cosa mostra l’immagine (per i lettori di schermo)",
+          "fit": "Adattamento"
+        },
+        "o": {
+          "fit": {
+            "contain": "Mostrala tutta",
+            "cover": "Riempi il riquadro"
+          }
+        },
+        "empty": "Carica un’immagine da mostrare.",
+        "needAlt": "Prima aggiungi una breve descrizione. La classe vede l’immagine quando ce l’ha.",
+        "gone": "Questa immagine non c’è più.",
+        "upload": "Carica un’immagine",
+        "uploading": "Controllo la tua immagine…",
+        "replace": "Cambia l’immagine",
+        "note": "Descrivi l’immagine",
+        "bad": "Quell’immagine non ha funzionato. Prova una foto JPG o PNG."
       }
     },
     "push": {
@@ -9365,7 +9630,18 @@
       "checkClosed": "Quella verifica è terminata.",
       "checkValue": "Scegli una delle risposte.",
       "resting": "Il meteo si sta riposando. Riprova tra poco.",
-      "qrGone": "Non si può mostrare come codice QR."
+      "qrGone": "Non si può mostrare come codice QR.",
+      "tool": "Quello strumento non è più sul tuo schermo."
+    },
+    "tools": {
+      "send": "Invia alla classe",
+      "options": "Opzioni",
+      "optionsFor": "{name}: opzioni",
+      "pin": "Fissa sul mio schermo",
+      "pinned": "Ora è sul tuo schermo.",
+      "copyNote": "La tua copia. Nessun altro la vede.",
+      "yourCopy": "Questa è la tua copia per esercitarti. Nessun altro vede cosa ci fai, e non viene salvata a meno che tu non la fissi sul tuo schermo.",
+      "done": "Fatto"
     }
   }
 }

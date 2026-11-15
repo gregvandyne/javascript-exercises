@@ -2788,14 +2788,16 @@
         "live": "Live game",
         "lesson": "Lesson",
         "link": "Link",
-        "check": "Quick check"
+        "check": "Quick check",
+        "tool": "Teaching tool"
       },
       "act": {
         "play": "Play",
         "join": "Join game",
         "lesson": "Open lesson",
         "link": "Open link",
-        "answer": "Answer"
+        "answer": "Answer",
+        "open": "Open"
       },
       "push": {
         "title": "Push to students",
@@ -2844,7 +2846,10 @@
         "thanks": "Thanks! You can change your answer until your teacher ends the check."
       },
       "more": "More",
-      "moreName": "See more of {name}"
+      "moreName": "See more of {name}",
+      "tools": {
+        "sent": "{name} sent. Every student gets their own copy."
+      }
     }
   },
   "favorites": {
@@ -9379,7 +9384,8 @@
       "show": "Show",
       "tools": "Tools",
       "check": "Check",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Teaching tools"
     },
     "w": {
       "clock": {
@@ -9761,6 +9767,265 @@
         "remove": "Take off {e}",
         "clear": "Take them all off",
         "empty": "Tap a sticker below to put it here."
+      },
+      "fractions": {
+        "name": "Fraction bars",
+        "desc": "Split, shade and compare. Same-size pieces shows why one is bigger. Grades 2–6.",
+        "bar": "Bars",
+        "circle": "Circles",
+        "same": "Same-size pieces",
+        "hide": "Hide the answer",
+        "add": "Add",
+        "remove": "Remove",
+        "parts": "{n} parts",
+        "more": "More parts",
+        "fewer": "Fewer parts",
+        "shadedOf": "{n} of {d} parts shaded",
+        "sameText": "Cut into {n} same-size pieces: {list}.",
+        "tooSmall": "Same-size pieces would be {n} tiny pieces: too small to draw.",
+        "samePrompt": "Press Same-size pieces to see why.",
+        "which": "Fraction {n}",
+        "order": "Which is bigger?"
+      },
+      "numline": {
+        "name": "Number line",
+        "desc": "Whole numbers, fractions, decimals and negatives. Tap to place points, drag to jump. Grades K–8.",
+        "from": "Starts at",
+        "to": "Ends at",
+        "steps": "Steps between whole numbers",
+        "mode": "Labels",
+        "whole": "Whole numbers",
+        "fraction": "Fractions",
+        "decimal": "Decimals",
+        "point": "Point",
+        "jump": "Jump",
+        "clear": "Clear",
+        "cursor": "Number line",
+        "placed": "Point at {v}",
+        "removed": "Point at {v} taken away",
+        "jumpFrom": "Jump from {v}: now pick where it lands",
+        "jumped": "From {a} to {b}: {d}",
+        "hint": "Tap the line to place a point, or drag along it to jump.",
+        "range": "Up to 240 steps fit on one line."
+      },
+      "coord": {
+        "name": "Coordinate plane",
+        "desc": "Plot points and draw y = mx + b. Change the slope and start, with a table of values. Grades 5–8.",
+        "slope": "Slope",
+        "start": "Starts at",
+        "quads": "Quadrants",
+        "four": "Four quadrants",
+        "one": "One quadrant",
+        "size": "Grid size",
+        "line": "Show the line",
+        "table": "Show the table",
+        "plot": "Graph",
+        "plotted": "Point plotted at {p}",
+        "unplotted": "Point at {p} taken away",
+        "clear": "Clear the points",
+        "rise": "rise",
+        "run": "run",
+        "hint": "Arrow keys move, Enter plots a point.",
+        "noLine": "Tap the grid to plot points."
+      },
+      "graph": {
+        "name": "Graph maker",
+        "desc": "Bar, line, picture and dot plots from your own numbers or a quick check's totals.",
+        "kind": "Kind of graph",
+        "bar": "Bar graph",
+        "line": "Line graph",
+        "picture": "Picture graph",
+        "dot": "Dot plot",
+        "title": "Title",
+        "data": "Data",
+        "label": "Label",
+        "value": "Number",
+        "addRow": "Add a row",
+        "removeRow": "Remove row",
+        "fromCheck": "Use a quick check's totals",
+        "noChecks": "No quick checks yet",
+        "counts": "Only the totals come over, never who answered what.",
+        "per": "Each picture stands for",
+        "key": "{icon} = {n}",
+        "icon": "Picture",
+        "empty": "Add your numbers in Options."
+      },
+      "base10": {
+        "name": "Base-ten blocks",
+        "desc": "Ones, tens and hundreds. Drag them in, trade 10 for 1 and back. Grades K–4.",
+        "hundreds": "Hundreds",
+        "tens": "Tens",
+        "ones": "Ones",
+        "add": "Add one",
+        "take": "Take one away",
+        "tradeUp": "10 ones → 1 ten",
+        "tradeDown": "1 ten → 10 ones",
+        "tradeUpT": "10 tens → 1 hundred",
+        "tradeDownH": "1 hundred → 10 tens",
+        "traded": "Traded.",
+        "hint": "10 of a kind can be traded for 1 of the next.",
+        "drop": "Drag onto the mat",
+        "clear": "Clear"
+      },
+      "placeval": {
+        "name": "Place value chart",
+        "desc": "Thousands to thousandths, with digit discs.",
+        "discs": "Show discs",
+        "decimals": "Show tenths, hundredths and thousandths",
+        "times10": "Times 10",
+        "div10": "Divide by 10",
+        "more": "Add one",
+        "less": "Take one away",
+        "expanded": "Expanded",
+        "clear": "Clear",
+        "thousands": "Thousands",
+        "hundreds": "Hundreds",
+        "tens": "Tens",
+        "ones": "Ones",
+        "tenths": "Tenths",
+        "hundredths": "Hundredths",
+        "thousandths": "Thousandths"
+      },
+      "tenframe": {
+        "name": "Ten frames",
+        "desc": "One or two ten frames with red and yellow counters and number bonds. Grades K–2.",
+        "frames": "Ten frame",
+        "red": "Red",
+        "yellow": "Yellow",
+        "take": "Take one",
+        "clear": "Clear",
+        "fill": "Fill with red",
+        "bond": "Number bond",
+        "cell": "Box {n}",
+        "empty": "empty",
+        "counts": "{r} red and {y} yellow: {n} in all",
+        "flip": "Swap the colors",
+        "makeTen": "{n} more makes the next ten."
+      },
+      "hundreds": {
+        "name": "Hundreds chart",
+        "desc": "Shade numbers, skip count and hide numbers to guess.",
+        "start": "Numbers",
+        "skip": "Skip count",
+        "skipBy": "Count by {n}",
+        "hide": "Hide numbers",
+        "none": "Show all",
+        "shaded": "Hide the shaded",
+        "all": "Hide all",
+        "clear": "Clear",
+        "shadedN": "{n} shaded",
+        "hidden": "Hidden number",
+        "noSkip": "No skip count"
+      },
+      "area": {
+        "name": "Area model and arrays",
+        "desc": "Rows times columns. Split a side to see the partial products.",
+        "rows": "Rows",
+        "cols": "Columns",
+        "array": "Array",
+        "area": "Area model",
+        "splitRows": "Split the rows after",
+        "splitCols": "Split the columns after",
+        "place": "Split by place value",
+        "noSplit": "0 means no split.",
+        "hint": "Split a side to break the product into easier parts."
+      },
+      "times": {
+        "name": "Times table grid",
+        "desc": "Up to 12 × 12. Light up a fact, a row, a column or the square numbers.",
+        "size": "Size",
+        "fact": "Fact",
+        "row": "Row",
+        "col": "Column",
+        "squares": "Square numbers",
+        "turn": "Turn-around facts",
+        "hide": "Hide answers",
+        "pick": "Tap a box to light up a fact.",
+        "squaresAre": "Square numbers",
+        "clear": "Clear"
+      },
+      "tclock": {
+        "name": "Teaching clock",
+        "desc": "Hands that move together, a digital readout and elapsed time.",
+        "digital": "Show the digital time",
+        "h24": "24-hour time",
+        "elapsed": "Elapsed time",
+        "start": "Start",
+        "endTime": "End",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Drag a hand, or use the arrow keys.",
+        "minutes": "minutes",
+        "hours": "h",
+        "time": "Clock",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Fraction, decimal, percent",
+        "desc": "One number three ways, side by side, with a 10 × 10 grid.",
+        "fraction": "Fraction",
+        "decimal": "Decimal",
+        "percent": "Percent",
+        "grid": "Hundredths grid",
+        "hint": "repeating",
+        "top": "Numerator",
+        "bottom": "Denominator",
+        "outOf": "{n} out of 100"
+      },
+      "board": {
+        "name": "Whiteboard",
+        "desc": "Draw and write on the projector. Never saved or sent anywhere.",
+        "s": {
+          "bg": "Background"
+        },
+        "o": {
+          "bg": {
+            "plain": "Plain",
+            "grid": "Grid",
+            "lined": "Lined"
+          }
+        },
+        "pen": "Pen",
+        "marker": "Highlighter",
+        "eraser": "Eraser",
+        "color": "Color",
+        "ink": "Black",
+        "red": "Red",
+        "blue": "Blue",
+        "green": "Green",
+        "orange": "Orange",
+        "purple": "Purple",
+        "undo": "Undo",
+        "clear": "Clear",
+        "note": "Drawings stay on this screen only and are gone when the page reloads.",
+        "canvas": "Drawing area",
+        "down": "Pen down",
+        "up": "Pen up",
+        "keys": "Arrow keys move the pen; Space puts it down or lifts it.",
+        "cleared": "Board cleared"
+      },
+      "picture": {
+        "name": "Picture",
+        "desc": "Show a diagram, anchor chart or photo you upload.",
+        "s": {
+          "pic": "Picture",
+          "alt": "What the picture shows (for screen readers)",
+          "fit": "Fit"
+        },
+        "o": {
+          "fit": {
+            "contain": "Show it all",
+            "cover": "Fill the box"
+          }
+        },
+        "empty": "Upload a picture to show.",
+        "needAlt": "Add a short description first. Students see the picture once it has one.",
+        "gone": "This picture is gone.",
+        "upload": "Upload a picture",
+        "uploading": "Checking your picture…",
+        "replace": "Change the picture",
+        "note": "Describe the picture",
+        "bad": "That picture didn't work. Try a JPG or PNG photo."
       }
     },
     "push": {
@@ -9788,7 +10053,18 @@
       "checkClosed": "That check has ended.",
       "checkValue": "Pick one of the answers.",
       "resting": "Weather is resting. Try again in a little while.",
-      "qrGone": "That can't be shown as a QR code."
+      "qrGone": "That can't be shown as a QR code.",
+      "tool": "That tool isn't on your screen any more."
+    },
+    "tools": {
+      "send": "Send to students",
+      "options": "Options",
+      "optionsFor": "{name}: options",
+      "pin": "Pin to my screen",
+      "pinned": "It's on your screen now.",
+      "copyNote": "Your own copy. Nobody else sees it.",
+      "yourCopy": "This is your own copy to play with. Nobody else sees what you do with it, and it isn't saved unless you pin it to your screen.",
+      "done": "Done"
     }
   }
 }

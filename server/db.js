@@ -977,6 +977,13 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_dash_checks_class ON dash_checks(class_id, day);
     CREATE TABLE IF NOT EXISTS dash_answers (check_id TEXT NOT NULL, user_id TEXT NOT NULL, value INTEGER NOT NULL, at INTEGER NOT NULL,
       PRIMARY KEY (check_id, user_id));`],
+  // Classroom dashboards, stage 3 (services/dash.js, services/dash-tools.js; docs/decisions.md "Classroom dashboards,
+  // stage 3"). dash_pushes.data: what a pushed teaching tool starts from ({ type, state }, rebuilt from the tool's spec;
+  // '{}' for other kinds). dash_pictures.use: 'bg' (a background) or 'show' (a teacher's Picture widget; the class's
+  // students may fetch it while it is pinned on their screens).
+  ['0080_dash_teaching_tools', `
+    ALTER TABLE dash_pushes ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE dash_pictures ADD COLUMN use TEXT NOT NULL DEFAULT 'bg';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

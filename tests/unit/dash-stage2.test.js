@@ -69,9 +69,9 @@ function openLesson(w, title = 'Comparing fractions') {
   return L.classLessons(w.A.id).find(x => x.lesson_id === lesson.id || x.title === title);
 }
 
-test('migration 0079 is the newest and its tables and columns exist', () => {
+test('migration 0079 follows 0078 and its tables and columns exist', () => {
   const names = MIGRATIONS.map(m => m[0]);
-  assert.equal(names.at(-1), '0079_dash_everyday');
+  assert.ok(names.indexOf('0079_dash_everyday') === names.indexOf('0078_class_dashboards') + 1, 'stage 3 adds 0080');
   assert.equal(names.filter(n => n.startsWith('0079')).length, 1);
   for (const tb of ['dash_help', 'dash_checks', 'dash_answers']) assert.ok(q.get("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", tb), tb);
   const cols = q.all('PRAGMA table_info(dash_class)').map(c => c.name);
@@ -91,9 +91,9 @@ test('the registry: every stage 2 type has a renderer and English words; who may
     }
   }
   // Students may add only things that stay on their own screen.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random']);
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && x.group !== 'teach').map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random'], 'stage 3 adds the teaching tools (tests/unit/dash-stage3.test.js)');
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
-  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x)).map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random']);
+  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && x.group !== 'teach').map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random'], 'stage 3\'s teaching tools are sent, never pinned');
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');
