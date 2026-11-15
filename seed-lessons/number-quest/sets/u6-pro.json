@@ -1,0 +1,226 @@
+{
+ "id": "nq-u6-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "Pro",
+ "title": "Number Quest Unit 6 · The Drafting Keep (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6.G.A.2",
+   "topic": "Area and volume",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A box is 1 1/2 m long, 2 m wide and 1 m high. How many cubes with edges of 1/2 m fill it?",
+   "choices": [
+    "3",
+    "6",
+    "24",
+    "9"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "found the volume in cubic meters and stopped",
+    "divided the volume by 1/2 only once",
+    "correct",
+    "added the cubes along each edge instead of multiplying"
+   ],
+   "why": "Count the cubes along each edge: 3 along 1 1/2 m, 4 along 2 m and 2 along 1 m. Then 3 × 4 × 2 = 24. Check: the volume is 3 m³ and each cube is 1/8 m³."
+  },
+  {
+   "id": "nq-pro-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6.G.A.4",
+   "topic": "Area and volume",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A box is 4 cm by 3 cm by 2 cm. Unfold it into its net. What is its surface area?",
+   "choices": [
+    "26 cm²",
+    "52 cm²",
+    "24 cm²",
+    "9 cm²"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "counted only three of the six faces",
+    "correct",
+    "found the volume instead of the area of the faces",
+    "added the three edge lengths"
+   ],
+   "why": "The net has three pairs of faces: 4 × 3 = 12, 4 × 2 = 8 and 3 × 2 = 6. Each pair counts twice: 2 × (12 + 8 + 6) = 52 cm²."
+  },
+  {
+   "id": "nq-pro-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6.G.A.1",
+   "topic": "Area and volume",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A trapezoid has parallel sides of 4 m and 10 m. The distance between them is 6 m. What is its area?",
+   "choices": [
+    "84 m²",
+    "60 m²",
+    "24 m²",
+    "42 m²"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "multiplied the sum of the parallel sides by the height without halving",
+    "multiplied the longer side by the height",
+    "used only the shorter side times the height",
+    "correct"
+   ],
+   "why": "Cut it into a rectangle and triangles, or use the mean of the parallel sides: (4 + 10) ÷ 2 = 7, and 7 × 6 = 42 m²."
+  },
+  {
+   "id": "nq-pro-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "7.G.B.5",
+   "topic": "Angles and moves",
+   "kind": "apply",
+   "secs": 40,
+   "q": "Two straight lines cross. One of the four angles is 48°. What is the angle next to it?",
+   "choices": [
+    "48°",
+    "42°",
+    "132°",
+    "312°"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "took the angle across from it, which is equal",
+    "subtracted from 90° instead of 180°",
+    "correct",
+    "subtracted from 360° instead of 180°"
+   ],
+   "why": "Angles next to each other on a straight line add to 180°. So the angle next to 48° is 180° − 48° = 132°. The angle across from 48° is also 48°."
+  },
+  {
+   "id": "nq-pro-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "8.G.A.3",
+   "topic": "Angles and moves",
+   "kind": "apply",
+   "secs": 40,
+   "q": "Point P (3, −2) is reflected over the y-axis. What are the coordinates of its image?",
+   "choices": [
+    "(3, 2)",
+    "(−3, −2)",
+    "(−3, 2)",
+    "(−2, 3)"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "reflected it over the x-axis instead",
+    "correct",
+    "changed both signs, which is a half turn",
+    "swapped the two coordinates"
+   ],
+   "why": "A flip over the y-axis changes the side, not the height: (x, y) becomes (−x, y). So (3, −2) becomes (−3, −2)."
+  },
+  {
+   "id": "nq-pro-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "8.G.A.1",
+   "topic": "Angles and moves",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A triangle with sides of 3, 4 and 5 units is turned 90° about the origin. How long are its sides after the turn?",
+   "choices": [
+    "3, 4 and 5 units",
+    "6, 8 and 10 units",
+    "9, 16 and 25 units",
+    "It depends on how far it is from the origin"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "thought a quarter turn doubles each side",
+    "squared each side length",
+    "thought a turn stretches a shape far from the origin"
+   ],
+   "why": "A turn moves every point but keeps every length and every angle. The image is congruent to the triangle: its sides are still 3, 4 and 5 units."
+  },
+  {
+   "id": "nq-pro-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "8.G.B.7",
+   "topic": "Pythagorean theorem",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A ladder 10 m long leans on a wall. Its foot is 6 m from the wall. How high up the wall does it reach?",
+   "choices": [
+    "4 m",
+    "16 m",
+    "√136 m",
+    "8 m"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "subtracted the lengths instead of their squares",
+    "added the two lengths",
+    "added the squares instead of subtracting them",
+    "correct"
+   ],
+   "why": "The ladder is the long side: 6² + h² = 10². So h² = 100 − 36 = 64, and h = √64 = 8 m."
+  },
+  {
+   "id": "nq-pro-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "8.G.B.8",
+   "topic": "Pythagorean theorem",
+   "kind": "apply",
+   "secs": 40,
+   "q": "What is the distance between the points (−1, 2) and (5, 10)?",
+   "choices": [
+    "14",
+    "10",
+    "100",
+    "2"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "added the distance across and the distance up",
+    "correct",
+    "stopped before taking the square root",
+    "took the difference of the distance across and up"
+   ],
+   "why": "Across: 5 − (−1) = 6. Up: 10 − 2 = 8. Then 6² + 8² = 36 + 64 = 100, and √100 = 10."
+  },
+  {
+   "id": "nq-pro-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "8.G.B.7",
+   "topic": "Pythagorean theorem",
+   "kind": "apply",
+   "secs": 40,
+   "q": "A room is 4 m long, 3 m wide and 12 m tall. How long is the longest pole from a floor corner to the far top corner?",
+   "choices": [
+    "5 m",
+    "19 m",
+    "13 m",
+    "√160 m"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "found only the diagonal of the floor",
+    "added the three edges",
+    "correct",
+    "used only the length and the height"
+   ],
+   "why": "The floor's diagonal: 4² + 3² = 25, so 5 m. Then 5² + 12² = 25 + 144 = 169, and √169 = 13 m."
+  }
+ ]
+}

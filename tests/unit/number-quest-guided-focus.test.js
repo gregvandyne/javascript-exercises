@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 211, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5 and 6 in Pro Unit 7');
-  assert.equal(steps, 500, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5 and 17 in Pro Unit 7');
+  assert.equal(slides, 219, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4, 6 in Pro Unit 5, 8 in Pro Unit 6 and 6 in Pro Unit 7');
+  assert.equal(steps, 523, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4, 16 in Pro Unit 5, 23 in Pro Unit 6 and 17 in Pro Unit 7');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -632,6 +632,35 @@ const REGISTRY = [
   ['pro-5.3', 1, 2, [36.02,35.73,39.21,41.42], [35,34.1,5.2,8.9]],
   ['pro-5.3', 3, 0, [26.14,8.18,61.84,79.11], [25.1,6.6,37.7,74.1]],
   ['pro-5.3', 3, 1, [7.59,8.18,37.71,48.71], [6.6,6.6,32.1,43.7]],
+  // Pro Unit 6, The Drafting Keep (2026-11-15): 6.1 a box's net (the front, its twin the back, an end), a right triangle (the triangle,
+  // its base, its height) and a roof prism's net (an end, the bottom rectangle, a sloping side); 6.2 two beams crossing (the known
+  // angle, the one next to it, the one across), a slide on the plane (the stone before and after) and a dilation (the window, its
+  // copy, the origin); 6.3 the ladder's right triangle (the wall, the foot, the ladder) and two towers on a grid (A, B, the slope
+  // triangle). The target of each is the layout's own bounds for that part (the numbers the drawing is drawn from), or the part's
+  // box less the usual margin where the part takes in its name; every ring was checked on the drawn slide.
+  ['pro-6.1', 1, 0, [34, 34.07, 53, 56.59], [32.8, 31.9, 21.4, 26.8]],
+  ['pro-6.1', 1, 1, [65.67, 34.07, 84.67, 56.59], [64.5, 31.9, 21.4, 26.8]],
+  ['pro-6.1', 1, 2, [21.33, 34.07, 34, 56.59], [20.1, 31.9, 15.1, 26.8]],
+  ['pro-6.1', 3, 0, [32.33, 24.89, 73.67, 80], [30.7, 22, 44.5, 60.8]],
+  ['pro-6.1', 3, 1, [49.3, 83.91, 56.7, 91.73], [48.1, 81.8, 9.8, 12.1]],
+  ['pro-6.1', 3, 2, [22.54, 48.53, 29.93, 56.36], [21.3, 46.4, 9.8, 12.1]],
+  ['pro-6.1', 4, 0, [45.5, 11.56, 60.5, 29.33], [44.3, 9.4, 17.4, 22]],
+  ['pro-6.1', 4, 1, [45.5, 29.33, 60.5, 64.89], [44.3, 27.2, 17.4, 39.8]],
+  ['pro-6.1', 4, 2, [33, 29.33, 45.5, 64.89], [31.8, 27.2, 14.9, 39.8]],
+  ['pro-6.2', 1, 0, [50, 27.62, 64.3, 50.67], [49.2, 26.2, 15.9, 25.9]],
+  ['pro-6.2', 1, 1, [34.54, 25.76, 56.53, 50.67], [33.7, 24.3, 23.6, 27.8]],
+  ['pro-6.2', 1, 2, [35.7, 50.67, 50, 73.71], [34.9, 49.2, 15.9, 25.9]],
+  ['pro-6.2', 2, 0, [13.1, 57.0, 38.9, 88.8], [12.1, 55.4, 27.8, 35]],
+  ['pro-6.2', 2, 1, [51, 11.5, 76.6, 48.6], [50, 9.9, 27.6, 40.3]],
+  ['pro-6.2', 4, 0, [25.5, 47.0, 46.1, 86.5], [24.5, 45.4, 22.6, 42.7]],
+  ['pro-6.2', 4, 1, [33.4, 11.8, 67.9, 70.8], [32.4, 10.2, 36.5, 62.2]],
+  ['pro-6.2', 4, 2, [18.94, 85.69, 24.94, 98.13], [18.9, 85.7, 6, 12.4]],
+  ['pro-6.3', 1, 0, [31.58, 48.53, 38.98, 56.36], [30.4, 46.4, 9.8, 12.1]],
+  ['pro-6.3', 1, 1, [49.3, 83.91, 56.7, 91.73], [48.1, 81.8, 9.8, 12.1]],
+  ['pro-6.3', 1, 2, [55.32, 42.78, 58.24, 52.03], [54.1, 40.6, 5.3, 13.5]],
+  ['pro-6.3', 3, 0, [33.6, 61.6, 54.9, 75.3], [32.6, 60, 23.3, 16.9]],
+  ['pro-6.3', 3, 1, [53.1, 10.5, 74.4, 24.2], [52.1, 8.9, 23.3, 16.9]],
+  ['pro-6.3', 3, 2, [34.6, 17.1, 64.6, 68.7], [33.6, 15.5, 32, 54.8]],
   // Pro Unit 7, The Test Range (2026-11-15): 7.1 a dot plot of nine landings (the four before the middle, the three at 14 with
   // their label) and a box plot (the box with its quartiles, the median, the whiskers with the lowest and highest); 7.2 the
   // probability line (0, 1, the point 0.3) and the table of a gate and a bin (the two rows, the six outcomes, R3); 7.3 two box
@@ -655,13 +684,13 @@ const REGISTRY = [
   ['pro-7.3', 3, 1, [15.76, 19.95, 93.63, 72.57], [14.7, 18.3, 80.0, 55.9]],
   ['pro-7.3', 3, 2, [61.45, 60.27, 64.04, 64.89], [60.4, 58.6, 4.7, 7.9]],
 ];
-test('every authored box contains its measured target with a small margin (500-step registry)', () => {
+test('every authored box contains its measured target with a small margin (523-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 500);
+  assert.equal(REGISTRY.length, 523);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -679,7 +708,7 @@ test('every authored box contains its measured target with a small margin (500-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 500);
+  assert.equal(total, 523);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at
