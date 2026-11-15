@@ -380,7 +380,7 @@
       "band": "pro",
       "capturedAt": "2026-11-15",
       "chapter": "7.4",
-      "commit": "c0b467cc",
+      "commit": "78956a24",
       "concept": "Pro 7.4, The Great Clock round 1, the Ratio Gear (The clock's lantern burns 6 milliliters of oil every 4 hours. At that rate, how many milliliters does it burn in 10 hours?): the data board with a double number line, hours over milliliters, 0 under 0 and 4 over 6, the asked 10 hours over a ?, the lab tester and the Great Clock's empty sockets below, the chip reading 10 h → ? ml, the stepper at 10 ml and the Run button, shot at phone width (scripts/nq-shots.js band)",
       "game": "launch-lab",
       "key": "nq/launch-lab/the-great-clock",
