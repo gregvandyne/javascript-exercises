@@ -2689,6 +2689,131 @@
         "cleared": "已取消"
       },
       "progress": "第 {n} 步，共 {total} 步"
+    },
+    "dash": {
+      "dropHint": "從工具庫把小工具加到這裡",
+      "pinnedBy": "老師傳來的",
+      "onStudents": "在學生畫面上",
+      "widgetRole": "小工具",
+      "toolsFor": "移動或調整 {name} 的大小",
+      "keyHelp": "方向鍵可以移動這個小工具。Shift 加方向鍵可以調整大小。Delete 可以移除。Ctrl 加 Z 可以復原。",
+      "tool": {
+        "up": "上移",
+        "down": "下移",
+        "left": "左移",
+        "right": "右移",
+        "narrower": "變窄",
+        "wider": "變寬",
+        "shorter": "變矮",
+        "taller": "變高",
+        "remove": "移除"
+      },
+      "say": {
+        "moved": "{name}：第 {x} 欄，第 {y} 列",
+        "resized": "{name}：寬 {w}，高 {h}",
+        "added": "已加入 {name}",
+        "removed": "已移除 {name}。按復原可以拿回來。",
+        "undone": "已復原變更",
+        "pinned": "老師釘選了 {name}。你可以移動它，但不能移除。",
+        "pinOn": "{name} 現在會出現在學生畫面上",
+        "pinOff": "{name} 不再出現在學生畫面上",
+        "layout": "版面：{name}",
+        "eyesOn": "所有學生畫面都開啟了「看前面」",
+        "eyesOff": "「看前面」已結束",
+        "eyesUp": "眼睛看前面",
+        "hidden": "已隱藏，保存在「老師傳來的」裡。",
+        "back": "回來了"
+      },
+      "editing": "編輯中：{name}",
+      "all": "全部",
+      "add": "加入",
+      "addName": "加入 {name}",
+      "noneFound": "沒有符合的小工具。",
+      "side": {
+        "none": "你的畫面",
+        "noneText": "選一個小工具來修改，或從工具庫加入新的。",
+        "title": "{name} 設定",
+        "pinnedNote": "老師釘選了這個小工具。你可以移動它，但不能移除。",
+        "pin": "釘選在學生畫面上",
+        "pinHelp": "釘選的小工具會出現在每位學生的畫面上，學生不能移除。",
+        "duplicate": "複製",
+        "remove": "移除",
+        "pictures": "學生的背景圖片",
+        "picturesNote": "每張圖片只有你和那位學生看得到。",
+        "picturesNone": "沒有學生在用圖片。",
+        "takeDown": "撤下",
+        "takenDown": "已撤下圖片"
+      },
+      "bgChanged": "已更換背景",
+      "uploading": "正在檢查你的圖片…",
+      "uploadBad": "這張圖片不能用。試試 JPG 或 PNG 照片。",
+      "eyes": "看前面",
+      "eyesEnd": "結束「看前面」",
+      "layouts": {
+        "name": "名稱",
+        "copy": "從這個版面開始",
+        "save": "儲存",
+        "needName": "請幫版面取個名字。",
+        "newTitle": "新版面",
+        "manageTitle": "版面：{name}",
+        "rename": "重新命名",
+        "del": "刪除這個版面",
+        "delConfirm": "要刪除版面「{name}」嗎？",
+        "keepOne": "至少要留一個版面。"
+      },
+      "kind": {
+        "game": "遊戲",
+        "live": "即時遊戲",
+        "lesson": "課程",
+        "link": "連結"
+      },
+      "act": {
+        "play": "開始玩",
+        "join": "加入遊戲",
+        "lesson": "打開課程",
+        "link": "打開連結"
+      },
+      "push": {
+        "title": "傳給學生",
+        "sentToday": "今天傳過的",
+        "noneYet": "今天還沒有傳任何東西。",
+        "end": "結束",
+        "endName": "結束 {title}",
+        "send": "傳送",
+        "sendName": "傳送 {title}",
+        "sent": "已傳到每位學生的畫面",
+        "what": "要傳什麼",
+        "tab": {
+          "game": "遊戲",
+          "live": "即時遊戲",
+          "lesson": "課程",
+          "link": "連結"
+        },
+        "search": "搜尋遊戲",
+        "gamesNone": "找不到學生能打開的遊戲。",
+        "liveOpen": "你的即時遊戲已開放",
+        "liveNone": "請先開始一場即時遊戲，再把加入方式傳到每個畫面。",
+        "liveStart": "開始即時遊戲",
+        "lessonsNone": "今天這個班級沒有開放的課程。",
+        "linksNote": "學生只能打開這份清單上的連結。",
+        "linksNone": "還沒有核准的連結。",
+        "linkName": "名稱",
+        "linkUrl": "網址（https://…）",
+        "linkAdd": "核准連結",
+        "linkAdded": "已核准連結",
+        "linkRemoveName": "把 {title} 從核准清單移除"
+      },
+      "banner": {
+        "from": "老師傳來的 · {when}",
+        "hide": "隱藏",
+        "hidden": "已隱藏：{title}。保存在「老師傳來的」裡。",
+        "back": "拿回來"
+      },
+      "tray": {
+        "label": "老師傳來的：今天 {count} 項",
+        "show": "顯示",
+        "showing": "顯示中"
+      }
     }
   },
   "favorites": {
@@ -8736,6 +8861,151 @@
       "games": "遊戲",
       "classText": "給教室白板和手機用的活動。",
       "gamesText": "可以玩、可以分享的遊戲。"
+    }
+  },
+  "dash": {
+    "title": "{name} · 班級儀表板",
+    "myTitle": "{name} · 我的儀表板",
+    "entry": {
+      "teacher": "班級儀表板",
+      "student": "我的儀表板"
+    },
+    "gridTeacher": "班級儀表板的小工具",
+    "gridStudent": "我的儀表板的小工具",
+    "noscript": "儀表板需要 JavaScript，請開啟後再使用。",
+    "pick": {
+      "title": "我的儀表板"
+    },
+    "top": {
+      "backClass": "回到班級頁面",
+      "backMyClass": "回到我的班級頁面",
+      "projector": "投影",
+      "edit": "編輯畫面",
+      "editMine": "改變我的畫面",
+      "editing": "編輯中：{name}",
+      "editingMine": "正在改變我的畫面",
+      "editHint": "拖曳來移動 · 拖曳角落來改變大小 · 也可以用方向鍵",
+      "editHintMine": "移動你的小工具、加入新的，或選一個背景。釘選的會留著。",
+      "undo": "復原",
+      "done": "完成"
+    },
+    "layouts": {
+      "label": "版面",
+      "new": "新增",
+      "manage": "重新命名或刪除這個版面",
+      "defaultName": "每天"
+    },
+    "foot": {
+      "eyes": "看前面",
+      "push": "傳給學生"
+    },
+    "tray": {
+      "button": "老師傳來的",
+      "heading": "今天老師傳來的",
+      "empty": "今天還沒有。",
+      "note": "老師傳來的東西會留在這裡，直到今天結束。",
+      "close": "關閉"
+    },
+    "eyes": {
+      "title": "眼睛看前面",
+      "text": "老師有東西要給你看。"
+    },
+    "lib": {
+      "heading": "加入小工具",
+      "search": "搜尋小工具",
+      "searchHint": "時鐘、行程…",
+      "groups": "小工具分類"
+    },
+    "side": {
+      "none": "你的畫面"
+    },
+    "bg": {
+      "heading": "背景",
+      "colors": "顏色",
+      "art": "Oomba 圖畫",
+      "upload": "上傳圖片",
+      "note": "圖片會像大頭貼一樣經過檢查。只有你和你班上的老師看得到你的圖片。",
+      "cream": "奶油色",
+      "mint": "薄荷圓點",
+      "spark": "黃色圓點",
+      "sky": "天空",
+      "leaf": "葉子",
+      "ink": "墨色",
+      "sparks": "閃光",
+      "eyes": "Oomba 的眼睛",
+      "hills": "山丘",
+      "night": "夜空"
+    },
+    "groups": {
+      "join": "加入與分享",
+      "time": "時間",
+      "class": "班級",
+      "show": "展示",
+      "tools": "工具",
+      "check": "檢查",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "時鐘",
+        "desc": "大大的時間，坐在最後面也看得到。",
+        "s": {
+          "face": "鐘面",
+          "hour12": "12 小時制",
+          "seconds": "顯示秒數",
+          "date": "顯示日期"
+        },
+        "o": {
+          "face": {
+            "digital": "數字",
+            "analog": "指針"
+          }
+        }
+      },
+      "text": {
+        "name": "文字與行程",
+        "desc": "公告、今天的行程、作業。",
+        "empty": "在「編輯畫面」裡寫下行程。",
+        "s": {
+          "title": "標題",
+          "body": "文字（一行一項）",
+          "style": "顯示方式"
+        },
+        "o": {
+          "style": {
+            "list": "編號清單",
+            "text": "一般文字"
+          }
+        }
+      },
+      "ican": {
+        "name": "學習目標「我會…」",
+        "desc": "用孩子的話寫今天的學習目標。",
+        "lead": "我會…",
+        "empty": "在「編輯畫面」裡加入今天的目標。",
+        "s": {
+          "goal": "今天的目標"
+        }
+      }
+    },
+    "push": {
+      "sent": "已傳到每位學生的畫面"
+    },
+    "errors": {
+      "notFound": "找不到這個班級儀表板。",
+      "name": "請幫版面取個名字。",
+      "tooMany": "這個班級的版面已經到上限了，請先刪除一個。",
+      "last": "至少要留一個版面。",
+      "url": "請輸入以 https:// 開頭的完整網址。",
+      "tooManyLinks": "這個班級的核准連結已經到上限了，請先移除一個。",
+      "kind": "請選擇要傳什麼。",
+      "game": "你的學生打不開這個遊戲。",
+      "noLive": "請先開始一場即時遊戲。",
+      "lesson": "這堂課在這個班級沒有開放。",
+      "link": "這個連結不在核准清單上。",
+      "tooManyPushes": "一天傳這麼多太多了，請先結束一些。",
+      "pic_badType": "這張圖片不能用。試試 JPG 或 PNG 照片。",
+      "pic_tooBig": "這張圖片太大了。"
     }
   }
 }

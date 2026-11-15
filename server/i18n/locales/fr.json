@@ -2689,6 +2689,131 @@
         "cleared": "Enlevés"
       },
       "progress": "Étape {n} sur {total}"
+    },
+    "dash": {
+      "dropHint": "Ajoute un widget ici depuis la bibliothèque",
+      "pinnedBy": "De ton enseignant",
+      "onStudents": "Sur les écrans des élèves",
+      "widgetRole": "widget",
+      "toolsFor": "Déplacer ou redimensionner {name}",
+      "keyHelp": "Les flèches déplacent ce widget. Maj et les flèches le redimensionnent. Suppr l’enlève. Ctrl et Z annule.",
+      "tool": {
+        "up": "Monter",
+        "down": "Descendre",
+        "left": "Vers la gauche",
+        "right": "Vers la droite",
+        "narrower": "Plus étroit",
+        "wider": "Plus large",
+        "shorter": "Moins haut",
+        "taller": "Plus haut",
+        "remove": "Enlever"
+      },
+      "say": {
+        "moved": "{name} : colonne {x}, ligne {y}",
+        "resized": "{name} : {w} de large, {h} de haut",
+        "added": "{name} ajouté",
+        "removed": "{name} enlevé. Annuler le remet.",
+        "undone": "Changement annulé",
+        "pinned": "Ton enseignant a épinglé {name}. Tu peux le déplacer, mais pas l’enlever.",
+        "pinOn": "{name} est maintenant sur les écrans des élèves",
+        "pinOff": "{name} n’est plus sur les écrans des élèves",
+        "layout": "Disposition : {name}",
+        "eyesOn": "« Les yeux ici » est activé sur tous les écrans des élèves",
+        "eyesOff": "« Les yeux ici » est terminé",
+        "eyesUp": "Les yeux vers l’avant",
+        "hidden": "Caché. C’est gardé dans De ton enseignant.",
+        "back": "C’est revenu"
+      },
+      "editing": "Modification : {name}",
+      "all": "Tous",
+      "add": "Ajouter",
+      "addName": "Ajouter {name}",
+      "noneFound": "Aucun widget ne correspond.",
+      "side": {
+        "none": "Ton écran",
+        "noneText": "Choisis un widget pour le changer, ou ajoutes-en un depuis la bibliothèque.",
+        "title": "Réglages : {name}",
+        "pinnedNote": "Ton enseignant a épinglé ce widget. Tu peux le déplacer, mais pas l’enlever.",
+        "pin": "Épingler sur les écrans des élèves",
+        "pinHelp": "Les widgets épinglés s’affichent sur l’écran de chaque élève, et les élèves ne peuvent pas les enlever.",
+        "duplicate": "Dupliquer",
+        "remove": "Enlever",
+        "pictures": "Images de fond des élèves",
+        "picturesNote": "Seuls toi et cet élève pouvez voir chacune.",
+        "picturesNone": "Aucun élève n’utilise d’image.",
+        "takeDown": "Retirer",
+        "takenDown": "Image retirée"
+      },
+      "bgChanged": "Fond changé",
+      "uploading": "Vérification de ton image…",
+      "uploadBad": "Cette image n’a pas marché. Essaie une photo JPG ou PNG.",
+      "eyes": "Les yeux ici",
+      "eyesEnd": "Arrêter « Les yeux ici »",
+      "layouts": {
+        "name": "Nom",
+        "copy": "Partir de cette disposition",
+        "save": "Enregistrer",
+        "needName": "Donne un nom à la disposition.",
+        "newTitle": "Nouvelle disposition",
+        "manageTitle": "Disposition : {name}",
+        "rename": "Renommer",
+        "del": "Supprimer cette disposition",
+        "delConfirm": "Supprimer la disposition « {name} » ?",
+        "keepOne": "Garde au moins une disposition."
+      },
+      "kind": {
+        "game": "Jeu",
+        "live": "Jeu en direct",
+        "lesson": "Leçon",
+        "link": "Lien"
+      },
+      "act": {
+        "play": "Jouer",
+        "join": "Rejoindre le jeu",
+        "lesson": "Ouvrir la leçon",
+        "link": "Ouvrir le lien"
+      },
+      "push": {
+        "title": "Envoyer aux élèves",
+        "sentToday": "Envoyé aujourd’hui",
+        "noneYet": "Rien d’envoyé aujourd’hui.",
+        "end": "Terminer",
+        "endName": "Terminer {title}",
+        "send": "Envoyer",
+        "sendName": "Envoyer {title}",
+        "sent": "Envoyé sur l’écran de chaque élève",
+        "what": "Quoi envoyer",
+        "tab": {
+          "game": "Un jeu",
+          "live": "Jeu en direct",
+          "lesson": "Une leçon",
+          "link": "Un lien"
+        },
+        "search": "Chercher des jeux",
+        "gamesNone": "Aucun jeu trouvé que tes élèves peuvent ouvrir.",
+        "liveOpen": "Ton jeu en direct est ouvert",
+        "liveNone": "Lance d’abord un jeu en direct, puis envoie son accès à tous les écrans.",
+        "liveStart": "Lancer un jeu en direct",
+        "lessonsNone": "Aucune leçon n’est ouverte dans cette classe aujourd’hui.",
+        "linksNote": "Les élèves ne peuvent ouvrir que les liens de cette liste.",
+        "linksNone": "Aucun lien approuvé pour l’instant.",
+        "linkName": "Nom",
+        "linkUrl": "Adresse web (https://…)",
+        "linkAdd": "Approuver le lien",
+        "linkAdded": "Lien approuvé",
+        "linkRemoveName": "Retirer {title} de la liste approuvée"
+      },
+      "banner": {
+        "from": "De ton enseignant · {when}",
+        "hide": "Cacher",
+        "hidden": "Caché : {title}. C’est gardé dans De ton enseignant.",
+        "back": "Le remettre"
+      },
+      "tray": {
+        "label": "De ton enseignant : {count, plural, one {# chose} other {# choses}} aujourd’hui",
+        "show": "Afficher",
+        "showing": "Affiché"
+      }
     }
   },
   "favorites": {
@@ -8736,6 +8861,151 @@
       "games": "Jeux",
       "classText": "Des activités pour le tableau de la classe et pour les téléphones.",
       "gamesText": "Des jeux pour jouer et partager."
+    }
+  },
+  "dash": {
+    "title": "{name} · Tableau de bord de la classe",
+    "myTitle": "{name} · Mon tableau de bord",
+    "entry": {
+      "teacher": "Tableau de bord de la classe",
+      "student": "Mon tableau de bord"
+    },
+    "gridTeacher": "Widgets du tableau de bord de la classe",
+    "gridStudent": "Widgets de mon tableau de bord",
+    "noscript": "Le tableau de bord a besoin de JavaScript. Active-le pour l’utiliser.",
+    "pick": {
+      "title": "Mes tableaux de bord"
+    },
+    "top": {
+      "backClass": "Retour à la page de la classe",
+      "backMyClass": "Retour à la page de ma classe",
+      "projector": "Projecteur",
+      "edit": "Modifier l’écran",
+      "editMine": "Changer mon écran",
+      "editing": "Modification : {name}",
+      "editingMine": "Je change mon écran",
+      "editHint": "Fais glisser pour déplacer · tire un coin pour redimensionner · ou utilise les flèches",
+      "editHintMine": "Déplace tes widgets, ajoutes-en ou choisis un fond. Les widgets épinglés restent.",
+      "undo": "Annuler",
+      "done": "Terminé"
+    },
+    "layouts": {
+      "label": "Disposition",
+      "new": "Nouvelle",
+      "manage": "Renommer ou supprimer cette disposition",
+      "defaultName": "Tous les jours"
+    },
+    "foot": {
+      "eyes": "Les yeux ici",
+      "push": "Envoyer aux élèves"
+    },
+    "tray": {
+      "button": "De ton enseignant",
+      "heading": "De ton enseignant aujourd’hui",
+      "empty": "Rien pour l’instant aujourd’hui.",
+      "note": "Tout ce que ton enseignant envoie reste ici jusqu’à la fin de la journée.",
+      "close": "Fermer"
+    },
+    "eyes": {
+      "title": "Les yeux vers l’avant",
+      "text": "Ton enseignant a quelque chose à te montrer."
+    },
+    "lib": {
+      "heading": "Ajouter un widget",
+      "search": "Chercher des widgets",
+      "searchHint": "Horloge, programme…",
+      "groups": "Groupes de widgets"
+    },
+    "side": {
+      "none": "Ton écran"
+    },
+    "bg": {
+      "heading": "Fond",
+      "colors": "Couleurs",
+      "art": "Dessins Oomba",
+      "upload": "Envoyer une image",
+      "note": "Les images sont vérifiées comme les photos de profil. Seuls toi et les enseignants de ta classe pouvez voir la tienne.",
+      "cream": "Crème",
+      "mint": "Points menthe",
+      "spark": "Points étincelle",
+      "sky": "Ciel",
+      "leaf": "Feuille",
+      "ink": "Encre",
+      "sparks": "Étincelles",
+      "eyes": "Yeux d’Oomba",
+      "hills": "Collines",
+      "night": "Ciel de nuit"
+    },
+    "groups": {
+      "join": "Rejoindre et partager",
+      "time": "Temps",
+      "class": "Classe",
+      "show": "Afficher",
+      "tools": "Outils",
+      "check": "Vérifier",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "Horloge",
+        "desc": "L’heure, assez grande pour la lire du fond de la classe.",
+        "s": {
+          "face": "Cadran",
+          "hour12": "Format 12 heures",
+          "seconds": "Afficher les secondes",
+          "date": "Afficher la date"
+        },
+        "o": {
+          "face": {
+            "digital": "Numérique",
+            "analog": "À aiguilles"
+          }
+        }
+      },
+      "text": {
+        "name": "Texte et programme",
+        "desc": "Annonces, programme du jour, devoirs.",
+        "empty": "Écris ton programme dans Modifier l’écran.",
+        "s": {
+          "title": "Titre",
+          "body": "Texte (un élément par ligne)",
+          "style": "Afficher comme"
+        },
+        "o": {
+          "style": {
+            "list": "Une liste numérotée",
+            "text": "Du texte simple"
+          }
+        }
+      },
+      "ican": {
+        "name": "Objectif « Je peux… »",
+        "desc": "L’objectif du jour avec des mots d’enfant.",
+        "lead": "Je peux…",
+        "empty": "Ajoute l’objectif du jour dans Modifier l’écran.",
+        "s": {
+          "goal": "Objectif du jour"
+        }
+      }
+    },
+    "push": {
+      "sent": "Envoyé sur l’écran de chaque élève"
+    },
+    "errors": {
+      "notFound": "Nous n’avons pas trouvé ce tableau de bord.",
+      "name": "Donne un nom à la disposition.",
+      "tooMany": "Tu as le maximum de dispositions pour une classe. Supprimes-en une d’abord.",
+      "last": "Garde au moins une disposition.",
+      "url": "Utilise une adresse web complète qui commence par https://",
+      "tooManyLinks": "Cette classe a le maximum de liens approuvés. Retires-en un d’abord.",
+      "kind": "Choisis quoi envoyer.",
+      "game": "Tes élèves ne peuvent pas ouvrir ce jeu.",
+      "noLive": "Lance d’abord un jeu en direct.",
+      "lesson": "Cette leçon n’est pas ouverte dans cette classe.",
+      "link": "Ce lien n’est pas dans la liste approuvée.",
+      "tooManyPushes": "C’est beaucoup pour une journée. Termines-en quelques-uns d’abord.",
+      "pic_badType": "Cette image n’a pas marché. Essaie une photo JPG ou PNG.",
+      "pic_tooBig": "Cette image est trop grande."
     }
   }
 }

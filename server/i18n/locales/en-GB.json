@@ -826,5 +826,19 @@
         "text": "Call maths facts or words, mark the cards"
       }
     }
+  },
+  "dash": {
+    "bg": {
+      "colors": "Colours"
+    },
+    "w": {
+      "clock": {
+        "o": {
+          "face": {
+            "analog": "Analogue"
+          }
+        }
+      }
+    }
   }
 }

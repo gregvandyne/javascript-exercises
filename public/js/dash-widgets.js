@@ -5,6 +5,8 @@
 // Widgets render text with textContent only: never innerHTML with anything a person typed.
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+/** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
+const typed = (tag, cls, text) => { const e = el(tag, cls, text); e.dir = 'auto'; return e; };
 const SVG = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs) => { const e = document.createElementNS(SVG, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
 
@@ -42,21 +44,21 @@ function clock(body, s, ctx) {
 
 function text(body, s, ctx) {
   body.classList.add('dw-text');
-  if (s.title) body.appendChild(el('div', 'dw-title', s.title));
+  if (s.title) body.appendChild(typed('div', 'dw-title', s.title));
   const lines = String(s.body || '').split('\n').map(x => x.trim());
   if (!lines.some(Boolean)) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? ctx.type.words.empty : '')); return null; }
   if (s.style === 'list') {
-    const ol = el('ol', 'dw-list');
-    for (const line of lines.filter(Boolean)) ol.appendChild(el('li', null, line.replace(/^[-*•]\s*/, '')));
+    const ol = el('ol', 'dw-list'); ol.dir = 'auto';
+    for (const line of lines.filter(Boolean)) ol.appendChild(typed('li', null, line.replace(/^[-*•]\s*/, '')));
     body.appendChild(ol);
-  } else body.appendChild(el('p', 'dw-para', lines.join('\n')));
+  } else body.appendChild(typed('p', 'dw-para', lines.join('\n')));
   return null;
 }
 
 function ican(body, s, ctx) {
   body.classList.add('dw-ican');
   body.appendChild(el('div', 'dw-lead', ctx.type.words.lead));
-  if (s.goal) body.appendChild(el('div', 'dw-goal', s.goal));
+  if (s.goal) body.appendChild(typed('div', 'dw-goal', s.goal));
   else body.appendChild(el('p', 'dw-empty', ctx.type.words.empty));
   return null;
 }

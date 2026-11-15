@@ -2689,6 +2689,131 @@
         "cleared": "Quitados"
       },
       "progress": "Paso {n} de {total}"
+    },
+    "dash": {
+      "dropHint": "Añade aquí un widget de la biblioteca",
+      "pinnedBy": "De tu maestro",
+      "onStudents": "En las pantallas de los alumnos",
+      "widgetRole": "widget",
+      "toolsFor": "Mover o cambiar el tamaño de {name}",
+      "keyHelp": "Las flechas mueven este widget. Mayús y las flechas cambian su tamaño. Supr lo quita. Ctrl y Z deshace.",
+      "tool": {
+        "up": "Subir",
+        "down": "Bajar",
+        "left": "A la izquierda",
+        "right": "A la derecha",
+        "narrower": "Más estrecho",
+        "wider": "Más ancho",
+        "shorter": "Más bajo",
+        "taller": "Más alto",
+        "remove": "Quitar"
+      },
+      "say": {
+        "moved": "{name}: columna {x}, fila {y}",
+        "resized": "{name}: {w} de ancho, {h} de alto",
+        "added": "{name} añadido",
+        "removed": "{name} quitado. Deshacer lo trae de vuelta.",
+        "undone": "Cambio deshecho",
+        "pinned": "Tu maestro fijó {name}. Puedes moverlo, pero no quitarlo.",
+        "pinOn": "{name} ahora está en las pantallas de los alumnos",
+        "pinOff": "{name} ya no está en las pantallas de los alumnos",
+        "layout": "Diseño: {name}",
+        "eyesOn": "«Ojos al frente» está activado en todas las pantallas",
+        "eyesOff": "«Ojos al frente» terminó",
+        "eyesUp": "Ojos al frente",
+        "hidden": "Oculto. Está guardado en De tu maestro.",
+        "back": "Ya volvió"
+      },
+      "editing": "Editando: {name}",
+      "all": "Todos",
+      "add": "Añadir",
+      "addName": "Añadir {name}",
+      "noneFound": "Ningún widget coincide.",
+      "side": {
+        "none": "Tu pantalla",
+        "noneText": "Elige un widget para cambiarlo o añade uno de la biblioteca.",
+        "title": "Ajustes de {name}",
+        "pinnedNote": "Tu maestro fijó este widget. Puedes moverlo, pero no quitarlo.",
+        "pin": "Fijar en las pantallas de los alumnos",
+        "pinHelp": "Los widgets fijados aparecen en la pantalla de cada alumno, y los alumnos no pueden quitarlos.",
+        "duplicate": "Duplicar",
+        "remove": "Quitar",
+        "pictures": "Imágenes de fondo de los alumnos",
+        "picturesNote": "Solo tú y ese alumno pueden ver cada una.",
+        "picturesNone": "Ningún alumno usa una imagen.",
+        "takeDown": "Quitar",
+        "takenDown": "Imagen quitada"
+      },
+      "bgChanged": "Fondo cambiado",
+      "uploading": "Revisando tu imagen…",
+      "uploadBad": "Esa imagen no funcionó. Prueba una foto JPG o PNG.",
+      "eyes": "Ojos al frente",
+      "eyesEnd": "Terminar «Ojos al frente»",
+      "layouts": {
+        "name": "Nombre",
+        "copy": "Empezar desde este diseño",
+        "save": "Guardar",
+        "needName": "Ponle un nombre al diseño.",
+        "newTitle": "Nuevo diseño",
+        "manageTitle": "Diseño: {name}",
+        "rename": "Renombrar",
+        "del": "Borrar este diseño",
+        "delConfirm": "¿Borrar el diseño «{name}»?",
+        "keepOne": "Deja al menos un diseño."
+      },
+      "kind": {
+        "game": "Juego",
+        "live": "Juego en vivo",
+        "lesson": "Lección",
+        "link": "Enlace"
+      },
+      "act": {
+        "play": "Jugar",
+        "join": "Unirme al juego",
+        "lesson": "Abrir la lección",
+        "link": "Abrir el enlace"
+      },
+      "push": {
+        "title": "Enviar a los alumnos",
+        "sentToday": "Enviado hoy",
+        "noneYet": "Todavía no enviaste nada hoy.",
+        "end": "Terminar",
+        "endName": "Terminar {title}",
+        "send": "Enviar",
+        "sendName": "Enviar {title}",
+        "sent": "Enviado a la pantalla de cada alumno",
+        "what": "Qué enviar",
+        "tab": {
+          "game": "Un juego",
+          "live": "Juego en vivo",
+          "lesson": "Una lección",
+          "link": "Un enlace"
+        },
+        "search": "Buscar juegos",
+        "gamesNone": "No hay juegos que tus alumnos puedan abrir.",
+        "liveOpen": "Tu juego en vivo está abierto",
+        "liveNone": "Primero empieza un juego en vivo y luego envía el acceso a todas las pantallas.",
+        "liveStart": "Empezar un juego en vivo",
+        "lessonsNone": "Hoy no hay lecciones abiertas en esta clase.",
+        "linksNote": "Los alumnos solo pueden abrir los enlaces de esta lista.",
+        "linksNone": "Todavía no hay enlaces aprobados.",
+        "linkName": "Nombre",
+        "linkUrl": "Dirección web (https://…)",
+        "linkAdd": "Aprobar enlace",
+        "linkAdded": "Enlace aprobado",
+        "linkRemoveName": "Quitar {title} de la lista aprobada"
+      },
+      "banner": {
+        "from": "De tu maestro · {when}",
+        "hide": "Ocultar",
+        "hidden": "Oculto: {title}. Está guardado en De tu maestro.",
+        "back": "Traerlo de vuelta"
+      },
+      "tray": {
+        "label": "De tu maestro: {count, plural, one {# cosa} other {# cosas}} hoy",
+        "show": "Mostrar",
+        "showing": "Se muestra"
+      }
     }
   },
   "favorites": {
@@ -8736,6 +8861,151 @@
       "games": "Juegos",
       "classText": "Actividades para la pizarra de clase y para móviles.",
       "gamesText": "Juegos para jugar y compartir."
+    }
+  },
+  "dash": {
+    "title": "{name} · Panel de la clase",
+    "myTitle": "{name} · Mi panel",
+    "entry": {
+      "teacher": "Panel de la clase",
+      "student": "Mi panel"
+    },
+    "gridTeacher": "Widgets del panel de la clase",
+    "gridStudent": "Widgets de mi panel",
+    "noscript": "El panel necesita JavaScript. Actívalo para usarlo.",
+    "pick": {
+      "title": "Mis paneles"
+    },
+    "top": {
+      "backClass": "Volver a la página de la clase",
+      "backMyClass": "Volver a la página de mi clase",
+      "projector": "Proyector",
+      "edit": "Editar pantalla",
+      "editMine": "Cambiar mi pantalla",
+      "editing": "Editando: {name}",
+      "editingMine": "Cambiando mi pantalla",
+      "editHint": "Arrastra para mover · arrastra una esquina para cambiar el tamaño · o usa las flechas",
+      "editHintMine": "Mueve tus widgets, añade otros o elige un fondo. Los fijados se quedan.",
+      "undo": "Deshacer",
+      "done": "Listo"
+    },
+    "layouts": {
+      "label": "Diseño",
+      "new": "Nuevo",
+      "manage": "Renombrar o borrar este diseño",
+      "defaultName": "Todos los días"
+    },
+    "foot": {
+      "eyes": "Ojos al frente",
+      "push": "Enviar a los alumnos"
+    },
+    "tray": {
+      "button": "De tu maestro",
+      "heading": "De tu maestro hoy",
+      "empty": "Nada todavía hoy.",
+      "note": "Todo lo que envía tu maestro se queda aquí hasta que termina el día.",
+      "close": "Cerrar"
+    },
+    "eyes": {
+      "title": "Ojos al frente",
+      "text": "Tu maestro quiere mostrarte algo."
+    },
+    "lib": {
+      "heading": "Añadir un widget",
+      "search": "Buscar widgets",
+      "searchHint": "Reloj, agenda…",
+      "groups": "Grupos de widgets"
+    },
+    "side": {
+      "none": "Tu pantalla"
+    },
+    "bg": {
+      "heading": "Fondo",
+      "colors": "Colores",
+      "art": "Dibujos de Oomba",
+      "upload": "Subir una imagen",
+      "note": "Las imágenes se revisan como las fotos de perfil. Solo tú y los maestros de tu clase pueden ver la tuya.",
+      "cream": "Crema",
+      "mint": "Puntos menta",
+      "spark": "Puntos chispa",
+      "sky": "Cielo",
+      "leaf": "Hoja",
+      "ink": "Tinta",
+      "sparks": "Chispas",
+      "eyes": "Ojos de Oomba",
+      "hills": "Colinas",
+      "night": "Cielo nocturno"
+    },
+    "groups": {
+      "join": "Unirse y compartir",
+      "time": "Tiempo",
+      "class": "Clase",
+      "show": "Mostrar",
+      "tools": "Herramientas",
+      "check": "Comprobar",
+      "oomba": "Oomba"
+    },
+    "w": {
+      "clock": {
+        "name": "Reloj",
+        "desc": "La hora, tan grande que se lee desde el fondo.",
+        "s": {
+          "face": "Esfera",
+          "hour12": "Formato de 12 horas",
+          "seconds": "Mostrar segundos",
+          "date": "Mostrar la fecha"
+        },
+        "o": {
+          "face": {
+            "digital": "Digital",
+            "analog": "Analógico"
+          }
+        }
+      },
+      "text": {
+        "name": "Texto y agenda",
+        "desc": "Avisos, la agenda de hoy, tareas.",
+        "empty": "Escribe tu agenda en Editar pantalla.",
+        "s": {
+          "title": "Título",
+          "body": "Texto (una cosa por línea)",
+          "style": "Mostrar como"
+        },
+        "o": {
+          "style": {
+            "list": "Una lista numerada",
+            "text": "Texto simple"
+          }
+        }
+      },
+      "ican": {
+        "name": "Objetivo «Puedo…»",
+        "desc": "La meta de hoy con palabras de niños.",
+        "lead": "Puedo…",
+        "empty": "Añade la meta de hoy en Editar pantalla.",
+        "s": {
+          "goal": "La meta de hoy"
+        }
+      }
+    },
+    "push": {
+      "sent": "Enviado a la pantalla de cada alumno"
+    },
+    "errors": {
+      "notFound": "No encontramos ese panel de clase.",
+      "name": "Ponle un nombre al diseño.",
+      "tooMany": "Ya tienes el máximo de diseños para una clase. Borra uno primero.",
+      "last": "Deja al menos un diseño.",
+      "url": "Usa una dirección web completa que empiece por https://",
+      "tooManyLinks": "Esta clase ya tiene el máximo de enlaces aprobados. Quita uno primero.",
+      "kind": "Elige qué enviar.",
+      "game": "Tus alumnos no pueden abrir ese juego.",
+      "noLive": "Primero empieza un juego en vivo.",
+      "lesson": "Esa lección no está abierta en esta clase.",
+      "link": "Ese enlace no está en la lista aprobada.",
+      "tooManyPushes": "Es mucho para un día. Termina algunos primero.",
+      "pic_badType": "Esa imagen no funcionó. Prueba una foto JPG o PNG.",
+      "pic_tooBig": "Esa imagen es demasiado grande."
     }
   }
 }

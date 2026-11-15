@@ -5953,3 +5953,70 @@ speaker. Also make sure this is always done with the AI voices." (the Oomba Kit'
   and the kit title).
 - **Open:** a native speaker's read of the new card translations; the other words of Fraction Factory, Escape the Post
   Office and Trick Inbox are still English.
+
+## Classroom dashboards, stage 1 (15 Nov 2026)
+A screen per class that stays open all day: the teacher's on the projector (`/class/<id>/dashboard`, the "Class
+dashboard" button in the class header) and each student's own (the same address, "My dashboard" on the student's class
+page and on their Class tab; `/dashboard` takes a student with one class straight to it). Built to the approved mockups
+(Main, TeacherEdit, Student) with the site's own tokens and components. Code: `server/services/dash.js`,
+`server/routes/dash.js`, `public/js/dash.js`, `public/js/dash-widgets.js`, `public/css/dash.css`; migration 0078.
+- **Widgets.** One registry (`WIDGETS` in services/dash.js): id, library group, who may add it (teacher, student,
+  both), default and smallest size, the settings schema, and the extra words its renderer shows. The browser's
+  renderers are keyed by the same id (dash-widgets.js). The library (search and groups), the 12-column grid, the
+  settings form, saving and server validation all work from the schema, so stage 2's timers, QR, picker... are a
+  registry entry and a renderer. Stage 1 types: clock (digital or analog), text and agenda (teacher), "I can…"
+  objective. Every layout a browser sends is rebuilt from the schema on the server (`cleanWidgets`): unknown types,
+  settings and ids are dropped, sizes clamped, text clipped and stripped of control and direction-override characters.
+- **Editing.** Drag to move and drag the corner to resize (mouse and pen); on every device the selected widget also
+  has buttons (up, down, left, right, narrower, wider, shorter, taller, remove), which are also the way on a phone,
+  where the grid is one column in reading order. Keyboard: arrows move, Shift+arrows resize, Delete removes, Enter
+  opens its settings, Ctrl+Z undoes; every change is announced in a polite live region ("Clock: column 3, row 1").
+  Nothing ever overlaps: what a moved widget covers moves down. Undo keeps the last 40 changes. Changes save by
+  themselves (debounced).
+- **Teacher layouts** are per teacher per class, named, up to 12 (one tap to switch; new from the current one or the
+  starter; rename; delete, never the last). The layout a teacher last switched to is the one the class follows: its
+  widgets marked "Pin on student screens" are copied to `dash_class.pins` for students. A school admin who does not
+  teach the class has no dashboard (only the class's own teacher changes it, as the brief asks).
+- **Projector mode:** full screen, larger type, a screen wake lock where the browser has one (asked again when the tab
+  comes back), the pointer hidden after 3 s without movement.
+- **Student screens:** the teacher's pinned widgets (they can be moved, not removed or changed) plus the student's own
+  (clock and their own goal in stage 1), per student per class. What a student types stays in their own row: never in
+  another student's page, the projector or any API another person reads (tested).
+- **Backgrounds:** six colours and four Oomba art presets (SVG in public/img/dash, drawn with brand colours) for
+  both, or an uploaded picture. Colours use the theme tokens, so they follow light and dark; pictures get a light
+  wash of the page colour. Pictures go through the profile photo's file checks, now one function
+  (`photos.cleanJpeg`: JPEG only, size and side limits, every metadata segment removed; the browser re-draws the
+  picture to at most 1600 × 1000 first). **Decided differently from the profile photo:** no AI check. The brief rules
+  out any AI in this feature and any student picture going to an AI, so the profile photo's AI screen is not run;
+  instead a picture is seen only by its owner and the teachers of that class while the owner is in it (not another
+  student, another class's teacher, a school admin or a visitor: 404, tested), and the teacher's edit panel lists the
+  class's student pictures with "Take down". The newest four per person per class are kept.
+- **Push to students and the tray.** The teacher sends a game (public, shared with the school, or shared with this
+  class, so every student can open it), the join of the class's open live game (the teacher hosts; students only ever
+  get `/join#code`), an open class lesson, or an approved link. Students see the newest as a banner (Ink) with Hide;
+  hidden, a dashed line with "Bring it back" takes its place, and everything sent that day stays in "From your
+  teacher" in the top bar. Kept server side per class per school day (the school's time zone, else New York), with
+  each student's hidden marks, so it survives a reload; the teacher ends an item, a removed link or a closed live game
+  leaves at once, and the day's end clears the tray. At most 40 a day; two weeks of history kept.
+- **Realtime** is the site's existing way class pages learn about a live game (`public/js/class-live.js`): the screen
+  asks `/api/dash/<class>/live` every 4 s while in view (and at once when it comes back into view). No new transport.
+  The answer is small (Eyes up, today's pushes, when the pins last changed); pins are fetched only when they changed.
+- **Approved links:** per class, managed in Push to students. `cleanUrl` accepts only https with a real host name: no
+  `javascript:`, `data:`, `http:`, user name or password, IP address, port, `localhost`/`.local`/`.internal`, spaces,
+  control or direction characters, over 500 characters. Students open them only through
+  `/class/<id>/dashboard/link/<id>`, which redirects while the link is still on the list (no referrer). There is no
+  school-level link allow list in the code base yet; when one comes, `cleanUrl`/`addLink` is where it plugs in.
+- **Eyes up:** a full-screen "Eyes up front" card on every student screen of the class (the rest of the page is inert
+  under it), until the teacher ends it or 3 minutes pass.
+- **Safety:** no chat or typed text between students anywhere; no prices, plans or upgrade words on student screens;
+  names are the ones the class already sees (the student's own Oomba name; no roster names); kids never host; no
+  friend codes, friendships or messages come from any of this; nothing in these files talks to an AI and nothing
+  leaves the server on upload (tested by watching outgoing requests). Every route checks the class role
+  (`roleOf`: the class's teacher, or an active student); everyone else gets 404. Writes go through the site's
+  same-origin CSRF check and per-route rate limits. Account deletion forgets a person's screens and pictures.
+- Strings: `dash.*` and `js.dash.*`, translated into every locale.
+- Tests: `tests/unit/dash.test.js`. Screenshots of every state were checked by hand (teacher 1600 × 900 and edit
+  mode, student 1366 × 768 and 390 × 844, banner, hidden, tray, Eyes up, a picture background, dark and Hebrew).
+- **Open / later stages:** stage 2 widgets (timers, weather, QR, picker...); layouts that follow the bell schedule;
+  "who sees this widget" beyond pinning; a real-time socket if 4 s polling proves too slow; a native speaker's read of
+  the new translations.
