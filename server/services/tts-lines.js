@@ -113,6 +113,11 @@ export const GAMES = {
   // counter are shown, never read.
   'shape-hunt': { title: 'Shape Hunt', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   'shark-plank': { title: 'Shark Plank', role: 'deep', spoken: /./ },
+  // Sky Lines (Number Quest Pro, grade 8): read-aloud is on by default. Every instruction, hint and answer line is
+  // spoken, in the friendly voice (its VOICES block), written the way it is said ("2 x plus 1", "negative 3").
+  // What the chip and the board show (show.*), the button labels (btn.*), the chapter names and the round counter are
+  // shown, never read.
+  'sky-lines': { title: 'Sky Lines', role: 'friendly', spoken: /^(?!btn\.|show\.|round$|title$|loading$|ch\.)/ },
   // Sub Zero (Number Quest Pro, grades 6-7): read-aloud is on by default. Every instruction, hint and answer line is
   // spoken, in the friendly voice (its VOICES block), written the way it is said ("negative 6 degrees", "3 fourths").
   // What the chip and the lab screen show (show.*), the button labels (btn.*), the chapter names and the round counter

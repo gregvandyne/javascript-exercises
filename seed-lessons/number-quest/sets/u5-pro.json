@@ -1,0 +1,226 @@
+{
+ "id": "nq-u5-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "Pro",
+ "title": "Number Quest Unit 5 · The Sky Wires (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "8.EE.B.6",
+   "topic": "Slope",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A line passes through (1, 2) and (5, 8). What is its slope?",
+   "choices": [
+    "2/3",
+    "3/2",
+    "6",
+    "8/5"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "divided the run by the rise",
+    "correct",
+    "found the rise and stopped",
+    "divided the y of one point by its x"
+   ],
+   "why": "The rise is 8 − 2 = 6 and the run is 5 − 1 = 4. Slope is rise over run: 6/4 = 3/2."
+  },
+  {
+   "id": "nq-pro-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "8.EE.B.5",
+   "topic": "Slope",
+   "kind": "scenario",
+   "secs": 30,
+   "q": "A drone climbs at a steady rate: 15 meters in 6 seconds. Its graph is a line through (0, 0). What is the slope of the line?",
+   "choices": [
+    "0.4",
+    "9",
+    "2.5",
+    "90"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "divided the seconds by the meters",
+    "subtracted the seconds from the meters",
+    "correct",
+    "multiplied the two numbers"
+   ],
+   "why": "The slope is the unit rate: 15 meters ÷ 6 seconds = 2.5 meters each second. Check: 2.5 × 6 = 15."
+  },
+  {
+   "id": "nq-pro-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "8.EE.B.6",
+   "topic": "Slope",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A line passes through (−2, 4) and (2, −4). What is its slope?",
+   "choices": [
+    "2",
+    "−1/2",
+    "0",
+    "−2"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "dropped the negative sign of the rise",
+    "divided the run by the rise",
+    "added the y-values instead of subtracting them",
+    "correct"
+   ],
+   "why": "The rise is −4 − 4 = −8 and the run is 2 − (−2) = 4. Slope is −8/4 = −2: the line goes down 2 for each step across."
+  },
+  {
+   "id": "nq-pro-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "8.F.B.4",
+   "topic": "Linear rules",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A table has x = 0, 1, 2, 3 and y = 5, 8, 11, 14. Which rule gives y?",
+   "choices": [
+    "y = 5x + 3",
+    "y = 3x",
+    "y = 3x + 5",
+    "y = x + 5"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "swapped the start value and the rate of change",
+    "left out the start value",
+    "correct",
+    "used a change of 1 for each step"
+   ],
+   "why": "When x is 0, y is 5, so the rule starts at 5. Each step adds 3, so the slope is 3: y = 3x + 5. Check: 3 × 3 + 5 = 14."
+  },
+  {
+   "id": "nq-pro-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "8.F.B.4",
+   "topic": "Linear rules",
+   "kind": "scenario",
+   "secs": 30,
+   "q": "A candle is 20 cm tall and burns down 2 cm each hour. Which rule gives its height h after t hours?",
+   "choices": [
+    "h = 20 − 2t",
+    "h = 2t + 20",
+    "h = 20t − 2",
+    "h = 18t"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "added the change instead of subtracting it",
+    "swapped the start height and the change",
+    "subtracted the two numbers before using the hours"
+   ],
+   "why": "The candle starts at 20 cm, and each hour takes away 2 cm, so after t hours it has lost 2t. The rule is h = 20 − 2t. After 3 hours: 20 − 6 = 14 cm."
+  },
+  {
+   "id": "nq-pro-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "8.F.B.4",
+   "topic": "Linear rules",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A line passes through (2, 7) and (4, 11). What is its y-intercept?",
+   "choices": [
+    "2",
+    "3",
+    "5",
+    "7"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "gave the slope instead of the y-intercept",
+    "correct",
+    "stepped back one unit instead of two",
+    "gave the y-value of the first point"
+   ],
+   "why": "The slope is (11 − 7)/(4 − 2) = 2. From (2, 7), go back 2 steps to x = 0: 7 − 2 × 2 = 3. The rule is y = 2x + 3."
+  },
+  {
+   "id": "nq-pro-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "8.EE.C.7",
+   "topic": "Linear equations",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Solve 3(x − 2) = x + 4.",
+   "choices": [
+    "x = 3",
+    "x = 5",
+    "x = −1",
+    "x = 2.5"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "multiplied only the x by 3",
+    "correct",
+    "subtracted 6 from the right side instead of adding it",
+    "added x to the left side instead of subtracting it"
+   ],
+   "why": "Multiply out: 3x − 6 = x + 4. Subtract x: 2x − 6 = 4. Add 6: 2x = 10, so x = 5. Check: 3 × 3 = 9 and 5 + 4 = 9."
+  },
+  {
+   "id": "nq-pro-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "8.EE.C.8",
+   "topic": "Linear equations",
+   "kind": "apply",
+   "secs": 30,
+   "q": "At which point do the lines y = 3x − 1 and y = x + 5 meet?",
+   "choices": [
+    "(8, 3)",
+    "(2, 7)",
+    "(3, 10)",
+    "(3, 8)"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "wrote the y-value first",
+    "subtracted 1 from 5 instead of adding it",
+    "added 1 instead of subtracting it to find y",
+    "correct"
+   ],
+   "why": "Set the rules equal: 3x − 1 = x + 5, so 2x = 6 and x = 3. Then y = 3 + 5 = 8. The point (3, 8) is on both lines: 3 × 3 − 1 = 8."
+  },
+  {
+   "id": "nq-pro-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "8.EE.C.7",
+   "topic": "Linear equations",
+   "kind": "recall",
+   "secs": 30,
+   "q": "How many solutions does 4x + 6 = 2(2x + 3) have?",
+   "choices": [
+    "None",
+    "Exactly one",
+    "Exactly two",
+    "Every number is a solution"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "decided that equal slopes always mean no solution",
+    "assumed every equation has one solution",
+    "counted the two sides of the equation",
+    "correct"
+   ],
+   "why": "Multiply out the right side: 2(2x + 3) = 4x + 6. Both sides are the same expression, so the equation is true for every value of x."
+  }
+ ]
+}

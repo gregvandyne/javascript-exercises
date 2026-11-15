@@ -92,11 +92,11 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
   // Math after Trick Inbox; Remi's Quiet Meadow after Question Battle; Garden Count (Number Quest Launchpad) after
   // Fraction Factory, Lily Hop (Launchpad Unit 2) after Happy Putt, Crate Stacker (Launchpad Unit 3) after Drop Four, Balance Bridge
   // (Launchpad Unit 4) after Atlas Quest (Live), Rocket Supply (Launchpad Unit 5) after Ring Rumble,
-  // Shape Hunt (Launchpad Unit 6) after Rocket Supply, Kitchen Rush (Launchpad Unit 7) after Happy Putt, Lantern Mix (Pro Unit 1) after Kitchen Rush, Sub Zero (Pro Unit 2) after Shark Plank, Machine Line (Pro Unit 3) after Loop Lab, and Scale Scout (Pro Unit 4) after Rocket Supply.
+  // Shape Hunt (Launchpad Unit 6) after Rocket Supply, Kitchen Rush (Launchpad Unit 7) after Happy Putt, Lantern Mix (Pro Unit 1) after Kitchen Rush, Sub Zero (Pro Unit 2) after Shark Plank, Machine Line (Pro Unit 3) after Loop Lab, Scale Scout (Pro Unit 4) after Rocket Supply, and Sky Lines (Pro Unit 5) after Shark Plank.
   assert.deepEqual([...lines.TTS_GAMES], ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'hero-of-sunvale',
     'atlas-quest', 'atlas-quest-live', 'balance-bridge', 'beat-lanes', 'brain-board', 'brick-drop', 'castle-clash', 'code-isle',
     'connect-four', 'crate-stacker', 'escape-the-post-office', 'footy-tycoon', 'fraction-factory', 'garden-count', 'gulp-city', 'happy-putt', 'kitchen-rush', 'lantern-mix', 'lily-hop', 'loop-lab', 'machine-line', 'munch-maze',
-    'quest-race', 'question-battle', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'ring-rumble', 'rocket-supply', 'scale-scout', 'shape-hunt', 'shark-plank', 'sub-zero', 'sum-racer', 'swish-flick', 'trick-inbox', 'tug-of-math',
+    'quest-race', 'question-battle', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'ring-rumble', 'rocket-supply', 'scale-scout', 'shape-hunt', 'shark-plank', 'sky-lines', 'sub-zero', 'sum-racer', 'swish-flick', 'trick-inbox', 'tug-of-math',
     'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'word-trail', 'jungle-cup']);
 });
 

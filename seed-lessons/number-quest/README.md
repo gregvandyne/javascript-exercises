@@ -711,8 +711,9 @@ is a name only: nothing is registered for it, and no file exists.
 
 **Built so far:** Unit 1, The Mixing Tower, with Lantern Mix; Unit 2, The Cold Store, with Sub Zero; Unit 3, The
 Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3" at the end of this file). Their
-`planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, followed on
-2026-11-15 ("Pro Unit 4"). A unit that has no section at the end of this file is still planned.
+`planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, and Unit 5, The Sky
+Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"). A unit that has no
+section at the end of this file is still planned.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1187,3 +1188,78 @@ real area is the paper area times the scale once; a percent change is measured a
 game checks each idea by planning and running. Pro stays `status: "building"`: other units are still planned, and no
 learner, parent or visitor sees any of this. **Left for the opening**, as for Units 1 to 3: the teacher page's game
 list (`NQ_CREW`) and its locale strings do not name Scale Scout.
+
+## Pro Unit 5 — The Sky Wires (2026-11-15, tier still `building`)
+
+The fifth Pro unit, built to the contract above ("What a unit PR touches"), side by side with Unit 4. Lines for grade 8:
+slope, a line as a rule, linear equations and two lines meeting. Its `planned` flag is gone, so its three steps are real
+steps for the platform admin (and nobody else: the tier is `building`).
+
+| File | What |
+|---|---|
+| `course/pro/5.1.json`, `5.2.json`, `5.3.json` | the three decks, inside the Pro limits above: **5.1 Slope: the steepness of a line** (8.EE.B.5, 8.EE.B.6, also 6.NS.C.8), **5.2 y = mx + b: a line as a rule** (8.F.B.4, also 8.F.A.1, 8.F.A.3, 6.EE.C.9), **5.3 Solve linear equations and find where two lines meet** (8.EE.C.7, 8.EE.C.8). Seven slides each: a story slide with Tally, two drawn coordinate planes with guided focus, one worked example, four words, the mission last |
+| `sets/u5-pro.json` | nine exit items (`nq-pro-5.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (divided the run by the rise, dropped the negative sign, swapped the start value and the rate of change, multiplied only the x by 3, wrote the y-value first), every item with a `why` that checks the answer |
+| `units.json` | Unit 5's own object: the flags deleted, `tool: "sky-lines"`, the three `game.pro` specs, three teacher notes |
+| `seed-games/sky-lines.html` | **Sky Lines**, the unit's game (Oomba3D 1.2.0, Sky Islands theme 1.0.1, at sunset): chapter `slope` for 5.1 (How Steep), `rule` for 5.2 (Wire Rules), `meet` for 5.3 (Meeting Point), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**A wire is a line.** A board on the deck shows a grid of 12 by 8 squares (the first quadrant, or all four with the
+origin in the middle), islands on grid points and wires across it. A wire is y = mx + b: `m` its steepness (the game's
+word for slope, kept in halves so every height on the board is exact) and `b` its start height. The game says
+"steepness", "up over across" and "start height"; the decks give the terms slope, rise, run and y-intercept.
+
+**What each chapter plays.** `slope`: string a wire from island A to island B by setting its steepness (up 6 for 4
+across is 3/2), two stairs of different sizes under one wire (2 across and 1 up, so 6 across is 3 up: the tile 5 is
+"adding changes the steepness"), a wire that goes down from the second quadrant to the fourth (steepness −1, with the
+sign slip named), read the steepness of a drawn wire through two quadrants (2/3, with 3/2 and −2/3 offered), a cable
+car that climbs 2 meters in 4 seconds as a wire through the start (the unit rate is the slope), and a drawn rate
+against a told one (which car climbs faster). `rule`: the wire's height after so many steps (start 2, 1 for every 2
+across, at 6 across), the start height and steepness from a table, from a story (a glider that drops) and from two
+islands neither of which is at 0 across, the rule of a drawn wire (y = 2x + 1 against y = x + 2 and y = 2x), and the
+one table of three whose steps change (not a straight wire). `meet`: how far across two rules are equal
+(2x + 1 = x + 4), the platform on the point of both wires (y = 2x + 1 and y = −x + 7 at (2, 5)), which of three points
+is on both drawn wires, wires that share no point (the same steepness, another start: no solution), two rules that
+are one wire (2x + 4 and 2(x + 2): true for every x), and an equation with brackets and x on both sides
+(2(x + 1) = x + 5). The first lap is always the same; a replay takes the next of each round's three sets of numbers
+and shuffles its tiles.
+
+**Plan, then run.** Four ways to answer and no typing: a stepper for one number (a steepness, a height, how far
+across), a stepper with a dial button in the middle for a wire that needs two (the button changes whether the stepper
+turns the steepness or the start height, and the board writes the rule of the plan, `y = 2x + 1`), four arrows (or a
+drag on the grid) for the platform, each with a Run button, or one of three tiles. **The board never draws a wire
+before it is run**: it shows the islands and the plan's numbers, so the numbers have to be worked out, not slid into
+place. A wrong plan is run and drawn as it really turns out (`SkyLines.judge`): the wire as it was set, dashed and
+orange, and an upright gap at the place it misses ("At island B your wire is at height 9, not −3."); a platform at
+the wrong height is answered with where the wire really is at that height; two wires are drawn as far as the plan
+goes, with their two heights there. While a hint shows, the camera fits the board above it, so the hint never covers
+the picture. The round stays open. No timer, no lives, no fail state, no reward currency; nothing is priced, bought or
+sold. Keys: the arrows (or + and −) move the stepper and F changes the dial; the four arrows move the platform; Enter
+runs; 1 to 3 pick a tile; every control is also a button.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game, and the speaker button says a line again. A spoken line is written the way it
+is said ("Wire A is 2 x plus 1", "at height negative 6"), with digits only in its number places; a line that can meet
+a number below zero has one wording for each case, so the voice allowlist (`server/services/tts-lines.js`) never sees
+a sign. The words box prints the signs (`SkyLines.shown`: 2x + 1, −6). Island coordinates are never spoken: they are
+read off the grid, which is the skill. The chip, the board and the tiles carry the symbols and are never read.
+
+**Not Lily Hop.** Launchpad Unit 2's Lily Hop plays the same world by day, with a hero who hops between islands and
+coins to collect. Sky Lines is the sky at sunset with a dark board on two posts, one wire rigger and no picker, no coin
+and no coin block, a game-made pair of pylons with one long wire in the distance, and a far island where a flag, the
+theme's own, is planted for each finished round. The grid is drawn face on, on the board, so its squares stay square.
+The test holds the board to its 4 by 3 shape, in full view, clear of the rigger and the far island, its smallest
+numbers to 12 px on a 390 px phone (10 px at 360 px), every control to 56 px, and every word on a control inside it.
+
+**Diagrams.** The unit adds no diagram type and no option. All six drawings are the pack's `plane`: 5.1 a line from A
+to B with its rise and run, and a small stair and a big stair under one line; 5.2 the line y = 0.5x + 2 with its start
+and its slope, and four points of y = x² that do not lie on a line; 5.3 two lines that cross at (2, 5), and two
+parallel lines. All 16 focus steps are measured and pinned in `tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/sky-lines/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/sky-lines.recipe.js`.
+
+**Gear.** The unit's stamp is the Slope Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit
+covers, the misconceptions it meets (slope is across over up; a bigger stair is steeper; the number added is the
+slope; 2(x + 1) is 2x + 1; lines with one slope must meet) and how the game checks each idea by planning and running.
+Pro stays `status: "building"`, and no learner, parent or visitor sees any of this. **Left for the opening**, as for
+Units 1 to 3: the teacher page's game list (`NQ_CREW`) and its locale strings do not name Sky Lines.

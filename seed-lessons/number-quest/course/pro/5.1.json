@@ -1,0 +1,259 @@
+{
+ "key": "pro-5.1",
+ "n": "5.1",
+ "band": "pro",
+ "title": "Slope: the steepness of a line",
+ "topic": "Slope",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "How steep is the wire?",
+   "text": "Tally is stringing wires between the sky islands. One wire climbs 6 squares while it crosses 4, and another climbs only 3 while it crosses 6. Before anyone rides them, Tally wants one number that says how steep each wire is.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 1,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Slope is up over across",
+   "text": "The slope of a line is how far it goes up for each step across. From A (0, 0) to B (4, 6) the line rises 6 while it runs 4, so its slope is 6/4, which is 3/2. Each single step across lifts the line by 1.5.",
+   "art": "ruler",
+   "visual": {
+    "type": "plane",
+    "label": "A line from A to B with its rise and run",
+    "x": [
+     0,
+     8
+    ],
+    "y": [
+     0,
+     8
+    ],
+    "points": [
+     {
+      "x": 0,
+      "y": 0,
+      "label": "A"
+     },
+     {
+      "x": 4,
+      "y": 6,
+      "label": "B"
+     }
+    ],
+    "lines": [
+     {
+      "through": [
+       [
+        0,
+        0
+       ],
+       [
+        4,
+        6
+       ]
+      ]
+     }
+    ],
+    "slope": {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      4,
+      6
+     ]
+    }
+   },
+   "focus": [
+    {
+     "cue": "Start at A and end at B, two points on the line.",
+     "box": [
+      43.1,
+      15.9,
+      8.5,
+      17
+     ]
+    },
+    {
+     "cue": "The run is 4 across and the rise is 6 up.",
+     "box": [
+      25.2,
+      26.8,
+      37.5,
+      64
+     ]
+    },
+    {
+     "cue": "Rise over run: 6/4 = 3/2, the slope of the whole line.",
+     "box": [
+      25.2,
+      6.6,
+      32.4,
+      84.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Any two points give the same slope",
+   "text": "Choose any two points on a straight line and the slope comes out the same. A small stair of 1 up for 2 across and a big stair of 3 up for 6 across have the same shape. So 1/2 and 3/6 are equal, and the line has one slope.",
+   "art": "grid",
+   "visual": {
+    "type": "plane",
+    "label": "A small stair and a big stair under one line",
+    "x": [
+     0,
+     12
+    ],
+    "y": [
+     0,
+     8
+    ],
+    "step": [
+     2,
+     2
+    ],
+    "lines": [
+     {
+      "m": 0.5,
+      "b": 0
+     }
+    ],
+    "segments": [
+     {
+      "from": [
+       2,
+       1
+      ],
+      "to": [
+       4,
+       1
+      ],
+      "dash": true
+     },
+     {
+      "from": [
+       4,
+       1
+      ],
+      "to": [
+       4,
+       2
+      ],
+      "dash": true
+     }
+    ],
+    "slope": {
+     "from": [
+      4,
+      2
+     ],
+     "to": [
+      10,
+      5
+     ]
+    }
+   },
+   "focus": [
+    {
+     "cue": "The small stair: 2 across, then 1 up.",
+     "box": [
+      32,
+      49.2,
+      10,
+      10.4
+     ]
+    },
+    {
+     "cue": "The big stair: 6 across, then 3 up.",
+     "box": [
+      40,
+      27.9,
+      38.5,
+      33.4
+     ]
+    },
+    {
+     "cue": "Both stairs fit the same line: 1/2 = 3/6.",
+     "box": [
+      24,
+      20.6,
+      50,
+      46.2
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "A line that goes down",
+   "text": "A line that falls from left to right has a negative slope. From (−4, 3) to (2, −3) it drops 6 while it runs 6 across. Subtract in the same order on the top and on the bottom, and keep the sign.",
+   "art": "pencil",
+   "steps": [
+    "rise = −3 − 3 = −6",
+    "run = 2 − (−4) = 6",
+    "slope = −6/6 = −1"
+   ]
+  },
+  {
+   "title": "A steady rate is a slope",
+   "text": "A cable car that climbs 2 meters every 4 seconds moves at a steady rate. Its graph is a straight line through (0, 0), and the slope of that line is the unit rate: 2/4 = 0.5 meters each second. A steeper line means a faster car.",
+   "art": "clock"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for the steepness of a line.",
+   "art": "star",
+   "words": [
+    {
+     "word": "slope",
+     "means": "how steep a line is: the rise divided by the run"
+    },
+    {
+     "word": "rise",
+     "means": "how far a line goes up (or down) between two of its points"
+    },
+    {
+     "word": "run",
+     "means": "how far a line goes across between the same two points"
+    },
+    {
+     "word": "unit rate",
+     "means": "how much of one quantity there is for each 1 of another"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sky Lines at How Steep. Set the steepness of each wire, run it and see where it really goes. Then compare two steady rates.",
+   "art": "trophy",
+   "img": "nq/sky-lines/how-steep",
+   "alt": "Sky Lines on a phone: a grid with island A at the start and island B higher up, and a stepper to set how steep the wire is.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-5.1-e1",
+  "nq-pro-5.1-e2",
+  "nq-pro-5.1-e3"
+ ],
+ "game": {
+  "slug": "sky-lines",
+  "chapter": "How Steep",
+  "params": "chapter=slope&lock=1"
+ }
+}
