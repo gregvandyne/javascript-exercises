@@ -143,3 +143,8 @@
 .su-tab:hover{background:var(--hover)}
 .su-tab[aria-pressed="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 3px var(--accent-line)}
 .su-thint{margin:0;color:var(--text-2)}
+/* "How will it be played?": a Live that cannot be yet stays greyed out, and its reason stays easy to read */
+.su-card.is-off .su-pick:disabled{opacity:1}
+.su-card.is-off .su-pic,.su-card.is-off .su-name{opacity:.5}
+.su-card.is-off .su-desc{color:var(--text)}
+.su-grid-text.su-grid-play{--desc-lines:4}

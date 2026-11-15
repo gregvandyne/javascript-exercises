@@ -52,6 +52,7 @@ import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
 import { sharingOptions, shareDefault, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { LIVE_NOT, LIVE_NOT_ENGINE } from '../builder/plan.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady, checkHtml as checkLiveHtml } from '../services/classlive-check.js';
 
@@ -174,15 +175,32 @@ export function studioState(user, gameId, t = tEn, req = null) {
     grownUpLink: grownUpLinkHint(req, user),
     // The daily-limit card's offer (builder/upsell.js): a plan or a Spark Pack, asked of a child's grown-up; never a price.
     upsell: upsellFor(user, req),
-    // Oomba Live: is the current version a live class game (and the published one hostable)? The Studio offers "Make it a
-    // live class game" (a fixed, translated Builder message) until it is; hosts get "Host live" once it is published.
-    liveClass: liveOn() && cur ? liveClassState(user, g, cur, t) : null,
+    // Oomba Live: the Studio's one live line for the current version (liveClassState). Read again after every build and
+    // every new version (public/js/studio.js), so it always says where this version stands.
+    liveClass: liveOn() && cur ? liveClassState(user, g, cur, t, chat.state) : null,
   };
 }
-function liveClassState(user, g, cur, t) {
+/**
+ * The live line: one of
+ *   'host'    live-ready and the published version too: "Ready to host live" and Host for those who can host (a
+ *             teacher, a grown-up, the admin); a kid reads "A teacher or grown-up can host this live" and never gets Host
+ *   'publish' live-ready, not published (or the published version is not): "Publish it to host it live"
+ *   'fix'     it loads the live pack but the check fails: "Live, but needs a fix: <the check's first reason>" and Fix it
+ *   'off'     not a live game: "Not a live game" and Make it live (a fixed Builder message), or, where it cannot be
+ *             live (a ready-made 3D world, a tool for the board, the survey, the exit ticket: plan.js LIVE_NOT), why not
+ * state: the Builder's saved state (state.play: the setup steps' "How will it be played?" and the kind of game).
+ */
+export function liveClassState(user, g, cur, t, state = {}) {
   const chk = checkLiveHtml(cur.html), first = chk.issues.find(i => i.level === 'fail');
-  const loads = /\/packs\/live\.js/.test(cur.html);
-  return { ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published: gameLiveReady(g), canHost: liveCanHost(user), host: `/live?game=${g.id}`, ask: t('live.entry.studioAskText') };
+  const loads = /\/packs\/live\.js/.test(cur.html), published = gameLiveReady(g), canHost = liveCanHost(user);
+  const play = (state && state.play) || null;
+  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : (play && play.type && LIVE_NOT[play.type]) || '';
+  const line = chk.ready ? (published ? 'host' : 'publish') : loads ? 'fix' : 'off';
+  return {
+    line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
+    host: `/live?game=${g.id}`, ask: t('live.entry.studioAskText'), fixAsk: first ? t('live.entry.studioFixText', { issue: t(`live.check.${first.code}`) }) : '',
+    why: line === 'off' && not ? t(`buildSetup.play.why.${not}`) : '', chose: play ? play.how : '',
+  };
 }
 
 // ---------------------------------------------------------------- pages

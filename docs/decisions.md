@@ -5757,3 +5757,55 @@ other classroom type activities. Let's make sure these are frontloaded in the bu
 - **Open:** a real projector and clicker, a real classroom microphone (the thresholds are the official meters' kind of
   numbers, not tuned in a room), a build with the real model from each starter, and a native speaker's read of the
   new translations.
+
+## Live or not, said once: "How will it be played?" and the Studio's live line (15 Nov 2026)
+
+The owner asked: "How does the builder know if a game should be offered live or not? This is also not super clear."
+Until now the Builder knew in three unrelated ways: typed words that name Oomba Live (`prompt.js LIVE_WORDS`, kept in
+`state.wantsLive`), a game that already loads the live pack, and, for a 3D world of their own only, an ask_user
+"Live or closed world?". The setup steps never asked, Kit 2 worlds silently could not be live, and the Studio showed
+"Make it a live class game" with no word on why a game was or was not live.
+
+- **A step in `/build/new`: "How will it be played?"** (after "Who is in it?", before "What should it teach?"; a
+  classroom starter skips the scene steps, so for it this is step 2). Three answers (`plan.js PLAYS`): **Live with my
+  class or group** (everyone on their own device; a teacher or grown-up runs it from the big screen with Oomba Live),
+  **On one screen** (the board, or one device passed around) and **On my own**. The plan carries it as `play`
+  (`normalisePlan`; left out when a page did not answer, so older plans read exactly as before), the sentence says it
+  (`planSentence`; only the Live sentence names "Oomba Live", so the words check agrees with the plan, tested in all 13
+  languages), the transcript line of later turns says it (`planBrief`), and `planNote` tells the model: Live = build it
+  live-ready in the same build with the LIVE RULES; one screen or on my own = NOT a live game, no live pack.
+- **Defaults, decided per type** (`playDefault`). Teachers (`teacherHost`): Live for quiz, word, memory, Category Board,
+  bingo (each player marks their own card) and the adventure, running and catching games; On one screen for flashcards
+  (one big card for the room), the quiet game, spinner, scoreboard, class survey, two-player duel and board game; On my
+  own for the exit ticket. Kids and families: On my own, except the one-screen-by-nature types (quiet game, spinner,
+  scoreboard, duel: On one screen). A kid may still pick Live: the card says a teacher or grown-up runs it, and kids
+  still never host (`classlive-access.js canHost`, unchanged). No kind of game picked: Live for a teacher, On my own
+  for a kid.
+- **Where Live cannot be, it is shown greyed out with a one-line reason, never hidden** (`LIVE_NOT`, `liveNot`): the quiet
+  game, spinner and scoreboard (a tool the whole room shares on one screen), the class survey (its answers are counted
+  on the device and never sent: the survey's own safety decision above stands), the exit ticket (stores nothing per
+  student; each student's answers belong in a class lesson's question step), and a ready-made 3D world (Kit 2 has no
+  live play yet; the page works this out from the look, world and characters exactly as `planEngine` does). A plan that
+  says Live anyway (an old or edited page) gets this viewer's default instead, on the server.
+- **The Builder.** `playFor` (from `engineFor` every plan turn, and from the toolbox) sets `state.wantsLive` for Live, so
+  the LIVE RULES go with every turn of that game, and clears it for one screen or on my own (a later typed "make it a
+  live class game" still turns it on). `state.play` remembers the answer, and while it is set the toolbox refuses an
+  ask_user whose options name "Oomba Live" (the live-or-closed question), telling the model the answer; the 3D RULES say
+  the setup steps' answer counts. A classroom starter that goes live loads the kit tag and the live pack only for the
+  connection, as an own 3D world does. The mock Builder makes a Live plan's kit game live-ready from its first version.
+- **The Studio's live line** (`routes/studio.js liveClassState`, `public/js/studio.js renderLiveClass`): one line under
+  the safety line, with one action, from the existing live-ready check (`classlive-check.js`) and its issue codes:
+  "Ready to host live" + Host (hosts only; a kid reads "A teacher or grown-up can host this live" and gets no Host),
+  "Publish it to host it live" (a kid: "so a teacher or grown-up can host it live") + Publish, "Live, but needs a fix:
+  <the check's first reason>" + Fix it (a fixed, translated Builder message that names Oomba Live, `live.entry.
+  studioFixText`), and "Not a live game" + Make it live (the existing fixed message; where the game cannot be live, the
+  button shows why instead and sends nothing). The line is read again after every new version, not only after the build.
+- **Unchanged safety:** no free text or chat between players (the LIVE RULES and the run-time text-entry lock); names
+  only from `Oomba.live.players()`; nothing about students goes to an AI (the step sends only one of three fixed words).
+- Tests: `tests/unit/builder-live-choice.test.js` (defaults for every type and both accounts, normalisation, planNote /
+  planBrief / the sentence in every language, `wantsLive` from the plan, the refused second question, the page data and
+  `/api/build/plan`, every live line from `GET /api/studio/:id` for a teacher and a kid, and in Chromium on a desktop
+  and an iPhone: the step for both, the greyed-out Live with its reason, the plan rows, each Studio line, no Host for
+  kids, "Make it live" on a 3D world sending nothing); the setup and classroom layout tests count the new step.
+- **Open:** a real model build from a Live plan of each classroom type (bingo and the Category Board live are new
+  ground for the model), and a native speaker's read of the new words.

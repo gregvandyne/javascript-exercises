@@ -1344,10 +1344,6 @@
   "js.live-play.wrong": "Announced to a player after a wrong answer in a live quiz. Kind, never harsh.",
   "js.live-sets.replaceOpen": "Confirm dialog for a teacher who opens a second live game while one is still open.",
   "js.live-sets.answer": "Screen-reader label of an answer box in the question-set editor. {n} = 1-4.",
-  "js.studio.live.ready": "Chip in the Studio: this game can be hosted live (Oomba Live). Max ~20 chars.",
-  "js.studio.live.teacher": "Shown to a kid in the Studio when their game is live-ready: a teacher or grown-up hosts it.",
-  "js.studio.live.notYet": "Studio line. {issue} is one of the live.check.* reasons.",
-  "js.studio.live.make": "Studio button: asks the Builder to turn the game into a live class game. Max ~32 chars.",
   "live.team.preset.0": "A team name in Oomba Live (kids 8-14), the same for every team list: 0-7 are Blue Whales, Orange Tigers, Green Frogs, Pink Flamingos, Yellow Bees, Sky Eagles (light blue), Red Foxes, Night Owls (dark indigo). Plural animal, adjectives agree, at most ~18 characters. The colour word must match the team's colour (the team is shown in that colour with a shape).",
   "live.team.shape.circle": "Screen-reader name of a team's shape (circle, triangle, square, heart, star, hexagon, diamond, moon), one word.",
   "live.team.moved": "Screen-reader announcement when the teacher moves a player: {name} is the player's nickname or name, {team} a team name.",
@@ -1555,5 +1551,13 @@
   "js.buildsetup.all.clearLabel": "Screen-reader label of the Clear all button. {name} is the group's name.",
   "js.buildsetup.all.picked": "Read out by screen readers after Select all. {count} is how many cards are now picked in that group.",
   "js.buildsetup.all.pickedWorld": "Read out after Select all in a 3D game when only the characters of one world could be picked together. {count} is how many, {world} the 3D world's name.",
-  "js.buildsetup.all.cleared": "Read out by screen readers after Clear all."
+  "js.buildsetup.all.cleared": "Read out by screen readers after Clear all.",
+  "buildSetup.play.live.title": "Setup step \"How will it be played?\": everyone on their own device, hosted with Oomba Live (keep \"Oomba Live\" as is in the text). Max ~32 chars.",
+  "buildSetup.play.why.kit2": "Shown on the greyed-out Live card and in the Studio: why a ready-made 3D world cannot be played live yet. One short line.",
+  "buildSetup.say.playlive": "Part of the plan sentence the builder sends as their first Builder message. Must keep \"Oomba Live\" exactly as written.",
+  "buildSetup.say.playscreen": "Part of the plan sentence. Must NOT contain the word \"live\" (it would ask the Builder for a live game).",
+  "buildSetup.say.playsolo": "Part of the plan sentence. Must NOT contain the word \"live\" (it would ask the Builder for a live game).",
+  "js.studio.liveLine.kidReady": "Studio live line for a kid: kids never host; a teacher or grown-up does.",
+  "js.studio.liveLine.fix": "Studio live line. {issue} is one of the live.check.* reasons.",
+  "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason."
 }

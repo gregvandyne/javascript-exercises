@@ -5,6 +5,9 @@
 //   starter for, a shipped 3D world, a character of the catalogue) or { from: 'custom', text } (typed under "Something
 //   else": OUTSIDE the packs, so the Builder makes that part from scratch). null / [] / '' means "the Builder decides".
 //   look: '3d' | '2d' | 'auto' | null.   learn: [{ id }] from LEARN, or { text } typed.
+//   play: how it will be played (the "How will it be played?" step): 'live' (with a class or group on Oomba Live: everyone
+//   on their own device, a teacher or grown-up hosts it from the big screen), 'screen' (on one screen: the board, or one
+//   device passed around) or 'solo' (on my own); left out when not answered (an older page): the Builder decides.
 // This module: what the steps offer (from the Builder's own catalogue, never typed twice), the check of a plan that
 // came from a page (normalisePlan: unknown ids are dropped, typed text is trimmed), the sentence the builder reads and
 // sends (planSentence, their language), the engine the plan means (planEngine, engineFor) and the block the model reads
@@ -78,6 +81,38 @@ export function classroomTypeFor(text, { forKid = false } = {}) {
   return '';
 }
 export const LOOKS = ['3d', '2d', 'auto'];
+
+// ---- How it will be played -----------------------------------------------------------------------------------------
+/** The answers of "How will it be played?", in the order the step shows them. */
+export const PLAYS = ['live', 'screen', 'solo'];
+/** Why a kind of game cannot be played live (yet), by type: a one-line reason the step shows on the greyed-out Live
+ *  card (buildSetup.play.why.<code>) and the Studio's "Make it live" says. A type that is not listed can be live.
+ *    board: a tool for the board that the whole room shares (the quiet game, the spinner, the scoreboard)
+ *    survey: answers are only counted on this device and never sent anywhere (docs/decisions.md, the class survey)
+ *    exitticket: stores nothing per student; each student's answers belong in a class lesson's question step */
+export const LIVE_NOT = { quiet: 'board', spinner: 'board', scoreboard: 'board', survey: 'survey', exitticket: 'exitticket' };
+/** And by engine: the ready-made 3D worlds (Kit 2, Oomba3D) have no live play yet (kit2.js KIT2_RULES say so too). */
+export const LIVE_NOT_ENGINE = { kit2: 'kit2' };
+/** The default answer by type for a teacher (staff) and for everyone else. A teacher's classroom types that work live
+ *  start on Live; the tools for the board start on one screen; everyone else starts on their own, except the types that
+ *  are one screen by nature (the board tools, two players on one keyboard). */
+const PLAY_TEACHER = { quiz: 'live', word: 'live', memory: 'live', categories: 'live', bingo: 'live', adventure: 'live', runner: 'live', catch: 'live',
+  flashcards: 'screen', quiet: 'screen', spinner: 'screen', scoreboard: 'screen', survey: 'screen', duel: 'screen', board: 'screen', exitticket: 'solo' };
+const PLAY_KID = { quiet: 'screen', spinner: 'screen', scoreboard: 'screen', duel: 'screen' };
+/** Why this plan cannot be played live, or '' when it can: its type's reason, else its engine's. */
+export function liveNot(plan) {
+  const t = plan && plan.type && plan.type.from === 'pack' ? plan.type.id : '';
+  if (t && LIVE_NOT[t]) return LIVE_NOT[t];
+  return plan ? LIVE_NOT_ENGINE[planEngine(plan).engine] || '' : '';
+}
+/** The answers this plan may have: [{ id, ok, why }] in step order (a Live that cannot be is listed, not ok, with why). */
+export const playOptions = plan => { const why = liveNot(plan); return PLAYS.map(id => ({ id, ok: id !== 'live' || !why, why: id === 'live' ? why : '' })); };
+/** The answer the step starts on, for this plan and viewer. forKid: a kid's or family's plan. */
+export function playDefault(plan, { forKid = false } = {}) {
+  const t = plan && plan.type && plan.type.from === 'pack' ? plan.type.id : '';
+  const want = forKid ? PLAY_KID[t] || 'solo' : t ? PLAY_TEACHER[t] || 'solo' : 'live';
+  return want === 'live' && liveNot(plan) ? (t && LIVE_NOT[t] ? 'screen' : 'solo') : want;
+}
 export const LEARN = ['math', 'reading', 'science', 'geography', 'fun'];
 /** The sections of "Who is in it?": the heroes, then every animal group of the catalogue (kit2/creature-groups.json). */
 export const CHARACTER_GROUPS = ['heroes', ...KIT2_CREATURE_GROUPS];
@@ -149,7 +184,10 @@ export function normalisePlan(raw, { forKid = false } = {}) {
     v: PLAN_VERSION, type, look: LOOKS.includes(raw.look) ? raw.look : null, world: choice(raw.world, WORLD_IDS),
     characters, learn, notes: clean(raw.notes, LIMITS.notes),
   };
-  return plan.type || plan.look || plan.world || characters.length || learn.length || plan.notes ? plan : null;
+  // How it is played: a known answer this plan allows; Live where it cannot be (a ready-made 3D world, a tool for the
+  // board) becomes this viewer's default for it. Not answered: no play at all (the Builder decides, as before the step).
+  if (PLAYS.includes(raw.play)) plan.play = raw.play === 'live' && liveNot(plan) ? playDefault(plan, { forKid }) : raw.play;
+  return plan.type || plan.look || plan.world || characters.length || learn.length || plan.notes || plan.play ? plan : null;
 }
 /** The parts of a plan that are outside the packs: ['type', 'world', 'character'] (each at most once). */
 export const customParts = plan => [plan.type && plan.type.from === 'custom' && 'type', plan.world && plan.world.from === 'custom' && 'world', plan.characters.some(c => c.from === 'custom') && 'character'].filter(Boolean);
@@ -171,6 +209,7 @@ export function planSentence(plan, t = tEn, { files = 0 } = {}) {
   if (plan.world) out.push(t('buildSetup.say.world', { value: choiceLabel('world', plan.world, t) }));
   if (plan.characters.length) out.push(t('buildSetup.say.characters', { list: listOf(plan.characters.map(c => choiceLabel('character', c, t)), loc) }));
   if (plan.learn.length) out.push(t('buildSetup.say.learn', { list: listOf(plan.learn.map(l => learnLabel(l, t)), loc) }));
+  if (plan.play) out.push(t(`buildSetup.say.play${plan.play}`));
   if (files > 0) out.push(t('buildSetup.say.file'));
   if (plan.notes) out.push(/[.!?。！？]$/.test(plan.notes) ? plan.notes : `${plan.notes}.`);
   return out.join(' ');
@@ -240,6 +279,7 @@ export function planEngine(plan) {
  */
 export function engineFor(state, plan, text, version) {
   if (!plan) return wantsKit2(state, text, version);
+  playFor(state, plan);
   const e = planEngine(plan), cur = version ? kit2Of(version.html) : null;
   if (e.engine === 'open') return wantsKit2(state, text, version);
   if (e.engine === 'kit2') {
@@ -251,6 +291,17 @@ export function engineFor(state, plan, text, version) {
   if (cur) return wantsKit2(state, '', version);
   if (state) { delete state.kit2; if (e.engine === 'world3d') state.wants3d = true; }
   return null;
+}
+
+/**
+ * What the plan's "How will it be played?" means for the Builder's saved state: Live sets state.wantsLive (the LIVE
+ * RULES go with every turn of this game, prompt.js wantsLive), one screen or on my own clears it (a later typed "make it
+ * live" sets it again). state.play remembers the answer and the kind of game for the Studio's live line.
+ */
+export function playFor(state, plan) {
+  if (!state || !plan || !plan.play) return;
+  if (plan.play === 'live') state.wantsLive = true; else delete state.wantsLive;
+  state.play = { how: plan.play, type: plan.type && plan.type.from === 'pack' ? plan.type.id : '' };
 }
 
 /**
@@ -297,12 +348,13 @@ export const CLASSROOM_NOTES = {
 const q = s => JSON.stringify(String(s));
 const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
 const who = id => { const c = setupCharacter(id); return c ? `${c.id} (${c.name})` : id; };
+const PLAY_BRIEF = { live: 'LIVE (Oomba Live, a teacher or grown-up hosts)', screen: 'on one screen (not live)', solo: 'on my own (not live)' };
 /** One line for the transcript of later turns (builder/claude.js historyToMessages): what was pack and what was custom. */
 export function planBrief(plan) {
   if (!plan) return '';
   const part = (name, c) => (c ? `${name} ${c.from === 'pack' ? `pack ${c.id}` : `custom ${q(c.text)}`}` : '');
-  const bits = [part('type', plan.type), plan.look && plan.look !== 'auto' ? `look ${plan.look.toUpperCase()}` : '', part('world', plan.world), ...plan.characters.map(c => part('character', c))].filter(Boolean);
-  return bits.length ? `[Setup choices: ${bits.join('; ')}. Pack parts are used as given; custom parts are outside the packs and built from scratch.]` : '';
+  const bits = [part('type', plan.type), plan.look && plan.look !== 'auto' ? `look ${plan.look.toUpperCase()}` : '', part('world', plan.world), ...plan.characters.map(c => part('character', c)), plan.play ? `played ${PLAY_BRIEF[plan.play]}` : ''].filter(Boolean);
+  return bits.length ? `[Setup choices: ${bits.join('; ')}. Pack parts are used as given; custom parts are outside the packs and built from scratch.${plan.play ? ' How it is played was answered: do not ask whether it should be live or closed.' : ''}]` : '';
 }
 /**
  * The block the model reads with a plan's first message (not cached: it is this build's own). Pack choices are named
@@ -329,6 +381,9 @@ export function planNote(plan) {
   lines.push(plan.learn.some(l => l.id === 'fun') && !learn.length ? '- Teaches: nothing, it is just for fun (no quiz unless the game type needs questions).'
     : learn.length ? `- Teaches: ${learn.join(', ')}${plan.learn.some(l => l.id === 'fun') ? ' (kept light: they also said just for fun)' : ''}.`
       : type && type.skip.includes('learn') ? '- Teaches: not asked (a classroom tool; use their note for its content).' : '- Teaches: not chosen (you decide; a learning twist is welcome, never forced).');
+  lines.push(plan.play === 'live' ? '- How it is played: LIVE with their class or group on Oomba Live (everyone on their own device; a teacher or grown-up hosts it from the big screen).'
+    : plan.play === 'screen' ? '- How it is played: ON ONE SCREEN (the class together on the board, or one device passed around). Not a live game.'
+      : plan.play === 'solo' ? '- How it is played: ON MY OWN (one player on one device). Not a live game.' : '- How it is played: not chosen (you decide; a game is live only when they ask for it).');
   if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
   const how = [];
   if (e.engine === 'kit2') {
@@ -361,12 +416,17 @@ export function planNote(plan) {
   } else if (e.engine === 'scratch') {
     how.push('The place is their own idea: decide between 2D on the Oomba Kit and a 3D world of their own ("world3d"), and build the place from scratch. Never use a ready-made 3D world ("oomba3d") for it.');
   }
+  if (plan.play === 'live') {
+    how.push(`They chose to play it LIVE: build the game, then make it live-ready in this same build with the LIVE RULES (the live pack's tag, Oomba.live.ready once, on('start') and on('end'), results with score / item / quiz.answer), so a teacher or grown-up can host it with Oomba Live. It must still work for one player alone.${e.engine === 'classroom' ? ' This classroom starter is plain HTML, not on the kit: add the kit tag and the live pack ONLY for the live connection (no other packs, no kit screens), keep its own look and keys, and let each player do their part on their own device (their own card, their own answers) while the board shows the round.' : ''}${e.engine === 'world3d' || e.engine === 'scratch' || e.engine === 'open' ? ' If it is a 3D world of their own, it is a live world: do not ask "Live or closed world?".' : ''} Never add free text, typing or chat between players, and never show a player's name except from Oomba.live.players(). Tell them in one short sentence that a teacher or grown-up hosts it live once it is published.`);
+  } else if (plan.play === 'screen' || plan.play === 'solo') {
+    how.push(`They chose ${plan.play === 'screen' ? 'ON ONE SCREEN' : 'ON MY OWN'}: it is NOT a live game. Do NOT add the live pack or Oomba.live${e.engine === 'world3d' || e.engine === 'scratch' || e.engine === 'open' ? '; a 3D world of their own is a closed world: do not ask "Live or closed world?"' : ''}.${plan.play === 'screen' ? ' Make it work for a room watching one screen: big, readable from the back, simple keys or taps.' : ''} If they ask for a live class game later, make it live then.`);
+  }
   const custom = customParts(plan);
   return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
 ${lines.join('\n')}
 How to use them:
 - A PACK choice is used exactly as given, by its id: never swap it for something else, never rebuild it from scratch.
 - A CUSTOM choice is OUTSIDE the builder packs: no ready-made world, character or starter is it. Build only that part from scratch, as well as the engine allows.${custom.length ? ' Tell the builder in one short, kind sentence which part you made from scratch and that it may look simpler.' : ''}
-- Everything "not chosen" is yours to decide. Do not ask the setup questions again (kind of game, look, world, characters, what it teaches): say your short plan and build now.
+- Everything "not chosen" is yours to decide. Do not ask the setup questions again (kind of game, look, world, characters, what it teaches, how it is played or live or closed): say your short plan and build now.
 ${how.map(x => `- ${x}`).join('\n')}`;
 }

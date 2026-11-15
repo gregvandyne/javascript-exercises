@@ -229,7 +229,7 @@ test('"Who is in it?" is grouped from the catalogue; empty groups are "Coming so
 });
 
 // ---------------------------------------------------------------- the page
-test('/build/new: the start, six steps, every live world with a Preview, groups, and no way to it without an account', async () => {
+test('/build/new: the start, seven steps, every live world with a Preview, groups, and no way to it without an account', async () => {
   const anon = client(); const a = await anon('/build/new');
   assert.equal(a.status, 302);
   const b = await kid('/build');
@@ -239,10 +239,10 @@ test('/build/new: the start, six steps, every live world with a Preview, groups,
   assert.match(h, /id="su-guide"[^>]*><span class="su-way-t">Help me choose</, 'help me choose');
   assert.match(h, /id="su-direct"[^>]*><span class="su-way-t">I know what I want</, 'the bypass');
   assert.match(h, /id="su-skipall" hidden>Skip to the Builder</);
-  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'type', 'look', 'world', 'chars', 'learn', 'extras', 'plan']);
-  for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
-  assert.equal((h.match(/data-go="back"/g) || []).length, 7); assert.equal((h.match(/data-go="skip"/g) || []).length, 6); assert.equal((h.match(/data-go="next"/g) || []).length, 6);
-  assert.match(h, /Step 1 of 6/); assert.match(h, /Step 6 of 6/);
+  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
+  for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'How will it be played?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
+  assert.equal((h.match(/data-go="back"/g) || []).length, 8); assert.equal((h.match(/data-go="skip"/g) || []).length, 7); assert.equal((h.match(/data-go="next"/g) || []).length, 7);
+  assert.match(h, /Step 1 of 7/); assert.match(h, /Step 7 of 7/);
   // twelve live worlds (Wild Woods, Dino Valley and Under the Sea too), each with its real cover and a Preview button; every preview picture exists, large
   assert.equal(kit2.KIT2_WORLDS.length, 12);
   for (const w of kit2.KIT2_WORLDS) {

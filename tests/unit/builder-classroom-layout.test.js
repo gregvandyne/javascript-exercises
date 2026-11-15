@@ -59,38 +59,42 @@ for (const [label, opts] of [['desktop', { viewport: { width: 1280, height: 800 
     assert.equal(sizes.length, 1, `every card one size (${sizes})`);
     if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: `${SHOTS}/type-step-teacher-${label}.png`, fullPage: true }); }
     await page.click('.su-pick[data-step="type"][data-id="survey"]');
-    assert.match(await page.textContent('.su-screen[data-screen="type"] .su-count'), /Step 1 of 2/);
+    assert.match(await page.textContent('.su-screen[data-screen="type"] .su-count'), /Step 1 of 3/);
     // the games are one tap away, and the pick is kept while they look
     await page.click('[data-tgroup-btn="games"]');
     assert.deepEqual(await visibleCards(page), ['adventure', 'runner', 'catch', 'duel', 'board', 'else']);
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/type-step-teacher-${label}-games.png`, fullPage: true });
     await page.click('[data-tgroup-btn="class"]');
     assert.equal(await page.getAttribute('.su-pick[data-id="survey"]', 'aria-pressed'), 'true');
-    await next(page); assert.equal(await screen(page), 'extras', 'no 2D or 3D, world, characters or teaching for a survey');
-    assert.match(await page.textContent('.su-screen[data-screen="extras"] .su-count'), /Step 2 of 2/);
+    await next(page); assert.equal(await screen(page), 'play', 'no 2D or 3D, world or characters for a survey');
+    assert.match(await page.textContent('.su-screen[data-screen="play"] .su-count'), /Step 2 of 3/);
+    await next(page); assert.equal(await screen(page), 'extras', 'and nothing to teach');
+    assert.match(await page.textContent('.su-screen[data-screen="extras"] .su-count'), /Step 3 of 3/);
     await page.fill('#su-notes', 'about our school trip'); await next(page);
     assert.equal(await screen(page), 'plan');
-    assert.deepEqual(await page.$$eval('#su-rows dt', d => d.map(x => x.textContent)), ['Game type', 'Extras']);
+    assert.deepEqual(await page.$$eval('#su-rows dt', d => d.map(x => x.textContent)), ['Game type', 'How it is played', 'Extras']);
     await page.waitForFunction(() => document.getElementById('su-told').textContent.length > 5 && document.getElementById('su-told').textContent !== '…');
-    assert.equal(await page.textContent('#su-told'), 'Here is my game plan. Kind of game: Class survey. about our school trip.');
+    assert.equal(await page.textContent('#su-told'), 'Here is my game plan. Kind of game: Class survey. We play it together on one screen. about our school trip.');
     await page.click('#su-plan [data-go="back"], .su-screen[data-screen="plan"] [data-go="back"]');
     assert.equal(await screen(page), 'extras', 'Back skips the same steps');
     assert.deepEqual(errors, []); await ctx.close();
   });
 }
 
-test('kid: the games first in today\'s order, kid-suitable classroom types one tap away; bingo skips to "What should it teach?"', { skip }, async () => {
+test('kid: the games first in today\'s order, kid-suitable classroom types one tap away; bingo skips to "How will it be played?"', { skip }, async () => {
   const { ctx, page, errors } = await open({ teacher: false, viewport: { width: 390, height: 844 } });
   assert.deepEqual(await page.$$eval('[data-tgroup-btn]', b => b.map(x => `${x.dataset.tgroupBtn}:${x.getAttribute('aria-pressed')}`)), ['games:true', 'class:false']);
   assert.deepEqual(await visibleCards(page), ['adventure', 'runner', 'catch', 'quiz', 'memory', 'word', 'duel', 'board', 'else']);
   await page.click('[data-tgroup-btn="class"]');
   assert.deepEqual(await visibleCards(page), ['quiet', 'categories', 'bingo', 'flashcards', 'spinner', 'scoreboard', 'else']);
   await page.click('.su-pick[data-step="type"][data-id="bingo"]');
-  await next(page); assert.equal(await screen(page), 'learn'); assert.match(await page.textContent('.su-screen[data-screen="learn"] .su-count'), /Step 2 of 3/);
+  await next(page); assert.equal(await screen(page), 'play'); assert.match(await page.textContent('.su-screen[data-screen="play"] .su-count'), /Step 2 of 4/);
+  await next(page); assert.equal(await screen(page), 'learn'); assert.match(await page.textContent('.su-screen[data-screen="learn"] .su-count'), /Step 3 of 4/);
+  await page.click('.su-screen[data-screen="learn"] [data-go="back"]');
   // changing to a game brings every step back
-  await page.click('.su-screen[data-screen="learn"] [data-go="back"]'); await page.click('[data-tgroup-btn="games"]');
+  await page.click('.su-screen[data-screen="play"] [data-go="back"]'); await page.click('[data-tgroup-btn="games"]');
   await page.click('.su-pick[data-step="type"][data-id="runner"]'); await next(page);
-  assert.equal(await screen(page), 'look'); assert.match(await page.textContent('.su-screen[data-screen="look"] .su-count'), /Step 2 of 6/);
+  assert.equal(await screen(page), 'look'); assert.match(await page.textContent('.su-screen[data-screen="look"] .su-count'), /Step 2 of 7/);
   assert.ok(await noScroll(page));
   assert.deepEqual(errors, []); await ctx.close();
 });
