@@ -2743,7 +2743,10 @@
         "picturesNote": "Ognuna la vedete solo tu e quell'alunno.",
         "picturesNone": "Nessun alunno usa un'immagine.",
         "takeDown": "Togli",
-        "takenDown": "Immagine tolta"
+        "takenDown": "Immagine tolta",
+        "zoneNone": "Nessuno",
+        "placeNote": "Scrivi una città o un paese. Oomba non usa mai la posizione di nessuno.",
+        "qrNote": "Si possono mostrare solo i link approvati della classe e le pagine Oomba."
       },
       "bgChanged": "Sfondo cambiato",
       "uploading": "Controllo la tua immagine…",
@@ -2766,13 +2769,15 @@
         "game": "Gioco",
         "live": "Gioco dal vivo",
         "lesson": "Lezione",
-        "link": "Link"
+        "link": "Link",
+        "check": "Verifica veloce"
       },
       "act": {
         "play": "Gioca",
         "join": "Entra nel gioco",
         "lesson": "Apri la lezione",
-        "link": "Apri il link"
+        "link": "Apri il link",
+        "answer": "Rispondi"
       },
       "push": {
         "title": "Invia agli alunni",
@@ -2814,7 +2819,14 @@
         "label": "Dal tuo insegnante: {count, plural, one {# cosa} other {# cose}} oggi",
         "show": "Mostra",
         "showing": "Visibile"
-      }
+      },
+      "check": {
+        "title": "Verifica veloce",
+        "tap": "Tocca la tua risposta.",
+        "thanks": "Grazie! Puoi cambiare risposta finché l’insegnante non termina la verifica."
+      },
+      "more": "Altro",
+      "moreName": "Vedi il resto di {name}"
     }
   },
   "favorites": {
@@ -8954,7 +8966,8 @@
           "face": "Quadrante",
           "hour12": "Formato 12 ore",
           "seconds": "Mostra i secondi",
-          "date": "Mostra la data"
+          "date": "Mostra la data",
+          "zone2": "Secondo fuso orario"
         },
         "o": {
           "face": {
@@ -8987,6 +9000,344 @@
         "s": {
           "goal": "Obiettivo di oggi"
         }
+      },
+      "timer": {
+        "name": "Timer",
+        "desc": "Conto alla rovescia con cifre grandi e una barra del tempo.",
+        "s": {
+          "minutes": "Minuti di partenza",
+          "chime": "Leggero suono alla fine",
+          "bar": "Mostra la barra del tempo",
+          "view": "Aspetto"
+        },
+        "start": "Avvia",
+        "pause": "Pausa",
+        "resume": "Riprendi",
+        "reset": "Azzera",
+        "custom": "Altro tempo",
+        "min": "Minuti",
+        "sec": "Secondi",
+        "set": "Imposta",
+        "done": "Tempo scaduto!",
+        "left": "Mancano {time}",
+        "presets": "Tempi rapidi",
+        "mins": "{n} minuti",
+        "o": {
+          "view": {
+            "digits": "Cifre grandi",
+            "ring": "Anello che si restringe"
+          }
+        }
+      },
+      "stopwatch": {
+        "name": "Cronometro",
+        "desc": "Conta da zero in su.",
+        "start": "Avvia",
+        "pause": "Pausa",
+        "resume": "Riprendi",
+        "reset": "Azzera"
+      },
+      "schedule": {
+        "name": "Orario del giorno",
+        "desc": "Le ore di oggi; quella in corso è evidenziata.",
+        "s": {
+          "periods": "Ore"
+        },
+        "empty": "Aggiungi le ore di oggi in Modifica schermo.",
+        "now": "Adesso",
+        "next": "Dopo",
+        "left": "mancano {n} min",
+        "after": "Il programma di oggi è finito.",
+        "before": "Per iniziare",
+        "addPeriod": "Aggiungi un’ora",
+        "period": "Ora",
+        "from": "Da",
+        "to": "A",
+        "remove": "Togli l’ora"
+      },
+      "weather": {
+        "name": "Meteo",
+        "desc": "Il meteo di oggi nella città della tua scuola.",
+        "s": {
+          "place": "Luogo",
+          "unit": "Temperatura in"
+        },
+        "o": {
+          "unit": {
+            "auto": "Automatico",
+            "f": "°F",
+            "c": "°C"
+          }
+        },
+        "empty": "Scegli la tua città in Modifica schermo.",
+        "resting": "Il meteo si sta riposando",
+        "loading": "Guardiamo il cielo…",
+        "hiLo": "Massima {hi} · Minima {lo}",
+        "find": "Cerca",
+        "search": "Città o paese",
+        "searchHint": "Scrivi la tua città o il tuo paese",
+        "none": "Nessun luogo per ora",
+        "place": "Luogo",
+        "clear": "Sole e cielo sereno. Una bella giornata!",
+        "clearNight": "Cielo sereno stanotte.",
+        "partly": "Un po’ di sole, un po’ di nuvole.",
+        "cloudy": "Nuvoloso oggi.",
+        "fog": "Nebbia. Fai attenzione fuori.",
+        "drizzle": "Un po’ di pioggerella. Porta una giacca.",
+        "rain": "Piove, porta una giacca!",
+        "snow": "Neve! Copriti bene.",
+        "storm": "Temporale. Resta dentro se puoi."
+      },
+      "qr": {
+        "name": "Codice QR",
+        "desc": "Mostra un link da scansionare con i tablet.",
+        "s": {
+          "target": "Cosa apre il codice"
+        },
+        "empty": "Scegli cosa apre il codice in Modifica schermo.",
+        "gone": "Quel link non è più disponibile. Scegline un altro in Modifica schermo.",
+        "scan": "Codice QR da scansionare",
+        "nothing": "Ancora niente"
+      },
+      "picker": {
+        "name": "Estrazione a sorte",
+        "desc": "Sceglie un alunno con il suo nome Oomba.",
+        "s": {
+          "norepeat": "Nessuna ripetizione finché non sono usciti tutti",
+          "mode": "Mostra come",
+          "source": "Scegli da",
+          "items": "I tuoi elementi (uno per riga)"
+        },
+        "pick": "Estrai un alunno",
+        "again": "Ancora",
+        "left": "Rimasti in questo giro: {n}",
+        "away": "Assenti oggi",
+        "awayTitle": "Chi è assente oggi?",
+        "awayNote": "Gli alunni spuntati oggi non vengono estratti. Domani si riparte da capo.",
+        "reset": "Ricomincia",
+        "none": "Nessun alunno da estrarre.",
+        "o": {
+          "mode": {
+            "names": "Un nome",
+            "wheel": "Una ruota"
+          },
+          "source": {
+            "class": "La classe (nomi Oomba)",
+            "items": "I tuoi elementi"
+          }
+        },
+        "spin": "Gira",
+        "noItems": "Scrivi qualche elemento in Modifica schermo."
+      },
+      "noise": {
+        "name": "Misura della voce",
+        "desc": "Quanto è rumorosa la classe? Usa il tuo microfono; non viene registrato niente.",
+        "s": {
+          "zone": "Livello obiettivo"
+        },
+        "o": {
+          "zone": {
+            "silent": "Silenzio",
+            "whisper": "Sussurro",
+            "talk": "Lavoro a coppie",
+            "busy": "Lavoro di gruppo"
+          }
+        },
+        "start": "Accendi il microfono",
+        "stop": "Spegni il microfono",
+        "on": "Microfono acceso",
+        "off": "Microfono spento",
+        "note": "Il suono resta su questo computer. Niente viene registrato, salvato o inviato.",
+        "denied": "Il microfono è bloccato. Consentilo nel browser per usare la misura.",
+        "quiet": "Bella calma",
+        "ok": "Sta salendo",
+        "loud": "Troppo rumore!"
+      },
+      "help": {
+        "name": "Fila per l’aiuto",
+        "desc": "Gli alunni toccano «Ho bisogno di aiuto» o «Ho finito».",
+        "need": "Ho bisogno di aiuto",
+        "done": "Ho finito",
+        "cancel": "Non importa",
+        "place": "Sei il numero {n} in fila.",
+        "doneMine": "L’insegnante vede che hai finito.",
+        "empty": "Nessuno è in attesa.",
+        "next": "Avanti",
+        "clear": "Cancella tutto",
+        "waiting": "{n} in attesa",
+        "finished": "{n} hanno finito",
+        "remove": "Togli {name}",
+        "hidden": "I nomi sono nascosti sul proiettore."
+      },
+      "check": {
+        "name": "Verifica veloce",
+        "desc": "Chiedi alla classe: pollici, pugno a cinque, scelte o da 1 a 5.",
+        "empty": "Manda una verifica veloce per vedere come va per tutti.",
+        "new": "Nuova verifica",
+        "end": "Termina",
+        "ended": "Terminata",
+        "names": "Chi ha risposto",
+        "save": "Salva i risultati",
+        "saved": "Salvati",
+        "savedList": "Risultati salvati",
+        "answered": "{n} su {total} hanno risposto",
+        "send": "Manda agli alunni",
+        "kind": "Tipo di verifica",
+        "question": "Domanda (puoi lasciarla vuota)",
+        "questionHint": "Come ti senti con le frazioni?",
+        "options": "Scelte",
+        "option": "Scelta {n}",
+        "addOption": "Aggiungi una scelta",
+        "needOptions": "Scrivi almeno due scelte.",
+        "nobody": "Nessuno",
+        "notYet": "Non ha ancora risposto",
+        "savedNone": "Nessun risultato salvato per ora.",
+        "thumbs": "Pollici",
+        "fist": "Pugno a cinque",
+        "choice": "Scelta multipla",
+        "scale": "Da 1 a 5",
+        "up": "Ho capito",
+        "side": "Più o meno",
+        "down": "Non ancora"
+      },
+      "tiles": {
+        "name": "Riquadri Oomba",
+        "desc": "Giochi e lezioni da aprire con un tocco.",
+        "s": {
+          "tiles": "Riquadri"
+        },
+        "empty": "Scegli giochi e lezioni in Modifica schermo.",
+        "add": "Aggiungi un riquadro",
+        "games": "Giochi",
+        "lessons": "Lezioni",
+        "remove": "Togli",
+        "gone": "Adesso non sono aperti."
+      },
+      "countdown": {
+        "name": "Conto alla rovescia per un giorno",
+        "desc": "Giorni e ore fino a una gita, uno spettacolo o le vacanze.",
+        "s": {
+          "label": "Cosa arriva",
+          "date": "Giorno",
+          "time": "Ora"
+        },
+        "empty": "Scegli il giorno in Modifica schermo.",
+        "days": "Giorni",
+        "hours": "Ore",
+        "mins": "Minuti",
+        "today": "È oggi!",
+        "past": "Quel giorno è passato."
+      },
+      "calendar": {
+        "name": "Calendario",
+        "desc": "La data di oggi, il mese e i giorni che segni.",
+        "s": {
+          "marks": "Giorni segnati"
+        },
+        "today": "Oggi",
+        "coming": "In arrivo",
+        "none": "Niente di segnato questo mese.",
+        "addMark": "Segna un giorno",
+        "day": "Giorno",
+        "label": "Etichetta",
+        "remove": "Togli il giorno"
+      },
+      "symbols": {
+        "name": "Segnali di lavoro",
+        "desc": "Come si lavora adesso: in silenzio, sussurrando, in coppia, insieme, mano alzata.",
+        "s": {
+          "mode": "Adesso"
+        },
+        "o": {
+          "mode": {
+            "silent": "Lavoro in silenzio",
+            "whisper": "Voce sussurrata",
+            "partner": "Chiedi a un compagno",
+            "together": "Lavoriamo insieme",
+            "hand": "Alza la mano"
+          }
+        },
+        "change": "Cambia come lavoriamo"
+      },
+      "light": {
+        "name": "Semaforo",
+        "desc": "Rosso, giallo o verde, con le tue parole per ciascuno.",
+        "s": {
+          "color": "Luce accesa",
+          "red": "Parole per il rosso",
+          "yellow": "Parole per il giallo",
+          "green": "Parole per il verde"
+        },
+        "o": {
+          "color": {
+            "red": "Rosso",
+            "yellow": "Giallo",
+            "green": "Verde"
+          }
+        },
+        "set": "Cambia la luce"
+      },
+      "dice": {
+        "name": "Dadi",
+        "desc": "Lancia da 1 a 6 dadi e guarda il totale.",
+        "s": {
+          "count": "Quanti dadi"
+        },
+        "roll": "Lancia",
+        "total": "Totale: {n}",
+        "die": "Hai fatto {n}"
+      },
+      "random": {
+        "name": "Numero a caso",
+        "desc": "Un numero tra il più piccolo e il più grande.",
+        "s": {
+          "min": "Più piccolo",
+          "max": "Più grande"
+        },
+        "go": "Estrai un numero",
+        "between": "Da {min} a {max}"
+      },
+      "groups": {
+        "name": "Crea gruppi",
+        "desc": "Gruppi a caso dalla classe, con i nomi Oomba.",
+        "s": {
+          "by": "Crea gruppi per",
+          "n": "Numero"
+        },
+        "o": {
+          "by": {
+            "size": "Alunni per gruppo",
+            "count": "Numero di gruppi"
+          }
+        },
+        "make": "Crea i gruppi",
+        "again": "Rimescola",
+        "group": "Gruppo {n}",
+        "none": "Nessun alunno da mettere in gruppo.",
+        "note": "Gli alunni segnati assenti nell’estrazione restano fuori."
+      },
+      "score": {
+        "name": "Segnapunti",
+        "desc": "Punti delle squadre con i pulsanti più e meno.",
+        "s": {
+          "teams": "Nomi delle squadre (uno per riga)",
+          "scores": "Punti"
+        },
+        "team": "Squadra {n}",
+        "plus": "Un punto a {team}",
+        "minus": "Un punto in meno a {team}",
+        "reset": "Azzera i punti"
+      },
+      "stickers": {
+        "name": "Adesivi",
+        "desc": "Simpatici adesivi Oomba da mettere sullo schermo.",
+        "s": {
+          "stamps": "Adesivi"
+        },
+        "add": "Aggiungi un adesivo",
+        "remove": "Togli {e}",
+        "clear": "Toglili tutti",
+        "empty": "Tocca un adesivo qui sotto per metterlo qui."
       }
     },
     "push": {
@@ -9006,7 +9357,15 @@
       "link": "Quel link non è nell'elenco approvato.",
       "tooManyPushes": "È tanto per un giorno. Prima chiudine qualcuno.",
       "pic_badType": "Quell'immagine non ha funzionato. Prova una foto JPG o PNG.",
-      "pic_tooBig": "Quell'immagine è troppo grande."
+      "pic_tooBig": "Quell'immagine è troppo grande.",
+      "timer": "Quel timer non ha funzionato. Riprova.",
+      "nobody": "Non c’è nessuno da estrarre.",
+      "checkKind": "Scegli un tipo di verifica.",
+      "checkOptions": "Scrivi almeno due scelte.",
+      "checkClosed": "Quella verifica è terminata.",
+      "checkValue": "Scegli una delle risposte.",
+      "resting": "Il meteo si sta riposando. Riprova tra poco.",
+      "qrGone": "Non si può mostrare come codice QR."
     }
   }
 }

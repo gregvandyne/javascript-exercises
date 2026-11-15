@@ -6020,3 +6020,105 @@ page and on their Class tab; `/dashboard` takes a student with one class straigh
 - **Open / later stages:** stage 2 widgets (timers, weather, QR, picker...); layouts that follow the bell schedule;
   "who sees this widget" beyond pinning; a real-time socket if 4 s polling proves too slow; a native speaker's read of
   the new translations.
+
+## Classroom dashboards, stage 2 (15 Nov 2026)
+Everyday widgets on the stage 1 grid: each is a registry entry (`WIDGETS` in `server/services/dash.js`) and a
+renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.js`). Migration 0079.
+- **Registry additions.** New setting types, each rebuilt on the server (`cleanSettings`): `number` (clamped),
+  `zone` (a real IANA zone or nothing), `periods` (HH:MM, end after start, sorted, at most 16), `place` (a name and
+  coordinates rounded to 2 decimals), `target` (QR: link, live, lesson or game, by id only) and `tiles` (games and
+  lessons, at most 12). Two flags: `pin: false` (never on student screens: picker, noise meter, QR, quick check) and
+  `pinDef` (the help queue is pinned when added). Students may add only the clock, their goal, a timer and a
+  stopwatch, all of which stay on their own screen.
+- **Live state.** No new poller: `/api/dash/<class>/live` (every 4 s while in view) now also carries the server's
+  clock (`now`), the teacher's timers, the help queue (the teacher: the queue; a student: only `{ kind, place }`),
+  quick checks (the teacher: totals; a student: open checks and their own answer) and the weather of the places on
+  the screen. Renderers get it through a `live()` hook.
+- **Timers and stopwatch.** A teacher's timer is stored as `{ mode, dur, base, start, on }` in `dash_class.timers`
+  (a start time and a duration, never a ticking value). Each screen estimates the server's clock from the quickest of
+  its last 8 round trips, so a pinned countdown shows the same time everywhere (tested with clocks 90 s fast and
+  45 s slow). Presets 1/2/5/10 minutes and a custom time; the chime is off by default; the bar and the "Time's up"
+  pulse follow reduced motion. A student's own timer stays in their browser.
+- **Schedule** works in the school's time zone (as the stage 1 tray does); **clock** gained a second time zone.
+- **Weather** (Open-Meteo, no key). The teacher types a city; the server geocodes it; the widget keeps the name and
+  coordinates. Never the browser's or a student's location. Fetched on the server, cached per place for 20 minutes;
+  a failure or a 6 s timeout shows "Weather is resting" (a forecast under 2 hours old is kept through a short
+  outage). The live answer never waits for the network (a stale place is refreshed in the background). **Not
+  verified against the real service:** both Open-Meteo hosts were blocked from the build sandbox, so tests use a
+  stubbed fetch (`_setWeatherFetch`).
+- **QR.** Made on the server by our own `services/qr.js`, now up to version 6 (106 bytes; versions 1-4 unchanged
+  byte for byte). Only the class's approved links (the code holds the class's own `/class/<id>/dashboard/link/<id>`
+  address, so a removed link stops working), the class's live join, an open class lesson or a game every student can
+  open. The short text under the code is the destination without `https://`.
+- **Random picker** (teacher only, never pinned): the pick is made on the server from the class's students by their
+  Oomba (display) names, never roster names; "don't repeat until everyone's had a turn" and "away today" are kept
+  per class per school day. The shuffle is skipped with reduced motion.
+- **Noise meter** (teacher only): Web Audio levels in the teacher's browser after a tap; a "Mic on" chip and an off
+  button; the mic stops when the tab is hidden. Its module has no network, storage or recorder code (tested by
+  reading the file).
+- **Help queue:** fixed buttons ("I need help", "I'm done", "Never mind"), no text. Today only. On the teacher's
+  screen names hide in projector mode (`.dw-private`), leaving the counts. **Decided:** the teacher's screen shows
+  Oomba names otherwise, as live games' "needs help" does for the host.
+- **Quick checks:** thumbs, fist to five, multiple choice (2-6 teacher-written choices) or 1-5. Sent as a push
+  (kind `check`, so it is in the banner and the tray) and answered in a card under the banner; one open at a time.
+  The teacher's widget (and so the projector) shows totals only; names are in a sheet the teacher opens, hidden in
+  projector mode. Unsaved checks go when the school day changes; saved ones stay (with their answers) until the
+  class's data goes. No AI anywhere.
+- **Oomba tiles:** games every student can open and the class's open lessons, resolved for the reader each time.
+- Safety, access and limits follow stage 1 exactly: every new route uses `load()` (class role, 404 to others), the
+  site's CSRF check, and a rate limit. Account deletion also forgets a person's help queue place, check answers and
+  picker marks.
+- **More everyday widgets** (added to stage 2 on request; same rules): the timer's **shrinking ring** view; the
+  picker's **spinner wheel** mode (filled from the class's Oomba names through the server's pick, or from items the
+  teacher types, picked in the browser); **countdown to a day** (date and time in the school's time zone; days,
+  hours, minutes); **calendar** (the month in the school's time zone, today, and up to 40 teacher-marked days with a
+  short label); **work symbols** (five fixed icons and labels) and a **traffic light** (red, yellow, green, with the
+  teacher's own short words) the teacher switches with one tap and may pin; **dice** (1-6, total) and a **random
+  number** (teacher's smallest and biggest), both also addable by students on their own screen and never pinned;
+  a **group maker** (by group size or number of groups, from the class's Oomba names, leaving out students the
+  picker marks away; teacher only, never pinned, made in the teacher's browser); a **scoreboard** (teacher-typed
+  team names, + and −); **stickers** from a fixed set of 20 Oomba emoji (no uploads; stored as an index and a
+  place). Widgets the teacher taps save through the layout (`ctx.set`), so pinned ones reach students with the next
+  live check. Two hidden setting types hold the scores and the stickers.
+- **Nothing is cut off, checked by a script.** `npm run dash:fit` (`scripts/dash-fit-check.js`, also run by
+  `tests/unit/dash-fit.test.js`, about two minutes; skipped where no Chromium is installed) loads every widget type at
+  its default size and at its smallest. It covers the teacher's screen and projector mode (1600 × 900), a student's
+  screen (1366 × 768) and a phone (390 × 844), light and dark, in English, German and Arabic. It fails when:
+  - a widget's content is bigger than its box;
+  - an element sits outside the widget or text is cut;
+  - a control's painted box (border, shadow, transform) is less than 12px from the widget's inner edge, is clipped by
+    an ancestor that does not scroll, or sits under another control row;
+  - the phone scrolls sideways.
+
+  How widgets fit:
+  - Content fits by container-query sizing.
+  - Only lists that grow scroll, inside their own area with a shadow and a "More" button in the header: the help
+    queue, groups, the schedule's periods, a long agenda or goal, tiles, and a long scoreboard.
+  - Fixed content never scrolls: a quick check's totals (two columns past three answers) and every widget's buttons.
+  - On a phone, a widget is as tall as its content.
+  - **Decided:** to make this true, several smallest sizes went up (clock, text and goal 3 × 2; timer, stopwatch,
+    countdown, symbols, light, dice, random, stickers 3 × 3; help, noise, scoreboard 4 × 3; check and picker 4 × 4).
+    Several default sizes went up too: weather, countdown, dice, random, noise and stopwatch to 3 rows, the check to
+    5 × 4 and the picker to 6 × 5. A stored layout keeps its old sizes until it is next saved.
+- **Look.** Every widget has one header: an icon chip in its group's colour, the title, and the pin as a quiet chip
+  (icon only on a narrow widget). The group colour also shows on the card's top edge, never on text. The card has a
+  hairline and a soft shadow, a 20px radius and 16px padding.
+
+  The big numbers (clock, timer, countdown, random number, scores, temperature) share one display style, and the words
+  under them share one secondary style. Each widget has one primary (green) button; the rest are quiet. Motion is
+  150–200ms, and none with reduced motion. The traffic light's dim lamps look off. Stickers are added from a sheet.
+- **Spinner wheel.** The wheel fills the widget, beside the readout when the widget is wide. Each name's size is
+  worked out in pixels. Names go on the slices only when every one is at least 12px (13px on the projector); otherwise
+  the slices carry numbers at the rim.
+
+  A big readout under the wheel shows the name under the pointer as it turns, then the winner, always in full. With
+  reduced motion the result shows straight away. "No repeats" and "Away today" take names off the wheel, and "Left this
+  round" counts them.
+
+  Six slice colours (brand colours mixed 34% into the card) keep AA contrast with the text in light and dark (tested).
+  Neighbouring slices never share a colour, the last and the first included.
+- Tests: `tests/unit/dash-stage2.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: teacher
+  1600 × 900, edit mode, projector, student 1366 × 768 and 390 × 844, dark, Hebrew, Arabic, and wheels of 8, 24 and
+  32 students.
+- **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
+  document camera.

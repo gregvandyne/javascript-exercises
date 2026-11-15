@@ -2743,7 +2743,10 @@
         "picturesNote": "Elke afbeelding zien alleen jij en die leerling.",
         "picturesNone": "Geen enkele leerling gebruikt een afbeelding.",
         "takeDown": "Weghalen",
-        "takenDown": "Afbeelding weggehaald"
+        "takenDown": "Afbeelding weggehaald",
+        "zoneNone": "Geen",
+        "placeNote": "Typ een plaats of stad. Oomba gebruikt nooit iemands locatie.",
+        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond."
       },
       "bgChanged": "Achtergrond veranderd",
       "uploading": "Je afbeelding wordt gecontroleerd…",
@@ -2766,13 +2769,15 @@
         "game": "Spel",
         "live": "Live spel",
         "lesson": "Les",
-        "link": "Link"
+        "link": "Link",
+        "check": "Snelle check"
       },
       "act": {
         "play": "Spelen",
         "join": "Meedoen",
         "lesson": "Les openen",
-        "link": "Link openen"
+        "link": "Link openen",
+        "answer": "Antwoorden"
       },
       "push": {
         "title": "Naar leerlingen sturen",
@@ -2814,7 +2819,14 @@
         "label": "Van je leraar: vandaag {count, plural, one {# ding} other {# dingen}}",
         "show": "Tonen",
         "showing": "Zichtbaar"
-      }
+      },
+      "check": {
+        "title": "Snelle check",
+        "tap": "Tik op je antwoord.",
+        "thanks": "Dank je! Je kunt je antwoord veranderen tot je leraar de check stopt."
+      },
+      "more": "Meer",
+      "moreName": "Meer van {name} zien"
     }
   },
   "favorites": {
@@ -8954,7 +8966,8 @@
           "face": "Wijzerplaat",
           "hour12": "12-uursnotatie",
           "seconds": "Seconden tonen",
-          "date": "Datum tonen"
+          "date": "Datum tonen",
+          "zone2": "Tweede tijdzone"
         },
         "o": {
           "face": {
@@ -8987,6 +9000,344 @@
         "s": {
           "goal": "Doel van vandaag"
         }
+      },
+      "timer": {
+        "name": "Timer",
+        "desc": "Telt af met grote cijfers en een tijdbalk.",
+        "s": {
+          "minutes": "Minuten bij de start",
+          "chime": "Zacht belletje aan het eind",
+          "bar": "Tijdbalk tonen",
+          "view": "Weergave"
+        },
+        "start": "Start",
+        "pause": "Pauze",
+        "resume": "Verder",
+        "reset": "Opnieuw",
+        "custom": "Eigen tijd",
+        "min": "Minuten",
+        "sec": "Seconden",
+        "set": "Instellen",
+        "done": "De tijd is om!",
+        "left": "Nog {time}",
+        "presets": "Snelle tijden",
+        "mins": "{n} minuten",
+        "o": {
+          "view": {
+            "digits": "Grote cijfers",
+            "ring": "Krimpende ring"
+          }
+        }
+      },
+      "stopwatch": {
+        "name": "Stopwatch",
+        "desc": "Telt op vanaf nul.",
+        "start": "Start",
+        "pause": "Pauze",
+        "resume": "Verder",
+        "reset": "Opnieuw"
+      },
+      "schedule": {
+        "name": "Dagrooster",
+        "desc": "De lessen van vandaag; de les van nu licht op.",
+        "s": {
+          "periods": "Lessen"
+        },
+        "empty": "Voeg de lessen van vandaag toe bij Scherm bewerken.",
+        "now": "Nu",
+        "next": "Hierna",
+        "left": "nog {n} min",
+        "after": "Dat was het rooster van vandaag.",
+        "before": "Als eerste",
+        "addPeriod": "Les toevoegen",
+        "period": "Les",
+        "from": "Van",
+        "to": "Tot",
+        "remove": "Les weghalen"
+      },
+      "weather": {
+        "name": "Weer",
+        "desc": "Het weer van vandaag in de plaats van je school.",
+        "s": {
+          "place": "Plaats",
+          "unit": "Temperatuur in"
+        },
+        "o": {
+          "unit": {
+            "auto": "Automatisch",
+            "f": "°F",
+            "c": "°C"
+          }
+        },
+        "empty": "Kies je plaats bij Scherm bewerken.",
+        "resting": "Het weer rust even uit",
+        "loading": "We kijken naar de lucht…",
+        "hiLo": "Hoogste {hi} · Laagste {lo}",
+        "find": "Zoeken",
+        "search": "Plaats of stad",
+        "searchHint": "Typ je plaats of stad",
+        "none": "Nog geen plaats",
+        "place": "Plaats",
+        "clear": "Zonnig en helder. Een topdag!",
+        "clearNight": "Heldere lucht vannacht.",
+        "partly": "Beetje zon, beetje wolken.",
+        "cloudy": "Bewolkt vandaag.",
+        "fog": "Mistig. Pas goed op buiten.",
+        "drizzle": "Een beetje motregen. Neem een jas mee.",
+        "rain": "Regenachtig, neem een jas mee!",
+        "snow": "Sneeuw! Kleed je warm aan.",
+        "storm": "Onweer. Blijf binnen als het kan."
+      },
+      "qr": {
+        "name": "QR-code",
+        "desc": "Zet een link op het scherm om te scannen met tablets.",
+        "s": {
+          "target": "Wat de code opent"
+        },
+        "empty": "Kies bij Scherm bewerken wat de code opent.",
+        "gone": "Die link is er niet meer. Kies een andere bij Scherm bewerken.",
+        "scan": "QR-code om te scannen",
+        "nothing": "Nog niets"
+      },
+      "picker": {
+        "name": "Willekeurige leerling",
+        "desc": "Kiest een leerling bij zijn Oomba-naam.",
+        "s": {
+          "norepeat": "Niemand twee keer tot iedereen aan de beurt was",
+          "mode": "Tonen als",
+          "source": "Kiezen uit",
+          "items": "Je eigen items (één per regel)"
+        },
+        "pick": "Kies een leerling",
+        "again": "Nog een keer",
+        "left": "Nog over deze ronde: {n}",
+        "away": "Vandaag afwezig",
+        "awayTitle": "Wie is er vandaag niet?",
+        "awayNote": "Aangevinkte leerlingen worden vandaag niet gekozen. Morgen begint het opnieuw.",
+        "reset": "Opnieuw beginnen",
+        "none": "Geen leerlingen om uit te kiezen.",
+        "o": {
+          "mode": {
+            "names": "Een naam",
+            "wheel": "Een draaiwiel"
+          },
+          "source": {
+            "class": "De klas (Oomba-namen)",
+            "items": "Je eigen items"
+          }
+        },
+        "spin": "Draaien",
+        "noItems": "Typ een paar items bij Scherm bewerken."
+      },
+      "noise": {
+        "name": "Stemmeter",
+        "desc": "Hoe hard is het in de klas? Gebruikt je microfoon; er wordt niets opgenomen.",
+        "s": {
+          "zone": "Doelniveau"
+        },
+        "o": {
+          "zone": {
+            "silent": "Stil",
+            "whisper": "Fluisteren",
+            "talk": "Samen overleggen",
+            "busy": "Groepswerk"
+          }
+        },
+        "start": "Microfoon aanzetten",
+        "stop": "Microfoon uitzetten",
+        "on": "Microfoon aan",
+        "off": "Microfoon uit",
+        "note": "Het geluid blijft op deze computer. Er wordt niets opgenomen, bewaard of verstuurd.",
+        "denied": "De microfoon is geblokkeerd. Sta hem toe in de browser om de meter te gebruiken.",
+        "quiet": "Lekker rustig",
+        "ok": "Het wordt luider",
+        "loud": "Te hard!"
+      },
+      "help": {
+        "name": "Hulprij",
+        "desc": "Leerlingen tikken op ‘Ik heb hulp nodig’ of ‘Ik ben klaar’.",
+        "need": "Ik heb hulp nodig",
+        "done": "Ik ben klaar",
+        "cancel": "Laat maar",
+        "place": "Je bent nummer {n} in de rij.",
+        "doneMine": "Je leraar ziet dat je klaar bent.",
+        "empty": "Niemand wacht.",
+        "next": "Volgende",
+        "clear": "Alles wissen",
+        "waiting": "{n} wachten",
+        "finished": "{n} klaar",
+        "remove": "{name} weghalen",
+        "hidden": "Op de beamer zijn de namen verborgen."
+      },
+      "check": {
+        "name": "Snelle check",
+        "desc": "Vraag de klas: duimen, vuist tot vijf, keuzes of 1 tot 5.",
+        "empty": "Stuur een snelle check om te zien hoe het met iedereen gaat.",
+        "new": "Nieuwe check",
+        "end": "Stoppen",
+        "ended": "Gestopt",
+        "names": "Wie antwoordde",
+        "save": "Resultaten bewaren",
+        "saved": "Bewaard",
+        "savedList": "Bewaarde resultaten",
+        "answered": "{n} van {total} hebben geantwoord",
+        "send": "Naar de leerlingen sturen",
+        "kind": "Soort check",
+        "question": "Vraag (mag leeg blijven)",
+        "questionHint": "Hoe gaat het met breuken?",
+        "options": "Keuzes",
+        "option": "Keuze {n}",
+        "addOption": "Keuze toevoegen",
+        "needOptions": "Schrijf minstens twee keuzes.",
+        "nobody": "Niemand",
+        "notYet": "Nog geen antwoord",
+        "savedNone": "Nog geen bewaarde resultaten.",
+        "thumbs": "Duimen",
+        "fist": "Vuist tot vijf",
+        "choice": "Meerkeuze",
+        "scale": "1 tot 5",
+        "up": "Snap ik",
+        "side": "Een beetje",
+        "down": "Nog niet"
+      },
+      "tiles": {
+        "name": "Oomba-tegels",
+        "desc": "Spellen en lessen die je met één tik opent.",
+        "s": {
+          "tiles": "Tegels"
+        },
+        "empty": "Kies spellen en lessen bij Scherm bewerken.",
+        "add": "Tegel toevoegen",
+        "games": "Spellen",
+        "lessons": "Lessen",
+        "remove": "Weghalen",
+        "gone": "Die staan nu niet open."
+      },
+      "countdown": {
+        "name": "Aftellen naar een dag",
+        "desc": "Dagen en uren tot een uitje, een voorstelling of de vakantie.",
+        "s": {
+          "label": "Wat er komt",
+          "date": "Dag",
+          "time": "Tijd"
+        },
+        "empty": "Kies de dag bij Scherm bewerken.",
+        "days": "Dagen",
+        "hours": "Uren",
+        "mins": "Minuten",
+        "today": "Het is vandaag!",
+        "past": "Die dag is al voorbij."
+      },
+      "calendar": {
+        "name": "Kalender",
+        "desc": "De datum van vandaag, de maand en dagen die je markeert.",
+        "s": {
+          "marks": "Gemarkeerde dagen"
+        },
+        "today": "Vandaag",
+        "coming": "Binnenkort",
+        "none": "Niets gemarkeerd deze maand.",
+        "addMark": "Dag markeren",
+        "day": "Dag",
+        "label": "Naam",
+        "remove": "Dag weghalen"
+      },
+      "symbols": {
+        "name": "Werksymbolen",
+        "desc": "Hoe we nu werken: stil, fluisteren, maatje, samen, vinger opsteken.",
+        "s": {
+          "mode": "Nu"
+        },
+        "o": {
+          "mode": {
+            "silent": "Stil werken",
+            "whisper": "Fluisterstem",
+            "partner": "Vraag een maatje",
+            "together": "Samen werken",
+            "hand": "Vinger opsteken"
+          }
+        },
+        "change": "Werkwijze veranderen"
+      },
+      "light": {
+        "name": "Stoplicht",
+        "desc": "Rood, oranje of groen, met je eigen woorden voor elke kleur.",
+        "s": {
+          "color": "Licht dat nu brandt",
+          "red": "Woorden bij rood",
+          "yellow": "Woorden bij oranje",
+          "green": "Woorden bij groen"
+        },
+        "o": {
+          "color": {
+            "red": "Rood",
+            "yellow": "Oranje",
+            "green": "Groen"
+          }
+        },
+        "set": "Licht veranderen"
+      },
+      "dice": {
+        "name": "Dobbelstenen",
+        "desc": "Gooi met 1 tot 6 dobbelstenen en zie het totaal.",
+        "s": {
+          "count": "Hoeveel dobbelstenen"
+        },
+        "roll": "Gooien",
+        "total": "Totaal: {n}",
+        "die": "Je gooide {n}"
+      },
+      "random": {
+        "name": "Willekeurig getal",
+        "desc": "Een getal tussen het kleinste en het grootste.",
+        "s": {
+          "min": "Kleinste",
+          "max": "Grootste"
+        },
+        "go": "Kies een getal",
+        "between": "Van {min} tot {max}"
+      },
+      "groups": {
+        "name": "Groepjes maken",
+        "desc": "Willekeurige groepjes uit de klas, op Oomba-naam.",
+        "s": {
+          "by": "Groepjes maken op",
+          "n": "Getal"
+        },
+        "o": {
+          "by": {
+            "size": "Leerlingen per groepje",
+            "count": "Aantal groepjes"
+          }
+        },
+        "make": "Groepjes maken",
+        "again": "Opnieuw husselen",
+        "group": "Groepje {n}",
+        "none": "Geen leerlingen om groepjes mee te maken.",
+        "note": "Leerlingen die bij de kiezer afwezig staan, doen niet mee."
+      },
+      "score": {
+        "name": "Scorebord",
+        "desc": "Teampunten met plus- en minknoppen.",
+        "s": {
+          "teams": "Teamnamen (één per regel)",
+          "scores": "Punten"
+        },
+        "team": "Team {n}",
+        "plus": "Eén punt voor {team}",
+        "minus": "Eén punt eraf voor {team}",
+        "reset": "Punten op nul"
+      },
+      "stickers": {
+        "name": "Stickers",
+        "desc": "Leuke Oomba-stickers voor op het scherm.",
+        "s": {
+          "stamps": "Stickers"
+        },
+        "add": "Sticker toevoegen",
+        "remove": "{e} weghalen",
+        "clear": "Allemaal weghalen",
+        "empty": "Tik hieronder op een sticker om hem hier te zetten."
       }
     },
     "push": {
@@ -9006,7 +9357,15 @@
       "link": "Die link staat niet op de goedgekeurde lijst.",
       "tooManyPushes": "Dat is veel voor één dag. Beëindig er eerst een paar.",
       "pic_badType": "Die afbeelding werkte niet. Probeer een JPG- of PNG-foto.",
-      "pic_tooBig": "Die afbeelding is te groot."
+      "pic_tooBig": "Die afbeelding is te groot.",
+      "timer": "Die timer werkte niet. Probeer het opnieuw.",
+      "nobody": "Er is niemand om te kiezen.",
+      "checkKind": "Kies een soort check.",
+      "checkOptions": "Schrijf minstens twee keuzes.",
+      "checkClosed": "Die check is gestopt.",
+      "checkValue": "Kies een van de antwoorden.",
+      "resting": "Het weer rust even uit. Probeer het straks nog eens.",
+      "qrGone": "Dat kan niet als QR-code worden getoond."
     }
   }
 }

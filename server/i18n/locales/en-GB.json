@@ -838,6 +838,22 @@
             "analog": "Analogue"
           }
         }
+      },
+      "schedule": {
+        "name": "Timetable for the day",
+        "after": "That's the end of today's timetable.",
+        "desc": "Today's lessons, with the one on now lit up."
+      },
+      "light": {
+        "o": {
+          "color": {
+            "yellow": "Amber"
+          }
+        },
+        "s": {
+          "yellow": "Words for amber"
+        },
+        "desc": "Red, amber or green, with your own words for each."
       }
     }
   }

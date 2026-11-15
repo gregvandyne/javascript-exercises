@@ -35,8 +35,13 @@ test('the join address fits version 3; finders, timing, the dark module and both
   for (let i = 0; i <= 5; i++) assert.equal(m[i][8], b(i));
   for (let i = 0; i < 8; i++) assert.equal(m[8][n - 1 - i], b(i));
   for (let i = 8; i < 15; i++) assert.equal(m[n - 15 + i][8], b(i));
-  assert.throws(() => QR.qr('x'.repeat(63)));
   assert.equal(QR.qr('x'.repeat(62)).version, 4);
+  // Versions 5 and 6 (level M: 2 blocks of 43 and 4 blocks of 27 data codewords) for longer class links.
+  assert.equal(QR.qr('x'.repeat(63)).version, 5);
+  assert.equal(QR.qr('x'.repeat(84)).version, 5);
+  assert.equal(QR.qr('x'.repeat(85)).version, 6);
+  assert.equal(QR.qr('x'.repeat(106)).size, 41);
+  assert.throws(() => QR.qr('x'.repeat(107)));
 });
 
 test('the SVG: crisp, a quiet zone, an accessible name, nothing from the input but modules', () => {

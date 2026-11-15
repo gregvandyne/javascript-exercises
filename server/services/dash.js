@@ -14,6 +14,7 @@
 //   only, size limits, metadata removed) and nothing else, and only the owner and the class's teachers can fetch them.
 // - Pushes are kept per class per school day; the tray shows today's until the teacher ends one or the day ends.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { q, tx, now, uid, audit } from '../db.js';
 import { config } from '../config.js';
@@ -28,31 +29,92 @@ import { liveOn, openForClass } from './classlive-sessions.js';
 export const GROUPS = ['join', 'time', 'class', 'show', 'tools', 'check', 'oomba'];
 /**
  * Widget types. who: 'teacher' | 'student' | 'both' (who may add it to their own screen; a teacher can pin any of
- * theirs to student screens). size/min: [columns, rows]. words: other strings its renderer shows (dash.w.<id>.<word>).
- * settings: [{ key, type: 'text'|'textarea'|'select'|'bool', max (text), options (select), def }].
+ * theirs to student screens unless pin is false). pinDef: pinned when added. size/min: [columns, rows]. words: other
+ * strings its renderer shows (dash.w.<id>.<word>).
+ * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
+ * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
+ * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
+ * 'scores' and 'stamps' (hidden: changed by the widget itself). Every type is rebuilt on the server (cleanSettings).
  */
 export const WIDGETS = [
-  { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [2, 1], words: [], settings: [
+  { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
     { key: 'hour12', type: 'bool', def: true },
     { key: 'seconds', type: 'bool', def: false },
-    { key: 'date', type: 'bool', def: true }] },
-  { id: 'text', icon: '📝', group: 'show', who: 'teacher', size: [4, 3], min: [2, 1], words: ['empty'], settings: [
+    { key: 'date', type: 'bool', def: true },
+    { key: 'zone2', type: 'zone', def: '' }] },
+  { id: 'text', icon: '📝', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty'], settings: [
     { key: 'title', type: 'text', max: 40, def: '' },
     { key: 'body', type: 'textarea', max: 800, def: '' },
     { key: 'style', type: 'select', options: ['list', 'text'], def: 'list' }] },
-  { id: 'ican', icon: '🎯', group: 'show', who: 'both', size: [4, 2], min: [2, 1], words: ['lead', 'empty'], settings: [
+  { id: 'ican', icon: '🎯', group: 'show', who: 'both', size: [4, 2], min: [3, 2], words: ['lead', 'empty'], settings: [
     { key: 'goal', type: 'textarea', max: 200, def: '' }] },
+  // ---- stage 2: everyday widgets
+  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins'], settings: [
+    { key: 'minutes', type: 'number', min: 1, max: 180, def: 5 },
+    { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
+    { key: 'chime', type: 'bool', def: false },
+    { key: 'bar', type: 'bool', def: true }] },
+  { id: 'stopwatch', icon: '⏱️', group: 'time', who: 'both', size: [3, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset'], settings: [] },
+  { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove'], settings: [
+    { key: 'periods', type: 'periods', def: [] }] },
+  { id: 'weather', icon: '⛅', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty', 'resting', 'loading', 'hiLo', 'find', 'search', 'searchHint', 'none', 'place',
+    'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
+    { key: 'place', type: 'place', def: null },
+    { key: 'unit', type: 'select', options: ['auto', 'f', 'c'], def: 'auto' }] },
+  { id: 'qr', icon: '🔳', group: 'join', who: 'teacher', pin: false, size: [4, 4], min: [3, 3], words: ['empty', 'gone', 'scan', 'nothing'], settings: [
+    { key: 'target', type: 'target', def: null }] },
+  { id: 'picker', icon: '🙋', group: 'class', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pick', 'again', 'left', 'away', 'awayTitle', 'awayNote', 'reset', 'none', 'spin', 'noItems'], settings: [
+    { key: 'mode', type: 'select', options: ['names', 'wheel'], def: 'names' },
+    { key: 'source', type: 'select', options: ['class', 'items'], def: 'class' },
+    { key: 'items', type: 'textarea', max: 600, def: '' },
+    { key: 'norepeat', type: 'bool', def: true }] },
+  { id: 'noise', icon: '🎤', group: 'tools', who: 'teacher', pin: false, size: [4, 3], min: [4, 3], words: ['start', 'stop', 'on', 'off', 'note', 'denied', 'quiet', 'ok', 'loud'], settings: [
+    { key: 'zone', type: 'select', options: ['silent', 'whisper', 'talk', 'busy'], def: 'talk' }] },
+  { id: 'help', icon: '✋', group: 'class', who: 'teacher', pinDef: true, size: [4, 3], min: [4, 3], words: ['need', 'done', 'cancel', 'place', 'doneMine', 'empty', 'next', 'clear', 'waiting', 'finished', 'remove', 'hidden'], settings: [] },
+  { id: 'check', icon: '✅', group: 'check', who: 'teacher', pin: false, size: [5, 4], min: [4, 4], words: ['empty', 'new', 'end', 'ended', 'names', 'save', 'saved', 'savedList', 'answered', 'send', 'kind', 'question', 'questionHint',
+    'options', 'option', 'addOption', 'needOptions', 'nobody', 'notYet', 'savedNone', 'thumbs', 'fist', 'choice', 'scale', 'up', 'side', 'down'], settings: [] },
+  // ---- stage 2, second part: more everyday widgets
+  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past'], settings: [
+    { key: 'label', type: 'text', max: 60, def: '' },
+    { key: 'date', type: 'date', def: '' },
+    { key: 'time', type: 'hhmm', def: '08:00' }] },
+  { id: 'calendar', icon: '📆', group: 'time', who: 'teacher', size: [4, 4], min: [3, 3], words: ['today', 'coming', 'none', 'addMark', 'day', 'label', 'remove'], settings: [
+    { key: 'marks', type: 'marks', def: [] }] },
+  { id: 'symbols', icon: '🤫', group: 'class', who: 'teacher', size: [3, 3], min: [3, 3], words: ['change'], settings: [
+    { key: 'mode', type: 'select', options: ['silent', 'whisper', 'partner', 'together', 'hand'], def: 'whisper' }] },
+  { id: 'light', icon: '🚦', group: 'class', who: 'teacher', size: [3, 3], min: [3, 3], words: ['set'], settings: [
+    { key: 'color', type: 'select', options: ['red', 'yellow', 'green'], def: 'green' },
+    { key: 'red', type: 'text', max: 40, def: '' },
+    { key: 'yellow', type: 'text', max: 40, def: '' },
+    { key: 'green', type: 'text', max: 40, def: '' }] },
+  { id: 'dice', icon: '🎲', group: 'tools', who: 'both', pin: false, size: [3, 3], min: [3, 3], words: ['roll', 'total', 'die'], settings: [
+    { key: 'count', type: 'number', min: 1, max: 6, def: 2 }] },
+  { id: 'random', icon: '🔢', group: 'tools', who: 'both', pin: false, size: [3, 3], min: [3, 3], words: ['go', 'between'], settings: [
+    { key: 'min', type: 'number', min: -9999, max: 9999, def: 1 },
+    { key: 'max', type: 'number', min: -9999, max: 9999, def: 100 }] },
+  { id: 'groups', icon: '👥', group: 'class', who: 'teacher', pin: false, size: [6, 4], min: [4, 3], words: ['make', 'again', 'group', 'none', 'note'], settings: [
+    { key: 'by', type: 'select', options: ['size', 'count'], def: 'size' },
+    { key: 'n', type: 'number', min: 2, max: 12, def: 4 }] },
+  { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [4, 3], words: ['team', 'plus', 'minus', 'reset'], settings: [
+    { key: 'teams', type: 'textarea', max: 240, def: '' },
+    { key: 'scores', type: 'scores', hidden: true, def: [] }] },
+  { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [3, 3], words: ['add', 'remove', 'clear', 'empty'], settings: [
+    { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
+  { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
+    { key: 'tiles', type: 'tiles', def: [] }] },
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
 export const COLS = 12, MAX_ROWS = 24, MAX_H = 8, MAX_WIDGETS = 24, MAX_LAYOUTS = 12;
 export const canAdd = (type, role) => !!type && (type.who === 'both' || type.who === role);
+/** Whether a teacher may pin this type on student screens (the picker, the noise meter, QR and checks never are). */
+export const canPin = type => !!type && type.pin !== false;
 
 /** The registry as the browser gets it: labels in the reader's language. role: 'teacher' | 'student'. */
 export function registryFor(t, role) {
   const types = WIDGETS.map(w => ({
-    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role),
+    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef,
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
     words: Object.fromEntries(w.words.map(k => [k, t(`dash.w.${w.id}.${k}`)])),
     settings: w.settings.map(s => ({ ...s, label: t(`dash.w.${w.id}.s.${s.key}`),
@@ -71,6 +133,68 @@ export const cleanText = (v, max, multi = false) => {
   if (multi) s = s.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n');
   return [...s.trim()].slice(0, max).join('');
 };
+export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_STAMPS = 30, MAX_SCORE = 9999;
+/** How many stickers the fixed Oomba set has (public/js/dash-widgets.js STAMPS; no uploads). */
+export const STAMP_COUNT = 20;
+const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** A real calendar day as YYYY-MM-DD, or ''. */
+export const cleanDate = v => { const m = YMD.exec(String(v ?? '')); if (!m) return ''; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] && +m[1] >= 2000 && +m[1] <= 2100 ? m[0] : ''; };
+/** Teacher-marked calendar days: a day and a short label, one per day, in order. */
+export function cleanMarks(v) {
+  const out = new Map();
+  for (const x of Array.isArray(v) ? v : []) {
+    if (out.size >= MAX_MARKS) break;
+    const date = cleanDate(x && x.date), label = cleanText(x && x.label, 40);
+    if (date && label) out.set(date, { date, label });
+  }
+  return [...out.values()].sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+/** Scoreboard points: whole numbers, one per team. */
+export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
+/** Stickers: which one of the fixed set and where (percent of the widget). */
+export const cleanStamps = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').slice(0, MAX_STAMPS)
+  .map(x => ({ e: Number(x.e), x: Math.round(Number(x.x)), y: Math.round(Number(x.y)) }))
+  .filter(x => Number.isInteger(x.e) && x.e >= 0 && x.e < STAMP_COUNT && x.x >= 0 && x.x <= 100 && x.y >= 0 && x.y <= 100);
+const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+const ZONES = new Set(typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []);
+export const isZone = z => { if (ZONES.has(z)) return true; try { new Intl.DateTimeFormat('en', { timeZone: String(z) }); return /^[A-Za-z_]+\/[A-Za-z_/+-]+$/.test(String(z)); } catch { return false; } };
+const num = (v, lo, hi) => { const n = Number(v); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
+/** The day's periods: a name and a start and end time (HH:MM, end after start), in order, at most MAX_PERIODS. */
+export function cleanPeriods(v) {
+  const out = [];
+  for (const p of Array.isArray(v) ? v : []) {
+    if (out.length >= MAX_PERIODS) break;
+    if (!p || typeof p !== 'object' || !HHMM.test(p.start) || !HHMM.test(p.end) || p.end <= p.start) continue;
+    out.push({ name: cleanText(p.name, 40), start: p.start, end: p.end });
+  }
+  return out.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
+}
+/** A weather place the teacher picked: a name and coordinates (two decimals: about a kilometre, the cache key). */
+export function cleanPlace(v) {
+  if (!v || typeof v !== 'object') return null;
+  const lat = num(v.lat, -90, 90), lon = num(v.lon, -180, 180), name = cleanText(v.name, 80);
+  if (lat === null || lon === null || !name) return null;
+  return { name, lat: Math.round(lat * 100) / 100, lon: Math.round(lon * 100) / 100 };
+}
+export const QR_KINDS = ['link', 'live', 'lesson', 'game'];
+/** What a QR code opens: one of the class's approved links, its live game's join, an open lesson, a game. Whether it
+ *  is still allowed is checked each time the code is made (qrFor). */
+export function cleanTarget(v) {
+  if (!v || typeof v !== 'object' || !QR_KINDS.includes(v.kind)) return null;
+  const ref = String(v.ref ?? '');
+  if (v.kind === 'live') return { kind: 'live', ref: '' };
+  return ID.test(ref) ? { kind: v.kind, ref } : null;
+}
+/** Oomba tiles: games and lessons, no repeats, at most MAX_TILES. Who may open them is checked when they are shown. */
+export function cleanTiles(v) {
+  const out = [], seen = new Set();
+  for (const x of Array.isArray(v) ? v : []) {
+    if (out.length >= MAX_TILES) break;
+    if (!x || !['game', 'lesson'].includes(x.kind) || !ID.test(String(x.ref || '')) || seen.has(`${x.kind}:${x.ref}`)) continue;
+    seen.add(`${x.kind}:${x.ref}`); out.push({ kind: x.kind, ref: String(x.ref) });
+  }
+  return out;
+}
 /** One widget's settings, rebuilt from its schema. */
 export function cleanSettings(type, s = {}) {
   const out = {}; const src = s && typeof s === 'object' ? s : {};
@@ -78,6 +202,17 @@ export function cleanSettings(type, s = {}) {
     const v = src[f.key];
     if (f.type === 'bool') out[f.key] = v === undefined ? f.def : v === true || v === 1 || v === '1' || v === 'true';
     else if (f.type === 'select') out[f.key] = f.options.includes(v) ? v : f.def;
+    else if (f.type === 'number') { const n = Math.round(Number(v)); out[f.key] = v !== undefined && v !== '' && Number.isFinite(n) ? Math.min(f.max, Math.max(f.min, n)) : f.def; }
+    else if (f.type === 'zone') out[f.key] = v && isZone(v) ? String(v) : '';
+    else if (f.type === 'periods') out[f.key] = cleanPeriods(v);
+    else if (f.type === 'place') out[f.key] = cleanPlace(v);
+    else if (f.type === 'target') out[f.key] = cleanTarget(v);
+    else if (f.type === 'tiles') out[f.key] = cleanTiles(v);
+    else if (f.type === 'date') out[f.key] = cleanDate(v);
+    else if (f.type === 'hhmm') out[f.key] = HHMM.test(String(v ?? '')) ? String(v) : f.def;
+    else if (f.type === 'marks') out[f.key] = cleanMarks(v);
+    else if (f.type === 'scores') out[f.key] = cleanScores(v);
+    else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else out[f.key] = v === undefined ? f.def : cleanText(v, f.max, f.type === 'textarea');
   }
   return out;
@@ -96,7 +231,7 @@ export function cleanWidgets(list, role) {
     const type = widgetType(raw.type);
     if (!canAdd(type, role) || !ID.test(String(raw.id || '')) || seen.has(raw.id)) continue;
     seen.add(raw.id);
-    out.push({ id: String(raw.id), type: type.id, ...cleanBox(type, raw), s: cleanSettings(type, raw.s), ...(role === 'teacher' && raw.pin ? { pin: true } : {}) });
+    out.push({ id: String(raw.id), type: type.id, ...cleanBox(type, raw), s: cleanSettings(type, raw.s), ...(role === 'teacher' && raw.pin && canPin(type) ? { pin: true } : {}) });
   }
   return out;
 }
@@ -333,6 +468,8 @@ export function pushHref(c, p) {
   if (p.kind === 'live') { const room = liveRoom(c); return room && room.code === p.ref ? `/join#${p.ref}` : null; }
   if (p.kind === 'lesson') return openLessons(c).some(x => x.id === p.ref) ? `/class/${c.id}/lessons/${p.ref}` : null;
   if (p.kind === 'link') return getLink(c.id, p.ref) ? `/class/${c.id}/dashboard/link/${p.ref}` : null;
+  // A quick check opens on the dashboard itself while it is open.
+  if (p.kind === 'check') return q.get('SELECT 1 FROM dash_checks WHERE id=? AND class_id=? AND ended_at IS NULL', p.ref, c.id) ? `#check-${p.ref}` : null;
   return null;
 }
 /** Today's pushes still on (the tray), newest first, each with where it opens. Ones with nowhere to go are left out. */
@@ -362,10 +499,325 @@ export function setEyes(u, c, on) {
 }
 export const eyesOf = (classId, t = now()) => { const st = classState(classId); return st.eyes_until > t ? { until: st.eyes_until } : null; };
 
-/** What a dashboard checks every few seconds: Eyes up, today's pushes, and when the pinned widgets last changed. */
+/** What a dashboard checks every few seconds: Eyes up, today's pushes, when the pinned widgets last changed, and (stage
+ *  2) the server's clock, the teacher's timers, the help queue, quick checks and the weather. A student gets only what
+ *  is theirs: their own place in the help queue and their own answers, never anyone else's. */
 export function liveState(c, u, role) {
-  const st = classState(c.id);
-  return { eyes: eyesOf(c.id), pushes: todaysPushes(c, role === 'student' ? u.id : null), pinsAt: st.pins_at, day: dayOf(c) };
+  const st = classState(c.id), t = now();
+  const teacher = role === 'teacher';
+  const pins = json(st.pins, []);
+  const shown = teacher ? [...((currentLayout(u, c) || {}).widgets || []), ...pins] : pins;
+  const timers = json(st.timers, {});
+  const pinnedTimers = new Set(pins.filter(w => TIMER_TYPES.includes(w.type)).map(w => w.id));
+  const weather = {};
+  for (const w of shown) if (w.type === 'weather' && w.s && w.s.place) weather[placeKey(w.s.place)] = weatherFor(w.s.place, t);
+  return {
+    eyes: eyesOf(c.id, t), pushes: todaysPushes(c, teacher ? null : u.id), pinsAt: st.pins_at, day: dayOf(c), now: t,
+    timers: teacher ? timers : Object.fromEntries(Object.entries(timers).filter(([id]) => pinnedTimers.has(id))),
+    help: teacher ? { queue: helpQueue(c) } : { mine: helpMine(c, u.id) },
+    checks: checksFor(c, u, role),
+    weather,
+    ...(teacher ? { size: studentsOf(c).length } : {}),
+  };
+}
+
+// ================================================================ stage 2: everyday widgets
+/** The class's active students as everyone in class sees them: their Oomba name (display name), never the roster
+ *  (real) name. Used by the picker, the help queue and who answered a check. */
+export const studentsOf = c => S.roster(c.id).filter(r => r.role === 'student').map(r => ({ id: r.id, name: r.display_name }));
+/** One of this teacher's widgets (any of their layouts for the class) of one of these types. */
+function teacherWidget(u, c, wid, types) {
+  for (const l of layoutsOf(c.id, u.id)) { const w = l.widgets.find(x => x.id === String(wid || '')); if (w && types.includes(w.type)) return w; }
+  return null;
+}
+
+// ---------------------------------------------------------------- timers and stopwatches
+// A teacher's timer is stored as a start time and a duration ({ mode, dur, base, start, on }), never a ticking value:
+// every screen works out what is left from the server's clock (liveState.now), so they all agree.
+export const TIMER_TYPES = ['timer', 'stopwatch'];
+export const MAX_TIMER_MS = 3 * 3600e3;
+/** What a timer shows at server time t: { elapsed, left (countdowns), done }. */
+export function timerView(st, t = now()) {
+  const elapsed = Math.max(0, (st.base || 0) + (st.on ? t - st.start : 0));
+  if (st.mode !== 'down') return { elapsed, left: null, done: false };
+  const left = Math.max(0, st.dur - elapsed);
+  return { elapsed: Math.min(elapsed, st.dur), left, done: left === 0 };
+}
+export function timerAction(u, c, wid, { action, ms } = {}, t = now()) {
+  const w = teacherWidget(u, c, wid, TIMER_TYPES); if (!w) return { error: 'notFound' };
+  const all = json(classState(c.id).timers, {});
+  const down = w.type === 'timer';
+  const cur = all[w.id] && all[w.id].mode === (down ? 'down' : 'up') ? all[w.id] : { mode: down ? 'down' : 'up', dur: down ? (w.s.minutes || 5) * 60e3 : 0, base: 0, start: 0, on: false };
+  const v = timerView(cur, t);
+  if (action === 'start') { if (!cur.on) { if (down && v.done) cur.base = 0; cur.start = t; cur.on = true; } }
+  else if (action === 'pause') { if (cur.on) { cur.base = v.elapsed; cur.on = false; cur.start = 0; } }
+  else if (action === 'reset') Object.assign(cur, { base: 0, on: false, start: 0 });
+  else if (action === 'set' && down) {
+    const n = Math.round(Number(ms));
+    if (!Number.isFinite(n) || n < 1000 || n > MAX_TIMER_MS) return { error: 'timer' };
+    Object.assign(cur, { dur: n, base: 0, on: false, start: 0 });
+  } else return { error: 'timer' };
+  // Keep only timers whose widget is still on one of the class's layouts.
+  const ids = new Set(q.all('SELECT widgets FROM dash_layouts WHERE class_id=?', c.id).flatMap(r => json(r.widgets, []).map(x => x.id)));
+  const next = Object.fromEntries(Object.entries(all).filter(([id]) => ids.has(id) && id !== w.id));
+  next[w.id] = cur;
+  ensureClassRow(c.id);
+  q.run('UPDATE dash_class SET timers=? WHERE class_id=?', JSON.stringify(next), c.id);
+  return { timer: cur, now: t };
+}
+
+// ---------------------------------------------------------------- the random student picker (teacher only)
+function pickerState(c) {
+  const p = json(classState(c.id).picker, {});
+  return p && p.day === dayOf(c) ? { picked: [], away: [], last: null, ...p } : { day: dayOf(c), picked: [], away: [], last: null };
+}
+/** The class's students (their Oomba names), who was picked this round and who is away today. */
+export function pickerView(c) {
+  const p = pickerState(c), kids = studentsOf(c), here = new Set(kids.map(k => k.id));
+  return { students: kids, picked: p.picked.filter(id => here.has(id)), away: p.away.filter(id => here.has(id)) };
+}
+export function pickerAction(u, c, { action, user, on = true, norepeat = true } = {}) {
+  const p = pickerState(c), kids = studentsOf(c);
+  let pick = null;
+  if (action === 'pick') {
+    const away = new Set(p.away);
+    let pool = kids.filter(k => !away.has(k.id));
+    if (!pool.length) return { error: 'nobody' };
+    if (norepeat) {
+      const fresh = pool.filter(k => !p.picked.includes(k.id));
+      if (!fresh.length) p.picked = [];   // everyone has had a turn: a new round
+      else pool = fresh;
+    }
+    // Not the same student twice in a row when anyone else is left.
+    if (pool.length > 1 && p.last) pool = pool.filter(k => k.id !== p.last);
+    pick = pool[crypto.randomInt(pool.length)];
+    if (!p.picked.includes(pick.id)) p.picked.push(pick.id);
+    p.last = pick.id;
+  } else if (action === 'away') {
+    const k = kids.find(x => x.id === String(user || '')); if (!k) return { error: 'notFound' };
+    p.away = p.away.filter(id => id !== k.id); if (on) p.away.push(k.id);
+  } else if (action === 'reset') { p.picked = []; p.last = null; }
+  else return { error: 'kind' };
+  ensureClassRow(c.id);
+  q.run('UPDATE dash_class SET picker=? WHERE class_id=?', JSON.stringify(p), c.id);
+  return { ...pickerView(c), ...(pick ? { pick } : {}) };
+}
+
+// ---------------------------------------------------------------- the help queue
+// Students tap "I need help" or "I'm done" (fixed buttons, no text). The teacher sees the queue in order; a student
+// sees only their own place. Today only.
+export const HELP_KINDS = ['help', 'done'];
+export function helpQueue(c) {
+  return q.all(`SELECT h.user_id id, u.display_name name, h.kind, h.at FROM dash_help h JOIN users u ON u.id=h.user_id
+    JOIN class_members m ON m.class_id=h.class_id AND m.user_id=h.user_id AND m.status='active' AND m.role='student'
+    WHERE h.class_id=? AND h.day=? ORDER BY h.at, h.rowid`, c.id, dayOf(c));
+}
+export function helpMine(c, userId) {
+  const list = helpQueue(c), me = list.find(x => x.id === userId);
+  if (!me) return null;
+  return { kind: me.kind, ...(me.kind === 'help' ? { place: list.filter(x => x.kind === 'help').findIndex(x => x.id === userId) + 1 } : {}) };
+}
+export function helpAsk(u, c, kind) {
+  if (kind === 'cancel') { q.run('DELETE FROM dash_help WHERE class_id=? AND user_id=?', c.id, u.id); return { mine: null }; }
+  if (!HELP_KINDS.includes(kind)) return { error: 'kind' };
+  const day = dayOf(c), old = q.get('SELECT kind, day FROM dash_help WHERE class_id=? AND user_id=?', c.id, u.id);
+  if (!(old && old.kind === kind && old.day === day)) {
+    q.run(`INSERT INTO dash_help(class_id, user_id, kind, day, at) VALUES (?,?,?,?,?) ON CONFLICT(class_id, user_id) DO UPDATE SET kind=excluded.kind, day=excluded.day, at=excluded.at`, c.id, u.id, kind, day, now());
+  }
+  return { mine: helpMine(c, u.id) };
+}
+/** The teacher: next (the first who needs help leaves the queue), remove one, or clear (help, done or both). */
+export function helpTeacher(u, c, { action, user, kind } = {}) {
+  const day = dayOf(c);
+  if (action === 'next') {
+    const first = helpQueue(c).find(x => x.kind === 'help');
+    if (first) q.run('DELETE FROM dash_help WHERE class_id=? AND user_id=?', c.id, first.id);
+    return { served: first ? { id: first.id, name: first.name } : null, queue: helpQueue(c) };
+  }
+  if (action === 'remove') q.run('DELETE FROM dash_help WHERE class_id=? AND user_id=?', c.id, String(user || ''));
+  else if (action === 'clear') {
+    if (HELP_KINDS.includes(kind)) q.run('DELETE FROM dash_help WHERE class_id=? AND kind=?', c.id, kind);
+    else q.run('DELETE FROM dash_help WHERE class_id=?', c.id);
+  } else return { error: 'kind' };
+  q.run('DELETE FROM dash_help WHERE class_id=? AND day<>?', c.id, day);
+  return { queue: helpQueue(c) };
+}
+
+// ---------------------------------------------------------------- quick checks (broadcast)
+// The teacher sends a quick check; it reaches student screens as a push (banner and tray). Students answer with a tap:
+// thumbs (up, sideways, down), fist to five (0-5), multiple choice (the teacher's options) or a 1-5 scale. No free
+// text. The teacher sees totals live and, on their own tap, who answered what; students never see anyone else's
+// answer; the projector shows totals only. Kept for the school day unless the teacher saves them. Never sent to an AI.
+export const CHECK_KINDS = ['thumbs', 'fist', 'choice', 'scale'];
+export const MAX_OPTIONS = 6;
+const choicesOf = ch => (ch.kind === 'thumbs' ? 3 : ch.kind === 'fist' ? 6 : ch.kind === 'scale' ? 5 : ch.options.length);
+const readCheck = r => (r ? { ...r, options: json(r.options, []) } : null);
+const getCheck = (c, id) => readCheck(q.get('SELECT * FROM dash_checks WHERE id=? AND class_id=?', String(id || ''), c.id));
+/** Unsaved checks from earlier days (and their answers) are gone. */
+function dropOldChecks(c) {
+  const day = dayOf(c);
+  q.run('DELETE FROM dash_answers WHERE check_id IN (SELECT id FROM dash_checks WHERE class_id=? AND day<>? AND saved_at IS NULL)', c.id, day);
+  q.run('DELETE FROM dash_checks WHERE class_id=? AND day<>? AND saved_at IS NULL', c.id, day);
+}
+export function createCheck(u, c, { kind, question, options } = {}) {
+  if (!CHECK_KINDS.includes(kind)) return { error: 'checkKind' };
+  const opts = kind === 'choice' ? (Array.isArray(options) ? options : []).map(o => cleanText(o, 60)).filter(Boolean).slice(0, MAX_OPTIONS) : [];
+  if (kind === 'choice' && opts.length < 2) return { error: 'checkOptions' };
+  const day = dayOf(c);
+  if (q.get('SELECT COUNT(*) n FROM dash_pushes WHERE class_id=? AND day=?', c.id, day).n >= MAX_PUSHES_A_DAY) return { error: 'tooManyPushes' };
+  const id = uid(12), t = now(), text = cleanText(question, 120);
+  tx(() => {
+    dropOldChecks(c);
+    // One open check at a time: a new one ends the last.
+    for (const old of q.all('SELECT id FROM dash_checks WHERE class_id=? AND ended_at IS NULL', c.id)) endCheckRow(c, old.id, t);
+    q.run('INSERT INTO dash_checks(id, class_id, day, kind, question, options, by_id, created_at) VALUES (?,?,?,?,?,?,?,?)', id, c.id, day, kind, text, JSON.stringify(opts), u.id, t);
+    q.run("INSERT INTO dash_pushes(id, class_id, day, kind, ref, title, by_id, created_at) VALUES (?,?,?,'check',?,?,?,?)", uid(12), c.id, day, id, text, u.id, t);
+  });
+  audit(u.id, 'dash.check', c.id, { check: id, kind });
+  return { check: id };
+}
+function endCheckRow(c, id, t = now()) {
+  q.run('UPDATE dash_checks SET ended_at=? WHERE id=? AND class_id=? AND ended_at IS NULL', t, id, c.id);
+  q.run("UPDATE dash_pushes SET ended_at=? WHERE class_id=? AND kind='check' AND ref=? AND ended_at IS NULL", t, c.id, id);
+}
+export function endCheck(u, c, id) { const ch = getCheck(c, id); if (!ch) return { error: 'notFound' }; endCheckRow(c, ch.id); return { ok: true }; }
+export function saveCheck(u, c, id, saved = true) {
+  const ch = getCheck(c, id); if (!ch) return { error: 'notFound' };
+  q.run('UPDATE dash_checks SET saved_at=? WHERE id=?', saved ? now() : null, ch.id);
+  return { ok: true };
+}
+/** A student's tap. Only on an open check of today, only a value the check has. */
+export function answerCheck(u, c, id, value) {
+  const ch = getCheck(c, id);
+  if (!ch || ch.ended_at || ch.day !== dayOf(c)) return { error: 'checkClosed' };
+  const v = Number(value);
+  if (!Number.isInteger(v) || v < 0 || v >= choicesOf(ch)) return { error: 'checkValue' };
+  q.run('INSERT INTO dash_answers(check_id, user_id, value, at) VALUES (?,?,?,?) ON CONFLICT(check_id, user_id) DO UPDATE SET value=excluded.value, at=excluded.at', ch.id, u.id, v, now());
+  return { mine: v };
+}
+/** Answers of current students only (one who left the class no longer counts). */
+const answersOf = (c, id) => q.all(`SELECT a.user_id, a.value FROM dash_answers a JOIN class_members m ON m.class_id=? AND m.user_id=a.user_id AND m.status='active' AND m.role='student' WHERE a.check_id=?`, c.id, id);
+const tallyOf = (c, ch) => { const n = new Array(choicesOf(ch)).fill(0); const a = answersOf(c, ch.id); for (const x of a) if (x.value < n.length) n[x.value]++; return { tally: n, n: a.length }; };
+/** Teacher: today's checks (newest first) with totals, no names. Student: today's open checks with their own answer. */
+export function checksFor(c, u, role) {
+  if (role === 'teacher') dropOldChecks(c);
+  const list = q.all('SELECT * FROM dash_checks WHERE class_id=? AND day=? ORDER BY created_at DESC, rowid DESC LIMIT 12', c.id, dayOf(c)).map(readCheck);
+  if (role === 'teacher') return list.map(ch => ({ id: ch.id, kind: ch.kind, q: ch.question, options: ch.options, ...tallyOf(c, ch), open: !ch.ended_at, saved: !!ch.saved_at, at: ch.created_at }));
+  return list.filter(ch => !ch.ended_at).map(ch => {
+    const mine = q.get('SELECT value FROM dash_answers WHERE check_id=? AND user_id=?', ch.id, u.id);
+    return { id: ch.id, kind: ch.kind, q: ch.question, options: ch.options, mine: mine ? mine.value : null, at: ch.created_at };
+  });
+}
+/** The teacher only: who answered what (Oomba names), and who hasn't answered yet. */
+export function checkNames(c, id) {
+  const ch = getCheck(c, id); if (!ch) return { error: 'notFound' };
+  const kids = studentsOf(c), byId = new Map(kids.map(k => [k.id, k.name]));
+  const groups = Array.from({ length: choicesOf(ch) }, () => []);
+  const answered = new Set();
+  for (const a of answersOf(c, ch.id)) if (groups[a.value] && byId.has(a.user_id)) { groups[a.value].push(byId.get(a.user_id)); answered.add(a.user_id); }
+  return { groups, missing: kids.filter(k => !answered.has(k.id)).map(k => k.name) };
+}
+/** Checks the teacher saved (any day), newest first, totals only. */
+export const savedChecks = c => q.all('SELECT * FROM dash_checks WHERE class_id=? AND saved_at IS NOT NULL ORDER BY created_at DESC LIMIT 40', c.id).map(readCheck)
+  .map(ch => ({ id: ch.id, kind: ch.kind, q: ch.question, options: ch.options, day: ch.day, ...tallyOf(c, ch) }));
+
+// ---------------------------------------------------------------- weather (Open-Meteo, no key)
+// The teacher types a city; the server looks it up (geocoding-api.open-meteo.com) and the widget keeps the place's name
+// and coordinates. Never the browser's or a student's location. The server fetches the forecast (api.open-meteo.com),
+// keeps it per place for WEATHER_MS, and a screen gets it with its live state. A failure or a slow answer is "resting".
+export const WEATHER_MS = 20 * 60e3, RESTING_MS = 5 * 60e3, WEATHER_STALE_MS = 2 * 3600e3, MAX_PLACES_CACHED = 500;
+let weatherTimeout = 6000;
+let fetchFn = (...a) => fetch(...a);
+/** Tests swap the network out (and back with no argument). */
+export function _setWeatherFetch(f, timeoutMs = 6000) { fetchFn = f || ((...a) => fetch(...a)); weatherTimeout = timeoutMs; weatherCache.clear(); }
+export const weatherCache = new Map();
+export const placeKey = p => `${Number(p.lat).toFixed(2)},${Number(p.lon).toFixed(2)}`;
+/** A WMO weather code -> the word group the widget shows (dash.w.weather.<group>). */
+export function weatherGroup(code, day = true) {
+  const n = Number(code);
+  if (n === 0 || n === 1) return day ? 'clear' : 'clearNight';
+  if (n === 2) return 'partly';
+  if (n === 3) return 'cloudy';
+  if (n === 45 || n === 48) return 'fog';
+  if (n >= 51 && n <= 57) return 'drizzle';
+  if ((n >= 61 && n <= 67) || (n >= 80 && n <= 82)) return 'rain';
+  if ((n >= 71 && n <= 77) || n === 85 || n === 86) return 'snow';
+  if (n >= 95) return 'storm';
+  return 'cloudy';
+}
+async function getJson(url) {
+  const res = await fetchFn(url, { signal: AbortSignal.timeout(weatherTimeout), headers: { accept: 'application/json' } });
+  if (!res || !res.ok) throw new Error(`weather ${res ? res.status : 'no answer'}`);
+  return res.json();
+}
+/** Fetch one place's weather now (temperatures in °C; the browser converts). Never throws. */
+export async function refreshWeather(place, t = now()) {
+  const p = cleanPlace(place); if (!p) return null;
+  const key = placeKey(p), old = weatherCache.get(key);
+  weatherCache.set(key, { ...(old || {}), pending: true, until: t + RESTING_MS });
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`;
+    const j = await Promise.race([getJson(url), new Promise((_, bad) => setTimeout(() => bad(new Error('weather timeout')), weatherTimeout + 50).unref?.())]);
+    const cur = j && j.current, d = j && j.daily;
+    const temp = Number(cur && cur.temperature_2m);
+    if (!Number.isFinite(temp)) throw new Error('weather: no temperature');
+    const day = cur.is_day !== 0;
+    const data = { t: temp, hi: Number(d && d.temperature_2m_max && d.temperature_2m_max[0]), lo: Number(d && d.temperature_2m_min && d.temperature_2m_min[0]), code: Number(cur.weather_code), day, group: weatherGroup(cur.weather_code, day), at: t };
+    if (!Number.isFinite(data.hi)) data.hi = null; if (!Number.isFinite(data.lo)) data.lo = null;
+    weatherCache.set(key, { data, until: t + WEATHER_MS, pending: false });
+  } catch {
+    // Keep a recent forecast through a short outage; otherwise the widget says "Weather is resting".
+    const keep = old && old.data && t - old.data.at < WEATHER_STALE_MS ? old.data : null;
+    weatherCache.set(key, { data: keep, resting: !keep, until: t + RESTING_MS, pending: false });
+  }
+  if (weatherCache.size > MAX_PLACES_CACHED) weatherCache.delete(weatherCache.keys().next().value);
+  return weatherCache.get(key);
+}
+/** What a screen shows for a place right now: the cached forecast, { resting }, or { loading } while the first fetch
+ *  runs. A stale entry is refreshed in the background (the live answer never waits for the network). */
+export function weatherFor(place, t = now()) {
+  const p = cleanPlace(place); if (!p) return { resting: true };
+  const e = weatherCache.get(placeKey(p));
+  if ((!e || e.until <= t) && !(e && e.pending)) refreshWeather(p, t).catch(() => {});
+  const cur = weatherCache.get(placeKey(p));
+  if (cur && cur.data) return cur.data;
+  return cur && cur.resting ? { resting: true } : { loading: true };
+}
+/** The teacher types a city: up to 6 places (name, region, country and coordinates), or { error: 'resting' }. */
+export async function findPlaces(text, lang = 'en') {
+  const name = cleanText(text, 60);
+  if (name.length < 2) return { places: [] };
+  try {
+    const j = await getJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=6&language=${encodeURIComponent(String(lang).slice(0, 2))}&format=json`);
+    const places = (j && Array.isArray(j.results) ? j.results : []).map(r => cleanPlace({ name: [r.name, r.admin1, r.country].filter(Boolean).join(', '), lat: r.latitude, lon: r.longitude })).filter(Boolean);
+    return { places };
+  } catch { return { error: 'resting' }; }
+}
+
+// ---------------------------------------------------------------- QR codes
+/** Where a QR widget's target goes, if it is still allowed: one of the class's approved links (through the class's own
+ *  link address, so a removed link stops working), the class's live game join, an open class lesson, or a game every
+ *  student can open. -> { url, text (short, shown under the code), title } or null. */
+export function qrTarget(c, target, origin) {
+  const tg = cleanTarget(target); if (!tg) return null;
+  const short = s => { const x = String(s).replace(/^https?:\/\//, '').replace(/\/$/, ''); return x.length > 48 ? `${x.slice(0, 47)}…` : x; };
+  if (tg.kind === 'link') { const l = getLink(c.id, tg.ref); if (!l || !cleanUrl(l.url)) return null; return { url: `${origin}/class/${c.id}/dashboard/link/${l.id}`, text: short(l.url), title: l.title }; }
+  if (tg.kind === 'live') { const room = liveRoom(c); if (!room) return null; const url = `${origin}/join#${room.code}`; return { url, text: short(url), title: room.title }; }
+  if (tg.kind === 'lesson') { const cl = openLessons(c).find(x => x.id === tg.ref); if (!cl) return null; const url = `${origin}/class/${c.id}/lessons/${cl.id}`; return { url, text: short(url), title: cl.title }; }
+  if (tg.kind === 'game') { const g = games.getGame(tg.ref); if (!pushableGame(c, g)) return null; const url = `${origin}/play/${g.slug}`; return { url, text: short(url), title: g.title }; }
+  return null;
+}
+
+// ---------------------------------------------------------------- Oomba tiles
+/** Tiles as a reader of the class sees them: only games every student can open and the class's open lessons. Titles
+ *  and icons only: no prices, plans or upgrade words exist here. */
+export function resolveTiles(c, tiles) {
+  const out = [];
+  for (const x of cleanTiles(tiles)) {
+    if (x.kind === 'game') { const g = games.getGame(x.ref); if (pushableGame(c, g)) out.push({ kind: 'game', ref: g.id, title: g.title, icon: g.icon || '🎮', href: `/play/${g.slug}` }); }
+    else { const cl = openLessons(c).find(l => l.id === x.ref); if (cl) out.push({ kind: 'lesson', ref: cl.id, title: cl.title, icon: '📚', href: `/class/${c.id}/lessons/${cl.id}` }); }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- background pictures
@@ -425,4 +877,13 @@ export function forgetUser(userId) {
   for (const p of q.all('SELECT id FROM dash_pictures WHERE owner_id=?', userId)) dropPicture(p.id);
   q.run('DELETE FROM dash_students WHERE user_id=?', userId);
   q.run('DELETE FROM dash_push_hidden WHERE user_id=?', userId);
+  // Stage 2: their place in help queues, their check answers, and any picker list they are on.
+  q.run('DELETE FROM dash_help WHERE user_id=?', userId);
+  q.run('DELETE FROM dash_answers WHERE user_id=?', userId);
+  for (const r of q.all("SELECT class_id, picker FROM dash_class WHERE picker LIKE ?", `%${userId}%`)) {
+    const p = json(r.picker, {});
+    for (const k of ['picked', 'away']) if (Array.isArray(p[k])) p[k] = p[k].filter(id => id !== userId);
+    if (p.last === userId) p.last = null;
+    q.run('UPDATE dash_class SET picker=? WHERE class_id=?', JSON.stringify(p), r.class_id);
+  }
 }
