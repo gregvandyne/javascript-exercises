@@ -1739,6 +1739,7 @@
     "scanStillFailing": "Il controllo di sicurezza non è ancora contento. Tocca «Fai sistemare al Costruttore» per riprovare.",
     "turnTimeout": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato. La tua versione più nuova è salvata. Dimmi cosa cambiare adesso!",
     "turnTimeoutNothing": "⏱️ Questa costruzione è durata più del nostro tempo massimo, quindi mi sono fermato prima di riuscire a salvare qualcosa. Non ha usato nessun messaggio al Costruttore, quindi puoi riprovare.",
+    "planStarted": "Ho iniziato il tuo gioco con i personaggi che hai scelto.",
     "errors": {
       "disabled": "La creazione di giochi è spenta per questo account. Un adulto può chiederci di riaccenderla.",
       "empty": "Prima scrivi un messaggio o tocca un'idea.",

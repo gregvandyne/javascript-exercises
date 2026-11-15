@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ART2D_WORLDS, ART2D_CHARACTERS, ART2D_VERSIONS, ART2D_HELPER } from './art2d-catalog.js';
-import { oomba2dTag, art2dPackTag, ART2D_PACKS } from '../services/art2d.js';
+import { oomba2dTag, art2dPackTag, art2dPacksOf, ART2D_PACKS } from '../services/art2d.js';
 import { art2dOf } from '../services/art2d-lint.js';
 import { LOCALES_DIR, CODES } from '../i18n/index.js';
 
@@ -82,6 +82,36 @@ export function art2dEdits(html, { world = '', hero = '' } = {}) {
 }
 /** Does this game draw with the 2D art (it loads Oomba2D with a pinned tag)? */
 export const isArt2dGame = html => /\/vendor\/art2d\/oomba2d\/\d+\.\d+\.\d+\/oomba2d\.js/.test(String(html || ''));
+const FRIENDS_ARE = [/\bfriends2d\s*:\s*\[([^\]]*)\]/, /Oomba2D\s*\.\s*use\s*\(\s*\{[^}]*\bfriends\s*:\s*\[([^\]]*)\]/];
+/** Who a 2D art game draws: { world, hero, friends: [ids] } (its CONFIG lines, or its own Oomba2D.use call), or null
+ *  when it does not use Oomba2D at all. */
+export function art2dCast(html) {
+  const s = String(html || ''), base = art2dOf(s); if (!base) return null;
+  const friends = [];
+  for (const re of FRIENDS_ARE) { const m = re.exec(s); if (m) for (const x of m[1].matchAll(/['"]([a-z0-9-]{2,40})['"]/g)) if (!friends.includes(x[1])) friends.push(x[1]); }
+  return { world: base.world, hero: base.hero, friends };
+}
+/**
+ * What a game leaves out of the 2D art it must draw. want: { world, hero, friends } (the setup plan's: plan.js
+ * planArt2d). Every character of want (the hero and each friend) must be drawn, as the hero (CONFIG.hero2d) or as a
+ * friend (CONFIG.friends2d), with Oomba2D and each pack loaded with its pinned tag; want.world, when there is one, is
+ * the game's world. -> [] when the game keeps all of it, else short reasons (for the model).
+ */
+export function art2dMissing(html, want = {}) {
+  const src = String(html || ''), cast = art2dCast(src), out = [];
+  const hero = art2dCharacter(want.hero), chars = [...(hero ? [hero] : []), ...art2dFriends(want.friends, hero ? hero.id : '')];
+  const world = art2dWorld(want.world);
+  if (!chars.length && !world) return out;
+  if (!isArt2dGame(src) || !cast) return ['the game does not draw with the 2D art at all (no Oomba2D tag, no CONFIG.hero2d / CONFIG.friends2d)'];
+  const drawn = new Set([cast.hero, ...cast.friends].filter(Boolean));
+  const gone = chars.filter(c => !drawn.has(c.id)).map(c => c.id);
+  if (gone.length) out.push(`these picked characters are not in CONFIG.hero2d or CONFIG.friends2d: ${gone.join(', ')}`);
+  if (world && cast.world !== world.id) out.push(`CONFIG.world must be '${world.id}'`);
+  const loaded = new Set(art2dPacksOf(src).map(p => p.id)), packs = [...new Set([...(world ? [world.id] : []), ...chars.map(c => c.pack)])];
+  const unloaded = packs.filter(id => !loaded.has(id));
+  if (unloaded.length) out.push(`the pack tag of ${unloaded.join(', ')} is missing`);
+  return out;
+}
 
 // ---- What a message asks for --------------------------------------------------------------------------------------
 const norm = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[’‘`]/g, '\'');
@@ -239,7 +269,8 @@ export function art2dNote(pick) {
   const fr = art2dFriends(pick.friends, c ? c.id : '');
   return `2D ART CHOICE: ${how}${w ? ` the 2D world ${w.id} ("${w.name}")` : ''}${w && c ? ' and' : ''}${c ? ` the sprite ${c.kind} ${c.id} (${c.name})` : ''}${!w && !c ? ' an animal' : ''}. `
     + (fr.length ? `Friends who are in the game too (start_from_template friends, CONFIG.friends2d): ${fr.map(f => f.id).join(', ')}. ` : '')
-    + (pick.soft ? `Only if this is a running or catching game: start_from_template "runner" or "catch" with sprite "${c ? c.id : ''}". For any other kind of game use the kit's own characters and say nothing about sprites.` : pick.by === 'game' && !pick.changed ? 'Keep them unless they ask for another.' : w || c ? `For a runner or a catching game call start_from_template with template "runner" or "catch"${w ? `, world "${w.id}"` : ''}${c ? `, sprite "${c.id}"` : ''}; other kinds of 2D game do not draw the worlds yet (say so in one short sentence if they asked for one).` : '')
+    + (pick.by === 'plan' && (w || c) ? `They picked ${c ? 'these characters' : 'this world'} in the setup steps, so this build MUST be a running or catching game that draws them: start_from_template with template "runner" or "catch"${w ? `, world "${w.id}"` : ''}${c ? `, sprite "${c.id}"` : ''}${fr.length ? ` and friends ${JSON.stringify(fr.map(f => f.id))}` : ''}, then make it theirs with edit_game. Every version of this build must keep CONFIG.world, CONFIG.hero2d, CONFIG.friends2d and the 2D art tags: a version that leaves out a picked character is not saved. Never write the game from scratch and never draw these characters with the kit's own characters.`
+      : pick.soft ? `Only if this is a running or catching game: start_from_template "runner" or "catch" with sprite "${c ? c.id : ''}". For any other kind of game use the kit's own characters and say nothing about sprites.` : pick.by === 'game' && !pick.changed ? 'Keep them unless they ask for another.' : w || c ? `For a runner or a catching game call start_from_template with template "runner" or "catch"${w ? `, world "${w.id}"` : ''}${c ? `, sprite "${c.id}"` : ''}${fr.length ? ` and friends ${JSON.stringify(fr.map(f => f.id))}` : ''}; other kinds of 2D game do not draw the worlds yet (say so in one short sentence if they asked for one).` : '')
     + (pick.missing ? ' They asked for an animal that has no sprite yet: say that kindly in one short sentence and use the kit\'s own characters.' : '');
 }
 export { ART2D_VERSIONS };

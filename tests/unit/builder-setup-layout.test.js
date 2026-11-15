@@ -329,3 +329,42 @@ test('"I know what I want" and "Skip to the Builder" go straight to an empty Stu
   assert.ok(!/animation|transition/.test(fs.readFileSync(new URL('../../public/css/build-setup.css', import.meta.url), 'utf8')));
   await ctx.close();
 });
+
+// The reported bug: on an iPhone, 2D and "Select all" on the Sea section, and the game showed the kit's own characters.
+// The whole way through in the browser: every sea animal is picked and sent as the plan, the build draws the dolphin
+// (the first one picked) as the hero with the other 22 as friends from the animals 1.1.0 pack, and in the game frame
+// the title shows the dolphin sprite (not the kit's hero) and sea animals stand along the way.
+test('iPhone, 2D, "Select all" on Sea: the game draws the dolphin and the other 22 sea animals, never the kit\'s own characters', { skip, timeout: 180_000 }, async () => {
+  const { devices } = await import('playwright-core');
+  const { ctx, page } = await open(390, 844, { ...devices['iPhone 13'] });
+  const sent = []; page.on('request', r => { if (/\/api\/studio\/[\w-]+\/chat$/.test(r.url())) sent.push(JSON.parse(r.postData() || '{}')); });
+  await page.click('#su-guide'); await page.click('.su-screen:not([hidden]) [data-go="skip"]');   // game type: left to the Builder
+  await page.click('.su-pick[data-step="look"][data-id="2d"]'); await next(page);
+  await page.click('.su-screen:not([hidden]) [data-go="skip"]');                                      // world: left to the Builder
+  const SEA = plan.characterGroups().find(g => g.id === 'sea').items.map(c => c.id);
+  await page.click('.su-all[data-all="chars:sea"]');
+  const picked = await page.evaluate(() => [...document.querySelectorAll('.su-pick[data-step="chars"][aria-pressed="true"]')].map(b => b.dataset.id));
+  assert.deepEqual(picked, SEA, 'Select all picks all 23 sea animals in 2D, none taken out');
+  assert.equal(await page.textContent('.su-pick[data-step="chars"][data-id="dolphin"] .su-desc'), 'You play as this one');
+  await next(page); await page.click('.su-screen:not([hidden]) [data-go="skip"]'); await next(page);
+  await page.waitForFunction(() => /Here is my game plan/.test(document.querySelector('#su-told').textContent));
+  await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
+  const id = page.url().split('/').pop();
+  await runner.idle(id);
+  assert.equal(sent.length, 1); assert.equal(sent[0].plan.look, '2d'); assert.deepEqual(sent[0].plan.characters.map(c => c.id), SEA, 'the plan with every animal reaches the chat');
+  const html = games.getVersion(games.getGame(id).current_version_id).html;
+  assert.ok(html.includes("\n  hero2d: 'dolphin',\n") && html.includes(`\n  friends2d: [${SEA.slice(1).map(x => `'${x}'`).join(', ')}],\n`));
+  assert.ok(html.includes('/vendor/art2d/animals/1.1.0/pack.js') && html.includes('/vendor/art2d/oomba2d/1.1.0/oomba2d.js'));
+  // the game itself, at phone size
+  await page.reload(); await page.waitForSelector('#st-frame[src*="/frame/"]');
+  const game = await ctx.newPage(); const errors = []; game.on('pageerror', e => errors.push(String(e)));
+  await game.goto(BASE + await page.getAttribute('#st-frame', 'src'));
+  await game.waitForFunction(() => window.Oomba2D && document.querySelector('canvas.a2d-portrait'), null, { timeout: 60_000 });
+  assert.equal(await game.evaluate(() => document.querySelectorAll('.ok-title-hero canvas.ok-portrait').length), 0, 'the title shows the dolphin sprite, not the kit\'s hero');
+  await game.waitForFunction(() => { const X = window.__brbTest; if (!X || !X.state) return false; const s = X.state().scene; if (s !== 'play' && X.start) X.start(); return s === 'play'; }, null, { timeout: 60_000, polling: 400 });
+  await game.waitForFunction(() => window.Oomba2D.friendsNow.length >= 1, null, { timeout: 60_000, polling: 300 });
+  const now = await game.evaluate(() => window.Oomba2D.friendsNow.map(f => f.id));
+  for (const f of now) assert.ok(SEA.slice(1).includes(f), `${f} is one of the sea animals`);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

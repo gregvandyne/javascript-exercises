@@ -1739,6 +1739,7 @@
     "scanStillFailing": "De veiligheidscheck is nog niet tevreden. Tik op “Laat de Bouwer het repareren” om het opnieuw te proberen.",
     "turnTimeout": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt. Je nieuwste versie is bewaard. Vertel me wat ik nu moet veranderen!",
     "turnTimeoutNothing": "⏱️ Dit bouwen duurde langer dan onze tijdslimiet, dus ik ben gestopt voordat ik iets kon bewaren. Het heeft geen bericht aan de Bouwer gekost, dus je kunt het nog eens proberen.",
+    "planStarted": "Ik ben je spel begonnen met de figuren die je hebt gekozen.",
     "errors": {
       "disabled": "Bouwen staat uit voor dit account. Een volwassene kan ons vragen het weer aan te zetten.",
       "empty": "Typ eerst een bericht of tik op een idee.",
