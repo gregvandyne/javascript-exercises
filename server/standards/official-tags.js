@@ -70,6 +70,10 @@ export const GAMES = Object.freeze({
   // number (and a squaring machine), expressions that are equal (expand, combine like terms, factor, subtract a sum), and
   // equations and inequalities solved by undoing a line of operations (its three chapters, MACHINE_CHAPTERS below).
   'machine-line': { 'ccss-math': ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1', '6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2', '6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'] },
+  // Scale Scout (grade 7, Number Quest Pro Unit 4): proportional relationships in tables and graphs and their constant (also a
+  // unit rate from fractions), a map's scale used both ways and as an equation, real areas and a plan redrawn at another
+  // scale, and multi-step percent problems: percent change and percent error (its three chapters, SCOUT_CHAPTERS below).
+  'scale-scout': { 'ccss-math': ['7.RP.A.2a', '7.RP.A.2b', '7.RP.A.1', '7.G.A.1', '7.RP.A.2c', '7.RP.A.2d', '7.RP.A.3', '7.EE.B.3'] },
   // Sky Lines (grade 8, Number Quest Pro Unit 5): the steepness of a line as up over across (also going down, in all four
   // quadrants), a line as a rule with a start height and a steady change, and where two lines meet, never meet or are one
   // line (its three chapters, SKY_CHAPTERS below).
@@ -130,12 +134,16 @@ export const SUBZERO_CHAPTERS = Object.freeze({
 export const MACHINE_CHAPTERS = Object.freeze({
   build: ['6.EE.A.2', '6.EE.B.6', '6.EE.A.1'], same: ['6.EE.A.3', '6.EE.A.4', '7.EE.A.1', '7.EE.A.2'], undo: ['6.EE.B.7', '7.EE.B.4a', '6.EE.B.5', '6.EE.B.8', '7.EE.B.4b'],
 });
+/** Scale Scout's chapters (seed-games/scale-scout.html ScaleScout.CHAPTERS), for a step locked to one. */
+export const SCOUT_CHAPTERS = Object.freeze({
+  constant: ['7.RP.A.2a', '7.RP.A.2b', '7.RP.A.1'], scale: ['7.G.A.1', '7.RP.A.2c', '7.RP.A.2d'], percent: ['7.RP.A.3', '7.EE.B.3'],
+});
 /** Sky Lines' chapters (seed-games/sky-lines.html SkyLines.CHAPTERS), for a step locked to one. */
 export const SKY_CHAPTERS = Object.freeze({
   slope: ['8.EE.B.5', '8.EE.B.6', '6.NS.C.8'], rule: ['8.F.B.4', '8.F.A.1', '8.F.A.3', '6.EE.C.9'], meet: ['8.EE.C.7', '8.EE.C.8'],
 });
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'sky-lines']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -155,6 +163,7 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'lantern-mix') { const ch = p.get('chapter') || ''; return Object.hasOwn(LANTERN_CHAPTERS, ch) ? [...LANTERN_CHAPTERS[ch]] : null; }
   if (slug === 'sub-zero') { const ch = p.get('chapter') || ''; return Object.hasOwn(SUBZERO_CHAPTERS, ch) ? [...SUBZERO_CHAPTERS[ch]] : null; }
   if (slug === 'machine-line') { const ch = p.get('chapter') || ''; return Object.hasOwn(MACHINE_CHAPTERS, ch) ? [...MACHINE_CHAPTERS[ch]] : null; }
+  if (slug === 'scale-scout') { const ch = p.get('chapter') || ''; return Object.hasOwn(SCOUT_CHAPTERS, ch) ? [...SCOUT_CHAPTERS[ch]] : null; }
   if (slug === 'sky-lines') { const ch = p.get('chapter') || ''; return Object.hasOwn(SKY_CHAPTERS, ch) ? [...SKY_CHAPTERS[ch]] : null; }
   return null;
 }

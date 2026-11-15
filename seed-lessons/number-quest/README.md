@@ -711,8 +711,9 @@ is a name only: nothing is registered for it, and no file exists.
 
 **Built so far:** Unit 1, The Mixing Tower, with Lantern Mix; Unit 2, The Cold Store, with Sub Zero; Unit 3, The
 Machine Hall, with Machine Line (all 2026-11-14; see "Pro Unit 1" to "Pro Unit 3" at the end of this file). Their
-`planned` and `reserved` flags are gone from `units.json`; Units 4 to 7 are still planned.
-Unit 5, The Sky Wires, with Sky Lines, followed on 2026-11-15 ("Pro Unit 5" at the end of this file), built beside Unit 4.
+`planned` and `reserved` flags are gone from `units.json`. Unit 4, The Map Room, with Scale Scout, and Unit 5, The Sky
+Wires, with Sky Lines, followed on 2026-11-15, built side by side ("Pro Unit 4", "Pro Unit 5"). A unit that has no
+section at the end of this file is still planned.
 
 ### The 23 steps and their codes (final: a unit PR changes none of this)
 
@@ -1107,6 +1108,86 @@ covers, the misconceptions it meets (3(x + 2) is 3x + 2; two matches are proof; 
 and how the game checks each idea by planning and running. Pro stays `status: "building"`: Units 4 to 7 are still
 planned, and no learner, parent or visitor sees any of this. **Left for the opening**, as for Units 1 and 2: the
 teacher page's game list (`NQ_CREW`) and its locale strings do not name Machine Line.
+
+## Pro Unit 4 — The Map Room (2026-11-15, tier still `building`)
+
+The fourth Pro unit, built to the contract above ("What a unit PR touches"). Proportional relationships, scale
+drawings and percent problems for grade 7. Its `planned` flag is gone, so its three steps are real steps for the
+platform admin (and nobody else: the tier is `building`).
+
+| File | What |
+|---|---|
+| `course/pro/4.1.json`, `4.2.json`, `4.3.json` | the three decks, inside the Pro limits above: **4.1 Is it proportional? Find the constant** (7.RP.A.2a, 7.RP.A.2b, also 7.RP.A.1), **4.2 Scale drawings and maps** (7.G.A.1, 7.RP.A.2c, also 7.RP.A.2d), **4.3 Percent problems** (7.RP.A.3, also 7.EE.B.3). Seven slides each: a story slide with Tally, two drawn diagrams with guided focus, one worked example, four words, the mission last |
+| `sets/u4-pro.json` | nine exit items (`nq-pro-4.<s>-e1..3`), each `cat` one of its step's primary codes, four choices, every distractor tagged with the misconception that produces it (chose a list that adds the same amount each hour after a head start, divided the minutes by the liters, multiplied the paper area by the scale only once, divided the change by the new height, took the grams of error as the percent), every item with a `why` that works the answer out. `tests/unit/scale-scout.test.js` solves all nine again from the numbers in each question |
+| `units.json` | Unit 4's own object: the flags deleted, `tool: "scale-scout"`, the three `game.pro` specs, three teacher notes |
+| `seed-games/scale-scout.html` | **Scale Scout**, the unit's game (Oomba3D 1.2.0, Medieval Village theme 1.1.0, in the morning): chapter `constant` for 4.1 (Steady Pace), `scale` for 4.2 (Map and Ground), `percent` for 4.3 (Percent Report), six rounds each. Lesson mode is `chapter=<id>&lock=1`; the sixth right round reports game over (won), which completes the step |
+
+**A paper map on a board.** A survey camp outside the village, and one board that always faces the player. The game
+draws eight kinds of picture on it (`ScaleScout.view`): tables of hours and kilometers, a double number line, three
+small graphs, one graph with a named point, a map (a road from the gate, a ruler in centimeters, the scale in the
+corner), a field plan, two walls over one ruler, and a bar for a tank, a field's sacks, a path or a route. The 3D
+village is the setting; nothing a player must read is drawn in perspective.
+
+**What each chapter plays.** `constant`: three walkers' tables, one proportional (d = 3t), one with a head start that
+adds 2 each hour, one that speeds up ("Whose distance is proportional to the time?", never "who is steady": the
+head-start walker is steady too); the kilometers for 1 hour from a table (7 km in 2 h: 3.5) and from a graph through
+(4, 6); a unit rate from two fractions (half a kilometer in a quarter of an hour, on a double number line); three
+graphs, one a straight line through (0, 0), one straight but starting higher, one that bends; and 12 km in 3 h used
+for 5 h (14 km is "adds 2 hours and 2 kilometers"). `scale`: a map at 1 cm : 250 m, the mill 6 cm from the gate, set
+the meters of the walk; the tower is 2000 m away, put its pin on the ruler; the scale as an equation (d = 250c
+against d = c + 250 and c = 250d); a 3 cm by 2 cm field at 1 cm : 10 m (600 m², with 60 m² for the scale used once
+and 6 m² for the paper); a 6 cm wall at 1 cm : 4 m drawn again at 1 cm : 8 m; and the scale read from a graph through
+(4, 1000) as the point (1, r). `percent`: a tank from 80 liters to 60 (25%; 20 is "the liters that went"), a field
+from 40 sacks to 52 (30%), a survey of 48 m for a real 50 m (4% error), a 200 m path made 15% longer (230 m; 215 m
+adds meters, 30 m is the extra part only; on an odd lap, shorter), a tank that holds 40 liters after a 20% drop (50
+liters; 48 adds 20% of 40) and a 20 km route with 35% walked (13 km left). The first lap is always the same; a replay
+draws other numbers from a seeded generator.
+
+**Plan, then run.** Two ways to answer and no typing: a stepper with a Run button (a held button repeats), or one of
+three tiles. A pin on the map and a wall on the new plan are themselves drawings, so the board shows them as they are
+set; every other number stays on the stepper until Run, so the board never shows a result the plan has not earned. A
+wrong plan is run and drawn as it really turns out (`ScaleScout.judge`): 1250 m is walked along the road and stops at
+5 cm, short of the mill; a 30% drop is marked at 56 liters beside the tank's 60; a pace of 3 an hour puts 6, 12 and 18
+beside the table's 7, 14 and 21; a plan's line is drawn dashed on the graph to the point it reaches. The hint says the
+same in words, and the round stays open. No timer, no lives, no fail state, no reward currency. Keys: the arrows (or
++ and −) move the stepper, Enter runs, 1 to 3 pick a tile; every control is also a button.
+
+**Contexts (owner decision 3).** Walks, maps, a water tank, sacks of grain, a path and measurement error. Nothing is
+priced, bought or sold in the game or in the decks. The standard's own contexts appear once: check item
+`nq-pro-4.3-e3` is a discount, worded about a third person, as the rule allows for step 4.3's check only. No tax, tip,
+interest or commission item.
+
+**Read-aloud is on by default (owner decision 6).** Every instruction, hint and answer line is sent to `BRB.speak`
+unless the player has muted the game, and the speaker button says a line again. A spoken line is written the way it
+is said ("25 percent of 80 is 20", "1 centimeter to 250 meters", "half a kilometer in a quarter of an hour"), with
+digits only in its number places, so the voice allowlist (`server/services/tts-lines.js`) never sees a sign; the
+words box prints the signs (`ScaleScout.shown`: 25% of 80 is 20). No line puts a plural unit after a number that can
+be 1. The chip, the board and the tiles carry the symbols and are never read.
+
+**Not Garden Count.** Launchpad Unit 1's Garden Count plays the same world (its 1.0.0) by day, with apple trees, a
+basket and a helper to pick. Scale Scout is the newest village in the morning, seen from a survey camp (a tent, logs,
+a barrel), with a paper board on two posts, one hooded scout and no picker, no coin, no chest, no market and no
+animal, and a game-made survey line (a plank with six pegs) where a flag, the theme's own, is planted for each
+finished round. The test holds the board to its 4 by 3 shape, in full view, clear of the scout and the survey line,
+its smallest numbers to 12 px on a 390 px phone (10 px at 360 px), every control to 56 px, and every word on a control
+inside it.
+
+**Diagrams.** The unit adds no diagram type and no option. 4.1 uses a `table` (hours, kilometers, and kilometers for
+each hour) and a `plane` (d = 3t through the origin and (1, 3)); 4.2 a `double` (map centimeters over ground meters)
+and `squares` (a 3 by 2 field plan with both sides named in both units); 4.3 a `split` (the tank: 60 liters left, 20
+gone) and a `double` (meters off and percent error for a real 50 m). All 16 focus steps are measured and pinned in
+`tests/unit/number-quest-guided-focus.test.js`.
+
+**Pictures.** The three mission slides carry `nq/scale-scout/<state>` phone-width captures (`scripts/nq-shots.js`,
+shots marked `tier: 'pro'`; manifest entries with `band: "pro"`). Cover and share picture:
+`scripts/covers/scale-scout.recipe.js`.
+
+**Gear.** The unit's stamp is the Scale Gear (`tiers.pro.stones`). **Teacher notes** (three) say what the unit covers,
+the misconceptions it meets (adding the same amount each time is proportional; any straight line is proportional; a
+real area is the paper area times the scale once; a percent change is measured against the new amount) and how the
+game checks each idea by planning and running. Pro stays `status: "building"`: other units are still planned, and no
+learner, parent or visitor sees any of this. **Left for the opening**, as for Units 1 to 3: the teacher page's game
+list (`NQ_CREW`) and its locale strings do not name Scale Scout.
 
 ## Pro Unit 5 — The Sky Wires (2026-11-15, tier still `building`)
 

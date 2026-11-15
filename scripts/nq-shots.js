@@ -123,6 +123,11 @@ const SHOTS = [
   { tier: 'pro', step: '3.1', state: 'build-the-line', slug: 'machine-line', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: machineLine, cdp: true },
   { tier: 'pro', step: '3.2', state: 'same-output', slug: 'machine-line', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=same&lock=1', prep: machineLine, cdp: true },
   { tier: 'pro', step: '3.3', state: 'run-it-back', slug: 'machine-line', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=undo&lock=1', prep: machineLine, cdp: true },
+  // Pro Unit 4, The Map Room: Scale Scout, a 3D game, in each step's own chapter, the whole phone screen as the band
+  // (the words on top, the paper map board in the village, the scout and the survey line under it, the tiles or the stepper below).
+  { tier: 'pro', step: '4.1', state: 'steady-pace', slug: 'scale-scout', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=constant&lock=1', prep: scaleScout, cdp: true },
+  { tier: 'pro', step: '4.2', state: 'map-and-ground', slug: 'scale-scout', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=scale&lock=1', prep: scaleScout, cdp: true },
+  { tier: 'pro', step: '4.3', state: 'percent-report', slug: 'scale-scout', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=percent&lock=1', prep: scaleScout, cdp: true },
   // Pro Unit 5, The Sky Wires: Sky Lines, a 3D game, in each step's own chapter, the whole phone screen as the band
   // (the words on top, the board on the deck, the wire rigger and the far island under it, the stepper below).
   { tier: 'pro', step: '5.1', state: 'how-steep', slug: 'sky-lines', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=slope&lock=1', prep: skyLines, cdp: true },
@@ -339,6 +344,17 @@ async function machineLine(f) {
   // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
   // the board has popped in: two empty slots between n and a question mark (Build the Line), line A and line B with
   // "always the same?" (Same Output), a line that adds 7 with the output 12 (Run It Back).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#start');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function scaleScout(f) {
+  // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
+  // the board has popped in: three walkers' tables lettered A, B and C (Steady Pace), the map with the mill 6 cm from the
+  // gate over its ruler (Map and Ground), a tank of 80 liters filled to 60 (Percent Report).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#start');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);

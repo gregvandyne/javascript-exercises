@@ -2115,23 +2115,20 @@
    "emoji": "🗺️",
    "group": "unit-4",
    "n": 4,
-   "planned": true,
-   "reserved": {
-    "game": "scale-scout",
-    "world": "medieval-village"
-   },
    "stamp": "Scale Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Steady Pace",
+       "chapterTitle": "Steady Pace",
+       "params": "chapter=constant&lock=1",
+       "slug": "scale-scout"
+      }
      },
      "mp": "MP7",
      "n": "4.1",
      "order": 11,
-     "reserved": {
-      "params": "chapter=constant&lock=1"
-     },
      "shorts": {
       "pro": "Proportional or not"
      },
@@ -2154,14 +2151,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Map and Ground",
+       "chapterTitle": "Map and Ground",
+       "params": "chapter=scale&lock=1",
+       "slug": "scale-scout"
+      }
      },
      "mp": "MP4",
      "n": "4.2",
      "order": 12,
-     "reserved": {
-      "params": "chapter=scale&lock=1"
-     },
      "shorts": {
       "pro": "Scale drawings"
      },
@@ -2184,14 +2183,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Percent Report",
+       "chapterTitle": "Percent Report",
+       "params": "chapter=percent&lock=1",
+       "slug": "scale-scout"
+      }
      },
      "mp": "MP2",
      "n": "4.3",
      "order": 13,
-     "reserved": {
-      "params": "chapter=percent&lock=1"
-     },
      "shorts": {
       "pro": "Percent problems"
      },
@@ -2213,10 +2214,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers the grade 7 work on proportional relationships: deciding whether two quantities are proportional from a table or a graph, finding the constant of proportionality (the unit rate, also from fractions), writing the relationship as an equation, using a scale to find real lengths and areas and to redraw a plan at another scale, and solving multi-step percent problems (percent increase and decrease, percent error).",
+    "Common misconceptions: that a table is proportional because it goes up by the same amount each time (a head start is not proportional); that any straight-line graph is proportional (it must pass through the origin); that a real area is the paper area times the scale once (both sides are scaled); and that a percent change is measured against the new amount or is the same as the amount itself. Ask \"what do you get for 1?\", \"does it start at zero?\" and \"percent of what?\"",
+    "Scale Scout checks each idea by planning and running. The learner sets a number on a stepper or picks a tile, runs the plan and sees what it really gives: a walk that stops short of the mill, a tank that ends at another level. Contexts are walks, maps, water and crops; nothing is bought or sold (the standard's tax and discount contexts appear once, in the lesson check of step 4.3). There is no timer, every instruction is read aloud by default, and six finished rounds complete a step."
+   ],
    "tier": "pro",
    "title": "The Map Room",
-   "tool": null
+   "tool": "scale-scout"
   },
   {
    "emoji": "📈",

@@ -61,9 +61,9 @@ const post = async (path, cookie, body, type = 'application/json') => {
 const rungs = (number, algebra, shape, data) => ({ number, algebra, 'shape-measure': shape, 'data-chance': data });
 const all = r => rungs(r, r, r, r);
 const PRO_KEYS = ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '7.3', '7.4'].map(k => `pro-${k}`);
-// Built so far: the welcome, Unit 1 (The Mixing Tower), Unit 2 (The Cold Store) and Unit 3 (The Machine Hall), 2026-11-14, and Unit 5
-// (The Sky Wires), 2026-11-15. A unit PR adds its number here. Units are built side by side, so the built ones need not be the first ones.
-const BUILT_UNITS = [0, 1, 2, 3, 5];
+// Built so far: the welcome, Unit 1 (The Mixing Tower), Unit 2 (The Cold Store) and Unit 3 (The Machine Hall), 2026-11-14, and Unit 4
+// (The Map Room) and Unit 5 (The Sky Wires), 2026-11-15. A unit PR adds its number here. Units are built side by side, so the built ones need not be the first ones.
+const BUILT_UNITS = [0, 1, 2, 3, 4, 5];
 const BUILT_KEYS = PRO_KEYS.filter(k => BUILT_UNITS.includes(+k[4])), PLANNED_KEYS = PRO_KEYS.filter(k => !BUILT_KEYS.includes(k));
 /** FOR THIS FILE: Pro as it will be once its units are built and it opens. The planned flags are lifted in a copy of
  *  the catalogue (the steps then load with the placeholder deck a step without a deck file gets) and the tier's
@@ -94,10 +94,10 @@ const MAIN = Object.freeze({ sets: 88434, hash: '4e1e9f9978a499ee70c269aae79b7d4
   startNodes: ['launchpad-0.1', 'launchpad-1.1', 'launchpad-2.1', 'launchpad-3.1', 'launchpad-4.1', 'launchpad-5.1', 'launchpad-6.1', 'launchpad-7.1', 'launchpad-7.4', 'explorer-0.1', 'explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1', 'explorer-7.4'] });
 
 // ------------------------------------------------------------------------------------------------- planned units
-test('planned units: reserved in the catalogue, absent from the engine; the tier is its welcome step and its built units (Units 1 to 3 and Unit 5 so far)', () => {
+test('planned units: reserved in the catalogue, absent from the engine; the tier is its welcome step and its built units (Units 1 to 5 so far)', () => {
   assert.equal(T.statusOf('pro'), 'building'); assert.equal(T.exists('pro'), true); assert.equal(T.isOpen('pro'), false);
-  assert.deepEqual(T.unitsOf('pro').map(u => [u.n, u.title]), [[0, 'Welcome to the Towers'], [1, 'The Mixing Tower'], [2, 'The Cold Store'], [3, 'The Machine Hall'], [5, 'The Sky Wires']]);
-  assert.deepEqual(T.plannedUnitsOf('pro').map(u => [u.n, u.title, u.stamp]), [[4, 'The Map Room', 'Scale Gear'],
+  assert.deepEqual(T.unitsOf('pro').map(u => [u.n, u.title]), [[0, 'Welcome to the Towers'], [1, 'The Mixing Tower'], [2, 'The Cold Store'], [3, 'The Machine Hall'], [4, 'The Map Room'], [5, 'The Sky Wires']]);
+  assert.deepEqual(T.plannedUnitsOf('pro').map(u => [u.n, u.title, u.stamp]), [
     [6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']]);
   for (const tier of ['launchpad', 'explorer']) assert.deepEqual(T.plannedUnitsOf(tier), [], `${tier} has nothing planned: every unit is built`);
   assert.deepEqual(T.plannedUnitsOf('nowhere'), []); assert.equal(T.isPlanned(null), false); assert.equal(T.isPlanned({ planned: 'yes' }), false, 'only the literal true plans a unit');
@@ -108,8 +108,9 @@ test('planned units: reserved in the catalogue, absent from the engine; the tier
     ['pro-1.1', 'Ratios and equal mixes', true, 'lantern-mix chapter=mix&lock=1', 1], ['pro-1.2', 'Unit rates', true, 'lantern-mix chapter=rate&lock=1', 2], ['pro-1.3', 'Percent and changing units', true, 'lantern-mix chapter=percent&lock=1', 3],
     ['pro-2.1', 'Divide by a fraction', true, 'sub-zero chapter=pour&lock=1', 4], ['pro-2.2', 'Below zero: opposites and absolute value', true, 'sub-zero chapter=below&lock=1', 5], ['pro-2.3', 'Add, subtract, multiply and divide with negatives', true, 'sub-zero chapter=change&lock=1', 6],
     ['pro-3.1', 'Write and work out expressions', true, 'machine-line chapter=build&lock=1', 7], ['pro-3.2', 'Expressions that are equal', true, 'machine-line chapter=same&lock=1', 8], ['pro-3.3', 'Solve equations and inequalities', true, 'machine-line chapter=undo&lock=1', 9],
-    ['pro-5.1', 'Slope: the steepness of a line', true, 'sky-lines chapter=slope&lock=1', 10], ['pro-5.2', 'y = mx + b: a line as a rule', true, 'sky-lines chapter=rule&lock=1', 11], ['pro-5.3', 'Solve linear equations and find where two lines meet', true, 'sky-lines chapter=meet&lock=1', 12]]);
-  assert.deepEqual(C.groupsFor(course, 'pro').map(g => g.id), ['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-5']);
+    ['pro-4.1', 'Is it proportional? Find the constant', true, 'scale-scout chapter=constant&lock=1', 10], ['pro-4.2', 'Scale drawings and maps', true, 'scale-scout chapter=scale&lock=1', 11], ['pro-4.3', 'Percent problems', true, 'scale-scout chapter=percent&lock=1', 12],
+    ['pro-5.1', 'Slope: the steepness of a line', true, 'sky-lines chapter=slope&lock=1', 13], ['pro-5.2', 'y = mx + b: a line as a rule', true, 'sky-lines chapter=rule&lock=1', 14], ['pro-5.3', 'Solve linear equations and find where two lines meet', true, 'sky-lines chapter=meet&lock=1', 15]]);
+  assert.deepEqual(C.groupsFor(course, 'pro').map(g => g.id), ['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5']);
   for (const key of PLANNED_KEYS) {
     assert.equal(C.getStep(course, key), null, `${key}: planned, so no step`);
     assert.equal(C.stepFor(admin, course, key), null, `${key}: not even for the admin`);
@@ -128,7 +129,8 @@ test('planned units: reserved in the catalogue, absent from the engine; the tier
   // unit's steps are credited (to the admin, the only one who can reach them while the tier is building).
   assert.deepEqual([...tags.numberQuestSteps().keys()].filter(k => k.startsWith('pro-')), BUILT_KEYS.slice(1));
   assert.ok(!P.startNodes().some(x => x.tier === 'pro'));
-  for (const u of [1, 2, 3, 4, 5, 6, 7].filter(n => !BUILT_UNITS.includes(n))) { assert.equal(P.entryProfile('pro', u), null, `Pro Unit ${u}'s profile is on file and inert`); assert.deepEqual(P.testOutItems(u, 'seed', 'pro'), []); }
+  const stillPlanned = T.plannedUnitsOf('pro').map(u => u.n); assert.ok(stillPlanned.includes(6) && stillPlanned.includes(7));
+  for (const u of stillPlanned) { assert.equal(P.entryProfile('pro', u), null, `Pro Unit ${u}'s profile is on file and inert`); assert.deepEqual(P.testOutItems(u, 'seed', 'pro'), []); }
   assert.ok(PLACE.crosswalk.entryProfiles['pro-1.1'], 'though placement.json does record it');
   assert.equal(P.proEntry(), null, 'Pro is nobody\'s start while it is building');
   assert.equal(P.overrideStartNode(newKid(), 'pro-0.1'), null); assert.equal(P.overrideStartNode(newKid(), 'pro-1.1'), null);
@@ -235,15 +237,17 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.match(street.text, /href="\/courses\/number-quest\/pro-0\.1"/, 'the welcome is a door');
   assert.doesNotMatch(street.text, /id="step-explorer-|id="step-launchpad-/, 'a street renders only its own units');
   assert.match(street.text, /id="nqp-planned"/);
-  assert.match(street.text, /Planned for Pro: 3 units not built yet/);
+  assert.match(street.text, /Planned for Pro: 2 units not built yet/);
   assert.match(street.text, /Admin preview\. These units are reserved in the catalogue/);
-  for (const [u, title, gear] of [[4, 'The Map Room', 'Scale Gear'], [6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']]) {
+  for (const [u, title, gear] of [[6, 'The Drafting Keep', 'Angle Gear'], [7, 'The Test Range', 'Chance Gear']]) {
     assert.match(street.text, new RegExp(`id="planned-unit-${u}"[\\s\\S]*?Unit ${u} · ${title}[\\s\\S]*?${gear}`), `Unit ${u}`);
   }
   assert.equal((street.text.match(/class="nqp-step nqp-step-planned"/g) || []).length, PLANNED_KEYS.length, `all ${PLANNED_KEYS.length} planned steps are listed`);
-  assert.equal(PLANNED_KEYS.length, 10, 'ten steps are still planned: three each in Units 4 and 6 and four in Unit 7');
+  assert.equal(PLANNED_KEYS.length, 7, 'seven steps are still planned: three in Unit 6 and four in Unit 7');
   assert.doesNotMatch(street.text, /id="planned-unit-5"/, 'Unit 5 is built: it is on the street, not in the planned list');
   assert.match(street.text, /id="step-pro-5\.1"/); assert.match(street.text, /The Sky Wires/); assert.match(street.text, /Slope: the steepness of a line/);
+  assert.doesNotMatch(street.text, /id="planned-unit-4"/, 'Unit 4 is built: it is on the street, not in the planned list');
+  assert.match(street.text, /id="step-pro-4\.1"/); assert.match(street.text, /The Map Room/); assert.match(street.text, /Scale drawings and maps/);
   assert.doesNotMatch(street.text, /id="planned-unit-3"/, 'Unit 3 is built: it is on the street, not in the planned list');
   assert.match(street.text, /id="step-pro-3\.1"/); assert.match(street.text, /The Machine Hall/); assert.match(street.text, /Write and work out expressions/);
   assert.doesNotMatch(street.text, /id="planned-unit-2"/, 'Unit 2 is built: it is on the street, not in the planned list');
@@ -252,7 +256,7 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.match(street.text, /The Mixing Tower/); assert.match(street.text, /Ratios and equal mixes/);
   assert.match(street.text, /id="planned-pro-7\.4"[\s\S]*?The Great Clock/);
   for (const key of PLANNED_KEYS) assert.doesNotMatch(street.text, new RegExp(`href="/courses/number-quest/${key.replace('.', '\\.')}"`), `${key} is not a door`);
-  assert.match(street.text, /of 13/, 'the street counts its thirteen built steps');
+  assert.match(street.text, /of 16/, 'the street counts its sixteen built steps');
   // The welcome step: the deck, its two diagrams, its check, read-aloud lines in words.
   const step = await get('/courses/number-quest/pro-0.1', cookie);
   assert.equal(step.status, 200);
@@ -274,19 +278,19 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   assert.equal(teach.status, 200);
   assert.doesNotMatch(clean(teach.text), /undefined|NaN|\[object Object\]/);
   assert.match(teach.text, /Pro · Welcome to the Towers/);
-  assert.match(teach.text, /id="planned"[\s\S]*?Planned units \(admin preview\)[\s\S]*?These 3 units are reserved in the catalogue and not built yet/);
+  assert.match(teach.text, /id="planned"[\s\S]*?Planned units \(admin preview\)[\s\S]*?These 2 units are reserved in the catalogue and not built yet/);
   const plannedHtml = teach.text.slice(teach.text.indexOf('id="planned"'), teach.text.indexOf('id="notes"'));
   assert.match(plannedHtml, /Pro · Unit 6 · The Drafting Keep — Angle Gear/); assert.match(plannedHtml, /Pro · Unit 7 · The Test Range — Chance Gear/);
   assert.match(plannedHtml, /title="[^"]{20,}"[^>]*>6\.G\.A\.1</, 'a planned step shows its locked codes, with the published statement');
   assert.match(plannedHtml, /8\.G\.B\.7/); assert.match(plannedHtml, /The Great Clock/);
-  assert.equal((plannedHtml.match(/class="csq-map-unit"/g) || []).length, 3);
+  assert.equal((plannedHtml.match(/class="csq-map-unit"/g) || []).length, 2);
   const mapHtml = teach.text.slice(teach.text.indexOf('id="map"'), teach.text.indexOf('id="planned"'));
   assert.doesNotMatch(mapHtml, /The Drafting Keep|6\.G\.A\.1/, 'the published map holds built steps only');
   assert.match(mapHtml, /The Mixing Tower/); assert.match(mapHtml, /6\.RP\.A\.1/, 'and Unit 1, built, is in it for the admin');
-  assert.doesNotMatch(plannedHtml, /The Mixing Tower|The Cold Store|The Machine Hall|The Sky Wires/); assert.match(mapHtml, /The Sky Wires/); assert.match(mapHtml, /8\.F\.B\.4/); assert.match(mapHtml, /The Cold Store/); assert.match(mapHtml, /6\.NS\.A\.1/); assert.match(mapHtml, /The Machine Hall/); assert.match(mapHtml, /6\.EE\.A\.2/);
+  assert.doesNotMatch(plannedHtml, /The Mixing Tower|The Cold Store|The Machine Hall|The Map Room|The Sky Wires/); assert.match(mapHtml, /The Map Room/); assert.match(mapHtml, /7\.RP\.A\.2a/); assert.match(mapHtml, /The Sky Wires/); assert.match(mapHtml, /8\.F\.B\.4/); assert.match(mapHtml, /The Cold Store/); assert.match(mapHtml, /6\.NS\.A\.1/); assert.match(mapHtml, /The Machine Hall/); assert.match(mapHtml, /6\.EE\.A\.2/);
   assert.equal((await get('/teachers/number-quest?print=1', cookie)).status, 200);
   const cat = C.numberQuestCatalogue(admin);
-  assert.deepEqual(cat.planned.map(u => u.n), [4, 6, 7]); assert.equal(cat.units.filter(u => u.tier === 'pro').length, BUILT_UNITS.length);
+  assert.deepEqual(cat.planned.map(u => u.n), [6, 7]); assert.equal(cat.units.filter(u => u.tier === 'pro').length, BUILT_UNITS.length);
 });
 
 // ------------------------------------------------------------------------------------------------- placement

@@ -83,8 +83,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 199, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3 and 6 in Pro Unit 5');
-  assert.equal(steps, 467, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3 and 16 in Pro Unit 5');
+  assert.equal(slides, 205, 'visual focus slides: 80 across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams), 12 in Launchpad Unit 1, 12 in Unit 2, 12 in Unit 3, 12 in Unit 4, 12 in Unit 5, 12 in Unit 6 and 15 in Unit 7 (12, and 3 in the finale deck), and 2 in the Pro welcome deck and 12 in Pro Unit 1, 6 in Pro Unit 2, 6 in Pro Unit 3, 6 in Pro Unit 4 and 6 in Pro Unit 5');
+  assert.equal(steps, 483, 'focus steps: 183 across the 23 Explorer decks, 25 in Launchpad Unit 1, 27 in Unit 2, 27 in Unit 3, 28 in Unit 4, 29 in Unit 5, 30 in Unit 6 and 40 in Unit 7 (34, and 6 in the finale deck), and 5 in the Pro welcome deck and 26 in Pro Unit 1, 15 in Pro Unit 2, 16 in Pro Unit 3, 16 in Pro Unit 4 and 16 in Pro Unit 5');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -590,6 +590,27 @@ const REGISTRY = [
   ['pro-3.3', 1, 2, [14.28, 48.89, 48.2, 70.4], [14.3, 47.3, 34.9, 24.9]],
   ['pro-3.3', 3, 0, [62.65, 60.44, 66.65, 67.56], [61.4, 58.1, 6.6, 11.7]],
   ['pro-3.3', 3, 1, [4.07, 60.44, 66.65, 67.56], [3.2, 58.1, 64.8, 11.7]],
+  // Pro Unit 4, The Map Room (2026-11-15): 4.1 a table of hours and kilometers (the column for 1 hour, the column for 3 hours, the row
+  // of kilometers for each hour) and a coordinate plane (the origin, the point (1, 3), the line d = 3t); 4.2 a double number line of
+  // map centimeters and ground meters (1 and 250, 4 and 1000, the unknown under 6) and a field plan of 3 by 2 squares (its top label,
+  // its side label, the six squares); 4.3 a percent bar (the whole tank, the part that is gone with its label) and a double number line
+  // of meters off and percent (1 and 2%, 2 and 4%). Measured with getBoundingClientRect on the drawn diagrams at 390 px, as Unit 3's were.
+  ['pro-4.1', 1, 0, [28, 21.33, 50, 61.87], [27, 19.7, 24, 43.8]],
+  ['pro-4.1', 1, 1, [72, 21.33, 94, 61.87], [71, 19.7, 24, 43.8]],
+  ['pro-4.1', 1, 2, [6, 48.36, 94, 61.87], [5, 46.7, 90, 16.8]],
+  ['pro-4.1', 3, 0, [35.1, 62.22, 38.3, 73.88], [34.1, 60.6, 5.2, 14.9]],
+  ['pro-4.1', 3, 1, [44.1, 48, 58.71, 61.49], [43.1, 46.4, 16.6, 16.7]],
+  ['pro-4.1', 3, 2, [37.75, 9.83, 78.41, 63.41], [36.7, 8.2, 42.7, 56.8]],
+  ['pro-4.2', 1, 0, [21.18, 26.23, 27.48, 80.58], [20.2, 24.6, 8.3, 57.6]],
+  ['pro-4.2', 1, 1, [57.13, 26.23, 65.53, 80.58], [56.1, 24.6, 10.4, 57.6]],
+  ['pro-4.2', 1, 2, [82.5, 70.76, 89.5, 82.13], [81.5, 69.2, 9, 14.5]],
+  ['pro-4.2', 3, 0, [44.56, 18.23, 61.59, 25.35], [43.6, 16.6, 19, 10.3]],
+  ['pro-4.2', 3, 1, [24.01, 35.83, 41.04, 42.95], [23, 34.2, 19, 10.4]],
+  ['pro-4.2', 3, 2, [42.5, 26.67, 63.5, 51.56], [41.5, 25.1, 23, 28.1]],
+  ['pro-4.3', 1, 0, [6, 14.22, 94, 30.22], [5, 12.6, 90, 19.2]],
+  ['pro-4.3', 1, 1, [72, 39.11, 94.13, 68.7], [71, 37.5, 24.1, 32.8]],
+  ['pro-4.3', 3, 0, [23.65, 26.23, 29.95, 80.58], [22.7, 24.6, 8.2, 57.6]],
+  ['pro-4.3', 3, 1, [38.45, 26.23, 44.75, 80.58], [37.5, 24.6, 8.2, 57.6]],
   // Pro Unit 5, The Sky Wires (2026-11-15): six coordinate planes. 5.1 a line from A to B (island B with its letter, the rise and run
   // with their two labels, the line with its arrowheads) and a small stair and a big stair under one line; 5.2 the line y = 0.5x + 2
   // (its start on the y-axis, its rise and run, the point at x = 6) and four points of y = x²; 5.3 two lines that cross (each line with
@@ -612,13 +633,13 @@ const REGISTRY = [
   ['pro-5.3', 3, 0, [26.14,8.18,61.84,79.11], [25.1,6.6,37.7,74.1]],
   ['pro-5.3', 3, 1, [7.59,8.18,37.71,48.71], [6.6,6.6,32.1,43.7]],
 ];
-test('every authored box contains its measured target with a small margin (467-step registry)', () => {
+test('every authored box contains its measured target with a small margin (483-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 467);
+  assert.equal(REGISTRY.length, 483);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -636,7 +657,7 @@ test('every authored box contains its measured target with a small margin (467-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 467);
+  assert.equal(total, 483);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

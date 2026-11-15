@@ -25,7 +25,7 @@ const course = C.getCourse('number-quest');
 const steps = C.steps(course, 'explorer');
 const byN = n => steps.find(s => s.n === n);
 
-test('every mission game reports completion: gameOver call sites in all fifteen mission games', () => {
+test('every mission game reports completion: gameOver call sites in all sixteen mission games', () => {
   // Fraction Factory fires only at chapter completion (its own test pins the single call site).
   assert.equal((read('seed-games/fraction-factory.html').match(/BRB\.gameOver\(/g) || []).length, 1);
   // Sum Racer fires at race end with won = place 1.
@@ -108,6 +108,12 @@ test('every mission game reports completion: gameOver call sites in all fifteen 
   assert.match(line, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
   assert.match(line, /if \(S\.round >= ML\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
   assert.equal((line.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
+  // Scale Scout (Pro Unit 4): the same shape (tests/unit/scale-scout.test.js plays every chapter and counts the message).
+  const scout = read('seed-games/scale-scout.html');
+  assert.equal((scout.match(/BRB\.gameOver\(/g) || []).length, 1);
+  assert.match(scout, /function finish\(\) \{[\s\S]{0,500}BRB\.gameOver\(\{ won: true \}\)/);
+  assert.match(scout, /if \(S\.round >= SS\.ROUNDS\) return finish\(\);/, 'finish follows the last round only');
+  assert.equal((scout.match(/\bfinish\(\)/g) || []).length, 2, 'finish is defined once and called from one place');
   // Sky Lines (Pro Unit 5): the same shape (tests/unit/sky-lines.test.js plays every chapter and counts the message).
   const sky = read('seed-games/sky-lines.html');
   assert.equal((sky.match(/BRB\.gameOver\(/g) || []).length, 1);
@@ -268,13 +274,13 @@ test('lesson identity survives the frame for Launchpad too: Garden Count’s, Li
   }
 });
 
-test('lesson identity survives the frame for the built Pro units too: Lantern Mix’s, Sub Zero’s, Machine Line’s and Sky Lines’ chapter and lock pass the allow-list intact', () => {
+test('lesson identity survives the frame for the built Pro units too: Lantern Mix’s, Sub Zero’s, Machine Line’s, Scale Scout’s and Sky Lines’ chapter and lock pass the allow-list intact', () => {
   const pro = C.steps(course, 'pro').filter(s => s.game);
-  assert.deepEqual(pro.map(s => s.n), ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '5.1', '5.2', '5.3']);
+  assert.deepEqual(pro.map(s => s.n), ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3']);
   for (const s of pro) {
-    const slug = { 1: 'lantern-mix', 2: 'sub-zero', 3: 'machine-line', 5: 'sky-lines' }[s.unit];
+    const slug = { 1: 'lantern-mix', 2: 'sub-zero', 3: 'machine-line', 4: 'scale-scout', 5: 'sky-lines' }[s.unit];
     assert.equal(s.game.slug, slug, s.n);
-    const want = { chapter: { '1.1': 'mix', '1.2': 'rate', '1.3': 'percent', '2.1': 'pour', '2.2': 'below', '2.3': 'change', '3.1': 'build', '3.2': 'same', '3.3': 'undo', '5.1': 'slope', '5.2': 'rule', '5.3': 'meet' }[s.n], lock: 1 };
+    const want = { chapter: { '1.1': 'mix', '1.2': 'rate', '1.3': 'percent', '2.1': 'pour', '2.2': 'below', '2.3': 'change', '3.1': 'build', '3.2': 'same', '3.3': 'undo', '4.1': 'constant', '4.2': 'scale', '4.3': 'percent', '5.1': 'slope', '5.2': 'rule', '5.3': 'meet' }[s.n], lock: 1 };
     assert.deepEqual(PP.parseParams(Object.fromEntries(new URLSearchParams(s.game.params))), want, `${s.n}: params parse`);
     assert.deepEqual(PP.unpackParams(PP.packParams(want)), want, `${s.n}: chapter and lock survive the signed token`);
     assert.equal(C.playHref(course, C.getStep(course, `pro-${s.n}`)), `/play/${slug}?course=number-quest&cstep=pro-${s.n}&chapter=${want.chapter}&lock=1`, `${s.n}: the Play link carries the step and the chapter`);

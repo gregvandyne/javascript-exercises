@@ -5309,6 +5309,59 @@ three decks, nine exit items, the game Machine Line in the Toy Town world, and t
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear, and play by a student of the age.
 
+## Number Quest Pro Unit 4: The Map Room and Scale Scout (15 Nov 2026)
+
+The fourth Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"):
+three decks, nine exit items, the game Scale Scout in the Medieval Village world, and the one-line registrations. Pro
+stays `building`; nobody but the platform admin can open a Pro step. Where the build left the plan, and why:
+
+- **Read-aloud is on by default** (owner decision 6), not a button that is off by default as the plan said. Spoken
+  lines are written as they are said, with digits only in the number places, so the voice allowlist sees no sign. A
+  fraction is in a line's own words ("half a kilometer in a quarter of an hour"), so the unit-rate round has three
+  fixed versions rather than drawn numbers.
+- **Oomba3D 1.2.0 and Medieval Village 1.1.0**, the newest of each, not the 1.1.0 library the plan named. No kit or
+  theme file changed. The village is shown in the morning from a survey camp, with no apple trees, no basket and no
+  helper to pick, so it does not look like Garden Count, which plays the same world by day.
+- **The map is a board, not laid over the 3D land.** The plan had a paper map over the village, a route planned on it
+  and the walk watched on the real ground, and named as its hardest thing that map and land must agree exactly at
+  every scale on a phone. A map seen in perspective cannot carry a ruler a learner can read at 390 px, and a walk of
+  1500 m across a toy village would have to be faked. So the map, its ruler and the walk are drawn face on, on one
+  board, as Machine Line's line is; the walk is a line that grows along the road at a steady pace and stops where the
+  plan's meters really end. The 3D village is the setting, and a flag on the survey line marks each finished round.
+- **No free ruler tool.** The plan asked for a ruler that works by touch. A stepper moves a pin along the map's ruler
+  one centimeter at a time (a held button repeats); the test holds every control to 56 px. Dragging on a 3D canvas was
+  left out: it adds a second way to do one thing and nothing the stepper cannot do.
+- **"Whose distance is proportional to the time?", not "Who walks at a steady pace?"** as the plan worded round 1. A
+  walker with a head start who adds 2 km each hour is walking steadily and is not proportional; that walker is the
+  round's main wrong answer, so the question must not have two defensible answers.
+- **Which plans are on the board before Run.** The standing rule is that the board shows only the plan until the Run
+  button. A pin on the map and a wall on the new plan are the plan, so they are drawn as they are set, with no meters.
+  A pace, a distance or a percent stays on the stepper: drawing it would be drawing its outcome.
+- **Percent contexts are neutral** (owner decision 3): a water tank, sacks of grain, a path, a route and measurement
+  error. Nothing is priced or sold in the game or the decks. One check item (`nq-pro-4.3-e3`) is a discount about a
+  third person, which the rule allows in step 4.3's check only (at most two in the tier). No tax, tip, interest or
+  commission item. The plan's "sports percentages" were left out: six rounds were filled without them.
+- **7.RP.A.2d in the game is the point (1, r) read from a graph** (the scale as the meters for 1 centimeter), and
+  (0, 0) is what tells the proportional graph from the others. Explaining a point in words is in deck 4.2.
+- **7.EE.B.3 is one two-step round** (a route, the percent walked, the kilometers left) and the before-and-after
+  rounds; estimation and converting between forms are not played.
+- **Redrawing at a new scale is one length**, a wall, not a whole field plan: the idea (find the real length, then use
+  the new scale) is the same, and a bar over a ruler reads at phone size where a redrawn rectangle would not.
+- **Rounds the plan did not list**, so each chapter has six: a unit rate from two fractions (7.RP.A.1), a steady pace
+  used for more hours, the pin (ground to map), a real area, the scale from a graph, the amount after a percent change
+  and the amount before one.
+- **No new diagram type.** The plan marked a double number line and a coordinate plane as missing; both shipped in the
+  diagram pack and the decks use them.
+- **Tests that named "the planned unit" now name Unit 6**, which stays planned until its own build, so the unit built
+  beside this one (Unit 5) does not break them.
+- **A built unit's entry profile is live in the engine**, as for Units 1 to 3: `P.entryProfile('pro', 4)` now
+  answers. The route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as before: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
+  Scale Scout. The game itself is a library game on the Learn shelf (math, grade 7) from the day it is registered; its
+  title, description and tags never name the Pro tier.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only, at about five
+  frames a second), the AI voice by ear, and play by a student of the age.
+
 ## Number Quest Pro Unit 5: The Sky Wires and Sky Lines (15 Nov 2026)
 
 The fifth Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"), side
@@ -5354,9 +5407,9 @@ and why:
   and all six of the unit's drawings use it.
 - **Contexts are neutral** (decision 3): wires, islands, a cable car, a glider, a balloon, a candle. Nothing is priced
   or sold, and there is no reward currency.
-- **Built before Unit 4 merged.** Units 4 and 5 were built at the same time, so on this branch the built Pro units are
-  0, 1, 2, 3 and 5. The foundations test now names the built units as a list (`BUILT_UNITS`) instead of "the first
-  ten steps", and the tests that need "a planned unit" use Unit 6, which stays planned after both land.
+- **Built beside Unit 4.** Units 4 and 5 were built at the same time and merged one after the other. The foundations
+  test names the built units as a list (`BUILT_UNITS`) instead of "the first so many steps", so units need not be built
+  in order, and the tests that need "a planned unit" use Unit 6, which stays planned after both.
 - **A built unit's entry profile is live in the engine**, as for Units 1 to 3: `P.entryProfile('pro', 5)` now answers.
   The route still refuses a Pro test-out and placement lands nobody on Pro while the tier is building.
 - **Left for the opening PR**, as before: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
