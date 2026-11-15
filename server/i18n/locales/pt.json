@@ -1739,6 +1739,7 @@
     "scanStillFailing": "A verificação de segurança ainda não está contente. Toque em “Pedir conserto ao Construtor” para tentar de novo.",
     "turnTimeout": "⏱️ Esta criação passou do nosso tempo limite, então eu parei. Sua versão mais nova está salva. Me diga o que mudar agora!",
     "turnTimeoutNothing": "⏱️ Esta criação passou do nosso tempo limite, então eu parei antes de conseguir salvar alguma coisa. Ela não gastou nenhuma mensagem do Construtor, então você pode tentar de novo.",
+    "planStarted": "Comecei seu jogo com os personagens que você escolheu.",
     "errors": {
       "disabled": "A criação de jogos está desligada para esta conta. Um adulto pode nos pedir para ligar de novo.",
       "empty": "Digite uma mensagem ou toque em uma ideia primeiro.",

@@ -1738,6 +1738,7 @@
     "scanStillFailing": "La vérification de sécurité n’est toujours pas contente. Touche « Réparer avec le Constructeur » pour réessayer.",
     "turnTimeout": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté. Ta version la plus récente est enregistrée. Dis-moi ce qu’il faut changer maintenant !",
     "turnTimeoutNothing": "⏱️ Cette construction a dépassé notre limite de temps, alors je me suis arrêté avant de pouvoir enregistrer quoi que ce soit. Elle n’a pas utilisé de message pour le Constructeur, donc tu peux réessayer.",
+    "planStarted": "J’ai commencé ton jeu avec les personnages que tu as choisis.",
     "errors": {
       "disabled": "La création est désactivée pour ce compte. Un adulte peut nous demander de la réactiver.",
       "empty": "Écris un message ou touche une idée d’abord.",

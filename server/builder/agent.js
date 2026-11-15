@@ -110,7 +110,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   const state = { ...chat.state, scanFails: 0 }; job.state = state;
   // The builder's own words for this game (every message so far and this one): the style check never undoes what they asked for.
   const requests = [...chat.messages.filter(m => m && m.role === 'user' && typeof m.text === 'string').map(m => m.text), text, ...job.waiting.map(e => e.text)].filter(Boolean).slice(-40);
-  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests });
+  const tb = toolbox({ user, gameId: game.id, emit, state, locale, steps, signal: job.ac.signal, requests, plan });
   // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
   // carried messages). Resumed attempts get a fresh one from now.
   const words = text || job.waiting.map(e => e.text).join('\n');
@@ -140,6 +140,15 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   }
   job.usage = usage;
   if (job.handedOff || job.ended) return;                // handed off, or already ended by the backstop
+  // A setup plan with 2D art whose build saved nothing (the model refused or failed every time, or the time ran out):
+  // the server starts the game itself with the characters they picked (tools.js planFallback), so a child never ends
+  // up with no game. Not after a stop, a delete or a ban.
+  const why = job.ac.signal.aborted ? String(job.ac.signal.reason) : '';
+  if (plan && (!why || why === 'timeout') && !turns.versionsSince(game.id, job.base).length) {
+    let r = null; try { r = await tb.planFallback(); } catch { r = null; }
+    if (job.handedOff || job.ended) return;
+    if (r && r.ok) emit('text', { text: `${job.seg.text.trim() ? '\n\n' : ''}${t('builder.planStarted')}` });
+  }
   endBuild(job, { usage });
 }
 
