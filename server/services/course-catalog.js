@@ -51,6 +51,7 @@ export const COURSES = Object.freeze([
     // (Unit 2, The Cold Store: dividing by a fraction, numbers below zero, operations with negatives). Machine Line is its third
     // (Unit 3, The Machine Hall: writing and working out expressions, expressions that are equal, equations and inequalities).
     // Scale Scout is its fourth (Unit 4, The Map Room: proportional relationships and their constant, scale drawings and maps, percent problems).
+    // Sky Lines is its fifth (Unit 5, The Sky Wires: slope, y = mx + b as a rule, linear equations and where two lines meet).
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
@@ -68,6 +69,7 @@ export const COURSES = Object.freeze([
       { slug: 'sub-zero', topic: 'numbers', shared: true },
       { slug: 'machine-line', topic: 'numbers', shared: true },
       { slug: 'scale-scout', topic: 'numbers', shared: true },
+      { slug: 'sky-lines', topic: 'numbers', shared: true },
     ],
   },
 ]);
