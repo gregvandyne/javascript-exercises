@@ -5698,3 +5698,62 @@ bubbles were all in 1.2.0, waiting for this world).
   takes at most 40 friends (`friendsMax` in the locked Oomba2D 1.1.0, `ART2D_FRIENDS_MAX`). Everyone picked beyond the
   first 40 in catalogue order is left out. `tests/unit/art2d-friends.test.js` now says so instead of "everyone". A
   bigger cap needs a new helper version: the owner's call.
+
+## Classroom activities in the Builder, first for teachers (15 Nov 2026)
+
+The owner asked: "Can we also list Quiet Games as part of the builder options, as well as, Jeopardy, Surveys, and any
+other classroom type activities. Let's make sure these are frontloaded in the builder options for teachers."
+
+- **The game-type step of `/build/new` has two groups**, "For your class" and "Games", one shown at a time
+  (`plan.js typeGroups`, `routes/build-setup.js`, `public/js/buildsetup.js`). A teacher (`classlive-access.js
+  teacherHost`: school staff, the platform admin or a teacher of a class) gets "For your class" first and shown: quiet
+  game, Category Board, class survey, bingo, flashcards, exit ticket, spinner, team scoreboard, then quiz, word game and
+  memory match; the other games are one tap away. Kids and families keep the games in today's order, shown first, and
+  "For your class" after it with the types that suit kids (no survey, no exit ticket; `normalisePlan(…, { forKid })`
+  drops those two for them on the server too, in `/api/build/plan` and the runner).
+- **Steps that do not apply are skipped.** A classroom starter has no 2D or 3D, world or characters; the survey, quiet
+  game, spinner and scoreboard also skip "What should it teach?" (`GAME_TYPES[].skip`). The page jumps over them,
+  counts only the steps left ("Step 2 of 2"), leaves them out of the plan, and `normalisePlan` drops whatever a page sent
+  for them, so the engine is always `classroom` and never a 3D world. Quiz, word and memory keep every step.
+- **New starters, plain HTML for the board** (`server/builder/templates/{quiet,categories,survey,bingo,flashcards,
+  exitticket,spinner,scoreboard}.html`, builder-only, `catalog.js CLASSROOM_TEMPLATE_KEYS`). Not on the Oomba Kit: the
+  kit's title / play / results game loop does not fit tools a teacher runs on a projector. Each has big type readable
+  from the back of the room, keyboard and clicker keys (arrows, Page Up / Page Down, Space, Enter, number keys), Sound
+  and Full screen buttons, a one-key-per-line CONFIG with `lang` (the language of the teacher's content) and a WORDS
+  table in the 13 site languages. Read-aloud speaks only CONFIG strings exactly as written, so the existing rules hold
+  (only fixed lines of a published, scanned version get the AI voice). `planNote` tells the model how to build each
+  (`CLASSROOM_NOTES`), the system prompt has short CLASSROOM RULES, and `start_from_template` says it is not a kit game.
+- **"Jeopardy" is a trademark.** The product says Category Board (translated). The word may be typed: under "Something
+  else" it becomes the Category Board type (`CLASSROOM_WORDS`, as do "exit ticket", "noise meter", "bingo"...), and the
+  Builder is told to build the categories starter and never use the name, the show's blue-and-gold look, its music,
+  money signs or "answer in the form of a question". The board is sticky notes on a chalkboard, points without "$".
+- **The class survey counts on the device; it does not use `BRB.poll`.** Considered: letting a published Builder game
+  owned by staff keep poll counts on the server. Not done, because (1) `game_poll_votes` stores a row per player with
+  their choice: "who chose what" would exist on our server for questions a teacher writes freely (feelings, home life),
+  which is far more sensitive than "would you rather"; (2) polls are cumulative across every player of the game forever,
+  while a class wants this lesson's answers; (3) only two choices, so a migration would be needed; (4) it would add a
+  role check on every vote. Instead the survey has "Count hands" (the teacher taps how many hands are up) and "Pass the
+  device" (each student taps a choice in private; the screen says thanks and never shows the choice back). Answers are an
+  array of counts in the page's memory: no names, no typing, no saving, nothing sent, nothing to an AI. In "Pass the
+  device" results show only from `CONFIG.minShown` answers, 5 like `polls.js MIN_SHOWN`, so nobody in a tiny group can be
+  picked out; "Count hands" shows at once (the hands were up in the room). `POLL_GAMES` is unchanged, and a test checks
+  that a teacher's published Builder survey still gets 404 from `/api/games/:id/poll`.
+- **The quiet game** (Quiet Stars: a night sky that fills with stars while the room is quiet) uses `BRB.loudness` the way
+  the official noise meters do, with their consent words, after the "Start listening" tap; it calibrates to the room's
+  quiet (median of 3 s) and waits (a cloud over the moon, no flashing) while the room is over the line. Refused, no
+  device, busy, a page that cannot listen, or the teacher's Stop: it carries on as a calm quiet timer with a "Too loud"
+  button (L). No sounds play while it listens.
+- **The exit ticket** stores nothing per student and submits no score (`gameOver` with `score: null`). A teacher who wants
+  each student's answers uses what class lessons already do safely (a question step, or a question set as homework); the
+  model is told to say so. **The spinner** offers teams, numbers or the teacher's own topics, never students' names.
+- **Main's 2D-art guard (PR #343) and the classroom types:** `planArt2d` is null for every classroom type (the plan has no
+  look, world or characters), so a classroom type with characters picked on the page is never forced into a running game;
+  it starts from its own starter, and `planFallback` does nothing for it. Tested in `tests/unit/builder-classroom.test.js`.
+- Tests: `tests/unit/builder-classroom.test.js` (order for teacher and kid, plan normalisation, planNote per type, the
+  2D guard, the hand-off, the survey's gating, counts and threshold, the starters' scan, CONFIG and WORDS),
+  `tests/unit/classroom-templates.test.js` (every starter in Chromium at 1280 and 390 and right to left, no console errors,
+  no network; the quiet game with the microphone refused; the survey threshold; the keys), and
+  `tests/unit/builder-classroom-layout.test.js` (the step on a desktop and an iPhone).
+- **Open:** a real projector and clicker, a real classroom microphone (the thresholds are the official meters' kind of
+  numbers, not tuned in a room), a build with the real model from each starter, and a native speaker's read of the
+  new translations.

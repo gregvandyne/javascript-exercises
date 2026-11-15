@@ -84,7 +84,9 @@ test('the engine a plan means: world + 3D is always a ready-made 3D world; 2D st
   assert.deepEqual({ engine: cq.engine, world: cq.world, hero: cq.hero, companion: cq.companion, more: cq.more, friends: cq.friends, missing: cq.missing },
     { engine: 'kit2', world: 'castle-quest', hero: 'knight', companion: 'fox', more: ['horse'], friends: ['mage'], missing: ['cow'] });
   // every game type in 3D with a pack world is a Kit 2 game in that world
-  for (const t of plan.TYPE_IDS) for (const w of kit2.WORLD_IDS) { const x = e({ type: pack(t), look: '3d', world: pack(w) }); assert.equal(`${x.engine} ${x.world}`, `kit2 ${w}`); assert.ok(kit2.heroesOf(w).some(h => h.id === x.hero)); }
+  for (const t of plan.GAME_TYPES.filter(x => !x.starter).map(x => x.id)) for (const w of kit2.WORLD_IDS) { const x = e({ type: pack(t), look: '3d', world: pack(w) }); assert.equal(`${x.engine} ${x.world}`, `kit2 ${w}`); assert.ok(kit2.heroesOf(w).some(h => h.id === x.hero)); }
+  // a classroom starter (a survey, a scoreboard...) is never a 3D world, whatever a page sent with it (tests/unit/builder-classroom.test.js)
+  for (const t of plan.GAME_TYPES.filter(x => x.starter).map(x => x.id)) assert.deepEqual(e({ type: pack(t), look: '3d', world: pack('castle-quest') }), { engine: 'classroom', template: t });
   // an animal that can be the hero plays when no hero is picked; one that cannot (a pig) comes along instead
   assert.equal(e({ look: '3d', world: pack('castle-quest'), characters: [pack('horse')] }).hero, 'horse');
   const pig = e({ look: '3d', world: pack('medieval-village'), characters: [pack('pig')] });
