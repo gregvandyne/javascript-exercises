@@ -3,7 +3,7 @@
 // decks), rendered lang="en". The child's page shows no score, percentage, timer or rung anywhere — Tally
 // names a starting workshop, and that is all. The note page is where the rungs live, in plain words,
 // with the caveat the service puts in the data.
-import { html, raw, esc } from './html.js';
+import { html, raw } from './html.js';
 import { VERSION } from './layout.js';
 import * as P from '../services/number-quest-placement.js';
 
@@ -19,12 +19,12 @@ const GRADES = [['K', 'Kindergarten'], ['1', 'Grade 1'], ['2', 'Grade 2'], ['3',
  *  /api/tts for the current item by run id only when English is among them (routes/tts.js, ctx 'placement').
  *  Nothing is read until the child taps Listen, which every question shows. */
 export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
-  return html`<div class="nq" lang="en" data-tts-langs="${esc(ttsLangs.join(','))}">
+  return html`<div class="nq" lang="en" data-tts-langs="${ttsLangs.join(',')}">
   <section class="nq-stage" id="nq-doors">
     <p class="nq-kicker">🔢 Number Quest</p>
     <h1>Tally's Sorting Game</h1>
     <p class="lead">Tally the cat runs the Numberworks. She wants to find your first workshop. Show her what you can do!</p>
-    ${placement && placement.disabled ? html`<div class="panel"><p>Your teacher or parent has placed you at <b>${esc(P.nodeInfo(placement.startNode).workshop)}</b>, so there is no game to play today.</p><p><a class="btn btn-primary" href="/courses/number-quest">Go to Number Quest</a></p></div>` : html`
+    ${placement && placement.disabled ? html`<div class="panel"><p>Your teacher or parent has placed you at <b>${P.nodeInfo(placement.startNode).workshop}</b>, so there is no game to play today.</p><p><a class="btn btn-primary" href="/courses/number-quest">Go to Number Quest</a></p></div>` : html`
     <h2>What grade are you in?</h2>
     <div class="nq-grades" role="group" aria-label="Your grade">
       ${GRADES.map(([g, label]) => html`<button type="button" class="nq-grade" data-grade="${g}">${label}</button>`)}
@@ -35,7 +35,7 @@ export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
       <button type="button" class="btn btn-big" id="nq-begin">Just Play</button>
     </div>
     <p class="small muted">Skipping the game is always fine. You can play it later from the course map, whenever you like.</p>
-    ${placement && placement.startNode ? html`<p class="small">You already have a starting workshop: <b>${esc(P.nodeInfo(placement.startNode).workshop)}</b>. Playing again is a retake: your old start point stays until you say to use the new one.</p>` : ''}`}
+    ${placement && placement.startNode ? html`<p class="small">You already have a starting workshop: <b>${P.nodeInfo(placement.startNode).workshop}</b>. Playing again is a retake: your old start point stays until you say to use the new one.</p>` : ''}`}
   </section>
 
   <section class="nq-stage" id="nq-game" hidden>
@@ -85,23 +85,23 @@ export function startingPointPage({ child, placement, note, canManage }) {
   return html`<div class="nq" lang="en">
   <p class="nq-kicker">🔢 Number Quest · for teachers and parents</p>
   <h1>Starting Point note</h1>
-  ${child ? html`<p class="lead">For ${esc(child.display_name || child.username)}.</p>` : ''}
+  ${child ? html`<p class="lead">For ${child.display_name || child.username}.</p>` : ''}
   ${!placement || !placement.startNode ? html`<div class="panel"><p>No placement yet. The Sorting Game has not placed this learner, or they chose to start from the very beginning without one being saved.</p></div>` : html`
   <div class="panel">
-    ${note ? html`<ul class="nq-note-lines">${note.lines.map(l => html`<li>${esc(l)}</li>`)}</ul>
-    <p><b>Placed start:</b> ${esc(note.placedUnit)}</p>
-    ${note.launchpadLine ? html`<p>${esc(note.launchpadLine)}</p>` : ''}
+    ${note ? html`<ul class="nq-note-lines">${note.lines.map(l => html`<li>${l}</li>`)}</ul>
+    <p><b>Placed start:</b> ${note.placedUnit}</p>
+    ${note.launchpadLine ? html`<p>${note.launchpadLine}</p>` : ''}
     ${note.proLine ? html`<p id="nq-pro-line">${note.proLine}</p>` : ''}
-    ${note.partial ? html`<p>${esc(note.partial)}</p>` : ''}` : html`<p><b>Start point:</b> ${esc(info.workshop)} (${esc(placement.startNode)}), set by ${esc(placement.source)}.</p>`}
-    <p class="nq-caveat">${esc(P.CAVEAT)}</p>
-    ${placement.softLandNode ? html`<p>Tally is currently suggesting a warm-up at <b>${esc(P.nodeInfo(placement.softLandNode).workshop)}</b> first, after two tricky checks at the placed start. The placement itself has not moved.</p>` : ''}
+    ${note.partial ? html`<p>${note.partial}</p>` : ''}` : html`<p><b>Start point:</b> ${info.workshop} (${placement.startNode}), set by ${placement.source}.</p>`}
+    <p class="nq-caveat">${P.CAVEAT}</p>
+    ${placement.softLandNode ? html`<p>Tally is currently suggesting a warm-up at <b>${P.nodeInfo(placement.softLandNode).workshop}</b> first, after two tricky checks at the placed start. The placement itself has not moved.</p>` : ''}
     <p class="small muted">Placement asks only a grade and stores rungs, not birthdays. Rungs are curriculum-order judgements by the course writers, refined by item data after launch, not certified grades.</p>
   </div>
   ${canManage ? html`<div class="panel">
     <h2>Override: your word is final</h2>
     <p>Placement is advice the platform gives, never a gate it keeps. You can move this learner to any start point, or turn the Sorting Game off for them.</p>
     <form id="nq-override-form" class="row">
-      <label>Start point <select id="nq-override-node">${P.START_NODES.map(n => html`<option value="${n.node}" ${placement.startNode === n.node ? 'selected' : ''}>${esc(n.workshop)} (${esc(n.node)})</option>`)}</select></label>
+      <label>Start point <select id="nq-override-node">${P.START_NODES.map(n => html`<option value="${n.node}" ${placement.startNode === n.node ? 'selected' : ''}>${n.workshop} (${n.node})</option>`)}</select></label>
       <button type="submit" class="btn btn-primary">Set start point</button>
     </form>
     <p><button type="button" class="btn" id="nq-toggle-disabled">${placement.disabled ? 'Turn the Sorting Game back on' : 'Turn the Sorting Game off for this learner'}</button></p>
