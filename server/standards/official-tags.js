@@ -85,7 +85,8 @@ export const GAMES = Object.freeze({
   // Launch Lab (grades 6-8, Number Quest Pro Unit 7): center and spread of probe landings (median, mean, interquartile range,
   // mean absolute deviation, dot plots, box plots and histograms), probability from models and from runs of drops (two stages
   // in a table), and two data sets compared in spreads, a random sample, and scatter plots with their association, outlier and
-  // trend line (its three chapters, LAB_CHAPTERS below).
+  // trend line (its three teaching chapters, LAB_CHAPTERS below). Its fourth chapter, The Great Clock, is the Pro finale:
+  // one multi-step round from each unit, credited only to a step locked to it.
   'launch-lab': { 'ccss-math': ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2', '7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8', '7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
@@ -155,9 +156,13 @@ export const SKY_CHAPTERS = Object.freeze({
 export const KEEP_CHAPTERS = Object.freeze({
   build: ['6.G.A.1', '6.G.A.2', '6.G.A.4', '7.G.B.6'], move: ['7.G.B.5', '8.G.A.1', '8.G.A.3', '8.G.A.2', '8.G.A.4'], span: ['8.G.B.7', '8.G.B.8', '8.G.B.6', '8.EE.A.2'],
 });
-/** Launch Lab's chapters (seed-games/launch-lab.html LaunchLab.CHAPTERS), for a step locked to one. */
+/** Launch Lab's chapters (seed-games/launch-lab.html LaunchLab.CHAPTERS), for a step locked to one. `clock` is the Pro
+ *  finale, The Great Clock: multi-step problems with rational numbers (7.EE.B.3), one round from each of Units 1 to 7
+ *  (a unit rate, a signed change, an equation, a percent, a slope, a span, a data read), so a step locked to it is
+ *  credited with its spine and one code a unit. */
 export const LAB_CHAPTERS = Object.freeze({
   spread: ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2'], chance: ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8'], trend: ['7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'],
+  clock: ['7.EE.B.3', '6.RP.A.3b', '7.NS.A.3', '7.EE.B.4a', '7.RP.A.3', '8.EE.B.5', '8.G.B.7', '6.SP.B.5'],
 });
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
 export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder', 'launch-lab']);

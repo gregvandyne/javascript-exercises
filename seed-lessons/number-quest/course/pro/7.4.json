@@ -1,0 +1,214 @@
+{
+ "key": "pro-7.4",
+ "n": "7.4",
+ "band": "pro",
+ "title": "The Great Clock",
+ "topic": "The seven gears",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "Seven gears for the clock",
+   "text": "The Great Clock stands silent above the Towers. Its seven gears wait on the workbench, one from each tower. To set a gear in place, you solve that tower's problem, and every problem takes more than one step.",
+   "art": "gears",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "A chain of small steps",
+   "text": "The cold store is at −6°C. It warms 2.5° an hour for 4 hours, then cools 3°. First the warming: 4 × 2.5 = 10, so −6 + 10 = 4. Then the cooling: 4 − 3 = 1°C.",
+   "art": "ruler",
+   "visual": {
+    "type": "numberline",
+    "label": "The cold store warms, then cools",
+    "min": -10,
+    "max": 10,
+    "upright": true,
+    "tube": true,
+    "marks": [
+     {
+      "at": -10,
+      "label": "−10°"
+     },
+     {
+      "at": -5,
+      "label": "−5°"
+     },
+     {
+      "at": 0,
+      "label": "0°"
+     },
+     {
+      "at": 5,
+      "label": "5°"
+     },
+     {
+      "at": 10,
+      "label": "10°"
+     }
+    ],
+    "point": {
+     "at": 1,
+     "label": "1°C"
+    },
+    "hops": [
+     {
+      "from": -6,
+      "to": 4,
+      "label": "+10°"
+     },
+     {
+      "from": 4,
+      "to": 1,
+      "label": "−3°"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "It starts at −6°C and warms by 4 × 2.5 = 10 degrees.",
+     "box": [
+      59.8,
+      32.9,
+      12.7,
+      34.1
+     ]
+    },
+    {
+     "cue": "Then it cools by 3 degrees.",
+     "box": [
+      71.8,
+      31.3,
+      11.0,
+      13.6
+     ]
+    },
+    {
+     "cue": "It ends at 1°C, just above zero.",
+     "box": [
+      43.6,
+      36.9,
+      12.9,
+      13.0
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Estimate first, then check",
+   "text": "Before you work it out, guess roughly. A lantern burns 6 mL of oil in 4 hours. How much does it burn in 10 hours? A good estimate catches a slip.",
+   "art": "ruler",
+   "steps": [
+    "Estimate: 10 hours is a bit more than 2 × 4",
+    "So a bit more than 2 × 6 = 12 mL",
+    "Unit rate: 6 ÷ 4 = 1.5 mL an hour",
+    "10 hours: 1.5 × 10 = 15 mL",
+    "15 is a bit more than 12: it makes sense"
+   ]
+  },
+  {
+   "title": "A ladder to the clock face",
+   "text": "The clock face is 8 meters up the tower wall, and the ladder's foot stands 6 meters out. The ladder is the long side: 6² + 8² = 36 + 64 = 100, and √100 = 10. The ladder is 10 meters long.",
+   "art": "ruler",
+   "visual": {
+    "type": "righttriangle",
+    "label": "The wall, the ground and the ladder",
+    "base": 6,
+    "height": 8,
+    "labels": {
+     "base": "6 m",
+     "height": "8 m",
+     "hyp": "?"
+    }
+   },
+   "focus": [
+    {
+     "cue": "The wall: 8 meters up to the clock face.",
+     "box": [
+      30.2,
+      46.5,
+      10.2,
+      12.5
+     ]
+    },
+    {
+     "cue": "The ladder's foot: 6 meters out.",
+     "box": [
+      47.9,
+      81.9,
+      10.2,
+      12.4
+     ]
+    },
+    {
+     "cue": "The ladder is the long side, across from the square corner.",
+     "box": [
+      54.7,
+      40.3,
+      4.2,
+      14.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Compare with the right amount",
+   "text": "A survey map says a path is 48 meters, but it is really 60 meters. The error is 60 − 48 = 12 meters. Percent error compares the error with the real length: 12 ÷ 60 = 0.2, which is 20%.",
+   "art": "map"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for the last climb.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "multi-step problem",
+     "means": "a problem you solve in more than one step, each step using the answer before it"
+    },
+    {
+     "word": "estimate",
+     "means": "a rough answer worked out first, to check that the exact answer makes sense"
+    },
+    {
+     "word": "unit rate",
+     "means": "how much for one unit, such as 1.5 milliliters of oil in one hour"
+    },
+    {
+     "word": "percent error",
+     "means": "the error divided by the real amount, written as a percent"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Launch Lab at The Great Clock. Set seven gears, one from each tower: a rate, a change below zero, an equation, a percent error, a slope, a ladder and a missing landing.",
+   "art": "trophy",
+   "img": "nq/launch-lab/the-great-clock",
+   "alt": "Launch Lab on a phone: the Great Clock's first gear, a double number line of hours and milliliters, and a stepper to set the oil for 10 hours.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-7.4-e1",
+  "nq-pro-7.4-e2",
+  "nq-pro-7.4-e3"
+ ],
+ "game": {
+  "slug": "launch-lab",
+  "chapter": "The Great Clock",
+  "params": "chapter=clock&lock=1"
+ }
+}

@@ -5517,6 +5517,41 @@ refuses a Pro test-out and placement lands nobody on Pro. Where the build left t
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear, and play by a student of the age.
 
+## Number Quest Pro finale: The Great Clock (15 Nov 2026)
+
+Step 7.4, The Great Clock, the last Pro step, built as Launchpad's finale was: an ordinary fourth step of Unit 7 with its
+own deck (`course/pro/7.4.json`), three more exit items (the unit bank now holds the twelve the plan named), a fourth
+teacher note, and a mission that is the fourth chapter of the unit's game, Launch Lab's `clock`. Its `planned` and
+`reserved` are deleted, as no other built step carries them. **Pro stays `building`**: no locale copy, no `NQ_CREW`
+line, nothing opened; the opening waits for the owner. Where the build left the plan, and why:
+
+- **Seven rounds, where the other chapters have six.** The plan says one round per gear, so the chapter has seven
+  (`LaunchLab.roundsOf`); the dots, the end of the chapter and the completion signal follow the chapter's own count.
+- **The seven gears, each in its unit's world, each more than one step**: a unit rate for a longer time (the lantern,
+  6.RP.A.3b), a warming in equal steps then a cooling from below zero (the cold store, 7.NS.A.3), a two-machine line
+  run backward (7.EE.B.4a), a survey's percent error (7.RP.A.3: the plan's "scale" gear is read as the unit's percent
+  code, the one the step cites; no map scale round), a zip wire's rise for each 1 across through the origin (8.EE.B.5),
+  a ladder by the Pythagorean theorem (8.G.B.7) and a missing landing from a mean (6.SP.B.5). The spine, 7.EE.B.3, is
+  what every round shares and what the three exit items check.
+- **Every gear is planned on the stepper**, none with tiles: each has one number for an answer, and a wrong number can
+  be run and drawn as it really turns out (where an amount really falls, the start an end would need, a ladder's real
+  reach, the mean five landings would really have). Named slips get their own hint.
+- **Four new board drawings, no new deck diagram**: a double number line, an upright thermometer, the machine line and
+  the ladder's triangle are game-drawn on the face-on board; the scatter plane gained a finer grid for the zip wire.
+  Signed numbers are printed with a true minus sign; spoken lines say "below zero" and never carry a sign.
+- **The clock gains a gear per solved round**: in this chapter the results deck carries a game-made clock (a plate,
+  seven sockets, a dial) instead of the cargo rack; the gears turn, and with all seven in the hand goes round. Nothing
+  moves with reduced motion. One hex color was changed after the site's word scanner matched it as a blocked word.
+- **The deck has two drawn diagrams** (the cold store's upright line, the ladder's triangle), not three: the worked
+  example estimates first and checks, which 7.EE.B.3 asks for, and needs no picture.
+- **The planned-step engine stays.** `number-quest-tiers.js` still honours a step marked `planned` inside a built unit;
+  its tests now run on a copy of the catalogue with 7.4 planned again (`withFinalePlanned` in
+  `number-quest-pro-foundations.test.js`), including the admin's "Planned: the unit is built, and this step of it is not
+  yet." The file itself has no planned or reserved Pro step, which the tests now pin. Removing the last planned step
+  does not open the tier: `statusOf` reads `tiers.pro.status`, still `"building"`, and a test pins that too.
+- **Not verified:** a real GPU, phone or Chromebook (software WebGL in headless Chromium only), the AI voice by ear, and
+  play by a student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

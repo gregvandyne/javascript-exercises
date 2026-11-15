@@ -11,7 +11,12 @@
                     estimated from results, the chance of not, two stages in a table of outcomes, and a model's
                     prediction beside a real run;
        trend  (7.3) two launchers' medians apart, means apart in mean absolute deviations, a random sample and its
-                    batch, the pattern of a scatter plot, its outlier, and a prediction from a trend line.
+                    batch, the pattern of a scatter plot, its outlier, and a prediction from a trend line;
+     and the finale, seven rounds, one for each tower's gear:
+       clock  (7.4) The Great Clock: a unit rate (the lantern's oil), a signed change (the cold store), an equation
+                    (the machine line), a percent error (the survey map), a slope (the zip wire), a span (the ladder to
+                    the clock face) and a data read (the missing landing), each a problem of more than one step; the
+                    clock on the results deck gains a gear for each round solved, and turns when all seven are in.
      Made for ages 11 to 14: plan first, then run. The player sets a stepper or picks one of three tiles and runs the
      plan; the board shows only the question until then. A wrong plan is run too and shown as it really turns out
      (a median line with more probes on one side, a total that does not match, a rate that is not the run's, a
@@ -19,8 +24,8 @@
      contexts are probes, launchers, bins and fins. No timer, no lives, no fail state, nothing typed. Read-aloud is on
      by default (BRB.speak, the shared path; the speaker button says a line again): lines are written the way they
      are said. Keys: arrows or + and - move the stepper, Enter runs, 1 to 3 pick a tile. Lesson mode: BRB.params
-     { chapter: spread | chance | trend, lock: 1 } opens that chapter only; finishing its six rounds reports game
-     over, won, once (the course step's completion signal). With no parameters the game offers the three chapters
+     { chapter: spread | chance | trend | clock, lock: 1 } opens that chapter only; finishing its six rounds (the
+     clock's seven) reports game over, won, once (the course step's completion signal). With no parameters the game offers the four chapters
      from a menu. Saves only which chapters are finished (BRB.storage 'launch-lab-v1'). The import map below is
      exactly kit2ImportMap() (server/services/vendor.js); tests/unit/launch-lab.test.js fails if a library bump leaves
      it behind. English only, like Number Quest's other lesson games. Test handle: window.__ll (also
@@ -146,7 +151,9 @@
    a box plot, bars, the tower, a bar from 0 to 1, a table of outcomes, a sample, a scatter plot) over lines of maths. ===== */
 /* launch-lab:begin */
 (function (root) {
-  var CHAPTERS = ['spread', 'chance', 'trend'], ROUNDS = 6;
+  var CHAPTERS = ['spread', 'chance', 'trend', 'clock'], ROUNDS = 6;
+  /** How many rounds a chapter has: six, and the clock's seven (one for each gear). */
+  function roundsOf(chapter) { return chapter === 'clock' ? 7 : ROUNDS; }
   function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   function one(r, a) { return a[Math.floor(r() * a.length)]; }
   function between(r, lo, hi) { return lo + Math.floor(r() * (hi - lo + 1)); }
@@ -553,14 +560,173 @@
     return L('t.hint.predict', { a: p.a, b: p.b, c: p.yb - p.ya, x: p.x });
   }
 
+  /* ---- clock (7.4): the Great Clock, the Pro finale: one round from each tower, one gear each. Every round is a
+     multi-step problem with rational numbers, told in its own unit's world: a lantern's oil (Lantern Mix), the cold
+     store (Sub Zero), the machine line (Machine Line), a survey map (Scale Scout), a zip wire (Sky Lines), a ladder to
+     the keep wall (Keep Builder) and the test range's landings (Launch Lab). ---- */
+  var GEARS = ['ratio', 'zero', 'variable', 'scale', 'slope', 'angle', 'chance'];
+  var RATES = [0.5, 1.5, 2.5, 3], WARM = [[1.5, 2], [1.5, 4], [2.5, 2], [2.5, 4], [2, 3], [3, 2]], TRIPLES = [[6, 8, 10], [9, 12, 15], [12, 16, 20], [5, 12, 13], [8, 15, 17], [7, 24, 25]];
+  var FOUR = [[-4, -2, 2, 3], [-3, -1, 2, 4], [-4, -1, 1, 3], [-2, -2, 1, 4], [-5, -1, 2, 2], [-3, -3, 2, 3]];
+  /** A number as the board prints it, with a true minus sign. */
+  function sg(v) { return nt(v).replace('-', '−'); }
+  /** A temperature as the words say it: "6 below zero", "zero", "4 above zero" (the number is always a plain digit). */
+  function tside(v) { return v < 0 ? 'below' : v > 0 ? 'above' : 'zero'; }
+  function clockRound(n, lap, r, out) {
+    var a, b, c, q, t, s, w, h, e, p, x, m, f, k, vals, R, S;
+    out.gear = GEARS[n - 1];
+    out.ask = [L('g.gear.' + n)];
+    if (n === 1) {
+      // the Ratio Gear: a unit rate, then the same rate for a longer time
+      if (lap === 0) { a = 4; c = 6; t = 10; q = 1.5; } else { do { q = one(r, RATES); a = one(r, [2, 4]); c = q * a; t = one(r, [6, 8, 10, 12]); } while (c < 2 || t === a || q * t > 40 || !exact(c)); }
+      out.kind = 'rate'; out.p = { a: a, c: c, t: t, q: q, ans: q * t };
+      stepper(out, q * t, 'ml', 0, 40, 1, lap === 0 ? 10 : Math.max(0, q * t - between(r, 3, 8)));
+      var add = c + (t - a); if (add >= 0 && add <= 40 && add !== q * t) out.slips[add] = [L('g.hint.rate.add', { d: t - a, q: nt(q) })];
+      out.ask.push(L('g.ask.rate', { c: c, a: a, t: t }));
+      out.said = [L('g.said.rate', { c: c, a: a, q: nt(q), t: t, n: q * t })];
+      out.chip = L('show.q.rate', { t: t }); out.chipDone = c + ' ÷ ' + a + ' × ' + t + ' = ' + q * t + ' ml';
+    } else if (n === 2) {
+      // the Zero Gear: below zero, a warming in equal steps, then a cooling
+      if (lap === 0) { s = -6; w = 2.5; h = 4; c = 3; } else { do { s = -between(r, 3, 9); k = one(r, WARM); w = k[0]; h = k[1]; c = between(r, 2, 6); } while (s + w * h - c > 8 || s + w * h - c < -8 || w * h - c < 1 || w * h - c > 10); }
+      a = w * h; e = s + a - c;
+      out.kind = 'temp'; out.p = { s: s, w: w, h: h, a: a, c: c, e: e, d: a - c };
+      stepper(out, e, '°', -10, 10, 1, s);
+      if (s + a <= 10 && s + a !== e) out.slips[s + a] = [L('g.hint.temp.cool', { c: c })];
+      out.ask.push(L('g.ask.temp', { s: -s, w: nt(w), h: h, c: c }), L('g.ask.temp2'));
+      out.said = [L('g.said.temp.' + tside(e), { a: a, c: c, e: Math.abs(e) })];
+      out.chip = L('show.q.temp'); out.chipDone = sg(s) + '° + ' + a + '° − ' + c + '° = ' + sg(e) + '°';
+    } else if (n === 3) {
+      // the Variable Gear: undo a two-machine line, px + q = r
+      if (lap === 0) { p = 3; q = 5; x = 6; } else { p = one(r, [2, 3, 4]); q = one(r, [1.5, 2.5, 4, 5, 7]); x = between(r, 2, 9); }
+      R = p * x + q;
+      out.kind = 'undo'; out.p = { p: p, q: q, x: x, r: R };
+      stepper(out, x, '', 0, 12, 1, 0);
+      k = (R / p) - q; if (exact(k) && Math.round(k) === k && k >= 0 && k <= 12 && k !== x) out.slips[k] = [L('g.hint.undo.order', { q: nt(q) })];
+      out.ask.push(L('g.ask.undo', { p: p, q: nt(q), r: nt(R) }));
+      out.said = [L('g.said.undo', { r: nt(R), q: nt(q), a: p * x, p: p, x: x })];
+      out.chip = L('show.q.undo', { p: p, q: nt(q), r: nt(R) }); out.chipDone = '(' + nt(R) + ' − ' + nt(q) + ') ÷ ' + p + ' = ' + x;
+    } else if (n === 4) {
+      // the Scale Gear: a survey's percent error, against the real length
+      if (lap === 0) { R = 60; p = 20; S = 48; } else { do { R = one(r, [40, 50, 60, 80, 100, 120]); p = one(r, [10, 20, 25, 30, 40, 50]); e = R * p / 100; S = one(r, [R - e, R + e]); } while (!(e >= 2 && Math.round(e) === e) || S >= 150); }
+      e = Math.abs(R - S);
+      out.kind = 'error'; out.p = { r: R, s: S, e: e, pc: p };
+      stepper(out, p, '%', 0, 60, 5, 0);
+      k = e / S * 100; if (exact(k) && Math.round(k) === k && k % 5 === 0 && k <= 60 && k !== p) out.slips[k] = [L('g.hint.error.survey', { s: S, r: R })];
+      out.ask.push(L('g.ask.error', { s: S, r: R }));
+      out.said = [L('g.said.error', { e: e, r: R, d: nt(e / R), p: p })];
+      out.chip = L('show.q.error'); out.chipDone = e + ' ÷ ' + R + ' = ' + nt(e / R) + ' = ' + p + '%';
+    } else if (n === 5) {
+      // the Slope Gear: a zip wire's rise for each 1 across (its slope, the unit rate of a proportional line)
+      if (lap === 0) { a = 4; b = 6; } else { do { a = one(r, [2, 4, 6]); m = one(r, [0.5, 1, 1.5, 2, 2.5, 3]); b = m * a; } while (b < 2 || b > 14 || !exact(b) || Math.round(b) !== b); }
+      m = b / a;
+      out.kind = 'slope'; out.p = { a: a, b: b, m: m };
+      stepper(out, m, '', 0, 4, 0.5, 0);
+      k = a / b; if (k <= 4 && Math.abs(Math.round(k * 2) - k * 2) < 1e-9 && Math.abs(k - m) > 1e-9) out.slips[k] = [L('g.hint.slope.flip')];
+      out.ask.push(L('g.ask.slope', { a: a, b: b }), L('g.ask.slope2'));
+      out.said = [L('g.said.slope', { b: b, a: a, m: nt(m) })];
+      out.chip = L('show.q.slope'); out.chipDone = b + ' ÷ ' + a + ' = ' + nt(m);
+    } else if (n === 6) {
+      // the Angle Gear: a ladder to the clock face, by the Pythagorean theorem
+      k = lap === 0 ? [6, 8, 10] : one(r, TRIPLES);
+      if (lap === 0 || r() < 0.5) { b = k[0]; a = k[1]; } else { b = k[1]; a = k[0]; }
+      c = k[2];
+      out.kind = 'ladder'; out.p = { a: a, b: b, c: c, s: a * a + b * b };
+      stepper(out, c, 'm', 2, 30, 1, Math.max(a, b));
+      if (a + b <= 30) out.slips[a + b] = [L('g.hint.ladder.add')];
+      out.ask.push(L('g.ask.ladder', { a: a }), L('g.ask.ladder2', { b: b }));
+      out.said = [L('g.said.ladder', { b: b, a: a, s: a * a + b * b, c: c })];
+      out.chip = L('show.q.ladder'); out.chipDone = b + '² + ' + a + '² = ' + c + '²';
+    } else {
+      // the Chance Gear: the mean of five landings is given, and one landing is missing
+      if (lap === 0) { m = 14; vals = [10, 12, 16, 17]; } else { do { m = between(r, 11, 16); k = one(r, FOUR); vals = sorted(k.map(function (o) { return m + o + between(r, 0, 1); })); f = 5 * m - sum(vals); } while (f === m || f < 6 || f > 22 || Math.abs(f - m) > 10); }
+      t = 5 * m; s = sum(vals); f = t - s;
+      out.kind = 'missing'; out.p = { m: m, vals: vals, t: t, s: s, f: f, min: 6, max: 22 };
+      stepper(out, f, 'm', 6, 22, 1, m);
+      out.slips[m] = [L('g.hint.missing.mean', { t: t })];
+      out.ask.push(L('g.ask.missing', { m: m, a: vals[0], b: vals[1], c: vals[2], d: vals[3] }));
+      out.said = [L('g.said.missing', { m: m, t: t, s: s, k: f })];
+      out.chip = L('show.q.missing'); out.chipDone = '5 × ' + m + ' − ' + s + ' = ' + f + ' m';
+    }
+  }
+  function clockView(R, mode, v) {
+    var p = R.p, part, add;
+    if (R.kind === 'rate') {
+      part = { k: 'dnl', a: p.a, c: p.c, t: p.t, q: p.q, max: Math.max(p.a, p.t) + 2, top: 'show.hours', bot: 'show.ml' };
+      if (mode === 'ask') { part.at = { v: null, tone: 'plan' }; return { parts: [part], lines: [] }; }
+      if (mode === 'found') { part.at = { v: p.ans, tone: 'ok' }; return { parts: [part], lines: [p.c + ' ÷ ' + p.a + ' = ' + nt(p.q), nt(p.q) + ' × ' + p.t + ' = ' + p.ans] }; }
+      part.at = { v: v, tone: 'warn' };
+      return { parts: [part], lines: [v + ' ÷ ' + p.t + (exact(v / p.t) ? ' = ' : ' ') + rate(v / p.t) + ' ≠ ' + nt(p.q)] };
+    }
+    if (R.kind === 'temp') {
+      part = { k: 'therm', min: -10, max: 10, s: p.s };
+      if (mode === 'ask') return { parts: [part], lines: [sg(p.s) + '° + ' + p.h + ' × ' + nt(p.w) + '° − ' + p.c + '° = ?'] };
+      if (mode === 'found') { part.hops = [{ a: p.s, b: p.s + p.a, t: '+' + p.a + '°' }, { a: p.s + p.a, b: p.e, t: '−' + p.c + '°' }]; part.end = { v: p.e, tone: 'ok' }; return { parts: [part], lines: [sg(p.s) + ' + ' + p.a + ' − ' + p.c + ' = ' + sg(p.e)] }; }
+      // the plan undone: from its end, take back the cooling and the warming, and see where it started
+      var x0 = v - p.d;
+      part.hops = [{ a: x0, b: x0 + p.a, t: '+' + p.a + '°', tone: 'warn' }, { a: x0 + p.a, b: v, t: '−' + p.c + '°', tone: 'warn' }]; part.end = { v: v, tone: 'warn' }; part.from = { v: x0, tone: 'warn' };
+      return { parts: [part], lines: [sg(v) + ' − ' + p.a + ' + ' + p.c + ' = ' + sg(x0) + ' ≠ ' + sg(p.s)] };
+    }
+    if (R.kind === 'undo') {
+      part = { k: 'machine', p: p.p, q: nt(p.q) };
+      if (mode === 'ask') { part.vals = ['?', null, nt(p.r)]; return { parts: [part], lines: [] }; }
+      if (mode === 'found') { part.vals = [String(p.x), String(p.p * p.x), nt(p.r)]; part.tone = 'ok'; return { parts: [part], lines: ['(' + nt(p.r) + ' − ' + nt(p.q) + ') ÷ ' + p.p + ' = ' + p.x] }; }
+      part.vals = [String(v), String(p.p * v), nt(p.p * v + p.q)]; part.tone = 'warn'; part.goal = nt(p.r);
+      return { parts: [part], lines: [p.p + ' × ' + v + ' + ' + nt(p.q) + ' = ' + nt(p.p * v + p.q) + ' ≠ ' + nt(p.r)] };
+    }
+    if (R.kind === 'error') {
+      var lo = Math.min(p.r, p.s), hi = Math.max(p.r, p.s), ticks = [{ v: 0, t: '0' }, { v: p.r, t: 'real ' + p.r + ' m' }], mk = [{ v: p.s, t: 'survey ' + p.s + ' m', low: true }];
+      if (mode === 'ask') return { parts: [{ k: 'bar', min: 0, max: hi, segs: [{ a: 0, b: lo, t: lo + ' m' }, { a: lo, b: hi, t: '?', tone: 'plan' }], ticks: ticks, marks: mk }], lines: [] };
+      if (mode === 'found') return { parts: [{ k: 'bar', min: 0, max: hi, tone: 'ok', segs: [{ a: 0, b: lo, t: lo + ' m' }, { a: lo, b: hi, t: p.e + ' m', tone: 'ok' }], ticks: ticks, marks: mk }], lines: [p.e + ' ÷ ' + p.r + ' = ' + nt(p.e / p.r) + ' = ' + p.pc + '%'] };
+      add = p.r * v / 100;
+      return { parts: [{ k: 'bar', min: 0, max: Math.max(hi, lo + add), segs: [{ a: 0, b: lo, t: lo + ' m' }, { a: lo, b: lo + add, t: nt(add) + ' m', tone: 'warn' }], ticks: ticks, marks: mk }], lines: [v + '% × ' + p.r + ' = ' + nt(add) + ' ≠ ' + p.e] };
+    }
+    if (R.kind === 'slope') {
+      var pl = { k: 'scatter', pts: [[0, 0], [p.a, p.b]], xmax: 8, ymax: 16, ygrid: 1, ylab: 4, xname: 'x.across', ytitle: 'show.y.up', tags: [{ x: p.a, y: p.b, t: '(' + p.a + ', ' + p.b + ')' }] };
+      if (mode === 'ask') return { parts: [pl], lines: [] };
+      if (mode === 'found') { pl.trend = { m: p.m, b: 0, tone: 'ok' }; pl.stair = { x: 0, y: 0, run: p.a, rise: p.b, tone: 'ok' }; return { parts: [pl], lines: [p.b + ' ÷ ' + p.a + ' = ' + nt(p.m)] }; }
+      pl.trend = { m: v, b: 0, tone: 'warn' }; pl.dot = { x: p.a, y: v * p.a, t: '(' + p.a + ', ' + nt(v * p.a) + ')', tone: 'warn' };
+      return { parts: [pl], lines: [nt(v) + ' × ' + p.a + ' = ' + nt(v * p.a) + ' ≠ ' + p.b] };
+    }
+    if (R.kind === 'ladder') {
+      part = { k: 'tri', a: p.a, b: p.b };
+      if (mode === 'ask') { part.lad = { t: '?', tone: 'plan' }; return { parts: [part], lines: [] }; }
+      if (mode === 'found') { part.lad = { len: p.c, t: p.c + ' m', tone: 'ok' }; return { parts: [part], lines: [p.b + '² + ' + p.a + '² = ' + p.s + ' = ' + p.c + '²'] }; }
+      var up = v > p.b ? Math.sqrt(v * v - p.b * p.b) : 0;
+      part.lad = { len: v, up: up, upT: rate(up) + ' m up', t: v + ' m', tone: 'warn' };
+      return { parts: [part], lines: [v > p.b ? v + '² − ' + p.b + '² = ' + (v * v - p.b * p.b) + ' ≠ ' + p.a + '²' : v + ' ≤ ' + p.b] };
+    }
+    // missing
+    if (mode === 'ask') return { parts: [{ k: 'dots', min: p.min, max: p.max, rows: [dotRow(p.vals, { marks: [{ v: p.m, t: 'mean ' + p.m, tone: 'plan' }] })] }], lines: [L('show.fifth')] };
+    if (mode === 'found') return { parts: [{ k: 'dots', min: p.min, max: p.max, rows: [dotRow(sorted(p.vals.concat([p.f])), { ring: { v: p.f, tone: 'ok' }, marks: [{ v: p.m, t: 'mean ' + p.m, tone: 'ok' }] })] }], lines: ['5 × ' + p.m + ' = ' + p.t, p.t + ' − ' + p.s + ' = ' + p.f] };
+    var mn = (p.s + v) / 5;
+    return { parts: [{ k: 'dots', min: p.min, max: p.max, rows: [dotRow(sorted(p.vals.concat([v])), { ring: { v: v, tone: 'warn' }, marks: [{ v: mn, t: 'mean ' + nt(mn), tone: 'warn' }] })] }], lines: ['(' + p.s + ' + ' + v + ') ÷ 5 = ' + nt(mn) + ' ≠ ' + p.m] };
+  }
+  function clockWhy(R, v) {
+    var p = R.p, up, k;
+    if (R.kind === 'rate') return L(exact(v / p.t) ? 'g.hint.rate' : 'g.hint.rate.about', { n: v, t: p.t, b: nt(v / p.t), c: p.c, a: p.a, q: nt(p.q) });
+    if (R.kind === 'temp') {
+      // where the plan's end is, and the change it means from the start (a rise, a drop or none)
+      k = v - p.s;
+      return [L(k > 0 ? 'g.hint.temp.rise.' + tside(v) : k < 0 ? 'g.hint.temp.drop' : 'g.hint.temp.none', { n: Math.abs(v), k: Math.abs(k) }), L('g.hint.temp.net', { a: p.a, c: p.c, d: p.d })];
+    }
+    if (R.kind === 'undo') return L('g.hint.undo', { n: v, p: p.p, a: p.p * v, q: nt(p.q), b: nt(p.p * v + p.q), r: nt(p.r) });
+    if (R.kind === 'error') return L('g.hint.error', { n: v, r: p.r, a: nt(p.r * v / 100), e: p.e });
+    if (R.kind === 'slope') return L('g.hint.slope', { n: nt(v), c: nt(v * p.a), a: p.a, b: p.b });
+    if (R.kind === 'ladder') {
+      if (v <= p.b) return L('g.hint.ladder.short', { n: v, b: p.b });
+      up = Math.sqrt(v * v - p.b * p.b);
+      return L(exact(up) ? 'g.hint.ladder' : 'g.hint.ladder.about', { n: v, b: p.b, h: nt(up), a: p.a });
+    }
+    return L('g.hint.missing', { n: v, a: p.s + v, b: nt((p.s + v) / 5), m: p.m });
+  }
+
   /** The board of a round: as asked ('ask'), as a plan really turns out ('try') and as found ('found'). */
-  function view(R, mode, v) { return R.chapter === 'spread' ? spreadView(R, mode, v) : R.chapter === 'chance' ? chanceView(R, mode, v) : trendView(R, mode, v); }
+  function view(R, mode, v) { return R.chapter === 'spread' ? spreadView(R, mode, v) : R.chapter === 'chance' ? chanceView(R, mode, v) : R.chapter === 'clock' ? clockView(R, mode, v) : trendView(R, mode, v); }
   function round(chapter, n, lap) {
     var ci = CHAPTERS.indexOf(chapter);
-    if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
+    if (ci < 0 || !(n >= 1 && n <= roundsOf(chapter))) return null;
     lap = lap || 0;
     var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
-    if (chapter === 'spread') spreadRound(n, lap, r, out); else if (chapter === 'chance') chanceRound(n, lap, r, out); else trendRound(n, lap, r, out);
+    if (chapter === 'spread') spreadRound(n, lap, r, out); else if (chapter === 'chance') chanceRound(n, lap, r, out); else if (chapter === 'clock') clockRound(n, lap, r, out); else trendRound(n, lap, r, out);
     out.pic = { ask: view(out, 'ask', null), found: view(out, 'found', null) };
     return out;
   }
@@ -572,11 +738,12 @@
     if (typeof v !== 'number' || !(v >= s.min - 1e-9 && v <= s.max + 1e-9) || Math.abs(Math.round(v / s.by) * s.by - v) > 1e-9) return null;
     v = Math.round(v * 100) / 100;
     if (Math.abs(v - R.answer) < 1e-9) return { ok: true };
-    return { ok: false, lines: R.slips[v] || [R.chapter === 'spread' ? spreadWhy(R, v) : R.chapter === 'chance' ? chanceWhy(R, v) : trendWhy(R, v)], draw: view(R, 'try', v) };
+    var why = R.chapter === 'spread' ? spreadWhy(R, v) : R.chapter === 'chance' ? chanceWhy(R, v) : R.chapter === 'clock' ? clockWhy(R, v) : trendWhy(R, v);
+    return { ok: false, lines: R.slips[v] || (Array.isArray(why[0]) ? why : [why]), draw: view(R, 'try', v) };
   }
   /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
   function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
-  root.LaunchLab = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, judge: judge, view: view, params: params, shown: shown, nt: nt, frac: frac, median: median, mad: mad, corr: corr };
+  root.LaunchLab = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, roundsOf: roundsOf, GEARS: GEARS, sg: sg, round: round, judge: judge, view: view, params: params, shown: shown, nt: nt, frac: frac, median: median, mad: mad, corr: corr };
 })(typeof window !== 'undefined' ? window : globalThis);
 /* launch-lab:end */
 </script>
@@ -597,6 +764,8 @@ const I18N = {
     "ch.spread": "Spread Test",
     "ch.chance": "Drop Tower",
     "ch.trend": "Trend Watch",
+    "ch.clock": "The Great Clock",
+    "start.clock": "The Great Clock has stopped. Solve one problem from each tower to set its seven gears turning.",
     "s.ask.median": "{n} probes landed on the test range. What is the median landing, in meters?",
     "s.ask.mean": "What is the mean landing of these {n} probes, in meters?",
     "s.ask.consistent": "Two launchers each sent 8 probes. Which launcher is more consistent?",
@@ -689,8 +858,58 @@ const I18N = {
     "t.said.none": "Yes! The points show no pattern: no association.",
     "t.said.outlier": "Yes! That probe landed {g} meters short of the pattern.",
     "t.said.predict": "Yes! The line rises {r} meters for each step of power, so at power {x} it is at {y} meters.",
+    "g.gear.1": "Gear 1 of 7, the Ratio Gear.",
+    "g.gear.2": "Gear 2 of 7, the Zero Gear.",
+    "g.gear.3": "Gear 3 of 7, the Variable Gear.",
+    "g.gear.4": "Gear 4 of 7, the Scale Gear.",
+    "g.gear.5": "Gear 5 of 7, the Slope Gear.",
+    "g.gear.6": "Gear 6 of 7, the Angle Gear.",
+    "g.gear.7": "Gear 7 of 7, the Chance Gear.",
+    "g.ask.rate": "The clock's lantern burns {c} milliliters of oil every {a} hours. At that rate, how many milliliters does it burn in {t} hours?",
+    "g.ask.temp": "The cold store is at {s} below zero. It warms {w} degrees each hour for {h} hours, then cools {c} degrees.",
+    "g.ask.temp2": "What is its temperature now?",
+    "g.ask.undo": "A number goes into the machine line. It is multiplied by {p}, then {q} is added, and {r} comes out. What number went in?",
+    "g.ask.error": "The survey map says the path to the clock is {s} meters. The real path is {r} meters. What is the percent error?",
+    "g.ask.slope": "A zip wire runs straight from the foot of the tower to a platform {a} across and {b} up.",
+    "g.ask.slope2": "How much does the wire rise for each 1 across?",
+    "g.ask.ladder": "A ladder must reach the clock face, {a} meters up the tower wall.",
+    "g.ask.ladder2": "Its foot stands {b} meters out from the wall. How long is the ladder?",
+    "g.ask.missing": "The mean of five landings is {m} meters. Four of them landed at {a}, {b}, {c} and {d} meters. Where did the fifth land?",
+    "g.hint.rate": "A plan of {n} in {t} hours is {b} an hour. The lantern burns {c} in {a} hours, {q} an hour.",
+    "g.hint.rate.about": "A plan of {n} in {t} hours is about {b} an hour. The lantern burns {c} in {a} hours, {q} an hour.",
+    "g.hint.rate.add": "That adds {d} more milliliters for {d} more hours. The oil goes up by {q} for each hour.",
+    "g.hint.temp.rise.below": "Ending at {n} below zero means a rise of {k} from the start.",
+    "g.hint.temp.rise.zero": "Ending at zero means a rise of {k} from the start.",
+    "g.hint.temp.rise.above": "Ending at {n} above zero means a rise of {k} from the start.",
+    "g.hint.temp.drop": "Ending at {n} below zero means a drop of {k} from the start.",
+    "g.hint.temp.none": "Ending at {n} below zero means no change from the start.",
+    "g.hint.temp.net": "Warming {a} degrees and cooling {c} is a rise of {d}.",
+    "g.hint.temp.cool": "That is after the warming only. Then it cools {c} degrees.",
+    "g.hint.undo": "{n} times {p} is {a}, and {a} plus {q} is {b}. The machine gave {r}.",
+    "g.hint.undo.order": "That undid the machines in the wrong order. Undo the last one first: take away {q}.",
+    "g.hint.error": "{n} percent of {r} meters is {a} meters. The survey is off by {e}.",
+    "g.hint.error.survey": "That compares the error with the survey's {s} meters. Percent error compares it with the real {r}.",
+    "g.hint.slope": "A rise of {n} for each 1 across reaches {c} up at {a} across. The platform is {b} up.",
+    "g.hint.slope.flip": "That divides the across by the up. The slope is the rise divided by the run.",
+    "g.hint.ladder": "A ladder of length {n} from {b} meters out reaches {h} meters up. The clock face is {a} meters up.",
+    "g.hint.ladder.about": "A ladder of length {n} from {b} meters out reaches about {h} meters up. The clock face is {a} meters up.",
+    "g.hint.ladder.short": "A ladder of length {n} cannot reach up from {b} meters out.",
+    "g.hint.ladder.add": "That adds the two sides. Square them and add, then find the square root.",
+    "g.hint.missing": "With {n} as the fifth, the five add to {a} and the mean is {b}. The mean must be {m}.",
+    "g.hint.missing.mean": "That is the mean itself. The five landings must add to {t}.",
+    "g.said.rate": "Yes! {c} divided by {a} is {q} milliliters an hour, and {q} times {t} is {n}.",
+    "g.said.temp.below": "Yes! It warms {a} degrees and cools {c}, so it ends at {e} below zero.",
+    "g.said.temp.above": "Yes! It warms {a} degrees and cools {c}, so it ends at {e} above zero.",
+    "g.said.temp.zero": "Yes! It warms {a} degrees and cools {c}, so it ends at zero.",
+    "g.said.undo": "Yes! {r} minus {q} is {a}, and {a} divided by {p} is {x}.",
+    "g.said.error": "Yes! The survey is off by {e} meters, and {e} divided by {r} is {d}, which is {p} percent.",
+    "g.said.slope": "Yes! It rises {b} for {a} across, and {b} divided by {a} is {m}.",
+    "g.said.ladder": "Yes! {b} squared plus {a} squared is {s}, and {c} squared is {s} too.",
+    "g.said.missing": "Yes! Five landings with a mean of {m} add to {t}. The four add to {s}, so the fifth is {k} meters.",
     "win": "Tests done!",
     "win.card": "Six pods are on the rack. Well done.",
+    "win.clock": "All seven gears are turning. The Great Clock runs again.",
+    "win.clock.title": "The clock runs!",
     "round": "Round {n} of {m}",
     "show.q.median": "median?",
     "show.q.mean": "mean?",
@@ -739,6 +958,21 @@ const I18N = {
     "show.y": "distance (m)",
     "show.idle": "test range",
     "show.mean": "mean",
+    "show.q.rate": "{t} h → ? ml",
+    "show.q.temp": "now: ?°",
+    "show.q.undo": "{p}x + {q} = {r}",
+    "show.q.error": "% error?",
+    "show.q.slope": "rise per 1?",
+    "show.q.ladder": "ladder: ? m",
+    "show.q.missing": "5th landing?",
+    "show.hours": "hours",
+    "show.ml": "ml",
+    "show.x.across": "across",
+    "show.y.up": "up",
+    "show.fifth": "the fifth landing: ?",
+    "show.in": "in",
+    "show.out": "out",
+    "show.clock.idle": "the Great Clock: 7 gears",
     "btn.say": "Say it again",
     "btn.up": "Up",
     "btn.down": "Down",
@@ -766,7 +1000,7 @@ const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(
 const printed = l => (typeof l === 'string' ? l : LL.shown(fmt(l[0], l[1])));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SAVE_KEY = 'launch-lab-v1';
-const ICON = { spread: '📏', chance: '🎲', trend: '📈' };
+const ICON = { spread: '📏', chance: '🎲', trend: '📈', clock: '🕰️' };
 
 /* ---------- state ---------- */
 const P = LL.params(B && B.params);
@@ -851,16 +1085,41 @@ const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness:
 }
 
 // The results rack (game-made: a deck with six pads and the theme's ink edge), where a cargo pod is set down for each
-// finished round. It moves with the screen's shape, so it is its own group.
-const chest = new THREE.Group(), rack = new THREE.Group();
-const MAT = { dark: mat('#262c44'), deck: mat('#55628f'), pad: mat('#ffd23f'), edge: new THREE.LineBasicMaterial({ color: '#141414' }) };
+// finished round. It moves with the screen's shape, so it is its own group. In the finale the same deck carries the
+// Great Clock instead: an upright plate with seven sockets in a row and a dial over them; a solved round sets its gear
+// in the next socket, the gears turn (not with reduced motion), and the dial's hand goes round once all seven are in.
+const chest = new THREE.Group(), rack = new THREE.Group(), pads = new THREE.Group(), clockArt = new THREE.Group(), hand = new THREE.Group();
+const MAT = { dark: mat('#262c44'), deck: mat('#55628f'), pad: mat('#ffd23f'), plate: mat('#3b4366'), face: mat('#fff6e5'), edge: new THREE.LineBasicMaterial({ color: '#141414' }) };
 const solid = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), MAT.edge)); return o; };
-const slot = i => V3(-1.1 + i * 0.44, 0.16, 0);   // on the deck, in the rack's own space: six in a row
+/** Is the clock on the deck? The finale's rounds, its start card and its end card. */
+const clockOn = () => (S.chapter || (S.screen === 'start' ? P.chapter : '')) === 'clock';
+// on the deck, in the rack's own space: six pads in a row, or the clock's seven sockets
+const slot = i => (clockOn() ? V3(-1.14 + i * 0.38, 0.62, 0.02) : V3(-1.1 + i * 0.44, 0.16, 0));
 chest.add(solid(new THREE.BoxGeometry(2.8, 0.14, 0.56), MAT.deck, 0, 0.07, 0));
-for (let i = 0; i < 6; i++) chest.add(solid(new THREE.CylinderGeometry(0.15, 0.15, 0.04, 14), MAT.pad, slot(i).x, 0.15, 0));
-chest.add(rack); props.add(chest);
+for (let i = 0; i < 6; i++) pads.add(solid(new THREE.CylinderGeometry(0.15, 0.15, 0.04, 14), MAT.pad, -1.1 + i * 0.44, 0.15, 0));
+{
+  clockArt.add(solid(new THREE.BoxGeometry(2.8, 0.98, 0.1), MAT.plate, 0, 0.63, -0.1));
+  const face = solid(new THREE.CylinderGeometry(0.3, 0.3, 0.06, 32), MAT.face, 0, 1.3, -0.08); face.rotation.x = Math.PI / 2; clockArt.add(face);
+  for (let i = 0; i < 7; i++) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.022, 8, 24), MAT.dark); ring.position.set(-1.14 + i * 0.38, 0.62, -0.04); clockArt.add(ring); }
+  hand.add(solid(new THREE.BoxGeometry(0.035, 0.22, 0.02), MAT.dark, 0, 0.1, 0)); hand.position.set(0, 1.3, -0.03); clockArt.add(hand);
+  clockArt.visible = false;
+}
+chest.add(pads, clockArt, rack); props.add(chest);
 const POD = 0.62;   // the theme's cargo pod, at this size, is about a third of a meter
-function pod() { const o = PT.cargo.clone(true); o.scale.setScalar(POD); return o; }
+const GEAR_COLORS = ['#e8a33a', '#5fb3e0', '#e06a8a', '#6cc070', '#8f7de0', '#d07a4a', '#e8d24a'];
+/** The clock's gear for round i + 1: a toothed wheel facing the player, each in its own color. */
+function gear(i) {
+  const o = new THREE.Group(), m = mat(GEAR_COLORS[i % 7]);
+  const disc = solid(new THREE.CylinderGeometry(0.13, 0.13, 0.06, 20), m, 0, 0, 0); disc.rotation.x = Math.PI / 2; o.add(disc);
+  for (let t = 0; t < 8; t++) { const a = t * Math.PI / 4, tooth = solid(new THREE.BoxGeometry(0.06, 0.06, 0.06), m, Math.cos(a) * 0.15, Math.sin(a) * 0.15, 0); tooth.rotation.z = a; o.add(tooth); }
+  const hub = solid(new THREE.CylinderGeometry(0.035, 0.035, 0.08, 10), MAT.dark, 0, 0, 0); hub.rotation.x = Math.PI / 2; o.add(hub);
+  o.userData.spin = i % 2 ? -1 : 1;
+  return o;
+}
+/** What a finished round puts on the deck: a cargo pod on the rack, or the clock's next gear. */
+function pod(i) { if (clockOn()) return gear(i); const o = PT.cargo.clone(true); o.scale.setScalar(POD); return o; }
+/** The rounds of the chapter being played (six; the clock's seven). */
+const roundsNow = () => LL.roundsOf(S.chapter);
 const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts on the range: the board
 // The board's two posts (they follow its size)
 const posts = new THREE.Group(); g.scene.add(posts);
@@ -951,13 +1210,16 @@ function paintDots(part, top) {
     if (row.tag) tagDot(row.tag, x0 - 84, yAxis - 34);
     axis(x0, x1, yAxis, part.min, part.max, every);
     const seen = {}, sorted = row.vals.slice().sort((a, b) => a - b);
+    let ring = null;
     sorted.forEach((v, i) => {
       seen[v] = (seen[v] || 0) + 1;
       const cx = sx(v), cy = yAxis - 8 - (seen[v] - 0.5) * step;
       if (row.gaps != null && v !== row.gaps) line(sx(row.gaps), cy, cx, cy, C.amber, 4);
       dot(cx, cy, rad, col, C.ink, 3);
       if (row.mid === i) dot(cx, cy, rad + 9, null, C.ok, 6);
+      if (row.ring && v === row.ring.v) ring = [cx, cy];   // the top dot of that value
     });
+    if (ring) dot(ring[0], ring[1], rad + 9, null, TONE[row.ring.tone] || C.plan, 6);
     for (const m of row.marks || []) { const mc = TONE[m.tone] || C.plan, x = sx(m.v); line(x, y + 54, x, yAxis, mc, 5, m.tone === 'warn' ? [14, 10] : null); tagged(m.t, x, y + 26, 42, mc, { dash: m.tone === 'warn' }); }
     if (row.span) bracket(sx, row.span.a, row.span.b, yAxis + 76, row.span.t, row.span.tone, row.span.steps);
     y = yAxis + (two ? 136 : 140);
@@ -1056,12 +1318,14 @@ const sampleH = part => (part.n === 50 ? 62 : 74) * Math.ceil(part.n / (part.n =
    point that is ringed, and a planned point at a power with its distance. */
 function paintScatter(part, top) {
   const x0 = 200, x1 = 860, y0 = top + 30, y1 = top + 400, px = v => x0 + v / part.xmax * (x1 - x0), py = v => y1 - v / part.ymax * (y1 - y0);
+  const yg = part.ygrid || 5, yl = part.ylab || 10;
   fillStroke(rr(x0, y0, x1 - x0, y1 - y0, 4), C.paper, null);
   for (let v = 0; v <= part.xmax; v++) { line(px(v), y0, px(v), y1, C.grid, 3); if (v % 2 === 0) text(String(v), px(v), y1 + 36, 42, { weight: 700 }); }
-  for (let v = 0; v <= part.ymax; v += 5) { line(x0, py(v), x1, py(v), C.grid, 3); if (v % 10 === 0) text(String(v), x0 - 16, py(v), 42, { align: 'right', weight: 700 }); }
+  for (let v = 0; v <= part.ymax; v += yg) { line(x0, py(v), x1, py(v), C.grid, 3); if (v % yl === 0) text(String(v), x0 - 16, py(v), 42, { align: 'right', weight: 700 }); }
   line(x0, y1, x1 + 20, y1, C.ink, 6); line(x0, y1, x0, y0 - 16, C.ink, 6);
   text(fmt('show.' + part.xname), (x0 + x1) / 2, y1 + 82, 42, { fill: C.dim });
-  X.save(); X.translate(x0 - 104, (y0 + y1) / 2); X.rotate(-Math.PI / 2); text(fmt('show.y'), 0, 0, 42, { fill: C.dim }); X.restore();
+  X.save(); X.translate(x0 - 104, (y0 + y1) / 2); X.rotate(-Math.PI / 2); text(fmt(part.ytitle || 'show.y'), 0, 0, 42, { fill: C.dim }); X.restore();
+  if (part.stair) { const st = part.stair, col = TONE[st.tone] || C.plan; line(px(st.x), py(st.y), px(st.x + st.run), py(st.y), col, 6, [14, 10]); line(px(st.x + st.run), py(st.y), px(st.x + st.run), py(st.y + st.rise), col, 6, [14, 10]); }
   if (part.at != null) line(px(part.at), y0, px(part.at), y1, C.amber, 4, [12, 10]);
   if (part.trend) {
     const t = part.trend, col = TONE[t.tone] || C.plan, ya = t.b, yb = t.m * part.xmax + t.b;
@@ -1069,11 +1333,72 @@ function paintScatter(part, top) {
     for (const q of t.through || []) { fillStroke(rr(px(q[0]) - 13, py(q[1]) - 13, 26, 26, 4), C.paper, col, 5); tagged('(' + q[0] + ', ' + q[1] + ')', px(q[0]) - 20, py(q[1]) - 44, 40, col, { align: 'right' }); }
   }
   for (const [x, y] of part.pts) dot(px(x), py(y), 12, C.dot, C.ink, 3);
-  for (const tg of part.tags || []) tagged(tg.t, px(tg.x) + 22, py(tg.y) + 38, 40, C.plan, { align: 'left' });
+  for (const tg of part.tags || []) tagged(tg.t, px(tg.x) + 22, Math.min(y1 - 30, py(tg.y) + 38), 40, C.plan, { align: 'left' });
   if (part.ring) { const tg = part.tags[part.ring.i], col = TONE[part.ring.tone]; dot(px(tg.x), py(tg.y), 26, null, col, 6); }
   if (part.dot) { const d = part.dot, col = TONE[d.tone], off = d.y > part.ymax; const y = py(Math.min(part.ymax, d.y)); if (!off) dot(px(d.x), y, 17, col, C.paper, 5); tagged(d.t + (off ? ' ↑' : ''), px(d.x) + 28, Math.max(y0 + 30, y), 42, col, { align: 'left', dash: d.tone === 'warn' }); }
 }
-const PART = { dots: [paintDots, dotsH], box: [paintBox, () => 410], hist: [paintHist, () => 388], tower: [paintTower, () => 424], bar: [paintBar, p => (p.marks.some(m => m.low) ? 260 : 210)], grid: [paintGrid, gridH], sample: [paintSample, sampleH], scatter: [paintScatter, () => 500] };
+/* A double number line (the Ratio Gear): hours over milliliters, 0 under 0 and the lantern's own pair lined up; the
+   asked time with its '?', the found amount, or a plan put where its amount really falls on the milliliter line. */
+function paintDnl(part, top) {
+  const x0 = 180, x1 = 900, H = part.max, sx = h => x0 + Math.min(H, h) / H * (x1 - x0), yt = top + 96, yb = top + 300;
+  for (const [y, name] of [[yt, part.top], [yb, part.bot]]) { line(x0 - 10, y, x1 + 20, y, C.ink, 6); text(fmt(name), 92, y + 2, 46, { fill: C.dim }); }
+  const pairs = [[0, 0], [part.a, part.c]];
+  for (const [h, v] of pairs) { line(sx(h), yt + 16, sx(h), yb - 16, C.grid, 4, [10, 10]); line(sx(h), yt - 14, sx(h), yt + 14, C.ink, 5); line(sx(h), yb - 14, sx(h), yb + 14, C.ink, 5); text(String(h), sx(h), yt - 44, 54, {}); text(LL.nt(v), sx(h), yb + 48, 54, {}); }
+  const xt = sx(part.t), at = part.at, col = TONE[at.tone] || C.plan;
+  line(xt, yt - 14, xt, yt + 14, C.ink, 5); tagged(String(part.t), xt, yt - 44, 52, C.amber);
+  if (at.v == null) { line(xt, yt + 16, xt, yb - 16, col, 4, [10, 10]); tagged('?', xt, yb + 50, 54, C.goal); return; }
+  const real = at.v / part.q, xr = sx(real), off = real > H;
+  line(xt, yt + 16, xr, yb - 16, col, 5, at.tone === 'warn' ? [14, 10] : null); line(xr, yb - 16, xr, yb + 16, col, 7);
+  tagged(LL.nt(at.v) + (off ? ' →' : ''), xr, yb + (at.tone === 'warn' ? 112 : 50), 52, col, { dash: at.tone === 'warn' });
+}
+/* An upright thermometer (the Zero Gear) from −10° to 10°: the start, the warming and the cooling as two hops, and
+   where they end; a plan is undone from its own end, and its start is drawn where it really is. */
+function paintTherm(part, top) {
+  const xa = 380, y0 = top + 26, y1 = top + 426, sy = v => y1 - (v - part.min) / (part.max - part.min) * (y1 - y0);
+  fillStroke(rr(xa - 22, y0 - 14, 44, y1 - y0 + 28, 22), C.paper, C.ink, 5);
+  for (let v = part.min; v <= part.max; v++) { line(xa - 22, sy(v), xa - (v % 5 ? 8 : 2), sy(v), C.ink, v === 0 ? 5 : 3); if (v % 5 === 0) text(LL.sg(v) + '°', xa - 40, sy(v), 42, { align: 'right', weight: 700 }); }
+  line(xa - 22, sy(0), xa + 22, sy(0), C.ink, 5);
+  const mark = (v, x, s, col, dash) => { dot(xa, sy(v), 13, col); line(xa + 16, sy(v), x - 70, sy(v), col, 4, dash ? [10, 8] : null); tagged(s, x, sy(v), 42, col, { dash }); };
+  (part.hops || []).forEach((h, i) => {
+    const x = xa + 52 + i * 46, col = TONE[h.tone] || C.ok, ya = sy(h.a), yb = sy(h.b), d = yb < ya ? -1 : 1;
+    line(x, ya, x, yb - d * 6, col, 7, h.tone === 'warn' ? [14, 10] : null); line(x - 12, yb - d * 18, x, yb, col, 6); line(x + 12, yb - d * 18, x, yb, col, 6);
+  });
+  mark(part.s, 640, LL.sg(part.s) + '°', C.plan, false);
+  if (part.from) mark(part.from.v, 820, LL.sg(part.from.v) + '°', C.warn, true);
+  if (part.end) mark(part.end.v, part.from ? 950 : 820, LL.sg(part.end.v) + '°', TONE[part.end.tone], part.end.tone === 'warn');
+}
+/* The machine line (the Variable Gear): a number goes in, through "× p" and "+ q", and out. */
+function paintMachine(part, top) {
+  const y = top + 96, h = 120, col = TONE[part.tone] || C.ink;
+  const boxes = [{ w: 150, t: part.vals[0], kind: 'in' }, { w: 180, t: '× ' + part.p, kind: 'm' }, { w: 180, t: '+ ' + part.q, kind: 'm' }, { w: 160, t: part.vals[2], kind: 'out' }];
+  let x = (CW - (150 + 180 + 180 + 160 + 3 * 46)) / 2;
+  boxes.forEach((b, i) => {
+    const tone = b.kind === 'm' ? C.ink : (b.kind === 'in' && part.vals[0] === '?') ? C.goal : col;
+    fillStroke(rr(x, y, b.w, h, b.kind === 'm' ? 10 : 60), b.kind === 'm' ? 'rgba(58, 68, 104, 0.16)' : C.cell, tone, 6, part.tone === 'warn' && b.kind !== 'm' ? [14, 10] : null);
+    label(b.t, x + b.w / 2, y + h / 2 + 2, 56, { max: b.w - 16, min: 40, fill: tone });
+    if (b.kind !== 'm') text(fmt(b.kind === 'in' ? 'show.in' : 'show.out'), x + b.w / 2, y + h + 40, 40, { fill: C.dim });
+    x += b.w;
+    if (i < 3) { line(x + 6, y + h / 2, x + 40, y + h / 2, C.ink, 6); line(x + 26, y + h / 2 - 12, x + 40, y + h / 2, C.ink, 5); line(x + 26, y + h / 2 + 12, x + 40, y + h / 2, C.ink, 5); if (i === 1 && part.vals[1] != null) tagged(part.vals[1], x + 23, y - 40, 42, col); x += 46; }
+  });
+}
+/* The ladder to the clock face (the Angle Gear): the wall, the ground out to the ladder's foot, and the ladder; a plan's
+   ladder is drawn at its own length from the same foot, reaching as high as it really does. */
+function paintTri(part, top) {
+  const L = part.lad, up = L.len != null && L.up != null ? L.up : part.a, hi = Math.max(part.a, up), k = Math.min(330 / hi, 520 / part.b);
+  const xw = 700, yg = top + 410, xf = xw - part.b * k, yw = yg - part.a * k, col = TONE[L.tone] || C.plan;
+  line(xf - 60, yg, xw + 120, yg, C.ink, 6);
+  fillStroke(rr(xw, yw - 10, 40, yg - yw + 10, 4), 'rgba(58, 68, 104, 0.30)', C.ink, 5);
+  dot(xw + 20, yw - 34, 24, C.paper, C.ink, 5); line(xw + 20, yw - 34, xw + 20, yw - 50, C.ink, 4, null); line(xw + 20, yw - 34, xw + 32, yw - 34, C.ink, 4, null);
+  fillStroke(rr(xw - 26, yg - 26, 26, 26, 2), null, C.ink, 4);
+  text(part.a + ' m', xw + 120, (yw + yg) / 2, 44, { align: 'center' });
+  text(part.b + ' m', (xf + xw) / 2, yg + 42, 44, {});
+  if (L.len == null) { line(xf, yg, xw, yw, col, 9, [16, 12]); tagged(L.t, (xf + xw) / 2 - 50, (yg + yw) / 2 - 30, 46, C.goal); return; }
+  const flat = L.tone === 'warn' && L.up === 0, ex = flat ? xf + L.len * k : xw, ey = flat ? yg - 4 : yg - up * k;
+  line(xf, yg, ex, ey, col, 10, L.tone === 'warn' ? [18, 12] : null);
+  if (!flat && L.tone === 'warn') { dot(ex, ey, 12, col); tagged(L.upT, ex - 26, ey - 8, 40, col, { align: 'right', dash: true }); }
+  tagged(L.t, (xf + ex) / 2 - 60, (yg + ey) / 2 - (flat ? 60 : 30), 46, col, { dash: L.tone === 'warn' });
+}
+const PART = { dnl: [paintDnl, () => 380], therm: [paintTherm, () => 452], machine: [paintMachine, () => 300], tri: [paintTri, () => 452], dots: [paintDots, dotsH], box: [paintBox, () => 410], hist: [paintHist, () => 388], tower: [paintTower, () => 424], bar: [paintBar, p => (p.marks.some(m => m.low) ? 260 : 210)], grid: [paintGrid, gridH], sample: [paintSample, sampleH], scatter: [paintScatter, () => 500] };
 /** One look of the board: its parts and its lines of maths, set out from top to bottom. */
 function paintView(ov) {
   const blocks = [], lines = (ov.lines || []).map(printed);
@@ -1088,7 +1413,7 @@ function paint(Rd, mode) {
   smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
   fillStroke(rr(8, 8, CW - 16, CH - 16, 30), C.bg, C.ink, 10);
   fillStroke(rr(22, 22, CW - 44, CH - 44, 20), null, 'rgba(58, 68, 104, 0.40)', 4);
-  if (!Rd) paintView({ parts: [{ k: 'dots', min: 8, max: 20, rows: [{ vals: [11, 12, 12, 13, 14, 14, 14, 15, 17] }] }], lines: [fmt('title'), fmt('show.idle')] });
+  if (!Rd) paintView({ parts: [{ k: 'dots', min: 8, max: 20, rows: [{ vals: [11, 12, 12, 13, 14, 14, 14, 15, 17] }] }], lines: clockOn() ? [fmt('ch.clock'), fmt('show.clock.idle')] : [fmt('title'), fmt('show.idle')] });
   else {
     // the board shows the question until the plan is run: a plan on the stepper is never drawn before Run
     const p = Rd.pic, ov = mode === 'found' ? p.found : mode === 'hint' && S.draw ? S.draw : p.ask;
@@ -1139,6 +1464,8 @@ g.onUpdate(dt => {
     if (w.t >= 1) { const at = tweens.indexOf(w); if (at >= 0) tweens.splice(at, 1); if (w.then) w.then(); }
   }
   if (hold) { hold.t -= dt; if (hold.t <= 0) { hold.t = 0.1; held = true; bump(hold.dir); } }
+  // the clock's gears turn as they are set, and its hand goes round once all seven are in (never with reduced motion)
+  if (clockArt.visible && !reduced) { for (const o of rack.children) o.rotation.z += dt * 1.4 * (o.userData.spin || 0); if (rack.children.length >= 7) hand.rotation.z -= dt * 1.1; }
 });
 
 /* ---------- where things go, and the camera ---------- */
@@ -1155,6 +1482,7 @@ const chestSpot = () => (tall ? V3(0.98, 0, squat() ? -2.5 : -0.5) : V3(5.05, 0,
 const chestBox = () => { const k = chestSize(), t = chestSpot(); return [V3(t.x - 1.45 * k, 0, t.z), V3(t.x + 1.45 * k, 0, t.z), V3(t.x + 1.45 * k, 1.6 * k, t.z), V3(t.x - 1.45 * k, 1.6 * k, t.z)]; };
 function placeChest() {
   chest.scale.setScalar(chestSize()); chest.position.copy(chestSpot());
+  const on = clockOn(); pads.visible = !on; clockArt.visible = on; if (!on) hand.rotation.z = 0;
   // the launcher stands behind the board, off to its side, so it never covers a number
   launcher.scale.setScalar(tall ? 0.7 : 0.9); launcher.position.set(BW / 2 + (tall ? 1.6 : 0.9), 0, BOARD.z - (tall ? 1.2 : 0.6));
 }
@@ -1218,13 +1546,13 @@ function putBoard(Rd, mode, first) {
 /** Pods on the rack: one for each round already finished. */
 function setPods(n) {
   while (rack.children.length > n) rack.remove(rack.children[rack.children.length - 1]);
-  for (let i = rack.children.length; i < n; i++) { const o = pod(); o.position.copy(slot(i)); rack.add(o); }
+  for (let i = rack.children.length; i < n; i++) { const o = pod(i); o.position.copy(slot(i)); rack.add(o); }
   S.probes = n;
 }
 /** A finished round's pod comes down onto the next pad of the rack. */
 function setDown(then) {
-  const i = S.probes; if (i >= LL.ROUNDS) return then();
-  const o = pod(), to = slot(i); rack.add(o); S.probes = i + 1;
+  const i = S.probes; if (i >= roundsNow()) return then();
+  const o = pod(i), to = slot(i); rack.add(o); S.probes = i + 1;
   o.position.set(to.x, to.y + 1.5, to.z);
   fly(o, to, { dur: 0.55, arc: 0.2, then: () => { sfx('land'); then(); } });
 }
@@ -1269,7 +1597,7 @@ function solo(pods) {
 }
 function showStart() {
   S.screen = 'start'; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
-  card('start', { title: fmt('title'), sub: fmt('ch.' + P.chapter), line: 'start.line', buttons: [{ id: 'start', icon: ICON[P.chapter], label: fmt('btn.start'), cls: 'go', go: () => startChapter(P.chapter) }] });
+  card('start', { title: fmt('title'), sub: fmt('ch.' + P.chapter), line: P.chapter === 'clock' ? 'start.clock' : 'start.line', buttons: [{ id: 'start', icon: ICON[P.chapter], label: fmt('btn.start'), cls: 'go', go: () => startChapter(P.chapter) }] });
   frame();
 }
 function showMenu() {
@@ -1279,7 +1607,7 @@ function showMenu() {
   frame();
 }
 
-/* ---------- a chapter: six rounds ---------- */
+/* ---------- a chapter: six rounds (the clock: seven) ---------- */
 function startChapter(chapter) {
   if (!LL.CHAPTERS.includes(chapter)) return showMenu();
   S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
@@ -1288,11 +1616,11 @@ function startChapter(chapter) {
   nextRound();
 }
 function dots2() {
-  el.dots.replaceChildren(...Array.from({ length: LL.ROUNDS }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
-  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: LL.ROUNDS })); el.dots.hidden = false; el.row2.hidden = false;
+  el.dots.replaceChildren(...Array.from({ length: roundsNow() }, (_, i) => { const d = document.createElement('i'); if (i < S.round - 1) d.className = 'on'; else if (i === S.round - 1) d.className = 'now'; return d; }));
+  el.dots.setAttribute('aria-label', fmt('round', { n: S.round, m: roundsNow() })); el.dots.hidden = false; el.row2.hidden = false;
 }
 function nextRound() {
-  if (S.round >= LL.ROUNDS) return finish();
+  if (S.round >= roundsNow()) return finish();
   S.round++; S.R = LL.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.draw = null; S.shown = false; S.tick++;
   const Rd = S.R; S.value = Rd.input === 'step' ? Rd.step.start : null;
   hint(); dots2(); chip(Rd.chip);
@@ -1304,16 +1632,17 @@ function finish() {
   // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
   S.reported++;
   try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
-  S.R = null; solo(LL.ROUNDS);
+  S.R = null; solo(roundsNow());
   g.celebrate(S.hero, '');   // the cheer; the words are on the card
   const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
   if (!S.lock) buttons.push({ id: 'menu', icon: '🚀', label: fmt('btn.menu'), go: showMenu });
-  card('end', { title: fmt('win'), sub: fmt('ch.' + S.chapter), line: 'win.card', buttons });
+  const clock = S.chapter === 'clock';
+  card('end', { title: fmt(clock ? 'win.clock.title' : 'win'), sub: fmt('ch.' + S.chapter), line: clock ? 'win.clock' : 'win.card', buttons });
   frame();
 }
 
 /** What the stepper shows for the plan: the number and its unit. */
-function valueText(Rd, v) { return LL.nt(v) + (Rd.unit ? ' ' + Rd.unit : ''); }
+function valueText(Rd, v) { return LL.sg(v) + (Rd.unit ? (/^[°%]$/.test(Rd.unit) ? '' : ' ') + Rd.unit : ''); }
 /** The controls of a round: three tiles, or a stepper and a run button. */
 function controls(Rd, found) {
   if (Rd.input === 'tiles') return Rd.opts.map((o, i) => button({ id: 'll-n' + i, big: o.t, aria: o.t, cls: (o.t.length > 4 ? 'long' : '') + (found && i === Rd.answer ? ' right' : ''), go: b => answer(i, b) }));
@@ -1329,7 +1658,7 @@ function controls(Rd, found) {
 }
 /** Draw the round from its state (also after the screen turns): the board, the helper, the pods, the controls. */
 function redraw() {
-  if (S.screen === 'start' || S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? LL.ROUNDS : 0); return void frame(); }
+  if (S.screen === 'start' || S.screen === 'menu' || S.screen === 'end') { solo(S.screen === 'end' ? roundsNow() : 0); return void frame(); }
   if (S.screen !== 'play' || !S.R) return void frame();
   const focus = el.bar.contains(document.activeElement) ? document.activeElement.id : '';
   const Rd = S.R, found = S.phase === 'right', first = !S.shown && !found;
@@ -1401,7 +1730,7 @@ function clearTo(p) {
 }
 const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
 window.__ll = window.__brbTest = {
-  state: () => ({ game: 'launch-lab', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: LL.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+  state: () => ({ game: 'launch-lab', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: S.chapter ? roundsNow() : LL.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall, deck: rack.children.length,
     ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, value: S.value, tried: S.draw, moving: tweens.length, onStage: { board: stage.children.includes(board) && board.visible, pods: rack.children.length } } : {}) }),
   /** Fast: nothing waits and nothing moves. Turning it on also finishes whatever is moving now. */
   fast: on => { S.fast = on !== false; for (let n = 0; S.fast && tweens.length && n < 50; n++) { const w = tweens.shift(); w.o.visible = true; w.step(1); if (w.then) w.then(); } },

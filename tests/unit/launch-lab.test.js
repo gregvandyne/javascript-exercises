@@ -1,9 +1,10 @@
 // Launch Lab (seed-games/launch-lab.html): Number Quest Pro Unit 7's game (The Test Range, grades 6 to 8), a Kit 2
-// (Oomba3D) test range on a red planet at sunset, with a data board. Checked here:
+// (Oomba3D) test range on a red planet at sunset, with a data board, and the Pro finale, The Great Clock, its fourth
+// chapter (seven rounds, one for each tower's gear). Checked here:
 //   - the file: the scanner passes it with no fail issue, it loads nothing from another site, its import map is exactly
 //     kit2ImportMap() (so a library bump that leaves the game behind fails here), it is the newest Space Base at sunset
 //     (Rocket Supply plays the same world by day), and it has no timer, no lives, no losing, no shop and no wager;
-//   - its rounds (the pure block between launch-lab:begin and launch-lab:end): six a chapter, every answer worked out
+//   - its rounds (the pure block between launch-lab:begin and launch-lab:end): six a chapter (the clock: seven), every answer worked out
 //     again here from the words the round asks with and the data on the board as asked (never from the game's own
 //     answer), every data set checked (a median really is the middle landing, a mean absolute deviation really is the
 //     one the words give, a scatter plot really has the pattern it is said to have), every plan a player can make
@@ -14,11 +15,12 @@
 //     to be spoken, and nothing is bought, sold, bet or won;
 //   - its registration: seeded, on the Learn shelf for grades 6 to 8, in the Number Quest course, tagged chapter by
 //     chapter with the codes units.json gives the three steps, and its lesson parameters survive the play-params
-//     grammar; and the unit's nine check items, each key worked out from the numbers in its question;
+//     grammar; and the unit's twelve check items (three for the finale), each key worked out from the numbers in its question;
 //   - the game itself, in real Chromium inside the production game frame (frameDocument + the frame CSP + the sandbox),
 //     for each chapter in lesson mode: it loads with no error and asks for nothing outside /vendor, every instruction is
 //     sent to be spoken (read-aloud is on by default), a wrong plan gets its hint and its picture and does not advance,
-//     a right one sets a pod on the rack, and six right rounds post the game-over message exactly once, not before;
+//     a right one sets a pod on the rack (in the clock, a gear in its socket), and six right rounds (the clock's seven)
+//     post the game-over message exactly once, not before;
 //     then the menu with no parameters, a round at the game's own speed with the real stepper buttons, the keyboard, a
 //     desktop, a 390 px and a 360 px phone and reduced motion.
 // The play tests need a local Chromium; they are skipped when there is none. LL_SHOTS=<dir> saves screenshots there.
@@ -48,14 +50,15 @@ const { sayMath } = await import('../../seed-lessons/number-quest/math-text.js')
 const HTML = fs.readFileSync(path.join(ROOT, 'seed-games/launch-lab.html'), 'utf8');
 const META = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/launch-lab.json'), 'utf8'));
 const UNITS = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/units.json'), 'utf8'));
-const UNIT = UNITS.units.find(u => u.tier === 'pro' && u.n === 7), STEPS = UNIT.steps.filter(s => s.planned !== true);
-const CHAPTERS = ['spread', 'chance', 'trend'];
+const UNIT = UNITS.units.find(u => u.tier === 'pro' && u.n === 7), STEPS = UNIT.steps;
+const CHAPTERS = ['spread', 'chance', 'trend', 'clock'];
+const ROUNDS_OF = { spread: 6, chance: 6, trend: 6, clock: 7 };
 
 // The game's own round maker and words, run on their own (no DOM, no 3D).
 const LL = (() => {
   const box = {}; vm.runInNewContext(/\/\* launch-lab:begin \*\/([\s\S]*?)\/\* launch-lab:end \*\//.exec(HTML)[1], box);
   const plain = v => JSON.parse(JSON.stringify(v)), G = box.LaunchLab;   // plain objects of this realm, so deepEqual can compare them
-  return { ...plain({ CHAPTERS: G.CHAPTERS, ROUNDS: G.ROUNDS }), round: (...a) => plain(G.round(...a)), judge: (r, v) => plain(G.judge(r, v)), view: (r, m, v) => plain(G.view(r, m, v)), params: p => plain(G.params(p)), shown: s => G.shown(s), nt: v => G.nt(v) };
+  return { ...plain({ CHAPTERS: G.CHAPTERS, ROUNDS: G.ROUNDS, GEARS: G.GEARS }), roundsOf: c => G.roundsOf(c), round: (...a) => plain(G.round(...a)), judge: (r, v) => plain(G.judge(r, v)), view: (r, m, v) => plain(G.view(r, m, v)), params: p => plain(G.params(p)), shown: s => G.shown(s), nt: v => G.nt(v) };
 })();
 const T = lines.readGame('launch-lab').strings.en;
 const say = (key, v = {}) => T[key].replace(/\{(\w+)\}/g, (m, k) => v[k]);
@@ -119,6 +122,14 @@ function solve(r) {
       return part.tags[far].t;
     }
     case 'predict': { const [a, c, b, d, x] = g(/power (\d+), distance (\d+), and power (\d+), distance (\d+)\. Predict the distance for power (\d+)/); return c + (x - a) * (d - c) / (b - a); }
+    // the Great Clock: each a problem of more than one step, worked out here from its words (and its board, where it draws the data)
+    case 'rate': { const [c, a, t] = g(/burns ([\d.]+) milliliters of oil every (\d+) hours\. At that rate, how many milliliters does it burn in (\d+) hours/); assert.equal(part.a, a); assert.equal(part.c, c); assert.equal(part.t, t); return c / a * t; }
+    case 'temp': { const [s, w, h, c] = g(/at (\d+) below zero\. It warms ([\d.]+) degrees each hour for (\d+) hours, then cools (\d+) degrees/); assert.equal(part.s, -s, 'the thermometer starts where the words say'); return -s + w * h - c; }
+    case 'undo': { const [p, q, r0] = g(/multiplied by (\d+), then ([\d.]+) is added, and ([\d.]+) comes out/); return (r0 - q) / p; }
+    case 'error': { const [sv, rv] = g(/the clock is (\d+) meters\. The real path is (\d+) meters/); return Math.abs(rv - sv) / rv * 100; }
+    case 'slope': { const [a, b] = g(/a platform (\d+) across and (\d+) up/); assert.deepEqual(part.pts, [[0, 0], [a, b]], 'the plane shows the foot and the platform'); return b / a; }
+    case 'ladder': { const [a, b] = g(/clock face, (\d+) meters up the tower wall\. Its foot stands (\d+) meters out/); const c = Math.sqrt(a * a + b * b); assert.ok(Number.isInteger(c), 'a whole ladder'); assert.deepEqual([part.a, part.b], [a, b]); return c; }
+    case 'missing': { const [m, a, b, c, d] = g(/mean of five landings is (\d+) meters\. Four of them landed at (\d+), (\d+), (\d+) and (\d+) meters/); assert.deepEqual(sorted(part.rows[0].vals), sorted([a, b, c, d]), 'the dot plot shows the four landings'); return 5 * m - (a + b + c + d); }
     default: assert.fail(`no solver for ${r.kind}`);
   }
 }
@@ -136,6 +147,17 @@ const HINTS = {
   't.hint.mads': (x, v, r) => x.n === v && x.a === v * x.s && x.d === r.p.d && x.a !== x.d,
   't.hint.sample': (x, v) => x.n === v && near(+x.a, v / x.t), 't.hint.sample.about': (x, v) => x.n === v && Math.abs(+x.a - v / x.t) <= 0.005 + 1e-9 && !near(+x.a, v / x.t),
   't.hint.predict': (x, v, r) => x.c === r.p.yb - r.p.ya && x.x === r.p.x,
+  'g.hint.rate': (x, v, r) => x.n === v && near(+x.b, v / x.t) && near(+x.q, x.c / x.a) && x.t === r.p.t,
+  'g.hint.rate.about': (x, v) => x.n === v && Math.abs(+x.b - v / x.t) <= 0.005 + 1e-9 && !near(+x.b, v / x.t) && near(+x.q, x.c / x.a),
+  'g.hint.temp.rise.below': (x, v, r) => v < 0 && x.n === -v && x.k === v - r.p.s && x.k > 0, 'g.hint.temp.rise.above': (x, v, r) => v > 0 && x.n === v && x.k === v - r.p.s,
+  'g.hint.temp.rise.zero': (x, v, r) => v === 0 && x.k === -r.p.s, 'g.hint.temp.drop': (x, v, r) => v < r.p.s && x.n === -v && x.k === r.p.s - v, 'g.hint.temp.none': (x, v, r) => v === r.p.s && x.n === -v,
+  'g.hint.temp.net': (x, v, r) => x.a === r.p.w * r.p.h && x.c === r.p.c && x.d === x.a - x.c,
+  'g.hint.undo': (x, v, r) => x.n === v && x.a === v * x.p && near(+x.b, x.a + +x.q) && !near(+x.b, +x.r) && near(+x.r, r.p.r),
+  'g.hint.error': (x, v, r) => x.n === v && near(+x.a, v * x.r / 100) && x.e === Math.abs(r.p.r - r.p.s) && !near(+x.a, x.e),
+  'g.hint.slope': (x, v, r) => near(+x.n, v) && near(+x.c, v * x.a) && x.b === r.p.b && !near(+x.c, x.b),
+  'g.hint.ladder': (x, v, r) => x.n === v && near(+x.h, Math.sqrt(v * v - x.b * x.b)) && x.a === r.p.a && +x.h !== x.a, 'g.hint.ladder.about': (x, v, r) => x.n === v && Math.abs(+x.h - Math.sqrt(v * v - x.b * x.b)) <= 0.005 + 1e-9 && x.a === r.p.a,
+  'g.hint.ladder.short': (x, v) => x.n === v && v <= x.b,
+  'g.hint.missing': (x, v, r) => x.n === v && x.a === sum(r.p.vals) + v && near(+x.b, x.a / 5) && !near(+x.b, x.m),
 };
 
 test('the file: the scanner passes it, nothing leaves the site, its import map is exactly kit2ImportMap(), and the base is a test range at sunset', () => {
@@ -174,17 +196,22 @@ test('the file: the scanner passes it, nothing leaves the site, its import map i
   assert.doesNotMatch(HTML, /physics\(|rapier3d-compat'\)|creature\(|school\(|g\.controls\(/, 'no physics, no animal and nothing to steer: nothing chases, bites or falls');
 });
 
-test('rounds: six a chapter, every answer worked out again from the words and the data, every plan judged, every wrong plan shown as it really turns out, the first lap always the same', () => {
+test('rounds: six a chapter (the clock: seven), every answer worked out again from the words and the data, every plan judged, every wrong plan shown as it really turns out, the first lap always the same', () => {
   assert.deepEqual(LL.CHAPTERS, CHAPTERS); assert.equal(LL.ROUNDS, 6);
+  for (const c of CHAPTERS) assert.equal(LL.roundsOf(c), ROUNDS_OF[c], c);
   assert.equal(LL.round('nowhere', 1, 0), null); assert.equal(LL.round('chance', 0, 0), null); assert.equal(LL.round('chance', 7, 0), null);
-  const kinds = { spread: ['median', 'mean', 'consistent', 'iqr', 'mad', 'hist'], chance: ['model', 'freq', 'estimate', 'not', 'table', 'expect'], trend: ['gap', 'mads', 'sample', 'assoc', 'outlier', 'predict'] };
-  const PARTS = ['dots', 'box', 'hist', 'tower', 'bar', 'grid', 'sample', 'scatter'];
+  assert.equal(LL.round('clock', 0, 0), null); assert.equal(LL.round('clock', 8, 0), null); assert.ok(LL.round('clock', 7, 0), 'the clock has a seventh round');
+  const kinds = { spread: ['median', 'mean', 'consistent', 'iqr', 'mad', 'hist'], chance: ['model', 'freq', 'estimate', 'not', 'table', 'expect'], trend: ['gap', 'mads', 'sample', 'assoc', 'outlier', 'predict'],
+    clock: ['rate', 'temp', 'undo', 'error', 'slope', 'ladder', 'missing'] };
+  assert.deepEqual(LL.GEARS, ['ratio', 'zero', 'variable', 'scale', 'slope', 'angle', 'chance'], 'one gear for each unit, in unit order');
+  const PARTS = ['dots', 'box', 'hist', 'tower', 'bar', 'grid', 'sample', 'scatter', 'dnl', 'therm', 'machine', 'tri'];
   const seen = new Map();
   let judged = 0, wrongs = 0;
-  for (const chapter of CHAPTERS) for (let lap = 0; lap < 14; lap++) for (let n = 1; n <= 6; n++) {
+  for (const chapter of CHAPTERS) for (let lap = 0; lap < 14; lap++) for (let n = 1; n <= ROUNDS_OF[chapter]; n++) {
     const r = LL.round(chapter, n, lap), where = `${chapter} ${n} lap ${lap}`;
     assert.deepEqual(r, LL.round(chapter, n, lap), `${where}: the same round every time it is asked for`);
     assert.equal(r.kind, kinds[chapter][n - 1], where); assert.equal(r.chapter, chapter); assert.equal(r.n, n);
+    if (chapter === 'clock') { assert.equal(r.gear, LL.GEARS[n - 1], where); assert.deepEqual(r.ask[0], [`g.gear.${n}`, {}], `${where}: the round names its gear first`); assert.equal(r.input, 'step', `${where}: every gear is planned on the stepper`); }
     assert.ok(r.input === 'tiles' || r.input === 'step', where);
     // the board as asked and as found are what view() draws, and each is one drawn part over at most two lines
     assert.deepEqual(r.pic.ask, LL.view(r, 'ask', null), where); assert.deepEqual(r.pic.found, LL.view(r, 'found', null), where);
@@ -205,7 +232,7 @@ test('rounds: six a chapter, every answer worked out again from the words and th
       assert.ok(all.some(v => near(v, r.answer)), `${where}: the stepper can stand on the answer`);
       assert.ok(!near(r.step.start, r.answer) && all.includes(r.step.start), `${where}: it starts on the stepper, and not on the answer`);
       assert.ok(Math.abs(r.answer - r.step.start) / r.step.by <= 10 + 1e-9, `${where}: the answer is at most ten presses away`);
-      assert.ok(['m', ''].includes(r.unit), where);
+      assert.ok(['m', '', 'ml', '°', '%'].includes(r.unit), where);
       for (const v of [r.step.min - r.step.by, r.step.max + r.step.by, r.step.min + r.step.by / 2, '3', null, NaN]) assert.equal(LL.judge(r, v), null, `${where}: ${v} is not a plan`);
     }
     for (const v of all) {
@@ -243,24 +270,40 @@ test('rounds: six a chapter, every answer worked out again from the words and th
       if (r.kind === 'assoc') assert.equal(Math.sign(part.trend.m), { positive: 1, negative: -1, none: 0 }[r.opts[v].t], `${where}: the picked trend is drawn`);
       if (r.kind === 'outlier') assert.equal(part.ring.i, 'ABC'.indexOf(r.opts[v].v), where);
       if (r.kind === 'consistent') assert.equal(part.rows.filter(x => x.tone === 'warn').length, r.opts[v].v === 'same' ? 2 : 1, where);
+      // the clock's plans, run: each picture holds what the plan really gives
+      if (r.kind === 'rate') { assert.deepEqual([part.at.v, part.at.tone], [v, 'warn'], where); assert.match(line0, new RegExp(`^${v} ÷ ${p.t} (= |≈ )`), where); }
+      if (r.kind === 'temp') { assert.deepEqual([part.end.v, part.from.v], [v, v - (p.a - p.c)], `${where}: the plan undone from its own end starts at ${v - p.a + p.c}`); assert.notEqual(part.from.v, p.s); assert.equal(part.hops[0].b - part.hops[0].a, p.a); assert.equal(part.hops[1].a - part.hops[1].b, p.c); }
+      if (r.kind === 'undo') { assert.deepEqual(part.vals, [String(v), String(p.p * v), LL.nt(p.p * v + p.q)], `${where}: ${v} sent through the line`); assert.equal(line0, `${p.p} × ${v} + ${LL.nt(p.q)} = ${LL.nt(p.p * v + p.q)} ≠ ${LL.nt(p.r)}`); }
+      if (r.kind === 'error') { const seg = part.segs[1]; assert.ok(near(seg.b - seg.a, p.r * v / 100) && seg.tone === 'warn', `${where}: ${v}% of the real length is drawn`); }
+      if (r.kind === 'slope') { assert.deepEqual([part.trend.m, part.trend.b, part.dot.x, part.dot.y], [v, 0, p.a, v * p.a], `${where}: the wire at the plan's slope`); }
+      if (r.kind === 'ladder') { assert.equal(part.lad.len, v); assert.ok(near(part.lad.up, v > p.b ? Math.sqrt(v * v - p.b * p.b) : 0), `${where}: the ladder reaches as high as it really does`); }
+      if (r.kind === 'missing') { const row = part.rows[0]; assert.deepEqual(row.vals, sorted([...p.vals, v])); assert.deepEqual(row.ring, { v, tone: 'warn' }); assert.ok(near(row.marks[0].v, (sum(p.vals) + v) / 5), `${where}: the mean the plan's five really have`); }
     }
     // what is said when it is right is true: the numbers of the line are the numbers of the round
     for (const [k, v] of [...r.ask, ...r.said]) assert.doesNotMatch(say(k, v), /\b1 (meters|probes|drops|bins|landings)\b|undefined|NaN/, `${where}: ${say(k, v)}`);
     if (r.kind === 'median') { const [x] = r.said; assert.equal(x[1].m, want); assert.equal(sorted(r.p.vals)[x[1].k - 1], want, `${where}: probe ${x[1].k} in order is the middle one`); }
     if (r.kind === 'expect') { assert.notEqual(r.p.run, r.p.e, `${where}: the run comes out close to the model, not exactly`); assert.ok(Math.abs(r.p.run - r.p.e) <= 3); }
+    // the clock's data, checked: a rational step on the way (a unit rate, a warming, a rational addend, a ratio) and a right triangle that is right
+    if (r.kind === 'temp') { assert.ok(r.p.s < 0 && r.p.a > r.p.c, `${where}: below zero, and a net warming`); assert.ok(!Number.isInteger(r.p.w) || r.p.w === 2 || r.p.w === 3); }
+    if (r.kind === 'ladder') assert.equal(r.p.a ** 2 + r.p.b ** 2, r.p.c ** 2, where);
+    if (r.kind === 'missing') { assert.equal(mean([...r.p.vals, want]), r.p.m, `${where}: the five really have the mean the words give`); assert.notEqual(want, r.p.m); }
     // the found board carries the answer
     const found = JSON.stringify(r.pic.found);
     assert.ok(found.includes(r.input === 'tiles' ? (r.kind === 'assoc' ? `show.${r.p.kind}` : r.kind === 'consistent' || r.kind === 'outlier' ? '"ok"' : String(want)) : LL.nt(want)), `${where}: the found board shows ${want}`);
     seen.set(`${chapter}/${n}`, (seen.get(`${chapter}/${n}`) || new Set()).add(JSON.stringify(r.p)));
   }
-  assert.ok(judged > 3000 && wrongs > 2700, `every plan of 252 rounds was judged (${judged}, ${wrongs} wrong)`);
+  assert.ok(judged > 3000 && wrongs > 2700, `every plan of 350 rounds was judged (${judged}, ${wrongs} wrong)`);
   // a replay brings other numbers (every round has at least three versions in fourteen laps)
   for (const [k, v] of seen) assert.ok(v.size >= 3, `${k}: ${v.size} versions`);
   // The first lap, by its numbers: the unit's own examples.
-  const first = c => [1, 2, 3, 4, 5, 6].map(n => { const r = LL.round(c, n, 0); return r.input === 'tiles' ? r.opts[r.answer].t : `${r.answer} ${r.unit}`.trim(); });
+  const first = c => Array.from({ length: ROUNDS_OF[c] }, (_, i) => i + 1).map(n => { const r = LL.round(c, n, 0); return r.input === 'tiles' ? r.opts[r.answer].t : `${r.answer} ${r.unit}`.trim(); });
   assert.deepEqual(first('spread'), ['14 m', '13 m', 'B', '5 m', '2 m', '12']);
   assert.deepEqual(first('chance'), ['0.3', '80', '0.35', '0.7', '1/6', '18']);
   assert.deepEqual(first('trend'), ['6 m', '3', '60', 'positive', 'B', '26 m']);
+  assert.deepEqual(first('clock'), ['15 ml', '1 °', '6', '20 %', '1.5', '10 m', '15 m'], 'the Great Clock: the deck\'s own examples first');
+  assert.equal(box(LL.round('clock', 1, 0).ask), 'Gear 1 of 7, the Ratio Gear. The clock\'s lantern burns 6 milliliters of oil every 4 hours. At that rate, how many milliliters does it burn in 10 hours?');
+  assert.equal(box(LL.round('clock', 2, 0).ask), 'Gear 2 of 7, the Zero Gear. The cold store is at 6 below zero. It warms 2.5 degrees each hour for 4 hours, then cools 3 degrees. What is its temperature now?');
+  assert.equal(box(LL.round('clock', 6, 0).ask), 'Gear 6 of 7, the Angle Gear. A ladder must reach the clock face, 8 meters up the tower wall. Its foot stands 6 meters out from the wall. How long is the ladder?');
   assert.deepEqual(LL.round('spread', 1, 0).pic.ask.parts[0].rows[0].vals, [11, 12, 12, 13, 14, 14, 14, 15, 17], 'the dot plot of the deck');
   assert.equal(box(LL.round('spread', 1, 0).ask), '9 probes landed on the test range. What is the median landing, in meters?');
   assert.equal(box(LL.round('chance', 2, 0).ask), 'In 50 drops, 20 landed in bin C. At that rate, how many of 200 drops would land in bin C?');
@@ -284,11 +327,22 @@ test('rounds: six a chapter, every answer worked out again from the words and th
   assert.equal(hint('trend', 3, 70), '70 out of 300 is a rate of about 0.23. The sample had 4 out of 20, a rate of 0.2.');
   assert.equal(tile('trend', 4, 'none'), 'There is a pattern: from left to right, the points go up.');
   assert.equal(hint('trend', 6, 27), 'From power 2 to power 6, the line rises 12 meters. Keep going to power 8.');
+  assert.equal(hint('clock', 1, 12), 'That adds 6 more milliliters for 6 more hours. The oil goes up by 1.5 for each hour.');
+  assert.equal(hint('clock', 1, 16), 'A plan of 16 in 10 hours is 1.6 an hour. The lantern burns 6 in 4 hours, 1.5 an hour.');
+  assert.equal(hint('clock', 2, 4), 'That is after the warming only. Then it cools 3 degrees.');
+  assert.equal(hint('clock', 2, 2), 'Ending at 2 above zero means a rise of 8 from the start. Warming 10 degrees and cooling 3 is a rise of 7.');
+  assert.equal(hint('clock', 2, -8), 'Ending at 8 below zero means a drop of 2 from the start. Warming 10 degrees and cooling 3 is a rise of 7.');
+  assert.equal(hint('clock', 3, 7), '7 × 3 is 21, and 21 + 5 is 26. The machine gave 23.');
+  assert.equal(hint('clock', 4, 25), 'That compares the error with the survey\'s 48 meters. Percent error compares it with the real 60.');
+  assert.equal(hint('clock', 5, 2), 'A rise of 2 for each 1 across reaches 8 up at 4 across. The platform is 6 up.');
+  assert.equal(hint('clock', 6, 14), 'That adds the two sides. Square them and add, then find the square root.');
+  assert.equal(hint('clock', 6, 11), 'A ladder of length 11 from 6 meters out reaches about 9.22 meters up. The clock face is 8 meters up.');
+  assert.equal(hint('clock', 7, 14), 'That is the mean itself. The five landings must add to 70.');
   // A number on the stepper is never drawn on the board before it is run: the board as asked does not change with it.
-  for (const chapter of CHAPTERS) for (let n = 1; n <= 6; n++) { const r = LL.round(chapter, n, 0); if (r.input === 'step') for (const v of plans(r)) assert.deepEqual(LL.view(r, 'ask', v), r.pic.ask, `${chapter} ${n}: the board as asked does not change with the stepper`); }
+  for (const chapter of CHAPTERS) for (let n = 1; n <= ROUNDS_OF[chapter]; n++) { const r = LL.round(chapter, n, 0); if (r.input === 'step') for (const v of plans(r)) assert.deepEqual(LL.view(r, 'ask', v), r.pic.ask, `${chapter} ${n}: the board as asked does not change with the stepper`); }
   // Lesson parameters.
   assert.deepEqual(LL.params({ chapter: 'chance', lock: 1 }), { chapter: 'chance', lock: true }); assert.deepEqual(LL.params({ chapter: 'chance' }), { chapter: 'chance', lock: false });
-  assert.deepEqual(LL.params({ chapter: 'clock', lock: 1 }), { chapter: '', lock: false }, 'the finale chapter is not built'); assert.deepEqual(LL.params(null), { chapter: '', lock: false });
+  assert.deepEqual(LL.params({ chapter: 'clock', lock: 1 }), { chapter: 'clock', lock: true }, 'the finale chapter'); assert.deepEqual(LL.params({ chapter: 'gate', lock: 1 }), { chapter: '', lock: false }); assert.deepEqual(LL.params(null), { chapter: '', lock: false });
 });
 
 test('words: every line is a registered spoken line written as it is said; the words box prints the signs; nothing is bought, sold, bet or won', () => {
@@ -296,7 +350,7 @@ test('words: every line is a registered spoken line written as it is said; the w
   const ok = text => lines.allowedLine('launch-lab', 'en', text);
   const NUMS = Object.fromEntries('abcdeghkmnpqrstwxy'.split('').map((k, i) => [k, i + 2]));
   const spoken = Object.keys(T).filter(k => !/^(btn\.|show\.|ch\.|round$|title$|loading$)/.test(k));
-  assert.equal(spoken.length, 96);
+  assert.equal(spoken.length, 147, 'the 96 lines of the three teaching chapters and the 51 of the Great Clock');
   for (const k of spoken) {
     assert.deepEqual(ok(say(k, NUMS)), { text: say(k, NUMS), role: 'friendly' }, `${k}: "${say(k, NUMS)}" may be spoken, in the friendly voice`);
     // the voice is handed words and digits only: no sign, no fraction slash, no bracket, no unit short form
@@ -319,7 +373,9 @@ test('words: every line is a registered spoken line written as it is said; the w
   // Every key the game's code names exists in its words.
   for (const m of HTML.matchAll(/(?:fmt|speak|L)\('([a-z][a-zA-Z0-9._]*)'/g)) if (!m[1].endsWith('.')) assert.ok(T[m[1]] !== undefined, `the game uses "${m[1]}", which its words do not have`);
   for (const k of ['show.x.power', 'show.x.mass', 'show.x.order', 'show.y', 'show.up', 'show.down', 'show.none', 'show.notfit.up', 'show.notfit.down', 'show.notfit.none']) assert.ok(T[k], k);
-  assert.deepEqual([T['ch.spread'], T['ch.chance'], T['ch.trend'], T.title], ['Spread Test', 'Drop Tower', 'Trend Watch', 'Launch Lab']);
+  assert.deepEqual([T['ch.spread'], T['ch.chance'], T['ch.trend'], T['ch.clock'], T.title], ['Spread Test', 'Drop Tower', 'Trend Watch', 'The Great Clock', 'Launch Lab']);
+  for (let n = 1; n <= 7; n++) assert.match(T[`g.gear.${n}`], new RegExp(`^Gear ${n} of 7, the (Ratio|Zero|Variable|Scale|Slope|Angle|Chance) Gear\\.$`));
+  for (const k of ['start.clock', 'win.clock', 'win.clock.title', 'show.hours', 'show.ml', 'show.x.across', 'show.y.up', 'show.fifth', 'show.in', 'show.out', 'show.clock.idle']) assert.ok(T[k], k);
   for (const text of Object.values(T)) assert.doesNotMatch(text, /[–—]/, text);
   // US spelling (the course's rule)
   for (const text of Object.values(T)) assert.doesNotMatch(text, /\b(litres?|metres?|kilometres?|centimetres?|centre|colou?red|colours?|favourites?|grey|maths)\b/i, text);
@@ -337,7 +393,7 @@ test('words: every line is a registered spoken line written as it is said; the w
   for (const text of [META.title, META.description, META.tags]) assert.doesNotMatch(text, /\bpro\b|towers|number quest/i, text);
 });
 
-test('registration: seeded, on the Learn shelf, in the Number Quest course, and tagged chapter by chapter as units.json teaches', () => {
+test('registration: seeded, on the Learn shelf, in the Number Quest course, and tagged chapter by chapter as units.json teaches (the finale too)', () => {
   assert.ok(SEED_GAMES.includes('launch-lab'));
   assert.equal(META.slug, 'launch-lab'); assert.equal(META.title, 'Launch Lab'); assert.equal(META.category, 'learning'); assert.equal(META.shelf, 'learn'); assert.equal(META.players_max, 1); assert.equal(META.featured, true);
   assert.deepEqual(SHELF_INFO['launch-lab'], { subject: 'math', from: 6, to: 8 }, 'on the Learn shelf as math for grades 6 to 8');
@@ -345,17 +401,18 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   const nq = catalog.COURSES.find(c => c.slug === 'number-quest');
   assert.deepEqual(nq.games.find(g => g.slug === 'launch-lab'), { slug: 'launch-lab', topic: 'numbers', shared: true });
   assert.equal(catalog.courseOfSlug('launch-lab'), null, 'shared: it keeps its own page in the library');
-  assert.deepEqual(TAGS.LAB_CHAPTERS, { spread: ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2'], chance: ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8'], trend: ['7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'] });
-  assert.deepEqual(TAGS.gameCodes('launch-lab', 'ccss-math'), Object.values(TAGS.LAB_CHAPTERS).flat());
+  assert.deepEqual(TAGS.LAB_CHAPTERS, { spread: ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2'], chance: ['7.SP.C.5', '7.SP.C.6', '7.SP.C.7', '7.SP.C.8'], trend: ['7.SP.B.4', '8.SP.A.1', '7.SP.B.3', '7.SP.A.2', '8.SP.A.2'],
+    clock: ['7.EE.B.3', '6.RP.A.3b', '7.NS.A.3', '7.EE.B.4a', '7.RP.A.3', '8.EE.B.5', '8.G.B.7', '6.SP.B.5'] });
+  // the game's own library tags are its three teaching chapters' codes; the finale's are credited only to a step locked to it
+  assert.deepEqual(TAGS.gameCodes('launch-lab', 'ccss-math'), [...TAGS.LAB_CHAPTERS.spread, ...TAGS.LAB_CHAPTERS.chance, ...TAGS.LAB_CHAPTERS.trend]);
   assert.ok(TAGS.LEVELLED.includes('launch-lab'));
   assert.equal(UNIT.title, 'The Test Range'); assert.equal(UNIT.stamp, 'Chance Gear'); assert.equal(UNIT.tool, 'launch-lab'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Chance Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
-  assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['7.1', 20, 'Center and spread'], ['7.2', 21, 'Chance: experiments and models'], ['7.3', 22, 'Compare two data sets and spot a trend']]);
-  // The finale is not built: step 7.4 keeps its reservation inside the built unit, and nothing of it exists.
+  assert.equal(UNIT.teacherNotes.length, 4); assert.match(UNIT.teacherNotes[3], /^The Great Clock \(7\.4\) is the tier's finale/); assert.ok(UNITS.tiers.pro.stones.includes('Chance Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['7.1', 20, 'Center and spread'], ['7.2', 21, 'Chance: experiments and models'], ['7.3', 22, 'Compare two data sets and spot a trend'], ['7.4', 23, 'The Great Clock']]);
+  // The finale is built: step 7.4 is an ordinary fourth step, as Launchpad's is, named by the tier's finale line.
   const fin = UNIT.steps.find(s => s.n === '7.4');
-  assert.deepEqual([fin.planned, fin.reserved, fin.game.pro, fin.titles.pro, UNITS.tiers.pro.finale], [true, { params: 'chapter=clock&lock=1' }, null, 'The Great Clock', '7.4']);
-  assert.ok(!fs.existsSync(path.join(ROOT, 'seed-lessons/number-quest/course/pro/7.4.json')), 'no finale deck');
-  assert.ok(!/['"]clock['"]/.test(/var CHAPTERS = \[[^\]]*\]/.exec(HTML)[0]), 'no finale chapter in the game');
+  assert.deepEqual([fin.planned, fin.reserved, fin.titles.pro, UNITS.tiers.pro.finale], [undefined, undefined, 'The Great Clock', '7.4']);
+  assert.deepEqual(fin.standards.pro.primary, ['7.EE.B.3']); assert.deepEqual(fin.standards.pro.also, ['6.RP.A.3b', '7.NS.A.3', '7.EE.B.4a', '7.RP.A.3', '8.EE.B.5', '8.G.B.7', '6.SP.B.5'], 'one also-covers code from each unit');
   // the statements the unit's steps cite are locked with the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;
   const ccss = Object.fromEntries(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/standards/ccss-math.json'), 'utf8')).standards.map(s => [s.id, s.statement]));
@@ -374,9 +431,9 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.stepGameCodes('launch-lab', 'ccss-math', '', ''), [], 'an unlocked step with no grade claims nothing as practice');
   assert.deepEqual(TAGS.stepGameCodes('launch-lab', 'ccss-math', '6', ''), ['6.SP.A.3', '6.SP.B.4', '6.SP.B.5', '6.SP.A.2'], 'an unlocked grade 6 step claims the grade 6 codes only');
   assert.deepEqual(TAGS.stepGameCodes('launch-lab', 'ccss-math', '8', ''), ['8.SP.A.1', '8.SP.A.2'], 'and a grade 8 step the grade 8 ones');
-  // the decks and the check: the three decks send the learner to the step's own chapter, and every check item keys one of its step's primary codes
+  // the decks and the check: the four decks send the learner to the step's own chapter, and every check item keys one of its step's primary codes
   const set = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/sets/u7-pro.json'), 'utf8'));
-  assert.equal(set.items.length, 9);
+  assert.equal(set.items.length, 12);
   STEPS.forEach((s, i) => {
     const deck = JSON.parse(fs.readFileSync(path.join(ROOT, `seed-lessons/number-quest/course/pro/${s.n}.json`), 'utf8'));
     assert.deepEqual(deck.game, { slug: 'launch-lab', chapter: T[`ch.${CHAPTERS[i]}`], params: `chapter=${CHAPTERS[i]}&lock=1` }); assert.equal(deck.title, s.titles.pro);
@@ -387,7 +444,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
 });
 
 // The check items, each solved here from its own numbers: exactly one choice is right, and it is the key.
-test('the nine check items: each key is the one right choice, worked out from the numbers in the question', () => {
+test('the twelve check items: each key is the one right choice, worked out from the numbers in the question', () => {
   const set = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/sets/u7-pro.json'), 'utf8')), by = Object.fromEntries(set.items.map(it => [it.id, it]));
   const key = id => by[id].choices[by[id].answer];
   // 7.1: a median from an unordered list; an interquartile range from five numbers; a center against a spread
@@ -407,6 +464,11 @@ test('the nine check items: each key is the one right choice, worked out from th
   const pts = [...by['nq-pro-7.3-e3'].q.matchAll(/\((\d+), (\d+)\)/g)].map(x => [+x[1], +x[2]]), f = fit(pts.filter(p => key('nq-pro-7.3-e3') !== `(${p[0]}, ${p[1]})`));
   const offs = pts.map(p => Math.abs(f.off(p))), worst = offs.indexOf(Math.max(...offs));
   assert.equal(key('nq-pro-7.3-e3'), `(${pts[worst][0]}, ${pts[worst][1]})`); assert.ok(offs.filter((o, i) => i !== worst).every(o => o < 1e-9), 'every other point is exactly on the pattern');
+  // 7.4: a signed change in steps; a unit rate for a longer time; an equation undone (every one a multi-step problem)
+  m = /at (−?\d+)°C\. It warms ([\d.]+)°C each minute for (\d+) minutes, then cools (\d+)°C/.exec(by['nq-pro-7.4-e1'].q); const t0 = +m[1].replace('−', '-');
+  assert.equal(key('nq-pro-7.4-e1'), `${t0 + m[2] * m[3] - m[4]}°C`.replace('-', '−'));
+  m = /burns (\d+) milliliters of oil in (\d+) hours\. At that rate, how many milliliters does it burn in (\d+) hours/.exec(by['nq-pro-7.4-e2'].q); assert.equal(key('nq-pro-7.4-e2'), `${m[1] / m[2] * m[3]} milliliters`);
+  m = /multiplies a number by (\d+), then adds ([\d.]+)\. The number ([\d.]+) comes out/.exec(by['nq-pro-7.4-e3'].q); assert.equal(key('nq-pro-7.4-e3'), String((m[3] - m[2]) / m[1]));
   for (const it of set.items) assert.equal(new Set(it.choices).size, 4, `${it.id}: four different choices`);
 });
 
@@ -454,7 +516,7 @@ const ids = (frame, sel) => frame.evaluate(s => [...document.querySelectorAll(s)
 /** A wrong plan for a round: a wrong tile, or the stepper one step off the answer. */
 const wrongOf = s => (s.input === 'tiles' ? s.choices.find(v => v !== s.answer) : s.answer + s.step.by <= s.step.max ? s.answer + s.step.by : s.answer - s.step.by);
 /** What the stepper shows for a plan. */
-const planText = (s, v) => LL.nt(v) + (s.unit ? ' ' + s.unit : '');
+const planText = (s, v) => LL.nt(v).replace('-', '−') + (s.unit ? (/^[°%]$/.test(s.unit) ? '' : ' ') + s.unit : '');
 const CONTROLS = { tiles: ['ll-n0', 'll-n1', 'll-n2'], step: ['ll-dn', 'll-val', 'll-up', 'll-go'] };
 /** Try a plan with the real controls: the handle sets the plan, the click runs it; or a click on a tile. */
 async function tryPlan(g, s, v, tap) {
@@ -464,23 +526,25 @@ async function tryPlan(g, s, v, tap) {
 }
 
 for (const chapter of CHAPTERS) {
-  test(`lesson mode, ${chapter}: loads clean, a wrong plan shows what it gives and does not advance, six right rounds post game over once`, { skip, timeout: 900_000 }, async () => {
+  const RN = ROUNDS_OF[chapter];
+  test(`lesson mode, ${chapter}: loads clean, a wrong plan shows what it gives and does not advance, ${RN} right rounds post game over once`, { skip, timeout: 900_000 }, async () => {
     const g = await open({ params: `chapter=${chapter}&lock=1` });
     const { frame, state, until } = g;
     // the start card: the chapter by its name, one Start button, no menu and no helper to pick
     let s = await state();
     assert.deepEqual([s.screen, s.lock, s.hero], ['start', true, 'rogue']);
     assert.deepEqual(await ids(frame, '#card .ll-btn'), ['start']); assert.equal(await text(frame, '#card h2'), T[`ch.${chapter}`]);
-    assert.ok((await g.spoken()).includes(T['start.line']), 'read-aloud is on by default: the first line is sent to be spoken before any tap');
+    assert.ok((await g.spoken()).includes(T[chapter === 'clock' ? 'start.clock' : 'start.line']), 'read-aloud is on by default: the first line is sent to be spoken before any tap');
     await g.shot(`${chapter}-0-start`);
     await frame.click('#start');
     await until(() => window.__ll.state().screen === 'play');
     s = await state();
-    assert.deepEqual([s.chapter, s.lock, s.round, s.rounds], [chapter, true, 1, 6], 'straight into the locked chapter');
-    assert.equal(await frame.evaluate(() => document.querySelectorAll('#ch-spread, #ch-chance, #ch-trend, #menu').length), 0);
+    assert.deepEqual([s.chapter, s.lock, s.round, s.rounds], [chapter, true, 1, RN], 'straight into the locked chapter');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#ch-spread, #ch-chance, #ch-trend, #ch-clock, #menu').length), 0);
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#dots i').length), RN, `${RN} round dots`);
     await until(() => window.__ll.state().moving === 0, null, 180_000);   // round 1's board has popped in at the game's own speed
     await frame.evaluate(() => window.__ll.fast());   // no waiting between the steps of a round; the clicks are the real ones
-    for (let round = 1; round <= 6; round++) {
+    for (let round = 1; round <= RN; round++) {
       s = await state();
       assert.equal(s.round, round); assert.equal(s.phase, 'play'); assert.equal(s.mode, 'ask', `round ${round}: the board as it is asked`);
       const want = LL.round(chapter, round, 0);
@@ -528,7 +592,9 @@ for (const chapter of CHAPTERS) {
     assert.equal(over.length, 1, 'the course step’s completion signal, once');
     assert.equal(over[0].won, true);
     assert.deepEqual(await ids(frame, '#card .ll-btn'), ['again'], 'locked: play again, and no way to another chapter');
-    assert.equal(await text(frame, '#card .ll-askt'), 'Six pods are on the rack. Well done.');
+    assert.equal(await text(frame, '#card .ll-askt'), T[chapter === 'clock' ? 'win.clock' : 'win.card']);
+    assert.equal(s.deck, RN, chapter === 'clock' ? 'all seven gears are in the clock' : 'six pods on the rack');
+    if (chapter === 'clock') assert.equal(await text(frame, '#card h1'), 'The clock runs!');
     await g.shot(`${chapter}-end`);
     // Every line it tried to say is one of its own registered lines, and none carries a sign.
     for (const line of new Set(await g.spoken())) { assert.ok(lines.allowedLine('launch-lab', 'en', line), `"${line}" is a registered line`); assert.doesNotMatch(line, /[−×÷=<>≥²%★≈]|\d\/\d/, `"${line}" is said in words`); }
@@ -546,11 +612,11 @@ for (const chapter of CHAPTERS) {
 }
 
 
-test('no parameters: a menu of the three chapters; at the game’s own speed the real buttons set a plan, a wrong plan is run and drawn, a right one sets a pod and only then the next round', { skip, timeout: 900_000 }, async () => {
+test('no parameters: a menu of the four chapters; at the game’s own speed the real buttons set a plan, a wrong plan is run and drawn, a right one sets a pod and only then the next round', { skip, timeout: 900_000 }, async () => {
   const g = await open();
   const { frame, state, until } = g;
   assert.equal((await state()).screen, 'menu');
-  assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('#card .ll-menu .ll-btn')].map(b => [b.id, b.querySelector('.l').textContent])), [['ch-spread', 'Spread Test'], ['ch-chance', 'Drop Tower'], ['ch-trend', 'Trend Watch']]);
+  assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('#card .ll-menu .ll-btn')].map(b => [b.id, b.querySelector('.l').textContent])), [['ch-spread', 'Spread Test'], ['ch-chance', 'Drop Tower'], ['ch-trend', 'Trend Watch'], ['ch-clock', 'The Great Clock']]);
   await g.shot('menu');
   // Spread Test, round 1 (nine landings, the median 14 m), with nothing hurried and the real buttons
   await frame.click('#ch-spread');
@@ -636,7 +702,7 @@ test('keyboard, phones and reduced motion: every control is a button a key can p
       await (touch ? m.frame.tap('#start') : m.frame.click('#start'));
       await m.until(() => window.__ll.state().screen === 'play');
       await m.frame.evaluate(() => window.__ll.fast());
-      for (let round = 1; round <= 6; round++) {
+      for (let round = 1; round <= ROUNDS_OF[chapter]; round++) {
         await m.until(r => window.__ll.state().round === r && window.__ll.state().phase === 'play' && window.__ll.state().moving === 0, round, 120_000);
         await m.p.waitForTimeout(120);   // a frame, so the camera has settled on this round
         const st = await m.state(), where = `${chapter} round ${round} at ${width} px`;
