@@ -161,9 +161,9 @@ test('rounds: six a chapter, every answer right for the reason the unit teaches,
     ['all', 'Wire A is 2x + 4. Wire B is 2 times the sum of x and 2. How many points do they share?', 'every point'],
     ['sides', 'Wire A is 2 times the sum of x and 1. Wire B is x + 5. How far across are they at the same height?', 3]]);
   // what the chip shows before and after, and what is said and printed when each is found
-  assert.deepEqual(lap0('slope').map(r => [printed(r.chip), printed(r.chipDone)]), [['how steep?', 'steepness 3/2'], ['1/2 = ?/6', '1/2 = 3/6'], ['how steep?', 'steepness −1'], ['how steep?', 'steepness 2/3'], ['meters each second?', '1/2 m each second'], ['which is faster?', '2 < 2.5']]);
+  assert.deepEqual(lap0('slope').map(r => [printed(r.chip), printed(r.chipDone)]), [['how steep?', 'steepness 3/2'], ['1/2 = ?/6', '1/2 = 3/6'], ['how steep?', 'steepness −1'], ['how steep?', 'steepness 2/3'], ['how fast?', '1/2 m each second'], ['faster car?', '2 < 2.5']]);
   assert.deepEqual(lap0('rule').map(r => [printed(r.chip), printed(r.chipDone)]), [['height at 6 across?', '1/2 × 6 + 2 = 5'], ['y = ?x + ?', 'y = 2x + 1'], ['y = ?x + ?', 'y = −x + 6'], ['y = ?x + ?', 'y = 1/2 x + 2'], ['y = ?x + ?', 'y = 2x + 1'], ['which one bends?', 'table B: +1, +2, +3']]);
-  assert.deepEqual(lap0('meet').map(r => [printed(r.chip), printed(r.chipDone)]), [['2x + 1 = x + 4', 'x = 3'], ['where do they cross?', '(2, 5)'], ['where do they cross?', '(2, 3)'], ['2x + 1 = 2x + 4', 'no solution'], ['2x + 4 = 2(x + 2)', 'true for every x'], ['2(x + 1) = x + 5', 'x = 3']]);
+  assert.deepEqual(lap0('meet').map(r => [printed(r.chip), printed(r.chipDone)]), [['2x + 1 = x + 4', 'x = 3'], ['the crossing?', '(2, 5)'], ['the crossing?', '(2, 3)'], ['2x + 1 = 2x + 4', 'no solution'], ['2x + 4 = 2(x + 2)', 'true for every x'], ['2(x + 1) = x + 5', 'x = 3']]);
   assert.deepEqual(lap0('slope').map(r => box(r.said)), ['Yes! It goes up 6 for 4 across. Steepness is up over across.', 'Yes! 6 across is 3 × 2, and 3 × 1 is 3. Same steepness.', 'Yes! It goes down 6 for 6 across, so the steepness is below 0.',
     'Yes! It goes up 4 for 6 across. Steepness is up over across.', 'Yes! 2 meters in 4 seconds is 0.5 meters each second.', 'Yes! Car B climbs 2.5 meters each second, and car A only 2.']);
   assert.deepEqual(lap0('rule').map(r => box(r.said)), ['Yes! 6 across climbs 3, and 2 + 3 is 5.', 'Yes! It starts at 1 and goes up 2 for each step across.', 'Yes! It starts at 6 and goes down 1 for each step across.',
@@ -758,19 +758,19 @@ test('keyboard, a drag, phones and reduced motion: every control is a button a k
           const hit = (a, b) => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
           const sp = window.__sl.spot(), line = r($('line')).bottom, bar = vis($('hint')) ? r($('hint')).top : r($('bar')).top, box = b => ({ left: b[0], top: b[1], right: b[2], bottom: b[3] });
           const board = box(sp.board.box), hero = box(sp.hero), chest = box(sp.chest), w = board.right - board.left, h = board.bottom - board.top;
-          // the words on a control stay inside it (no clipped tile)
+          // the words on a control stay inside it (no clipped tile), and the chip shows all of its words (`cut`)
           const spill = kids.filter(b => [...b.querySelectorAll('.big, .l')].some(t => r(t).left < r(b).left - 0.5 || r(t).right > r(b).right + 0.5)).length;
           const tiny = Math.min(...kids.flatMap(b => [...b.querySelectorAll('.big, .l')]).concat($('askt'), $('sum'), vis($('hint')) ? [$('hint')] : []).map(t => parseFloat(getComputedStyle(t).fontSize)));
           return { inside: [...top, ...bs].every(b => b.left >= 0 && b.right <= innerWidth + 0.5 && b.top >= 0 && b.bottom <= innerHeight + 0.5),
             top: top.some((a, i) => top.some((b, j) => j > i && hit(a, b))) || top.some(a => hit(a, gear)), three: top.length,
             oneLine: innerWidth > innerHeight ? top.every(a => a.top < top[0].bottom && a.bottom > top[0].top) : null,
-            small: bs.filter(b => b.height < 56 || b.width < 56).length, n: bs.length, overlap: bs.some((a, i) => bs.some((b, j) => j > i && hit(a, b))), scroll: document.documentElement.scrollWidth > innerWidth, spill, tiny,
+            small: bs.filter(b => b.height < 56 || b.width < 56).length, n: bs.length, overlap: bs.some((a, i) => bs.some((b, j) => j > i && hit(a, b))), scroll: document.documentElement.scrollWidth > innerWidth, spill, tiny, cut: $('sum').scrollWidth > $('sum').clientWidth + 1,
             // the board: big, 4 by 3, on screen between the words and the controls (or the hint), nothing in front of it
             wide: w, flat: Math.abs(w / h - 4 / 3) < 0.03, view: board.left >= 0 && board.right <= innerWidth && board.top >= line && board.bottom <= bar, clear: sp.board.clear, read: sp.board.small,
             helper: hero.left >= 0 && hero.right <= innerWidth && hero.top > line, hidden: hit(board, hero) || hit(board, chest) };
         });
         let fit = await measure();
-        const look = { inside: true, top: false, three: 3, oneLine: width > height ? true : null, small: 0, n: controlsOf(st).length, overlap: false, scroll: false, spill: 0, tiny: fit.tiny, wide: fit.wide, flat: true, view: true, clear: true, read: fit.read, helper: true, hidden: false };
+        const look = { inside: true, top: false, three: 3, oneLine: width > height ? true : null, small: 0, n: controlsOf(st).length, overlap: false, scroll: false, spill: 0, tiny: fit.tiny, cut: false, wide: fit.wide, flat: true, view: true, clear: true, read: fit.read, helper: true, hidden: false };
         assert.deepEqual(fit, look, `${where}: on screen, the top row tidy, the controls big and apart, the board flat, in view, unhidden and clear of the rigger`);
         assert.ok(fit.wide >= wide, `${where}: the board is ${fit.wide} px wide (at least ${wide})`);
         assert.ok(fit.read >= small, `${where}: the smallest number or word on the board is ${fit.read} px (at least ${small})`);
@@ -781,7 +781,7 @@ test('keyboard, a drag, phones and reduced motion: every control is a button a k
         fit = await measure();
         assert.equal((await m.state()).mode, 'hint', where); assert.ok(fit.read >= small, `${where}: the smallest mark of a wrong plan's picture is ${fit.read} px (at least ${small})`);
         assert.ok(fit.wide >= wide * 0.8, `${where}: with a hint under it the board is still ${fit.wide} px wide`); assert.ok(fit.tiny >= 13, `${where}: the hint's words are ${fit.tiny} px`);
-        assert.deepEqual([fit.flat, fit.view, fit.clear, fit.hidden, fit.inside, fit.spill], [true, true, true, false, true, 0], `${where}: the board with a wrong plan on it, above its hint`);
+        assert.deepEqual([fit.flat, fit.view, fit.clear, fit.hidden, fit.inside, fit.spill, fit.helper], [true, true, true, false, true, 0, true], `${where}: the board with a wrong plan on it, above its hint`);
         if (round === 1 && reducedMotion === 'reduce') {
           assert.equal(await m.frame.evaluate(() => getComputedStyle(document.querySelector('.sl-btn.no')).outlineStyle), 'dashed', `${where}: with reduced motion a wrong plan shows as a dashed outline`);
           assert.equal((await m.state()).round, 1);

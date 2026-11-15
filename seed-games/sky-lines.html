@@ -110,7 +110,7 @@
   .sl-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
   @media (min-aspect-ratio: 9/10) {
     .sl-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
-    .sl-ask { flex: 0 1 auto; max-width: 100%; } .sl-row2 { flex: none; max-width: 40%; }
+    .sl-ask { flex: 0 1 auto; max-width: 100%; } .sl-row2 { flex: none; max-width: 60%; }
     .sl-askt { font-size: clamp(16px, 1.9vw, 23px); } .sl-sum { font-size: clamp(17px, 2.1vw, 26px); }
   }
   @media (max-width: 480px) { .sl-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .sl .sl-btn { min-height: 70px; padding: 6px 3px; } .sl-dots i { width: 16px; } .sl-menu .sl-btn { flex: 1 1 100%; max-width: 100%; min-height: 70px; flex-direction: row; gap: 12px; } .sl .sl-btn.go { flex-basis: 96px; } .sl-bar.point .sl-btn.go { flex: 1 1 0; } .sl .sl-btn.step { width: clamp(56px, 17vw, 96px); } }
@@ -577,12 +577,12 @@ const I18N = {
     "win.card": "Six flags are flying on the far island. Well done.",
     "round": "Round {n} of {m}",
     "show.q.steep": "how steep?",
-    "show.q.rate": "meters each second?",
-    "show.q.faster": "which is faster?",
+    "show.q.rate": "how fast?",
+    "show.q.faster": "faster car?",
     "show.q.height": "height at {x} across?",
     "show.q.rule": "y = ?x + ?",
     "show.q.bent": "which one bends?",
-    "show.q.cross": "where do they cross?",
+    "show.q.cross": "the crossing?",
     "show.steep": "steepness {a}",
     "show.rate": "{a} m each second",
     "show.riserun": "up {a}, across {b}",
@@ -969,30 +969,35 @@ const view = { pts: [] };
 function frame() {
   if (!g || !view.pts.length) return;
   const cam = g.camera, Wd = innerWidth, Hd = innerHeight, play = S.screen === 'play', kids = el.card.children;
-  // while a hint is showing, the board alone is fitted above it, so the hint never covers what the wrong plan drew
-  const hinting = play && !el.hint.hidden, pts = hinting ? view.pts.slice(0, 4) : view.pts;
   const topPx = (play ? el.line.getBoundingClientRect().bottom : kids.length ? kids[0].getBoundingClientRect().bottom : Hd * 0.2) + 10;
-  const botPx = hinting ? Hd - el.hint.getBoundingClientRect().top + 8 : play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
+  const botPx = play ? (el.bar.hidden ? 66 : Hd - el.bar.getBoundingClientRect().top + (squat() ? 12 : tall ? 50 : 10)) : (kids.length > 1 ? Hd - kids[1].getBoundingClientRect().top : Hd * 0.24) + 10;
   const fov = tall ? 50 : 38, tilt = tall ? 0.36 : 0.13;
-  const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * botPx / Hd };
   if (cam.fov !== fov) { cam.fov = fov; cam.updateProjectionMatrix(); }
   const dir = V3(0, Math.sin(tilt), Math.cos(tilt)), right = V3(1, 0, 0), up = V3(0, Math.cos(tilt), -Math.sin(tilt)), look = V3(0, 0, 0), v = V3(0, 0, 0), half = Math.tan(fov * Math.PI / 360);
-  const mid = V3(0, 0, 0); for (const p of pts) mid.addScaledVector(p, 1 / pts.length);
-  let bx;
-  const fits = d => {
-    look.copy(mid);
-    for (let i = 0; i < 6; i++) {
-      cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
-      bx = [9, -9, 9, -9];
-      for (const p of pts) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
-      if (i === 5) break;
-      look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
-    }
-    return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+  /** Stand the camera as near as `pts` allow between the words and `bot` pixels from the bottom, never nearer than `least`. */
+  const fit = (pts, bot, least, from = pts) => {
+    const safe = { l: -1 + 20 / Wd, r: 1 - 20 / Wd, t: 1 - 2 * topPx / Hd, b: -1 + 2 * bot / Hd };
+    const mid = V3(0, 0, 0); for (const p of from) mid.addScaledVector(p, 1 / from.length);   // how deep into the scene the camera looks
+    let bx;
+    const fits = d => {
+      look.copy(mid);
+      for (let i = 0; i < 6; i++) {
+        cam.position.copy(look).addScaledVector(dir, d); cam.lookAt(look); cam.updateMatrixWorld(true);
+        bx = [9, -9, 9, -9];
+        for (const p of from) { v.copy(p).project(cam); bx[0] = Math.min(bx[0], v.x); bx[1] = Math.max(bx[1], v.x); }   // side to side, everything stays where it was
+        for (const p of pts) { v.copy(p).project(cam); bx[2] = Math.min(bx[2], v.y); bx[3] = Math.max(bx[3], v.y); }
+        if (i === 5) break;
+        look.addScaledVector(right, -((safe.l + safe.r) - (bx[0] + bx[1])) / 2 * half * d * cam.aspect).addScaledVector(up, -((safe.t + safe.b) - (bx[2] + bx[3])) / 2 * half * d);
+      }
+      return bx[0] >= safe.l - 0.004 && bx[1] <= safe.r + 0.004 && bx[2] >= safe.b - 0.004 && bx[3] <= safe.t + 0.004;
+    };
+    let near = least, far = 120;
+    if (fits(near)) far = near; else for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
+    fits(far); return far;
   };
-  let near = 3, far = 120;
-  for (let i = 0; i < 18; i++) { const d = (near + far) / 2; if (fits(d)) far = d; else near = d; }
-  fits(far);
+  const d = fit(view.pts, botPx, 3);
+  // while a hint is showing, the board alone is fitted above it (never nearer than before), so the hint never covers what the wrong plan drew
+  if (play && !el.hint.hidden) fit(view.pts.slice(0, 4), Hd - el.hint.getBoundingClientRect().top + 8, d, view.pts);
 }
 let wasSquat = squat();
 addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
