@@ -3268,7 +3268,7 @@
       "emptyText": "Maak een nieuwe les, laat de AI een opzet maken, of kopieer een les die een collega heeft gedeeld.",
       "find": "Zoek een les",
       "readyMade": "Kant-en-klaar",
-      "numberQuest": "Number Quest (rekenen, groep 2–7)"
+      "numberQuest": "Number Quest (rekenen en wiskunde, groep 2 t/m klas 2)"
     },
     "folder": {
       "name": "Naam van de map",
@@ -4467,7 +4467,7 @@
       "q4": "Hoe beschermen jullie de privacy van leerlingen?",
       "a4": "We vragen leerlingen nooit om een e-mailadres, leeftijd of woonadres. Er is geen reclame en er zijn geen trackingcookies, en de echte naam van een leerling is alleen zichtbaar voor medewerkers van de school. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
       "q5": "Voor welke leeftijden en groepen is het?",
-      "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten. Number Quest, de rekencursus, begint in groep 2, en CS Quest en Cyber Defenders beginnen in groep 5.",
+      "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten. Number Quest, de rekencursus, loopt van groep 2 tot en met de tweede klas, en CS Quest en Cyber Defenders beginnen in groep 5.",
       "q6": "Hoe voeg ik mijn klas toe?",
       "a6": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
       "a6google": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
@@ -7077,7 +7077,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Rekenen in de Numberworks · groep 2 tot en met 7"
+      "sub": "Rekenen in de Numberworks · groep 2 tot en met de tweede klas"
     },
     "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
     "gamesN": "{count, plural, one {Bekijk het # spel} other {Bekijk de # spellen}}"
@@ -7384,8 +7384,8 @@
       "lead": "Korte dia’s, snelle checks en gamemissies op één pad. Leerlingen werken in hun eigen tempo; jij ziet de voortgang in het cijferoverzicht.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Rekenen · groep 2 tot en met 7",
-        "p": "Tellen, plaatswaarde, breuken, meten, vormen en data in het Numberworks van Netville, met Tally de kat, van groep 2 tot en met groep 7. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
+        "tag": "Rekenen · groep 2 tot en met de tweede klas",
+        "p": "Tellen, plaatswaarde, breuken, verhoudingen, vergelijkingen, vormen en data in het Numberworks van Netville, met Tally de kat, van groep 2 tot en met de tweede klas. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
       },
       "cs": {
         "name": "CS Quest",

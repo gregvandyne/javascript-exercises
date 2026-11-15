@@ -323,7 +323,7 @@ test('registration: seeded, on the Learn shelf, in the Number Quest course, and 
   assert.deepEqual(TAGS.gameCodes('keep-builder', 'ccss-math'), Object.values(TAGS.KEEP_CHAPTERS).flat());
   assert.ok(TAGS.LEVELLED.includes('keep-builder'));
   assert.equal(UNIT.title, 'The Drafting Keep'); assert.equal(UNIT.stamp, 'Angle Gear'); assert.equal(UNIT.tool, 'keep-builder'); assert.equal(UNIT.planned, undefined); assert.equal(UNIT.reserved, undefined);
-  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Angle Gear')); assert.equal(UNITS.tiers.pro.status, 'building', 'Pro stays closed');
+  assert.equal(UNIT.teacherNotes.length, 3); assert.ok(UNITS.tiers.pro.stones.includes('Angle Gear')); assert.equal(UNITS.tiers.pro.status, 'open', 'the grades 6-8 street is open to everyone (2026-11-15)');
   assert.deepEqual(STEPS.map(s => [s.n, s.order, s.titles.pro]), [['6.1', 17, 'Area, surface area and volume'], ['6.2', 18, 'Angles and moves: slide, flip, turn, resize'], ['6.3', 19, 'The Pythagorean theorem']]);
   // the statements the unit's steps cite are locked with the published text, word for word
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/standards.json'), 'utf8')).proCodes.codes;

@@ -362,7 +362,7 @@ export function proEntry() {
 /** The locked crosswalk (placement.json): the start node is the first unit whose entry profile the four
  *  placed rungs do not fully meet — a near-miss counts as not met, so ties resolve to the LOWER unit.
  *  - Explorer (always walked for rungs at or over the line): Units 1-7 in order. All seven met → the strands
- *    point past every workshop: with no Pro tier open, the start is the finale door (explorer-7.4, the Vault
+ *    point past every workshop: unless the Pro starting line below is met, the start is the finale door (explorer-7.4, the Vault
  *    of Measures) and `finaleDoor` rides along so the child and the grown-up note can both say the street is
  *    finished and the Vault is waiting.
  *  - Any rung below 2.5 puts the start in the Launchpad tier (open since 2026-11-13, with profiles keyed
@@ -375,8 +375,8 @@ export function proEntry() {
  *    learner with EVERY strand at or over the Pro starting line (PRO_LINE, rung 5.5): below Pro's first profile
  *    → Pro's first step; else its first unmet unit; all met → Pro's finale door when it has one, else its last
  *    unit's door. A learner who meets all seven Explorer profiles with any strand under the line starts at
- *    the Explorer finale door, as before. While Pro is not open (it is "building" today, and its units are
- *    planned), none of this runs: the recorded Pro profiles are inert and every start is what it was.
+ *    the Explorer finale door, as before. Pro opened on 2026-11-15; should it ever be closed again, none of
+ *    this runs and every such start is the Explorer finale door again.
  *  `tier` names the street the node sits on.
  *  The Launchpad form has no Algebra staircase: its Number rung speaks for the folded strand. */
 export function crosswalk(rungs) {
@@ -456,6 +456,33 @@ export function launchpadNoteLine(rungs, startNode, source = 'sorting-game') {
   return `One or more strands landed just below the Explorer starting line, and every ${gardens} garden's entry profile was met, so the start is ${nodeInfo(cw.node).workshop} on the Explorer street. The ${gardens} gardens stay open behind it for games and review.`;
 }
 
+/** The grown-up note's line about the Pro starting line (PRO_LINE), or null. Pro opened on 2026-11-15; like
+ *  launchpadNoteLine, it is worked out from the rungs and the start node the note is about, so a fresh run's note
+ *  and the note rebuilt from a stored row agree:
+ *  - the start is on the Pro street and was set there: no extra line, the placed unit names it;
+ *  - the rungs point into Pro but the stored start is elsewhere (set before the street opened, when such runs
+ *    began at the Explorer finale door): say where the same answers would start the learner now, and that
+ *    nothing has moved. A grown-up's own choice (`source` 'override') gets no line: their word stands;
+ *  - every Explorer profile is met but a strand is under the line, with Pro open: say why the start is the
+ *    Explorer finale door and not the Pro street;
+ *  - otherwise (Pro not open, or the start is earlier on the path): null. */
+export function proNoteLine(rungs, startNode, source = 'sorting-game') {
+  const pro = proEntry();
+  if (!pro) return null;
+  const cw = crosswalk(rungs || {});
+  const stored = (T.parseKey(startNode) || {}).tier || T.DEFAULT_TIER;
+  const line = rungLabel(PRO_LINE);
+  if (cw.tier === 'pro') {
+    if (stored === 'pro' || source === 'override') return null;
+    return `Every strand is at or over the ${pro.name} starting line (rung ${line}). This start point was set before the ${pro.name} street (grades 6 to 8) opened; on the same answers the Sorting Game would now start this learner at ${cw.finaleDoor ? `${nodeInfo(cw.node).workshop}, the ${pro.name} finale door` : placedUnitWords(cw.node)}. Nothing has been moved and no progress has changed: use the override on this page, or let the learner replay the Sorting Game, if you would like the start to change.`;
+  }
+  const fin = finaleOf(T.DEFAULT_TIER);
+  if (cw.finaleDoor && fin && cw.node === fin.node && startNode === fin.node) return `Every Explorer entry profile was met, but one or more strands are under the ${pro.name} starting line (rung ${line} in every strand), so the start is ${fin.workshop}, the Explorer finale door. The ${pro.name} street (grades 6 to 8) opens to placement once every strand reaches the line, and a grown-up can choose it with the override at any time.`;
+  return null;
+}
+/** Is this node a street's finale door (Explorer's Vault of Measures, Launchpad's Garden Gate, Pro's Great Clock)? */
+export const isFinaleNode = node => startNodes().some(x => x.node === node && x.finale);
+
 /** One strand of the Starting Point note, in plain words: "solid to grade 4" when a whole rung confirmed,
  *  "grade 3, growing" for a half rung, kindergarten named, "worth a look" when the strand sits well below
  *  the student's best strand or under the Explorer starting line, and an honest line when the game ran out
@@ -496,11 +523,14 @@ export function finishRun(state, { partial = false } = {}) {
   for (const key of Object.keys(state.strands)) { placed[key] = placedRung(state.strands[key]); rungs[key] = placed[key].rung; }
   const { node, tier, launchpadGap, finaleDoor } = crosswalk(rungs);
   const info = nodeInfo(node);
+  const proLine = proNoteLine(rungs, node);
   const note = {
     lines: Object.keys(state.strands).map(k => strandNoteWords(STRAND_LABELS[k], placed[k], rungs)),
     placedUnit: finaleDoor ? finaleWords(node) : placedUnitWords(node),
     startNode: node, tier, launchpadGap, finaleDoor: !!finaleDoor,
     launchpadLine: launchpadNoteLine(rungs, node),
+    // Only when there is something to say (the note of every run that does not reach the Pro line is as it was).
+    ...(proLine ? { proLine } : {}),
     partial: partial ? 'The game was stopped early. Strands place independently, so this start point still stands; a strand that had not settled starts at its seed rung.' : null,
     caveat: CAVEAT,
   };
@@ -560,8 +590,8 @@ function savePlacement(user, { grade, rungs, startNode, source, reanchorGrade = 
  *  - K-2: the Launchpad tier's first step (Meet Tally in the Gardens); the Explorer intro if that tier
  *    is not open.
  *  - 3-5: Explorer's first workshop (Unit 1's door: the intro is a welcome, not a unit).
- *  - 6-8: the Pro tier's first step once that tier is open; until then the furthest built Explorer
- *    workshop door (Unit 7's door), never an unbuilt node. The finale door is NOT a beginning: the Vault
+ *  - 6-8: the Pro tier's first step (Welcome to the Towers; open since 2026-11-15); should Pro not be open,
+ *    the furthest built Explorer workshop door (Unit 7's door), never an unbuilt node. The finale door is NOT a beginning: the Vault
  *    unlocks in course order, so a beginning start names the last unit's first step, not the finale. */
 export function beginningNode(grade) {
   const g = seedGrade(grade);

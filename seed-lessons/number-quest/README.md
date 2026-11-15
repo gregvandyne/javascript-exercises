@@ -897,7 +897,7 @@ commit is serial.
 
 ### Opening the tier (later, its own PR)
 
-Set `tiers.pro.status` to `"open"` once no unit is planned. That is the only switch: the street switcher, the band
+**Done on 2026-11-15: see "Pro opens" at the end of this file.** Set `tiers.pro.status` to `"open"` once no unit is planned. That is the only switch: the street switcher, the band
 card, the teacher page's units, map and counts, the placement matrix and explainer (`proPlacementWords`), placement and
 "Just Play" follow the data. What the opening PR still writes by hand: the course copy in the 13 locale files (two
 streets, kindergarten to grade 5, the game list, the lock paragraph, the FAQ), the teacher page's list of what Pro
@@ -1474,3 +1474,60 @@ unit, and the tests keep exercising it through a copy of the catalogue with 7.4 
 (`number-quest-pro-foundations.test.js`, `withFinalePlanned`). With no step planned, nothing opens the tier by itself:
 `statusOf` falls through to `tiers.pro.status`, which stays `"building"`. **Left for the opening PR**: the status, the
 teacher page's game list (`NQ_CREW`), the locale copy and `program.standards`.
+
+## Pro opens (2026-11-15)
+
+`units.json` `tiers.pro.status` is `"open"`: the Pro street (grades 6–8, The Towers: the welcome, Units 1–7 and the Great
+Clock finale, 23 steps) is there for everyone, beside Launchpad and Explorer. Nothing in Pro is planned or reserved. The
+per-unit sections above are the build log and keep their "tier still `building`" headings as history.
+
+**Placement.** No placement data changed: the rung 6.0–8.0 bank, the Pro starting line and the seven profiles were locked
+with the foundations (2026-11-14) and were inert until now; `crosswalk.proProfiles` and `crosswalk.rule` now say they are
+live. How a start is chosen (`server/services/number-quest-placement.js` `crosswalk`, `beginningNode`):
+
+1. **Just Play** with a named grade: K–2 starts at `launchpad-0.1`, 3–5 at `explorer-1.1`, **6–8 at `pro-0.1`** (Welcome
+   to the Towers; `explorer-7.1` until the opening).
+2. **The Sorting Game.** Explorer's walk is unchanged. A run that meets all seven Explorer profiles starts on the Pro
+   street only with **every strand at rung 5.5 or above** (`P.PRO_LINE`, `crosswalk.proLine`): under the first Pro profile
+   → `pro-0.1`; else the door of the first Pro unit whose profile is not fully met; all seven met → `pro-7.4`, the Great
+   Clock door (Pro is the last street, so its finale is a landing, as Explorer's was). With any strand under 5.5 the
+   start is the Explorer finale door, `explorer-7.4`, exactly as before. The short K–2 form reads its Number rung for
+   Algebra, as everywhere.
+3. Every one of the 88,434 possible sets of placed rungs starts where it started while Pro was building, except exactly
+   the 1,512 sets with every strand at 5.5 or over (6⁴ on the standard form, 6³ on the short form), which move from the
+   Vault door to the Pro street (`tests/unit/number-quest-pro-open.test.js`).
+4. **Test-out** is offered for Pro Units 1–7 (the route already allowed any unit with an entry profile on a street the
+   learner can see); five items at the unit's profile rungs, from the rebuilt bank. The welcome has none.
+5. **Worth knowing:** the game places a strand at the rung it reached when it runs out of questions, confirmed or not
+   (as on every street). A grade 4 learner who answers all 20 questions right reaches rung 5.5 in every strand without
+   settling any of them, and so starts at the Pro welcome; a grade 5 learner who does the same reaches 6.5 and starts at
+   Pro Unit 2. The welcome is a framing step, the soft landing and the override still apply, and the owner's rule
+   (decision 4) is applied as written.
+
+**Nobody is moved.** Opening writes nothing: no migration, no backfill, no new column. A learner placed at the Vault of
+Measures before the opening, whose stored rungs now point into Pro, stays at the Vault; their Starting Point note still
+reads the stored start as the finale door, and a new line says where the same answers would start today and that nothing
+has moved (`P.proNoteLine`). A note for a fresh Vault landing says why it is not the Pro street (a strand under 5.5). A
+grown-up's override gets no such line.
+
+**The path.** A brand-new learner sees three street cards; until they choose or are placed, the street drawn is Explorer.
+A finished Explorer street now offers the walk on to Pro (`#nqp-onward`); the end of Pro offers nothing further.
+
+**The teacher page.** Its counts follow the data (3 streets, 21 units, 69 steps, 19 games, grades K–8). The seven Pro games
+are on the game list (`NQ_CREW` in `server/routes/number-quest.js`, `teachers.nq.crew.<game>`), the map and notes carry
+every Pro step, the placement matrix and explainer name the Pro street and its line (`proPlacementWords`), and a new
+section, **What the Pro street does not cover** (`proCoverageSection` in `server/views/number-quest-teacher.js`, also in
+the print pack), is generated from `standards.json` `proCoverage`: the four headline gaps (circles; cylinders, cones and
+spheres; exponents and scientific notation; irrational numbers) named in a sentence and in bold, then every one of the 19
+uncited grade 6–8 statements with its published text.
+
+**Copy.** In all 13 locales: `lessons.library.numberQuest`, `courses.nq.sub`, `landing.courses.nq.tag`,
+`landing.courses.nq.p` (where the locale has it) and `teachers.faq.a5` now run to grade 8. In English (the teacher page's
+copy is English-first): the lead ("on three streets"), the promise, the game list paragraph and seven game descriptions,
+the units paragraph, the lock note (the Pro lock is published and the gaps are listed), FAQ 2, the start lines,
+`courses.nq.about` and `courses.nq.teachers`. The Learn tab lists the course as K–8 (`routes/teachers.js`
+`COURSE_INFO`). `units.json` `program.standards` names all three streets.
+
+**Unchanged on purpose.** The games, decks, banks, placement data and the read-aloud default (on, in every Pro game).
+Nothing is priced on a learner page; no Pro game's title, description or tags names the tier.
+

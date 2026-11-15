@@ -158,7 +158,8 @@ test('crosswalk: an entry profile per unit door, monotone across units, ties res
   const P = (n, a, s, d) => ({ Number: n, 'Algebra & Patterns': a, 'Shape & Measure': s, 'Data & Chance': d });
   assert.deepEqual([1, 2, 3, 4, 5, 6, 7].map(n => profiles[`pro-${n}.1`]), [P(5.5, 6, 5.5, 5.5), P(7, 6, 5.5, 5.5), P(7, 6.5, 5.5, 5.5), P(7, 7, 5.5, 5.5), P(7, 8, 5.5, 5.5), P(7, 8, 7.5, 5.5), P(7, 8, 7.5, 7.5)]);
   assert.equal(plc.crosswalk.proLine, 5.5, 'the Pro starting line: every strand at rung 5.5 or above (owner decision 4)');
-  assert.match(plc.crosswalk.proProfiles, /INERT while tiers\.pro\.status is "building"/);
+  assert.match(plc.crosswalk.proProfiles, /LIVE since the Pro tier opened on 2026-11-15/);
+  assert.match(plc.crosswalk.proProfiles, /Until then they were inert/);
   assert.match(plc.crosswalk.rule, /every strand at rung 5\.5 or above/);
   const seq = ['explorer-1.1', 'explorer-2.1', 'explorer-3.1', 'explorer-4.1', 'explorer-5.1', 'explorer-6.1', 'explorer-7.1'].map(k => profiles[k]);
   for (const p of seq) for (const s of strands) assert.ok(typeof p[s] === 'number' && p[s] >= 0 && p[s] <= 8, `profile names ${s} as a rung`);
@@ -222,14 +223,14 @@ test('Launchpad units cite only codes in launchpadCodes; the welcome cites none;
   assert.equal(steps[0].n, '0.1'); assert.equal(steps[0].standards.launchpad.flag, 'framing', 'the welcome is framing');
 });
 
-test('tiers: Launchpad, Explorer and Pro are declared, each with a status; Pro is building', () => {
+test('tiers: Launchpad, Explorer and Pro are declared, each with a status; Pro is open', () => {
   assert.deepEqual(Object.keys(cat.tiers).sort(), ['explorer', 'launchpad', 'pro']);
   assert.equal(cat.tiers.explorer.status, 'open');
   assert.ok(['open', 'building'].includes(cat.tiers.launchpad.status));
   assert.equal(cat.tiers.launchpad.district, 'The Gardens'); assert.equal(cat.tiers.launchpad.grades, 'K-2'); assert.equal(cat.tiers.launchpad.inGame, 'Launchpad');
   assert.ok(Array.isArray(cat.tiers.launchpad.stones));
   // Pro (the owner's decisions of 2026-11-14): The Towers, grades 6-8, seven Gears, the Great Clock at 7.4.
-  assert.deepEqual(cat.tiers.pro, { district: 'The Towers', finale: '7.4', grades: '6-8', inGame: 'Pro', status: 'building',
+  assert.deepEqual(cat.tiers.pro, { district: 'The Towers', finale: '7.4', grades: '6-8', inGame: 'Pro', status: 'open',
     stones: ['Ratio Gear', 'Zero Gear', 'Variable Gear', 'Scale Gear', 'Slope Gear', 'Angle Gear', 'Chance Gear'] });
   assert.equal(typeof reg.proCodes.about, 'string');
 });

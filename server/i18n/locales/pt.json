@@ -3269,7 +3269,7 @@
       "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou.",
       "find": "Procurar uma aula",
       "readyMade": "Prontos para usar",
-      "numberQuest": "Number Quest (matemática, da educação infantil ao 5º ano)"
+      "numberQuest": "Number Quest (matemática, da educação infantil ao 8º ano)"
     },
     "folder": {
       "name": "Nome da pasta",
@@ -4468,7 +4468,7 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos. Number Quest, o curso de matemática, começa na educação infantil, e CS Quest e Cyber Defenders começam no 3º ano.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
@@ -7078,7 +7078,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Matemática nos Numberworks · da educação infantil ao 5º ano"
+      "sub": "Matemática nos Numberworks · da educação infantil ao 8º ano"
     },
     "unitsN": "{count, plural, one {Ver a # unidade} other {Ver as # unidades}}",
     "gamesN": "{count, plural, one {Ver o # jogo} other {Ver os # jogos}}"
@@ -7385,8 +7385,8 @@
       "lead": "Apresentações curtas, verificações rápidas e missões de jogo num só caminho. Cada aluno avança no seu ritmo; você acompanha o progresso no boletim.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matemática · educação infantil ao 5º ano",
-        "p": "Contagem, valor posicional, frações, medidas, formas e dados pelo Numberworks de Netville com a gata Tally, da educação infantil ao 5º ano. Cada passo está alinhado aos Common Core State Standards de matemática."
+        "tag": "Matemática · educação infantil ao 8º ano",
+        "p": "Contagem, valor posicional, frações, razões, equações, formas e dados pelo Numberworks de Netville com a gata Tally, da educação infantil ao 8º ano. Cada passo está alinhado aos Common Core State Standards de matemática."
       },
       "cs": {
         "name": "CS Quest",

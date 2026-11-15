@@ -5552,6 +5552,51 @@ line, nothing opened; the opening waits for the owner. Where the build left the 
 - **Not verified:** a real GPU, phone or Chromebook (software WebGL in headless Chromium only), the AI voice by ear, and
   play by a student of the age.
 
+## Number Quest Pro opens (15 Nov 2026)
+
+All seven Pro units and the Great Clock finale are built, and the owner said to open the pack when they were done, so
+`tiers.pro.status` in `seed-lessons/number-quest/units.json` is now `open`: the grades 6-8 street is there for everyone,
+beside Launchpad and Explorer. That status line is the only switch; everything else either follows the data or is copy.
+
+- **Placement was already locked, so it opens as recorded.** The rung 6.0-8.0 bank was rebuilt and locked with the
+  foundations (2026-11-14; every item solved independently in its test), and the seven Pro entry profiles and the Pro
+  starting line were recorded then and inert. Opening makes them live, unchanged. A run that meets every Explorer
+  profile enters Pro only with every strand at rung 5.5 or above (owner decision 4); otherwise it starts at the Explorer
+  finale door as before. On the line but under Pro Unit 1's profile, the start is the Pro welcome. "Just Play" with
+  grade 6, 7 or 8 starts at the Pro welcome. Of the 88,434 possible sets of placed rungs, exactly the 1,512 with every
+  strand at 5.5 or more start somewhere new (on the Pro street instead of the Vault door); every other set, and every
+  whole game that does not reach the line, ends where it did, which a test checks set by set and game by game.
+- **Test-out for Pro Units 1-7** is offered from the opening: the route already allowed any unit with a locked profile on
+  a street the learner can see, and the bank deals five items at each profile's rungs.
+- **Pro's finale is a landing, Launchpad's is not.** A run that meets all seven Pro profiles starts at the Great Clock
+  door, as Explorer's Vault was the landing while Explorer was the last street. Launchpad's Garden Gate stays a review
+  door, because a street comes after it.
+- **Nobody is moved.** No migration, no backfill. A learner placed at the Vault before today whose stored rungs now point
+  into Pro stays at the Vault; the Starting Point note keeps the finale wording for the stored start and adds one line
+  saying where the same answers would start today and that nothing has moved. A fresh Vault landing's note says why it
+  is not the Pro street. An override gets no extra line.
+- **What Pro does not cover is on the teacher page,** generated from `standards.json` `proCoverage` (owner decision 2):
+  circles, cylinders, cones and spheres, exponents and scientific notation, and irrational numbers named first, then all
+  19 uncited grade 6-8 statements with their published text. The map's lock note now publishes the Pro lock.
+- **The seven Pro games are on the teacher page's game list** (`NQ_CREW`), each with its own description, as the
+  Launchpad games were added when that street opened. Game titles, descriptions and tags are unchanged and do not name
+  the tier.
+- **Copy.** The same keys the Launchpad opening changed, in all 13 locales (the course's grade line, the library chip,
+  the landing card and the FAQ answer now run to grade 8); the English teacher-page copy names three streets. The
+  Learn tab lists the course as K-8. `program.standards` names the three streets.
+- **Billing is untouched.** Pro is not tied to any plan; nothing on a learner page or on "/" is priced.
+- **Worth knowing, left as the rule says:** placement uses the rung a strand reached when the questions run out,
+  confirmed or not, on every street. So a grade 4 learner who answers all 20 questions right reaches 5.5 everywhere
+  without settling a rung and starts at the Pro welcome, and a grade 5 learner who does the same starts at Pro Unit 2.
+  The soft landing and the grown-up override are the remedies, as for every other start. Requiring confirmed rungs to
+  cross would be a change to the owner's rule, so it was not made here.
+- **Tests.** Tests that pinned Pro as building now pin it open; the building behaviour (who sees a building street,
+  that a recorded profile is inert, that placement and every page are unchanged while building) is still pinned through
+  the test-only status hook and the planned-unit and planned-step copies of the catalogue. New:
+  `tests/unit/number-quest-pro-open.test.js`.
+- **Not done here:** a real-device check, play by students of the age, and translated teacher-page copy (it is
+  English-first, as before). Legal pages were not edited.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

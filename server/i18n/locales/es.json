@@ -3267,7 +3267,7 @@
       "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega.",
       "find": "Buscar una lección",
       "readyMade": "Listos para usar",
-      "numberQuest": "Number Quest (matemáticas, de kínder a 5.º grado)"
+      "numberQuest": "Number Quest (matemáticas, de kínder a 8.º grado)"
     },
     "folder": {
       "name": "Nombre de la carpeta",
@@ -4466,7 +4466,7 @@
       "q4": "¿Cómo protegen la privacidad de los estudiantes?",
       "a4": "Nunca pedimos a los estudiantes su correo electrónico, su edad ni su dirección. No hay anuncios ni cookies de seguimiento, y el nombre real de un estudiante solo lo ve el personal de su escuela. Nuestra <a href=\"{href}\">política de privacidad</a> detalla exactamente qué datos guardamos.",
       "q5": "¿Para qué edades y grados es?",
-      "a5": "Oomba Academy está pensada de kínder a 8.º grado, más o menos de 5 a 14 años. Juegos como Shark Plank y las primeras pistas de Sum Racer van bien para los más pequeños. Number Quest, el curso de matemáticas, empieza en kínder, y CS Quest y Cyber Defenders empiezan en 3.º grado.",
+      "a5": "Oomba Academy está pensada de kínder a 8.º grado, más o menos de 5 a 14 años. Juegos como Shark Plank y las primeras pistas de Sum Racer van bien para los más pequeños. Number Quest, el curso de matemáticas, va de kínder a 8.º grado, y CS Quest y Cyber Defenders empiezan en 3.º grado.",
       "q6": "¿Cómo agrego a mi clase?",
       "a6": "Primero, escríbanos para registrar su escuela (es gratis). Luego cree una clase y comparta su código de clase con los estudiantes que tienen su propia cuenta, o cree cuentas escolares para toda la clase e imprima tarjetas de acceso.",
       "a6google": "Primero, escríbanos para registrar su escuela (es gratis). Luego cree una clase y comparta su código de clase con los estudiantes que tienen su propia cuenta, o cree cuentas escolares para toda la clase e imprima tarjetas de acceso. Las escuelas que usan Google pueden permitir que los estudiantes inicien sesión con Google.",
@@ -7076,7 +7076,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Matemáticas en los Numberworks · de kínder a 5.º grado"
+      "sub": "Matemáticas en los Numberworks · de kínder a 8.º grado"
     },
     "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}",
     "gamesN": "{count, plural, one {Ver el # juego} other {Ver los # juegos}}"
@@ -7383,8 +7383,8 @@
       "lead": "Presentaciones cortas, comprobaciones rápidas y misiones de juego en un solo camino. Cada estudiante avanza a su ritmo; tú ves el progreso en el libro de calificaciones.",
       "nq": {
         "name": "Number Quest",
-        "tag": "Matemáticas · kínder a 5.º grado",
-        "p": "Conteo, valor posicional, fracciones, medidas, figuras y datos por el Numberworks de Netville con Tally la gata, de kínder a 5.º grado. Cada paso está alineado con los Common Core State Standards de matemáticas."
+        "tag": "Matemáticas · kínder a 8.º grado",
+        "p": "Conteo, valor posicional, fracciones, razones, ecuaciones, figuras y datos por el Numberworks de Netville con Tally la gata, de kínder a 8.º grado. Cada paso está alineado con los Common Core State Standards de matemáticas."
       },
       "cs": {
         "name": "CS Quest",

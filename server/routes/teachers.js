@@ -511,7 +511,7 @@ const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 const HOWS = ['solo', 'two', 'live'];
 /** Each course's subject and grades, for the filters and the card's "Subject · Grades" line: the same grades as the
  *  course's own subtitle (courses.<key>.sub; Cyber Defenders has two bands, 3-5 and 6-8). */
-const COURSE_INFO = { 'cs-quest': { subject: 'code', from: 3, to: 8 }, 'cyber-defenders': { subject: 'code', from: 3, to: 8 }, 'number-quest': { subject: 'math', from: 0, to: 5 } };
+const COURSE_INFO = { 'cs-quest': { subject: 'code', from: 3, to: 8 }, 'cyber-defenders': { subject: 'code', from: 3, to: 8 }, 'number-quest': { subject: 'math', from: 0, to: 8 } };
 /** The filters asked for in the address, each one only when it is a known value. */
 export function learnFilters(query = {}, defaultGrade = '') {
   const subject = SUBJECTS.some(x => x.key === query.subject) ? query.subject : '';
