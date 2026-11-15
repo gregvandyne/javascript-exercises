@@ -112,17 +112,17 @@ function text(body, s, ctx) {
   const lines = String(s.body || '').split('\n').map(x => x.trim());
   if (!lines.some(Boolean)) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? ctx.type.words.empty : '')); return null; }
   if (s.style === 'list') {
-    const ol = el('ol', 'dw-list'); ol.dir = 'auto';
+    const ol = el('ol', 'dw-list dw-scroll'); ol.dir = 'auto';
     for (const line of lines.filter(Boolean)) ol.appendChild(typed('li', null, line.replace(/^[-*•]\s*/, '')));
     body.appendChild(ol);
-  } else body.appendChild(typed('p', 'dw-para', lines.join('\n')));
+  } else body.appendChild(typed('p', 'dw-para dw-scroll', lines.join('\n')));
   return null;
 }
 
 function ican(body, s, ctx) {
   body.classList.add('dw-ican');
   body.appendChild(el('div', 'dw-lead', ctx.type.words.lead));
-  if (s.goal) body.appendChild(typed('div', 'dw-goal', s.goal));
+  if (s.goal) body.appendChild(typed('div', 'dw-goal dw-scroll', s.goal));
   else body.appendChild(el('p', 'dw-empty', ctx.type.words.empty));
   return null;
 }
@@ -200,7 +200,7 @@ function runner(body, s, ctx, down) {
       cb.addEventListener('click', () => { custom.hidden = !custom.hidden; cb.setAttribute('aria-expanded', String(!custom.hidden)); if (!custom.hidden) im.focus(); });
       body.appendChild(custom);
     }
-    const row = el('div', 'dw-row');
+    const row = el('div', 'dw-row dw-foot');
     go = btn(W.start, 'btn btn-primary dw-go');
     const reset = btn(W.reset, 'btn dw-reset');
     go.addEventListener('click', () => act(state().on ? 'pause' : 'start'));
@@ -233,7 +233,7 @@ function runner(body, s, ctx, down) {
     const done = down && v.done && (st.on || st.base > 0);
     body.classList.toggle('is-done', done);
     doneMsg.hidden = !done;
-    if (go) { go.textContent = st.on ? W.pause : st.base > 0 && !v.done ? W.resume : W.start; go.classList.toggle('btn-primary', !st.on); }
+    if (go) go.textContent = st.on ? W.pause : st.base > 0 && !v.done ? W.resume : W.start;
     const key = `${st.start}:${st.dur}`;
     if (done && st.on && rang !== key) { rang = key; if (s.chime && control) chime(); if (control) ctx.say(W.done); }
   }
@@ -252,7 +252,7 @@ function schedule(body, s, ctx) {
   const fmt = new Intl.DateTimeFormat(ctx.intl, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
   const at = hhmm => { const [h, m] = hhmm.split(':').map(Number); return fmt.format(Date.UTC(2020, 0, 1, h, m)); };
   const status = el('div', 'dw-sched-now'); status.setAttribute('aria-live', 'polite'); status.dir = 'auto';
-  const ol = el('ol', 'dw-periods');
+  const ol = el('ol', 'dw-periods dw-scroll');
   const rows = periods.map(p => {
     const li = el('li', 'dw-period');
     const tm = el('span', 'dw-ptime', `${at(p.start)}–${at(p.end)}`); tm.dir = 'ltr';
@@ -272,7 +272,12 @@ function schedule(body, s, ctx) {
     if (r.cur >= 0) msg = `${W.now}: ${periods[r.cur].name || '…'} · ${fill(W.left, { n: Math.ceil(r.left) })}`;
     else if (r.next >= 0) msg = `${r.next === 0 ? W.before : W.next}: ${periods[r.next].name || '…'} · ${at(periods[r.next].start)}`;
     else msg = W.after;
-    if (msg !== last) { last = msg; status.textContent = msg; }
+    if (msg !== last) {
+      last = msg; status.textContent = msg;
+      // The period on now (or the next one) in view, when the list is longer than the widget.
+      const row = rows[r.cur >= 0 ? r.cur : r.next];
+      if (row && ol.scrollHeight > ol.clientHeight) ol.scrollTop = Math.max(0, row.offsetTop - ol.offsetTop - 4);
+    }
   };
   tick();
   return { tick };
@@ -347,46 +352,73 @@ function picker(body, s, ctx) {
   const items = own ? String(s.items || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 40) : [];
   body.classList.add('dw-picker');
   if (wheelMode) body.classList.add('dw-wheelmode');
+  // The big readout: the name under the pointer while the wheel turns, then the winner (always the full name).
   const name = el('div', 'dw-pickname', wheelMode ? '' : '🎲'); name.setAttribute('aria-live', 'polite'); name.dir = 'auto';
-  let wheel = null, rot = 0;
-  if (wheelMode) { wheel = el('div', 'dw-wheel'); wheel.setAttribute('aria-hidden', 'true'); body.appendChild(wheel); }
-  const left = el('div', 'dw-pickleft small muted');
-  const row = el('div', 'dw-row');
+  let wheel = null, rot = 0, spinning = false, raf = 0;
+  const wrap = el('div', 'dw-pickwrap');   // inside the body, so the widget's size rules (container queries) reach it
+  if (wheelMode) { wheel = el('div', 'dw-wheel'); wheel.setAttribute('aria-hidden', 'true'); wrap.appendChild(wheel); }
+  const side = el('div', 'dw-pickside');
+  const left = el('div', 'dw-pickleft');
+  const row = el('div', 'dw-row dw-foot');
   const go = btn(wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`, 'btn btn-primary'), away = btn(W.away), reset = btn(W.reset);
   row.append(go);
   if (!own) row.append(away);
   row.append(reset);
-  body.append(name, left, row);
+  side.append(name, left, row);
+  wrap.appendChild(side);
+  body.appendChild(wrap);
   let view = null, timer = 0;
   const ownState = localPicks.get(ctx.id) || { picked: [] }; localPicks.set(ctx.id, ownState);
-  /** What the wheel shows: the teacher's items, or the class's Oomba names (away students left out). */
-  const entries = () => (own ? items : view ? view.students.filter(k => !view.away.includes(k.id)).map(k => k.name) : []);
+  /** What the wheel shows: the class's Oomba names (away students left out) or the teacher's items, and with "no
+   *  repeats" only those not picked yet this round, so the wheel gets easier to read as the round goes on. */
+  const entries = () => {
+    if (own) { const fresh = items.filter((x, i) => !s.norepeat || !ownState.picked.includes(i)); return fresh.length ? fresh : items; }
+    if (!view) return [];
+    const here = view.students.filter(k => !view.away.includes(k.id));
+    const fresh = s.norepeat ? here.filter(k => !view.picked.includes(k.id)) : here;
+    return (fresh.length ? fresh : here).map(k => k.name);
+  };
+  let shown = [];
   const drawWheel = () => {
-    if (!wheel) return;
-    const list = entries();
+    if (!wheel || spinning) return;
+    shown = entries();
     wheel.textContent = '';
-    if (!list.length) return;
+    if (!shown.length) return;
+    const px = Math.min(wheel.clientWidth, wheel.clientHeight) || 0;
+    const plan = wheelPlan(shown, px, ctx.private());
+    const colors = sliceColors(shown.length);
     const svg = svgEl('svg', { viewBox: '-50 -50 100 100', class: 'dw-wheelsvg' });
     const g = svgEl('g', { class: 'dw-wheelrot' }); g.style.transform = `rotate(${rot}deg)`;
-    const seg = 360 / list.length;
-    list.forEach((label, i) => {
+    const seg = 360 / shown.length;
+    shown.forEach((label, i) => {
       const a0 = (i * seg - 90) * Math.PI / 180, a1 = ((i + 1) * seg - 90) * Math.PI / 180;
       const big = seg > 180 ? 1 : 0;
-      const d = list.length === 1 ? 'M0 -48 A48 48 0 1 1 -0.01 -48 Z' : `M0 0 L${48 * Math.cos(a0)} ${48 * Math.sin(a0)} A48 48 0 ${big} 1 ${48 * Math.cos(a1)} ${48 * Math.sin(a1)} Z`;
-      g.appendChild(svgEl('path', { d, class: `dw-seg dw-seg${i % 4}` }));
+      const d = shown.length === 1 ? 'M0 -48 A48 48 0 1 1 -0.01 -48 Z' : `M0 0 L${48 * Math.cos(a0)} ${48 * Math.sin(a0)} A48 48 0 ${big} 1 ${48 * Math.cos(a1)} ${48 * Math.sin(a1)} Z`;
+      g.appendChild(svgEl('path', { d, class: `dw-seg dw-seg${colors[i]}` }));
       const mid = (i + 0.5) * seg - 90;
-      const shown = label.length > 16 ? `${label.slice(0, 15)}…` : label;
-      const tx = svgEl('text', { x: 9, y: 0, transform: `rotate(${mid})`, class: 'dw-segtext', 'font-size': Math.max(2.6, Math.min(7, 70 / list.length, 66 / Math.max(1, shown.length))) });
-      tx.textContent = shown;
-      g.appendChild(tx);
+      // Where the text points once the wheel is turned: on the left half it would read upside down, so it turns round
+      // and is anchored from the other end.
+      const flip = labelFlips(mid + rot);
+      if (plan.names) {
+        const tx = svgEl('text', { x: flip ? -9 : 9, y: 0, transform: `rotate(${flip ? mid + 180 : mid})`, 'text-anchor': flip ? 'end' : 'start', class: 'dw-segtext', 'font-size': plan.units[i] });
+        tx.textContent = sliceLabel(label);
+        g.appendChild(tx);
+      } else {
+        // Too many to read: a number at the rim (the readout below says the name).
+        const tx = svgEl('text', { x: flip ? -42 : 42, y: 0, transform: `rotate(${flip ? mid + 180 : mid})`, 'text-anchor': 'middle', class: 'dw-segtext dw-segnum', 'font-size': plan.numberUnits });
+        tx.textContent = String(i + 1);
+        g.appendChild(tx);
+      }
     });
     svg.appendChild(g);
-    svg.appendChild(svgEl('path', { d: 'M-4 -50 L4 -50 L0 -41 Z', class: 'dw-pointer' }));
+    svg.appendChild(svgEl('path', { d: 'M-4.5 -50 L4.5 -50 L0 -40 Z', class: 'dw-pointer' }));
     svg.appendChild(svgEl('circle', { cx: 0, cy: 0, r: 5, class: 'dw-hub' }));
     wheel.appendChild(svg);
   };
+  const sized = typeof ResizeObserver === 'function' && wheel ? new ResizeObserver(() => drawWheel()) : null;
+  if (sized) sized.observe(wheel);
   const showLeft = () => {
-    if (own) { left.textContent = items.length ? '' : W.noItems; go.disabled = !items.length; drawWheel(); return; }
+    if (own) { left.textContent = items.length ? fill(W.left, { n: entries().length }) : W.noItems; go.disabled = !items.length; drawWheel(); return; }
     if (!view) return;
     const here = view.students.filter(k => !view.away.includes(k.id));
     const n = s.norepeat ? here.filter(k => !view.picked.includes(k.id)).length || here.length : here.length;
@@ -396,16 +428,25 @@ function picker(body, s, ctx) {
   };
   const load = () => (own ? Promise.resolve(showLeft()) : ctx.get('/picker').then(v => { view = v; showLeft(); }).catch(() => {}));
   load();
-  /** Turn the wheel so the picked entry stops under the pointer (at once with reduced motion). */
+  /** Turn the wheel so the picked entry stops under the pointer, the readout ticking through the names it passes (at
+   *  once with reduced motion). */
   const spinTo = (index, done) => {
-    const list = entries(), seg = 360 / list.length;
+    const seg = 360 / shown.length;
     const g = wheel && wheel.querySelector('.dw-wheelrot');
     if (!g || ctx.reduced()) { rot = -(index + 0.5) * seg; drawWheel(); done(); return; }
     const base = Math.ceil(rot / 360) * 360 + 360 * 4;
     rot = base - (index + 0.5) * seg + (Math.random() - 0.5) * seg * 0.6;
+    spinning = true;
     g.style.transition = 'transform 3.2s cubic-bezier(.17,.67,.21,1)';
     requestAnimationFrame(() => { g.style.transform = `rotate(${rot}deg)`; });
-    timer = setTimeout(done, 3300);
+    const tick = () => {
+      const m = getComputedStyle(g).transform;
+      const mm = /matrix\(([^,]+),\s*([^,]+)/.exec(m);
+      if (mm) { const deg = Math.atan2(+mm[2], +mm[1]) * 180 / Math.PI; const i = underPointer(deg, shown.length); if (shown[i] && name.textContent !== shown[i]) name.textContent = shown[i]; }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    timer = setTimeout(() => { cancelAnimationFrame(raf); spinning = false; done(); }, 3300);
   };
   go.addEventListener('click', async () => {
     go.disabled = true;
@@ -415,19 +456,20 @@ function picker(body, s, ctx) {
       if (own) {
         // Teacher-typed items: picked here (no student data involved).
         let pool = items.map((x, i) => i).filter(i => !s.norepeat || !ownState.picked.includes(i));
-        if (!pool.length) { ownState.picked = []; pool = items.map((x, i) => i); }
-        index = pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length];
-        ownState.picked.push(index); pickName = items[index];
+        if (!pool.length) { ownState.picked = []; pool = items.map((x, i) => i); drawWheel(); }
+        const k = pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length];
+        pickName = items[k]; index = shown.indexOf(pickName);
+        ownState.picked.push(k);
       } else {
-        const before = entries();
+        const before = shown.slice();
         const r = await ctx.act('/picker', { action: 'pick', norepeat: !!s.norepeat });
         if (!r || !r.pick) { go.disabled = false; return; }
-        view = r; pickName = r.pick.name; index = Math.max(0, before.indexOf(pickName));
-        if (wheelMode && before.join('\n') !== entries().join('\n')) { drawWheel(); index = entries().indexOf(pickName); }
+        view = r; pickName = r.pick.name; index = before.indexOf(pickName);
+        if (wheelMode && index < 0) { drawWheel(); index = shown.indexOf(pickName); }   // a new round began
       }
-      const land = () => { name.removeAttribute('aria-busy'); name.textContent = pickName; name.classList.add('is-picked'); go.disabled = false; if (!own) showLeft(); if (!wheelMode) go.textContent = `🎲 ${W.again}`; };
+      const land = () => { name.removeAttribute('aria-busy'); name.textContent = pickName; name.classList.add('is-picked'); go.disabled = false; showLeft(); if (!wheelMode) go.textContent = `🎲 ${W.again}`; };
       name.setAttribute('aria-busy', 'true');
-      if (wheelMode) { spinTo(index, land); return; }
+      if (wheelMode) { spinTo(Math.max(0, index), land); return; }
       const names = view.students.map(k => k.name);
       if (ctx.reduced() || names.length < 2) land();
       else {
@@ -435,10 +477,10 @@ function picker(body, s, ctx) {
         const spin = () => { name.textContent = names[Math.floor(Math.random() * names.length)]; i++; wait *= 1.18; if (i < 14) timer = setTimeout(spin, wait); else land(); };
         spin();
       }
-    } catch { go.disabled = false; }
+    } catch { go.disabled = false; spinning = false; }
   });
   reset.addEventListener('click', async () => {
-    if (own) { ownState.picked = []; name.textContent = ''; return; }
+    if (own) { ownState.picked = []; name.textContent = ''; showLeft(); return; }
     const r = await ctx.act('/picker', { action: 'reset' });
     if (r) { view = r; name.textContent = wheelMode ? '' : '🎲'; name.classList.remove('is-picked'); go.textContent = wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`; showLeft(); }
   });
@@ -453,9 +495,32 @@ function picker(body, s, ctx) {
       if (r) { view = r; showLeft(); }
     });
   });
-  return { destroy() { clearTimeout(timer); } };
+  return { destroy() { clearTimeout(timer); cancelAnimationFrame(raf); if (sized) sized.disconnect(); } };
 }
 const localPicks = new Map();
+/** A wheel label pointing at this angle (degrees, 0 = to the right, clockwise) would read upside down. */
+export const labelFlips = deg => { const a = ((deg % 360) + 360) % 360; return a > 90 && a < 270; };
+/** A name on a slice: at most 16 characters (the readout under the wheel always shows the whole name). */
+export const sliceLabel = label => (label.length > 16 ? `${label.slice(0, 15)}…` : label);
+/** How many slice colours there are (public/css/dash.css .dw-seg0 … .dw-seg5). */
+export const SLICE_COLOURS = 6;
+/** A colour per slice where no two neighbours match, the last and the first included. */
+export function sliceColors(n, k = SLICE_COLOURS) {
+  const c = Array.from({ length: n }, (_, i) => i % k);
+  if (n > 2 && c[n - 1] === c[0]) c[n - 1] = [1, 2, 3, 4, 5].map(x => (c[0] + x) % k).find(x => x !== c[n - 2] && x !== c[0]);
+  return c;
+}
+/** Whether names fit on the slices of a wheel this many pixels wide: each name's size (viewBox units, the wheel is
+ *  100 across) and its rendered size; names only when every one is at least 12px (13px on the projector), else
+ *  numbers at the rim. */
+export function wheelPlan(names, px, projector = false) {
+  const n = Math.max(1, names.length), min = projector ? 13 : 12;
+  const units = names.map(x => Math.min(7, 70 / n, 64 / Math.max(1, sliceLabel(x).length)));
+  const smallest = Math.min(...units) * px / 100;
+  return { names: names.length > 0 && px > 0 && smallest >= min, units, smallestPx: smallest, numberUnits: Math.max(3.2, Math.min(6, (2 * Math.PI * 42 / n) * 0.62)) };
+}
+/** The slice under the pointer (at the top) when the wheel is turned by deg degrees. */
+export const underPointer = (deg, n) => Math.floor(((((-deg) % 360) + 360) % 360) / (360 / n)) % n;
 
 // ---------------------------------------------------------------- help queue
 // Students tap "I need help" or "I'm done" (no text). The teacher's widget shows the queue in order; on the projector
@@ -464,7 +529,7 @@ function help(body, s, ctx) {
   const W = ctx.type.words;
   body.classList.add('dw-help');
   if (ctx.role === 'student') {
-    const row = el('div', 'dw-helpbtns');
+    const row = el('div', 'dw-helpbtns dw-stick-top');
     const need = btn(`✋ ${W.need}`, 'btn dw-big'), done = btn(`✅ ${W.done}`, 'btn dw-big');
     const status = el('div', 'dw-helpme'); status.setAttribute('role', 'status');
     const cancel = btn(W.cancel, 'btn btn-sm');
@@ -485,9 +550,9 @@ function help(body, s, ctx) {
     return { live: draw };
   }
   const counts = el('div', 'dw-helpcounts');
-  const list = el('ol', 'dw-queue dw-private');
+  const list = el('ol', 'dw-queue dw-private dw-scroll');
   const hidden = el('p', 'dw-public small muted', W.hidden);
-  const row = el('div', 'dw-row');
+  const row = el('div', 'dw-row dw-foot');
   const next = btn(`➡️ ${W.next}`, 'btn btn-primary'), clear = btn(W.clear);
   row.append(next, clear);
   body.append(counts, list, hidden, row);
@@ -524,14 +589,19 @@ function check(body, s, ctx) {
   body.classList.add('dw-check');
   const head = el('div', 'dw-checkhead');
   const bars = el('ul', 'dw-bars');
+  // Every answer's total is always in view: the bars shrink with the widget (two columns for more than three
+  // answers). Only a long list in the teacher's own (not projector) view may scroll.
   const metaRow = el('div', 'dw-checkmetarow');
-  const meta = el('span', 'dw-checkmeta small');
-  const saved = btn(W.savedList, 'btn btn-sm dw-linkbtn');
+  const meta = el('span', 'dw-checkmeta');
+  const saved = btn(W.savedList, 'btn btn-sm dw-linkbtn dw-private');   // the teacher's list, not for the projector
   metaRow.append(meta, saved);
-  const row = el('div', 'dw-row');
-  const add = btn(`➕ ${W.new}`, 'btn btn-sm btn-primary'), end = btn(W.end, 'btn btn-sm'), names = btn(`👀 ${W.names}`, 'btn btn-sm dw-private'), save = btn(W.save, 'btn btn-sm');
+  const row = el('div', 'dw-row dw-foot');
+  const add = btn(`➕ ${W.new}`, 'btn btn-sm btn-primary'), end = btn(W.end, 'btn btn-sm'), names = btn('👀', 'btn btn-sm dw-private', W.names), save = btn(W.save, 'btn btn-sm');
+  names.appendChild(el('span', 'dw-btxt', ` ${W.names}`)); names.title = W.names;   // the words go on a narrow widget; the label stays
   row.append(add, end, names, save);
-  body.append(head, bars, metaRow, row);
+  const area = el('div', 'dw-checkarea');
+  area.append(head, metaRow, bars);
+  body.append(area, row);
   let cur = null, sig = '';
   const draw = live => {
     const L = live || ctx.live();
@@ -542,6 +612,7 @@ function check(body, s, ctx) {
     if (!cur) { head.appendChild(el('p', 'dw-empty', W.empty)); return; }
     head.append(el('span', 'dw-kindchip', W[cur.kind]), typed('b', 'dw-checkq', cur.q || ''));
     const ch = checkChoices(cur, W), max = Math.max(1, ...cur.tally);
+    bars.classList.toggle('dw-bars-many', ch.length > 3);
     ch.forEach((c, i) => {
       const li = el('li', 'dw-barrow');
       const lab = el('span', 'dw-barlab'); if (c.icon) { const ic = lab.appendChild(el('span', c.rot ? 'dw-rot' : 'dw-ic', c.icon)); ic.setAttribute('aria-hidden', 'true'); }
@@ -606,7 +677,7 @@ function tiles(body, s, ctx) {
   const show = got => {
     body.textContent = '';
     if (!got.length) { body.appendChild(el('p', 'dw-empty', W.gone)); return; }
-    const ul = el('ul', 'dw-tilegrid');
+    const ul = el('ul', 'dw-tilegrid dw-scroll');
     for (const x of got) {
       const li = el('li');
       const a = el(ctx.editing ? 'span' : 'a', 'dw-tile');
@@ -719,7 +790,7 @@ function calendar(body, s, ctx) {
       }
       row.appendChild(c);
     }
-    const coming = (s.marks || []).filter(x => x.date >= today).slice(0, 4);
+    const coming = (s.marks || []).filter(x => x.date >= today).slice(0, 2);
     const list = el('ul', 'dw-calmarks');
     const short = new Intl.DateTimeFormat(ctx.intl, { month: 'short', day: 'numeric', timeZone: 'UTC' });
     for (const x of coming) { const li = el('li'); const [yy, mm, dd] = x.date.split('-').map(Number); li.append(el('b', null, short.format(Date.UTC(yy, mm - 1, dd))), typed('span', null, x.label)); list.appendChild(li); }
@@ -739,7 +810,7 @@ function symbols(body, s, ctx) {
   big.append(ic, el('span', 'dw-symlabel', f.labels[s.mode]));
   body.appendChild(big);
   if (ctx.teacher && !ctx.editing) {
-    const row = el('div', 'dw-symrow'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.change);
+    const row = el('div', 'dw-symrow dw-stick'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.change);
     for (const m of f.options) {
       const b = btn(SYMBOLS[m], 'btn btn-sm dw-symbtn', f.labels[m]); b.title = f.labels[m];
       b.setAttribute('aria-pressed', String(m === s.mode));
@@ -760,7 +831,7 @@ function light(body, s, ctx) {
   label.setAttribute('aria-label', `${f.labels[s.color]}${s[s.color] ? `: ${s[s.color]}` : ''}`);
   body.append(lamp, label);
   if (ctx.teacher && !ctx.editing) {
-    const row = el('div', 'dw-row dw-lightrow'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.set);
+    const row = el('div', 'dw-row dw-lightrow dw-stick'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.set);
     for (const c of f.options) {
       const b = btn(f.labels[c], `btn btn-sm dw-lightbtn dw-lightbtn-${c}`); b.setAttribute('aria-pressed', String(c === s.color));
       b.addEventListener('click', () => { ctx.set('color', c); ctx.say(s[c] || f.labels[c]); });
@@ -786,7 +857,8 @@ function dice(body, s, ctx) {
   const row = el('div', 'dw-dicerow');
   const total = el('div', 'dw-dicetotal'); total.setAttribute('role', 'status');
   const go = btn(`🎲 ${W.roll}`, 'btn btn-primary');
-  body.append(row, total, go);
+  const ctl = el('div', 'dw-row dw-stick'); ctl.appendChild(go);
+  body.append(row, total, ctl);
   let timer = 0;
   const show = vals => {
     row.textContent = '';
@@ -815,7 +887,8 @@ function random(body, s, ctx) {
   const out = el('div', 'dw-randn', lastNumbers.has(ctx.id) ? String(lastNumbers.get(ctx.id)) : '?'); out.setAttribute('role', 'status');
   const range = el('div', 'dw-randrange small muted', fill(W.between, { min: lo, max: hi }));
   const go = btn(`🔢 ${W.go}`, 'btn btn-primary');
-  body.append(out, range, go);
+  const ctl = el('div', 'dw-row dw-stick'); ctl.appendChild(go);
+  body.append(out, range, ctl);
   go.addEventListener('click', () => { const v = lo + rnd(hi - lo + 1); lastNumbers.set(ctx.id, v); out.textContent = String(v); });
   return null;
 }
@@ -826,9 +899,9 @@ const madeGroups = new Map();
 function groups(body, s, ctx) {
   const W = ctx.type.words;
   body.classList.add('dw-groups');
-  const out = el('div', 'dw-grouplist');
+  const out = el('div', 'dw-grouplist dw-scroll');
   const note = el('p', 'small muted dw-note', W.note);
-  const row = el('div', 'dw-row');
+  const row = el('div', 'dw-row dw-stick-top');
   const go = btn(`👥 ${W.make}`, 'btn btn-primary');
   row.appendChild(go);
   body.append(row, out, note);
@@ -861,14 +934,14 @@ function score(body, s, ctx) {
   let names = String(s.teams || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 8);
   if (!names.length) names = [fill(W.team, { n: 1 }), fill(W.team, { n: 2 })];
   const scores = names.map((_, i) => Number((s.scores || [])[i]) || 0);
-  const ul = el('ul', 'dw-teams');
+  const ul = el('ul', 'dw-teams dw-scroll');   // more teams than fit: the list scrolls, the reset stays below
   const control = ctx.teacher && !ctx.editing;
   names.forEach((nm, i) => {
     const li = el('li', `dw-team dw-team${i % 4}`);
     li.appendChild(typed('span', 'dw-teamname', nm));
     const pts = el('b', 'dw-teampts', String(scores[i])); pts.setAttribute('aria-live', 'polite');
     if (control) {
-      const minus = btn('−', 'btn btn-sm dw-pm', fill(W.minus, { team: nm })), plus = btn('+', 'btn btn-sm btn-primary dw-pm', fill(W.plus, { team: nm }));
+      const minus = btn('−', 'btn btn-sm dw-pm', fill(W.minus, { team: nm })), plus = btn('+', 'btn btn-sm dw-pm dw-plus', fill(W.plus, { team: nm }));
       const change = d => { const next = scores.slice(); next[i] = Math.max(-9999, Math.min(9999, next[i] + d)); ctx.set('scores', next); ctx.say(`${nm}: ${next[i]}`); };
       minus.addEventListener('click', () => change(-1)); plus.addEventListener('click', () => change(1));
       li.append(minus, pts, plus);
@@ -876,7 +949,7 @@ function score(body, s, ctx) {
     ul.appendChild(li);
   });
   body.appendChild(ul);
-  if (control) { const r = btn(W.reset, 'btn btn-sm dw-linkbtn'); r.addEventListener('click', () => ctx.set('scores', names.map(() => 0))); body.appendChild(r); }
+  if (control) { const r = btn(`↺ ${W.reset}`, 'btn btn-sm dw-scorereset'); r.addEventListener('click', () => ctx.set('scores', names.map(() => 0))); const ctl = el('div', 'dw-row dw-foot dw-scorefoot'); ctl.appendChild(r); body.appendChild(ctl); }
   return null;
 }
 
@@ -889,7 +962,7 @@ function stickers(body, s, ctx) {
   list.forEach((x, i) => {
     const e = STAMPS[x.e] || '⭐';
     const sp = el(control ? 'button' : 'span', 'dw-stamp', e);
-    sp.style.insetInlineStart = `${x.x}%`; sp.style.insetBlockStart = `${x.y}%`;
+    sp.style.setProperty('--x', x.x); sp.style.setProperty('--y', x.y);   // always inside the area (public/css/dash.css)
     if (control) { sp.type = 'button'; sp.setAttribute('aria-label', fill(W.remove, { e })); sp.addEventListener('click', () => ctx.set('stamps', list.filter((_, j) => j !== i))); }
     else sp.setAttribute('aria-hidden', 'true');
     area.appendChild(sp);
@@ -897,15 +970,22 @@ function stickers(body, s, ctx) {
   body.appendChild(area);
   if (!list.length && control) area.appendChild(el('p', 'dw-empty', W.empty));
   if (control) {
-    const pal = el('div', 'dw-palette'); pal.setAttribute('role', 'group'); pal.setAttribute('aria-label', W.add);
-    STAMPS.forEach((e, i) => {
-      const b = btn(e, 'btn btn-sm dw-palbtn', `${W.add}: ${e}`);
-      b.addEventListener('click', () => { if (list.length >= 30) return; ctx.set('stamps', [...list, { e: i, x: 6 + rnd(80), y: 6 + rnd(70) }]); });
-      pal.appendChild(b);
+    // Adding: a sheet with the fixed Oomba set only; the widget keeps one row of controls.
+    const row = el('div', 'dw-row dw-foot');
+    const add = btn(`⭐ ${W.add}`, 'btn btn-sm btn-primary');
+    add.disabled = list.length >= 30;
+    add.addEventListener('click', () => {
+      const esc = ctx.esc;
+      const sh = ctx.sheet({ title: W.add, content: `<div class="dw-palette" role="group" aria-label="${esc(W.add)}">${STAMPS.map((e, i) => `<button class="btn dw-palbtn" type="button" data-stamp="${i}" aria-label="${esc(`${W.add}: ${e}`)}">${e}</button>`).join('')}</div>` });
+      sh.el.addEventListener('click', ev => {
+        const b2 = ev.target.closest('[data-stamp]'); if (!b2) return;
+        sh.close();
+        ctx.set('stamps', [...list, { e: +b2.dataset.stamp, x: rnd(101), y: rnd(101) }].slice(0, 30));
+      });
     });
-    const clear = btn(W.clear, 'btn btn-sm dw-linkbtn'); clear.disabled = !list.length; clear.addEventListener('click', () => ctx.set('stamps', []));
-    pal.appendChild(clear);
-    body.appendChild(pal);
+    const clear = btn(`🧹 ${W.clear}`, 'btn btn-sm'); clear.disabled = !list.length; clear.addEventListener('click', () => ctx.set('stamps', []));
+    row.append(add, clear);
+    body.appendChild(row);
   }
   return null;
 }

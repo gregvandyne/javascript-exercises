@@ -2824,7 +2824,9 @@
         "title": "Verifica veloce",
         "tap": "Tocca la tua risposta.",
         "thanks": "Grazie! Puoi cambiare risposta finché l’insegnante non termina la verifica."
-      }
+      },
+      "more": "Altro",
+      "moreName": "Vedi il resto di {name}"
     }
   },
   "favorites": {

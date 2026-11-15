@@ -2824,7 +2824,9 @@
         "title": "Snelle check",
         "tap": "Tik op je antwoord.",
         "thanks": "Dank je! Je kunt je antwoord veranderen tot je leraar de check stopt."
-      }
+      },
+      "more": "Meer",
+      "moreName": "Meer van {name} zien"
     }
   },
   "favorites": {

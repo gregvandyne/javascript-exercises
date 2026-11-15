@@ -2823,7 +2823,9 @@
         "title": "Vérification rapide",
         "tap": "Touche ta réponse.",
         "thanks": "Merci ! Tu peux changer ta réponse jusqu’à ce que ton enseignant termine la vérification."
-      }
+      },
+      "more": "Plus",
+      "moreName": "Voir la suite de {name}"
     }
   },
   "favorites": {

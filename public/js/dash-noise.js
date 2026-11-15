@@ -30,11 +30,10 @@ export function noise(body, s, ctx) {
   const zone = el('span', 'dw-meter-zone'); zone.style.inlineSize = `${top}%`;
   const fill = el('span', 'dw-meter-fill');
   meter.append(zone, fill);
-  const row = el('div', 'dw-row');
   const btn = el('button', 'btn btn-sm btn-primary dw-micbtn', `🎤 ${W.start}`); btn.type = 'button';
   const note = el('p', 'dw-note small muted', W.note);
-  row.append(btn);
-  body.append(status, meter, row, note);
+  status.append(btn);   // the mic chip, the level in words and the on/off button share one line
+  body.append(status, meter, note);
 
   let stream = null, audio = null, raf = 0, smooth = 0, lastSay = '';
   function show(level) {

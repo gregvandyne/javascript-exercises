@@ -2842,7 +2842,9 @@
         "title": "Quick check",
         "tap": "Tap your answer.",
         "thanks": "Thanks! You can change your answer until your teacher ends the check."
-      }
+      },
+      "more": "More",
+      "moreName": "See more of {name}"
     }
   },
   "favorites": {

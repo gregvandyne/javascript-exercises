@@ -59,6 +59,28 @@ function start() {
 
   // ---------------------------------------------------------------- drawing
   const tickers = new Map(), hooks = new Map(), destroyers = new Map();
+  // A widget body taller than its box scrolls; is-scrolly / at-end draw the "there is more" shadow (public/css/dash.css).
+  // Inner lists that scroll on their own (.dw-scroll: the help queue, a check's bars, the teams) get the same marks.
+  const mark = x => {
+    const on = x.scrollHeight > x.clientHeight + 6;
+    x.classList.toggle('is-scrolly', on);
+    const end = !on || x.scrollTop + x.clientHeight >= x.scrollHeight - 6;
+    x.classList.toggle('at-end', end);
+    return end;
+  };
+  const moreTarget = b => [b, ...b.querySelectorAll('.dw-scroll')].find(x => x.classList.contains('is-scrolly') && !x.classList.contains('at-end')) || null;
+  const scrolly = b => {
+    mark(b);
+    for (const x of b.querySelectorAll('.dw-scroll')) mark(x);
+    if (b.moreBtn) b.moreBtn.hidden = !moreTarget(b);
+  };
+  const sizeWatch = typeof ResizeObserver === 'function' ? new ResizeObserver(es => { for (const e of es) scrolly(e.target); }) : null;
+  const watchBody = b => {
+    sizeWatch?.observe(b);
+    b.addEventListener('scroll', () => scrolly(b), { passive: true, capture: true });
+    new MutationObserver(() => scrolly(b)).observe(b, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'class'] });
+    requestAnimationFrame(() => scrolly(b));
+  };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const projecting = () => document.body.classList.contains('dash-projector');
   /** What a widget's renderer gets besides its settings (public/js/dash-widgets.js says what each is for). */
@@ -115,15 +137,24 @@ function start() {
     c.setAttribute('role', 'listitem');
     c.style.gridColumn = `${w.x + 1} / span ${w.w}`; c.style.gridRow = `${w.y + 1} / span ${w.h}`;
     c.style.order = i; c.style.setProperty('--h', w.h);
+    if (type && type.group) c.dataset.group = type.group;
+    // One header for every widget: an icon chip in the group's colour, the title, and the pin as a quiet chip.
     const head = document.createElement('div'); head.className = 'dash-wh';
+    const icon = document.createElement('span'); icon.className = 'dash-wicon'; icon.setAttribute('aria-hidden', 'true'); icon.textContent = (type && type.icon) || '▫️';
     const title = document.createElement('h2'); title.className = 'dash-wt'; title.id = `dw-${w.id}`; title.textContent = nameOf(w);
-    head.appendChild(title);
-    if (w.pinned) head.appendChild(Object.assign(document.createElement('span'), { className: 'chip-s dash-pin', textContent: `📌 ${t('js.dash.pinnedBy')}` }));
-    else if (TEACHER && w.pin) head.appendChild(Object.assign(document.createElement('span'), { className: 'chip-s dash-pin', textContent: `📌 ${t('js.dash.onStudents')}` }));
+    head.append(icon, title);
+    const pinText = w.pinned ? t('js.dash.pinnedBy') : TEACHER && w.pin ? t('js.dash.onStudents') : '';
+    if (pinText) { const pin = document.createElement('span'); pin.className = 'dash-pin'; pin.title = pinText; pin.innerHTML = `<span aria-hidden="true">📌</span> <span class="dash-pintext"></span>`; pin.lastChild.textContent = pinText; head.appendChild(pin); }
     c.appendChild(head);
     c.setAttribute('aria-labelledby', title.id);
     const body = document.createElement('div'); body.className = 'dash-wb';
     c.appendChild(body);
+    // "More below": shown while the body has more than fits; a tap scrolls it.
+    const more = document.createElement('button'); more.type = 'button'; more.className = 'dash-more'; more.hidden = true;
+    more.textContent = `↓ ${t('js.dash.more')}`; more.setAttribute('aria-label', t('js.dash.moreName', { name: nameOf(w) }));
+    more.addEventListener('click', e => { e.stopPropagation(); const x = moreTarget(body) || body; x.scrollBy({ top: x.clientHeight * 0.8, behavior: reduced.matches ? 'auto' : 'smooth' }); });
+    head.appendChild(more); body.moreBtn = more;
+    watchBody(body);
     if (destroyers.has(w.id)) { try { destroyers.get(w.id)(); } catch { /* gone */ } destroyers.delete(w.id); }
     const r = RENDER[w.type] ? RENDER[w.type](body, w.s || {}, ctxFor(w, type)) : null;
     if (r && r.tick) tickers.set(w.id, r.tick);

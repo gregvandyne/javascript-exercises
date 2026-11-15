@@ -2824,7 +2824,9 @@
         "title": "Checagem rápida",
         "tap": "Toque na sua resposta.",
         "thanks": "Obrigado! Você pode mudar sua resposta até seu professor encerrar a checagem."
-      }
+      },
+      "more": "Mais",
+      "moreName": "Ver mais de {name}"
     }
   },
   "favorites": {

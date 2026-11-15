@@ -378,7 +378,7 @@ test('help queue: fixed buttons only; the teacher sees the order; a student sees
   assert.deepEqual((await T(`/api/dash/${w.A.id}/live`)).json.help.queue, []);
   // On the projector the teacher's widget hides names (CSS: .dash-projector .dw-private).
   assert.match(fs.readFileSync('public/css/dash.css', 'utf8'), /\.dash-projector \.dw-private\{display:none!important\}/);
-  assert.match(fs.readFileSync('public/js/dash-widgets.js', 'utf8'), /'dw-queue dw-private'/);
+  assert.match(fs.readFileSync('public/js/dash-widgets.js', 'utf8'), /'dw-queue dw-private dw-scroll'/);
 });
 
 test('quick checks: a push to students, taps only, totals for the teacher, nobody else\'s answers for students, names on the teacher\'s tap only', async () => {
@@ -417,7 +417,7 @@ test('quick checks: a push to students, taps only, totals for the teacher, nobod
   assert.equal((await A1(`/api/dash/${w.A.id}/checks/${id}/names`)).status, 404);
   // The widget's projector view: the names button is teacher-only and hidden in projector mode; the grid shows totals.
   const wsrc = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
-  assert.match(wsrc, /names = btn\([^)]*'btn btn-sm dw-private'\)/);
+  assert.match(wsrc, /names = btn\('👀', 'btn btn-sm dw-private', W\.names\)/);
   assert.match(wsrc, /if \(!cur \|\| ctx\.private\(\)\) return;/);
   // A new check ends the last; an ended check takes no answers and leaves the tray.
   const id2 = (await T(`/api/dash/${w.A.id}/checks`, POST({ kind: 'thumbs' }))).json.check;
@@ -589,4 +589,45 @@ test('symbols, traffic light, scoreboard and stickers the teacher taps reach stu
   // A student can add dice and a random number to their own screen, but not a scoreboard or a light.
   await as(w.a1)(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'd1', type: 'dice' }, { id: 'r1', type: 'random' }, { id: 's1', type: 'score' }, { id: 'l1', type: 'light' }, { id: 'g1', type: 'groups' }] }));
   assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets.map(x => x.type), ['dice', 'random']);
+});
+
+test('the spinner wheel: names on the slices only when they are readable, else numbers; neighbouring slices never share a colour; the colours keep AA contrast', () => {
+  const kids = n => Array.from({ length: n }, (_, i) => `${['Sunny', 'Brave', 'Quiet', 'Zippy', 'Maple', 'Cosmo', 'Pixel', 'Lucky'][i % 8]}${['Otter', 'Fox', 'Panda', 'Koala', 'Owl', 'Tiger', 'Hare', 'Wren'][Math.floor(i / 8) % 8]}${10 + i}`);
+  // A wheel of about 320px on the teacher's screen: 8 names fit; 24 and 32 do not (numbers at the rim instead).
+  for (const [n, names] of [[8, true], [24, false], [32, false]]) {
+    const plan = W.wheelPlan(kids(n), 320);
+    assert.equal(plan.names, names, `${n} students`);
+    if (names) assert.ok(plan.smallestPx >= 12, `${n}: ${plan.smallestPx}px`);
+    else assert.ok(plan.numberUnits * 320 / 100 >= 12, `${n}: numbers ${plan.numberUnits * 3.2}px`);
+  }
+  // The projector asks for 13px: a wheel where the smallest name is 12.5px shows numbers there, names on the teacher's screen.
+  const names8 = kids(8), units = Math.min(...W.wheelPlan(names8, 100).units), px = 12.5 * 100 / units;
+  assert.equal(W.wheelPlan(names8, px).names, true); assert.equal(W.wheelPlan(names8, px, true).names, false);
+  assert.equal(W.wheelPlan(names8, 0).names, false, 'not measured yet: no names');
+  // Long names: 16 characters at most on a slice; the readout always has the whole name.
+  assert.equal(W.sliceLabel('SuperSchnellerFuchs7'), 'SuperSchnellerF…'); assert.equal(W.sliceLabel('MapleOwl55'), 'MapleOwl55');
+  // The name under the pointer as the wheel turns.
+  for (const n of [8, 24, 32]) for (let i = 0; i < n; i++) assert.equal(W.underPointer(-(i + 0.5) * (360 / n) - 720, n), i);
+  // Colours: no two neighbours alike, the last and the first included.
+  for (let n = 2; n <= 40; n++) {
+    const c = W.sliceColors(n);
+    assert.equal(c.length, n);
+    for (let i = 0; i < n; i++) if (n > 2 || i === 0) assert.notEqual(c[i], c[(i + 1) % n], `n=${n} slice ${i}`);
+    assert.ok(c.every(x => x >= 0 && x < W.SLICE_COLOURS));
+  }
+  // Each slice colour (a brand colour mixed 34% into the card) keeps AA contrast (4.5) with the text, light and dark.
+  const css = fs.readFileSync('public/css/dash.css', 'utf8'), app = fs.readFileSync('public/css/app.css', 'utf8');
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const lum = rgb => { const [r, g, b] = rgb.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const themes = [{ card: '#FFFDF2', text: '#141414' }, { card: '#1E1E1B', text: '#FFFDF2' }];
+  assert.ok(app.includes('--card:#FFFDF2') && app.includes('--card:#1E1E1B') && app.includes('--text:#141414'), 'the tokens these checks use');
+  for (let i = 0; i < W.SLICE_COLOURS; i++) {
+    const m = new RegExp(`\\.dw-seg${i}\\{fill:color-mix\\(in srgb,(#[0-9A-Fa-f]{6}) (\\d+)%,var\\(--card\\)\\)\\}`).exec(css);
+    assert.ok(m, `slice colour ${i}`);
+    for (const th of themes) {
+      const p = +m[2] / 100, mix = hex(m[1]).map((v, k) => Math.round(v * p + hex(th.card)[k] * (1 - p)));
+      assert.ok(contrast(mix, hex(th.text)) >= 4.5, `slice ${i} on ${th.card}: ${contrast(mix, hex(th.text)).toFixed(2)}`);
+    }
+  }
 });

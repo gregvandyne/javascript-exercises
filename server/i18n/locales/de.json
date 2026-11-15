@@ -2824,7 +2824,9 @@
         "title": "Schnelle Abfrage",
         "tap": "Tippe auf deine Antwort.",
         "thanks": "Danke! Du kannst deine Antwort ändern, bis deine Lehrkraft die Abfrage beendet."
-      }
+      },
+      "more": "Mehr",
+      "moreName": "Mehr von {name} zeigen"
     }
   },
   "favorites": {

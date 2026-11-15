@@ -2823,7 +2823,9 @@
         "title": "Comprobación rápida",
         "tap": "Toca tu respuesta.",
         "thanks": "¡Gracias! Puedes cambiar tu respuesta hasta que tu docente termine la comprobación."
-      }
+      },
+      "more": "Más",
+      "moreName": "Ver más de {name}"
     }
   },
   "favorites": {

@@ -6080,7 +6080,45 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
   team names, + and −); **stickers** from a fixed set of 20 Oomba emoji (no uploads; stored as an index and a
   place). Widgets the teacher taps save through the layout (`ctx.set`), so pinned ones reach students with the next
   live check. Two hidden setting types hold the scores and the stickers.
-- Tests: `tests/unit/dash-stage2.test.js`. Screenshots checked by hand (teacher 1600 × 900, edit mode, projector,
-  student 1366 × 768 and 390 × 844, dark, Hebrew, Arabic).
+- **Nothing is cut off, checked by a script.** `npm run dash:fit` (`scripts/dash-fit-check.js`, also run by
+  `tests/unit/dash-fit.test.js`, about two minutes; skipped where no Chromium is installed) loads every widget type at
+  its default size and at its smallest. It covers the teacher's screen and projector mode (1600 × 900), a student's
+  screen (1366 × 768) and a phone (390 × 844), light and dark, in English, German and Arabic. It fails when:
+  - a widget's content is bigger than its box;
+  - an element sits outside the widget or text is cut;
+  - a control's painted box (border, shadow, transform) is less than 12px from the widget's inner edge, is clipped by
+    an ancestor that does not scroll, or sits under another control row;
+  - the phone scrolls sideways.
+
+  How widgets fit:
+  - Content fits by container-query sizing.
+  - Only lists that grow scroll, inside their own area with a shadow and a "More" button in the header: the help
+    queue, groups, the schedule's periods, a long agenda or goal, tiles, and a long scoreboard.
+  - Fixed content never scrolls: a quick check's totals (two columns past three answers) and every widget's buttons.
+  - On a phone, a widget is as tall as its content.
+  - **Decided:** to make this true, several smallest sizes went up (clock, text and goal 3 × 2; timer, stopwatch,
+    countdown, symbols, light, dice, random, stickers 3 × 3; help, noise, scoreboard 4 × 3; check and picker 4 × 4).
+    Several default sizes went up too: weather, countdown, dice, random, noise and stopwatch to 3 rows, the check to
+    5 × 4 and the picker to 6 × 5. A stored layout keeps its old sizes until it is next saved.
+- **Look.** Every widget has one header: an icon chip in its group's colour, the title, and the pin as a quiet chip
+  (icon only on a narrow widget). The group colour also shows on the card's top edge, never on text. The card has a
+  hairline and a soft shadow, a 20px radius and 16px padding.
+
+  The big numbers (clock, timer, countdown, random number, scores, temperature) share one display style, and the words
+  under them share one secondary style. Each widget has one primary (green) button; the rest are quiet. Motion is
+  150–200ms, and none with reduced motion. The traffic light's dim lamps look off. Stickers are added from a sheet.
+- **Spinner wheel.** The wheel fills the widget, beside the readout when the widget is wide. Each name's size is
+  worked out in pixels. Names go on the slices only when every one is at least 12px (13px on the projector); otherwise
+  the slices carry numbers at the rim.
+
+  A big readout under the wheel shows the name under the pointer as it turns, then the winner, always in full. With
+  reduced motion the result shows straight away. "No repeats" and "Away today" take names off the wheel, and "Left this
+  round" counts them.
+
+  Six slice colours (brand colours mixed 34% into the card) keep AA contrast with the text in light and dark (tested).
+  Neighbouring slices never share a colour, the last and the first included.
+- Tests: `tests/unit/dash-stage2.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: teacher
+  1600 × 900, edit mode, projector, student 1366 × 768 and 390 × 844, dark, Hebrew, Arabic, and wheels of 8, 24 and
+  32 students.
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.
