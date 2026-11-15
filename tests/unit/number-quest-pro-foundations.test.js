@@ -207,7 +207,7 @@ test('a tier with a planned unit is never open, whatever its status line says; l
   assert.equal(C.getStep(course, 'pro-7.4').title, 'The Great Clock'); assert.equal(C.getStep(course, 'pro-7.4').deck, false, 'with no deck file it gets the placeholder');
   assert.ok(C.deckProblems('pro', 'number-quest').includes('pro-7.4: no deck at course/pro/7.4.json'));
   // All seven lifted, the finale's flag too, and the line open: the tier is open.
-  cat = structuredClone(UNITS);
+  cat = structuredClone(UNITS); cat.tiers.pro.status = 'open';
   for (const u of cat.units) if (u.tier === 'pro') { delete u.planned; for (const s of u.steps) delete s.planned; }
   T.setCatalogueForTests(cat); C.reload();
   assert.equal(T.statusOf('pro'), 'open'); assert.deepEqual(T.openTiers(), ['launchpad', 'explorer', 'pro']);
