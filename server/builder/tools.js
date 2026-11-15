@@ -81,9 +81,9 @@ export function toolbox(ctx) {
   const planned = planArt2d(ctx.plan);
   const plannedCast = () => (planned ? [planned.hero, ...planned.friends].filter(Boolean) : []);
   const plannedStart = () => `start_from_template with template "runner" or "catch"${planned.world ? `, world "${planned.world}"` : ''}${planned.hero ? `, sprite "${planned.hero}"` : ''}${planned.friends.length ? ` and friends ${JSON.stringify(planned.friends)}` : ''}`;
-  function saveVersion(rawHtml, notes) {
+  function saveVersion(rawHtml, notes, { evenIfStopped = false } = {}) {
     // Checked here, not only in exec(): start_from_template awaits the template files before it saves.
-    if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };
+    if (stopped() && !evenIfStopped) return { ok: false, forModel: 'Stopped.', stop: true };
     const g0 = game(); if (!g0 || g0.status === 'deleted') return { ok: false, forModel: 'The game was deleted.', stop: true };
     if (typeof rawHtml !== 'string' || rawHtml.trim().length < 20) return { ok: false, forModel: 'The game was empty. Send the complete game document.' };
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
@@ -306,10 +306,27 @@ export function toolbox(ctx) {
     return { ran: true, version: cur.number, ...rep };
   }
 
+  /**
+   * A setup plan's build that drew the 2D art and ended with no version (the model kept refusing or failing, or the time
+   * ran out): the server saves the plan's own template (runner, or catch for a catching game) with the world and every
+   * character picked, as a normal version, so a child never ends up with no game. Called by agent.js once the provider
+   * is done (also after a time-out). -> the saveVersion result (its 'version' event already sent), or null.
+   */
+  async function planFallback() {
+    if (!planned) return null;
+    const { html, fallback } = await templateHtml(planned.template, { world: planned.world, hero: planned.hero, friends: planned.friends });
+    if (fallback) return null;
+    steps.start('template');
+    const r = saveVersion(html, 'Started with the characters you picked', { evenIfStopped: true });
+    if (r.event) ctx.emit(r.event[0], r.event[1]);
+    return r;
+  }
+
   return {
     current,
     game,
     autoPlaytest,
+    planFallback,
     /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */
     exec(name, input) {
       if (stopped()) return { ok: false, forModel: 'Stopped.' };

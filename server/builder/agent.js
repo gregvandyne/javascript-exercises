@@ -140,6 +140,15 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   }
   job.usage = usage;
   if (job.handedOff || job.ended) return;                // handed off, or already ended by the backstop
+  // A setup plan with 2D art whose build saved nothing (the model refused or failed every time, or the time ran out):
+  // the server starts the game itself with the characters they picked (tools.js planFallback), so a child never ends
+  // up with no game. Not after a stop, a delete or a ban.
+  const why = job.ac.signal.aborted ? String(job.ac.signal.reason) : '';
+  if (plan && (!why || why === 'timeout') && !turns.versionsSince(game.id, job.base).length) {
+    let r = null; try { r = await tb.planFallback(); } catch { r = null; }
+    if (job.handedOff || job.ended) return;
+    if (r && r.ok) emit('text', { text: `${job.seg.text.trim() ? '\n\n' : ''}${t('builder.planStarted')}` });
+  }
   endBuild(job, { usage });
 }
 

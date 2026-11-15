@@ -1739,6 +1739,7 @@
     "scanStillFailing": "Der Sicherheitscheck ist noch nicht zufrieden. Tipp auf „Baumeister soll's reparieren“, um es noch mal zu versuchen.",
     "turnTimeout": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört. Deine neueste Version ist gespeichert. Sag mir, was ich als Nächstes ändern soll!",
     "turnTimeoutNothing": "⏱️ Dieser Bau hat länger gedauert als unser Zeitlimit, deshalb habe ich aufgehört, bevor ich etwas speichern konnte. Dafür wurde keine Nachricht an den Baumeister verbraucht, du kannst es also noch mal versuchen.",
+    "planStarted": "Ich habe dein Spiel mit den Figuren gestartet, die du ausgesucht hast.",
     "errors": {
       "disabled": "Bauen ist für dieses Konto ausgeschaltet. Ein Erwachsener kann uns bitten, es wieder einzuschalten.",
       "empty": "Schreib zuerst eine Nachricht oder tipp auf eine Idee.",

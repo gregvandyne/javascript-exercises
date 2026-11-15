@@ -83,7 +83,7 @@ test('the sea section has 23 animals, every one a sprite of the animals pack the
   assert.ok(!S.art2dManifest('animals', '1.0.0').sprites.dolphin, 'animals 1.0.0 is the land animals only');
   const plan = P.normalisePlan(seaPlan());
   assert.equal(plan.characters.length, 23, 'Select all on the Sea section is within the plan\'s limits');
-  assert.deepEqual(P.planArt2d(plan), { world: '', hero: 'dolphin', friends: SEA.slice(1) });
+  assert.deepEqual(P.planArt2d(plan), { template: 'runner', world: '', hero: 'dolphin', friends: SEA.slice(1) });
   for (const type of [null, 'runner', 'catch', 'adventure']) assert.ok(P.planArt2d(P.normalisePlan(seaPlan(type ? { type: { from: 'pack', id: type } } : {}))), `game type ${type}: the 2D art`);
   assert.equal(P.planArt2d(P.normalisePlan(seaPlan({ type: { from: 'pack', id: 'quiz' } }))), null, 'a quiz does not draw them (the plan says so)');
   assert.equal(P.planArt2d(P.normalisePlan({ ...seaPlan(), look: '3d' })), null, '3D is Kit 2');
@@ -172,6 +172,34 @@ test('a world picked with the animals is kept too; a build with no plan, and a 3
   // a 3D plan with the same animals: Kit 2, nothing 2D to keep
   const g3 = games.createGame(u.id, {}), tb3 = toolbox({ user: u, gameId: g3.id, emit: () => {}, state: {}, plan: P.normalisePlan({ ...seaPlan(), look: '3d' }) });
   assert.match(tb3.exec('write_game', { html: T.loadTemplate('runner', {}), notes: 'x' }).forModel, /^Saved as version 1/);
+});
+
+test('the model refuses every time: the server starts the game itself with all 23 animals, and says so in one line', async () => {
+  const kitOnly = T.loadTemplate('runner', {});
+  const { id, results } = await build(seaPlan(), [
+    [{ type: 'text', text: 'I will make my own sea game. ' }, { type: 'tool_use', name: 'write_game', input: { html: kitOnly, notes: 'Mine' } }],
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'quiz', notes: 'A quiz' } }],
+    [{ type: 'tool_use', name: 'write_game', input: { html: kitOnly, notes: 'Mine again' } }],
+    [{ type: 'text', text: 'Sorry, I could not build it.' }],
+  ]);
+  assert.equal(results.length, 3); assert.ok(results.every(r => /^Not (saved|started)/.test(r)), 'every attempt of the model was refused');
+  assert.equal(games.listVersions(id).length, 1, 'one version: the server\'s own');
+  const v = cur(id), c = cast(v.html);
+  assert.equal(c.hero, 'dolphin'); assert.deepEqual(c.friends, SEA.slice(1));
+  assert.ok(v.html.includes(S.art2dPackTag('animals')) && v.html.includes(S.oomba2dTag()));
+  assert.equal(v.safety_status, 'pass'); assert.equal(v.notes, 'Started with the characters you picked');
+  const reply = loadChat(id).messages.at(-1);
+  assert.equal(reply.role, 'assistant');
+  assert.match(reply.text, /(^|\n\n)I started your game with the characters you picked\.$/, 'one short line, last');
+  assert.match(loadChat(id).messages.filter(m => m.role === 'assistant').map(m => m.text).join(' '), /Sorry, I could not build it\./);
+  assert.ok(loadChat(id).messages.some(m => m.role === 'assistant' && (m.events || []).some(e => e[0] === 'version' && e[1].number === 1)), 'the version shows in the chat like any other');
+  // a catching game in the plan: the fallback is the catching game
+  const r2 = await build(seaPlan({ type: { from: 'pack', id: 'catch' } }), [[{ type: 'text', text: 'No.' }]]);
+  const v2 = cur(r2.id); assert.match(v2.html, /<title>[^<]*<\/title>/); assert.equal(cast(v2.html).friends.length, 22);
+  assert.ok(T.loadTemplate('catch', {}).split('\n')[0] === v2.html.split('\n')[0], 'the catch template');
+  // no plan, or a 3D plan: nothing is made for them
+  const r3 = await build({ ...seaPlan(), look: '3d' }, [[{ type: 'text', text: 'No.' }]]);
+  assert.equal(games.getGame(r3.id).current_version_id, null);
 });
 
 test('art2dMissing and art2dCast read the CONFIG lines and a game\'s own Oomba2D.use call', () => {

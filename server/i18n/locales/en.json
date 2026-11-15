@@ -1739,6 +1739,7 @@
     "scanStillFailing": "The safety check still is not happy. Tap “Ask the Builder to fix it” to try again.",
     "turnTimeout": "⏱️ This build took longer than our time limit, so I stopped. Your newest version is saved. Tell me what to change next!",
     "turnTimeoutNothing": "⏱️ This build took longer than our time limit, so I stopped before I could save anything. It didn’t use up a Builder message, so you can try again.",
+    "planStarted": "I started your game with the characters you picked.",
     "errors": {
       "disabled": "Building is switched off for this account. A grown-up can ask us to turn it back on.",
       "empty": "Type a message or tap an idea first.",

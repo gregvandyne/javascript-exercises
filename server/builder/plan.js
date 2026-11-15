@@ -203,7 +203,8 @@ export function art2dFor(state, plan, version) {
 }
 
 /**
- * The 2D art a plan's build must draw, whatever the model does: { world, hero, friends } (friends: the sprites picked
+ * The 2D art a plan's build must draw, whatever the model does: { template, world, hero, friends } (template: 'runner' or
+ * 'catch', the one the plan means; friends: the sprites picked
  * after the first, as many as a game may name, art2d.js ART2D_FRIENDS_MAX), or null when the plan does not draw the 2D
  * art (3D, a kind of game that does not draw it, nothing picked). builder/tools.js starts the template with exactly
  * these and refuses any version of that build that leaves one out, so a picked animal is never swapped for the kit's
@@ -213,7 +214,7 @@ export function planArt2d(plan) {
   if (!plan) return null;
   const e = planEngine(plan);
   if (e.engine !== '2d' || !e.art || !e.template) return null;
-  return { world: e.art.world, hero: e.art.sprite, friends: art2dFriends(e.art.friends, e.art.sprite).map(c => c.id) };
+  return { template: e.template, world: e.art.world, hero: e.art.sprite, friends: art2dFriends(e.art.friends, e.art.sprite).map(c => c.id) };
 }
 
 // ---- What the model reads ------------------------------------------------------------------------------------------
