@@ -42,8 +42,8 @@ test('the course is registered: a learner sees the Launchpad and Explorer bands,
   assert.equal(C.getStep(course, 'explorer-7.4').game.slug, 'quest-race', 'the finale rides the Vault Run');
   assert.equal(C.getStep(course, 'explorer-6.1').game.params, 'mode=nq-6-1&lock=1', '6.1 plays the Shape Hunt board until Builders Yard ships');
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
-  assert.equal(C.getStep(course, 'pro-4.1'), null, 'Pro Unit 4 is planned, not built: it has no steps');
-  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3'], 'the Pro street is its welcome step and Units 1, 2 and 3 so far');
+  assert.equal(C.getStep(course, 'pro-6.1'), null, 'Pro Unit 6 is planned, not built: it has no steps');
+  assert.deepEqual(C.steps(course, 'pro').map(s => s.key), ['pro-0.1', 'pro-1.1', 'pro-1.2', 'pro-1.3', 'pro-2.1', 'pro-2.2', 'pro-2.3', 'pro-3.1', 'pro-3.2', 'pro-3.3', 'pro-4.1', 'pro-4.2', 'pro-4.3'], 'the Pro street is its welcome step and Units 1, 2, 3 and 4 so far');
   assert.equal(C.stepFor(newKid(), course, 'pro-0.1'), null, 'and a learner cannot reach even that while the street is being built');
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);

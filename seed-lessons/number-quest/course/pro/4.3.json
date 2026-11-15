@@ -1,0 +1,187 @@
+{
+ "key": "pro-4.3",
+ "n": "4.3",
+ "band": "pro",
+ "title": "Percent problems",
+ "topic": "Percent problems",
+ "minutes": 10,
+ "slides": [
+  {
+   "title": "The tank is lower today",
+   "text": "The camp's water tank held 80 liters yesterday. Today the gauge reads 60. Tally wants one number that says how big the drop is, whatever the size of the tank.",
+   "art": "cat",
+   "story": {
+    "scene": "street",
+    "lit": 4,
+    "chars": [
+     "tally"
+    ]
+   }
+  },
+  {
+   "title": "Percent change: compare with the start",
+   "text": "A percent change compares the change with the starting amount. The tank dropped 20 liters from 80, and 20 ÷ 80 = 0.25, so it dropped 25%. Always divide by where you started, not by where you ended.",
+   "art": "chart",
+   "visual": {
+    "type": "split",
+    "label": "A tank of 80 liters with 20 liters gone",
+    "whole": "80 L",
+    "parts": [
+     {
+      "w": 0.75,
+      "label": "60 L left",
+      "tone": 1
+     },
+     {
+      "w": 0.25,
+      "label": "20 L gone",
+      "tone": 0
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The start: the whole tank, 80 liters.",
+     "box": [
+      5,
+      12.6,
+      90,
+      19.2
+     ]
+    },
+    {
+     "cue": "The change: 20 of the 80 liters, which is 25%.",
+     "box": [
+      71,
+      37.5,
+      24.1,
+      32.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "A percent increase",
+   "text": "A field gave 40 sacks of grain last year and 52 this year. Find the change first, then divide by the starting amount. Check it: 30% of 40 is 12, and 40 + 12 = 52.",
+   "art": "scale",
+   "steps": [
+    "Last year 40 sacks, this year 52",
+    "Change: 52 − 40 = 12",
+    "12 ÷ 40 = 0.30",
+    "Increase: 30%"
+   ]
+  },
+  {
+   "title": "Percent error",
+   "text": "Percent error says how far off a measurement is, compared with the real value. A survey says 48 meters where the real distance is 50. It is 2 meters off, and 2 ÷ 50 = 0.04, so the percent error is 4%.",
+   "art": "ruler",
+   "visual": {
+    "type": "double",
+    "label": "Meters off and percent error for a real distance of 50 meters",
+    "top": "Meters off",
+    "bottom": "Percent",
+    "ticks": [
+     [
+      0,
+      "0%"
+     ],
+     [
+      1,
+      "2%"
+     ],
+     [
+      2,
+      "4%"
+     ],
+     [
+      3,
+      "6%"
+     ],
+     [
+      4,
+      "8%"
+     ],
+     [
+      5,
+      "10%"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Each meter off is 1 ÷ 50, which is 2%.",
+     "box": [
+      22.7,
+      24.6,
+      8.2,
+      57.6
+     ]
+    },
+    {
+     "cue": "The survey was 2 meters off: 4%.",
+     "box": [
+      37.5,
+      24.6,
+      8.2,
+      57.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Before and after",
+   "text": "To find an amount after a 15% increase, add 15% of the start: a 200 meter path becomes 200 + 30 = 230 meters. Working backward is different. If a tank holds 40 liters after a 20% drop, then 40 liters is 80% of the start. Each 1% is 40 ÷ 80 = 0.5 liters, so the start was 50 liters.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for percent problems.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "percent change",
+     "means": "the change as a percent of the starting amount"
+    },
+    {
+     "word": "percent increase",
+     "means": "how much an amount grew, as a percent of where it started"
+    },
+    {
+     "word": "percent decrease",
+     "means": "how much an amount fell, as a percent of where it started"
+    },
+    {
+     "word": "percent error",
+     "means": "how far off a measurement is, as a percent of the real value"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Scale Scout at Percent Report. Set the percent a tank dropped and a field grew, find a survey's percent error, and work out amounts before and after a change. Run each plan to test it.",
+   "art": "trophy",
+   "img": "nq/scale-scout/percent-report",
+   "alt": "Scale Scout on a phone: a bar for a water tank of 80 liters filled to 60, with a stepper to set the percent it dropped.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
+  }
+ ],
+ "check": [
+  "nq-pro-4.3-e1",
+  "nq-pro-4.3-e2",
+  "nq-pro-4.3-e3"
+ ],
+ "game": {
+  "slug": "scale-scout",
+  "chapter": "Percent Report",
+  "params": "chapter=percent&lock=1"
+ }
+}

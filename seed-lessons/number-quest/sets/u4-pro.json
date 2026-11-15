@@ -1,0 +1,226 @@
+{
+ "id": "nq-u4-pro",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 4,
+ "band": "Pro",
+ "title": "Number Quest Unit 4 · The Map Room (Pro)",
+ "items": [
+  {
+   "id": "nq-pro-4.1-e1",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "7.RP.A.2a",
+   "topic": "Proportional or not",
+   "kind": "apply",
+   "secs": 30,
+   "q": "Each list gives pairs (hours, kilometers) for one walker. In which list is the distance proportional to the time?",
+   "choices": [
+    "(1, 4), (2, 6), (3, 8)",
+    "(1, 4), (2, 8), (3, 12)",
+    "(1, 1), (2, 4), (3, 9)",
+    "(1, 5), (2, 6), (3, 7)"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "chose a list that adds the same amount each hour after a head start",
+    "correct",
+    "chose a list where the distance is the hours squared",
+    "added 4 to the hours instead of multiplying them"
+   ],
+   "why": "Divide each distance by its time. In (1, 4), (2, 8), (3, 12) every answer is 4, so d = 4t. In the other lists the answers change, for example 4 ÷ 1 = 4 but 6 ÷ 2 = 3."
+  },
+  {
+   "id": "nq-pro-4.1-e2",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "7.RP.A.2b",
+   "topic": "Proportional or not",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A pump fills a tank at a steady rate: 10 liters after 4 minutes, 20 liters after 8 minutes, 30 liters after 12 minutes. What is the constant of proportionality, in liters per minute?",
+   "choices": [
+    "0.4",
+    "6",
+    "2.5",
+    "10"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "divided the minutes by the liters",
+    "subtracted 4 from 10 instead of dividing",
+    "correct",
+    "took the first amount as the rate"
+   ],
+   "why": "Liters per minute means liters divided by minutes: 10 ÷ 4 = 2.5. The other rows agree: 20 ÷ 8 = 2.5 and 30 ÷ 12 = 2.5."
+  },
+  {
+   "id": "nq-pro-4.1-e3",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "7.RP.A.2a",
+   "topic": "Proportional or not",
+   "kind": "recall",
+   "secs": 30,
+   "q": "The graph of distance against time for a walk is a straight line. Which extra fact makes the relationship proportional?",
+   "choices": [
+    "The line goes up from left to right",
+    "The line passes through (1, 1)",
+    "The line is steep",
+    "The line passes through (0, 0)"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "thought any rising line is proportional",
+    "confused the point for 1 with the origin",
+    "linked steepness to being proportional",
+    "correct"
+   ],
+   "why": "A proportional graph is a straight line through the origin: at 0 hours the distance is 0. A straight line that starts higher, such as d = 2t + 1, is not proportional."
+  },
+  {
+   "id": "nq-pro-4.2-e1",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "7.G.A.1",
+   "topic": "Scale drawings",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A map has a scale of 1 cm : 200 m. Two wells are 8 cm apart on the map. How far apart are they on the ground?",
+   "choices": [
+    "208 m",
+    "25 m",
+    "160 m",
+    "1600 m"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "added the map distance to the scale",
+    "divided the scale by the map distance",
+    "dropped a zero when multiplying",
+    "correct"
+   ],
+   "why": "Every centimeter stands for 200 meters, so 8 centimeters stand for 8 × 200 = 1600 meters. Check by dividing: 1600 ÷ 200 = 8."
+  },
+  {
+   "id": "nq-pro-4.2-e2",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "7.RP.A.2c",
+   "topic": "Scale drawings",
+   "kind": "apply",
+   "secs": 30,
+   "q": "On a map, 1 cm stands for 50 m. With c for centimeters on the map and d for meters on the ground, which equation is right?",
+   "choices": [
+    "d = 50c",
+    "c = 50d",
+    "d = c + 50",
+    "d + c = 50"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "swapped the map distance and the ground distance",
+    "added the scale instead of multiplying by it",
+    "treated the scale as a total of the two distances"
+   ],
+   "why": "Each centimeter is 50 meters, so the meters are 50 times the centimeters: d = 50c. Check with c = 2: d = 100, and 2 cm on the map is 100 m."
+  },
+  {
+   "id": "nq-pro-4.2-e3",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "7.G.A.1",
+   "topic": "Scale drawings",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A room on a plan is 4 cm by 3 cm. The scale is 1 cm : 2 m. What is the real area of the room?",
+   "choices": [
+    "24 m²",
+    "48 m²",
+    "12 m²",
+    "14 m²"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "multiplied the paper area by the scale only once",
+    "correct",
+    "used the paper lengths without the scale",
+    "added the two real sides instead of multiplying"
+   ],
+   "why": "Scale each side first: 4 cm is 8 m and 3 cm is 6 m. The real area is 8 × 6 = 48 square meters. Each square centimeter stands for 2 × 2 = 4 square meters."
+  },
+  {
+   "id": "nq-pro-4.3-e1",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "7.RP.A.3",
+   "topic": "Percent problems",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A plant was 20 cm tall. Now it is 25 cm tall. What is the percent increase?",
+   "choices": [
+    "20%",
+    "5%",
+    "125%",
+    "25%"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "divided the change by the new height",
+    "took the centimeters of change as the percent",
+    "gave the new height as a percent of the old height",
+    "correct"
+   ],
+   "why": "The change is 25 − 20 = 5 cm. Compare it with the start: 5 ÷ 20 = 0.25, which is 25%. Check: 25% of 20 is 5, and 20 + 5 = 25."
+  },
+  {
+   "id": "nq-pro-4.3-e2",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "7.RP.A.3",
+   "topic": "Percent problems",
+   "kind": "apply",
+   "secs": 30,
+   "q": "A scale shows 76 grams for a weight that is really 80 grams. What is the percent error?",
+   "choices": [
+    "4%",
+    "95%",
+    "5%",
+    "about 5.3%"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "took the grams of error as the percent",
+    "gave the reading as a percent of the real weight",
+    "correct",
+    "divided the error by the reading instead of the real weight"
+   ],
+   "why": "The reading is 80 − 76 = 4 grams off. Percent error compares that with the real value: 4 ÷ 80 = 0.05, which is 5%."
+  },
+  {
+   "id": "nq-pro-4.3-e3",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "7.RP.A.3",
+   "topic": "Percent problems",
+   "kind": "scenario",
+   "secs": 30,
+   "q": "A tent is marked at $60. Ms. Okoro has a 25% discount. How much does she pay for the tent?",
+   "choices": [
+    "$15",
+    "$45",
+    "$35",
+    "$75"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "found the discount and stopped there",
+    "correct",
+    "subtracted 25 dollars instead of 25%",
+    "added the discount instead of subtracting it"
+   ],
+   "why": "25% of 60 is 15, so the discount is $15. She pays 60 − 15 = $45. Another way: she pays 75% of 60, and 0.75 × 60 = 45."
+  }
+ ]
+}

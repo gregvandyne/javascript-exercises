@@ -453,6 +453,39 @@
       "state": "load-the-rocket"
     },
     {
+      "alt": "Scale Scout on a phone: a map with a road from the gate to the mill over a ruler in centimeters, the scale 1 cm to 250 m, and a stepper for the meters.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "4.2",
+      "commit": "PENDING",
+      "concept": "Pro 4.2, Map and Ground round 1 (The map scale is 1 centimeter to 250 meters. The mill is 6 centimeters from the gate. How many meters is the walk?): the paper map with the road from the gate, the mill's flag at 6 on the ruler and the scale 1 cm : 250 m in the corner, the scout and the survey line below, the chip reading 6 cm → ? m, the stepper at 0 m and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "scale-scout",
+      "key": "nq/scale-scout/map-and-ground",
+      "state": "map-and-ground"
+    },
+    {
+      "alt": "Scale Scout on a phone: a bar for a water tank of 80 liters filled to 60, with a stepper to set the percent it dropped.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "4.3",
+      "commit": "PENDING",
+      "concept": "Pro 4.3, Percent Report round 1 (The water tank held 80 liters. Now it holds 60. What percent did it drop?): the paper board in the survey camp with a bar for the 80 liter tank filled to 60 L and drop: ?% under it, the scout and the survey line below, the chip reading 80 → 60: ?%, the stepper at 0% and the Run button, shot at phone width (scripts/nq-shots.js band)",
+      "game": "scale-scout",
+      "key": "nq/scale-scout/percent-report",
+      "state": "percent-report"
+    },
+    {
+      "alt": "Scale Scout on a phone: a paper map board with three small tables of hours and kilometers, lettered A, B and C, and three tiles to pick from.",
+      "band": "pro",
+      "capturedAt": "2026-11-15",
+      "chapter": "4.1",
+      "commit": "PENDING",
+      "concept": "Pro 4.1, Steady Pace round 1 (Three walkers wrote down hours and kilometers. Whose distance is proportional to the time?): the paper board in the survey camp with three tables of hours and kilometers lettered A, B and C, the scout and the survey line below, the chip reading proportional?, and the tiles A, B and C, shot at phone width (scripts/nq-shots.js band)",
+      "game": "scale-scout",
+      "key": "nq/scale-scout/steady-pace",
+      "state": "steady-pace"
+    },
+    {
       "alt": "Shape Hunt on a phone: a board with the dotted outline of a square, and three buttons with pieces on them.",
       "band": "launchpad",
       "capturedAt": "2026-11-13",
