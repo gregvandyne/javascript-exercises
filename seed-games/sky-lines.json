@@ -1,0 +1,16 @@
+{
+  "slug": "sky-lines",
+  "title": "Sky Lines",
+  "icon": "🪁",
+  "cover": "sunset",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "algebra,slope,steepness,rise over run,rate of change,unit rate,proportional relationships,similar triangles,coordinate plane,four quadrants,graphing,linear equations,y = mx + b,slope-intercept form,y-intercept,linear functions,function tables,systems of equations,point of intersection,parallel lines,no solution,infinitely many solutions,variables on both sides,eighth grade,grade 8,middle school,math,maths,3d,sky islands,zip wire,read aloud,learning",
+  "description": "Floating islands at sunset, and a grid where every wire is a straight line. String a wire from island A to island B by setting how steep it is: up 6 for 4 across. Give a wire a start height and a steady change, read its rule from a table, a story or two islands, and spot the table that bends. Then find where two wires meet, when they never meet, and when two rules are one wire. Plan a wire, run it, and see where it really goes. Every instruction is read aloud.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Number Quest Unit 5 of the grades 6-8 street, The Sky Wires (grade 8): a Kit 2 game on Oomba3D 1.2.0 in the Sky Islands theme 1.0.1 at sunset (ink outlines, gear button, graphics 'auto'), loaded with exactly kit2ImportMap() (tests/unit/sky-lines.test.js checks the literal map). The deck, the islands, the bricks, the grass, the clouds and the flags are the theme's own pieces; the pylons, the long wire in the distance and the board's posts are the game's own simple meshes. The grid of 12 by 8 squares, the islands on it, the wires, the stairs, the platform and the tables are drawn by the game on one board that always faces the player. Three chapters of six rounds (lesson mode: chapter=slope|rule|meet and lock=1): How Steep (5.1: steepness from island A to island B, going up and going down in all four quadrants, two stairs under one wire, a steady rate, two rates compared), Wire Rules (5.2: the height after so many steps, the start height and steepness from a table, a story, two islands and a drawn wire, the table that is not a straight wire) and Meeting Point (5.3: where two rules are equal, the platform on the point of both wires, wires that never meet, two rules for one wire, brackets and x on both sides). Plan first, then run: a stepper (one dial, or two with a button that changes which one it turns), four arrows or a drag for the platform, or three tiles; the board never draws a wire before it is run, and a wrong plan is run and drawn as it really turns out (the wire as set, and by how much it misses), with a spoken hint, and the round stays open. Steepness is kept in halves, so every height is exact. No timer, no lives, no fail state, nothing typed, no reward currency. Read-aloud is on by default (BRB.speak, friendly voice): lines are written the way they are said. Keys: arrows or + and - move the stepper, F changes the dial, the four arrows move the platform, Enter runs, 1 to 3 pick a tile. Each right round plants a flag on the far island, and the sixth reports game over (won) once, which completes the course step. Saves only which chapters are finished. English only.",
+  "l10n": {}
+}

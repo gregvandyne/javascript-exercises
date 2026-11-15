@@ -2227,23 +2227,20 @@
    "emoji": "📈",
    "group": "unit-5",
    "n": 5,
-   "planned": true,
-   "reserved": {
-    "game": "sky-lines",
-    "world": "sky-islands"
-   },
    "stamp": "Slope Gear",
    "steps": [
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "How Steep",
+       "chapterTitle": "How Steep",
+       "params": "chapter=slope&lock=1",
+       "slug": "sky-lines"
+      }
      },
      "mp": "MP7",
      "n": "5.1",
      "order": 14,
-     "reserved": {
-      "params": "chapter=slope&lock=1"
-     },
      "shorts": {
       "pro": "Slope"
      },
@@ -2266,14 +2263,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Wire Rules",
+       "chapterTitle": "Wire Rules",
+       "params": "chapter=rule&lock=1",
+       "slug": "sky-lines"
+      }
      },
      "mp": "MP4",
      "n": "5.2",
      "order": 15,
-     "reserved": {
-      "params": "chapter=rule&lock=1"
-     },
      "shorts": {
       "pro": "Linear rules"
      },
@@ -2298,14 +2297,16 @@
     },
     {
      "game": {
-      "pro": null
+      "pro": {
+       "chapter": "Meeting Point",
+       "chapterTitle": "Meeting Point",
+       "params": "chapter=meet&lock=1",
+       "slug": "sky-lines"
+      }
      },
      "mp": "MP1",
      "n": "5.3",
      "order": 16,
-     "reserved": {
-      "params": "chapter=meet&lock=1"
-     },
      "shorts": {
       "pro": "Linear equations"
      },
@@ -2325,10 +2326,14 @@
      }
     }
    ],
-   "teacherNotes": [],
+   "teacherNotes": [
+    "This unit covers the grade 8 work on lines: slope as the steepness of a line (up over across, the same between any two points of the line), a proportional relationship as a line through the origin whose slope is the unit rate, a linear function as a rule y = mx + b built from a table, a story or two points, and linear equations in one variable and pairs of lines that meet at one point, at no point or at every point.",
+    "Common misconceptions: that slope is across over up, or that it has no sign; that a bigger stair under the same line is steeper (it has the same ratio); that the number added in y = mx + b is the slope and the number with x is the start; that 2(x + 1) is 2x + 1; and that two lines with the same slope must meet somewhere. Ask \"how far up for how far across?\", \"where is it at 0 across?\" and \"is that point on both lines?\"",
+    "Sky Lines checks each idea by planning and running. The learner sets a wire's steepness and start height, or puts a platform on a grid point, runs the plan and sees where the wire really goes and by how much it misses. The board never draws a wire before it is run, so the numbers have to be worked out. There is no timer, nothing is bought or sold, every instruction is read aloud by default, and six finished rounds complete a step."
+   ],
    "tier": "pro",
    "title": "The Sky Wires",
-   "tool": null
+   "tool": "sky-lines"
   },
   {
    "emoji": "📐",
