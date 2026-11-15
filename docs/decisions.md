@@ -5418,6 +5418,54 @@ and why:
 - **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
   ear, and play by a student of the age.
 
+## Number Quest Pro Unit 6: The Drafting Keep and Keep Builder (15 Nov 2026)
+
+The sixth Pro unit, built to the unit contract in `seed-lessons/number-quest/README.md` ("What a unit PR touches"), side
+by side with Unit 7: three decks, nine exit items, the game Keep Builder in the Castle Quest world, and the one-line
+registrations, merged on top of Units 4 and 5. Pro stays `building`; nobody but the platform admin can open a Pro step.
+Where the build left the plan, and why:
+
+- **Read-aloud is on by default** (owner decision 6), not off as the plan said. Spoken lines are written as they are
+  said ("65 degrees", "3 squared plus 4 squared"), with digits only in number places. Coordinates, rules such as
+  (−x, y) and equations live on the board and the tiles, never in a spoken line, so no line needs a sign.
+- **Oomba3D 1.2.0 and Castle Quest 1.2.0**, the newest of each, not the 1.1.0 library the plan named. No kit or theme
+  file changed. The castle is at sunset in a building yard (Balance Bridge plays it by day), with no coin, chest, key,
+  spikes or animal, and the theme's stone block set on a game-made plinth for each finished round.
+- **The working surface is a face-on board, not building in 3D.** The plan had the player build with blocks, unfold
+  walls into nets, move and turn stone pieces by touch and lean physics ladders, and named nets and touch flips and
+  turns in 3D as the costly part. A net, an angle or a plan grid seen in perspective cannot be read at 390 px, and a
+  physics ladder would make the answer depend on a simulation. So every picture is drawn flat on one board (as in Units
+  3 to 5); the 3D courtyard is the setting. No Rapier, no dragging.
+- **Plans are run, not drawn as they are set.** No stepper value is a drawing in this unit, so the board shows only the
+  question until Run. A wrong plan is drawn as it really turns out: stone laid face by face until it runs out, a beam
+  bent to the angle the plan makes, the stone where its rule really puts it, a ladder leaning with its top where its
+  length takes it (or flat when it cannot reach), a square with the side its area really gives, a triangle drawn from
+  three beams with its real corner.
+- **Rounds the plan named, and the ones added** so each chapter has six. Named and kept: crates of 1/2 in a room
+  2 1/2 by 3 by 2, a tower's net, the trapezoid banner, crossing beams at 65° (the angle next to it; the plan's "the
+  other three angles" is in the deck, where the angle across is a focus step), a slide and its corner's coordinates, a
+  bigger window (as a scale factor), the 3-4-5 ladder, distance between two towers, squares on the three sides. Added:
+  a ramp (a prism with a right-triangle end), a cistern's height from its volume (fractional edges), a roof prism's net
+  (triangles in a net), the equation for a square corner (7.G.B.5 "write and solve"), a flip and a turn by their rules,
+  a plank's foot (a short side), the longest pole in a room (three dimensions), and the converse with three beams.
+- **"The gate piece must fill the gap" is a choice of rule**, not a free drag: three tiles, each a rule in coordinates
+  or a turn, and the test checks that exactly one moves the stone onto the gap, computed from the board's own points.
+- **Circles, cylinders, cones and spheres** (7.G.B.4, 8.G.C.9) and angle sums (8.G.A.5) stay out, as the plan's
+  coverage table says.
+- **Focus boxes** are the diagram pack's own `diagramParts` boxes; the pinned target of each is the layout's own bounds
+  for that part (where a part takes in its name, the box less the usual margin), and the browser renderer test checks
+  every ring on the drawn slide.
+- **Tests that named "the planned unit" now name Unit 7**, which stays planned until its own build. `BUILT_UNITS` gains
+  6. On main the teacher page's planned section says "These 1 units" when one unit is left; the test accepts "unit" or
+  "units" and the wording is left for whoever touches that page (it is the admin's preview only).
+- **A built unit's entry profile is live in the engine**, as for Units 1 to 5. The route still refuses a Pro test-out
+  and placement lands nobody on Pro while the tier is building.
+- **Left for the opening PR**, as before: the teacher page's game list (`NQ_CREW`) and its locale strings do not name
+  Keep Builder. The game itself is a library game on the Learn shelf (math, grades 6 to 8); its title, description and
+  tags never name the Pro tier.
+- **Not verified:** a real GPU, a real phone or Chromebook (software WebGL in headless Chromium only), the AI voice by
+  ear, and play by a student of the age.
+
 ## Many characters in a 2D game, and "Select all" in the setup steps (14 Nov 2026)
 
 - **Oomba2D 1.1.0** (`public/vendor/art2d/oomba2d/1.1.0/`, a new line in `kit2/ART2D.json`; 1.0.0 and every pack are

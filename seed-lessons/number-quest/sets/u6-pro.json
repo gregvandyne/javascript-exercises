@@ -71,7 +71,7 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "forgot to halve the sum of the parallel sides",
+    "multiplied the sum of the parallel sides by the height without halving",
     "multiplied the longer side by the height",
     "used only the shorter side times the height",
     "correct"
@@ -193,7 +193,7 @@
    "misconceptions": [
     "added the distance across and the distance up",
     "correct",
-    "forgot to take the square root",
+    "stopped before taking the square root",
     "took the difference of the distance across and up"
    ],
    "why": "Across: 5 − (−1) = 6. Up: 10 − 2 = 8. Then 6² + 8² = 36 + 64 = 100, and √100 = 10."

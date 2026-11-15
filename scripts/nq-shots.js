@@ -133,6 +133,11 @@ const SHOTS = [
   { tier: 'pro', step: '5.1', state: 'how-steep', slug: 'sky-lines', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=slope&lock=1', prep: skyLines, cdp: true },
   { tier: 'pro', step: '5.2', state: 'wire-rules', slug: 'sky-lines', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=rule&lock=1', prep: skyLines, cdp: true },
   { tier: 'pro', step: '5.3', state: 'meeting-point', slug: 'sky-lines', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=meet&lock=1', prep: skyLines, cdp: true },
+  // Pro Unit 6, The Drafting Keep: Keep Builder, a 3D game, in each step's own chapter, the whole phone screen as the band
+  // (the words on top, the builder's plan board in the courtyard, the builder and the keep under it, the tiles or the stepper below).
+  { tier: 'pro', step: '6.1', state: 'fill-and-cover', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: keepBuilder, cdp: true },
+  { tier: 'pro', step: '6.2', state: 'slide-flip-turn', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=move&lock=1', prep: keepBuilder, cdp: true },
+  { tier: 'pro', step: '6.3', state: 'ladders-and-spans', slug: 'keep-builder', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=span&lock=1', prep: keepBuilder, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -366,6 +371,17 @@ async function skyLines(f) {
   // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
   // the board has popped in: islands A and B on the grid (How Steep), the start of a wire and the place to set its
   // height (Wire Rules), the starts of wire A and wire B with their equation (Meeting Point).
+  await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
+  await f.click('#start');
+  await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);
+  await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+  await wait(2200);
+}
+
+async function keepBuilder(f) {
+  // A lesson arrival: Start, and the locked chapter opens on its first round. Each is photographed as it is asked, once
+  // the board has popped in: a store room drawn as a box, 2.5 m by 3 m by 2 m (Fill and Cover), two beams crossing at 65°
+  // (Slide, Flip, Turn), a wall 4 m high with a ladder's foot 3 m out (Ladders and Spans).
   await f.waitForFunction(() => window.__ready === true, null, { timeout: 90000 });
   await f.click('#start');
   await until(f, s => s.screen === 'play' && s.round === 1 && s.moving === 0, 60000);

@@ -833,7 +833,13 @@ const slot = i => (i < 3 ? V3((i - 1) * 0.56, 0.14, 0) : i < 5 ? V3((i - 3.5) * 
 chest.add(solid(new THREE.BoxGeometry(2.1, 0.14, 0.8), MAT.wood, 0, 0.07, 0));
 for (const x of [-0.9, 0.9]) chest.add(solid(new THREE.BoxGeometry(0.12, 0.05, 0.84), MAT.dark, x, 0.16, 0));
 chest.add(rack); props.add(chest);
-function block() { const o = PT.block.clone(true); o.scale.setScalar(STONE / 2.2); const holder = new THREE.Group(); o.position.set(0, 0, 0); holder.add(o); return holder; }
+/** One of the theme's stone blocks, its edge STONE long, standing with its middle over the holder's origin (the piece is
+ *  modelled off-centre, so it is centred here, as piece() does for the courtyard). */
+function block() {
+  const o = PT.block.clone(true), holder = new THREE.Group(); o.scale.setScalar(STONE / 2.2); o.position.set(0, 0, 0); o.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(o), c = box.getCenter(V3(0, 0, 0));
+  o.position.set(-c.x, -box.min.y, -c.z); holder.add(o); return holder;
+}
 const stage = new THREE.Group(); g.scene.add(stage);   // what a round puts in the courtyard: the board
 // The board's two posts (they follow its size)
 const posts = new THREE.Group(); g.scene.add(posts);
@@ -1178,8 +1184,8 @@ const squat = () => tall && innerHeight < innerWidth * 1.95;
 const heroSize = () => (squat() ? 0.4 : tall ? 0.7 : 0.92);
 const heroSpot = () => (tall ? V3(-1.12, 0, squat() ? -2.5 : -0.5) : V3(-4.75, 0, -1.3));
 const heroBox = (p, k) => [V3(p.x - 0.95 * k, 0, p.z), V3(p.x + 0.95 * k, 0, p.z), V3(p.x - 0.95 * k, 2.1 * k, p.z), V3(p.x + 0.95 * k, 2.1 * k, p.z)];
-const chestSize = () => (squat() ? 0.42 : tall ? 0.62 : 0.9);
-const chestSpot = () => (tall ? V3(0.98, 0, squat() ? -2.5 : -0.5) : V3(5.05, 0, -1.2));
+const chestSize = () => (squat() ? 0.42 : tall ? 0.62 : 0.8);
+const chestSpot = () => (tall ? V3(0.98, 0, squat() ? -2.5 : -0.5) : V3(5.3, 0, -1.2));
 const chestBox = () => { const k = chestSize(), t = chestSpot(); return [V3(t.x - 1.1 * k, 0, t.z), V3(t.x + 1.1 * k, 0, t.z), V3(t.x + 1.1 * k, 1.75 * k, t.z), V3(t.x - 1.1 * k, 1.75 * k, t.z)]; };
 function placeChest() { chest.scale.setScalar(chestSize()); chest.position.copy(chestSpot()); }
 function stagePts() {
@@ -1340,7 +1346,11 @@ function finish() {
 function valueText(Rd, v) { return Rd.unit === '×' ? '× ' + KB.nt(v) : Rd.unit === '°' ? KB.nt(v) + '°' : KB.nt(v) + ' ' + Rd.unit; }
 /** The controls of a round: three tiles, or a stepper and a run button. */
 function controls(Rd, found) {
-  if (Rd.input === 'tiles') return Rd.opts.map((o, i) => button({ id: 'kb-n' + i, big: o.t, aria: o.t, cls: (o.t.length > 12 ? 'longer' : o.t.length > 5 ? 'long' : '') + (found && i === Rd.answer ? ' right' : ''), go: b => answer(i, b) }));
+  if (Rd.input === 'tiles') {
+    // a tile with one long word ("counterclockwise") takes a wider share of the row, so no word is cut on a phone
+    const word = o => Math.max(...o.t.split(' ').map(w => w.length)), wide = Rd.opts.some(o => word(o) > 10);
+    return Rd.opts.map((o, i) => { const b = button({ id: 'kb-n' + i, big: o.t, aria: o.t, cls: (o.t.length > 12 ? 'longer' : o.t.length > 5 ? 'long' : '') + (found && i === Rd.answer ? ' right' : ''), go: x => answer(i, x) }); if (wide) { b.style.flexGrow = String(Math.max(4, word(o))); b.style.minWidth = '64px'; } return b; });
+  }
   const go = button({ id: 'kb-go', icon: '▶', label: fmt('btn.run'), cls: 'go', go: b => run(b) });
   const stepBtn = (id, sign, key, dir) => {
     const b = button({ id, big: sign, aria: fmt(key), cls: 'step', go: () => { if (held) { held = false; return; } bump(dir); } });

@@ -202,7 +202,14 @@
    "text": "Open Keep Builder at Fill and Cover. Pack crates into a store room, cover a tower's net with stone, cut a banner into pieces and fill a ramp. Run each plan and see what it really gives.",
    "art": "trophy",
    "img": "nq/keep-builder/fill-and-cover",
-   "alt": "Keep Builder on a phone: a plan board with a store room drawn as a box, 2.5 m by 3 m by 2 m, and three tiles to pick from."
+   "alt": "Keep Builder on a phone: a plan board with a store room drawn as a box, 2.5 m by 3 m by 2 m, and three tiles to pick from.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

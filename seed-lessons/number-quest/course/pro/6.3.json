@@ -192,7 +192,14 @@
    "text": "Open Keep Builder at Ladders and Spans. Find a ladder, a ramp and a rope between two towers, build squares on a triangle's sides and test three beams for a square corner.",
    "art": "trophy",
    "img": "nq/keep-builder/ladders-and-spans",
-   "alt": "Keep Builder on a phone: a wall 4 m high with a ladder leaning on it from 3 m out, and a stepper to set the ladder's length."
+   "alt": "Keep Builder on a phone: a wall 4 m high with a ladder leaning on it from 3 m out, and a stepper to set the ladder's length.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [

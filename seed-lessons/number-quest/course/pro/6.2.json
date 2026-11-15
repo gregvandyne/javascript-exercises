@@ -303,7 +303,14 @@
    "text": "Open Keep Builder at Slide, Flip, Turn. Find the angle next to a known one, write the equation for a square corner, move the gate stone into its gap and set a scale factor.",
    "art": "trophy",
    "img": "nq/keep-builder/slide-flip-turn",
-   "alt": "Keep Builder on a phone: two beams cross on a plan board, one angle marked 65° and the next one a question mark, with a stepper in degrees."
+   "alt": "Keep Builder on a phone: two straight beams cross on a plan board, one angle marked 65° and the next one a question mark, with a stepper in degrees.",
+   "view": [
+    0,
+    0,
+    37.82,
+    100
+   ],
+   "whole": true
   }
  ],
  "check": [
