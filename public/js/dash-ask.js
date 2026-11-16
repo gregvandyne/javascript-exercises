@@ -1,0 +1,174 @@
+// Classroom dashboards, stage 4: "Make a question from it" (docs/decisions.md "Classroom dashboards, stage 4"). Turns what
+// a teaching tool shows now into a multiple-choice quick check (stage 2's kind 'choice': a question and 2-6 answers).
+// Pure: no DOM, no network. The teacher sees the question in a sheet, can change any word, and sends it as a quick check;
+// the right answer is shown to the teacher only (quick checks never mark answers right or wrong on a student's screen).
+// Every answer is built from the tool's state with the tested maths (dash-math.js, dash-math4.js); a tool whose state
+// has nothing with one right answer (a graphic organizer, an empty board) makes no question, and its button is hidden.
+import * as M from './dash-math.js';
+import * as M4 from './dash-math4.js';
+
+const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+/** The answers, the right one among them, in an order that depends on the state (so it isn't always A). */
+function choice(q, right, wrong, seed) {
+  const opts = [String(right)];
+  for (const w of wrong) { const s = String(w); if (s && !opts.includes(s) && opts.length < 4) opts.push(s); }
+  if (opts.length < 2 || !q) return null;
+  const rnd = M4.seeded(hash(seed));
+  for (let i = opts.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [opts[i], opts[j]] = [opts[j], opts[i]]; }
+  return { q, options: opts.map(o => [...o].slice(0, 60).join('')), answer: opts.indexOf(String(right)) };
+}
+const near = (n, ds, ok = x => x >= 0) => ds.map(d => n + d).filter(ok);
+const sliceText = (s, n) => [...String(s)].slice(0, n).join('');
+
+/**
+ * A question from a tool's state. type: the tool's id; st: its state; W: the tool's words; A: the question words
+ * (dash.ask.*); intl: the reader's language. -> { q, options: [text], answer: index } or null.
+ */
+export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
+  const seed = `${type}:${JSON.stringify(st)}`;
+  const Q = A.q || {};
+  const nf = n => new Intl.NumberFormat(intl).format(n);
+  switch (type) {
+    case 'fractions': {
+      const b = (st.bars || []).find(x => x.n > 0 && x.d > 1); if (!b) return null;
+      return choice(Q.fractions, `${b.n}/${b.d}`, [`${b.d - b.n}/${b.d}`, `${b.d}/${b.n}`, `${b.n}/${b.d + 1}`, `${b.n + 1}/${b.d}`].filter(f => !/^0\//.test(f)), seed);
+    }
+    case 'numline': {
+      const lab = t => M.tickLabel(t, st.sub, st.mode);
+      if ((st.jumps || []).length) {
+        const end = st.jumps[st.jumps.length - 1].b;
+        return choice(Q.numline, lab(end), near(end, [1, -1, st.sub, -st.sub, 2], () => true).map(lab), seed);
+      }
+      if ((st.points || []).length) { const p = st.points[0]; return choice(Q.numlinePt, lab(p), near(p, [1, -1, st.sub, 2], () => true).map(lab), seed); }
+      return null;
+    }
+    case 'coord': {
+      if (!st.line) return null;
+      const i = st.mi, m = M.SLOPES[i]; if (!m) return null;
+      const others = [i + 1, i - 1, i + 2, M.SLOPES.length - 1 - i].filter(k => k >= 0 && k < M.SLOPES.length && k !== i).map(k => M.fracText(M.SLOPES[k]));
+      if (m.n) others.unshift(M.fracText({ n: m.d, d: m.n }));
+      return choice(Q.coord, M.fracText(m), others, seed);
+    }
+    case 'graph': {
+      const rows = (st.rows || []).map((r, i) => ({ l: r.l || String.fromCharCode(65 + i), v: r.v }));
+      if (rows.length < 2) return null;
+      const max = Math.max(...rows.map(r => r.v)), top = rows.filter(r => r.v === max);
+      if (top.length !== 1 || !max) return null;
+      return choice(Q.graph, top[0].l, rows.filter(r => r !== top[0]).sort((a, b) => b.v - a.v).map(r => r.l), seed);
+    }
+    case 'base10': {
+      const v = M.blocksValue(st); if (!v) return null;
+      return choice(Q.base10, nf(v), near(v, [10, -10, 100, -100, 1, -1]).map(nf).concat(st.h ? [nf(st.h + st.t + st.o)] : []), seed);
+    }
+    case 'placeval': {
+      const v = st.v; if (!v) return null;
+      return choice(Q.placeval, M.pvFormat(v, intl), [M.pvTimes10(v), M.pvDiv10(v), M.pvAdd(v, 3, 1), M.pvAdd(v, 2, -1)].filter(x => x !== null && x !== v).map(x => M.pvFormat(x, intl)), seed);
+    }
+    case 'tenframe': {
+      const n = (st.cells || []).filter(Boolean).length; if (!n) return null;
+      return choice(Q.tenframe, nf(n), near(n, [1, -1, 2, -2]).map(nf), seed);
+    }
+    case 'hundreds': {
+      if (st.skip > 1) {
+        const list = M.skipCount(st.skip, st.start); if (list.length < 4) return null;
+        const a = list[2], next = list[3];
+        return choice(fill(Q.hundreds, { n: st.skip, a }), nf(next), [next + 1, next - 1, a + 1, next + st.skip, a + 10].map(nf), seed);
+      }
+      const n = (st.shade || []).length; if (!n) return null;
+      return choice(Q.hundredsShade, nf(n), near(n, [1, -1, 10, -10, 2]).filter(x => x > 0).map(nf), seed);
+    }
+    case 'area': case 'times': {
+      const a = type === 'area' ? st.a : st.r, b = type === 'area' ? st.b : st.c;
+      if (!a || !b) return null;
+      const p = a * b;
+      return choice(fill(Q.times, { a, b }), nf(p), [p + a, p - b, (a + 1) * b, a + b, p + 10].filter(x => x > 0).map(nf), seed);
+    }
+    case 'tclock': {
+      const f = new Intl.DateTimeFormat(intl, { hour: 'numeric', minute: '2-digit', hour12: !st.h24, timeZone: 'UTC' });
+      const tt = m => f.format(new Date(Date.UTC(2020, 0, 1, 0, M.wrapMin(m))));
+      const p = M.clockParts(st.t);
+      // A swapped reading (the hands read the wrong way round) where it makes a real time.
+      const swapped = p.m % 5 === 0 && p.m ? ((p.m / 5) % 12 || 12) * 60 + (p.h % 12) * 5 + (p.pm ? 720 : 0) : null;
+      return choice(Q.tclock, tt(st.t), [swapped, st.t + 60, st.t - 60, st.t + 5, st.t + 30].filter(x => x !== null).map(tt), seed);
+    }
+    case 'fdp': {
+      if (!st.n) return null;
+      const dec = (n, d) => M.decimalString(n, d);
+      return choice(fill(Q.fdp, { f: `${st.n}/${st.d}` }), dec(st.n, st.d), [st.d <= 100 ? dec(st.n, st.d * 10) : '', dec(st.n + 1, st.d), st.n < st.d ? dec(st.n, st.d + 1) : '', dec(st.n * 10, st.d)].filter(Boolean), seed);
+    }
+    case 'geoboard': {
+      const b = (st.bands || []).find(x => x.closed && M4.isSimple(x.pts)); if (!b) return null;
+      const p = M4.pick(b.pts), area = M4.mixed(p.a2, 2);
+      return choice(Q.geoboard, area, [M4.mixed(p.a2 + 2, 2), M4.mixed(Math.max(1, p.a2 - 2), 2), String(p.I + p.B), M4.mixed(p.a2 + 1, 2)], seed);
+    }
+    case 'pattern': {
+      const h = M4.hexFraction(st.blocks || []); if (!h.sixths) return null;
+      return choice(Q.pattern, M4.mixed(h.sixths, 6), [M4.mixed(h.sixths + 1, 6), M4.mixed(Math.max(1, h.sixths - 1), 6), String((st.blocks || []).length), M4.mixed(h.sixths, 3)], seed);
+    }
+    case 'angle': {
+      const k = M4.angleKind(st.a);
+      const names = ['acute', 'right', 'obtuse', 'straight', 'reflex'];
+      return choice(Q.angle, W[k] || k, names.filter(x => x !== k).map(x => W[x] || x), seed);
+    }
+    case 'solids': {
+      const s = M4.SOLIDS[st.shape]; if (!s) return null;
+      const [key, n] = s.curved ? ['solidsF', s.f] : ['solidsE', s.e];
+      return choice(Q[key], nf(n), near(n, [1, -1, 2, -2, 4]).map(nf), seed);
+    }
+    case 'transform': {
+      const pts = (M4.SHAPES[st.shape] || []).map(([x, y]) => [x + st.ox, y + st.oy]); if (!pts.length) return null;
+      const A0 = pts[0], t = { op: st.op, dx: st.dx, dy: st.dy, axis: st.axis, turn: st.turn };
+      const wrong = [{ op: 'translate', dx: st.dy, dy: st.dx }, { op: 'reflect', axis: st.axis === 'x' ? 'y' : 'x' }, { op: 'rotate', turn: st.turn === 90 ? 270 : 90 }, { op: 'translate', dx: -st.dx, dy: -st.dy }, { op: 'reflect', axis: 'yx' }];
+      return choice(fill(Q.transform, { p: M4.pointText(A0) }), M4.pointText(M4.transformPoint(A0, t)), wrong.map(w => M4.pointText(M4.transformPoint(A0, w))), seed);
+    }
+    case 'balance': {
+      const L = { x: st.lx, u: st.lu }, R = { x: st.rx, u: st.ru };
+      if (M4.tip(L, R, st.x) || L.x === R.x) return null;
+      return choice(Q.balance, nf(st.x), near(st.x, [1, -1, 2]).filter(x => x > 0).concat([Math.abs(L.u - R.u)]).map(nf), seed);
+    }
+    case 'algebra': {
+      const tiles = st.tiles || []; if (!tiles.length) return null;
+      const s = M4.simplifyTiles(tiles), c = M4.tileCounts(tiles);
+      const right = M4.polyText(s);
+      if (right === M4.rawText(tiles)) return null;
+      const wrong = [{ a: c.x2.p + c.x2.n, b: c.x.p + c.x.n, c: c['1'].p + c['1'].n }, { ...s, b: -s.b }, { ...s, c: -s.c }, { a: s.b, b: s.a, c: s.c }, { ...s, a: s.a + 1 }].map(M4.polyText);
+      return choice(Q.algebra, right, wrong, seed);
+    }
+    case 'coins': {
+      const cur = st.cur === 'auto' ? M4.currencyFor(intl) : st.cur, ds = M4.denoms(cur), money = v => M4.moneyText(cur, v, intl);
+      if (st.mode === 'change') {
+        if (st.paid < st.cost || st.paid === st.cost) return null;
+        const ch = st.paid - st.cost;
+        return choice(Q.coinsChange, money(ch), [st.cost, ch + 10, Math.max(1, ch - 10), ch + 1].map(money), seed);
+      }
+      const total = M4.moneyTotal(cur, st.counts || []); if (!total) return null;
+      const used = ds.filter((d, i) => (st.counts || [])[i]).map(d => d.v);
+      return choice(Q.coins, money(total), [total + (used[0] || 1), total - (used[0] || 1), total + 10, (st.counts || []).reduce((a, b) => a + b, 0)].filter(x => x > 0).map(money), seed);
+    }
+    case 'chance': {
+      const outs = M4.outcomes(st.kind, st.dice, st.parts);
+      const o = st.kind === 'dice' && st.dice === 2 ? outs[5] : outs[0];
+      const label = st.kind === 'coin' ? W.heads : o.o;
+      const f = M.simplify(o.p.n, o.p.d), ft = `${f.n}/${f.d}`;
+      const pool = ['1/2', '1/3', '1/4', '1/6', '1/12', '1/36', '5/36', `1/${outs.length}`, `${f.d}/${f.n}`].filter(x => x !== ft && x !== '1/1');
+      return choice(fill(Q.chance, { o: label }), ft, pool, seed);
+    }
+    case 'letters': {
+      const word = M4.FAMILIES[st.fam] ? (st.word || []).map(i => M4.ALPHABET[i]).join('') + st.fam : (st.word || []).map(i => M4.ALPHABET[i]).join('');
+      if (!word) return null;
+      const n = M4.letterCounts(word).vowels;
+      return choice(fill(Q.letters, { w: sliceText(st.caps ? word.toUpperCase() : word, 14) }), nf(n), near(n, [1, -1, 2, 3]).map(nf), seed);
+    }
+    case 'map': {
+      const pins = st.pins || []; if (!pins.length) return null;
+      if (st.kind === 'grid') { const p = pins[0], r = M4.gridRef(p.x, p.y); return choice(Q.mapGrid, r, [M4.gridRef(p.x + 100, p.y), M4.gridRef(p.x, p.y + 100), M4.gridRef(p.x - 100, p.y), M4.gridRef(p.y * 2, p.x / 2)], seed); }
+      for (const p of pins) {
+        const c = M4.continentAt(p.x, p.y); if (!c) continue;
+        return choice(Q.map, W[c] || c, M4.CONTINENT_IDS.filter(x => x !== c && x !== 'antarctica').map(x => W[x] || x), `${seed}:${c}`);
+      }
+      return null;
+    }
+    default: return null;
+  }
+}

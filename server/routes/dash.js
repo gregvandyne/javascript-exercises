@@ -28,6 +28,9 @@
 // tool's spec); a Picture widget's picture is uploaded with POST /pictures?use=show (the class's teacher only) and
 // fetched from /dash/pictures/:pid by the class's students while it is pinned on their screens. Whiteboard drawings
 // never leave the browser.
+// Stage 4 (docs/decisions.md "Classroom dashboards, stage 4"): teaching tools part 2 add no new address either. "Make a
+// question from it" sends an ordinary quick check (POST /checks); "Practice it" links come with the page (official games
+// every student of the class can open).
 // Every route asks D.roleOf / D.isTeacher: only the class's own teacher changes the class screen, sends, approves links
 // or starts Eyes up; only the class's students and teachers read it. Everyone else gets 404. CSRF is the site's
 // same-origin check (auth.csrfCheck); every write has a rate limit.
@@ -89,7 +92,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t('dash.layouts.defaultName'));
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -118,7 +121,7 @@ function dashPage(req, res, c, role) {
     </footer>`;
   } else {
     const st = D.studentState(c.id, u.id);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backMyClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>

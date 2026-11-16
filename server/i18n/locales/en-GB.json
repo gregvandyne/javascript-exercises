@@ -872,7 +872,44 @@
       },
       "base10": {
         "name": "Base-ten blocks"
+      },
+      "transform": {
+        "deg": "{n}° anticlockwise",
+        "desc": "Slide, flip and turn a shape on a grid, with its starting place and every point's coordinates. Years 5–9."
+      },
+      "coins": {
+        "desc": "Count coins and notes, see the total, and make change. Simple drawn coins, never real pictures. Reception to Year 5.",
+        "units": "Amounts here are in pence or cents (plain numbers for the plain set)."
+      },
+      "geoboard": {
+        "desc": "Stretch bands round pegs. Area and perimeter of a closed shape, exactly (Pick's theorem). Years 3–9."
+      },
+      "pattern": {
+        "desc": "Hexagons, trapezia, rhombi, triangles and squares that snap together. Shows the fraction of a hexagon. Reception to Year 6.",
+        "trap": "Trapezium"
+      },
+      "angle": {
+        "desc": "Two rays and a protractor. The angle in degrees and its name. Years 5–9."
+      },
+      "solids": {
+        "desc": "Cubes, prisms, pyramids, cylinders and cones that fold and unfold. Count faces, edges and vertices. Years 2–9."
+      },
+      "balance": {
+        "desc": "Solve equations with x-boxes and weights: do the same to both sides and it stays level. Years 4–9."
+      },
+      "algebra": {
+        "desc": "x², x and 1 tiles, positive and negative. Zero pairs cancel; the expression simplifies. Years 7–9."
+      },
+      "chance": {
+        "desc": "Toss coins, roll dice and spin spinners up to 1,000 times. A live chart beside what we expect. Years 4–9."
+      },
+      "letters": {
+        "desc": "Build words from letter tiles, vowels marked, with word families (-at, -ig, -ake...). Nobody types. Reception to Year 4."
       }
+    },
+    "tools": {
+      "practice": "Practise it",
+      "practiceName": "Practise it: {title}"
     }
   }
 }
