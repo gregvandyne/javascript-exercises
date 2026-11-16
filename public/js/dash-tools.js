@@ -56,9 +56,12 @@ function shell(body, s, ctx, id) {
     W, C, st, top, stage, read, foot, draw: () => {}, sized: true,
     /** How much to grow an SVG's text so it is at least min px on screen: the model's viewBox is vbW x vbH user units and
      *  its text is base units. -> a factor >= 1 (CSS --ts). */
+    /** Screen pixels per SVG unit for a viewBox of vbW x vbH drawn in the model's area (0 before it has a size). */
+    scale(vbW, vbH) { const w = stage.clientWidth, h = stage.clientHeight; return matchMedia('(max-width: 719px)').matches || !h ? w / vbW : Math.min(w / vbW, h / vbH); },
+    /** The smallest text, in screen pixels: 14 (16 on the projector). */
+    minPx: () => (document.body.classList.contains('dash-projector') ? 16 : 14),
     ts(vbW, vbH, base = 20, min = 13) {
-      const w = stage.clientWidth, h = stage.clientHeight, phone = matchMedia('(max-width: 719px)').matches;
-      const k = phone || !h ? w / vbW : Math.min(w / vbW, h / vbH);
+      const k = T.scale(vbW, vbH);
       // On the projector the text is read from the back of the room: a bigger floor.
       const floor = document.body.classList.contains('dash-projector') ? min * 1.35 : min;
       return k > 0 ? Math.max(1, floor / (base * k)) : 1;
@@ -192,7 +195,7 @@ function fractions(body, s, ctx) {
     st.bars.forEach((b, i) => {
       const row = el('div', 'dt-frow');
       const lab = el('div', 'dt-flab'); lab.appendChild(stacked(b.n, b.d));
-      if (useL && c.L !== b.d) { const eq = el('span', 'dt-feq'); eq.dir = 'ltr'; eq.append('= ', stacked(c.list[i].n, c.L, 'dt-frac dt-frac-s')); lab.appendChild(eq); }
+      if (useL && c.L !== b.d) { const eq = el('span', 'dt-feq'); eq.dir = 'ltr'; const sign = el('span', 'dt-eqsign', '='); sign.setAttribute('aria-hidden', 'true'); eq.append(sign, stacked(c.list[i].n, c.L)); lab.appendChild(eq); }
       const parts = useL ? c.L : b.d, shaded = useL ? c.list[i].n : b.n;
       const shape = st.shape === 'bar' ? barSvg(parts, shaded, i, useL ? c.L / b.d : 1) : pieSvg(parts, shaded, i, useL ? c.L / b.d : 1);
       shape.classList.add('dt-fshape');
@@ -388,16 +391,22 @@ function coord(body, s, ctx) {
   const slope = T.stepper(W.slope, () => M.fracText(m()), () => { if (st.mi > 0) { st.mi--; T.commit(eqWords()); } }, () => { if (st.mi < M.SLOPES.length - 1) { st.mi++; T.commit(eqWords()); } }, `${W.slope} −`, `${W.slope} +`);
   const startS = T.stepper(W.start, () => (st.b < 0 ? `−${-st.b}` : st.b), () => { if (st.b > -10) { st.b--; T.commit(eqWords()); } }, () => { if (st.b < 10) { st.b++; T.commit(eqWords()); } }, `${W.start} −`, `${W.start} +`);
   T.top.append(slope, startS);
-  let cur = { x: 0, y: 0 }, plane;
+  let cur = { x: 0, y: 0 }, plane, planeRO = null;
   const range = () => (st.quads === 1 ? [0, 2 * st.size] : [-st.size, st.size]);
   T.draw = () => {
     slope.sync(); startS.sync();
     const [lo, hi] = range(), n = hi - lo, P = 40, S = 520, u = (S - 2 * P) / n;
     cur.x = Math.max(lo, Math.min(hi, cur.x)); cur.y = Math.max(lo, Math.min(hi, cur.y));
     const X = v => P + (v - lo) * u, Y = v => S - P - (v - lo) * u;
+    const lastPlane = T.stage.querySelector('.dt-plane'), lastBox = lastPlane && lastPlane.getBoundingClientRect();
     T.stage.textContent = '';
     const box = el('div', 'dt-cwrap');
-    const ts = T.ts(st.table && !matchMedia('(max-width: 719px)').matches ? S * 1.9 : S, S, 20, 12);
+    // Text size from the plane as it was last drawn (the table beside it takes a share of the width); the first time,
+    // a guess, checked once it is on screen.
+    const floorPx = document.body.classList.contains('dash-projector') ? 16 : 13;
+    const box0 = lastBox, side = r => Math.min(r.width, r.height || r.width);
+    const kNow = box0 && box0.width ? side(box0) / S : T.scale(st.table && !matchMedia('(max-width: 719px)').matches ? S * 1.9 : S, S);
+    const ts = kNow > 0 ? Math.max(1, floorPx / (20 * kNow)) : 1;
     plane = svg('svg', { viewBox: `0 0 ${S} ${S}`, class: 'dt-plane', style: `--ts:${ts.toFixed(3)}`, role: 'application', tabindex: ctx.editing ? '-1' : '0', 'aria-label': `${W.plot}. ${W.hint}`, 'aria-roledescription': W.plot });
     plane.setAttribute('direction', 'ltr');
     plane.appendChild(svg('rect', { x: P, y: P, width: S - 2 * P, height: S - 2 * P, class: 'dt-paper' }));
@@ -408,14 +417,16 @@ function coord(body, s, ctx) {
     const ax = st.quads === 1 ? lo : 0;
     plane.appendChild(svg('path', { d: `M${P - 8} ${Y(ax)}H${S - P + 14}M${X(ax)} ${S - P + 8}V${P - 14}`, class: 'dt-axis' }));
     plane.appendChild(svg('path', { d: `M${S - P + 20} ${Y(ax)} l-12 -7 v14 z M${X(ax)} ${P - 20} l-7 12 h14 z`, class: 'dt-arrow' }));
-    plane.appendChild(svg('text', { x: S - P + 14, y: Y(ax) + 28, class: 'dt-axl', 'text-anchor': 'middle' }, 'x'));
-    plane.appendChild(svg('text', { x: X(ax) - 18, y: P - 12, class: 'dt-axl', 'text-anchor': 'middle' }, 'y'));
+    // Axis names clear of the tick numbers: x above the end of the x axis, y to the right of the top of the y axis.
+    plane.appendChild(svg('text', { x: S - P + 16, y: Y(ax) - 14, class: 'dt-axl', 'text-anchor': 'middle' }, 'x'));
+    plane.appendChild(svg('text', { x: X(ax) + 14, y: P - 6, class: 'dt-axl', 'text-anchor': 'start' }, 'y'));
     for (let v = lo; v <= hi; v += step) {
       if (v === ax && st.quads === 4) continue;
       plane.appendChild(svg('text', { x: X(v), y: Y(ax) + 24, class: 'dt-cl', 'text-anchor': 'middle' }, svgText(v)));
       plane.appendChild(svg('text', { x: X(ax) - 10, y: Y(v) + 6, class: 'dt-cl', 'text-anchor': 'end' }, svgText(v)));
     }
-    if (st.quads === 4) plane.appendChild(svg('text', { x: X(0) - 10, y: Y(0) + 24, class: 'dt-cl', 'text-anchor': 'end' }, '0'));
+    // The origin's 0 only where it can't run into the −1 beside it (so "−1 0" never reads as "−10").
+    if (st.quads === 4 && u * step > 20 * ts * 2.6) plane.appendChild(svg('text', { x: X(0) - 10, y: Y(0) + 24, class: 'dt-cl', 'text-anchor': 'end' }, '0'));
     if (st.line) {
       const seg = M.lineInBox(m(), st.b, lo, hi, lo, hi);
       if (seg) {
@@ -441,6 +452,11 @@ function coord(body, s, ctx) {
       tb.append(r1, r2); box.appendChild(tb);
     }
     T.stage.appendChild(box);
+    // The plane's size can change without the model area changing (the table beside it grows when fonts arrive): watch
+    // the plane itself and draw again when its scale moves.
+    if (planeRO) planeRO.disconnect();
+    planeRO = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { const k2 = side(plane.getBoundingClientRect()) / S; if (k2 > 0 && Math.abs(k2 - kNow) / k2 > 0.03 && plane.isConnected) requestAnimationFrame(() => T.draw()); }) : null;
+    if (planeRO) planeRO.observe(plane);
     const eq = el('div', 'dt-big dt-eq'); eq.dir = 'ltr'; eq.setAttribute('aria-label', eqWords());
     for (const p of M.equationParts(m(), st.b)) eq.appendChild(p.f ? stacked(p.f.n, p.f.d, 'dt-frac dt-frac-s') : document.createTextNode(p.t));
     T.read.textContent = ''; T.read.appendChild(eq);
@@ -497,8 +513,26 @@ function graph(body, s, ctx) {
     if (st.title) { const h = el('div', 'dt-gtitle', st.title); h.dir = 'auto'; T.stage.appendChild(h); }
     if (!rows.length) { T.stage.appendChild(el('p', 'dw-empty', W.empty)); T.read.textContent = ''; return; }
     const max = Math.max(...rows.map(r => r.v));
-    const n = rows.length, Wd = 640, H = 360, L = 56, B = 48, R = 16, Tp = 18, cw = (Wd - L - R) / n;
-    const ts = T.ts(Wd, H + 40, 20, 12);
+    const n = rows.length, Wd = 640, H = 360, L = 56, R = 16, Tp = 18, cw = (Wd - L - R) / n;
+    // The title sits above the chart, so the chart is drawn a little smaller than its viewBox suggests: measure with room.
+    const ts = T.ts(Wd, H + 70, 20, document.body.classList.contains('dash-projector') ? 10.5 : 13);
+    // Category labels are never cut: they wrap onto two lines (three at most) and shrink, never below 12px (13 on the
+    // projector).
+    const px = T.scale(Wd, H + 70) || 1, floor = (document.body.classList.contains('dash-projector') ? 14 : 13) / px;
+    // Whole words only: a word longer than the column means the labels turn instead.
+    const wrap = (text, f, max) => {
+      const room = Math.max(1, Math.floor((cw * 0.94) / (f * 0.58))), out = [];
+      for (const word of String(text).split(/\s+/)) {
+        if ([...word].length > room) return null;
+        if (out.length && [...`${out[out.length - 1]} ${word}`].length <= room) out[out.length - 1] += ` ${word}`; else out.push(word);
+      }
+      return out.length <= max ? out : null;
+    };
+    let lf = Math.max(20, floor), lines = null, turn = false;
+    for (let f = Math.max(20, floor); f >= floor - 1e-6; f -= 1) { const all = rows.map((r, i) => wrap(labelOf(r, i), f, 2)); if (all.every(Boolean)) { lf = f; lines = all; break; } }
+    if (!lines) { turn = true; lf = Math.max(floor, Math.min(20, cw * 0.55)); lines = rows.map((r, i) => [labelOf(r, i)]); }
+    const longest = Math.max(...rows.map((r, i) => [...labelOf(r, i)].length));
+    const B = turn ? 16 + longest * lf * 0.58 * Math.sin(Math.PI / 4) + lf : 14 + Math.max(...lines.map(x => x.length)) * lf * 1.15 + 6;
     const g = svg('svg', { viewBox: `0 0 ${Wd} ${H}`, class: 'dt-graph', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': `${W[st.kind]}: ${rows.map((r, i) => `${labelOf(r, i)} ${r.v}`).join(', ')}` });
     g.setAttribute('direction', 'ltr');
     const sc = st.kind === 'picture' ? M.niceScale(Math.ceil(max / st.per)) : st.kind === 'dot' ? { top: Math.max(1, Math.min(max, 20)), step: max > 10 ? 2 : 1 } : M.niceScale(max);
@@ -533,8 +567,9 @@ function graph(body, s, ctx) {
         for (let k = 0; k < shown; k++) g.appendChild(svg('circle', { cx, cy: H - B - (k + 0.5) * size, r: size * 0.4, class: `dt-gdot dt-c${i % FCOLORS}` }));
         if (r.v > 20) g.appendChild(svg('text', { x: cx, y: H - B - 20.5 * size - 4, class: 'dt-gv', 'text-anchor': 'middle' }, r.v));
       }
-      const full = labelOf(r, i), room = Math.max(3, Math.floor(cw / (12 * ts)));
-      const lab = svg('text', { x: cx, y: H - B + 12 + 20 * ts, class: 'dt-gl', 'text-anchor': 'middle' }, [...full].length > room ? `${[...full].slice(0, room - 1).join('')}…` : full);
+      const ly = H - B + 10 + lf;
+      const lab = svg('text', turn ? { x: cx, y: H - B + 14, class: 'dt-gl', 'text-anchor': 'end', transform: `rotate(-45 ${cx} ${H - B + 14})`, style: `font-size:${lf.toFixed(2)}px`, 'dominant-baseline': 'hanging' } : { x: cx, y: ly, class: 'dt-gl', 'text-anchor': 'middle', style: `font-size:${lf.toFixed(2)}px` });
+      lines[i].forEach((ln, k) => lab.appendChild(svg('tspan', { x: cx, dy: k ? lf * 1.15 : 0 }, ln)));
       g.appendChild(lab);
     });
     if (pts.length) {
@@ -734,7 +769,7 @@ function placeval(body, s, ctx) {
       c.tabIndex = i === sel && !ctx.editing ? 0 : -1;
       const head = el('div', 'dt-pvh', name(i)); head.dir = 'auto';
       const discs = el('div', 'dt-pvdiscs'); discs.setAttribute('aria-hidden', 'true');
-      if (st.discs) for (let k = 0; k < dg[i]; k++) discs.appendChild(el('span', `dt-disc dt-disc${i}`, DISC[i]));
+      if (st.discs) for (let k = 0; k < dg[i]; k++) discs.appendChild(el('span', `dt-disc dt-disc${i}`)).appendChild(el('span', 'dt-disct', DISC[i]));
       c.append(head, discs, el('div', 'dt-pvd', String(dg[i])));
       c.addEventListener('click', () => { if (ctx.editing) return; sel = i; syncSel(); c.focus(); });
       c.addEventListener('focus', () => { if (sel !== i) { sel = i; syncSel(); } });
@@ -893,8 +928,40 @@ function area(body, s, ctx) {
     const r = pp(), V = view();
     const pad = 46, maxW = 560, maxH = 400, k = Math.min((maxW - pad) / st.b, (maxH - pad) / st.a);
     const w = st.b * k, h = st.a * k;
-    const ts = T.ts(w + pad + 8, h + pad + 8, 22, 13);
-    const sv = svg('svg', { viewBox: `0 0 ${w + pad + 8} ${h + pad + 8}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': sayIt() });
+    // Partial products go inside their part when they fit at a readable size (14px, 16 on the projector); a part too
+    // small for its label gets it outside, with a leader line: to the right, or below for the bottom row.
+    const tw = (str, f) => [...String(str)].length * f * 0.6;
+    let mR = 0, mB = 0, px = 0, place = [];
+    for (let pass = 0; pass < 3; pass++) {
+      px = T.scale(w + pad + 8 + mR, h + pad + 8 + mB) || 1;
+      const fMin = T.minPx() / px;
+      place = []; let needR = 0, nB = 0;
+      if (V === 'area') {
+        let y = Y0of(pad);
+        r.rows.forEach((ra, i) => {
+          let x = pad;
+          r.cols.forEach((cb, j) => {
+            const part = r.parts.find(p => p.i === i && p.j === j), cw = cb * k, ch = ra * k, top = `${part.a} × ${part.b}`;
+            const fs = Math.min(Math.max(34, fMin * 1.6), cw / ([...String(part.p)].length * 0.62), ch / 2.3, (cw - 8) / (top.length * 0.6 * 0.72));
+            if (fs * 0.72 >= fMin) place.push({ part, inside: true, x, y, cw, ch, fs, top });
+            else {
+              const below = i === r.rows.length - 1 && r.rows.length > 1, fo = fMin * 1.1, text = `${top} = ${part.p}`;
+              place.push({ part, inside: false, below, x, y, cw, ch, fo, text, line: below ? nB++ : 0 });
+              if (!below) needR = Math.max(needR, tw(text, fo) + 28);
+            }
+            x += cw;
+          });
+          y += ra * k;
+        });
+      }
+      const fo = fMin * 1.1, wantR = Math.ceil(needR), wantB = Math.ceil(nB ? nB * fo * 1.5 + 14 : 0);
+      if (wantR === mR && wantB === mB) break;
+      mR = wantR; mB = wantB;
+    }
+    function Y0of(p) { return p; }
+    const VW = w + pad + 8 + mR, VH = h + pad + 8 + mB;
+    const ts = T.ts(VW, VH, 22, T.minPx());
+    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': sayIt() });
     sv.setAttribute('direction', 'ltr');
     const X0 = pad, Y0 = pad;
     if (V === 'array') {
@@ -904,23 +971,29 @@ function area(body, s, ctx) {
         sv.appendChild(svg('circle', { cx: X0 + (j + 0.5) * k, cy: Y0 + (i + 0.5) * k, r: rad, class: `dt-dot dt-c${region % FCOLORS}` }));
       }
     } else {
-      let y = Y0;
-      r.rows.forEach((ra, i) => {
-        let x = X0;
-        r.cols.forEach((cb, j) => {
-          const part = r.parts.find(p => p.i === i && p.j === j);
-          sv.appendChild(svg('rect', { x, y, width: cb * k, height: ra * k, class: `dt-region dt-c${(i * 2 + j) % FCOLORS}` }));
-          const fs = Math.min(34, (cb * k) / 5.2, (ra * k) / 2.2);
-          if (fs >= 11) {
-            sv.appendChild(svg('text', { x: x + (cb * k) / 2, y: y + (ra * k) / 2 - fs * 0.15, 'font-size': fs * 0.62, 'text-anchor': 'middle', class: 'dt-rl' }, `${part.a} × ${part.b}`));
-            sv.appendChild(svg('text', { x: x + (cb * k) / 2, y: y + (ra * k) / 2 + fs * 0.85, 'font-size': fs, 'text-anchor': 'middle', class: 'dt-rv' }, part.p));
-          }
-          x += cb * k;
-        });
-        y += ra * k;
-      });
+      for (const c of place) sv.appendChild(svg('rect', { x: c.x, y: c.y, width: c.cw, height: c.ch, class: `dt-region dt-c${(c.part.i * 2 + c.part.j) % FCOLORS}` }));
       if (st.a <= 30 && st.b <= 30) { let grid = ''; for (let i = 1; i < st.a; i++) grid += `M${X0} ${Y0 + i * k}h${w}`; for (let j = 1; j < st.b; j++) grid += `M${X0 + j * k} ${Y0}v${h}`; sv.appendChild(svg('path', { d: grid, class: 'dt-unit' })); }
       sv.appendChild(svg('rect', { x: X0, y: Y0, width: w, height: h, class: 'dt-outline' }));
+      const usedY = [];
+      for (const c of place) {
+        const cx = c.x + c.cw / 2, cy = c.y + c.ch / 2;
+        if (c.inside) {
+          sv.appendChild(svg('text', { x: cx, y: cy - c.fs * 0.12, 'font-size': c.fs * 0.72, 'text-anchor': 'middle', class: 'dt-rl' }, c.top));
+          sv.appendChild(svg('text', { x: cx, y: cy + c.fs * 0.85, 'font-size': c.fs, 'text-anchor': 'middle', class: 'dt-rv' }, c.part.p));
+        } else if (c.below) {
+          const ly = Y0 + h + 14 + (c.line + 1) * c.fo * 1.5 - c.fo * 0.35, lx = Math.max(X0 + tw(c.text, c.fo) / 2, Math.min(X0 + w - tw(c.text, c.fo) / 2 + mR, cx));
+          sv.appendChild(svg('path', { d: `M${cx} ${cy}V${ly - c.fo * 1.05}`, class: 'dt-leader' }));
+          sv.appendChild(svg('circle', { cx, cy, r: 3.5, class: 'dt-leaderdot' }));
+          sv.appendChild(svg('text', { x: lx, y: ly, 'font-size': c.fo, 'text-anchor': 'middle', class: 'dt-rout' }, c.text));
+        } else {
+          let ly = cy; while (usedY.some(u => Math.abs(u - ly) < c.fo * 1.3)) ly += c.fo * 1.3;
+          usedY.push(ly);
+          const lx = X0 + w + 24;
+          sv.appendChild(svg('path', { d: `M${cx} ${cy}L${lx - 6} ${ly - c.fo * 0.35}`, class: 'dt-leader' }));
+          sv.appendChild(svg('circle', { cx, cy, r: 3.5, class: 'dt-leaderdot' }));
+          sv.appendChild(svg('text', { x: lx, y: ly, 'font-size': c.fo, class: 'dt-rout' }, c.text));
+        }
+      }
     }
     // Side lengths along the top and the left.
     let x = X0; r.cols.forEach(cb => { sv.appendChild(svg('text', { x: x + (cb * k) / 2, y: Y0 - 14, class: 'dt-side', 'text-anchor': 'middle' }, cb)); x += cb * k; });
@@ -1054,7 +1127,12 @@ function tclock(body, s, ctx) {
       const e = M.elapsed(st.t, st.end);
       T.read.appendChild(el('div', 'dt-sub dt-elapsed', `${W.elapsed}: ${dur(e)}`));
       const j = M.elapsedJumps(st.t, st.end);
-      if (j.length > 1) T.read.appendChild(ltr('div', 'dt-sub dt-jumps', j.map(x => `${timeText(x.from)} → ${timeText(x.to)} (${dur(x.mins)})`).join(' · ')));
+      if (j.length > 1) {
+        // Each jump stays on one line; the jumps wrap between them.
+        const line = ltr('div', 'dt-sub dt-jumps');
+        j.forEach((x, n) => { if (n) line.append(' · '); line.appendChild(el('span', 'dt-nowrap', `${timeText(x.from)} → ${timeText(x.to)} (${dur(x.mins)})`)); });
+        T.read.appendChild(line);
+      }
     } else if (!st.digital) T.read.appendChild(el('div', 'dt-sub', W.hint));
   };
   const angleOf = e => { const r = face.getBoundingClientRect(); const x = e.clientX - (r.left + r.width / 2), y = e.clientY - (r.top + r.height / 2); return (Math.atan2(x, -y) * 180) / Math.PI; };

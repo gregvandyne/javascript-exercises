@@ -206,6 +206,47 @@ function problems() {
     const rows = [...st.parentElement.children].filter(x => getComputedStyle(x).display !== 'none' && x.getClientRects().length && !x.classList.contains('dt-ghost'));
     for (let i = 1; i < rows.length; i++) { const a = rows[i - 1].getBoundingClientRect(), b = rows[i].getBoundingClientRect(); if (b.top < a.bottom - 1) out.push(`${name(w)}: "${rows[i].className}" overlaps "${rows[i - 1].className}"`); }
   }
+  // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
+  const projector = document.body.classList.contains('dash-projector'), floor = projector ? 13 : 12;
+  for (const t of document.querySelectorAll('.dash-w .dt')) {
+    const w = t.closest('.dash-w'); if (!w.offsetParent) continue;
+    for (const e of t.querySelectorAll('*')) {
+      const tag = e.tagName.toLowerCase();
+      if (e.closest('.sr-only') || tag === 'tspan') continue;
+      const inSvg = !!e.closest('svg') && tag !== 'svg';
+      if (inSvg && tag !== 'text') continue;
+      const txt = inSvg ? e.textContent.trim() : [...e.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+      if (!txt) continue;
+      const cs = getComputedStyle(e);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || !e.getClientRects().length) continue;
+      let size = parseFloat(cs.fontSize);
+      if (inSvg) { const m = e.getScreenCTM(); size *= m ? Math.hypot(m.a, m.b) : 1; }
+      if (size < floor - 0.25) out.push(`${name(w)}: "${txt.slice(0, 24)}" is ${size.toFixed(1)}px (needs ${floor})`);
+      if (inSvg && e.closest('.dt-graph') && /…$/.test(txt)) out.push(`${name(w)}: the label "${txt}" is cut short`);
+    }
+  }
+  for (const e of document.querySelectorAll('.dash-w *')) {
+    const cs = getComputedStyle(e);
+    if (cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 1 && e.getClientRects().length && !e.closest('.sr-only')) out.push(`${name(e.closest('.dash-w'))}: "${label(e)}" ends in … (cut)`);
+  }
+  const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead')].filter(b => !b.hidden && b.getClientRects().length).map(b => b.getBoundingClientRect());
+  for (const w of document.querySelectorAll('.dash-w')) {
+    if (!w.offsetParent) continue;
+    const r = w.getBoundingClientRect();
+    let clip = { top: 0, bottom: innerHeight, left: 0, right: innerWidth }, scroller = null;
+    for (let a = w.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowY !== 'visible') { const q = a.getBoundingClientRect(); clip = { top: Math.max(clip.top, q.top), bottom: Math.min(clip.bottom, q.bottom), left: Math.max(clip.left, q.left), right: Math.min(clip.right, q.right) }; if (!scroller && /(auto|scroll)/.test(cs.overflowY)) scroller = a; }
+    }
+    const vis = { top: Math.max(r.top, clip.top), bottom: Math.min(r.bottom, clip.bottom), left: Math.max(r.left, clip.left), right: Math.min(r.right, clip.right) };
+    if (vis.bottom > vis.top) for (const b of bars) if (vis.top < b.bottom - 1 && vis.bottom > b.top + 1 && vis.left < b.right && vis.right > b.left) out.push(`${name(w)}: sits under the top or bottom bar`);
+    // Below the fold is fine only while it can be scrolled into view.
+    const hidden = r.bottom - clip.bottom;
+    if (hidden > 1) {
+      const room = scroller ? scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop : document.documentElement.scrollHeight - innerHeight - scrollY;
+      if (hidden > room + 1) out.push(`${name(w)}: ${Math.round(hidden)}px below the screen can't be scrolled into view`);
+    }
+  }
   if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} > ${innerWidth})`);
   return [...new Set(out)];
 }

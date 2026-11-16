@@ -25,7 +25,9 @@ body.dash-page{padding-bottom:0}
 
 /* ---------- the body: library | grid | settings ---------- */
 .dash-body{flex:1 1 auto;min-height:0;display:flex;gap:var(--s4)}
-.dash-stage{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;gap:var(--s3);overflow:auto}
+.dash-stage{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;gap:var(--s3);overflow:auto;padding-bottom:var(--s2)}
+/* more widgets below the fold: a shadow along the stage's bottom edge (the bars never cover a widget; the stage scrolls) */
+.dash-stage.has-more{box-shadow:inset 0 -18px 14px -12px color-mix(in srgb,var(--text) 32%,transparent)}
 .dash-lib,.dash-side{flex:0 0 300px;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:var(--s3);background:var(--card);color:var(--text);border-radius:var(--r);padding:var(--s4);box-shadow:var(--shadow)}
 .dash-lib[hidden],.dash-side[hidden]{display:none}
 .dash-lib h2,.dash-side h2{font-size:1.3rem;margin:0}
@@ -47,7 +49,7 @@ body.dash-page{padding-bottom:0}
 .dash-picrow img{border-radius:8px;object-fit:cover;background:var(--card-2)}
 
 /* ---------- the grid ---------- */
-.dash-grid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(var(--rows,4),minmax(72px,1fr));gap:var(--s4)}
+.dash-grid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(var(--rows,4),minmax(var(--rowmin,72px),1fr));gap:var(--s4)}
 .dash-w{--g:var(--accent);container:dashw / inline-size;position:relative;display:flex;flex-direction:column;gap:var(--s2);min-width:0;min-height:0;background:var(--card);color:var(--text);border-radius:var(--r);padding:var(--s4);box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
 /* Group colours: on the icon chip and the card's top edge only, never on text. */
 .dash-w[data-group="time"]{--g:#5AA9D6}
@@ -550,6 +552,10 @@ span.dw-stamp{cursor:default}
 :root[data-theme="dark"] .dt{--dt-pen-red:#FF6B6B;--dt-pen-blue:#6FB2FF;--dt-pen-green:#5FD38D;--dt-pen-orange:#FFA24D;--dt-pen-purple:#C49BFF}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt{--dt-pen-red:#FF6B6B;--dt-pen-blue:#6FB2FF;--dt-pen-green:#5FD38D;--dt-pen-orange:#FFA24D;--dt-pen-purple:#C49BFF}}
 .dt .btn{white-space:normal;line-height:1.15;text-align:center}
+/* a button that can't be used now still reads (4.5:1): muted text on a dashed outline instead of a faded button */
+.dt .btn:disabled{opacity:1}
+.dash-wb .dt .btn:disabled:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:transparent;color:var(--muted);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--line) 80%,transparent)}
+.dash-wb .dt .btn.btn-primary:disabled{opacity:.7}
 /* a pressed button shows as pressed (the quiet-button rule above is more specific than stage 2's pressed rule) */
 .dash-wb .btn[aria-pressed="true"]:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:var(--current);color:var(--on-current);box-shadow:none}
 .dt.is-static .dt-stage{pointer-events:none}
@@ -560,12 +566,15 @@ span.dw-stamp{cursor:default}
 .dt-stage>svg{display:block;width:100%;height:100%}
 .dt-read{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
 .dt-big{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1;font-size:clamp(1.15rem,min(9cqh,6.5cqi),3.4rem);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.2em .35em;overflow-wrap:anywhere;max-width:100%}
-.dt-sub{color:var(--text-2);font-weight:600;font-size:clamp(.8rem,min(5.5cqh,3.6cqi),1.3rem);overflow-wrap:anywhere;max-width:100%}
+.dt-sub{color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(5.5cqh,3.6cqi),1.3rem);overflow-wrap:anywhere;max-width:100%}
 .dt-note{color:var(--accent-ink)}
 .dt-seg{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:center}
 .dt-seg .btn{min-width:44px;padding:0 12px}
 .dt-step{display:inline-flex;align-items:center;gap:6px}
 .dt-steplab{font-weight:700;color:var(--text-2);font-size:.88rem}
+/* the disc's number shows when the disc is big enough for it at 12px; otherwise its colour and column say it */
+.dt-disct{display:none}
+@container (min-width:860px) and (min-height:480px){.dt-disct{display:inline}}
 .dt-stepval{min-width:2.2em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:1.15rem}
 .dt-pm{min-width:44px;padding:0;font-size:1.35rem}
 .dt-copynote{margin:0;flex:1 1 100%;text-align:center}
@@ -589,12 +598,16 @@ span.dw-stamp{cursor:default}
 .dt-axis{stroke:var(--text);stroke-width:3;fill:none;stroke-linecap:round}
 .dt-arrow{fill:var(--text)}
 .dt-cl,.dt-tl,.dt-axl,.dt-side,.dt-gl{fill:var(--text);font:700 calc(20px * var(--ts,1)) var(--font)}
+/* tick numbers keep a halo of the card's colour, so a line or a jump never runs through them */
+.dt-cl,.dt-tl,.dt-axl,.dt-side{paint-order:stroke;stroke:var(--card);stroke-width:calc(5px * var(--ts,1));stroke-linejoin:round}
 .dt-axl{font-style:italic;font-size:calc(24px * var(--ts,1))}
 /* fractions */
 .dt-fwrap{width:100%;height:100%;display:flex;flex-direction:column;justify-content:safe center;gap:clamp(4px,2cqh,14px)}
 .dt-f-bar{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;grid-template-rows:repeat(var(--rows,2),minmax(24px,110px));align-content:center;column-gap:var(--s2)}
 .dt-f-bar .dt-frow{display:contents}
-.dt-f-bar .dt-flab .dt-frac{font-size:clamp(.75rem,min(calc(100cqh / var(--rows,2) / 2.7),7cqi),2.6rem)}
+.dt-f-bar .dt-flab .dt-frac,.dt-f-bar .dt-flab .dt-feq{font-size:clamp(.82rem,min(calc(100cqh / var(--rows,2) / 2.7),5.5cqi),2.6rem)}
+.dt-feq .dt-frac{font-size:1em!important;color:var(--text-2)}
+.dt-eqsign{font-weight:800;font-size:1em;line-height:1;color:var(--text-2)}
 .dt-frow{display:flex;align-items:center;gap:var(--s2);flex:1 1 0;min-height:44px;max-height:120px}
 .dt-flab{flex:none;display:flex;align-items:center;gap:6px;min-width:2.6em;justify-content:flex-end;align-self:center}
 .dt-f-bar .dt-fpm{align-self:center}
@@ -608,7 +621,7 @@ span.dw-stamp{cursor:default}
 .dt-frac{display:inline-flex;flex-direction:column;align-items:center;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;font-size:clamp(1.1rem,min(8cqh,5cqi),2.6rem);vertical-align:middle}
 .dt-frac-s{font-size:.75em}
 .dt-fl{display:block;align-self:stretch;min-width:1.1em;height:.1em;min-height:2px;background:currentColor;margin:.12em 0}
-.dt-feq{display:inline-flex;align-items:center;gap:4px;color:var(--text-2);font-weight:800}
+.dt-feq{display:inline-flex;align-items:center;gap:.25em;color:var(--text-2);font-weight:800;font-size:clamp(1.1rem,min(8cqh,5cqi),2.6rem)}
 .dt-sign{font-size:1.1em;padding:0 .15em}
 .dt-cmp{gap:.15em .4em}
 /* number line */
@@ -635,12 +648,12 @@ span.dw-stamp{cursor:default}
 .dt-line{stroke:var(--accent-press);stroke-width:5;stroke-linecap:round}
 .dt-lpt{fill:var(--accent-press)}
 .dt-tri{fill:none;stroke:#C2185B;stroke-width:3;stroke-dasharray:8 5}
-.dt-tril{fill:#C2185B;font:800 calc(18px * var(--ts,1)) var(--font);paint-order:stroke;stroke:var(--card);stroke-width:5px}
+.dt-tril{fill:#C2185B;font:800 calc(20px * var(--ts,1)) var(--font);paint-order:stroke;stroke:var(--card);stroke-width:5px}
 .dt-cross{stroke:var(--focus);stroke-width:3}
 .dt-table{border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums;font-weight:700;font-size:clamp(.85rem,min(5cqh,3.2cqi),1.3rem);border-radius:10px;overflow:hidden;flex:none}
 .dt-table th,.dt-table td{padding:4px 10px;text-align:center;background:var(--card-2);border:1px solid var(--line)}
 .dt-table tr:first-child>*{background:color-mix(in srgb,var(--line) 55%,var(--card))}
-@container (max-aspect-ratio:6/5){.dt-cwrap{flex-direction:column}.dt-plane{flex:1 1 0;min-height:0;height:auto;width:auto;max-height:100%}}
+@container (max-aspect-ratio:8/5){.dt-cwrap{flex-direction:column}.dt-plane{flex:1 1 0;min-height:0;height:auto;width:100%;max-height:100%}}
 .dt-eq{gap:.12em;font-size:clamp(1.1rem,min(7cqh,5cqi),2.6rem)}
 [dir="rtl"] .dt-fbar{transform:scaleX(-1)}
 /* graphs */
@@ -670,26 +683,28 @@ span.dw-stamp{cursor:default}
 .dt-ghost[hidden]{display:none}
 /* place value */
 .dt-pv{width:100%;height:100%;display:flex;align-items:stretch;gap:4px}
-.dt-pvcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;border-radius:var(--r-sm);background:var(--card-2);cursor:pointer;box-shadow:inset 0 0 0 2px transparent}
+.dt-pvcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 1px;border-radius:var(--r-sm);background:var(--card-2);cursor:pointer;box-shadow:inset 0 0 0 2px transparent}
 .dt-pvcol.is-sel{box-shadow:inset 0 0 0 3px var(--accent-line);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
-.dt-pvh{font-size:clamp(.62rem,2.2cqi,.95rem);font-weight:700;color:var(--text-2);text-align:center;line-height:1.1;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto;max-width:100%}
+.dt-pvh{font-size:clamp(.75rem,1.9cqi,.95rem);font-weight:700;color:var(--text-2);text-align:center;line-height:1.1;white-space:nowrap;letter-spacing:-.01em;max-width:100%}
+/* narrow charts: the column names turn on their side rather than break mid-word */
+@container (max-width:600px){.dt-pvh{writing-mode:vertical-rl;transform:rotate(180deg);max-width:none;max-height:9em;font-size:.8rem}}
 .dt-pvdiscs{flex:1 1 0;min-height:0;width:100%;display:flex;flex-wrap:wrap;align-content:flex-end;justify-content:center;gap:2px;overflow:hidden}
 .dt-pv:not(.has-discs) .dt-pvdiscs{display:none}
 .dt-pv:not(.has-discs) .dt-pvcol{justify-content:center}
-.dt-disc{display:grid;place-items:center;width:clamp(16px,4.2cqi,34px);aspect-ratio:1;border-radius:50%;font-size:clamp(5px,1.05cqi,9px);font-weight:800;color:#141414;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.45);overflow:hidden}
+.dt-disc{display:grid;place-items:center;width:clamp(12px,min(4.2cqi,7.5cqh),40px);aspect-ratio:1;border-radius:50%;font-size:12px;font-weight:800;color:#141414;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.45);overflow:hidden}
 .dt-disc0{background:#F28C6B}.dt-disc1{background:#5AA9D6}.dt-disc2{background:#66C792}.dt-disc3{background:#FFD23F}.dt-disc4{background:#F7B8D0}.dt-disc5{background:#B9AEF0}.dt-disc6{background:#9ED9CF}
 .dt-pvd{font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.2rem,min(12cqh,6cqi),3.2rem);line-height:1}
 .dt-pvdot{align-self:flex-end;font-weight:800;font-size:clamp(1.2rem,min(12cqh,6cqi),3.2rem);line-height:1;padding-bottom:6px}
 /* ten frames */
-.dt-tfwrap{width:100%;height:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s3)}
-.dt-tf{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:3px solid var(--text);border-radius:6px;background:var(--text);height:min(100%,calc((100cqi - 32px) / 5 * 2 / var(--frames,1)));aspect-ratio:5/2;max-width:100%}
+.dt-tfwrap{width:100%;height:100%;display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:var(--s3)}
+.dt-tf{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:3px solid var(--text);border-radius:6px;background:var(--text);height:min(100cqh,calc((100cqi - 16px) / var(--frames,1) / 2.5));aspect-ratio:5/2;max-width:100%;flex:none}
 .dt-tfwrap:has(.dt-tf + .dt-tf) .dt-tf{--frames:2}
 .dt-tfcell{position:relative;border:0;margin:0;padding:0;min-width:24px;min-height:24px;background:var(--card);box-shadow:inset 0 0 0 1px var(--text);cursor:pointer}
 .dt-tfcell::after{content:"";position:absolute;inset:14%;border-radius:50%;transform:scale(0);transition:transform .15s ease}
 .dt-tfcell.has-r::after{background:#E5483B;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);transform:scale(1)}
 .dt-tfcell.has-y::after{background:#FFD23F;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);transform:scale(1)}
 .dt-tfcell:focus-visible{outline:3px solid var(--focus);outline-offset:-4px;z-index:1}
-.dt-bond{width:clamp(84px,22cqi,150px)}
+.dt-bond{width:clamp(110px,22cqi,160px)}
 .dt-bond svg{display:block;width:100%;height:auto}
 .dt-bondl{stroke:var(--text);stroke-width:2.5}
 .dt-bondc{stroke:var(--text);stroke-width:2.5}
@@ -700,8 +715,9 @@ span.dw-stamp{cursor:default}
 .dt-hgrid,.dt-tgrid{display:grid;width:min(100%,calc(100cqh - 4px));max-height:100%;aspect-ratio:1;gap:2px}
 .dt-hgrid{grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
 .dt-tgrid{grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr)}
-.dt-hcell,.dt-tcell,.dt-th{display:grid;place-items:center;min-width:0;min-height:0;padding:0;border:0;border-radius:5px;background:var(--card-2);color:var(--text);font:700 clamp(9px,min(3.3cqi,3.3cqh),1.5rem) var(--font);font-variant-numeric:tabular-nums;cursor:pointer;line-height:1}
-.dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-size:clamp(8px,min(2.7cqi,2.7cqh),1.3rem)}
+.dt-hcell,.dt-tcell,.dt-th{display:grid;place-items:center;min-width:0;min-height:0;padding:0;border:0;border-radius:5px;background:var(--card-2);color:var(--text);font:700 clamp(13px,min(3.3cqi,3.3cqh),1.5rem) var(--font);font-variant-numeric:tabular-nums;cursor:pointer;line-height:1}
+.dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-size:clamp(12px,min(2.7cqi,2.7cqh),1.3rem);letter-spacing:-.03em}
+.dash-projector .dt-tgrid .dt-tcell,.dash-projector .dt-tgrid .dt-th{font-size:clamp(13px,min(2.7cqi,2.7cqh),1.4rem)}
 .dt-th{background:color-mix(in srgb,var(--line) 70%,var(--card));font-weight:800;cursor:default}
 .dt-tcorner{background:transparent}
 .dt-hcell.is-on{background:var(--dt-c1);color:#141414}
@@ -718,6 +734,9 @@ span.dw-stamp{cursor:default}
 .dt-split{stroke:#C2185B;stroke-width:4;stroke-dasharray:10 6}
 .dt-rl{fill:#141414;font-weight:700;font-family:var(--font)}
 .dt-rv{fill:#141414;font-weight:800;font-family:var(--font)}
+.dt-rout{fill:var(--text);font-weight:800;font-family:var(--font)}
+.dt-leader{fill:none;stroke:var(--text);stroke-width:1.5;stroke-dasharray:4 3}
+.dt-leaderdot{fill:var(--text)}
 .dt-side{font-size:calc(22px * var(--ts,1));font-weight:800}
 /* teaching clock */
 .dt-clockwrap{height:100%;width:100%;display:flex;justify-content:center}
@@ -731,15 +750,16 @@ span.dw-stamp{cursor:default}
 .dt-ghosth{stroke:var(--muted);stroke-width:4;stroke-linecap:round;stroke-dasharray:6 5;opacity:.8}
 .dt-pin{fill:var(--text)}
 .dt-grab{stroke:transparent;stroke-width:26;cursor:grab;pointer-events:stroke}
-.dt-jumps{font-size:clamp(.72rem,min(4.4cqh,3cqi),1.05rem)}
+.dt-nowrap{white-space:nowrap}
+.dt-jumps{font-size:clamp(.85rem,min(4.4cqh,3cqi),1.05rem)}
 /* fraction, decimal, percent */
 .dt-fdpwrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:var(--s3)}
 .dt-cards{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
 .dt-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:var(--s2);border-radius:var(--r-sm);background:var(--card-2);min-width:0;text-align:center}
-.dt-cardl{font-weight:700;color:var(--text-2);font-size:clamp(.72rem,2.6cqi,1rem);overflow-wrap:anywhere}
+.dt-cardl{font-weight:700;color:var(--text-2);font-size:clamp(.82rem,2.6cqi,1rem);overflow-wrap:anywhere}
 .dt-card{container-type:inline-size}
 .dt-cardv{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1rem,22cqi,2.6rem);max-width:100%;line-height:1.1}
-.dt-cardt{white-space:nowrap;font-size:clamp(.7rem,calc(150cqi / var(--len,6)),2.6rem)}
+.dt-cardt{overflow-wrap:anywhere;font-size:clamp(.8rem,calc(150cqi / var(--len,6)),2.6rem)}
 .dt-hund{flex:0 1 auto;height:100%;max-width:45%;aspect-ratio:1;cursor:pointer}
 .dt-part{opacity:.55}
 @container (max-aspect-ratio:7/5){.dt-fdpwrap{flex-direction:column}.dt-hund{flex:1 1 0;min-height:0;height:auto;width:auto;max-width:100%;max-height:100%}.dt-cards{flex:none;width:100%}}
@@ -786,6 +806,9 @@ span.dw-stamp{cursor:default}
   .dt-mats{min-height:240px}
   .dt-pv{min-height:200px}
   .dt-hgrid,.dt-tgrid{width:100%;height:auto}
+  .dt-tgrid{gap:1px}
+  .dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-weight:600;letter-spacing:-.06em}
+  .dt-tfwrap{flex-wrap:wrap}
   .dt-tf{height:auto;width:min(100%,360px)}
   .dt-boardbg{height:320px}
   .dt-picframe{flex:none;height:260px}

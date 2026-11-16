@@ -131,6 +131,7 @@ function start() {
     grid.textContent = '';
     const rows = Math.max(MIN_ROWS, rowsUsed() + (S.editing ? 1 : 0));
     grid.style.setProperty('--rows', rows);
+    fitRows();
     const order = [...S.widgets].sort((a, b) => a.y - b.y || a.x - b.x);
     for (const w of order) grid.appendChild(card(w, order.indexOf(w)));
     if (S.editing && !narrow.matches) {
@@ -931,6 +932,7 @@ function start() {
   const awake = () => { document.body.classList.remove('dash-idle'); clearTimeout(idle); if (document.body.classList.contains('dash-projector')) idle = setTimeout(() => document.body.classList.add('dash-idle'), 3000); };
   function projector(on) {
     document.body.classList.toggle('dash-projector', on);
+    requestAnimationFrame(fitRows);
     $('#dash-projector')?.setAttribute('aria-pressed', String(on));
     if (on) { document.documentElement.requestFullscreen?.().catch(() => {}); wake(); awake(); }
     else { if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {}); try { lock && lock.release(); } catch { /* gone */ } lock = null; clearTimeout(idle); document.body.classList.remove('dash-idle'); }
@@ -941,5 +943,23 @@ function start() {
   for (const ev of ['mousemove', 'pointerdown', 'keydown']) document.addEventListener(ev, awake, { passive: true });
 
   narrow.addEventListener('change', render);
+  // Projector mode (stage 3 review): the whole screen fits without scrolling when the rows can be at least 56px tall;
+  // a layout taller than that scrolls inside the stage, with a shadow at the bottom while there is more below.
+  function fitRows() {
+    const stage = grid.parentElement;
+    let min = 72;
+    if (document.body.classList.contains('dash-projector') && !S.editing && !narrow.matches) {
+      const rows = +grid.style.getPropertyValue('--rows') || MIN_ROWS, gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+      const fit = Math.floor((stage.clientHeight - parseFloat(getComputedStyle(stage).paddingBottom || 0) - gap * (rows - 1)) / rows);
+      if (fit >= 56) min = Math.min(72, fit);
+    }
+    grid.style.setProperty('--rowmin', `${min}px`);
+    stageMark();
+  }
+  const stageEl = grid.parentElement;
+  const stageMark = () => { const more = stageEl.scrollHeight > stageEl.clientHeight + 12 && stageEl.scrollTop + stageEl.clientHeight < stageEl.scrollHeight - 12; stageEl.classList.toggle('has-more', more); };
+  stageEl.addEventListener('scroll', stageMark, { passive: true });
+  addEventListener('resize', () => requestAnimationFrame(fitRows));
+  document.addEventListener('fullscreenchange', () => requestAnimationFrame(fitRows));
   applyBg(); render(); renderLayouts(); showLive(); tick();
 }

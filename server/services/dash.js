@@ -125,9 +125,9 @@ export const WIDGETS = [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
   // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
-  ...[['fractions', '🍕', [6, 6], [5, 5]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [4, 4]],
-    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [5, 5]], ['tenframe', '🔴', [5, 5], [4, 4]], ['hundreds', '💯', [5, 7], [4, 6]],
-    ['area', '🔲', [6, 6], [5, 5]], ['times', '✖️', [5, 7], [4, 6]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
+  ...[['fractions', '🍕', [6, 6], [5, 5]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [5, 5]],
+    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 5]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['area', '🔲', [6, 6], [5, 5]], ['times', '✖️', [6, 8], [5, 7]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
     .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
     { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },

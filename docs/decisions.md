@@ -6177,8 +6177,8 @@ maths, pure and tested), `server/services/dash-tools.js` (each tool's state, reb
 - **Accessible:** every tool works by keyboard (sliders with arrow keys for bars, the number line, the clock and the
   hundredths grid; a roving grid for ten frames, the hundreds chart and the times table; a plotting cursor on the
   coordinate plane), and changes are announced in the polite live region. Buttons are 44px; the cells of the hundreds
-  chart and the times table can be smaller at small sizes (on a 390px phone a 12 × 12 times table cell is about 23px) and have
-  the keyboard grid. Light and dark; on right-to-left pages the controls mirror while number lines, graphs and the
+  chart and the times table can be smaller at small sizes (on a 390px phone a 12 × 12 times table cell is about 24px,
+  its number at 12px) and have the keyboard grid. Light and dark; on right-to-left pages the controls mirror while number lines, graphs and the
   coordinate plane keep left-to-right maths (fraction bars fill from the side of their fraction); numbers put into
   sentences are isolated so "6/8, 5/8" reads right in Arabic and Hebrew. Reduced motion respected.
 - **Readable from the back:** SVG text grows so it is never under 13px on screen (more in projector mode); lines are
@@ -6186,6 +6186,19 @@ maths, pure and tested), `server/services/dash-tools.js` (each tool's state, reb
 - **Fit check:** `scripts/dash-fit-check.js` now spreads the widgets over as many layouts as needed (24 widgets and 24
   rows each), puts every tool on both students' own screens on the tools' layouts, and also fails when a tool's model
   spills out of its area or a tool's rows overlap.
+- **Nothing unreadable, nothing hidden (review).** Text in a tool is never under 12px (13px on the projector); area
+  model partial products are at least 14px (16 on the projector) and move outside their part, with a leader line, when
+  the part is too small. Graph labels are never cut: they wrap onto two lines and shrink, and turn 45° when a word is
+  wider than its column. Coordinate tick numbers have a halo of the card's colour; the axis names sit clear of them; the
+  origin's 0 is left out where it would run into −1. Place value column names turn on their side on a narrow chart
+  rather than break mid-word; disc numbers show only where a disc fits them at 12px. Disabled tool buttons keep their
+  text at full contrast (a dashed outline says they are off). **Projector mode fits the screen** when the layout's rows
+  can be at least 56px tall (they shrink from 72px); a taller layout scrolls inside the stage, with a shadow at the
+  bottom edge while there is more below, and the bars never cover a widget. The fit check now also fails on any of
+  these: text under 12px (13 on the projector) in a tool, measured on screen (SVG text through its transform), a
+  graph label cut short, any text-overflow ellipsis that is cutting text, a widget under the top or bottom bar, and
+  content below the screen that can't be scrolled into view. Smallest sizes went up where needed (graph 5 × 5,
+  coordinate plane 5 × 6, base-ten 6 × 5, place value 6 × 5, ten frames 4 × 5, times table 5 × 7).
 - Also fixed: a pressed quiet button inside a widget (`aria-pressed="true"`) now shows as pressed (the stage 2 quiet
   rule was more specific and left it with cream text on a light button).
 - **Not in this stage** (stages 4 and 5): geoboard, pattern blocks, angle maker, 3D shapes and nets, transformations,
