@@ -9386,17 +9386,6 @@
         "r_brave": "Etwas Neues wagen",
         "r_creative": "Gute Ideen"
       },
-      "stickers": {
-        "name": "Sticker",
-        "desc": "Lustige Oomba-Sticker für den Bildschirm.",
-        "s": {
-          "stamps": "Sticker"
-        },
-        "add": "Sticker hinzufügen",
-        "remove": "{e} entfernen",
-        "clear": "Alle entfernen",
-        "empty": "Tippe unten auf einen Sticker, um ihn hierher zu setzen."
-      },
       "fractions": {
         "name": "Bruchstreifen",
         "desc": "Teilen, färben und vergleichen. „Gleich große Teile“ zeigt, warum einer größer ist. Klasse 2–6.",

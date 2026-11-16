@@ -163,7 +163,7 @@ function start() {
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
-    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
+    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard): keep it, redraw it, save.
     set: (key, value) => {
       if (!TEACHER || w.pinned) return;
       w.s = { ...w.s, [key]: value };
@@ -452,7 +452,7 @@ function start() {
     const commit = () => { if (pending) { S.undo.push(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } $('#dash-undo').disabled = !S.undo.length; };
     const redraw = () => { const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`); if (old) { const order = +old.style.order; old.replaceWith(card(w, order)); } save(); };
     for (const f of type.settings) {
-      if (f.hidden) continue;   // changed by the widget itself (scores, stickers)
+      if (f.hidden) continue;   // changed by the widget itself (scores)
       const id = `dset-${w.id}-${f.key}`;
       const field = document.createElement('div'); field.className = f.type === 'bool' ? 'dash-tog' : 'field';
       if (f.type === 'bool') {

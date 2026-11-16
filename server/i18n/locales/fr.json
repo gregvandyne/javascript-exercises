@@ -9385,17 +9385,6 @@
         "r_brave": "Oser essayer",
         "r_creative": "Bonnes idées"
       },
-      "stickers": {
-        "name": "Autocollants",
-        "desc": "Des autocollants Oomba à mettre sur l’écran.",
-        "s": {
-          "stamps": "Autocollants"
-        },
-        "add": "Ajouter un autocollant",
-        "remove": "Retirer {e}",
-        "clear": "Tout retirer",
-        "empty": "Touche un autocollant en dessous pour le mettre ici."
-      },
       "fractions": {
         "name": "Bandes de fractions",
         "desc": "Partager, colorier et comparer. « Parts égales » montre pourquoi l’une est plus grande. Du CE1 à la 6e.",

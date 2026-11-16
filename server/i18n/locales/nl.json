@@ -9386,17 +9386,6 @@
         "r_brave": "Iets nieuws proberen",
         "r_creative": "Goede ideeën"
       },
-      "stickers": {
-        "name": "Stickers",
-        "desc": "Leuke Oomba-stickers voor op het scherm.",
-        "s": {
-          "stamps": "Stickers"
-        },
-        "add": "Sticker toevoegen",
-        "remove": "{e} weghalen",
-        "clear": "Allemaal weghalen",
-        "empty": "Tik hieronder op een sticker om hem hier te zetten."
-      },
       "fractions": {
         "name": "Breukenstroken",
         "desc": "Verdelen, kleuren en vergelijken. ‘Even grote stukjes’ laat zien waarom de ene groter is. Groep 4–8.",

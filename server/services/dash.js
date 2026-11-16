@@ -38,7 +38,7 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools
  * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
  * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
  * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
- * 'scores' and 'stamps' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
+ * 'scores' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
  * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
  * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
  * 'events': countdowns, each a label, a day and an optional time (cleanEvents).
@@ -168,8 +168,6 @@ export const WIDGETS = [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
     { key: 'scores', type: 'scores', hidden: true, def: [] }] },
-  { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [3, 3], words: ['add', 'remove', 'clear', 'empty'], settings: [
-    { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
   { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
@@ -255,9 +253,7 @@ export const cleanText = (v, max, multi = false) => {
   if (multi) s = s.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n');
   return [...s.trim()].slice(0, max).join('');
 };
-export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_STAMPS = 30, MAX_SCORE = 9999;
-/** How many stickers the fixed Oomba set has (public/js/dash-widgets.js STAMPS; no uploads). */
-export const STAMP_COUNT = 20;
+export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_SCORE = 9999;
 const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
 /** A real calendar day as YYYY-MM-DD, or ''. */
 export const cleanDate = v => { const m = YMD.exec(String(v ?? '')); if (!m) return ''; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] && +m[1] >= 2000 && +m[1] <= 2100 ? m[0] : ''; };
@@ -289,10 +285,6 @@ export function cleanEvents(v, old = {}) {
 }
 /** Scoreboard points: whole numbers, one per team. */
 export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
-/** Stickers: which one of the fixed set and where (percent of the widget). */
-export const cleanStamps = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').slice(0, MAX_STAMPS)
-  .map(x => ({ e: Number(x.e), x: Math.round(Number(x.x)), y: Math.round(Number(x.y)) }))
-  .filter(x => Number.isInteger(x.e) && x.e >= 0 && x.e < STAMP_COUNT && x.x >= 0 && x.x <= 100 && x.y >= 0 && x.y <= 100);
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 const ZONES = new Set(typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []);
 export const isZone = z => { if (ZONES.has(z)) return true; try { new Intl.DateTimeFormat('en', { timeZone: String(z) }); return /^[A-Za-z_]+\/[A-Za-z_/+-]+$/.test(String(z)); } catch { return false; } };
@@ -371,7 +363,6 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
     else if (f.type === 'events') out[f.key] = cleanEvents(v, src);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
-    else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
     // stage 5
@@ -437,10 +428,13 @@ export const roleOf = (u, c) => (isTeacher(u, c) ? 'teacher' : isStudent(u, c) ?
 
 // ---------------------------------------------------------------- teacher layouts
 const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_at, created_at, updated_at';
+/** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
+ *  when read, so old layouts, pins and student screens keep loading with everything else as it was. */
+const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
 /** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
  *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
 const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
-const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(json(r.widgets, [])), bg: json(r.bg, DEFAULT_BG) } : null);
+const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(json(r.widgets, []))), bg: json(r.bg, DEFAULT_BG) } : null);
 export const getLayout = id => readLayout(q.get(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE id=?`, String(id || '')));
 export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE class_id=? AND owner_id=? ORDER BY position, created_at`, classId, ownerId).map(readLayout);
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
@@ -544,11 +538,11 @@ export const LAYOUT_TEMPLATES = [
     ['light', [6, 0, 3, 3], { color: 'red', ...lightWords(t) }],
     ['symbols', [9, 0, 3, 3], { mode: 'silent' }],
     ['breathe', [6, 3, 6, 4], { pace: 'calm' }]] },
-  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: () => [
+  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: t => [
     ['picker', [0, 0, 5, 5], { mode: 'wheel', source: 'class' }],
     ['video', [5, 0, 4, 4]],
     ['dice', [9, 0, 3, 4], { count: 2 }],
-    ['stickers', [0, 5, 5, 3], { stamps: [{ e: 0, x: 10, y: 28 }, { e: 3, x: 28, y: 66 }, { e: 7, x: 47, y: 26 }, { e: 11, x: 66, y: 64 }, { e: 5, x: 86, y: 30 }] }],
+    ['score', [0, 5, 5, 3], { mode: 'teams', teams: t('dash.tpl.group.teams') }],
     ['breathe', [5, 4, 4, 4], { pace: 'calm' }],
     ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
 ];
@@ -581,13 +575,13 @@ function publishPins(classId, widgets) {
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
-export const pinsOf = classId => upgradeWidgets(json(classState(classId).pins, []));
+export const pinsOf = classId => upgradeWidgets(known(json(classState(classId).pins, [])));
 
 // ---------------------------------------------------------------- student screens
 export function studentState(classId, userId) {
   const r = q.get('SELECT widgets, pins, bg FROM dash_students WHERE class_id=? AND user_id=?', classId, userId);
   if (!r) return { widgets: [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) }], pins: {}, bg: { kind: 'color', id: 'sky' }, fresh: true };
-  return { widgets: json(r.widgets, []), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
+  return { widgets: known(json(r.widgets, [])), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
 }
 /** A student saves their screen: their own widgets (types students may add), where they put the pinned ones (a place
  *  only: pinned widgets can't be removed or changed), and their background. */

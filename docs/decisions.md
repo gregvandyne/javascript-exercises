@@ -6496,6 +6496,20 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
 
+## Classroom dashboards: stickers widget removed (16 Nov 2026)
+Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
+(`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and
+`STAMP_COUNT`), so it is no longer in the widget library and neither teachers nor students can add it; its renderer and
+emoji set (`public/js/dash-widgets.js`), its CSS and its `dash.w.stickers.*` strings in every locale went with it.
+- **Existing ones are dropped, not migrated.** Layouts, the class's pins and student screens are stored as JSON; a
+  widget whose type the registry no longer has is now filtered out when read (`known` in `readLayout`, `pinsOf`,
+  `studentState`), and `cleanWidgets` already refused unknown types on save. So an old layout, pin or student screen with
+  a stickers widget loads with only that widget missing, and the next save stores it without it. A student's saved place
+  for an old pinned stickers widget is ignored (it used to be a crash waiting to happen: `cleanBox` of an unknown type).
+  Pushes never carried stickers (only teaching tools are sent). No migration.
+- **Fun break** gets a team **scoreboard** (four sample team names in the teacher's language) in the stickers' 5 × 3
+  place, its default size: still playful for a break, and the layout still fills the 12 × 8 grid with no gaps.
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or

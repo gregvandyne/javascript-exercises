@@ -732,8 +732,8 @@ function tiles(body, s, ctx) {
 }
 
 // ================================================================ stage 2, second part
-// Event countdown, calendar, work symbols, traffic light, dice, random number, group maker, scoreboard, stickers.
-// Widgets the teacher changes with a tap (symbols, light, score, stickers) save through ctx.set(key, value): the
+// Event countdown, calendar, work symbols, traffic light, dice, random number, group maker, scoreboard.
+// Widgets the teacher changes with a tap (symbols, light, score) save through ctx.set(key, value): the
 // layout saves, and a pinned one reaches student screens with the next /live check.
 
 /** Today in a time zone as YYYY-MM-DD. */
@@ -763,8 +763,6 @@ export function makeGroups(names, by, n, rand = Math.random) {
   list.forEach((x, i) => groups[i % k].push(x));
   return groups;
 }
-/** The fixed Oomba sticker set (no uploads). services/dash.js STAMP_COUNT must match. */
-export const STAMPS = ['⭐', '🌟', '🎉', '👏', '💯', '🏆', '🌈', '🔥', '💡', '❤️', '✅', '🎯', '🚀', '🍎', '📚', '✏️', '🌻', '🐸', '🦉', '🎵'];
 const rnd = n => (globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] % n : Math.floor(Math.random() * n));
 
 /** Days from one YYYY-MM-DD to another (calendar days, whatever the clock). */
@@ -1063,42 +1061,5 @@ function score(body, s, ctx) {
   return null;
 }
 
-function stickers(body, s, ctx) {
-  const W = ctx.type.words;
-  body.classList.add('dw-stickers');
-  const area = el('div', 'dw-stickarea');
-  const list = s.stamps || [];
-  const control = ctx.teacher && !ctx.editing;
-  list.forEach((x, i) => {
-    const e = STAMPS[x.e] || '⭐';
-    const sp = el(control ? 'button' : 'span', 'dw-stamp', e);
-    sp.style.setProperty('--x', x.x); sp.style.setProperty('--y', x.y);   // always inside the area (public/css/dash.css)
-    if (control) { sp.type = 'button'; sp.setAttribute('aria-label', fill(W.remove, { e })); sp.addEventListener('click', () => ctx.set('stamps', list.filter((_, j) => j !== i))); }
-    else sp.setAttribute('aria-hidden', 'true');
-    area.appendChild(sp);
-  });
-  body.appendChild(area);
-  if (!list.length && control) area.appendChild(el('p', 'dw-empty', W.empty));
-  if (control) {
-    // Adding: a sheet with the fixed Oomba set only; the widget keeps one row of controls.
-    const row = el('div', 'dw-row dw-foot');
-    const add = btn(`⭐ ${W.add}`, 'btn btn-sm btn-primary');
-    add.disabled = list.length >= 30;
-    add.addEventListener('click', () => {
-      const esc = ctx.esc;
-      const sh = ctx.sheet({ title: W.add, content: `<div class="dw-palette" role="group" aria-label="${esc(W.add)}">${STAMPS.map((e, i) => `<button class="btn dw-palbtn" type="button" data-stamp="${i}" aria-label="${esc(`${W.add}: ${e}`)}">${e}</button>`).join('')}</div>` });
-      sh.el.addEventListener('click', ev => {
-        const b2 = ev.target.closest('[data-stamp]'); if (!b2) return;
-        sh.close();
-        ctx.set('stamps', [...list, { e: +b2.dataset.stamp, x: rnd(101), y: rnd(101) }].slice(0, 30));
-      });
-    });
-    const clear = btn(`🧹 ${W.clear}`, 'btn btn-sm'); clear.disabled = !list.length; clear.addEventListener('click', () => ctx.set('stamps', []));
-    row.append(add, clear);
-    body.appendChild(row);
-  }
-  return null;
-}
-
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4, ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...TOOLS, ...TOOLS4, ...RENDER5, camera };

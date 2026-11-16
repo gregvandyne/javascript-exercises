@@ -464,15 +464,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-teamname{flex:1 0 100%;min-width:0;font-weight:800;font-size:clamp(1rem,min(10cqh,5cqi),1.8rem);overflow-wrap:anywhere;hyphens:auto;line-height:1.15}
 .dw-teampts{flex:none;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.4rem,min(20cqh,8cqi),5rem);line-height:1;min-width:1.4em}
 .dw-pm{min-width:44px;padding:0;font-size:1.4rem}
-/* stickers */
-.dw-stickers{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
-.dw-stickarea{--st:clamp(44px,min(24cqh,16cqi),84px);position:relative;flex:1 1 auto;min-height:var(--st);border-radius:var(--r-sm);background:var(--card-2)}
-.dw-stamp{position:absolute;inset-inline-start:calc((100% - var(--st)) * var(--x) / 100);inset-block-start:calc((100% - var(--st)) * var(--y) / 100);display:grid;place-items:center;width:var(--st);height:var(--st);font-size:calc(var(--st) * .7);line-height:1;background:none;border:0;padding:0;cursor:pointer;border-radius:12px}
-.dw-stickarea .dw-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:var(--s2)}
-span.dw-stamp{cursor:default}
-.dw-stamp:focus-visible{outline:3px solid var(--focus);border-radius:8px}
-.dw-palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:var(--s2)}
-.dw-palbtn{min-height:56px;padding:0;font-size:1.6rem}
 
 /* ---------- one look for the big numbers, one for the words under them ---------- */
 .dw-time,.dw-digits,.dw-countn,.dw-randn,.dw-teampts,.dw-wtemp{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.08;padding-block:.05em}
