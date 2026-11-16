@@ -528,7 +528,7 @@ test('account deletion forgets a student\'s place in help queues, their check an
 test('every stage 2 string is translated into every locale', async () => {
   const { checkAll } = await import('../../server/i18n/check.js');
   const r = checkAll();
-  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles|countdown|calendar|symbols|light|dice|random|groups|score|stickers)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
+  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles|countdown|calendar|symbols|light|dice|random|groups|score)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
   assert.ok(keys.length > 240, String(keys.length));
   for (const l of r.locales) {
     if (l.code === 'en-GB') continue;
@@ -539,8 +539,11 @@ test('every stage 2 string is translated into every locale', async () => {
 });
 
 test('more everyday widgets: registry, settings rebuilt on the server, and the maths behind them', () => {
-  const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score', 'stickers'];
+  const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score'];
   for (const id of ids) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
+  // The stickers widget was removed (docs/decisions.md "Stickers widget removed"): not in the registry, no renderer.
+  assert.equal(D.widgetType('stickers'), null); assert.equal(W.RENDER.stickers, undefined);
+  assert.ok(!D.WIDGETS.some(x => x.id === 'stickers'));
   const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
   // Visual timer and spinner wheel are modes of the timer and the picker.
   assert.equal(c('timer', { view: 'ring' }).view, 'ring'); assert.equal(c('timer', { view: 'lava lamp' }).view, 'digits');
@@ -563,13 +566,7 @@ test('more everyday widgets: registry, settings rebuilt on the server, and the m
   assert.deepEqual(c('groups', { by: 'count', n: 99 }), { by: 'count', n: 12 });
   // Scoreboard: whole points, one per team (8 at most); team names are teacher text.
   assert.deepEqual(c('score', { teams: 'Red\nBlue', scores: [3, '4.6', 'x', 1e9, -1e9, 0, 0, 0, 9, 9] }), { mode: 'teams', teams: 'Red\nBlue', scores: [3, 5, 0, 9999, -9999, 0, 0, 0] }, 'stage 5 adds the mode (teams by default)');
-  // Stickers: only the fixed set (no uploads), inside the widget, at most 30.
-  assert.deepEqual(c('stickers', { stamps: [{ e: 0, x: 10, y: 20 }, { e: 99, x: 1, y: 1 }, { e: 1, x: 120, y: 5 }, { e: 'https://evil.example/x.png', x: 1, y: 1 }, { e: 2.5, x: 1, y: 1 }] }).stamps, [{ e: 0, x: 10, y: 20 }]);
-  assert.equal(c('stickers', { stamps: Array.from({ length: 50 }, () => ({ e: 1, x: 5, y: 5 })) }).stamps.length, D.MAX_STAMPS);
-  assert.equal(W.STAMPS.length, D.STAMP_COUNT);
   const widgets = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
-  const stickerCode = widgets.slice(widgets.indexOf('function stickers('), widgets.indexOf('/** id -> renderer.'));
-  assert.doesNotMatch(stickerCode, /type="?file|input|upload|FileReader|fetch|innerHTML/i, 'stickers: no uploads, no network, no markup');
   // Countdown sums (the school's time zone) and calendar day.
   assert.equal(W.zonedEpoch('2026-12-04', '09:30', 'America/New_York'), Date.UTC(2026, 11, 4, 14, 30));
   assert.equal(W.zonedEpoch('2026-07-04', '09:30', 'America/New_York'), Date.UTC(2026, 6, 4, 13, 30), 'summer time');
@@ -590,18 +587,62 @@ test('more everyday widgets: registry, settings rebuilt on the server, and the m
   assert.doesNotMatch(widgets, /roster|realName|real_name/i);
 });
 
-test('symbols, traffic light, scoreboard and stickers the teacher taps reach student screens when pinned; dice and groups never do', async () => {
+test('symbols, traffic light and scoreboard the teacher taps reach student screens when pinned; dice and groups never do; a stickers widget is dropped', async () => {
   const w = world(); const T = as(w.T);
   await layout(w, [{ id: 'sy', type: 'symbols', s: { mode: 'silent' }, pin: true }, { id: 'tl', type: 'light', s: { color: 'red', red: 'Eyes on me' }, pin: true },
     { id: 'sb', type: 'score', s: { teams: 'Comets\nRockets', scores: [2, 5] }, pin: true }, { id: 'st', type: 'stickers', s: { stamps: [{ e: 3, x: 50, y: 50 }] }, pin: true },
     { id: 'dc', type: 'dice', pin: true }, { id: 'gr', type: 'groups', pin: true }, { id: 'rn', type: 'random', pin: true }]);
   const pins = (await as(w.a1)(`/api/dash/${w.A.id}/pins`)).json.pins;
-  assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score', 'stickers']);
+  assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score']);
+  // The stickers widget is gone: one sent is dropped like any unknown type, never stored.
+  assert.ok(!D.layoutsOf(w.A.id, w.T.id)[0].widgets.some(x => x.type === 'stickers'));
   assert.equal(pins.find(p => p.type === 'light').s.red, 'Eyes on me');
   assert.deepEqual(pins.find(p => p.type === 'score').s.scores, [2, 5]);
   // A student can add dice and a random number to their own screen, but not a scoreboard or a light.
   await as(w.a1)(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'd1', type: 'dice' }, { id: 'r1', type: 'random' }, { id: 's1', type: 'score' }, { id: 'l1', type: 'light' }, { id: 'g1', type: 'groups' }] }));
   assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets.map(x => x.type), ['dice', 'random']);
+});
+
+test('a stored stickers widget (from before it was removed) is dropped when read: layouts, pins and student screens keep loading with nothing else lost', async () => {
+  const w = world(); const T = as(w.T), A1 = as(w.a1);
+  const l = await layout(w, [{ id: 'cl', type: 'clock' }, { id: 'sb', type: 'score', x: 4, s: { teams: 'Comets\nRockets', scores: [2, 5] }, pin: true },
+    { id: 'tl', type: 'light', y: 4, s: { color: 'red', red: 'Eyes on me' }, pin: true }]);
+  const kept = D.getLayout(l.id).widgets, keptPins = D.pinsOf(w.A.id);
+  assert.deepEqual(keptPins.map(p => p.id), ['sb', 'tl']);
+  // As it was stored before the removal: a pinned stickers widget in the layout, the class's pins and a student's screen.
+  const old = { id: 'st', type: 'stickers', x: 0, y: 6, w: 4, h: 3, s: { stamps: [{ e: 3, x: 50, y: 50 }] }, pin: true };
+  const { pin, ...oldPin } = old;
+  q.run('UPDATE dash_layouts SET widgets=? WHERE id=?', JSON.stringify([kept[0], old, ...kept.slice(1)]), l.id);
+  q.run('UPDATE dash_class SET pins=? WHERE class_id=?', JSON.stringify([keptPins[0], oldPin, ...keptPins.slice(1)]), w.A.id);
+  const dice = { id: 'd1', type: 'dice', x: 0, y: 2, w: 3, h: 3, s: { count: 2 } };
+  q.run('INSERT INTO dash_students(class_id, user_id, widgets, pins, bg, updated_at) VALUES (?,?,?,?,?,?)', w.A.id, w.a1.id,
+    JSON.stringify([dice, { ...oldPin, id: 'st2' }]), JSON.stringify({ st: { x: 6, y: 0, w: 4, h: 3 }, sb: { x: 0, y: 6, w: 5, h: 3 } }), JSON.stringify({ kind: 'color', id: 'mint' }), Date.now());
+  // Read back: the stickers widget is gone, everything else exactly as it was.
+  assert.deepEqual(D.getLayout(l.id).widgets, kept);
+  assert.deepEqual(D.layoutsOf(w.A.id, w.T.id)[0].widgets, kept);
+  assert.deepEqual(D.pinsOf(w.A.id), keptPins);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets, [dice]);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).bg, { kind: 'color', id: 'mint' });
+  // Both screens and the API load.
+  for (const who of [T, A1]) {
+    const r = await who(`/class/${w.A.id}/dashboard`); assert.equal(r.status, 200);
+    assert.doesNotMatch(r.text, /"type":"stickers"/);
+  }
+  const pins = await A1(`/api/dash/${w.A.id}/pins`); assert.equal(pins.status, 200);
+  assert.deepEqual(pins.json.pins.map(p => p.type), ['score', 'light']);
+  assert.equal((await T(`/api/dash/${w.A.id}/live`)).status, 200);
+  assert.equal((await A1(`/api/dash/${w.A.id}/live`)).status, 200);
+  // A student who moves the pinned widgets (the old stickers one among them) saves fine; only the real pins keep a place.
+  const r = await A1(`/api/dash/${w.A.id}/me`, POST({ pins: { st: { x: 6, y: 0, w: 4, h: 3 }, sb: { x: 0, y: 6, w: 5, h: 3 } } }));
+  assert.equal(r.status, 200, r.text);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).pins, { sb: { x: 0, y: 6, w: 5, h: 3 } });
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets, [dice]);
+  // The teacher saves the layout as it loaded: everything else kept, the stickers widget gone from storage too.
+  const again = await T(`/api/dash/${w.A.id}/layouts/${l.id}`, POST({ widgets: D.getLayout(l.id).widgets }));
+  assert.equal(again.status, 200, again.text);
+  assert.deepEqual(again.json.layout.widgets, kept);
+  assert.doesNotMatch(q.get('SELECT widgets FROM dash_layouts WHERE id=?', l.id).widgets, /stickers/);
+  assert.doesNotMatch(D.classState(w.A.id).pins, /stickers/);
 });
 
 test('the spinner wheel: names on the slices only when they are readable, else numbers; neighbouring slices never share a colour; the colours keep AA contrast', () => {

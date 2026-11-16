@@ -52,7 +52,7 @@ test('the five ready-made layouts, as asked: their widgets, pins and backgrounds
   assert.deepEqual(types('lesson'), ['check', 'help', 'light', 'numline', 'timer']);
   assert.deepEqual(types('group'), ['groups', 'noise', 'score', 'timer']);
   assert.deepEqual(types('quiet'), ['breathe', 'light', 'symbols', 'timer']);
-  assert.deepEqual(types('fun'), ['breathe', 'dice', 'picker', 'stickers', 'timer', 'video']);
+  assert.deepEqual(types('fun'), ['breathe', 'dice', 'picker', 'score', 'timer', 'video'], 'a team scoreboard where the stickers were (removed)');
   const pinned = id => D.templateWidgets(id, t).filter(w => w.pin).map(w => w.type).sort();
   assert.deepEqual(pinned('morning'), ['ican', 'jobs', 'mood'], 'goal, mood and jobs on student screens');
   assert.deepEqual(pinned('lesson'), ['help'], 'the help queue on student screens (a quick check reaches them when it is sent)');
@@ -65,6 +65,11 @@ test('the five ready-made layouts, as asked: their widgets, pins and backgrounds
   assert.ok(get('fun', 'timer').minutes >= 3 && get('fun', 'timer').minutes <= 5, 'a short brain break');
   assert.equal(get('fun', 'video').video, null, 'an empty video slot for the teacher\'s own');
   assert.equal(get('group', 'score').mode, 'teams');
+  assert.equal(get('fun', 'score').mode, 'teams');
+  assert.equal(get('fun', 'score').teams.split('\n').length, 4, 'four sample teams');
+  // Fun break fills the whole 12 x 8 grid: no gaps.
+  const fun = D.templateWidgets('fun', t);
+  assert.equal(fun.reduce((n, w) => n + w.w * w.h, 0), 12 * 8);
   for (const x of D.LAYOUT_TEMPLATES) assert.deepEqual(D.cleanBg(x.bg), x.bg, `${x.id}: a real background`);
   assert.deepEqual(D.layoutTemplate('fun').bg, { kind: 'art', id: 'sparks' });
 });
