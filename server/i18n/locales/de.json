@@ -9830,8 +9830,8 @@
         "idea4": "Baue zwei Formen mit gleicher Fläche, aber verschiedenem Umfang.",
         "idea5": "Baue eine Form mit genau zwei rechten Winkeln.",
         "howto": "Tippe Nägel an, für ein Gummiband. Erster Nagel schließt.",
-        "helpUse": "Tippe Stifte an, um ein Band zu spannen; tippe den ersten Stift noch einmal, um es zu schließen. Wähle zuerst eine Farbe oder Neues Band für ein weiteres (bis 12).\nZiehe eine Ecke, um sie zu verschieben, oder ziehe innen, um das ganze Band zu verschieben. Band löschen nimmt das ausgewählte weg.\nFormen legt eine fertige Form aufs Brett; Werkzeuge hat ein Lineal (ziehe an seinen Enden); Beschriften bringt Text und einen Stift.\nFüllung, Gitterlinien, Winkel und Beschriftungen ändern die Anzeige; Gitter und Einstellungen ändern das Brett (Quadratgitter, Dreieckspunkte, Kreis).\nVergrößern mit + und − oder zwei Fingern; Rückgängig, Wiederholen und Zurücksetzen; Vollbild füllt den Bildschirm.\nTastatur: Pfeile gehen über die Stifte, Enter spannt das Band oder wählt eine Ecke, Pfeile verschieben sie, Entf löscht, Esc lässt los.",
-        "helpIdeas": "Stelle eine Aufgabe (💡 hat Ideen): Alle bauen eine Form mit der Fläche 12 und vergleichen die Umfänge.\nBaue auf Dreieckspunkten ein Sechseck und zähle die kleinen Dreiecke; vergleiche am Kreis die Winkel von Formen im Kreis."
+        "helpUse": "Tippe Stifte an, um ein Band zu spannen; der erste Stift schließt es.\nZiehe eine Ecke oder das ganze Band. Eine Farbe beginnt ein neues.\nFormen, Werkzeuge und Beschriften bringen Formen, Lineal, Text und Stift.",
+        "helpIdeas": "Probiert: Alle bauen die Fläche 12 und vergleichen die Umfänge."
       },
       "pattern": {
         "name": "Musterplättchen",

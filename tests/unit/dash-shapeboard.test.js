@@ -277,6 +277,21 @@ test('the registry and the words: the geoboard id stays; every word in every lan
   assert.doesNotMatch(all, /brain\s*ing\s*camp|mathigon|polypad|didax|toy\s*theater/i);
 });
 
+test('the ⓘ help is short: three lines on the controls and one "Try:" idea, in every language', () => {
+  for (const code of ['en', 'ar', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant']) {
+    const g = JSON.parse(fs.readFileSync(`server/i18n/locales/${code}.json`, 'utf8')).dash.w.geoboard;
+    const lines = g.helpUse.split('\n');
+    assert.equal(lines.length, 3, code); assert.ok(!g.helpIdeas.includes('\n'), code);
+    const words = s => (/^(ja|zh)/.test(code) ? [...s].length / 3 : s.split(/\s+/).length);
+    for (const l of lines) assert.ok(words(l) <= 14, `${code}: ${l}`);
+    if (code === 'en') { assert.match(g.helpIdeas, /^Try: /); assert.ok(words(`${g.helpUse} ${g.helpIdeas}`) <= 55); }
+  }
+  // The panel keeps the controls and one "Try:" line; the list of shared extras is left out.
+  const src = fs.readFileSync('public/js/dash-shapeboard.js', 'utf8');
+  assert.match(src, /const r = T\.finish\(\);\n\s*tidyHelp\(\);/);
+  assert.match(src, /el\('p', 'dt-helptry', list\.textContent\)/);
+});
+
 test('the renderer: pointer events with no page scroll on the board, pinch only on the board, keyboard, a live summary', () => {
   const src = fs.readFileSync('public/js/dash-shapeboard.js', 'utf8'), css = fs.readFileSync('public/css/dash.css', 'utf8');
   for (const ev of ["'pointerdown'", "'pointermove'", "'pointerup'", "'pointercancel'"]) assert.ok(src.includes(`board.addEventListener(${ev}`), ev);

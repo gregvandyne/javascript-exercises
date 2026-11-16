@@ -6736,6 +6736,10 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   screen (`cleanToolState(..., { student: true })`, tested) and the browser leaves them out of what it keeps. Nothing a
   student types or draws reaches another student or the teacher; drawings never go to any AI (there is none here); no
   network, storage or `innerHTML` in the renderer (tested). Students read the title, never type it. No prices.
+- **The ⓘ help is short** (product feedback: "much more concise"): three lines on the controls (each about a dozen words)
+  and one "Try:" idea, about 50 words in English; the shared list of Make a question, Send to students and Practice it
+  is left out of this panel (those buttons say what they do). The panel is tidied by the renderer after the shell builds
+  it, so the shared help code is unchanged.
 - **Make a question** asks the selected band's area (or the first closed shape's): wrong answers are the perimeter, the pegs
   counted, and one or two squares off; on triangle dots, "How many small triangles make the shape?". The circle makes no
   question (its areas are not exact).

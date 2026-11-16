@@ -10253,8 +10253,8 @@
         "idea4": "Make two shapes with the same area but different perimeters.",
         "idea5": "Make a shape with exactly two right angles.",
         "howto": "Tap pegs to stretch a band. Tap the first peg again to close it.",
-        "helpUse": "Tap pegs to stretch a band; tap its first peg again to close it. Pick a color first, or New band, to start another (up to 12).\nDrag a corner to move it, or drag inside a band to move the whole band. Delete band takes the selected one away.\nShapes puts a ready-made shape on the board; Tools has a ruler (drag its ends); Annotate adds text and a pen.\nFills, Grid lines, Angles and Labels change what shows; Grid and Settings change the board (square grid, triangle dots, circle).\nZoom with + and − or two fingers; Undo, Redo and Reset; Full screen fills the screen.\nKeyboard: arrows move round the pegs, Enter stretches the band or picks a corner, arrows then move it, Delete removes, Escape lets go.",
-        "helpIdeas": "Set a challenge (💡 has ideas): everyone makes a shape with an area of 12 and compares perimeters.\nOn triangle dots, make a hexagon and count the small triangles inside; on the circle, compare the angles of inscribed shapes."
+        "helpUse": "Tap pegs to stretch a band; tap the first peg to close it.\nDrag a corner or a whole band. A color starts a new band.\nShapes, Tools and Annotate add shapes, a ruler, labels and a pen.",
+        "helpIdeas": "Try: everyone makes an area of 12, then compares perimeters."
       },
       "pattern": {
         "name": "Pattern blocks",

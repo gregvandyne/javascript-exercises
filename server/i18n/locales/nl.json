@@ -9830,8 +9830,8 @@
         "idea4": "Maak twee vormen met dezelfde oppervlakte maar een andere omtrek.",
         "idea5": "Maak een vorm met precies twee rechte hoeken.",
         "howto": "Tik op spijkers om een elastiekje te spannen. De eerste sluit het.",
-        "helpUse": "Tik op pinnen om een elastiekje te spannen; tik nog eens op de eerste om het te sluiten. Kies eerst een kleur, of Nieuw elastiekje, voor nog een (tot 12).\nSleep een hoekpunt om het te verplaatsen, of sleep binnen een elastiekje om het hele elastiekje te verplaatsen. Elastiekje wissen haalt het gekozen weg.\nVormen zet een kant-en-klare vorm neer; Gereedschap heeft een liniaal (sleep aan de uiteinden); Aantekenen geeft tekst en een pen.\nOpvulling, Roosterlijnen, Hoeken en Labels veranderen wat je ziet; Rooster en Instellingen veranderen het bord (vierkantsrooster, driehoekspunten, cirkel).\nZoom met + en − of met twee vingers; Ongedaan maken, Opnieuw doen en Opnieuw; Volledig scherm vult het scherm.\nToetsenbord: pijltjes gaan langs de pinnen, Enter spant het elastiekje of kiest een hoekpunt, pijltjes verplaatsen het, Delete wist, Esc laat los.",
-        "helpIdeas": "Geef een uitdaging (💡 heeft ideeën): iedereen maakt een vorm met oppervlakte 12 en vergelijkt de omtrek.\nMaak op driehoekspunten een zeshoek en tel de driehoekjes; vergelijk op de cirkel de hoeken van vormen in de cirkel."
+        "helpUse": "Tik op pinnen om een elastiekje te spannen; de eerste pin sluit het.\nSleep een hoekpunt of het hele elastiekje. Een kleur begint een nieuw.\nVormen, Gereedschap en Aantekenen geven vormen, liniaal, labels en pen.",
+        "helpIdeas": "Probeer: iedereen maakt oppervlakte 12 en vergelijkt de omtrek."
       },
       "pattern": {
         "name": "Patroonblokken",

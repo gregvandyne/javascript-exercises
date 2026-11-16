@@ -9829,8 +9829,8 @@
         "idea4": "Fais deux figures de même aire mais de périmètres différents.",
         "idea5": "Fais une figure avec exactement deux angles droits.",
         "howto": "Touche des clous pour tendre un élastique. Le premier clou le ferme.",
-        "helpUse": "Touche des clous pour tendre un élastique ; touche de nouveau le premier pour le fermer. Choisis d’abord une couleur, ou Nouvel élastique, pour en commencer un autre (jusqu’à 12).\nGlisse un sommet pour le déplacer, ou glisse à l’intérieur pour déplacer tout l’élastique. Supprimer l’élastique retire celui qui est choisi.\nFigures pose une figure toute faite ; Outils a une règle (glisse ses bouts) ; Annoter ajoute du texte et un crayon.\nRemplissage, Lignes, Angles et Étiquettes changent l’affichage ; Grille et Réglages changent la planche (quadrillage, points en triangles, cercle).\nZoome avec + et − ou deux doigts ; Annuler, Rétablir et Réinitialiser ; Plein écran remplit l’écran.\nClavier : les flèches parcourent les clous, Entrée tend l’élastique ou prend un sommet, les flèches le déplacent, Suppr retire, Échap lâche.",
-        "helpIdeas": "Lance un défi (💡 propose des idées) : chacun fait une figure d’aire 12 et compare les périmètres.\nSur les points en triangles, fais un hexagone et compte les petits triangles ; sur le cercle, compare les angles des figures inscrites."
+        "helpUse": "Touche des clous pour tendre un élastique ; le premier clou le ferme.\nGlisse un sommet ou tout l’élastique. Une couleur en commence un autre.\nFigures, Outils et Annoter ajoutent figures, règle, étiquettes et crayon.",
+        "helpIdeas": "Essaie : chacun fait une aire de 12, puis on compare les périmètres."
       },
       "pattern": {
         "name": "Blocs logiques",

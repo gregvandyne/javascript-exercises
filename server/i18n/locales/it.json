@@ -9830,8 +9830,8 @@
         "idea4": "Crea due figure con la stessa area ma perimetri diversi.",
         "idea5": "Crea una figura con esattamente due angoli retti.",
         "howto": "Tocca i chiodi per tendere un elastico. Il primo chiodo lo chiude.",
-        "helpUse": "Tocca i chiodi per tendere un elastico; tocca di nuovo il primo per chiuderlo. Scegli prima un colore, o Nuovo elastico, per iniziarne un altro (fino a 12).\nTrascina un vertice per spostarlo, o trascina dentro un elastico per spostarlo tutto. Elimina elastico toglie quello scelto.\nFigure mette una figura già pronta; Strumenti ha un righello (trascina le estremità); Annota aggiunge testo e una penna.\nRiempimento, Linee, Angoli ed Etichette cambiano ciò che si vede; Griglia e Impostazioni cambiano la tavola (griglia quadrata, punti a triangoli, cerchio).\nIngrandisci con + e − o con due dita; Annulla, Ripeti e Azzera; Schermo intero riempie lo schermo.\nTastiera: le frecce passano tra i chiodi, Invio tende l’elastico o sceglie un vertice, le frecce lo spostano, Canc elimina, Esc lascia.",
-        "helpIdeas": "Lancia una sfida (💡 ha delle idee): tutti creano una figura di area 12 e confrontano i perimetri.\nSui punti a triangoli crea un esagono e conta i triangolini; sul cerchio confronta gli angoli delle figure inscritte."
+        "helpUse": "Tocca i chiodi per tendere un elastico; il primo chiodo lo chiude.\nTrascina un vertice o tutto l’elastico. Un colore ne inizia un altro.\nFigure, Strumenti e Annota aggiungono figure, righello, etichette e penna.",
+        "helpIdeas": "Prova: tutti creano un’area di 12 e confrontano i perimetri."
       },
       "pattern": {
         "name": "Blocchi geometrici",

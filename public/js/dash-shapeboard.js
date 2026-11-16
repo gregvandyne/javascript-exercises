@@ -111,6 +111,12 @@ export function geoboard(body, s, ctx) {
   const at = p => { const q = G.pegXY(st.board, f.N, p); return { x: f.ox + q.x * f.S, y: f.oy + q.y * f.S }; };
   const units = v => ({ x: (v.x - f.ox) / f.S, y: (v.y - f.oy) / f.S });
   let pxPerUnit = 0.5;   // screen pixels per viewBox unit (set when drawn)
+  // The board's own box can change size while the tool's area doesn't (the chrome or the readout beside it changed):
+  // drawn again then, so its words stay readable.
+  let boxSize = { w: 0, h: 0 }, boxRaf = 0;
+  const boxRo = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
+    if (Math.abs(boardBox.clientWidth - boxSize.w) > 2 || Math.abs(boardBox.clientHeight - boxSize.h) > 2) { cancelAnimationFrame(boxRaf); boxRaf = requestAnimationFrame(() => { if (!drag) draw(); }); }
+  }) : null;
   /** The peg under a point (viewBox units): the nearest one within a generous radius (half a step, at least 26px). */
   const pegNear = (v, loose = false) => {
     const r = G.nearestPeg(st.board, f.N, units(v)); if (!r) return null;
@@ -138,6 +144,7 @@ export function geoboard(body, s, ctx) {
   main.append(rail, palette, boardBox);
   root.append(head, main, bar, pop);
   T.stage.textContent = ''; T.stage.appendChild(root);
+  if (boxRo) boxRo.observe(boardBox);
   let board = null;
 
   // The challenge title: the teacher types it (with ideas to start from); everyone else reads it.
@@ -455,10 +462,12 @@ export function geoboard(body, s, ctx) {
     if (teacherText && document.activeElement !== titleIn && titleIn.value !== st.title) titleIn.value = st.title;
     if (teacherText && titleIn.isConnected) fitTitle();
     f = frame();
+    // The readout first: beside the board it takes room from it, so the board is measured after it.
+    readout();
     const N = f.N, bands = st.bands, sel = band();
     cursorFix();
     // Screen pixels per viewBox unit with the whole board in view (the board box is square-ish; a phone uses its width).
-    const bw = boardBox.clientWidth, bh = boardBox.clientHeight;
+    const bw = boardBox.clientWidth, bh = boardBox.clientHeight; boxSize = { w: bw, h: bh };
     pxPerUnit = (phone || !bh ? bw : Math.min(bw, bh)) / VB || 0.5;
     const z = ui.view.z, floor = projecting() ? 16 : 13;
     // Text keeps its size on the screen when the board is zoomed (the pegs and bands grow; the words don't).
@@ -605,7 +614,6 @@ export function geoboard(body, s, ctx) {
       const back = btn(W.done, 'btn btn-sm gb-chipx'); back.addEventListener('click', e => { e.stopPropagation(); setMode('band'); board.focus({ preventScroll: true }); });
       chip.append(t, back);
     } else chip.hidden = true;
-    readout();
     syncButtons();
   }
   const strokePath = p => { let d = ''; for (let i = 0; i < p.length; i += 2) d += `${i ? 'L' : 'M'}${p[i]},${p[i + 1]}`; return p.length === 2 ? `${d}l0.1,0` : d; };
@@ -879,12 +887,27 @@ export function geoboard(body, s, ctx) {
   document.addEventListener('keydown', onEsc);
   fit.addEventListener('click', e => { e.stopPropagation(); ui.view = { z: 1, cx: VB / 2, cy: VB / 2 }; applyView(); board.focus({ preventScroll: true }); });
 
+  /** The ⓘ panel, kept short: what the controls do (three lines) and one "Try:" line; no list of the shared extras
+   *  (Make a question, Send to students and Practice it say what they do on their own buttons). */
+  function tidyHelp() {
+    const card = body.closest('.dash-w') || body.parentElement, info = card && card.querySelector('.dt-info[aria-controls]');
+    const panel = info && card.querySelector(`#${CSS.escape(info.getAttribute('aria-controls'))}`); if (!panel) return;
+    const C = ctx.common || {};
+    [...panel.querySelectorAll('.dt-helph')].forEach((h, i) => {
+      const list = h.nextElementSibling && h.nextElementSibling.matches('.dt-helpl') ? h.nextElementSibling : null;
+      if (i === 0) return;
+      if (h.textContent === C.helpIdeas && list) { const p = el('p', 'dt-helptry', list.textContent); p.dir = 'auto'; h.replaceWith(p); list.remove(); return; }
+      h.remove(); if (list) list.remove();
+    });
+  }
+
   // ---------------------------------------------------------------- the shell
   T.draw = render;
   const r = T.finish();
+  tidyHelp();
   return {
     destroy() {
-      r.destroy(); clearTimeout(titleTimer); closeMenu();
+      r.destroy(); clearTimeout(titleTimer); closeMenu(); if (boxRo) boxRo.disconnect(); cancelAnimationFrame(boxRaf);
       document.removeEventListener('fullscreenchange', onFull); document.removeEventListener('keydown', onEsc);
       const c = card(); if (c.classList.contains('gb-max')) { c.classList.remove('gb-max'); document.documentElement.classList.remove('gb-maxed'); }
     },

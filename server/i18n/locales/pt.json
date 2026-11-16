@@ -9831,8 +9831,8 @@
         "idea4": "Monte duas figuras com a mesma área mas perímetros diferentes.",
         "idea5": "Monte uma figura com exatamente dois ângulos retos.",
         "howto": "Toque nos pinos para esticar um elástico. O primeiro pino o fecha.",
-        "helpUse": "Toque nos pinos para esticar um elástico; toque de novo no primeiro para fechá-lo. Escolha antes uma cor, ou Novo elástico, para começar outro (até 12).\nArraste um vértice para movê-lo, ou arraste dentro de um elástico para movê-lo inteiro. Apagar elástico tira o escolhido.\nFiguras põe uma figura pronta; Ferramentas tem uma régua (arraste as pontas); Anotar adiciona texto e uma caneta.\nPreenchimento, Linhas, Ângulos e Legendas mudam o que se vê; Malha e Configurações mudam o tabuleiro (malha quadriculada, pontos em triângulos, círculo).\nAproxime com + e − ou com dois dedos; Desfazer, Refazer e Recomeçar; Tela cheia ocupa a tela toda.\nTeclado: as setas percorrem os pinos, Enter estica o elástico ou escolhe um vértice, as setas o movem, Delete apaga, Esc larga.",
-        "helpIdeas": "Lance um desafio (💡 tem ideias): todos fazem uma figura de área 12 e comparam os perímetros.\nNos pontos em triângulos, faça um hexágono e conte os triângulos; no círculo, compare os ângulos das figuras inscritas."
+        "helpUse": "Toque nos pinos para esticar um elástico; o primeiro pino o fecha.\nArraste um vértice ou o elástico inteiro. Uma cor começa outro.\nFiguras, Ferramentas e Anotar trazem figuras, régua, legendas e caneta.",
+        "helpIdeas": "Experimente: todos fazem uma área de 12 e comparam os perímetros."
       },
       "pattern": {
         "name": "Blocos padrão",

@@ -9829,8 +9829,8 @@
         "idea4": "Forma dos figuras con la misma área y distinto perímetro.",
         "idea5": "Forma una figura con exactamente dos ángulos rectos.",
         "howto": "Toca clavos para estirar una goma. Toca el primero para cerrarla.",
-        "helpUse": "Toca clavos para tensar una goma; toca otra vez el primero para cerrarla. Elige antes un color, o Goma nueva, para empezar otra (hasta 12).\nArrastra un vértice para moverlo, o arrastra dentro de una goma para moverla entera. Borrar goma quita la elegida.\nFiguras pone una figura ya hecha; Herramientas tiene una regla (arrastra sus extremos); Anotar añade texto y un lápiz.\nRelleno, Líneas, Ángulos y Etiquetas cambian lo que se ve; Cuadrícula y Ajustes cambian el tablero (cuadrícula, puntos triangulares, círculo).\nAcerca con + y − o con dos dedos; Deshacer, Rehacer y Reiniciar; Pantalla completa llena la pantalla.\nTeclado: las flechas recorren los clavos, Intro tensa la goma o elige un vértice, las flechas lo mueven, Supr borra, Esc suelta.",
-        "helpIdeas": "Pon un reto (💡 tiene ideas): todos forman una figura de área 12 y comparan los perímetros.\nEn los puntos triangulares, forma un hexágono y cuenta los triángulos; en el círculo, compara los ángulos de las figuras inscritas."
+        "helpUse": "Toca clavos para tensar una goma; toca el primero para cerrarla.\nArrastra un vértice o la goma entera. Un color empieza otra goma.\nFiguras, Herramientas y Anotar añaden figuras, regla, etiquetas y lápiz.",
+        "helpIdeas": "Prueba: todos forman un área de 12 y comparan los perímetros."
       },
       "pattern": {
         "name": "Bloques de patrón",
