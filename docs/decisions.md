@@ -6318,6 +6318,36 @@ hidden `state` setting and in the push, as in stage 3.
     the demo pin for Kenya sits in East Africa.
   - The pattern block board has a margin, so its edge dots show whole.
   - The protractor's numbers thin to every 90° when it is too small for them to sit apart.
+- **Review changes (16 Nov 2026): graphic organizers and letter tiles.**
+  - **Organizers are written in where they are** (no sheet). Each box has a heading field and a text area lying over its
+    list in the same type: a click, a tap or Tab puts the caret there, Enter in a heading goes on to its box, Enter in a
+    box is a new idea (one a line), Escape leaves the box for its heading. What is typed is kept half a second after the
+    last key and when the box is left, through the tool's own `ctx.keep` with the same limits (title 60, heading 40, box
+    400) and the same server cleaning. So the teacher's text goes to their layout, a student's copy stays in their
+    browser (or on their own screen if pinned) and nothing a student types reaches anyone else (tested by reading the
+    code; the copy's keep is still `copies.set`). Every field is named ("Step 2: Ideas (one on each line)"). A copy that
+    opens in a sheet puts the focus on the tool's first control, not a box (a phone would bring up its keyboard).
+    "Make a question from it" still makes no question from an organizer, as before.
+  - **Steps can be added and taken away.** A sequence has 2-10 steps ("Add a step", and ✕ on each step); main idea and
+    details has 2-6 details ("Add a detail"). **Decided:** the other kinds keep their fixed boxes (a Venn diagram, a
+    T-chart and KWL have a fixed meaning; a story map's five parts are its parts). Steps renumber (a heading the
+    teacher wrote stays with its step). They run in rows of as many as fit with arrows between; when there are more
+    rows than fit, whole rows fill the organizer and the rest scroll. The state gains `d` (details, 2-6, default 3), `n`
+    goes to 2-10 and boxes to 10; layouts saved in the old shape come back unchanged (tested).
+  - **The Venn diagram is two true circles** at every size: an SVG of its own 3:2 shape, as big as fits and centred
+    (never stretched), with the three parts placed inside the circles; the middle part's ideas are centred, without
+    bullets.
+  - **Letter tiles: a drag shows.** A lifted copy of the tile (shadow, tilted) follows the mouse, finger or pen; the tile
+    it came from shows as a dashed outline; the board lights up with a bar where the tile will go. A word tile held off
+    the board is marked with ✕ and is taken away when let go (as before); a letter dropped elsewhere does nothing, and a
+    cancelled drag changes nothing. Tapping, Enter, Shift+arrows and Delete still do everything a drag does, and the
+    focused tile keeps the focus when the tool redraws.
+  - **Choosing a word family starts from scratch**: the board is cleared and only the family's ending is on it ("none"
+    clears it too). No confirm and no undo: the board holds a few letters.
+  - **An instruction above the board**: "Drag or tap letters into the box to make a word." in every language (the old
+    hint inside an empty board is no longer shown).
+  - The fit check gained three organizers of their own: a sequence with ten steps, a Venn diagram and main idea with six
+    details, all in long German words.
 - **Not in this stage** (stage 5): video, site windows, document camera, hall pass, class jobs.
 
 ## Classroom dashboards, stage 5 (16 Nov 2026)

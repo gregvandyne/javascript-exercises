@@ -9874,7 +9874,8 @@
         "moved": "{l} déplacée à la place {n}",
         "hint": "Touche ou fais glisser des lettres pour construire un mot.",
         "onset": "?",
-        "full": "Le mot est complet."
+        "full": "Le mot est complet.",
+        "instr": "Fais glisser ou touche des lettres pour les mettre dans la case et former un mot."
       },
       "organizer": {
         "name": "Organisateur graphique",
@@ -9910,7 +9911,12 @@
         "step": "Étape {n}",
         "editHint": "Touche une case pour écrire dedans.",
         "note": "Ce que tu écris reste sur cet écran et dans les copies que tu envoies. Les copies des élèves sont à eux : ce qu’ils écrivent ne revient jamais.",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "addStep": "Ajouter une étape",
+        "addDetail": "Ajouter un détail",
+        "remove": "Enlever {name}",
+        "added": "Ajouté : {name}",
+        "removed": "Enlevé : {name}"
       },
       "map": {
         "name": "Cartes",

@@ -866,7 +866,8 @@ function letters(body, s, ctx) {
   const T = shell(body, s, ctx, 'letters'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let drag = null;
-  const fam = rowSelect(W.fam, [['', W.none], ...G.FAMILY_IDS.map(f => [f, `-${f}`])], st.fam, v => { st.fam = v; if (v) st.word = st.word.slice(0, 2); T.commit(v ? `-${v}` : W.none); });
+  // Review: a new family (or none) starts from scratch: the board is cleared, only the family's ending is on it.
+  const fam = rowSelect(W.fam, [['', W.none], ...G.FAMILY_IDS.map(f => [f, `-${f}`])], st.fam, v => { Object.assign(st, G.switchFamily(st, v)); T.commit(v ? `-${v}` : W.none); });
   const caps = T.toggle('Aa', W.caps, () => st.caps, v => { st.caps = v; T.commit(); });
   T.top.append(fam, caps);
   const back = ibtn('⌫', W.back), clear = ibtn('🧹', W.clear);
@@ -879,12 +880,18 @@ function letters(body, s, ctx) {
   back.addEventListener('click', () => { if (!st.word.length) return; const i = st.word.pop(); T.commit(fill(W.removed, { l: letter(i) })); });
   clear.addEventListener('click', () => { st.word = []; T.commit(W.clear); });
   T.draw = () => {
+    // Drawn again when the tool changes size (the readout appears): the tile that had the focus keeps it.
+    const a = document.activeElement, had = a && T.stage.contains(a) ? (a.classList.contains('dt-lb') ? `.dt-lb:nth-child(${[...a.parentNode.children].indexOf(a) + 1})` : a.dataset.k != null ? `[data-k="${a.dataset.k}"]` : null) : null;
     fam.value = st.fam; caps.sync();
     back.disabled = clear.disabled = !st.word.length;
     T.stage.textContent = '';
     const wrap = el('div', 'dt-lwrap'); wrap.dir = 'ltr';
+    // What to do, right above the board (review), in the page's own direction.
+    const say = el('p', 'dt-linstr', W.instr); say.dir = 'auto'; say.id = `${ctx.id || 'lt'}-instr${ctx.copy ? '-copy' : ''}`;
+    if (!ctx.editing) wrap.appendChild(say);
     // The word being built: tiles that can be moved (arrow keys with Shift, or drag), the family's ending fixed.
     const row = el('div', 'dt-lword'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', W.word);
+    if (!ctx.editing) row.setAttribute('aria-describedby', say.id);
     const cells = st.word.map((i, k) => {
       const b = btn('', `dt-ltile${G.isVowel(G.ALPHABET[i]) ? ' is-vowel' : ''}`, `${tileName(i)} (${k + 1})`); b.removeAttribute('title');
       b.appendChild(el('span', 'dt-lch', letter(i)));
@@ -893,12 +900,11 @@ function letters(body, s, ctx) {
         if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.shiftKey) { e.preventDefault(); const to = k + (e.key === 'ArrowLeft' ? -1 : 1); if (to < 0 || to >= st.word.length) return; [st.word[k], st.word[to]] = [st.word[to], st.word[k]]; T.commit(`${fill(W.moved, { l: letter(i), n: to + 1 })}: ${word()}`); row.querySelector(`[data-k="${to}"]`)?.focus(); }
         else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); st.word.splice(k, 1); T.commit(fill(W.removed, { l: letter(i) })); (row.querySelector(`[data-k="${Math.max(0, k - 1)}"]`) || bank.querySelector('button'))?.focus(); }
       });
-      b.addEventListener('pointerdown', e => { if (ctx.editing) return; drag = { from: 'word', k, i, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false }; b.setPointerCapture(e.pointerId); });
+      b.addEventListener('pointerdown', e => { if (ctx.editing || e.button > 0) return; drag = { from: 'word', k, i, el: b, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false }; b.setPointerCapture(e.pointerId); });
       row.appendChild(b); return b;
     });
     for (let k = st.word.length; k < (st.fam ? 1 : 0); k++) row.appendChild(el('span', 'dt-lslot', W.onset));
     if (st.fam) for (const ch of st.fam) { const t = el('span', `dt-ltile is-fixed${G.isVowel(ch) ? ' is-vowel' : ''}`); t.appendChild(el('span', 'dt-lch', st.caps ? ch.toUpperCase() : ch)); t.setAttribute('aria-hidden', 'true'); row.appendChild(t); }
-    if (!st.word.length && !st.fam) row.appendChild(el('p', 'dw-empty', W.hint));
     if (cells.length && !ctx.editing) roving(row, cells, 99);
     wrap.appendChild(row);
     // The bank: every letter once, vowels marked by colour and a dot (never colour alone).
@@ -908,13 +914,14 @@ function letters(body, s, ctx) {
       b.appendChild(el('span', 'dt-lch', letter(i)));
       if (ctx.editing) b.disabled = true;
       b.addEventListener('click', () => { if (drag && drag.moved) return; if (st.fam && st.word.length >= 2) st.word = []; addAt(i); T.stage.querySelectorAll('.dt-lb')[i]?.focus(); });
-      b.addEventListener('pointerdown', e => { if (ctx.editing) return; drag = { from: 'bank', i, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false }; });
+      b.addEventListener('pointerdown', e => { if (ctx.editing || e.button > 0) return; drag = { from: 'bank', i, el: b, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false }; b.setPointerCapture(e.pointerId); });
       bank.appendChild(b); return b;
     });
     if (!ctx.editing) roving(bank, bcells, 13);
     wrap.appendChild(bank);
     T.stage.appendChild(wrap);
     wireDrag(row);
+    if (had) T.stage.querySelector(had)?.focus();
     T.read.textContent = '';
     const w = word(), c = G.letterCounts(w);
     if (!w) return;
@@ -923,83 +930,200 @@ function letters(body, s, ctx) {
     T.read.appendChild(el('div', 'dt-sub', sub.join(' · ')));
   };
   /** Drop a tile on the word: from the bank it goes in where it lands; a word tile moves there (or leaves when dropped
-   *  outside the word). */
+   *  outside the word). Review: while dragging (mouse, touch or pen), a lifted copy of the tile follows the pointer, the
+   *  tile it came from shows as a dashed outline, and the board lights up with a bar where the tile will go; a word tile
+   *  held away from the board shows it will be taken away. A cancelled drag (pointercancel) changes nothing. */
   function wireDrag(row) {
-    const at = x => { const ts = [...row.querySelectorAll('[data-k]')]; let k = ts.findIndex(t => { const r = t.getBoundingClientRect(); return x < r.left + r.width / 2; }); return k < 0 ? ts.length : k; };
-    const move = e => { if (!drag || drag.id !== e.pointerId) return; if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) { drag.moved = true; row.classList.add('is-drop'); } };
+    let ghost = null, caret = null;
+    const near = e => { const r = row.getBoundingClientRect(); return e.clientY >= r.top - 20 && e.clientY <= r.bottom + 20 && e.clientX >= r.left - 20 && e.clientX <= r.right + 20; };
+    // Where a tile dropped at x goes: among the word's tiles, leaving out the one being moved.
+    const tilesBut = d => [...row.querySelectorAll('[data-k]')].filter(t => !(d.from === 'word' && +t.dataset.k === d.k));
+    const at = (x, d) => { const ts = tilesBut(d); const k = ts.findIndex(t => { const r = t.getBoundingClientRect(); return x < r.left + r.width / 2; }); return k < 0 ? ts.length : k; };
+    const stop = () => {
+      ghost?.remove(); caret?.remove(); ghost = caret = null;
+      row.classList.remove('is-drop'); T.stage.querySelector('.is-dragsrc')?.classList.remove('is-dragsrc');
+    };
+    const lift = d => {
+      const src = d.el, r = src.getBoundingClientRect(), cs = getComputedStyle(src);
+      ghost = el('div', `${src.className} dt-lghost`); ghost.setAttribute('aria-hidden', 'true');
+      ghost.appendChild(el('span', 'dt-lch', src.textContent));
+      Object.assign(ghost.style, { width: `${r.width}px`, height: `${r.height}px`, fontSize: cs.fontSize });
+      d.ox = d.x - r.left; d.oy = d.y - r.top;
+      document.body.appendChild(ghost);
+      src.classList.add('is-dragsrc');
+      caret = el('span', 'dt-lcaret'); caret.setAttribute('aria-hidden', 'true'); row.appendChild(caret);
+    };
+    const show = (d, e) => {
+      ghost.style.transform = `translate(${e.clientX - d.ox}px, ${e.clientY - d.oy}px) rotate(-4deg) scale(1.08)`;
+      const over = near(e), full = d.from === 'bank' && st.word.length >= max() && !st.fam;
+      row.classList.toggle('is-drop', over && !full);
+      ghost.classList.toggle('is-out', !over && d.from === 'word');
+      caret.hidden = !over || full;
+      if (caret.hidden) return;
+      // The bar sits in the gap where the tile will go (before the k-th tile, or after the last one).
+      const ts = tilesBut(d), rr = row.getBoundingClientRect();
+      const k = st.fam && d.from === 'bank' && st.word.length >= 2 ? 0 : at(e.clientX, d);
+      let x;
+      if (ts.length && k < ts.length) x = ts[k].getBoundingClientRect().left - 4;
+      else if (ts.length) x = ts[ts.length - 1].getBoundingClientRect().right + 2;
+      else { const f = row.querySelector('.dt-lslot,.is-fixed'); x = f ? f.getBoundingClientRect().left - 4 : rr.left + rr.width / 2; }
+      caret.style.left = `${x - rr.left - 1}px`;
+    };
+    const move = e => {
+      if (!drag || drag.id !== e.pointerId) return;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) { drag.moved = true; lift(drag); }
+      if (drag.moved && ghost) { e.preventDefault(); show(drag, e); }
+    };
     const up = e => {
       if (!drag || drag.id !== e.pointerId) return;
-      const d = drag; row.classList.remove('is-drop');
+      const d = drag; stop();
       setTimeout(() => { drag = null; });
-      if (!d.moved) return;
-      const r = row.getBoundingClientRect(), inside = e.clientY >= r.top - 20 && e.clientY <= r.bottom + 20;
-      if (d.from === 'bank' && inside) { if (st.fam && st.word.length >= 2) st.word = []; addAt(d.i, Math.min(at(e.clientX), st.word.length)); }
-      else if (d.from === 'word') { const [x] = st.word.splice(d.k, 1); if (inside) { st.word.splice(Math.min(at(e.clientX), st.word.length), 0, x); T.commit(word()); } else T.commit(fill(W.removed, { l: letter(x) })); }
+      if (!d.moved || e.type === 'pointercancel') return;
+      const inside = near(e);
+      if (d.from === 'bank' && inside) { if (st.fam && st.word.length >= 2) st.word = []; addAt(d.i, Math.min(at(e.clientX, d), st.word.length)); }
+      else if (d.from === 'word') { const to = at(e.clientX, d); const [x] = st.word.splice(d.k, 1); if (inside) { st.word.splice(Math.min(to, st.word.length), 0, x); T.commit(word()); } else T.commit(fill(W.removed, { l: letter(x) })); }
     };
-    body.onpointermove = move; body.onpointerup = up;
+    body.onpointermove = move; body.onpointerup = up; body.onpointercancel = up;
   }
   return T.finish();
 }
 
 // ================================================================ 11. graphic organizers (the teacher's own words; a student's copy is theirs)
 const ORG_HEADS = { venn: ['a', 'both', 'b'], tchart: ['left', 'right'], kwl: ['know', 'want', 'learned'], story: ['characters', 'setting', 'problem', 'events', 'solution'], main: ['idea', 'detail', 'detail', 'detail'] };
+/** Organizers whose boxes can be added and taken away (server/services/dash-tools.js ORGANIZER_GROW): the state key, the
+ *  fewest, the most, and the first box that can go (main idea and details keeps its idea). */
+const ORG_GROW = { seq: { key: 'n', lo: 2, hi: 10, from: 0, add: 'addStep' }, main: { key: 'd', lo: 2, hi: 6, from: 1, add: 'addDetail' } };
+/** Review: each box is written in where it is (no sheet). At rest a box shows its ideas as a list; a click, a tap or Tab
+ *  puts the caret in the box's own text area (same place, same type size), and what is typed is kept as it is typed
+ *  (debounced) and when the box is left, through ctx.keep: the teacher's layout, or a student's own copy (their browser,
+ *  or their own screen if pinned), never anyone else's. */
 function organizer(body, s, ctx) {
   const T = shell(body, s, ctx, 'organizer'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  const count = () => ({ venn: 3, tchart: 2, kwl: 3, story: 5, main: 4 }[st.kind] || st.n);
+  const grow = () => ORG_GROW[st.kind] || null;
+  const count = () => ({ venn: 3, tchart: 2, kwl: 3, story: 5 }[st.kind] || (st.kind === 'main' ? 1 + st.d : st.n));
   const fit = () => { st.boxes = Array.from({ length: count() }, (_, i) => st.boxes[i] || { h: '', t: '' }); };
   fit();
-  const kind = rowSelect(W.kind, ['venn', 'tchart', 'kwl', 'story', 'main', 'seq'].map(k => [k, W[k]]), st.kind, v => { st.kind = v; fit(); T.commit(W[v]); });
+  const kind = rowSelect(W.kind, ['venn', 'tchart', 'kwl', 'story', 'main', 'seq'].map(k => [k, W[k]]), st.kind, v => { keep(); st.kind = v; fit(); T.commit(W[v]); });
   T.top.appendChild(kind);
   const canEdit = !ctx.editing && (ctx.teacher || ctx.own || ctx.copy);
-  const edit = ibtn('✏️', W.edit);
-  if (canEdit) T.foot.appendChild(edit);
-  const headOf = i => st.boxes[i].h || (st.kind === 'seq' ? fill(W.step, { n: i + 1 }) : st.kind === 'main' && i ? `${W.detail} ${i}` : W[ORG_HEADS[st.kind][i]]);
-  const editSheet = (focus = 0) => {
-    const sh = ctx.sheet({ title: fill(ctx.common.optionsFor, { name: W[st.kind] }), content: '' });
-    const f = el('form', 'stack dt-orgform'); sh.el.querySelector('.sheet-body').appendChild(f);
-    f.appendChild(el('p', 'small muted', W.note));
-    const title = field(f, W.title, Object.assign(el('input', 'input'), { maxLength: 60, value: st.title })); title.dir = 'auto';
-    const ins = st.boxes.map((b, i) => {
-      const fs = el('fieldset', 'dt-orgset'); fs.appendChild(el('legend', null, headOf(i)));
-      const h = field(fs, W.heading, Object.assign(el('input', 'input'), { maxLength: 40, value: b.h, placeholder: headOf(i) })); h.dir = 'auto';
-      const t = field(fs, W.text, Object.assign(el('textarea', 'input'), { maxLength: 400, rows: 3, value: b.t })); t.dir = 'auto';
-      f.appendChild(fs); return { h, t };
-    });
-    const row = el('div', 'row'), ok = el('button', 'btn btn-primary', W.save); ok.type = 'submit'; row.appendChild(ok); f.appendChild(row);
-    f.addEventListener('submit', e => { e.preventDefault(); st.title = title.value.trim().slice(0, 60); ins.forEach((x, i) => { st.boxes[i] = { h: x.h.value.trim().slice(0, 40), t: x.t.value.replace(/\r/g, '').slice(0, 400) }; }); sh.close(); T.commit(W.save); });
-    (ins[focus] ? ins[focus].t : title).focus();
+  // Typing is kept half a second after the last key, and at once when a box is left.
+  let timer = 0, dirty = false;
+  const keep = () => { clearTimeout(timer); if (!dirty) return; dirty = false; if (!ctx.editing && ctx.keep) ctx.keep(parts.clone(st)); };
+  const keepSoon = () => { dirty = true; clearTimeout(timer); timer = setTimeout(keep, 500); };
+  const defHead = i => (st.kind === 'seq' ? fill(W.step, { n: i + 1 }) : st.kind === 'main' && i ? `${W.detail} ${i}` : W[ORG_HEADS[st.kind][i]]);
+  const headOf = i => st.boxes[i].h || defHead(i);
+  const add = ibtn('➕', W.addStep);
+  if (canEdit) T.foot.appendChild(add);
+  add.addEventListener('click', () => {
+    const g = grow(); if (!g || st[g.key] >= g.hi) return;
+    keep(); st[g.key]++; fit(); T.commit(fill(W.added, { name: headOf(st.boxes.length - 1) }));
+    T.stage.querySelector(`[data-org="t${st.boxes.length - 1}"]`)?.focus();
+  });
+  const removeBox = i => {
+    const g = grow(); if (!g || st[g.key] <= g.lo) return;
+    keep(); const name = headOf(i); st.boxes.splice(i, 1); st[g.key]--; fit(); T.commit(fill(W.removed, { name }));
+    (T.stage.querySelector(`[data-org="t${Math.min(i, st.boxes.length - 1)}"]`) || add).focus();
   };
-  edit.addEventListener('click', () => editSheet());
+  const showList = (list, text) => {
+    list.textContent = '';
+    const lines = String(text || '').split('\n').map(x => x.trim()).filter(Boolean);
+    for (const line of lines) { const li = el('li', null, line); li.dir = 'auto'; list.appendChild(li); }
+    if (!lines.length) list.appendChild(el('li', 'dt-orgempty', '…'));
+  };
+  const hint = () => { T.read.textContent = ''; if (canEdit && !st.boxes.some(b => b.t.trim())) T.read.appendChild(el('div', 'dt-sub', W.editHint)); };
+  /** An input that edits st in place: kept as typed, and on leaving it; Enter goes on to `next`. */
+  const inline = (node, get, set, next) => {
+    node.value = get(); node.dir = 'auto';
+    node.addEventListener('input', () => { set(node.value); keepSoon(); });
+    node.addEventListener('change', () => { set(node.value.trim()); dirty = true; keep(); });
+    if (next) node.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); next()?.focus(); } });
+    return node;
+  };
   T.draw = () => {
+    // Drawn again while typing (the tool was resized): the caret comes back where it was.
+    const a = document.activeElement, was = a && T.stage.contains(a) ? { k: a.dataset.org, s: a.selectionStart, e: a.selectionEnd } : null;
     kind.value = st.kind;
+    const g = grow();
+    add.hidden = !g; add.disabled = !!g && st[g.key] >= g.hi;
+    if (g) { const name = W[g.add]; add.dataset.tip = name; add.setAttribute('aria-label', name); add.querySelector('.dt-lbl').textContent = name; }
     T.stage.textContent = '';
     const wrap = el('div', `dt-org dt-org-${st.kind}`);
-    if (st.title) { const h = el('div', 'dt-orgtitle', st.title); h.dir = 'auto'; wrap.appendChild(h); }
+    if (canEdit) {
+      const title = inline(Object.assign(el('input', 'dt-orgtitle dt-orgin'), { maxLength: 60, placeholder: W.title, type: 'text' }), () => st.title, v => { st.title = v.slice(0, 60); }, () => T.stage.querySelector('[data-org="h0"]'));
+      title.dataset.org = 'title'; title.setAttribute('aria-label', W.title); wrap.appendChild(title);
+    } else if (st.title) { const h = el('div', 'dt-orgtitle', st.title); h.dir = 'auto'; wrap.appendChild(h); }
     const grid = el('div', 'dt-orggrid'); grid.style.setProperty('--n', st.boxes.length);
-    if (st.kind === 'venn') { const bg = svg('svg', { viewBox: '0 0 300 160', class: 'dt-vennbg', 'aria-hidden': 'true', preserveAspectRatio: 'none' }); bg.append(svg('ellipse', { cx: 108, cy: 80, rx: 104, ry: 76, class: 'dt-venn dt-venn0' }), svg('ellipse', { cx: 192, cy: 80, rx: 104, ry: 76, class: 'dt-venn dt-venn1' })); grid.appendChild(bg); }
+    let into = grid, cols = 0;
+    if (st.kind === 'venn') {
+      // Two true circles at every size: a box of the drawing's own shape, as big as fits, in the middle.
+      const vb = el('div', 'dt-vennbox');
+      const bg = svg('svg', { viewBox: '0 0 300 200', class: 'dt-vennbg', 'aria-hidden': 'true' });
+      bg.append(svg('circle', { cx: 97.5, cy: 100, r: 95, class: 'dt-venn dt-venn0' }), svg('circle', { cx: 202.5, cy: 100, r: 95, class: 'dt-venn dt-venn1' }));
+      vb.appendChild(bg); grid.appendChild(vb); into = vb;
+    }
+    if (g) {
+      // Steps (or details) run in rows of as many as fit; more rows scroll inside the organizer, whole rows at a time.
+      const n = st.kind === 'main' ? st.d : st.boxes.length, w = T.stage.clientWidth || 600;
+      const min = projecting() ? 200 : 150, arrow = st.kind === 'seq' ? 36 : 0;
+      cols = Math.max(1, Math.min(n, Math.floor((w + arrow) / (min + arrow))));
+      grid.style.gridTemplateColumns = st.kind === 'seq' ? Array(cols).fill('minmax(0,1fr)').join(' auto ') : `repeat(${cols},minmax(0,1fr))`;
+      grid.classList.add('dw-scroll');
+    }
     st.boxes.forEach((b, i) => {
-      const box = el(canEdit ? 'button' : 'div', `dt-orgbox dt-ob${i}`);
-      if (canEdit) { box.type = 'button'; box.setAttribute('aria-label', `${headOf(i)}: ${W.edit}`); box.addEventListener('click', () => editSheet(i)); }
-      const h = el('div', 'dt-orgh', headOf(i)); h.dir = 'auto';
-      const lines = String(b.t || '').split('\n').map(x => x.trim()).filter(Boolean);
-      const list = el('ul', 'dt-orgl dw-scroll'); list.dir = 'auto';
-      for (const line of lines) { const li = el('li', null, line); li.dir = 'auto'; list.appendChild(li); }
-      if (!lines.length) list.appendChild(el('li', 'dt-orgempty', '…'));
-      box.append(h, list);
-      grid.appendChild(box);
-      if (st.kind === 'seq' && i < st.boxes.length - 1) { const a = el('span', 'dt-orgarrow', '→'); a.setAttribute('aria-hidden', 'true'); grid.appendChild(a); }
+      const box = el('div', `dt-orgbox dt-ob${i}`);
+      const hrow = el('div', 'dt-orghrow');
+      const area = el('div', 'dt-orgbody');
+      const list = el('ul', 'dt-orgl dw-scroll'); list.dir = 'auto'; showList(list, b.t);
+      area.appendChild(list);
+      if (canEdit) {
+        const h = inline(Object.assign(el('input', 'dt-orgh dt-orgin'), { maxLength: 40, placeholder: defHead(i), type: 'text' }), () => b.h, v => { b.h = v.slice(0, 40); }, () => ta);
+        h.dataset.org = `h${i}`; h.setAttribute('aria-label', `${W.heading}: ${defHead(i)}`);
+        hrow.appendChild(h);
+        const ta = Object.assign(el('textarea', 'dt-orgta'), { maxLength: 400, rows: 2 });
+        ta.value = b.t; ta.dir = 'auto'; ta.dataset.org = `t${i}`;
+        ta.setAttribute('aria-label', `${headOf(i)}: ${W.text}`);
+        list.setAttribute('aria-hidden', 'true');
+        ta.addEventListener('focus', () => box.classList.add('is-writing'));
+        ta.addEventListener('input', () => { b.t = ta.value.replace(/\r/g, '').slice(0, 400); keepSoon(); });
+        ta.addEventListener('blur', () => { box.classList.remove('is-writing'); showList(list, b.t); keep(); hint(); });
+        ta.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); ta.blur(); h.focus(); } });
+        area.appendChild(ta);
+        // A click on the box's edge writes in it too.
+        box.addEventListener('click', e => { if (e.target === box || e.target === area) ta.focus(); });
+        if (g && i >= g.from && st[g.key] > g.lo) {
+          const x = btn('✕', 'btn btn-sm dt-orgdel', fill(W.remove, { name: headOf(i) })); x.dataset.tip = x.getAttribute('aria-label') || '';
+          x.addEventListener('click', () => removeBox(i)); hrow.appendChild(x);
+        }
+      } else { const h = el('div', 'dt-orgh', headOf(i)); h.dir = 'auto'; hrow.appendChild(h); }
+      box.append(hrow, area);
+      into.appendChild(box);
+      // A sequence's arrows run between the steps of a row (the steps are numbered, so a new row reads on).
+      if (st.kind === 'seq' && i < st.boxes.length - 1 && (i + 1) % cols) { const ar = el('span', 'dt-orgarrow', '→'); ar.setAttribute('aria-hidden', 'true'); into.appendChild(ar); }
     });
     wrap.appendChild(grid);
     T.stage.appendChild(wrap);
-    T.read.textContent = '';
-    if (!st.boxes.some(b => b.t.trim()) && canEdit) T.read.appendChild(el('div', 'dt-sub', W.editHint));
+    hint();
+    // Rows of steps share the organizer's height; when they don't all fit, as many whole rows as fit fill it exactly and
+    // the rest scroll (never a row cut through by the edge). Not on a phone, where the organizer is as tall as its rows.
+    if (g && cols && !matchMedia('(max-width: 719px)').matches) {
+      const seq = st.kind === 'seq', rows = seq ? Math.ceil(st.boxes.length / cols) : 1 + Math.ceil(st.d / cols);
+      const H = grid.clientHeight, gap = parseFloat(getComputedStyle(grid).rowGap) || 0, least = (seq ? 96 : 76) * (projecting() ? 1.25 : 1);
+      const fit = Math.max(1, Math.min(rows, Math.floor((H + gap) / (least + gap))));
+      if (H > 0) { grid.style.gridTemplateRows = 'none'; grid.style.gridAutoRows = `${Math.floor((H - gap * (fit - 1)) / fit)}px`; }
+    }
+    if (was && was.k) {
+      const back = T.stage.querySelector(`[data-org="${was.k}"]`);
+      if (back) { back.focus(); try { back.setSelectionRange(was.s, was.e); } catch { /* not a text field */ } }
+    }
   };
   return T.finish({
     options: box => {
-      if (st.kind !== 'seq') { box.appendChild(el('p', 'small muted', W.note)); return; }
-      const n = field(box, W.boxes, selectOf([3, 4, 5, 6].map(x => [x, String(x)]), st.n));
-      n.addEventListener('change', () => { st.n = +n.value; fit(); T.commit(); });
+      box.appendChild(el('p', 'small muted', W.note));
+      const g = grow(); if (!g) return;
+      const opts = []; for (let k = g.lo; k <= g.hi; k++) opts.push([k, String(k)]);
+      const n = field(box, W.boxes, selectOf(opts, st[g.key]));
+      n.addEventListener('change', () => { keep(); st[g.key] = +n.value; fit(); T.commit(); });
     },
   });
 }

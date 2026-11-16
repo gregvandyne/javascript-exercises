@@ -458,7 +458,7 @@ test('sending a stage 4 tool: the teacher\'s own tool, its state rebuilt; each s
   const r = await as(w.T)(`/api/dash/${An}/pushes`, POST({ kind: 'tool', ref: 'og1', state: { kind: 'kwl', title: 'Frogs‮', boxes: [{ t: 'jump\u0007' }], spy: 1 } }));
   assert.equal(r.status, 200, r.text);
   const p = (await as(w.a1)(`/api/dash/${An}/live`)).json.pushes.find(x => x.kind === 'tool');
-  assert.deepEqual(p.tool, { type: 'organizer', state: { kind: 'kwl', n: 4, title: 'Frogs', boxes: [{ h: '', t: 'jump' }, { h: '', t: '' }, { h: '', t: '' }] } });
+  assert.deepEqual(p.tool, { type: 'organizer', state: { kind: 'kwl', n: 4, d: 3, title: 'Frogs', boxes: [{ h: '', t: 'jump' }, { h: '', t: '' }, { h: '', t: '' }] } });
   assert.deepEqual((await as(w.a2)(`/api/dash/${An}/live`)).json.pushes.find(x => x.kind === 'tool').tool, p.tool);
   await as(w.T)(`/api/dash/${An}/pushes`, POST({ kind: 'tool', ref: 'mp1', state: { pins: [{ x: 9999, y: 10, l: 'Here' }] } }));
   assert.deepEqual((await as(w.a1)(`/api/dash/${An}/live`)).json.pushes[0].tool.state.pins, [{ x: 1000, y: 10, l: 'Here' }]);
@@ -515,4 +515,87 @@ test('every stage 4 string is translated into every locale', async () => {
   // The stage 3 tools keep their place: Teach still has them all, in order, before stage 4's.
   const ids = D.WIDGETS.map(x => x.id);
   assert.ok(STAGE3.every(id => ids.indexOf(id) < ids.indexOf('geoboard')));
+});
+
+// ---------------------------------------------------------------- review (docs/decisions.md "Classroom dashboards, stage 4", "Review changes")
+test('review: a sequence\'s steps and main idea\'s details can be added and taken away; the server clamps their counts', () => {
+  const c = (v) => DT.cleanToolState('organizer', v);
+  assert.deepEqual(DT.ORGANIZER_GROW, { seq: { key: 'n', lo: 2, hi: 10 }, main: { key: 'd', lo: 2, hi: 6 } });
+  for (const n of [2, 3, 7, 10]) assert.equal(c({ kind: 'seq', n }).boxes.length, n, String(n));
+  assert.equal(c({ kind: 'seq', n: 99, boxes: Array(40).fill({ t: 'step' }) }).boxes.length, 10, 'at most 10 steps, however many are sent');
+  assert.equal(c({ kind: 'seq', n: 99 }).n, 10); assert.equal(c({ kind: 'seq', n: 1 }).n, 2); assert.equal(c({ kind: 'seq', n: -5 }).boxes.length, 2);
+  assert.equal(c({ kind: 'seq', n: 'many' }).n, 4, 'not a number: the default');
+  // Steps keep their own text and headings in order; the 11th and later never survive.
+  const ten = c({ kind: 'seq', n: 10, boxes: Array.from({ length: 12 }, (_, i) => ({ h: `H${i}`, t: `step ${i}` })) });
+  assert.deepEqual(ten.boxes.map(b => b.t), Array.from({ length: 10 }, (_, i) => `step ${i}`));
+  // Main idea and details: the idea and 2-6 details.
+  assert.equal(c({ kind: 'main', d: 6 }).boxes.length, 7); assert.equal(c({ kind: 'main', d: 2 }).boxes.length, 3);
+  assert.equal(c({ kind: 'main', d: 40 }).boxes.length, 7); assert.equal(c({ kind: 'main', d: 0 }).boxes.length, 3);
+  // The other kinds keep their fixed boxes whatever n and d say.
+  for (const [kind, n] of [['venn', 3], ['tchart', 2], ['kwl', 3], ['story', 5]]) assert.equal(c({ kind, n: 10, d: 6 }).boxes.length, n, kind);
+  // Text written in place is cleaned as before (the same 400 characters, lines kept, control and direction marks gone).
+  const t = c({ kind: 'seq', n: 2, boxes: [{ h: `H‮${'h'.repeat(60)}`, t: `a\r\nb\u0007⁦${'z'.repeat(600)}` }] });
+  assert.equal([...t.boxes[0].h].length, 40); assert.doesNotMatch(t.boxes[0].h, /‮/); assert.match(t.boxes[0].t, /^a\nbz/); assert.equal([...t.boxes[0].t].length, 400);
+});
+
+test('review: organizers saved in the old shape (before steps could be added) come back as they were', () => {
+  const c = (v) => DT.cleanToolState('organizer', v);
+  // The old shape: n 3-6 for a sequence, no d, main idea always the idea and 3 details.
+  const oldSeq = { kind: 'seq', n: 6, title: 'Life cycle', boxes: Array.from({ length: 6 }, (_, i) => ({ h: '', t: `s${i}` })) };
+  assert.deepEqual(c(oldSeq), { ...oldSeq, d: 3 });
+  const oldMain = { kind: 'main', n: 4, title: 'Bees', boxes: [{ h: '', t: 'idea' }, { h: '', t: 'd1' }, { h: 'Mine', t: 'd2' }, { h: '', t: 'd3' }] };
+  assert.deepEqual(c(oldMain), { ...oldMain, d: 3 });
+  const oldVenn = { kind: 'venn', n: 4, title: '', boxes: [{ h: 'Frogs', t: 'a' }, { h: '', t: 'b' }, { h: 'Toads', t: 'c' }] };
+  assert.deepEqual(c(oldVenn), { ...oldVenn, d: 3 });
+  // A widget default still has a Venn diagram's three boxes, and the registry default is the cleaned empty state.
+  assert.equal(c({}).boxes.length, 3);
+  assert.deepEqual(D.widgetType('organizer').settings[0].def, c({}));
+  // Cleaning twice changes nothing (what a teacher's layout saves is what comes back).
+  for (const v of [oldSeq, oldMain, { kind: 'seq', n: 10 }, { kind: 'main', d: 6 }]) assert.deepEqual(c(c(v)), c(v));
+});
+
+test('review: choosing a word family starts the board from scratch; "none" clears it too', () => {
+  const st = { fam: '', word: [2, 0, 19, 18], caps: true };
+  assert.deepEqual(G.switchFamily(st, 'ig'), { fam: 'ig', word: [], caps: true }, 'the old letters are not kept in front of the new ending');
+  assert.deepEqual(G.switchFamily({ fam: 'at', word: [2] }, 'op'), { fam: 'op', word: [] });
+  assert.deepEqual(G.switchFamily({ fam: 'at', word: [2] }, ''), { fam: '', word: [] });
+  assert.deepEqual(G.switchFamily({ fam: 'at', word: [2] }, 'zzz'), { fam: '', word: [] }, 'not a family: none');
+  assert.deepEqual(st.word, [2, 0, 19, 18], 'the state passed in is not changed');
+  // The tool uses it for the family menu (the old code kept two letters).
+  const tools = fs.readFileSync('public/js/dash-tools4.js', 'utf8');
+  const letters = tools.slice(tools.indexOf('function letters('), tools.indexOf('// ====', tools.indexOf('function letters(')));
+  assert.match(letters, /G\.switchFamily\(st, v\)/);
+  assert.doesNotMatch(letters, /st\.word = st\.word\.slice\(0, 2\)/);
+});
+
+test('review: organizers are written in place, saved only through the widget\'s own keep (a student\'s copy stays theirs)', () => {
+  const tools = fs.readFileSync('public/js/dash-tools4.js', 'utf8');
+  const org = tools.slice(tools.indexOf('function organizer('), tools.indexOf('// ====', tools.indexOf('function organizer(')));
+  // No sheet for writing: a text area in each box, named, with the same limits the server keeps.
+  assert.doesNotMatch(org, /editSheet|ctx\.sheet\(/);
+  assert.match(org, /el\('textarea', 'dt-orgta'\)/); assert.match(org, /maxLength: 400/); assert.match(org, /maxLength: 40,/); assert.match(org, /maxLength: 60,/);
+  assert.match(org, /setAttribute\('aria-label', `\$\{headOf\(i\)\}: \$\{W\.text\}`\)/);
+  // What is typed goes nowhere but ctx.keep: the teacher's layout, or the student's own copy.
+  assert.doesNotMatch(org, /ctx\.send|ctx\.act|ctx\.get|ctx\.upload|ctx\.checks/);
+  assert.match(org, /ctx\.keep\(parts\.clone\(st\)\)/);
+  // The copy a student opens keeps its state in their own browser (public/js/dash.js openCopy).
+  const dash = fs.readFileSync('public/js/dash.js', 'utf8');
+  assert.match(dash, /copy: true, send: null, upload: null, checks: null, ask: null, keep: state => copies\.set\(pid, state\)/);
+  // The Venn diagram's circles are circles: no stretching.
+  assert.doesNotMatch(org, /preserveAspectRatio/); assert.match(org, /svg\('circle'/);
+});
+
+test('review: the new words are in every locale (the instruction above the letter board, adding and taking away steps)', async () => {
+  const keys = ['dash.w.letters.instr', 'dash.w.organizer.addStep', 'dash.w.organizer.addDetail', 'dash.w.organizer.remove', 'dash.w.organizer.added', 'dash.w.organizer.removed'];
+  for (const k of keys) {
+    const en = tFor('en')(k); assert.ok(en && en !== k, k);
+    for (const code of ['ar', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant']) {
+      const l = JSON.parse(fs.readFileSync(`server/i18n/locales/${code}.json`, 'utf8'));
+      const v = k.split('.').reduce((o, p) => o && o[p], l);
+      assert.ok(typeof v === 'string' && v.trim() && v !== en, `${code} ${k}`);
+    }
+  }
+  assert.ok(D.widgetType('letters').words.includes('instr'));
+  for (const w of ['addStep', 'addDetail', 'remove', 'added', 'removed']) assert.ok(D.widgetType('organizer').words.includes(w), w);
+  assert.match(JSON.parse(fs.readFileSync('server/i18n/locales/it.json', 'utf8')).dash.w.letters.instr, /^Trascina .*parola\.$/);
 });

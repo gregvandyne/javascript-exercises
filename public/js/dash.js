@@ -1027,6 +1027,9 @@ function start() {
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
     const ctx = { ...ctxFor(w, type), own: true, copy: true, send: null, upload: null, checks: null, ask: null, keep: state => copies.set(pid, state), set: () => {} };
     const r = RENDER[type.id](body, w.s, ctx);
+    // The sheet puts the focus on its first field; in a copy that is the tool's first control instead, never a box to
+    // write in (a phone would bring up its keyboard before the student has asked to write).
+    setTimeout(() => { if (sh.el.contains(document.activeElement) && document.activeElement.matches('input[type="text"],textarea')) sh.el.querySelector('.dash-wcopy select,.dash-wcopy button')?.focus(); }, 40);
     sh.el.querySelector('[data-pincopy]').addEventListener('click', () => {
       const box = freeSpot(type.size[0], type.size[1]);
       const mine = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s: { state: copies.get(pid) || p.tool.state } };

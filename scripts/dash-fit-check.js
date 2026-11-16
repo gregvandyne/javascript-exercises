@@ -128,6 +128,14 @@ const STAGE5_EXTRA = [
   { ...D.widgetType('score'), wid: 'wpoints', s: { mode: 'students' } },
   { ...D.widgetType('schedule'), wid: 'wnownext', s: { ...SETTINGS.schedule, view: 'nownext' } },
 ];
+// Stage 4 review: the organizers written in where they are, as widgets of their own: a sequence with its most steps, a
+// Venn diagram and main idea with its most details, all with long German words (the story map above stays too).
+const LONG = ['Die Raupe frisst sich durch das Blatt', 'Sie verpuppt sich in einem Kokon', 'Schmetterlingsflügelentfaltung', 'Der Schmetterling trocknet seine Flügel in der Sonne'];
+const STAGE4_EXTRA = [
+  { ...D.widgetType('organizer'), wid: 'worgseq', s: { state: { kind: 'seq', n: 10, title: 'Die Verwandlung der kleinen Raupe Nimmersatt', boxes: Array.from({ length: 10 }, (_, i) => ({ h: i === 3 ? 'Verpuppungszeitraum' : '', t: LONG.slice(0, 1 + (i % 4)).join('\n') })) } } },
+  { ...D.widgetType('organizer'), wid: 'worgvenn', s: { state: { kind: 'venn', title: 'Frösche und Kröten im Vergleich', boxes: [{ h: 'Froschlurche', t: 'Glatte, feuchte Haut\nLange Hinterbeine\nLeben am Wasser' }, { h: '', t: 'Amphibienentwicklung\nLegen Eier\nKönnen schwimmen' }, { h: 'Kröten', t: 'Warzige, trockene Haut\nKurze Beine\nLeben an Land' }] } } },
+  { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
+];
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
 {
@@ -154,7 +162,7 @@ D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE4.has(t.id))),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;

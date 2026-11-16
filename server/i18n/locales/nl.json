@@ -9875,7 +9875,8 @@
         "moved": "{l} naar plek {n} verplaatst",
         "hint": "Tik of sleep letters om een woord te bouwen.",
         "onset": "?",
-        "full": "Het woord is vol."
+        "full": "Het woord is vol.",
+        "instr": "Sleep of tik letters naar het vak om een woord te maken."
       },
       "organizer": {
         "name": "Grafische organizer",
@@ -9911,7 +9912,12 @@
         "step": "Stap {n}",
         "editHint": "Tik een vak aan om erin te schrijven.",
         "note": "Wat je schrijft blijft op dit scherm en in de kopieën die je stuurt. De kopieën van leerlingen zijn van hen: wat zij schrijven komt nooit terug.",
-        "save": "Opslaan"
+        "save": "Opslaan",
+        "addStep": "Stap erbij",
+        "addDetail": "Detail erbij",
+        "remove": "{name} weghalen",
+        "added": "{name} erbij gezet",
+        "removed": "{name} weggehaald"
       },
       "map": {
         "name": "Kaarten",

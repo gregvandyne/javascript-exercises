@@ -449,6 +449,11 @@ export const FAMILY_IDS = Object.keys(FAMILIES);
 /** The letters in front that make real words in a family (single letters and two-letter blends). */
 export const onsetsOf = fam => [...new Set(FAMILIES[fam].map(w => w.slice(0, w.length - fam.length)))];
 export const isFamilyWord = (fam, word) => !!FAMILIES[fam] && FAMILIES[fam].includes(String(word).toLowerCase());
+/** Review: choosing a word family (or none) starts from scratch: the board is cleared and only the family's ending is on
+ *  it (it never adds to what was there). -> the changed part of a letter tiles state. */
+export function switchFamily(state, fam) {
+  return { ...state, fam: FAMILIES[fam] ? fam : '', word: [] };
+}
 /** Vowels and consonants in a word (letters only). */
 export function letterCounts(word) {
   const ls = [...String(word).toLowerCase()].filter(c => /[a-z]/.test(c));
