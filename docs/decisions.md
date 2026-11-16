@@ -6800,6 +6800,42 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
 
+## Classroom dashboards: tooltips never cut off; pattern blocks dragged from the palette (16 Nov 2026)
+From the product owner's screenshots of the live site.
+- **Tooltips were cut off.** The dark label a button shows on hover and keyboard focus (stage 4 review) was a `::after`
+  drawn inside the button, so any box around it that clips cut it: the shape board's colour rail showed "ew band" for
+  *New band* and the same for *Delete band*; the ✕ on an organizer step ("Take away Step 5") showed only the label's
+  bottom edge under the top of its scrolling box. Every such button also had a native `title`, so the browser's own
+  tooltip showed as well.
+- **Fix at the root:** one tooltip for the page, `public/js/dash-tip.js`. It lives in a layer of its own (position: fixed,
+  in `<body>`, or in the element shown full screen or an open dialog), is placed from the button's box (above it and
+  centred; below when there is no room above; shifted to stay 8px inside the screen; `placeTip`, pure and tested), and
+  follows its button while shown. It is hidden on scroll (a hover tooltip; one shown by keyboard focus follows its
+  button), resize, Escape, a press, window blur, and when the button goes or is redrawn. `role="tooltip"`, and the
+  button's `aria-describedby` points to it while it shows. A hover shows nothing while a button is held (a drag).
+  Hover rules kept from the CSS: a button whose words show in full (`.dt-lbl`) names itself only on keyboard focus; a
+  menu button that is open shows none. It never transitions (the reduced-motion rule gives every property a tiny
+  transition, which left it where the last button was for a frame; the fit check caught it). **Touch:** never on a tap; a long press (half a second, finger still) shows it
+  and it goes when the finger lifts.
+- **No native title where the tooltip exists:** buttons get their tooltip through `tip(el, text)`, which takes away the
+  `title` and keeps `aria-label` (the shape board's toolbar, rail, shapes and pens; stage 3 mode buttons; Practice it;
+  Make a question; every icon button in the stage 4 tools; the organizer's ✕ and Add a step/detail; the pattern blocks
+  palette). Buttons without a dark tooltip keep their native title.
+- **Pattern blocks: drag from the palette, or tap.** A block in the palette above the board can be dragged onto the board
+  with a mouse, finger or pen. Until the pointer has moved more than 8px it is a tap and adds the block at the first free
+  spot as before (Enter too; `paletteDrag`, pure and tested). Then a lifted copy of the block, the size it will be on the
+  board, follows the pointer with its middle under it; the board lights up and a dashed outline shows where it will
+  land. Let go on the board: the block is added there, on the grid point nearest to where it was let go among those
+  where the whole block is on the board, so its edges meet the grid and other blocks like a block dragged on the board
+  (`dropBlock`, pure and tested); it becomes the chosen block and is announced. Let go off the board, Escape or a
+  cancelled pointer: nothing changes. The palette and the board have `touch-action: none`, so the page does not scroll
+  while a block is dragged. **Open:** the one-line instruction still says "Tap a block above to add it" (not changed in
+  13 languages for this; it stays true).
+- **Checks:** `tests/unit/dash-tip.test.js`. The fit check (`npm run dash:fit`, TIPS=0 skips it) focuses every button
+  with a tooltip in turn on every view: its tooltip shows, whole inside the screen, clipped by nothing around it,
+  describes its button, and the button has no native title. Driven by hand at 1600 × 900, the projector, a 1024 × 768
+  touch tablet and a 390 × 844 touch phone (a student's own copy), English and Italian.
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or

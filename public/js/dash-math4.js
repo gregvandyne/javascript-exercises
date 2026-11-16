@@ -306,6 +306,29 @@ export function snapBlock(px, py) {
   }
   return { x: best.x, y: best.y };
 }
+/** Pattern blocks review: a press on a block in the palette is a tap (it adds the block, as before) until the pointer has
+ *  moved more than `slop` px from where it went down; from then on it is a drag. */
+export const PALETTE_SLOP = 8;
+export function paletteDrag(x0, y0, x1, y1, slop = PALETTE_SLOP) { return Math.hypot(x1 - x0, y1 - y0) > slop; }
+/** A block of kind k dragged from the palette and let go with its middle at (px, py) on the board (edge units; the board
+ *  is w × h edges, 15 × 10 rows by default). -> the block it becomes: its corner on the grid point (x + y even, x 0-2w,
+ *  y 0-rows) nearest to where it was let go, among those where the whole block lies on the board (so its edges meet the
+ *  grid, and other blocks' edges, like a block dragged on the board); null when let go off the board (cancelled). */
+export function dropBlock(k, px, py, r = 0, w = 15, rows = 10) {
+  const h = rows * R3;
+  if (!BLOCK_SHAPES[k] || !(px >= 0 && px <= w && py >= 0 && py <= h)) return null;
+  const pts = blockPoints({ k, x: 0, y: 0, r });
+  const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+  const ox = px - cx, oy = py - cy;
+  let best = null;
+  for (let y = 0; y <= rows; y++) for (let x = y % 2; x <= 2 * w; x += 2) {
+    const inside = pts.every(([a, b]) => a + x / 2 >= -1e-9 && a + x / 2 <= w + 1e-9 && b + y * R3 >= -1e-9 && b + y * R3 <= h + 1e-9);
+    if (!inside) continue;
+    const d = (x / 2 - ox) ** 2 + (y * R3 - oy) ** 2;
+    if (!best || d < best.d - 1e-12) best = { x, y, d };
+  }
+  return best ? { k, x: best.x, y: best.y, r } : null;
+}
 /** How much of a hexagon the blocks make (the hexagon, trapezoid, blue rhombus and triangle): { n, d } in lowest terms,
  *  and the count of each kind. */
 export function hexFraction(blocks) {

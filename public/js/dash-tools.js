@@ -11,6 +11,7 @@
 // no network but the app's own, no AI. Whiteboard drawings live in this page's memory only: never stored, never sent.
 import * as M from './dash-math.js';
 import { questionFor } from './dash-ask.js';
+import { tip } from './dash-tip.js';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -81,7 +82,7 @@ function shell(body, s, ctx, id) {
       const bs = options.map(([v, text, aria, icon]) => {
         const b = btn(icon ? '' : text, 'btn btn-sm', aria);
         // An icon and its words; on a narrow widget only the icon shows (the button keeps its name).
-        if (icon) { const i = el('span', 'dt-ic', icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); b.title = text; b.dataset.tip = text; }
+        if (icon) { const i = el('span', 'dt-ic', icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); tip(b, text); }
         b.addEventListener('click', () => set(v)); g.appendChild(b); return [v, b];
       });
       g.sync = () => { for (const [v, b] of bs) b.setAttribute('aria-pressed', String(get() === v)); };
@@ -128,7 +129,7 @@ function shell(body, s, ctx, id) {
         const one = games.length === 1, a = el(one ? 'a' : 'button', 'btn btn-sm dt-practice');
         const name = one ? fill(C.practiceName, { title: games[0].title }) : C.practice;
         if (one) a.href = games[0].href; else a.type = 'button';
-        a.setAttribute('aria-label', name); a.title = name; a.dataset.tip = name;
+        a.setAttribute('aria-label', name); tip(a, name);
         const i = el('span', 'dt-ic', '🎮'), l = el('span', 'dt-lbl', C.practice); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         a.append(i, l);
         if (!one) a.addEventListener('click', () => {
@@ -140,7 +141,7 @@ function shell(body, s, ctx, id) {
         foot.appendChild(a);
       }
       if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.ask) {
-        ask = btn('', 'btn btn-sm dt-ask', C.ask); ask.dataset.tip = C.ask;
+        ask = tip(btn('', 'btn btn-sm dt-ask', C.ask), C.ask);
         const i = el('span', 'dt-ic', '❓'), l = el('span', 'dt-lbl', C.ask); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         ask.append(i, l);
         ask.addEventListener('click', () => askSheet(ctx, T.question()));
