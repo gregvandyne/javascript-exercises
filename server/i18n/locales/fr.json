@@ -9016,9 +9016,10 @@
         }
       },
       "timer": {
-        "name": "Minuteur",
-        "desc": "Compte à rebours en gros chiffres, avec une barre de temps.",
+        "name": "Minuteur et chronomètre",
+        "desc": "Compte à rebours ou chronomètre, en gros chiffres.",
         "s": {
+          "mode": "Mode",
           "minutes": "Minutes au départ",
           "chime": "Petit carillon à la fin",
           "bar": "Afficher la barre de temps",
@@ -9036,7 +9037,14 @@
         "left": "Encore {time}",
         "presets": "Durées rapides",
         "mins": "{n} minutes",
+        "mode": "Minuteur ou chronomètre",
+        "toTimer": "Minuteur : compte à rebours",
+        "toStopwatch": "Chronomètre : compte à partir de zéro",
         "o": {
+          "mode": {
+            "timer": "Minuteur",
+            "stopwatch": "Chronomètre"
+          },
           "view": {
             "digits": "Gros chiffres",
             "ring": "Anneau qui rétrécit"

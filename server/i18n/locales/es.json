@@ -9016,9 +9016,10 @@
         }
       },
       "timer": {
-        "name": "Temporizador",
-        "desc": "Cuenta atrás con números grandes y una barra de tiempo.",
+        "name": "Temporizador y cronómetro",
+        "desc": "Cuenta atrás o hacia delante con números grandes.",
         "s": {
+          "mode": "Modo",
           "minutes": "Minutos al empezar",
           "chime": "Campanita suave al final",
           "bar": "Mostrar la barra de tiempo",
@@ -9036,7 +9037,14 @@
         "left": "Quedan {time}",
         "presets": "Tiempos rápidos",
         "mins": "{n} minutos",
+        "mode": "Temporizador o cronómetro",
+        "toTimer": "Temporizador: cuenta atrás",
+        "toStopwatch": "Cronómetro: cuenta desde cero",
         "o": {
+          "mode": {
+            "timer": "Temporizador",
+            "stopwatch": "Cronómetro"
+          },
           "view": {
             "digits": "Números grandes",
             "ring": "Anillo que se encoge"

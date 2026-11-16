@@ -164,8 +164,9 @@ function start() {
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
     // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
+    // A student's own widget too (the timer's mode); never a pinned one.
     set: (key, value) => {
-      if (!TEACHER || w.pinned) return;
+      if (w.pinned) return;
       w.s = { ...w.s, [key]: value };
       const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
       if (old) { const had = old.contains(document.activeElement) ? [...old.querySelectorAll('button')].indexOf(document.activeElement) : -1; const fresh = card(w, +old.style.order); old.replaceWith(fresh); if (had >= 0) fresh.querySelectorAll('button')[had]?.focus(); }

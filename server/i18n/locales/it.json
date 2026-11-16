@@ -9017,9 +9017,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Conto alla rovescia con cifre grandi e una barra del tempo.",
+        "name": "Timer e cronometro",
+        "desc": "Conto alla rovescia o in avanti con cifre grandi.",
         "s": {
+          "mode": "Modalità",
           "minutes": "Minuti di partenza",
           "chime": "Leggero suono alla fine",
           "bar": "Mostra la barra del tempo",
@@ -9037,7 +9038,14 @@
         "left": "Mancano {time}",
         "presets": "Tempi rapidi",
         "mins": "{n} minuti",
+        "mode": "Timer o cronometro",
+        "toTimer": "Timer: conto alla rovescia",
+        "toStopwatch": "Cronometro: conta da zero in su",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Cronometro"
+          },
           "view": {
             "digits": "Cifre grandi",
             "ring": "Anello che si restringe"

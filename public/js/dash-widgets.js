@@ -2,7 +2,7 @@
 // settings). A renderer gets the widget's body element, its settings and ctx, and may return { tick(date) } (called
 // once a second), { live(state) } (called after each /live check, every 4 s while the screen is in view) and
 // { destroy() } (the widget is redrawn or goes away). Stage 2 adds the everyday widgets (docs/decisions.md
-// "Classroom dashboards, stage 2"): timer, stopwatch, schedule, weather, QR, picker, noise meter, help queue, quick
+// "Classroom dashboards, stage 2"): timer (with its stopwatch mode), schedule, weather, QR, picker, noise meter, help queue, quick
 // checks and Oomba tiles.
 // ctx: { type (with the translated words), intl, role, id, tz, teacher (the class's teacher's own widget), pinned (a
 // student seeing the teacher's pinned widget), own (a student's own widget), editing, reduced() (reduced motion),
@@ -156,19 +156,46 @@ function chime() {
     }
   } catch { /* no sound: fine */ }
 }
-const localTimers = new Map();
-const RING = 2 * Math.PI * 44;   // a student's own timers (their browser only)
-function runner(body, s, ctx, down) {
+const localTimers = new Map();   // a student's own timers (their browser only)
+const RING = 2 * Math.PI * 44;
+// The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): s.mode 'timer'
+// counts down, 'stopwatch' counts up. Whoever controls it switches with the two buttons at the top; a switch drops
+// the run it had (the server does the same when the layout is saved), so nothing carries over from the other mode.
+const MODE_ICONS = { timer: '⏳', stopwatch: '⏱️' };
+function timer(body, s, ctx) {
   const W = ctx.type.words;
+  const down = s.mode !== 'stopwatch', mode = down ? 'down' : 'up';
   const control = ctx.teacher || ctx.own;
-  const fresh = () => ({ mode: down ? 'down' : 'up', dur: (s.minutes || 5) * 60e3, base: 0, start: 0, on: false });
+  const fresh = () => ({ mode, dur: (s.minutes || 5) * 60e3, base: 0, start: 0, on: false });
   const state = () => {
-    if (ctx.own) { if (!localTimers.has(ctx.id)) localTimers.set(ctx.id, fresh()); return localTimers.get(ctx.id); }
+    if (ctx.own) { const mine = localTimers.get(ctx.id); if (!mine || mine.mode !== mode) localTimers.set(ctx.id, fresh()); return localTimers.get(ctx.id); }
     const st = (ctx.live().timers || {})[ctx.id];
-    return st && st.mode === (down ? 'down' : 'up') ? st : fresh();
+    return st && st.mode === mode ? st : fresh();
   };
   const clockNow = () => (ctx.own ? Date.now() : ctx.now());
-  body.classList.add('dw-timer');
+  body.classList.add('dw-timer', `dw-timer-${s.mode === 'stopwatch' ? 'stopwatch' : 'timer'}`);
+  if (control) {
+    const f = ctx.type.settings.find(x => x.key === 'mode');
+    const modes = el('div', 'dw-modes'); modes.setAttribute('role', 'group'); modes.setAttribute('aria-label', W.mode);
+    for (const m of f.options) {
+      const b = btn('', 'btn btn-sm dw-mode');
+      const ic = el('span', 'dw-modeicon', MODE_ICONS[m]); ic.setAttribute('aria-hidden', 'true');
+      b.append(ic, el('span', 'dw-modetext', f.labels[m]));
+      b.title = m === 'stopwatch' ? W.toStopwatch : W.toTimer;
+      b.setAttribute('aria-pressed', String(m === (down ? 'timer' : 'stopwatch')));
+      b.addEventListener('click', async () => {
+        if (m === (down ? 'timer' : 'stopwatch')) return;
+        if (ctx.own) localTimers.delete(ctx.id);
+        else { const live = ctx.live(); if (live.timers) { const { [ctx.id]: gone, ...rest } = live.timers; live.timers = rest; } }
+        ctx.set('mode', m);
+        ctx.say(m === 'stopwatch' ? W.toStopwatch : W.toTimer);
+        await ctx.flush();
+      });
+      modes.appendChild(b);
+    }
+    body.appendChild(modes);
+  }
+  const main = body.appendChild(el('div', 'dw-tmain'));
   const digits = el('div', 'dw-digits'); digits.setAttribute('role', 'timer');
   const doneMsg = el('div', 'dw-done', W.done || ''); doneMsg.hidden = true; doneMsg.setAttribute('role', 'status');
   const ringView = down && s.view === 'ring';
@@ -184,9 +211,9 @@ function runner(body, s, ctx, down) {
     arc = svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringfg', 'stroke-dasharray': RING, transform: 'rotate(-90 50 50)' });
     svg.appendChild(arc);
     wrap.append(svg, digits);
-    body.append(wrap, doneMsg);
-  } else body.append(digits, doneMsg);
-  if (bar) body.appendChild(bar);
+    main.append(wrap, doneMsg);
+  } else main.append(digits, doneMsg);
+  if (bar) main.appendChild(bar);
   let go = null;
   if (control) {
     if (down) {
@@ -194,7 +221,7 @@ function runner(body, s, ctx, down) {
       for (const m of [1, 2, 5, 10]) { const b = btn(`${m}`, 'btn btn-sm dw-pre', fill(W.mins, { n: m })); b.addEventListener('click', () => act('set', m * 60e3)); pre.appendChild(b); }
       const cb = btn(W.custom, 'btn btn-sm dw-pre'); cb.setAttribute('aria-expanded', 'false');
       pre.appendChild(cb);
-      body.appendChild(pre);
+      main.appendChild(pre);
       const custom = el('form', 'dw-custom'); custom.hidden = true;
       const mid = `dw-${ctx.id}-m`, sid = `dw-${ctx.id}-s`;
       const lm = el('label', null, W.min); lm.htmlFor = mid;
@@ -209,7 +236,7 @@ function runner(body, s, ctx, down) {
         if (ms >= 1000) { act('set', Math.min(ms, 3 * 3600e3)); custom.hidden = true; cb.setAttribute('aria-expanded', 'false'); cb.focus(); }
       });
       cb.addEventListener('click', () => { custom.hidden = !custom.hidden; cb.setAttribute('aria-expanded', String(!custom.hidden)); if (!custom.hidden) im.focus(); });
-      body.appendChild(custom);
+      main.appendChild(custom);
     }
     const row = el('div', 'dw-row dw-foot');
     go = btn(W.start, 'btn btn-primary dw-go');
@@ -217,7 +244,7 @@ function runner(body, s, ctx, down) {
     go.addEventListener('click', () => act(state().on ? 'pause' : 'start'));
     reset.addEventListener('click', () => act('reset'));
     row.append(go, reset);
-    body.appendChild(row);
+    main.appendChild(row);
   }
   async function act(action, ms) {
     if (ctx.own) {
@@ -251,8 +278,6 @@ function runner(body, s, ctx, down) {
   draw();
   return { tick: draw, live: draw };
 }
-const timer = (body, s, ctx) => runner(body, s, ctx, true);
-const stopwatch = (body, s, ctx) => runner(body, s, ctx, false);
 
 // ---------------------------------------------------------------- the day's schedule (the school's time zone)
 function schedule(body, s, ctx) {
@@ -1030,4 +1055,4 @@ function stickers(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4, ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4, ...RENDER5, camera };

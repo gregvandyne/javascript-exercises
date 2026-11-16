@@ -90,8 +90,9 @@ test('the registry: every stage 5 type has a renderer and English words; who may
   assert.ok(D.canPin(D.widgetType('jobs')) && D.canPin(D.widgetType('checklist')) && D.canPin(D.widgetType('breathe')));
   // The audit: every classroom-display tool the brief lists has a widget (or a mode of one).
   const ids = D.WIDGETS.map(x => x.id);
-  for (const id of ['text', 'clock', 'timer', 'stopwatch', 'picker', 'groups', 'noise', 'qr', 'light', 'symbols', 'check', 'calendar', 'countdown', 'dice', 'breathe', 'schedule', 'note', 'checklist', 'mood', 'score'])
+  for (const id of ['text', 'clock', 'timer', 'picker', 'groups', 'noise', 'qr', 'light', 'symbols', 'check', 'calendar', 'countdown', 'dice', 'breathe', 'schedule', 'note', 'checklist', 'mood', 'score'])
     assert.ok(ids.includes(id), id);
+  assert.deepEqual(D.widgetType('timer').settings.find(s => s.key === 'mode').options, ['timer', 'stopwatch'], 'the stopwatch is a mode of the timer');
   assert.ok(D.widgetType('schedule').settings.find(s => s.key === 'view').options.includes('nownext'));
   assert.ok(D.widgetType('score').settings.find(s => s.key === 'mode').options.includes('students'));
 });

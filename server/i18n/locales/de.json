@@ -9017,9 +9017,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Zählt mit großen Ziffern und einem Zeitbalken rückwärts.",
+        "name": "Timer und Stoppuhr",
+        "desc": "Zählt mit großen Ziffern rückwärts oder vorwärts.",
         "s": {
+          "mode": "Modus",
           "minutes": "Minuten zu Beginn",
           "chime": "Leiser Gong am Ende",
           "bar": "Zeitbalken zeigen",
@@ -9037,7 +9038,14 @@
         "left": "Noch {time}",
         "presets": "Schnelle Zeiten",
         "mins": "{n} Minuten",
+        "mode": "Timer oder Stoppuhr",
+        "toTimer": "Timer: zählt rückwärts",
+        "toStopwatch": "Stoppuhr: zählt ab null vorwärts",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stoppuhr"
+          },
           "view": {
             "digits": "Große Ziffern",
             "ring": "Schrumpfender Ring"

@@ -9017,9 +9017,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Telt af met grote cijfers en een tijdbalk.",
+        "name": "Timer en stopwatch",
+        "desc": "Telt af of op met grote cijfers.",
         "s": {
+          "mode": "Modus",
           "minutes": "Minuten bij de start",
           "chime": "Zacht belletje aan het eind",
           "bar": "Tijdbalk tonen",
@@ -9037,7 +9038,14 @@
         "left": "Nog {time}",
         "presets": "Snelle tijden",
         "mins": "{n} minuten",
+        "mode": "Timer of stopwatch",
+        "toTimer": "Timer: telt af",
+        "toStopwatch": "Stopwatch: telt op vanaf nul",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stopwatch"
+          },
           "view": {
             "digits": "Grote cijfers",
             "ring": "Krimpende ring"

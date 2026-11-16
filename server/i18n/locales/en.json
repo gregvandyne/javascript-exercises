@@ -9440,9 +9440,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Count down with big digits and a time bar.",
+        "name": "Timer and stopwatch",
+        "desc": "Count down or count up, with big digits.",
         "s": {
+          "mode": "Mode",
           "minutes": "Starting minutes",
           "chime": "Soft chime at the end",
           "bar": "Show the time bar",
@@ -9460,7 +9461,14 @@
         "left": "{time} left",
         "presets": "Quick times",
         "mins": "{n} minutes",
+        "mode": "Timer or stopwatch",
+        "toTimer": "Timer: counts down",
+        "toStopwatch": "Stopwatch: counts up from zero",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stopwatch"
+          },
           "view": {
             "digits": "Big digits",
             "ring": "Shrinking ring"
