@@ -535,11 +535,11 @@ function fractions(body, s, ctx) {
       wrap.appendChild(sent);
       return sent;
     };
-    // The first way whose circles are big enough and that really fits (measured), else the one with the biggest circles
-    // that fits, else the smallest.
+    // The first way whose circles are big enough (at least 72px and three quarters of the biggest any way gives) and
+    // that really fits (measured), else the one with the biggest circles that fits, else the smallest.
     const fits = sent => sent.scrollWidth <= room.w + 1 && sent.offsetHeight <= room.h + 1;
-    const good = ways.filter(w => w.s >= 20);
-    for (const w of [...good.filter(x => x.s >= 72), ...good.slice().sort((x, y) => y.s - x.s)]) if (fits(build(w))) return;
+    const good = ways.filter(w => w.s >= 20), big = Math.max(72, 0.75 * Math.max(0, ...good.map(w => w.s)));
+    for (const w of [...good.filter(x => x.s >= big), ...good.slice().sort((x, y) => y.s - x.s)]) if (fits(build(w))) return;
     build({ form: 'mini', lines: 2, eqOn: false, s: 20 });
   }
   /** The classes for a form of − and + (mini: on one row, with the smaller buttons). */
