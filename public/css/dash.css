@@ -939,6 +939,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .is-wide .gb-rail .gb-btn{flex-direction:column;gap:2px;width:100%;min-height:52px;padding:4px 2px;font-size:.74rem;font-weight:700;line-height:1.1}
 .is-wide .gb-rail .gb-btn .gb-lbl{max-width:100%;overflow-wrap:anywhere;hyphens:auto}
 .is-wide .gb-rail .gb-ic{font-size:1.35rem}
+.gb-bar:empty,.gb-rail:empty,.gb-palette:empty{display:none!important}
 .gb-bar{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;min-width:0}
 .is-wide .gb-bar{padding:4px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line)}
 .is-wide .gb-bar .gb-btn{padding:0 9px;font-size:.88rem}

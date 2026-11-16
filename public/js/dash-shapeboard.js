@@ -185,7 +185,7 @@ export function geoboard(body, s, ctx) {
     else for (const b of st.bands) { b.pts = b.pts.filter(p => G.onBoard(st.board, n(), p)); if (b.pts.length < 3) b.closed = false; }
     st.bands = st.bands.filter(b => b.pts.length); if (st.cur >= st.bands.length) st.cur = -1;
     ui.ruler = null; ui.cursor = { x: 0, y: 0 }; ui.corner = -1;
-  }, `${W[kind]}, ${kind === 'circle' ? fill(W.ringPegs, { n: st.ring }) : `${st.pegs} × ${st.pegs}`}`);
+  }, `${W[kind]}, ${kind === 'circle' ? fill(W.ringPegs, { n: size || st.ring }) : `${size || st.pegs} × ${size || st.pegs}`}`);
   const reset = () => change(() => { st.bands = []; st.cur = -1; st.notes = []; st.ink = []; ui.ruler = null; ui.corner = -1; }, W.resetDone);
   const toggle = key => change(() => { st[key] = !st[key]; }, `${W[key]}: ${st[key] ? '✓' : '✗'}`);
   const zoomBy = (k, cx, cy) => {
@@ -264,7 +264,7 @@ export function geoboard(body, s, ctx) {
     syncButtons();
   }
   function syncButtons() {
-    const b = band();
+    const b = band(), had = document.activeElement;
     for (const [id, x] of Object.entries(B)) {
       if (x.dataset.key) x.setAttribute('aria-pressed', String(!!st[x.dataset.key]));
       if (id === 'undo') x.disabled = !undoStack.length;
@@ -280,6 +280,8 @@ export function geoboard(body, s, ctx) {
       if (id === 'bands') { const d = x.querySelector('.gb-dot'); d.className = `gb-ic gb-dot gb-c${b ? b.c : ui.colour}`; }
     }
     for (const sw of palette.querySelectorAll('.gb-sw')) { const k = +sw.className.match(/gb-c(\d)/)[1]; sw.setAttribute('aria-pressed', String((b ? b.c : ui.colour) === k)); }
+    // A button that has just been used up (Undo with nothing left, Reset on an empty board) hands the focus to the board.
+    if (had && had.disabled && root.contains(had) && board) board.focus({ preventScroll: true });
   }
 
   // ---------------------------------------------------------------- the small menus
