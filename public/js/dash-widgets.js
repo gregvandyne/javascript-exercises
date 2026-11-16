@@ -21,6 +21,7 @@ import { TOOLS4 } from './dash-tools4.js';
 // sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
 import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
+import { format } from './i18n-format.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
@@ -596,7 +597,7 @@ function help(body, s, ctx) {
     const q = (((live || ctx.live()).help) || {}).queue || [];
     const s2 = JSON.stringify(q); if (s2 === sig) return; sig = s2;
     const waiting = q.filter(x => x.kind === 'help'), finished = q.filter(x => x.kind === 'done');
-    counts.textContent = `✋ ${fill(W.waiting, { n: waiting.length })} · ✅ ${fill(W.finished, { n: finished.length })}`;
+    counts.textContent = `✋ ${format(W.waiting, { n: waiting.length }, ctx.intl)} · ✅ ${format(W.finished, { n: finished.length }, ctx.intl)}`;
     list.textContent = '';
     if (!q.length) list.appendChild(el('li', 'dw-empty', W.empty));
     for (const x of [...waiting, ...finished]) {

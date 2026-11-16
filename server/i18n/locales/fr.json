@@ -9180,7 +9180,7 @@
         "next": "Suivant",
         "clear": "Tout effacer",
         "waiting": "{n} en attente",
-        "finished": "{n} ont fini",
+        "finished": "{n, plural, one {# a fini} other {# ont fini}}",
         "remove": "Retirer {name}",
         "hidden": "Les noms sont cachés sur le projecteur."
       },

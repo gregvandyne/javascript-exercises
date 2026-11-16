@@ -9180,7 +9180,7 @@
         "empty": "Niemand wartet.",
         "next": "Nächstes Kind",
         "clear": "Alle löschen",
-        "waiting": "{n} warten",
+        "waiting": "{n, plural, one {# wartet} other {# warten}}",
         "finished": "{n} fertig",
         "remove": "{name} entfernen",
         "hidden": "Auf dem Beamer sind die Namen versteckt."
