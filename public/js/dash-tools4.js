@@ -100,7 +100,6 @@ function geoboard(body, s, ctx) {
       else T.read.appendChild(el('div', 'dt-sub', fill(W.squares, { a: iso(G.mixed(p.a2, 2)) })));
     } else if (b && b.closed) T.read.appendChild(el('div', 'dt-sub dt-note', W.crosses));
     else if (b && b.pts.length > 1) { const L = G.bandLength(b.pts, false); T.read.append(ltr('div', 'dt-big', G.lengthText(L)), el('div', 'dt-sub', W.open)); }
-    else T.read.appendChild(el('div', 'dt-sub', W.hint));
   };
   function wire(X, n) {
     if (ctx.editing) return;
@@ -507,7 +506,6 @@ function transform(body, s, ctx) {
     T.read.textContent = '';
     T.read.appendChild(ltr('div', 'dt-big dt-trrule', G.ruleText(tr())));
     if (!img.every(inGrid)) T.read.appendChild(el('div', 'dt-sub dt-note', W.offGrid));
-    else if (!st.table) T.read.appendChild(el('div', 'dt-sub', W.hint));
     if (!ctx.editing) wire(u, X, Y);
   };
   function wire(u) {
@@ -1108,7 +1106,7 @@ function organizer(body, s, ctx) {
     // the rest scroll (never a row cut through by the edge). Not on a phone, where the organizer is as tall as its rows.
     if (g && cols && !matchMedia('(max-width: 719px)').matches) {
       const seq = st.kind === 'seq', rows = seq ? Math.ceil(st.boxes.length / cols) : 1 + Math.ceil(st.d / cols);
-      const H = grid.clientHeight, gap = parseFloat(getComputedStyle(grid).rowGap) || 0, least = (seq ? 96 : 76) * (projecting() ? 1.25 : 1);
+      const H = Math.floor(grid.getBoundingClientRect().height), gap = parseFloat(getComputedStyle(grid).rowGap) || 0, least = (seq ? 96 : 76) * (projecting() ? 1.25 : 1);
       const fit = Math.max(1, Math.min(rows, Math.floor((H + gap) / (least + gap))));
       if (H > 0) { grid.style.gridTemplateRows = 'none'; grid.style.gridAutoRows = `${Math.floor((H - gap * (fit - 1)) / fit)}px`; }
     }

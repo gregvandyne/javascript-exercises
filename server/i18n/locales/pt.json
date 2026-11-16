@@ -9424,7 +9424,32 @@
         "tooSmall": "Seriam {n} partes minúsculas: pequenas demais para desenhar.",
         "samePrompt": "Toque em “Partes iguais” para ver por quê.",
         "which": "Fração {n}",
-        "order": "Qual é maior?"
+        "order": "Qual é maior?",
+        "howto": "Toque numa barra para pintar partes. − e + mudam as partes.",
+        "howtoOp": "Use − e + em cada número. O resultado aparece desenhado abaixo.",
+        "howtoMul": "Use − e + em cada número. A parte sobreposta é o resultado.",
+        "helpUse": "Comparar, Somar, Subtrair, Multiplicar e Dividir escolhem o que fazer.\nComparar: toque numa barra ou num círculo para pintar partes; − e + mudam quantas partes há. Partes iguais mostra qual é maior.\nSomar e Subtrair: − e + ajustam cada numerador e denominador. As duas frações são cortadas em partes iguais; depois o resultado é desenhado e simplificado.\nMultiplicar: a primeira fração pinta colunas, a segunda pinta linhas. Onde elas se sobrepõem está o resultado.\nDividir: a primeira fração é medida em pedaços da segunda; o que sobra fica tracejado. Os passos invertem a segunda e multiplicam. O segundo numerador não pode ser 0.\nEsconder a resposta guarda a resposta até você mostrá-la.",
+        "helpIdeas": "Mostre 1/2 + 1/3 com a resposta escondida e peça às duplas que a prevejam.\nPergunte quantos 1/4 cabem em 3/4 e depois tente 3/4 ÷ 1/2.",
+        "mode": "O que fazer",
+        "modeCompare": "Comparar",
+        "modeAdd": "Somar",
+        "modeSub": "Subtrair",
+        "modeMul": "Multiplicar",
+        "first": "Primeira fração",
+        "second": "Segunda fração",
+        "num": "Numerador",
+        "den": "Denominador",
+        "simplest": "Forma mais simples: {f}.",
+        "mixed": "Como número misto: {m}.",
+        "already": "{f} já está na forma mais simples.",
+        "below": "{b} é maior que {a}, então o resultado é menor que zero.",
+        "swap": "Trocar",
+        "overlap": "{n} das {d} partes pequenas se sobrepõem.",
+        "think": "Resolva e depois mostre a resposta.",
+        "modeDiv": "Dividir",
+        "howtoDiv": "Use − e + em cada número. Quantas vezes a segunda cabe na primeira?",
+        "fits": "{b} cabe {n} vezes em {a}.",
+        "noZero": "Não dá para dividir por zero, então o segundo numerador fica em 1 ou mais."
       },
       "numline": {
         "name": "Reta numérica",
@@ -9445,7 +9470,10 @@
         "jumpFrom": "Pulo a partir de {v}: agora escolha onde ele cai",
         "jumped": "De {a} até {b}: {d}",
         "hint": "Toque na reta para marcar um ponto ou arraste ao longo dela para pular.",
-        "range": "Cabem até 240 passos em uma reta."
+        "range": "Cabem até 240 passos em uma reta.",
+        "howto": "Ponto: toque na reta. Pulo: arraste de um número a outro.",
+        "helpUse": "Ponto marca um ponto onde você toca; toque de novo para tirá-lo.\nPulo desenha uma seta de onde você aperta até onde solta e escreve a conta abaixo.\nAs setas do teclado movem a marca; Enter marca um ponto ou começa e termina um pulo.\nOpções: o intervalo, e números inteiros, frações ou decimais.",
+        "helpIdeas": "Pule 3/4 três vezes a partir do 0. Onde você chega?\nAjuste de −5 a 5 e mostre 2 − 5 como um pulo para trás passando pelo zero."
       },
       "coord": {
         "name": "Plano cartesiano",
@@ -9465,7 +9493,10 @@
         "rise": "sobe",
         "run": "anda",
         "hint": "As setas movem, Enter marca um ponto.",
-        "noLine": "Toque na malha para marcar pontos."
+        "noLine": "Toque na malha para marcar pontos.",
+        "howto": "Toque na malha para marcar um ponto. − e + mudam a reta.",
+        "helpUse": "Toque num cruzamento para marcar um ponto; toque de novo para tirá-lo.\nInclinação − e + deixam a reta mais ou menos inclinada; Começa em muda onde ela corta o eixo y.\nA tabela dá valores exatos da reta.\nAs setas movem o cursor; Enter marca um ponto.\nOpções: quatro quadrantes ou um, tamanho 5 ou 10, a reta e a tabela.",
+        "helpIdeas": "Marque três pontos da tabela e pergunte pela regra.\nMude a inclinação de 1/2 para 2: o que mudou e o que ficou igual?"
       },
       "graph": {
         "name": "Criador de gráficos",
@@ -9487,7 +9518,10 @@
         "per": "Cada figura vale",
         "key": "{icon} = {n}",
         "icon": "Figura",
-        "empty": "Coloque seus números em Opções."
+        "empty": "Coloque seus números em Opções.",
+        "howto": "Escolha um tipo de gráfico. Coloque seus números em Opções.",
+        "helpUse": "Barras, linhas, pictograma e pontos desenham os mesmos números de jeitos diferentes.\nOpções: um título, e para cada linha um nome e um número (até 12).\nNo pictograma, escolha a figura e quanto vale cada uma.\nO professor também pode copiar em Opções os totais de uma pergunta rápida.",
+        "helpIdeas": "Faça uma pergunta rápida sobre a fruta favorita e faça o gráfico dos totais.\nMostre os dados em barras e em pontos: qual é mais fácil de ler?"
       },
       "base10": {
         "name": "Material dourado",
@@ -9504,7 +9538,10 @@
         "traded": "Trocado.",
         "hint": "10 de um tipo podem ser trocados por 1 do próximo.",
         "drop": "Arraste para o tapete",
-        "clear": "Limpar"
+        "clear": "Limpar",
+        "howto": "Toque ou arraste blocos para os tapetes. Troque 10 por 1.",
+        "helpUse": "− e + embaixo de um tapete tiram ou põem um bloco.\nArraste um bloco do título de um tapete para pôr um; arraste um para fora para tirá-lo.\nOs botões de troca trocam 10 unidades por 1 dezena, ou 10 dezenas por 1 centena, e o contrário. O número não muda.\nLimpar esvazia os tapetes.",
+        "helpIdeas": "Mostre 3 dezenas e 14 unidades: dá para mostrar melhor?\nMonte 205 e troque para poder tirar 30."
       },
       "placeval": {
         "name": "Quadro de valor posicional",
@@ -9523,7 +9560,10 @@
         "ones": "Unidades",
         "tenths": "Décimos",
         "hundredths": "Centésimos",
-        "thousandths": "Milésimos"
+        "thousandths": "Milésimos",
+        "howto": "Toque numa coluna e mude o algarismo dela com − e +.",
+        "helpUse": "Toque numa coluna para escolhê-la; − e + tiram ou põem um nessa ordem, com reagrupamento.\nVezes 10 e Dividido por 10 movem cada algarismo uma ordem.\nA forma decomposta aparece abaixo.\nOpções: as fichas, as ordens depois da vírgula, limpar.",
+        "helpIdeas": "Mostre 3405 e aperte Vezes 10: o que se moveu e o que ficou?\nMonte 0,25 e peça a um aluno que some um décimo."
       },
       "tenframe": {
         "name": "Quadros de dez",
@@ -9539,7 +9579,10 @@
         "empty": "vazia",
         "counts": "{r} vermelhas e {y} amarelas: {n} ao todo",
         "flip": "Trocar as cores",
-        "makeTen": "Faltam {n} para a próxima dezena."
+        "makeTen": "Faltam {n} para a próxima dezena.",
+        "howto": "Toque num quadro: vermelho, depois amarelo, depois vazio.",
+        "helpUse": "Toque num quadro: vermelho, depois amarelo, depois vazio.\nVermelho + e Amarelo + enchem o próximo quadro; Tirar um esvazia o último.\nA decomposição mostra as duas cores e quantos faltam para dez.\nOpções: um ou dois quadros, a decomposição, trocar as cores, encher de vermelho.",
+        "helpIdeas": "Mostre 7 por dois segundos, cubra a tela e pergunte quantos eram.\nMostre 6 vermelhos e 3 amarelos: quanto é 6 + 3, e quantos faltam para 10?"
       },
       "hundreds": {
         "name": "Quadro do cem",
@@ -9554,7 +9597,10 @@
         "clear": "Limpar",
         "shadedN": "{n} pintados",
         "hidden": "Número escondido",
-        "noSkip": "Sem pulos"
+        "noSkip": "Sem pulos",
+        "howto": "Toque nos números para pintá-los. Escolha uma contagem.",
+        "helpUse": "Toque num número para pintá-lo; toque de novo para tirar a cor.\nContar de tanto em tanto acende as contagens de 2 a 10.\nEsconder números esconde os pintados ou todos, para adivinhar.\nLimpar tira as cores e a contagem. Opções: 1-100 ou 0-99.",
+        "helpIdeas": "Esconda todos os números, pinte um e pergunte qual é.\nConte de 9 em 9: que padrão os algarismos formam?"
       },
       "area": {
         "name": "Modelo de área e disposições",
@@ -9567,7 +9613,10 @@
         "splitCols": "Dividir as colunas depois de",
         "place": "Dividir pelo valor posicional",
         "noSplit": "0 quer dizer sem divisão.",
-        "hint": "Divida um lado para quebrar o produto em partes mais fáceis."
+        "hint": "Divida um lado para quebrar o produto em partes mais fáceis.",
+        "howto": "Ajuste linhas e colunas com − e +. Divida um lado para decompor.",
+        "helpUse": "Linhas e Colunas − e + ajustam os dois números.\nDisposição mostra pontos em linhas (até 12 × 12); Modelo de área mostra um retângulo.\nDividir pelo valor posicional separa os lados em dezenas e unidades e mostra cada produto parcial.\nOpções: escolha exatamente onde cada lado é dividido (0 = sem divisão).",
+        "helpIdeas": "Mostre 14 × 6 como 10 × 6 e 4 × 6 e some as partes.\nMostre 3 × 4 e depois 4 × 3: o resultado mudou?"
       },
       "times": {
         "name": "Tabuada em grade",
@@ -9581,7 +9630,10 @@
         "hide": "Esconder os resultados",
         "pick": "Toque numa casa para destacar uma conta.",
         "squaresAre": "Números quadrados",
-        "clear": "Limpar"
+        "clear": "Limpar",
+        "howto": "Toque num quadro para acender uma conta. Escolha o que mais mostrar.",
+        "helpUse": "Toque num quadro para acender sua conta.\nO menu acende uma conta, uma linha, uma coluna, os quadrados ou as contas invertidas.\nEsconder os resultados apaga cada produto, para adivinhar.\nAs setas andam pela tabela; Enter acende uma conta.\nLimpar apaga tudo. Opções: 10 × 10 ou 12 × 12.",
+        "helpIdeas": "Acenda a linha do 9: que padrão os algarismos formam?\nEsconda os resultados, acenda 7 × 8 e pergunte à turma antes de mostrar."
       },
       "tclock": {
         "name": "Relógio de ensinar",
@@ -9597,7 +9649,10 @@
         "hours": "h",
         "time": "Relógio",
         "onlyH": "{h} h",
-        "onlyM": "{m} min"
+        "onlyM": "{m} min",
+        "howto": "Arraste um ponteiro para mudar a hora. O outro acompanha.",
+        "helpUse": "Arraste o ponteiro dos minutos ou o das horas; o das horas anda com os minutos.\nOs botões voltam ou avançam 5 minutos ou 1 hora.\nAs setas andam um minuto; Page Up e Page Down, uma hora.\nOpções: a hora digital, o formato 24 horas, o tempo decorrido.\nTempo decorrido: escolha o início ou o fim e ajuste cada um; o tempo entre eles aparece em pulos.",
+        "helpIdeas": "Esconda a hora digital e peça à turma que leia o relógio.\nCom tempo decorrido: das 11:40 às 13:15, quanto tempo é?"
       },
       "fdp": {
         "name": "Fração, decimal, porcentagem",
@@ -9609,7 +9664,10 @@
         "hint": "periódico",
         "top": "Numerador",
         "bottom": "Denominador",
-        "outOf": "{n} de 100"
+        "outOf": "{n} de 100",
+        "howto": "Mude o numerador e o denominador com − e +, ou toque na malha.",
+        "helpUse": "Numerador e Denominador − e + mudam a fração (até 100).\nOs cartões mostram o mesmo número como fração, decimal e porcentagem. Uma dízima periódica termina com …\nToque na malha 10 × 10 para pintar esses centésimos; as setas também funcionam.",
+        "helpIdeas": "Peça 3/8 como decimal e depois confira aqui.\nPinte 25 quadrados: quais são três jeitos de escrever isso?"
       },
       "board": {
         "name": "Quadro branco",
@@ -9686,7 +9744,10 @@
         "closed": "Elástico fechado. Área {a}.",
         "hint": "Toque nos pinos para esticar um elástico; toque de novo no primeiro para o fechar. Arraste um canto para o mover.",
         "cursor": "Geoplano",
-        "show": "Mostrar o teorema de Pick"
+        "show": "Mostrar o teorema de Pick",
+        "howto": "Toque nos pinos para esticar um elástico. O primeiro pino o fecha.",
+        "helpUse": "Toque nos pinos para esticar o elástico; toque de novo no primeiro pino, ou em Fechar, para fechá-lo.\nArraste um vértice para movê-lo.\nNovo elástico começa outra figura de uma nova cor (até 6); Desfazer tira o último pino.\nUma figura fechada mostra sua área e seu perímetro exatos.\nAs setas andam pelos pinos; Enter estica o elástico ou pega um vértice.",
+        "helpIdeas": "Cada um faz uma figura de área 6 quadrados: comparem os perímetros.\nFaça um triângulo retângulo e mostre que é metade de um retângulo."
       },
       "pattern": {
         "name": "Blocos padrão",
@@ -9706,7 +9767,10 @@
         "block": "{name}, girado {deg}°",
         "moved": "Movido para {x}, {y}",
         "hint": "Arraste os blocos; eles encaixam na grade.",
-        "empty": "Adicione um bloco da fila de cima. As setas movem o bloco escolhido e R gira-o."
+        "empty": "Adicione um bloco da fila de cima. As setas movem o bloco escolhido e R gira-o.",
+        "howto": "Toque numa peça acima para pô-la. Arraste as peças: elas se encaixam.",
+        "helpUse": "Toque numa peça da fileira de cima para pô-la.\nArraste uma peça para movê-la; ela se encaixa na malha. Toque nela para escolhê-la.\nGirar gira a peça escolhida; Tirar a remove; Limpar esvazia o tabuleiro.\nA leitura diz que fração de um hexágono as peças formam.\nAs setas movem a peça escolhida; R a gira.",
+        "helpIdeas": "De quantos jeitos dá para cobrir um hexágono?\nSe o hexágono vale 1, quanto vale um trapézio? E um triângulo?"
       },
       "angle": {
         "name": "Criador de ângulos",
@@ -9722,7 +9786,10 @@
         "arc": "Arco",
         "step": "Encaixar em",
         "ray": "Ângulo",
-        "hint": "Arraste a ponta da semirreta ou use as setas."
+        "hint": "Arraste a ponta da semirreta ou use as setas.",
+        "howto": "Arraste a ponta da semirreta, ou mude o ângulo com − e +.",
+        "helpUse": "Arraste a ponta da semirreta para abrir ou fechar o ângulo.\n− e + o mudam um passo; os botões pulam para 45°, 90°, 135°, 180° ou 270°.\nA medida e o nome do ângulo aparecem abaixo.\nTransferidor e Arco mostram ou escondem os dois. Opções: passos de 1°, 5° ou 15°.",
+        "helpIdeas": "Esconda o transferidor e peça primeiro uma estimativa.\nAbra devagar de 0° a 360° e diga o nome de cada tipo de ângulo no caminho."
       },
       "solids": {
         "name": "Sólidos e planificações",
@@ -9747,7 +9814,10 @@
         "none": "Só o sólido",
         "folded": "{n}% dobrado",
         "shape": "Sólido",
-        "view": "Dobrar: setas. Girar: Page Up e Page Down."
+        "view": "Dobrar: setas. Girar: Page Up e Page Down.",
+        "howto": "Escolha um sólido. Dobre ou desdobre; arraste para o lado para girar.",
+        "helpUse": "O primeiro menu escolhe o sólido; o segundo marca faces, arestas ou vértices.\nDobrar dobra a planificação no sólido; aperte de novo para desdobrar.\nArraste para o lado, ou aperte Girar, para virá-lo.\nAs setas dobram aos poucos; Page Up e Page Down o giram.\nFaces, arestas e vértices são contados abaixo.",
+        "helpIdeas": "Mostre uma planificação aberta e pergunte que sólido ela forma antes de dobrar.\nConte faces, vértices e arestas de um prisma: F + V − A = 2?"
       },
       "transform": {
         "name": "Transformações",
@@ -9775,7 +9845,10 @@
         "hint": "As setas ou arrastar movem a figura.",
         "moved": "Movida",
         "rule": "Regra",
-        "move": "Transformação"
+        "move": "Transformação",
+        "howto": "Escolha transladar, refletir ou girar. Arraste a figura.",
+        "helpUse": "Transladar, Refletir e Girar escolhem o movimento.\nTransladar: x e y − e + deslizam a figura; você também pode arrastá-la ou usar as setas.\nRefletir e Girar: o menu escolhe o eixo ou o giro em torno da origem.\nA regra e cada ponto antes e depois aparecem.\nOpções: a figura, o início tracejado, a tabela.",
+        "helpIdeas": "Reflita no eixo y: o que acontece com cada x?\nGire 90° e pergunte onde o ponto A vai parar antes de mostrar."
       },
       "balance": {
         "name": "Balança",
@@ -9800,7 +9873,10 @@
         "where": "Fazer em",
         "secret": "Quanto pesa x",
         "scale": "Balança",
-        "start": "Começar uma equação nova com"
+        "start": "Começar uma equação nova com",
+        "howto": "Faça o mesmo dos dois lados para manter o equilíbrio. Ache x.",
+        "helpUse": "+ x e − x põem ou tiram uma caixa x; + 1 e − 1, um peso.\n÷ divide cada lado em grupos iguais e fica com um.\nOs dois lados, Lado esquerdo ou Lado direito: onde acontece o próximo passo. Um lado só faz a balança pender.\nDesfazer volta um passo; Nova equação cria outra.\nOpções: mostrar quanto pesa x, escolher x, começar uma nova equação.",
+        "helpIdeas": "Resolvam juntos 3x + 2 = x + 8, dizendo cada passo em voz alta.\nFaça um passo só de um lado: por que pendeu?"
       },
       "algebra": {
         "name": "Peças de álgebra",
@@ -9822,7 +9898,10 @@
         "removed": "Tirou {t}",
         "hint": "Não há mais pares nulos: não fica mais simples.",
         "empty": "Ponha peças da fila de cima.",
-        "full": "O tapete está cheio."
+        "full": "O tapete está cheio.",
+        "howto": "Toque numa peça acima para pô-la. Tire os pares nulos para simplificar.",
+        "helpUse": "Os botões de cima põem +x², −x², +x, −x, +1 ou −1.\nToque numa peça para escolhê-la; Virar troca o sinal, Delete a tira.\nUma positiva e uma negativa do mesmo tipo formam um par nulo (circulado); Pares nulos os tira.\nA expressão aparece como as peças estão e depois simplificada. Limpar esvazia o tapete.",
+        "helpIdeas": "Monte 2x + 3 − x − 1 e simplifique com pares nulos.\nMostre x² + 2x e peça outro jeito de escrever."
       },
       "coins": {
         "name": "Moedas e dinheiro",
@@ -9849,7 +9928,10 @@
         "removed": "Tirar {m}",
         "empty": "Toque numa moeda ou nota acima para a pôr aqui.",
         "mode": "O que fazer",
-        "units": "Os valores aqui estão em cêntimos ou pence (números simples no conjunto simples)."
+        "units": "Os valores aqui estão em cêntimos ou pence (números simples no conjunto simples).",
+        "howto": "Toque nas moedas e notas acima. Toque numa pilha para tirar uma.",
+        "helpUse": "Contar: toque numa moeda ou nota para pô-la; toque numa pilha no tapete para tirar uma. O total aparece.\nDar o troco: ajuste com − e + quanto custa e com quanto se paga. O troco, o menor número de moedas e a contagem para cima aparecem.\nLimpar esvazia o tapete.\nOpções: qual dinheiro, o preço e quanto se paga.",
+        "helpIdeas": "Faça o mesmo total com menos moedas.\nCusta 37, pago com 100: contem juntos para cima até achar o troco."
       },
       "chance": {
         "name": "Laboratório do acaso",
@@ -9873,7 +9955,10 @@
         "part": "Parte",
         "runs": "Tentativas de cada vez",
         "kind": "Experiência",
-        "none": "Ainda não há tentativas"
+        "none": "Ainda não há tentativas",
+        "howto": "Escolha moeda, dados ou roleta e aperte Lançar. Compare com a linha.",
+        "helpUse": "Moeda, Dados e Roleta escolhem o experimento.\nO menu define quantas tentativas cada Lançar faz; Lançar as faz.\nO gráfico mostra os resultados; a linha tracejada é quantos esperamos.\nRecomeçar os apaga.\nOpções: um ou dois dados (a soma), as partes da roleta, até 1000 tentativas.",
+        "helpIdeas": "Preveja, lance 10 vezes e depois 1000: qual fica mais perto da metade?\nLance dois dados 1000 vezes: por que a soma 7 sai mais?"
       },
       "letters": {
         "name": "Peças de letras",
@@ -10210,7 +10295,15 @@
       "askQ": "Pergunta",
       "askOpt": "Resposta {n}",
       "practice": "Praticar",
-      "practiceName": "Praticar: {title}"
+      "practiceName": "Praticar: {title}",
+      "helpFor": "Como usar: {name}",
+      "helpClose": "Fechar",
+      "helpControls": "O que cada botão faz",
+      "helpIdeas": "Ideias para a aula",
+      "helpMore": "Também",
+      "helpAsk": "Fazer uma pergunta: transforma o que a ferramenta mostra agora numa pergunta rápida. Você pode mudar as palavras antes de enviar.",
+      "helpSend": "Enviar para a turma: cada aluno recebe a própria cópia para experimentar. Nada do que ele faz com ela volta.",
+      "helpPractice": "Praticar: abre um jogo da Oomba que pratica a mesma ideia."
     },
     "ask": {
       "fractions": "Que fração está pintada?",
@@ -10239,7 +10332,11 @@
       "chance": "Qual é a probabilidade de {o}?",
       "letters": "Quantas vogais há em “{w}”?",
       "map": "Em que continente está o alfinete?",
-      "mapGrid": "Em que quadrado está o alfinete?"
+      "mapGrid": "Em que quadrado está o alfinete?",
+      "fractionsAdd": "Quanto é {a} + {b}?",
+      "fractionsSub": "Quanto é {a} − {b}?",
+      "fractionsMul": "Quanto é {a} × {b}?",
+      "fractionsDiv": "Quanto é {a} ÷ {b}?"
     },
     "tpl": {
       "morning": {

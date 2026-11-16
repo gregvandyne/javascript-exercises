@@ -231,6 +231,96 @@ test('teaching clock: hands move together, dragging the minute hand past 12 chan
   assert.deepEqual(M.clockParts(0), { h: 12, h24: 0, m: 0, pm: false }); assert.deepEqual(M.clockParts(12 * 60 + 5), { h: 12, h24: 12, m: 5, pm: true });
 });
 
+// ---------------------------------------------------------------- help on the maths tools: the fraction tool's operations
+// (docs/decisions.md "Classroom dashboards: help on the maths tools")
+test('fractions: add, subtract, multiply and divide exactly, simplified, as mixed numbers; below zero; never by zero', async () => {
+  const op = (o, a, b) => M.operate(o, f(...a), f(...b));
+  assert.deepEqual(M.gcd(12, 18), 6); assert.equal(M.lcm(4, 6), 12); assert.equal(M.lcm(11, 12), 132);
+  // add: the least common denominator, the same-size pieces, the answer, its simplest form and mixed number
+  let r = op('add', [1, 2], [1, 3]);
+  assert.deepEqual([r.L, r.a2, r.b2, r.raw, r.simple, r.mixed, r.more], [6, f(3, 6), f(2, 6), f(5, 6), f(5, 6), '5/6', false]);
+  r = op('add', [3, 4], [3, 4]); assert.deepEqual([r.raw, r.simple, r.mixed, r.more], [f(6, 4), f(3, 2), '1 1/2', true]);
+  r = op('add', [1, 4], [1, 6]); assert.equal(r.L, 12, 'the least common denominator, not 24'); assert.deepEqual(r.raw, f(5, 12));
+  r = op('add', [2, 4], [1, 2]); assert.deepEqual([r.raw, r.simple, r.mixed, r.whole], [f(4, 4), f(1, 1), '1', true]);
+  r = op('add', [7, 11], [5, 12]); assert.deepEqual([r.L, r.raw, r.mixed], [132, f(139, 132), '1 7/132']);
+  // subtract, below zero: the minus is on the answer, never lost
+  r = op('sub', [3, 4], [1, 3]); assert.deepEqual([r.raw, r.mixed, r.negative], [f(5, 12), '5/12', false]);
+  r = op('sub', [1, 3], [1, 2]); assert.deepEqual([r.raw, r.simple, r.mixed, r.negative], [f(-1, 6), f(-1, 6), '−1/6', true]);
+  r = op('sub', [1, 2], [7, 3]); assert.equal(r.mixed, '−1 5/6');
+  r = op('sub', [2, 5], [2, 5]); assert.deepEqual([r.simple, r.mixed, r.negative], [f(0, 1), '0', false]);
+  // multiply: whole numbers (n/1) work
+  r = op('mul', [2, 3], [3, 4]); assert.deepEqual([r.raw, r.simple, r.mixed], [f(6, 12), f(1, 2), '1/2']);
+  r = op('mul', [3, 1], [2, 3]); assert.deepEqual([r.raw, r.mixed, r.whole], [f(6, 3), '2', true]);
+  r = op('mul', [3, 1], [2, 1]); assert.equal(r.mixed, '6');
+  r = op('mul', [0, 5], [3, 4]); assert.equal(r.mixed, '0');
+  // divide: a/b × d/c; how many of the second fit in the first
+  r = op('div', [3, 4], [1, 4]); assert.deepEqual([r.flip, r.raw, r.mixed], [f(4, 1), f(12, 4), '3']);
+  r = op('div', [3, 4], [1, 2]); assert.deepEqual([r.L, r.a2, r.b2, r.raw, r.mixed], [4, f(3, 4), f(2, 4), f(6, 4), '1 1/2']);
+  r = op('div', [1, 2], [3, 4]); assert.equal(r.mixed, '2/3');
+  r = op('div', [2, 1], [1, 3]); assert.equal(r.mixed, '6');
+  r = op('div', [3, 4], [0, 5]); assert.ok(r.guarded, 'nothing is divided by zero'); assert.deepEqual(r.b, f(1, 5)); assert.equal(r.mixed, '3 3/4');
+  for (const o of Object.keys(M.OPS)) for (let i = 0; i < 400; i++) {
+    // every answer is exact: compared with the same sum in floating point
+    const a = M.clampOperand(f(i % 13, 1 + (i % 12))), b = M.clampOperand(f((i * 7) % 13, 1 + ((i * 5) % 12)));
+    const x = M.operate(o, a, b), va = a.n / a.d, vb = x.b.n / x.b.d;
+    const want = { add: va + vb, sub: va - vb, mul: va * vb, div: va / vb }[o];
+    assert.ok(Math.abs(x.simple.n / x.simple.d - want) < 1e-9, `${o} ${a.n}/${a.d} ${b.n}/${b.d}`);
+    assert.equal(M.gcd(x.simple.n, x.simple.d), 1, 'lowest terms');
+  }
+  // the operands' limits: bottom 1-12, top 0-12 and at most three wholes
+  assert.deepEqual(M.clampOperand(f(99, 1)), f(3, 1)); assert.deepEqual(M.clampOperand(f(-4, 40)), f(0, 12)); assert.deepEqual(M.clampOperand(f(5, 0)), f(3, 1));
+  assert.deepEqual(M.mixedParts(f(-7, 6)), { sign: -1, whole: 1, n: 1, d: 6 }); assert.equal(M.mixedText(f(8, 4)), '2'); assert.equal(M.fracRaw(f(-1, 6)), '−1/6');
+  assert.deepEqual(M.FRACTION_MODES, ['compare', 'add', 'sub', 'mul', 'div']);
+  // the browser's starting fractions are the server's
+  const st = DT.cleanToolState('fractions', { mode: 'add' });
+  assert.deepEqual([st.a, st.b], [M.OP_START.a, M.OP_START.b]);
+});
+
+test('fractions: the new state (mode, a, b) is rebuilt on the server; layouts saved before it load unchanged', () => {
+  const c = DT.cleanToolState;
+  const old = { shape: 'circle', bars: [{ n: 2, d: 3 }, { n: 6, d: 6 }], same: true, hide: false };
+  assert.deepEqual(c('fractions', old), old, 'an old Compare state comes back exactly as it was');
+  assert.deepEqual(c('fractions', { ...old, mode: 'compare', a: { n: 1, d: 2 }, b: { n: 1, d: 3 } }), old, 'Compare with the starting fractions is stored in the old shape');
+  const s = c('fractions', { ...old, mode: 'add', a: { n: 30, d: 0 }, b: { n: -3, d: 99, evil: 1 }, x: 1 });
+  assert.deepEqual([s.mode, s.a, s.b], ['add', { n: 3, d: 1 }, { n: 0, d: 12 }]);
+  assert.deepEqual(c('fractions', s), s, 'cleaning is stable');
+  assert.deepEqual(c('fractions', { mode: 'compare', a: { n: 2, d: 5 } }).a, { n: 2, d: 5 }, 'a teacher\'s fractions are kept while comparing');
+  assert.equal(c('fractions', { mode: 'pow' }).mode, undefined, 'an unknown mode is Compare');
+  assert.deepEqual(c('fractions', { mode: 'div', b: { n: 0, d: 4 } }).b, { n: 1, d: 4 }, 'never divide by zero');
+  assert.deepEqual(c('fractions', { mode: 'mul', a: 'x', b: [1, 2] }).a, { n: 1, d: 2 });
+  assert.equal(c('fractions', { mode: 'sub', a: { n: 12, d: 12 } }).a.n, 12);
+  assert.equal(c('fractions', { mode: 'sub', a: { n: 12, d: 2 } }).a.n, 6, 'at most three wholes');
+});
+
+test('fractions: "Make a question" from each mode, the right answer in lowest terms, no wrong answer worth the same', async () => {
+  const A = await import('../../public/js/dash-ask.js');
+  const reg = D.registryFor(tFor('en'), 'teacher'), W2 = reg.types.find(x => x.id === 'fractions').words;
+  const ask = (st, lang = 'en') => A.questionFor('fractions', { ...DT.cleanToolState('fractions', {}), ...st }, W2, D.registryFor(tFor(lang), 'teacher').ask, lang);
+  const cases = [
+    [{ mode: 'compare', bars: [{ n: 3, d: 8 }] }, 'What fraction is shaded?', '3/8'],
+    [{ mode: 'add', a: f(1, 2), b: f(1, 3) }, 'What is 1/2 + 1/3?', '5/6', '2/5'],
+    [{ mode: 'add', a: f(3, 4), b: f(3, 4) }, 'What is 3/4 + 3/4?', '1 1/2'],
+    [{ mode: 'sub', a: f(1, 3), b: f(1, 2) }, 'What is 1/3 − 1/2?', '−1/6', '1/6'],
+    [{ mode: 'mul', a: f(2, 3), b: f(3, 4) }, 'What is 2/3 × 3/4?', '1/2', '5/7'],
+    [{ mode: 'mul', a: f(3, 1), b: f(2, 1) }, 'What is 3/1 × 2/1?', '6'],
+    [{ mode: 'div', a: f(3, 4), b: f(1, 2) }, 'What is 3/4 ÷ 1/2?', '1 1/2', '3/8'],
+    [{ mode: 'div', a: f(3, 4), b: f(1, 4) }, 'What is 3/4 ÷ 1/4?', '3'],
+  ];
+  const value = t => { const m = /^(−?)(?:(\d+) )?(\d+)(?:\/(\d+))?$/.exec(t); const s = m[1] ? -1 : 1; return m[4] ? s * ((+m[2] || 0) + m[3] / m[4]) : s * (+m[2] || 0) + s * +m[3] * (m[2] ? 0 : 1); };
+  for (const [st, q, right, wrong] of cases) {
+    const made = ask(st);
+    assert.equal(made.q, q); assert.equal(made.options[made.answer], right, q);
+    assert.ok(made.options.length >= 2 && made.options.length <= 4, q);
+    if (wrong) assert.ok(made.options.includes(wrong), `${q}: the usual slip ${wrong} is offered`);
+    const v = value(right);
+    made.options.forEach((o, i) => { if (i !== made.answer) assert.ok(Math.abs(value(o) - v) > 1e-9, `${q}: ${o} is not worth the same as ${right}`); });
+    assert.deepEqual(ask(st), made, 'the same state makes the same question');
+  }
+  // "Hide the answer" never changes the question; the words follow the language.
+  assert.equal(ask({ mode: 'div', a: f(3, 4), b: f(1, 2) }, 'it').q, 'Quanto fa 3/4 ÷ 1/2?');
+  assert.deepEqual(ask({ mode: 'add', a: f(1, 2), b: f(1, 3), hide: true }).options.sort(), ask({ mode: 'add', a: f(1, 2), b: f(1, 3) }).options.sort());
+});
+
 test('fraction, decimal, percent: exact, with repeating decimals shown sensibly', () => {
   assert.equal(M.decimalString(1, 3), '0.333…'); assert.equal(M.percentString(1, 3), '33.3…%');
   assert.equal(M.decimalString(2, 3), '0.666…'); assert.equal(M.percentString(2, 3), '66.6…%');
@@ -364,4 +454,14 @@ test('every stage 3 string is translated into every locale', async () => {
     assert.deepEqual(l.missing.filter(k => keys.includes(k)), [], l.code);
     assert.deepEqual([...l.placeholderErrors, ...l.parseErrors, ...l.extra], [], l.code);
   }
+});
+
+test('a maths tool saved below its new smallest size is read at that size, and what it covers moves down', () => {
+  const t = D.widgetType('fractions');
+  const old = [{ id: 'f', type: 'fractions', x: 0, y: 0, w: t.min[0], h: t.min[1] - 1, s: {} }, { id: 'c', type: 'clock', x: 0, y: t.min[1] - 1, w: 3, h: 2, s: {} }];
+  const out = D.migrateWidgets(old);
+  assert.equal(out[0].h, t.min[1]);
+  assert.ok(out[1].y >= out[0].y + out[0].h, 'the clock under it moved down');
+  const fine = [{ id: 'f', type: 'fractions', x: 0, y: 0, w: t.size[0], h: t.size[1], s: {} }];
+  assert.strictEqual(D.migrateWidgets(fine)[0], fine[0], 'a widget at a good size is untouched');
 });

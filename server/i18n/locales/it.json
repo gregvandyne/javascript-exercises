@@ -9423,7 +9423,32 @@
         "tooSmall": "Sarebbero {n} parti minuscole: troppo piccole da disegnare.",
         "samePrompt": "Premi «Parti uguali» per vedere perché.",
         "which": "Frazione {n}",
-        "order": "Quale è più grande?"
+        "order": "Quale è più grande?",
+        "howto": "Tocca una striscia per colorare le parti. − e + cambiano i pezzi.",
+        "howtoOp": "Usa − e + su ogni numero. Il risultato è disegnato sotto.",
+        "howtoMul": "Usa − e + su ogni numero. La parte sovrapposta è il risultato.",
+        "helpUse": "Confronta, Somma, Sottrai, Moltiplica e Dividi scelgono cosa fare.\nConfronta: tocca una striscia o un cerchio per colorare le parti; − e + cambiano quante parti ha. Parti uguali mostra quale è più grande.\nSomma e Sottrai: − e + regolano ogni numeratore e denominatore. Le due frazioni sono divise in parti uguali, poi il risultato è disegnato e semplificato.\nMoltiplica: la prima frazione colora le colonne, la seconda le righe. Dove si sovrappongono c’è il risultato.\nDividi: la prima frazione è misurata in pezzi della seconda; l’avanzo è tratteggiato. I passaggi capovolgono la seconda e moltiplicano. Il secondo numeratore non può essere 0.\nNascondi la risposta la tiene nascosta finché non la mostri.",
+        "helpIdeas": "Mostra 1/2 + 1/3 con la risposta nascosta e fai prevedere alle coppie.\nChiedi quanti 1/4 stanno in 3/4, poi prova 3/4 ÷ 1/2.",
+        "mode": "Cosa fare",
+        "modeCompare": "Confronta",
+        "modeAdd": "Somma",
+        "modeSub": "Sottrai",
+        "modeMul": "Moltiplica",
+        "first": "Prima frazione",
+        "second": "Seconda frazione",
+        "num": "Numeratore",
+        "den": "Denominatore",
+        "simplest": "Ridotta ai minimi termini: {f}.",
+        "mixed": "Come numero misto: {m}.",
+        "already": "{f} è già ridotta ai minimi termini.",
+        "below": "{b} è maggiore di {a}, quindi il risultato è minore di zero.",
+        "swap": "Scambia",
+        "overlap": "{n} delle {d} parti piccole si sovrappongono.",
+        "think": "Calcola, poi mostra la risposta.",
+        "modeDiv": "Dividi",
+        "howtoDiv": "Usa − e + su ogni numero. Quante volte la seconda sta nella prima?",
+        "fits": "{b} sta {n} volte in {a}.",
+        "noZero": "Non si può dividere per zero, quindi il secondo numeratore resta 1 o più."
       },
       "numline": {
         "name": "Linea dei numeri",
@@ -9444,7 +9469,10 @@
         "jumpFrom": "Salto da {v}: ora scegli dove arriva",
         "jumped": "Da {a} a {b}: {d}",
         "hint": "Tocca la linea per mettere un punto o trascina lungo la linea per saltare.",
-        "range": "Su una linea stanno fino a 240 passi."
+        "range": "Su una linea stanno fino a 240 passi.",
+        "howto": "Punto: tocca la retta. Salto: trascina da un numero a un altro.",
+        "helpUse": "Punto mette un punto dove tocchi; toccalo di nuovo per toglierlo.\nSalto disegna una freccia da dove premi a dove lasci e scrive il calcolo sotto.\nLe frecce della tastiera muovono il segno; Invio mette un punto o inizia e finisce un salto.\nOpzioni: l’intervallo, e numeri interi, frazioni o decimali.",
+        "helpIdeas": "Salta 3/4 tre volte da 0. Dove arrivi?\nImposta da −5 a 5 e mostra 2 − 5 come un salto indietro oltre lo zero."
       },
       "coord": {
         "name": "Piano cartesiano",
@@ -9464,7 +9492,10 @@
         "rise": "sale",
         "run": "avanza",
         "hint": "Le frecce spostano, Invio segna un punto.",
-        "noLine": "Tocca la griglia per segnare punti."
+        "noLine": "Tocca la griglia per segnare punti.",
+        "howto": "Tocca la griglia per mettere un punto. − e + cambiano la retta.",
+        "helpUse": "Tocca un incrocio per mettere un punto; toccalo di nuovo per toglierlo.\nPendenza − e + rendono la retta più o meno ripida; Parte da sposta dove taglia l’asse y.\nLa tabella dà valori esatti sulla retta.\nLe frecce muovono il cursore; Invio mette un punto.\nOpzioni: quattro quadranti o uno, misura 5 o 10, la retta e la tabella.",
+        "helpIdeas": "Metti tre punti dalla tabella e chiedi la regola.\nCambia la pendenza da 1/2 a 2: cosa è cambiato e cosa è rimasto uguale?"
       },
       "graph": {
         "name": "Crea grafici",
@@ -9486,7 +9517,10 @@
         "per": "Ogni disegno vale",
         "key": "{icon} = {n}",
         "icon": "Disegno",
-        "empty": "Aggiungi i tuoi numeri in Opzioni."
+        "empty": "Aggiungi i tuoi numeri in Opzioni.",
+        "howto": "Scegli un tipo di grafico. Scrivi i tuoi numeri in Opzioni.",
+        "helpUse": "Istogramma, linee, ideogramma e punti disegnano gli stessi numeri in modi diversi.\nOpzioni: un titolo, e per ogni riga un nome e un numero (fino a 12).\nPer un ideogramma scegli il disegno e quanto vale ciascuno.\nL’insegnante può anche copiare in Opzioni i totali di una domanda veloce.",
+        "helpIdeas": "Fai una domanda veloce sul frutto preferito e rappresenta i totali.\nMostra i dati a barre e a punti: quale si legge meglio?"
       },
       "base10": {
         "name": "Blocchi in base dieci",
@@ -9503,7 +9537,10 @@
         "traded": "Cambiato.",
         "hint": "10 di un tipo si cambiano con 1 del tipo dopo.",
         "drop": "Trascina sul tappeto",
-        "clear": "Cancella"
+        "clear": "Cancella",
+        "howto": "Tocca o trascina i blocchi sui tappeti. Cambia 10 con 1.",
+        "helpUse": "− e + sotto un tappeto tolgono o aggiungono un blocco.\nTrascina un blocco dal titolo di un tappeto per aggiungerne uno; trascinane fuori uno per toglierlo.\nI pulsanti di cambio scambiano 10 unità con 1 decina, o 10 decine con 1 centinaio, e viceversa. Il numero non cambia.\nCancella svuota i tappeti.",
+        "helpIdeas": "Mostra 3 decine e 14 unità: c’è un modo migliore?\nCostruisci 205 e cambia per poter togliere 30."
       },
       "placeval": {
         "name": "Tabella del valore posizionale",
@@ -9522,7 +9559,10 @@
         "ones": "Unità",
         "tenths": "Decimi",
         "hundredths": "Centesimi",
-        "thousandths": "Millesimi"
+        "thousandths": "Millesimi",
+        "howto": "Tocca una colonna, poi cambia la sua cifra con − e +.",
+        "helpUse": "Tocca una colonna per sceglierla; − e + tolgono o aggiungono uno in quella posizione, con riporti e prestiti.\nPer 10 e Diviso 10 spostano ogni cifra di una posizione.\nLa forma estesa è scritta sotto.\nOpzioni: i gettoni, le posizioni dopo la virgola, cancella.",
+        "helpIdeas": "Mostra 3405 e premi Per 10: cosa si è spostato e cosa è rimasto?\nFai 0,25 e chiedi a un alunno di aggiungere un decimo."
       },
       "tenframe": {
         "name": "Cornici del dieci",
@@ -9538,7 +9578,10 @@
         "empty": "vuota",
         "counts": "{r} rossi e {y} gialli: {n} in tutto",
         "flip": "Scambia i colori",
-        "makeTen": "Ancora {n} per la prossima decina."
+        "makeTen": "Ancora {n} per la prossima decina.",
+        "howto": "Tocca una casella: rosso, poi giallo, poi vuota.",
+        "helpUse": "Tocca una casella: rosso, poi giallo, poi vuota.\nRosso + e Giallo + riempiono la casella seguente; Togline uno svuota l’ultima.\nLa scomposizione mostra i due colori e quanti ne mancano a dieci.\nOpzioni: una o due cornici, la scomposizione, scambia i colori, riempi di rosso.",
+        "helpIdeas": "Mostra 7 per due secondi, copri lo schermo e chiedi quanti erano.\nMostra 6 rossi e 3 gialli: quanto fa 6 + 3, e quanti ne mancano a 10?"
       },
       "hundreds": {
         "name": "Tabella del cento",
@@ -9553,7 +9596,10 @@
         "clear": "Cancella",
         "shadedN": "{n} colorati",
         "hidden": "Numero nascosto",
-        "noSkip": "Senza salti"
+        "noSkip": "Senza salti",
+        "howto": "Tocca i numeri per colorarli. Scegli un conteggio per vedere uno schema.",
+        "helpUse": "Tocca un numero per colorarlo; toccalo di nuovo per togliere il colore.\nConta a salti accende i salti da 2 a 10.\nNascondi numeri nasconde quelli colorati o tutti, per indovinare.\nCancella toglie colori e conteggio. Opzioni: 1-100 o 0-99.",
+        "helpIdeas": "Nascondi tutti i numeri, colorane uno e chiedi quale è.\nConta a salti di 9: che schema formano le cifre?"
       },
       "area": {
         "name": "Modello d’area e schieramenti",
@@ -9566,7 +9612,10 @@
         "splitCols": "Dividi le colonne dopo",
         "place": "Dividi per valore posizionale",
         "noSplit": "0 vuol dire: non dividere.",
-        "hint": "Dividi un lato per spezzare il prodotto in parti più facili."
+        "hint": "Dividi un lato per spezzare il prodotto in parti più facili.",
+        "howto": "Regola righe e colonne con − e +. Dividi un lato per scomporre.",
+        "helpUse": "Righe e Colonne − e + regolano i due numeri.\nSchieramento mostra punti in righe (fino a 12 × 12); Modello d’area mostra un rettangolo.\nDividi per valore posizionale separa i lati in decine e unità e mostra ogni prodotto parziale.\nOpzioni: scegli esattamente dove dividere ogni lato (0 = nessuna divisione).",
+        "helpIdeas": "Mostra 14 × 6 come 10 × 6 e 4 × 6 e somma le parti.\nMostra 3 × 4, poi 4 × 3: il risultato è cambiato?"
       },
       "times": {
         "name": "Tavola pitagorica",
@@ -9580,7 +9629,10 @@
         "hide": "Nascondi i risultati",
         "pick": "Tocca una casella per illuminare un prodotto.",
         "squaresAre": "Numeri quadrati",
-        "clear": "Cancella"
+        "clear": "Cancella",
+        "howto": "Tocca una casella per accendere un prodotto. Scegli cos’altro mostrare.",
+        "helpUse": "Tocca una casella per accendere il suo prodotto.\nIl menu accende un prodotto, una riga, una colonna, i quadrati o la proprietà commutativa.\nNascondi i risultati svuota ogni prodotto, per indovinare.\nLe frecce si muovono nella tabella; Invio accende un prodotto.\nCancella spegne tutto. Opzioni: 10 × 10 o 12 × 12.",
+        "helpIdeas": "Accendi la riga del 9: che schema formano le cifre?\nNascondi i risultati, accendi 7 × 8 e chiedi alla classe prima di mostrarlo."
       },
       "tclock": {
         "name": "Orologio didattico",
@@ -9596,7 +9648,10 @@
         "hours": "h",
         "time": "Orologio",
         "onlyH": "{h} h",
-        "onlyM": "{m} min"
+        "onlyM": "{m} min",
+        "howto": "Trascina una lancetta per cambiare l’ora. L’altra la segue.",
+        "helpUse": "Trascina la lancetta dei minuti o delle ore; quella delle ore si muove con i minuti.\nI pulsanti vanno indietro o avanti di 5 minuti o di 1 ora.\nLe frecce muovono di un minuto, Pag su e Pag giù di un’ora.\nOpzioni: l’ora digitale, il formato 24 ore, il tempo trascorso.\nTempo trascorso: scegli l’inizio o la fine e regola ciascuno; il tempo in mezzo è mostrato a salti.",
+        "helpIdeas": "Nascondi l’ora digitale e fai leggere l’orologio alla classe.\nCon il tempo trascorso: dalle 11:40 alle 13:15, quanto tempo è?"
       },
       "fdp": {
         "name": "Frazione, decimale, percentuale",
@@ -9608,7 +9663,10 @@
         "hint": "periodico",
         "top": "Numeratore",
         "bottom": "Denominatore",
-        "outOf": "{n} su 100"
+        "outOf": "{n} su 100",
+        "howto": "Cambia numeratore e denominatore con − e +, oppure tocca la griglia.",
+        "helpUse": "Numeratore e Denominatore − e + cambiano la frazione (fino a 100).\nLe carte mostrano lo stesso numero come frazione, decimale e percentuale. Un decimale periodico finisce con …\nTocca la griglia 10 × 10 per colorare tanti centesimi; vanno bene anche le frecce.",
+        "helpIdeas": "Chiedi 3/8 come decimale, poi verifica qui.\nColora 25 quadretti: quali sono tre modi di scriverlo?"
       },
       "board": {
         "name": "Lavagna",
@@ -9685,7 +9743,10 @@
         "closed": "Elastico chiuso. Area {a}.",
         "hint": "Tocca i chiodi per tendere un elastico; tocca di nuovo il primo per chiuderlo. Trascina un angolo per spostarlo.",
         "cursor": "Geopiano",
-        "show": "Mostra il teorema di Pick"
+        "show": "Mostra il teorema di Pick",
+        "howto": "Tocca i chiodi per tendere un elastico. Il primo chiodo lo chiude.",
+        "helpUse": "Tocca i chiodi per tendere l’elastico; tocca di nuovo il primo chiodo, o Chiudi, per chiuderlo.\nTrascina un vertice per spostarlo.\nNuovo elastico inizia un’altra figura di un nuovo colore (fino a 6); Annulla toglie l’ultimo chiodo.\nUna figura chiusa mostra area e perimetro esatti.\nLe frecce si muovono tra i chiodi; Invio tende l’elastico o prende un vertice.",
+        "helpIdeas": "Ognuno fa una figura di area 6 quadretti: confrontate i perimetri.\nFai un triangolo rettangolo e mostra che è metà di un rettangolo."
       },
       "pattern": {
         "name": "Blocchi geometrici",
@@ -9705,7 +9766,10 @@
         "block": "{name}, ruotato di {deg}°",
         "moved": "Spostato in {x}, {y}",
         "hint": "Trascina i blocchi; si agganciano alla griglia.",
-        "empty": "Aggiungi un blocco dalla fila in alto. Le frecce spostano il blocco scelto e R lo ruota."
+        "empty": "Aggiungi un blocco dalla fila in alto. Le frecce spostano il blocco scelto e R lo ruota.",
+        "howto": "Tocca un pezzo in alto per aggiungerlo. Trascinali: si incastrano.",
+        "helpUse": "Tocca un pezzo nella fila in alto per aggiungerlo.\nTrascina un pezzo per spostarlo; si aggancia alla griglia. Toccalo per sceglierlo.\nRuota ruota il pezzo scelto; Togli lo toglie; Cancella svuota il piano.\nLa lettura dice quale frazione di esagono formano i pezzi.\nLe frecce muovono il pezzo scelto; R lo ruota.",
+        "helpIdeas": "In quanti modi puoi coprire un esagono?\nSe l’esagono vale 1, quanto vale un trapezio? E un triangolo?"
       },
       "angle": {
         "name": "Crea angoli",
@@ -9721,7 +9785,10 @@
         "arc": "Arco",
         "step": "Aggancia a",
         "ray": "Angolo",
-        "hint": "Trascina la punta della semiretta o usa le frecce."
+        "hint": "Trascina la punta della semiretta o usa le frecce.",
+        "howto": "Trascina la punta della semiretta, o cambia l’angolo con − e +.",
+        "helpUse": "Trascina la punta della semiretta per aprire o chiudere l’angolo.\n− e + lo cambiano di un passo; i pulsanti saltano a 45°, 90°, 135°, 180° o 270°.\nAmpiezza e nome dell’angolo sono scritti sotto.\nGoniometro e Arco li mostrano o li nascondono. Opzioni: passi di 1°, 5° o 15°.",
+        "helpIdeas": "Nascondi il goniometro e chiedi prima una stima.\nApri piano da 0° a 360° e nomina ogni tipo di angolo lungo la strada."
       },
       "solids": {
         "name": "Solidi e sviluppi",
@@ -9746,7 +9813,10 @@
         "none": "Solo il solido",
         "folded": "Piegato al {n}%",
         "shape": "Solido",
-        "view": "Piegare: frecce. Ruotare: Pag su e Pag giù."
+        "view": "Piegare: frecce. Ruotare: Pag su e Pag giù.",
+        "howto": "Scegli un solido. Piegalo o aprilo; trascina di lato per ruotarlo.",
+        "helpUse": "Il primo menu sceglie il solido; il secondo segna facce, spigoli o vertici.\nPiega piega lo sviluppo nel solido; premilo di nuovo per aprirlo.\nTrascina di lato, o premi Ruota, per girarlo.\nLe frecce lo piegano poco alla volta; Pag su e Pag giù lo ruotano.\nFacce, spigoli e vertici sono contati sotto.",
+        "helpIdeas": "Mostra uno sviluppo piatto e chiedi quale solido diventerà prima di piegarlo.\nConta facce, vertici e spigoli di un prisma: F + V − S = 2?"
       },
       "transform": {
         "name": "Trasformazioni",
@@ -9774,7 +9844,10 @@
         "hint": "Le frecce o un trascinamento spostano la figura.",
         "moved": "Spostata",
         "rule": "Regola",
-        "move": "Trasformazione"
+        "move": "Trasformazione",
+        "howto": "Scegli trasla, rifletti o ruota. Trascina la figura o usa i pulsanti.",
+        "helpUse": "Trasla, Rifletti e Ruota scelgono il movimento.\nTrasla: x e y − e + spostano la figura; puoi anche trascinarla o usare le frecce.\nRifletti e Ruota: il menu sceglie l’asse o la rotazione intorno all’origine.\nSono mostrati la regola e ogni punto prima e dopo.\nOpzioni: la figura, la partenza tratteggiata, la tabella.",
+        "helpIdeas": "Rifletti rispetto all’asse y: cosa succede a ogni x?\nRuota di 90° e chiedi dove finirà il punto A prima di mostrarlo."
       },
       "balance": {
         "name": "Bilancia",
@@ -9799,7 +9872,10 @@
         "where": "Fallo su",
         "secret": "Quanto pesa x",
         "scale": "Bilancia",
-        "start": "Nuova equazione con"
+        "start": "Nuova equazione con",
+        "howto": "Fai la stessa cosa sui due piatti per restare in equilibrio. Trova x.",
+        "helpUse": "+ x e − x aggiungono o tolgono una scatola x; + 1 e − 1 un peso.\n÷ divide ogni piatto in gruppi uguali e ne tiene uno.\nEntrambi i piatti, Piatto sinistro o Piatto destro: dove si fa il passo seguente. Un solo piatto fa pendere la bilancia.\nAnnulla toglie un passo; Nuova equazione ne crea un’altra.\nOpzioni: mostra quanto pesa x, scegli x, inizia una nuova equazione.",
+        "helpIdeas": "Risolvete insieme 3x + 2 = x + 8 dicendo ogni passo ad alta voce.\nFai un passo su un solo piatto: perché pende?"
       },
       "algebra": {
         "name": "Tessere algebriche",
@@ -9821,7 +9897,10 @@
         "removed": "Tolto {t}",
         "hint": "Niente più coppie nulle: più semplice di così non si può.",
         "empty": "Aggiungi tessere dalla fila in alto.",
-        "full": "Il tappeto è pieno."
+        "full": "Il tappeto è pieno.",
+        "howto": "Tocca una tessera in alto per aggiungerla. Togli le coppie nulle.",
+        "helpUse": "I pulsanti in alto aggiungono +x², −x², +x, −x, +1 o −1.\nTocca una tessera per sceglierla; Gira cambia il suo segno, Canc la toglie.\nUna positiva e una negativa dello stesso tipo fanno una coppia nulla (cerchiata); Coppie nulle le toglie.\nL’espressione è scritta come sono le tessere, poi semplificata. Cancella svuota il tappeto.",
+        "helpIdeas": "Costruisci 2x + 3 − x − 1 e semplifica con le coppie nulle.\nMostra x² + 2x e chiedi un altro modo di scriverlo."
       },
       "coins": {
         "name": "Monete e denaro",
@@ -9848,7 +9927,10 @@
         "removed": "Togli {m}",
         "empty": "Tocca una moneta o una banconota qui sopra per metterla qui.",
         "mode": "Cosa fare",
-        "units": "Gli importi qui sono in centesimi o pence (numeri semplici per il set semplice)."
+        "units": "Gli importi qui sono in centesimi o pence (numeri semplici per il set semplice).",
+        "howto": "Tocca monete e banconote in alto. Tocca una pila per toglierne una.",
+        "helpUse": "Conta: tocca una moneta o una banconota per aggiungerla; tocca una pila sul tappeto per toglierne una. Il totale è mostrato.\nDai il resto: regola con − e + quanto costa e con cosa si paga. Sono mostrati il resto, il minor numero di monete e il conteggio in avanti.\nCancella svuota il tappeto.\nOpzioni: quale moneta, il prezzo e quanto si paga.",
+        "helpIdeas": "Fai lo stesso totale con meno monete.\nCosta 37, pagato con 100: contate insieme in avanti per trovare il resto."
       },
       "chance": {
         "name": "Laboratorio del caso",
@@ -9872,7 +9954,10 @@
         "part": "Spicchio",
         "runs": "Prove ogni volta",
         "kind": "Esperimento",
-        "none": "Ancora nessuna prova"
+        "none": "Ancora nessuna prova",
+        "howto": "Scegli moneta, dadi o ruota, poi Lancia. Confronta con la linea.",
+        "helpUse": "Moneta, Dadi e Ruota scelgono l’esperimento.\nIl menu decide quante prove fa ogni Lancia; Lancia le fa.\nIl grafico mostra i risultati; la linea tratteggiata è quante ce ne aspettiamo.\nRicomincia li cancella.\nOpzioni: uno o due dadi (la somma), le parti della ruota, fino a 1000 prove.",
+        "helpIdeas": "Prevedi, lancia 10 volte, poi 1000: quale si avvicina di più alla metà?\nLancia due dadi 1000 volte: perché la somma 7 esce più spesso?"
       },
       "letters": {
         "name": "Tessere delle lettere",
@@ -10209,7 +10294,15 @@
       "askQ": "Domanda",
       "askOpt": "Risposta {n}",
       "practice": "Esercitati",
-      "practiceName": "Esercitati: {title}"
+      "practiceName": "Esercitati: {title}",
+      "helpFor": "Come si usa: {name}",
+      "helpClose": "Chiudi",
+      "helpControls": "A cosa servono i pulsanti",
+      "helpIdeas": "Idee per la classe",
+      "helpMore": "Inoltre",
+      "helpAsk": "Crea una domanda: trasforma ciò che lo strumento mostra ora in una domanda veloce. Puoi cambiare le parole prima di inviarla.",
+      "helpSend": "Invia alla classe: ogni alunno riceve la sua copia da provare. Niente di ciò che ci fa torna indietro.",
+      "helpPractice": "Esercitati: apre un gioco Oomba che allena la stessa idea."
     },
     "ask": {
       "fractions": "Quale frazione è colorata?",
@@ -10238,7 +10331,11 @@
       "chance": "Qual è la probabilità di {o}?",
       "letters": "Quante vocali ci sono in «{w}»?",
       "map": "Su quale continente è lo spillo?",
-      "mapGrid": "In quale casella è lo spillo?"
+      "mapGrid": "In quale casella è lo spillo?",
+      "fractionsAdd": "Quanto fa {a} + {b}?",
+      "fractionsSub": "Quanto fa {a} − {b}?",
+      "fractionsMul": "Quanto fa {a} × {b}?",
+      "fractionsDiv": "Quanto fa {a} ÷ {b}?"
     },
     "tpl": {
       "morning": {

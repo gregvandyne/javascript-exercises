@@ -21,6 +21,27 @@ function choice(q, right, wrong, seed) {
 const near = (n, ds, ok = x => x >= 0) => ds.map(d => n + d).filter(ok);
 const sliceText = (s, n) => [...String(s)].slice(0, n).join('');
 
+/** The fraction tool's Add, Subtract, Multiply and Divide: "What is 1/2 + 1/3?" with the answer in lowest terms (a mixed number
+ *  past one whole) and wrong answers from the usual slips: adding tops and bottoms, keeping one bottom number, counting
+ *  one piece too many or too few, the sign turned round, crossing over. A wrong answer is never worth the same as the
+ *  right one (2/4 is not offered beside 1/2). */
+function fractionOp(st, Q, seed) {
+  const r = M.operate(st.mode, st.a || M.OP_START.a, st.b || M.OP_START.b);
+  const key = { add: 'fractionsAdd', sub: 'fractionsSub', mul: 'fractionsMul', div: 'fractionsDiv' }[r.op];
+  const { a, b } = r, f = (n, d) => (d > 0 ? { n, d } : null);
+  const slips = {
+    add: [f(a.n + b.n, a.d + b.d), f(a.n + b.n, Math.max(a.d, b.d)), f(r.raw.n + 1, r.L), f(r.raw.n - 1, r.L), f(a.n * b.n, a.d * b.d)],
+    sub: [f(a.n - b.n, a.d - b.d), f(-r.raw.n, r.L), f(a.n - b.n, Math.max(a.d, b.d)), f(r.raw.n + 1, r.L), f(r.raw.n - 1, r.L)],
+    mul: [f(a.n + b.n, a.d + b.d), f(a.n * b.n, Math.max(a.d, b.d)), f(a.n * b.d, a.d * b.n), f(r.raw.n + 1, r.raw.d), f(r.raw.n - 1, r.raw.d)],
+    // Divide: forgetting to turn the second over (multiplying instead), turning the first over, dividing the tops only
+    // over the first bottom, one piece too many. (Dividing straight across, (a.n ÷ b.n)/(a.d ÷ b.d), is always right.)
+    div: [f(a.n * b.n, a.d * b.d), f(a.d * b.n, a.n * b.d), f(a.n, b.n * a.d), f(r.raw.n + r.raw.d, r.raw.d), f(r.raw.n + 1, r.raw.d)],
+  }[r.op];
+  const seen = [r.simple], wrong = [];
+  for (const x of slips) { if (!x || x.n < 0 && r.op !== 'sub' || seen.some(y => M.compare(x, y) === 0)) continue; seen.push(x); wrong.push(M.mixedText(x)); }
+  return choice(fill(Q[key], { a: `${a.n}/${a.d}`, b: `${b.n}/${b.d}` }), r.mixed, wrong, seed);
+}
+
 /**
  * A question from a tool's state. type: the tool's id; st: its state; W: the tool's words; A: the question words
  * (dash.ask.*); intl: the reader's language. -> { q, options: [text], answer: index } or null.
@@ -31,6 +52,7 @@ export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
   const nf = n => new Intl.NumberFormat(intl).format(n);
   switch (type) {
     case 'fractions': {
+      if (M.OPS[st.mode]) return fractionOp(st, Q, seed);
       const b = (st.bars || []).find(x => x.n > 0 && x.d > 1); if (!b) return null;
       return choice(Q.fractions, `${b.n}/${b.d}`, [`${b.d - b.n}/${b.d}`, `${b.d}/${b.n}`, `${b.n}/${b.d + 1}`, `${b.n + 1}/${b.d}`].filter(f => !/^0\//.test(f)), seed);
     }
