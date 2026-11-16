@@ -1,0 +1,870 @@
+<title>Sum Spotter</title>
+<style>
+  /* Sum Spotter on the Oomba Kit: number stones in a pond. Only the game's own DOM pieces are styled here, with the
+     kit's variables (the accent colors are set from Oomba.color at start, for light and dark). Math reads left to right. */
+  .ss, .ss * { box-sizing: border-box; }
+  .ss { position: fixed; left: 0; right: 0; top: min(var(--ok-safe-top), 70px); bottom: 0; display: flex; flex-direction: column; align-items: center;
+    padding: 0 8px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; color: var(--ok-text); line-height: 1.2; }
+  .ss > * { pointer-events: auto; }
+  .ss[hidden] { display: none; }
+  .ss :where(button) { font: inherit; color: var(--ok-text); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .ss button:focus-visible { outline: 4px solid var(--ok-focus); outline-offset: 3px; }
+
+  /* the picker */
+  .ss-scroll { width: 100%; flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; padding: 4px 2px 12px; }
+  .ss-pick { width: min(100%, 680px); margin: 0 auto auto; padding: 16px 14px 18px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 26px;
+    box-shadow: 0 5px 0 var(--ok-edge); display: flex; flex-direction: column; gap: 14px; }
+  .ss-pick h2 { margin: 0; font-size: 1.45em; font-weight: 900; text-align: center; line-height: 1.1; }
+  .ss-pick h3 { margin: 4px 4px 0; font-size: 1.05em; font-weight: 900; opacity: .9; }
+  .ss-lvs { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .ss-lv { position: relative; display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 8px 12px; border-radius: 18px; border: 3px solid var(--ok-edge);
+    background: var(--ok-bg2); box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; text-align: start; width: 100%; }
+  .ss-lv:active, .ss-mode:active, .ss-chip:active, .ss-tool:active, .ss-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .ss-lv .ss-no { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 1.2em;
+    background: var(--ss-stone); border: 3px solid var(--ok-edge); color: var(--ss-ink); }
+  .ss-lv b { display: block; font-size: 1.08em; font-weight: 900; }
+  .ss-lv small { display: block; font-weight: 700; opacity: .85; font-size: .86em; }
+  .ss-lv .ss-st { display: block; font-size: .9em; letter-spacing: 1px; color: var(--ss-gold); min-height: 1em; }
+  .ss-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  .ss-mode { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 20px; border: 3px solid var(--ok-edge); background: var(--ss-mode-bg); text-align: start; }
+  .ss-mode.rush { background: var(--ss-rush-bg); cursor: pointer; box-shadow: 0 4px 0 var(--ok-edge); }
+  .ss-mode .ss-mh { display: flex; align-items: center; gap: 10px; }
+  .ss-mode .ss-mh svg { width: 30px; height: 30px; flex: none; }
+  .ss-mode b { display: block; font-size: 1.12em; font-weight: 900; }
+  .ss-mode small { display: block; font-weight: 700; opacity: .88; font-size: .88em; }
+  .ss-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ss-chip { min-height: 44px; padding: 4px 12px; border-radius: 999px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge);
+    font-weight: 800; font-size: .9em; cursor: pointer; }
+
+  /* the pond */
+  .ss-play { flex: 1; min-height: 0; width: 100%; display: grid; grid-template-areas: "bar" "say" "pond" "eq" "tools"; grid-template-rows: auto auto auto auto auto;
+    justify-content: center; justify-items: center; align-content: center; row-gap: 10px; padding-bottom: 6px; }
+  .ss-play.land { grid-template-areas: "bar bar" "pond say" "pond eq" "pond tools"; grid-template-columns: auto var(--ss-side, 300px); grid-template-rows: auto auto auto 1fr;
+    column-gap: 16px; align-content: center; align-items: start; }
+  .ss-bar { grid-area: bar; display: flex; align-items: center; gap: 8px; width: var(--ss-bw, 100%); min-height: 46px; }
+  .ss-bar .ss-sp { flex: 1; min-width: 0; }
+  .ss-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge);
+    font-weight: 900; min-width: 0; max-width: 100%; }
+  .ss-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ss-pill svg { width: 20px; height: 20px; flex: none; }
+  .ss-count { flex: none; font-variant-numeric: tabular-nums; }
+  .ss-count.low { background: var(--ss-coral-t); }
+  .ss-back { flex: none; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .ss-back svg { width: 24px; height: 24px; }
+  .ss-dots { display: flex; gap: 4px; align-items: center; flex: none; min-height: 44px; padding: 4px 10px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
+  .ss-dots i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ok-edge); background: var(--ok-bg2); }
+  .ss-dots i.on { background: var(--ss-go); }
+  .ss-dots i.now { background: var(--ss-sky); width: 14px; height: 14px; }
+
+  .ss-say { grid-area: say; width: var(--ss-bw, 100%); display: flex; align-items: center; gap: 10px; }
+  .ss-pip { flex: none; width: var(--ss-pip, 64px); height: var(--ss-pip, 64px); display: grid; place-items: center; }
+  .ss-pip canvas { width: 100%; height: 100%; display: block; }
+  .ss-pip.hop { animation: ss-hop .45s ease-out; }
+  .ss-bub { position: relative; flex: 1; min-width: 0; min-height: 56px; display: flex; align-items: center; padding: 8px 14px; border-radius: 18px; background: var(--ok-card);
+    border: 3px solid var(--ok-edge); font-weight: 800; font-size: 1.02em; }
+  .ss-bub::before { content: ''; position: absolute; top: 50%; inset-inline-start: -11px; width: 16px; height: 16px; margin-top: -8px; background: var(--ok-card);
+    border-inline-start: 3px solid var(--ok-edge); border-bottom: 3px solid var(--ok-edge); transform: rotate(45deg); }
+  [dir="rtl"] .ss-bub::before { transform: rotate(-45deg); }
+  .ss-bub.nope { background: var(--ss-coral-t); }
+  .ss-bub.nope::before { background: var(--ss-coral-t); }
+  .ss-bub.yes { background: var(--ss-go-t); }
+  .ss-bub.yes::before { background: var(--ss-go-t); }
+
+  .ss-pond { grid-area: pond; position: relative; width: var(--ss-pw); height: var(--ss-ph); border-radius: 48% 52% 46% 54% / 50% 46% 54% 50%; background: var(--ss-water);
+    border: 3px solid var(--ok-edge); box-shadow: inset 0 -10px 0 var(--ss-water-d), 0 5px 0 var(--ok-edge); direction: ltr; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .ss-pond::before, .ss-pond::after { content: ''; position: absolute; border-radius: 50%; border: 3px solid var(--ss-ripple); pointer-events: none; }
+  .ss-pond::before { width: 22%; height: 9%; left: 40%; top: 46%; }
+  .ss-pond::after { width: 12%; height: 5%; left: 8%; top: 10%; }
+  .ss-pad { position: absolute; width: 13%; aspect-ratio: 1.3; border-radius: 50%; background: var(--ss-pad); border: 3px solid var(--ok-edge); pointer-events: none;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 54%, 50% 50%, 0 46%); }
+  .ss-stone { position: absolute; width: var(--ss-d); height: var(--ss-d); margin: calc(var(--ss-d) / -2) 0 0 calc(var(--ss-d) / -2); border-radius: 50% 50% 46% 54% / 54% 50% 50% 46%;
+    border: 4px solid var(--ok-edge); background: var(--ss-stone); box-shadow: inset 0 calc(var(--ss-d) * -.08) 0 var(--ss-stone-d), 0 5px 0 var(--ok-edge); cursor: pointer; padding: 0;
+    display: grid; place-items: center; font-size: var(--ss-fs) !important; font-weight: 900; line-height: 1; color: var(--ss-ink); font-variant-numeric: tabular-nums;
+    animation: ss-bob 3.2s ease-in-out infinite; animation-delay: var(--ss-bd, 0s); transition: background .15s; }
+  .ss-stone .ss-v { pointer-events: none; }
+  .ss-stone.hint { background: var(--ss-hint-bg); box-shadow: inset 0 calc(var(--ss-d) * -.08) 0 var(--ss-stone-d), 0 0 0 6px var(--ss-grape), 0 5px 0 var(--ok-edge); }
+  .ss-stone.pair { background: var(--ss-go-t); }
+  .ss-stone.right { background: var(--ss-go); animation: ss-pop .5s ease-out; box-shadow: 0 0 0 7px var(--ss-gold), 0 5px 0 var(--ok-edge); }
+  .ss-stone.nope { animation: ss-nope .45s ease-out; background: var(--ss-nope-bg); }
+  .ss-stone.nope::after { content: '✕'; position: absolute; top: -6px; inset-inline-end: -6px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 14px; background: var(--ss-coral); color: var(--ss-ink); border: 3px solid var(--ok-edge); }
+  @keyframes ss-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes ss-pop { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  @keyframes ss-nope { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(2px); } }
+  @keyframes ss-hop { 0% { transform: translateY(0); } 40% { transform: translateY(-12px); } 100% { transform: translateY(0); } }
+  .ok-rm .ss-stone, .ok-rm .ss-pip { animation: none !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .ss-stone, .ss-pip { animation: none !important; } }
+
+  .ss-eq { grid-area: eq; display: flex; align-items: center; justify-content: center; gap: 8px; direction: ltr; font-weight: 900; font-size: 1.5em; min-height: 62px; padding: 4px 14px;
+    border-radius: 20px; background: var(--ok-card); border: 3px solid var(--ok-edge); box-shadow: 0 4px 0 var(--ok-edge); }
+  .ss-eq span { display: grid; place-items: center; min-width: 54px; height: 48px; padding: 0 8px; border-radius: 14px; background: var(--ok-bg2); border: 3px solid var(--ok-edge); font-variant-numeric: tabular-nums; }
+  .ss-eq span.op { min-width: 0; padding: 0; background: none; border: 0; }
+  .ss-eq span.q { color: color-mix(in srgb, var(--ok-text) 45%, var(--ok-card)); }
+  .ss-eq span.got { background: var(--ss-go-t); }
+  .ss-tools { grid-area: tools; display: flex; gap: 8px; justify-content: center; width: var(--ss-bw, 100%); }
+  .ss-tool { position: relative; min-height: 56px; min-width: 140px; padding: 4px 18px; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-shadow: 0 3px 0 var(--ok-edge);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 900; font-size: 1.05em; }
+  .ss-tool svg { width: 24px; height: 24px; flex: none; }
+  .ss-tool .ss-n { position: absolute; top: -9px; inset-inline-end: -6px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 999px; background: var(--ss-grape-t); border: 2px solid var(--ok-edge);
+    font-size: 13px; display: grid; place-items: center; }
+  .ss-tool .ss-n:empty { display: none; }
+  @media (min-width: 900px) and (min-height: 600px) { .ss-pick { font-size: 1.08em; } }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.6/packs/dress.js" integrity="sha384-mparmgq1wIeiUwg5wl0iNxyyBr886ZulubzlilnHahyy/KkrRkEFMnyg0Sp0LmYv" crossorigin="anonymous"></script>
+<script>
+/* sum-spotter-core:begin */
+/* The puzzle maker: plain functions, no DOM and no kit, so the unit test runs this block on its own (node:vm).
+   A puzzle is a group of different whole numbers in which exactly ONE member is the sum (or the product) of two
+   other members, and nothing else in the group could be read that way. */
+(function (root) {
+  'use strict';
+  // The levels, in the order they ramp. size: how many stones (both ends included). add / mul: the numbers for that
+  // operation (lo: the smallest stone, max: the biggest stone, minT: the smallest answer, fmax: the biggest factor).
+  // rounds: puzzles in a level; base: points.
+  var LEVELS = [
+    { id: 'add10', op: 'add', size: [4, 4], add: { lo: 1, max: 10, minT: 3 }, rounds: 8, base: 100 },
+    { id: 'add20', op: 'add', size: [4, 4], add: { lo: 1, max: 20, minT: 9 }, rounds: 8, base: 150 },
+    { id: 'add50', op: 'add', size: [5, 5], add: { lo: 2, max: 50, minT: 18 }, rounds: 8, base: 250 },
+    { id: 'add100', op: 'add', size: [5, 6], add: { lo: 3, max: 100, minT: 35 }, rounds: 8, base: 350 },
+    { id: 'times', op: 'mul', size: [4, 5], mul: { lo: 2, fmax: 10, max: 100 }, rounds: 8, base: 300 },
+    { id: 'mixed', op: 'mix', size: [5, 6], add: { lo: 2, max: 60, minT: 15 }, mul: { lo: 2, fmax: 10, max: 100 }, rounds: 8, base: 450 }
+  ];
+  var BY_ID = {};
+  LEVELS.forEach(function (l) { BY_ID[l.id] = l; });
+  function level(id) { return BY_ID[id] || null; }
+  // Rush: 60 seconds, the puzzles ramping through the levels.
+  var RUSH = { secs: 60, ramp: ['add10', 'add10', 'add20', 'add20', 'add20', 'add50', 'times', 'add50', 'times', 'add100', 'times', 'mixed'] };
+  function rushLevel(k) { return RUSH.ramp[Math.min(Math.max(0, k), RUSH.ramp.length - 1)]; }
+
+  // mulberry32: small, fast and the same on every device.
+  var TWO32 = Math.pow(2, 32);
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    function f() { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; }
+    return { float: f, int: function (lo, hi) { return lo + Math.floor(f() * (hi - lo + 1)); }, shuffle: function (arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(f() * (i + 1)), x = arr[i]; arr[i] = arr[j]; arr[j] = x; } return arr; } };
+  }
+
+  function apply(op, a, b) { return op === 'mul' ? a * b : a + b; }
+  function opsOf(L) { return L.op === 'mix' ? ['add', 'mul'] : [L.op]; }
+  /** Every way a member is made from two OTHER members: [{t, a, b, op}] (indices, a < b). */
+  function finds(values, ops) {
+    var out = [], n = values.length;
+    ops.forEach(function (op) {
+      for (var a = 0; a < n; a++) for (var b = a + 1; b < n; b++) {
+        var v = apply(op, values[a], values[b]);
+        for (var t = 0; t < n; t++) if (t !== a && t !== b && values[t] === v) out.push({ t: t, a: a, b: b, op: op });
+      }
+    });
+    return out;
+  }
+  /** Members that are a member doubled (or squared): 8 next to 4 could look like 4 + 4, so a puzzle never has one. */
+  function doubles(values, ops) {
+    var out = [];
+    ops.forEach(function (op) {
+      for (var i = 0; i < values.length; i++) for (var j = 0; j < values.length; j++) if (i !== j && apply(op, values[j], values[j]) === values[i]) out.push({ t: i, a: j, op: op });
+    });
+    return out;
+  }
+  /** Is this a fair group: different whole numbers above zero, exactly one find, and no doubles? */
+  function check(values, ops) {
+    if (!values || values.length < 3) return false;
+    var seen = {};
+    for (var i = 0; i < values.length; i++) { var v = values[i]; if (!(v > 0) || Math.floor(v) !== v || seen[v]) return false; seen[v] = 1; }
+    return finds(values, ops).length === 1 && doubles(values, ops).length === 0;
+  }
+  // A group under construction stays fair as long as it has at most one find and no doubles.
+  function partialOk(values, ops) { return finds(values, ops).length <= 1 && doubles(values, ops).length === 0; }
+
+  /** A puzzle for a level from a seed: { level, op, values, answer, pair, seed }. The same seed makes the same puzzle. */
+  function generate(id, seed) {
+    var L = level(id) || LEVELS[0], R = rng(seed), ops = opsOf(L);
+    var op = L.op === 'mix' ? (R.float() < 0.5 ? 'add' : 'mul') : L.op, c = L[op];
+    var size = R.int(L.size[0], L.size[1]);
+    for (var tries = 0; tries < 4000; tries++) {
+      var a, b, t;
+      if (op === 'add') { t = R.int(Math.max(c.minT, 2 * c.lo + 1), c.max); a = R.int(c.lo, t - c.lo); b = t - a; }
+      else { a = R.int(c.lo, c.fmax); b = R.int(c.lo, c.fmax); t = a * b; }
+      if (a === b || t > c.max) continue;
+      var vals = [a, b, t];
+      if (!partialOk(vals, ops)) continue;
+      // half the time (when it can be) a stone bigger than the answer, so the answer is not always the biggest
+      var wantBig = tries < 3000 && t < c.max - 2 && R.float() < 0.5;
+      for (var guard = 0; vals.length < size && guard < 300; guard++) {
+        var d = op === 'mul' && R.float() < 0.5 ? R.int(c.lo, c.fmax + 3) : R.int(c.lo, c.max);
+        if (vals.indexOf(d) >= 0) continue;
+        if (wantBig && vals.length === size - 1 && !vals.some(function (v) { return v > t; }) && d < t) continue;
+        var next = vals.concat([d]);
+        if (partialOk(next, ops)) vals = next;
+      }
+      if (vals.length < size || !check(vals, ops)) continue;
+      var order = R.shuffle(vals.map(function (_, i) { return i; }));
+      var values = order.map(function (i) { return vals[i]; });
+      var f = finds(values, ops)[0];
+      return { level: L.id, op: op, values: values, answer: f.t, pair: [f.a, f.b], seed: seed >>> 0 };
+    }
+    return null;
+  }
+
+  /** Stars for a level: 3 with at most one wrong tap and no hints, 2 with a little help, else 1. */
+  function stars(r) { var m = r.mistakes || 0, h = r.hints || 0; return m <= 1 && h === 0 ? 3 : m + h <= 4 ? 2 : 1; }
+  /** Points for a level: the base, more for puzzles found first time, less for help; never below a fifth of the base. */
+  function score(id, r) {
+    var L = level(id); if (!L) return 0;
+    var s = L.base + L.base * 0.5 * (r.clean || 0) / L.rounds - L.base * 0.05 * (r.mistakes || 0) - L.base * 0.1 * (r.hints || 0);
+    return Math.max(Math.round(L.base * 0.2), Math.round(s));
+  }
+  function rushStars(n) { return n >= 15 ? 3 : n >= 8 ? 2 : n >= 1 ? 1 : 0; }
+  function rushPoints(found, streakBonus) { return found * 10 + (streakBonus || 0); }
+
+  root.SumSpotterCore = { LEVELS: LEVELS, RUSH: RUSH, level: level, rushLevel: rushLevel, rng: rng, apply: apply, opsOf: opsOf, finds: finds, doubles: doubles, check: check, generate: generate, stars: stars, score: score, rushStars: rushStars, rushPoints: rushPoints };
+})(typeof window !== 'undefined' ? window : this);
+/* sum-spotter-core:end */
+</script>
+<script>
+/* Every word the game shows, in the 13 site languages (en-GB only where it differs). Numbers on the stones stay plain
+   digits in every language. server/services/tts-lines.js reads this block for the AI voices. */
+// ==== I18N START ====
+var I18N = {
+  en: {
+    title: 'Sum Spotter', tag: 'Find the number two others make!',
+    how1: 'Look at all the numbers on the stones', how2: 'Tap the one that two of the others add up to', how3: 'Stuck? Pip the frog has hints',
+    pickH: 'Pick a pond', levelsH: 'Levels', modesH: 'More ways to play',
+    L_add10: 'Sums to 10', P_add10: '4 stones, small numbers', L_add20: 'Sums to 20', P_add20: '4 stones, numbers to 20',
+    L_add50: 'Sums to 50', P_add50: '5 stones, bigger numbers', L_add100: 'Sums to 100', P_add100: '5 or 6 stones, numbers to 100',
+    L_times: 'Times', P_times: 'The product of two others', L_mixed: 'Mixed', P_mixed: 'Plus or times, 5 or 6 stones',
+    rush: 'Rush', rushP: 'Spot as many as you can in 60 seconds', practice: 'Practice', practiceP: 'No clock and no stars. Play as long as you like.',
+    bestS: 'Best: {n} of 3 stars', bestR: 'Best: {n}',
+    askAdd: 'Which number is the sum of two others?', askMul: 'Which number is the product of two others?',
+    nopeAdd: 'No two other numbers add up to {x}. Try another stone!', nopeMul: 'No two other numbers multiply to make {x}. Try another stone!',
+    hint1: 'One of the two numbers is {a}. Find its partner!', lookPair: 'Look at {a} and {b}. Which stone do they make?', hintAll: 'Pip showed you both numbers. Now find what they make!',
+    right1: 'You spotted it!', right2: 'Great spotting!', right3: 'That is the one!',
+    levels: 'Levels', hint: 'Hint', progress: 'Puzzle {n} of {total}', timeLeft: '{t} seconds left', found: 'Found {n}', pond: 'Number stones',
+    eqAdd: '{a} plus {b} makes {c}', eqMul: '{a} times {b} makes {c}',
+    doneH: 'Pond cleared!', rushH: 'Time is up!', winSay: 'You cleared {name}! Mistakes {m}, hints {h}.', rushSay: 'You found {n} in 60 seconds!'
+  },
+  es: {
+    title: 'Caza Sumas', tag: '¡Encuentra el número que forman otros dos!',
+    how1: 'Mira todos los números de las piedras', how2: 'Toca el que es la suma de otros dos', how3: '¿Te atascaste? La rana Pip tiene pistas',
+    pickH: 'Elige un estanque', levelsH: 'Niveles', modesH: 'Más formas de jugar',
+    L_add10: 'Sumas hasta 10', P_add10: '4 piedras, números pequeños', L_add20: 'Sumas hasta 20', P_add20: '4 piedras, números hasta 20',
+    L_add50: 'Sumas hasta 50', P_add50: '5 piedras, números más grandes', L_add100: 'Sumas hasta 100', P_add100: '5 o 6 piedras, números hasta 100',
+    L_times: 'Multiplicar', P_times: 'El producto de otros dos', L_mixed: 'Mezcla', P_mixed: 'Suma o multiplicación, 5 o 6 piedras',
+    rush: 'Carrera', rushP: 'Encuentra todos los que puedas en 60 segundos', practice: 'Práctica', practiceP: 'Sin reloj y sin estrellas. Juega todo lo que quieras.',
+    bestS: 'Récord: {n} de 3 estrellas', bestR: 'Récord: {n}',
+    askAdd: '¿Qué número es la suma de otros dos?', askMul: '¿Qué número es el producto de otros dos?',
+    nopeAdd: 'Ningún par de los otros números suma {x}. ¡Prueba otra piedra!', nopeMul: 'Ningún par de los otros números multiplicados da {x}. ¡Prueba otra piedra!',
+    hint1: 'Uno de los dos números es el {a}. ¡Busca su pareja!', lookPair: 'Mira el {a} y el {b}. ¿Qué piedra forman?', hintAll: 'Pip te mostró los dos números. ¡Ahora busca lo que forman!',
+    right1: '¡Lo encontraste!', right2: '¡Muy buen ojo!', right3: '¡Ese es!',
+    levels: 'Niveles', hint: 'Pista', progress: 'Reto {n} de {total}', timeLeft: 'Quedan {t} segundos', found: 'Encontrados: {n}', pond: 'Piedras con números',
+    eqAdd: '{a} más {b} es {c}', eqMul: '{a} por {b} es {c}',
+    doneH: '¡Estanque superado!', rushH: '¡Se acabó el tiempo!', winSay: '¡Superaste {name}! Errores {m}, pistas {h}.', rushSay: '¡Encontraste {n} en 60 segundos!'
+  },
+  fr: {
+    title: 'Chasseur de sommes', tag: 'Trouve le nombre que font deux autres !',
+    how1: 'Regarde tous les nombres sur les pierres', how2: 'Touche celui qui est la somme de deux autres', how3: 'Bloqué ? Pip la grenouille a des indices',
+    pickH: 'Choisis une mare', levelsH: 'Niveaux', modesH: 'D’autres façons de jouer',
+    L_add10: 'Sommes jusqu’à 10', P_add10: '4 pierres, petits nombres', L_add20: 'Sommes jusqu’à 20', P_add20: '4 pierres, nombres jusqu’à 20',
+    L_add50: 'Sommes jusqu’à 50', P_add50: '5 pierres, nombres plus grands', L_add100: 'Sommes jusqu’à 100', P_add100: '5 ou 6 pierres, nombres jusqu’à 100',
+    L_times: 'Fois', P_times: 'Le produit de deux autres', L_mixed: 'Mélange', P_mixed: 'Plus ou fois, 5 ou 6 pierres',
+    rush: 'Course', rushP: 'Trouves-en le plus possible en 60 secondes', practice: 'Entraînement', practiceP: 'Pas de chrono ni d’étoiles. Joue aussi longtemps que tu veux.',
+    bestS: 'Record : {n} sur 3 étoiles', bestR: 'Record : {n}',
+    askAdd: 'Quel nombre est la somme de deux autres ?', askMul: 'Quel nombre est le produit de deux autres ?',
+    nopeAdd: 'Aucune paire d’autres nombres ne fait {x} en addition. Essaie une autre pierre !', nopeMul: 'Aucune paire d’autres nombres ne fait {x} en multipliant. Essaie une autre pierre !',
+    hint1: 'L’un des deux nombres est {a}. Trouve son partenaire !', lookPair: 'Regarde {a} et {b}. Quelle pierre font-ils ?', hintAll: 'Pip t’a montré les deux nombres. Trouve maintenant ce qu’ils font !',
+    right1: 'Bien vu !', right2: 'Super coup d’œil !', right3: 'C’est celui-là !',
+    levels: 'Niveaux', hint: 'Indice', progress: 'Défi {n} sur {total}', timeLeft: 'Encore {t} secondes', found: 'Trouvés : {n}', pond: 'Pierres à nombres',
+    eqAdd: '{a} plus {b} font {c}', eqMul: '{a} fois {b} font {c}',
+    doneH: 'Mare terminée !', rushH: 'Temps écoulé !', winSay: 'Tu as terminé {name} ! Erreurs {m}, indices {h}.', rushSay: 'Tu en as trouvé {n} en 60 secondes !'
+  },
+  de: {
+    title: 'Summenspürer', tag: 'Finde die Zahl, die zwei andere ergeben!',
+    how1: 'Schau dir alle Zahlen auf den Steinen an', how2: 'Tippe auf die Zahl, die zwei andere zusammen ergeben', how3: 'Steckst du fest? Frosch Pip hat Tipps',
+    pickH: 'Wähle einen Teich', levelsH: 'Stufen', modesH: 'Noch mehr Spielarten',
+    L_add10: 'Summen bis 10', P_add10: '4 Steine, kleine Zahlen', L_add20: 'Summen bis 20', P_add20: '4 Steine, Zahlen bis 20',
+    L_add50: 'Summen bis 50', P_add50: '5 Steine, größere Zahlen', L_add100: 'Summen bis 100', P_add100: '5 oder 6 Steine, Zahlen bis 100',
+    L_times: 'Mal', P_times: 'Das Produkt von zwei anderen', L_mixed: 'Gemischt', P_mixed: 'Plus oder mal, 5 oder 6 Steine',
+    rush: 'Tempo', rushP: 'Finde so viele wie möglich in 60 Sekunden', practice: 'Üben', practiceP: 'Keine Uhr und keine Sterne. Spiel, so lange du willst.',
+    bestS: 'Bestes: {n} von 3 Sternen', bestR: 'Bestes: {n}',
+    askAdd: 'Welche Zahl ist die Summe von zwei anderen?', askMul: 'Welche Zahl ist das Produkt von zwei anderen?',
+    nopeAdd: 'Keine zwei anderen Zahlen ergeben zusammen {x}. Probier einen anderen Stein!', nopeMul: 'Keine zwei anderen Zahlen ergeben mal genommen {x}. Probier einen anderen Stein!',
+    hint1: 'Eine der zwei Zahlen ist {a}. Finde ihren Partner!', lookPair: 'Schau dir {a} und {b} an. Welchen Stein ergeben sie?', hintAll: 'Pip hat dir beide Zahlen gezeigt. Finde jetzt, was sie ergeben!',
+    right1: 'Gefunden!', right2: 'Toll gesehen!', right3: 'Genau die!',
+    levels: 'Stufen', hint: 'Tipp', progress: 'Rätsel {n} von {total}', timeLeft: 'Noch {t} Sekunden', found: 'Gefunden: {n}', pond: 'Zahlensteine',
+    eqAdd: '{a} plus {b} ergibt {c}', eqMul: '{a} mal {b} ergibt {c}',
+    doneH: 'Teich geschafft!', rushH: 'Die Zeit ist um!', winSay: 'Du hast {name} geschafft! Fehler {m}, Tipps {h}.', rushSay: 'Du hast {n} in 60 Sekunden gefunden!'
+  },
+  it: {
+    title: 'Caccia alla Somma', tag: 'Trova il numero che fanno altri due!',
+    how1: 'Guarda tutti i numeri sui sassi', how2: 'Tocca quello che è la somma di altri due', how3: 'Bloccato? La rana Pip ha degli aiuti',
+    pickH: 'Scegli uno stagno', levelsH: 'Livelli', modesH: 'Altri modi di giocare',
+    L_add10: 'Somme fino a 10', P_add10: '4 sassi, numeri piccoli', L_add20: 'Somme fino a 20', P_add20: '4 sassi, numeri fino a 20',
+    L_add50: 'Somme fino a 50', P_add50: '5 sassi, numeri più grandi', L_add100: 'Somme fino a 100', P_add100: '5 o 6 sassi, numeri fino a 100',
+    L_times: 'Per', P_times: 'Il prodotto di altri due', L_mixed: 'Misto', P_mixed: 'Più o per, 5 o 6 sassi',
+    rush: 'Sfida a tempo', rushP: 'Trovane più che puoi in 60 secondi', practice: 'Allenamento', practiceP: 'Niente orologio e niente stelle. Gioca quanto vuoi.',
+    bestS: 'Record: {n} su 3 stelle', bestR: 'Record: {n}',
+    askAdd: 'Quale numero è la somma di altri due?', askMul: 'Quale numero è il prodotto di altri due?',
+    nopeAdd: 'Nessuna coppia degli altri numeri fa {x} sommando. Prova un altro sasso!', nopeMul: 'Nessuna coppia degli altri numeri fa {x} moltiplicando. Prova un altro sasso!',
+    hint1: 'Uno dei due numeri è {a}. Trova il suo compagno!', lookPair: 'Guarda {a} e {b}. Quale sasso fanno?', hintAll: 'Pip ti ha mostrato i due numeri. Ora trova cosa fanno!',
+    right1: 'Trovato!', right2: 'Che occhio!', right3: 'È proprio quello!',
+    levels: 'Livelli', hint: 'Aiuto', progress: 'Sfida {n} di {total}', timeLeft: 'Mancano {t} secondi', found: 'Trovati: {n}', pond: 'Sassi con i numeri',
+    eqAdd: '{a} più {b} fa {c}', eqMul: '{a} per {b} fa {c}',
+    doneH: 'Stagno completato!', rushH: 'Tempo scaduto!', winSay: 'Hai completato {name}! Errori {m}, aiuti {h}.', rushSay: 'Ne hai trovati {n} in 60 secondi!'
+  },
+  pt: {
+    title: 'Caça-Somas', tag: 'Encontre o número que outros dois formam!',
+    how1: 'Olhe todos os números nas pedras', how2: 'Toque no que é a soma de outros dois', how3: 'Empacou? O sapo Pip tem dicas',
+    pickH: 'Escolha um lago', levelsH: 'Níveis', modesH: 'Mais jeitos de jogar',
+    L_add10: 'Somas até 10', P_add10: '4 pedras, números pequenos', L_add20: 'Somas até 20', P_add20: '4 pedras, números até 20',
+    L_add50: 'Somas até 50', P_add50: '5 pedras, números maiores', L_add100: 'Somas até 100', P_add100: '5 ou 6 pedras, números até 100',
+    L_times: 'Vezes', P_times: 'O produto de outros dois', L_mixed: 'Misturado', P_mixed: 'Mais ou vezes, 5 ou 6 pedras',
+    rush: 'Corrida', rushP: 'Encontre o máximo que puder em 60 segundos', practice: 'Treino', practiceP: 'Sem relógio e sem estrelas. Jogue quanto quiser.',
+    bestS: 'Recorde: {n} de 3 estrelas', bestR: 'Recorde: {n}',
+    askAdd: 'Qual número é a soma de outros dois?', askMul: 'Qual número é o produto de outros dois?',
+    nopeAdd: 'Nenhum par dos outros números soma {x}. Tente outra pedra!', nopeMul: 'Nenhum par dos outros números multiplicado dá {x}. Tente outra pedra!',
+    hint1: 'Um dos dois números é {a}. Encontre o par dele!', lookPair: 'Olhe o {a} e o {b}. Que pedra eles formam?', hintAll: 'O Pip mostrou os dois números. Agora encontre o que eles formam!',
+    right1: 'Você achou!', right2: 'Que olho bom!', right3: 'É esse mesmo!',
+    levels: 'Níveis', hint: 'Dica', progress: 'Desafio {n} de {total}', timeLeft: 'Faltam {t} segundos', found: 'Encontrados: {n}', pond: 'Pedras com números',
+    eqAdd: '{a} mais {b} dá {c}', eqMul: '{a} vezes {b} dá {c}',
+    doneH: 'Lago completo!', rushH: 'Acabou o tempo!', winSay: 'Você completou {name}! Erros {m}, dicas {h}.', rushSay: 'Você encontrou {n} em 60 segundos!'
+  },
+  nl: {
+    title: 'Somzoeker', tag: 'Vind het getal dat twee andere samen maken!',
+    how1: 'Bekijk alle getallen op de stenen', how2: 'Tik op het getal dat de som is van twee andere', how3: 'Vast? Kikker Pip heeft hints',
+    pickH: 'Kies een vijver', levelsH: 'Niveaus', modesH: 'Meer manieren om te spelen',
+    L_add10: 'Sommen tot 10', P_add10: '4 stenen, kleine getallen', L_add20: 'Sommen tot 20', P_add20: '4 stenen, getallen tot 20',
+    L_add50: 'Sommen tot 50', P_add50: '5 stenen, grotere getallen', L_add100: 'Sommen tot 100', P_add100: '5 of 6 stenen, getallen tot 100',
+    L_times: 'Keer', P_times: 'Het product van twee andere', L_mixed: 'Gemengd', P_mixed: 'Plus of keer, 5 of 6 stenen',
+    rush: 'Race', rushP: 'Vind er zoveel je kunt in 60 seconden', practice: 'Oefenen', practiceP: 'Geen klok en geen sterren. Speel zo lang je wilt.',
+    bestS: 'Beste: {n} van 3 sterren', bestR: 'Beste: {n}',
+    askAdd: 'Welk getal is de som van twee andere?', askMul: 'Welk getal is het product van twee andere?',
+    nopeAdd: 'Geen twee andere getallen maken samen {x}. Probeer een andere steen!', nopeMul: 'Geen twee andere getallen maken keer elkaar {x}. Probeer een andere steen!',
+    hint1: 'Een van de twee getallen is {a}. Zoek zijn maatje!', lookPair: 'Kijk naar {a} en {b}. Welke steen maken ze?', hintAll: 'Pip heeft je beide getallen laten zien. Zoek nu wat ze maken!',
+    right1: 'Gevonden!', right2: 'Goed gezien!', right3: 'Dat is hem!',
+    levels: 'Niveaus', hint: 'Hint', progress: 'Puzzel {n} van {total}', timeLeft: 'Nog {t} seconden', found: 'Gevonden: {n}', pond: 'Getallenstenen',
+    eqAdd: '{a} plus {b} is {c}', eqMul: '{a} keer {b} is {c}',
+    doneH: 'Vijver klaar!', rushH: 'De tijd is om!', winSay: 'Je hebt {name} gehaald! Fouten {m}, hints {h}.', rushSay: 'Je vond er {n} in 60 seconden!'
+  },
+  ru: {
+    title: 'Найди сумму', tag: 'Найди число, которое дают два других!',
+    how1: 'Посмотри на все числа на камнях', how2: 'Нажми на то, которое равно сумме двух других', how3: 'Застрял? У лягушонка Пипа есть подсказки',
+    pickH: 'Выбери пруд', levelsH: 'Уровни', modesH: 'Ещё способы играть',
+    L_add10: 'Суммы до 10', P_add10: '4 камня, маленькие числа', L_add20: 'Суммы до 20', P_add20: '4 камня, числа до 20',
+    L_add50: 'Суммы до 50', P_add50: '5 камней, числа побольше', L_add100: 'Суммы до 100', P_add100: '5 или 6 камней, числа до 100',
+    L_times: 'Умножение', P_times: 'Произведение двух других', L_mixed: 'Вперемешку', P_mixed: 'Плюс или умножение, 5 или 6 камней',
+    rush: 'На время', rushP: 'Найди как можно больше за 60 секунд', practice: 'Тренировка', practiceP: 'Без часов и без звёзд. Играй сколько хочешь.',
+    bestS: 'Лучшее: {n} из 3 звёзд', bestR: 'Лучшее: {n}',
+    askAdd: 'Какое число равно сумме двух других?', askMul: 'Какое число равно произведению двух других?',
+    nopeAdd: 'Никакие два других числа не дают в сумме {x}. Попробуй другой камень!', nopeMul: 'Никакие два других числа не дают при умножении {x}. Попробуй другой камень!',
+    hint1: 'Одно из двух чисел: {a}. Найди ему пару!', lookPair: 'Посмотри на {a} и {b}. Какой камень они дают?', hintAll: 'Пип показал оба числа. Теперь найди, что они дают!',
+    right1: 'Нашёл!', right2: 'Отличный глаз!', right3: 'Это оно!',
+    levels: 'Уровни', hint: 'Подсказка', progress: 'Задача {n} из {total}', timeLeft: 'Осталось секунд: {t}', found: 'Найдено: {n}', pond: 'Камни с числами',
+    eqAdd: '{a} плюс {b} будет {c}', eqMul: '{a} умножить на {b} будет {c}',
+    doneH: 'Пруд пройден!', rushH: 'Время вышло!', winSay: 'Ты прошёл уровень «{name}»! Ошибки: {m}, подсказки: {h}.', rushSay: 'Ты нашёл {n} за 60 секунд!'
+  },
+  ja: {
+    title: 'かずさがし', tag: 'ほかの2つでできる数をさがそう！',
+    how1: 'いしにかいてある数をぜんぶ見よう', how2: 'ほかの2つをたした数をタップしよう', how3: 'こまったら、カエルのピップがヒントをくれるよ',
+    pickH: 'いけをえらぼう', levelsH: 'レベル', modesH: 'ほかのあそびかた',
+    L_add10: 'たして10まで', P_add10: 'いし4こ、小さい数', L_add20: 'たして20まで', P_add20: 'いし4こ、20までの数',
+    L_add50: 'たして50まで', P_add50: 'いし5こ、大きめの数', L_add100: 'たして100まで', P_add100: 'いし5こか6こ、100までの数',
+    L_times: 'かけ算', P_times: 'ほかの2つをかけた数', L_mixed: 'ミックス', P_mixed: 'たし算かかけ算、いし5こか6こ',
+    rush: 'タイムアタック', rushP: '60びょうで、できるだけたくさん見つけよう', practice: 'れんしゅう', practiceP: 'とけいもほしもなし。すきなだけあそべるよ。',
+    bestS: 'ベスト：ほし3こ中{n}こ', bestR: 'ベスト：{n}',
+    askAdd: 'ほかの2つをたした数はどれ？', askMul: 'ほかの2つをかけた数はどれ？',
+    nopeAdd: 'ほかの2つをたしても{x}にはならないよ。べつのいしをためそう！', nopeMul: 'ほかの2つをかけても{x}にはならないよ。べつのいしをためそう！',
+    hint1: '2つのうち1つは{a}だよ。あいぼうをさがそう！', lookPair: '{a}と{b}を見て。どのいしになるかな？', hintAll: 'ピップが2つの数を見せたよ。できる数をさがそう！',
+    right1: '見つけた！', right2: 'よく見つけたね！', right3: 'それだよ！',
+    levels: 'レベル', hint: 'ヒント', progress: 'もんだい {n}/{total}', timeLeft: 'のこり{t}びょう', found: '見つけた数：{n}', pond: '数のいし',
+    eqAdd: '{a}たす{b}は{c}', eqMul: '{a}かける{b}は{c}',
+    doneH: 'いけをクリア！', rushH: 'じかんぎれ！', winSay: '{name}をクリアしたよ！まちがい{m}、ヒント{h}。', rushSay: '60びょうで{n}こ見つけたよ！'
+  },
+  'zh-Hant': {
+    title: '找和數', tag: '找出由另外兩個數算出來的數！',
+    how1: '看看石頭上所有的數字', how2: '點那個等於另外兩個數相加的數', how3: '卡住了嗎？青蛙皮普有提示',
+    pickH: '選一個池塘', levelsH: '關卡', modesH: '更多玩法',
+    L_add10: '和在10以內', P_add10: '4顆石頭，小的數', L_add20: '和在20以內', P_add20: '4顆石頭，20以內的數',
+    L_add50: '和在50以內', P_add50: '5顆石頭，大一點的數', L_add100: '和在100以內', P_add100: '5或6顆石頭，100以內的數',
+    L_times: '乘法', P_times: '另外兩個數的積', L_mixed: '混合', P_mixed: '加法或乘法，5或6顆石頭',
+    rush: '計時挑戰', rushP: '60秒內盡量多找幾個', practice: '練習', practiceP: '不計時，也沒有星星。想玩多久就玩多久。',
+    bestS: '最佳：3顆星中的{n}顆', bestR: '最佳：{n}',
+    askAdd: '哪個數是另外兩個數的和？', askMul: '哪個數是另外兩個數的積？',
+    nopeAdd: '沒有另外兩個數加起來是{x}。換一顆石頭試試！', nopeMul: '沒有另外兩個數乘起來是{x}。換一顆石頭試試！',
+    hint1: '兩個數中有一個是{a}。找找它的夥伴！', lookPair: '看看{a}和{b}。它們會變成哪顆石頭？', hintAll: '皮普讓你看了兩個數。現在找出它們算出的數！',
+    right1: '找到了！', right2: '眼力真好！', right3: '就是它！',
+    levels: '關卡', hint: '提示', progress: '第{n}題，共{total}題', timeLeft: '還剩{t}秒', found: '找到：{n}', pond: '數字石頭',
+    eqAdd: '{a}加{b}等於{c}', eqMul: '{a}乘{b}等於{c}',
+    doneH: '池塘過關！', rushH: '時間到！', winSay: '你過了{name}！錯誤{m}，提示{h}。', rushSay: '你在60秒內找到{n}個！'
+  },
+  ar: {
+    title: 'صائد المجموع', tag: 'جد العدد الذي يصنعه عددان آخران!',
+    how1: 'انظر إلى كل الأعداد على الحجارة', how2: 'المس العدد الذي يساوي مجموع عددين آخرين', how3: 'هل علقت؟ الضفدع بيب عنده تلميحات',
+    pickH: 'اختر بركة', levelsH: 'المستويات', modesH: 'طرق أخرى للعب',
+    L_add10: 'مجموع حتى 10', P_add10: '4 حجارة، أعداد صغيرة', L_add20: 'مجموع حتى 20', P_add20: '4 حجارة، أعداد حتى 20',
+    L_add50: 'مجموع حتى 50', P_add50: '5 حجارة، أعداد أكبر', L_add100: 'مجموع حتى 100', P_add100: '5 أو 6 حجارة، أعداد حتى 100',
+    L_times: 'الضرب', P_times: 'حاصل ضرب عددين آخرين', L_mixed: 'مختلط', P_mixed: 'جمع أو ضرب، 5 أو 6 حجارة',
+    rush: 'سباق', rushP: 'جد أكبر عدد ممكن في 60 ثانية', practice: 'تدريب', practiceP: 'لا ساعة ولا نجوم. العب كما تحب.',
+    bestS: 'الأفضل: {n} من 3 نجوم', bestR: 'الأفضل: {n}',
+    askAdd: 'أي عدد هو مجموع عددين آخرين؟', askMul: 'أي عدد هو حاصل ضرب عددين آخرين؟',
+    nopeAdd: 'لا يوجد عددان آخران مجموعهما {x}. جرّب حجرًا آخر!', nopeMul: 'لا يوجد عددان آخران حاصل ضربهما {x}. جرّب حجرًا آخر!',
+    hint1: 'أحد العددين هو {a}. ابحث عن شريكه!', lookPair: 'انظر إلى {a} و{b}. أي حجر يصنعان؟', hintAll: 'أراك بيب العددين. الآن جد ما يصنعانه!',
+    right1: 'وجدته!', right2: 'عين رائعة!', right3: 'هذا هو!',
+    levels: 'المستويات', hint: 'تلميح', progress: 'اللغز {n} من {total}', timeLeft: 'بقي {t} ثانية', found: 'وجدت: {n}', pond: 'حجارة الأعداد',
+    eqAdd: '{a} زائد {b} يساوي {c}', eqMul: '{a} ضرب {b} يساوي {c}',
+    doneH: 'أنهيت البركة!', rushH: 'انتهى الوقت!', winSay: 'أنهيت {name}! الأخطاء {m}، التلميحات {h}.', rushSay: 'وجدت {n} في 60 ثانية!'
+  },
+  he: {
+    title: 'צייד הסכומים', tag: 'מצאו את המספר ששני אחרים יוצרים!',
+    how1: 'הסתכלו על כל המספרים שעל האבנים', how2: 'הקישו על המספר שהוא סכום של שניים אחרים', how3: 'נתקעתם? לצפרדע פיפ יש רמזים',
+    pickH: 'בחרו בריכה', levelsH: 'שלבים', modesH: 'עוד דרכים לשחק',
+    L_add10: 'סכומים עד 10', P_add10: '4 אבנים, מספרים קטנים', L_add20: 'סכומים עד 20', P_add20: '4 אבנים, מספרים עד 20',
+    L_add50: 'סכומים עד 50', P_add50: '5 אבנים, מספרים גדולים יותר', L_add100: 'סכומים עד 100', P_add100: '5 או 6 אבנים, מספרים עד 100',
+    L_times: 'כפל', P_times: 'המכפלה של שניים אחרים', L_mixed: 'מעורב', P_mixed: 'חיבור או כפל, 5 או 6 אבנים',
+    rush: 'מרוץ', rushP: 'מצאו כמה שיותר ב־60 שניות', practice: 'תרגול', practiceP: 'בלי שעון ובלי כוכבים. שחקו כמה שתרצו.',
+    bestS: 'הכי טוב: {n} מתוך 3 כוכבים', bestR: 'הכי טוב: {n}',
+    askAdd: 'איזה מספר הוא הסכום של שניים אחרים?', askMul: 'איזה מספר הוא המכפלה של שניים אחרים?',
+    nopeAdd: 'אין שני מספרים אחרים שסכומם {x}. נסו אבן אחרת!', nopeMul: 'אין שני מספרים אחרים שמכפלתם {x}. נסו אבן אחרת!',
+    hint1: 'אחד משני המספרים הוא {a}. מצאו את בן הזוג שלו!', lookPair: 'הסתכלו על {a} ועל {b}. איזו אבן הם יוצרים?', hintAll: 'פיפ הראה לכם את שני המספרים. עכשיו מצאו מה הם יוצרים!',
+    right1: 'מצאתם!', right2: 'עין חדה!', right3: 'זה הוא!',
+    levels: 'שלבים', hint: 'רמז', progress: 'חידה {n} מתוך {total}', timeLeft: 'נשארו {t} שניות', found: 'נמצאו: {n}', pond: 'אבני מספרים',
+    eqAdd: '{a} ועוד {b} זה {c}', eqMul: '{a} כפול {b} זה {c}',
+    doneH: 'הבריכה הושלמה!', rushH: 'הזמן נגמר!', winSay: 'השלמתם את {name}! טעויות {m}, רמזים {h}.', rushSay: 'מצאתם {n} ב־60 שניות!'
+  }
+};
+I18N['en-GB'] = Object.assign({}, I18N.en);
+// ==== I18N END ====
+// ==== VOICES START ====
+// Pip the frog reads the how-to cards and the fixed lines in one friendly voice (tts-lines.js reads this).
+var VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script>
+(function () {
+  'use strict';
+  var O = window.Oomba, C = window.SumSpotterCore;
+  var LANG = O.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en;
+  /** A word from the table; {x} takes vars.x. Numbers stay plain Western digits (the stones' digits in every language). */
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+
+  var CONFIG = {
+    title: 'Sum Spotter',
+    theme: 'meadow',
+    pip: { species: 'frog', mood: 'happy' },   // Pip the frog, the friendly helper
+    saveKey: 'sum-spotter-v1',
+    nextMs: 1100,   // the pause after a find, before the next puzzle
+  };
+  // Where the stones sit in the pond (percent of its width and height): stepping stones in two staggered rows.
+  var SPOTS = {
+    4: [[24, 31], [68, 28], [32, 71], [76, 69]],
+    5: [[17, 28], [50, 26], [83, 30], [32, 73], [68, 75]],
+    6: [[16, 27], [50, 29], [84, 25], [17, 73], [50, 75], [83, 71]],
+  };
+  var reduced = function () { return !!O.settings.reduced; };
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function icon(name, size) { var s = el('span'); s.setAttribute('aria-hidden', 'true'); s.style.display = 'contents'; s.innerHTML = O.icon(name, { size: size || 22 }); return s; }
+  function announce(s) { try { O.ui.announce(s); } catch (e) { /* no live region */ } }
+  function levelName(id) { return t('L_' + id); }
+  function sign(op) { return op === 'mul' ? '×' : '+'; }
+
+  /* ---------- saved progress: best stars per level and the best Rush (BRB.storage) ---------- */
+  function load() { try { var s = window.BRB && BRB.storage && BRB.storage.get(CONFIG.saveKey); return s && typeof s === 'object' ? s : {}; } catch (e) { return {}; } }
+  var SAVE = load();
+  SAVE = { best: SAVE.best && typeof SAVE.best === 'object' ? SAVE.best : {}, rush: +SAVE.rush || 0 };
+  Object.keys(SAVE.best).forEach(function (id) { var b = SAVE.best[id]; if (!C.level(id) || !b || !(b.stars >= 1 && b.stars <= 3)) delete SAVE.best[id]; });
+  function persist() { try { if (window.BRB && BRB.storage) BRB.storage.set(CONFIG.saveKey, SAVE); } catch (e) { /* the save is full or off */ } }
+
+  /* ---------- state ---------- */
+  var S = {
+    screen: 'title', w: null, mode: '', id: '', seed: 0, round: 0, p: null, busy: false,
+    wrongHere: 0, hintStep: 0, shown: false, mistakes: 0, hints: 0, clean: 0, found: 0, streak: 0, bonus: 0, left: 0, shownSec: -1,
+    again: false, pending: null, fast: false, lastWin: null,
+  };
+  var D = {};   // the DOM pieces of the screen on show
+
+  /* ---------- colors (kit roles, never codes), for light and dark ---------- */
+  function paint() {
+    var root = O.ui.root(), dark = O.theme.mode === 'dark';
+    var col = function (r, s) { try { return O.color(r, s); } catch (e) { return null; } };
+    var set = {
+      sky: col('interact', 'base'), coral: col('wrong', 'base'), go: col('go', 'light'), ink: col('ink'), grape: col('magic', 'base'), gold: col('reward', 'base'),
+      stone: col('cream'), water: col('water', dark ? 'shade' : 'light'), leaf: col('go', 'base'),
+    };
+    for (var k in set) if (set[k]) root.style.setProperty('--ss-' + k, set[k]);
+    var mix = function (v, p, on) { return 'color-mix(in srgb, var(--ss-' + v + ') ' + p + '%, ' + (on || 'var(--ok-card)') + ')'; };
+    root.style.setProperty('--ss-stone-d', mix('ink', 16, 'var(--ss-stone)'));
+    root.style.setProperty('--ss-water-d', mix('ink', 18, 'var(--ss-water)'));
+    root.style.setProperty('--ss-ripple', 'color-mix(in srgb, var(--ss-stone) 55%, var(--ss-water))');
+    root.style.setProperty('--ss-pad', mix('leaf', 85, 'var(--ss-water)'));
+    root.style.setProperty('--ss-go-t', mix('go', 55, 'var(--ss-stone)'));
+    root.style.setProperty('--ss-coral-t', mix('coral', dark ? 45 : 35));
+    root.style.setProperty('--ss-grape-t', mix('grape', 35));
+    root.style.setProperty('--ss-nope-bg', mix('coral', 45, 'var(--ss-stone)'));
+    root.style.setProperty('--ss-hint-bg', mix('grape', 30, 'var(--ss-stone)'));
+    root.style.setProperty('--ss-mode-bg', mix('sky', dark ? 16 : 12));
+    root.style.setProperty('--ss-rush-bg', mix('gold', dark ? 30 : 34));
+  }
+  O.theme.on('change', function () { paint(); drawPip(); });
+
+  /* ---------- Pip the frog (kit art, drawn once per theme) ---------- */
+  var PIP = null;
+  function pipCanvas(px) {
+    var c = el('canvas'), dpr = Math.min(2, window.devicePixelRatio || 1), size = Math.round(px * dpr);
+    c.width = size; c.height = size; c.setAttribute('aria-hidden', 'true');
+    if (!PIP) { try { PIP = O.art.toCanvas(O.char(CONFIG.pip), 160); } catch (e) { try { PIP = O.art.toCanvas('frog', 160); } catch (e2) { PIP = null; } } }
+    if (PIP && PIP.width) { var g = c.getContext('2d'), k = Math.min(size / PIP.width, size / PIP.height); g.drawImage(PIP, (size - PIP.width * k) / 2, (size - PIP.height * k) / 2, PIP.width * k, PIP.height * k); }
+    return c;
+  }
+  function drawPip() { PIP = null; if (D.pip) { D.pip.innerHTML = ''; D.pip.appendChild(pipCanvas(80)); } }
+
+  /* ---------- the kit game: the title, pause and results; the pond is the game's own DOM ---------- */
+  var SET = [
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '     P              ',
+    '####################',
+    '####################',
+  ];
+  function badge() {   // the title's badge: three stones, the middle one the sum of the other two
+    var px = 150, h = 92, c = el('canvas'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = px * dpr; c.height = h * dpr; c.style.width = px + 'px'; c.style.height = h + 'px';
+    function draw() {
+      var g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, px, h);
+      var ink = O.color('ink'), fam = getComputedStyle(document.documentElement).getPropertyValue('--ok-font') || 'sans-serif';
+      g.fillStyle = O.color('water', 'light'); g.strokeStyle = ink; g.lineWidth = 3;
+      g.beginPath(); g.ellipse(px / 2, h * 0.62, px / 2 - 3, h * 0.34, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+      [[30, 54, 2, 0], [75, 40, 5, 1], [120, 56, 3, 0]].forEach(function (s) {
+        g.fillStyle = s[3] ? O.color('go', 'light') : O.color('cream');
+        g.beginPath(); g.arc(s[0], s[1], 20, 0, Math.PI * 2); g.fill(); g.stroke();
+        g.fillStyle = ink; g.font = '900 22px ' + fam; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(s[2]), s[0], s[1] + 1);
+      });
+    }
+    try { draw(); } catch (e) { /* drawn again when the font is ready */ }
+    if (O.fonts && O.fonts.ready) O.fonts.ready.then(function () { try { draw(); } catch (e) { /* no canvas */ } });
+    return c;
+  }
+  var game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), theme: CONFIG.theme, titleHue: 'mint', titleBadge: badge(),
+    controls: 'none', camera: 'fixed', hero: 'frog', heroSize: 1.6, hud: [], countdown: 0,
+    howTo: [{ icon: 'eye', text: t('how1') }, { icon: 'tap', text: t('how2') }, { icon: 'hint', text: t('how3') }],
+    level: O.level.grid(SET, {}),
+    update: function (w, dt) { frame(w, dt); },
+    testState: function () { return testState(); },
+    on: {
+      start: function (w) { begin(w); },
+      title: function () { S.again = false; hide(); },
+      results: function () { hide(); },
+    },
+  });
+  O.on('pause', function (r) { if (r === 'quit') S.again = false; });
+  function frame(w, dt) {
+    var V = w.stage.view, z = Math.min(V.vw / (12 * w.cell), V.vh / (w.level.h + w.cell));
+    w.cam.bounds(null); w.cam.zoom = z; w.cam.x = w.level.w / 2; w.cam.y = w.level.h - 0.4 * w.cell - V.vh / z / 2;
+    if (S.screen === 'play' && S.mode === 'rush' && !w.ended && !S.done) {
+      S.left -= dt;
+      var sec = Math.max(0, Math.ceil(S.left));
+      if (sec !== S.shownSec && D.count) { S.shownSec = sec; D.countT.textContent = String(sec); D.count.setAttribute('aria-label', t('timeLeft', { t: sec })); D.count.classList.toggle('low', sec <= 10); }
+      if (S.left <= 0) endRush();
+    }
+  }
+
+  /* ---------- the screens ---------- */
+  function build() {
+    if (D.ss) return D.ss;
+    paint();
+    var ss = el('div', 'ss'); ss.hidden = true; ss.dir = O.dir || 'ltr';
+    O.ui.root().appendChild(ss);
+    D.ss = ss;
+    window.addEventListener('resize', function () { layout(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(ss);
+    return ss;
+  }
+  function screen(name) { var ss = build(); ss.innerHTML = ''; ss.hidden = false; ss.dataset.screen = name; S.screen = name; D.play = null; D.count = null; D.pip = null; return ss; }
+  function hide() { if (D.ss) { D.ss.hidden = true; D.ss.innerHTML = ''; } D.play = null; D.count = null; D.pip = null; if (S.screen !== 'won') S.screen = 'title'; }
+
+  function begin(w) {
+    S.w = w;
+    if (S.pending) { var p = S.pending; S.pending = null; return startMode(p.mode, p.id, p); }
+    if (S.again && S.mode) { S.again = false; return startMode(S.mode, S.id, {}); }
+    showPicker();
+  }
+
+  /* The picker: the six levels, then Rush and Practice. */
+  function showPicker() {
+    var ss = screen('pick'), sc = el('div', 'ss-scroll'), card = el('div', 'ss-pick');
+    ss.appendChild(sc); sc.appendChild(card);
+    card.appendChild(el('h2', '', t('pickH')));
+    card.appendChild(el('h3', '', t('levelsH')));
+    var grid = el('div', 'ss-lvs');
+    C.LEVELS.forEach(function (L, k) {
+      var b = el('button', 'ss-lv'); b.type = 'button'; b.id = 'lv-' + L.id; b.dataset.level = L.id;
+      var no = el('span', 'ss-no', String(k + 1)); no.setAttribute('aria-hidden', 'true'); b.appendChild(no);
+      var tx = el('span'); tx.appendChild(el('b', '', levelName(L.id))); tx.appendChild(el('small', '', t('P_' + L.id)));
+      var best = SAVE.best[L.id], st = el('span', 'ss-st', best ? '★★★'.slice(0, best.stars) + '☆☆☆'.slice(0, 3 - best.stars) : '');
+      st.setAttribute('aria-hidden', 'true'); tx.appendChild(st); b.appendChild(tx);
+      b.setAttribute('aria-label', levelName(L.id) + ', ' + t('P_' + L.id) + (best ? ', ' + t('bestS', { n: best.stars }) : ''));
+      b.addEventListener('click', function () { sfx('select'); startMode('level', L.id, {}); });
+      grid.appendChild(b);
+    });
+    card.appendChild(grid);
+    card.appendChild(el('h3', '', t('modesH')));
+    var modes = el('div', 'ss-modes');
+    var rush = el('button', 'ss-mode rush'); rush.type = 'button'; rush.id = 'ss-rush';
+    var rh = el('span', 'ss-mh'); rh.appendChild(icon('clock', 30)); var rt = el('span'); rt.appendChild(el('b', '', t('rush'))); rt.appendChild(el('small', '', t('rushP')));
+    if (SAVE.rush) rt.appendChild(el('small', '', t('bestR', { n: SAVE.rush })));
+    rh.appendChild(rt); rush.appendChild(rh);
+    rush.addEventListener('click', function () { sfx('select'); startMode('rush', '', {}); });
+    modes.appendChild(rush);
+    var pr = el('section', 'ss-mode'); pr.setAttribute('aria-labelledby', 'ss-practice-h');
+    var ph = el('div', 'ss-mh'); ph.appendChild(icon('spark', 30)); var pt = el('div'), pb = el('b', '', t('practice')); pb.id = 'ss-practice-h'; pt.appendChild(pb); pt.appendChild(el('small', '', t('practiceP'))); ph.appendChild(pt);
+    pr.appendChild(ph);
+    var chips = el('div', 'ss-chips');
+    C.LEVELS.forEach(function (L) {
+      var ch = el('button', 'ss-chip', levelName(L.id)); ch.type = 'button'; ch.id = 'pr-' + L.id;
+      ch.setAttribute('aria-label', t('practice') + ', ' + levelName(L.id));
+      ch.addEventListener('click', function () { sfx('select'); startMode('practice', L.id, {}); });
+      chips.appendChild(ch);
+    });
+    pr.appendChild(chips); modes.appendChild(pr);
+    card.appendChild(modes);
+    var first = card.querySelector('.ss-lv');
+    O.time.real.after(0, function () { try { if (first && !('ontouchstart' in window)) first.focus({ preventScroll: true }); } catch (e) { /* gone */ } });
+  }
+
+  /* Starting a level, Rush or Practice. */
+  function startMode(mode, id, o) {
+    o = o || {};
+    if (mode !== 'rush' && !C.level(id)) return showPicker();
+    S.mode = mode; S.id = mode === 'rush' ? '' : id; S.round = 0; S.mistakes = 0; S.hints = 0; S.clean = 0; S.found = 0; S.streak = 0; S.bonus = 0; S.done = false;
+    S.left = C.RUSH.secs; S.shownSec = -1; S.lastWin = null;
+    S.seed = o.seed != null ? (o.seed >>> 0) : (S.w && S.w.rand ? S.w.rand.int(1, 0x7FFFFFFE) : 1 + Math.floor(Math.random() * 0x7FFFFFFE));
+    buildPlay();
+    nextPuzzle();
+  }
+  function puzzleLevel() { return S.mode === 'rush' ? C.rushLevel(S.round) : S.id; }
+  function nextPuzzle() {
+    var lid = puzzleLevel(), seed = (S.seed + S.round * 7919) >>> 0;
+    S.p = C.generate(lid, seed) || C.generate(lid, seed + 1);
+    S.busy = false; S.wrongHere = 0; S.hintStep = 0; S.shown = false;
+    drawPuzzle();
+  }
+
+  /* The play screen: the bar, Pip and the question, the pond, the sum, the hint button. */
+  function buildPlay() {
+    var ss = screen('play');
+    var pl = el('div', 'ss-play'); ss.appendChild(pl); D.play = pl;
+    var bar = el('div', 'ss-bar');
+    var back = el('button', 'ss-back'); back.type = 'button'; back.id = 'ss-levels'; back.setAttribute('aria-label', t('levels')); back.title = t('levels'); back.appendChild(icon('menu', 24));
+    back.addEventListener('click', function () { sfx('select'); S.done = true; showPicker(); });
+    var nm = el('div', 'ss-pill'); var nmT = el('span', '', S.mode === 'rush' ? t('rush') : S.mode === 'practice' ? t('practice') + ' · ' + levelName(S.id) : levelName(S.id)); nm.appendChild(nmT); D.name = nmT;
+    bar.appendChild(back); bar.appendChild(nm); bar.appendChild(el('span', 'ss-sp'));
+    if (S.mode === 'level') { var dots = el('div', 'ss-dots'); dots.setAttribute('role', 'img'); D.dots = dots; bar.appendChild(dots); }
+    else {
+      var ct = el('div', 'ss-pill ss-count'); ct.dir = 'ltr';
+      ct.appendChild(icon(S.mode === 'rush' ? 'clock' : 'star', 20)); D.countT = el('span', '', S.mode === 'rush' ? String(C.RUSH.secs) : '0'); ct.appendChild(D.countT);
+      if (S.mode === 'rush') ct.setAttribute('role', 'timer');
+      D.count = ct; bar.appendChild(ct);
+    }
+    pl.appendChild(bar);
+    var say = el('div', 'ss-say'), pip = el('div', 'ss-pip'); D.pip = pip; pip.appendChild(pipCanvas(80));
+    var bub = el('div', 'ss-bub'); bub.id = 'ss-say'; D.bub = bub;
+    say.appendChild(pip); say.appendChild(bub); pl.appendChild(say); D.sayRow = say; D.bar = bar;
+    var pond = el('div', 'ss-pond'); pond.dir = 'ltr'; pond.setAttribute('role', 'group'); pond.setAttribute('aria-label', t('pond'));
+    D.pond = pond; pl.appendChild(pond);
+    var eq = el('div', 'ss-eq'); eq.dir = 'ltr'; eq.setAttribute('aria-hidden', 'true'); D.eq = eq; pl.appendChild(eq);
+    var tools = el('div', 'ss-tools');
+    var hb = el('button', 'ss-tool'); hb.type = 'button'; hb.id = 'ss-hint'; hb.appendChild(icon('hint', 24)); hb.appendChild(el('span', '', t('hint')));
+    var hn = el('span', 'ss-n'); hb.appendChild(hn); D.hintN = hn;
+    hb.addEventListener('click', function () { hint(); });
+    D.hintB = hb; tools.appendChild(hb); pl.appendChild(tools); D.tools = tools;
+    layout();
+  }
+
+  function drawPuzzle() {
+    if (!D.pond) return;
+    var p = S.p, n = p.values.length, R = C.rng(p.seed ^ 0x5eed), spots = SPOTS[n];
+    D.pond.innerHTML = ''; D.stones = [];
+    [[6, 58], [88, 50], [46, 4]].forEach(function (q, k) { var pad = el('span', 'ss-pad'); pad.style.left = q[0] + '%'; pad.style.top = q[1] + '%'; pad.style.transform = 'rotate(' + (k * 120 + 20) + 'deg)'; D.pond.appendChild(pad); });
+    p.values.forEach(function (v, i) {
+      var s = el('button', 'ss-stone'); s.type = 'button'; s.dataset.i = String(i); s.dataset.v = String(v);
+      s.appendChild(el('span', 'ss-v', String(v)));
+      var x = spots[i][0] + (R.float() - 0.5) * 6, y = spots[i][1] + (R.float() - 0.5) * 4;
+      s.style.left = x + '%'; s.style.top = y + '%'; s.style.setProperty('--ss-bd', (-R.float() * 3).toFixed(2) + 's');
+      s.addEventListener('click', function () { tap(i); });
+      D.stones.push(s); D.pond.appendChild(s);
+    });
+    D.pond.setAttribute('aria-label', t('pond') + ': ' + p.values.join(', '));
+    say(t(p.op === 'mul' ? 'askMul' : 'askAdd'), '');
+    drawEq();
+    if (D.dots) {
+      var L = C.level(S.id); D.dots.innerHTML = '';
+      for (var k = 0; k < L.rounds; k++) D.dots.appendChild(el('i', k < S.round ? 'on' : k === S.round ? 'now' : ''));
+      D.dots.setAttribute('aria-label', t('progress', { n: S.round + 1, total: L.rounds }));
+    }
+    if (S.mode === 'practice' && D.countT) { D.countT.textContent = String(S.found); D.count.setAttribute('aria-label', t('found', { n: S.found })); }
+    D.hintN.textContent = S.hints ? String(S.hints) : '';
+    layout();
+    announce(t(p.op === 'mul' ? 'askMul' : 'askAdd') + ' ' + p.values.join(', '));
+    if (!('ontouchstart' in window && !matchMedia('(pointer: fine)').matches)) { var f = D.stones[0]; if (f && D.ss.contains(document.activeElement)) { try { f.focus({ preventScroll: true }); } catch (e) { /* gone */ } } }
+  }
+  /** The sum under the pond: ? + ? = ?, filled in by hints and by the find. */
+  function drawEq() {
+    var p = S.p, a = p.values[p.pair[0]], b = p.values[p.pair[1]], c = p.values[p.answer];
+    var parts = [[S.hintStep >= 1 || S.shown ? a : null], [sign(p.op), 'op'], [S.hintStep >= 2 || S.shown ? b : null], ['=', 'op'], [S.shown ? c : null]];
+    D.eq.innerHTML = '';
+    parts.forEach(function (q) { var s = el('span', q[1] === 'op' ? 'op' : q[0] == null ? 'q' : 'got', q[0] == null ? '?' : String(q[0])); D.eq.appendChild(s); });
+  }
+  function say(text, kind) {
+    if (!D.bub) return;
+    D.bub.textContent = text; D.bub.className = 'ss-bub' + (kind ? ' ' + kind : '');
+  }
+  function hop() { if (!D.pip || reduced()) return; D.pip.classList.remove('hop'); void D.pip.offsetWidth; D.pip.classList.add('hop'); }
+
+  /* Sizes: the pond as big as it can be; Pip, the sum and the hint under it in portrait and beside it in landscape. */
+  function layout() {
+    if (!D.play || !D.play.isConnected) return;
+    var ss = D.ss, Wd = ss.clientWidth - 16, Ht = ss.clientHeight - 10, pl = D.play, st = pl.style;
+    if (Wd <= 0 || Ht <= 0) return;
+    var land = Wd > Ht * 1.2 && Wd >= 700;
+    pl.classList.toggle('land', land);
+    var pw, ph, side = Math.min(340, Math.max(260, Wd * 0.32));
+    if (land) {
+      st.setProperty('--ss-side', side + 'px'); st.setProperty('--ss-bw', '100%');
+      pw = Math.min(Wd - side - 20, (Ht - 70) * 1.45, 760); ph = Math.min(Ht - 70, pw * 0.72);
+      st.setProperty('--ss-pip', '72px');
+    } else {
+      var bw = Math.min(Wd, 620); st.setProperty('--ss-bw', bw + 'px');
+      var small = Ht < 700; st.setProperty('--ss-pip', (small ? 56 : 76) + 'px');
+      // what is left once the bar, Pip, the sum, the hint and the gaps are measured; a short screen gets a flatter
+      // pond, never wider than 1.7 times its height, so the stones always sit inside it
+      var hOf = function (e, d) { return e && e.offsetHeight ? e.offsetHeight : d; };
+      var rest = hOf(D.bar, 48) + hOf(D.sayRow, small ? 62 : 80) + hOf(D.eq, 66) + hOf(D.tools, 62) + 4 * 10 + 14;
+      ph = Math.min(bw * 0.8, Math.max(170, Ht - rest), 480); pw = Math.min(bw, ph * 1.7);
+    }
+    pw = Math.floor(pw); ph = Math.floor(ph);
+    var n = S.p ? S.p.values.length : 4, d = Math.min(pw * (n <= 4 ? 0.26 : n === 5 ? 0.23 : 0.21), ph * 0.33, 136);
+    d = Math.max(58, Math.floor(d));
+    st.setProperty('--ss-pw', pw + 'px'); st.setProperty('--ss-ph', ph + 'px'); st.setProperty('--ss-d', d + 'px');
+    st.setProperty('--ss-fs', Math.round(d * 0.42) + 'px');
+  }
+
+  /* ---------- a tap on a stone ---------- */
+  function tap(i) {
+    if (S.screen !== 'play' || S.busy || !S.p || i < 0 || i >= S.p.values.length) return;
+    var p = S.p, s = D.stones[i];
+    if (i === p.answer) return spotted();
+    // a gentle nudge: no two other stones make this number (true by how the puzzle is made), and after two misses Pip shows the pair
+    S.mistakes++; S.wrongHere++; S.streak = 0;
+    sfx('wrong', { volume: 0.4 });
+    if (s && !reduced()) { s.classList.remove('nope'); void s.offsetWidth; }
+    if (s) s.classList.add('nope');
+    var x = p.values[i];
+    if (S.wrongHere >= 2 && S.hintStep < 2) {
+      S.hintStep = 2; markPair();
+      say(t('lookPair', { a: p.values[p.pair[0]], b: p.values[p.pair[1]] }), 'nope');
+    } else say(t(p.op === 'mul' ? 'nopeMul' : 'nopeAdd', { x: x }), 'nope');
+    announce(D.bub.textContent);
+    drawEq();
+    var later = function () { if (s) s.classList.remove('nope'); };
+    if (S.w) S.w.after(900, later); else later();
+  }
+  function markPair() { var p = S.p; D.stones.forEach(function (s, k) { s.classList.toggle('hint', (S.hintStep >= 1 && k === p.pair[0]) || (S.hintStep >= 2 && k === p.pair[1])); }); }
+  /** A hint: first one of the two numbers, then the other; counted. */
+  function hint() {
+    if (S.screen !== 'play' || S.busy || !S.p) return;
+    var p = S.p;
+    if (S.hintStep >= 2) { say(t('hintAll'), ''); announce(t('hintAll')); return; }
+    S.hintStep++; S.hints++;
+    markPair(); drawEq(); hop(); sfx('spark', { volume: 0.5 });
+    var line = S.hintStep === 1 ? t('hint1', { a: p.values[p.pair[0]] }) : t('lookPair', { a: p.values[p.pair[0]], b: p.values[p.pair[1]] });
+    say(line, ''); announce(line);
+    D.hintN.textContent = String(S.hints);
+  }
+  function spotted() {
+    var p = S.p; S.busy = true; S.shown = true;
+    if (!S.wrongHere && !S.hintStep) S.clean++;
+    S.found++; S.streak++; if (S.mode === 'rush' && S.streak >= 3) S.bonus += Math.min(10, 2 * (S.streak - 2));
+    D.stones.forEach(function (s, k) { s.classList.remove('nope', 'hint'); if (k === p.pair[0] || k === p.pair[1]) s.classList.add('pair'); });
+    D.stones[p.answer].classList.add('right');
+    drawEq(); hop();
+    var a = p.values[p.pair[0]], b = p.values[p.pair[1]], c = p.values[p.answer];
+    say(t(['right1', 'right2', 'right3'][S.found % 3]), 'yes');
+    announce(D.bub.textContent + ' ' + t(p.op === 'mul' ? 'eqMul' : 'eqAdd', { a: a, b: b, c: c }));
+    sfx('correct', { volume: 0.7 });
+    if (S.mode === 'rush' && D.name) D.name.textContent = t('rush') + ' · ' + t('found', { n: S.found });
+    if (S.mode === 'practice' && D.countT) { D.countT.textContent = String(S.found); D.count.setAttribute('aria-label', t('found', { n: S.found })); }
+    if (D.dots && D.dots.children[S.round]) D.dots.children[S.round].className = 'on';
+    var go = function () {
+      if (S.screen !== 'play' || S.done) return;
+      S.round++;
+      if (S.mode === 'level' && S.round >= C.level(S.id).rounds) return finishLevel();
+      nextPuzzle();
+    };
+    if (S.fast) go(); else if (S.w) S.w.after(reduced() ? 600 : CONFIG.nextMs, go); else go();
+  }
+
+  /* ---------- the end of a level or a Rush: the kit's results card (stars, points, BRB.gameOver) ---------- */
+  function finishLevel() {
+    var w = S.w, L = C.level(S.id), r = { mistakes: S.mistakes, hints: S.hints, clean: S.clean };
+    var stars = C.stars(r), points = C.score(L.id, r);
+    S.done = true; S.screen = 'won';
+    var prev = SAVE.best[L.id]; if (!prev || stars > prev.stars) SAVE.best[L.id] = { stars: stars };
+    persist();
+    S.lastWin = { mode: 'level', id: L.id, stars: stars, score: points, mistakes: r.mistakes, hints: r.hints, clean: r.clean };
+    announce(t('winSay', { name: levelName(L.id), m: r.mistakes, h: r.hints }));
+    sfx('levelup');
+    S.again = true;
+    if (w && !w.ended) w.win({ stars: stars, score: points, title: t('doneH') });
+  }
+  function endRush() {
+    if (S.done) return;
+    var w = S.w, n = S.found, stars = C.rushStars(n), points = C.rushPoints(n, S.bonus);
+    S.done = true; S.screen = 'won'; S.busy = true;
+    if (n > SAVE.rush) SAVE.rush = n;
+    persist();
+    S.lastWin = { mode: 'rush', found: n, stars: stars, score: points, mistakes: S.mistakes, hints: S.hints };
+    announce(t('rushSay', { n: n }));
+    S.again = true;
+    if (w && !w.ended) w.win({ stars: stars, score: points, title: t('rushH') });
+  }
+
+  /* ---------- the keyboard: Tab or the arrows move between the stones, Enter or Space taps one, H asks for a hint ---------- */
+  window.addEventListener('keydown', function (e) {
+    if (S.screen !== 'play' || game.state !== 'play' || (O.ui.open && O.ui.open > 0) || e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'h' || k === 'H') { hint(); e.preventDefault(); return; }
+    var mv = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[k];
+    if (mv && D.stones && D.stones.length) {
+      var at = D.stones.indexOf(document.activeElement), n = D.stones.length, nx = at < 0 ? 0 : (at + mv + n) % n;
+      try { D.stones[nx].focus({ preventScroll: true }); } catch (er) { /* gone */ }
+      e.preventDefault();
+    }
+  });
+
+  /* ---------- test hooks (window.__brbTest, merged with the kit's) ---------- */
+  function testState() {
+    var p = S.p;
+    return {
+      screen: S.screen, mode: S.mode, level: S.mode === 'rush' ? C.rushLevel(S.round) : S.id, round: S.round, seed: S.seed,
+      values: p ? p.values.slice() : [], op: p ? p.op : '', answer: p && (S.screen === 'play' || S.screen === 'won') ? p.answer : -1, pair: p ? p.pair.slice() : [],
+      hintStep: S.hintStep, mistakes: S.mistakes, hints: S.hints, clean: S.clean, found: S.found, left: Math.max(0, Math.round(S.left)),
+      best: SAVE.best, rushBest: SAVE.rush, lastWin: S.lastWin, kit: game.state,
+    };
+  }
+  Object.assign(window.__brbTest, {
+    state: testState,
+    core: C,
+    pick: function (mode, id, o) { o = Object.assign({}, o || {}); if (game.state === 'play') startMode(mode, id, o); else { S.pending = Object.assign({ mode: mode, id: id }, o); game.start(); } return testState(); },
+    picker: function () { if (game.state === 'play') showPicker(); else game.start(); return testState(); },
+    tap: function (i) { tap(i); return testState(); },
+    hint: function () { hint(); return testState(); },
+    skipAnimations: function () { S.fast = true; return testState(); },
+    setLeft: function (s) { S.left = +s || 0; S.shownSec = -1; return testState(); },
+  });
+})();
+</script>

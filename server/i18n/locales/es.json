@@ -4751,6 +4751,7 @@
       "quietBounce": "Un medidor de ruido para la clase: una caja de pelotas saltarinas descansa mientras hay calma y se agita, traquetea y salta si hay demasiado ruido.",
       "popcornHush": "Un medidor de ruido para la clase: mantened la calma para que las palomitas no estallen, porque demasiado ruido hace saltar los granos.",
       "sudoku": "Acertijos de lógica, desde un mini 4×4 con dibujos hasta el clásico 9×9: cada fila, columna y caja tiene cada número una vez.",
+      "sumSpotter": "Encuentra el número que es la suma (o el producto) de otros dos, desde sumas hasta 10 hasta las tablas, con una carrera de 60 segundos.",
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria."
     },
     "hubs": {

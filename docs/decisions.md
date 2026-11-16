@@ -6468,5 +6468,28 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
 
+## Sum Spotter: spot the number two others make (16 Nov 2026)
+
+The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or
+layout of the published puzzle that inspired it, never its puzzle sets or wording.
+
+- **One game, six levels and two modes** (`seed-games/sum-spotter.html`, `SumSpotterCore.LEVELS`): number stones in
+  Pip the frog's pond, two staggered rows of stepping stones (no center number, no ring of petals). Sums to 10 and to
+  20 (4 stones), Sums to 50 (5), Sums to 100 (5 or 6), Times (the product of two others, factors 2 to 10) and Mixed
+  (plus or times, the operation named in the question), 8 puzzles each with stars. Rush: 60 seconds on the game clock,
+  the puzzles ramping through the levels. Practice: any level, endless, no clock and no stars.
+- **Exactly one answer, by construction and by test**: puzzles are made in the game from a seed, never stored. A group
+  is kept only when its numbers are different, exactly one member is made from two OTHER members (in Mixed by plus or
+  times, so neither operation gives a second answer) and no member is another doubled or squared (8 next to 4 reads as
+  4 + 4). `tests/unit/sum-spotter.test.js` checks 3,000 puzzles a level and the Rush ramp with its own brute-force
+  checker. Sums to 10 with 4 stones has only a few dozen fair groups; order and placement keep it fresh.
+- **Gentle help**: a wrong tap shakes the stone and Pip says no two other numbers make it (always true); a second
+  wrong tap on the same puzzle shows the pair. Hints show one number of the pair, then the other, in the sum under the
+  pond (? + ? = ?). No prices or upsells.
+- **On the Learn shelf** as math, grades 1 to 5 (`learn.js SHELF_INFO`, `LEARNING`), next to Sudoku in the lists. Its
+  shelf for existing databases comes from a new migration (`0082_sum_spotter_shelf`); 0062 is left as it was. The AI
+  voice reads the title, the how-to cards and Pip's fixed lines, never a line with the stones' numbers.
+- **Open:** a native speaker's read of the new translations and game titles (each language has its own title, as
+  Sudoku's do), and whether Rush deserves a leaderboard of its own.
 ## Preferred sources link on the landing page footer
 The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).

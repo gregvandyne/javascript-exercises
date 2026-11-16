@@ -132,6 +132,10 @@ export const GAMES = {
   // Sudoku: the title, the how-to cards (read aloud with read-aloud on) and the few fixed lines, in the friendly voice
   // (its VOICES block). The board, the pad, the labels a screen reader reads and the lines with numbers are never spoken.
   'sudoku': { title: 'Sudoku', role: 'friendly', spoken: /^(?:title|tag|how\d|pickH|making|fixed|hinted|notDone|solvedH)$/ },
+  // Sum Spotter: the title, the how-to cards (read only on a tap of the how-to card's speaker button) and the fixed lines
+  // Pip the frog says, in the friendly voice (its VOICES block). Level names, the stones, labels and the lines with
+  // numbers in them are never spoken.
+  'sum-spotter': { title: 'Sum Spotter', role: 'friendly', spoken: /^(?:title|tag|how\d|pickH|askAdd|askMul|hintAll|right\d|doneH|rushH)$/ },
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },
   'swish-flick': { title: 'Swish Flick', role: 'narrator', spoken: /./ },
   'trick-inbox': { title: 'Trick Inbox', role: 'wise', spoken: /./ },

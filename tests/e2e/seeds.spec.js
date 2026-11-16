@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { gameFrame, adminPage } from './helpers.js';
 
 const NOISE_METERS = { 'remis-quiet-meadow': 'Quiet Meadow', 'quiet-bounce': 'Quiet Bounce', 'popcorn-hush': 'Popcorn Hush' };
-const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['tug-of-math', 'Tug of Math'], ['quiet-bounce', 'Quiet Bounce'], ['popcorn-hush', 'Popcorn Hush'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup'], ['sudoku', 'Sudoku']];
+const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['tug-of-math', 'Tug of Math'], ['quiet-bounce', 'Quiet Bounce'], ['popcorn-hush', 'Popcorn Hush'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup'], ['sudoku', 'Sudoku'], ['sum-spotter', 'Sum Spotter']];
 
 // CS Quest's games are played only inside their course (docs/decisions.md "Course games are played only as part of their
 // course"): no page of their own and not on Home for players, who land on the course page; the platform admin still opens
@@ -37,7 +37,7 @@ for (const [slug, title] of COURSE) {
 
 // Each launch game's shelf (docs/decisions.md "Play and Learn"): Play games are featured on Play ('/'), Learn games are in
 // Learn's games (or its live class games). Remi's noise meter is a class tool: on neither row, found by search.
-const LEARN = new Set(['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'atlas-quest', 'tug-of-math', 'doodle-hoot', 'word-trail', 'sudoku']);
+const LEARN = new Set(['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'atlas-quest', 'tug-of-math', 'doodle-hoot', 'word-trail', 'sudoku', 'sum-spotter']);
 for (const [slug, title] of SEEDS) {
   test(`${slug} loads in the sandbox and shows up on its shelf (Play or Learn)`, async ({ page }) => {
     const errors = [];
