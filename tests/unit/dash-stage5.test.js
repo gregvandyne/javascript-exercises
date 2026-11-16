@@ -163,6 +163,18 @@ test('site addresses: https only (no javascript:, data:, http:, local or IP addr
   assert.deepEqual(D.cleanSettings(site, { url: 'https://example.org/a' }), { url: 'https://example.org/a' });
 });
 
+test('site addresses: the settings form refuses what the server would drop (the browser\'s rule agrees with cleanUrl)', () => {
+  // Before, the form only checked https and a dot, so an IP address, a port or a .local name was accepted, shown with an
+  // "Open in a new tab" link to it, and then silently dropped by the server on save.
+  for (const x of ['https://www.example.org/maths?unit=3', 'https://example.org:443/a', 'https://EXAMPLE.org/A', 'https://example.org/a b', 'javascript:alert(1)', 'http://example.org',
+    'https://user:pw@example.org', 'https://localhost/', 'https://app.localhost/', 'https://127.0.0.1/', 'https://10.0.0.1/', 'https://[::1]/', 'https://printer.local/', 'https://db.internal/',
+    'https://example.org:8443/', 'https://exa mple.org', 'example.org', '//example.org', 'https://.example.org/', 'https://example.org‮/', `https://example.org/${'a'.repeat(500)}`, ''])
+    assert.equal(V.siteUrl(x), D.cleanUrl(x), x);
+  for (const x of ['https://10.0.0.1/', 'https://example.org:8443/', 'https://printer.local/', 'https://x.internal/']) assert.equal(V.siteUrl(x), null, x);
+  // The settings editor uses it.
+  assert.match(fs.readFileSync('public/js/dash.js', 'utf8'), /siteUrl\(x\)/);
+});
+
 test('may a site be framed: X-Frame-Options and frame-ancestors, as browsers read them; private addresses never asked', async () => {
   const ours = 'https://oomba.example';
   assert.equal(DM.frameVerdict({}, ours), 'ok');

@@ -70,3 +70,16 @@ export function videoSrc(v, { start = 0, end = 0, mute = false, loop = false } =
   return `${VIDEO_HOSTS.vimeo}/video/${x.id}?${q}${st ? `#t=${st}s` : ''}`;
 }
 
+/** The site window's address: the browser's copy of services/dash.js cleanUrl (tests/unit/dash-stage5.test.js checks
+ *  they agree), so the settings say at once when an address will be refused (http, a port, an IP address, a local name)
+ *  instead of the server dropping it on save. -> the address, or null. */
+export function siteUrl(v) {
+  const s = String(v ?? '').trim();
+  if (!s || s.length > 500 || /[\u0000- \u007F-\u009F‪-‮⁦-⁩]/.test(s)) return null;
+  let u; try { u = new URL(s); } catch { return null; }
+  if (u.protocol !== 'https:' || u.username || u.password || (u.port && u.port !== '443')) return null;
+  const host = u.hostname.toLowerCase();
+  if (!/^[a-z0-9.-]+$/.test(host) || !host.includes('.') || host.startsWith('.') || host.endsWith('.') || /^[\d.]+$/.test(host)) return null;
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) return null;
+  return u.href;
+}

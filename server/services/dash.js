@@ -238,7 +238,8 @@ export function registryFor(t, role) {
     settings: w.settings.map(s => ({ ...s, label: s.type === 'tool' ? '' : t(`dash.w.${w.id}.s.${s.key}`),
       ...(s.options ? { labels: Object.fromEntries(s.options.map(o => [o, t(`dash.w.${w.id}.o.${s.key}.${o}`)])) } : {}) })),
   }));
-  const used = new Set(WIDGETS.map(w => w.group));
+  // Only the groups this reader can add from: a student's library has no Class, Check or Oomba chip leading nowhere.
+  const used = new Set(WIDGETS.filter(w => canAdd(w, role)).map(w => w.group));
   return { types, groups: GROUPS.filter(g => used.has(g)).map(g => ({ id: g, name: t(`dash.groups.${g}`) })), common: Object.fromEntries(TOOL_COMMON.map(k => [k, t(`dash.tools.${k}`)])),
     ask: { q: Object.fromEntries(ASK_KEYS.map(k => [k, t(`dash.ask.${k}`)])) } };
 }
@@ -621,8 +622,13 @@ export function push(u, c, { kind, ref, state } = {}) {
   return { push: id };
 }
 export function endPush(u, c, id) {
-  const r = q.run('UPDATE dash_pushes SET ended_at=? WHERE id=? AND class_id=? AND ended_at IS NULL', now(), String(id || ''), c.id);
-  return r.changes ? { ok: true } : { error: 'notFound' };
+  // A quick check's push is the check: ending it in "Sent today" ends the check too (else its answer card stayed on every
+  // student screen, still taking answers, with nothing left in the tray or the teacher's sent list to end it from).
+  const p = q.get('SELECT kind, ref FROM dash_pushes WHERE id=? AND class_id=? AND ended_at IS NULL', String(id || ''), c.id);
+  if (!p) return { error: 'notFound' };
+  q.run('UPDATE dash_pushes SET ended_at=? WHERE id=? AND class_id=? AND ended_at IS NULL', now(), String(id || ''), c.id);
+  if (p.kind === 'check') endCheckRow(c, p.ref);
+  return { ok: true };
 }
 /** Where a push opens, for a student of the class. A live push whose room has closed (or changed) has nowhere to go. */
 export function pushHref(c, p) {

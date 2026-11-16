@@ -15,7 +15,7 @@
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
-import { parseVideo } from '/js/dash-video.js';
+import { parseVideo, siteUrl } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 
 const D = pageData();
@@ -535,11 +535,10 @@ function start() {
       const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg');
       inp.value = w.s[f.key] || '';
       inp.addEventListener('change', () => {
-        const x = inp.value.trim();
-        let ok = false; try { const u = new URL(x); ok = u.protocol === 'https:' && !u.username && !u.password && u.hostname.includes('.'); } catch { ok = false; }
+        const x = inp.value.trim(), ok = siteUrl(x);
         if (x && !ok) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); return; }
         msg.textContent = ''; msg.classList.remove('err');
-        w.s[f.key] = x; commit(); redraw();
+        w.s[f.key] = x ? ok : ''; commit(); redraw();
       });
     },
     places(field, f, w, id, type, { commit, redraw }) {

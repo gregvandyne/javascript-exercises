@@ -49,7 +49,9 @@ body.dash-page{padding-bottom:0}
 .dash-picrow img{border-radius:8px;object-fit:cover;background:var(--card-2)}
 
 /* ---------- the grid ---------- */
-.dash-grid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(var(--rows,4),minmax(var(--rowmin,72px),1fr));gap:var(--s4)}
+/* A layout taller than the stage keeps its full height (the stage scrolls): shrunk, its rows would spill over what
+   follows, such as edit mode's background bar. */
+.dash-grid{flex:1 0 auto;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(var(--rows,4),minmax(var(--rowmin,72px),1fr));gap:var(--s4)}
 .dash-w{--g:var(--accent);container:dashw / inline-size;position:relative;display:flex;flex-direction:column;gap:var(--s2);min-width:0;min-height:0;background:var(--card);color:var(--text);border-radius:var(--r);padding:var(--s4);box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
 /* Group colours: on the icon chip and the card's top edge only, never on text. */
 .dash-w[data-group="time"]{--g:#5AA9D6}
@@ -385,7 +387,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-symrow{display:flex;flex-wrap:wrap;justify-content:safe center;gap:4px}
 .dw-symbtn{min-width:44px;padding:0 8px;font-size:1.3rem}
 .dw-symbtn[aria-pressed="true"],.dw-lightbtn[aria-pressed="true"]{background:var(--current);color:var(--on-current);box-shadow:none}
-@container (max-height:200px){.dw-symrow{display:none}}
+@container (max-height:150px){.dw-symrow{display:none}}
 /* traffic light */
 .dw-light{display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2);height:100%;text-align:center}
 .dw-lamps{display:flex;gap:clamp(6px,3cqi,18px);padding:clamp(6px,3cqi,14px);border-radius:999px;background:var(--brand-ink)}
@@ -394,7 +396,9 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-lamp.is-on{opacity:1;box-shadow:0 0 0 3px var(--brand-cream)}
 .dw-lightlabel{font-weight:800;font-size:clamp(1.1rem,min(14cqh,8cqi),3rem);overflow-wrap:anywhere}
 .dw-lightrow{justify-content:safe center}
-@container (max-height:200px){.dw-lightrow{display:none}}
+/* a short light (its default 3 x 3) keeps its buttons: tighter gaps and housing instead */
+@container (max-height:220px){.dw-light{gap:4px}.dw-lamps{padding:6px}}
+@container (max-height:150px){.dw-lightrow{display:none}}
 /* dice and random number */
 .dw-dice,.dw-rand{display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:6px;height:100%;text-align:center;overflow:auto}
 .dw-dicerow{display:flex;flex-wrap:wrap;justify-content:safe center;gap:8px}

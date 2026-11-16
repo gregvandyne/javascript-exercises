@@ -2721,7 +2721,7 @@
         "layout": "Disposizione: {name}",
         "eyesOn": "«Occhi qui» è attivo su tutti gli schermi",
         "eyesOff": "«Occhi qui» è finito",
-        "eyesUp": "Occhi avanti",
+        "eyesUp": "Occhi qui",
         "hidden": "Nascosto. È salvato in Dal tuo insegnante.",
         "back": "È tornato"
       },
@@ -8925,7 +8925,7 @@
       "close": "Chiudi"
     },
     "eyes": {
-      "title": "Occhi avanti",
+      "title": "Occhi qui",
       "text": "Il tuo insegnante vuole mostrarti qualcosa."
     },
     "lib": {
