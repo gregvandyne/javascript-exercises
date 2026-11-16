@@ -57,11 +57,11 @@ const guest = auth.createGuest();
 // ---------------------------------------------------------------- the tags
 const PLAY = ['hero-of-sunvale', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'brick-drop', 'munch-maze', 'swish-flick', 'beat-lanes', 'would-you-rather', 'gulp-city', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'jungle-cup'];
 const LEARN = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live',
-  'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder', 'launch-lab', 'sudoku'];
+  'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder', 'launch-lab', 'sudoku', 'sum-spotter'];
 const seedMeta = fs.readdirSync('seed-games').filter(f => f.endsWith('.json')).map(f => JSON.parse(fs.readFileSync(`seed-games/${f}`, 'utf8')));
 
-test('every launch game is on exactly one shelf: 15 on Play, 38 on Learn, as designed; the database agrees', () => {
-  assert.equal(seedMeta.length, 53);
+test('every launch game is on exactly one shelf: 15 on Play, 39 on Learn, as designed; the database agrees', () => {
+  assert.equal(seedMeta.length, 54);
   for (const m of seedMeta) assert.ok(m.shelf === 'play' || m.shelf === 'learn', `${m.slug}: shelf`);
   assert.deepEqual(seedMeta.filter(m => m.shelf === 'play').map(m => m.slug).sort(), [...PLAY].sort());
   assert.deepEqual(seedMeta.filter(m => m.shelf === 'learn').map(m => m.slug).sort(), [...LEARN].sort());
@@ -97,6 +97,9 @@ test('the migration backfills an older database, and a re-import writes the shel
   if (mig) {
     const step = mig.find(m => m[0] === '0062_game_shelf'); assert.ok(step);
     step[2](db);
+    // an older database then runs the later shelf migrations too (a new Learn game gets its own, never an edit to 0062)
+    for (const m of mig.filter(m => m[0] > '0062' && /_shelf$/.test(m[0]))) { if (m[1]) db.exec(m[1]); if (m[2]) m[2](db); }
+    assert.equal(G.getGameBySlug('sum-spotter').shelf, 'learn', '0082 puts Sum Spotter on Learn');
     assert.equal(G.getGameBySlug('sum-racer').shelf, 'learn'); assert.equal(G.getGameBySlug('ring-rumble').shelf, 'play');
   }
   q.run("UPDATE games SET shelf='' WHERE slug='word-trail'");

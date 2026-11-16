@@ -5,7 +5,7 @@
 //     title and the cards through the AI path when tapped (tap again: stop), and hides when a line is refused, never
 //     falling back to the device's voice;
 //   - games pinned to older kits (which read the cards by themselves) are kept quiet by the SDK;
-//   - the five official games with how-to cards show them in the player's language (es, ja, ar).
+//   - the six official games with how-to cards show them in the player's language (es, ja, ar).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -146,7 +146,7 @@ test('games pinned to older kits: the SDK drops their automatic how-to read (AI 
   for (const v of ['1.1.3', '1.1.4', '1.1.5']) assert.equal(K.KIT_PATCHES[v], '1.1.6');
 });
 
-// ---- the five official games with how-to cards, in the player's language ----
+// ---- the six official games with how-to cards, in the player's language ----
 const block = (html, a, b) => html.slice(html.indexOf(a), html.indexOf(b));
 const i18nOf = slug => { const html = fs.readFileSync(path.join(ROOT, 'seed-games', slug + '.html'), 'utf8'); const box = {}; vm.runInNewContext(block(html, '// ==== I18N START ====', '// ==== I18N END ====') + '\nthis.I18N = I18N;', box); return box.I18N; };
 const EXPECT = {
@@ -154,6 +154,7 @@ const EXPECT = {
   'escape-the-post-office': l => ['how.locks', 'how.stamps', 'how.retry'].map(k => i18nOf('escape-the-post-office')[l][k]),
   'trick-inbox': l => ['how.clues', 'how.choose', 'how.adult'].map(k => i18nOf('trick-inbox')[l][k]),
   sudoku: l => ['how1', 'how2', 'how3'].map(k => i18nOf('sudoku')[l][k]),
+  'sum-spotter': l => ['how1', 'how2', 'how3'].map(k => i18nOf('sum-spotter')[l][k]),
   'packet-post': l => { const s = JSON.parse(fs.readFileSync(path.join(ROOT, `scripts/data/cs-quest/packet-post/${l}.json`), 'utf8')).strings; return ['Tap a road for each packet', 'Rebuild the picture by number', 'Keep secrets sealed'].map(k => s[k]); },
 };
 for (const slug of Object.keys(EXPECT)) {

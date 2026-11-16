@@ -995,6 +995,10 @@ export const MIGRATIONS = [
       PRIMARY KEY (class_id, user_id, reason));
     CREATE TABLE IF NOT EXISTS dash_moods (class_id TEXT NOT NULL, user_id TEXT NOT NULL, day TEXT NOT NULL, mood INTEGER NOT NULL, at INTEGER NOT NULL,
       PRIMARY KEY (class_id, user_id));`],
+  // Sum Spotter, a new official game on the Learn shelf (docs/decisions.md "Sum Spotter"): a database seeded before it
+  // existed gets its row from the seed import, which reads "shelf" from its JSON; this makes sure an existing row is
+  // on Learn too. 0062's list is left as it was (a migration that ran never runs again).
+  ['0082_sum_spotter_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='sum-spotter';"],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
