@@ -6725,6 +6725,37 @@ questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tool
   maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and short
   help in every language, the panel's code), `scripts/dash-fit-check.js` (each panel opened). Strings in all 13 locales (en-GB where spelling differs).
 
+## Fractions as a number sentence (16 Nov 2026)
+Product feedback on the fraction tool's operations: "The fractions look funny here. I don't like how they are shown
+vertically. Also, when you switch to the bars it looks terrible." Code: `opView` and the functions after it in
+`public/js/dash-tools.js`, the `.dt-fop` rules in `public/css/dash.css`. Compare is unchanged; the state is unchanged.
+- **What was wrong.** Add/Subtract/Divide drew the two fractions' − and + as one row above a grid of three pictures with
+  their labels, the grid's rows sized between fixed limits (22-90px) and its pictures `height:100%` of those rows, all
+  centred with `align-content:center` (not `safe`). On a widget whose model area is under 340px tall (a default-size
+  fraction widget on a busy layout is about 280px) a container query also turned each fraction's − and + into one
+  cramped row (`− 1 + / − 2 +`), its slash drawn with a transform. Circles therefore came out as a column down the
+  left. When the pictures needed more height than the area had (a shorter area, longer words, bars after circles), the
+  grid's overflow was centred, so it grew upward over the − and + row and the mode buttons; the transformed slashes
+  paint above later content, which is why "/" showed inside the top bar while the buttons under it were hidden. The
+  readout was also rebuilt after the pictures were measured, so the area changed size after every draw.
+- **Now.** The sizes are worked out in the browser from the model area (measured after the readout is built; drawn again
+  when it changes size): each way of laying it out is tried, best first, and the first that really fits (measured) is
+  kept, so it never spills; every container also centres `safe`, so nothing can grow over the buttons.
+  - **Circles:** a number sentence in one row, each fraction's circles above its − and + (stacked as on paper: − n +
+    over − d +, with "= 3/6" beside it when the same-size pieces are drawn), then the sign, the second, = and the
+    answer's circles over the answer (? while hidden, under one dashed circle). Two rows (A − B, then = answer) when one
+    row would make the circles small; on a phone one fraction a row, its circles beside it.
+  - **Bars:** stacked on one scale (good for comparing lengths), each with its sign and fraction (its − and +) beside it
+    and level with it; at most 72px tall and 1100px wide. Add and Subtract show the same-size pieces as thin dashed
+    lines inside the original pieces, Divide its lots in two shades with the part lot hatched.
+  - **Multiply:** the sentence (A × B = answer) above the area model, which stays square.
+  - The − and + come in four sizes, chosen by the room: 44px buttons stacked, 36px stacked, and (only on a very short
+    widget, such as the smallest one in German or on the projector) each fraction on one row, with 44px or 36px
+    buttons. "= 3/6" beside a fraction is left out before anything gets smaller (the readout still says it).
+- **Tested:** the fit check has Divide in circles past one whole and a widget whose mode and view the teacher's screen
+  switches through in turn (ending in Divide with bars, hidden), and checks that each bar's fraction is level with its
+  bar and that the sentence reads left to right (in Arabic too: maths stays left to right).
+
 ## Classroom dashboards: Shape board, the geoboard rebuilt (16 Nov 2026)
 Product request: "add a tool like this that allows you to make different shapes... include all of the tools you see on the
 screenshot. Should be super responsive and perfect ux on desktop mobile and tablet." The screenshot (another company's
