@@ -2722,9 +2722,9 @@
         "eyesOff": "«Ojos al frente» terminó",
         "eyesUp": "Ojos al frente",
         "hidden": "Oculto. Está guardado en De tu maestro.",
-        "back": "Ya volvió"
+        "back": "Ya volvió",
+        "renamed": "Diseño renombrado: {name}"
       },
-      "editing": "Editando: {name}",
       "all": "Todos",
       "add": "Añadir",
       "addName": "Añadir {name}",
@@ -8919,6 +8919,7 @@
       "edit": "Editar pantalla",
       "editMine": "Cambiar mi pantalla",
       "editing": "Editando: {name}",
+      "layoutName": "Nombre del diseño",
       "editingMine": "Cambiando mi pantalla",
       "editHint": "Arrastra para mover · arrastra una esquina para cambiar el tamaño · o usa las flechas",
       "editHintMine": "Mueve tus widgets, añade otros o elige un fondo. Los fijados se quedan.",
@@ -8928,8 +8929,7 @@
     "layouts": {
       "label": "Diseño",
       "new": "Nuevo",
-      "manage": "Renombrar o borrar este diseño",
-      "defaultName": "Todos los días"
+      "manage": "Renombrar o borrar este diseño"
     },
     "foot": {
       "eyes": "Ojos al frente",
@@ -10427,6 +10427,10 @@
       "lesson": {
         "name": "Lección",
         "desc": "Temporizador, comprobación rápida, fila de ayuda, recta numérica y semáforo."
+      },
+      "math": {
+        "name": "Matemáticas",
+        "desc": "Barras de fracciones, una recta numérica en cuartos, un temporizador y la fila de ayuda."
       },
       "group": {
         "name": "Trabajo en grupo",

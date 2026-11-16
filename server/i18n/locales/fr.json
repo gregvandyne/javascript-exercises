@@ -2722,9 +2722,9 @@
         "eyesOff": "« Les yeux ici » est terminé",
         "eyesUp": "Les yeux vers l’avant",
         "hidden": "Caché. C’est gardé dans De ton enseignant.",
-        "back": "C’est revenu"
+        "back": "C’est revenu",
+        "renamed": "Disposition renommée : {name}"
       },
-      "editing": "Modification : {name}",
       "all": "Tous",
       "add": "Ajouter",
       "addName": "Ajouter {name}",
@@ -8919,6 +8919,7 @@
       "edit": "Modifier l’écran",
       "editMine": "Changer mon écran",
       "editing": "Modification : {name}",
+      "layoutName": "Nom de la disposition",
       "editingMine": "Je change mon écran",
       "editHint": "Fais glisser pour déplacer · tire un coin pour redimensionner · ou utilise les flèches",
       "editHintMine": "Déplace tes widgets, ajoutes-en ou choisis un fond. Les widgets épinglés restent.",
@@ -8928,8 +8929,7 @@
     "layouts": {
       "label": "Disposition",
       "new": "Nouvelle",
-      "manage": "Renommer ou supprimer cette disposition",
-      "defaultName": "Tous les jours"
+      "manage": "Renommer ou supprimer cette disposition"
     },
     "foot": {
       "eyes": "Les yeux ici",
@@ -10427,6 +10427,10 @@
       "lesson": {
         "name": "Leçon",
         "desc": "Minuteur, vérification rapide, file d’aide, droite graduée et feu tricolore."
+      },
+      "math": {
+        "name": "Maths",
+        "desc": "Bandes de fractions, une droite graduée en quarts, un minuteur et la file d’aide."
       },
       "group": {
         "name": "Travail de groupe",

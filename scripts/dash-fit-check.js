@@ -204,7 +204,7 @@ const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH 
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
     cur.push({ id: t.wid || `w${t.id}`, type: t.id, x, y, w, h, s: t.s || SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
   if (cur.length) out.push(cur); return out; };
-D.ensureLayouts(T, C, 'Default sizes');
+D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
