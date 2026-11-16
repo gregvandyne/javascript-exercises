@@ -1304,6 +1304,7 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 /* settings editors */
 .dash-fieldmsg{margin:0;font-weight:700}
 .dash-fieldmsg.err{color:var(--danger)}
+.dash-qrweb .dash-fieldmsg{overflow-wrap:anywhere}
 .dash-places fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column}
 .dash-places legend{margin-bottom:4px}
 @media (max-width:719px){

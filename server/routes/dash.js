@@ -10,7 +10,7 @@
 //   POST /api/dash/:id/templates/:tid         a teacher adds a ready-made layout (docs/decisions.md "Ready-made layouts")
 //   GET  /api/dash/:id/push-options           POST /api/dash/:id/pushes, /pushes/:pid/end    the teacher sends
 //   POST /api/dash/:id/pushes/:pid/hide       a student hides a push from their banner (or brings it back)
-//   POST /api/dash/:id/links, /links/:lid/remove           approved links
+//   POST /api/dash/:id/links, /links/:lid/remove           approved links ({ qr: true }: the QR widget's typed website)
 //   POST /api/dash/:id/eyes                   Eyes up on or off
 //   POST /api/dash/:id/pictures, GET /api/dash/:id/pictures, POST /api/dash/:id/pictures/:pid/remove
 // Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): everyday widgets. Their changing state (timers, help
@@ -56,7 +56,7 @@ import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as D from '../services/dash.js';
-import { qrSvg } from '../services/qr.js';
+import { qrSvg, fits, MAX_DASH_VERSION } from '../services/qr.js';
 import { origin } from '../seo.js';
 import { dashCsp, DASH_TEACHER_POLICY, siteFrame, siteFrameCsp, SITE_SANDBOX } from '../services/dash-media.js';
 
@@ -284,7 +284,8 @@ router.post('/api/dash/:id/pushes/:pid/end', requireUser, rateLimit('dash-push',
 router.post('/api/dash/:id/links', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
   const b = body(req);
-  send(req, res, D.addLink(req.user, x.c, { url: b.url, title: b.title }));
+  // { qr: true }: the QR widget's "A website" box (no scheme reads as https://, must fit a code; -> { link, target }).
+  send(req, res, b.qr === true ? D.qrWebsite(req.user, x.c, { url: b.url, title: b.title }) : D.addLink(req.user, x.c, { url: b.url, title: b.title }));
 });
 router.post('/api/dash/:id/links/:lid/remove', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
@@ -387,7 +388,8 @@ router.get('/api/dash/:id/qr', requireUser, rateLimit('dash-qr', 240, 3600e3), (
   res.set('Cache-Control', 'no-store');
   const tg = D.qrTarget(x.c, { kind: String(req.query.kind || ''), ref: String(req.query.ref || '') }, origin(req));
   if (!tg) return fail(req, res, 'qrGone', 404);
-  let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan') }); } catch { return fail(req, res, 'qrGone', 404); }
+  if (!fits(tg.url, MAX_DASH_VERSION)) return fail(req, res, 'qrLong', 422);
+  let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan'), max: MAX_DASH_VERSION }); } catch { return fail(req, res, 'qrGone', 404); }
   res.json({ svg, text: tg.text, title: tg.title });
 });
 

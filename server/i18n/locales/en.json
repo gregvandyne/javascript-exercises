@@ -2855,6 +2855,17 @@
         "own": "Or make your own",
         "ownName": "Your own layout",
         "ownDesc": "Start fresh, or copy the layout you're on."
+      },
+      "qrWeb": {
+        "tooLong": "This address is too long for a QR code — try a shorter link.",
+        "option": "A website…",
+        "url": "Website address",
+        "name": "Name (optional)",
+        "save": "Show this website",
+        "ok": "The code will open {url}",
+        "note": "You can leave out https:// (it is added for you). The website joins the class's approved links, where you can remove it.",
+        "saved": "QR code now opens {name}",
+        "bad": "Use a full web address that starts with https://"
       }
     }
   },
@@ -9552,7 +9563,8 @@
         "empty": "Pick what the code opens in Edit screen.",
         "gone": "That link isn't available any more. Pick another in Edit screen.",
         "scan": "QR code to scan",
-        "nothing": "Nothing yet"
+        "nothing": "Nothing yet",
+        "tooLong": "This address is too long for a QR code — try a shorter link."
       },
       "picker": {
         "name": "Random student picker",
@@ -10600,7 +10612,8 @@
       "reason": "Pick a reason from the list.",
       "noMood": "Your teacher hasn't put a mood check-in on your screen.",
       "site": "That site window has no address yet.",
-      "template": "Pick one of the ready-made layouts."
+      "template": "Pick one of the ready-made layouts.",
+      "qrLong": "This address is too long for a QR code — try a shorter link."
     },
     "tools": {
       "send": "Send to students",
