@@ -12,13 +12,14 @@ import * as G from './dash-math4.js';
 import { parts } from './dash-tools.js';
 import { format } from './i18n-format.js';
 import { geoboard } from './dash-shapeboard.js';
+import { tip } from './dash-tip.js';
 
 const { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, ltr, svgPoint, iso } = parts;
 const minus = v => String(v).replace(/^-/, '−');
 const projecting = () => document.body.classList.contains('dash-projector');
 /** A button with an icon and words; on a narrow tool only the icon shows (the button keeps its name). */
 function ibtn(icon, text, cls = 'btn btn-sm') {
-  const b = btn('', cls, text); b.dataset.tip = text;
+  const b = tip(btn('', cls, text), text);
   const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
@@ -41,13 +42,89 @@ function pattern(body, s, ctx) {
   let sel = -1, drag = null, board;
   const tray = el('div', 'dt-ptray'); tray.setAttribute('role', 'group'); tray.setAttribute('aria-label', W.board);
   for (const k of G.BLOCK_KINDS) {
-    const b = btn('', 'btn btn-sm dt-pbtn', `➕ ${W[k]}`); b.title = W[k]; b.dataset.tip = W[k];
+    const b = tip(btn('', 'btn btn-sm dt-pbtn', `➕ ${W[k]}`), W[k]);
     const ic = svg('svg', { viewBox: '-1.2 -2 3.4 2.4', class: 'dt-pic', 'aria-hidden': 'true' });
     ic.appendChild(svg('polygon', { points: G.BLOCK_SHAPES[k].map(([x, y]) => `${x},${y}`).join(' '), class: `dt-blk4 dt-k-${k}` }));
     b.appendChild(ic);
-    b.addEventListener('click', () => add(k));
+    // A tap (or Enter) adds the block at the first free spot; a drag puts it where it is let go (see paletteDrag).
+    b.addEventListener('click', () => { if (pal && pal.moved) return; add(k); });
+    b.addEventListener('pointerdown', e => paletteDown(e, k, b));
     tray.appendChild(b);
   }
+  /** Review: a block can also be dragged from the palette onto the board (mouse, touch or pen). Until the pointer moves
+   *  more than a few px it is a tap (G.paletteDrag); then a lifted copy of the block, as big as it will be on the board,
+   *  follows the pointer, the board lights up and a dashed outline shows where it will land (snapped to the grid like a
+   *  block dragged on the board, G.dropBlock). Let go on the board: the block is added there. Let go anywhere else, press
+   *  Escape or a cancelled pointer: nothing changes. */
+  let pal = null;
+  const boardBox = () => { const bd = T.stage.querySelector('.dt-pboard'); return bd ? { bd, r: bd.querySelector('.dt-pbg').getBoundingClientRect() } : null; };
+  const landing = e => {
+    const x = boardBox(); if (!x) return null;
+    const { bd, r } = x;
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return null;
+    const q = svgPoint(bd, e);
+    return G.dropBlock(pal.k, Math.max(0, Math.min(BW, q.x / BU)), Math.max(0, Math.min(BH, q.y / BU)));
+  };
+  function paletteDown(e, k, b) {
+    if (ctx.editing || e.button > 0 || pal) return;
+    pal = { k, b, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, ghost: null, shadow: null };
+    try { b.setPointerCapture(e.pointerId); } catch { /* not capturable */ }
+  }
+  const palLift = d => {
+    const x = boardBox(); const m = x && x.bd.getScreenCTM(); const px = m ? Math.hypot(m.a, m.b) * BU : 40;
+    const pts = G.blockPoints({ k: d.k, x: 0, y: 0, r: 0 });
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0;
+    const g = el('div', 'dt-pghost'); g.setAttribute('aria-hidden', 'true');
+    const sv = svg('svg', { viewBox: `${x0 - 0.05} ${y0 - 0.05} ${w + 0.1} ${h + 0.1}`, width: (w + 0.1) * px, height: (h + 0.1) * px });
+    sv.appendChild(svg('polygon', { points: pts.map(([a, c]) => `${a},${c}`).join(' '), class: `dt-blk4 dt-k-${d.k}` }));
+    g.appendChild(sv);
+    // The block's middle sits under the pointer.
+    const cx = xs.reduce((a, v) => a + v, 0) / xs.length, cy = ys.reduce((a, v) => a + v, 0) / ys.length;
+    d.ox = (cx - x0 + 0.05) * px; d.oy = (cy - y0 + 0.05) * px;
+    (document.fullscreenElement || document.body).appendChild(g);
+    d.ghost = g; d.b.classList.add('is-dragsrc');
+    d.esc = ev => { if (ev.key === 'Escape') { ev.preventDefault(); palStop(); } };
+    document.addEventListener('keydown', d.esc, true);
+  };
+  const palShow = (d, e) => {
+    d.ghost.style.transform = `translate(${e.clientX - d.ox}px, ${e.clientY - d.oy}px) rotate(-4deg) scale(1.06)`;
+    const spot = landing(e), x = boardBox();
+    d.ghost.classList.toggle('is-out', !spot);
+    if (!x) return;
+    x.bd.classList.toggle('is-drop', !!spot);
+    if (!d.shadow || !d.shadow.isConnected) { d.shadow = svg('polygon', { class: 'dt-pshadow' }); x.bd.appendChild(d.shadow); }
+    d.shadow.style.display = spot ? '' : 'none';
+    if (spot) d.shadow.setAttribute('points', G.blockPoints(spot).map(([a, c]) => `${a * BU},${c * BU}`).join(' '));
+  };
+  const palStop = () => {
+    const d = pal; if (!d) return;
+    d.ghost?.remove(); d.shadow?.remove(); d.b.classList.remove('is-dragsrc');
+    T.stage.querySelector('.dt-pboard')?.classList.remove('is-drop');
+    if (d.esc) document.removeEventListener('keydown', d.esc, true);
+    d.done = true;
+  };
+  tray.addEventListener('pointermove', e => {
+    const d = pal; if (!d || d.done || d.id !== e.pointerId) return;
+    if (!d.moved && G.paletteDrag(d.x, d.y, e.clientX, e.clientY)) {
+      if (st.blocks.length >= 40) { palStop(); return; }
+      d.moved = true; palLift(d);
+    }
+    if (d.moved && d.ghost) { e.preventDefault(); palShow(d, e); }
+  });
+  const palUp = e => {
+    const d = pal; if (!d || d.id !== e.pointerId) return;
+    // The click that follows a drag (or a drag cancelled by Escape) must not add a block as well.
+    setTimeout(() => { if (pal === d) pal = null; });
+    if (d.done) return;
+    const spot = d.moved && e.type === 'pointerup' ? landing(e) : null;
+    palStop();
+    if (!d.moved) return;
+    if (!spot || st.blocks.length >= 40) return;
+    st.blocks.push(spot); sel = st.blocks.length - 1;
+    T.commit(nameOf(spot)); focusSel();
+  };
+  tray.addEventListener('pointerup', palUp);
+  tray.addEventListener('pointercancel', palUp);
   T.top.appendChild(tray);
   const turn = ibtn('↻', W.turn), rm = ibtn('🗑️', W.remove), clear = ibtn('🧹', W.clear);
   T.foot.append(turn, rm, clear);
@@ -935,7 +1012,7 @@ function organizer(body, s, ctx) {
     kind.value = st.kind;
     const g = grow();
     add.hidden = !g; add.disabled = !!g && st[g.key] >= g.hi;
-    if (g) { const name = W[g.add]; add.dataset.tip = name; add.setAttribute('aria-label', name); add.querySelector('.dt-lbl').textContent = name; }
+    if (g) { const name = W[g.add]; tip(add, name); add.setAttribute('aria-label', name); add.querySelector('.dt-lbl').textContent = name; }
     T.stage.textContent = '';
     const wrap = el('div', `dt-org dt-org-${st.kind}`);
     if (canEdit) {
@@ -981,7 +1058,7 @@ function organizer(body, s, ctx) {
         // A click on the box's edge writes in it too.
         box.addEventListener('click', e => { if (e.target === box || e.target === area) ta.focus(); });
         if (g && i >= g.from && st[g.key] > g.lo) {
-          const x = btn('✕', 'btn btn-sm dt-orgdel', fill(W.remove, { name: headOf(i) })); x.dataset.tip = x.getAttribute('aria-label') || '';
+          const x = btn('✕', 'btn btn-sm dt-orgdel', fill(W.remove, { name: headOf(i) })); tip(x, x.getAttribute('aria-label') || '');
           x.addEventListener('click', () => removeBox(i)); hrow.appendChild(x);
         }
       } else { const h = el('div', 'dt-orgh', headOf(i)); h.dir = 'auto'; hrow.appendChild(h); }
