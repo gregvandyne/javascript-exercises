@@ -6489,7 +6489,7 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
 
 ## Classroom dashboards: ready-made layouts (16 Nov 2026)
 A teacher's first layout is still the near-empty "Everyday" starter, and every other layout was built by hand. Now the
-New layout sheet starts with **Start from a ready-made layout**: five layouts, each an icon, a name and one line, picked
+New layout sheet starts with **Start from a ready-made layout**: five layouts (six since Math, below), each an icon, a name and one line, picked
 with one tap (the name is filled in and can be changed), then Save. Below them **Or make your own** keeps the old choice
 (copy the layout on screen, or the starter). Code: `LAYOUT_TEMPLATES`, `templateWidgets`, `createFromTemplate` in
 `server/services/dash.js`; `POST /api/dash/:id/templates/:tid` in `server/routes/dash.js`; `newSheet` in
@@ -6521,10 +6521,49 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
   view, the edge fades while there are more), and the projector hides the "Layout" label. Phones are unchanged.
 - **The mood check-in's faces** are rounded squares instead of pills, so a long word ("Benissimo") stays inside the
   chosen face's dark background.
-- **Not done (optional in the brief):** offering the templates on a brand-new class's first visit. The first visit still
-  makes the "Everyday" starter (its tests unchanged); the ready-made layouts are one tap away under ➕ New.
+- ~~Not done: offering the templates on a brand-new class's first visit.~~ Done since (below).
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
+
+**The default set on a first visit, a Math layout, rename in edit mode (16 Nov 2026).** "You should also be able to edit
+the name of the page in the edit screen. Also make the default screens automatically populate for new users and add a
+Math default dashboard as well."
+- **First visit.** A teacher's first visit to a class's dashboard (no layouts of theirs for that class) now makes all six
+  ready-made layouts, in the teacher's language, in this order: Morning start, Lesson, Math, Group work, Quiet work, Fun
+  break (`DEFAULT_SET`, 6 of `MAX_LAYOUTS` 12). Morning start is first, on screen, and the one students follow (its goal,
+  mood check-in and class jobs pinned) unless the class already follows another teacher's layout. **Decided: no
+  "Everyday" seventh**: Morning start replaces it. `starterWidgets` stays for the New sheet's "Your own layout" without
+  copying. A teacher with any layout for the class gets nothing new (existing teachers' layouts are never touched or
+  duplicated). `dash.layouts.defaultName` and `js.dash.editing` went with it.
+- **Race guard.** `ensureLayouts` counts and inserts inside one IMMEDIATE transaction (better-sqlite3's
+  `.immediate()`): the database's write lock is taken before counting, so two first requests at once (two tabs, or two
+  server processes on the one file) can't both find none. Tested with two tabs and with two processes starting the same
+  millisecond on a shared database file (the test fails without the guard).
+- **Class jobs on student screens from day one.** Morning start pins class jobs, so a new class's student screens show
+  the week's crew by Oomba name, as stage 5 designed it (the class already sees those names). Two tests that looked for
+  "no other names anywhere in a student's live answer" around a quick check now first switch the class to Quiet work.
+- **Math** (🔢, leaf green; en-GB "Maths", it "Matematica", de "Mathe", fr "Maths", ja "算数", nl "Rekenen", he "חשבון"...):
+  fraction bars (5 × 8, the full height: the tool needs at least 5 × 7), a number line counting in quarters from 0 to 2
+  (7 × 4), the help queue (4 × 4, pinned) and a 10-minute timer (3 × 4); the 12 × 8 grid exactly, no gaps. **Decided:
+  no quick check or "I can" goal.** At the tools' current smallest sizes, fractions + number line + quick check + timer +
+  help needs 99 cells of 96; the quick check is one tap away in each tool's "Make a question", and the Lesson layout
+  has one. Only maths tool ids that stay when the maths tools are merged into fewer types (`fractions`, `numline`), so
+  the layout survives that; the number line's state is built with `cleanToolState`, so it is always what the tool
+  stores. In the New layout sheet after Lesson.
+- **Rename in edit mode.** The edit bar's "Editing: <name>" now has the name as a field (labelled "Layout name", at most
+  40, a dashed underline and a pencil until focused, sized to the name). Enter or leaving it saves through the same
+  route as Rename in the ⋯ sheet (cleaned on the server: required, at most 40, control and direction characters
+  removed); Escape puts the saved name back; an error ("Give the layout a name.", or the server's) shows beside it in
+  red and the field is marked invalid; the footer chip updates at once and a screen reader hears "Layout renamed".
+  The words around the name come from the one translated string, so each language keeps its order. Rename in the ⋯
+  sheet stays.
+- Tests (`dash-templates.test.js`): first visit makes the six in order (English and Italian), Morning start followed with
+  its pins; second and third visits change nothing; a teacher with a layout is untouched; two tabs at once and two
+  processes at once make the set once; Math valid in every locale (grid, sizes, pins, no gaps); the edit bar's field and
+  the rename route's checks. Changed: `dash.test.js` (first layout "Morning start" not "Everyday", its pins, delete down
+  to one before "the last layout stays", the pinned goal is Morning start's sample), `dash-templates.test.js` (six
+  templates, "nothing was made" counts the first visit's six), `dash-stage2.test.js` and `dash-stage4.test.js` (switch to
+  Quiet work first, above). `npm run dash:fit` checks `tpl-math`.
 
 ## Classroom dashboards: any website in the QR code (16 Nov 2026)
 "Allow teachers to add websites freely to the QR code." The QR widget's settings ("What the code opens") gain
