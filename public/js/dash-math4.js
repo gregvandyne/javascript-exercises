@@ -79,6 +79,203 @@ export function lengthText(L) {
 /** Rounded to 2 decimals, for "≈ 10.83" (only when the length has a root in it). */
 export const approxText = (L, intl = 'en') => new Intl.NumberFormat(intl, { maximumFractionDigits: 2, useGrouping: false }).format(L.approx);
 
+// ================================================================ shape board (docs/decisions.md "Shape board")
+// Three boards: a square grid (n × n pegs), triangle dots (n rows of n pegs, every other row moved half a step, so each
+// peg's six neighbours are one step away) and a circle (ring pegs round it and one in the centre). A peg is always
+// { x, y } whole numbers: column and row on the grids; on the circle x is the ring peg's number (0 at the top, going
+// clockwise) and x = ring is the centre, with y = 0.
+export const BOARDS = ['square', 'iso', 'circle'];
+export const GRID_SIZES = [5, 7, 9, 11];
+export const RING_SIZES = [6, 8, 10, 12, 16, 24];
+export const MAX_BANDS = 12, MAX_PTS = 16, BAND_COLOURS = 7;
+export const SHAPE_KINDS = ['tri', 'right', 'sq', 'rect', 'para', 'trap', 'pent', 'hex', 'oct'];
+const H3 = Math.sqrt(3) / 2;
+/** How many pegs a board has across (the grids) or round it (the circle). */
+export const boardSize = st => (st.board === 'circle' ? st.ring : st.pegs);
+/** Every peg of a board, in reading order (the circle: round the ring, then the centre). */
+export function pegList(board, n) {
+  if (board === 'circle') return Array.from({ length: n + 1 }, (_, i) => ({ x: i, y: 0 }));
+  const out = [];
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) out.push({ x, y });
+  return out;
+}
+export const onBoard = (board, n, p) => (board === 'circle' ? p.y === 0 && p.x >= 0 && p.x <= n : p.x >= 0 && p.y >= 0 && p.x < n && p.y < n);
+/** A peg in lattice steps: the square grid as it is; triangle dots as (u, r) along the row and down-right (so moving a shape
+ *  keeps its shape); the circle as its ring number. */
+export const toLattice = (board, p) => (board === 'iso' ? { x: p.x - Math.floor(p.y / 2), y: p.y } : { x: p.x, y: p.y });
+export const fromLattice = (board, q) => (board === 'iso' ? { x: q.x + Math.floor(q.y / 2), y: q.y } : { x: q.x, y: q.y });
+/** Where a peg is, in board units (one step between neighbouring pegs; the circle's radius is 1, y down as on screen). */
+export function pegXY(board, n, p) {
+  if (board === 'iso') return { x: p.x + (p.y % 2) / 2, y: p.y * H3 };
+  if (board === 'circle') {
+    if (p.x >= n) return { x: 0, y: 0 };
+    const a = -Math.PI / 2 + (2 * Math.PI * p.x) / n;
+    return { x: Math.cos(a), y: Math.sin(a) };
+  }
+  return { x: p.x, y: p.y };
+}
+/** The square of a side's length, a whole number on the grids: dx² + dy² (square), u² + uv + v² (triangle dots). null
+ *  on the circle (its chords are not whole-number roots). */
+export function sideSquare(board, a, b) {
+  if (board === 'circle') return null;
+  const p = toLattice(board, a), q = toLattice(board, b), du = q.x - p.x, dv = q.y - p.y;
+  return board === 'iso' ? du * du + du * dv + dv * dv : du * du + dv * dv;
+}
+/** A side's exact length { whole, roots, approx } (as bandLength), or only approx on the circle. */
+export function sideLength(board, n, a, b) {
+  const sq = sideSquare(board, a, b);
+  if (sq === null) { const p = pegXY(board, n, a), q = pegXY(board, n, b); return { whole: 0, roots: [], approx: Math.hypot(q.x - p.x, q.y - p.y), inexact: true }; }
+  const r = sqrtParts(sq);
+  return r.m === 1 ? { whole: r.k, roots: [], approx: r.k } : { whole: 0, roots: [{ k: r.k, m: r.m }], approx: Math.sqrt(sq) };
+}
+/** A band's length on any board: exact on the grids (whole units plus simplified roots), approx on the circle. */
+export function bandLengthOn(board, n, pts, closed = true) {
+  if (board === 'square') return bandLength(pts, closed);
+  const by = new Map(); let approx = 0, inexact = false;
+  const k = closed ? pts.length : pts.length - 1;
+  for (let i = 0; i < k; i++) {
+    const L = sideLength(board, n, pts[i], pts[(i + 1) % pts.length]);
+    approx += L.approx;
+    if (L.inexact) { inexact = true; continue; }
+    if (L.whole) by.set(1, (by.get(1) || 0) + L.whole);
+    for (const r of L.roots) by.set(r.m, (by.get(r.m) || 0) + r.k);
+  }
+  if (inexact) return { whole: 0, roots: [], approx, inexact: true };
+  const roots = [...by.entries()].filter(([m]) => m !== 1).sort((a, b) => a[0] - b[0]).map(([m, kk]) => ({ k: kk, m }));
+  return { whole: by.get(1) || 0, roots, approx };
+}
+/** "4 + 2√2 ≈ 6.83", "12", "≈ 3.46" (the circle): a length for the readout and labels. */
+export function lengthLabel(L, intl = 'en') {
+  if (L.inexact) return `≈ ${approxText(L, intl)}`;
+  return L.roots.length ? `${lengthText(L)} ≈ ${approxText(L, intl)}` : lengthText(L);
+}
+/** Is this band a real shape on this board? (no peg twice, no sides crossing or touching, some area) */
+export function simpleOn(board, n, pts) {
+  if (new Set(pts.map(p => `${p.x},${p.y}`)).size !== pts.length) return false;
+  if (board === 'square') return isSimple(pts);
+  if (board === 'iso') return isSimple(pts.map(p => toLattice(board, p)));
+  // The circle: real coordinates, scaled up and rounded so the integer test sees straight lines through the centre.
+  return isSimple(pts.map(p => { const q = pegXY(board, n, p); return { x: Math.round(q.x * 1e6), y: Math.round(q.y * 1e6) }; }));
+}
+/** A closed band's area. Square grid: square units, exactly (Pick's theorem; a2 is twice the area). Triangle dots: small
+ *  triangles, exactly (each is half of the lattice's rhombus: t = 2I + B − 2). Circle: approx, with the radius as 1. */
+export function shapeArea(board, n, pts) {
+  if (board === 'square') { const p = pick(pts); return { kind: 'sq', a2: p.a2, I: p.I, B: p.B }; }
+  if (board === 'iso') { const L = pts.map(p => toLattice(board, p)), t = doubleArea(L), B = boundaryPegs(L); return { kind: 'tri', t, B, I: (t - B + 2) / 2 }; }
+  let s = 0;
+  for (let i = 0; i < pts.length; i++) { const a = pegXY(board, n, pts[i]), b = pegXY(board, n, pts[(i + 1) % pts.length]); s += a.x * b.y - b.x * a.y; }
+  return { kind: 'approx', a: Math.abs(s) / 2 };
+}
+/** Each corner's inside angle, in degrees (a closed band that doesn't cross itself): they add up to (n − 2) × 180. */
+export function interiorAngles(board, n, pts) {
+  const P = pts.map(p => pegXY(board, n, p));
+  let s = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; s += a.x * b.y - b.x * a.y; }
+  const turn = Math.sign(s) || 1;
+  return P.map((v, i) => {
+    const a = P[(i + P.length - 1) % P.length], b = P[(i + 1) % P.length];
+    const e1 = { x: v.x - a.x, y: v.y - a.y }, e2 = { x: b.x - v.x, y: b.y - v.y };
+    const t = Math.atan2(e1.x * e2.y - e1.y * e2.x, e1.x * e2.x + e1.y * e2.y) * 180 / Math.PI;
+    return 180 - turn * t;
+  });
+}
+/** "90°", "63.4°": whole degrees when the angle is one (to a hundredth), else one decimal. */
+export function angleText(a, intl = 'en') {
+  const r = Math.round(a);
+  if (Math.abs(a - r) < 0.01) return `${r}°`;
+  return `${new Intl.NumberFormat(intl, { maximumFractionDigits: 1, useGrouping: false }).format(a)}°`;
+}
+/** Vertex letters across every band in turn: A, B, … Z, then A′, B′ … */
+export const vertexLetter = i => String.fromCharCode(65 + (i % 26)) + '′'.repeat(Math.floor(i / 26));
+/** The nearest peg to a point in board units, and how far it is (board units). */
+export function nearestPeg(board, n, pt) {
+  let best = null;
+  if (board === 'circle') {
+    for (const p of pegList(board, n)) { const q = pegXY(board, n, p), d = Math.hypot(q.x - pt.x, q.y - pt.y); if (!best || d < best.d) best = { p, d }; }
+    return best;
+  }
+  const y0 = board === 'iso' ? Math.round(pt.y / H3) : Math.round(pt.y);
+  for (let y = y0 - 1; y <= y0 + 1; y++) {
+    if (y < 0 || y >= n) continue;
+    const x0 = Math.round(pt.x - (board === 'iso' ? (y % 2) / 2 : 0));
+    for (let x = x0 - 1; x <= x0 + 1; x++) {
+      if (x < 0 || x >= n) continue;
+      const q = pegXY(board, n, { x, y }), d = Math.hypot(q.x - pt.x, q.y - pt.y);
+      if (!best || d < best.d) best = { p: { x, y }, d };
+    }
+  }
+  if (!best) { const c = { x: Math.max(0, Math.min(n - 1, Math.round(pt.x))), y: Math.max(0, Math.min(n - 1, Math.round(board === 'iso' ? pt.y / H3 : pt.y))) }; const q = pegXY(board, n, c); best = { p: c, d: Math.hypot(q.x - pt.x, q.y - pt.y) }; }
+  return best;
+}
+/** Is a point (board units) inside a closed band? */
+export function insideBand(board, n, pts, pt) {
+  const P = pts.map(p => pegXY(board, n, p)); let c = false;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a.y > pt.y) !== (b.y > pt.y) && pt.x < ((b.x - a.x) * (pt.y - a.y)) / (b.y - a.y) + a.x) c = !c; }
+  return c;
+}
+/** A band moved by whole steps (the grids: dx along, dy down in lattice steps; the circle: turned dx pegs round, the centre
+ *  staying put), or null when a peg would leave the board. */
+export function moveBand(board, n, pts, dx, dy) {
+  const out = pts.map(p => {
+    if (board === 'circle') return p.x >= n ? { ...p } : { x: (((p.x + dx) % n) + n) % n, y: 0 };
+    const q = toLattice(board, p); return fromLattice(board, { x: q.x + dx, y: q.y + dy });
+  });
+  return out.every(p => onBoard(board, n, p)) ? out : null;
+}
+/** A preset shape as pegs, placed in the middle of the board, or null when the board can't make it. */
+export function presetShape(kind, board, n) {
+  if (board === 'circle') {
+    const h = n / 2, reg = k => (n % k === 0 ? Array.from({ length: k }, (_, i) => ({ x: (i * n) / k, y: 0 })) : null);
+    if (kind === 'tri') { if (n % 3 === 0) return reg(3); const k = Math.round(n / 3); return [{ x: 0, y: 0 }, { x: k, y: 0 }, { x: n - k, y: 0 }]; }
+    if (kind === 'right') return n % 2 ? null : [{ x: 0, y: 0 }, { x: Math.max(1, Math.round(n / 6)), y: 0 }, { x: h, y: 0 }];
+    if (kind === 'sq') return reg(4);
+    if (kind === 'rect') { if (n % 2) return null; let i = Math.round(h / 3); if (4 * i === h) i -= 1; return i < 1 ? null : [i, h - i, h + i, n - i].map(x => ({ x, y: 0 })); }
+    if (kind === 'trap') { if (n % 6) return null; const k = n / 6, s = n % 12 === 0 ? (3 * n) / 4 : 0; return [0, k, 2 * k, 3 * k].map(i => ({ x: (s + i) % n, y: 0 })); }
+    if (kind === 'pent') return reg(5);
+    if (kind === 'hex') return reg(6);
+    if (kind === 'oct') return reg(8);
+    return null;
+  }
+  // The shapes in lattice steps (square grid: plain steps; triangle dots: along the row and down-right).
+  const S = board === 'iso'
+    ? { tri: [[0, 2], [2, 2], [2, 0]], right: [[0, 0], [1, 0], [0, 2]], rect: [[0, 0], [1, 0], [0, 2], [-1, 2]], para: [[0, 0], [2, 0], [2, 1], [0, 1]],
+      trap: [[0, 2], [4, 2], [4, 0], [2, 0]], hex: [[2, 0], [2, 1], [1, 2], [0, 2], [0, 1], [1, 0]] }
+    : { tri: [[0, 3], [4, 3], [2, 0]], right: [[0, 0], [0, 3], [4, 3]], sq: [[0, 0], [3, 0], [3, 3], [0, 3]], rect: [[0, 0], [4, 0], [4, 2], [0, 2]],
+      para: [[1, 0], [4, 0], [3, 2], [0, 2]], trap: [[1, 0], [3, 0], [4, 2], [0, 2]], pent: [[2, 0], [4, 2], [3, 4], [1, 4], [0, 2]],
+      hex: [[1, 0], [3, 0], [4, 2], [3, 4], [1, 4], [0, 2]], oct: [[1, 0], [3, 0], [4, 1], [4, 3], [3, 4], [1, 4], [0, 3], [0, 1]] };
+  const raw = S[kind]; if (!raw) return null;
+  // Triangle dots' shapes are drawn twice as big where the board has room for that (from 7 rows).
+  const mid = { x: (n - 1) / 2, y: ((n - 1) / 2) * (board === 'iso' ? H3 : 1) };
+  for (const k of board === 'iso' && n >= 7 ? [2, 1] : [1]) {
+    const L = raw.map(([x, y]) => ({ x: x * k, y: y * k }));
+    const at = (dx, dy) => L.map(q => fromLattice(board, { x: q.x + dx, y: q.y + dy }));
+    let best = null;
+    for (let dy = -n; dy <= n; dy++) for (let dx = -2 * n; dx <= 2 * n; dx++) {
+      const pts = at(dx, dy); if (!pts.every(p => onBoard(board, n, p))) continue;
+      const xy = pts.map(p => pegXY(board, n, p));
+      const cx = (Math.min(...xy.map(q => q.x)) + Math.max(...xy.map(q => q.x))) / 2, cy = (Math.min(...xy.map(q => q.y)) + Math.max(...xy.map(q => q.y))) / 2;
+      const d = (cx - mid.x) ** 2 + (cy - mid.y) ** 2;
+      if (!best || d < best.d - 1e-9) best = { pts, d };
+    }
+    if (best) return best.pts;
+  }
+  return null;
+}
+/** Which preset shapes this board can make. */
+export const presetsFor = (board, n) => SHAPE_KINDS.filter(k => presetShape(k, board, n));
+/** Pen strokes are kept small: points closer than tol to the line between their neighbours go (Ramer-Douglas-Peucker). */
+export function simplifyStroke(pts, tol = 2) {
+  if (pts.length < 3) return pts.slice();
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop(); let far = -1, fd = tol;
+    const A = pts[a], B = pts[b], dx = B[0] - A[0], dy = B[1] - A[1], len = Math.hypot(dx, dy) || 1;
+    for (let i = a + 1; i < b; i++) { const d = Math.abs(dy * (pts[i][0] - A[0]) - dx * (pts[i][1] - A[1])) / len; if (d > fd) { fd = d; far = i; } }
+    if (far >= 0) { keep[far] = 1; stack.push([a, far], [far, b]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+
 // ================================================================ pattern blocks
 /** What each block is worth in sixths of the yellow hexagon (the square and the thin rhombus are not fractions of it). */
 export const BLOCKS = { hex: 6, trap: 3, rhom: 2, tri: 1, sq: null, thin: null };

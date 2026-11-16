@@ -59,7 +59,14 @@ const TOOL_WORDS = {
   tclock: ['digital', 'h24', 'elapsed', 'start', 'endTime', 'elapsedIs', 'onlyH', 'onlyM', 'hint', 'minutes', 'hours', 'time'],
   fdp: ['fraction', 'decimal', 'percent', 'grid', 'hint', 'top', 'bottom', 'outOf'],
   // stage 4
-  geoboard: ['pegs', 'newBand', 'undo', 'close', 'clear', 'band', 'area', 'perimeter', 'pickIs', 'squares', 'open', 'crosses', 'peg', 'added', 'closed', 'hint', 'cursor', 'show'],
+  // the shape board (docs/decisions.md "Shape board")
+  geoboard: ['area', 'perimeter', 'length', 'pickIs', 'pickTri', 'areaSq', 'areaTri', 'areaCircle', 'radiusOne', 'open', 'crosses', 'peg', 'added', 'closed',
+    'hint', 'cursor', 'show', 'band', 'bands', 'bandOf', 'newBand', 'del', 'deleted', 'selected', 'moved', 'corner', 'cornerMoved', 'sayBand', 'empty',
+    'pickOne', 'noRoom', 'c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'shapes', 'shapeAdded', 'tri', 'right', 'sq', 'rect', 'para', 'trap', 'pent', 'hex',
+    'oct', 'tools', 'select', 'ruler', 'rulerIs', 'annotate', 'text', 'pen', 'eraser', 'ink', 'pen0', 'pen1', 'pen2', 'pen3', 'pen4', 'clearNotes',
+    'labelText', 'labelIs', 'labelDel', 'done', 'modePen', 'modeText', 'modeErase', 'inkFull', 'local', 'reset', 'resetDone', 'settings', 'full',
+    'fullExit', 'zoomIn', 'zoomOut', 'zoomFit', 'undo', 'redo', 'grid', 'board', 'square', 'iso', 'circle', 'ringPegs', 'fills', 'lines', 'angles',
+    'labels', 'view', 'more', 'title', 'titlePh', 'ideas', 'idea1', 'idea2', 'idea3', 'idea4', 'idea5'],
   pattern: ['hex', 'trap', 'rhom', 'tri', 'sq', 'thin', 'turn', 'remove', 'clear', 'of', 'notHex', 'board', 'block', 'moved', 'hint', 'empty'],
   angle: ['acute', 'right', 'obtuse', 'straight', 'reflex', 'zero', 'full', 'proto', 'arc', 'step', 'ray', 'hint'],
   solids: ['cube', 'cuboid', 'triprism', 'hexprism', 'sqpyramid', 'tripyramid', 'cylinder', 'cone', 'fold', 'unfold', 'faces', 'edges', 'vertices', 'flatCurved', 'euler', 'turn', 'mark', 'none', 'folded', 'shape', 'view'],
@@ -90,7 +97,7 @@ export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'c
   'helpFor', 'helpClose', 'helpTry'];
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
 export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
-  'geoboard', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
+  'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
 /** Stage 4, "Practice it": a teaching tool and the official Oomba games that practise the same thing (picked by hand
  *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
  *  student of the class can open it; a tool without a clean match offers nothing. */
@@ -192,7 +199,7 @@ export const WIDGETS = [
     .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
   // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
-  ...[['geoboard', '📌', [6, 6], [5, 6], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 7], [5, 7], 'teach'],
+  ...[['geoboard', '📌', [8, 8], [5, 7], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 7], [5, 7], 'teach'],
     ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
     ['chance', '🎯', [7, 6], [6, 6], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
     .map(([id, icon, size, min, group]) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
@@ -392,7 +399,7 @@ export const MAX_ITEMS = 20;
 /** A checklist's ticks: one true/false per item. */
 export const cleanTicks = v => (Array.isArray(v) ? v : []).slice(0, MAX_ITEMS).map(x => x === true || x === 1);
 /** One widget's settings, rebuilt from its schema. */
-export function cleanSettings(type, s = {}) {
+export function cleanSettings(type, s = {}, role = 'teacher') {
   const out = {}; const src = s && typeof s === 'object' ? s : {};
   for (const f of type.settings) {
     const v = src[f.key];
@@ -409,7 +416,7 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
     else if (f.type === 'events') out[f.key] = cleanEvents(v, src);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
-    else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
+    else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v, { student: role === 'student' });
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
     // stage 5
     else if (f.type === 'video') out[f.key] = cleanVideo(v);
@@ -437,7 +444,7 @@ export function cleanWidgets(list, role) {
     const type = widgetType(raw.type);
     if (!canAdd(type, role) || !ID.test(String(raw.id || '')) || seen.has(raw.id)) continue;
     seen.add(raw.id);
-    out.push({ id: String(raw.id), type: type.id, ...cleanBox(type, raw), s: cleanSettings(type, raw.s), ...(role === 'teacher' && raw.pin && canPin(type) ? { pin: true } : {}) });
+    out.push({ id: String(raw.id), type: type.id, ...cleanBox(type, raw), s: cleanSettings(type, raw.s, role), ...(role === 'teacher' && raw.pin && canPin(type) ? { pin: true } : {}) });
   }
   return out;
 }

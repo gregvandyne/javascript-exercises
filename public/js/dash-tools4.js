@@ -1,4 +1,5 @@
-// Classroom dashboards, stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"): geoboard,
+// Classroom dashboards, stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"): geoboard (the
+// shape board, in public/js/dash-shapeboard.js),
 // pattern blocks, angle maker, 3D shapes and nets, transformations, balance scale, algebra tiles, coins and money, chance
 // lab, letter tiles, graphic organizers and maps. Each works exactly like a stage 3 tool (public/js/dash-tools.js): the
 // same shell (mode buttons, the model, a readout, a row of buttons ending with Options and Send to students), the same
@@ -10,6 +11,7 @@ import * as M from './dash-math.js';
 import * as G from './dash-math4.js';
 import { parts } from './dash-tools.js';
 import { format } from './i18n-format.js';
+import { geoboard } from './dash-shapeboard.js';
 
 const { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, ltr, svgPoint, iso } = parts;
 const minus = v => String(v).replace(/^-/, '−');
@@ -29,118 +31,7 @@ function rowSelect(label, options, value, on) {
 /** The text grows so it is at least 13px (more on the projector) on screen: --ts for a viewBox drawn into box. */
 function tsFor(T, vbW, vbH, base = 20) { return T.ts(vbW, vbH, base, 13); }
 
-// ================================================================ 1. geoboard
-const BAND_DASH = ['', '14 8', '4 6', '18 6 4 6', '2 4', '10 4 2 4'];
-function geoboard(body, s, ctx) {
-  const T = shell(body, s, ctx, 'geoboard'), { W, st } = T;
-  const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  const SP = 100, PAD = 60;
-  let cur = { x: 0, y: 0 }, carry = null, drag = null, board;
-  const band = () => st.bands[st.cur];
-  const newB = ibtn('➕', W.newBand), undo = ibtn('↶', W.undo), close = ibtn('⭕', W.close), clear = ibtn('🧹', W.clear);
-  T.top.append(newB, undo, close);
-  T.foot.append(clear);
-  const pegName = p => fill(W.peg, { x: p.x + 1, y: p.y + 1 });
-  const areaOf = b => (b && b.closed && G.isSimple(b.pts) ? G.pick(b.pts) : null);
-  const sayBand = () => { const b = band(), p = areaOf(b); if (p) ctx.say(fill(W.closed, { a: iso(G.mixed(p.a2, 2)) })); };
-  newB.addEventListener('click', () => { if (st.bands.length >= 6) return; st.bands.push({ pts: [], closed: false }); st.cur = st.bands.length - 1; T.commit(fill(W.band, { n: st.cur + 1 })); });
-  undo.addEventListener('click', () => { const b = band(); if (!b) return; if (b.closed) b.closed = false; else b.pts.pop(); if (!b.pts.length && st.bands.length > 1) { st.bands.splice(st.cur, 1); st.cur = Math.max(0, st.cur - 1); } T.commit(W.undo); });
-  close.addEventListener('click', () => { const b = band(); if (b && b.pts.length >= 3) { b.closed = true; T.commit(); sayBand(); } });
-  clear.addEventListener('click', () => { st.bands = [{ pts: [], closed: false }]; st.cur = 0; carry = null; T.commit(W.clear); });
-  /** A peg pressed: carry a corner, put it down, close the band, or stretch the band to it. */
-  const press = p => {
-    let b = band();
-    if (carry) { const c = carry; carry = null; if (!b.pts.some((q, i) => i !== c.i && q.x === p.x && q.y === p.y)) b.pts[c.i] = { ...p }; T.commit(fill(W.added, { x: p.x + 1, y: p.y + 1 })); sayBand(); return; }
-    if (!b) { st.bands.push({ pts: [], closed: false }); st.cur = st.bands.length - 1; b = band(); }
-    const at = b.pts.findIndex(q => q.x === p.x && q.y === p.y);
-    if (b.closed) {
-      if (at >= 0) { carry = { i: at }; T.draw(); ctx.say(pegName(p)); return; }
-      if (st.bands.length >= 6) return;
-      st.bands.push({ pts: [{ ...p }], closed: false }); st.cur = st.bands.length - 1; T.commit(fill(W.added, { x: p.x + 1, y: p.y + 1 })); return;
-    }
-    if (at === 0 && b.pts.length >= 3) { b.closed = true; T.commit(); sayBand(); return; }
-    if (at >= 0 || b.pts.length >= 16) return;
-    b.pts.push({ ...p }); T.commit(fill(W.added, { x: p.x + 1, y: p.y + 1 }));
-  };
-  T.draw = () => {
-    const n = st.pegs, size = (n - 1) * SP + 2 * PAD, b = band();
-    newB.disabled = st.bands.length >= 6 || (b && !b.pts.length); undo.disabled = !b || (!b.pts.length && st.bands.length <= 1); close.disabled = !b || b.closed || b.pts.length < 3;
-    clear.disabled = !st.bands.some(x => x.pts.length);
-    cur = { x: Math.min(cur.x, n - 1), y: Math.min(cur.y, n - 1) };
-    T.stage.textContent = '';
-    const X = v => PAD + v * SP;
-    board = svg('svg', { viewBox: `0 0 ${size} ${size}`, class: 'dt-geo', role: 'application', tabindex: ctx.editing ? '-1' : '0', 'aria-label': `${W.cursor}. ${W.hint}`, 'aria-roledescription': W.cursor, style: `--ts:${tsFor(T, size, size).toFixed(3)}` });
-    board.setAttribute('direction', 'ltr');
-    board.appendChild(svg('rect', { x: 8, y: 8, width: size - 16, height: size - 16, rx: 28, class: 'dt-geobase' }));
-    st.bands.forEach((bd, k) => {
-      if (!bd.pts.length) return;
-      const pts = bd.pts.map(p => `${X(p.x)},${X(p.y)}`).join(' ');
-      const ok = bd.closed && G.isSimple(bd.pts);
-      if (ok) board.appendChild(svg('polygon', { points: pts, class: `dt-geofill dt-b${k}` }));
-      board.appendChild(svg(bd.closed ? 'polygon' : 'polyline', { points: pts, class: `dt-band dt-b${k}${k === st.cur ? ' is-cur' : ''}`, 'stroke-dasharray': BAND_DASH[k] || null }));
-      // The band's number by its first peg, so bands are told apart by more than colour.
-      const p0 = bd.pts[0];
-      board.appendChild(svg('text', { x: X(p0.x) - 22, y: X(p0.y) - 18, class: `dt-geon dt-b${k}`, 'text-anchor': 'middle' }, String(k + 1)));
-    });
-    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) board.appendChild(svg('circle', { cx: X(x), cy: X(y), r: 11, class: 'dt-peg' }));
-    if (carry && b) { const q = b.pts[carry.i]; board.appendChild(svg('circle', { cx: X(q.x), cy: X(q.y), r: 22, class: 'dt-carry' })); }
-    if (drag && drag.to) board.appendChild(svg('circle', { cx: X(drag.to.x), cy: X(drag.to.y), r: 22, class: 'dt-carry' }));
-    if (!ctx.editing) board.appendChild(svg('circle', { cx: X(cur.x), cy: X(cur.y), r: 26, class: 'dt-geocur' }));
-    const wrap = el('div', 'dt-geowrap'); wrap.appendChild(board); T.stage.appendChild(wrap);
-    wire(X, n);
-    // The readout: the current band's area and perimeter, exactly.
-    T.read.textContent = '';
-    const p = areaOf(b);
-    if (p) {
-      const L = G.bandLength(b.pts, true);
-      const big = ltr('div', 'dt-big dt-geobig');
-      big.append(el('span', 'dt-geok', `${W.area} `), el('b', null, G.mixed(p.a2, 2)), el('span', 'dt-geosep', ' · '), el('span', 'dt-geok', `${W.perimeter} `), el('b', null, G.lengthText(L) + (L.roots.length ? ` ≈ ${G.approxText(L, ctx.intl)}` : '')));
-      T.read.appendChild(big);
-      if (st.show) T.read.appendChild(ltr('div', 'dt-sub', fill(W.pickIs, { i: p.I, b: p.B, a: G.mixed(p.a2, 2) })));
-      else T.read.appendChild(el('div', 'dt-sub', fill(W.squares, { a: iso(G.mixed(p.a2, 2)) })));
-    } else if (b && b.closed) T.read.appendChild(el('div', 'dt-sub dt-note', W.crosses));
-    else if (b && b.pts.length > 1) { const L = G.bandLength(b.pts, false); T.read.append(ltr('div', 'dt-big', G.lengthText(L)), el('div', 'dt-sub', W.open)); }
-  };
-  function wire(X, n) {
-    if (ctx.editing) return;
-    const pegAt = e => { const q = svgPoint(board, e); return { x: Math.max(0, Math.min(n - 1, Math.round((q.x - PAD) / SP))), y: Math.max(0, Math.min(n - 1, Math.round((q.y - PAD) / SP))) }; };
-    board.addEventListener('keydown', e => {
-      const d = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] }[e.key];
-      if (d) { e.preventDefault(); cur = { x: Math.max(0, Math.min(n - 1, cur.x + d[0])), y: Math.max(0, Math.min(n - 1, cur.y + d[1])) }; T.draw(); board.focus(); ctx.say(pegName(cur)); }
-      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); press(cur); board.focus(); }
-      else if (e.key === 'Escape' && carry) { carry = null; T.draw(); board.focus(); }
-      else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); undo.click(); board.focus(); }
-    });
-    // Press a corner of the band and drag it to another peg; a tap stretches the band.
-    board.addEventListener('pointerdown', e => {
-      const p = pegAt(e), b = band(); cur = p;
-      const at = b ? b.pts.findIndex(q => q.x === p.x && q.y === p.y) : -1;
-      drag = { from: p, at, id: e.pointerId, to: null };
-      board.setPointerCapture(e.pointerId); e.preventDefault(); board.focus();
-    });
-    board.addEventListener('pointermove', e => {
-      if (!drag || drag.id !== e.pointerId || drag.at < 0) return;
-      const p = pegAt(e); if (p.x === drag.from.x && p.y === drag.from.y && !drag.to) return;
-      if (!drag.to || drag.to.x !== p.x || drag.to.y !== p.y) { const d = drag; d.to = p; cur = p; T.draw(); drag = d; board.setPointerCapture(d.id); }
-    });
-    const up = e => {
-      if (!drag || drag.id !== e.pointerId) return;
-      const d = drag; drag = null;
-      if (d.to && d.at >= 0 && (d.to.x !== d.from.x || d.to.y !== d.from.y)) { carry = { i: d.at }; press(d.to); }
-      else press(d.from);
-      board.focus();
-    };
-    board.addEventListener('pointerup', up);
-    board.addEventListener('pointercancel', () => { drag = null; T.draw(); });
-  }
-  return T.finish({
-    options: box => {
-      const pg = field(box, W.pegs, selectOf([5, 7, 9, 11].map(v => [v, `${v} × ${v}`]), st.pegs));
-      pg.addEventListener('change', () => { st.pegs = +pg.value; for (const b of st.bands) { b.pts = b.pts.filter(p => p.x < st.pegs && p.y < st.pegs); if (b.pts.length < 3) b.closed = false; } T.commit(); });
-      checkRow(box, W.show, st.show, v => { st.show = v; T.commit(); });
-    },
-  });
-}
+// ================================================================ 1. geoboard: the shape board (public/js/dash-shapeboard.js)
 
 // ================================================================ 2. pattern blocks
 const BW = 15, BH = 10 * Math.sqrt(3) / 2, BU = 60;

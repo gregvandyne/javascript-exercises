@@ -120,9 +120,16 @@ export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
       return choice(fill(Q.fdp, { f: `${st.n}/${st.d}` }), dec(st.n, st.d), [st.d <= 100 ? dec(st.n, st.d * 10) : '', dec(st.n + 1, st.d), st.n < st.d ? dec(st.n, st.d + 1) : '', dec(st.n * 10, st.d)].filter(Boolean), seed);
     }
     case 'geoboard': {
-      const b = (st.bands || []).find(x => x.closed && M4.isSimple(x.pts)); if (!b) return null;
-      const p = M4.pick(b.pts), area = M4.mixed(p.a2, 2);
-      return choice(Q.geoboard, area, [M4.mixed(p.a2 + 2, 2), M4.mixed(Math.max(1, p.a2 - 2), 2), String(p.I + p.B), M4.mixed(p.a2 + 1, 2)], seed);
+      // The selected band if it is a closed shape, else the first one that is. Wrong answers are the usual slips: the
+      // perimeter instead of the area, counting the pegs instead of the squares, one square too many or too few.
+      const board = st.board || 'square', n = board === 'circle' ? st.ring || 12 : st.pegs || 7, bands = st.bands || [];
+      if (board === 'circle') return null;
+      const ok = x => x && x.closed && M4.simpleOn(board, n, x.pts || []);
+      const b = ok(bands[st.cur]) ? bands[st.cur] : bands.find(ok); if (!b) return null;
+      const A = M4.shapeArea(board, n, b.pts), per = M4.lengthText(M4.bandLengthOn(board, n, b.pts, true));
+      if (A.kind === 'tri') return choice(Q.geoboardTri || Q.geoboard, String(A.t), [String(A.I + A.B), per, String(A.t + 2), String(Math.max(1, A.t - 2)), String(A.B)], seed);
+      const area = M4.mixed(A.a2, 2);
+      return choice(Q.geoboard, area, [per, String(A.I + A.B), M4.mixed(A.a2 + 2, 2), M4.mixed(Math.max(1, A.a2 - 2), 2), M4.mixed(A.a2 + 1, 2)], seed);
     }
     case 'pattern': {
       const h = M4.hexFraction(st.blocks || []); if (!h.sixths) return null;

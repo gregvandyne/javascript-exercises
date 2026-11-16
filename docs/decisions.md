@@ -6686,6 +6686,81 @@ questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tool
   maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and short
   help in every language, the panel's code), `scripts/dash-fit-check.js` (each panel opened). Strings in all 13 locales (en-GB where spelling differs).
 
+## Classroom dashboards: Shape board, the geoboard rebuilt (16 Nov 2026)
+Product request: "add a tool like this that allows you to make different shapes... include all of the tools you see on the
+screenshot. Should be super responsive and perfect ux on desktop mobile and tablet." The screenshot (another company's
+board) was used as a list of features only: the look, layout, colours, icons and words are our own, built from the
+dashboard tools' parts, and nothing names or imitates another product. The widget keeps its type id `geoboard` and its
+name "Geoboard" (Geobrett, Géoplan...), so layouts, pushes, Practice it and ready-made layouts keep working. Code: the
+renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geometry in `public/js/dash-math4.js`
+("shape board" section), the question in `dash-ask.js`, the state in `server/services/dash-tools.js`, CSS `gb-*` in
+`public/css/dash.css`, strings `dash.w.geoboard.*` and `dash.ask.geoboardTri` in all 13 locales.
+- **Bands.** Seven colours, each with its own dash too (colour is never the only sign). Tap pegs to stretch a band, tap its
+  first peg (ringed) to close it. Pick a colour, or New band, to start another; up to 12 bands of up to 16 pegs. A
+  selected band shows its corners: drag one to move it, or drag inside the band to move the whole band (peg by peg; on the
+  circle it turns round the centre). Delete band, Reset (everything, with undo). Fills: translucent in the band's colour.
+- **Boards.** A square grid (5 × 5, 7 × 7, 9 × 9, 11 × 11), triangle dots (the same sizes; every other row half a step
+  over, so each peg's six neighbours are one step away) and a circle (6, 8, 10, 12, 16 or 24 pegs round it and one in the
+  centre). Grid lines: the rows and columns, the three directions of the triangle dots, or the circle and its spokes.
+  Changing the kind of board starts the bands afresh; changing its size keeps the pegs that still fit.
+- **Shapes.** Triangle, right triangle, square, rectangle, parallelogram, trapezoid, pentagon, hexagon and octagon, each only
+  where the board can make it (no square on triangle dots; regular shapes on the circle when its pegs divide evenly),
+  dropped in the middle as an ordinary band (a second one moves over a step so both show).
+- **Measures, exactly.** Square grid: area in square units by Pick's theorem (halves as "4 1/2") and the perimeter as whole
+  units plus simplified roots with a decimal ("2 + 2√2 ≈ 4.83"). Triangle dots: area in small triangles (t = 2I + B − 2,
+  checked against a count) and exact perimeters (a side's square is u² + uv + v², so "4 + 4√3"). The circle: decimals with
+  the radius as 1 unit (its chords are not whole-number roots), said so under the readout. **Angles** shows each inside
+  angle (whole degrees, else one decimal; a dent is reflex; right angles get a square mark); **Labels** shows corner
+  letters A, B, C... across every band and each side's length. Both for the selected band, or every band when none is.
+- **Tools:** Make bands (the usual mode), a **ruler** whose ends snap to pegs (drag an end to turn it, drag its body to move
+  it; its exact length on it) and the Pick's theorem line. **Annotate:** text labels (tap where; up to 12, 40 characters;
+  drag to move, tap to change or delete) and a pen in five colours with an eraser that rubs out whole strokes. A chip over
+  the board says which mode is on and has Done.
+- **Challenge title** at the top: the teacher types it (a text area that wraps; 80 characters) or picks one of five ideas
+  ("Make a shape with an area of 12 square units."...); everyone else reads it; on the projector it is large.
+- **Bar:** settings (board and grid size), full screen (the Fullscreen API on the widget; where there is none, the widget
+  fills the window, and Escape leaves), zoom in and out (up to 4×; Fit comes back), undo and redo (60 steps, in this page),
+  Grid, Fills, Grid lines, Angles, Labels.
+- **Devices.** One code path for mouse, touch and pen (pointer events, captured for the whole gesture); the board has
+  `touch-action: none`, so dragging never scrolls the page, and two fingers pinch and pan the board (never the page);
+  Ctrl/⌘ + wheel zooms; a drag on the empty board pans when zoomed. Pegs snap from half a step away and at least 26px.
+  Every control is at least 44px. A wide widget (at least 620 × 400 px of room, not a phone, not the projector) has a rail
+  (Shapes, Tools, Annotate, Reset, board), the colours beside it and a bar below; anything narrower, a phone and the
+  projector have one compact bar (colour, Shapes, Tools, Annotate, View, Undo, More) whose groups open as small menus inside
+  the widget (Escape, a tap outside, arrow keys), so the board keeps the room. Where a square board leaves room at its
+  side, the measures are read out beside it. A phone shows the board full width and square.
+- **Keyboard.** Tab reaches every control (visible focus); on the board the arrow keys move a peg cursor, Enter stretches the
+  band, closes it or picks a corner; with a band selected the arrows move the band, with a corner picked they move the
+  corner; [ and ] go from band to band; Delete removes, Backspace takes back the last peg while stretching, Escape lets go,
+  + and − zoom, Ctrl/⌘+Z undoes and Ctrl/⌘+Shift+Z or Ctrl+Y redoes. Labels are buttons (Enter edits, arrows move them).
+  Changes are said once in the polite live region with the selected band's area and perimeter when they change.
+- **Projector:** the compact bar, bigger pegs and thicker bands, the title large in blue; ⓘ hidden as for every tool.
+- **State and old layouts.** New keys: `board`, `ring`, `fills`, `lines`, `angles`, `labels`, `title`, `notes` (x, y in the
+  board's 1000 × 1000 units, text), `ink` (strokes: a colour and whole-number points, simplified in the browser, at most
+  30 strokes of 120 points), and `c` (a colour) on each band; `cur` may be −1 (none selected) and bands go to 12. They are
+  stored only when they differ from their start, so a geoboard saved before this loads, and is stored again, exactly as it
+  was (tested); a band with no colour takes its place's colour. **Decided:** sizes 8 × 8 (smallest 5 × 7); smaller saved
+  boards grow on read (`migrateWidget`).
+- **Privacy.** The state goes only through the tool's `ctx.keep` (the teacher's layout; a student's copy in their own
+  browser) and the teacher's Send to students, as before. Labels and pen strokes on a teacher's tool are the teacher's
+  (cleaned on the server like other teacher text: control and direction characters out, lengths and counts capped). On a
+  student's copy they stay in that browser; if the student pins it, the server drops labels and drawings from their own
+  screen (`cleanToolState(..., { student: true })`, tested) and the browser leaves them out of what it keeps. Nothing a
+  student types or draws reaches another student or the teacher; drawings never go to any AI (there is none here); no
+  network, storage or `innerHTML` in the renderer (tested). Students read the title, never type it. No prices.
+- **The ⓘ help is short** (product feedback: "much more concise"): three lines on the controls (each about a dozen words)
+  and one "Try:" idea, about 50 words in English; the shared list of Make a question, Send to students and Practice it
+  is left out of this panel (those buttons say what they do). The panel is tidied by the renderer after the shell builds
+  it, so the shared help code is unchanged.
+- **Make a question** asks the selected band's area (or the first closed shape's): wrong answers are the perimeter, the pegs
+  counted, and one or two squares off; on triangle dots, "How many small triangles make the shape?". The circle makes no
+  question (its areas are not exact).
+- **Changed tests:** `dash-stage4.test.js` expected a geoboard to keep at most 6 bands (`bands.length` 6, `cur` 5 for 11
+  bands sent); it now keeps up to 12, so the same input keeps 11 bands and `cur` 9, and a new line checks the cap of 12.
+  Its safety scan now also reads `dash-shapeboard.js`. New: `tests/unit/dash-shapeboard.test.js`. The fit check has three
+  busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
+  triangle dots; the 24-peg circle).
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or
