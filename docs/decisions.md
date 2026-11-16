@@ -6293,9 +6293,9 @@ hidden `state` setting and in the push, as in stage 3.
   and dark (a dark phone was added). The widgets now go on as many layouts as they need, one layout filled with each set
   in turn (more sets than a teacher may keep). Its stage 3 "model spills out" check now leaves out what is scrolled out
   of view inside a list that scrolls (an organizer's box, the coins on the mat), as the widget-level check always has.
-  Text in a tool is at least 12px (13px on the projector). **Decided:** smallest sizes: geoboard 5 × 6, pattern blocks
-  6 × 6, angle 5 × 5, nets 5 × 6, transformations, balance, algebra, coins, chance and letters 6 × 6 (or 5 × 6),
-  organizer and map 6 × 5; stage 3's fraction bars went from 5 × 5 to 5 × 6 to make room for the new buttons.
+  Text in a tool is at least 12px (13px on the projector). **Decided:** smallest sizes: geoboard, nets and algebra
+  tiles 5 × 6; angle 5 × 5; pattern blocks, transformations, balance, coins, chance and letters 6 × 6; organizer and
+  map 6 × 5; stage 3's fraction bars went from 5 × 5 to 5 × 6 to make room for the new buttons.
 - Earlier tests changed only where stage 4 needs it: the list of tools a student may add, the stage 2 filters that leave
   out the teaching tools (now Teach and Words and maps), the renderer files the registry test reads, and the fit test's
   views (a dark phone) and layout count.
