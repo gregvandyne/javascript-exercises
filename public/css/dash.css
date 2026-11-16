@@ -584,7 +584,6 @@ span.dw-stamp{cursor:default}
 /* steppers and buttons on a tinted area stay visible */
 .dash-wb .btn.dt-pm:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
 .dt-ic{font-size:1.1em;line-height:1}
-@container (max-width:520px){.dt-seg .dt-lbl{display:none}}
 /* the shared look of SVG models: thick lines readable from the back of the room */
 .dt svg{overflow:visible}
 .dt [tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
@@ -759,7 +758,9 @@ span.dw-stamp{cursor:default}
 .dt-cardl{font-weight:700;color:var(--text-2);font-size:clamp(.82rem,2.6cqi,1rem);overflow-wrap:anywhere}
 .dt-card{container-type:inline-size}
 .dt-cardv{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1rem,22cqi,2.6rem);max-width:100%;line-height:1.1}
-.dt-cardt{overflow-wrap:anywhere;font-size:clamp(.8rem,calc(150cqi / var(--len,6)),2.6rem)}
+.dt-cardt{white-space:nowrap;font-size:clamp(.75rem,calc(140cqi / var(--len,6)),2.6rem)}
+.dash-projector .dt-cardt{font-size:clamp(.82rem,calc(140cqi / var(--len,6)),2.6rem)}
+.dt-cardl{white-space:nowrap}
 .dt-hund{flex:0 1 auto;height:100%;max-width:45%;aspect-ratio:1;cursor:pointer}
 .dt-part{opacity:.55}
 @container (max-aspect-ratio:7/5){.dt-fdpwrap{flex-direction:column}.dt-hund{flex:1 1 0;min-height:0;height:auto;width:auto;max-width:100%;max-height:100%}.dt-cards{flex:none;width:100%}}
@@ -789,10 +790,14 @@ span.dw-stamp{cursor:default}
 .dt-practice,.dt-ask{display:inline-flex;align-items:center;gap:6px;min-width:44px;text-decoration:none}
 .dt .btn[hidden]{display:none}
 .dt .btn:has(.dt-lbl){min-width:44px;justify-content:center}
+/* Stage 4 review: buttons with an icon always show their words (a row wraps rather than drop them); any button whose
+   words are short of room still names itself in a tooltip on hover and on keyboard focus. */
+.dt .btn[data-tip]{position:relative}
+.dt .btn[data-tip]:is(:hover,:focus-visible)::after{content:attr(data-tip);position:absolute;inset-block-end:calc(100% + 6px);inset-inline-start:50%;translate:-50% 0;z-index:30;width:max-content;max-width:16em;padding:4px 8px;border-radius:8px;background:var(--text);color:var(--card);font:600 .85rem/1.25 var(--font);white-space:normal;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+[dir="rtl"] .dt .btn[data-tip]:is(:hover,:focus-visible)::after{translate:50% 0}
+.dt .btn[data-tip]:has(.dt-lbl:not([hidden])):not(:focus-visible)::after{content:none}
 .dt-practicego{display:flex;gap:var(--s2);justify-content:flex-start;width:100%;text-decoration:none}
 /* the shared extras go to their icon first, then the tool's own buttons */
-@container (max-width:900px){.dt-foot .dt-practice .dt-lbl,.dt-foot .dt-ask .dt-lbl{display:none}.dt-foot .dt-practice,.dt-foot .dt-ask{padding:0 10px}}
-@container (max-width:640px){.dt-foot .dt-lbl,.dt-top .dt-lbl{display:none}.dt-foot .btn:has(.dt-lbl),.dt-top .btn:has(.dt-lbl){padding:0 10px}}
 .dt-askform .dt-askopts{gap:var(--s2);margin:0;padding:0}
 .dt-askopt{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:6px var(--s2)}
 .dt-askopt label{font-weight:700}
@@ -846,9 +851,12 @@ span.dw-stamp{cursor:default}
 .dt-solid{width:100%;height:100%;touch-action:none;cursor:grab}
 .dt-sface{stroke:none;filter:brightness(var(--l,1))}
 .dt-st0{fill:#FFD23F}.dt-st1{fill:#66C792}.dt-st2{fill:#5AA9D6}.dt-st3{fill:#F28C6B}.dt-st4{fill:#B9AEF0}.dt-st5{fill:#9ED9CF}
-.dt-sface.is-curved{fill:#9ED9CF}
+.dt-sface.is-curved{fill:#9ED9CF;stroke:#9ED9CF;stroke-width:1;stroke-linejoin:round}
 .dt-sedge{fill:none;stroke:#141414;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
 .dt-sedge.is-marked{stroke:#C2185B;stroke-width:5}
+.dt-shidden{stroke-dasharray:7 6;opacity:.55;stroke-width:2}
+:root[data-theme="dark"] .dt-shidden{stroke:var(--text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt-shidden{stroke:var(--text)}}
 .dt-svx{fill:#C2185B;stroke:#fff;stroke-width:2.5}
 .dt-sfnum{fill:#141414;font:800 calc(18px * var(--ts,1)) var(--font)}
 .dt-scount{gap:.3em .6em;font-size:clamp(1rem,min(6.5cqh,4.2cqi),2.4rem)}
@@ -866,6 +874,7 @@ span.dw-stamp{cursor:default}
 .dt-trl0{fill:var(--text-2)}
 .dt-trrule{font-size:clamp(1rem,min(7cqh,4.2cqi),2.4rem)}
 .dt-trtable td,.dt-trtable th{white-space:nowrap}
+.dt-trtall{font-size:clamp(.82rem,min(3.6cqh,2.6cqi),1.2rem)}.dt-trtall td,.dt-trtall th{padding:2px 8px}
 .dt-trwide{display:none}
 .dt-trwide td,.dt-trwide th{padding:2px 6px}
 @container (max-aspect-ratio:8/5){.dt-trwrap .dt-trtall{display:none}.dt-trwrap .dt-trwide{display:table}.dt-trwrap{gap:var(--s2)}}
@@ -903,13 +912,13 @@ span.dw-stamp{cursor:default}
 .dt-algexp{font-size:clamp(1rem,min(7cqh,4.4cqi),2.4rem)}
 .dt-algraw{color:var(--text-2);font-weight:700}
 /* coins and money */
-.dt-money{width:100%;height:100%;display:flex;flex-direction:column;gap:var(--s2);min-height:0}
+.dt-money{width:100%;height:100%;display:flex;flex-direction:column;justify-content:safe center;gap:var(--s3);min-height:0}
 .dt-mtray{flex:none;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .dt-mbtn{display:grid;place-items:center;min-width:48px;min-height:48px;padding:2px;border:0;border-radius:12px;background:transparent;cursor:pointer}
 .dt-mbtn:hover{background:var(--card-2)}
 .dt-mbtn:focus-visible,.dt-mstack:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-mbtn:disabled{opacity:.45;cursor:default}
-.dt-mmat{flex:1 1 0;min-height:0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:var(--s2);padding:var(--s2);border-radius:var(--r-sm);background:color-mix(in srgb,var(--accent) 10%,var(--card-2));overflow:auto;align-content:safe center}
+.dt-mmat{flex:0 1 auto;min-height:min(96px,100%);display:flex;flex-wrap:wrap;align-content:safe center;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s2);border-radius:var(--r-sm);background:color-mix(in srgb,var(--accent) 10%,var(--card-2));overflow:auto;align-content:safe center}
 .dt-mstack{display:flex;align-items:center;gap:6px;min-height:48px;padding:4px 10px 4px 4px;border:0;border-radius:12px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer;color:var(--text)}
 .dt-mstack.is-static{cursor:default}
 .dt-mpile{display:flex}
@@ -1048,6 +1057,7 @@ button.dt-orgbox:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
   .dt-stage>svg,.dt-plane,.dt-clock,.dt-hund{height:auto;max-height:70vh;width:100%}
   .dt-fwrap,.dt-mats,.dt-pv,.dt-tfwrap,.dt-cwrap,.dt-fdpwrap,.dt-clockwrap{height:auto}
   .dt-cwrap,.dt-fdpwrap{flex-direction:column}
+  .dt-cards{grid-template-columns:minmax(0,1fr)}
   .dt-trwrap .dt-trtall{display:table}.dt-trwrap .dt-trwide{display:none}
   .dt-plane{flex:none;max-width:100%;aspect-ratio:1}
   .dt-hund{max-width:100%}

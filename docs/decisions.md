@@ -6302,4 +6302,20 @@ hidden `state` setting and in the push, as in stage 3.
 - Tests: `tests/unit/dash-stage4.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: each tool on the
   teacher's 1600 × 900 screen, the projector with three tools, a student's sent copy at 1366 × 768 and on a 390 × 844
   phone, the question sheet and a student answering, dark, Arabic, and every tool at its smallest size.
+- **Review fixes (16 Nov 2026).**
+  - Buttons with an icon now always show their words, and a row wraps rather than drop them. This applies to the stage 3
+    mode buttons as well. Any button also names itself in a tooltip on hover and on keyboard focus.
+  - The number line leaves out the room for arcs while it has no jumps, so it fills a wide, short tool. Its readout no
+    longer shows a lone number under the line, which read as a tick label.
+  - The fit check now also fails when a short label (one word or number) breaks across lines. That caught the fraction,
+    decimal and percent cards: a phone shows them one under another, and their values never wrap.
+  - Coins in a pile show their value on the top coin only. The mat is as tall as its coins, and the tray and mat sit
+    together.
+  - Folded solids are drawn as closed solids: only faces turned towards the viewer are painted (faces' corners run
+    outwards, tested), hidden edges are dashed, and the seam of a cylinder or cone shows only while it is open. The view
+    never looks straight along a side face or at a single face of a prism; it turns a little further instead.
+  - The map's Europe, Great Britain and Ireland are redrawn so they're recognisable (still our own simple outlines), and
+    the demo pin for Kenya sits in East Africa.
+  - The pattern block board has a margin, so its edge dots show whole.
+  - The protractor's numbers thin to every 90° when it is too small for them to sit apart.
 - **Not in this stage** (stage 5): video, site windows, document camera, hall pass, class jobs.

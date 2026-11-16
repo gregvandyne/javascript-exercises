@@ -107,7 +107,7 @@ const SETTINGS = {
     { h: '', t: 'Kokosnuss, ein kleiner Feuerdrache\nMatilda, das Stachelschwein\nOskar, der Fressdrache' }, { h: '', t: 'Die Dracheninsel, ein Sommer voller Abenteuer' },
     { h: '', t: 'Kokosnuss kann noch nicht fliegen, und alle anderen Drachen lachen über ihn.' }, { h: '', t: 'Erstens übt er jeden Morgen\nZweitens hilft ihm Matilda\nDrittens fällt er ins Wasser\nViertens versucht er es noch einmal\nFünftens fliegt er ein kleines Stück\nSechstens feiern alle' },
     { h: '', t: 'Er schafft es am Ende, weil er nie aufgibt.' }] } },
-  map: { state: { kind: 'world', names: true, pins: [{ x: 540, y: 240, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
+  map: { state: { kind: 'world', names: true, pins: [{ x: 605, y: 250, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
 };
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
@@ -257,6 +257,18 @@ function problems() {
       if (inSvg) { const m = e.getScreenCTM(); size *= m ? Math.hypot(m.a, m.b) : 1; }
       if (size < floor - 0.25) out.push(`${name(w)}: "${txt.slice(0, 24)}" is ${size.toFixed(1)}px (needs ${floor})`);
       if (inSvg && e.closest('.dt-graph') && /…$/.test(txt)) out.push(`${name(w)}: the label "${txt}" is cut short`);
+    }
+  }
+  // Stage 4 review: a short label (one word or number) never breaks across lines ("1" over "0" for 10).
+  for (const w of document.querySelectorAll('.dash-w')) {
+    if (!w.offsetParent) continue;
+    const walker = document.createTreeWalker(w, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const txt = n.textContent.trim();
+      if (!txt || /\s/.test(txt) || [...txt].length > 14 || n.parentElement.closest('.sr-only,svg')) continue;
+      const r = document.createRange(); r.selectNodeContents(n);
+      const tops = new Set([...r.getClientRects()].filter(q => q.width > 0.5).map(q => Math.round(q.top)));
+      if (tops.size > 1) out.push(`${name(w)}: the label "${txt}" breaks across lines`);
     }
   }
   for (const e of document.querySelectorAll('.dash-w *')) {

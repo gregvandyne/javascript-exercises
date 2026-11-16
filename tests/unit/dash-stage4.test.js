@@ -200,6 +200,15 @@ test('3D shapes and nets: faces, edges and vertices; the net is flat, the folded
     const side = (face, i) => Math.hypot(...face[i].map((c, d) => c - face[(i + 1) % face.length][d]));
     folded.forEach((face, i) => face.forEach((_, j) => { assert.ok(Math.abs(side(face, j) - side(flat[i], j)) < 1e-9); assert.ok(Math.abs(side(face, j) - side(half[i], j)) < 1e-9); }));
   }
+  // Every face's corners run outwards (the folded solid paints only the faces turned towards the viewer).
+  for (const k of G.SOLID_KINDS) {
+    const m = G.solidModel(k), C = [0, 1, 2].map(d => m.v.reduce((a, p) => a + p[d], 0) / m.v.length);
+    for (const f of m.faces) {
+      const P = f.v.map(i => m.v[i]), u = [0, 1, 2].map(d => P[1][d] - P[0][d]), v = [0, 1, 2].map(d => P[2][d] - P[0][d]);
+      const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], fc = [0, 1, 2].map(d => P.reduce((a, p) => a + p[d], 0) / P.length);
+      assert.ok(n.reduce((a, x, d) => a + x * (fc[d] - C[d]), 0) > 0, `${k}: a face turned inwards`);
+    }
+  }
   // A cube's net: six squares that don't overlap (their centres are at least a side apart).
   const net = G.foldPose('cube', 0).map(f => [f.reduce((a, p) => a + p[0], 0) / 4, f.reduce((a, p) => a + p[1], 0) / 4]);
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) assert.ok(Math.hypot(net[i][0] - net[j][0], net[i][1] - net[j][1]) > 1.6 - 1e-9);

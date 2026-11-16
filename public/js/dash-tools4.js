@@ -16,7 +16,7 @@ const minus = v => String(v).replace(/^-/, '−');
 const projecting = () => document.body.classList.contains('dash-projector');
 /** A button with an icon and words; on a narrow tool only the icon shows (the button keeps its name). */
 function ibtn(icon, text, cls = 'btn btn-sm') {
-  const b = btn('', cls, text); b.removeAttribute('title');
+  const b = btn('', cls, text); b.dataset.tip = text;
   const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
@@ -151,7 +151,7 @@ function pattern(body, s, ctx) {
   let sel = -1, drag = null, board;
   const tray = el('div', 'dt-ptray'); tray.setAttribute('role', 'group'); tray.setAttribute('aria-label', W.board);
   for (const k of G.BLOCK_KINDS) {
-    const b = btn('', 'btn btn-sm dt-pbtn', `➕ ${W[k]}`); b.removeAttribute('title');
+    const b = btn('', 'btn btn-sm dt-pbtn', `➕ ${W[k]}`); b.title = W[k]; b.dataset.tip = W[k];
     const ic = svg('svg', { viewBox: '-1.2 -2 3.4 2.4', class: 'dt-pic', 'aria-hidden': 'true' });
     ic.appendChild(svg('polygon', { points: G.BLOCK_SHAPES[k].map(([x, y]) => `${x},${y}`).join(' '), class: `dt-blk4 dt-k-${k}` }));
     b.appendChild(ic);
@@ -179,9 +179,10 @@ function pattern(body, s, ctx) {
   T.draw = () => {
     turn.disabled = rm.disabled = !st.blocks[sel]; clear.disabled = !st.blocks.length;
     T.stage.textContent = '';
-    board = svg('svg', { viewBox: `0 0 ${BW * BU} ${BH * BU}`, class: 'dt-pboard', 'aria-label': W.board, role: 'group' });
+    // The board has a margin so the grid's edge dots show whole.
+    board = svg('svg', { viewBox: `-24 -24 ${BW * BU + 48} ${BH * BU + 48}`, class: 'dt-pboard', 'aria-label': W.board, role: 'group' });
     board.setAttribute('direction', 'ltr');
-    board.appendChild(svg('rect', { x: -30, y: -30, width: BW * BU + 60, height: BH * BU + 60, rx: 24, class: 'dt-pbg' }));
+    board.appendChild(svg('rect', { x: -24, y: -24, width: BW * BU + 48, height: BH * BU + 48, rx: 24, class: 'dt-pbg' }));
     let dots = '';
     for (let y = 0; y <= 10; y++) for (let x = y % 2; x <= 30; x += 2) dots += `M${(x / 2) * BU} ${y * (Math.sqrt(3) / 2) * BU}h0.01`;
     board.appendChild(svg('path', { d: dots, class: 'dt-pdots' }));
@@ -271,14 +272,17 @@ function angle(body, s, ctx) {
       let ticks = '';
       for (let d = 0; d <= (full ? 355 : 180); d += 5) { const r0 = d % 30 === 0 ? R - 22 : d % 10 === 0 ? R - 14 : R - 9, t = (d * Math.PI) / 180; ticks += `M${R * Math.cos(t)} ${-R * Math.sin(t)}L${r0 * Math.cos(t)} ${-r0 * Math.sin(t)}`; }
       face.appendChild(svg('path', { d: ticks, class: 'dt-ptick' }));
-      for (let d = 0; d <= (full ? 330 : 180); d += 30) { const t = (d * Math.PI) / 180, r = R - 42, flat = d === 0 || d === 180; face.appendChild(svg('text', { x: r * Math.cos(t), y: -r * Math.sin(t) + (flat ? -14 : 7), 'text-anchor': 'middle', class: 'dt-pnum' }, d)); }
+      // Numbers every 30°, or every 90° when the protractor is too small for them to sit apart.
+      const tsA = tsFor(T, vb[2], vb[3], 15), every = 15 * tsA * 2.2 > 67 ? 90 : 30;
+      for (let d = 0; d <= (full ? 330 : 180); d += every) { const t = (d * Math.PI) / 180, r = R - 42, flat = d === 0 || d === 180; face.appendChild(svg('text', { x: r * Math.cos(t), y: -r * Math.sin(t) + (flat ? -14 : 7), 'text-anchor': 'middle', class: 'dt-pnum' }, d)); }
     }
     if (st.arc && a > 0 && a < 360) {
       const r = 58, large = a > 180 ? 1 : 0;
       if (a === 90) face.appendChild(svg('path', { d: 'M34 0V-34H0', class: 'dt-aright' }));
       else face.appendChild(svg('path', { d: `M${r} 0A${r} ${r} 0 ${large} 0 ${r * Math.cos(rad)} ${-r * Math.sin(rad)}`, class: 'dt-aarc' }));
       const mid = rad / 2, lr = a < 40 ? 96 : 84;
-      face.appendChild(svg('text', { x: lr * Math.cos(mid), y: -lr * Math.sin(mid) + 8, 'text-anchor': 'middle', class: 'dt-alab' }, `${a}°`));
+      // The degrees by the arc only where they can't run into the protractor's numbers (the readout always has them).
+      if (tsFor(T, vb[2], vb[3], 15) < 1.5) face.appendChild(svg('text', { x: lr * Math.cos(mid), y: -lr * Math.sin(mid) + 8, 'text-anchor': 'middle', class: 'dt-alab' }, `${a}°`));
     } else if (st.arc && a === 360) face.appendChild(svg('circle', { r: 58, class: 'dt-aarc' }));
     face.appendChild(svg('line', { x1: 0, y1: 0, x2: 200, y2: 0, class: 'dt-ray' }));
     face.appendChild(svg('line', { x1: 0, y1: 0, x2: 200 * Math.cos(rad), y2: -200 * Math.sin(rad), class: 'dt-ray dt-ray2' }));
@@ -335,30 +339,53 @@ function solids(body, s, ctx) {
     anim = requestAnimationFrame(stepF);
   };
   foldB.addEventListener('click', () => goFold(st.fold >= 50 ? 0 : 100));
-  turnB.addEventListener('click', () => { st.yaw = (st.yaw + 30) % 360; T.commit(); });
+  turnB.addEventListener('click', () => { st.yaw = (st.yaw + 45) % 360; T.commit(); });
   /** Corners on screen: turn by yaw about the up axis, then tilt from above (the flat net) to the side (the solid). */
   const project = (p, yaw, pitch) => {
     const c = Math.cos(yaw), s2 = Math.sin(yaw), x = p[0] * c - p[1] * s2, y = p[0] * s2 + p[1] * c, z = p[2];
     const cp = Math.cos(pitch), sp = Math.sin(pitch);
     return { x, y: -(y * sp + z * cp), d: -y * cp + z * sp };
   };
-  const pitchAt = t => ((90 - 62 * t) * Math.PI) / 180;
+  const pitchAt = t => ((90 - 60 * t) * Math.PI) / 180;
   T.draw = () => {
     shape.value = st.shape; mark.value = st.mark;
     const l = foldB.querySelector('.dt-lbl'), i = foldB.querySelector('.dt-ic');
     const folding = st.fold < 50; l.textContent = folding ? W.fold : W.unfold; i.textContent = folding ? '📦' : '📄'; foldB.setAttribute('aria-label', folding ? W.fold : W.unfold);
-    const t = st.fold / 100, yaw = (st.yaw * Math.PI) / 180, model = G.solidModel(st.shape), info = G.SOLIDS[st.shape];
-    // One scale for the whole fold (the picture doesn't zoom while it folds).
+    const model = G.solidModel(st.shape), info = G.SOLIDS[st.shape], t = st.fold / 100;
+    // Never look along a side face (it would show as a line and the solid would look flat): turn a little further.
+    let yd = st.yaw;
+    const sides = info.curved ? [] : model.faces.map(f => { const P = f.v.map(i => model.v[i]); const u = [P[1][0] - P[0][0], P[1][1] - P[0][1], P[1][2] - P[0][2]], v = [P[2][0] - P[0][0], P[2][1] - P[0][1], P[2][2] - P[0][2]]; const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]; const L = Math.hypot(...n) || 1; return n.map(x => x / L); }).filter(n => Math.abs(n[2]) < 0.9);
+    // ...and show at least two side faces (looking straight at one face of a prism hides the rest).
+    const poor = d => { const a = (d * Math.PI) / 180, facing = sides.map(n => -(n[0] * Math.sin(a) + n[1] * Math.cos(a)) / (Math.hypot(n[0], n[1]) || 1));
+      return facing.some(f => Math.abs(f) < 0.26) || facing.filter(f => f > 0.26).length < Math.min(2, sides.length); };
+    for (let k = 0; k < 12 && poor(yd); k++) yd += 7;
+    const yaw = (yd * Math.PI) / 180;
+    // The solid or its net fills the model's area at every stage of the fold.
     let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
-    for (const tt of [0, 0.25, 0.5, 0.75, 1]) for (const f of G.foldPose(st.shape, tt)) for (const p of f) { const q = project(p, yaw, pitchAt(tt)); bx0 = Math.min(bx0, q.x); bx1 = Math.max(bx1, q.x); by0 = Math.min(by0, q.y); by1 = Math.max(by1, q.y); }
+    for (const f of G.foldPose(st.shape, t)) for (const p of f) { const q = project(p, yaw, pitchAt(t)); bx0 = Math.min(bx0, q.x); bx1 = Math.max(bx1, q.x); by0 = Math.min(by0, q.y); by1 = Math.max(by1, q.y); }
     const VW = 400, VH = 300, k = Math.min((VW - 40) / (bx1 - bx0), (VH - 40) / (by1 - by0)), ox = VW / 2 - ((bx0 + bx1) / 2) * k, oy = VH / 2 - ((by0 + by1) / 2) * k;
     const pose = G.foldPose(st.shape, t), pitch = pitchAt(t);
+    /** A face's real edges: every edge of a flat face; of a curved strip only the rims, and the cut while it is open. */
+    const realEdge = (F, e) => {
+      const f = F.f; if (!f.curved) return true;
+      const gi = F.fi, last = gi === model.faces.length - (st.shape === 'cylinder' ? 2 : 1), first = gi === 1;
+      const rim = st.shape === 'cylinder' ? e === 0 || e === 2 : e === 0;
+      const cut = t <= 0.98 && (st.shape === 'cylinder' ? (first && e === 3) || (last && e === 1) : (first && e === 2) || (last && e === 1));
+      return rim || cut;
+    };
     const faces = pose.map((pts, fi) => {
       const pr = pts.map(p => project(p, yaw, pitch));
       const n = (() => { const a = pts[0], b = pts[1], c = pts[2]; const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; const nn = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]; const L = Math.hypot(...nn) || 1; return nn.map(x => x / L); })();
       const light = Math.abs(n[2] * 0.7 + n[0] * 0.4 + n[1] * 0.3);
-      return { fi, pr, depth: pr.reduce((a, q) => a + q.d, 0) / pr.length, light, f: model.faces[fi] };
+      return { fi, pr, n, depth: pr.reduce((a, q) => a + q.d, 0) / pr.length, light, f: model.faces[fi] };
     }).sort((a, b) => a.depth - b.depth);
+    // Folded, the solid is closed: only the faces turned towards us are painted (back faces drawn first anyway, by
+    // depth), and the edges hidden behind it are dashed, as in a maths book. Faces' corners run outwards (tested).
+    const closed = t > 0.98, cam = [-Math.sin(yaw) * Math.cos(pitch), -Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch)];
+    for (const F of faces) F.front = F.n[0] * cam[0] + F.n[1] * cam[1] + F.n[2] * cam[2] > 1e-6;
+    const edgeKey = (f, e) => { const a = f.v[e], b = f.v[(e + 1) % f.v.length]; return a < b ? `${a}-${b}` : `${b}-${a}`; };
+    const frontEdges = new Set(faces.filter(F => F.front).flatMap(F => F.f.v.map((_, e) => edgeKey(F.f, e))));
+    let hidden = '';
     T.stage.textContent = '';
     const ts = tsFor(T, VW, VH);
     view = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-solid', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.view, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': st.fold, 'aria-valuetext': fill(W.folded, { n: st.fold }), style: `--ts:${ts.toFixed(3)}` });
@@ -369,21 +396,16 @@ function solids(body, s, ctx) {
     const flatIndex = new Map(model.faces.map((f, i) => [i, f.curved ? 0 : ++flatNo]));
     for (const F of faces) {
       const f = F.f, g = svg('g', {});
+      if (closed && !F.front) {
+        f.v.forEach((_, e) => { if (realEdge(F, e) && !frontEdges.has(edgeKey(f, e))) hidden += `M${P(F.pr[e])}L${P(F.pr[(e + 1) % f.v.length])}`; });
+        continue;
+      }
       const tint = f.curved ? 0 : (F.fi % FACE_TINTS);
       g.appendChild(svg('polygon', { points: F.pr.map(P).join(' '), class: `dt-sface dt-st${tint}${f.curved ? ' is-curved' : ''}`, style: `--l:${(0.72 + 0.28 * F.light).toFixed(2)}` }));
       // Curved surfaces are many thin strips: draw only their real edges (the rims and the cut).
       let edges = '';
-      const vs = f.v, m = vs.length;
-      for (let e = 0; e < m; e++) {
-        const a = F.pr[e], b = F.pr[(e + 1) % m];
-        if (f.curved) {
-          const gi = F.fi, last = gi === model.faces.length - (st.shape === 'cylinder' ? 2 : 1), first = gi === 1;
-          const rim = st.shape === 'cylinder' ? e === 0 || e === 2 : e === 0;
-          const cut = st.shape === 'cylinder' ? (first && e === 3) || (last && e === 1) : (first && e === 2) || (last && e === 1);
-          if (!rim && !cut) continue;
-        }
-        edges += `M${P(a)}L${P(b)}`;
-      }
+      const m = f.v.length;
+      for (let e = 0; e < m; e++) if (realEdge(F, e)) edges += `M${P(F.pr[e])}L${P(F.pr[(e + 1) % m])}`;
       if (edges) g.appendChild(svg('path', { d: edges, class: `dt-sedge${st.mark === 'edges' ? ' is-marked' : ''}` }));
       if (st.mark === 'faces' && (!f.curved || F.fi === 1)) {
         const c = F.pr.reduce((acc, q) => ({ x: acc.x + q.x / F.pr.length, y: acc.y + q.y / F.pr.length }), { x: 0, y: 0 });
@@ -391,6 +413,7 @@ function solids(body, s, ctx) {
       }
       view.appendChild(g);
     }
+    if (hidden) view.appendChild(svg('path', { d: hidden, class: `dt-sedge dt-shidden${st.mark === 'edges' ? ' is-marked' : ''}` }));
     if (st.mark === 'vertices' && t > 0.98 && !info.curved) for (const v of model.v) { const q = project(v, yaw, pitch); view.appendChild(svg('circle', { cx: ox + q.x * k, cy: oy + q.y * k, r: 8, class: 'dt-svx' })); }
     if (st.mark === 'vertices' && t > 0.98 && st.shape === 'cone') { const q = project(model.v[nVerts], yaw, pitch); view.appendChild(svg('circle', { cx: ox + q.x * k, cy: oy + q.y * k, r: 8, class: 'dt-svx' })); }
     const box = el('div', 'dt-solidwrap'); box.appendChild(view); T.stage.appendChild(box);
@@ -662,18 +685,20 @@ function algebra(body, s, ctx) {
 
 // ================================================================ 8. coins and money (our own simple designs, never real coin pictures)
 const METAL = v => (v < 5 ? 'cu' : v < 100 ? 'ag' : 'au');
-function coinSvg(cur, d, size = 64) {
-  const face = G.faceText(cur, d.v);
+/** A coin or note of our own design. under: lying under another in a pile (its value is shown on the top one only). */
+function coinSvg(cur, d, size = 64, under = false) {
+  const face = under ? '' : G.faceText(cur, d.v);
   if (d.note) {
     const sv = svg('svg', { viewBox: '0 0 120 64', class: `dt-note dt-note${d.v >= 2000 ? 3 : d.v >= 1000 ? 2 : 1}`, width: size * 1.6, height: size * 0.86, 'aria-hidden': 'true' });
     sv.append(svg('rect', { x: 2, y: 2, width: 116, height: 60, rx: 8, class: 'dt-notebg' }), svg('rect', { x: 9, y: 9, width: 102, height: 46, rx: 5, class: 'dt-noteframe' }),
-      svg('path', { d: 'M26 22l3.5 7 7.5 1-5.5 5 1.4 7.5-6.9-3.7-6.9 3.7 1.4-7.5-5.5-5 7.5-1z', class: 'dt-notestar' }), svg('text', { x: 78, y: 41, 'text-anchor': 'middle', class: 'dt-notet' }, face));
+      svg('path', { d: 'M26 22l3.5 7 7.5 1-5.5 5 1.4 7.5-6.9-3.7-6.9 3.7 1.4-7.5-5.5-5 7.5-1z', class: 'dt-notestar' }));
+    if (face) sv.appendChild(svg('text', { x: 78, y: 41, 'text-anchor': 'middle', class: 'dt-notet' }, face));
     return sv;
   }
   const r = 30 - (cur === 'gen' ? 0 : Math.max(0, 5 - String(d.v).length * 2));
   const sv = svg('svg', { viewBox: '0 0 64 64', class: `dt-coin dt-${METAL(d.v)}`, width: size, height: size, 'aria-hidden': 'true' });
-  sv.append(svg('circle', { cx: 32, cy: 32, r, class: 'dt-coinrim' }), svg('circle', { cx: 32, cy: 32, r: r - 5, class: 'dt-coinface' }),
-    svg('text', { x: 32, y: 32 + (face.length > 3 ? 5 : 7), 'text-anchor': 'middle', class: `dt-coint${face.length > 3 ? ' is-long' : ''}` }, face));
+  sv.append(svg('circle', { cx: 32, cy: 32, r, class: 'dt-coinrim' }), svg('circle', { cx: 32, cy: 32, r: r - 5, class: 'dt-coinface' }));
+  if (face) sv.appendChild(svg('text', { x: 32, y: 32 + (face.length > 3 ? 5 : 7), 'text-anchor': 'middle', class: `dt-coint${face.length > 3 ? ' is-long' : ''}` }, face));
   return sv;
 }
 function coins(body, s, ctx) {
@@ -713,7 +738,7 @@ function coins(body, s, ctx) {
         if (!st.counts[i]) return;
         const g = btn('', 'dt-mstack', `${fill(W.removed, { m: money(d.v) })} (${st.counts[i]})`); g.removeAttribute('title');
         const pile = el('span', 'dt-mpile'); pile.style.setProperty('--n', Math.min(st.counts[i], 6));
-        for (let k = 0; k < Math.min(st.counts[i], 6); k++) pile.appendChild(coinSvg(st.cur, d, 44));
+        for (let k = 0, m = Math.min(st.counts[i], 6); k < m; k++) pile.appendChild(coinSvg(st.cur, d, 44, k < m - 1));
         g.append(pile, ltr('b', 'dt-mn', `× ${st.counts[i]}`));
         if (ctx.editing) g.disabled = true;
         g.addEventListener('click', () => { st.counts[i]--; T.commit(`${fill(W.removed, { m: money(d.v) })}. ${W.total}: ${money(G.moneyTotal(st.cur, st.counts))}`); });
@@ -723,7 +748,7 @@ function coins(body, s, ctx) {
       wrap.append(tray, mat);
     } else {
       const f = G.fewest(st.cur, Math.max(0, st.paid - st.cost)), mat = el('div', 'dt-mmat dt-mchange');
-      ds.forEach((d, i) => { if (!f[i]) return; const g = el('div', 'dt-mstack is-static'); const pile = el('span', 'dt-mpile'); pile.style.setProperty('--n', Math.min(f[i], 6)); for (let k = 0; k < Math.min(f[i], 6); k++) pile.appendChild(coinSvg(st.cur, d, 44)); g.append(pile, ltr('b', 'dt-mn', `× ${f[i]}`)); mat.appendChild(g); });
+      ds.forEach((d, i) => { if (!f[i]) return; const g = el('div', 'dt-mstack is-static'); const pile = el('span', 'dt-mpile'); pile.style.setProperty('--n', Math.min(f[i], 6)); for (let k = 0, m = Math.min(f[i], 6); k < m; k++) pile.appendChild(coinSvg(st.cur, d, 44, k < m - 1)); g.append(pile, ltr('b', 'dt-mn', `× ${f[i]}`)); mat.appendChild(g); });
       const steps = G.countUp(st.cur, st.cost, st.paid);
       const chain = ltr('p', 'dt-mchain');
       if (steps && steps.length) chain.textContent = [money(st.cost), ...steps.map(x => money(x.to))].join(' → ');

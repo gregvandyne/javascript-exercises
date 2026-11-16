@@ -77,7 +77,7 @@ function shell(body, s, ctx, id) {
       const bs = options.map(([v, text, aria, icon]) => {
         const b = btn(icon ? '' : text, 'btn btn-sm', aria);
         // An icon and its words; on a narrow widget only the icon shows (the button keeps its name).
-        if (icon) { const i = el('span', 'dt-ic', icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); b.removeAttribute('title'); }
+        if (icon) { const i = el('span', 'dt-ic', icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); b.title = text; b.dataset.tip = text; }
         b.addEventListener('click', () => set(v)); g.appendChild(b); return [v, b];
       });
       g.sync = () => { for (const [v, b] of bs) b.setAttribute('aria-pressed', String(get() === v)); };
@@ -124,7 +124,7 @@ function shell(body, s, ctx, id) {
         const one = games.length === 1, a = el(one ? 'a' : 'button', 'btn btn-sm dt-practice');
         const name = one ? fill(C.practiceName, { title: games[0].title }) : C.practice;
         if (one) a.href = games[0].href; else a.type = 'button';
-        a.setAttribute('aria-label', name); a.title = name;
+        a.setAttribute('aria-label', name); a.title = name; a.dataset.tip = name;
         const i = el('span', 'dt-ic', '🎮'), l = el('span', 'dt-lbl', C.practice); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         a.append(i, l);
         if (!one) a.addEventListener('click', () => {
@@ -136,7 +136,7 @@ function shell(body, s, ctx, id) {
         foot.appendChild(a);
       }
       if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.ask) {
-        ask = btn('', 'btn btn-sm dt-ask', C.ask);
+        ask = btn('', 'btn btn-sm dt-ask', C.ask); ask.dataset.tip = C.ask;
         const i = el('span', 'dt-ic', '❓'), l = el('span', 'dt-lbl', C.ask); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         ask.append(i, l);
         ask.addEventListener('click', () => askSheet(ctx, T.question()));
@@ -347,8 +347,10 @@ function numline(body, s, ctx) {
     tools.sync(); clear.disabled = !st.points.length && !st.jumps.length;
     if (cursor === null || cursor < lo() || cursor > hi()) cursor = Math.max(lo(), Math.min(hi(), 0));
     T.stage.textContent = '';
-    const ts = T.ts(1000, 176, 22, 13);
-    line = svg('svg', { viewBox: '0 0 1000 176', class: 'dt-nl', style: `--ts:${ts.toFixed(3)}`, role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.cursor, 'aria-valuemin': lo(), 'aria-valuemax': hi(), 'aria-valuenow': cursor, 'aria-valuetext': label(cursor) });
+    // Stage 4 review: with no jumps the room for arcs above the line is left out, so the line fills a wide, short tool.
+    const vbY = st.jumps.length ? 0 : 58, vbH = 176 - vbY;
+    const ts = T.ts(1000, vbH, 22, 13);
+    line = svg('svg', { viewBox: `0 ${vbY} 1000 ${vbH}`, class: 'dt-nl', style: `--ts:${ts.toFixed(3)}`, role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.cursor, 'aria-valuemin': lo(), 'aria-valuemax': hi(), 'aria-valuenow': cursor, 'aria-valuetext': label(cursor) });
     line.setAttribute('direction', 'ltr');
     const x = t => M.tickX(t, lo(), hi(), X0, X1);
     line.appendChild(svg('line', { x1: X0 - 24, x2: X1 + 24, y1: Y, y2: Y, class: 'dt-axis' }));
@@ -382,7 +384,10 @@ function numline(body, s, ctx) {
       // 0 + 3/4 + 3/4 + 3/4 = 2 1/4 (a jump back is a minus)
       big.textContent = `${label(chain[0].a)}${chain.map(j => ` ${j.b >= j.a ? '+' : '−'} ${M.tickLabel(Math.abs(j.b - j.a), st.sub, st.mode)}`).join('')} = ${label(chain[chain.length - 1].b)}`;
       T.read.append(big, el('div', 'dt-sub', fill(W.jumped, { a: iso(label(last.a)), b: iso(label(last.b)), d: iso(M.jumpLabel(last.a, last.b, st.sub, st.mode)) })));
-    } else { big.textContent = label(cursor); T.read.append(big, el('div', 'dt-sub', start !== null ? fill(W.jumpFrom, { v: iso(label(start)) }) : W.hint)); }
+    } else {
+      // Stage 4 review: no lone number under the line (it read as a label); the cursor is on the line and in its slider value.
+      T.read.append(el('div', 'dt-sub', start !== null ? fill(W.jumpFrom, { v: iso(label(start)) }) : W.hint));
+    }
   };
   /** The last jumps that follow on from each other (0 → 1/4 → 1/2...). */
   const contiguous = js => { const out = [js[js.length - 1]]; for (let i = js.length - 2; i >= 0 && js[i].b === out[0].a; i--) out.unshift(js[i]); return out; };
@@ -578,10 +583,10 @@ function graph(body, s, ctx) {
     const max = Math.max(...rows.map(r => r.v));
     const n = rows.length, Wd = 640, H = 360, L = 56, R = 16, Tp = 18, cw = (Wd - L - R) / n;
     // The title sits above the chart, so the chart is drawn a little smaller than its viewBox suggests: measure with room.
-    const ts = T.ts(Wd, H + 70, 20, document.body.classList.contains('dash-projector') ? 10.5 : 13);
+    const ts = T.ts(Wd, H + 70, 20, document.body.classList.contains('dash-projector') ? 11.5 : 13);
     // Category labels are never cut: they wrap onto two lines (three at most) and shrink, never below 12px (13 on the
     // projector).
-    const px = T.scale(Wd, H + 70) || 1, floor = (document.body.classList.contains('dash-projector') ? 14 : 13) / px;
+    const px = T.scale(Wd, H + 70) || 1, floor = (document.body.classList.contains('dash-projector') ? 15 : 13.5) / px;
     // Whole words only: a word longer than the column means the labels turn instead.
     const wrap = (text, f, max) => {
       const room = Math.max(1, Math.floor((cw * 0.94) / (f * 0.58))), out = [];

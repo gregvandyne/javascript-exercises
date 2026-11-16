@@ -76,7 +76,7 @@ export const TOOL_SPECS = {
     fix: s => { for (const b of s.blocks) if ((b.x + b.y) % 2) b.x += b.x < 30 ? 1 : -1; },
   },
   angle: { spec: { a: ['int', 0, 360, 50], proto: ['bool', true], step: ['enum', [1, 5, 15], 5], arc: ['bool', true] } },
-  solids: { spec: { shape: ['enum', ['cube', 'cuboid', 'triprism', 'hexprism', 'sqpyramid', 'tripyramid', 'cylinder', 'cone'], 'cube'], fold: ['int', 0, 100, 100], yaw: ['int', 0, 359, 30],
+  solids: { spec: { shape: ['enum', ['cube', 'cuboid', 'triprism', 'hexprism', 'sqpyramid', 'tripyramid', 'cylinder', 'cone'], 'cube'], fold: ['int', 0, 100, 100], yaw: ['int', 0, 359, 35],
     mark: ['enum', ['none', 'faces', 'edges', 'vertices'], 'none'] } },
   transform: {
     spec: { shape: ['enum', ['tri', 'flag', 'ell', 'arrow'], 'tri'], ox: ['int', -9, 7, 0], oy: ['int', -9, 7, 0], op: ['enum', ['translate', 'reflect', 'rotate'], 'translate'],
