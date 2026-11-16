@@ -1718,3 +1718,4 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 @container (max-width:420px){.dt .input.dt-bbox{width:2.6em}.dt-bsent{gap:4px;padding:2px 4px}}
 @container (max-width:520px){.dt-bars .dt-steplab{display:none}}
 .dash-projector .dt .input.dt-bsta{font-size:1.05rem}
+@media (max-width:719px){.dt-bars .dt-steplab{display:inline}}
