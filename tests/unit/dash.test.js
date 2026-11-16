@@ -121,6 +121,14 @@ test('who can open a class dashboard: its teacher and students; everyone else ge
   assert.doesNotMatch((await as(w.SA)(`/class/${w.A.id}`)).text, /id="class-dash-link"/, 'a school admin who does not teach it has no dashboard link');
 });
 
+test('the dashboard says whether the school\'s time zone is set (unset: the page follows the browser\'s own zone)', async () => {
+  const w = world();
+  const url = `/class/${w.A.id}/dashboard`;
+  for (const who of [w.T, w.a1]) assert.match((await as(who)(url)).text, /"tz":"America\/New_York","tzSet":false/);
+  assert.ok(S.updateSchool(boss, w.oak.id, { settings: { timeZone: 'Europe/Berlin' } }).ok);
+  for (const who of [w.T, w.a1]) assert.match((await as(who)(url)).text, /"tz":"Europe\/Berlin","tzSet":true/);
+});
+
 test('only the class\'s teacher changes layouts, pushes, approves links or starts Eyes up', async () => {
   const w = world();
   await as(w.T)(`/class/${w.A.id}/dashboard`);

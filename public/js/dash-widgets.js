@@ -309,12 +309,12 @@ function schedule(body, s, ctx) {
     if (r.cur >= 0) msg = `${W.now}: ${periods[r.cur].name || '…'} · ${fill(W.left, { n: Math.ceil(r.left) })}`;
     else if (r.next >= 0) msg = `${r.next === 0 ? W.before : W.next}: ${periods[r.next].name || '…'} · ${at(periods[r.next].start)}`;
     else msg = W.after;
-    if (msg !== last) {
-      last = msg; status.textContent = msg;
-      // The period on now (or the next one) in view, when the list is longer than the widget.
-      const row = rows[r.cur >= 0 ? r.cur : r.next];
-      if (row && ol.scrollHeight > ol.clientHeight) ol.scrollTop = Math.max(0, row.offsetTop - ol.offsetTop - 4);
-    }
+    // The period on now (or the next one) in view when the list is longer than the widget: the list rests on that row
+    // (snapRows in public/js/dash.js scrolls to it and cuts the list at whole rows from there; the rows above fade).
+    // Set before the text changes, so the cut that the change sets off already rests on it.
+    // After the last period, the end of the day.
+    ol.snapTo = rows[r.cur >= 0 ? r.cur : r.next >= 0 ? r.next : rows.length - 1] || null;
+    if (msg !== last) { last = msg; status.textContent = msg; }
   };
   tick();
   return { tick };
@@ -332,7 +332,14 @@ function nowNext(body, periods, at, ctx) {
     const now = minutesIn(ctx.tz || 'America/New_York'), r = periodAt(periods, now);
     const nextI = r.cur >= 0 ? (r.cur + 1 < periods.length ? r.cur + 1 : -1) : r.next;
     const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) return; last = key;
-    a.h.textContent = r.cur >= 0 ? W.now : r.next >= 0 ? (r.next === 0 ? W.before : W.next) : W.now;
+    // The next period starts as this one ends: its start time says nothing "minutes left" does not, so the card leaves it
+    // out (public/css/dash.css) and both cards fit a short widget.
+    b.c.classList.toggle('is-follows', r.cur >= 0 && nextI >= 0 && periods[nextI].start === periods[r.cur].end);
+    // Only a period on now is lit as "now". Before school (or in a gap) the card says what comes first and when; after
+    // the last period it is a calm end of the day, with no "Now" over it.
+    a.c.classList.toggle('is-now', r.cur >= 0); a.c.classList.toggle('is-done', r.cur < 0 && r.next < 0);
+    a.h.hidden = r.cur < 0 && r.next < 0;
+    a.h.textContent = r.cur >= 0 ? W.now : r.next >= 0 ? (r.next === 0 ? W.before : W.next) : '';
     if (r.cur >= 0) { a.n.textContent = periods[r.cur].name || '…'; a.m.textContent = fill(W.left, { n: Math.ceil(r.left) }); }
     else if (r.next >= 0) { a.n.textContent = periods[r.next].name || '…'; a.m.textContent = fill(W.starts, { time: at(periods[r.next].start) }); }
     else { a.n.textContent = W.after; a.m.textContent = ''; }
@@ -340,9 +347,24 @@ function nowNext(body, periods, at, ctx) {
     b.h.textContent = W.next;
     if (nextI >= 0) { b.n.textContent = periods[nextI].name || '…'; b.m.textContent = fill(W.starts, { time: at(periods[nextI].start) }); }
     else { b.n.textContent = W.nothingNext; b.m.textContent = ''; }
+    fit();
   };
+  // The cards hold their whole text, never cut. When it is more than the widget holds (long names in a small widget),
+  // the names get smaller in steps (never under 13px, public/css/dash.css --nnk); if that is not enough, the "next"
+  // card steps aside and "now" keeps the widget.
+  const over = () => body.scrollHeight > body.clientHeight + 1;
+  const fit = () => {
+    if (!body.isConnected) return;
+    body.style.setProperty('--nnk', '1'); b.c.classList.remove('is-out');
+    for (let k = 9; over() && k >= 6; k--) body.style.setProperty('--nnk', String(k / 10));
+    if (over() && !b.c.hidden) b.c.classList.add('is-out');
+  };
+  const watch = typeof ResizeObserver === 'function' ? new ResizeObserver(() => fit()) : null;
+  // (The cards too: the type settles to the widget's size, and the font arrives, after the widget is drawn.)
+  for (const x of [body, a.c, b.c]) watch?.observe(x);
+  document.fonts?.ready.then(fit);
   tick();
-  return { tick };
+  return { tick, destroy: () => watch?.disconnect() };
 }
 
 // ---------------------------------------------------------------- weather (from the server, never the browser's place)

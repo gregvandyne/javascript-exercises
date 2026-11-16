@@ -6761,6 +6761,47 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
 
+## Classroom dashboards: the schedule at every time of day (16 Nov 2026)
+The schedule failed the fit check at some times of day and not others (a period row cut in half on the projector, a list
+with rows hidden above and no fade, "now and next" too tall at its smallest in the first period). Real bugs a class
+could see at those times, not flakes: the check ran with the real clock, so it saw a different schedule each run.
+- **Causes.** (1) The list scrolled the period on now into view itself (`scrollTop = row.offsetTop - 4`), and only
+  when its status line changed (a minute later, since the first draw happens before the widget is on the page), while
+  the whole-rows cut (`snapRows`) was worked out for the list at its top: once scrolled, rows were sliced at both
+  edges. (2) Scrolled to its end, the list cleared its fade (`at-end`) although rows were hidden above, with nothing
+  saying so. (3) On the projector the rows' type settles to the widget's new size a frame after the widget is resized
+  (container units), after the list was cut, and nothing cut it again: the widget's own size had not changed. (4) "Now
+  and next": its two cards were fixed at 3 : 2 of the widget (`minmax(0, …)` rows; the short layout's rows never
+  applied, since the widget's body is its own size container and a container query never matches the container
+  itself), so a card whose text wrapped (a long first period, "Morgenkreis und Begrüßung", or "Danach kommt nichts
+  mehr") ran over the other card or out of the widget.
+- **Fixes.** A list may name the row it rests on (`snapTo`; the schedule names the period on now, else the next one,
+  else after school the last one). `snapRows` then scrolls it to that row's top and cuts it at the last whole row
+  below; near the end it rests at its end, starting at a row's top, so whole rows still fill it. Rows hidden above get
+  a lighter, shorter fade at the top edge (`at-top`, set with `at-end`), so the lit row it rests on still reads
+  clearly. Each scrolling list watches its rows' sizes and is cut again when one changes. "Now and next" cards share
+  the height 3 : 2 but are never shorter than their text; the next card leaves out its start time when it is the time
+  the period on now ends ("15 min left" already says it); and when the text is still more than the widget holds, the
+  names get smaller in steps (never under 13px), and as a last step the next card steps aside so "now" keeps the
+  widget. Nothing is cut.
+- **"Now and next" out of school hours.** Only a period on now is lit and labelled "Now". Before the first period (or
+  in a gap) the card says "First up" / "Next", the period and when it starts; after the last one it is a calm end of
+  the day ("That's the end of today's schedule.", no label, not lit). No new words.
+- **One time zone on the dashboard.** A teacher saw "end of the day" at 11:19 in the morning: their school has no time
+  zone set, so the schedule ran on the fallback (America/New_York) while the top bar's clock showed the browser's own
+  time. The page now says whether the school's zone is set (`tzSet`); when it is not, the whole dashboard (top bar
+  clock, schedule, calendar, countdowns) uses the browser's zone, and when it is, the top bar's clock uses the
+  school's zone too. The server's school day for unset schools is unchanged (New York). The ready-made "Morning start"
+  sample day already runs 08:30-14:45 (`TPL_PERIODS`), so it was the zone, not the sample periods.
+- **The fit check pins the clock** (Playwright's `page.clock`, at today's date in the school's time zone, with the
+  browser in that zone). The page opens 40 s before the time checked and the clock then moves on a minute, as in a
+  classroom where the dashboard stays open (the old list only scrolled at a minute's turn). Every layout is checked at
+  `AT` (default 10:20, the list resting scrolled down). The schedule's own layouts (`sched-HHMM`: list and "now and
+  next" at the default, smallest, 3 × 3 and a wide short size) are checked at each time in `SCHED_AT`: 07:30 (before
+  school), 08:05 and 08:19 (the first period), 09:10 (the break), 10:20 (mid-day), 11:30 (the last period), 12:30
+  (after school). A list now also fails when a row is sliced by its top edge while it rests scrolled down, or when it
+  has rows above and no fade there; "more below" is what is below where it rests.
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or

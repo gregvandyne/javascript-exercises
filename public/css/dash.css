@@ -1485,21 +1485,30 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dw5-clfoot{justify-content:space-between}
 .dw5-clcount{font-weight:700;color:var(--text-2)}
 /* now and next */
-.dw-nownext{display:grid;grid-template-rows:minmax(0,3fr) minmax(0,2fr);gap:var(--s2)}
-.dw5-nn{display:flex;flex-direction:column;justify-content:safe center;gap:2px;min-height:0;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+/* the cards share the height 3 : 2, each at least as tall as its text at its width (the body is the widget's own size
+   container, so the short layout below cannot change the body itself, only the cards) */
+.dw-nownext{display:flex;flex-direction:column}
+.dw5-nn+.dw5-nn{margin-top:var(--s2)}
+.dw5-nn{display:flex;flex-direction:column;justify-content:safe center;gap:2px;flex:3 1 0;min-height:auto;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-nn.is-next{flex-grow:2}
+/* the next period starts as the one on now ends: "15 min left" already says when (public/js/dash-widgets.js) */
+.dw5-nn.is-next.is-follows .dw5-nnmeta{display:none}
 .dw5-nn.is-now{background:var(--current);color:var(--on-current)}
-.dw5-nn[hidden]{display:none}
+.dw5-nn[hidden],.dw5-nnlab[hidden]{display:none}
+.dw5-nn.is-done{justify-content:safe center;text-align:center}
+.dw5-nn.is-done .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem);font-weight:700}
 .dw5-nnlab{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(.8rem,min(6cqh,4cqi),1.1rem);opacity:.9}
-.dw5-nnname{font-size:clamp(1.1rem,min(13cqh,8cqi),3rem);line-height:1.1;overflow-wrap:anywhere}
-.dw5-nn.is-next .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem)}
+.dw5-nnname{font-size:max(13px,calc(clamp(1.1rem,min(13cqh,8cqi),3rem) * var(--nnk,1)));line-height:1.1;overflow-wrap:anywhere}
+.dw5-nn.is-next .dw5-nnname{font-size:max(13px,calc(clamp(1rem,min(9cqh,6cqi),2rem) * var(--nnk,1)))}
+.dw5-nn.is-out{display:none}
 .dw5-nnmeta{font-weight:700;font-size:clamp(.85rem,min(6cqh,4cqi),1.3rem)}
-/* a short schedule: each card is one line (it wraps rather than hide anything) */
+/* a short schedule: each card on one line where it fits (it wraps; public/js/dash-widgets.js nowNext fits the rest) */
 @container (max-height:170px){
-  .dw-nownext{grid-template-rows:auto auto;align-content:center;align-items:start}
-  .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;padding:4px 10px}
+  .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;align-content:center;padding:2px 10px}
   .dw5-nnlab{font-size:.8rem}
-  .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:1.05rem}
+  .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:max(13px,calc(1.05rem * var(--nnk,1)))}
   .dw5-nnmeta{font-size:.85rem}
+  .dw5-nn+.dw5-nn{margin-top:4px}
 }
 /* settings editors */
 .dash-fieldmsg{margin:0;font-weight:700}
@@ -1511,7 +1520,6 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
   .dw-vframe,.dw5-siteframe,.dw5-camstage{flex:none;height:auto;aspect-ratio:16/10}
   .dw5-camstage{container-type:size}
   .dw5-bstage{flex:none;height:220px;container-type:size}
-  .dw-nownext{grid-template-rows:auto auto}
   .dw5-nn{min-height:96px}
   .dw5-emptybox{flex:none}
 }
@@ -1520,6 +1528,10 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 /* Stage 5 review: a list that scrolls holds whole rows only (public/js/dash.js snapRows) and fades softly at its bottom
    edge while there is more below, so it reads as "scroll for more", never as cut off. */
 .dw-scroll.is-scrolly:not(.at-end){-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35));mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35))}
+/* rows above too (the schedule rests on the period on now): a lighter, shorter fade at the top edge, so the row it rests
+   on (often the lit period on now) still reads clearly */
+.dw-scroll.is-scrolly:not(.at-top){-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px);mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px)}
+.dw-scroll.is-scrolly:not(.at-top):not(.at-end){-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px,#000 calc(100% - 20px),rgba(0,0,0,.35));mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px,#000 calc(100% - 20px),rgba(0,0,0,.35))}
 /* the mood check-in on the projector: only how many have checked in, big, and a note where the counts are */
 .dw5-moodhidden{margin:0;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(6cqh,4cqi),1.2rem);text-align:center}
 .dash-projector .dw-mood{justify-content:safe center;align-items:center;text-align:center}
