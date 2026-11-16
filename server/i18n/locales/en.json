@@ -10298,7 +10298,8 @@
         "moved": "{l} moved to place {n}",
         "hint": "Tap or drag letters to build a word.",
         "onset": "?",
-        "full": "The word is full."
+        "full": "The word is full.",
+        "instr": "Drag or tap letters into the box to make a word."
       },
       "organizer": {
         "name": "Graphic organizer",
@@ -10334,7 +10335,12 @@
         "step": "Step {n}",
         "editHint": "Tap a box to write in it.",
         "note": "What you write stays on this screen and in the copies you send. Students' copies are their own: what they write never comes back.",
-        "save": "Save"
+        "save": "Save",
+        "addStep": "Add a step",
+        "addDetail": "Add a detail",
+        "remove": "Take away {name}",
+        "added": "Added {name}",
+        "removed": "Took away {name}"
       },
       "map": {
         "name": "Maps",

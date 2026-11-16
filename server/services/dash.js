@@ -67,9 +67,9 @@ const TOOL_WORDS = {
   algebra: ['x2', 'x', 'one', 'pos', 'neg', 'flip', 'zero', 'clear', 'raw', 'simple', 'pairs', 'mat', 'tile', 'added', 'removed', 'hint', 'empty', 'full'],
   coins: ['count', 'change', 'total', 'cost', 'paid', 'changeIs', 'countUp', 'fewest', 'clear', 'cur', 'auto', 'usd', 'eur', 'gbp', 'gen', 'notEnough', 'tray', 'mat', 'added', 'removed', 'empty', 'mode', 'units'],
   chance: ['coin', 'dice', 'spinner', 'one', 'two', 'parts', 'run', 'trials', 'reset', 'heads', 'tails', 'got', 'expected', 'chart', 'hint', 'sum', 'part', 'runs', 'kind', 'none'],
-  letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full'],
+  letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full', 'instr'],
   organizer: ['kind', 'venn', 'tchart', 'kwl', 'story', 'main', 'seq', 'title', 'edit', 'heading', 'text', 'boxes', 'empty', 'a', 'b', 'both', 'left', 'right', 'know', 'want', 'learned',
-    'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save'],
+    'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save', 'addStep', 'addDetail', 'remove', 'added', 'removed'],
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };

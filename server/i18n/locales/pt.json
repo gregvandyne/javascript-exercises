@@ -9876,7 +9876,8 @@
         "moved": "{l} movida para o lugar {n}",
         "hint": "Toque ou arraste letras para formar uma palavra.",
         "onset": "?",
-        "full": "A palavra está cheia."
+        "full": "A palavra está cheia.",
+        "instr": "Arraste ou toque nas letras para as pôr na caixa e formar uma palavra."
       },
       "organizer": {
         "name": "Organizador gráfico",
@@ -9912,7 +9913,12 @@
         "step": "Passo {n}",
         "editHint": "Toque numa caixa para escrever nela.",
         "note": "O que você escreve fica nesta tela e nas cópias que envia. As cópias dos alunos são deles: o que escrevem nunca volta.",
-        "save": "Guardar"
+        "save": "Guardar",
+        "addStep": "Pôr um passo",
+        "addDetail": "Pôr um detalhe",
+        "remove": "Tirar {name}",
+        "added": "Pôs: {name}",
+        "removed": "Tirou: {name}"
       },
       "map": {
         "name": "Mapas",

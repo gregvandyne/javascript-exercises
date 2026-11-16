@@ -9875,7 +9875,8 @@
         "moved": "{l} an Stelle {n} verschoben",
         "hint": "Tippe oder ziehe Buchstaben, um ein Wort zu bauen.",
         "onset": "?",
-        "full": "Das Wort ist voll."
+        "full": "Das Wort ist voll.",
+        "instr": "Ziehe Buchstaben in den Kasten oder tippe sie an, um ein Wort zu bauen."
       },
       "organizer": {
         "name": "Grafischer Organizer",
@@ -9911,7 +9912,12 @@
         "step": "Schritt {n}",
         "editHint": "Tippe einen Kasten an, um hineinzuschreiben.",
         "note": "Was du schreibst, bleibt auf diesem Bildschirm und in den Kopien, die du schickst. Die Kopien der Kinder gehören ihnen: Was sie schreiben, kommt nie zurück.",
-        "save": "Speichern"
+        "save": "Speichern",
+        "addStep": "Schritt dazu",
+        "addDetail": "Detail dazu",
+        "remove": "{name} wegnehmen",
+        "added": "{name} dazugekommen",
+        "removed": "{name} weggenommen"
       },
       "map": {
         "name": "Karten",
