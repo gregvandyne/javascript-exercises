@@ -9047,7 +9047,8 @@
         "name": "今日課表",
         "desc": "今天的節次，正在上的那一節會亮起來。",
         "s": {
-          "periods": "節次"
+          "periods": "節次",
+          "view": "顯示"
         },
         "empty": "在「編輯畫面」加入今天的節次。",
         "now": "現在",
@@ -9059,7 +9060,15 @@
         "period": "節次",
         "from": "從",
         "to": "到",
-        "remove": "移除這一節"
+        "remove": "移除這一節",
+        "o": {
+          "view": {
+            "list": "一整天",
+            "nownext": "現在和接下來"
+          }
+        },
+        "nothingNext": "之後沒有了",
+        "starts": "{time} 開始"
       },
       "weather": {
         "name": "天氣",
@@ -9327,12 +9336,41 @@
         "desc": "用加減按鈕幫各隊計分。",
         "s": {
           "teams": "隊名（一行一個）",
-          "scores": "分數"
+          "scores": "分數",
+          "mode": "加分對象"
         },
         "team": "第 {n} 隊",
         "plus": "{team} 加一分",
         "minus": "{team} 減一分",
-        "reset": "分數歸零"
+        "reset": "分數歸零",
+        "o": {
+          "mode": {
+            "teams": "小隊",
+            "students": "每位學生"
+          }
+        },
+        "reason": "原因",
+        "award": "給 {name} 一分",
+        "awardAll": "全班各加一分",
+        "everyone": "全班",
+        "undo": "復原",
+        "undone": "剛才的一分已經收回。",
+        "classTotal": "全班總分：{n}",
+        "mine": "我的分數",
+        "given": "{name}：因為{reason}加一分",
+        "resetAll": "重新開始",
+        "resetConfirm": "要把每位學生的分數都歸零嗎？",
+        "hidden": "每位學生的分數在投影時會隱藏。",
+        "nobody": "這個班級還沒有學生。",
+        "pick": "選一個原因。分數只會加，不會扣。",
+        "r_kind": "友善",
+        "r_helpful": "幫助別人",
+        "r_teamwork": "團隊合作",
+        "r_effort": "認真努力",
+        "r_listening": "專心聆聽",
+        "r_responsible": "負責任",
+        "r_brave": "勇於嘗試",
+        "r_creative": "好點子"
       },
       "stickers": {
         "name": "貼紙",
@@ -9907,6 +9945,184 @@
         "indian": "印度洋",
         "arctic": "北冰洋",
         "southern": "南冰洋"
+      },
+      "video": {
+        "name": "影片",
+        "desc": "在你的畫面上播放 YouTube 或 Vimeo 影片。不會傳給學生。",
+        "s": {
+          "video": "影片連結",
+          "start": "從這裡開始",
+          "end": "在這裡停止",
+          "mute": "靜音",
+          "loop": "播完重播"
+        },
+        "empty": "在這個小工具的設定裡貼上 YouTube 或 Vimeo 連結。",
+        "paste": "貼上 YouTube 或 Vimeo 連結",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "這不是 YouTube 或 Vimeo 的影片連結。",
+        "ok": "已經選好影片。貼上別的連結就能換。",
+        "endNote": "（只限 YouTube：Vimeo 影片會播到最後。）",
+        "note": "只會保存影片的編號，不保存連結。影片在服務提供者的隱私加強版播放器中播放，而且只在你的畫面上。",
+        "secsHint": "分和秒，例如 1:30。",
+        "secsBad": "請用分和秒輸入時間，例如 1:30。",
+        "title": "影片播放器"
+      },
+      "site": {
+        "name": "網站視窗",
+        "desc": "在儀表板裡顯示網頁（網站允許的話）。不會傳給學生。",
+        "s": {
+          "url": "網址（https）"
+        },
+        "empty": "在這個小工具的設定裡加上 https:// 網址。",
+        "checking": "正在檢查網站…",
+        "blocked": "這個網站無法在儀表板裡顯示",
+        "blockedText": "這個網站不允許顯示在其他網頁裡。你還是可以在新分頁中開啟。",
+        "open": "在新分頁中開啟",
+        "bad": "請使用以 https:// 開頭的完整網址。",
+        "note": "只限 https 網站。學生永遠看不到這個視窗。",
+        "frameTitle": "來自 {host} 的網頁"
+      },
+      "camera": {
+        "name": "實物投影",
+        "desc": "用相機展示書本或學習單。不會錄影也不會傳送。",
+        "start": "開始",
+        "stop": "停止",
+        "which": "相機",
+        "mirror": "鏡像",
+        "rotate": "旋轉",
+        "zoomIn": "放大",
+        "zoomOut": "縮小",
+        "zoom": "縮放",
+        "freeze": "定格",
+        "unfreeze": "回到即時",
+        "frozen": "已定格",
+        "live": "即時",
+        "note": "畫面只留在這個螢幕上，永遠不會錄影、儲存或傳送。",
+        "denied": "相機被封鎖了",
+        "deniedText": "請在瀏覽器網址列允許這個網站使用相機，然後再試一次。",
+        "none": "找不到相機",
+        "noneText": "請接上相機或選另一台，然後再試一次。",
+        "failed": "相機沒有啟動",
+        "off": "相機已關閉",
+        "camera": "相機畫面",
+        "again": "再試一次"
+      },
+      "hallpass": {
+        "name": "外出證",
+        "desc": "學生申請離開教室到你選定的地方，你可以答應或請他們等一下。",
+        "s": {
+          "places": "學生可以申請的地方",
+          "oneOut": "一次只能一人外出",
+          "mins": "外出幾分鐘後算是太久"
+        },
+        "ask": "需要離開教室嗎？選擇要去哪裡。",
+        "askFor": "申請外出證：{place}",
+        "waiting": "等老師回覆：{place}",
+        "cancel": "不用了",
+        "out": "你已外出：{place}",
+        "back": "我回來了",
+        "declined": "現在不行，晚一點可以再申請。",
+        "ok": "好",
+        "asking": "{n} 人申請中",
+        "outNow": "{n} 人外出中",
+        "nobody": "沒有人外出或申請。",
+        "approve": "可以",
+        "decline": "等一下",
+        "oneOut": "一次一人",
+        "over": "太久",
+        "outPublic": "不在教室",
+        "mine": "只有你和老師看得到你的外出證。",
+        "hiddenNames": "投影時不會顯示誰在申請。",
+        "none": "全部清除",
+        "backSay": "{name} 回來了。",
+        "p_bathroom": "廁所",
+        "p_water": "喝水",
+        "p_nurse": "保健室",
+        "p_office": "辦公室",
+        "p_library": "圖書館",
+        "markBack": "已回來"
+      },
+      "jobs": {
+        "name": "班級工作",
+        "desc": "每個人都有工作，每週輪換。使用班上的 Oomba 名字。",
+        "s": {
+          "jobs": "工作（一行一個；空白就用常見的）",
+          "crew": "誰做什麼"
+        },
+        "rotate": "下一週",
+        "shuffle": "打亂",
+        "rotated": "大家都換到下一個工作了。",
+        "shuffled": "工作已打亂。",
+        "nobody": "這個班級還沒有學生。",
+        "open": "空缺",
+        "defaults": "排頭\n開門\n電燈\n照顧植物\n整理書本\n整潔隊長\n跑腿\n擦黑板"
+      },
+      "mood": {
+        "name": "心情打卡",
+        "desc": "學生點一張臉表示現在的心情。只有你看得到誰選了哪一個。",
+        "ask": "你現在感覺怎麼樣？",
+        "mine": "你選了{face}。",
+        "counts": "{total} 人中有 {n} 人打卡",
+        "names": "誰選了哪一個",
+        "nobody": "沒有人",
+        "notYet": "還沒選",
+        "saved": "只有老師看得到你選的臉。",
+        "m_great": "超棒",
+        "m_good": "不錯",
+        "m_okay": "還好",
+        "m_meh": "不太好",
+        "m_sad": "難過"
+      },
+      "breathe": {
+        "name": "呼吸練習",
+        "desc": "跟著平靜的圓圈一起呼吸。",
+        "s": {
+          "pace": "節奏"
+        },
+        "o": {
+          "pace": {
+            "calm": "吸 4、吐 4",
+            "box": "方形：吸、停、吐、停",
+            "long": "吸 4、吐 6"
+          }
+        },
+        "start": "開始",
+        "pause": "暫停",
+        "in": "吸氣",
+        "hold": "停住",
+        "out": "吐氣",
+        "ready": "準備好就開始"
+      },
+      "note": {
+        "name": "便利貼",
+        "desc": "放在你自己畫面上的備忘。不會釘選給學生。",
+        "s": {
+          "body": "備忘",
+          "color": "顏色"
+        },
+        "o": {
+          "color": {
+            "yellow": "黃色",
+            "pink": "粉紅",
+            "blue": "藍色",
+            "green": "綠色"
+          }
+        },
+        "empty": "在這個小工具的設定裡寫下備忘。"
+      },
+      "checklist": {
+        "name": "檢查清單",
+        "desc": "大家一起勾選的步驟。",
+        "s": {
+          "title": "標題",
+          "items": "步驟（一行一個）",
+          "ticks": "勾選"
+        },
+        "empty": "在這個小工具的設定裡加入步驟。",
+        "done": "{total} 項中完成 {n} 項",
+        "clear": "全部取消勾選",
+        "ticked": "完成",
+        "unticked": "未完成"
       }
     },
     "push": {
@@ -9935,7 +10151,14 @@
       "checkValue": "請選一個答案。",
       "resting": "天氣在休息，請等一下再試。",
       "qrGone": "這個不能顯示成 QR 碼。",
-      "tool": "這個工具已經不在你的畫面上了。"
+      "tool": "這個工具已經不在你的畫面上了。",
+      "noPass": "老師還沒有把外出證放到你的畫面上。",
+      "passPlace": "請從外出證上的地方選一個。",
+      "passOut": "你已經外出了，請先點「我回來了」。",
+      "oneOut": "已經有人外出了，一次一人。",
+      "reason": "請從清單中選一個原因。",
+      "noMood": "老師還沒有把心情打卡放到你的畫面上。",
+      "site": "這個網站視窗還沒有網址。"
     },
     "tools": {
       "send": "傳給全班",

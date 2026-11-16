@@ -64,7 +64,8 @@ const STAGE3 = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 
 const P = (...xy) => { const out = []; for (let i = 0; i < xy.length; i += 2) out.push({ x: xy[i], y: xy[i + 1] }); return out; };
 
 test('no new migration: stage 4 keeps its state in the widget and the push (0080 is still the newest)', () => {
-  assert.equal(MIGRATIONS.map(m => m[0]).at(-1), '0080_dash_teaching_tools');
+  const names = MIGRATIONS.map(m => m[0]);
+  assert.equal(names[names.indexOf('0080_dash_teaching_tools') + 1], '0081_dash_class_tools', 'the next one is stage 5\'s (tests/unit/dash-stage5.test.js)');
 });
 
 test('the registry: every stage 4 tool has a renderer, a group, English words, and is sent, never pinned', () => {
@@ -498,7 +499,7 @@ test('safety: no AI, no network or storage in the tools, no prices, no "Pro", no
   for (const who of [w.a1, w.a2]) { const page = (await as(who)(`/class/${w.A.id}/dashboard`)).text; assert.doesNotMatch(page, w.REAL); assert.doesNotMatch(page, money); }
   // No new route: stage 4 rides on the stage 1-3 addresses.
   const routes = fs.readFileSync('server/routes/dash.js', 'utf8').match(/router\.(get|post|put|delete|patch)\(/g).length;
-  assert.equal(routes, 35, "the same 35 addresses as stage 3");
+  assert.equal(routes, 42, 'the same 35 addresses as stage 3, and stage 5\'s 7 (hall pass, points, mood, site windows)');
 });
 
 test('every stage 4 string is translated into every locale', async () => {

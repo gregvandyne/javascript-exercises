@@ -9048,7 +9048,8 @@
         "name": "Dagrooster",
         "desc": "De lessen van vandaag; de les van nu licht op.",
         "s": {
-          "periods": "Lessen"
+          "periods": "Lessen",
+          "view": "Tonen"
         },
         "empty": "Voeg de lessen van vandaag toe bij Scherm bewerken.",
         "now": "Nu",
@@ -9060,7 +9061,15 @@
         "period": "Les",
         "from": "Van",
         "to": "Tot",
-        "remove": "Les weghalen"
+        "remove": "Les weghalen",
+        "o": {
+          "view": {
+            "list": "De hele dag",
+            "nownext": "Nu en straks"
+          }
+        },
+        "nothingNext": "Hierna niets meer",
+        "starts": "Begint om {time}"
       },
       "weather": {
         "name": "Weer",
@@ -9328,12 +9337,41 @@
         "desc": "Teampunten met plus- en minknoppen.",
         "s": {
           "teams": "Teamnamen (één per regel)",
-          "scores": "Punten"
+          "scores": "Punten",
+          "mode": "Punten voor"
         },
         "team": "Team {n}",
         "plus": "Eén punt voor {team}",
         "minus": "Eén punt eraf voor {team}",
-        "reset": "Punten op nul"
+        "reset": "Punten op nul",
+        "o": {
+          "mode": {
+            "teams": "Teams",
+            "students": "Elke leerling"
+          }
+        },
+        "reason": "Reden",
+        "award": "Een punt voor {name}",
+        "awardAll": "Een punt voor iedereen",
+        "everyone": "Iedereen",
+        "undo": "Ongedaan maken",
+        "undone": "Het laatste punt is teruggenomen.",
+        "classTotal": "Klas totaal: {n}",
+        "mine": "Mijn punten",
+        "given": "{name}: een punt voor {reason}",
+        "resetAll": "Opnieuw beginnen",
+        "resetConfirm": "De punten van alle leerlingen op nul zetten?",
+        "hidden": "De punten van elke leerling zijn verborgen op de beamer.",
+        "nobody": "Nog geen leerlingen in deze klas.",
+        "pick": "Kies waarvoor. Punten worden alleen gegeven, nooit afgepakt.",
+        "r_kind": "Vriendelijk",
+        "r_helpful": "Helpen",
+        "r_teamwork": "Samenwerken",
+        "r_effort": "Hard werken",
+        "r_listening": "Luisteren",
+        "r_responsible": "Verantwoordelijk",
+        "r_brave": "Iets nieuws proberen",
+        "r_creative": "Goede ideeën"
       },
       "stickers": {
         "name": "Stickers",
@@ -9908,6 +9946,184 @@
         "indian": "Indische Oceaan",
         "arctic": "Noordelijke IJszee",
         "southern": "Zuidelijke Oceaan"
+      },
+      "video": {
+        "name": "Video",
+        "desc": "Een YouTube- of Vimeo-video op je scherm. Nooit naar leerlingen gestuurd.",
+        "s": {
+          "video": "Videolink",
+          "start": "Beginnen bij",
+          "end": "Stoppen bij",
+          "mute": "Zonder geluid",
+          "loop": "Aan het eind opnieuw"
+        },
+        "empty": "Plak een YouTube- of Vimeo-link in de instellingen van deze widget.",
+        "paste": "Plak een YouTube- of Vimeo-link",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "Dat is geen link naar een YouTube- of Vimeo-video.",
+        "ok": "Er is een video ingesteld. Plak een andere link om hem te wijzigen.",
+        "endNote": "(Alleen YouTube: Vimeo-video's spelen tot het eind.)",
+        "note": "Alleen het nummer van de video wordt bewaard, niet de link. Hij speelt in de privacyvriendelijke speler van de dienst en alleen op jouw scherm.",
+        "secsHint": "Minuten en seconden, bijvoorbeeld 1:30.",
+        "secsBad": "Typ de tijd als minuten en seconden, bijvoorbeeld 1:30.",
+        "title": "Videospeler"
+      },
+      "site": {
+        "name": "Websitevenster",
+        "desc": "Een webpagina in je dashboard, als de site dat toestaat. Nooit naar leerlingen gestuurd.",
+        "s": {
+          "url": "Webadres (https)"
+        },
+        "empty": "Voeg een https://-adres toe in de instellingen van deze widget.",
+        "checking": "De site wordt gecontroleerd…",
+        "blocked": "Deze site kan niet in het dashboard worden getoond",
+        "blockedText": "De site staat niet toe dat hij in andere pagina's wordt getoond. Je kunt hem wel in een nieuw tabblad openen.",
+        "open": "Openen in een nieuw tabblad",
+        "bad": "Gebruik een volledig adres dat begint met https://",
+        "note": "Alleen https-sites. Leerlingen zien dit venster nooit.",
+        "frameTitle": "Webpagina van {host}"
+      },
+      "camera": {
+        "name": "Documentcamera",
+        "desc": "Laat een boek of werkblad zien met je camera. Er wordt niets opgenomen of verstuurd.",
+        "start": "Starten",
+        "stop": "Stoppen",
+        "which": "Camera",
+        "mirror": "Spiegelen",
+        "rotate": "Draaien",
+        "zoomIn": "Inzoomen",
+        "zoomOut": "Uitzoomen",
+        "zoom": "Zoom",
+        "freeze": "Stilzetten",
+        "unfreeze": "Live",
+        "frozen": "Stilstaand beeld",
+        "live": "Live",
+        "note": "Het beeld blijft op dit scherm. Het wordt nooit opgenomen, bewaard of verstuurd.",
+        "denied": "De camera is geblokkeerd",
+        "deniedText": "Sta de camera voor deze site toe in de adresbalk van je browser en probeer het opnieuw.",
+        "none": "Geen camera gevonden",
+        "noneText": "Sluit een camera aan of kies een andere en probeer het opnieuw.",
+        "failed": "De camera is niet gestart",
+        "off": "Camera staat uit",
+        "camera": "Camerabeeld",
+        "again": "Opnieuw proberen"
+      },
+      "hallpass": {
+        "name": "Gangpas",
+        "desc": "Leerlingen vragen om de klas uit te gaan naar een plek die jij kiest. Jij zegt ja of nu niet.",
+        "s": {
+          "places": "Plekken waar leerlingen om kunnen vragen",
+          "oneOut": "Eén leerling tegelijk weg",
+          "mins": "Minuten voordat een pas als lang telt"
+        },
+        "ask": "Moet je even weg? Kies waarheen.",
+        "askFor": "Een pas vragen: {place}",
+        "waiting": "Wachten op je leraar: {place}",
+        "cancel": "Laat maar",
+        "out": "Je bent weg: {place}",
+        "back": "Ik ben terug",
+        "declined": "Nu even niet. Je kunt het later opnieuw vragen.",
+        "ok": "Oké",
+        "asking": "{n} vragen",
+        "outNow": "{n} weg",
+        "nobody": "Niemand is weg of vraagt.",
+        "approve": "Ja",
+        "decline": "Nu niet",
+        "oneOut": "Eén tegelijk",
+        "over": "lang",
+        "outPublic": "Niet in de klas",
+        "mine": "Alleen jij en je leraar zien je pas.",
+        "hiddenNames": "Wie vraagt, is verborgen op de beamer.",
+        "none": "Alles wissen",
+        "backSay": "{name} is terug.",
+        "p_bathroom": "Wc",
+        "p_water": "Water",
+        "p_nurse": "EHBO",
+        "p_office": "Administratie",
+        "p_library": "Bibliotheek",
+        "markBack": "Terug"
+      },
+      "jobs": {
+        "name": "Klassentaken",
+        "desc": "Een taak voor iedereen, die elke week doorschuift. Met de Oomba-namen van de klas.",
+        "s": {
+          "jobs": "Taken (één op elke regel; leeg voor de gewone)",
+          "crew": "Wie doet wat"
+        },
+        "rotate": "Volgende week",
+        "shuffle": "Husselen",
+        "rotated": "Iedereen is doorgeschoven naar de volgende taak.",
+        "shuffled": "Taken gehusseld.",
+        "nobody": "Nog geen leerlingen in deze klas.",
+        "open": "Vrij",
+        "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken"
+      },
+      "mood": {
+        "name": "Hoe voel ik me",
+        "desc": "Leerlingen tikken op een gezicht voor hoe ze zich voelen. Alleen jij ziet wie wat koos.",
+        "ask": "Hoe voel je je?",
+        "mine": "Je koos {face}.",
+        "counts": "{n} van {total} hebben gekozen",
+        "names": "Wie wat koos",
+        "nobody": "Niemand",
+        "notYet": "Nog niet",
+        "saved": "Alleen je leraar ziet je gezicht.",
+        "m_great": "Super",
+        "m_good": "Goed",
+        "m_okay": "Gaat wel",
+        "m_meh": "Niet zo goed",
+        "m_sad": "Verdrietig"
+      },
+      "breathe": {
+        "name": "Ademen",
+        "desc": "Een rustige cirkel om mee te ademen.",
+        "s": {
+          "pace": "Ritme"
+        },
+        "o": {
+          "pace": {
+            "calm": "4 in, 4 uit",
+            "box": "Vierkant: in, vast, uit, vast",
+            "long": "4 in, 6 uit"
+          }
+        },
+        "start": "Starten",
+        "pause": "Pauze",
+        "in": "Adem in",
+        "hold": "Vasthouden",
+        "out": "Adem uit",
+        "ready": "Klaar als jij het bent"
+      },
+      "note": {
+        "name": "Plakbriefje",
+        "desc": "Een briefje voor jou op je eigen scherm. Nooit vastgezet voor leerlingen.",
+        "s": {
+          "body": "Briefje",
+          "color": "Kleur"
+        },
+        "o": {
+          "color": {
+            "yellow": "Geel",
+            "pink": "Roze",
+            "blue": "Blauw",
+            "green": "Groen"
+          }
+        },
+        "empty": "Schrijf je briefje in de instellingen van deze widget."
+      },
+      "checklist": {
+        "name": "Checklist",
+        "desc": "Stappen om samen af te vinken.",
+        "s": {
+          "title": "Titel",
+          "items": "Stappen (één op elke regel)",
+          "ticks": "Vinkjes"
+        },
+        "empty": "Voeg stappen toe in de instellingen van deze widget.",
+        "done": "{n} van {total} klaar",
+        "clear": "Alle vinkjes weg",
+        "ticked": "klaar",
+        "unticked": "nog niet klaar"
       }
     },
     "push": {
@@ -9936,7 +10152,14 @@
       "checkValue": "Kies een van de antwoorden.",
       "resting": "Het weer rust even uit. Probeer het straks nog eens.",
       "qrGone": "Dat kan niet als QR-code worden getoond.",
-      "tool": "Dat hulpmiddel staat niet meer op je scherm."
+      "tool": "Dat hulpmiddel staat niet meer op je scherm.",
+      "noPass": "Je leraar heeft geen pas op je scherm gezet.",
+      "passPlace": "Kies een van de plekken op de pas.",
+      "passOut": "Je bent al weg. Tik eerst op ‘Ik ben terug’.",
+      "oneOut": "Er is al iemand weg. Eén tegelijk.",
+      "reason": "Kies een reden uit de lijst.",
+      "noMood": "Je leraar heeft geen ‘Hoe voel ik me’ op je scherm gezet.",
+      "site": "Dit websitevenster heeft nog geen adres."
     },
     "tools": {
       "send": "Naar de klas sturen",

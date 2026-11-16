@@ -984,6 +984,17 @@ export const MIGRATIONS = [
   ['0080_dash_teaching_tools', `
     ALTER TABLE dash_pushes ADD COLUMN data TEXT NOT NULL DEFAULT '{}';
     ALTER TABLE dash_pictures ADD COLUMN use TEXT NOT NULL DEFAULT 'bg';`],
+  // Classroom dashboards, stage 5 (services/dash.js; docs/decisions.md "Classroom dashboards, stage 5"). dash_passes: a
+  // student's hall pass for today (one row per student: asked, out or declined; the row goes when they are back, and
+  // older days' rows whenever the class's passes are read). dash_points: a student's positive points per reason (a
+  // count, never below zero). dash_moods: today's mood check-in (a face's index, one per student).
+  ['0081_dash_class_tools', `
+    CREATE TABLE IF NOT EXISTS dash_passes (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, user_id TEXT NOT NULL, place TEXT NOT NULL, day TEXT NOT NULL,
+      state TEXT NOT NULL, asked_at INTEGER NOT NULL, out_at INTEGER, UNIQUE (class_id, user_id));
+    CREATE TABLE IF NOT EXISTS dash_points (class_id TEXT NOT NULL, user_id TEXT NOT NULL, reason TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, user_id, reason));
+    CREATE TABLE IF NOT EXISTS dash_moods (class_id TEXT NOT NULL, user_id TEXT NOT NULL, day TEXT NOT NULL, mood INTEGER NOT NULL, at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, user_id));`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

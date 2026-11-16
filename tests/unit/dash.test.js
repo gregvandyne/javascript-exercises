@@ -64,7 +64,7 @@ test('the registry: every type has a renderer, labels in English, and layouts ar
   for (const x of reg.types) { assert.ok(!/^dash\./.test(x.name) && !/^dash\./.test(x.desc), x.id); for (const s of x.settings) assert.ok(!/^dash\./.test(s.label), `${x.id}.${s.key}`); }
   assert.equal(reg.types.find(x => x.id === 'text').add, false, 'students cannot add the teacher text widget');
   // Stage 3's renderers are in dash-tools.js, stage 4's in dash-tools4.js (both merged into RENDER).
-  const js = fs.readFileSync('public/js/dash-widgets.js', 'utf8') + fs.readFileSync('public/js/dash-tools.js', 'utf8') + fs.readFileSync('public/js/dash-tools4.js', 'utf8');
+  const js = fs.readFileSync('public/js/dash-widgets.js', 'utf8') + fs.readFileSync('public/js/dash-tools.js', 'utf8') + fs.readFileSync('public/js/dash-tools4.js', 'utf8') + fs.readFileSync('public/js/dash-class5.js', 'utf8') + fs.readFileSync('public/js/dash-camera.js', 'utf8');
   for (const w of D.WIDGETS) assert.match(js, new RegExp(`\\b${w.id}\\b`), `renderer for ${w.id}`);
   // Cleaning: unknown types, bad ids and duplicate ids go; sizes clamp; text is clipped; unknown settings dropped; pin
   // only for teachers.
@@ -311,7 +311,7 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   // The registry offers students nothing that sends text to others: their types are clock, their own goal, and (stage
   // 2) a timer, a stopwatch, dice and a random number that run in their own browser.
   assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random', 'fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
-    'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map'], 'stage 3 and 4: their own copies of the teaching tools');
+    'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
 });
 
 test('account deletion forgets a person\'s screens and pictures', async () => {

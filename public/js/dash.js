@@ -15,6 +15,8 @@
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
+import { parseVideo } from '/js/dash-video.js';
+import { PASS_ICON, secsText } from '/js/dash-class5.js';
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -96,7 +98,7 @@ function start() {
     catch (err) { if (errEl) errEl.textContent = err.message; else toast(err.message, { bad: true }); return null; }
   }
   const ctxFor = (w, type) => ({
-    type, intl: INTL, role: D.role, id: w.id, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
+    type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
     get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
     // Stage 3: teaching tools.
@@ -381,6 +383,8 @@ function start() {
   $('#dash-lib-q')?.addEventListener('input', renderLibrary);
 
   // ---------------------------------------------------------------- the settings panel
+  /** Stage 5: redraw the settings once the field being typed in has let go (a pasted video link can set the start). */
+  const renderSideSoon = () => setTimeout(() => { const box = $('#dash-side-body'); if (box) { box.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(`dset-${S.selected}-video`)}`)?.focus(); } }, 0);
   function renderSide() {
     const box = $('#dash-side-body'), h = $('#dash-side-h'); if (!box) return;
     if (box.contains(document.activeElement) && box.dataset.for === S.selected) return;   // typing: keep the form
@@ -446,7 +450,61 @@ function start() {
   const cityOf = z => z.split('/').pop().replace(/_/g, ' ');
   let optsCache = null;
   const pushOpts = async (q = '') => { if (!q && optsCache) return optsCache; const r = await api(`/api/dash/${CID}/push-options${q ? `?q=${encodeURIComponent(q)}` : ''}`); if (!q) optsCache = r; return r; };
+  /** Stage 5: "1:30", "90" or "1:02:03" -> seconds, or null (the same rule as services/dash.js cleanSecs). */
+  const secsOf = v => { const x = String(v || '').trim(); if (!x) return 0; if (/^\d{1,5}$/.test(x)) return Math.min(86400, +x); const m = /^(?:(\d{1,2}):)?(\d{1,3}):([0-5]\d)$/.exec(x); return m ? Math.min(86400, (+m[1] || 0) * 3600 + +m[2] * 60 + +m[3]) : null; };
   const EDITORS = {
+    // ---- stage 5: a video link (only the provider and the video's id are kept), a time in the video, a site's address,
+    // the hall pass's places.
+    video(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<label for="${id}">${esc(W.paste)}</label><input class="input" id="${id}" type="url" inputmode="url" autocomplete="off" spellcheck="false" maxlength="300" placeholder="${esc(W.pasteHint)}" aria-describedby="${id}-m"><p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted">${esc(W.note)}</p>`;
+      const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg');
+      const show = () => { msg.textContent = w.s[f.key] ? `✔ ${W.ok}` : ''; msg.classList.remove('err'); };
+      show();
+      inp.addEventListener('change', () => {
+        const x = inp.value.trim(); if (!x) { show(); return; }
+        const v = parseVideo(x);
+        if (!v) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); return; }
+        w.s[f.key] = { p: v.p, id: v.id, ...(v.h ? { h: v.h } : {}) };
+        if (v.t && !w.s.start) w.s.start = v.t;
+        inp.value = ''; commit(); redraw(); renderSideSoon(); announce(W.ok);
+      });
+    },
+    secs(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input dash-secs" id="${id}" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="0:00" aria-describedby="${id}-m"><p class="small dash-fieldmsg" id="${id}-m">${esc(f.key === 'end' ? `${W.secsHint} ${W.endNote}` : W.secsHint)}</p>`;
+      const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg');
+      inp.value = w.s[f.key] ? secsText(w.s[f.key]) : '';
+      inp.addEventListener('change', () => {
+        const n = secsOf(inp.value);
+        if (n === null) { msg.textContent = `✖ ${W.secsBad}`; msg.classList.add('err'); msg.setAttribute('role', 'alert'); return; }
+        msg.textContent = f.key === 'end' ? `${W.secsHint} ${W.endNote}` : W.secsHint; msg.classList.remove('err'); msg.removeAttribute('role');
+        w.s[f.key] = n; inp.value = n ? secsText(n) : ''; commit(); redraw();
+      });
+    },
+    site(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="url" inputmode="url" autocomplete="off" spellcheck="false" maxlength="500" placeholder="https://" aria-describedby="${id}-m ${id}-n" dir="ltr"><p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted" id="${id}-n">${esc(W.note)}</p>`;
+      const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg');
+      inp.value = w.s[f.key] || '';
+      inp.addEventListener('change', () => {
+        const x = inp.value.trim();
+        let ok = false; try { const u = new URL(x); ok = u.protocol === 'https:' && !u.username && !u.password && u.hostname.includes('.'); } catch { ok = false; }
+        if (x && !ok) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); return; }
+        msg.textContent = ''; msg.classList.remove('err');
+        w.s[f.key] = x; commit(); redraw();
+      });
+    },
+    places(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-places';
+      field.innerHTML = `<fieldset><legend class="dash-lab">${esc(f.label)}</legend>${f.def.map(p => `<label class="dash-tog"><span><span aria-hidden="true">${PASS_ICON[p] || ''}</span> ${esc(W[`p_${p}`] || p)}</span><input type="checkbox" value="${esc(p)}"${(w.s[f.key] || []).includes(p) ? ' checked' : ''}></label>`).join('')}</fieldset>`;
+      field.addEventListener('change', () => {
+        const on = [...field.querySelectorAll('input:checked')].map(x => x.value);
+        if (!on.length) { field.querySelector(`input[value="${CSS.escape((w.s[f.key] || f.def)[0])}"]`).checked = true; return; }
+        w.s[f.key] = on; commit(); redraw();
+      });
+    },
     // Stage 3: the Picture widget's picture (the class's teacher uploads; the stage 1 checks).
     pic(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;

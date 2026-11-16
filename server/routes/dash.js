@@ -31,6 +31,16 @@
 // Stage 4 (docs/decisions.md "Classroom dashboards, stage 4"): teaching tools part 2 add no new address either. "Make a
 // question from it" sends an ordinary quick check (POST /checks); "Practice it" links come with the page (official games
 // every student of the class can open).
+// Stage 5 (docs/decisions.md "Classroom dashboards, stage 5"):
+//   POST /api/dash/:id/pass                   a student: ask for a pass (a fixed place), cancel, I'm back, dismiss
+//   POST /api/dash/:id/pass/teacher           the teacher: approve, decline, back, clear
+//   POST /api/dash/:id/points                 the teacher: one point (positive reasons only), undo one, reset
+//   POST /api/dash/:id/mood                   a student taps a face (their own, today)
+//   GET  /api/dash/:id/mood/names             the teacher: who chose which face (their own class)
+//   GET  /api/dash/:id/site/:wid              the teacher: may this site window's address be shown in a frame?
+//   GET  /class/:id/dashboard/frame/:wid      the teacher: the wrapper page a site window is framed through
+// The teacher's dashboard page gets frames from the two video hosts and camera/microphone for itself (dash-media.js);
+// a student's page keeps the site's headers exactly.
 // Every route asks D.roleOf / D.isTeacher: only the class's own teacher changes the class screen, sends, approves links
 // or starts Eyes up; only the class's students and teachers read it. Everyone else gets 404. CSRF is the site's
 // same-origin check (auth.csrfCheck); every write has a rate limit.
@@ -47,6 +57,7 @@ import * as S from '../services/schools.js';
 import * as D from '../services/dash.js';
 import { qrSvg } from '../services/qr.js';
 import { origin } from '../seo.js';
+import { dashCsp, DASH_TEACHER_POLICY, siteFrame, siteFrameCsp, SITE_SANDBOX } from '../services/dash-media.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/dash.css?v=${VERSION}">`);
@@ -170,6 +181,9 @@ function dashPage(req, res, c, role) {
 router.get('/class/:id/dashboard', requireUser, (req, res) => {
   const x = load(req, res); if (!x) return;
   res.set('Cache-Control', 'no-store');
+  // Stage 5: the teacher's screen may play a video from the privacy-enhanced hosts, frame its own site-window wrapper,
+  // and use the camera (document camera) and microphone (noise meter) after a tap. Students' screens: unchanged.
+  if (x.role === 'teacher') res.set({ 'Content-Security-Policy': dashCsp(String(res.get('Content-Security-Policy') || '')), 'Permissions-Policy': DASH_TEACHER_POLICY });
   dashPage(req, res, x.c, x.role);
 });
 
@@ -375,4 +389,53 @@ router.get('/api/dash/:id/tiles', requireUser, rateLimit('dash-tiles', 240, 60e3
   res.set('Cache-Control', 'no-store');
   const refs = String(req.query.refs || '').split(',').slice(0, D.MAX_TILES).map(r => { const [kind, ref] = r.split(':'); return { kind, ref }; });
   res.json({ tiles: D.resolveTiles(x.c, refs) });
+});
+
+// ================================================================ stage 5: hall pass, points, mood, site windows
+router.post('/api/dash/:id/pass', requireUser, rateLimit('dash-pass', 120, 3600e3), (req, res) => {
+  const x = load(req, res, { student: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.passStudent(req.user, x.c, { action: String(b.action || ''), place: String(b.place || '') }));
+});
+router.post('/api/dash/:id/pass/teacher', requireUser, rateLimit('dash-pass-teacher', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.passTeacher(req.user, x.c, { action: String(b.action || ''), pass: b.pass }));
+});
+router.post('/api/dash/:id/points', requireUser, rateLimit('dash-points', 1200, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.pointsAction(req.user, x.c, { action: String(b.action || ''), user: b.user, reason: String(b.reason || '') }));
+});
+router.post('/api/dash/:id/mood', requireUser, rateLimit('dash-mood', 120, 3600e3), (req, res) => {
+  const x = load(req, res, { student: true }); if (!x) return;
+  const m = body(req).mood;
+  send(req, res, D.setMood(req.user, x.c, m === null ? null : m));
+});
+router.get('/api/dash/:id/mood/names', requireUser, rateLimit('dash-options', 120, 60e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  res.json(D.moodNames(x.c));
+});
+router.get('/api/dash/:id/site/:wid', requireUser, rateLimit('dash-site', 120, 3600e3), async (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  const w = D.siteWidget(req.user, x.c, req.params.wid);
+  if (!w) return fail(req, res, 'site', 404);
+  const r = await siteFrame(w.url, origin(req), D.cleanUrl);
+  res.json({ frame: r.frame, host: new URL(w.url).hostname, url: w.url });
+});
+/** The wrapper a site window is framed through (the teacher's own screen only): a sandboxed frame of the one site, with
+ *  a CSP naming only that site's origin(s), and nothing else. Sites that refuse framing are never framed. */
+router.get('/class/:id/dashboard/frame/:wid', requireUser, rateLimit('dash-site', 120, 3600e3), async (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const w = D.siteWidget(req.user, x.c, req.params.wid);
+  if (!w) return no(req, res);
+  const r = await siteFrame(w.url, origin(req), D.cleanUrl);
+  if (r.frame !== 'ok') return no(req, res);
+  res.set({ 'Content-Security-Policy': siteFrameCsp(r.origins), 'X-Frame-Options': 'SAMEORIGIN', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()' });
+  res.type('html').send(`<!doctype html><html lang="${req.locale || 'en'}"><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>${html`${new URL(w.url).hostname}`}</title>
+<style>html,body{margin:0;height:100%;background:#fff}iframe{display:block;border:0;width:100%;height:100%}</style></head>
+<body><iframe src="${html`${w.url}`}" sandbox="${SITE_SANDBOX}" referrerpolicy="no-referrer" title="${html`${req.t('dash.w.site.frameTitle', { host: new URL(w.url).hostname })}`}"></iframe></body></html>`);
 });

@@ -91,9 +91,9 @@ test('the registry: every stage 2 type has a renderer and English words; who may
     }
   }
   // Students may add only things that stay on their own screen.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js)');
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random', 'breathe'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js); stage 5 the breathing circle (dash-stage5.test.js)');
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
-  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random'], 'stage 3 and 4\'s teaching tools are sent, never pinned');
+  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['camera', 'check', 'dice', 'groups', 'noise', 'note', 'picker', 'qr', 'random', 'site', 'video'], 'stage 3 and 4\'s teaching tools are sent, never pinned; stage 5\'s video, site window, camera and sticky note are the teacher\'s screen only');
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');
@@ -549,7 +549,7 @@ test('more everyday widgets: registry, settings rebuilt on the server, and the m
   assert.deepEqual(c('random', { min: -1e9, max: '12' }), { min: -9999, max: 12 });
   assert.deepEqual(c('groups', { by: 'count', n: 99 }), { by: 'count', n: 12 });
   // Scoreboard: whole points, one per team (8 at most); team names are teacher text.
-  assert.deepEqual(c('score', { teams: 'Red\nBlue', scores: [3, '4.6', 'x', 1e9, -1e9, 0, 0, 0, 9, 9] }), { teams: 'Red\nBlue', scores: [3, 5, 0, 9999, -9999, 0, 0, 0] });
+  assert.deepEqual(c('score', { teams: 'Red\nBlue', scores: [3, '4.6', 'x', 1e9, -1e9, 0, 0, 0, 9, 9] }), { mode: 'teams', teams: 'Red\nBlue', scores: [3, 5, 0, 9999, -9999, 0, 0, 0] }, 'stage 5 adds the mode (teams by default)');
   // Stickers: only the fixed set (no uploads), inside the widget, at most 30.
   assert.deepEqual(c('stickers', { stamps: [{ e: 0, x: 10, y: 20 }, { e: 99, x: 1, y: 1 }, { e: 1, x: 120, y: 5 }, { e: 'https://evil.example/x.png', x: 1, y: 1 }, { e: 2.5, x: 1, y: 1 }] }).stamps, [{ e: 0, x: 10, y: 20 }]);
   assert.equal(c('stickers', { stamps: Array.from({ length: 50 }, () => ({ e: 1, x: 5, y: 5 })) }).stamps.length, D.MAX_STAMPS);

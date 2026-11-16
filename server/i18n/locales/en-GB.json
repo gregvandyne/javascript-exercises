@@ -905,6 +905,14 @@
       },
       "letters": {
         "desc": "Build words from letter tiles, vowels marked, with word families (-at, -ig, -ake...). Nobody types. Reception to Year 4."
+      },
+      "note": {
+        "s": {
+          "color": "Colour"
+        }
+      },
+      "hallpass": {
+        "p_bathroom": "Toilet"
       }
     },
     "tools": {

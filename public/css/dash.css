@@ -1075,3 +1075,161 @@ button.dt-orgbox:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
   .dt-picframe{flex:none;height:260px}
   .dash-wcopy{height:auto}
 }
+
+/* ---------- stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, document camera, hall
+   pass, class jobs, points for each student, mood check-in, breathing, sticky note, checklist, now and next ---------- */
+.dw5{display:flex;flex-direction:column;gap:var(--s2);height:100%;min-height:0}
+.dw5-ic{display:inline-block;line-height:1;flex:none}
+.dw5 .btn{white-space:normal;line-height:1.15;text-align:center;gap:6px}
+.dw5 .btn:disabled{opacity:1}
+.dash-wb .dw5 .btn:disabled:not(.btn-primary){background:transparent;color:var(--muted);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--line) 80%,transparent)}
+.dash-wb .dw5 .btn.btn-primary:disabled{opacity:.7}
+.dw5-emptybox,.dw5-fallback,.dw5-cammsg{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2);padding:var(--s3);text-align:center;border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-bigic{font-size:clamp(1.6rem,min(14cqh,10cqi),3rem);line-height:1}
+.dw5-meta{margin:0;flex:none;font-weight:700;color:var(--text-2);font-size:clamp(.875rem,min(5cqh,3.6cqi),1.1rem)}
+.dw5-muted{color:var(--muted)}
+.dw5-fbtitle{font-size:clamp(1rem,min(8cqh,5cqi),1.6rem);line-height:1.2;overflow-wrap:anywhere}
+.dw5-fbtext{margin:0;max-width:44ch;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(5cqh,3.8cqi),1.15rem)}
+/* video */
+.dw-vframe{flex:1 1 auto;min-height:0;border-radius:var(--r-sm);overflow:hidden;background:#000}
+.dw-vframe iframe,.dw5-siteframe iframe{display:block;width:100%;height:100%;border:0}
+/* site window */
+.dw5-sitebar{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);justify-content:space-between}
+.dw5-host{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 10px;border-radius:999px;background:var(--card-2);font-weight:700;font-size:.9rem;min-width:0;max-width:100%}
+.dw5-hosttext{overflow-wrap:anywhere}
+.dw5-siteframe{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border-radius:var(--r-sm);overflow:hidden;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
+.dw5-status{margin:auto;font-weight:700;color:var(--text-2)}
+.dw5-fallback{background:transparent}
+/* document camera */
+.dw5-camtop{flex:none}
+.dw5-camstate{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;background:var(--card-2);font-weight:800;font-size:.9rem}
+.dw5-camstate.is-live{background:var(--bad-bg);color:var(--bad-ink);box-shadow:inset 0 0 0 2px var(--danger)}
+.dw5-campick{display:inline-flex;align-items:center;gap:6px;min-width:0;margin-inline-start:auto}
+.dw5-campick[hidden]{display:none}
+.dw5-camlab{font-weight:700;font-size:.85rem}
+.dw5-camsel{min-height:44px;max-width:16em}
+.dw5-camstage{position:relative;flex:1 1 auto;min-height:0;display:grid;place-items:center;overflow:hidden;border-radius:var(--r-sm);background:#141414;container-type:size}
+.dw5-camvideo,.dw5-camstill{grid-area:1/1;max-width:100cqw;max-height:100cqh;object-fit:contain;transition:transform .18s ease}
+.dw5-camstage.is-turned .dw5-camvideo,.dw5-camstage.is-turned .dw5-camstill{max-width:100cqh;max-height:100cqw}
+.dw5-camvideo[hidden],.dw5-camstill[hidden]{display:none}
+.dw5-cammsg{grid-area:1/1;align-self:stretch;justify-self:stretch;background:var(--card-2);border-radius:0}
+.dw5-cammsg[hidden]{display:none}
+.dw5-zoom{min-width:3.2em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.dw5-camvideo,.dw5-camstill{transition:none}}
+/* hall pass */
+.dw5-passme{display:flex;flex-direction:column;gap:var(--s2);height:100%;min-height:0}
+.dw5-passline{margin:0;display:flex;align-items:center;gap:var(--s2);font-weight:800;font-size:clamp(1rem,min(9cqh,5cqi),1.7rem);line-height:1.2;overflow-wrap:anywhere}
+.dw5-places{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,8.5em),1fr));gap:var(--s2)}
+.dw5-place{flex-direction:column;min-height:64px;padding:6px 8px;font-size:1rem}
+.dw5-place .dw5-ic{font-size:1.5rem}
+.dw5-passtime{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.05;font-size:clamp(1.6rem,min(22cqh,16cqi),5rem)}
+.dw5-passtime.is-over{color:var(--danger)}
+.dw5-passtime.dw5-small{font-size:1.05rem;letter-spacing:0;min-width:3.2em;text-align:end}
+.dw5-passtime.dw5-small.is-over{padding:2px 8px;border-radius:999px;background:var(--bad-bg);color:var(--bad-ink);box-shadow:inset 0 0 0 2px var(--danger)}
+.dw5-passcounts{margin:0;flex:none;display:flex;flex-wrap:wrap;gap:6px var(--s3);font-weight:800;font-size:clamp(.95rem,min(8cqh,4.4cqi),1.5rem)}
+.dw5-count.dw5-muted{font-weight:700;font-size:.85em}
+.dw5-passlist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dw5-passrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px var(--s2);padding:6px 6px 6px 12px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-passrow.is-asked{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.dw5-who{flex:1 1 9em;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dw5-name{overflow-wrap:anywhere;font-weight:800}
+.dw5-where{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:var(--text-2);font-size:.9rem}
+.dw-public-inline{display:none!important}
+.dash-projector .dw-public-inline{display:inline-flex!important}
+.dw5-acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-inline-start:auto}
+.dw5-passacts{flex:none}
+/* class jobs */
+.dw5-jobgrid{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,10em),1fr));align-content:start;gap:var(--s2)}
+.dw5-job{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 4px 0 0 var(--accent)}
+[dir="rtl"] .dw5-job{box-shadow:inset -4px 0 0 var(--accent)}
+.dw5-jobname{font-weight:700;color:var(--text-2);font-size:clamp(.85rem,min(5cqh,3.6cqi),1.15rem);overflow-wrap:anywhere}
+.dw5-jobwho{font-weight:800;font-size:clamp(1rem,min(7cqh,4.6cqi),1.6rem);overflow-wrap:anywhere;line-height:1.15}
+.dw5-jobnote{grid-column:1/-1}
+/* points for each student */
+.dw5-ptop{flex:none;display:flex;align-items:center;gap:var(--s2)}
+.dw5-classtot{margin:0;display:flex;align-items:center;gap:var(--s2);font-weight:800;color:var(--text-2);font-size:clamp(.9rem,min(7cqh,4.4cqi),1.3rem)}
+.dw5-classbig{color:var(--text);font-size:clamp(1.1rem,min(12cqh,6cqi),2.2rem)}
+.dash-projector .dw-points .dw5-classbig{flex-direction:column;font-size:clamp(1.4rem,min(22cqh,10cqi),4rem);margin:auto;text-align:center}
+.dash-projector .dw-points .dw5-ptop{flex:1 1 auto}
+.dw5-plist{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17em),1fr));align-content:start;gap:6px}
+.dw5-prow{display:flex;align-items:center;gap:var(--s2);padding:4px 4px 4px 12px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-prow .dw5-name{flex:1 1 auto;min-width:0}
+.dw5-pn{min-width:1.6em;text-align:end;font-variant-numeric:tabular-nums;font-size:1.2rem}
+.dw5-plus{min-width:52px;padding:0 10px;font-weight:800;font-size:1rem;background:var(--accent-soft)!important}
+.dw5-mine{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;flex:1 1 auto;justify-content:safe center}
+.dw5-minelab{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(9cqh,5cqi),1.6rem)}
+.dw5-big{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.05;font-size:clamp(2rem,min(32cqh,20cqi),7rem)}
+.dw5-why{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;flex:none}
+.dw5-chip{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:.9rem}
+.dw-points>.dw5-classtot{justify-content:center;flex:none}
+.dw5-reasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(10em,1fr));gap:var(--s2);margin-top:var(--s2)}
+.dw5-reason{min-height:56px;justify-content:flex-start;text-align:start;white-space:normal;gap:8px}
+/* mood check-in */
+.dw5-moodq{margin:0;flex:none;font-weight:800;font-size:clamp(1rem,min(9cqh,5cqi),1.7rem)}
+.dw5-faces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.dw5-face{flex-direction:column;min-height:72px;padding:6px 2px;gap:4px}
+.dw5-faceic{font-size:clamp(1.5rem,min(16cqh,8cqi),2.8rem)}
+.dw5-facew{font-size:.85rem;font-weight:700;overflow-wrap:anywhere;hyphens:auto}
+.dw5-moodme{margin:0;font-weight:800;min-height:1.2em;font-size:clamp(.95rem,min(7cqh,4.4cqi),1.4rem)}
+@container (max-width:360px){.dw5-faces{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.dw5-moodbars{flex:1 1 auto;min-height:0}
+/* breathing */
+.dw5-bstage{position:relative;flex:1 1 auto;min-height:0;display:grid;place-items:center}
+.dw5-bring{grid-area:1/1;width:min(92cqi,72cqh);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,#5AA9D6 40%,var(--card)) 0 55%,color-mix(in srgb,#5AA9D6 22%,var(--card)) 56%);box-shadow:0 0 0 3px color-mix(in srgb,#5AA9D6 45%,var(--card));transform:scale(.62);transition:transform var(--len,4s) ease-in-out}
+.dw5-bring.is-big{transform:scale(1)}
+.dw5-bwords{grid-area:1/1;position:relative;max-width:min(78cqi,60cqh);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:4px 8px}
+.dw5-bphase{font-size:clamp(.95rem,min(8cqh,6.5cqi),2rem);line-height:1.15;overflow-wrap:anywhere}
+.dw5-bcount{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.2rem,min(14cqh,12cqi),3.2rem);line-height:1}
+@media (prefers-reduced-motion:reduce){.dw5-bring{transition:none;transform:scale(.85)}.dw5-bring.is-big{transform:scale(.85)}}
+/* sticky note */
+.dw-sticky{border-radius:var(--r-sm);padding:var(--s3);margin:0}
+.dw5-note-yellow{background:color-mix(in srgb,#FFD23F 30%,var(--card))}
+.dw5-note-pink{background:color-mix(in srgb,#F28CB4 30%,var(--card))}
+.dw5-note-blue{background:color-mix(in srgb,#5AA9D6 30%,var(--card))}
+.dw5-note-green{background:color-mix(in srgb,#66C792 30%,var(--card))}
+.dw5-notetext{margin:0;white-space:pre-line;font-weight:700;overflow-wrap:anywhere;font-size:clamp(1rem,min(10cqh,6cqi),2rem);line-height:1.3}
+/* checklist */
+.dw5-cltitle{flex:none;font-weight:800;font-size:clamp(1rem,min(9cqh,5cqi),1.8rem);overflow-wrap:anywhere}
+.dw5-cl{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.dw5-clbox{display:flex;align-items:center;gap:var(--s2);width:100%;min-height:44px;padding:6px 10px;border:0;border-radius:var(--r-sm);background:var(--card-2);color:var(--text);font:700 clamp(.95rem,min(7cqh,4.4cqi),1.5rem) var(--font);text-align:start;cursor:default}
+button.dw5-clbox{cursor:pointer}
+button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dw5-clmark{display:grid;place-items:center;flex:none;width:1.4em;height:1.4em;border-radius:6px;box-shadow:inset 0 0 0 2px var(--edge);background:var(--card);font-size:.9em;color:var(--on-current)}
+.dw5-clrow.is-done .dw5-clmark{background:var(--current);box-shadow:none}
+.dw5-clrow.is-done .dw5-cltext{text-decoration:line-through;text-decoration-thickness:2px;color:var(--text-2)}
+.dw5-cltext{overflow-wrap:anywhere;min-width:0}
+.dash-wb .dw5-cl button.dw5-clbox[aria-pressed="true"]{background:var(--card-2);color:var(--text)}
+.dw5-clfoot{justify-content:space-between}
+.dw5-clcount{font-weight:700;color:var(--text-2)}
+/* now and next */
+.dw-nownext{display:grid;grid-template-rows:minmax(0,3fr) minmax(0,2fr);gap:var(--s2)}
+.dw5-nn{display:flex;flex-direction:column;justify-content:safe center;gap:2px;min-height:0;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-nn.is-now{background:var(--current);color:var(--on-current)}
+.dw5-nn[hidden]{display:none}
+.dw5-nnlab{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(.8rem,min(6cqh,4cqi),1.1rem);opacity:.9}
+.dw5-nnname{font-size:clamp(1.1rem,min(13cqh,8cqi),3rem);line-height:1.1;overflow-wrap:anywhere}
+.dw5-nn.is-next .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem)}
+.dw5-nnmeta{font-weight:700;font-size:clamp(.85rem,min(6cqh,4cqi),1.3rem)}
+/* a short schedule: each card is one line (it wraps rather than hide anything) */
+@container (max-height:230px){
+  .dw-nownext{grid-template-rows:auto auto;align-content:center}
+  .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;padding:4px 10px}
+  .dw5-nnlab{font-size:.8rem}
+  .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:1.05rem}
+  .dw5-nnmeta{font-size:.85rem}
+}
+/* settings editors */
+.dash-fieldmsg{margin:0;font-weight:700}
+.dash-fieldmsg.err{color:var(--danger)}
+.dash-places fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column}
+.dash-places legend{margin-bottom:4px}
+@media (max-width:719px){
+  .dw-vframe,.dw5-siteframe,.dw5-camstage{flex:none;height:auto;aspect-ratio:16/10}
+  .dw5-camstage{container-type:size}
+  .dw5-bstage{flex:none;height:220px;container-type:size}
+  .dw-nownext{grid-template-rows:auto auto}
+  .dw5-nn{min-height:96px}
+  .dw5-emptybox{flex:none}
+}
+/* a classmate's Oomba name in a right-to-left page: its own direction, but placed where the page's text starts */
+.dw5-iso{unicode-bidi:isolate}
