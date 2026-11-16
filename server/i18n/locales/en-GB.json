@@ -860,14 +860,14 @@
       },
       "tenframe": {
         "flip": "Swap the colours",
-        "helpUse": "Tap a box: red, then yellow, then empty.\nRed + and Yellow + fill the next box; Take one empties the last.\nThe number bond shows both colours and how many more make ten.\nOptions: one or two frames, the number bond, swap the colours, fill with red."
+        "helpUse": "Red + and Yellow + fill the next box; Take one empties the last.\nThe number bond shows how many more make ten.\nOptions: two frames, swap the colours, fill with red."
       },
       "numline": {
         "desc": "Whole numbers, fractions, decimals and negatives. Tap to place points, drag to jump. Reception to Year 9."
       },
       "graph": {
         "desc": "Bar, line, picture and dot plots from your own numbers or a quick check's totals.",
-        "helpIdeas": "Ask a quick check about favourite fruit, then graph its totals.\nShow the data as bars and as dots: which is easier to read?"
+        "helpIdeas": "Ask a quick check about favourite fruit, then graph its totals."
       },
       "times": {
         "name": "Times tables grid"
@@ -920,8 +920,7 @@
     },
     "tools": {
       "practice": "Practise it",
-      "practiceName": "Practise it: {title}",
-      "helpPractice": "Practice it: opens an Oomba game that practises the same idea."
+      "practiceName": "Practise it: {title}"
     },
     "tpl": {
       "periods": {

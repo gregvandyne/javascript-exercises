@@ -6621,7 +6621,7 @@ right that explains more. Also, for fractions, you should be able to compare, ad
 was added to the same change on request). Code: the tools' shell in `public/js/dash-tools.js` (`helpButton`, `T.howto`),
 the fraction tool in the same file, the maths in `public/js/dash-math.js` (`OPS`, `operate`, `mixedText`...), the
 questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tools.js`, `MATH_TOOLS` in
-`server/services/dash.js`, strings `dash.w.<tool>.howto|helpUse|helpIdeas`, `dash.tools.help*`, `dash.ask.fractions*`.
+`server/services/dash.js`, strings `dash.w.<tool>.howto|helpUse|helpIdeas`, `dash.tools.helpFor|helpClose|helpTry`, `dash.ask.fractions*`.
 - **Which tools.** Every maths tool (`MATH_TOOLS`, tested to be exactly the Teach tools that are sent to students): fraction
   bars, number line, coordinate plane, graph maker, base-ten blocks, place value, ten frames, hundreds chart, area model,
   times table, teaching clock, fraction/decimal/percent, geoboard, pattern blocks, angle maker, 3D shapes and nets,
@@ -6632,12 +6632,24 @@ questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tool
   are at most 72 characters (tested). The readout hints it replaces are gone (number line, area model, clock, geoboard,
   transformations), so there are never two.
 - **ⓘ in the header, top right** (after the pin chip and "More"; 44px; named "How to use Fraction bars"). It opens a small
-  panel inside the widget, not a page modal: what each control does, one or two ideas for class, and what Make a
-  question, Send to students and Practice it do, only where the tool shows them. Closed by ✕, Escape or a tap outside;
-  the focus goes into the panel and back to ⓘ; `aria-expanded`/`aria-controls`; it scrolls when long. A student's copy
-  (in a sheet, with no header) has ⓘ at the end of the instruction row, and the same help without the teacher's ideas,
-  Make a question or Send (it says the copy is theirs instead). **On the projector ⓘ and the panel are hidden**; the
-  instruction stays, larger. The help is built with `textContent` only.
+  panel inside the widget, not a page modal. Closed by ✕, Escape or a tap outside; the focus goes into the panel and back
+  to ⓘ; `aria-expanded`/`aria-controls`. A student's copy (in a sheet, with no header) has ⓘ at the end of the
+  instruction row. **On the projector ⓘ and the panel are hidden**; the instruction stays, larger. The help is built
+  with `textContent` only.
+  - **Decided: the panel is short** (product, after the first version: "Make the information panel much more concise.
+    The one I saw was extremely long"; the fractions panel had six long points, two ideas and a "More" section that ran
+    off the panel). Now: the panel's one heading is its title ("How to use Fraction bars"), then **at most three
+    points** (`helpUse`, one a line, each about 12 words or fewer in English) with only what the one-line instruction
+    doesn't already say (modes, hidden features, keys, Options), then **one "Try:" line** (`helpIdeas`, one idea for
+    class; teacher only, never on a student's copy). About 40-50 words in English a tool (fractions went from about 180
+    words with the "More" section to 39). **No "More" section**: Make a question, Send to students and Practice it say
+    what they do, and a student's copy already says it is theirs under the tool. The code shows at most three points and
+    the first idea whatever the strings hold. Tested in every language: at most 3 points and one idea, at most 12 words a
+    point and 50 in all in English, at most 90 characters a line and 300 a tool in every locale, every locale translated,
+    the old `dash.tools.help*` words gone (only `helpFor`, `helpClose`, `helpTry` stay). The fit check opens each tool's
+    panel in turn (teacher, student and phone, light and dark): it fits the widget without scrolling and nothing in it is
+    cut. The geoboard's help is being rewritten with the geoboard itself in this same format, so its strings are not yet
+    held to the budget.
 - **Fractions: Compare | Add | Subtract | Multiply | Divide.** Compare is unchanged. The operations take two fractions,
   each with − and + on its numerator and denominator: denominators 1-12, numerators 0-12 and at most three wholes (so
   whole numbers 1/1-3/1 work). Add and Subtract cut both into same-size pieces (the least common denominator) on one
@@ -6671,8 +6683,8 @@ questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tool
   the last row ended a pixel past the organizer; they now use its exact height, rounded down. (Found when the fit check's
   new packing put the main-idea organizer alone on the Arabic projector.)
 - No AI, no network, nothing a student does reaches anyone; no prices. Tests: `tests/unit/dash-stage3.test.js` (the
-  maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and help in
-  every language, the panel's code). Strings in all 13 locales (en-GB where spelling differs).
+  maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and short
+  help in every language, the panel's code), `scripts/dash-fit-check.js` (each panel opened). Strings in all 13 locales (en-GB where spelling differs).
 
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 

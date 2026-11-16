@@ -9850,8 +9850,8 @@
         "howto": "Tap a bar to shade parts. Use − and + to change the pieces.",
         "howtoOp": "Use − and + on each number. The answer is drawn below.",
         "howtoMul": "Use − and + on each number. The overlap is the answer.",
-        "helpUse": "Compare, Add, Subtract, Multiply and Divide choose what to do.\nCompare: tap a bar or circle to shade parts; − and + change how many parts. Same-size pieces shows which is bigger.\nAdd and Subtract: − and + set each numerator and denominator. Both are cut into same-size pieces, then the answer is drawn and simplified.\nMultiply: the first fraction shades columns, the second shades rows. Where they overlap is the answer.\nDivide: the first fraction is measured in lots of the second; a part left over is hatched. The steps turn the second over and multiply. The second numerator can't be 0.\nHide the answer keeps it back until you show it.",
-        "helpIdeas": "Show 1/2 + 1/3 with the answer hidden and ask pairs to predict it.\nAsk how many 1/4s fit in 3/4, then try 3/4 ÷ 1/2.",
+        "helpUse": "Choose Compare, Add, Subtract, Multiply or Divide.\nIn Compare, Same-size pieces shows which fraction is bigger.\nHide the answer keeps it back until you show it.",
+        "helpIdeas": "Show 1/2 + 1/3 with the answer hidden and ask pairs to predict it.",
         "mode": "What to do",
         "modeCompare": "Compare",
         "modeAdd": "Add",
@@ -9894,8 +9894,8 @@
         "hint": "Tap the line to place a point, or drag along it to jump.",
         "range": "Up to 240 steps fit on one line.",
         "howto": "Point: tap the line. Jump: drag from one number to another.",
-        "helpUse": "Point puts a dot where you tap; tap it again to take it away.\nJump draws an arrow from where you press to where you let go, and writes the sum below.\nArrow keys move the marker; Enter places a point or starts and ends a jump.\nOptions: the range, and whole numbers, fractions or decimals.",
-        "helpIdeas": "Jump 3/4 three times from 0. Where do you land?\nSet −5 to 5 and show 2 − 5 as a jump back across zero."
+        "helpUse": "Tap a point again to take it away.\nArrow keys move the marker; Enter places a point or a jump.\nOptions: the range, and whole numbers, fractions or decimals.",
+        "helpIdeas": "Jump 3/4 three times from 0. Where do you land?"
       },
       "coord": {
         "name": "Coordinate plane",
@@ -9917,8 +9917,8 @@
         "hint": "Arrow keys move, Enter plots a point.",
         "noLine": "Tap the grid to plot points.",
         "howto": "Tap the grid to plot a point. Use − and + to change the line.",
-        "helpUse": "Tap where lines cross to plot a point; tap it again to take it away.\nSlope − and + change how steep the line is; Starts at moves where it crosses the y-axis.\nThe table gives exact values on the line.\nArrow keys move the cursor; Enter plots.\nOptions: four quadrants or one, size 5 or 10, the line and the table.",
-        "helpIdeas": "Plot three points from the table and ask for the rule.\nChange the slope from 1/2 to 2: what changed, and what stayed the same?"
+        "helpUse": "Tap a point again to take it away.\nSlope changes the steepness; Starts at moves the line up or down.\nThe table gives exact values. Options: one quadrant or four.",
+        "helpIdeas": "Plot three points from the table and ask for the rule."
       },
       "graph": {
         "name": "Graph maker",
@@ -9942,8 +9942,8 @@
         "icon": "Picture",
         "empty": "Add your numbers in Options.",
         "howto": "Pick a kind of graph. Put your own numbers in Options.",
-        "helpUse": "Bar, Line, Picture and Dot draw the same numbers in different ways.\nOptions: a title, and a label and a number for each row (up to 12).\nFor a picture graph, pick the picture and what each one stands for.\nTeachers can also copy a quick check's totals in Options.",
-        "helpIdeas": "Ask a quick check about favorite fruit, then graph its totals.\nShow the data as bars and as dots: which is easier to read?"
+        "helpUse": "Bar, line, picture and dot graphs show the same numbers.\nOptions: a title, and up to 12 labels and numbers.\nTeachers can graph a quick check's totals from Options.",
+        "helpIdeas": "Ask a quick check about favorite fruit, then graph its totals."
       },
       "base10": {
         "name": "Base-ten blocks",
@@ -9962,8 +9962,8 @@
         "drop": "Drag onto the mat",
         "clear": "Clear",
         "howto": "Tap or drag blocks onto the mats. Trade 10 for 1 of the next.",
-        "helpUse": "− and + under a mat take away or add one block.\nDrag a block from a mat's heading onto it to add one; drag one off to take it away.\nThe trade buttons swap 10 ones for 1 ten, or 10 tens for 1 hundred, and back. The number stays the same.\nClear empties the mats.",
-        "helpIdeas": "Show 3 tens and 14 ones: is there a better way to show it?\nBuild 205, then trade to get ready to take away 30."
+        "helpUse": "− and + under a mat take away or add one block.\nDrag a block off a mat to take it away.\nTrading changes the blocks, never the number.",
+        "helpIdeas": "Build 205, then trade to get ready to take away 30."
       },
       "placeval": {
         "name": "Place value chart",
@@ -9984,8 +9984,8 @@
         "hundredths": "Hundredths",
         "thousandths": "Thousandths",
         "howto": "Tap a column, then use − and + to change its digit.",
-        "helpUse": "Tap a column to choose it; − and + take away or add one in that place, carrying and borrowing.\nTimes 10 and Divide by 10 move every digit one place.\nThe expanded form is written below.\nOptions: the discs, the places after the decimal point, clear.",
-        "helpIdeas": "Show 3405, press Times 10: what moved, and what stayed?\nMake 0.25, then ask a student to make it one tenth more."
+        "helpUse": "− and + carry and borrow across the places.\nTimes 10 and Divide by 10 move every digit one place.\nOptions: digit discs, and places after the decimal point.",
+        "helpIdeas": "Show 3405, press Times 10: what moved, and what stayed?"
       },
       "tenframe": {
         "name": "Ten frames",
@@ -10003,8 +10003,8 @@
         "flip": "Swap the colors",
         "makeTen": "{n} more makes the next ten.",
         "howto": "Tap a box for a red counter, again for yellow, again to empty it.",
-        "helpUse": "Tap a box: red, then yellow, then empty.\nRed + and Yellow + fill the next box; Take one empties the last.\nThe number bond shows both colours and how many more make ten.\nOptions: one or two frames, the number bond, swap the colors, fill with red.",
-        "helpIdeas": "Show 7 for two seconds, hide the screen, and ask how many.\nShow 6 red and 3 yellow: what is 6 + 3, and how many more make 10?"
+        "helpUse": "Red + and Yellow + fill the next box; Take one empties the last.\nThe number bond shows how many more make ten.\nOptions: two frames, swap the colors, fill with red.",
+        "helpIdeas": "Show 7 for two seconds, hide the screen, and ask how many."
       },
       "hundreds": {
         "name": "Hundreds chart",
@@ -10021,8 +10021,8 @@
         "hidden": "Hidden number",
         "noSkip": "No skip count",
         "howto": "Tap numbers to shade them. Pick a skip count to see a pattern.",
-        "helpUse": "Tap a number to shade it; tap again to unshade it.\nSkip count lights up counting by 2 to 10.\nHide numbers hides the shaded ones or all of them, to guess what is underneath.\nClear takes the shading and the skip count away. Options: 1-100 or 0-99.",
-        "helpIdeas": "Hide all the numbers, shade one, and ask which number it is.\nCount by 9: what pattern do the digits make?"
+        "helpUse": "Tap a shaded number again to unshade it.\nHide numbers hides the shaded ones, or all, to guess.\nOptions: 1-100 or 0-99. Clear takes it all away.",
+        "helpIdeas": "Count by 9: what pattern do the digits make?"
       },
       "area": {
         "name": "Area model and arrays",
@@ -10037,8 +10037,8 @@
         "noSplit": "0 means no split.",
         "hint": "Split a side to break the product into easier parts.",
         "howto": "Use − and + for rows and columns. Split a side to break it up.",
-        "helpUse": "Rows and Columns − and + set the two numbers.\nArray shows dots in rows (up to 12 × 12); Area shows a rectangle.\nSplit by place value cuts the sides into tens and ones and shows each partial product.\nOptions: choose exactly where each side is split (0 means no split).",
-        "helpIdeas": "Show 14 × 6 as 10 × 6 and 4 × 6, and add the parts.\nShow 3 × 4, then 4 × 3: did the answer change?"
+        "helpUse": "Array shows dots in rows; Area model shows a rectangle.\nSplit by place value shows each partial product.\nOptions: choose exactly where each side is split.",
+        "helpIdeas": "Show 14 × 6 as 10 × 6 and 4 × 6, and add the parts."
       },
       "times": {
         "name": "Times table grid",
@@ -10054,8 +10054,8 @@
         "squaresAre": "Square numbers",
         "clear": "Clear",
         "howto": "Tap a box to light up a fact. Pick what else to show.",
-        "helpUse": "Tap a box to light up its fact.\nThe menu lights up a fact, a row, a column, the square numbers or the turn-around fact.\nHide answers blanks every product, to guess.\nArrow keys move around the grid; Enter lights up a fact.\nClear turns it all off. Options: 10 × 10 or 12 × 12.",
-        "helpIdeas": "Light up the 9 row: what pattern do the digits make?\nHide answers, light up 7 × 8, and ask the class before you show it."
+        "helpUse": "The menu lights a row, a column, squares or turn-around facts.\nHide answers blanks every product, so the class can guess.\nArrow keys and Enter work too. Options: 10 × 10 or 12 × 12.",
+        "helpIdeas": "Light up the 9 row: what pattern do the digits make?"
       },
       "tclock": {
         "name": "Teaching clock",
@@ -10073,8 +10073,8 @@
         "onlyH": "{h} h",
         "onlyM": "{m} min",
         "howto": "Drag a hand to change the time. The other hand follows.",
-        "helpUse": "Drag the minute or the hour hand; the hour hand moves with the minutes.\nThe buttons move 5 minutes or 1 hour back or on.\nArrow keys move a minute, Page Up and Page Down an hour.\nOptions: the digital time, 24-hour time, elapsed time.\nElapsed time: choose the start or the end and set each one; the time between is shown in jumps.",
-        "helpIdeas": "Turn the digital time off and ask the class to read the clock.\nWith elapsed time: from 11:40 to 1:15, how long is that?"
+        "helpUse": "The buttons move 5 minutes or 1 hour back or on.\nOptions: the digital time and 24-hour time.\nElapsed time, in Options, shows how long from start to end.",
+        "helpIdeas": "Turn the digital time off and ask the class to read the clock."
       },
       "fdp": {
         "name": "Fraction, decimal, percent",
@@ -10088,8 +10088,8 @@
         "bottom": "Denominator",
         "outOf": "{n} out of 100",
         "howto": "Use − and + on the numerator and denominator, or tap the grid.",
-        "helpUse": "Numerator and Denominator − and + change the fraction (up to 100).\nThe cards show the same number as a fraction, a decimal and a percent. A decimal that repeats ends in …\nTap the 10 × 10 grid to shade that many hundredths; arrow keys work too.",
-        "helpIdeas": "Ask for 3/8 as a decimal, then set it here to check.\nShade 25 squares: what are three ways to write it?"
+        "helpUse": "The cards show it as a fraction, a decimal and a percent.\nA decimal that repeats ends in …\nTap the 10 × 10 grid to shade hundredths; arrow keys work too.",
+        "helpIdeas": "Ask for 3/8 as a decimal, then set it here to check."
       },
       "board": {
         "name": "Whiteboard",
@@ -10191,8 +10191,8 @@
         "hint": "Drag blocks; they snap to the grid.",
         "empty": "Add a block from the row above. Arrow keys move the chosen block and R turns it.",
         "howto": "Tap a block above to add it. Drag blocks; they snap together.",
-        "helpUse": "Tap a block in the row above to add it.\nDrag a block to move it; it snaps to the grid. Tap it to choose it.\nTurn turns the chosen block; Remove takes it away; Clear empties the board.\nThe readout is the fraction of a hexagon the blocks make.\nArrow keys move the chosen block; R turns it.",
-        "helpIdeas": "How many ways can you cover a hexagon?\nIf the hexagon is 1, what is a trapezoid worth? And a triangle?"
+        "helpUse": "Tap a placed block to choose it, then Turn or Remove.\nThe readout is the fraction of a hexagon the blocks make.\nArrow keys move the chosen block; R turns it.",
+        "helpIdeas": "How many ways can you cover a hexagon?"
       },
       "angle": {
         "name": "Angle maker",
@@ -10210,8 +10210,8 @@
         "ray": "Angle",
         "hint": "Drag the end of the ray, or use the arrow keys.",
         "howto": "Drag the end of the ray, or use − and + to change the angle.",
-        "helpUse": "Drag the end of the ray to open or close the angle.\n− and + change it by one step; the buttons jump to 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc show or hide them. Options: snap to 1°, 5° or 15°.",
-        "helpIdeas": "Hide the protractor and ask for an estimate first.\nOpen it slowly from 0° to 360° and name each kind of angle on the way."
+        "helpUse": "The buttons jump to 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc switch each on or off; Options sets the snap.",
+        "helpIdeas": "Hide the protractor and ask for an estimate first."
       },
       "solids": {
         "name": "3D shapes and nets",
@@ -10238,8 +10238,8 @@
         "shape": "Shape",
         "view": "Fold it: arrow keys. Turn it: Page Up and Page Down.",
         "howto": "Pick a shape. Fold or unfold it; drag sideways to turn it.",
-        "helpUse": "The first menu picks the shape; the second marks its faces, edges or vertices.\nFold folds the net into the solid; press it again to unfold.\nDrag sideways, or press Turn, to turn it round.\nArrow keys fold it a little at a time; Page Up and Page Down turn it.\nThe faces, edges and vertices are counted below.",
-        "helpIdeas": "Show a flat net and ask which solid it makes before you fold it.\nCount the faces, vertices and edges of a prism: does F + V − E = 2?"
+        "helpUse": "The second menu marks the faces, edges or vertices.\nTurn also turns it; faces, edges and vertices are counted below.\nArrow keys fold it; Page Up and Page Down turn it.",
+        "helpIdeas": "Show a flat net and ask which solid it makes before you fold it."
       },
       "transform": {
         "name": "Transformations",
@@ -10269,8 +10269,8 @@
         "rule": "Rule",
         "move": "Transformation",
         "howto": "Pick slide, flip or turn. Drag the shape or use the controls.",
-        "helpUse": "Translate, Reflect and Rotate choose the move.\nTranslate: x and y − and + slide the shape; you can also drag it or use the arrow keys.\nReflect and Rotate: the menu picks the mirror line or the turn about the origin.\nThe rule and each point before and after are shown.\nOptions: the shape, the dashed start, the table.",
-        "helpIdeas": "Reflect in the y-axis: what happens to each x?\nRotate 90° and ask where point A will land before you show it."
+        "helpUse": "Translate: − and + on x and y slide the shape.\nReflect and Rotate: the menu picks the mirror line or turn.\nThe rule and each point before and after are shown.",
+        "helpIdeas": "Rotate 90° and ask where point A will land before you show it."
       },
       "balance": {
         "name": "Balance scale",
@@ -10297,8 +10297,8 @@
         "scale": "Balance scale",
         "start": "Start a new equation where",
         "howto": "Do the same to both sides to keep it level. Find x.",
-        "helpUse": "+ x and − x add or take away an x-box; + 1 and − 1 add or take away a weight.\n÷ shares each side into equal groups and keeps one.\nBoth sides, Left side or Right side: where the next step happens. One side only makes it tip.\nUndo takes back a step; New equation makes a new one.\nOptions: show what x weighs, choose x, start a new equation.",
-        "helpIdeas": "Solve 3x + 2 = x + 8 together, saying each step out loud.\nDo a step to one side only: why did it tip?"
+        "helpUse": "+ x, − x, + 1 and − 1 add or take away boxes and weights.\n÷ shares each side into equal groups and keeps one.\nA step on Left side or Right side only makes it tip.",
+        "helpIdeas": "Solve 3x + 2 = x + 8 together, saying each step out loud."
       },
       "algebra": {
         "name": "Algebra tiles",
@@ -10322,8 +10322,8 @@
         "empty": "Add tiles from the row above.",
         "full": "The mat is full.",
         "howto": "Tap a tile above to add it. Take away zero pairs to simplify.",
-        "helpUse": "The buttons above add +x², −x², +x, −x, +1 or −1.\nTap a tile to choose it; Flip changes its sign, Delete takes it away.\nA positive and a negative of one kind make a zero pair (ringed); Zero pairs takes them away.\nThe expression is written as the tiles lie, then simplified. Clear empties the mat.",
-        "helpIdeas": "Build 2x + 3 − x − 1 and simplify it with zero pairs.\nShow x² + 2x and ask for another way to write it."
+        "helpUse": "Tap a tile to choose it; Flip changes its sign.\nOpposite tiles of one kind are ringed: a zero pair.\nZero pairs takes them away, and the expression is simplified.",
+        "helpIdeas": "Build 2x + 3 − x − 1 and simplify it with zero pairs."
       },
       "coins": {
         "name": "Coins and money",
@@ -10352,8 +10352,8 @@
         "mode": "What to do",
         "units": "Amounts here are in cents or pence (plain numbers for the plain set).",
         "howto": "Tap coins and notes above to add them. Tap a pile to take one.",
-        "helpUse": "Count: tap a coin or note to add it; tap a pile on the mat to take one away. The total is shown.\nMake change: set the cost and what was paid with − and +. The change, the fewest coins and the count-up are shown.\nClear empties the mat.\nOptions: which money, the cost and what was paid.",
-        "helpIdeas": "Make the same total with fewer coins.\nIt costs 37, paid with 100: count up together to find the change."
+        "helpUse": "Count adds up the money; Make change works out the change.\nIn Make change, − and + set the cost and what was paid.\nOptions: which money. Clear empties the mat.",
+        "helpIdeas": "It costs 37, paid with 100: count up together to find the change."
       },
       "chance": {
         "name": "Chance lab",
@@ -10379,8 +10379,8 @@
         "kind": "Experiment",
         "none": "No trials yet",
         "howto": "Pick coin, dice or spinner, then Run. Compare with the dashed line.",
-        "helpUse": "Coin, Dice and Spinner choose the experiment.\nThe menu sets how many trials each Run does; Run does them.\nThe chart shows the results; the dashed line is how many we expect.\nStart again clears them.\nOptions: one die or two (the total), the spinner's parts, any number of trials up to 1000.",
-        "helpIdeas": "Predict, run 10 tosses, then 1000: which is closer to half?\nRoll two dice 1000 times: why is 7 the most common total?"
+        "helpUse": "The menu sets how many trials each Run does.\nStart again clears the results.\nOptions: one die or two, the spinner's parts, up to 1000 trials.",
+        "helpIdeas": "Predict, run 10 tosses, then 1000: which is closer to half?"
       },
       "letters": {
         "name": "Letter tiles",
@@ -10720,12 +10720,7 @@
       "practiceName": "Practice it: {title}",
       "helpFor": "How to use {name}",
       "helpClose": "Close",
-      "helpControls": "What the controls do",
-      "helpIdeas": "Ideas for class",
-      "helpMore": "More",
-      "helpAsk": "Make a question: turns what the tool shows now into a quick check. You can change the words before you send it.",
-      "helpSend": "Send to students: each student gets their own copy to try. Nothing they do with it comes back.",
-      "helpPractice": "Practice it: opens an Oomba game that practices the same idea."
+      "helpTry": "Try:"
     },
     "ask": {
       "fractions": "What fraction is shaded?",

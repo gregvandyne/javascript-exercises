@@ -9427,8 +9427,8 @@
         "howto": "Tik op een strook om delen te kleuren. − en + veranderen de stukjes.",
         "howtoOp": "Gebruik − en + bij elk getal. Het antwoord staat eronder getekend.",
         "howtoMul": "Gebruik − en + bij elk getal. De overlap is het antwoord.",
-        "helpUse": "Vergelijken, Optellen, Aftrekken, Vermenigvuldigen en Delen kiezen wat je doet.\nVergelijken: tik op een strook of cirkel om delen te kleuren; − en + veranderen het aantal delen. Even grote stukjes laat zien welke groter is.\nOptellen en Aftrekken: − en + stellen elke teller en noemer in. Beide worden in even grote stukjes gedeeld, dan wordt het antwoord getekend en vereenvoudigd.\nVermenigvuldigen: de eerste breuk kleurt kolommen, de tweede rijen. Waar ze overlappen is het antwoord.\nDelen: de eerste breuk wordt gemeten in stukken van de tweede; wat overblijft is gearceerd. De stappen draaien de tweede om en vermenigvuldigen. De tweede teller kan geen 0 zijn.\nAntwoord verbergen houdt het antwoord achter tot je het laat zien.",
-        "helpIdeas": "Laat 1/2 + 1/3 zien met het antwoord verborgen en laat tweetallen het voorspellen.\nVraag hoe vaak 1/4 in 3/4 past en probeer dan 3/4 ÷ 1/2.",
+        "helpUse": "Kies Vergelijken, Optellen, Aftrekken, Vermenigvuldigen of Delen.\nBij Vergelijken laat Even grote stukjes zien welke breuk groter is.\nAntwoord verbergen houdt het antwoord achter tot je het laat zien.",
+        "helpIdeas": "Laat 1/2 + 1/3 zien met het antwoord verborgen en laat tweetallen het voorspellen.",
         "mode": "Wat doen",
         "modeCompare": "Vergelijken",
         "modeAdd": "Optellen",
@@ -9471,8 +9471,8 @@
         "hint": "Tik op de lijn voor een punt, of sleep erlangs om te springen.",
         "range": "Er passen tot 240 stappen op één lijn.",
         "howto": "Punt: tik op de lijn. Sprong: sleep van het ene getal naar het andere.",
-        "helpUse": "Punt zet een stip waar je tikt; tik er nog eens op om hem weg te halen.\nSprong tekent een pijl van waar je drukt tot waar je loslaat en schrijft de som eronder.\nDe pijltjestoetsen verplaatsen het merkje; Enter zet een punt of begint en eindigt een sprong.\nOpties: het bereik, en hele getallen, breuken of kommagetallen.",
-        "helpIdeas": "Spring drie keer 3/4 vanaf 0. Waar kom je uit?\nStel −5 tot 5 in en laat 2 − 5 zien als een sprong terug over nul."
+        "helpUse": "Tik nog eens op een punt om het weg te halen.\nPijltjestoetsen verplaatsen het merkje; Enter zet een punt of sprong.\nOpties: het bereik, en hele getallen, breuken of kommagetallen.",
+        "helpIdeas": "Spring drie keer 3/4 vanaf 0. Waar kom je uit?"
       },
       "coord": {
         "name": "Assenstelsel",
@@ -9494,8 +9494,8 @@
         "hint": "Pijltjestoetsen bewegen, Enter zet een punt.",
         "noLine": "Tik op het rooster om punten te zetten.",
         "howto": "Tik op het rooster om een punt te zetten. − en + veranderen de lijn.",
-        "helpUse": "Tik op een kruispunt om een punt te zetten; tik nog eens om het weg te halen.\nHelling − en + maken de lijn steiler of vlakker; Begint bij verschuift waar hij de y-as snijdt.\nDe tabel geeft precieze waarden op de lijn.\nDe pijltjestoetsen verplaatsen de cursor; Enter zet een punt.\nOpties: vier kwadranten of één, grootte 5 of 10, de lijn en de tabel.",
-        "helpIdeas": "Zet drie punten uit de tabel en vraag naar de regel.\nVerander de helling van 1/2 naar 2: wat veranderde er, en wat bleef hetzelfde?"
+        "helpUse": "Tik nog eens op een punt om het weg te halen.\nHelling verandert hoe steil de lijn is; Begint bij schuift hem op of neer.\nDe tabel geeft precieze waarden. Opties: één of vier kwadranten.",
+        "helpIdeas": "Zet drie punten uit de tabel en vraag naar de regel."
       },
       "graph": {
         "name": "Grafiekmaker",
@@ -9519,8 +9519,8 @@
         "icon": "Plaatje",
         "empty": "Zet je getallen in Opties.",
         "howto": "Kies een soort diagram. Zet je eigen getallen in Opties.",
-        "helpUse": "Staaf-, lijn-, beeld- en stippendiagram tekenen dezelfde getallen op een andere manier.\nOpties: een titel, en per rij een naam en een getal (tot 12).\nBij een beelddiagram kies je het plaatje en wat elk plaatje waard is.\nLeraren kunnen in Opties ook de totalen van een peiling overnemen.",
-        "helpIdeas": "Doe een peiling over lievelingsfruit en zet de totalen in een diagram.\nLaat de gegevens als staven en als stippen zien: wat leest makkelijker?"
+        "helpUse": "Staaf, lijn, beeld en stippen tonen dezelfde getallen.\nOpties: een titel en tot 12 labels met getallen.\nLeraren kunnen in Opties de totalen van een snelle vraag gebruiken.",
+        "helpIdeas": "Doe een peiling over lievelingsfruit en zet de totalen in een diagram."
       },
       "base10": {
         "name": "MAB-blokjes",
@@ -9539,8 +9539,8 @@
         "drop": "Sleep naar de mat",
         "clear": "Wissen",
         "howto": "Tik of sleep blokken op de matten. Ruil 10 voor 1.",
-        "helpUse": "− en + onder een mat halen een blok weg of leggen er een bij.\nSleep een blok van de kop van een mat erop om er een bij te leggen; sleep er een af om hem weg te halen.\nDe ruilknoppen ruilen 10 eenheden voor 1 tiental, of 10 tientallen voor 1 honderdtal, en terug. Het getal blijft hetzelfde.\nWissen maakt de matten leeg.",
-        "helpIdeas": "Laat 3 tientallen en 14 eenheden zien: kan het handiger?\nLeg 205 en ruil zodat je er 30 af kunt halen."
+        "helpUse": "− en + onder een mat halen een blok weg of leggen er een bij.\nSleep een blok van de mat om het weg te halen.\nInwisselen verandert de blokken, nooit het getal.",
+        "helpIdeas": "Leg 205 en ruil zodat je er 30 af kunt halen."
       },
       "placeval": {
         "name": "Positieschema",
@@ -9561,8 +9561,8 @@
         "hundredths": "Honderdsten",
         "thousandths": "Duizendsten",
         "howto": "Tik op een kolom en verander het cijfer met − en +.",
-        "helpUse": "Tik op een kolom om hem te kiezen; − en + halen op die plek één weg of leggen er één bij, met lenen en onthouden.\nKeer 10 en Gedeeld door 10 schuiven elk cijfer één plaats op.\nDe uitgeschreven vorm staat eronder.\nOpties: de fiches, de plaatsen na de komma, wissen.",
-        "helpIdeas": "Laat 3405 zien en druk op Keer 10: wat schoof op en wat bleef?\nMaak 0,25 en laat een leerling er een tiende bij doen."
+        "helpUse": "− en + lenen en onthouden over de posities heen.\nKeer 10 en Gedeeld door 10 schuiven elk cijfer één plek op.\nOpties: fiches, en plaatsen achter de komma.",
+        "helpIdeas": "Laat 3405 zien en druk op Keer 10: wat schoof op en wat bleef?"
       },
       "tenframe": {
         "name": "Rekenrekjes van tien",
@@ -9580,8 +9580,8 @@
         "flip": "Kleuren wisselen",
         "makeTen": "Nog {n} tot het volgende tiental.",
         "howto": "Tik op een vakje: rood, dan geel, dan leeg.",
-        "helpUse": "Tik op een vakje: rood, dan geel, dan leeg.\nRood + en Geel + vullen het volgende vakje; Eén eraf maakt het laatste leeg.\nDe splitsing laat beide kleuren zien en hoeveel er nog bij moeten tot tien.\nOpties: één of twee rekenrekjes, de splitsing, kleuren wisselen, vullen met rood.",
-        "helpIdeas": "Laat 7 twee seconden zien, bedek het scherm en vraag hoeveel het er waren.\nLaat 6 rode en 3 gele zien: hoeveel is 6 + 3, en hoeveel moeten er nog bij tot 10?"
+        "helpUse": "Rood + en Geel + vullen het volgende vak; Eén eraf leegt het laatste.\nDe splitsing laat zien hoeveel er nog tot tien nodig zijn.\nOpties: twee rekenrekjes, kleuren wisselen, vullen met rood.",
+        "helpIdeas": "Laat 7 twee seconden zien, bedek het scherm en vraag hoeveel het er waren."
       },
       "hundreds": {
         "name": "Honderdveld",
@@ -9598,8 +9598,8 @@
         "hidden": "Verborgen getal",
         "noSkip": "Geen sprongen",
         "howto": "Tik op getallen om ze te kleuren. Kies sprongen tellen voor een patroon.",
-        "helpUse": "Tik op een getal om het te kleuren; tik nog eens om de kleur weg te halen.\nSprongen tellen licht de rijen van 2 tot 10 op.\nGetallen verbergen verbergt de gekleurde of alle getallen, om te raden.\nWissen haalt kleuren en sprongen weg. Opties: 1-100 of 0-99.",
-        "helpIdeas": "Verberg alle getallen, kleur er één en vraag welk getal het is.\nTel in sprongen van 9: welk patroon maken de cijfers?"
+        "helpUse": "Tik nog eens op een gekleurd getal om de kleur weg te halen.\nGetallen verbergen dekt de gekleurde of alle getallen af, om te raden.\nOpties: 1-100 of 0-99. Wissen haalt alles weg.",
+        "helpIdeas": "Tel in sprongen van 9: welk patroon maken de cijfers?"
       },
       "area": {
         "name": "Oppervlaktemodel en roosters",
@@ -9614,8 +9614,8 @@
         "noSplit": "0 betekent niet splitsen.",
         "hint": "Splits een kant om de som in makkelijkere stukjes te verdelen.",
         "howto": "Stel rijen en kolommen in met − en +. Splits een zijde om te verdelen.",
-        "helpUse": "Rijen en Kolommen − en + stellen de twee getallen in.\nRooster laat stippen in rijen zien (tot 12 × 12); Oppervlaktemodel laat een rechthoek zien.\nSplitsen per positie verdeelt de zijden in tientallen en eenheden en laat elk deelproduct zien.\nOpties: kies precies waar elke zijde gesplitst wordt (0 = niet splitsen).",
-        "helpIdeas": "Laat 14 × 6 zien als 10 × 6 en 4 × 6 en tel de delen op.\nLaat 3 × 4 zien en dan 4 × 3: is het antwoord anders?"
+        "helpUse": "Rooster toont stippen in rijen; Oppervlaktemodel toont een rechthoek.\nSplitsen per positie toont elk deelproduct.\nOpties: kies precies waar elke zijde gesplitst wordt.",
+        "helpIdeas": "Laat 14 × 6 zien als 10 × 6 en 4 × 6 en tel de delen op."
       },
       "times": {
         "name": "Tafelkaart",
@@ -9631,8 +9631,8 @@
         "squaresAre": "Kwadraten",
         "clear": "Wissen",
         "howto": "Tik op een vakje om een som op te lichten. Kies wat je nog toont.",
-        "helpUse": "Tik op een vakje om de som op te lichten.\nHet menu licht een som, een rij, een kolom, de kwadraten of de omkeersom op.\nAntwoorden verbergen maakt elk antwoord leeg, om te raden.\nDe pijltjestoetsen gaan door het rooster; Enter licht een som op.\nWissen zet alles uit. Opties: 10 × 10 of 12 × 12.",
-        "helpIdeas": "Licht de rij van 9 op: welk patroon maken de cijfers?\nVerberg de antwoorden, licht 7 × 8 op en vraag het de klas voor je het laat zien."
+        "helpUse": "Het menu licht een rij, kolom, kwadraten of omkeersommen op.\nAntwoorden verbergen dekt elk product af, zodat de klas kan raden.\nPijltjestoetsen en Enter werken ook. Opties: 10 × 10 of 12 × 12.",
+        "helpIdeas": "Licht de rij van 9 op: welk patroon maken de cijfers?"
       },
       "tclock": {
         "name": "Oefenklok",
@@ -9650,8 +9650,8 @@
         "onlyH": "{h} u",
         "onlyM": "{m} min",
         "howto": "Sleep een wijzer om de tijd te veranderen. De andere gaat mee.",
-        "helpUse": "Sleep de grote of de kleine wijzer; de kleine wijzer loopt mee met de minuten.\nDe knoppen gaan 5 minuten of 1 uur terug of vooruit.\nDe pijltjestoetsen gaan een minuut, Page Up en Page Down een uur.\nOpties: de digitale tijd, 24-uurstijd, verstreken tijd.\nVerstreken tijd: kies het begin of het eind en stel ze allebei in; de tijd ertussen staat er in sprongen.",
-        "helpIdeas": "Zet de digitale tijd uit en laat de klas de klok lezen.\nMet verstreken tijd: van 11:40 tot 13:15, hoe lang is dat?"
+        "helpUse": "De knoppen zetten de tijd 5 minuten of 1 uur terug of vooruit.\nOpties: de digitale tijd en 24-uurstijd.\nVerstreken tijd, in Opties, toont hoe lang het van begin tot eind is.",
+        "helpIdeas": "Zet de digitale tijd uit en laat de klas de klok lezen."
       },
       "fdp": {
         "name": "Breuk, kommagetal, procent",
@@ -9665,8 +9665,8 @@
         "bottom": "Noemer",
         "outOf": "{n} van de 100",
         "howto": "Verander teller en noemer met − en +, of tik op het rooster.",
-        "helpUse": "Teller en Noemer − en + veranderen de breuk (tot 100).\nDe kaarten laten hetzelfde getal zien als breuk, kommagetal en procent. Een repeterend kommagetal eindigt op …\nTik op het rooster van 10 × 10 om zoveel honderdsten te kleuren; pijltjestoetsen werken ook.",
-        "helpIdeas": "Vraag naar 3/8 als kommagetal en controleer het dan hier.\nKleur 25 vakjes: wat zijn drie manieren om dat te schrijven?"
+        "helpUse": "De kaarten tonen het als breuk, kommagetal en procent.\nEen repeterend kommagetal eindigt op …\nTik op het 10 × 10-rooster om honderdsten te kleuren; pijltjestoetsen werken ook.",
+        "helpIdeas": "Vraag naar 3/8 als kommagetal en controleer het dan hier."
       },
       "board": {
         "name": "Whiteboard",
@@ -9768,8 +9768,8 @@
         "hint": "Sleep de blokken; ze klikken op het rooster vast.",
         "empty": "Voeg een blok toe uit de rij hierboven. De pijltjestoetsen verplaatsen het gekozen blok en R draait het.",
         "howto": "Tik op een blokje bovenaan. Sleep blokjes: ze klikken vast.",
-        "helpUse": "Tik op een blokje in de rij bovenaan om het toe te voegen.\nSleep een blokje om het te verplaatsen; het klikt vast in het rooster. Tik erop om het te kiezen.\nDraaien draait het gekozen blokje; Weghalen haalt het weg; Wissen maakt het bord leeg.\nDe uitkomst zegt welk deel van een zeshoek de blokjes zijn.\nDe pijltjestoetsen verplaatsen het gekozen blokje; R draait het.",
-        "helpIdeas": "Op hoeveel manieren kun je een zeshoek bedekken?\nAls de zeshoek 1 is, wat is een trapezium dan waard? En een driehoek?"
+        "helpUse": "Tik op een blok op het bord om het te kiezen, dan Draaien of Weghalen.\nDe uitkomst is het deel van een zeshoek dat de blokken vormen.\nPijltjestoetsen verplaatsen het gekozen blok; R draait het.",
+        "helpIdeas": "Op hoeveel manieren kun je een zeshoek bedekken?"
       },
       "angle": {
         "name": "Hoekenmaker",
@@ -9787,8 +9787,8 @@
         "ray": "Hoek",
         "hint": "Sleep het uiteinde van de halve lijn of gebruik de pijltjestoetsen.",
         "howto": "Sleep het eind van de halve lijn, of verander de hoek met − en +.",
-        "helpUse": "Sleep het eind van de halve lijn om de hoek te openen of te sluiten.\n− en + veranderen hem één stap; de knoppen springen naar 45°, 90°, 135°, 180° of 270°.\nDe grootte en de naam van de hoek staan eronder.\nGradenboog en Boog laten ze zien of verbergen ze. Opties: stappen van 1°, 5° of 15°.",
-        "helpIdeas": "Verberg de gradenboog en laat eerst schatten.\nOpen hem langzaam van 0° tot 360° en noem onderweg elke soort hoek."
+        "helpUse": "De knoppen springen naar 45°, 90°, 135°, 180° of 270°.\nDe grootte en de naam van de hoek staan eronder.\nGradenboog en Boog zet je aan of uit; Opties stelt het vastklikken in.",
+        "helpIdeas": "Verberg de gradenboog en laat eerst schatten."
       },
       "solids": {
         "name": "Ruimtefiguren en bouwplaten",
@@ -9815,8 +9815,8 @@
         "shape": "Figuur",
         "view": "Vouwen: pijltjestoetsen. Draaien: Page Up en Page Down.",
         "howto": "Kies een figuur. Vouw hem of vouw hem open; sleep opzij om te draaien.",
-        "helpUse": "Het eerste menu kiest de figuur; het tweede markeert zijvlakken, ribben of hoekpunten.\nVouwen vouwt de uitslag tot de figuur; druk nog eens om hem open te vouwen.\nSleep opzij, of druk op Draaien, om hem rond te draaien.\nDe pijltjestoetsen vouwen hem stukje voor stukje; Page Up en Page Down draaien hem.\nZijvlakken, ribben en hoekpunten worden eronder geteld.",
-        "helpIdeas": "Laat een platte uitslag zien en vraag welke figuur het wordt voor je hem vouwt.\nTel zijvlakken, hoekpunten en ribben van een prisma: geldt Z + H − R = 2?"
+        "helpUse": "Het tweede menu markeert de vlakken, ribben of hoekpunten.\nDraaien draait hem ook; vlakken, ribben en hoekpunten worden geteld.\nPijltjestoetsen vouwen hem; Page Up en Page Down draaien hem.",
+        "helpIdeas": "Laat een platte uitslag zien en vraag welke figuur het wordt voor je hem vouwt."
       },
       "transform": {
         "name": "Transformaties",
@@ -9846,8 +9846,8 @@
         "rule": "Regel",
         "move": "Transformatie",
         "howto": "Kies verschuiven, spiegelen of draaien. Sleep de vorm.",
-        "helpUse": "Verschuiven, Spiegelen en Draaien kiezen de beweging.\nVerschuiven: x en y − en + schuiven de vorm; je kunt hem ook slepen of de pijltjestoetsen gebruiken.\nSpiegelen en Draaien: het menu kiest de spiegellijn of de draaiing om de oorsprong.\nDe regel en elk punt voor en na staan erbij.\nOpties: de vorm, het gestippelde begin, de tabel.",
-        "helpIdeas": "Spiegel in de y-as: wat gebeurt er met elke x?\nDraai 90° en vraag waar punt A terechtkomt voor je het laat zien."
+        "helpUse": "Verschuiven: − en + bij x en y schuiven de figuur.\nSpiegelen en Draaien: het menu kiest de spiegellijn of draaiing.\nDe regel en elk punt ervoor en erna worden getoond.",
+        "helpIdeas": "Draai 90° en vraag waar punt A terechtkomt voor je het laat zien."
       },
       "balance": {
         "name": "Balans",
@@ -9874,8 +9874,8 @@
         "scale": "Balans",
         "start": "Nieuwe vergelijking met",
         "howto": "Doe aan beide kanten hetzelfde, dan blijft hij in evenwicht. Vind x.",
-        "helpUse": "+ x en − x leggen een x-doos erbij of halen er een af; + 1 en − 1 een gewichtje.\n÷ verdeelt elke kant in gelijke groepen en houdt er één.\nBeide kanten, Linkerkant of Rechterkant: waar de volgende stap gebeurt. Aan één kant laat hem doorslaan.\nOngedaan maken haalt een stap terug; Nieuwe vergelijking maakt een nieuwe.\nOpties: laten zien wat x weegt, x kiezen, een nieuwe vergelijking beginnen.",
-        "helpIdeas": "Los samen 3x + 2 = x + 8 op en zeg elke stap hardop.\nDoe een stap aan één kant: waarom slaat hij door?"
+        "helpUse": "+ x, − x, + 1 en − 1 leggen dozen en gewichten erbij of halen ze weg.\n÷ verdeelt elke kant in gelijke groepen en houdt er één.\nEen stap alleen op Linkerkant of Rechterkant laat hem kantelen.",
+        "helpIdeas": "Los samen 3x + 2 = x + 8 op en zeg elke stap hardop."
       },
       "algebra": {
         "name": "Algebrategels",
@@ -9899,8 +9899,8 @@
         "empty": "Voeg tegels toe uit de rij hierboven.",
         "full": "De mat is vol.",
         "howto": "Tik op een tegel bovenaan om hem toe te voegen. Haal nulparen weg.",
-        "helpUse": "De knoppen bovenaan leggen +x², −x², +x, −x, +1 of −1 erbij.\nTik op een tegel om hem te kiezen; Omdraaien verandert het teken, Delete haalt hem weg.\nEen positieve en een negatieve van dezelfde soort zijn een nulpaar (omcirkeld); Nulparen haalt ze weg.\nDe uitdrukking staat er zoals de tegels liggen, en vereenvoudigd. Wissen maakt de mat leeg.",
-        "helpIdeas": "Leg 2x + 3 − x − 1 en vereenvoudig met nulparen.\nLaat x² + 2x zien en vraag naar een andere manier om het te schrijven."
+        "helpUse": "Tik op een tegel om hem te kiezen; Omdraaien verandert het teken.\nTegengestelde tegels van één soort krijgen een ring: een nulpaar.\nNulparen haalt ze weg en de uitdrukking wordt vereenvoudigd.",
+        "helpIdeas": "Leg 2x + 3 − x − 1 en vereenvoudig met nulparen."
       },
       "coins": {
         "name": "Munten en geld",
@@ -9929,8 +9929,8 @@
         "mode": "Wat doen",
         "units": "Bedragen zijn hier in centen of pence (gewone getallen bij de gewone set).",
         "howto": "Tik op munten en briefjes bovenaan. Tik op een stapel voor één eraf.",
-        "helpUse": "Tellen: tik op een munt of briefje om het toe te voegen; tik op een stapel op de mat om er een weg te halen. Het totaal staat erbij.\nWisselgeld geven: stel met − en + in wat het kost en waarmee betaald is. Het wisselgeld, de minste munten en het optellen staan erbij.\nWissen maakt de mat leeg.\nOpties: welk geld, de prijs en waarmee betaald is.",
-        "helpIdeas": "Maak hetzelfde totaal met minder munten.\nHet kost 37, betaald met 100: tel samen op om het wisselgeld te vinden."
+        "helpUse": "Tellen telt het geld op; Wisselgeld geven rekent het wisselgeld uit.\nBij Wisselgeld geven stellen − en + de prijs en het betaalde bedrag in.\nOpties: welk geld. Wissen maakt de mat leeg.",
+        "helpIdeas": "Het kost 37, betaald met 100: tel samen op om het wisselgeld te vinden."
       },
       "chance": {
         "name": "Kanslab",
@@ -9956,8 +9956,8 @@
         "kind": "Proef",
         "none": "Nog geen worpen",
         "howto": "Kies munt, dobbelstenen of draairad en druk op Gooien.",
-        "helpUse": "Munt, Dobbelstenen en Draairad kiezen het experiment.\nHet menu bepaalt hoeveel pogingen elke keer Gooien doet; Gooien doet ze.\nHet diagram laat de uitkomsten zien; de stippellijn is hoeveel we verwachten.\nOpnieuw beginnen wist ze.\nOpties: één of twee dobbelstenen (het totaal), de delen van het draairad, tot 1000 pogingen.",
-        "helpIdeas": "Voorspel, gooi 10 keer en dan 1000: wat zit dichter bij de helft?\nGooi twee dobbelstenen 1000 keer: waarom komt 7 het vaakst?"
+        "helpUse": "Het menu kiest hoeveel pogingen Gooien elke keer doet.\nOpnieuw beginnen wist de resultaten.\nOpties: één of twee dobbelstenen, de delen van het draairad, tot 1000 pogingen.",
+        "helpIdeas": "Voorspel, gooi 10 keer en dan 1000: wat zit dichter bij de helft?"
       },
       "letters": {
         "name": "Lettertegels",
@@ -10297,12 +10297,7 @@
       "practiceName": "Oefenen: {title}",
       "helpFor": "Zo werkt {name}",
       "helpClose": "Sluiten",
-      "helpControls": "Wat de knoppen doen",
-      "helpIdeas": "Ideeën voor de klas",
-      "helpMore": "Verder",
-      "helpAsk": "Maak een vraag: maakt van wat het hulpmiddel nu laat zien een korte peiling. Je kunt de woorden aanpassen voor je hem stuurt.",
-      "helpSend": "Naar de klas sturen: elke leerling krijgt een eigen kopie om te proberen. Niets wat ze ermee doen komt terug.",
-      "helpPractice": "Oefenen: opent een Oomba-spel dat hetzelfde oefent."
+      "helpTry": "Probeer:"
     },
     "ask": {
       "fractions": "Welke breuk is gekleurd?",

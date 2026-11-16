@@ -646,9 +646,10 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-helphead{display:flex;align-items:center;gap:var(--s2);margin-bottom:4px}
 .dt-helpt{flex:1 1 auto;min-width:0;margin:0;font-size:1rem;font-weight:800;overflow-wrap:break-word}
 .dt-help .dt-helpx{flex:none;min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
-.dt-helph{margin:var(--s2) 0 2px;font-size:.78rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--text-2)}
 .dt-helpl{margin:0;padding-inline-start:1.2em}
-.dt-helpl li{margin:2px 0;overflow-wrap:break-word}
+.dt-helpl li{margin:3px 0;overflow-wrap:break-word}
+.dt-helptry{margin:var(--s2) 0 0;padding-top:var(--s2);border-top:1px solid var(--line);overflow-wrap:break-word}
+.dt-helptryl{margin-inline-end:.35em;font-weight:800}
 .dash-projector .dt-info,.dash-projector .dt-help{display:none!important}
 /* the shared look of SVG models: thick lines readable from the back of the room */
 .dt svg{overflow:visible}
