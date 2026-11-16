@@ -6832,3 +6832,24 @@ are shown. Make the name Ms. Haberle's."
   weekday (scripts/how-clock.mjs) and sets the browser's clock and time zone to match, so the schedule shows "Morning
   meeting, then Math".
 - The video file is not in the repo (it is large and is remade by the script).
+
+## Dashboard layout tour on the landing (16 Nov 2026)
+Owner: "make some sort of cool parallax that shows all of the different dashboards and everything it offers."
+- **Where:** a section on "/" right after Class dashboards (`#dash-tour`, server/routes/landing.js): every ready-made
+  layout (services/dash.js `LAYOUT_TEMPLATES`, so a new one shows up by itself) with its real screenshot, its name and
+  description (the app's own `dash.tpl.*` words), and chips for its widgets; then "55 widgets to build your own" with
+  every widget in `WIDGETS` (the app's `dash.w.*.name`). New words: `landing.dtour.*` in all 13 languages.
+- **Motion** (public/js/landing.js `startTour`, on screens at least 1000 × 620 with motion allowed): the section stays on
+  screen (sticky) while the page scrolls through about 78vh per layout; the layouts come forward like a deck (the next
+  ones stacked behind, lifted and dimmed; the one leaving tips back and lifts away), each resting a moment in front, with
+  its words beside it and an icon row for where you are. The widget rows slide sideways in opposite directions as the
+  page scrolls, placed so it works right to left too. Transforms, opacity and a brightness filter only, one frame per
+  scroll burst, passive listeners.
+- **Without it** (no script, reduced motion, or narrower than 1000px): a plain list, each layout's words beside or above
+  its picture, and the widgets as a wrapped cloud. Everything is in the page as sent.
+- **Pictures:** `dash-layout-<id>` from scripts/how-shots.js (`--only dash`), 1600 × 1000 CSS px saved 2048 wide, each
+  layout in use by the demo class (moods, a quick check answered, the help queue, groups and points, the timers, the
+  wheel and dice, the video widget with a plain stand-in as the walkthrough video has).
+- **Checks:** tests/unit/teacher-landing.test.js (every layout and its picture, every widget once, the count, translated
+  in Arabic, no `.is-tour` in the page as sent); landing-audit passes at all six sizes, dark and light; looked at in
+  English, Arabic (right to left) and on a phone, with reduced motion and without JavaScript.

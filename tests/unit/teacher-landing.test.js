@@ -199,3 +199,25 @@ test('class dashboards: a section with the real screenshots, in every language, 
     assert.doesNotMatch(sec, /lang="en"/, `${code}: the dashboards section is translated`);
   }
 });
+
+test('the layout tour: every ready-made layout with its real screenshot and widgets, then every widget; complete without script', async () => {
+  const fs = await import('node:fs');
+  const D = await import('../../server/services/dash.js');
+  const s = (await call(null, '/')).text;
+  const sec = s.slice(s.indexOf('id="dash-tour"'), s.indexOf('</section>', s.indexOf('id="dash-tour"')));
+  assert.ok(sec.length > 500);
+  for (const x of D.LAYOUT_TEMPLATES) {
+    assert.ok(sec.includes(`/img/how/dash-layout-${x.id}-d-1024.webp`), x.id);
+    assert.ok(fs.existsSync(new URL(`../../public/img/how/dash-layout-${x.id}-d-2048.webp`, import.meta.url)), `${x.id} picture is in the repo`);
+  }
+  assert.equal([...sec.matchAll(/class="lp-dt-item"/g)].length, D.LAYOUT_TEMPLATES.length);
+  // Every widget is named once in the rows, with the real count in the heading.
+  const rows = sec.slice(sec.indexOf('class="lp-dt-widgets"'));
+  assert.equal([...rows.matchAll(/<li>/g)].length, D.WIDGETS.length);
+  assert.match(rows, new RegExp(`>${D.WIDGETS.length} widgets to build your own<`));
+  // The deck is the script's (.is-tour); the page as sent is the plain list.
+  assert.doesNotMatch(sec, /is-tour/);
+  const ar = (await call(null, '/ar')).text;
+  const arSec = ar.slice(ar.indexOf('id="dash-tour"'), ar.indexOf('</section>', ar.indexOf('id="dash-tour"')));
+  assert.doesNotMatch(arSec, /lang="en"/, 'translated');
+});

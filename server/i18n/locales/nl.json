@@ -7453,6 +7453,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Kant-en-klare indelingen",
+      "h": "Een indeling voor elk deel van de dag",
+      "lead": "Begin de ochtend, geef een les, begeleid groepswerk, kom tot rust bij stil werken en neem een speelpauze. Wissel met één tik, en de schermen van leerlingen volgen.",
+      "widgets": "{count} widgets om je eigen indeling te maken"
+    },
     "dash": {
       "kicker": "Nieuw: klasdashboards",
       "h": "Eén scherm voor de hele schooldag",

@@ -7453,6 +7453,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Fertige Layouts",
+      "h": "Ein Layout für jeden Teil des Tages",
+      "lead": "Starte in den Morgen, unterrichte eine Stunde, leite Gruppenarbeit, komm in der Stillarbeit zur Ruhe und mach eine Spielpause. Mit einem Tippen wechseln, und die Bildschirme der Kinder folgen.",
+      "widgets": "{count} Widgets für dein eigenes Layout"
+    },
     "dash": {
       "kicker": "Neu: Klassen-Dashboards",
       "h": "Ein Bildschirm für den ganzen Schultag",

@@ -7970,6 +7970,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Ready-made layouts",
+      "h": "A layout for every part of the day",
+      "lead": "Start the morning, teach a lesson, run group work, settle into quiet work and take a fun break. Switch in one tap, and students' screens follow.",
+      "widgets": "{count} widgets to build your own"
+    },
     "dash": {
       "kicker": "New: class dashboards",
       "h": "One screen for the whole school day",

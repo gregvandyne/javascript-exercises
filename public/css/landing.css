@@ -433,3 +433,40 @@ main{position:relative;z-index:1}
 .lp-gc .lp-list{margin-top:0}
 .lp-gc .lp-small a{color:var(--link);font-weight:700}
 .lp-research{text-align:center}
+
+/* ---- the layout tour (#dash-tour): a list of cards; .is-tour (public/js/landing.js, wide screens with motion) makes it a
+   deck that plays as the page scrolls. Each layout's words and picture sit in one item, so the plain list needs no script. */
+.lp-dt-list{list-style:none;margin:0;padding:0;display:grid;gap:clamp(40px,6vw,72px)}
+.lp-dt-item{display:grid;gap:22px 48px;align-items:center}
+@media (min-width:900px){.lp-dt-item{grid-template-columns:minmax(0,.78fr) minmax(0,1.4fr)}}
+.lp-dt-text h3{font-size:clamp(1.5rem,1.2rem + 1.2vw,2.3rem);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.lp-dt-text>p:not(.lp-dt-n){color:var(--text-2);font-size:clamp(1rem,.95rem + .25vw,1.15rem);margin:0}
+.lp-dt-n{text-align:start;font-weight:800;font-size:14px;letter-spacing:.14em;color:var(--accent-text);margin:0 0 10px}
+.lp-dt-n span{color:var(--muted)}
+.lp-dt-chips,.lp-dt-row{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.lp-dt-chips li,.lp-dt-row li{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--card-solid);border:1px solid var(--line-2);font-weight:650;font-size:15px;white-space:nowrap;color:var(--text)}
+.lp-dt-fig{margin:0}
+.lp-dt-fig img{display:block;width:100%;height:auto}
+.lp-dt-dots{display:none}
+.lp-dt-widgets{position:relative;margin-top:clamp(56px,7vw,96px);text-align:center}
+.lp-dt-wh{font-size:clamp(1.3rem,1.1rem + .8vw,1.9rem);margin:0 auto 22px;padding-inline:var(--gut);letter-spacing:-.015em}
+.lp-dt-row{justify-content:center;padding-inline:var(--gut);max-width:1200px;margin:10px auto 0}
+/* With motion, the widget rows are one line each, slid sideways as the page scrolls (two directions). */
+.lp-ready .lp-dt-row.is-slide{flex-wrap:nowrap;justify-content:flex-start;max-width:none;width:max-content;padding:0;will-change:transform}
+.lp-ready .lp-dt-widgets.is-slide{overflow:hidden;padding-block:6px}
+
+/* The deck: the section stays on screen (sticky) while the page scrolls through it; the layout in front has its words. */
+.lp-dt.is-tour{height:calc(var(--n) * 78vh + 100vh)}
+.is-tour .lp-dt-stage{position:sticky;top:var(--bar);height:calc(100vh - var(--bar));display:flex;align-items:center;overflow:hidden}
+.is-tour .lp-dt-in{position:relative;width:100%;height:min(78vh,720px)}
+.is-tour .lp-dt-list{display:block;position:absolute;inset:0;perspective:1600px}
+.is-tour .lp-dt-item{position:absolute;inset:0;grid-template-columns:minmax(0,.72fr) minmax(0,1.45fr);pointer-events:none}
+.is-tour .lp-dt-item.on{pointer-events:auto}
+.is-tour .lp-dt-text{opacity:var(--o,0);transform:translate3d(0,calc(var(--d,0) * 46px),0)}
+.is-tour .lp-dt-fig{transform-origin:50% 100%;opacity:var(--fo,1);
+  transform:translate3d(calc(var(--ahead,0) * 2.4%),calc(var(--past,0) * 118% - var(--ahead,0) * 11%),0) scale(calc(1 - var(--ahead,0) * .07)) rotateX(calc(var(--past,0) * -16deg));
+  filter:brightness(calc(1 - var(--ahead,0) * .16))}
+.is-tour .lp-dt-fig .lp-screen{box-shadow:var(--shadow),0 0 0 6px rgba(184,179,161,.08),0 30px 80px -30px rgba(0,0,0,.55)}
+.is-tour .lp-dt-dots{display:flex;gap:10px;list-style:none;margin:0;padding:0;position:absolute;left:0;bottom:-6px}
+.is-tour .lp-dt-dots li{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--line-2);background:var(--card-solid);font-size:18px;opacity:.55;transition:opacity .3s,transform .3s}
+.is-tour .lp-dt-dots li.on{opacity:1;transform:scale(1.12);border-color:var(--mint)}

@@ -7452,6 +7452,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Diseños listos",
+      "h": "Un diseño para cada momento del día",
+      "lead": "Empieza la mañana, da una lección, organiza el trabajo en grupo, pasa al trabajo en silencio y tomen un descanso divertido. Cambia con un toque y las pantallas de los estudiantes te siguen.",
+      "widgets": "{count} widgets para crear el tuyo"
+    },
     "dash": {
       "kicker": "Nuevo: paneles de clase",
       "h": "Una sola pantalla para todo el día de clase",

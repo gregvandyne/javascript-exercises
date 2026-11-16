@@ -7452,6 +7452,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Mises en page toutes prêtes",
+      "h": "Une mise en page pour chaque moment de la journée",
+      "lead": "Commencez la matinée, faites une leçon, lancez le travail en groupe, passez au travail en silence et prenez une pause jeu. Changez en un geste : les écrans des élèves suivent.",
+      "widgets": "{count} widgets pour créer la vôtre"
+    },
     "dash": {
       "kicker": "Nouveau : les tableaux de bord de la classe",
       "h": "Un seul écran pour toute la journée",

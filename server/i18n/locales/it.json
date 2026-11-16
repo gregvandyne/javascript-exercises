@@ -7453,6 +7453,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Layout pronti",
+      "h": "Un layout per ogni momento della giornata",
+      "lead": "Inizia la mattina, fai lezione, guida il lavoro di gruppo, passa al lavoro in silenzio e concedi una pausa gioco. Cambi con un tocco, e gli schermi degli studenti seguono.",
+      "widgets": "{count} widget per creare il tuo"
+    },
     "dash": {
       "kicker": "Novità: le bacheche di classe",
       "h": "Uno schermo per tutta la giornata a scuola",

@@ -38,6 +38,7 @@ import { teacherLoop } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
+import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -202,6 +203,36 @@ export function renderLanding(req, res) {
       <div class="lp-screen">${shot('dash-teacher', t('landing.dash.shotAlt'))}</div>
       <div class="lp-phone" data-depth=".16" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="170px" width="390" height="844" alt="" loading="lazy" decoding="async"></div>
     </figure>
+  </div>
+</section>`;
+
+  // The layout tour (#dash-tour, docs/decisions.md "Dashboard layout tour on the landing"): every ready-made layout
+  // (services/dash.js LAYOUT_TEMPLATES) with its real screenshot, name, description and widgets, then every widget.
+  // Without JavaScript, with reduced motion or on a narrow screen it is a plain list of cards; public/js/landing.js
+  // turns it into a deck that plays as the page scrolls (.is-tour) and slides the widget rows.
+  const wname = id => t(`dash.w.${id}.name`);
+  const icon = id => (WIDGETS.find(w => w.id === id) || {}).icon || '▫️';
+  const chip = id => html`<li><span aria-hidden="true">${icon(id)}</span>${wname(id)}</li>`;
+  const tourWidgets = WIDGETS.map(w => w.id);
+  const half = Math.ceil(tourWidgets.length / 2);
+  const dtourSec = html`<section class="lp-sec lp-dtour" id="dash-tour" aria-labelledby="dtour-h">
+  <div class="lp-wrap"><header class="lp-sec-head"><p class="lp-eyebrow"${fb('landing.dtour.kicker')}>${t('landing.dtour.kicker')}</p><h2 id="dtour-h"${fb('landing.dtour.h')}>${t('landing.dtour.h')}</h2><p${fb('landing.dtour.lead')}>${t('landing.dtour.lead')}</p></header></div>
+  <div class="lp-dt" data-dtour style="--n:${LAYOUT_TEMPLATES.length}">
+    <div class="lp-dt-stage"><div class="lp-wrap lp-dt-in">
+      <ol class="lp-dt-list">${LAYOUT_TEMPLATES.map((x, i) => {
+        const types = [...new Set(x.widgets(t).map(([type]) => type))];
+        return html`<li class="lp-dt-item" data-i="${i}">
+        <div class="lp-dt-text"><p class="lp-dt-n" aria-hidden="true" dir="ltr">0${i + 1}<span> / 0${LAYOUT_TEMPLATES.length}</span></p><h3><span aria-hidden="true">${x.icon}</span> ${t(`dash.tpl.${x.id}.name`)}</h3><p>${t(`dash.tpl.${x.id}.desc`)}</p><ul class="lp-dt-chips">${types.map(chip)}</ul></div>
+        <figure class="lp-dt-fig"><div class="lp-screen">${shot(`dash-layout-${x.id}`, `${t(`dash.tpl.${x.id}.name`)}: ${t(`dash.tpl.${x.id}.desc`)}`)}</div></figure>
+      </li>`;
+      })}</ol>
+      <ol class="lp-dt-dots" aria-hidden="true">${LAYOUT_TEMPLATES.map(x => html`<li><span>${x.icon}</span></li>`)}</ol>
+    </div></div>
+  </div>
+  <div class="lp-dt-widgets">
+    <h3 class="lp-dt-wh"${fb('landing.dtour.widgets')}>${t('landing.dtour.widgets', { count: tourWidgets.length })}</h3>
+    <ul class="lp-dt-row" data-row="1">${tourWidgets.slice(0, half).map(chip)}</ul>
+    <ul class="lp-dt-row" data-row="-1">${tourWidgets.slice(half).map(chip)}</ul>
   </div>
 </section>`;
 
@@ -377,7 +408,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${dashSec}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${dashSec}${dtourSec}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">

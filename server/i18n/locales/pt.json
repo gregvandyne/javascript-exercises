@@ -7454,6 +7454,12 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Layouts prontos",
+      "h": "Um layout para cada momento do dia",
+      "lead": "Comece a manhã, dê uma aula, conduza o trabalho em grupo, passe ao trabalho em silêncio e faça um intervalo divertido. Troque com um toque, e as telas dos alunos acompanham.",
+      "widgets": "{count} widgets para montar o seu"
+    },
     "dash": {
       "kicker": "Novo: painéis da turma",
       "h": "Uma tela para o dia letivo inteiro",
