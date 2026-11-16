@@ -40,6 +40,9 @@ export const LEARNING = {
   // Sudoku: logic puzzles from a 4x4 (with a picture mode for children not reading numbers yet) to the classic 9x9 at
   // four levels; every puzzle has exactly one answer, graded by the reasoning it needs.
   'sudoku': { key: 'sudoku', teaches: ['Logical reasoning', 'Problem solving', 'Pattern recognition', 'Number sense'], level: 'Grades K-8' },
+  // Sum Spotter: find the one number in a small group that two others add up to (later, multiply to make), from sums to
+  // 10 to times tables and a mixed level, plus a 60-second Rush and an untimed practice; every group has exactly one answer.
+  'sum-spotter': { key: 'sumSpotter', teaches: ['Addition', 'Multiplication', 'Mental math', 'Number sense'], level: 'Grades 1-5' },
 };
 /** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */
 export function gradeBand(slugs) {
@@ -74,7 +77,7 @@ export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainB
 export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
-export const CONTENT_UPDATED = '2026-11-15';
+export const CONTENT_UPDATED = '2026-11-16';
 
 // ---------------------------------------------------------------------------------------------------- parents
 // The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages
@@ -134,7 +137,7 @@ const band = s => { const m = /^(K|\d+)-(\d+)$/.exec(s); return { from: m[1] ===
 export const SHELF_INFO = Object.fromEntries(Object.entries({
   'shark-plank': ['words', 'K-3'], 'word-hunt': ['words', '1-5'], 'word-peek': ['words', '3-8'], 'word-trail': ['words', 'K-3'], 'doodle-hoot': ['words', '1-8'],
   'sum-racer': ['math', '1-5'], 'fraction-factory': ['math', '3-5'], 'tug-of-math': ['math', '1-8'], 'garden-count': ['math', 'K-1'], 'lily-hop': ['math', 'K-1'], 'crate-stacker': ['math', '1-2'], 'balance-bridge': ['math', '1-2'], 'rocket-supply': ['math', '2-2'], 'shape-hunt': ['math', 'K-2'], 'kitchen-rush': ['math', 'K-2'], 'lantern-mix': ['math', '6-6'], 'sub-zero': ['math', '6-7'], 'machine-line': ['math', '6-7'], 'scale-scout': ['math', '7-7'], 'sky-lines': ['math', '8-8'], 'keep-builder': ['math', '6-8'], 'launch-lab': ['math', '6-8'],
-  'castle-clash': ['thinking', '2-8'], 'sudoku': ['thinking', 'K-8'], 'loop-lab': ['music', '2-8'],
+  'castle-clash': ['thinking', '2-8'], 'sudoku': ['thinking', 'K-8'], 'sum-spotter': ['math', '1-5'], 'loop-lab': ['music', '2-8'],
   'atlas-quest': ['maps', '3-8'], 'atlas-quest-live': ['maps', '3-8'],
   'code-isle': ['code', '4-8'], 'packet-post': ['code', '3-8'], 'inside-the-machine': ['code', '3-8'], 'data-detective': ['code', '3-8'], 'robo-route': ['code', '3-8'],
   'trick-inbox': ['code', '3-6'], 'escape-the-post-office': ['code', '3-6'],

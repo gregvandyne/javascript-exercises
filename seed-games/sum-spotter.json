@@ -1,0 +1,72 @@
+{
+  "slug": "sum-spotter",
+  "title": "Sum Spotter",
+  "icon": "🐸",
+  "cover": "meadow",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "addition,sums,mental math,multiplication,times tables,number bonds,numbers,math,math game,number puzzle,practice,elementary,grade 1,grade 2,grade 3,grade 4,grade 5",
+  "description": "Sum Spotter at Pip the frog's pond: look at the numbers on the stones and tap the one that two of the others add up to. Six levels from sums to 10 to sums to 100, times and a mixed level, plus a 60-second Rush and an untimed practice. Every group has exactly one answer, with hints and a gentle nudge when you tap the wrong stone.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit (the pinned kit 1.1.6 tag plus the dress pack): Oomba.game with controls 'none', a fixed camera and Pip the frog as the hero in the meadow theme, the kit's title (three number stones as the badge), how-to cards (keys how1-how3 in the I18N block), pause screen, settings, results card with stars and points (w.win, which calls BRB.gameOver and submits the score), sounds, font and light/dark look. The picker, the pond, the stones, the sum strip and the hint button are the game's own DOM inside Oomba.ui.root(), colored with kit roles through CSS variables (no color codes). The core idea: a small group of different whole numbers on stones in a pond, and exactly one of them is the sum (or the product) of two OTHER numbers in the group. Levels (SumSpotterCore.LEVELS): Sums to 10 (4 stones), Sums to 20 (4 stones), Sums to 50 (5 stones), Sums to 100 (5 or 6 stones), Times (4 or 5 stones, factors 2 to 10) and Mixed (5 or 6 stones, plus or times, the operation shown in the question), 8 puzzles each. Rush: 60 seconds on the game clock (it stops in the pause screen), the puzzles ramping through the levels, 10 points a find plus a streak bonus. Practice: any level, endless, no clock and no stars. Puzzles are made in the game from a seed, never stored: the answer and its pair first, then other stones added one at a time while the group stays fair; a group is kept only when its numbers are all different, exactly one member is made from two others (for Mixed, by plus OR times, so neither operation gives a second answer) and no member is another one doubled or squared (8 next to 4 could look like 4 + 4). Half the time a stone bigger than the answer is added, so the answer is not always the biggest. The same seed makes the same puzzle everywhere (mulberry32). Hints: the first shows one number of the pair and fills it into the sum strip under the pond (? + ? = ?), the second the other one; both are counted. A wrong tap shakes the stone, marks it with a cross and Pip says no two other numbers make it (always true by construction); after two wrong taps on a puzzle Pip shows the pair. Stars for a level: 3 with at most one wrong tap and no hints, 2 with up to four wrong taps and hints together, else 1. Rush stars: 1 for any find, 2 for 8, 3 for 15. Saved in BRB.storage key 'sum-spotter-v1': the best stars per level and the best Rush. Nothing is ever offered for sale. The pond and the sum always read left to right while the words mirror in Arabic and Hebrew; the stones are buttons with their number, the pond a labelled group, and questions, nudges, hints and finds are announced. Phone first: the pond as big as the screen allows with Pip, the sum and the hint under it in portrait and beside it in landscape. All words in 13 languages (the I18N block). window.__brbTest: state, pick(mode, id, {seed}), picker, tap, hint, skipAnimations, setLeft, core.",
+  "l10n": {
+    "es": {
+      "title": "Caza Sumas",
+      "description": "Caza Sumas en el estanque de la rana Pip: mira los números de las piedras y toca el que es la suma de otros dos. Seis niveles, de sumas hasta 10 a sumas hasta 100, multiplicación y una mezcla, más una carrera de 60 segundos y un modo de práctica sin reloj. Cada grupo tiene una sola respuesta, con pistas y ayuda amable si te equivocas.",
+      "tags": "suma,sumas,sumar,cálculo mental,multiplicación,tablas de multiplicar,números,matemáticas,juego de matemáticas,rompecabezas de números,práctica,primaria"
+    },
+    "fr": {
+      "title": "Chasseur de sommes",
+      "description": "Chasseur de sommes dans la mare de Pip la grenouille : regarde les nombres sur les pierres et touche celui qui est la somme de deux autres. Six niveaux, des sommes jusqu’à 10 aux sommes jusqu’à 100, les multiplications et un mélange, plus une course de 60 secondes et un entraînement sans chrono. Chaque groupe a une seule réponse, avec des indices et une aide douce en cas d’erreur.",
+      "tags": "addition,sommes,calcul mental,multiplication,tables de multiplication,nombres,maths,jeu de maths,énigme de nombres,entraînement,primaire"
+    },
+    "de": {
+      "title": "Summenspürer",
+      "description": "Summenspürer am Teich von Frosch Pip: Schau dir die Zahlen auf den Steinen an und tippe auf die, die zwei andere zusammen ergeben. Sechs Stufen von Summen bis 10 bis Summen bis 100, Malnehmen und Gemischt, dazu ein 60-Sekunden-Tempolauf und Üben ohne Uhr. Jede Gruppe hat genau eine Antwort, mit Tipps und sanfter Hilfe bei einem Fehler.",
+      "tags": "Addition,Summen,Kopfrechnen,Multiplikation,Einmaleins,Zahlen,Mathe,Mathespiel,Zahlenrätsel,Üben,Grundschule"
+    },
+    "it": {
+      "title": "Caccia alla Somma",
+      "description": "Caccia alla Somma nello stagno della rana Pip: guarda i numeri sui sassi e tocca quello che è la somma di altri due. Sei livelli, dalle somme fino a 10 alle somme fino a 100, le moltiplicazioni e un misto, più una sfida a tempo di 60 secondi e un allenamento senza orologio. Ogni gruppo ha una sola risposta, con aiuti e un aiuto gentile quando sbagli.",
+      "tags": "addizione,somme,calcolo mentale,moltiplicazione,tabelline,numeri,matematica,gioco di matematica,enigma di numeri,allenamento,scuola primaria"
+    },
+    "pt": {
+      "title": "Caça-Somas",
+      "description": "Caça-Somas no lago do sapo Pip: olhe os números nas pedras e toque no que é a soma de outros dois. Seis níveis, de somas até 10 a somas até 100, multiplicação e um misturado, mais uma corrida de 60 segundos e um treino sem relógio. Cada grupo tem uma única resposta, com dicas e ajuda gentil quando você erra.",
+      "tags": "adição,somas,cálculo mental,multiplicação,tabuada,números,matemática,jogo de matemática,desafio de números,treino,ensino fundamental"
+    },
+    "nl": {
+      "title": "Somzoeker",
+      "description": "Somzoeker bij de vijver van kikker Pip: bekijk de getallen op de stenen en tik op het getal dat de som is van twee andere. Zes niveaus, van sommen tot 10 tot sommen tot 100, keersommen en gemengd, plus een race van 60 seconden en oefenen zonder klok. Elke groep heeft precies één antwoord, met hints en vriendelijke hulp als je je vergist.",
+      "tags": "optellen,sommen,hoofdrekenen,vermenigvuldigen,tafels,getallen,rekenen,rekenspel,getallenpuzzel,oefenen,basisschool"
+    },
+    "ru": {
+      "title": "Найди сумму",
+      "description": "Найди сумму у пруда лягушонка Пипа: посмотри на числа на камнях и нажми на то, которое равно сумме двух других. Шесть уровней: от сумм до 10 до сумм до 100, умножение и вперемешку, а ещё забег на 60 секунд и тренировка без часов. В каждой группе ровно один ответ, есть подсказки и мягкая помощь при ошибке.",
+      "tags": "сложение,сумма,устный счёт,умножение,таблица умножения,числа,математика,математическая игра,числовая головоломка,тренировка,начальная школа"
+    },
+    "ja": {
+      "title": "かずさがし",
+      "description": "カエルのピップのいけで、かずさがし。いしにかいてある数を見て、ほかの2つをたした数をタップしよう。10までのたし算から100までのたし算、かけ算、ミックスまで6つのレベル。60びょうのタイムアタックと、とけいなしのれんしゅうもあるよ。どのグループも答えはひとつだけ。ヒントつきで、まちがえてもやさしく助けてくれます。",
+      "tags": "たし算,足し算,暗算,かけ算,九九,数,算数,算数ゲーム,数字パズル,れんしゅう,小学生"
+    },
+    "zh-Hant": {
+      "title": "找和數",
+      "description": "在青蛙皮普的池塘玩找和數：看看石頭上的數字，點那個等於另外兩個數相加的數。從10以內的加法到100以內的加法、乘法和混合，共六個關卡，還有60秒計時挑戰和不計時的練習。每一組都只有一個答案，有提示，答錯時也會溫柔地幫你。",
+      "tags": "加法,和,心算,乘法,乘法表,數字,數學,數學遊戲,數字謎題,練習,小學"
+    },
+    "ar": {
+      "title": "صائد المجموع",
+      "description": "صائد المجموع في بركة الضفدع بيب: انظر إلى الأعداد على الحجارة والمس العدد الذي يساوي مجموع عددين آخرين. ستة مستويات من الجمع حتى 10 إلى الجمع حتى 100 والضرب ومستوى مختلط، مع سباق 60 ثانية وتدريب بلا ساعة. لكل مجموعة جواب واحد فقط، مع تلميحات ومساعدة لطيفة عند الخطأ.",
+      "tags": "جمع,مجموع,حساب ذهني,ضرب,جدول الضرب,أعداد,رياضيات,لعبة رياضيات,لغز أعداد,تدريب,ابتدائي"
+    },
+    "he": {
+      "title": "צייד הסכומים",
+      "description": "צייד הסכומים בבריכה של הצפרדע פיפ: הסתכלו על המספרים שעל האבנים והקישו על המספר שהוא הסכום של שניים אחרים. שישה שלבים, מסכומים עד 10 ועד סכומים עד 100, כפל ושלב מעורב, ועוד מרוץ של 60 שניות ותרגול בלי שעון. לכל קבוצה יש תשובה אחת בלבד, עם רמזים ועזרה עדינה כשטועים.",
+      "tags": "חיבור,סכום,חשבון בעל פה,כפל,לוח הכפל,מספרים,מתמטיקה,משחק חשבון,חידת מספרים,תרגול,יסודי"
+    }
+  }
+}

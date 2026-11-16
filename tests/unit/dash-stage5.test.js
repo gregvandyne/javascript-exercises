@@ -60,9 +60,9 @@ async function layout(w, widgets) {
 }
 const STAGE5 = ['video', 'site', 'camera', 'hallpass', 'jobs', 'mood', 'breathe', 'note', 'checklist'];
 
-test('migration 0081 is the newest: hall passes, points and moods', () => {
+test('migration 0081: hall passes, points and moods (0082 is Sum Spotter\'s shelf, tests/unit/sum-spotter.test.js)', () => {
   const names = MIGRATIONS.map(m => m[0]);
-  assert.equal(names.at(-1), '0081_dash_class_tools');
+  assert.equal(names[names.indexOf('0081_dash_class_tools') + 1], '0082_sum_spotter_shelf');
   assert.equal(names.indexOf('0081_dash_class_tools'), names.indexOf('0080_dash_teaching_tools') + 1);
   for (const tb of ['dash_passes', 'dash_points', 'dash_moods']) assert.ok(q.get("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", tb), tb);
   // Minimal: a pass has a place, a state and two times; a point row is a count; a mood is a face's index.
