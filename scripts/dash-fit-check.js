@@ -253,6 +253,41 @@ for (const size of ['size', 'min']) {
 }
 // Ready-made layouts: built per language in the loop below.
 for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
+// The schedule at pinned times of day (docs/decisions.md "Classroom dashboards: the schedule at every time of day"): the
+// browser's clock is pinned (Playwright's page.clock) and the browser is in the school's time zone, so the period on now,
+// the list's scroll and the "now and next" text are the same on every run. Every other layout is checked at AT (school
+// time, default 10:20: the list rests scrolled down, on the period on now). The schedule's own layout, list and "now and
+// next" at their default, smallest, 3 x 3 and a wide short size, is checked at each time in SCHED_AT: before school, the
+// first period (and its last minute), the break, mid-day, the last period and after school.
+const AT = process.env.AT || '10:20';
+const SCHED_AT = (process.env.SCHED_AT || '07:30,08:05,08:19,09:10,10:20,11:30,12:30').split(',').filter(Boolean);
+{
+  const sch = D.widgetType('schedule'), list = { ...SETTINGS.schedule, view: 'list' }, nn = { ...SETTINGS.schedule, view: 'nownext' };
+  const [dw, dh] = sch.size, [mw, mh] = sch.min;
+  const widgets = [
+    { id: 'wsched-list', type: 'schedule', x: 0, y: 0, w: dw, h: dh, s: list },
+    { id: 'wsched-nn', type: 'schedule', x: dw, y: 0, w: dw, h: dh, s: nn },
+    { id: 'wsched-list3', type: 'schedule', x: 2 * dw, y: 0, w: 3, h: 3, s: list },
+    { id: 'wsched-listmin', type: 'schedule', x: 0, y: dh, w: mw, h: mh, s: list },
+    { id: 'wsched-nnmin', type: 'schedule', x: mw, y: dh, w: mw, h: mh, s: nn },
+    { id: 'wsched-nn3', type: 'schedule', x: 2 * mw, y: dh, w: 3, h: 3, s: nn },
+    { id: 'wsched-listwide', type: 'schedule', x: 0, y: dh + 3, w: 6, h: mh, s: list },
+    { id: 'wsched-nnwide', type: 'schedule', x: 6, y: dh + 3, w: 6, h: mh, s: nn },
+  ].map(w => ({ ...w, pin: true }));
+  for (const at of SCHED_AT) LAYOUTS.push({ key: `sched-${at.replace(':', '')}`, at, widgets, own: [], chip: 1, stage5: false });
+}
+const ZONE = S.zoneOf(S.getSchool(school.id)) || D.FALLBACK_TZ;
+/** Today's hh:mm in the school's time zone, as a time for the browser's clock. */
+const schoolTime = hhmm => {
+  const [h, m] = hhmm.split(':').map(Number), want = h * 60 + m;
+  let t = Date.parse(`${ymd}T${hhmm}:00Z`);
+  for (let k = 0; k < 3; k++) {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(t).map(x => [x.type, x.value]));
+    let d = want - (Number(p.hour) * 60 + Number(p.minute)); if (d > 720) d -= 1440; if (d < -720) d += 1440;
+    t += d * 60e3;
+  }
+  return t;
+};
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
 const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
@@ -418,25 +453,34 @@ function problems() {
       if (tops.size > 1) out.push(`${name(w)}: the label "${txt}" breaks across lines`);
     }
   }
-  // Stage 5 review: a list that scrolls shows whole rows at rest (scrollTop 0), and fades at its bottom edge while there
-  // is more below. A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list
-  // unless it carries the fade); so does a list with more below and no fade.
+  // Stage 5 review: a list that scrolls shows whole rows at rest, and fades at its bottom edge while there is more below.
+  // A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list unless it carries
+  // the fade); so does a list with more below and no fade. The schedule (docs/decisions.md "Classroom dashboards: the
+  // schedule at every time of day") rests with the period on now in view, so a list may rest scrolled down: then no row
+  // may be sliced by its top edge either, and the rows above need the fade at its top edge.
   for (const x of document.querySelectorAll('.dash-w ul, .dash-w ol, .dash-w .dw-scroll')) {
     const w = x.closest('.dash-w'); if (!w.offsetParent || !x.getClientRects().length) continue;
     const cs = getComputedStyle(x);
     if (!/(auto|scroll)/.test(cs.overflowY) || x.scrollHeight <= x.clientHeight + 6) continue;
-    const faded = x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
-    if (!faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
-    if (x.scrollTop > 0) continue;
-    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0);
+    const below = x.scrollTop + x.clientHeight < x.scrollHeight - 6, above = x.scrollTop > 6;
+    const faded = below && x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
+    const fadedTop = above && x.classList.contains('is-scrolly') && !x.classList.contains('at-top') && cs.maskImage !== 'none';
+    if (below && !faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
+    if (above && !fadedTop) out.push(`${name(w)}: a list "${x.className}" has more above but no fade at its top`);
+    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0), topEdge = xr.top + (parseFloat(cs.borderTopWidth) || 0);
     for (const c of x.children) {
       if (!c.getClientRects().length || getComputedStyle(c).position === 'absolute') continue;
       const r = c.getBoundingClientRect();
       // A row taller than the whole list may be cut between two of its lines (never through one), under the fade.
-      const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
-      for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < edge - 1 && q.bottom > edge + 1); }
       const tall = r.height > x.clientHeight - 1;
-      if (r.top < edge - 1 && r.bottom > edge + 1 && (x.classList.contains('dw-scroll') || !faded) && (!tall || !faded || throughLine)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} max ${x.style.maxHeight} tall ${tall} faded ${faded} through ${throughLine} lines ${(() => { const o = []; const t2 = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); const g = document.createRange(); for (let n = t2.nextNode(); n; n = t2.nextNode()) { g.selectNodeContents(n); for (const q of g.getClientRects()) o.push(`${Math.round(q.top - xr.top)}-${Math.round(q.bottom - xr.top)}`); } return o.join(","); })()}]` : ''}`); break; }
+      const through = (e, fd) => {
+        const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
+        for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < e - 1 && q.bottom > e + 1); }
+        return r.top < e - 1 && r.bottom > e + 1 && (x.classList.contains('dw-scroll') || !fd) && (!tall || !fd || throughLine);
+      };
+      const dbg = () => (window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} top ${Math.round(x.scrollTop)} of ${x.scrollHeight} max ${x.style.maxHeight} tall ${tall}]` : '');
+      if (through(edge, faded)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${dbg()}`); break; }
+      if (above && through(topEdge, fadedTop)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's top edge ("${label(c)}")${dbg()}`); break; }
     }
   }
   for (const e of document.querySelectorAll('.dash-w *')) {
@@ -486,18 +530,23 @@ for (const L of RUN) {
  for (const lang of LANGS) {
   if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
   for (const v of VIEWS) {
-    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: Number(process.env.DSF) || 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
+    const ctx = await browser.newContext({ timezoneId: ZONE, viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: Number(process.env.DSF) || 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');
     await ctx.addCookies([{ name: cn, value: cv, url: base }, { name: 'lang', value: lang, url: base }]);
     const page = await ctx.newPage();
+    // The page opens 40 s before the time checked and the clock then moves on a minute, past a minute's turn, as in a
+    // classroom where the dashboard stays open (the schedule's text changes each minute): the check is at hh:mm:20.
+    await page.clock.install({ time: schoolTime(L.at || AT) - 40e3 });
     if (L.stage5) await stubOutside(page);
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
+    if (process.env.DEBUG) page.on('console', m => console.log('  console:', m.text()));
     await page.goto(`${base}/class/${C.id}/dashboard`);
     await page.waitForSelector('.dash-w');
     if (v.who === T) { await page.click(`#dash-layouts .chip:nth-child(${L.chip})`, { timeout: 5000 }).catch(e => errors.push(`the layout chip is missing (${e.message.split('\n')[0]})`)); await page.waitForTimeout(300); }
     if (v.projector) await page.click('#dash-projector');
     await page.waitForTimeout(1500);
+    await page.clock.fastForward(60e3);
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
     if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
@@ -575,6 +624,8 @@ for (const L of RUN) {
     if (OUT) {
       await page.evaluate(() => { document.querySelector('.dash-stage').scrollTop = 0; });
       await page.screenshot({ path: `${OUT}/fit-${L.key}-${lang}-${v.name}.png`, fullPage: v.name === 'phone' });
+      // The schedule's own layouts: each schedule widget on its own too.
+      if (L.at) for (const w of await page.$$('.dash-w[data-id^="wsched"]')) await w.screenshot({ path: `${OUT}/${L.key}-${lang}-${v.name}-${await w.getAttribute('data-id')}.png` }).catch(() => {});
     }
     await ctx.close();
   }
