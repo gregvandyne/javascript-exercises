@@ -12,6 +12,9 @@
 // "now and next", on layouts of their own. Outside pages are stubs (the browser answers the video and site hosts itself;
 // the server's "may it be framed?" check is stubbed) and the camera is Chromium's fake camera: the chrome around them is
 // what is checked. Text in a stage 5 widget is at least 12px (13px on the projector), as in the tools.
+// The timer's stopwatch mode (docs/decisions.md "Timer and stopwatch combined") is checked as a widget of its own, running
+// past an hour, and on the first layouts both students also have a timer and a stopwatch of their own (with the mode
+// switch, which pinned copies don't show).
 // Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
 // (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
 // names and light words in that language) with its own background.
@@ -139,6 +142,7 @@ const SETTINGS = {
   checklist: { title: 'Bevor wir nach Hause gehen', items: 'Arbeitsplatz aufräumen und Stifte einsammeln\nHausaufgabenheft einpacken\nStuhl hochstellen\nJacke anziehen\nTschüss sagen', ticks: [true, true, false, true] },
 };
 // Stage 5: the scoreboard's points for each student and the schedule's "now and next" are checked as widgets of their own.
+const TIME_EXTRA = [{ ...D.widgetType('timer'), wid: 'wstopwatch', s: { mode: 'stopwatch' } }];
 const STAGE5_EXTRA = [
   { ...D.widgetType('score'), wid: 'wpoints', s: { mode: 'students' } },
   { ...D.widgetType('schedule'), wid: 'wnownext', s: { ...SETTINGS.schedule, view: 'nownext' } },
@@ -179,12 +183,14 @@ D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;
     // On a layout with tools, each student has every tool their own screen can hold.
     const own = widgets.filter(w => D.canAdd(D.widgetType(w.type), 'student') && TOOLSET.has(w.type)).map(({ pin, ...w }) => w);
+    // A student's own timer and stopwatch (their mode switch shows only there and on the teacher's screen).
+    if (widgets.some(w => w.type === 'timer')) for (const [id, mode] of [['mytimer', 'timer'], ['mystopwatch', 'stopwatch']]) { const [tw, th] = D.widgetType('timer')[size]; own.push({ id, type: 'timer', x: 0, y: 0, w: tw, h: th, s: { mode } }); }
     // Stage 4: more layouts than a teacher may keep (12), so one layout is filled with each set in turn.
     LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
@@ -196,6 +202,7 @@ const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSiz
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
 D.useLayout(T, C, first.id);
 D.timerAction(T, C, 'wtimer', { action: 'start' }, Date.now() - 65e3);
+D.timerAction(T, C, 'wstopwatch', { action: 'start' }, Date.now() - 3725e3);
 for (const k of kids.slice(0, 6)) D.helpAsk(k, C, 'help');
 for (const k of kids.slice(6, 9)) D.helpAsk(k, C, 'done');
 const check = D.createCheck(T, C, { kind: 'choice', question: 'Welche Bruchzahl ist größer, wenn die Nenner verschieden sind?', options: ['Dreiviertel', 'Zweidrittel', 'Fünfachtel', 'Beide sind genau gleich groß', 'Weiß ich nicht', 'Sechszehntel'] }).check;

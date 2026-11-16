@@ -9018,9 +9018,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Contagem regressiva com números grandes e uma barra de tempo.",
+        "name": "Timer e cronômetro",
+        "desc": "Contagem regressiva ou progressiva com números grandes.",
         "s": {
+          "mode": "Modo",
           "minutes": "Minutos para começar",
           "chime": "Toque suave no final",
           "bar": "Mostrar a barra de tempo",
@@ -9038,7 +9039,14 @@
         "left": "Faltam {time}",
         "presets": "Tempos rápidos",
         "mins": "{n} minutos",
+        "mode": "Timer ou cronômetro",
+        "toTimer": "Timer: contagem regressiva",
+        "toStopwatch": "Cronômetro: conta a partir do zero",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Cronômetro"
+          },
           "view": {
             "digits": "Números grandes",
             "ring": "Anel que diminui"

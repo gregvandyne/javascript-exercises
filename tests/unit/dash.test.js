@@ -320,8 +320,8 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   assert.equal(q.get(`SELECT COUNT(*) n FROM chat_messages WHERE from_id IN (${marks}) AND to_id IN (${marks})`, ...people, ...people).n, 0);
   assert.equal(getUser(w.T.id).friend_code, null, 'the teacher still has no friend code');
   // The registry offers students nothing that sends text to others: their types are clock, their own goal, and (stage
-  // 2) a timer, a stopwatch, dice and a random number that run in their own browser.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random', 'fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
+  // 2) a timer (which is also a stopwatch), dice and a random number that run in their own browser.
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'dice', 'random', 'fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
     'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
 });
 

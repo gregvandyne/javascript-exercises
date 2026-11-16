@@ -80,7 +80,8 @@ test('migration 0079 follows 0078 and its tables and columns exist', () => {
 
 test('the registry: every stage 2 type has a renderer and English words; who may add and pin each', () => {
   const t = tFor('en');
-  const ids = ['timer', 'stopwatch', 'schedule', 'weather', 'qr', 'picker', 'noise', 'help', 'check', 'tiles'];
+  // The stopwatch is the timer's stopwatch mode now (docs/decisions.md "Timer and stopwatch combined"; tests/unit/dash-timer.test.js).
+  const ids = ['timer', 'schedule', 'weather', 'qr', 'picker', 'noise', 'help', 'check', 'tiles'];
   for (const id of ids) assert.ok(D.widgetType(id), id);
   for (const id of ids) assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`);
   for (const role of ['teacher', 'student']) {
@@ -91,20 +92,21 @@ test('the registry: every stage 2 type has a renderer and English words; who may
     }
   }
   // Students may add only things that stay on their own screen.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random', 'breathe'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js); stage 5 the breathing circle (dash-stage5.test.js)');
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'dice', 'random', 'breathe'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js); stage 5 the breathing circle (dash-stage5.test.js)');
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
   assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['camera', 'check', 'dice', 'groups', 'noise', 'note', 'picker', 'qr', 'random', 'site', 'video'], 'stage 3 and 4\'s teaching tools are sent, never pinned; stage 5\'s video, site window, camera and sticky note are the teacher\'s screen only');
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');
   // A student can't add teacher-only types (picker, noise, help, check...).
-  assert.deepEqual(D.cleanWidgets(ids.map((type, i) => ({ id: `s${i}`, type })), 'student').map(x => x.type), ['timer', 'stopwatch']);
+  assert.deepEqual(D.cleanWidgets([...ids, 'stopwatch'].map((type, i) => ({ id: `s${i}`, type })), 'student').map(x => [x.type, x.s.mode]), [['timer', 'timer'], ['timer', 'stopwatch']]);
 });
 
 test('settings are rebuilt on the server for every new type', () => {
   const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
   // timer: whole minutes 1-180; bools
-  assert.deepEqual(c('timer', { minutes: '999', chime: 'true', bar: 0, evil: 1 }), { minutes: 180, view: 'digits', chime: true, bar: false });
+  assert.deepEqual(c('timer', { minutes: '999', chime: 'true', bar: 0, evil: 1 }), { mode: 'timer', minutes: 180, view: 'digits', chime: true, bar: false });
+  assert.equal(c('timer', { mode: 'stopwatch' }).mode, 'stopwatch'); assert.equal(c('timer', { mode: 'laps' }).mode, 'timer');
   assert.equal(c('timer', { minutes: -4 }).minutes, 1); assert.equal(c('timer', { minutes: 'x' }).minutes, 5); assert.equal(c('timer', {}).minutes, 5);
   // clock: a real time zone or nothing
   assert.equal(c('clock', { zone2: 'Europe/London' }).zone2, 'Europe/London');

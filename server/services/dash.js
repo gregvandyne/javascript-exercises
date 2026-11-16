@@ -113,12 +113,15 @@ export const WIDGETS = [
   { id: 'ican', icon: '🎯', group: 'show', who: 'both', size: [4, 2], min: [3, 2], words: ['lead', 'empty'], settings: [
     { key: 'goal', type: 'textarea', max: 200, def: '' }] },
   // ---- stage 2: everyday widgets
-  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins'], settings: [
+  // The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): mode picks a
+  // countdown or counting up. Old 'stopwatch' widgets are read as a timer in stopwatch mode (migrateWidgets). A row
+  // taller than before (default 4 x 4, smallest 3 x 4): the mode switch sits above the digits and the controls.
+  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 4], min: [3, 4], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins', 'mode', 'toTimer', 'toStopwatch'], settings: [
+    { key: 'mode', type: 'select', options: ['timer', 'stopwatch'], def: 'timer' },
     { key: 'minutes', type: 'number', min: 1, max: 180, def: 5 },
     { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
     { key: 'chime', type: 'bool', def: false },
     { key: 'bar', type: 'bool', def: true }] },
-  { id: 'stopwatch', icon: '⏱️', group: 'time', who: 'both', size: [3, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset'], settings: [] },
   { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts'], settings: [
     { key: 'periods', type: 'periods', def: [] },
     { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
@@ -221,6 +224,32 @@ export const WIDGETS = [
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
+/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there. */
+export const RETIRED = { stopwatch: { type: 'timer', s: { mode: 'stopwatch' } } };
+/** One stored or sent widget with a retired type -> the widget it is now (same id, so its running state, pins and
+ *  student places still match; its box grows to the new type's smallest size if it must). Anything else is unchanged. */
+export function migrateWidget(w) {
+  const r = w && typeof w === 'object' && Object.hasOwn(RETIRED, w.type) ? RETIRED[w.type] : null;
+  if (!r) return w;
+  const type = widgetType(r.type);
+  const box = Number.isFinite(w.w) ? cleanBox(type, w) : {};
+  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...(w.s && typeof w.s === 'object' ? w.s : {}), ...r.s }) };
+}
+export function migrateWidgets(list) {
+  if (!Array.isArray(list)) return [];
+  const out = list.map(migrateWidget);
+  // A widget that grew pushes the ones it now overlaps down (as the browser does when one is moved or resized).
+  out.forEach((w, i) => { if (w !== list[i] && (w.w !== list[i].w || w.h !== list[i].h || w.x !== list[i].x)) settleBoxes(out, w); });
+  return out;
+}
+const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+function settleBoxes(list, moved) {
+  const queue = [moved]; let guard = 0;
+  while (queue.length && guard++ < 500) {
+    const a = queue.shift();
+    for (const b of list) if (b !== a && b !== moved && Number.isFinite(b.y) && overlaps(a, b)) { b.y = Math.min(MAX_ROWS - 1, a.y + a.h); queue.push(b); }
+  }
+}
 export const COLS = 12, MAX_ROWS = 24, MAX_H = 8, MAX_WIDGETS = 24, MAX_LAYOUTS = 12;
 export const canAdd = (type, role) => !!type && (type.who === 'both' || type.who === role);
 /** Whether a teacher may pin this type on student screens (the picker, the noise meter, QR and checks never are). */
@@ -384,9 +413,10 @@ export function cleanBox(type, b = {}) {
 /** A layout's widgets as a browser sent them -> what may be stored. role: whose screen ('teacher' may pin). */
 export function cleanWidgets(list, role) {
   const out = [], seen = new Set();
-  for (const raw of Array.isArray(list) ? list : []) {
+  for (let raw of Array.isArray(list) ? list : []) {
     if (out.length >= MAX_WIDGETS) break;
     if (!raw || typeof raw !== 'object') continue;
+    raw = migrateWidget(raw);
     const type = widgetType(raw.type);
     if (!canAdd(type, role) || !ID.test(String(raw.id || '')) || seen.has(raw.id)) continue;
     seen.add(raw.id);
@@ -429,12 +459,12 @@ export const roleOf = (u, c) => (isTeacher(u, c) ? 'teacher' : isStudent(u, c) ?
 // ---------------------------------------------------------------- teacher layouts
 const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_at, created_at, updated_at';
 /** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
- *  when read, so old layouts, pins and student screens keep loading with everything else as it was. */
+ *  when read (after old stopwatches become timers: migrateWidgets), so old layouts, pins and student screens keep loading with everything else as it was. */
 const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
 /** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
  *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
 const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
-const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(json(r.widgets, []))), bg: json(r.bg, DEFAULT_BG) } : null);
+const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(migrateWidgets(json(r.widgets, [])))), bg: json(r.bg, DEFAULT_BG) } : null);
 export const getLayout = id => readLayout(q.get(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE id=?`, String(id || '')));
 export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE class_id=? AND owner_id=? ORDER BY position, created_at`, classId, ownerId).map(readLayout);
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
@@ -477,6 +507,10 @@ export function updateLayout(u, c, id, { name, widgets, bg } = {}) {
   const w = widgets === undefined ? l.widgets : ownPictures(cleanWidgets(widgets, 'teacher'), u, c);
   const b = bg === undefined ? l.bg : cleanBg(bg, u, c.id);
   q.run('UPDATE dash_layouts SET name=?, widgets=?, bg=?, updated_at=? WHERE id=?', n, JSON.stringify(w), JSON.stringify(b), now(), id);
+  // A timer switched between counting down and counting up starts again from nothing: its old run is dropped.
+  const was = new Map(l.widgets.filter(x => x.type === 'timer').map(x => [x.id, x.s.mode]));
+  const switched = w.filter(x => x.type === 'timer' && was.has(x.id) && was.get(x.id) !== x.s.mode).map(x => x.id);
+  if (switched.length) dropTimers(c.id, switched);
   if (classState(c.id).layout_id === id) publishPins(c.id, w);
   return { layout: getLayout(id) };
 }
@@ -575,13 +609,17 @@ function publishPins(classId, widgets) {
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
-export const pinsOf = classId => upgradeWidgets(known(json(classState(classId).pins, [])));
+export const pinsOf = classId => upgradeWidgets(known(migrateWidgets(json(classState(classId).pins, []))));
 
 // ---------------------------------------------------------------- student screens
 export function studentState(classId, userId) {
   const r = q.get('SELECT widgets, pins, bg FROM dash_students WHERE class_id=? AND user_id=?', classId, userId);
   if (!r) return { widgets: [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) }], pins: {}, bg: { kind: 'color', id: 'sky' }, fresh: true };
-  return { widgets: known(json(r.widgets, [])), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
+  // Where the student moved each pinned widget, at least that widget's smallest size now (an old stopwatch's box
+  // grew when it became a timer).
+  const pins = json(r.pins, {}), types = new Map(pinsOf(classId).map(x => [x.id, widgetType(x.type)]));
+  for (const [id, box] of Object.entries(pins)) { const type = types.get(id); if (type && box && typeof box === 'object' && (box.w < type.min[0] || box.h < type.min[1])) pins[id] = cleanBox(type, box); }
+  return { widgets: known(migrateWidgets(json(r.widgets, []))), pins, bg: json(r.bg, DEFAULT_BG) };
 }
 /** A student saves their screen: their own widgets (types students may add), where they put the pinned ones (a place
  *  only: pinned widgets can't be removed or changed), and their background. */
@@ -751,7 +789,7 @@ export const eyesOf = (classId, t = now()) => { const st = classState(classId); 
 export function liveState(c, u, role) {
   const st = classState(c.id), t = now();
   const teacher = role === 'teacher';
-  const pins = json(st.pins, []);
+  const pins = known(migrateWidgets(json(st.pins, [])));
   const shown = teacher ? [...((currentLayout(u, c) || {}).widgets || []), ...pins] : pins;
   const timers = json(st.timers, {});
   const pinnedTimers = new Set(pins.filter(w => TIMER_TYPES.includes(w.type)).map(w => w.id));
@@ -781,8 +819,18 @@ function teacherWidget(u, c, wid, types) {
 // ---------------------------------------------------------------- timers and stopwatches
 // A teacher's timer is stored as a start time and a duration ({ mode, dur, base, start, on }), never a ticking value:
 // every screen works out what is left from the server's clock (liveState.now), so they all agree.
+// 'stopwatch' stays here for pins a student's browser still holds from before the two were combined.
 export const TIMER_TYPES = ['timer', 'stopwatch'];
 export const MAX_TIMER_MS = 3 * 3600e3;
+/** A timer's state mode for its widget: 'down' (timer mode) or 'up' (stopwatch mode). */
+export const timerMode = w => (w.type === 'stopwatch' || (w.s && w.s.mode === 'stopwatch') ? 'up' : 'down');
+/** Forget these timers' runs (a timer switched mode). */
+function dropTimers(classId, ids) {
+  const all = json(classState(classId).timers, {});
+  if (!ids.some(id => Object.hasOwn(all, id))) return;
+  for (const id of ids) delete all[id];
+  q.run('UPDATE dash_class SET timers=? WHERE class_id=?', JSON.stringify(all), classId);
+}
 /** What a timer shows at server time t: { elapsed, left (countdowns), done }. */
 export function timerView(st, t = now()) {
   const elapsed = Math.max(0, (st.base || 0) + (st.on ? t - st.start : 0));
@@ -793,7 +841,8 @@ export function timerView(st, t = now()) {
 export function timerAction(u, c, wid, { action, ms } = {}, t = now()) {
   const w = teacherWidget(u, c, wid, TIMER_TYPES); if (!w) return { error: 'notFound' };
   const all = json(classState(c.id).timers, {});
-  const down = w.type === 'timer';
+  const down = timerMode(w) === 'down';
+  // A run of the other mode (the widget was switched) is never carried over: it starts from nothing.
   const cur = all[w.id] && all[w.id].mode === (down ? 'down' : 'up') ? all[w.id] : { mode: down ? 'down' : 'up', dur: down ? (w.s.minutes || 5) * 60e3 : 0, base: 0, start: 0, on: false };
   const v = timerView(cur, t);
   if (action === 'start') { if (!cur.on) { if (down && v.done) cur.base = 0; cur.start = t; cur.on = true; } }

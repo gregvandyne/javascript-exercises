@@ -6526,6 +6526,39 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
 
+## Classroom dashboards: timer and stopwatch combined (16 Nov 2026)
+The product owner: "combine the timer and stopwatch into one widget where you can choose between the two." The library
+now has one entry, **Timer and stopwatch** (type id `timer`; "Timer e cronometro", "Timer und Stoppuhr"...), and no
+Stopwatch of its own. Code: `WIDGETS` (timer), `RETIRED`, `migrateWidget(s)`, `timerMode`, `timerAction`,
+`updateLayout` in `server/services/dash.js`; `timer` in `public/js/dash-widgets.js`; `.dw-modes` / `.dw-tmain` in
+`public/css/dash.css`; strings `dash.w.timer.*` (`s.mode`, `o.mode.*`, `mode`, `toTimer`, `toStopwatch`).
+- **Mode is a setting** (`mode`: `timer` counts down, `stopwatch` counts up; default timer) and a switch at the top of
+  the widget: two buttons, Timer | Stopwatch, for whoever controls it (the teacher, or a student on their own timer);
+  pinned copies on student screens show only the time. Each mode keeps what it had: the timer its quick
+  times, custom time, bar or ring and chime; the stopwatch start, pause, resume and reset (it never had laps).
+- **Decided: switching mode starts again from nothing**, even while it runs. A countdown is never turned into a count
+  up or back: the run is dropped (the browser at once; the server when the layout is saved, `updateLayout` compares
+  each timer's mode; `timerAction` also never reuses a run of the other mode), the new mode shows 0:00 or its full
+  minutes, paused, on every screen, and the switch is announced ("Stopwatch: counts up from zero").
+- **Old stopwatches keep working, on read** (no migration: nothing to rewrite in bulk, and old browsers may still send
+  the old type). Everywhere a widget list is read (layouts, the class's pins, a student's own screen) or sent
+  (`cleanWidgets`), a `stopwatch` becomes a `timer` in stopwatch mode **with the same id**, so its running state in
+  `dash_class.timers` (mode `up`) carries on, pins and a student's place for it still match, and
+  `/api/dash/:id/timers/<old id>` still answers. It is stored as a timer the next time the layout is saved, and the
+  pins are republished then (students redraw). `TIMER_TYPES` still lists `stopwatch` for that reason.
+- **Size: default 4 × 4, smallest 3 × 4** (was 4 × 3 and 3 × 3; the stopwatch 3 × 3): the switch is a 44px row above
+  the digits (the digits give up a little height for it; at the smallest size on a narrow screen the quick times
+  are hidden, as they always were on a short timer, and the minutes stay in the settings). An old stopwatch's box grows to 3 × 4 when read and widgets it would now cover move down (as in the
+  browser); a student's place for a pinned one grows too. The ready-made layouts' timers (4 × 4, 6 × 7, 3 × 4) already
+  fit. `npm run dash:fit` checks a running stopwatch-mode widget (past an hour) next to the timer, and a student's own
+  timer and stopwatch with their switch, at both sizes, on every view in English, German and Arabic.
+- The old `dash.w.stopwatch.*` strings are left in place (i18n:check does not require removing them).
+- Tests: `tests/unit/dash-timer.test.js` (one library entry, the mode setting, switching while running, both modes'
+  server actions, old stopwatches in layouts, pins, student screens and running state, ready-made layouts). Updated
+  to the combined widget: the student-addable lists in `dash.test.js` and `dash-stage2.test.js`, the timer's cleaned
+  settings in `dash-stage2.test.js`, and the brief audit in `dash-stage5.test.js` (the stopwatch is a mode of the
+  timer).
+
 ## Classroom dashboards: stickers widget removed (16 Nov 2026)
 Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
 (`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and

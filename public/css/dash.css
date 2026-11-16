@@ -222,6 +222,16 @@ body.dash-page{padding-bottom:0}
 [dir="rtl"] .dw-rot{transform:rotate(90deg) scaleX(-1)}
 /* timers */
 .dw-timer{display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2);height:100%;text-align:center}
+/* the timer's two modes (count down | count up) at the top; the rest centred under it */
+.dw-modes{display:flex;flex:none;gap:4px;max-width:100%;justify-content:center}
+.dw-mode{flex:0 1 auto;min-width:0;white-space:normal;line-height:1.1;gap:6px;padding:0 12px}
+.dw-modetext{min-width:0;overflow-wrap:anywhere}
+@container (max-width:300px){.dw-modeicon{display:none}.dw-mode{padding:0 8px}}
+/* with the switch above them the digits give up a little height, so the quick times and Start still fit at 4 rows */
+.dw-timer:has(> .dw-modes) .dw-tmain>.dw-digits{font-size:clamp(1.8rem,min(22cqh,22cqi),12rem)}
+/* at its smallest (3 x 4) the switch takes the quick times' row, as a short timer always did (Set minutes stays in its settings) */
+@container (max-height:300px) and (max-width:400px){.dw-timer:has(> .dw-modes) :is(.dw-presets,.dw-custom){display:none!important}}
+.dw-tmain{flex:1 1 auto;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2)}
 .dw-digits{font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;font-size:clamp(1.8rem,min(30cqh,22cqi),12rem)}
 /* a short timer keeps the digits and Start; the quick times come back when it is taller */
 @container (max-height:250px){.dw-presets,.dw-custom{display:none!important}.dw-timer .dw-bar{height:10px}}
