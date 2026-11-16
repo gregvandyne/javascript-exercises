@@ -854,6 +854,24 @@
           "yellow": "Words for amber"
         },
         "desc": "Red, amber or green, with your own words for each."
+      },
+      "board": {
+        "color": "Colour"
+      },
+      "tenframe": {
+        "flip": "Swap the colours"
+      },
+      "numline": {
+        "desc": "Whole numbers, fractions, decimals and negatives. Tap to place points, drag to jump. Reception to Year 9."
+      },
+      "graph": {
+        "desc": "Bar, line, picture and dot plots from your own numbers or a quick check's totals."
+      },
+      "times": {
+        "name": "Times tables grid"
+      },
+      "base10": {
+        "name": "Base-ten blocks"
       }
     }
   }

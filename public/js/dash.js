@@ -6,6 +6,10 @@
 // Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): the everyday widgets' state (timers, the help queue,
 // quick checks, weather) rides on the same check; widgets get it through their live() hook. A student answers a quick
 // check in the card under the banner.
+// Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): teaching tools keep their state through ctx.keep (the
+// teacher's layout, or a student's own screen) and go to students with ctx.send (a push of kind 'tool'); a student opens
+// their own copy in a sheet (kept in this browser only) and may pin it to their own screen. The Picture widget uploads
+// through ctx.upload (the stage 1 picture checks).
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
@@ -93,6 +97,16 @@ function start() {
     type, intl: INTL, role: D.role, id: w.id, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
     get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
+    // Stage 3: teaching tools.
+    common: D.registry.common || {}, copy: false,
+    keep: state => { if (w.pinned) return; w.s = { ...w.s, state }; save(); },
+    send: TEACHER ? async state => {
+      if (saveTimer) await flush();
+      const r = await act('/pushes', { kind: 'tool', ref: w.id, state });
+      if (r) { toast(t('js.dash.tools.sent', { name: (type && type.name) || '' })); poll(); }
+    } : null,
+    upload: TEACHER ? uploadShow : null,
+    checks: TEACHER ? checksForGraph : null,
     // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
     set: (key, value) => {
       if (!TEACHER || w.pinned) return;
@@ -117,6 +131,7 @@ function start() {
     grid.textContent = '';
     const rows = Math.max(MIN_ROWS, rowsUsed() + (S.editing ? 1 : 0));
     grid.style.setProperty('--rows', rows);
+    fitRows();
     const order = [...S.widgets].sort((a, b) => a.y - b.y || a.x - b.x);
     for (const w of order) grid.appendChild(card(w, order.indexOf(w)));
     if (S.editing && !narrow.matches) {
@@ -425,6 +440,23 @@ function start() {
   let optsCache = null;
   const pushOpts = async (q = '') => { if (!q && optsCache) return optsCache; const r = await api(`/api/dash/${CID}/push-options${q ? `?q=${encodeURIComponent(q)}` : ''}`); if (!q) optsCache = r; return r; };
   const EDITORS = {
+    // Stage 3: the Picture widget's picture (the class's teacher uploads; the stage 1 checks).
+    pic(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-picedit';
+      field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><div class="dash-picprev"></div><button class="btn btn-sm" type="button" id="${id}" aria-describedby="${id}-l">🖼️ ${esc(w.s[f.key] ? W.replace : W.upload)}</button><input type="file" accept="image/*" hidden>`;
+      const prev = field.querySelector('.dash-picprev'), b = field.querySelector('button'), file = field.querySelector('input');
+      const show = () => { prev.innerHTML = w.s[f.key] ? `<img src="/dash/pictures/${encodeURIComponent(w.s[f.key])}" alt="" width="120" height="80">` : ''; };
+      show();
+      b.addEventListener('click', () => file.click());
+      file.addEventListener('change', async () => {
+        const x = file.files && file.files[0]; if (!x) return; file.value = '';
+        b.disabled = true; b.textContent = W.uploading;
+        try { const r = await uploadShow(x); w.s[f.key] = r.id; commit(); redraw(); show(); announce(W.replace); }
+        catch (err) { toast(err.message, { bad: true, ms: 5000 }); }
+        finally { b.disabled = false; b.textContent = `🖼️ ${w.s[f.key] ? W.replace : W.upload}`; }
+      });
+    },
     date(field, f, w, id, type, { commit, redraw }) {
       field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="date" min="2000-01-01" max="2100-12-31">`;
       const inp = field.querySelector('input'); inp.value = w.s[f.key] || '';
@@ -600,6 +632,26 @@ function start() {
     } catch (err) { toast(err.message, { bad: true, ms: 5000 }); }
     finally { btn.disabled = false; btn.innerHTML = old; }
   });
+  /** Stage 3: a picture for the Picture widget (the class's teacher only), through the same checks as a background. */
+  async function uploadShow(f) {
+    let blob; try { blob = await toJpeg(f); } catch { throw new Error(t('js.dash.uploadBad')); }
+    const res = await fetch(`/api/dash/${CID}/pictures?use=show`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'image/jpeg' }, body: blob });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || t('js.dash.uploadBad'));
+    return data;
+  }
+  /** Stage 3: quick checks the graph maker can show: today's and saved ones, totals only (never who answered). */
+  async function checksForGraph() {
+    const W = (types.get('check') || { words: {} }).words;
+    const saved = await api2('/checks/saved').then(r => r.checks).catch(() => []);
+    const seen = new Set(), out = [];
+    for (const c of [...(S.live.checks || []), ...saved]) {
+      if (seen.has(c.id)) continue; seen.add(c.id);
+      const rows = checkChoices(c, W).map((x, i) => ({ l: `${x.icon && !x.typed && c.kind !== 'fist' ? `${x.icon} ` : ''}${x.label}`.trim(), v: (c.tally || [])[i] || 0 }));
+      out.push({ title: `${c.q || W[c.kind]}${c.day ? ` (${c.day})` : ''}`, q: c.q || W[c.kind] || '', rows });
+    }
+    return out;
+  }
   /** A background picture: at most 1600 x 1000, re-drawn as a JPEG in the browser (which also drops location data). */
   async function toJpeg(f) {
     let img;
@@ -694,8 +746,8 @@ function start() {
     catch (err) { toast(err.message, { bad: true }); }
   });
 
-  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅' };
-  const titleOf = p => p.title || t(`js.dash.kind.${p.kind}`);
+  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮' };
+  const titleOf = p => (p.kind === 'tool' ? ((types.get(p.tool && p.tool.type) || {}).name || t('js.dash.kind.tool')) : p.title || t(`js.dash.kind.${p.kind}`));
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
   async function openPush(q = '') {
@@ -718,7 +770,7 @@ function start() {
           <p class="err form-err" role="alert"></p><div class="row"><button class="btn" type="submit">✅ ${esc(t('js.dash.push.linkAdd'))}</button></div></form>`,
     };
     const content = `<section class="dash-sent"><h3 class="dash-h3">${esc(t('js.dash.push.sentToday'))}</h3>
-      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: p.title }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
+      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: titleOf(p) }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
       <div class="chips dash-ptabs" role="tablist" aria-label="${esc(t('js.dash.push.what'))}">${tabs.map(k => `<button class="chip" type="button" role="tab" id="dash-ptab-${k}" aria-controls="dash-ppanel" aria-selected="${k === pushTab}" tabindex="${k === pushTab ? 0 : -1}" data-ptab="${k}">${KIND_ICON[k]} ${esc(t(`js.dash.push.tab.${k}`))}</button>`).join('')}</div>
       <div class="dash-ppanel" id="dash-ppanel" role="tabpanel" aria-labelledby="dash-ptab-${pushTab}">${panel[pushTab]}</div>`;
     if (pushSheet) { $('.sheet-body', pushSheet.el).innerHTML = content; } else { pushSheet = sheet({ title: t('js.dash.push.title'), content, onClose: () => { pushSheet = null; } }); wirePush(); }
@@ -753,7 +805,7 @@ function start() {
   }
 
   // ---------------------------------------------------------------- what the live state shows
-  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link', check: 'answer' };
+  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link', check: 'answer', tool: 'open' };
   const openAttrs = p => (p.kind === 'link' ? ' target="_blank" rel="noopener noreferrer"' : '');
   function showLive() {
     const live = S.live || { pushes: [] };
@@ -826,6 +878,8 @@ function start() {
     $('#dash-tray-close').addEventListener('click', () => { setTray(false); trayBtn.focus(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !tray.hidden) { setTray(false); trayBtn.focus(); } });
     document.addEventListener('click', async e => {
+      const tool = e.target.closest('a[href^="#tool-"]');
+      if (tool) { e.preventDefault(); setTray(false); openCopy(tool.getAttribute('href').slice(6)); return; }
       const go = e.target.closest('a[href^="#check-"]');
       if (go) { e.preventDefault(); setTray(false); const box = $('#dash-check'); if (box && !box.hidden) { box.scrollIntoView({ block: 'nearest' }); (box.querySelector('.dash-ans[aria-pressed="false"]') || box).focus(); } return; }
       const a = e.target.closest('[data-answer]');
@@ -847,12 +901,38 @@ function start() {
     });
   }
 
+  // ---------------------------------------------------------------- a student's own copy of a teaching tool (stage 3)
+  // The teacher's tool arrives as a push; the student plays with their own copy in a sheet. It stays in this browser only
+  // (closing and opening it again keeps it until the page reloads); "Pin to my screen" makes it one of their own widgets.
+  const copies = new Map();
+  function openCopy(pid) {
+    const p = (S.live.pushes || []).find(x => x.id === pid && x.kind === 'tool');
+    const type = p && p.tool && types.get(p.tool.type);
+    if (!type || !RENDER[type.id]) return;
+    const C = D.registry.common || {};
+    const sh = sheet({ title: `${type.icon} ${type.name}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
+    sh.el.querySelector('.sheet').classList.add('dash-copysheet');
+    const body = sh.el.querySelector('.dash-wcopy .dash-wb');
+    const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
+    const ctx = { ...ctxFor(w, type), own: true, copy: true, send: null, upload: null, checks: null, keep: state => copies.set(pid, state), set: () => {} };
+    const r = RENDER[type.id](body, w.s, ctx);
+    sh.el.querySelector('[data-pincopy]').addEventListener('click', () => {
+      const box = freeSpot(type.size[0], type.size[1]);
+      const mine = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s: { state: copies.get(pid) || p.tool.state } };
+      S.widgets.push(mine); render(); save();
+      if (r && r.destroy) r.destroy();
+      sh.close(); toast(C.pinned); announce(C.pinned);
+      grid.querySelector(`[data-id="${CSS.escape(mine.id)}"]`)?.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
   // ---------------------------------------------------------------- projector mode (the teacher)
   let lock = null, idle = null;
   const wake = async () => { try { if (navigator.wakeLock && document.body.classList.contains('dash-projector') && !document.hidden) lock = await navigator.wakeLock.request('screen'); } catch { lock = null; } };
   const awake = () => { document.body.classList.remove('dash-idle'); clearTimeout(idle); if (document.body.classList.contains('dash-projector')) idle = setTimeout(() => document.body.classList.add('dash-idle'), 3000); };
   function projector(on) {
     document.body.classList.toggle('dash-projector', on);
+    requestAnimationFrame(fitRows);
     $('#dash-projector')?.setAttribute('aria-pressed', String(on));
     if (on) { document.documentElement.requestFullscreen?.().catch(() => {}); wake(); awake(); }
     else { if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {}); try { lock && lock.release(); } catch { /* gone */ } lock = null; clearTimeout(idle); document.body.classList.remove('dash-idle'); }
@@ -863,5 +943,23 @@ function start() {
   for (const ev of ['mousemove', 'pointerdown', 'keydown']) document.addEventListener(ev, awake, { passive: true });
 
   narrow.addEventListener('change', render);
+  // Projector mode (stage 3 review): the whole screen fits without scrolling when the rows can be at least 56px tall;
+  // a layout taller than that scrolls inside the stage, with a shadow at the bottom while there is more below.
+  function fitRows() {
+    const stage = grid.parentElement;
+    let min = 72;
+    if (document.body.classList.contains('dash-projector') && !S.editing && !narrow.matches) {
+      const rows = +grid.style.getPropertyValue('--rows') || MIN_ROWS, gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+      const fit = Math.floor((stage.clientHeight - parseFloat(getComputedStyle(stage).paddingBottom || 0) - gap * (rows - 1)) / rows);
+      if (fit >= 56) min = Math.min(72, fit);
+    }
+    grid.style.setProperty('--rowmin', `${min}px`);
+    stageMark();
+  }
+  const stageEl = grid.parentElement;
+  const stageMark = () => { const more = stageEl.scrollHeight > stageEl.clientHeight + 12 && stageEl.scrollTop + stageEl.clientHeight < stageEl.scrollHeight - 12; stageEl.classList.toggle('has-more', more); };
+  stageEl.addEventListener('scroll', stageMark, { passive: true });
+  addEventListener('resize', () => requestAnimationFrame(fitRows));
+  document.addEventListener('fullscreenchange', () => requestAnimationFrame(fitRows));
   applyBg(); render(); renderLayouts(); showLive(); tick();
 }

@@ -23,10 +23,11 @@ import * as games from './games.js';
 import * as L from './lessons.js';
 import { cleanJpeg, PhotoError } from './photos.js';
 import { liveOn, openForClass } from './classlive-sessions.js';
+import { TOOL_IDS, cleanToolState } from './dash-tools.js';
 
 // ---------------------------------------------------------------- the widget registry
 /** Library groups, in order. Groups without a widget yet (stage 2 and later) are not shown. */
-export const GROUPS = ['join', 'time', 'class', 'show', 'tools', 'check', 'oomba'];
+export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'tools', 'check', 'oomba'];
 /**
  * Widget types. who: 'teacher' | 'student' | 'both' (who may add it to their own screen; a teacher can pin any of
  * theirs to student screens unless pin is false). pinDef: pinned when added. size/min: [columns, rows]. words: other
@@ -34,8 +35,27 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'tools', 'check', 'oomba
  * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
  * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
  * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
- * 'scores' and 'stamps' (hidden: changed by the widget itself). Every type is rebuilt on the server (cleanSettings).
+ * 'scores' and 'stamps' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
+ * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
+ * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
  */
+/** The words each teaching tool shows (dash.w.<id>.<word>); the words they share are dash.tools.<word> (TOOL_COMMON). */
+const TOOL_WORDS = {
+  fractions: ['bar', 'circle', 'same', 'hide', 'add', 'remove', 'parts', 'more', 'fewer', 'shadedOf', 'sameText', 'tooSmall', 'samePrompt', 'which', 'order'],
+  numline: ['from', 'to', 'steps', 'mode', 'whole', 'fraction', 'decimal', 'point', 'jump', 'clear', 'cursor', 'placed', 'removed', 'jumpFrom', 'jumped', 'hint', 'range'],
+  coord: ['slope', 'start', 'quads', 'four', 'one', 'size', 'line', 'table', 'plot', 'plotted', 'unplotted', 'clear', 'rise', 'run', 'hint', 'noLine'],
+  graph: ['kind', 'bar', 'line', 'picture', 'dot', 'title', 'data', 'label', 'value', 'addRow', 'removeRow', 'fromCheck', 'noChecks', 'counts', 'per', 'key', 'icon', 'empty'],
+  base10: ['hundreds', 'tens', 'ones', 'add', 'take', 'tradeUp', 'tradeDown', 'tradeUpT', 'tradeDownH', 'traded', 'hint', 'drop', 'clear'],
+  placeval: ['discs', 'decimals', 'times10', 'div10', 'more', 'less', 'expanded', 'clear', 'thousands', 'hundreds', 'tens', 'ones', 'tenths', 'hundredths', 'thousandths'],
+  tenframe: ['frames', 'red', 'yellow', 'take', 'clear', 'fill', 'bond', 'cell', 'empty', 'counts', 'flip', 'makeTen'],
+  hundreds: ['start', 'skip', 'skipBy', 'hide', 'none', 'shaded', 'all', 'clear', 'shadedN', 'hidden', 'noSkip'],
+  area: ['rows', 'cols', 'array', 'area', 'splitRows', 'splitCols', 'place', 'noSplit', 'hint'],
+  times: ['size', 'fact', 'row', 'col', 'squares', 'turn', 'hide', 'pick', 'squaresAre', 'clear'],
+  tclock: ['digital', 'h24', 'elapsed', 'start', 'endTime', 'elapsedIs', 'onlyH', 'onlyM', 'hint', 'minutes', 'hours', 'time'],
+  fdp: ['fraction', 'decimal', 'percent', 'grid', 'hint', 'top', 'bottom', 'outOf'],
+};
+/** Words every teaching tool shares (dash.tools.<word>). */
+export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done'];
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
@@ -103,6 +123,18 @@ export const WIDGETS = [
     { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
   { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
     { key: 'tiles', type: 'tiles', def: [] }] },
+  // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
+  // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
+  ...[['fractions', '🍕', [6, 6], [5, 5]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [5, 5]],
+    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 5]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['area', '🔲', [6, 6], [5, 5]], ['times', '✖️', [6, 8], [5, 7]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
+    .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
+    { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },
+  { id: 'picture', icon: '🖼️', group: 'show', who: 'teacher', size: [4, 4], min: [3, 3], words: ['empty', 'needAlt', 'gone', 'upload', 'uploading', 'replace', 'note', 'bad'], settings: [
+    { key: 'pic', type: 'pic', def: '' },
+    { key: 'alt', type: 'textarea', max: 200, def: '' },
+    { key: 'fit', type: 'select', options: ['contain', 'cover'], def: 'contain' }] },
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
@@ -114,14 +146,14 @@ export const canPin = type => !!type && type.pin !== false;
 /** The registry as the browser gets it: labels in the reader's language. role: 'teacher' | 'student'. */
 export function registryFor(t, role) {
   const types = WIDGETS.map(w => ({
-    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef,
+    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send,
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
     words: Object.fromEntries(w.words.map(k => [k, t(`dash.w.${w.id}.${k}`)])),
-    settings: w.settings.map(s => ({ ...s, label: t(`dash.w.${w.id}.s.${s.key}`),
+    settings: w.settings.map(s => ({ ...s, label: s.type === 'tool' ? '' : t(`dash.w.${w.id}.s.${s.key}`),
       ...(s.options ? { labels: Object.fromEntries(s.options.map(o => [o, t(`dash.w.${w.id}.o.${s.key}.${o}`)])) } : {}) })),
   }));
   const used = new Set(WIDGETS.map(w => w.group));
-  return { types, groups: GROUPS.filter(g => used.has(g)).map(g => ({ id: g, name: t(`dash.groups.${g}`) })) };
+  return { types, groups: GROUPS.filter(g => used.has(g)).map(g => ({ id: g, name: t(`dash.groups.${g}`) })), common: Object.fromEntries(TOOL_COMMON.map(k => [k, t(`dash.tools.${k}`)])) };
 }
 
 // ---------------------------------------------------------------- cleaning what browsers send
@@ -213,6 +245,8 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
     else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
+    else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
+    else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
     else out[f.key] = v === undefined ? f.def : cleanText(v, f.max, f.type === 'textarea');
   }
   return out;
@@ -246,7 +280,7 @@ export function cleanBg(bg, user, classId) {
   if (!bg || typeof bg !== 'object') return DEFAULT_BG;
   if (bg.kind === 'color' && BG_COLORS.includes(bg.id)) return { kind: 'color', id: bg.id };
   if (bg.kind === 'art' && BG_ART.includes(bg.id)) return { kind: 'art', id: bg.id };
-  if (bg.kind === 'pic' && ID.test(String(bg.id || '')) && q.get('SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=?', bg.id, user.id, classId)) return { kind: 'pic', id: bg.id };
+  if (bg.kind === 'pic' && ID.test(String(bg.id || '')) && q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='bg'", bg.id, user.id, classId)) return { kind: 'pic', id: bg.id };
   return DEFAULT_BG;
 }
 const json = (s, d) => { try { const v = JSON.parse(s); return v ?? d; } catch { return d; } };
@@ -299,7 +333,7 @@ export function createLayout(u, c, { name, widgets = [], bg = DEFAULT_BG } = {})
   const count = q.get('SELECT COUNT(*) n FROM dash_layouts WHERE class_id=? AND owner_id=?', c.id, u.id).n;
   if (count >= MAX_LAYOUTS) return { error: 'tooMany' };
   const id = uid(12), t = now();
-  q.run(`INSERT INTO dash_layouts(${LAYOUT_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?)`, id, c.id, u.id, n, JSON.stringify(cleanWidgets(widgets, 'teacher')), JSON.stringify(cleanBg(bg, u, c.id)), count, t, t, t);
+  q.run(`INSERT INTO dash_layouts(${LAYOUT_COLS}) VALUES (?,?,?,?,?,?,?,?,?,?)`, id, c.id, u.id, n, JSON.stringify(ownPictures(cleanWidgets(widgets, 'teacher'), u, c)), JSON.stringify(cleanBg(bg, u, c.id)), count, t, t, t);
   // The first layout anyone makes for a class is the one students follow.
   ensureClassRow(c.id);
   if (!classState(c.id).layout_id) useLayout(u, c, id);
@@ -309,7 +343,7 @@ const ownLayout = (u, c, id) => { const l = getLayout(id); return l && l.class_i
 export function updateLayout(u, c, id, { name, widgets, bg } = {}) {
   const l = ownLayout(u, c, id); if (!l) return { error: 'notFound' };
   const n = name === undefined ? l.name : cleanText(name, 40); if (!n) return { error: 'name' };
-  const w = widgets === undefined ? l.widgets : cleanWidgets(widgets, 'teacher');
+  const w = widgets === undefined ? l.widgets : ownPictures(cleanWidgets(widgets, 'teacher'), u, c);
   const b = bg === undefined ? l.bg : cleanBg(bg, u, c.id);
   q.run('UPDATE dash_layouts SET name=?, widgets=?, bg=?, updated_at=? WHERE id=?', n, JSON.stringify(w), JSON.stringify(b), now(), id);
   if (classState(c.id).layout_id === id) publishPins(c.id, w);
@@ -336,11 +370,19 @@ export function deleteLayout(u, c, id) {
   });
   return { ok: true };
 }
-/** What students get from the teacher's layout: the pinned widgets only. */
+/** A picture widget shows only one of this teacher's own pictures for this class (stage 3); any other id is dropped. */
+function ownPictures(widgets, u, c) {
+  for (const w of widgets) if (w.type === 'picture' && w.s.pic && !q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='show'", w.s.pic, u.id, c.id)) w.s.pic = '';
+  return widgets;
+}
+/** What students get from the teacher's layout: the pinned widgets only (a picture only once it has its description).
+ *  pins_at moves only when the pins really changed, so students' screens redraw only then (stage 3: a teacher working a
+ *  tool saves the layout often). */
 function publishPins(classId, widgets) {
-  const pins = widgets.filter(w => w.pin).map(({ pin, ...w }) => w);
+  const pins = JSON.stringify(widgets.filter(w => w.pin && !(w.type === 'picture' && !(w.s.pic && w.s.alt))).map(({ pin, ...w }) => w));
   ensureClassRow(classId);
-  q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', JSON.stringify(pins), now(), classId);
+  if (classState(classId).pins === pins) return;
+  q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
 export const pinsOf = classId => json(classState(classId).pins, []);
 
@@ -415,7 +457,7 @@ export function removeLink(u, c, id) {
 }
 
 // ---------------------------------------------------------------- pushes and the tray
-export const PUSH_KINDS = ['game', 'live', 'lesson', 'link'];
+export const PUSH_KINDS = ['game', 'live', 'lesson', 'link', 'tool'];
 export const MAX_PUSHES_A_DAY = 40;
 /** A game students of the class can open: live, and public, shared with the school, or shared with this class. */
 export function pushableGame(c, g) {
@@ -439,21 +481,27 @@ export function pushOptions(u, c, text = '') {
   for (const g of found) { if (seen.has(g.id) || !pushableGame(c, g)) continue; seen.add(g.id); list.push({ id: g.id, title: g.title, icon: g.icon }); if (list.length >= 12) break; }
   return { games: list, live: liveRoom(c), lessons: openLessons(c), links: linksOf(c.id) };
 }
-export function push(u, c, { kind, ref } = {}) {
+export function push(u, c, { kind, ref, state } = {}) {
   if (!PUSH_KINDS.includes(kind)) return { error: 'kind' };
   const day = dayOf(c);
   if (q.get('SELECT COUNT(*) n FROM dash_pushes WHERE class_id=? AND day=?', c.id, day).n >= MAX_PUSHES_A_DAY) return { error: 'tooManyPushes' };
-  let title, r = String(ref || '');
+  let title, data = {}, r = String(ref || '');
   if (kind === 'game') { const g = games.getGame(r); if (!pushableGame(c, g)) return { error: 'game' }; title = g.title; }
   else if (kind === 'live') { const room = liveRoom(c); if (!room) return { error: 'noLive' }; title = room.title; r = room.code; }
   else if (kind === 'lesson') { const cl = openLessons(c).find(x => x.id === r); if (!cl) return { error: 'lesson' }; title = cl.title; }
-  else { const l = getLink(c.id, r); if (!l) return { error: 'link' }; title = l.title; }
+  else if (kind === 'tool') {
+    // Stage 3: one of this teacher's teaching tools, as it is on their screen now (state as sent, rebuilt from the tool's
+    // spec). Each student opens their own copy; nothing a student does with it comes back.
+    const w = teacherWidget(u, c, r, TOOL_IDS); if (!w) return { error: 'tool' };
+    data = { type: w.type, state: cleanToolState(w.type, state === undefined ? w.s.state : state) };
+    title = w.type;
+  } else { const l = getLink(c.id, r); if (!l) return { error: 'link' }; title = l.title; }
   const id = uid(12);
   tx(() => {
     // Older days' pushes are only history nobody reads: keep two weeks.
     q.run('DELETE FROM dash_push_hidden WHERE push_id IN (SELECT id FROM dash_pushes WHERE class_id=? AND created_at<?)', c.id, now() - 14 * 86400e3);
     q.run('DELETE FROM dash_pushes WHERE class_id=? AND created_at<?', c.id, now() - 14 * 86400e3);
-    q.run('INSERT INTO dash_pushes(id, class_id, day, kind, ref, title, by_id, created_at) VALUES (?,?,?,?,?,?,?,?)', id, c.id, day, kind, r, cleanText(title, 80) || '…', u.id, now());
+    q.run('INSERT INTO dash_pushes(id, class_id, day, kind, ref, title, by_id, created_at, data) VALUES (?,?,?,?,?,?,?,?,?)', id, c.id, day, kind, r, cleanText(title, 80) || '…', u.id, now(), JSON.stringify(data));
   });
   audit(u.id, 'dash.push', c.id, { push: id, kind });
   return { push: id };
@@ -468,6 +516,8 @@ export function pushHref(c, p) {
   if (p.kind === 'live') { const room = liveRoom(c); return room && room.code === p.ref ? `/join#${p.ref}` : null; }
   if (p.kind === 'lesson') return openLessons(c).some(x => x.id === p.ref) ? `/class/${c.id}/lessons/${p.ref}` : null;
   if (p.kind === 'link') return getLink(c.id, p.ref) ? `/class/${c.id}/dashboard/link/${p.ref}` : null;
+  // A teaching tool opens on the dashboard itself, as the student's own copy.
+  if (p.kind === 'tool') return `#tool-${p.id}`;
   // A quick check opens on the dashboard itself while it is open.
   if (p.kind === 'check') return q.get('SELECT 1 FROM dash_checks WHERE id=? AND class_id=? AND ended_at IS NULL', p.ref, c.id) ? `#check-${p.ref}` : null;
   return null;
@@ -475,8 +525,8 @@ export function pushHref(c, p) {
 /** Today's pushes still on (the tray), newest first, each with where it opens. Ones with nowhere to go are left out. */
 export function todaysPushes(c, userId = null) {
   const hidden = userId ? new Set(q.all('SELECT h.push_id FROM dash_push_hidden h JOIN dash_pushes p ON p.id=h.push_id WHERE p.class_id=? AND h.user_id=?', c.id, userId).map(r => r.push_id)) : new Set();
-  return q.all('SELECT id, kind, ref, title, created_at FROM dash_pushes WHERE class_id=? AND day=? AND ended_at IS NULL ORDER BY created_at DESC, rowid DESC', c.id, dayOf(c))
-    .map(p => ({ id: p.id, kind: p.kind, title: p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id) }))
+  return q.all('SELECT id, kind, ref, title, created_at, data FROM dash_pushes WHERE class_id=? AND day=? AND ended_at IS NULL ORDER BY created_at DESC, rowid DESC', c.id, dayOf(c))
+    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: json(p.data, {}) } : {}) }))
     .filter(p => p.href);
 }
 /** A student hides a push from their banner (or brings it back). It stays in their tray either way. */
@@ -826,17 +876,20 @@ export const picFile = id => path.join(PIC_DIR(), `${String(id).replace(/[^A-Za-
 /** A background is shown big, so it may be larger than a profile photo; the browser makes it at most 1600 wide. */
 export const PIC_LIMITS = { maxBytes: 900 * 1024, maxSide: 2000 };
 export const PICS_KEPT = 4;
-/** Store a background picture: the profile photo's file checks (JPEG only, size, metadata removed). Never sent to an
- *  AI or anywhere else. Keeps the newest PICS_KEPT per person per class. -> { id } */
-export function savePicture(u, c, bytes) {
+/** Stage 3: pictures a teacher shows in a Picture widget (use 'show'), kept apart from backgrounds (use 'bg'). */
+export const SHOW_PICS_KEPT = 12;
+/** Store a picture: the profile photo's file checks (JPEG only, size, metadata removed). Never sent to an AI or anywhere
+ *  else. use: 'bg' (a background, anyone on the screen) or 'show' (a Picture widget, the class's teacher only: the route
+ *  checks). Keeps the newest PICS_KEPT backgrounds / SHOW_PICS_KEPT shown pictures per person per class. -> { id } */
+export function savePicture(u, c, bytes, { use = 'bg' } = {}) {
   const clean = cleanJpeg(bytes, PIC_LIMITS);
-  const id = uid(16);
+  const id = uid(16), kind = use === 'show' ? 'show' : 'bg';
   fs.mkdirSync(PIC_DIR(), { recursive: true });
   fs.writeFileSync(picFile(id), clean);
-  q.run('INSERT INTO dash_pictures(id, owner_id, class_id, bytes, created_at) VALUES (?,?,?,?,?)', id, u.id, c.id, clean.length, now());
-  const old = q.all('SELECT id FROM dash_pictures WHERE owner_id=? AND class_id=? ORDER BY created_at DESC, rowid DESC', u.id, c.id).slice(PICS_KEPT);
+  q.run('INSERT INTO dash_pictures(id, owner_id, class_id, bytes, created_at, use) VALUES (?,?,?,?,?,?)', id, u.id, c.id, clean.length, now(), kind);
+  const old = q.all('SELECT id FROM dash_pictures WHERE owner_id=? AND class_id=? AND use=? ORDER BY created_at DESC, rowid DESC', u.id, c.id, kind).slice(kind === 'show' ? SHOW_PICS_KEPT : PICS_KEPT);
   for (const p of old) dropPicture(p.id);
-  audit(u.id, 'dash.picture', c.id, { picture: id, bytes: clean.length });
+  audit(u.id, 'dash.picture', c.id, { picture: id, bytes: clean.length, use: kind });
   return { id };
 }
 function dropPicture(id) {
@@ -848,13 +901,18 @@ function dropPicture(id) {
   q.run('UPDATE dash_students SET bg=? WHERE bg=?', plain, mine);
 }
 /** Who can fetch a picture: its owner, and the teachers of the class it was added for while the owner is still in that
- *  class. Nobody else: not other students, not another class's teacher, not a school admin, not a visitor. */
+ *  class. Stage 3: also the class's students, for a picture its teacher shows in a Picture widget pinned on student
+ *  screens right now (with its description). Nobody else: not another class's students or teacher, not a school admin,
+ *  not a visitor; never a background picture to a student. */
 export function canSeePicture(viewer, pic) {
   if (!viewer || !pic || viewer.is_guest) return false;
   if (viewer.id === pic.owner_id) return true;
   const c = S.getClass(pic.class_id);
-  return !!c && S.teaches(viewer, c.id) && ['teacher', 'admin'].includes(S.roleIn(viewer, c.school_id)) && !!S.classMember(c.id, pic.owner_id);
+  if (!c) return false;
+  if (S.teaches(viewer, c.id) && ['teacher', 'admin'].includes(S.roleIn(viewer, c.school_id)) && !!S.classMember(c.id, pic.owner_id)) return true;
+  return pic.use === 'show' && isStudent(viewer, c) && isTeacher(getUserLite(pic.owner_id), c) && pinsOf(c.id).some(w => w.type === 'picture' && w.s && w.s.pic === pic.id && w.s.alt);
 }
+const getUserLite = id => q.get('SELECT * FROM users WHERE id=?', id) || null;
 export const getPicture = id => q.get('SELECT * FROM dash_pictures WHERE id=?', String(id || '')) || null;
 /** The class's students' background pictures in use, for its teacher to see and take down. */
 export const studentPictures = c => q.all(`SELECT p.id, p.owner_id, p.created_at, u.display_name, sm.roster_name FROM dash_students d

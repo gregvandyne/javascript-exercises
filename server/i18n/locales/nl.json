@@ -2770,14 +2770,16 @@
         "live": "Live spel",
         "lesson": "Les",
         "link": "Link",
-        "check": "Snelle check"
+        "check": "Snelle check",
+        "tool": "Lesgereedschap"
       },
       "act": {
         "play": "Spelen",
         "join": "Meedoen",
         "lesson": "Les openen",
         "link": "Link openen",
-        "answer": "Antwoorden"
+        "answer": "Antwoorden",
+        "open": "Openen"
       },
       "push": {
         "title": "Naar leerlingen sturen",
@@ -2826,7 +2828,10 @@
         "thanks": "Dank je! Je kunt je antwoord veranderen tot je leraar de check stopt."
       },
       "more": "Meer",
-      "moreName": "Meer van {name} zien"
+      "moreName": "Meer van {name} zien",
+      "tools": {
+        "sent": "{name} verstuurd. Elke leerling krijgt een eigen kopie."
+      }
     }
   },
   "favorites": {
@@ -8956,7 +8961,8 @@
       "show": "Tonen",
       "tools": "Hulpmiddelen",
       "check": "Nagaan",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Lesgereedschap"
     },
     "w": {
       "clock": {
@@ -9338,6 +9344,265 @@
         "remove": "{e} weghalen",
         "clear": "Allemaal weghalen",
         "empty": "Tik hieronder op een sticker om hem hier te zetten."
+      },
+      "fractions": {
+        "name": "Breukenstroken",
+        "desc": "Verdelen, kleuren en vergelijken. ‘Even grote stukjes’ laat zien waarom de ene groter is. Groep 4–8.",
+        "bar": "Stroken",
+        "circle": "Cirkels",
+        "same": "Even grote stukjes",
+        "hide": "Antwoord verbergen",
+        "add": "Erbij",
+        "remove": "Eraf",
+        "parts": "{n} stukjes",
+        "more": "Meer stukjes",
+        "fewer": "Minder stukjes",
+        "shadedOf": "{n} van de {d} stukjes gekleurd",
+        "sameText": "Verdeeld in {n} even grote stukjes: {list}.",
+        "tooSmall": "Dat zouden {n} piepkleine stukjes zijn: te klein om te tekenen.",
+        "samePrompt": "Druk op ‘Even grote stukjes’ om te zien waarom.",
+        "which": "Breuk {n}",
+        "order": "Welke is groter?"
+      },
+      "numline": {
+        "name": "Getallenlijn",
+        "desc": "Hele getallen, breuken, kommagetallen en negatieve getallen. Tik om punten te zetten, sleep om te springen. Groep 1–8 en hoger.",
+        "from": "Begint bij",
+        "to": "Eindigt bij",
+        "steps": "Stappen tussen hele getallen",
+        "mode": "Getallen erbij",
+        "whole": "Hele getallen",
+        "fraction": "Breuken",
+        "decimal": "Kommagetallen",
+        "point": "Punt",
+        "jump": "Sprong",
+        "clear": "Wissen",
+        "cursor": "Getallenlijn",
+        "placed": "Punt bij {v}",
+        "removed": "Punt bij {v} weggehaald",
+        "jumpFrom": "Sprong vanaf {v}: kies nu waar hij landt",
+        "jumped": "Van {a} naar {b}: {d}",
+        "hint": "Tik op de lijn voor een punt, of sleep erlangs om te springen.",
+        "range": "Er passen tot 240 stappen op één lijn."
+      },
+      "coord": {
+        "name": "Assenstelsel",
+        "desc": "Punten zetten en y = mx + b tekenen. Verander de helling en het begin, met een tabel. Groep 7 en hoger.",
+        "slope": "Helling",
+        "start": "Begint bij",
+        "quads": "Kwadranten",
+        "four": "Vier kwadranten",
+        "one": "Eén kwadrant",
+        "size": "Grootte van het rooster",
+        "line": "Lijn tonen",
+        "table": "Tabel tonen",
+        "plot": "Grafiek",
+        "plotted": "Punt gezet bij {p}",
+        "unplotted": "Punt bij {p} weggehaald",
+        "clear": "Punten wissen",
+        "rise": "omhoog",
+        "run": "opzij",
+        "hint": "Pijltjestoetsen bewegen, Enter zet een punt.",
+        "noLine": "Tik op het rooster om punten te zetten."
+      },
+      "graph": {
+        "name": "Grafiekmaker",
+        "desc": "Staaf-, lijn-, beeld- en stippendiagrammen van je eigen getallen of de totalen van een snelle vraag.",
+        "kind": "Soort grafiek",
+        "bar": "Staafdiagram",
+        "line": "Lijndiagram",
+        "picture": "Beelddiagram",
+        "dot": "Stippendiagram",
+        "title": "Titel",
+        "data": "Gegevens",
+        "label": "Naam",
+        "value": "Getal",
+        "addRow": "Rij erbij",
+        "removeRow": "Rij weghalen",
+        "fromCheck": "Totalen van een snelle vraag gebruiken",
+        "noChecks": "Nog geen snelle vragen",
+        "counts": "Alleen de totalen gaan mee, nooit wie wat antwoordde.",
+        "per": "Elk plaatje staat voor",
+        "key": "{icon} = {n}",
+        "icon": "Plaatje",
+        "empty": "Zet je getallen in Opties."
+      },
+      "base10": {
+        "name": "MAB-blokjes",
+        "desc": "Eenheden, tientallen en honderdtallen. Sleep ze erin, wissel 10 voor 1 en terug. Groep 1–6.",
+        "hundreds": "Honderdtallen",
+        "tens": "Tientallen",
+        "ones": "Eenheden",
+        "add": "Eén erbij",
+        "take": "Eén eraf",
+        "tradeUp": "10 eenheden → 1 tiental",
+        "tradeDown": "1 tiental → 10 eenheden",
+        "tradeUpT": "10 tientallen → 1 honderdtal",
+        "tradeDownH": "1 honderdtal → 10 tientallen",
+        "traded": "Gewisseld.",
+        "hint": "10 van één soort kun je wisselen voor 1 van de volgende.",
+        "drop": "Sleep naar de mat",
+        "clear": "Wissen"
+      },
+      "placeval": {
+        "name": "Positieschema",
+        "desc": "Van duizendtallen tot duizendsten, met fiches.",
+        "discs": "Fiches tonen",
+        "decimals": "Tienden, honderdsten en duizendsten tonen",
+        "times10": "Keer 10",
+        "div10": "Gedeeld door 10",
+        "more": "Eén erbij",
+        "less": "Eén eraf",
+        "expanded": "Uitgesplitst",
+        "clear": "Wissen",
+        "thousands": "Duizendtallen",
+        "hundreds": "Honderdtallen",
+        "tens": "Tientallen",
+        "ones": "Eenheden",
+        "tenths": "Tienden",
+        "hundredths": "Honderdsten",
+        "thousandths": "Duizendsten"
+      },
+      "tenframe": {
+        "name": "Rekenrekjes van tien",
+        "desc": "Eén of twee tienvakken met rode en gele fiches en splitsingen. Groep 1–4.",
+        "frames": "Tienvak",
+        "red": "Rood",
+        "yellow": "Geel",
+        "take": "Eén eraf",
+        "clear": "Wissen",
+        "fill": "Vullen met rood",
+        "bond": "Splitsing",
+        "cell": "Vakje {n}",
+        "empty": "leeg",
+        "counts": "{r} rood en {y} geel: samen {n}",
+        "flip": "Kleuren wisselen",
+        "makeTen": "Nog {n} tot het volgende tiental."
+      },
+      "hundreds": {
+        "name": "Honderdveld",
+        "desc": "Getallen kleuren, sprongsgewijs tellen en getallen verbergen om te raden.",
+        "start": "Getallen",
+        "skip": "Sprongen tellen",
+        "skipBy": "Sprongen van {n}",
+        "hide": "Getallen verbergen",
+        "none": "Alles tonen",
+        "shaded": "Gekleurde verbergen",
+        "all": "Alles verbergen",
+        "clear": "Wissen",
+        "shadedN": "{n} gekleurd",
+        "hidden": "Verborgen getal",
+        "noSkip": "Geen sprongen"
+      },
+      "area": {
+        "name": "Oppervlaktemodel en roosters",
+        "desc": "Rijen keer kolommen. Splits een kant om de deelproducten te zien.",
+        "rows": "Rijen",
+        "cols": "Kolommen",
+        "array": "Rooster",
+        "area": "Oppervlaktemodel",
+        "splitRows": "Rijen splitsen na",
+        "splitCols": "Kolommen splitsen na",
+        "place": "Splitsen per positie",
+        "noSplit": "0 betekent niet splitsen.",
+        "hint": "Splits een kant om de som in makkelijkere stukjes te verdelen."
+      },
+      "times": {
+        "name": "Tafelkaart",
+        "desc": "Tot 12 × 12. Licht een som, een rij, een kolom of de kwadraten op.",
+        "size": "Grootte",
+        "fact": "Som",
+        "row": "Rij",
+        "col": "Kolom",
+        "squares": "Kwadraten",
+        "turn": "Omkeersommen",
+        "hide": "Antwoorden verbergen",
+        "pick": "Tik op een vakje om een som op te lichten.",
+        "squaresAre": "Kwadraten",
+        "clear": "Wissen"
+      },
+      "tclock": {
+        "name": "Oefenklok",
+        "desc": "Wijzers die samen bewegen, de digitale tijd en hoeveel tijd er voorbij is.",
+        "digital": "Digitale tijd tonen",
+        "h24": "24-uurstijd",
+        "elapsed": "Verstreken tijd",
+        "start": "Begin",
+        "endTime": "Eind",
+        "elapsedIs": "{h} u {m} min",
+        "hint": "Sleep een wijzer of gebruik de pijltjestoetsen.",
+        "minutes": "minuten",
+        "hours": "u",
+        "time": "Klok",
+        "onlyH": "{h} u",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Breuk, kommagetal, procent",
+        "desc": "Eén getal op drie manieren naast elkaar, met een rooster van 10 × 10.",
+        "fraction": "Breuk",
+        "decimal": "Kommagetal",
+        "percent": "Procent",
+        "grid": "Honderdstenrooster",
+        "hint": "repeterend",
+        "top": "Teller",
+        "bottom": "Noemer",
+        "outOf": "{n} van de 100"
+      },
+      "board": {
+        "name": "Whiteboard",
+        "desc": "Tekenen en schrijven op de beamer. Wordt nooit bewaard of ergens heen gestuurd.",
+        "s": {
+          "bg": "Achtergrond"
+        },
+        "o": {
+          "bg": {
+            "plain": "Leeg",
+            "grid": "Ruitjes",
+            "lined": "Lijntjes"
+          }
+        },
+        "pen": "Pen",
+        "marker": "Markeerstift",
+        "eraser": "Gum",
+        "color": "Kleur",
+        "ink": "Zwart",
+        "red": "Rood",
+        "blue": "Blauw",
+        "green": "Groen",
+        "orange": "Oranje",
+        "purple": "Paars",
+        "undo": "Ongedaan maken",
+        "clear": "Alles wissen",
+        "note": "Tekeningen blijven alleen op dit scherm en zijn weg als de pagina opnieuw laadt.",
+        "canvas": "Tekenvlak",
+        "down": "Pen neer",
+        "up": "Pen op",
+        "keys": "Pijltjestoetsen bewegen de pen; de spatiebalk zet hem neer of tilt hem op.",
+        "cleared": "Bord gewist"
+      },
+      "picture": {
+        "name": "Afbeelding",
+        "desc": "Laat een schema, een leerposter of een foto zien die je uploadt.",
+        "s": {
+          "pic": "Afbeelding",
+          "alt": "Wat de afbeelding laat zien (voor schermlezers)",
+          "fit": "Passen"
+        },
+        "o": {
+          "fit": {
+            "contain": "Helemaal tonen",
+            "cover": "Vak vullen"
+          }
+        },
+        "empty": "Upload een afbeelding om te laten zien.",
+        "needAlt": "Voeg eerst een korte beschrijving toe. Leerlingen zien de afbeelding pas als die er is.",
+        "gone": "Deze afbeelding is er niet meer.",
+        "upload": "Afbeelding uploaden",
+        "uploading": "Je afbeelding wordt gecontroleerd…",
+        "replace": "Afbeelding veranderen",
+        "note": "Afbeelding beschrijven",
+        "bad": "Die afbeelding werkte niet. Probeer een JPG- of PNG-foto."
       }
     },
     "push": {
@@ -9365,7 +9630,18 @@
       "checkClosed": "Die check is gestopt.",
       "checkValue": "Kies een van de antwoorden.",
       "resting": "Het weer rust even uit. Probeer het straks nog eens.",
-      "qrGone": "Dat kan niet als QR-code worden getoond."
+      "qrGone": "Dat kan niet als QR-code worden getoond.",
+      "tool": "Dat hulpmiddel staat niet meer op je scherm."
+    },
+    "tools": {
+      "send": "Naar de klas sturen",
+      "options": "Opties",
+      "optionsFor": "{name}: opties",
+      "pin": "Op mijn scherm zetten",
+      "pinned": "Het staat nu op je scherm.",
+      "copyNote": "Je eigen kopie. Niemand anders ziet hem.",
+      "yourCopy": "Dit is je eigen kopie om mee te oefenen. Niemand anders ziet wat je ermee doet, en hij wordt alleen bewaard als je hem op je scherm zet.",
+      "done": "Klaar"
     }
   }
 }

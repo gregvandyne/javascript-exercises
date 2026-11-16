@@ -2,7 +2,7 @@
 //   GET  /class/:id/dashboard                 the class's teacher: the projector screen; a student: their own screen
 //   GET  /dashboard                           a student's way in: their one class's screen, or a list to pick from
 //   GET  /class/:id/dashboard/link/:lid       a student (or teacher) opens an approved link: only while it is approved
-//   GET  /dash/pictures/:pid                  a background picture: its owner and the class's teachers only
+//   GET  /dash/pictures/:pid                  a picture: its owner and the class's teachers (and students: a pinned Picture)
 //   GET  /api/dash/:id/live                   what a screen checks every few seconds (Eyes up, pushes, pinned widgets)
 //   GET  /api/dash/:id/pins                   the pinned widgets as students get them
 //   POST /api/dash/:id/me                     a student saves their screen
@@ -23,6 +23,11 @@
 //   GET  /api/dash/:id/places?q=              the teacher looks up a city for the weather (server side)
 //   GET  /api/dash/:id/qr?kind=&ref=          a QR code for an allowed target (teacher)
 //   GET  /api/dash/:id/tiles?refs=            Oomba tiles the reader can open
+// Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): teaching tools, the whiteboard and the Picture widget add
+// no new address. A tool is sent with POST /pushes (kind 'tool': the teacher's widget id and its state, rebuilt from the
+// tool's spec); a Picture widget's picture is uploaded with POST /pictures?use=show (the class's teacher only) and
+// fetched from /dash/pictures/:pid by the class's students while it is pinned on their screens. Whiteboard drawings
+// never leave the browser.
 // Every route asks D.roleOf / D.isTeacher: only the class's own teacher changes the class screen, sends, approves links
 // or starts Eyes up; only the class's students and teachers read it. Everyone else gets 404. CSRF is the site's
 // same-origin check (auth.csrfCheck); every write has a rate limit.
@@ -246,7 +251,7 @@ router.get('/api/dash/:id/push-options', requireUser, rateLimit('dash-options', 
 router.post('/api/dash/:id/pushes', requireUser, rateLimit('dash-push', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
   const b = body(req);
-  send(req, res, D.push(req.user, x.c, { kind: b.kind, ref: b.ref }), { toast: req.t('dash.push.sent') });
+  send(req, res, D.push(req.user, x.c, { kind: b.kind, ref: b.ref, state: b.state }), { toast: req.t('dash.push.sent') });
 });
 router.post('/api/dash/:id/pushes/:pid/end', requireUser, rateLimit('dash-push', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
@@ -268,9 +273,11 @@ router.post('/api/dash/:id/eyes', requireUser, rateLimit('dash-eyes', 60, 3600e3
 
 // ---------------------------------------------------------------- background pictures
 router.post('/api/dash/:id/pictures', requireUser, rateLimit('dash-picture', 20, 3600e3), express.raw({ type: () => true, limit: '1mb', inflate: false }), (req, res) => {
-  const x = load(req, res); if (!x) return;
+  // use=show: a picture for the Picture widget (stage 3): the class's own teacher only, never a student.
+  const use = req.query.use === 'show' ? 'show' : 'bg';
+  const x = load(req, res, { teacher: use === 'show' }); if (!x) return;
   try {
-    const r = D.savePicture(req.user, x.c, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0));
+    const r = D.savePicture(req.user, x.c, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0), { use });
     res.json({ ok: true, id: r.id, url: `/dash/pictures/${r.id}` });
   } catch (e) {
     if (e instanceof D.PhotoError) return res.status(e.status).json({ error: req.t(`dash.errors.pic_${e.code === 'tooBig' ? 'tooBig' : 'badType'}`) });

@@ -2769,14 +2769,16 @@
         "live": "Jeu en direct",
         "lesson": "Leçon",
         "link": "Lien",
-        "check": "Vérification rapide"
+        "check": "Vérification rapide",
+        "tool": "Outil pour enseigner"
       },
       "act": {
         "play": "Jouer",
         "join": "Rejoindre le jeu",
         "lesson": "Ouvrir la leçon",
         "link": "Ouvrir le lien",
-        "answer": "Répondre"
+        "answer": "Répondre",
+        "open": "Ouvrir"
       },
       "push": {
         "title": "Envoyer aux élèves",
@@ -2825,7 +2827,10 @@
         "thanks": "Merci ! Tu peux changer ta réponse jusqu’à ce que ton enseignant termine la vérification."
       },
       "more": "Plus",
-      "moreName": "Voir la suite de {name}"
+      "moreName": "Voir la suite de {name}",
+      "tools": {
+        "sent": "{name} envoyé. Chaque élève reçoit sa propre copie."
+      }
     }
   },
   "favorites": {
@@ -8955,7 +8960,8 @@
       "show": "Afficher",
       "tools": "Outils",
       "check": "Vérifier",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Outils pour enseigner"
     },
     "w": {
       "clock": {
@@ -9337,6 +9343,265 @@
         "remove": "Retirer {e}",
         "clear": "Tout retirer",
         "empty": "Touche un autocollant en dessous pour le mettre ici."
+      },
+      "fractions": {
+        "name": "Bandes de fractions",
+        "desc": "Partager, colorier et comparer. « Parts égales » montre pourquoi l’une est plus grande. Du CE1 à la 6e.",
+        "bar": "Bandes",
+        "circle": "Disques",
+        "same": "Parts égales",
+        "hide": "Cacher la réponse",
+        "add": "Ajouter",
+        "remove": "Retirer",
+        "parts": "{n} parts",
+        "more": "Plus de parts",
+        "fewer": "Moins de parts",
+        "shadedOf": "{n} parts coloriées sur {d}",
+        "sameText": "Coupé en {n} parts égales : {list}.",
+        "tooSmall": "Ce seraient {n} parts minuscules : trop petites pour être dessinées.",
+        "samePrompt": "Appuie sur « Parts égales » pour voir pourquoi.",
+        "which": "Fraction {n}",
+        "order": "Laquelle est la plus grande ?"
+      },
+      "numline": {
+        "name": "Droite graduée",
+        "desc": "Nombres entiers, fractions, décimaux et négatifs. Touche pour placer des points, glisse pour faire des bonds. De la maternelle à la 4e.",
+        "from": "Commence à",
+        "to": "Finit à",
+        "steps": "Pas entre deux entiers",
+        "mode": "Étiquettes",
+        "whole": "Nombres entiers",
+        "fraction": "Fractions",
+        "decimal": "Décimaux",
+        "point": "Point",
+        "jump": "Bond",
+        "clear": "Effacer",
+        "cursor": "Droite graduée",
+        "placed": "Point à {v}",
+        "removed": "Point à {v} retiré",
+        "jumpFrom": "Bond depuis {v} : choisis maintenant où il atterrit",
+        "jumped": "De {a} à {b} : {d}",
+        "hint": "Touche la droite pour placer un point, ou glisse le long pour faire un bond.",
+        "range": "Jusqu’à 240 pas tiennent sur une droite."
+      },
+      "coord": {
+        "name": "Repère cartésien",
+        "desc": "Placer des points et tracer y = mx + b. Changer la pente et l’ordonnée à l’origine, avec un tableau de valeurs. De la 6e à la 4e.",
+        "slope": "Pente",
+        "start": "Commence à",
+        "quads": "Quadrants",
+        "four": "Quatre quadrants",
+        "one": "Un quadrant",
+        "size": "Taille du quadrillage",
+        "line": "Montrer la droite",
+        "table": "Montrer le tableau",
+        "plot": "Graphique",
+        "plotted": "Point placé en {p}",
+        "unplotted": "Point en {p} retiré",
+        "clear": "Effacer les points",
+        "rise": "monte",
+        "run": "avance",
+        "hint": "Les flèches déplacent, Entrée place un point.",
+        "noLine": "Touche le quadrillage pour placer des points."
+      },
+      "graph": {
+        "name": "Atelier de graphiques",
+        "desc": "Diagrammes en barres, en lignes, en images et en points, avec tes nombres ou les totaux d’une question éclair.",
+        "kind": "Type de graphique",
+        "bar": "Diagramme en barres",
+        "line": "Diagramme en lignes",
+        "picture": "Pictogramme",
+        "dot": "Diagramme en points",
+        "title": "Titre",
+        "data": "Données",
+        "label": "Étiquette",
+        "value": "Nombre",
+        "addRow": "Ajouter une ligne",
+        "removeRow": "Retirer la ligne",
+        "fromCheck": "Utiliser les totaux d’une question éclair",
+        "noChecks": "Pas encore de question éclair",
+        "counts": "Seuls les totaux sont repris, jamais qui a répondu quoi.",
+        "per": "Chaque image vaut",
+        "key": "{icon} = {n}",
+        "icon": "Image",
+        "empty": "Ajoute tes nombres dans Options."
+      },
+      "base10": {
+        "name": "Blocs base dix",
+        "desc": "Unités, dizaines et centaines. Fais-les glisser, échange 10 contre 1 et inversement. De la maternelle au CM1.",
+        "hundreds": "Centaines",
+        "tens": "Dizaines",
+        "ones": "Unités",
+        "add": "En ajouter un",
+        "take": "En retirer un",
+        "tradeUp": "10 unités → 1 dizaine",
+        "tradeDown": "1 dizaine → 10 unités",
+        "tradeUpT": "10 dizaines → 1 centaine",
+        "tradeDownH": "1 centaine → 10 dizaines",
+        "traded": "Échangé.",
+        "hint": "10 d’une sorte s’échangent contre 1 de la suivante.",
+        "drop": "Glisse sur le tapis",
+        "clear": "Effacer"
+      },
+      "placeval": {
+        "name": "Tableau de numération",
+        "desc": "Des milliers aux millièmes, avec des jetons.",
+        "discs": "Montrer les jetons",
+        "decimals": "Montrer dixièmes, centièmes et millièmes",
+        "times10": "Fois 10",
+        "div10": "Divisé par 10",
+        "more": "En ajouter un",
+        "less": "En retirer un",
+        "expanded": "Décomposé",
+        "clear": "Effacer",
+        "thousands": "Milliers",
+        "hundreds": "Centaines",
+        "tens": "Dizaines",
+        "ones": "Unités",
+        "tenths": "Dixièmes",
+        "hundredths": "Centièmes",
+        "thousandths": "Millièmes"
+      },
+      "tenframe": {
+        "name": "Cadres de dix",
+        "desc": "Un ou deux cadres de dix avec des jetons rouges et jaunes et des décompositions. De la maternelle au CE1.",
+        "frames": "Cadre de dix",
+        "red": "Rouge",
+        "yellow": "Jaune",
+        "take": "En retirer un",
+        "clear": "Effacer",
+        "fill": "Remplir de rouge",
+        "bond": "Décomposition",
+        "cell": "Case {n}",
+        "empty": "vide",
+        "counts": "{r} rouges et {y} jaunes : {n} en tout",
+        "flip": "Échanger les couleurs",
+        "makeTen": "Encore {n} pour la dizaine suivante."
+      },
+      "hundreds": {
+        "name": "Tableau des nombres jusqu’à 100",
+        "desc": "Colorier des nombres, compter de tant en tant et cacher des nombres à deviner.",
+        "start": "Nombres",
+        "skip": "Compter de tant en tant",
+        "skipBy": "De {n} en {n}",
+        "hide": "Cacher des nombres",
+        "none": "Tout montrer",
+        "shaded": "Cacher les coloriés",
+        "all": "Tout cacher",
+        "clear": "Effacer",
+        "shadedN": "{n} coloriés",
+        "hidden": "Nombre caché",
+        "noSkip": "Sans bonds"
+      },
+      "area": {
+        "name": "Modèle d’aire et quadrillages",
+        "desc": "Lignes fois colonnes. Coupe un côté pour voir les produits partiels.",
+        "rows": "Lignes",
+        "cols": "Colonnes",
+        "array": "Quadrillage",
+        "area": "Modèle d’aire",
+        "splitRows": "Couper les lignes après",
+        "splitCols": "Couper les colonnes après",
+        "place": "Couper selon la numération",
+        "noSplit": "0 veut dire : pas de coupe.",
+        "hint": "Coupe un côté pour découper le produit en parties plus faciles."
+      },
+      "times": {
+        "name": "Table de multiplication",
+        "desc": "Jusqu’à 12 × 12. Éclaire un produit, une ligne, une colonne ou les carrés.",
+        "size": "Taille",
+        "fact": "Produit",
+        "row": "Ligne",
+        "col": "Colonne",
+        "squares": "Nombres carrés",
+        "turn": "Produits inversés",
+        "hide": "Cacher les résultats",
+        "pick": "Touche une case pour éclairer un produit.",
+        "squaresAre": "Nombres carrés",
+        "clear": "Effacer"
+      },
+      "tclock": {
+        "name": "Horloge pour apprendre",
+        "desc": "Des aiguilles qui bougent ensemble, l’heure numérique et la durée écoulée.",
+        "digital": "Montrer l’heure numérique",
+        "h24": "Format 24 heures",
+        "elapsed": "Durée écoulée",
+        "start": "Début",
+        "endTime": "Fin",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Fais glisser une aiguille ou utilise les flèches.",
+        "minutes": "minutes",
+        "hours": "h",
+        "time": "Horloge",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Fraction, décimal, pourcentage",
+        "desc": "Un nombre écrit de trois façons côte à côte, avec un quadrillage de 10 × 10.",
+        "fraction": "Fraction",
+        "decimal": "Décimal",
+        "percent": "Pourcentage",
+        "grid": "Quadrillage des centièmes",
+        "hint": "périodique",
+        "top": "Numérateur",
+        "bottom": "Dénominateur",
+        "outOf": "{n} sur 100"
+      },
+      "board": {
+        "name": "Tableau blanc",
+        "desc": "Dessiner et écrire sur le projecteur. Jamais enregistré ni envoyé nulle part.",
+        "s": {
+          "bg": "Fond"
+        },
+        "o": {
+          "bg": {
+            "plain": "Uni",
+            "grid": "Quadrillé",
+            "lined": "Ligné"
+          }
+        },
+        "pen": "Crayon",
+        "marker": "Surligneur",
+        "eraser": "Gomme",
+        "color": "Couleur",
+        "ink": "Noir",
+        "red": "Rouge",
+        "blue": "Bleu",
+        "green": "Vert",
+        "orange": "Orange",
+        "purple": "Violet",
+        "undo": "Annuler",
+        "clear": "Tout effacer",
+        "note": "Les dessins restent seulement sur cet écran et disparaissent quand la page se recharge.",
+        "canvas": "Zone de dessin",
+        "down": "Crayon posé",
+        "up": "Crayon levé",
+        "keys": "Les flèches déplacent le crayon ; Espace le pose ou le lève.",
+        "cleared": "Tableau effacé"
+      },
+      "picture": {
+        "name": "Image",
+        "desc": "Montre un schéma, une affiche ou une photo que tu envoies.",
+        "s": {
+          "pic": "Image",
+          "alt": "Ce que montre l’image (pour les lecteurs d’écran)",
+          "fit": "Cadrage"
+        },
+        "o": {
+          "fit": {
+            "contain": "Tout montrer",
+            "cover": "Remplir le cadre"
+          }
+        },
+        "empty": "Envoie une image à montrer.",
+        "needAlt": "Ajoute d’abord une courte description. Les élèves voient l’image une fois qu’elle en a une.",
+        "gone": "Cette image n’existe plus.",
+        "upload": "Envoyer une image",
+        "uploading": "Vérification de ton image…",
+        "replace": "Changer l’image",
+        "note": "Décrire l’image",
+        "bad": "Cette image n’a pas marché. Essaie une photo JPG ou PNG."
       }
     },
     "push": {
@@ -9364,7 +9629,18 @@
       "checkClosed": "Cette vérification est terminée.",
       "checkValue": "Choisis une des réponses.",
       "resting": "La météo fait une pause. Réessaie dans un petit moment.",
-      "qrGone": "Impossible d’afficher cela en code QR."
+      "qrGone": "Impossible d’afficher cela en code QR.",
+      "tool": "Cet outil n’est plus sur ton écran."
+    },
+    "tools": {
+      "send": "Envoyer à la classe",
+      "options": "Options",
+      "optionsFor": "{name} : options",
+      "pin": "Épingler sur mon écran",
+      "pinned": "C’est sur ton écran maintenant.",
+      "copyNote": "Ta propre copie. Personne d’autre ne la voit.",
+      "yourCopy": "C’est ta propre copie pour t’entraîner. Personne d’autre ne voit ce que tu en fais, et elle n’est enregistrée que si tu l’épingles sur ton écran.",
+      "done": "Terminé"
     }
   }
 }

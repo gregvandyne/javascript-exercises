@@ -6122,3 +6122,88 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
   32 students.
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.
+
+## Classroom dashboards, stage 3 (15 Nov 2026)
+Teaching tools (part 1), a whiteboard and a Picture widget, on the stage 1 grid and the stage 2 look. Built to the
+approved TeachingTools mockup (fraction bars with "Same-size pieces", a coordinate plane with slope and start buttons)
+and the "Teaching tools" list in Widgets. Code: `public/js/dash-tools.js` (renderers), `public/js/dash-math.js` (the
+maths, pure and tested), `server/services/dash-tools.js` (each tool's state, rebuilt on the server); registry entries in
+`server/services/dash.js`. Migration 0080.
+- **A new group, Teach** (its own colour on the icon chip and the card's top edge). Twelve tools: fraction bars and
+  circles, number line, coordinate plane, graph maker, base-ten blocks, place value chart, ten frames, hundreds chart,
+  area model and arrays, times table grid, teaching clock, and fraction/decimal/percent. Every tool has the same parts:
+  a row of mode buttons, the model (SVG, or HTML buttons for the grids), a readout in the shared big-number style, and a
+  row of buttons ending with Options (a sheet) and **Send to students**, the one primary button.
+- **State.** What a tool shows (the fractions, a line's range, the slope...) is its state, kept in a hidden `state`
+  setting of the widget: the teacher's layout saves it (debounced), so the projector comes back as it was. The server
+  rebuilds every state from the tool's spec (`cleanToolState`: unknown keys dropped, numbers clamped, lists cut, text
+  clipped and cleaned; rules such as "never more shaded than parts" kept). Saving a layout no longer moves `pins_at`
+  unless the pins really changed, so a teacher working a tool doesn't make every student screen redraw.
+- **Send to students** is a stage 1 push of a new kind, `tool`: the teacher's widget id and its state as it is on the
+  screen, rebuilt on the server and stored in `dash_pushes.data`. It shows in the banner and the tray like any push
+  ("Open"). A student's copy opens in a sheet and lives in their browser only (closing and opening it again keeps it
+  until the page reloads); nothing they do with it goes anywhere. **Pin to my screen** makes it one of the student's
+  own widgets, saved with their screen like their clock or goal (students may also add any tool themselves). Tools are
+  never pinned (a pinned copy would follow every move the teacher makes), so `canPin` is false for them.
+- **The maths** is exact: fractions are whole numerators and denominators, never floats; a number line's ticks are whole
+  multiples of 1/steps; the slope steps through whole numbers and friendly fractions (rise over run), and the table of
+  values shows exact fractions (5/3, not 1.67). Repeating decimals show the repeat (1/3 → 0.333…, 33.3…%; 1/6 →
+  0.1666…, 16.6…%; 1/7 → 0.142857…), and screen readers hear "repeating". The clock's hour hand moves with the minutes,
+  dragging the minute hand past 12 moves the hour on (or back), and elapsed time goes forward across noon and midnight,
+  with the jumps to the hour shown (11:40 → 12:00 → 1:00 → 1:15). Base-ten trades never change the number; place value
+  carries and borrows; area model partial products always add up to the product. All in `tests/unit/dash-stage3.test.js`.
+- **Decided:** "3 of 8 parts shaded, three eighths": the fraction is said in words in English only (a small built-in
+  word list); other languages hear "3 of 8 parts shaded" from their own translation, since fraction words need grammar
+  per language that a word list can't give.
+- **Decided:** base-ten blocks are drawn with one unit for all three kinds (a cube is as wide as a rod, a flat is ten
+  rods), so the sizes compare truthfully; flats pile with an offset so each one's edge shows.
+- **Graph maker** from typed data or from a quick check: the Options sheet lists today's and saved checks and copies
+  their **totals** with the answer labels; who answered what is never read.
+- **Whiteboard** (teacher only, never pinned or sent): pen, highlighter, eraser, six colours that follow light and dark,
+  undo, clear, and a plain, grid or lined background. Pointer, pen and touch; by keyboard the arrow keys move a pen and
+  Space puts it down. The drawing is in this page's memory only (a note under it says so): never stored, never sent,
+  gone on reload. Its code has no network, storage or `ctx.keep/send` (tested by reading the file).
+- **Picture** (teacher only): uploaded through stage 1's picture pipeline (`photos.cleanJpeg`: JPEG only, size and side
+  limits, metadata removed; the browser re-draws it first; no AI check, as for backgrounds). `POST
+  /api/dash/<class>/pictures?use=show` is the class's teacher only (404 to students and everyone else); such pictures
+  are kept apart from backgrounds (`dash_pictures.use`, the newest 12 per teacher per class). A Picture widget can only
+  show the teacher's own picture for that class. **Access, extended:** the class's active students may fetch it while a
+  Picture widget showing it is pinned on their screens; nobody else (another class, another teacher, a school admin, a
+  visitor: 404), and never a background. A description (alt text) is required: without one the teacher sees a prompt
+  and the widget is left out of the students' pins. Fit: show it all or fill the box.
+- **Access and safety** follow stage 1 exactly: no new route; the push and picture routes keep their class-role check
+  (404), same-origin CSRF check and rate limits. No AI anywhere, no free text between students (a student's graph labels
+  stay on their own screen), no prices or plan words (the mockup's plan labels were left out), Oomba names only.
+- **Accessible:** every tool works by keyboard (sliders with arrow keys for bars, the number line, the clock and the
+  hundredths grid; a roving grid for ten frames, the hundreds chart and the times table; a plotting cursor on the
+  coordinate plane), and changes are announced in the polite live region. Buttons are 44px; the cells of the hundreds
+  chart and the times table can be smaller at small sizes (on a 390px phone a 12 × 12 times table cell is about 24px,
+  its number at 12px) and have the keyboard grid. Light and dark; on right-to-left pages the controls mirror while number lines, graphs and the
+  coordinate plane keep left-to-right maths (fraction bars fill from the side of their fraction); numbers put into
+  sentences are isolated so "6/8, 5/8" reads right in Arabic and Hebrew. Reduced motion respected.
+- **Readable from the back:** SVG text grows so it is never under 13px on screen (more in projector mode); lines are
+  thick. Sizes: most tools default to 6 × 5 or 6 × 6.
+- **Fit check:** `scripts/dash-fit-check.js` now spreads the widgets over as many layouts as needed (24 widgets and 24
+  rows each), puts every tool on both students' own screens on the tools' layouts, and also fails when a tool's model
+  spills out of its area or a tool's rows overlap.
+- **Nothing unreadable, nothing hidden (review).** Text in a tool is never under 12px (13px on the projector); area
+  model partial products are at least 14px (16 on the projector) and move outside their part, with a leader line, when
+  the part is too small. Graph labels are never cut: they wrap onto two lines and shrink, and turn 45° when a word is
+  wider than its column. Coordinate tick numbers have a halo of the card's colour; the axis names sit clear of them; the
+  origin's 0 is left out where it would run into −1. Place value column names turn on their side on a narrow chart
+  rather than break mid-word; disc numbers show only where a disc fits them at 12px. Disabled tool buttons keep their
+  text at full contrast (a dashed outline says they are off). **Projector mode fits the screen** when the layout's rows
+  can be at least 56px tall (they shrink from 72px); a taller layout scrolls inside the stage, with a shadow at the
+  bottom edge while there is more below, and the bars never cover a widget. The fit check now also fails on any of
+  these: text under 12px (13 on the projector) in a tool, measured on screen (SVG text through its transform), a
+  graph label cut short, any text-overflow ellipsis that is cutting text, a widget under the top or bottom bar, and
+  content below the screen that can't be scrolled into view. Smallest sizes went up where needed (graph 5 × 5,
+  coordinate plane 5 × 6, base-ten 6 × 5, place value 6 × 5, ten frames 4 × 5, times table 5 × 7).
+- Also fixed: a pressed quiet button inside a widget (`aria-pressed="true"`) now shows as pressed (the stage 2 quiet
+  rule was more specific and left it with cream text on a light button).
+- **Not in this stage** (stages 4 and 5): geoboard, pattern blocks, angle maker, 3D shapes and nets, transformations,
+  balance scale, algebra tiles, coins and bills, chance lab, letter and word tiles, graphic organizers, maps, "Make a
+  question from it", "Practice it", video, site windows, document camera, hall pass, class jobs.
+- Tests: `tests/unit/dash-stage3.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: each tool on the
+  teacher's 1600 × 900 screen, projector mode with three tools, a student at 1366 × 768 opening and pinning a sent tool,
+  390 × 844 phones, dark and Arabic.

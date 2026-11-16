@@ -2770,14 +2770,16 @@
         "live": "Live-Spiel",
         "lesson": "Lektion",
         "link": "Link",
-        "check": "Schnelle Abfrage"
+        "check": "Schnelle Abfrage",
+        "tool": "Unterrichtswerkzeug"
       },
       "act": {
         "play": "Spielen",
         "join": "Mitspielen",
         "lesson": "Lektion öffnen",
         "link": "Link öffnen",
-        "answer": "Antworten"
+        "answer": "Antworten",
+        "open": "Öffnen"
       },
       "push": {
         "title": "An die Klasse senden",
@@ -2826,7 +2828,10 @@
         "thanks": "Danke! Du kannst deine Antwort ändern, bis deine Lehrkraft die Abfrage beendet."
       },
       "more": "Mehr",
-      "moreName": "Mehr von {name} zeigen"
+      "moreName": "Mehr von {name} zeigen",
+      "tools": {
+        "sent": "{name} gesendet. Jedes Kind bekommt seine eigene Kopie."
+      }
     }
   },
   "favorites": {
@@ -8956,7 +8961,8 @@
       "show": "Zeigen",
       "tools": "Werkzeuge",
       "check": "Abfragen",
-      "oomba": "Oomba"
+      "oomba": "Oomba",
+      "teach": "Unterrichtswerkzeuge"
     },
     "w": {
       "clock": {
@@ -9338,6 +9344,265 @@
         "remove": "{e} entfernen",
         "clear": "Alle entfernen",
         "empty": "Tippe unten auf einen Sticker, um ihn hierher zu setzen."
+      },
+      "fractions": {
+        "name": "Bruchstreifen",
+        "desc": "Teilen, färben und vergleichen. „Gleich große Teile“ zeigt, warum einer größer ist. Klasse 2–6.",
+        "bar": "Streifen",
+        "circle": "Kreise",
+        "same": "Gleich große Teile",
+        "hide": "Antwort verstecken",
+        "add": "Dazu",
+        "remove": "Weg",
+        "parts": "{n} Teile",
+        "more": "Mehr Teile",
+        "fewer": "Weniger Teile",
+        "shadedOf": "{n} von {d} Teilen gefärbt",
+        "sameText": "In {n} gleich große Teile geteilt: {list}.",
+        "tooSmall": "Gleich große Teile wären {n} winzige Stücke: zu klein zum Zeichnen.",
+        "samePrompt": "Tippe auf „Gleich große Teile“, um zu sehen, warum.",
+        "which": "Bruch {n}",
+        "order": "Welcher ist größer?"
+      },
+      "numline": {
+        "name": "Zahlenstrahl",
+        "desc": "Ganze Zahlen, Brüche, Dezimalzahlen und negative Zahlen. Tippen setzt Punkte, Ziehen macht Sprünge. Klasse 1–8.",
+        "from": "Beginnt bei",
+        "to": "Endet bei",
+        "steps": "Schritte zwischen ganzen Zahlen",
+        "mode": "Beschriftung",
+        "whole": "Ganze Zahlen",
+        "fraction": "Brüche",
+        "decimal": "Dezimalzahlen",
+        "point": "Punkt",
+        "jump": "Sprung",
+        "clear": "Leeren",
+        "cursor": "Zahlenstrahl",
+        "placed": "Punkt bei {v}",
+        "removed": "Punkt bei {v} entfernt",
+        "jumpFrom": "Sprung ab {v}: Wähle jetzt, wo er landet",
+        "jumped": "Von {a} bis {b}: {d}",
+        "hint": "Tippe auf den Strahl für einen Punkt oder ziehe daran entlang für einen Sprung.",
+        "range": "Auf einen Strahl passen bis zu 240 Schritte."
+      },
+      "coord": {
+        "name": "Koordinatensystem",
+        "desc": "Punkte eintragen und y = mx + b zeichnen. Steigung und Startwert ändern, mit Wertetabelle. Klasse 5–8.",
+        "slope": "Steigung",
+        "start": "Beginnt bei",
+        "quads": "Quadranten",
+        "four": "Vier Quadranten",
+        "one": "Ein Quadrant",
+        "size": "Rastergröße",
+        "line": "Gerade zeigen",
+        "table": "Tabelle zeigen",
+        "plot": "Diagramm",
+        "plotted": "Punkt bei {p} eingetragen",
+        "unplotted": "Punkt bei {p} entfernt",
+        "clear": "Punkte löschen",
+        "rise": "hoch",
+        "run": "rüber",
+        "hint": "Pfeiltasten bewegen, Enter trägt einen Punkt ein.",
+        "noLine": "Tippe ins Raster, um Punkte einzutragen."
+      },
+      "graph": {
+        "name": "Diagramm-Werkstatt",
+        "desc": "Säulen-, Linien-, Bild- und Punktdiagramme aus deinen Zahlen oder den Summen einer Blitzfrage.",
+        "kind": "Art des Diagramms",
+        "bar": "Säulendiagramm",
+        "line": "Liniendiagramm",
+        "picture": "Bilddiagramm",
+        "dot": "Punktdiagramm",
+        "title": "Titel",
+        "data": "Daten",
+        "label": "Beschriftung",
+        "value": "Zahl",
+        "addRow": "Zeile dazu",
+        "removeRow": "Zeile entfernen",
+        "fromCheck": "Summen einer Blitzfrage nehmen",
+        "noChecks": "Noch keine Blitzfragen",
+        "counts": "Nur die Summen werden übernommen, nie wer was geantwortet hat.",
+        "per": "Jedes Bild steht für",
+        "key": "{icon} = {n}",
+        "icon": "Bild",
+        "empty": "Trag deine Zahlen unter Optionen ein."
+      },
+      "base10": {
+        "name": "Zehnersystem-Blöcke",
+        "desc": "Einer, Zehner und Hunderter. Hineinziehen, 10 gegen 1 tauschen und zurück. Klasse 1–4.",
+        "hundreds": "Hunderter",
+        "tens": "Zehner",
+        "ones": "Einer",
+        "add": "Einen dazu",
+        "take": "Einen weg",
+        "tradeUp": "10 Einer → 1 Zehner",
+        "tradeDown": "1 Zehner → 10 Einer",
+        "tradeUpT": "10 Zehner → 1 Hunderter",
+        "tradeDownH": "1 Hunderter → 10 Zehner",
+        "traded": "Getauscht.",
+        "hint": "10 von einer Sorte kann man gegen 1 der nächsten tauschen.",
+        "drop": "Auf die Matte ziehen",
+        "clear": "Leeren"
+      },
+      "placeval": {
+        "name": "Stellenwerttafel",
+        "desc": "Von Tausendern bis Tausendsteln, mit Plättchen.",
+        "discs": "Plättchen zeigen",
+        "decimals": "Zehntel, Hundertstel und Tausendstel zeigen",
+        "times10": "Mal 10",
+        "div10": "Durch 10",
+        "more": "Einen dazu",
+        "less": "Einen weg",
+        "expanded": "Zerlegt",
+        "clear": "Leeren",
+        "thousands": "Tausender",
+        "hundreds": "Hunderter",
+        "tens": "Zehner",
+        "ones": "Einer",
+        "tenths": "Zehntel",
+        "hundredths": "Hundertstel",
+        "thousandths": "Tausendstel"
+      },
+      "tenframe": {
+        "name": "Zehnerfelder",
+        "desc": "Ein oder zwei Zehnerfelder mit roten und gelben Plättchen und Zahlzerlegung. Klasse 1–2.",
+        "frames": "Zehnerfeld",
+        "red": "Rot",
+        "yellow": "Gelb",
+        "take": "Eins weg",
+        "clear": "Leeren",
+        "fill": "Rot auffüllen",
+        "bond": "Zahlzerlegung",
+        "cell": "Feld {n}",
+        "empty": "leer",
+        "counts": "{r} rot und {y} gelb: zusammen {n}",
+        "flip": "Farben tauschen",
+        "makeTen": "Noch {n} bis zum nächsten Zehner."
+      },
+      "hundreds": {
+        "name": "Hundertertafel",
+        "desc": "Zahlen färben, in Schritten zählen und Zahlen zum Raten verstecken.",
+        "start": "Zahlen",
+        "skip": "In Schritten zählen",
+        "skipBy": "In {n}er-Schritten",
+        "hide": "Zahlen verstecken",
+        "none": "Alle zeigen",
+        "shaded": "Gefärbte verstecken",
+        "all": "Alle verstecken",
+        "clear": "Leeren",
+        "shadedN": "{n} gefärbt",
+        "hidden": "Versteckte Zahl",
+        "noSkip": "Ohne Schritte"
+      },
+      "area": {
+        "name": "Flächenmodell und Punktfelder",
+        "desc": "Zeilen mal Spalten. Teile eine Seite, um die Teilprodukte zu sehen.",
+        "rows": "Zeilen",
+        "cols": "Spalten",
+        "array": "Punktfeld",
+        "area": "Flächenmodell",
+        "splitRows": "Zeilen teilen nach",
+        "splitCols": "Spalten teilen nach",
+        "place": "Nach Stellenwert teilen",
+        "noSplit": "0 heißt: nicht teilen.",
+        "hint": "Teile eine Seite, um die Aufgabe in leichtere Teile zu zerlegen."
+      },
+      "times": {
+        "name": "Einmaleins-Tafel",
+        "desc": "Bis 12 × 12. Eine Aufgabe, eine Zeile, eine Spalte oder die Quadratzahlen hervorheben.",
+        "size": "Größe",
+        "fact": "Aufgabe",
+        "row": "Zeile",
+        "col": "Spalte",
+        "squares": "Quadratzahlen",
+        "turn": "Tauschaufgaben",
+        "hide": "Ergebnisse verstecken",
+        "pick": "Tippe auf ein Feld, um eine Aufgabe hervorzuheben.",
+        "squaresAre": "Quadratzahlen",
+        "clear": "Leeren"
+      },
+      "tclock": {
+        "name": "Lernuhr",
+        "desc": "Zeiger, die sich zusammen bewegen, eine Digitalanzeige und Zeitspannen.",
+        "digital": "Digitale Uhrzeit zeigen",
+        "h24": "24-Stunden-Zeit",
+        "elapsed": "Zeitspanne",
+        "start": "Anfang",
+        "endTime": "Ende",
+        "elapsedIs": "{h} h {m} min",
+        "hint": "Ziehe einen Zeiger oder nutze die Pfeiltasten.",
+        "minutes": "Minuten",
+        "hours": "h",
+        "time": "Uhr",
+        "onlyH": "{h} h",
+        "onlyM": "{m} min"
+      },
+      "fdp": {
+        "name": "Bruch, Dezimalzahl, Prozent",
+        "desc": "Eine Zahl auf drei Arten nebeneinander, mit einem 10 × 10-Raster.",
+        "fraction": "Bruch",
+        "decimal": "Dezimalzahl",
+        "percent": "Prozent",
+        "grid": "Hundertstel-Raster",
+        "hint": "periodisch",
+        "top": "Zähler",
+        "bottom": "Nenner",
+        "outOf": "{n} von 100"
+      },
+      "board": {
+        "name": "Tafel",
+        "desc": "Auf dem Beamer zeichnen und schreiben. Wird nie gespeichert oder irgendwohin geschickt.",
+        "s": {
+          "bg": "Hintergrund"
+        },
+        "o": {
+          "bg": {
+            "plain": "Leer",
+            "grid": "Kariert",
+            "lined": "Liniert"
+          }
+        },
+        "pen": "Stift",
+        "marker": "Textmarker",
+        "eraser": "Radierer",
+        "color": "Farbe",
+        "ink": "Schwarz",
+        "red": "Rot",
+        "blue": "Blau",
+        "green": "Grün",
+        "orange": "Orange",
+        "purple": "Lila",
+        "undo": "Rückgängig",
+        "clear": "Löschen",
+        "note": "Zeichnungen bleiben nur auf diesem Bildschirm und sind weg, wenn die Seite neu lädt.",
+        "canvas": "Zeichenfläche",
+        "down": "Stift unten",
+        "up": "Stift oben",
+        "keys": "Pfeiltasten bewegen den Stift; die Leertaste setzt ihn ab oder hebt ihn.",
+        "cleared": "Tafel gelöscht"
+      },
+      "picture": {
+        "name": "Bild",
+        "desc": "Zeige eine Skizze, ein Lernplakat oder ein Foto, das du hochlädst.",
+        "s": {
+          "pic": "Bild",
+          "alt": "Was das Bild zeigt (für Bildschirmleser)",
+          "fit": "Anpassen"
+        },
+        "o": {
+          "fit": {
+            "contain": "Ganz zeigen",
+            "cover": "Feld füllen"
+          }
+        },
+        "empty": "Lade ein Bild zum Zeigen hoch.",
+        "needAlt": "Schreib zuerst eine kurze Beschreibung. Erst dann sehen die Kinder das Bild.",
+        "gone": "Dieses Bild gibt es nicht mehr.",
+        "upload": "Bild hochladen",
+        "uploading": "Dein Bild wird geprüft…",
+        "replace": "Bild ändern",
+        "note": "Bild beschreiben",
+        "bad": "Das Bild hat nicht geklappt. Versuch ein JPG- oder PNG-Foto."
       }
     },
     "push": {
@@ -9365,7 +9630,18 @@
       "checkClosed": "Diese Abfrage ist beendet.",
       "checkValue": "Wähle eine der Antworten.",
       "resting": "Das Wetter macht Pause. Versuch es gleich noch mal.",
-      "qrGone": "Das lässt sich nicht als QR-Code zeigen."
+      "qrGone": "Das lässt sich nicht als QR-Code zeigen.",
+      "tool": "Dieses Werkzeug ist nicht mehr auf deinem Bildschirm."
+    },
+    "tools": {
+      "send": "An die Klasse senden",
+      "options": "Optionen",
+      "optionsFor": "{name}: Optionen",
+      "pin": "Auf meinen Bildschirm",
+      "pinned": "Jetzt ist es auf deinem Bildschirm.",
+      "copyNote": "Deine eigene Kopie. Niemand sonst sieht sie.",
+      "yourCopy": "Das ist deine eigene Kopie zum Ausprobieren. Niemand sonst sieht, was du damit machst, und sie wird nur gespeichert, wenn du sie auf deinen Bildschirm heftest.",
+      "done": "Fertig"
     }
   }
 }
