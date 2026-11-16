@@ -810,7 +810,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 [dir="rtl"] .dt-fbar{transform:scaleX(-1)}
 /* graphs */
 .dt-gtitle{position:absolute;top:0;inset-inline:0;text-align:center;font-weight:800;font-size:clamp(.95rem,min(6cqh,4cqi),1.6rem);overflow-wrap:anywhere}
-.dt-graph{padding-top:1.6em}
+.dt-graph{padding-top:calc(clamp(.95rem,min(6cqh,4cqi),1.6rem) * 1.5)}
 .dt-gridl{stroke:color-mix(in srgb,var(--text) 18%,var(--card));stroke-width:1.5}
 .dt-gbar{stroke:var(--text);stroke-width:2}
 .dt-gv{fill:var(--text);font:800 calc(20px * var(--ts,1)) var(--font)}

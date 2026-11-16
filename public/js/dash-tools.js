@@ -949,9 +949,12 @@ function graph(body, s, ctx) {
     if (st.title) { const h = el('div', 'dt-gtitle', st.title); h.dir = 'auto'; T.stage.appendChild(h); }
     if (!rows.length) { T.stage.appendChild(el('p', 'dw-empty', W.empty)); T.read.textContent = ''; return; }
     const max = Math.max(...rows.map(r => r.v));
-    const n = rows.length, Wd = 640, H = 360, L = 56, R = 16, Tp = 18, cw = (Wd - L - R) / n;
+    const n = rows.length, Wd = 640, H = 360, L = 56, R = 16, cw = (Wd - L - R) / n;
     // The title sits above the chart, so the chart is drawn a little smaller than its viewBox suggests: measure with room.
     const ts = T.ts(Wd, H + 70, 20, document.body.classList.contains('dash-projector') ? 11.5 : 13);
+    // Room above the tallest bar or point for its number (drawn at 20 × ts, 8-14 units above it), so it never reaches the
+    // title above the chart.
+    const Tp = 18 + 20 * ts + 6;
     // Category labels are never cut: they wrap onto two lines (three at most) and shrink, never below 12px (13 on the
     // projector).
     const px = T.scale(Wd, H + 70) || 1, floor = (document.body.classList.contains('dash-projector') ? 15 : 13.5) / px;
