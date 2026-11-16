@@ -423,7 +423,8 @@ function start() {
     const q = ($('#dash-lib-q').value || '').trim().toLowerCase();
     const list = $('#dash-lib-list'); list.textContent = '';
     // A tool is also found by its modes' names ("times table" finds Multiply and divide).
-    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.modes || []).map(m => m.name).join(' ')}`.toLowerCase().includes(q)));
+    // Bar models and number rods: a tool (or a mode) is also found by its other names ("tape diagram", dash.w.<id>.find).
+    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.words || {}).find || ''} ${(x.modes || []).map(m => `${m.name} ${(m.words || {}).find || ''}`).join(' ')}`.toLowerCase().includes(q)));
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
       li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;

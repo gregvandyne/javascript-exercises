@@ -6,6 +6,7 @@
 // has nothing with one right answer (a graphic organizer, an empty board) makes no question, and its button is hidden.
 import * as M from './dash-math.js';
 import * as M4 from './dash-math4.js';
+import * as M5 from './dash-math5.js';
 
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -40,6 +41,28 @@ function fractionOp(st, Q, seed) {
   const seen = [r.simple], wrong = [];
   for (const x of slips) { if (!x || x.n < 0 && r.op !== 'sub' || seen.some(y => M.compare(x, y) === 0)) continue; seen.push(x); wrong.push(M.mixedText(x)); }
   return choice(fill(Q[key], { a: `${a.n}/${a.d}`, b: `${b.n}/${b.d}` }), r.mixed, wrong, seed);
+}
+
+/** A bar model's question: its number sentence with "?" for the unknown, and wrong answers from the usual slips
+ *  (adding instead of multiplying or subtracting, one off). */
+function barQuestion(b, m) {
+  const sum = a => a.reduce((x, y) => x + y, 0), ans = m.answer;
+  if (m.kind === 'mul') {
+    const t = b.g * b.e;
+    if (m.unk === 0) return { s: `${b.g} × ${b.e} = ?`, wrong: [b.g + b.e, t + b.e, t - b.e, t + 1] };
+    if (m.unk === 1) return { s: `? × ${b.e} = ${t}`, wrong: [t - b.e, t + b.e, ans + 1, ans - 1, b.e] };
+    return { s: `${t} ÷ ${b.g} = ?`, wrong: [t - b.g, t + b.g, ans + 1, ans - 1, b.g] };
+  }
+  if (m.kind === 'part') {
+    const whole = sum(b.p);
+    if (m.unk === 0) return { s: `${b.p.join(' + ')} = ?`, wrong: [whole + 1, whole - 1, whole + 10, whole - 10] };
+    const known = b.p.map((v, i) => (i === m.unk - 1 ? '?' : v)).join(' + ');
+    return { s: `${known} = ${whole}`, wrong: [whole + (whole - ans), ans + 1, ans - 1, whole] };
+  }
+  const big = Math.max(b.ca, b.cb), small = Math.min(b.ca, b.cb), diff = big - small;
+  if (m.unk === 0) return { s: `${big} − ${small} = ?`, wrong: [big + small, diff + 1, diff - 1, big] };
+  const mine = m.unk === 1 ? b.ca : b.cb, theirs = m.unk === 1 ? b.cb : b.ca;
+  return mine >= theirs ? { s: `${theirs} + ${diff} = ?`, wrong: [theirs - diff, ans + 1, ans - 1, diff] } : { s: `${theirs} − ${diff} = ?`, wrong: [theirs + diff, ans + 1, ans - 1, diff] };
 }
 
 /**
@@ -197,6 +220,17 @@ export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
         return choice(Q.map, W[c] || c, M4.CONTINENT_IDS.filter(x => x !== c && x !== 'antarctica').map(x => W[x] || x), `${seed}:${c}`);
       }
       return null;
+    }
+    // Bar models and number rods (docs/decisions.md "Bar models and number rods").
+    case 'bars': {
+      const b = M5.clampBars(st), m = M5.barModel(b), r = barQuestion(b, m);
+      return choice(fill(Q.bars, { s: r.s }), m.answer, r.wrong.filter(x => x >= 0 && x !== m.answer), seed);
+    }
+    case 'rods': {
+      const e = { l: st.l || [], r: st.r || [] };
+      if (!st.eq || !M5.eqValid(e)) return null;
+      const ans = M5.missingOf(e), sum = a => a.reduce((x, y) => x + y, 0), other = e.l.includes(0) ? e.r : e.l;
+      return choice(fill(Q.rods, { e: M5.eqText(e) }), ans, [sum(other), ans + 1, ans - 1, sum([...e.l, ...e.r]), ans + 2].filter(x => x > 0 && x !== ans), seed);
     }
     default: return null;
   }

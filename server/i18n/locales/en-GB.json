@@ -922,7 +922,11 @@
         "m": {
           "times": "Times tables grid"
         },
-        "desc": "Area models and arrays with partial products, and a times tables grid up to 12 × 12."
+        "desc": "Area models and arrays with partial products, and a times tables grid up to 12 × 12. Bar models too: groups, parts and comparing."
+      },
+      "rods": {
+        "desc": "Coloured rods from 1 to 20: build trains, compare lengths and model equations.",
+        "typeBad": "That can't be modelled. Use + and whole numbers, one ?, and up to 20 a side."
       }
     },
     "tools": {

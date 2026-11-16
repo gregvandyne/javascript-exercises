@@ -64,7 +64,8 @@ const OLD = {
   balance: { x: 4, lx: 5, lu: 3, rx: 2, ru: 15, show: false, where: 'both', hist: [{ lx: 6, lu: 3, rx: 3, ru: 15, op: 'subx', n: 0, w: 'both' }] },
   graph: { kind: 'dot', title: 'Pets', icon: 3, per: 2, rows: [{ l: 'Dogs', v: 4 }, { l: 'Cats', v: 6 }] },
 };
-const MATHS = ['fractions', 'numline', 'coord', 'placeval', 'tenframe', 'hundreds', 'area', 'tclock', 'geoboard', 'pattern', 'algebra', 'coins', 'chance'];
+// Bar models and number rods (docs/decisions.md): number rods is a maths tool of its own since then (fourteen).
+const MATHS = ['fractions', 'numline', 'coord', 'placeval', 'tenframe', 'hundreds', 'area', 'tclock', 'geoboard', 'pattern', 'algebra', 'coins', 'chance', 'rods'];
 
 test('the final mapping: thirteen maths tools in the library, each retired tool a mode of one', () => {
   assert.deepEqual(DT.MODE_HOME, MAP);
@@ -91,7 +92,7 @@ test('the final mapping: thirteen maths tools in the library, each retired tool 
   assert.deepEqual(en.filter(x => x.modes).map(x => [x.id, x.name, x.modes.map(m => m.name)]), [
     ['fractions', 'Fractions', ['Fraction bars', 'Fraction, decimal, percent']],
     ['placeval', 'Place value', ['Place value chart', 'Base-ten blocks']],
-    ['area', 'Multiply and divide', ['Area model and arrays', 'Times table grid']],
+    ['area', 'Multiply and divide', ['Area model and arrays', 'Times table grid', 'Bar models']],
     ['geoboard', 'Shape board', ['Geoboard', 'Angle maker']],
     ['pattern', 'Geometry', ['Pattern blocks', '3D shapes and nets', 'Transformations']],
     ['algebra', 'Algebra', ['Algebra tiles', 'Balance scale']],
@@ -273,5 +274,5 @@ test('the number chart runs 1-120; the wrapper stays small, local and safe', () 
   const src = fs.readFileSync('public/js/dash-modes.js', 'utf8');
   for (const bad of [/\bfetch\s*\(/, /XMLHttpRequest/, /localStorage|sessionStorage|indexedDB/, /innerHTML/, /WebSocket/]) assert.doesNotMatch(src, bad, String(bad));
   assert.ok(src.split('\n').length < 150, 'a thin wrapper, not a giant file');
-  assert.match(fs.readFileSync('public/js/dash-widgets.js', 'utf8'), /withModes\(\{ \.\.\.TOOLS, \.\.\.TOOLS4 \}\)/);
+  assert.match(fs.readFileSync('public/js/dash-widgets.js', 'utf8'), /withModes\(\{ \.\.\.TOOLS, \.\.\.TOOLS4, bars, rods \}\)/);
 });
