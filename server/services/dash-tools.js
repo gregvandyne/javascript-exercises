@@ -6,7 +6,8 @@
 // browser.
 //
 // Spec: { key: ['int', lo, hi, def] | ['enum', [values], def] | ['bool', def] | ['text', max, def]
-//              | ['textm', max, def] (several lines) | ['ints', maxLen, lo, hi, def] | ['list', maxLen, { spec }, def] }
+//              | ['textm', max, def] (several lines) | ['ints', maxLen, lo, hi, def] | ['list', maxLen, { spec }, def]
+//              | ['obj', { spec }] (one object, each key its own default) }
 // then fix(state) for rules that tie keys together (a numerator no bigger than its denominator...).
 
 const SAFE_TEXT = (v, max) => [...String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').replace(/[‪-‮⁦-⁩]/g, '').trim()].slice(0, max).join('');
@@ -14,9 +15,20 @@ const SAFE_LINES = (v, max) => [...String(v ?? '').replace(/\r/g, '').replace(/[
 const toInt = (v, lo, hi, d) => { const n = Math.round(Number(v)); return v !== null && v !== '' && Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
 
 export const TOOL_SPECS = {
+  // Compare (bars) and, since "help on the maths tools", Add, Subtract, Multiply and Divide two fractions a and b (a bottom number
+  // 1-12, a top number 0-12 and at most three wholes; public/js/dash-math.js OP_LIMITS and OP_START, tested to agree).
+  // mode, a and b are kept only when one of them is not its starting value, so a Compare state is stored exactly as it
+  // always was and layouts saved before the modes load unchanged.
   fractions: {
-    spec: { shape: ['enum', ['bar', 'circle'], 'bar'], bars: ['list', 3, { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }, [{ n: 3, d: 4 }, { n: 5, d: 8 }]], same: ['bool', false], hide: ['bool', false] },
-    fix: s => { if (!s.bars.length) s.bars = [{ n: 1, d: 2 }]; for (const b of s.bars) b.n = Math.min(b.n, b.d); },
+    spec: { shape: ['enum', ['bar', 'circle'], 'bar'], bars: ['list', 3, { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }, [{ n: 3, d: 4 }, { n: 5, d: 8 }]], same: ['bool', false], hide: ['bool', false],
+      mode: ['enum', ['compare', 'add', 'sub', 'mul', 'div'], 'compare'], a: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }], b: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 3] }] },
+    fix: s => {
+      if (!s.bars.length) s.bars = [{ n: 1, d: 2 }];
+      for (const b of s.bars) b.n = Math.min(b.n, b.d);
+      for (const f of [s.a, s.b]) f.n = Math.min(f.n, 3 * f.d);
+      if (s.mode === 'div' && !s.b.n) s.b.n = 1;   // never divide by zero
+      if (s.mode === 'compare' && s.a.n === 1 && s.a.d === 2 && s.b.n === 1 && s.b.d === 3) { delete s.mode; delete s.a; delete s.b; }
+    },
   },
   numline: {
     spec: { lo: ['int', -100, 999, 0], hi: ['int', -99, 1000, 10], sub: ['enum', [1, 2, 3, 4, 5, 6, 8, 10, 12], 1], mode: ['enum', ['whole', 'fraction', 'decimal'], 'whole'],
@@ -138,6 +150,7 @@ function cleanBy(spec, src) {
     else if (d[0] === 'text') out[k] = v === undefined ? d[2] : SAFE_TEXT(v, d[1]);
     else if (d[0] === 'textm') out[k] = v === undefined ? d[2] : SAFE_LINES(v, d[1]);
     else if (d[0] === 'ints') out[k] = (Array.isArray(v) ? v : d[4] || []).slice(0, d[1]).map(x => toInt(x, d[2], d[3], null)).filter(x => x !== null);
+    else if (d[0] === 'obj') out[k] = cleanBy(d[1], v);
     else if (d[0] === 'list') out[k] = Array.isArray(v) ? v.slice(0, d[1]).filter(x => x && typeof x === 'object').map(x => cleanBy(d[2], x)) : d[3].map(x => JSON.parse(JSON.stringify(x)));
   }
   return out;

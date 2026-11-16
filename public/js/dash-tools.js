@@ -45,7 +45,11 @@ function shell(body, s, ctx, id) {
   if (ctx.editing) body.classList.add('is-static');
   const top = el('div', 'dt-top dw-row'), stage = el('div', 'dt-stage'), read = el('div', 'dt-read'), foot = el('div', 'dt-foot dw-row');
   read.setAttribute('aria-live', 'polite');
-  body.append(top, stage, read, foot);
+  // The one-line instruction under the title (a maths tool's `howto`; T.howto changes it, e.g. for a mode).
+  const howRow = el('div', 'dt-howrow'), how = el('p', 'dt-howto'); how.dir = 'auto'; howRow.appendChild(how);
+  const setHow = text => { how.textContent = text || ''; howRow.hidden = !text && !howRow.querySelector('.dt-info'); };
+  setHow(W.howto);
+  body.append(howRow, top, stage, read, foot);
   // Drawn again when the model's area changes size, so labels stay readable (see T.ts).
   let lw = 0, lh = 0, raf = 0;
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
@@ -54,7 +58,7 @@ function shell(body, s, ctx, id) {
   }) : null;
   if (ro) ro.observe(stage);
   const T = {
-    W, C, st, top, stage, read, foot, draw: () => {}, sized: true,
+    W, C, st, top, stage, read, foot, draw: () => {}, sized: true, howto: setHow,
     /** Stage 4: a quick check made from what the tool shows now, or null. */
     question: () => questionFor(id, st, W, ctx.askWords || {}, ctx.intl),
     /** How much to grow an SVG's text so it is at least min px on screen: the model's viewBox is vbW x vbH user units and
@@ -149,11 +153,50 @@ function shell(body, s, ctx, id) {
       }
       if (ctx.copy) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
       if (ask) { const d = T.draw; T.draw = () => { d(); ask.hidden = !T.question(); }; }
+      const help = W.helpUse && !ctx.editing ? helpButton(body, howRow, ctx, { practice: games.length > 0, ask: !!ask, send: !!foot.querySelector('.dt-send') }) : null;
+      setHow(how.textContent);
       T.draw();
-      return { destroy() { if (ro) ro.disconnect(); cancelAnimationFrame(raf); } };
+      return { destroy() { if (ro) ro.disconnect(); cancelAnimationFrame(raf); if (help) help.destroy(); } };
     },
   };
   return T;
+}
+/** ⓘ in the widget's header (top right; on a student's copy in a sheet, at the end of the instruction row): a small panel
+ *  inside the widget saying what each control does, ideas for class and, where the tool has them, what Make a question,
+ *  Send to students and Practice it do (a student's copy says it is theirs instead). Closed by ✕, Escape or a tap
+ *  outside; the focus goes into it and back to the button. Hidden on the projector (public/css/dash.css). */
+let helpIds = 0;
+function helpButton(body, howRow, ctx, has) {
+  const W = ctx.type.words, C = ctx.common || {}, name = ctx.type.name;
+  const card = body.closest('.dash-w') || body.parentElement, head = card && card.querySelector(':scope > .dash-wh');
+  const id = `dt-help${++helpIds}`, label = fill(C.helpFor, { name });
+  const b = btn('', 'dt-info', label); b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', id);
+  const i = el('span', 'dt-infoi', 'i'); i.setAttribute('aria-hidden', 'true'); b.appendChild(i);
+  const panel = el('div', 'dt-help'); panel.id = id; panel.hidden = true; panel.tabIndex = -1;
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', label);
+  const top = el('div', 'dt-helphead'), h = el('h3', 'dt-helpt', label); h.dir = 'auto';
+  const x = btn('✕', 'btn btn-sm dt-helpx', C.helpClose); top.append(h, x); panel.appendChild(top);
+  const list = (title, text) => {
+    const items = String(text || '').split('\n').map(t => t.trim()).filter(Boolean); if (!items.length) return;
+    panel.appendChild(el('h4', 'dt-helph', title));
+    const ul = el('ul', 'dt-helpl'); for (const t of items) { const li = el('li', null, t); li.dir = 'auto'; ul.appendChild(li); } panel.appendChild(ul);
+  };
+  list(C.helpControls, W.helpUse);
+  list(C.helpIdeas, ctx.copy || !ctx.teacher ? '' : W.helpIdeas);
+  list(C.helpMore, [has.ask && C.helpAsk, has.send && C.helpSend, has.practice && C.helpPractice, ctx.copy && C.copyNote].filter(Boolean).join('\n'));
+  (head || howRow).appendChild(b); card.appendChild(panel);
+  if (!head) howRow.hidden = false;
+  const outside = e => { if (!panel.contains(e.target) && !b.contains(e.target)) close(false); };
+  function open() { panel.hidden = false; b.setAttribute('aria-expanded', 'true'); panel.focus(); document.addEventListener('pointerdown', outside, true); }
+  function close(back = true) {
+    if (panel.hidden) return;
+    panel.hidden = true; b.setAttribute('aria-expanded', 'false'); document.removeEventListener('pointerdown', outside, true);
+    if (back) b.focus();
+  }
+  b.addEventListener('click', e => { e.stopPropagation(); if (panel.hidden) open(); else close(); });
+  x.addEventListener('click', () => close());
+  panel.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } });
+  return { destroy() { document.removeEventListener('pointerdown', outside, true); b.remove(); panel.remove(); } };
 }
 /** Stage 4: the teacher checks the question made from the tool (every word can be changed), sees which answer is right
  *  (only here: quick checks never mark answers on students' screens) and sends it as a stage 2 quick check. */
@@ -231,16 +274,32 @@ function stacked(n, d, cls = 'dt-frac') {
 }
 
 // ================================================================ 1. fraction bars and circles
+// Compare (one to three fractions, as in stage 3) and, since "help on the maths tools", Add, Subtract, Multiply and
+// Divide two fractions (docs/decisions.md "Classroom dashboards: help on the maths tools"). The maths is M.operate (exact); a new
+// operation is an entry in M.OPS plus its words and, if it needs one, its own picture (opModel).
 const FCOLORS = 3;
+const MODE_ICON = { compare: '⚖️', add: '➕', sub: '➖', mul: '✖️', div: '➗' };
+const MODE_WORD = { compare: 'modeCompare', add: 'modeAdd', sub: 'modeSub', mul: 'modeMul', div: 'modeDiv' };
+/** Pieces drawn in one strip at most (more would be slivers): past it the answer is drawn without same-size pieces. */
+const MAX_PIECES = 96;
 function fractions(body, s, ctx) {
   const T = shell(body, s, ctx, 'fractions'), { W, st } = T;
+  const mode = () => (M.OPS[st.mode] ? st.mode : 'compare');
+  const modes = T.seg(W.mode, M.FRACTION_MODES.map(m => [m, W[MODE_WORD[m]], null, MODE_ICON[m]]), mode, v => {
+    st.mode = v; if (M.OPS[v]) { st.a = M.clampOperand(st.a || M.OP_START.a); st.b = M.clampOperand(st.b || M.OP_START.b); }
+    zeroNote = v === 'div' && !st.b.n; if (zeroNote) st.b.n = 1;
+    T.commit(M.OPS[v] ? `${W[MODE_WORD[v]]}: ${opSay()}` : W[MODE_WORD[v]]);
+  });
   const shapes = T.seg(W.bar, [['bar', W.bar], ['circle', W.circle]], () => st.shape, v => { st.shape = v; T.commit(); });
   const same = T.toggle(`🧩 ${W.same}`, null, () => st.same, v => { st.same = v; T.commit(sameText()); });
-  T.top.append(shapes, same);
-  const add = btn(`➕ ${W.add}`, 'btn btn-sm'), rm = btn(`➖ ${W.remove}`, 'btn btn-sm'), hide = T.toggle(`🙈 ${W.hide}`, null, () => st.hide, v => { st.hide = v; T.commit(); });
+  T.top.append(modes, shapes, same);
+  const add = btn(`➕ ${W.add}`, 'btn btn-sm'), rm = btn(`➖ ${W.remove}`, 'btn btn-sm'), hide = T.toggle(`🙈 ${W.hide}`, null, () => st.hide, v => { st.hide = v; T.commit(v ? '' : opSay()); });
+  const swap = btn(`⇄ ${W.swap}`, 'btn btn-sm dt-fswap');
   add.addEventListener('click', () => { if (st.bars.length < 3) { st.bars.push({ n: 1, d: st.bars[st.bars.length - 1]?.d || 4 }); T.commit(); T.stage.querySelectorAll('.dt-fshape')[st.bars.length - 1]?.focus(); } });
   rm.addEventListener('click', () => { if (st.bars.length > 1) { st.bars.pop(); T.commit(); } });
-  T.foot.append(add, rm, hide);
+  swap.addEventListener('click', () => { [st.a, st.b] = [st.b, st.a]; T.commit(opSay()); });
+  T.foot.append(add, rm, swap, hide);
+  let zeroNote = false;   // Divide: the divisor's top number was kept at 1 (nothing is divided by zero); say why
   const cd = () => M.commonDenominator(st.bars);
   const sameText = () => {
     if (!st.same) return '';
@@ -249,8 +308,20 @@ function fractions(body, s, ctx) {
     return fill(W.sameText, { n: c.L, list: c.list.map(f => iso(`${f.n}/${f.d}`)).join(', ') });
   };
   const say = i => { const b = st.bars[i]; ctx.say(shadedWords(b.n, b.d, W, ctx.intl)); };
+  /** "1/2 + 1/3 = 5/6" (the answer left out while it is hidden). */
+  const opSay = () => {
+    if (!M.OPS[mode()]) return '';
+    const r = M.operate(mode(), st.a, st.b);
+    return iso(`${r.a.n}/${r.a.d} ${r.sign} ${r.b.n}/${r.b.d}${st.hide ? '' : ` = ${r.mixed}`}`);
+  };
   T.draw = () => {
-    shapes.sync(); same.sync(); hide.sync();
+    const op = mode();
+    modes.sync(); shapes.sync(); same.sync(); hide.sync();
+    same.hidden = add.hidden = rm.hidden = op !== 'compare'; shapes.hidden = op === 'mul';
+    T.howto(op === 'compare' ? W.howto : op === 'mul' ? W.howtoMul : op === 'div' ? W.howtoDiv : W.howtoOp);
+    if (op === 'compare') { swap.hidden = true; compareView(); } else opView(op);
+  };
+  function compareView() {
     add.disabled = st.bars.length >= 3; rm.disabled = st.bars.length <= 1;
     const c = cd(), useL = st.same && c.L <= 48;
     T.stage.textContent = '';
@@ -300,8 +371,177 @@ function fractions(body, s, ctx) {
       const why = el('div', 'dt-sub', st.hide ? W.order : st.same ? sameText() : W.samePrompt);
       T.read.append(big, why);
     } else T.read.appendChild(el('div', 'dt-sub', shadedWords(st.bars[0].n, st.bars[0].d, W, ctx.intl)));
+  }
+  /** Add, Subtract or Multiply: the two fractions as a sum with − and + on every number, the picture, the steps. */
+  function opView(op) {
+    st.a = M.clampOperand(st.a || M.OP_START.a); st.b = M.clampOperand(st.b || M.OP_START.b);
+    const r = M.operate(op, st.a, st.b), had = T.stage.contains(document.activeElement) ? document.activeElement.dataset.k : '';
+    swap.hidden = op !== 'sub' || !r.negative;
+    T.stage.textContent = '';
+    const wrap = el('div', `dt-fop dt-fop-${op} dt-fo-${op === 'mul' ? 'area' : st.shape}`); wrap.dir = 'ltr';
+    const eq = el('div', 'dt-foeq');
+    const sign = t => { const x = el('span', 'dt-fosign', t); x.setAttribute('aria-hidden', 'true'); return x; };
+    eq.append(operand('a', 0), sign(r.sign), operand('b', 1));
+    wrap.appendChild(eq);
+    T.stage.appendChild(wrap);
+    wrap.appendChild(op === 'mul' ? areaModel(r, eq) : strips(r));
+    if (had) (T.stage.querySelector(`[data-k="${had}"]:not(:disabled)`) || T.stage.querySelector(`[data-k^="${had.slice(0, 2)}"]:not(:disabled)`))?.focus();
+    // The readout: 1/2 + 1/3 = 3/6 + 2/6 = 5/6 (= the simplest form), then in words what that is.
+    T.read.textContent = '';
+    const big = el('div', 'dt-big dt-cmp dt-fchain'); big.dir = 'ltr';
+    const put = (...xs) => { for (const x of xs) big.appendChild(typeof x === 'string' ? el('span', 'dt-sign', x) : x); };
+    put(stacked(r.a.n, r.a.d), r.sign, stacked(r.b.n, r.b.d), '=');
+    const notes = [];
+    if (zeroNote) notes.push(W.noZero);
+    if (st.hide) { put('?'); notes.push(W.think); } else {
+      // Divide: a/b ÷ c/d = a/b × d/c (the second turned over).
+      if (op === 'div') put(stacked(r.a.n, r.a.d), '×', stacked(r.flip.n, r.flip.d), '=');
+      else if (op !== 'mul' && (r.a.d !== r.L || r.b.d !== r.L)) put(fracEl(r.a2), r.sign, fracEl(r.b2), '=');
+      put(fracEl(r.raw));
+      const simpler = r.simple.n !== r.raw.n || r.simple.d !== r.raw.d;
+      if (simpler) put('=', fracEl(r.simple));
+      if (op === 'mul') notes.push(fill(W.overlap, { n: Math.abs(r.raw.n), d: r.raw.d }));
+      if (op === 'div') notes.push(fill(W.fits, { n: iso(r.mixed), a: iso(`${r.a.n}/${r.a.d}`), b: iso(`${r.b.n}/${r.b.d}`) }));
+      if (r.negative) notes.push(fill(W.below, { a: iso(`${r.a.n}/${r.a.d}`), b: iso(`${r.b.n}/${r.b.d}`) }));
+      if (r.more) notes.push(fill(W.mixed, { m: iso(r.mixed) }));
+      else if (simpler && !r.whole) notes.push(fill(W.simplest, { f: iso(r.mixed) }));
+      else if (!simpler && !r.whole && r.raw.n && !r.negative) notes.push(fill(W.already, { f: iso(M.fracRaw(r.raw)) }));
+      if (op !== 'mul' && !sameSize(r)) notes.push(fill(W.tooSmall, { n: r.L }));
+    }
+    T.read.appendChild(big);
+    if (notes.length) T.read.appendChild(el('div', 'dt-sub', notes.join(' ')));
+  }
+  /** A fraction stacked (a whole number plain, a minus in front). */
+  const fracEl = f => {
+    const a = Math.abs(f.n), x = f.d === 1 ? ltr('span', 'dt-fwhole', String(a)) : stacked(a, f.d);
+    if (f.n >= 0) return x;
+    const w = el('span', 'dt-fneg'); w.dir = 'ltr'; w.append(el('span', 'dt-sign', '−'), x); return w;
   };
+  /** Whether the strips can show the same-size pieces (not too many slivers). */
+  const sameSize = r => r.L <= 48 && wholesOf(r) * r.L <= MAX_PIECES;
+  const wholesOf = r => Math.max(1, ...(r.op === 'div' ? [r.a, r.b] : [r.a, r.b, r.raw]).map(f => Math.ceil(Math.abs(f.n) / f.d)));
+  /** One fraction of the sum: − and + on its top and its bottom number. */
+  function operand(k, i) {
+    const f = st[k], who = i ? W.second : W.first;
+    const g = el('div', `dt-fo dt-fo${i}`); g.setAttribute('role', 'group'); g.setAttribute('aria-label', `${who}: ${f.n}/${f.d}`);
+    const row = (key, lo, hi, word) => {
+      const r = el('div', 'dt-forow');
+      const m = btn('−', 'btn btn-sm dt-pm', `${word} − (${who})`), p = btn('+', 'btn btn-sm dt-pm', `${word} + (${who})`);
+      m.dataset.k = `${k}${key}-`; p.dataset.k = `${k}${key}+`;
+      const v = ltr('b', 'dt-fov', String(f[key])); v.setAttribute('aria-hidden', 'true');
+      // Divide: the second fraction's top number stops at 1 (nothing is divided by zero); − there says why instead.
+      const noZero = mode() === 'div' && k === 'b' && key === 'n';
+      m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = ctx.editing || f[key] >= hi;
+      const set = x => { zeroNote = noZero && x < 1; if (zeroNote) { T.draw(); ctx.say(W.noZero); return; } st[k] = M.clampOperand({ ...f, [key]: x }); T.commit(opSay()); };
+      m.addEventListener('click', () => set(f[key] - 1)); p.addEventListener('click', () => set(f[key] + 1));
+      r.append(m, v, p); return r;
+    };
+    const line = el('div', 'dt-fol'); line.setAttribute('aria-hidden', 'true');
+    g.append(row('n', 0, Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * f.d), W.num), line, row('d', 1, M.OP_LIMITS.dMax, W.den));
+    return g;
+  }
+  /** Add and Subtract: the first fraction, the second and the answer, in same-size pieces (bars or circles, on one scale). */
+  function strips(r) {
+    const W2 = wholesOf(r), useL = !st.hide && sameSize(r), grid = el('div', 'dt-fstrips');
+    const row = (label, cells, per, group, aria, part) => {
+      const lab = el('div', 'dt-flab'); for (const x of label) lab.appendChild(typeof x === 'string' ? el('span', 'dt-eqsign', x) : x);
+      const pic = st.shape === 'circle' ? pies(W2, per, cells, group, part) : stripSvg(W2, per, cells, group, part);
+      pic.setAttribute('role', 'img'); pic.setAttribute('aria-label', aria);
+      grid.append(lab, pic);
+    };
+    const pieces = (f, from, cls) => { const out = []; for (let i = 0; i < Math.abs(f.n); i++) out[from + i] = cls; return out; };
+    const fa = useL ? r.a2 : r.a, fb = useL ? r.b2 : r.b;
+    row([fracEl(fa)], pieces(fa, 0, 'dt-on dt-c0'), fa.d, useL ? r.L / r.a.d : 1, shadedWords(fa.n, fa.d, W, ctx.intl));
+    row([r.sign, fracEl(fb)], pieces(fb, 0, 'dt-on dt-c1'), fb.d, useL ? r.L / r.b.d : 1, shadedWords(fb.n, fb.d, W, ctx.intl));
+    if (st.hide) { row(['=', el('span', 'dt-sign', '?')], [], 1, 1, '?'); return grid; }
+    // The answer: adding puts the second's pieces after the first's; taking away crosses the second's off the first's end.
+    // Below zero, the pieces missing are drawn hatched and the answer has its minus. With too many pieces to draw, the
+    // answer is one bar (or wedge) as long as it is.
+    if (r.op === 'div') return divRow(r, W2, useL, row, grid);
+    const show = useL ? r.raw : r.simple, many = W2 * show.d > MAX_PIECES, neg = r.negative ? 'dt-on dt-fneg' : null;
+    let cells;
+    if (many) cells = [];
+    else if (!useL || r.negative) cells = Array.from({ length: Math.abs(show.n) }, () => neg || 'dt-on dt-c2');
+    else if (r.op === 'add') cells = Array.from({ length: r.raw.n }, (_, i) => (i < r.a2.n ? 'dt-on dt-c0' : 'dt-on dt-c1'));
+    else cells = Array.from({ length: r.a2.n }, (_, i) => (i < r.raw.n ? 'dt-on dt-c0' : 'dt-took'));
+    row(['=', fracEl(show)], cells, many ? 1 : show.d, 1, `= ${M.fracRaw(show)}`, many ? { v: Math.abs(show.n) / show.d, cls: neg || 'dt-on dt-c2' } : null);
+    return grid;
+  }
+  /** Divide: the first fraction measured in lots of the second (same-size pieces): whole lots take turns in two
+   *  shades with a bold line between them, and what is left over is hatched (it is that part of one more lot). */
+  function divRow(r, W2, useL, row, grid) {
+    if (!useL) { row(['=', fracEl(r.simple)], [], 1, 1, `= ${r.mixed}`, { v: r.a.n / r.a.d, cls: 'dt-on dt-c1' }); return grid; }
+    const lot = r.b2.n, full = Math.floor(r.a2.n / lot) * lot;
+    const cells = Array.from({ length: r.a2.n }, (_, i) => (i >= full ? 'dt-on dt-fleft' : Math.floor(i / lot) % 2 ? 'dt-on dt-c1b' : 'dt-on dt-c1'));
+    row(['=', fracEl(r.simple)], cells, r.L, lot, `= ${r.mixed}`);
+    return grid;
+  }
+  /** Multiply: a unit square cut one way by the first bottom number (its top number shaded) and the other way by the
+   *  second; where the shading overlaps is the product. Past one whole, the square repeats (3/1 is three squares). */
+  function areaModel(r, eq) {
+    const { a, b } = r, hide = st.hide;
+    const A = Math.max(1, Math.ceil(a.n / a.d)), B = Math.max(1, Math.ceil(b.n / b.d)), U = 100, P = 46;
+    const cw = U / a.d, rh = U / b.d, wv = A * U + P + 12, hv = B * U + P + 12;
+    // The labels are at least 13px (more on the projector) in the room left under the sum, not the whole model area.
+    const w = T.stage.clientWidth, h = T.stage.clientHeight - eq.offsetHeight - 12;
+    const k = matchMedia('(max-width: 719px)').matches || h <= 0 ? w / wv : Math.min(w / wv, h / hv);
+    const ts = k > 0 ? Math.max(1, (document.body.classList.contains('dash-projector') ? 13 * 1.35 : 13) / (16 * k)) : 1;
+    const sv = svg('svg', { viewBox: `${-P} -12 ${wv} ${hv}`, class: 'dt-farea', role: 'img', style: `--ts:${ts.toFixed(3)}`,
+      'aria-label': hide ? `${a.n}/${a.d} × ${b.n}/${b.d}` : fill(W.overlap, { n: r.raw.n, d: r.raw.d }) });
+    sv.setAttribute('direction', 'ltr');
+    for (let i = 0; i < A * a.d; i++) for (let j = 0; j < B * b.d; j++) {
+      const inA = i < a.n, inB = j < b.n;
+      sv.appendChild(svg('rect', { x: i * cw, y: j * rh, width: cw, height: rh, class: inA && inB && !hide ? 'dt-mx' : inA && inB ? 'dt-mab' : inA ? 'dt-ma' : inB ? 'dt-mb' : 'dt-off' }));
+    }
+    for (let i = 1; i < A * a.d; i++) sv.appendChild(svg('line', { x1: i * cw, x2: i * cw, y1: 0, y2: B * U, class: i % a.d ? 'dt-thin' : 'dt-edge' }));
+    for (let j = 1; j < B * b.d; j++) sv.appendChild(svg('line', { x1: 0, x2: A * U, y1: j * rh, y2: j * rh, class: j % b.d ? 'dt-thin' : 'dt-edge' }));
+    sv.appendChild(svg('rect', { x: 0, y: 0, width: A * U, height: B * U, class: 'dt-outline' }));
+    // What each way is cut into: the first fraction along the bottom, the second up the side.
+    if (a.n) { sv.appendChild(svg('path', { d: `M0 ${B * U + 8}v8H${a.n * cw}v-8`, class: 'dt-fbrace dt-c0s' })); sv.appendChild(svg('text', { x: (a.n * cw) / 2, y: B * U + 20 + 18 * ts, 'text-anchor': 'middle', class: 'dt-ftl' }, `${a.n}/${a.d}`)); }
+    if (b.n) { sv.appendChild(svg('path', { d: `M-8 0h-8V${b.n * rh}h8`, class: 'dt-fbrace dt-c1s' })); sv.appendChild(svg('text', { x: -22, y: (b.n * rh) / 2 + 6 * ts, 'text-anchor': 'end', class: 'dt-ftl' }, `${b.n}/${b.d}`)); }
+    const box = el('div', 'dt-fareabox'); box.appendChild(sv);
+    return box;
+  }
   return T.finish();
+}
+/** A strip of `wholes` wholes cut into `per` pieces each; cells[i] is piece i's class (unshaded when missing); a bold line
+ *  at every whole and every `group` pieces (the pieces before they were cut smaller). */
+function stripSvg(wholes, per, cells, group = 1, part = null) {
+  const w = 600, h = 80, n = wholes * per, sv = svg('svg', { viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none', class: 'dt-fbar dt-fobar' });
+  if (part) sv.appendChild(svg('rect', { x: 0, y: 0, width: (w * part.v) / wholes, height: h, class: part.cls }));
+  for (let i = 0; i < n; i++) {
+    if (!part) sv.appendChild(svg('rect', { x: (i * w) / n, y: 0, width: w / n, height: h, class: cells[i] || 'dt-off' }));
+    if (cells[i] === 'dt-took') sv.appendChild(svg('path', { d: `M${(i * w) / n} 0L${((i + 1) * w) / n} ${h}`, class: 'dt-tookx' }));
+  }
+  for (let i = 1; i < n; i++) sv.appendChild(svg('line', { x1: (i * w) / n, x2: (i * w) / n, y1: 0, y2: h, class: i % per === 0 ? 'dt-whole' : i % group ? 'dt-thin' : 'dt-edge' }));
+  sv.appendChild(svg('rect', { x: 0, y: 0, width: w, height: h, class: 'dt-outline' }));
+  return sv;
+}
+/** The same as circles: one circle a whole (part: one wedge as big as it is, for too many pieces to draw). */
+function pies(wholes, per, cells, group = 1, part = null) {
+  const box = el('div', 'dt-fpies');
+  for (let k = 0; k < wholes; k++) {
+    const sv = svg('svg', { viewBox: '-52 -52 104 104', class: 'dt-fpie' });
+    const pt = a => `${(48 * Math.sin(a)).toFixed(3)} ${(-48 * Math.cos(a)).toFixed(3)}`;
+    if (part) {
+      const v = Math.max(0, Math.min(1, part.v - k)), a1 = v * 2 * Math.PI;
+      sv.appendChild(svg('circle', { r: 48, class: 'dt-off' }));
+      if (v >= 1) sv.appendChild(svg('circle', { r: 48, class: part.cls }));
+      else if (v > 0) sv.appendChild(svg('path', { d: `M0 0 L0 -48 A48 48 0 ${a1 > Math.PI ? 1 : 0} 1 ${pt(a1)} Z`, class: part.cls }));
+      sv.appendChild(svg('circle', { cx: 0, cy: 0, r: 48, class: 'dt-outline' }));
+      box.appendChild(sv); continue;
+    }
+    for (let i = 0; i < per; i++) {
+      const a0 = (i / per) * 2 * Math.PI, a1 = ((i + 1) / per) * 2 * Math.PI, c = cells[k * per + i] || 'dt-off';
+      const d = per === 1 ? 'M0 -48 A48 48 0 1 1 -0.01 -48 Z' : `M0 0 L${pt(a0)} A48 48 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${pt(a1)} Z`;
+      sv.appendChild(svg('path', { d, class: `${c} ${i % group ? 'dt-thinp' : ''}` }));
+      if (c === 'dt-took') { const m = (a0 + a1) / 2; sv.appendChild(svg('path', { d: `M${(14 * Math.sin(m)).toFixed(2)} ${(-14 * Math.cos(m)).toFixed(2)}L${(44 * Math.sin(m)).toFixed(2)} ${(-44 * Math.cos(m)).toFixed(2)}`, class: 'dt-tookx' })); }
+    }
+    if (per > 1) for (let i = 0; i < per; i += group) sv.appendChild(svg('line', { x1: 0, y1: 0, x2: 48 * Math.sin((i / per) * 2 * Math.PI), y2: -48 * Math.cos((i / per) * 2 * Math.PI), class: 'dt-edge' }));
+    sv.appendChild(svg('circle', { cx: 0, cy: 0, r: 48, class: 'dt-outline' }));
+    box.appendChild(sv);
+  }
+  return box;
 }
 /** A bar of `parts` pieces, the first `shaded` filled; every `group` pieces a bold line (the original pieces). */
 function barSvg(parts, shaded, color, group = 1) {
@@ -386,7 +626,8 @@ function numline(body, s, ctx) {
       T.read.append(big, el('div', 'dt-sub', fill(W.jumped, { a: iso(label(last.a)), b: iso(label(last.b)), d: iso(M.jumpLabel(last.a, last.b, st.sub, st.mode)) })));
     } else {
       // Stage 4 review: no lone number under the line (it read as a label); the cursor is on the line and in its slider value.
-      T.read.append(el('div', 'dt-sub', start !== null ? fill(W.jumpFrom, { v: iso(label(start)) }) : W.hint));
+      // Help on the maths tools: the instruction line above says how to use the line (no second hint here).
+      if (start !== null) T.read.append(el('div', 'dt-sub', fill(W.jumpFrom, { v: iso(label(start)) })));
     }
   };
   /** The last jumps that follow on from each other (0 → 1/4 → 1/2...). */
@@ -1074,7 +1315,7 @@ function area(body, s, ctx) {
     if (r.parts.length > 1) {
       const dist = `(${r.rows.join(' + ')}) × (${r.cols.join(' + ')})`.replace(/\((\d+)\)/g, '$1');
       T.read.appendChild(ltr('div', 'dt-sub', `${dist} = ${r.parts.map(p => p.p).join(' + ')}`));
-    } else T.read.appendChild(el('div', 'dt-sub', W.hint));
+    }
   };
   return T.finish({
     options: box => {
@@ -1201,7 +1442,7 @@ function tclock(body, s, ctx) {
         j.forEach((x, n) => { if (n) line.append(' · '); line.appendChild(el('span', 'dt-nowrap', `${timeText(x.from)} → ${timeText(x.to)} (${dur(x.mins)})`)); });
         T.read.appendChild(line);
       }
-    } else if (!st.digital) T.read.appendChild(el('div', 'dt-sub', W.hint));
+    }
   };
   const angleOf = e => { const r = face.getBoundingClientRect(); const x = e.clientX - (r.left + r.width / 2), y = e.clientY - (r.top + r.height / 2); return (Math.atan2(x, -y) * 180) / Math.PI; };
   function wire() {

@@ -26,6 +26,63 @@ export function ordered(fracs) {
 /** Whether two fractions are equivalent (2/4 and 1/2). */
 export const equivalent = (a, b) => compare(a, b) === 0;
 
+// ---------------------------------------------------------------- adding, subtracting and multiplying fractions
+// The fraction tool's Add, Subtract and Multiply modes (docs/decisions.md "Classroom dashboards: help on the maths
+// tools"). Each operation is an entry in OPS (add, subtract, multiply, divide).
+/** What each fraction in an operation may be: a bottom number 1-12, a top number 0-12 and at most three wholes. */
+export const OP_LIMITS = { dMax: 12, nMax: 12, wholes: 3 };
+/** The operations' starting fractions (server/services/dash-tools.js keeps the same, tested). */
+export const OP_START = { a: { n: 1, d: 2 }, b: { n: 1, d: 3 } };
+/** A fraction kept inside OP_LIMITS (whole numbers; the top number never more than three wholes). */
+export function clampOperand(f) {
+  const d = Math.max(1, Math.min(OP_LIMITS.dMax, Math.round(Number(f && f.d)) || 1));
+  const n = Math.max(0, Math.min(OP_LIMITS.nMax, OP_LIMITS.wholes * d, Math.round(Number(f && f.n)) || 0));
+  return { n, d };
+}
+/** A fraction as a whole number and a part: 7/6 -> { sign: 1, whole: 1, n: 1, d: 6 }; -1/4 -> { sign: -1, whole: 0, n: 1, d: 4 }. */
+export function mixedParts(f) {
+  const s = simplify(f.n, f.d), a = Math.abs(s.n);
+  return { sign: s.n < 0 ? -1 : 1, whole: Math.floor(a / s.d), n: a % s.d, d: s.d };
+}
+/** A fraction in lowest terms as text, a mixed number when it is more than one whole: "5/6", "1 1/6", "2", "−1/6". */
+export function mixedText(f) {
+  const m = mixedParts(f), sign = m.sign < 0 ? '−' : '';
+  if (!m.n) return `${sign}${m.whole}`;
+  return m.whole ? `${sign}${m.whole} ${m.n}/${m.d}` : `${sign}${m.n}/${m.d}`;
+}
+/** A fraction as written, not simplified: "6/12", "−1/6". */
+export const fracRaw = f => `${f.n < 0 ? '−' : ''}${Math.abs(f.n)}/${f.d}`;
+/**
+ * The operations. Each takes two fractions and gives:
+ *   L     the bottom number the work is done in (the least common denominator to add or subtract; the product of the
+ *         bottom numbers to multiply)
+ *   a2 b2 the two fractions written over L when adding or subtracting (the same-size pieces), else as they are
+ *   raw   the answer before simplifying (5/6, 6/12, -1/6...)
+ */
+export const OPS = {
+  add: { sign: '+', run(a, b) { const c = commonDenominator([a, b]); return { L: c.L, a2: c.list[0], b2: c.list[1], raw: { n: c.list[0].n + c.list[1].n, d: c.L } }; } },
+  sub: { sign: '−', run(a, b) { const c = commonDenominator([a, b]); return { L: c.L, a2: c.list[0], b2: c.list[1], raw: { n: c.list[0].n - c.list[1].n, d: c.L } }; } },
+  mul: { sign: '×', run(a, b) { return { L: a.d * b.d, a2: { ...a }, b2: { ...b }, raw: { n: a.n * b.n, d: a.d * b.d } }; } },
+  // How many of the second fit in the first: both over the same bottom number to measure one with the other, and
+  // worked as a/b × d/c (the second turned over). The second is never zero (operate keeps its top number at least 1).
+  div: { sign: '÷', run(a, b) { const c = commonDenominator([a, b]); return { L: c.L, a2: c.list[0], b2: c.list[1], flip: { n: b.d, d: b.n }, raw: { n: a.n * b.d, d: a.d * b.n } }; } },
+};
+/** The modes of the fraction tool: Compare and the operations, in the order of its switch. */
+export const FRACTION_MODES = ['compare', ...Object.keys(OPS)];
+/**
+ * a op b, exactly: { op, sign, a, b, guarded (dividing by 0 was turned into dividing by 1/d), L, flip (divide: the second
+ * turned over), a2, b2, raw, simple (lowest terms), mixed (text), negative, whole (a whole
+ * number), more (more than one whole and not a whole number, so a mixed number says it best) }.
+ */
+export function operate(op, a, b) {
+  const o = OPS[op]; if (!o) return null;
+  a = clampOperand(a); b = clampOperand(b);
+  // Nothing can be divided by zero: the divisor's top number is at least 1 (guarded says it was raised).
+  const guarded = op === 'div' && b.n === 0; if (guarded) b = { n: 1, d: b.d };
+  const r = o.run(a, b), simple = simplify(r.raw.n, r.raw.d);
+  return { op, sign: o.sign, a, b, guarded, ...r, simple, mixed: mixedText(simple), negative: simple.n < 0, whole: simple.d === 1, more: Math.abs(simple.n) > simple.d && simple.d > 1 };
+}
+
 // ---------------------------------------------------------------- spoken fractions (English; other languages say "3 of 8")
 const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];

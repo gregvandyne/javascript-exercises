@@ -73,12 +73,22 @@ const TOOL_WORDS = {
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
+/** Help on the maths tools (docs/decisions.md "Classroom dashboards: help on the maths tools"): each maths tool's one-line
+ *  instruction (howto) and its ⓘ panel (helpUse: what each control does, helpIdeas: ideas for class; one a line). */
+export const MATH_TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
+  'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance'];
+for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas');
+// The fraction tool's Add, Subtract, Multiply and Divide.
+TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul', 'modeDiv', 'howtoOp', 'howtoMul', 'howtoDiv', 'first', 'second', 'num', 'den',
+  'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // stage 4: "Make a question from it" and "Practice it"
-  'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName'];
+  'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
+  // help on the maths tools: the ⓘ panel
+  'helpFor', 'helpClose', 'helpControls', 'helpIdeas', 'helpMore', 'helpAsk', 'helpSend', 'helpPractice'];
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
-export const ASK_KEYS = ['fractions', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
+export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
   'geoboard', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
 /** Stage 4, "Practice it": a teaching tool and the official Oomba games that practise the same thing (picked by hand
  *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
@@ -175,14 +185,14 @@ export const WIDGETS = [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
   // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
-  ...[['fractions', '🍕', [6, 6], [5, 6]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [5, 5]],
-    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 5]], ['hundreds', '💯', [5, 7], [4, 6]],
-    ['area', '🔲', [6, 6], [5, 5]], ['times', '✖️', [6, 8], [5, 7]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
+  ...[['fractions', '🍕', [6, 7], [5, 7]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 6], [5, 6]],
+    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['area', '🔲', [6, 6], [5, 6]], ['times', '✖️', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
     .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
   // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
-  ...[['geoboard', '📌', [6, 6], [5, 6], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 6], [5, 6], 'teach'],
-    ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 6], [6, 6], 'teach'],
+  ...[['geoboard', '📌', [6, 6], [5, 6], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 7], [5, 7], 'teach'],
+    ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
     ['chance', '🎯', [7, 6], [6, 6], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
     .map(([id, icon, size, min, group]) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [

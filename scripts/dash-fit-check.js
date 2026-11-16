@@ -157,6 +157,13 @@ const STAGE4_EXTRA = [
   { ...D.widgetType('organizer'), wid: 'worgvenn', s: { state: { kind: 'venn', title: 'Frösche und Kröten im Vergleich', boxes: [{ h: 'Froschlurche', t: 'Glatte, feuchte Haut\nLange Hinterbeine\nLeben am Wasser' }, { h: '', t: 'Amphibienentwicklung\nLegen Eier\nKönnen schwimmen' }, { h: 'Kröten', t: 'Warzige, trockene Haut\nKurze Beine\nLeben an Land' }] } } },
   { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
 ];
+// Help on the maths tools: the fraction tool's Add (circles, more than one whole), Subtract (below zero, so Swap shows)
+// and Multiply (a whole number, so the square repeats), as widgets of their own.
+const FRACTION_EXTRA = [
+  { ...D.widgetType('fractions'), wid: 'wfradd', s: { state: { mode: 'add', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
+  { ...D.widgetType('fractions'), wid: 'wfrsub', s: { state: { mode: 'sub', a: { n: 1, d: 3 }, b: { n: 11, d: 12 } } } },
+  { ...D.widgetType('fractions'), wid: 'wfrmul', s: { state: { mode: 'mul', a: { n: 3, d: 1 }, b: { n: 7, d: 12 } } } },
+];
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
 {
@@ -183,7 +190,7 @@ D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;

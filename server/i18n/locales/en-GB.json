@@ -859,13 +859,15 @@
         "color": "Colour"
       },
       "tenframe": {
-        "flip": "Swap the colours"
+        "flip": "Swap the colours",
+        "helpUse": "Tap a box: red, then yellow, then empty.\nRed + and Yellow + fill the next box; Take one empties the last.\nThe number bond shows both colours and how many more make ten.\nOptions: one or two frames, the number bond, swap the colours, fill with red."
       },
       "numline": {
         "desc": "Whole numbers, fractions, decimals and negatives. Tap to place points, drag to jump. Reception to Year 9."
       },
       "graph": {
-        "desc": "Bar, line, picture and dot plots from your own numbers or a quick check's totals."
+        "desc": "Bar, line, picture and dot plots from your own numbers or a quick check's totals.",
+        "helpIdeas": "Ask a quick check about favourite fruit, then graph its totals.\nShow the data as bars and as dots: which is easier to read?"
       },
       "times": {
         "name": "Times tables grid"
@@ -882,7 +884,8 @@
         "units": "Amounts here are in pence or cents (plain numbers for the plain set)."
       },
       "geoboard": {
-        "desc": "Stretch bands round pegs. Area and perimeter of a closed shape, exactly (Pick's theorem). Years 3–9."
+        "desc": "Stretch bands round pegs. Area and perimeter of a closed shape, exactly (Pick's theorem). Years 3–9.",
+        "helpUse": "Tap pegs to stretch the band; tap the first peg again, or Close, to close it.\nDrag a corner to move it.\nNew band starts another shape in a new colour (up to 6); Undo takes back the last peg.\nA closed shape shows its exact area and perimeter.\nArrow keys move round the pegs; Enter stretches the band or picks up a corner."
       },
       "pattern": {
         "desc": "Hexagons, trapezia, rhombi, triangles and squares that snap together. Shows the fraction of a hexagon. Reception to Year 6.",
@@ -917,7 +920,8 @@
     },
     "tools": {
       "practice": "Practise it",
-      "practiceName": "Practise it: {title}"
+      "practiceName": "Practise it: {title}",
+      "helpPractice": "Practice it: opens an Oomba game that practises the same idea."
     },
     "tpl": {
       "periods": {

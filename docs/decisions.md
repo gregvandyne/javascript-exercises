@@ -6573,6 +6573,65 @@ emoji set (`public/js/dash-widgets.js`), its CSS and its `dash.w.stickers.*` str
 - **Fun break** gets a team **scoreboard** (four sample team names in the teacher's language) in the stickers' 5 × 3
   place, its default size: still playful for a break, and the layout still fills the 12 × 8 grid with no gaps.
 
+## Classroom dashboards: help on the maths tools (16 Nov 2026)
+Product request: "Add better instructions on the math widgets. Have a one line instruction and then an info box in the top
+right that explains more. Also, for fractions, you should be able to compare, add, subtract, multiply fractions" (Divide
+was added to the same change on request). Code: the tools' shell in `public/js/dash-tools.js` (`helpButton`, `T.howto`),
+the fraction tool in the same file, the maths in `public/js/dash-math.js` (`OPS`, `operate`, `mixedText`...), the
+questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tools.js`, `MATH_TOOLS` in
+`server/services/dash.js`, strings `dash.w.<tool>.howto|helpUse|helpIdeas`, `dash.tools.help*`, `dash.ask.fractions*`.
+- **Which tools.** Every maths tool (`MATH_TOOLS`, tested to be exactly the Teach tools that are sent to students): fraction
+  bars, number line, coordinate plane, graph maker, base-ten blocks, place value, ten frames, hundreds chart, area model,
+  times table, teaching clock, fraction/decimal/percent, geoboard, pattern blocks, angle maker, 3D shapes and nets,
+  transformations, balance scale, algebra tiles, coins and money, chance lab. Not the whiteboard, letter tiles (they
+  already have their instruction), organizers or maps.
+- **A one-line instruction** under the title row, saying what to do first ("Tap a bar to shade parts. Use − and + to change
+  the pieces."); the fraction tool's changes with its mode. It wraps rather than being cut (the fit check); German lines
+  are at most 72 characters (tested). The readout hints it replaces are gone (number line, area model, clock, geoboard,
+  transformations), so there are never two.
+- **ⓘ in the header, top right** (after the pin chip and "More"; 44px; named "How to use Fraction bars"). It opens a small
+  panel inside the widget, not a page modal: what each control does, one or two ideas for class, and what Make a
+  question, Send to students and Practice it do, only where the tool shows them. Closed by ✕, Escape or a tap outside;
+  the focus goes into the panel and back to ⓘ; `aria-expanded`/`aria-controls`; it scrolls when long. A student's copy
+  (in a sheet, with no header) has ⓘ at the end of the instruction row, and the same help without the teacher's ideas,
+  Make a question or Send (it says the copy is theirs instead). **On the projector ⓘ and the panel are hidden**; the
+  instruction stays, larger. The help is built with `textContent` only.
+- **Fractions: Compare | Add | Subtract | Multiply | Divide.** Compare is unchanged. The operations take two fractions,
+  each with − and + on its numerator and denominator: denominators 1-12, numerators 0-12 and at most three wholes (so
+  whole numbers 1/1-3/1 work). Add and Subtract cut both into same-size pieces (the least common denominator) on one
+  scale, then draw the answer (adding: the second's pieces after the first's; subtracting: the second's pieces crossed off
+  the first's end), with the steps "3/4 + 2/3 = 9/12 + 8/12 = 17/12", the simplest form and the mixed number. Past 48
+  pieces a whole (or 96 in a strip) the answer is drawn as one bar and "too small to draw" is said. Multiply is an area
+  model: a unit square cut one way by the first denominator (its numerator shaded) and the other way by the second; the
+  overlap is the product, "6 of the 12 small parts overlap"; past one whole the square repeats. Divide measures the first
+  in lots of the second (same-size pieces; whole lots take turns in two colours, the part left over is hatched) and works
+  "3/4 ÷ 1/2 = 3/4 × 2/1 = 6/4 = 3/2", "1 1/2 of 1/2 fit in 3/4".
+  - **Decided: subtracting below zero** is allowed and shown: the answer has its minus ("−1/6"), its pieces are hatched
+    and dashed in the answer strip, a note says "1/2 is bigger than 1/3, so the answer is less than zero", and a **Swap**
+    button appears. Nothing is blocked.
+  - **Decided: dividing by zero** can't happen: in Divide the second numerator stops at 1 (pressing − there says
+    "Nothing can be divided by zero..."), the maths raises a 0 to 1 (`guarded`) and the server cleans it to 1.
+  - Hide the answer works in every mode ("1/2 + 1/3 = ?", no same-size pieces, an empty answer strip, no overlap).
+  - **Make a question** per mode: "What is 1/2 + 1/3?" with the answer in lowest terms (a mixed number past one) and wrong
+    answers from the usual slips: adding tops and bottoms, keeping one denominator, one piece too many or few, the sign
+    turned round, crossing over, forgetting to turn the divisor over, turning the first over. A wrong answer is never
+    worth the same as the right one (tested). Dividing straight across is not offered: it always gives the right value.
+  - The bars and circles views both work in Add, Subtract and Divide; Multiply has its own picture.
+  - **State and old layouts.** The state gains `mode`, `a` and `b`, rebuilt on the server (a new `obj` spec kind). They
+    are stored only when one differs from its start (Compare, 1/2 and 1/3), so a Compare state is stored exactly as before
+    and layouts and pushes saved before this load unchanged (tested; no earlier assertion changed). The operations are
+    entries of `OPS`, so another can be added without touching the rest.
+- **Sizes.** The instruction costs a line, so a few smallest sizes went up where the fit check found text under 12px or a
+  model spilling: fraction bars 6 × 7 (smallest 5 × 7; the mode switch is a row too), ten frames smallest 4 × 6, area
+  model smallest 5 × 6, 3D shapes 6 × 7 (smallest 5 × 7), graph maker 5 × 6 (German instruction and long labels), times table smallest 5 × 8, coins 7 × 7 (smallest 6 × 7). The fit check has three more fraction widgets (Add in circles
+  past one whole, Subtract below zero, Multiply with a whole number).
+- Also fixed: a graphic organizer's rows were sized from the grid's rounded height (`clientHeight`), so on some screens
+  the last row ended a pixel past the organizer; they now use its exact height, rounded down. (Found when the fit check's
+  new packing put the main-idea organizer alone on the Arabic projector.)
+- No AI, no network, nothing a student does reaches anyone; no prices. Tests: `tests/unit/dash-stage3.test.js` (the
+  maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and help in
+  every language, the panel's code). Strings in all 13 locales (en-GB where spelling differs).
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or
