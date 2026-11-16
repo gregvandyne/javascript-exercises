@@ -22,6 +22,8 @@
 // Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): a tool with modes is checked in
 // each mode (its own state, then a widget of its own per other mode, carrying the old tool's busy state there), with its
 // mode switch; the number chart also runs 1-120.
+// Every button with a tooltip is focused in turn (TIPS=0 skips it): its tooltip shows whole inside the screen, clipped
+// by nothing, and the button has no native title as well.
 // Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
 // its widget without scrolling and nothing in it is cut.
 // For every widget it checks:
@@ -180,13 +182,18 @@ const STAGE4_EXTRA = [...GEO_EXTRA,
   { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
 ];
 // Help on the maths tools: the fraction tool's Add (circles, more than one whole), Subtract (below zero, so Swap shows)
-// and Multiply (a whole number, so the square repeats), as widgets of their own.
+// and Multiply (a whole number, so the square repeats), as widgets of their own. Fractions as a number sentence
+// (docs/decisions.md): Divide in circles past one whole, and one (wfrswitch) whose mode and view the teacher's screen
+// switches in turn before it is checked (Subtract in circles with the answer hidden, then Divide in bars... the pictures
+// were once drawn over the mode buttons after a switch).
 // Maths tools combined: every mode that was a tool of its own, as a widget of the tool it is a mode of now (with the busy
 // state it had), and the number chart's 1-120.
 const MODE_WIDGET = m => ({ ...D.widgetType(DT.MODE_HOME[m]), wid: `wmode${m}`, s: { state: { tab: m, [m]: SETTINGS[m].state } } });
 const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } }]);
 const MODE4 = ['angle', 'solids', 'transform', 'balance'].map(MODE_WIDGET);
 const FRACTION_EXTRA = [
+  { ...D.widgetType('fractions'), wid: 'wfrdiv', s: { state: { mode: 'div', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
+  { ...D.widgetType('fractions'), wid: 'wfrswitch', s: { state: { mode: 'sub', shape: 'circle', hide: true } } },
   { ...D.widgetType('fractions'), wid: 'wfradd', s: { state: { mode: 'add', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrsub', s: { state: { mode: 'sub', a: { n: 1, d: 3 }, b: { n: 11, d: 12 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrmul', s: { state: { mode: 'mul', a: { n: 3, d: 1 }, b: { n: 7, d: 12 } } } },
@@ -213,7 +220,7 @@ const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH 
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
     cur.push({ id: t.wid || `w${t.id}`, type: t.id, x, y, w, h, s: t.s || SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
   if (cur.length) out.push(cur); return out; };
-D.ensureLayouts(T, C, 'Default sizes');
+D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
@@ -349,6 +356,23 @@ function problems() {
     for (let i = 1; i < rows.length; i++) { const a = rows[i - 1].getBoundingClientRect(), b = rows[i].getBoundingClientRect(); if (b.top < a.bottom - 1) out.push(`${name(w)}: "${rows[i].className}" overlaps "${rows[i - 1].className}"`); }
   }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
+  // Fractions as a number sentence: each bar's fraction is level with its bar, and the sentence reads left to right
+  // (the first fraction, the second, the answer) in every language.
+  for (const g of document.querySelectorAll('.dash-w .dt-fbars:not(.dt-fbars-above)')) {
+    const w = g.closest('.dash-w'); if (!w.offsetParent) continue;
+    const kids = [...g.children];
+    for (let i = 0; i + 1 < kids.length; i += 2) {
+      const a = kids[i].getBoundingClientRect(), b = kids[i + 1].getBoundingClientRect();
+      if (Math.abs((a.top + a.bottom) / 2 - (b.top + b.bottom) / 2) > 2) out.push(`${name(w)}: a fraction is not level with its bar`);
+    }
+  }
+  for (const f of document.querySelectorAll('.dash-w .dt-fo-circle')) {
+    const w = f.closest('.dash-w'); if (!w.offsetParent) continue;
+    const g = f.querySelector('.dt-fsent'), t = [0, 1, 2].map(i => g?.querySelector(`.dt-ft${i}`)?.getBoundingClientRect());
+    if (!t[2]) { out.push(`${name(w)}: the circles are not a number sentence`); continue; }
+    if (g.classList.contains('dt-fsent3')) { if (innerWidth >= 720) out.push(`${name(w)}: the circles are a column on a wide screen`); continue; }
+    if (!(t[0].right <= t[1].left + 1 && Math.abs(t[0].bottom - t[1].bottom) < 2 && (t[1].right <= t[2].left + 1 || t[2].top >= t[1].bottom - 1))) out.push(`${name(w)}: the fractions' sentence does not read left to right`);
+  }
   const projector = document.body.classList.contains('dash-projector'), floor = projector ? 13 : 12;
   for (const t of document.querySelectorAll('.dash-w .dt, .dash-w .dw5')) {
     const w = t.closest('.dash-w'); if (!w.offsetParent) continue;
@@ -462,6 +486,13 @@ for (const L of RUN) {
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
     if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
+    // The fraction tool switched between modes and views in turn (a mode is its place in the first row of buttons: 1
+    // Compare, 2 Add, 3 Subtract, 4 Multiply, 5 Divide; a view in the second: 1 Bars, 2 Circles), ending in Divide with bars.
+    if (v.who === T && await page.$('.dash-w[data-id="wfrswitch"]')) {
+      const seg = (k, n) => page.click(`.dash-w[data-id="wfrswitch"] .dt-top .dt-seg:nth-child(${k}) button:nth-child(${n})`, { timeout: 3000 }).then(() => page.waitForTimeout(80));
+      for (const [k, n] of [[1, 3], [2, 2], [1, 5], [2, 1], [1, 2], [2, 2], [1, 4], [1, 3], [2, 1], [1, 1], [2, 2], [1, 5], [2, 1]]) await seg(k, n).catch(e => errors.push(`the fraction tool's switch can't be pressed (${e.message.split('\n')[0]})`));
+      await page.waitForTimeout(300);
+    }
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
     // Help on the maths tools: each tool's ⓘ panel, opened one at a time, fits its widget without scrolling and no line
@@ -492,6 +523,36 @@ for (const L of RUN) {
         }
         await page.keyboard.press('Escape'); await page.waitForTimeout(30);
       }
+    }
+    // Tooltips are never cut off (docs/decisions.md "Classroom dashboards: tooltips never cut off"): every button with a
+    // tooltip, focused by keyboard in turn, shows its tooltip whole inside the screen, not clipped by anything around it,
+    // named by aria-describedby, and with no native title as well.
+    if (process.env.TIPS !== '0') {
+      await page.keyboard.press('Shift');
+      found.push(...await page.evaluate(() => {
+        const out = [], name = e => e.closest('.dash-w')?.querySelector('.dash-wt')?.textContent || '';
+        for (const el of document.querySelectorAll('.dash-w [data-tip]')) {
+          if (el.title) out.push(`${name(el)}: "${el.dataset.tip}" has a native title as well as its tooltip`);
+          if (!el.getClientRects().length || getComputedStyle(el).visibility === 'hidden' || el.disabled) continue;
+          if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+          el.scrollIntoView({ block: 'center', inline: 'nearest' });
+          el.focus({ preventScroll: true });
+          if (document.activeElement !== el) continue;
+          const t = document.getElementById('dash-tip');
+          if (!t || t.hidden || t.getAttribute('role') !== 'tooltip') { out.push(`${name(el)}: "${el.dataset.tip}" shows no tooltip on keyboard focus`); continue; }
+          const r = t.getBoundingClientRect();
+          if (r.left < 0 || r.top < 0 || r.right > innerWidth || r.bottom > innerHeight) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" goes outside the screen`);
+          for (let a = t.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+            const cs = getComputedStyle(a); if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+            const q = a.getBoundingClientRect();
+            if (r.left < q.left - 0.5 || r.right > q.right + 0.5 || r.top < q.top - 0.5 || r.bottom > q.bottom + 0.5) { out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is clipped by ${a.className || a.tagName}`); break; }
+          }
+          if (t.scrollWidth > t.clientWidth + 1) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is cut`);
+          if (!(el.getAttribute('aria-describedby') || '').split(/\s+/).includes(t.id)) out.push(`${name(el)}: "${el.dataset.tip}" is not described by its tooltip`);
+          el.blur();
+        }
+        return out;
+      }));
     }
     total += found.length;
     console.log(`${found.length ? '✗' : '✓'} ${L.key} ${lang} ${v.name}${found.length ? '' : ': nothing cut off'}`);

@@ -15,6 +15,7 @@
 import * as G from './dash-math4.js';
 import { parts } from './dash-tools.js';
 import { format } from './i18n-format.js';
+import { tip } from './dash-tip.js';
 
 const { shell, el, svg, btn, ltr, svgPoint, iso, clone } = parts;
 const projecting = () => document.body.classList.contains('dash-projector');
@@ -31,7 +32,7 @@ const BOARD_ICON = { square: '▦', iso: '◬', circle: '◯' };
 
 /** A toolbar button: an icon and its words (the words hide on a compact bar; the button keeps its name and tooltip). */
 function tbtn(icon, text, cls = '') {
-  const b = btn('', `btn btn-sm gb-btn ${cls}`.trim(), text); b.dataset.tip = text;
+  const b = tip(btn('', `btn btn-sm gb-btn ${cls}`.trim(), text), text);
   const i = el('span', 'gb-ic', icon), l = el('span', 'gb-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
@@ -281,7 +282,7 @@ export function geoboard(body, s, ctx) {
       if (id === 'zoomIn') x.disabled = ui.view.z >= 4;
       if (id === 'zoomOut') x.disabled = ui.view.z <= 1;
       if (id === 'reset') x.disabled = !st.bands.length && !st.notes.length && !st.ink.length;
-      if (id === 'full') { const on = isFull(); x.setAttribute('aria-pressed', String(on)); x.setAttribute('aria-label', on ? W.fullExit : W.full); x.dataset.tip = on ? W.fullExit : W.full; x.querySelector('.gb-lbl').textContent = on ? W.fullExit : W.full; }
+      if (id === 'full') { const on = isFull(); x.setAttribute('aria-pressed', String(on)); x.setAttribute('aria-label', on ? W.fullExit : W.full); tip(x, on ? W.fullExit : W.full); x.querySelector('.gb-lbl').textContent = on ? W.fullExit : W.full; }
       if (id === 'tools') x.setAttribute('aria-pressed', String(!!ui.ruler));
       if (id === 'annotate') x.setAttribute('aria-pressed', String(ui.mode !== 'band'));
       if (id === 'bands') { const d = x.querySelector('.gb-dot'); d.className = `gb-ic gb-dot gb-c${b ? b.c : ui.colour}`; }
@@ -317,7 +318,7 @@ export function geoboard(body, s, ctx) {
       const g = section(W.shapes); g.classList.add('gb-popshapes');
       for (const k of G.SHAPE_KINDS) {
         if (!G.presetShape(k, st.board, N)) continue;
-        const b = btn('', 'btn btn-sm gb-item gb-shape', W[k]); b.dataset.tip = W[k];
+        const b = tip(btn('', 'btn btn-sm gb-item gb-shape', W[k]), W[k]);
         const pic = svg('svg', { viewBox: '0 0 24 24', class: 'gb-shapeic', 'aria-hidden': 'true' }); pic.appendChild(svg('polygon', { points: SHAPE_ICON[k] }));
         const l = el('span', 'gb-lbl', W[k]); l.setAttribute('aria-hidden', 'true');
         b.append(pic, l); b.addEventListener('click', e => { e.stopPropagation(); addShape(k); }); g.appendChild(b);
@@ -334,7 +335,7 @@ export function geoboard(body, s, ctx) {
       item(g, '🧽', W.eraser, () => setMode('erase'), ui.mode === 'erase');
       const c = section(W.ink); c.classList.add('gb-popsw');
       for (let k = 0; k < PEN_COLOURS; k++) {
-        const b = btn('', `btn btn-sm gb-pensw gb-pen${k}`, W[`pen${k}`]); b.setAttribute('aria-pressed', String(ui.pen === k)); b.dataset.tip = W[`pen${k}`];
+        const b = btn('', `btn btn-sm gb-pensw gb-pen${k}`, W[`pen${k}`]); b.setAttribute('aria-pressed', String(ui.pen === k)); tip(b, W[`pen${k}`]);
         b.addEventListener('click', e => { e.stopPropagation(); ui.pen = k; ui.mode = 'pen'; closeMenu(); draw(); ctx.say(`${W.pen}: ${W[`pen${k}`]}`); }); c.appendChild(b);
       }
       const h = section(W.clearNotes, false);

@@ -2723,9 +2723,9 @@
         "eyesOff": "«Occhi qui» è finito",
         "eyesUp": "Occhi qui",
         "hidden": "Nascosto. È salvato in Dal tuo insegnante.",
-        "back": "È tornato"
+        "back": "È tornato",
+        "renamed": "Disposizione rinominata: {name}"
       },
-      "editing": "Modifica: {name}",
       "all": "Tutti",
       "add": "Aggiungi",
       "addName": "Aggiungi {name}",
@@ -8920,6 +8920,7 @@
       "edit": "Modifica schermo",
       "editMine": "Cambia il mio schermo",
       "editing": "Modifica: {name}",
+      "layoutName": "Nome della disposizione",
       "editingMine": "Sto cambiando il mio schermo",
       "editHint": "Trascina per spostare · trascina un angolo per ridimensionare · oppure usa le frecce",
       "editHintMine": "Sposta i tuoi widget, aggiungine altri o scegli uno sfondo. Quelli fissati restano.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Disposizione",
       "new": "Nuova",
-      "manage": "Rinomina o elimina questa disposizione",
-      "defaultName": "Ogni giorno"
+      "manage": "Rinomina o elimina questa disposizione"
     },
     "foot": {
       "eyes": "Occhi qui",
@@ -10458,6 +10458,10 @@
       "lesson": {
         "name": "Lezione",
         "desc": "Timer, verifica veloce, fila per l’aiuto, linea dei numeri e semaforo."
+      },
+      "math": {
+        "name": "Matematica",
+        "desc": "Strisce delle frazioni, una linea dei numeri in quarti, un timer e la fila per l’aiuto."
       },
       "group": {
         "name": "Lavoro di gruppo",

@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
-import { q, tx, now, uid, audit } from '../db.js';
+import { db, q, tx, now, uid, audit } from '../db.js';
 import { config } from '../config.js';
 import * as S from './schools.js';
 import * as games from './games.js';
@@ -519,7 +519,8 @@ export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
 const ensureClassRow = classId => q.run('INSERT OR IGNORE INTO dash_class(class_id) VALUES (?)', classId);
 
-/** A first layout: a clock, today's goal and the agenda (both pinned on student screens). */
+/** The New layout sheet's "make your own" without copying the layout on screen: a clock, today's goal and the agenda
+ *  (both pinned on student screens). A first visit makes the ready-made set instead (ensureLayouts). */
 export function starterWidgets() {
   return [
     { id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) },
@@ -527,10 +528,22 @@ export function starterWidgets() {
     { id: 'text1', type: 'text', x: 4, y: 0, w: 8, h: 4, s: cleanSettings(widgetType('text')), pin: true },
   ];
 }
-/** The teacher's layouts for this class, making the first one if there are none. */
-export function ensureLayouts(u, c, name) {
+/** The teacher's layouts for this class. A teacher with none for it (their first visit) gets the whole ready-made set
+ *  in their language (DEFAULT_SET: Morning start first, the one students follow when the class follows nothing yet);
+ *  a teacher with any layout gets nothing new. The check and the six inserts are one IMMEDIATE transaction: it takes
+ *  the database's write lock before it counts, so two first requests at once (two tabs, or two server processes on the
+ *  one database file) can never both find none and make the set twice. t is the teacher's translate function. */
+export function ensureLayouts(u, c, t) {
   let list = layoutsOf(c.id, u.id);
-  if (!list.length) { createLayout(u, c, { name, widgets: starterWidgets() }); list = layoutsOf(c.id, u.id); }
+  if (list.length) return list;
+  db.transaction(() => {
+    if (q.get('SELECT COUNT(*) n FROM dash_layouts WHERE class_id=? AND owner_id=?', c.id, u.id).n) return;
+    for (const id of DEFAULT_SET) {
+      const r = createFromTemplate(u, c, id, { t });
+      if (r.error) throw new Error(`default layout ${id}: ${r.error}`);
+    }
+  }).immediate();
+  list = layoutsOf(c.id, u.id);
   return list;
 }
 /** The layout the teacher sees now: the class's current one if it is theirs, else their last used. */
@@ -585,7 +598,8 @@ export function deleteLayout(u, c, id) {
   return { ok: true };
 }
 // ---------------------------------------------------------------- ready-made layouts
-// docs/decisions.md "Ready-made layouts". Five layouts a teacher adds with one tap from the New layout sheet. Each is an
+// docs/decisions.md "Ready-made layouts". Six layouts: a teacher's first visit to a class's dashboard makes all of them
+// (ensureLayouts, DEFAULT_SET), and any of them is one tap away again in the New layout sheet. Each is an
 // ordinary layout once made (the teacher renames, moves and changes it like any other): its widgets are built here for
 // the teacher's language (sample periods, goal, jobs, team names and light words come from dash.tpl.*) and then go
 // through createLayout, so cleanWidgets rebuilds every one from the registry like anything a browser sends.
@@ -611,6 +625,14 @@ export const LAYOUT_TEMPLATES = [
     ['check', [0, 4, 5, 4]],
     ['help', [5, 4, 4, 4], {}, true],
     ['light', [9, 4, 3, 4], { color: 'green', ...lightWords(t) }]] },
+  // A maths lesson (docs/decisions.md "Ready-made layouts": the Math layout). Only maths tool ids that stay when the
+  // maths tools are merged into fewer types with modes (fractions, numline), so the layout survives that change. The
+  // fractions tool (at least 5 x 7) takes the full height; the number line counts in quarters from 0 to 2, beside it.
+  { id: 'math', icon: '🔢', bg: { kind: 'color', id: 'leaf' }, widgets: () => [
+    ['fractions', [0, 0, 5, 8]],
+    ['numline', [5, 0, 7, 4], { state: cleanToolState('numline', { lo: 0, hi: 2, sub: 4, mode: 'fraction' }) }],
+    ['help', [5, 4, 4, 4], {}, true],
+    ['timer', [9, 4, 3, 4], { minutes: 10 }]] },
   { id: 'group', icon: '👥', bg: { kind: 'color', id: 'mint' }, widgets: t => [
     ['groups', [0, 0, 8, 4], { by: 'count', n: 4 }],
     ['timer', [8, 0, 4, 4], { minutes: 20 }],
@@ -630,6 +652,8 @@ export const LAYOUT_TEMPLATES = [
     ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
 ];
 const TPL_BY_ID = new Map(LAYOUT_TEMPLATES.map(x => [x.id, x]));
+/** What a teacher's first visit to a class's dashboard makes, in this order (the first is the one students follow). */
+export const DEFAULT_SET = ['morning', 'lesson', 'math', 'group', 'quiet', 'fun'];
 export const layoutTemplate = id => TPL_BY_ID.get(String(id)) || null;
 /** The ready-made layouts as the New layout sheet lists them, in the reader's language. */
 export const templatesFor = t => LAYOUT_TEMPLATES.map(x => ({ id: x.id, icon: x.icon, name: t(`dash.tpl.${x.id}.name`), desc: t(`dash.tpl.${x.id}.desc`) }));

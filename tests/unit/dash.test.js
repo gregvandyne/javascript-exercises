@@ -131,7 +131,7 @@ test('only the class\'s teacher changes layouts, pushes, approves links or start
   ];
   for (const who of [w.a1, w.T2, w.SA, w.b1, w.stranger]) for (const [p, body] of writes) assert.equal((await as(who)(p, { method: 'POST', body })).status, 404, `${who.username} ${p}`);
   for (const [p, body] of writes) assert.equal((await as(null)(p, { method: 'POST', body })).status, 401);
-  assert.equal(D.layoutsOf(w.A.id, w.T.id)[0].name, 'Everyday');
+  assert.equal(D.layoutsOf(w.A.id, w.T.id)[0].name, 'Morning start', 'not renamed by anyone else');
   assert.equal(D.eyesOf(w.A.id), null);
   // CSRF: a cross-site write is refused before it reaches the route.
   const r = await fetch(base + `/api/dash/${w.A.id}/eyes`, { method: 'POST', headers: { cookie: cookieFor(w.T.id), 'content-type': 'application/json', 'sec-fetch-site': 'cross-site' }, body: '{"on":true}' });
@@ -143,7 +143,8 @@ test('layouts: create, rename, switch, delete; pinned widgets of the layout in u
   await T(`/class/${w.A.id}/dashboard`);
   const first = D.layoutsOf(w.A.id, w.T.id)[0];
   assert.equal(D.classState(w.A.id).layout_id, first.id);
-  assert.deepEqual(D.pinsOf(w.A.id).map(p => p.type).sort(), ['ican', 'text']);
+  assert.equal(first.name, 'Morning start', 'the first visit\'s ready-made set: Morning start is the one students follow');
+  assert.deepEqual(D.pinsOf(w.A.id).map(p => p.type).sort(), ['ican', 'jobs', 'mood']);
   let r = await T(`/api/dash/${w.A.id}/layouts/${first.id}`, { method: 'POST', body: { widgets: [{ id: 'g', type: 'ican', x: 0, y: 0, w: 6, h: 2, s: { goal: 'add fractions' }, pin: true }, { id: 'c', type: 'clock', x: 6, y: 0 }] } });
   assert.equal(r.status, 200);
   assert.deepEqual(D.pinsOf(w.A.id).map(p => [p.id, p.s.goal]), [['g', 'add fractions']], 'only pinned widgets, without the pin flag');
@@ -157,6 +158,8 @@ test('layouts: create, rename, switch, delete; pinned widgets of the layout in u
   assert.equal(D.pinsOf(w.A.id).length, 0);
   assert.equal((await T(`/api/dash/${w.A.id}/layouts/${second.id}/delete`, { method: 'POST', body: {} })).status, 200);
   assert.equal(D.classState(w.A.id).layout_id, first.id, 'deleting the layout in use goes back to another');
+  // Down to one layout (the first visit made six): the last one stays.
+  for (const l of D.layoutsOf(w.A.id, w.T.id).filter(x => x.id !== first.id)) assert.equal((await T(`/api/dash/${w.A.id}/layouts/${l.id}/delete`, { method: 'POST', body: {} })).status, 200, l.name);
   assert.equal((await T(`/api/dash/${w.A.id}/layouts/${first.id}/delete`, { method: 'POST', body: {} })).status, 400, 'the last layout stays');
   // Another teacher's layout id can't be touched through this class.
   await as(w.T2)(`/class/${w.B.id}/dashboard`);
@@ -168,7 +171,8 @@ test('layouts: create, rename, switch, delete; pinned widgets of the layout in u
 test('a student\'s screen: own widgets and places only; pins cannot be removed or rewritten; typed text stays with them', async () => {
   const w = world();
   await as(w.T)(`/class/${w.A.id}/dashboard`);
-  const pinId = D.pinsOf(w.A.id)[0].id;
+  const pin = D.pinsOf(w.A.id)[0], pinId = pin.id;
+  assert.equal(pin.type, 'ican'); assert.equal(pin.s.goal, tFor('en')('dash.tpl.morning.goal'), 'Morning start\'s sample goal');
   const A1 = as(w.a1);
   const r = await A1(`/api/dash/${w.A.id}/me`, { method: 'POST', body: {
     widgets: [{ id: 'mine', type: 'ican', x: 0, y: 5, w: 4, h: 2, s: { goal: 'SECRET-GOAL-a1' } }, { id: 'note', type: 'text', s: { body: 'hello classmates' } }],
@@ -178,7 +182,7 @@ test('a student\'s screen: own widgets and places only; pins cannot be removed o
   assert.deepEqual(st.widgets.map(x => x.id), ['mine'], 'no teacher-only widget types');
   assert.deepEqual(Object.keys(st.pins), [pinId]); assert.deepEqual(st.pins[pinId], { x: 8, y: 6, w: 4, h: 2 }, 'a place only');
   assert.deepEqual(st.bg, { kind: 'art', id: 'hills' });
-  assert.equal(D.pinsOf(w.A.id).find(p => p.id === pinId).s.goal, '', 'the teacher\'s pinned widget is unchanged');
+  assert.equal(D.pinsOf(w.A.id).find(p => p.id === pinId).s.goal, pin.s.goal, 'the teacher\'s pinned widget is unchanged');
   // Another student, the teacher and the projector never get a1's typed text.
   for (const who of [w.a2, w.T]) {
     assert.doesNotMatch((await as(who)(`/class/${w.A.id}/dashboard`)).text, /SECRET-GOAL-a1/, who.username);
