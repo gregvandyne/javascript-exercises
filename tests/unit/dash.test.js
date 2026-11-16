@@ -63,6 +63,17 @@ test('the registry: every type has a renderer, labels in English, and layouts ar
   assert.deepEqual(reg.types.map(x => x.id).slice(0, 3), ['clock', 'text', 'ican'], 'stage 1 types first; stage 2 adds more');
   for (const x of reg.types) { assert.ok(!/^dash\./.test(x.name) && !/^dash\./.test(x.desc), x.id); for (const s of x.settings) assert.ok(!/^dash\./.test(s.label), `${x.id}.${s.key}`); }
   assert.equal(reg.types.find(x => x.id === 'text').add, false, 'students cannot add the teacher text widget');
+  // The library's group chips: only groups the reader can add from (a student had Class, Check, Oomba and Join chips
+  // that led to "nothing found").
+  for (const role of ['student', 'teacher']) {
+    const r = D.registryFor(t, role);
+    for (const g of r.groups) assert.ok(r.types.some(x => x.add && x.group === g.id), `${role}: group ${g.id} has something to add`);
+  }
+  assert.deepEqual(reg.groups.map(g => g.id).filter(g => ['class', 'check', 'oomba', 'join'].includes(g)), []);
+  assert.ok(D.registryFor(t, 'teacher').groups.length > reg.groups.length);
+  // The teacher's goal pinned on a student screen has no "add today's goal" hint (the student can't edit it).
+  const wsrc = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
+  assert.match(wsrc.slice(wsrc.indexOf('function ican('), wsrc.indexOf('function ican(') + 600), /ctx\.pinned \? '' : ctx\.type\.words\.empty/);
   // Stage 3's renderers are in dash-tools.js, stage 4's in dash-tools4.js (both merged into RENDER).
   const js = fs.readFileSync('public/js/dash-widgets.js', 'utf8') + fs.readFileSync('public/js/dash-tools.js', 'utf8') + fs.readFileSync('public/js/dash-tools4.js', 'utf8') + fs.readFileSync('public/js/dash-class5.js', 'utf8') + fs.readFileSync('public/js/dash-camera.js', 'utf8');
   for (const w of D.WIDGETS) assert.match(js, new RegExp(`\\b${w.id}\\b`), `renderer for ${w.id}`);
@@ -322,4 +333,17 @@ test('account deletion forgets a person\'s screens and pictures', async () => {
   assert.equal(q.get('SELECT COUNT(*) n FROM dash_students WHERE user_id=?', w.a1.id).n, 0);
   assert.equal(D.getPicture(pic.id), null);
   assert.equal(fs.existsSync(D.picFile(pic.id)), false);
+});
+
+test('layout CSS (end-to-end review): the grid never shrinks under what follows it; the light and symbols keep their buttons at their default size', () => {
+  const css = fs.readFileSync('public/css/dash.css', 'utf8');
+  // A layout taller than the screen used to be squeezed into the stage, its rows spilling over edit mode's background
+  // bar (which could then not be clicked). The grid keeps its full height; the stage scrolls.
+  assert.match(css, /\.dash-grid\{flex:1 0 auto;/);
+  // At their default 3 x 3 the body is about 188px tall on a 1366 or 1600 wide screen: the buttons were hidden below
+  // 200px, so the teacher could not switch the light or the symbol at all. Hidden only when really short now.
+  for (const row of ['dw-symrow', 'dw-lightrow']) {
+    const m = new RegExp(`@container \\(max-height:(\\d+)px\\)\\{\\.${row}\\{display:none\\}\\}`).exec(css);
+    assert.ok(m, row); assert.ok(+m[1] <= 150, `${row} hides only below ${m[1]}px`);
+  }
 });

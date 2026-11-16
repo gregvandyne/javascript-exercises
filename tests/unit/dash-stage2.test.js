@@ -499,6 +499,19 @@ async function safetyChecks() {
   assert.ok(levelOf(Uint8Array.from({ length: 512 }, (_, i) => (i % 2 ? 200 : 56))) > 80);
 }
 
+test('ending a quick check\'s push in "Sent today" ends the check: no answer card left on student screens', async () => {
+  const w = world(); const T = as(w.T), A1 = as(w.a1);
+  await T(`/class/${w.A.id}/dashboard`);
+  const id = (await T(`/api/dash/${w.A.id}/checks`, POST({ kind: 'thumbs', question: 'Ready?' }))).json.check;
+  const p = (await A1(`/api/dash/${w.A.id}/live`)).json.pushes.find(x => x.kind === 'check');
+  assert.equal((await T(`/api/dash/${w.A.id}/pushes/${p.id}/end`, POST())).status, 200);
+  const l1 = (await A1(`/api/dash/${w.A.id}/live`)).json;
+  assert.deepEqual(l1.pushes, []); assert.deepEqual(l1.checks, [], 'the card goes with the push');
+  assert.equal((await A1(`/api/dash/${w.A.id}/checks/${id}/answer`, POST({ value: 0 }))).status, 400, 'no more answers');
+  assert.deepEqual((await T(`/api/dash/${w.A.id}/live`)).json.checks.map(c => c.open), [false], 'the teacher\'s widget shows it ended');
+  assert.equal((await T(`/api/dash/${w.A.id}/pushes/${p.id}/end`, POST())).status, 404, 'already ended');
+});
+
 test('account deletion forgets a student\'s place in help queues, their check answers and picker marks', async () => {
   const w = world();
   await layout(w, [{ id: 'hq', type: 'help', pin: true }]);

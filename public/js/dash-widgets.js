@@ -133,7 +133,8 @@ function ican(body, s, ctx) {
   body.classList.add('dw-ican');
   body.appendChild(el('div', 'dw-lead', ctx.type.words.lead));
   if (s.goal) body.appendChild(typed('div', 'dw-goal dw-scroll', s.goal));
-  else body.appendChild(el('p', 'dw-empty', ctx.type.words.empty));
+  // The teacher's goal pinned on a student's screen: the student can't edit it, so no "add a goal" hint (as for text).
+  else body.appendChild(el('p', 'dw-empty', ctx.pinned ? '' : ctx.type.words.empty));
   return null;
 }
 
