@@ -9247,18 +9247,23 @@
       },
       "countdown": {
         "name": "Conto alla rovescia per un giorno",
-        "desc": "Giorni e ore fino a una gita, uno spettacolo o le vacanze.",
+        "desc": "Giorni e ore fino a gite, spettacoli o vacanze: uno o più nella stessa scheda.",
         "s": {
-          "label": "Cosa arriva",
-          "date": "Giorno",
-          "time": "Ora"
+          "events": "Conti alla rovescia"
         },
         "empty": "Scegli il giorno in Modifica schermo.",
         "days": "Giorni",
         "hours": "Ore",
         "mins": "Minuti",
         "today": "È oggi!",
-        "past": "Quel giorno è passato."
+        "past": "Quel giorno è passato.",
+        "label": "Cosa arriva",
+        "day": "Giorno",
+        "time": "Ora (facoltativa)",
+        "addEvent": "Aggiungi un conto alla rovescia",
+        "remove": "Togli",
+        "event": "Conto alla rovescia {n}",
+        "full": "Una scheda contiene fino a {n} conti alla rovescia."
       },
       "calendar": {
         "name": "Calendario",
@@ -9388,17 +9393,6 @@
         "r_responsible": "Responsabilità",
         "r_brave": "Provare cose nuove",
         "r_creative": "Buone idee"
-      },
-      "stickers": {
-        "name": "Adesivi",
-        "desc": "Simpatici adesivi Oomba da mettere sullo schermo.",
-        "s": {
-          "stamps": "Adesivi"
-        },
-        "add": "Aggiungi un adesivo",
-        "remove": "Togli {e}",
-        "clear": "Toglili tutti",
-        "empty": "Tocca un adesivo qui sotto per metterlo qui."
       },
       "fractions": {
         "name": "Strisce delle frazioni",
@@ -9889,7 +9883,8 @@
         "moved": "{l} spostata al posto {n}",
         "hint": "Tocca o trascina le lettere per costruire una parola.",
         "onset": "?",
-        "full": "La parola è piena."
+        "full": "La parola è piena.",
+        "instr": "Trascina o tocca le lettere per metterle nel riquadro e formare una parola."
       },
       "organizer": {
         "name": "Organizzatore grafico",
@@ -9925,7 +9920,12 @@
         "step": "Passo {n}",
         "editHint": "Tocca un riquadro per scriverci.",
         "note": "Quello che scrivi resta su questo schermo e nelle copie che invii. Le copie degli alunni sono loro: ciò che scrivono non torna mai indietro.",
-        "save": "Salva"
+        "save": "Salva",
+        "addStep": "Aggiungi un passo",
+        "addDetail": "Aggiungi un dettaglio",
+        "remove": "Togli {name}",
+        "added": "Aggiunto: {name}",
+        "removed": "Tolto: {name}"
       },
       "map": {
         "name": "Mappe",

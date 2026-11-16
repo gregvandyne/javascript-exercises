@@ -396,6 +396,22 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-countn{font-size:clamp(1.3rem,min(22cqh,10cqi),5rem)}
 .dw-countu{font-weight:700;color:var(--text-2);font-size:.85rem}
 .dw-countmsg{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(12cqh,6cqi),2rem)}
+/* several countdowns in one card: a list, soonest first; each row its label and day, and how long is left at its end */
+.dw-count.dw-countmany{align-items:stretch;justify-content:flex-start;text-align:start}
+.dw-countlist{flex:0 1 auto;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dw-countrow{display:flex;align-items:center;gap:var(--s2);padding:6px 10px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw-countrow.is-today{background:color-mix(in srgb,var(--accent) 22%,var(--card))}
+.dw-countrow.is-past{background:transparent;box-shadow:inset 0 0 0 2px var(--card-2)}
+.dw-countwhat{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.dw-countname{font-weight:800;line-height:1.15;overflow-wrap:anywhere;hyphens:auto;font-size:clamp(.95rem,min(7cqh,5.2cqi),1.7rem)}
+.dw-countwhen{color:var(--text-2);font-weight:600;line-height:1.2;overflow-wrap:anywhere;font-size:clamp(.8rem,min(5cqh,3.8cqi),1.15rem)}
+.dw-countrow.is-today .dw-countwhen{color:var(--accent-ink);font-weight:800}
+.dw-countrow.is-past .dw-countname{color:var(--text-2)}
+.dw-countval{flex:none;display:flex;gap:4px;align-items:flex-start}
+.dw-countval[hidden],.dw-countpair[hidden],.dw-countlabel[hidden],.dw-countbox[hidden]{display:none}
+.dw-countpair{display:flex;flex-direction:column;align-items:center;min-width:2.4em}
+.dw-countrow .dw-countn{font-size:clamp(1.15rem,min(10cqh,7cqi),2.8rem)}
+.dw-countrow .dw-countu{font-size:.75rem;line-height:1.1}
 /* calendar */
 .dw-cal{display:flex;flex-direction:column;gap:6px;height:100%}
 .dw-caltitle{font-weight:800;font-size:clamp(1rem,min(8cqh,6cqi),1.8rem)}
@@ -458,15 +474,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-teamname{flex:1 0 100%;min-width:0;font-weight:800;font-size:clamp(1rem,min(10cqh,5cqi),1.8rem);overflow-wrap:anywhere;hyphens:auto;line-height:1.15}
 .dw-teampts{flex:none;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.4rem,min(20cqh,8cqi),5rem);line-height:1;min-width:1.4em}
 .dw-pm{min-width:44px;padding:0;font-size:1.4rem}
-/* stickers */
-.dw-stickers{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
-.dw-stickarea{--st:clamp(44px,min(24cqh,16cqi),84px);position:relative;flex:1 1 auto;min-height:var(--st);border-radius:var(--r-sm);background:var(--card-2)}
-.dw-stamp{position:absolute;inset-inline-start:calc((100% - var(--st)) * var(--x) / 100);inset-block-start:calc((100% - var(--st)) * var(--y) / 100);display:grid;place-items:center;width:var(--st);height:var(--st);font-size:calc(var(--st) * .7);line-height:1;background:none;border:0;padding:0;cursor:pointer;border-radius:12px}
-.dw-stickarea .dw-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:var(--s2)}
-span.dw-stamp{cursor:default}
-.dw-stamp:focus-visible{outline:3px solid var(--focus);border-radius:8px}
-.dw-palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:var(--s2)}
-.dw-palbtn{min-height:56px;padding:0;font-size:1.6rem}
 
 /* ---------- one look for the big numbers, one for the words under them ---------- */
 .dw-time,.dw-digits,.dw-countn,.dw-randn,.dw-teampts,.dw-wtemp{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.08;padding-block:.05em}
@@ -992,7 +999,19 @@ span.dw-stamp{cursor:default}
 /* letter tiles */
 .dt-lwrap{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:clamp(6px,3cqh,18px);min-height:0}
 .dt-lword{flex:none;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(3px,.8cqi,6px);min-height:clamp(56px,24cqh,100px);padding:6px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
-.dt-lword.is-drop{box-shadow:inset 0 0 0 3px var(--focus)}
+.dt-lword{position:relative}
+.dt-lword.is-drop{box-shadow:inset 0 0 0 3px var(--accent-line);background:color-mix(in srgb,var(--accent-line) 14%,var(--card-2))}
+/* Review: what to do, right above the board; and a drag that shows (a lifted tile follows the pointer, the tile it came
+   from is a dashed outline, a bar marks where it will go; a word tile held off the board shows it will be taken away). */
+.dt-linstr{flex:none;margin:0 0 calc(-1 * clamp(2px,1.5cqh,10px));text-align:center;font-weight:700;font-size:clamp(.8rem,min(5cqh,2.6cqi),1.25rem);color:var(--text-2)}
+.dash-projector .dt-linstr{font-size:clamp(1rem,min(6cqh,3cqi),1.5rem)}
+.dt-ltile{-webkit-user-select:none;user-select:none}
+.dt-ltile.dt-ltile.is-dragsrc{opacity:.45;border-style:dashed;box-shadow:none}
+.dt-ltile.dt-lghost{position:fixed;left:0;top:0;z-index:10000;margin:0;pointer-events:none;box-sizing:border-box;cursor:grabbing;box-shadow:0 14px 28px rgba(20,20,20,.35),0 4px 8px rgba(20,20,20,.25);will-change:transform}
+.dt-ltile.dt-lghost.is-out{opacity:.75;border-color:#C62828}
+.dt-ltile.dt-lghost.is-out::before{content:"✕";position:absolute;top:-10px;right:-10px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#C62828;color:#fff;font:800 13px/1 var(--font)}
+.dt-lcaret{position:absolute;top:12%;bottom:12%;width:5px;border-radius:3px;background:var(--accent-press);pointer-events:none}
+.dt-lcaret[hidden]{display:none}
 .dt-lbank{flex:none;display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:4px}
 .dt-ltile{position:relative;display:grid;place-items:center;min-width:44px;min-height:44px;padding:0 4px;border:2px solid #141414;border-radius:8px;background:#FFF8E6;color:#141414;font:800 clamp(1.05rem,min(7cqh,3.4cqi),2rem) var(--font);cursor:pointer;touch-action:none}
 .dt-lword .dt-ltile{flex:0 0 auto;width:clamp(44px,calc((100cqi - 90px) / 12),72px);min-height:clamp(44px,18cqh,80px);font-size:clamp(1.1rem,min(11cqh,5cqi),2.8rem)}
@@ -1013,35 +1032,60 @@ span.dw-stamp{cursor:default}
 .dt-org{width:100%;height:100%;display:flex;flex-direction:column;gap:var(--s2);min-height:0}
 .dt-orgtitle{flex:none;text-align:center;font-weight:800;font-size:clamp(1rem,min(6cqh,4cqi),1.6rem);overflow-wrap:anywhere}
 .dt-orggrid{flex:1 1 0;min-height:0;display:grid;gap:var(--s2);position:relative}
-.dt-orgbox{display:flex;flex-direction:column;gap:4px;min-width:0;min-height:0;padding:8px 10px;border:0;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);text-align:start;font:inherit;cursor:default;overflow:hidden}
-button.dt-orgbox{cursor:pointer}
-button.dt-orgbox:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
-.dt-orgbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.dt-orgh{flex:none;font-weight:800;font-size:clamp(.85rem,min(6cqh,2.8cqi),1.3rem);color:var(--text-2);overflow-wrap:anywhere}
+.dt-orgbox{position:relative;display:flex;flex-direction:column;gap:4px;min-width:0;min-height:0;padding:8px 10px;border:0;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);text-align:start;font:inherit;overflow:hidden}
+.dt-orghrow{flex:none;display:flex;align-items:center;gap:4px;min-width:0}
+.dt-orgh{flex:1 1 auto;min-width:0;font-weight:800;font-size:clamp(.85rem,min(6cqh,2.8cqi),1.3rem);color:var(--text-2);overflow-wrap:anywhere}
+.dt-orgbody{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;cursor:text}
 .dt-orgl{flex:1 1 auto;min-height:0;margin:0;padding-inline-start:1.1em;overflow:auto;font-weight:600;font-size:clamp(.85rem,min(6cqh,2.6cqi),1.35rem);overflow-wrap:anywhere;display:flex;flex-direction:column;gap:2px}
 .dt-orgempty{list-style:none;margin-inline-start:-1.1em;color:var(--muted)}
+/* Review: written in where it is. Inputs look like the words they hold; a box's text area lies over its list (the same
+   type) and shows while the box is being written in. */
+.dt-orgin{display:block;width:100%;padding:0 4px;margin:0;border:0;border-radius:6px;background:transparent;color:inherit;font-family:inherit;line-height:1.25;text-overflow:clip}
+input.dt-orgtitle{font-weight:800}
+input.dt-orgh{font-weight:800}
+.dt-orgin::placeholder{color:inherit;opacity:1}
+input.dt-orgtitle::placeholder{color:var(--muted)}
+.dt-orgin:hover{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.dt-orgin:focus{outline:3px solid var(--focus);outline-offset:0;background:var(--card)}
+.dt-orgta{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;padding-inline-start:1.1em;border:0;border-radius:6px;resize:none;background:transparent;color:var(--text);font:inherit;font-weight:600;font-size:clamp(.85rem,min(6cqh,2.6cqi),1.35rem);line-height:inherit;overflow:auto;opacity:0}
+.dt-orgbox.is-writing .dt-orgta{opacity:1;outline:0}
+.dt-orgbox.is-writing .dt-orgl{visibility:hidden}
+.dt-orgbox:has(.dt-orgta):hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.dt-orgbox.is-writing,.dt-orgbox.is-writing:hover{box-shadow:inset 0 0 0 3px var(--focus)}
+.dt-orgdel.btn{position:absolute;top:4px;inset-inline-end:4px;z-index:1;min-width:32px;min-height:32px;width:32px;height:32px;padding:0;font-size:.85rem}
+.dt-orgbox:has(.dt-orgdel) .dt-orgh{padding-inline-end:34px}
 .dt-org-tchart .dt-orggrid,.dt-org-kwl .dt-orggrid{grid-template-columns:repeat(var(--n),minmax(0,1fr))}
 .dt-org-tchart .dt-orgbox{border-radius:0;background:transparent;box-shadow:none;border-top:4px solid var(--text)}
 .dt-org-tchart .dt-ob0{border-inline-end:4px solid var(--text)}
 .dt-org-story .dt-orggrid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}
 .dt-org-story .dt-ob3{grid-row:span 2}
-.dt-org-main .dt-orggrid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,.8fr) minmax(0,1.2fr)}
+/* main idea and details: the idea across the top, its details (2-6) in rows (columns set by the tool) */
+.dt-org-main .dt-orggrid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(4.2em,.8fr);grid-auto-rows:minmax(4.2em,1.2fr)}
 .dt-org-main .dt-ob0{grid-column:1 / -1;background:color-mix(in srgb,var(--spark) 30%,var(--card))}
-.dt-org-seq .dt-orggrid{grid-template-columns:repeat(var(--n),minmax(0,1fr) auto);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr) max-content;align-items:stretch}
+/* a sequence (2-10 steps): rows of steps with arrows between (columns set by the tool); more rows scroll, whole rows at a time */
+.dt-org-seq .dt-orggrid{grid-auto-rows:minmax(7.5em,1fr);align-items:stretch}
+.dt-org-seq .dt-orggrid,.dt-org-main .dt-orggrid{overflow:auto}
 .dt-orgarrow{align-self:center;font-weight:800;font-size:1.4rem;color:var(--text-2)}
 [dir="rtl"] .dt-orgarrow{transform:scaleX(-1)}
-.dt-org-venn .dt-orggrid{grid-template-columns:minmax(0,1.15fr) minmax(0,.8fr) minmax(0,1.15fr)}
-.dt-vennbg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* Venn: two true circles (an SVG of its own shape, as big as fits, centred); the three parts sit inside them */
+.dt-org-venn .dt-orggrid{display:grid;place-items:center;container-type:size}
+.dt-vennbox{position:relative;width:min(100cqw,150cqh);height:min(100cqh,66.667cqw)}
+.dt-vennbg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .dt-venn{stroke:var(--text);stroke-width:3;vector-effect:non-scaling-stroke}
 .dt-venn0{fill:color-mix(in srgb,#5AA9D6 22%,transparent)}.dt-venn1{fill:color-mix(in srgb,#F28C6B 22%,transparent)}
-.dt-org-venn .dt-orgbox{position:relative;background:transparent;box-shadow:none;padding:14% 6px 12%;justify-content:center}
-.dt-org-venn .dt-orgl{flex:0 1 auto}
-.dt-org-venn button.dt-orgbox:hover{box-shadow:none;background:color-mix(in srgb,var(--text) 5%,transparent)}
-.dt-org-venn .dt-ob0{padding-inline-start:16%;padding-inline-end:24%}.dt-org-venn .dt-ob2{padding-inline-end:16%;padding-inline-start:24%}
-.dt-org-venn .dt-ob1{padding-inline:4%}
+.dt-org-venn .dt-orgbox{position:absolute;top:19%;bottom:15%;padding:0;background:transparent;box-shadow:none;font-size:clamp(.8rem,min(5.5cqh,2.6cqw),1.35rem)}
+.dt-org-venn .dt-orgh,.dt-org-venn .dt-orgl,.dt-org-venn .dt-orgta{font-size:inherit}
+.dt-org-venn .dt-orgbox:has(.dt-orgta):hover{box-shadow:none;background:color-mix(in srgb,var(--text) 5%,transparent)}
+.dt-org-venn .dt-ob0{inset-inline-start:8%;width:27%}.dt-org-venn .dt-ob2{inset-inline-end:8%;width:27%}
+.dt-org-venn .dt-ob1{inset-inline-start:36%;width:28%;top:29%;bottom:18%}
+.dt-org-venn .dt-orgl{overflow-wrap:break-word;hyphens:auto}
+.dt-org-venn .dt-ob1 .dt-orgl{list-style:none;padding-inline-start:0;text-align:center}
+.dt-org-venn .dt-ob1 .dt-orgta{padding-inline-start:0;text-align:center}
+.dt-org-venn .dt-orgbox.is-writing,.dt-org-venn .dt-orgbox.is-writing:hover{box-shadow:inset 0 0 0 3px var(--focus);background:color-mix(in srgb,var(--card) 85%,transparent)}
 [dir="rtl"] .dt-vennbg{transform:scaleX(-1)}
 .dt-org-venn .dt-ob1 .dt-orgh{text-align:center}
-.dash-projector .dt-orgh,.dash-projector .dt-orgl{font-size:clamp(.875rem,min(6cqh,2.8cqi),1.5rem)}
+.dash-projector .dt-orgh,.dash-projector .dt-orgl,.dash-projector .dt-orgta{font-size:clamp(.875rem,min(6cqh,2.8cqi),1.5rem)}
+.dash-projector .dt-org-venn .dt-orgbox{font-size:clamp(.875rem,min(6cqh,2.8cqw),1.5rem)}
 .dt-orgset{border:2px solid var(--line);border-radius:var(--r-sm);padding:var(--s2) var(--s3)}
 .dt-orgset legend{font-weight:800;padding:0 4px}
 /* maps */
@@ -1072,8 +1116,11 @@ button.dt-orgbox:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
   .dt-mmat{flex:none;min-height:120px}
   .dt-lbank{grid-template-columns:repeat(7,minmax(0,1fr))}
   .dt-orggrid{flex:none;min-height:260px}
-  .dt-org-seq .dt-orggrid{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:minmax(0,1fr)}
-  .dt-org-seq .dt-orgarrow{transform:rotate(90deg);justify-self:center}
+  .dt-org-seq .dt-orggrid{grid-auto-rows:minmax(7.5em,auto)}
+  .dt-org-seq .dt-orggrid,.dt-org-main .dt-orggrid{overflow:visible}
+  .dt-org-main .dt-orggrid{grid-template-rows:minmax(6em,auto);grid-auto-rows:minmax(7.5em,auto)}
+  .dt-org-venn .dt-orggrid{min-height:0;height:auto;container-type:inline-size}
+  .dt-vennbox{width:100%;height:auto;aspect-ratio:3 / 2}
   .dt-org-kwl .dt-orggrid{grid-template-columns:minmax(0,1fr)}
   .dt-algmat{min-height:200px}
 }

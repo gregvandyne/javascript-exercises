@@ -108,16 +108,23 @@ export const TOOL_SPECS = {
     spec: { word: ['ints', 12, 0, 25, [2]], fam: ['enum', ['', 'at', 'an', 'ap', 'ig', 'in', 'ip', 'op', 'ot', 'ug', 'un', 'et', 'en', 'ell', 'ake', 'ine'], 'at'], caps: ['bool', false] },
     fix: s => { if (s.fam) s.word = s.word.slice(0, 2); },
   },
+  // A sequence has n steps and main idea and details has d details (review: the teacher adds and takes away boxes); the
+  // other kinds have a fixed number of boxes. Layouts saved before d existed get the old 3 details.
   organizer: {
-    spec: { kind: ['enum', ['venn', 'tchart', 'kwl', 'story', 'main', 'seq'], 'venn'], n: ['int', 3, 6, 4], title: ['text', 60, ''], boxes: ['list', 8, { h: ['text', 40, ''], t: ['textm', 400, ''] }, []] },
-    fix: s => { const n = ORGANIZER_BOXES[s.kind] || s.n; s.boxes = Array.from({ length: n }, (_, i) => s.boxes[i] || { h: '', t: '' }); },
+    spec: { kind: ['enum', ['venn', 'tchart', 'kwl', 'story', 'main', 'seq'], 'venn'], n: ['int', 2, 10, 4], d: ['int', 2, 6, 3], title: ['text', 60, ''],
+      boxes: ['list', 10, { h: ['text', 40, ''], t: ['textm', 400, ''] }, []] },
+    fix: s => { const n = organizerBoxes(s); s.boxes = Array.from({ length: n }, (_, i) => s.boxes[i] || { h: '', t: '' }); },
   },
   map: {
     spec: { kind: ['enum', ['world', 'grid'], 'world'], names: ['bool', true], pins: ['list', 12, { x: ['int', 0, 1000, 500], y: ['int', 0, 500, 250], l: ['text', 24, ''] }, []] },
   },
 };
-/** How many boxes each graphic organizer has (a sequence has 3 to 6: its n). */
-export const ORGANIZER_BOXES = { venn: 3, tchart: 2, kwl: 3, story: 5, main: 4 };
+/** How many boxes each graphic organizer has; a sequence's steps (n) and main idea's details (d) are set by the teacher. */
+export const ORGANIZER_BOXES = { venn: 3, tchart: 2, kwl: 3, story: 5 };
+/** The organizers whose boxes can be added and taken away: the state key, the fewest and the most (public/js/dash-tools4.js). */
+export const ORGANIZER_GROW = { seq: { key: 'n', lo: 2, hi: 10 }, main: { key: 'd', lo: 2, hi: 6 } };
+/** An organizer state's number of boxes (main idea and details: the idea and its details). */
+export const organizerBoxes = s => ORGANIZER_BOXES[s.kind] || (s.kind === 'main' ? 1 + s.d : s.n);
 /** The tools a teacher can send to students (each student gets their own copy). */
 export const TOOL_IDS = Object.keys(TOOL_SPECS);
 

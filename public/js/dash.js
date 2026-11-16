@@ -14,7 +14,7 @@
 // same ctx, plus ctx.ask (the teacher turns a tool into a quick check) and ctx.practice (official games to practise with).
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
-import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
+import { RENDER, checkChoices, skewOf, fill } from '/js/dash-widgets.js';
 import { parseVideo, siteUrl } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 
@@ -163,7 +163,7 @@ function start() {
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
-    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
+    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard): keep it, redraw it, save.
     // A student's own widget too (the timer's mode); never a pinned one.
     set: (key, value) => {
       if (w.pinned) return;
@@ -453,7 +453,7 @@ function start() {
     const commit = () => { if (pending) { S.undo.push(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } $('#dash-undo').disabled = !S.undo.length; };
     const redraw = () => { const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`); if (old) { const order = +old.style.order; old.replaceWith(card(w, order)); } save(); };
     for (const f of type.settings) {
-      if (f.hidden) continue;   // changed by the widget itself (scores, stickers)
+      if (f.hidden) continue;   // changed by the widget itself (scores)
       const id = `dset-${w.id}-${f.key}`;
       const field = document.createElement('div'); field.className = f.type === 'bool' ? 'dash-tog' : 'field';
       if (f.type === 'bool') {
@@ -599,6 +599,34 @@ function start() {
         if (e.target.closest('[data-addp]')) {
           const list = w.s[f.key] || []; if (list.length >= 40) return;
           list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: D.tz }).format(new Date()), label: '' });
+          w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
+        }
+      });
+    },
+    // Several countdowns in one card: a row per event (what, day, an optional time), added and removed here; the card
+    // sorts them soonest first. services/dash.js cleanEvents keeps the same rules (MAX_EVENTS, real days, clean text).
+    events(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words, MAX = 8;
+      field.className = 'field dash-periods dash-events';
+      const draw = () => {
+        const list = w.s[f.key] || (w.s[f.key] = []);
+        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((e, i) => `<li class="dash-perrow" data-i="${i}" role="group" aria-label="${esc(fill(W.event, { n: i + 1 }))}">
+          <label class="sr-only" for="${id}-t${i}">${esc(W.label)} ${i + 1}</label><input class="input dash-pername" id="${id}-t${i}" data-k="label" maxlength="60" dir="auto" value="${esc(e.label)}" placeholder="${esc(W.label)}">
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)}: ${esc(e.label || fill(W.event, { n: i + 1 }))}">✖</button>
+          <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-d${i}">${esc(W.day)}</label><input class="input" id="${id}-d${i}" data-k="date" type="date" min="2000-01-01" max="2100-12-31" value="${esc(e.date)}"></span>
+          <span class="dash-pertime"><label for="${id}-h${i}">${esc(W.time)}</label><input class="input" id="${id}-h${i}" data-k="time" type="time" value="${esc(e.time)}"></span></span></li>`).join('')}</ol>
+          ${list.length < MAX ? `<button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addEvent)}</button>` : `<p class="small muted" data-full>${esc(fill(W.full, { n: MAX }))}</p>`}`;
+      };
+      draw();
+      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
+      field.addEventListener('change', () => commit());
+      field.addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]');
+        if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]')?.focus(); announce(W.remove); }
+        if (e.target.closest('[data-addp]')) {
+          // A copy: a widget just added shares the registry's empty default list.
+          const list = [...(w.s[f.key] || [])]; if (list.length >= MAX) return;
+          list.push({ label: '', date: '', time: '' });
           w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
         }
       });
@@ -1073,6 +1101,9 @@ function start() {
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
     const ctx = { ...ctxFor(w, type), own: true, copy: true, send: null, upload: null, checks: null, ask: null, keep: state => copies.set(pid, state), set: () => {} };
     const r = RENDER[type.id](body, w.s, ctx);
+    // The sheet puts the focus on its first field; in a copy that is the tool's first control instead, never a box to
+    // write in (a phone would bring up its keyboard before the student has asked to write).
+    setTimeout(() => { if (sh.el.contains(document.activeElement) && document.activeElement.matches('input[type="text"],textarea')) sh.el.querySelector('.dash-wcopy select,.dash-wcopy button')?.focus(); }, 40);
     sh.el.querySelector('[data-pincopy]').addEventListener('click', () => {
       const box = freeSpot(type.size[0], type.size[1]);
       const mine = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s: { state: copies.get(pid) || p.tool.state } };

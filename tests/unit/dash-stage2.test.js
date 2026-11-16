@@ -530,7 +530,7 @@ test('account deletion forgets a student\'s place in help queues, their check an
 test('every stage 2 string is translated into every locale', async () => {
   const { checkAll } = await import('../../server/i18n/check.js');
   const r = checkAll();
-  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles|countdown|calendar|symbols|light|dice|random|groups|score|stickers)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
+  const keys = Object.keys(r.en).filter(k => /^dash\.w\.(timer|stopwatch|schedule|weather|qr|picker|noise|help|check|tiles|countdown|calendar|symbols|light|dice|random|groups|score)\.|^dash\.w\.clock\.s\.zone2$|^dash\.errors\.(timer|nobody|check\w+|resting|qrGone)$|^js\.dash\.(check\.|kind\.check|act\.answer|side\.(zoneNone|placeNote|qrNote))/.test(k));
   assert.ok(keys.length > 240, String(keys.length));
   for (const l of r.locales) {
     if (l.code === 'en-GB') continue;
@@ -541,16 +541,20 @@ test('every stage 2 string is translated into every locale', async () => {
 });
 
 test('more everyday widgets: registry, settings rebuilt on the server, and the maths behind them', () => {
-  const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score', 'stickers'];
+  const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score'];
   for (const id of ids) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
+  // The stickers widget was removed (docs/decisions.md "Stickers widget removed"): not in the registry, no renderer.
+  assert.equal(D.widgetType('stickers'), null); assert.equal(W.RENDER.stickers, undefined);
+  assert.ok(!D.WIDGETS.some(x => x.id === 'stickers'));
   const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
   // Visual timer and spinner wheel are modes of the timer and the picker.
   assert.equal(c('timer', { view: 'ring' }).view, 'ring'); assert.equal(c('timer', { view: 'lava lamp' }).view, 'digits');
   assert.deepEqual(c('picker', { mode: 'wheel', source: 'items', items: 'Volcanoes\nRivers\u0000', norepeat: false }), { mode: 'wheel', source: 'items', items: 'Volcanoes\nRivers', norepeat: false });
-  // Countdown: a real day and a time.
-  assert.deepEqual(c('countdown', { label: 'Field trip', date: '2026-12-04', time: '09:30' }), { label: 'Field trip', date: '2026-12-04', time: '09:30' });
-  for (const bad of ['2026-02-30', '26-12-04', '2026-13-01', '1999-12-31', 'tomorrow', '']) assert.equal(c('countdown', { date: bad }).date, '', bad);
-  assert.equal(c('countdown', { time: '25:00' }).time, '08:00');
+  // Countdown: a real day and a time (several countdowns in one card: a countdown saved as one is a list of one; the
+  // list's own rules are in "several countdowns in one card" below).
+  assert.deepEqual(c('countdown', { label: 'Field trip', date: '2026-12-04', time: '09:30' }), { events: [{ label: 'Field trip', date: '2026-12-04', time: '09:30' }] });
+  for (const bad of ['2026-02-30', '26-12-04', '2026-13-01', '1999-12-31', 'tomorrow', '']) assert.deepEqual(c('countdown', { events: [{ label: 'Trip', date: bad }] }).events, [{ label: 'Trip', date: '', time: '' }], bad);
+  assert.equal(c('countdown', { events: [{ date: '2026-12-04', time: '25:00' }] }).events[0].time, '');
   // Calendar: real days with a label, one per day, sorted, at most 40.
   assert.deepEqual(c('calendar', { marks: [{ date: '2026-11-20', label: 'Book fair' }, { date: '2026-11-03', label: 'Picture day‮' }, { date: '2026-11-20', label: 'Dup' }, { date: 'x', label: 'Bad' }, { date: '2026-11-21', label: '' }] }).marks,
     [{ date: '2026-11-03', label: 'Picture day' }, { date: '2026-11-20', label: 'Dup' }]);
@@ -565,13 +569,7 @@ test('more everyday widgets: registry, settings rebuilt on the server, and the m
   assert.deepEqual(c('groups', { by: 'count', n: 99 }), { by: 'count', n: 12 });
   // Scoreboard: whole points, one per team (8 at most); team names are teacher text.
   assert.deepEqual(c('score', { teams: 'Red\nBlue', scores: [3, '4.6', 'x', 1e9, -1e9, 0, 0, 0, 9, 9] }), { mode: 'teams', teams: 'Red\nBlue', scores: [3, 5, 0, 9999, -9999, 0, 0, 0] }, 'stage 5 adds the mode (teams by default)');
-  // Stickers: only the fixed set (no uploads), inside the widget, at most 30.
-  assert.deepEqual(c('stickers', { stamps: [{ e: 0, x: 10, y: 20 }, { e: 99, x: 1, y: 1 }, { e: 1, x: 120, y: 5 }, { e: 'https://evil.example/x.png', x: 1, y: 1 }, { e: 2.5, x: 1, y: 1 }] }).stamps, [{ e: 0, x: 10, y: 20 }]);
-  assert.equal(c('stickers', { stamps: Array.from({ length: 50 }, () => ({ e: 1, x: 5, y: 5 })) }).stamps.length, D.MAX_STAMPS);
-  assert.equal(W.STAMPS.length, D.STAMP_COUNT);
   const widgets = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
-  const stickerCode = widgets.slice(widgets.indexOf('function stickers('), widgets.indexOf('/** id -> renderer.'));
-  assert.doesNotMatch(stickerCode, /type="?file|input|upload|FileReader|fetch|innerHTML/i, 'stickers: no uploads, no network, no markup');
   // Countdown sums (the school's time zone) and calendar day.
   assert.equal(W.zonedEpoch('2026-12-04', '09:30', 'America/New_York'), Date.UTC(2026, 11, 4, 14, 30));
   assert.equal(W.zonedEpoch('2026-07-04', '09:30', 'America/New_York'), Date.UTC(2026, 6, 4, 13, 30), 'summer time');
@@ -592,18 +590,126 @@ test('more everyday widgets: registry, settings rebuilt on the server, and the m
   assert.doesNotMatch(widgets, /roster|realName|real_name/i);
 });
 
-test('symbols, traffic light, scoreboard and stickers the teacher taps reach student screens when pinned; dice and groups never do', async () => {
+test('several countdowns in one card: the list is cleaned on the server, old single countdowns convert, soonest first, days gone by', async () => {
+  const c = s => D.cleanSettings(D.widgetType('countdown'), s);
+  // The list: a label (60 characters, clean text), a real day, an optional time; at most MAX_EVENTS; empty rows dropped;
+  // a label with no day yet is kept (at the end) so a row being filled in is not lost.
+  assert.equal(D.MAX_EVENTS, 8);
+  assert.deepEqual(c({}).events, []); assert.deepEqual(c({ events: 'nope' }).events, []); assert.deepEqual(c({ events: [null, 7, 'x', {}] }).events, []);
+  const many = c({ events: Array.from({ length: 12 }, (_, i) => ({ label: `Day ${i}`, date: `2026-12-${String(10 + i).padStart(2, '0')}` })) }).events;
+  assert.equal(many.length, D.MAX_EVENTS); assert.equal(many[0].label, 'Day 0');
+  assert.deepEqual(c({ events: [{ label: `  Show\u0000 night‮${'!'.repeat(80)}  `, date: '2026-12-04', time: '18:30', extra: 'x' }] }).events,
+    [{ label: `Show night${'!'.repeat(50)}`, date: '2026-12-04', time: '18:30' }]);
+  for (const bad of ['2026-02-30', '2026-2-3', '2101-01-01', 'next week', 20261204, null]) assert.equal(c({ events: [{ label: 'x', date: bad }] }).events[0].date, '', String(bad));
+  for (const bad of ['24:00', '9:30', '09:60', 'noon', 930]) assert.equal(c({ events: [{ label: 'x', date: '2026-12-04', time: bad }] }).events[0].time, '', String(bad));
+  assert.deepEqual(c({ events: [{ label: '', date: '', time: '09:00' }, { label: ' ', date: 'x' }] }).events, [], 'rows with nothing in them go');
+  // Stored soonest first (a day with no time counts from the start of the day); rows with no day yet last, in order.
+  assert.deepEqual(c({ events: [{ label: 'Later', date: '2026-12-20' }, { label: 'No day yet' }, { label: 'Morning', date: '2026-12-04', time: '09:00' },
+    { label: 'Same day, no time', date: '2026-12-04' }, { label: 'Another', date: '' }] }).events.map(e => e.label), ['Same day, no time', 'Morning', 'Later', 'No day yet', 'Another']);
+  // A countdown saved before it held a list converts on read: nothing lost, its time kept (08:00 was the old default).
+  assert.deepEqual(c({ label: 'Book fair', date: '2026-12-04', time: '08:00' }).events, [{ label: 'Book fair', date: '2026-12-04', time: '08:00' }]);
+  assert.deepEqual(c({ label: 'Trip', date: '', time: '08:00' }).events, [{ label: 'Trip', date: '', time: '08:00' }], 'a label with no day yet is kept');
+  assert.deepEqual(c({ label: '', date: '', time: '08:00' }).events, [], 'an untouched old countdown is an empty list');
+  assert.deepEqual(c({ label: 'Old', date: '2026-12-04', events: [{ label: 'New', date: '2026-12-05' }] }).events.map(e => e.label), ['New'], 'the list wins over old keys');
+  // Old shape in the database: the teacher's layout and the pinned copy on student screens read it as a list of one.
+  const w = world();
+  await layout(w, [{ id: 'cd', type: 'countdown', s: { events: [] }, pin: true }]);
+  const l = D.layoutsOf(w.A.id, w.T.id)[0];
+  const old = [{ id: 'cd', type: 'countdown', x: 0, y: 0, w: 4, h: 3, s: { label: 'Science fair', date: '2026-12-04', time: '09:30' }, pin: true }];
+  q.run('UPDATE dash_layouts SET widgets=? WHERE id=?', JSON.stringify(old), l.id);
+  q.run('UPDATE dash_class SET pins=? WHERE class_id=?', JSON.stringify(old.map(({ pin, ...x }) => x)), w.A.id);
+  const want = [{ label: 'Science fair', date: '2026-12-04', time: '09:30' }];
+  assert.deepEqual(D.getLayout(l.id).widgets[0].s, { events: want });
+  assert.deepEqual((await as(w.a1)(`/api/dash/${w.A.id}/pins`)).json.pins[0].s, { events: want });
+  const page = await as(w.T)(`/class/${w.A.id}/dashboard`);
+  assert.equal(page.status, 200); assert.match(page.text, /Science fair/); assert.match(page.text, /"s":\{"events":\[\{"label":"Science fair"/); assert.doesNotMatch(page.text, /"s":\{"label":"Science fair"/, 'the page gets the list, not the old shape');
+  // Saved again from the browser, it is stored as the list; a student's screen can't hold a countdown of its own.
+  await layout(w, D.getLayout(l.id).widgets);
+  assert.deepEqual(JSON.parse(q.get('SELECT widgets FROM dash_layouts WHERE id=?', l.id).widgets)[0].s, { events: want });
+  assert.equal(D.canAdd(D.widgetType('countdown'), 'student'), false); assert.ok(D.canPin(D.widgetType('countdown')));
+  const mine = await as(w.a1)(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'mycd', type: 'countdown', x: 0, y: 0, w: 4, h: 3, s: { events: [{ label: 'Party at mine', date: '2026-12-04' }] } }] }));
+  assert.equal(mine.status, 200); assert.deepEqual(mine.json.state.widgets, []);
+
+  // What the card shows (school time zone): soonest first, today's on its day, days gone by greyed at the end for a
+  // week, then gone; with nothing left, the latest day gone by alone (a card of one says "come and gone" as before).
+  const tz = 'America/New_York', now = Date.UTC(2026, 10, 16, 15, 0);   // 16 Nov 2026, 10:00 in New York
+  const ev = list => W.countdownEvents({ events: list }, now, tz);
+  const shown = ev([{ label: 'Far', date: '2027-06-30', time: '' }, { label: 'Soon', date: '2026-11-17', time: '09:00' }, { label: 'Today', date: '2026-11-16', time: '14:00' },
+    { label: 'Done today', date: '2026-11-16', time: '08:00' }, { label: 'Last week', date: '2026-11-10', time: '' }, { label: 'Yesterday', date: '2026-11-15', time: '10:00' },
+    { label: 'Long ago', date: '2026-09-01', time: '' }, { label: 'No day', date: '', time: '' }]);
+  assert.deepEqual(shown.map(e => [e.label, e.state]), [['Done today', 'today'], ['Today', 'today'], ['Soon', 'coming'], ['Far', 'coming'], ['Yesterday', 'past'], ['Last week', 'past']]);
+  assert.deepEqual(shown.find(e => e.label === 'Today').parts, { days: 0, hours: 4, mins: 0 });
+  assert.equal(shown.find(e => e.label === 'Done today').left, 0);
+  assert.deepEqual(shown.find(e => e.label === 'Soon').parts, { days: 0, hours: 23, mins: 0 }, 'less than a day away: hours and minutes');
+  assert.deepEqual(shown.find(e => e.label === 'Far').parts, { days: 226, hours: null, mins: null }, 'no time: whole days on the calendar');
+  assert.equal(W.PAST_DAYS, 7);
+  assert.deepEqual(ev([{ label: 'Long ago', date: '2026-09-01', time: '' }, { label: 'Older', date: '2026-08-01', time: '' }]).map(e => [e.label, e.state]), [['Long ago', 'past']]);
+  assert.deepEqual(ev([{ label: '', date: '', time: '' }]), []);
+  // A countdown still in the old shape on a screen that has it cached shows the same.
+  assert.deepEqual(W.countdownEvents({ label: 'Trip', date: '2026-11-20', time: '08:00' }, now, tz).map(e => [e.label, e.state, e.parts.days]), [['Trip', 'coming', 3]]);
+  // The settings form: the same limit, and no markup from what was typed (escaped like every sheet).
+  const js = fs.readFileSync('public/js/dash.js', 'utf8'); const ed = js.slice(js.indexOf('    events(field, f, w, id, type'), js.indexOf('    number(field, f, w, id, type'));
+  assert.match(ed, /MAX = 8\b/); assert.match(ed, /value="\$\{esc\(e\.label\)\}"/);
+  const wjs = fs.readFileSync('public/js/dash-widgets.js', 'utf8'); const card = wjs.slice(wjs.indexOf('function countdown('), wjs.indexOf('function calendar('));
+  assert.doesNotMatch(card, /innerHTML/, 'the card writes typed text with textContent only');
+});
+
+test('symbols, traffic light and scoreboard the teacher taps reach student screens when pinned; dice and groups never do; a stickers widget is dropped', async () => {
   const w = world(); const T = as(w.T);
   await layout(w, [{ id: 'sy', type: 'symbols', s: { mode: 'silent' }, pin: true }, { id: 'tl', type: 'light', s: { color: 'red', red: 'Eyes on me' }, pin: true },
     { id: 'sb', type: 'score', s: { teams: 'Comets\nRockets', scores: [2, 5] }, pin: true }, { id: 'st', type: 'stickers', s: { stamps: [{ e: 3, x: 50, y: 50 }] }, pin: true },
     { id: 'dc', type: 'dice', pin: true }, { id: 'gr', type: 'groups', pin: true }, { id: 'rn', type: 'random', pin: true }]);
   const pins = (await as(w.a1)(`/api/dash/${w.A.id}/pins`)).json.pins;
-  assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score', 'stickers']);
+  assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score']);
+  // The stickers widget is gone: one sent is dropped like any unknown type, never stored.
+  assert.ok(!D.layoutsOf(w.A.id, w.T.id)[0].widgets.some(x => x.type === 'stickers'));
   assert.equal(pins.find(p => p.type === 'light').s.red, 'Eyes on me');
   assert.deepEqual(pins.find(p => p.type === 'score').s.scores, [2, 5]);
   // A student can add dice and a random number to their own screen, but not a scoreboard or a light.
   await as(w.a1)(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'd1', type: 'dice' }, { id: 'r1', type: 'random' }, { id: 's1', type: 'score' }, { id: 'l1', type: 'light' }, { id: 'g1', type: 'groups' }] }));
   assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets.map(x => x.type), ['dice', 'random']);
+});
+
+test('a stored stickers widget (from before it was removed) is dropped when read: layouts, pins and student screens keep loading with nothing else lost', async () => {
+  const w = world(); const T = as(w.T), A1 = as(w.a1);
+  const l = await layout(w, [{ id: 'cl', type: 'clock' }, { id: 'sb', type: 'score', x: 4, s: { teams: 'Comets\nRockets', scores: [2, 5] }, pin: true },
+    { id: 'tl', type: 'light', y: 4, s: { color: 'red', red: 'Eyes on me' }, pin: true }]);
+  const kept = D.getLayout(l.id).widgets, keptPins = D.pinsOf(w.A.id);
+  assert.deepEqual(keptPins.map(p => p.id), ['sb', 'tl']);
+  // As it was stored before the removal: a pinned stickers widget in the layout, the class's pins and a student's screen.
+  const old = { id: 'st', type: 'stickers', x: 0, y: 6, w: 4, h: 3, s: { stamps: [{ e: 3, x: 50, y: 50 }] }, pin: true };
+  const { pin, ...oldPin } = old;
+  q.run('UPDATE dash_layouts SET widgets=? WHERE id=?', JSON.stringify([kept[0], old, ...kept.slice(1)]), l.id);
+  q.run('UPDATE dash_class SET pins=? WHERE class_id=?', JSON.stringify([keptPins[0], oldPin, ...keptPins.slice(1)]), w.A.id);
+  const dice = { id: 'd1', type: 'dice', x: 0, y: 2, w: 3, h: 3, s: { count: 2 } };
+  q.run('INSERT INTO dash_students(class_id, user_id, widgets, pins, bg, updated_at) VALUES (?,?,?,?,?,?)', w.A.id, w.a1.id,
+    JSON.stringify([dice, { ...oldPin, id: 'st2' }]), JSON.stringify({ st: { x: 6, y: 0, w: 4, h: 3 }, sb: { x: 0, y: 6, w: 5, h: 3 } }), JSON.stringify({ kind: 'color', id: 'mint' }), Date.now());
+  // Read back: the stickers widget is gone, everything else exactly as it was.
+  assert.deepEqual(D.getLayout(l.id).widgets, kept);
+  assert.deepEqual(D.layoutsOf(w.A.id, w.T.id)[0].widgets, kept);
+  assert.deepEqual(D.pinsOf(w.A.id), keptPins);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets, [dice]);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).bg, { kind: 'color', id: 'mint' });
+  // Both screens and the API load.
+  for (const who of [T, A1]) {
+    const r = await who(`/class/${w.A.id}/dashboard`); assert.equal(r.status, 200);
+    assert.doesNotMatch(r.text, /"type":"stickers"/);
+  }
+  const pins = await A1(`/api/dash/${w.A.id}/pins`); assert.equal(pins.status, 200);
+  assert.deepEqual(pins.json.pins.map(p => p.type), ['score', 'light']);
+  assert.equal((await T(`/api/dash/${w.A.id}/live`)).status, 200);
+  assert.equal((await A1(`/api/dash/${w.A.id}/live`)).status, 200);
+  // A student who moves the pinned widgets (the old stickers one among them) saves fine; only the real pins keep a place.
+  const r = await A1(`/api/dash/${w.A.id}/me`, POST({ pins: { st: { x: 6, y: 0, w: 4, h: 3 }, sb: { x: 0, y: 6, w: 5, h: 3 } } }));
+  assert.equal(r.status, 200, r.text);
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).pins, { sb: { x: 0, y: 6, w: 5, h: 3 } });
+  assert.deepEqual(D.studentState(w.A.id, w.a1.id).widgets, [dice]);
+  // The teacher saves the layout as it loaded: everything else kept, the stickers widget gone from storage too.
+  const again = await T(`/api/dash/${w.A.id}/layouts/${l.id}`, POST({ widgets: D.getLayout(l.id).widgets }));
+  assert.equal(again.status, 200, again.text);
+  assert.deepEqual(again.json.layout.widgets, kept);
+  assert.doesNotMatch(q.get('SELECT widgets FROM dash_layouts WHERE id=?', l.id).widgets, /stickers/);
+  assert.doesNotMatch(D.classState(w.A.id).pins, /stickers/);
 });
 
 test('the spinner wheel: names on the slices only when they are readable, else numbers; neighbouring slices never share a colour; the colours keep AA contrast', () => {

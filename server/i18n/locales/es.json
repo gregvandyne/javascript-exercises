@@ -9246,18 +9246,23 @@
       },
       "countdown": {
         "name": "Cuenta atrás para un día",
-        "desc": "Días y horas hasta una excursión, una función o las vacaciones.",
+        "desc": "Días y horas hasta excursiones, funciones o vacaciones: una o varias en la misma tarjeta.",
         "s": {
-          "label": "Lo que viene",
-          "date": "Día",
-          "time": "Hora"
+          "events": "Cuentas atrás"
         },
         "empty": "Elige el día en Editar pantalla.",
         "days": "Días",
         "hours": "Horas",
         "mins": "Minutos",
         "today": "¡Es hoy!",
-        "past": "Ese día ya pasó."
+        "past": "Ese día ya pasó.",
+        "label": "Lo que viene",
+        "day": "Día",
+        "time": "Hora (opcional)",
+        "addEvent": "Añadir una cuenta atrás",
+        "remove": "Quitar",
+        "event": "Cuenta atrás {n}",
+        "full": "Una tarjeta admite hasta {n} cuentas atrás."
       },
       "calendar": {
         "name": "Calendario",
@@ -9387,17 +9392,6 @@
         "r_responsible": "Responsabilidad",
         "r_brave": "Atreverse a probar",
         "r_creative": "Buenas ideas"
-      },
-      "stickers": {
-        "name": "Pegatinas",
-        "desc": "Pegatinas divertidas de Oomba para la pantalla.",
-        "s": {
-          "stamps": "Pegatinas"
-        },
-        "add": "Añadir una pegatina",
-        "remove": "Quitar {e}",
-        "clear": "Quitarlas todas",
-        "empty": "Toca una pegatina de abajo para ponerla aquí."
       },
       "fractions": {
         "name": "Barras de fracciones",
@@ -9888,7 +9882,8 @@
         "moved": "{l} movida al lugar {n}",
         "hint": "Toca o arrastra letras para formar una palabra.",
         "onset": "?",
-        "full": "La palabra está llena."
+        "full": "La palabra está llena.",
+        "instr": "Arrastra o toca letras para ponerlas en el recuadro y formar una palabra."
       },
       "organizer": {
         "name": "Organizador gráfico",
@@ -9924,7 +9919,12 @@
         "step": "Paso {n}",
         "editHint": "Toca un recuadro para escribir en él.",
         "note": "Lo que escribes se queda en esta pantalla y en las copias que envías. Las copias de los alumnos son suyas: lo que escriben nunca vuelve.",
-        "save": "Guardar"
+        "save": "Guardar",
+        "addStep": "Añadir un paso",
+        "addDetail": "Añadir un detalle",
+        "remove": "Quitar {name}",
+        "added": "Añadido: {name}",
+        "removed": "Quitado: {name}"
       },
       "map": {
         "name": "Mapas",

@@ -72,6 +72,8 @@ const lesson = L.createLesson(T, school.id, { title: 'Vergleichen von Brüchen m
 const cl = L.classLessons(C.id)[0];
 const link = D.addLink(T, C, { url: 'https://bibliothek.example.org/kinder/lesen/geschichten', title: 'Schulbibliothek und Leseecke' }).link;
 const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+/** A day n days from today (school time zone), as YYYY-MM-DD. */
+const dayAt = n => new Date(Date.parse(`${ymd}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
 const SETTINGS = {
   clock: { face: 'analog', zone2: 'America/Argentina/Buenos_Aires' },
   text: { title: 'Heute im Unterricht', body: 'Rechtschreibübungsheft Seite zweiundzwanzig\nMathematikwettbewerbsvorbereitung\nLesen' },
@@ -81,14 +83,23 @@ const SETTINGS = {
   weather: { place: { name: 'Llanfairpwllgwyngyll, Isle of Anglesey, United Kingdom', lat: 53.22, lon: -4.2 } },
   qr: { target: { kind: 'link', ref: link.id } },
   picker: { mode: 'wheel' },
-  countdown: { label: 'Klassenausflug ins Naturkundemuseum', date: `${ymd.slice(0, 4)}-12-24`, time: '09:00' },
+  // Several countdowns in one card, as many as a card holds (8): more than fit (whole rows, the fade), long German
+  // labels, one today, one tomorrow (hours and minutes), one more than a year away (three-figure days), one gone by.
+  countdown: { events: [
+    { label: 'Klassenausflug ins Naturkundemuseum mit Picknick', date: dayAt(0), time: '' },
+    { label: 'Elternsprechtagsvorbereitungstreffen', date: dayAt(1), time: '09:00' },
+    { label: 'Weihnachtsfeier der Grundschule Ahornbaum', date: dayAt(12), time: '10:30' },
+    { label: 'Abschlussfeier und Zeugnisübergabe', date: dayAt(400), time: '' },
+    { label: 'Laternenumzug', date: dayAt(-1), time: '17:00' },
+    { label: 'Projektwoche „Unsere Umwelt“', date: dayAt(30), time: '' },
+    { label: 'Vorlesewettbewerb der vierten Klassen', date: dayAt(5), time: '11:15' },
+    { label: 'Bundesjugendspiele', date: dayAt(60), time: '08:00' }] },
   calendar: { marks: [{ date: `${ymd.slice(0, 8)}28`, label: 'Schulbuchausstellung im Foyer' }, { date: `${ymd.slice(0, 8)}27`, label: 'Science show' }] },
   light: { color: 'yellow', yellow: 'Leise Stimmen, bitte flüstern' },
   dice: { count: 6 },
   random: { min: -9999, max: 9999 },
   groups: { by: 'count', n: 3 },
   score: { teams: 'Die Sternschnuppen\nRaketen\nKometen\nPlaneten', scores: [-9999, 9999, 12, 0] },
-  stickers: { stamps: [{ e: 0, x: 4, y: 6 }, { e: 5, x: 96, y: 94 }, { e: 12, x: 50, y: 50 }] },
   tiles: { tiles: [{ kind: 'game', ref: g1.id }, { kind: 'game', ref: g2.id }, { kind: 'game', ref: g3.id }, { kind: 'lesson', ref: cl.id }] },
   // stage 3: busy states (three fractions, long ranges, a 12 x 12 grid, elapsed time across noon...)
   fractions: { state: { bars: [{ n: 3, d: 4 }, { n: 5, d: 8 }, { n: 7, d: 12 }], same: true } },
@@ -135,6 +146,16 @@ const TIME_EXTRA = [{ ...D.widgetType('timer'), wid: 'wstopwatch', s: { mode: 's
 const STAGE5_EXTRA = [
   { ...D.widgetType('score'), wid: 'wpoints', s: { mode: 'students' } },
   { ...D.widgetType('schedule'), wid: 'wnownext', s: { ...SETTINGS.schedule, view: 'nownext' } },
+  // A countdown card with one event keeps the big boxes it always had (a long label, days, hours and minutes).
+  { ...D.widgetType('countdown'), wid: 'wcount1', s: { events: [{ label: 'Klassenausflug ins Naturkundemuseum', date: dayAt(38), time: '09:00' }] } },
+];
+// Stage 4 review: the organizers written in where they are, as widgets of their own: a sequence with its most steps, a
+// Venn diagram and main idea with its most details, all with long German words (the story map above stays too).
+const LONG = ['Die Raupe frisst sich durch das Blatt', 'Sie verpuppt sich in einem Kokon', 'Schmetterlingsflügelentfaltung', 'Der Schmetterling trocknet seine Flügel in der Sonne'];
+const STAGE4_EXTRA = [
+  { ...D.widgetType('organizer'), wid: 'worgseq', s: { state: { kind: 'seq', n: 10, title: 'Die Verwandlung der kleinen Raupe Nimmersatt', boxes: Array.from({ length: 10 }, (_, i) => ({ h: i === 3 ? 'Verpuppungszeitraum' : '', t: LONG.slice(0, 1 + (i % 4)).join('\n') })) } } },
+  { ...D.widgetType('organizer'), wid: 'worgvenn', s: { state: { kind: 'venn', title: 'Frösche und Kröten im Vergleich', boxes: [{ h: 'Froschlurche', t: 'Glatte, feuchte Haut\nLange Hinterbeine\nLeben am Wasser' }, { h: '', t: 'Amphibienentwicklung\nLegen Eier\nKönnen schwimmen' }, { h: 'Kröten', t: 'Warzige, trockene Haut\nKurze Beine\nLeben an Land' }] } } },
+  { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
 ];
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
@@ -162,7 +183,7 @@ D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE4.has(t.id))),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;
