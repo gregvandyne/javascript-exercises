@@ -9408,8 +9408,8 @@
         "r_creative": "Boas ideias"
       },
       "fractions": {
-        "name": "Barras de frações",
-        "desc": "Divida, pinte e compare. “Partes iguais” mostra por que uma é maior. 2.º ao 6.º ano.",
+        "name": "Frações",
+        "desc": "Compare, some, subtraia, multiplique e divida com barras e círculos, e veja um número como fração, decimal e porcentagem.",
         "bar": "Barras",
         "circle": "Círculos",
         "same": "Partes iguais",
@@ -9449,7 +9449,11 @@
         "modeDiv": "Dividir",
         "howtoDiv": "Use − e + em cada número. Quantas vezes a segunda cabe na primeira?",
         "fits": "{b} cabe {n} vezes em {a}.",
-        "noZero": "Não dá para dividir por zero, então o segundo numerador fica em 1 ou mais."
+        "noZero": "Não dá para dividir por zero, então o segundo numerador fica em 1 ou mais.",
+        "m": {
+          "fractions": "Barras de frações",
+          "fdp": "Fração, decimal, porcentagem"
+        }
       },
       "numline": {
         "name": "Reta numérica",
@@ -9544,8 +9548,8 @@
         "helpIdeas": "Monte 205 e troque para poder tirar 30."
       },
       "placeval": {
-        "name": "Quadro de valor posicional",
-        "desc": "Dos milhares aos milésimos, com fichas.",
+        "name": "Valor posicional",
+        "desc": "Material dourado e um quadro de valor posicional: troque dezenas por unidades e leia números dos milhões aos milésimos.",
         "discs": "Mostrar fichas",
         "decimals": "Mostrar décimos, centésimos e milésimos",
         "times10": "Vezes 10",
@@ -9563,7 +9567,11 @@
         "thousandths": "Milésimos",
         "howto": "Toque numa coluna e mude o algarismo dela com − e +.",
         "helpUse": "− e + fazem o vai-um e o empréstimo entre as ordens.\nVezes 10 e Dividido por 10 movem cada algarismo uma ordem.\nOpções: as fichas e as casas depois da vírgula.",
-        "helpIdeas": "Mostre 3405 e aperte Vezes 10: o que se moveu e o que ficou?"
+        "helpIdeas": "Mostre 3405 e aperte Vezes 10: o que se moveu e o que ficou?",
+        "m": {
+          "placeval": "Quadro de valor posicional",
+          "base10": "Material dourado"
+        }
       },
       "tenframe": {
         "name": "Quadros de dez",
@@ -9585,8 +9593,8 @@
         "helpIdeas": "Mostre 7 por dois segundos, cubra a tela e pergunte quantos eram."
       },
       "hundreds": {
-        "name": "Quadro do cem",
-        "desc": "Pinte números, conte de tanto em tanto e esconda números para adivinhar.",
+        "name": "Quadro numérico",
+        "desc": "Um quadro de 1 a 100, de 0 a 99 ou de 1 a 120. Pinte números, conte de tantos em tantos e esconda números para adivinhar.",
         "start": "Números",
         "skip": "Contar de tanto em tanto",
         "skipBy": "De {n} em {n}",
@@ -9603,8 +9611,8 @@
         "helpIdeas": "Conte de 9 em 9: que padrão os algarismos formam?"
       },
       "area": {
-        "name": "Modelo de área e disposições",
-        "desc": "Linhas vezes colunas. Divida um lado para ver os produtos parciais.",
+        "name": "Multiplicar e dividir",
+        "desc": "Modelos de área e disposições com produtos parciais, e uma tabuada em grade até 12 × 12.",
         "rows": "Linhas",
         "cols": "Colunas",
         "array": "Disposição",
@@ -9616,7 +9624,11 @@
         "hint": "Divida um lado para quebrar o produto em partes mais fáceis.",
         "howto": "Ajuste linhas e colunas com − e +. Divida um lado para decompor.",
         "helpUse": "Disposição mostra pontos em fileiras; Modelo de área, um retângulo.\nDividir pelo valor posicional mostra cada produto parcial.\nOpções: escolha exatamente onde cada lado é dividido.",
-        "helpIdeas": "Mostre 14 × 6 como 10 × 6 e 4 × 6 e some as partes."
+        "helpIdeas": "Mostre 14 × 6 como 10 × 6 e 4 × 6 e some as partes.",
+        "m": {
+          "area": "Modelo de área e disposições",
+          "times": "Tabuada em grade"
+        }
       },
       "times": {
         "name": "Tabuada em grade",
@@ -9725,8 +9737,8 @@
         "bad": "Essa imagem não funcionou. Tente uma foto JPG ou PNG."
       },
       "geoboard": {
-        "name": "Geoplano",
-        "desc": "Faça figuras com elásticos numa malha quadriculada, pontos em triângulos ou um círculo. Área, perímetro e ângulos exatos; régua, legendas e caneta. Do 2.º ao 8.º ano.",
+        "name": "Tabuleiro de formas",
+        "desc": "Faça formas com elásticos numa grade, pontos ou círculo, com área e perímetro exatos. Crie e meça ângulos com um transferidor.",
         "area": "Área",
         "perimeter": "Perímetro",
         "length": "Comprimento",
@@ -9832,11 +9844,15 @@
         "idea5": "Monte uma figura com exatamente dois ângulos retos.",
         "howto": "Toque nos pinos para esticar um elástico. O primeiro pino o fecha.",
         "helpUse": "Toque nos pinos para esticar um elástico; o primeiro pino o fecha.\nArraste um vértice ou o elástico inteiro. Uma cor começa outro.\nFiguras, Ferramentas e Anotar trazem figuras, régua, legendas e caneta.",
-        "helpIdeas": "Experimente: todos fazem uma área de 12 e comparam os perímetros."
+        "helpIdeas": "Experimente: todos fazem uma área de 12 e comparam os perímetros.",
+        "m": {
+          "geoboard": "Geoplano",
+          "angle": "Criador de ângulos"
+        }
       },
       "pattern": {
-        "name": "Blocos padrão",
-        "desc": "Hexágonos, trapézios, losangos, triângulos e quadrados que se encaixam. Mostra a fração de um hexágono. Da educação infantil ao 5.º ano.",
+        "name": "Geometria",
+        "desc": "Blocos padrão, sólidos que se abrem em planificações, e translações, reflexões e rotações numa grade.",
         "hex": "Hexágono",
         "trap": "Trapézio",
         "rhom": "Losango azul",
@@ -9855,7 +9871,12 @@
         "empty": "Adicione um bloco da fila de cima. As setas movem o bloco escolhido e R gira-o.",
         "howto": "Toque numa peça acima para pô-la. Arraste as peças: elas se encaixam.",
         "helpUse": "Toque num bloco do tabuleiro para escolhê-lo; depois Girar ou Tirar.\nA leitura é a fração do hexágono que os blocos formam.\nAs setas movem o bloco escolhido; R o gira.",
-        "helpIdeas": "De quantos jeitos dá para cobrir um hexágono?"
+        "helpIdeas": "De quantos jeitos dá para cobrir um hexágono?",
+        "m": {
+          "pattern": "Blocos padrão",
+          "solids": "Sólidos e planificações",
+          "transform": "Transformações"
+        }
       },
       "angle": {
         "name": "Criador de ângulos",
@@ -9964,8 +9985,8 @@
         "helpIdeas": "Resolvam juntos 3x + 2 = x + 8, dizendo cada passo em voz alta."
       },
       "algebra": {
-        "name": "Peças de álgebra",
-        "desc": "Peças x², x e 1, positivas e negativas. Os pares nulos anulam-se; a expressão simplifica-se. Do 6.º ao 8.º ano.",
+        "name": "Álgebra",
+        "desc": "Peças de álgebra com pares nulos e uma balança para resolver equações passo a passo.",
         "x2": "x ao quadrado",
         "x": "x",
         "one": "um",
@@ -9986,7 +10007,11 @@
         "full": "O tapete está cheio.",
         "howto": "Toque numa peça acima para pô-la. Tire os pares nulos para simplificar.",
         "helpUse": "Toque numa peça para escolhê-la; Virar muda o sinal.\nPeças opostas do mesmo tipo ganham um círculo: um par nulo.\nPares nulos os tira e a expressão é simplificada.",
-        "helpIdeas": "Monte 2x + 3 − x − 1 e simplifique com pares nulos."
+        "helpIdeas": "Monte 2x + 3 − x − 1 e simplifique com pares nulos.",
+        "m": {
+          "algebra": "Peças de álgebra",
+          "balance": "Balança"
+        }
       },
       "coins": {
         "name": "Moedas e dinheiro",
@@ -10019,8 +10044,8 @@
         "helpIdeas": "Custa 37, pago com 100: contem juntos para cima até achar o troco."
       },
       "chance": {
-        "name": "Laboratório do acaso",
-        "desc": "Lance moedas, dados e roletas até 1000 vezes. Um gráfico ao vivo ao lado do esperado. Do 3.º ao 8.º ano.",
+        "name": "Dados e acaso",
+        "desc": "Gráficos de barras, linhas, pictogramas e pontos, e um laboratório do acaso: moedas, dados e roletas até 1000 vezes.",
         "coin": "Moeda",
         "dice": "Dados",
         "spinner": "Roleta",
@@ -10043,7 +10068,11 @@
         "none": "Ainda não há tentativas",
         "howto": "Escolha moeda, dados ou roleta e aperte Lançar. Compare com a linha.",
         "helpUse": "O menu define quantas tentativas Lançar faz de cada vez.\nRecomeçar apaga os resultados.\nOpções: um ou dois dados, as partes da roleta, até 1000 tentativas.",
-        "helpIdeas": "Preveja, lance 10 vezes e depois 1000: qual fica mais perto da metade?"
+        "helpIdeas": "Preveja, lance 10 vezes e depois 1000: qual fica mais perto da metade?",
+        "m": {
+          "chance": "Laboratório do acaso",
+          "graph": "Criador de gráficos"
+        }
       },
       "letters": {
         "name": "Peças de letras",
@@ -10383,7 +10412,8 @@
       "practiceName": "Praticar: {title}",
       "helpFor": "Como usar: {name}",
       "helpClose": "Fechar",
-      "helpTry": "Experimente:"
+      "helpTry": "Experimente:",
+      "modeFor": "Escolha o que {name} mostra"
     },
     "ask": {
       "fractions": "Que fração está pintada?",

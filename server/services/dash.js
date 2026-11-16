@@ -24,7 +24,7 @@ import * as L from './lessons.js';
 import { cleanJpeg, PhotoError } from './photos.js';
 import { liveOn, openForClass } from './classlive-sessions.js';
 import { isOfficial } from './classlive-access.js';
-import { TOOL_IDS, cleanToolState } from './dash-tools.js';
+import { TOOL_IDS, TOOL_MODES, MODE_HOME, cleanToolState, moveToolState } from './dash-tools.js';
 import { cleanVideo } from './dash-media.js';
 import { lookup } from '../i18n/index.js';
 import { fits, MAX_DASH_VERSION } from './qr.js';
@@ -82,7 +82,9 @@ const TOOL_WORDS = {
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
 /** Help on the maths tools (docs/decisions.md "Classroom dashboards: help on the maths tools"): each maths tool's one-line
- *  instruction (howto) and its short ⓘ panel (helpUse: at most three points, one a line; helpIdeas: one idea for class). */
+ *  instruction (howto) and its short ⓘ panel (helpUse: at most three points, one a line; helpIdeas: one idea for class).
+ *  Since "maths tools combined" these are the maths tools' modes (a retired tool's id is now a mode of another tool, its
+ *  help and words still dash.w.<old id>.*): every mode has its own instruction and ⓘ panel. */
 export const MATH_TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
   'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance'];
 for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas');
@@ -91,6 +93,8 @@ TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul'
   'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
+  // maths tools combined: the mode switch ("Choose what Place value shows")
+  'modeFor',
   // stage 4: "Make a question from it" and "Practice it"
   'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
   // help on the maths tools: the ⓘ panel
@@ -98,7 +102,8 @@ export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'c
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
 export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
   'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
-/** Stage 4, "Practice it": a teaching tool and the official Oomba games that practise the same thing (picked by hand
+/** Stage 4, "Practice it": a teaching tool (since "maths tools combined": a tool's mode, keyed by the mode's id, which is
+ *  the old tool's id; the page sends every key and each mode looks up its own) and the official Oomba games that practise the same thing (picked by hand
  *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
  *  student of the class can open it; a tool without a clean match offers nothing. */
 export const PRACTICE = {
@@ -117,6 +122,12 @@ export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
 /** Widgets that show something from outside Oomba (or the camera): the teacher's screen and projector only. Never
  *  pinned, never pushed, never on a student's screen. */
 export const TEACHER_ONLY = ['video', 'site', 'camera'];
+/** Each maths tool mode's icon (a tool's own mode has the tool's icon). */
+export const MODE_ICONS = { fractions: '🍕', fdp: '➗', placeval: '🔟', base10: '🧱', area: '🔲', times: '✖️', geoboard: '📌', angle: '📐',
+  pattern: '🔷', solids: '🧊', transform: '🔄', algebra: '🟪', balance: '⚖️', chance: '🎯', graph: '📊' };
+/** A teaching tool's registry entry (stages 3 and 4); modes: its modes, when it has more than one (TOOL_MODES). */
+const toolType = (id, icon, size, min, group) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id],
+  ...(TOOL_MODES[id] ? { modes: TOOL_MODES[id] } : {}), settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] });
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
@@ -193,16 +204,19 @@ export const WIDGETS = [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
   // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
-  ...[['fractions', '🍕', [6, 7], [5, 7]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 6], [5, 6]],
-    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
-    ['area', '🔲', [6, 6], [5, 6]], ['times', '✖️', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
-    .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  // Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): base-ten blocks, the times table,
+  // fraction/decimal/percent, the angle maker, 3D shapes, transformations, the balance and the graph maker are modes of
+  // place value, multiply and divide, fractions, the shape board, geometry, algebra and data and chance (TOOL_MODES,
+  // RETIRED). A tool with modes is as big as its biggest mode needs, plus the row of its mode switch.
+  ...[['fractions', '🍕', [6, 8], [5, 8]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]],
+    ['placeval', '🔟', [7, 7], [6, 6]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['area', '🔲', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]]]
+    .map(([id, icon, size, min]) => toolType(id, icon, size, min, 'teach')),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
   // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
-  ...[['geoboard', '📌', [8, 8], [5, 7], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 7], [5, 7], 'teach'],
-    ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
-    ['chance', '🎯', [7, 6], [6, 6], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
-    .map(([id, icon, size, min, group]) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  ...[['geoboard', '📌', [8, 8], [5, 8], 'teach'], ['pattern', '🔷', [7, 8], [6, 8], 'teach'], ['algebra', '🟪', [7, 7], [6, 7], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
+    ['chance', '🎯', [7, 7], [6, 7], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
+    .map(([id, icon, size, min, group]) => toolType(id, icon, size, min, group)),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
     { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },
   { id: 'picture', icon: '🖼️', group: 'show', who: 'teacher', size: [4, 4], min: [3, 3], words: ['empty', 'needAlt', 'gone', 'upload', 'uploading', 'replace', 'note', 'bad'], settings: [
@@ -242,8 +256,14 @@ export const WIDGETS = [
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
-/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there. */
-export const RETIRED = { stopwatch: { type: 'timer', s: { mode: 'stopwatch' } } };
+/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there (or a
+ *  function of the old settings). A retired maths tool's state goes under its old id in the tool it is a mode of, and
+ *  that mode shows (dash-tools.js TOOL_MODES): { type: 'base10', s: { state: S } } -> { type: 'placeval', s: { state:
+ *  { tab: 'base10', base10: S } } }. */
+export const RETIRED = {
+  stopwatch: { type: 'timer', s: { mode: 'stopwatch' } },
+  ...Object.fromEntries(Object.entries(MODE_HOME).map(([old, home]) => [old, { type: home, s: o => ({ state: { tab: old, [old]: o.state && typeof o.state === 'object' ? o.state : {} } }) }])),
+};
 /** One stored or sent widget with a retired type -> the widget it is now (same id, so its running state, pins and
  *  student places still match; its box grows to the new type's smallest size if it must). Anything else is unchanged. */
 export function migrateWidget(w) {
@@ -257,7 +277,8 @@ export function migrateWidget(w) {
   }
   const type = widgetType(r.type);
   const box = Number.isFinite(w.w) ? cleanBox(type, w) : {};
-  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...(w.s && typeof w.s === 'object' ? w.s : {}), ...r.s }) };
+  const old = w.s && typeof w.s === 'object' ? w.s : {};
+  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...old, ...(typeof r.s === 'function' ? r.s(old) : r.s) }) };
 }
 export function migrateWidgets(list) {
   if (!Array.isArray(list)) return [];
@@ -288,6 +309,10 @@ export function registryFor(t, role) {
     id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send,
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
     words: Object.fromEntries(w.words.map(k => [k, word(t, `dash.w.${w.id}.${k}`)])),
+    // A maths tool's modes: each with its name on the switch (dash.w.<tool>.m.<mode>), its icon, and, for a mode that was
+    // a tool of its own, that tool's words and starting state (dash.w.<mode>.*). The tool's own mode uses the tool's.
+    ...(w.modes ? { modes: w.modes.map(m => ({ id: m, icon: MODE_ICONS[m], name: t(`dash.w.${w.id}.m.${m}`),
+      ...(m === w.id ? {} : { words: Object.fromEntries(TOOL_WORDS[m].map(k => [k, word(t, `dash.w.${m}.${k}`)])), def: cleanToolState(m, {}) }) })) } : {}),
     settings: w.settings.map(s => ({ ...s, label: s.type === 'tool' ? '' : t(`dash.w.${w.id}.s.${s.key}`),
       ...(s.options ? { labels: Object.fromEntries(s.options.map(o => [o, t(`dash.w.${w.id}.o.${s.key}.${o}`)])) } : {}) })),
   }));
@@ -792,8 +817,14 @@ export function pushHref(c, p) {
 export function todaysPushes(c, userId = null) {
   const hidden = userId ? new Set(q.all('SELECT h.push_id FROM dash_push_hidden h JOIN dash_pushes p ON p.id=h.push_id WHERE p.class_id=? AND h.user_id=?', c.id, userId).map(r => r.push_id)) : new Set();
   return q.all('SELECT id, kind, ref, title, created_at, data FROM dash_pushes WHERE class_id=? AND day=? AND ended_at IS NULL ORDER BY created_at DESC, rowid DESC', c.id, dayOf(c))
-    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: json(p.data, {}) } : {}) }))
+    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: toolOfPush(p) } : {}) }))
     .filter(p => p.href);
+}
+/** A sent tool as students open it. One sent before "maths tools combined" with a retired tool's type opens as that
+ *  mode of the tool it became (dash_pushes.data is never rewritten). */
+function toolOfPush(p) {
+  const d = json(p.data, {});
+  return d && typeof d === 'object' && MODE_HOME[d.type] ? moveToolState(d.type, d.state) : d;
 }
 /** A student hides a push from their banner (or brings it back). It stays in their tray either way. */
 export function hidePush(u, c, id, hidden = true) {

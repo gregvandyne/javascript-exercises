@@ -1176,9 +1176,11 @@ function tenframe(body, s, ctx) {
 // ================================================================ 8. hundreds chart
 function hundreds(body, s, ctx) {
   const T = shell(body, s, ctx, 'hundreds'), { W, st } = T;
+  // Maths tools combined: the chart also runs 1-120 (upto; from 1 only), twelve rows of ten.
+  const last = () => (st.start && st.upto === 120 ? 120 : st.start ? 100 : 99);
   const skip = selectOf([[0, W.noSkip], ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => [n, fill(W.skipBy, { n })])], st.skip);
   skip.classList.add('dt-select'); skip.setAttribute('aria-label', W.skip);
-  skip.addEventListener('change', () => { st.skip = +skip.value; T.commit(st.skip ? `${fill(W.skipBy, { n: st.skip })}: ${M.skipCount(st.skip, st.start).slice(0, 5).join(', ')}…` : W.noSkip); });
+  skip.addEventListener('change', () => { st.skip = +skip.value; T.commit(st.skip ? `${fill(W.skipBy, { n: st.skip })}: ${M.skipCount(st.skip, st.start, last()).slice(0, 5).join(', ')}…` : W.noSkip); });
   const hide = selectOf([['none', W.none], ['shaded', W.shaded], ['all', W.all]], st.hide);
   hide.classList.add('dt-select'); hide.setAttribute('aria-label', W.hide);
   hide.addEventListener('change', () => { st.hide = hide.value; T.commit(); });
@@ -1188,11 +1190,11 @@ function hundreds(body, s, ctx) {
   let focusAt = 0;
   T.draw = () => {
     skip.value = String(st.skip); hide.value = st.hide; clear.disabled = !st.shade.length && !st.skip;
-    const shaded = new Set(st.shade), counted = new Set(M.skipCount(st.skip, st.start));
+    const shaded = new Set(st.shade), counted = new Set(M.skipCount(st.skip, st.start, last()));
     T.stage.textContent = '';
-    const g = el('div', 'dt-hgrid'); g.dir = 'ltr'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', ctx.type.name);
+    const g = el('div', `dt-hgrid${last() === 120 ? ' is-120' : ''}`); g.dir = 'ltr'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', ctx.type.name);
     const cells = [];
-    for (let k = 0; k < 100; k++) {
+    for (let k = 0; k <= last() - st.start; k++) {
       const v = k + st.start, on = shaded.has(v), sk = counted.has(v);
       const hid = st.hide === 'all' || (st.hide === 'shaded' && (on || sk));
       const b = btn(hid ? '' : String(v), `dt-hcell${on ? ' is-on' : ''}${sk ? ' is-skip' : ''}`);
@@ -1210,12 +1212,15 @@ function hundreds(body, s, ctx) {
     if (!ctx.editing) roving(g, cells, 10, j => { focusAt = j; });
     T.stage.appendChild(g);
     T.read.textContent = '';
-    T.read.appendChild(el('div', 'dt-sub', [st.shade.length ? fill(W.shadedN, { n: st.shade.length }) : '', st.skip ? `${fill(W.skipBy, { n: st.skip })}: ${M.skipCount(st.skip, st.start).slice(0, 4).join(', ')}…` : ''].filter(Boolean).join(' · ') || ' '));
+    T.read.appendChild(el('div', 'dt-sub', [st.shade.length ? fill(W.shadedN, { n: st.shade.length }) : '', st.skip ? `${fill(W.skipBy, { n: st.skip })}: ${M.skipCount(st.skip, st.start, last()).slice(0, 4).join(', ')}…` : ''].filter(Boolean).join(' · ') || ' '));
   };
   return T.finish({
     options: box => {
-      const start = field(box, W.start, selectOf([[1, '1–100'], [0, '0–99']], st.start));
-      start.addEventListener('change', () => { st.start = +start.value; st.shade = st.shade.filter(x => x >= st.start && x <= st.start + 99); T.commit(); });
+      const start = field(box, W.start, selectOf([[1, '1–100'], [0, '0–99'], [120, '1–120']], st.start && st.upto === 120 ? 120 : st.start));
+      start.addEventListener('change', () => {
+        const v = +start.value; st.start = v ? 1 : 0; if (v === 120) st.upto = 120; else delete st.upto;
+        st.shade = st.shade.filter(x => x >= st.start && x <= last()); T.commit();
+      });
     },
   });
 }
