@@ -121,6 +121,14 @@ test('who can open a class dashboard: its teacher and students; everyone else ge
   assert.doesNotMatch((await as(w.SA)(`/class/${w.A.id}`)).text, /id="class-dash-link"/, 'a school admin who does not teach it has no dashboard link');
 });
 
+test('the dashboard says whether the school\'s time zone is set (unset: the page follows the browser\'s own zone)', async () => {
+  const w = world();
+  const url = `/class/${w.A.id}/dashboard`;
+  for (const who of [w.T, w.a1]) assert.match((await as(who)(url)).text, /"tz":"America\/New_York","tzSet":false/);
+  assert.ok(S.updateSchool(boss, w.oak.id, { settings: { timeZone: 'Europe/Berlin' } }).ok);
+  for (const who of [w.T, w.a1]) assert.match((await as(who)(url)).text, /"tz":"Europe\/Berlin","tzSet":true/);
+});
+
 test('only the class\'s teacher changes layouts, pushes, approves links or starts Eyes up', async () => {
   const w = world();
   await as(w.T)(`/class/${w.A.id}/dashboard`);
@@ -328,7 +336,7 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   // Maths tools combined: base-ten blocks, the times table, fraction/decimal/percent, the angle maker, 3D shapes,
   // transformations, the balance and the graph maker are modes of the tools listed.
   assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'dice', 'random', 'fractions', 'numline', 'coord', 'placeval', 'tenframe', 'hundreds', 'area', 'tclock',
-    'geoboard', 'pattern', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
+    'geoboard', 'pattern', 'algebra', 'coins', 'chance', 'rods', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
 });
 
 test('account deletion forgets a person\'s screens and pictures', async () => {

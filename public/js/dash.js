@@ -25,6 +25,10 @@ if (root && D.classId) start();
 function start() {
   const TEACHER = D.role === 'teacher';
   const CID = D.classId;
+  // One time zone for the whole dashboard (the top bar's clock, the schedule, the calendar, countdowns): the school's,
+  // else (a school with no zone set) this browser's own, never a far-away default that puts the schedule out of step
+  // with the clock on the wall.
+  const TZ = D.tzSet === false ? (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || D.tz; } catch { return D.tz; } })() : D.tz;
   const COLS = 12, MIN_ROWS = 4, MAX_ROWS = 24, MAX_H = 8, POLL_MS = 4000;
   const types = new Map(D.registry.types.map(x => [x.id, x]));
   const grid = $('#dash-grid'), say = $('#dash-say');
@@ -74,12 +78,17 @@ function start() {
     x.classList.toggle('is-scrolly', on);
     const end = !on || x.scrollTop + x.clientHeight >= x.scrollHeight - 6;
     x.classList.toggle('at-end', end);
+    // Rows above (a list resting scrolled down, as the schedule does to show the period on now): the fade at its top.
+    x.classList.toggle('at-top', !on || x.scrollTop <= 6);
     return end;
   };
   const moreTarget = b => [b, ...b.querySelectorAll('.dw-scroll')].find(x => x.classList.contains('is-scrolly') && !x.classList.contains('at-end')) || null;
   /** Stage 5 review: a list that scrolls shows whole rows only. Its height is cut at the bottom of the last row that fits
    *  (a row of a grid ends with its tallest item; a list of lines, a paragraph, at a whole line), so nothing is ever
-   *  sliced through; the soft fade at its bottom edge (public/css/dash.css) says there is more. */
+   *  sliced through; the soft fade at its bottom edge (public/css/dash.css) says there is more.
+   *  A list may name the row it rests on (x.snapTo, a child: the schedule's period on now). It then rests scrolled to that
+   *  row's top, cut at the last whole row below it; near the end it rests at its end instead, starting at a row's top, so
+   *  whole rows still fill it and the rows above sit under the fade at its top. Without one it keeps where it is. */
   /** The boxes of the lines of text in an element (text only: not the boxes of the elements around it). */
   const textRects = root => {
     const out = [], walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), rg = document.createRange();
@@ -94,10 +103,22 @@ function start() {
     const avail = x.clientHeight;
     if (x.scrollHeight <= avail + 1) return;
     const xr = x.getBoundingClientRect(), bt = parseFloat(st.borderTopWidth) || 0;  // (all boxes are border-box)
-    const items = [...x.children].filter(c => c.getClientRects().length && getComputedStyle(c).position !== 'absolute')
-      .map(c => { const r = c.getBoundingClientRect(); return { t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }; });
+    const all = [...x.children].filter(c => c.getClientRects().length && getComputedStyle(c).position !== 'absolute')
+      .map(c => { const r = c.getBoundingClientRect(); return { el: c, t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }; });
+    // Where the list rests: 0, or the top of the row it names (moved up to a row's top when that row is near the end).
+    const a = x.snapTo && all.find(it => it.el === x.snapTo);
+    let from = 0, atEnd = false;
+    // (Not even that row fits: the list rests at its top, cut between lines as below; the schedule's status line above it
+    // already names the period on now.)
+    if (a && a.t > 0.5 && a.b - a.t <= avail) {
+      const full = x.scrollHeight;
+      from = a.t;
+      if (full - from <= avail) { atEnd = true; from = Math.min(from, ...all.filter(it => full - it.t <= avail).map(it => it.t)); }
+    }
+    const items = all.filter(it => it.t >= from - 0.5).map(it => ({ t: it.t - from, b: it.b - from }));
     let cut = 0;
-    if (items.length) {
+    if (atEnd) cut = Math.ceil(x.scrollHeight - from);
+    else if (items.length) {
       for (const it of items) if (it.b <= avail + 0.5) cut = Math.max(cut, it.b);
       // A taller neighbour in the same grid row (it starts above the cut and ends below it) moves the cut above that row.
       for (let k = 0; k < 6; k++) {
@@ -109,7 +130,7 @@ function start() {
     // Not even one row fits (a long idea in an organizer box, a group card in a short widget): cut between two lines of
     // its text instead, never through one.
     if (cut <= 0) {
-      const lines = textRects(x).map(r => ({ t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }));
+      const lines = textRects(x).map(r => ({ t: r.top - xr.top - bt + x.scrollTop - from, b: r.bottom - xr.top - bt + x.scrollTop - from })).filter(l => l.t >= -0.5);
       cut = Math.max(0, ...lines.filter(l => l.b <= avail + 0.5).map(l => l.b));
       for (let k = 0; k < 6; k++) {
         const cross = lines.filter(l => l.t < cut - 0.5 && l.b > cut + 0.5); if (!cross.length) break;
@@ -118,10 +139,20 @@ function start() {
       }
       if (cut > 0) cut = Math.min(avail, cut + 2);
     }
-    if (cut > 0) { x.style.maxHeight = `${Math.floor(cut + bt + (parseFloat(st.borderBottomWidth) || 0))}px`; x.scrollTop = keep; }
+    if (cut > 0) { x.style.maxHeight = `${Math.floor(cut + bt + (parseFloat(st.borderBottomWidth) || 0))}px`; x.scrollTop = a ? from : keep; }
+  };
+  /** A row that changes height after its list was cut (the type settling to the widget's size a frame late, the
+   *  schedule's period on now) cuts the list again: the widget's own size may not change, so its watch would not see it. */
+  const watchRows = x => {
+    if (typeof ResizeObserver !== 'function') return;
+    const kids = [...x.children];
+    if (x.rowWatch && x.rowKids.length === kids.length && kids.every((c, i) => c === x.rowKids[i])) return;
+    x.rowWatch?.disconnect(); x.rowKids = kids;
+    x.rowWatch = new ResizeObserver(() => { const b = x.closest('.dash-wb'); if (b) scrolly(b); });
+    for (const c of kids) x.rowWatch.observe(c);
   };
   const scrolly = (b, snap = true) => {
-    if (snap) for (const x of b.querySelectorAll('.dw-scroll')) snapRows(x);
+    if (snap) for (const x of b.querySelectorAll('.dw-scroll')) { snapRows(x); watchRows(x); }
     mark(b);
     for (const x of b.querySelectorAll('.dw-scroll')) mark(x);
     if (b.moreBtn) b.moreBtn.hidden = !moreTarget(b);
@@ -145,7 +176,7 @@ function start() {
     catch (err) { if (errEl) errEl.textContent = err.message; else toast(err.message, { bad: true }); return null; }
   }
   const ctxFor = (w, type) => ({
-    type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
+    type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: TZ, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
     get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
     // Stage 3: teaching tools.
@@ -423,7 +454,8 @@ function start() {
     const q = ($('#dash-lib-q').value || '').trim().toLowerCase();
     const list = $('#dash-lib-list'); list.textContent = '';
     // A tool is also found by its modes' names ("times table" finds Multiply and divide).
-    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.modes || []).map(m => m.name).join(' ')}`.toLowerCase().includes(q)));
+    // Bar models and number rods: a tool (or a mode) is also found by its other names ("tape diagram", dash.w.<id>.find).
+    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.words || {}).find || ''} ${(x.modes || []).map(m => `${m.name} ${(m.words || {}).find || ''}`).join(' ')}`.toLowerCase().includes(q)));
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
       li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
@@ -602,7 +634,7 @@ function start() {
         if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]').focus(); }
         if (e.target.closest('[data-addp]')) {
           const list = w.s[f.key] || []; if (list.length >= 40) return;
-          list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: D.tz }).format(new Date()), label: '' });
+          list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date()), label: '' });
           w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
         }
       });
@@ -841,7 +873,7 @@ function start() {
 
   // ---------------------------------------------------------------- the clock in the top bar, the date, tickers
   const nowEl = $('#dash-now'), dateEl = $('#dash-date');
-  const hm = new Intl.DateTimeFormat(INTL, { hour: 'numeric', minute: '2-digit' }), long = new Intl.DateTimeFormat(INTL, { weekday: 'long', month: 'long', day: 'numeric' });
+  const hm = new Intl.DateTimeFormat(INTL, { hour: 'numeric', minute: '2-digit', timeZone: TZ }), long = new Intl.DateTimeFormat(INTL, { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ });
   const tick = () => { const d = new Date(); if (nowEl) nowEl.textContent = hm.format(d); if (dateEl) dateEl.textContent = long.format(d); for (const f of tickers.values()) f(d); };
   setInterval(tick, 1000);
 

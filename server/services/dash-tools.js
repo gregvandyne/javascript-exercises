@@ -142,6 +142,38 @@ export const TOOL_SPECS = {
     spec: { kind: ['enum', ['coin', 'dice', 'spinner'], 'coin'], dice: ['enum', [1, 2], 1], parts: ['int', 2, 8, 4], runs: ['int', 1, 1000, 100], counts: ['ints', 11, 0, 1000000, []] },
     fix: s => { const n = s.kind === 'coin' ? 2 : s.kind === 'spinner' ? s.parts : s.dice === 2 ? 11 : 6; s.counts = Array.from({ length: n }, (_, i) => s.counts[i] || 0); },
   },
+  // ---- bar models and number rods (docs/decisions.md "Bar models and number rods"); the limits match
+  // public/js/dash-math5.js BAR_LIMITS, BAR_START, ROD_W, ROD_H, ROD_MAX and EQ_START (tested to agree).
+  // Bar models, a mode of Multiply and divide: groups × each (mul), parts of a whole (part) or two bars compared (cmp);
+  // unk is which quantity is "?" (mul: total, groups, each; part: whole, then each part; cmp: difference, first,
+  // second). story is the word problem: the teacher's own text in a layout or a sent copy; a student's own screen never
+  // keeps it (student: true), so what a student writes stays in their browser.
+  bars: {
+    spec: { kind: ['enum', ['mul', 'part', 'cmp'], 'mul'], g: ['int', 1, 12, 3], e: ['int', 1, 100, 4], p: ['ints', 4, 1, 999, [5, 3]],
+      ca: ['int', 1, 999, 9], cb: ['int', 1, 999, 5], unk: ['int', 0, 4, 0], hide: ['bool', true], bw: ['bool', true], bp: ['bool', true],
+      max: ['int', 10, 1000, 50], story: ['textm', 240, ''] },
+    fix: (s, o = {}) => {
+      while (s.p.length < 2) s.p.push(1);
+      const n = s.kind === 'part' ? s.p.length + 1 : 3;
+      if (s.unk >= n) s.unk = 0;
+      if (o.student) s.story = '';
+    },
+  },
+  // Number rods: rods 1-20 units long on a 30 × 16 unit board (x, y: the rod's top left unit; v: standing up, never a rod
+  // longer than 16), at most
+  // 60; the equation (eq: shown) is l = r, terms 1-20 with exactly one 0, the missing box; model: its two trains shown.
+  rods: {
+    spec: { rods: ['list', 60, { n: ['int', 1, 20, 1], x: ['int', 0, 29, 0], y: ['int', 0, 15, 0], v: ['bool', false] }, []],
+      dir: ['enum', ['h', 'v'], 'h'], grid: ['bool', true], units: ['bool', true], long: ['int', 11, 20, 12],
+      eq: ['bool', true], l: ['ints', 3, 0, 20, [5, 4]], r: ['ints', 3, 0, 20, [0, 3]], model: ['bool', false] },
+    fix: s => {
+      for (const r of s.rods) {
+        if (r.v && r.n > 16) r.v = false;
+        r.x = Math.min(r.x, 30 - (r.v ? 1 : r.n)); r.y = Math.min(r.y, 16 - (r.v ? r.n : 1));
+      }
+      if (!rodEquation(s.l, s.r)) { s.l = [5, 4]; s.r = [0, 3]; s.model = false; }
+    },
+  },
   letters: {
     spec: { word: ['ints', 12, 0, 25, [2]], fam: ['enum', ['', 'at', 'an', 'ap', 'ig', 'in', 'ip', 'op', 'ot', 'ug', 'un', 'et', 'en', 'ell', 'ake', 'ine'], 'at'], caps: ['bool', false] },
     fix: s => { if (s.fam) s.word = s.word.slice(0, 2); },
@@ -173,15 +205,27 @@ export const TOOL_IDS = Object.keys(TOOL_SPECS);
 export const TOOL_MODES = {
   placeval: ['placeval', 'base10'],
   fractions: ['fractions', 'fdp'],
-  area: ['area', 'times'],
+  area: ['area', 'times', 'bars'],
   geoboard: ['geoboard', 'angle'],
   pattern: ['pattern', 'solids', 'transform'],
   algebra: ['algebra', 'balance'],
   chance: ['chance', 'graph'],
 };
+/** Modes that never were a tool of their own (bar models, docs/decisions.md "Bar models and number rods"): nothing was
+ *  ever saved with their id as a widget's type, so they are not retired types. */
+export const NEW_MODES = ['bars'];
 /** A retired tool's id -> the tool it is a mode of now. */
-export const MODE_HOME = Object.fromEntries(Object.entries(TOOL_MODES).flatMap(([id, modes]) => modes.slice(1).map(m => [m, id])));
+export const MODE_HOME = Object.fromEntries(Object.entries(TOOL_MODES).flatMap(([id, modes]) => modes.slice(1).filter(m => !NEW_MODES.includes(m)).map(m => [m, id])));
 
+/** Number rods: is l = r an equation the board can model (each side 1-3 terms of 0-20, exactly one 0, the missing term
+ *  1-20 and each side at most 20 long)? public/js/dash-math5.js eqValid, tested to agree. */
+export function rodEquation(l, r) {
+  if (!Array.isArray(l) || !Array.isArray(r) || !l.length || !r.length || l.length > 3 || r.length > 3) return false;
+  const all = [...l, ...r], sum = a => a.reduce((x, y) => x + y, 0);
+  if (all.filter(x => x === 0).length !== 1) return false;
+  const m = l.includes(0) ? sum(r) - sum(l) : sum(l) - sum(r);
+  return m >= 1 && m <= 20 && sum(l) + (l.includes(0) ? m : 0) <= 20 && sum(r) + (r.includes(0) ? m : 0) <= 20;
+}
 function cleanBy(spec, src) {
   const o = src && typeof src === 'object' && !Array.isArray(src) ? src : {}, out = {};
   for (const [k, d] of Object.entries(spec)) {
