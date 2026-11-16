@@ -14,8 +14,8 @@
 // same ctx, plus ctx.ask (the teacher turns a tool into a quick check) and ctx.practice (official games to practise with).
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
-import { RENDER, checkChoices, skewOf, fill } from '/js/dash-widgets.js';
-import { parseVideo, siteUrl } from '/js/dash-video.js';
+import { RENDER, checkChoices, skewOf, fill, qrForget } from '/js/dash-widgets.js';
+import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 
 const D = pageData();
@@ -690,16 +690,48 @@ function start() {
     },
     target(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
-      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}"><option value="">${esc(W.nothing)}</option></select><p class="small muted">${esc(t('js.dash.side.qrNote'))}</p>`;
-      const sel = field.querySelector('select');
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}"><option value="">${esc(W.nothing)}</option><option value="web">🌐 ${esc(t('js.dash.qrWeb.option'))}</option></select><p class="small muted">${esc(t('js.dash.side.qrNote'))}</p>
+        <div class="stack dash-qrweb" hidden><label for="${id}-u">${esc(t('js.dash.qrWeb.url'))}</label><input class="input" id="${id}-u" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="example.org" dir="ltr" aria-describedby="${id}-m ${id}-n">
+        <p class="small dash-fieldmsg" id="${id}-m" role="status"></p>
+        <label for="${id}-t">${esc(t('js.dash.qrWeb.name'))}</label><input class="input" id="${id}-t" type="text" maxlength="60" autocomplete="off" dir="auto">
+        <button class="btn btn-sm" type="button" data-qrweb>🔳 ${esc(t('js.dash.qrWeb.save'))}</button><p class="small muted" id="${id}-n">${esc(t('js.dash.qrWeb.note'))}</p></div>`;
+      const sel = field.querySelector('select'), box = field.querySelector('.dash-qrweb'), url = box.querySelector(`#${CSS.escape(id)}-u`), name = box.querySelector(`#${CSS.escape(id)}-t`), msg = box.querySelector('.dash-fieldmsg'), go = box.querySelector('[data-qrweb]');
       const curKey = w.s[f.key] ? `${w.s[f.key].kind}:${w.s[f.key].ref}` : '';
       pushOpts().then(o => {
         const group = (kind, items) => (items.length ? `<optgroup label="${esc(t(`js.dash.kind.${kind}`))}">${items.map(x => `<option value="${esc(`${kind}:${x.ref}`)}">${esc(x.title)}</option>`).join('')}</optgroup>` : '');
         sel.insertAdjacentHTML('beforeend', group('link', o.links.map(l => ({ ref: l.id, title: l.title }))) + group('live', o.live ? [{ ref: '', title: o.live.title }] : []) + group('lesson', o.lessons.map(l => ({ ref: l.id, title: l.title }))) + group('game', o.games.map(g => ({ ref: g.id, title: g.title }))));
         if (curKey && !sel.querySelector(`option[value="${CSS.escape(curKey)}"]`)) sel.insertAdjacentHTML('beforeend', `<option value="${esc(curKey)}">${esc(W.gone)}</option>`);
-        sel.value = curKey;
+        if (sel.value !== 'web') sel.value = curKey;
       }).catch(() => {});
-      sel.addEventListener('change', () => { const [kind, ref = ''] = sel.value.split(':'); w.s[f.key] = sel.value ? { kind, ref } : null; commit(); redraw(); });
+      // Instant feedback with the server's own rules (services/dash.js webAddress and the QR code's size).
+      const check = () => {
+        const x = url.value.trim(), ok = webAddress(x);
+        const bad = x && !ok ? t('js.dash.qrWeb.bad') : ok && tooLongForQr(ok) ? t('js.dash.qrWeb.tooLong') : '';
+        msg.textContent = bad ? `✖ ${bad}` : ok ? `✔ ${t('js.dash.qrWeb.ok', { url: ok })}` : '';
+        msg.classList.toggle('err', !!bad); url.setAttribute('aria-invalid', String(!!bad));
+        go.disabled = !ok || !!bad;
+        return bad ? null : ok;
+      };
+      url.addEventListener('input', check);
+      const save = async () => {
+        const ok = check(); if (!ok) { url.focus(); return; }
+        go.disabled = true;
+        try {
+          const r = await api(`/api/dash/${CID}/links`, { method: 'POST', body: { url: ok, title: name.value, qr: true } });
+          optsCache = null; qrForget();
+          w.s[f.key] = r.target; commit(); redraw();
+          announce(t('js.dash.qrWeb.saved', { name: r.link.title }));
+          setTimeout(() => { const b = $('#dash-side-body'); if (b) { b.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(id)}`)?.focus(); } }, 0);
+        } catch (e) { msg.textContent = `✖ ${e.message}`; msg.classList.add('err'); go.disabled = false; }
+      };
+      go.addEventListener('click', save);
+      for (const i of [url, name]) i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } });
+      check();
+      sel.addEventListener('change', () => {
+        box.hidden = sel.value !== 'web';
+        if (sel.value === 'web') { url.focus(); return; }
+        const [kind, ref = ''] = sel.value.split(':'); w.s[f.key] = sel.value ? { kind, ref } : null; commit(); redraw();
+      });
     },
     tiles(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
@@ -970,7 +1002,7 @@ function start() {
       try {
         if (s) { s.disabled = true; const r = await api(`/api/dash/${CID}/pushes`, { method: 'POST', body: { kind: s.dataset.send, ref: s.dataset.ref } }); toast(r.toast || t('js.dash.push.sent')); await poll(); await openPush(); }
         else if (end) { await api(`/api/dash/${CID}/pushes/${end.dataset.end}/end`, { method: 'POST', body: {} }); await poll(); await openPush(); }
-        else if (un) { await api(`/api/dash/${CID}/links/${un.dataset.unlink}/remove`, { method: 'POST', body: {} }); await poll(); await openPush(); }
+        else if (un) { await api(`/api/dash/${CID}/links/${un.dataset.unlink}/remove`, { method: 'POST', body: {} }); optsCache = null; qrForget(); render(); await poll(); await openPush(); }   // a QR code of that link goes at once
       } catch (err) { if (s) s.disabled = false; toast(err.message, { bad: true }); }
     });
     el.addEventListener('keydown', e => {

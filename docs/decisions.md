@@ -6526,6 +6526,48 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
 
+## Classroom dashboards: any website in the QR code (16 Nov 2026)
+"Allow teachers to add websites freely to the QR code." The QR widget's settings ("What the code opens") gain
+**A website…**: an address box, an optional name and "Show this website". Before, a website had to be approved first in
+Push to students' link tab.
+- **Same rules as every approved link.** The address is checked as the teacher types (`webAddress` in
+  `public/js/dash-video.js`, the browser's copy of `services/dash.js` `webAddress`; a test checks they agree) and again
+  on the server: https only, a real host name, no IP address, port, `localhost`/`.local`/`.internal`, user name or
+  password, spaces or control characters, at most 500 characters. The error is the existing wording ("Use a full web
+  address that starts with https://"). **No scheme typed** ("example.org/page"): read as `https://example.org/page`
+  on both sides, and the settings show the full address the code will open. An address with any other scheme
+  (`http:`, `javascript:`, `data:`, `file:`, `user:pw@…`) is still refused, never rewritten.
+- **It becomes an approved link.** `POST /api/dash/:id/links` with `qr: true` (no new address; the class's teacher only,
+  404 to everyone else, the same rate limit) calls `addLink`: audited (`dash.link_add`), on the class's list in Push to
+  students, removable there, counted toward `MAX_LINKS` (50). The same address again is the same link (`addLink` now
+  looks for it before checking the limit, so a full list still reuses it). The widget keeps `{ kind: 'link', ref }`
+  as before; the live game, lesson and game choices are unchanged.
+- **What the code holds: the website's own https address.** The class's `/class/<id>/dashboard/link/<id>` redirect
+  needs a sign-in (it checks the reader is in the class), and the tablets and phones that scan a projector are often
+  not signed in, so a student would meet a sign-in page instead of the site. The code is therefore the approved
+  address itself. It stays safe because the code is only made from an approved, `cleanUrl`-valid link of the class,
+  by the teacher's own request, and the widget is teacher only (`pin: false`, never on a student screen; students
+  can't add links). Removing the link takes the code away: the server refuses to make it (404, "That link isn't
+  available any more"), the screen that removed it redraws at once, and every QR widget checks again each minute, so
+  another screen loses it within a minute. A device that already scanned it keeps the address, as with any website
+  shown on a board. Changed test: `dash-stage2` "QR codes…" expected the class redirect in the code; it now expects
+  the website address (and that the SVG is that address's code).
+- **Long addresses.** `services/qr.js` now makes versions 1-40 (level M, byte mode: the standard's block table,
+  alignment patterns and version information), with versions 1-6 byte for byte as before and the default still
+  version 6 (the live host screen is unchanged). The dashboard asks for up to **version 13 (69 × 69 modules, 331
+  bytes)**: typical addresses of 150-250 characters fit (250 is version 11); longer ones would be too dense to scan
+  from a seat. A longer address is refused as it is typed and on save ("This address is too long for a QR code — try
+  a shorter link"), and an older approved link that is too long shows that message in the widget (the QR route
+  answers 422). Checked against the standard's capacity, alignment and version information tables, against symbols
+  made by OpenCV 5.0's QR encoder (module-for-module identical at versions 7-20 with the same mask; the SHA-256 of
+  four reference symbols are in `tests/unit/live-qr.test.js`), and by decoding our codes with OpenCV's QR detector,
+  including screenshots of the widget in a real browser (34 and 250 characters).
+- **Under the code:** the short address (without `https://`) as before, and the teacher's name for the link when one
+  was given (a name that is only the host name is not repeated).
+- Tests: `tests/unit/dash-stage2.test.js` (typed website creates or reuses the link and the target, refused
+  addresses, browser and server agree, removed link → no code, the encoded address, long addresses, who may call it,
+  a full list, translations), `tests/unit/live-qr.test.js` (versions 7-40).
+
 ## Classroom dashboards: timer and stopwatch combined (16 Nov 2026)
 The product owner: "combine the timer and stopwatch into one widget where you can choose between the two." The library
 now has one entry, **Timer and stopwatch** (type id `timer`; "Timer e cronometro", "Timer und Stoppuhr"...), and no

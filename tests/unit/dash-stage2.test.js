@@ -292,10 +292,11 @@ test('QR codes: only the class\'s approved links and Oomba pages; removed or for
   assert.equal(r.status, 200, r.text);
   assert.match(r.json.svg, /^<svg [^>]*viewBox="0 0 \d+ \d+"/); assert.match(r.json.svg, /aria-label="QR code to scan"/);
   assert.equal(r.json.text, 'library.example.org/kids/reading-corner'); assert.equal(r.json.title, 'School library');
-  // The code holds the class's own link address (a removed link stops working), not the raw outside address.
+  // The code holds the approved website's own https address, so a tablet that isn't signed in opens it at once (the
+  // class's /dashboard/link address needs a sign-in); it is only made while the link is approved (removed: 404 below).
   const target = D.qrTarget(w.A, { kind: 'link', ref: link.id }, 'https://oomba.example');
-  assert.equal(target.url, `https://oomba.example/class/${w.A.id}/dashboard/link/${link.id}`);
-  assert.ok(Buffer.byteLength(target.url) <= 106, 'fits the QR maker');
+  assert.equal(target.url, 'https://library.example.org/kids/reading-corner');
+  assert.equal(r.json.svg, (await import('../../server/services/qr.js')).qrSvg(target.url, { title: 'QR code to scan', max: 13 }), 'the code is of that address');
   assert.equal((await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${other.id}`)).status, 404, 'another class\'s link');
   assert.equal((await T(`/api/dash/${w.A.id}/qr?kind=url&ref=${encodeURIComponent('https://evil.example')}`)).status, 404, 'any other address');
   assert.equal((await T(`/api/dash/${w.A.id}/qr?kind=live`)).status, 404, 'no live game open');
@@ -315,6 +316,101 @@ test('QR codes: only the class\'s approved links and Oomba pages; removed or for
   assert.equal(qr(`https://oomba.example/class/${w.A.id}/dashboard/link/${link.id}`).version, 5);
   assert.equal(qr('x'.repeat(106)).version, 6);
   assert.throws(() => qr('x'.repeat(107)));
+});
+
+test('QR code, a website: typed in the widget\'s settings, it becomes an approved link and the code opens the site itself', async () => {
+  const w = world(); const T = as(w.T);
+  await T(`/class/${w.A.id}/dashboard`);
+  const QR = await import('../../server/services/qr.js');
+  const V = await import('../../public/js/dash-video.js');
+  const site = (who, body) => as(who)(`/api/dash/${w.A.id}/links`, POST({ ...body, qr: true }));
+  const en = tFor('en');
+  // No scheme: read as https://, on both sides alike.
+  const r = await site(w.T, { url: '  example.org/reading?level=2  ', title: 'Reading corner' });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(r.json.link.url, 'https://example.org/reading?level=2'); assert.equal(r.json.link.title, 'Reading corner');
+  assert.deepEqual(r.json.target, { kind: 'link', ref: r.json.link.id });
+  // An approved link like any other: on the class's list, audited, removable, counted toward MAX_LINKS.
+  assert.deepEqual(D.linksOf(w.A.id).map(l => l.url), ['https://example.org/reading?level=2']);
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='dash.link_add' AND target=? AND actor_id=?", w.A.id, w.T.id));
+  // The same address again (typed with its scheme) is the same link: no second row.
+  const again = await site(w.T, { url: 'https://example.org/reading?level=2', title: 'Other name' });
+  assert.equal(again.json.link.id, r.json.link.id); assert.equal(D.linksOf(w.A.id).length, 1);
+  // The widget keeps { kind, ref } only; the layout saves it.
+  const lay = await layout(w, [{ id: 'qq', type: 'qr', x: 0, y: 0, w: 4, h: 4, s: { target: r.json.target } }]);
+  assert.deepEqual(lay.widgets[0].s.target, r.json.target);
+  // The code: the website's own address (no sign-in wall for a tablet), the short text and the teacher's name under it.
+  const code = await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${r.json.link.id}`);
+  assert.equal(code.status, 200, code.text);
+  assert.equal(code.json.text, 'example.org/reading?level=2'); assert.equal(code.json.title, 'Reading corner');
+  assert.equal(D.qrTarget(w.A, r.json.target, 'https://oomba.example').url, 'https://example.org/reading?level=2');
+  assert.equal(code.json.svg, QR.qrSvg('https://example.org/reading?level=2', { title: en('dash.w.qr.scan'), max: QR.MAX_DASH_VERSION }));
+  // No name given: only the address shows (the host name alone isn't repeated as a title).
+  const bare = await site(w.T, { url: 'museum.example.org' });
+  assert.equal(bare.json.link.title, 'museum.example.org');
+  assert.equal((await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${bare.json.link.id}`)).json.title, '');
+  // Refused, with the existing wording: the safety rules stay (http, other schemes, IPs, local names, credentials, ports).
+  const refused = ['http://example.org', 'javascript:alert(1)', 'JAVASCRIPT:alert(1)', 'data:text/html,<b>x</b>', 'ftp://example.org', 'file:///etc/passwd',
+    'https://user:pw@example.org', 'user:pw@example.org', 'kid@example.org', '192.168.1.10/admin', 'https://127.0.0.1', 'localhost/x', 'localhost:3000', 'printer.local',
+    'intranet.internal/a', 'example.org:8443', 'example', 'exa mple.org', 'example.org/‮gnp.exe', '', '   ', `example.org/${'a'.repeat(600)}`];
+  for (const bad of refused) {
+    const x = await site(w.T, { url: bad });
+    assert.equal(x.status, 400, bad); assert.equal(x.json.error, en('dash.errors.url'), bad);
+    assert.equal(D.webAddress(bad), null, bad); assert.equal(V.webAddress(bad), null, `browser: ${bad}`);
+  }
+  // The browser's copy agrees with the server on every address.
+  for (const x of [...refused, 'example.org', 'Example.ORG/Path', 'https://example.org:443/a', 'example.org:443/a', 'www.example.org/a?b=1#c', 'HTTPS://example.org', 'sub.example.co.uk/x'])
+    assert.equal(V.webAddress(x), D.webAddress(x), x);
+  assert.equal(D.webAddress('example.org:443/a'), 'https://example.org/a');
+  assert.equal(D.linksOf(w.A.id).length, 2, 'nothing refused was added');
+  // Long addresses: up to the dashboard's largest code (version 13, 331 bytes) work; longer ones say so and add nothing.
+  assert.equal(V.QR_WEB_MAX, QR.capacity(QR.MAX_DASH_VERSION)); assert.equal(V.QR_WEB_MAX, 331);
+  const url250 = `https://example.org/${'b'.repeat(230)}`; assert.equal(url250.length, 250);
+  const long = await site(w.T, { url: url250 });
+  assert.equal(long.status, 200, long.text);
+  const longCode = await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${long.json.link.id}`);
+  assert.equal(longCode.status, 200); assert.equal(QR.qr(url250, { max: QR.MAX_DASH_VERSION }).version, 11);
+  const max = `https://example.org/${'c'.repeat(331 - 20)}`; assert.equal(max.length, 331);
+  assert.equal((await site(w.T, { url: max })).status, 200); assert.equal(V.tooLongForQr(max), false);
+  const tooLong = `${max}d`;
+  const tl = await site(w.T, { url: tooLong });
+  assert.equal(tl.status, 400); assert.equal(tl.json.error, en('dash.errors.qrLong')); assert.equal(V.tooLongForQr(tooLong), true);
+  assert.ok(!D.linksOf(w.A.id).some(l => l.url === tooLong), 'not added');
+  // A link approved elsewhere (Push to students takes up to 500 characters) that is too long: the widget is told so.
+  const big = D.addLink(w.T, w.A, { url: `https://example.org/${'e'.repeat(400)}` }).link;
+  const bigCode = await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${big.id}`);
+  assert.equal(bigCode.status, 422); assert.equal(bigCode.json.error, en('dash.errors.qrLong'));
+  // Removed (here or in Push to students): no code any more.
+  D.removeLink(w.T, w.A, r.json.link.id);
+  assert.equal((await T(`/api/dash/${w.A.id}/qr?kind=link&ref=${r.json.link.id}`)).status, 404);
+  assert.equal(D.qrTarget(w.A, r.json.target, 'https://oomba.example'), null);
+  // Typing it again after removal approves it afresh.
+  const back = await site(w.T, { url: 'example.org/reading?level=2' });
+  assert.notEqual(back.json.link.id, r.json.link.id);
+  // Only the class's teacher: students, other teachers, a school admin and strangers get 404; signed out 401.
+  const n = D.linksOf(w.A.id).length;
+  for (const who of [w.a1, w.T2, w.SA, w.b1, w.stranger]) assert.equal((await site(who, { url: 'evil.example.org' })).status, 404, who.username);
+  assert.equal((await site(null, { url: 'evil.example.org' })).status, 401);
+  assert.equal(D.linksOf(w.A.id).length, n);
+  // The QR widget is still never pinned to student screens.
+  assert.equal(D.canPin(D.widgetType('qr')), false);
+  // A full list: the same address is still reused; a new one is refused.
+  let i = 0; while (D.linksOf(w.A.id).length < D.MAX_LINKS) D.addLink(w.T, w.A, { url: `https://fill${i++}.example.org` });
+  assert.equal((await site(w.T, { url: 'example.org/reading?level=2' })).json.link.id, back.json.link.id);
+  const full = await site(w.T, { url: 'new.example.org' });
+  assert.equal(full.status, 400); assert.equal(full.json.error, en('dash.errors.tooManyLinks'));
+});
+
+test('QR code, a website: every new string is translated into every locale', async () => {
+  const { checkAll } = await import('../../server/i18n/check.js');
+  const r = checkAll();
+  const keys = Object.keys(r.en).filter(k => /^js\.dash\.qrWeb\.|^dash\.w\.qr\.tooLong$|^dash\.errors\.qrLong$/.test(k));
+  assert.equal(keys.length, 11);
+  for (const l of r.locales) {
+    if (l.code === 'en-GB') continue;
+    assert.deepEqual(l.missing.filter(k => keys.includes(k)), [], l.code);
+    assert.deepEqual([...l.placeholderErrors, ...l.parseErrors, ...l.extra], [], l.code);
+  }
 });
 
 test('the picker: Oomba names only (never real names), no repeats until everyone has had a turn, away students skipped', async () => {

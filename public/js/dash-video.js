@@ -83,3 +83,12 @@ export function siteUrl(v) {
   if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) return null;
   return u.href;
 }
+/** The QR widget's "A website" box: services/dash.js webAddress in the browser (tests/unit/dash-stage2.test.js checks
+ *  they agree). "example.org/page" without a scheme is read as https://example.org/page; then every siteUrl rule. */
+export function webAddress(v) {
+  const s = String(v ?? '').trim();
+  return siteUrl(s && !/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(s) ? `https://${s}` : s);
+}
+/** The longest address (in bytes) the dashboard's QR code takes: services/qr.js capacity(MAX_DASH_VERSION). */
+export const QR_WEB_MAX = 331;
+export const tooLongForQr = href => new TextEncoder().encode(String(href)).length > QR_WEB_MAX;
