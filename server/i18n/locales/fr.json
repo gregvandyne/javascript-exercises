@@ -7688,7 +7688,8 @@
       "languages": "Langues",
       "theme": "Thème",
       "dark": "Sombre",
-      "light": "Clair"
+      "light": "Clair",
+      "preferredSource": "Ajoutez Oomba comme source préférée sur Google"
     }
   },
   "teach": {

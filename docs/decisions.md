@@ -6452,3 +6452,5 @@ layout of the published puzzle that inspired it, never its puzzle sets or wordin
   voice reads the title, the how-to cards and Pip's fixed lines, never a line with the stones' numbers.
 - **Open:** a native speaker's read of the new translations and game titles (each language has its own title, as
   Sudoku's do), and whether Rush deserves a leaderboard of its own.
+## Preferred sources link on the landing page footer
+The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).

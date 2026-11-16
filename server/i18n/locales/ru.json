@@ -7688,7 +7688,8 @@
       "languages": "Языки",
       "theme": "Тема",
       "dark": "Тёмная",
-      "light": "Светлая"
+      "light": "Светлая",
+      "preferredSource": "Добавьте Oomba в предпочитаемые источники Google"
     }
   },
   "teach": {
