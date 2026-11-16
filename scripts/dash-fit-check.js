@@ -19,6 +19,9 @@
 // Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
 // (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
 // names and light words in that language) with its own background.
+// Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): a tool with modes is checked in
+// each mode (its own state, then a widget of its own per other mode, carrying the old tool's busy state there), with its
+// mode switch; the number chart also runs 1-120.
 // Every button with a tooltip is focused in turn (TIPS=0 skips it): its tooltip shows whole inside the screen, clipped
 // by nothing, and the button has no native title as well.
 // Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
@@ -49,6 +52,7 @@ const L = await import('../server/services/lessons.js');
 const DM = await import('../server/services/dash-media.js');
 const games = await import('../server/services/games.js');
 const D = await import('../server/services/dash.js');
+const DT = await import('../server/services/dash-tools.js');
 const { createApp } = await import('../server/app.js');
 const { tFor } = await import('../server/i18n/index.js');
 
@@ -182,6 +186,11 @@ const STAGE4_EXTRA = [...GEO_EXTRA,
 // (docs/decisions.md): Divide in circles past one whole, and one (wfrswitch) whose mode and view the teacher's screen
 // switches in turn before it is checked (Subtract in circles with the answer hidden, then Divide in bars... the pictures
 // were once drawn over the mode buttons after a switch).
+// Maths tools combined: every mode that was a tool of its own, as a widget of the tool it is a mode of now (with the busy
+// state it had), and the number chart's 1-120.
+const MODE_WIDGET = m => ({ ...D.widgetType(DT.MODE_HOME[m]), wid: `wmode${m}`, s: { state: { tab: m, [m]: SETTINGS[m].state } } });
+const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } }]);
+const MODE4 = ['angle', 'solids', 'transform', 'balance'].map(MODE_WIDGET);
 const FRACTION_EXTRA = [
   { ...D.widgetType('fractions'), wid: 'wfrdiv', s: { state: { mode: 'div', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrswitch', s: { state: { mode: 'sub', shape: 'circle', hide: true } } },
@@ -215,7 +224,7 @@ D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA, ...MODE3]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...MODE4, ...STAGE4_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;

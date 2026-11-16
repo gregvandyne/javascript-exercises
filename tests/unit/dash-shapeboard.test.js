@@ -242,7 +242,8 @@ test('Make a question: the selected band\'s area, with the perimeter and the peg
 
 test('the registry and the words: the geoboard id stays; every word in every language, translated', async () => {
   const t = D.widgetType('geoboard');
-  assert.deepEqual([t.size, t.min, t.group, t.send], [[8, 8], [5, 7], 'teach', true]);
+  // Maths tools combined: the angle maker is a mode of the shape board; the mode switch costs a row (smallest 5 x 8).
+  assert.deepEqual([t.size, t.min, t.group, t.send, t.modes], [[8, 8], [5, 8], 'teach', true, ['geoboard', 'angle']]);
   assert.ok(D.MATH_TOOLS.includes('geoboard') && D.ASK_KEYS.includes('geoboardTri') && D.PRACTICE.geoboard.length);
   const en = JSON.parse(fs.readFileSync('server/i18n/locales/en.json', 'utf8'));
   const words = en.dash.w.geoboard;

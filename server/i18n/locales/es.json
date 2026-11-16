@@ -9406,8 +9406,8 @@
         "r_creative": "Buenas ideas"
       },
       "fractions": {
-        "name": "Barras de fracciones",
-        "desc": "Divide, colorea y compara. «Partes iguales» muestra por qué una es mayor. Grados 2.º–6.º.",
+        "name": "Fracciones",
+        "desc": "Compara, suma, resta, multiplica y divide con barras y círculos, y ve un número como fracción, decimal y porcentaje.",
         "bar": "Barras",
         "circle": "Círculos",
         "same": "Partes iguales",
@@ -9447,7 +9447,11 @@
         "modeDiv": "Dividir",
         "howtoDiv": "Ajusta cada número con − y +. ¿Cuántas veces cabe la segunda?",
         "fits": "{b} cabe {n} veces en {a}.",
-        "noZero": "No se puede dividir entre cero, así que el segundo numerador se queda en 1 o más."
+        "noZero": "No se puede dividir entre cero, así que el segundo numerador se queda en 1 o más.",
+        "m": {
+          "fractions": "Barras de fracciones",
+          "fdp": "Fracción, decimal, porcentaje"
+        }
       },
       "numline": {
         "name": "Recta numérica",
@@ -9542,8 +9546,8 @@
         "helpIdeas": "Forma 205 y cambia para poder quitar 30."
       },
       "placeval": {
-        "name": "Tabla de valor posicional",
-        "desc": "De millares a milésimas, con fichas.",
+        "name": "Valor posicional",
+        "desc": "Bloques de base diez y una tabla de valor posicional: cambia decenas por unidades y lee números de millones a milésimas.",
         "discs": "Mostrar fichas",
         "decimals": "Mostrar décimas, centésimas y milésimas",
         "times10": "Por 10",
@@ -9561,7 +9565,11 @@
         "thousandths": "Milésimas",
         "howto": "Toca una columna y cambia su cifra con − y +.",
         "helpUse": "− y + llevan y piden prestado entre las posiciones.\nPor 10 y Entre 10 mueven cada cifra una posición.\nOpciones: las fichas y las cifras después de la coma.",
-        "helpIdeas": "Muestra 3405 y pulsa Por 10: ¿qué se movió y qué se quedó?"
+        "helpIdeas": "Muestra 3405 y pulsa Por 10: ¿qué se movió y qué se quedó?",
+        "m": {
+          "placeval": "Tabla de valor posicional",
+          "base10": "Bloques de base diez"
+        }
       },
       "tenframe": {
         "name": "Marcos de diez",
@@ -9583,8 +9591,8 @@
         "helpIdeas": "Muestra 7 durante dos segundos, tapa la pantalla y pregunta cuántos había."
       },
       "hundreds": {
-        "name": "Tabla del cien",
-        "desc": "Colorea números, cuenta de tantos en tantos y oculta números para adivinar.",
+        "name": "Tabla numérica",
+        "desc": "Una tabla del 1 al 100, del 0 al 99 o del 1 al 120. Colorea números, cuenta de tantos en tantos y oculta números para adivinar.",
         "start": "Números",
         "skip": "Contar de tantos en tantos",
         "skipBy": "De {n} en {n}",
@@ -9601,8 +9609,8 @@
         "helpIdeas": "Cuenta de 9 en 9: ¿qué patrón forman las cifras?"
       },
       "area": {
-        "name": "Modelo de área y matrices",
-        "desc": "Filas por columnas. Divide un lado para ver los productos parciales.",
+        "name": "Multiplicar y dividir",
+        "desc": "Modelos de área y matrices con productos parciales, y una tabla de multiplicar hasta 12 × 12.",
         "rows": "Filas",
         "cols": "Columnas",
         "array": "Matriz",
@@ -9614,7 +9622,11 @@
         "hint": "Divide un lado para partir el producto en partes más fáciles.",
         "howto": "Ajusta filas y columnas con − y +. Divide un lado para descomponer.",
         "helpUse": "Matriz muestra puntos en filas; Modelo de área, un rectángulo.\nDividir por valor posicional muestra cada producto parcial.\nOpciones: elige exactamente dónde se divide cada lado.",
-        "helpIdeas": "Muestra 14 × 6 como 10 × 6 y 4 × 6 y suma las partes."
+        "helpIdeas": "Muestra 14 × 6 como 10 × 6 y 4 × 6 y suma las partes.",
+        "m": {
+          "area": "Modelo de área y matrices",
+          "times": "Tabla de multiplicar"
+        }
       },
       "times": {
         "name": "Tabla de multiplicar",
@@ -9723,8 +9735,8 @@
         "bad": "Esa imagen no funcionó. Prueba con una foto JPG o PNG."
       },
       "geoboard": {
-        "name": "Geoplano",
-        "desc": "Forma figuras con gomas en una cuadrícula, puntos triangulares o un círculo. Área, perímetro y ángulos exactos; regla, etiquetas y lápiz. De 2.º a 8.º.",
+        "name": "Tablero de figuras",
+        "desc": "Haz figuras con gomas en una cuadrícula, puntos o un círculo, con área y perímetro exactos. Crea y mide ángulos con un transportador.",
         "area": "Área",
         "perimeter": "Perímetro",
         "length": "Longitud",
@@ -9830,11 +9842,15 @@
         "idea5": "Forma una figura con exactamente dos ángulos rectos.",
         "howto": "Toca clavos para estirar una goma. Toca el primero para cerrarla.",
         "helpUse": "Toca clavos para tensar una goma; toca el primero para cerrarla.\nArrastra un vértice o la goma entera. Un color empieza otra goma.\nFiguras, Herramientas y Anotar añaden figuras, regla, etiquetas y lápiz.",
-        "helpIdeas": "Prueba: todos forman un área de 12 y comparan los perímetros."
+        "helpIdeas": "Prueba: todos forman un área de 12 y comparan los perímetros.",
+        "m": {
+          "geoboard": "Geoplano",
+          "angle": "Creador de ángulos"
+        }
       },
       "pattern": {
-        "name": "Bloques de patrón",
-        "desc": "Hexágonos, trapecios, rombos, triángulos y cuadrados que encajan. Muestra la fracción de un hexágono. Grados K–5.",
+        "name": "Geometría",
+        "desc": "Bloques de patrón, cuerpos que se despliegan en desarrollos, y traslaciones, reflexiones y giros en una cuadrícula.",
         "hex": "Hexágono",
         "trap": "Trapecio",
         "rhom": "Rombo azul",
@@ -9853,7 +9869,12 @@
         "empty": "Añade un bloque de la fila de arriba. Las flechas mueven el bloque elegido y R lo gira.",
         "howto": "Toca una pieza arriba para añadirla. Arrastra las piezas: encajan solas.",
         "helpUse": "Toca un bloque del tablero para elegirlo; luego Girar o Quitar.\nLa lectura es la fracción de hexágono que forman los bloques.\nLas flechas mueven el bloque elegido; R lo gira.",
-        "helpIdeas": "¿De cuántas formas puedes cubrir un hexágono?"
+        "helpIdeas": "¿De cuántas formas puedes cubrir un hexágono?",
+        "m": {
+          "pattern": "Bloques de patrón",
+          "solids": "Cuerpos y desarrollos",
+          "transform": "Transformaciones"
+        }
       },
       "angle": {
         "name": "Creador de ángulos",
@@ -9962,8 +9983,8 @@
         "helpIdeas": "Resolved juntos 3x + 2 = x + 8 diciendo cada paso en voz alta."
       },
       "algebra": {
-        "name": "Fichas de álgebra",
-        "desc": "Fichas x², x y 1, positivas y negativas. Los pares nulos se anulan; la expresión se simplifica. Grados 6–8.",
+        "name": "Álgebra",
+        "desc": "Fichas de álgebra con pares cero y una balanza para resolver ecuaciones paso a paso.",
         "x2": "x al cuadrado",
         "x": "x",
         "one": "uno",
@@ -9984,7 +10005,11 @@
         "full": "El tapete está lleno.",
         "howto": "Toca una ficha arriba para añadirla. Quita pares nulos para simplificar.",
         "helpUse": "Toca una ficha para elegirla; Voltear cambia su signo.\nLas fichas opuestas del mismo tipo se rodean: un par nulo.\nPares nulos las quita y la expresión se simplifica.",
-        "helpIdeas": "Forma 2x + 3 − x − 1 y simplifícala con pares nulos."
+        "helpIdeas": "Forma 2x + 3 − x − 1 y simplifícala con pares nulos.",
+        "m": {
+          "algebra": "Fichas de álgebra",
+          "balance": "Balanza"
+        }
       },
       "coins": {
         "name": "Monedas y dinero",
@@ -10017,8 +10042,8 @@
         "helpIdeas": "Cuesta 37 y se paga con 100: contad juntos hacia arriba para hallar el cambio."
       },
       "chance": {
-        "name": "Laboratorio de azar",
-        "desc": "Lanza monedas, tira dados y gira ruletas hasta 1000 veces. Una gráfica en vivo junto a lo esperado. Grados 3–8.",
+        "name": "Datos y azar",
+        "desc": "Gráficas de barras, líneas, pictogramas y puntos, y un laboratorio de azar: monedas, dados y ruletas hasta 1000 veces.",
         "coin": "Moneda",
         "dice": "Dados",
         "spinner": "Ruleta",
@@ -10041,7 +10066,11 @@
         "none": "Todavía no hay intentos",
         "howto": "Elige moneda, dados o ruleta y pulsa Lanzar. Compara con la línea.",
         "helpUse": "El menú fija cuántos intentos hace Lanzar cada vez.\nEmpezar de nuevo borra los resultados.\nOpciones: uno o dos dados, las partes de la ruleta, hasta 1000 intentos.",
-        "helpIdeas": "Predice, lanza 10 veces y luego 1000: ¿cuál se acerca más a la mitad?"
+        "helpIdeas": "Predice, lanza 10 veces y luego 1000: ¿cuál se acerca más a la mitad?",
+        "m": {
+          "chance": "Laboratorio de azar",
+          "graph": "Creador de gráficas"
+        }
       },
       "letters": {
         "name": "Fichas de letras",
@@ -10381,7 +10410,8 @@
       "practiceName": "Practicar: {title}",
       "helpFor": "Cómo usar: {name}",
       "helpClose": "Cerrar",
-      "helpTry": "Prueba:"
+      "helpTry": "Prueba:",
+      "modeFor": "Elige qué muestra {name}"
     },
     "ask": {
       "fractions": "¿Qué fracción está coloreada?",

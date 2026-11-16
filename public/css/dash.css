@@ -640,6 +640,13 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 /* steppers and buttons on a tinted area stay visible */
 .dash-wb .btn.dt-pm:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
 .dt-ic{font-size:1.1em;line-height:1}
+/* maths tools combined: the mode switch at the top of a tool with modes (public/js/dash-modes.js), like the timer's */
+.dt-modes{flex:none;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:100%;min-width:0}
+.dt .dt-mode{flex:0 1 auto;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-weight:700}
+.dt-modeic{flex:none;font-size:1.1em;line-height:1}
+.dt-modetext{min-width:0;overflow-wrap:break-word}
+@container (max-width:420px){.dt .dt-mode{padding:0 8px}.dt-modes:has(.dt-mode:nth-child(3)) .dt-modeic{display:none}}
+.dash-projector .dt .dt-mode{font-size:1.05rem}
 /* help on the maths tools: the one-line instruction under the title, ⓘ in the header and its panel inside the widget */
 .dt-howrow{flex:none;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;margin-bottom:calc(4px - var(--s2))}
 .dt-howrow[hidden]{display:none}
@@ -859,6 +866,8 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 /* hundreds chart and times table */
 .dt-hgrid,.dt-tgrid{display:grid;width:min(100%,calc(100cqh - 4px));max-height:100%;aspect-ratio:1;gap:2px}
 .dt-hgrid{grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
+/* maths tools combined: 1-120 is twelve rows of ten */
+.dt-hgrid.is-120{grid-template-rows:repeat(12,1fr);aspect-ratio:auto;height:100%;width:min(100%,calc(100cqh * 1.25))}
 .dt-tgrid{grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr)}
 .dt-hcell,.dt-tcell,.dt-th{display:grid;place-items:center;min-width:0;min-height:0;padding:0;border:0;border-radius:5px;background:var(--card-2);color:var(--text);font:700 clamp(13px,min(3.3cqi,3.3cqh),1.5rem) var(--font);font-variant-numeric:tabular-nums;cursor:pointer;line-height:1}
 .dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-size:clamp(12px,min(2.7cqi,2.7cqh),1.3rem);letter-spacing:-.03em}
@@ -909,6 +918,8 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-cardl{white-space:nowrap}
 .dt-hund{flex:0 1 auto;height:100%;max-width:45%;aspect-ratio:1;cursor:pointer}
 .dt-part{opacity:.55}
+/* maths tools combined: in the taller fractions tool, narrow cards beside the grid go one under another (never cut) */
+@container (min-aspect-ratio:7/5) and (max-width:700px){.dt-cards{grid-template-columns:minmax(0,1fr)}}
 @container (max-aspect-ratio:7/5){.dt-fdpwrap{flex-direction:column}.dt-hund{flex:1 1 0;min-height:0;height:auto;width:auto;max-width:100%;max-height:100%}.dt-cards{flex:none;width:100%}}
 /* whiteboard */
 .dt-boardbg{border-radius:var(--r-sm);background-color:var(--card-2);overflow:hidden;box-shadow:inset 0 0 0 2px var(--line)}
@@ -1362,6 +1373,9 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.dt-mbtn,.dt-tile{transition:none}}
 @media (max-width:719px){
   .dt-angle,.dt-solid,.dt-map,.dt-bal,.dt-pboard{height:auto;width:100%;max-height:70vh}
+  /* the angle maker's body shares the class dt-angle with its drawing: the body itself is never held to 70vh (its mode
+     switch made it taller than that) */
+  .dash-wb.dt-angle{max-height:none}
   .dt-anglewrap,.dt-solidwrap,.dt-mapwrap,.dt-chwrap,.dt-money,.dt-lwrap,.dt-org,.dt-algmat{height:auto}
   .dt-chwrap{flex-direction:column}.dt-chart{width:100%;height:auto;flex:none}.dt-chobj{height:auto;width:min(40%,140px)}
   .dt-mmat{flex:none;min-height:120px}
@@ -1378,6 +1392,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 /* a student's own copy of a sent tool */
 .dash-copysheet{width:min(1100px,calc(100vw - 24px));max-width:none}
 .dash-wcopy{height:min(62vh,640px);padding:var(--s3);margin-top:var(--s2);box-shadow:inset 0 0 0 2px var(--line)}
+/* maths tools combined: a copy with a mode switch gets that row back */
+.dash-wcopy:has(.dt-modes){height:min(70vh,700px)}
 .dash-copyacts{margin-top:var(--s3);justify-content:flex-end}
 /* small widgets: the model keeps its room */
 @container (max-height:300px){.dt-read .dt-sub:not(:first-child){display:none}.dt-steplab{display:none}}
@@ -1403,13 +1419,14 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-mats{min-height:240px}
   .dt-pv{min-height:200px}
   .dt-hgrid,.dt-tgrid{width:100%;height:auto}
+  .dt-hgrid.is-120{width:100%;height:auto;aspect-ratio:10/12}
   .dt-tgrid{gap:1px}
   .dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-weight:600;letter-spacing:-.06em}
   .dt-tfwrap{flex-wrap:wrap}
   .dt-tf{height:auto;width:min(100%,360px)}
   .dt-boardbg{height:320px}
   .dt-picframe{flex:none;height:260px}
-  .dash-wcopy{height:auto}
+  .dash-wcopy,.dash-wcopy:has(.dt-modes){height:auto}
 }
 
 /* ---------- stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, document camera, hall

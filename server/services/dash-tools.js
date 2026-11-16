@@ -62,8 +62,14 @@ export const TOOL_SPECS = {
   placeval: { spec: { v: ['int', 0, 9999999, 3405270], discs: ['bool', true], dec: ['bool', true] }, fix: s => { if (!s.dec) s.v -= s.v % 1000; } },
   tenframe: { spec: { frames: ['enum', [1, 2], 1], cells: ['ints', 20, 0, 2, [1, 1, 1, 1, 1, 1, 1, 2, 2]], bond: ['bool', true] },
     fix: s => { s.cells = Array.from({ length: 20 }, (_, i) => (i < s.frames * 10 ? s.cells[i] || 0 : 0)); } },
-  hundreds: { spec: { start: ['enum', [1, 0], 1], shade: ['ints', 100, 0, 100], skip: ['int', 0, 10, 0], hide: ['enum', ['none', 'shaded', 'all'], 'none'] },
-    fix: s => { const lo = s.start, hi = s.start ? 100 : 99; s.shade = [...new Set(s.shade)].filter(x => x >= lo && x <= hi).sort((a, b) => a - b); if (s.skip === 1) s.skip = 0; } },
+  // Maths tools combined: the number chart also runs 1-120 (upto 120, from 1 only); upto is stored only when it is 120,
+  // so a chart saved before it is stored exactly as it was.
+  hundreds: { spec: { start: ['enum', [1, 0], 1], shade: ['ints', 120, 0, 120], skip: ['int', 0, 10, 0], hide: ['enum', ['none', 'shaded', 'all'], 'none'], upto: ['enum', [100, 120], 100] },
+    fix: s => {
+      if (!s.start) s.upto = 100;
+      const lo = s.start, hi = s.start ? s.upto : 99; s.shade = [...new Set(s.shade)].filter(x => x >= lo && x <= hi).sort((a, b) => a - b); if (s.skip === 1) s.skip = 0;
+      if (s.upto === 100) delete s.upto;
+    } },
   area: { spec: { a: ['int', 1, 99, 4], b: ['int', 1, 99, 6], view: ['enum', ['array', 'area'], 'array'], sa: ['int', 0, 98, 0], sb: ['int', 0, 98, 0] },
     fix: s => { if (s.sa >= s.a) s.sa = 0; if (s.sb >= s.b) s.sb = 0; } },
   times: { spec: { size: ['enum', [10, 12], 10], r: ['int', 0, 12, 0], c: ['int', 0, 12, 0], mark: ['enum', ['fact', 'row', 'col', 'squares', 'turn'], 'fact'], hide: ['bool', false] },
@@ -157,8 +163,24 @@ export const ORGANIZER_BOXES = { venn: 3, tchart: 2, kwl: 3, story: 5 };
 export const ORGANIZER_GROW = { seq: { key: 'n', lo: 2, hi: 10 }, main: { key: 'd', lo: 2, hi: 6 } };
 /** An organizer state's number of boxes (main idea and details: the idea and its details). */
 export const organizerBoxes = s => ORGANIZER_BOXES[s.kind] || (s.kind === 'main' ? 1 + s.d : s.n);
-/** The tools a teacher can send to students (each student gets their own copy). */
+/** The tools a teacher can send to students (each student gets their own copy). Since "maths tools combined" this also
+ *  holds the retired tools' ids: they are modes of another tool now, and their specs clean those modes' states. */
 export const TOOL_IDS = Object.keys(TOOL_SPECS);
+/** Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): a tool with modes and, in
+ *  order, its modes. The first mode is the tool's own (its state's own keys, as always); every other mode is a tool that
+ *  used to stand alone, and its state lives under its old id (placeval's { v, discs, dec, base10: { h, t, o } }). Which
+ *  mode shows is `tab` (`mode` is already the fraction tool's Compare|Add..., the number line's and the coins'). */
+export const TOOL_MODES = {
+  placeval: ['placeval', 'base10'],
+  fractions: ['fractions', 'fdp'],
+  area: ['area', 'times'],
+  geoboard: ['geoboard', 'angle'],
+  pattern: ['pattern', 'solids', 'transform'],
+  algebra: ['algebra', 'balance'],
+  chance: ['chance', 'graph'],
+};
+/** A retired tool's id -> the tool it is a mode of now. */
+export const MODE_HOME = Object.fromEntries(Object.entries(TOOL_MODES).flatMap(([id, modes]) => modes.slice(1).map(m => [m, id])));
 
 function cleanBy(spec, src) {
   const o = src && typeof src === 'object' && !Array.isArray(src) ? src : {}, out = {};
@@ -181,5 +203,23 @@ export function cleanToolState(type, v, o = {}) {
   const t = TOOL_SPECS[type]; if (!t) return null;
   const s = cleanBy(t.spec, v);
   if (t.fix) t.fix(s, o);
+  // A tool with modes: which one shows (kept only when it isn't the tool's own) and each other mode's state, cleaned by
+  // its own spec and kept only when it differs from its start. So a state saved before the modes is stored exactly as it
+  // was, and switching modes never loses what was set up in another.
+  const modes = TOOL_MODES[type];
+  if (modes) {
+    const src = v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+    if (modes.includes(src.tab) && src.tab !== type) s.tab = src.tab;
+    for (const m of modes.slice(1)) {
+      if (!src[m] || typeof src[m] !== 'object' || Array.isArray(src[m])) continue;
+      const sub = cleanToolState(m, src[m], o);
+      if (JSON.stringify(sub) !== JSON.stringify(cleanToolState(m, {}, o))) s[m] = sub;
+    }
+  }
   return s;
+}
+/** A state of a retired tool -> the same state as a mode of the tool it is now ({ type, state }); anything else unchanged. */
+export function moveToolState(type, state) {
+  const home = MODE_HOME[type];
+  return home ? { type: home, state: cleanToolState(home, { tab: type, [type]: state && typeof state === 'object' ? state : {} }) } : { type, state };
 }

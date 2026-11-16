@@ -6831,6 +6831,90 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
 
+## Classroom dashboards: maths tools combined (16 Nov 2026)
+Product: "Where possible let's consolidate these math widgets." The library's maths tools go from 21 to 13: eight tools
+are now **modes** of another, chosen with a switch at the top of the tool (a segmented control like the timer's Timer |
+Stopwatch). Each mode is the old tool, whole: its state, its one-line instruction, its own ⓘ help ("How to use Base-ten
+blocks"), Make a question, Send to students, Practice it and the projector. Code: `TOOL_MODES`, `MODE_HOME`,
+`cleanToolState`, `moveToolState` in `server/services/dash-tools.js`; `WIDGETS` (`toolType`, `modes`), `MODE_ICONS`,
+`RETIRED`, `migrateWidget`, `registryFor` (`modes`), `toolOfPush` in `server/services/dash.js`; the wrapper
+`public/js/dash-modes.js` (`moded`, `withModes`, `modeState`, `withMode`), used by `RENDER` in `public/js/dash-widgets.js`;
+`ctx.practiceOf` and `toolName` in `public/js/dash.js`; `.dt-modes` in `public/css/dash.css`; strings
+`dash.w.<tool>.m.<mode>` and `dash.tools.modeFor`.
+
+| Tool in the library (type id) | Modes (the first is the tool's own) |
+|---|---|
+| Fractions (`fractions`) | Fraction bars (`fractions`: Compare, Add, Subtract, Multiply, Divide as before) · Fraction, decimal, percent (`fdp`) |
+| Number line (`numline`) | unchanged (negatives were already there: −100 to 1000) |
+| Coordinate plane (`coord`) | unchanged: its own tool (see below) |
+| Place value (`placeval`) | Place value chart (`placeval`) · Base-ten blocks (`base10`) |
+| Ten frames (`tenframe`) | unchanged (see below) |
+| Number chart (`hundreds`) | one tool; Options: 1–100, 0–99 or **1–120** (new) |
+| Multiply and divide (`area`) | Area model and arrays (`area`) · Times table grid (`times`) |
+| Teaching clock (`tclock`), Coins and money (`coins`) | unchanged |
+| Shape board (`geoboard`) | Geoboard (`geoboard`, the shape board as before) · Angle maker (`angle`) |
+| Geometry (`pattern`) | Pattern blocks (`pattern`) · 3D shapes and nets (`solids`) · Transformations (`transform`) |
+| Algebra (`algebra`) | Algebra tiles (`algebra`) · Balance scale (`balance`) |
+| Data and chance (`chance`) | Chance lab (`chance`) · Graph maker (`graph`) |
+
+- **Decided: the coordinate plane stays a tool of its own.** It is where slope and y = mx + b are taught (a table of
+  values, rise over run): algebra and functions, not shapes. Transformations do happen on a grid, but on their own −8 to 8
+  grid with a shape, its image and the rule; folding the plane into Geometry would hide y = mx + b behind a geometry
+  switch, and folding transformations into the plane would give the plane two unrelated jobs. So Geometry has three modes
+  and the plane stays where teachers look for it. 13 maths tools, not 12.
+- **Decided: the angle maker is a mode of the shape board**, not a tool inside the board. The board's own Angles toggle
+  already measures the inside angles of a band; the angle maker is a different lesson (two rays, a protractor, naming
+  angles from zero to a full turn) and keeps its slider, presets and snapping only as a mode of its own.
+- **Decided: Ten frames keeps its name and has no switch yet.** A switch with one button would be noise, and calling it
+  "Counting frames" before the bead rack and two-colour counters exist would promise tools that aren't there. When they
+  come they are entries of `TOOL_MODES.tenframe`: the wrapper, the state and the migration need nothing else.
+- **Decided: the number chart's 1–120** is a third choice in its Options ("1–120": twelve rows of ten). The state gains
+  `upto` (100 or 120, from 1 only), stored only when it is 120, so every chart saved before is stored exactly as it was.
+  Skip counting and the question it makes go to 120.
+- **The state.** A tool with modes keeps its own mode's keys at the top of its state, exactly as before; each other mode's
+  state is under the old tool's id (`{ v, discs, dec, base10: { h, t, o } }`), and `tab` says which mode shows.
+  **Decided: `tab`, not `mode`**: `mode` is already the fraction tool's Compare | Add..., the number line's whole |
+  fraction | decimal and the coins' count | change. `cleanToolState` cleans the tool's own keys with its own spec and each
+  mode's part with the old tool's spec (`TOOL_SPECS` keeps every old spec); `tab` is kept only when it is not the tool's
+  own mode, and a part only when it differs from its start. So layouts and pushes saved before load and store unchanged,
+  switching modes never loses another mode's work (each part is kept), and the shape board's student rule (no labels or
+  drawings on a student's own screen) still applies in every mode.
+- **The wrapper** (`moded` in `public/js/dash-modes.js`, about 100 lines): it draws the switch, then calls the old renderer
+  of the chosen mode on the same widget body, with that mode's words, name and starting state, `keep` and `send` that put
+  the mode's part back into the whole state, and that mode's Practice it games. Switching destroys the mode on screen
+  (its help button and panel too) and draws the other; the switch is announced and keeps the focus. The renderers
+  themselves are unchanged (the fraction tool's drawing in particular: a parallel fix is working on it).
+- **Old widgets keep working, on read** (no migration, as for the stopwatch): everywhere a widget list is read (layouts,
+  the class's pins, a student's own screen) or sent (`cleanWidgets`), a widget of a retired type becomes the tool it is a
+  mode of **with the same id**, its state moved under its old id and `tab` set to it (`RETIRED`, built from `MODE_HOME`;
+  `migrateWidget` takes a function of the old settings). Its box grows to the tool's smallest size and what it would now
+  cover moves down (`migrateWidgets`). A browser that still sends an old type gets the same. `known()` would drop an
+  unknown type, but no retired maths type is unknown: each is migrated first. **Sent copies:** `dash_pushes.data` is never
+  rewritten; a push with an old type is read as `{ type: <tool>, state: { tab: <old>, <old>: state } }` (`toolOfPush`), so
+  a student's tray opens it in that mode, and "Pin to my screen" keeps the whole tool. A new push carries the whole tool
+  (every mode's part), so a student can switch modes on their copy too; it still stays in their browser.
+- **Practice it** is keyed by mode (`PRACTICE` keeps the old tools' ids, which are the modes' ids); the page sends every
+  key and `ctx.practiceOf(mode)` gives each mode its own games (base-ten blocks: Rocket Supply; times table: Sum Racer...).
+- **The library**: one entry per tool, new names and descriptions in all 13 locales (en-GB only where its spelling
+  differs: the "times tables grid"; its old descriptions of the shape board, pattern blocks, algebra tiles and chance lab
+  were removed so the new English ones show). A mode's name on the switch is the old tool's name in that language
+  (`dash.w.<tool>.m.<mode>`), so nothing a teacher knew is renamed inside a tool. Searching the library also finds a tool
+  by its modes' names ("times table" finds Multiply and divide). A sent tool is named by its mode in the banner and tray.
+- **Sizes**: each tool is at least as big as its biggest mode was, plus the switch's row: fractions 6 × 8 (smallest 5 ×
+  8), place value 7 × 7 (6 × 6), multiply and divide 6 × 8 (5 × 8), shape board 8 × 8 (5 × 8), geometry 7 × 8 (6 × 8),
+  algebra 7 × 7 (6 × 7), data and chance 7 × 7 (6 × 7). Smaller saved boxes grow when read.
+- **Ready-made layouts**: none uses a retired type (the Lesson layout's number line is unchanged); tested.
+- **Fit check**: `npm run dash:fit` has, on the tools' layouts, a widget per mode that was a tool of its own (with the busy
+  state it had) and a 1–120 chart, at both sizes, on every view, in English, German and Arabic; each mode's ⓘ panel is
+  opened.
+- **Safety** unchanged: no AI, no network or storage in the wrapper (tested by reading it), students' copies stay in their
+  browser, no prices.
+- **Tests:** new `tests/unit/dash-math-merge.test.js`. Changed to the combined tools: `dash.test.js` (the tools a student
+  may add), `dash-stage3.test.js` (the registry test: graph, base10, times and fdp are modes with renderers, students'
+  old types are read as the tool), `dash-stage4.test.js` (the registry test for angle, solids, transform and balance; a
+  mode's words come from its tool's `modes` in "Make a question" and the help tests; `MATH_TOOLS` is every mode of the
+  Teach tools), `dash-shapeboard.test.js` (smallest size 5 × 8 and its modes).
+
 ## Classroom dashboards: tooltips never cut off; pattern blocks dragged from the palette (16 Nov 2026)
 From the product owner's screenshots of the live site.
 - **Tooltips were cut off.** The dark label a button shows on hover and keyboard focus (stage 4 review) was a `::after`

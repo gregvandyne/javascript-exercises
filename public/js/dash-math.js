@@ -254,9 +254,9 @@ export const placeSplit = n => (n >= 10 && n % 10 ? n - (n % 10) : 0);
 
 // ---------------------------------------------------------------- hundreds chart
 /** Skip counting by n on a chart starting at 0 or 1 (to 99 or 100): the numbers counted (n, 2n, 3n...). */
-export function skipCount(n, start = 1) {
+export function skipCount(n, start = 1, upto = 100) {
   const out = []; if (n < 1) return out;
-  for (let x = n; x <= (start ? 100 : 99); x += n) out.push(x);
+  for (let x = n; x <= (start ? upto : 99); x += n) out.push(x);
   return out;
 }
 
