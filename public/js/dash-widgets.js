@@ -160,7 +160,7 @@ function chime() {
   } catch { /* no sound: fine */ }
 }
 const localTimers = new Map();   // a student's own timers (their browser only)
-const RING = 2 * Math.PI * 44;
+const RING = 2 * Math.PI * 45;
 // The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): s.mode 'timer'
 // counts down, 'stopwatch' counts up. Whoever controls it switches with the two buttons at the top; a switch drops
 // the run it had (the server does the same when the layout is saved), so nothing carries over from the other mode.
@@ -210,8 +210,8 @@ function timer(body, s, ctx) {
   if (ringView) {
     const wrap = el('div', 'dw-ring');
     const svg = svgEl('svg', { viewBox: '0 0 100 100', 'aria-hidden': 'true' });
-    svg.appendChild(svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringbg' }));
-    arc = svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringfg', 'stroke-dasharray': RING, transform: 'rotate(-90 50 50)' });
+    svg.appendChild(svgEl('circle', { cx: 50, cy: 50, r: 45, class: 'dw-ringbg' }));
+    arc = svgEl('circle', { cx: 50, cy: 50, r: 45, class: 'dw-ringfg', 'stroke-dasharray': RING, transform: 'rotate(-90 50 50)' });
     svg.appendChild(arc);
     wrap.append(svg, digits);
     main.append(wrap, doneMsg);
@@ -267,6 +267,9 @@ function timer(body, s, ctx) {
     const st = state(), v = timerView(st, clockNow());
     const ms = down ? v.left : v.elapsed;
     digits.textContent = mmss(ms, !down);
+    // One size for every time to 99:59, and one step down for hours, decided by the run (a countdown of an hour or more
+    // keeps the smaller size all the way down; a stopwatch steps down once, at 1:00:00), never by the text shown.
+    digits.classList.toggle('is-long', down ? st.dur >= 3600e3 : ms >= 3600e3);
     digits.setAttribute('aria-label', down ? fill(W.left, { time: mmss(ms) }) : mmss(ms, true));
     if (barFill) barFill.style.inlineSize = `${st.dur ? (100 * v.left) / st.dur : 0}%`;
     if (arc) arc.setAttribute('stroke-dashoffset', String(RING * (1 - (st.dur ? v.left / st.dur : 0))));

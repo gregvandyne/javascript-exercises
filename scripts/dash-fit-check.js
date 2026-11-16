@@ -281,6 +281,27 @@ const SCHED_AT = (process.env.SCHED_AT || '07:30,08:05,08:19,09:10,10:20,11:30,1
   ].map(w => ({ ...w, pin: true }));
   for (const at of SCHED_AT) LAYOUTS.push({ key: `sched-${at.replace(':', '')}`, at, widgets, own: [], chip: 1, stage5: false });
 }
+// The timer's ring and digits (docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring"): the time is the same size at
+// every time up to 99:59 (0:05, 9:59, 10:00 and 59:59 side by side, in the ring, the digits and the stopwatch), and in
+// the ring it sits inside the ring's inner circle. One layout per size (key timer-<size>, SIZES=timer for only these):
+// the default, the smallest and the Quiet work layout's big 6 x 7 ring; each also has 1:05:00 (hours, a size of its own)
+// and the Fun break layout's 3:00 ring.
+{
+  const tt = D.widgetType('timer'), STATES = [['0005', 5e3], ['959', 599e3], ['1000', 600e3], ['5959', 3599e3]];
+  for (const [key, [tw, th]] of [['default', tt.size], ['min', tt.min], ['big', [6, 7]]]) {
+    const items = [];
+    const views = key === 'big' ? ['ring'] : ['ring', 'digits', 'sw'];
+    for (const v of views) for (const [k, ms] of STATES) items.push([`wt-${v}-${k}`, v, ms]);
+    for (const v of views) items.push([`wth-${v}-10500`, v, 3900e3]);
+    items.push(['wt3-ring-300', 'ring', 180e3]);
+    const per = Math.floor(12 / tw), widgets = [], timers = [];
+    items.forEach(([id, v, ms], i) => {
+      widgets.push({ id, type: 'timer', x: (i % per) * tw, y: Math.floor(i / per) * th, w: tw, h: th, pin: true, s: v === 'sw' ? { mode: 'stopwatch' } : { minutes: 5, view: v === 'ring' ? 'ring' : 'digits', bar: true } });
+      timers.push([id, v === 'sw' ? 'up' : 'down', ms]);
+    });
+    LAYOUTS.push({ key: `timer-${key}`, widgets, own: [], chip: 1, stage5: false, timers });
+  }
+}
 const ZONE = S.zoneOf(S.getSchool(school.id)) || D.FALLBACK_TZ;
 /** Today's hh:mm in the school's time zone, as a time for the browser's clock. */
 const schoolTime = hhmm => {
@@ -400,6 +421,24 @@ function problems() {
       if (!e.closest('.dw-stick,.dw-stick-top')) for (const st of sticks) { const q = st.getBoundingClientRect(); if (q.top < r.bottom - 1 && q.bottom > r.top + 1 && q.left < r.right && q.right > r.left) out.push(`${name(w)}: "${label(e)}" is under the widget's controls`); }
     }
   }
+  // The timer (docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring"): in the ring view the time's box lies inside the
+  // ring's inner circle with room to spare (2px), and timers of one group (the timer layouts' wt-<view>-<time> widgets,
+  // one size) show their time at one font size, whatever the time.
+  const tfont = new Map();
+  for (const t of document.querySelectorAll('.dash-w .dw-timer')) {
+    const w = t.closest('.dash-w'), d = t.querySelector('.dw-digits'); if (!w.offsetParent || !d || !d.getClientRects().length) continue;
+    const c = t.querySelector('.dw-ring .dw-ringbg');
+    if (c) {
+      const m = c.getScreenCTM(), k = Math.hypot(m.a, m.b), cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
+      const ox = m.a * cx + m.c * cy + m.e, oy = m.b * cx + m.d * cy + m.f;
+      const inner = (+c.getAttribute('r') - parseFloat(getComputedStyle(c).strokeWidth) / 2) * k;
+      const q = d.getBoundingClientRect(), far = Math.max(...[[q.left, q.top], [q.right, q.top], [q.left, q.bottom], [q.right, q.bottom]].map(([x, y]) => Math.hypot(x - ox, y - oy)));
+      if (far > inner - 2) out.push(`${name(w)}: the time "${d.textContent}" is not inside the ring (corner ${far.toFixed(1)}px from its centre, inner circle ${inner.toFixed(1)}px)`);
+    }
+    const id = w.dataset.id || '';
+    if (/^wt-/.test(id)) { const g = id.replace(/-[^-]+$/, ''); if (!tfont.has(g)) tfont.set(g, []); tfont.get(g).push([d.textContent, parseFloat(getComputedStyle(d).fontSize)]); }
+  }
+  for (const [g, list] of tfont) if (new Set(list.map(([, f]) => f.toFixed(2))).size > 1) out.push(`timer ${g}: the time changes size with the time (${list.map(([x, f]) => `${x} ${f.toFixed(1)}px`).join(', ')})`);
   // Stage 3: a teaching tool's model stays inside its own area (it never spills over the readout or the buttons), and the
   // tool's rows never overlap.
   for (const st of document.querySelectorAll('.dash-w .dt-stage')) {
@@ -572,6 +611,8 @@ for (const L of RUN) {
  D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
+ // The timer layouts: each timer paused at its time (a countdown set to it, a stopwatch run that long and paused).
+ for (const [id, m, ms] of L.timers || []) { const t0 = Date.now(); if (m === 'down') D.timerAction(T, C, id, { action: 'set', ms }, t0); else { D.timerAction(T, C, id, { action: 'start' }, t0 - ms); D.timerAction(T, C, id, { action: 'pause' }, t0); } }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
   if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
@@ -670,6 +711,8 @@ for (const L of RUN) {
     if (OUT) {
       await page.evaluate(() => { document.querySelector('.dash-stage').scrollTop = 0; });
       await page.screenshot({ path: `${OUT}/fit-${L.key}-${lang}-${v.name}.png`, fullPage: v.name === 'phone' });
+      // The timer layouts: each timer on its own too.
+      if (L.timers) for (const w of await page.$$('.dash-w[data-id^="wt"]')) await w.screenshot({ path: `${OUT}/${L.key}-${lang}-${v.name}-${await w.getAttribute('data-id')}.png` }).catch(() => {});
       // The schedule's own layouts: each schedule widget on its own too.
       if (L.at) for (const w of await page.$$('.dash-w[data-id^="wsched"]')) await w.screenshot({ path: `${OUT}/${L.key}-${lang}-${v.name}-${await w.getAttribute('data-id')}.png` }).catch(() => {});
     }

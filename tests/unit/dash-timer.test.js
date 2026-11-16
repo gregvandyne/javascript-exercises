@@ -187,3 +187,25 @@ test('ready-made layouts still make timers (timer mode, their own minutes and lo
   }
   assert.deepEqual(D.templateWidgets('quiet', t).find(y => y.type === 'timer').s, { mode: 'timer', minutes: 20, view: 'ring', chime: false, bar: true });
 });
+
+test('the ring and the digits: one size for every time to 99:59, sized from the ring, never from the time shown', () => {
+  // docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring".
+  const css = fs.readFileSync('public/css/dash.css', 'utf8'), js = fs.readFileSync('public/js/dash-widgets.js', 'utf8');
+  const rule = sel => { const m = css.match(new RegExp(`(?:^|\\})${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\{([^}]*)\\}`, 'm')); return m ? m[1] : ''; };
+  // The ring's area is a size container and the ring is the largest circle in it; the time is sized from that alone.
+  assert.match(rule('.dw-ring'), /container-type:size/);
+  assert.match(rule('.dw-ring svg'), /width:min\(100cqw,100cqh\)/);
+  const k = Number(rule('.dw-ring .dw-digits').match(/min\(100cqw,100cqh\) \* ([\d.]+)/)[1]);
+  const kLong = Number(rule('.dw-ring .dw-digits.is-long').match(/min\(100cqw,100cqh\) \* ([\d.]+)/)[1]);
+  // The widest time ("88:88", 2.62em x 1.18em with its line box; "8:88:88" 3.44em) fits the inner circle (r 41 of 100,
+  // ring r 45, stroke 8) with room to spare.
+  assert.match(js, /r: 45, class: 'dw-ringbg'/); assert.match(css, /\.dw-ringbg\{[^}]*stroke-width:8/);
+  const inner = 2 * (45 - 4) / 100;
+  assert.ok(Math.hypot(2.62, 1.18) * k <= inner * 0.92, `88:88 fits (${k})`);
+  assert.ok(Math.hypot(3.44, 1.18) * kLong <= inner * 0.92, `8:88:88 fits (${kLong})`);
+  // Tabular figures, so the digits never jiggle while counting; hours step down once, by the run, not by the text.
+  assert.match(css, /\.dw-digits\{[^}]*font-variant-numeric:tabular-nums/);
+  assert.match(js, /digits\.classList\.toggle\('is-long', down \? st\.dur >= 3600e3 : ms >= 3600e3\)/);
+  assert.doesNotMatch(js, /digits\.style\.fontSize/);
+  assert.equal(W.mmss(599e3), '9:59'); assert.equal(W.mmss(3599e3), '59:59'); assert.equal(W.mmss(3900e3), '1:05:00');
+});

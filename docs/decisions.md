@@ -7127,3 +7127,26 @@ the end of a very long page. Code: `placeSwitcher` in `public/js/dash.js`, the `
   (`teacher-phone`, `teacher-phone-dark`, 390 × 844): the switcher and the Eyes up / Push bar are on the first screen, the
   chip on screen is in view, every control is 44px, the switcher stays at the top when scrolled, and at rest neither bar
   covers a widget.
+
+## Classroom dashboards: timer, one digit size, inside the ring (16 Nov 2026)
+The product owner, from a phone (Fun break layout, ring view at 3:00): "I don't like how this changes sizes depending on
+the number of minutes. Let's make the outer circle larger so it can house bigger numbers and make the size consistent
+for all single and double digit numbers." Cause: the ring had no size of its own. It was a square grid around the
+digits, so where the widget's height is not fixed (a phone, where each widget is as tall as its content) the ring was
+only as wide as the time ("3:00" a small ring, "10:00" a bigger one) and the time ran over the ring on both sides; on
+wide screens the ring took the height left but the digits were sized from the widget, not from the ring, and their box
+reached past the inner circle.
+- **The ring is as big as the room left** under the Timer | Stopwatch switch and above the quick times and Start: its
+  area (`.dw-ring`) takes all the height left and is a size container; the circle is `min(100cqw, 100cqh)` of it. On a
+  phone the area is given a height (76% of the widget's width, at most 340px). The ring is now r 45, stroke 8 (was 44
+  and 9), so its inner circle is r 41 of 100.
+- **One digit size for every time to 99:59**, sized from the ring alone: `0.25 × the ring`, which fits the widest
+  case, "88:88" (2.62em × 1.18em with its line box in Bricolage Grotesque 800, tabular figures), inside the inner circle
+  with room to spare. Times with hours step down once, to `0.195 ×` (fits "8:88:88"), decided by the run, not the text:
+  a countdown of an hour or more keeps the smaller size all the way down; a stopwatch steps down once at 1:00:00.
+- The digits view already sized the time from the widget only (tabular figures, never from the text); it is now
+  checked too.
+- Tests: `dash-timer.test.js` (the rules and the sums). `npm run dash:fit` has three timer layouts (`timer-default`,
+  `timer-min`, `timer-big` for Quiet work's 6 × 7; `SIZES=timer` for only these) with timers paused at 0:05, 9:59, 10:00
+  and 59:59 in the ring, the digits and the stopwatch, plus 1:05:00 and the Fun break's 3:00 ring: in each group the
+  time has one font size, and on every view any ring's time box lies inside its inner circle (2px to spare).
