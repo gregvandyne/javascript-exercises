@@ -7694,7 +7694,8 @@
       "languages": "Sprachen",
       "theme": "Design",
       "dark": "Dunkel",
-      "light": "Hell"
+      "light": "Hell",
+      "preferredSource": "Oomba als bevorzugte Quelle bei Google hinzufügen"
     }
   },
   "teach": {

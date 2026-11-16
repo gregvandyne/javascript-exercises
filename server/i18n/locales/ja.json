@@ -7693,7 +7693,8 @@
       "languages": "言語",
       "theme": "テーマ",
       "dark": "ダーク",
-      "light": "ライト"
+      "light": "ライト",
+      "preferredSource": "Google で Oomba を優先ソースに追加"
     }
   },
   "teach": {

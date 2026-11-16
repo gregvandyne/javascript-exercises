@@ -7693,7 +7693,8 @@
       "languages": "語言",
       "theme": "主題",
       "dark": "深色",
-      "light": "淺色"
+      "light": "淺色",
+      "preferredSource": "在 Google 將 Oomba 設為偏好來源"
     }
   },
   "teach": {
