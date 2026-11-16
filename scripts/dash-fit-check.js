@@ -159,7 +159,7 @@ const GB = (...a) => { const o = []; for (let i = 0; i < a.length; i += 2) o.pus
 const GEO_BANDS = [GB(0, 0, 3, 0, 0, 3), GB(4, 0, 7, 0, 7, 2, 4, 2), GB(8, 0, 10, 1, 9, 3), GB(1, 4, 3, 4, 3, 6, 1, 6), GB(4, 3, 6, 3, 7, 5, 5, 6, 4, 5), GB(8, 4, 10, 4, 10, 7, 8, 7),
   GB(0, 7, 2, 7, 1, 9), GB(3, 7, 6, 7, 5, 9, 3, 9), GB(7, 8, 10, 8, 10, 10, 7, 10), GB(0, 10, 2, 10, 1, 9), GB(3, 10, 5, 10, 4, 9), GB(6, 6, 7, 6, 7, 7)];
 const GEO_EXTRA = [
-  { ...D.widgetType('geoboard'), wid: 'wgeobusy', s: { state: { pegs: 11, cur: 4, labels: true, angles: true, lines: true, title: 'Baue eine Form mit einem Flächeninhalt von zwölf Quadrateinheiten – wie viele findest du?',
+  { ...D.widgetType('geoboard'), wid: 'wgeobusy', s: { state: { pegs: 11, cur: 4, labels: true, angles: true, lines: true, title: 'Baue Formen mit zwölf Quadrateinheiten Flächeninhalt – wie viele findest du?',
     bands: GEO_BANDS.map((pts, i) => ({ pts, closed: true, c: i % 7 })),
     notes: [{ x: 500, y: 40, t: 'Gleicher Flächeninhalt?' }, { x: 150, y: 960, t: 'Rechtwinkliges Dreieck' }], ink: [{ c: 1, p: [100, 100, 200, 160, 300, 120, 400, 200] }, { c: 3, p: [600, 800, 700, 900] }] } } },
   { ...D.widgetType('geoboard'), wid: 'wgeoiso', s: { state: { board: 'iso', pegs: 9, cur: 0, labels: true, angles: true, title: 'Sechsecke aus kleinen Dreiecken',

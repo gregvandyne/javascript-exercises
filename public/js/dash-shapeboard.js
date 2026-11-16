@@ -58,7 +58,7 @@ export function geoboard(body, s, ctx) {
     if (!Number.isInteger(st.cur) || st.cur >= st.bands.length) st.cur = st.bands.length ? Math.min(Math.max(-1, st.cur | 0), st.bands.length - 1) : -1;
   };
   norm();
-  const ui = { mode: 'band', pen: 0, colour: st.bands.length % G.BAND_COLOURS, fresh: false, ruler: null, view: { z: 1, cx: VB / 2, cy: VB / 2 }, cursor: { x: 0, y: 0 }, corner: -1, wide: null, side: null, said: '' };
+  const ui = { mode: 'band', pen: 0, colour: st.bands.length % G.BAND_COLOURS, fresh: false, ruler: null, view: { z: 1, cx: VB / 2, cy: VB / 2 }, cursor: { x: 0, y: 0 }, corner: -1, wide: null, chrome: '', side: null, said: '' };
   const undoStack = [], redoStack = [];
   /** Redraw through the shell (which also shows or hides Make a question). */
   const draw = () => T.draw();
@@ -449,7 +449,10 @@ export function geoboard(body, s, ctx) {
     // The chrome: a rail and a bar on a wide widget, one compact bar on a narrow one, a phone or the projector.
     const sw = T.stage.clientWidth, sh = T.stage.clientHeight, phone = matchMedia('(max-width: 719px)').matches;
     const wide = !projecting() && !phone && sw >= 620 && sh >= 400;
-    if (wide !== ui.wide) { ui.wide = wide; closeMenu(); buildChrome(); }
+    // The chrome is built again when the room changes kind, or the projector is turned on or off (it shows the title as
+    // text and reduces the chrome).
+    const mode = `${wide}:${projecting()}`;
+    if (mode !== ui.chrome) { ui.wide = wide; ui.chrome = mode; closeMenu(); buildChrome(); }
     // Where a square board leaves room at its side (a wide tool, the projector), the measures are read out beside it;
     // otherwise under it.
     const side = !phone && !ctx.editing && sw >= 560 && sw - sh >= (wide ? 140 : 220);
@@ -579,7 +582,10 @@ export function geoboard(body, s, ctx) {
     board.appendChild(ink);
     st.notes.forEach((note, i) => {
       const g = svg('g', { class: 'gb-note', tabindex: ctx.editing ? '-1' : '0', role: 'button', 'aria-label': fill(W.labelIs, { t: note.t }), 'data-note': i });
-      g.appendChild(svg('text', { x: note.x, y: note.y, 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${fs(30).toFixed(1)}px` }, note.t));
+      // Kept inside the board: a label near an edge is moved in by about half its width.
+      const size = fs(30), half = Math.min(VB / 2, [...note.t].length * size * 0.3 + 8);
+      const lx = Math.max(half, Math.min(VB - half, note.x)), ly = Math.max(size * 0.7, Math.min(VB - size * 0.7, note.y));
+      g.appendChild(svg('text', { x: lx, y: ly, 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${size.toFixed(1)}px` }, note.t));
       board.appendChild(g);
     });
     // The ruler: a strip from peg to peg with a tick at every step and its length.
@@ -780,7 +786,7 @@ export function geoboard(body, s, ctx) {
     else if (drag.kind === 'note') {
       const note = st.notes[drag.i]; if (!note) return;
       note.x = Math.round(Math.max(0, Math.min(VB, v.x + drag.dx))); note.y = Math.round(Math.max(0, Math.min(VB, v.y + drag.dy)));
-      const t = board.querySelector(`[data-note="${drag.i}"] text`); if (t) { t.setAttribute('x', note.x); t.setAttribute('y', note.y); }
+      const t = board.querySelector(`[data-note="${drag.i}"] text`); if (t) { const half = Math.min(VB / 2, (t.getComputedTextLength ? t.getComputedTextLength() : 0) / 2 + 8); t.setAttribute('x', Math.max(half, Math.min(VB - half, note.x))); t.setAttribute('y', note.y); }
     } else if (drag.kind === 'ruler') {
       const q = pegNear(v, true); if (!q) return;
       const r = ui.ruler;
