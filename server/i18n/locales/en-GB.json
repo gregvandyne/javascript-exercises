@@ -918,6 +918,12 @@
     "tools": {
       "practice": "Practise it",
       "practiceName": "Practise it: {title}"
+    },
+    "tpl": {
+      "periods": {
+        "maths": "Maths",
+        "break": "Break"
+      }
     }
   }
 }

@@ -2831,6 +2831,12 @@
       "moreName": "Meer van {name} zien",
       "tools": {
         "sent": "{name} verstuurd. Elke leerling krijgt een eigen kopie."
+      },
+      "tpl": {
+        "heading": "Begin met een kant-en-klare indeling",
+        "own": "Of maak je eigen indeling",
+        "ownName": "Je eigen indeling",
+        "ownDesc": "Begin leeg of kopieer de indeling die je nu hebt."
       }
     }
   },
@@ -10162,7 +10168,8 @@
       "oneOut": "Er is al iemand weg. Eén tegelijk.",
       "reason": "Kies een reden uit de lijst.",
       "noMood": "Je leraar heeft geen ‘Hoe voel ik me’ op je scherm gezet.",
-      "site": "Dit websitevenster heeft nog geen adres."
+      "site": "Dit websitevenster heeft nog geen adres.",
+      "template": "Kies een van de kant-en-klare indelingen."
     },
     "tools": {
       "send": "Naar de klas sturen",
@@ -10211,6 +10218,46 @@
       "letters": "Hoeveel klinkers zitten er in ‘{w}’?",
       "map": "Op welk werelddeel staat de speld?",
       "mapGrid": "In welk vak staat de speld?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Start van de dag",
+        "desc": "Klok, nu en straks, dagdoel, hoe voel ik me en klassentaken.",
+        "goal": "één ding noemen dat ik vandaag wil leren.",
+        "jobs": "Rijleider\nPlanten\nBoeken\nOpruimbaas\nBoodschapper"
+      },
+      "lesson": {
+        "name": "Les",
+        "desc": "Timer, snelle check, hulprij, getallenlijn en stoplicht."
+      },
+      "group": {
+        "name": "Groepswerk",
+        "desc": "Groepjes maken, timer, stemmeter en teampunten.",
+        "teams": "Raketten\nKometen\nPlaneten\nSterren"
+      },
+      "quiet": {
+        "name": "Stil werken",
+        "desc": "Grote timer, rood stoplicht, werksymbolen en ademen."
+      },
+      "fun": {
+        "name": "Leuke pauze",
+        "desc": "Draai aan het rad, gooi de dobbelstenen, dans op je eigen video en adem dan rustig."
+      },
+      "periods": {
+        "circle": "Kring",
+        "maths": "Rekenen",
+        "break": "Pauze",
+        "reading": "Lezen",
+        "lunch": "Lunch",
+        "science": "Natuur",
+        "art": "Tekenen",
+        "home": "Opruimen en tot morgen"
+      },
+      "light": {
+        "red": "Stilte, alsjeblieft",
+        "yellow": "Fluisterstem",
+        "green": "Praat met je maatje"
+      }
     }
   }
 }
