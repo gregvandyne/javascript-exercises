@@ -1005,7 +1005,7 @@ button.dt-orgbox:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
 .dt-org-venn .dt-ob1{padding-inline:4%}
 [dir="rtl"] .dt-vennbg{transform:scaleX(-1)}
 .dt-org-venn .dt-ob1 .dt-orgh{text-align:center}
-.dash-projector .dt-orgh,.dash-projector .dt-orgl{font-size:clamp(1rem,min(6cqh,2.8cqi),1.5rem)}
+.dash-projector .dt-orgh,.dash-projector .dt-orgl{font-size:clamp(.875rem,min(6cqh,2.8cqi),1.5rem)}
 .dt-orgset{border:2px solid var(--line);border-radius:var(--r-sm);padding:var(--s2) var(--s3)}
 .dt-orgset legend{font-weight:800;padding:0 4px}
 /* maps */
@@ -1211,8 +1211,8 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dw5-nn.is-next .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem)}
 .dw5-nnmeta{font-weight:700;font-size:clamp(.85rem,min(6cqh,4cqi),1.3rem)}
 /* a short schedule: each card is one line (it wraps rather than hide anything) */
-@container (max-height:230px){
-  .dw-nownext{grid-template-rows:auto auto;align-content:center}
+@container (max-height:170px){
+  .dw-nownext{grid-template-rows:auto auto;align-content:center;align-items:start}
   .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;padding:4px 10px}
   .dw5-nnlab{font-size:.8rem}
   .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:1.05rem}
@@ -1233,3 +1233,19 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 }
 /* a classmate's Oomba name in a right-to-left page: its own direction, but placed where the page's text starts */
 .dw5-iso{unicode-bidi:isolate}
+/* Stage 5 review: a list that scrolls holds whole rows only (public/js/dash.js snapRows) and fades softly at its bottom
+   edge while there is more below, so it reads as "scroll for more", never as cut off. */
+.dw-scroll.is-scrolly:not(.at-end){-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35));mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35))}
+/* the mood check-in on the projector: only how many have checked in, big, and a note where the counts are */
+.dw5-moodhidden{margin:0;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(6cqh,4cqi),1.2rem);text-align:center}
+.dash-projector .dw-mood{justify-content:safe center;align-items:center;text-align:center}
+.dash-projector .dw-mood .dw5-moodmeta{justify-content:center}
+.dash-projector .dw-mood .dw-checkmeta{color:var(--text);font-weight:800;font-size:clamp(1.3rem,min(16cqh,8cqi),3rem)}
+/* Oomba tiles in a short widget: one line each (icon and title), so whole tiles fit and the list scrolls by tiles */
+@container (max-height:200px){
+  .dw-tile{flex-direction:row;justify-content:flex-start;min-height:48px;padding:4px 10px;text-align:start}
+  .dw-tileicon{font-size:1.5rem}
+  .dw-tiletitle{font-size:.95rem;line-height:1.15}
+}
+/* a list cut to whole rows leaves room below it: a widget's row of buttons stays at the bottom */
+.dash-wb .dw-foot{margin-top:auto}

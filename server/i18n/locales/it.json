@@ -10072,7 +10072,8 @@
         "m_good": "Bene",
         "m_okay": "Così così",
         "m_meh": "Non tanto bene",
-        "m_sad": "Triste"
+        "m_sad": "Triste",
+        "countsHidden": "Quante volte è stata scelta ogni faccina si vede sul tuo schermo, non sul proiettore."
       },
       "breathe": {
         "name": "Respiro",

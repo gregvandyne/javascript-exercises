@@ -10072,7 +10072,8 @@
         "m_good": "Goed",
         "m_okay": "Gaat wel",
         "m_meh": "Niet zo goed",
-        "m_sad": "Verdrietig"
+        "m_sad": "Verdrietig",
+        "countsHidden": "Hoe vaak elk gezicht gekozen is, staat op je eigen scherm, niet op de beamer."
       },
       "breathe": {
         "name": "Ademen",

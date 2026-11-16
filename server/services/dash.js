@@ -208,7 +208,7 @@ export const WIDGETS = [
   { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'open', 'defaults'], settings: [
     { key: 'jobs', type: 'textarea', max: 400, def: '' },
     { key: 'crew', type: 'crew', hidden: true, def: { order: [], shift: 0 } }] },
-  { id: 'mood', icon: '😊', group: 'check', who: 'teacher', pinDef: true, size: [4, 4], min: [4, 4], words: ['ask', 'mine', 'counts', 'names', 'nobody', 'notYet', 'saved', ...MOODS.map(m => `m_${m}`)], settings: [] },
+  { id: 'mood', icon: '😊', group: 'check', who: 'teacher', pinDef: true, size: [4, 4], min: [4, 4], words: ['ask', 'mine', 'counts', 'names', 'nobody', 'notYet', 'saved', 'countsHidden', ...MOODS.map(m => `m_${m}`)], settings: [] },
   { id: 'breathe', icon: '🫧', group: 'tools', who: 'both', size: [3, 4], min: [3, 4], words: ['start', 'pause', 'in', 'hold', 'out', 'ready'], settings: [
     { key: 'pace', type: 'select', options: ['calm', 'box', 'long'], def: 'calm' }] },
   { id: 'note', icon: '🗒️', group: 'show', who: 'teacher', pin: false, size: [3, 3], min: [3, 2], words: ['empty'], settings: [

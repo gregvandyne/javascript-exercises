@@ -457,6 +457,12 @@ test('poll and mood privacy: students see only their own answer and face; the te
   assert.doesNotMatch(names.text, w.REAL);
   for (const who of [w.a1, w.T2, w.stranger]) assert.equal((await as(who)(`/api/dash/${w.A.id}/mood/names`)).status, 404);
   assert.match(fs.readFileSync('public/js/dash-class5.js', 'utf8'), /ibtn\('👀', W\.names, 'btn btn-sm dw-private'\)/);
+  // On the projector even the per-face counts hide (in a small class "Sad 1" could point to one child): only how many
+  // have checked in, and a note that the counts are on the teacher's own screen.
+  const c5 = fs.readFileSync('public/js/dash-class5.js', 'utf8');
+  assert.match(c5, /el\('ul', 'dw-bars dw5-moodbars dw-private'\)/);
+  assert.match(c5, /el\('p', 'dw-public dw5-moodhidden', W\.countsHidden\)/);
+  assert.match(fs.readFileSync('public/css/dash.css', 'utf8'), /\.dash-projector \.dw-private\{display:none!important\}/);
   // Today only; another class's student can't answer; account deletion forgets it.
   q.run("UPDATE dash_moods SET day='2000-01-01' WHERE user_id=?", w.a3.id);
   assert.deepEqual(D.moodCounts(w.A).counts, [1, 0, 0, 0, 1]);

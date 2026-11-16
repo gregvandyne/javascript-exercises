@@ -340,12 +340,15 @@ function mood(body, s, ctx) {
     draw();
     return { live: draw };
   }
-  const bars = el('ul', 'dw-bars dw5-moodbars');
-  const metaRow = el('div', 'dw-checkmetarow');
+  // Each face's count stays on the teacher's own screen: on the projector, in a small class, "Sad 1" could point to one
+  // child. The projector shows only how many have checked in.
+  const bars = el('ul', 'dw-bars dw5-moodbars dw-private');
+  const metaRow = el('div', 'dw-checkmetarow dw5-moodmeta');
   const meta = el('span', 'dw-checkmeta');
   const names = ibtn('👀', W.names, 'btn btn-sm dw-private');
   metaRow.append(meta, names);
-  body.append(bars, metaRow);
+  const hidden = el('p', 'dw-public dw5-moodhidden', W.countsHidden);
+  body.append(bars, metaRow, hidden);
   let sig = '';
   const draw = live => {
     const m = ((live || ctx.live()).mood) || { counts: [0, 0, 0, 0, 0], n: 0, size: 0 };

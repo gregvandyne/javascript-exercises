@@ -10072,7 +10072,8 @@
         "m_good": "Gut",
         "m_okay": "Geht so",
         "m_meh": "Nicht so gut",
-        "m_sad": "Traurig"
+        "m_sad": "Traurig",
+        "countsHidden": "Wie oft jedes Gesicht gewählt wurde, steht auf deinem eigenen Bildschirm, nicht auf dem Beamer."
       },
       "breathe": {
         "name": "Atmen",

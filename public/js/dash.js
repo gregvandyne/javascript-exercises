@@ -77,17 +77,64 @@ function start() {
     return end;
   };
   const moreTarget = b => [b, ...b.querySelectorAll('.dw-scroll')].find(x => x.classList.contains('is-scrolly') && !x.classList.contains('at-end')) || null;
-  const scrolly = b => {
+  /** Stage 5 review: a list that scrolls shows whole rows only. Its height is cut at the bottom of the last row that fits
+   *  (a row of a grid ends with its tallest item; a list of lines, a paragraph, at a whole line), so nothing is ever
+   *  sliced through; the soft fade at its bottom edge (public/css/dash.css) says there is more. */
+  /** The boxes of the lines of text in an element (text only: not the boxes of the elements around it). */
+  const textRects = root => {
+    const out = [], walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), rg = document.createRange();
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); for (const r of rg.getClientRects()) if (r.width > 0.5 && r.height > 0.5) out.push(r); }
+    return out;
+  };
+  const snapRows = x => {
+    const keep = x.scrollTop;
+    x.style.maxHeight = '';
+    const st = getComputedStyle(x);
+    if (!/(auto|scroll)/.test(st.overflowY)) return;
+    const avail = x.clientHeight;
+    if (x.scrollHeight <= avail + 1) return;
+    const xr = x.getBoundingClientRect(), bt = parseFloat(st.borderTopWidth) || 0;  // (all boxes are border-box)
+    const items = [...x.children].filter(c => c.getClientRects().length && getComputedStyle(c).position !== 'absolute')
+      .map(c => { const r = c.getBoundingClientRect(); return { t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }; });
+    let cut = 0;
+    if (items.length) {
+      for (const it of items) if (it.b <= avail + 0.5) cut = Math.max(cut, it.b);
+      // A taller neighbour in the same grid row (it starts above the cut and ends below it) moves the cut above that row.
+      for (let k = 0; k < 6; k++) {
+        const cross = items.filter(it => it.t < cut - 0.5 && it.b > cut + 0.5); if (!cross.length) break;
+        const rowTop = Math.min(...cross.map(c => c.t));
+        cut = Math.max(0, ...items.filter(it => it.b <= rowTop + 0.5).map(it => it.b));
+      }
+    }
+    // Not even one row fits (a long idea in an organizer box, a group card in a short widget): cut between two lines of
+    // its text instead, never through one.
+    if (cut <= 0) {
+      const lines = textRects(x).map(r => ({ t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }));
+      cut = Math.max(0, ...lines.filter(l => l.b <= avail + 0.5).map(l => l.b));
+      for (let k = 0; k < 6; k++) {
+        const cross = lines.filter(l => l.t < cut - 0.5 && l.b > cut + 0.5); if (!cross.length) break;
+        const top = Math.min(...cross.map(l => l.t));
+        cut = Math.max(0, ...lines.filter(l => l.b <= top + 0.5).map(l => l.b));
+      }
+      if (cut > 0) cut = Math.min(avail, cut + 2);
+    }
+    if (cut > 0) { x.style.maxHeight = `${Math.floor(cut + bt + (parseFloat(st.borderBottomWidth) || 0))}px`; x.scrollTop = keep; }
+  };
+  const scrolly = (b, snap = true) => {
+    if (snap) for (const x of b.querySelectorAll('.dw-scroll')) snapRows(x);
     mark(b);
     for (const x of b.querySelectorAll('.dw-scroll')) mark(x);
     if (b.moreBtn) b.moreBtn.hidden = !moreTarget(b);
   };
+  /** Every widget's lists again (projector mode changes the type size, so rows change height while the boxes may not). */
+  const resnapAll = () => { for (const b of grid.querySelectorAll('.dash-wb')) scrolly(b); };
   const sizeWatch = typeof ResizeObserver === 'function' ? new ResizeObserver(es => { for (const e of es) scrolly(e.target); }) : null;
   const watchBody = b => {
     sizeWatch?.observe(b);
-    b.addEventListener('scroll', () => scrolly(b), { passive: true, capture: true });
+    b.addEventListener('scroll', () => scrolly(b, false), { passive: true, capture: true });
     new MutationObserver(() => scrolly(b)).observe(b, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'class'] });
     requestAnimationFrame(() => scrolly(b));
+    document.fonts?.ready.then(() => scrolly(b));
   };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const projecting = () => document.body.classList.contains('dash-projector');
@@ -997,7 +1044,7 @@ function start() {
   const awake = () => { document.body.classList.remove('dash-idle'); clearTimeout(idle); if (document.body.classList.contains('dash-projector')) idle = setTimeout(() => document.body.classList.add('dash-idle'), 3000); };
   function projector(on) {
     document.body.classList.toggle('dash-projector', on);
-    requestAnimationFrame(fitRows);
+    requestAnimationFrame(() => { fitRows(); requestAnimationFrame(resnapAll); });
     $('#dash-projector')?.setAttribute('aria-pressed', String(on));
     if (on) { document.documentElement.requestFullscreen?.().catch(() => {}); wake(); awake(); }
     else { if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {}); try { lock && lock.release(); } catch { /* gone */ } lock = null; clearTimeout(idle); document.body.classList.remove('dash-idle'); }

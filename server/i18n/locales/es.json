@@ -10071,7 +10071,8 @@
         "m_good": "Bien",
         "m_okay": "Regular",
         "m_meh": "No muy bien",
-        "m_sad": "Triste"
+        "m_sad": "Triste",
+        "countsHidden": "Cuántos eligieron cada cara se ve en tu propia pantalla, no en el proyector."
       },
       "breathe": {
         "name": "Respirar",

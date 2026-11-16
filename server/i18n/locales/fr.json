@@ -10071,7 +10071,8 @@
         "m_good": "Bien",
         "m_okay": "Ça va",
         "m_meh": "Pas trop",
-        "m_sad": "Triste"
+        "m_sad": "Triste",
+        "countsHidden": "Le nombre de chaque visage est sur ton propre écran, pas sur le projecteur."
       },
       "breathe": {
         "name": "Respiration",

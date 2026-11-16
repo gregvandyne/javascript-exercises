@@ -311,6 +311,27 @@ function problems() {
       if (tops.size > 1) out.push(`${name(w)}: the label "${txt}" breaks across lines`);
     }
   }
+  // Stage 5 review: a list that scrolls shows whole rows at rest (scrollTop 0), and fades at its bottom edge while there
+  // is more below. A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list
+  // unless it carries the fade); so does a list with more below and no fade.
+  for (const x of document.querySelectorAll('.dash-w ul, .dash-w ol, .dash-w .dw-scroll')) {
+    const w = x.closest('.dash-w'); if (!w.offsetParent || !x.getClientRects().length) continue;
+    const cs = getComputedStyle(x);
+    if (!/(auto|scroll)/.test(cs.overflowY) || x.scrollHeight <= x.clientHeight + 6) continue;
+    const faded = x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
+    if (!faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
+    if (x.scrollTop > 0) continue;
+    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0);
+    for (const c of x.children) {
+      if (!c.getClientRects().length || getComputedStyle(c).position === 'absolute') continue;
+      const r = c.getBoundingClientRect();
+      // A row taller than the whole list may be cut between two of its lines (never through one), under the fade.
+      const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
+      for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < edge - 1 && q.bottom > edge + 1); }
+      const tall = r.height > x.clientHeight - 1;
+      if (r.top < edge - 1 && r.bottom > edge + 1 && (x.classList.contains('dw-scroll') || !faded) && (!tall || !faded || throughLine)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} max ${x.style.maxHeight} tall ${tall} faded ${faded} through ${throughLine} lines ${(() => { const o = []; const t2 = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); const g = document.createRange(); for (let n = t2.nextNode(); n; n = t2.nextNode()) { g.selectNodeContents(n); for (const q of g.getClientRects()) o.push(`${Math.round(q.top - xr.top)}-${Math.round(q.bottom - xr.top)}`); } return o.join(","); })()}]` : ''}`); break; }
+    }
+  }
   for (const e of document.querySelectorAll('.dash-w *')) {
     const cs = getComputedStyle(e);
     if (cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 1 && e.getClientRects().length && !e.closest('.sr-only')) out.push(`${name(e.closest('.dash-w'))}: "${label(e)}" ends in … (cut)`);

@@ -10495,7 +10495,8 @@
         "m_good": "Good",
         "m_okay": "Okay",
         "m_meh": "Not great",
-        "m_sad": "Sad"
+        "m_sad": "Sad",
+        "countsHidden": "Each face's count is on your own screen, not the projector."
       },
       "breathe": {
         "name": "Breathing",

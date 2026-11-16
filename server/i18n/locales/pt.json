@@ -10073,7 +10073,8 @@
         "m_good": "Bem",
         "m_okay": "Mais ou menos",
         "m_meh": "Não muito bem",
-        "m_sad": "Triste"
+        "m_sad": "Triste",
+        "countsHidden": "A contagem de cada carinha fica na sua própria tela, não no projetor."
       },
       "breathe": {
         "name": "Respirar",

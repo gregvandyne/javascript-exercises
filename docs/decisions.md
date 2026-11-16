@@ -6409,5 +6409,22 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
   students may add and what is never pinned, the scoreboard's cleaned settings (now with its mode), the renderer files
   the registry test reads, and mic-scope's list of files allowed to grant the microphone.
 - Tests: `tests/unit/dash-stage5.test.js`, `tests/unit/dash-fit.test.js`.
+- **Review fixes (16 Nov 2026).**
+  - **Whole rows in every list that scrolls (stages 1-5).** A `.dw-scroll` list is cut at the bottom of the last row
+    that fits (`snapRows` in `public/js/dash.js`: a grid row ends with its tallest item; the gap below stays empty), so
+    no row is ever sliced through. When not even one row fits (a long idea in an organizer box, a group card in a
+    short group maker, a long tile title), it is cut between two lines of text, never through one. While there is more
+    below, the list fades softly at its bottom edge (a mask) and "↓ More" stays. A widget's row of buttons sits at the
+    bottom. Oomba tiles in a short widget go one line each, so whole tiles fit.
+  - The fit check now fails when a list item is partly visible at the list's resting position (a `.dw-scroll` list
+    always; another scrolling list unless it fades; a row taller than the whole list only if a line of its text is
+    cut), and when a list with more below has no fade. It found the hall pass, class jobs, points, schedule, group
+    maker, tiles and graphic organizer lists; all are fixed.
+  - **Mood check-in on the projector** shows only "9 of 12 checked in" and "Each face's count is on your own screen,
+    not the projector": in a small class "Sad 1" on the big screen could point to one child. The counts stay on the
+    teacher's own screen.
+  - The schedule's "now and next" goes to one line a card only below 170px of height.
+  - Lists are cut again when projector mode changes the type size. On the projector, a graphic organizer's text starts
+    at 14px (was 16px; the projector floor is 13px), so a short box still shows at least one whole line.
 - **Not verified:** real YouTube and Vimeo players and a real site's frame check (the build sandbox can't reach them;
   tests and the fit check use stubs), and a physical document camera (Chromium's fake camera was used).
