@@ -78,6 +78,13 @@ const TOOL_WORDS = {
   letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full', 'instr'],
   organizer: ['kind', 'venn', 'tchart', 'kwl', 'story', 'main', 'seq', 'title', 'edit', 'heading', 'text', 'boxes', 'empty', 'a', 'b', 'both', 'left', 'right', 'know', 'want', 'learned',
     'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save', 'addStep', 'addDetail', 'remove', 'added', 'removed'],
+  // bar models and number rods (docs/decisions.md "Bar models and number rods")
+  bars: ['kind', 'mul', 'part', 'cmp', 'groups', 'each', 'parts', 'partN', 'first', 'second', 'total', 'whole', 'diff', 'newProblem', 'unknown', 'unknownIs',
+    'braceWhole', 'braceOne', 'braceDiff', 'oneGroup', 'nGroups', 'qGroups', 'hide', 'show', 'answerIs', 'sentences', 'box', 'right', 'wrong', 'story', 'storyBtn', 'storyLocal',
+    'model', 'max', 'sayMul', 'sayPart', 'sayCmp', 'find'],
+  rods: ['palette', 'addRod', 'rodN', 'longer', 'board', 'boardKeys', 'lying', 'standing', 'added', 'copied', 'deleted', 'moved', 'full', 'noRoom', 'tooLong',
+    'dirH', 'dirV', 'grid', 'units', 'zoomIn', 'zoomOut', 'undo', 'redo', 'turn', 'copy', 'del', 'reset', 'resetDone', 'chosen', 'eq', 'eqOff', 'box', 'blank',
+    'right', 'wrong', 'newEq', 'typeEq', 'typeLabel', 'typeHint', 'typeBad', 'model', 'modelled', 'trainIs', 'same', 'notSame', 'empty', 'count', 'find'],
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
@@ -86,7 +93,7 @@ const TOOL_WORDS = {
  *  Since "maths tools combined" these are the maths tools' modes (a retired tool's id is now a mode of another tool, its
  *  help and words still dash.w.<old id>.*): every mode has its own instruction and ⓘ panel. */
 export const MATH_TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
-  'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance'];
+  'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'bars', 'rods'];
 for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas');
 // The fraction tool's Add, Subtract, Multiply and Divide.
 TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul', 'modeDiv', 'howtoOp', 'howtoMul', 'howtoDiv', 'first', 'second', 'num', 'den',
@@ -101,7 +108,7 @@ export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'c
   'helpFor', 'helpClose', 'helpTry'];
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
 export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
-  'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
+  'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid', 'bars', 'rods'];
 /** Stage 4, "Practice it": a teaching tool (since "maths tools combined": a tool's mode, keyed by the mode's id, which is
  *  the old tool's id; the page sends every key and each mode looks up its own) and the official Oomba games that practise the same thing (picked by hand
  *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
@@ -110,7 +117,7 @@ export const PRACTICE = {
   fractions: ['fraction-factory'], numline: ['lily-hop', 'sub-zero'], coord: ['sky-lines'], graph: ['data-detective'], base10: ['rocket-supply'],
   placeval: ['rocket-supply', 'crate-stacker'], tenframe: ['garden-count'], hundreds: ['crate-stacker'], times: ['sum-racer'], tclock: ['kitchen-rush'],
   geoboard: ['keep-builder'], pattern: ['shape-hunt'], angle: ['keep-builder'], solids: ['shape-hunt', 'keep-builder'], transform: ['keep-builder'],
-  balance: ['balance-bridge', 'machine-line'], algebra: ['machine-line'], coins: ['kitchen-rush'], chance: ['launch-lab'], letters: ['word-trail', 'word-hunt'], map: ['atlas-quest'],
+  balance: ['balance-bridge', 'machine-line'], algebra: ['machine-line'], coins: ['kitchen-rush'], chance: ['launch-lab'], bars: ['sum-racer'], rods: ['lily-hop'], letters: ['word-trail', 'word-hunt'], map: ['atlas-quest'],
 };
 // ---- stage 5 (docs/decisions.md "Classroom dashboards, stage 5")
 /** Hall pass places a teacher may offer (fixed: students never type where they are going). */
@@ -124,7 +131,7 @@ export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
 export const TEACHER_ONLY = ['video', 'site', 'camera'];
 /** Each maths tool mode's icon (a tool's own mode has the tool's icon). */
 export const MODE_ICONS = { fractions: '🍕', fdp: '➗', placeval: '🔟', base10: '🧱', area: '🔲', times: '✖️', geoboard: '📌', angle: '📐',
-  pattern: '🔷', solids: '🧊', transform: '🔄', algebra: '🟪', balance: '⚖️', chance: '🎯', graph: '📊' };
+  pattern: '🔷', solids: '🧊', transform: '🔄', algebra: '🟪', balance: '⚖️', chance: '🎯', graph: '📊', bars: '🍫' };
 /** A teaching tool's registry entry (stages 3 and 4); modes: its modes, when it has more than one (TOOL_MODES). */
 const toolType = (id, icon, size, min, group) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id],
   ...(TOOL_MODES[id] ? { modes: TOOL_MODES[id] } : {}), settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] });
@@ -210,12 +217,12 @@ export const WIDGETS = [
   // RETIRED). A tool with modes is as big as its biggest mode needs, plus the row of its mode switch.
   ...[['fractions', '🍕', [6, 8], [5, 8]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]],
     ['placeval', '🔟', [7, 7], [6, 6]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
-    ['area', '🔲', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]]]
+    ['area', '🔲', [7, 8], [6, 8]], ['tclock', '🕰️', [4, 6], [4, 5]]]
     .map(([id, icon, size, min]) => toolType(id, icon, size, min, 'teach')),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
   // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
   ...[['geoboard', '📌', [8, 8], [5, 8], 'teach'], ['pattern', '🔷', [7, 8], [6, 8], 'teach'], ['algebra', '🟪', [7, 7], [6, 7], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
-    ['chance', '🎯', [7, 7], [6, 7], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
+    ['chance', '🎯', [7, 7], [6, 7], 'teach'], ['rods', '🟧', [8, 8], [6, 8], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
     .map(([id, icon, size, min, group]) => toolType(id, icon, size, min, group)),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
     { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },
