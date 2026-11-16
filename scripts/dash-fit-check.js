@@ -19,6 +19,8 @@
 // Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
 // (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
 // names and light words in that language) with its own background.
+// Every button with a tooltip is focused in turn (TIPS=0 skips it): its tooltip shows whole inside the screen, clipped
+// by nothing, and the button has no native title as well.
 // Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
 // its widget without scrolling and nothing in it is cut.
 // For every widget it checks:
@@ -209,7 +211,7 @@ const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH 
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
     cur.push({ id: t.wid || `w${t.id}`, type: t.id, x, y, w, h, s: t.s || SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
   if (cur.length) out.push(cur); return out; };
-D.ensureLayouts(T, C, 'Default sizes');
+D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
@@ -512,6 +514,36 @@ for (const L of RUN) {
         }
         await page.keyboard.press('Escape'); await page.waitForTimeout(30);
       }
+    }
+    // Tooltips are never cut off (docs/decisions.md "Classroom dashboards: tooltips never cut off"): every button with a
+    // tooltip, focused by keyboard in turn, shows its tooltip whole inside the screen, not clipped by anything around it,
+    // named by aria-describedby, and with no native title as well.
+    if (process.env.TIPS !== '0') {
+      await page.keyboard.press('Shift');
+      found.push(...await page.evaluate(() => {
+        const out = [], name = e => e.closest('.dash-w')?.querySelector('.dash-wt')?.textContent || '';
+        for (const el of document.querySelectorAll('.dash-w [data-tip]')) {
+          if (el.title) out.push(`${name(el)}: "${el.dataset.tip}" has a native title as well as its tooltip`);
+          if (!el.getClientRects().length || getComputedStyle(el).visibility === 'hidden' || el.disabled) continue;
+          if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+          el.scrollIntoView({ block: 'center', inline: 'nearest' });
+          el.focus({ preventScroll: true });
+          if (document.activeElement !== el) continue;
+          const t = document.getElementById('dash-tip');
+          if (!t || t.hidden || t.getAttribute('role') !== 'tooltip') { out.push(`${name(el)}: "${el.dataset.tip}" shows no tooltip on keyboard focus`); continue; }
+          const r = t.getBoundingClientRect();
+          if (r.left < 0 || r.top < 0 || r.right > innerWidth || r.bottom > innerHeight) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" goes outside the screen`);
+          for (let a = t.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+            const cs = getComputedStyle(a); if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+            const q = a.getBoundingClientRect();
+            if (r.left < q.left - 0.5 || r.right > q.right + 0.5 || r.top < q.top - 0.5 || r.bottom > q.bottom + 0.5) { out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is clipped by ${a.className || a.tagName}`); break; }
+          }
+          if (t.scrollWidth > t.clientWidth + 1) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is cut`);
+          if (!(el.getAttribute('aria-describedby') || '').split(/\s+/).includes(t.id)) out.push(`${name(el)}: "${el.dataset.tip}" is not described by its tooltip`);
+          el.blur();
+        }
+        return out;
+      }));
     }
     total += found.length;
     console.log(`${found.length ? '✗' : '✓'} ${L.key} ${lang} ${v.name}${found.length ? '' : ': nothing cut off'}`);

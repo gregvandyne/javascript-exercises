@@ -2741,9 +2741,9 @@
         "eyesOff": "Eyes up ended",
         "eyesUp": "Eyes up front",
         "hidden": "Hidden. It's saved in From your teacher.",
-        "back": "It's back"
+        "back": "It's back",
+        "renamed": "Layout renamed: {name}"
       },
-      "editing": "Editing: {name}",
       "all": "All",
       "add": "Add",
       "addName": "Add {name}",
@@ -9343,6 +9343,7 @@
       "edit": "Edit screen",
       "editMine": "Change my screen",
       "editing": "Editing: {name}",
+      "layoutName": "Layout name",
       "editingMine": "Changing my screen",
       "editHint": "Drag to move · drag a corner to resize · or use the arrow keys",
       "editHintMine": "Move your widgets, add new ones or pick a background. Pinned ones stay.",
@@ -9352,8 +9353,7 @@
     "layouts": {
       "label": "Layout",
       "new": "New",
-      "manage": "Rename or delete this layout",
-      "defaultName": "Everyday"
+      "manage": "Rename or delete this layout"
     },
     "foot": {
       "eyes": "Eyes up",
@@ -10851,6 +10851,10 @@
       "lesson": {
         "name": "Lesson",
         "desc": "Timer, quick check, help queue, a number line and a traffic light."
+      },
+      "math": {
+        "name": "Math",
+        "desc": "Fraction bars, a number line in quarters, a timer and the help queue."
       },
       "group": {
         "name": "Group work",

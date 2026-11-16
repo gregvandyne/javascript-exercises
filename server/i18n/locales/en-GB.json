@@ -928,6 +928,9 @@
       "periods": {
         "maths": "Maths",
         "break": "Break"
+      },
+      "math": {
+        "name": "Maths"
       }
     }
   }

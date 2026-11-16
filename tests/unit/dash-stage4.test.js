@@ -409,6 +409,9 @@ test('"Make a question from it": every tool with one right answer makes a quick 
 test('a question made from a tool goes out as an ordinary quick check: the class\'s teacher only, students see it, totals only', async () => {
   const w = world(), An = w.A.id;
   await as(w.T)(`/class/${An}/dashboard`);
+  // The first visit's Morning start pins class jobs, whose crew (students' Oomba names, which may hold "right") students
+  // see by design; follow Quiet work (nothing pinned) so the live answer holds only the check.
+  D.useLayout(w.T, w.A, D.layoutsOf(An, w.T.id).find(l => l.name === 'Quiet work').id);
   const reg = D.registryFor(tFor('en'), 'teacher');
   const made = A.questionFor('angle', { a: 135 }, reg.types.find(x => x.id === 'angle').words, reg.ask, 'en');
   const r = await as(w.T)(`/api/dash/${An}/checks`, POST({ kind: 'choice', question: made.q, options: made.options }));
