@@ -9662,18 +9662,23 @@
       },
       "countdown": {
         "name": "Countdown to a day",
-        "desc": "Days and hours until a field trip, a show or a holiday.",
+        "desc": "Days and hours until field trips, shows or holidays: one or several on one card.",
         "s": {
-          "label": "What's coming",
-          "date": "Day",
-          "time": "Time"
+          "events": "Countdowns"
         },
         "empty": "Pick the day in Edit screen.",
         "days": "Days",
         "hours": "Hours",
         "mins": "Minutes",
         "today": "It's today!",
-        "past": "That day has come and gone."
+        "past": "That day has come and gone.",
+        "label": "What's coming",
+        "day": "Day",
+        "time": "Time (optional)",
+        "addEvent": "Add a countdown",
+        "remove": "Remove",
+        "event": "Countdown {n}",
+        "full": "A card holds up to {n} countdowns."
       },
       "calendar": {
         "name": "Calendar",

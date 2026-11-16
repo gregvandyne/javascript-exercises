@@ -9240,18 +9240,23 @@
       },
       "countdown": {
         "name": "Contagem para um dia",
-        "desc": "Dias e horas até um passeio, uma apresentação ou as férias.",
+        "desc": "Dias e horas até passeios, apresentações ou férias: uma ou várias no mesmo cartão.",
         "s": {
-          "label": "O que vem aí",
-          "date": "Dia",
-          "time": "Hora"
+          "events": "Contagens"
         },
         "empty": "Escolha o dia em Editar tela.",
         "days": "Dias",
         "hours": "Horas",
         "mins": "Minutos",
         "today": "É hoje!",
-        "past": "Esse dia já passou."
+        "past": "Esse dia já passou.",
+        "label": "O que vem aí",
+        "day": "Dia",
+        "time": "Hora (opcional)",
+        "addEvent": "Adicionar uma contagem",
+        "remove": "Remover",
+        "event": "Contagem {n}",
+        "full": "Um cartão comporta até {n} contagens."
       },
       "calendar": {
         "name": "Calendário",

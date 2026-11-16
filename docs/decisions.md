@@ -6123,6 +6123,34 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.
 
+### Several countdowns in one card (16 Nov 2026)
+
+Teachers asked to put several countdowns in one card instead of adding a card for each.
+
+- **Settings.** The countdown's settings are now a list of events (`events`). Each has a label (60 characters, clean
+  text), a day (a real date) and an optional time (HH:MM, or empty for the whole day). A card holds up to 8
+  (`MAX_EVENTS`). The settings form has "Add a countdown" and a remove button on each row. At 8 the add button gives
+  way to a note. The server rebuilds the list (`cleanEvents`): bad days and times are emptied, empty rows dropped. A row
+  with a label but no day yet is kept, so a half-filled row is not lost. The list is stored soonest first (a day with
+  no time counts from the start of the day); rows with no day go last.
+- **Old cards.** A countdown saved as one `{ label, date, time }` is read as a list of one. `cleanSettings` converts
+  it, and so does every read of a stored layout or of the pins students get. Nothing is lost, and its time is kept
+  (08:00 was the old default). The card's renderer also reads the old shape. The next save stores the list.
+- **The card.** Only events with a day are shown, sorted by when they happen in the school's time zone. With one
+  event the card looks as it always did: the label, big boxes for days, hours and minutes, "It's today!" on the day,
+  "That day has come and gone" after it. An event with no time shows whole calendar days only. With several events,
+  the card is a list. Each row shows its label and its day and time. At the row's end are days and hours, or hours
+  and minutes once it is less than a day away (days only with no time). On its day a row is highlighted and says
+  "It's today!". A day gone by moves to the end, greyed, for 7 days (`PAST_DAYS`), then drops off the card (it stays
+  in the settings to remove). If every event is older than that, the most recent one stays, so a card of one never
+  goes blank. The list scrolls by whole rows with the fade, like every other list. Default 4 × 3 and smallest 3 × 3
+  are unchanged.
+- **Who.** As before: teachers only, and it may be pinned. A pinned card reaches student screens with its whole list.
+  Students can't add one to their own screen.
+- Tests: `tests/unit/dash-stage2.test.js` (cleaning, the old shape, sorting, past days, pins). The fit check's
+  countdown is a full card of 8 with long German labels, one today, one tomorrow, one gone by and one more than a year
+  away. A card of one is checked on its own.
+
 ## Classroom dashboards, stage 3 (15 Nov 2026)
 Teaching tools (part 1), a whiteboard and a Picture widget, on the stage 1 grid and the stage 2 look. Built to the
 approved TeachingTools mockup (fraction bars with "Same-size pieces", a coordinate plane with slope and start buttons)
