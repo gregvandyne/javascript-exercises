@@ -8205,7 +8205,8 @@
       "languages": "Languages",
       "theme": "Theme",
       "dark": "Dark",
-      "light": "Light"
+      "light": "Light",
+      "preferredSource": "Add Oomba as a preferred source on Google"
     }
   },
   "rubrics": {

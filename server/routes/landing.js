@@ -47,6 +47,9 @@ export const TRIAL_URL = '/trial';
 export const HOST_NOW_URL = '/teachers/host';
 /** Schools: invoices, purchase orders, more than a few teachers. */
 export const SALES_EMAIL = 'Greg@oomba.ai';
+// Google's preferred sources deeplink (Search Central, "Help your readers find your site through preferred sources"):
+// a reader who taps it can mark oomba.ai as a source they prefer in Google Search. A plain link, no Google script.
+export const PREFERRED_SOURCE_URL = 'https://www.google.com/preferences/source?q=oomba.ai';
 /** Show the Teacher plan's price on the landing (and in its structured data). Off: prices live on /plans only. */
 export const LANDING_SHOW_PRICE = false;
 export const TEACHER_PRICE = { amount: '119', currency: 'USD', label: '$119' };
@@ -314,7 +317,8 @@ export function renderLanding(req, res) {
   ${playBand}
   <div class="lp-wrap lp-foot-in">
     <div class="lp-foot-brand"><a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a><p class="lp-tagline">${t('brand.tagline')}</p><p>${t('landing.footer.tagline')}</p>
-      <a class="lp-btn lp-btn-ghost lp-btn-sm" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
+      <a class="lp-btn lp-btn-ghost lp-btn-sm" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
+      <a class="lp-pref" href="${PREFERRED_SOURCE_URL}" rel="noopener" data-cta="preferred-source"><span aria-hidden="true">⭐</span>${t('landing.footer.preferredSource')}</a></div>
     <nav aria-labelledby="ft-t"><h2 id="ft-t">${t('landing.footer.teachers')}</h2><ul>
       <li><a href="${lp('/teachers')}">${t('landing.footer.guide')}</a></li>
       <li><a href="${lp('/teachers/cs-quest')}">${t('landing.courses.cs.name')}</a></li>

@@ -7688,7 +7688,8 @@
       "languages": "اللغات",
       "theme": "المظهر",
       "dark": "داكن",
-      "light": "فاتح"
+      "light": "فاتح",
+      "preferredSource": "أضف Oomba كمصدر مفضل على Google"
     }
   },
   "teach": {

@@ -423,6 +423,8 @@ main{position:relative;z-index:1}
 @media (min-width:820px) and (max-width:999px){.lp-plans-3{grid-template-columns:1fr 1fr}.lp-plans-3>:first-child{grid-column:1/-1}}
 .lp-plan-plus{margin-top:22px;font-weight:700;color:var(--text)}
 .lp-plan-plus+.lp-list{margin-top:12px}
+.lp-pref{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px;border:1px solid var(--line-2);border-radius:999px;color:var(--text);font-weight:700;font-size:14px;text-decoration:none;max-width:100%}
+.lp-pref:hover,.lp-pref:focus-visible{border-color:currentColor}
 .lp-foot-brand .lp-tagline{font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.01em}
 .lp-gc{max-width:1000px;margin:0 auto}
 .lp-gc .lp-list{margin-top:0}
