@@ -6783,7 +6783,9 @@ could see at those times, not flakes: the check ran with the real clock, so it s
   the height 3 : 2 but are never shorter than their text; the next card leaves out its start time when it is the time
   the period on now ends ("15 min left" already says it); and when the text is still more than the widget holds, the
   names get smaller in steps (never under 13px), and as a last step the next card steps aside so "now" keeps the
-  widget. Nothing is cut.
+  widget. One step a frame, only ever down until the text or the widget's size changes (the type follows container
+  units a frame late, so a size read straight after a change can be stale; stepping one way never swings). Nothing is
+  cut.
 - **"Now and next" out of school hours.** Only a period on now is lit and labelled "Now". Before the first period (or
   in a gap) the card says "First up" / "Next", the period and when it starts; after the last one it is a calm end of
   the day ("That's the end of today's schedule.", no label, not lit). No new words.

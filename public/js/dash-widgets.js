@@ -331,7 +331,8 @@ function nowNext(body, periods, at, ctx) {
   const tick = () => {
     const now = minutesIn(ctx.tz || 'America/New_York'), r = periodAt(periods, now);
     const nextI = r.cur >= 0 ? (r.cur + 1 < periods.length ? r.cur + 1 : -1) : r.next;
-    const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) return; last = key;
+    // (Each second, too, while the text is more than the widget holds: a step the frames below missed.)
+    const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) { if (over()) shrink(); return; } last = key;
     // The next period starts as this one ends: its start time says nothing "minutes left" does not, so the card leaves it
     // out (public/css/dash.css) and both cards fit a short widget.
     b.c.classList.toggle('is-follows', r.cur >= 0 && nextI >= 0 && periods[nextI].start === periods[r.cur].end);
@@ -347,24 +348,25 @@ function nowNext(body, periods, at, ctx) {
     b.h.textContent = W.next;
     if (nextI >= 0) { b.n.textContent = periods[nextI].name || '…'; b.m.textContent = fill(W.starts, { time: at(periods[nextI].start) }); }
     else { b.n.textContent = W.nothingNext; b.m.textContent = ''; }
-    fit();
+    refit();
   };
   // The cards hold their whole text, never cut. When it is more than the widget holds (long names in a small widget),
-  // the names get smaller in steps (never under 13px, public/css/dash.css --nnk); if that is not enough, the "next"
-  // card steps aside and "now" keeps the widget.
-  const over = () => body.scrollHeight > body.clientHeight + 1;
-  const fit = () => {
-    if (!body.isConnected) return;
-    body.style.setProperty('--nnk', '1'); b.c.classList.remove('is-out');
-    for (let k = 9; over() && k >= 6; k--) body.style.setProperty('--nnk', String(k / 10));
-    if (over() && !b.c.hidden) b.c.classList.add('is-out');
-  };
-  const watch = typeof ResizeObserver === 'function' ? new ResizeObserver(() => fit()) : null;
-  // (The cards too: the type settles to the widget's size, and the font arrives, after the widget is drawn.)
-  for (const x of [body, a.c, b.c]) watch?.observe(x);
-  document.fonts?.ready.then(fit);
+  // the names get smaller in steps (90% down to 60%, never under 13px: public/css/dash.css --nnk); if that is not
+  // enough, the "next" card steps aside and "now" keeps the widget. One step a frame and only ever down, until the text
+  // or the widget's size changes: the type follows the widget's size (container units) a frame late, so a size read
+  // straight after a change can be stale, and stepping down only never swings back and forth.
+  const over = () => body.isConnected && body.scrollHeight > body.clientHeight + 1;
+  let step = 0, frame = 0;
+  const apply = () => { body.style.setProperty('--nnk', String(Math.max(6, 10 - step) / 10)); b.c.classList.toggle('is-out', step > 4); };
+  const shrink = () => { if (step > 4 || b.c.hidden && step > 3) return; step++; apply(); later(); };
+  const later = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { if (over()) shrink(); }); };
+  const refit = () => { step = 0; apply(); later(); };
+  let size = '';
+  const watch = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { const z = `${body.clientWidth}x${body.clientHeight}`; if (z !== size) { size = z; refit(); } }) : null;
+  watch?.observe(body);
+  document.fonts?.ready.then(refit);
   tick();
-  return { tick, destroy: () => watch?.disconnect() };
+  return { tick, destroy: () => { watch?.disconnect(); cancelAnimationFrame(frame); } };
 }
 
 // ---------------------------------------------------------------- weather (from the server, never the browser's place)
