@@ -21,6 +21,8 @@ test('every dashboard widget fits its box: no content, control or text cut off, 
   // Every layout the script made (default, default-2..., min, min-2...): stage 3's tools are on the later ones.
   const keys = (/\d+ layouts: (.*)/.exec(out) || [])[1].split(', ');
   assert.ok(keys.includes('default') && keys.includes('min') && keys.length >= 10, keys.join());
+  // The schedule at pinned times of day: before school, first period, mid-day, last period, after school.
+  for (const at of ['0730', '0805', '1020', '1130', '1230']) assert.ok(keys.includes(`sched-${at}`), keys.join());
   for (const size of keys) for (const lang of ['en', 'de', 'ar']) for (const view of ['teacher', 'projector', 'student', 'phone', 'teacher-dark', 'projector-dark', 'student-dark', 'phone-dark'])
     assert.match(out, new RegExp(`✓ ${size} ${lang} ${view}: nothing cut off`));
 });

@@ -312,12 +312,12 @@ function schedule(body, s, ctx) {
     if (r.cur >= 0) msg = `${W.now}: ${periods[r.cur].name || '…'} · ${fill(W.left, { n: Math.ceil(r.left) })}`;
     else if (r.next >= 0) msg = `${r.next === 0 ? W.before : W.next}: ${periods[r.next].name || '…'} · ${at(periods[r.next].start)}`;
     else msg = W.after;
-    if (msg !== last) {
-      last = msg; status.textContent = msg;
-      // The period on now (or the next one) in view, when the list is longer than the widget.
-      const row = rows[r.cur >= 0 ? r.cur : r.next];
-      if (row && ol.scrollHeight > ol.clientHeight) ol.scrollTop = Math.max(0, row.offsetTop - ol.offsetTop - 4);
-    }
+    // The period on now (or the next one) in view when the list is longer than the widget: the list rests on that row
+    // (snapRows in public/js/dash.js scrolls to it and cuts the list at whole rows from there; the rows above fade).
+    // Set before the text changes, so the cut that the change sets off already rests on it.
+    // After the last period, the end of the day.
+    ol.snapTo = rows[r.cur >= 0 ? r.cur : r.next >= 0 ? r.next : rows.length - 1] || null;
+    if (msg !== last) { last = msg; status.textContent = msg; }
   };
   tick();
   return { tick };
@@ -334,8 +334,16 @@ function nowNext(body, periods, at, ctx) {
   const tick = () => {
     const now = minutesIn(ctx.tz || 'America/New_York'), r = periodAt(periods, now);
     const nextI = r.cur >= 0 ? (r.cur + 1 < periods.length ? r.cur + 1 : -1) : r.next;
-    const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) return; last = key;
-    a.h.textContent = r.cur >= 0 ? W.now : r.next >= 0 ? (r.next === 0 ? W.before : W.next) : W.now;
+    // (Each second, too, while the text is more than the widget holds: a step the frames below missed.)
+    const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) { if (over()) shrink(); return; } last = key;
+    // The next period starts as this one ends: its start time says nothing "minutes left" does not, so the card leaves it
+    // out (public/css/dash.css) and both cards fit a short widget.
+    b.c.classList.toggle('is-follows', r.cur >= 0 && nextI >= 0 && periods[nextI].start === periods[r.cur].end);
+    // Only a period on now is lit as "now". Before school (or in a gap) the card says what comes first and when; after
+    // the last period it is a calm end of the day, with no "Now" over it.
+    a.c.classList.toggle('is-now', r.cur >= 0); a.c.classList.toggle('is-done', r.cur < 0 && r.next < 0);
+    a.h.hidden = r.cur < 0 && r.next < 0;
+    a.h.textContent = r.cur >= 0 ? W.now : r.next >= 0 ? (r.next === 0 ? W.before : W.next) : '';
     if (r.cur >= 0) { a.n.textContent = periods[r.cur].name || '…'; a.m.textContent = fill(W.left, { n: Math.ceil(r.left) }); }
     else if (r.next >= 0) { a.n.textContent = periods[r.next].name || '…'; a.m.textContent = fill(W.starts, { time: at(periods[r.next].start) }); }
     else { a.n.textContent = W.after; a.m.textContent = ''; }
@@ -343,9 +351,25 @@ function nowNext(body, periods, at, ctx) {
     b.h.textContent = W.next;
     if (nextI >= 0) { b.n.textContent = periods[nextI].name || '…'; b.m.textContent = fill(W.starts, { time: at(periods[nextI].start) }); }
     else { b.n.textContent = W.nothingNext; b.m.textContent = ''; }
+    refit();
   };
+  // The cards hold their whole text, never cut. When it is more than the widget holds (long names in a small widget),
+  // the names get smaller in steps (90% down to 60%, never under 13px: public/css/dash.css --nnk); if that is not
+  // enough, the "next" card steps aside and "now" keeps the widget. One step a frame and only ever down, until the text
+  // or the widget's size changes: the type follows the widget's size (container units) a frame late, so a size read
+  // straight after a change can be stale, and stepping down only never swings back and forth.
+  const over = () => body.isConnected && body.scrollHeight > body.clientHeight + 1;
+  let step = 0, frame = 0;
+  const apply = () => { body.style.setProperty('--nnk', String(Math.max(6, 10 - step) / 10)); b.c.classList.toggle('is-out', step > 4); };
+  const shrink = () => { if (step > 4 || b.c.hidden && step > 3) return; step++; apply(); later(); };
+  const later = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { if (over()) shrink(); }); };
+  const refit = () => { step = 0; apply(); later(); };
+  let size = '';
+  const watch = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { const z = `${body.clientWidth}x${body.clientHeight}`; if (z !== size) { size = z; refit(); } }) : null;
+  watch?.observe(body);
+  document.fonts?.ready.then(refit);
   tick();
-  return { tick };
+  return { tick, destroy: () => { watch?.disconnect(); cancelAnimationFrame(frame); } };
 }
 
 // ---------------------------------------------------------------- weather (from the server, never the browser's place)
