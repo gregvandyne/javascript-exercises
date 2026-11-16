@@ -2836,6 +2836,17 @@
         "own": "Ou crée la tienne",
         "ownName": "Ta propre disposition",
         "ownDesc": "Pars de zéro ou copie la disposition actuelle."
+      },
+      "qrWeb": {
+        "tooLong": "Cette adresse est trop longue pour un code QR : essaie un lien plus court.",
+        "option": "Un site web…",
+        "url": "Adresse du site web",
+        "name": "Nom (facultatif)",
+        "save": "Afficher ce site web",
+        "ok": "Le code ouvrira {url}",
+        "note": "Tu peux omettre https://, il est ajouté pour toi. Le site rejoint la liste des liens approuvés de la classe, où tu peux le retirer.",
+        "saved": "Le code QR ouvre maintenant {name}",
+        "bad": "Utilise une adresse web complète qui commence par https://"
       }
     }
   },
@@ -9120,7 +9131,8 @@
         "empty": "Choisis ce que le code ouvre dans Modifier l’écran.",
         "gone": "Ce lien n’est plus disponible. Choisis-en un autre dans Modifier l’écran.",
         "scan": "Code QR à scanner",
-        "nothing": "Rien pour l’instant"
+        "nothing": "Rien pour l’instant",
+        "tooLong": "Cette adresse est trop longue pour un code QR : essaie un lien plus court."
       },
       "picker": {
         "name": "Tirage au sort d’un élève",
@@ -10168,7 +10180,8 @@
       "reason": "Choisis une raison dans la liste.",
       "noMood": "Ton enseignant n’a pas mis de météo des émotions sur ton écran.",
       "site": "Cette fenêtre de site n’a pas encore d’adresse.",
-      "template": "Choisis une des dispositions toutes prêtes."
+      "template": "Choisis une des dispositions toutes prêtes.",
+      "qrLong": "Cette adresse est trop longue pour un code QR : essaie un lien plus court."
     },
     "tools": {
       "send": "Envoyer à la classe",

@@ -2837,6 +2837,17 @@
         "own": "Oppure creane una tua",
         "ownName": "Una disposizione tua",
         "ownDesc": "Parti da zero o copia quella che stai usando."
+      },
+      "qrWeb": {
+        "tooLong": "Questo indirizzo è troppo lungo per un codice QR: prova un link più corto.",
+        "option": "Un sito web…",
+        "url": "Indirizzo del sito web",
+        "name": "Nome (facoltativo)",
+        "save": "Mostra questo sito web",
+        "ok": "Il codice aprirà {url}",
+        "note": "Puoi omettere https://, viene aggiunto da solo. Il sito entra nell'elenco dei link approvati della classe, da cui puoi toglierlo.",
+        "saved": "Il codice QR ora apre {name}",
+        "bad": "Usa un indirizzo web completo che inizia con https://"
       }
     }
   },
@@ -9121,7 +9132,8 @@
         "empty": "Scegli cosa apre il codice in Modifica schermo.",
         "gone": "Quel link non è più disponibile. Scegline un altro in Modifica schermo.",
         "scan": "Codice QR da scansionare",
-        "nothing": "Ancora niente"
+        "nothing": "Ancora niente",
+        "tooLong": "Questo indirizzo è troppo lungo per un codice QR: prova un link più corto."
       },
       "picker": {
         "name": "Estrazione a sorte",
@@ -10169,7 +10181,8 @@
       "reason": "Scegli un motivo dalla lista.",
       "noMood": "Il tuo insegnante non ha messo «Come mi sento» sul tuo schermo.",
       "site": "Questa finestra web non ha ancora un indirizzo.",
-      "template": "Scegli una delle disposizioni pronte."
+      "template": "Scegli una delle disposizioni pronte.",
+      "qrLong": "Questo indirizzo è troppo lungo per un codice QR: prova un link più corto."
     },
     "tools": {
       "send": "Invia alla classe",

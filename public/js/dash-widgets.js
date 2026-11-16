@@ -356,28 +356,35 @@ function weather(body, s, ctx) {
 
 // ---------------------------------------------------------------- QR code (allowed targets only; made on the server)
 const qrCache = new Map();
+/** Forget every code (a link was added or removed here): the next draw asks the server again. */
+export const qrForget = () => qrCache.clear();
 function qr(body, s, ctx) {
   const W = ctx.type.words;
   body.classList.add('dw-qr');
   if (!s.target) { body.appendChild(el('p', 'dw-empty', W.empty)); return null; }
   const key = `${s.target.kind}:${s.target.ref}`;
+  let shown;
   const show = r => {
+    const was = shown; shown = r ? r.svg : r === false ? false : null;
+    if (was !== undefined && was === shown) return;
     body.textContent = '';
+    if (r === false) { body.appendChild(el('p', 'dw-empty', W.tooLong)); return; }
     if (!r) { body.appendChild(el('p', 'dw-empty', W.gone)); return; }
     const box = el('div', 'dw-qrbox');
     box.innerHTML = r.svg;   // our own server's SVG (services/qr.js), built from an allowed address only
     const link = el('div', 'dw-qrtext', r.text); link.dir = 'ltr';
-    body.append(box, typed('div', 'dw-qrtitle', r.title), link);
+    if (r.title) body.append(box, typed('div', 'dw-qrtitle', r.title), link); else body.append(box, link);
   };
+  // 422: the address is too long for a code (false); anything else: not allowed any more (null).
+  const load = () => ctx.get(`/qr?kind=${encodeURIComponent(s.target.kind)}&ref=${encodeURIComponent(s.target.ref || '')}`)
+    .then(r => { qrCache.set(key, { r, until: Date.now() + 60e3 }); show(r); })
+    .catch(e => { const r = e && e.status === 422 ? false : null; qrCache.set(key, { r, until: Date.now() + (r === false ? 60e3 : 15e3) }); show(r); });
   const hit = qrCache.get(key);
   if (hit && hit.until > Date.now()) show(hit.r);
-  else {
-    body.appendChild(el('p', 'dw-empty', '…'));
-    ctx.get(`/qr?kind=${encodeURIComponent(s.target.kind)}&ref=${encodeURIComponent(s.target.ref || '')}`)
-      .then(r => { qrCache.set(key, { r, until: Date.now() + 60e3 }); show(r); })
-      .catch(() => { qrCache.set(key, { r: null, until: Date.now() + 15e3 }); show(null); });
-  }
-  return null;
+  else { body.appendChild(el('p', 'dw-empty', '…')); load(); }
+  // Checked again each minute, so a link removed on another screen takes its code away here too.
+  let next = Date.now() + 60e3;
+  return { tick() { if (Date.now() < next || !body.isConnected) return; next = Date.now() + 60e3; const h = qrCache.get(key); if (h && h.until > Date.now()) show(h.r); else load(); } };
 }
 
 // ---------------------------------------------------------------- the random student picker (teacher only)

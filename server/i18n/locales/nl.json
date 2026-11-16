@@ -2837,6 +2837,17 @@
         "own": "Of maak je eigen indeling",
         "ownName": "Je eigen indeling",
         "ownDesc": "Begin leeg of kopieer de indeling die je nu hebt."
+      },
+      "qrWeb": {
+        "tooLong": "Dit adres is te lang voor een QR-code. Probeer een kortere link.",
+        "option": "Een website…",
+        "url": "Adres van de website",
+        "name": "Naam (optioneel)",
+        "save": "Deze website tonen",
+        "ok": "De code opent {url}",
+        "note": "Je mag https:// weglaten, dat wordt aangevuld. De website komt op de lijst met goedgekeurde links van de klas, waar je hem weer kunt weghalen.",
+        "saved": "De QR-code opent nu {name}",
+        "bad": "Gebruik een volledig webadres dat begint met https://"
       }
     }
   },
@@ -9121,7 +9132,8 @@
         "empty": "Kies bij Scherm bewerken wat de code opent.",
         "gone": "Die link is er niet meer. Kies een andere bij Scherm bewerken.",
         "scan": "QR-code om te scannen",
-        "nothing": "Nog niets"
+        "nothing": "Nog niets",
+        "tooLong": "Dit adres is te lang voor een QR-code. Probeer een kortere link."
       },
       "picker": {
         "name": "Willekeurige leerling",
@@ -10169,7 +10181,8 @@
       "reason": "Kies een reden uit de lijst.",
       "noMood": "Je leraar heeft geen ‘Hoe voel ik me’ op je scherm gezet.",
       "site": "Dit websitevenster heeft nog geen adres.",
-      "template": "Kies een van de kant-en-klare indelingen."
+      "template": "Kies een van de kant-en-klare indelingen.",
+      "qrLong": "Dit adres is te lang voor een QR-code. Probeer een kortere link."
     },
     "tools": {
       "send": "Naar de klas sturen",

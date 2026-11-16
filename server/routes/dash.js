@@ -23,6 +23,7 @@
 //   POST /api/dash/:id/checks/:cid/answer     a student taps an answer
 //   GET  /api/dash/:id/places?q=              the teacher looks up a city for the weather (server side)
 //   GET  /api/dash/:id/qr?kind=&ref=          a QR code for an allowed target (teacher)
+//   POST /api/dash/:id/qr/site                a typed website becomes an approved link and the QR code's target (teacher)
 //   GET  /api/dash/:id/tiles?refs=            Oomba tiles the reader can open
 // Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): teaching tools, the whiteboard and the Picture widget add
 // no new address. A tool is sent with POST /pushes (kind 'tool': the teacher's widget id and its state, rebuilt from the
@@ -56,7 +57,7 @@ import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as D from '../services/dash.js';
-import { qrSvg } from '../services/qr.js';
+import { qrSvg, fits, MAX_DASH_VERSION } from '../services/qr.js';
 import { origin } from '../seo.js';
 import { dashCsp, DASH_TEACHER_POLICY, siteFrame, siteFrameCsp, SITE_SANDBOX } from '../services/dash-media.js';
 
@@ -387,8 +388,15 @@ router.get('/api/dash/:id/qr', requireUser, rateLimit('dash-qr', 240, 3600e3), (
   res.set('Cache-Control', 'no-store');
   const tg = D.qrTarget(x.c, { kind: String(req.query.kind || ''), ref: String(req.query.ref || '') }, origin(req));
   if (!tg) return fail(req, res, 'qrGone', 404);
-  let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan') }); } catch { return fail(req, res, 'qrGone', 404); }
+  if (!fits(tg.url, MAX_DASH_VERSION)) return fail(req, res, 'qrLong', 422);
+  let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan'), max: MAX_DASH_VERSION }); } catch { return fail(req, res, 'qrGone', 404); }
   res.json({ svg, text: tg.text, title: tg.title });
+});
+/** The QR widget's "A website" box: the typed address joins the class's approved links and becomes the code's target. */
+router.post('/api/dash/:id/qr/site', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.qrWebsite(req.user, x.c, { url: b.url, title: b.title }));
 });
 
 router.get('/api/dash/:id/tiles', requireUser, rateLimit('dash-tiles', 240, 60e3), (req, res) => {

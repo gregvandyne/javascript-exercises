@@ -27,6 +27,7 @@ import { isOfficial } from './classlive-access.js';
 import { TOOL_IDS, cleanToolState } from './dash-tools.js';
 import { cleanVideo } from './dash-media.js';
 import { lookup } from '../i18n/index.js';
+import { fits, MAX_DASH_VERSION } from './qr.js';
 
 // ---------------------------------------------------------------- the widget registry
 /** Library groups, in order. Groups without a widget yet (stage 2 and later) are not shown. */
@@ -125,7 +126,7 @@ export const WIDGETS = [
     'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
     { key: 'place', type: 'place', def: null },
     { key: 'unit', type: 'select', options: ['auto', 'f', 'c'], def: 'auto' }] },
-  { id: 'qr', icon: '🔳', group: 'join', who: 'teacher', pin: false, size: [4, 4], min: [3, 3], words: ['empty', 'gone', 'scan', 'nothing'], settings: [
+  { id: 'qr', icon: '🔳', group: 'join', who: 'teacher', pin: false, size: [4, 4], min: [3, 3], words: ['empty', 'gone', 'scan', 'nothing', 'tooLong'], settings: [
     { key: 'target', type: 'target', def: null }] },
   { id: 'picker', icon: '🙋', group: 'class', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pick', 'again', 'left', 'away', 'awayTitle', 'awayNote', 'reset', 'none', 'spin', 'noItems'], settings: [
     { key: 'mode', type: 'select', options: ['names', 'wheel'], def: 'names' },
@@ -610,13 +611,21 @@ export function cleanUrl(v) {
   if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) return null;
   return u.href;
 }
+/** A website address as a teacher types it: "example.org/page" (no scheme) is read as https://example.org/page, then
+ *  every cleanUrl rule applies (an address with another scheme, http: or javascript: included, stays refused).
+ *  public/js/dash-video.js webAddress is the browser's copy (tests/unit/dash-stage2.test.js checks they agree). */
+export function webAddress(v) {
+  const s = String(v ?? '').trim();
+  return cleanUrl(s && !/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(s) ? `https://${s}` : s);
+}
 export const linksOf = classId => q.all('SELECT id, url, title, created_at FROM dash_links WHERE class_id=? AND removed_at IS NULL ORDER BY created_at', classId);
 export const getLink = (classId, id) => q.get('SELECT * FROM dash_links WHERE id=? AND class_id=? AND removed_at IS NULL', String(id || ''), classId) || null;
 export function addLink(u, c, { url, title } = {}) {
   const href = cleanUrl(url); if (!href) return { error: 'url' };
   const name = cleanText(title, 60) || new URL(href).hostname;
-  if (linksOf(c.id).length >= MAX_LINKS) return { error: 'tooManyLinks' };
+  // The same address again is the link already on the list (also when the list is full).
   const dup = linksOf(c.id).find(l => l.url === href); if (dup) return { link: dup };
+  if (linksOf(c.id).length >= MAX_LINKS) return { error: 'tooManyLinks' };
   const id = uid(12);
   q.run('INSERT INTO dash_links(id, class_id, url, title, added_by, created_at) VALUES (?,?,?,?,?,?)', id, c.id, href, name, u.id, now());
   audit(u.id, 'dash.link_add', c.id, { link: id, host: new URL(href).hostname });
@@ -1026,17 +1035,32 @@ export async function findPlaces(text, lang = 'en') {
 }
 
 // ---------------------------------------------------------------- QR codes
-/** Where a QR widget's target goes, if it is still allowed: one of the class's approved links (through the class's own
- *  link address, so a removed link stops working), the class's live game join, an open class lesson, or a game every
- *  student can open. -> { url, text (short, shown under the code), title } or null. */
+/** Where a QR widget's target goes, if it is still allowed: one of the class's approved links, the class's live game
+ *  join, an open class lesson, or a game every student can open. -> { url, text (short, shown under the code), title }
+ *  or null. An approved link's code holds the website's own https address, so a tablet or phone that isn't signed in
+ *  opens it at once; the code is only made while the link is on the class's list (a removed link shows no code). The
+ *  title is the name the teacher gave it ('' when it is only the host name, which the short text already shows). */
 export function qrTarget(c, target, origin) {
   const tg = cleanTarget(target); if (!tg) return null;
   const short = s => { const x = String(s).replace(/^https?:\/\//, '').replace(/\/$/, ''); return x.length > 48 ? `${x.slice(0, 47)}…` : x; };
-  if (tg.kind === 'link') { const l = getLink(c.id, tg.ref); if (!l || !cleanUrl(l.url)) return null; return { url: `${origin}/class/${c.id}/dashboard/link/${l.id}`, text: short(l.url), title: l.title }; }
+  if (tg.kind === 'link') {
+    const l = getLink(c.id, tg.ref), url = l && cleanUrl(l.url); if (!url) return null;
+    return { url, text: short(url), title: l.title === new URL(url).hostname ? '' : l.title };
+  }
   if (tg.kind === 'live') { const room = liveRoom(c); if (!room) return null; const url = `${origin}/join#${room.code}`; return { url, text: short(url), title: room.title }; }
   if (tg.kind === 'lesson') { const cl = openLessons(c).find(x => x.id === tg.ref); if (!cl) return null; const url = `${origin}/class/${c.id}/lessons/${cl.id}`; return { url, text: short(url), title: cl.title }; }
   if (tg.kind === 'game') { const g = games.getGame(tg.ref); if (!pushableGame(c, g)) return null; const url = `${origin}/play/${g.slug}`; return { url, text: short(url), title: g.title }; }
   return null;
+}
+
+/** The QR widget's "A website" box: the address the teacher typed becomes one of the class's approved links (or the
+ *  one already there: same address), audited and on the class's list like any other, and the widget's target.
+ *  -> { link, target } or { error: 'url' | 'qrLong' | 'tooManyLinks' }. */
+export function qrWebsite(u, c, { url, title } = {}) {
+  const href = webAddress(url); if (!href) return { error: 'url' };
+  if (!fits(href, MAX_DASH_VERSION)) return { error: 'qrLong' };
+  const r = addLink(u, c, { url: href, title }); if (r.error) return r;
+  return { link: r.link, target: { kind: 'link', ref: r.link.id } };
 }
 
 // ---------------------------------------------------------------- Oomba tiles

@@ -2837,6 +2837,17 @@
         "own": "Oder ein eigenes machen",
         "ownName": "Eigenes Layout",
         "ownDesc": "Leer beginnen oder dieses Layout kopieren."
+      },
+      "qrWeb": {
+        "tooLong": "Diese Adresse ist zu lang für einen QR-Code – nimm einen kürzeren Link.",
+        "option": "Eine Website…",
+        "url": "Adresse der Website",
+        "name": "Name (freiwillig)",
+        "save": "Diese Website zeigen",
+        "ok": "Der Code öffnet {url}",
+        "note": "https:// kannst du weglassen, es wird ergänzt. Die Website kommt auf die Liste der freigegebenen Links der Klasse, wo du sie wieder entfernen kannst.",
+        "saved": "Der QR-Code öffnet jetzt {name}",
+        "bad": "Nimm eine vollständige Webadresse, die mit https:// beginnt."
       }
     }
   },
@@ -9121,7 +9132,8 @@
         "empty": "Wähle unter „Bildschirm bearbeiten“, was der Code öffnet.",
         "gone": "Dieser Link geht nicht mehr. Wähle unter „Bildschirm bearbeiten“ einen anderen.",
         "scan": "QR-Code zum Scannen",
-        "nothing": "Noch nichts"
+        "nothing": "Noch nichts",
+        "tooLong": "Diese Adresse ist zu lang für einen QR-Code – nimm einen kürzeren Link."
       },
       "picker": {
         "name": "Zufällige Auswahl",
@@ -10169,7 +10181,8 @@
       "reason": "Wähle einen Grund aus der Liste.",
       "noMood": "Deine Lehrkraft hat kein Stimmungsbarometer auf deinen Bildschirm gelegt.",
       "site": "Dieses Webseitenfenster hat noch keine Adresse.",
-      "template": "Wähle eines der fertigen Layouts."
+      "template": "Wähle eines der fertigen Layouts.",
+      "qrLong": "Diese Adresse ist zu lang für einen QR-Code – nimm einen kürzeren Link."
     },
     "tools": {
       "send": "An die Klasse senden",
