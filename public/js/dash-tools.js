@@ -374,21 +374,29 @@ function fractions(body, s, ctx) {
       T.read.append(big, why);
     } else T.read.appendChild(el('div', 'dt-sub', shadedWords(st.bars[0].n, st.bars[0].d, W, ctx.intl)));
   }
-  /** Add, Subtract or Multiply: the two fractions as a sum with − and + on every number, the picture, the steps. */
+  /** Add, Subtract, Multiply or Divide: a number sentence. Circles: each fraction's circles above its − and + (stacked as
+   *  on paper), then the sign, the second, = and the answer, in one row (two rows on a narrow widget). Bars: the bars
+   *  stacked on one scale, each with its fraction (its − and +) beside it. Multiply: the sentence above the area model.
+   *  The sizes come from the model's area as it is now (drawn again when it changes): the readout is built first, so
+   *  the area is measured at its final size. */
   function opView(op) {
     st.a = M.clampOperand(st.a || M.OP_START.a); st.b = M.clampOperand(st.b || M.OP_START.b);
     const r = M.operate(op, st.a, st.b), had = T.stage.contains(document.activeElement) ? document.activeElement.dataset.k : '';
     swap.hidden = op !== 'sub' || !r.negative;
+    readout(op, r);
     T.stage.textContent = '';
+    // A phone's model area grows with what it holds: it is given a fixed room instead of being measured.
+    const narrow = matchMedia('(max-width: 719px)').matches;
+    const room = { w: T.stage.clientWidth, h: narrow ? 460 : T.stage.clientHeight };
     const wrap = el('div', `dt-fop dt-fop-${op} dt-fo-${op === 'mul' ? 'area' : st.shape}`); wrap.dir = 'ltr';
-    const eq = el('div', 'dt-foeq');
-    const sign = t => { const x = el('span', 'dt-fosign', t); x.setAttribute('aria-hidden', 'true'); return x; };
-    eq.append(operand('a', 0), sign(r.sign), operand('b', 1));
-    wrap.appendChild(eq);
     T.stage.appendChild(wrap);
-    wrap.appendChild(op === 'mul' ? areaModel(r, eq) : strips(r));
+    if (op === 'mul') mulView(r, wrap, room);
+    else if (st.shape === 'circle') circleView(r, wrap, room);
+    else barView(r, wrap, room);
     if (had) (T.stage.querySelector(`[data-k="${had}"]:not(:disabled)`) || T.stage.querySelector(`[data-k^="${had.slice(0, 2)}"]:not(:disabled)`))?.focus();
-    // The readout: 1/2 + 1/3 = 3/6 + 2/6 = 5/6 (= the simplest form), then in words what that is.
+  }
+  /** The readout: 1/2 + 1/3 = 3/6 + 2/6 = 5/6 (= the simplest form), then in words what that is. */
+  function readout(op, r) {
     T.read.textContent = '';
     const big = el('div', 'dt-big dt-cmp dt-fchain'); big.dir = 'ltr';
     const put = (...xs) => { for (const x of xs) big.appendChild(typeof x === 'string' ? el('span', 'dt-sign', x) : x); };
@@ -419,10 +427,10 @@ function fractions(body, s, ctx) {
     if (f.n >= 0) return x;
     const w = el('span', 'dt-fneg'); w.dir = 'ltr'; w.append(el('span', 'dt-sign', '−'), x); return w;
   };
-  /** Whether the strips can show the same-size pieces (not too many slivers). */
+  /** Whether the pictures can show the same-size pieces (not too many slivers). */
   const sameSize = r => r.L <= 48 && wholesOf(r) * r.L <= MAX_PIECES;
   const wholesOf = r => Math.max(1, ...(r.op === 'div' ? [r.a, r.b] : [r.a, r.b, r.raw]).map(f => Math.ceil(Math.abs(f.n) / f.d)));
-  /** One fraction of the sum: − and + on its top and its bottom number. */
+  /** One fraction of the sentence: − and + on its top and its bottom number, stacked as on paper. */
   function operand(k, i) {
     const f = st[k], who = i ? W.second : W.first;
     const g = el('div', `dt-fo dt-fo${i}`); g.setAttribute('role', 'group'); g.setAttribute('aria-label', `${who}: ${f.n}/${f.d}`);
@@ -442,41 +450,157 @@ function fractions(body, s, ctx) {
     g.append(row('n', 0, Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * f.d), W.num), line, row('d', 1, M.OP_LIMITS.dMax, W.den));
     return g;
   }
-  /** Add and Subtract: the first fraction, the second and the answer, in same-size pieces (bars or circles, on one scale). */
-  function strips(r) {
-    const W2 = wholesOf(r), useL = !st.hide && sameSize(r), grid = el('div', 'dt-fstrips');
-    const row = (label, cells, per, group, aria, part) => {
-      const lab = el('div', 'dt-flab'); for (const x of label) lab.appendChild(typeof x === 'string' ? el('span', 'dt-eqsign', x) : x);
-      const pic = st.shape === 'circle' ? pies(W2, per, cells, group, part) : stripSvg(W2, per, cells, group, part);
-      pic.setAttribute('role', 'img'); pic.setAttribute('aria-label', aria);
-      grid.append(lab, pic);
-    };
-    const pieces = (f, from, cls) => { const out = []; for (let i = 0; i < Math.abs(f.n); i++) out[from + i] = cls; return out; };
-    const fa = useL ? r.a2 : r.a, fb = useL ? r.b2 : r.b;
-    row([fracEl(fa)], pieces(fa, 0, 'dt-on dt-c0'), fa.d, useL ? r.L / r.a.d : 1, shadedWords(fa.n, fa.d, W, ctx.intl));
-    row([r.sign, fracEl(fb)], pieces(fb, 0, 'dt-on dt-c1'), fb.d, useL ? r.L / r.b.d : 1, shadedWords(fb.n, fb.d, W, ctx.intl));
-    if (st.hide) { row(['=', el('span', 'dt-sign', '?')], [], 1, 1, '?'); return grid; }
-    // The answer: adding puts the second's pieces after the first's; taking away crosses the second's off the first's end.
-    // Below zero, the pieces missing are drawn hatched and the answer has its minus. With too many pieces to draw, the
-    // answer is one bar (or wedge) as long as it is.
-    if (r.op === 'div') return divRow(r, W2, useL, row, grid);
-    const show = useL ? r.raw : r.simple, many = W2 * show.d > MAX_PIECES, neg = r.negative ? 'dt-on dt-fneg' : null;
-    let cells;
-    if (many) cells = [];
-    else if (!useL || r.negative) cells = Array.from({ length: Math.abs(show.n) }, () => neg || 'dt-on dt-c2');
-    else if (r.op === 'add') cells = Array.from({ length: r.raw.n }, (_, i) => (i < r.a2.n ? 'dt-on dt-c0' : 'dt-on dt-c1'));
-    else cells = Array.from({ length: r.a2.n }, (_, i) => (i < r.raw.n ? 'dt-on dt-c0' : 'dt-took'));
-    row(['=', fracEl(show)], cells, many ? 1 : show.d, 1, `= ${M.fracRaw(show)}`, many ? { v: Math.abs(show.n) / show.d, cls: neg || 'dt-on dt-c2' } : null);
-    return grid;
+  /** A fraction with its − and +, and what it is in same-size pieces (= 3/6) when that is drawn. */
+  function operandBox(k, i, same) {
+    const box = el('div', 'dt-fopnd'); box.appendChild(operand(k, i));
+    if (same) { const q = el('span', 'dt-feqv'); q.dir = 'ltr'; const s = el('span', 'dt-eqsign', '='); s.setAttribute('aria-hidden', 'true'); q.append(s, fracEl(same)); box.appendChild(q); }
+    return box;
   }
-  /** Divide: the first fraction measured in lots of the second (same-size pieces): whole lots take turns in two
-   *  shades with a bold line between them, and what is left over is hatched (it is that part of one more lot). */
-  function divRow(r, W2, useL, row, grid) {
-    if (!useL) { row(['=', fracEl(r.simple)], [], 1, 1, `= ${r.mixed}`, { v: r.a.n / r.a.d, cls: 'dt-on dt-c1' }); return grid; }
-    const lot = r.b2.n, full = Math.floor(r.a2.n / lot) * lot;
-    const cells = Array.from({ length: r.a2.n }, (_, i) => (i >= full ? 'dt-on dt-fleft' : Math.floor(i / lot) % 2 ? 'dt-on dt-c1b' : 'dt-on dt-c1'));
-    row(['=', fracEl(r.simple)], cells, r.L, lot, `= ${r.mixed}`);
-    return grid;
+  /** The answer's place in the sentence: the fraction, or ? while it is hidden. */
+  const answerEl = f => { const x = el('span', 'dt-fans'); x.dir = 'ltr'; x.appendChild(f ? fracEl(f) : el('span', 'dt-fq', '?')); return x; };
+  const signEl = t => { const x = el('div', 'dt-fsg'); const s = el('span', 'dt-fosign', t); s.setAttribute('aria-hidden', 'true'); x.appendChild(s); return x; };
+  /** The fractions' − and + in each form: [height, width] in px (see .dt-fs-stack, -tight, -inline in dash.css). */
+  const FORMS = { stack: [100, 150], tight: [84, 128], inline: [44, 300], mini: [36, 260] }, EQW = 56, GAP = 12, SIGN = 40;
+  /** Add, Subtract, Divide: what each picture shows. A and B are the two fractions (in same-size pieces when they are
+   *  drawn), ans the answer: cells[i] is piece i's class, per pieces a whole, group pieces between bold lines, part one
+   *  bar or wedge as long as the answer (too many pieces to draw), f the fraction it is. */
+  function pictures(r) {
+    const useL = !st.hide && sameSize(r);
+    const pieces = (f, cls) => Array.from({ length: Math.abs(f.n) }, () => cls);
+    const fa = useL ? r.a2 : r.a, fb = useL ? r.b2 : r.b;
+    const A = { f: fa, cells: pieces(fa, 'dt-on dt-c0'), per: fa.d, group: useL ? r.L / r.a.d : 1, same: useL && r.a.d !== r.L ? r.a2 : null };
+    const B = { f: fb, cells: pieces(fb, 'dt-on dt-c1'), per: fb.d, group: useL ? r.L / r.b.d : 1, same: useL && r.b.d !== r.L ? r.b2 : null };
+    let ans;
+    if (st.hide) ans = { f: null, cells: [], per: 1, group: 1 };
+    // Divide: the first fraction measured in lots of the second (same-size pieces): whole lots take turns in two shades
+    // with a bold line between them, and what is left over is hatched (it is that part of one more lot).
+    else if (r.op === 'div') {
+      if (!useL) ans = { f: r.simple, cells: [], per: 1, group: 1, part: { v: r.a.n / r.a.d, cls: 'dt-on dt-c1' } };
+      else {
+        const lot = r.b2.n, full = Math.floor(r.a2.n / lot) * lot;
+        ans = { f: r.simple, per: r.L, group: lot, cells: Array.from({ length: r.a2.n }, (_, i) => (i >= full ? 'dt-on dt-fleft' : Math.floor(i / lot) % 2 ? 'dt-on dt-c1b' : 'dt-on dt-c1')) };
+      }
+    } else {
+      // Adding puts the second's pieces after the first's; taking away crosses the second's off the first's end. Below
+      // zero, the pieces missing are drawn hatched and the answer has its minus. With too many pieces to draw, the answer
+      // is one bar (or wedge) as long as it is.
+      const show = useL ? r.raw : r.simple, many = wholesOf(r) * show.d > MAX_PIECES, neg = r.negative ? 'dt-on dt-fneg' : null;
+      let cells;
+      if (many) cells = [];
+      else if (!useL || r.negative) cells = Array.from({ length: Math.abs(show.n) }, () => neg || 'dt-on dt-c2');
+      else if (r.op === 'add') cells = Array.from({ length: r.raw.n }, (_, i) => (i < r.a2.n ? 'dt-on dt-c0' : 'dt-on dt-c1'));
+      else cells = Array.from({ length: r.a2.n }, (_, i) => (i < r.raw.n ? 'dt-on dt-c0' : 'dt-took'));
+      ans = { f: show, cells, per: many ? 1 : show.d, group: 1, part: many ? { v: Math.abs(show.n) / show.d, cls: neg || 'dt-on dt-c2' } : null };
+    }
+    A.aria = shadedWords(fa.n, fa.d, W, ctx.intl); B.aria = shadedWords(fb.n, fb.d, W, ctx.intl);
+    ans.aria = `= ${!ans.f ? '?' : r.op === 'div' ? r.mixed : M.fracRaw(ans.f)}`;
+    for (const x of [A, B, ans]) x.wholes = Math.max(1, Math.ceil(x.part ? x.part.v : x.cells.length / x.per));
+    return { A, B, ans };
+  }
+  /** Circles: A − B = ? in a row, each fraction's circles above it; two rows (A − B, then = ?) when one row would make the
+   *  circles too small. The circle size, and how big the − and + are, are worked out from the room. */
+  function circleView(r, wrap, room) {
+    const p = pictures(r), ns = [p.A.wholes, p.B.wholes, p.ans.wholes];
+    const size = (form, lines, eqOn) => {
+      const [hs, ws] = FORMS[form], eq = [p.A.same && eqOn ? EQW : 0, p.B.same && eqOn ? EQW : 0];
+      const under = i => (i < 2 ? ws + eq[i] : 72), pics = (i, s) => ns[i] * s + (ns[i] - 1) * 6;
+      const col = (i, s) => Math.max(under(i), pics(i, s));
+      // 1: one row; 2: A − B, then = ?; 3 (a phone): each fraction a row of its own, its circles beside it.
+      const wide = { 1: s => col(0, s) + col(1, s) + col(2, s) + 2 * SIGN + 4 * GAP, 2: s => Math.max(col(0, s) + col(1, s) + SIGN + 2 * GAP, SIGN + col(2, s) + GAP),
+        3: s => Math.max(...[0, 1, 2].map(i => pics(i, s) + GAP + under(i))) }[lines];
+      const high = { 1: room.h - hs - GAP, 2: (room.h - 2 * hs - 3 * GAP) / 2, 3: (room.h - 2 * SIGN - 4 * GAP) / 3 }[lines];
+      let s = Math.floor(Math.min(lines === 3 ? 110 : 220, high - 4));
+      while (s >= 20 && wide(s) > room.w) s -= 2;
+      return s;
+    };
+    // Each way to lay it out, best first (with "= 3/6" beside each fraction, then without it).
+    const ways = [];
+    for (const [form, lines] of [['stack', 1], ['tight', 1], ['stack', 2], ['tight', 2], ['stack', 3], ['tight', 3], ['inline', 1], ['inline', 2], ['mini', 1], ['mini', 2]])
+      for (const eqOn of p.A.same || p.B.same ? [true, false] : [false]) ways.push({ form, lines, eqOn, s: size(form, lines, eqOn) });
+    const build = w => {
+      wrap.textContent = ''; wrap.className = wrap.className.replace(/ dt-fs-\S+/g, ''); wrap.classList.add(...formClass(w.form));
+      const sent = el('div', `dt-fsent dt-fsent${w.lines}`);
+      sent.style.setProperty('--ps', `${Math.max(20, w.s)}px`); sent.style.setProperty('--hs', `${FORMS[w.form][0]}px`);
+      const term = (x, i, under) => {
+        const col = el('div', `dt-fterm dt-ft${i}`);
+        const pic = pies(x.wholes, x.per, x.cells, x.group, x.part);
+        pic.setAttribute('role', 'img'); pic.setAttribute('aria-label', x.aria);
+        if (!x.f && i === 2) pic.classList.add('dt-fqpie');
+        const u = el('div', 'dt-funder'); u.appendChild(under);
+        col.append(pic, u); return col;
+      };
+      sent.append(term(p.A, 0, operandBox('a', 0, w.eqOn && p.A.same)), signEl(r.sign), term(p.B, 1, operandBox('b', 1, w.eqOn && p.B.same)));
+      if (w.lines === 2) sent.appendChild(el('div', 'dt-fbrk'));
+      sent.append(signEl('='), term(p.ans, 2, answerEl(p.ans.f)));
+      wrap.appendChild(sent);
+      return sent;
+    };
+    // The first way whose circles are big enough and that really fits (measured), else the one with the biggest circles
+    // that fits, else the smallest.
+    const fits = sent => sent.scrollWidth <= room.w + 1 && sent.offsetHeight <= room.h + 1;
+    const good = ways.filter(w => w.s >= 20);
+    for (const w of [...good.filter(x => x.s >= 72), ...good.slice().sort((x, y) => y.s - x.s)]) if (fits(build(w))) return;
+    build({ form: 'mini', lines: 2, eqOn: false, s: 20 });
+  }
+  /** The classes for a form of − and + (mini: on one row, with the smaller buttons). */
+  const formClass = form => (form === 'mini' ? ['dt-fs-inline', 'dt-fs-tight'] : [`dt-fs-${form}`]);
+  /** Bars: one bar a row on one scale, each with its sign and fraction beside it (lined up on the bars' side); on a
+   *  phone (or when that does not fit) each fraction above its bar. The first form of − and + that fits (measured) is used. */
+  function barView(r, wrap, room) {
+    const p = pictures(r), wholes = wholesOf(r);
+    const ansH = { stack: 56, tight: 48, inline: 36, mini: 30 }, gap = { stack: GAP, tight: GAP, inline: 6, mini: 6 };
+    const build = (form, eqOn, above) => {
+      wrap.textContent = ''; wrap.className = wrap.className.replace(/ dt-fs-\S+/g, ''); wrap.classList.add(...formClass(form));
+      const hs = FORMS[form][0];
+      // The bars: as tall as the room allows, never taller than the fractions beside them (and at most 72px).
+      const bh = above ? 48 : Math.max(20, Math.min(72, hs, room.h - 2 * hs - 2 * gap[form] - 2));
+      const grid = el('div', `dt-fbars${above ? ' dt-fbars-above' : ''}`); grid.style.setProperty('--bh', `${bh}px`); grid.style.setProperty('--gp', `${gap[form]}px`);
+      const row = (sign, label, x) => {
+        const lab = el('div', 'dt-fblab');
+        if (sign) { const t = el('span', 'dt-fosign', sign); t.setAttribute('aria-hidden', 'true'); lab.appendChild(t); }
+        lab.appendChild(label);
+        const bar = stripSvg(wholes, x.per, x.cells, x.group, x.part);
+        bar.setAttribute('role', 'img'); bar.setAttribute('aria-label', x.aria);
+        grid.append(lab, bar);
+      };
+      row('', operandBox('a', 0, eqOn && p.A.same), p.A);
+      row(r.sign, operandBox('b', 1, eqOn && p.B.same), p.B);
+      row('=', answerEl(p.ans.f), p.ans);
+      wrap.appendChild(grid);
+      return grid;
+    };
+    // Fits: no wider or taller than the room, and the bars at least 120px long.
+    const fits = g => g.scrollWidth <= room.w + 1 && g.offsetHeight <= room.h + 1 && g.querySelector('.dt-fobar').getBoundingClientRect().width >= Math.min(120, room.w / 3);
+    const eqs = p.A.same || p.B.same ? [true, false] : [false];
+    // A phone: each fraction above its bar first; a widget: beside it first.
+    const phone = matchMedia('(max-width: 719px)').matches;
+    for (const above of phone ? [true, false] : [false, true]) for (const form of ['stack', 'tight', 'inline', 'mini']) for (const eqOn of eqs) {
+      if ((above || 2 * FORMS[form][0] + ansH[form] + 2 * gap[form] <= room.h) && fits(build(form, eqOn, above))) return;
+    }
+    build('mini', false, false);
+  }
+  /** Multiply: the sentence (A × B = ?) above the area model. */
+  function mulView(r, wrap, room) {
+    // The sentence in one row (A × B = answer) with the biggest − and + that leave the square room (the answer is left
+    // out when it would not fit on the row: the readout has it).
+    const build = (form, answer) => {
+      wrap.textContent = ''; wrap.className = wrap.className.replace(/ dt-fs-\S+/g, ''); wrap.classList.add(...formClass(form));
+      const eq = el('div', 'dt-foeq');
+      eq.append(operand('a', 0), signEl(r.sign), operand('b', 1));
+      if (answer) eq.append(signEl('='), answerEl(st.hide ? null : r.simple));
+      wrap.appendChild(eq);
+      return eq;
+    };
+    const room2 = { stack: 170, tight: 120, inline: 90, mini: 0 };
+    let eq = null;
+    for (const form of ['stack', 'tight', 'inline', 'mini']) for (const answer of [true, false]) {
+      if (eq) break;
+      const e = build(form, answer);
+      if (e.scrollWidth <= room.w + 1 && e.offsetHeight <= FORMS[form][0] + 8 && room.h - e.offsetHeight - GAP >= room2[form]) eq = e;
+    }
+    if (!eq) eq = build('mini', false);
+    wrap.appendChild(eq);
+    wrap.appendChild(areaModel(r, eq));
   }
   /** Multiply: a unit square cut one way by the first bottom number (its top number shaded) and the other way by the
    *  second; where the shading overlaps is the product. Past one whole, the square repeats (3/1 is three squares). */

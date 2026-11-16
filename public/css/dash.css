@@ -690,21 +690,52 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-feq{display:inline-flex;align-items:center;gap:.25em;color:var(--text-2);font-weight:800;font-size:clamp(1.1rem,min(8cqh,5cqi),2.6rem)}
 .dt-sign{font-size:1.1em;padding:0 .15em}
 .dt-cmp{gap:.15em .4em}
-/* fractions: Add, Subtract, Multiply (docs/decisions.md "Classroom dashboards: help on the maths tools") */
-.dt-fop{width:100%;height:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:safe center;gap:clamp(4px,1.6cqh,12px);min-height:0}
-.dt-foeq{flex:none;display:flex;align-items:center;justify-content:center;gap:clamp(6px,2cqi,18px);flex-wrap:wrap}
-.dt-fo{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:2px 6px;border-radius:12px;box-shadow:inset 4px 0 0 var(--dt-c0)}
+/* fractions: Add, Subtract, Multiply, Divide (docs/decisions.md "Classroom dashboards: help on the maths tools" and
+   "Fractions as a number sentence"). The sizes in px agree with FORMS in public/js/dash-tools.js. */
+.dt-fop{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;min-height:0;min-width:0}
+.dt-fopnd{display:inline-flex;align-items:center;gap:6px}
+.dt-fo{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:2px 6px 2px 10px;border-radius:12px;box-shadow:inset 4px 0 0 var(--dt-c0)}
 .dt-fo1{box-shadow:inset 4px 0 0 var(--dt-c1)}
 .dt-forow{display:flex;align-items:center;gap:4px}
-.dt-fov{min-width:1.6em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.1rem,min(7cqh,4.5cqi),2rem);line-height:1}
+.dt-fov{min-width:1.5em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:1.5rem;line-height:1}
 .dt-fol{align-self:stretch;margin-inline:48px;height:3px;border-radius:2px;background:currentColor}
-.dt-fosign{font-weight:800;font-size:clamp(1.3rem,min(8cqh,5cqi),2.4rem);line-height:1}
-.dt-fstrips{flex:1 1 0;min-height:0;display:grid;grid-template-columns:max-content minmax(0,1fr);grid-template-rows:repeat(3,minmax(22px,90px));align-content:center;gap:clamp(3px,1.2cqh,10px) var(--s2)}
-.dt-fstrips .dt-flab{justify-content:flex-end;gap:.25em;font-size:clamp(1rem,min(5.5cqh,4.5cqi),1.9rem)}
-.dt-fstrips .dt-frac,.dt-fstrips .dt-fwhole,.dt-fstrips .dt-sign{font-size:1em}
-.dt-fstrips .dt-fbar{cursor:default}
-.dt-fpies{min-width:0;min-height:0;height:100%;display:flex;align-items:center;justify-content:flex-start;gap:6px}
-.dt-fpies .dt-fpie{flex:0 1 auto;height:100%;width:auto;max-width:calc((100% - 12px) / 3);cursor:default}
+.dt-fosign{font-weight:800;font-size:2rem;line-height:1}
+.dt-fs-tight .dt-pm{min-height:36px;height:36px;min-width:36px;font-size:1.15rem}
+.dt-fs-tight .dt-fov{font-size:1.3rem}
+.dt-fs-tight .dt-fol{margin-inline:40px}
+.dt-fs-tight .dt-fosign{font-size:1.7rem}
+/* a very short widget: each fraction on one row (− 1 + / − 2 +) */
+.dt-fs-inline .dt-fo{flex-direction:row;gap:6px}
+.dt-fs-inline .dt-fol{width:3px;height:30px;margin:0 2px;align-self:center;transform:skewX(-20deg)}
+.dt-fs-inline .dt-fosign{font-size:1.4rem}
+.dt-feqv{display:inline-flex;align-items:center;gap:4px;color:var(--text-2);font-weight:800;font-size:1.1rem}
+.dt-feqv .dt-frac{font-size:1em}
+.dt-fans{display:inline-flex;align-items:center;font-weight:800;font-size:1.6rem}
+.dt-fans .dt-frac,.dt-fans .dt-fwhole,.dt-fans .dt-sign{font-size:1em}
+.dt-fq{font-size:1.25em;line-height:1}
+.dt-fs-tight .dt-fans{font-size:1.35rem}
+.dt-fs-inline .dt-fans{font-size:1rem}
+/* circles: A − B = ? as a row, each fraction under its circles (--ps the circles' size, --hs the fractions' height) */
+.dt-fsent{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:12px;max-width:100%}
+.dt-fterm{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.dt-fterm .dt-fpies{height:var(--ps);display:flex;align-items:center;justify-content:center;gap:6px}
+.dt-fterm .dt-fpie{flex:none;width:var(--ps);height:var(--ps);max-width:none;cursor:default}
+.dt-funder{height:var(--hs);display:flex;align-items:center;justify-content:center}
+.dt-fsg{width:40px;height:var(--hs);display:flex;align-items:center;justify-content:center}
+.dt-fbrk{flex-basis:100%;height:0}
+.dt-fqpie .dt-outline{stroke-dasharray:5 4}
+.dt-fsent3{flex-direction:column;align-items:center;flex-wrap:nowrap;gap:8px}
+.dt-fsent3 .dt-fterm{flex-direction:row}
+.dt-fsent3 .dt-fsg{height:auto}
+/* bars: one a row on one scale, its sign and fraction beside it (--bh the bars' height) */
+.dt-fbars{width:100%;max-width:1100px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;align-content:safe center;gap:var(--gp,12px) 10px}
+.dt-fblab{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.dt-fbars .dt-fobar{display:block;width:100%;height:var(--bh);cursor:default}
+.dt-fbars-above{grid-template-columns:minmax(0,1fr);row-gap:6px}
+.dt-fbars-above .dt-fblab{justify-content:center}
+.dt-fbars-above .dt-fobar+.dt-fblab{margin-top:6px}
+.dt-foeq{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.dt-foeq .dt-fsg{width:auto}
 .dt-fwhole{font-weight:800;font-variant-numeric:tabular-nums}
 .dt-fneg{display:inline-flex;align-items:center}
 .dt-on.dt-fneg{fill:color-mix(in srgb,var(--danger) 45%,var(--card));stroke:var(--danger);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
@@ -722,10 +753,9 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-fbrace{fill:none;stroke-width:3;vector-effect:non-scaling-stroke}
 .dt-c0s{stroke:color-mix(in srgb,var(--dt-c0) 60%,var(--text))}.dt-c1s{stroke:color-mix(in srgb,var(--dt-c1) 60%,var(--text))}
 .dt-ftl{fill:var(--text);font:800 calc(16px * var(--ts,1)) var(--font)}
-.dt-fchain{gap:.1em .3em;font-size:clamp(1rem,min(7cqh,5cqi),2.8rem)}
+.dt-fchain{gap:.1em .3em;font-size:clamp(1rem,min(5.5cqh,4cqi),2.2rem)}
 .dt-fchain .dt-frac{font-size:1em}
 [dir="rtl"] .dt-fop .dt-fbar{transform:none}
-@container (max-height:340px){.dt-fstrips .dt-flab{font-size:.85rem}.dt-fstrips .dt-frac{flex-direction:row;align-items:baseline}.dt-fstrips .dt-fl{display:none}.dt-fstrips .dt-fd::before{content:'/'}.dt-fo{flex-direction:row;gap:6px}.dt-fol{width:3px;height:auto;margin:6px 0;transform:skewX(-20deg)}}
 /* number line */
 .dt-nl{cursor:crosshair;touch-action:none}
 .dt-tick{stroke:var(--text);stroke-width:2.5}
@@ -1345,7 +1375,6 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-frow{min-height:56px;height:64px;flex:none}
   .dt-f-circle .dt-frow{height:auto}
   .dt-fop{height:auto}
-  .dt-fstrips{flex:none;grid-template-rows:repeat(3,52px)}
   .dt-fareabox{flex:none;height:min(78vw,300px)}
   .dt-mats{min-height:240px}
   .dt-pv{min-height:200px}
