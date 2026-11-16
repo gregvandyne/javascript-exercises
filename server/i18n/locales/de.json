@@ -2723,9 +2723,9 @@
         "eyesOff": "„Augen nach vorn“ ist beendet",
         "eyesUp": "Augen nach vorn",
         "hidden": "Ausgeblendet. Es ist unter „Von deiner Lehrkraft“ gespeichert.",
-        "back": "Es ist wieder da"
+        "back": "Es ist wieder da",
+        "renamed": "Layout umbenannt: {name}"
       },
-      "editing": "Bearbeiten: {name}",
       "all": "Alle",
       "add": "Hinzufügen",
       "addName": "{name} hinzufügen",
@@ -8920,6 +8920,7 @@
       "edit": "Bildschirm bearbeiten",
       "editMine": "Meinen Bildschirm ändern",
       "editing": "Bearbeiten: {name}",
+      "layoutName": "Name des Layouts",
       "editingMine": "Ich ändere meinen Bildschirm",
       "editHint": "Ziehen zum Verschieben · an einer Ecke ziehen zum Ändern der Größe · oder Pfeiltasten",
       "editHintMine": "Verschiebe deine Widgets, füge neue hinzu oder wähle einen Hintergrund. Angeheftete bleiben.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Layout",
       "new": "Neu",
-      "manage": "Dieses Layout umbenennen oder löschen",
-      "defaultName": "Alltag"
+      "manage": "Dieses Layout umbenennen oder löschen"
     },
     "foot": {
       "eyes": "Augen nach vorn",
@@ -10428,6 +10428,10 @@
       "lesson": {
         "name": "Unterricht",
         "desc": "Timer, schnelle Abfrage, Hilfe-Schlange, Zahlenstrahl und Ampel."
+      },
+      "math": {
+        "name": "Mathe",
+        "desc": "Bruchstreifen, ein Zahlenstrahl in Vierteln, ein Timer und die Hilfe-Schlange."
       },
       "group": {
         "name": "Gruppenarbeit",

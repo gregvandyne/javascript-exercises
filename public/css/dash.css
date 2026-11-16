@@ -31,6 +31,19 @@ body.dash-page{padding-bottom:0}
   .dash-projector .dash-foot>.dash-lab{display:none}
 }
 .dash-hint{flex:1 1 200px}
+/* Edit mode: the layout's name is a field in the title (docs/decisions.md "Ready-made layouts"), looking like the title
+   with a dashed underline and a pencil until it is focused. */
+.dash-edittitle{display:flex;align-items:center;flex-wrap:wrap;gap:0 .3em;min-width:0}
+.dash-namebox{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:100%}
+.dash-namein{font:inherit;color:inherit;width:16ch;min-width:8ch;max-width:min(28ch,100%);field-sizing:content;min-height:44px;padding:2px 2em 2px .4em;border:2px solid transparent;border-bottom:2px dashed var(--edge);border-radius:var(--r-sm);background:transparent}
+@supports (field-sizing:content){.dash-namein{width:auto}}
+.dash-namein:hover{background:var(--card-2)}
+.dash-namein:focus{outline:none;border:2px solid var(--accent-line);background:var(--card)}
+.dash-namein[aria-invalid="true"]{border-color:var(--danger)}
+.dash-namepen{position:absolute;inset-inline-end:.4em;font-size:.8em;pointer-events:none;opacity:.75}
+.dash-namein:focus + .dash-namepen{display:none}
+.dash-nameerr{color:var(--danger);font-weight:700;font-size:.9rem}
+.dash-nameerr:empty{display:none}
 
 /* ---------- the body: library | grid | settings ---------- */
 .dash-body{flex:1 1 auto;min-height:0;display:flex;gap:var(--s4)}

@@ -2723,9 +2723,9 @@
         "eyesOff": "“Olhos aqui” terminou",
         "eyesUp": "Olhos para a frente",
         "hidden": "Escondido. Está guardado em Do seu professor.",
-        "back": "Voltou"
+        "back": "Voltou",
+        "renamed": "Layout renomeado: {name}"
       },
-      "editing": "Editando: {name}",
       "all": "Todos",
       "add": "Adicionar",
       "addName": "Adicionar {name}",
@@ -8921,6 +8921,7 @@
       "edit": "Editar tela",
       "editMine": "Mudar minha tela",
       "editing": "Editando: {name}",
+      "layoutName": "Nome do layout",
       "editingMine": "Mudando minha tela",
       "editHint": "Arraste para mover · arraste um canto para mudar o tamanho · ou use as setas",
       "editHintMine": "Mova seus widgets, adicione outros ou escolha um fundo. Os fixados ficam.",
@@ -8930,8 +8931,7 @@
     "layouts": {
       "label": "Layout",
       "new": "Novo",
-      "manage": "Renomear ou apagar este layout",
-      "defaultName": "Todo dia"
+      "manage": "Renomear ou apagar este layout"
     },
     "foot": {
       "eyes": "Olhos aqui",
@@ -10429,6 +10429,10 @@
       "lesson": {
         "name": "Aula",
         "desc": "Timer, checagem rápida, fila de ajuda, reta numérica e semáforo."
+      },
+      "math": {
+        "name": "Matemática",
+        "desc": "Barras de frações, uma reta numérica em quartos, um timer e a fila de ajuda."
       },
       "group": {
         "name": "Trabalho em grupo",

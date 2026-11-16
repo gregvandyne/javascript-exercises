@@ -2723,9 +2723,9 @@
         "eyesOff": "‘Ogen hierheen’ is gestopt",
         "eyesUp": "Ogen naar voren",
         "hidden": "Verborgen. Het staat bewaard bij Van je leraar.",
-        "back": "Het is terug"
+        "back": "Het is terug",
+        "renamed": "Indeling hernoemd: {name}"
       },
-      "editing": "Bewerken: {name}",
       "all": "Alle",
       "add": "Toevoegen",
       "addName": "{name} toevoegen",
@@ -8920,6 +8920,7 @@
       "edit": "Scherm bewerken",
       "editMine": "Mijn scherm aanpassen",
       "editing": "Bewerken: {name}",
+      "layoutName": "Naam van de indeling",
       "editingMine": "Mijn scherm aanpassen",
       "editHint": "Sleep om te verplaatsen · sleep een hoek om de grootte te veranderen · of gebruik de pijltjestoetsen",
       "editHintMine": "Verplaats je widgets, voeg nieuwe toe of kies een achtergrond. Vastgezette blijven staan.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Indeling",
       "new": "Nieuw",
-      "manage": "Deze indeling hernoemen of verwijderen",
-      "defaultName": "Elke dag"
+      "manage": "Deze indeling hernoemen of verwijderen"
     },
     "foot": {
       "eyes": "Ogen hierheen",
@@ -10428,6 +10428,10 @@
       "lesson": {
         "name": "Les",
         "desc": "Timer, snelle check, hulprij, getallenlijn en stoplicht."
+      },
+      "math": {
+        "name": "Rekenen",
+        "desc": "Breukenstroken, een getallenlijn in kwarten, een timer en de hulprij."
       },
       "group": {
         "name": "Groepswerk",
