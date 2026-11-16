@@ -6428,3 +6428,6 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
     at 14px (was 16px; the projector floor is 13px), so a short box still shows at least one whole line.
 - **Not verified:** real YouTube and Vimeo players and a real site's frame check (the build sandbox can't reach them;
   tests and the fit check use stubs), and a physical document camera (Chromium's fake camera was used).
+
+## Preferred sources link on the landing page footer
+The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).

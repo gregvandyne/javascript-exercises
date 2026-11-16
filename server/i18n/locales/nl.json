@@ -7688,7 +7688,8 @@
       "languages": "Talen",
       "theme": "Thema",
       "dark": "Donker",
-      "light": "Licht"
+      "light": "Licht",
+      "preferredSource": "Voeg Oomba toe als voorkeursbron in Google"
     }
   },
   "teach": {
