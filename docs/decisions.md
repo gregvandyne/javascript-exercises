@@ -6808,3 +6808,27 @@ Owner: "update the marketing site to showcase the new dashboards."
   heading as a feature.
 - **Checks:** tests/unit/teacher-landing.test.js (the section, its pictures, translated in de, ar and ja);
   `scripts/landing-audit.js` passes at all six sizes, dark and light.
+
+## Class dashboards walkthrough video (16 Nov 2026)
+Owner: "Build a beautiful walkthrough video … make it look like an actual class and make sure the new default layouts
+are shown. Make the name Ms. Haberle's."
+- **How it is made:** `npm run dash:video -- --out dash-walkthrough.mp4` (scripts/dash-video.js). The real app on a
+  throwaway in-memory database, driven by Playwright, recorded with Chromium's screencast (Page.startScreencast, JPEG
+  frames with their times) and put together with ffmpeg: each part at a constant 30 fps, then the parts joined with
+  short cross-fades; 1920 × 1080 H.264 with faststart. `--peek dir` saves a still of every step; `--keep` keeps the frames.
+- **The class:** Ms. Haberle's Class (grade 4) at Maple Grove Demo School with 22 students, shown only by their Oomba
+  names as dashboards always do (the roster names are placeholders and never appear). The day runs as a class would:
+  16 moods checked in, a thumbs quick check answered by 18, hands up in the help queue, groups made, team points, the
+  voice meter on Chromium's fake microphone, the timers, the wheel and the dice.
+- **What it shows:** her everyday screen; New layout with all five ready-made layouts (each one pointed at); then each
+  of them made in turn (Morning start, Lesson, Group work, Quiet work, Fun break) with every widget on screen and in
+  use; switching back in one tap; a student's own screen on a phone (pinned widgets, a mood tap, a game sent to every
+  screen); an end card. No prices.
+- **The frame:** a stage page (a Playwright route, never served by the app) holds the dashboard in an iframe with a
+  caption band and title cards, and draws the pointer and its click rings. In the recording browser only, the
+  dashboard page's `X-Frame-Options: DENY` and `frame-ancestors 'none'` are relaxed to same-origin so the stage can frame
+  it, and the video widget's host answers with a plain, unbranded stand-in (as scripts/dash-fit-check.js does).
+- **A school morning on any day:** the script starts itself again with its clock at 8:50 in New York on the next
+  weekday (scripts/how-clock.mjs) and sets the browser's clock and time zone to match, so the schedule shows "Morning
+  meeting, then Math".
+- The video file is not in the repo (it is large and is remade by the script).
