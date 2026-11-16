@@ -190,7 +190,9 @@ const STAGE4_EXTRA = [...GEO_EXTRA,
 // Maths tools combined: every mode that was a tool of its own, as a widget of the tool it is a mode of now (with the busy
 // state it had), and the number chart's 1-120.
 const MODE_WIDGET = m => ({ ...D.widgetType(DT.MODE_HOME[m]), wid: `wmode${m}`, s: { state: { tab: m, [m]: SETTINGS[m].state } } });
-const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } }]);
+const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } },
+  // A graph whose tallest bar is exactly the top of its scale, under a title: its number once ran into the title.
+  { ...D.widgetType(DT.MODE_HOME.graph), wid: 'wgraphtop', s: { state: { tab: 'graph', graph: { kind: 'bar', title: 'Haustiere unserer Klasse', rows: [{ l: 'Hunde', v: 4 }, { l: 'Katzen', v: 6 }, { l: 'Fische', v: 2 }] } } } }]);
 const MODE4 = ['angle', 'solids', 'transform', 'balance'].map(MODE_WIDGET);
 // Bar models and number rods (docs/decisions.md "Bar models and number rods"): bar models (a mode of Multiply and divide)
 // with the most groups and the biggest numbers, four parts, two compared bars far apart and a long German word problem;
@@ -357,6 +359,14 @@ function problems() {
     const dbg = window.__fitDebug ? ` [body ${b.clientHeight}: ${[...b.children].map(x => `${x.className}=${Math.round(x.getBoundingClientRect().height)}`).join(', ')}]` : '';
     if (b.scrollHeight > b.clientHeight + 1) out.push(`${name(w)}: content is ${b.scrollHeight - b.clientHeight}px taller than the widget${dbg}`);
     if (b.scrollWidth > b.clientWidth + 1) out.push(`${name(w)}: content is ${b.scrollWidth - b.clientWidth}px wider than the widget`);
+    // A graph's title never touches a number above a bar or a point (they once collided on a tall bar).
+    for (const t of w.querySelectorAll('.dt-gtitle')) {
+      const tr = t.getBoundingClientRect();
+      for (const v of t.parentElement.querySelectorAll('.dt-gv')) {
+        const vr = v.getBoundingClientRect();
+        if (vr.left < tr.right && tr.left < vr.right && vr.top < tr.bottom + 2 && tr.top < vr.bottom) out.push(`${name(w)}: the graph's title touches the number "${v.textContent}"`);
+      }
+    }
     // The widget's inner edge: its padding box (inside the border).
     const wr = w.getBoundingClientRect(), wcs = getComputedStyle(w);
     const inner = { left: wr.left + parseFloat(wcs.borderLeftWidth), right: wr.right - parseFloat(wcs.borderRightWidth), top: wr.top + parseFloat(wcs.borderTopWidth), bottom: wr.bottom - parseFloat(wcs.borderBottomWidth) };
