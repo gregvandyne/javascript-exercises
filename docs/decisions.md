@@ -7053,3 +7053,34 @@ layout of the published puzzle that inspired it, never its puzzle sets or wordin
   Sudoku's do), and whether Rush deserves a leaderboard of its own.
 ## Preferred sources link on the landing page footer
 The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).
+
+## Classroom dashboards: layouts on a phone (16 Nov 2026)
+Product report: "On mobile I can't shift between the different dashboards." Tapping a layout chip did switch, but on a
+phone (one column, under 720px) the footer with the chips, New, ⋯, Eyes up and Push to students sat below every widget, at
+the end of a very long page. Code: `placeSwitcher` in `public/js/dash.js`, the `.has-topswitch` rules in
+`public/css/dash.css`, the `#dash-switch` wrapper in `server/routes/dash.js`.
+- **The switcher moves to the top.** On screens under 720px (the width where the page turns into one column) the layout
+  switcher (the chips, ➕ New and ⋯) is a row of its own right under the top bar, stuck to the top of the screen while the
+  page scrolls. The chips scroll sideways in one line; the layout on screen is the dark chip and is kept in view (only
+  the row scrolls, never the page); each edge fades while there is more that way. 44px targets. The "Layout" label and
+  the word "New" are kept for screen readers only, so the chips get the room.
+- **Decided: a chip row, not a "Layout: Morning start ▾" button with a sheet.** Switching stays one tap, the six or more
+  names are visible and the row is the same control as on wider screens; a sheet would add a tap each switch and hide
+  which layouts there are. The row is about 60px.
+- **Eyes up and Push to students** stay in the footer, which on a phone is a bar stuck to the bottom of the screen
+  (with `env(safe-area-inset-bottom)` for the iPhone's home bar); the two buttons share its width and wrap their words
+  in long languages. Each control is in one place only: the same elements move, nothing is copied.
+- **Sticky, not fixed:** both bars take their own room in the page, so at the top of the page the switcher sits on no
+  widget and at the end the bottom bar sits on none. `scroll-padding` keeps a focused control clear of both.
+- **Edit mode on a phone:** the footer is hidden as on every screen; the switcher stays (switching chooses which layout
+  is edited, and the edit bar's name field follows) but is not sticky there, so it never covers the edit bar or a
+  settings field. Rename in the edit bar works as before.
+- **Accessibility:** the chips are buttons in a `nav` labelled "Layout" (the existing string), the one on screen marked
+  `aria-current` (was a group with `aria-pressed`, on every screen); a switch is still announced ("Layout: Fun break").
+- **Unchanged:** 720px and wider (tablet in landscape and portrait from 720px, desktop, projector): the footer is laid out
+  exactly as before (the wrapper adds no box; checked element by element against the previous version). Students have
+  no layout chips and nothing of theirs changed. No new strings.
+- Tests: `dash.test.js` (the markup, one of each control, nothing for students). `npm run dash:fit` has a teacher phone
+  (`teacher-phone`, `teacher-phone-dark`, 390 × 844): the switcher and the Eyes up / Push bar are on the first screen, the
+  chip on screen is in view, every control is 44px, the switcher stays at the top when scrolled, and at rest neither bar
+  covers a widget.

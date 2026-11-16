@@ -873,8 +873,9 @@ function start() {
   function renderLayouts() {
     const box = $('#dash-layouts'); if (!box) return; box.textContent = '';
     for (const l of S.layouts) {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l.name; b.setAttribute('aria-pressed', String(l.id === S.layoutId));
-      b.addEventListener('click', () => switchLayout(l.id));
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l.name;
+      if (l.id === S.layoutId) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', () => { if (l.id !== S.layoutId) switchLayout(l.id); });
       box.appendChild(b);
     }
     keepChip();
@@ -885,19 +886,34 @@ function start() {
     const box = $('#dash-layouts'); if (!box) return;
     const more = box.scrollWidth > box.clientWidth + 1;
     box.classList.toggle('is-more', more);
-    const on = box.querySelector('[aria-pressed="true"]');
-    if (on && more) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const on = box.querySelector('[aria-current="true"]');
+    // Only the row scrolls (never the page: the row may be sticky at the top of a phone's page).
+    if (on && more) { const br = box.getBoundingClientRect(), r = on.getBoundingClientRect(), pad = 32; if (r.left < br.left + pad) box.scrollLeft -= br.left + pad - r.left; else if (r.right > br.right - pad) box.scrollLeft += r.right - (br.right - pad); }
     chipEnd();
   }
-  const chipEnd = () => { const box = $('#dash-layouts'); if (box) box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); };
+  const chipEnd = () => { const box = $('#dash-layouts'); if (!box) return; box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); box.classList.toggle('at-start', Math.abs(box.scrollLeft) < 2); };
   $('#dash-layouts')?.addEventListener('scroll', chipEnd, { passive: true });
+  // Phones and narrow tablets (one column, docs/decisions.md "Layouts on a phone"): the layout switcher (the chips, New
+  // and ⋯) moves from the footer, below every widget, to a row of its own under the top bar that stays at the top while
+  // the page scrolls; the footer keeps Eyes up and Push to students, as a bar at the bottom of the screen. Wider screens
+  // keep the footer as it was. The same elements move, so there is only ever one of each control.
+  const switcher = $('#dash-switch'), foot = $('#dash-foot');
+  function placeSwitcher() {
+    if (!switcher || !foot) return;
+    const top = narrow.matches;
+    if (top && switcher.parentElement === foot) $('#dash-edithead').after(switcher);
+    else if (!top && switcher.parentElement !== foot) foot.prepend(switcher);
+    root.classList.toggle('has-topswitch', top);
+    keepChip();
+  }
+  narrow.addEventListener('change', placeSwitcher);
   async function switchLayout(id) {
     if (saveTimer) await flush();
     try {
       await api(`/api/dash/${CID}/layouts/${id}/use`, { method: 'POST', body: {} });
       const l = S.layouts.find(x => x.id === id);
-      S.layoutId = id; S.active = id; S.widgets = clone(l.widgets); S.bg = l.bg; S.undo = [];
-      applyBg(); render(); renderLayouts();
+      S.layoutId = id; S.active = id; S.widgets = clone(l.widgets); S.bg = l.bg; S.undo = []; S.selected = null;
+      applyBg(); render(); renderLayouts(); resetName();
       announce(t('js.dash.say.layout', { name: l.name }));
     } catch (err) { toast(err.message, { bad: true }); }
   }
@@ -1216,5 +1232,5 @@ function start() {
   stageEl.addEventListener('scroll', stageMark, { passive: true });
   addEventListener('resize', () => requestAnimationFrame(fitRows));
   document.addEventListener('fullscreenchange', () => requestAnimationFrame(fitRows));
-  applyBg(); render(); renderLayouts(); showLive(); tick();
+  applyBg(); render(); renderLayouts(); if (TEACHER) placeSwitcher(); showLive(); tick();
 }

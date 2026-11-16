@@ -21,6 +21,10 @@ body.dash-page{padding-bottom:0}
 .dash-me{display:flex;align-items:center;gap:var(--s2);font-weight:700}
 .dash-count{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--current);color:var(--on-current);font-size:.8rem}
 .dash-layouts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+/* The layout switcher (the label, the chips, New and ⋯) is one wrapper that adds no box of its own in the footer, so the
+   footer is laid out exactly as before; on a phone public/js/dash.js moves it under the top bar (below). */
+.dash-switch{display:contents}
+.dash-layouts .chip[aria-current="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
 /* Ready-made layouts make six or more layouts usual: on a wide screen the chips stay on the bar's one line and scroll
    sideways when there are more than fit, so the bar never grows a second line (it did on the projector). */
 @media (min-width:720px){
@@ -28,7 +32,7 @@ body.dash-page{padding-bottom:0}
   .dash-layouts .chip{flex:none}
   .dash-layouts.is-more:not(.at-end){-webkit-mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent)}
   [dir="rtl"] .dash-layouts{--fade-end:left}
-  .dash-projector .dash-foot>.dash-lab{display:none}
+  .dash-projector .dash-foot .dash-lab{display:none}
 }
 .dash-hint{flex:1 1 200px}
 /* Edit mode: the layout's name is a field in the title (docs/decisions.md "Ready-made layouts"), looking like the title
@@ -566,6 +570,28 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
   .dash-hint{display:none}
   .dash-check{padding:var(--s3) var(--s4)}
   .dash-ans{flex-basis:90px}
+  /* Layouts on a phone (docs/decisions.md "Layouts on a phone"): the switcher is a row of its own under the top bar,
+     the chips scrolling sideways (the one on screen kept in view, the edge faded while there are more), New as ➕ and
+     ⋯ at its end; it sticks to the top of the screen while the page scrolls. The footer keeps Eyes up and Push to
+     students as a bar stuck to the bottom (above the iPhone's home bar). Both are sticky, not fixed: at rest they take
+     their own room in the page, so neither sits on a widget at the top or the end of the page. In edit mode the footer
+     is hidden as everywhere, and the switcher stays (switching what is being edited) but is not sticky, so it never
+     covers the edit bar or a settings field. */
+  .has-topswitch .dash-switch{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:var(--s2);margin-inline:calc(-1 * var(--s4));padding:var(--s2) var(--s4);padding-inline:max(var(--s4),env(safe-area-inset-left)) max(var(--s4),env(safe-area-inset-right));background:var(--card);color:var(--text);box-shadow:0 4px 14px -6px color-mix(in srgb,var(--text) 35%,transparent)}
+  .has-topswitch .dash-switch>.dash-lab{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .has-topswitch .dash-layouts{flex:1 1 auto;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:2px;margin:-2px}
+  .has-topswitch .dash-layouts::-webkit-scrollbar{display:none}
+  .has-topswitch .dash-layouts .chip{flex:none}
+  .has-topswitch .dash-layouts.is-more{--fa:#000;--fz:#000;-webkit-mask-image:linear-gradient(to var(--fade-end,right),var(--fa),#000 32px,#000 calc(100% - 32px),var(--fz));mask-image:linear-gradient(to var(--fade-end,right),var(--fa),#000 32px,#000 calc(100% - 32px),var(--fz))}
+  .has-topswitch .dash-layouts.is-more:not(.at-start){--fa:transparent}
+  .has-topswitch .dash-layouts.is-more:not(.at-end){--fz:transparent}
+  [dir="rtl"] .has-topswitch .dash-layouts{--fade-end:left}
+  .has-topswitch .dash-switch>.btn{flex:none;min-width:44px;min-height:44px;padding:0 12px}
+  .has-topswitch .dash-lnewt{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .has-topswitch.is-editing .dash-switch{position:static}
+  .has-topswitch .dash-foot{position:sticky;bottom:0;z-index:20;flex-wrap:nowrap;margin:0 calc(-1 * var(--s4)) calc(-1 * var(--s3));border-radius:var(--r) var(--r) 0 0;padding:var(--s2) max(var(--s4),env(safe-area-inset-right)) calc(var(--s2) + env(safe-area-inset-bottom)) max(var(--s4),env(safe-area-inset-left));box-shadow:0 -4px 14px -6px color-mix(in srgb,var(--text) 35%,transparent)}
+  .has-topswitch .dash-foot>.dash-grow{display:none}
+  .has-topswitch .dash-foot>.btn{flex:1 1 auto;min-width:0;min-height:44px;justify-content:center;white-space:normal;text-align:center;line-height:1.15}
   .dw-barrow{grid-template-columns:minmax(3.5em,auto) 1fr 2em}
 }
 /* "More below" on a widget whose body scrolls (public/js/dash.js) */
@@ -1719,3 +1745,5 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 @container (max-width:520px){.dt-bars .dt-steplab{display:none}}
 .dash-projector .dt .input.dt-bsta{font-size:1.05rem}
 @media (max-width:719px){.dt-bars .dt-steplab{display:inline}}
+/* Layouts on a phone: focusing or scrolling to something never leaves it under the sticky switcher or the bottom bar. */
+@media (max-width:719px){html:has(.dash.has-topswitch:not(.is-editing)){scroll-padding-top:72px;scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom))}}

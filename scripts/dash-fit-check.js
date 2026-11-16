@@ -26,6 +26,9 @@
 // by nothing, and the button has no native title as well.
 // Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
 // its widget without scrolling and nothing in it is cut.
+// Layouts on a phone (docs/decisions.md "Layouts on a phone") adds the teacher's phone (390 × 844, light and dark): the
+// layout switcher and the Eyes up / Push bar are on the first screen, the switcher stays at the top while the page
+// scrolls, and at rest neither sticky bar covers a widget.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -443,7 +446,11 @@ function problems() {
     const cs = getComputedStyle(e);
     if (cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 1 && e.getClientRects().length && !e.closest('.sr-only')) out.push(`${name(e.closest('.dash-w'))}: "${label(e)}" ends in … (cut)`);
   }
-  const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead')].filter(b => !b.hidden && b.getClientRects().length).map(b => b.getBoundingClientRect());
+  // Sticky bars (the teacher's phone: the layout switcher at the top, Eyes up and Push at the bottom) float over the page
+  // while it scrolls, so they are checked at rest below; the others never cover a widget.
+  const shown = b => !b.hidden && b.getClientRects().length;
+  const sticky = b => getComputedStyle(b).position === 'sticky';
+  const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead, .dash-switch')].filter(b => shown(b) && !sticky(b)).map(b => b.getBoundingClientRect());
   for (const w of document.querySelectorAll('.dash-w')) {
     if (!w.offsetParent) continue;
     const r = w.getBoundingClientRect();
@@ -461,7 +468,34 @@ function problems() {
       if (hidden > room + 1) out.push(`${name(w)}: ${Math.round(hidden)}px below the screen can't be scrolled into view`);
     }
   }
-  if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} > ${innerWidth})`);
+  if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} > ${innerWidth})${window.__fitDebug ? ` [${[...document.querySelectorAll('body *')].filter(e => e.getClientRects().length && e.getBoundingClientRect().right > innerWidth + 1 && !e.closest('#dash-layouts')).slice(0, 5).map(e => `${e.tagName}.${e.className}#${e.id}`).join(' ')}]` : ''}`);
+  // Layouts on a phone (docs/decisions.md "Layouts on a phone"): on the teacher's phone the layout switcher is under the
+  // top bar, whole on the first screen without scrolling (the layout on screen among its chips, in view), and stays at
+  // the top while the page scrolls; Eyes up and Push to students are on the first screen too, in the bar at the bottom.
+  // At rest (the top of the page for the switcher, the end of the page for the bottom bar) neither covers a widget.
+  const sw = document.getElementById('dash-switch'), foot = document.getElementById('dash-foot');
+  if (sw && foot && innerWidth < 720 && !document.getElementById('dash').classList.contains('is-editing')) {
+    const y0 = scrollY, wr = () => [...document.querySelectorAll('.dash-w')].filter(w => w.offsetParent).map(w => [w, w.getBoundingClientRect()]);
+    const hits = (b, list) => list.filter(([, r]) => r.top < b.bottom - 1 && r.bottom > b.top + 1 && r.left < b.right && r.right > b.left).map(([w]) => name(w));
+    const onScreen = r => r.top >= -1 && r.bottom <= innerHeight + 1 && r.height > 0;
+    if (sw.parentElement === foot) out.push('the layout switcher is still in the footer, below every widget');
+    else if (!sticky(sw)) out.push('the layout switcher does not stay at the top while the page scrolls');
+    if (!sticky(foot)) out.push('Eyes up and Push to students are not in a bar at the bottom of the screen');
+    scrollTo(0, 0);
+    const s0 = sw.getBoundingClientRect(), f0 = foot.getBoundingClientRect(), nav = document.getElementById('dash-layouts').getBoundingClientRect();
+    if (!onScreen(s0)) out.push(`the layout switcher is not on the first screen (${Math.round(s0.top)}-${Math.round(s0.bottom)} of ${innerHeight})`);
+    if (!onScreen(f0)) out.push(`Eyes up and Push to students are not on the first screen (${Math.round(f0.top)}-${Math.round(f0.bottom)} of ${innerHeight})`);
+    const cur = document.querySelector('#dash-layouts [aria-current="true"]'), cr = cur && cur.getBoundingClientRect();
+    if (!cr) out.push('no layout chip is marked as the one on screen');
+    else if (cr.left < nav.left - 1 || cr.right > nav.right + 1) out.push(`the chip "${cur.textContent}" of the layout on screen is scrolled out of view`);
+    for (const c of document.querySelectorAll('#dash-switch .chip, #dash-switch .btn, #dash-foot .btn')) if (c.getClientRects().length && c.getBoundingClientRect().height < 43.5) out.push(`"${label(c)}" in the phone's bars is under 44px tall`);
+    for (const n of hits(s0, wr())) out.push(`${n}: sits under the layout switcher at the top of the page`);
+    scrollTo(0, document.documentElement.scrollHeight);
+    const s1 = sw.getBoundingClientRect(), f1 = foot.getBoundingClientRect();
+    if (document.documentElement.scrollHeight > innerHeight + 200 && Math.abs(s1.top) > 1) out.push(`the layout switcher scrolls away (top ${Math.round(s1.top)})`);
+    for (const n of hits(f1, wr())) out.push(`${n}: sits under Eyes up and Push to students at the end of the page`);
+    scrollTo(0, y0);
+  }
   return [...new Set(out)];
 }
 
@@ -470,10 +504,12 @@ const ALL_VIEWS = [
   { name: 'projector', who: T, size: [1600, 900], projector: true },
   { name: 'student', who: kids[1], size: [1366, 768] },
   { name: 'phone', who: kids[2], size: [390, 844] },
+  { name: 'teacher-phone', who: T, size: [390, 844] },
   { name: 'teacher-dark', who: T, size: [1600, 900], dark: true },
   { name: 'projector-dark', who: T, size: [1600, 900], projector: true, dark: true },
   { name: 'student-dark', who: kids[1], size: [1366, 768], dark: true },
   { name: 'phone-dark', who: kids[2], size: [390, 844], dark: true },
+  { name: 'teacher-phone-dark', who: T, size: [390, 844], dark: true },
 ];
 const VIEWS = process.env.VIEWS ? ALL_VIEWS.filter(v => process.env.VIEWS.split(',').includes(v.name)) : ALL_VIEWS;
 const LANGS = (process.env.LANGS || 'en,de,ar').split(',');
