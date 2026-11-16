@@ -5,6 +5,8 @@
 // Stage 3 (docs/decisions.md "Classroom dashboards, stage 3") adds the teaching tools, the whiteboard and the Picture
 // widget: the widgets are split over as many layouts as the grid needs (24 widgets, 24 rows each), and on the tools'
 // layouts both students have every tool on their own screen (as a pinned copy of a sent tool would be).
+// Stage 4 (docs/decisions.md "Classroom dashboards, stage 4") adds teaching tools part 2 on more layouts of their own,
+// "Practice it" links (official games are made for the check) and a phone in dark mode.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -44,6 +46,15 @@ const NAMES = ['WunderbarerOtter42', 'QuietPanda88', 'SuperSchnellerFuchs7', 'Zi
 const kids = NAMES.map((n, i) => { const u = S.createSchoolAccount(T, school.id, { rosterName: `Real ${i}` }).user; S.addToClass(boss, C.id, u.id); q.run('UPDATE users SET display_name=? WHERE id=?', n, u.id); return getUser(u.id); });
 const game = n => { const g = games.createGame(T.id, { title: n, icon: '🎮' }); const v = games.addVersion(g.id, '<title>G</title><canvas></canvas>'); q.run("UPDATE games SET status='published', visibility='public', published_version_id=? WHERE id=?", v.id || v, g.id); return g; };
 const g1 = game('Bruchrechnen-Pizzabäckerei'), g2 = game('Number Line Hop'), g3 = game('Word Garden');
+// Stage 4: the official games "Practice it" links to (long titles, so the links are checked at their widest).
+{
+  const off = q.get("SELECT * FROM users WHERE username='OombaAcademy'") || createUser({ username: 'OombaAcademy', password: 'secret123', role: 'admin' });
+  for (const slug of new Set(Object.values(D.PRACTICE).flat())) {
+    const g = games.createGame(off.id, { title: `${slug.replace(/-/g, ' ')} Abenteuerspielplatz`, icon: '🎮' }); const v = games.addVersion(g.id, '<title>G</title><canvas></canvas>');
+    q.run('DELETE FROM games WHERE slug=? AND id<>?', slug, g.id);
+    q.run("UPDATE games SET slug=?, source='seed', status='published', visibility='public', published_version_id=? WHERE id=?", slug, v.id || v, g.id);
+  }
+}
 const lesson = L.createLesson(T, school.id, { title: 'Vergleichen von Brüchen mit ungleichen Nennern' }).lesson; L.assign(T, C.id, lesson.id);
 const cl = L.classLessons(C.id)[0];
 const link = D.addLink(T, C, { url: 'https://bibliothek.example.org/kinder/lesen/geschichten', title: 'Schulbibliothek und Leseecke' }).link;
@@ -81,6 +92,22 @@ const SETTINGS = {
   fdp: { state: { n: 1, d: 7 } },
   board: { bg: 'lined' },
   picture: { alt: 'Ein Ankerdiagramm: Brüche als Teile eines Ganzen', fit: 'contain' },
+  // stage 4: busy states (many bands and blocks, a reflex angle, a half-folded cylinder, a full mat, long words...)
+  geoboard: { state: { pegs: 11, cur: 0, bands: [{ pts: [{ x: 1, y: 1 }, { x: 8, y: 2 }, { x: 9, y: 7 }, { x: 3, y: 9 }, { x: 2, y: 5 }], closed: true }, { pts: [{ x: 5, y: 4 }, { x: 7, y: 5 }, { x: 6, y: 8 }], closed: false }] } },
+  pattern: { state: { blocks: [{ k: 'hex', x: 3, y: 5, r: 0 }, { k: 'hex', x: 7, y: 5, r: 0 }, { k: 'trap', x: 11, y: 5, r: 0 }, { k: 'trap', x: 15, y: 5, r: 6 }, { k: 'rhom', x: 17, y: 5, r: 2 }, { k: 'tri', x: 21, y: 5, r: 0 }, { k: 'tri', x: 23, y: 5, r: 2 }, { k: 'sq', x: 4, y: 8, r: 0 }, { k: 'thin', x: 10, y: 8, r: 1 }, { k: 'rhom', x: 16, y: 8, r: 0 }] } },
+  angle: { state: { a: 235, step: 5 } },
+  solids: { state: { shape: 'cylinder', fold: 60, mark: 'faces', yaw: 40 } },
+  transform: { state: { shape: 'arrow', op: 'rotate', turn: 270, ox: 2, oy: 1 } },
+  balance: { state: { x: 4, lx: 5, lu: 3, rx: 2, ru: 15, hist: [{ lx: 6, lu: 3, rx: 3, ru: 15, op: 'subx', n: 0, w: 'both' }] } },
+  algebra: { state: { tiles: [...Array(4)].map(() => ({ k: 'x2', neg: false })).concat([...Array(2)].map(() => ({ k: 'x2', neg: true })), [...Array(6)].map(() => ({ k: 'x', neg: false })), [...Array(4)].map(() => ({ k: 'x', neg: true })), [...Array(7)].map(() => ({ k: '1', neg: false })), [...Array(5)].map(() => ({ k: '1', neg: true }))) } },
+  coins: { state: { cur: 'eur', counts: [3, 2, 1, 4, 2, 1, 2, 1, 1, 1, 1] } },
+  chance: { state: { kind: 'dice', dice: 2, runs: 1000, counts: [28, 55, 83, 110, 139, 166, 139, 110, 83, 55, 28] } },
+  letters: { state: { fam: '', word: [...'grasshoppers'].map(c => c.charCodeAt(0) - 97), caps: false } },
+  organizer: { state: { kind: 'story', title: 'Die Geschichte vom kleinen Drachen Kokosnuss und seinen Freunden', boxes: [
+    { h: '', t: 'Kokosnuss, ein kleiner Feuerdrache\nMatilda, das Stachelschwein\nOskar, der Fressdrache' }, { h: '', t: 'Die Dracheninsel, ein Sommer voller Abenteuer' },
+    { h: '', t: 'Kokosnuss kann noch nicht fliegen, und alle anderen Drachen lachen über ihn.' }, { h: '', t: 'Erstens übt er jeden Morgen\nZweitens hilft ihm Matilda\nDrittens fällt er ins Wasser\nViertens versucht er es noch einmal\nFünftens fliegt er ein kleines Stück\nSechstens feiern alle' },
+    { h: '', t: 'Er schafft es am Ende, weil er nie aufgibt.' }] } },
+  map: { state: { kind: 'world', names: true, pins: [{ x: 540, y: 240, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
 };
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
@@ -97,6 +124,8 @@ const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-l
 /** Every widget type, packed in reading order, at its default size or its smallest, over as many layouts as needed (a
  *  layout holds 24 widgets and 24 rows). Stage 1 and 2 widgets and stage 3 widgets go on separate layouts. */
 const STAGE3 = new Set(['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'board', 'picture']);
+const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map']);
+const TOOLSET = new Set([...STAGE3, ...STAGE4]);
 const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH = 0;
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
     cur.push({ id: `w${t.id}`, type: t.id, x, y, w, h, s: SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
@@ -105,17 +134,18 @@ D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id)))];
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE4.has(t.id)))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;
-    const layout = LAYOUTS.length ? D.createLayout(T, C, { name, widgets }).layout : (D.updateLayout(T, C, first.id, { name, widgets }), D.getLayout(first.id));
     // On a layout with tools, each student has every tool their own screen can hold.
-    const own = widgets.filter(w => D.canAdd(D.widgetType(w.type), 'student') && STAGE3.has(w.type)).map(({ pin, ...w }) => w);
-    LAYOUTS.push({ key: name, layout, own, chip: LAYOUTS.length + 1 });
+    const own = widgets.filter(w => D.canAdd(D.widgetType(w.type), 'student') && TOOLSET.has(w.type)).map(({ pin, ...w }) => w);
+    // Stage 4: more layouts than a teacher may keep (12), so one layout is filled with each set in turn.
+    LAYOUTS.push({ key: name, widgets, own, chip: 1 });
   });
 }
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
 const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
+D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
 D.useLayout(T, C, first.id);
 D.timerAction(T, C, 'wtimer', { action: 'start' }, Date.now() - 65e3);
 for (const k of kids.slice(0, 6)) D.helpAsk(k, C, 'help');
@@ -200,6 +230,10 @@ function problems() {
     for (const e of st.querySelectorAll('*')) {
       if (e.closest('svg') && e.tagName.toLowerCase() !== 'svg') continue;
       const cs = getComputedStyle(e); if (cs.display === 'none' || cs.position === 'absolute' && e.classList.contains('dt-ghost') || e.closest('.sr-only') || !e.getClientRects().length) continue;
+      // Stage 4: a list that grows (a graphic organizer's box, the coins on the mat) scrolls inside its own area, which
+      // stays inside the model's area: what is scrolled out of view there is not spilling.
+      let sc = e.parentElement, scrolled = false; while (sc && sc !== st) { if (scrolls(sc)) { scrolled = true; break; } sc = sc.parentElement; }
+      if (scrolled) continue;
       const q = e.getBoundingClientRect(); if (!q.width && !q.height) continue;
       if (q.left < r.left - 1 || q.right > r.right + 1 || q.top < r.top - 1 || q.bottom > r.bottom + 1) { out.push(`${name(w)}: "${label(e)}" spills out of the tool's model area`); break; }
     }
@@ -259,12 +293,14 @@ const ALL_VIEWS = [
   { name: 'teacher-dark', who: T, size: [1600, 900], dark: true },
   { name: 'projector-dark', who: T, size: [1600, 900], projector: true, dark: true },
   { name: 'student-dark', who: kids[1], size: [1366, 768], dark: true },
+  { name: 'phone-dark', who: kids[2], size: [390, 844], dark: true },
 ];
 const VIEWS = process.env.VIEWS ? ALL_VIEWS.filter(v => process.env.VIEWS.split(',').includes(v.name)) : ALL_VIEWS;
 const LANGS = (process.env.LANGS || 'en,de,ar').split(',');
 let total = 0;
 for (const L of RUN) {
- D.useLayout(T, C, L.layout.id);
+ D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets });
+ D.useLayout(T, C, first.id);
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
   for (const v of VIEWS) {

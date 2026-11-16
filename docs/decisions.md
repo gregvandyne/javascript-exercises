@@ -6207,3 +6207,99 @@ maths, pure and tested), `server/services/dash-tools.js` (each tool's state, reb
 - Tests: `tests/unit/dash-stage3.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: each tool on the
   teacher's 1600 × 900 screen, projector mode with three tools, a student at 1366 × 768 opening and pinning a sent tool,
   390 × 844 phones, dark and Arabic.
+
+## Classroom dashboards, stage 4 (16 Nov 2026)
+Teaching tools, part 2, on the stage 3 pattern exactly: the teacher drives a tool on the projector, **Send to students**
+gives each student their own copy in the browser (a push of kind `tool`), and a student may pin it to their own screen.
+Code: `public/js/dash-tools4.js` (renderers), `public/js/dash-math4.js` (the maths, pure and tested),
+`public/js/dash-ask.js` ("Make a question from it", pure and tested), the specs in `server/services/dash-tools.js` and the
+registry entries in `server/services/dash.js`. No migration and no new address: a tool's state stays in the widget's
+hidden `state` setting and in the push, as in stage 3.
+- **Twelve tools.** In Teach: geoboard, pattern blocks, angle maker, 3D shapes and nets, transformations, balance scale,
+  algebra tiles, coins and money, chance lab. In a new group, **Words and maps** (its own colour): letter tiles, graphic
+  organizers and maps. Every tool has stage 3's parts (mode buttons, the model, a readout in the big-number style, a row
+  of buttons ending with Options and Send to students) and works by keyboard, with changes announced.
+- **Geoboard:** bands round pegs (5 × 5 to 11 × 11, up to six bands, each its own colour, dash and number). A closed band
+  that doesn't cross itself shows its area exactly by **Pick's theorem** (A = I + B/2 − 1; areas in halves, "4 1/2") and
+  its perimeter exactly, as whole units plus simplified roots ("6 + 2√5 ≈ 10.47"). Drag a corner to move it; by
+  keyboard, arrows move a peg cursor, Enter stretches the band, picks up a corner or puts it down.
+- **Pattern blocks:** hexagon, trapezoid, blue rhombus, triangle, square and thin rhombus. Drag, turn (60° steps, 30° for
+  the square and thin rhombus) and they snap to a triangle grid. The readout is the fraction of a hexagon (sixths, exact);
+  squares and thin rhombi are counted but said not to be fractions of the hexagon. By keyboard each block is a button:
+  arrows move it on the grid, R turns it, Delete removes it.
+- **Angle maker:** two rays and our own protractor (half a circle, a whole one past 180°). Degrees and the name: zero,
+  acute, right, obtuse, straight, reflex, full turn. Snaps to 1°, 5° or 15°; presets; a slider by keyboard.
+- **3D shapes and nets** in plain SVG with our own projection (no WebGL): cube, cuboid, triangular and hexagonal prisms,
+  square and triangular pyramids, cylinder, cone. Each face hangs on its parent by a fold line; folding turns every face
+  about its hinge, so the net is flat at 0 and is exactly the solid at 1, and no face ever stretches (tested). The
+  cylinder and cone unroll into a rectangle and a sector (thin strips drawn without their seams). Faces, edges and
+  vertices, with F + V − E = 2 for the flat-faced solids. **Decided:** a cylinder is counted as 3 faces (2 flat, 1
+  curved), 2 edges, 0 vertices and a cone as 2 faces, 1 edge, 1 vertex (the apex), said as "2 flat and 1 curved".
+- **Transformations:** a shape on a −8 to 8 grid, translated, reflected (x-axis, y-axis, y = x, y = −x) or rotated
+  (90°, 180°, 270° about the origin), with the original's dashed ghost, the image's primed labels, the rule
+  ("(x, y) → (−y, x)") and a table of coordinates (a column per point on a narrow tool). Drag or arrows to translate.
+- **Balance scale:** x-boxes and unit weights; x has a hidden value. Add or take an x-box or a weight, or share both
+  sides into equal groups, on both sides (it stays level) or one side (it tips). Undo, a list of steps, "Solved: x = 3".
+  New equations are made so they balance.
+- **Algebra tiles:** x², x and 1, positive and negative (a negative tile is hatched, dashed and has a minus: colour is
+  never the only sign). Zero pairs are ringed; "Zero pairs" takes them away; the readout is the expression as the tiles
+  lie and simplified ("2x² + 3x − x + 2 − 1 = 2x² + 2x + 1"). The value never changes (tested at many x).
+- **Coins and money:** US coins and notes, euro, pound and a plain set (numbers only), drawn by us as simple discs and
+  notes with a star (never pictures of real money). The currency follows the language (US English dollars, British
+  English pounds, euro languages euros, others the plain set) and can be changed; a sent copy keeps the teacher's.
+  Count (tap to add, tap a pile to take one), the total, the fewest coins for it; Make change shows the change, the
+  fewest coins (checked against every way for every amount to 600) and the count-up ("37¢ → 40¢ → 50¢ → $1.00").
+  **Decided:** the words are "It costs" and "Paid with"; amounts are maths, not prices of anything Oomba sells.
+- **Chance lab:** coin, one or two dice (the total) and a spinner of 2-8 equal parts; 1, 10, 100, 1000 or any number up to
+  1000 trials at a time. A live bar chart (filled a batch at a time; at once with reduced motion) with a dashed mark for
+  the expected count of each outcome; the chances are exact fractions (two dice: 7 is 1/6).
+- **Letter tiles:** a-z tiles, vowels coloured and dotted; build by tapping or dragging, reorder with Shift+arrows or a
+  drag, Delete removes. English word families (-at, -ig, -ake...) fix the ending and say whether the word is real (a
+  short, kind word list). **Nobody types:** a word is letter indexes, rebuilt on the server, never free text.
+- **Graphic organizers:** Venn diagram, T-chart, KWL, story map, main idea and details, sequence (3-6). The teacher writes
+  in a sheet (title, headings, one idea a line); the text is cleaned on the server (lines kept; control and direction
+  characters removed; 400 characters a box). **Decided:** a student's copy is theirs: they may write in it, it stays in
+  their browser, and if they pin it, it is saved with their own screen only (as their goal is in stage 1): never shown
+  to another student or the teacher, never sent anywhere (tested).
+- **Maps:** our own simplified outlines of the continents (and some islands) and the oceans' names on a 1000 × 500 world
+  map, or a 10 × 5 grid map (A-J, 1-5) with a compass rose; up to 12 numbered pins with short labels (the teacher's,
+  or a student's on their own copy). No map tiles or services. Names never sit under a pin or another name: they move,
+  and on a map too small for every name the oceans' give way first. Arrows and Enter place pins; drag moves them.
+- **"Make a question from it"** (the teacher's own screen; every tool): what the tool shows now becomes a stage 2
+  multiple-choice quick check ("What fraction is shaded?", "What kind of angle is this?", "Where does point A land?"),
+  2-4 answers built from the state with the tested maths, in an order that depends on the state. The teacher can change
+  every word in a sheet that marks the right answer for them only, then sends it with `POST /checks` (kind `choice`):
+  students answer as for any quick check and the projector shows totals. A state with nothing that has one right answer
+  (an organizer, an empty board, a band that crosses itself, an untrue equation, a pin in the sea) makes no question, and
+  the button is hidden.
+- **"Practice it":** each tool lists, by hand, the official games that practise the same thing (`PRACTICE` in
+  services/dash.js, from the games' own topics in `seed-games/*.json`). A game is offered only while it is the official
+  account's (`isOfficial`) and every student of the class can open it (stage 1's `pushableGame`); a tool with no clean
+  match (organizers, fraction/decimal/percent, area model, the whiteboard) shows nothing. One game: a link; two: a short
+  list. Worked out with the page (`practice` in the page data); no new address. **Not matched:** lessons (their topics
+  aren't tagged in a way that can be matched cleanly).
+- **Safety and privacy** as in stages 1-3: no AI anywhere; no chat or free text between players (students never type to
+  each other; what a student writes in their own copy never leaves their screen); nothing a student does with a copy
+  comes back; Oomba names only; no prices, plans or "Pro". The new modules have no network, storage, recorder or
+  `innerHTML` code (tested by reading them). Drawings are still never stored.
+- **Accessible:** a keyboard way for every drag (listed above); changes announced in the polite live region; buttons 44px
+  (the letter bank's tiles too); colour never the only sign (bands have dashes and numbers, negative tiles a hatch and a
+  minus, vowels a dot, the marked count a ring). Maths stays left to right on right-to-left pages; spoken text follows
+  stage 3 (numbers in the reader's language; counted words use the reader's plural rules).
+- **Words that count** ("{n, plural, one {# vowel} other {# vowels}}") go to the browser as the message itself and are
+  filled in there with `public/js/i18n-format.js` (other words are sent as before).
+- **Nothing cut off.** The fit check (`npm run dash:fit`) now covers every stage 4 tool at its default and smallest
+  size, in English, German and Arabic, on the teacher's screen, the projector, a student's screen and a phone, in light
+  and dark (a dark phone was added). The widgets now go on as many layouts as they need, one layout filled with each set
+  in turn (more sets than a teacher may keep). Its stage 3 "model spills out" check now leaves out what is scrolled out
+  of view inside a list that scrolls (an organizer's box, the coins on the mat), as the widget-level check always has.
+  Text in a tool is at least 12px (13px on the projector). **Decided:** smallest sizes: geoboard 5 × 6, pattern blocks
+  6 × 6, angle 5 × 5, nets 5 × 6, transformations, balance, algebra, coins, chance and letters 6 × 6 (or 5 × 6),
+  organizer and map 6 × 5; stage 3's fraction bars went from 5 × 5 to 5 × 6 to make room for the new buttons.
+- Earlier tests changed only where stage 4 needs it: the list of tools a student may add, the stage 2 filters that leave
+  out the teaching tools (now Teach and Words and maps), the renderer files the registry test reads, and the fit test's
+  views (a dark phone) and layout count.
+- Tests: `tests/unit/dash-stage4.test.js`, `tests/unit/dash-fit.test.js`. Screenshots checked by hand: each tool on the
+  teacher's 1600 × 900 screen, the projector with three tools, a student's sent copy at 1366 × 768 and on a 390 × 844
+  phone, the question sheet and a student answering, dark, Arabic, and every tool at its smallest size.
+- **Not in this stage** (stage 5): video, site windows, document camera, hall pass, class jobs.

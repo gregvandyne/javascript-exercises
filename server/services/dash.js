@@ -23,11 +23,13 @@ import * as games from './games.js';
 import * as L from './lessons.js';
 import { cleanJpeg, PhotoError } from './photos.js';
 import { liveOn, openForClass } from './classlive-sessions.js';
+import { isOfficial } from './classlive-access.js';
 import { TOOL_IDS, cleanToolState } from './dash-tools.js';
+import { lookup } from '../i18n/index.js';
 
 // ---------------------------------------------------------------- the widget registry
 /** Library groups, in order. Groups without a widget yet (stage 2 and later) are not shown. */
-export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'tools', 'check', 'oomba'];
+export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools', 'check', 'oomba'];
 /**
  * Widget types. who: 'teacher' | 'student' | 'both' (who may add it to their own screen; a teacher can pin any of
  * theirs to student screens unless pin is false). pinDef: pinned when added. size/min: [columns, rows]. words: other
@@ -53,9 +55,38 @@ const TOOL_WORDS = {
   times: ['size', 'fact', 'row', 'col', 'squares', 'turn', 'hide', 'pick', 'squaresAre', 'clear'],
   tclock: ['digital', 'h24', 'elapsed', 'start', 'endTime', 'elapsedIs', 'onlyH', 'onlyM', 'hint', 'minutes', 'hours', 'time'],
   fdp: ['fraction', 'decimal', 'percent', 'grid', 'hint', 'top', 'bottom', 'outOf'],
+  // stage 4
+  geoboard: ['pegs', 'newBand', 'undo', 'close', 'clear', 'band', 'area', 'perimeter', 'pickIs', 'squares', 'open', 'crosses', 'peg', 'added', 'closed', 'hint', 'cursor', 'show'],
+  pattern: ['hex', 'trap', 'rhom', 'tri', 'sq', 'thin', 'turn', 'remove', 'clear', 'of', 'notHex', 'board', 'block', 'moved', 'hint', 'empty'],
+  angle: ['acute', 'right', 'obtuse', 'straight', 'reflex', 'zero', 'full', 'proto', 'arc', 'step', 'ray', 'hint'],
+  solids: ['cube', 'cuboid', 'triprism', 'hexprism', 'sqpyramid', 'tripyramid', 'cylinder', 'cone', 'fold', 'unfold', 'faces', 'edges', 'vertices', 'flatCurved', 'euler', 'turn', 'mark', 'none', 'folded', 'shape', 'view'],
+  transform: ['shape', 'tri', 'flag', 'ell', 'arrow', 'translate', 'reflect', 'rotate', 'axis', 'axisX', 'axisY', 'axisYX', 'axisYNX', 'turn', 'deg', 'ghost', 'table', 'original', 'image', 'offGrid', 'hint', 'moved', 'rule', 'move'],
+  balance: ['both', 'left', 'right', 'addx', 'subx', 'add1', 'sub1', 'div', 'new', 'undo', 'show', 'solved', 'tipsL', 'tipsR', 'level', 'cant', 'steps', 'where', 'secret', 'scale', 'start'],
+  algebra: ['x2', 'x', 'one', 'pos', 'neg', 'flip', 'zero', 'clear', 'raw', 'simple', 'pairs', 'mat', 'tile', 'added', 'removed', 'hint', 'empty', 'full'],
+  coins: ['count', 'change', 'total', 'cost', 'paid', 'changeIs', 'countUp', 'fewest', 'clear', 'cur', 'auto', 'usd', 'eur', 'gbp', 'gen', 'notEnough', 'tray', 'mat', 'added', 'removed', 'empty', 'mode', 'units'],
+  chance: ['coin', 'dice', 'spinner', 'one', 'two', 'parts', 'run', 'trials', 'reset', 'heads', 'tails', 'got', 'expected', 'chart', 'hint', 'sum', 'part', 'runs', 'kind', 'none'],
+  letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full'],
+  organizer: ['kind', 'venn', 'tchart', 'kwl', 'story', 'main', 'seq', 'title', 'edit', 'heading', 'text', 'boxes', 'empty', 'a', 'b', 'both', 'left', 'right', 'know', 'want', 'learned',
+    'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save'],
+  map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
+    'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
 /** Words every teaching tool shares (dash.tools.<word>). */
-export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done'];
+export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
+  // stage 4: "Make a question from it" and "Practice it"
+  'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName'];
+/** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
+export const ASK_KEYS = ['fractions', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
+  'geoboard', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
+/** Stage 4, "Practice it": a teaching tool and the official Oomba games that practise the same thing (picked by hand
+ *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
+ *  student of the class can open it; a tool without a clean match offers nothing. */
+export const PRACTICE = {
+  fractions: ['fraction-factory'], numline: ['lily-hop', 'sub-zero'], coord: ['sky-lines'], graph: ['data-detective'], base10: ['rocket-supply'],
+  placeval: ['rocket-supply', 'crate-stacker'], tenframe: ['garden-count'], hundreds: ['crate-stacker'], times: ['sum-racer'], tclock: ['kitchen-rush'],
+  geoboard: ['keep-builder'], pattern: ['shape-hunt'], angle: ['keep-builder'], solids: ['shape-hunt', 'keep-builder'], transform: ['keep-builder'],
+  balance: ['balance-bridge', 'machine-line'], algebra: ['machine-line'], coins: ['kitchen-rush'], chance: ['launch-lab'], letters: ['word-trail', 'word-hunt'], map: ['atlas-quest'],
+};
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
@@ -125,10 +156,16 @@ export const WIDGETS = [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
   // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
-  ...[['fractions', '🍕', [6, 6], [5, 5]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [5, 5]],
+  ...[['fractions', '🍕', [6, 6], [5, 6]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 5], [5, 5]],
     ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 5]], ['hundreds', '💯', [5, 7], [4, 6]],
     ['area', '🔲', [6, 6], [5, 5]], ['times', '✖️', [6, 8], [5, 7]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
     .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
+  // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
+  ...[['geoboard', '📌', [6, 6], [5, 6], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 6], [5, 6], 'teach'],
+    ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 6], [6, 6], 'teach'],
+    ['chance', '🎯', [7, 6], [6, 6], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
+    .map(([id, icon, size, min, group]) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
     { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },
   { id: 'picture', icon: '🖼️', group: 'show', who: 'teacher', size: [4, 4], min: [3, 3], words: ['empty', 'needAlt', 'gone', 'upload', 'uploading', 'replace', 'note', 'bad'], settings: [
@@ -143,17 +180,21 @@ export const canAdd = (type, role) => !!type && (type.who === 'both' || type.who
 /** Whether a teacher may pin this type on student screens (the picker, the noise meter, QR and checks never are). */
 export const canPin = type => !!type && type.pin !== false;
 
+/** A widget's word for the browser. Stage 4: a word that counts ("{n, plural, one {# vowel} other {# vowels}}") goes as
+ *  the message itself, for the browser to fill in with public/js/i18n-format.js; every other word as t() gives it. */
+const word = (t, key) => { const raw = t.locale ? lookup(t.locale, key) : undefined; return raw && /\{\w+,\s*plural,/.test(raw) ? raw : t(key); };
 /** The registry as the browser gets it: labels in the reader's language. role: 'teacher' | 'student'. */
 export function registryFor(t, role) {
   const types = WIDGETS.map(w => ({
     id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send,
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
-    words: Object.fromEntries(w.words.map(k => [k, t(`dash.w.${w.id}.${k}`)])),
+    words: Object.fromEntries(w.words.map(k => [k, word(t, `dash.w.${w.id}.${k}`)])),
     settings: w.settings.map(s => ({ ...s, label: s.type === 'tool' ? '' : t(`dash.w.${w.id}.s.${s.key}`),
       ...(s.options ? { labels: Object.fromEntries(s.options.map(o => [o, t(`dash.w.${w.id}.o.${s.key}.${o}`)])) } : {}) })),
   }));
   const used = new Set(WIDGETS.map(w => w.group));
-  return { types, groups: GROUPS.filter(g => used.has(g)).map(g => ({ id: g, name: t(`dash.groups.${g}`) })), common: Object.fromEntries(TOOL_COMMON.map(k => [k, t(`dash.tools.${k}`)])) };
+  return { types, groups: GROUPS.filter(g => used.has(g)).map(g => ({ id: g, name: t(`dash.groups.${g}`) })), common: Object.fromEntries(TOOL_COMMON.map(k => [k, t(`dash.tools.${k}`)])),
+    ask: { q: Object.fromEntries(ASK_KEYS.map(k => [k, t(`dash.ask.${k}`)])) } };
 }
 
 // ---------------------------------------------------------------- cleaning what browsers send
@@ -866,6 +907,21 @@ export function resolveTiles(c, tiles) {
   for (const x of cleanTiles(tiles)) {
     if (x.kind === 'game') { const g = games.getGame(x.ref); if (pushableGame(c, g)) out.push({ kind: 'game', ref: g.id, title: g.title, icon: g.icon || '🎮', href: `/play/${g.slug}` }); }
     else { const cl = openLessons(c).find(l => l.id === x.ref); if (cl) out.push({ kind: 'lesson', ref: cl.id, title: cl.title, icon: '📚', href: `/class/${c.id}/lessons/${cl.id}` }); }
+  }
+  return out;
+}
+
+/** Stage 4, "Practice it": for each teaching tool, the official games that practise it and that every student of the
+ *  class can open (PRACTICE), at most two: { tool: [{ title, icon, href }] }. Tools without one are left out. */
+export function practiceFor(c) {
+  const out = {}, seen = new Map();
+  for (const [tool, slugs] of Object.entries(PRACTICE)) {
+    const list = [];
+    for (const slug of slugs) {
+      if (!seen.has(slug)) { const g = games.getGameBySlug(slug); seen.set(slug, g && isOfficial(g) && pushableGame(c, g) ? { title: g.title, icon: g.icon || '🎮', href: `/play/${g.slug}` } : null); }
+      if (seen.get(slug)) list.push(seen.get(slug));
+    }
+    if (list.length) out[tool] = list.slice(0, 2);
   }
   return out;
 }

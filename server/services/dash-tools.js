@@ -6,10 +6,11 @@
 // browser.
 //
 // Spec: { key: ['int', lo, hi, def] | ['enum', [values], def] | ['bool', def] | ['text', max, def]
-//              | ['ints', maxLen, lo, hi, def] | ['list', maxLen, { spec }, def] }
+//              | ['textm', max, def] (several lines) | ['ints', maxLen, lo, hi, def] | ['list', maxLen, { spec }, def] }
 // then fix(state) for rules that tie keys together (a numerator no bigger than its denominator...).
 
 const SAFE_TEXT = (v, max) => [...String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, '').replace(/[‪-‮⁦-⁩]/g, '').trim()].slice(0, max).join('');
+const SAFE_LINES = (v, max) => [...String(v ?? '').replace(/\r/g, '').replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, '').replace(/[‪-‮⁦-⁩]/g, '').replace(/\n{3,}/g, '\n\n').trim()].slice(0, max).join('');
 const toInt = (v, lo, hi, d) => { const n = Math.round(Number(v)); return v !== null && v !== '' && Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
 
 export const TOOL_SPECS = {
@@ -56,7 +57,67 @@ export const TOOL_SPECS = {
     fix: s => { if (s.r > s.size) s.r = 0; if (s.c > s.size) s.c = 0; } },
   tclock: { spec: { t: ['int', 0, 1439, 580], digital: ['bool', true], h24: ['bool', false], el: ['bool', false], end: ['int', 0, 1439, 735] } },
   fdp: { spec: { n: ['int', 0, 100, 3], d: ['int', 1, 100, 8] }, fix: s => { s.n = Math.min(s.n, s.d); } },
+  // ---- stage 4 (docs/decisions.md "Classroom dashboards, stage 4"); the lists match public/js/dash-math4.js (tested)
+  geoboard: {
+    spec: { pegs: ['enum', [5, 7, 9, 11], 7], cur: ['int', 0, 5, 0], show: ['bool', true],
+      bands: ['list', 6, { pts: ['list', 16, { x: ['int', 0, 10, 0], y: ['int', 0, 10, 0] }, []], closed: ['bool', false] }, [{ pts: [{ x: 1, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 3 }, { x: 2, y: 3 }], closed: true }]] },
+    fix: s => {
+      for (const b of s.bands) {
+        b.pts = b.pts.filter(p => p.x < s.pegs && p.y < s.pegs).filter((p, i, a) => !i || p.x !== a[i - 1].x || p.y !== a[i - 1].y);
+        if (b.pts.length > 1 && b.pts[0].x === b.pts.at(-1).x && b.pts[0].y === b.pts.at(-1).y) { b.pts.pop(); b.closed = true; }
+        if (b.pts.length < 3) b.closed = false;
+      }
+      if (s.cur >= s.bands.length) s.cur = Math.max(0, s.bands.length - 1);
+    },
+  },
+  pattern: {
+    spec: { blocks: ['list', 40, { k: ['enum', ['hex', 'trap', 'rhom', 'tri', 'sq', 'thin'], 'hex'], x: ['int', 0, 30, 0], y: ['int', 0, 10, 0], r: ['int', 0, 11, 0] },
+      [{ k: 'hex', x: 3, y: 5, r: 0 }, { k: 'trap', x: 9, y: 5, r: 0 }, { k: 'tri', x: 15, y: 5, r: 0 }, { k: 'rhom', x: 19, y: 5, r: 0 }]] },
+    fix: s => { for (const b of s.blocks) if ((b.x + b.y) % 2) b.x += b.x < 30 ? 1 : -1; },
+  },
+  angle: { spec: { a: ['int', 0, 360, 50], proto: ['bool', true], step: ['enum', [1, 5, 15], 5], arc: ['bool', true] } },
+  solids: { spec: { shape: ['enum', ['cube', 'cuboid', 'triprism', 'hexprism', 'sqpyramid', 'tripyramid', 'cylinder', 'cone'], 'cube'], fold: ['int', 0, 100, 100], yaw: ['int', 0, 359, 30],
+    mark: ['enum', ['none', 'faces', 'edges', 'vertices'], 'none'] } },
+  transform: {
+    spec: { shape: ['enum', ['tri', 'flag', 'ell', 'arrow'], 'tri'], ox: ['int', -9, 7, 0], oy: ['int', -9, 7, 0], op: ['enum', ['translate', 'reflect', 'rotate'], 'translate'],
+      dx: ['int', -8, 8, 3], dy: ['int', -8, 8, -5], axis: ['enum', ['y', 'x', 'yx', 'ynx'], 'y'], turn: ['enum', [90, 180, 270], 90], ghost: ['bool', true], table: ['bool', true] },
+    fix: s => {
+      // The shape stays on the grid (−8 to 8): its corners run from 1 to 5 before the offset.
+      const span = { tri: [4, 3], flag: [3, 5], ell: [4, 4], arrow: [5, 5] }[s.shape];
+      s.ox = Math.max(-9, Math.min(8 - span[0], s.ox)); s.oy = Math.max(-9, Math.min(8 - span[1], s.oy));
+    },
+  },
+  balance: {
+    spec: { x: ['int', 1, 9, 3], lx: ['int', 0, 9, 3], lu: ['int', 0, 30, 2], rx: ['int', 0, 9, 1], ru: ['int', 0, 30, 8], show: ['bool', false], where: ['enum', ['both', 'left', 'right'], 'both'],
+      hist: ['list', 12, { lx: ['int', 0, 9, 0], lu: ['int', 0, 30, 0], rx: ['int', 0, 9, 0], ru: ['int', 0, 30, 0], op: ['enum', ['addx', 'subx', 'add1', 'sub1', 'div', 'new'], 'new'], n: ['int', 0, 9, 0], w: ['enum', ['both', 'left', 'right'], 'both'] }, []] },
+  },
+  algebra: {
+    spec: { tiles: ['list', 36, { k: ['enum', ['x2', 'x', '1'], 'x'], neg: ['bool', false] },
+      [{ k: 'x2', neg: false }, { k: 'x2', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: true }, { k: '1', neg: false }, { k: '1', neg: false }, { k: '1', neg: true }]] },
+  },
+  coins: {
+    spec: { cur: ['enum', ['auto', 'usd', 'eur', 'gbp', 'gen'], 'auto'], mode: ['enum', ['count', 'change'], 'count'], counts: ['ints', 11, 0, 20, [3, 1, 2, 1]],
+      cost: ['int', 0, 10000, 37], paid: ['int', 0, 10000, 100] },
+    fix: s => { const n = { usd: 9, eur: 11, gbp: 11, gen: 7, auto: 11 }[s.cur]; s.counts = Array.from({ length: n }, (_, i) => s.counts[i] || 0); },
+  },
+  chance: {
+    spec: { kind: ['enum', ['coin', 'dice', 'spinner'], 'coin'], dice: ['enum', [1, 2], 1], parts: ['int', 2, 8, 4], runs: ['int', 1, 1000, 100], counts: ['ints', 11, 0, 1000000, []] },
+    fix: s => { const n = s.kind === 'coin' ? 2 : s.kind === 'spinner' ? s.parts : s.dice === 2 ? 11 : 6; s.counts = Array.from({ length: n }, (_, i) => s.counts[i] || 0); },
+  },
+  letters: {
+    spec: { word: ['ints', 12, 0, 25, [2]], fam: ['enum', ['', 'at', 'an', 'ap', 'ig', 'in', 'ip', 'op', 'ot', 'ug', 'un', 'et', 'en', 'ell', 'ake', 'ine'], 'at'], caps: ['bool', false] },
+    fix: s => { if (s.fam) s.word = s.word.slice(0, 2); },
+  },
+  organizer: {
+    spec: { kind: ['enum', ['venn', 'tchart', 'kwl', 'story', 'main', 'seq'], 'venn'], n: ['int', 3, 6, 4], title: ['text', 60, ''], boxes: ['list', 8, { h: ['text', 40, ''], t: ['textm', 400, ''] }, []] },
+    fix: s => { const n = ORGANIZER_BOXES[s.kind] || s.n; s.boxes = Array.from({ length: n }, (_, i) => s.boxes[i] || { h: '', t: '' }); },
+  },
+  map: {
+    spec: { kind: ['enum', ['world', 'grid'], 'world'], names: ['bool', true], pins: ['list', 12, { x: ['int', 0, 1000, 500], y: ['int', 0, 500, 250], l: ['text', 24, ''] }, []] },
+  },
 };
+/** How many boxes each graphic organizer has (a sequence has 3 to 6: its n). */
+export const ORGANIZER_BOXES = { venn: 3, tchart: 2, kwl: 3, story: 5, main: 4 };
 /** The tools a teacher can send to students (each student gets their own copy). */
 export const TOOL_IDS = Object.keys(TOOL_SPECS);
 
@@ -68,8 +129,9 @@ function cleanBy(spec, src) {
     else if (d[0] === 'enum') out[k] = d[1].includes(v) ? v : d[1].includes(Number(v)) && typeof d[1][0] === 'number' ? Number(v) : d[2];
     else if (d[0] === 'bool') out[k] = v === undefined ? d[1] : v === true || v === 1 || v === 'true';
     else if (d[0] === 'text') out[k] = v === undefined ? d[2] : SAFE_TEXT(v, d[1]);
+    else if (d[0] === 'textm') out[k] = v === undefined ? d[2] : SAFE_LINES(v, d[1]);
     else if (d[0] === 'ints') out[k] = (Array.isArray(v) ? v : d[4] || []).slice(0, d[1]).map(x => toInt(x, d[2], d[3], null)).filter(x => x !== null);
-    else if (d[0] === 'list') out[k] = Array.isArray(v) ? v.slice(0, d[1]).filter(x => x && typeof x === 'object').map(x => cleanBy(d[2], x)) : d[3].map(x => ({ ...x }));
+    else if (d[0] === 'list') out[k] = Array.isArray(v) ? v.slice(0, d[1]).filter(x => x && typeof x === 'object').map(x => cleanBy(d[2], x)) : d[3].map(x => JSON.parse(JSON.stringify(x)));
   }
   return out;
 }

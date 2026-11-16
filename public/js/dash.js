@@ -10,6 +10,8 @@
 // teacher's layout, or a student's own screen) and go to students with ctx.send (a push of kind 'tool'); a student opens
 // their own copy in a sheet (kept in this browser only) and may pin it to their own screen. The Picture widget uploads
 // through ctx.upload (the stage 1 picture checks).
+// Stage 4 (docs/decisions.md "Classroom dashboards, stage 4"): teaching tools part 2 (public/js/dash-tools4.js) use the
+// same ctx, plus ctx.ask (the teacher turns a tool into a quick check) and ctx.practice (official games to practise with).
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
@@ -107,6 +109,11 @@ function start() {
     } : null,
     upload: TEACHER ? uploadShow : null,
     checks: TEACHER ? checksForGraph : null,
+    // Stage 4: "Make a question from it" sends an ordinary quick check (multiple choice); "Practice it" links to official
+    // games every student of the class can open (worked out by the server with the page).
+    ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
+    askWords: D.registry.ask || {},
+    practice: (D.practice || {})[w.type] || [],
     // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
     set: (key, value) => {
       if (!TEACHER || w.pinned) return;
@@ -914,7 +921,7 @@ function start() {
     sh.el.querySelector('.sheet').classList.add('dash-copysheet');
     const body = sh.el.querySelector('.dash-wcopy .dash-wb');
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
-    const ctx = { ...ctxFor(w, type), own: true, copy: true, send: null, upload: null, checks: null, keep: state => copies.set(pid, state), set: () => {} };
+    const ctx = { ...ctxFor(w, type), own: true, copy: true, send: null, upload: null, checks: null, ask: null, keep: state => copies.set(pid, state), set: () => {} };
     const r = RENDER[type.id](body, w.s, ctx);
     sh.el.querySelector('[data-pincopy]').addEventListener('click', () => {
       const box = freeSpot(type.size[0], type.size[1]);

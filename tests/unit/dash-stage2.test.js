@@ -91,9 +91,9 @@ test('the registry: every stage 2 type has a renderer and English words; who may
     }
   }
   // Students may add only things that stay on their own screen.
-  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && x.group !== 'teach').map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random'], 'stage 3 adds the teaching tools (tests/unit/dash-stage3.test.js)');
+  assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'stopwatch', 'dice', 'random'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js)');
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
-  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && x.group !== 'teach').map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random'], 'stage 3\'s teaching tools are sent, never pinned');
+  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['check', 'dice', 'groups', 'noise', 'picker', 'qr', 'random'], 'stage 3 and 4\'s teaching tools are sent, never pinned');
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');

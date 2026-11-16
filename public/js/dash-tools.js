@@ -10,6 +10,7 @@
 // The maths is in public/js/dash-math.js (pure, tested). Everything is drawn with SVG or HTML from code: no libraries,
 // no network but the app's own, no AI. Whiteboard drawings live in this page's memory only: never stored, never sent.
 import * as M from './dash-math.js';
+import { questionFor } from './dash-ask.js';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -54,6 +55,8 @@ function shell(body, s, ctx, id) {
   if (ro) ro.observe(stage);
   const T = {
     W, C, st, top, stage, read, foot, draw: () => {}, sized: true,
+    /** Stage 4: a quick check made from what the tool shows now, or null. */
+    question: () => questionFor(id, st, W, ctx.askWords || {}, ctx.intl),
     /** How much to grow an SVG's text so it is at least min px on screen: the model's viewBox is vbW x vbH user units and
      *  its text is base units. -> a factor >= 1 (CSS --ts). */
     /** Screen pixels per SVG unit for a viewBox of vbW x vbH drawn in the model's area (0 before it has a size). */
@@ -112,17 +115,77 @@ function shell(body, s, ctx, id) {
         });
         foot.appendChild(ob);
       }
+      // Stage 4: "Practice it" (official games every student can open; nothing when there is no clean match) and "Make a
+      // question from it" (the teacher's own screen: what the tool shows now, as a multiple-choice quick check).
+      let ask = null;
+      const games = ctx.editing ? [] : (ctx.practice || []).slice(0, 2);
+      if (games.length) {
+        // One game: a link straight to it. Two: a short list to pick from.
+        const one = games.length === 1, a = el(one ? 'a' : 'button', 'btn btn-sm dt-practice');
+        const name = one ? fill(C.practiceName, { title: games[0].title }) : C.practice;
+        if (one) a.href = games[0].href; else a.type = 'button';
+        a.setAttribute('aria-label', name); a.title = name;
+        const i = el('span', 'dt-ic', '🎮'), l = el('span', 'dt-lbl', C.practice); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        a.append(i, l);
+        if (!one) a.addEventListener('click', () => {
+          const sh = ctx.sheet({ title: C.practice, content: '' });
+          const ul = el('ul', 'plain stack dt-practicelist'); sh.el.querySelector('.sheet-body').appendChild(ul);
+          for (const g of games) { const li = el('li'), link = el('a', 'btn dt-practicego'); link.href = g.href; const t = el('span', null, g.title); t.dir = 'auto'; link.append(el('span', 'dt-ic', g.icon || '🎮'), t); li.appendChild(link); ul.appendChild(li); }
+          ul.querySelector('a')?.focus();
+        });
+        foot.appendChild(a);
+      }
+      if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.ask) {
+        ask = btn('', 'btn btn-sm dt-ask', C.ask);
+        const i = el('span', 'dt-ic', '❓'), l = el('span', 'dt-lbl', C.ask); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        ask.append(i, l);
+        ask.addEventListener('click', () => askSheet(ctx, T.question()));
+        foot.appendChild(ask);
+      }
       if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.send && ctx.type.send) {
         const sb = btn(`📤 ${C.send}`, 'btn btn-sm btn-primary dt-send');
         sb.addEventListener('click', async () => { sb.disabled = true; try { await ctx.send(clone(st)); } finally { sb.disabled = false; } });
         foot.appendChild(sb);
       }
       if (ctx.copy) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
+      if (ask) { const d = T.draw; T.draw = () => { d(); ask.hidden = !T.question(); }; }
       T.draw();
       return { destroy() { if (ro) ro.disconnect(); cancelAnimationFrame(raf); } };
     },
   };
   return T;
+}
+/** Stage 4: the teacher checks the question made from the tool (every word can be changed), sees which answer is right
+ *  (only here: quick checks never mark answers on students' screens) and sends it as a stage 2 quick check. */
+function askSheet(ctx, made) {
+  if (!made) return;
+  const C = ctx.common || {};
+  const sh = ctx.sheet({ title: C.askTitle, content: '' });
+  const f = el('form', 'stack dt-askform'); f.noValidate = true; sh.el.querySelector('.sheet-body').appendChild(f);
+  f.appendChild(el('p', 'small muted', C.askNote));
+  const q = field(f, C.askQ, Object.assign(el('input', 'input'), { maxLength: 120, value: made.q })); q.dir = 'auto';
+  const list = el('ol', 'plain stack dt-askopts'); f.appendChild(list);
+  const inputs = made.options.map((o, i) => {
+    const li = el('li', `dt-askopt${i === made.answer ? ' is-right' : ''}`);
+    const id = `dt-ao${Math.random().toString(36).slice(2, 8)}`;
+    const lab = el('label', null, fill(C.askOpt, { n: String.fromCharCode(65 + i) })); lab.htmlFor = id;
+    const inp = Object.assign(el('input', 'input'), { maxLength: 60, value: o, id }); inp.dir = 'auto';
+    li.append(lab, inp);
+    if (i === made.answer) { const r = el('span', 'dt-right', `✔ ${C.askRight}`); li.appendChild(r); inp.setAttribute('aria-describedby', `${id}r`); r.id = `${id}r`; }
+    list.appendChild(li); return inp;
+  });
+  const err = el('p', 'err form-err'); err.setAttribute('role', 'alert'); f.appendChild(err);
+  const row = el('div', 'row'), go = el('button', 'btn btn-primary', `📤 ${C.askSend}`); go.type = 'submit'; row.appendChild(go); f.appendChild(row);
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const options = inputs.map(i => i.value.trim()).filter(Boolean);
+    if (options.length < 2) { inputs[0].focus(); return; }
+    go.disabled = true;
+    const r = await ctx.ask({ question: q.value.trim(), options }, err);
+    go.disabled = false;
+    if (r) sh.close();
+  });
+  q.focus();
 }
 /** A labelled field for an Options sheet. */
 function field(box, label, input) {
@@ -1365,3 +1428,5 @@ const C = ctx => ctx.common || {};
 /** id -> renderer (merged into public/js/dash-widgets.js RENDER). */
 export const TOOLS = { fractions, numline, coord, graph, base10, placeval, tenframe, hundreds, area, times, tclock, fdp, board, picture };
 export const PEN_COLORS = PENS;
+/** The shared parts, for stage 4's tools (public/js/dash-tools4.js). */
+export const parts = { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, fill, clone, ltr, svgPoint, svgText, iso };

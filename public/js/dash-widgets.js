@@ -13,8 +13,10 @@
 // No widget talks to an AI. The noise meter (dash-noise.js) has no network code at all.
 // Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): the teaching tools, the whiteboard and the Picture widget
 // are in public/js/dash-tools.js (their maths in dash-math.js); ctx gains common, keep, send, copy, upload and checks.
+// Stage 4: teaching tools part 2 are in public/js/dash-tools4.js (maths in dash-math4.js); ctx gains ask and practice.
 import { noise } from './dash-noise.js';
 import { TOOLS } from './dash-tools.js';
+import { TOOLS4 } from './dash-tools4.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
@@ -994,4 +996,4 @@ function stickers(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS };
+export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4 };
