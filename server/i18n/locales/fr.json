@@ -9047,7 +9047,8 @@
         "name": "Programme du jour",
         "desc": "Les séances du jour ; celle en cours est mise en avant.",
         "s": {
-          "periods": "Séances"
+          "periods": "Séances",
+          "view": "Afficher"
         },
         "empty": "Ajoute les séances du jour dans Modifier l’écran.",
         "now": "Maintenant",
@@ -9059,7 +9060,15 @@
         "period": "Séance",
         "from": "De",
         "to": "À",
-        "remove": "Retirer la séance"
+        "remove": "Retirer la séance",
+        "o": {
+          "view": {
+            "list": "Toute la journée",
+            "nownext": "Maintenant et ensuite"
+          }
+        },
+        "nothingNext": "Plus rien après",
+        "starts": "Commence à {time}"
       },
       "weather": {
         "name": "Météo",
@@ -9327,12 +9336,41 @@
         "desc": "Points des équipes avec des boutons plus et moins.",
         "s": {
           "teams": "Noms des équipes (un par ligne)",
-          "scores": "Points"
+          "scores": "Points",
+          "mode": "Points pour"
         },
         "team": "Équipe {n}",
         "plus": "Un point pour {team}",
         "minus": "Un point de moins pour {team}",
-        "reset": "Remettre les points à zéro"
+        "reset": "Remettre les points à zéro",
+        "o": {
+          "mode": {
+            "teams": "Équipes",
+            "students": "Chaque élève"
+          }
+        },
+        "reason": "Raison",
+        "award": "Un point pour {name}",
+        "awardAll": "Un point pour tous",
+        "everyone": "Tout le monde",
+        "undo": "Annuler",
+        "undone": "Le dernier point a été repris.",
+        "classTotal": "Total de la classe : {n}",
+        "mine": "Mes points",
+        "given": "{name} : un point pour {reason}",
+        "resetAll": "Recommencer",
+        "resetConfirm": "Remettre à zéro les points de tous les élèves ?",
+        "hidden": "Les points de chaque élève sont cachés sur le projecteur.",
+        "nobody": "Pas encore d’élèves dans cette classe.",
+        "pick": "Choisis pourquoi. Les points sont seulement donnés, jamais retirés.",
+        "r_kind": "Gentillesse",
+        "r_helpful": "Entraide",
+        "r_teamwork": "Travail d’équipe",
+        "r_effort": "Effort",
+        "r_listening": "Écoute",
+        "r_responsible": "Responsabilité",
+        "r_brave": "Oser essayer",
+        "r_creative": "Bonnes idées"
       },
       "stickers": {
         "name": "Autocollants",
@@ -9907,6 +9945,185 @@
         "indian": "Océan Indien",
         "arctic": "Océan Arctique",
         "southern": "Océan Austral"
+      },
+      "video": {
+        "name": "Vidéo",
+        "desc": "Une vidéo YouTube ou Vimeo sur ton écran. Jamais envoyée aux élèves.",
+        "s": {
+          "video": "Lien de la vidéo",
+          "start": "Commencer à",
+          "end": "S’arrêter à",
+          "mute": "Sans le son",
+          "loop": "Recommencer à la fin"
+        },
+        "empty": "Colle un lien YouTube ou Vimeo dans les réglages de ce widget.",
+        "paste": "Colle un lien YouTube ou Vimeo",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "Ce n’est pas un lien vers une vidéo YouTube ou Vimeo.",
+        "ok": "Une vidéo est choisie. Colle un autre lien pour la changer.",
+        "endNote": "(YouTube seulement : les vidéos Vimeo vont jusqu’au bout.)",
+        "note": "Seul le numéro de la vidéo est gardé, pas le lien. Elle passe dans le lecteur respectueux de la vie privée du service, et seulement sur ton écran.",
+        "secsHint": "Minutes et secondes, par exemple 1:30.",
+        "secsBad": "Écris le temps en minutes et secondes, par exemple 1:30.",
+        "title": "Lecteur vidéo"
+      },
+      "site": {
+        "name": "Fenêtre de site",
+        "desc": "Une page web dans ton tableau de bord, si le site le permet. Jamais envoyée aux élèves.",
+        "s": {
+          "url": "Adresse web (https)"
+        },
+        "empty": "Ajoute une adresse https:// dans les réglages de ce widget.",
+        "checking": "Vérification du site…",
+        "blocked": "Ce site ne peut pas s’afficher dans le tableau de bord",
+        "blockedText": "Le site ne permet pas d’être affiché dans d’autres pages. Tu peux quand même l’ouvrir dans un nouvel onglet.",
+        "open": "Ouvrir dans un nouvel onglet",
+        "bad": "Utilise une adresse complète qui commence par https://",
+        "note": "Seulement des sites https. Les élèves ne voient jamais cette fenêtre.",
+        "frameTitle": "Page web de {host}"
+      },
+      "camera": {
+        "name": "Caméra de documents",
+        "desc": "Montre un livre ou une fiche avec ta caméra. Rien n’est enregistré ni envoyé.",
+        "start": "Démarrer",
+        "stop": "Arrêter",
+        "which": "Caméra",
+        "mirror": "Miroir",
+        "rotate": "Tourner",
+        "zoomIn": "Agrandir",
+        "zoomOut": "Réduire",
+        "zoom": "Zoom",
+        "freeze": "Figer",
+        "unfreeze": "En direct",
+        "frozen": "Image figée",
+        "live": "En direct",
+        "note": "L’image reste sur cet écran. Elle n’est jamais enregistrée, gardée ni envoyée.",
+        "denied": "La caméra est bloquée",
+        "deniedText": "Autorise la caméra pour ce site dans la barre d’adresse du navigateur, puis réessaie.",
+        "none": "Aucune caméra trouvée",
+        "noneText": "Branche une caméra ou choisis-en une autre, puis réessaie.",
+        "failed": "La caméra n’a pas démarré",
+        "off": "La caméra est éteinte",
+        "camera": "Image de la caméra",
+        "again": "Réessayer"
+      },
+      "hallpass": {
+        "name": "Laissez-passer",
+        "desc": "Les élèves demandent à sortir vers un lieu que tu choisis. Tu dis oui ou pas maintenant.",
+        "s": {
+          "places": "Lieux que les élèves peuvent demander",
+          "oneOut": "Un seul élève dehors à la fois",
+          "mins": "Minutes avant qu’une sortie soit longue"
+        },
+        "ask": "Besoin de sortir ? Choisis où.",
+        "askFor": "Demander un laissez-passer : {place}",
+        "waiting": "En attente de ton enseignant : {place}",
+        "cancel": "Finalement non",
+        "out": "Tu es sorti : {place}",
+        "back": "Je suis revenu",
+        "declined": "Pas maintenant. Tu pourras redemander plus tard.",
+        "ok": "OK",
+        "asking": "{n} demandent",
+        "outNow": "{n} dehors",
+        "nobody": "Personne n’est dehors ni ne demande.",
+        "approve": "Oui",
+        "decline": "Pas maintenant",
+        "oneOut": "Un à la fois",
+        "over": "long",
+        "outPublic": "Hors de la classe",
+        "mine": "Seuls toi et ton enseignant voyez ton laissez-passer.",
+        "hiddenNames": "Les demandes sont cachées sur le projecteur.",
+        "none": "Tout effacer",
+        "backSay": "{name} est revenu.",
+        "p_bathroom": "Toilettes",
+        "p_water": "Eau",
+        "p_nurse": "Infirmerie",
+        "p_office": "Secrétariat",
+        "p_library": "Bibliothèque",
+        "markBack": "Revenu"
+      },
+      "jobs": {
+        "name": "Métiers de la classe",
+        "desc": "Un métier pour chacun, qui tourne chaque semaine. Avec les noms Oomba de la classe.",
+        "s": {
+          "jobs": "Métiers (un par ligne ; vide pour les habituels)",
+          "crew": "Qui fait quoi"
+        },
+        "rotate": "Semaine suivante",
+        "shuffle": "Mélanger",
+        "rotated": "Chacun passe au métier suivant.",
+        "shuffled": "Métiers mélangés.",
+        "nobody": "Pas encore d’élèves dans cette classe.",
+        "open": "Libre",
+        "defaults": "Chef de rang\nPortier\nLumières\nPlantes\nLivres\nChef du rangement\nMessager\nTableau"
+      },
+      "mood": {
+        "name": "Météo des émotions",
+        "desc": "Les élèves touchent un visage selon ce qu’ils ressentent. Toi seul vois qui a choisi quoi.",
+        "ask": "Comment te sens-tu ?",
+        "mine": "Tu as choisi {face}.",
+        "counts": "{n} sur {total} ont répondu",
+        "names": "Qui a choisi quoi",
+        "nobody": "Personne",
+        "notYet": "Pas encore",
+        "saved": "Seul ton enseignant voit ton visage.",
+        "m_great": "Super",
+        "m_good": "Bien",
+        "m_okay": "Ça va",
+        "m_meh": "Pas trop",
+        "m_sad": "Triste",
+        "countsHidden": "Le nombre de chaque visage est sur ton propre écran, pas sur le projecteur."
+      },
+      "breathe": {
+        "name": "Respiration",
+        "desc": "Un cercle calme pour respirer avec lui.",
+        "s": {
+          "pace": "Rythme"
+        },
+        "o": {
+          "pace": {
+            "calm": "Inspire 4, expire 4",
+            "box": "Carré : inspire, bloque, expire, bloque",
+            "long": "Inspire 4, expire 6"
+          }
+        },
+        "start": "Démarrer",
+        "pause": "Pause",
+        "in": "Inspire",
+        "hold": "Bloque",
+        "out": "Expire",
+        "ready": "Prêt quand tu veux"
+      },
+      "note": {
+        "name": "Pense-bête",
+        "desc": "Une note pour toi sur ton propre écran. Jamais épinglée pour les élèves.",
+        "s": {
+          "body": "Note",
+          "color": "Couleur"
+        },
+        "o": {
+          "color": {
+            "yellow": "Jaune",
+            "pink": "Rose",
+            "blue": "Bleu",
+            "green": "Vert"
+          }
+        },
+        "empty": "Écris ta note dans les réglages de ce widget."
+      },
+      "checklist": {
+        "name": "Liste à cocher",
+        "desc": "Des étapes à cocher ensemble.",
+        "s": {
+          "title": "Titre",
+          "items": "Étapes (une par ligne)",
+          "ticks": "Coches"
+        },
+        "empty": "Ajoute des étapes dans les réglages de ce widget.",
+        "done": "{n} sur {total} faites",
+        "clear": "Tout décocher",
+        "ticked": "fait",
+        "unticked": "pas fait"
       }
     },
     "push": {
@@ -9935,7 +10152,14 @@
       "checkValue": "Choisis une des réponses.",
       "resting": "La météo fait une pause. Réessaie dans un petit moment.",
       "qrGone": "Impossible d’afficher cela en code QR.",
-      "tool": "Cet outil n’est plus sur ton écran."
+      "tool": "Cet outil n’est plus sur ton écran.",
+      "noPass": "Ton enseignant n’a pas mis de laissez-passer sur ton écran.",
+      "passPlace": "Choisis un des lieux du laissez-passer.",
+      "passOut": "Tu es déjà sorti. Touche d’abord « Je suis revenu ».",
+      "oneOut": "Quelqu’un est déjà dehors. Un à la fois.",
+      "reason": "Choisis une raison dans la liste.",
+      "noMood": "Ton enseignant n’a pas mis de météo des émotions sur ton écran.",
+      "site": "Cette fenêtre de site n’a pas encore d’adresse."
     },
     "tools": {
       "send": "Envoyer à la classe",

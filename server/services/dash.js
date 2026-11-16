@@ -25,6 +25,7 @@ import { cleanJpeg, PhotoError } from './photos.js';
 import { liveOn, openForClass } from './classlive-sessions.js';
 import { isOfficial } from './classlive-access.js';
 import { TOOL_IDS, cleanToolState } from './dash-tools.js';
+import { cleanVideo } from './dash-media.js';
 import { lookup } from '../i18n/index.js';
 
 // ---------------------------------------------------------------- the widget registry
@@ -87,6 +88,16 @@ export const PRACTICE = {
   geoboard: ['keep-builder'], pattern: ['shape-hunt'], angle: ['keep-builder'], solids: ['shape-hunt', 'keep-builder'], transform: ['keep-builder'],
   balance: ['balance-bridge', 'machine-line'], algebra: ['machine-line'], coins: ['kitchen-rush'], chance: ['launch-lab'], letters: ['word-trail', 'word-hunt'], map: ['atlas-quest'],
 };
+// ---- stage 5 (docs/decisions.md "Classroom dashboards, stage 5")
+/** Hall pass places a teacher may offer (fixed: students never type where they are going). */
+export const PASS_PLACES = ['bathroom', 'water', 'nurse', 'office', 'library'];
+/** Reasons for a student's point: positive behaviours only. There is no reason to take a point away. */
+export const POINT_REASONS = ['kind', 'helpful', 'teamwork', 'effort', 'listening', 'responsible', 'brave', 'creative'];
+/** The mood check-in's faces, in order (an index is stored, never text). */
+export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
+/** Widgets that show something from outside Oomba (or the camera): the teacher's screen and projector only. Never
+ *  pinned, never pushed, never on a student's screen. */
+export const TEACHER_ONLY = ['video', 'site', 'camera'];
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
@@ -107,8 +118,9 @@ export const WIDGETS = [
     { key: 'chime', type: 'bool', def: false },
     { key: 'bar', type: 'bool', def: true }] },
   { id: 'stopwatch', icon: '⏱️', group: 'time', who: 'both', size: [3, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset'], settings: [] },
-  { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove'], settings: [
-    { key: 'periods', type: 'periods', def: [] }] },
+  { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts'], settings: [
+    { key: 'periods', type: 'periods', def: [] },
+    { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
   { id: 'weather', icon: '⛅', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty', 'resting', 'loading', 'hiLo', 'find', 'search', 'searchHint', 'none', 'place',
     'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
     { key: 'place', type: 'place', def: null },
@@ -147,7 +159,11 @@ export const WIDGETS = [
   { id: 'groups', icon: '👥', group: 'class', who: 'teacher', pin: false, size: [6, 4], min: [4, 3], words: ['make', 'again', 'group', 'none', 'note'], settings: [
     { key: 'by', type: 'select', options: ['size', 'count'], def: 'size' },
     { key: 'n', type: 'number', min: 2, max: 12, def: 4 }] },
-  { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [4, 3], words: ['team', 'plus', 'minus', 'reset'], settings: [
+  { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [4, 3], words: ['team', 'plus', 'minus', 'reset',
+    // stage 5: points for each student (positive only), from a fixed list of reasons
+    'reason', 'award', 'awardAll', 'everyone', 'undo', 'undone', 'classTotal', 'mine', 'given', 'resetAll', 'resetConfirm', 'hidden', 'nobody', 'pick',
+    ...POINT_REASONS.map(r => `r_${r}`)], settings: [
+    { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
     { key: 'scores', type: 'scores', hidden: true, def: [] }] },
   { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [3, 3], words: ['add', 'remove', 'clear', 'empty'], settings: [
@@ -172,13 +188,43 @@ export const WIDGETS = [
     { key: 'pic', type: 'pic', def: '' },
     { key: 'alt', type: 'textarea', max: 200, def: '' },
     { key: 'fit', type: 'select', options: ['contain', 'cover'], def: 'contain' }] },
+  // ---- stage 5: video, a site window and a document camera (the teacher's screen and projector only); a hall pass, class
+  // jobs, a mood check-in (students see only their own); and calm, note and checklist widgets.
+  { id: 'video', icon: '🎬', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'paste', 'pasteHint', 'bad', 'ok', 'endNote', 'note', 'secsHint', 'secsBad', 'title'], settings: [
+    { key: 'video', type: 'video', def: null },
+    { key: 'start', type: 'secs', def: 0 },
+    { key: 'end', type: 'secs', def: 0 },
+    { key: 'mute', type: 'bool', def: false },
+    { key: 'loop', type: 'bool', def: false }] },
+  { id: 'site', icon: '🌐', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'checking', 'blocked', 'blockedText', 'open', 'bad', 'note', 'frameTitle'], settings: [
+    { key: 'url', type: 'site', def: '' }] },
+  { id: 'camera', icon: '📷', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['start', 'stop', 'which', 'mirror', 'rotate', 'zoomIn', 'zoomOut', 'zoom', 'freeze', 'unfreeze', 'frozen', 'live', 'note',
+    'denied', 'deniedText', 'none', 'noneText', 'failed', 'off', 'camera', 'again'], settings: [] },
+  { id: 'hallpass', icon: '🚪', group: 'class', who: 'teacher', pinDef: true, size: [5, 5], min: [4, 4], words: ['ask', 'askFor', 'waiting', 'cancel', 'out', 'back', 'declined', 'ok', 'asking', 'outNow', 'nobody', 'approve', 'decline',
+    'oneOut', 'over', 'outPublic', 'mine', 'hiddenNames', 'none', 'backSay', 'markBack', ...PASS_PLACES.map(p => `p_${p}`)], settings: [
+    { key: 'places', type: 'places', def: PASS_PLACES },
+    { key: 'oneOut', type: 'bool', def: true },
+    { key: 'mins', type: 'number', min: 1, max: 30, def: 5 }] },
+  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'open', 'defaults'], settings: [
+    { key: 'jobs', type: 'textarea', max: 400, def: '' },
+    { key: 'crew', type: 'crew', hidden: true, def: { order: [], shift: 0 } }] },
+  { id: 'mood', icon: '😊', group: 'check', who: 'teacher', pinDef: true, size: [4, 4], min: [4, 4], words: ['ask', 'mine', 'counts', 'names', 'nobody', 'notYet', 'saved', 'countsHidden', ...MOODS.map(m => `m_${m}`)], settings: [] },
+  { id: 'breathe', icon: '🫧', group: 'tools', who: 'both', size: [3, 4], min: [3, 4], words: ['start', 'pause', 'in', 'hold', 'out', 'ready'], settings: [
+    { key: 'pace', type: 'select', options: ['calm', 'box', 'long'], def: 'calm' }] },
+  { id: 'note', icon: '🗒️', group: 'show', who: 'teacher', pin: false, size: [3, 3], min: [3, 2], words: ['empty'], settings: [
+    { key: 'body', type: 'textarea', max: 300, def: '' },
+    { key: 'color', type: 'select', options: ['yellow', 'pink', 'blue', 'green'], def: 'yellow' }] },
+  { id: 'checklist', icon: '☑️', group: 'show', who: 'teacher', size: [4, 4], min: [3, 3], words: ['empty', 'done', 'clear', 'ticked', 'unticked'], settings: [
+    { key: 'title', type: 'text', max: 40, def: '' },
+    { key: 'items', type: 'textarea', max: 600, def: '' },
+    { key: 'ticks', type: 'ticks', hidden: true, def: [] }] },
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
 export const COLS = 12, MAX_ROWS = 24, MAX_H = 8, MAX_WIDGETS = 24, MAX_LAYOUTS = 12;
 export const canAdd = (type, role) => !!type && (type.who === 'both' || type.who === role);
 /** Whether a teacher may pin this type on student screens (the picker, the noise meter, QR and checks never are). */
-export const canPin = type => !!type && type.pin !== false;
+export const canPin = type => !!type && type.pin !== false && !TEACHER_ONLY.includes(type.id);
 
 /** A widget's word for the browser. Stage 4: a word that counts ("{n, plural, one {# vowel} other {# vowels}}") goes as
  *  the message itself, for the browser to fill in with public/js/i18n-format.js; every other word as t() gives it. */
@@ -268,6 +314,26 @@ export function cleanTiles(v) {
   }
   return out;
 }
+// stage 5 setting types
+/** Seconds into a video: a number, or "m:ss" / "h:mm:ss" as typed. 0..24 hours. */
+export function cleanSecs(v) {
+  const s = String(v ?? '').trim();
+  let n = 0;
+  if (/^\d{1,5}$/.test(s)) n = +s;
+  else { const m = /^(?:(\d{1,2}):)?(\d{1,3}):([0-5]\d)$/.exec(s); if (m) n = (+m[1] || 0) * 3600 + +m[2] * 60 + +m[3]; }
+  return Math.min(86400, Math.max(0, Math.round(n) || 0));
+}
+/** The hall pass places offered: a subset of PASS_PLACES in their order, at least one. */
+export const cleanPlaces = (v, def = PASS_PLACES) => { const set = new Set(Array.isArray(v) ? v : []); const out = PASS_PLACES.filter(p => set.has(p)); return out.length ? out : [...def]; };
+/** Class jobs: who comes in what order (student ids, checked against the class when shown) and how far it has turned. */
+export function cleanCrew(v) {
+  const src = v && typeof v === 'object' ? v : {};
+  const order = [...new Set((Array.isArray(src.order) ? src.order : []).map(String).filter(x => ID.test(x)))].slice(0, 80);
+  return { order, shift: int(src.shift, 0, 9999, 0) };
+}
+export const MAX_ITEMS = 20;
+/** A checklist's ticks: one true/false per item. */
+export const cleanTicks = v => (Array.isArray(v) ? v : []).slice(0, MAX_ITEMS).map(x => x === true || x === 1);
 /** One widget's settings, rebuilt from its schema. */
 export function cleanSettings(type, s = {}) {
   const out = {}; const src = s && typeof s === 'object' ? s : {};
@@ -288,6 +354,13 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
+    // stage 5
+    else if (f.type === 'video') out[f.key] = cleanVideo(v);
+    else if (f.type === 'secs') out[f.key] = cleanSecs(v);
+    else if (f.type === 'site') out[f.key] = (v && cleanUrl(v)) || '';
+    else if (f.type === 'places') out[f.key] = cleanPlaces(v, f.def);
+    else if (f.type === 'crew') out[f.key] = cleanCrew(v);
+    else if (f.type === 'ticks') out[f.key] = cleanTicks(v);
     else out[f.key] = v === undefined ? f.def : cleanText(v, f.max, f.type === 'textarea');
   }
   return out;
@@ -420,7 +493,7 @@ function ownPictures(widgets, u, c) {
  *  pins_at moves only when the pins really changed, so students' screens redraw only then (stage 3: a teacher working a
  *  tool saves the layout often). */
 function publishPins(classId, widgets) {
-  const pins = JSON.stringify(widgets.filter(w => w.pin && !(w.type === 'picture' && !(w.s.pic && w.s.alt))).map(({ pin, ...w }) => w));
+  const pins = JSON.stringify(widgets.filter(w => w.pin && !TEACHER_ONLY.includes(w.type) && !(w.type === 'picture' && !(w.s.pic && w.s.alt))).map(({ pin, ...w }) => w));
   ensureClassRow(classId);
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
@@ -609,6 +682,7 @@ export function liveState(c, u, role) {
     checks: checksFor(c, u, role),
     weather,
     ...(teacher ? { size: studentsOf(c).length } : {}),
+    ...stage5Live(c, u, role, shown),
   };
 }
 
@@ -986,6 +1060,171 @@ export function removePicture(u, c, id) {
 }
 export { PhotoError };
 
+// ================================================================ stage 5 (docs/decisions.md "Classroom dashboards, stage 5")
+/** What stage 5's widgets on this screen need from the server, and nothing more: the hall pass (the teacher: today's
+ *  requests and who is out; a student: only their own pass), class jobs (the names in order, in the class only), points
+ *  for each student (the teacher: everyone's; a student: their own and the class's total, never a ranking) and the mood
+ *  check-in (the teacher: the counts; a student: their own). */
+function stage5Live(c, u, role, shown) {
+  const teacher = role === 'teacher', has = type => shown.some(w => w.type === type), out = {};
+  if (has('hallpass')) out.pass = teacher ? { list: passList(c) } : { mine: passMine(c, u.id) };
+  const jobs = shown.filter(w => w.type === 'jobs');
+  if (jobs.length) {
+    const kids = studentsOf(c);
+    out.crew = Object.fromEntries(jobs.map(w => [w.id, crewPeople(kids, w.s && w.s.crew).map(k => (teacher ? k : { name: k.name }))]));
+  }
+  if (shown.some(w => w.type === 'score' && w.s && w.s.mode === 'students')) out.points = teacher ? pointsAll(c) : pointsMine(c, u.id);
+  if (has('mood')) out.mood = teacher ? moodCounts(c) : { mine: moodMine(c, u.id) };
+  return out;
+}
+
+// ---------------------------------------------------------------- hall pass
+// A student asks for a pass to one of the places the teacher offers (fixed buttons, no text). The teacher approves or
+// declines; an approved pass shows who is out and since when. One out at a time, if the teacher wants. A student sees
+// only their own pass. Rows are for today only: yesterday's go whenever the class's passes are read, and a pass ends
+// (its row goes) when the student is back.
+export const PASS_STATES = ['asked', 'out', 'declined'];
+/** The hall pass widget students see (the first one pinned), or null: no pinned pass, no asking. */
+const pinnedPass = c => pinsOf(c.id).find(w => w.type === 'hallpass') || null;
+/** The pass settings the teacher works with: the pinned one, else the one on their screen, else the defaults. */
+function passSettings(u, c) {
+  const w = pinnedPass(c) || ((currentLayout(u, c) || {}).widgets || []).find(x => x.type === 'hallpass');
+  return w ? cleanSettings(widgetType('hallpass'), w.s) : cleanSettings(widgetType('hallpass'), {});
+}
+/** Today only: older passes are gone (any class, after 36 hours, too: a class nobody opens keeps nothing). */
+function dropOldPasses(c) {
+  q.run('DELETE FROM dash_passes WHERE class_id=? AND day<>?', c.id, dayOf(c));
+  q.run('DELETE FROM dash_passes WHERE asked_at<?', now() - 36 * 3600e3);
+}
+export function passList(c) {
+  dropOldPasses(c);
+  return q.all(`SELECT p.id, p.user_id uid, u.display_name name, p.place, p.state, p.asked_at, p.out_at FROM dash_passes p JOIN users u ON u.id=p.user_id
+    JOIN class_members m ON m.class_id=p.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
+    WHERE p.class_id=? AND p.state IN ('asked','out') ORDER BY p.asked_at, p.rowid`, c.id)
+    .map(r => ({ id: r.id, name: r.name, place: r.place, state: r.state, at: r.state === 'out' ? r.out_at : r.asked_at }));
+}
+export function passMine(c, userId) {
+  dropOldPasses(c);
+  const r = q.get('SELECT id, place, state, asked_at, out_at FROM dash_passes WHERE class_id=? AND user_id=?', c.id, userId);
+  return r ? { place: r.place, state: r.state, at: r.state === 'out' ? r.out_at : r.asked_at } : null;
+}
+/** A student: ask (place), cancel a request, say they're back, or dismiss "not right now". */
+export function passStudent(u, c, { action, place } = {}) {
+  dropOldPasses(c);
+  const mine = q.get('SELECT * FROM dash_passes WHERE class_id=? AND user_id=?', c.id, u.id);
+  if (action === 'ask') {
+    const w = pinnedPass(c); if (!w) return { error: 'noPass' };
+    const s = cleanSettings(widgetType('hallpass'), w.s);
+    if (!s.places.includes(place)) return { error: 'passPlace' };
+    if (mine && mine.state === 'out') return { error: 'passOut' };
+    q.run(`INSERT INTO dash_passes(id, class_id, user_id, place, day, state, asked_at, out_at) VALUES (?,?,?,?,?,'asked',?,NULL)
+      ON CONFLICT(class_id, user_id) DO UPDATE SET id=excluded.id, place=excluded.place, day=excluded.day, state='asked', asked_at=excluded.asked_at, out_at=NULL`, uid(12), c.id, u.id, place, dayOf(c), now());
+  } else if (action === 'cancel' || action === 'back' || action === 'ok') {
+    if (mine) q.run('DELETE FROM dash_passes WHERE class_id=? AND user_id=?', c.id, u.id);
+  } else return { error: 'kind' };
+  return { mine: passMine(c, u.id) };
+}
+/** The teacher: approve or decline a request, mark someone back, or clear today's passes. */
+export function passTeacher(u, c, { action, pass } = {}) {
+  dropOldPasses(c);
+  const p = q.get('SELECT * FROM dash_passes WHERE id=? AND class_id=?', String(pass || ''), c.id);
+  if (action === 'clear') q.run('DELETE FROM dash_passes WHERE class_id=?', c.id);
+  else if (!p) return { error: 'notFound' };
+  else if (action === 'approve') {
+    if (p.state !== 'asked') return { error: 'notFound' };
+    if (passSettings(u, c).oneOut && q.get("SELECT 1 FROM dash_passes WHERE class_id=? AND state='out'", c.id)) return { error: 'oneOut' };
+    q.run("UPDATE dash_passes SET state='out', out_at=? WHERE id=?", now(), p.id);
+  } else if (action === 'decline') {
+    if (p.state !== 'asked') return { error: 'notFound' };
+    q.run("UPDATE dash_passes SET state='declined' WHERE id=?", p.id);
+  } else if (action === 'back') q.run('DELETE FROM dash_passes WHERE id=?', p.id);
+  else return { error: 'kind' };
+  return { list: passList(c) };
+}
+
+// ---------------------------------------------------------------- class jobs
+/** The class's students in job order: the saved order (ids still in the class), then anyone new, by Oomba name. */
+export function crewPeople(kids, crew) {
+  const order = cleanCrew(crew).order, byId = new Map(kids.map(k => [k.id, k]));
+  const first = order.filter(id => byId.has(id)).map(id => byId.get(id));
+  const seen = new Set(first.map(k => k.id));
+  const rest = kids.filter(k => !seen.has(k.id)).sort((a, b) => String(a.name).localeCompare(String(b.name)) || (a.id < b.id ? -1 : 1));
+  return [...first, ...rest];
+}
+/** Who does job i this week: people in order, turned by shift. More jobs than people: the rest are open; more people
+ *  than jobs: the rest get a turn as the chart turns. -> one person (or null) per job. */
+export function jobAssign(jobCount, people, shift = 0) {
+  const n = people.length;
+  return Array.from({ length: jobCount }, (_, i) => (i < n ? people[((i + shift) % n + n) % n] : null));
+}
+
+// ---------------------------------------------------------------- points for each student (positive only)
+// The teacher gives a point with a reason from a fixed list. There is no minus: a point given by mistake can be taken
+// back once (Undo), never below zero. A student sees only their own total and the class's; nobody sees a ranking.
+const pointRows = c => q.all(`SELECT p.user_id, p.reason, p.n FROM dash_points p JOIN class_members m ON m.class_id=p.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
+  WHERE p.class_id=? AND p.n>0`, c.id);
+export function pointsAll(c) {
+  const rows = pointRows(c), by = new Map();
+  for (const r of rows) { const x = by.get(r.user_id) || { n: 0, r: {} }; x.n += r.n; x.r[r.reason] = r.n; by.set(r.user_id, x); }
+  const list = studentsOf(c).map(k => ({ id: k.id, name: k.name, n: (by.get(k.id) || {}).n || 0, r: (by.get(k.id) || {}).r || {} }));
+  return { list, total: list.reduce((a, b) => a + b.n, 0) };
+}
+export function pointsMine(c, userId) {
+  const rows = pointRows(c), mine = rows.filter(r => r.user_id === userId);
+  return { mine: mine.reduce((a, b) => a + b.n, 0), r: Object.fromEntries(mine.map(r => [r.reason, r.n])), total: rows.reduce((a, b) => a + b.n, 0) };
+}
+export const MAX_POINTS = 9999;
+/** award: one point for one student (user) or every student (user 'all') for a reason; undo: take one such point
+ *  back (never below zero); reset: everyone back to zero. */
+export function pointsAction(u, c, { action, user, reason } = {}) {
+  if (action === 'reset') { q.run('DELETE FROM dash_points WHERE class_id=?', c.id); return pointsAll(c); }
+  if (!['award', 'undo'].includes(action)) return { error: 'kind' };
+  if (!POINT_REASONS.includes(reason)) return { error: 'reason' };
+  const kids = studentsOf(c), who = user === 'all' ? kids : kids.filter(k => k.id === String(user || ''));
+  if (!who.length) return { error: user === 'all' ? 'nobody' : 'notFound' };
+  tx(() => {
+    for (const k of who) {
+      if (action === 'award') q.run(`INSERT INTO dash_points(class_id, user_id, reason, n, at) VALUES (?,?,?,1,?)
+        ON CONFLICT(class_id, user_id, reason) DO UPDATE SET n=MIN(?, n+1), at=excluded.at`, c.id, k.id, reason, now(), MAX_POINTS);
+      else if (action === 'undo') q.run('UPDATE dash_points SET n=MAX(0, n-1) WHERE class_id=? AND user_id=? AND reason=?', c.id, k.id, reason);
+    }
+  });
+  q.run('DELETE FROM dash_points WHERE class_id=? AND n<=0', c.id);
+  return pointsAll(c);
+}
+
+// ---------------------------------------------------------------- mood check-in (faces only)
+// A student taps one of five faces (an index; no words of their own). Today only. The teacher sees the counts on the
+// widget (and so the projector) and, on their own tap, who chose which, for their own class; a student sees only their
+// own face. Nobody else ever sees anyone's.
+const dropOldMoods = c => q.run('DELETE FROM dash_moods WHERE class_id=? AND day<>?', c.id, dayOf(c));
+const moodRows = c => { dropOldMoods(c); return q.all(`SELECT d.user_id, d.mood FROM dash_moods d JOIN class_members m ON m.class_id=d.class_id AND m.user_id=d.user_id AND m.status='active' AND m.role='student' WHERE d.class_id=?`, c.id); };
+export function moodCounts(c) {
+  const counts = MOODS.map(() => 0), rows = moodRows(c);
+  for (const r of rows) if (counts[r.mood] !== undefined) counts[r.mood]++;
+  return { counts, n: rows.length, size: studentsOf(c).length };
+}
+export const moodMine = (c, userId) => { dropOldMoods(c); const r = q.get('SELECT mood FROM dash_moods WHERE class_id=? AND user_id=?', c.id, userId); return r ? r.mood : null; };
+export function setMood(u, c, mood) {
+  if (!pinsOf(c.id).some(w => w.type === 'mood')) return { error: 'noMood' };
+  if (mood === null) { q.run('DELETE FROM dash_moods WHERE class_id=? AND user_id=?', c.id, u.id); return { mine: null }; }
+  const v = Number(mood);
+  if (!Number.isInteger(v) || v < 0 || v >= MOODS.length) return { error: 'kind' };
+  q.run('INSERT INTO dash_moods(class_id, user_id, day, mood, at) VALUES (?,?,?,?,?) ON CONFLICT(class_id, user_id) DO UPDATE SET day=excluded.day, mood=excluded.mood, at=excluded.at', c.id, u.id, dayOf(c), v, now());
+  return { mine: v };
+}
+/** The class's teacher only: who chose each face today (Oomba names), and who hasn't yet. */
+export function moodNames(c) {
+  const kids = studentsOf(c), byId = new Map(kids.map(k => [k.id, k.name]));
+  const groups = MOODS.map(() => []), done = new Set();
+  for (const r of moodRows(c)) if (groups[r.mood] && byId.has(r.user_id)) { groups[r.mood].push(byId.get(r.user_id)); done.add(r.user_id); }
+  return { groups, missing: kids.filter(k => !done.has(k.id)).map(k => k.name) };
+}
+
+// ---------------------------------------------------------------- the site window
+/** One of this teacher's site windows (any of their layouts for the class) and its address, or null. */
+export function siteWidget(u, c, wid) { const w = teacherWidget(u, c, wid, ['site']); return w && w.s && w.s.url && cleanUrl(w.s.url) ? { id: w.id, url: cleanUrl(w.s.url) } : null; }
+
 /** Account deletion (services/account-delete.js): this person's screens and pictures go. */
 export function forgetUser(userId) {
   for (const p of q.all('SELECT id FROM dash_pictures WHERE owner_id=?', userId)) dropPicture(p.id);
@@ -994,6 +1233,8 @@ export function forgetUser(userId) {
   // Stage 2: their place in help queues, their check answers, and any picker list they are on.
   q.run('DELETE FROM dash_help WHERE user_id=?', userId);
   q.run('DELETE FROM dash_answers WHERE user_id=?', userId);
+  // Stage 5: their hall pass, points and mood.
+  for (const t of ['dash_passes', 'dash_points', 'dash_moods']) q.run(`DELETE FROM ${t} WHERE user_id=?`, userId);
   for (const r of q.all("SELECT class_id, picker FROM dash_class WHERE picker LIKE ?", `%${userId}%`)) {
     const p = json(r.picker, {});
     for (const k of ['picked', 'away']) if (Array.isArray(p[k])) p[k] = p[k].filter(id => id !== userId);

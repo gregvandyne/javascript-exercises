@@ -9049,7 +9049,8 @@
         "name": "Horário do dia",
         "desc": "As aulas de hoje; a que está acontecendo fica em destaque.",
         "s": {
-          "periods": "Aulas"
+          "periods": "Aulas",
+          "view": "Mostrar"
         },
         "empty": "Adicione as aulas de hoje em Editar tela.",
         "now": "Agora",
@@ -9061,7 +9062,15 @@
         "period": "Aula",
         "from": "De",
         "to": "Até",
-        "remove": "Remover aula"
+        "remove": "Remover aula",
+        "o": {
+          "view": {
+            "list": "O dia todo",
+            "nownext": "Agora e depois"
+          }
+        },
+        "nothingNext": "Não há nada depois",
+        "starts": "Começa às {time}"
       },
       "weather": {
         "name": "Tempo",
@@ -9329,12 +9338,41 @@
         "desc": "Pontos das equipes com botões de mais e menos.",
         "s": {
           "teams": "Nomes das equipes (um por linha)",
-          "scores": "Pontos"
+          "scores": "Pontos",
+          "mode": "Pontos para"
         },
         "team": "Equipe {n}",
         "plus": "Um ponto para {team}",
         "minus": "Um ponto a menos para {team}",
-        "reset": "Zerar pontos"
+        "reset": "Zerar pontos",
+        "o": {
+          "mode": {
+            "teams": "Equipes",
+            "students": "Cada aluno"
+          }
+        },
+        "reason": "Motivo",
+        "award": "Um ponto para {name}",
+        "awardAll": "Um ponto para todos",
+        "everyone": "Todos",
+        "undo": "Desfazer",
+        "undone": "O último ponto foi retirado.",
+        "classTotal": "Total da turma: {n}",
+        "mine": "Meus pontos",
+        "given": "{name}: um ponto por {reason}",
+        "resetAll": "Começar de novo",
+        "resetConfirm": "Zerar os pontos de todos os alunos?",
+        "hidden": "Os pontos de cada aluno ficam escondidos no projetor.",
+        "nobody": "Ainda não há alunos nesta turma.",
+        "pick": "Escolha o motivo. Pontos só são dados, nunca tirados.",
+        "r_kind": "Gentileza",
+        "r_helpful": "Ajudar",
+        "r_teamwork": "Trabalho em equipe",
+        "r_effort": "Esforço",
+        "r_listening": "Ouvir",
+        "r_responsible": "Responsabilidade",
+        "r_brave": "Tentar algo novo",
+        "r_creative": "Boas ideias"
       },
       "stickers": {
         "name": "Adesivos",
@@ -9909,6 +9947,185 @@
         "indian": "Oceano Índico",
         "arctic": "Oceano Ártico",
         "southern": "Oceano Antártico"
+      },
+      "video": {
+        "name": "Vídeo",
+        "desc": "Um vídeo do YouTube ou do Vimeo na sua tela. Nunca é enviado aos alunos.",
+        "s": {
+          "video": "Link do vídeo",
+          "start": "Começar em",
+          "end": "Parar em",
+          "mute": "Sem som",
+          "loop": "Repetir no final"
+        },
+        "empty": "Cole um link do YouTube ou do Vimeo nas configurações deste widget.",
+        "paste": "Cole um link do YouTube ou do Vimeo",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "Isso não é um link de vídeo do YouTube ou do Vimeo.",
+        "ok": "Há um vídeo escolhido. Cole outro link para trocar.",
+        "endNote": "(Só no YouTube: vídeos do Vimeo vão até o fim.)",
+        "note": "Só o número do vídeo é guardado, não o link. Ele toca no player com privacidade reforçada do serviço e só na sua tela.",
+        "secsHint": "Minutos e segundos, por exemplo 1:30.",
+        "secsBad": "Escreva o tempo em minutos e segundos, por exemplo 1:30.",
+        "title": "Player de vídeo"
+      },
+      "site": {
+        "name": "Janela de site",
+        "desc": "Uma página da web dentro do seu painel, se o site permitir. Nunca é enviada aos alunos.",
+        "s": {
+          "url": "Endereço da web (https)"
+        },
+        "empty": "Adicione um endereço https:// nas configurações deste widget.",
+        "checking": "Verificando o site…",
+        "blocked": "Este site não pode ser mostrado dentro do painel",
+        "blockedText": "O site não permite ser mostrado dentro de outras páginas. Você ainda pode abri-lo em uma nova aba.",
+        "open": "Abrir em uma nova aba",
+        "bad": "Use um endereço completo que comece com https://",
+        "note": "Só sites https. Os alunos nunca veem esta janela.",
+        "frameTitle": "Página da web de {host}"
+      },
+      "camera": {
+        "name": "Câmera de documentos",
+        "desc": "Mostre um livro ou uma folha com a sua câmera. Nada é gravado nem enviado.",
+        "start": "Iniciar",
+        "stop": "Parar",
+        "which": "Câmera",
+        "mirror": "Espelhar",
+        "rotate": "Girar",
+        "zoomIn": "Aproximar",
+        "zoomOut": "Afastar",
+        "zoom": "Zoom",
+        "freeze": "Congelar",
+        "unfreeze": "Ao vivo",
+        "frozen": "Congelada",
+        "live": "Ao vivo",
+        "note": "A imagem fica nesta tela. Nunca é gravada, salva nem enviada.",
+        "denied": "A câmera está bloqueada",
+        "deniedText": "Permita a câmera para este site na barra de endereço do navegador e tente de novo.",
+        "none": "Nenhuma câmera encontrada",
+        "noneText": "Conecte uma câmera ou escolha outra e tente de novo.",
+        "failed": "A câmera não ligou",
+        "off": "A câmera está desligada",
+        "camera": "Imagem da câmera",
+        "again": "Tentar de novo"
+      },
+      "hallpass": {
+        "name": "Passe de saída",
+        "desc": "Os alunos pedem para sair da sala para um lugar que você escolhe. Você diz sim ou agora não.",
+        "s": {
+          "places": "Lugares que os alunos podem pedir",
+          "oneOut": "Só um aluno fora de cada vez",
+          "mins": "Minutos até uma saída ficar longa"
+        },
+        "ask": "Precisa sair? Escolha para onde.",
+        "askFor": "Pedir um passe: {place}",
+        "waiting": "Esperando seu professor: {place}",
+        "cancel": "Deixa pra lá",
+        "out": "Você está fora: {place}",
+        "back": "Voltei",
+        "declined": "Agora não. Você pode pedir de novo mais tarde.",
+        "ok": "OK",
+        "asking": "{n} pedindo",
+        "outNow": "{n} fora",
+        "nobody": "Ninguém está fora nem pedindo.",
+        "approve": "Sim",
+        "decline": "Agora não",
+        "oneOut": "Um de cada vez",
+        "over": "longa",
+        "outPublic": "Fora da sala",
+        "mine": "Só você e seu professor veem o seu passe.",
+        "hiddenNames": "Quem está pedindo fica escondido no projetor.",
+        "none": "Limpar tudo",
+        "backSay": "{name} voltou.",
+        "p_bathroom": "Banheiro",
+        "p_water": "Água",
+        "p_nurse": "Enfermaria",
+        "p_office": "Secretaria",
+        "p_library": "Biblioteca",
+        "markBack": "Voltou"
+      },
+      "jobs": {
+        "name": "Tarefas da turma",
+        "desc": "Uma tarefa para cada um, que gira toda semana. Com os nomes Oomba da turma.",
+        "s": {
+          "jobs": "Tarefas (uma em cada linha; vazio para as de sempre)",
+          "crew": "Quem faz o quê"
+        },
+        "rotate": "Próxima semana",
+        "shuffle": "Misturar",
+        "rotated": "Todos passaram para a próxima tarefa.",
+        "shuffled": "Tarefas misturadas.",
+        "nobody": "Ainda não há alunos nesta turma.",
+        "open": "Livre",
+        "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro"
+      },
+      "mood": {
+        "name": "Como estou",
+        "desc": "Os alunos tocam numa carinha para dizer como se sentem. Só você vê quem escolheu qual.",
+        "ask": "Como você está se sentindo?",
+        "mine": "Você escolheu {face}.",
+        "counts": "{n} de {total} responderam",
+        "names": "Quem escolheu qual",
+        "nobody": "Ninguém",
+        "notYet": "Ainda não",
+        "saved": "Só o seu professor vê a sua carinha.",
+        "m_great": "Ótimo",
+        "m_good": "Bem",
+        "m_okay": "Mais ou menos",
+        "m_meh": "Não muito bem",
+        "m_sad": "Triste",
+        "countsHidden": "A contagem de cada carinha fica na sua própria tela, não no projetor."
+      },
+      "breathe": {
+        "name": "Respirar",
+        "desc": "Um círculo calmo para respirar junto.",
+        "s": {
+          "pace": "Ritmo"
+        },
+        "o": {
+          "pace": {
+            "calm": "Inspira 4, expira 4",
+            "box": "Quadrado: inspira, segura, expira, segura",
+            "long": "Inspira 4, expira 6"
+          }
+        },
+        "start": "Iniciar",
+        "pause": "Pausar",
+        "in": "Inspire",
+        "hold": "Segure",
+        "out": "Expire",
+        "ready": "Quando quiser"
+      },
+      "note": {
+        "name": "Bilhete",
+        "desc": "Uma anotação para você na sua própria tela. Nunca é fixada para os alunos.",
+        "s": {
+          "body": "Anotação",
+          "color": "Cor"
+        },
+        "o": {
+          "color": {
+            "yellow": "Amarelo",
+            "pink": "Rosa",
+            "blue": "Azul",
+            "green": "Verde"
+          }
+        },
+        "empty": "Escreva sua anotação nas configurações deste widget."
+      },
+      "checklist": {
+        "name": "Lista de passos",
+        "desc": "Passos para marcar juntos.",
+        "s": {
+          "title": "Título",
+          "items": "Passos (um em cada linha)",
+          "ticks": "Marcas"
+        },
+        "empty": "Adicione passos nas configurações deste widget.",
+        "done": "{n} de {total} feitos",
+        "clear": "Desmarcar tudo",
+        "ticked": "feito",
+        "unticked": "não feito"
       }
     },
     "push": {
@@ -9937,7 +10154,14 @@
       "checkValue": "Escolha uma das respostas.",
       "resting": "O tempo está descansando. Tente de novo daqui a pouco.",
       "qrGone": "Isso não pode ser mostrado como código QR.",
-      "tool": "Essa ferramenta não está mais na sua tela."
+      "tool": "Essa ferramenta não está mais na sua tela.",
+      "noPass": "Seu professor não colocou um passe na sua tela.",
+      "passPlace": "Escolha um dos lugares do passe.",
+      "passOut": "Você já está fora. Toque primeiro em “Voltei”.",
+      "oneOut": "Alguém já está fora. Um de cada vez.",
+      "reason": "Escolha um motivo da lista.",
+      "noMood": "Seu professor não colocou “Como estou” na sua tela.",
+      "site": "Esta janela de site ainda não tem endereço."
     },
     "tools": {
       "send": "Enviar para a turma",

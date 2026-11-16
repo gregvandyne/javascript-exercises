@@ -6319,3 +6319,112 @@ hidden `state` setting and in the push, as in stage 3.
   - The pattern block board has a margin, so its edge dots show whole.
   - The protractor's numbers thin to every 90° when it is too small for them to sit apart.
 - **Not in this stage** (stage 5): video, site windows, document camera, hall pass, class jobs.
+
+## Classroom dashboards, stage 5 (16 Nov 2026)
+The last stage: what the teacher shows from outside Oomba (video, a site window, a document camera), the class's own
+routines (hall pass, class jobs, points for each student, a mood check-in), and the gaps in the everyday toolset. Code:
+`server/services/dash-media.js` (video ids, the "may this site be framed?" check, the CSP strings), the stage 5 section
+of `server/services/dash.js`, `public/js/dash-class5.js` (renderers), `public/js/dash-camera.js` (the only stage 5 file
+that touches a camera), `public/js/dash-video.js` (the browser's copy of the video rules, tested to agree); migration
+0081 (`dash_passes`, `dash_points`, `dash_moods`).
+- **Video** (teacher only, never pinned or pushed). The teacher pastes a YouTube or Vimeo link; only `{ p, id }` (and an
+  unlisted Vimeo video's hash) is kept, after checking the host is the provider's own and the id is well formed
+  (11 characters for YouTube, digits for Vimeo). Anything else is refused and nothing of the link is stored or echoed.
+  Players come from `www.youtube-nocookie.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin,
+  presentation; no popups or navigation of the page). Options: start, end (YouTube only: Vimeo's player has no end
+  parameter, the settings say so), muted, loop. A time in a pasted link (`t=1m30s`) becomes the start. **Decided:** the
+  frame sends `strict-origin-when-cross-origin` (the school site's origin only): both players refuse to play without
+  knowing the embedding site, and the site's own `same-origin` policy would send nothing.
+- **Site window** (teacher only). https addresses only (stage 1's `cleanUrl`: no `javascript:`, `data:`, `http:`,
+  passwords, ports, IPs or local names). Before framing, the server asks the site once (headers only, three redirects at
+  most, each address checked again, cached half an hour) and reads `X-Frame-Options` and CSP `frame-ancestors` as a
+  browser does. The connection uses a DNS lookup that refuses private, loopback, link-local and similar addresses, so
+  the check can't be pointed inside the school's or our network. Only an "ok" is framed; "refused" or no answer shows
+  "This site can't be shown inside the dashboard" with **Open in a new tab** (`rel="noopener noreferrer"`). A frame that
+  says yes but never loads falls back after 12 seconds. The new-tab link stays on the window either way.
+- **The CSP, decided.** The brief suggested allowing every `https:` frame on the dashboard page. Narrower instead: the
+  teacher's dashboard page adds exactly the two video hosts to `frame-src` (students' pages and every other page keep
+  the site's CSP byte for byte, tested). A site window is framed through a same-origin wrapper,
+  `/class/<id>/dashboard/frame/<widget>` (the class's teacher only, 404 to everyone else), whose own CSP is
+  `default-src 'none'; frame-src <that site's origin(s)>; frame-ancestors 'self'` with no scripts, `X-Frame-Options:
+  SAMEORIGIN`, `no-referrer`, and a sandboxed frame (scripts, same origin, forms, popups; never top navigation, camera
+  or microphone). So the dashboard itself never trusts any outside origin but the two video hosts, and each wrapper
+  trusts one site, the one the teacher chose, only after that site said it may be framed.
+- **Permissions-Policy, changed.** The teacher's dashboard page now sends `camera=(self), microphone=(self)` (students'
+  pages keep `camera=()` and `microphone=()`). The camera is the document camera's; the microphone fixes stage 2's noise
+  meter, which the site-wide `microphone=()` had blocked in real browsers. `tests/unit/mic-scope.test.js` now lists
+  `dash-media.js` as the third file allowed to grant the microphone (only on this page, tested in dash-stage5).
+- **Document camera** (teacher only). Start, pick the camera (when there is more than one), mirror, turn a quarter at a
+  time, zoom 1-3×, freeze (the frame is drawn on a canvas that is only shown, never read back). The stream stops when
+  the widget is redrawn or removed, the layout changes, or the tab is hidden. "The camera is blocked" (with how to allow
+  it) and "No camera found" are friendly cards with Try again. Nothing is recorded, stored or sent: the module has no
+  network, storage, recorder or canvas-reading code (tested by reading it).
+- **Hall pass** (pinned when added). The teacher picks the places students may ask for from a fixed list (bathroom,
+  water, nurse, office, library), "one out at a time" (on by default) and the minutes before a pass shows as long. A
+  student taps a place (no text), sees only their own pass (waiting, out with a timer, or "not right now") and taps I'm
+  back. The teacher sees requests (Yes / Not now) and who is out with a timer ("long" in words and a red outline past the
+  limit). **Decided:** on the projector, requests' names hide (the count stays) and an out pass shows "Out of class"
+  instead of the place (a nurse visit is nobody else's business); the teacher's own screen shows both. Rows are minimal
+  (place, state, two times) and for today only: other days' rows go whenever the class's passes are read, any row older
+  than 36 hours goes too, and a pass's row goes when the student is back.
+- **Class jobs.** The teacher's jobs (one a line, or eight usual ones in the reader's language), assigned to the class's
+  students by Oomba name. **Next week** turns the chart by one (everyone moves to the next job; over n weeks n students
+  do every job once, tested); **Shuffle** makes a new order. The order is student ids kept with the widget and checked
+  against the class each time (leavers drop out, newcomers join at the end by name). Pinnable: students see the chart
+  (names only, never ids) inside their class.
+- **Points for each student: extending the scoreboard.** Stage 2's scoreboard already had team points (plus and minus).
+  Rather than a second points widget, it gained a mode, **Each student**. The teacher gives a point with a reason from a
+  fixed, positive list (kindness, helping, teamwork, hard work, listening, being responsible, trying something new, good
+  ideas), to one student or everyone; there is no minus and no reason to take one away. Undo takes back the last point
+  given (never below zero); Start again resets. The teacher's list is in name order, never ranked. On the projector the
+  names and each student's points hide and the class total shows big. A student sees only their own total, its reasons
+  and the class's total. Teams mode is unchanged (a stored scoreboard without a mode stays teams).
+- **Mood check-in** (pinned when added). Five faces with their words; a student taps one (an index is stored, today
+  only), changes it if they like, and is told only their teacher sees it. The teacher's widget (and so the projector)
+  shows counts; "Who picked which" (a sheet, hidden on the projector) lists names for their own class only.
+- **The rest of the toolset (audit).** Already there from stages 1-4: text and agenda, clock, timer (and visual ring),
+  stopwatch, random name (and wheel), group maker, noise meter, QR code, traffic light, work symbols, quick checks
+  (thumbs, fist to five, multiple choice, 1-5: these are the poll and exit ticket, fixed choices only), calendar,
+  countdown to a day, dice, backgrounds and art. Added: **breathing** (a circle that grows and shrinks with "Breathe in",
+  "Hold", "Breathe out" and a count; three patterns; still with reduced motion; students may add it too), **now and
+  next** (a view of the schedule: two big cards), a **sticky note** (the teacher's own words, never pinned) and a
+  **checklist** (the teacher's steps, ticked with a tap; ticked steps are struck through and marked, not only coloured;
+  pinnable, read-only for students).
+- **Safety.** Students never get video, site or camera widgets: the registry never lets them be pinned (even a forced pin
+  flag in a stored layout is filtered when pins are made), they can't be pushed or added by students, and a student's
+  page carries none of their settings (tested). Students never type here; names are Oomba names inside the class; no
+  AI; no prices, plans or "Pro" (the German "pro Zeile" in three dashboard labels became "in jeder Zeile").
+- **Accessible.** Every action is a button with its words (icons are decoration); timers are `role="timer"`; changes are
+  announced in the polite live region; buttons are 44px or more; colour is never the only sign (an overdue pass says
+  "long", ticked steps are struck through with a mark, the live camera chip says "Live"); right-to-left pages place
+  classmates' Latin names where the line starts.
+- **Fit check.** `npm run dash:fit` now also has layouts of stage 5 widgets (each at its default and smallest size, with
+  the scoreboard's student mode and the schedule's now and next as extra widgets) in English, German and Arabic, on the
+  teacher's screen, the projector, a student's screen and a phone, light and dark. Outside pages are stubs answered by
+  the browser, the frame check is stubbed (allowed at the default size, refused at the smallest), the camera is
+  Chromium's fake camera, and the text-size floor (12px, 13px on the projector) now covers stage 5 widgets too.
+  **Decided sizes:** hall pass 5 × 5 (smallest 4 × 4), breathing 3 × 4 (3 × 4), video, site and camera 6 × 5 (4 × 4),
+  jobs 5 × 5 (4 × 4), mood 4 × 4 (4 × 4), note 3 × 3 (3 × 2), checklist 4 × 4 (3 × 3).
+- Earlier tests changed only where stage 5 needs it: the newest migration, the route count (42), the lists of what
+  students may add and what is never pinned, the scoreboard's cleaned settings (now with its mode), the renderer files
+  the registry test reads, and mic-scope's list of files allowed to grant the microphone.
+- Tests: `tests/unit/dash-stage5.test.js`, `tests/unit/dash-fit.test.js`.
+- **Review fixes (16 Nov 2026).**
+  - **Whole rows in every list that scrolls (stages 1-5).** A `.dw-scroll` list is cut at the bottom of the last row
+    that fits (`snapRows` in `public/js/dash.js`: a grid row ends with its tallest item; the gap below stays empty), so
+    no row is ever sliced through. When not even one row fits (a long idea in an organizer box, a group card in a
+    short group maker, a long tile title), it is cut between two lines of text, never through one. While there is more
+    below, the list fades softly at its bottom edge (a mask) and "↓ More" stays. A widget's row of buttons sits at the
+    bottom. Oomba tiles in a short widget go one line each, so whole tiles fit.
+  - The fit check now fails when a list item is partly visible at the list's resting position (a `.dw-scroll` list
+    always; another scrolling list unless it fades; a row taller than the whole list only if a line of its text is
+    cut), and when a list with more below has no fade. It found the hall pass, class jobs, points, schedule, group
+    maker, tiles and graphic organizer lists; all are fixed.
+  - **Mood check-in on the projector** shows only "9 of 12 checked in" and "Each face's count is on your own screen,
+    not the projector": in a small class "Sad 1" on the big screen could point to one child. The counts stay on the
+    teacher's own screen.
+  - The schedule's "now and next" goes to one line a card only below 170px of height.
+  - Lists are cut again when projector mode changes the type size. On the projector, a graphic organizer's text starts
+    at 14px (was 16px; the projector floor is 13px), so a short box still shows at least one whole line.
+- **Not verified:** real YouTube and Vimeo players and a real site's frame check (the build sandbox can't reach them;
+  tests and the fit check use stubs), and a physical document camera (Chromium's fake camera was used).

@@ -8989,7 +8989,7 @@
         "empty": "Schreib deinen Tagesplan unter „Bildschirm bearbeiten“.",
         "s": {
           "title": "Überschrift",
-          "body": "Text (ein Punkt pro Zeile)",
+          "body": "Text (ein Punkt in jeder Zeile)",
           "style": "Zeigen als"
         },
         "o": {
@@ -9048,7 +9048,8 @@
         "name": "Tagesplan",
         "desc": "Die Stunden von heute; die aktuelle leuchtet.",
         "s": {
-          "periods": "Stunden"
+          "periods": "Stunden",
+          "view": "Anzeigen"
         },
         "empty": "Füge die Stunden von heute unter „Bildschirm bearbeiten“ hinzu.",
         "now": "Jetzt",
@@ -9060,7 +9061,15 @@
         "period": "Stunde",
         "from": "Von",
         "to": "Bis",
-        "remove": "Stunde entfernen"
+        "remove": "Stunde entfernen",
+        "o": {
+          "view": {
+            "list": "Den ganzen Tag",
+            "nownext": "Jetzt und danach"
+          }
+        },
+        "nothingNext": "Danach kommt nichts mehr",
+        "starts": "Beginnt um {time}"
       },
       "weather": {
         "name": "Wetter",
@@ -9113,7 +9122,7 @@
           "norepeat": "Niemanden doppelt, bis alle dran waren",
           "mode": "Zeigen als",
           "source": "Auswählen aus",
-          "items": "Deine Einträge (einer pro Zeile)"
+          "items": "Deine Einträge (einer in jeder Zeile)"
         },
         "pick": "Kind auswählen",
         "again": "Noch mal",
@@ -9327,13 +9336,42 @@
         "name": "Punktetafel",
         "desc": "Teampunkte mit Plus- und Minus-Knöpfen.",
         "s": {
-          "teams": "Teamnamen (einer pro Zeile)",
-          "scores": "Punkte"
+          "teams": "Teamnamen (einer in jeder Zeile)",
+          "scores": "Punkte",
+          "mode": "Punkte für"
         },
         "team": "Team {n}",
         "plus": "Ein Punkt für {team}",
         "minus": "Ein Punkt weniger für {team}",
-        "reset": "Punkte zurücksetzen"
+        "reset": "Punkte zurücksetzen",
+        "o": {
+          "mode": {
+            "teams": "Teams",
+            "students": "Jedes Kind"
+          }
+        },
+        "reason": "Grund",
+        "award": "Ein Punkt für {name}",
+        "awardAll": "Ein Punkt für alle",
+        "everyone": "Alle",
+        "undo": "Rückgängig",
+        "undone": "Der letzte Punkt wurde zurückgenommen.",
+        "classTotal": "Klasse gesamt: {n}",
+        "mine": "Meine Punkte",
+        "given": "{name}: ein Punkt für {reason}",
+        "resetAll": "Neu beginnen",
+        "resetConfirm": "Die Punkte aller Kinder auf null setzen?",
+        "hidden": "Die Punkte der einzelnen Kinder sind auf dem Beamer verborgen.",
+        "nobody": "Noch keine Kinder in dieser Klasse.",
+        "pick": "Wähle, wofür. Punkte werden nur gegeben, nie weggenommen.",
+        "r_kind": "Freundlichkeit",
+        "r_helpful": "Helfen",
+        "r_teamwork": "Teamarbeit",
+        "r_effort": "Fleiß",
+        "r_listening": "Zuhören",
+        "r_responsible": "Verantwortung",
+        "r_brave": "Etwas Neues wagen",
+        "r_creative": "Gute Ideen"
       },
       "stickers": {
         "name": "Sticker",
@@ -9908,6 +9946,185 @@
         "indian": "Indischer Ozean",
         "arctic": "Arktischer Ozean",
         "southern": "Südlicher Ozean"
+      },
+      "video": {
+        "name": "Video",
+        "desc": "Ein YouTube- oder Vimeo-Video auf deinem Bildschirm. Wird nie an Kinder geschickt.",
+        "s": {
+          "video": "Videolink",
+          "start": "Beginnen bei",
+          "end": "Anhalten bei",
+          "mute": "Stumm",
+          "loop": "Am Ende wiederholen"
+        },
+        "empty": "Füge in den Einstellungen dieses Widgets einen YouTube- oder Vimeo-Link ein.",
+        "paste": "YouTube- oder Vimeo-Link einfügen",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "Das ist kein Link zu einem YouTube- oder Vimeo-Video.",
+        "ok": "Ein Video ist eingestellt. Füge einen anderen Link ein, um es zu ändern.",
+        "endNote": "(Nur YouTube: Vimeo-Videos laufen bis zum Ende.)",
+        "note": "Gespeichert wird nur die Nummer des Videos, nicht der Link. Es läuft im datenschutzfreundlichen Player des Anbieters und nur auf deinem Bildschirm.",
+        "secsHint": "Minuten und Sekunden, z. B. 1:30.",
+        "secsBad": "Gib die Zeit als Minuten und Sekunden ein, z. B. 1:30.",
+        "title": "Videoplayer"
+      },
+      "site": {
+        "name": "Webseitenfenster",
+        "desc": "Eine Webseite in deinem Dashboard, wenn die Seite es erlaubt. Wird nie an Kinder geschickt.",
+        "s": {
+          "url": "Webadresse (https)"
+        },
+        "empty": "Trage in den Einstellungen dieses Widgets eine https://-Adresse ein.",
+        "checking": "Die Seite wird geprüft …",
+        "blocked": "Diese Seite kann im Dashboard nicht angezeigt werden",
+        "blockedText": "Die Seite erlaubt nicht, in anderen Seiten angezeigt zu werden. Du kannst sie in einem neuen Tab öffnen.",
+        "open": "In neuem Tab öffnen",
+        "bad": "Gib eine vollständige Adresse ein, die mit https:// beginnt.",
+        "note": "Nur https-Seiten. Kinder sehen dieses Fenster nie.",
+        "frameTitle": "Webseite von {host}"
+      },
+      "camera": {
+        "name": "Dokumentenkamera",
+        "desc": "Zeige ein Buch oder Arbeitsblatt mit deiner Kamera. Nichts wird aufgenommen oder gesendet.",
+        "start": "Starten",
+        "stop": "Stoppen",
+        "which": "Kamera",
+        "mirror": "Spiegeln",
+        "rotate": "Drehen",
+        "zoomIn": "Vergrößern",
+        "zoomOut": "Verkleinern",
+        "zoom": "Zoom",
+        "freeze": "Standbild",
+        "unfreeze": "Live",
+        "frozen": "Standbild",
+        "live": "Live",
+        "note": "Das Bild bleibt auf diesem Bildschirm. Es wird nie aufgenommen, gespeichert oder gesendet.",
+        "denied": "Die Kamera ist gesperrt",
+        "deniedText": "Erlaube die Kamera für diese Seite in der Adressleiste deines Browsers und versuche es noch einmal.",
+        "none": "Keine Kamera gefunden",
+        "noneText": "Schließe eine Kamera an oder wähle eine andere und versuche es noch einmal.",
+        "failed": "Die Kamera ist nicht gestartet",
+        "off": "Kamera ist aus",
+        "camera": "Kamerabild",
+        "again": "Noch einmal"
+      },
+      "hallpass": {
+        "name": "Toilettenpass",
+        "desc": "Kinder bitten darum, den Raum zu verlassen, für einen Ort, den du festlegst. Du sagst ja oder später.",
+        "s": {
+          "places": "Orte, nach denen Kinder fragen können",
+          "oneOut": "Nur ein Kind gleichzeitig draußen",
+          "mins": "Minuten, bis ein Pass als lang gilt"
+        },
+        "ask": "Musst du kurz raus? Wähle, wohin.",
+        "askFor": "Um einen Pass bitten: {place}",
+        "waiting": "Warte auf deine Lehrkraft: {place}",
+        "cancel": "Doch nicht",
+        "out": "Du bist draußen: {place}",
+        "back": "Bin zurück",
+        "declined": "Jetzt gerade nicht. Du kannst später noch einmal fragen.",
+        "ok": "OK",
+        "asking": "{n} fragen",
+        "outNow": "{n} draußen",
+        "nobody": "Niemand ist draußen oder fragt.",
+        "approve": "Ja",
+        "decline": "Später",
+        "oneOut": "Einzeln",
+        "over": "lang",
+        "outPublic": "Nicht im Raum",
+        "mine": "Nur du und deine Lehrkraft sehen deinen Pass.",
+        "hiddenNames": "Wer fragt, ist auf dem Beamer verborgen.",
+        "none": "Alle löschen",
+        "backSay": "{name} ist zurück.",
+        "p_bathroom": "Toilette",
+        "p_water": "Wasser",
+        "p_nurse": "Sanitätsraum",
+        "p_office": "Sekretariat",
+        "p_library": "Bücherei",
+        "markBack": "Zurück"
+      },
+      "jobs": {
+        "name": "Klassendienste",
+        "desc": "Dienste für alle, jede Woche weitergedreht. Mit den Oomba-Namen der Klasse.",
+        "s": {
+          "jobs": "Dienste (einer in jeder Zeile; leer für die üblichen)",
+          "crew": "Wer macht was"
+        },
+        "rotate": "Nächste Woche",
+        "shuffle": "Mischen",
+        "rotated": "Alle sind zum nächsten Dienst weitergerückt.",
+        "shuffled": "Dienste gemischt.",
+        "nobody": "Noch keine Kinder in dieser Klasse.",
+        "open": "Frei",
+        "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst"
+      },
+      "mood": {
+        "name": "Stimmungsbarometer",
+        "desc": "Kinder tippen auf ein Gesicht, wie es ihnen geht. Nur du siehst, wer was gewählt hat.",
+        "ask": "Wie fühlst du dich?",
+        "mine": "Du hast {face} gewählt.",
+        "counts": "{n} von {total} haben gewählt",
+        "names": "Wer was gewählt hat",
+        "nobody": "Niemand",
+        "notYet": "Noch nicht",
+        "saved": "Nur deine Lehrkraft sieht dein Gesicht.",
+        "m_great": "Super",
+        "m_good": "Gut",
+        "m_okay": "Geht so",
+        "m_meh": "Nicht so gut",
+        "m_sad": "Traurig",
+        "countsHidden": "Wie oft jedes Gesicht gewählt wurde, steht auf deinem eigenen Bildschirm, nicht auf dem Beamer."
+      },
+      "breathe": {
+        "name": "Atmen",
+        "desc": "Ein ruhiger Kreis zum Mitatmen.",
+        "s": {
+          "pace": "Muster"
+        },
+        "o": {
+          "pace": {
+            "calm": "4 ein, 4 aus",
+            "box": "Viereck: ein, halten, aus, halten",
+            "long": "4 ein, 6 aus"
+          }
+        },
+        "start": "Starten",
+        "pause": "Pause",
+        "in": "Einatmen",
+        "hold": "Halten",
+        "out": "Ausatmen",
+        "ready": "Bereit, wenn du es bist"
+      },
+      "note": {
+        "name": "Notizzettel",
+        "desc": "Eine Notiz für dich auf deinem eigenen Bildschirm. Nie für Kinder angeheftet.",
+        "s": {
+          "body": "Notiz",
+          "color": "Farbe"
+        },
+        "o": {
+          "color": {
+            "yellow": "Gelb",
+            "pink": "Rosa",
+            "blue": "Blau",
+            "green": "Grün"
+          }
+        },
+        "empty": "Schreib deine Notiz in die Einstellungen dieses Widgets."
+      },
+      "checklist": {
+        "name": "Checkliste",
+        "desc": "Schritte zum gemeinsamen Abhaken.",
+        "s": {
+          "title": "Titel",
+          "items": "Schritte (einer in jeder Zeile)",
+          "ticks": "Häkchen"
+        },
+        "empty": "Füge in den Einstellungen dieses Widgets Schritte hinzu.",
+        "done": "{n} von {total} erledigt",
+        "clear": "Alle Häkchen weg",
+        "ticked": "erledigt",
+        "unticked": "nicht erledigt"
       }
     },
     "push": {
@@ -9936,7 +10153,14 @@
       "checkValue": "Wähle eine der Antworten.",
       "resting": "Das Wetter macht Pause. Versuch es gleich noch mal.",
       "qrGone": "Das lässt sich nicht als QR-Code zeigen.",
-      "tool": "Dieses Werkzeug ist nicht mehr auf deinem Bildschirm."
+      "tool": "Dieses Werkzeug ist nicht mehr auf deinem Bildschirm.",
+      "noPass": "Deine Lehrkraft hat keinen Pass auf deinen Bildschirm gelegt.",
+      "passPlace": "Wähle einen der Orte auf dem Pass.",
+      "passOut": "Du bist schon draußen. Tippe zuerst auf „Bin zurück“.",
+      "oneOut": "Jemand ist schon draußen. Immer nur einzeln.",
+      "reason": "Wähle einen Grund aus der Liste.",
+      "noMood": "Deine Lehrkraft hat kein Stimmungsbarometer auf deinen Bildschirm gelegt.",
+      "site": "Dieses Webseitenfenster hat noch keine Adresse."
     },
     "tools": {
       "send": "An die Klasse senden",

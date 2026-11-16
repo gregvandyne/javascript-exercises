@@ -66,7 +66,7 @@ const f = (n, d) => ({ n, d });
 
 test('migration 0080 is the newest; pushes carry data and pictures a use', () => {
   const names = MIGRATIONS.map(m => m[0]);
-  assert.equal(names.at(-1), '0080_dash_teaching_tools');
+  assert.equal(names[names.indexOf('0079_dash_everyday') + 1], '0080_dash_teaching_tools', 'stage 5 adds 0081 after it');
   assert.equal(names.filter(n => n.startsWith('0080')).length, 1);
   assert.ok(q.all('PRAGMA table_info(dash_pushes)').some(c => c.name === 'data'));
   assert.ok(q.all('PRAGMA table_info(dash_pictures)').some(c => c.name === 'use'));

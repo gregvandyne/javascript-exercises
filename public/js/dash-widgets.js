@@ -17,6 +17,10 @@
 import { noise } from './dash-noise.js';
 import { TOOLS } from './dash-tools.js';
 import { TOOLS4 } from './dash-tools4.js';
+// Stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, hall pass, class jobs, mood, breathing,
+// sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
+import { RENDER5, points } from './dash-class5.js';
+import { camera } from './dash-camera.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
@@ -256,6 +260,7 @@ function schedule(body, s, ctx) {
   if (!periods.length) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? W.empty : '')); return null; }
   const fmt = new Intl.DateTimeFormat(ctx.intl, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
   const at = hhmm => { const [h, m] = hhmm.split(':').map(Number); return fmt.format(Date.UTC(2020, 0, 1, h, m)); };
+  if (s.view === 'nownext') return nowNext(body, periods, at, ctx);
   const status = el('div', 'dw-sched-now'); status.setAttribute('aria-live', 'polite'); status.dir = 'auto';
   const ol = el('ol', 'dw-periods dw-scroll');
   const rows = periods.map(p => {
@@ -283,6 +288,31 @@ function schedule(body, s, ctx) {
       const row = rows[r.cur >= 0 ? r.cur : r.next];
       if (row && ol.scrollHeight > ol.clientHeight) ol.scrollTop = Math.max(0, row.offsetTop - ol.offsetTop - 4);
     }
+  };
+  tick();
+  return { tick };
+}
+
+/** Stage 5: the schedule as two big cards, "Now" and "Next". */
+function nowNext(body, periods, at, ctx) {
+  const W = ctx.type.words;
+  body.classList.add('dw-nownext', 'dw5');
+  const card = cls => { const c = el('section', `dw5-nn ${cls}`); const h = el('span', 'dw5-nnlab'); const n = el('b', 'dw5-nnname'); n.dir = 'auto'; const m = el('span', 'dw5-nnmeta'); c.append(h, n, m); body.appendChild(c); return { c, h, n, m }; };
+  const a = card('is-now'), b = card('is-next');
+  a.c.setAttribute('aria-live', 'polite');
+  let last = '';
+  const tick = () => {
+    const now = minutesIn(ctx.tz || 'America/New_York'), r = periodAt(periods, now);
+    const nextI = r.cur >= 0 ? (r.cur + 1 < periods.length ? r.cur + 1 : -1) : r.next;
+    const key = `${r.cur}:${nextI}:${Math.ceil(r.left)}`; if (key === last) return; last = key;
+    a.h.textContent = r.cur >= 0 ? W.now : r.next >= 0 ? (r.next === 0 ? W.before : W.next) : W.now;
+    if (r.cur >= 0) { a.n.textContent = periods[r.cur].name || '…'; a.m.textContent = fill(W.left, { n: Math.ceil(r.left) }); }
+    else if (r.next >= 0) { a.n.textContent = periods[r.next].name || '…'; a.m.textContent = fill(W.starts, { time: at(periods[r.next].start) }); }
+    else { a.n.textContent = W.after; a.m.textContent = ''; }
+    b.c.hidden = r.cur < 0;
+    b.h.textContent = W.next;
+    if (nextI >= 0) { b.n.textContent = periods[nextI].name || '…'; b.m.textContent = fill(W.starts, { time: at(periods[nextI].start) }); }
+    else { b.n.textContent = W.nothingNext; b.m.textContent = ''; }
   };
   tick();
   return { tick };
@@ -934,6 +964,8 @@ function groups(body, s, ctx) {
 }
 
 function score(body, s, ctx) {
+  // Stage 5: points for each student (positive reasons only; a student sees only their own).
+  if (s.mode === 'students') return points(body, s, ctx);
   const W = ctx.type.words;
   body.classList.add('dw-score');
   let names = String(s.teams || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 8);
@@ -996,4 +1028,4 @@ function stickers(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4 };
+export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4, ...RENDER5, camera };

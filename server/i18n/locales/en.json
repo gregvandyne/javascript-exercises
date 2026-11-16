@@ -9471,7 +9471,8 @@
         "name": "Schedule for the day",
         "desc": "Today's periods, with the one on now lit up.",
         "s": {
-          "periods": "Periods"
+          "periods": "Periods",
+          "view": "Show"
         },
         "empty": "Add today's periods in Edit screen.",
         "now": "Now",
@@ -9483,7 +9484,15 @@
         "period": "Period",
         "from": "From",
         "to": "To",
-        "remove": "Remove period"
+        "remove": "Remove period",
+        "o": {
+          "view": {
+            "list": "The whole day",
+            "nownext": "Now and next"
+          }
+        },
+        "nothingNext": "Nothing after this",
+        "starts": "Starts at {time}"
       },
       "weather": {
         "name": "Weather",
@@ -9751,12 +9760,41 @@
         "desc": "Team points with plus and minus buttons.",
         "s": {
           "teams": "Team names (one per line)",
-          "scores": "Points"
+          "scores": "Points",
+          "mode": "Points for"
         },
         "team": "Team {n}",
         "plus": "One point for {team}",
         "minus": "One point off {team}",
-        "reset": "Reset points"
+        "reset": "Reset points",
+        "o": {
+          "mode": {
+            "teams": "Teams",
+            "students": "Each student"
+          }
+        },
+        "reason": "Reason",
+        "award": "A point for {name}",
+        "awardAll": "A point for everyone",
+        "everyone": "Everyone",
+        "undo": "Undo",
+        "undone": "The last point was taken back.",
+        "classTotal": "Class total: {n}",
+        "mine": "My points",
+        "given": "{name}: a point for {reason}",
+        "resetAll": "Start again",
+        "resetConfirm": "Set every student's points back to zero?",
+        "hidden": "Each student's points are hidden on the projector.",
+        "nobody": "No students in this class yet.",
+        "pick": "Pick what it's for. Points are only ever given, never taken away.",
+        "r_kind": "Kindness",
+        "r_helpful": "Helping",
+        "r_teamwork": "Teamwork",
+        "r_effort": "Hard work",
+        "r_listening": "Listening",
+        "r_responsible": "Being responsible",
+        "r_brave": "Trying something new",
+        "r_creative": "Good ideas"
       },
       "stickers": {
         "name": "Stickers",
@@ -10331,6 +10369,185 @@
         "indian": "Indian Ocean",
         "arctic": "Arctic Ocean",
         "southern": "Southern Ocean"
+      },
+      "video": {
+        "name": "Video",
+        "desc": "A YouTube or Vimeo video on your screen. Never sent to students.",
+        "s": {
+          "video": "Video link",
+          "start": "Start at",
+          "end": "Stop at",
+          "mute": "Muted",
+          "loop": "Play again at the end"
+        },
+        "empty": "Paste a YouTube or Vimeo link in this widget's settings.",
+        "paste": "Paste a YouTube or Vimeo link",
+        "pasteHint": "https://youtu.be/…",
+        "bad": "That isn't a YouTube or Vimeo video link.",
+        "ok": "A video is set. Paste another link to change it.",
+        "endNote": "(YouTube only: Vimeo videos play to the end.)",
+        "note": "Only the video's number is kept, not the link. It plays from the providers' privacy-enhanced players and only on your screen.",
+        "secsHint": "Minutes and seconds, like 1:30.",
+        "secsBad": "Type the time as minutes and seconds, like 1:30.",
+        "title": "Video player"
+      },
+      "site": {
+        "name": "Site window",
+        "desc": "A web page inside your dashboard, if the site allows it. Never sent to students.",
+        "s": {
+          "url": "Web address (https)"
+        },
+        "empty": "Add an https:// address in this widget's settings.",
+        "checking": "Checking the site…",
+        "blocked": "This site can't be shown inside the dashboard",
+        "blockedText": "The site doesn't allow being shown inside other pages. You can still open it in a new tab.",
+        "open": "Open in a new tab",
+        "bad": "Use a full address that starts with https://",
+        "note": "Only https sites. Students never see this window.",
+        "frameTitle": "Web page from {host}"
+      },
+      "camera": {
+        "name": "Document camera",
+        "desc": "Show a book or worksheet with your camera. Nothing is recorded or sent.",
+        "start": "Start",
+        "stop": "Stop",
+        "which": "Camera",
+        "mirror": "Mirror",
+        "rotate": "Turn",
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out",
+        "zoom": "Zoom",
+        "freeze": "Freeze",
+        "unfreeze": "Go live",
+        "frozen": "Frozen",
+        "live": "Live",
+        "note": "The picture stays on this screen. It is never recorded, saved or sent.",
+        "denied": "The camera is blocked",
+        "deniedText": "Allow the camera for this site in your browser's address bar, then try again.",
+        "none": "No camera found",
+        "noneText": "Plug in a camera, or pick another one, then try again.",
+        "failed": "The camera didn't start",
+        "off": "Camera is off",
+        "camera": "Camera picture",
+        "again": "Try again"
+      },
+      "hallpass": {
+        "name": "Hall pass",
+        "desc": "Students ask to leave the room for a place you choose. You say yes or not now.",
+        "s": {
+          "places": "Places students can ask for",
+          "oneOut": "One student out at a time",
+          "mins": "Minutes before a pass shows as long"
+        },
+        "ask": "Need to leave the room? Pick where.",
+        "askFor": "Ask for a pass: {place}",
+        "waiting": "Waiting for your teacher: {place}",
+        "cancel": "Never mind",
+        "out": "You're out: {place}",
+        "back": "I'm back",
+        "declined": "Not right now. You can ask again later.",
+        "ok": "OK",
+        "asking": "{n} asking",
+        "outNow": "{n} out",
+        "nobody": "Nobody is out or asking.",
+        "approve": "Yes",
+        "decline": "Not now",
+        "oneOut": "One at a time",
+        "over": "long",
+        "outPublic": "Out of class",
+        "mine": "Only you and your teacher see your pass.",
+        "hiddenNames": "Who is asking is hidden on the projector.",
+        "none": "Clear all",
+        "backSay": "{name} is back.",
+        "p_bathroom": "Bathroom",
+        "p_water": "Water",
+        "p_nurse": "Nurse",
+        "p_office": "Office",
+        "p_library": "Library",
+        "markBack": "Back"
+      },
+      "jobs": {
+        "name": "Class jobs",
+        "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names.",
+        "s": {
+          "jobs": "Jobs (one per line; empty for the usual ones)",
+          "crew": "Who does what"
+        },
+        "rotate": "Next week",
+        "shuffle": "Shuffle",
+        "rotated": "Everyone has moved on to the next job.",
+        "shuffled": "Jobs shuffled.",
+        "nobody": "No students in this class yet.",
+        "open": "Open",
+        "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner"
+      },
+      "mood": {
+        "name": "Mood check-in",
+        "desc": "Students tap a face for how they feel. Only you see who picked which.",
+        "ask": "How are you feeling?",
+        "mine": "You picked {face}.",
+        "counts": "{n} of {total} checked in",
+        "names": "Who picked which",
+        "nobody": "Nobody",
+        "notYet": "Not yet",
+        "saved": "Only your teacher sees your face.",
+        "m_great": "Great",
+        "m_good": "Good",
+        "m_okay": "Okay",
+        "m_meh": "Not great",
+        "m_sad": "Sad",
+        "countsHidden": "Each face's count is on your own screen, not the projector."
+      },
+      "breathe": {
+        "name": "Breathing",
+        "desc": "A calm circle to breathe along with.",
+        "s": {
+          "pace": "Pattern"
+        },
+        "o": {
+          "pace": {
+            "calm": "In 4, out 4",
+            "box": "Box: in, hold, out, hold",
+            "long": "In 4, out 6"
+          }
+        },
+        "start": "Start",
+        "pause": "Pause",
+        "in": "Breathe in",
+        "hold": "Hold",
+        "out": "Breathe out",
+        "ready": "Ready when you are"
+      },
+      "note": {
+        "name": "Sticky note",
+        "desc": "A note for you on your own screen. Never pinned to students.",
+        "s": {
+          "body": "Note",
+          "color": "Color"
+        },
+        "o": {
+          "color": {
+            "yellow": "Yellow",
+            "pink": "Pink",
+            "blue": "Blue",
+            "green": "Green"
+          }
+        },
+        "empty": "Write your note in this widget's settings."
+      },
+      "checklist": {
+        "name": "Checklist",
+        "desc": "Steps to tick off together.",
+        "s": {
+          "title": "Title",
+          "items": "Steps (one per line)",
+          "ticks": "Ticks"
+        },
+        "empty": "Add steps in this widget's settings.",
+        "done": "{n} of {total} done",
+        "clear": "Untick all",
+        "ticked": "done",
+        "unticked": "not done"
       }
     },
     "push": {
@@ -10359,7 +10576,14 @@
       "checkValue": "Pick one of the answers.",
       "resting": "Weather is resting. Try again in a little while.",
       "qrGone": "That can't be shown as a QR code.",
-      "tool": "That tool isn't on your screen any more."
+      "tool": "That tool isn't on your screen any more.",
+      "noPass": "Your teacher hasn't put a hall pass on your screen.",
+      "passPlace": "Pick one of the places on the pass.",
+      "passOut": "You're already out. Tap \"I'm back\" first.",
+      "oneOut": "Someone is already out. One at a time.",
+      "reason": "Pick a reason from the list.",
+      "noMood": "Your teacher hasn't put a mood check-in on your screen.",
+      "site": "That site window has no address yet."
     },
     "tools": {
       "send": "Send to students",

@@ -7,6 +7,11 @@
 // layouts both students have every tool on their own screen (as a pinned copy of a sent tool would be).
 // Stage 4 (docs/decisions.md "Classroom dashboards, stage 4") adds teaching tools part 2 on more layouts of their own,
 // "Practice it" links (official games are made for the check) and a phone in dark mode.
+// Stage 5 (docs/decisions.md "Classroom dashboards, stage 5") adds video, the site window, the document camera, the hall
+// pass, class jobs, points for each student, the mood check-in, breathing, a sticky note, a checklist and the schedule's
+// "now and next", on layouts of their own. Outside pages are stubs (the browser answers the video and site hosts itself;
+// the server's "may it be framed?" check is stubbed) and the camera is Chromium's fake camera: the chrome around them is
+// what is checked. Text in a stage 5 widget is at least 12px (13px on the projector), as in the tools.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -29,6 +34,7 @@ const { q } = await import('../server/db.js');
 const { createUser, startSession, getUser } = await import('../server/auth.js');
 const S = await import('../server/services/schools.js');
 const L = await import('../server/services/lessons.js');
+const DM = await import('../server/services/dash-media.js');
 const games = await import('../server/services/games.js');
 const D = await import('../server/services/dash.js');
 const { createApp } = await import('../server/app.js');
@@ -108,7 +114,20 @@ const SETTINGS = {
     { h: '', t: 'Kokosnuss kann noch nicht fliegen, und alle anderen Drachen lachen über ihn.' }, { h: '', t: 'Erstens übt er jeden Morgen\nZweitens hilft ihm Matilda\nDrittens fällt er ins Wasser\nViertens versucht er es noch einmal\nFünftens fliegt er ein kleines Stück\nSechstens feiern alle' },
     { h: '', t: 'Er schafft es am Ende, weil er nie aufgibt.' }] } },
   map: { state: { kind: 'world', names: true, pins: [{ x: 605, y: 250, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
+  // stage 5: busy states (every option on, long words, a pass over its time, more jobs than fit)
+  video: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, start: 95, end: 3725, mute: true, loop: true },
+  site: { url: 'https://bibliothek.example.org/kinder/lesen' },
+  hallpass: { oneOut: false, mins: 3 },
+  jobs: { jobs: 'Tafeldienst und Schwammauswaschdienst\nBlumengießdienst\nTürdienst\nLichtdienst\nAustragedienst für Arbeitsblätter\nBücherkistenordnungsdienst\nPapierkorbdienst\nReihenführung\nFensterdienst\nComputerdienst', crew: { order: [], shift: 3 } },
+  breathe: { pace: 'box' },
+  note: { body: 'Elternabend vorbereiten: Rechtschreibhefte einsammeln und Klassenfotos austeilen!', color: 'pink' },
+  checklist: { title: 'Bevor wir nach Hause gehen', items: 'Arbeitsplatz aufräumen und Stifte einsammeln\nHausaufgabenheft einpacken\nStuhl hochstellen\nJacke anziehen\nTschüss sagen', ticks: [true, true, false, true] },
 };
+// Stage 5: the scoreboard's points for each student and the schedule's "now and next" are checked as widgets of their own.
+const STAGE5_EXTRA = [
+  { ...D.widgetType('score'), wid: 'wpoints', s: { mode: 'students' } },
+  { ...D.widgetType('schedule'), wid: 'wnownext', s: { ...SETTINGS.schedule, view: 'nownext' } },
+];
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
 {
@@ -125,22 +144,24 @@ const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-l
  *  layout holds 24 widgets and 24 rows). Stage 1 and 2 widgets and stage 3 widgets go on separate layouts. */
 const STAGE3 = new Set(['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'board', 'picture']);
 const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map']);
+const STAGE5 = new Set(['video', 'site', 'camera', 'hallpass', 'jobs', 'mood', 'breathe', 'note', 'checklist']);
 const TOOLSET = new Set([...STAGE3, ...STAGE4]);
 const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH = 0;
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
-    cur.push({ id: `w${t.id}`, type: t.id, x, y, w, h, s: SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
+    cur.push({ id: t.wid || `w${t.id}`, type: t.id, x, y, w, h, s: t.s || SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
   if (cur.length) out.push(cur); return out; };
 D.ensureLayouts(T, C, 'Default sizes');
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE4.has(t.id)))];
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE3.has(t.id))), ...pack(size, D.WIDGETS.filter(t => STAGE4.has(t.id))),
+    ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;
     // On a layout with tools, each student has every tool their own screen can hold.
     const own = widgets.filter(w => D.canAdd(D.widgetType(w.type), 'student') && TOOLSET.has(w.type)).map(({ pin, ...w }) => w);
     // Stage 4: more layouts than a teacher may keep (12), so one layout is filled with each set in turn.
-    LAYOUTS.push({ key: name, widgets, own, chip: 1 });
+    LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
 }
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
@@ -154,6 +175,18 @@ const check = D.createCheck(T, C, { kind: 'choice', question: 'Welche Bruchzahl 
 kids.forEach((k, i) => D.answerCheck(k, C, check, i % 6));
 D.pickerAction(T, C, { action: 'away', user: kids[9].id, on: true });
 D.weatherFor(SETTINGS.weather.place);
+// Stage 5: passes (two out, one long past its time; three asking), points, moods. The site check is stubbed: the
+// default-size window may be framed, the smallest one is refused (its fallback card is the bigger content).
+let siteOk = true;
+DM._setSiteProbe(async url => ({ frame: siteOk ? 'ok' : 'blocked', origins: [new URL(url).origin] }));
+function seed5() {
+  q.run('DELETE FROM dash_passes WHERE class_id=?', C.id);
+  const t0 = Date.now(), day = D.dayOf(C);
+  const pass = (k, place, state, ago) => q.run('INSERT INTO dash_passes(id, class_id, user_id, place, day, state, asked_at, out_at) VALUES (?,?,?,?,?,?,?,?)', `p${k.id.slice(0, 8)}`, C.id, k.id, place, day, state, t0 - ago - 5e3, state === 'out' ? t0 - ago : null);
+  pass(kids[0], 'nurse', 'out', 11 * 60e3); pass(kids[1], 'bathroom', 'out', 95e3); pass(kids[2], 'library', 'asked', 30e3); pass(kids[3], 'office', 'asked', 20e3); pass(kids[4], 'water', 'asked', 10e3);
+  kids.forEach((k, i) => { for (let j = 0; j <= i % 4; j++) D.pointsAction(T, C, { action: 'award', user: k.id, reason: D.POINT_REASONS[(i + j) % 8] }); });
+  kids.slice(0, 8).forEach((k, i) => D.setMood(k, C, i % 5));
+}
 await new Promise(r => setTimeout(r, 30));
 
 // ---------------------------------------------------------------- the browser checks
@@ -161,7 +194,14 @@ const server = createApp().listen(0); await new Promise(r => server.once('listen
 const base = `http://127.0.0.1:${server.address().port}`;
 const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const exe = exe0;
-const browser = await chromium.launch(exe ? { executablePath: exe } : {});
+// Stage 5: Chromium's fake camera stands in for a document camera.
+const browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
+/** Stage 5: the outside pages are stubs the browser answers itself (nothing leaves the machine). */
+const STUB = (title, bg) => `<!doctype html><html><body style="margin:0;height:100vh;display:grid;place-items:center;background:${bg};color:#fff;font:700 18px sans-serif">${title}</body></html>`;
+async function stubOutside(page) {
+  await page.route(/^https:\/\/(www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: STUB('▶ video', '#202020') }));
+  await page.route(/^https:\/\/bibliothek\.example\.org\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: STUB('bibliothek.example.org', '#2F6F5E') }));
+}
 
 /** In the page: every problem with every widget. */
 function problems() {
@@ -242,7 +282,7 @@ function problems() {
   }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
   const projector = document.body.classList.contains('dash-projector'), floor = projector ? 13 : 12;
-  for (const t of document.querySelectorAll('.dash-w .dt')) {
+  for (const t of document.querySelectorAll('.dash-w .dt, .dash-w .dw5')) {
     const w = t.closest('.dash-w'); if (!w.offsetParent) continue;
     for (const e of t.querySelectorAll('*')) {
       const tag = e.tagName.toLowerCase();
@@ -269,6 +309,27 @@ function problems() {
       const r = document.createRange(); r.selectNodeContents(n);
       const tops = new Set([...r.getClientRects()].filter(q => q.width > 0.5).map(q => Math.round(q.top)));
       if (tops.size > 1) out.push(`${name(w)}: the label "${txt}" breaks across lines`);
+    }
+  }
+  // Stage 5 review: a list that scrolls shows whole rows at rest (scrollTop 0), and fades at its bottom edge while there
+  // is more below. A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list
+  // unless it carries the fade); so does a list with more below and no fade.
+  for (const x of document.querySelectorAll('.dash-w ul, .dash-w ol, .dash-w .dw-scroll')) {
+    const w = x.closest('.dash-w'); if (!w.offsetParent || !x.getClientRects().length) continue;
+    const cs = getComputedStyle(x);
+    if (!/(auto|scroll)/.test(cs.overflowY) || x.scrollHeight <= x.clientHeight + 6) continue;
+    const faded = x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
+    if (!faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
+    if (x.scrollTop > 0) continue;
+    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0);
+    for (const c of x.children) {
+      if (!c.getClientRects().length || getComputedStyle(c).position === 'absolute') continue;
+      const r = c.getBoundingClientRect();
+      // A row taller than the whole list may be cut between two of its lines (never through one), under the fade.
+      const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
+      for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < edge - 1 && q.bottom > edge + 1); }
+      const tall = r.height > x.clientHeight - 1;
+      if (r.top < edge - 1 && r.bottom > edge + 1 && (x.classList.contains('dw-scroll') || !faded) && (!tall || !faded || throughLine)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} max ${x.style.maxHeight} tall ${tall} faded ${faded} through ${throughLine} lines ${(() => { const o = []; const t2 = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); const g = document.createRange(); for (let n = t2.nextNode(); n; n = t2.nextNode()) { g.selectNodeContents(n); for (const q of g.getClientRects()) o.push(`${Math.round(q.top - xr.top)}-${Math.round(q.bottom - xr.top)}`); } return o.join(","); })()}]` : ''}`); break; }
     }
   }
   for (const e of document.querySelectorAll('.dash-w *')) {
@@ -313,13 +374,15 @@ let total = 0;
 for (const L of RUN) {
  D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets });
  D.useLayout(T, C, first.id);
+ if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
   for (const v of VIEWS) {
-    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light' });
+    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');
     await ctx.addCookies([{ name: cn, value: cv, url: base }, { name: 'lang', value: lang, url: base }]);
     const page = await ctx.newPage();
+    if (L.stage5) await stubOutside(page);
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(`${base}/class/${C.id}/dashboard`);
@@ -328,7 +391,7 @@ for (const L of RUN) {
     if (v.projector) await page.click('#dash-projector');
     await page.waitForTimeout(1500);
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
-    if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
+    if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
@@ -343,6 +406,7 @@ for (const L of RUN) {
   }
  }
 }
+DM._setSiteProbe(null);
 await browser.close(); server.close();
 console.log(`${RUN.length} layouts: ${RUN.map(l => l.key).join(', ')}`);
 console.log(total ? `${total} problem(s) found.` : 'No problems found.');
