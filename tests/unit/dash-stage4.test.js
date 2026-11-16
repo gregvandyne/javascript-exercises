@@ -605,7 +605,7 @@ test('review: the new words are in every locale (the instruction above the lette
 
 // ---------------------------------------------------------------- help on the maths tools
 // (docs/decisions.md "Classroom dashboards: help on the maths tools")
-test('help on the maths tools: every maths tool has a one-line instruction and â“˜ help, in every language', async () => {
+test('help on the maths tools: every maths tool has a one-line instruction and short â“˜ help, in every language', async () => {
   const { checkAll } = await import('../../server/i18n/check.js');
   const reg = D.registryFor(tFor('en'), 'teacher');
   // Every maths tool (Teach, sent to students), and only those: not the whiteboard, letters, organizers or maps.
@@ -614,7 +614,7 @@ test('help on the maths tools: every maths tool has a one-line instruction and â
   for (const id of ['board', 'letters', 'organizer', 'map']) assert.ok(!D.MATH_TOOLS.includes(id), id);
   const fr = ['modeCompare', 'modeAdd', 'modeSub', 'modeMul', 'modeDiv', 'howtoOp', 'howtoMul', 'howtoDiv', 'first', 'second', 'num', 'den', 'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think'];
   const keys = [...D.MATH_TOOLS.flatMap(id => ['howto', 'helpUse', 'helpIdeas'].map(k => `dash.w.${id}.${k}`)), ...fr.map(k => `dash.w.fractions.${k}`),
-    ...['helpFor', 'helpClose', 'helpControls', 'helpIdeas', 'helpMore', 'helpAsk', 'helpSend', 'helpPractice'].map(k => `dash.tools.${k}`),
+    ...['helpFor', 'helpClose', 'helpTry'].map(k => `dash.tools.${k}`),
     ...['fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv'].map(k => `dash.ask.${k}`)];
   const r = checkAll();
   for (const k of keys) assert.ok(r.en[k], k);
@@ -629,14 +629,36 @@ test('help on the maths tools: every maths tool has a one-line instruction and â
     const loc = JSON.parse(fs.readFileSync(`server/i18n/locales/${code}.json`, 'utf8'));
     for (const k of keys) if (!/^dash\.ask\./.test(k)) assert.notEqual(get(loc, k), get(en, k), `${code} ${k} is translated, not copied`);
   }
+  // The panel is short (product: "much more concise"): at most three points and one idea for class, no "More" section.
+  // The geoboard is being rebuilt elsewhere with the same short format, so its help is not held to the budget here yet.
+  const words = s => s.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)).length;
+  const short = D.MATH_TOOLS.filter(id => id !== 'geoboard');
   for (const id of D.MATH_TOOLS) {
     const w = reg.types.find(x => x.id === id).words;
-    // One line: one sentence or two short ones, no line breaks; the help is a list (one item a line) of 2-6 items.
+    // One line: one sentence or two short ones, no line breaks.
     assert.ok(w.howto && !/\n/.test(w.howto) && [...w.howto].length <= 72, `${id}: ${w.howto}`);
-    const items = w.helpUse.split('\n'), ideas = w.helpIdeas.split('\n');
-    assert.ok(items.length >= 3 && items.length <= 6, id); assert.ok(ideas.length >= 1 && ideas.length <= 2, id);
     for (const [k, v] of Object.entries({ howto: w.howto, helpUse: w.helpUse, helpIdeas: w.helpIdeas })) assert.doesNotMatch(v, /\$\s?\d|â‚¬\s?\d|Â£\s?\d|pricing|upgrade|\bPro\b|\bAI\b/, `${id}.${k}`);
+    if (!short.includes(id)) continue;
+    // English: 1-3 points of at most 12 words, one "Try:" idea, about 40-50 words in all.
+    const items = w.helpUse.split('\n');
+    assert.ok(items.length >= 1 && items.length <= 3, `${id}: ${items.length} points`);
+    assert.ok(!/\n/.test(w.helpIdeas) && w.helpIdeas.trim(), `${id}: one idea`);
+    for (const t of items) assert.ok(words(t) <= 12, `${id}: "${t}" is ${words(t)} words`);
+    assert.ok(words(w.helpUse) + words(w.helpIdeas) <= 50, `${id}: ${words(w.helpUse) + words(w.helpIdeas)} words`);
   }
+  // Every language: the same shape, and a character budget so a translation can't make the panel long again.
+  for (const code of ['en', 'ar', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant']) {
+    const loc = JSON.parse(fs.readFileSync(`server/i18n/locales/${code}.json`, 'utf8'));
+    for (const k of ['helpControls', 'helpIdeas', 'helpMore', 'helpAsk', 'helpSend', 'helpPractice']) assert.equal(loc.dash.tools[k], undefined, `${code} dash.tools.${k} is gone`);
+    for (const id of short) {
+      const { helpUse, helpIdeas } = loc.dash.w[id], lines = [...helpUse.split('\n'), ...helpIdeas.split('\n')];
+      assert.ok(helpUse.split('\n').length <= 3 && helpIdeas.split('\n').length === 1, `${code} ${id}`);
+      for (const t of lines) assert.ok(t.trim() && [...t].length <= 90, `${code} ${id}: ${t}`);
+      assert.ok([...helpUse, ...helpIdeas].length <= 300, `${code} ${id}: ${[...helpUse, ...helpIdeas].length} characters`);
+    }
+  }
+  const gb = JSON.parse(fs.readFileSync('server/i18n/locales/en-GB.json', 'utf8'));
+  assert.equal(gb.dash.tools.helpPractice, undefined);
   // German instructions stay short enough for one line at a tool's default size.
   const de = D.registryFor(tFor('de'), 'teacher');
   for (const id of D.MATH_TOOLS) assert.ok([...de.types.find(x => x.id === id).words.howto].length <= 72, id);
@@ -644,10 +666,11 @@ test('help on the maths tools: every maths tool has a one-line instruction and â
   // hidden on the projector. No markup from strings (textContent only), no network or storage.
   const src = fs.readFileSync('public/js/dash-tools.js', 'utf8'), css = fs.readFileSync('public/css/dash.css', 'utf8');
   const help = src.slice(src.indexOf('function helpButton('), src.indexOf('function askSheet('));
-  for (const bit of ["'aria-expanded'", "'aria-controls'", "'Escape'", "'pointerdown'", 'C.helpFor', 'W.helpUse', 'W.helpIdeas', 'ctx.copy']) assert.ok(help.includes(bit), bit);
+  for (const bit of ["'aria-expanded'", "'aria-controls'", "'Escape'", "'pointerdown'", 'C.helpFor', 'C.helpTry', 'W.helpUse', 'W.helpIdeas', 'ctx.copy', '.slice(0, 3)']) assert.ok(help.includes(bit), bit);
+  // No "More" section: Make a question, Send and Practice it explain themselves.
+  assert.doesNotMatch(help, /helpMore|helpAsk|helpSend|helpPractice|helpControls/);
   assert.doesNotMatch(help, /innerHTML|fetch\(|localStorage/);
   assert.match(css, /\.dash-projector \.dt-info,\.dash-projector \.dt-help\{display:none!important\}/);
-  // Students get the same help without teacher-only actions: ideas for class, Make a question and Send are the teacher's.
-  assert.match(help, /ctx\.copy \|\| !ctx\.teacher \? '' : W\.helpIdeas/);
-  assert.match(help, /has\.ask && C\.helpAsk, has\.send && C\.helpSend/);
+  // Students get the same points without the teacher's "Try:" idea (one line at most).
+  assert.match(help, /ctx\.copy \|\| !ctx\.teacher \? '' : lines\(W\.helpIdeas\)\[0\]/);
 });

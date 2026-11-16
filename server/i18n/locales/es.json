@@ -9426,8 +9426,8 @@
         "howto": "Toca una barra para colorear partes. − y + cambian las partes.",
         "howtoOp": "Ajusta cada número con − y +. El resultado se dibuja abajo.",
         "howtoMul": "Ajusta cada número con − y +. La parte que se cruza es el resultado.",
-        "helpUse": "Comparar, Sumar, Restar, Multiplicar y Dividir eligen qué hacer.\nComparar: toca una barra o un círculo para colorear partes; − y + cambian cuántas partes tiene. Partes iguales muestra cuál es mayor.\nSumar y Restar: − y + ajustan cada numerador y denominador. Las dos se cortan en partes iguales; luego se dibuja el resultado y se simplifica.\nMultiplicar: la primera fracción colorea columnas y la segunda filas. Donde se cruzan está el resultado.\nDividir: la primera fracción se mide en trozos de la segunda; lo que sobra va rayado. Los pasos dan la vuelta a la segunda y multiplican. El segundo numerador no puede ser 0.\nOcultar la respuesta la guarda hasta que la muestres.",
-        "helpIdeas": "Muestra 1/2 + 1/3 con la respuesta oculta y pide a las parejas que la predigan.\nPregunta cuántos 1/4 caben en 3/4 y luego prueba 3/4 ÷ 1/2.",
+        "helpUse": "Elige Comparar, Sumar, Restar, Multiplicar o Dividir.\nEn Comparar, Partes iguales muestra qué fracción es mayor.\nOcultar la respuesta la guarda hasta que la muestres.",
+        "helpIdeas": "Muestra 1/2 + 1/3 con la respuesta oculta y pide a las parejas que la predigan.",
         "mode": "Qué hacer",
         "modeCompare": "Comparar",
         "modeAdd": "Sumar",
@@ -9470,8 +9470,8 @@
         "hint": "Toca la recta para poner un punto o arrastra a lo largo para saltar.",
         "range": "En una recta caben hasta 240 pasos.",
         "howto": "Punto: toca la recta. Salto: arrastra de un número a otro.",
-        "helpUse": "Punto pone un punto donde tocas; tócalo otra vez para quitarlo.\nSalto dibuja una flecha desde donde pulsas hasta donde sueltas y escribe la operación debajo.\nLas flechas del teclado mueven la marca; Intro pone un punto o empieza y termina un salto.\nOpciones: el intervalo, y números enteros, fracciones o decimales.",
-        "helpIdeas": "Salta 3/4 tres veces desde 0. ¿Dónde caes?\nPon de −5 a 5 y muestra 2 − 5 como un salto hacia atrás que pasa el cero."
+        "helpUse": "Toca otra vez un punto para quitarlo.\nLas flechas mueven la marca; Intro pone un punto o un salto.\nOpciones: el intervalo, y números enteros, fracciones o decimales.",
+        "helpIdeas": "Salta 3/4 tres veces desde 0. ¿Dónde caes?"
       },
       "coord": {
         "name": "Plano cartesiano",
@@ -9493,8 +9493,8 @@
         "hint": "Las flechas mueven, Intro marca un punto.",
         "noLine": "Toca la cuadrícula para marcar puntos.",
         "howto": "Toca la cuadrícula para poner un punto. − y + cambian la recta.",
-        "helpUse": "Toca un cruce para poner un punto; tócalo otra vez para quitarlo.\nPendiente − y + hacen la recta más o menos empinada; Empieza en mueve dónde corta el eje y.\nLa tabla da valores exactos de la recta.\nLas flechas mueven el cursor; Intro pone un punto.\nOpciones: cuatro cuadrantes o uno, tamaño 5 o 10, la recta y la tabla.",
-        "helpIdeas": "Pon tres puntos de la tabla y pregunta por la regla.\nCambia la pendiente de 1/2 a 2: ¿qué cambió y qué siguió igual?"
+        "helpUse": "Toca otra vez un punto para quitarlo.\nPendiente cambia la inclinación; Empieza en sube o baja la recta.\nLa tabla da valores exactos. Opciones: uno o cuatro cuadrantes.",
+        "helpIdeas": "Pon tres puntos de la tabla y pregunta por la regla."
       },
       "graph": {
         "name": "Creador de gráficas",
@@ -9518,8 +9518,8 @@
         "icon": "Dibujo",
         "empty": "Añade tus números en Opciones.",
         "howto": "Elige un tipo de gráfica. Escribe tus números en Opciones.",
-        "helpUse": "Barras, líneas, pictograma y puntos dibujan los mismos números de formas distintas.\nOpciones: un título, y para cada fila un nombre y un número (hasta 12).\nEn un pictograma, elige el dibujo y cuánto vale cada uno.\nEl docente también puede copiar en Opciones los totales de una pregunta rápida.",
-        "helpIdeas": "Haz una pregunta rápida sobre la fruta favorita y grafica los totales.\nMuestra los datos en barras y en puntos: ¿cuál se lee mejor?"
+        "helpUse": "Barras, líneas, pictograma y puntos muestran los mismos números.\nOpciones: un título y hasta 12 etiquetas con sus números.\nLos docentes pueden graficar los totales de una pregunta rápida desde Opciones.",
+        "helpIdeas": "Haz una pregunta rápida sobre la fruta favorita y grafica los totales."
       },
       "base10": {
         "name": "Bloques de base diez",
@@ -9538,8 +9538,8 @@
         "drop": "Arrastra al tapete",
         "clear": "Borrar",
         "howto": "Toca o arrastra bloques a las alfombras. Cambia 10 por 1.",
-        "helpUse": "− y + debajo de una alfombra quitan o añaden un bloque.\nArrastra un bloque desde el título de una alfombra para añadir uno; saca uno arrastrando para quitarlo.\nLos botones de cambio cambian 10 unidades por 1 decena, o 10 decenas por 1 centena, y al revés. El número no cambia.\nBorrar vacía las alfombras.",
-        "helpIdeas": "Muestra 3 decenas y 14 unidades: ¿hay una forma mejor?\nForma 205 y cambia para poder quitar 30."
+        "helpUse": "− y + bajo una alfombra quitan o añaden un bloque.\nArrastra un bloque fuera de la alfombra para quitarlo.\nCanjear cambia los bloques, nunca el número.",
+        "helpIdeas": "Forma 205 y cambia para poder quitar 30."
       },
       "placeval": {
         "name": "Tabla de valor posicional",
@@ -9560,8 +9560,8 @@
         "hundredths": "Centésimas",
         "thousandths": "Milésimas",
         "howto": "Toca una columna y cambia su cifra con − y +.",
-        "helpUse": "Toca una columna para elegirla; − y + quitan o añaden uno en ese lugar, llevando y pidiendo prestado.\nPor 10 y Entre 10 mueven cada cifra un lugar.\nLa forma desarrollada se escribe debajo.\nOpciones: las fichas, los lugares después de la coma, borrar.",
-        "helpIdeas": "Muestra 3405 y pulsa Por 10: ¿qué se movió y qué se quedó?\nForma 0,25 y pide a un estudiante que le sume una décima."
+        "helpUse": "− y + llevan y piden prestado entre las posiciones.\nPor 10 y Entre 10 mueven cada cifra una posición.\nOpciones: las fichas y las cifras después de la coma.",
+        "helpIdeas": "Muestra 3405 y pulsa Por 10: ¿qué se movió y qué se quedó?"
       },
       "tenframe": {
         "name": "Marcos de diez",
@@ -9579,8 +9579,8 @@
         "flip": "Cambiar los colores",
         "makeTen": "Faltan {n} para la siguiente decena.",
         "howto": "Toca una casilla: rojo, luego amarillo, luego vacía.",
-        "helpUse": "Toca una casilla: rojo, luego amarillo, luego vacía.\nRojo + y Amarillo + llenan la siguiente casilla; Quitar una vacía la última.\nLa descomposición muestra los dos colores y cuántos faltan para diez.\nOpciones: uno o dos marcos, la descomposición, cambiar los colores, llenar de rojo.",
-        "helpIdeas": "Muestra 7 durante dos segundos, tapa la pantalla y pregunta cuántos había.\nMuestra 6 rojos y 3 amarillos: ¿cuánto es 6 + 3 y cuántos faltan para 10?"
+        "helpUse": "Rojo + y Amarillo + llenan la siguiente casilla; Quitar una vacía la última.\nLa descomposición muestra cuántas faltan para diez.\nOpciones: dos marcos, cambiar los colores, llenar de rojo.",
+        "helpIdeas": "Muestra 7 durante dos segundos, tapa la pantalla y pregunta cuántos había."
       },
       "hundreds": {
         "name": "Tabla del cien",
@@ -9597,8 +9597,8 @@
         "hidden": "Número oculto",
         "noSkip": "Sin saltos",
         "howto": "Toca números para colorearlos. Elige un conteo para ver un patrón.",
-        "helpUse": "Toca un número para colorearlo; tócalo otra vez para quitar el color.\nContar de tantos en tantos ilumina las series de 2 a 10.\nOcultar números oculta los coloreados o todos, para adivinar.\nBorrar quita los colores y el conteo. Opciones: 1-100 o 0-99.",
-        "helpIdeas": "Oculta todos los números, colorea uno y pregunta cuál es.\nCuenta de 9 en 9: ¿qué patrón forman las cifras?"
+        "helpUse": "Toca otra vez un número sombreado para quitarle el color.\nOcultar números tapa los sombreados, o todos, para adivinar.\nOpciones: 1-100 o 0-99. Borrar lo quita todo.",
+        "helpIdeas": "Cuenta de 9 en 9: ¿qué patrón forman las cifras?"
       },
       "area": {
         "name": "Modelo de área y matrices",
@@ -9613,8 +9613,8 @@
         "noSplit": "0 significa sin dividir.",
         "hint": "Divide un lado para partir el producto en partes más fáciles.",
         "howto": "Ajusta filas y columnas con − y +. Divide un lado para descomponer.",
-        "helpUse": "Filas y Columnas − y + ajustan los dos números.\nMatriz muestra puntos en filas (hasta 12 × 12); Modelo de área muestra un rectángulo.\nDividir por valor posicional separa los lados en decenas y unidades y muestra cada producto parcial.\nOpciones: elige exactamente dónde se divide cada lado (0 = sin dividir).",
-        "helpIdeas": "Muestra 14 × 6 como 10 × 6 y 4 × 6 y suma las partes.\nMuestra 3 × 4 y luego 4 × 3: ¿cambió el resultado?"
+        "helpUse": "Matriz muestra puntos en filas; Modelo de área, un rectángulo.\nDividir por valor posicional muestra cada producto parcial.\nOpciones: elige exactamente dónde se divide cada lado.",
+        "helpIdeas": "Muestra 14 × 6 como 10 × 6 y 4 × 6 y suma las partes."
       },
       "times": {
         "name": "Tabla de multiplicar",
@@ -9630,8 +9630,8 @@
         "squaresAre": "Números cuadrados",
         "clear": "Borrar",
         "howto": "Toca una casilla para iluminar un producto. Elige qué más mostrar.",
-        "helpUse": "Toca una casilla para iluminar su producto.\nEl menú ilumina un producto, una fila, una columna, los cuadrados o la propiedad conmutativa.\nOcultar resultados deja cada producto en blanco, para adivinar.\nLas flechas se mueven por la tabla; Intro ilumina un producto.\nBorrar lo apaga todo. Opciones: 10 × 10 o 12 × 12.",
-        "helpIdeas": "Ilumina la fila del 9: ¿qué patrón forman las cifras?\nOculta los resultados, ilumina 7 × 8 y pregunta a la clase antes de mostrarlo."
+        "helpUse": "El menú ilumina una fila, una columna, los cuadrados o la conmutativa.\nOcultar resultados tapa cada producto para que la clase adivine.\nTambién sirven las flechas e Intro. Opciones: 10 × 10 o 12 × 12.",
+        "helpIdeas": "Ilumina la fila del 9: ¿qué patrón forman las cifras?"
       },
       "tclock": {
         "name": "Reloj didáctico",
@@ -9649,8 +9649,8 @@
         "onlyH": "{h} h",
         "onlyM": "{m} min",
         "howto": "Arrastra una aguja para cambiar la hora. La otra la sigue.",
-        "helpUse": "Arrastra el minutero o la aguja de las horas; la de las horas avanza con los minutos.\nLos botones retroceden o avanzan 5 minutos o 1 hora.\nLas flechas mueven un minuto; Re Pág y Av Pág, una hora.\nOpciones: la hora digital, el formato de 24 horas, el tiempo transcurrido.\nTiempo transcurrido: elige el inicio o el fin y ajusta cada uno; el tiempo entre ambos se muestra en saltos.",
-        "helpIdeas": "Oculta la hora digital y pide a la clase que lea el reloj.\nCon tiempo transcurrido: de 11:40 a 13:15, ¿cuánto tiempo es?"
+        "helpUse": "Los botones mueven 5 minutos o 1 hora adelante o atrás.\nOpciones: la hora digital y el formato de 24 horas.\nTiempo transcurrido, en Opciones, muestra cuánto pasa del inicio al final.",
+        "helpIdeas": "Oculta la hora digital y pide a la clase que lea el reloj."
       },
       "fdp": {
         "name": "Fracción, decimal, porcentaje",
@@ -9664,8 +9664,8 @@
         "bottom": "Denominador",
         "outOf": "{n} de 100",
         "howto": "Cambia el numerador y el denominador con − y +, o toca la cuadrícula.",
-        "helpUse": "Numerador y Denominador − y + cambian la fracción (hasta 100).\nLas tarjetas muestran el mismo número como fracción, decimal y porcentaje. Un decimal periódico termina en …\nToca la cuadrícula de 10 × 10 para colorear esos centésimos; las flechas también sirven.",
-        "helpIdeas": "Pide 3/8 como decimal y compruébalo aquí.\nColorea 25 cuadros: ¿cuáles son tres formas de escribirlo?"
+        "helpUse": "Las tarjetas lo muestran como fracción, decimal y porcentaje.\nUn decimal periódico termina en …\nToca la cuadrícula de 10 × 10 para sombrear centésimas; también con flechas.",
+        "helpIdeas": "Pide 3/8 como decimal y compruébalo aquí."
       },
       "board": {
         "name": "Pizarra",
@@ -9852,8 +9852,8 @@
         "hint": "Arrastra los bloques; encajan en la cuadrícula.",
         "empty": "Añade un bloque de la fila de arriba. Las flechas mueven el bloque elegido y R lo gira.",
         "howto": "Toca una pieza arriba para añadirla. Arrastra las piezas: encajan solas.",
-        "helpUse": "Toca una pieza de la fila de arriba para añadirla.\nArrastra una pieza para moverla; se ajusta a la cuadrícula. Tócala para elegirla.\nGirar gira la pieza elegida; Quitar la quita; Borrar vacía el tablero.\nLa lectura dice qué fracción de un hexágono forman las piezas.\nLas flechas mueven la pieza elegida; R la gira.",
-        "helpIdeas": "¿De cuántas formas puedes cubrir un hexágono?\nSi el hexágono vale 1, ¿cuánto vale un trapecio? ¿Y un triángulo?"
+        "helpUse": "Toca un bloque del tablero para elegirlo; luego Girar o Quitar.\nLa lectura es la fracción de hexágono que forman los bloques.\nLas flechas mueven el bloque elegido; R lo gira.",
+        "helpIdeas": "¿De cuántas formas puedes cubrir un hexágono?"
       },
       "angle": {
         "name": "Creador de ángulos",
@@ -9871,8 +9871,8 @@
         "ray": "Ángulo",
         "hint": "Arrastra el extremo de la semirrecta o usa las flechas.",
         "howto": "Arrastra el extremo del lado, o cambia el ángulo con − y +.",
-        "helpUse": "Arrastra el extremo del lado para abrir o cerrar el ángulo.\n− y + lo cambian un paso; los botones saltan a 45°, 90°, 135°, 180° o 270°.\nLa medida y el nombre del ángulo aparecen debajo.\nTransportador y Arco los muestran u ocultan. Opciones: pasos de 1°, 5° o 15°.",
-        "helpIdeas": "Oculta el transportador y pide primero una estimación.\nÁbrelo despacio de 0° a 360° y nombra cada tipo de ángulo por el camino."
+        "helpUse": "Los botones saltan a 45°, 90°, 135°, 180° o 270°.\nDebajo se ven la medida y el nombre del ángulo.\nTransportador y Arco se muestran u ocultan; Opciones ajusta el salto.",
+        "helpIdeas": "Oculta el transportador y pide primero una estimación."
       },
       "solids": {
         "name": "Cuerpos y desarrollos",
@@ -9899,8 +9899,8 @@
         "shape": "Cuerpo",
         "view": "Plegar: flechas. Girar: Re Pág y Av Pág.",
         "howto": "Elige un cuerpo. Pliégalo o despliégalo; arrastra de lado para girarlo.",
-        "helpUse": "El primer menú elige el cuerpo; el segundo marca sus caras, aristas o vértices.\nPlegar pliega la red en el cuerpo; púlsalo otra vez para desplegar.\nArrastra de lado, o pulsa Girar, para darle la vuelta.\nLas flechas lo pliegan poco a poco; Re Pág y Av Pág lo giran.\nCaras, aristas y vértices se cuentan debajo.",
-        "helpIdeas": "Muestra una red plana y pregunta qué cuerpo saldrá antes de plegarla.\nCuenta caras, vértices y aristas de un prisma: ¿C + V − A = 2?"
+        "helpUse": "El segundo menú marca las caras, aristas o vértices.\nGirar también lo gira; caras, aristas y vértices se cuentan abajo.\nLas flechas lo pliegan; Re Pág y Av Pág lo giran.",
+        "helpIdeas": "Muestra una red plana y pregunta qué cuerpo saldrá antes de plegarla."
       },
       "transform": {
         "name": "Transformaciones",
@@ -9930,8 +9930,8 @@
         "rule": "Regla",
         "move": "Transformación",
         "howto": "Elige trasladar, reflejar o girar. Arrastra la figura o usa los botones.",
-        "helpUse": "Trasladar, Reflejar y Girar eligen el movimiento.\nTrasladar: x e y − y + deslizan la figura; también puedes arrastrarla o usar las flechas.\nReflejar y Girar: el menú elige el eje o el giro alrededor del origen.\nSe muestran la regla y cada punto antes y después.\nOpciones: la figura, el inicio punteado, la tabla.",
-        "helpIdeas": "Refleja en el eje y: ¿qué le pasa a cada x?\nGira 90° y pregunta dónde caerá el punto A antes de mostrarlo."
+        "helpUse": "Trasladar: − y + en x e y deslizan la figura.\nReflejar y Girar: el menú elige el eje o el giro.\nSe muestran la regla y cada punto antes y después.",
+        "helpIdeas": "Gira 90° y pregunta dónde caerá el punto A antes de mostrarlo."
       },
       "balance": {
         "name": "Balanza",
@@ -9958,8 +9958,8 @@
         "scale": "Balanza",
         "start": "Empezar una ecuación nueva con",
         "howto": "Haz lo mismo en los dos lados para que siga en equilibrio. Halla x.",
-        "helpUse": "+ x y − x añaden o quitan una caja x; + 1 y − 1, una pesa.\n÷ reparte cada lado en grupos iguales y se queda con uno.\nLos dos lados, Lado izquierdo o Lado derecho: dónde se hace el siguiente paso. Un solo lado hace que se incline.\nDeshacer quita un paso; Ecuación nueva crea otra.\nOpciones: mostrar cuánto pesa x, elegir x, empezar una ecuación nueva.",
-        "helpIdeas": "Resolved juntos 3x + 2 = x + 8 diciendo cada paso en voz alta.\nHaz un paso en un solo lado: ¿por qué se inclina?"
+        "helpUse": "+ x, − x, + 1 y − 1 añaden o quitan cajas y pesas.\n÷ reparte cada lado en grupos iguales y se queda con uno.\nUn paso solo en Lado izquierdo o Lado derecho la inclina.",
+        "helpIdeas": "Resolved juntos 3x + 2 = x + 8 diciendo cada paso en voz alta."
       },
       "algebra": {
         "name": "Fichas de álgebra",
@@ -9983,8 +9983,8 @@
         "empty": "Añade fichas de la fila de arriba.",
         "full": "El tapete está lleno.",
         "howto": "Toca una ficha arriba para añadirla. Quita pares nulos para simplificar.",
-        "helpUse": "Los botones de arriba añaden +x², −x², +x, −x, +1 o −1.\nToca una ficha para elegirla; Voltear cambia su signo, Supr la quita.\nUna positiva y una negativa del mismo tipo forman un par nulo (rodeado); Pares nulos los quita.\nLa expresión se escribe tal como están las fichas y luego simplificada. Borrar vacía el tapete.",
-        "helpIdeas": "Forma 2x + 3 − x − 1 y simplifícala con pares nulos.\nMuestra x² + 2x y pide otra forma de escribirlo."
+        "helpUse": "Toca una ficha para elegirla; Voltear cambia su signo.\nLas fichas opuestas del mismo tipo se rodean: un par nulo.\nPares nulos las quita y la expresión se simplifica.",
+        "helpIdeas": "Forma 2x + 3 − x − 1 y simplifícala con pares nulos."
       },
       "coins": {
         "name": "Monedas y dinero",
@@ -10013,8 +10013,8 @@
         "mode": "Qué hacer",
         "units": "Las cantidades aquí van en céntimos o peniques (números sencillos en el juego sencillo).",
         "howto": "Toca monedas y billetes arriba. Toca un montón para quitar uno.",
-        "helpUse": "Contar: toca una moneda o un billete para añadirlo; toca un montón del tapete para quitar uno. Se muestra el total.\nDar el cambio: ajusta con − y + lo que cuesta y con qué se paga. Se muestran el cambio, las menos monedas posibles y el conteo hacia arriba.\nBorrar vacía el tapete.\nOpciones: qué dinero, el precio y lo que se paga.",
-        "helpIdeas": "Forma el mismo total con menos monedas.\nCuesta 37 y se paga con 100: contad juntos hacia arriba para hallar el cambio."
+        "helpUse": "Contar suma el dinero; Dar el cambio calcula el cambio.\nEn Dar el cambio, − y + fijan el precio y lo pagado.\nOpciones: qué dinero. Borrar vacía el tapete.",
+        "helpIdeas": "Cuesta 37 y se paga con 100: contad juntos hacia arriba para hallar el cambio."
       },
       "chance": {
         "name": "Laboratorio de azar",
@@ -10040,8 +10040,8 @@
         "kind": "Experimento",
         "none": "Todavía no hay intentos",
         "howto": "Elige moneda, dados o ruleta y pulsa Lanzar. Compara con la línea.",
-        "helpUse": "Moneda, Dados y Ruleta eligen el experimento.\nEl menú fija cuántos intentos hace cada Lanzar; Lanzar los hace.\nLa gráfica muestra los resultados; la línea punteada es cuántos esperamos.\nEmpezar de nuevo los borra.\nOpciones: uno o dos dados (la suma), las partes de la ruleta, hasta 1000 intentos.",
-        "helpIdeas": "Predice, lanza 10 veces y luego 1000: ¿cuál se acerca más a la mitad?\nLanza dos dados 1000 veces: ¿por qué la suma 7 sale más?"
+        "helpUse": "El menú fija cuántos intentos hace Lanzar cada vez.\nEmpezar de nuevo borra los resultados.\nOpciones: uno o dos dados, las partes de la ruleta, hasta 1000 intentos.",
+        "helpIdeas": "Predice, lanza 10 veces y luego 1000: ¿cuál se acerca más a la mitad?"
       },
       "letters": {
         "name": "Fichas de letras",
@@ -10381,12 +10381,7 @@
       "practiceName": "Practicar: {title}",
       "helpFor": "Cómo usar: {name}",
       "helpClose": "Cerrar",
-      "helpControls": "Qué hace cada botón",
-      "helpIdeas": "Ideas para la clase",
-      "helpMore": "Además",
-      "helpAsk": "Hacer una pregunta: convierte lo que muestra la herramienta en una pregunta rápida. Puedes cambiar las palabras antes de enviarla.",
-      "helpSend": "Enviar a la clase: cada estudiante recibe su propia copia para probar. Nada de lo que haga con ella vuelve.",
-      "helpPractice": "Practicar: abre un juego de Oomba que practica la misma idea."
+      "helpTry": "Prueba:"
     },
     "ask": {
       "fractions": "¿Qué fracción está coloreada?",

@@ -82,7 +82,7 @@ const TOOL_WORDS = {
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
 /** Help on the maths tools (docs/decisions.md "Classroom dashboards: help on the maths tools"): each maths tool's one-line
- *  instruction (howto) and its ⓘ panel (helpUse: what each control does, helpIdeas: ideas for class; one a line). */
+ *  instruction (howto) and its short ⓘ panel (helpUse: at most three points, one a line; helpIdeas: one idea for class). */
 export const MATH_TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
   'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance'];
 for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas');
@@ -94,7 +94,7 @@ export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'c
   // stage 4: "Make a question from it" and "Practice it"
   'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
   // help on the maths tools: the ⓘ panel
-  'helpFor', 'helpClose', 'helpControls', 'helpIdeas', 'helpMore', 'helpAsk', 'helpSend', 'helpPractice'];
+  'helpFor', 'helpClose', 'helpTry'];
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
 export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
   'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];

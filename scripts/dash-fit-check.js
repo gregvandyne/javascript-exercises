@@ -19,6 +19,8 @@
 // Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
 // (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
 // names and light words in that language) with its own background.
+// Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
+// its widget without scrolling and nothing in it is cut.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -28,7 +30,8 @@
 //   - no control sits under the widget's own controls row,
 // and that the phone never scrolls sideways.
 //
-//   npm run dash:fit            exit code 1 when anything is cut off; OUT=/some/dir also saves a screenshot per view
+//   npm run dash:fit            exit code 1 when anything is cut off; OUT=/some/dir also saves a screenshot per view;
+//                               HELPSHOTS=/some/dir saves each open help panel's widget (DSF=2 for sharp pictures)
 // It needs a Chromium: BRB_CHROMIUM, else the repo's pinned browser where it is installed, else Playwright's own.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -435,7 +438,7 @@ for (const L of RUN) {
  for (const lang of LANGS) {
   if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
   for (const v of VIEWS) {
-    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
+    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: Number(process.env.DSF) || 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');
     await ctx.addCookies([{ name: cn, value: cv, url: base }, { name: 'lang', value: lang, url: base }]);
     const page = await ctx.newPage();
@@ -452,6 +455,35 @@ for (const L of RUN) {
     await page.waitForTimeout(700);
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
+    // Help on the maths tools: each tool's ⓘ panel, opened one at a time, fits its widget without scrolling and no line
+    // of it is cut (docs/decisions.md "Classroom dashboards: help on the maths tools"). Not on the projector (hidden).
+    if (!v.projector && process.env.HELP !== '0') {
+      const infos = (await page.$$('.dash-w .dt-info')).length;
+      for (let i = 0; i < infos; i++) {
+        const b = (await page.$$('.dash-w .dt-info'))[i]; if (!b || !(await b.isVisible())) continue;
+        await b.scrollIntoViewIfNeeded().catch(() => {});
+        await b.click({ timeout: 3000 }).catch(e => found.push(`help ${i}: ⓘ can't be pressed (${e.message.split('\n')[0]})`));
+        await page.waitForTimeout(60);
+        found.push(...await b.evaluate(btn => {
+          const out = [], p = document.getElementById(btn.getAttribute('aria-controls'));
+          const w = btn.closest('.dash-w') || (p && p.parentElement), name = (w && w.querySelector('.dash-wt')?.textContent) || (p && p.getAttribute('aria-label'));
+          if (!p || p.hidden) return [`${name}: the help panel does not open`];
+          if (p.scrollHeight > p.clientHeight + 1) out.push(`${name}: the help panel scrolls (${p.scrollHeight - p.clientHeight}px more)`);
+          const r = p.getBoundingClientRect(), wr = w.getBoundingClientRect();
+          if (r.top < wr.top - 1 || r.bottom > wr.bottom + 1 || r.left < wr.left - 1 || r.right > wr.right + 1) out.push(`${name}: the help panel goes outside the widget`);
+          for (const e of p.querySelectorAll('*')) if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push(`${name}: help text "${e.textContent.slice(0, 24)}" is cut`);
+          return out;
+        }));
+        if (process.env.HELPSHOTS) {
+          fs.mkdirSync(process.env.HELPSHOTS, { recursive: true });
+          const w = await b.evaluateHandle(btn => btn.closest('.dash-w') || document.getElementById(btn.getAttribute('aria-controls')).parentElement);
+          const id = await w.evaluate(x => x.dataset.id || x.className.split(' ')[0]);
+          await w.screenshot({ path: `${process.env.HELPSHOTS}/help-${lang}-${v.name}-${id}.png` }).catch(() => {});
+          if (process.env.HELPPAGE && id.includes(process.env.HELPPAGE)) await page.screenshot({ path: `${process.env.HELPSHOTS}/page-${lang}-${v.name}-${id}.png` });
+        }
+        await page.keyboard.press('Escape'); await page.waitForTimeout(30);
+      }
+    }
     total += found.length;
     console.log(`${found.length ? '✗' : '✓'} ${L.key} ${lang} ${v.name}${found.length ? '' : ': nothing cut off'}`);
     for (const f of found) console.log(`    ${f}`);

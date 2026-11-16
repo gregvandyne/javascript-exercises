@@ -9427,8 +9427,8 @@
         "howto": "Tippe auf einen Streifen zum Färben. − und + ändern die Teile.",
         "howtoOp": "Ändere jede Zahl mit − und +. Unten wird das Ergebnis gezeigt.",
         "howtoMul": "Ändere jede Zahl mit − und +. Die Überlappung ist das Ergebnis.",
-        "helpUse": "Vergleichen, Addieren, Subtrahieren, Multiplizieren und Dividieren wählen, was getan wird.\nVergleichen: Tippe auf einen Streifen oder Kreis, um Teile zu färben; − und + ändern die Anzahl der Teile. Gleich große Teile zeigt, welcher Bruch größer ist.\nAddieren und Subtrahieren: − und + stellen Zähler und Nenner ein. Beide werden in gleich große Teile geteilt, dann wird das Ergebnis gezeichnet und gekürzt.\nMultiplizieren: Der erste Bruch färbt Spalten, der zweite Zeilen. Wo sie sich überlappen, ist das Ergebnis.\nDividieren: Der erste Bruch wird in Stücken des zweiten gemessen; ein Rest ist schraffiert. Die Rechnung dreht den zweiten Bruch um und multipliziert. Der zweite Zähler kann nicht 0 sein.\nAntwort verstecken hält die Antwort zurück, bis du es zeigst.",
-        "helpIdeas": "Zeige 1/2 + 1/3 mit verborgenem Ergebnis und lass Paare es vorhersagen.\nFrage, wie oft 1/4 in 3/4 passt, und versuche dann 3/4 ÷ 1/2.",
+        "helpUse": "Wähle Vergleichen, Addieren, Subtrahieren, Multiplizieren oder Dividieren.\nBeim Vergleichen zeigt Gleich große Teile, welcher Bruch größer ist.\nAntwort verstecken hält die Antwort zurück, bis du sie zeigst.",
+        "helpIdeas": "Zeige 1/2 + 1/3 mit verborgenem Ergebnis und lass Paare es vorhersagen.",
         "mode": "Was tun",
         "modeCompare": "Vergleichen",
         "modeAdd": "Addieren",
@@ -9471,8 +9471,8 @@
         "hint": "Tippe auf den Strahl für einen Punkt oder ziehe daran entlang für einen Sprung.",
         "range": "Auf einen Strahl passen bis zu 240 Schritte.",
         "howto": "Punkt: auf den Strahl tippen. Sprung: von Zahl zu Zahl ziehen.",
-        "helpUse": "Punkt setzt einen Punkt, wo du tippst; tippe noch einmal, um ihn wegzunehmen.\nSprung zeichnet einen Pfeil von dort, wo du drückst, bis dort, wo du loslässt, und schreibt die Rechnung darunter.\nPfeiltasten bewegen die Marke; Enter setzt einen Punkt oder beginnt und beendet einen Sprung.\nOptionen: der Bereich, und ganze Zahlen, Brüche oder Dezimalzahlen.",
-        "helpIdeas": "Springe dreimal 3/4 ab 0. Wo landest du?\nStelle −5 bis 5 ein und zeige 2 − 5 als Sprung über die Null zurück."
+        "helpUse": "Tippe noch einmal auf einen Punkt, um ihn zu entfernen.\nPfeiltasten bewegen die Marke; Enter setzt einen Punkt oder Sprung.\nOptionen: der Bereich und ganze Zahlen, Brüche oder Dezimalzahlen.",
+        "helpIdeas": "Springe dreimal 3/4 ab 0. Wo landest du?"
       },
       "coord": {
         "name": "Koordinatensystem",
@@ -9494,8 +9494,8 @@
         "hint": "Pfeiltasten bewegen, Enter trägt einen Punkt ein.",
         "noLine": "Tippe ins Raster, um Punkte einzutragen.",
         "howto": "Tippe ins Gitter für einen Punkt. − und + ändern die Gerade.",
-        "helpUse": "Tippe auf einen Gitterpunkt, um einen Punkt zu setzen; noch einmal tippen nimmt ihn weg.\nSteigung − und + machen die Gerade steiler oder flacher; Beginnt bei verschiebt, wo sie die y-Achse schneidet.\nDie Tabelle zeigt genaue Werte auf der Geraden.\nPfeiltasten bewegen den Zeiger; Enter setzt einen Punkt.\nOptionen: vier Quadranten oder einer, Größe 5 oder 10, Gerade und Tabelle.",
-        "helpIdeas": "Trage drei Punkte aus der Tabelle ein und frage nach der Regel.\nÄndere die Steigung von 1/2 auf 2: Was hat sich geändert, was ist gleich geblieben?"
+        "helpUse": "Tippe noch einmal auf einen Punkt, um ihn zu entfernen.\nSteigung ändert, wie steil die Gerade ist; Beginnt bei verschiebt sie.\nDie Tabelle zeigt genaue Werte. Optionen: ein oder vier Quadranten.",
+        "helpIdeas": "Trage drei Punkte aus der Tabelle ein und frage nach der Regel."
       },
       "graph": {
         "name": "Diagramm-Werkstatt",
@@ -9519,8 +9519,8 @@
         "icon": "Bild",
         "empty": "Trag deine Zahlen unter Optionen ein.",
         "howto": "Wähle eine Diagrammart. Deine Zahlen trägst du in Optionen ein.",
-        "helpUse": "Säulen-, Linien-, Bild- und Punktdiagramm zeichnen dieselben Zahlen auf verschiedene Weise.\nOptionen: ein Titel, und für jede Zeile ein Name und eine Zahl (bis zu 12).\nFür ein Bilddiagramm wählst du das Bild und wofür jedes steht.\nLehrkräfte können in Optionen auch die Summen einer Abfrage übernehmen.",
-        "helpIdeas": "Frage per Abfrage nach dem Lieblingsobst und zeichne die Summen.\nZeige die Daten als Balken und als Punkte: Was liest sich leichter?"
+        "helpUse": "Säulen-, Linien-, Bild- und Punktdiagramm zeigen dieselben Zahlen.\nOptionen: ein Titel und bis zu 12 Beschriftungen mit Zahlen.\nLehrkräfte können in den Optionen die Summen einer Blitzfrage nehmen.",
+        "helpIdeas": "Frage per Abfrage nach dem Lieblingsobst und zeichne die Summen."
       },
       "base10": {
         "name": "Zehnersystem-Blöcke",
@@ -9539,8 +9539,8 @@
         "drop": "Auf die Matte ziehen",
         "clear": "Leeren",
         "howto": "Tippe oder ziehe Blöcke auf die Matten. Tausche 10 gegen 1.",
-        "helpUse": "− und + unter einer Matte nehmen einen Block weg oder legen einen dazu.\nZiehe einen Block aus der Überschrift auf die Matte, um einen dazuzulegen; ziehe einen herunter, um ihn wegzunehmen.\nDie Tauschknöpfe tauschen 10 Einer gegen 1 Zehner oder 10 Zehner gegen 1 Hunderter, und zurück. Die Zahl bleibt gleich.\nLeeren räumt die Matten ab.",
-        "helpIdeas": "Zeige 3 Zehner und 14 Einer: Geht es auch besser?\nLege 205 und tausche, damit du 30 wegnehmen kannst."
+        "helpUse": "− und + unter einer Matte nehmen einen Block weg oder legen einen dazu.\nZieh einen Block von der Matte, um ihn wegzunehmen.\nTauschen ändert die Blöcke, aber nie die Zahl.",
+        "helpIdeas": "Lege 205 und tausche, damit du 30 wegnehmen kannst."
       },
       "placeval": {
         "name": "Stellenwerttafel",
@@ -9561,8 +9561,8 @@
         "hundredths": "Hundertstel",
         "thousandths": "Tausendstel",
         "howto": "Tippe auf eine Spalte, dann ändern − und + ihre Ziffer.",
-        "helpUse": "Tippe auf eine Spalte, um sie zu wählen; − und + nehmen an dieser Stelle eins weg oder legen eins dazu, mit Übertrag.\nMal 10 und Durch 10 verschieben jede Ziffer um eine Stelle.\nDarunter steht die Zahl in Stellenschreibweise.\nOptionen: die Plättchen, die Stellen nach dem Komma, leeren.",
-        "helpIdeas": "Zeige 3405 und drücke Mal 10: Was hat sich bewegt, was ist geblieben?\nLege 0,25 und lass ein Kind ein Zehntel dazulegen."
+        "helpUse": "− und + übertragen und borgen über die Stellen hinweg.\nMal 10 und Durch 10 verschieben jede Ziffer um eine Stelle.\nOptionen: Plättchen und Stellen nach dem Komma.",
+        "helpIdeas": "Zeige 3405 und drücke Mal 10: Was hat sich bewegt, was ist geblieben?"
       },
       "tenframe": {
         "name": "Zehnerfelder",
@@ -9580,8 +9580,8 @@
         "flip": "Farben tauschen",
         "makeTen": "Noch {n} bis zum nächsten Zehner.",
         "howto": "Tippe in ein Feld: rot, nochmal gelb, nochmal leer.",
-        "helpUse": "Tippe in ein Feld: rot, dann gelb, dann leer.\nRot + und Gelb + füllen das nächste Feld; Eins weg leert das letzte.\nDie Zahlzerlegung zeigt beide Farben und wie viele bis zehn fehlen.\nOptionen: ein oder zwei Felder, die Zahlzerlegung, Farben tauschen, Rot auffüllen.",
-        "helpIdeas": "Zeige 7 für zwei Sekunden, verdecke den Bildschirm und frage, wie viele es waren.\nZeige 6 rote und 3 gelbe: Was ist 6 + 3, und wie viele fehlen bis 10?"
+        "helpUse": "Rot + und Gelb + füllen das nächste Feld; Eins weg leert das letzte.\nDie Zahlzerlegung zeigt, wie viele bis zehn fehlen.\nOptionen: zwei Felder, Farben tauschen, Rot auffüllen.",
+        "helpIdeas": "Zeige 7 für zwei Sekunden, verdecke den Bildschirm und frage, wie viele es waren."
       },
       "hundreds": {
         "name": "Hundertertafel",
@@ -9598,8 +9598,8 @@
         "hidden": "Versteckte Zahl",
         "noSkip": "Ohne Schritte",
         "howto": "Tippe Zahlen zum Färben an. Wähle eine Zählreihe für ein Muster.",
-        "helpUse": "Tippe eine Zahl an, um sie zu färben; noch einmal tippen nimmt die Farbe weg.\nIn Schritten zählen zeigt die Reihen von 2 bis 10.\nZahlen verstecken versteckt die gefärbten oder alle Zahlen zum Raten.\nLeeren nimmt Farben und Zählreihe weg. Optionen: 1-100 oder 0-99.",
-        "helpIdeas": "Verdecke alle Zahlen, färbe eine und frage, welche es ist.\nZähle in Neunerschritten: Welches Muster bilden die Ziffern?"
+        "helpUse": "Tippe eine gefärbte Zahl noch einmal an, um sie zu entfärben.\nZahlen verstecken verdeckt die gefärbten oder alle, zum Raten.\nOptionen: 1-100 oder 0-99. Leeren nimmt alles weg.",
+        "helpIdeas": "Zähle in Neunerschritten: Welches Muster bilden die Ziffern?"
       },
       "area": {
         "name": "Flächenmodell und Punktfelder",
@@ -9614,8 +9614,8 @@
         "noSplit": "0 heißt: nicht teilen.",
         "hint": "Teile eine Seite, um die Aufgabe in leichtere Teile zu zerlegen.",
         "howto": "Zeilen und Spalten mit − und +. Teile eine Seite zum Zerlegen.",
-        "helpUse": "Zeilen und Spalten − und + stellen die beiden Zahlen ein.\nPunktfeld zeigt Punkte in Reihen (bis 12 × 12); Flächenmodell zeigt ein Rechteck.\nNach Stellenwert teilen zerlegt die Seiten in Zehner und Einer und zeigt jedes Teilprodukt.\nOptionen: genau wählen, wo jede Seite geteilt wird (0 heißt nicht geteilt).",
-        "helpIdeas": "Zeige 14 × 6 als 10 × 6 und 4 × 6 und addiere die Teile.\nZeige 3 × 4, dann 4 × 3: Ist das Ergebnis anders?"
+        "helpUse": "Punktfeld zeigt Punkte in Reihen; Flächenmodell zeigt ein Rechteck.\nNach Stellenwert teilen zeigt jedes Teilprodukt.\nOptionen: genau wählen, wo jede Seite geteilt wird.",
+        "helpIdeas": "Zeige 14 × 6 als 10 × 6 und 4 × 6 und addiere die Teile."
       },
       "times": {
         "name": "Einmaleins-Tafel",
@@ -9631,8 +9631,8 @@
         "squaresAre": "Quadratzahlen",
         "clear": "Leeren",
         "howto": "Tippe ein Feld für eine Aufgabe an. Wähle, was du noch zeigst.",
-        "helpUse": "Tippe ein Feld an, um seine Aufgabe zu zeigen.\nDas Menü zeigt eine Aufgabe, eine Zeile, eine Spalte, die Quadratzahlen oder die Tauschaufgabe.\nErgebnisse verstecken macht jedes Ergebnis leer, zum Raten.\nPfeiltasten bewegen sich im Gitter; Enter zeigt eine Aufgabe.\nLeeren schaltet alles aus. Optionen: 10 × 10 oder 12 × 12.",
-        "helpIdeas": "Zeige die Neunerreihe: Welches Muster bilden die Ziffern?\nVerstecke die Ergebnisse, zeige 7 × 8 und frage die Klasse, bevor du es aufdeckst."
+        "helpUse": "Das Menü hebt eine Reihe, Spalte, Quadratzahlen oder Tauschaufgaben hervor.\nErgebnisse verstecken verdeckt jedes Produkt, damit die Klasse rät.\nPfeiltasten und Enter gehen auch. Optionen: 10 × 10 oder 12 × 12.",
+        "helpIdeas": "Zeige die Neunerreihe: Welches Muster bilden die Ziffern?"
       },
       "tclock": {
         "name": "Lernuhr",
@@ -9650,8 +9650,8 @@
         "onlyH": "{h} h",
         "onlyM": "{m} min",
         "howto": "Ziehe einen Zeiger, um die Zeit zu ändern. Der andere folgt.",
-        "helpUse": "Ziehe den Minuten- oder den Stundenzeiger; der Stundenzeiger geht mit den Minuten mit.\nDie Knöpfe gehen 5 Minuten oder 1 Stunde zurück oder vor.\nPfeiltasten gehen eine Minute, Bild auf und Bild ab eine Stunde.\nOptionen: digitale Uhrzeit, 24-Stunden-Zeit, Zeitspanne.\nZeitspanne: Wähle Anfang oder Ende und stelle jede Zeit ein; die Zeit dazwischen wird in Sprüngen gezeigt.",
-        "helpIdeas": "Schalte die Digitalzeit aus und lass die Klasse die Uhr lesen.\nMit Zeitspanne: Von 11:40 bis 13:15, wie lange ist das?"
+        "helpUse": "Die Knöpfe stellen 5 Minuten oder 1 Stunde vor oder zurück.\nOptionen: digitale Uhrzeit und 24-Stunden-Zeit.\nZeitspanne (in den Optionen) zeigt die Dauer vom Start bis zum Ende.",
+        "helpIdeas": "Schalte die Digitalzeit aus und lass die Klasse die Uhr lesen."
       },
       "fdp": {
         "name": "Bruch, Dezimalzahl, Prozent",
@@ -9665,8 +9665,8 @@
         "bottom": "Nenner",
         "outOf": "{n} von 100",
         "howto": "Ändere Zähler und Nenner mit − und +, oder tippe ins Gitter.",
-        "helpUse": "Zähler und Nenner − und + ändern den Bruch (bis 100).\nDie Karten zeigen dieselbe Zahl als Bruch, Dezimalzahl und Prozent. Eine periodische Dezimalzahl endet mit …\nTippe ins 10 × 10-Gitter, um so viele Hundertstel zu färben; Pfeiltasten gehen auch.",
-        "helpIdeas": "Frage nach 3/8 als Dezimalzahl und prüfe es dann hier.\nFärbe 25 Kästchen: Wie kann man das dreimal anders schreiben?"
+        "helpUse": "Die Karten zeigen die Zahl als Bruch, Dezimalzahl und Prozent.\nEine periodische Dezimalzahl endet mit …\nTippe in das 10 × 10-Gitter, um Hundertstel zu färben; Pfeiltasten gehen auch.",
+        "helpIdeas": "Frage nach 3/8 als Dezimalzahl und prüfe es dann hier."
       },
       "board": {
         "name": "Tafel",
@@ -9853,8 +9853,8 @@
         "hint": "Ziehe die Plättchen; sie rasten im Raster ein.",
         "empty": "Füge ein Plättchen aus der Reihe oben hinzu. Pfeiltasten verschieben das gewählte Plättchen, R dreht es.",
         "howto": "Tippe oben ein Plättchen an. Ziehe Plättchen, sie rasten ein.",
-        "helpUse": "Tippe oben ein Plättchen an, um es hinzuzufügen.\nZiehe ein Plättchen, um es zu verschieben; es rastet im Gitter ein. Tippe es an, um es zu wählen.\nDrehen dreht das gewählte Plättchen; Entfernen nimmt es weg; Leeren räumt alles ab.\nDie Anzeige sagt, welcher Bruchteil eines Sechsecks die Plättchen sind.\nPfeiltasten bewegen das gewählte Plättchen; R dreht es.",
-        "helpIdeas": "Auf wie viele Arten kannst du ein Sechseck bedecken?\nWenn das Sechseck 1 ist, was ist dann ein Trapez wert? Und ein Dreieck?"
+        "helpUse": "Tippe einen Block an, um ihn zu wählen, dann Drehen oder Entfernen.\nDie Anzeige ist der Bruchteil eines Sechsecks, den die Blöcke bilden.\nPfeiltasten bewegen den gewählten Block; R dreht ihn.",
+        "helpIdeas": "Auf wie viele Arten kannst du ein Sechseck bedecken?"
       },
       "angle": {
         "name": "Winkelmacher",
@@ -9872,8 +9872,8 @@
         "ray": "Winkel",
         "hint": "Ziehe das Ende des Strahls oder nutze die Pfeiltasten.",
         "howto": "Ziehe am Ende des Schenkels, oder ändere den Winkel mit − und +.",
-        "helpUse": "Ziehe am Ende des Schenkels, um den Winkel zu öffnen oder zu schließen.\n− und + ändern ihn um einen Schritt; die Knöpfe springen auf 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen zeigen oder verbergen beides. Optionen: Schritte von 1°, 5° oder 15°.",
-        "helpIdeas": "Verbirg den Winkelmesser und lass zuerst schätzen.\nÖffne langsam von 0° bis 360° und benenne jede Winkelart unterwegs."
+        "helpUse": "Die Knöpfe springen auf 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen blenden sie ein oder aus; Optionen: Einrasten.",
+        "helpIdeas": "Verbirg den Winkelmesser und lass zuerst schätzen."
       },
       "solids": {
         "name": "Körper und Netze",
@@ -9900,8 +9900,8 @@
         "shape": "Körper",
         "view": "Falten: Pfeiltasten. Drehen: Bild auf und Bild ab.",
         "howto": "Wähle einen Körper. Falte ihn, und ziehe zur Seite zum Drehen.",
-        "helpUse": "Das erste Menü wählt den Körper; das zweite markiert Flächen, Kanten oder Ecken.\nFalten faltet das Netz zum Körper; noch einmal drücken faltet es auf.\nZiehe zur Seite oder drücke Drehen, um ihn zu drehen.\nPfeiltasten falten ihn Stück für Stück; Bild auf und Bild ab drehen ihn.\nFlächen, Kanten und Ecken werden darunter gezählt.",
-        "helpIdeas": "Zeige ein flaches Netz und frage, welcher Körper entsteht, bevor du faltest.\nZähle Flächen, Ecken und Kanten eines Prismas: Gilt F + E − K = 2?"
+        "helpUse": "Das zweite Menü markiert Flächen, Kanten oder Ecken.\nDrehen dreht ihn auch; Flächen, Kanten und Ecken werden gezählt.\nPfeiltasten falten ihn; Bild auf und Bild ab drehen ihn.",
+        "helpIdeas": "Zeige ein flaches Netz und frage, welcher Körper entsteht, bevor du faltest."
       },
       "transform": {
         "name": "Abbildungen",
@@ -9931,8 +9931,8 @@
         "rule": "Regel",
         "move": "Abbildung",
         "howto": "Wähle Verschieben, Spiegeln oder Drehen. Ziehe die Form.",
-        "helpUse": "Verschieben, Spiegeln und Drehen wählen die Bewegung.\nVerschieben: x und y − und + schieben die Form; du kannst sie auch ziehen oder die Pfeiltasten nutzen.\nSpiegeln und Drehen: Das Menü wählt die Spiegelachse oder die Drehung um den Ursprung.\nDie Regel und jeder Punkt vorher und nachher werden gezeigt.\nOptionen: die Form, der gestrichelte Anfang, die Tabelle.",
-        "helpIdeas": "Spiegle an der y-Achse: Was passiert mit jedem x?\nDrehe um 90° und frage, wo Punkt A landet, bevor du es zeigst."
+        "helpUse": "Verschieben: − und + bei x und y schieben die Figur.\nSpiegeln und Drehen: Das Menü wählt Spiegelachse oder Drehung.\nDie Regel und jeder Punkt vorher und nachher werden gezeigt.",
+        "helpIdeas": "Drehe um 90° und frage, wo Punkt A landet, bevor du es zeigst."
       },
       "balance": {
         "name": "Balkenwaage",
@@ -9959,8 +9959,8 @@
         "scale": "Balkenwaage",
         "start": "Neue Gleichung mit",
         "howto": "Tu auf beiden Seiten dasselbe, dann bleibt es gleich. Finde x.",
-        "helpUse": "+ x und − x legen eine x-Kiste dazu oder nehmen sie weg; + 1 und − 1 ein Gewicht.\n÷ teilt jede Seite in gleiche Gruppen und behält eine.\nBeide Seiten, Linke Seite oder Rechte Seite: wo der nächste Schritt passiert. Nur eine Seite bringt die Waage zum Kippen.\nRückgängig nimmt einen Schritt zurück; Neue Gleichung macht eine neue.\nOptionen: Zeigen, was x wiegt, x wählen, eine neue Gleichung beginnen.",
-        "helpIdeas": "Löst 3x + 2 = x + 8 gemeinsam und sagt jeden Schritt laut.\nMach einen Schritt nur auf einer Seite: Warum kippt die Waage?"
+        "helpUse": "+ x, − x, + 1 und − 1 legen Kisten und Gewichte dazu oder nehmen sie weg.\n÷ teilt jede Seite in gleiche Gruppen und behält eine.\nEin Schritt nur auf Linke Seite oder Rechte Seite lässt sie kippen.",
+        "helpIdeas": "Löst 3x + 2 = x + 8 gemeinsam und sagt jeden Schritt laut."
       },
       "algebra": {
         "name": "Algebrakacheln",
@@ -9984,8 +9984,8 @@
         "empty": "Füge Kacheln aus der Reihe oben hinzu.",
         "full": "Die Matte ist voll.",
         "howto": "Tippe oben ein Plättchen an. Nimm Nullpaare weg zum Vereinfachen.",
-        "helpUse": "Die Knöpfe oben legen +x², −x², +x, −x, +1 oder −1 dazu.\nTippe ein Plättchen an, um es zu wählen; Umdrehen ändert sein Vorzeichen, Entf nimmt es weg.\nEin positives und ein negatives der gleichen Art sind ein Nullpaar (umkreist); Nullpaare nimmt sie weg.\nDer Term steht so da, wie die Plättchen liegen, und vereinfacht. Leeren räumt die Matte ab.",
-        "helpIdeas": "Lege 2x + 3 − x − 1 und vereinfache mit Nullpaaren.\nZeige x² + 2x und frage nach einer anderen Schreibweise."
+        "helpUse": "Tippe eine Kachel an, um sie zu wählen; Umdrehen ändert ihr Vorzeichen.\nGegensätzliche Kacheln einer Sorte werden eingekreist: ein Nullpaar.\nNullpaare nimmt sie weg, und der Term wird vereinfacht.",
+        "helpIdeas": "Lege 2x + 3 − x − 1 und vereinfache mit Nullpaaren."
       },
       "coins": {
         "name": "Münzen und Geld",
@@ -10014,8 +10014,8 @@
         "mode": "Was tun",
         "units": "Beträge hier sind in Cent oder Pence (einfache Zahlen beim einfachen Satz).",
         "howto": "Tippe oben Münzen an. Tippe einen Stapel, um eine wegzunehmen.",
-        "helpUse": "Zählen: Tippe eine Münze oder einen Schein an, um sie dazuzulegen; tippe einen Stapel auf der Matte, um eine wegzunehmen. Die Summe wird gezeigt.\nWechselgeld: Stelle mit − und + ein, was es kostet und womit bezahlt wurde (Es kostet, Bezahlt mit). Das Wechselgeld, die wenigsten Münzen und das Hochzählen werden gezeigt.\nLeeren räumt die Matte ab.\nOptionen: welches Geld, der Preis und womit bezahlt wurde.",
-        "helpIdeas": "Lege dieselbe Summe mit weniger Münzen.\nEs kostet 37, bezahlt mit 100: Zählt gemeinsam hoch zum Wechselgeld."
+        "helpUse": "Zählen addiert das Geld; Wechselgeld rechnet das Rückgeld aus.\nBei Wechselgeld stellen − und + Preis und bezahlten Betrag ein.\nOptionen: welches Geld. Leeren räumt die Matte ab.",
+        "helpIdeas": "Es kostet 37, bezahlt mit 100: Zählt gemeinsam hoch zum Wechselgeld."
       },
       "chance": {
         "name": "Zufallslabor",
@@ -10041,8 +10041,8 @@
         "kind": "Versuch",
         "none": "Noch keine Versuche",
         "howto": "Wähle Münze, Würfel oder Glücksrad, dann Los. Vergleiche mit der Linie.",
-        "helpUse": "Münze, Würfel und Glücksrad wählen das Experiment.\nDas Menü stellt ein, wie viele Versuche jedes Los macht; Los macht sie.\nDas Diagramm zeigt die Ergebnisse; die gestrichelte Linie ist, wie viele wir erwarten.\nNeu anfangen löscht sie.\nOptionen: ein oder zwei Würfel (die Summe), die Teile des Glücksrads, bis zu 1000 Versuche.",
-        "helpIdeas": "Vorhersagen, 10 Würfe, dann 1000: Was liegt näher an der Hälfte?\nWirf zwei Würfel 1000-mal: Warum kommt die Summe 7 am häufigsten?"
+        "helpUse": "Das Menü legt fest, wie viele Versuche Los jedes Mal macht.\nNeu anfangen löscht die Ergebnisse.\nOptionen: ein oder zwei Würfel, die Teile des Glücksrads, bis zu 1000 Versuche.",
+        "helpIdeas": "Vorhersagen, 10 Würfe, dann 1000: Was liegt näher an der Hälfte?"
       },
       "letters": {
         "name": "Buchstabenkärtchen",
@@ -10382,12 +10382,7 @@
       "practiceName": "Üben: {title}",
       "helpFor": "So geht {name}",
       "helpClose": "Schließen",
-      "helpControls": "Was die Knöpfe tun",
-      "helpIdeas": "Ideen für den Unterricht",
-      "helpMore": "Mehr",
-      "helpAsk": "Frage daraus machen: macht aus dem, was das Werkzeug gerade zeigt, eine kurze Abfrage. Die Wörter kannst du vor dem Senden ändern.",
-      "helpSend": "An die Klasse senden: Jedes Kind bekommt eine eigene Kopie zum Ausprobieren. Nichts davon kommt zurück.",
-      "helpPractice": "Üben: öffnet ein Oomba-Spiel, das dasselbe übt."
+      "helpTry": "Zum Ausprobieren:"
     },
     "ask": {
       "fractions": "Welcher Bruchteil ist gefärbt?",

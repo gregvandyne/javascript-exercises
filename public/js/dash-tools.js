@@ -153,7 +153,7 @@ function shell(body, s, ctx, id) {
       }
       if (ctx.copy) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
       if (ask) { const d = T.draw; T.draw = () => { d(); ask.hidden = !T.question(); }; }
-      const help = W.helpUse && !ctx.editing ? helpButton(body, howRow, ctx, { practice: games.length > 0, ask: !!ask, send: !!foot.querySelector('.dt-send') }) : null;
+      const help = W.helpUse && !ctx.editing ? helpButton(body, howRow, ctx) : null;
       setHow(how.textContent);
       T.draw();
       return { destroy() { if (ro) ro.disconnect(); cancelAnimationFrame(raf); if (help) help.destroy(); } };
@@ -161,12 +161,13 @@ function shell(body, s, ctx, id) {
   };
   return T;
 }
-/** ⓘ in the widget's header (top right; on a student's copy in a sheet, at the end of the instruction row): a small panel
- *  inside the widget saying what each control does, ideas for class and, where the tool has them, what Make a question,
- *  Send to students and Practice it do (a student's copy says it is theirs instead). Closed by ✕, Escape or a tap
- *  outside; the focus goes into it and back to the button. Hidden on the projector (public/css/dash.css). */
+/** ⓘ in the widget's header (top right; on a student's copy in a sheet, at the end of the instruction row): a short panel
+ *  inside the widget: the title ("How to use Fraction bars"), at most three short points (helpUse, one a line) and, for
+ *  the teacher only, one "Try:" idea for class (helpIdeas). Nothing on Make a question, Send or Practice it: those
+ *  buttons say what they do. Closed by ✕, Escape or a tap outside; the focus goes into it and back to the button.
+ *  Hidden on the projector (public/css/dash.css). */
 let helpIds = 0;
-function helpButton(body, howRow, ctx, has) {
+function helpButton(body, howRow, ctx) {
   const W = ctx.type.words, C = ctx.common || {}, name = ctx.type.name;
   const card = body.closest('.dash-w') || body.parentElement, head = card && card.querySelector(':scope > .dash-wh');
   const id = `dt-help${++helpIds}`, label = fill(C.helpFor, { name });
@@ -176,14 +177,15 @@ function helpButton(body, howRow, ctx, has) {
   panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', label);
   const top = el('div', 'dt-helphead'), h = el('h3', 'dt-helpt', label); h.dir = 'auto';
   const x = btn('✕', 'btn btn-sm dt-helpx', C.helpClose); top.append(h, x); panel.appendChild(top);
-  const list = (title, text) => {
-    const items = String(text || '').split('\n').map(t => t.trim()).filter(Boolean); if (!items.length) return;
-    panel.appendChild(el('h4', 'dt-helph', title));
-    const ul = el('ul', 'dt-helpl'); for (const t of items) { const li = el('li', null, t); li.dir = 'auto'; ul.appendChild(li); } panel.appendChild(ul);
-  };
-  list(C.helpControls, W.helpUse);
-  list(C.helpIdeas, ctx.copy || !ctx.teacher ? '' : W.helpIdeas);
-  list(C.helpMore, [has.ask && C.helpAsk, has.send && C.helpSend, has.practice && C.helpPractice, ctx.copy && C.copyNote].filter(Boolean).join('\n'));
+  const lines = text => String(text || '').split('\n').map(t => t.trim()).filter(Boolean);
+  const ul = el('ul', 'dt-helpl');
+  for (const t of lines(W.helpUse).slice(0, 3)) { const li = el('li', null, t); li.dir = 'auto'; ul.appendChild(li); }
+  panel.appendChild(ul);
+  const idea = ctx.copy || !ctx.teacher ? '' : lines(W.helpIdeas)[0];
+  if (idea) {
+    const p = el('p', 'dt-helptry'); p.dir = 'auto';
+    p.append(el('b', 'dt-helptryl', C.helpTry), el('span', null, idea)); panel.appendChild(p);
+  }
   (head || howRow).appendChild(b); card.appendChild(panel);
   if (!head) howRow.hidden = false;
   const outside = e => { if (!panel.contains(e.target) && !b.contains(e.target)) close(false); };

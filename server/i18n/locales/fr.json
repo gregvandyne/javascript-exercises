@@ -9426,8 +9426,8 @@
         "howto": "Touche une bande pour colorier des parts. − et + changent les parts.",
         "howtoOp": "Règle chaque nombre avec − et +. Le résultat est dessiné dessous.",
         "howtoMul": "Règle chaque nombre avec − et +. La partie commune est le résultat.",
-        "helpUse": "Comparer, Additionner, Soustraire, Multiplier et Diviser choisissent ce qu’on fait.\nComparer : touche une bande ou un disque pour colorier des parts ; − et + changent le nombre de parts. Parts égales montre laquelle est la plus grande.\nAdditionner et Soustraire : − et + règlent chaque numérateur et dénominateur. Les deux fractions sont coupées en parts égales, puis le résultat est dessiné et simplifié.\nMultiplier : la première fraction colorie des colonnes, la seconde des lignes. Là où elles se superposent, c’est le résultat.\nDiviser : la première fraction est mesurée avec la seconde ; un reste est hachuré. Le calcul retourne la seconde fraction et multiplie. Le second numérateur ne peut pas valoir 0.\nCacher la réponse la garde cachée jusqu’à ce que tu la montres.",
-        "helpIdeas": "Montre 1/2 + 1/3 avec la réponse cachée et fais deviner les binômes.\nDemande combien de 1/4 tiennent dans 3/4, puis essaie 3/4 ÷ 1/2.",
+        "helpUse": "Choisis Comparer, Additionner, Soustraire, Multiplier ou Diviser.\nEn Comparer, Parts égales montre quelle fraction est la plus grande.\nCacher la réponse la garde cachée jusqu’à ce que tu la montres.",
+        "helpIdeas": "Montre 1/2 + 1/3 avec la réponse cachée et fais deviner les binômes.",
         "mode": "Que faire",
         "modeCompare": "Comparer",
         "modeAdd": "Additionner",
@@ -9470,8 +9470,8 @@
         "hint": "Touche la droite pour placer un point, ou glisse le long pour faire un bond.",
         "range": "Jusqu’à 240 pas tiennent sur une droite.",
         "howto": "Point : touche la droite. Bond : glisse d’un nombre à un autre.",
-        "helpUse": "Point place un point là où tu touches ; touche-le à nouveau pour l’enlever.\nBond trace une flèche de là où tu appuies jusqu’à là où tu lâches, et écrit le calcul dessous.\nLes flèches du clavier déplacent le repère ; Entrée place un point ou commence et finit un bond.\nOptions : l’intervalle, et nombres entiers, fractions ou décimaux.",
-        "helpIdeas": "Fais trois bonds de 3/4 depuis 0. Où arrives-tu ?\nRègle de −5 à 5 et montre 2 − 5 comme un bond en arrière qui passe zéro."
+        "helpUse": "Touche un point une deuxième fois pour l’enlever.\nLes flèches déplacent le repère ; Entrée place un point ou un bond.\nOptions : l’intervalle, et nombres entiers, fractions ou décimaux.",
+        "helpIdeas": "Fais trois bonds de 3/4 depuis 0. Où arrives-tu ?"
       },
       "coord": {
         "name": "Repère cartésien",
@@ -9493,8 +9493,8 @@
         "hint": "Les flèches déplacent, Entrée place un point.",
         "noLine": "Touche le quadrillage pour placer des points.",
         "howto": "Touche le quadrillage pour placer un point. − et + changent la droite.",
-        "helpUse": "Touche un croisement pour placer un point ; touche-le à nouveau pour l’enlever.\nPente − et + rendent la droite plus ou moins raide ; Commence à déplace l’endroit où elle coupe l’axe des y.\nLe tableau donne des valeurs exactes sur la droite.\nLes flèches déplacent le curseur ; Entrée place un point.\nOptions : quatre quadrants ou un seul, taille 5 ou 10, la droite et le tableau.",
-        "helpIdeas": "Place trois points du tableau et demande la règle.\nPasse la pente de 1/2 à 2 : qu’est-ce qui a changé, qu’est-ce qui est resté pareil ?"
+        "helpUse": "Touche un point une deuxième fois pour l’enlever.\nPente change l’inclinaison ; Commence à monte ou descend la droite.\nLe tableau donne des valeurs exactes. Options : un ou quatre quadrants.",
+        "helpIdeas": "Place trois points du tableau et demande la règle."
       },
       "graph": {
         "name": "Atelier de graphiques",
@@ -9518,8 +9518,8 @@
         "icon": "Image",
         "empty": "Ajoute tes nombres dans Options.",
         "howto": "Choisis un type de graphique. Mets tes nombres dans Options.",
-        "helpUse": "Barres, lignes, pictogramme et points dessinent les mêmes nombres de façons différentes.\nOptions : un titre, et pour chaque ligne un nom et un nombre (jusqu’à 12).\nPour un pictogramme, choisis l’image et ce que vaut chacune.\nL’enseignant peut aussi reprendre les totaux d’une question rapide dans Options.",
-        "helpIdeas": "Pose une question rapide sur le fruit préféré, puis trace ses totaux.\nMontre les données en barres et en points : lequel se lit le mieux ?"
+        "helpUse": "Barres, lignes, pictogramme et points montrent les mêmes nombres.\nOptions : un titre et jusqu’à 12 étiquettes avec leurs nombres.\nL’enseignant peut tracer les totaux d’une question éclair depuis Options.",
+        "helpIdeas": "Pose une question rapide sur le fruit préféré, puis trace ses totaux."
       },
       "base10": {
         "name": "Blocs base dix",
@@ -9538,8 +9538,8 @@
         "drop": "Glisse sur le tapis",
         "clear": "Effacer",
         "howto": "Touche ou glisse des blocs sur les tapis. Échange 10 contre 1.",
-        "helpUse": "− et + sous un tapis retirent ou ajoutent un bloc.\nGlisse un bloc depuis le titre d’un tapis pour en ajouter un ; fais-en sortir un pour le retirer.\nLes boutons d’échange changent 10 unités contre 1 dizaine, ou 10 dizaines contre 1 centaine, et inversement. Le nombre ne change pas.\nEffacer vide les tapis.",
-        "helpIdeas": "Montre 3 dizaines et 14 unités : peut-on mieux l’écrire ?\nConstruis 205, puis échange pour pouvoir enlever 30."
+        "helpUse": "− et + sous un tapis retirent ou ajoutent un bloc.\nFais glisser un bloc hors du tapis pour le retirer.\nÉchanger change les blocs, jamais le nombre.",
+        "helpIdeas": "Construis 205, puis échange pour pouvoir enlever 30."
       },
       "placeval": {
         "name": "Tableau de numération",
@@ -9560,8 +9560,8 @@
         "hundredths": "Centièmes",
         "thousandths": "Millièmes",
         "howto": "Touche une colonne, puis change son chiffre avec − et +.",
-        "helpUse": "Touche une colonne pour la choisir ; − et + retirent ou ajoutent un à ce rang, avec les retenues.\nFois 10 et Divisé par 10 décalent chaque chiffre d’un rang.\nLa décomposition est écrite dessous.\nOptions : les jetons, les rangs après la virgule, effacer.",
-        "helpIdeas": "Montre 3405 et appuie sur Fois 10 : qu’est-ce qui a bougé, qu’est-ce qui est resté ?\nFais 0,25 et demande à un élève d’ajouter un dixième."
+        "helpUse": "− et + font les retenues et les emprunts entre les rangs.\nFois 10 et Divisé par 10 décalent chaque chiffre d’un rang.\nOptions : les jetons et les chiffres après la virgule.",
+        "helpIdeas": "Montre 3405 et appuie sur Fois 10 : qu’est-ce qui a bougé, qu’est-ce qui est resté ?"
       },
       "tenframe": {
         "name": "Cadres de dix",
@@ -9579,8 +9579,8 @@
         "flip": "Échanger les couleurs",
         "makeTen": "Encore {n} pour la dizaine suivante.",
         "howto": "Touche une case : rouge, puis jaune, puis vide.",
-        "helpUse": "Touche une case : rouge, puis jaune, puis vide.\nRouge + et Jaune + remplissent la case suivante ; En retirer un vide la dernière.\nLa décomposition montre les deux couleurs et combien il manque pour dix.\nOptions : une ou deux grilles, la décomposition, échanger les couleurs, remplir de rouge.",
-        "helpIdeas": "Montre 7 pendant deux secondes, cache l’écran et demande combien.\nMontre 6 rouges et 3 jaunes : combien font 6 + 3, et combien manque-t-il pour 10 ?"
+        "helpUse": "Rouge + et Jaune + remplissent la case suivante ; En retirer un vide la dernière.\nLa décomposition montre combien il manque pour dix.\nOptions : deux grilles, échanger les couleurs, remplir de rouge.",
+        "helpIdeas": "Montre 7 pendant deux secondes, cache l’écran et demande combien."
       },
       "hundreds": {
         "name": "Tableau des nombres jusqu’à 100",
@@ -9597,8 +9597,8 @@
         "hidden": "Nombre caché",
         "noSkip": "Sans bonds",
         "howto": "Touche des nombres pour les colorier. Choisis un comptage pour un motif.",
-        "helpUse": "Touche un nombre pour le colorier ; touche-le à nouveau pour l’effacer.\nCompter de tant en tant allume les suites de 2 à 10.\nCacher des nombres cache les nombres coloriés ou tous, pour deviner.\nEffacer enlève les couleurs et le comptage. Options : 1-100 ou 0-99.",
-        "helpIdeas": "Cache tous les nombres, colorie-en un et demande lequel c’est.\nCompte de 9 en 9 : quel motif font les chiffres ?"
+        "helpUse": "Touche à nouveau un nombre colorié pour l’effacer.\nCacher des nombres masque les coloriés, ou tous, pour deviner.\nOptions : 1-100 ou 0-99. Effacer enlève tout.",
+        "helpIdeas": "Compte de 9 en 9 : quel motif font les chiffres ?"
       },
       "area": {
         "name": "Modèle d’aire et quadrillages",
@@ -9613,8 +9613,8 @@
         "noSplit": "0 veut dire : pas de coupe.",
         "hint": "Coupe un côté pour découper le produit en parties plus faciles.",
         "howto": "Règle lignes et colonnes avec − et +. Coupe un côté pour décomposer.",
-        "helpUse": "Lignes et Colonnes − et + règlent les deux nombres.\nQuadrillage montre des points en lignes (jusqu’à 12 × 12) ; Modèle d’aire montre un rectangle.\nCouper selon la numération sépare les côtés en dizaines et unités et montre chaque produit partiel.\nOptions : choisis exactement où chaque côté est coupé (0 = pas de coupe).",
-        "helpIdeas": "Montre 14 × 6 comme 10 × 6 et 4 × 6, puis additionne les parties.\nMontre 3 × 4, puis 4 × 3 : le résultat a-t-il changé ?"
+        "helpUse": "Quadrillage montre des points en lignes ; Modèle d’aire, un rectangle.\nCouper selon la numération montre chaque produit partiel.\nOptions : choisis exactement où chaque côté est coupé.",
+        "helpIdeas": "Montre 14 × 6 comme 10 × 6 et 4 × 6, puis additionne les parties."
       },
       "times": {
         "name": "Table de multiplication",
@@ -9630,8 +9630,8 @@
         "squaresAre": "Nombres carrés",
         "clear": "Effacer",
         "howto": "Touche une case pour allumer un produit. Choisis quoi montrer d’autre.",
-        "helpUse": "Touche une case pour allumer son produit.\nLe menu allume un produit, une ligne, une colonne, les carrés ou les produits inversés.\nCacher les résultats vide chaque produit, pour deviner.\nLes flèches se déplacent dans la grille ; Entrée allume un produit.\nEffacer éteint tout. Options : 10 × 10 ou 12 × 12.",
-        "helpIdeas": "Allume la ligne de 9 : quel motif font les chiffres ?\nCache les résultats, allume 7 × 8 et demande à la classe avant de montrer."
+        "helpUse": "Le menu éclaire une ligne, une colonne, les carrés ou les produits inversés.\nCacher les résultats masque chaque produit pour faire deviner la classe.\nLes flèches et Entrée marchent aussi. Options : 10 × 10 ou 12 × 12.",
+        "helpIdeas": "Allume la ligne de 9 : quel motif font les chiffres ?"
       },
       "tclock": {
         "name": "Horloge pour apprendre",
@@ -9649,8 +9649,8 @@
         "onlyH": "{h} h",
         "onlyM": "{m} min",
         "howto": "Glisse une aiguille pour changer l’heure. L’autre suit.",
-        "helpUse": "Glisse la grande ou la petite aiguille ; la petite avance avec les minutes.\nLes boutons reculent ou avancent de 5 minutes ou d’1 heure.\nLes flèches avancent d’une minute, Page préc. et Page suiv. d’une heure.\nOptions : l’heure numérique, le format 24 heures, la durée écoulée.\nDurée écoulée : choisis le début ou la fin et règle chacun ; la durée entre les deux est montrée par bonds.",
-        "helpIdeas": "Cache l’heure numérique et fais lire l’horloge à la classe.\nAvec la durée écoulée : de 11:40 à 13:15, combien de temps ?"
+        "helpUse": "Les boutons avancent ou reculent de 5 minutes ou d’1 heure.\nOptions : l’heure numérique et le format 24 heures.\nDurée écoulée, dans Options, montre le temps entre le début et la fin.",
+        "helpIdeas": "Cache l’heure numérique et fais lire l’horloge à la classe."
       },
       "fdp": {
         "name": "Fraction, décimal, pourcentage",
@@ -9664,8 +9664,8 @@
         "bottom": "Dénominateur",
         "outOf": "{n} sur 100",
         "howto": "Change numérateur et dénominateur avec − et +, ou touche la grille.",
-        "helpUse": "Numérateur et Dénominateur − et + changent la fraction (jusqu’à 100).\nLes cartes montrent le même nombre en fraction, en décimal et en pourcentage. Un décimal qui se répète finit par …\nTouche la grille de 10 × 10 pour colorier autant de centièmes ; les flèches marchent aussi.",
-        "helpIdeas": "Demande 3/8 en nombre décimal, puis vérifie ici.\nColorie 25 cases : quelles sont trois façons de l’écrire ?"
+        "helpUse": "Les cartes le montrent en fraction, en décimal et en pourcentage.\nUn décimal qui se répète finit par …\nTouche la grille 10 × 10 pour colorier des centièmes ; les flèches marchent aussi.",
+        "helpIdeas": "Demande 3/8 en nombre décimal, puis vérifie ici."
       },
       "board": {
         "name": "Tableau blanc",
@@ -9852,8 +9852,8 @@
         "hint": "Fais glisser les blocs ; ils s’accrochent à la grille.",
         "empty": "Ajoute un bloc depuis la rangée du haut. Les flèches déplacent le bloc choisi et R le tourne.",
         "howto": "Touche une pièce en haut pour l’ajouter. Glisse-les : elles s’emboîtent.",
-        "helpUse": "Touche une pièce dans la rangée du haut pour l’ajouter.\nGlisse une pièce pour la déplacer ; elle s’aligne sur la grille. Touche-la pour la choisir.\nTourner tourne la pièce choisie ; Retirer l’enlève ; Effacer vide le plateau.\nL’affichage dit quelle fraction d’un hexagone font les pièces.\nLes flèches déplacent la pièce choisie ; R la tourne.",
-        "helpIdeas": "De combien de façons peut-on couvrir un hexagone ?\nSi l’hexagone vaut 1, combien vaut un trapèze ? Et un triangle ?"
+        "helpUse": "Touche un bloc du plateau pour le choisir, puis Tourner ou Retirer.\nL’affichage donne la fraction d’hexagone que forment les blocs.\nLes flèches déplacent le bloc choisi ; R le tourne.",
+        "helpIdeas": "De combien de façons peut-on couvrir un hexagone ?"
       },
       "angle": {
         "name": "Fabrique d’angles",
@@ -9871,8 +9871,8 @@
         "ray": "Angle",
         "hint": "Fais glisser le bout de la demi-droite ou utilise les flèches.",
         "howto": "Glisse le bout de la demi-droite, ou change l’angle avec − et +.",
-        "helpUse": "Glisse le bout de la demi-droite pour ouvrir ou fermer l’angle.\n− et + le changent d’un pas ; les boutons sautent à 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle sont écrits dessous.\nRapporteur et Arc les montrent ou les cachent. Options : pas de 1°, 5° ou 15°.",
-        "helpIdeas": "Cache le rapporteur et fais d’abord estimer.\nOuvre lentement de 0° à 360° et nomme chaque sorte d’angle en chemin."
+        "helpUse": "Les boutons sautent à 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle s’affichent dessous.\nRapporteur et Arc s’affichent ou se cachent ; Options règle l’arrondi.",
+        "helpIdeas": "Cache le rapporteur et fais d’abord estimer."
       },
       "solids": {
         "name": "Solides et patrons",
@@ -9899,8 +9899,8 @@
         "shape": "Solide",
         "view": "Plier : flèches. Tourner : Page précédente et Page suivante.",
         "howto": "Choisis un solide. Plie ou déplie-le ; glisse de côté pour le tourner.",
-        "helpUse": "Le premier menu choisit le solide ; le second marque ses faces, arêtes ou sommets.\nPlier plie le patron en solide ; appuie à nouveau pour le déplier.\nGlisse de côté, ou appuie sur Tourner, pour le faire tourner.\nLes flèches le plient petit à petit ; Page préc. et Page suiv. le tournent.\nFaces, arêtes et sommets sont comptés dessous.",
-        "helpIdeas": "Montre un patron à plat et demande quel solide il donnera avant de le plier.\nCompte faces, sommets et arêtes d’un prisme : F + S − A = 2 ?"
+        "helpUse": "Le second menu marque les faces, arêtes ou sommets.\nTourner le fait aussi tourner ; faces, arêtes et sommets sont comptés.\nLes flèches le plient ; Page préc. et Page suiv. le tournent.",
+        "helpIdeas": "Montre un patron à plat et demande quel solide il donnera avant de le plier."
       },
       "transform": {
         "name": "Transformations",
@@ -9930,8 +9930,8 @@
         "rule": "Règle",
         "move": "Transformation",
         "howto": "Choisis translation, symétrie ou rotation. Glisse la forme.",
-        "helpUse": "Translation, Symétrie et Rotation choisissent le mouvement.\nTranslation : x et y − et + font glisser la forme ; tu peux aussi la glisser ou utiliser les flèches.\nSymétrie et Rotation : le menu choisit l’axe ou la rotation autour de l’origine.\nLa règle et chaque point avant et après sont montrés.\nOptions : la forme, le départ en pointillés, le tableau.",
-        "helpIdeas": "Symétrie par rapport à l’axe des y : que devient chaque x ?\nTourne de 90° et demande où arrivera le point A avant de le montrer."
+        "helpUse": "Translation : − et + sur x et y font glisser la figure.\nSymétrie et Rotation : le menu choisit l’axe ou la rotation.\nLa règle et chaque point avant et après sont affichés.",
+        "helpIdeas": "Tourne de 90° et demande où arrivera le point A avant de le montrer."
       },
       "balance": {
         "name": "Balance",
@@ -9958,8 +9958,8 @@
         "scale": "Balance",
         "start": "Nouvelle équation où",
         "howto": "Fais la même chose des deux côtés pour garder l’équilibre. Trouve x.",
-        "helpUse": "+ x et − x ajoutent ou retirent une boîte x ; + 1 et − 1 un poids.\n÷ partage chaque côté en groupes égaux et en garde un.\nLes deux côtés, Côté gauche ou Côté droit : où se fait l’étape suivante. Un seul côté fait pencher la balance.\nAnnuler revient en arrière ; Nouvelle équation en crée une autre.\nOptions : montrer ce que pèse x, choisir x, commencer une nouvelle équation.",
-        "helpIdeas": "Résolvez 3x + 2 = x + 8 ensemble, en disant chaque étape à voix haute.\nFais une étape d’un seul côté : pourquoi la balance penche-t-elle ?"
+        "helpUse": "+ x, − x, + 1 et − 1 ajoutent ou retirent boîtes et poids.\n÷ partage chaque côté en groupes égaux et en garde un.\nUne étape seulement sur Côté gauche ou Côté droit la fait pencher.",
+        "helpIdeas": "Résolvez 3x + 2 = x + 8 ensemble, en disant chaque étape à voix haute."
       },
       "algebra": {
         "name": "Tuiles algébriques",
@@ -9983,8 +9983,8 @@
         "empty": "Ajoute des tuiles depuis la rangée du haut.",
         "full": "Le tapis est plein.",
         "howto": "Touche une tuile en haut pour l’ajouter. Enlève les paires nulles.",
-        "helpUse": "Les boutons du haut ajoutent +x², −x², +x, −x, +1 ou −1.\nTouche une tuile pour la choisir ; Retourner change son signe, Suppr l’enlève.\nUne tuile positive et une négative de la même sorte font une paire nulle (entourée) ; Paires nulles les enlève.\nL’expression est écrite telle que les tuiles sont posées, puis simplifiée. Effacer vide le tapis.",
-        "helpIdeas": "Pose 2x + 3 − x − 1 et simplifie avec les paires nulles.\nMontre x² + 2x et demande une autre façon de l’écrire."
+        "helpUse": "Touche une tuile pour la choisir ; Retourner change son signe.\nDeux tuiles opposées de même sorte sont entourées : une paire nulle.\nPaires nulles les retire et l’expression est simplifiée.",
+        "helpIdeas": "Pose 2x + 3 − x − 1 et simplifie avec les paires nulles."
       },
       "coins": {
         "name": "Pièces et argent",
@@ -10013,8 +10013,8 @@
         "mode": "Que faire",
         "units": "Les montants ici sont en centimes ou en pence (nombres simples pour le jeu simple).",
         "howto": "Touche pièces et billets en haut. Touche une pile pour en retirer.",
-        "helpUse": "Compter : touche une pièce ou un billet pour l’ajouter ; touche une pile sur le tapis pour en retirer un. Le total est affiché.\nRendre la monnaie : règle avec − et + ce que ça coûte et avec quoi on paie. La monnaie, le moins de pièces possible et le comptage en avançant sont montrés.\nEffacer vide le tapis.\nOptions : quelle monnaie, le prix et ce qui est payé.",
-        "helpIdeas": "Fais le même total avec moins de pièces.\nÇa coûte 37, payé avec 100 : comptez ensemble pour trouver la monnaie."
+        "helpUse": "Compter additionne l’argent ; Rendre la monnaie calcule la monnaie.\nEn Rendre la monnaie, − et + règlent le prix et la somme payée.\nOptions : quelle monnaie. Effacer vide le tapis.",
+        "helpIdeas": "Ça coûte 37, payé avec 100 : comptez ensemble pour trouver la monnaie."
       },
       "chance": {
         "name": "Labo du hasard",
@@ -10040,8 +10040,8 @@
         "kind": "Expérience",
         "none": "Pas encore d’essais",
         "howto": "Choisis pièce, dés ou roue, puis Lancer. Compare aux pointillés.",
-        "helpUse": "Pièce, Dés et Roue choisissent l’expérience.\nLe menu règle combien d’essais fait chaque Lancer ; Lancer les fait.\nLe graphique montre les résultats ; la ligne pointillée, c’est combien on en attend.\nRecommencer les efface.\nOptions : un dé ou deux (la somme), les parts de la roue, jusqu’à 1000 essais.",
-        "helpIdeas": "Prédire, lancer 10 fois, puis 1000 : lequel est le plus proche de la moitié ?\nLance deux dés 1000 fois : pourquoi la somme 7 sort-elle le plus ?"
+        "helpUse": "Le menu fixe combien d’essais Lancer fait à chaque fois.\nRecommencer efface les résultats.\nOptions : un ou deux dés, les parts de la roue, jusqu’à 1000 essais.",
+        "helpIdeas": "Prédire, lancer 10 fois, puis 1000 : lequel est le plus proche de la moitié ?"
       },
       "letters": {
         "name": "Lettres mobiles",
@@ -10381,12 +10381,7 @@
       "practiceName": "S’entraîner : {title}",
       "helpFor": "Comment utiliser : {name}",
       "helpClose": "Fermer",
-      "helpControls": "À quoi servent les boutons",
-      "helpIdeas": "Idées pour la classe",
-      "helpMore": "Et aussi",
-      "helpAsk": "Faire une question : transforme ce que montre l’outil en une question rapide. Tu peux changer les mots avant de l’envoyer.",
-      "helpSend": "Envoyer à la classe : chaque élève reçoit sa propre copie pour essayer. Rien de ce qu’il en fait ne revient.",
-      "helpPractice": "S’entraîner : ouvre un jeu Oomba qui fait travailler la même notion."
+      "helpTry": "À essayer :"
     },
     "ask": {
       "fractions": "Quelle fraction est coloriée ?",
