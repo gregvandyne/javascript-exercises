@@ -6479,8 +6479,8 @@ Push to students' link tab.
   address that starts with https://"). **No scheme typed** ("example.org/page"): read as `https://example.org/page`
   on both sides, and the settings show the full address the code will open. An address with any other scheme
   (`http:`, `javascript:`, `data:`, `file:`, `user:pw@…`) is still refused, never rewritten.
-- **It becomes an approved link.** `POST /api/dash/:id/qr/site` (the class's teacher only; 404 to everyone else, rate
-  limited with the other link writes) calls `addLink`: audited (`dash.link_add`), on the class's list in Push to
+- **It becomes an approved link.** `POST /api/dash/:id/links` with `qr: true` (no new address; the class's teacher only,
+  404 to everyone else, the same rate limit) calls `addLink`: audited (`dash.link_add`), on the class's list in Push to
   students, removable there, counted toward `MAX_LINKS` (50). The same address again is the same link (`addLink` now
   looks for it before checking the limit, so a full list still reuses it). The widget keeps `{ kind: 'link', ref }`
   as before; the live game, lesson and game choices are unchanged.

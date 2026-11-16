@@ -10,7 +10,7 @@
 //   POST /api/dash/:id/templates/:tid         a teacher adds a ready-made layout (docs/decisions.md "Ready-made layouts")
 //   GET  /api/dash/:id/push-options           POST /api/dash/:id/pushes, /pushes/:pid/end    the teacher sends
 //   POST /api/dash/:id/pushes/:pid/hide       a student hides a push from their banner (or brings it back)
-//   POST /api/dash/:id/links, /links/:lid/remove           approved links
+//   POST /api/dash/:id/links, /links/:lid/remove           approved links ({ qr: true }: the QR widget's typed website)
 //   POST /api/dash/:id/eyes                   Eyes up on or off
 //   POST /api/dash/:id/pictures, GET /api/dash/:id/pictures, POST /api/dash/:id/pictures/:pid/remove
 // Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): everyday widgets. Their changing state (timers, help
@@ -23,7 +23,6 @@
 //   POST /api/dash/:id/checks/:cid/answer     a student taps an answer
 //   GET  /api/dash/:id/places?q=              the teacher looks up a city for the weather (server side)
 //   GET  /api/dash/:id/qr?kind=&ref=          a QR code for an allowed target (teacher)
-//   POST /api/dash/:id/qr/site                a typed website becomes an approved link and the QR code's target (teacher)
 //   GET  /api/dash/:id/tiles?refs=            Oomba tiles the reader can open
 // Stage 3 (docs/decisions.md "Classroom dashboards, stage 3"): teaching tools, the whiteboard and the Picture widget add
 // no new address. A tool is sent with POST /pushes (kind 'tool': the teacher's widget id and its state, rebuilt from the
@@ -285,7 +284,8 @@ router.post('/api/dash/:id/pushes/:pid/end', requireUser, rateLimit('dash-push',
 router.post('/api/dash/:id/links', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
   const b = body(req);
-  send(req, res, D.addLink(req.user, x.c, { url: b.url, title: b.title }));
+  // { qr: true }: the QR widget's "A website" box (no scheme reads as https://, must fit a code; -> { link, target }).
+  send(req, res, b.qr === true ? D.qrWebsite(req.user, x.c, { url: b.url, title: b.title }) : D.addLink(req.user, x.c, { url: b.url, title: b.title }));
 });
 router.post('/api/dash/:id/links/:lid/remove', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
@@ -391,12 +391,6 @@ router.get('/api/dash/:id/qr', requireUser, rateLimit('dash-qr', 240, 3600e3), (
   if (!fits(tg.url, MAX_DASH_VERSION)) return fail(req, res, 'qrLong', 422);
   let svg; try { svg = qrSvg(tg.url, { title: req.t('dash.w.qr.scan'), max: MAX_DASH_VERSION }); } catch { return fail(req, res, 'qrGone', 404); }
   res.json({ svg, text: tg.text, title: tg.title });
-});
-/** The QR widget's "A website" box: the typed address joins the class's approved links and becomes the code's target. */
-router.post('/api/dash/:id/qr/site', requireUser, rateLimit('dash-links', 60, 3600e3), (req, res) => {
-  const x = load(req, res, { teacher: true }); if (!x) return;
-  const b = body(req);
-  send(req, res, D.qrWebsite(req.user, x.c, { url: b.url, title: b.title }));
 });
 
 router.get('/api/dash/:id/tiles', requireUser, rateLimit('dash-tiles', 240, 60e3), (req, res) => {

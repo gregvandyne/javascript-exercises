@@ -688,7 +688,7 @@ function start() {
         const ok = check(); if (!ok) { url.focus(); return; }
         go.disabled = true;
         try {
-          const r = await api(`/api/dash/${CID}/qr/site`, { method: 'POST', body: { url: ok, title: name.value } });
+          const r = await api(`/api/dash/${CID}/links`, { method: 'POST', body: { url: ok, title: name.value, qr: true } });
           optsCache = null; qrForget();
           w.s[f.key] = r.target; commit(); redraw();
           announce(t('js.dash.qrWeb.saved', { name: r.link.title }));

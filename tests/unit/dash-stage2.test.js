@@ -321,7 +321,7 @@ test('QR code, a website: typed in the widget\'s settings, it becomes an approve
   await T(`/class/${w.A.id}/dashboard`);
   const QR = await import('../../server/services/qr.js');
   const V = await import('../../public/js/dash-video.js');
-  const site = (who, body) => as(who)(`/api/dash/${w.A.id}/qr/site`, POST(body));
+  const site = (who, body) => as(who)(`/api/dash/${w.A.id}/links`, POST({ ...body, qr: true }));
   const en = tFor('en');
   // No scheme: read as https://, on both sides alike.
   const r = await site(w.T, { url: '  example.org/reading?level=2  ', title: 'Reading corner' });
