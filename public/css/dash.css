@@ -1338,6 +1338,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 /* a student's own copy of a sent tool */
 .dash-copysheet{width:min(1100px,calc(100vw - 24px));max-width:none}
 .dash-wcopy{height:min(62vh,640px);padding:var(--s3);margin-top:var(--s2);box-shadow:inset 0 0 0 2px var(--line)}
+/* maths tools combined: a copy with a mode switch gets that row back */
+.dash-wcopy:has(.dt-modes){height:min(70vh,700px)}
 .dash-copyacts{margin-top:var(--s3);justify-content:flex-end}
 /* small widgets: the model keeps its room */
 @container (max-height:300px){.dt-read .dt-sub:not(:first-child){display:none}.dt-steplab{display:none}}
@@ -1371,7 +1373,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-tf{height:auto;width:min(100%,360px)}
   .dt-boardbg{height:320px}
   .dt-picframe{flex:none;height:260px}
-  .dash-wcopy{height:auto}
+  .dash-wcopy,.dash-wcopy:has(.dt-modes){height:auto}
 }
 
 /* ---------- stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, document camera, hall
