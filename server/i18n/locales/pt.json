@@ -9182,7 +9182,7 @@
         "next": "Próximo",
         "clear": "Limpar tudo",
         "waiting": "{n} esperando",
-        "finished": "{n} terminaram",
+        "finished": "{n, plural, one {# terminou} other {# terminaram}}",
         "remove": "Remover {name}",
         "hidden": "Os nomes ficam escondidos no projetor."
       },

@@ -9180,7 +9180,7 @@
         "empty": "Niemand wacht.",
         "next": "Volgende",
         "clear": "Alles wissen",
-        "waiting": "{n} wachten",
+        "waiting": "{n, plural, one {# wacht} other {# wachten}}",
         "finished": "{n} klaar",
         "remove": "{name} weghalen",
         "hidden": "Op de beamer zijn de namen verborgen."

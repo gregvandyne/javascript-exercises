@@ -9181,7 +9181,7 @@
         "next": "Avanti",
         "clear": "Cancella tutto",
         "waiting": "{n} in attesa",
-        "finished": "{n} hanno finito",
+        "finished": "{n, plural, one {# ha finito} other {# hanno finito}}",
         "remove": "Togli {name}",
         "hidden": "I nomi sono nascosti sul proiettore."
       },
