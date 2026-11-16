@@ -2723,9 +2723,9 @@
         "eyesOff": "«Occhi qui» è finito",
         "eyesUp": "Occhi qui",
         "hidden": "Nascosto. È salvato in Dal tuo insegnante.",
-        "back": "È tornato"
+        "back": "È tornato",
+        "renamed": "Disposizione rinominata: {name}"
       },
-      "editing": "Modifica: {name}",
       "all": "Tutti",
       "add": "Aggiungi",
       "addName": "Aggiungi {name}",
@@ -8920,6 +8920,7 @@
       "edit": "Modifica schermo",
       "editMine": "Cambia il mio schermo",
       "editing": "Modifica: {name}",
+      "layoutName": "Nome della disposizione",
       "editingMine": "Sto cambiando il mio schermo",
       "editHint": "Trascina per spostare · trascina un angolo per ridimensionare · oppure usa le frecce",
       "editHintMine": "Sposta i tuoi widget, aggiungine altri o scegli uno sfondo. Quelli fissati restano.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Disposizione",
       "new": "Nuova",
-      "manage": "Rinomina o elimina questa disposizione",
-      "defaultName": "Ogni giorno"
+      "manage": "Rinomina o elimina questa disposizione"
     },
     "foot": {
       "eyes": "Occhi qui",
@@ -9407,8 +9407,8 @@
         "r_creative": "Buone idee"
       },
       "fractions": {
-        "name": "Strisce delle frazioni",
-        "desc": "Dividi, colora e confronta. «Parti uguali» mostra perché una è più grande. Classi 2ª–6ª.",
+        "name": "Frazioni",
+        "desc": "Confronta, somma, sottrai, moltiplica e dividi con strisce e cerchi, e vedi un numero come frazione, decimale e percentuale.",
         "bar": "Strisce",
         "circle": "Cerchi",
         "same": "Parti uguali",
@@ -9448,7 +9448,11 @@
         "modeDiv": "Dividi",
         "howtoDiv": "Usa − e + su ogni numero. Quante volte la seconda sta nella prima?",
         "fits": "{b} sta {n} volte in {a}.",
-        "noZero": "Non si può dividere per zero, quindi il secondo numeratore resta 1 o più."
+        "noZero": "Non si può dividere per zero, quindi il secondo numeratore resta 1 o più.",
+        "m": {
+          "fractions": "Strisce delle frazioni",
+          "fdp": "Frazione, decimale, percentuale"
+        }
       },
       "numline": {
         "name": "Linea dei numeri",
@@ -9543,8 +9547,8 @@
         "helpIdeas": "Costruisci 205 e cambia per poter togliere 30."
       },
       "placeval": {
-        "name": "Tabella del valore posizionale",
-        "desc": "Dalle migliaia ai millesimi, con i gettoni.",
+        "name": "Valore posizionale",
+        "desc": "Blocchi in base dieci e tabella del valore posizionale: cambia decine in unità e leggi i numeri dai milioni ai millesimi.",
         "discs": "Mostra i gettoni",
         "decimals": "Mostra decimi, centesimi e millesimi",
         "times10": "Per 10",
@@ -9562,7 +9566,11 @@
         "thousandths": "Millesimi",
         "howto": "Tocca una colonna, poi cambia la sua cifra con − e +.",
         "helpUse": "− e + fanno il riporto e il prestito tra le posizioni.\nPer 10 e Diviso 10 spostano ogni cifra di una posizione.\nOpzioni: i gettoni e le cifre dopo la virgola.",
-        "helpIdeas": "Mostra 3405 e premi Per 10: cosa si è spostato e cosa è rimasto?"
+        "helpIdeas": "Mostra 3405 e premi Per 10: cosa si è spostato e cosa è rimasto?",
+        "m": {
+          "placeval": "Tabella del valore posizionale",
+          "base10": "Blocchi in base dieci"
+        }
       },
       "tenframe": {
         "name": "Cornici del dieci",
@@ -9584,8 +9592,8 @@
         "helpIdeas": "Mostra 7 per due secondi, copri lo schermo e chiedi quanti erano."
       },
       "hundreds": {
-        "name": "Tabella del cento",
-        "desc": "Colora numeri, conta a salti e nascondi numeri da indovinare.",
+        "name": "Tabella dei numeri",
+        "desc": "Una tabella da 1 a 100, da 0 a 99 o da 1 a 120. Colora numeri, conta a salti e nascondi numeri da indovinare.",
         "start": "Numeri",
         "skip": "Conta a salti",
         "skipBy": "Conta di {n} in {n}",
@@ -9602,8 +9610,8 @@
         "helpIdeas": "Conta a salti di 9: che schema formano le cifre?"
       },
       "area": {
-        "name": "Modello d’area e schieramenti",
-        "desc": "Righe per colonne. Dividi un lato per vedere i prodotti parziali.",
+        "name": "Moltiplicare e dividere",
+        "desc": "Modelli d’area e schieramenti con prodotti parziali, e una tavola pitagorica fino a 12 × 12.",
         "rows": "Righe",
         "cols": "Colonne",
         "array": "Schieramento",
@@ -9615,7 +9623,11 @@
         "hint": "Dividi un lato per spezzare il prodotto in parti più facili.",
         "howto": "Regola righe e colonne con − e +. Dividi un lato per scomporre.",
         "helpUse": "Schieramento mostra punti in righe; Modello d’area un rettangolo.\nDividi per valore posizionale mostra ogni prodotto parziale.\nOpzioni: scegli dove dividere esattamente ogni lato.",
-        "helpIdeas": "Mostra 14 × 6 come 10 × 6 e 4 × 6 e somma le parti."
+        "helpIdeas": "Mostra 14 × 6 come 10 × 6 e 4 × 6 e somma le parti.",
+        "m": {
+          "area": "Modello d’area e schieramenti",
+          "times": "Tavola pitagorica"
+        }
       },
       "times": {
         "name": "Tavola pitagorica",
@@ -9724,8 +9736,8 @@
         "bad": "Quell’immagine non ha funzionato. Prova una foto JPG o PNG."
       },
       "geoboard": {
-        "name": "Geopiano",
-        "desc": "Crea figure con elastici su una griglia quadrata, punti a triangoli o un cerchio. Area, perimetro e angoli esatti; righello, etichette e penna. Classi 2–8.",
+        "name": "Tavola delle forme",
+        "desc": "Crea forme con elastici su griglia, punti o cerchio, con area e perimetro esatti. Costruisci e misura angoli con il goniometro.",
         "area": "Area",
         "perimeter": "Perimetro",
         "length": "Lunghezza",
@@ -9831,11 +9843,15 @@
         "idea5": "Crea una figura con esattamente due angoli retti.",
         "howto": "Tocca i chiodi per tendere un elastico. Il primo chiodo lo chiude.",
         "helpUse": "Tocca i chiodi per tendere un elastico; il primo chiodo lo chiude.\nTrascina un vertice o tutto l’elastico. Un colore ne inizia un altro.\nFigure, Strumenti e Annota aggiungono figure, righello, etichette e penna.",
-        "helpIdeas": "Prova: tutti creano un’area di 12 e confrontano i perimetri."
+        "helpIdeas": "Prova: tutti creano un’area di 12 e confrontano i perimetri.",
+        "m": {
+          "geoboard": "Geopiano",
+          "angle": "Crea angoli"
+        }
       },
       "pattern": {
-        "name": "Blocchi geometrici",
-        "desc": "Esagoni, trapezi, rombi, triangoli e quadrati che si incastrano. Mostra la frazione di un esagono. Classi 1ª–5ª.",
+        "name": "Geometria",
+        "desc": "Blocchi geometrici, solidi che si aprono nei loro sviluppi, e traslazioni, simmetrie e rotazioni su una griglia.",
         "hex": "Esagono",
         "trap": "Trapezio",
         "rhom": "Rombo blu",
@@ -9854,7 +9870,12 @@
         "empty": "Aggiungi un blocco dalla fila in alto. Le frecce spostano il blocco scelto e R lo ruota.",
         "howto": "Tocca un pezzo in alto per aggiungerlo. Trascinali: si incastrano.",
         "helpUse": "Tocca un blocco sul piano per sceglierlo, poi Ruota o Togli.\nIl valore indica la frazione di esagono formata dai blocchi.\nLe frecce spostano il blocco scelto; R lo ruota.",
-        "helpIdeas": "In quanti modi puoi coprire un esagono?"
+        "helpIdeas": "In quanti modi puoi coprire un esagono?",
+        "m": {
+          "pattern": "Blocchi geometrici",
+          "solids": "Solidi e sviluppi",
+          "transform": "Trasformazioni"
+        }
       },
       "angle": {
         "name": "Crea angoli",
@@ -9963,8 +9984,8 @@
         "helpIdeas": "Risolvete insieme 3x + 2 = x + 8 dicendo ogni passo ad alta voce."
       },
       "algebra": {
-        "name": "Tessere algebriche",
-        "desc": "Tessere x², x e 1, positive e negative. Le coppie nulle si annullano; l’espressione si semplifica. Classi 6ª–8ª.",
+        "name": "Algebra",
+        "desc": "Tessere algebriche con coppie nulle e una bilancia per risolvere equazioni passo dopo passo.",
         "x2": "x al quadrato",
         "x": "x",
         "one": "uno",
@@ -9985,7 +10006,11 @@
         "full": "Il tappeto è pieno.",
         "howto": "Tocca una tessera in alto per aggiungerla. Togli le coppie nulle.",
         "helpUse": "Tocca una tessera per sceglierla; Gira ne cambia il segno.\nTessere opposte dello stesso tipo sono cerchiate: una coppia nulla.\nCoppie nulle le toglie e l’espressione viene semplificata.",
-        "helpIdeas": "Costruisci 2x + 3 − x − 1 e semplifica con le coppie nulle."
+        "helpIdeas": "Costruisci 2x + 3 − x − 1 e semplifica con le coppie nulle.",
+        "m": {
+          "algebra": "Tessere algebriche",
+          "balance": "Bilancia"
+        }
       },
       "coins": {
         "name": "Monete e denaro",
@@ -10018,8 +10043,8 @@
         "helpIdeas": "Costa 37, pagato con 100: contate insieme in avanti per trovare il resto."
       },
       "chance": {
-        "name": "Laboratorio del caso",
-        "desc": "Lancia monete, dadi e ruote fino a 1000 volte. Un grafico dal vivo accanto a ciò che ci aspettiamo. Classi 3ª–8ª.",
+        "name": "Dati e probabilità",
+        "desc": "Grafici a barre, a linee, ideogrammi e a punti, e un laboratorio del caso: monete, dadi e ruote fino a 1000 volte.",
         "coin": "Moneta",
         "dice": "Dadi",
         "spinner": "Ruota",
@@ -10042,7 +10067,11 @@
         "none": "Ancora nessuna prova",
         "howto": "Scegli moneta, dadi o ruota, poi Lancia. Confronta con la linea.",
         "helpUse": "Il menu decide quante prove fa Lancia ogni volta.\nRicomincia cancella i risultati.\nOpzioni: uno o due dadi, le parti della ruota, fino a 1000 prove.",
-        "helpIdeas": "Prevedi, lancia 10 volte, poi 1000: quale si avvicina di più alla metà?"
+        "helpIdeas": "Prevedi, lancia 10 volte, poi 1000: quale si avvicina di più alla metà?",
+        "m": {
+          "chance": "Laboratorio del caso",
+          "graph": "Crea grafici"
+        }
       },
       "letters": {
         "name": "Tessere delle lettere",
@@ -10382,7 +10411,8 @@
       "practiceName": "Esercitati: {title}",
       "helpFor": "Come si usa: {name}",
       "helpClose": "Chiudi",
-      "helpTry": "Prova:"
+      "helpTry": "Prova:",
+      "modeFor": "Scegli cosa mostra {name}"
     },
     "ask": {
       "fractions": "Quale frazione è colorata?",
@@ -10428,6 +10458,10 @@
       "lesson": {
         "name": "Lezione",
         "desc": "Timer, verifica veloce, fila per l’aiuto, linea dei numeri e semaforo."
+      },
+      "math": {
+        "name": "Matematica",
+        "desc": "Strisce delle frazioni, una linea dei numeri in quarti, un timer e la fila per l’aiuto."
       },
       "group": {
         "name": "Lavoro di gruppo",

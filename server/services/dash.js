@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
-import { q, tx, now, uid, audit } from '../db.js';
+import { db, q, tx, now, uid, audit } from '../db.js';
 import { config } from '../config.js';
 import * as S from './schools.js';
 import * as games from './games.js';
@@ -24,7 +24,7 @@ import * as L from './lessons.js';
 import { cleanJpeg, PhotoError } from './photos.js';
 import { liveOn, openForClass } from './classlive-sessions.js';
 import { isOfficial } from './classlive-access.js';
-import { TOOL_IDS, cleanToolState } from './dash-tools.js';
+import { TOOL_IDS, TOOL_MODES, MODE_HOME, cleanToolState, moveToolState } from './dash-tools.js';
 import { cleanVideo } from './dash-media.js';
 import { lookup } from '../i18n/index.js';
 import { fits, MAX_DASH_VERSION } from './qr.js';
@@ -82,7 +82,9 @@ const TOOL_WORDS = {
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
 /** Help on the maths tools (docs/decisions.md "Classroom dashboards: help on the maths tools"): each maths tool's one-line
- *  instruction (howto) and its short ⓘ panel (helpUse: at most three points, one a line; helpIdeas: one idea for class). */
+ *  instruction (howto) and its short ⓘ panel (helpUse: at most three points, one a line; helpIdeas: one idea for class).
+ *  Since "maths tools combined" these are the maths tools' modes (a retired tool's id is now a mode of another tool, its
+ *  help and words still dash.w.<old id>.*): every mode has its own instruction and ⓘ panel. */
 export const MATH_TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp',
   'geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance'];
 for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas');
@@ -91,6 +93,8 @@ TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul'
   'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
+  // maths tools combined: the mode switch ("Choose what Place value shows")
+  'modeFor',
   // stage 4: "Make a question from it" and "Practice it"
   'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
   // help on the maths tools: the ⓘ panel
@@ -98,7 +102,8 @@ export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'c
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
 export const ASK_KEYS = ['fractions', 'fractionsAdd', 'fractionsSub', 'fractionsMul', 'fractionsDiv', 'numline', 'numlinePt', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'hundredsShade', 'times', 'tclock', 'fdp',
   'geoboard', 'geoboardTri', 'pattern', 'angle', 'solidsF', 'solidsE', 'transform', 'balance', 'algebra', 'coins', 'coinsChange', 'chance', 'letters', 'map', 'mapGrid'];
-/** Stage 4, "Practice it": a teaching tool and the official Oomba games that practise the same thing (picked by hand
+/** Stage 4, "Practice it": a teaching tool (since "maths tools combined": a tool's mode, keyed by the mode's id, which is
+ *  the old tool's id; the page sends every key and each mode looks up its own) and the official Oomba games that practise the same thing (picked by hand
  *  from the games' own topics, seed-games/<slug>.json). A game is offered only while it is the official game and every
  *  student of the class can open it; a tool without a clean match offers nothing. */
 export const PRACTICE = {
@@ -117,6 +122,12 @@ export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
 /** Widgets that show something from outside Oomba (or the camera): the teacher's screen and projector only. Never
  *  pinned, never pushed, never on a student's screen. */
 export const TEACHER_ONLY = ['video', 'site', 'camera'];
+/** Each maths tool mode's icon (a tool's own mode has the tool's icon). */
+export const MODE_ICONS = { fractions: '🍕', fdp: '➗', placeval: '🔟', base10: '🧱', area: '🔲', times: '✖️', geoboard: '📌', angle: '📐',
+  pattern: '🔷', solids: '🧊', transform: '🔄', algebra: '🟪', balance: '⚖️', chance: '🎯', graph: '📊' };
+/** A teaching tool's registry entry (stages 3 and 4); modes: its modes, when it has more than one (TOOL_MODES). */
+const toolType = (id, icon, size, min, group) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id],
+  ...(TOOL_MODES[id] ? { modes: TOOL_MODES[id] } : {}), settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] });
 export const WIDGETS = [
   { id: 'clock', icon: '🕒', group: 'time', who: 'both', size: [3, 2], min: [3, 2], words: [], settings: [
     { key: 'face', type: 'select', options: ['digital', 'analog'], def: 'digital' },
@@ -193,16 +204,19 @@ export const WIDGETS = [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
   // pinned (a pinned copy would follow every move the teacher makes). Students may add them to their own screen.
-  ...[['fractions', '🍕', [6, 7], [5, 7]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]], ['graph', '📊', [5, 6], [5, 6]],
-    ['base10', '🧱', [7, 6], [6, 5]], ['placeval', '🔟', [7, 5], [6, 5]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
-    ['area', '🔲', [6, 6], [5, 6]], ['times', '✖️', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]], ['fdp', '➗', [6, 5], [5, 4]]]
-    .map(([id, icon, size, min]) => ({ id, icon, group: 'teach', who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  // Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): base-ten blocks, the times table,
+  // fraction/decimal/percent, the angle maker, 3D shapes, transformations, the balance and the graph maker are modes of
+  // place value, multiply and divide, fractions, the shape board, geometry, algebra and data and chance (TOOL_MODES,
+  // RETIRED). A tool with modes is as big as its biggest mode needs, plus the row of its mode switch.
+  ...[['fractions', '🍕', [6, 8], [5, 8]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]],
+    ['placeval', '🔟', [7, 7], [6, 6]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['area', '🔲', [6, 8], [5, 8]], ['tclock', '🕰️', [4, 6], [4, 5]]]
+    .map(([id, icon, size, min]) => toolType(id, icon, size, min, 'teach')),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
   // Teach; letter tiles, graphic organizers and maps in a new group, Words and maps.
-  ...[['geoboard', '📌', [8, 8], [5, 7], 'teach'], ['pattern', '🔷', [7, 6], [6, 6], 'teach'], ['angle', '📐', [6, 6], [5, 5], 'teach'], ['solids', '🧊', [6, 7], [5, 7], 'teach'],
-    ['transform', '🔄', [7, 6], [6, 6], 'teach'], ['balance', '⚖️', [7, 6], [6, 6], 'teach'], ['algebra', '🟪', [6, 6], [5, 6], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
-    ['chance', '🎯', [7, 6], [6, 6], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
-    .map(([id, icon, size, min, group]) => ({ id, icon, group, who: 'both', pin: false, send: true, size, min, words: TOOL_WORDS[id], settings: [{ key: 'state', type: 'tool', hidden: true, def: cleanToolState(id, {}) }] })),
+  ...[['geoboard', '📌', [8, 8], [5, 8], 'teach'], ['pattern', '🔷', [7, 8], [6, 8], 'teach'], ['algebra', '🟪', [7, 7], [6, 7], 'teach'], ['coins', '🪙', [7, 7], [6, 7], 'teach'],
+    ['chance', '🎯', [7, 7], [6, 7], 'teach'], ['letters', '🔤', [7, 6], [6, 6], 'words'], ['organizer', '🗂️', [7, 6], [6, 5], 'words'], ['map', '🗺️', [7, 6], [6, 5], 'words']]
+    .map(([id, icon, size, min, group]) => toolType(id, icon, size, min, group)),
   { id: 'board', icon: '🖍️', group: 'teach', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['pen', 'marker', 'eraser', 'color', 'ink', 'red', 'blue', 'green', 'orange', 'purple', 'undo', 'clear', 'note', 'canvas', 'down', 'up', 'keys', 'cleared'], settings: [
     { key: 'bg', type: 'select', options: ['plain', 'grid', 'lined'], def: 'grid' }] },
   { id: 'picture', icon: '🖼️', group: 'show', who: 'teacher', size: [4, 4], min: [3, 3], words: ['empty', 'needAlt', 'gone', 'upload', 'uploading', 'replace', 'note', 'bad'], settings: [
@@ -242,8 +256,14 @@ export const WIDGETS = [
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
-/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there. */
-export const RETIRED = { stopwatch: { type: 'timer', s: { mode: 'stopwatch' } } };
+/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there (or a
+ *  function of the old settings). A retired maths tool's state goes under its old id in the tool it is a mode of, and
+ *  that mode shows (dash-tools.js TOOL_MODES): { type: 'base10', s: { state: S } } -> { type: 'placeval', s: { state:
+ *  { tab: 'base10', base10: S } } }. */
+export const RETIRED = {
+  stopwatch: { type: 'timer', s: { mode: 'stopwatch' } },
+  ...Object.fromEntries(Object.entries(MODE_HOME).map(([old, home]) => [old, { type: home, s: o => ({ state: { tab: old, [old]: o.state && typeof o.state === 'object' ? o.state : {} } }) }])),
+};
 /** One stored or sent widget with a retired type -> the widget it is now (same id, so its running state, pins and
  *  student places still match; its box grows to the new type's smallest size if it must). Anything else is unchanged. */
 export function migrateWidget(w) {
@@ -257,7 +277,8 @@ export function migrateWidget(w) {
   }
   const type = widgetType(r.type);
   const box = Number.isFinite(w.w) ? cleanBox(type, w) : {};
-  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...(w.s && typeof w.s === 'object' ? w.s : {}), ...r.s }) };
+  const old = w.s && typeof w.s === 'object' ? w.s : {};
+  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...old, ...(typeof r.s === 'function' ? r.s(old) : r.s) }) };
 }
 export function migrateWidgets(list) {
   if (!Array.isArray(list)) return [];
@@ -288,6 +309,10 @@ export function registryFor(t, role) {
     id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send,
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
     words: Object.fromEntries(w.words.map(k => [k, word(t, `dash.w.${w.id}.${k}`)])),
+    // A maths tool's modes: each with its name on the switch (dash.w.<tool>.m.<mode>), its icon, and, for a mode that was
+    // a tool of its own, that tool's words and starting state (dash.w.<mode>.*). The tool's own mode uses the tool's.
+    ...(w.modes ? { modes: w.modes.map(m => ({ id: m, icon: MODE_ICONS[m], name: t(`dash.w.${w.id}.m.${m}`),
+      ...(m === w.id ? {} : { words: Object.fromEntries(TOOL_WORDS[m].map(k => [k, word(t, `dash.w.${m}.${k}`)])), def: cleanToolState(m, {}) }) })) } : {}),
     settings: w.settings.map(s => ({ ...s, label: s.type === 'tool' ? '' : t(`dash.w.${w.id}.s.${s.key}`),
       ...(s.options ? { labels: Object.fromEntries(s.options.map(o => [o, t(`dash.w.${w.id}.o.${s.key}.${o}`)])) } : {}) })),
   }));
@@ -494,7 +519,8 @@ export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
 const ensureClassRow = classId => q.run('INSERT OR IGNORE INTO dash_class(class_id) VALUES (?)', classId);
 
-/** A first layout: a clock, today's goal and the agenda (both pinned on student screens). */
+/** The New layout sheet's "make your own" without copying the layout on screen: a clock, today's goal and the agenda
+ *  (both pinned on student screens). A first visit makes the ready-made set instead (ensureLayouts). */
 export function starterWidgets() {
   return [
     { id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) },
@@ -502,10 +528,22 @@ export function starterWidgets() {
     { id: 'text1', type: 'text', x: 4, y: 0, w: 8, h: 4, s: cleanSettings(widgetType('text')), pin: true },
   ];
 }
-/** The teacher's layouts for this class, making the first one if there are none. */
-export function ensureLayouts(u, c, name) {
+/** The teacher's layouts for this class. A teacher with none for it (their first visit) gets the whole ready-made set
+ *  in their language (DEFAULT_SET: Morning start first, the one students follow when the class follows nothing yet);
+ *  a teacher with any layout gets nothing new. The check and the six inserts are one IMMEDIATE transaction: it takes
+ *  the database's write lock before it counts, so two first requests at once (two tabs, or two server processes on the
+ *  one database file) can never both find none and make the set twice. t is the teacher's translate function. */
+export function ensureLayouts(u, c, t) {
   let list = layoutsOf(c.id, u.id);
-  if (!list.length) { createLayout(u, c, { name, widgets: starterWidgets() }); list = layoutsOf(c.id, u.id); }
+  if (list.length) return list;
+  db.transaction(() => {
+    if (q.get('SELECT COUNT(*) n FROM dash_layouts WHERE class_id=? AND owner_id=?', c.id, u.id).n) return;
+    for (const id of DEFAULT_SET) {
+      const r = createFromTemplate(u, c, id, { t });
+      if (r.error) throw new Error(`default layout ${id}: ${r.error}`);
+    }
+  }).immediate();
+  list = layoutsOf(c.id, u.id);
   return list;
 }
 /** The layout the teacher sees now: the class's current one if it is theirs, else their last used. */
@@ -560,7 +598,8 @@ export function deleteLayout(u, c, id) {
   return { ok: true };
 }
 // ---------------------------------------------------------------- ready-made layouts
-// docs/decisions.md "Ready-made layouts". Five layouts a teacher adds with one tap from the New layout sheet. Each is an
+// docs/decisions.md "Ready-made layouts". Six layouts: a teacher's first visit to a class's dashboard makes all of them
+// (ensureLayouts, DEFAULT_SET), and any of them is one tap away again in the New layout sheet. Each is an
 // ordinary layout once made (the teacher renames, moves and changes it like any other): its widgets are built here for
 // the teacher's language (sample periods, goal, jobs, team names and light words come from dash.tpl.*) and then go
 // through createLayout, so cleanWidgets rebuilds every one from the registry like anything a browser sends.
@@ -586,6 +625,14 @@ export const LAYOUT_TEMPLATES = [
     ['check', [0, 4, 5, 4]],
     ['help', [5, 4, 4, 4], {}, true],
     ['light', [9, 4, 3, 4], { color: 'green', ...lightWords(t) }]] },
+  // A maths lesson (docs/decisions.md "Ready-made layouts": the Math layout). Only maths tool ids that stay when the
+  // maths tools are merged into fewer types with modes (fractions, numline), so the layout survives that change. The
+  // fractions tool (at least 5 x 7) takes the full height; the number line counts in quarters from 0 to 2, beside it.
+  { id: 'math', icon: '🔢', bg: { kind: 'color', id: 'leaf' }, widgets: () => [
+    ['fractions', [0, 0, 5, 8]],
+    ['numline', [5, 0, 7, 4], { state: cleanToolState('numline', { lo: 0, hi: 2, sub: 4, mode: 'fraction' }) }],
+    ['help', [5, 4, 4, 4], {}, true],
+    ['timer', [9, 4, 3, 4], { minutes: 10 }]] },
   { id: 'group', icon: '👥', bg: { kind: 'color', id: 'mint' }, widgets: t => [
     ['groups', [0, 0, 8, 4], { by: 'count', n: 4 }],
     ['timer', [8, 0, 4, 4], { minutes: 20 }],
@@ -605,6 +652,8 @@ export const LAYOUT_TEMPLATES = [
     ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
 ];
 const TPL_BY_ID = new Map(LAYOUT_TEMPLATES.map(x => [x.id, x]));
+/** What a teacher's first visit to a class's dashboard makes, in this order (the first is the one students follow). */
+export const DEFAULT_SET = ['morning', 'lesson', 'math', 'group', 'quiet', 'fun'];
 export const layoutTemplate = id => TPL_BY_ID.get(String(id)) || null;
 /** The ready-made layouts as the New layout sheet lists them, in the reader's language. */
 export const templatesFor = t => LAYOUT_TEMPLATES.map(x => ({ id: x.id, icon: x.icon, name: t(`dash.tpl.${x.id}.name`), desc: t(`dash.tpl.${x.id}.desc`) }));
@@ -792,8 +841,14 @@ export function pushHref(c, p) {
 export function todaysPushes(c, userId = null) {
   const hidden = userId ? new Set(q.all('SELECT h.push_id FROM dash_push_hidden h JOIN dash_pushes p ON p.id=h.push_id WHERE p.class_id=? AND h.user_id=?', c.id, userId).map(r => r.push_id)) : new Set();
   return q.all('SELECT id, kind, ref, title, created_at, data FROM dash_pushes WHERE class_id=? AND day=? AND ended_at IS NULL ORDER BY created_at DESC, rowid DESC', c.id, dayOf(c))
-    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: json(p.data, {}) } : {}) }))
+    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: toolOfPush(p) } : {}) }))
     .filter(p => p.href);
+}
+/** A sent tool as students open it. One sent before "maths tools combined" with a retired tool's type opens as that
+ *  mode of the tool it became (dash_pushes.data is never rewritten). */
+function toolOfPush(p) {
+  const d = json(p.data, {});
+  return d && typeof d === 'object' && MODE_HOME[d.type] ? moveToolState(d.type, d.state) : d;
 }
 /** A student hides a push from their banner (or brings it back). It stays in their tray either way. */
 export function hidePush(u, c, id, hidden = true) {

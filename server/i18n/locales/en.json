@@ -2741,9 +2741,9 @@
         "eyesOff": "Eyes up ended",
         "eyesUp": "Eyes up front",
         "hidden": "Hidden. It's saved in From your teacher.",
-        "back": "It's back"
+        "back": "It's back",
+        "renamed": "Layout renamed: {name}"
       },
-      "editing": "Editing: {name}",
       "all": "All",
       "add": "Add",
       "addName": "Add {name}",
@@ -9343,6 +9343,7 @@
       "edit": "Edit screen",
       "editMine": "Change my screen",
       "editing": "Editing: {name}",
+      "layoutName": "Layout name",
       "editingMine": "Changing my screen",
       "editHint": "Drag to move · drag a corner to resize · or use the arrow keys",
       "editHintMine": "Move your widgets, add new ones or pick a background. Pinned ones stay.",
@@ -9352,8 +9353,7 @@
     "layouts": {
       "label": "Layout",
       "new": "New",
-      "manage": "Rename or delete this layout",
-      "defaultName": "Everyday"
+      "manage": "Rename or delete this layout"
     },
     "foot": {
       "eyes": "Eyes up",
@@ -9830,8 +9830,8 @@
         "r_creative": "Good ideas"
       },
       "fractions": {
-        "name": "Fraction bars",
-        "desc": "Split, shade and compare. Same-size pieces shows why one is bigger. Grades 2–6.",
+        "name": "Fractions",
+        "desc": "Compare, add, subtract, multiply and divide with bars and circles, and see one number as a fraction, decimal and percent.",
         "bar": "Bars",
         "circle": "Circles",
         "same": "Same-size pieces",
@@ -9871,7 +9871,11 @@
         "modeDiv": "Divide",
         "howtoDiv": "Use − and + on each number. How many of the second fit in the first?",
         "fits": "{n} of {b} fit in {a}.",
-        "noZero": "Nothing can be divided by zero, so the second numerator stays at 1 or more."
+        "noZero": "Nothing can be divided by zero, so the second numerator stays at 1 or more.",
+        "m": {
+          "fractions": "Fraction bars",
+          "fdp": "Fraction, decimal, percent"
+        }
       },
       "numline": {
         "name": "Number line",
@@ -9966,8 +9970,8 @@
         "helpIdeas": "Build 205, then trade to get ready to take away 30."
       },
       "placeval": {
-        "name": "Place value chart",
-        "desc": "Thousands to thousandths, with digit discs.",
+        "name": "Place value",
+        "desc": "Base-ten blocks and a place value chart: trade tens for ones, and read numbers from millions to thousandths.",
         "discs": "Show discs",
         "decimals": "Show tenths, hundredths and thousandths",
         "times10": "Times 10",
@@ -9985,7 +9989,11 @@
         "thousandths": "Thousandths",
         "howto": "Tap a column, then use − and + to change its digit.",
         "helpUse": "− and + carry and borrow across the places.\nTimes 10 and Divide by 10 move every digit one place.\nOptions: digit discs, and places after the decimal point.",
-        "helpIdeas": "Show 3405, press Times 10: what moved, and what stayed?"
+        "helpIdeas": "Show 3405, press Times 10: what moved, and what stayed?",
+        "m": {
+          "placeval": "Place value chart",
+          "base10": "Base-ten blocks"
+        }
       },
       "tenframe": {
         "name": "Ten frames",
@@ -10007,8 +10015,8 @@
         "helpIdeas": "Show 7 for two seconds, hide the screen, and ask how many."
       },
       "hundreds": {
-        "name": "Hundreds chart",
-        "desc": "Shade numbers, skip count and hide numbers to guess.",
+        "name": "Number chart",
+        "desc": "A 1–100, 0–99 or 1–120 chart. Shade numbers, skip count and hide numbers to guess.",
         "start": "Numbers",
         "skip": "Skip count",
         "skipBy": "Count by {n}",
@@ -10025,8 +10033,8 @@
         "helpIdeas": "Count by 9: what pattern do the digits make?"
       },
       "area": {
-        "name": "Area model and arrays",
-        "desc": "Rows times columns. Split a side to see the partial products.",
+        "name": "Multiply and divide",
+        "desc": "Area models and arrays with partial products, and a times table grid up to 12 × 12.",
         "rows": "Rows",
         "cols": "Columns",
         "array": "Array",
@@ -10038,7 +10046,11 @@
         "hint": "Split a side to break the product into easier parts.",
         "howto": "Use − and + for rows and columns. Split a side to break it up.",
         "helpUse": "Array shows dots in rows; Area model shows a rectangle.\nSplit by place value shows each partial product.\nOptions: choose exactly where each side is split.",
-        "helpIdeas": "Show 14 × 6 as 10 × 6 and 4 × 6, and add the parts."
+        "helpIdeas": "Show 14 × 6 as 10 × 6 and 4 × 6, and add the parts.",
+        "m": {
+          "area": "Area model and arrays",
+          "times": "Times table grid"
+        }
       },
       "times": {
         "name": "Times table grid",
@@ -10147,8 +10159,8 @@
         "bad": "That picture didn't work. Try a JPG or PNG photo."
       },
       "geoboard": {
-        "name": "Geoboard",
-        "desc": "Make shapes with bands on a square grid, triangle dots or a circle. Area, perimeter and angles, exactly; a ruler, labels and a pen. Grades 2–8.",
+        "name": "Shape board",
+        "desc": "Make shapes with bands on a grid, dots or a circle, with exact area and perimeter. Make and measure angles with a protractor.",
         "area": "Area",
         "perimeter": "Perimeter",
         "length": "Length",
@@ -10254,11 +10266,15 @@
         "idea5": "Make a shape with exactly two right angles.",
         "howto": "Tap pegs to stretch a band. Tap the first peg again to close it.",
         "helpUse": "Tap pegs to stretch a band; tap the first peg to close it.\nDrag a corner or a whole band. A color starts a new band.\nShapes, Tools and Annotate add shapes, a ruler, labels and a pen.",
-        "helpIdeas": "Try: everyone makes an area of 12, then compares perimeters."
+        "helpIdeas": "Try: everyone makes an area of 12, then compares perimeters.",
+        "m": {
+          "geoboard": "Geoboard",
+          "angle": "Angle maker"
+        }
       },
       "pattern": {
-        "name": "Pattern blocks",
-        "desc": "Hexagons, trapezoids, rhombi, triangles and squares that snap together. Shows the fraction of a hexagon. Grades K–5.",
+        "name": "Geometry",
+        "desc": "Pattern blocks, 3D shapes that fold into nets, and slides, flips and turns on a grid.",
         "hex": "Hexagon",
         "trap": "Trapezoid",
         "rhom": "Blue rhombus",
@@ -10277,7 +10293,12 @@
         "empty": "Add a block from the row above. Arrow keys move the chosen block and R turns it.",
         "howto": "Tap a block above to add it. Drag blocks; they snap together.",
         "helpUse": "Tap a placed block to choose it, then Turn or Remove.\nThe readout is the fraction of a hexagon the blocks make.\nArrow keys move the chosen block; R turns it.",
-        "helpIdeas": "How many ways can you cover a hexagon?"
+        "helpIdeas": "How many ways can you cover a hexagon?",
+        "m": {
+          "pattern": "Pattern blocks",
+          "solids": "3D shapes and nets",
+          "transform": "Transformations"
+        }
       },
       "angle": {
         "name": "Angle maker",
@@ -10386,8 +10407,8 @@
         "helpIdeas": "Solve 3x + 2 = x + 8 together, saying each step out loud."
       },
       "algebra": {
-        "name": "Algebra tiles",
-        "desc": "x², x and 1 tiles, positive and negative. Zero pairs cancel; the expression simplifies. Grades 6–8.",
+        "name": "Algebra",
+        "desc": "Algebra tiles with zero pairs, and a balance scale to solve equations step by step.",
         "x2": "x squared",
         "x": "x",
         "one": "one",
@@ -10408,7 +10429,11 @@
         "full": "The mat is full.",
         "howto": "Tap a tile above to add it. Take away zero pairs to simplify.",
         "helpUse": "Tap a tile to choose it; Flip changes its sign.\nOpposite tiles of one kind are ringed: a zero pair.\nZero pairs takes them away, and the expression is simplified.",
-        "helpIdeas": "Build 2x + 3 − x − 1 and simplify it with zero pairs."
+        "helpIdeas": "Build 2x + 3 − x − 1 and simplify it with zero pairs.",
+        "m": {
+          "algebra": "Algebra tiles",
+          "balance": "Balance scale"
+        }
       },
       "coins": {
         "name": "Coins and money",
@@ -10441,8 +10466,8 @@
         "helpIdeas": "It costs 37, paid with 100: count up together to find the change."
       },
       "chance": {
-        "name": "Chance lab",
-        "desc": "Toss coins, roll dice and spin spinners up to 1,000 times. A live chart beside what we expect. Grades 3–8.",
+        "name": "Data and chance",
+        "desc": "Bar, line, picture and dot graphs, and a chance lab: coins, dice and spinners up to 1,000 times.",
         "coin": "Coin",
         "dice": "Dice",
         "spinner": "Spinner",
@@ -10465,7 +10490,11 @@
         "none": "No trials yet",
         "howto": "Pick coin, dice or spinner, then Run. Compare with the dashed line.",
         "helpUse": "The menu sets how many trials each Run does.\nStart again clears the results.\nOptions: one die or two, the spinner's parts, up to 1000 trials.",
-        "helpIdeas": "Predict, run 10 tosses, then 1000: which is closer to half?"
+        "helpIdeas": "Predict, run 10 tosses, then 1000: which is closer to half?",
+        "m": {
+          "chance": "Chance lab",
+          "graph": "Graph maker"
+        }
       },
       "letters": {
         "name": "Letter tiles",
@@ -10805,7 +10834,8 @@
       "practiceName": "Practice it: {title}",
       "helpFor": "How to use {name}",
       "helpClose": "Close",
-      "helpTry": "Try:"
+      "helpTry": "Try:",
+      "modeFor": "Choose what {name} shows"
     },
     "ask": {
       "fractions": "What fraction is shaded?",
@@ -10851,6 +10881,10 @@
       "lesson": {
         "name": "Lesson",
         "desc": "Timer, quick check, help queue, a number line and a traffic light."
+      },
+      "math": {
+        "name": "Math",
+        "desc": "Fraction bars, a number line in quarters, a timer and the help queue."
       },
       "group": {
         "name": "Group work",

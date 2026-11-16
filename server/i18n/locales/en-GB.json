@@ -884,13 +884,11 @@
         "units": "Amounts here are in pence or cents (plain numbers for the plain set)."
       },
       "geoboard": {
-        "desc": "Make shapes with bands on a square grid, triangle dots or a circle. Area, perimeter and angles, exactly; a ruler, labels and a pen. Years 3–9.",
         "ink": "Pen colour",
         "trap": "Trapezium",
         "helpUse": "Tap pegs to stretch a band; tap the first peg to close it.\nDrag a corner or a whole band. A colour starts a new band.\nShapes, Tools and Annotate add shapes, a ruler, labels and a pen."
       },
       "pattern": {
-        "desc": "Hexagons, trapezia, rhombi, triangles and squares that snap together. Shows the fraction of a hexagon. Reception to Year 6.",
         "trap": "Trapezium"
       },
       "angle": {
@@ -902,12 +900,8 @@
       "balance": {
         "desc": "Solve equations with x-boxes and weights: do the same to both sides and it stays level. Years 4–9."
       },
-      "algebra": {
-        "desc": "x², x and 1 tiles, positive and negative. Zero pairs cancel; the expression simplifies. Years 7–9."
-      },
-      "chance": {
-        "desc": "Toss coins, roll dice and spin spinners up to 1,000 times. A live chart beside what we expect. Years 4–9."
-      },
+      "algebra": {},
+      "chance": {},
       "letters": {
         "desc": "Build words from letter tiles, vowels marked, with word families (-at, -ig, -ake...). Nobody types. Reception to Year 4."
       },
@@ -918,6 +912,17 @@
       },
       "hallpass": {
         "p_bathroom": "Toilet"
+      },
+      "placeval": {
+        "m": {
+          "base10": "Base-ten blocks"
+        }
+      },
+      "area": {
+        "m": {
+          "times": "Times tables grid"
+        },
+        "desc": "Area models and arrays with partial products, and a times tables grid up to 12 × 12."
       }
     },
     "tools": {
@@ -928,6 +933,9 @@
       "periods": {
         "maths": "Maths",
         "break": "Break"
+      },
+      "math": {
+        "name": "Maths"
       }
     }
   }

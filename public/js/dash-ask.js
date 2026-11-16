@@ -93,7 +93,7 @@ export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
     }
     case 'hundreds': {
       if (st.skip > 1) {
-        const list = M.skipCount(st.skip, st.start); if (list.length < 4) return null;
+        const list = M.skipCount(st.skip, st.start, st.start && st.upto === 120 ? 120 : 100); if (list.length < 4) return null;
         const a = list[2], next = list[3];
         return choice(fill(Q.hundreds, { n: st.skip, a }), nf(next), [next + 1, next - 1, a + 1, next + st.skip, a + 10].map(nf), seed);
       }

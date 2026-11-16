@@ -6489,7 +6489,7 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
 
 ## Classroom dashboards: ready-made layouts (16 Nov 2026)
 A teacher's first layout is still the near-empty "Everyday" starter, and every other layout was built by hand. Now the
-New layout sheet starts with **Start from a ready-made layout**: five layouts, each an icon, a name and one line, picked
+New layout sheet starts with **Start from a ready-made layout**: five layouts (six since Math, below), each an icon, a name and one line, picked
 with one tap (the name is filled in and can be changed), then Save. Below them **Or make your own** keeps the old choice
 (copy the layout on screen, or the starter). Code: `LAYOUT_TEMPLATES`, `templateWidgets`, `createFromTemplate` in
 `server/services/dash.js`; `POST /api/dash/:id/templates/:tid` in `server/routes/dash.js`; `newSheet` in
@@ -6521,10 +6521,49 @@ with one tap (the name is filled in and can be changed), then Save. Below them *
   view, the edge fades while there are more), and the projector hides the "Layout" label. Phones are unchanged.
 - **The mood check-in's faces** are rounded squares instead of pills, so a long word ("Benissimo") stays inside the
   chosen face's dark background.
-- **Not done (optional in the brief):** offering the templates on a brand-new class's first visit. The first visit still
-  makes the "Everyday" starter (its tests unchanged); the ready-made layouts are one tap away under ➕ New.
+- ~~Not done: offering the templates on a brand-new class's first visit.~~ Done since (below).
 - Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
   checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
+
+**The default set on a first visit, a Math layout, rename in edit mode (16 Nov 2026).** "You should also be able to edit
+the name of the page in the edit screen. Also make the default screens automatically populate for new users and add a
+Math default dashboard as well."
+- **First visit.** A teacher's first visit to a class's dashboard (no layouts of theirs for that class) now makes all six
+  ready-made layouts, in the teacher's language, in this order: Morning start, Lesson, Math, Group work, Quiet work, Fun
+  break (`DEFAULT_SET`, 6 of `MAX_LAYOUTS` 12). Morning start is first, on screen, and the one students follow (its goal,
+  mood check-in and class jobs pinned) unless the class already follows another teacher's layout. **Decided: no
+  "Everyday" seventh**: Morning start replaces it. `starterWidgets` stays for the New sheet's "Your own layout" without
+  copying. A teacher with any layout for the class gets nothing new (existing teachers' layouts are never touched or
+  duplicated). `dash.layouts.defaultName` and `js.dash.editing` went with it.
+- **Race guard.** `ensureLayouts` counts and inserts inside one IMMEDIATE transaction (better-sqlite3's
+  `.immediate()`): the database's write lock is taken before counting, so two first requests at once (two tabs, or two
+  server processes on the one file) can't both find none. Tested with two tabs and with two processes starting the same
+  millisecond on a shared database file (the test fails without the guard).
+- **Class jobs on student screens from day one.** Morning start pins class jobs, so a new class's student screens show
+  the week's crew by Oomba name, as stage 5 designed it (the class already sees those names). Two tests that looked for
+  "no other names anywhere in a student's live answer" around a quick check now first switch the class to Quiet work.
+- **Math** (🔢, leaf green; en-GB "Maths", it "Matematica", de "Mathe", fr "Maths", ja "算数", nl "Rekenen", he "חשבון"...):
+  fraction bars (5 × 8, the full height: the tool needs at least 5 × 7), a number line counting in quarters from 0 to 2
+  (7 × 4), the help queue (4 × 4, pinned) and a 10-minute timer (3 × 4); the 12 × 8 grid exactly, no gaps. **Decided:
+  no quick check or "I can" goal.** At the tools' current smallest sizes, fractions + number line + quick check + timer +
+  help needs 99 cells of 96; the quick check is one tap away in each tool's "Make a question", and the Lesson layout
+  has one. Only maths tool ids that stay when the maths tools are merged into fewer types (`fractions`, `numline`), so
+  the layout survives that; the number line's state is built with `cleanToolState`, so it is always what the tool
+  stores. In the New layout sheet after Lesson.
+- **Rename in edit mode.** The edit bar's "Editing: <name>" now has the name as a field (labelled "Layout name", at most
+  40, a dashed underline and a pencil until focused, sized to the name). Enter or leaving it saves through the same
+  route as Rename in the ⋯ sheet (cleaned on the server: required, at most 40, control and direction characters
+  removed); Escape puts the saved name back; an error ("Give the layout a name.", or the server's) shows beside it in
+  red and the field is marked invalid; the footer chip updates at once and a screen reader hears "Layout renamed".
+  The words around the name come from the one translated string, so each language keeps its order. Rename in the ⋯
+  sheet stays.
+- Tests (`dash-templates.test.js`): first visit makes the six in order (English and Italian), Morning start followed with
+  its pins; second and third visits change nothing; a teacher with a layout is untouched; two tabs at once and two
+  processes at once make the set once; Math valid in every locale (grid, sizes, pins, no gaps); the edit bar's field and
+  the rename route's checks. Changed: `dash.test.js` (first layout "Morning start" not "Everyday", its pins, delete down
+  to one before "the last layout stays", the pinned goal is Morning start's sample), `dash-templates.test.js` (six
+  templates, "nothing was made" counts the first visit's six), `dash-stage2.test.js` and `dash-stage4.test.js` (switch to
+  Quiet work first, above). `npm run dash:fit` checks `tpl-math`.
 
 ## Classroom dashboards: any website in the QR code (16 Nov 2026)
 "Allow teachers to add websites freely to the QR code." The QR widget's settings ("What the code opens") gain
@@ -6686,6 +6725,37 @@ questions in `public/js/dash-ask.js`, the cleaning in `server/services/dash-tool
   maths, the cleaning, a question per mode), `tests/unit/dash-stage4.test.js` (every maths tool's instruction and short
   help in every language, the panel's code), `scripts/dash-fit-check.js` (each panel opened). Strings in all 13 locales (en-GB where spelling differs).
 
+## Fractions as a number sentence (16 Nov 2026)
+Product feedback on the fraction tool's operations: "The fractions look funny here. I don't like how they are shown
+vertically. Also, when you switch to the bars it looks terrible." Code: `opView` and the functions after it in
+`public/js/dash-tools.js`, the `.dt-fop` rules in `public/css/dash.css`. Compare is unchanged; the state is unchanged.
+- **What was wrong.** Add/Subtract/Divide drew the two fractions' − and + as one row above a grid of three pictures with
+  their labels, the grid's rows sized between fixed limits (22-90px) and its pictures `height:100%` of those rows, all
+  centred with `align-content:center` (not `safe`). On a widget whose model area is under 340px tall (a default-size
+  fraction widget on a busy layout is about 280px) a container query also turned each fraction's − and + into one
+  cramped row (`− 1 + / − 2 +`), its slash drawn with a transform. Circles therefore came out as a column down the
+  left. When the pictures needed more height than the area had (a shorter area, longer words, bars after circles), the
+  grid's overflow was centred, so it grew upward over the − and + row and the mode buttons; the transformed slashes
+  paint above later content, which is why "/" showed inside the top bar while the buttons under it were hidden. The
+  readout was also rebuilt after the pictures were measured, so the area changed size after every draw.
+- **Now.** The sizes are worked out in the browser from the model area (measured after the readout is built; drawn again
+  when it changes size): each way of laying it out is tried, best first, and the first that really fits (measured) is
+  kept, so it never spills; every container also centres `safe`, so nothing can grow over the buttons.
+  - **Circles:** a number sentence in one row, each fraction's circles above its − and + (stacked as on paper: − n +
+    over − d +, with "= 3/6" beside it when the same-size pieces are drawn), then the sign, the second, = and the
+    answer's circles over the answer (? while hidden, under one dashed circle). Two rows (A − B, then = answer) when one
+    row would make the circles small; on a phone one fraction a row, its circles beside it.
+  - **Bars:** stacked on one scale (good for comparing lengths), each with its sign and fraction (its − and +) beside it
+    and level with it; at most 72px tall and 1100px wide. Add and Subtract show the same-size pieces as thin dashed
+    lines inside the original pieces, Divide its lots in two shades with the part lot hatched.
+  - **Multiply:** the sentence (A × B = answer) above the area model, which stays square.
+  - The − and + come in four sizes, chosen by the room: 44px buttons stacked, 36px stacked, and (only on a very short
+    widget, such as the smallest one in German or on the projector) each fraction on one row, with 44px or 36px
+    buttons. "= 3/6" beside a fraction is left out before anything gets smaller (the readout still says it).
+- **Tested:** the fit check has Divide in circles past one whole and a widget whose mode and view the teacher's screen
+  switches through in turn (ending in Divide with bars, hidden), and checks that each bar's fraction is level with its
+  bar and that the sentence reads left to right (in Arabic too: maths stays left to right).
+
 ## Classroom dashboards: Shape board, the geoboard rebuilt (16 Nov 2026)
 Product request: "add a tool like this that allows you to make different shapes... include all of the tools you see on the
 screenshot. Should be super responsive and perfect ux on desktop mobile and tablet." The screenshot (another company's
@@ -6803,6 +6873,126 @@ could see at those times, not flakes: the check ran with the real clock, so it s
   school), 08:05 and 08:19 (the first period), 09:10 (the break), 10:20 (mid-day), 11:30 (the last period), 12:30
   (after school). A list now also fails when a row is sliced by its top edge while it rests scrolled down, or when it
   has rows above and no fade there; "more below" is what is below where it rests.
+
+## Classroom dashboards: maths tools combined (16 Nov 2026)
+Product: "Where possible let's consolidate these math widgets." The library's maths tools go from 21 to 13: eight tools
+are now **modes** of another, chosen with a switch at the top of the tool (a segmented control like the timer's Timer |
+Stopwatch). Each mode is the old tool, whole: its state, its one-line instruction, its own ⓘ help ("How to use Base-ten
+blocks"), Make a question, Send to students, Practice it and the projector. Code: `TOOL_MODES`, `MODE_HOME`,
+`cleanToolState`, `moveToolState` in `server/services/dash-tools.js`; `WIDGETS` (`toolType`, `modes`), `MODE_ICONS`,
+`RETIRED`, `migrateWidget`, `registryFor` (`modes`), `toolOfPush` in `server/services/dash.js`; the wrapper
+`public/js/dash-modes.js` (`moded`, `withModes`, `modeState`, `withMode`), used by `RENDER` in `public/js/dash-widgets.js`;
+`ctx.practiceOf` and `toolName` in `public/js/dash.js`; `.dt-modes` in `public/css/dash.css`; strings
+`dash.w.<tool>.m.<mode>` and `dash.tools.modeFor`.
+
+| Tool in the library (type id) | Modes (the first is the tool's own) |
+|---|---|
+| Fractions (`fractions`) | Fraction bars (`fractions`: Compare, Add, Subtract, Multiply, Divide as before) · Fraction, decimal, percent (`fdp`) |
+| Number line (`numline`) | unchanged (negatives were already there: −100 to 1000) |
+| Coordinate plane (`coord`) | unchanged: its own tool (see below) |
+| Place value (`placeval`) | Place value chart (`placeval`) · Base-ten blocks (`base10`) |
+| Ten frames (`tenframe`) | unchanged (see below) |
+| Number chart (`hundreds`) | one tool; Options: 1–100, 0–99 or **1–120** (new) |
+| Multiply and divide (`area`) | Area model and arrays (`area`) · Times table grid (`times`) |
+| Teaching clock (`tclock`), Coins and money (`coins`) | unchanged |
+| Shape board (`geoboard`) | Geoboard (`geoboard`, the shape board as before) · Angle maker (`angle`) |
+| Geometry (`pattern`) | Pattern blocks (`pattern`) · 3D shapes and nets (`solids`) · Transformations (`transform`) |
+| Algebra (`algebra`) | Algebra tiles (`algebra`) · Balance scale (`balance`) |
+| Data and chance (`chance`) | Chance lab (`chance`) · Graph maker (`graph`) |
+
+- **Decided: the coordinate plane stays a tool of its own.** It is where slope and y = mx + b are taught (a table of
+  values, rise over run): algebra and functions, not shapes. Transformations do happen on a grid, but on their own −8 to 8
+  grid with a shape, its image and the rule; folding the plane into Geometry would hide y = mx + b behind a geometry
+  switch, and folding transformations into the plane would give the plane two unrelated jobs. So Geometry has three modes
+  and the plane stays where teachers look for it. 13 maths tools, not 12.
+- **Decided: the angle maker is a mode of the shape board**, not a tool inside the board. The board's own Angles toggle
+  already measures the inside angles of a band; the angle maker is a different lesson (two rays, a protractor, naming
+  angles from zero to a full turn) and keeps its slider, presets and snapping only as a mode of its own.
+- **Decided: Ten frames keeps its name and has no switch yet.** A switch with one button would be noise, and calling it
+  "Counting frames" before the bead rack and two-colour counters exist would promise tools that aren't there. When they
+  come they are entries of `TOOL_MODES.tenframe`: the wrapper, the state and the migration need nothing else.
+- **Decided: the number chart's 1–120** is a third choice in its Options ("1–120": twelve rows of ten). The state gains
+  `upto` (100 or 120, from 1 only), stored only when it is 120, so every chart saved before is stored exactly as it was.
+  Skip counting and the question it makes go to 120.
+- **The state.** A tool with modes keeps its own mode's keys at the top of its state, exactly as before; each other mode's
+  state is under the old tool's id (`{ v, discs, dec, base10: { h, t, o } }`), and `tab` says which mode shows.
+  **Decided: `tab`, not `mode`**: `mode` is already the fraction tool's Compare | Add..., the number line's whole |
+  fraction | decimal and the coins' count | change. `cleanToolState` cleans the tool's own keys with its own spec and each
+  mode's part with the old tool's spec (`TOOL_SPECS` keeps every old spec); `tab` is kept only when it is not the tool's
+  own mode, and a part only when it differs from its start. So layouts and pushes saved before load and store unchanged,
+  switching modes never loses another mode's work (each part is kept), and the shape board's student rule (no labels or
+  drawings on a student's own screen) still applies in every mode.
+- **The wrapper** (`moded` in `public/js/dash-modes.js`, about 100 lines): it draws the switch, then calls the old renderer
+  of the chosen mode on the same widget body, with that mode's words, name and starting state, `keep` and `send` that put
+  the mode's part back into the whole state, and that mode's Practice it games. Switching destroys the mode on screen
+  (its help button and panel too) and draws the other; the switch is announced and keeps the focus. The renderers
+  themselves are unchanged (the fraction tool's drawing in particular: a parallel fix is working on it).
+- **Old widgets keep working, on read** (no migration, as for the stopwatch): everywhere a widget list is read (layouts,
+  the class's pins, a student's own screen) or sent (`cleanWidgets`), a widget of a retired type becomes the tool it is a
+  mode of **with the same id**, its state moved under its old id and `tab` set to it (`RETIRED`, built from `MODE_HOME`;
+  `migrateWidget` takes a function of the old settings). Its box grows to the tool's smallest size and what it would now
+  cover moves down (`migrateWidgets`). A browser that still sends an old type gets the same. `known()` would drop an
+  unknown type, but no retired maths type is unknown: each is migrated first. **Sent copies:** `dash_pushes.data` is never
+  rewritten; a push with an old type is read as `{ type: <tool>, state: { tab: <old>, <old>: state } }` (`toolOfPush`), so
+  a student's tray opens it in that mode, and "Pin to my screen" keeps the whole tool. A new push carries the whole tool
+  (every mode's part), so a student can switch modes on their copy too; it still stays in their browser.
+- **Practice it** is keyed by mode (`PRACTICE` keeps the old tools' ids, which are the modes' ids); the page sends every
+  key and `ctx.practiceOf(mode)` gives each mode its own games (base-ten blocks: Rocket Supply; times table: Sum Racer...).
+- **The library**: one entry per tool, new names and descriptions in all 13 locales (en-GB only where its spelling
+  differs: the "times tables grid"; its old descriptions of the shape board, pattern blocks, algebra tiles and chance lab
+  were removed so the new English ones show). A mode's name on the switch is the old tool's name in that language
+  (`dash.w.<tool>.m.<mode>`), so nothing a teacher knew is renamed inside a tool. Searching the library also finds a tool
+  by its modes' names ("times table" finds Multiply and divide). A sent tool is named by its mode in the banner and tray.
+- **Sizes**: each tool is at least as big as its biggest mode was, plus the switch's row: fractions 6 × 8 (smallest 5 ×
+  8), place value 7 × 7 (6 × 6), multiply and divide 6 × 8 (5 × 8), shape board 8 × 8 (5 × 8), geometry 7 × 8 (6 × 8),
+  algebra 7 × 7 (6 × 7), data and chance 7 × 7 (6 × 7). Smaller saved boxes grow when read.
+- **Ready-made layouts**: none uses a retired type (the Lesson layout's number line is unchanged); tested.
+- **Fit check**: `npm run dash:fit` has, on the tools' layouts, a widget per mode that was a tool of its own (with the busy
+  state it had) and a 1–120 chart, at both sizes, on every view, in English, German and Arabic; each mode's ⓘ panel is
+  opened.
+- **Safety** unchanged: no AI, no network or storage in the wrapper (tested by reading it), students' copies stay in their
+  browser, no prices.
+- **Tests:** new `tests/unit/dash-math-merge.test.js`. Changed to the combined tools: `dash.test.js` (the tools a student
+  may add), `dash-stage3.test.js` (the registry test: graph, base10, times and fdp are modes with renderers, students'
+  old types are read as the tool), `dash-stage4.test.js` (the registry test for angle, solids, transform and balance; a
+  mode's words come from its tool's `modes` in "Make a question" and the help tests; `MATH_TOOLS` is every mode of the
+  Teach tools), `dash-shapeboard.test.js` (smallest size 5 × 8 and its modes).
+
+## Classroom dashboards: tooltips never cut off; pattern blocks dragged from the palette (16 Nov 2026)
+From the product owner's screenshots of the live site.
+- **Tooltips were cut off.** The dark label a button shows on hover and keyboard focus (stage 4 review) was a `::after`
+  drawn inside the button, so any box around it that clips cut it: the shape board's colour rail showed "ew band" for
+  *New band* and the same for *Delete band*; the ✕ on an organizer step ("Take away Step 5") showed only the label's
+  bottom edge under the top of its scrolling box. Every such button also had a native `title`, so the browser's own
+  tooltip showed as well.
+- **Fix at the root:** one tooltip for the page, `public/js/dash-tip.js`. It lives in a layer of its own (position: fixed,
+  in `<body>`, or in the element shown full screen or an open dialog), is placed from the button's box (above it and
+  centred; below when there is no room above; shifted to stay 8px inside the screen; `placeTip`, pure and tested), and
+  follows its button while shown. It is hidden on scroll (a hover tooltip; one shown by keyboard focus follows its
+  button), resize, Escape, a press, window blur, and when the button goes or is redrawn. `role="tooltip"`, and the
+  button's `aria-describedby` points to it while it shows. A hover shows nothing while a button is held (a drag).
+  Hover rules kept from the CSS: a button whose words show in full (`.dt-lbl`) names itself only on keyboard focus; a
+  menu button that is open shows none. It never transitions (the reduced-motion rule gives every property a tiny
+  transition, which left it where the last button was for a frame; the fit check caught it). **Touch:** never on a tap; a long press (half a second, finger still) shows it
+  and it goes when the finger lifts.
+- **No native title where the tooltip exists:** buttons get their tooltip through `tip(el, text)`, which takes away the
+  `title` and keeps `aria-label` (the shape board's toolbar, rail, shapes and pens; stage 3 mode buttons; Practice it;
+  Make a question; every icon button in the stage 4 tools; the organizer's ✕ and Add a step/detail; the pattern blocks
+  palette). Buttons without a dark tooltip keep their native title.
+- **Pattern blocks: drag from the palette, or tap.** A block in the palette above the board can be dragged onto the board
+  with a mouse, finger or pen. Until the pointer has moved more than 8px it is a tap and adds the block at the first free
+  spot as before (Enter too; `paletteDrag`, pure and tested). Then a lifted copy of the block, the size it will be on the
+  board, follows the pointer with its middle under it; the board lights up and a dashed outline shows where it will
+  land. Let go on the board: the block is added there, on the grid point nearest to where it was let go among those
+  where the whole block is on the board, so its edges meet the grid and other blocks like a block dragged on the board
+  (`dropBlock`, pure and tested); it becomes the chosen block and is announced. Let go off the board, Escape or a
+  cancelled pointer: nothing changes. The palette and the board have `touch-action: none`, so the page does not scroll
+  while a block is dragged. **Open:** the one-line instruction still says "Tap a block above to add it" (not changed in
+  13 languages for this; it stays true).
+- **Checks:** `tests/unit/dash-tip.test.js`. The fit check (`npm run dash:fit`, TIPS=0 skips it) focuses every button
+  with a tooltip in turn on every view: its tooltip shows, whole inside the screen, clipped by nothing around it,
+  describes its button, and the button has no native title. Driven by hand at 1600 × 900, the projector, a 1024 × 768
+  touch tablet and a 390 × 844 touch phone (a student's own copy), English and Italian.
 
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 

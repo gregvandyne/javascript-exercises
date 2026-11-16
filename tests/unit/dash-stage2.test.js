@@ -482,6 +482,9 @@ test('help queue: fixed buttons only; the teacher sees the order; a student sees
 test('quick checks: a push to students, taps only, totals for the teacher, nobody else\'s answers for students, names on the teacher\'s tap only', async () => {
   const w = world(); const T = as(w.T), A1 = as(w.a1), A2 = as(w.a2);
   await T(`/class/${w.A.id}/dashboard`);
+  // The first visit's Morning start pins class jobs, whose crew (classmates' Oomba names) students see by design; follow
+  // Quiet work (nothing pinned) so what a student's live answer holds is the check's alone.
+  D.useLayout(w.T, w.A, D.layoutsOf(w.A.id, w.T.id).find(l => l.name === 'Quiet work').id);
   assert.equal((await T(`/api/dash/${w.A.id}/checks`, POST({ kind: 'essay' }))).status, 400);
   assert.equal((await T(`/api/dash/${w.A.id}/checks`, POST({ kind: 'choice', options: ['only one', '  '] }))).status, 400, 'a choice check needs two choices');
   const r = await T(`/api/dash/${w.A.id}/checks`, POST({ kind: 'choice', question: 'Which is bigger?', options: ['1/2', '1/3', '‮evil', 'x'.repeat(90), 'e', 'f', 'g', 'h'] }));

@@ -185,7 +185,7 @@ function start() {
     send: TEACHER ? async state => {
       if (saveTimer) await flush();
       const r = await act('/pushes', { kind: 'tool', ref: w.id, state });
-      if (r) { toast(t('js.dash.tools.sent', { name: (type && type.name) || '' })); poll(); }
+      if (r) { toast(t('js.dash.tools.sent', { name: toolName({ type: w.type, state }) || '' })); poll(); }
     } : null,
     upload: TEACHER ? uploadShow : null,
     checks: TEACHER ? checksForGraph : null,
@@ -194,6 +194,8 @@ function start() {
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
+    // Maths tools combined: a tool's mode looks up its own games (PRACTICE is keyed by mode; a tool's own mode is its id).
+    practiceOf: mode => (D.practice || {})[mode] || [],
     // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard): keep it, redraw it, save.
     // A student's own widget too (the timer's mode); never a pinned one.
     set: (key, value) => {
@@ -430,8 +432,9 @@ function start() {
     root.classList.toggle('is-editing', on);
     for (const id of ['dash-lib', 'dash-side', 'dash-editfoot', 'dash-edithead']) { const x = document.getElementById(id); if (x) x.hidden = !on; }
     for (const id of ['dash-top', 'dash-foot', 'dash-banner']) { const x = document.getElementById(id); if (x) x.hidden = on; }
-    if (on) { renderLibrary(); if (TEACHER) $('#dash-editing').textContent = t('js.dash.editing', { name: currentName() }); }
+    if (on) renderLibrary();
     else if (saveTimer) flush();
+    if (TEACHER) resetName();
     render();
     (on ? $('#dash-lib-q') : $('#dash-edit'))?.focus();
   }
@@ -450,7 +453,8 @@ function start() {
     }
     const q = ($('#dash-lib-q').value || '').trim().toLowerCase();
     const list = $('#dash-lib-list'); list.textContent = '';
-    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc}`.toLowerCase().includes(q)));
+    // A tool is also found by its modes' names ("times table" finds Multiply and divide).
+    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.modes || []).map(m => m.name).join(' ')}`.toLowerCase().includes(q)));
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
       li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
@@ -973,11 +977,37 @@ function start() {
     });
   }
   $('#dash-layout-new')?.addEventListener('click', newSheet);
+  // Rename in edit mode (docs/decisions.md "Ready-made layouts"): the name in the edit bar is a field. Enter or leaving
+  // it saves through the same route as Rename in the ⋯ sheet (the server cleans and checks it: required, at most 40);
+  // Escape puts the saved name back; an error shows under it and the field keeps what was typed.
+  const nameIn = $('#dash-edit-name'), nameErr = $('#dash-edit-name-err');
+  let naming = false;
+  function nameError(msg) { nameErr.textContent = msg; if (msg) nameIn.setAttribute('aria-invalid', 'true'); else nameIn.removeAttribute('aria-invalid'); }
+  function resetName() { if (!nameIn) return; nameIn.value = currentName(); nameError(''); }
+  async function commitName() {
+    const l = S.layouts.find(x => x.id === S.layoutId); if (!l || naming) return;
+    const name = nameIn.value.trim();
+    if (name === l.name) { resetName(); return; }
+    if (!name) { nameError(t('js.dash.layouts.needName')); return; }
+    naming = true;
+    try {
+      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } });
+      l.name = r.layout.name; renderLayouts();
+      if (l.id === S.layoutId) resetName();
+      announce(t('js.dash.say.renamed', { name: l.name }));
+    } catch (err) { nameError(err.message); } finally { naming = false; }
+  }
+  nameIn?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commitName(); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); resetName(); }
+  });
+  nameIn?.addEventListener('blur', commitName);
+  nameIn?.addEventListener('input', () => { if (nameErr.textContent) nameError(''); });
   $('#dash-layout-more')?.addEventListener('click', () => {
     const l = S.layouts.find(x => x.id === S.layoutId);
     const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">✏️ ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>🗑️ ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
     $('#dash-rename', sh.el).addEventListener('click', () => { sh.close(); nameSheet(t('js.dash.layouts.rename'), l.name, false, async name => {
-      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); }); });
+      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); resetName(); }); });
     $('#dash-del', sh.el).addEventListener('click', async () => {
       if (!confirm(t('js.dash.layouts.delConfirm', { name: l.name }))) return;
       try {
@@ -995,7 +1025,9 @@ function start() {
   });
 
   const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮' };
-  const titleOf = p => (p.kind === 'tool' ? ((types.get(p.tool && p.tool.type) || {}).name || t('js.dash.kind.tool')) : p.title || t(`js.dash.kind.${p.kind}`));
+  /** A sent tool is named by its mode when it has one ("Base-ten blocks", not "Place value"). */
+  const toolName = tool => { const ty = types.get(tool && tool.type) || {}; const m = (ty.modes || []).find(x => x.id === ((tool.state && tool.state.tab) || ty.id)); return (m && m.name) || ty.name; };
+  const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool') : p.title || t(`js.dash.kind.${p.kind}`));
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
   async function openPush(q = '') {
@@ -1158,7 +1190,8 @@ function start() {
     const type = p && p.tool && types.get(p.tool.type);
     if (!type || !RENDER[type.id]) return;
     const C = D.registry.common || {};
-    const sh = sheet({ title: `${type.icon} ${type.name}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
+    const mode = (type.modes || []).find(x => x.id === ((p.tool.state && p.tool.state.tab) || type.id));
+    const sh = sheet({ title: `${(mode && mode.icon) || type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
     sh.el.querySelector('.sheet').classList.add('dash-copysheet');
     const body = sh.el.querySelector('.dash-wcopy .dash-wb');
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };

@@ -17,6 +17,7 @@
 import { noise } from './dash-noise.js';
 import { TOOLS } from './dash-tools.js';
 import { TOOLS4 } from './dash-tools4.js';
+import { withModes } from './dash-modes.js';
 // Stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, hall pass, class jobs, mood, breathing,
 // sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
 import { RENDER5, points } from './dash-class5.js';
@@ -1118,4 +1119,4 @@ function score(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...TOOLS, ...TOOLS4, ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...withModes({ ...TOOLS, ...TOOLS4 }), ...RENDER5, camera };

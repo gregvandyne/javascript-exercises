@@ -2723,9 +2723,9 @@
         "eyesOff": "„Augen nach vorn“ ist beendet",
         "eyesUp": "Augen nach vorn",
         "hidden": "Ausgeblendet. Es ist unter „Von deiner Lehrkraft“ gespeichert.",
-        "back": "Es ist wieder da"
+        "back": "Es ist wieder da",
+        "renamed": "Layout umbenannt: {name}"
       },
-      "editing": "Bearbeiten: {name}",
       "all": "Alle",
       "add": "Hinzufügen",
       "addName": "{name} hinzufügen",
@@ -8920,6 +8920,7 @@
       "edit": "Bildschirm bearbeiten",
       "editMine": "Meinen Bildschirm ändern",
       "editing": "Bearbeiten: {name}",
+      "layoutName": "Name des Layouts",
       "editingMine": "Ich ändere meinen Bildschirm",
       "editHint": "Ziehen zum Verschieben · an einer Ecke ziehen zum Ändern der Größe · oder Pfeiltasten",
       "editHintMine": "Verschiebe deine Widgets, füge neue hinzu oder wähle einen Hintergrund. Angeheftete bleiben.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Layout",
       "new": "Neu",
-      "manage": "Dieses Layout umbenennen oder löschen",
-      "defaultName": "Alltag"
+      "manage": "Dieses Layout umbenennen oder löschen"
     },
     "foot": {
       "eyes": "Augen nach vorn",
@@ -9407,8 +9407,8 @@
         "r_creative": "Gute Ideen"
       },
       "fractions": {
-        "name": "Bruchstreifen",
-        "desc": "Teilen, färben und vergleichen. „Gleich große Teile“ zeigt, warum einer größer ist. Klasse 2–6.",
+        "name": "Brüche",
+        "desc": "Mit Streifen und Kreisen vergleichen, addieren, subtrahieren, multiplizieren und dividieren, und eine Zahl als Bruch, Dezimalzahl und Prozent sehen.",
         "bar": "Streifen",
         "circle": "Kreise",
         "same": "Gleich große Teile",
@@ -9448,7 +9448,11 @@
         "modeDiv": "Dividieren",
         "howtoDiv": "Ändere jede Zahl mit − und +. Wie oft passt der zweite hinein?",
         "fits": "{n}-mal passt {b} in {a}.",
-        "noZero": "Durch null kann man nicht teilen, also bleibt der zweite Zähler bei 1 oder mehr."
+        "noZero": "Durch null kann man nicht teilen, also bleibt der zweite Zähler bei 1 oder mehr.",
+        "m": {
+          "fractions": "Bruchstreifen",
+          "fdp": "Bruch, Dezimalzahl, Prozent"
+        }
       },
       "numline": {
         "name": "Zahlenstrahl",
@@ -9543,8 +9547,8 @@
         "helpIdeas": "Lege 205 und tausche, damit du 30 wegnehmen kannst."
       },
       "placeval": {
-        "name": "Stellenwerttafel",
-        "desc": "Von Tausendern bis Tausendsteln, mit Plättchen.",
+        "name": "Stellenwert",
+        "desc": "Zehnersystem-Blöcke und eine Stellenwerttafel: Zehner gegen Einer tauschen und Zahlen von Millionen bis Tausendstel lesen.",
         "discs": "Plättchen zeigen",
         "decimals": "Zehntel, Hundertstel und Tausendstel zeigen",
         "times10": "Mal 10",
@@ -9562,7 +9566,11 @@
         "thousandths": "Tausendstel",
         "howto": "Tippe auf eine Spalte, dann ändern − und + ihre Ziffer.",
         "helpUse": "− und + übertragen und borgen über die Stellen hinweg.\nMal 10 und Durch 10 verschieben jede Ziffer um eine Stelle.\nOptionen: Plättchen und Stellen nach dem Komma.",
-        "helpIdeas": "Zeige 3405 und drücke Mal 10: Was hat sich bewegt, was ist geblieben?"
+        "helpIdeas": "Zeige 3405 und drücke Mal 10: Was hat sich bewegt, was ist geblieben?",
+        "m": {
+          "placeval": "Stellenwerttafel",
+          "base10": "Zehnersystem-Blöcke"
+        }
       },
       "tenframe": {
         "name": "Zehnerfelder",
@@ -9584,8 +9592,8 @@
         "helpIdeas": "Zeige 7 für zwei Sekunden, verdecke den Bildschirm und frage, wie viele es waren."
       },
       "hundreds": {
-        "name": "Hundertertafel",
-        "desc": "Zahlen färben, in Schritten zählen und Zahlen zum Raten verstecken.",
+        "name": "Zahlentafel",
+        "desc": "Eine Tafel von 1–100, 0–99 oder 1–120. Zahlen einfärben, in Schritten zählen und Zahlen zum Raten verstecken.",
         "start": "Zahlen",
         "skip": "In Schritten zählen",
         "skipBy": "In {n}er-Schritten",
@@ -9602,8 +9610,8 @@
         "helpIdeas": "Zähle in Neunerschritten: Welches Muster bilden die Ziffern?"
       },
       "area": {
-        "name": "Flächenmodell und Punktfelder",
-        "desc": "Zeilen mal Spalten. Teile eine Seite, um die Teilprodukte zu sehen.",
+        "name": "Multiplizieren und Dividieren",
+        "desc": "Flächenmodelle und Punktfelder mit Teilprodukten und eine Einmaleins-Tafel bis 12 × 12.",
         "rows": "Zeilen",
         "cols": "Spalten",
         "array": "Punktfeld",
@@ -9615,7 +9623,11 @@
         "hint": "Teile eine Seite, um die Aufgabe in leichtere Teile zu zerlegen.",
         "howto": "Zeilen und Spalten mit − und +. Teile eine Seite zum Zerlegen.",
         "helpUse": "Punktfeld zeigt Punkte in Reihen; Flächenmodell zeigt ein Rechteck.\nNach Stellenwert teilen zeigt jedes Teilprodukt.\nOptionen: genau wählen, wo jede Seite geteilt wird.",
-        "helpIdeas": "Zeige 14 × 6 als 10 × 6 und 4 × 6 und addiere die Teile."
+        "helpIdeas": "Zeige 14 × 6 als 10 × 6 und 4 × 6 und addiere die Teile.",
+        "m": {
+          "area": "Flächenmodell und Punktfelder",
+          "times": "Einmaleins-Tafel"
+        }
       },
       "times": {
         "name": "Einmaleins-Tafel",
@@ -9724,8 +9736,8 @@
         "bad": "Das Bild hat nicht geklappt. Versuch ein JPG- oder PNG-Foto."
       },
       "geoboard": {
-        "name": "Geobrett",
-        "desc": "Formen mit Gummibändern auf Quadratgitter, Dreieckspunkten oder Kreis. Fläche, Umfang und Winkel exakt; Lineal, Beschriftung, Stift. Klasse 2–8.",
+        "name": "Formenbrett",
+        "desc": "Formen mit Gummibändern auf Gitter, Punkten oder Kreis, mit genauem Flächeninhalt und Umfang. Winkel bauen und mit dem Geodreieck messen.",
         "area": "Fläche",
         "perimeter": "Umfang",
         "length": "Länge",
@@ -9831,11 +9843,15 @@
         "idea5": "Baue eine Form mit genau zwei rechten Winkeln.",
         "howto": "Tippe Nägel an, für ein Gummiband. Erster Nagel schließt.",
         "helpUse": "Tippe Stifte an, um ein Band zu spannen; der erste Stift schließt es.\nZiehe eine Ecke oder das ganze Band. Eine Farbe beginnt ein neues.\nFormen, Werkzeuge und Beschriften bringen Formen, Lineal, Text und Stift.",
-        "helpIdeas": "Probiert: Alle bauen die Fläche 12 und vergleichen die Umfänge."
+        "helpIdeas": "Probiert: Alle bauen die Fläche 12 und vergleichen die Umfänge.",
+        "m": {
+          "geoboard": "Geobrett",
+          "angle": "Winkelmacher"
+        }
       },
       "pattern": {
-        "name": "Musterplättchen",
-        "desc": "Sechsecke, Trapeze, Rauten, Dreiecke und Quadrate, die einrasten. Zeigt den Bruchteil eines Sechsecks. Klasse 1–5.",
+        "name": "Geometrie",
+        "desc": "Musterplättchen, Körper, die sich zu Netzen auffalten, und Verschieben, Spiegeln und Drehen auf einem Gitter.",
         "hex": "Sechseck",
         "trap": "Trapez",
         "rhom": "Blaue Raute",
@@ -9854,7 +9870,12 @@
         "empty": "Füge ein Plättchen aus der Reihe oben hinzu. Pfeiltasten verschieben das gewählte Plättchen, R dreht es.",
         "howto": "Tippe oben ein Plättchen an. Ziehe Plättchen, sie rasten ein.",
         "helpUse": "Tippe einen Block an, um ihn zu wählen, dann Drehen oder Entfernen.\nDie Anzeige ist der Bruchteil eines Sechsecks, den die Blöcke bilden.\nPfeiltasten bewegen den gewählten Block; R dreht ihn.",
-        "helpIdeas": "Auf wie viele Arten kannst du ein Sechseck bedecken?"
+        "helpIdeas": "Auf wie viele Arten kannst du ein Sechseck bedecken?",
+        "m": {
+          "pattern": "Musterplättchen",
+          "solids": "Körper und Netze",
+          "transform": "Abbildungen"
+        }
       },
       "angle": {
         "name": "Winkelmacher",
@@ -9963,8 +9984,8 @@
         "helpIdeas": "Löst 3x + 2 = x + 8 gemeinsam und sagt jeden Schritt laut."
       },
       "algebra": {
-        "name": "Algebrakacheln",
-        "desc": "x²-, x- und 1-Kacheln, positiv und negativ. Nullpaare heben sich auf; der Term wird vereinfacht. Klasse 6–8.",
+        "name": "Algebra",
+        "desc": "Algebrakacheln mit Nullpaaren und eine Balkenwaage, um Gleichungen Schritt für Schritt zu lösen.",
         "x2": "x Quadrat",
         "x": "x",
         "one": "eins",
@@ -9985,7 +10006,11 @@
         "full": "Die Matte ist voll.",
         "howto": "Tippe oben ein Plättchen an. Nimm Nullpaare weg zum Vereinfachen.",
         "helpUse": "Tippe eine Kachel an, um sie zu wählen; Umdrehen ändert ihr Vorzeichen.\nGegensätzliche Kacheln einer Sorte werden eingekreist: ein Nullpaar.\nNullpaare nimmt sie weg, und der Term wird vereinfacht.",
-        "helpIdeas": "Lege 2x + 3 − x − 1 und vereinfache mit Nullpaaren."
+        "helpIdeas": "Lege 2x + 3 − x − 1 und vereinfache mit Nullpaaren.",
+        "m": {
+          "algebra": "Algebrakacheln",
+          "balance": "Balkenwaage"
+        }
       },
       "coins": {
         "name": "Münzen und Geld",
@@ -10018,8 +10043,8 @@
         "helpIdeas": "Es kostet 37, bezahlt mit 100: Zählt gemeinsam hoch zum Wechselgeld."
       },
       "chance": {
-        "name": "Zufallslabor",
-        "desc": "Münzen werfen, würfeln und Glücksräder drehen, bis zu 1.000-mal. Ein Live-Diagramm neben dem Erwarteten. Klasse 3–8.",
+        "name": "Daten und Zufall",
+        "desc": "Säulen-, Linien-, Bild- und Punktdiagramme und ein Zufallslabor: Münzen, Würfel und Glücksräder bis zu 1.000-mal.",
         "coin": "Münze",
         "dice": "Würfel",
         "spinner": "Glücksrad",
@@ -10042,7 +10067,11 @@
         "none": "Noch keine Versuche",
         "howto": "Wähle Münze, Würfel oder Glücksrad, dann Los. Vergleiche mit der Linie.",
         "helpUse": "Das Menü legt fest, wie viele Versuche Los jedes Mal macht.\nNeu anfangen löscht die Ergebnisse.\nOptionen: ein oder zwei Würfel, die Teile des Glücksrads, bis zu 1000 Versuche.",
-        "helpIdeas": "Vorhersagen, 10 Würfe, dann 1000: Was liegt näher an der Hälfte?"
+        "helpIdeas": "Vorhersagen, 10 Würfe, dann 1000: Was liegt näher an der Hälfte?",
+        "m": {
+          "chance": "Zufallslabor",
+          "graph": "Diagramm-Werkstatt"
+        }
       },
       "letters": {
         "name": "Buchstabenkärtchen",
@@ -10382,7 +10411,8 @@
       "practiceName": "Üben: {title}",
       "helpFor": "So geht {name}",
       "helpClose": "Schließen",
-      "helpTry": "Zum Ausprobieren:"
+      "helpTry": "Zum Ausprobieren:",
+      "modeFor": "Wählen, was {name} zeigt"
     },
     "ask": {
       "fractions": "Welcher Bruchteil ist gefärbt?",
@@ -10428,6 +10458,10 @@
       "lesson": {
         "name": "Unterricht",
         "desc": "Timer, schnelle Abfrage, Hilfe-Schlange, Zahlenstrahl und Ampel."
+      },
+      "math": {
+        "name": "Mathe",
+        "desc": "Bruchstreifen, ein Zahlenstrahl in Vierteln, ein Timer und die Hilfe-Schlange."
       },
       "group": {
         "name": "Gruppenarbeit",

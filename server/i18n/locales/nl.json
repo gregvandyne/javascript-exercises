@@ -2723,9 +2723,9 @@
         "eyesOff": "‘Ogen hierheen’ is gestopt",
         "eyesUp": "Ogen naar voren",
         "hidden": "Verborgen. Het staat bewaard bij Van je leraar.",
-        "back": "Het is terug"
+        "back": "Het is terug",
+        "renamed": "Indeling hernoemd: {name}"
       },
-      "editing": "Bewerken: {name}",
       "all": "Alle",
       "add": "Toevoegen",
       "addName": "{name} toevoegen",
@@ -8920,6 +8920,7 @@
       "edit": "Scherm bewerken",
       "editMine": "Mijn scherm aanpassen",
       "editing": "Bewerken: {name}",
+      "layoutName": "Naam van de indeling",
       "editingMine": "Mijn scherm aanpassen",
       "editHint": "Sleep om te verplaatsen · sleep een hoek om de grootte te veranderen · of gebruik de pijltjestoetsen",
       "editHintMine": "Verplaats je widgets, voeg nieuwe toe of kies een achtergrond. Vastgezette blijven staan.",
@@ -8929,8 +8930,7 @@
     "layouts": {
       "label": "Indeling",
       "new": "Nieuw",
-      "manage": "Deze indeling hernoemen of verwijderen",
-      "defaultName": "Elke dag"
+      "manage": "Deze indeling hernoemen of verwijderen"
     },
     "foot": {
       "eyes": "Ogen hierheen",
@@ -9407,8 +9407,8 @@
         "r_creative": "Goede ideeën"
       },
       "fractions": {
-        "name": "Breukenstroken",
-        "desc": "Verdelen, kleuren en vergelijken. ‘Even grote stukjes’ laat zien waarom de ene groter is. Groep 4–8.",
+        "name": "Breuken",
+        "desc": "Vergelijk, tel op, trek af, vermenigvuldig en deel met stroken en cirkels, en zie één getal als breuk, kommagetal en procent.",
         "bar": "Stroken",
         "circle": "Cirkels",
         "same": "Even grote stukjes",
@@ -9448,7 +9448,11 @@
         "modeDiv": "Delen",
         "howtoDiv": "Gebruik − en + bij elk getal. Hoe vaak past de tweede in de eerste?",
         "fits": "{b} past {n} keer in {a}.",
-        "noZero": "Je kunt niet door nul delen, dus de tweede teller blijft 1 of meer."
+        "noZero": "Je kunt niet door nul delen, dus de tweede teller blijft 1 of meer.",
+        "m": {
+          "fractions": "Breukenstroken",
+          "fdp": "Breuk, kommagetal, procent"
+        }
       },
       "numline": {
         "name": "Getallenlijn",
@@ -9543,8 +9547,8 @@
         "helpIdeas": "Leg 205 en ruil zodat je er 30 af kunt halen."
       },
       "placeval": {
-        "name": "Positieschema",
-        "desc": "Van duizendtallen tot duizendsten, met fiches.",
+        "name": "Plaatswaarde",
+        "desc": "MAB-blokjes en een positieschema: wissel tientallen voor eenheden en lees getallen van miljoenen tot duizendsten.",
         "discs": "Fiches tonen",
         "decimals": "Tienden, honderdsten en duizendsten tonen",
         "times10": "Keer 10",
@@ -9562,7 +9566,11 @@
         "thousandths": "Duizendsten",
         "howto": "Tik op een kolom en verander het cijfer met − en +.",
         "helpUse": "− en + lenen en onthouden over de posities heen.\nKeer 10 en Gedeeld door 10 schuiven elk cijfer één plek op.\nOpties: fiches, en plaatsen achter de komma.",
-        "helpIdeas": "Laat 3405 zien en druk op Keer 10: wat schoof op en wat bleef?"
+        "helpIdeas": "Laat 3405 zien en druk op Keer 10: wat schoof op en wat bleef?",
+        "m": {
+          "placeval": "Positieschema",
+          "base10": "MAB-blokjes"
+        }
       },
       "tenframe": {
         "name": "Rekenrekjes van tien",
@@ -9584,8 +9592,8 @@
         "helpIdeas": "Laat 7 twee seconden zien, bedek het scherm en vraag hoeveel het er waren."
       },
       "hundreds": {
-        "name": "Honderdveld",
-        "desc": "Getallen kleuren, sprongsgewijs tellen en getallen verbergen om te raden.",
+        "name": "Getallenkaart",
+        "desc": "Een kaart van 1–100, 0–99 of 1–120. Kleur getallen, tel met sprongen en verberg getallen om te raden.",
         "start": "Getallen",
         "skip": "Sprongen tellen",
         "skipBy": "Sprongen van {n}",
@@ -9602,8 +9610,8 @@
         "helpIdeas": "Tel in sprongen van 9: welk patroon maken de cijfers?"
       },
       "area": {
-        "name": "Oppervlaktemodel en roosters",
-        "desc": "Rijen keer kolommen. Splits een kant om de deelproducten te zien.",
+        "name": "Vermenigvuldigen en delen",
+        "desc": "Oppervlaktemodellen en roosters met deelproducten, en een tafelkaart tot 12 × 12.",
         "rows": "Rijen",
         "cols": "Kolommen",
         "array": "Rooster",
@@ -9615,7 +9623,11 @@
         "hint": "Splits een kant om de som in makkelijkere stukjes te verdelen.",
         "howto": "Stel rijen en kolommen in met − en +. Splits een zijde om te verdelen.",
         "helpUse": "Rooster toont stippen in rijen; Oppervlaktemodel toont een rechthoek.\nSplitsen per positie toont elk deelproduct.\nOpties: kies precies waar elke zijde gesplitst wordt.",
-        "helpIdeas": "Laat 14 × 6 zien als 10 × 6 en 4 × 6 en tel de delen op."
+        "helpIdeas": "Laat 14 × 6 zien als 10 × 6 en 4 × 6 en tel de delen op.",
+        "m": {
+          "area": "Oppervlaktemodel en roosters",
+          "times": "Tafelkaart"
+        }
       },
       "times": {
         "name": "Tafelkaart",
@@ -9724,8 +9736,8 @@
         "bad": "Die afbeelding werkte niet. Probeer een JPG- of PNG-foto."
       },
       "geoboard": {
-        "name": "Geobord",
-        "desc": "Maak vormen met elastiekjes op een vierkantsrooster, driehoekspunten of een cirkel. Oppervlakte, omtrek en hoeken exact; liniaal, labels en pen. Groep 4–8.",
+        "name": "Vormenbord",
+        "desc": "Maak vormen met elastiekjes op een rooster, stippen of een cirkel, met exacte oppervlakte en omtrek. Maak en meet hoeken met een gradenboog.",
         "area": "Oppervlakte",
         "perimeter": "Omtrek",
         "length": "Lengte",
@@ -9831,11 +9843,15 @@
         "idea5": "Maak een vorm met precies twee rechte hoeken.",
         "howto": "Tik op spijkers om een elastiekje te spannen. De eerste sluit het.",
         "helpUse": "Tik op pinnen om een elastiekje te spannen; de eerste pin sluit het.\nSleep een hoekpunt of het hele elastiekje. Een kleur begint een nieuw.\nVormen, Gereedschap en Aantekenen geven vormen, liniaal, labels en pen.",
-        "helpIdeas": "Probeer: iedereen maakt oppervlakte 12 en vergelijkt de omtrek."
+        "helpIdeas": "Probeer: iedereen maakt oppervlakte 12 en vergelijkt de omtrek.",
+        "m": {
+          "geoboard": "Geobord",
+          "angle": "Hoekenmaker"
+        }
       },
       "pattern": {
-        "name": "Patroonblokken",
-        "desc": "Zeshoeken, trapezia, ruiten, driehoeken en vierkanten die in elkaar klikken. Laat het deel van een zeshoek zien. Groep 1–7.",
+        "name": "Meetkunde",
+        "desc": "Patroonblokken, ruimtefiguren die openvouwen tot bouwplaten, en verschuiven, spiegelen en draaien op een rooster.",
         "hex": "Zeshoek",
         "trap": "Trapezium",
         "rhom": "Blauwe ruit",
@@ -9854,7 +9870,12 @@
         "empty": "Voeg een blok toe uit de rij hierboven. De pijltjestoetsen verplaatsen het gekozen blok en R draait het.",
         "howto": "Tik op een blokje bovenaan. Sleep blokjes: ze klikken vast.",
         "helpUse": "Tik op een blok op het bord om het te kiezen, dan Draaien of Weghalen.\nDe uitkomst is het deel van een zeshoek dat de blokken vormen.\nPijltjestoetsen verplaatsen het gekozen blok; R draait het.",
-        "helpIdeas": "Op hoeveel manieren kun je een zeshoek bedekken?"
+        "helpIdeas": "Op hoeveel manieren kun je een zeshoek bedekken?",
+        "m": {
+          "pattern": "Patroonblokken",
+          "solids": "Ruimtefiguren en bouwplaten",
+          "transform": "Transformaties"
+        }
       },
       "angle": {
         "name": "Hoekenmaker",
@@ -9963,8 +9984,8 @@
         "helpIdeas": "Los samen 3x + 2 = x + 8 op en zeg elke stap hardop."
       },
       "algebra": {
-        "name": "Algebrategels",
-        "desc": "x²-, x- en 1-tegels, positief en negatief. Nulparen vallen weg; de uitdrukking wordt eenvoudiger. Klas 1–2 van het voortgezet onderwijs.",
+        "name": "Algebra",
+        "desc": "Algebrategels met nulparen en een balans om vergelijkingen stap voor stap op te lossen.",
         "x2": "x kwadraat",
         "x": "x",
         "one": "één",
@@ -9985,7 +10006,11 @@
         "full": "De mat is vol.",
         "howto": "Tik op een tegel bovenaan om hem toe te voegen. Haal nulparen weg.",
         "helpUse": "Tik op een tegel om hem te kiezen; Omdraaien verandert het teken.\nTegengestelde tegels van één soort krijgen een ring: een nulpaar.\nNulparen haalt ze weg en de uitdrukking wordt vereenvoudigd.",
-        "helpIdeas": "Leg 2x + 3 − x − 1 en vereenvoudig met nulparen."
+        "helpIdeas": "Leg 2x + 3 − x − 1 en vereenvoudig met nulparen.",
+        "m": {
+          "algebra": "Algebrategels",
+          "balance": "Balans"
+        }
       },
       "coins": {
         "name": "Munten en geld",
@@ -10018,8 +10043,8 @@
         "helpIdeas": "Het kost 37, betaald met 100: tel samen op om het wisselgeld te vinden."
       },
       "chance": {
-        "name": "Kanslab",
-        "desc": "Gooi munten en dobbelstenen en draai rad tot 1000 keer. Een live grafiek naast wat we verwachten. Groep 5–8 en hoger.",
+        "name": "Data en kans",
+        "desc": "Staaf-, lijn-, beeld- en stippengrafieken, en een kanslab: munten, dobbelstenen en draaischijven tot 1000 keer.",
         "coin": "Munt",
         "dice": "Dobbelstenen",
         "spinner": "Draairad",
@@ -10042,7 +10067,11 @@
         "none": "Nog geen worpen",
         "howto": "Kies munt, dobbelstenen of draairad en druk op Gooien.",
         "helpUse": "Het menu kiest hoeveel pogingen Gooien elke keer doet.\nOpnieuw beginnen wist de resultaten.\nOpties: één of twee dobbelstenen, de delen van het draairad, tot 1000 pogingen.",
-        "helpIdeas": "Voorspel, gooi 10 keer en dan 1000: wat zit dichter bij de helft?"
+        "helpIdeas": "Voorspel, gooi 10 keer en dan 1000: wat zit dichter bij de helft?",
+        "m": {
+          "chance": "Kanslab",
+          "graph": "Grafiekmaker"
+        }
       },
       "letters": {
         "name": "Lettertegels",
@@ -10382,7 +10411,8 @@
       "practiceName": "Oefenen: {title}",
       "helpFor": "Zo werkt {name}",
       "helpClose": "Sluiten",
-      "helpTry": "Probeer:"
+      "helpTry": "Probeer:",
+      "modeFor": "Kies wat {name} laat zien"
     },
     "ask": {
       "fractions": "Welke breuk is gekleurd?",
@@ -10428,6 +10458,10 @@
       "lesson": {
         "name": "Les",
         "desc": "Timer, snelle check, hulprij, getallenlijn en stoplicht."
+      },
+      "math": {
+        "name": "Rekenen",
+        "desc": "Breukenstroken, een getallenlijn in kwarten, een timer en de hulprij."
       },
       "group": {
         "name": "Groepswerk",
