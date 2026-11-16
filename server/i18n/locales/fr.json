@@ -2830,6 +2830,12 @@
       "moreName": "Voir la suite de {name}",
       "tools": {
         "sent": "{name} envoyé. Chaque élève reçoit sa propre copie."
+      },
+      "tpl": {
+        "heading": "Partir d’une disposition toute prête",
+        "own": "Ou crée la tienne",
+        "ownName": "Ta propre disposition",
+        "ownDesc": "Pars de zéro ou copie la disposition actuelle."
       }
     }
   },
@@ -9232,18 +9238,23 @@
       },
       "countdown": {
         "name": "Compte à rebours jusqu’à un jour",
-        "desc": "Les jours et les heures avant une sortie, un spectacle ou les vacances.",
+        "desc": "Les jours et les heures avant des sorties, des spectacles ou les vacances : un ou plusieurs sur la même carte.",
         "s": {
-          "label": "Ce qui arrive",
-          "date": "Jour",
-          "time": "Heure"
+          "events": "Comptes à rebours"
         },
         "empty": "Choisis le jour dans Modifier l’écran.",
         "days": "Jours",
         "hours": "Heures",
         "mins": "Minutes",
         "today": "C’est aujourd’hui !",
-        "past": "Ce jour est passé."
+        "past": "Ce jour est passé.",
+        "label": "Ce qui arrive",
+        "day": "Jour",
+        "time": "Heure (facultative)",
+        "addEvent": "Ajouter un compte à rebours",
+        "remove": "Retirer",
+        "event": "Compte à rebours {n}",
+        "full": "Une carte contient jusqu’à {n} comptes à rebours."
       },
       "calendar": {
         "name": "Calendrier",
@@ -9373,17 +9384,6 @@
         "r_responsible": "Responsabilité",
         "r_brave": "Oser essayer",
         "r_creative": "Bonnes idées"
-      },
-      "stickers": {
-        "name": "Autocollants",
-        "desc": "Des autocollants Oomba à mettre sur l’écran.",
-        "s": {
-          "stamps": "Autocollants"
-        },
-        "add": "Ajouter un autocollant",
-        "remove": "Retirer {e}",
-        "clear": "Tout retirer",
-        "empty": "Touche un autocollant en dessous pour le mettre ici."
       },
       "fractions": {
         "name": "Bandes de fractions",
@@ -10167,7 +10167,8 @@
       "oneOut": "Quelqu’un est déjà dehors. Un à la fois.",
       "reason": "Choisis une raison dans la liste.",
       "noMood": "Ton enseignant n’a pas mis de météo des émotions sur ton écran.",
-      "site": "Cette fenêtre de site n’a pas encore d’adresse."
+      "site": "Cette fenêtre de site n’a pas encore d’adresse.",
+      "template": "Choisis une des dispositions toutes prêtes."
     },
     "tools": {
       "send": "Envoyer à la classe",
@@ -10216,6 +10217,46 @@
       "letters": "Combien de voyelles y a-t-il dans « {w} » ?",
       "map": "Sur quel continent est l’épingle ?",
       "mapGrid": "Dans quelle case est l’épingle ?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Début de journée",
+        "desc": "Horloge, maintenant et ensuite, objectif du jour, météo des émotions et métiers.",
+        "goal": "dire une chose que je veux apprendre aujourd’hui.",
+        "jobs": "Chef de rang\nPlantes\nLivres\nChef du rangement\nMessager"
+      },
+      "lesson": {
+        "name": "Leçon",
+        "desc": "Minuteur, vérification rapide, file d’aide, droite graduée et feu tricolore."
+      },
+      "group": {
+        "name": "Travail de groupe",
+        "desc": "Faire des groupes, minuteur, mesure du bruit et points des équipes.",
+        "teams": "Fusées\nComètes\nPlanètes\nÉtoiles"
+      },
+      "quiet": {
+        "name": "Travail en silence",
+        "desc": "Grand minuteur, feu rouge, consignes de travail et respiration."
+      },
+      "fun": {
+        "name": "Pause amusante",
+        "desc": "Fais tourner la roue, lance les dés, danse sur ta vidéo, puis respire."
+      },
+      "periods": {
+        "circle": "Accueil",
+        "maths": "Mathématiques",
+        "break": "Récréation",
+        "reading": "Lecture",
+        "lunch": "Déjeuner",
+        "science": "Sciences",
+        "art": "Arts plastiques",
+        "home": "Rangement et au revoir"
+      },
+      "light": {
+        "red": "Silence, s’il vous plaît",
+        "yellow": "On chuchote",
+        "green": "On parle à deux"
+      }
     }
   }
 }

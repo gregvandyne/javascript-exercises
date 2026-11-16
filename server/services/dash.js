@@ -38,9 +38,10 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools
  * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
  * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
  * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
- * 'scores' and 'stamps' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
+ * 'scores' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
  * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
  * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
+ * 'events': countdowns, each a label, a day and an optional time (cleanEvents).
  */
 /** The words each teaching tool shows (dash.w.<id>.<word>); the words they share are dash.tools.<word> (TOOL_COMMON). */
 const TOOL_WORDS = {
@@ -138,10 +139,11 @@ export const WIDGETS = [
   { id: 'check', icon: '✅', group: 'check', who: 'teacher', pin: false, size: [5, 4], min: [4, 4], words: ['empty', 'new', 'end', 'ended', 'names', 'save', 'saved', 'savedList', 'answered', 'send', 'kind', 'question', 'questionHint',
     'options', 'option', 'addOption', 'needOptions', 'nobody', 'notYet', 'savedNone', 'thumbs', 'fist', 'choice', 'scale', 'up', 'side', 'down'], settings: [] },
   // ---- stage 2, second part: more everyday widgets
-  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past'], settings: [
-    { key: 'label', type: 'text', max: 60, def: '' },
-    { key: 'date', type: 'date', def: '' },
-    { key: 'time', type: 'hhmm', def: '08:00' }] },
+  // Several countdowns in one card (docs/decisions.md "Several countdowns in one card"): a list of events, each a label,
+  // a day and an optional time. A card saved with one { label, date, time } is read as a list of one (cleanSettings).
+  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past',
+    'label', 'day', 'time', 'addEvent', 'remove', 'event', 'full'], settings: [
+    { key: 'events', type: 'events', def: [] }] },
   { id: 'calendar', icon: '📆', group: 'time', who: 'teacher', size: [4, 4], min: [3, 3], words: ['today', 'coming', 'none', 'addMark', 'day', 'label', 'remove'], settings: [
     { key: 'marks', type: 'marks', def: [] }] },
   { id: 'symbols', icon: '🤫', group: 'class', who: 'teacher', size: [3, 3], min: [3, 3], words: ['change'], settings: [
@@ -166,8 +168,6 @@ export const WIDGETS = [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
     { key: 'scores', type: 'scores', hidden: true, def: [] }] },
-  { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [3, 3], words: ['add', 'remove', 'clear', 'empty'], settings: [
-    { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
   { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
@@ -253,9 +253,7 @@ export const cleanText = (v, max, multi = false) => {
   if (multi) s = s.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n');
   return [...s.trim()].slice(0, max).join('');
 };
-export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_STAMPS = 30, MAX_SCORE = 9999;
-/** How many stickers the fixed Oomba set has (public/js/dash-widgets.js STAMPS; no uploads). */
-export const STAMP_COUNT = 20;
+export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_SCORE = 9999;
 const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
 /** A real calendar day as YYYY-MM-DD, or ''. */
 export const cleanDate = v => { const m = YMD.exec(String(v ?? '')); if (!m) return ''; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] && +m[1] >= 2000 && +m[1] <= 2100 ? m[0] : ''; };
@@ -269,12 +267,24 @@ export function cleanMarks(v) {
   }
   return [...out.values()].sort((a, b) => (a.date < b.date ? -1 : 1));
 }
+export const MAX_EVENTS = 8;
+/** Countdown events: a label (60 characters), a real day and an optional time (HH:MM, '' for the whole day), at most
+ *  MAX_EVENTS, soonest first (a row with a label and no day yet keeps its place at the end; an empty row is dropped).
+ *  A countdown saved before it held a list ({ label, date, time }) comes as one event: nothing is lost. */
+export function cleanEvents(v, old = {}) {
+  const src = Array.isArray(v) ? v : v === undefined && old && typeof old === 'object' && ('date' in old || 'label' in old) ? [old] : [];
+  const out = [];
+  for (const x of src) {
+    if (out.length >= MAX_EVENTS) break;
+    if (!x || typeof x !== 'object') continue;
+    const label = cleanText(x.label, 60), date = cleanDate(x.date), time = HHMM.test(String(x.time ?? '')) ? String(x.time) : '';
+    if (label || date) out.push({ label, date, time });
+  }
+  const key = e => (e.date ? `${e.date} ${e.time || '00:00'}` : '~');
+  return out.map((e, i) => [e, i]).sort(([a, i], [b, j]) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : i - j)).map(([e]) => e);
+}
 /** Scoreboard points: whole numbers, one per team. */
 export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
-/** Stickers: which one of the fixed set and where (percent of the widget). */
-export const cleanStamps = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').slice(0, MAX_STAMPS)
-  .map(x => ({ e: Number(x.e), x: Math.round(Number(x.x)), y: Math.round(Number(x.y)) }))
-  .filter(x => Number.isInteger(x.e) && x.e >= 0 && x.e < STAMP_COUNT && x.x >= 0 && x.x <= 100 && x.y >= 0 && x.y <= 100);
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 const ZONES = new Set(typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []);
 export const isZone = z => { if (ZONES.has(z)) return true; try { new Intl.DateTimeFormat('en', { timeZone: String(z) }); return /^[A-Za-z_]+\/[A-Za-z_/+-]+$/.test(String(z)); } catch { return false; } };
@@ -351,8 +361,8 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'date') out[f.key] = cleanDate(v);
     else if (f.type === 'hhmm') out[f.key] = HHMM.test(String(v ?? '')) ? String(v) : f.def;
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
+    else if (f.type === 'events') out[f.key] = cleanEvents(v, src);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
-    else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
     // stage 5
@@ -418,7 +428,13 @@ export const roleOf = (u, c) => (isTeacher(u, c) ? 'teacher' : isStudent(u, c) ?
 
 // ---------------------------------------------------------------- teacher layouts
 const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_at, created_at, updated_at';
-const readLayout = r => (r ? { ...r, widgets: json(r.widgets, []), bg: json(r.bg, DEFAULT_BG) } : null);
+/** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
+ *  when read, so old layouts, pins and student screens keep loading with everything else as it was. */
+const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
+/** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
+ *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
+const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
+const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(json(r.widgets, []))), bg: json(r.bg, DEFAULT_BG) } : null);
 export const getLayout = id => readLayout(q.get(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE id=?`, String(id || '')));
 export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE class_id=? AND owner_id=? ORDER BY position, created_at`, classId, ownerId).map(readLayout);
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
@@ -485,6 +501,66 @@ export function deleteLayout(u, c, id) {
   });
   return { ok: true };
 }
+// ---------------------------------------------------------------- ready-made layouts
+// docs/decisions.md "Ready-made layouts". Five layouts a teacher adds with one tap from the New layout sheet. Each is an
+// ordinary layout once made (the teacher renames, moves and changes it like any other): its widgets are built here for
+// the teacher's language (sample periods, goal, jobs, team names and light words come from dash.tpl.*) and then go
+// through createLayout, so cleanWidgets rebuilds every one from the registry like anything a browser sends.
+// Boxes are [x, y, w, h] on the 12-column grid; none overlap, each is at least its type's smallest size, and only
+// types the registry lets a teacher pin are pinned (tests/unit/dash-templates.test.js).
+/** The sample school day (the teacher changes the names and times in the schedule's settings). */
+const TPL_PERIODS = [['circle', '08:30', '09:00'], ['maths', '09:00', '10:00'], ['break', '10:00', '10:20'], ['reading', '10:20', '11:30'],
+  ['lunch', '11:30', '12:15'], ['science', '12:15', '13:15'], ['art', '13:15', '14:15'], ['home', '14:15', '14:45']];
+/** The clock as the teacher's language usually shows it (9:05 AM, or 09:05). */
+const hour12 = t => { try { return !!new Intl.DateTimeFormat(t.intl || t.locale || 'en', { hour: 'numeric' }).resolvedOptions().hour12; } catch { return true; } };
+const lightWords = t => ({ red: t('dash.tpl.light.red'), yellow: t('dash.tpl.light.yellow'), green: t('dash.tpl.light.green') });
+export const LAYOUT_TEMPLATES = [
+  { id: 'morning', icon: '🌅', bg: { kind: 'art', id: 'hills' }, widgets: t => [
+    // The clock where a student's own starter clock sits (4 x 2 at the top left), so pinned widgets never land on it.
+    ['clock', [0, 0, 4, 2], { hour12: hour12(t) }],
+    ['ican', [4, 0, 8, 2], { goal: t('dash.tpl.morning.goal') }, true],
+    ['mood', [8, 2, 4, 4], {}, true],
+    ['schedule', [0, 2, 4, 4], { view: 'nownext', periods: TPL_PERIODS.map(([k, start, end]) => ({ name: t(`dash.tpl.periods.${k}`), start, end })) }],
+    ['jobs', [4, 2, 4, 4], { jobs: t('dash.tpl.morning.jobs') }, true]] },
+  { id: 'lesson', icon: '📚', bg: { kind: 'color', id: 'cream' }, widgets: t => [
+    ['numline', [0, 0, 8, 4]],
+    ['timer', [8, 0, 4, 4], { minutes: 15 }],
+    ['check', [0, 4, 5, 4]],
+    ['help', [5, 4, 4, 4], {}, true],
+    ['light', [9, 4, 3, 4], { color: 'green', ...lightWords(t) }]] },
+  { id: 'group', icon: '👥', bg: { kind: 'color', id: 'mint' }, widgets: t => [
+    ['groups', [0, 0, 8, 4], { by: 'count', n: 4 }],
+    ['timer', [8, 0, 4, 4], { minutes: 20 }],
+    ['score', [0, 4, 8, 4], { mode: 'teams', teams: t('dash.tpl.group.teams') }],
+    ['noise', [8, 4, 4, 4], { zone: 'talk' }]] },
+  { id: 'quiet', icon: '🤫', bg: { kind: 'color', id: 'sky' }, widgets: t => [
+    ['timer', [0, 0, 6, 7], { minutes: 20, view: 'ring' }],
+    ['light', [6, 0, 3, 3], { color: 'red', ...lightWords(t) }],
+    ['symbols', [9, 0, 3, 3], { mode: 'silent' }],
+    ['breathe', [6, 3, 6, 4], { pace: 'calm' }]] },
+  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: t => [
+    ['picker', [0, 0, 5, 5], { mode: 'wheel', source: 'class' }],
+    ['video', [5, 0, 4, 4]],
+    ['dice', [9, 0, 3, 4], { count: 2 }],
+    ['score', [0, 5, 5, 3], { mode: 'teams', teams: t('dash.tpl.group.teams') }],
+    ['breathe', [5, 4, 4, 4], { pace: 'calm' }],
+    ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
+];
+const TPL_BY_ID = new Map(LAYOUT_TEMPLATES.map(x => [x.id, x]));
+export const layoutTemplate = id => TPL_BY_ID.get(String(id)) || null;
+/** The ready-made layouts as the New layout sheet lists them, in the reader's language. */
+export const templatesFor = t => LAYOUT_TEMPLATES.map(x => ({ id: x.id, icon: x.icon, name: t(`dash.tpl.${x.id}.name`), desc: t(`dash.tpl.${x.id}.desc`) }));
+/** A ready-made layout's widgets for this language, cleaned like any layout (ids fresh each time, so two layouts made
+ *  from one template never share a running timer). */
+export function templateWidgets(id, t) {
+  const tpl = layoutTemplate(id); if (!tpl) return [];
+  return cleanWidgets(tpl.widgets(t).map(([type, [x, y, w, h], s = {}, pin = false]) => ({ id: `${type}${uid(6)}`, type, x, y, w, h, s, pin })), 'teacher');
+}
+/** One tap: a new layout from a ready-made one, named as the teacher typed (or the template's name). */
+export function createFromTemplate(u, c, id, { name, t } = {}) {
+  const tpl = layoutTemplate(id); if (!tpl || typeof t !== 'function') return { error: 'template' };
+  return createLayout(u, c, { name: cleanText(name, 40) || t(`dash.tpl.${tpl.id}.name`), widgets: templateWidgets(tpl.id, t), bg: tpl.bg });
+}
 /** A picture widget shows only one of this teacher's own pictures for this class (stage 3); any other id is dropped. */
 function ownPictures(widgets, u, c) {
   for (const w of widgets) if (w.type === 'picture' && w.s.pic && !q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='show'", w.s.pic, u.id, c.id)) w.s.pic = '';
@@ -499,13 +575,13 @@ function publishPins(classId, widgets) {
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
-export const pinsOf = classId => json(classState(classId).pins, []);
+export const pinsOf = classId => upgradeWidgets(known(json(classState(classId).pins, [])));
 
 // ---------------------------------------------------------------- student screens
 export function studentState(classId, userId) {
   const r = q.get('SELECT widgets, pins, bg FROM dash_students WHERE class_id=? AND user_id=?', classId, userId);
   if (!r) return { widgets: [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) }], pins: {}, bg: { kind: 'color', id: 'sky' }, fresh: true };
-  return { widgets: json(r.widgets, []), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
+  return { widgets: known(json(r.widgets, [])), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
 }
 /** A student saves their screen: their own widgets (types students may add), where they put the pinned ones (a place
  *  only: pinned widgets can't be removed or changed), and their background. */

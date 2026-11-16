@@ -12,6 +12,9 @@
 // "now and next", on layouts of their own. Outside pages are stubs (the browser answers the video and site hosts itself;
 // the server's "may it be framed?" check is stubbed) and the camera is Chromium's fake camera: the chrome around them is
 // what is checked. Text in a stage 5 widget is at least 12px (13px on the projector), as in the tools.
+// Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
+// (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
+// names and light words in that language) with its own background.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -38,6 +41,7 @@ const DM = await import('../server/services/dash-media.js');
 const games = await import('../server/services/games.js');
 const D = await import('../server/services/dash.js');
 const { createApp } = await import('../server/app.js');
+const { tFor } = await import('../server/i18n/index.js');
 
 const OUT = process.env.OUT || '';
 if (OUT) fs.mkdirSync(OUT, { recursive: true });
@@ -65,6 +69,8 @@ const lesson = L.createLesson(T, school.id, { title: 'Vergleichen von Brüchen m
 const cl = L.classLessons(C.id)[0];
 const link = D.addLink(T, C, { url: 'https://bibliothek.example.org/kinder/lesen/geschichten', title: 'Schulbibliothek und Leseecke' }).link;
 const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+/** A day n days from today (school time zone), as YYYY-MM-DD. */
+const dayAt = n => new Date(Date.parse(`${ymd}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
 const SETTINGS = {
   clock: { face: 'analog', zone2: 'America/Argentina/Buenos_Aires' },
   text: { title: 'Heute im Unterricht', body: 'Rechtschreibübungsheft Seite zweiundzwanzig\nMathematikwettbewerbsvorbereitung\nLesen' },
@@ -74,14 +80,23 @@ const SETTINGS = {
   weather: { place: { name: 'Llanfairpwllgwyngyll, Isle of Anglesey, United Kingdom', lat: 53.22, lon: -4.2 } },
   qr: { target: { kind: 'link', ref: link.id } },
   picker: { mode: 'wheel' },
-  countdown: { label: 'Klassenausflug ins Naturkundemuseum', date: `${ymd.slice(0, 4)}-12-24`, time: '09:00' },
+  // Several countdowns in one card, as many as a card holds (8): more than fit (whole rows, the fade), long German
+  // labels, one today, one tomorrow (hours and minutes), one more than a year away (three-figure days), one gone by.
+  countdown: { events: [
+    { label: 'Klassenausflug ins Naturkundemuseum mit Picknick', date: dayAt(0), time: '' },
+    { label: 'Elternsprechtagsvorbereitungstreffen', date: dayAt(1), time: '09:00' },
+    { label: 'Weihnachtsfeier der Grundschule Ahornbaum', date: dayAt(12), time: '10:30' },
+    { label: 'Abschlussfeier und Zeugnisübergabe', date: dayAt(400), time: '' },
+    { label: 'Laternenumzug', date: dayAt(-1), time: '17:00' },
+    { label: 'Projektwoche „Unsere Umwelt“', date: dayAt(30), time: '' },
+    { label: 'Vorlesewettbewerb der vierten Klassen', date: dayAt(5), time: '11:15' },
+    { label: 'Bundesjugendspiele', date: dayAt(60), time: '08:00' }] },
   calendar: { marks: [{ date: `${ymd.slice(0, 8)}28`, label: 'Schulbuchausstellung im Foyer' }, { date: `${ymd.slice(0, 8)}27`, label: 'Science show' }] },
   light: { color: 'yellow', yellow: 'Leise Stimmen, bitte flüstern' },
   dice: { count: 6 },
   random: { min: -9999, max: 9999 },
   groups: { by: 'count', n: 3 },
   score: { teams: 'Die Sternschnuppen\nRaketen\nKometen\nPlaneten', scores: [-9999, 9999, 12, 0] },
-  stickers: { stamps: [{ e: 0, x: 4, y: 6 }, { e: 5, x: 96, y: 94 }, { e: 12, x: 50, y: 50 }] },
   tiles: { tiles: [{ kind: 'game', ref: g1.id }, { kind: 'game', ref: g2.id }, { kind: 'game', ref: g3.id }, { kind: 'lesson', ref: cl.id }] },
   // stage 3: busy states (three fractions, long ranges, a 12 x 12 grid, elapsed time across noon...)
   fractions: { state: { bars: [{ n: 3, d: 4 }, { n: 5, d: 8 }, { n: 7, d: 12 }], same: true } },
@@ -127,6 +142,8 @@ const SETTINGS = {
 const STAGE5_EXTRA = [
   { ...D.widgetType('score'), wid: 'wpoints', s: { mode: 'students' } },
   { ...D.widgetType('schedule'), wid: 'wnownext', s: { ...SETTINGS.schedule, view: 'nownext' } },
+  // A countdown card with one event keeps the big boxes it always had (a long label, days, hours and minutes).
+  { ...D.widgetType('countdown'), wid: 'wcount1', s: { events: [{ label: 'Klassenausflug ins Naturkundemuseum', date: dayAt(38), time: '09:00' }] } },
 ];
 // Stage 4 review: the organizers written in where they are, as widgets of their own: a sequence with its most steps, a
 // Venn diagram and main idea with its most details, all with long German words (the story map above stays too).
@@ -172,6 +189,8 @@ for (const size of ['size', 'min']) {
     LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
 }
+// Ready-made layouts: built per language in the loop below.
+for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
 const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
@@ -380,11 +399,12 @@ const VIEWS = process.env.VIEWS ? ALL_VIEWS.filter(v => process.env.VIEWS.split(
 const LANGS = (process.env.LANGS || 'en,de,ar').split(',');
 let total = 0;
 for (const L of RUN) {
- D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets });
+ D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
+  if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
   for (const v of VIEWS) {
     const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');

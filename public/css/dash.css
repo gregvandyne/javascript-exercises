@@ -21,6 +21,15 @@ body.dash-page{padding-bottom:0}
 .dash-me{display:flex;align-items:center;gap:var(--s2);font-weight:700}
 .dash-count{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--current);color:var(--on-current);font-size:.8rem}
 .dash-layouts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+/* Ready-made layouts make six or more layouts usual: on a wide screen the chips stay on the bar's one line and scroll
+   sideways when there are more than fit, so the bar never grows a second line (it did on the projector). */
+@media (min-width:720px){
+  .dash-layouts{flex:1000 1 0;min-width:min(100%,240px);max-width:max-content;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding:4px;margin:-4px}
+  .dash-layouts .chip{flex:none}
+  .dash-layouts.is-more:not(.at-end){-webkit-mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent)}
+  [dir="rtl"] .dash-layouts{--fade-end:left}
+  .dash-projector .dash-foot>.dash-lab{display:none}
+}
 .dash-hint{flex:1 1 200px}
 
 /* ---------- the body: library | grid | settings ---------- */
@@ -43,6 +52,19 @@ body.dash-page{padding-bottom:0}
 .dash-form textarea{resize:vertical;min-height:88px;padding-top:10px}
 .dash-tog{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:44px}
 .dash-tog input{width:24px;height:24px;flex:none}
+/* Ready-made layouts (docs/decisions.md "Ready-made layouts"): the New layout sheet's choices, one tap each. */
+.dash-tpls{margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.dash-tpls legend{padding:0;margin-bottom:var(--s2)}
+.dash-tpl{position:relative;display:flex;align-items:center;gap:var(--s3);min-height:56px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card-2);border:2px solid transparent;cursor:pointer}
+.dash-tpl:hover{border-color:var(--line)}
+.dash-tpl input{position:absolute;opacity:0;pointer-events:none}
+.dash-tpl:has(input:checked){border-color:var(--accent-line);background:var(--accent-soft)}
+.dash-tpl:has(input:checked)::after{content:"✔";flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-line);color:var(--card);font-weight:800}
+.dash-tpl:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.dash-tpl-icon{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:var(--r-sm);background:var(--card);font-size:1.4rem}
+.dash-tpl-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;line-height:1.3}
+.dash-tpl-or{margin-top:var(--s2)}
+.dash-tpls legend,.dash-tpl-or{font-weight:800}
 .dash-sideacts{display:flex;gap:var(--s2);flex-wrap:wrap}
 .dash-pics{display:flex;flex-direction:column;gap:var(--s2);border-top:2px solid var(--line);padding-top:var(--s3)}
 .dash-picrow{display:flex;align-items:center;gap:var(--s2)}
@@ -364,6 +386,22 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-countn{font-size:clamp(1.3rem,min(22cqh,10cqi),5rem)}
 .dw-countu{font-weight:700;color:var(--text-2);font-size:.85rem}
 .dw-countmsg{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(12cqh,6cqi),2rem)}
+/* several countdowns in one card: a list, soonest first; each row its label and day, and how long is left at its end */
+.dw-count.dw-countmany{align-items:stretch;justify-content:flex-start;text-align:start}
+.dw-countlist{flex:0 1 auto;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dw-countrow{display:flex;align-items:center;gap:var(--s2);padding:6px 10px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw-countrow.is-today{background:color-mix(in srgb,var(--accent) 22%,var(--card))}
+.dw-countrow.is-past{background:transparent;box-shadow:inset 0 0 0 2px var(--card-2)}
+.dw-countwhat{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.dw-countname{font-weight:800;line-height:1.15;overflow-wrap:anywhere;hyphens:auto;font-size:clamp(.95rem,min(7cqh,5.2cqi),1.7rem)}
+.dw-countwhen{color:var(--text-2);font-weight:600;line-height:1.2;overflow-wrap:anywhere;font-size:clamp(.8rem,min(5cqh,3.8cqi),1.15rem)}
+.dw-countrow.is-today .dw-countwhen{color:var(--accent-ink);font-weight:800}
+.dw-countrow.is-past .dw-countname{color:var(--text-2)}
+.dw-countval{flex:none;display:flex;gap:4px;align-items:flex-start}
+.dw-countval[hidden],.dw-countpair[hidden],.dw-countlabel[hidden],.dw-countbox[hidden]{display:none}
+.dw-countpair{display:flex;flex-direction:column;align-items:center;min-width:2.4em}
+.dw-countrow .dw-countn{font-size:clamp(1.15rem,min(10cqh,7cqi),2.8rem)}
+.dw-countrow .dw-countu{font-size:.75rem;line-height:1.1}
 /* calendar */
 .dw-cal{display:flex;flex-direction:column;gap:6px;height:100%}
 .dw-caltitle{font-weight:800;font-size:clamp(1rem,min(8cqh,6cqi),1.8rem)}
@@ -426,15 +464,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-teamname{flex:1 0 100%;min-width:0;font-weight:800;font-size:clamp(1rem,min(10cqh,5cqi),1.8rem);overflow-wrap:anywhere;hyphens:auto;line-height:1.15}
 .dw-teampts{flex:none;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.4rem,min(20cqh,8cqi),5rem);line-height:1;min-width:1.4em}
 .dw-pm{min-width:44px;padding:0;font-size:1.4rem}
-/* stickers */
-.dw-stickers{display:flex;flex-direction:column;gap:var(--s2);height:100%;overflow:auto}
-.dw-stickarea{--st:clamp(44px,min(24cqh,16cqi),84px);position:relative;flex:1 1 auto;min-height:var(--st);border-radius:var(--r-sm);background:var(--card-2)}
-.dw-stamp{position:absolute;inset-inline-start:calc((100% - var(--st)) * var(--x) / 100);inset-block-start:calc((100% - var(--st)) * var(--y) / 100);display:grid;place-items:center;width:var(--st);height:var(--st);font-size:calc(var(--st) * .7);line-height:1;background:none;border:0;padding:0;cursor:pointer;border-radius:12px}
-.dw-stickarea .dw-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:var(--s2)}
-span.dw-stamp{cursor:default}
-.dw-stamp:focus-visible{outline:3px solid var(--focus);border-radius:8px}
-.dw-palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:var(--s2)}
-.dw-palbtn{min-height:56px;padding:0;font-size:1.6rem}
 
 /* ---------- one look for the big numbers, one for the words under them ---------- */
 .dw-time,.dw-digits,.dw-countn,.dw-randn,.dw-teampts,.dw-wtemp{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.08;padding-block:.05em}
@@ -1211,7 +1240,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 /* mood check-in */
 .dw5-moodq{margin:0;flex:none;font-weight:800;font-size:clamp(1rem,min(9cqh,5cqi),1.7rem)}
 .dw5-faces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.dw5-face{flex-direction:column;min-height:72px;padding:6px 2px;gap:4px}
+.dw5-face{flex-direction:column;min-height:72px;padding:6px 2px;gap:4px;border-radius:var(--r-sm);white-space:normal}
 .dw5-faceic{font-size:clamp(1.5rem,min(16cqh,8cqi),2.8rem)}
 .dw5-facew{font-size:.85rem;font-weight:700;overflow-wrap:anywhere;hyphens:auto}
 .dw5-moodme{margin:0;font-weight:800;min-height:1.2em;font-size:clamp(.95rem,min(7cqh,4.4cqi),1.4rem)}

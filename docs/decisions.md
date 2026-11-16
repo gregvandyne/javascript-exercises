@@ -6123,6 +6123,34 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.
 
+### Several countdowns in one card (16 Nov 2026)
+
+Teachers asked to put several countdowns in one card instead of adding a card for each.
+
+- **Settings.** The countdown's settings are now a list of events (`events`). Each has a label (60 characters, clean
+  text), a day (a real date) and an optional time (HH:MM, or empty for the whole day). A card holds up to 8
+  (`MAX_EVENTS`). The settings form has "Add a countdown" and a remove button on each row. At 8 the add button gives
+  way to a note. The server rebuilds the list (`cleanEvents`): bad days and times are emptied, empty rows dropped. A row
+  with a label but no day yet is kept, so a half-filled row is not lost. The list is stored soonest first (a day with
+  no time counts from the start of the day); rows with no day go last.
+- **Old cards.** A countdown saved as one `{ label, date, time }` is read as a list of one. `cleanSettings` converts
+  it, and so does every read of a stored layout or of the pins students get. Nothing is lost, and its time is kept
+  (08:00 was the old default). The card's renderer also reads the old shape. The next save stores the list.
+- **The card.** Only events with a day are shown, sorted by when they happen in the school's time zone. With one
+  event the card looks as it always did: the label, big boxes for days, hours and minutes, "It's today!" on the day,
+  "That day has come and gone" after it. An event with no time shows whole calendar days only. With several events,
+  the card is a list. Each row shows its label and its day and time. At the row's end are days and hours, or hours
+  and minutes once it is less than a day away (days only with no time). On its day a row is highlighted and says
+  "It's today!". A day gone by moves to the end, greyed, for 7 days (`PAST_DAYS`), then drops off the card (it stays
+  in the settings to remove). If every event is older than that, the most recent one stays, so a card of one never
+  goes blank. The list scrolls by whole rows with the fade, like every other list. Default 4 × 3 and smallest 3 × 3
+  are unchanged.
+- **Who.** As before: teachers only, and it may be pinned. A pinned card reaches student screens with its whole list.
+  Students can't add one to their own screen.
+- Tests: `tests/unit/dash-stage2.test.js` (cleaning, the old shape, sorting, past days, pins). The fit check's
+  countdown is a full card of 8 with long German labels, one today, one tomorrow, one gone by and one more than a year
+  away. A card of one is checked on its own.
+
 ## Classroom dashboards, stage 3 (15 Nov 2026)
 Teaching tools (part 1), a whiteboard and a Picture widget, on the stage 1 grid and the stage 2 look. Built to the
 approved TeachingTools mockup (fraction bars with "Same-size pieces", a coordinate plane with slope and start buttons)
@@ -6458,6 +6486,59 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
     at 14px (was 16px; the projector floor is 13px), so a short box still shows at least one whole line.
 - **Not verified:** real YouTube and Vimeo players and a real site's frame check (the build sandbox can't reach them;
   tests and the fit check use stubs), and a physical document camera (Chromium's fake camera was used).
+
+## Classroom dashboards: ready-made layouts (16 Nov 2026)
+A teacher's first layout is still the near-empty "Everyday" starter, and every other layout was built by hand. Now the
+New layout sheet starts with **Start from a ready-made layout**: five layouts, each an icon, a name and one line, picked
+with one tap (the name is filled in and can be changed), then Save. Below them **Or make your own** keeps the old choice
+(copy the layout on screen, or the starter). Code: `LAYOUT_TEMPLATES`, `templateWidgets`, `createFromTemplate` in
+`server/services/dash.js`; `POST /api/dash/:id/templates/:tid` in `server/routes/dash.js`; `newSheet` in
+`public/js/dash.js`; strings `dash.tpl.*`, `dash.errors.template`, `js.dash.tpl.*`.
+- **The five.** *Morning start* (sunrise hills art): clock, schedule as "now and next" with a sample school day, today's
+  "I can" goal, mood check-in, class jobs; goal, mood and jobs pinned. *Lesson* (cream): number line, timer (15 min),
+  quick check, help queue (pinned), traffic light. *Group work* (mint): group maker (4 groups), timer (20 min),
+  scoreboard with four team names, noise meter. *Quiet work* (sky): a big ring timer (20 min), traffic light on red,
+  work symbols on "silent", breathing. *Fun break* (sparks art, the most playful): name wheel, two dice, an empty video
+  slot for the teacher's own movement or dance video, a 3-minute ring timer with a chime, breathing to calm down after,
+  and a sticker board with five stickers already on it.
+- **Decided: the quick check is not pinned.** The brief asked for the Lesson's quick check and help queue pinned, but the
+  registry never lets a quick check be pinned (`pin: false`): a check reaches students when the teacher sends one, as
+  an answer card. Only the help queue is pinned.
+- **Sample content is in the teacher's language** (the language of the page they make it from): period names, goal,
+  five jobs (from the class jobs' usual list), four team names (rockets, comets, planets, stars) and the light's words
+  for red, yellow and green, in all 13 locales (en-GB only where it differs: "Maths", "Break"). Neutral and kid-friendly;
+  no names of real people, no prices. The clock follows the language's usual 12- or 24-hour time.
+- **Each is an ordinary layout once made.** Widgets are built for the language, then go through `createLayout`, so
+  `cleanWidgets` rebuilds them from the registry like anything a browser sends; ids are fresh each time (two layouts
+  from one template never share a running timer). The route is the create-layout route's twin: signed in, the class's
+  own teacher only (404 for everyone else), the site's same-origin check, the same `dash-layout` rate limit, and
+  `MAX_LAYOUTS` with the same "delete one first" error. An unknown template is refused.
+- **Boxes.** Every template fits the 12-column grid in at most 8 rows (a 1600 × 900 screen without scrolling), with no
+  overlaps and every widget at least its smallest size. Morning start's clock sits where a student's own starter clock
+  is (4 × 2 at the top left), so its pinned widgets don't get pushed down on student screens.
+- **The layout chips.** Five more layouts made the footer wrap to a second line on the projector. On screens 720px and
+  wider the chips now stay on one line and scroll sideways when there are more than fit (the one on screen is kept in
+  view, the edge fades while there are more), and the projector hides the "Layout" label. Phones are unchanged.
+- **The mood check-in's faces** are rounded squares instead of pills, so a long word ("Benissimo") stays inside the
+  chosen face's dark background.
+- **Not done (optional in the brief):** offering the templates on a brand-new class's first visit. The first visit still
+  makes the "Everyday" starter (its tests unchanged); the ready-made layouts are one tap away under ➕ New.
+- Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
+  checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.
+
+## Classroom dashboards: stickers widget removed (16 Nov 2026)
+Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
+(`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and
+`STAMP_COUNT`), so it is no longer in the widget library and neither teachers nor students can add it; its renderer and
+emoji set (`public/js/dash-widgets.js`), its CSS and its `dash.w.stickers.*` strings in every locale went with it.
+- **Existing ones are dropped, not migrated.** Layouts, the class's pins and student screens are stored as JSON; a
+  widget whose type the registry no longer has is now filtered out when read (`known` in `readLayout`, `pinsOf`,
+  `studentState`), and `cleanWidgets` already refused unknown types on save. So an old layout, pin or student screen with
+  a stickers widget loads with only that widget missing, and the next save stores it without it. A student's saved place
+  for an old pinned stickers widget is ignored (it used to be a crash waiting to happen: `cleanBox` of an unknown type).
+  Pushes never carried stickers (only teaching tools are sent). No migration.
+- **Fun break** gets a team **scoreboard** (four sample team names in the teacher's language) in the stickers' 5 × 3
+  place, its default size: still playful for a break, and the layout still fills the 12 × 8 grid with no gaps.
 
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 

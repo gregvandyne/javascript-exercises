@@ -14,7 +14,7 @@
 // same ctx, plus ctx.ask (the teacher turns a tool into a quick check) and ctx.practice (official games to practise with).
 import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
-import { RENDER, checkChoices, skewOf } from '/js/dash-widgets.js';
+import { RENDER, checkChoices, skewOf, fill } from '/js/dash-widgets.js';
 import { parseVideo, siteUrl } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 
@@ -163,7 +163,7 @@ function start() {
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
-    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard, stickers): keep it, redraw it, save.
+    // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard): keep it, redraw it, save.
     set: (key, value) => {
       if (!TEACHER || w.pinned) return;
       w.s = { ...w.s, [key]: value };
@@ -452,7 +452,7 @@ function start() {
     const commit = () => { if (pending) { S.undo.push(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } $('#dash-undo').disabled = !S.undo.length; };
     const redraw = () => { const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`); if (old) { const order = +old.style.order; old.replaceWith(card(w, order)); } save(); };
     for (const f of type.settings) {
-      if (f.hidden) continue;   // changed by the widget itself (scores, stickers)
+      if (f.hidden) continue;   // changed by the widget itself (scores)
       const id = `dset-${w.id}-${f.key}`;
       const field = document.createElement('div'); field.className = f.type === 'bool' ? 'dash-tog' : 'field';
       if (f.type === 'bool') {
@@ -598,6 +598,34 @@ function start() {
         if (e.target.closest('[data-addp]')) {
           const list = w.s[f.key] || []; if (list.length >= 40) return;
           list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: D.tz }).format(new Date()), label: '' });
+          w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
+        }
+      });
+    },
+    // Several countdowns in one card: a row per event (what, day, an optional time), added and removed here; the card
+    // sorts them soonest first. services/dash.js cleanEvents keeps the same rules (MAX_EVENTS, real days, clean text).
+    events(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words, MAX = 8;
+      field.className = 'field dash-periods dash-events';
+      const draw = () => {
+        const list = w.s[f.key] || (w.s[f.key] = []);
+        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((e, i) => `<li class="dash-perrow" data-i="${i}" role="group" aria-label="${esc(fill(W.event, { n: i + 1 }))}">
+          <label class="sr-only" for="${id}-t${i}">${esc(W.label)} ${i + 1}</label><input class="input dash-pername" id="${id}-t${i}" data-k="label" maxlength="60" dir="auto" value="${esc(e.label)}" placeholder="${esc(W.label)}">
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)}: ${esc(e.label || fill(W.event, { n: i + 1 }))}">✖</button>
+          <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-d${i}">${esc(W.day)}</label><input class="input" id="${id}-d${i}" data-k="date" type="date" min="2000-01-01" max="2100-12-31" value="${esc(e.date)}"></span>
+          <span class="dash-pertime"><label for="${id}-h${i}">${esc(W.time)}</label><input class="input" id="${id}-h${i}" data-k="time" type="time" value="${esc(e.time)}"></span></span></li>`).join('')}</ol>
+          ${list.length < MAX ? `<button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addEvent)}</button>` : `<p class="small muted" data-full>${esc(fill(W.full, { n: MAX }))}</p>`}`;
+      };
+      draw();
+      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
+      field.addEventListener('change', () => commit());
+      field.addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]');
+        if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]')?.focus(); announce(W.remove); }
+        if (e.target.closest('[data-addp]')) {
+          // A copy: a widget just added shares the registry's empty default list.
+          const list = [...(w.s[f.key] || [])]; if (list.length >= MAX) return;
+          list.push({ label: '', date: '', time: '' });
           w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
         }
       });
@@ -811,7 +839,20 @@ function start() {
       b.addEventListener('click', () => switchLayout(l.id));
       box.appendChild(b);
     }
+    keepChip();
   }
+  /** More chips than fit scroll sideways on a wide screen (ready-made layouts make six or more usual): keep the one on
+   *  screen in view, and fade the bar's edge while there are more to scroll to. */
+  function keepChip() {
+    const box = $('#dash-layouts'); if (!box) return;
+    const more = box.scrollWidth > box.clientWidth + 1;
+    box.classList.toggle('is-more', more);
+    const on = box.querySelector('[aria-pressed="true"]');
+    if (on && more) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    chipEnd();
+  }
+  const chipEnd = () => { const box = $('#dash-layouts'); if (box) box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); };
+  $('#dash-layouts')?.addEventListener('scroll', chipEnd, { passive: true });
   async function switchLayout(id) {
     if (saveTimer) await flush();
     try {
@@ -830,12 +871,44 @@ function start() {
       try { await onSave(name, copy ? $('#dash-name-copy', sh.el).checked : false); sh.close(); } catch (err) { $('.form-err', sh.el).textContent = err.message; }
     });
   }
-  $('#dash-layout-new')?.addEventListener('click', () => nameSheet(t('js.dash.layouts.newTitle'), '', true, async (name, copy) => {
-    if (saveTimer) await flush();
-    const r = await api(`/api/dash/${CID}/layouts`, { method: 'POST', body: { name, copyFrom: copy ? S.layoutId : null } });
+  // New layout: one of the ready-made layouts (docs/decisions.md "Ready-made layouts"; its name filled in, editable), or
+  // the teacher's own (a copy of the layout on screen, or the starter).
+  async function addLayout(r) {
     S.layouts.push({ id: r.layout.id, name: r.layout.name, widgets: r.layout.widgets, bg: r.layout.bg });
     await switchLayout(r.layout.id);
-  }));
+  }
+  function newSheet() {
+    const tpls = D.templates || [];
+    const card = (id, icon, name, desc, on) => `<label class="dash-tpl"><input type="radio" name="dash-tpl" value="${esc(id)}"${on ? ' checked' : ''}><span class="dash-tpl-icon" aria-hidden="true">${esc(icon)}</span><span class="dash-tpl-text"><b>${esc(name)}</b><span class="small muted">${esc(desc)}</span></span></label>`;
+    const sh = sheet({ title: t('js.dash.layouts.newTitle'), content: `<form class="stack" id="dash-name-form" novalidate>
+      ${tpls.length ? `<fieldset class="dash-tpls"><legend class="dash-h3">${esc(t('js.dash.tpl.heading'))}</legend>${tpls.map(x => card(x.id, x.icon, x.name, x.desc, false)).join('')}
+      <p class="dash-h3 dash-tpl-or">${esc(t('js.dash.tpl.own'))}</p>${card('', '✏️', t('js.dash.tpl.ownName'), t('js.dash.tpl.ownDesc'), true)}</fieldset>` : ''}
+      <div class="field"><label for="dash-name-in">${esc(t('js.dash.layouts.name'))}</label><input class="input" id="dash-name-in" maxlength="40" required value=""></div>
+      <label class="dash-tog" id="dash-name-copyrow"><span>${esc(t('js.dash.layouts.copy'))}</span><input type="checkbox" id="dash-name-copy" checked></label>
+      <p class="err form-err" role="alert"></p><div class="row"><button class="btn btn-primary" type="submit">${esc(t('js.dash.layouts.save'))}</button></div></form>` });
+    const nameIn = $('#dash-name-in', sh.el), copyRow = $('#dash-name-copyrow', sh.el);
+    const picked = () => ($('input[name="dash-tpl"]:checked', sh.el) || {}).value || '';
+    // The ready-made name fills the box until the teacher types their own.
+    let auto = '';
+    sh.el.addEventListener('change', e => {
+      if (e.target.name !== 'dash-tpl') return;
+      const tpl = tpls.find(x => x.id === picked());
+      copyRow.hidden = !!tpl;
+      if (nameIn.value.trim() === '' || nameIn.value === auto) { auto = tpl ? tpl.name : ''; nameIn.value = auto; }
+    });
+    $('#dash-name-form', sh.el).addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = nameIn.value.trim(), tpl = picked();
+      if (!name) { $('.form-err', sh.el).textContent = t('js.dash.layouts.needName'); nameIn.focus(); return; }
+      try {
+        if (saveTimer) await flush();
+        await addLayout(tpl ? await api(`/api/dash/${CID}/templates/${encodeURIComponent(tpl)}`, { method: 'POST', body: { name } })
+          : await api(`/api/dash/${CID}/layouts`, { method: 'POST', body: { name, copyFrom: $('#dash-name-copy', sh.el).checked ? S.layoutId : null } }));
+        sh.close();
+      } catch (err) { $('.form-err', sh.el).textContent = err.message; }
+    });
+  }
+  $('#dash-layout-new')?.addEventListener('click', newSheet);
   $('#dash-layout-more')?.addEventListener('click', () => {
     const l = S.layouts.find(x => x.id === S.layoutId);
     const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">✏️ ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>🗑️ ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
@@ -1069,6 +1142,7 @@ function start() {
     }
     grid.style.setProperty('--rowmin', `${min}px`);
     stageMark();
+    keepChip();
   }
   const stageEl = grid.parentElement;
   const stageMark = () => { const more = stageEl.scrollHeight > stageEl.clientHeight + 12 && stageEl.scrollTop + stageEl.clientHeight < stageEl.scrollHeight - 12; stageEl.classList.toggle('has-more', more); };

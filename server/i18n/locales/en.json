@@ -2849,6 +2849,12 @@
       "moreName": "See more of {name}",
       "tools": {
         "sent": "{name} sent. Every student gets their own copy."
+      },
+      "tpl": {
+        "heading": "Start from a ready-made layout",
+        "own": "Or make your own",
+        "ownName": "Your own layout",
+        "ownDesc": "Start fresh, or copy the layout you're on."
       }
     }
   },
@@ -9656,18 +9662,23 @@
       },
       "countdown": {
         "name": "Countdown to a day",
-        "desc": "Days and hours until a field trip, a show or a holiday.",
+        "desc": "Days and hours until field trips, shows or holidays: one or several on one card.",
         "s": {
-          "label": "What's coming",
-          "date": "Day",
-          "time": "Time"
+          "events": "Countdowns"
         },
         "empty": "Pick the day in Edit screen.",
         "days": "Days",
         "hours": "Hours",
         "mins": "Minutes",
         "today": "It's today!",
-        "past": "That day has come and gone."
+        "past": "That day has come and gone.",
+        "label": "What's coming",
+        "day": "Day",
+        "time": "Time (optional)",
+        "addEvent": "Add a countdown",
+        "remove": "Remove",
+        "event": "Countdown {n}",
+        "full": "A card holds up to {n} countdowns."
       },
       "calendar": {
         "name": "Calendar",
@@ -9797,17 +9808,6 @@
         "r_responsible": "Being responsible",
         "r_brave": "Trying something new",
         "r_creative": "Good ideas"
-      },
-      "stickers": {
-        "name": "Stickers",
-        "desc": "Fun Oomba stickers to put on the screen.",
-        "s": {
-          "stamps": "Stickers"
-        },
-        "add": "Add a sticker",
-        "remove": "Take off {e}",
-        "clear": "Take them all off",
-        "empty": "Tap a sticker below to put it here."
       },
       "fractions": {
         "name": "Fraction bars",
@@ -10591,7 +10591,8 @@
       "oneOut": "Someone is already out. One at a time.",
       "reason": "Pick a reason from the list.",
       "noMood": "Your teacher hasn't put a mood check-in on your screen.",
-      "site": "That site window has no address yet."
+      "site": "That site window has no address yet.",
+      "template": "Pick one of the ready-made layouts."
     },
     "tools": {
       "send": "Send to students",
@@ -10640,6 +10641,46 @@
       "letters": "How many vowels are in “{w}”?",
       "map": "Which continent is the pin on?",
       "mapGrid": "Which square is the pin in?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Morning start",
+        "desc": "Clock, now and next, today's goal, a mood check-in and class jobs.",
+        "goal": "say one thing I want to learn today.",
+        "jobs": "Line leader\nPlant helper\nBook helper\nTidy-up captain\nMessenger"
+      },
+      "lesson": {
+        "name": "Lesson",
+        "desc": "Timer, quick check, help queue, a number line and a traffic light."
+      },
+      "group": {
+        "name": "Group work",
+        "desc": "Group maker, timer, noise meter and team points.",
+        "teams": "Rockets\nComets\nPlanets\nStars"
+      },
+      "quiet": {
+        "name": "Quiet work",
+        "desc": "Big timer, a red light, work symbols and a breathing circle."
+      },
+      "fun": {
+        "name": "Fun break",
+        "desc": "Spin the wheel, roll the dice, dance to your own video, then breathe."
+      },
+      "periods": {
+        "circle": "Morning meeting",
+        "maths": "Math",
+        "break": "Recess",
+        "reading": "Reading",
+        "lunch": "Lunch",
+        "science": "Science",
+        "art": "Art",
+        "home": "Pack up and goodbye"
+      },
+      "light": {
+        "red": "Quiet, please",
+        "yellow": "Whisper voices",
+        "green": "Talk with a partner"
+      }
     }
   }
 }

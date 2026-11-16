@@ -2831,6 +2831,12 @@
       "moreName": "Mehr von {name} zeigen",
       "tools": {
         "sent": "{name} gesendet. Jedes Kind bekommt seine eigene Kopie."
+      },
+      "tpl": {
+        "heading": "Mit einem fertigen Layout beginnen",
+        "own": "Oder ein eigenes machen",
+        "ownName": "Eigenes Layout",
+        "ownDesc": "Leer beginnen oder dieses Layout kopieren."
       }
     }
   },
@@ -9233,18 +9239,23 @@
       },
       "countdown": {
         "name": "Countdown bis zu einem Tag",
-        "desc": "Tage und Stunden bis zum Ausflug, zur Aufführung oder zu den Ferien.",
+        "desc": "Tage und Stunden bis zu Ausflügen, Aufführungen oder Ferien: einer oder mehrere auf einer Karte.",
         "s": {
-          "label": "Was kommt",
-          "date": "Tag",
-          "time": "Uhrzeit"
+          "events": "Countdowns"
         },
         "empty": "Wähle den Tag unter „Bildschirm bearbeiten“.",
         "days": "Tage",
         "hours": "Stunden",
         "mins": "Minuten",
         "today": "Heute ist es so weit!",
-        "past": "Dieser Tag ist schon vorbei."
+        "past": "Dieser Tag ist schon vorbei.",
+        "label": "Was kommt",
+        "day": "Tag",
+        "time": "Uhrzeit (optional)",
+        "addEvent": "Countdown hinzufügen",
+        "remove": "Entfernen",
+        "event": "Countdown {n}",
+        "full": "Eine Karte fasst bis zu {n} Countdowns."
       },
       "calendar": {
         "name": "Kalender",
@@ -9374,17 +9385,6 @@
         "r_responsible": "Verantwortung",
         "r_brave": "Etwas Neues wagen",
         "r_creative": "Gute Ideen"
-      },
-      "stickers": {
-        "name": "Sticker",
-        "desc": "Lustige Oomba-Sticker für den Bildschirm.",
-        "s": {
-          "stamps": "Sticker"
-        },
-        "add": "Sticker hinzufügen",
-        "remove": "{e} entfernen",
-        "clear": "Alle entfernen",
-        "empty": "Tippe unten auf einen Sticker, um ihn hierher zu setzen."
       },
       "fractions": {
         "name": "Bruchstreifen",
@@ -10168,7 +10168,8 @@
       "oneOut": "Jemand ist schon draußen. Immer nur einzeln.",
       "reason": "Wähle einen Grund aus der Liste.",
       "noMood": "Deine Lehrkraft hat kein Stimmungsbarometer auf deinen Bildschirm gelegt.",
-      "site": "Dieses Webseitenfenster hat noch keine Adresse."
+      "site": "Dieses Webseitenfenster hat noch keine Adresse.",
+      "template": "Wähle eines der fertigen Layouts."
     },
     "tools": {
       "send": "An die Klasse senden",
@@ -10217,6 +10218,46 @@
       "letters": "Wie viele Vokale hat „{w}“?",
       "map": "Auf welchem Kontinent steckt die Nadel?",
       "mapGrid": "In welchem Feld steckt die Nadel?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Tagesstart",
+        "desc": "Uhr, jetzt und danach, Tagesziel, Stimmungsbarometer und Klassendienste.",
+        "goal": "eine Sache nennen, die ich heute lernen möchte.",
+        "jobs": "Reihenführung\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst"
+      },
+      "lesson": {
+        "name": "Unterricht",
+        "desc": "Timer, schnelle Abfrage, Hilfe-Schlange, Zahlenstrahl und Ampel."
+      },
+      "group": {
+        "name": "Gruppenarbeit",
+        "desc": "Gruppen bilden, Timer, Lautstärke-Messer und Teampunkte.",
+        "teams": "Raketen\nKometen\nPlaneten\nSterne"
+      },
+      "quiet": {
+        "name": "Stillarbeit",
+        "desc": "Großer Timer, rote Ampel, Arbeitszeichen und Atmen."
+      },
+      "fun": {
+        "name": "Spaßpause",
+        "desc": "Glücksrad drehen, würfeln, zum eigenen Video tanzen, dann atmen."
+      },
+      "periods": {
+        "circle": "Morgenkreis",
+        "maths": "Mathematik",
+        "break": "Pause",
+        "reading": "Lesen",
+        "lunch": "Mittagessen",
+        "science": "Sachunterricht",
+        "art": "Kunst",
+        "home": "Aufräumen und Tschüss"
+      },
+      "light": {
+        "red": "Bitte leise sein",
+        "yellow": "Flüsterstimme",
+        "green": "Zu zweit reden"
+      }
     }
   }
 }
