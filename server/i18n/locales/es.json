@@ -9238,18 +9238,23 @@
       },
       "countdown": {
         "name": "Cuenta atrás para un día",
-        "desc": "Días y horas hasta una excursión, una función o las vacaciones.",
+        "desc": "Días y horas hasta excursiones, funciones o vacaciones: una o varias en la misma tarjeta.",
         "s": {
-          "label": "Lo que viene",
-          "date": "Día",
-          "time": "Hora"
+          "events": "Cuentas atrás"
         },
         "empty": "Elige el día en Editar pantalla.",
         "days": "Días",
         "hours": "Horas",
         "mins": "Minutos",
         "today": "¡Es hoy!",
-        "past": "Ese día ya pasó."
+        "past": "Ese día ya pasó.",
+        "label": "Lo que viene",
+        "day": "Día",
+        "time": "Hora (opcional)",
+        "addEvent": "Añadir una cuenta atrás",
+        "remove": "Quitar",
+        "event": "Cuenta atrás {n}",
+        "full": "Una tarjeta admite hasta {n} cuentas atrás."
       },
       "calendar": {
         "name": "Calendario",

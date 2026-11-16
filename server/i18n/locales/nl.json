@@ -9239,18 +9239,23 @@
       },
       "countdown": {
         "name": "Aftellen naar een dag",
-        "desc": "Dagen en uren tot een uitje, een voorstelling of de vakantie.",
+        "desc": "Dagen en uren tot uitjes, voorstellingen of vakanties: één of meer op één kaart.",
         "s": {
-          "label": "Wat er komt",
-          "date": "Dag",
-          "time": "Tijd"
+          "events": "Aftellers"
         },
         "empty": "Kies de dag bij Scherm bewerken.",
         "days": "Dagen",
         "hours": "Uren",
         "mins": "Minuten",
         "today": "Het is vandaag!",
-        "past": "Die dag is al voorbij."
+        "past": "Die dag is al voorbij.",
+        "label": "Wat er komt",
+        "day": "Dag",
+        "time": "Tijd (mag leeg)",
+        "addEvent": "Afteller toevoegen",
+        "remove": "Weghalen",
+        "event": "Afteller {n}",
+        "full": "Op één kaart passen tot {n} aftellers."
       },
       "calendar": {
         "name": "Kalender",

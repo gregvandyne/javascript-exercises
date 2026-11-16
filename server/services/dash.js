@@ -41,6 +41,7 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools
  * 'scores' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
  * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
  * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
+ * 'events': countdowns, each a label, a day and an optional time (cleanEvents).
  */
 /** The words each teaching tool shows (dash.w.<id>.<word>); the words they share are dash.tools.<word> (TOOL_COMMON). */
 const TOOL_WORDS = {
@@ -138,10 +139,11 @@ export const WIDGETS = [
   { id: 'check', icon: '✅', group: 'check', who: 'teacher', pin: false, size: [5, 4], min: [4, 4], words: ['empty', 'new', 'end', 'ended', 'names', 'save', 'saved', 'savedList', 'answered', 'send', 'kind', 'question', 'questionHint',
     'options', 'option', 'addOption', 'needOptions', 'nobody', 'notYet', 'savedNone', 'thumbs', 'fist', 'choice', 'scale', 'up', 'side', 'down'], settings: [] },
   // ---- stage 2, second part: more everyday widgets
-  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past'], settings: [
-    { key: 'label', type: 'text', max: 60, def: '' },
-    { key: 'date', type: 'date', def: '' },
-    { key: 'time', type: 'hhmm', def: '08:00' }] },
+  // Several countdowns in one card (docs/decisions.md "Several countdowns in one card"): a list of events, each a label,
+  // a day and an optional time. A card saved with one { label, date, time } is read as a list of one (cleanSettings).
+  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past',
+    'label', 'day', 'time', 'addEvent', 'remove', 'event', 'full'], settings: [
+    { key: 'events', type: 'events', def: [] }] },
   { id: 'calendar', icon: '📆', group: 'time', who: 'teacher', size: [4, 4], min: [3, 3], words: ['today', 'coming', 'none', 'addMark', 'day', 'label', 'remove'], settings: [
     { key: 'marks', type: 'marks', def: [] }] },
   { id: 'symbols', icon: '🤫', group: 'class', who: 'teacher', size: [3, 3], min: [3, 3], words: ['change'], settings: [
@@ -265,6 +267,22 @@ export function cleanMarks(v) {
   }
   return [...out.values()].sort((a, b) => (a.date < b.date ? -1 : 1));
 }
+export const MAX_EVENTS = 8;
+/** Countdown events: a label (60 characters), a real day and an optional time (HH:MM, '' for the whole day), at most
+ *  MAX_EVENTS, soonest first (a row with a label and no day yet keeps its place at the end; an empty row is dropped).
+ *  A countdown saved before it held a list ({ label, date, time }) comes as one event: nothing is lost. */
+export function cleanEvents(v, old = {}) {
+  const src = Array.isArray(v) ? v : v === undefined && old && typeof old === 'object' && ('date' in old || 'label' in old) ? [old] : [];
+  const out = [];
+  for (const x of src) {
+    if (out.length >= MAX_EVENTS) break;
+    if (!x || typeof x !== 'object') continue;
+    const label = cleanText(x.label, 60), date = cleanDate(x.date), time = HHMM.test(String(x.time ?? '')) ? String(x.time) : '';
+    if (label || date) out.push({ label, date, time });
+  }
+  const key = e => (e.date ? `${e.date} ${e.time || '00:00'}` : '~');
+  return out.map((e, i) => [e, i]).sort(([a, i], [b, j]) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : i - j)).map(([e]) => e);
+}
 /** Scoreboard points: whole numbers, one per team. */
 export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -343,6 +361,7 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'date') out[f.key] = cleanDate(v);
     else if (f.type === 'hhmm') out[f.key] = HHMM.test(String(v ?? '')) ? String(v) : f.def;
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
+    else if (f.type === 'events') out[f.key] = cleanEvents(v, src);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
     else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
@@ -412,7 +431,10 @@ const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_a
 /** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
  *  when read, so old layouts, pins and student screens keep loading with everything else as it was. */
 const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
-const readLayout = r => (r ? { ...r, widgets: known(json(r.widgets, [])), bg: json(r.bg, DEFAULT_BG) } : null);
+/** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
+ *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
+const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
+const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(json(r.widgets, []))), bg: json(r.bg, DEFAULT_BG) } : null);
 export const getLayout = id => readLayout(q.get(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE id=?`, String(id || '')));
 export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE class_id=? AND owner_id=? ORDER BY position, created_at`, classId, ownerId).map(readLayout);
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
@@ -553,7 +575,7 @@ function publishPins(classId, widgets) {
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
-export const pinsOf = classId => known(json(classState(classId).pins, []));
+export const pinsOf = classId => upgradeWidgets(known(json(classState(classId).pins, [])));
 
 // ---------------------------------------------------------------- student screens
 export function studentState(classId, userId) {

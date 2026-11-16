@@ -9239,18 +9239,23 @@
       },
       "countdown": {
         "name": "Conto alla rovescia per un giorno",
-        "desc": "Giorni e ore fino a una gita, uno spettacolo o le vacanze.",
+        "desc": "Giorni e ore fino a gite, spettacoli o vacanze: uno o più nella stessa scheda.",
         "s": {
-          "label": "Cosa arriva",
-          "date": "Giorno",
-          "time": "Ora"
+          "events": "Conti alla rovescia"
         },
         "empty": "Scegli il giorno in Modifica schermo.",
         "days": "Giorni",
         "hours": "Ore",
         "mins": "Minuti",
         "today": "È oggi!",
-        "past": "Quel giorno è passato."
+        "past": "Quel giorno è passato.",
+        "label": "Cosa arriva",
+        "day": "Giorno",
+        "time": "Ora (facoltativa)",
+        "addEvent": "Aggiungi un conto alla rovescia",
+        "remove": "Togli",
+        "event": "Conto alla rovescia {n}",
+        "full": "Una scheda contiene fino a {n} conti alla rovescia."
       },
       "calendar": {
         "name": "Calendario",

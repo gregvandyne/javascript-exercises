@@ -9239,18 +9239,23 @@
       },
       "countdown": {
         "name": "Countdown bis zu einem Tag",
-        "desc": "Tage und Stunden bis zum Ausflug, zur Aufführung oder zu den Ferien.",
+        "desc": "Tage und Stunden bis zu Ausflügen, Aufführungen oder Ferien: einer oder mehrere auf einer Karte.",
         "s": {
-          "label": "Was kommt",
-          "date": "Tag",
-          "time": "Uhrzeit"
+          "events": "Countdowns"
         },
         "empty": "Wähle den Tag unter „Bildschirm bearbeiten“.",
         "days": "Tage",
         "hours": "Stunden",
         "mins": "Minuten",
         "today": "Heute ist es so weit!",
-        "past": "Dieser Tag ist schon vorbei."
+        "past": "Dieser Tag ist schon vorbei.",
+        "label": "Was kommt",
+        "day": "Tag",
+        "time": "Uhrzeit (optional)",
+        "addEvent": "Countdown hinzufügen",
+        "remove": "Entfernen",
+        "event": "Countdown {n}",
+        "full": "Eine Karte fasst bis zu {n} Countdowns."
       },
       "calendar": {
         "name": "Kalender",

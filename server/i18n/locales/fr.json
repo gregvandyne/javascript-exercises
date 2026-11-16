@@ -9238,18 +9238,23 @@
       },
       "countdown": {
         "name": "Compte à rebours jusqu’à un jour",
-        "desc": "Les jours et les heures avant une sortie, un spectacle ou les vacances.",
+        "desc": "Les jours et les heures avant des sorties, des spectacles ou les vacances : un ou plusieurs sur la même carte.",
         "s": {
-          "label": "Ce qui arrive",
-          "date": "Jour",
-          "time": "Heure"
+          "events": "Comptes à rebours"
         },
         "empty": "Choisis le jour dans Modifier l’écran.",
         "days": "Jours",
         "hours": "Heures",
         "mins": "Minutes",
         "today": "C’est aujourd’hui !",
-        "past": "Ce jour est passé."
+        "past": "Ce jour est passé.",
+        "label": "Ce qui arrive",
+        "day": "Jour",
+        "time": "Heure (facultative)",
+        "addEvent": "Ajouter un compte à rebours",
+        "remove": "Retirer",
+        "event": "Compte à rebours {n}",
+        "full": "Une carte contient jusqu’à {n} comptes à rebours."
       },
       "calendar": {
         "name": "Calendrier",

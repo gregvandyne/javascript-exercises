@@ -386,6 +386,22 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dw-countn{font-size:clamp(1.3rem,min(22cqh,10cqi),5rem)}
 .dw-countu{font-weight:700;color:var(--text-2);font-size:.85rem}
 .dw-countmsg{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(12cqh,6cqi),2rem)}
+/* several countdowns in one card: a list, soonest first; each row its label and day, and how long is left at its end */
+.dw-count.dw-countmany{align-items:stretch;justify-content:flex-start;text-align:start}
+.dw-countlist{flex:0 1 auto;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dw-countrow{display:flex;align-items:center;gap:var(--s2);padding:6px 10px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw-countrow.is-today{background:color-mix(in srgb,var(--accent) 22%,var(--card))}
+.dw-countrow.is-past{background:transparent;box-shadow:inset 0 0 0 2px var(--card-2)}
+.dw-countwhat{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.dw-countname{font-weight:800;line-height:1.15;overflow-wrap:anywhere;hyphens:auto;font-size:clamp(.95rem,min(7cqh,5.2cqi),1.7rem)}
+.dw-countwhen{color:var(--text-2);font-weight:600;line-height:1.2;overflow-wrap:anywhere;font-size:clamp(.8rem,min(5cqh,3.8cqi),1.15rem)}
+.dw-countrow.is-today .dw-countwhen{color:var(--accent-ink);font-weight:800}
+.dw-countrow.is-past .dw-countname{color:var(--text-2)}
+.dw-countval{flex:none;display:flex;gap:4px;align-items:flex-start}
+.dw-countval[hidden],.dw-countpair[hidden],.dw-countlabel[hidden],.dw-countbox[hidden]{display:none}
+.dw-countpair{display:flex;flex-direction:column;align-items:center;min-width:2.4em}
+.dw-countrow .dw-countn{font-size:clamp(1.15rem,min(10cqh,7cqi),2.8rem)}
+.dw-countrow .dw-countu{font-size:.75rem;line-height:1.1}
 /* calendar */
 .dw-cal{display:flex;flex-direction:column;gap:6px;height:100%}
 .dw-caltitle{font-weight:800;font-size:clamp(1rem,min(8cqh,6cqi),1.8rem)}
