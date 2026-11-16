@@ -9804,17 +9804,6 @@
         "r_brave": "Trying something new",
         "r_creative": "Good ideas"
       },
-      "stickers": {
-        "name": "Stickers",
-        "desc": "Fun Oomba stickers to put on the screen.",
-        "s": {
-          "stamps": "Stickers"
-        },
-        "add": "Add a sticker",
-        "remove": "Take off {e}",
-        "clear": "Take them all off",
-        "empty": "Tap a sticker below to put it here."
-      },
       "fractions": {
         "name": "Fraction bars",
         "desc": "Split, shade and compare. Same-size pieces shows why one is bigger. Grades 2–6.",

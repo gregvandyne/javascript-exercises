@@ -9381,17 +9381,6 @@
         "r_brave": "Provare cose nuove",
         "r_creative": "Buone idee"
       },
-      "stickers": {
-        "name": "Adesivi",
-        "desc": "Simpatici adesivi Oomba da mettere sullo schermo.",
-        "s": {
-          "stamps": "Adesivi"
-        },
-        "add": "Aggiungi un adesivo",
-        "remove": "Togli {e}",
-        "clear": "Toglili tutti",
-        "empty": "Tocca un adesivo qui sotto per metterlo qui."
-      },
       "fractions": {
         "name": "Strisce delle frazioni",
         "desc": "Dividi, colora e confronta. «Parti uguali» mostra perché una è più grande. Classi 2ª–6ª.",

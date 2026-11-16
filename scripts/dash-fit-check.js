@@ -85,7 +85,6 @@ const SETTINGS = {
   random: { min: -9999, max: 9999 },
   groups: { by: 'count', n: 3 },
   score: { teams: 'Die Sternschnuppen\nRaketen\nKometen\nPlaneten', scores: [-9999, 9999, 12, 0] },
-  stickers: { stamps: [{ e: 0, x: 4, y: 6 }, { e: 5, x: 96, y: 94 }, { e: 12, x: 50, y: 50 }] },
   tiles: { tiles: [{ kind: 'game', ref: g1.id }, { kind: 'game', ref: g2.id }, { kind: 'game', ref: g3.id }, { kind: 'lesson', ref: cl.id }] },
   // stage 3: busy states (three fractions, long ranges, a 12 x 12 grid, elapsed time across noon...)
   fractions: { state: { bars: [{ n: 3, d: 4 }, { n: 5, d: 8 }, { n: 7, d: 12 }], same: true } },

@@ -9382,17 +9382,6 @@
         "r_brave": "Tentar algo novo",
         "r_creative": "Boas ideias"
       },
-      "stickers": {
-        "name": "Adesivos",
-        "desc": "Adesivos divertidos do Oomba para a tela.",
-        "s": {
-          "stamps": "Adesivos"
-        },
-        "add": "Adicionar um adesivo",
-        "remove": "Tirar {e}",
-        "clear": "Tirar todos",
-        "empty": "Toque num adesivo abaixo para colocá-lo aqui."
-      },
       "fractions": {
         "name": "Barras de frações",
         "desc": "Divida, pinte e compare. “Partes iguais” mostra por que uma é maior. 2.º ao 6.º ano.",
