@@ -6994,6 +6994,83 @@ From the product owner's screenshots of the live site.
   describes its button, and the button has no native title. Driven by hand at 1600 × 900, the projector, a 1024 × 768
   touch tablet and a 390 × 844 touch phone (a student's own copy), English and Italian.
 
+## Classroom dashboards: bar models and number rods (16 Nov 2026)
+Product: two new maths teaching tools, "make sure these are both available for Math". Another company's screenshots were
+used as a list of features only: the look, layout, colours, icons and words are our own, built from the dashboard tools'
+parts, and nothing names or imitates another product (the rods are "Number rods" in every language). Code: the maths in
+`public/js/dash-math5.js` (pure, tested); the renderers `public/js/dash-bars.js` and `public/js/dash-rods.js` (in `RENDER`
+through `withModes` in `public/js/dash-widgets.js`); the questions in `public/js/dash-ask.js`; the state in
+`server/services/dash-tools.js` (`TOOL_SPECS.bars`, `TOOL_SPECS.rods`, `rodEquation`, `NEW_MODES`); the registry in
+`server/services/dash.js`; CSS `.dt-b*` and `.dt-r*` in `public/css/dash.css`; strings `dash.w.bars.*`, `dash.w.rods.*`,
+`dash.w.area.m.bars`, `dash.ask.bars|rods` in all 13 locales. Tests: `tests/unit/dash-bars-rods.test.js`.
+- **Where they are.** **Bar models** is a third mode of **Multiply and divide** (`TOOL_MODES.area`: Area model and arrays |
+  Times table grid | Bar models); its state lives under `bars` like any other mode's, `tab: 'bars'` shows it. Bar models
+  never were a tool of their own, so `bars` is not a retired type (`NEW_MODES`: no `MODE_HOME`/`RETIRED` entry).
+  **Number rods** is a new tool (`rods`, Teaching tools: the library's maths group, students may add it, sent to
+  students, never pinned). The library also finds a tool by its other names (`dash.w.<id>.find`, for a mode too):
+  "bar model", "tape diagram", "rods", "number rods" and each language's own words.
+- **Decided: the Math ready-made layout is unchanged.** It is full (fractions 5 × 8, the number line, help and timer
+  fill 12 × 8 with no gap); neither tool fits without dropping or shrinking one below its smallest size. Both are one
+  search or one chip away in the library.
+- **Bar models.** Multiply/divide (groups × in each = total; 1-12 groups of 1-100), Part–whole (2-4 parts of 1-999 make the
+  whole) and Compare (two bars of 1-999 and their difference, a dashed piece after the shorter one). Parts are drawn to
+  scale (no part thinner than 7%, so a 1 beside 999 can still be read and tapped); when "how many groups?" is the
+  question one group is drawn and the rest of the total is left whole. Any one quantity is the **?** (the "? = …" menu);
+  "Hide answer"/"Show answer"; a stepper never shows the hidden number (it reads "?"), nor does Options. Braces (in
+  Options): over the whole and under one part (Compare: under the difference). − and + change groups and in each, the number of parts and the
+  chosen part (tap a part; arrows and +/− on it too), or the two bars; Options types them exactly and sets the biggest
+  number for **New problem** (10-1000, default 50), which makes a random problem of the same kind and a random ?.
+  **Number sentences** under the model: □ × □ = □ and □ ÷ □ = □; □ + □ (a box a part) = □ and □ − □ = □; for Compare
+  □ − □ = □ and □ + □ = □. Each is checked once its boxes are filled: any order the maths allows is right (4 × 3 and
+  3 × 4), ✓ and "Yes! That matches the model." or ✗ and "Not yet. Look at the model again." (never red). The numbers typed
+  stay in this page only (never kept or sent; a sent copy never carries the teacher's answers). The sentences are not
+  rebuilt while someone types (a redraw keeps the focus). **Word problem**: a text box ("Write a word problem that
+  matches your model.", 240 characters).
+- **Number rods.** A 30 × 16 unit board; rods 1-10 in a palette, each its own colour (our own ten; light rods take dark
+  numbers, dark ones light) with its number and unit marks, so colour is never the only cue; a longer rod (11-20, a
+  stepper beside it; one colour with a strong mark at ten). Tap adds a rod at the first free place; drag puts it where
+  it is let go (the pattern blocks' palette drag: `paletteDrag`, a lifted copy, the board lit, a dashed outline where it
+  lands). On the board: drag to move, Turn, Copy, Delete; rods snap to the unit grid and to another rod's end within ¾
+  unit on the same line (`snapRod`), so trains join. **Trains** are rods end to end on one row (or column); the chosen
+  rod's train shows a ruler and its total, and the readout says "6 + 3 = 9". New rods lie or stand (orientation), Grid,
+  Unit lines, zoom (100-300%, a drag on the empty board pans; Ctrl/⌘ + wheel), Undo/Redo (60 steps, this page), Reset.
+  A rod longer than 16 can only lie down. At most 60 rods.
+  **Equation**: "5 + 4 = □ + 3" above the board (each side 1-3 terms, at most 20 long, one box); New equation (random,
+  terms 1-10), Type an equation ("5 + 4 = ? + 3", parsed: + and whole numbers only, so nothing typed is free text), the box
+  answered and checked (✓ "Both sides are 9 long."). **Show trains** puts each side's known rods as a train (A over B)
+  and a dashed "?" gap where the missing rod goes; the readout compares the two lengths, and a rod laid in the gap fills it.
+  Standing trains too tall for the board lie down.
+- **Both:** the one-line instruction and the short ⓘ help (three points, one "Try:" idea; the help tests), tooltips by
+  the shared `tip()` (no native titles in these renderers, tested), the projector (bigger numbers, ⓘ hidden), phone,
+  tablet and desktop with pointer events (captured), `touch-action: none` on the board and the palette, 44px targets,
+  keyboard (palette: Enter adds; board: arrows move the chosen rod, Shift+arrows by 5, R turns, D copies, Delete removes,
+  [ and ] go from rod to rod, Escape lets go, Ctrl/⌘+Z and Ctrl/⌘+Shift+Z or Ctrl+Y; bar parts: arrows choose, +/− change),
+  aria labels and changes said in the polite live region. Make a question: the bar model's ? as a sentence ("12 ÷ 3 = ?",
+  wrong answers from adding instead of multiplying, one off...) and the rods' box ("5 + 4 = □ + 3", the slip: the other
+  side's total). Practice it: Sum Racer for bar models, Lily Hop for number rods.
+- **State.** `bars`: `kind`, `g`, `e`, `p` (2-4 parts), `ca`, `cb`, `unk`, `hide`, `bw`, `bp`, `max`, `story`; an untouched bar
+  model stores nothing (the mode's part is kept only when it differs from its start), so every Multiply and divide saved
+  before loads and stores exactly as it was (tested). `rods`: `rods` ({ n, x, y, v }), `dir`, `grid`, `units`, `long`, `eq`,
+  `l`, `r` (0 is the box), `model`; an equation the board can't model goes back to 5 + 4 = □ + 3 (`rodEquation`, the
+  browser's `eqValid`, tested to agree). Zoom, undo and typed answers are this page's only.
+- **Privacy.** The word problem on the teacher's tool is teacher text (their layout; the copy they send). On a student's
+  sent copy it stays in that browser; on a student's own screen the renderer leaves it out of what it keeps and the
+  server drops it too (`cleanToolState(..., { student: true })`, tested), so nothing a student writes reaches anyone. No
+  free text in number rods. No AI, network or storage in the renderers (tested); no prices.
+- **Sizes:** number rods 8 × 8 (smallest 6 × 8). **Multiply and divide grew to 7 × 8 (smallest 6 × 8)**: with a third mode
+  its switch wrapped to two rows at 5 columns in German, which squeezed the times table grid on the projector and left
+  no room for a bar model's sentences (the fit check). Smaller saved boxes grow when read (`migrateWidget`), as before.
+  Bar models keep their controls few: the braces are in Options, the word problem's box is named by its placeholder,
+  the steppers drop their words on a narrow tool and New problem is an icon (named by its tooltip). On a short widget
+  (a tablet's 8-row layout) the model keeps at least 120px and the widget's own "More" scrolls the rest.
+- **Also:** the fractions Add/Subtract instruction said "The answer is drawn below." but in circles the answer is to the
+  right: now "The answer is drawn too." in all 13 languages.
+- **Changed tests:** `dash-math-merge.test.js` (the maths tools are 14 with number rods; Multiply and divide's modes end
+  with Bar models; `RENDER` wraps `{ ...TOOLS, ...TOOLS4, bars, rods }`), `dash.test.js` (a student may add number rods).
+  No assertion was weakened. The fit check has three busy bar models (12 groups of 100 with a long German word problem,
+  four parts 999/1/250/7, 999 against 1) and two busy number rods (the board full with 60 rods and the equation, standing
+  trains) plus the tool's own busy state, on every view.
+
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 
 The owner asked for a new official seed game on the "find the sum in a group" idea, made our own: never the name or

@@ -141,6 +141,7 @@ const SETTINGS = {
     { h: '', t: 'Kokosnuss, ein kleiner Feuerdrache\nMatilda, das Stachelschwein\nOskar, der Fressdrache' }, { h: '', t: 'Die Dracheninsel, ein Sommer voller Abenteuer' },
     { h: '', t: 'Kokosnuss kann noch nicht fliegen, und alle anderen Drachen lachen über ihn.' }, { h: '', t: 'Erstens übt er jeden Morgen\nZweitens hilft ihm Matilda\nDrittens fällt er ins Wasser\nViertens versucht er es noch einmal\nFünftens fliegt er ein kleines Stück\nSechstens feiern alle' },
     { h: '', t: 'Er schafft es am Ende, weil er nie aufgibt.' }] } },
+  rods: { state: { eq: true, model: true, l: [5, 4], r: [0, 3], rods: [{ n: 5, x: 1, y: 1 }, { n: 4, x: 6, y: 1 }, { n: 3, x: 7, y: 3 }, { n: 6, x: 1, y: 3 }, { n: 10, x: 2, y: 7 }, { n: 17, x: 2, y: 9 }] } },
   map: { state: { kind: 'world', names: true, pins: [{ x: 605, y: 250, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
   // stage 5: busy states (every option on, long words, a pass over its time, more jobs than fit)
   video: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, start: 95, end: 3725, mute: true, loop: true },
@@ -191,6 +192,20 @@ const STAGE4_EXTRA = [...GEO_EXTRA,
 const MODE_WIDGET = m => ({ ...D.widgetType(DT.MODE_HOME[m]), wid: `wmode${m}`, s: { state: { tab: m, [m]: SETTINGS[m].state } } });
 const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } }]);
 const MODE4 = ['angle', 'solids', 'transform', 'balance'].map(MODE_WIDGET);
+// Bar models and number rods (docs/decisions.md "Bar models and number rods"): bar models (a mode of Multiply and divide)
+// with the most groups and the biggest numbers, four parts, two compared bars far apart and a long German word problem;
+// number rods with the board full (60 rods, a train selected by nothing), the equation shown and its trains standing.
+const BARS = (wid, bars) => ({ ...D.widgetType('area'), wid, s: { state: { tab: 'bars', bars } } });
+const BARS_EXTRA = [
+  BARS('wbarsmul', { kind: 'mul', g: 12, e: 100, unk: 1, story: 'Zwölf Schulklassen sammeln jeweils hundert Kastanien für das Herbstfest. Wie viele Kastanien sind es zusammen?' }),
+  BARS('wbarspart', { kind: 'part', p: [999, 1, 250, 7], unk: 2, hide: false }),
+  BARS('wbarscmp', { kind: 'cmp', ca: 999, cb: 1, unk: 0, bp: false }),
+];
+const FULL_RODS = (() => { const out = []; let x = 0, y = 0; for (let k = 0; out.length < 60; k++) { const n = (k % 10) + 1; if (x + n > 30) { x = 0; y++; } if (y > 15) break; out.push({ n, x, y }); x += n; } return out; })();
+const RODS_EXTRA = [
+  { ...D.widgetType('rods'), wid: 'wrodsfull', s: { state: { rods: FULL_RODS, eq: true, l: [9, 8], r: [0, 3], long: 20 } } },
+  { ...D.widgetType('rods'), wid: 'wrodsv', s: { state: { dir: 'v', eq: true, l: [3, 4], r: [2, 0], model: true, rods: [{ n: 3, x: 1, y: 1, v: true }, { n: 4, x: 1, y: 4, v: true }, { n: 2, x: 3, y: 1, v: true }, { n: 12, x: 6, y: 2 }] } } },
+];
 const FRACTION_EXTRA = [
   { ...D.widgetType('fractions'), wid: 'wfrdiv', s: { state: { mode: 'div', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrswitch', s: { state: { mode: 'sub', shape: 'circle', hide: true } } },
@@ -213,7 +228,7 @@ const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-l
 /** Every widget type, packed in reading order, at its default size or its smallest, over as many layouts as needed (a
  *  layout holds 24 widgets and 24 rows). Stage 1 and 2 widgets and stage 3 widgets go on separate layouts. */
 const STAGE3 = new Set(['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'board', 'picture']);
-const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map']);
+const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'rods']);
 const STAGE5 = new Set(['video', 'site', 'camera', 'hallpass', 'jobs', 'mood', 'breathe', 'note', 'checklist']);
 const TOOLSET = new Set([...STAGE3, ...STAGE4]);
 const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH = 0;
@@ -224,7 +239,7 @@ D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA, ...MODE3]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...MODE4, ...STAGE4_EXTRA]),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA, ...MODE3]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...MODE4, ...STAGE4_EXTRA]), ...pack(size, [...BARS_EXTRA, ...RODS_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;

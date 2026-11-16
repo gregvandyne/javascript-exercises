@@ -336,7 +336,7 @@ test('safety: no prices or plan names on student screens, no chat or text box to
   // Maths tools combined: base-ten blocks, the times table, fraction/decimal/percent, the angle maker, 3D shapes,
   // transformations, the balance and the graph maker are modes of the tools listed.
   assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student')).map(x => x.id), ['clock', 'ican', 'timer', 'dice', 'random', 'fractions', 'numline', 'coord', 'placeval', 'tenframe', 'hundreds', 'area', 'tclock',
-    'geoboard', 'pattern', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
+    'geoboard', 'pattern', 'algebra', 'coins', 'chance', 'rods', 'letters', 'organizer', 'map', 'breathe'], 'stage 3 and 4: their own copies of the teaching tools; stage 5: the breathing circle');
 });
 
 test('account deletion forgets a person\'s screens and pictures', async () => {
