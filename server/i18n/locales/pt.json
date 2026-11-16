@@ -2831,6 +2831,12 @@
       "moreName": "Ver mais de {name}",
       "tools": {
         "sent": "{name} enviado. Cada aluno recebe a própria cópia."
+      },
+      "tpl": {
+        "heading": "Começar com um layout pronto",
+        "own": "Ou crie o seu",
+        "ownName": "Seu próprio layout",
+        "ownDesc": "Comece do zero ou copie o layout atual."
       }
     }
   },
@@ -10161,7 +10167,8 @@
       "oneOut": "Alguém já está fora. Um de cada vez.",
       "reason": "Escolha um motivo da lista.",
       "noMood": "Seu professor não colocou “Como estou” na sua tela.",
-      "site": "Esta janela de site ainda não tem endereço."
+      "site": "Esta janela de site ainda não tem endereço.",
+      "template": "Escolha um dos layouts prontos."
     },
     "tools": {
       "send": "Enviar para a turma",
@@ -10210,6 +10217,46 @@
       "letters": "Quantas vogais há em “{w}”?",
       "map": "Em que continente está o alfinete?",
       "mapGrid": "Em que quadrado está o alfinete?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Começo do dia",
+        "desc": "Relógio, agora e depois, objetivo do dia, como estou e tarefas da turma.",
+        "goal": "contar uma coisa que quero aprender hoje.",
+        "jobs": "Líder da fila\nPlantas\nLivros\nChefe da arrumação\nMensageiro"
+      },
+      "lesson": {
+        "name": "Aula",
+        "desc": "Timer, checagem rápida, fila de ajuda, reta numérica e semáforo."
+      },
+      "group": {
+        "name": "Trabalho em grupo",
+        "desc": "Montar grupos, timer, medidor de voz e pontos das equipes.",
+        "teams": "Foguetes\nCometas\nPlanetas\nEstrelas"
+      },
+      "quiet": {
+        "name": "Trabalho em silêncio",
+        "desc": "Timer grande, semáforo vermelho, sinais de trabalho e respiração."
+      },
+      "fun": {
+        "name": "Pausa divertida",
+        "desc": "Gire a roleta, jogue os dados, dance com seu vídeo e depois respire."
+      },
+      "periods": {
+        "circle": "Roda da manhã",
+        "maths": "Matemática",
+        "break": "Recreio",
+        "reading": "Leitura",
+        "lunch": "Almoço",
+        "science": "Ciências",
+        "art": "Artes",
+        "home": "Arrumação e tchau"
+      },
+      "light": {
+        "red": "Silêncio, por favor",
+        "yellow": "Voz baixinha",
+        "green": "Conversa em dupla"
+      }
     }
   }
 }

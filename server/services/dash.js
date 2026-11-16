@@ -485,6 +485,66 @@ export function deleteLayout(u, c, id) {
   });
   return { ok: true };
 }
+// ---------------------------------------------------------------- ready-made layouts
+// docs/decisions.md "Ready-made layouts". Five layouts a teacher adds with one tap from the New layout sheet. Each is an
+// ordinary layout once made (the teacher renames, moves and changes it like any other): its widgets are built here for
+// the teacher's language (sample periods, goal, jobs, team names and light words come from dash.tpl.*) and then go
+// through createLayout, so cleanWidgets rebuilds every one from the registry like anything a browser sends.
+// Boxes are [x, y, w, h] on the 12-column grid; none overlap, each is at least its type's smallest size, and only
+// types the registry lets a teacher pin are pinned (tests/unit/dash-templates.test.js).
+/** The sample school day (the teacher changes the names and times in the schedule's settings). */
+const TPL_PERIODS = [['circle', '08:30', '09:00'], ['maths', '09:00', '10:00'], ['break', '10:00', '10:20'], ['reading', '10:20', '11:30'],
+  ['lunch', '11:30', '12:15'], ['science', '12:15', '13:15'], ['art', '13:15', '14:15'], ['home', '14:15', '14:45']];
+/** The clock as the teacher's language usually shows it (9:05 AM, or 09:05). */
+const hour12 = t => { try { return !!new Intl.DateTimeFormat(t.intl || t.locale || 'en', { hour: 'numeric' }).resolvedOptions().hour12; } catch { return true; } };
+const lightWords = t => ({ red: t('dash.tpl.light.red'), yellow: t('dash.tpl.light.yellow'), green: t('dash.tpl.light.green') });
+export const LAYOUT_TEMPLATES = [
+  { id: 'morning', icon: '🌅', bg: { kind: 'art', id: 'hills' }, widgets: t => [
+    // The clock where a student's own starter clock sits (4 x 2 at the top left), so pinned widgets never land on it.
+    ['clock', [0, 0, 4, 2], { hour12: hour12(t) }],
+    ['ican', [4, 0, 8, 2], { goal: t('dash.tpl.morning.goal') }, true],
+    ['mood', [8, 2, 4, 4], {}, true],
+    ['schedule', [0, 2, 4, 4], { view: 'nownext', periods: TPL_PERIODS.map(([k, start, end]) => ({ name: t(`dash.tpl.periods.${k}`), start, end })) }],
+    ['jobs', [4, 2, 4, 4], { jobs: t('dash.tpl.morning.jobs') }, true]] },
+  { id: 'lesson', icon: '📚', bg: { kind: 'color', id: 'cream' }, widgets: t => [
+    ['numline', [0, 0, 8, 4]],
+    ['timer', [8, 0, 4, 4], { minutes: 15 }],
+    ['check', [0, 4, 5, 4]],
+    ['help', [5, 4, 4, 4], {}, true],
+    ['light', [9, 4, 3, 4], { color: 'green', ...lightWords(t) }]] },
+  { id: 'group', icon: '👥', bg: { kind: 'color', id: 'mint' }, widgets: t => [
+    ['groups', [0, 0, 8, 4], { by: 'count', n: 4 }],
+    ['timer', [8, 0, 4, 4], { minutes: 20 }],
+    ['score', [0, 4, 8, 4], { mode: 'teams', teams: t('dash.tpl.group.teams') }],
+    ['noise', [8, 4, 4, 4], { zone: 'talk' }]] },
+  { id: 'quiet', icon: '🤫', bg: { kind: 'color', id: 'sky' }, widgets: t => [
+    ['timer', [0, 0, 6, 7], { minutes: 20, view: 'ring' }],
+    ['light', [6, 0, 3, 3], { color: 'red', ...lightWords(t) }],
+    ['symbols', [9, 0, 3, 3], { mode: 'silent' }],
+    ['breathe', [6, 3, 6, 4], { pace: 'calm' }]] },
+  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: () => [
+    ['picker', [0, 0, 5, 5], { mode: 'wheel', source: 'class' }],
+    ['video', [5, 0, 4, 4]],
+    ['dice', [9, 0, 3, 4], { count: 2 }],
+    ['stickers', [0, 5, 5, 3], { stamps: [{ e: 0, x: 10, y: 28 }, { e: 3, x: 28, y: 66 }, { e: 7, x: 47, y: 26 }, { e: 11, x: 66, y: 64 }, { e: 5, x: 86, y: 30 }] }],
+    ['breathe', [5, 4, 4, 4], { pace: 'calm' }],
+    ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
+];
+const TPL_BY_ID = new Map(LAYOUT_TEMPLATES.map(x => [x.id, x]));
+export const layoutTemplate = id => TPL_BY_ID.get(String(id)) || null;
+/** The ready-made layouts as the New layout sheet lists them, in the reader's language. */
+export const templatesFor = t => LAYOUT_TEMPLATES.map(x => ({ id: x.id, icon: x.icon, name: t(`dash.tpl.${x.id}.name`), desc: t(`dash.tpl.${x.id}.desc`) }));
+/** A ready-made layout's widgets for this language, cleaned like any layout (ids fresh each time, so two layouts made
+ *  from one template never share a running timer). */
+export function templateWidgets(id, t) {
+  const tpl = layoutTemplate(id); if (!tpl) return [];
+  return cleanWidgets(tpl.widgets(t).map(([type, [x, y, w, h], s = {}, pin = false]) => ({ id: `${type}${uid(6)}`, type, x, y, w, h, s, pin })), 'teacher');
+}
+/** One tap: a new layout from a ready-made one, named as the teacher typed (or the template's name). */
+export function createFromTemplate(u, c, id, { name, t } = {}) {
+  const tpl = layoutTemplate(id); if (!tpl || typeof t !== 'function') return { error: 'template' };
+  return createLayout(u, c, { name: cleanText(name, 40) || t(`dash.tpl.${tpl.id}.name`), widgets: templateWidgets(tpl.id, t), bg: tpl.bg });
+}
 /** A picture widget shows only one of this teacher's own pictures for this class (stage 3); any other id is dropped. */
 function ownPictures(widgets, u, c) {
   for (const w of widgets) if (w.type === 'picture' && w.s.pic && !q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='show'", w.s.pic, u.id, c.id)) w.s.pic = '';

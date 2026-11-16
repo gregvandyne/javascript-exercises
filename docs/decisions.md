@@ -6428,3 +6428,42 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
     at 14px (was 16px; the projector floor is 13px), so a short box still shows at least one whole line.
 - **Not verified:** real YouTube and Vimeo players and a real site's frame check (the build sandbox can't reach them;
   tests and the fit check use stubs), and a physical document camera (Chromium's fake camera was used).
+
+## Classroom dashboards: ready-made layouts (16 Nov 2026)
+A teacher's first layout is still the near-empty "Everyday" starter, and every other layout was built by hand. Now the
+New layout sheet starts with **Start from a ready-made layout**: five layouts, each an icon, a name and one line, picked
+with one tap (the name is filled in and can be changed), then Save. Below them **Or make your own** keeps the old choice
+(copy the layout on screen, or the starter). Code: `LAYOUT_TEMPLATES`, `templateWidgets`, `createFromTemplate` in
+`server/services/dash.js`; `POST /api/dash/:id/templates/:tid` in `server/routes/dash.js`; `newSheet` in
+`public/js/dash.js`; strings `dash.tpl.*`, `dash.errors.template`, `js.dash.tpl.*`.
+- **The five.** *Morning start* (sunrise hills art): clock, schedule as "now and next" with a sample school day, today's
+  "I can" goal, mood check-in, class jobs; goal, mood and jobs pinned. *Lesson* (cream): number line, timer (15 min),
+  quick check, help queue (pinned), traffic light. *Group work* (mint): group maker (4 groups), timer (20 min),
+  scoreboard with four team names, noise meter. *Quiet work* (sky): a big ring timer (20 min), traffic light on red,
+  work symbols on "silent", breathing. *Fun break* (sparks art, the most playful): name wheel, two dice, an empty video
+  slot for the teacher's own movement or dance video, a 3-minute ring timer with a chime, breathing to calm down after,
+  and a sticker board with five stickers already on it.
+- **Decided: the quick check is not pinned.** The brief asked for the Lesson's quick check and help queue pinned, but the
+  registry never lets a quick check be pinned (`pin: false`): a check reaches students when the teacher sends one, as
+  an answer card. Only the help queue is pinned.
+- **Sample content is in the teacher's language** (the language of the page they make it from): period names, goal,
+  five jobs (from the class jobs' usual list), four team names (rockets, comets, planets, stars) and the light's words
+  for red, yellow and green, in all 13 locales (en-GB only where it differs: "Maths", "Break"). Neutral and kid-friendly;
+  no names of real people, no prices. The clock follows the language's usual 12- or 24-hour time.
+- **Each is an ordinary layout once made.** Widgets are built for the language, then go through `createLayout`, so
+  `cleanWidgets` rebuilds them from the registry like anything a browser sends; ids are fresh each time (two layouts
+  from one template never share a running timer). The route is the create-layout route's twin: signed in, the class's
+  own teacher only (404 for everyone else), the site's same-origin check, the same `dash-layout` rate limit, and
+  `MAX_LAYOUTS` with the same "delete one first" error. An unknown template is refused.
+- **Boxes.** Every template fits the 12-column grid in at most 8 rows (a 1600 × 900 screen without scrolling), with no
+  overlaps and every widget at least its smallest size. Morning start's clock sits where a student's own starter clock
+  is (4 × 2 at the top left), so its pinned widgets don't get pushed down on student screens.
+- **The layout chips.** Five more layouts made the footer wrap to a second line on the projector. On screens 720px and
+  wider the chips now stay on one line and scroll sideways when there are more than fit (the one on screen is kept in
+  view, the edge fades while there are more), and the projector hides the "Layout" label. Phones are unchanged.
+- **The mood check-in's faces** are rounded squares instead of pills, so a long word ("Benissimo") stays inside the
+  chosen face's dark background.
+- **Not done (optional in the brief):** offering the templates on a brand-new class's first visit. The first visit still
+  makes the "Everyday" starter (its tests unchanged); the ready-made layouts are one tap away under ➕ New.
+- Tests: `tests/unit/dash-templates.test.js`; the route count in `dash-stage4.test.js` is now 43. `npm run dash:fit`
+  checks each template (`tpl-<id>`, built in English, German and Arabic) on every view.

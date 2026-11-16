@@ -12,6 +12,9 @@
 // "now and next", on layouts of their own. Outside pages are stubs (the browser answers the video and site hosts itself;
 // the server's "may it be framed?" check is stubbed) and the camera is Chromium's fake camera: the chrome around them is
 // what is checked. Text in a stage 5 widget is at least 12px (13px on the projector), as in the tools.
+// Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
+// (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
+// names and light words in that language) with its own background.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -38,6 +41,7 @@ const DM = await import('../server/services/dash-media.js');
 const games = await import('../server/services/games.js');
 const D = await import('../server/services/dash.js');
 const { createApp } = await import('../server/app.js');
+const { tFor } = await import('../server/i18n/index.js');
 
 const OUT = process.env.OUT || '';
 if (OUT) fs.mkdirSync(OUT, { recursive: true });
@@ -164,6 +168,8 @@ for (const size of ['size', 'min']) {
     LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
 }
+// Ready-made layouts: built per language in the loop below.
+for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
 const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
@@ -372,11 +378,12 @@ const VIEWS = process.env.VIEWS ? ALL_VIEWS.filter(v => process.env.VIEWS.split(
 const LANGS = (process.env.LANGS || 'en,de,ar').split(',');
 let total = 0;
 for (const L of RUN) {
- D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets });
+ D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
+  if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
   for (const v of VIEWS) {
     const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');

@@ -811,7 +811,20 @@ function start() {
       b.addEventListener('click', () => switchLayout(l.id));
       box.appendChild(b);
     }
+    keepChip();
   }
+  /** More chips than fit scroll sideways on a wide screen (ready-made layouts make six or more usual): keep the one on
+   *  screen in view, and fade the bar's edge while there are more to scroll to. */
+  function keepChip() {
+    const box = $('#dash-layouts'); if (!box) return;
+    const more = box.scrollWidth > box.clientWidth + 1;
+    box.classList.toggle('is-more', more);
+    const on = box.querySelector('[aria-pressed="true"]');
+    if (on && more) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    chipEnd();
+  }
+  const chipEnd = () => { const box = $('#dash-layouts'); if (box) box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); };
+  $('#dash-layouts')?.addEventListener('scroll', chipEnd, { passive: true });
   async function switchLayout(id) {
     if (saveTimer) await flush();
     try {
@@ -830,12 +843,44 @@ function start() {
       try { await onSave(name, copy ? $('#dash-name-copy', sh.el).checked : false); sh.close(); } catch (err) { $('.form-err', sh.el).textContent = err.message; }
     });
   }
-  $('#dash-layout-new')?.addEventListener('click', () => nameSheet(t('js.dash.layouts.newTitle'), '', true, async (name, copy) => {
-    if (saveTimer) await flush();
-    const r = await api(`/api/dash/${CID}/layouts`, { method: 'POST', body: { name, copyFrom: copy ? S.layoutId : null } });
+  // New layout: one of the ready-made layouts (docs/decisions.md "Ready-made layouts"; its name filled in, editable), or
+  // the teacher's own (a copy of the layout on screen, or the starter).
+  async function addLayout(r) {
     S.layouts.push({ id: r.layout.id, name: r.layout.name, widgets: r.layout.widgets, bg: r.layout.bg });
     await switchLayout(r.layout.id);
-  }));
+  }
+  function newSheet() {
+    const tpls = D.templates || [];
+    const card = (id, icon, name, desc, on) => `<label class="dash-tpl"><input type="radio" name="dash-tpl" value="${esc(id)}"${on ? ' checked' : ''}><span class="dash-tpl-icon" aria-hidden="true">${esc(icon)}</span><span class="dash-tpl-text"><b>${esc(name)}</b><span class="small muted">${esc(desc)}</span></span></label>`;
+    const sh = sheet({ title: t('js.dash.layouts.newTitle'), content: `<form class="stack" id="dash-name-form" novalidate>
+      ${tpls.length ? `<fieldset class="dash-tpls"><legend class="dash-h3">${esc(t('js.dash.tpl.heading'))}</legend>${tpls.map(x => card(x.id, x.icon, x.name, x.desc, false)).join('')}
+      <p class="dash-h3 dash-tpl-or">${esc(t('js.dash.tpl.own'))}</p>${card('', '✏️', t('js.dash.tpl.ownName'), t('js.dash.tpl.ownDesc'), true)}</fieldset>` : ''}
+      <div class="field"><label for="dash-name-in">${esc(t('js.dash.layouts.name'))}</label><input class="input" id="dash-name-in" maxlength="40" required value=""></div>
+      <label class="dash-tog" id="dash-name-copyrow"><span>${esc(t('js.dash.layouts.copy'))}</span><input type="checkbox" id="dash-name-copy" checked></label>
+      <p class="err form-err" role="alert"></p><div class="row"><button class="btn btn-primary" type="submit">${esc(t('js.dash.layouts.save'))}</button></div></form>` });
+    const nameIn = $('#dash-name-in', sh.el), copyRow = $('#dash-name-copyrow', sh.el);
+    const picked = () => ($('input[name="dash-tpl"]:checked', sh.el) || {}).value || '';
+    // The ready-made name fills the box until the teacher types their own.
+    let auto = '';
+    sh.el.addEventListener('change', e => {
+      if (e.target.name !== 'dash-tpl') return;
+      const tpl = tpls.find(x => x.id === picked());
+      copyRow.hidden = !!tpl;
+      if (nameIn.value.trim() === '' || nameIn.value === auto) { auto = tpl ? tpl.name : ''; nameIn.value = auto; }
+    });
+    $('#dash-name-form', sh.el).addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = nameIn.value.trim(), tpl = picked();
+      if (!name) { $('.form-err', sh.el).textContent = t('js.dash.layouts.needName'); nameIn.focus(); return; }
+      try {
+        if (saveTimer) await flush();
+        await addLayout(tpl ? await api(`/api/dash/${CID}/templates/${encodeURIComponent(tpl)}`, { method: 'POST', body: { name } })
+          : await api(`/api/dash/${CID}/layouts`, { method: 'POST', body: { name, copyFrom: $('#dash-name-copy', sh.el).checked ? S.layoutId : null } }));
+        sh.close();
+      } catch (err) { $('.form-err', sh.el).textContent = err.message; }
+    });
+  }
+  $('#dash-layout-new')?.addEventListener('click', newSheet);
   $('#dash-layout-more')?.addEventListener('click', () => {
     const l = S.layouts.find(x => x.id === S.layoutId);
     const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">✏️ ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>🗑️ ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
@@ -1066,6 +1111,7 @@ function start() {
     }
     grid.style.setProperty('--rowmin', `${min}px`);
     stageMark();
+    keepChip();
   }
   const stageEl = grid.parentElement;
   const stageMark = () => { const more = stageEl.scrollHeight > stageEl.clientHeight + 12 && stageEl.scrollTop + stageEl.clientHeight < stageEl.scrollHeight - 12; stageEl.classList.toggle('has-more', more); };

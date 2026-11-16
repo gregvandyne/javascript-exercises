@@ -2831,6 +2831,12 @@
       "moreName": "Vedi il resto di {name}",
       "tools": {
         "sent": "{name} inviato. Ogni studente riceve la sua copia."
+      },
+      "tpl": {
+        "heading": "Parti da una disposizione pronta",
+        "own": "Oppure creane una tua",
+        "ownName": "Una disposizione tua",
+        "ownDesc": "Parti da zero o copia quella che stai usando."
       }
     }
   },
@@ -10160,7 +10166,8 @@
       "oneOut": "Qualcuno è già fuori. Uno alla volta.",
       "reason": "Scegli un motivo dalla lista.",
       "noMood": "Il tuo insegnante non ha messo «Come mi sento» sul tuo schermo.",
-      "site": "Questa finestra web non ha ancora un indirizzo."
+      "site": "Questa finestra web non ha ancora un indirizzo.",
+      "template": "Scegli una delle disposizioni pronte."
     },
     "tools": {
       "send": "Invia alla classe",
@@ -10209,6 +10216,46 @@
       "letters": "Quante vocali ci sono in «{w}»?",
       "map": "Su quale continente è lo spillo?",
       "mapGrid": "In quale casella è lo spillo?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Inizio giornata",
+        "desc": "Orologio, ora e dopo, obiettivo del giorno, come mi sento e incarichi.",
+        "goal": "dire una cosa che voglio imparare oggi.",
+        "jobs": "Capofila\nPiante\nLibri\nCapo del riordino\nMessaggero"
+      },
+      "lesson": {
+        "name": "Lezione",
+        "desc": "Timer, verifica veloce, fila per l’aiuto, linea dei numeri e semaforo."
+      },
+      "group": {
+        "name": "Lavoro di gruppo",
+        "desc": "Crea gruppi, timer, misura della voce e punti delle squadre.",
+        "teams": "Razzi\nComete\nPianeti\nStelle"
+      },
+      "quiet": {
+        "name": "Lavoro silenzioso",
+        "desc": "Timer grande, semaforo rosso, segnali di lavoro e respiro."
+      },
+      "fun": {
+        "name": "Pausa divertente",
+        "desc": "Gira la ruota, lancia i dadi, balla col tuo video, poi respira."
+      },
+      "periods": {
+        "circle": "Accoglienza",
+        "maths": "Matematica",
+        "break": "Ricreazione",
+        "reading": "Lettura",
+        "lunch": "Pranzo",
+        "science": "Scienze",
+        "art": "Arte",
+        "home": "Riordino e saluti"
+      },
+      "light": {
+        "red": "Silenzio, per favore",
+        "yellow": "Voce bassa",
+        "green": "Parla a coppie"
+      }
     }
   }
 }

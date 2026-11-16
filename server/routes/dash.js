@@ -7,6 +7,7 @@
 //   GET  /api/dash/:id/pins                   the pinned widgets as students get them
 //   POST /api/dash/:id/me                     a student saves their screen
 //   POST /api/dash/:id/layouts[/:lid[/use|/delete]]   a teacher's layouts
+//   POST /api/dash/:id/templates/:tid         a teacher adds a ready-made layout (docs/decisions.md "Ready-made layouts")
 //   GET  /api/dash/:id/push-options           POST /api/dash/:id/pushes, /pushes/:pid/end    the teacher sends
 //   POST /api/dash/:id/pushes/:pid/hide       a student hides a push from their banner (or brings it back)
 //   POST /api/dash/:id/links, /links/:lid/remove           approved links
@@ -103,7 +104,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t('dash.layouts.defaultName'));
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -244,6 +245,12 @@ router.post('/api/dash/:id/layouts', requireUser, rateLimit('dash-layout', 120, 
   const from = b.copyFrom ? D.getLayout(b.copyFrom) : null;
   const src = from && from.class_id === x.c.id && from.owner_id === req.user.id ? from : null;
   send(req, res, D.createLayout(req.user, x.c, { name: b.name, widgets: src ? src.widgets : D.starterWidgets(), bg: src ? src.bg : D.DEFAULT_BG }));
+});
+/** Ready-made layouts (docs/decisions.md "Ready-made layouts"): a new layout from one of D.LAYOUT_TEMPLATES, its sample
+ *  words in the teacher's language. The same checks as making any layout (the class's own teacher, MAX_LAYOUTS). */
+router.post('/api/dash/:id/templates/:tid', requireUser, rateLimit('dash-layout', 120, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  send(req, res, D.createFromTemplate(req.user, x.c, req.params.tid, { name: body(req).name, t: req.t }));
 });
 router.post('/api/dash/:id/layouts/:lid', requireUser, rateLimit('dash-save', 300, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;

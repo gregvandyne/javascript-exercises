@@ -2830,6 +2830,12 @@
       "moreName": "Ver más de {name}",
       "tools": {
         "sent": "{name} enviado. Cada estudiante recibe su propia copia."
+      },
+      "tpl": {
+        "heading": "Empezar con un diseño listo",
+        "own": "O crea el tuyo",
+        "ownName": "Tu propio diseño",
+        "ownDesc": "Empieza de cero o copia el diseño actual."
       }
     }
   },
@@ -10159,7 +10165,8 @@
       "oneOut": "Ya hay alguien fuera. De uno en uno.",
       "reason": "Elige un motivo de la lista.",
       "noMood": "Tu maestro no ha puesto «¿Cómo estás?» en tu pantalla.",
-      "site": "Esta ventana web todavía no tiene dirección."
+      "site": "Esta ventana web todavía no tiene dirección.",
+      "template": "Elige uno de los diseños listos."
     },
     "tools": {
       "send": "Enviar a la clase",
@@ -10208,6 +10215,46 @@
       "letters": "¿Cuántas vocales tiene «{w}»?",
       "map": "¿En qué continente está el alfiler?",
       "mapGrid": "¿En qué casilla está el alfiler?"
+    },
+    "tpl": {
+      "morning": {
+        "name": "Inicio del día",
+        "desc": "Reloj, ahora y después, objetivo del día, estado de ánimo y tareas de clase.",
+        "goal": "decir una cosa que quiero aprender hoy.",
+        "jobs": "Encargado de la fila\nPlantas\nLibros\nOrden\nMensajero"
+      },
+      "lesson": {
+        "name": "Lección",
+        "desc": "Temporizador, comprobación rápida, fila de ayuda, recta numérica y semáforo."
+      },
+      "group": {
+        "name": "Trabajo en grupo",
+        "desc": "Hacer grupos, temporizador, medidor de voz y puntos por equipos.",
+        "teams": "Cohetes\nCometas\nPlanetas\nEstrellas"
+      },
+      "quiet": {
+        "name": "Trabajo en silencio",
+        "desc": "Temporizador grande, semáforo en rojo, señales de trabajo y respiración."
+      },
+      "fun": {
+        "name": "Pausa divertida",
+        "desc": "Gira la ruleta, tira los dados, baila con tu vídeo y luego respira."
+      },
+      "periods": {
+        "circle": "Asamblea",
+        "maths": "Matemáticas",
+        "break": "Recreo",
+        "reading": "Lectura",
+        "lunch": "Comida",
+        "science": "Ciencias",
+        "art": "Plástica",
+        "home": "Recoger y despedida"
+      },
+      "light": {
+        "red": "Silencio, por favor",
+        "yellow": "Voz bajita",
+        "green": "Hablar en pareja"
+      }
     }
   }
 }
