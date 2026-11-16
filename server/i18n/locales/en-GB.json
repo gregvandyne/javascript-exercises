@@ -884,8 +884,10 @@
         "units": "Amounts here are in pence or cents (plain numbers for the plain set)."
       },
       "geoboard": {
-        "desc": "Stretch bands round pegs. Area and perimeter of a closed shape, exactly (Pick's theorem). Years 3–9.",
-        "helpUse": "Tap pegs to stretch the band; tap the first peg again, or Close, to close it.\nDrag a corner to move it.\nNew band starts another shape in a new colour (up to 6); Undo takes back the last peg.\nA closed shape shows its exact area and perimeter.\nArrow keys move round the pegs; Enter stretches the band or picks up a corner."
+        "desc": "Make shapes with bands on a square grid, triangle dots or a circle. Area, perimeter and angles, exactly; a ruler, labels and a pen. Years 3–9.",
+        "ink": "Pen colour",
+        "trap": "Trapezium",
+        "helpUse": "Tap pegs to stretch a band; tap the first peg to close it.\nDrag a corner or a whole band. A colour starts a new band.\nShapes, Tools and Annotate add shapes, a ruler, labels and a pen."
       },
       "pattern": {
         "desc": "Hexagons, trapezia, rhombi, triangles and squares that snap together. Shows the fraction of a hexagon. Reception to Year 6.",

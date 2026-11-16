@@ -101,7 +101,9 @@ test('every stage 4 state is rebuilt on the server: unknown keys go, numbers cla
   // geoboard: pegs on the board, no repeated neighbours, a band back at its start is closed, fewer than 3 pegs is open
   const gb = c('geoboard', { pegs: 5, cur: 9, bands: [{ pts: P(0, 0, 0, 0, 4, 0, 9, 9, 4, 4, 0, 0) }, { pts: P(1, 1, 2, 2), closed: true }, ...Array(9).fill({ pts: [] })] });
   assert.deepEqual(gb.bands[0], { pts: P(0, 0, 4, 0, 4, 4), closed: true });
-  assert.equal(gb.bands[1].closed, false); assert.equal(gb.bands.length, 6); assert.equal(gb.cur, 5);
+  // The shape board (docs/decisions.md "Shape board") keeps up to 12 bands (it was 6): these 11 all stay, and so does cur.
+  assert.equal(gb.bands[1].closed, false); assert.equal(gb.bands.length, 11); assert.equal(gb.cur, 9);
+  assert.equal(c('geoboard', { bands: Array(20).fill({ pts: [] }), cur: 30 }).bands.length, 12);
   assert.equal(c('geoboard', { pegs: 8 }).pegs, 7);
   assert.equal(c('geoboard', { bands: [{ pts: Array.from({ length: 40 }, (_, i) => ({ x: i % 7, y: Math.floor(i / 7) })) }] }).bands[0].pts.length, 16);
   // pattern blocks: on the triangle grid (x + y even), at most 40, a known kind
@@ -472,10 +474,11 @@ test('sending a stage 4 tool: the teacher\'s own tool, its state rebuilt; each s
 });
 
 test('safety: no AI, no network or storage in the tools, no prices, no "Pro", no real names, students never type to each other', async () => {
-  for (const file of ['public/js/dash-tools4.js', 'public/js/dash-math4.js', 'public/js/dash-ask.js', 'server/services/dash-tools.js'])
+  for (const file of ['public/js/dash-tools4.js', 'public/js/dash-shapeboard.js', 'public/js/dash-math4.js', 'public/js/dash-ask.js', 'server/services/dash-tools.js'])
     assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /anthropic|screenPhoto|ai-budget|lesson-ai|\bclaude\b|openai/i, file);
   const tools = fs.readFileSync('public/js/dash-tools4.js', 'utf8'), math = fs.readFileSync('public/js/dash-math4.js', 'utf8'), ask = fs.readFileSync('public/js/dash-ask.js', 'utf8');
-  for (const src of [tools, math, ask]) for (const bad of [/\bfetch\s*\(/, /XMLHttpRequest/, /sendBeacon/, /WebSocket/, /EventSource/, /localStorage|sessionStorage|indexedDB/, /from '\/js\/app\.js'/, /MediaRecorder|getUserMedia/, /toDataURL|toBlob/, /innerHTML/])
+  const shapes = fs.readFileSync('public/js/dash-shapeboard.js', 'utf8');
+  for (const src of [tools, shapes, math, ask]) for (const bad of [/\bfetch\s*\(/, /XMLHttpRequest/, /sendBeacon/, /WebSocket/, /EventSource/, /localStorage|sessionStorage|indexedDB/, /from '\/js\/app\.js'/, /MediaRecorder|getUserMedia/, /toDataURL|toBlob/, /innerHTML/])
     assert.doesNotMatch(src, bad, String(bad));
   for (const src of [math, ask]) assert.doesNotMatch(src, /document\.|window\./, 'the maths and the questions are pure');
   // Coins are our own simple drawings: no image files or pictures of real money.

@@ -6,7 +6,8 @@
 // widget: the widgets are split over as many layouts as the grid needs (24 widgets, 24 rows each), and on the tools'
 // layouts both students have every tool on their own screen (as a pinned copy of a sent tool would be).
 // Stage 4 (docs/decisions.md "Classroom dashboards, stage 4") adds teaching tools part 2 on more layouts of their own,
-// "Practice it" links (official games are made for the check) and a phone in dark mode.
+// "Practice it" links (official games are made for the check) and a phone in dark mode. The shape board (docs/decisions.md
+// "Shape board") adds three busy geoboards: twelve bands with every label on, triangle dots and the circle.
 // Stage 5 (docs/decisions.md "Classroom dashboards, stage 5") adds video, the site window, the document camera, the hall
 // pass, class jobs, points for each student, the mood check-in, breathing, a sticky note, a checklist and the schedule's
 // "now and next", on layouts of their own. Outside pages are stubs (the browser answers the video and site hosts itself;
@@ -152,7 +153,21 @@ const STAGE5_EXTRA = [
 // Stage 4 review: the organizers written in where they are, as widgets of their own: a sequence with its most steps, a
 // Venn diagram and main idea with its most details, all with long German words (the story map above stays too).
 const LONG = ['Die Raupe frisst sich durch das Blatt', 'Sie verpuppt sich in einem Kokon', 'Schmetterlingsflügelentfaltung', 'Der Schmetterling trocknet seine Flügel in der Sonne'];
-const STAGE4_EXTRA = [
+// The shape board (docs/decisions.md "Shape board"): twelve bands with labels, angles, text labels, pen strokes and a long
+// German challenge; triangle dots; and the circle, as widgets of their own.
+const GB = (...a) => { const o = []; for (let i = 0; i < a.length; i += 2) o.push({ x: a[i], y: a[i + 1] }); return o; };
+const GEO_BANDS = [GB(0, 0, 3, 0, 0, 3), GB(4, 0, 7, 0, 7, 2, 4, 2), GB(8, 0, 10, 1, 9, 3), GB(1, 4, 3, 4, 3, 6, 1, 6), GB(4, 3, 6, 3, 7, 5, 5, 6, 4, 5), GB(8, 4, 10, 4, 10, 7, 8, 7),
+  GB(0, 7, 2, 7, 1, 9), GB(3, 7, 6, 7, 5, 9, 3, 9), GB(7, 8, 10, 8, 10, 10, 7, 10), GB(0, 10, 2, 10, 1, 9), GB(3, 10, 5, 10, 4, 9), GB(6, 6, 7, 6, 7, 7)];
+const GEO_EXTRA = [
+  { ...D.widgetType('geoboard'), wid: 'wgeobusy', s: { state: { pegs: 11, cur: 4, labels: true, angles: true, lines: true, title: 'Baue Formen mit zwölf Quadrateinheiten Flächeninhalt – wie viele findest du?',
+    bands: GEO_BANDS.map((pts, i) => ({ pts, closed: true, c: i % 7 })),
+    notes: [{ x: 500, y: 40, t: 'Gleicher Flächeninhalt?' }, { x: 150, y: 960, t: 'Rechtwinkliges Dreieck' }], ink: [{ c: 1, p: [100, 100, 200, 160, 300, 120, 400, 200] }, { c: 3, p: [600, 800, 700, 900] }] } } },
+  { ...D.widgetType('geoboard'), wid: 'wgeoiso', s: { state: { board: 'iso', pegs: 9, cur: 0, labels: true, angles: true, title: 'Sechsecke aus kleinen Dreiecken',
+    bands: [{ pts: [{ x: 4, y: 1 }, { x: 6, y: 1 }, { x: 7, y: 3 }, { x: 6, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 3 }], closed: true, c: 4 }, { pts: [{ x: 1, y: 6 }, { x: 3, y: 6 }, { x: 2, y: 8 }], closed: true, c: 5 }] } } },
+  { ...D.widgetType('geoboard'), wid: 'wgeocircle', s: { state: { board: 'circle', ring: 24, cur: 1, labels: true, angles: true, lines: true,
+    bands: [{ pts: [0, 4, 8, 12, 16, 20].map(x => ({ x, y: 0 })), closed: true, c: 0 }, { pts: [0, 9, 24].map(x => ({ x, y: 0 })), closed: true, c: 1 }] } } },
+];
+const STAGE4_EXTRA = [...GEO_EXTRA,
   { ...D.widgetType('organizer'), wid: 'worgseq', s: { state: { kind: 'seq', n: 10, title: 'Die Verwandlung der kleinen Raupe Nimmersatt', boxes: Array.from({ length: 10 }, (_, i) => ({ h: i === 3 ? 'Verpuppungszeitraum' : '', t: LONG.slice(0, 1 + (i % 4)).join('\n') })) } } },
   { ...D.widgetType('organizer'), wid: 'worgvenn', s: { state: { kind: 'venn', title: 'Frösche und Kröten im Vergleich', boxes: [{ h: 'Froschlurche', t: 'Glatte, feuchte Haut\nLange Hinterbeine\nLeben am Wasser' }, { h: '', t: 'Amphibienentwicklung\nLegen Eier\nKönnen schwimmen' }, { h: 'Kröten', t: 'Warzige, trockene Haut\nKurze Beine\nLeben an Land' }] } } },
   { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },

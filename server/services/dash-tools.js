@@ -2,8 +2,9 @@
 // state is what the teacher (or a student, on their own screen) has set up: the fractions shown, a number line's range,
 // a line's slope... It is kept in the widget's hidden `state` setting and, when the teacher sends the tool to students,
 // copied into the push. Everything a browser sends is rebuilt here from the tool's spec: unknown keys are dropped,
-// numbers clamped, lists cut, text clipped. Drawings (the whiteboard) are never part of any state: they never leave the
-// browser.
+// numbers clamped, lists cut, text clipped. The whiteboard's drawings are never part of any state: they never leave the
+// browser. The shape board's pen strokes and labels are the teacher's own (simplified and capped, like other teacher
+// text); a student's are never kept on the server (cleanToolState(..., { student: true })).
 //
 // Spec: { key: ['int', lo, hi, def] | ['enum', [values], def] | ['bool', def] | ['text', max, def]
 //              | ['textm', max, def] (several lines) | ['ints', maxLen, lo, hi, def] | ['list', maxLen, { spec }, def]
@@ -70,16 +71,35 @@ export const TOOL_SPECS = {
   tclock: { spec: { t: ['int', 0, 1439, 580], digital: ['bool', true], h24: ['bool', false], el: ['bool', false], end: ['int', 0, 1439, 735] } },
   fdp: { spec: { n: ['int', 0, 100, 3], d: ['int', 1, 100, 8] }, fix: s => { s.n = Math.min(s.n, s.d); } },
   // ---- stage 4 (docs/decisions.md "Classroom dashboards, stage 4"); the lists match public/js/dash-math4.js (tested)
+  // Shape board (docs/decisions.md "Shape board"): a square grid, triangle dots or a circle (ring pegs round a centre peg);
+  // up to 12 bands in 7 colours (c; a band saved before colours has none and takes its place's colour), the view toggles,
+  // the teacher's challenge title, text labels and pen strokes (x, y in the board's 1000 × 1000 units). The keys added
+  // for the shape board are stored only when they differ from their start, so a geoboard saved before it (pegs, cur,
+  // show, bands) is stored exactly as it was. A student's own screen never keeps labels or pen strokes (student: true):
+  // drawings and typed notes on a student's copy stay in their browser.
   geoboard: {
-    spec: { pegs: ['enum', [5, 7, 9, 11], 7], cur: ['int', 0, 5, 0], show: ['bool', true],
-      bands: ['list', 6, { pts: ['list', 16, { x: ['int', 0, 10, 0], y: ['int', 0, 10, 0] }, []], closed: ['bool', false] }, [{ pts: [{ x: 1, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 3 }, { x: 2, y: 3 }], closed: true }]] },
-    fix: s => {
+    spec: { pegs: ['enum', [5, 7, 9, 11], 7], cur: ['int', -1, 11, 0], show: ['bool', true],
+      bands: ['list', 12, { pts: ['list', 16, { x: ['int', 0, 24, 0], y: ['int', 0, 10, 0] }, []], closed: ['bool', false], c: ['int', -1, 6, -1] }, [{ pts: [{ x: 1, y: 1 }, { x: 4, y: 1 }, { x: 5, y: 3 }, { x: 2, y: 3 }], closed: true }]],
+      board: ['enum', ['square', 'iso', 'circle'], 'square'], ring: ['enum', [6, 8, 10, 12, 16, 24], 12],
+      fills: ['bool', true], lines: ['bool', false], angles: ['bool', false], labels: ['bool', false], title: ['text', 80, ''],
+      notes: ['list', 12, { x: ['int', 0, 1000, 500], y: ['int', 0, 1000, 500], t: ['text', 40, ''] }, []],
+      ink: ['list', 30, { c: ['int', 0, 4, 0], p: ['ints', 240, 0, 1000] }, []] },
+    fix: (s, o = {}) => {
+      const circle = s.board === 'circle';
       for (const b of s.bands) {
-        b.pts = b.pts.filter(p => p.x < s.pegs && p.y < s.pegs).filter((p, i, a) => !i || p.x !== a[i - 1].x || p.y !== a[i - 1].y);
+        b.pts = b.pts.filter(p => (circle ? p.y === 0 && p.x <= s.ring : p.x < s.pegs && p.y < s.pegs)).filter((p, i, a) => !i || p.x !== a[i - 1].x || p.y !== a[i - 1].y);
         if (b.pts.length > 1 && b.pts[0].x === b.pts.at(-1).x && b.pts[0].y === b.pts.at(-1).y) { b.pts.pop(); b.closed = true; }
         if (b.pts.length < 3) b.closed = false;
+        if (b.c < 0) delete b.c;
       }
       if (s.cur >= s.bands.length) s.cur = Math.max(0, s.bands.length - 1);
+      s.notes = s.notes.filter(n => n.t);
+      for (const k of s.ink) if (k.p.length % 2) k.p.pop();
+      s.ink = s.ink.filter(k => k.p.length >= 2);
+      if (o.student) { s.notes = []; s.ink = []; }
+      const start = { board: 'square', ring: 12, fills: true, lines: false, angles: false, labels: false, title: '' };
+      for (const [k, v] of Object.entries(start)) if (s[k] === v) delete s[k];
+      for (const k of ['notes', 'ink']) if (!s[k].length) delete s[k];
     },
   },
   pattern: {
@@ -155,10 +175,11 @@ function cleanBy(spec, src) {
   }
   return out;
 }
-/** A tool's state as a browser sent it -> what may be stored or sent to students. Nothing else survives. */
-export function cleanToolState(type, v) {
+/** A tool's state as a browser sent it -> what may be stored or sent to students. Nothing else survives. o.student: it is
+ *  saved on a student's own screen (the shape board then keeps no labels or drawings). */
+export function cleanToolState(type, v, o = {}) {
   const t = TOOL_SPECS[type]; if (!t) return null;
   const s = cleanBy(t.spec, v);
-  if (t.fix) t.fix(s);
+  if (t.fix) t.fix(s, o);
   return s;
 }
