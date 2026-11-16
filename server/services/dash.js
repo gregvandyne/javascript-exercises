@@ -241,7 +241,13 @@ export const RETIRED = { stopwatch: { type: 'timer', s: { mode: 'stopwatch' } } 
  *  student places still match; its box grows to the new type's smallest size if it must). Anything else is unchanged. */
 export function migrateWidget(w) {
   const r = w && typeof w === 'object' && Object.hasOwn(RETIRED, w.type) ? RETIRED[w.type] : null;
-  if (!r) return w;
+  if (!r) {
+    // A widget saved smaller than its type's smallest size now (the maths tools grew a row for their instruction line)
+    // is read at that size, so nothing is squeezed; migrateWidgets then pushes what it now covers down.
+    const t = w && typeof w === 'object' ? widgetType(w.type) : null;
+    if (!t || !Number.isFinite(w.w) || !Number.isFinite(w.h) || (w.w >= t.min[0] && w.h >= t.min[1])) return w;
+    return { ...w, ...cleanBox(t, w) };
+  }
   const type = widgetType(r.type);
   const box = Number.isFinite(w.w) ? cleanBox(type, w) : {};
   return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...(w.s && typeof w.s === 'object' ? w.s : {}), ...r.s }) };

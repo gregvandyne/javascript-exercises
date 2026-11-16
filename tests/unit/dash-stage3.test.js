@@ -455,3 +455,13 @@ test('every stage 3 string is translated into every locale', async () => {
     assert.deepEqual([...l.placeholderErrors, ...l.parseErrors, ...l.extra], [], l.code);
   }
 });
+
+test('a maths tool saved below its new smallest size is read at that size, and what it covers moves down', () => {
+  const t = D.widgetType('fractions');
+  const old = [{ id: 'f', type: 'fractions', x: 0, y: 0, w: t.min[0], h: t.min[1] - 1, s: {} }, { id: 'c', type: 'clock', x: 0, y: t.min[1] - 1, w: 3, h: 2, s: {} }];
+  const out = D.migrateWidgets(old);
+  assert.equal(out[0].h, t.min[1]);
+  assert.ok(out[1].y >= out[0].y + out[0].h, 'the clock under it moved down');
+  const fine = [{ id: 'f', type: 'fractions', x: 0, y: 0, w: t.size[0], h: t.size[1], s: {} }];
+  assert.strictEqual(D.migrateWidgets(fine)[0], fine[0], 'a widget at a good size is untouched');
+});
