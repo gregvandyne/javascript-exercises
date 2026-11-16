@@ -6123,6 +6123,34 @@ renderer (`public/js/dash-widgets.js`; the noise meter in `public/js/dash-noise.
 - **Later stages (not in stage 2):** a drawing whiteboard, an image or video widget, web page windows, a webcam
   document camera.
 
+### Several countdowns in one card (16 Nov 2026)
+
+Teachers asked to put several countdowns in one card instead of adding a card for each.
+
+- **Settings.** The countdown's settings are now a list of events (`events`). Each has a label (60 characters, clean
+  text), a day (a real date) and an optional time (HH:MM, or empty for the whole day). A card holds up to 8
+  (`MAX_EVENTS`). The settings form has "Add a countdown" and a remove button on each row. At 8 the add button gives
+  way to a note. The server rebuilds the list (`cleanEvents`): bad days and times are emptied, empty rows dropped. A row
+  with a label but no day yet is kept, so a half-filled row is not lost. The list is stored soonest first (a day with
+  no time counts from the start of the day); rows with no day go last.
+- **Old cards.** A countdown saved as one `{ label, date, time }` is read as a list of one. `cleanSettings` converts
+  it, and so does every read of a stored layout or of the pins students get. Nothing is lost, and its time is kept
+  (08:00 was the old default). The card's renderer also reads the old shape. The next save stores the list.
+- **The card.** Only events with a day are shown, sorted by when they happen in the school's time zone. With one
+  event the card looks as it always did: the label, big boxes for days, hours and minutes, "It's today!" on the day,
+  "That day has come and gone" after it. An event with no time shows whole calendar days only. With several events,
+  the card is a list. Each row shows its label and its day and time. At the row's end are days and hours, or hours
+  and minutes once it is less than a day away (days only with no time). On its day a row is highlighted and says
+  "It's today!". A day gone by moves to the end, greyed, for 7 days (`PAST_DAYS`), then drops off the card (it stays
+  in the settings to remove). If every event is older than that, the most recent one stays, so a card of one never
+  goes blank. The list scrolls by whole rows with the fade, like every other list. Default 4 × 3 and smallest 3 × 3
+  are unchanged.
+- **Who.** As before: teachers only, and it may be pinned. A pinned card reaches student screens with its whole list.
+  Students can't add one to their own screen.
+- Tests: `tests/unit/dash-stage2.test.js` (cleaning, the old shape, sorting, past days, pins). The fit check's
+  countdown is a full card of 8 with long German labels, one today, one tomorrow, one gone by and one more than a year
+  away. A card of one is checked on its own.
+
 ## Classroom dashboards, stage 3 (15 Nov 2026)
 Teaching tools (part 1), a whiteboard and a Picture widget, on the stage 1 grid and the stage 2 look. Built to the
 approved TeachingTools mockup (fraction bars with "Same-size pieces", a coordinate plane with slope and start buttons)
@@ -6318,6 +6346,36 @@ hidden `state` setting and in the push, as in stage 3.
     the demo pin for Kenya sits in East Africa.
   - The pattern block board has a margin, so its edge dots show whole.
   - The protractor's numbers thin to every 90° when it is too small for them to sit apart.
+- **Review changes (16 Nov 2026): graphic organizers and letter tiles.**
+  - **Organizers are written in where they are** (no sheet). Each box has a heading field and a text area lying over its
+    list in the same type: a click, a tap or Tab puts the caret there, Enter in a heading goes on to its box, Enter in a
+    box is a new idea (one a line), Escape leaves the box for its heading. What is typed is kept half a second after the
+    last key and when the box is left, through the tool's own `ctx.keep` with the same limits (title 60, heading 40, box
+    400) and the same server cleaning. So the teacher's text goes to their layout, a student's copy stays in their
+    browser (or on their own screen if pinned) and nothing a student types reaches anyone else (tested by reading the
+    code; the copy's keep is still `copies.set`). Every field is named ("Step 2: Ideas (one on each line)"). A copy that
+    opens in a sheet puts the focus on the tool's first control, not a box (a phone would bring up its keyboard).
+    "Make a question from it" still makes no question from an organizer, as before.
+  - **Steps can be added and taken away.** A sequence has 2-10 steps ("Add a step", and ✕ on each step); main idea and
+    details has 2-6 details ("Add a detail"). **Decided:** the other kinds keep their fixed boxes (a Venn diagram, a
+    T-chart and KWL have a fixed meaning; a story map's five parts are its parts). Steps renumber (a heading the
+    teacher wrote stays with its step). They run in rows of as many as fit with arrows between; when there are more
+    rows than fit, whole rows fill the organizer and the rest scroll. The state gains `d` (details, 2-6, default 3), `n`
+    goes to 2-10 and boxes to 10; layouts saved in the old shape come back unchanged (tested).
+  - **The Venn diagram is two true circles** at every size: an SVG of its own 3:2 shape, as big as fits and centred
+    (never stretched), with the three parts placed inside the circles; the middle part's ideas are centred, without
+    bullets.
+  - **Letter tiles: a drag shows.** A lifted copy of the tile (shadow, tilted) follows the mouse, finger or pen; the tile
+    it came from shows as a dashed outline; the board lights up with a bar where the tile will go. A word tile held off
+    the board is marked with ✕ and is taken away when let go (as before); a letter dropped elsewhere does nothing, and a
+    cancelled drag changes nothing. Tapping, Enter, Shift+arrows and Delete still do everything a drag does, and the
+    focused tile keeps the focus when the tool redraws.
+  - **Choosing a word family starts from scratch**: the board is cleared and only the family's ending is on it ("none"
+    clears it too). No confirm and no undo: the board holds a few letters.
+  - **An instruction above the board**: "Drag or tap letters into the box to make a word." in every language (the old
+    hint inside an empty board is no longer shown).
+  - The fit check gained three organizers of their own: a sequence with ten steps, a Venn diagram and main idea with six
+    details, all in long German words.
 - **Not in this stage** (stage 5): video, site windows, document camera, hall pass, class jobs.
 
 ## Classroom dashboards, stage 5 (16 Nov 2026)
@@ -6509,6 +6567,53 @@ Push to students' link tab.
 - Tests: `tests/unit/dash-stage2.test.js` (typed website creates or reuses the link and the target, refused
   addresses, browser and server agree, removed link → no code, the encoded address, long addresses, who may call it,
   a full list, translations), `tests/unit/live-qr.test.js` (versions 7-40).
+
+## Classroom dashboards: timer and stopwatch combined (16 Nov 2026)
+The product owner: "combine the timer and stopwatch into one widget where you can choose between the two." The library
+now has one entry, **Timer and stopwatch** (type id `timer`; "Timer e cronometro", "Timer und Stoppuhr"...), and no
+Stopwatch of its own. Code: `WIDGETS` (timer), `RETIRED`, `migrateWidget(s)`, `timerMode`, `timerAction`,
+`updateLayout` in `server/services/dash.js`; `timer` in `public/js/dash-widgets.js`; `.dw-modes` / `.dw-tmain` in
+`public/css/dash.css`; strings `dash.w.timer.*` (`s.mode`, `o.mode.*`, `mode`, `toTimer`, `toStopwatch`).
+- **Mode is a setting** (`mode`: `timer` counts down, `stopwatch` counts up; default timer) and a switch at the top of
+  the widget: two buttons, Timer | Stopwatch, for whoever controls it (the teacher, or a student on their own timer);
+  pinned copies on student screens show only the time. Each mode keeps what it had: the timer its quick
+  times, custom time, bar or ring and chime; the stopwatch start, pause, resume and reset (it never had laps).
+- **Decided: switching mode starts again from nothing**, even while it runs. A countdown is never turned into a count
+  up or back: the run is dropped (the browser at once; the server when the layout is saved, `updateLayout` compares
+  each timer's mode; `timerAction` also never reuses a run of the other mode), the new mode shows 0:00 or its full
+  minutes, paused, on every screen, and the switch is announced ("Stopwatch: counts up from zero").
+- **Old stopwatches keep working, on read** (no migration: nothing to rewrite in bulk, and old browsers may still send
+  the old type). Everywhere a widget list is read (layouts, the class's pins, a student's own screen) or sent
+  (`cleanWidgets`), a `stopwatch` becomes a `timer` in stopwatch mode **with the same id**, so its running state in
+  `dash_class.timers` (mode `up`) carries on, pins and a student's place for it still match, and
+  `/api/dash/:id/timers/<old id>` still answers. It is stored as a timer the next time the layout is saved, and the
+  pins are republished then (students redraw). `TIMER_TYPES` still lists `stopwatch` for that reason.
+- **Size: default 4 × 4, smallest 3 × 4** (was 4 × 3 and 3 × 3; the stopwatch 3 × 3): the switch is a 44px row above
+  the digits (the digits give up a little height for it; at the smallest size on a narrow screen the quick times
+  are hidden, as they always were on a short timer, and the minutes stay in the settings). An old stopwatch's box grows to 3 × 4 when read and widgets it would now cover move down (as in the
+  browser); a student's place for a pinned one grows too. The ready-made layouts' timers (4 × 4, 6 × 7, 3 × 4) already
+  fit. `npm run dash:fit` checks a running stopwatch-mode widget (past an hour) next to the timer, and a student's own
+  timer and stopwatch with their switch, at both sizes, on every view in English, German and Arabic.
+- The old `dash.w.stopwatch.*` strings are left in place (i18n:check does not require removing them).
+- Tests: `tests/unit/dash-timer.test.js` (one library entry, the mode setting, switching while running, both modes'
+  server actions, old stopwatches in layouts, pins, student screens and running state, ready-made layouts). Updated
+  to the combined widget: the student-addable lists in `dash.test.js` and `dash-stage2.test.js`, the timer's cleaned
+  settings in `dash-stage2.test.js`, and the brief audit in `dash-stage5.test.js` (the stopwatch is a mode of the
+  timer).
+
+## Classroom dashboards: stickers widget removed (16 Nov 2026)
+Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
+(`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and
+`STAMP_COUNT`), so it is no longer in the widget library and neither teachers nor students can add it; its renderer and
+emoji set (`public/js/dash-widgets.js`), its CSS and its `dash.w.stickers.*` strings in every locale went with it.
+- **Existing ones are dropped, not migrated.** Layouts, the class's pins and student screens are stored as JSON; a
+  widget whose type the registry no longer has is now filtered out when read (`known` in `readLayout`, `pinsOf`,
+  `studentState`), and `cleanWidgets` already refused unknown types on save. So an old layout, pin or student screen with
+  a stickers widget loads with only that widget missing, and the next save stores it without it. A student's saved place
+  for an old pinned stickers widget is ignored (it used to be a crash waiting to happen: `cleanBox` of an unknown type).
+  Pushes never carried stickers (only teaching tools are sent). No migration.
+- **Fun break** gets a team **scoreboard** (four sample team names in the teacher's language) in the stickers' 5 × 3
+  place, its default size: still playful for a break, and the layout still fills the 12 × 8 grid with no gaps.
 
 ## Sum Spotter: spot the number two others make (16 Nov 2026)
 

@@ -9029,9 +9029,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Contagem regressiva com números grandes e uma barra de tempo.",
+        "name": "Timer e cronômetro",
+        "desc": "Contagem regressiva ou progressiva com números grandes.",
         "s": {
+          "mode": "Modo",
           "minutes": "Minutos para começar",
           "chime": "Toque suave no final",
           "bar": "Mostrar a barra de tempo",
@@ -9049,7 +9050,14 @@
         "left": "Faltam {time}",
         "presets": "Tempos rápidos",
         "mins": "{n} minutos",
+        "mode": "Timer ou cronômetro",
+        "toTimer": "Timer: contagem regressiva",
+        "toStopwatch": "Cronômetro: conta a partir do zero",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Cronômetro"
+          },
           "view": {
             "digits": "Números grandes",
             "ring": "Anel que diminui"
@@ -9252,18 +9260,23 @@
       },
       "countdown": {
         "name": "Contagem para um dia",
-        "desc": "Dias e horas até um passeio, uma apresentação ou as férias.",
+        "desc": "Dias e horas até passeios, apresentações ou férias: uma ou várias no mesmo cartão.",
         "s": {
-          "label": "O que vem aí",
-          "date": "Dia",
-          "time": "Hora"
+          "events": "Contagens"
         },
         "empty": "Escolha o dia em Editar tela.",
         "days": "Dias",
         "hours": "Horas",
         "mins": "Minutos",
         "today": "É hoje!",
-        "past": "Esse dia já passou."
+        "past": "Esse dia já passou.",
+        "label": "O que vem aí",
+        "day": "Dia",
+        "time": "Hora (opcional)",
+        "addEvent": "Adicionar uma contagem",
+        "remove": "Remover",
+        "event": "Contagem {n}",
+        "full": "Um cartão comporta até {n} contagens."
       },
       "calendar": {
         "name": "Calendário",
@@ -9393,17 +9406,6 @@
         "r_responsible": "Responsabilidade",
         "r_brave": "Tentar algo novo",
         "r_creative": "Boas ideias"
-      },
-      "stickers": {
-        "name": "Adesivos",
-        "desc": "Adesivos divertidos do Oomba para a tela.",
-        "s": {
-          "stamps": "Adesivos"
-        },
-        "add": "Adicionar um adesivo",
-        "remove": "Tirar {e}",
-        "clear": "Tirar todos",
-        "empty": "Toque num adesivo abaixo para colocá-lo aqui."
       },
       "fractions": {
         "name": "Barras de frações",
@@ -9894,7 +9896,8 @@
         "moved": "{l} movida para o lugar {n}",
         "hint": "Toque ou arraste letras para formar uma palavra.",
         "onset": "?",
-        "full": "A palavra está cheia."
+        "full": "A palavra está cheia.",
+        "instr": "Arraste ou toque nas letras para as pôr na caixa e formar uma palavra."
       },
       "organizer": {
         "name": "Organizador gráfico",
@@ -9930,7 +9933,12 @@
         "step": "Passo {n}",
         "editHint": "Toque numa caixa para escrever nela.",
         "note": "O que você escreve fica nesta tela e nas cópias que envia. As cópias dos alunos são deles: o que escrevem nunca volta.",
-        "save": "Guardar"
+        "save": "Guardar",
+        "addStep": "Pôr um passo",
+        "addDetail": "Pôr um detalhe",
+        "remove": "Tirar {name}",
+        "added": "Pôs: {name}",
+        "removed": "Tirou: {name}"
       },
       "map": {
         "name": "Mapas",

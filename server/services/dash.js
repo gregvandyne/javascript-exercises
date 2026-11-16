@@ -39,9 +39,10 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools
  * settings: [{ key, type, def, ... }]: 'text'|'textarea' (max), 'select' (options), 'bool', 'number' (min, max),
  * 'zone' (a time zone or ''), 'periods' (the day's schedule), 'place' (a geocoded place, weather), 'target' (what a QR
  * code opens), 'tiles' (Oomba games and lessons), 'date' (YYYY-MM-DD), 'hhmm', 'marks' (calendar days with a label),
- * 'scores' and 'stamps' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
+ * 'scores' (hidden: changed by the widget itself), 'tool' (stage 3: a teaching tool's state, hidden,
  * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
  * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
+ * 'events': countdowns, each a label, a day and an optional time (cleanEvents).
  */
 /** The words each teaching tool shows (dash.w.<id>.<word>); the words they share are dash.tools.<word> (TOOL_COMMON). */
 const TOOL_WORDS = {
@@ -67,9 +68,9 @@ const TOOL_WORDS = {
   algebra: ['x2', 'x', 'one', 'pos', 'neg', 'flip', 'zero', 'clear', 'raw', 'simple', 'pairs', 'mat', 'tile', 'added', 'removed', 'hint', 'empty', 'full'],
   coins: ['count', 'change', 'total', 'cost', 'paid', 'changeIs', 'countUp', 'fewest', 'clear', 'cur', 'auto', 'usd', 'eur', 'gbp', 'gen', 'notEnough', 'tray', 'mat', 'added', 'removed', 'empty', 'mode', 'units'],
   chance: ['coin', 'dice', 'spinner', 'one', 'two', 'parts', 'run', 'trials', 'reset', 'heads', 'tails', 'got', 'expected', 'chart', 'hint', 'sum', 'part', 'runs', 'kind', 'none'],
-  letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full'],
+  letters: ['bank', 'word', 'fam', 'none', 'caps', 'clear', 'back', 'vowel', 'consonant', 'real', 'made', 'counts', 'tile', 'added', 'removed', 'moved', 'hint', 'onset', 'full', 'instr'],
   organizer: ['kind', 'venn', 'tchart', 'kwl', 'story', 'main', 'seq', 'title', 'edit', 'heading', 'text', 'boxes', 'empty', 'a', 'b', 'both', 'left', 'right', 'know', 'want', 'learned',
-    'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save'],
+    'characters', 'setting', 'problem', 'events', 'solution', 'idea', 'detail', 'step', 'editHint', 'note', 'save', 'addStep', 'addDetail', 'remove', 'added', 'removed'],
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
     'northAmerica', 'southAmerica', 'europe', 'asia', 'africa', 'australia', 'antarctica', 'pacific', 'atlantic', 'indian', 'arctic', 'southern'],
 };
@@ -113,12 +114,15 @@ export const WIDGETS = [
   { id: 'ican', icon: '🎯', group: 'show', who: 'both', size: [4, 2], min: [3, 2], words: ['lead', 'empty'], settings: [
     { key: 'goal', type: 'textarea', max: 200, def: '' }] },
   // ---- stage 2: everyday widgets
-  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins'], settings: [
+  // The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): mode picks a
+  // countdown or counting up. Old 'stopwatch' widgets are read as a timer in stopwatch mode (migrateWidgets). A row
+  // taller than before (default 4 x 4, smallest 3 x 4): the mode switch sits above the digits and the controls.
+  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 4], min: [3, 4], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins', 'mode', 'toTimer', 'toStopwatch'], settings: [
+    { key: 'mode', type: 'select', options: ['timer', 'stopwatch'], def: 'timer' },
     { key: 'minutes', type: 'number', min: 1, max: 180, def: 5 },
     { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
     { key: 'chime', type: 'bool', def: false },
     { key: 'bar', type: 'bool', def: true }] },
-  { id: 'stopwatch', icon: '⏱️', group: 'time', who: 'both', size: [3, 3], min: [3, 3], words: ['start', 'pause', 'resume', 'reset'], settings: [] },
   { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts'], settings: [
     { key: 'periods', type: 'periods', def: [] },
     { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
@@ -139,10 +143,11 @@ export const WIDGETS = [
   { id: 'check', icon: '✅', group: 'check', who: 'teacher', pin: false, size: [5, 4], min: [4, 4], words: ['empty', 'new', 'end', 'ended', 'names', 'save', 'saved', 'savedList', 'answered', 'send', 'kind', 'question', 'questionHint',
     'options', 'option', 'addOption', 'needOptions', 'nobody', 'notYet', 'savedNone', 'thumbs', 'fist', 'choice', 'scale', 'up', 'side', 'down'], settings: [] },
   // ---- stage 2, second part: more everyday widgets
-  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past'], settings: [
-    { key: 'label', type: 'text', max: 60, def: '' },
-    { key: 'date', type: 'date', def: '' },
-    { key: 'time', type: 'hhmm', def: '08:00' }] },
+  // Several countdowns in one card (docs/decisions.md "Several countdowns in one card"): a list of events, each a label,
+  // a day and an optional time. A card saved with one { label, date, time } is read as a list of one (cleanSettings).
+  { id: 'countdown', icon: '⏰', group: 'time', who: 'teacher', size: [4, 3], min: [3, 3], words: ['empty', 'days', 'hours', 'mins', 'today', 'past',
+    'label', 'day', 'time', 'addEvent', 'remove', 'event', 'full'], settings: [
+    { key: 'events', type: 'events', def: [] }] },
   { id: 'calendar', icon: '📆', group: 'time', who: 'teacher', size: [4, 4], min: [3, 3], words: ['today', 'coming', 'none', 'addMark', 'day', 'label', 'remove'], settings: [
     { key: 'marks', type: 'marks', def: [] }] },
   { id: 'symbols', icon: '🤫', group: 'class', who: 'teacher', size: [3, 3], min: [3, 3], words: ['change'], settings: [
@@ -167,8 +172,6 @@ export const WIDGETS = [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
     { key: 'scores', type: 'scores', hidden: true, def: [] }] },
-  { id: 'stickers', icon: '⭐', group: 'show', who: 'teacher', size: [4, 3], min: [3, 3], words: ['add', 'remove', 'clear', 'empty'], settings: [
-    { key: 'stamps', type: 'stamps', hidden: true, def: [] }] },
   { id: 'tiles', icon: '🧩', group: 'oomba', who: 'teacher', size: [6, 3], min: [3, 2], words: ['empty', 'add', 'games', 'lessons', 'remove', 'gone'], settings: [
     { key: 'tiles', type: 'tiles', def: [] }] },
   // ---- stage 3: teaching tools (group teach). Each student gets their own copy when the teacher sends one; never
@@ -222,6 +225,32 @@ export const WIDGETS = [
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
+/** Types that are now a mode of another widget: the old id, the widget it became and the settings it gets there. */
+export const RETIRED = { stopwatch: { type: 'timer', s: { mode: 'stopwatch' } } };
+/** One stored or sent widget with a retired type -> the widget it is now (same id, so its running state, pins and
+ *  student places still match; its box grows to the new type's smallest size if it must). Anything else is unchanged. */
+export function migrateWidget(w) {
+  const r = w && typeof w === 'object' && Object.hasOwn(RETIRED, w.type) ? RETIRED[w.type] : null;
+  if (!r) return w;
+  const type = widgetType(r.type);
+  const box = Number.isFinite(w.w) ? cleanBox(type, w) : {};
+  return { ...w, type: type.id, ...box, s: cleanSettings(type, { ...(w.s && typeof w.s === 'object' ? w.s : {}), ...r.s }) };
+}
+export function migrateWidgets(list) {
+  if (!Array.isArray(list)) return [];
+  const out = list.map(migrateWidget);
+  // A widget that grew pushes the ones it now overlaps down (as the browser does when one is moved or resized).
+  out.forEach((w, i) => { if (w !== list[i] && (w.w !== list[i].w || w.h !== list[i].h || w.x !== list[i].x)) settleBoxes(out, w); });
+  return out;
+}
+const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+function settleBoxes(list, moved) {
+  const queue = [moved]; let guard = 0;
+  while (queue.length && guard++ < 500) {
+    const a = queue.shift();
+    for (const b of list) if (b !== a && b !== moved && Number.isFinite(b.y) && overlaps(a, b)) { b.y = Math.min(MAX_ROWS - 1, a.y + a.h); queue.push(b); }
+  }
+}
 export const COLS = 12, MAX_ROWS = 24, MAX_H = 8, MAX_WIDGETS = 24, MAX_LAYOUTS = 12;
 export const canAdd = (type, role) => !!type && (type.who === 'both' || type.who === role);
 /** Whether a teacher may pin this type on student screens (the picker, the noise meter, QR and checks never are). */
@@ -254,9 +283,7 @@ export const cleanText = (v, max, multi = false) => {
   if (multi) s = s.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n');
   return [...s.trim()].slice(0, max).join('');
 };
-export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_STAMPS = 30, MAX_SCORE = 9999;
-/** How many stickers the fixed Oomba set has (public/js/dash-widgets.js STAMPS; no uploads). */
-export const STAMP_COUNT = 20;
+export const MAX_PERIODS = 16, MAX_TILES = 12, MAX_MARKS = 40, MAX_TEAMS = 8, MAX_SCORE = 9999;
 const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
 /** A real calendar day as YYYY-MM-DD, or ''. */
 export const cleanDate = v => { const m = YMD.exec(String(v ?? '')); if (!m) return ''; const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] && +m[1] >= 2000 && +m[1] <= 2100 ? m[0] : ''; };
@@ -270,12 +297,24 @@ export function cleanMarks(v) {
   }
   return [...out.values()].sort((a, b) => (a.date < b.date ? -1 : 1));
 }
+export const MAX_EVENTS = 8;
+/** Countdown events: a label (60 characters), a real day and an optional time (HH:MM, '' for the whole day), at most
+ *  MAX_EVENTS, soonest first (a row with a label and no day yet keeps its place at the end; an empty row is dropped).
+ *  A countdown saved before it held a list ({ label, date, time }) comes as one event: nothing is lost. */
+export function cleanEvents(v, old = {}) {
+  const src = Array.isArray(v) ? v : v === undefined && old && typeof old === 'object' && ('date' in old || 'label' in old) ? [old] : [];
+  const out = [];
+  for (const x of src) {
+    if (out.length >= MAX_EVENTS) break;
+    if (!x || typeof x !== 'object') continue;
+    const label = cleanText(x.label, 60), date = cleanDate(x.date), time = HHMM.test(String(x.time ?? '')) ? String(x.time) : '';
+    if (label || date) out.push({ label, date, time });
+  }
+  const key = e => (e.date ? `${e.date} ${e.time || '00:00'}` : '~');
+  return out.map((e, i) => [e, i]).sort(([a, i], [b, j]) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : i - j)).map(([e]) => e);
+}
 /** Scoreboard points: whole numbers, one per team. */
 export const cleanScores = v => (Array.isArray(v) ? v : []).slice(0, MAX_TEAMS).map(n => { const x = Math.round(Number(n)); return Number.isFinite(x) ? Math.max(-MAX_SCORE, Math.min(MAX_SCORE, x)) : 0; });
-/** Stickers: which one of the fixed set and where (percent of the widget). */
-export const cleanStamps = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').slice(0, MAX_STAMPS)
-  .map(x => ({ e: Number(x.e), x: Math.round(Number(x.x)), y: Math.round(Number(x.y)) }))
-  .filter(x => Number.isInteger(x.e) && x.e >= 0 && x.e < STAMP_COUNT && x.x >= 0 && x.x <= 100 && x.y >= 0 && x.y <= 100);
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 const ZONES = new Set(typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : []);
 export const isZone = z => { if (ZONES.has(z)) return true; try { new Intl.DateTimeFormat('en', { timeZone: String(z) }); return /^[A-Za-z_]+\/[A-Za-z_/+-]+$/.test(String(z)); } catch { return false; } };
@@ -352,8 +391,8 @@ export function cleanSettings(type, s = {}) {
     else if (f.type === 'date') out[f.key] = cleanDate(v);
     else if (f.type === 'hhmm') out[f.key] = HHMM.test(String(v ?? '')) ? String(v) : f.def;
     else if (f.type === 'marks') out[f.key] = cleanMarks(v);
+    else if (f.type === 'events') out[f.key] = cleanEvents(v, src);
     else if (f.type === 'scores') out[f.key] = cleanScores(v);
-    else if (f.type === 'stamps') out[f.key] = cleanStamps(v);
     else if (f.type === 'tool') out[f.key] = cleanToolState(type.id, v);
     else if (f.type === 'pic') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
     // stage 5
@@ -375,9 +414,10 @@ export function cleanBox(type, b = {}) {
 /** A layout's widgets as a browser sent them -> what may be stored. role: whose screen ('teacher' may pin). */
 export function cleanWidgets(list, role) {
   const out = [], seen = new Set();
-  for (const raw of Array.isArray(list) ? list : []) {
+  for (let raw of Array.isArray(list) ? list : []) {
     if (out.length >= MAX_WIDGETS) break;
     if (!raw || typeof raw !== 'object') continue;
+    raw = migrateWidget(raw);
     const type = widgetType(raw.type);
     if (!canAdd(type, role) || !ID.test(String(raw.id || '')) || seen.has(raw.id)) continue;
     seen.add(raw.id);
@@ -419,7 +459,13 @@ export const roleOf = (u, c) => (isTeacher(u, c) ? 'teacher' : isStudent(u, c) ?
 
 // ---------------------------------------------------------------- teacher layouts
 const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_at, created_at, updated_at';
-const readLayout = r => (r ? { ...r, widgets: json(r.widgets, []), bg: json(r.bg, DEFAULT_BG) } : null);
+/** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
+ *  when read (after old stopwatches become timers: migrateWidgets), so old layouts, pins and student screens keep loading with everything else as it was. */
+const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
+/** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
+ *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
+const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
+const readLayout = r => (r ? { ...r, widgets: upgradeWidgets(known(migrateWidgets(json(r.widgets, [])))), bg: json(r.bg, DEFAULT_BG) } : null);
 export const getLayout = id => readLayout(q.get(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE id=?`, String(id || '')));
 export const layoutsOf = (classId, ownerId) => q.all(`SELECT ${LAYOUT_COLS} FROM dash_layouts WHERE class_id=? AND owner_id=? ORDER BY position, created_at`, classId, ownerId).map(readLayout);
 export const classState = classId => q.get('SELECT * FROM dash_class WHERE class_id=?', classId) || { class_id: classId, layout_id: null, pins: '[]', pins_at: 0, eyes_until: 0, eyes_by: null, eyes_at: 0 };
@@ -462,6 +508,10 @@ export function updateLayout(u, c, id, { name, widgets, bg } = {}) {
   const w = widgets === undefined ? l.widgets : ownPictures(cleanWidgets(widgets, 'teacher'), u, c);
   const b = bg === undefined ? l.bg : cleanBg(bg, u, c.id);
   q.run('UPDATE dash_layouts SET name=?, widgets=?, bg=?, updated_at=? WHERE id=?', n, JSON.stringify(w), JSON.stringify(b), now(), id);
+  // A timer switched between counting down and counting up starts again from nothing: its old run is dropped.
+  const was = new Map(l.widgets.filter(x => x.type === 'timer').map(x => [x.id, x.s.mode]));
+  const switched = w.filter(x => x.type === 'timer' && was.has(x.id) && was.get(x.id) !== x.s.mode).map(x => x.id);
+  if (switched.length) dropTimers(c.id, switched);
   if (classState(c.id).layout_id === id) publishPins(c.id, w);
   return { layout: getLayout(id) };
 }
@@ -523,11 +573,11 @@ export const LAYOUT_TEMPLATES = [
     ['light', [6, 0, 3, 3], { color: 'red', ...lightWords(t) }],
     ['symbols', [9, 0, 3, 3], { mode: 'silent' }],
     ['breathe', [6, 3, 6, 4], { pace: 'calm' }]] },
-  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: () => [
+  { id: 'fun', icon: '🎉', bg: { kind: 'art', id: 'sparks' }, widgets: t => [
     ['picker', [0, 0, 5, 5], { mode: 'wheel', source: 'class' }],
     ['video', [5, 0, 4, 4]],
     ['dice', [9, 0, 3, 4], { count: 2 }],
-    ['stickers', [0, 5, 5, 3], { stamps: [{ e: 0, x: 10, y: 28 }, { e: 3, x: 28, y: 66 }, { e: 7, x: 47, y: 26 }, { e: 11, x: 66, y: 64 }, { e: 5, x: 86, y: 30 }] }],
+    ['score', [0, 5, 5, 3], { mode: 'teams', teams: t('dash.tpl.group.teams') }],
     ['breathe', [5, 4, 4, 4], { pace: 'calm' }],
     ['timer', [9, 4, 3, 4], { minutes: 3, view: 'ring', chime: true }]] },
 ];
@@ -560,13 +610,17 @@ function publishPins(classId, widgets) {
   if (classState(classId).pins === pins) return;
   q.run('UPDATE dash_class SET pins=?, pins_at=? WHERE class_id=?', pins, Math.max(now(), (classState(classId).pins_at || 0) + 1), classId);
 }
-export const pinsOf = classId => json(classState(classId).pins, []);
+export const pinsOf = classId => upgradeWidgets(known(migrateWidgets(json(classState(classId).pins, []))));
 
 // ---------------------------------------------------------------- student screens
 export function studentState(classId, userId) {
   const r = q.get('SELECT widgets, pins, bg FROM dash_students WHERE class_id=? AND user_id=?', classId, userId);
   if (!r) return { widgets: [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2, s: cleanSettings(widgetType('clock')) }], pins: {}, bg: { kind: 'color', id: 'sky' }, fresh: true };
-  return { widgets: json(r.widgets, []), pins: json(r.pins, {}), bg: json(r.bg, DEFAULT_BG) };
+  // Where the student moved each pinned widget, at least that widget's smallest size now (an old stopwatch's box
+  // grew when it became a timer).
+  const pins = json(r.pins, {}), types = new Map(pinsOf(classId).map(x => [x.id, widgetType(x.type)]));
+  for (const [id, box] of Object.entries(pins)) { const type = types.get(id); if (type && box && typeof box === 'object' && (box.w < type.min[0] || box.h < type.min[1])) pins[id] = cleanBox(type, box); }
+  return { widgets: known(migrateWidgets(json(r.widgets, []))), pins, bg: json(r.bg, DEFAULT_BG) };
 }
 /** A student saves their screen: their own widgets (types students may add), where they put the pinned ones (a place
  *  only: pinned widgets can't be removed or changed), and their background. */
@@ -744,7 +798,7 @@ export const eyesOf = (classId, t = now()) => { const st = classState(classId); 
 export function liveState(c, u, role) {
   const st = classState(c.id), t = now();
   const teacher = role === 'teacher';
-  const pins = json(st.pins, []);
+  const pins = known(migrateWidgets(json(st.pins, [])));
   const shown = teacher ? [...((currentLayout(u, c) || {}).widgets || []), ...pins] : pins;
   const timers = json(st.timers, {});
   const pinnedTimers = new Set(pins.filter(w => TIMER_TYPES.includes(w.type)).map(w => w.id));
@@ -774,8 +828,18 @@ function teacherWidget(u, c, wid, types) {
 // ---------------------------------------------------------------- timers and stopwatches
 // A teacher's timer is stored as a start time and a duration ({ mode, dur, base, start, on }), never a ticking value:
 // every screen works out what is left from the server's clock (liveState.now), so they all agree.
+// 'stopwatch' stays here for pins a student's browser still holds from before the two were combined.
 export const TIMER_TYPES = ['timer', 'stopwatch'];
 export const MAX_TIMER_MS = 3 * 3600e3;
+/** A timer's state mode for its widget: 'down' (timer mode) or 'up' (stopwatch mode). */
+export const timerMode = w => (w.type === 'stopwatch' || (w.s && w.s.mode === 'stopwatch') ? 'up' : 'down');
+/** Forget these timers' runs (a timer switched mode). */
+function dropTimers(classId, ids) {
+  const all = json(classState(classId).timers, {});
+  if (!ids.some(id => Object.hasOwn(all, id))) return;
+  for (const id of ids) delete all[id];
+  q.run('UPDATE dash_class SET timers=? WHERE class_id=?', JSON.stringify(all), classId);
+}
 /** What a timer shows at server time t: { elapsed, left (countdowns), done }. */
 export function timerView(st, t = now()) {
   const elapsed = Math.max(0, (st.base || 0) + (st.on ? t - st.start : 0));
@@ -786,7 +850,8 @@ export function timerView(st, t = now()) {
 export function timerAction(u, c, wid, { action, ms } = {}, t = now()) {
   const w = teacherWidget(u, c, wid, TIMER_TYPES); if (!w) return { error: 'notFound' };
   const all = json(classState(c.id).timers, {});
-  const down = w.type === 'timer';
+  const down = timerMode(w) === 'down';
+  // A run of the other mode (the widget was switched) is never carried over: it starts from nothing.
   const cur = all[w.id] && all[w.id].mode === (down ? 'down' : 'up') ? all[w.id] : { mode: down ? 'down' : 'up', dur: down ? (w.s.minutes || 5) * 60e3 : 0, base: 0, start: 0, on: false };
   const v = timerView(cur, t);
   if (action === 'start') { if (!cur.on) { if (down && v.done) cur.base = 0; cur.start = t; cur.on = true; } }

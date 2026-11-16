@@ -9027,9 +9027,10 @@
         }
       },
       "timer": {
-        "name": "Minuteur",
-        "desc": "Compte à rebours en gros chiffres, avec une barre de temps.",
+        "name": "Minuteur et chronomètre",
+        "desc": "Compte à rebours ou chronomètre, en gros chiffres.",
         "s": {
+          "mode": "Mode",
           "minutes": "Minutes au départ",
           "chime": "Petit carillon à la fin",
           "bar": "Afficher la barre de temps",
@@ -9047,7 +9048,14 @@
         "left": "Encore {time}",
         "presets": "Durées rapides",
         "mins": "{n} minutes",
+        "mode": "Minuteur ou chronomètre",
+        "toTimer": "Minuteur : compte à rebours",
+        "toStopwatch": "Chronomètre : compte à partir de zéro",
         "o": {
+          "mode": {
+            "timer": "Minuteur",
+            "stopwatch": "Chronomètre"
+          },
           "view": {
             "digits": "Gros chiffres",
             "ring": "Anneau qui rétrécit"
@@ -9250,18 +9258,23 @@
       },
       "countdown": {
         "name": "Compte à rebours jusqu’à un jour",
-        "desc": "Les jours et les heures avant une sortie, un spectacle ou les vacances.",
+        "desc": "Les jours et les heures avant des sorties, des spectacles ou les vacances : un ou plusieurs sur la même carte.",
         "s": {
-          "label": "Ce qui arrive",
-          "date": "Jour",
-          "time": "Heure"
+          "events": "Comptes à rebours"
         },
         "empty": "Choisis le jour dans Modifier l’écran.",
         "days": "Jours",
         "hours": "Heures",
         "mins": "Minutes",
         "today": "C’est aujourd’hui !",
-        "past": "Ce jour est passé."
+        "past": "Ce jour est passé.",
+        "label": "Ce qui arrive",
+        "day": "Jour",
+        "time": "Heure (facultative)",
+        "addEvent": "Ajouter un compte à rebours",
+        "remove": "Retirer",
+        "event": "Compte à rebours {n}",
+        "full": "Une carte contient jusqu’à {n} comptes à rebours."
       },
       "calendar": {
         "name": "Calendrier",
@@ -9391,17 +9404,6 @@
         "r_responsible": "Responsabilité",
         "r_brave": "Oser essayer",
         "r_creative": "Bonnes idées"
-      },
-      "stickers": {
-        "name": "Autocollants",
-        "desc": "Des autocollants Oomba à mettre sur l’écran.",
-        "s": {
-          "stamps": "Autocollants"
-        },
-        "add": "Ajouter un autocollant",
-        "remove": "Retirer {e}",
-        "clear": "Tout retirer",
-        "empty": "Touche un autocollant en dessous pour le mettre ici."
       },
       "fractions": {
         "name": "Bandes de fractions",
@@ -9892,7 +9894,8 @@
         "moved": "{l} déplacée à la place {n}",
         "hint": "Touche ou fais glisser des lettres pour construire un mot.",
         "onset": "?",
-        "full": "Le mot est complet."
+        "full": "Le mot est complet.",
+        "instr": "Fais glisser ou touche des lettres pour les mettre dans la case et former un mot."
       },
       "organizer": {
         "name": "Organisateur graphique",
@@ -9928,7 +9931,12 @@
         "step": "Étape {n}",
         "editHint": "Touche une case pour écrire dedans.",
         "note": "Ce que tu écris reste sur cet écran et dans les copies que tu envoies. Les copies des élèves sont à eux : ce qu’ils écrivent ne revient jamais.",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "addStep": "Ajouter une étape",
+        "addDetail": "Ajouter un détail",
+        "remove": "Enlever {name}",
+        "added": "Ajouté : {name}",
+        "removed": "Enlevé : {name}"
       },
       "map": {
         "name": "Cartes",

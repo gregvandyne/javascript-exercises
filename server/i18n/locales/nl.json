@@ -9028,9 +9028,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Telt af met grote cijfers en een tijdbalk.",
+        "name": "Timer en stopwatch",
+        "desc": "Telt af of op met grote cijfers.",
         "s": {
+          "mode": "Modus",
           "minutes": "Minuten bij de start",
           "chime": "Zacht belletje aan het eind",
           "bar": "Tijdbalk tonen",
@@ -9048,7 +9049,14 @@
         "left": "Nog {time}",
         "presets": "Snelle tijden",
         "mins": "{n} minuten",
+        "mode": "Timer of stopwatch",
+        "toTimer": "Timer: telt af",
+        "toStopwatch": "Stopwatch: telt op vanaf nul",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stopwatch"
+          },
           "view": {
             "digits": "Grote cijfers",
             "ring": "Krimpende ring"
@@ -9251,18 +9259,23 @@
       },
       "countdown": {
         "name": "Aftellen naar een dag",
-        "desc": "Dagen en uren tot een uitje, een voorstelling of de vakantie.",
+        "desc": "Dagen en uren tot uitjes, voorstellingen of vakanties: één of meer op één kaart.",
         "s": {
-          "label": "Wat er komt",
-          "date": "Dag",
-          "time": "Tijd"
+          "events": "Aftellers"
         },
         "empty": "Kies de dag bij Scherm bewerken.",
         "days": "Dagen",
         "hours": "Uren",
         "mins": "Minuten",
         "today": "Het is vandaag!",
-        "past": "Die dag is al voorbij."
+        "past": "Die dag is al voorbij.",
+        "label": "Wat er komt",
+        "day": "Dag",
+        "time": "Tijd (mag leeg)",
+        "addEvent": "Afteller toevoegen",
+        "remove": "Weghalen",
+        "event": "Afteller {n}",
+        "full": "Op één kaart passen tot {n} aftellers."
       },
       "calendar": {
         "name": "Kalender",
@@ -9392,17 +9405,6 @@
         "r_responsible": "Verantwoordelijk",
         "r_brave": "Iets nieuws proberen",
         "r_creative": "Goede ideeën"
-      },
-      "stickers": {
-        "name": "Stickers",
-        "desc": "Leuke Oomba-stickers voor op het scherm.",
-        "s": {
-          "stamps": "Stickers"
-        },
-        "add": "Sticker toevoegen",
-        "remove": "{e} weghalen",
-        "clear": "Allemaal weghalen",
-        "empty": "Tik hieronder op een sticker om hem hier te zetten."
       },
       "fractions": {
         "name": "Breukenstroken",
@@ -9893,7 +9895,8 @@
         "moved": "{l} naar plek {n} verplaatst",
         "hint": "Tik of sleep letters om een woord te bouwen.",
         "onset": "?",
-        "full": "Het woord is vol."
+        "full": "Het woord is vol.",
+        "instr": "Sleep of tik letters naar het vak om een woord te maken."
       },
       "organizer": {
         "name": "Grafische organizer",
@@ -9929,7 +9932,12 @@
         "step": "Stap {n}",
         "editHint": "Tik een vak aan om erin te schrijven.",
         "note": "Wat je schrijft blijft op dit scherm en in de kopieën die je stuurt. De kopieën van leerlingen zijn van hen: wat zij schrijven komt nooit terug.",
-        "save": "Opslaan"
+        "save": "Opslaan",
+        "addStep": "Stap erbij",
+        "addDetail": "Detail erbij",
+        "remove": "{name} weghalen",
+        "added": "{name} erbij gezet",
+        "removed": "{name} weggehaald"
       },
       "map": {
         "name": "Kaarten",

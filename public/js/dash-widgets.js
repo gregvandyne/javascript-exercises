@@ -2,7 +2,7 @@
 // settings). A renderer gets the widget's body element, its settings and ctx, and may return { tick(date) } (called
 // once a second), { live(state) } (called after each /live check, every 4 s while the screen is in view) and
 // { destroy() } (the widget is redrawn or goes away). Stage 2 adds the everyday widgets (docs/decisions.md
-// "Classroom dashboards, stage 2"): timer, stopwatch, schedule, weather, QR, picker, noise meter, help queue, quick
+// "Classroom dashboards, stage 2"): timer (with its stopwatch mode), schedule, weather, QR, picker, noise meter, help queue, quick
 // checks and Oomba tiles.
 // ctx: { type (with the translated words), intl, role, id, tz, teacher (the class's teacher's own widget), pinned (a
 // student seeing the teacher's pinned widget), own (a student's own widget), editing, reduced() (reduced motion),
@@ -156,19 +156,46 @@ function chime() {
     }
   } catch { /* no sound: fine */ }
 }
-const localTimers = new Map();
-const RING = 2 * Math.PI * 44;   // a student's own timers (their browser only)
-function runner(body, s, ctx, down) {
+const localTimers = new Map();   // a student's own timers (their browser only)
+const RING = 2 * Math.PI * 44;
+// The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): s.mode 'timer'
+// counts down, 'stopwatch' counts up. Whoever controls it switches with the two buttons at the top; a switch drops
+// the run it had (the server does the same when the layout is saved), so nothing carries over from the other mode.
+const MODE_ICONS = { timer: '⏳', stopwatch: '⏱️' };
+function timer(body, s, ctx) {
   const W = ctx.type.words;
+  const down = s.mode !== 'stopwatch', mode = down ? 'down' : 'up';
   const control = ctx.teacher || ctx.own;
-  const fresh = () => ({ mode: down ? 'down' : 'up', dur: (s.minutes || 5) * 60e3, base: 0, start: 0, on: false });
+  const fresh = () => ({ mode, dur: (s.minutes || 5) * 60e3, base: 0, start: 0, on: false });
   const state = () => {
-    if (ctx.own) { if (!localTimers.has(ctx.id)) localTimers.set(ctx.id, fresh()); return localTimers.get(ctx.id); }
+    if (ctx.own) { const mine = localTimers.get(ctx.id); if (!mine || mine.mode !== mode) localTimers.set(ctx.id, fresh()); return localTimers.get(ctx.id); }
     const st = (ctx.live().timers || {})[ctx.id];
-    return st && st.mode === (down ? 'down' : 'up') ? st : fresh();
+    return st && st.mode === mode ? st : fresh();
   };
   const clockNow = () => (ctx.own ? Date.now() : ctx.now());
-  body.classList.add('dw-timer');
+  body.classList.add('dw-timer', `dw-timer-${s.mode === 'stopwatch' ? 'stopwatch' : 'timer'}`);
+  if (control) {
+    const f = ctx.type.settings.find(x => x.key === 'mode');
+    const modes = el('div', 'dw-modes'); modes.setAttribute('role', 'group'); modes.setAttribute('aria-label', W.mode);
+    for (const m of f.options) {
+      const b = btn('', 'btn btn-sm dw-mode');
+      const ic = el('span', 'dw-modeicon', MODE_ICONS[m]); ic.setAttribute('aria-hidden', 'true');
+      b.append(ic, el('span', 'dw-modetext', f.labels[m]));
+      b.title = m === 'stopwatch' ? W.toStopwatch : W.toTimer;
+      b.setAttribute('aria-pressed', String(m === (down ? 'timer' : 'stopwatch')));
+      b.addEventListener('click', async () => {
+        if (m === (down ? 'timer' : 'stopwatch')) return;
+        if (ctx.own) localTimers.delete(ctx.id);
+        else { const live = ctx.live(); if (live.timers) { const { [ctx.id]: gone, ...rest } = live.timers; live.timers = rest; } }
+        ctx.set('mode', m);
+        ctx.say(m === 'stopwatch' ? W.toStopwatch : W.toTimer);
+        await ctx.flush();
+      });
+      modes.appendChild(b);
+    }
+    body.appendChild(modes);
+  }
+  const main = body.appendChild(el('div', 'dw-tmain'));
   const digits = el('div', 'dw-digits'); digits.setAttribute('role', 'timer');
   const doneMsg = el('div', 'dw-done', W.done || ''); doneMsg.hidden = true; doneMsg.setAttribute('role', 'status');
   const ringView = down && s.view === 'ring';
@@ -184,9 +211,9 @@ function runner(body, s, ctx, down) {
     arc = svgEl('circle', { cx: 50, cy: 50, r: 44, class: 'dw-ringfg', 'stroke-dasharray': RING, transform: 'rotate(-90 50 50)' });
     svg.appendChild(arc);
     wrap.append(svg, digits);
-    body.append(wrap, doneMsg);
-  } else body.append(digits, doneMsg);
-  if (bar) body.appendChild(bar);
+    main.append(wrap, doneMsg);
+  } else main.append(digits, doneMsg);
+  if (bar) main.appendChild(bar);
   let go = null;
   if (control) {
     if (down) {
@@ -194,7 +221,7 @@ function runner(body, s, ctx, down) {
       for (const m of [1, 2, 5, 10]) { const b = btn(`${m}`, 'btn btn-sm dw-pre', fill(W.mins, { n: m })); b.addEventListener('click', () => act('set', m * 60e3)); pre.appendChild(b); }
       const cb = btn(W.custom, 'btn btn-sm dw-pre'); cb.setAttribute('aria-expanded', 'false');
       pre.appendChild(cb);
-      body.appendChild(pre);
+      main.appendChild(pre);
       const custom = el('form', 'dw-custom'); custom.hidden = true;
       const mid = `dw-${ctx.id}-m`, sid = `dw-${ctx.id}-s`;
       const lm = el('label', null, W.min); lm.htmlFor = mid;
@@ -209,7 +236,7 @@ function runner(body, s, ctx, down) {
         if (ms >= 1000) { act('set', Math.min(ms, 3 * 3600e3)); custom.hidden = true; cb.setAttribute('aria-expanded', 'false'); cb.focus(); }
       });
       cb.addEventListener('click', () => { custom.hidden = !custom.hidden; cb.setAttribute('aria-expanded', String(!custom.hidden)); if (!custom.hidden) im.focus(); });
-      body.appendChild(custom);
+      main.appendChild(custom);
     }
     const row = el('div', 'dw-row dw-foot');
     go = btn(W.start, 'btn btn-primary dw-go');
@@ -217,7 +244,7 @@ function runner(body, s, ctx, down) {
     go.addEventListener('click', () => act(state().on ? 'pause' : 'start'));
     reset.addEventListener('click', () => act('reset'));
     row.append(go, reset);
-    body.appendChild(row);
+    main.appendChild(row);
   }
   async function act(action, ms) {
     if (ctx.own) {
@@ -251,8 +278,6 @@ function runner(body, s, ctx, down) {
   draw();
   return { tick: draw, live: draw };
 }
-const timer = (body, s, ctx) => runner(body, s, ctx, true);
-const stopwatch = (body, s, ctx) => runner(body, s, ctx, false);
 
 // ---------------------------------------------------------------- the day's schedule (the school's time zone)
 function schedule(body, s, ctx) {
@@ -739,8 +764,8 @@ function tiles(body, s, ctx) {
 }
 
 // ================================================================ stage 2, second part
-// Event countdown, calendar, work symbols, traffic light, dice, random number, group maker, scoreboard, stickers.
-// Widgets the teacher changes with a tap (symbols, light, score, stickers) save through ctx.set(key, value): the
+// Event countdown, calendar, work symbols, traffic light, dice, random number, group maker, scoreboard.
+// Widgets the teacher changes with a tap (symbols, light, score) save through ctx.set(key, value): the
 // layout saves, and a pinned one reaches student screens with the next /live check.
 
 /** Today in a time zone as YYYY-MM-DD. */
@@ -770,29 +795,98 @@ export function makeGroups(names, by, n, rand = Math.random) {
   list.forEach((x, i) => groups[i % k].push(x));
   return groups;
 }
-/** The fixed Oomba sticker set (no uploads). services/dash.js STAMP_COUNT must match. */
-export const STAMPS = ['⭐', '🌟', '🎉', '👏', '💯', '🏆', '🌈', '🔥', '💡', '❤️', '✅', '🎯', '🚀', '🍎', '📚', '✏️', '🌻', '🐸', '🦉', '🎵'];
 const rnd = n => (globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] % n : Math.floor(Math.random() * n));
+
+/** Days from one YYYY-MM-DD to another (calendar days, whatever the clock). */
+const utcDay = ymd => { const [y, m, d] = ymd.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const dayDiff = (a, b) => Math.round((utcDay(b) - utcDay(a)) / 864e5);
+/** How long a past day stays on a card of several countdowns (greyed, at the end) before it drops off. */
+export const PAST_DAYS = 7;
+/** A countdown's events as its card shows them at time now in the school's time zone (docs/decisions.md "Several
+ *  countdowns in one card"): only events with a day; upcoming and today's soonest first, then days gone by in the last
+ *  PAST_DAYS (most recent first). If nothing is left, the latest day gone by alone, so a card of one keeps saying "That
+ *  day has come and gone" as it always did. Each: { label, date, time, at (ms), state: 'coming'|'today'|'past', left
+ *  (ms; 0 once reached), parts ({ days, hours, mins }; an event with no time counts whole days only: hours null) }.
+ *  A countdown saved as one { label, date, time } is read as a list of one. */
+export function countdownEvents(s, now, tz) {
+  const list = Array.isArray(s && s.events) ? s.events : s && s.date ? [{ label: s.label || '', date: s.date, time: s.time || '' }] : [];
+  const today = todayIn(tz, new Date(now));
+  const all = list.filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.date)).map(e => {
+    const at = zonedEpoch(e.date, e.time || '00:00', tz), d = dayDiff(today, e.date);
+    const left = d < 0 ? 0 : e.time ? Math.max(0, at - now) : 0;
+    const state = d < 0 ? 'past' : d === 0 ? 'today' : 'coming';
+    const parts = e.time ? countdownParts(left) : { days: Math.max(0, d), hours: null, mins: null };
+    return { label: e.label || '', date: e.date, time: e.time || '', at, state, left, parts, ago: -d };
+  });
+  const soon = all.filter(e => e.state !== 'past').sort((a, b) => a.at - b.at);
+  const past = all.filter(e => e.state === 'past').sort((a, b) => b.at - a.at);
+  const recent = past.filter(e => e.ago <= PAST_DAYS);
+  return soon.length || recent.length ? [...soon, ...recent] : past.slice(0, 1);
+}
 
 function countdown(body, s, ctx) {
   const W = ctx.type.words;
   body.classList.add('dw-count');
-  if (!s.date) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? W.empty : '')); return null; }
   const tz = ctx.tz || 'America/New_York';
-  const at = zonedEpoch(s.date, s.time, tz);
-  if (s.label) body.appendChild(typed('div', 'dw-countlabel', s.label));
-  const boxes = el('div', 'dw-countboxes');
-  const part = key => { const b = el('div', 'dw-countbox'); const n = b.appendChild(el('b', 'dw-countn')); b.appendChild(el('span', 'dw-countu', W[key])); boxes.appendChild(b); return n; };
-  const nd = part('days'), nh = part('hours'), nm = part('mins');
-  const msg = el('div', 'dw-countmsg'); msg.setAttribute('role', 'status');
-  body.append(boxes, msg);
+  const shown = () => countdownEvents(s, ctx.now(), tz);
+  if (!shown().length) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? W.empty : '')); return null; }
+  const put = (node, text) => { const x = String(text); if (node.textContent !== x) node.textContent = x; };
+  let sig = '', draw = null;
+  const one = () => {
+    // One event: the big boxes, as the countdown has always looked.
+    body.classList.remove('dw-countmany');
+    const label = typed('div', 'dw-countlabel', '');
+    const boxes = el('div', 'dw-countboxes');
+    const part = key => { const b = el('div', 'dw-countbox'); const n = b.appendChild(el('b', 'dw-countn')); b.appendChild(el('span', 'dw-countu', W[key])); boxes.appendChild(b); return [b, n]; };
+    const [, nd] = part('days'), [bh, nh] = part('hours'), [bm, nm] = part('mins');
+    const msg = el('div', 'dw-countmsg'); msg.setAttribute('role', 'status');
+    body.append(label, boxes, msg);
+    return e => {
+      put(label, e.label); label.hidden = !e.label;
+      const timed = !!e.time;
+      if (e.state === 'past' || (e.state === 'today' && !e.left)) { boxes.hidden = true; put(msg, e.state === 'past' ? W.past : W.today); return; }
+      boxes.hidden = false; bh.hidden = bm.hidden = !timed;
+      put(nd, e.parts.days); if (timed) { put(nh, e.parts.hours); put(nm, e.parts.mins); }
+      put(msg, e.state === 'today' ? W.today : '');
+    };
+  };
+  const many = list => {
+    // Several: a list, soonest first; each row its label, its day and how long is left (days, or hours and minutes
+    // once it is less than a day away). Days gone by are greyed at the end. The list scrolls by whole rows.
+    body.classList.add('dw-countmany');
+    const ol = el('ol', 'dw-countlist dw-scroll');
+    const dayFmt = new Intl.DateTimeFormat(ctx.intl, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+    const timeFmt = new Intl.DateTimeFormat(ctx.intl, { hour: 'numeric', minute: '2-digit', timeZone: tz });
+    const rows = list.map(e => {
+      const li = el('li', `dw-countrow is-${e.state}`);
+      const what = li.appendChild(el('div', 'dw-countwhat'));
+      if (e.label) what.appendChild(typed('span', 'dw-countname', e.label));
+      // Under the label: its day (and time); "It's today!" on the day; a day gone by says so. With no label, the day leads.
+      const day = dayFmt.format(utcDay(e.date)), word = e.state === 'today' ? W.today : e.state === 'past' ? W.past : '';
+      what.appendChild(el('span', 'dw-countwhen', word ? (e.label ? word : `${day} · ${word}`) : `${day}${e.time ? ` · ${timeFmt.format(e.at)}` : ''}`));
+      const val = li.appendChild(el('div', 'dw-countval'));
+      const pair = key => { const p = el('span', 'dw-countpair'); const n = p.appendChild(el('b', 'dw-countn')); p.appendChild(el('span', 'dw-countu', W[key])); val.appendChild(p); return n; };
+      const a = pair('days'), b = pair('hours');
+      ol.appendChild(li);
+      return x => {
+        const done = x.state === 'past' || (x.state === 'today' && !x.left);
+        val.hidden = done;
+        if (done) return;
+        const close = !!x.time && x.parts.days === 0;
+        // Days (and hours when it has a time), or hours and minutes once it is less than a day away.
+        put(a.nextSibling, close ? W.hours : W.days); put(b.nextSibling, close ? W.mins : W.hours);
+        put(a, close ? x.parts.hours : x.parts.days); b.parentNode.hidden = !x.time; if (x.time) put(b, close ? x.parts.mins : x.parts.hours);
+      };
+    });
+    body.appendChild(ol);
+    return xs => xs.forEach((x, i) => rows[i](x));
+  };
   const tick = () => {
-    const now = ctx.now(), left = at - now;
-    const today = todayIn(tz, new Date(now)) === s.date;
-    if (left <= 0) { boxes.hidden = true; msg.textContent = today ? W.today : W.past; return; }
-    const p = countdownParts(left);
-    boxes.hidden = false; nd.textContent = p.days; nh.textContent = p.hours; nm.textContent = p.mins;
-    msg.textContent = today ? W.today : '';
+    const list = shown();
+    // Rebuilt only when what is listed changes (an event reached, a day gone by): the numbers change in place.
+    const next = list.map(e => `${e.date}|${e.time}|${e.label}|${e.state}|${e.state === 'today' && !e.left}`).join('\n');
+    if (next !== sig) { sig = next; body.textContent = ''; draw = list.length > 1 ? many(list) : list.length ? one() : null; if (!list.length) body.appendChild(el('p', 'dw-empty', '')); }
+    if (draw) draw(list.length > 1 ? list : list[0]);
   };
   tick();
   return { tick };
@@ -999,42 +1093,5 @@ function score(body, s, ctx) {
   return null;
 }
 
-function stickers(body, s, ctx) {
-  const W = ctx.type.words;
-  body.classList.add('dw-stickers');
-  const area = el('div', 'dw-stickarea');
-  const list = s.stamps || [];
-  const control = ctx.teacher && !ctx.editing;
-  list.forEach((x, i) => {
-    const e = STAMPS[x.e] || '⭐';
-    const sp = el(control ? 'button' : 'span', 'dw-stamp', e);
-    sp.style.setProperty('--x', x.x); sp.style.setProperty('--y', x.y);   // always inside the area (public/css/dash.css)
-    if (control) { sp.type = 'button'; sp.setAttribute('aria-label', fill(W.remove, { e })); sp.addEventListener('click', () => ctx.set('stamps', list.filter((_, j) => j !== i))); }
-    else sp.setAttribute('aria-hidden', 'true');
-    area.appendChild(sp);
-  });
-  body.appendChild(area);
-  if (!list.length && control) area.appendChild(el('p', 'dw-empty', W.empty));
-  if (control) {
-    // Adding: a sheet with the fixed Oomba set only; the widget keeps one row of controls.
-    const row = el('div', 'dw-row dw-foot');
-    const add = btn(`⭐ ${W.add}`, 'btn btn-sm btn-primary');
-    add.disabled = list.length >= 30;
-    add.addEventListener('click', () => {
-      const esc = ctx.esc;
-      const sh = ctx.sheet({ title: W.add, content: `<div class="dw-palette" role="group" aria-label="${esc(W.add)}">${STAMPS.map((e, i) => `<button class="btn dw-palbtn" type="button" data-stamp="${i}" aria-label="${esc(`${W.add}: ${e}`)}">${e}</button>`).join('')}</div>` });
-      sh.el.addEventListener('click', ev => {
-        const b2 = ev.target.closest('[data-stamp]'); if (!b2) return;
-        sh.close();
-        ctx.set('stamps', [...list, { e: +b2.dataset.stamp, x: rnd(101), y: rnd(101) }].slice(0, 30));
-      });
-    });
-    const clear = btn(`🧹 ${W.clear}`, 'btn btn-sm'); clear.disabled = !list.length; clear.addEventListener('click', () => ctx.set('stamps', []));
-    row.append(add, clear);
-    body.appendChild(row);
-  }
-  return null;
-}
-
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, stopwatch, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, stickers, ...TOOLS, ...TOOLS4, ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...TOOLS, ...TOOLS4, ...RENDER5, camera };

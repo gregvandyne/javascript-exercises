@@ -9451,9 +9451,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Count down with big digits and a time bar.",
+        "name": "Timer and stopwatch",
+        "desc": "Count down or count up, with big digits.",
         "s": {
+          "mode": "Mode",
           "minutes": "Starting minutes",
           "chime": "Soft chime at the end",
           "bar": "Show the time bar",
@@ -9471,7 +9472,14 @@
         "left": "{time} left",
         "presets": "Quick times",
         "mins": "{n} minutes",
+        "mode": "Timer or stopwatch",
+        "toTimer": "Timer: counts down",
+        "toStopwatch": "Stopwatch: counts up from zero",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stopwatch"
+          },
           "view": {
             "digits": "Big digits",
             "ring": "Shrinking ring"
@@ -9674,18 +9682,23 @@
       },
       "countdown": {
         "name": "Countdown to a day",
-        "desc": "Days and hours until a field trip, a show or a holiday.",
+        "desc": "Days and hours until field trips, shows or holidays: one or several on one card.",
         "s": {
-          "label": "What's coming",
-          "date": "Day",
-          "time": "Time"
+          "events": "Countdowns"
         },
         "empty": "Pick the day in Edit screen.",
         "days": "Days",
         "hours": "Hours",
         "mins": "Minutes",
         "today": "It's today!",
-        "past": "That day has come and gone."
+        "past": "That day has come and gone.",
+        "label": "What's coming",
+        "day": "Day",
+        "time": "Time (optional)",
+        "addEvent": "Add a countdown",
+        "remove": "Remove",
+        "event": "Countdown {n}",
+        "full": "A card holds up to {n} countdowns."
       },
       "calendar": {
         "name": "Calendar",
@@ -9815,17 +9828,6 @@
         "r_responsible": "Being responsible",
         "r_brave": "Trying something new",
         "r_creative": "Good ideas"
-      },
-      "stickers": {
-        "name": "Stickers",
-        "desc": "Fun Oomba stickers to put on the screen.",
-        "s": {
-          "stamps": "Stickers"
-        },
-        "add": "Add a sticker",
-        "remove": "Take off {e}",
-        "clear": "Take them all off",
-        "empty": "Tap a sticker below to put it here."
       },
       "fractions": {
         "name": "Fraction bars",
@@ -10316,7 +10318,8 @@
         "moved": "{l} moved to place {n}",
         "hint": "Tap or drag letters to build a word.",
         "onset": "?",
-        "full": "The word is full."
+        "full": "The word is full.",
+        "instr": "Drag or tap letters into the box to make a word."
       },
       "organizer": {
         "name": "Graphic organizer",
@@ -10352,7 +10355,12 @@
         "step": "Step {n}",
         "editHint": "Tap a box to write in it.",
         "note": "What you write stays on this screen and in the copies you send. Students' copies are their own: what they write never comes back.",
-        "save": "Save"
+        "save": "Save",
+        "addStep": "Add a step",
+        "addDetail": "Add a detail",
+        "remove": "Take away {name}",
+        "added": "Added {name}",
+        "removed": "Took away {name}"
       },
       "map": {
         "name": "Maps",

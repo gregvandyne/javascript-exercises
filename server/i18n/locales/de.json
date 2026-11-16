@@ -9028,9 +9028,10 @@
         }
       },
       "timer": {
-        "name": "Timer",
-        "desc": "Zählt mit großen Ziffern und einem Zeitbalken rückwärts.",
+        "name": "Timer und Stoppuhr",
+        "desc": "Zählt mit großen Ziffern rückwärts oder vorwärts.",
         "s": {
+          "mode": "Modus",
           "minutes": "Minuten zu Beginn",
           "chime": "Leiser Gong am Ende",
           "bar": "Zeitbalken zeigen",
@@ -9048,7 +9049,14 @@
         "left": "Noch {time}",
         "presets": "Schnelle Zeiten",
         "mins": "{n} Minuten",
+        "mode": "Timer oder Stoppuhr",
+        "toTimer": "Timer: zählt rückwärts",
+        "toStopwatch": "Stoppuhr: zählt ab null vorwärts",
         "o": {
+          "mode": {
+            "timer": "Timer",
+            "stopwatch": "Stoppuhr"
+          },
           "view": {
             "digits": "Große Ziffern",
             "ring": "Schrumpfender Ring"
@@ -9251,18 +9259,23 @@
       },
       "countdown": {
         "name": "Countdown bis zu einem Tag",
-        "desc": "Tage und Stunden bis zum Ausflug, zur Aufführung oder zu den Ferien.",
+        "desc": "Tage und Stunden bis zu Ausflügen, Aufführungen oder Ferien: einer oder mehrere auf einer Karte.",
         "s": {
-          "label": "Was kommt",
-          "date": "Tag",
-          "time": "Uhrzeit"
+          "events": "Countdowns"
         },
         "empty": "Wähle den Tag unter „Bildschirm bearbeiten“.",
         "days": "Tage",
         "hours": "Stunden",
         "mins": "Minuten",
         "today": "Heute ist es so weit!",
-        "past": "Dieser Tag ist schon vorbei."
+        "past": "Dieser Tag ist schon vorbei.",
+        "label": "Was kommt",
+        "day": "Tag",
+        "time": "Uhrzeit (optional)",
+        "addEvent": "Countdown hinzufügen",
+        "remove": "Entfernen",
+        "event": "Countdown {n}",
+        "full": "Eine Karte fasst bis zu {n} Countdowns."
       },
       "calendar": {
         "name": "Kalender",
@@ -9392,17 +9405,6 @@
         "r_responsible": "Verantwortung",
         "r_brave": "Etwas Neues wagen",
         "r_creative": "Gute Ideen"
-      },
-      "stickers": {
-        "name": "Sticker",
-        "desc": "Lustige Oomba-Sticker für den Bildschirm.",
-        "s": {
-          "stamps": "Sticker"
-        },
-        "add": "Sticker hinzufügen",
-        "remove": "{e} entfernen",
-        "clear": "Alle entfernen",
-        "empty": "Tippe unten auf einen Sticker, um ihn hierher zu setzen."
       },
       "fractions": {
         "name": "Bruchstreifen",
@@ -9893,7 +9895,8 @@
         "moved": "{l} an Stelle {n} verschoben",
         "hint": "Tippe oder ziehe Buchstaben, um ein Wort zu bauen.",
         "onset": "?",
-        "full": "Das Wort ist voll."
+        "full": "Das Wort ist voll.",
+        "instr": "Ziehe Buchstaben in den Kasten oder tippe sie an, um ein Wort zu bauen."
       },
       "organizer": {
         "name": "Grafischer Organizer",
@@ -9929,7 +9932,12 @@
         "step": "Schritt {n}",
         "editHint": "Tippe einen Kasten an, um hineinzuschreiben.",
         "note": "Was du schreibst, bleibt auf diesem Bildschirm und in den Kopien, die du schickst. Die Kopien der Kinder gehören ihnen: Was sie schreiben, kommt nie zurück.",
-        "save": "Speichern"
+        "save": "Speichern",
+        "addStep": "Schritt dazu",
+        "addDetail": "Detail dazu",
+        "remove": "{name} wegnehmen",
+        "added": "{name} dazugekommen",
+        "removed": "{name} weggenommen"
       },
       "map": {
         "name": "Karten",
