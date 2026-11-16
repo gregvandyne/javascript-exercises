@@ -95,6 +95,29 @@ test('the registry: every type has a renderer, labels in English, and layouts ar
   assert.equal(D.cleanWidgets(Array.from({ length: 60 }, (_, i) => ({ id: `c${i}`, type: 'clock' })), 'teacher').length, D.MAX_WIDGETS);
 });
 
+test('layouts on a phone: one layout switcher (a nav labelled "Layout", New and ⋯) the page moves to the top on a phone; students have none', async () => {
+  const w = world();
+  const url = `/class/${w.A.id}/dashboard`;
+  const t = (await as(w.T)(url)).text;
+  const sw = t.match(/<div class="dash-switch" id="dash-switch">([\s\S]*?)<\/div>\s*<span class="dash-grow">/);
+  assert.ok(sw, 'the switcher is the footer\'s first part, before Eyes up and Push');
+  assert.match(sw[1], /<span class="dash-lab" id="dash-layouts-l">Layout<\/span>/);
+  assert.match(sw[1], /<nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"><\/nav>/);
+  assert.match(sw[1], /id="dash-layout-new"><span><span aria-hidden="true">➕<\/span> <span class="dash-lnewt">New<\/span><\/span><\/button>/);
+  assert.match(sw[1], /id="dash-layout-more" aria-label="Rename or delete this layout"/);
+  for (const id of ['dash-switch', 'dash-layouts', 'dash-layout-new', 'dash-layout-more', 'dash-eyes-btn', 'dash-push']) assert.equal(t.split(`id="${id}"`).length, 2, `one ${id}`);
+  const s = (await as(w.a1)(url)).text;
+  assert.doesNotMatch(s, /dash-switch|dash-layouts|dash-foot/);
+  // The browser moves the switcher (public/js/dash.js placeSwitcher) at the same width the page turns into one column.
+  const js = fs.readFileSync(new URL('../../public/js/dash.js', import.meta.url), 'utf8'), css = fs.readFileSync(new URL('../../public/css/dash.css', import.meta.url), 'utf8');
+  assert.match(js, /const narrow = matchMedia\('\(max-width: 719px\)'\)/);
+  assert.match(js, /function placeSwitcher\(\)/);
+  assert.match(js, /setAttribute\('aria-current', 'true'\)/);
+  assert.match(css, /\.has-topswitch \.dash-switch\{position:sticky;top:0/);
+  assert.match(css, /\.has-topswitch \.dash-foot\{position:sticky;bottom:0[^}]*env\(safe-area-inset-bottom\)/);
+  assert.match(css, /\.has-topswitch\.is-editing \.dash-switch\{position:static\}/);
+});
+
 test('approved links: https only, no javascript:, data:, http:, credentials, IPs or local names', () => {
   assert.equal(D.cleanUrl('https://example.org/a?b=1#c'), 'https://example.org/a?b=1#c');
   assert.equal(D.cleanUrl('HTTPS://Example.ORG'), 'https://example.org/');

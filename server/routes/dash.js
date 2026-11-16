@@ -131,10 +131,12 @@ function dashPage(req, res, c, role) {
       <button class="btn btn-primary btn-sm" type="button" id="dash-done">✔ ${t('dash.top.done')}</button>
     </header>`;
     foot = html`<footer class="dash-foot" id="dash-foot">
-      <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
-      <div class="dash-layouts" id="dash-layouts" role="group" aria-labelledby="dash-layouts-l"></div>
-      <button class="btn btn-sm" type="button" id="dash-layout-new">➕ ${t('dash.layouts.new')}</button>
-      <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
+      <div class="dash-switch" id="dash-switch">
+        <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
+        <nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"></nav>
+        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span><span aria-hidden="true">➕</span> <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
+        <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
+      </div>
       <span class="dash-grow"></span>
       <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">👀 ${t('dash.foot.eyes')}</button>
       <button class="btn btn-primary btn-sm" type="button" id="dash-push">📤 ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
