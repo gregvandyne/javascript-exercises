@@ -115,7 +115,7 @@ export function renderLanding(req, res) {
 <header class="lp-bar" id="lp-bar">
   <a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a>
   <nav class="lp-nav" aria-label="${t('landing.nav.label')}">
-    <a href="#how" data-cta="how">${t('landing.nav.how')}</a><a href="#builder">${t('landing.nav.builder')}</a><a href="#courses">${t('landing.nav.courses')}</a>${live ? html`<a href="#live">${t('landing.nav.live')}</a>` : ''}<a href="#pricing" data-cta="pricing">${t('landing.nav.pricing')}</a><a href="#faq">${t('landing.nav.faq')}</a>
+    <a href="#how" data-cta="how">${t('landing.nav.how')}</a><a href="#builder">${t('landing.nav.builder')}</a><a class="lp-nav-wide" href="#dashboards"${fb('landing.nav.dashboards')}>${t('landing.nav.dashboards')}</a><a href="#courses">${t('landing.nav.courses')}</a>${live ? html`<a href="#live">${t('landing.nav.live')}</a>` : ''}<a href="#pricing" data-cta="pricing">${t('landing.nav.pricing')}</a><a href="#faq">${t('landing.nav.faq')}</a>
   </nav>
   <div class="lp-actions">
     <a class="lp-signin" href="/login">${t('landing.nav.signIn')}</a>
@@ -184,6 +184,23 @@ export function renderLanding(req, res) {
       <div class="lp-bubble lp-bubble-you" data-depth="-.12"><b>${t('landing.builder.you')}</b><span>${t('landing.builder.msg')}</span><span class="lp-chip">📄 ${t('landing.demo.file')}</span></div>
       <div class="lp-bubble lp-bubble-bot" data-depth=".1"><b>🤖 ${t('landing.demo.builderTag')}</b><span>${t('landing.builder.bot')}</span></div>
       <figcaption>${t('landing.builder.caption')}</figcaption>
+    </figure>
+  </div>
+</section>`;
+
+  // Class dashboards (docs/decisions.md "Classroom dashboards", "Class dashboards on the landing"): the teacher's screen
+  // on the projector with a student's own screen beside it, real captures from scripts/how-shots.js (--only dash).
+  const dashSec = html`<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">
+  <div class="lp-glow lp-glow-b" aria-hidden="true" data-depth="-.2"></div>
+  <div class="lp-wrap lp-split-in">
+    <div class="lp-split-text rv">
+      <p class="lp-eyebrow"${fb('landing.dash.kicker')}>${t('landing.dash.kicker')}</p><h2 id="dash-h"${fb('landing.dash.h')}>${t('landing.dash.h')}</h2><p${fb('landing.dash.lead')}>${t('landing.dash.lead')}</p>
+      <ul class="lp-list">${[1, 2, 3, 4, 5].map(i => html`<li>${check}<span${fb(`landing.dash.li${i}`)}>${t(`landing.dash.li${i}`)}</span></li>`)}</ul>
+      ${cta(TRIAL_URL, t('landing.hero.cta'))}
+    </div>
+    <figure class="lp-device lp-device-live rv">
+      <div class="lp-screen">${shot('dash-teacher', t('landing.dash.shotAlt'))}</div>
+      <div class="lp-phone" data-depth=".16" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="170px" width="390" height="844" alt="" loading="lazy" decoding="async"></div>
     </figure>
   </div>
 </section>`;
@@ -360,7 +377,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${dashSec}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
@@ -423,10 +440,10 @@ function softwareLd(req, t, { description, langs }) {
   const app = {
     '@type': 'SoftwareApplication', '@id': seo.abs(req, '/#app'), name: BRAND, url: seo.abs(req, '/'), description,
     publisher: { '@id': seo.orgId(req) }, image: seo.abs(req, '/og/landing.jpg'),
-    screenshot: ['parents-build', 'live-lobby'].map(n => seo.abs(req, `/img/how/${n}-d-1024.webp`)),
+    screenshot: ['parents-build', 'dash-teacher', 'live-lobby'].map(n => seo.abs(req, `/img/how/${n}-d-1024.webp`)),
     inLanguage: langs, isAccessibleForFree: false,
     audience: [{ '@type': 'EducationalAudience', educationalRole: 'teacher' }, ...seo.audienceLd()],
-    featureList: [1, 2, 3, 4, 5].map(i => t(`landing.builder.li${i}`)).concat([t('landing.pricing.teacher.li1'), t('landing.pricing.teacher.li2')]),
+    featureList: [1, 2, 3, 4, 5].map(i => t(`landing.builder.li${i}`)).concat([t('landing.dash.h'), t('landing.pricing.teacher.li1'), t('landing.pricing.teacher.li2')]),
   };
   if (LANDING_SHOW_PRICE) {
     app.offers = { '@type': 'Offer', name: t('landing.pricing.teacher.name'), price: TEACHER_PRICE.amount, priceCurrency: TEACHER_PRICE.currency, url: seo.abs(req, TRIAL_URL),

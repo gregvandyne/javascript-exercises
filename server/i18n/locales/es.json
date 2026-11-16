@@ -7452,12 +7452,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Nuevo: paneles de clase",
+      "h": "Una sola pantalla para todo el día de clase",
+      "lead": "Proyecta un panel de clase: el reloj, el horario de hoy, el objetivo del día y más de 50 widgets para elegir. Cada estudiante tiene también su propia pantalla, con los widgets que fijes.",
+      "li1": "Diseños listos para la mañana, una lección, el trabajo en grupo, el trabajo en silencio y un descanso divertido, o arrastra widgets al tuyo.",
+      "li2": "Temporizadores, selector de nombres al azar, creador de grupos, medidor de voz, cola de ayuda y preguntas rápidas.",
+      "li3": "Herramientas de matemáticas en la pantalla grande: barras de fracciones, rectas numéricas, geoplanos, bloques de base diez y más.",
+      "li4": "Fija widgets en la pantalla de cada estudiante o envía a la clase un juego, una lección o un enlace con un toque.",
+      "li5": "Sin IA en ninguna parte. Los estudiantes aparecen con su nombre de Oomba, y lo que escribe cada uno se queda en su propia pantalla.",
+      "shotAlt": "Un panel de clase proyectado: el reloj, el objetivo del día, el horario con Matemáticas ahora y Recreo después, los encargos de la clase y un registro de ánimo."
+    },
     "meta": {
       "title": "Convierte tus planes de clase en juegos · Oomba Academy",
       "description": "Aprendizaje basado en juegos para docentes: pega una lección o sube un PDF y el Constructor IA lo convierte en un juego interactivo para tu clase. 14 días gratis, sin tarjeta.",
       "imageAlt": "Oomba Academy para docentes: convierte tus planes de clase en juegos que tu clase pedirá jugar."
     },
     "nav": {
+      "dashboards": "Paneles",
       "label": "Sitio para docentes",
       "home": "Inicio de Oomba Academy",
       "skip": "Ir al contenido",

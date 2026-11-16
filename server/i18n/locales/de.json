@@ -7453,12 +7453,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Neu: Klassen-Dashboards",
+      "h": "Ein Bildschirm für den ganzen Schultag",
+      "lead": "Zeig ein Klassen-Dashboard am Beamer: die Uhr, den Stundenplan, das Ziel des Tages und über 50 Widgets zur Auswahl. Jedes Kind bekommt auch einen eigenen Bildschirm, mit den Widgets, die du anheftest.",
+      "li1": "Fertige Layouts für den Morgen, eine Unterrichtsstunde, Gruppenarbeit, Stillarbeit und eine Spielpause, oder du ziehst Widgets in dein eigenes.",
+      "li2": "Timer, ein Namens-Zufallsgenerator, ein Gruppenmacher, ein Lautstärkemesser, eine Hilfe-Warteschlange und schnelle Abfragen.",
+      "li3": "Mathe-Werkzeuge auf der großen Leinwand: Bruchstreifen, Zahlenstrahlen, Geobretter, Zehnersystem-Blöcke und mehr.",
+      "li4": "Hefte Widgets an jeden Schülerbildschirm oder schick der Klasse mit einem Tippen ein Spiel, eine Lektion oder einen Link.",
+      "li5": "Ganz ohne KI. Kinder erscheinen mit ihren Oomba-Namen, und was ein Kind eintippt, bleibt auf seinem eigenen Bildschirm.",
+      "shotAlt": "Ein Klassen-Dashboard am Beamer: die Uhr, das Ziel des Tages, der Stundenplan mit Mathe jetzt und Pause danach, Klassendienste und eine Stimmungsabfrage."
+    },
     "meta": {
       "title": "Unterrichtsentwürfe in Klassenspiele verwandeln · Oomba Academy",
       "description": "Spielbasiertes Lernen für Lehrkräfte: Stunde einfügen oder PDF hochladen, und der KI-Baumeister macht daraus ein interaktives Spiel für die Klasse. 14 Tage gratis, ohne Karte.",
       "imageAlt": "Oomba Academy für Lehrkräfte: Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse spielen will."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Seite für Lehrkräfte",
       "home": "Oomba Academy Startseite",
       "skip": "Zum Inhalt",

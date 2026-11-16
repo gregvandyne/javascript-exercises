@@ -181,3 +181,21 @@ test('the page works without JavaScript and loads nothing from elsewhere', async
   assert.ok(lazy >= 10, 'pictures below the first screen load lazily');
   assert.match(s, /<figure class="lp-demo" data-stage="done"/, 'the hero shows the whole lesson → game picture before any script');
 });
+
+test('class dashboards: a section with the real screenshots, in every language, linked from the wide top bar', async () => {
+  const fs = await import('node:fs');
+  const s = (await call(null, '/')).text;
+  assert.match(s, /<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">/);
+  assert.match(s, /<a class="lp-nav-wide" href="#dashboards">Dashboards<\/a>/, 'the nav link (shown only where the bar has room for it)');
+  for (const f of ['dash-teacher-d-1024', 'dash-teacher-d-2048', 'dash-student-p-390', 'dash-student-p-780']) {
+    assert.ok(s.includes(`/img/how/${f}.webp`), f);
+    assert.ok(fs.existsSync(new URL(`../../public/img/how/${f}.webp`, import.meta.url)), `${f}.webp is in the repo`);
+  }
+  // Every language has the section's words (no English fallback marks inside it).
+  for (const code of ['de', 'ar', 'ja']) {
+    const page = (await call(null, `/${code}`)).text;
+    const sec = page.slice(page.indexOf('id="dashboards"'), page.indexOf('</section>', page.indexOf('id="dashboards"')));
+    assert.ok(sec.length > 200, code);
+    assert.doesNotMatch(sec, /lang="en"/, `${code}: the dashboards section is translated`);
+  }
+});

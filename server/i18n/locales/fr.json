@@ -7452,12 +7452,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Nouveau : les tableaux de bord de la classe",
+      "h": "Un seul écran pour toute la journée",
+      "lead": "Affichez le tableau de bord de la classe au vidéoprojecteur : l’horloge, l’emploi du temps, l’objectif du jour et plus de 50 widgets au choix. Chaque élève a aussi son propre écran, avec les widgets que vous épinglez.",
+      "li1": "Des mises en page toutes prêtes pour le matin, une leçon, le travail en groupe, le travail en silence et une pause jeu, ou glissez des widgets dans la vôtre.",
+      "li2": "Minuteurs, tirage au sort des prénoms, création de groupes, sonomètre, file d’aide et questions éclair.",
+      "li3": "Des outils de maths sur grand écran : bandes de fractions, droites graduées, géoplans, blocs base dix et plus encore.",
+      "li4": "Épinglez des widgets sur l’écran de chaque élève, ou envoyez à la classe un jeu, une leçon ou un lien en un geste.",
+      "li5": "Aucune IA. Les élèves apparaissent sous leur nom Oomba, et ce qu’un élève écrit reste sur son propre écran.",
+      "shotAlt": "Le tableau de bord de la classe au vidéoprojecteur : l’horloge, l’objectif du jour, l’emploi du temps avec les maths maintenant et la récréation ensuite, les responsabilités de la classe et la météo des émotions."
+    },
     "meta": {
       "title": "Transformez vos cours en jeux pour la classe · Oomba Academy",
       "description": "L’apprentissage par le jeu pour les enseignants : collez une leçon ou envoyez un PDF, le Constructeur IA en fait un jeu interactif pour la classe. 14 jours gratuits, sans carte.",
       "imageAlt": "Oomba Academy pour les enseignants : transformez vos cours en jeux que votre classe réclamera."
     },
     "nav": {
+      "dashboards": "Tableaux de bord",
       "label": "Site enseignants",
       "home": "Accueil d’Oomba Academy",
       "skip": "Aller au contenu",

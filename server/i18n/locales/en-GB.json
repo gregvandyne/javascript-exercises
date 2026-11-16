@@ -740,6 +740,10 @@
     }
   },
   "landing": {
+    "dash": {
+      "li3": "Maths tools on the big screen: fraction bars, number lines, geoboards, base-ten blocks and more.",
+      "shotAlt": "A class dashboard on the projector: the clock, today's goal, the timetable with Maths now and break next, class jobs and a mood check-in."
+    },
     "hero": {
       "kicker": "For teachers · ages 5 to 14"
     },

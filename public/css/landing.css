@@ -93,6 +93,9 @@ main{position:relative;z-index:1}
 .lp-nav a{color:var(--text-2);text-decoration:none;font-weight:600;font-size:15px;padding:8px 12px;border-radius:999px;white-space:nowrap}
 .lp-nav a:hover{color:var(--text);background:rgba(184,179,161,.14)}
 @media (min-width:1120px){.lp-nav{display:flex}}
+/* A link that only fits beside the others on wide screens (Dashboards): the bar never scrolls sideways (landing-audit). */
+.lp-nav .lp-nav-wide{display:none}
+@media (min-width:1500px){.lp-nav .lp-nav-wide{display:inline}}
 .lp-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
 @media (min-width:1120px){.lp-actions{margin-inline-start:0}}
 .lp-signin{display:none;color:var(--text);font-weight:600;font-size:15px;text-decoration:none;padding:8px 10px;border-radius:999px}

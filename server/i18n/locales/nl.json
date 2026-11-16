@@ -7453,12 +7453,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Nieuw: klasdashboards",
+      "h": "Eén scherm voor de hele schooldag",
+      "lead": "Zet een klasdashboard op het digibord: de klok, het rooster van vandaag, het doel van de dag en meer dan 50 widgets om uit te kiezen. Elke leerling krijgt ook een eigen scherm, met de widgets die jij vastzet.",
+      "li1": "Kant-en-klare indelingen voor de ochtend, een les, groepswerk, stil werken en een speelpauze, of sleep widgets naar je eigen indeling.",
+      "li2": "Timers, een namenkiezer, een groepjesmaker, een stemmeter, een hulprij en snelle checks.",
+      "li3": "Rekenmateriaal op het grote scherm: breukenstroken, getallenlijnen, geoborden, MAB-materiaal en meer.",
+      "li4": "Zet widgets vast op het scherm van elke leerling, of stuur de klas met één tik een spel, een les of een link.",
+      "li5": "Nergens AI. Leerlingen staan er met hun Oomba-naam, en wat een leerling typt, blijft op het eigen scherm.",
+      "shotAlt": "Een klasdashboard op het digibord: de klok, het doel van de dag, het rooster met nu Rekenen en daarna Pauze, klassentaken en een gevoelscheck."
+    },
     "meta": {
       "title": "Maak van je lesplannen klassengames · Oomba Academy",
       "description": "Spelend leren voor leerkrachten: plak een les of upload een pdf en de AI-Bouwer maakt er een interactieve game voor de klas van. 14 dagen gratis, zonder creditcard.",
       "imageAlt": "Oomba Academy voor leerkrachten: maak van je lesplannen games die je klas wil spelen."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Site voor leerkrachten",
       "home": "Oomba Academy home",
       "skip": "Naar de inhoud",

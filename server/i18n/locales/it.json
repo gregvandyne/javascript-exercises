@@ -7453,12 +7453,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Novità: le bacheche di classe",
+      "h": "Uno schermo per tutta la giornata a scuola",
+      "lead": "Proietta una bacheca di classe: l’orologio, l’orario di oggi, l’obiettivo del giorno e più di 50 widget tra cui scegliere. Ogni alunno ha anche un suo schermo, con i widget che fissi tu.",
+      "li1": "Layout pronti per la mattina, una lezione, il lavoro di gruppo, il lavoro in silenzio e una pausa gioco, oppure trascina i widget nel tuo.",
+      "li2": "Timer, estrazione casuale dei nomi, creazione dei gruppi, misuratore di voce, coda di aiuto e domande veloci.",
+      "li3": "Strumenti di matematica sul grande schermo: strisce delle frazioni, linee dei numeri, geopiani, blocchi in base dieci e altro.",
+      "li4": "Fissa i widget sullo schermo di ogni studente, o invia alla classe un gioco, una lezione o un link con un tocco.",
+      "li5": "Nessuna IA. Gli studenti compaiono con il loro nome Oomba, e quello che uno studente scrive resta sul suo schermo.",
+      "shotAlt": "Una bacheca di classe proiettata: l’orologio, l’obiettivo del giorno, l’orario con Matematica adesso e Ricreazione dopo, gli incarichi della classe e il termometro delle emozioni."
+    },
     "meta": {
       "title": "Trasforma le tue lezioni in giochi per la classe · Oomba Academy",
       "description": "Apprendimento basato sul gioco per insegnanti: incolla una lezione o carica un PDF e il Costruttore IA la trasforma in un gioco interattivo. 14 giorni gratis, senza carta.",
       "imageAlt": "Oomba Academy per insegnanti: trasforma le tue lezioni in giochi che la classe ti chiederà di rifare."
     },
     "nav": {
+      "dashboards": "Bacheche",
       "label": "Sito per insegnanti",
       "home": "Home di Oomba Academy",
       "skip": "Vai al contenuto",

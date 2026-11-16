@@ -7970,12 +7970,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "New: class dashboards",
+      "h": "One screen for the whole school day",
+      "lead": "Put a class dashboard on the projector: the clock, today's schedule, your goal for the day and more than 50 widgets to choose from. Every student gets a screen of their own too, with the widgets you pin.",
+      "li1": "Ready-made layouts for the morning, a lesson, group work, quiet work and a fun break, or drag widgets into your own.",
+      "li2": "Timers, a random name picker, a group maker, a voice meter, a help queue and quick checks.",
+      "li3": "Math tools on the big screen: fraction bars, number lines, geoboards, base-ten blocks and more.",
+      "li4": "Pin widgets to every student's screen, or send the class a game, a lesson or a link in one tap.",
+      "li5": "No AI anywhere in it. Students show up by their Oomba names, and what a student types stays on their own screen.",
+      "shotAlt": "A class dashboard on the projector: the clock, today's goal, the schedule with Math now and Recess next, class jobs and a mood check-in."
+    },
     "meta": {
       "title": "Turn lesson plans into classroom games · Oomba Academy",
       "description": "Game-based learning for teachers: paste a lesson or upload a PDF and the AI Builder turns it into an interactive classroom game. 14-day free trial, no card.",
       "imageAlt": "Oomba Academy for teachers: turn your lesson plans into games your class begs to play."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Teacher site",
       "home": "Oomba Academy home",
       "skip": "Skip to content",

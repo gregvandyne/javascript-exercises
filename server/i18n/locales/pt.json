@@ -7454,12 +7454,24 @@
     }
   },
   "landing": {
+    "dash": {
+      "kicker": "Novo: painéis da turma",
+      "h": "Uma tela para o dia letivo inteiro",
+      "lead": "Coloque um painel da turma no projetor: o relógio, o horário de hoje, o objetivo do dia e mais de 50 widgets para escolher. Cada aluno também ganha sua própria tela, com os widgets que você fixar.",
+      "li1": "Layouts prontos para a manhã, uma aula, trabalho em grupo, trabalho em silêncio e um intervalo divertido, ou arraste widgets para montar o seu.",
+      "li2": "Cronômetros, sorteio de nomes, criador de grupos, medidor de voz, fila de ajuda e perguntas rápidas.",
+      "li3": "Ferramentas de matemática na tela grande: barras de frações, retas numéricas, geoplanos, material dourado e mais.",
+      "li4": "Fixe widgets na tela de cada aluno ou envie à turma um jogo, uma aula ou um link com um toque.",
+      "li5": "Nenhuma IA. Os alunos aparecem com o nome Oomba, e o que um aluno digita fica na tela dele.",
+      "shotAlt": "Um painel da turma no projetor: o relógio, o objetivo do dia, o horário com Matemática agora e Recreio a seguir, as tarefas da turma e um registro de humor."
+    },
     "meta": {
       "title": "Transforme seus planos de aula em jogos · Oomba Academy",
       "description": "Aprendizagem baseada em jogos para professores: cole uma aula ou envie um PDF e o Construtor IA cria um jogo interativo para a turma. 14 dias grátis, sem cartão.",
       "imageAlt": "Oomba Academy para professores: transforme seus planos de aula em jogos que a turma vai pedir para jogar."
     },
     "nav": {
+      "dashboards": "Painéis",
       "label": "Site para professores",
       "home": "Início da Oomba Academy",
       "skip": "Ir para o conteúdo",

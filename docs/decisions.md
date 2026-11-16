@@ -6786,3 +6786,25 @@ layout of the published puzzle that inspired it, never its puzzle sets or wordin
   Sudoku's do), and whether Rush deserves a leaderboard of its own.
 ## Preferred sources link on the landing page footer
 The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).
+
+## Class dashboards on the landing page (16 Nov 2026)
+Owner: "update the marketing site to showcase the new dashboards."
+- **Where:** a section on "/" (server/routes/landing.js, `#dashboards`) right after the Builder, laid out like the live
+  games section: the words on one side, the teacher's screen with a student's phone screen on top of it on the other.
+  Words under `landing.dash.*` in all 13 languages (en-GB only where the spelling differs: Maths, timetable). Only what
+  the code does: more than 50 widgets (55 in `WIDGETS`), the five ready-made layouts, the tools named in the registry,
+  pinning to student screens and sending a game, lesson or link, no AI, Oomba names, and what a student types staying in
+  their own row ("Classroom dashboards, stage 1"). Dashboards are free, so the button is the usual trial button.
+- **Top bar:** the "Dashboards" link (`.lp-nav-wide`) shows only from 1500px wide, where it fits beside the others in
+  every language; narrower, the section is reached by scrolling. Measured while adding it: in German, French, Russian,
+  Dutch, Spanish and Italian the bar was already wider than the window at 1180 to 1280px (Russian to 1440px) without
+  it. Not changed here.
+- **Pictures:** real captures by scripts/how-shots.js (`--only dash`): Ms. Rivera's demo class on the "Morning start"
+  layout, three demo students' moods checked in, the teacher's screen (desktop) and Pixel Panda's own screen
+  (phone), with the usual price and demo-name checks. So the clock and "now and next" show a school morning on any day
+  the script is run, the server for these shots runs with its clock moved ahead to 9:20 in New York on the next
+  weekday (scripts/how-clock.mjs, loaded with `--import` by the script only, never by the app), and the browser's clock
+  and time zone are set to match. The structured data lists the teacher's screen as a screenshot and the section's
+  heading as a feature.
+- **Checks:** tests/unit/teacher-landing.test.js (the section, its pictures, translated in de, ar and ja);
+  `scripts/landing-audit.js` passes at all six sizes, dark and light.

@@ -6,7 +6,7 @@
 // Real captures of the running app, from made-up demo people in a throwaway database (never a real DB or a real child):
 // Pixel Panda, Rocket Otter, Ms. Rivera's Class at Sunny Hill Demo School... Light theme only (the page frames them).
 //
-// Usage: npm run how-shots [-- --only parents|teachers|live] [-- --keep]     (--keep leaves the temp data and PNGs)
+// Usage: npm run how-shots [-- --only parents|teachers|live|dash] [-- --keep]     (--keep leaves the temp data and PNGs)
 //        HOW_PORT=5990 (the server; the fake Stripe for the family step uses HOW_PORT + 1)
 //        HOW_REAL_BUILDER=1 with ANTHROPIC_API_KEY set: the Builder step from Claude (not deterministic: check it by eye).
 // Needs ImageMagick `convert` with WebP (else Chromium encodes) and the Playwright Chromium (BRB_CHROMIUM or /opt/pw-browsers).
@@ -130,6 +130,14 @@ async function main() {
     if (!only || only === 'parents') made.push(...await parentShots(shooter, ids));
     if (!only || only === 'teachers') made.push(...await teacherShots(shooter, ids));
     if (!only || only === 'live') made.push(...await liveShots(shooter, ids));
+    if (!only || only === 'dash') {
+      // A school morning on the dashboard's clock and schedule: the same database, the server's clock moved to 9:20 in
+      // the school's time zone on the next weekday (scripts/how-clock.mjs; the page takes its time from the server).
+      await stop(app);
+      const morning = nextSchoolMorning();
+      app = await startApp({ ...env, HOW_CLOCK: morning, NODE_OPTIONS: `--import ${path.join(ROOT, 'scripts', 'how-clock.mjs')}` });
+      made.push(...await dashShots(shooter, ids, morning));
+    }
     if (!only || only === 'parents') {
       // The same database, now with paid-plan pages on, for the family step.
       await stop(app);
@@ -158,8 +166,8 @@ function makeShooter({ browser, BASE, PNG }) {
   const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
   const DESK = { viewport: { width: 1024, height: 640 }, deviceScaleFactor: 2 };
   /** A signed-in (or signed-out) page for one person on one device. */
-  async function person(kind, username) {
-    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : DESK), baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce' });
+  async function person(kind, username, { timezoneId } = {}) {
+    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : DESK), baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce', ...(timezoneId ? { timezoneId } : {}) });
     await ctx.setExtraHTTPHeaders({ 'X-Forwarded-For': randomIp() });
     const page = await ctx.newPage();
     page.setDefaultTimeout(20_000);
@@ -519,6 +527,57 @@ async function liveShots({ person, shot }, ids) {
   return made;
 }
 
+/** 9:20 in New York (the dashboard's time zone for a school without one) on the next weekday still ahead, as ISO. */
+function nextSchoolMorning() {
+  const TZ = 'America/New_York';
+  const parts = d => Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short' }).formatToParts(d).map(p => [p.type, p.value]));
+  for (let day = 0; day < 8; day++) {
+    const p = parts(new Date(Date.now() + day * 864e5));
+    if (p.weekday === 'Sat' || p.weekday === 'Sun') continue;
+    // 9:20 that day: guess with a 5-hour offset, then correct by what New York's clock says at the guess.
+    let t = Date.UTC(+p.year, +p.month - 1, +p.day, 14, 20);
+    const q = parts(new Date(t)); t -= ((+q.hour * 60 + +q.minute) - (9 * 60 + 20)) * 60e3;
+    if (t > Date.now() + 60e3) return new Date(t).toISOString();
+  }
+  throw new Error('dash: no school morning ahead');
+}
+
+// ---------------------------------------------------------------- Class dashboards (the landing's #dashboards)
+// Ms. Rivera's class on the "Morning start" ready-made layout (services/dash.js LAYOUT_TEMPLATES): dash-teacher is her
+// screen (desktop); dash-student is Pixel Panda's own screen on a phone, with the widgets she pinned (today's
+// goal, the mood check-in, class jobs) beside their own clock. Three students check in a mood first, so her mood widget
+// shows totals (never who picked which: that is behind a tap, and not shot).
+async function dashShots({ person, shot }, ids, morning) {
+  const made = [];
+  const teacher = await person('desk', 'MsRivera');
+  const origin = new URL(teacher.url()).origin;
+  const api = async (p, url, data) => { const r = await p.request.post(url, { data, headers: { Origin: origin } }); if (!r.ok()) throw new Error(`dash: ${url} ${r.status()} ${await r.text()}`); return r.json(); };
+  // Opening the dashboard once makes her starter layout; then the ready-made one, used for the class.
+  await teacher.goto(`/class/${ids.classId}/dashboard`);
+  const made1 = await api(teacher, `/api/dash/${ids.classId}/templates/morning`, {});
+  await api(teacher, `/api/dash/${ids.classId}/layouts/${made1.layout.id}/use`, {});
+  for (const [username, mood] of [['SwiftOtter34', 0], ['BrightFox57', 1], ['CozyKoala18', 0]]) {   // MOODS: 0 great, 1 good
+    const s = await person('desk', username);
+    await api(s, `/api/dash/${ids.classId}/mood`, { mood });
+    await s.context().close();
+  }
+  await teacher.context().close();
+  // The browser's clock too (the clock and schedule widgets read it), fixed at the same morning.
+  const ready = async p => { await p.locator('.dash-w').first().waitFor(); await p.waitForTimeout(1200); };
+  const open = async (kind, who) => { const p = await person(kind, who, { timezoneId: 'America/New_York' }); await p.clock.setFixedTime(new Date(morning)); await p.goto(`/class/${ids.classId}/dashboard`); await ready(p); return p; };
+  {
+    const kind = 'desk', p = await open(kind, 'MsRivera');
+    made.push({ slug: 'dash-teacher', kind, png: await shot(p, `dash-teacher-${kind}`, { names: true }) });
+    await p.context().close();
+  }
+  {
+    const p = await open('phone', ids.pandaSchool);
+    made.push({ slug: 'dash-student', kind: 'phone', png: await shot(p, 'dash-student-phone', { names: true }) });
+    await p.context().close();
+  }
+  return made;
+}
+
 // ---------------------------------------------------------------- encode
 const SIZES = { phone: [['p', 390], ['p', 780]], desk: [['d', 1024], ['d', 2048]] };
 function hasMagick() { try { return /WEBP/i.test(execFileSync('convert', ['-list', 'format'], { encoding: 'utf8' })) ? 'convert' : null; } catch { return null; } }
@@ -550,7 +609,7 @@ function report(files) {
   const kb = n => `${(n / 1024).toFixed(0)} KB`;
   for (const f of files) console.log(`${path.relative(ROOT, f.file).padEnd(48)} ${kb(f.bytes).padStart(7)}`);
   let over = false;
-  for (const pg of ['parents', 'teachers', 'live']) {
+  for (const pg of ['parents', 'teachers', 'live', 'dash']) {
     const mine = files.filter(f => f.slug.startsWith(pg + '-'));
     if (!mine.length) continue;
     const phone = mine.filter(f => f.tag === 'p' && f.w === 780).reduce((a, f) => a + f.bytes, 0);
