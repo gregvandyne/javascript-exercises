@@ -277,7 +277,7 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   assert.equal((await req(u, '/')).location, '/teach');
   // Classroom first; School (the setup checklist) is one tap away in the account menu behind the avatar.
   const shell = shellFor(u, { headers: {} });
-  assert.deepEqual(shell.tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn']);
+  assert.deepEqual(shell.tabs.slice(0, 2).map(x => x[1]), ['/teach', '/build']);
   assert.match((await req(u, '/teach')).text, /<details class="acctpick" data-acctpick>[\s\S]*?<a href="\/school" >/);
   const sp = await req(u, '/school'); assert.equal(sp.location, `/school/${school.slug}`);
   assert.equal((await req(u, sp.location)).status, 200);
@@ -288,7 +288,7 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   const two = S.createSchoolAccount(u, school.id, { rosterName: 'Mr Second', role: 'teacher' }).user;
   assert.equal(S.soloSchoolAdmin(auth.getUser(solo.id)), false);
   assert.equal(landingFor(auth.getUser(solo.id)), '/school');
-  assert.deepEqual(shellFor(auth.getUser(solo.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn'], 'School stays in the account menu');
+  assert.deepEqual(shellFor(auth.getUser(solo.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/build'], 'School stays in the account menu');
   assert.equal(S.soloSchoolAdmin(two), false, 'a teacher who runs no school');
   assert.equal(S.soloSchoolAdmin(mia), false); assert.equal(S.soloSchoolAdmin(null), false);
   // An admin of a new, empty school with other staff still signs in to its setup page.
@@ -299,7 +299,7 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   assert.equal(S.soloSchoolAdmin(auth.getUser(head.id)), false, 'an appointed head, alone in the school');
   assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
   assert.equal(landingFor(auth.getUser(head.id)), '/school');
-  assert.deepEqual(shellFor(auth.getUser(head.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn']);
+  assert.deepEqual(shellFor(auth.getUser(head.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/build']);
   S.createSchoolAccount(head, big.id, { rosterName: 'Tom Teacher', role: 'teacher' });
   assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
 });

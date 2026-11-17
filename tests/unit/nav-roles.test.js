@@ -57,8 +57,8 @@ const guest = auth.createGuest();
 const ON = {
   out: { tabs: ['/', '/learn', '/build', '/parents', '/login'], top: ['/', '/learn', '/build', '/parents', '/teachers'] },
   grownup: { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
-  schoolAdmin: { tabs: ['/teach', '/learn', '/play', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
-  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
+  schoolAdmin: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
+  teacher: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
   admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
   student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
   kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
@@ -66,8 +66,8 @@ const ON = {
 const KEYS = {
   out: ['play', 'learn', 'build', 'grownups', 'signin'],
   grownup: ['family', 'play', 'learn', 'build', 'account'],
-  schoolAdmin: ['classroom', 'learn', 'play', 'me'],
-  teacher: ['classroom', 'learn', 'play', 'live', 'me'],
+  schoolAdmin: ['classroom', 'build', 'live', 'me'],
+  teacher: ['classroom', 'build', 'live', 'me'],
   admin: ['play', 'learn', 'build', 'schools', 'me'],
   student: ['class', 'play', 'learn', 'build', 'me'],
   kid: ['play', 'learn', 'build', 'friends', 'me'],
@@ -92,8 +92,8 @@ test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages 
       for (const k of ['plans', 'school']) assert.ok(!s.tabs.some(([x]) => x === k) && !s.top.some(([x]) => x === k), `${role}: no ${k} in either bar`);
     }
   }
-  // Five tabs for everyone but a school admin (Classroom · Learn · Play · Me: Live is in their top bar only).
-  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 5);
+  // Five tabs for everyone but staff: Classroom · Build · Live · Me for teachers and school admins.
+  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.
@@ -233,10 +233,12 @@ test('the current tab: Play on the game pages and search, Learn on /learn, Class
   assert.deepEqual(cur(acct), ['/family/account']);
   assert.match(acct, /<summary class="me-btn is-current"/);
   assert.match(acct, /<a href="\/family\/account" aria-current="page">/, 'Account in the menu is the page you are on');
-  assert.deepEqual(cur((await get(teacher, '/play')).text), ['/play']);
+  // Teachers' bar is Classroom · Build · Live: Play and Learn still open, with no tab marked
+  assert.deepEqual(cur((await get(teacher, '/play')).text), []);
   assert.deepEqual(cur((await get(teacher, '/teach')).text), ['/teach']);
   assert.deepEqual(cur((await get(teacher, '/live')).text), ['/live']);
-  assert.deepEqual(cur((await get(teacher, '/learn')).text), ['/learn']);
+  assert.deepEqual(cur((await get(teacher, '/build')).text), ['/build']);
+  assert.ok(!/class="navlink" href="\/(?:learn|play)"/.test(topnav((await get(teacher, '/teach')).text)), 'no Learn or Play in a teacher\'s top bar');
   const sch = (await get(head, `/school/${oak.slug}`)).text;
   assert.deepEqual(cur(sch), ['/me'], 'a school admin on their school: Me (School is in its menu)');
   assert.match(sch, /<a href="\/school" aria-current="page"><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/);

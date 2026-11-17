@@ -80,8 +80,8 @@ export function landingFor(u) {
  * first matching row wins:
  *   signed out or a guest   Play · Learn · Build · Grown-ups · Sign in   (top: Play · Learn · Build · Parents · Teachers)
  *   grown-up                Family · Play · Learn · Build · Account      (top: the same without Account)
- *   school staff            Classroom · Learn · Play · (Live) · Me       (top: the same without Me; a school admin's
- *                                                                          Live is in the top bar only)
+ *   school staff            Classroom · Build · (Live) · Me              (top: the same without Me; a school admin's
+ *                                                                          School is in the account menu)
  *   platform admin          Play · Learn · Build · Schools · Me
  *   student                 Class · Play · Learn · Build · Me            (top: the same with Friends, without Me)
  *   kid                     Play · Learn · Build · Friends · Me          (top: the same without Me)
@@ -108,9 +108,10 @@ export function shellFor(u) {
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
-    const head = [classroom, learn, play, ...stories];
-    // A school admin: School is in the account menu (accountMenu), and Live in the top bar only.
-    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, me], top: [...head, ...live], meHref: '/me' };
+    // Classroom · Build · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar: Classroom, Build, Live").
+    const head = [classroom, build, ...stories];
+    // A school admin: School is in the account menu (accountMenu); otherwise the teacher's bars.
+    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, ...live, me], top: [...head, ...live], meHref: '/me' };
     const top = [...head, ...live];
     return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
@@ -187,6 +188,7 @@ export const plansInMenu = (u, req) => legalReader(u) && familiesOn(req);
  * The account menu behind the avatar (signed in only; signed out the avatar is the Sign in link), a <details> of plain
  * links like the language picker, so it works with no JavaScript (app.js adds Escape, outside-click and arrow keys):
  *   Me (or Account, a grown-up's settings page) · My school (a school admin: /school) ·
+ *   Games and lessons: Play, Learn (school staff, whose bars have neither) ·
  *   Settings: Theme (Light, Dark, Same as my device), Plans (adults, plansInMenu), All settings (/me/settings or
  *   /family/account).
  */
@@ -197,6 +199,8 @@ export function accountMenu(req, { shell, name, badge, active }) {
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const plansKey = tabKey(t, 'plans');
   const school = !grownup && adminSchools(u).length > 0;
+  // Teachers' bar is Classroom · Build · Live: Play and Learn are here instead (docs/decisions.md "Teachers' top bar").
+  const staff = shell.role === 'teacher' || shell.role === 'schoolAdmin';
   // on: the page being shown is this item's (aria-current, as in the bars).
   const item = (href, emo, label, { on = req.path === href, attr = '', extra = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${emo}</span><span>${label}</span>${extra}</a></li>`;
   return html`<details class="acctpick" data-acctpick>
@@ -206,6 +210,11 @@ export function accountMenu(req, { shell, name, badge, active }) {
         ${item('/me', u.photo_at ? '🙂' : u.avatar, t('nav.me'), { extra: badge('me') })}
         ${school ? item('/school', '🏛️', t('me.tiles.school'), { on: req.path === '/school' || req.path.startsWith('/school/') }) : ''}
       </ul>`}
+      ${staff ? html`<p class="lang-head" id="acct-browse-head">${t('layout.acct.browse')}</p>
+      <ul class="acct-list" aria-labelledby="acct-browse-head">
+        ${item('/play', '🎮', t(tabKey(t, 'play')), { attr: en(tabKey(t, 'play')) })}
+        ${item('/learn', '📚', t(tabKey(t, 'learn')), { on: req.path === '/learn' || req.path.startsWith('/learn/'), attr: en(tabKey(t, 'learn')) })}
+      </ul>` : ''}
       <p class="lang-head" id="acct-set-head">${t('me.settings.title')}</p>
       <p class="acct-sub" id="acct-theme-head">${t('layout.theme.title')}</p>
       ${themeLinks(req, { cls: 'acct-list acct-themes', labelledby: 'acct-theme-head' })}

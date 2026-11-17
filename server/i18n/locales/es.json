@@ -31,7 +31,8 @@
       "dark": "Oscuro"
     },
     "acct": {
-      "allSettings": "Todos los ajustes"
+      "allSettings": "Todos los ajustes",
+      "browse": "Juegos y lecciones"
     },
     "footer": {
       "tagline": "© Oomba Academy · Gratis para jugar, gratis para crear",

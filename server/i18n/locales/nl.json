@@ -32,7 +32,8 @@
       "dark": "Donker"
     },
     "acct": {
-      "allSettings": "Alle instellingen"
+      "allSettings": "Alle instellingen",
+      "browse": "Spellen en lessen"
     },
     "footer": {
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",

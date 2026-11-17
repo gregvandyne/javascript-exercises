@@ -7417,3 +7417,11 @@ the case, and "edit settings of individual widgets on a board without having to 
 - Tests: `tests/unit/dash-inputs.test.js` (parsing and limits; in Chromium: the fraction, decimal, percent typing rules,
   Escape, a bad entry, Enter, arrows, saving; the scoreboard drawn again while typing; a typed slope; the gear for the
   teacher, its sheet, saving, Undo, closing to the board; no gear for a student on a laptop or a phone).
+
+## Teachers' top bar: Classroom, Build, Live (17 Nov 2026)
+Owner: "For the top bar for a teacher it should just be Classroom Build Live at the top. You can remove Learn and Play."
+- School staff (teachers and school admins): top bar Classroom · Build · Live; phone tab bar the same with Me. A
+  school admin now has Live in the tab bar too (there is room since Learn and Play left). Everyone else is unchanged.
+- Play and Learn are not lost: they are in the account menu under "Games and lessons" for school staff
+  (`accountMenu`, `layout.acct.browse`), and still open at /play and /learn (no tab is marked there).
+- Tests: nav-roles, teacher-quick-wins and classroom-homes check the new bars and the menu's links.
