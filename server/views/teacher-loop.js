@@ -1,8 +1,7 @@
 // The teaching loop, Plan → Play → Check → Feedback (docs/decisions.md "The teaching loop"): one partial, three looks.
 //
 //   teacherLoop(t, { variant: 'landing' })  the section on the teacher landing at "/" (server/routes/landing.js), in the
-//                                           landing's own lp-* look (public/css/landing.css); its screenshots
-//                                           (landingShots) go under Google Classroom there when that is on
+//                                           landing's own lp-* look (public/css/landing.css), with the four screenshots
 //   teacherLoop(t, { variant: 'page' })     /teach/loop ("How Oomba fits your week") and /teachers, in the app's look
 //                                           (public/css/teach-loop.css)
 //   teacherLoop(t, { variant: 'compact' })  the card near the top of the Classroom home (/teach) for new teachers: each
@@ -40,16 +39,13 @@ export function teacherLoop(t, opts = {}) {
   return pageLook(t, { links, state, live, shots, id, headingTag, cls });
 }
 
-/** The landing's three screens, three across on wide screens (never one alone on a row). On the landing they sit under
- *  Google Classroom when that is on (landing.js), else under the loop's steps here. */
-export function landingShots(t) {
-  return html`<div class="lp-loop-shots">
-      ${SHOTS.map(([name]) => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 360px, (min-width: 900px) 31vw, 92vw')}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
+/** The landing's screenshot pair or grid: the named shots (default all), each with its caption. */
+export const loopShots = (t, names = SHOTS.map(([n]) => n)) => html`<div class="lp-loop-shots">
+      ${names.map(name => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw')}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
     </div>`;
-}
 
-/** On the landing: numbered cards like "How it works", then (shots) the screens, then the trial button. */
-function landing(t, { live, cta, id, shots }) {
+/** On the landing: numbered cards like "How it works", then the four screens, then the trial button. */
+function landing(t, { live, cta, id, shots = true }) {
   return html`<section class="lp-sec lp-loop" id="${id}" aria-labelledby="${id}-h">
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('teach.loop.kicker')}</p><h2 id="${id}-h">${t('teach.loop.h')}</h2><p>${t('teach.loop.lead')}</p></header>
@@ -58,7 +54,7 @@ function landing(t, { live, cta, id, shots }) {
         <h3>${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
         <ul class="lp-loop-tools">${toolsOf(s, live).map(k => html`<li>${lpCheck}<span>${plainName(t, k)}</span></li>`)}</ul></li>`)}
     </ol>
-    ${shots ? landingShots(t) : ''}
+    ${shots ? loopShots(t) : ''}
     ${cta ? html`<div class="lp-ctas lp-ctas-c lp-loop-cta">${cta}</div>` : ''}
   </div>
 </section>`;

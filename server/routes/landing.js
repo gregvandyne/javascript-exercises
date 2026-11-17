@@ -34,7 +34,7 @@ import * as seo from '../seo.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
-import { teacherLoop, landingShots } from '../views/teacher-loop.js';
+import { teacherLoop, loopShots } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
@@ -192,9 +192,9 @@ export function renderLanding(req, res) {
 
   // The teaching loop, Plan → Play → Check → Feedback, with the four real screens (views/teacher-loop.js, docs/decisions.md
   // "The teaching loop"): right after how it works.
-  // The gradebook, needs-attention and feedback screens go under Google Classroom when it is on (they are what the
-  // teacher sees of the work Classroom sends back), else they stay in the loop.
-  const loopSec = teacherLoop(t, { variant: 'landing', id: 'loop', live, shots: !classroomOn(), cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
+  // The gradebook and feedback screenshots sit under Google Classroom when it is on here; otherwise in the loop section.
+  const gcOn = classroomOn();
+  const loopSec = teacherLoop(t, { variant: 'landing', id: 'loop', live, shots: !gcOn, cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
 
   const builder = html`<section class="lp-sec lp-split" id="builder" aria-labelledby="builder-h">
   <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
@@ -289,14 +289,14 @@ export function renderLanding(req, res) {
 </section>`;
 
   // Google Classroom: only when it is on here (every line is teachers.classroom.*, the same words as /teachers).
-  const classroomSec = classroomOn() ? html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h">
+  const classroomSec = gcOn ? html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h">
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('teachers.classroom.kicker')}</p><h2 id="classroom-h"${fb('teachers.classroom.h')}>${t('teachers.classroom.h')}</h2><p${fb('teachers.classroom.lead')}>${t('teachers.classroom.lead')}</p></header>
     <div class="lp-card lp-gc rv">
       <ul class="lp-list lp-list-2">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => html`<li>${check}<span${fb(`teachers.classroom.${k}`)}>${t(`teachers.classroom.${k}`)}</span></li>`)}</ul>
       <p class="lp-small"${fb('teachers.classroom.note')}>${t('teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
     </div>
-    ${landingShots(t)}
+    ${loopShots(t, ['gradebook', 'feedback'])}
   </div>
 </section>` : '';
 
