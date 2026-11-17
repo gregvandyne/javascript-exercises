@@ -39,11 +39,19 @@ export function foldersStrip(req, current = '') {
         <form class="row" data-api="/api/game-folders" novalidate><label class="sr-only" for="gf-name">${t('folders.name')}</label>
           <input class="input grow" id="gf-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
           <button class="btn btn-primary" type="submit">📁 ${t('folders.create')}</button></form></details></li></ul>
+  </section>${sharedStrip(req, current)}`;
+}
+/** "🤝 Shared by colleagues" on Build: folders staff of the same school shared (only when there are some). */
+function sharedStrip(req, current = '') {
+  const t = req.t, list = F.sharedWith(req.user);
+  if (!list.length) return '';
+  return html`<section class="build-sec gfo-strip" aria-labelledby="gfs-h"><h2 id="gfs-h">🤝 ${t('folders.sharedTitle')}</h2>
+    <ul class="plain gfo-list">${list.map(f => html`<li><a class="gfo-chip${f.id === current ? ' is-on' : ''}" href="/build/folders/${f.id}" ${f.id === current ? raw('aria-current="page"') : ''}>📁 <b dir="auto">${f.name}</b> <span class="muted"><bdi>${t('folders.by', { name: f.owner_name })}</bdi> · ${f.games}</span></a></li>`)}</ul>
   </section>`;
 }
 
 /** One game card in a folder: cover, title, Play, Assign (school staff), Remove from the folder. */
-function folderGame(req, f, g, staff) {
+function folderGame(req, f, g, staff, mine = true) {
   const t = req.t;
   return html`<li class="mygame panel gfo-game">
     <a class="mg-cover" href="${playHref(req.user, g)}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: !g.published_version_id && g.source !== 'seed' })}</a>
@@ -52,26 +60,38 @@ function folderGame(req, f, g, staff) {
     <div class="mg-actions"><div class="mg-row">
       <a class="btn" href="${playHref(req.user, g)}">▶ ${t('game.play')}</a>
       ${staff ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">📌 ${t('folders.assign')}</a>` : ''}
-    </div><div class="mg-row mg-more">
+    </div>${mine ? html`<div class="mg-row mg-more">
       <form data-api="/api/game-folders/${f.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>
-    </div></div></li>`;
+    </div>` : html`<div class="mg-row mg-more"><a class="btn" href="/build/save?id=${g.id}">📁 ${t('folders.save')}</a></div>`}</div></li>`;
 }
 
 router.get('/build/folders/:id', requireBuilder, (req, res) => {
   const t = req.t, f = F.getFolder(req.params.id);
-  if (!f || f.owner_id !== req.user.id) return notFound(req, res);
-  const list = F.gamesIn(req.user, f.id), staff = S.isSchoolStaff(req.user);
-  const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1>
-    <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('folders.more', { name: f.name })}">⋯</summary><div class="menu">
+  if (!f || !F.canSee(req.user, f)) return notFound(req, res);
+  const list = F.gamesIn(req.user, f.id), staff = S.isSchoolStaff(req.user), mine = f.owner_id === req.user.id;
+  const schools = mine ? F.staffSchools(req.user) : [], sharedIn = f.school_id ? (S.getSchool(f.school_id) || {}).name || '' : '';
+  const owner = mine ? null : (F.sharedWith(req.user).find(x => x.id === f.id) || {}).owner_name || '';
+  // Sharing (the owner): with one of their schools, or not; colleagues only see games they can open.
+  const share = mine && schools.length ? html`<section class="panel gfo-share" aria-labelledby="gsh-h"><h2 id="gsh-h" class="sr-only">🤝 ${t('folders.shareTitle')}</h2>
+    ${f.school_id ? html`<p>🤝 ${t('folders.sharedWithSchool', { school: sharedIn })}</p><p class="small muted">${t('folders.shareNote')}</p>
+      <form data-api="/api/game-folders/${f.id}/share" data-reload><input type="hidden" name="schoolId" value=""><button class="btn btn-sm" type="submit">${t('folders.unshare')}</button></form>`
+    : html`<form class="row" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="gsh-s">${t('folders.shareTitle')}</label><select class="input" id="gsh-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
+      <button class="btn" type="submit">🤝 ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form><p class="small muted">${t('folders.shareNote')}</p>`}
+  </section>` : '';
+  const head = mine ? html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('folders.more', { name: f.name })}">⋯</summary><div class="menu">
       <form class="row" data-api="/api/game-folders/${f.id}" data-reload><label class="sr-only" for="gf-rn">${t('folders.name')}</label><input class="input input-sm grow" id="gf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
       <form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit">↑ ${t('lessons.up')}</button></form>
       <form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit">↓ ${t('lessons.down')}</button></form>
       <form data-api="/api/game-folders/${f.id}/delete" data-redirect="/build" data-confirm="${t('folders.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">🗑️ ${t('folders.delete')}</button></form>
-    </div></details></div>
+    </div></details>` : '';
+  const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1>${head}</div>
+  ${mine ? '' : html`<p class="muted">🤝 <bdi>${t('folders.by', { name: owner })}</bdi> · ${t('folders.sharedWithSchool', { school: sharedIn })}</p>
+    <form data-api="/api/game-folders/${f.id}/copy"><button class="btn btn-primary" type="submit">📁 ${t('folders.copy')}</button></form>`}
+  ${share}
   ${foldersStrip(req, f.id)}
   <section class="build-sec" aria-labelledby="gf-in-h"><h2 id="gf-in-h" class="sr-only">${f.name}</h2>
-    <p class="row"><a class="btn btn-primary" href="/build/new?folder=${f.id}">✨ ${t('build.newGame')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></p>
-    ${list.length ? html`<ul class="mygames">${list.map(g => folderGame(req, f, g, staff))}</ul>`
+    ${mine ? html`<p class="row"><a class="btn btn-primary" href="/build/new?folder=${f.id}">✨ ${t('build.newGame')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></p>` : ''}
+    ${list.length ? html`<ul class="mygames">${list.map(g => folderGame(req, f, g, staff, mine))}</ul>`
       : emptyState({ emoji: '📁', title: t('folders.emptyTitle'), text: t('folders.emptyText') })}
   </section>`;
   page(req, res, { title: f.name, active: 'build', back: '/build', backLabel: req.t('nav.build'), body, head: CSS });
@@ -111,6 +131,8 @@ router.post('/api/game-folders/:id/games', requireUser, rateLimit('game-folder',
   const r = F.addGame(req.user, req.params.id, b(req).gameId);
   r.ok ? res.json({ ok: true, toast: req.t(r.already ? 'folders.already' : 'folders.savedTo', { folder: r.folder.name }) }) : fail(req, res, r);
 });
+router.post('/api/game-folders/:id/share', requireUser, (req, res) => { const r = F.shareFolder(req.user, req.params.id, b(req).schoolId); r.ok ? res.json({ ok: true, toast: req.t(r.folder.school_id ? 'folders.sharedToast' : 'folders.unsharedToast') }) : fail(req, res, r); });
+router.post('/api/game-folders/:id/copy', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => { const r = F.copyFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, toast: req.t('folders.copied'), redirect: `/build/folders/${r.folder.id}` }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/games/:gid/delete', requireUser, (req, res) => { const r = F.removeGame(req.user, req.params.id, req.params.gid); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 
 // ---------------------------------------------------------------- Assign a game to a class

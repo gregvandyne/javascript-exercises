@@ -10806,6 +10806,17 @@
       "tooMany": "Je hebt het maximale aantal mappen. Verwijder er eerst een.",
       "full": "Deze map is vol.",
       "publishFirst": "Publiceer dit spel eerst voor je klas of je school, zodat leerlingen het kunnen spelen."
-    }
+    },
+    "sharedTitle": "Gedeeld door collega's",
+    "by": "van {name}",
+    "shareTitle": "Delen met een school",
+    "shareWith": "Delen met {school}",
+    "sharedWithSchool": "Gedeeld met {school}",
+    "shareNote": "Collega's daar kunnen deze map openen, de spellen spelen en toewijzen, en de map kopiëren. Ze zien alleen spellen die ze mogen openen: publiceer je eigen spellen voor je school.",
+    "unshare": "Niet meer delen",
+    "copy": "Kopiëren naar mijn mappen",
+    "sharedToast": "Gedeeld met je school",
+    "unsharedToast": "Niet meer gedeeld",
+    "copied": "Gekopieerd naar je mappen"
   }
 }

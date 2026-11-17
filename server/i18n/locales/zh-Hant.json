@@ -10805,6 +10805,17 @@
       "tooMany": "資料夾數量已達上限，請先刪除一個。",
       "full": "這個資料夾已滿。",
       "publishFirst": "請先為你的班級或學校發布這個遊戲，學生才能玩。"
-    }
+    },
+    "sharedTitle": "同事分享的資料夾",
+    "by": "{name} 分享",
+    "shareTitle": "與學校分享",
+    "shareWith": "與 {school} 分享",
+    "sharedWithSchool": "已與 {school} 分享",
+    "shareNote": "那所學校的同事可以打開這個資料夾、玩和指派裡面的遊戲，也可以複製它。他們只看得到自己能打開的遊戲：請把你自己的遊戲發布給學校。",
+    "unshare": "停止分享",
+    "copy": "複製到我的資料夾",
+    "sharedToast": "已與你的學校分享",
+    "unsharedToast": "已停止分享",
+    "copied": "已複製到你的資料夾"
   }
 }

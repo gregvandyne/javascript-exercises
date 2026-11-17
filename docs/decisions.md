@@ -7550,6 +7550,14 @@ Classroom**; folders live on **Build**, and the **class page** lists the class's
   lesson that has games (its games in step order), and soft-removes that lesson's open assignments
   (`class_lessons.removed_at`, the same remove every query already honours), recording each in `lessons_retired` so it
   can be undone. Lessons, steps, students' work and rubric marks all stay. A retired lesson's editor link opens its folder.
+- **Sharing** (owner: "Teachers should also still be able to share games"; picked: share **folders** with colleagues,
+  `0085_game_folder_sharing`): on a folder's page its owner shares it with one school they are staff of (a select when
+  they have several), or stops sharing. That school's staff (teachers and admins, never students or other schools) see
+  it under "🤝 Shared by colleagues" on Build with the owner's name, open it read-only (Play, Assign, Save to folder),
+  and "Copy to my folders" (the same name, the games they can open). Colleagues only ever see games they can open, so a
+  teacher's own draft or class-only game stays theirs; the share note says to publish for the school.
+- **Class page tabs:** 🎮 Games (first: build, assign, organise; the assigned games; the games shared with the class),
+  Progress, Students, Settings. The old Lessons and Games tabs are this one (`?tab=games` lands on it).
 - **Elsewhere:** `/teach/lessons` redirects to `/build`; Classroom home's tools button is "📁 My games and folders" and each
   class card's is "🎮 Assign a game"; the teaching loop's Plan tools are My games and folders and New game; the CS Quest
   page no longer links the library; the trial email's courses link goes to Learn.

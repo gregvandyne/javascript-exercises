@@ -57,6 +57,40 @@ export function moveFolder(u, id, dir) {
   return ok();
 }
 
+// ---------------------------------------------------------------- sharing a folder with colleagues
+/** The schools this person is staff of (teacher or admin): where they may share a folder. */
+export const staffSchools = u => (u ? S.schoolsOf(u.id).filter(s => s.role === 'teacher' || s.role === 'admin') : []);
+/** May this person open this folder? Its owner, or staff of the school it is shared with. */
+export const canSee = (u, f) => owns(u, f) || (!!u && !!f && !!f.school_id && staffSchools(u).some(s => s.id === f.school_id));
+/** Share a folder with one of the owner's schools (schoolId), or stop sharing it (schoolId empty). */
+export function shareFolder(u, id, schoolId) {
+  const f = getFolder(id); if (!owns(u, f)) return fail('notFound');
+  const sid = String(schoolId || '');
+  if (!sid) { q.run('UPDATE game_folders SET school_id=NULL, shared_at=NULL WHERE id=?', f.id); audit(u.id, 'gameFolder.unshare', f.id); return ok({ folder: getFolder(f.id) }); }
+  if (!staffSchools(u).some(s => s.id === sid)) return fail('notFound');
+  q.run('UPDATE game_folders SET school_id=?, shared_at=? WHERE id=?', sid, now(), f.id);
+  audit(u.id, 'gameFolder.share', f.id, { school: sid });
+  return ok({ folder: getFolder(f.id) });
+}
+/** Folders colleagues shared with this person's schools (never their own), newest first, with the owner's name and how
+ *  many of the games this person can open. */
+export function sharedWith(u) {
+  const ids = staffSchools(u).map(s => s.id); if (!ids.length) return [];
+  const rows = q.all(`SELECT f.*, s.name school_name, COALESCE(NULLIF(m.roster_name,''), us.display_name, us.username) owner_name FROM game_folders f
+    JOIN schools s ON s.id=f.school_id JOIN users us ON us.id=f.owner_id LEFT JOIN school_members m ON m.school_id=f.school_id AND m.user_id=f.owner_id
+    WHERE f.school_id IN (${ids.map(() => '?').join(',')}) AND f.owner_id!=? AND f.shared_at IS NOT NULL ORDER BY f.shared_at DESC LIMIT 200`, ...ids, u.id);
+  return rows.map(f => ({ ...f, games: gamesIn(u, f.id).length }));
+}
+/** Copy a folder this person can see into their own folders: the same name, the games they can open. */
+export function copyFolder(u, id) {
+  const f = getFolder(id); if (!canSee(u, f)) return fail('notFound');
+  const list = gamesIn(u, f.id);
+  const made = createFolder(u, f.name); if (!made.ok) return made;
+  for (const g of list.slice(0, MAX_IN_FOLDER)) addGame(u, made.folder.id, g.id);
+  audit(u.id, 'gameFolder.copy', made.folder.id, { from: f.id });
+  return ok({ folder: made.folder, count: Math.min(list.length, MAX_IN_FOLDER) });
+}
+
 /** A game a person may put in a folder: one they can see that is not deleted (their own drafts included). */
 const saveable = (u, g) => !!g && g.status !== 'deleted' && games.canView(u, g);
 export function addGame(u, folderId, gameId) {
@@ -74,9 +108,9 @@ export function removeGame(u, folderId, gameId) {
   q.run('DELETE FROM game_folder_items WHERE folder_id=? AND game_id=?', f.id, String(gameId || ''));
   return ok({ folder: f });
 }
-/** The games in a folder, in the order they were added, that this person can still see. */
+/** The games in a folder (its owner's, or one shared with them), in the order they were added, that this person can open. */
 export function gamesIn(u, folderId) {
-  const f = getFolder(folderId); if (!owns(u, f)) return [];
+  const f = getFolder(folderId); if (!canSee(u, f)) return [];
   return q.all(`SELECT g.* FROM game_folder_items i JOIN games g ON g.id=i.game_id WHERE i.folder_id=? AND g.status!='deleted' ORDER BY i.position, i.added_at`, f.id)
     .filter(g => games.canView(u, g));
 }

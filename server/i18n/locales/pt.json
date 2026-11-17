@@ -10807,6 +10807,17 @@
       "tooMany": "Tens o número máximo de pastas. Apaga uma primeiro.",
       "full": "Esta pasta está cheia.",
       "publishFirst": "Publica primeiro este jogo, para a tua turma ou escola, para os alunos o poderem jogar."
-    }
+    },
+    "sharedTitle": "Partilhadas por colegas",
+    "by": "de {name}",
+    "shareTitle": "Partilhar com uma escola",
+    "shareWith": "Partilhar com {school}",
+    "sharedWithSchool": "Partilhada com {school}",
+    "shareNote": "Os colegas dessa escola podem abrir esta pasta, jogar e atribuir os jogos dela e copiá-la. Só veem os jogos que podem abrir: publica os teus jogos para a tua escola.",
+    "unshare": "Deixar de partilhar",
+    "copy": "Copiar para as minhas pastas",
+    "sharedToast": "Partilhada com a tua escola",
+    "unsharedToast": "Já não é partilhada",
+    "copied": "Copiada para as tuas pastas"
   }
 }

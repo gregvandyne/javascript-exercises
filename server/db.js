@@ -1029,6 +1029,13 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS game_folder_items_game ON game_folder_items(game_id);
     CREATE TABLE IF NOT EXISTS lessons_retired (class_lesson_id TEXT PRIMARY KEY, lesson_id TEXT NOT NULL, retired_at INTEGER NOT NULL);`,
   retireLessons],
+  // Shared folders (owner: "Teachers should also still be able to share games"): a folder shared with one school its owner
+  // is staff of (school_id; NULL = private). That school's staff see it under "Shared by colleagues" on Build, open it
+  // read-only (only the games they can open), play or assign its games, and copy it into their own folders.
+  ['0085_game_folder_sharing', `
+    ALTER TABLE game_folders ADD COLUMN school_id TEXT;
+    ALTER TABLE game_folders ADD COLUMN shared_at INTEGER;
+    CREATE INDEX IF NOT EXISTS game_folders_school ON game_folders(school_id, shared_at);`],
 ];
 
 /** 0084's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

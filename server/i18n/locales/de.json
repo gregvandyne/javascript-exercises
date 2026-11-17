@@ -10806,6 +10806,17 @@
       "tooMany": "Du hast die höchste Zahl an Ordnern. Lösche zuerst einen.",
       "full": "Dieser Ordner ist voll.",
       "publishFirst": "Veröffentliche dieses Spiel zuerst für deine Klasse oder deine Schule, damit die Kinder es spielen können."
-    }
+    },
+    "sharedTitle": "Von Kolleginnen und Kollegen geteilt",
+    "by": "von {name}",
+    "shareTitle": "Mit einer Schule teilen",
+    "shareWith": "Mit {school} teilen",
+    "sharedWithSchool": "Geteilt mit {school}",
+    "shareNote": "Kolleginnen und Kollegen dort können diesen Ordner öffnen, seine Spiele spielen und zuweisen und ihn kopieren. Sie sehen nur Spiele, die sie öffnen dürfen: Veröffentliche deine eigenen Spiele für deine Schule.",
+    "unshare": "Nicht mehr teilen",
+    "copy": "In meine Ordner kopieren",
+    "sharedToast": "Mit deiner Schule geteilt",
+    "unsharedToast": "Nicht mehr geteilt",
+    "copied": "In deine Ordner kopiert"
   }
 }

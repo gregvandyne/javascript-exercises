@@ -11227,6 +11227,17 @@
       "tooMany": "You have the most folders allowed. Delete one first.",
       "full": "This folder is full.",
       "publishFirst": "Publish this game first, for your class or your school, so students can play it."
-    }
+    },
+    "sharedTitle": "Shared by colleagues",
+    "by": "by {name}",
+    "shareTitle": "Share with a school",
+    "shareWith": "Share with {school}",
+    "sharedWithSchool": "Shared with {school}",
+    "shareNote": "Colleagues there can open this folder, play and assign its games, and copy it. They only see games they can open: publish your own games for your school.",
+    "unshare": "Stop sharing",
+    "copy": "Copy to my folders",
+    "sharedToast": "Shared with your school",
+    "unsharedToast": "No longer shared",
+    "copied": "Copied to your folders"
   }
 }

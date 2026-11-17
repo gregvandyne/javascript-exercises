@@ -10805,6 +10805,17 @@
       "tooMany": "Tu as le nombre maximum de dossiers. Supprimes-en un d'abord.",
       "full": "Ce dossier est plein.",
       "publishFirst": "Publie d'abord ce jeu pour ta classe ou ton école, pour que les élèves puissent y jouer."
-    }
+    },
+    "sharedTitle": "Partagés par des collègues",
+    "by": "par {name}",
+    "shareTitle": "Partager avec une école",
+    "shareWith": "Partager avec {school}",
+    "sharedWithSchool": "Partagé avec {school}",
+    "shareNote": "Les collègues de cette école peuvent ouvrir ce dossier, jouer à ses jeux, les attribuer et le copier. Ils ne voient que les jeux qu'ils peuvent ouvrir : publie tes propres jeux pour ton école.",
+    "unshare": "Ne plus partager",
+    "copy": "Copier dans mes dossiers",
+    "sharedToast": "Partagé avec ton école",
+    "unsharedToast": "N'est plus partagé",
+    "copied": "Copié dans tes dossiers"
   }
 }

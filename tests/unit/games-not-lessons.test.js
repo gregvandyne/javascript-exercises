@@ -140,3 +140,34 @@ test('pages: Build shows folders, a folder page, Save to folder, the class page 
   const kidPage = await as(kid)(`/class/${cls.id}`);
   assert.match(kidPage.text, /Moon Maze/); assert.match(kidPage.text, /Planet Race/); assert.doesNotMatch(kidPage.text, /Space week/, 'a retired lesson is gone for students');
 });
+
+test("sharing a folder with colleagues: shared on Build, opened read-only, copied; only the school's staff, only games they can open", async () => {
+  const elm = S.createSchool(boss, { name: 'Elm Folders' }).school;
+  const elmT = S.createSchoolAccount(boss, elm.id, { rosterName: 'Elm Teacher', role: 'teacher' }).user;
+  const f = F.createFolder(ana, 'Shared week').folder;
+  F.addGame(ana, f.id, oomba.id); F.addGame(ana, f.id, draft.id);   // a draft of Ana's: never seen by colleagues
+  assert.equal(F.shareFolder(ana, f.id, elm.id).code, 'notFound', 'only a school you are staff of');
+  assert.equal(F.shareFolder(ben, f.id, oak.id).code, 'notFound', 'only your own folder');
+  assert.ok(F.shareFolder(ana, f.id, oak.id).ok);
+  assert.deepEqual(F.sharedWith(ben).map(x => [x.name, x.owner_name, x.games]), [['Shared week', 'Ana Teacher', 1]], 'Ben sees it, with the one game he can open');
+  assert.deepEqual(F.sharedWith(ana), [], 'not your own');
+  assert.deepEqual(F.sharedWith(elmT), [], 'not another school');
+  assert.deepEqual(F.sharedWith(kid), [], 'never students');
+  assert.equal(F.addGame(ben, f.id, other.id).code, 'notFound', 'read-only for colleagues');
+  // the pages: Build lists it, the folder opens read-only with Copy, and copying makes Ben's own folder
+  const build = await as(ben)('/build');
+  assert.match(build.text, /Shared by colleagues/); assert.match(build.text, new RegExp(`href="/build/folders/${f.id}"`));
+  const page = await as(ben)(`/build/folders/${f.id}`);
+  assert.equal(page.status, 200); assert.match(page.text, /Copy to my folders/); assert.match(page.text, /Fraction Fun/);
+  assert.doesNotMatch(page.text, /Ana Draft|Remove from folder|deleteConfirm|\/api\/game-folders\/[^/]+\/delete/);
+  assert.equal((await as(elmT)(`/build/folders/${f.id}`)).status, 404);
+  const copy = await as(ben)(`/api/game-folders/${f.id}/copy`, { method: 'POST', body: {} });
+  assert.ok(copy.json.ok);
+  const mineNow = F.foldersOf(ben.id).find(x => x.name === 'Shared week');
+  assert.deepEqual(F.gamesIn(ben, mineNow.id).map(g => g.title), ['Fraction Fun']);
+  const own = await as(ana)(`/build/folders/${f.id}`);
+  assert.match(own.text, /Shared with Oak Folders/); assert.match(own.text, /Stop sharing/);
+  assert.ok(F.shareFolder(ana, f.id, '').ok);
+  assert.deepEqual(F.sharedWith(ben), [], 'stopped sharing: gone for colleagues');
+  assert.equal((await as(ben)(`/build/folders/${f.id}`)).status, 404);
+});

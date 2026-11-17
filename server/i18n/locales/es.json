@@ -10805,6 +10805,17 @@
       "tooMany": "Tienes el máximo de carpetas. Borra una primero.",
       "full": "Esta carpeta está llena.",
       "publishFirst": "Publica este juego primero, para tu clase o tu escuela, para que los alumnos puedan jugarlo."
-    }
+    },
+    "sharedTitle": "Compartidas por colegas",
+    "by": "de {name}",
+    "shareTitle": "Compartir con una escuela",
+    "shareWith": "Compartir con {school}",
+    "sharedWithSchool": "Compartida con {school}",
+    "shareNote": "Los colegas de esa escuela pueden abrir esta carpeta, jugar y asignar sus juegos, y copiarla. Solo ven los juegos que pueden abrir: publica tus propios juegos para tu escuela.",
+    "unshare": "Dejar de compartir",
+    "copy": "Copiar a mis carpetas",
+    "sharedToast": "Compartida con tu escuela",
+    "unsharedToast": "Ya no se comparte",
+    "copied": "Copiada a tus carpetas"
   }
 }
