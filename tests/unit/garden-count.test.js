@@ -159,14 +159,14 @@ const shotsDir = process.env.GC_SHOTS;
 
 /** The game in the production frame, on a stand-in for the play page: it keeps the SDK's messages (window.__msgs) and
  *  answers a speech request with "no AI voice here" at once, as the play page does when a line cannot be read. */
-async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false } = {}) {
+async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false, ttsDelay = 0 } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion, hasTouch: touch });
   const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: 'Garden Count' }, save: {}, canSave: false, params: PP.parseParams(params), tts: { langs: ['en'] } });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
-<script>window.__msgs = []; addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);
-  if (d.type === 'brb:tts' && !d.pre) e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*'); });</script>`;
+<script>window.__msgs = []; addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push({ ...d, at: Date.now() });
+  if (d.type === 'brb:tts' && !d.pre) { const src = e.source; setTimeout(() => src.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*'), ${ttsDelay}); } });</script>`;
   const outside = [];
   await ctx.route('**/*', route => {
     const u = route.request().url();
@@ -262,6 +262,30 @@ for (const chapter of CHAPTERS) {
     await g.ctx.close();
   });
 }
+
+test('voices finish before the next question: a slow AI line holds the round change; the next lines are fetched ahead', { skip, timeout: 240_000 }, async () => {
+  // The play page answers every line 3 s late (a cold AI voice): the game used to start the next round 2 s after "10 and
+  // 1 make 11", and the next question cut that line off before it was ever heard.
+  const g = await open({ params: 'chapter=teens&lock=1', ttsDelay: 3000 });
+  const { frame, state, until } = g;
+  await frame.evaluate(() => window.__gc.hero('knight'));
+  await until(() => window.__gc.state().screen === 'play');
+  const s = await state(), next = GC.round('teens', 2, 0);
+  const sums = t => `10 and ${t - 10} make ${t}.`;
+  const pre = (await g.msgs('brb:tts')).filter(m => m.pre).map(m => m.text);
+  assert.ok(pre.includes(sums(s.target)), 'this round’s last line, fetched ahead');
+  assert.ok(pre.includes(`Make ${next.target}.`), 'and the next round’s question');
+  await frame.evaluate(() => { const t = window.__gc.state().target; window.__gc.act('fill'); for (let i = 10; i < t; i++) window.__gc.act('one'); });
+  const t0 = Date.now();
+  await frame.evaluate(() => window.__gc.act('done'));
+  await until(() => window.__gc.state().round === 2);
+  const said = (await g.msgs('brb:tts')).filter(m => !m.pre && m.at >= t0 - 50);
+  const yes = said.find(m => m.text === sums(s.target)), ask = said.find(m => m.text === `Make ${next.target}.`);
+  assert.ok(yes && ask, 'the line and the next question were both said');
+  assert.ok(ask.at - yes.at >= 3000, `the next question waited for the line (${ask.at - yes.at} ms, the line took 3 s to come)`);
+  assert.deepEqual(g.errors, []);
+  await g.ctx.close();
+});
 
 test('no parameters: a picture menu of the three chapters; too many apples are handed back, counting down', { skip, timeout: 240_000 }, async () => {
   const g = await open();

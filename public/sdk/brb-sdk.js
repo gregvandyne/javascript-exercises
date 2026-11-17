@@ -905,6 +905,32 @@
     }
     return n > 0;
   }
+  // Is anything being said, or waiting to be said? An AI line asked of the server and not yet back counts (it is
+  // about to play), and so does a queued line and the device's own voice.
+  function speaking() {
+    if (ttsCur || ttsQueue.length) return true;
+    if (pendingSpeech.length || liveUtterances.length) return true;
+    try { return !!(synth && (synth.speaking || synth.pending)); } catch (e) { return false; }
+  }
+  // afterSpeech(fn, { min, max, gap }): fn once nothing is being said (speaking() false for gap ms, 250 by default), and
+  // never before min ms (0) nor after max ms (10 s: a line that never says it ended can't hold the game). Games call it
+  // where they move on to the next question, so the last line is never cut off by the next one (docs/decisions.md
+  // "Voices finish before the next question"). -> a function that cancels it.
+  function afterSpeech(fn, opts) {
+    opts = opts || {};
+    var min = num(opts.min, 0, 60000, 0), max = Math.max(min, num(opts.max, 0, 60000, 10000)), gap = num(opts.gap, 0, 2000, 250);
+    // Time is counted in ticks of 60 ms or by the clock, whichever says more (a slowed background tab can't stretch max).
+    var t0 = Date.now(), ticks = 0, quietAt = -1, done = false, timer = null;
+    var tick = function () {
+      if (done) return;
+      var el = Math.max(ticks * 60, Date.now() - t0); ticks++;
+      if (speaking()) quietAt = -1; else if (quietAt < 0) quietAt = el;
+      if (el >= max || (el >= min && quietAt >= 0 && el - quietAt >= gap)) { done = true; try { fn(); } catch (e) { /* game's own error */ } return; }
+      timer = setTimeout(tick, 60);
+    };
+    timer = setTimeout(tick, 0);
+    return function () { done = true; if (timer) clearTimeout(timer); };
+  }
   // Is this line going to be read by an AI voice? (lang: as for speak). Games use it to leave out their own "voice" beeps.
   function aiVoice(lang) { return !!TTS && ttsMode === 'ai' && ttsWanted('x', typeof lang === 'string' && lang ? lang : USER_LANG, {}); }
   // aiVoiceCheck(lines, { lang, voice }) -> Promise<boolean>: will the AI voice read every one of these lines? The play
@@ -1150,6 +1176,9 @@
     voice: function (lang) { try { return voiceFor(lang); } catch (e) { return null; } },
     speak: speak,
     stopSpeaking: stopSpeaking,
+    // Moving on after speech: fn once the last line is finished (afterSpeech above); whether a line is playing or waiting.
+    afterSpeech: afterSpeech,
+    speaking: speaking,
     // AI voices (official games, when on): fetch lines ahead, and whether a language is read by an AI voice now.
     prefetchSpeech: prefetchSpeech,
     aiVoice: aiVoice,
