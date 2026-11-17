@@ -48,6 +48,7 @@ export const KEPT = {
   live_sets: 'the owner keeps their quiz set; school_id is cleared and it is no longer shared',
   school_requests: 'the request stays as a record; its school_id is cleared',
   teacher_trials: 'one free trial ever per school/teacher/email (no school data)',
+  game_folders: 'the owner keeps their folder of games; school_id is cleared and it is no longer shared',
 };
 
 /** Stripe subscriptions of an owner that will still charge: live mode always, test mode when the site runs on a test
@@ -124,6 +125,7 @@ export function deleteSchool(by, schoolId) {
     delIn('lesson_steps', 'lesson_id', lessonIds); delIn('lesson_standards', 'lesson_id', lessonIds);
     if (lessonIds.length) q.run(`UPDATE live_sets SET lesson_id=NULL WHERE lesson_id IN (${marks(lessonIds)})`, ...lessonIds);
     q.run('UPDATE live_sets SET school_id=NULL, shared=0 WHERE school_id=?', s);
+    q.run('UPDATE game_folders SET school_id=NULL, shared_at=NULL WHERE school_id=?', s);   // a teacher's folder stays theirs, unshared
     // Accounts the school made: switched off, as when they leave the school (schools.js removeMember).
     for (const id of schoolAccounts) {
       q.run('UPDATE users SET banned=1 WHERE id=?', id); q.run('DELETE FROM sessions WHERE user_id=?', id);
