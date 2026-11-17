@@ -205,6 +205,9 @@
       "invoice": {
         "text": "For a purchase order, or a school that pays by bank transfer or cheque. We send a yearly invoice by email, due in 30 days."
       }
+    },
+    "joinStaff": {
+      "cancelled": "This invite was cancelled. Ask the school if you think that's a mistake."
     }
   },
   "lessons": {
