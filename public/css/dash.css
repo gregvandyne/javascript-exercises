@@ -810,6 +810,47 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-fchain{gap:.1em .3em;font-size:clamp(1rem,min(5.5cqh,4cqi),2.2rem)}
 .dt-fchain .dt-frac{font-size:1em}
 [dir="rtl"] .dt-fop .dt-fbar{transform:none}
+/* fractions, dividing as measuring (docs/decisions.md "Classroom dashboards: fractions, dividing as measuring"): the
+   sentence (always stacked − and +), the picture (as big hidden as shown), then Fit one more, Next step and the steps */
+.dt-fop{gap:8px}
+.dt-fs-tight .dt-foeq{gap:8px}
+.dt-fdraw{flex:1 1 0;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;min-width:0}
+.dt-fdraw .dt-fbars{max-width:none}
+.dt-fdraw .dt-fareabox{flex:1 1 0;height:100%;min-width:0;min-height:0}
+.dt-fbarc{min-width:0;height:var(--bh)}
+.dt-fstrip{display:block;overflow:visible}
+.dt-ftag{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:1.05rem;line-height:1;white-space:nowrap}
+.dt-ftag .dt-frac{font-size:1em}
+.dt-ftsign{font-size:1.2em}
+.dt-fmix{display:inline-flex;align-items:center;gap:.12em;font-weight:800}
+.dt-fmix .dt-frac{font-size:.8em}
+.dt-fans .dt-fmix .dt-frac{font-size:.8em}
+.dt-fguess{display:inline-flex;align-items:center;gap:6px}
+.dt-fdo-i{min-width:44px;padding-inline:10px}
+.dt-fcheck-i{min-width:40px;padding-inline:10px}
+.dt-fgin.input{width:5.2em;min-height:40px;padding:4px 6px;text-align:center;font-weight:800;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.dt-fdo{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 8px;max-width:100%}
+.dt-fsteps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px;min-width:0}
+.dt-fstep{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:color-mix(in srgb,var(--line) 55%,var(--card));font-weight:700;font-size:.92rem;line-height:1.2}
+.dt-fstep-n{padding:3px;position:relative}
+.dt-fstepn{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;border-radius:50%;background:var(--text);color:var(--card);font-size:.875rem}
+.dt-ffb{font-weight:800;font-size:clamp(.95rem,min(5.5cqh,3.6cqi),1.3rem)}
+.dt-ffb.is-right{color:var(--ok)}
+.dt-ffb.is-simplify{color:var(--text)}
+.dt-ffb.is-no,.dt-ffb.is-unread{color:var(--text-2)}
+.dt-fcopy{fill:none;stroke:var(--text);stroke-width:2.5}
+.dt-fcopyw{stroke:var(--text);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.dt-fghost{fill:none;stroke:var(--text);stroke-width:2;stroke-dasharray:6 4;opacity:.75;vector-effect:non-scaling-stroke}
+.dt-fcl{fill:#141414;stroke:#fff;stroke-width:3px;paint-order:stroke;font:800 14px var(--font);vector-effect:non-scaling-stroke}
+.dash-projector .dt-fstrip .dt-fcl{font-size:16px}
+.dt-fqout{fill:none;stroke:var(--text);stroke-width:2.5;stroke-dasharray:7 5;opacity:.8;vector-effect:non-scaling-stroke}
+.dt-fqt{fill:var(--text-2);font:800 28px var(--font)}
+.dt-fsent{align-items:flex-end}
+.dt-fsent .dt-fsg{width:30px;height:auto;align-self:center}
+.dt-fterm .dt-fpies{height:auto;display:flex;flex-wrap:wrap;width:calc(var(--cols,1) * var(--ps) + (var(--cols,1) - 1) * 6px)}
+.dt-fterm .dt-fpies.dt-fmany{flex-wrap:nowrap;width:auto}
+.dt-ftimes{font-weight:800;font-size:1.3rem;white-space:nowrap}
+.dt-fsent .dt-funder{height:auto;min-height:36px}
 /* number line */
 .dt-nl{cursor:crosshair;touch-action:none}
 .dt-tick{stroke:var(--text);stroke-width:2.5}
@@ -1439,6 +1480,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-frow{min-height:56px;height:64px;flex:none}
   .dt-f-circle .dt-frow{height:auto}
   .dt-fop{height:auto}
+  .dt-fdraw{flex:none}
   .dt-fareabox{flex:none;height:min(78vw,300px)}
   .dt-mats{min-height:240px}
   .dt-pv{min-height:200px}

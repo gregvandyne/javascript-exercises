@@ -81,9 +81,9 @@ const SHOTS = [
   { tier: 'launchpad', step: '2.3', state: 'hop-to-20', slug: 'lily-hop', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=twenty&lock=1', prep: lilyHop, cdp: true },
   // Launchpad Unit 3, The Tens Trellis: Crate Stacker, a 3D game, in each step's own chapter, the whole phone screen as
   // the band (the yard and the town fill it, the words and the number chip on top, the big buttons at the bottom).
-  { tier: 'launchpad', step: '3.1', state: 'load-the-truck', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1', prep: crateStacker, cdp: true },
-  { tier: 'launchpad', step: '3.2', state: 'which-has-more', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=greater&lock=1', prep: crateStacker, cdp: true },
-  { tier: 'launchpad', step: '3.3', state: 'add-more-crates', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=add&lock=1', prep: crateStacker, cdp: true },
+  { tier: 'launchpad', step: '3.1', state: 'load-the-truck', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=build&lock=1&mode=same', prep: crateStacker, cdp: true },
+  { tier: 'launchpad', step: '3.2', state: 'which-has-more', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=greater&lock=1&mode=same', prep: crateStacker, cdp: true },
+  { tier: 'launchpad', step: '3.3', state: 'add-more-crates', slug: 'crate-stacker', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=add&lock=1&mode=same', prep: crateStacker, cdp: true },
   // Launchpad Unit 4, The Balance Bridge: Balance Bridge, a 3D game, in each step's own chapter, the whole phone screen
   // as the band (the castle and the see-saw bridge fill it, the words and the sum on top, the big buttons at the bottom).
   { tier: 'launchpad', step: '4.1', state: 'same-on-both-sides', slug: 'balance-bridge', narrow: { width: 390, height: 580, from: 0, to: 580 }, params: 'chapter=equal&lock=1', prep: balanceBridge, cdp: true },

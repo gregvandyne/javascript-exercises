@@ -138,9 +138,9 @@
 /* ===== Sky Lines' rounds: plain data and functions (no DOM, no 3D), so tests/unit/sky-lines.test.js can run this
    block on its own. A wire is a straight line y = mx + b on a grid of 12 by 8 squares: `m` is its steepness (the
    slope: how far it goes up for each step across; below zero when it goes down) and `b` its start height (its height
-   at 0 across). A round is made from its chapter, its number (1-6) and the lap (0 the first time through, so the
-   first six rounds are always the same; a replay takes the next of each round's three sets of numbers and shuffles
-   its tiles). Every round has `ask` and `said` (lines of the words table with their numbers, said one after the
+   at 0 across). A round is made from its chapter, its number (1-6) and the lap (0 is a fixed lap the tests pin;
+   each play takes a new random lap from 1 up, so a replay takes other sets of each round's three sets of numbers,
+   mixed round by round, and shuffles its tiles). Every round has `ask` and `said` (lines of the words table with their numbers, said one after the
    other), `chip` and `chipDone` (what the chip shows before and after), `pic` (what the board draws as asked and as
    found: islands, wires, stairs, a platform, tables, lines of maths) and one of four ways to answer:
      input 'wire'   set the wire's steepness with a dial, or its steepness and its start height with two (`dials`);
@@ -397,7 +397,10 @@
     if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
     lap = lap || 0;
     var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n };
-    if (chapter === 'slope') slopeRound(n, lap % 3, r, out); else if (chapter === 'rule') ruleRound(n, lap % 3, r, out); else meetRound(n, lap % 3, r, out);
+    // which of the round's three sets: lap % 3 for laps 0-2 (every round the same set); later laps mix them, so
+    // the rounds of one lap come from different sets (27 mixes a chapter)
+    var v = (lap + Math.floor(lap / 3) * (n - 1) + Math.floor(lap / 9) * (n - 1) * (n - 1)) % 3;
+    if (chapter === 'slope') slopeRound(n, v, r, out); else if (chapter === 'rule') ruleRound(n, v, r, out); else meetRound(n, v, r, out);
     return out;
   }
   function onDial(d, v) { return typeof v === 'number' && v >= d.min && v <= d.max && Math.round((v - d.min) / d.by) * d.by + d.min === v; }
@@ -458,7 +461,26 @@
   }
   /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
   function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
-  root.SkyLines = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, COLS: COLS, ROWS: ROWS, round: round, judge: judge, params: params, shown: shown, nt: nt, ft: ft, mt: mt, expr: expr, rule: rule, pt: pt, ratio: ratio, wireOf: wireOf };
+  /* A play's lap (see the top of this block): lapOf(chapter, last, rand) tries random laps from 1 up and takes the
+     first whose rounds all ask different things and share none with the lap `last` (the last play of this chapter);
+     else the try that came closest. rand: a function giving 0..1. sig(round): what a round asks, as text (its
+     numbers and words; not the order of its tiles, its hints or what is said after). */
+  var NOT_ASKED = ['n', 'choices', 'opts', 'hints', 'said', 'show', 'shown', 'items', 'total', 'chip', 'chipDone', 'draws', 'slips', 'lv', 'rv', 'L', 'R'];
+  function sig(rd) { var o = {}; for (var k in rd) if (Object.prototype.hasOwnProperty.call(rd, k) && NOT_ASKED.indexOf(k) < 0) o[k] = rd[k]; return JSON.stringify(o); }
+  function lapOf(chapter, last, rand) {
+    var count = ROUNDS, prev = {}, best = 0, worst = Infinity, i, j, lap, seen, bad, k;
+    last = last >>> 0;
+    if (last > 0) for (j = 1; j <= count; j++) prev[sig(round(chapter, j, last))] = 1;
+    for (i = 0; i < 60; i++) {
+      lap = 1 + Math.floor(rand() * 999999); if (lap === last) continue;
+      seen = {}; bad = 0;
+      for (j = 1; j <= count; j++) { k = sig(round(chapter, j, lap)); bad += seen[k] ? 100 : prev[k] ? 1 : 0; seen[k] = 1; }
+      if (!bad) return lap;
+      if (bad < worst) { worst = bad; best = lap; }
+    }
+    return best || (last === 1 ? 2 : 1);
+  }
+  root.SkyLines = { sig: sig, lapOf: lapOf, CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, COLS: COLS, ROWS: ROWS, round: round, judge: judge, params: params, shown: shown, nt: nt, ft: ft, mt: mt, expr: expr, rule: rule, pt: pt, ratio: ratio, wireOf: wireOf };
 })(typeof window !== 'undefined' ? window : globalThis);
 /* sky-lines:end */
 </script>
@@ -646,7 +668,7 @@ const ICON = { slope: '📐', rule: '📈', meet: '🤝' };
 
 /* ---------- state ---------- */
 const P = SL.params(B && B.params);
-const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', mode: 'ask', value: null, dial: 'm', draw: null, hero: null, fast: false, lines: null, reported: 0, done: {}, tick: 0, flags: 0 };
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, pin: null, R: null, phase: 'idle', mode: 'ask', value: null, dial: 'm', draw: null, hero: null, fast: false, lines: null, reported: 0, done: {}, tick: 0, flags: 0 };
 try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of SL.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
 const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
 
@@ -1100,9 +1122,26 @@ function showMenu() {
 }
 
 /* ---------- a chapter: six rounds ---------- */
+/* Each play of a chapter (the first, and every Play again) takes its own lap: a random one whose rounds all ask
+   different things and none of what the last play of that chapter asked (its lap is kept in the game's save, BRB.storage,
+   best effort). The fixed lap 0 only when a test pins it (window.__brbTest.lap). */
+const LAPS_KEY = 'sky-lines.laps';
+// fresh numbers from the browser; without them a plain stream, which still never gives the last play's lap (lapOf)
+let spare = 0x9E3779B9;
+function rand01() { try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch (e) { spare = (Math.imul(spare, 1664525) + 1013904223) >>> 0; return spare / 4294967296; } }
+function playLap(chapter) {
+  if (S.pin != null) { const p = S.pin; S.pin = null; return p; }
+  let last = null;
+  try { last = B && B.storage ? B.storage.get(LAPS_KEY) : null; } catch (e) { last = null; }
+  if (!last || typeof last !== 'object' || Array.isArray(last)) last = {};
+  const lap = SL.lapOf(chapter, +last[chapter] || 0, rand01);
+  last[chapter] = lap;
+  try { if (B && B.storage) B.storage.set(LAPS_KEY, last); } catch (e) { /* no save here: the lap is still new */ }
+  return lap;
+}
 function startChapter(chapter) {
   if (!SL.CHAPTERS.includes(chapter)) return showMenu();
-  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
+  S.chapter = chapter; S.lap = playLap(chapter); S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
   setFlags(0);
   if (S.hero) S.hero.play('idle');
   nextRound();
@@ -1128,7 +1167,7 @@ function finish() {
   try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
   S.R = null; solo(SL.ROUNDS);
   g.celebrate(S.hero, '');   // the cheer; the words are on the card
-  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => startChapter(S.chapter) }];
   if (!S.lock) buttons.push({ id: 'menu', icon: '🪁', label: fmt('btn.menu'), go: showMenu });
   card('end', { title: fmt('win'), sub: fmt('ch.' + S.chapter), line: 'win.card', buttons });
   frame();
@@ -1243,8 +1282,10 @@ function clearTo(p) {
 }
 const boxPts = pts => { const p = pts.map(scr); return [Math.min(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[0])), Math.max(...p.map(q => q[1]))].map(n => Math.round(n)); };
 window.__sl = window.__brbTest = {
-  state: () => ({ game: 'sky-lines', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: SL.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+  state: () => ({ game: 'sky-lines', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, lap: S.lap, rounds: SL.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
     ...(S.R && S.screen === 'play' ? { ...S.R, mode: S.mode, value: S.value, dial: S.dial, tried: S.draw, moving: tweens.length, onStage: { board: stage.children.includes(board) && board.visible, flags: rack.children.length } } : {}) }),
+  /** lap(n): the next play takes lap n (0: the fixed lap) instead of a random one. */
+  lap: n => { S.pin = Math.max(0, Math.floor(+n) || 0); },
   fast: on => { S.fast = on !== false; },
   /** 'set' a plan, 'run' it, 'answer' a tile, or 'solve' the round the right way. */
   act: (name, arg) => {
