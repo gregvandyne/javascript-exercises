@@ -71,11 +71,12 @@ export async function adminPage(browser) {
 /** Studio state for a game, as the signed-in owner sees it. */
 export const studioState = async (page, id) => (await page.request.get(`/api/studio/${id}`)).json();
 
-/** Start a game from a "Start from" template, give it a unique name, and return { id, slug, title }. */
+/** Start a game from a template (as the setup steps do), give it a unique name, and return { id, slug, title }. */
 export async function templateGame(page, { title = uniq('Game '), template = 'catch' } = {}) {
-  await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click(`.tplcard[data-template="${template}"]`)]);
-  const id = page.url().split('/studio/')[1];
+  const made = await page.request.post('/api/studio/new', { data: { template } });
+  expect(made.ok()).toBeTruthy();
+  const { id, url } = await made.json();
+  await page.goto(url);
   await expect(page.locator('#st-frame')).toHaveAttribute('src', /\/frame\//);
   await page.fill('#st-title', title); await page.press('#st-title', 'Enter');
   await expect.poll(async () => (await studioState(page, id)).game.title).toBe(title);

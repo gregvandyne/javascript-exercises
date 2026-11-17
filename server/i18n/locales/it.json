@@ -1424,14 +1424,9 @@
       "text": "Racconta la tua idea al Costruttore. Lui crea il gioco e tu puoi continuare a cambiarlo."
     },
     "newGame": "Nuovo gioco",
-    "startFrom": "Parti da un modello",
-    "startFromLabel": "Parti da {title}",
-    "worlds": "Inizia in un mondo 3D",
-    "startInLabel": "Inizia nel mondo 3D {title}",
-    "twoPlayers": "2 giocatori",
     "updateWaiting": "Aggiornamento in attesa di revisione",
     "changed": "Modificato {when}",
-    "empty": "Tocca «Nuovo gioco» o scegli un modello qui sopra. I tuoi giochi compariranno qui.",
+    "empty": "Tocca «Nuovo gioco» per iniziarne uno. I tuoi giochi compariranno qui.",
     "rename": "Rinomina",
     "delete": "Elimina",
     "status": {
@@ -1944,7 +1939,6 @@
     },
     "build": {
       "gettingReady": "Preparazione…",
-      "needsNewer": "Serve un dispositivo più recente",
       "renameTitle": "Rinomina il gioco",
       "nameLabel": "Nome del gioco",
       "save": "Salva",

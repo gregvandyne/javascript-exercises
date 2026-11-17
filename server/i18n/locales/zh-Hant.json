@@ -1423,14 +1423,9 @@
       "text": "把你的點子告訴小幫手。它會做出遊戲，你還可以一直修改。"
     },
     "newGame": "新遊戲",
-    "startFrom": "從範本開始",
-    "startFromLabel": "從 {title} 開始",
-    "worlds": "從 3D 世界開始",
-    "startInLabel": "從 3D 世界「{title}」開始",
-    "twoPlayers": "2 位玩家",
     "updateWaiting": "更新等待審核中",
     "changed": "{when}修改",
-    "empty": "點「新遊戲」或選上面的範本。你的遊戲會出現在這裡。",
+    "empty": "點「新遊戲」開始做一個。你的遊戲會出現在這裡。",
     "rename": "改名",
     "delete": "刪除",
     "status": {
@@ -1943,7 +1938,6 @@
     },
     "build": {
       "gettingReady": "準備中…",
-      "needsNewer": "需要較新的裝置",
       "renameTitle": "幫遊戲改名",
       "nameLabel": "遊戲名稱",
       "save": "儲存",

@@ -239,7 +239,6 @@ test('every site language has its own words for the picker, the worlds and the c
     for (const w of K.WORLD_IDS) assert.ok(d.studio.worlds.names[w], `${code}: ${w}`);
     for (const h of K.CHARACTER_IDS) assert.ok(d.studio.heroes.names[h], `${code}: ${h}`);
     for (const k of ['worldUse', 'heroUse']) assert.match(d.js.studio[k], /\{name\}/, `${code}: js.studio.${k}`);
-    assert.ok(d.build.worlds, code); assert.match(d.build.startInLabel, /\{title\}/, code);
     assert.equal(new Set(Object.values(d.studio.worlds.names)).size, K.WORLD_IDS.length, `${code}: no two worlds share a name`);
     assert.equal(new Set(Object.values(d.studio.heroes.names)).size, K.CHARACTER_IDS.length, `${code}: no two characters share a name`);
     if (code !== 'en') assert.notDeepEqual(d.studio.picker, read('en').studio.picker, `${code}: translated, not copied`);
@@ -633,12 +632,9 @@ test('every world and character has its pictures', () => {
   for (const c of K.KIT2_CHARACTERS) assert.ok(fs.statSync(path.join(ROOT, 'public/img/kit2/heroes', `${c.id}.webp`)).size > 500, c.id);
 });
 
-test('the Build page and the Studio offer every world and character, with pictures; a world card starts a Kit 2 game', async () => {
+test('the Studio offers every world and character, with pictures; a world starts a Kit 2 game', async () => {
   const c = client();
   assert.equal((await c('/api/auth/signup', { method: 'POST', body: { username: 'WorldPicker', password: 'secret12' } })).status, 200);
-  const build = await c('/build');
-  for (const w of CAT.KIT2_WORLDS) assert.match(build.text, new RegExp(`data-template="oomba3d" data-world="${w.id}"[^>]*>\\s*<span class="tplcover tplpic"><img src="/img/kit2/worlds/${w.id}-card\\.webp"`), w.id);
-  assert.match(build.text, /Start in a 3D world/);
   assert.equal((await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'candy-land' } })).status, 400);
   assert.equal((await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d' } })).status, 400);
   const made = await c('/api/studio/new', { method: 'POST', body: { template: 'oomba3d', world: 'medieval-village' } });

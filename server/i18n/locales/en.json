@@ -1424,14 +1424,9 @@
       "text": "Tell the Builder your idea. It builds the game, and you can keep changing it."
     },
     "newGame": "New game",
-    "startFrom": "Start from",
-    "startFromLabel": "Start from {title}",
-    "worlds": "Start in a 3D world",
-    "startInLabel": "Start in the 3D world {title}",
-    "twoPlayers": "2 players",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
-    "empty": "Tap “New game” or pick a starter above. Your games will show up here.",
+    "empty": "Tap “New game” to start one. Your games will show up here.",
     "rename": "Rename",
     "delete": "Delete",
     "status": {
@@ -1956,7 +1951,6 @@
     },
     "build": {
       "gettingReady": "Getting ready…",
-      "needsNewer": "Needs a newer device",
       "renameTitle": "Rename game",
       "nameLabel": "Game name",
       "save": "Save",

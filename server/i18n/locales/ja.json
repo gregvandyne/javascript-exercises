@@ -1423,14 +1423,9 @@
       "text": "ビルダーにアイデアを話してください。ゲームをつくってくれて、何度でもかえられます。"
     },
     "newGame": "新しいゲーム",
-    "startFrom": "ここからはじめる",
-    "startFromLabel": "{title}からはじめる",
-    "worlds": "3Dワールドから はじめる",
-    "startInLabel": "3Dワールド「{title}」から はじめる",
-    "twoPlayers": "2人用",
     "updateWaiting": "アップデートがチェック待ち",
     "changed": "{when}にへんこう",
-    "empty": "「新しいゲーム」をタップするか、上のスターターをえらんでください。きみのゲームはここに出てきます。",
+    "empty": "「新しいゲーム」をタップしてはじめよう。きみのゲームはここに出てきます。",
     "rename": "なまえをかえる",
     "delete": "けす",
     "status": {
@@ -1943,7 +1938,6 @@
     },
     "build": {
       "gettingReady": "じゅんび中…",
-      "needsNewer": "もっと新しい きかいが ひつよう",
       "renameTitle": "ゲームのなまえをかえる",
       "nameLabel": "ゲームの名前",
       "save": "ほぞん",

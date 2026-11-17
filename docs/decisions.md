@@ -7260,3 +7260,17 @@ screens the model area has a fixed height and the `@container (max-aspect-ratio:
   unchanged (the rule is phone-only).
 - **Check:** `npm run dash:fit` now fails when a fraction, decimal, percent card is under 96px wide, or when the cards
   sit over the hundred grid (the column layout) and are narrower than the tool.
+
+## Build page: no starter cards (17 Nov 2026)
+Owner: "lets get rid of the start in a world and start from sections here because this is a bit redundant with the
+walkthrough now available." The Build page (`/build`) showed two grids of cards above My games: "Start in a 3D world"
+(the twelve Kit 2 worlds) and "Start from" (the classic templates). The setup steps behind "New game" (`/build/new`,
+"Help me choose" or "I know what I want") already offer the same starts, so the page now has the "New game" banner and
+My games only.
+- Removed: both sections (server/routes/studio.js), their click and "Needs a newer device" code (public/js/build.js),
+  their styles (`.tplgrid`, `.tplcard`, `.tpl-*` in public/css/studio.css), and the keys only they used (`build.worlds`,
+  `build.startFrom`, `build.startFromLabel`, `build.startInLabel`, `build.twoPlayers`, `js.build.needsNewer`) in every
+  language and in notes.json. `POST /api/studio/new` with a template or world is unchanged (the setup steps use it).
+- The empty My games text no longer says "or pick a starter above": "Tap “New game” to start one." in all 12 languages.
+- Tests: builder-http checks the cards are gone; the e2e helper `templateGame` (and accounts.spec) now make the game
+  with `POST /api/studio/new` instead of clicking a card.

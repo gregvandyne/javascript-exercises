@@ -1424,14 +1424,9 @@
       "text": "Erzähl dem Baumeister deine Idee. Er baut das Spiel, und du kannst es immer weiter ändern."
     },
     "newGame": "Neues Spiel",
-    "startFrom": "Fang mit einer Vorlage an",
-    "startFromLabel": "Mit {title} anfangen",
-    "worlds": "Starte in einer 3D-Welt",
-    "startInLabel": "In der 3D-Welt {title} starten",
-    "twoPlayers": "2 Spieler",
     "updateWaiting": "Update wartet auf Prüfung",
     "changed": "Geändert {when}",
-    "empty": "Tipp auf „Neues Spiel“ oder such dir oben eine Vorlage aus. Deine Spiele erscheinen dann hier.",
+    "empty": "Tipp auf „Neues Spiel“, um eins anzufangen. Deine Spiele erscheinen dann hier.",
     "rename": "Umbenennen",
     "delete": "Löschen",
     "status": {
@@ -1944,7 +1939,6 @@
     },
     "build": {
       "gettingReady": "Wird vorbereitet…",
-      "needsNewer": "Braucht ein neueres Gerät",
       "renameTitle": "Spiel umbenennen",
       "nameLabel": "Name des Spiels",
       "save": "Speichern",
