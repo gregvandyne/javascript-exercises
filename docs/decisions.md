@@ -6830,6 +6830,13 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   Its safety scan now also reads `dash-shapeboard.js`. New: `tests/unit/dash-shapeboard.test.js`. The fit check has three
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
+- **Fixed (17 Nov 2026): the board drawn again every frame on the projector.** Whether the measures go beside the board
+  was decided from the stage's height, but the stage is taller with the readout beside it than with it underneath: at
+  the smallest size on the projector (605 × 383 with the readout under, 605 × 448 beside) each draw moved the readout and
+  the next moved it back, so the board was redrawn every frame with its words sized for the other arrangement (the fit
+  check's "Geoboard: "A" is 10.1px (needs 13)" in some runs, and a page too busy to click the layout chip). The room is
+  now the stage plus the readout when it is underneath, the same either way, and once beside it stays there until the
+  room is 16px short of the threshold. The fit check is unchanged.
 
 ## Classroom dashboards: the schedule at every time of day (16 Nov 2026)
 The schedule failed the fit check at some times of day and not others (a period row cut in half on the projector, a list

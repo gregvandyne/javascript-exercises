@@ -448,7 +448,12 @@ export function geoboard(body, s, ctx) {
   // ---------------------------------------------------------------- drawing
   function render() {
     // The chrome: a rail and a bar on a wide widget, one compact bar on a narrow one, a phone or the projector.
-    const sw = T.stage.clientWidth, sh = T.stage.clientHeight, phone = matchMedia('(max-width: 719px)').matches;
+    // The room is the stage and, when the readout is under it, the readout too: measured the same whichever side the
+    // readout is on. (The stage alone grows when the readout moves beside the board, which could flip the choices below
+    // back, and the board was then drawn again every frame, its words sized for the other arrangement.)
+    const sw = T.stage.clientWidth, phone = matchMedia('(max-width: 719px)').matches;
+    const under = !ui.side && T.read.isConnected && T.read.getClientRects().length;
+    const sh = T.stage.clientHeight + (under ? Math.max(0, T.read.getBoundingClientRect().bottom - T.stage.getBoundingClientRect().bottom) : 0);
     const wide = !projecting() && !phone && sw >= 620 && sh >= 400;
     // The chrome is built again when the room changes kind, or the projector is turned on or off (it shows the title as
     // text and reduces the chrome).
@@ -456,7 +461,8 @@ export function geoboard(body, s, ctx) {
     if (mode !== ui.chrome) { ui.wide = wide; ui.chrome = mode; closeMenu(); buildChrome(); }
     // Where a square board leaves room at its side (a wide tool, the projector), the measures are read out beside it;
     // otherwise under it.
-    const side = !phone && !ctx.editing && sw >= 560 && sw - sh >= (wide ? 140 : 220);
+    // A little slack once beside, so a pixel or two either way (a readout line wrapping) doesn't move it back and forth.
+    const side = !phone && !ctx.editing && sw >= 560 && sw - sh >= (wide ? 140 : 220) - (ui.side ? 16 : 0);
     if (side !== ui.side) {
       ui.side = side; root.classList.toggle('has-side', side);
       if (side) { main.appendChild(T.read); T.read.classList.add('gb-sideread'); } else { T.stage.after(T.read); T.read.classList.remove('gb-sideread'); }
