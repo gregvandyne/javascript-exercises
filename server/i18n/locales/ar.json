@@ -31,6 +31,9 @@
       "light": "فاتح",
       "dark": "داكن"
     },
+    "acct": {
+      "allSettings": "كل الإعدادات"
+    },
     "footer": {
       "tagline": "© Oomba Academy · العب مجانًا واصنع مجانًا",
       "safety": "الأمان",

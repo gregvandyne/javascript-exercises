@@ -30,6 +30,9 @@
       "light": "淺色",
       "dark": "深色"
     },
+    "acct": {
+      "allSettings": "所有設定"
+    },
     "footer": {
       "tagline": "© Oomba Academy · 免費玩、免費做",
       "safety": "安全",

@@ -7248,6 +7248,35 @@ games, have your kids build games too. Make it better than that."
 - The walkthrough video (scripts/dash-video.js) still opens on the old "Everyday" starter and makes its layouts from the
   New sheet; with the six made on a first visit it should switch between them instead before it is made again.
 
+## A quieter top bar (17 Nov 2026)
+Owner, with a screenshot of a school admin's header: "This is also too busy. Let's move light and dark mode under
+settings. Remove School because you can just click that when you click into the icon on the right to open up your
+account. Also move Plans to Settings as well"
+- **The avatar opens an account menu** (`accountMenu` in server/views/layout.js), signed in: Me (a grown-up has no Me
+  page, so no Me item), My school (school admins only: `adminSchools`, /school), then **Settings**: Theme (Same as my
+  device, Light, Dark), Plans (adults only, see below), All settings (`/me/settings`, or `/family/account` for a
+  grown-up). A `<details>` of plain links like the 🌐 picker, so it opens and picks with no JavaScript; public/js/app.js
+  adds Escape, outside-click and arrow keys, and the theme links switch at once (`data-theme-choice`). The avatar was a
+  plain link to /me before; that page is the menu's first item now. Signed out (and guests) the avatar is still the
+  Sign in link.
+- **Gone from the top bar and the phone tab bar, for every role:** the ☀️/🌙/🌓 theme menu (`themePicker` is replaced by
+  `themeLinks`), 🏛 School and ⭐ Plans. The school pages make Me current (`currentTab`). The 🌐 language picker stays.
+  A school admin's bar is Classroom · Learn · Play · (Live); their phone tab bar Classroom · Learn · Play · Me.
+- **Plans: adults only** (`plansInMenu` = `legalReader` and `familiesOn`: grown-ups, school staff and the platform admin,
+  while paid-plan pages are on). Kids and students no longer have a Plans link anywhere (until now everyone had one,
+  per "Plans page and the Basic plan" of 2026-10-27); /plans itself still opens for anyone and still tells a kid that a
+  grown-up buys plans. Prices stay on /plans only: the menu and the settings pages show the word Plans and a link.
+- **Signed out** (no account menu): the bar is Play · Learn · Build · Parents · Teachers (tab bar: Play · Learn · Build ·
+  Grown-ups · Sign in). Plans moved to the footer (while `familiesOn`), next to the landing page's pricing section and
+  footer link and the Plans buttons on /parents and /teachers, so a signed-out grown-up still reaches pricing from every
+  page. The theme moved to the footer as plain links, like the landing footer's theme switch.
+- **Settings pages:** `/me/settings` gains a Plans section for staff and the platform admin (`plansPanel`); a
+  grown-up's `/family/account` gains Appearance (the same theme form) and Plans.
+- **Words:** one new string, `layout.acct.allSettings` ("All settings"), in all 13 languages; the rest reuse
+  `me.settings.title`, `layout.theme.*`, `me.tiles.school`, `nav.plans` and `family.page.seePlans`.
+- Tests: tests/unit/nav-roles.test.js (every role's bars, the menu's items per role, the footer signed out, the settings
+  pages), plans.test.js, home-doors.test.js, nav-doors.test.js; tests/e2e/theme.spec.js drives the footer links and the
+  account menu with and without JavaScript.
 ## Number Quest: each level is its own street, on screen and in every count (17 Nov 2026)
 - Owner: "I am not seeing the difference between Pro and Explorer. It also says I have completed both Pro and Explorer even though I have only completed the Explorer."
 - Root cause 1 (look): the band switch worked (the choice is saved for a signed-in learner, grown-ups switch by `?street=`), but everything above the fold was the same on every level: the same "Number Quest · grades K–8" title, the same course-wide Tally Marks and daily goal, a "New here?" line even after a finished street, and the count. The level name and the units only showed far down the page, in a small chip row. Fix: a level banner right under the title (`#nqp-band`: "Your level" or "Now showing", the level's name and grades, its district, "Units 1–7, then the finale: <its finale>") with the level switcher inside it, one accent per level (Launchpad green, Explorer blue, Pro purple, mixed into the theme's card color so both themes work). "New here?" shows only to a learner with no step done on any street.

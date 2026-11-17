@@ -102,16 +102,22 @@ function school() {
 }
 
 // ---------------------------------------------------------------- the page and the menu
-test('/plans and the menu\'s Plans link: on for everyone while paid-plan pages are on, gone otherwise', async () => {
+test('/plans and its links: the account menu for adults, the footer signed out, never a kid\'s or a student\'s; gone while paid-plan pages are off', async () => {
   const k = kid(), g = grownup(), { teacher, student } = school();
-  for (const who of [null, signIn(k), signIn(g), signIn(teacher), signIn(student), signIn(auth.createGuest())]) {
+  const acct = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(s) || [''])[0];
+  const foot = s => (/<footer class="foot">[\s\S]*?<\/footer>/.exec(s) || [''])[0];
+  const bars = s => (/<header class="topbar">[\s\S]*?<\/header>/.exec(s) || [''])[0].replace(acct(s), '') + (/<nav class="tabbar"[\s\S]*?<\/nav>/.exec(s) || [''])[0];
+  for (const [who, where] of [[null, 'foot'], [signIn(auth.createGuest()), 'foot'], [signIn(g), 'menu'], [signIn(teacher), 'menu'], [signIn(k), null], [signIn(student), null]]) {
     // Play: '/' for the signed out and kids, /play for those whose first tab is another one.
-    const home = await call(who, '/play');
-    assert.match(home.text, /<a class="navlink" href="\/plans"[^>]*><span class="emo" aria-hidden="true">⭐<\/span>Plans<\/a>/);
-    assert.match(home.text, /<a class="tab" href="\/plans"/, 'also in the phone tab bar');
+    const home = (await call(who, '/play')).text;
+    assert.doesNotMatch(bars(home), /href="\/plans"/, 'never in the top bar or the phone tab bar');
+    if (where === 'menu') assert.match(acct(home), /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/);
+    else assert.doesNotMatch(acct(home), /href="\/plans"/);
+    if (where === 'foot') assert.match(foot(home), /<a href="\/plans">Plans<\/a>/); else assert.doesNotMatch(foot(home), /href="\/plans"/);
+    // Everyone may still open the page (a kid is told a grown-up buys plans).
     const r = await call(who, '/plans');
     assert.equal(r.status, 200);
-    assert.match(r.text, /<a class="navlink" href="\/plans" aria-current="page"/);
+    if (where === 'menu') assert.match(acct(r.text), /<a href="\/plans" aria-current="page">/);
   }
   assert.equal((await call(null, '/plans/schools')).status, 200);
   for (const off of [{ billingPublic: false }, { stripeApiKey: '' }]) {

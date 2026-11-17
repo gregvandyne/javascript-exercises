@@ -263,7 +263,7 @@ test('a. "Turn a lesson into a game" lands on a form that shows: the hide rule s
 });
 
 // ---------------------------------------------------------------- j. a solo teacher's first page
-test('j. a teacher alone in the school they made lands on the Classroom home at every sign-in; the School tab keeps the checklist; an appointed head does not', async () => {
+test('j. a teacher alone in the school they made lands on the Classroom home at every sign-in; School (in the account menu) keeps the checklist; an appointed head does not', async () => {
   const solo = auth.createUser({ username: 'SoloTeach', password: 'a-long-password-1', displayName: 'Ms Solo' });
   const school = S.createSchool(solo, { name: 'Solo Elementary' }).school;
   S.addMember(solo, school.id, solo.id, 'admin', { rosterName: 'Ms Solo' });
@@ -275,9 +275,10 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   const login = await req(null, '/api/auth/login', { method: 'POST', body: { username: 'SoloTeach', password: 'a-long-password-1' } });
   assert.equal(login.json.redirect, '/teach');
   assert.equal((await req(u, '/')).location, '/teach');
-  // Classroom first, then School: the setup checklist is one tap away.
+  // Classroom first; School (the setup checklist) is one tap away in the account menu behind the avatar.
   const shell = shellFor(u, { headers: {} });
-  assert.deepEqual(shell.tabs.slice(0, 2).map(x => x[1]), ['/teach', '/school']);
+  assert.deepEqual(shell.tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn']);
+  assert.match((await req(u, '/teach')).text, /<details class="acctpick" data-acctpick>[\s\S]*?<a href="\/school" >/);
   const sp = await req(u, '/school'); assert.equal(sp.location, `/school/${school.slug}`);
   assert.equal((await req(u, sp.location)).status, 200);
   // With a class, still the Classroom home.
@@ -287,7 +288,7 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   const two = S.createSchoolAccount(u, school.id, { rosterName: 'Mr Second', role: 'teacher' }).user;
   assert.equal(S.soloSchoolAdmin(auth.getUser(solo.id)), false);
   assert.equal(landingFor(auth.getUser(solo.id)), '/school');
-  assert.deepEqual(shellFor(auth.getUser(solo.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/school', '/teach']);
+  assert.deepEqual(shellFor(auth.getUser(solo.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn'], 'School stays in the account menu');
   assert.equal(S.soloSchoolAdmin(two), false, 'a teacher who runs no school');
   assert.equal(S.soloSchoolAdmin(mia), false); assert.equal(S.soloSchoolAdmin(null), false);
   // An admin of a new, empty school with other staff still signs in to its setup page.
@@ -298,7 +299,7 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
   assert.equal(S.soloSchoolAdmin(auth.getUser(head.id)), false, 'an appointed head, alone in the school');
   assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
   assert.equal(landingFor(auth.getUser(head.id)), '/school');
-  assert.deepEqual(shellFor(auth.getUser(head.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/school', '/teach']);
+  assert.deepEqual(shellFor(auth.getUser(head.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/teach', '/learn']);
   S.createSchoolAccount(head, big.id, { rosterName: 'Tom Teacher', role: 'teacher' });
   assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
 });

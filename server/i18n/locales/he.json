@@ -31,6 +31,9 @@
       "light": "בהיר",
       "dark": "כהה"
     },
+    "acct": {
+      "allSettings": "כל ההגדרות"
+    },
     "footer": {
       "tagline": "© Oomba Academy · משחקים בחינם, בונים בחינם",
       "safety": "בטיחות",

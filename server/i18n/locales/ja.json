@@ -30,6 +30,9 @@
       "light": "ライト",
       "dark": "ダーク"
     },
+    "acct": {
+      "allSettings": "すべての設定"
+    },
     "footer": {
       "tagline": "© Oomba Academy · あそぶのも、つくるのも、むりょう",
       "safety": "あんぜん",

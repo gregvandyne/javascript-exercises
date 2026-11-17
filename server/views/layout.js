@@ -70,25 +70,25 @@ export function landingFor(u) {
 }
 
 /**
- * The menus for one person (docs/decisions.md "Navigation shells" and "Play and Learn": one library on two shelves, Play
- * and Learn, that everyone shares, and a first tab built for each role) -> { role, tabs, top, meHref }. tabs is the phone
- * tab bar, last item the Me / Account / Sign in tab; top is the desktop top bar's links (the avatar button, meHref,
- * stands for Me or Account there). Each item is [key, href, emoji]. Search is the top bar's field (or round 🔎 button)
- * for everyone, not a tab. Play is '/' where '/' shows Play (landingFor null) and /play everywhere else. Plans is in every
- * list exactly while paid-plan pages are on (familiesOn). The first matching row wins:
- *   signed out or a guest   Play · Learn · Build · Grown-ups · (Plans) · Sign in   (top: Play · Learn · Build · (Plans) · Parents · Teachers)
- *   grown-up                Family · Play · Learn · Build · (Plans) · Account      (top: the same without Account)
- *   school admin            School · Classroom · Learn · Play · (Plans) · Me       (top: the same with (Live), without Me)
- *     …the only staff member of their school(s): Classroom · School · … (a solo teacher lands on the Classroom home)
- *   school staff            Classroom · Learn · Play · (Live) · (Plans) · Me       (top: the same without Me)
- *   platform admin          Play · Learn · Build · Friends · Schools · (Plans) · Me
- *   student                 Class · Play · Learn · Build · (Plans) · Me            (top: the same with Friends, without Me)
- *   kid                     Play · Learn · Build · Friends · (Plans) · Me          (top: the same without Me)
+ * The menus for one person (docs/decisions.md "Navigation shells", "Play and Learn" and "A quieter top bar": one library
+ * on two shelves, Play and Learn, that everyone shares, and a first tab built for each role) -> { role, tabs, top, meHref }.
+ * tabs is the phone tab bar, last item the Me / Account / Sign in tab; top is the desktop top bar's links (the avatar
+ * button, which opens the account menu signed in, stands for Me or Account there). Each item is [key, href, emoji].
+ * Search is the top bar's field (or round 🔎 button) for everyone, not a tab. Play is '/' where '/' shows Play
+ * (landingFor null) and /play everywhere else. Neither bar has Plans or School any more: Plans is in the account menu
+ * for grown-ups and staff (accountMenu) and in the footer signed out; School is in a school admin's account menu. The
+ * first matching row wins:
+ *   signed out or a guest   Play · Learn · Build · Grown-ups · Sign in   (top: Play · Learn · Build · Parents · Teachers)
+ *   grown-up                Family · Play · Learn · Build · Account      (top: the same without Account)
+ *   school staff            Classroom · Learn · Play · (Live) · Me       (top: the same without Me; a school admin's
+ *                                                                          Live is in the top bar only)
+ *   platform admin          Play · Learn · Build · Schools · Me
+ *   student                 Class · Play · Learn · Build · Me            (top: the same with Friends, without Me)
+ *   kid                     Play · Learn · Build · Friends · Me          (top: the same without Me)
  * Live (📡 /live, hosting) is there only while Oomba Live is on (liveOn). With STORY_BUILDER=1 every signed-in shell also
  * has Stories (🌙, /stories) after Build (or after Play where there is no Build).
  */
-export function shellFor(u, req) {
-  const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
+export function shellFor(u) {
   const [, , build, friends] = NAV;
   // Signed out, '/' is the teacher landing page (routes/landing.js, on unless LANDING_AT_ROOT=0), so Play goes to /play.
   const landingAtRoot = !u && process.env.LANDING_AT_ROOT !== '0';
@@ -100,45 +100,45 @@ export function shellFor(u, req) {
   // The Story Builder (routes/stories.js) for everyone signed in, only while STORY_BUILDER is on.
   const stories = config.storyBuilder ? [['stories', '/stories', '🌙']] : [];
   if (signedOut(u)) {
-    return { role: 'out', tabs: [play, learn, build, ['grownups', '/parents', '👪'], ...plans, ['signin', '/login', '🙂']],
-      top: [play, learn, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
+    return { role: 'out', tabs: [play, learn, build, ['grownups', '/parents', '👪'], ['signin', '/login', '🙂']],
+      top: [play, learn, build, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    const top = [['family', '/family', '👪'], play, learn, build, ...stories, ...plans];
+    const top = [['family', '/family', '👪'], play, learn, build, ...stories];
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
-    if (adminSchools(u).length > 0) {
-      // A solo teacher's first tab is Classroom (where they land); School, with its setup checklist, comes next.
-      const school = ['school', '/school', '🏛️'];
-      const head = [...(soloSchoolAdmin(u) ? [classroom, school] : [school, classroom]), learn, play, ...stories];
-      return { role: 'schoolAdmin', tabs: [...head, ...plans, me], top: [...head, ...live, ...plans], meHref: '/me' };
-    }
-    const top = [classroom, learn, play, ...stories, ...live, ...plans];
+    const head = [classroom, learn, play, ...stories];
+    // A school admin: School is in the account menu (accountMenu), and Live in the top bar only.
+    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, me], top: [...head, ...live], meHref: '/me' };
+    const top = [...head, ...live];
     return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
   if (isPlatformAdmin(u)) {
     // No Friends tab: the platform admin is staff, and staff have no friends (services/schools.js noFriendsAccount).
-    const top = [play, learn, build, ...stories, ['schools', '/admin/schools', '🏫'], ...plans];
+    const top = [play, learn, build, ...stories, ['schools', '/admin/schools', '🏫']];
     return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
   }
   // A teacher who left their school is an ordinary account again, but still has no friends (noFriendsAccount).
   const fr = noFriendsAccount(u) ? [] : [friends];
   if (inAnySchool(u)) {
     const head = [['class', '/classes', '🏫'], play, learn, build, ...stories];
-    return { role: 'student', tabs: [...head, ...plans, me], top: [...head, ...fr, ...plans], meHref: '/me' };
+    return { role: 'student', tabs: [...head, me], top: [...head, ...fr], meHref: '/me' };
   }
-  const top = [play, learn, build, ...stories, ...fr, ...plans];
+  const top = [play, learn, build, ...stories, ...fr];
   return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
 }
 /** The tab a page's `active` makes current in this shell: the game pages (home, play, search) are Play; the class pages
  *  are Classroom for staff, Class for students and Schools for the platform admin; hosting (live) is Live where there is
- *  a Live link, else Classroom; the parent and teacher pages are Grown-ups. */
+ *  a Live link, else Classroom; the school pages are Me (School is in the account menu); the parent and teacher pages are
+ *  Grown-ups. */
 export function currentTab(shell, active) {
   const has = k => shell.tabs.some(([x]) => x === k) || shell.top.some(([x]) => x === k);
   if (active === 'home' || active === 'search' || active === 'play') return has('play') ? 'play' : active;
   if (active === 'classes') return ['classroom', 'class', 'schools'].find(has) || active;
   if (active === 'live') return has('live') ? 'live' : has('classroom') ? 'classroom' : active;
+  // A school admin's School is in the account menu behind the avatar: on the school pages, Me is current.
+  if (active === 'school') return has('school') ? 'school' : has('me') ? 'me' : active;
   return active;
 }
 
@@ -169,16 +169,50 @@ export function langPicker(req) {
   </details>`;
 }
 
-/** The theme menu (☀️ Light, 🌙 Dark, 🌓 Same as my device), built like the language picker: plain links that work with no
- *  JavaScript. app.js switches at once instead, using data-theme-choice and data-label. */
-export function themePicker(req) {
+/** The theme choice (☀️ Light, 🌙 Dark, 🌓 Same as my device) as plain links that work with no JavaScript (?theme=, which
+ *  the server saves before redirecting back); app.js switches at once instead, using data-theme-choice. In the account
+ *  menu (accountMenu) signed in and in the footer signed out (docs/decisions.md "A quieter top bar"). */
+export function themeLinks(req, { cls = 'theme-list', labelledby = '' } = {}) {
   const t = tReq(req); const cur = THEMES.includes(req.theme) ? req.theme : 'system';
   const label = th => t('layout.theme.button', { theme: t(`layout.theme.${th}`) });
-  return html`<details class="themepick" data-themepick>
-    <summary class="theme-btn" aria-label="${label(cur)}" title="${t('layout.theme.title')}"><span class="theme-ico" aria-hidden="true">${THEME_ICONS[cur]}</span></summary>
-    <div class="theme-menu">
-      <p class="lang-head" id="theme-head">${t('layout.theme.title')}</p>
-      <ul class="theme-list" aria-labelledby="theme-head">${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${label(th)}" ${th === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${th === cur ? '✓' : ''}</span><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></a></li>`)}</ul>
+  return html`<ul class="${cls}"${labelledby ? raw(` aria-labelledby="${labelledby}"`) : ''}>${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${label(th)}" ${th === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${th === cur ? '✓' : ''}</span><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></a></li>`)}</ul>`;
+}
+
+/** Who sees Plans in the account menu and on the settings page: grown-ups, school staff and the platform admin (the
+ *  adults, legalReader), only while paid-plan pages are on (familiesOn). Never a kid or a student: kids are never sold
+ *  to (they can still open /plans, which tells them a grown-up buys plans). */
+export const plansInMenu = (u, req) => legalReader(u) && familiesOn(req);
+
+/**
+ * The account menu behind the avatar (signed in only; signed out the avatar is the Sign in link), a <details> of plain
+ * links like the language picker, so it works with no JavaScript (app.js adds Escape, outside-click and arrow keys):
+ *   Me (or Account, a grown-up's settings page) · My school (a school admin: /school) ·
+ *   Settings: Theme (Light, Dark, Same as my device), Plans (adults, plansInMenu), All settings (/me/settings or
+ *   /family/account).
+ */
+export function accountMenu(req, { shell, name, badge, active }) {
+  const t = tReq(req); const u = req.user;
+  const grownup = shell.role === 'grownup';
+  const settingsHref = grownup ? '/family/account' : '/me/settings';
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const plansKey = tabKey(t, 'plans');
+  const school = !grownup && adminSchools(u).length > 0;
+  // on: the page being shown is this item's (aria-current, as in the bars).
+  const item = (href, emo, label, { on = req.path === href, attr = '', extra = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${emo}</span><span>${label}</span>${extra}</a></li>`;
+  return html`<details class="acctpick" data-acctpick>
+    <summary class="me-btn${active ? ' is-current' : ''}" aria-label="${t('layout.meLabel', { name })}">${avatar(u, 38)}<span class="name">${name}</span>${badge('me')}</summary>
+    <div class="acct-menu">
+      ${grownup ? '' : html`<ul class="acct-list">
+        ${item('/me', u.photo_at ? '🙂' : u.avatar, t('nav.me'), { extra: badge('me') })}
+        ${school ? item('/school', '🏛️', t('me.tiles.school'), { on: req.path === '/school' || req.path.startsWith('/school/') }) : ''}
+      </ul>`}
+      <p class="lang-head" id="acct-set-head">${t('me.settings.title')}</p>
+      <p class="acct-sub" id="acct-theme-head">${t('layout.theme.title')}</p>
+      ${themeLinks(req, { cls: 'acct-list acct-themes', labelledby: 'acct-theme-head' })}
+      <ul class="acct-list" aria-labelledby="acct-set-head">
+        ${plansInMenu(u, req) ? item('/plans', '⭐', t(plansKey), { attr: en(plansKey) }) : ''}
+        ${item(settingsHref, '⚙️', t('layout.acct.allSettings'))}
+      </ul>
     </div>
   </details>`;
 }
@@ -238,8 +272,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
       ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>
     ${langPicker(req)}
-    ${themePicker(req)}
-    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'account' : 'me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>
+    ${u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me') }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
     ${joinNow}${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
@@ -248,7 +281,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a>${out && familiesOn(req) ? html`<a href="/plans"${fb(tabKey(t, 'plans'))}>${t(tabKey(t, 'plans'))}</a>` : ''}<a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a>${out ? html`<div class="foot-theme"><span id="foot-theme-head">${t('layout.theme.title')}:</span>${themeLinks(req, { cls: 'foot-themes', labelledby: 'foot-theme-head' })}</div>` : ''}</footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.

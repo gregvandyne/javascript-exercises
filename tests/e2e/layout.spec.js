@@ -39,7 +39,7 @@ async function checkPages(browser, state, paths) {
       for (const t of await findTouching(page)) problems.push(`${p} @${v.width}/${v.theme || v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (wide > 1) problems.push(`${p} @${v.width}: the page scrolls sideways by ${wide}px`);
-      await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick):not(.themepick)').forEach(d => { d.open = true; }));
+      await page.evaluate(() => document.querySelectorAll('details:not(.inline-menu):not(.langpick):not(.acctpick)').forEach(d => { d.open = true; }));
       for (const t of await findTouching(page)) problems.push(`${p} [opened] @${v.width}/${v.theme || v.scheme}: ${t.a}  ⟷  ${t.b} (${t.dir} ${t.gap}px)`);
     }
     await ctx.close();
@@ -107,7 +107,7 @@ test('the top bar fits the logo, search, the language and theme menus and the Me
       cx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
       const field = q.checkVisibility();
       const cut = field && cx.measureText(q.placeholder).width > q.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      const missing = ['.topbar .langpick > summary', '.topbar .themepick > summary', '.topbar .me-btn', field ? '#topq' : '.topsearch-btn']
+      const missing = ['.topbar .langpick > summary', '.topbar .me-btn', field ? '#topq' : '.topsearch-btn']
         .filter(s => !document.querySelector(s).checkVisibility());
       return { tight: items.slice(1).some((b, i) => b.left - items[i].right < 4) || nav.slice(1).some((b, i) => b.left - nav[i].right < 2),
         off: items.some(b => b.left < 0 || b.right > innerWidth), wide: document.documentElement.scrollWidth - innerWidth,

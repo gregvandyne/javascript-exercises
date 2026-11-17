@@ -31,6 +31,9 @@
       "light": "Hell",
       "dark": "Dunkel"
     },
+    "acct": {
+      "allSettings": "Alle Einstellungen"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
