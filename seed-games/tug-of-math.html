@@ -506,22 +506,24 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
     return ks[ks.length - 1];
   }
   function same(a, b) { return !!a && !!b && a.e.join(' ') === b.e.join(' '); }
-  /** make(grade, r, prev, kind?, other?, vseed?): a question (never the same as prev). r: a function giving 0..1 (rng(seed)). */
+  /** make(grade, r, prev, kind?, other?, vseed?, seen?): a question (never the same as prev; while a few more tries can
+   *  find one, none that `seen` ({ question text: true }) already holds). r: a function giving 0..1 (rng(seed)). */
   /** The seed of the form picker for both sides' n-th question (the same for both sides). */
   function variantSeed(seed, n) { return ((seed >>> 0) ^ Math.imul(n + 7, 0x85EBCA6B)) >>> 0; }
-  function make(g, r, prev, kind, other, vseed) {
+  function make(g, r, prev, kind, other, vseed, seen) {
     g = grade(g); var K = KINDS[g], k = K[kind] ? kind : kindAt(g, Math.floor(r() * 4294967296), 0), q, tries = 0;
     do { var m = K[k][2](r, vseed != null ? rng(vseed) : r); q = { e: m[0], a: m[1], k: k, g: g }; }
-    while ((same(q, prev) || (tries < 6 && same(q, other)) || (tries < 3 && prev && q.a === prev.a)) && ++tries < 30);
+    while ((same(q, prev) || (tries < 6 && same(q, other)) || (tries < 3 && prev && q.a === prev.a) || (tries < 20 && seen && seen[q.e.join(' ')])) && ++tries < 30);
     return q;
   }
   /** The questions for a match: next(side) gives side 0 (Blue) or 1 (Red) its next question; both sides' n-th
-   *  questions are the same kind, and a side never gets the same question twice in a row. */
+   *  questions are the same kind, and a side never gets the same question twice in a row, nor one it had before in
+   *  the match while its kind has others to give. */
   function deck(g, seed) {
-    seed = seed >>> 0; var n = [0, 0], prev = [null, null], rs = [rng(seed ^ 0x51ED), rng(seed ^ 0xA77E)];
+    seed = seed >>> 0; var n = [0, 0], prev = [null, null], rs = [rng(seed ^ 0x51ED), rng(seed ^ 0xA77E)], seen = [{}, {}];
     return { grade: grade(g), seed: seed, count: n, next: function (side) {
-      side = side ? 1 : 0; var o = prev[1 - side], q = make(g, rs[side], prev[side], kindAt(g, seed, n[side]), o && o.n === n[side] ? o : null, variantSeed(seed, n[side]));
-      q.n = n[side]++; prev[side] = q; return q;
+      side = side ? 1 : 0; var o = prev[1 - side], q = make(g, rs[side], prev[side], kindAt(g, seed, n[side]), o && o.n === n[side] ? o : null, variantSeed(seed, n[side]), seen[side]);
+      q.n = n[side]++; prev[side] = q; seen[side][q.e.join(' ')] = true; return q;
     } };
   }
   /** Whether answers can be below zero (the keypad's minus key): grades 7 and 8 only. */

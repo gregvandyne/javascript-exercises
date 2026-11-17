@@ -215,10 +215,25 @@
     var s = L.base + L.base * 0.5 * (r.clean || 0) / L.rounds - L.base * 0.05 * (r.mistakes || 0) - L.base * 0.1 * (r.hints || 0);
     return Math.max(Math.round(L.base * 0.2), Math.round(s));
   }
+  /** What a puzzle asks, as text: its sum (or product), the pair smallest first, and the answer ("add:3,4=7"). */
+  function factOf(p) { var a = p.values[p.pair[0]], b = p.values[p.pair[1]]; return p.op + ':' + Math.min(a, b) + ',' + Math.max(a, b) + '=' + p.values[p.answer]; }
+  /** A round's puzzle from its seed, but never one whose sum `seen` ({ factOf: true }) already holds while another
+   *  try (up to 40, each its own seed) finds a new one; with nothing seen it is the puzzle the seed makes. The same
+   *  seed and the same seen give the same puzzle. */
+  function fresh(id, seed, seen) {
+    var first = null;
+    for (var k = 0; k < 40; k++) {
+      var s = (seed + k * 104729) >>> 0, p = generate(id, s) || generate(id, s + 1);
+      if (!p) continue;
+      if (!first) first = p;
+      if (!seen || !seen[factOf(p)]) return p;
+    }
+    return first;
+  }
   function rushStars(n) { return n >= 15 ? 3 : n >= 8 ? 2 : n >= 1 ? 1 : 0; }
   function rushPoints(found, streakBonus) { return found * 10 + (streakBonus || 0); }
 
-  root.SumSpotterCore = { LEVELS: LEVELS, RUSH: RUSH, level: level, rushLevel: rushLevel, rng: rng, apply: apply, opsOf: opsOf, finds: finds, doubles: doubles, check: check, generate: generate, stars: stars, score: score, rushStars: rushStars, rushPoints: rushPoints };
+  root.SumSpotterCore = { LEVELS: LEVELS, RUSH: RUSH, level: level, rushLevel: rushLevel, rng: rng, apply: apply, opsOf: opsOf, finds: finds, doubles: doubles, check: check, generate: generate, stars: stars, score: score, rushStars: rushStars, rushPoints: rushPoints, factOf: factOf, fresh: fresh };
 })(typeof window !== 'undefined' ? window : this);
 /* sum-spotter-core:end */
 </script>
@@ -478,7 +493,7 @@ var VOICE_ROLES = { story: 'friendly' };
 
   /* ---------- state ---------- */
   var S = {
-    screen: 'title', w: null, mode: '', id: '', seed: 0, round: 0, p: null, busy: false,
+    screen: 'title', w: null, mode: '', id: '', seed: 0, round: 0, seen: {}, p: null, busy: false,
     wrongHere: 0, hintStep: 0, shown: false, mistakes: 0, hints: 0, clean: 0, found: 0, streak: 0, bonus: 0, left: 0, shownSec: -1,
     again: false, pending: null, fast: false, lastWin: null,
   };
@@ -640,7 +655,7 @@ var VOICE_ROLES = { story: 'friendly' };
   function startMode(mode, id, o) {
     o = o || {};
     if (mode !== 'rush' && !C.level(id)) return showPicker();
-    S.mode = mode; S.id = mode === 'rush' ? '' : id; S.round = 0; S.mistakes = 0; S.hints = 0; S.clean = 0; S.found = 0; S.streak = 0; S.bonus = 0; S.done = false;
+    S.mode = mode; S.id = mode === 'rush' ? '' : id; S.round = 0; S.seen = {}; S.mistakes = 0; S.hints = 0; S.clean = 0; S.found = 0; S.streak = 0; S.bonus = 0; S.done = false;
     S.left = C.RUSH.secs; S.shownSec = -1; S.lastWin = null;
     S.seed = o.seed != null ? (o.seed >>> 0) : (S.w && S.w.rand ? S.w.rand.int(1, 0x7FFFFFFE) : 1 + Math.floor(Math.random() * 0x7FFFFFFE));
     buildPlay();
@@ -649,7 +664,9 @@ var VOICE_ROLES = { story: 'friendly' };
   function puzzleLevel() { return S.mode === 'rush' ? C.rushLevel(S.round) : S.id; }
   function nextPuzzle() {
     var lid = puzzleLevel(), seed = (S.seed + S.round * 7919) >>> 0;
-    S.p = C.generate(lid, seed) || C.generate(lid, seed + 1);
+    // never the same sum twice in one play (the play's seed still decides every puzzle)
+    S.p = C.fresh(lid, seed, S.seen);
+    if (S.p) S.seen[C.factOf(S.p)] = true;
     S.busy = false; S.wrongHere = 0; S.hintStep = 0; S.shown = false;
     drawPuzzle();
   }

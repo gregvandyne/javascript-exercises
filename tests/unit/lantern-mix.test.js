@@ -373,7 +373,9 @@ const shotsDir = process.env.LM_SHOTS;
 
 /** The game in the production frame, on a stand-in for the play page: it keeps the SDK's messages (window.__msgs) and
  *  answers a speech request with "no AI voice here" at once, as the play page does when a line cannot be read. */
-async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false } = {}) {
+// lap: the lap the first play takes (0, the fixed lap, whose numbers the checks below know), or null for the
+// random lap a play really takes.
+async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false, lap = 0 } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion, hasTouch: touch });
@@ -397,6 +399,7 @@ async function open({ params = '', width = 960, height = 600, reducedMotion = 'n
   await p.goto(HOST + '/');
   const frame = p.frames().find(f => f.url() === HOST + '/frame');
   await frame.waitForFunction(() => window.__ready === true, null, { timeout: 180_000 });
+  if (lap != null) await frame.evaluate(n => window.__brbTest.lap(n), lap);
   const state = () => frame.evaluate(() => window.__lm.state());
   const msgs = type => p.evaluate(t => window.__msgs.filter(m => m.type === t), type);
   const spoken = async () => (await msgs('brb:tts')).map(m => m.text);
@@ -422,7 +425,7 @@ async function turn(frame, d, from, to, touch) {
 
 for (const chapter of CHAPTERS) {
   test(`lesson mode, ${chapter}: loads clean, read-aloud is on, a wrong plan is run and shown and does not advance, six right rounds post game over once`, { skip, timeout: 600_000 }, async () => {
-    const g = await open({ params: `chapter=${chapter}&lock=1` });
+    const g = await open({ params: `chapter=${chapter}&lock=1`, lap: null });   // the lap a real play takes
     const { frame, state, until } = g;
     assert.equal((await state()).screen, 'hero');
     assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('#card .lm-btn')].map(b => b.textContent)), ['Skelly', 'Rattles', 'Captain Clank', 'Wizard', 'Hooded Ranger'], 'five lamplighters, by the theme’s names');
@@ -439,7 +442,8 @@ for (const chapter of CHAPTERS) {
       await until(n => window.__lm.state().round === n && window.__lm.state().phase === 'play', round);
       s = await state();
       assert.equal(s.mode, 'ask', `round ${round}: the board as it is asked`);
-      const want = LM.round(chapter, round, 0), at = `${chapter} round ${round}`;
+      if (round === 1) { assert.ok(Number.isInteger(s.lap) && s.lap >= 1, 'a play takes a random lap, not the fixed lap 0'); g.lap1 = s.lap; } else assert.equal(s.lap, g.lap1, 'one lap for the whole play');
+      const want = LM.round(chapter, round, s.lap), at = `${chapter} round ${round}`;
       assert.deepEqual(Object.fromEntries(Object.keys(want).map(k => [k, s[k]])), want, `${at} is the round its number seeds`);
       const asked = await text(frame, '#askt');
       assert.equal(asked, say(...want.ask), `${at}: the instruction`);
@@ -504,7 +508,7 @@ for (const chapter of CHAPTERS) {
     await frame.click('#again');
     await until(() => window.__lm.state().screen === 'play');
     s = await state();
-    assert.equal(s.round, 1); assert.deepEqual(Object.fromEntries(Object.keys(LM.round(chapter, 1, 1)).map(k => [k, s[k]])), LM.round(chapter, 1, 1), 'the second lap’s first round');
+    assert.equal(s.round, 1); assert.ok(s.lap >= 1 && s.lap !== g.lap1, 'Play again takes another lap'); assert.deepEqual(Object.fromEntries(Object.keys(LM.round(chapter, 1, s.lap)).map(k => [k, s[k]])), LM.round(chapter, 1, s.lap), 'the next lap’s first round');
     assert.equal(s.onStage.lit, 0, 'the rack is cleared for the next lap');
     assert.equal((await g.msgs('brb:gameover')).length, 1);
     assert.deepEqual(g.errors, []);
