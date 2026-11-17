@@ -7453,3 +7453,32 @@ Owner feedback on the steps from #387:
   point were bare browser selects; they now have `class="input"`. **Decided: a test keeps it so**
   (`tests/unit/selects-styled.test.js`): every `<select>` in a view or script has class `input`, and every select made
   with `createElement('select')` is given it in the same or the next statement.
+
+## Fraction Factory: Pro is its own game; the controls in one card (17 Nov 2026)
+Owner: "I still don't see the difference between pro and explorer in fraction factory", and the controls looked
+scattered (the slicer wrapping 2 + 3, "not cut yet" alone, Hint on its own line). Picked from three mock-ups: **A, one
+panel beside the cake**; for Pro: **unlike denominators** and **multiply and divide**.
+- **Root cause:** every order was made with `bands: ['1b', '2']`, so Explorer and Pro played the same 21 orders (and
+  stars, kept per order id, counted for both). Now `L()` makes an Explorer order and `P()` a Pro one; no order is in
+  both bands. Explorer is unchanged (First Folds, First Cuts, Re-Slice, Recipe Math: the Number Quest Unit 4 links all
+  pass `band=1b`). Pro has four chapters of six orders: **Common Cuts** (1/3 + 1/4, 3/4 + 2/3 past one whole),
+  **Take Away** (3/4 − 1/6, 5/4 − 1/3), **Scale Up** (3 × 1/4, 4 × 2/3 over three cakes, 1/2 × 3/4, 2/3 × 3/4) and
+  **Share Out** (2 ÷ 1/4, 3/2 ÷ 1/4, 3/4 ÷ 1/12: build the amount in servings and count them). Each has an intro,
+  three hints and a check, the Jumble's wrong answers (5/7 for 3/4 + 2/3, 4/1 for 5/4 − 1/3, 5/7 for 3/4 × 2/3),
+  and every spoken line in the I18N block.
+- **Engine:** types `sub`, `mul`, `div` beside `add`; an order needs as many wholes as its amount (`wholesFor`, up to
+  3); a level may carry its own `cuts` (Pro: 2, 3, 4, 6, 8, 10, 12; Explorer keeps 2, 3, 4, 6, 8). **Decided:** a
+  product is served by any cut that builds it exactly (2/3 × 3/4 = 6/12 or one half), a sum or difference by its cut
+  or a finer one (as before), and a share-out only in the serving's own cut, since it counts servings (new feedback
+  `why.div-cut`). A link to an Explorer chapter with `band=2` plays it in Explorer.
+- **The map** says what each band plays under the switch ("Explorer · grades 3–5: fair shares, re-slicing, comparing
+  and adding", "Pro · grades 5–6 and up: unlike parts, taking away, multiplying and dividing").
+- **Controls (layout A):** an order built on the tray gets one card beside the wholes (under them on a phone):
+  "1 · Slicer: cut into" with one row of number buttons (named "Cut into n"), "2 · On the tray" with the reading and a
+  short line, then a wide Serve it! with Hint beside it. Two or three cakes stand in one row, smaller; a source amount
+  of more than one whole draws one row per whole. Checked with no scroll at 1280×720, 1000×504 and 390×844.
+- **Standards and shelf:** the game's CCSS list and `FRACTION_CHAPTERS` gain 5.NF.A.1-2, 5.NF.B.4, 5.NF.B.6,
+  5.NF.B.7 and 6.NS.A.1; the Learn shelf says grades 3-6.
+- Tests: tests/unit/fraction-factory-pro.test.js (bands disjoint, the goals, the cut rules, every Pro order solved by
+  its advice script); fraction-factory.test.js's chapter contract is per band; the e2e spec presses the slicer by its
+  name ("Cut into 4").

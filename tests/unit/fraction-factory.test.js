@@ -25,7 +25,9 @@ const { E, D } = loadData(HTML);
 const { LEVELS, CHAPTERS, THEN } = D;
 const J = v => JSON.parse(JSON.stringify(v));
 const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
-const CONTRACT = { folds: 3, 'first-cuts': 6, 're-slice': 6, recipe: 6 };
+// Explorer (1b) plays the Unit 4 chapters; Pro (2) its own four. The bands share no orders (owner: "I still don't see
+// the difference between pro and explorer").
+const CONTRACT = { '1b': { folds: 3, 'first-cuts': 6, 're-slice': 6, recipe: 6 }, '2': { 'common-cuts': 6, 'take-away': 6, 'scale-up': 6, 'share-out': 6 } };
 
 test('fraction-factory: the exact kit 1.1.6 tag and its packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Fraction Factory</title>'));
@@ -46,10 +48,11 @@ test('fraction-factory: the exact kit 1.1.6 tag and its packs, the metadata, and
 });
 
 test('fraction-factory: the chapters and the Unit 4 mission contract', () => {
-  assert.deepEqual(J(CHAPTERS.map(c => c.id)), ['folds', 'first-cuts', 're-slice', 'recipe']);
-  assert.deepEqual(J(CHAPTERS.map(c => c.index)), [1, 2, 3, 4]);
-  for (const ch of CHAPTERS) for (const band of ['1b', '2']) assert.equal(levelsFor(ch.id, band).length, CONTRACT[ch.id], `${ch.id} ${band}`);
-  assert.equal(LEVELS.length, 21);
+  assert.deepEqual(J(CHAPTERS.map(c => c.id)), ['folds', 'first-cuts', 're-slice', 'recipe', 'common-cuts', 'take-away', 'scale-up', 'share-out']);
+  assert.deepEqual(J(CHAPTERS.map(c => c.index)), [1, 2, 3, 4, 5, 6, 7, 8]);
+  for (const ch of CHAPTERS) for (const band of ['1b', '2']) assert.equal(levelsFor(ch.id, band).length, CONTRACT[band][ch.id] || 0, `${ch.id} ${band}`);
+  assert.equal(LEVELS.length, 45);
+  for (const l of LEVELS) assert.equal(l.bands.length, 1, `${l.id} belongs to one band only`);
   const ids = new Set(LEVELS.map(l => l.id)); assert.equal(ids.size, LEVELS.length, 'level ids unique');
   for (const l of LEVELS) {
     assert.ok(l.intro && l.hints.length === 3 && l.check && l.check.tiles.length === 3 && l.check.tiles[l.check.answer], `${l.id} carries intro, 3 hints and a 3-tile check`);
