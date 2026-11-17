@@ -7247,3 +7247,24 @@ games, have your kids build games too. Make it better than that."
   landing-audit passes at all six sizes, dark and light (layout shift 0).
 - The walkthrough video (scripts/dash-video.js) still opens on the old "Everyday" starter and makes its layouts from the
   New sheet; with the six made on a first visit it should switch between them instead before it is made again.
+
+## Fraction Factory: add the second cake first, and an order fits the frame (17 Nov 2026)
+Owner, on Recipe Math order 6 (5/4 of a cake): "it was confusing how you got to two different cakes. You had to click
+the cut into 4 button and then the second cake appeared ... Also, on my normal screen without full screen mode, I had to
+scroll down a bit to select the right cut."
+- **Add a cake:** every order starts with one whole on the table. An order of more than one whole (`goal.wholes > 1`,
+  any level, not only rc-6) shows a dashed "+ Add a cake" card beside the last cake, up to the wholes the order needs;
+  the extra cake has a Remove button (its parts leave the tray with it). A slicer never adds a cake any more. Engine:
+  `Run.s.wholes`, actions `add-whole` / `remove-whole`, the advice script adds the cake before it cuts.
+- **One slicer cuts every cake.** Simplest for kids (one tap, not one per cake) and the part size stays one number, so
+  fourths stay fourths and 5/4 is still read as five of one size; a cake added after the cut comes in with the same cut.
+- **Feedback:** a full table that is still short of the order says `why.more-wholes` ("One cake cannot hold that many
+  parts. Tap Add a cake ..."); too few, too many and the wrong cut keep their lines. The rc-6 intro and hints name the
+  button. The spoken block carries the new lines, so tts-lines warms them with no registry change. Like every other
+  intro, hint and button in this game they are English only; only the how-to cards are in the 13 languages (#350).
+- **Fit:** the order screen sizes cakes and bars from the frame's height and width (`--ff-cake`, `--ff-bar`,
+  `--ff-mini` with clamp/min and vh/vw), starts right under the kit's HUD row on short or narrow frames (66 px, not the
+  140 px band), and on a wide frame (aspect 13:10 or wider) puts the slicer, the tray reading and Serve/Hint beside the
+  wholes. Every level, at its start and with the order built, was measured with no scroll at 1000x504, 1280x560/650/720,
+  1366x620/768, 1440x780/900, 820x1180, 1180x820, 390x844 and 844x390. Below 440 px tall the slicer tip line hides
+  (the intro says the same). Checks: tests/unit/fraction-factory-add-cake.test.js.
