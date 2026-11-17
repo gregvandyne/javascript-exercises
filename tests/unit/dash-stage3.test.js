@@ -63,6 +63,9 @@ async function layout(w, widgets) {
 }
 const TOOLS = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp'];
 const f = (n, d) => ({ n, d });
+/** Maths tools combined: graph, base10, times and fdp are modes of data and chance, place value, multiply and divide and
+ *  fractions now (docs/decisions.md "Classroom dashboards: maths tools combined"). */
+const LIVE = TOOLS.filter(id => !DT.MODE_HOME[id]);
 
 test('migration 0080 is the newest; pushes carry data and pictures a use', () => {
   const names = MIGRATIONS.map(m => m[0]);
@@ -74,7 +77,8 @@ test('migration 0080 is the newest; pushes carry data and pictures a use', () =>
 
 test('the registry: the Teach group, a renderer and English words for every tool; who may add, pin and send each', () => {
   const t = tFor('en');
-  for (const id of [...TOOLS, 'board', 'picture']) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
+  for (const id of [...LIVE, 'board', 'picture']) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
+  for (const id of TOOLS.filter(id => DT.MODE_HOME[id])) { assert.equal(D.widgetType(id), null, id); assert.ok(D.widgetType(DT.MODE_HOME[id]).modes.includes(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
   const reg = D.registryFor(t, 'teacher');
   assert.ok(reg.groups.some(g => g.id === 'teach' && g.name === 'Teaching tools'));
   for (const x of reg.types.filter(x => [...TOOLS, 'board', 'picture'].includes(x.id))) {
@@ -83,7 +87,7 @@ test('the registry: the Teach group, a renderer and English words for every tool
     for (const s of x.settings) if (s.type !== 'tool') { assert.ok(!/^dash\./.test(s.label), `${x.id}.${s.key}`); for (const o of Object.values(s.labels || {})) assert.ok(!/^dash\./.test(o)); }
   }
   for (const v of Object.values(reg.common)) assert.ok(!/^dash\./.test(v));
-  for (const id of TOOLS) {
+  for (const id of LIVE) {
     const x = D.widgetType(id);
     assert.equal(x.group, 'teach'); assert.equal(x.who, 'both', id); assert.equal(D.canPin(x), false, `${id} is sent, never pinned`); assert.equal(x.send, true);
     // The starting state the browser gets is the cleaned default.
@@ -94,7 +98,7 @@ test('the registry: the Teach group, a renderer and English words for every tool
   assert.equal(D.widgetType('picture').who, 'teacher'); assert.equal(D.canPin(D.widgetType('picture')), true); assert.ok(!D.widgetType('picture').send);
   // Students may add the tools (their own copies), never the whiteboard or the picture.
   const sw = D.cleanWidgets([...TOOLS, 'board', 'picture'].map((type, i) => ({ id: `s${i}`, type })), 'student').map(x => x.type);
-  assert.deepEqual(sw, TOOLS);
+  assert.deepEqual(sw, TOOLS.map(id => DT.MODE_HOME[id] || id));
   assert.deepEqual(D.cleanWidgets([{ id: 'p1', type: 'fractions', pin: true }, { id: 'p2', type: 'board', pin: true }, { id: 'p3', type: 'picture', pin: true }], 'teacher').filter(x => x.pin).map(x => x.type), ['picture']);
 });
 

@@ -25,6 +25,10 @@ if (root && D.classId) start();
 function start() {
   const TEACHER = D.role === 'teacher';
   const CID = D.classId;
+  // One time zone for the whole dashboard (the top bar's clock, the schedule, the calendar, countdowns): the school's,
+  // else (a school with no zone set) this browser's own, never a far-away default that puts the schedule out of step
+  // with the clock on the wall.
+  const TZ = D.tzSet === false ? (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || D.tz; } catch { return D.tz; } })() : D.tz;
   const COLS = 12, MIN_ROWS = 4, MAX_ROWS = 24, MAX_H = 8, POLL_MS = 4000;
   const types = new Map(D.registry.types.map(x => [x.id, x]));
   const grid = $('#dash-grid'), say = $('#dash-say');
@@ -74,12 +78,17 @@ function start() {
     x.classList.toggle('is-scrolly', on);
     const end = !on || x.scrollTop + x.clientHeight >= x.scrollHeight - 6;
     x.classList.toggle('at-end', end);
+    // Rows above (a list resting scrolled down, as the schedule does to show the period on now): the fade at its top.
+    x.classList.toggle('at-top', !on || x.scrollTop <= 6);
     return end;
   };
   const moreTarget = b => [b, ...b.querySelectorAll('.dw-scroll')].find(x => x.classList.contains('is-scrolly') && !x.classList.contains('at-end')) || null;
   /** Stage 5 review: a list that scrolls shows whole rows only. Its height is cut at the bottom of the last row that fits
    *  (a row of a grid ends with its tallest item; a list of lines, a paragraph, at a whole line), so nothing is ever
-   *  sliced through; the soft fade at its bottom edge (public/css/dash.css) says there is more. */
+   *  sliced through; the soft fade at its bottom edge (public/css/dash.css) says there is more.
+   *  A list may name the row it rests on (x.snapTo, a child: the schedule's period on now). It then rests scrolled to that
+   *  row's top, cut at the last whole row below it; near the end it rests at its end instead, starting at a row's top, so
+   *  whole rows still fill it and the rows above sit under the fade at its top. Without one it keeps where it is. */
   /** The boxes of the lines of text in an element (text only: not the boxes of the elements around it). */
   const textRects = root => {
     const out = [], walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), rg = document.createRange();
@@ -94,10 +103,22 @@ function start() {
     const avail = x.clientHeight;
     if (x.scrollHeight <= avail + 1) return;
     const xr = x.getBoundingClientRect(), bt = parseFloat(st.borderTopWidth) || 0;  // (all boxes are border-box)
-    const items = [...x.children].filter(c => c.getClientRects().length && getComputedStyle(c).position !== 'absolute')
-      .map(c => { const r = c.getBoundingClientRect(); return { t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }; });
+    const all = [...x.children].filter(c => c.getClientRects().length && getComputedStyle(c).position !== 'absolute')
+      .map(c => { const r = c.getBoundingClientRect(); return { el: c, t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }; });
+    // Where the list rests: 0, or the top of the row it names (moved up to a row's top when that row is near the end).
+    const a = x.snapTo && all.find(it => it.el === x.snapTo);
+    let from = 0, atEnd = false;
+    // (Not even that row fits: the list rests at its top, cut between lines as below; the schedule's status line above it
+    // already names the period on now.)
+    if (a && a.t > 0.5 && a.b - a.t <= avail) {
+      const full = x.scrollHeight;
+      from = a.t;
+      if (full - from <= avail) { atEnd = true; from = Math.min(from, ...all.filter(it => full - it.t <= avail).map(it => it.t)); }
+    }
+    const items = all.filter(it => it.t >= from - 0.5).map(it => ({ t: it.t - from, b: it.b - from }));
     let cut = 0;
-    if (items.length) {
+    if (atEnd) cut = Math.ceil(x.scrollHeight - from);
+    else if (items.length) {
       for (const it of items) if (it.b <= avail + 0.5) cut = Math.max(cut, it.b);
       // A taller neighbour in the same grid row (it starts above the cut and ends below it) moves the cut above that row.
       for (let k = 0; k < 6; k++) {
@@ -109,7 +130,7 @@ function start() {
     // Not even one row fits (a long idea in an organizer box, a group card in a short widget): cut between two lines of
     // its text instead, never through one.
     if (cut <= 0) {
-      const lines = textRects(x).map(r => ({ t: r.top - xr.top - bt + x.scrollTop, b: r.bottom - xr.top - bt + x.scrollTop }));
+      const lines = textRects(x).map(r => ({ t: r.top - xr.top - bt + x.scrollTop - from, b: r.bottom - xr.top - bt + x.scrollTop - from })).filter(l => l.t >= -0.5);
       cut = Math.max(0, ...lines.filter(l => l.b <= avail + 0.5).map(l => l.b));
       for (let k = 0; k < 6; k++) {
         const cross = lines.filter(l => l.t < cut - 0.5 && l.b > cut + 0.5); if (!cross.length) break;
@@ -118,10 +139,20 @@ function start() {
       }
       if (cut > 0) cut = Math.min(avail, cut + 2);
     }
-    if (cut > 0) { x.style.maxHeight = `${Math.floor(cut + bt + (parseFloat(st.borderBottomWidth) || 0))}px`; x.scrollTop = keep; }
+    if (cut > 0) { x.style.maxHeight = `${Math.floor(cut + bt + (parseFloat(st.borderBottomWidth) || 0))}px`; x.scrollTop = a ? from : keep; }
+  };
+  /** A row that changes height after its list was cut (the type settling to the widget's size a frame late, the
+   *  schedule's period on now) cuts the list again: the widget's own size may not change, so its watch would not see it. */
+  const watchRows = x => {
+    if (typeof ResizeObserver !== 'function') return;
+    const kids = [...x.children];
+    if (x.rowWatch && x.rowKids.length === kids.length && kids.every((c, i) => c === x.rowKids[i])) return;
+    x.rowWatch?.disconnect(); x.rowKids = kids;
+    x.rowWatch = new ResizeObserver(() => { const b = x.closest('.dash-wb'); if (b) scrolly(b); });
+    for (const c of kids) x.rowWatch.observe(c);
   };
   const scrolly = (b, snap = true) => {
-    if (snap) for (const x of b.querySelectorAll('.dw-scroll')) snapRows(x);
+    if (snap) for (const x of b.querySelectorAll('.dw-scroll')) { snapRows(x); watchRows(x); }
     mark(b);
     for (const x of b.querySelectorAll('.dw-scroll')) mark(x);
     if (b.moreBtn) b.moreBtn.hidden = !moreTarget(b);
@@ -145,7 +176,7 @@ function start() {
     catch (err) { if (errEl) errEl.textContent = err.message; else toast(err.message, { bad: true }); return null; }
   }
   const ctxFor = (w, type) => ({
-    type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: D.tz, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
+    type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: TZ, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
     get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
     // Stage 3: teaching tools.
@@ -154,7 +185,7 @@ function start() {
     send: TEACHER ? async state => {
       if (saveTimer) await flush();
       const r = await act('/pushes', { kind: 'tool', ref: w.id, state });
-      if (r) { toast(t('js.dash.tools.sent', { name: (type && type.name) || '' })); poll(); }
+      if (r) { toast(t('js.dash.tools.sent', { name: toolName({ type: w.type, state }) || '' })); poll(); }
     } : null,
     upload: TEACHER ? uploadShow : null,
     checks: TEACHER ? checksForGraph : null,
@@ -163,6 +194,8 @@ function start() {
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
     practice: (D.practice || {})[w.type] || [],
+    // Maths tools combined: a tool's mode looks up its own games (PRACTICE is keyed by mode; a tool's own mode is its id).
+    practiceOf: mode => (D.practice || {})[mode] || [],
     // A widget the teacher changes with a tap (work symbols, traffic light, scoreboard): keep it, redraw it, save.
     // A student's own widget too (the timer's mode); never a pinned one.
     set: (key, value) => {
@@ -401,8 +434,9 @@ function start() {
     root.classList.toggle('is-editing', on);
     for (const id of ['dash-lib', 'dash-side', 'dash-editfoot', 'dash-edithead']) { const x = document.getElementById(id); if (x) x.hidden = !on; }
     for (const id of ['dash-top', 'dash-foot', 'dash-banner']) { const x = document.getElementById(id); if (x) x.hidden = on; }
-    if (on) { renderLibrary(); if (TEACHER) $('#dash-editing').textContent = t('js.dash.editing', { name: currentName() }); }
+    if (on) renderLibrary();
     else if (saveTimer) flush();
+    if (TEACHER) resetName();
     render();
     (on ? $('#dash-lib-q') : $('#dash-edit'))?.focus();
   }
@@ -421,7 +455,9 @@ function start() {
     }
     const q = ($('#dash-lib-q').value || '').trim().toLowerCase();
     const list = $('#dash-lib-list'); list.textContent = '';
-    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc}`.toLowerCase().includes(q)));
+    // A tool is also found by its modes' names ("times table" finds Multiply and divide).
+    // Bar models and number rods: a tool (or a mode) is also found by its other names ("tape diagram", dash.w.<id>.find).
+    const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.words || {}).find || ''} ${(x.modes || []).map(m => `${m.name} ${(m.words || {}).find || ''}`).join(' ')}`.toLowerCase().includes(q)));
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
       li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
@@ -600,7 +636,7 @@ function start() {
         if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]').focus(); }
         if (e.target.closest('[data-addp]')) {
           const list = w.s[f.key] || []; if (list.length >= 40) return;
-          list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: D.tz }).format(new Date()), label: '' });
+          list.push({ date: new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date()), label: '' });
           w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-t${list.length - 1}`)}`)?.focus();
         }
       });
@@ -839,7 +875,7 @@ function start() {
 
   // ---------------------------------------------------------------- the clock in the top bar, the date, tickers
   const nowEl = $('#dash-now'), dateEl = $('#dash-date');
-  const hm = new Intl.DateTimeFormat(INTL, { hour: 'numeric', minute: '2-digit' }), long = new Intl.DateTimeFormat(INTL, { weekday: 'long', month: 'long', day: 'numeric' });
+  const hm = new Intl.DateTimeFormat(INTL, { hour: 'numeric', minute: '2-digit', timeZone: TZ }), long = new Intl.DateTimeFormat(INTL, { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ });
   const tick = () => { const d = new Date(); if (nowEl) nowEl.textContent = hm.format(d); if (dateEl) dateEl.textContent = long.format(d); for (const f of tickers.values()) f(d); };
   setInterval(tick, 1000);
 
@@ -870,8 +906,9 @@ function start() {
   function renderLayouts() {
     const box = $('#dash-layouts'); if (!box) return; box.textContent = '';
     for (const l of S.layouts) {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l.name; b.setAttribute('aria-pressed', String(l.id === S.layoutId));
-      b.addEventListener('click', () => switchLayout(l.id));
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l.name;
+      if (l.id === S.layoutId) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', () => { if (l.id !== S.layoutId) switchLayout(l.id); });
       box.appendChild(b);
     }
     keepChip();
@@ -882,19 +919,34 @@ function start() {
     const box = $('#dash-layouts'); if (!box) return;
     const more = box.scrollWidth > box.clientWidth + 1;
     box.classList.toggle('is-more', more);
-    const on = box.querySelector('[aria-pressed="true"]');
-    if (on && more) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const on = box.querySelector('[aria-current="true"]');
+    // Only the row scrolls (never the page: the row may be sticky at the top of a phone's page).
+    if (on && more) { const br = box.getBoundingClientRect(), r = on.getBoundingClientRect(), pad = 32; if (r.left < br.left + pad) box.scrollLeft -= br.left + pad - r.left; else if (r.right > br.right - pad) box.scrollLeft += r.right - (br.right - pad); }
     chipEnd();
   }
-  const chipEnd = () => { const box = $('#dash-layouts'); if (box) box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); };
+  const chipEnd = () => { const box = $('#dash-layouts'); if (!box) return; box.classList.toggle('at-end', Math.abs(box.scrollLeft) + box.clientWidth >= box.scrollWidth - 2); box.classList.toggle('at-start', Math.abs(box.scrollLeft) < 2); };
   $('#dash-layouts')?.addEventListener('scroll', chipEnd, { passive: true });
+  // Phones and narrow tablets (one column, docs/decisions.md "Layouts on a phone"): the layout switcher (the chips, New
+  // and ⋯) moves from the footer, below every widget, to a row of its own under the top bar that stays at the top while
+  // the page scrolls; the footer keeps Eyes up and Push to students, as a bar at the bottom of the screen. Wider screens
+  // keep the footer as it was. The same elements move, so there is only ever one of each control.
+  const switcher = $('#dash-switch'), foot = $('#dash-foot');
+  function placeSwitcher() {
+    if (!switcher || !foot) return;
+    const top = narrow.matches;
+    if (top && switcher.parentElement === foot) $('#dash-edithead').after(switcher);
+    else if (!top && switcher.parentElement !== foot) foot.prepend(switcher);
+    root.classList.toggle('has-topswitch', top);
+    keepChip();
+  }
+  narrow.addEventListener('change', placeSwitcher);
   async function switchLayout(id) {
     if (saveTimer) await flush();
     try {
       await api(`/api/dash/${CID}/layouts/${id}/use`, { method: 'POST', body: {} });
       const l = S.layouts.find(x => x.id === id);
-      S.layoutId = id; S.active = id; S.widgets = clone(l.widgets); S.bg = l.bg; S.undo = [];
-      applyBg(); render(); renderLayouts();
+      S.layoutId = id; S.active = id; S.widgets = clone(l.widgets); S.bg = l.bg; S.undo = []; S.selected = null;
+      applyBg(); render(); renderLayouts(); resetName();
       announce(t('js.dash.say.layout', { name: l.name }));
     } catch (err) { toast(err.message, { bad: true }); }
   }
@@ -944,11 +996,37 @@ function start() {
     });
   }
   $('#dash-layout-new')?.addEventListener('click', newSheet);
+  // Rename in edit mode (docs/decisions.md "Ready-made layouts"): the name in the edit bar is a field. Enter or leaving
+  // it saves through the same route as Rename in the ⋯ sheet (the server cleans and checks it: required, at most 40);
+  // Escape puts the saved name back; an error shows under it and the field keeps what was typed.
+  const nameIn = $('#dash-edit-name'), nameErr = $('#dash-edit-name-err');
+  let naming = false;
+  function nameError(msg) { nameErr.textContent = msg; if (msg) nameIn.setAttribute('aria-invalid', 'true'); else nameIn.removeAttribute('aria-invalid'); }
+  function resetName() { if (!nameIn) return; nameIn.value = currentName(); nameError(''); }
+  async function commitName() {
+    const l = S.layouts.find(x => x.id === S.layoutId); if (!l || naming) return;
+    const name = nameIn.value.trim();
+    if (name === l.name) { resetName(); return; }
+    if (!name) { nameError(t('js.dash.layouts.needName')); return; }
+    naming = true;
+    try {
+      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } });
+      l.name = r.layout.name; renderLayouts();
+      if (l.id === S.layoutId) resetName();
+      announce(t('js.dash.say.renamed', { name: l.name }));
+    } catch (err) { nameError(err.message); } finally { naming = false; }
+  }
+  nameIn?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commitName(); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); resetName(); }
+  });
+  nameIn?.addEventListener('blur', commitName);
+  nameIn?.addEventListener('input', () => { if (nameErr.textContent) nameError(''); });
   $('#dash-layout-more')?.addEventListener('click', () => {
     const l = S.layouts.find(x => x.id === S.layoutId);
     const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">✏️ ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>🗑️ ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
     $('#dash-rename', sh.el).addEventListener('click', () => { sh.close(); nameSheet(t('js.dash.layouts.rename'), l.name, false, async name => {
-      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); }); });
+      const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); resetName(); }); });
     $('#dash-del', sh.el).addEventListener('click', async () => {
       if (!confirm(t('js.dash.layouts.delConfirm', { name: l.name }))) return;
       try {
@@ -966,7 +1044,9 @@ function start() {
   });
 
   const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮' };
-  const titleOf = p => (p.kind === 'tool' ? ((types.get(p.tool && p.tool.type) || {}).name || t('js.dash.kind.tool')) : p.title || t(`js.dash.kind.${p.kind}`));
+  /** A sent tool is named by its mode when it has one ("Base-ten blocks", not "Place value"). */
+  const toolName = tool => { const ty = types.get(tool && tool.type) || {}; const m = (ty.modes || []).find(x => x.id === ((tool.state && tool.state.tab) || ty.id)); return (m && m.name) || ty.name; };
+  const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool') : p.title || t(`js.dash.kind.${p.kind}`));
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
   async function openPush(q = '') {
@@ -1129,7 +1209,8 @@ function start() {
     const type = p && p.tool && types.get(p.tool.type);
     if (!type || !RENDER[type.id]) return;
     const C = D.registry.common || {};
-    const sh = sheet({ title: `${type.icon} ${type.name}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
+    const mode = (type.modes || []).find(x => x.id === ((p.tool.state && p.tool.state.tab) || type.id));
+    const sh = sheet({ title: `${(mode && mode.icon) || type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
     sh.el.querySelector('.sheet').classList.add('dash-copysheet');
     const body = sh.el.querySelector('.dash-wcopy .dash-wb');
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
@@ -1184,5 +1265,5 @@ function start() {
   stageEl.addEventListener('scroll', stageMark, { passive: true });
   addEventListener('resize', () => requestAnimationFrame(fitRows));
   document.addEventListener('fullscreenchange', () => requestAnimationFrame(fitRows));
-  applyBg(); render(); renderLayouts(); showLive(); tick();
+  applyBg(); render(); renderLayouts(); if (TEACHER) placeSwitcher(); showLive(); tick();
 }

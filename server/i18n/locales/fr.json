@@ -2722,9 +2722,9 @@
         "eyesOff": "« Les yeux ici » est terminé",
         "eyesUp": "Les yeux vers l’avant",
         "hidden": "Caché. C’est gardé dans De ton enseignant.",
-        "back": "C’est revenu"
+        "back": "C’est revenu",
+        "renamed": "Disposition renommée : {name}"
       },
-      "editing": "Modification : {name}",
       "all": "Tous",
       "add": "Ajouter",
       "addName": "Ajouter {name}",
@@ -8937,6 +8937,7 @@
       "edit": "Modifier l’écran",
       "editMine": "Changer mon écran",
       "editing": "Modification : {name}",
+      "layoutName": "Nom de la disposition",
       "editingMine": "Je change mon écran",
       "editHint": "Fais glisser pour déplacer · tire un coin pour redimensionner · ou utilise les flèches",
       "editHintMine": "Déplace tes widgets, ajoutes-en ou choisis un fond. Les widgets épinglés restent.",
@@ -8946,8 +8947,7 @@
     "layouts": {
       "label": "Disposition",
       "new": "Nouvelle",
-      "manage": "Renommer ou supprimer cette disposition",
-      "defaultName": "Tous les jours"
+      "manage": "Renommer ou supprimer cette disposition"
     },
     "foot": {
       "eyes": "Les yeux ici",
@@ -9424,8 +9424,8 @@
         "r_creative": "Bonnes idées"
       },
       "fractions": {
-        "name": "Bandes de fractions",
-        "desc": "Partager, colorier et comparer. « Parts égales » montre pourquoi l’une est plus grande. Du CE1 à la 6e.",
+        "name": "Fractions",
+        "desc": "Compare, additionne, soustrais, multiplie et divise avec des bandes et des disques, et vois un nombre en fraction, décimal et pourcentage.",
         "bar": "Bandes",
         "circle": "Disques",
         "same": "Parts égales",
@@ -9442,7 +9442,7 @@
         "which": "Fraction {n}",
         "order": "Laquelle est la plus grande ?",
         "howto": "Touche une bande pour colorier des parts. − et + changent les parts.",
-        "howtoOp": "Règle chaque nombre avec − et +. Le résultat est dessiné dessous.",
+        "howtoOp": "Utilise − et + sur chaque nombre. Le résultat est dessiné aussi.",
         "howtoMul": "Règle chaque nombre avec − et +. La partie commune est le résultat.",
         "helpUse": "Choisis Comparer, Additionner, Soustraire, Multiplier ou Diviser.\nEn Comparer, Parts égales montre quelle fraction est la plus grande.\nCacher la réponse la garde cachée jusqu’à ce que tu la montres.",
         "helpIdeas": "Montre 1/2 + 1/3 avec la réponse cachée et fais deviner les binômes.",
@@ -9465,7 +9465,11 @@
         "modeDiv": "Diviser",
         "howtoDiv": "Règle chaque nombre avec − et +. Combien de fois tient la seconde ?",
         "fits": "{b} tient {n} fois dans {a}.",
-        "noZero": "On ne peut pas diviser par zéro : le second numérateur reste à 1 ou plus."
+        "noZero": "On ne peut pas diviser par zéro : le second numérateur reste à 1 ou plus.",
+        "m": {
+          "fractions": "Bandes de fractions",
+          "fdp": "Fraction, décimal, pourcentage"
+        }
       },
       "numline": {
         "name": "Droite graduée",
@@ -9560,8 +9564,8 @@
         "helpIdeas": "Construis 205, puis échange pour pouvoir enlever 30."
       },
       "placeval": {
-        "name": "Tableau de numération",
-        "desc": "Des milliers aux millièmes, avec des jetons.",
+        "name": "Numération",
+        "desc": "Blocs base dix et tableau de numération : échange des dizaines contre des unités et lis les nombres des millions aux millièmes.",
         "discs": "Montrer les jetons",
         "decimals": "Montrer dixièmes, centièmes et millièmes",
         "times10": "Fois 10",
@@ -9579,7 +9583,11 @@
         "thousandths": "Millièmes",
         "howto": "Touche une colonne, puis change son chiffre avec − et +.",
         "helpUse": "− et + font les retenues et les emprunts entre les rangs.\nFois 10 et Divisé par 10 décalent chaque chiffre d’un rang.\nOptions : les jetons et les chiffres après la virgule.",
-        "helpIdeas": "Montre 3405 et appuie sur Fois 10 : qu’est-ce qui a bougé, qu’est-ce qui est resté ?"
+        "helpIdeas": "Montre 3405 et appuie sur Fois 10 : qu’est-ce qui a bougé, qu’est-ce qui est resté ?",
+        "m": {
+          "placeval": "Tableau de numération",
+          "base10": "Blocs base dix"
+        }
       },
       "tenframe": {
         "name": "Cadres de dix",
@@ -9601,8 +9609,8 @@
         "helpIdeas": "Montre 7 pendant deux secondes, cache l’écran et demande combien."
       },
       "hundreds": {
-        "name": "Tableau des nombres jusqu’à 100",
-        "desc": "Colorier des nombres, compter de tant en tant et cacher des nombres à deviner.",
+        "name": "Tableau des nombres",
+        "desc": "Un tableau de 1 à 100, de 0 à 99 ou de 1 à 120. Colorie des nombres, compte de n en n et cache des nombres à deviner.",
         "start": "Nombres",
         "skip": "Compter de tant en tant",
         "skipBy": "De {n} en {n}",
@@ -9619,8 +9627,8 @@
         "helpIdeas": "Compte de 9 en 9 : quel motif font les chiffres ?"
       },
       "area": {
-        "name": "Modèle d’aire et quadrillages",
-        "desc": "Lignes fois colonnes. Coupe un côté pour voir les produits partiels.",
+        "name": "Multiplier et diviser",
+        "desc": "Modèles d’aire et quadrillages avec produits partiels, et une table de multiplication jusqu’à 12 × 12. Et des modèles en barres : groupes, parties, comparaisons.",
         "rows": "Lignes",
         "cols": "Colonnes",
         "array": "Quadrillage",
@@ -9632,7 +9640,12 @@
         "hint": "Coupe un côté pour découper le produit en parties plus faciles.",
         "howto": "Règle lignes et colonnes avec − et +. Coupe un côté pour décomposer.",
         "helpUse": "Quadrillage montre des points en lignes ; Modèle d’aire, un rectangle.\nCouper selon la numération montre chaque produit partiel.\nOptions : choisis exactement où chaque côté est coupé.",
-        "helpIdeas": "Montre 14 × 6 comme 10 × 6 et 4 × 6, puis additionne les parties."
+        "helpIdeas": "Montre 14 × 6 comme 10 × 6 et 4 × 6, puis additionne les parties.",
+        "m": {
+          "area": "Modèle d’aire et quadrillages",
+          "times": "Table de multiplication",
+          "bars": "Modèles en barres"
+        }
       },
       "times": {
         "name": "Table de multiplication",
@@ -9741,8 +9754,8 @@
         "bad": "Cette image n’a pas marché. Essaie une photo JPG ou PNG."
       },
       "geoboard": {
-        "name": "Géoplan",
-        "desc": "Fais des figures avec des élastiques sur un quadrillage, des points en triangles ou un cercle. Aire, périmètre et angles exacts ; règle, étiquettes et crayon. Du CE1 à la 4e.",
+        "name": "Planche à formes",
+        "desc": "Fais des formes avec des élastiques sur un quadrillage, des points ou un cercle, aire et périmètre exacts. Construis et mesure des angles au rapporteur.",
         "area": "Aire",
         "perimeter": "Périmètre",
         "length": "Longueur",
@@ -9848,11 +9861,15 @@
         "idea5": "Fais une figure avec exactement deux angles droits.",
         "howto": "Touche des clous pour tendre un élastique. Le premier clou le ferme.",
         "helpUse": "Touche des clous pour tendre un élastique ; le premier clou le ferme.\nGlisse un sommet ou tout l’élastique. Une couleur en commence un autre.\nFigures, Outils et Annoter ajoutent figures, règle, étiquettes et crayon.",
-        "helpIdeas": "Essaie : chacun fait une aire de 12, puis on compare les périmètres."
+        "helpIdeas": "Essaie : chacun fait une aire de 12, puis on compare les périmètres.",
+        "m": {
+          "geoboard": "Géoplan",
+          "angle": "Fabrique d’angles"
+        }
       },
       "pattern": {
-        "name": "Blocs logiques",
-        "desc": "Hexagones, trapèzes, losanges, triangles et carrés qui s’emboîtent. Montre la fraction d’un hexagone. De la maternelle au CM2.",
+        "name": "Géométrie",
+        "desc": "Blocs logiques, solides qui se déplient en patrons, et translations, symétries et rotations sur un quadrillage.",
         "hex": "Hexagone",
         "trap": "Trapèze",
         "rhom": "Losange bleu",
@@ -9871,7 +9888,12 @@
         "empty": "Ajoute un bloc depuis la rangée du haut. Les flèches déplacent le bloc choisi et R le tourne.",
         "howto": "Touche une pièce en haut pour l’ajouter. Glisse-les : elles s’emboîtent.",
         "helpUse": "Touche un bloc du plateau pour le choisir, puis Tourner ou Retirer.\nL’affichage donne la fraction d’hexagone que forment les blocs.\nLes flèches déplacent le bloc choisi ; R le tourne.",
-        "helpIdeas": "De combien de façons peut-on couvrir un hexagone ?"
+        "helpIdeas": "De combien de façons peut-on couvrir un hexagone ?",
+        "m": {
+          "pattern": "Blocs logiques",
+          "solids": "Solides et patrons",
+          "transform": "Transformations"
+        }
       },
       "angle": {
         "name": "Fabrique d’angles",
@@ -9980,8 +10002,8 @@
         "helpIdeas": "Résolvez 3x + 2 = x + 8 ensemble, en disant chaque étape à voix haute."
       },
       "algebra": {
-        "name": "Tuiles algébriques",
-        "desc": "Tuiles x², x et 1, positives et négatives. Les paires nulles s’annulent ; l’expression se simplifie. De la 6e à la 4e.",
+        "name": "Algèbre",
+        "desc": "Tuiles algébriques avec paires nulles, et une balance pour résoudre des équations pas à pas.",
         "x2": "x au carré",
         "x": "x",
         "one": "un",
@@ -10002,7 +10024,11 @@
         "full": "Le tapis est plein.",
         "howto": "Touche une tuile en haut pour l’ajouter. Enlève les paires nulles.",
         "helpUse": "Touche une tuile pour la choisir ; Retourner change son signe.\nDeux tuiles opposées de même sorte sont entourées : une paire nulle.\nPaires nulles les retire et l’expression est simplifiée.",
-        "helpIdeas": "Pose 2x + 3 − x − 1 et simplifie avec les paires nulles."
+        "helpIdeas": "Pose 2x + 3 − x − 1 et simplifie avec les paires nulles.",
+        "m": {
+          "algebra": "Tuiles algébriques",
+          "balance": "Balance"
+        }
       },
       "coins": {
         "name": "Pièces et argent",
@@ -10035,8 +10061,8 @@
         "helpIdeas": "Ça coûte 37, payé avec 100 : comptez ensemble pour trouver la monnaie."
       },
       "chance": {
-        "name": "Labo du hasard",
-        "desc": "Lance des pièces, des dés et des roues jusqu’à 1 000 fois. Un graphique en direct à côté de ce qu’on attend. Du CE2 à la 4e.",
+        "name": "Données et hasard",
+        "desc": "Diagrammes en barres, courbes, pictogrammes et diagrammes à points, et un labo du hasard : pièces, dés et roues jusqu’à 1 000 fois.",
         "coin": "Pièce",
         "dice": "Dés",
         "spinner": "Roue",
@@ -10059,7 +10085,11 @@
         "none": "Pas encore d’essais",
         "howto": "Choisis pièce, dés ou roue, puis Lancer. Compare aux pointillés.",
         "helpUse": "Le menu fixe combien d’essais Lancer fait à chaque fois.\nRecommencer efface les résultats.\nOptions : un ou deux dés, les parts de la roue, jusqu’à 1000 essais.",
-        "helpIdeas": "Prédire, lancer 10 fois, puis 1000 : lequel est le plus proche de la moitié ?"
+        "helpIdeas": "Prédire, lancer 10 fois, puis 1000 : lequel est le plus proche de la moitié ?",
+        "m": {
+          "chance": "Labo du hasard",
+          "graph": "Atelier de graphiques"
+        }
       },
       "letters": {
         "name": "Lettres mobiles",
@@ -10340,6 +10370,105 @@
         "clear": "Tout décocher",
         "ticked": "fait",
         "unticked": "pas fait"
+      },
+      "bars": {
+        "kind": "Type de modèle",
+        "mul": "Multiplier/diviser",
+        "part": "Partie–tout",
+        "cmp": "Comparer",
+        "groups": "Groupes",
+        "each": "Dans chaque",
+        "parts": "Parties",
+        "partN": "Partie {n}",
+        "first": "1re barre",
+        "second": "2e barre",
+        "total": "Total",
+        "whole": "Tout",
+        "diff": "Écart",
+        "newProblem": "Nouveau problème",
+        "unknown": "Quel nombre est le ?",
+        "unknownIs": "? = {name}",
+        "braceWhole": "Accolade sur le tout",
+        "braceOne": "Accolade sous une partie",
+        "braceDiff": "Accolade sous l'écart",
+        "oneGroup": "1 groupe : {n}",
+        "nGroups": "{n, plural, one {# groupe} other {# groupes}}",
+        "qGroups": "? groupes",
+        "hide": "Cacher la réponse",
+        "show": "Montrer la réponse",
+        "answerIs": "Le ? vaut {n}.",
+        "sentences": "Complète les phrases mathématiques",
+        "box": "Phrase {s}, case {n}",
+        "right": "Oui ! Cela correspond au modèle.",
+        "wrong": "Pas encore. Regarde le modèle à nouveau.",
+        "story": "Écris un problème qui correspond à ton modèle.",
+        "storyBtn": "Problème",
+        "storyLocal": "Toi seul le vois. Il reste sur cet écran.",
+        "model": "Modèle en barres",
+        "max": "Les nouveaux problèmes vont jusqu'à",
+        "sayMul": "{g} groupes de {e} font {t}",
+        "sayPart": "{p} font {w}",
+        "sayCmp": "{a} et {b}, un écart de {d}",
+        "find": "modèle en barres, modèles en barres, schéma en barres, bande, bar model, tape diagram",
+        "howto": "Utilise − et + pour construire un modèle. Complète les phrases.",
+        "helpUse": "Choisis Multiplier/diviser, Partie–tout ou Comparer en haut.\nLe menu en bas choisit le ? ; Montrer la réponse le révèle.\nNouveau problème en crée un ; Options fixe le plus grand nombre.",
+        "helpIdeas": "Montre un modèle : la classe écrit un problème qui va avec.",
+        "name": "Modèles en barres"
+      },
+      "rods": {
+        "name": "Réglettes",
+        "desc": "Réglettes de couleur de 1 à 20 : faire des trains, comparer des longueurs, modéliser des égalités.",
+        "palette": "Réglettes",
+        "addRod": "Ajouter la réglette {n}",
+        "rodN": "Réglette {n}",
+        "longer": "Réglette plus longue (11–20)",
+        "board": "Plateau des réglettes",
+        "boardKeys": "Les flèches déplacent la réglette choisie ; R la tourne, D la copie, Suppr l'enlève.",
+        "lying": "Réglette {n}, couchée, en {x}, {y}",
+        "standing": "Réglette {n}, debout, en {x}, {y}",
+        "added": "Ajoutée : {what}",
+        "copied": "Copiée : {what}",
+        "deleted": "Réglette {n} enlevée",
+        "moved": "Déplacée en {x}, {y}",
+        "full": "Le plateau contient 60 réglettes au plus.",
+        "noRoom": "Il n'y a pas de place pour cette réglette.",
+        "tooLong": "Cette réglette est trop longue pour tenir debout.",
+        "dirH": "Nouvelles réglettes couchées",
+        "dirV": "Nouvelles réglettes debout",
+        "grid": "Quadrillage",
+        "units": "Traits d'unité",
+        "zoomIn": "Zoomer",
+        "zoomOut": "Dézoomer",
+        "undo": "Annuler",
+        "redo": "Rétablir",
+        "turn": "Tourner",
+        "copy": "Copier",
+        "del": "Supprimer",
+        "reset": "Réinitialiser",
+        "resetDone": "Le plateau est vide.",
+        "chosen": "Réglette choisie",
+        "eq": "Égalité",
+        "eqOff": "Égalité masquée",
+        "box": "Nombre manquant",
+        "blank": "case vide",
+        "right": "Oui ! Les deux côtés mesurent {n}.",
+        "wrong": "Pas encore. Compare les deux trains.",
+        "newEq": "Nouvelle égalité",
+        "typeEq": "Écrire une égalité",
+        "typeLabel": "Égalité",
+        "typeHint": "Utilise + et des nombres jusqu'à 20, avec ? pour la case : 5 + 4 = ? + 3",
+        "typeBad": "Impossible de la modéliser. Utilise + et des nombres entiers, un seul ?, et 20 au plus par côté.",
+        "model": "Montrer les trains",
+        "modelled": "Chaque côté de l'égalité est maintenant un train.",
+        "trainIs": "Train {sum} = {n}",
+        "same": "Les deux trains mesurent {n}.",
+        "notSame": "Les trains mesurent {a} et {b}.",
+        "empty": "Touche ou fais glisser une réglette de la rangée du haut.",
+        "count": "{n, plural, one {# réglette} other {# réglettes}}",
+        "find": "réglettes, réglette, réglettes de couleur, barres de nombres, number rods, rods",
+        "howto": "Touche ou fais glisser une réglette. Fais des trains de même longueur.",
+        "helpUse": "Touche une réglette, puis Tourner, Copier ou Supprimer ; flèches pour bouger.\nMontrer les trains pose les deux côtés de l'égalité ; remplis la case.\nLa réglette 11–20 est à côté du 10 ; − et + changent sa longueur.",
+        "helpIdeas": "Quelles deux réglettes font un train aussi long que celle de 10 ?"
       }
     },
     "push": {
@@ -10399,7 +10528,8 @@
       "practiceName": "S’entraîner : {title}",
       "helpFor": "Comment utiliser : {name}",
       "helpClose": "Fermer",
-      "helpTry": "À essayer :"
+      "helpTry": "À essayer :",
+      "modeFor": "Choisir ce que montre {name}"
     },
     "ask": {
       "fractions": "Quelle fraction est coloriée ?",
@@ -10433,7 +10563,9 @@
       "fractionsSub": "Combien font {a} − {b} ?",
       "fractionsMul": "Combien font {a} × {b} ?",
       "fractionsDiv": "Combien font {a} ÷ {b} ?",
-      "geoboardTri": "Combien de petits triangles forment la figure ?"
+      "geoboardTri": "Combien de petits triangles forment la figure ?",
+      "bars": "Quel nombre est le ? dans ce modèle en barres ? {s}",
+      "rods": "Quel nombre va dans la case ? {e}"
     },
     "tpl": {
       "morning": {
@@ -10445,6 +10577,10 @@
       "lesson": {
         "name": "Leçon",
         "desc": "Minuteur, vérification rapide, file d’aide, droite graduée et feu tricolore."
+      },
+      "math": {
+        "name": "Maths",
+        "desc": "Bandes de fractions, une droite graduée en quarts, un minuteur et la file d’aide."
       },
       "group": {
         "name": "Travail de groupe",

@@ -62,8 +62,14 @@ export const TOOL_SPECS = {
   placeval: { spec: { v: ['int', 0, 9999999, 3405270], discs: ['bool', true], dec: ['bool', true] }, fix: s => { if (!s.dec) s.v -= s.v % 1000; } },
   tenframe: { spec: { frames: ['enum', [1, 2], 1], cells: ['ints', 20, 0, 2, [1, 1, 1, 1, 1, 1, 1, 2, 2]], bond: ['bool', true] },
     fix: s => { s.cells = Array.from({ length: 20 }, (_, i) => (i < s.frames * 10 ? s.cells[i] || 0 : 0)); } },
-  hundreds: { spec: { start: ['enum', [1, 0], 1], shade: ['ints', 100, 0, 100], skip: ['int', 0, 10, 0], hide: ['enum', ['none', 'shaded', 'all'], 'none'] },
-    fix: s => { const lo = s.start, hi = s.start ? 100 : 99; s.shade = [...new Set(s.shade)].filter(x => x >= lo && x <= hi).sort((a, b) => a - b); if (s.skip === 1) s.skip = 0; } },
+  // Maths tools combined: the number chart also runs 1-120 (upto 120, from 1 only); upto is stored only when it is 120,
+  // so a chart saved before it is stored exactly as it was.
+  hundreds: { spec: { start: ['enum', [1, 0], 1], shade: ['ints', 120, 0, 120], skip: ['int', 0, 10, 0], hide: ['enum', ['none', 'shaded', 'all'], 'none'], upto: ['enum', [100, 120], 100] },
+    fix: s => {
+      if (!s.start) s.upto = 100;
+      const lo = s.start, hi = s.start ? s.upto : 99; s.shade = [...new Set(s.shade)].filter(x => x >= lo && x <= hi).sort((a, b) => a - b); if (s.skip === 1) s.skip = 0;
+      if (s.upto === 100) delete s.upto;
+    } },
   area: { spec: { a: ['int', 1, 99, 4], b: ['int', 1, 99, 6], view: ['enum', ['array', 'area'], 'array'], sa: ['int', 0, 98, 0], sb: ['int', 0, 98, 0] },
     fix: s => { if (s.sa >= s.a) s.sa = 0; if (s.sb >= s.b) s.sb = 0; } },
   times: { spec: { size: ['enum', [10, 12], 10], r: ['int', 0, 12, 0], c: ['int', 0, 12, 0], mark: ['enum', ['fact', 'row', 'col', 'squares', 'turn'], 'fact'], hide: ['bool', false] },
@@ -136,6 +142,38 @@ export const TOOL_SPECS = {
     spec: { kind: ['enum', ['coin', 'dice', 'spinner'], 'coin'], dice: ['enum', [1, 2], 1], parts: ['int', 2, 8, 4], runs: ['int', 1, 1000, 100], counts: ['ints', 11, 0, 1000000, []] },
     fix: s => { const n = s.kind === 'coin' ? 2 : s.kind === 'spinner' ? s.parts : s.dice === 2 ? 11 : 6; s.counts = Array.from({ length: n }, (_, i) => s.counts[i] || 0); },
   },
+  // ---- bar models and number rods (docs/decisions.md "Bar models and number rods"); the limits match
+  // public/js/dash-math5.js BAR_LIMITS, BAR_START, ROD_W, ROD_H, ROD_MAX and EQ_START (tested to agree).
+  // Bar models, a mode of Multiply and divide: groups × each (mul), parts of a whole (part) or two bars compared (cmp);
+  // unk is which quantity is "?" (mul: total, groups, each; part: whole, then each part; cmp: difference, first,
+  // second). story is the word problem: the teacher's own text in a layout or a sent copy; a student's own screen never
+  // keeps it (student: true), so what a student writes stays in their browser.
+  bars: {
+    spec: { kind: ['enum', ['mul', 'part', 'cmp'], 'mul'], g: ['int', 1, 12, 3], e: ['int', 1, 100, 4], p: ['ints', 4, 1, 999, [5, 3]],
+      ca: ['int', 1, 999, 9], cb: ['int', 1, 999, 5], unk: ['int', 0, 4, 0], hide: ['bool', true], bw: ['bool', true], bp: ['bool', true],
+      max: ['int', 10, 1000, 50], story: ['textm', 240, ''] },
+    fix: (s, o = {}) => {
+      while (s.p.length < 2) s.p.push(1);
+      const n = s.kind === 'part' ? s.p.length + 1 : 3;
+      if (s.unk >= n) s.unk = 0;
+      if (o.student) s.story = '';
+    },
+  },
+  // Number rods: rods 1-20 units long on a 30 × 16 unit board (x, y: the rod's top left unit; v: standing up, never a rod
+  // longer than 16), at most
+  // 60; the equation (eq: shown) is l = r, terms 1-20 with exactly one 0, the missing box; model: its two trains shown.
+  rods: {
+    spec: { rods: ['list', 60, { n: ['int', 1, 20, 1], x: ['int', 0, 29, 0], y: ['int', 0, 15, 0], v: ['bool', false] }, []],
+      dir: ['enum', ['h', 'v'], 'h'], grid: ['bool', true], units: ['bool', true], long: ['int', 11, 20, 12],
+      eq: ['bool', true], l: ['ints', 3, 0, 20, [5, 4]], r: ['ints', 3, 0, 20, [0, 3]], model: ['bool', false] },
+    fix: s => {
+      for (const r of s.rods) {
+        if (r.v && r.n > 16) r.v = false;
+        r.x = Math.min(r.x, 30 - (r.v ? 1 : r.n)); r.y = Math.min(r.y, 16 - (r.v ? r.n : 1));
+      }
+      if (!rodEquation(s.l, s.r)) { s.l = [5, 4]; s.r = [0, 3]; s.model = false; }
+    },
+  },
   letters: {
     spec: { word: ['ints', 12, 0, 25, [2]], fam: ['enum', ['', 'at', 'an', 'ap', 'ig', 'in', 'ip', 'op', 'ot', 'ug', 'un', 'et', 'en', 'ell', 'ake', 'ine'], 'at'], caps: ['bool', false] },
     fix: s => { if (s.fam) s.word = s.word.slice(0, 2); },
@@ -157,9 +195,37 @@ export const ORGANIZER_BOXES = { venn: 3, tchart: 2, kwl: 3, story: 5 };
 export const ORGANIZER_GROW = { seq: { key: 'n', lo: 2, hi: 10 }, main: { key: 'd', lo: 2, hi: 6 } };
 /** An organizer state's number of boxes (main idea and details: the idea and its details). */
 export const organizerBoxes = s => ORGANIZER_BOXES[s.kind] || (s.kind === 'main' ? 1 + s.d : s.n);
-/** The tools a teacher can send to students (each student gets their own copy). */
+/** The tools a teacher can send to students (each student gets their own copy). Since "maths tools combined" this also
+ *  holds the retired tools' ids: they are modes of another tool now, and their specs clean those modes' states. */
 export const TOOL_IDS = Object.keys(TOOL_SPECS);
+/** Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): a tool with modes and, in
+ *  order, its modes. The first mode is the tool's own (its state's own keys, as always); every other mode is a tool that
+ *  used to stand alone, and its state lives under its old id (placeval's { v, discs, dec, base10: { h, t, o } }). Which
+ *  mode shows is `tab` (`mode` is already the fraction tool's Compare|Add..., the number line's and the coins'). */
+export const TOOL_MODES = {
+  placeval: ['placeval', 'base10'],
+  fractions: ['fractions', 'fdp'],
+  area: ['area', 'times', 'bars'],
+  geoboard: ['geoboard', 'angle'],
+  pattern: ['pattern', 'solids', 'transform'],
+  algebra: ['algebra', 'balance'],
+  chance: ['chance', 'graph'],
+};
+/** Modes that never were a tool of their own (bar models, docs/decisions.md "Bar models and number rods"): nothing was
+ *  ever saved with their id as a widget's type, so they are not retired types. */
+export const NEW_MODES = ['bars'];
+/** A retired tool's id -> the tool it is a mode of now. */
+export const MODE_HOME = Object.fromEntries(Object.entries(TOOL_MODES).flatMap(([id, modes]) => modes.slice(1).filter(m => !NEW_MODES.includes(m)).map(m => [m, id])));
 
+/** Number rods: is l = r an equation the board can model (each side 1-3 terms of 0-20, exactly one 0, the missing term
+ *  1-20 and each side at most 20 long)? public/js/dash-math5.js eqValid, tested to agree. */
+export function rodEquation(l, r) {
+  if (!Array.isArray(l) || !Array.isArray(r) || !l.length || !r.length || l.length > 3 || r.length > 3) return false;
+  const all = [...l, ...r], sum = a => a.reduce((x, y) => x + y, 0);
+  if (all.filter(x => x === 0).length !== 1) return false;
+  const m = l.includes(0) ? sum(r) - sum(l) : sum(l) - sum(r);
+  return m >= 1 && m <= 20 && sum(l) + (l.includes(0) ? m : 0) <= 20 && sum(r) + (r.includes(0) ? m : 0) <= 20;
+}
 function cleanBy(spec, src) {
   const o = src && typeof src === 'object' && !Array.isArray(src) ? src : {}, out = {};
   for (const [k, d] of Object.entries(spec)) {
@@ -181,5 +247,23 @@ export function cleanToolState(type, v, o = {}) {
   const t = TOOL_SPECS[type]; if (!t) return null;
   const s = cleanBy(t.spec, v);
   if (t.fix) t.fix(s, o);
+  // A tool with modes: which one shows (kept only when it isn't the tool's own) and each other mode's state, cleaned by
+  // its own spec and kept only when it differs from its start. So a state saved before the modes is stored exactly as it
+  // was, and switching modes never loses what was set up in another.
+  const modes = TOOL_MODES[type];
+  if (modes) {
+    const src = v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+    if (modes.includes(src.tab) && src.tab !== type) s.tab = src.tab;
+    for (const m of modes.slice(1)) {
+      if (!src[m] || typeof src[m] !== 'object' || Array.isArray(src[m])) continue;
+      const sub = cleanToolState(m, src[m], o);
+      if (JSON.stringify(sub) !== JSON.stringify(cleanToolState(m, {}, o))) s[m] = sub;
+    }
+  }
   return s;
+}
+/** A state of a retired tool -> the same state as a mode of the tool it is now ({ type, state }); anything else unchanged. */
+export function moveToolState(type, state) {
+  const home = MODE_HOME[type];
+  return home ? { type: home, state: cleanToolState(home, { tab: type, [type]: state && typeof state === 'object' ? state : {} }) } : { type, state };
 }

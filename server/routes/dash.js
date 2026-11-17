@@ -96,15 +96,23 @@ const library = t => html`<aside class="dash-lib" id="dash-lib" aria-labelledby=
 /** The selected widget's settings (edit mode). */
 const side = t => html`<aside class="dash-side" id="dash-side" aria-labelledby="dash-side-h" hidden><h2 id="dash-side-h">${t('dash.side.none')}</h2><div id="dash-side-body"></div></aside>`;
 
+/** The edit bar's title, "Editing: <name>", with the name a field the teacher types a new name into (Enter or leaving
+ *  it saves, Escape puts it back: public/js/dash.js). The words around the name come from the one translated string,
+ *  so each language keeps its own order and punctuation. */
+function editTitle(t, name) {
+  const MARK = '\u0001', [pre, post = ''] = t('dash.top.editing', { name: MARK }).split(MARK);
+  return html`<h1 class="dash-class dash-edittitle" id="dash-editing"><span>${pre}</span><span class="dash-namebox"><input class="dash-namein" id="dash-edit-name" maxlength="40" value="${name}" aria-label="${t('dash.top.layoutName')}" aria-describedby="dash-edit-name-err" autocomplete="off" spellcheck="false" enterkeyhint="done"><span class="dash-namepen" aria-hidden="true">✏️</span></span><span>${post}</span></h1>
+      <span class="err dash-nameerr" id="dash-edit-name-err" role="alert"></span>`;
+}
 function dashPage(req, res, c, role) {
   const t = req.t, u = req.user;
   const s = S.getSchool(c.school_id);
   const reg = D.registryFor(t, role);
   let data, top, foot = '';
   if (role === 'teacher') {
-    const layouts = D.ensureLayouts(u, c, t('dash.layouts.defaultName'));
+    const layouts = D.ensureLayouts(u, c, t);
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -116,24 +124,26 @@ function dashPage(req, res, c, role) {
       <button class="btn btn-sm" type="button" id="dash-edit">✏️ ${t('dash.top.edit')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
-      <h1 class="dash-class" id="dash-editing">${t('dash.top.editing', { name: cur.name })}</h1>
+      ${editTitle(t, cur.name)}
       <span class="small muted dash-hint">${t('dash.top.editHint')}</span>
       <span class="dash-grow"></span>
       <button class="btn btn-sm" type="button" id="dash-undo" disabled>↶ ${t('dash.top.undo')}</button>
       <button class="btn btn-primary btn-sm" type="button" id="dash-done">✔ ${t('dash.top.done')}</button>
     </header>`;
     foot = html`<footer class="dash-foot" id="dash-foot">
-      <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
-      <div class="dash-layouts" id="dash-layouts" role="group" aria-labelledby="dash-layouts-l"></div>
-      <button class="btn btn-sm" type="button" id="dash-layout-new">➕ ${t('dash.layouts.new')}</button>
-      <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
+      <div class="dash-switch" id="dash-switch">
+        <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
+        <nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"></nav>
+        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span><span aria-hidden="true">➕</span> <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
+        <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
+      </div>
       <span class="dash-grow"></span>
       <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">👀 ${t('dash.foot.eyes')}</button>
       <button class="btn btn-primary btn-sm" type="button" id="dash-push">📤 ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
     </footer>`;
   } else {
     const st = D.studentState(c.id, u.id);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, registry: reg, practice: D.practiceFor(c), me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
+    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), me: st, pins: D.pinsOf(c.id), live: D.liveState(c, u, role) };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backMyClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>

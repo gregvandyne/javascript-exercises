@@ -21,6 +21,10 @@ body.dash-page{padding-bottom:0}
 .dash-me{display:flex;align-items:center;gap:var(--s2);font-weight:700}
 .dash-count{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--current);color:var(--on-current);font-size:.8rem}
 .dash-layouts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+/* The layout switcher (the label, the chips, New and ⋯) is one wrapper that adds no box of its own in the footer, so the
+   footer is laid out exactly as before; on a phone public/js/dash.js moves it under the top bar (below). */
+.dash-switch{display:contents}
+.dash-layouts .chip[aria-current="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
 /* Ready-made layouts make six or more layouts usual: on a wide screen the chips stay on the bar's one line and scroll
    sideways when there are more than fit, so the bar never grows a second line (it did on the projector). */
 @media (min-width:720px){
@@ -28,9 +32,22 @@ body.dash-page{padding-bottom:0}
   .dash-layouts .chip{flex:none}
   .dash-layouts.is-more:not(.at-end){-webkit-mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to var(--fade-end,right),#000 calc(100% - 28px),transparent)}
   [dir="rtl"] .dash-layouts{--fade-end:left}
-  .dash-projector .dash-foot>.dash-lab{display:none}
+  .dash-projector .dash-foot .dash-lab{display:none}
 }
 .dash-hint{flex:1 1 200px}
+/* Edit mode: the layout's name is a field in the title (docs/decisions.md "Ready-made layouts"), looking like the title
+   with a dashed underline and a pencil until it is focused. */
+.dash-edittitle{display:flex;align-items:center;flex-wrap:wrap;gap:0 .3em;min-width:0}
+.dash-namebox{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:100%}
+.dash-namein{font:inherit;color:inherit;width:16ch;min-width:8ch;max-width:min(28ch,100%);field-sizing:content;min-height:44px;padding:2px 2em 2px .4em;border:2px solid transparent;border-bottom:2px dashed var(--edge);border-radius:var(--r-sm);background:transparent}
+@supports (field-sizing:content){.dash-namein{width:auto}}
+.dash-namein:hover{background:var(--card-2)}
+.dash-namein:focus{outline:none;border:2px solid var(--accent-line);background:var(--card)}
+.dash-namein[aria-invalid="true"]{border-color:var(--danger)}
+.dash-namepen{position:absolute;inset-inline-end:.4em;font-size:.8em;pointer-events:none;opacity:.75}
+.dash-namein:focus + .dash-namepen{display:none}
+.dash-nameerr{color:var(--danger);font-weight:700;font-size:.9rem}
+.dash-nameerr:empty{display:none}
 
 /* ---------- the body: library | grid | settings ---------- */
 .dash-body{flex:1 1 auto;min-height:0;display:flex;gap:var(--s4)}
@@ -351,12 +368,18 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 
 /* ---------- stage 2, second part ---------- */
 /* the visual timer: a shrinking ring */
-.dw-ring{position:relative;flex:1 1 auto;min-height:0;aspect-ratio:1;max-width:100%;display:grid;place-items:center}
-.dw-ring svg{position:absolute;inset:0;width:100%;height:100%}
-.dw-ringbg{fill:none;stroke:var(--card-2);stroke-width:9}
-.dw-ringfg{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+/* docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring": the ring takes all the room the widget has left (the
+   area is a size container; the ring is the largest circle in it), and the time is sized from the ring alone, never
+   from the time shown: the widest time to 99:59 ("88:88", 2.62em x 1.18em with the line box) fits the ring's inner
+   circle (r 41 of 100) with room to spare. Times with hours (from 1:00:00) step down once, to fit "8:88:88". */
+.dw-ring{position:relative;flex:1 1 0;min-height:96px;width:100%;container-type:size;display:grid;place-items:center}
+.dw-ring>*{grid-area:1/1}
+.dw-ring svg{display:block;width:min(100cqw,100cqh);height:min(100cqw,100cqh)}
+.dw-ringbg{fill:none;stroke:var(--card-2);stroke-width:8}
+.dw-ringfg{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
 .dw-timer.is-done .dw-ringfg{stroke:var(--danger)}
-.dw-ring .dw-digits{position:relative;font-size:clamp(1.4rem,min(16cqh,12cqi),6rem)}
+.dw-ring .dw-digits{position:relative;white-space:nowrap;font-size:calc(min(100cqw,100cqh) * .25)}
+.dw-ring .dw-digits.is-long{font-size:calc(min(100cqw,100cqh) * .195)}
 @media (prefers-reduced-motion:reduce){.dw-ringfg{transition:none}}
 /* the spinner wheel */
 /* the spinner wheel: as big as the widget allows; beside the readout when the widget is wide */
@@ -548,11 +571,35 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
   /* a phone: one column; each widget as tall as its content (at least a little taller for taller widgets) */
   .dash-w{height:auto;min-height:calc(var(--h) * 36px + 72px)}
   .dash-wb{container-type:inline-size;overflow:visible;flex:none;height:auto!important}
+  /* the ring on a phone: the widget is as tall as its content, so the ring's area is given a height (most of the width) */
+  .dw-ring{flex:none;height:min(76cqi,340px)}
   .dash-tools{position:static;margin-top:var(--s2);box-shadow:none;background:var(--card-2);max-width:none}
   .dash-tray{top:auto;inset-inline:var(--s3);width:auto;margin-top:var(--s2);position:relative}
   .dash-hint{display:none}
   .dash-check{padding:var(--s3) var(--s4)}
   .dash-ans{flex-basis:90px}
+  /* Layouts on a phone (docs/decisions.md "Layouts on a phone"): the switcher is a row of its own under the top bar,
+     the chips scrolling sideways (the one on screen kept in view, the edge faded while there are more), New as ➕ and
+     ⋯ at its end; it sticks to the top of the screen while the page scrolls. The footer keeps Eyes up and Push to
+     students as a bar stuck to the bottom (above the iPhone's home bar). Both are sticky, not fixed: at rest they take
+     their own room in the page, so neither sits on a widget at the top or the end of the page. In edit mode the footer
+     is hidden as everywhere, and the switcher stays (switching what is being edited) but is not sticky, so it never
+     covers the edit bar or a settings field. */
+  .has-topswitch .dash-switch{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:var(--s2);margin-inline:calc(-1 * var(--s4));padding:var(--s2) var(--s4);padding-inline:max(var(--s4),env(safe-area-inset-left)) max(var(--s4),env(safe-area-inset-right));background:var(--card);color:var(--text);box-shadow:0 4px 14px -6px color-mix(in srgb,var(--text) 35%,transparent)}
+  .has-topswitch .dash-switch>.dash-lab{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .has-topswitch .dash-layouts{flex:1 1 auto;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;padding:2px;margin:-2px}
+  .has-topswitch .dash-layouts::-webkit-scrollbar{display:none}
+  .has-topswitch .dash-layouts .chip{flex:none}
+  .has-topswitch .dash-layouts.is-more{--fa:#000;--fz:#000;-webkit-mask-image:linear-gradient(to var(--fade-end,right),var(--fa),#000 32px,#000 calc(100% - 32px),var(--fz));mask-image:linear-gradient(to var(--fade-end,right),var(--fa),#000 32px,#000 calc(100% - 32px),var(--fz))}
+  .has-topswitch .dash-layouts.is-more:not(.at-start){--fa:transparent}
+  .has-topswitch .dash-layouts.is-more:not(.at-end){--fz:transparent}
+  [dir="rtl"] .has-topswitch .dash-layouts{--fade-end:left}
+  .has-topswitch .dash-switch>.btn{flex:none;min-width:44px;min-height:44px;padding:0 12px}
+  .has-topswitch .dash-lnewt{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .has-topswitch.is-editing .dash-switch{position:static}
+  .has-topswitch .dash-foot{position:sticky;bottom:0;z-index:20;flex-wrap:nowrap;margin:0 calc(-1 * var(--s4)) calc(-1 * var(--s3));border-radius:var(--r) var(--r) 0 0;padding:var(--s2) max(var(--s4),env(safe-area-inset-right)) calc(var(--s2) + env(safe-area-inset-bottom)) max(var(--s4),env(safe-area-inset-left));box-shadow:0 -4px 14px -6px color-mix(in srgb,var(--text) 35%,transparent)}
+  .has-topswitch .dash-foot>.dash-grow{display:none}
+  .has-topswitch .dash-foot>.btn{flex:1 1 auto;min-width:0;min-height:44px;justify-content:center;white-space:normal;text-align:center;line-height:1.15}
   .dw-barrow{grid-template-columns:minmax(3.5em,auto) 1fr 2em}
 }
 /* "More below" on a widget whose body scrolls (public/js/dash.js) */
@@ -627,6 +674,13 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 /* steppers and buttons on a tinted area stay visible */
 .dash-wb .btn.dt-pm:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
 .dt-ic{font-size:1.1em;line-height:1}
+/* maths tools combined: the mode switch at the top of a tool with modes (public/js/dash-modes.js), like the timer's */
+.dt-modes{flex:none;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:100%;min-width:0}
+.dt .dt-mode{flex:0 1 auto;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-weight:700}
+.dt-modeic{flex:none;font-size:1.1em;line-height:1}
+.dt-modetext{min-width:0;overflow-wrap:break-word}
+@container (max-width:420px){.dt .dt-mode{padding:0 8px}.dt-modes:has(.dt-mode:nth-child(3)) .dt-modeic{display:none}}
+.dash-projector .dt .dt-mode{font-size:1.05rem}
 /* help on the maths tools: the one-line instruction under the title, ⓘ in the header and its panel inside the widget */
 .dt-howrow{flex:none;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;margin-bottom:calc(4px - var(--s2))}
 .dt-howrow[hidden]{display:none}
@@ -690,21 +744,52 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-feq{display:inline-flex;align-items:center;gap:.25em;color:var(--text-2);font-weight:800;font-size:clamp(1.1rem,min(8cqh,5cqi),2.6rem)}
 .dt-sign{font-size:1.1em;padding:0 .15em}
 .dt-cmp{gap:.15em .4em}
-/* fractions: Add, Subtract, Multiply (docs/decisions.md "Classroom dashboards: help on the maths tools") */
-.dt-fop{width:100%;height:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:safe center;gap:clamp(4px,1.6cqh,12px);min-height:0}
-.dt-foeq{flex:none;display:flex;align-items:center;justify-content:center;gap:clamp(6px,2cqi,18px);flex-wrap:wrap}
-.dt-fo{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:2px 6px;border-radius:12px;box-shadow:inset 4px 0 0 var(--dt-c0)}
+/* fractions: Add, Subtract, Multiply, Divide (docs/decisions.md "Classroom dashboards: help on the maths tools" and
+   "Fractions as a number sentence"). The sizes in px agree with FORMS in public/js/dash-tools.js. */
+.dt-fop{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;min-height:0;min-width:0}
+.dt-fopnd{display:inline-flex;align-items:center;gap:6px}
+.dt-fo{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:2px 6px 2px 10px;border-radius:12px;box-shadow:inset 4px 0 0 var(--dt-c0)}
 .dt-fo1{box-shadow:inset 4px 0 0 var(--dt-c1)}
 .dt-forow{display:flex;align-items:center;gap:4px}
-.dt-fov{min-width:1.6em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(1.1rem,min(7cqh,4.5cqi),2rem);line-height:1}
+.dt-fov{min-width:1.5em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:1.5rem;line-height:1}
 .dt-fol{align-self:stretch;margin-inline:48px;height:3px;border-radius:2px;background:currentColor}
-.dt-fosign{font-weight:800;font-size:clamp(1.3rem,min(8cqh,5cqi),2.4rem);line-height:1}
-.dt-fstrips{flex:1 1 0;min-height:0;display:grid;grid-template-columns:max-content minmax(0,1fr);grid-template-rows:repeat(3,minmax(22px,90px));align-content:center;gap:clamp(3px,1.2cqh,10px) var(--s2)}
-.dt-fstrips .dt-flab{justify-content:flex-end;gap:.25em;font-size:clamp(1rem,min(5.5cqh,4.5cqi),1.9rem)}
-.dt-fstrips .dt-frac,.dt-fstrips .dt-fwhole,.dt-fstrips .dt-sign{font-size:1em}
-.dt-fstrips .dt-fbar{cursor:default}
-.dt-fpies{min-width:0;min-height:0;height:100%;display:flex;align-items:center;justify-content:flex-start;gap:6px}
-.dt-fpies .dt-fpie{flex:0 1 auto;height:100%;width:auto;max-width:calc((100% - 12px) / 3);cursor:default}
+.dt-fosign{font-weight:800;font-size:2rem;line-height:1}
+.dt-fs-tight .dt-pm{min-height:36px;height:36px;min-width:36px;font-size:1.15rem}
+.dt-fs-tight .dt-fov{font-size:1.3rem}
+.dt-fs-tight .dt-fol{margin-inline:40px}
+.dt-fs-tight .dt-fosign{font-size:1.7rem}
+/* a very short widget: each fraction on one row (− 1 + / − 2 +) */
+.dt-fs-inline .dt-fo{flex-direction:row;gap:6px}
+.dt-fs-inline .dt-fol{width:3px;height:30px;margin:0 2px;align-self:center;transform:skewX(-20deg)}
+.dt-fs-inline .dt-fosign{font-size:1.4rem}
+.dt-feqv{display:inline-flex;align-items:center;gap:4px;color:var(--text-2);font-weight:800;font-size:1.1rem}
+.dt-feqv .dt-frac{font-size:1em}
+.dt-fans{display:inline-flex;align-items:center;font-weight:800;font-size:1.6rem}
+.dt-fans .dt-frac,.dt-fans .dt-fwhole,.dt-fans .dt-sign{font-size:1em}
+.dt-fq{font-size:1.25em;line-height:1}
+.dt-fs-tight .dt-fans{font-size:1.35rem}
+.dt-fs-inline .dt-fans{font-size:1rem}
+/* circles: A − B = ? as a row, each fraction under its circles (--ps the circles' size, --hs the fractions' height) */
+.dt-fsent{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:12px;max-width:100%}
+.dt-fterm{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.dt-fterm .dt-fpies{height:var(--ps);display:flex;align-items:center;justify-content:center;gap:6px}
+.dt-fterm .dt-fpie{flex:none;width:var(--ps);height:var(--ps);max-width:none;cursor:default}
+.dt-funder{height:var(--hs);display:flex;align-items:center;justify-content:center}
+.dt-fsg{width:40px;height:var(--hs);display:flex;align-items:center;justify-content:center}
+.dt-fbrk{flex-basis:100%;height:0}
+.dt-fqpie .dt-outline{stroke-dasharray:5 4}
+.dt-fsent3{flex-direction:column;align-items:center;flex-wrap:nowrap;gap:8px}
+.dt-fsent3 .dt-fterm{flex-direction:row}
+.dt-fsent3 .dt-fsg{height:auto}
+/* bars: one a row on one scale, its sign and fraction beside it (--bh the bars' height) */
+.dt-fbars{width:100%;max-width:1100px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;align-content:safe center;gap:var(--gp,12px) 10px}
+.dt-fblab{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.dt-fbars .dt-fobar{display:block;width:100%;height:var(--bh);cursor:default}
+.dt-fbars-above{grid-template-columns:minmax(0,1fr);row-gap:6px}
+.dt-fbars-above .dt-fblab{justify-content:center}
+.dt-fbars-above .dt-fobar+.dt-fblab{margin-top:6px}
+.dt-foeq{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.dt-foeq .dt-fsg{width:auto}
 .dt-fwhole{font-weight:800;font-variant-numeric:tabular-nums}
 .dt-fneg{display:inline-flex;align-items:center}
 .dt-on.dt-fneg{fill:color-mix(in srgb,var(--danger) 45%,var(--card));stroke:var(--danger);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
@@ -722,10 +807,9 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-fbrace{fill:none;stroke-width:3;vector-effect:non-scaling-stroke}
 .dt-c0s{stroke:color-mix(in srgb,var(--dt-c0) 60%,var(--text))}.dt-c1s{stroke:color-mix(in srgb,var(--dt-c1) 60%,var(--text))}
 .dt-ftl{fill:var(--text);font:800 calc(16px * var(--ts,1)) var(--font)}
-.dt-fchain{gap:.1em .3em;font-size:clamp(1rem,min(7cqh,5cqi),2.8rem)}
+.dt-fchain{gap:.1em .3em;font-size:clamp(1rem,min(5.5cqh,4cqi),2.2rem)}
 .dt-fchain .dt-frac{font-size:1em}
 [dir="rtl"] .dt-fop .dt-fbar{transform:none}
-@container (max-height:340px){.dt-fstrips .dt-flab{font-size:.85rem}.dt-fstrips .dt-frac{flex-direction:row;align-items:baseline}.dt-fstrips .dt-fl{display:none}.dt-fstrips .dt-fd::before{content:'/'}.dt-fo{flex-direction:row;gap:6px}.dt-fol{width:3px;height:auto;margin:6px 0;transform:skewX(-20deg)}}
 /* number line */
 .dt-nl{cursor:crosshair;touch-action:none}
 .dt-tick{stroke:var(--text);stroke-width:2.5}
@@ -760,7 +844,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 [dir="rtl"] .dt-fbar{transform:scaleX(-1)}
 /* graphs */
 .dt-gtitle{position:absolute;top:0;inset-inline:0;text-align:center;font-weight:800;font-size:clamp(.95rem,min(6cqh,4cqi),1.6rem);overflow-wrap:anywhere}
-.dt-graph{padding-top:1.6em}
+.dt-graph{padding-top:calc(clamp(.95rem,min(6cqh,4cqi),1.6rem) * 1.5)}
 .dt-gridl{stroke:color-mix(in srgb,var(--text) 18%,var(--card));stroke-width:1.5}
 .dt-gbar{stroke:var(--text);stroke-width:2}
 .dt-gv{fill:var(--text);font:800 calc(20px * var(--ts,1)) var(--font)}
@@ -816,6 +900,8 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 /* hundreds chart and times table */
 .dt-hgrid,.dt-tgrid{display:grid;width:min(100%,calc(100cqh - 4px));max-height:100%;aspect-ratio:1;gap:2px}
 .dt-hgrid{grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
+/* maths tools combined: 1-120 is twelve rows of ten */
+.dt-hgrid.is-120{grid-template-rows:repeat(12,1fr);aspect-ratio:auto;height:100%;width:min(100%,calc(100cqh * 1.25))}
 .dt-tgrid{grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr)}
 .dt-hcell,.dt-tcell,.dt-th{display:grid;place-items:center;min-width:0;min-height:0;padding:0;border:0;border-radius:5px;background:var(--card-2);color:var(--text);font:700 clamp(13px,min(3.3cqi,3.3cqh),1.5rem) var(--font);font-variant-numeric:tabular-nums;cursor:pointer;line-height:1}
 .dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-size:clamp(12px,min(2.7cqi,2.7cqh),1.3rem);letter-spacing:-.03em}
@@ -866,6 +952,8 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-cardl{white-space:nowrap}
 .dt-hund{flex:0 1 auto;height:100%;max-width:45%;aspect-ratio:1;cursor:pointer}
 .dt-part{opacity:.55}
+/* maths tools combined: in the taller fractions tool, narrow cards beside the grid go one under another (never cut) */
+@container (min-aspect-ratio:7/5) and (max-width:700px){.dt-cards{grid-template-columns:minmax(0,1fr)}}
 @container (max-aspect-ratio:7/5){.dt-fdpwrap{flex-direction:column}.dt-hund{flex:1 1 0;min-height:0;height:auto;width:auto;max-width:100%;max-height:100%}.dt-cards{flex:none;width:100%}}
 /* whiteboard */
 .dt-boardbg{border-radius:var(--r-sm);background-color:var(--card-2);overflow:hidden;box-shadow:inset 0 0 0 2px var(--line)}
@@ -894,11 +982,15 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt .btn[hidden]{display:none}
 .dt .btn:has(.dt-lbl){min-width:44px;justify-content:center}
 /* Stage 4 review: buttons with an icon always show their words (a row wraps rather than drop them); any button whose
-   words are short of room still names itself in a tooltip on hover and on keyboard focus. */
+   words are short of room still names itself in a tooltip on hover and on keyboard focus. The tooltip is one element
+   for the page (public/js/dash-tip.js), in a layer of its own (position: fixed, in <body>), placed from the button's box
+   and kept inside the screen, so no tool edge, rail or scrolling box can cut it off. */
 .dt .btn[data-tip]{position:relative}
-.dt .btn[data-tip]:is(:hover,:focus-visible)::after{content:attr(data-tip);position:absolute;inset-block-end:calc(100% + 6px);inset-inline-start:50%;translate:-50% 0;z-index:30;width:max-content;max-width:16em;padding:4px 8px;border-radius:8px;background:var(--text);color:var(--card);font:600 .85rem/1.25 var(--font);white-space:normal;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-[dir="rtl"] .dt .btn[data-tip]:is(:hover,:focus-visible)::after{translate:50% 0}
-.dt .btn[data-tip]:has(.dt-lbl:not([hidden])):not(:focus-visible)::after{content:none}
+.dash-tip{position:fixed;left:0;top:0;z-index:9990;box-sizing:border-box;width:max-content;max-width:min(16em,calc(100vw - 16px));padding:4px 8px;border-radius:8px;background:var(--text);color:var(--card);font:600 .85rem/1.25 var(--font);white-space:normal;overflow-wrap:anywhere;text-align:center;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.dash-tip[hidden]{display:none}
+/* it moves straight to its button (no transition, even under the reduced-motion rule that gives every property a tiny one) */
+.dash-tip.dash-tip{transition:none!important}
+.dash-tip.is-big{font-size:1rem;padding:6px 10px}
 .dt-practicego{display:flex;gap:var(--s2);justify-content:flex-start;width:100%;text-decoration:none}
 /* the shared extras go to their icon first, then the tool's own buttons */
 .dt-askform .dt-askopts{gap:var(--s2);margin:0;padding:0}
@@ -1012,8 +1104,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .gb-pop[hidden]{display:none}
 .gb-poph{margin:4px 2px 0;font-size:.78rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--text-2)}
 .gb-popg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px}
-.gb-btn[aria-expanded="true"]::after{content:none!important}
-@media (hover:none){.dt .gb-btn[data-tip]:hover:not(:focus-visible)::after{content:none}}
 .gb-popsw{grid-template-columns:repeat(auto-fill,44px)}
 .gb-popsizes{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}
 .gb-popideas{grid-template-columns:minmax(0,1fr)}
@@ -1066,6 +1156,15 @@ html.gb-maxed,html.gb-maxed body{overflow:hidden}
 /* pattern blocks */
 .dt-ptray{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
 .dt-pbtn{min-width:48px;padding:0 8px}
+.dt-pbtn{touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}
+.dt-pbtn.is-dragsrc{opacity:.55}
+/* review: a block dragged from the palette: a lifted copy follows the pointer, the board lights up, a dashed outline shows
+   where it will land */
+.dt-pghost{position:fixed;left:0;top:0;z-index:10000;pointer-events:none;cursor:grabbing;will-change:transform;filter:drop-shadow(0 12px 14px rgba(20,20,20,.35)) drop-shadow(0 3px 5px rgba(20,20,20,.25))}
+.dt-pghost svg{display:block;overflow:visible}
+.dt-pghost.is-out{opacity:.7}
+.dt svg.dt-pboard.is-drop .dt-pbg{fill:color-mix(in srgb,var(--accent-line) 14%,var(--card-2));stroke:var(--accent-line);stroke-width:4;vector-effect:non-scaling-stroke}
+.dt-pshadow{fill:color-mix(in srgb,var(--accent-line) 18%,transparent);stroke:var(--accent-line);stroke-width:3;stroke-dasharray:8 6;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none}
 .dt-pic{width:36px;height:28px;display:block}
 .dt svg.dt-pboard{width:100%;height:100%;touch-action:none;overflow:hidden;border-radius:var(--r-sm)}
 .dt-pbg{fill:var(--card-2)}
@@ -1308,6 +1407,9 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.dt-mbtn,.dt-tile{transition:none}}
 @media (max-width:719px){
   .dt-angle,.dt-solid,.dt-map,.dt-bal,.dt-pboard{height:auto;width:100%;max-height:70vh}
+  /* the angle maker's body shares the class dt-angle with its drawing: the body itself is never held to 70vh (its mode
+     switch made it taller than that) */
+  .dash-wb.dt-angle{max-height:none}
   .dt-anglewrap,.dt-solidwrap,.dt-mapwrap,.dt-chwrap,.dt-money,.dt-lwrap,.dt-org,.dt-algmat{height:auto}
   .dt-chwrap{flex-direction:column}.dt-chart{width:100%;height:auto;flex:none}.dt-chobj{height:auto;width:min(40%,140px)}
   .dt-mmat{flex:none;min-height:120px}
@@ -1324,6 +1426,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 /* a student's own copy of a sent tool */
 .dash-copysheet{width:min(1100px,calc(100vw - 24px));max-width:none}
 .dash-wcopy{height:min(62vh,640px);padding:var(--s3);margin-top:var(--s2);box-shadow:inset 0 0 0 2px var(--line)}
+/* maths tools combined: a copy with a mode switch gets that row back */
+.dash-wcopy:has(.dt-modes){height:min(70vh,700px)}
 .dash-copyacts{margin-top:var(--s3);justify-content:flex-end}
 /* small widgets: the model keeps its room */
 @container (max-height:300px){.dt-read .dt-sub:not(:first-child){display:none}.dt-steplab{display:none}}
@@ -1345,18 +1449,18 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-frow{min-height:56px;height:64px;flex:none}
   .dt-f-circle .dt-frow{height:auto}
   .dt-fop{height:auto}
-  .dt-fstrips{flex:none;grid-template-rows:repeat(3,52px)}
   .dt-fareabox{flex:none;height:min(78vw,300px)}
   .dt-mats{min-height:240px}
   .dt-pv{min-height:200px}
   .dt-hgrid,.dt-tgrid{width:100%;height:auto}
+  .dt-hgrid.is-120{width:100%;height:auto;aspect-ratio:10/12}
   .dt-tgrid{gap:1px}
   .dt-tgrid .dt-tcell,.dt-tgrid .dt-th{font-weight:600;letter-spacing:-.06em}
   .dt-tfwrap{flex-wrap:wrap}
   .dt-tf{height:auto;width:min(100%,360px)}
   .dt-boardbg{height:320px}
   .dt-picframe{flex:none;height:260px}
-  .dash-wcopy{height:auto}
+  .dash-wcopy,.dash-wcopy:has(.dt-modes){height:auto}
 }
 
 /* ---------- stage 5 (docs/decisions.md "Classroom dashboards, stage 5"): video, site window, document camera, hall
@@ -1485,21 +1589,30 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dw5-clfoot{justify-content:space-between}
 .dw5-clcount{font-weight:700;color:var(--text-2)}
 /* now and next */
-.dw-nownext{display:grid;grid-template-rows:minmax(0,3fr) minmax(0,2fr);gap:var(--s2)}
-.dw5-nn{display:flex;flex-direction:column;justify-content:safe center;gap:2px;min-height:0;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+/* the cards share the height 3 : 2, each at least as tall as its text at its width (the body is the widget's own size
+   container, so the short layout below cannot change the body itself, only the cards) */
+.dw-nownext{display:flex;flex-direction:column}
+.dw5-nn+.dw5-nn{margin-top:var(--s2)}
+.dw5-nn{display:flex;flex-direction:column;justify-content:safe center;gap:2px;flex:3 1 0;min-height:auto;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-nn.is-next{flex-grow:2}
+/* the next period starts as the one on now ends: "15 min left" already says when (public/js/dash-widgets.js) */
+.dw5-nn.is-next.is-follows .dw5-nnmeta{display:none}
 .dw5-nn.is-now{background:var(--current);color:var(--on-current)}
-.dw5-nn[hidden]{display:none}
+.dw5-nn[hidden],.dw5-nnlab[hidden]{display:none}
+.dw5-nn.is-done{justify-content:safe center;text-align:center}
+.dw5-nn.is-done .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem);font-weight:700}
 .dw5-nnlab{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(.8rem,min(6cqh,4cqi),1.1rem);opacity:.9}
-.dw5-nnname{font-size:clamp(1.1rem,min(13cqh,8cqi),3rem);line-height:1.1;overflow-wrap:anywhere}
-.dw5-nn.is-next .dw5-nnname{font-size:clamp(1rem,min(9cqh,6cqi),2rem)}
+.dw5-nnname{font-size:max(13px,calc(clamp(1.1rem,min(13cqh,8cqi),3rem) * var(--nnk,1)));line-height:1.1;overflow-wrap:anywhere}
+.dw5-nn.is-next .dw5-nnname{font-size:max(13px,calc(clamp(1rem,min(9cqh,6cqi),2rem) * var(--nnk,1)))}
+.dw5-nn.is-out{display:none}
 .dw5-nnmeta{font-weight:700;font-size:clamp(.85rem,min(6cqh,4cqi),1.3rem)}
-/* a short schedule: each card is one line (it wraps rather than hide anything) */
+/* a short schedule: each card on one line where it fits (it wraps; public/js/dash-widgets.js nowNext fits the rest) */
 @container (max-height:170px){
-  .dw-nownext{grid-template-rows:auto auto;align-content:center;align-items:start}
-  .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;padding:4px 10px}
+  .dw5-nn{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;column-gap:8px;row-gap:0;align-content:center;padding:2px 10px}
   .dw5-nnlab{font-size:.8rem}
-  .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:1.05rem}
+  .dw5-nnname,.dw5-nn.is-next .dw5-nnname{font-size:max(13px,calc(1.05rem * var(--nnk,1)))}
   .dw5-nnmeta{font-size:.85rem}
+  .dw5-nn+.dw5-nn{margin-top:4px}
 }
 /* settings editors */
 .dash-fieldmsg{margin:0;font-weight:700}
@@ -1511,7 +1624,6 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
   .dw-vframe,.dw5-siteframe,.dw5-camstage{flex:none;height:auto;aspect-ratio:16/10}
   .dw5-camstage{container-type:size}
   .dw5-bstage{flex:none;height:220px;container-type:size}
-  .dw-nownext{grid-template-rows:auto auto}
   .dw5-nn{min-height:96px}
   .dw5-emptybox{flex:none}
 }
@@ -1520,6 +1632,10 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 /* Stage 5 review: a list that scrolls holds whole rows only (public/js/dash.js snapRows) and fades softly at its bottom
    edge while there is more below, so it reads as "scroll for more", never as cut off. */
 .dw-scroll.is-scrolly:not(.at-end){-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35));mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),rgba(0,0,0,.35))}
+/* rows above too (the schedule rests on the period on now): a lighter, shorter fade at the top edge, so the row it rests
+   on (often the lit period on now) still reads clearly */
+.dw-scroll.is-scrolly:not(.at-top){-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px);mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px)}
+.dw-scroll.is-scrolly:not(.at-top):not(.at-end){-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px,#000 calc(100% - 20px),rgba(0,0,0,.35));mask-image:linear-gradient(to bottom,rgba(0,0,0,.6),#000 12px,#000 calc(100% - 20px),rgba(0,0,0,.35))}
 /* the mood check-in on the projector: only how many have checked in, big, and a note where the counts are */
 .dw5-moodhidden{margin:0;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(6cqh,4cqi),1.2rem);text-align:center}
 .dash-projector .dw-mood{justify-content:safe center;align-items:center;text-align:center}
@@ -1533,3 +1649,121 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 }
 /* a list cut to whole rows leaves room below it: a widget's row of buttons stays at the bottom */
 .dash-wb .dw-foot{margin-top:auto}
+/* ---------- bar models and number rods (docs/decisions.md "Bar models and number rods") ---------- */
+/* bar models: the model drawn to scale, braces, the number sentences and the word problem */
+.dt-bm{width:100%;height:100%}
+.dt-bp{stroke:var(--text);stroke-width:2.5;vector-effect:non-scaling-stroke}
+.dt-bp.dt-c0{fill:var(--dt-c0)}.dt-bp.dt-c1{fill:var(--dt-c1)}.dt-bp.dt-c2{fill:var(--dt-c2)}
+.dt-bp.dt-brest{fill:color-mix(in srgb,var(--dt-c0) 35%,var(--card));stroke-dasharray:8 6}
+.dt-bpart.is-pick .dt-bp,.dt-bp.is-pick{stroke-width:5}
+.dt-bpart[role="button"]{cursor:pointer}
+.dt-bpart[role="button"]:focus-visible{outline:none}
+.dt-bpart[role="button"]:focus-visible .dt-bp{stroke:var(--focus);stroke-width:6}
+.dt-bdiff{fill:color-mix(in srgb,var(--dt-c3) 30%,transparent);stroke:var(--text);stroke-width:2.5;stroke-dasharray:10 7;vector-effect:non-scaling-stroke}
+.dt-bin{fill:#141414;font:800 calc(34px * var(--ts,1)) var(--font);font-variant-numeric:tabular-nums}
+.dt-bin.is-unk,.dt-blab.is-unk{fill:var(--accent-ink);font-size:calc(42px * var(--ts,1))}
+.dt-bin.is-unk{fill:#0F5A37}
+.dt-bin.is-ans{text-decoration:underline}
+.dt-brace{fill:none;stroke:var(--text);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.dt-brace.is-diff{stroke:var(--text-2)}
+.dt-blab{fill:var(--text);font:800 calc(34px * var(--ts,1)) var(--font);font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--card);stroke-width:calc(5px * var(--ts,1));stroke-linejoin:round}
+.dt-bgroups{font-weight:700;fill:var(--text-2)}
+.dt-bread{gap:6px;width:100%}
+.dt-bctl{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px var(--s2)}
+.dt-bsents{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px var(--s3);max-width:100%}
+.dt-bsh{flex:1 1 100%;margin:0;font-weight:700;color:var(--text-2);font-size:.9rem;text-align:center}
+.dt-bsent{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;align-items:center;gap:6px;padding:2px 8px;border-radius:12px;font-variant-numeric:tabular-nums}
+.dt-bsent.is-right{background:var(--ok-bg)}
+.dt-bsent.is-wrong{background:var(--warn-bg)}
+.dt-bop{font-weight:800;font-size:1.25rem;line-height:1;color:var(--text-2);min-width:.7em;text-align:center}
+.dt .input.dt-bbox,.dt .input.dt-rbox{width:3.6em;min-width:0;min-height:44px;padding:0 4px;text-align:center;font-weight:800;font-size:1.15rem;font-variant-numeric:tabular-nums;border-style:dashed}
+.dt-bmark{min-width:1.2em;font-weight:800;font-size:1.25rem;text-align:center}
+.is-right>.dt-bmark{color:var(--ok)}
+.is-wrong>.dt-bmark{color:var(--warn-ink)}
+.dt-bfb{flex:1 1 100%;margin:0;min-height:1.2em;font-weight:700;color:var(--text-2);font-size:.9rem;text-align:center}
+.dt-bstory[hidden]{display:none}
+.dt-bstory{width:min(100%,640px);display:flex;flex-direction:column;gap:4px;text-align:start}
+.dt-bsl{font-weight:700;font-size:.9rem;color:var(--text-2)}
+.dt .input.dt-bsta{min-height:44px;resize:none;font-size:1rem;line-height:1.3}
+.dt-bslocal{margin:0;font-size:.8rem}
+.dash-projector .dt-bsh,.dash-projector .dt-bfb,.dash-projector .dt-bsl{font-size:1.05rem}
+.dash-projector .dt .input.dt-bbox,.dash-projector .dt .input.dt-rbox{font-size:1.4rem}
+@container (max-height:330px){.dt-bsh{display:none}}
+/* number rods: the palette, the equation, the board */
+.dt-rods .dt-top{row-gap:4px}
+.dt-rtray{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:center;touch-action:none}
+/* a palette button is drawn as its rod: its colour, longer for a longer rod, its unit marks and its number */
+.dt .dt-rbtn{--rw:calc(30px + min(var(--n,1),12) * 5px);width:var(--rw);min-width:44px;min-height:44px;padding:0;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab;color:#141414}
+.dash-wb .btn.dt-rbtn:not(.btn-primary):not(.dw-linkbtn):not(.dw-big):not(.dw-symbtn):not(.dw-lightbtn){background:var(--rodc) repeating-linear-gradient(90deg,transparent 0 calc(max(var(--rw),44px) / var(--n,1) - 1.5px),rgba(20,20,20,.28) calc(max(var(--rw),44px) / var(--n,1) - 1.5px) calc(max(var(--rw),44px) / var(--n,1)));box-shadow:inset 0 0 0 2px rgba(20,20,20,.7)}
+.dash-wb .btn.dt-rbtn:not(.btn-primary):hover{box-shadow:inset 0 0 0 3px #141414}
+.dt-rbtn.is-dragsrc{opacity:.55}
+.dt-rnum{font-weight:800;font-variant-numeric:tabular-nums;font-size:1.05rem;padding:0 5px;border-radius:999px;background:rgba(255,253,242,.85);color:#141414;line-height:1.35}
+.dt-rodc1{--rodc:#FFD23F}.dt-rodc2{--rodc:#66C792}.dt-rodc3{--rodc:#5AA9D6}.dt-rodc4{--rodc:#F28C6B}.dt-rodc5{--rodc:#B98AE0}
+.dt-rodc6{--rodc:#2F6F5E}.dt-rodc7{--rodc:#E8862A}.dt-rodc8{--rodc:#1F5FB8}.dt-rodc9{--rodc:#A12A20}.dt-rodc10{--rodc:#3B3A35}.dt-rodcl{--rodc:#6A3FB0}
+.dt .dt-ricbtn{min-width:44px;padding:0 8px;font-size:1.05rem}
+.dt-rlong{display:inline-flex;align-items:center;gap:2px;padding-inline-start:4px;border-inline-start:2px solid var(--line)}
+.dt-rghost{filter:drop-shadow(0 12px 14px rgba(20,20,20,.35)) drop-shadow(0 3px 5px rgba(20,20,20,.25))}
+.dt-req{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px var(--s3)}
+.dt-req[hidden]{display:none}
+.dt-reqt{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:12px;font-weight:800;font-size:clamp(1.15rem,min(7cqh,4.5cqi),2rem);font-variant-numeric:tabular-nums}
+.dt-reqt.is-right{background:var(--ok-bg)}
+.dt-reqt.is-wrong{background:var(--warn-bg)}
+.dt-reqt .dt-bop{font-size:1em}
+.dt-reqb{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.dt-rwrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;min-height:0}
+.dt-rwrap.is-zoomed{display:block;overflow:auto;overscroll-behavior:contain}
+.dt svg.dt-rboard{display:block;width:100%;height:100%;touch-action:none;overflow:hidden;border-radius:var(--r-sm)}
+.dt-rwrap.is-zoomed svg.dt-rboard{width:auto;height:auto;max-width:none}
+.dt svg.dt-rboard:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.dt-rbg{fill:var(--card-2);stroke:var(--line);stroke-width:2;vector-effect:non-scaling-stroke}
+.dt svg.dt-rboard.is-drop .dt-rbg{fill:color-mix(in srgb,var(--accent-line) 14%,var(--card-2));stroke:var(--accent-line);stroke-width:4}
+.dt-rgrid{stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke;fill:none}
+.dt-rshadow{fill:color-mix(in srgb,var(--accent-line) 18%,transparent);stroke:var(--accent-line);stroke-width:3;stroke-dasharray:8 6;vector-effect:non-scaling-stroke;pointer-events:none}
+.dt-rod{stroke:rgba(20,20,20,.75);stroke-width:2;vector-effect:non-scaling-stroke}
+/* our own ten colours (each with its number on it, so colour is never the only cue); light rods take dark numbers */
+.dt-rod1{fill:#FFD23F}.dt-rod2{fill:#66C792}.dt-rod3{fill:#5AA9D6}.dt-rod4{fill:#F28C6B}.dt-rod5{fill:#B98AE0}
+.dt-rod6{fill:#2F6F5E}.dt-rod7{fill:#E8862A}.dt-rod8{fill:#1F5FB8}.dt-rod9{fill:#A12A20}.dt-rod10{fill:#3B3A35}.dt-rodl{fill:#6A3FB0}
+.dt-rlab{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;fill:#141414;pointer-events:none}
+.dt-rlab.dt-rod6,.dt-rlab.dt-rod8,.dt-rlab.dt-rod9,.dt-rlab.dt-rod10,.dt-rlab.dt-rodl{fill:#FFFDF2}
+/* a rod's number sits on a halo of its own colour, so the unit marks never cross it */
+.dt-rlab{paint-order:stroke;stroke-width:7px;stroke-linejoin:round}
+.dt-rlab.dt-rod1{stroke:#FFD23F}.dt-rlab.dt-rod2{stroke:#66C792}.dt-rlab.dt-rod3{stroke:#5AA9D6}.dt-rlab.dt-rod4{stroke:#F28C6B}.dt-rlab.dt-rod5{stroke:#B98AE0}
+.dt-rlab.dt-rod6{stroke:#2F6F5E}.dt-rlab.dt-rod7{stroke:#E8862A}.dt-rlab.dt-rod8{stroke:#1F5FB8}.dt-rlab.dt-rod9{stroke:#A12A20}.dt-rlab.dt-rod10{stroke:#3B3A35}.dt-rlab.dt-rodl{stroke:#6A3FB0}
+.dt-runit{stroke:rgba(20,20,20,.45);stroke-width:1.5;vector-effect:non-scaling-stroke;fill:none;pointer-events:none}
+.dt-rod6~.dt-runit,.dt-rod8~.dt-runit,.dt-rod9~.dt-runit,.dt-rod10~.dt-runit,.dt-rodl~.dt-runit{stroke:rgba(255,253,242,.5)}
+.dt-rten{stroke:#FFFDF2;stroke-width:3;vector-effect:non-scaling-stroke}
+.dt-rg{cursor:grab}
+.dt-rg.is-drag{cursor:grabbing;filter:drop-shadow(0 6px 8px rgba(20,20,20,.35))}
+.dt-rg:focus-visible{outline:none}
+.dt-rg.is-sel .dt-rod,.dt-rg:focus-visible .dt-rod{stroke:var(--focus);stroke-width:5}
+.dt-rg.in-train:not(.is-sel) .dt-rod{stroke:var(--text);stroke-width:3.5}
+.dt-rgap{fill:none;stroke:var(--text-2);stroke-width:3;stroke-dasharray:10 7;vector-effect:non-scaling-stroke}
+.dt-rgapq{fill:var(--text-2);font-family:var(--font);font-weight:800;pointer-events:none}
+.dt-rside{fill:var(--text-2);font-family:var(--font);font-weight:800;pointer-events:none}
+.dt-rrul{stroke:var(--text);stroke-width:2.5;fill:none;vector-effect:non-scaling-stroke;pointer-events:none}
+.dt-rtotal{fill:var(--text);font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--card-2);stroke-width:6px;stroke-linejoin:round;pointer-events:none}
+.dt-rcmp.is-same{color:var(--ok)}
+.dt-rsel,.dt-rview{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.dt-rsep{width:2px;align-self:stretch;margin:4px 2px;background:var(--line);border-radius:2px}
+@container (max-width:560px){.dt-rsep{display:none}}
+@container (max-width:820px){.dt .dt-rbtn{--rw:44px}}
+.dash-projector .dt-rnum{font-size:1.2rem}
+@media (max-width:719px){
+  .dt-bm{height:auto;max-height:60vh}
+  .dt-rwrap{height:auto;display:block;overflow:auto}
+  .dt-rods .dt-stage{min-height:0}
+  .dt svg.dt-rboard{height:auto;aspect-ratio:15 / 8}
+}
+.dt .dt-bnew{min-width:44px;padding:0 8px;font-size:1.1rem}
+/* the model keeps a readable height on a short widget (a tablet): the heading over the sentences goes first */
+.dt-bars .dt-stage{min-height:120px}
+.dt .input.dt-bbox{width:3em}
+@container (max-height:640px){.dt-bsh{display:none}}
+/* a student's copy of bar models or number rods: room for the model under its palette and sentences */
+.dash-wcopy:has(.dt-rods),.dash-wcopy:has(.dt-bars){height:min(72vh,720px)}
+@container (max-width:420px){.dt .input.dt-bbox{width:2.6em}.dt-bsent{gap:4px;padding:2px 4px}}
+@container (max-width:520px){.dt-bars .dt-steplab{display:none}}
+.dash-projector .dt .input.dt-bsta{font-size:1.05rem}
+@media (max-width:719px){.dt-bars .dt-steplab{display:inline}}
+/* Layouts on a phone: focusing or scrolling to something never leaves it under the sticky switcher or the bottom bar. */
+@media (max-width:719px){html:has(.dash.has-topswitch:not(.is-editing)){scroll-padding-top:72px;scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom))}}

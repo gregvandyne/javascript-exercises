@@ -19,8 +19,16 @@
 // Ready-made layouts (docs/decisions.md "Ready-made layouts") are checked as they are made: one layout per template
 // (key tpl-<id>, SIZES=tpl for only these), built in each language checked (its sample periods, goal, jobs, team
 // names and light words in that language) with its own background.
+// Maths tools combined (docs/decisions.md "Classroom dashboards: maths tools combined"): a tool with modes is checked in
+// each mode (its own state, then a widget of its own per other mode, carrying the old tool's busy state there), with its
+// mode switch; the number chart also runs 1-120.
+// Every button with a tooltip is focused in turn (TIPS=0 skips it): its tooltip shows whole inside the screen, clipped
+// by nothing, and the button has no native title as well.
 // Each maths tool's ⓘ help panel is opened in turn (not on the projector, where it is hidden; HELP=0 skips it): it fits
 // its widget without scrolling and nothing in it is cut.
+// Layouts on a phone (docs/decisions.md "Layouts on a phone") adds the teacher's phone (390 × 844, light and dark): the
+// layout switcher and the Eyes up / Push bar are on the first screen, the switcher stays at the top while the page
+// scrolls, and at rest neither sticky bar covers a widget.
 // For every widget it checks:
 //   - the widget's body holds its content (no overflow; only lists scroll, inside their own .dw-scroll area),
 //   - no part of the widget sits outside its body unless it is in a scroll area that really scrolls,
@@ -47,6 +55,7 @@ const L = await import('../server/services/lessons.js');
 const DM = await import('../server/services/dash-media.js');
 const games = await import('../server/services/games.js');
 const D = await import('../server/services/dash.js');
+const DT = await import('../server/services/dash-tools.js');
 const { createApp } = await import('../server/app.js');
 const { tFor } = await import('../server/i18n/index.js');
 
@@ -135,6 +144,7 @@ const SETTINGS = {
     { h: '', t: 'Kokosnuss, ein kleiner Feuerdrache\nMatilda, das Stachelschwein\nOskar, der Fressdrache' }, { h: '', t: 'Die Dracheninsel, ein Sommer voller Abenteuer' },
     { h: '', t: 'Kokosnuss kann noch nicht fliegen, und alle anderen Drachen lachen über ihn.' }, { h: '', t: 'Erstens übt er jeden Morgen\nZweitens hilft ihm Matilda\nDrittens fällt er ins Wasser\nViertens versucht er es noch einmal\nFünftens fliegt er ein kleines Stück\nSechstens feiern alle' },
     { h: '', t: 'Er schafft es am Ende, weil er nie aufgibt.' }] } },
+  rods: { state: { eq: true, model: true, l: [5, 4], r: [0, 3], rods: [{ n: 5, x: 1, y: 1 }, { n: 4, x: 6, y: 1 }, { n: 3, x: 7, y: 3 }, { n: 6, x: 1, y: 3 }, { n: 10, x: 2, y: 7 }, { n: 17, x: 2, y: 9 }] } },
   map: { state: { kind: 'world', names: true, pins: [{ x: 605, y: 250, l: 'Hier wohnt Oma' }, { x: 260, y: 130, l: 'Klassenfahrt' }, { x: 860, y: 340, l: 'Kängurus' }, { x: 740, y: 120, l: '' }, { x: 330, y: 310, l: 'Regenwald am Amazonas' }] } },
   // stage 5: busy states (every option on, long words, a pass over its time, more jobs than fit)
   video: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, start: 95, end: 3725, mute: true, loop: true },
@@ -176,8 +186,34 @@ const STAGE4_EXTRA = [...GEO_EXTRA,
   { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
 ];
 // Help on the maths tools: the fraction tool's Add (circles, more than one whole), Subtract (below zero, so Swap shows)
-// and Multiply (a whole number, so the square repeats), as widgets of their own.
+// and Multiply (a whole number, so the square repeats), as widgets of their own. Fractions as a number sentence
+// (docs/decisions.md): Divide in circles past one whole, and one (wfrswitch) whose mode and view the teacher's screen
+// switches in turn before it is checked (Subtract in circles with the answer hidden, then Divide in bars... the pictures
+// were once drawn over the mode buttons after a switch).
+// Maths tools combined: every mode that was a tool of its own, as a widget of the tool it is a mode of now (with the busy
+// state it had), and the number chart's 1-120.
+const MODE_WIDGET = m => ({ ...D.widgetType(DT.MODE_HOME[m]), wid: `wmode${m}`, s: { state: { tab: m, [m]: SETTINGS[m].state } } });
+const MODE3 = ['base10', 'times', 'fdp', 'graph'].map(MODE_WIDGET).concat([{ ...D.widgetType('hundreds'), wid: 'wn120', s: { state: { upto: 120, shade: [101, 110, 120], skip: 4 } } },
+  // A graph whose tallest bar is exactly the top of its scale, under a title: its number once ran into the title.
+  { ...D.widgetType(DT.MODE_HOME.graph), wid: 'wgraphtop', s: { state: { tab: 'graph', graph: { kind: 'bar', title: 'Haustiere unserer Klasse', rows: [{ l: 'Hunde', v: 4 }, { l: 'Katzen', v: 6 }, { l: 'Fische', v: 2 }] } } } }]);
+const MODE4 = ['angle', 'solids', 'transform', 'balance'].map(MODE_WIDGET);
+// Bar models and number rods (docs/decisions.md "Bar models and number rods"): bar models (a mode of Multiply and divide)
+// with the most groups and the biggest numbers, four parts, two compared bars far apart and a long German word problem;
+// number rods with the board full (60 rods, a train selected by nothing), the equation shown and its trains standing.
+const BARS = (wid, bars) => ({ ...D.widgetType('area'), wid, s: { state: { tab: 'bars', bars } } });
+const BARS_EXTRA = [
+  BARS('wbarsmul', { kind: 'mul', g: 12, e: 100, unk: 1, story: 'Zwölf Schulklassen sammeln jeweils hundert Kastanien für das Herbstfest. Wie viele Kastanien sind es zusammen?' }),
+  BARS('wbarspart', { kind: 'part', p: [999, 1, 250, 7], unk: 2, hide: false }),
+  BARS('wbarscmp', { kind: 'cmp', ca: 999, cb: 1, unk: 0, bp: false }),
+];
+const FULL_RODS = (() => { const out = []; let x = 0, y = 0; for (let k = 0; out.length < 60; k++) { const n = (k % 10) + 1; if (x + n > 30) { x = 0; y++; } if (y > 15) break; out.push({ n, x, y }); x += n; } return out; })();
+const RODS_EXTRA = [
+  { ...D.widgetType('rods'), wid: 'wrodsfull', s: { state: { rods: FULL_RODS, eq: true, l: [9, 8], r: [0, 3], long: 20 } } },
+  { ...D.widgetType('rods'), wid: 'wrodsv', s: { state: { dir: 'v', eq: true, l: [3, 4], r: [2, 0], model: true, rods: [{ n: 3, x: 1, y: 1, v: true }, { n: 4, x: 1, y: 4, v: true }, { n: 2, x: 3, y: 1, v: true }, { n: 12, x: 6, y: 2 }] } } },
+];
 const FRACTION_EXTRA = [
+  { ...D.widgetType('fractions'), wid: 'wfrdiv', s: { state: { mode: 'div', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
+  { ...D.widgetType('fractions'), wid: 'wfrswitch', s: { state: { mode: 'sub', shape: 'circle', hide: true } } },
   { ...D.widgetType('fractions'), wid: 'wfradd', s: { state: { mode: 'add', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrsub', s: { state: { mode: 'sub', a: { n: 1, d: 3 }, b: { n: 11, d: 12 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrmul', s: { state: { mode: 'mul', a: { n: 3, d: 1 }, b: { n: 7, d: 12 } } } },
@@ -197,18 +233,18 @@ const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-l
 /** Every widget type, packed in reading order, at its default size or its smallest, over as many layouts as needed (a
  *  layout holds 24 widgets and 24 rows). Stage 1 and 2 widgets and stage 3 widgets go on separate layouts. */
 const STAGE3 = new Set(['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'board', 'picture']);
-const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map']);
+const STAGE4 = new Set(['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map', 'rods']);
 const STAGE5 = new Set(['video', 'site', 'camera', 'hallpass', 'jobs', 'mood', 'breathe', 'note', 'checklist']);
 const TOOLSET = new Set([...STAGE3, ...STAGE4]);
 const pack = (key, types) => { const out = []; let cur = [], x = 0, y = 0, rowH = 0;
   for (const t of types) { const [w, h] = t[key]; if (x + w > 12) { x = 0; y += rowH; rowH = 0; } if (y + h > 24 || cur.length >= 24) { out.push(cur); cur = []; x = 0; y = 0; rowH = 0; }
     cur.push({ id: t.wid || `w${t.id}`, type: t.id, x, y, w, h, s: t.s || SETTINGS[t.id] || {}, pin: D.canPin(t) }); x += w; rowH = Math.max(rowH, h); }
   if (cur.length) out.push(cur); return out; };
-D.ensureLayouts(T, C, 'Default sizes');
+D.ensureLayouts(T, C, tFor('en'));
 const first = D.layoutsOf(C.id, T.id)[0];
 const LAYOUTS = [];
 for (const size of ['size', 'min']) {
-  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...STAGE4_EXTRA]),
+  const chunks = [...pack(size, D.WIDGETS.filter(t => !TOOLSET.has(t.id) && !STAGE5.has(t.id)).flatMap(t => (t.id === 'timer' ? [t, ...TIME_EXTRA] : [t]))), ...pack(size, [...D.WIDGETS.filter(t => STAGE3.has(t.id)), ...FRACTION_EXTRA, ...MODE3]), ...pack(size, [...D.WIDGETS.filter(t => STAGE4.has(t.id)), ...MODE4, ...STAGE4_EXTRA]), ...pack(size, [...BARS_EXTRA, ...RODS_EXTRA]),
     ...pack(size, [...D.WIDGETS.filter(t => STAGE5.has(t.id)), ...STAGE5_EXTRA]).map(c => Object.assign(c, { stage5: true }))];
   chunks.forEach((widgets, k) => {
     const name = `${size === 'size' ? 'default' : 'min'}${k ? `-${k + 1}` : ''}`;
@@ -222,6 +258,62 @@ for (const size of ['size', 'min']) {
 }
 // Ready-made layouts: built per language in the loop below.
 for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
+// The schedule at pinned times of day (docs/decisions.md "Classroom dashboards: the schedule at every time of day"): the
+// browser's clock is pinned (Playwright's page.clock) and the browser is in the school's time zone, so the period on now,
+// the list's scroll and the "now and next" text are the same on every run. Every other layout is checked at AT (school
+// time, default 10:20: the list rests scrolled down, on the period on now). The schedule's own layout, list and "now and
+// next" at their default, smallest, 3 x 3 and a wide short size, is checked at each time in SCHED_AT: before school, the
+// first period (and its last minute), the break, mid-day, the last period and after school.
+const AT = process.env.AT || '10:20';
+const SCHED_AT = (process.env.SCHED_AT || '07:30,08:05,08:19,09:10,10:20,11:30,12:30').split(',').filter(Boolean);
+{
+  const sch = D.widgetType('schedule'), list = { ...SETTINGS.schedule, view: 'list' }, nn = { ...SETTINGS.schedule, view: 'nownext' };
+  const [dw, dh] = sch.size, [mw, mh] = sch.min;
+  const widgets = [
+    { id: 'wsched-list', type: 'schedule', x: 0, y: 0, w: dw, h: dh, s: list },
+    { id: 'wsched-nn', type: 'schedule', x: dw, y: 0, w: dw, h: dh, s: nn },
+    { id: 'wsched-list3', type: 'schedule', x: 2 * dw, y: 0, w: 3, h: 3, s: list },
+    { id: 'wsched-listmin', type: 'schedule', x: 0, y: dh, w: mw, h: mh, s: list },
+    { id: 'wsched-nnmin', type: 'schedule', x: mw, y: dh, w: mw, h: mh, s: nn },
+    { id: 'wsched-nn3', type: 'schedule', x: 2 * mw, y: dh, w: 3, h: 3, s: nn },
+    { id: 'wsched-listwide', type: 'schedule', x: 0, y: dh + 3, w: 6, h: mh, s: list },
+    { id: 'wsched-nnwide', type: 'schedule', x: 6, y: dh + 3, w: 6, h: mh, s: nn },
+  ].map(w => ({ ...w, pin: true }));
+  for (const at of SCHED_AT) LAYOUTS.push({ key: `sched-${at.replace(':', '')}`, at, widgets, own: [], chip: 1, stage5: false });
+}
+// The timer's ring and digits (docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring"): the time is the same size at
+// every time up to 99:59 (0:05, 9:59, 10:00 and 59:59 side by side, in the ring, the digits and the stopwatch), and in
+// the ring it sits inside the ring's inner circle. One layout per size (key timer-<size>, SIZES=timer for only these):
+// the default, the smallest and the Quiet work layout's big 6 x 7 ring; each also has 1:05:00 (hours, a size of its own)
+// and the Fun break layout's 3:00 ring.
+{
+  const tt = D.widgetType('timer'), STATES = [['0005', 5e3], ['959', 599e3], ['1000', 600e3], ['5959', 3599e3]];
+  for (const [key, [tw, th]] of [['default', tt.size], ['min', tt.min], ['big', [6, 7]]]) {
+    const items = [];
+    const views = key === 'big' ? ['ring'] : ['ring', 'digits', 'sw'];
+    for (const v of views) for (const [k, ms] of STATES) items.push([`wt-${v}-${k}`, v, ms]);
+    for (const v of views) items.push([`wth-${v}-10500`, v, 3900e3]);
+    items.push(['wt3-ring-300', 'ring', 180e3]);
+    const per = Math.floor(12 / tw), widgets = [], timers = [];
+    items.forEach(([id, v, ms], i) => {
+      widgets.push({ id, type: 'timer', x: (i % per) * tw, y: Math.floor(i / per) * th, w: tw, h: th, pin: true, s: v === 'sw' ? { mode: 'stopwatch' } : { minutes: 5, view: v === 'ring' ? 'ring' : 'digits', bar: true } });
+      timers.push([id, v === 'sw' ? 'up' : 'down', ms]);
+    });
+    LAYOUTS.push({ key: `timer-${key}`, widgets, own: [], chip: 1, stage5: false, timers });
+  }
+}
+const ZONE = S.zoneOf(S.getSchool(school.id)) || D.FALLBACK_TZ;
+/** Today's hh:mm in the school's time zone, as a time for the browser's clock. */
+const schoolTime = hhmm => {
+  const [h, m] = hhmm.split(':').map(Number), want = h * 60 + m;
+  let t = Date.parse(`${ymd}T${hhmm}:00Z`);
+  for (let k = 0; k < 3; k++) {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(t).map(x => [x.type, x.value]));
+    let d = want - (Number(p.hour) * 60 + Number(p.minute)); if (d > 720) d -= 1440; if (d < -720) d += 1440;
+    t += d * 60e3;
+  }
+  return t;
+};
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
 const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
@@ -291,6 +383,14 @@ function problems() {
     const dbg = window.__fitDebug ? ` [body ${b.clientHeight}: ${[...b.children].map(x => `${x.className}=${Math.round(x.getBoundingClientRect().height)}`).join(', ')}]` : '';
     if (b.scrollHeight > b.clientHeight + 1) out.push(`${name(w)}: content is ${b.scrollHeight - b.clientHeight}px taller than the widget${dbg}`);
     if (b.scrollWidth > b.clientWidth + 1) out.push(`${name(w)}: content is ${b.scrollWidth - b.clientWidth}px wider than the widget`);
+    // A graph's title never touches a number above a bar or a point (they once collided on a tall bar).
+    for (const t of w.querySelectorAll('.dt-gtitle')) {
+      const tr = t.getBoundingClientRect();
+      for (const v of t.parentElement.querySelectorAll('.dt-gv')) {
+        const vr = v.getBoundingClientRect();
+        if (vr.left < tr.right && tr.left < vr.right && vr.top < tr.bottom + 2 && tr.top < vr.bottom) out.push(`${name(w)}: the graph's title touches the number "${v.textContent}"`);
+      }
+    }
     // The widget's inner edge: its padding box (inside the border).
     const wr = w.getBoundingClientRect(), wcs = getComputedStyle(w);
     const inner = { left: wr.left + parseFloat(wcs.borderLeftWidth), right: wr.right - parseFloat(wcs.borderRightWidth), top: wr.top + parseFloat(wcs.borderTopWidth), bottom: wr.bottom - parseFloat(wcs.borderBottomWidth) };
@@ -321,6 +421,24 @@ function problems() {
       if (!e.closest('.dw-stick,.dw-stick-top')) for (const st of sticks) { const q = st.getBoundingClientRect(); if (q.top < r.bottom - 1 && q.bottom > r.top + 1 && q.left < r.right && q.right > r.left) out.push(`${name(w)}: "${label(e)}" is under the widget's controls`); }
     }
   }
+  // The timer (docs/decisions.md "Classroom dashboards: timer, one digit size, inside the ring"): in the ring view the time's box lies inside the
+  // ring's inner circle with room to spare (2px), and timers of one group (the timer layouts' wt-<view>-<time> widgets,
+  // one size) show their time at one font size, whatever the time.
+  const tfont = new Map();
+  for (const t of document.querySelectorAll('.dash-w .dw-timer')) {
+    const w = t.closest('.dash-w'), d = t.querySelector('.dw-digits'); if (!w.offsetParent || !d || !d.getClientRects().length) continue;
+    const c = t.querySelector('.dw-ring .dw-ringbg');
+    if (c) {
+      const m = c.getScreenCTM(), k = Math.hypot(m.a, m.b), cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
+      const ox = m.a * cx + m.c * cy + m.e, oy = m.b * cx + m.d * cy + m.f;
+      const inner = (+c.getAttribute('r') - parseFloat(getComputedStyle(c).strokeWidth) / 2) * k;
+      const q = d.getBoundingClientRect(), far = Math.max(...[[q.left, q.top], [q.right, q.top], [q.left, q.bottom], [q.right, q.bottom]].map(([x, y]) => Math.hypot(x - ox, y - oy)));
+      if (far > inner - 2) out.push(`${name(w)}: the time "${d.textContent}" is not inside the ring (corner ${far.toFixed(1)}px from its centre, inner circle ${inner.toFixed(1)}px)`);
+    }
+    const id = w.dataset.id || '';
+    if (/^wt-/.test(id)) { const g = id.replace(/-[^-]+$/, ''); if (!tfont.has(g)) tfont.set(g, []); tfont.get(g).push([d.textContent, parseFloat(getComputedStyle(d).fontSize)]); }
+  }
+  for (const [g, list] of tfont) if (new Set(list.map(([, f]) => f.toFixed(2))).size > 1) out.push(`timer ${g}: the time changes size with the time (${list.map(([x, f]) => `${x} ${f.toFixed(1)}px`).join(', ')})`);
   // Stage 3: a teaching tool's model stays inside its own area (it never spills over the readout or the buttons), and the
   // tool's rows never overlap.
   for (const st of document.querySelectorAll('.dash-w .dt-stage')) {
@@ -340,6 +458,23 @@ function problems() {
     for (let i = 1; i < rows.length; i++) { const a = rows[i - 1].getBoundingClientRect(), b = rows[i].getBoundingClientRect(); if (b.top < a.bottom - 1) out.push(`${name(w)}: "${rows[i].className}" overlaps "${rows[i - 1].className}"`); }
   }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
+  // Fractions as a number sentence: each bar's fraction is level with its bar, and the sentence reads left to right
+  // (the first fraction, the second, the answer) in every language.
+  for (const g of document.querySelectorAll('.dash-w .dt-fbars:not(.dt-fbars-above)')) {
+    const w = g.closest('.dash-w'); if (!w.offsetParent) continue;
+    const kids = [...g.children];
+    for (let i = 0; i + 1 < kids.length; i += 2) {
+      const a = kids[i].getBoundingClientRect(), b = kids[i + 1].getBoundingClientRect();
+      if (Math.abs((a.top + a.bottom) / 2 - (b.top + b.bottom) / 2) > 2) out.push(`${name(w)}: a fraction is not level with its bar`);
+    }
+  }
+  for (const f of document.querySelectorAll('.dash-w .dt-fo-circle')) {
+    const w = f.closest('.dash-w'); if (!w.offsetParent) continue;
+    const g = f.querySelector('.dt-fsent'), t = [0, 1, 2].map(i => g?.querySelector(`.dt-ft${i}`)?.getBoundingClientRect());
+    if (!t[2]) { out.push(`${name(w)}: the circles are not a number sentence`); continue; }
+    if (g.classList.contains('dt-fsent3')) { if (innerWidth >= 720) out.push(`${name(w)}: the circles are a column on a wide screen`); continue; }
+    if (!(t[0].right <= t[1].left + 1 && Math.abs(t[0].bottom - t[1].bottom) < 2 && (t[1].right <= t[2].left + 1 || t[2].top >= t[1].bottom - 1))) out.push(`${name(w)}: the fractions' sentence does not read left to right`);
+  }
   const projector = document.body.classList.contains('dash-projector'), floor = projector ? 13 : 12;
   for (const t of document.querySelectorAll('.dash-w .dt, .dash-w .dw5')) {
     const w = t.closest('.dash-w'); if (!w.offsetParent) continue;
@@ -370,32 +505,45 @@ function problems() {
       if (tops.size > 1) out.push(`${name(w)}: the label "${txt}" breaks across lines`);
     }
   }
-  // Stage 5 review: a list that scrolls shows whole rows at rest (scrollTop 0), and fades at its bottom edge while there
-  // is more below. A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list
-  // unless it carries the fade); so does a list with more below and no fade.
+  // Stage 5 review: a list that scrolls shows whole rows at rest, and fades at its bottom edge while there is more below.
+  // A row sliced through by the list's edge fails (a .dw-scroll list always; any other scrolling list unless it carries
+  // the fade); so does a list with more below and no fade. The schedule (docs/decisions.md "Classroom dashboards: the
+  // schedule at every time of day") rests with the period on now in view, so a list may rest scrolled down: then no row
+  // may be sliced by its top edge either, and the rows above need the fade at its top edge.
   for (const x of document.querySelectorAll('.dash-w ul, .dash-w ol, .dash-w .dw-scroll')) {
     const w = x.closest('.dash-w'); if (!w.offsetParent || !x.getClientRects().length) continue;
     const cs = getComputedStyle(x);
     if (!/(auto|scroll)/.test(cs.overflowY) || x.scrollHeight <= x.clientHeight + 6) continue;
-    const faded = x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
-    if (!faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
-    if (x.scrollTop > 0) continue;
-    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0);
+    const below = x.scrollTop + x.clientHeight < x.scrollHeight - 6, above = x.scrollTop > 6;
+    const faded = below && x.classList.contains('is-scrolly') && !x.classList.contains('at-end') && cs.maskImage !== 'none';
+    const fadedTop = above && x.classList.contains('is-scrolly') && !x.classList.contains('at-top') && cs.maskImage !== 'none';
+    if (below && !faded) out.push(`${name(w)}: a list "${x.className}" has more below but no fade`);
+    if (above && !fadedTop) out.push(`${name(w)}: a list "${x.className}" has more above but no fade at its top`);
+    const xr = x.getBoundingClientRect(), edge = xr.bottom - (parseFloat(cs.borderBottomWidth) || 0), topEdge = xr.top + (parseFloat(cs.borderTopWidth) || 0);
     for (const c of x.children) {
       if (!c.getClientRects().length || getComputedStyle(c).position === 'absolute') continue;
       const r = c.getBoundingClientRect();
       // A row taller than the whole list may be cut between two of its lines (never through one), under the fade.
-      const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
-      for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < edge - 1 && q.bottom > edge + 1); }
       const tall = r.height > x.clientHeight - 1;
-      if (r.top < edge - 1 && r.bottom > edge + 1 && (x.classList.contains('dw-scroll') || !faded) && (!tall || !faded || throughLine)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} max ${x.style.maxHeight} tall ${tall} faded ${faded} through ${throughLine} lines ${(() => { const o = []; const t2 = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); const g = document.createRange(); for (let n = t2.nextNode(); n; n = t2.nextNode()) { g.selectNodeContents(n); for (const q of g.getClientRects()) o.push(`${Math.round(q.top - xr.top)}-${Math.round(q.bottom - xr.top)}`); } return o.join(","); })()}]` : ''}`); break; }
+      const through = (e, fd) => {
+        const tw = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), rg = document.createRange(); let throughLine = false;
+        for (let n = tw.nextNode(); n && !throughLine; n = tw.nextNode()) { if (!n.textContent.trim()) continue; rg.selectNodeContents(n); throughLine = [...rg.getClientRects()].some(q => q.width > 0.5 && q.top < e - 1 && q.bottom > e + 1); }
+        return r.top < e - 1 && r.bottom > e + 1 && (x.classList.contains('dw-scroll') || !fd) && (!tall || !fd || throughLine);
+      };
+      const dbg = () => (window.__fitDebug ? ` [row ${Math.round(r.top - xr.top)}-${Math.round(r.bottom - xr.top)} list ${x.clientHeight} top ${Math.round(x.scrollTop)} of ${x.scrollHeight} max ${x.style.maxHeight} tall ${tall}]` : '');
+      if (through(edge, faded)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's edge ("${label(c)}")${dbg()}`); break; }
+      if (above && through(topEdge, fadedTop)) { out.push(`${name(w)}: a row of "${x.className}" is cut through by the list's top edge ("${label(c)}")${dbg()}`); break; }
     }
   }
   for (const e of document.querySelectorAll('.dash-w *')) {
     const cs = getComputedStyle(e);
     if (cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 1 && e.getClientRects().length && !e.closest('.sr-only')) out.push(`${name(e.closest('.dash-w'))}: "${label(e)}" ends in … (cut)`);
   }
-  const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead')].filter(b => !b.hidden && b.getClientRects().length).map(b => b.getBoundingClientRect());
+  // Sticky bars (the teacher's phone: the layout switcher at the top, Eyes up and Push at the bottom) float over the page
+  // while it scrolls, so they are checked at rest below; the others never cover a widget.
+  const shown = b => !b.hidden && b.getClientRects().length;
+  const sticky = b => getComputedStyle(b).position === 'sticky';
+  const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead, .dash-switch')].filter(b => shown(b) && !sticky(b)).map(b => b.getBoundingClientRect());
   for (const w of document.querySelectorAll('.dash-w')) {
     if (!w.offsetParent) continue;
     const r = w.getBoundingClientRect();
@@ -413,7 +561,34 @@ function problems() {
       if (hidden > room + 1) out.push(`${name(w)}: ${Math.round(hidden)}px below the screen can't be scrolled into view`);
     }
   }
-  if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} > ${innerWidth})`);
+  if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} > ${innerWidth})${window.__fitDebug ? ` [${[...document.querySelectorAll('body *')].filter(e => e.getClientRects().length && e.getBoundingClientRect().right > innerWidth + 1 && !e.closest('#dash-layouts')).slice(0, 5).map(e => `${e.tagName}.${e.className}#${e.id}`).join(' ')}]` : ''}`);
+  // Layouts on a phone (docs/decisions.md "Layouts on a phone"): on the teacher's phone the layout switcher is under the
+  // top bar, whole on the first screen without scrolling (the layout on screen among its chips, in view), and stays at
+  // the top while the page scrolls; Eyes up and Push to students are on the first screen too, in the bar at the bottom.
+  // At rest (the top of the page for the switcher, the end of the page for the bottom bar) neither covers a widget.
+  const sw = document.getElementById('dash-switch'), foot = document.getElementById('dash-foot');
+  if (sw && foot && innerWidth < 720 && !document.getElementById('dash').classList.contains('is-editing')) {
+    const y0 = scrollY, wr = () => [...document.querySelectorAll('.dash-w')].filter(w => w.offsetParent).map(w => [w, w.getBoundingClientRect()]);
+    const hits = (b, list) => list.filter(([, r]) => r.top < b.bottom - 1 && r.bottom > b.top + 1 && r.left < b.right && r.right > b.left).map(([w]) => name(w));
+    const onScreen = r => r.top >= -1 && r.bottom <= innerHeight + 1 && r.height > 0;
+    if (sw.parentElement === foot) out.push('the layout switcher is still in the footer, below every widget');
+    else if (!sticky(sw)) out.push('the layout switcher does not stay at the top while the page scrolls');
+    if (!sticky(foot)) out.push('Eyes up and Push to students are not in a bar at the bottom of the screen');
+    scrollTo(0, 0);
+    const s0 = sw.getBoundingClientRect(), f0 = foot.getBoundingClientRect(), nav = document.getElementById('dash-layouts').getBoundingClientRect();
+    if (!onScreen(s0)) out.push(`the layout switcher is not on the first screen (${Math.round(s0.top)}-${Math.round(s0.bottom)} of ${innerHeight})`);
+    if (!onScreen(f0)) out.push(`Eyes up and Push to students are not on the first screen (${Math.round(f0.top)}-${Math.round(f0.bottom)} of ${innerHeight})`);
+    const cur = document.querySelector('#dash-layouts [aria-current="true"]'), cr = cur && cur.getBoundingClientRect();
+    if (!cr) out.push('no layout chip is marked as the one on screen');
+    else if (cr.left < nav.left - 1 || cr.right > nav.right + 1) out.push(`the chip "${cur.textContent}" of the layout on screen is scrolled out of view`);
+    for (const c of document.querySelectorAll('#dash-switch .chip, #dash-switch .btn, #dash-foot .btn')) if (c.getClientRects().length && c.getBoundingClientRect().height < 43.5) out.push(`"${label(c)}" in the phone's bars is under 44px tall`);
+    for (const n of hits(s0, wr())) out.push(`${n}: sits under the layout switcher at the top of the page`);
+    scrollTo(0, document.documentElement.scrollHeight);
+    const s1 = sw.getBoundingClientRect(), f1 = foot.getBoundingClientRect();
+    if (document.documentElement.scrollHeight > innerHeight + 200 && Math.abs(s1.top) > 1) out.push(`the layout switcher scrolls away (top ${Math.round(s1.top)})`);
+    for (const n of hits(f1, wr())) out.push(`${n}: sits under Eyes up and Push to students at the end of the page`);
+    scrollTo(0, y0);
+  }
   return [...new Set(out)];
 }
 
@@ -422,10 +597,12 @@ const ALL_VIEWS = [
   { name: 'projector', who: T, size: [1600, 900], projector: true },
   { name: 'student', who: kids[1], size: [1366, 768] },
   { name: 'phone', who: kids[2], size: [390, 844] },
+  { name: 'teacher-phone', who: T, size: [390, 844] },
   { name: 'teacher-dark', who: T, size: [1600, 900], dark: true },
   { name: 'projector-dark', who: T, size: [1600, 900], projector: true, dark: true },
   { name: 'student-dark', who: kids[1], size: [1366, 768], dark: true },
   { name: 'phone-dark', who: kids[2], size: [390, 844], dark: true },
+  { name: 'teacher-phone-dark', who: T, size: [390, 844], dark: true },
 ];
 const VIEWS = process.env.VIEWS ? ALL_VIEWS.filter(v => process.env.VIEWS.split(',').includes(v.name)) : ALL_VIEWS;
 const LANGS = (process.env.LANGS || 'en,de,ar').split(',');
@@ -434,25 +611,39 @@ for (const L of RUN) {
  D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
+ // The timer layouts: each timer paused at its time (a countdown set to it, a stopwatch run that long and paused).
+ for (const [id, m, ms] of L.timers || []) { const t0 = Date.now(); if (m === 'down') D.timerAction(T, C, id, { action: 'set', ms }, t0); else { D.timerAction(T, C, id, { action: 'start' }, t0 - ms); D.timerAction(T, C, id, { action: 'pause' }, t0); } }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
  for (const lang of LANGS) {
   if (L.tpl) { D.updateLayout(T, C, first.id, { widgets: D.templateWidgets(L.tpl, tFor(lang)), bg: D.layoutTemplate(L.tpl).bg }); D.useLayout(T, C, first.id); }
   for (const v of VIEWS) {
-    const ctx = await browser.newContext({ viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: Number(process.env.DSF) || 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
+    const ctx = await browser.newContext({ timezoneId: ZONE, viewport: { width: v.size[0], height: v.size[1] }, deviceScaleFactor: Number(process.env.DSF) || 1, reducedMotion: 'reduce', colorScheme: v.dark ? 'dark' : 'light', permissions: ['camera'] });
     const [cn, cv] = cookieFor(v.who.id).split('=');
     await ctx.addCookies([{ name: cn, value: cv, url: base }, { name: 'lang', value: lang, url: base }]);
     const page = await ctx.newPage();
+    // The page opens 40 s before the time checked and the clock then moves on a minute, past a minute's turn, as in a
+    // classroom where the dashboard stays open (the schedule's text changes each minute): the check is at hh:mm:20.
+    await page.clock.install({ time: schoolTime(L.at || AT) - 40e3 });
     if (L.stage5) await stubOutside(page);
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
+    if (process.env.DEBUG) page.on('console', m => console.log('  console:', m.text()));
     await page.goto(`${base}/class/${C.id}/dashboard`);
     await page.waitForSelector('.dash-w');
     if (v.who === T) { await page.click(`#dash-layouts .chip:nth-child(${L.chip})`, { timeout: 5000 }).catch(e => errors.push(`the layout chip is missing (${e.message.split('\n')[0]})`)); await page.waitForTimeout(300); }
     if (v.projector) await page.click('#dash-projector');
     await page.waitForTimeout(1500);
+    await page.clock.fastForward(60e3);
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
     if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
+    // The fraction tool switched between modes and views in turn (a mode is its place in the first row of buttons: 1
+    // Compare, 2 Add, 3 Subtract, 4 Multiply, 5 Divide; a view in the second: 1 Bars, 2 Circles), ending in Divide with bars.
+    if (v.who === T && await page.$('.dash-w[data-id="wfrswitch"]')) {
+      const seg = (k, n) => page.click(`.dash-w[data-id="wfrswitch"] .dt-top .dt-seg:nth-child(${k}) button:nth-child(${n})`, { timeout: 3000 }).then(() => page.waitForTimeout(80));
+      for (const [k, n] of [[1, 3], [2, 2], [1, 5], [2, 1], [1, 2], [2, 2], [1, 4], [1, 3], [2, 1], [1, 1], [2, 2], [1, 5], [2, 1]]) await seg(k, n).catch(e => errors.push(`the fraction tool's switch can't be pressed (${e.message.split('\n')[0]})`));
+      await page.waitForTimeout(300);
+    }
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
     // Help on the maths tools: each tool's ⓘ panel, opened one at a time, fits its widget without scrolling and no line
@@ -484,12 +675,46 @@ for (const L of RUN) {
         await page.keyboard.press('Escape'); await page.waitForTimeout(30);
       }
     }
+    // Tooltips are never cut off (docs/decisions.md "Classroom dashboards: tooltips never cut off"): every button with a
+    // tooltip, focused by keyboard in turn, shows its tooltip whole inside the screen, not clipped by anything around it,
+    // named by aria-describedby, and with no native title as well.
+    if (process.env.TIPS !== '0') {
+      await page.keyboard.press('Shift');
+      found.push(...await page.evaluate(() => {
+        const out = [], name = e => e.closest('.dash-w')?.querySelector('.dash-wt')?.textContent || '';
+        for (const el of document.querySelectorAll('.dash-w [data-tip]')) {
+          if (el.title) out.push(`${name(el)}: "${el.dataset.tip}" has a native title as well as its tooltip`);
+          if (!el.getClientRects().length || getComputedStyle(el).visibility === 'hidden' || el.disabled) continue;
+          if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+          el.scrollIntoView({ block: 'center', inline: 'nearest' });
+          el.focus({ preventScroll: true });
+          if (document.activeElement !== el) continue;
+          const t = document.getElementById('dash-tip');
+          if (!t || t.hidden || t.getAttribute('role') !== 'tooltip') { out.push(`${name(el)}: "${el.dataset.tip}" shows no tooltip on keyboard focus`); continue; }
+          const r = t.getBoundingClientRect();
+          if (r.left < 0 || r.top < 0 || r.right > innerWidth || r.bottom > innerHeight) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" goes outside the screen`);
+          for (let a = t.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+            const cs = getComputedStyle(a); if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+            const q = a.getBoundingClientRect();
+            if (r.left < q.left - 0.5 || r.right > q.right + 0.5 || r.top < q.top - 0.5 || r.bottom > q.bottom + 0.5) { out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is clipped by ${a.className || a.tagName}`); break; }
+          }
+          if (t.scrollWidth > t.clientWidth + 1) out.push(`${name(el)}: the tooltip "${el.dataset.tip}" is cut`);
+          if (!(el.getAttribute('aria-describedby') || '').split(/\s+/).includes(t.id)) out.push(`${name(el)}: "${el.dataset.tip}" is not described by its tooltip`);
+          el.blur();
+        }
+        return out;
+      }));
+    }
     total += found.length;
     console.log(`${found.length ? '✗' : '✓'} ${L.key} ${lang} ${v.name}${found.length ? '' : ': nothing cut off'}`);
     for (const f of found) console.log(`    ${f}`);
     if (OUT) {
       await page.evaluate(() => { document.querySelector('.dash-stage').scrollTop = 0; });
       await page.screenshot({ path: `${OUT}/fit-${L.key}-${lang}-${v.name}.png`, fullPage: v.name === 'phone' });
+      // The timer layouts: each timer on its own too.
+      if (L.timers) for (const w of await page.$$('.dash-w[data-id^="wt"]')) await w.screenshot({ path: `${OUT}/${L.key}-${lang}-${v.name}-${await w.getAttribute('data-id')}.png` }).catch(() => {});
+      // The schedule's own layouts: each schedule widget on its own too.
+      if (L.at) for (const w of await page.$$('.dash-w[data-id^="wsched"]')) await w.screenshot({ path: `${OUT}/${L.key}-${lang}-${v.name}-${await w.getAttribute('data-id')}.png` }).catch(() => {});
     }
     await ctx.close();
   }

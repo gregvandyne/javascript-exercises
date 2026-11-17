@@ -29,9 +29,11 @@ import { readiness } from '../services/billing-ready.js';
 import { audit, q } from '../db.js';
 import { config } from '../config.js';
 import * as webSearch from '../builder/search.js';
+import { cancel as cancelBuild } from '../builder/runner.js';
 import * as liveR from '../services/classlive-results.js';
 import * as team from '../services/team.js';
 import * as AU from '../services/admin-users.js';
+import { adminDeletePlan, adminDeleteAccount, adminDeleteRefusal } from '../services/account-delete.js';
 import * as AA from '../services/admin-analytics.js';
 import { getUserByName, OFFICIAL } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -237,16 +239,18 @@ function usersTab(req) {
     <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse everyone, with what they play and build, use <a href="/admin?tab=people">All users</a>.</p>
   </section>
   ${name && !u ? html`<p class="notice warn" style="margin-top:16px">No user called “${name}”.</p>` : ''}
-  ${u ? userPanel(u) : ''}`;
+  ${req.query.deleted ? html`<p class="notice" role="status" id="user-deleted">🗑️ The account was deleted.</p>` : ''}
+  ${u ? userPanel(u, req.user) : ''}`;
 }
-function userPanel(u) {
+function userPanel(u, me) {
   const games = AU.userGames(u.id), audits = AU.userAudit(u.id);
   return html`<section class="panel upanel" style="margin-top:16px">
     <div class="row uhead">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">⛔ Banned</span>` : html`<span class="chip-s">✅ Active</span>`}</div>
     <div class="row aacts uacts">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
       ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
-      ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
+      ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}
+      ${[null, 'billing'].includes(adminDeleteRefusal(me, getUser(u.id))) ? html`<a class="btn btn-danger" href="/admin/users/${u.id}/delete" id="u-delete">🗑️ Delete account</a>` : ''}</div>
     ${jumpNav([['u-details', 'Details'], u.is_guest ? null : ['u-activity', '📈 Activity'], games.length ? ['u-games', `Games (${games.length})`] : null, audits.length ? ['u-audit', 'Audit log'] : null])}
     <div class="tblwrap" id="u-details"><table class="tbl afacts" style="margin-top:12px"><tbody>
       <tr><th scope="row">Account type</th><td>${AU.TYPE_LABEL[AU.accountTypeOf(u.id)]} · ${AU.METHOD_LABEL[AU.signupMethod(u.id)]}</td></tr>
@@ -665,6 +669,49 @@ function funnelSection(r) {
   with this update, so the first two weeks read low. Days are UTC.`, 'wideopen')}`;
 }
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;
+
+// ---- Delete a grown-up's or teacher's account (services/account-delete.js adminDeleteAccount): a confirm page that says
+// what goes and lists the schools they made (deleted apart, on /admin/schools), then the typed username.
+const DELETE_REFUSED = {
+  notFound: 'That account is gone.', self: 'You can\'t delete your own account here.', platformAdmin: 'A platform admin account can\'t be deleted here.',
+  notAdult: 'Only a grown-up\'s or teacher\'s account can be deleted here (a family deletes a child it made; a school account goes with its school).',
+  billing: 'This account has a paid Stripe subscription that will still charge. Cancel it first (Billing), then delete the account.',
+};
+router.get('/admin/users/:id/delete', (req, res) => {
+  const p = adminDeletePlan(req.user, req.params.id);
+  if (!p || p.refusal === 'notFound') return res.status(404).send('Not found');
+  const u = p.user, n = (k, one, many = `${one}s`) => `${k} ${k === 1 ? one : many}`;
+  const body = html`
+  <div class="pagehead"><h1>🗑️ Delete account: @${u.username}</h1></div>
+  <section class="panel" id="delete-user">
+    <p style="margin-top:0">${u.display_name} · @${u.username} · ${AU.TYPE_LABEL[AU.accountTypeOf(u.id)]} · created ${new Date(u.created_at).toISOString().slice(0, 10)}</p>
+    ${p.refusal ? html`<p class="notice warn" role="alert" id="delete-refused">⛔ ${DELETE_REFUSED[p.refusal]}${p.billing.length ? html` (${p.billing.map((r, i) => html`${i ? ', ' : ''}<code>${r.stripe_subscription_id}</code> ${r.status}`)})` : ''}</p>` : ''}
+    <h2>What happens</h2>
+    <ul id="delete-goes">
+      <li>${p.schools.length ? html`They leave ${n(p.schools.length, 'school')} (${p.schools.map((s, i) => html`${i ? ', ' : ''}<a href="/school/${s.slug}">${s.name}</a> as ${s.role}`)})` : 'They are in no school'}${p.classes ? html` and ${n(p.classes, 'class', 'classes')}` : ''}; their real name on rosters is blanked.</li>
+      ${p.children ? html`<li>Their family's links to ${n(p.children, 'child', 'children')} end (the children's accounts stay).</li>` : ''}
+      <li>Their sign-ins, games (${p.games}), chats, friends, uploads, Google sign-in, quiz sets of their own and settings go; the account becomes a tombstone and the username is kept from others for 90 days.</li>
+    </ul>
+    ${p.createdSchools.length ? html`<h2>Schools they made</h2><p class="small muted">Not deleted with the account. Delete any you want gone on their own pages:</p>
+      <ul id="delete-schools">${p.createdSchools.map(s => html`<li><a href="/school/${s.slug}">${s.name}</a> <code dir="ltr">${s.slug}</code>${s.archived_at ? ' (archived)' : ''} <a class="btn btn-sm btn-danger" href="/admin/schools/${s.id}/delete">🗑️ Delete school</a></li>`)}</ul>` : ''}
+    ${p.refusal ? '' : html`<form class="stack" data-api="/api/admin/users/${u.id}/delete" novalidate id="delete-user-form">
+      <div class="field"><label for="du-confirm">Type the username, <b dir="ltr">${u.username}</b>, to delete the account</label>
+        <input class="input" id="du-confirm" name="confirm" maxlength="40" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" required><span class="err" id="du-confirm-err"></span></div>
+      <p class="err form-err" aria-live="polite"></p>
+      <div class="row"><button class="btn btn-danger" type="submit">🗑️ Delete this account</button> <a class="btn" href="/admin?tab=users&username=${encodeURIComponent(u.username)}">Cancel</a></div>
+    </form>`}
+  </section>`;
+  page(req, res, { title: 'Delete account', active: 'me', body, bodyClass: ADMIN_BODY, head: ADMIN_CSS, back: `/admin?tab=users&username=${encodeURIComponent(u.username)}`, backLabel: 'User' });
+});
+router.post('/api/admin/users/:id/delete', rateLimit('admin-delete', 30, 600e3), (req, res) => {
+  const u = getUser(req.params.id);
+  if (!u) return res.status(404).json({ error: DELETE_REFUSED.notFound });
+  if (String((req.body || {}).confirm || '').trim().toLowerCase() !== u.username.toLowerCase()) return res.status(400).json({ field: 'confirm', error: 'Type the username exactly as shown.' });
+  const r = adminDeleteAccount(req.user, u.id);
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : r.code === 'billing' ? 409 : 403).json({ error: DELETE_REFUSED[r.code] || 'Not deleted.' });
+  for (const g of r.games || []) cancelBuild(g, 'deleted');   // a build in one of their games stops at once
+  res.json({ ok: true, redirect: '/admin?tab=users&deleted=1', toast: 'Account deleted.' });
+});
 
 router.get('/admin/stats', (req, res) => {
   const days = [7, 30, 90].includes(+req.query.days) ? +req.query.days : 30;

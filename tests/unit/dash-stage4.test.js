@@ -61,6 +61,10 @@ async function layout(w, widgets) {
 }
 const TOOLS4 = ['geoboard', 'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'organizer', 'map'];
 const STAGE3 = ['fractions', 'numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp'];
+/** Maths tools combined (docs/decisions.md): angle, solids, transform and balance are modes of the shape board, geometry
+ *  and algebra now; their words come with their mode in the registry. */
+const LIVE4 = TOOLS4.filter(id => !DT.MODE_HOME[id]);
+const wordsOf = (reg, id) => (reg.types.find(x => x.id === id) || reg.types.flatMap(x => x.modes || []).find(m => m.id === id && m.words)).words;
 const P = (...xy) => { const out = []; for (let i = 0; i < xy.length; i += 2) out.push({ x: xy[i], y: xy[i + 1] }); return out; };
 
 test('no new migration: stage 4 keeps its state in the widget and the push (0080 is still the newest)', () => {
@@ -71,7 +75,14 @@ test('no new migration: stage 4 keeps its state in the widget and the push (0080
 test('the registry: every stage 4 tool has a renderer, a group, English words, and is sent, never pinned', () => {
   const t = tFor('en'), reg = D.registryFor(t, 'teacher');
   assert.ok(reg.groups.some(g => g.id === 'words' && g.name === 'Words and maps'));
-  for (const id of TOOLS4) {
+  for (const id of TOOLS4.filter(id => DT.MODE_HOME[id])) {
+    // A retired tool is a mode of another: still drawn by its own renderer, its words with its mode.
+    assert.equal(D.widgetType(id), null, id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`);
+    const home = reg.types.find(y => y.id === DT.MODE_HOME[id]), m = home.modes.find(y => y.id === id);
+    assert.ok(m && !/^dash\./.test(m.name), id); for (const [k, v] of Object.entries(m.words)) assert.ok(!/^dash\./.test(v), `${id}.${k}`);
+    assert.deepEqual(m.def, DT.cleanToolState(id, {}));
+  }
+  for (const id of LIVE4) {
     const x = D.widgetType(id);
     assert.ok(x, id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`);
     assert.equal(x.group, ['letters', 'organizer', 'map'].includes(id) ? 'words' : 'teach', id);
@@ -85,7 +96,7 @@ test('the registry: every stage 4 tool has a renderer, a group, English words, a
   for (const v of [...Object.values(reg.common), ...Object.values(reg.ask.q)]) assert.ok(!/^dash\./.test(v), v);
   assert.deepEqual(Object.keys(reg.ask.q).sort(), [...D.ASK_KEYS].sort());
   // Students may add every tool (their own copy); a teacher can never pin one.
-  assert.deepEqual(D.cleanWidgets(TOOLS4.map((type, i) => ({ id: `s${i}`, type })), 'student').map(x => x.type), TOOLS4);
+  assert.deepEqual(D.cleanWidgets(TOOLS4.map((type, i) => ({ id: `s${i}`, type })), 'student').map(x => x.type), TOOLS4.map(id => DT.MODE_HOME[id] || id));
   assert.deepEqual(D.cleanWidgets(TOOLS4.map((type, i) => ({ id: `p${i}`, type, pin: true })), 'teacher').filter(x => x.pin), []);
   // The server's lists match the browser's maths.
   assert.deepEqual(DT.TOOL_SPECS.pattern.spec.blocks[2].k[1], G.BLOCK_KINDS);
@@ -351,7 +362,7 @@ test('letter tiles, word families and maps', () => {
 });
 
 test('"Make a question from it": every tool with one right answer makes a quick check from its state, the answer among the choices', () => {
-  const t = tFor('en'), reg = D.registryFor(t, 'teacher'), words = id => reg.types.find(x => x.id === id).words;
+  const t = tFor('en'), reg = D.registryFor(t, 'teacher'), words = id => wordsOf(reg, id);
   const cases = {
     fractions: [{ bars: [{ n: 3, d: 8 }] }, '3/8'],
     numline: [{ lo: 0, hi: 3, sub: 4, mode: 'fraction', points: [], jumps: [{ a: 0, b: 3 }, { a: 3, b: 6 }] }, '1 1/2'],
@@ -402,15 +413,18 @@ test('"Make a question from it": every tool with one right answer makes a quick 
   assert.equal(A.questionFor('coins', { cur: 'usd', mode: 'change', cost: 120, paid: 100, counts: [] }, words('coins'), reg.ask), null);
   // In another language the words are that language's.
   const de = D.registryFor(tFor('de'), 'teacher');
-  const deQ = A.questionFor('angle', { a: 90 }, de.types.find(x => x.id === 'angle').words, de.ask, 'de');
+  const deQ = A.questionFor('angle', { a: 90 }, wordsOf(de, 'angle'), de.ask, 'de');
   assert.equal(deQ.q, 'Was für ein Winkel ist das?'); assert.equal(deQ.options[deQ.answer], 'Rechter Winkel');
 });
 
 test('a question made from a tool goes out as an ordinary quick check: the class\'s teacher only, students see it, totals only', async () => {
   const w = world(), An = w.A.id;
   await as(w.T)(`/class/${An}/dashboard`);
+  // The first visit's Morning start pins class jobs, whose crew (students' Oomba names, which may hold "right") students
+  // see by design; follow Quiet work (nothing pinned) so the live answer holds only the check.
+  D.useLayout(w.T, w.A, D.layoutsOf(An, w.T.id).find(l => l.name === 'Quiet work').id);
   const reg = D.registryFor(tFor('en'), 'teacher');
-  const made = A.questionFor('angle', { a: 135 }, reg.types.find(x => x.id === 'angle').words, reg.ask, 'en');
+  const made = A.questionFor('angle', { a: 135 }, wordsOf(reg, 'angle'), reg.ask, 'en');
   const r = await as(w.T)(`/api/dash/${An}/checks`, POST({ kind: 'choice', question: made.q, options: made.options }));
   assert.equal(r.status, 200, r.text);
   const live = (await as(w.a1)(`/api/dash/${An}/live`)).json;
@@ -608,8 +622,9 @@ test('review: the new words are in every locale (the instruction above the lette
 test('help on the maths tools: every maths tool has a one-line instruction and short ⓘ help, in every language', async () => {
   const { checkAll } = await import('../../server/i18n/check.js');
   const reg = D.registryFor(tFor('en'), 'teacher');
-  // Every maths tool (Teach, sent to students), and only those: not the whiteboard, letters, organizers or maps.
-  const maths = reg.types.filter(x => x.group === 'teach' && x.send).map(x => x.id);
+  // Every maths tool (Teach, sent to students), and only those: not the whiteboard, letters, organizers or maps. Since
+  // "maths tools combined", every mode of a maths tool (a mode has its own instruction and ⓘ help).
+  const maths = reg.types.filter(x => x.group === 'teach' && x.send).flatMap(x => (x.modes ? x.modes.map(m => m.id) : [x.id]));
   assert.deepEqual([...D.MATH_TOOLS].sort(), maths.sort());
   for (const id of ['board', 'letters', 'organizer', 'map']) assert.ok(!D.MATH_TOOLS.includes(id), id);
   const fr = ['modeCompare', 'modeAdd', 'modeSub', 'modeMul', 'modeDiv', 'howtoOp', 'howtoMul', 'howtoDiv', 'first', 'second', 'num', 'den', 'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think'];
@@ -634,7 +649,7 @@ test('help on the maths tools: every maths tool has a one-line instruction and s
   const words = s => s.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)).length;
   const short = D.MATH_TOOLS.filter(id => id !== 'geoboard');
   for (const id of D.MATH_TOOLS) {
-    const w = reg.types.find(x => x.id === id).words;
+    const w = wordsOf(reg, id);
     // One line: one sentence or two short ones, no line breaks.
     assert.ok(w.howto && !/\n/.test(w.howto) && [...w.howto].length <= 72, `${id}: ${w.howto}`);
     for (const [k, v] of Object.entries({ howto: w.howto, helpUse: w.helpUse, helpIdeas: w.helpIdeas })) assert.doesNotMatch(v, /\$\s?\d|€\s?\d|£\s?\d|pricing|upgrade|\bPro\b|\bAI\b/, `${id}.${k}`);
@@ -661,7 +676,7 @@ test('help on the maths tools: every maths tool has a one-line instruction and s
   assert.equal(gb.dash.tools.helpPractice, undefined);
   // German instructions stay short enough for one line at a tool's default size.
   const de = D.registryFor(tFor('de'), 'teacher');
-  for (const id of D.MATH_TOOLS) assert.ok([...de.types.find(x => x.id === id).words.howto].length <= 72, id);
+  for (const id of D.MATH_TOOLS) assert.ok([...wordsOf(de, id).howto].length <= 72, id);
   // The help lives in the tools' shell: ⓘ named for the tool, a panel with aria-expanded/controls, Escape, a tap outside;
   // hidden on the projector. No markup from strings (textContent only), no network or storage.
   const src = fs.readFileSync('public/js/dash-tools.js', 'utf8'), css = fs.readFileSync('public/css/dash.css', 'utf8');
