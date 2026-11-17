@@ -10524,7 +10524,7 @@
       },
       "balance": {
         "name": "Balance scale",
-        "desc": "Solve equations with x-boxes and weights: do the same to both sides and it stays level. Grades 3–8.",
+        "desc": "Solve equations with x-boxes and weights: do the same to both sides and it stays level. Grades 3 and up.",
         "both": "Both sides",
         "left": "Left side",
         "right": "Right side",
