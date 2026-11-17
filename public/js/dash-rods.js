@@ -89,9 +89,12 @@ export function rods(body, s, ctx) {
   const longBtn = palBtn(st.long);
   const lm = tip(btn('−', 'btn btn-sm dt-pm'), `${W.longer}: −`), lp = tip(btn('+', 'btn btn-sm dt-pm'), `${W.longer}: +`);
   lm.setAttribute('aria-label', `${W.longer} −`); lp.setAttribute('aria-label', `${W.longer} +`);
-  lm.addEventListener('click', () => { if (st.long > R.ROD_LONG[0]) { st.long--; T.commit(fill(W.rodN, { n: st.long })); } });
-  lp.addEventListener('click', () => { if (st.long < R.ROD_LONG[1]) { st.long++; T.commit(fill(W.rodN, { n: st.long })); } });
-  longBox.append(lm, longBtn, lp);
+  const setLong = n => { st.long = n; T.commit(fill(W.rodN, { n: st.long })); };
+  lm.addEventListener('click', () => { if (st.long > R.ROD_LONG[0]) setLong(st.long - 1); });
+  lp.addEventListener('click', () => { if (st.long < R.ROD_LONG[1]) setLong(st.long + 1); });
+  // The longer rod's length typed too (11-20); the rod beside it adds one that long.
+  const longIn = T.num({ label: W.longer, key: 'long', get: () => st.long, min: R.ROD_LONG[0], max: R.ROD_LONG[1], set: setLong, cls: 'dt-stepval dt-rlongn' });
+  longBox.append(lm, longIn, lp, longBtn);
   tray.appendChild(longBox);
   tray.addEventListener('pointermove', e => palMove(e));
   tray.addEventListener('pointerup', e => palUp(e));
@@ -359,7 +362,7 @@ export function rods(body, s, ctx) {
     // ---- the palette and the controls
     longBtn.dataset.n = st.long; paint(longBtn, st.long);
     tip(longBtn, fill(W.addRod, { n: st.long })); longBtn.setAttribute('aria-label', fill(W.addRod, { n: st.long }));
-    lm.disabled = st.long <= R.ROD_LONG[0]; lp.disabled = st.long >= R.ROD_LONG[1];
+    lm.disabled = st.long <= R.ROD_LONG[0]; lp.disabled = st.long >= R.ROD_LONG[1]; longIn.sync();
     for (const b of palBtns) b.disabled = !!ctx.editing;
     grid.sync(); units.sync(); eqOn.sync();
     const dirText = v0() ? W.dirV : W.dirH;

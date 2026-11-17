@@ -30,6 +30,9 @@
       "light": "Clair",
       "dark": "Sombre"
     },
+    "acct": {
+      "allSettings": "Tous les paramètres"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Gratuit pour jouer, gratuit pour créer",
       "safety": "Sécurité",
@@ -2739,7 +2742,8 @@
         "takenDown": "Image retirée",
         "zoneNone": "Aucun",
         "placeNote": "Tape une ville ou un village. Oomba n’utilise jamais la position de personne.",
-        "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés."
+        "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés.",
+        "undo": "Annuler"
       },
       "bgChanged": "Fond changé",
       "uploading": "Vérification de ton image…",
@@ -7261,7 +7265,13 @@
       "explorerSub": "Du CE2 au CM2",
       "pro": "Pro",
       "proSub": "De la 6e à la 4e",
-      "switch": "Passer en {band}"
+      "switch": "Passer en {band}",
+      "launchpad": "Décollage",
+      "launchpadSub": "De la grande section au CE1",
+      "yours": "Ton niveau",
+      "showing": "Niveau affiché",
+      "stepsDone": "{band} : {n} étapes finies sur {total}",
+      "unitsFinale": "Unités {from} à {to}, puis la finale : {finale}"
     },
     "map": {
       "h": "Carte du cours",
@@ -9582,7 +9592,8 @@
         "m": {
           "fractions": "Bandes de fractions",
           "fdp": "Fraction, décimal, pourcentage"
-        }
+        },
+        "partsOf": "Parts de la fraction {n}"
       },
       "numline": {
         "name": "Droite graduée",

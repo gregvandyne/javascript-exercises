@@ -211,20 +211,20 @@ test('"Ask my admin": a teacher asks in Settings; the admin sees who asked on My
   const { username: teachName } = await signup(teach, uniq('Teach'), 'teach-pass-123');
   const school = await schoolWithAdmin(a, headName, { teacher: teachName });
   await makeTester(browser, headName);
-  // The teacher: Classroom · Learn · Play · Live · Plans · Me, and the panel in Settings (/me/settings).
+  // The teacher: Classroom · Learn · Play · Live · Me, and the panel in Settings (/me/settings).
   await teach.setViewportSize({ width: 360, height: 780 });
   await teach.goto('/me/settings');
-  expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/plans', '/me']);
+  expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/me']);
   const panel = teach.locator('section.askplan');
   await expect(panel).toContainText("Your school doesn't have a School plan.");
   await panel.locator('button', { hasText: 'Ask my admin' }).click();
   await expect(teach.locator('#toasts')).toContainText("We told your school's admin.");
   await expect(panel).toContainText('You asked on');
   await expect(panel.locator('button')).toHaveCount(0);
-  // The admin: School · Classroom · Learn · Play · Plans · Me; My school on the Me page says a teacher asked.
+  // The admin: Classroom · Learn · Play · Me (School is in the account menu); My school on the Me page says a teacher asked.
   await head.setViewportSize({ width: 360, height: 780 });
   await head.goto('/me');
-  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/plans', '/me']);
+  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/me']);
   await expect(head.locator('a.metile[href="/school"]')).toContainText('1 teacher asked for a plan');
   await expect(head.locator('main')).not.toContainText('$');
   await head.goto(`/school/${school.slug}?tab=billing`);

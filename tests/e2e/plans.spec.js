@@ -136,7 +136,7 @@ test('signed out → Family yearly → sign-up keeps the plan → password → C
   await expect(mum.locator('.famkid')).toContainText('Extra messages come from your family plan.');
   // The child: nothing about money; the Studio counter shows the extras as a number only.
   await kid.goto('/');
-  await expect(kid.locator('.topnav a[href="/plans"]')).toHaveText(/Plans/);
+  await expect(kid.locator('a[href="/plans"]'), 'kids are never sold to: no Plans link').toHaveCount(0);
   // /plans marks the grown-up's plan, and Basic says "Switch".
   await mum.goto('/plans');
   await expect(mum.locator('#plan-family .plan-yours')).toHaveText('Your plan');
@@ -172,10 +172,11 @@ test('Basic covers one child; Family ↔ Basic switched in the Portal keeps the 
   expect((await control('state')).violations).toEqual([]);
 });
 
-test('a kid on /plans: the Plans link in the menu, every plan to look at, and a calm "a grown-up buys plans" panel', async ({ browser }) => {
+test('a kid on /plans (no link to it, but anyone may open it): every plan to look at, and a calm "a grown-up buys plans" panel', async ({ browser }) => {
   const kid = await person(browser); await signup(kid, uniq('Kid'));
   await kid.goto('/');
-  await Promise.all([kid.waitForURL(/\/plans$/), kid.locator('.topnav a[href="/plans"]').click()]);
+  await expect(kid.locator('a[href="/plans"]')).toHaveCount(0);
+  await kid.goto('/plans');
   await expect(kid.locator('.plan-card')).toHaveCount(5);
   await expect(kid.locator('#plan-free .plan-yours')).toHaveText('Your plan');
   // No sales nudging for kids: no "Recommended" badge.
@@ -189,10 +190,10 @@ test('a kid on /plans: the Plans link in the menu, every plan to look at, and a 
   await expect(ask).toContainText('/plans');
   await expect(ask).toContainText('You can keep playing and building for free.');
   await expect(ask.locator('a')).toHaveCount(0);
-  // On a phone the Plans tab is in the tab bar.
+  // On a phone neither: no Plans tab.
   const phone = await person(browser, { viewport: { width: 360, height: 780 }, storageState: await kid.context().storageState() });
   await phone.goto('/');
-  await expect(phone.locator('.tabbar a[href="/plans"]')).toBeVisible();
+  await expect(phone.locator('.tabbar a[href="/plans"]')).toHaveCount(0);
 });
 
 // Each page at a phone and a desktop width, light and dark, and right to left.
@@ -260,15 +261,15 @@ test('/plans/schools: the seat calculator (the Teacher price per teacher) and "S
 
 // Navigation weeks 3–4: a tab bar for each role, with Plans in every one. Each signed-in role's top bar fits from small
 // laptops to wide screens (en, de, ru), and its phone tab bar's labels fit at 360px (en, de, he, ar; light and dark).
-// The platform admin, the student and the school admin have the most menu items (six with Plans). Play is '/' where '/'
-// is Play and /play for everyone whose first tab is another one; Live (hosting) while Oomba Live is on.
+// No bar has Plans or School (docs/decisions.md "A quieter top bar": they are in the account menu). Play is '/' where
+// '/' is Play and /play for everyone whose first tab is another one; Live (hosting) while Oomba Live is on.
 const ROLE_BARS = {
-  kid: { tabs: ['/', '/learn', '/build', '/friends', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/plans'] },
-  student: { tabs: ['/classes', '/play', '/learn', '/build', '/plans', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends', '/plans'] },
-  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/plans', '/me'], top: ['/teach', '/learn', '/play', '/live', '/plans'] },
-  'school admin': { tabs: ['/school', '/teach', '/learn', '/play', '/plans', '/me'], top: ['/school', '/teach', '/learn', '/play', '/live', '/plans'] },
-  'grown-up': { tabs: ['/family', '/play', '/learn', '/build', '/plans', '/family/account'], top: ['/family', '/play', '/learn', '/build', '/plans'] },
-  'platform admin': { tabs: ['/', '/learn', '/build', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/admin/schools', '/plans'] },
+  kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
+  student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
+  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
+  'school admin': { tabs: ['/teach', '/learn', '/play', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
+  'grown-up': { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
+  'platform admin': { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
 };
 let roleStates = null;
 async function roles(browser) {
@@ -293,7 +294,7 @@ async function roles(browser) {
   return out;
 }
 
-test('every signed-in role\'s top bar fits from small laptops to wide screens (en, de, ru), with Plans in it', async ({ browser }) => {
+test('every signed-in role\'s top bar fits from small laptops to wide screens (en, de, ru); Plans only in an adult\'s account menu', async ({ browser }) => {
   const states = await roles(browser);
   const problems = [];
   for (const [who, state] of Object.entries(states)) {
@@ -305,6 +306,8 @@ test('every signed-in role\'s top bar fits from small laptops to wide screens (e
         await page.goto('/plans'); await page.evaluate(() => document.fonts.ready);
         const hrefs = await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')));
         if (JSON.stringify(hrefs) !== JSON.stringify(ROLE_BARS[who].top)) problems.push(`${who} ${width}/${lang}: top ${hrefs.join(' ')}`);
+        const menuPlans = await page.locator('.topbar .acctpick a[href="/plans"]').count();
+        if (menuPlans !== (['kid', 'student'].includes(who) ? 0 : 1)) problems.push(`${who}: ${menuPlans} Plans links in the account menu`);
         const r = await page.evaluate(topbarFit);
         if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${who} ${width}/${lang}: ${JSON.stringify(r)}`);
         for (const t of await findTouching(page)) problems.push(`${who} ${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
@@ -341,7 +344,7 @@ test('every signed-in role\'s phone tab bar at 360px: the right tabs, labels on 
       if (r.wrapped.length) problems.push(`${at}: label on two lines ${r.wrapped.join(', ')}`);
       if (lang !== 'en' && r.english.length) problems.push(`${at}: English labels on a translated page ${r.english.join(', ')}`);
       if (r.wide > 1) problems.push(`${at}: scrolls sideways ${r.wide}px`);
-      await expect(page.locator('.tabbar .tab[href="/plans"]')).toHaveAttribute('aria-current', 'page');
+      await expect(page.locator('.tabbar .tab[href="/plans"]')).toHaveCount(0);
       for (const t of await findTouching(page)) problems.push(`${at}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
       if (SHOTS) await page.locator('.tabbar').screenshot({ path: path.join(SHOTS, `tabbar-${who.replace(/ /g, '-')}-${lang}-${scheme}.png`) });
       await ctx.close();
@@ -350,7 +353,7 @@ test('every signed-in role\'s phone tab bar at 360px: the right tabs, labels on 
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('signed out with Plans on: Play · Learn · Build · Plans · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark)', async ({ browser }) => {
+test('signed out with Plans on: Play · Learn · Build · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark); Plans in the footer', async ({ browser }) => {
   const problems = [];
   for (const width of [821, 900, 1000, 1001, 1100, 1101, 1180, 1181, 1280, 1400, 1440, 1920]) {
     for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['ru', 'light']]) {
@@ -359,7 +362,8 @@ test('signed out with Plans on: Play · Learn · Build · Plans · Parents · Te
       const page = await ctx.newPage();
       // "/" is the teacher landing page for signed-out visitors (routes/landing.js); the app's top bar is on /play.
       await page.goto('/play'); await page.evaluate(() => document.fonts.ready);
-      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play', '/learn', '/build', '/plans', '/parents', '/teachers']);
+      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play', '/learn', '/build', '/parents', '/teachers']);
+      await expect(page.locator('footer.foot a[href="/plans"]')).toHaveCount(1);
       const r = await page.evaluate(topbarFit);
       if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${width}/${lang}: ${JSON.stringify(r)}`);
       for (const t of await findTouching(page)) problems.push(`${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);

@@ -31,6 +31,9 @@
       "light": "Claro",
       "dark": "Escuro"
     },
+    "acct": {
+      "allSettings": "Todas as configurações"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Grátis para jogar, grátis para criar",
       "safety": "Segurança",
@@ -2740,7 +2743,8 @@
         "takenDown": "Imagem tirada",
         "zoneNone": "Nenhum",
         "placeNote": "Digite uma cidade. O Oomba nunca usa a localização de ninguém.",
-        "qrNote": "Só os links aprovados da turma e as páginas do Oomba podem ser mostrados."
+        "qrNote": "Só os links aprovados da turma e as páginas do Oomba podem ser mostrados.",
+        "undo": "Desfazer"
       },
       "bgChanged": "Fundo mudado",
       "uploading": "Verificando sua imagem…",
@@ -7263,7 +7267,13 @@
       "explorerSub": "3º ao 5º ano",
       "pro": "Pro",
       "proSub": "6º ao 8º ano",
-      "switch": "Mudar para {band}"
+      "switch": "Mudar para {band}",
+      "launchpad": "Decolagem",
+      "launchpadSub": "Pré-escola ao 2º ano",
+      "yours": "Seu nível",
+      "showing": "Mostrando agora",
+      "stepsDone": "{band}: {n} de {total} etapas feitas",
+      "unitsFinale": "Unidades {from}–{to} e depois o final: {finale}"
     },
     "map": {
       "h": "Mapa do curso",
@@ -9584,7 +9594,8 @@
         "m": {
           "fractions": "Barras de frações",
           "fdp": "Fração, decimal, porcentagem"
-        }
+        },
+        "partsOf": "Partes da fração {n}"
       },
       "numline": {
         "name": "Reta numérica",

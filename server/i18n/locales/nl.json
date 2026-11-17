@@ -31,6 +31,9 @@
       "light": "Licht",
       "dark": "Donker"
     },
+    "acct": {
+      "allSettings": "Alle instellingen"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
       "safety": "Veiligheid",
@@ -2740,7 +2743,8 @@
         "takenDown": "Afbeelding weggehaald",
         "zoneNone": "Geen",
         "placeNote": "Typ een plaats of stad. Oomba gebruikt nooit iemands locatie.",
-        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond."
+        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond.",
+        "undo": "Ongedaan maken"
       },
       "bgChanged": "Achtergrond veranderd",
       "uploading": "Je afbeelding wordt gecontroleerd…",
@@ -7262,7 +7266,13 @@
       "explorerSub": "Groep 5–7",
       "pro": "Pro",
       "proSub": "Groep 8 tot klas 2",
-      "switch": "Wissel naar {band}"
+      "switch": "Wissel naar {band}",
+      "launchpad": "Lanceerplatform",
+      "launchpadSub": "Groep 2–4",
+      "yours": "Jouw niveau",
+      "showing": "Nu te zien",
+      "stepsDone": "{band}: {n} van {total} stappen klaar",
+      "unitsFinale": "Units {from}–{to}, dan de finale: {finale}"
     },
     "map": {
       "h": "Cursuskaart",
@@ -9583,7 +9593,8 @@
         "m": {
           "fractions": "Breukenstroken",
           "fdp": "Breuk, kommagetal, procent"
-        }
+        },
+        "partsOf": "Stukjes in breuk {n}"
       },
       "numline": {
         "name": "Getallenlijn",

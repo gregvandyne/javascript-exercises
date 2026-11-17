@@ -31,6 +31,9 @@
       "light": "Hell",
       "dark": "Dunkel"
     },
+    "acct": {
+      "allSettings": "Alle Einstellungen"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
       "safety": "Sicherheit",
@@ -2740,7 +2743,8 @@
         "takenDown": "Bild entfernt",
         "zoneNone": "Keine",
         "placeNote": "Gib einen Ort oder eine Stadt ein. Oomba nutzt nie den Standort von jemandem.",
-        "qrNote": "Nur die freigegebenen Links der Klasse und Oomba-Seiten lassen sich zeigen."
+        "qrNote": "Nur die freigegebenen Links der Klasse und Oomba-Seiten lassen sich zeigen.",
+        "undo": "Rückgängig"
       },
       "bgChanged": "Hintergrund geändert",
       "uploading": "Dein Bild wird geprüft…",
@@ -7262,7 +7266,13 @@
       "explorerSub": "Klassen 3–5",
       "pro": "Profi",
       "proSub": "Klassen 6–8",
-      "switch": "Zu {band} wechseln"
+      "switch": "Zu {band} wechseln",
+      "launchpad": "Startrampe",
+      "launchpadSub": "Kindergarten bis Klasse 2",
+      "yours": "Dein Level",
+      "showing": "Jetzt zu sehen",
+      "stepsDone": "{band}: {n} von {total} Schritten geschafft",
+      "unitsFinale": "Einheiten {from}–{to}, dann das Finale: {finale}"
     },
     "map": {
       "h": "Kurskarte",
@@ -9583,7 +9593,8 @@
         "m": {
           "fractions": "Bruchstreifen",
           "fdp": "Bruch, Dezimalzahl, Prozent"
-        }
+        },
+        "partsOf": "Teile in Bruch {n}"
       },
       "numline": {
         "name": "Zahlenstrahl",
