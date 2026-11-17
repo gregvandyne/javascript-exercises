@@ -7315,6 +7315,50 @@ screens the model area has a fixed height and the `@container (max-aspect-ratio:
 - **Check:** `npm run dash:fit` now fails when a fraction, decimal, percent card is under 96px wide, or when the cards
   sit over the hundred grid (the column layout) and are narrower than the tool.
 
+## Build page: no starter cards (17 Nov 2026)
+Owner: "lets get rid of the start in a world and start from sections here because this is a bit redundant with the
+walkthrough now available." The Build page (`/build`) showed two grids of cards above My games: "Start in a 3D world"
+(the twelve Kit 2 worlds) and "Start from" (the classic templates). The setup steps behind "New game" (`/build/new`,
+"Help me choose" or "I know what I want") already offer the same starts, so the page now has the "New game" banner and
+My games only.
+- Removed: both sections (server/routes/studio.js), their click and "Needs a newer device" code (public/js/build.js),
+  their styles (`.tplgrid`, `.tplcard`, `.tpl-*` in public/css/studio.css), and the keys only they used (`build.worlds`,
+  `build.startFrom`, `build.startFromLabel`, `build.startInLabel`, `build.twoPlayers`, `js.build.needsNewer`) in every
+  language and in notes.json. `POST /api/studio/new` with a template or world is unchanged (the setup steps use it).
+- The empty My games text no longer says "or pick a starter above": "Tap “New game” to start one." in all 12 languages.
+- Tests: builder-http checks the cards are gone; the e2e helper `templateGame` (and accounts.spec) now make the game
+  with `POST /api/studio/new` instead of clicking a card.
+
+## Landing: the teacher screens under Google Classroom (17 Nov 2026)
+Owner: the three teaching-loop screenshots on the landing looked out of place, with one alone on its row, and fit
+better under Google Classroom. Done in #389 (the gradebook and feedback screens under Classroom when it is on, none in
+the loop; with Classroom off they stay in the loop). This branch had made the same move with all three screens three
+across; on merging, #389's version was kept. What stays from this branch: teach-loop.test.js's check of where the loop
+sits now follows the class-day order (after "Your students build", before courses), which had gone stale on main.
+
+## Host a live game in steps (17 Nov 2026)
+Owner: "The host a live game page is not super well put together. Make it more like the builder process." `/live` was
+one long form: seven game cards, then question sets, who can join, most players, teams and settings, with several
+dropdowns and inputs left unstyled (thin native controls).
+- **Steps, as in the Builder's setup (`/build/new`):** 1 What do you want to play? → 2 Which questions? (or "Set up the
+  game" for Would You Rather, Atlas Quest, Tug of Math and Doodle Hoot, which make their own) → 3 Who is playing? →
+  4 Ready to open the room: one row per choice (game, questions, who can join, teams) with Change, Game settings
+  (closed), and "Open the room". A game that asks no questions has no step 2 (three steps). The progress dots, "Step n
+  of N", the card look, the tabs, the review rows and the sticky Back / Next bar are build-setup.css's (the page loads
+  it); live.css only adds what live needs (`.lv-wiz`).
+- **Cards:** each game is a card like the Builder's: its emoji in a picture box, name, line, who it is best for and
+  "Made for teams", a tick when picked; three across, two on a tablet, one per row with the emoji beside the words on
+  a phone. When there is more than one group (Live games, Oomba Academy games, My games, Shared with my classes), tabs
+  show one group at a time. "Who can join" is two or three big cards. Every select and number box uses `.input`.
+- **Same form, same API:** every field keeps its name and id and stays in the one `#lv-new` form; a step only shows
+  and hides its part (public/js/live-sets.js `steps()`), so `/api/live/sessions`, the remembered settings, lesson and
+  class links (`?class=`, `?game=`, `?mode=`, `?starter=`) all work as before. Opened with a game already chosen, the
+  page starts on the next step (its questions, or who is playing). Enter in a field goes to the next step; it opens
+  the room only on the last one. Without the script a noscript style shows every step and the form posts as before.
+- Tests: live-pages.test.js (the four steps in order, one form, the first step for each kind of link, the noscript
+  fallback). The e2e specs that open a room from the landing walk the steps with `liveStep` / `openLiveRoom`
+  (tests/e2e/helpers.js).
+
 ## Classroom dashboards: type the number between − and +; settings from the board (17 Nov 2026)
 Two requests from the owner: "set the numbers manually here instead of only being able to + or −", everywhere that is
 the case, and "edit settings of individual widgets on a board without having to go into the broader edit menu".
@@ -7368,3 +7412,24 @@ the case, and "edit settings of individual widgets on a board without having to 
 - Tests: `tests/unit/dash-inputs.test.js` (parsing and limits; in Chromium: the fraction, decimal, percent typing rules,
   Escape, a bad entry, Enter, arrows, saving; the scoreboard drawn again while typing; a typed slope; the gear for the
   teacher, its sheet, saving, Undo, closing to the board; no gear for a student on a laptop or a phone).
+
+## Teachers' top bar: Classroom, Build, Live (17 Nov 2026)
+Owner: "For the top bar for a teacher it should just be Classroom Build Live at the top. You can remove Learn and Play."
+- School staff (teachers and school admins): top bar Classroom · Build · Live; phone tab bar the same with Me. A
+  school admin now has Live in the tab bar too (there is room since Learn and Play left). Everyone else is unchanged.
+- Play and Learn are not lost: they are tiles in the teachers' account menu (below), and still open at /play and
+  /learn (no tab is marked there).
+- Tests: nav-roles, teacher-quick-wins and classroom-homes check the new bars and the menu's links.
+
+## Teachers' account menu (17 Nov 2026)
+Owner, after four mockups: Option 4 (a profile card) "but I would like to use the theme settings from number 3 at the
+bottom", then "Leave out the Help and add the My School". School staff's menu (layout.js `staffMenu`), top to bottom:
+- A card that opens Me: avatar, name, school, and "💬 n new messages ›" when there are any (the Me badge's count).
+- Play and Learn as two tiles (a teacher's bars have neither since "Teachers' top bar").
+- My school (school admins only), Plans (while paid-plan pages are on), Settings (/me/settings), Sign out (the same
+  `/api/auth/logout` form as on /me).
+- The theme as one Auto / Light / Dark switch at the bottom: the same plain `?theme=` links as `themeLinks` (no
+  JavaScript needed; app.js switches at once and moves `aria-current`). "Auto" is `layout.acct.themeAuto`.
+- Grown-ups, students, kids and the platform admin keep the menu from "A quieter top bar".
+- Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
+  the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.

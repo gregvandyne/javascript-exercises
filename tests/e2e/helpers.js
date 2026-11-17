@@ -71,11 +71,12 @@ export async function adminPage(browser) {
 /** Studio state for a game, as the signed-in owner sees it. */
 export const studioState = async (page, id) => (await page.request.get(`/api/studio/${id}`)).json();
 
-/** Start a game from a "Start from" template, give it a unique name, and return { id, slug, title }. */
+/** Start a game from a template (as the setup steps do), give it a unique name, and return { id, slug, title }. */
 export async function templateGame(page, { title = uniq('Game '), template = 'catch' } = {}) {
-  await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click(`.tplcard[data-template="${template}"]`)]);
-  const id = page.url().split('/studio/')[1];
+  const made = await page.request.post('/api/studio/new', { data: { template } });
+  expect(made.ok()).toBeTruthy();
+  const { id, url } = await made.json();
+  await page.goto(url);
   await expect(page.locator('#st-frame')).toHaveAttribute('src', /\/frame\//);
   await page.fill('#st-title', title); await page.press('#st-title', 'Enter');
   await expect.poll(async () => (await studioState(page, id)).game.title).toBe(title);
@@ -125,4 +126,22 @@ export async function schoolWithAdmin(admin, username, { teacher = null, name = 
     expect(add.ok(), await add.text()).toBe(true);
   }
   return { id, slug, name };
+}
+
+/** The /live landing is in steps like the Builder's setup (play, questions, who, open): Next or Back until `key` shows.
+ *  (A game with no questions has no questions step.) */
+export async function liveStep(page, key) {
+  const ORDER = ['play', 'questions', 'who', 'open'];
+  for (let i = 0; i < 6; i++) {
+    const cur = await page.locator('#lv-new .lv-wstep.is-on').getAttribute('data-step');
+    if (cur === key) return;
+    const dir = ORDER.indexOf(key) > ORDER.indexOf(cur) ? 'next' : 'back';
+    await page.locator(`#lv-new [data-go="${dir}"]:visible`).first().click();
+  }
+  throw new Error(`the /live step "${key}" never showed`);
+}
+/** On /live: go to the last step and press "Open the room". */
+export async function openLiveRoom(page) {
+  await liveStep(page, 'open');
+  await page.locator('#lv-new button[type=submit]').click();
 }
