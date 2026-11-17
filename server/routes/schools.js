@@ -13,6 +13,7 @@ import { requireUser, requireAdmin, getUserByName, accountKind, isRetiredName } 
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
+import * as SD from '../services/school-delete.js';
 import { sendSchoolWelcome, schoolWelcomeEmail } from '../services/school-welcome.js';
 import { welcomeToken, WELCOME_DAYS } from './password-reset.js';
 import { siteBase, maskEmail, normEmail, sendingOn, addressOf } from '../services/email.js';
@@ -130,10 +131,13 @@ router.get('/admin/schools', requireAdmin, (req, res) => {
     </form>
     <p class="small muted">Next, appoint its school admin on the school's People tab.</p>
   </section>
-  ${list.length ? html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>School</th><th>School admin</th><th>Classes</th><th>Students</th><th>Added</th></tr></thead><tbody>
-    ${list.map(s => html`<tr><td><a href="/school/${s.slug}"><b>${s.name}</b></a>${s.archived_at ? html` <span class="chip-s">archived</span>` : ''}</td>
+  ${req.query.deleted ? html`<p class="notice" role="status" id="school-deleted">🗑️ The school was deleted.</p>` : ''}
+  ${list.length ? html`<div class="panel tblwrap"><table class="tbl rtable" id="schools-list"><thead><tr><th>School</th><th>School admin</th><th>Google domains</th><th>Classes</th><th>Members</th><th>Added</th><th><span class="sr-only">Delete</span></th></tr></thead><tbody>
+    ${list.map(s => html`<tr><td><a href="/school/${s.slug}"><b>${s.name}</b></a>${s.archived_at ? html` <span class="chip-s">archived</span>` : ''}<div class="small muted" dir="ltr"><code>${s.slug}</code></div></td>
       <td data-label="School admin">${admins[s.id] || html`<a class="chip-s warn" href="/school/${s.slug}?tab=people">⚠️ None yet</a>`} <a class="btn btn-sm" href="/admin/schools/setup?school=${s.id}">✉️ ${admins[s.id] ? 'Welcome email' : 'Set up admin'}</a></td>
-      <td data-label="Classes">${s.classes}</td><td data-label="Students">${s.students}</td><td data-label="Added">${new Date(s.created_at).toISOString().slice(0, 10)}</td></tr>`)}
+      <td data-label="Google domains" dir="ltr">${(d => (d.length ? d.map((x, i) => html`${i ? ', ' : ''}<code>${x}</code>`) : html`<span class="muted">none</span>`))(schoolDomainList(s))}</td>
+      <td data-label="Classes">${s.classes}</td><td data-label="Members">${s.staff + s.students} <span class="small muted">(${s.staff} staff, ${s.students} students)</span></td><td data-label="Added">${new Date(s.created_at).toISOString().slice(0, 10)}</td>
+      <td><a class="btn btn-sm btn-danger" href="/admin/schools/${s.id}/delete">🗑️ Delete school</a></td></tr>`)}
   </tbody></table></div>` : emptyState({ emoji: '🏫', title: 'No schools yet', text: 'Add the first school above, then appoint its school admin on its People tab.' })}`;
   page(req, res, { title: 'Schools', active: S.isSchoolStaff(req.user) ? 'me' : 'schools', body, bodyClass: ADMIN_BODY, head: html`${CSS}${ADMIN_CSS}`, back: '/admin', backLabel: 'Admin' });
 });
@@ -144,6 +148,61 @@ router.post('/api/admin/schools', requireAdmin, (req, res) => {
   if (b(req).request) SR.close(req.user, String(b(req).request), 'done', { schoolId: r.school.id });
   // The first job for a new school is appointing its school admin (the request's sender's name filled in).
   res.json({ ok: true, redirect: `/school/${r.school.slug}?tab=people&new=1${b(req).request ? `&from=${encodeURIComponent(String(b(req).request))}` : ''}` });
+});
+
+/** A school's Google domains as saved (schools.settings googleDomains), for the admin's list. */
+const schoolDomainList = s => { const d = S.settingsOf(s).googleDomains; return Array.isArray(d) ? d.map(String) : []; };
+
+// ---- Delete a school (services/school-delete.js): a confirm page that lists what goes, then the typed name.
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+router.get('/admin/schools/:id/delete', requireAdmin, (req, res) => {
+  const p = SD.schoolDeletePlan(req.params.id);
+  if (!p) return notFound(req, res, 'That school is gone.');
+  const { school: s, counts: c } = p;
+  const goes = [
+    [c.staff + c.students, html`${plural(c.staff + c.students, 'membership')} (${c.staff} staff, ${c.students} students): only the membership goes, never their own accounts`],
+    [c.schoolAccounts, html`${plural(c.schoolAccounts, 'account')} the school made: switched off (banned, signed out), as when they leave the school`],
+    [c.classes, html`${plural(c.classes, 'class', 'classes')}${p.classes.length ? html`: ${p.classes.map((k, i) => html`${i ? ', ' : ''}${k.name}${k.archived_at ? ' (archived)' : ''}`)}` : ''}`],
+    [c.classMembers, html`${plural(c.classMembers, 'class roster row')}`],
+    [c.joinRequests, html`${plural(c.joinRequests, 'join request')}`],
+    [c.lessons, html`${plural(c.lessons, 'lesson')} and their steps, folders and standards tags`],
+    [c.assignments, html`${plural(c.assignments, 'assigned lesson')} in classes`],
+    [c.progress, html`${plural(c.progress, 'progress and gradebook row')}`],
+    [c.rubrics, html`${plural(c.rubrics, 'rubric')}`],
+    [c.gameShares, html`${plural(c.gameShares, 'game shared with a class', 'games shared with classes')} (the games stay)`],
+    [c.invites, html`${plural(c.invites, 'invite')} (Google and staff)`],
+    [c.dashboards, html`${plural(c.dashboards, 'classroom dashboard row')} with their pictures, checks and passes`],
+    [c.liveRuns, html`${plural(c.liveRuns, 'Oomba Live game')} played in its classes, with their scores`],
+    [c.googleClassroom, html`${plural(c.googleClassroom, 'Google Classroom link')} (nothing is changed at Google)`],
+    [c.billingRows, html`${plural(c.billingRows, 'billing row')} (invoice requests, seats, plan asks, grants)`],
+  ].filter(([n]) => n > 0);
+  const billing = p.billing.length > 0;
+  const body = html`
+  <div class="pagehead"><h1>🗑️ Delete school: ${s.name}</h1></div>
+  <section class="panel" id="delete-school">
+    <p style="margin-top:0"><a href="/school/${s.slug}"><b>${s.name}</b></a> · <code dir="ltr">${s.slug}</code> · added ${new Date(s.created_at).toISOString().slice(0, 10)}${s.archived_at ? ' · archived' : ''}</p>
+    <p>Google domains: ${p.domains.length ? p.domains.map((d, i) => html`${i ? ', ' : ''}<code dir="ltr">${d}</code>`) : html`<span class="muted">none</span>`}${p.domains.length ? html` <span class="small muted">(free for another school once this one is deleted)</span>` : ''}</p>
+    ${billing ? html`<p class="notice warn" role="alert" id="delete-billing">⛔ This school has a paid Stripe subscription that will still charge (${p.billing.map((r, i) => html`${i ? ', ' : ''}<code>${r.stripe_subscription_id}</code> ${r.status}`)}). Cancel it first (<a href="/admin/billing">Billing</a>), then delete the school.</p>` : ''}
+    <h2>What is deleted</h2>
+    ${goes.length ? html`<ul id="delete-goes">${goes.map(([, t]) => html`<li>${t}</li>`)}</ul>` : html`<p class="muted">Nothing but the school itself: it has no members, classes or lessons.</p>`}
+    <p class="small muted">Kept: people's own accounts, Stripe's record of ended subscriptions, "Set up my school" requests, the audit log, and quiz sets teachers made (no longer shared). This cannot be undone.</p>
+    ${billing ? '' : html`<form class="stack" data-api="/api/admin/schools/${s.id}/delete" novalidate id="delete-school-form">
+      <div class="field"><label for="ds-confirm">Type the school's name, <b>${s.name}</b>, to delete it</label>
+        <input class="input" id="ds-confirm" name="confirm" maxlength="80" autocomplete="off" required><span class="err" id="ds-confirm-err"></span></div>
+      <p class="err form-err" aria-live="polite"></p>
+      <div class="row"><button class="btn btn-danger" type="submit">🗑️ Delete this school</button> <a class="btn" href="/admin/schools">Cancel</a></div>
+    </form>`}
+  </section>`;
+  page(req, res, { title: 'Delete school', active: 'schools', body, bodyClass: ADMIN_BODY, head: html`${CSS}${ADMIN_CSS}`, back: '/admin/schools', backLabel: 'Schools' });
+});
+router.post('/api/admin/schools/:id/delete', requireAdmin, rateLimit('admin-delete', 30, 600e3), (req, res) => {
+  const s = S.getSchool(req.params.id);
+  if (!s) return res.status(404).json({ error: 'That school is gone.' });
+  if (String(b(req).confirm || '').trim() !== s.name.trim()) return fieldErr(res, 'confirm', 'Type the school\'s name exactly as shown.');
+  const r = SD.deleteSchool(req.user, s.id);
+  if (!r.ok && r.code === 'billing') return res.status(409).json({ error: `This school has a paid Stripe subscription that will still charge (${r.subscriptions.join(', ')}). Cancel it first.` });
+  if (!r.ok) return res.status(404).json({ error: 'That school is gone.' });
+  res.json({ ok: true, redirect: '/admin/schools?deleted=1', toast: 'School deleted.' });
 });
 
 // ---- Set up a school from a request (docs/decisions.md "Setting up a school from a request")

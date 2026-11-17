@@ -1,7 +1,7 @@
-// Deleting a child's account (COPPA 312.6, GDPR Art 17; docs/decisions.md "Parent-made child accounts" B8). Today only a
-// grown-up deletes, and only an account their family made (routes/family.js, behind madeOn and step-up); the platform
-// admin will use the same service later. One transaction does everything that is in the database; the files (Builder
-// uploads, screenshots, the profile photo) go right after it commits.
+// Deleting an account (COPPA 312.6, GDPR Art 17; docs/decisions.md "Parent-made child accounts" B8). A grown-up deletes
+// an account their family made (routes/family.js, behind madeOn and step-up); the platform admin deletes a grown-up's or
+// teacher's account (adminDeleteAccount at the end, routes/admin.js). One transaction does everything that is in the
+// database; the files (Builder uploads, screenshots, the profile photo) go right after it commits.
 //
 // What happens, in order:
 //   1. sessions: every sign-in ends, then the rows go;
@@ -29,6 +29,7 @@ import { q, tx, now, audit } from '../db.js';
 import { getUser, endSessions } from '../auth.js';
 import { unlinkAll } from './family.js';
 import { inAnySchool } from './schools.js';
+import { stillBilling } from './school-delete.js';
 import * as photos from './photos.js';
 import * as shots from './shots.js';
 import { uploadDir } from '../builder/uploads.js';
@@ -45,16 +46,30 @@ const TOMB = { avatar: '🙂', color: '#64748b' };
 
 /** An active member of any school or class (deleting is refused then). */
 export const inSchoolOrClass = u => inAnySchool(u) || !!q.get("SELECT 1 FROM class_members WHERE user_id=? AND status='active'", u.id);
-/** -> { ok, games: [ids] } (the caller stops any build in those games) | { ok:false, code:'notFound'|'inSchool' } */
-export function deleteAccount(childId, actor, { by = 'grownup', parentMade = true } = {}) {
+/** -> { ok, games: [ids] } (the caller stops any build in those games) | { ok:false, code:'notFound'|'inSchool' }
+ *  leaveSchools (the platform admin deleting a grown-up's or teacher's account, adminDeleteAccount): instead of the
+ *  refusal, the same transaction first ends their school and class memberships (marked 'left', their real name blanked),
+ *  drops their staff invites, teacher seats and plan asks, revokes their billing grants and removes their own quiz sets. */
+export function deleteAccount(childId, actor, { by = 'grownup', parentMade = true, leaveSchools = false } = {}) {
   const u = getUser(childId);
   if (!u || !u.password_hash || /^deleted_/.test(u.username)) return { ok: false, code: 'notFound' };
-  if (inSchoolOrClass(u)) return { ok: false, code: 'inSchool' };
+  if (!leaveSchools && inSchoolOrClass(u)) return { ok: false, code: 'inSchool' };
   const t = now();
   const gameIds = q.all('SELECT id FROM games WHERE owner_id=?', u.id).map(r => r.id);
   const storyIds = q.all('SELECT id FROM stories WHERE owner_id=?', u.id).map(r => r.id);
   const versionIds = gameIds.length ? q.all(`SELECT id FROM game_versions WHERE game_id IN (${gameIds.map(() => '?').join(',')})`, ...gameIds).map(r => r.id) : [];
   tx(() => {
+    // 0. (the admin's delete of a grown-up or teacher) their memberships and what they hold as school staff
+    if (leaveSchools) {
+      q.run("UPDATE school_members SET status='left', left_at=? WHERE user_id=? AND status='active'", t, u.id);
+      q.run("UPDATE school_members SET roster_name='' WHERE user_id=?", u.id);
+      q.run("UPDATE class_members SET status='left', left_at=? WHERE user_id=? AND status='active'", t, u.id);
+      for (const tbl of ['staff_invites', 'teacher_seats']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+      q.run('DELETE FROM school_plan_asks WHERE teacher_id=?', u.id);
+      q.run('DELETE FROM live_sets WHERE owner_id=? AND school_id IS NULL', u.id);   // their own quiz sets (a school's stay)
+      const fam = q.get('SELECT id FROM families WHERE owner_id=?', u.id);
+      q.run("UPDATE billing_grants SET revoked_at=? WHERE revoked_at IS NULL AND ((owner_kind='teacher' AND owner_id=?) OR (owner_kind='family' AND owner_id=?))", t, u.id, fam ? fam.id : '');
+    }
     // 1. sessions
     endSessions(u.id);
     q.run('DELETE FROM sessions WHERE user_id=?', u.id);
@@ -107,4 +122,50 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
   for (const v of versionIds) { try { fs.unlinkSync(shots.fileFor(v)); } catch { /* no screenshot */ } }
   for (const id of storyIds) { try { fs.rmSync(storyDir(id), { recursive: true, force: true }); } catch { /* already gone */ } }
   return { ok: true, games: gameIds };
+}
+
+// ---------------------------------------------------------------- the platform admin deletes a grown-up or teacher
+// (routes/schools.js /admin/users/:id/delete). Their school and class memberships end first (deleteAccount
+// leaveSchools); schools they made are NOT deleted: the confirm page lists them, to delete one by one
+// (services/school-delete.js). Refused for a platform admin, for the admin themselves, for children (a family deletes
+// a made child; a school account leaves with its school), and while a Stripe subscription of theirs (the Teacher plan,
+// or their family's plan) will still charge.
+/** A grown-up's or teacher's account: a family account, school staff (now or before), or signed up as a teacher. */
+export const isAdultAccount = u => !!u && !u.is_guest && (u.account_type === 'grownup' || u.signup_as === 'teacher'
+  || !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND role!='student'", u.id));
+/** Why the admin may not delete this account, or null. -> null | 'notFound'|'self'|'platformAdmin'|'notAdult'|'billing' */
+export function adminDeleteRefusal(actor, u) {
+  if (!u || !u.password_hash || /^deleted_/.test(u.username)) return 'notFound';
+  if (actor && actor.id === u.id) return 'self';
+  if (u.role === 'admin') return 'platformAdmin';
+  if (!isAdultAccount(u)) return 'notAdult';
+  if (billingOf(u).length) return 'billing';
+  return null;
+}
+/** Their subscriptions that will still charge: the Teacher plan (owner 'teacher') and their family's plan. */
+function billingOf(u) {
+  const fam = q.get('SELECT id FROM families WHERE owner_id=?', u.id);
+  return [...stillBilling('teacher', u.id), ...(fam ? stillBilling('family', fam.id) : [])];
+}
+/** What the delete does, for the confirm page. -> null | { user, refusal, schools, createdSchools, classes, children, billing } */
+export function adminDeletePlan(actor, userId) {
+  const u = getUser(userId); if (!u) return null;
+  const fam = q.get('SELECT id FROM families WHERE owner_id=?', u.id);
+  return {
+    user: u,
+    refusal: adminDeleteRefusal(actor, u),
+    schools: q.all(`SELECT s.id, s.name, s.slug, m.role FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' ORDER BY s.name COLLATE NOCASE`, u.id),
+    createdSchools: q.all('SELECT id, name, slug, archived_at FROM schools WHERE created_by=? ORDER BY name COLLATE NOCASE', u.id),
+    classes: q.get("SELECT COUNT(*) n FROM class_members WHERE user_id=? AND status='active'", u.id).n,
+    games: q.get("SELECT COUNT(*) n FROM games WHERE owner_id=?", u.id).n,
+    children: fam ? q.get('SELECT COUNT(*) n FROM family_children WHERE family_id=? AND unlinked_at IS NULL', fam.id).n : 0,
+    billing: billingOf(u),
+  };
+}
+/** The platform admin deletes a grown-up's or teacher's account. -> deleteAccount's result | { ok:false, code } */
+export function adminDeleteAccount(actor, userId) {
+  const u = getUser(userId);
+  const no = adminDeleteRefusal(actor, u);
+  if (no) return { ok: false, code: no };
+  return deleteAccount(u.id, actor, { by: 'admin', parentMade: false, leaveSchools: true });
 }
