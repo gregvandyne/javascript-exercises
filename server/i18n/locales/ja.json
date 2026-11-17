@@ -7237,7 +7237,13 @@
       "explorerSub": "小学3〜5年",
       "pro": "プロ",
       "proSub": "小学6年〜中学2年",
-      "switch": "{band}にきりかえる"
+      "switch": "{band}にきりかえる",
+      "launchpad": "ランチパッド",
+      "launchpadSub": "年長〜小学2年",
+      "yours": "あなたのレベル",
+      "showing": "いま表示中",
+      "stepsDone": "{band}：{total}ステップ中{n}ステップ完了",
+      "unitsFinale": "ユニット{from}〜{to}、そしてフィナーレ：{finale}"
     },
     "map": {
       "h": "コースマップ",

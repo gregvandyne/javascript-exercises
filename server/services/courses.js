@@ -746,14 +746,22 @@ export function classCourseProgress(students, course) {
       const r = q.get('SELECT band, COUNT(*) AS n FROM course_progress WHERE user_id=? AND course=? GROUP BY band ORDER BY n DESC LIMIT 1', user.id, course.slug);
       band = r && bandsFor(course, user).includes(r.band) ? r.band : null;
     }
-    if (!band) return { user, band: null, status: 'not-started', done: 0, total: steps(course, defaultBand(course, user)).length, score: 0, maxScore: 0, list: [] };
-    const list = states(user, course, band);
-    const done = list.filter(s => s.complete).length;
-    const started = list.some(s => s.row);
-    const score = list.reduce((n, s) => n + ((s.row && s.row.check_score) || 0), 0);
-    const maxScore = list.reduce((n, s) => n + (s.step.check && s.step.check.length ? 3 : 0), 0);
-    return { user, band, status: !started ? 'not-started' : done >= list.length ? 'completed' : 'in-progress', done, total: list.length, score, maxScore, list };
+    if (!band) return { user, band: null, status: 'not-started', done: 0, total: steps(course, defaultBand(course, user)).length, score: 0, maxScore: 0, list: [], bands: [] };
+    // Every band this student has worked in, each on its own steps: a student who finished Explorer and moved
+    // on to Pro is "completed" for Explorer and "not started" for Pro, never one status for the whole course.
+    const worked = new Set(user && user.id != null ? q.all('SELECT DISTINCT band FROM course_progress WHERE user_id=? AND course=?', user.id, course.slug).map(r => r.band) : []);
+    const bands = bandsFor(course, user).filter(b => b === band || worked.has(b)).map(b => bandProgress(user, course, b));
+    return { user, ...bands.find(b => b.band === band), bands };
   });
+}
+/** One band's progress for one student: { band, status, done, total, score, maxScore, list }. */
+function bandProgress(user, course, band) {
+  const list = states(user, course, band);
+  const done = list.filter(s => s.complete).length;
+  const started = list.some(s => s.row);
+  const score = list.reduce((n, s) => n + ((s.row && s.row.check_score) || 0), 0);
+  const maxScore = list.reduce((n, s) => n + (s.step.check && s.step.check.length ? 3 : 0), 0);
+  return { band, status: !started ? 'not-started' : done >= list.length ? 'completed' : 'in-progress', done, total: list.length, score, maxScore, list };
 }
 /** The slides this player reads on a step: the step's own deck, or its first-time deck (`slides_first_time`,
  *  Cyber Defenders) when the step has one and the player has finished no step of the course's other band —

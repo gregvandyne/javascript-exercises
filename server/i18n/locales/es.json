@@ -7237,7 +7237,13 @@
       "explorerSub": "Grados 3–5",
       "pro": "Pro",
       "proSub": "Grados 6–8",
-      "switch": "Cambiar a {band}"
+      "switch": "Cambiar a {band}",
+      "launchpad": "Despegue",
+      "launchpadSub": "Kínder a 2.º grado",
+      "yours": "Tu nivel",
+      "showing": "Mostrando ahora",
+      "stepsDone": "{band}: {n} de {total} pasos hechos",
+      "unitsFinale": "Unidades {from}–{to} y luego el final: {finale}"
     },
     "map": {
       "h": "Mapa del curso",

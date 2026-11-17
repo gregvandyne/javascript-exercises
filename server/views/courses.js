@@ -64,7 +64,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
           <div class="course-ht"><h3 id="course-${c.slug}-h">${t(`${c.key}.title`)}</h3>${meta ? html`<p>${subHead(t(`${c.key}.sub`))}</p><p class="gmeta course-meta">${meta}</p>` : html`<p>${subLine(t(`${c.key}.sub`))}</p>`}</div>
           <span class="course-go flip" aria-hidden="true">›</span>
         </a>
-        ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}
+        ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${BAND_INFO[ov.band] ? t('courses.band.stepsDone', { band: bandName(t, ov.band), n: ov.done, total: ov.total }) : t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}
         <details class="course-units"><summary>${t('courses.gamesN', { count: games.length })}</summary>
         <ol class="course-steps">${games.map(g => html`<li class="course-step"><a href="/courses/${c.slug}#${g.slug}" class="course-game">
           <span class="course-n" aria-hidden="true">${g.step}</span>

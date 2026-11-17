@@ -7239,7 +7239,13 @@
       "explorerSub": "כיתות ג׳–ה׳",
       "pro": "מקצוענים",
       "proSub": "כיתות ו׳–ח׳",
-      "switch": "מעבר לרמת {band}"
+      "switch": "מעבר לרמת {band}",
+      "launchpad": "כן שיגור",
+      "launchpadSub": "גן עד כיתה ב׳",
+      "yours": "הרמה שלך",
+      "showing": "מוצג עכשיו",
+      "stepsDone": "{band}: {n} מתוך {total} שלבים הושלמו",
+      "unitsFinale": "יחידות {from}–{to}, ואז הגמר: {finale}"
     },
     "map": {
       "h": "מפת הקורס",
