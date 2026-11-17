@@ -190,7 +190,8 @@ test('the file: the scanner passes it, nothing leaves the site, its import map i
   assert.match(HTML, /BRB\.gameOver\(\{ won: true \}\)/);
   assert.doesNotMatch(HTML, /\b(lives left|you lose|out of time|countdown|time is up|hurry|game over!)\b/i, 'no timer, no lives, no losing');
   // a round's steps are run by the game loop: the only wall-clock timers hide a hint, end a button shake and bring the helper back to standing
-  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 3);
+  // and two at the start: the loading screen's fallback wait for a first frame, and its removal after the fade
+  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 5);
   assert.doesNotMatch(HTML, /setInterval\(|Date\.now|performance\.now|Math\.random/, 'no clock, and every data set comes from the seeded generator');
   assert.doesNotMatch(HTML, /<input|<textarea|contenteditable|prompt\(/, 'nothing is typed');
   assert.doesNotMatch(HTML, /physics\(|rapier3d-compat'\)|creature\(|school\(|g\.controls\(/, 'no physics, no animal and nothing to steer: nothing chases, bites or falls');

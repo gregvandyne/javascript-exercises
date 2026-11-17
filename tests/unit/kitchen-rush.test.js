@@ -92,7 +92,8 @@ test('the file: the scanner passes it, nothing leaves the site, and its import m
   assert.doesNotMatch(HTML, /\b(lives left|you lose|out of time|countdown|time is up|hurry|game over!)\b/i, 'no timer, no lives, no losing: the rush is the busy kitchen');
   // a round's steps are run by the game loop: the only wall-clock timers hide a hint, end a button wobble and bring
   // the helper back to standing
-  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 3);
+  // and two at the start: the loading screen's fallback wait for a first frame, and its removal after the fade
+  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 5);
   assert.doesNotMatch(HTML, /setInterval\(|Date\.now|performance\.now/);
 });
 
