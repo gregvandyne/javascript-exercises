@@ -7274,3 +7274,15 @@ My games only.
 - The empty My games text no longer says "or pick a starter above": "Tap “New game” to start one." in all 12 languages.
 - Tests: builder-http checks the cards are gone; the e2e helper `templateGame` (and accounts.spec) now make the game
   with `POST /api/studio/new` instead of clicking a card.
+
+## Landing: the three teacher screens under Google Classroom (17 Nov 2026)
+Owner: "On the marketing page these 3 images seem a bit out of place and I don't like how there is an odd number with one
+on its own line. These seem better fitted under the Google Classroom section." The gradebook, needs-attention and
+feedback screens sat in the teaching-loop section in two columns, so the third was alone on a row.
+- When Google Classroom is on, the three screens (`landingShots` in server/views/teacher-loop.js) come after the
+  Classroom card; the loop keeps its four steps and the trial button. When Classroom is off (no Classroom section) they
+  stay in the loop, so they are never lost.
+- They are three across from 900px (`.lp-loop-shots`, public/css/landing.css), one column below: never two and one.
+- /teachers and /teach/loop (the app-look variant) are unchanged.
+- Tests: teach-loop.test.js checks both cases. Its older check that the loop comes before the Builder was out of date
+  since "Landing: the whole class day" (it now comes after "Your students build") and is corrected.
