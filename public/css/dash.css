@@ -1444,7 +1444,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-stage>svg,.dt-plane,.dt-clock,.dt-hund{height:auto;max-height:70vh;width:100%}
   .dt-fwrap,.dt-mats,.dt-pv,.dt-tfwrap,.dt-cwrap,.dt-fdpwrap,.dt-clockwrap{height:auto}
   .dt-cwrap,.dt-fdpwrap{flex-direction:column}
-  .dt-cards{grid-template-columns:minmax(0,1fr)}
+  /* the cards over the grid take the full width: .dt-card's inline-size containment gives them no width of their own (they shrank to 16px) */
+  .dt-cards{flex:none;width:100%;grid-template-columns:minmax(0,1fr)}
   .dt-trwrap .dt-trtall{display:table}.dt-trwrap .dt-trwide{display:none}
   .dt-plane{flex:none;max-width:100%;aspect-ratio:1}
   .dt-hund{max-width:100%}
