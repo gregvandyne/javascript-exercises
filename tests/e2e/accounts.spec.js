@@ -110,8 +110,8 @@ test('a shared classroom device: after a sign-in ends, the next child lands on t
 test('the Studio after the sign-in ended: the message goes back in the box, and every action says signed out', async ({ browser }) => {
   const page = await (await browser.newContext(PHONE)).newPage();
   const { username, password } = await signup(page, uniq('Kid'), 'secret-pass-9');
-  await page.goto('/build');
-  await Promise.all([page.waitForURL(/\/studio\//), page.click('.tplcard[data-template="catch"]')]);
+  const made = await (await page.request.post('/api/studio/new', { data: { template: 'catch' } })).json();
+  await page.goto(made.url);
   await expect(page.locator('#st-frame')).toHaveAttribute('src', /\/frame\//);
   const studio = new URL(page.url()).pathname;
   await signOutElsewhere(browser, username, password);

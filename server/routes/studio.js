@@ -19,7 +19,7 @@ import * as sttUsage from '../services/stt-usage.js';
 import { log } from '../services/log.js';
 import { config } from '../config.js';
 import { audit } from '../db.js';
-import { listTemplates, templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
+import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
@@ -208,29 +208,15 @@ export function liveClassState(user, g, cur, t, state = {}) {
 const BUILD_TONE = { building: 'warn', ready: 'good', question: 'good', stopped: 'bad' };
 const buildChip = (st, t) => (st ? html`<span class="stchip ${BUILD_TONE[st]}">${t(`build.status.${st}`)}</span>` : '');
 
-router.get('/build', requireBuilder, async (req, res) => {
+router.get('/build', requireBuilder, (req, res) => {
   const t = req.t;
   const mine = games.myGames(req.user.id, 100);
   const news = turns.buildStatus(req.user.id);
-  const templates = await listTemplates();
-  const tpl = (k, field, fallback) => (t.has(`studio.templates.${k}.${field}`) ? t(`studio.templates.${k}.${field}`) : fallback);
   const body = html`
   <div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>
   <section class="build-hero panel">
     <div class="build-hero-text"><h2>${t('build.hero.heading')}</h2><p>${t('build.hero.text')}</p></div>
     <a class="btn btn-primary btn-big" href="/build/new" id="newgame">✨ ${t('build.newGame')}</a>
-  </section>
-  <section aria-labelledby="k2-h" class="build-sec">
-    <h2 id="k2-h">${t('build.worlds')}</h2>
-    <div class="tplgrid">${KIT2_WORLDS.map(w => { const title = t(`studio.worlds.names.${w.id}`); return html`<button type="button" class="tplcard tplworld" data-template="oomba3d" data-world="${w.id}" data-threed="1" aria-label="${t('build.startInLabel', { title })}">
-      <span class="tplcover tplpic"><img src="/img/kit2/worlds/${w.id}-card.webp" alt="" width="320" height="180" loading="lazy" decoding="async"></span><span class="tpl-t">${title}</span>
-      <span class="tpl-p">👤 ${t('game.about.onePlayer')}</span></button>`; })}</div>
-  </section>
-  <section aria-labelledby="tpl-h" class="build-sec">
-    <h2 id="tpl-h">${t('build.startFrom')}</h2>
-    <div class="tplgrid">${templates.map(tp => { const title = tpl(tp.key, 'title', tp.title); return html`<button type="button" class="tplcard" data-template="${tp.key}"${tp.threeD ? ' data-threed="1"' : ''} aria-label="${t('build.startFromLabel', { title })}">
-      ${coverArt({ cover: tp.cover, icon: tp.icon }, 'tplcover')}<span class="tpl-t">${title}</span><span class="tpl-d">${tpl(tp.key, 'description', tp.description)}</span>
-      <span class="tpl-p">${tp.players > 1 ? `👫 ${t('build.twoPlayers')}` : `👤 ${t('game.about.onePlayer')}`}</span></button>`; })}</div>
   </section>
   <section aria-labelledby="mine-h" class="build-sec">
     <h2 id="mine-h">${t('home.rails.mine')}</h2>

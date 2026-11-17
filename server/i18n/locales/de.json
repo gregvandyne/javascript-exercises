@@ -32,7 +32,9 @@
       "dark": "Dunkel"
     },
     "acct": {
-      "allSettings": "Alle Einstellungen"
+      "allSettings": "Alle Einstellungen",
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
@@ -1427,14 +1429,9 @@
       "text": "Erzähl dem Baumeister deine Idee. Er baut das Spiel, und du kannst es immer weiter ändern."
     },
     "newGame": "Neues Spiel",
-    "startFrom": "Fang mit einer Vorlage an",
-    "startFromLabel": "Mit {title} anfangen",
-    "worlds": "Starte in einer 3D-Welt",
-    "startInLabel": "In der 3D-Welt {title} starten",
-    "twoPlayers": "2 Spieler",
     "updateWaiting": "Update wartet auf Prüfung",
     "changed": "Geändert {when}",
-    "empty": "Tipp auf „Neues Spiel“ oder such dir oben eine Vorlage aus. Deine Spiele erscheinen dann hier.",
+    "empty": "Tipp auf „Neues Spiel“, um eins anzufangen. Deine Spiele erscheinen dann hier.",
     "rename": "Umbenennen",
     "delete": "Löschen",
     "status": {
@@ -1947,7 +1944,6 @@
     },
     "build": {
       "gettingReady": "Wird vorbereitet…",
-      "needsNewer": "Braucht ein neueres Gerät",
       "renameTitle": "Spiel umbenennen",
       "nameLabel": "Name des Spiels",
       "save": "Speichern",
@@ -6698,6 +6694,36 @@
       "assign": "Dieser Klasse aufgeben",
       "mySets": "Meine Fragensätze",
       "another": "Noch eins machen"
+    },
+    "wiz": {
+      "modesTab": "Live-Spiele",
+      "progress": "Schritt {n} von {total}",
+      "back": "Zurück",
+      "next": "Weiter",
+      "change": "Ändern",
+      "play": {
+        "title": "Was wollt ihr spielen?",
+        "hint": "Wähle ein Spiel. Bevor der Raum aufgeht, kannst du alles noch ändern."
+      },
+      "questions": {
+        "title": "Welche Fragen?",
+        "ownTitle": "Spiel einstellen",
+        "hint": "Wähle, was das Spiel fragt und wie lange es dauert."
+      },
+      "who": {
+        "title": "Wer spielt mit?",
+        "hint": "Wähle, wer mitspielen darf, wie viele und ob in Teams gespielt wird."
+      },
+      "open": {
+        "title": "Bereit, den Raum zu öffnen",
+        "hint": "Prüfe deine Auswahl. Die Spielenden gehen auf {url} und geben den Code ein."
+      },
+      "row": {
+        "game": "Spiel",
+        "questions": "Fragen",
+        "who": "Wer darf mitspielen",
+        "teams": "Teams"
+      }
     }
   },
   "match": {

@@ -132,13 +132,34 @@ test('/live: the question bank by subject and level; the choice is remembered fo
   assert.deepEqual([...new Set(LS.get(b.json.sid).items.map(it => it.cat))], ['Math', 'Reading & words', 'General knowledge']);
 });
 
+test('/live in steps like the Builder setup: play, questions, who, open; one form; a preselected game starts on the next step', async () => {
+  const page = (await call('/live', { user: teacher })).text;
+  assert.deepEqual([...page.matchAll(/<section class="lv-wstep(?: is-on)?" data-step="(\w+)"/g)].map(m => m[1]), ['play', 'questions', 'who', 'open']);
+  assert.match(page, /<form class="lv-steps" id="lv-new" data-api="\/api\/live\/sessions" data-first="play"/);
+  assert.match(page, /<section class="lv-wstep is-on" data-step="play"/, 'the first step shows before the script runs');
+  assert.equal((page.match(/class="lv-wstep is-on"/g) || []).length, 1);
+  assert.match(page, /Step 1 of 4/); assert.match(page, /What do you want to play\?/); assert.match(page, /Who is playing\?/); assert.match(page, /Ready to open the room/);
+  // every field still in the one form, and "Open the room" is its submit button (on the last step)
+  const at = page.indexOf('<form class="lv-steps"'), form = page.slice(at, page.indexOf('</form>', at));
+  for (const f of ['name="pick"', 'name="set"', 'name="audience"', 'name="maxPlayers"', 'name="teams"', 'type="submit"']) assert.ok(form.includes(f), f);
+  assert.ok(form.indexOf('type="submit"') > form.indexOf('data-step="open"'), 'Open the room is on the last step');
+  for (const k of ['game', 'questions', 'who', 'teams']) assert.match(page, new RegExp(`data-row="${k}"`), k);
+  // without the script, every step shows and the step buttons hide (a plain form that posts)
+  assert.match(page, /<noscript><style>\.lv-wiz \.lv-wstep\{display:flex!important\}/);
+  assert.match(page, /href="\/css\/build-setup\.css"/, 'the Builder setup\'s look');
+  // opened with a game chosen: a quiz goes to its questions, a game that asks none to who is playing
+  assert.match((await call('/live?mode=battle', { user: teacher })).text, /data-first="questions"/);
+  const plain = publish(teacher, liveHtml(), { visibility: 'unlisted', title: 'Plain Live' });
+  assert.match((await call(`/live?game=${plain.id}`, { user: teacher })).text, /data-first="who"/);
+});
+
 test('/live?starter=: a lesson plan preselects Would You Rather topics, the bank, Atlas or a fixed starter; unknown ids are ignored', async () => {
   // P6 (CS Quest): 6.1 hosts wyr:tech:8:20; the mode comes from the starter when the URL names none
   const wyr = (await call('/live?starter=wyr:tech:8:20', { user: teacher })).text;
   assert.match(wyr, /value="mode:wyr" checked/);
   assert.match(wyr, /name="wyrTopic" value="tech" checked/); assert.doesNotMatch(wyr, /name="wyrTopic" value="animals" checked/); assert.doesNotMatch(wyr, /name="wyrTopic" value="online" checked/);
-  assert.match(wyr, /<select id="lv-wyr-count" name="wyrCount">(?:(?!<\/select>)[\s\S])*<option value="8" selected>/);
-  assert.match(wyr, /<select id="lv-wyr-secs" name="wyrSecs">(?:(?!<\/select>)[\s\S])*<option value="20" selected>/);
+  assert.match(wyr, /<select class="input" id="lv-wyr-count" name="wyrCount">(?:(?!<\/select>)[\s\S])*<option value="8" selected>/);
+  assert.match(wyr, /<select class="input" id="lv-wyr-secs" name="wyrSecs">(?:(?!<\/select>)[\s\S])*<option value="20" selected>/);
   assert.match(wyr, /id="lv-preset" data-starter="wyr:tech:8:20">Set up from the lesson plan\./);
   const mix = (await call('/live?starter=wyr:mix:5:10', { user: teacher })).text;
   assert.match(mix, /name="wyrTopic" value="animals" checked/); assert.match(mix, /name="wyrTopic" value="online" checked/);
@@ -146,7 +167,7 @@ test('/live?starter=: a lesson plan preselects Would You Rather topics, the bank
   const bank = (await call('/live?mode=battle&starter=bank:science:a10:15', { user: teacher })).text;
   assert.match(bank, /value="mode:battle" checked/); assert.match(bank, /<option value="bank" selected>/);
   assert.match(bank, /<option value="science" selected>/); assert.match(bank, /<option value="a10" selected>/);
-  assert.match(bank, /<select id="lv-bank-count" name="bankCount">(?:(?!<\/select>)[\s\S])*<option value="15" selected>/);
+  assert.match(bank, /<select class="input" id="lv-bank-count" name="bankCount">(?:(?!<\/select>)[\s\S])*<option value="15" selected>/);
   const board = (await call('/live?starter=bank:board:a6:math+words', { user: teacher })).text;
   assert.match(board, /value="mode:board" checked/); assert.match(board, /<option value="a6" selected>/);
   assert.match(board, /name="bankBoard" value="math" checked/); assert.match(board, /name="bankBoard" value="words" checked/); assert.doesNotMatch(board, /name="bankBoard" value="science" checked/);
@@ -155,7 +176,7 @@ test('/live?starter=: a lesson plan preselects Would You Rather topics, the bank
   const atlas = (await call('/live?starter=atlas:eu:hard:flag+capital:5:30', { user: teacher })).text;
   assert.match(atlas, /value="mode:atlas" checked/); assert.match(atlas, /<option value="eu" selected>/); assert.match(atlas, /<option value="hard" selected>/);
   assert.match(atlas, /name="atlasKind" value="flag" checked/); assert.match(atlas, /name="atlasKind" value="capital" checked/); assert.doesNotMatch(atlas, /name="atlasKind" value="find" checked/);
-  assert.match(atlas, /<select id="lv-atlas-secs" name="atlasSecs">(?:(?!<\/select>)[\s\S])*<option value="30" selected>/);
+  assert.match(atlas, /<select class="input" id="lv-atlas-secs" name="atlasSecs">(?:(?!<\/select>)[\s\S])*<option value="30" selected>/);
   // anything the session API would refuse is ignored: the usual landing, no preset note
   for (const bad of ['nonsense', 'wyr:pizza:5:15', 'wyr:tech:9:20', 'bank:magic:a8:10', 'atlas:mars:easy:find:10:20', '<script>alert(1)</script>', 'x'.repeat(300)]) {
     const page = await call(`/live?starter=${encodeURIComponent(bad)}`, { user: teacher });

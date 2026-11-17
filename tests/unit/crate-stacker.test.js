@@ -4,8 +4,10 @@
 //     exactly kit2ImportMap() (so a library bump that leaves the game behind fails here);
 //   - its rounds (the pure block between crate-stacker:begin and crate-stacker:end): six a chapter, the numbers in the
 //     ranges the unit teaches, every answer re-derived from the round's own numbers, the wrong choices the mistakes a
-//     child really makes (the digits swapped, the tens added as ones, the new ten forgotten), the same first lap
-//     every time;
+//     child really makes (the digits swapped, the tens added as ones, the new ten forgotten); every play new questions
+//     (a fresh lap), never one twice in a play, none of the last plays' where there is room; mode=same the fixed set;
+//   - its voice coach (the pure block between crate-coach:begin and crate-coach:end): one line at a time, each waiting
+//     for the one before to end, never one cut off; a stuck or failed line lets the game go on;
 //   - its words: every line it says is one of its own registered lines (the AI-voice allowlist), and what the number
 //     chip shows (with a "?" or a sign in it) is never sent to be spoken;
 //   - its registration: seeded, in the Number Quest course, tagged chapter by chapter with the codes units.json gives
@@ -49,8 +51,10 @@ const CHAPTERS = ['build', 'greater', 'add'];
 const CS = (() => {
   const box = {}; vm.runInNewContext(/\/\* crate-stacker:begin \*\/([\s\S]*?)\/\* crate-stacker:end \*\//.exec(HTML)[1], box);
   const plain = v => JSON.parse(JSON.stringify(v)), G = box.CrateStacker;   // plain objects of this realm, so deepEqual can compare them
-  return { CHAPTERS: plain(G.CHAPTERS), SIGNS: plain(G.SIGNS), ROUNDS: G.ROUNDS, MAX: G.MAX, round: (...a) => plain(G.round(...a)), params: p => plain(G.params(p)) };
+  return { CHAPTERS: plain(G.CHAPTERS), SIGNS: plain(G.SIGNS), ROUNDS: G.ROUNDS, MAX: G.MAX, round: (...a) => plain(G.round(...a)), params: p => plain(G.params(p)),
+    qid: r => G.qid(r), plan: (...a) => plain(G.plan(...a)), freshLap: (...a) => G.freshLap(...a) };
 })();
+const COACH = (() => { const box = {}; vm.runInNewContext(/\/\* crate-coach:begin \*\/([\s\S]*?)\/\* crate-coach:end \*\//.exec(HTML)[1], box); return box.CrateCoach; })();
 const T = lines.readGame('crate-stacker').strings.en;
 const say = (key, v = {}) => T[key].replace(/\{(\w+)\}/g, (m, k) => v[k]);
 const tensOf = n => Math.floor(n / 10), onesOf = n => n % 10;
@@ -79,7 +83,7 @@ test('the file: the scanner passes it, nothing leaves the site, and its import m
   assert.doesNotMatch(HTML, /\b(lives left|you lose|out of time|countdown|game over!)\b/i, 'no timer, no lives, no losing');
 });
 
-test('rounds: six a chapter, in the unit’s number ranges, every answer right, the first lap always the same', () => {
+test('rounds: six a chapter, in the unit’s number ranges, every answer right, the same round for the same lap', () => {
   assert.deepEqual([...CS.CHAPTERS], CHAPTERS); assert.equal(CS.ROUNDS, 6); assert.equal(CS.MAX, 99); assert.deepEqual([...CS.SIGNS], ['gt', 'eq', 'lt']);
   assert.equal(CS.round('build', 0, 0), null); assert.equal(CS.round('build', 7, 0), null); assert.equal(CS.round('shapes', 1, 0), null);
   for (const ch of CHAPTERS) for (let n = 1; n <= 6; n++) assert.deepEqual(CS.round(ch, n, 0), CS.round(ch, n, 0), `${ch} ${n}: seeded from the round number`);
@@ -149,9 +153,114 @@ test('rounds: six a chapter, in the unit’s number ranges, every answer right, 
   assert.ok(Math.max(...seen.build) >= 95 && Math.min(...seen.read) <= 25 && Math.max(...seen.read) >= 95, 'loads reach right across the two-digit numbers');
   assert.deepEqual([...seen.signs].sort(), ['eq', 'gt', 'lt'], 'all three signs are asked');
   assert.deepEqual([...seen.kinds].sort(), ['less10', 'more10', 'ones', 'tens']);
-  assert.deepEqual(CS.params({ chapter: 'add', lock: 1 }), { chapter: 'add', lock: true });
-  assert.deepEqual(CS.params({ chapter: 'nope', lock: 1 }), { chapter: '', lock: false }, 'an unknown chapter opens the menu, unlocked');
-  assert.deepEqual(CS.params(undefined), { chapter: '', lock: false });
+  assert.deepEqual(CS.params({ chapter: 'add', lock: 1 }), { chapter: 'add', lock: true, same: false });
+  assert.deepEqual(CS.params({ chapter: 'nope', lock: 1 }), { chapter: '', lock: false, same: false }, 'an unknown chapter opens the menu, unlocked');
+  assert.deepEqual(CS.params(undefined), { chapter: '', lock: false, same: false });
+  assert.deepEqual(CS.params({ chapter: 'add', lock: 1, mode: 'same' }), { chapter: 'add', lock: true, same: true }, 'mode=same: the fixed questions, the same for everyone');
+  assert.deepEqual(CS.params(PP.parseParams('chapter=build&lock=1&mode=same')), { chapter: 'build', lock: true, same: true }, 'and it survives the play-params grammar');
+});
+
+test('new questions every play: a fresh lap each time, never a question twice in a play, not the last plays’ where there is room', () => {
+  for (const ch of CHAPTERS) {
+    // the fixed set (mode=same) is lap 0 exactly as it always was: the first draw of every round
+    assert.deepEqual(CS.plan(ch, 0, []).map(({ id, ...r }) => r), [1, 2, 3, 4, 5, 6].map(n => CS.round(ch, n, 0)), `${ch}: mode=same keeps the fixed questions`);
+    assert.deepEqual(CS.plan(ch, 0, []), CS.plan(ch, 0, []), `${ch}: a lap always plans the same play`);
+    // two plays, as the game starts them (a fresh random lap each), ask different questions
+    const lapA = CS.freshLap(Math.random, []), lapB = CS.freshLap(Math.random, [lapA]);
+    assert.notEqual(lapA, lapB); assert.ok(lapA >= 1 && lapA < 2 ** 31 && Number.isInteger(lapA));
+    const A = CS.plan(ch, lapA, []), B2 = CS.plan(ch, lapB, A.map(r => r.id));
+    assert.notDeepEqual(A.map(r => r.id), B2.map(r => r.id), `${ch}: two plays give two different sequences`);
+    // many plays: six different questions in each, every round of the kind and range its number asks for, and the
+    // next play keeps clear of the last two plays' questions wherever the round has room
+    let clash = 0, rounds = 0;
+    const seq = new Set();
+    let avoid = [];
+    for (let play = 0; play < 300; play++) {
+      const lap = CS.freshLap(Math.random, []), P = CS.plan(ch, lap, avoid);
+      assert.equal(P.length, 6); assert.equal(new Set(P.map(r => r.id)).size, 6, `${ch} lap ${lap}: no question twice in a play (${P.map(r => r.id)})`);
+      P.forEach((r, i) => {
+        assert.equal(r.n, i + 1); assert.equal(r.id, CS.qid(r));
+        const base = CS.round(ch, i + 1, lap); assert.equal(r.kind, base.kind, `${ch} ${i + 1}: same kind of round`);
+        for (const k of ['ask', 'view', 'type', 'cross']) if (k in base) assert.equal(r[k], base[k], `${ch} ${i + 1}: same ${k}`);
+        if (ch === 'build' && i < 3) assert.equal(r.tens >= 5, base.tens >= 5, `${ch} ${i + 1}: the same tens range`);
+        if (avoid.includes(r.id)) clash++; rounds++;
+      });
+      seq.add(P.map(r => r.id).join(' '));
+      avoid = [...avoid, ...P.map(r => r.id)].slice(-12);
+    }
+    assert.ok(seq.size >= 295, `${ch}: plays hardly ever repeat a whole set (${seq.size} different sets in 300)`);
+    assert.ok(clash / rounds < 0.02, `${ch}: a question from the last two plays comes back only where the round has no other (${clash} of ${rounds})`);
+  }
+  // the rounds a fresh lap makes are as right as lap 0's (the long rounds test above covers laps 0-199; here random laps)
+  for (let i = 0; i < 200; i++) {
+    const lap = CS.freshLap(Math.random, []);
+    for (const r of CS.plan('add', lap, [])) { assert.equal(r.answer, r.kind === 'less10' ? r.a - r.b : r.a + r.b); assert.ok(r.answer >= 11 && r.answer <= 99 && r.choices.includes(r.answer)); }
+    for (const r of CS.plan('build', lap, [])) { assert.equal(r.answer, r.tens * 10 + r.ones); if (r.kind === 'build') assert.ok(r.answer <= 99); }
+    for (const r of CS.plan('greater', lap, [])) assert.equal(r.answer, r.kind === 'more' ? Math.max(r.a, r.b) : r.a > r.b ? 'gt' : r.a < r.b ? 'lt' : 'eq');
+  }
+});
+
+/** A clock for the coach: timers run when the test moves time on. */
+function fakeClock() {
+  let t = 0, seq = 0; const timers = new Map();
+  return {
+    now: () => t,
+    setTimeout: (f, ms) => { const id = ++seq; timers.set(id, { at: t + ms, f }); return id; },
+    clearTimeout: id => timers.delete(id),
+    tick(ms) { const end = t + ms; for (;;) { let next = null; for (const [id, x] of timers) if (x.at <= end && (!next || x.at < next[1].at)) next = [id, x]; if (!next) break; timers.delete(next[0]); t = next[1].at; next[1].f(); } t = end; },
+  };
+}
+test('the voice coach: each line waits for the one before to end, nothing is cut off, and a failed or stuck line never holds the game', () => {
+  // a voice that plays each line for 40 ms a character (a stand-in for the AI voice), and records what it was asked
+  const clock = fakeClock(), played = [], ends = [];
+  const voice = (text, onend) => { played.push([text, clock.now()]); clock.setTimeout(() => { ends.push([text, clock.now()]); onend(); }, 40 * text.length); return true; };
+  const prefetched = [];
+  const c = COACH.coach({ ...clock, speak: voice, prefetch: t => prefetched.push(t) });
+  let next = null;
+  c.say('52 is greater than 38.', true); c.say('5 tens is more than 3 tens.', true);
+  assert.deepEqual(played.map(p => p[0]), ['52 is greater than 38.'], 'one line at a time');
+  assert.deepEqual(prefetched, ['5 tens is more than 3 tens.'], 'the line that waits is fetched ahead, so it starts on time');
+  c.idle(() => { next = clock.now(); }, 12000);   // the next round waits for the coach
+  clock.tick(500);
+  assert.equal(next, null, 'the next round has not started while the line is being said');
+  clock.tick(5000);
+  assert.deepEqual(played.map(p => p[0]), ['52 is greater than 38.', '5 tens is more than 3 tens.']);
+  assert.equal(played[1][1], ends[0][1], 'the second line starts when the first has ended, not before');
+  assert.equal(next, ends[1][1], 'and the next round starts when the last line has ended');
+  assert.deepEqual([...c.log.map(l => l.why)], ['ended', 'ended']);
+
+  // a new instruction (not queued) drops the lines still waiting, never the one being said
+  c.say('Look at the tens first.', false); c.say('Count the tens.', true); c.say('Which truck has more?', false);
+  clock.tick(10000);
+  assert.deepEqual(played.slice(2).map(p => p[0]), ['Look at the tens first.', 'Which truck has more?']);
+  assert.ok(c.log.every(l => l.why === 'ended'), 'every line said to its end');
+
+  // the player moves on: waiting lines dropped, the one being said ends by itself
+  c.say('27 and 3 make 30.', true); c.say('2 more makes 32.', true); c.skip();
+  clock.tick(10000);
+  assert.deepEqual(played.slice(-1).map(p => p[0]), ['27 and 3 make 30.']);
+
+  // a failed line (the voice cannot start it: no voice, muted) ends at once: the game goes straight on
+  const f = fakeClock(), fc = COACH.coach({ ...f, speak: () => false });
+  let went = null; fc.say('Load 34 crates.', false); fc.idle(() => { went = f.now(); }, 12000);
+  assert.equal(went, 0, 'a line that cannot be said does not hold the round'); assert.equal(fc.log[0].why, 'silent');
+  // a stuck line (started, but its end never comes: audio that stalls) is let go after its cap, never the 12 s wait
+  const k = fakeClock(), kc = COACH.coach({ ...k, speak: () => true });
+  let went2 = null; kc.say('52 is greater than 38.', true); kc.idle(() => { went2 = k.now(); }, 12000);
+  k.tick(20000);
+  assert.equal(kc.log[0].why, 'timeout'); assert.ok(went2 > 0 && went2 <= 3500 + 80 * 22, `a stuck line lets the game go on after ${went2} ms`);
+  // a voice that throws is a failed line too
+  const e = fakeClock(), ec = COACH.coach({ ...e, speak: () => { throw new Error('no audio'); } });
+  let went3 = null; ec.say('Pick a game.', false); ec.idle(() => { went3 = e.now(); }); assert.equal(went3, 0);
+  // and the round's own cap: with a coach that never settles, the round still goes on after the max wait
+  const m = fakeClock(), mc = COACH.coach({ ...m, speak: () => true, cap: () => 1e9 });
+  let went4 = null; mc.say('Which sign goes in the middle?', true); mc.idle(() => { went4 = m.now(); }, 12000); m.tick(13000);
+  assert.equal(went4, 12000);
+  // in the game: every line goes through the coach (one BRB.speak call site, queued), and a right answer waits for it
+  assert.equal((HTML.match(/B\.speak\(/g) || []).length, 1, 'one call to the platform voice: the coach’s');
+  assert.match(HTML, /B\.speak\(text, \{ lang: 'en', voice: 'friendly', queue: true, onend \}\)/);
+  assert.match(HTML, /afterLine\(ms, advance\)/, 'the next round waits for the coach');
+  assert.doesNotMatch(HTML, /stopSpeaking|later\(ms, nextRound\)/, 'nothing stops a line, and no round starts on a timer alone');
 });
 
 test('words: every instruction, hint and answer line is a registered spoken line, short enough for a six-year-old', () => {
@@ -213,7 +322,7 @@ test('registration: seeded, in the Number Quest course, and tagged chapter by ch
     assert.equal(PP.cleanOptions(g.params), g.params);
     assert.deepEqual(PP.parseParams(g.params), { chapter: id, lock: 1 });
     assert.deepEqual(PP.unpackParams(PP.packParams(PP.parseParams(g.params))), { chapter: id, lock: 1 });
-    assert.deepEqual(CS.params(PP.parseParams(g.params)), { chapter: id, lock: true });
+    assert.deepEqual(CS.params(PP.parseParams(g.params)), { chapter: id, lock: true, same: false }, `${s.n}: a lesson step gets new questions every play`);
     // and the step is credited with exactly the chapter's codes, whatever grade the lesson names: its primary codes,
     // then the ones it also touches
     for (const grade of ['K', '1', '']) assert.deepEqual(TAGS.stepGameCodes('crate-stacker', 'ccss-math', grade, g.params), [...st.primary, ...st.also], `${s.n}: chapter codes`);
@@ -230,15 +339,22 @@ test.after(async () => { if (browser) await browser.close(); });
 const shotsDir = process.env.CS_SHOTS;
 
 /** The game in the production frame, on a stand-in for the play page: it keeps the SDK's messages (window.__msgs) and
- *  answers a speech request with "no AI voice here" at once, as the play page does when a line cannot be read. */
-async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false } = {}) {
+ *  answers a speech request with "no AI voice here" at once, as the play page does when a line cannot be read; with
+ *  voice: <ms a character>, it answers with a real sound that long instead (a stand-in AI voice, 300 ms to arrive). */
+async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false, html = HTML, voice = 0, colorScheme = 'light' } = {}) {
   const { chromium } = await import('playwright-core');
-  browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion, hasTouch: touch });
-  const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: 'Crate Stacker' }, save: {}, canSave: false, params: PP.parseParams(params), tts: { langs: ['en'] } });
+  browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required'] });
+  const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion, hasTouch: touch, colorScheme });
+  const doc = frameDocument(html, { user: { displayName: 'T', avatar: 'x', lang: 'en' }, game: { id: 'g', title: 'Crate Stacker' }, save: {}, canSave: false, params: PP.parseParams(params), tts: { langs: ['en'] } });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
-<script>window.__msgs = []; addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);
-  if (d.type === 'brb:tts' && !d.pre) e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*'); });</script>`;
+<script>window.__msgs = []; const VOICE = ${Number(voice) || 0};
+function wav(ms) { const rate = 8000, n = Math.round(rate * ms / 1000), b = new ArrayBuffer(44 + n), v = new DataView(b), s = (o, t) => [...t].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  s(0, 'RIFF'); v.setUint32(4, 36 + n, true); s(8, 'WAVE'); s(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); s(36, 'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128 + Math.round(16 * Math.sin(i / 5))); return b; }
+addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);
+  if (d.type !== 'brb:tts' || d.pre || d.check) return;
+  if (!VOICE) return e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*');
+  setTimeout(() => { const buf = wav(VOICE * d.text.length); e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: true, buf }, '*', [buf]); }, 300); });</script>`;
   const outside = [];
   await ctx.route('**/*', route => {
     const u = route.request().url();
@@ -293,12 +409,16 @@ for (const chapter of CHAPTERS) {
     assert.deepEqual([s.chapter, s.lock, s.round, s.rounds, s.hero], [chapter, true, 1, 6, 'mage'], 'straight into the locked chapter, no menu');
     assert.equal(await frame.evaluate(() => document.querySelectorAll('#ch-build, #menu').length), 0);
     await frame.evaluate(() => window.__cs.fast());   // short pauses between rounds; the taps are the real ones
+    const first = await state(), PLAN = CS.plan(chapter, first.lap, first.avoid);
+    assert.deepEqual([first.same, first.avoid], [false, []], 'a play of its own (no mode=same), nothing played before on this page');
+    assert.ok(first.lap >= 1, 'a fresh lap, not the fixed set');
+    assert.deepEqual(first.plan, PLAN.map(r => r.id), 'the play is the plan its lap makes');
     for (let round = 1; round <= 6; round++) {
       s = await state();
       assert.equal(s.round, round); assert.equal(s.phase, 'play');
-      const { chapter: ch, n, ...want } = CS.round(chapter, round, 0);
+      const { chapter: ch, n, ...want } = PLAN[round - 1];
       assert.deepEqual([ch, n], [chapter, round]);
-      assert.deepEqual(Object.fromEntries(Object.keys(want).map(k => [k, s[k]])), want, `round ${round} is the round its number seeds`);
+      assert.deepEqual(Object.fromEntries(Object.keys(want).map(k => [k, s[k]])), want, `round ${round} is the round the play's plan has`);
       const asked = await text(frame, '#askt');
       assert.equal(asked, asks(s), `round ${round}: the instruction`);
       assert.ok(asked.length <= 40, `round ${round}: a short instruction on screen (${asked})`);
@@ -365,10 +485,15 @@ for (const chapter of CHAPTERS) {
     await g.shot(`${chapter}-end`);
     // Every line it tried to say is one of its own registered lines.
     for (const line of new Set(await g.spoken())) assert.ok(lines.allowedLine('crate-stacker', 'en', line), `"${line}" is a registered line`);
-    // Play again starts the chapter over (new numbers), and finishing it would report again; nothing more is posted now.
+    // Play again starts the chapter over (new questions: a new lap, none of this play's where the round has room),
+    // and finishing it would report again; nothing more is posted now.
     await frame.click('#again');
     await until(() => window.__cs.state().screen === 'play');
-    assert.equal((await state()).round, 1);
+    const again = await state();
+    assert.equal(again.round, 1);
+    assert.notEqual(again.lap, first.lap); assert.deepEqual(again.avoid, first.plan, 'the last play’s questions are kept clear of');
+    assert.notDeepEqual(again.plan, first.plan, 'a different sequence of questions');
+    assert.ok(again.plan.filter(id => first.plan.includes(id)).length <= 1, `at most a question in common (a small range): ${again.plan} / ${first.plan}`);
     assert.equal((await g.msgs('brb:gameover')).length, 1);
     assert.deepEqual(g.errors, []);
     assert.deepEqual(g.outside, [], 'the game asked for nothing outside /vendor');
@@ -511,4 +636,98 @@ test('keyboard, a 360 px phone and reduced motion: everything is a big button a 
       await m.ctx.close();
     }
   }
+});
+
+test('the numbers above the haze: the chip and every truck number are page text over the 3D yard, crisp and high contrast, light and dark', { skip, timeout: 900_000 }, async () => {
+  // The Beautiful graphics level (light glow on), where the yard's haze and glow washed the truck numbers out.
+  const high = HTML.replace("graphics: 'auto'", "graphics: 'high'");
+  for (const [colorScheme, width, height, chapter] of [['light', 960, 600, 'add'], ['dark', 960, 600, 'greater'], ['dark', 390, 700, 'build']]) {
+    const g = await open({ params: `chapter=${chapter}&lock=1`, html: high, colorScheme, width, height });
+    try {
+      await g.frame.click('#hero-mage');
+      // the Beautiful level is slow on a software renderer: the truck takes its time to drive in
+      await g.frame.waitForFunction(() => window.__cs.state().screen === 'play' && window.__cs.state().moving === 0, null, { timeout: 180_000 });
+      const s = await g.state(), n = s.kind === 'more' || s.kind === 'sign' ? 2 : chapter === 'add' ? 2 : 1;
+      await g.frame.waitForFunction(k => window.__cs.boards().length >= k, n, { timeout: 60_000 });   // placed on the next drawn frame
+      const look = await g.frame.evaluate(() => {
+        const lum = c => { const [r, gg, b] = c.match(/\d+(\.\d+)?/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * gg + 0.0722 * b; };
+        const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+        const canvas = document.querySelector('canvas'), z = e => getComputedStyle(e).zIndex;
+        // the hit test sees what is drawn on top at a point; the words layer lets taps through (pointer-events: none), so
+        // it takes part in the hit test only while this looks
+        const probe = document.createElement('style'); probe.textContent = '#cs, #cs * { pointer-events: auto !important; } #cs #tags { pointer-events: none !important; } #cs #tags .cs-tag { pointer-events: auto !important; }'; document.head.append(probe);
+        const top = e => { const r = e.getBoundingClientRect(), at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return at === e || e.contains(at); };
+        const tags = [...document.querySelectorAll('#tags .cs-tag')].filter(t => !t.hidden), sum = document.getElementById('sum');
+        return {
+          layers: { cs: z(document.getElementById('cs')), canvasInHud: document.getElementById('cs').contains(canvas), canvasBefore: !!(canvas.compareDocumentPosition(document.getElementById('cs')) & Node.DOCUMENT_POSITION_FOLLOWING) },
+          sum: { onTop: top(sum), contrast: ratio(getComputedStyle(sum).color, getComputedStyle(sum).backgroundColor) },
+          tags: tags.map(t => ({ text: t.textContent, onTop: top(t), contrast: ratio(getComputedStyle(t).color, getComputedStyle(t).backgroundColor), h: t.getBoundingClientRect().height, inCanvas: canvas.contains(t) })),
+          probe: probe.remove(),
+        };
+      });
+      const at = `${chapter} ${colorScheme} ${width}px`;
+      assert.deepEqual(look.layers, { cs: '2', canvasInHud: false, canvasBefore: true }, `${at}: the words and numbers are a layer above the canvas`);
+      assert.ok(look.sum.onTop, `${at}: nothing lies over the number chip`); assert.ok(look.sum.contrast >= 7, `${at}: the chip is ink on mint (${look.sum.contrast.toFixed(1)}:1)`);
+      const want = s.kind === 'more' || s.kind === 'sign' ? [String(s.a), String(s.b)] : chapter === 'add' ? [String(s.a), '+' + s.b] : [String(s.ask === 'parts' ? '?' : 0)];
+      assert.deepEqual(look.tags.map(t => t.text).sort(), want.sort(), `${at}: the truck numbers (${JSON.stringify(look.tags)})`);
+      for (const t of look.tags) {
+        assert.ok(t.onTop, `${at}: nothing (no haze, no glow) lies over the truck number ${t.text}`);
+        assert.ok(t.contrast >= 12, `${at}: ${t.text} is ink on cream or gold (${t.contrast.toFixed(1)}:1)`);
+        assert.ok(t.h >= 24 && !t.inCanvas, `${at}: ${t.text} is big page text, not a picture in the canvas`);
+      }
+      // the number board follows its truck: it is where the sign is over the cab
+      const board = (await g.frame.evaluate(() => window.__cs.boards()))[0], spot = await g.frame.evaluate(() => window.__cs.spot('a'));
+      assert.ok(board.y + board.h < spot.left[1], `${at}: the board is above its truck`);
+      assert.deepEqual(g.errors, []);
+    } finally { await g.ctx.close(); }
+  }
+});
+
+test('the voice coach in the game: the next question waits for the coach’s last line, nothing is cut off, and a voice that fails does not hold the game', { skip, timeout: 420_000 }, async () => {
+  /** Answer round 1 right and watch the yard's sound: each line's audio start and end, any line paused before its end,
+   *  and when round 2's words appear. */
+  const watch = async g => {
+    await g.frame.click('#hero-mage');
+    await g.until(() => window.__cs.state().screen === 'play' && window.__cs.state().moving === 0);
+    await g.until(() => window.__cs.state().voice === 'idle');   // the question has been said
+    const s = await g.state();
+    await g.frame.evaluate(() => {
+      window.__ev = []; const T = () => performance.now();
+      let r = window.__cs.state().round; const tick = () => { const st = window.__cs.state(); if (st.round !== r) { r = st.round; window.__ev.push(['round', T()]); } setTimeout(tick, 10); }; tick();
+      const A = window.Audio.prototype, play = A.play;
+      A.play = function () { const a = this; if (String(a.src).startsWith('blob:')) { window.__ev.push(['start', T()]); a.addEventListener('ended', () => window.__ev.push(['end', T()]), { once: true }); a.addEventListener('pause', () => { if (!a.ended) window.__ev.push(['cut', T()]); }, { once: true }); } return play.apply(this, arguments); };
+      window.__t0 = T();
+    });
+    await g.frame.click('#cs-n' + s.answer);
+    await g.until(() => window.__cs.state().round === 2);
+    await g.until(() => window.__cs.state().voice === 'idle');
+    const ev = await g.frame.evaluate(() => window.__ev.map(([k, t]) => [k, Math.round(t - window.__t0)]));
+    const lines = await g.frame.evaluate(() => window.__cs.lines().filter(l => l.asked >= window.__t0).map(l => ({ text: l.text, why: l.why })));
+    return { s, ev, lines };
+  };
+  // A voice that takes 0.3 s to arrive and 150 ms a character (the two lines of the feedback: about 7.5 s in all, more
+  // than the 5.2 s the feedback stays on screen).
+  const g = await open({ params: 'chapter=greater&lock=1', voice: 150 });
+  try {
+    const { s, ev, lines } = await watch(g);
+    const at = k => ev.filter(e => e[0] === k).map(e => e[1]);
+    const [round] = at('round'), ends = at('end'), starts = at('start');
+    assert.deepEqual(at('cut'), [], `no line is cut off (${JSON.stringify(ev)})`);
+    assert.deepEqual(lines.slice(0, 2).map(l => l.text), [`${Math.max(s.a, s.b)} is greater than ${Math.min(s.a, s.b)}.`, `${Math.max(tensOf(s.a), tensOf(s.b))} tens is more than ${Math.min(tensOf(s.a), tensOf(s.b))} tens.`]);
+    assert.ok(lines.slice(0, 2).every(l => l.why === 'ended'), `both feedback lines were said to their end: ${JSON.stringify(lines)}`);
+    assert.ok(starts[1] >= ends[0] - 5, `the second line starts after the first has ended (${JSON.stringify(ev)})`);
+    assert.ok(round >= ends[1] - 5, `the next question comes after the last feedback line has ended (${round} ms, line ended at ${ends[1]} ms)`);
+    assert.ok(round > 5200, 'and the feedback had its full time on screen');
+    assert.ok(starts[2] >= ends[1] - 5 && starts[2] >= round, 'the next question’s words come after that');
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+
+  // A voice that fails (the play page answers "no AI voice", and this machine has no voice of its own): the game goes on
+  // after the feedback's own time, with nothing waiting on a sound that will never come.
+  const f = await open({ params: 'chapter=greater&lock=1' });
+  try {
+    const r2 = await watch(f), [round2] = r2.ev.filter(e => e[0] === 'round').map(e => e[1]);
+    assert.ok(round2 >= 5200 && round2 < 5200 + 4000, `the next question comes on time (${round2} ms)`);
+    assert.deepEqual(f.errors, []);
+  } finally { await f.ctx.close(); }
 });

@@ -13,7 +13,7 @@ import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '..
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isSchoolStaff, noFriendsAccount, isPlatformAdmin, adminSchools, soloSchoolAdmin, staffName } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, noFriendsAccount, isPlatformAdmin, adminSchools, soloSchoolAdmin, staffName, schoolsOf } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
@@ -80,8 +80,8 @@ export function landingFor(u) {
  * first matching row wins:
  *   signed out or a guest   Play · Learn · Build · Grown-ups · Sign in   (top: Play · Learn · Build · Parents · Teachers)
  *   grown-up                Family · Play · Learn · Build · Account      (top: the same without Account)
- *   school staff            Classroom · Learn · Play · (Live) · Me       (top: the same without Me; a school admin's
- *                                                                          Live is in the top bar only)
+ *   school staff            Classroom · Build · (Live) · Me              (top: the same without Me; a school admin's
+ *                                                                          School is in the account menu)
  *   platform admin          Play · Learn · Build · Schools · Me
  *   student                 Class · Play · Learn · Build · Me            (top: the same with Friends, without Me)
  *   kid                     Play · Learn · Build · Friends · Me          (top: the same without Me)
@@ -108,9 +108,10 @@ export function shellFor(u) {
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
-    const head = [classroom, learn, play, ...stories];
-    // A school admin: School is in the account menu (accountMenu), and Live in the top bar only.
-    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, me], top: [...head, ...live], meHref: '/me' };
+    // Classroom · Build · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar: Classroom, Build, Live").
+    const head = [classroom, build, ...stories];
+    // A school admin: School is in the account menu (accountMenu); otherwise the teacher's bars.
+    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, ...live, me], top: [...head, ...live], meHref: '/me' };
     const top = [...head, ...live];
     return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
@@ -190,8 +191,9 @@ export const plansInMenu = (u, req) => legalReader(u) && familiesOn(req);
  *   Settings: Theme (Light, Dark, Same as my device), Plans (adults, plansInMenu), All settings (/me/settings or
  *   /family/account).
  */
-export function accountMenu(req, { shell, name, badge, active }) {
+export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
   const t = tReq(req); const u = req.user;
+  if (shell.role === 'teacher' || shell.role === 'schoolAdmin') return staffMenu(req, { name, badge, active, unread });
   const grownup = shell.role === 'grownup';
   const settingsHref = grownup ? '/family/account' : '/me/settings';
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -213,6 +215,41 @@ export function accountMenu(req, { shell, name, badge, active }) {
         ${plansInMenu(u, req) ? item('/plans', '⭐', t(plansKey), { attr: en(plansKey) }) : ''}
         ${item(settingsHref, '⚙️', t('layout.acct.allSettings'))}
       </ul>
+    </div>
+  </details>`;
+}
+
+/**
+ * School staff's account menu (docs/decisions.md "Teachers' account menu"): a card that opens Me (the avatar, the name,
+ * the school, and how many messages are new), Play and Learn as two tiles (a teacher's bars have neither), My school
+ * (a school admin), Plans (plansInMenu), Settings and Sign out, and the theme as one Auto / Light / Dark switch at the
+ * bottom (plain links, as in themeLinks, so it works with no JavaScript; app.js switches at once).
+ */
+function staffMenu(req, { name, badge, active, unread }) {
+  const t = tReq(req); const u = req.user;
+  const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const school = (schoolsOf(u.id)[0] || {}).name || '';
+  const admin = adminSchools(u).length > 0;
+  const plansKey = tabKey(t, 'plans'), playKey = tabKey(t, 'play'), learnKey = tabKey(t, 'learn');
+  const here = href => req.path === href || req.path.startsWith(`${href}/`);
+  const item = (href, emo, label, { on = here(href), attr = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${emo}</span><span>${label}</span></a></li>`;
+  const cur = THEMES.includes(req.theme) ? req.theme : 'system';
+  const short = th => t(th === 'system' ? 'layout.acct.themeAuto' : `layout.theme.${th}`);
+  return html`<details class="acctpick" data-acctpick>
+    <summary class="me-btn${active ? ' is-current' : ''}" aria-label="${t('layout.meLabel', { name })}">${avatar(u, 38)}<span class="name">${name}</span>${badge('me')}</summary>
+    <div class="acct-menu acct-staff">
+      <a class="acct-card" href="/me" ${req.path === '/me' ? raw('aria-current="page"') : ''}>${avatar(u, 48)}<span class="acct-card-t"><b dir="auto">${name}</b>${school ? html`<small dir="auto">${school}</small>` : ''}${unread ? html`<span class="acct-card-msg">💬 ${t('layout.acct.newMessages', { count: unread })} ›</span>` : ''}</span></a>
+      <div class="acct-tiles">
+        <a href="/play" ${here('/play') ? raw('aria-current="page"') : ''}${en(playKey)}><span class="acct-tile-e" aria-hidden="true">🎮</span>${t(playKey)}</a>
+        <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">📚</span>${t(learnKey)}</a>
+      </div>
+      <ul class="acct-list acct-links">
+        ${admin ? item('/school', '🏛️', t('me.tiles.school')) : ''}
+        ${plansInMenu(u, req) ? item('/plans', '⭐', t(plansKey), { attr: en(plansKey) }) : ''}
+        ${item('/me/settings', '⚙️', t('me.settings.title'))}
+        <li><form data-api="/api/auth/logout" data-next="/"><button type="submit" class="acct-out"><span class="theme-ico" aria-hidden="true">🚪</span><span>${t('me.signOut.button')}</span></button></form></li>
+      </ul>
+      <ul class="acct-themeseg" aria-label="${t('layout.theme.title')}">${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${t('layout.theme.button', { theme: t(`layout.theme.${th}`) })}" title="${t(`layout.theme.${th}`)}" ${th === cur ? raw('aria-current="true"') : ''}><span aria-hidden="true">${THEME_ICONS[th]}</span> ${short(th)}</a></li>`)}</ul>
     </div>
   </details>`;
 }
@@ -272,7 +309,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
       ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>
     ${langPicker(req)}
-    ${u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me') }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
+    ${u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
     ${joinNow}${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
