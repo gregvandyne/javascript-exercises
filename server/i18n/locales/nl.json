@@ -2749,7 +2749,8 @@
         "takenDown": "Afbeelding weggehaald",
         "zoneNone": "Geen",
         "placeNote": "Typ een plaats of stad. Oomba gebruikt nooit iemands locatie.",
-        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond."
+        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond.",
+        "undo": "Ongedaan maken"
       },
       "bgChanged": "Achtergrond veranderd",
       "uploading": "Je afbeelding wordt gecontroleerd…",
@@ -9568,7 +9569,8 @@
         "m": {
           "fractions": "Breukenstroken",
           "fdp": "Breuk, kommagetal, procent"
-        }
+        },
+        "partsOf": "Stukjes in breuk {n}"
       },
       "numline": {
         "name": "Getallenlijn",

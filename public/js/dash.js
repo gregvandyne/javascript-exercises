@@ -17,6 +17,7 @@ import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf, fill, qrForget } from '/js/dash-widgets.js';
 import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
+import { tip } from '/js/dash-tip.js';
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -53,6 +54,8 @@ function start() {
   const rowsUsed = () => S.widgets.reduce((m, w) => Math.max(m, w.y + w.h), 0);
   const canRemove = w => !w.pinned;
   const nameOf = w => (types.get(w.type) || {}).name || w.type;
+  /** Whether the settings panel has anything for this widget (a field, or the teacher's "Pin on student screens"). */
+  const hasSettings = type => !!type && (type.settings.some(f => !f.hidden) || (TEACHER && !!type.pin));
 
   // ---------------------------------------------------------------- state
   // widgets: what this screen shows. Teacher: the current layout's widgets. Student: the teacher's pinned widgets
@@ -60,6 +63,8 @@ function start() {
   const S = { skew: D.live && D.live.now ? D.live.now - Date.now() : 0, samples: [], editing: false, selected: null, undo: [], bg: null, live: D.live || { pushes: [] }, layoutId: D.current || null, layouts: D.layouts || [], active: D.active || null, pinsAt: (D.live || {}).pinsAt || 0, pins: D.pins || [] };
   if (TEACHER) { const l = S.layouts.find(x => x.id === S.layoutId) || S.layouts[0]; S.widgets = clone(l.widgets); S.bg = l.bg; }
   else { S.mine = D.me; S.widgets = mergeStudent(); S.bg = D.me.bg; }
+  // The settings sheet opened from the board by a widget's gear (the teacher, not in edit mode): { id, box, h, base, undo, sh }.
+  let board = null;
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function mergeStudent() {
     const own = clone(S.mine.widgets || []).filter(w => types.get(w.type));
@@ -231,7 +236,7 @@ function start() {
       drop.textContent = t('js.dash.dropHint');
       grid.appendChild(drop);
     }
-    $('#dash-undo') && ($('#dash-undo').disabled = !S.undo.length);
+    syncUndo();
     if (S.editing) renderSide();
   }
   function card(w, i) {
@@ -266,7 +271,19 @@ function start() {
     if (r && r.live) hooks.set(w.id, r.live);
     if (r && r.destroy) destroyers.set(w.id, r.destroy);
     if (S.editing) editChrome(c, w);
+    else if (TEACHER && hasSettings(type)) head.appendChild(gearFor(w));
     return c;
+  }
+  /** The teacher's board, not in edit mode: a quiet gear at the end of the header opens this widget's settings (the same
+   *  panel as edit mode, in a sheet: boardSettings). Never on a student's screen, a student's copy or in edit mode. */
+  const GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+  function gearFor(w) {
+    const g = document.createElement('button'); g.type = 'button'; g.className = 'dash-wgear';
+    const label = t('js.dash.side.title', { name: nameOf(w) });
+    g.innerHTML = GEAR; g.setAttribute('aria-label', label); g.setAttribute('aria-haspopup', 'dialog'); g.setAttribute('aria-expanded', 'false');
+    tip(g, label);
+    g.addEventListener('click', e => { e.stopPropagation(); boardSettings(w.id); });
+    return g;
   }
 
   // ---------------------------------------------------------------- edit mode: chrome on each widget
@@ -294,7 +311,13 @@ function start() {
   }
 
   // ---------------------------------------------------------------- changes (every change can be undone)
-  function snapshot() { S.undo.push(JSON.stringify({ widgets: S.widgets, bg: S.bg })); if (S.undo.length > 40) S.undo.shift(); }
+  /** One step on the undo list (the last 40). The board's settings sheet undoes only its own steps (board.base). */
+  function pushUndo(x) { S.undo.push(x); if (S.undo.length > 40) { S.undo.shift(); if (board) board.base = Math.max(0, board.base - 1); } syncUndo(); }
+  function snapshot() { pushUndo(JSON.stringify({ widgets: S.widgets, bg: S.bg })); }
+  function syncUndo() {
+    const u = $('#dash-undo'); if (u) u.disabled = !S.undo.length;
+    if (board && board.undo) board.undo.disabled = S.undo.length <= board.base;
+  }
   function changed(msg) { render(); save(); if (msg) announce(msg); refocus(); }
   function refocus() { if (!S.selected || !S.editing) return; const c = grid.querySelector(`[data-id="${CSS.escape(S.selected)}"]`); if (c && document.activeElement !== c && !c.contains(document.activeElement) && !$('#dash-side').contains(document.activeElement)) c.focus({ preventScroll: true }); }
   function place(w, box) {
@@ -335,10 +358,13 @@ function start() {
     grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`)?.scrollIntoView({ block: 'nearest' });
   }
   function undo() {
+    if (board && S.undo.length <= board.base) return;
     const last = S.undo.pop(); if (!last) return;
     const x = JSON.parse(last); S.widgets = x.widgets; S.bg = x.bg; applyBg();
     if (!S.widgets.some(w => w.id === S.selected)) S.selected = null;
     changed(t('js.dash.say.undone'));
+    // The board's settings sheet shows the widget as it is now.
+    if (board) { board.box.dataset.for = ''; renderSide(); syncUndo(); }
   }
 
   // ---------------------------------------------------------------- saving
@@ -424,7 +450,7 @@ function start() {
     if (S.selected !== c.dataset.id) { S.selected = c.dataset.id; render(); refocus(); }
   });
   document.addEventListener('keydown', e => {
-    if (S.editing && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.target.closest('input,textarea')) { e.preventDefault(); undo(); }
+    if ((S.editing || (board && S.undo.length > board.base)) && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.target.closest('input,textarea')) { e.preventDefault(); undo(); }
   });
 
   // ---------------------------------------------------------------- edit mode on and off
@@ -469,13 +495,18 @@ function start() {
   $('#dash-lib-q')?.addEventListener('input', renderLibrary);
 
   // ---------------------------------------------------------------- the settings panel
+  // Edit mode: the side panel for the selected widget. The board (the teacher, not in edit mode): the same panel for one
+  // widget in a sheet, opened by its gear (board, above); it saves and undoes the same way.
+  const sideBox = () => (board ? board.box : $('#dash-side-body'));
+  const sideId = () => (board ? board.id : S.selected);
   /** Stage 5: redraw the settings once the field being typed in has let go (a pasted video link can set the start). */
-  const renderSideSoon = () => setTimeout(() => { const box = $('#dash-side-body'); if (box) { box.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(`dset-${S.selected}-video`)}`)?.focus(); } }, 0);
+  const renderSideSoon = () => setTimeout(() => { const box = sideBox(); if (box) { box.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(`dset-${sideId()}-video`)}`)?.focus(); } }, 0);
   function renderSide() {
-    const box = $('#dash-side-body'), h = $('#dash-side-h'); if (!box) return;
-    if (box.contains(document.activeElement) && box.dataset.for === S.selected) return;   // typing: keep the form
-    box.textContent = ''; box.dataset.for = S.selected || '';
-    const w = S.widgets.find(x => x.id === S.selected);
+    const box = sideBox(), h = board ? board.h : $('#dash-side-h'), sel = sideId(); if (!box) return;
+    if (box.contains(document.activeElement) && box.dataset.for === sel) return;   // typing: keep the form
+    box.textContent = ''; box.dataset.for = sel || '';
+    const w = S.widgets.find(x => x.id === sel);
+    if (!w && board) { board.sh.close(); return; }
     if (!w) {
       h.textContent = t('js.dash.side.none');
       box.innerHTML = `<p class="small muted">${esc(t('js.dash.side.noneText'))}</p>`;
@@ -488,7 +519,7 @@ function start() {
     const form = document.createElement('form'); form.className = 'stack dash-form'; form.addEventListener('submit', e => e.preventDefault());
     let pending = null;
     form.addEventListener('focusin', () => { pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); });
-    const commit = () => { if (pending) { S.undo.push(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } $('#dash-undo').disabled = !S.undo.length; };
+    const commit = () => { if (pending) { pushUndo(pending); pending = JSON.stringify({ widgets: S.widgets, bg: S.bg }); } syncUndo(); };
     const redraw = () => { const old = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`); if (old) { const order = +old.style.order; old.replaceWith(card(w, order)); } save(); };
     for (const f of type.settings) {
       if (f.hidden) continue;   // changed by the widget itself (scores)
@@ -518,6 +549,8 @@ function start() {
       form.appendChild(pin);
       form.insertAdjacentHTML('beforeend', `<p class="small muted">${esc(t('js.dash.side.pinHelp'))}</p>`);
     }
+    // On the board, only the settings: moving, copying and removing widgets stay in edit mode.
+    if (board) { box.appendChild(form); return; }
     const acts = document.createElement('div'); acts.className = 'row dash-sideacts';
     const dup = document.createElement('button'); dup.type = 'button'; dup.className = 'btn btn-sm'; dup.textContent = t('js.dash.side.duplicate');
     dup.addEventListener('click', () => { snapshot(); const box2 = freeSpot(w.w, w.h); const copy = { ...clone(w), id: `${w.type}${Math.random().toString(36).slice(2, 8)}`, ...box2 }; delete copy.pinned; S.widgets.push(copy); S.selected = copy.id; changed(t('js.dash.say.added', { name: type.name })); });
@@ -526,6 +559,25 @@ function start() {
     acts.append(dup, rm);
     form.appendChild(acts);
     box.appendChild(form);
+  }
+  /** One widget's settings from the board, without edit mode: the same form in a sheet. Its changes save as edit mode's
+   *  do (the layout, so pins reach students), Undo (and Ctrl+Z) takes back what was changed here, and closing it leaves
+   *  the board as it was, out of edit mode, with the focus back on the gear. */
+  function boardSettings(id) {
+    const w = S.widgets.find(x => x.id === id), type = w && types.get(w.type);
+    if (!TEACHER || S.editing || !type || board) return;
+    const sh = sheet({ title: t('js.dash.side.title', { name: type.name }), content: `<div class="dash-boardset" id="dash-boardset" data-for=""></div><div class="dash-boardacts"><button class="btn btn-sm" type="button" data-bundo disabled>↶ ${esc(t('js.dash.side.undo'))}</button></div>`,
+      onClose: () => {
+        board = null;
+        if (saveTimer) flush();
+        const g = grid.querySelector(`[data-id="${CSS.escape(id)}"] .dash-wgear`);
+        if (g) { g.setAttribute('aria-expanded', 'false'); g.focus({ preventScroll: true }); }
+      } });
+    sh.el.querySelector('.sheet').classList.add('dash-setsheet');
+    board = { id, sh, box: sh.el.querySelector('#dash-boardset'), h: sh.el.querySelector('#sheet-title'), base: S.undo.length, undo: sh.el.querySelector('[data-bundo]') };
+    board.undo.addEventListener('click', () => { undo(); (board?.box.querySelector('input,select,textarea,button') || board?.undo)?.focus(); });
+    grid.querySelector(`[data-id="${CSS.escape(id)}"] .dash-wgear`)?.setAttribute('aria-expanded', 'true');
+    renderSide(); syncUndo();
   }
   // ---------------------------------------------------------------- stage 2 settings editors
   // number, zone, periods (schedule), place (weather: the teacher types a city, the server looks it up), target (what a
@@ -759,7 +811,7 @@ function start() {
           optsCache = null; qrForget();
           w.s[f.key] = r.target; commit(); redraw();
           announce(t('js.dash.qrWeb.saved', { name: r.link.title }));
-          setTimeout(() => { const b = $('#dash-side-body'); if (b) { b.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(id)}`)?.focus(); } }, 0);
+          setTimeout(() => { const b = sideBox(); if (b) { b.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(id)}`)?.focus(); } }, 0);
         } catch (e) { msg.textContent = `✖ ${e.message}`; msg.classList.add('err'); go.disabled = false; }
       };
       go.addEventListener('click', save);

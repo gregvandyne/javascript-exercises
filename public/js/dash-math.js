@@ -169,6 +169,16 @@ export function hundredGrid(n, d) {
 // ---------------------------------------------------------------- the coordinate plane: y = mx + b, m a fraction
 /** The slopes the + and − buttons step through: whole numbers and the friendly fractions (rise over run). */
 export const SLOPES = [[-5, 1], [-4, 1], [-3, 1], [-2, 1], [-3, 2], [-1, 1], [-2, 3], [-1, 2], [-1, 3], [-1, 4], [0, 1], [1, 4], [1, 3], [1, 2], [2, 3], [1, 1], [3, 2], [2, 1], [3, 1], [4, 1], [5, 1]].map(([n, d]) => ({ n, d }));
+/** A typed slope ("2", "−1/2", "3/2", "0.5", "2/4") -> its place in SLOPES, or null when it is not one of them. */
+export function slopeOfText(text) {
+  const x = String(text ?? '').replace(/\s/g, '').replace(/^[−–]/, '-').replace(',', '.');
+  let n, d = 1;
+  const f = /^(-?\d+)\/(\d+)$/.exec(x);
+  if (f) { n = +f[1]; d = +f[2]; } else if (/^-?(\d+(\.\d+)?|\.\d+)$/.test(x)) { const v = Number(x); d = 100; n = Math.round(v * 100); if (Math.abs(n / 100 - v) > 1e-9) return null; } else return null;
+  if (!d) return null;
+  const i = SLOPES.findIndex(s => s.n * d === n * s.d);
+  return i < 0 ? null : i;
+}
 export const slopeIndex = m => { const i = SLOPES.findIndex(s => s.n === m.n && s.d === m.d); return i < 0 ? SLOPES.findIndex(s => s.n === 1 && s.d === 1) : i; };
 /** y at x on y = mx + b, exact: { n, d }. */
 export const lineY = (m, b, x) => simplify(m.n * x + b * m.d, m.d);

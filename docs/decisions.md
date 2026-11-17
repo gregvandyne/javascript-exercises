@@ -7314,3 +7314,57 @@ screens the model area has a fixed height and the `@container (max-aspect-ratio:
   unchanged (the rule is phone-only).
 - **Check:** `npm run dash:fit` now fails when a fraction, decimal, percent card is under 96px wide, or when the cards
   sit over the hundred grid (the column layout) and are narrower than the tool.
+
+## Classroom dashboards: type the number between − and +; settings from the board (17 Nov 2026)
+Two requests from the owner: "set the numbers manually here instead of only being able to + or −", everywhere that is
+the case, and "edit settings of individual widgets on a board without having to go into the broader edit menu".
+- **One shared field** (`public/js/dash-num.js`, `numField`): every number shown between − and + on the board is a text
+  field (`inputmode="numeric"`, the ordinary keyboard where a value can go below zero or is a slope like "1/2"; role
+  spinbutton with its own aria-label; no browser spinners). It looks like the number it replaces (same class, same size,
+  as wide as what it holds) with a faint dashed underline; a box shows on hover and while typing; 40px tall at least.
+  The tools get it through the shell (`T.stepper(..., num)` and `T.num`), so `snap`/`restore` keep the tool's state as
+  it was when typing began.
+- **Rules:** a value inside the limits is used while typing; Enter or leaving holds it to the limits (150 in 1-100 is
+  100); Escape and an entry that is empty or not a number put back the value from before typing; ArrowUp and ArrowDown
+  are the + and − buttons' own steps. **Decided:** a rule that ties two numbers together is applied to the state as it
+  was when typing began, so typing 12 into a denominator of 50 passes through 1 without leaving the numerator at 1;
+  typing 7 does bring a numerator of 8 down to 7 (as − does). A widget that draws itself again while typing (the
+  fraction sentence, the scoreboard) hands the typing (text, caret, the value from before) to its new field.
+- **Same path as the buttons:** each field calls the same change the buttons do (`T.commit` and `ctx.keep`, or
+  `ctx.set` for the scoreboard), so typed values are saved in the layout, sent to students with Send and cleaned by
+  `server/services/dash-tools.js` as tapped ones are.
+- **Where:** Fractions: fraction, decimal, percent (numerator 0 to the denominator, denominator 1-100), fraction bars'
+  parts (1-12; "4 parts" keeps its translated words around the field), Add/Subtract/Multiply/Divide numerators and
+  denominators (the operand limits; dividing never by zero); the coordinate plane's slope (typed as one of the slopes
+  the buttons step through, by value: "2/4" is 1/2) and start (−10 to 10); arrays and area rows and columns (1-99);
+  base-ten blocks' count per mat (the number in the mat's header, 0 to the most a mat holds); bar models' two steppers
+  (whatever they change in each kind; a hidden "?" can't be typed in); number rods' longer rod (11-20; the rod button
+  moves after +); the angle maker (0-360°, any whole degree; − and + keep the Options step); transformations x and y
+  (−8 to 8); money's cost (0 to what was paid) and paid with (the cost to 100.00, any amount; − and + still step through
+  the notes), typed in the money's own units; the scoreboard's points (−9999 to 9999).
+- **Left as they are, on purpose:** the place value chart (− and + change the selected place, each place is already a
+  spinbutton with arrow keys); the teaching clock (±5 and ±1 hour are jumps, the hands drag and the face takes arrow
+  keys); each student's points (+1 is an award with a reason, never typed or taken away); algebra tiles and the balance
+  (+x, −1... add tiles or are a step in solving); zoom −/+ on the camera, the rods board and the shape board (no number);
+  the timer (presets and a typed custom time already), dice count, random number range, group size and every other
+  number in the settings panel (already number fields).
+- **Settings from the board:** on the teacher's screen, out of edit mode, a widget with settings (a field, or "Pin on
+  student screens") has a gear (an outline cog, not the ⚙️ of a tool's own Options) at the end of its header: shown on
+  hover and focus with a mouse, always there and faint on a touch screen, only on hover or focus on the projector, never
+  while the pointer is hidden. aria-label "Clock settings" (`js.dash.side.title`). It opens the edit mode panel's own
+  form (`renderSide`, now drawn into the side panel or into the sheet: `board`) for that widget only, without
+  Duplicate and Remove (moving, copying and removing stay in edit mode). Changes save through the layout as in edit
+  mode; the sheet's Undo (and Ctrl+Z) takes back only what was changed in it. Closing it leaves the board as it was,
+  out of edit mode, the focus back on the gear. Teaching tools have no gear (their settings are their own Options).
+- **Teacher only:** the gear is drawn only when the page's role is the class's teacher (`TEACHER`, from the server's
+  `roleOf`) and not in edit mode; a student's screen (pinned or own widgets), a student's copy of a sent tool (drawn
+  outside the grid) and edit mode have none (tested in Chromium).
+- Strings: `js.dash.side.undo` and `dash.w.fractions.partsOf`, in all 13 languages (en-GB inherits en).
+- **The two-block theme rule, restored:** dash.css had its own dark values (`prefers-color-scheme` and `[data-theme]`
+  rules for the pens, the shape board's band colours and angle marks, a letter's vowel, the map's oceans, a 3D shape's
+  hidden edges), which `tests/unit/theme.test.js` forbids. They are tokens now (`--dt-pen-*`, `--gb0` to `--gb6`,
+  `--gb-angle`, `--dt-vowel`, `--dt-ocean`, `--dt-ocean-halo`, `--dt-hidden-edge`) in app.css's `:root` and its two dark
+  blocks, with the same values. A marked hidden edge is now the marked colour in dark too.
+- Tests: `tests/unit/dash-inputs.test.js` (parsing and limits; in Chromium: the fraction, decimal, percent typing rules,
+  Escape, a bad entry, Enter, arrows, saving; the scoreboard drawn again while typing; a typed slope; the gear for the
+  teacher, its sheet, saving, Undo, closing to the board; no gear for a student on a laptop or a phone).

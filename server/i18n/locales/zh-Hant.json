@@ -2748,7 +2748,8 @@
         "takenDown": "已撤下圖片",
         "zoneNone": "無",
         "placeNote": "輸入城鎮或城市。Oomba 從不使用任何人的位置。",
-        "qrNote": "只能顯示班級核准的連結和 Oomba 的頁面。"
+        "qrNote": "只能顯示班級核准的連結和 Oomba 的頁面。",
+        "undo": "復原"
       },
       "bgChanged": "已更換背景",
       "uploading": "正在檢查你的圖片…",
@@ -9567,7 +9568,8 @@
         "m": {
           "fractions": "分數條",
           "fdp": "分數、小數、百分率"
-        }
+        },
+        "partsOf": "分數 {n} 分成幾份"
       },
       "numline": {
         "name": "數線",

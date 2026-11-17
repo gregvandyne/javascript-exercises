@@ -2767,7 +2767,8 @@
         "takenDown": "Picture taken down",
         "zoneNone": "None",
         "placeNote": "Type a town or city. Oomba never uses anyone's location.",
-        "qrNote": "Only the class's approved links and Oomba pages can be shown."
+        "qrNote": "Only the class's approved links and Oomba pages can be shown.",
+        "undo": "Undo"
       },
       "bgChanged": "Background changed",
       "uploading": "Checking your picture…",
@@ -9989,7 +9990,8 @@
         "m": {
           "fractions": "Fraction bars",
           "fdp": "Fraction, decimal, percent"
-        }
+        },
+        "partsOf": "Parts in fraction {n}"
       },
       "numline": {
         "name": "Number line",

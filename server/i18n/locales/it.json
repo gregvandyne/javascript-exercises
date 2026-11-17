@@ -2749,7 +2749,8 @@
         "takenDown": "Immagine tolta",
         "zoneNone": "Nessuno",
         "placeNote": "Scrivi una città o un paese. Oomba non usa mai la posizione di nessuno.",
-        "qrNote": "Si possono mostrare solo i link approvati della classe e le pagine Oomba."
+        "qrNote": "Si possono mostrare solo i link approvati della classe e le pagine Oomba.",
+        "undo": "Annulla"
       },
       "bgChanged": "Sfondo cambiato",
       "uploading": "Controllo la tua immagine…",
@@ -9568,7 +9569,8 @@
         "m": {
           "fractions": "Strisce delle frazioni",
           "fdp": "Frazione, decimale, percentuale"
-        }
+        },
+        "partsOf": "Parti della frazione {n}"
       },
       "numline": {
         "name": "Linea dei numeri",
