@@ -254,6 +254,8 @@ export function updateMember(by, schoolId, userId, { rosterName, grade, role } =
 const classLeaveHooks = [];
 export const onClassLeave = fn => { if (!classLeaveHooks.includes(fn)) classLeaveHooks.push(fn); };
 const classLeft = x => { for (const fn of classLeaveHooks) fn(x); };
+/** A class deleted outside deleteClass (services/school-delete.js): the same hooks as deleteClass runs. */
+export const classDeleted = classId => classLeft({ classId });
 /** Hooks for the same modules when a school account is merged into a student's own account ({ from, into }): their
  *  per-student rows move with the class membership (or are deleted), never left on the switched-off account. */
 const mergeHooks = [];
