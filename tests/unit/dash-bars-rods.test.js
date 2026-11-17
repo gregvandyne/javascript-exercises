@@ -206,7 +206,7 @@ test('words: every bar model and number rods string in all 13 languages, the sho
     }
   }
   // Fractions Add/Subtract: the answer is to the right in circles, so the instruction no longer says "below".
-  assert.equal(en.dash.w.fractions.howtoOp, 'Use − and + on each number. The answer is drawn too.');
+  assert.equal(en.dash.w.fractions.howtoOp, 'Change each number with − and +. Type your answer, then Check.');
   for (const code of LOCALES) assert.doesNotMatch(JSON.stringify(loc(code).dash.w.fractions?.howtoOp || ''), /below|unten|dessous|abajo|sotto|abaixo|onder|ниже|下/i, code);
 });
 

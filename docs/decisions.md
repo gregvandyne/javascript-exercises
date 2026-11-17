@@ -7413,6 +7413,42 @@ the case, and "edit settings of individual widgets on a board without having to 
   Escape, a bad entry, Enter, arrows, saving; the scoreboard drawn again while typing; a typed slope; the gear for the
   teacher, its sheet, saving, Undo, closing to the board; no gear for a student on a laptop or a phone).
 
+## Classroom dashboards: fractions, dividing as measuring (17 Nov 2026)
+Owner feedback from the live site on the Fractions tool's Add/Subtract/Multiply/Divide (`public/js/dash-tools.js`,
+`public/js/dash-math.js`, `server/services/dash-tools.js`):
+- **Show the answer, the right way round.** The answer starts hidden (`hide` defaults to true, so students work it out
+  first; a state saved with it shown stays shown). The button says what it does: "👀 Show the answer" while hidden,
+  "🙈 Hide the answer" while shown. **Decided:** because its words change with the state it has no `aria-pressed`
+  (it was a pressed toggle reading "Hide the answer, pressed" while the answer was hidden).
+- **Answers past one whole are drawn as wholes.** 5/10 ÷ 2/9 = 9/4 was one half-filled bar or circle (the first
+  fraction's length). Every answer is now that many wholes, each its own bar or circle cut into the answer's pieces
+  (9/4: two full and a quarter of a third, in quarters; `M.splitWholes`); 0 is one empty whole. Divide's answer counts
+  copies of the second fraction, so it is drawn on a scale of its own, one whole a copy, in the copies' colours.
+- **One layout, hidden or shown, in both views.** The sentence is always the stacked fractions with − and + on each
+  number, then = and the answer, or while it is hidden a box to type an answer and Check. The picture under it is the
+  same size hidden or shown (the answer's wholes are counted either way); the hidden answer is a dashed bar or circle
+  with "?". The old circles layout fell to tiny icons, a column and one-line steppers when hidden.
+- **Dividing as measuring** (`M.measure`): the first fraction as a bar, and under it copies of the second laid end to
+  end on the same scale, one at a time with Fit one more (state `fit`), numbered, the last one only the part that fits
+  ("2 fit, and 1/4 of one more"), the rest of it dashed. Pieces are drawn in a common bottom number when that is at most
+  48 a whole (`M.DRAW_PIECES`); past it the copies are drawn by length with no piece lines. In Circles the copies are
+  laid on the first fraction's circles the same way, next to one copy (the second fraction) and the answer.
+- **The working, one step at a time** (Next step, state `step`): Add/Subtract (same bottom number, rename both, add or
+  take away the tops; renaming also redraws both fractions in the same-size pieces), Multiply (the grid, the shading,
+  the overlap, which the area model then picks out), Divide (keep, change, flip, multiply). The last step's result
+  shows only with the answer.
+- **Check my answer** (`M.parseFraction`, `M.checkAnswer`): 9/4, 2 1/4 and 2¼ are right; 18/8 or 2 2/8 is "Close: that
+  is the same amount. Is it simplified?"; anything else "Not yet". The real answer stays hidden. What is typed is never
+  saved or sent.
+- **Wording:** "Same-size pieces would be 90 tiny pieces: too small to draw" is now "These pieces would be too tiny to
+  see, so they are not drawn." (Compare only; the operations no longer need it).
+- **State:** `fit` (0-144, Divide only, no more than the copies that fit) and `step` (0-4, not in Compare) are cleaned
+  by `cleanToolState` and kept only when not 0, so states saved before them load as they were.
+- **Check:** `npm run dash:fit` has 5/10 ÷ 2/9 in both views, hidden (every copy and step showing) and shown, and 12 ÷
+  1/12 (144 copies; the answer's circles become one full circle "× 144"); it fails when a fraction's − and + are not
+  stacked, a circle is under 40px or a bar under 28px, Divide has no Fit one more, Show the answer has aria-pressed or
+  the answer shows while hidden. Tests: `tests/unit/dash-fractions-divide.test.js`.
+
 ## Teachers' top bar: Classroom, Build, Live (17 Nov 2026)
 Owner: "For the top bar for a teacher it should just be Classroom Build Live at the top. You can remove Learn and Play."
 - School staff (teachers and school admins): top bar Classroom · Build · Live; phone tab bar the same with Me. A
@@ -7462,8 +7498,9 @@ also quite glitchy."
   was see-through, so the 3D view flashed half-built (a black sky, a giant ground tile up close). It now has the sky's
   colour, stays until the helpers stand in place and one frame is drawn from where they are seen, then fades (no fade
   with reduced motion).
-- **Every Number Quest game** (Balance Bridge, Crate Stacker, Keep Builder, Kitchen Rush, Lantern Mix, Launch Lab,
-  Lily Hop, Machine Line, Rocket Supply, Scale Scout, Shape Hunt, Sky Lines, Sub Zero) had the same see-through
+- **Every Number Quest game** (Balance Bridge, Keep Builder, Kitchen Rush, Lantern Mix, Launch Lab,
+  Lily Hop, Machine Line, Rocket Supply, Scale Scout, Shape Hunt, Sky Lines, Sub Zero; Crate Stacker had its own fix
+  in #391, a curtain and a voice coach, kept as it is) had the same see-through
   loading screen removed too early, and gets the same fix (owner: "Make sure the start of all those games are not
   glitchy as well"): the page's own colour, removed after the first screen is drawn, a fade. Recorded from the first
   frame in the production frame: each shows its loading screen, then its finished first screen, nothing between.

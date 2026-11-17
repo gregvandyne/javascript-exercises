@@ -108,7 +108,7 @@ test('every tool\'s state is rebuilt on the server: unknown keys go, numbers are
   for (const id of TOOLS) { const s = c(id, { evil: '<script>', __proto__: { x: 1 } }); assert.ok(s && !('evil' in s), id); assert.deepEqual(c(id, s), s, `${id}: cleaning is stable`); }
   // fractions: 1-3 fractions, 1-12 parts, never more shaded than parts
   const fr = c('fractions', { shape: 'star', bars: [{ n: 9, d: 4 }, { n: -2, d: 99 }, { n: 1, d: 0 }, { n: 1, d: 2 }], same: 'yes' });
-  assert.deepEqual(fr, { shape: 'bar', bars: [{ n: 4, d: 4 }, { n: 0, d: 12 }, { n: 1, d: 1 }], same: false, hide: false });
+  assert.deepEqual(fr, { shape: 'bar', bars: [{ n: 4, d: 4 }, { n: 0, d: 12 }, { n: 1, d: 1 }], same: false, hide: true }, 'the answer starts hidden');
   assert.deepEqual(c('fractions', { bars: [] }).bars, [{ n: 1, d: 2 }]);
   // number line: a real range, at most 240 steps, points and jumps on the line, decimals that end
   const nl = c('numline', { lo: 5, hi: 2, sub: 7, mode: 'fraction', points: [1, 99999, 'x', 6], jumps: [{ a: 0, b: 0 }, { a: 5, b: 6 }, { a: -1, b: 3 }] });
@@ -347,7 +347,7 @@ test('sending a tool: the teacher\'s own tool only, its state rebuilt; every stu
   const live = (await as(w.a1)(`/api/dash/${A}/live`)).json;
   const p = live.pushes.find(x => x.kind === 'tool');
   assert.equal(p.href, `#tool-${p.id}`); assert.equal(p.title, '');
-  assert.deepEqual(p.tool, { type: 'fractions', state: { shape: 'bar', bars: [{ n: 2, d: 3 }, { n: 6, d: 6 }], same: true, hide: false } });
+  assert.deepEqual(p.tool, { type: 'fractions', state: { shape: 'bar', bars: [{ n: 2, d: 3 }, { n: 6, d: 6 }], same: true, hide: true } });
   // The same copy for every student; the push holds no student data.
   assert.deepEqual((await as(w.a2)(`/api/dash/${A}/live`)).json.pushes.find(x => x.kind === 'tool').tool, p.tool);
   assert.doesNotMatch(q.get('SELECT data FROM dash_pushes WHERE id=?', p.id).data, new RegExp(`${w.a1.id}|${w.a2.id}`));
