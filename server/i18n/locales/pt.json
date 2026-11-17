@@ -7242,7 +7242,13 @@
       "explorerSub": "3º ao 5º ano",
       "pro": "Pro",
       "proSub": "6º ao 8º ano",
-      "switch": "Mudar para {band}"
+      "switch": "Mudar para {band}",
+      "launchpad": "Decolagem",
+      "launchpadSub": "Pré-escola ao 2º ano",
+      "yours": "Seu nível",
+      "showing": "Mostrando agora",
+      "stepsDone": "{band}: {n} de {total} etapas feitas",
+      "unitsFinale": "Unidades {from}–{to} e depois o final: {finale}"
     },
     "map": {
       "h": "Mapa do curso",

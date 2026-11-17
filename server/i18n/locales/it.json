@@ -7241,7 +7241,13 @@
       "explorerSub": "Classi 3ª–5ª",
       "pro": "Pro",
       "proSub": "Classi 6ª–8ª",
-      "switch": "Passa a {band}"
+      "switch": "Passa a {band}",
+      "launchpad": "Rampa di lancio",
+      "launchpadSub": "Dall'ultimo anno di materna alla 2ª",
+      "yours": "Il tuo livello",
+      "showing": "Ora vedi",
+      "stepsDone": "{band}: {n} passi su {total} completati",
+      "unitsFinale": "Unità {from}–{to}, poi il finale: {finale}"
     },
     "map": {
       "h": "Mappa del corso",

@@ -18,6 +18,7 @@ const E = ctx.FractionFactory, { LEVELS } = ctx.FractionFactoryLevels;
 const level = id => LEVELS.find(l => l.id === id);
 const serveAfter = (id, cut, taps) => {
   const run = new E.Run(level(id), 1);
+  while (run.act({ t: 'add-whole' }).ok) { /* an order of more than one whole: put every cake it needs on the table */ }
   run.act({ t: 'cut', n: cut });
   for (let i = 0; i < taps; i++) run.act({ t: 'tap', i });
   return run.act({ t: 'serve' });
