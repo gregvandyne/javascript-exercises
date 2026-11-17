@@ -7516,12 +7516,30 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Fertige Layouts",
+      "h": "Ein Layout für jeden Teil des Tages",
+      "lead": "Starte in den Morgen, unterrichte eine Stunde, leite Gruppenarbeit, komm in der Stillarbeit zur Ruhe und mach eine Spielpause. Mit einem Tippen wechseln, und die Bildschirme der Kinder folgen.",
+      "widgets": "{count} Widgets für dein eigenes Layout"
+    },
+    "dash": {
+      "kicker": "Neu: Klassen-Dashboards",
+      "h": "Ein Bildschirm für den ganzen Schultag",
+      "lead": "Zeig ein Klassen-Dashboard am Beamer: die Uhr, den Stundenplan, das Ziel des Tages und {count} Widgets zur Auswahl. Jedes Kind bekommt auch einen eigenen Bildschirm, mit den Widgets, die du anheftest.",
+      "li1": "Fertige Layouts für den Morgen, eine Unterrichtsstunde, Gruppenarbeit, Stillarbeit und eine Spielpause, oder du ziehst Widgets in dein eigenes.",
+      "li2": "Timer, ein Namens-Zufallsgenerator, ein Gruppenmacher, ein Lautstärkemesser, eine Hilfe-Warteschlange und schnelle Abfragen.",
+      "li3": "Mathe-Werkzeuge auf der großen Leinwand: Bruchstreifen, Zahlenstrahlen, Geobretter, Stellenwerte und mehr.",
+      "li4": "Hefte Widgets an jeden Schülerbildschirm oder schick der Klasse mit einem Tippen ein Spiel, eine Lektion oder einen Link.",
+      "li5": "Ganz ohne KI. Kinder erscheinen mit ihren Oomba-Namen, und was ein Kind eintippt, bleibt auf seinem eigenen Bildschirm.",
+      "shotAlt": "Ein Klassen-Dashboard am Beamer: die Uhr, das Ziel des Tages, der Stundenplan mit Mathe jetzt und Pause danach, Klassendienste und eine Stimmungsabfrage."
+    },
     "meta": {
-      "title": "Unterrichtsentwürfe in Klassenspiele verwandeln · Oomba Academy",
-      "description": "Spielbasiertes Lernen für Lehrkräfte: Stunde einfügen oder PDF hochladen, und der KI-Baumeister macht daraus ein interaktives Spiel für die Klasse. 14 Tage gratis, ohne Karte.",
-      "imageAlt": "Oomba Academy für Lehrkräfte: Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse spielen will."
+      "title": "Klassen-Dashboards und Lernspiele für Lehrkräfte · Oomba Academy",
+      "description": "Ein Bildschirm für den Schultag, ein KI-Builder, der Lektionen zu Spielen macht, Live-Spiele und Spiele, die Kinder selbst bauen. 14 Tage gratis, ohne Karte.",
+      "imageAlt": "Oomba Academy für Lehrkräfte: ein Bildschirm für den Unterricht und Spiele, die hängen bleiben."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Seite für Lehrkräfte",
       "home": "Oomba Academy Startseite",
       "skip": "Zum Inhalt",
@@ -7534,17 +7552,23 @@
       "signIn": "Anmelden",
       "justPlay": "Einfach spielen",
       "trial": "Gratis testen",
-      "trialShort": "Gratis testen"
+      "trialShort": "Gratis testen",
+      "menu": "Menü",
+      "kids": "Kinder bauen"
     },
     "hero": {
       "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
-      "h1": "Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse unbedingt spielen will",
-      "lead": "Füge eine Stunde ein, lade ein PDF hoch oder beschreib einfach eine Idee. Der KI-Baumeister von Oomba macht daraus ein interaktives Spiel, das du live am Beamer spielst oder deiner Klasse zuweist.",
+      "h1": "Ein Bildschirm für deinen Unterricht. Spiele, die hängen bleiben.",
+      "lead": "Richte in einer Minute dein Klassen-Dashboard ein und leite den ganzen Tag damit. Mach mit dem KI-Builder aus jeder Lektion ein Spiel, spiel live am Beamer und lass deine Klasse eigene Spiele bauen.",
       "cta": "14 Tage kostenlos testen",
       "how": "So funktioniert’s",
       "trustCard": "Keine Karte nötig",
       "trustCancel": "Jederzeit kündbar",
-      "trustStudents": "Unbegrenzt viele Schüler"
+      "trustStudents": "Unbegrenzt viele Schüler",
+      "cBuildTag": "KI-Builder",
+      "cBuild": "Deine Bruchrechen-Lektion ist jetzt ein Spiel",
+      "cLiveTag": "Live-Spiel",
+      "cLive": "Deine Klasse steigt ein"
     },
     "facts": {
       "games": "fertige Lernspiele",
@@ -7571,19 +7595,28 @@
     },
     "how": {
       "kicker": "So funktioniert’s",
-      "h": "Vom Unterrichtsentwurf zum Spiel in drei Schritten",
-      "lead": "Kein Programmieren, kein Design. Wenn du deine Stunde beschreiben kannst, kannst du sie spielbar machen.",
+      "h": "Dein ganzer Schultag an einem Ort",
+      "lead": "Fang mit dem Bildschirm an, der den ganzen Tag offen bleibt, und hol dann die Spiele dazu. Jeder Schritt funktioniert für sich, zusammen noch besser.",
       "s1": {
-        "h": "Bring deine Stunde mit",
-        "p": "Füge den Text deiner Stunde ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib mit eigenen Worten, was die Klasse üben soll."
+        "h": "Klassen-Dashboard einrichten",
+        "p": "Öffne deine Klasse, und sechs fertige Layouts warten schon. Zeig es am Beamer, und jedes Kind bekommt einen eigenen Bildschirm."
       },
       "s2": {
-        "h": "Der Baumeister baut das Spiel",
-        "p": "Er schreibt das Spiel und testet es dann selbst in Handy-, Tablet- und Computergröße. Wünsch dir Änderungen in einfachen Worten: „mach es schwerer“, „füg einen Timer hinzu“."
+        "h": "Den Tag damit leiten",
+        "p": "Stimmungsabfrage, Timer, schnelle Abfragen, Hilfe-Warteschlange, Gruppen und Mathe-Werkzeuge, vom Morgenkreis bis zum Aufräumen. Layout wechseln mit einem Tippen."
       },
       "s3": {
-        "h": "Spiel es, wie du willst",
-        "p": "Spiel es live am Beamer, teile es nur mit deinen Klassen oder füg es mit Abgabetermin in eine Unterrichtseinheit ein und sieh den Fortschritt jedes Kindes."
+        "h": "Lektionen werden Spiele",
+        "p": "Füge eine Lektion ein oder lade ein PDF hoch. Der KI-Builder macht ein Spiel daraus, testet es selbst und behält jede Version."
+      },
+      "see": "Ansehen",
+      "s4": {
+        "h": "Live zusammen spielen",
+        "p": "Aufwärmrunden und Abschlussfragen auf der großen Leinwand. Die Kinder spielen auf ihren eigenen Geräten mit, die Punkte landen im Notenbuch."
+      },
+      "s5": {
+        "h": "Kinder bauen selbst",
+        "p": "Füg einer Lektion einen Schritt „Ein Spiel bauen“ hinzu. Die Kinder entwerfen, testen und verbessern ein eigenes Spiel, dann spielt es die Klasse."
       }
     },
     "builder": {
@@ -7771,6 +7804,17 @@
       "dark": "Dunkel",
       "light": "Hell",
       "preferredSource": "Oomba als bevorzugte Quelle bei Google hinzufügen"
+    },
+    "kids": {
+      "kicker": "Kinder als Macher",
+      "h": "Deine Klasse baut auch Spiele",
+      "lead": "Wer ein Spiel über ein Thema baut, muss es gut genug verstehen, um es zu erklären. Füg einer Lektion den Schritt „Ein Spiel bauen“ hinzu, und die Kinder beschreiben, testen und verbessern mit dem Builder ihr eigenes Spiel, ganz ohne Code.",
+      "li1": "Ein Schritt „Ein Spiel bauen“ in deinen Lektionen, mit der Idee, von der die Kinder ausgehen",
+      "li2": "Jedes Kind baut in seinem eigenen Studio, und du siehst den Fortschritt mit dem Rest der Lektion",
+      "li3": "Die Klasse spielt die Spiele der anderen: ein Wiederholungsspiel zum Wochenthema klappt prima",
+      "li4": "Privat, bis es geteilt wird: mit der Klasse oder mit allen erst, nachdem jemand aus unserem Team es geprüft hat",
+      "shotAlt": "Das Studio eines Kindes: Der Builder meldet, dass Version 2 fertig ist, und das Spiel läuft in einer Vorschau in Handygröße.",
+      "caption": "Das Studio eines Kindes: beschreiben, der Builder baut, selbst testen."
     }
   },
   "teach": {

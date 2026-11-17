@@ -100,9 +100,102 @@ function startDemo() {
   document.addEventListener('visibilitychange', () => { if (!document.hidden && visible) loop(); });
 }
 
+// ---- the menu (a <details>, so it works without this): closes when a section is chosen, on Escape and on a tap outside.
+const menu = document.getElementById('lp-menu');
+if (menu) {
+  const close = () => { if (menu.open) menu.open = false; };
+  menu.addEventListener('click', e => { if (e.target instanceof Element && e.target.closest('.lp-menu-panel a')) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.open) { close(); menu.querySelector('summary')?.focus(); } });
+  document.addEventListener('click', e => { if (menu.open && e.target instanceof Node && !menu.contains(e.target)) close(); });
+}
+
+// ---- How it works (#how): the line through the five steps fills as the page scrolls past it, and each step lights up as
+// the line reaches it. Without this (no script, reduced motion) the line is simply drawn and nothing is lit.
+let journeyOn = false;
+function startJourney() {
+  const list = document.querySelector('[data-journey]');
+  if (!list || journeyOn) return;
+  journeyOn = true;
+  const steps = [...list.children];
+  list.dataset.fill = '';
+  let queued = false;
+  function draw() {
+    queued = false;
+    if (reduce.matches) { list.style.removeProperty('--fill'); delete list.dataset.fill; steps.forEach(s => s.classList.remove('is-on')); return; }
+    list.dataset.fill = '';
+    const r = list.getBoundingClientRect();
+    // Empty when the list's top reaches 85% down the screen; full when its bottom reaches 55%.
+    const f = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.3)));
+    list.style.setProperty('--fill', f.toFixed(3));
+    steps.forEach((s, i) => s.classList.toggle('is-on', f >= (steps.length === 1 ? 0 : i / (steps.length - 1)) - 0.02));
+  }
+  const kickJ = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
+  addEventListener('scroll', kickJ, { passive: true });
+  addEventListener('resize', kickJ, { passive: true });
+  reduce.addEventListener?.('change', kickJ);
+  draw();
+}
+
+// ---- the layout tour (#dash-tour): on a wide screen the section stays put while the page scrolls through it, and the
+// layouts come forward one by one (each rests a moment in front); the widget rows slide sideways, in turn. Without this
+// (narrow screens, reduced motion, no script) it is a plain list. Transforms and opacity only, one frame per scroll burst.
+let tourOn = false;
+function startTour() {
+  const tour = document.querySelector('[data-dtour]');
+  const box = document.querySelector('.lp-dt-widgets');
+  if (!tour || tourOn) return;
+  tourOn = true;
+  const stage = tour.querySelector('.lp-dt-stage');
+  const items = [...tour.querySelectorAll('.lp-dt-item')], dots = [...tour.querySelectorAll('.lp-dt-dots li')];
+  const rows = box ? [...box.querySelectorAll('.lp-dt-row')] : [];
+  const n = items.length;
+  const wide = matchMedia('(min-width: 1000px) and (min-height: 620px)');
+  let deck = false, queued = false;
+  // Within each step, hold still at both ends and glide between (so a layout rests in front for a while).
+  const ease = x => { const f = Math.floor(x), r = x - f, u = Math.min(1, Math.max(0, (r - 0.2) / 0.6)); return f + u * u * (3 - 2 * u); };
+  const set = (el, k, v) => el.style.setProperty(k, v.toFixed(3));
+  function draw() {
+    queued = false;
+    if (deck) {
+      const total = tour.offsetHeight - stage.offsetHeight;
+      const p = ease(Math.min(1, Math.max(0, -tour.getBoundingClientRect().top / total)) * (n - 1) * 0.9999);
+      items.forEach((it, i) => {
+        const d = i - p, past = Math.min(0, d), ahead = Math.max(0, d);
+        set(it, '--d', d); set(it, '--past', past); set(it, '--ahead', ahead);
+        set(it, '--o', Math.max(0, 1 - Math.abs(d) * 2.2));
+        set(it, '--fo', d < 0 ? Math.max(0, 1 + d * 1.4) : Math.max(0, Math.min(1, 4 - ahead)));
+        it.style.zIndex = String(d < 0 ? 200 : 100 - Math.round(ahead * 10));   // a layout leaving goes over the next one
+        it.classList.toggle('on', Math.abs(d) < 0.5);
+      });
+      dots.forEach((dot, i) => dot.classList.toggle('on', Math.round(p) === i));
+    }
+    if (rows.length && box.classList.contains('is-slide')) {
+      const shift = (innerHeight - box.getBoundingClientRect().top - innerHeight * 0.6) * 0.35;
+      for (const row of rows) {
+        const centre = (box.clientWidth - row.scrollWidth) / 2 - row.offsetLeft;   // offsetLeft ignores transforms
+        row.style.transform = `translate3d(${(centre + shift * (+row.dataset.row || 1)).toFixed(1)}px,0,0)`;
+      }
+    }
+  }
+  const kickTour = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
+  function mode() {
+    deck = wide.matches && !reduce.matches;
+    tour.classList.toggle('is-tour', deck);
+    if (!deck) for (const it of items) { it.removeAttribute('style'); it.classList.remove('on'); }
+    if (box) { box.classList.toggle('is-slide', !reduce.matches); for (const r of rows) { r.classList.toggle('is-slide', !reduce.matches); if (reduce.matches) r.style.transform = ''; } }
+    draw();
+  }
+  wide.addEventListener?.('change', mode);
+  reduce.addEventListener?.('change', mode);
+  addEventListener('scroll', kickTour, { passive: true });
+  addEventListener('resize', kickTour, { passive: true });
+  addEventListener('load', kickTour, { once: true });
+  mode();
+}
+
 function start() {
   if (reduce.matches) return;
-  startParallax(); startReveal(); startDemo();
+  startParallax(); startReveal(); startDemo(); startTour(); startJourney();
 }
 start();
 reduce.addEventListener?.('change', () => { if (reduce.matches) { stopParallax(); const f = document.querySelector('.lp-demo'); if (f) f.dataset.stage = 'done'; } else start(); });

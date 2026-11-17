@@ -8033,12 +8033,30 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Ready-made layouts",
+      "h": "A layout for every part of the day",
+      "lead": "Start the morning, teach a lesson, run group work, settle into quiet work and take a fun break. Switch in one tap, and students' screens follow.",
+      "widgets": "{count} widgets to build your own"
+    },
+    "dash": {
+      "kicker": "New: class dashboards",
+      "h": "One screen for the whole school day",
+      "lead": "Put a class dashboard on the projector: the clock, today’s schedule, your goal for the day and {count} widgets to choose from. Every student gets a screen of their own too, with the widgets you pin.",
+      "li1": "Ready-made layouts for the morning, a lesson, group work, quiet work and a fun break, or drag widgets into your own.",
+      "li2": "Timers, a random name picker, a group maker, a voice meter, a help queue and quick checks.",
+      "li3": "Math tools on the big screen: fraction bars, number lines, geoboards, place value and more.",
+      "li4": "Pin widgets to every student's screen, or send the class a game, a lesson or a link in one tap.",
+      "li5": "No AI anywhere in it. Students show up by their Oomba names, and what a student types stays on their own screen.",
+      "shotAlt": "A class dashboard on the projector: the clock, today's goal, the schedule with Math now and Recess next, class jobs and a mood check-in."
+    },
     "meta": {
-      "title": "Turn lesson plans into classroom games · Oomba Academy",
-      "description": "Game-based learning for teachers: paste a lesson or upload a PDF and the AI Builder turns it into an interactive classroom game. 14-day free trial, no card.",
-      "imageAlt": "Oomba Academy for teachers: turn your lesson plans into games your class begs to play."
+      "title": "Class dashboards and learning games for teachers · Oomba Academy",
+      "description": "One screen to run your class day, an AI Builder that turns lessons into games, live class games, and games your students build. 14 days free, no card.",
+      "imageAlt": "Oomba Academy for teachers: one screen to run your class, and games to make learning stick."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Teacher site",
       "home": "Oomba Academy home",
       "skip": "Skip to content",
@@ -8051,17 +8069,23 @@
       "signIn": "Sign in",
       "justPlay": "Just Play",
       "trial": "Start free trial",
-      "trialShort": "Free trial"
+      "trialShort": "Free trial",
+      "menu": "Menu",
+      "kids": "Students build"
     },
     "hero": {
       "kicker": "For teachers · grades K–8",
-      "h1": "Turn your lesson plans into games your class begs to play",
-      "lead": "Paste a lesson, upload a PDF or just describe an idea. Oomba’s AI Builder turns it into an interactive game you can run live on the projector or assign to your class.",
+      "h1": "One screen to run your class. Games to make it stick.",
+      "lead": "Set up your class dashboard in a minute and run the whole day from it. Turn any lesson into a game with the AI Builder, play live on the projector, and let your students build games of their own.",
       "cta": "Start your free 14-day trial",
       "how": "See how it works",
       "trustCard": "No card needed",
       "trustCancel": "Cancel anytime",
-      "trustStudents": "Unlimited students"
+      "trustStudents": "Unlimited students",
+      "cBuildTag": "AI Builder",
+      "cBuild": "Your fractions lesson is now a game",
+      "cLiveTag": "Live game",
+      "cLive": "Your class is joining"
     },
     "facts": {
       "games": "ready-made learning games",
@@ -8088,19 +8112,28 @@
     },
     "how": {
       "kicker": "How it works",
-      "h": "From lesson plan to game in three steps",
-      "lead": "No coding and no design skills. If you can describe your lesson, you can make it playable.",
+      "h": "Your whole class day, in one place",
+      "lead": "Start with the screen you keep open all day, then bring in the games. Each step works on its own, and they work even better together.",
       "s1": {
-        "h": "Bring your lesson",
-        "p": "Paste your lesson text, upload a PDF, a picture or a text file, or describe what your class should practice, in your own words."
+        "h": "Set up your class dashboard",
+        "p": "Open your class and six ready-made layouts are waiting. Put it on the projector, and every student gets a screen of their own."
       },
       "s2": {
-        "h": "The Builder makes the game",
-        "p": "It writes the game, then playtests it by itself on phone, tablet and desktop sizes. Ask for changes in plain words: “make it harder”, “add a timer”."
+        "h": "Run your day from it",
+        "p": "Check-ins, timers, quick checks, the help queue, groups and math tools, from morning meeting to pack-up. Switch layouts in one tap."
       },
       "s3": {
-        "h": "Play it your way",
-        "p": "Host it live on the projector, share it with only your classes, or add it to a lesson with a due date and see every student’s progress."
+        "h": "Turn lessons into games",
+        "p": "Paste a lesson or upload a PDF. The AI Builder makes it a game, playtests it and keeps every version."
+      },
+      "see": "See it",
+      "s4": {
+        "h": "Play live together",
+        "p": "Warm-ups and exit tickets on the big screen. Students join on their own devices, and scores go to your gradebook."
+      },
+      "s5": {
+        "h": "Let your students build too",
+        "p": "Add a “Build a game” step to a lesson. Students design, test and fix a game of their own, then classmates play it."
       }
     },
     "builder": {
@@ -8288,6 +8321,17 @@
       "dark": "Dark",
       "light": "Light",
       "preferredSource": "Add Oomba as a preferred source on Google"
+    },
+    "kids": {
+      "kicker": "Students as makers",
+      "h": "Your students build games too",
+      "lead": "To make a game about a topic, you have to understand it well enough to teach it. Add a “Build a game” step to any lesson, and your students describe, test and improve their own game with the Builder, without writing code.",
+      "li1": "A “Build a game” step in your lessons, with the idea students start from",
+      "li2": "Each student builds in their own Studio, and you see their progress with the rest of the lesson",
+      "li3": "Classmates play each other’s games: a review game for this week’s topic works well",
+      "li4": "Private until shared: with their class, or with everyone only after a person on our team reviews it",
+      "shotAlt": "A student’s Studio: the Builder chat says version 2 is ready, and the student’s game runs in a phone-sized preview.",
+      "caption": "A student’s Studio: they describe it, the Builder builds it, they test it."
     }
   },
   "rubrics": {

@@ -7516,12 +7516,30 @@
     }
   },
   "landing": {
+    "dtour": {
+      "kicker": "Kant-en-klare indelingen",
+      "h": "Een indeling voor elk deel van de dag",
+      "lead": "Begin de ochtend, geef een les, begeleid groepswerk, kom tot rust bij stil werken en neem een speelpauze. Wissel met één tik, en de schermen van leerlingen volgen.",
+      "widgets": "{count} widgets om je eigen indeling te maken"
+    },
+    "dash": {
+      "kicker": "Nieuw: klasdashboards",
+      "h": "Eén scherm voor de hele schooldag",
+      "lead": "Zet een klasdashboard op het digibord: de klok, het rooster van vandaag, het doel van de dag en {count} widgets om uit te kiezen. Elke leerling krijgt ook een eigen scherm, met de widgets die jij vastzet.",
+      "li1": "Kant-en-klare indelingen voor de ochtend, een les, groepswerk, stil werken en een speelpauze, of sleep widgets naar je eigen indeling.",
+      "li2": "Timers, een namenkiezer, een groepjesmaker, een stemmeter, een hulprij en snelle checks.",
+      "li3": "Rekenmateriaal op het grote scherm: breukenstroken, getallenlijnen, geoborden, plaatswaarde en meer.",
+      "li4": "Zet widgets vast op het scherm van elke leerling, of stuur de klas met één tik een spel, een les of een link.",
+      "li5": "Nergens AI. Leerlingen staan er met hun Oomba-naam, en wat een leerling typt, blijft op het eigen scherm.",
+      "shotAlt": "Een klasdashboard op het digibord: de klok, het doel van de dag, het rooster met nu Rekenen en daarna Pauze, klassentaken en een gevoelscheck."
+    },
     "meta": {
-      "title": "Maak van je lesplannen klassengames · Oomba Academy",
-      "description": "Spelend leren voor leerkrachten: plak een les of upload een pdf en de AI-Bouwer maakt er een interactieve game voor de klas van. 14 dagen gratis, zonder creditcard.",
-      "imageAlt": "Oomba Academy voor leerkrachten: maak van je lesplannen games die je klas wil spelen."
+      "title": "Klasdashboards en leerspellen voor leerkrachten · Oomba Academy",
+      "description": "Eén scherm voor je schooldag, een AI-Builder die lessen spellen maakt, live klasspellen en spellen van je leerlingen. 14 dagen gratis, zonder kaart.",
+      "imageAlt": "Oomba Academy voor leerkrachten: één scherm om je klas te leiden, en spellen die blijven hangen."
     },
     "nav": {
+      "dashboards": "Dashboards",
       "label": "Site voor leerkrachten",
       "home": "Oomba Academy home",
       "skip": "Naar de inhoud",
@@ -7534,17 +7552,23 @@
       "signIn": "Inloggen",
       "justPlay": "Gewoon spelen",
       "trial": "Gratis proberen",
-      "trialShort": "Gratis proberen"
+      "trialShort": "Gratis proberen",
+      "menu": "Menu",
+      "kids": "Leerlingen bouwen"
     },
     "hero": {
       "kicker": "Voor leerkrachten · groep 2 tot en met de tweede klas",
-      "h1": "Maak van je lesplannen games die je klas steeds weer wil spelen",
-      "lead": "Plak een les, upload een pdf of beschrijf gewoon een idee. De AI-Bouwer van Oomba maakt er een interactieve game van die je live op het digibord speelt of aan je klas geeft.",
+      "h1": "Eén scherm om je klas te leiden. Spellen die blijven hangen.",
+      "lead": "Zet in een minuut je klasdashboard klaar en leid de hele dag ermee. Maak van elke les een spel met de AI-Builder, speel live op het digibord en laat je leerlingen hun eigen spellen bouwen.",
       "cta": "Start je gratis proef van 14 dagen",
       "how": "Bekijk hoe het werkt",
       "trustCard": "Geen creditcard nodig",
       "trustCancel": "Altijd opzegbaar",
-      "trustStudents": "Onbeperkt leerlingen"
+      "trustStudents": "Onbeperkt leerlingen",
+      "cBuildTag": "AI-Builder",
+      "cBuild": "Je breukenles is nu een spel",
+      "cLiveTag": "Live spel",
+      "cLive": "Je klas doet mee"
     },
     "facts": {
       "games": "kant-en-klare leergames",
@@ -7571,19 +7595,28 @@
     },
     "how": {
       "kicker": "Zo werkt het",
-      "h": "Van lesplan naar game in drie stappen",
-      "lead": "Geen programmeren, geen ontwerpen. Als je je les kunt beschrijven, kun je hem speelbaar maken.",
+      "h": "Je hele schooldag op één plek",
+      "lead": "Begin met het scherm dat de hele dag openstaat en haal dan de spellen erbij. Elke stap werkt op zichzelf, en samen nog beter.",
       "s1": {
-        "h": "Neem je les mee",
-        "p": "Plak de tekst van je les, upload een pdf, een afbeelding of een tekstbestand, of beschrijf in je eigen woorden wat je klas moet oefenen."
+        "h": "Zet je klasdashboard klaar",
+        "p": "Open je klas en zes kant-en-klare indelingen staan klaar. Zet het op het digibord, en elke leerling krijgt een eigen scherm."
       },
       "s2": {
-        "h": "De Bouwer maakt de game",
-        "p": "Hij schrijft de game en test hem daarna zelf op telefoon-, tablet- en computerformaat. Vraag om wijzigingen in gewone woorden: ‘maak het moeilijker’, ‘voeg een timer toe’."
+        "h": "Leid je dag ermee",
+        "p": "Gevoelscheck, timers, snelle checks, de hulprij, groepjes en rekenmateriaal, van de kring tot het opruimen. Wissel van indeling met één tik."
       },
       "s3": {
-        "h": "Speel het op jouw manier",
-        "p": "Speel hem live op het digibord, deel hem alleen met je eigen klassen of zet hem in een les met een inleverdatum en zie de voortgang van elke leerling."
+        "h": "Maak van lessen spellen",
+        "p": "Plak een les of upload een pdf. De AI-Builder maakt er een spel van, test het zelf en bewaart elke versie."
+      },
+      "see": "Bekijk het",
+      "s4": {
+        "h": "Speel live samen",
+        "p": "Warming-ups en exit tickets op het grote scherm. Leerlingen doen mee op hun eigen apparaat, en de scores gaan naar je cijferlijst."
+      },
+      "s5": {
+        "h": "Laat leerlingen ook bouwen",
+        "p": "Voeg een stap ‘Bouw een spel’ toe aan een les. Leerlingen ontwerpen, testen en verbeteren hun eigen spel, en daarna speelt de klas het."
       }
     },
     "builder": {
@@ -7771,6 +7804,17 @@
       "dark": "Donker",
       "light": "Licht",
       "preferredSource": "Voeg Oomba toe als voorkeursbron in Google"
+    },
+    "kids": {
+      "kicker": "Leerlingen als makers",
+      "h": "Je leerlingen bouwen ook spellen",
+      "lead": "Wie een spel over een onderwerp maakt, moet het goed genoeg begrijpen om het uit te leggen. Voeg een stap ‘Bouw een spel’ toe aan een les, en je leerlingen beschrijven, testen en verbeteren hun eigen spel met de Builder, zonder code.",
+      "li1": "Een stap ‘Bouw een spel’ in je lessen, met het idee waar leerlingen mee beginnen",
+      "li2": "Elke leerling bouwt in een eigen Studio, en jij ziet de voortgang samen met de rest van de les",
+      "li3": "Klasgenoten spelen elkaars spellen: een herhalingsspel over het onderwerp van de week werkt goed",
+      "li4": "Privé tot het gedeeld wordt: met de klas, of met iedereen pas nadat iemand van ons team het heeft bekeken",
+      "shotAlt": "De Studio van een leerling: de Builder meldt dat versie 2 klaar is, en het spel draait in een voorbeeld op telefoonformaat.",
+      "caption": "De Studio van een leerling: beschrijven, de Builder bouwt, zelf testen."
     }
   },
   "teach": {

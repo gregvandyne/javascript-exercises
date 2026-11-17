@@ -6,7 +6,7 @@
 // Real captures of the running app, from made-up demo people in a throwaway database (never a real DB or a real child):
 // Pixel Panda, Rocket Otter, Ms. Rivera's Class at Sunny Hill Demo School... Light theme only (the page frames them).
 //
-// Usage: npm run how-shots [-- --only parents|teachers|live] [-- --keep]     (--keep leaves the temp data and PNGs)
+// Usage: npm run how-shots [-- --only parents|teachers|live|dash] [-- --keep]     (--keep leaves the temp data and PNGs)
 //        HOW_PORT=5990 (the server; the fake Stripe for the family step uses HOW_PORT + 1)
 //        HOW_REAL_BUILDER=1 with ANTHROPIC_API_KEY set: the Builder step from Claude (not deterministic: check it by eye).
 // Needs ImageMagick `convert` with WebP (else Chromium encodes) and the Playwright Chromium (BRB_CHROMIUM or /opt/pw-browsers).
@@ -130,6 +130,14 @@ async function main() {
     if (!only || only === 'parents') made.push(...await parentShots(shooter, ids));
     if (!only || only === 'teachers') made.push(...await teacherShots(shooter, ids));
     if (!only || only === 'live') made.push(...await liveShots(shooter, ids));
+    if (!only || only === 'dash') {
+      // A school morning on the dashboard's clock and schedule: the same database, the server's clock moved to 9:20 in
+      // the school's time zone on the next weekday (scripts/how-clock.mjs; the page takes its time from the server).
+      await stop(app);
+      const morning = nextSchoolMorning();
+      app = await startApp({ ...env, HOW_CLOCK: morning, NODE_OPTIONS: `--import ${path.join(ROOT, 'scripts', 'how-clock.mjs')}` });
+      made.push(...await dashShots(shooter, ids, morning));
+    }
     if (!only || only === 'parents') {
       // The same database, now with paid-plan pages on, for the family step.
       await stop(app);
@@ -157,9 +165,11 @@ const randomIp = () => `10.${1 + crypto.randomInt(250)}.${crypto.randomInt(250)}
 function makeShooter({ browser, BASE, PNG }) {
   const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
   const DESK = { viewport: { width: 1024, height: 640 }, deviceScaleFactor: 2 };
+  // A whole dashboard layout (8 rows) on one screen: 1600 × 1000 CSS px, saved 2048 wide like the desktop shots.
+  const WIDE = { viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1.28 };
   /** A signed-in (or signed-out) page for one person on one device. */
-  async function person(kind, username) {
-    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : DESK), baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce' });
+  async function person(kind, username, { timezoneId } = {}) {
+    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : kind === 'wide' ? WIDE : DESK), baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce', ...(timezoneId ? { timezoneId } : {}) });
     await ctx.setExtraHTTPHeaders({ 'X-Forwarded-For': randomIp() });
     const page = await ctx.newPage();
     page.setDefaultTimeout(20_000);
@@ -519,8 +529,141 @@ async function liveShots({ person, shot }, ids) {
   return made;
 }
 
+/** The video widget's stand-in (its host is never reached from here): plain and unbranded, as scripts/dash-video.js. */
+const VIDEO_STAND_IN = `<!doctype html><html><head><style>html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,sans-serif}
+body{display:grid;place-items:center;background:linear-gradient(135deg,#2f6bff,#8b5cf6 55%,#ec4899);color:#fff}
+.eq{display:flex;gap:10px;align-items:flex-end;height:90px;justify-content:center}.eq i{width:16px;border-radius:8px;background:rgba(255,255,255,.9)}
+p{margin:18px 0 0;font-size:26px;font-weight:800;text-align:center}</style></head><body><div><div class="eq"><i style="height:40px"></i><i style="height:80px"></i><i style="height:60px"></i><i style="height:90px"></i><i style="height:50px"></i></div><p>Move-and-groove brain break</p></div></body></html>`;
+
+/** 9:20 in New York (the dashboard's time zone for a school without one) on the next weekday still ahead, as ISO. */
+function nextSchoolMorning() {
+  const TZ = 'America/New_York';
+  const parts = d => Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short' }).formatToParts(d).map(p => [p.type, p.value]));
+  for (let day = 0; day < 8; day++) {
+    const p = parts(new Date(Date.now() + day * 864e5));
+    if (p.weekday === 'Sat' || p.weekday === 'Sun') continue;
+    // 9:20 that day: guess with a 5-hour offset, then correct by what New York's clock says at the guess.
+    let t = Date.UTC(+p.year, +p.month - 1, +p.day, 14, 20);
+    const q = parts(new Date(t)); t -= ((+q.hour * 60 + +q.minute) - (9 * 60 + 20)) * 60e3;
+    if (t > Date.now() + 60e3) return new Date(t).toISOString();
+  }
+  throw new Error('dash: no school morning ahead');
+}
+
+// ---------------------------------------------------------------- Class dashboards (the landing's #dashboards)
+// Ms. Rivera's class on the "Morning start" ready-made layout (services/dash.js LAYOUT_TEMPLATES): dash-teacher is her
+// screen (desktop); dash-student is Pixel Panda's own screen on a phone, with the widgets she pinned (today's
+// goal, the mood check-in, class jobs) beside their own clock. Three students check in a mood first, so her mood widget
+// shows totals (never who picked which: that is behind a tap, and not shot).
+async function dashShots({ person, shot }, ids, morning) {
+  const made = [];
+  const teacher = await person('desk', 'MsRivera');
+  const origin = new URL(teacher.url()).origin;
+  const api = async (p, url, data) => { const r = await p.request.post(url, { data, headers: { Origin: origin } }); if (!r.ok()) throw new Error(`dash: ${url} ${r.status()} ${await r.text()}`); return r.json(); };
+  // Opening the dashboard once makes her starter layout. Then every ready-made layout in turn, each used by the class
+  // (dash-layout-<id>, the landing's layout tour), and last the morning one again for the shots after.
+  await teacher.goto(`/class/${ids.classId}/dashboard`);
+  for (const [username, mood] of [['SwiftOtter34', 0], ['BrightFox57', 1], ['CozyKoala18', 0], ['ShinyNewt62', 0]]) {   // MOODS: 0 great, 1 good
+    const s = await person('desk', username);
+    await api(s, `/api/dash/${ids.classId}/mood`, { mood }).catch(() => {});   // only once a mood widget is pinned: below
+    await s.context().close();
+  }
+  // A first visit makes the six ready-made layouts (services/dash.js DEFAULT_SET, in LAYOUT_TEMPLATES order); the page
+  // lists them with their widgets.
+  const made0 = await teacher.evaluate(() => JSON.parse(document.getElementById('page-data').textContent).layouts);
+  const TPLS = ['morning', 'lesson', 'math', 'group', 'quiet', 'fun'];
+  if (made0.length !== TPLS.length) throw new Error(`dash: a first visit made ${made0.length} layouts, not ${TPLS.length}`);
+  const layouts = Object.fromEntries(TPLS.map((id, i) => [id, made0[i]]));
+  // Fun break's video widget with a link, as a teacher would paste one (its host answers with a stand-in below).
+  const fun = layouts.fun;
+  await api(teacher, `/api/dash/${ids.classId}/layouts/${fun.id}`, { widgets: fun.widgets.map(w => (w.type === 'video' ? { ...w, s: { ...w.s, video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, mute: true } } : w)) });
+  const students = [];
+  for (const [, username] of STUDENTS) students.push(await person('desk', username));
+  const use = id => api(teacher, `/api/dash/${ids.classId}/layouts/${id}/use`, {});
+  const W = (p, type) => p.locator(`.dash-w[data-id^="${type}"]`).first();
+  const tour = {
+    async morning() {
+      await use(layouts.morning.id);
+      for (const [i, s] of students.entries()) await api(s, `/api/dash/${ids.classId}/mood`, { mood: [0, 1, 0, 2, 0][i] });
+    },
+    async lesson(p) {
+      const ch = await api(teacher, `/api/dash/${ids.classId}/checks`, { kind: 'thumbs', question: 'Can you compare 3/8 and 3/5?' });
+      const cid = ch.check;   // createCheck answers { check: id }
+      for (const [i, s] of students.entries()) {
+        if (cid) await api(s, `/api/dash/${ids.classId}/checks/${cid}/answer`, { value: [0, 0, 1, 0, 2][i] });
+        if (i < 2) await api(s, `/api/dash/${ids.classId}/help`, { kind: i === 0 ? 'help' : 'done' });
+      }
+      return async () => {
+        await W(p, 'timer').getByRole('button', { name: /^Start$/ }).click();
+        await W(p, 'numline').getByRole('button', { name: /Point$/ }).click();
+        const b = await W(p, 'numline').locator('svg').first().boundingBox();
+        if (b) await p.mouse.click(b.x + b.width * 0.62, b.y + b.height * 0.5);
+      };
+    },
+    async math(p) {
+      return async () => {
+        await W(p, 'timer').getByRole('button', { name: /^Start$/ }).click();
+        for (const i of [1, 4]) await api(students[i], `/api/dash/${ids.classId}/help`, { kind: 'help' });
+      };
+    },
+    async group(p) {
+      return async () => {
+        await W(p, 'groups').getByRole('button', { name: /Make groups/ }).click();
+        await W(p, 'timer').getByRole('button', { name: /^Start$/ }).click();
+        for (const [team, n] of [[0, 2], [1, 3], [2, 1]]) for (let k = 0; k < n; k++) await W(p, 'score').getByRole('button', { name: /One point for/ }).nth(team).click();
+      };
+    },
+    async quiet(p) {
+      return async () => {
+        await W(p, 'timer').getByRole('button', { name: /^Start$/ }).click();
+        await W(p, 'breathe').getByRole('button', { name: /^Start$/ }).click();
+      };
+    },
+    async fun(p) {
+      return async () => {
+        await W(p, 'picker').getByRole('button', { name: /Spin/ }).click();
+        await W(p, 'dice').getByRole('button', { name: /Roll$/ }).click();
+        await p.waitForTimeout(5500);   // the wheel stops
+      };
+    },
+  };
+  for (const tpl of TPLS) {
+    if (tpl !== 'morning') await use(layouts[tpl].id);
+    const p = await person('wide', 'MsRivera', { timezoneId: 'America/New_York' });
+    await p.clock.setFixedTime(new Date(morning));
+    await p.route(/^https:\/\/(www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ contentType: 'text/html', body: VIDEO_STAND_IN }));
+    const after = await tour[tpl](p);
+    await p.goto(`/class/${ids.classId}/dashboard`);
+    await p.locator('.dash-w').first().waitFor(); await p.waitForTimeout(1200);
+    if (after) await after();
+    await p.waitForTimeout(1500);
+    made.push({ slug: `dash-layout-${tpl}`, kind: 'wide', png: await shot(p, `dash-layout-${tpl}`, { names: true }) });
+    await p.context().close();
+  }
+  // The lesson's quick check is over, and the class follows the morning layout again, for the shots below.
+  const live = await teacher.request.get(`/api/dash/${ids.classId}/live`).then(r => r.json()).catch(() => ({}));
+  for (const c of live.checks || []) if (c.open) await api(teacher, `/api/dash/${ids.classId}/checks/${c.id}/end`, {});
+  await use(layouts.morning.id);
+  for (const s of students) await s.context().close();
+  await teacher.context().close();
+  // The browser's clock too (the clock and schedule widgets read it), fixed at the same morning.
+  const ready = async p => { await p.locator('.dash-w').first().waitFor(); await p.waitForTimeout(1200); };
+  const open = async (kind, who) => { const p = await person(kind, who, { timezoneId: 'America/New_York' }); await p.clock.setFixedTime(new Date(morning)); await p.goto(`/class/${ids.classId}/dashboard`); await ready(p); return p; };
+  {
+    const kind = 'desk', p = await open(kind, 'MsRivera');
+    made.push({ slug: 'dash-teacher', kind, png: await shot(p, `dash-teacher-${kind}`, { names: true }) });
+    await p.context().close();
+  }
+  {
+    const p = await open('phone', ids.pandaSchool);
+    made.push({ slug: 'dash-student', kind: 'phone', png: await shot(p, 'dash-student-phone', { names: true }) });
+    await p.context().close();
+  }
+  return made;
+}
+
 // ---------------------------------------------------------------- encode
-const SIZES = { phone: [['p', 390], ['p', 780]], desk: [['d', 1024], ['d', 2048]] };
+const SIZES = { phone: [['p', 390], ['p', 780]], desk: [['d', 1024], ['d', 2048]], wide: [['d', 1024], ['d', 2048]] };
 function hasMagick() { try { return /WEBP/i.test(execFileSync('convert', ['-list', 'format'], { encoding: 'utf8' })) ? 'convert' : null; } catch { return null; } }
 async function encodeAll(made, PNG) {
   fs.mkdirSync(OUT, { recursive: true });
@@ -550,7 +693,7 @@ function report(files) {
   const kb = n => `${(n / 1024).toFixed(0)} KB`;
   for (const f of files) console.log(`${path.relative(ROOT, f.file).padEnd(48)} ${kb(f.bytes).padStart(7)}`);
   let over = false;
-  for (const pg of ['parents', 'teachers', 'live']) {
+  for (const pg of ['parents', 'teachers', 'live', 'dash']) {
     const mine = files.filter(f => f.slug.startsWith(pg + '-'));
     if (!mine.length) continue;
     const phone = mine.filter(f => f.tag === 'p' && f.w === 780).reduce((a, f) => a + f.bytes, 0);

@@ -31,6 +31,7 @@
     "layout:live": "node scripts/live-layout-audit.js",
     "layout:games": "node scripts/games-fit-audit.js",
     "dash:fit": "node scripts/dash-fit-check.js",
+    "dash:video": "node scripts/dash-video.js",
     "focus:sheet": "node scripts/focus-sheet.js",
     "build:jungle": "node tools/jungle-cup/build.mjs"
   },

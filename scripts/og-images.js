@@ -80,8 +80,8 @@ const LANDING_CSS = `.lp{position:relative;width:1200px;height:630px;overflow:hi
 .lp .stack{position:absolute;right:20px;top:70px;width:470px;height:500px}
 .lp .stack img{border-color:#4A4840;box-shadow:0 20px 40px rgba(0,0,0,.6)}
 .lp .url{color:#66C792}`;
-CARDS.push({ file: 'landing.jpg', html: page(`<style>${LANDING_CSS}</style><div class="lp">${brand()}<span class="kicker">For teachers · 14 days free</span><h1>Turn your lesson plans into games your class begs to play</h1>
-  <div class="pills" style="position:relative;width:600px"><span>AI game Builder</span><span>Live class games</span><span>Unlimited students</span></div>
+CARDS.push({ file: 'landing.jpg', html: page(`<style>${LANDING_CSS}</style><div class="lp">${brand()}<span class="kicker">For teachers · 14 days free</span><h1>One screen to run your class. Games to make it stick.</h1>
+  <div class="pills" style="position:relative;width:600px"><span>Class dashboards</span><span>AI game Builder</span><span>Live class games</span></div>
   <div class="stack"><img src="${cover('fraction-factory')}"><img src="${cover('quest-race')}"><img src="${cover('robo-route')}"></div><p class="url">oomba.ai</p></div>`) });
 
 const KICKER = { learning: 'Free learning game', words: 'Free word game', board: 'Free board game', music: 'Free music game', puzzle: 'Free puzzle game', arcade: 'Free arcade game', sports: 'Free sports game', adventure: 'Free adventure game', silly: 'Free silly game' };

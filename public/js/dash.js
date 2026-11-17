@@ -326,7 +326,9 @@ function start() {
   function add(type) {
     snapshot();
     const box = freeSpot(type.size[0], type.size[1]);
-    const s = {}; for (const f of type.settings) s[f.key] = f.def;
+    // A deep copy: the list editors (marks, periods) push into and edit rows of w.s in place, which would otherwise
+    // change the registry's shared default for every widget of this type added later in the page session.
+    const s = {}; for (const f of type.settings) s[f.key] = structuredClone(f.def);
     const w = { id: `${type.id}${Math.random().toString(36).slice(2, 8)}`, type: type.id, ...box, s, ...(TEACHER && type.pin && type.pinDef ? { pin: true } : {}) };
     S.widgets.push(w); S.selected = w.id;
     changed(t('js.dash.say.added', { name: type.name }));

@@ -50,11 +50,11 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
     assert.equal(r.status, 200);
     assert.ok(isLanding(r.text), ua);
     assert.equal(r.text.match(/<h1\b/g).length, 1, 'one h1');
-    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">Turn your lesson plans into games your class begs to play<\/h1>/);
+    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">One screen to run your class\. Games to make it stick\.<\/h1>/);
     assert.match(r.text, /<meta name="robots" content="index, follow, max-image-preview:large">/);
     assert.match(r.text, new RegExp(`<link rel="canonical" href="${base}/">`));
-    assert.match(r.text, /<title>Turn lesson plans into classroom games · Oomba Academy<\/title>/);
-    assert.match(r.text, /<meta name="description" content="Game-based learning for teachers: [^"]{40,}">/);
+    assert.match(r.text, /<title>Class dashboards and learning games for teachers · Oomba Academy<\/title>/);
+    assert.match(r.text, /<meta name="description" content="One screen to run your class day, [^"]{40,}">/);
     assert.match(r.text, /<meta property="og:image" content="[^"]+\/og\/landing\.jpg">/);
     assert.match(r.text, /<meta name="twitter:card" content="summary_large_image">/);
     for (const lm of ['<header class="lp-bar"', '<main id="lp-main">', '<footer class="lp-foot">', '<nav class="lp-nav"']) assert.ok(r.text.includes(lm), lm);
@@ -112,7 +112,7 @@ test('every language: hreflang for all 13, /es is the Spanish landing (its own c
   const es = await call(null, '/es', { ua: GOOGLEBOT });
   assert.ok(isLanding(es.text));
   assert.match(es.text, /<html lang="es" dir="ltr"/);
-  assert.match(es.text, /<h1 id="lp-h1" class="lp-h1">Convierte tus planes de clase en juegos/);
+  assert.match(es.text, /<h1 id="lp-h1" class="lp-h1">Una pantalla para dirigir tu clase/);
   assert.match(es.text, new RegExp(`<link rel="canonical" href="${base}/es">`));
   assert.doesNotMatch(es.text, / lang="en" dir="ltr">(?!Roediger|Hattie|Fraction)/, 'nothing left in English but the citations and a game name');
   for (const c of ['ar', 'he']) assert.match((await call(null, `/${c}`)).text, new RegExp(`<html lang="${c}" dir="rtl"`));
@@ -180,4 +180,67 @@ test('the page works without JavaScript and loads nothing from elsewhere', async
   const lazy = [...s.matchAll(/<img\b[^>]*>/g)].filter(m => /loading="lazy"/.test(m[0])).length;
   assert.ok(lazy >= 10, 'pictures below the first screen load lazily');
   assert.match(s, /<figure class="lp-demo" data-stage="done"/, 'the hero shows the whole lesson → game picture before any script');
+});
+
+test('class dashboards: a section with the real screenshots, in every language, linked from the wide top bar', async () => {
+  const fs = await import('node:fs');
+  const s = (await call(null, '/')).text;
+  assert.match(s, /<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">/);
+  assert.match(s, /<nav class="lp-nav"[^>]*>\s*<a href="#dashboards">Dashboards<\/a>/, 'first in the top bar');
+  assert.match(s, /<nav class="lp-menu-panel"[\s\S]*?<a href="#dashboards">Dashboards<\/a>/, 'and in the menu (phones)');
+  for (const f of ['dash-teacher-d-1024', 'dash-teacher-d-2048', 'dash-student-p-390', 'dash-student-p-780']) {
+    assert.ok(s.includes(`/img/how/${f}.webp`), f);
+    assert.ok(fs.existsSync(new URL(`../../public/img/how/${f}.webp`, import.meta.url)), `${f}.webp is in the repo`);
+  }
+  // Every language has the section's words (no English fallback marks inside it).
+  for (const code of ['de', 'ar', 'ja']) {
+    const page = (await call(null, `/${code}`)).text;
+    const sec = page.slice(page.indexOf('id="dashboards"'), page.indexOf('</section>', page.indexOf('id="dashboards"')));
+    assert.ok(sec.length > 200, code);
+    assert.doesNotMatch(sec, /lang="en"/, `${code}: the dashboards section is translated`);
+  }
+});
+
+test('the layout tour: every ready-made layout with its real screenshot and widgets, then every widget; complete without script', async () => {
+  const fs = await import('node:fs');
+  const D = await import('../../server/services/dash.js');
+  const s = (await call(null, '/')).text;
+  const sec = s.slice(s.indexOf('id="dash-tour"'), s.indexOf('</section>', s.indexOf('id="dash-tour"')));
+  assert.ok(sec.length > 500);
+  for (const x of D.LAYOUT_TEMPLATES) {
+    assert.ok(sec.includes(`/img/how/dash-layout-${x.id}-d-1024.webp`), x.id);
+    assert.ok(fs.existsSync(new URL(`../../public/img/how/dash-layout-${x.id}-d-2048.webp`, import.meta.url)), `${x.id} picture is in the repo`);
+  }
+  assert.equal([...sec.matchAll(/class="lp-dt-item"/g)].length, D.LAYOUT_TEMPLATES.length);
+  // Every widget is named once in the rows, with the real count in the heading.
+  const rows = sec.slice(sec.indexOf('class="lp-dt-widgets"'));
+  assert.equal([...rows.matchAll(/<li>/g)].length, D.WIDGETS.length);
+  assert.match(rows, new RegExp(`>${D.WIDGETS.length} widgets to build your own<`));
+  // The deck is the script's (.is-tour); the page as sent is the plain list.
+  assert.doesNotMatch(sec, /is-tour/);
+  const ar = (await call(null, '/ar')).text;
+  const arSec = ar.slice(ar.indexOf('id="dash-tour"'), ar.indexOf('</section>', ar.indexOf('id="dash-tour"')));
+  assert.doesNotMatch(arSec, /lang="en"/, 'translated');
+});
+
+test('the story: the class day in five steps that lead to their sections in order, and a menu for phones that needs no script', async () => {
+  const s = (await call(null, '/')).text;
+  const at = id => s.indexOf(`id="${id}"`);
+  const order = ['how', 'dashboards', 'dash-tour', 'builder', 'kids', 'courses', 'pricing', 'faq'];
+  for (const id of order) assert.ok(at(id) > 0, id);
+  for (let i = 1; i < order.length; i++) assert.ok(at(order[i - 1]) < at(order[i]), `${order[i - 1]} before ${order[i]}`);
+  // Five steps, each a link to a section on the page.
+  const steps = [...s.slice(at('how')).matchAll(/<a class="lp-jlink" href="#([\w-]+)">/g)].map(m => m[1]).slice(0, 5);
+  assert.equal(steps.length, 5);
+  for (const id of steps) assert.ok(at(id) > 0, `step goes to #${id}`);
+  assert.deepEqual([steps[0], steps[1], steps[2], steps[4]], ['dashboards', 'dash-tour', 'builder', 'kids']);
+  // The menu: a <details> (opens without JavaScript) with every section, sign in and Just Play.
+  const menu = s.slice(s.indexOf('<details class="lp-menu"'), s.indexOf('</details>'));
+  assert.ok(menu.length > 100, 'menu');
+  for (const id of ['how', 'dashboards', 'builder', 'kids', 'courses', 'pricing', 'faq']) assert.match(menu, new RegExp(`href="#${id}"`), id);
+  assert.match(menu, /href="\/login"/); assert.match(menu, /href="\/play"/);
+  // The hero shows the class dashboard (the lesson → game loop is in the Builder section now, still complete before any script).
+  const hero = s.slice(0, at('how'));
+  assert.match(hero, /class="lp-hstage"/); assert.match(hero, /dash-teacher-d-1024\.webp/);
+  assert.ok(s.indexOf('class="lp-demo"') > at('builder'), 'the demo is in the Builder section');
 });

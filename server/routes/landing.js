@@ -38,6 +38,7 @@ import { teacherLoop } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
+import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -111,17 +112,30 @@ export function renderLanding(req, res) {
 
   if (req.method === 'GET' && countable(req)) funnel.bump('landing.view');
 
+  // The page's sections, in the order of the story (docs/decisions.md "Landing: the whole class day"). wide: also in
+  // the bar on wide screens; every one is in the menu (phones and narrower screens, where the bar has no room).
+  const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
+    ['#kids', 'kids', false], ['#courses', 'courses', true], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
+  const NAV_CTA = { '#how': 'how', '#pricing': 'pricing' };
+  const navLink = (href, key) => html`<a href="${href}"${NAV_CTA[href] ? raw(` data-cta="${NAV_CTA[href]}"`) : ''}${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
   const header = html`<a class="lp-skip" href="#lp-main">${t('landing.nav.skip')}</a>
 <header class="lp-bar" id="lp-bar">
   <a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a>
   <nav class="lp-nav" aria-label="${t('landing.nav.label')}">
-    <a href="#how" data-cta="how">${t('landing.nav.how')}</a><a href="#builder">${t('landing.nav.builder')}</a><a href="#courses">${t('landing.nav.courses')}</a>${live ? html`<a href="#live">${t('landing.nav.live')}</a>` : ''}<a href="#pricing" data-cta="pricing">${t('landing.nav.pricing')}</a><a href="#faq">${t('landing.nav.faq')}</a>
+    ${NAV.filter(([, , wide]) => wide).map(([href, key]) => navLink(href, key))}
   </nav>
   <div class="lp-actions">
     <a class="lp-signin" href="/login">${t('landing.nav.signIn')}</a>
     <a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
     <a class="lp-btn lp-btn-primary lp-btn-sm" href="${TRIAL_URL}" data-cta="trial" aria-label="${t('landing.nav.trial')}"><span class="lp-long">${t('landing.nav.trial')}</span><span class="lp-short" aria-hidden="true">${t('landing.nav.trialShort')}</span></a>
   </div>
+  <details class="lp-menu" id="lp-menu">
+    <summary class="lp-menu-btn" aria-label="${t('landing.nav.menu')}"><span class="lp-burger" aria-hidden="true"><i></i><i></i><i></i></span><span class="lp-menu-word"${fb('landing.nav.menu')}>${t('landing.nav.menu')}</span></summary>
+    <nav class="lp-menu-panel" aria-label="${t('landing.nav.label')}">
+      <ul>${NAV.map(([href, key]) => html`<li>${navLink(href, key)}</li>`)}</ul>
+      <div class="lp-menu-foot"><a class="lp-btn lp-btn-ghost" href="/login">${t('landing.nav.signIn')}</a><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
+    </nav>
+  </details>
 </header>`;
 
   // The sky: three star fields and the aurora, each moved at its own speed by public/js/landing.js (data-depth).
@@ -147,7 +161,7 @@ export function renderLanding(req, res) {
       <p class="lp-freeline"${fb('teachers.free.line')}>${tHtml(t, 'teachers.free.line', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' })}</p>
       <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
-    ${demo(t, fb)}
+    ${heroStage(t, fb)}
   </div>
 </section>`;
 
@@ -158,11 +172,20 @@ export function renderLanding(req, res) {
     <li><b>0</b><span>${t('landing.facts.installs')}</span></li>
   </ul></div></section>`;
 
-  const how = html`<section class="lp-sec" id="how" aria-labelledby="how-h">
+  // How it works: the class day in five steps, each a link to its section; a line fills in as the page scrolls
+  // (public/js/landing.js), and without script it is simply drawn.
+  const STEPS = [['🖥️', '#dashboards'], ['☀️', '#dash-tour'], ['✨', '#builder'], ['📡', live ? '#live' : '#builder'], ['🎨', '#kids']];
+  const how = html`<section class="lp-sec lp-journey" id="how" aria-labelledby="how-h">
   <div class="lp-wrap">
-    <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.how.kicker')}</p><h2 id="how-h">${t('landing.how.h')}</h2><p>${t('landing.how.lead')}</p></header>
-    <ol class="lp-steps">
-      ${[['1', '📄', 's1'], ['2', '✨', 's2'], ['3', '🎮', 's3']].map(([n, e, k]) => html`<li class="lp-card lp-step rv"><span class="lp-step-n" aria-hidden="true">0${n}</span><span class="lp-step-e" aria-hidden="true">${e}</span><h3>${t(`landing.how.${k}.h`)}</h3><p>${t(`landing.how.${k}.p`)}</p></li>`)}
+    <header class="lp-sec-head"><p class="lp-eyebrow"${fb('landing.how.kicker')}>${t('landing.how.kicker')}</p><h2 id="how-h"${fb('landing.how.h')}>${t('landing.how.h')}</h2><p${fb('landing.how.lead')}>${t('landing.how.lead')}</p></header>
+    <ol class="lp-jsteps" data-journey>
+      ${STEPS.map(([e, href], i) => html`<li class="lp-jstep rv" style="--i:${i}"><a class="lp-jlink" href="${href}">
+        <span class="lp-jbadge" aria-hidden="true"><span class="lp-jemoji">${e}</span></span>
+        <span class="lp-jn" aria-hidden="true" dir="ltr">0${i + 1}</span>
+        <h3${fb(`landing.how.s${i + 1}.h`)}>${t(`landing.how.s${i + 1}.h`)}</h3>
+        <p${fb(`landing.how.s${i + 1}.p`)}>${t(`landing.how.s${i + 1}.p`)}</p>
+        <span class="lp-jsee"${fb('landing.how.see')}>${t('landing.how.see')} <span aria-hidden="true">↓</span></span>
+      </a></li>`)}
     </ol>
   </div>
 </section>`;
@@ -179,11 +202,69 @@ export function renderLanding(req, res) {
       <ul class="lp-list">${[1, 2, 3, 4, 5].map(i => html`<li>${check}<span>${t(`landing.builder.li${i}`)}</span></li>`)}</ul>
       ${cta(TRIAL_URL, t('landing.hero.cta'))}
     </div>
+    ${demo(t, fb)}
+  </div>
+</section>`;
+
+  // Class dashboards (docs/decisions.md "Classroom dashboards", "Class dashboards on the landing"): the teacher's screen
+  // on the projector with a student's own screen beside it, real captures from scripts/how-shots.js (--only dash).
+  const dashSec = html`<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">
+  <div class="lp-glow lp-glow-b" aria-hidden="true" data-depth="-.2"></div>
+  <div class="lp-wrap lp-split-in">
+    <div class="lp-split-text rv">
+      <p class="lp-eyebrow"${fb('landing.dash.kicker')}>${t('landing.dash.kicker')}</p><h2 id="dash-h"${fb('landing.dash.h')}>${t('landing.dash.h')}</h2><p${fb('landing.dash.lead')}>${t('landing.dash.lead', { count: WIDGETS.length })}</p>
+      <ul class="lp-list">${[1, 2, 3, 4, 5].map(i => html`<li>${check}<span${fb(`landing.dash.li${i}`)}>${t(`landing.dash.li${i}`)}</span></li>`)}</ul>
+      ${cta(TRIAL_URL, t('landing.hero.cta'))}
+    </div>
+    <figure class="lp-device lp-device-live rv">
+      <div class="lp-screen">${shot('dash-teacher', t('landing.dash.shotAlt'))}</div>
+      <div class="lp-phone" data-depth=".16" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="170px" width="390" height="844" alt="" loading="lazy" decoding="async"></div>
+    </figure>
+  </div>
+</section>`;
+
+  // The layout tour (#dash-tour, docs/decisions.md "Dashboard layout tour on the landing"): every ready-made layout
+  // (services/dash.js LAYOUT_TEMPLATES) with its real screenshot, name, description and widgets, then every widget.
+  // Without JavaScript, with reduced motion or on a narrow screen it is a plain list of cards; public/js/landing.js
+  // turns it into a deck that plays as the page scrolls (.is-tour) and slides the widget rows.
+  const wname = id => t(`dash.w.${id}.name`);
+  const icon = id => (WIDGETS.find(w => w.id === id) || {}).icon || '▫️';
+  const chip = id => html`<li><span aria-hidden="true">${icon(id)}</span>${wname(id)}</li>`;
+  const tourWidgets = WIDGETS.map(w => w.id);
+  const half = Math.ceil(tourWidgets.length / 2);
+  const dtourSec = html`<section class="lp-sec lp-dtour" id="dash-tour" aria-labelledby="dtour-h">
+  <div class="lp-wrap"><header class="lp-sec-head"><p class="lp-eyebrow"${fb('landing.dtour.kicker')}>${t('landing.dtour.kicker')}</p><h2 id="dtour-h"${fb('landing.dtour.h')}>${t('landing.dtour.h')}</h2><p${fb('landing.dtour.lead')}>${t('landing.dtour.lead')}</p></header></div>
+  <div class="lp-dt" data-dtour style="--n:${LAYOUT_TEMPLATES.length}">
+    <div class="lp-dt-stage"><div class="lp-wrap lp-dt-in">
+      <ol class="lp-dt-list">${LAYOUT_TEMPLATES.map((x, i) => {
+        const types = [...new Set(x.widgets(t).map(([type]) => type))];
+        return html`<li class="lp-dt-item" data-i="${i}">
+        <div class="lp-dt-text"><p class="lp-dt-n" aria-hidden="true" dir="ltr">0${i + 1}<span> / 0${LAYOUT_TEMPLATES.length}</span></p><h3><span aria-hidden="true">${x.icon}</span> ${t(`dash.tpl.${x.id}.name`)}</h3><p>${t(`dash.tpl.${x.id}.desc`)}</p><ul class="lp-dt-chips">${types.map(chip)}</ul></div>
+        <figure class="lp-dt-fig"><div class="lp-screen">${shot(`dash-layout-${x.id}`, `${t(`dash.tpl.${x.id}.name`)}: ${t(`dash.tpl.${x.id}.desc`)}`)}</div></figure>
+      </li>`;
+      })}</ol>
+      <ol class="lp-dt-dots" aria-hidden="true">${LAYOUT_TEMPLATES.map(x => html`<li><span>${x.icon}</span></li>`)}</ol>
+    </div></div>
+  </div>
+  <div class="lp-dt-widgets">
+    <h3 class="lp-dt-wh"${fb('landing.dtour.widgets')}>${t('landing.dtour.widgets', { count: tourWidgets.length })}</h3>
+    <ul class="lp-dt-row" data-row="1">${tourWidgets.slice(0, half).map(chip)}</ul>
+    <ul class="lp-dt-row" data-row="-1">${tourWidgets.slice(half).map(chip)}</ul>
+  </div>
+</section>`;
+
+  // Students build too (#kids): the "Build a game" lesson step (lessons.kinds.build), with the real Studio of a student.
+  const kidsSec = html`<section class="lp-sec lp-split" id="kids" aria-labelledby="kids-h">
+  <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
+  <div class="lp-wrap lp-split-in">
+    <div class="lp-split-text rv">
+      <p class="lp-eyebrow"${fb('landing.kids.kicker')}>${t('landing.kids.kicker')}</p><h2 id="kids-h"${fb('landing.kids.h')}>${t('landing.kids.h')}</h2><p${fb('landing.kids.lead')}>${t('landing.kids.lead')}</p>
+      <ul class="lp-list">${[1, 2, 3, 4].map(i => html`<li>${check}<span${fb(`landing.kids.li${i}`)}>${t(`landing.kids.li${i}`)}</span></li>`)}</ul>
+      ${cta(TRIAL_URL, t('landing.hero.cta'))}
+    </div>
     <figure class="lp-device rv">
-      <div class="lp-screen">${shot('parents-build', t('landing.builder.shotAlt'))}</div>
-      <div class="lp-bubble lp-bubble-you" data-depth="-.12"><b>${t('landing.builder.you')}</b><span>${t('landing.builder.msg')}</span><span class="lp-chip">📄 ${t('landing.demo.file')}</span></div>
-      <div class="lp-bubble lp-bubble-bot" data-depth=".1"><b>🤖 ${t('landing.demo.builderTag')}</b><span>${t('landing.builder.bot')}</span></div>
-      <figcaption>${t('landing.builder.caption')}</figcaption>
+      <div class="lp-screen">${shot('parents-build', t('landing.kids.shotAlt'))}</div>
+      <figcaption${fb('landing.kids.caption')}>${t('landing.kids.caption')}</figcaption>
     </figure>
   </div>
 </section>`;
@@ -360,7 +441,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${kidsSec}${loopSec}${courses}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
@@ -390,6 +471,25 @@ ${body}
 const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
 /** The games in the moving row under the courses. */
 const MARQUEE = ['sum-racer', 'atlas-quest', 'doodle-hoot', 'trick-inbox', 'code-isle', 'data-detective', 'fraction-factory', 'quest-race', 'brain-board', 'word-trail'];
+
+/** The hero's picture: the class dashboard on the projector (a real capture, scripts/how-shots.js), a student's own screen
+ *  on a phone, and around it the rest of the day: a game the Builder just made and a live game starting. The cards move
+ *  at their own depth as the page scrolls (data-depth, public/js/landing.js); without script they simply sit there. */
+function heroStage(t, fb) {
+  return html`<figure class="lp-hstage">
+  <div class="lp-screen lp-hs-screen"><img src="/img/how/dash-teacher-d-1024.webp" srcset="/img/how/dash-teacher-d-1024.webp 1024w, /img/how/dash-teacher-d-2048.webp 2048w" sizes="(min-width: 1024px) 600px, 92vw" width="1024" height="640" alt="${t('landing.dash.shotAlt')}" fetchpriority="high" decoding="async"></div>
+  <div class="lp-hs-phone" data-depth=".1" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="150px" width="390" height="844" alt="" decoding="async"></div>
+  <div class="lp-glass lp-hs-card lp-hs-build" data-depth="-.14">
+    ${cover('fraction-factory', { eager: true, w: 240, cls: 'lp-hs-cover' })}
+    <div><p class="lp-d-tag"${fb('landing.hero.cBuildTag')}>✨ ${t('landing.hero.cBuildTag')}</p><p class="lp-hs-t"${fb('landing.hero.cBuild')}>${t('landing.hero.cBuild')}</p></div>
+  </div>
+  <div class="lp-glass lp-hs-card lp-hs-live" data-depth="-.06">
+    <span class="lp-hs-dot" aria-hidden="true"></span>
+    <div><p class="lp-d-tag"${fb('landing.hero.cLiveTag')}>📡 ${t('landing.hero.cLiveTag')}</p><p class="lp-hs-t"${fb('landing.hero.cLive')}>${t('landing.hero.cLive')}</p></div>
+    <span class="lp-hs-faces" aria-hidden="true"><i>🐼</i><i>🦊</i><i>🐨</i><i>🦦</i></span>
+  </div>
+</figure>`;
+}
 
 /** The hero's picture: a lesson, the Builder at work, and a game. Without JavaScript (or with reduced motion) all three
  *  show at once; public/js/landing.js plays it as a short loop. */
@@ -423,10 +523,10 @@ function softwareLd(req, t, { description, langs }) {
   const app = {
     '@type': 'SoftwareApplication', '@id': seo.abs(req, '/#app'), name: BRAND, url: seo.abs(req, '/'), description,
     publisher: { '@id': seo.orgId(req) }, image: seo.abs(req, '/og/landing.jpg'),
-    screenshot: ['parents-build', 'live-lobby'].map(n => seo.abs(req, `/img/how/${n}-d-1024.webp`)),
+    screenshot: ['parents-build', 'dash-teacher', 'live-lobby'].map(n => seo.abs(req, `/img/how/${n}-d-1024.webp`)),
     inLanguage: langs, isAccessibleForFree: false,
     audience: [{ '@type': 'EducationalAudience', educationalRole: 'teacher' }, ...seo.audienceLd()],
-    featureList: [1, 2, 3, 4, 5].map(i => t(`landing.builder.li${i}`)).concat([t('landing.pricing.teacher.li1'), t('landing.pricing.teacher.li2')]),
+    featureList: [1, 2, 3, 4, 5].map(i => t(`landing.builder.li${i}`)).concat([t('landing.dash.h'), t('landing.pricing.teacher.li1'), t('landing.pricing.teacher.li2')]),
   };
   if (LANDING_SHOW_PRICE) {
     app.offers = { '@type': 'Offer', name: t('landing.pricing.teacher.name'), price: TEACHER_PRICE.amount, priceCurrency: TEACHER_PRICE.currency, url: seo.abs(req, TRIAL_URL),

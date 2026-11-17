@@ -7097,6 +7097,72 @@ layout of the published puzzle that inspired it, never its puzzle sets or wordin
 ## Preferred sources link on the landing page footer
 The landing footer links to Google's preferred sources deeplink (`https://www.google.com/preferences/source?q=oomba.ai`) so visitors can mark oomba.ai as a source they prefer in Google Search. A plain link with our own styling, not Google's button script: no third-party script on the page and no Publisher ID needed. It sits only on the adult-facing marketing page, never in play or kid screens. Label in all 13 languages (`landing.footer.preferredSource`).
 
+## Class dashboards on the landing page (16 Nov 2026)
+Owner: "update the marketing site to showcase the new dashboards."
+- **Where:** a section on "/" (server/routes/landing.js, `#dashboards`) right after the Builder, laid out like the live
+  games section: the words on one side, the teacher's screen with a student's phone screen on top of it on the other.
+  Words under `landing.dash.*` in all 13 languages (en-GB only where the spelling differs: Maths, timetable). Only what
+  the code does: more than 50 widgets (55 in `WIDGETS`), the five ready-made layouts, the tools named in the registry,
+  pinning to student screens and sending a game, lesson or link, no AI, Oomba names, and what a student types staying in
+  their own row ("Classroom dashboards, stage 1"). Dashboards are free, so the button is the usual trial button.
+- **Top bar:** the "Dashboards" link (`.lp-nav-wide`) shows only from 1500px wide, where it fits beside the others in
+  every language; narrower, the section is reached by scrolling. Measured while adding it: in German, French, Russian,
+  Dutch, Spanish and Italian the bar was already wider than the window at 1180 to 1280px (Russian to 1440px) without
+  it. Not changed here.
+- **Pictures:** real captures by scripts/how-shots.js (`--only dash`): Ms. Rivera's demo class on the "Morning start"
+  layout, three demo students' moods checked in, the teacher's screen (desktop) and Pixel Panda's own screen
+  (phone), with the usual price and demo-name checks. So the clock and "now and next" show a school morning on any day
+  the script is run, the server for these shots runs with its clock moved ahead to 9:20 in New York on the next
+  weekday (scripts/how-clock.mjs, loaded with `--import` by the script only, never by the app), and the browser's clock
+  and time zone are set to match. The structured data lists the teacher's screen as a screenshot and the section's
+  heading as a feature.
+- **Checks:** tests/unit/teacher-landing.test.js (the section, its pictures, translated in de, ar and ja);
+  `scripts/landing-audit.js` passes at all six sizes, dark and light.
+
+## Class dashboards walkthrough video (16 Nov 2026)
+Owner: "Build a beautiful walkthrough video … make it look like an actual class and make sure the new default layouts
+are shown. Make the name Ms. Haberle's."
+- **How it is made:** `npm run dash:video -- --out dash-walkthrough.mp4` (scripts/dash-video.js). The real app on a
+  throwaway in-memory database, driven by Playwright, recorded with Chromium's screencast (Page.startScreencast, JPEG
+  frames with their times) and put together with ffmpeg: each part at a constant 30 fps, then the parts joined with
+  short cross-fades; 1920 × 1080 H.264 with faststart. `--peek dir` saves a still of every step; `--keep` keeps the frames.
+- **The class:** Ms. Haberle's Class (grade 4) at Maple Grove Demo School with 22 students, shown only by their Oomba
+  names as dashboards always do (the roster names are placeholders and never appear). The day runs as a class would:
+  16 moods checked in, a thumbs quick check answered by 18, hands up in the help queue, groups made, team points, the
+  voice meter on Chromium's fake microphone, the timers, the wheel and the dice.
+- **What it shows:** her everyday screen; New layout with all five ready-made layouts (each one pointed at); then each
+  of them made in turn (Morning start, Lesson, Group work, Quiet work, Fun break) with every widget on screen and in
+  use; switching back in one tap; a student's own screen on a phone (pinned widgets, a mood tap, a game sent to every
+  screen); an end card. No prices.
+- **The frame:** a stage page (a Playwright route, never served by the app) holds the dashboard in an iframe with a
+  caption band and title cards, and draws the pointer and its click rings. In the recording browser only, the
+  dashboard page's `X-Frame-Options: DENY` and `frame-ancestors 'none'` are relaxed to same-origin so the stage can frame
+  it, and the video widget's host answers with a plain, unbranded stand-in (as scripts/dash-fit-check.js does).
+- **A school morning on any day:** the script starts itself again with its clock at 8:50 in New York on the next
+  weekday (scripts/how-clock.mjs) and sets the browser's clock and time zone to match, so the schedule shows "Morning
+  meeting, then Math".
+- The video file is not in the repo (it is large and is remade by the script).
+
+## Dashboard layout tour on the landing (16 Nov 2026)
+Owner: "make some sort of cool parallax that shows all of the different dashboards and everything it offers."
+- **Where:** a section on "/" right after Class dashboards (`#dash-tour`, server/routes/landing.js): every ready-made
+  layout (services/dash.js `LAYOUT_TEMPLATES`, so a new one shows up by itself) with its real screenshot, its name and
+  description (the app's own `dash.tpl.*` words), and chips for its widgets; then "55 widgets to build your own" with
+  every widget in `WIDGETS` (the app's `dash.w.*.name`). New words: `landing.dtour.*` in all 13 languages.
+- **Motion** (public/js/landing.js `startTour`, on screens at least 1000 × 620 with motion allowed): the section stays on
+  screen (sticky) while the page scrolls through about 78vh per layout; the layouts come forward like a deck (the next
+  ones stacked behind, lifted and dimmed; the one leaving tips back and lifts away), each resting a moment in front, with
+  its words beside it and an icon row for where you are. The widget rows slide sideways in opposite directions as the
+  page scrolls, placed so it works right to left too. Transforms, opacity and a brightness filter only, one frame per
+  scroll burst, passive listeners.
+- **Without it** (no script, reduced motion, or narrower than 1000px): a plain list, each layout's words beside or above
+  its picture, and the widgets as a wrapped cloud. Everything is in the page as sent.
+- **Pictures:** `dash-layout-<id>` from scripts/how-shots.js (`--only dash`), 1600 × 1000 CSS px saved 2048 wide, each
+  layout in use by the demo class (moods, a quick check answered, the help queue, groups and points, the timers, the
+  wheel and dice, the video widget with a plain stand-in as the walkthrough video has).
+- **Checks:** tests/unit/teacher-landing.test.js (every layout and its picture, every widget once, the count, translated
+  in Arabic, no `.is-tour` in the page as sent); landing-audit passes at all six sizes, dark and light; looked at in
+  English, Arabic (right to left) and on a phone, with reduced motion and without JavaScript.
 ## Classroom dashboards: layouts on a phone (16 Nov 2026)
 Product report: "On mobile I can't shift between the different dashboards." Tapping a layout chip did switch, but on a
 phone (one column, under 720px) the footer with the chips, New, ⋯, Eyes up and Push to students sat below every widget, at
@@ -7150,3 +7216,34 @@ reached past the inner circle.
   `timer-min`, `timer-big` for Quiet work's 6 × 7; `SIZES=timer` for only these) with timers paused at 0:05, 9:59, 10:00
   and 59:59 in the ring, the digits and the stopwatch, plus 1:05:00 and the Fun break's 3:00 ring: in each group the
   time has one font size, and on every view any ring's time box lies inside its inner circle (2px to spare).
+
+## Landing: the whole class day (17 Nov 2026)
+Owner: "I'm unable to navigate to the dashboard page on mobile. I also think this needs to be part of the main landing
+page. Set up your classroom dashboard, use it to run your day to day, build games to augment learning, play live
+games, have your kids build games too. Make it better than that."
+- **Phones could not reach any section:** below 1120px the top bar hid its links and had no menu. Now a menu
+  (`#lp-menu`, a `<details>` so it opens without script; public/js/landing.js closes it on a choice, Escape or a tap
+  outside) lists every section in story order, with Sign in and Just Play. The links sit in the bar only from 1366px
+  (Dashboards first; "How it works" and "Students build" are menu-only), which also ends the bar running wider than
+  the window in German, French, Russian, Dutch, Spanish and Italian at 1180 to 1440px (measured: no overflow in any of
+  the 13 languages from 320 to 1600px). Below 900px Just Play leaves the bar (it is in the menu), so nothing wraps.
+  The app's own dashboard links were checked on a phone and were fine ("Class dashboard" on the class page, "My
+  dashboard" for students).
+- **The story:** the hero is now "One screen to run your class. Games to make it stick.", its picture the real class
+  dashboard with a student's phone and two cards (a game the Builder just made, a live game starting) at their own
+  depth. "How it works" is the class day in five linked steps: set up your class dashboard → run your day from it →
+  turn lessons into games → play live together → let your students build too, joined by a line that fills as the page
+  scrolls. The sections follow in that order: Class dashboards, the layout tour, the Builder (now with the lesson → game
+  loop that was in the hero), live games, and a new "Your students build games too" (`#kids`: the "Build a game" lesson
+  step, with the Studio screenshot), then the teaching loop, courses and the rest as before.
+- **Words:** every new line in all 13 languages (hero, meta title and description, under 160 characters, the five
+  steps, the students section, the menu); the dashboards lead now gives the real widget count (48 since the maths tools
+  were combined) instead of "more than 50"; the maths line names tools that still exist. The share card
+  (public/og/landing.jpg, scripts/og-images.js) has the new heading and "Class dashboards" first.
+- **Pictures:** scripts/how-shots.js now takes the six layouts a first visit makes (Math included) instead of making its
+  own, so the tour shows all six.
+- **Checks:** tests/unit/teacher-landing.test.js (the sections in order, five steps that each go to a section, the menu
+  with every section and no script needed, the dashboard in the hero and the loop in the Builder section);
+  landing-audit passes at all six sizes, dark and light (layout shift 0).
+- The walkthrough video (scripts/dash-video.js) still opens on the old "Everyday" starter and makes its layouts from the
+  New sheet; with the six made on a first visit it should switch between them instead before it is made again.
