@@ -2746,7 +2746,8 @@
         "takenDown": "Bild entfernt",
         "zoneNone": "Keine",
         "placeNote": "Gib einen Ort oder eine Stadt ein. Oomba nutzt nie den Standort von jemandem.",
-        "qrNote": "Nur die freigegebenen Links der Klasse und Oomba-Seiten lassen sich zeigen."
+        "qrNote": "Nur die freigegebenen Links der Klasse und Oomba-Seiten lassen sich zeigen.",
+        "undo": "Rückgängig"
       },
       "bgChanged": "Hintergrund geändert",
       "uploading": "Dein Bild wird geprüft…",
@@ -9559,7 +9560,8 @@
         "m": {
           "fractions": "Bruchstreifen",
           "fdp": "Bruch, Dezimalzahl, Prozent"
-        }
+        },
+        "partsOf": "Teile in Bruch {n}"
       },
       "numline": {
         "name": "Zahlenstrahl",

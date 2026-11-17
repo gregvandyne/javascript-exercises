@@ -27,6 +27,11 @@
   /* Status: success, danger and the text on it, the red and amber chips, the stats chart bars. */
   --ok:#14744A; --ok-bg:#E1F1E1; --danger:#BE3329; --on-danger:#FFFDF2; --bad-bg:#F9E3DC; --bad-ink:#A12A20;
   --warn-bg:#FFF0B8; --warn-ink:#6B4C00; --viz-1:#1F9D63;
+  /* Classroom dashboards' teaching tools: pen colours, the shape board's band colours and angle marks, a letter's vowel,
+     the map's ocean names and their halo, an edge hidden behind a 3D shape (public/css/dash.css). */
+  --dt-pen-red:#D7263D; --dt-pen-blue:#1F6FD1; --dt-pen-green:#1E8E4E; --dt-pen-orange:#E06A00; --dt-pen-purple:#7A3FC4;
+  --gb0:#1F6FD1; --gb1:#C2185B; --gb2:#1E8E4E; --gb3:#D35F00; --gb4:#7A3FC4; --gb5:#00838F; --gb6:#8D5524; --gb-angle:#A3216A;
+  --dt-vowel:#C2185B; --dt-ocean:#0D4F7A; --dt-ocean-halo:rgba(255,255,255,.7); --dt-hidden-edge:#141414;
   --shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);
   --shadow-lg:0 12px 32px rgba(20,20,20,.14);
   /* Shapes: cards and small tiles, small controls, big panels and heroes. */
@@ -49,6 +54,9 @@
   --spark-edge:transparent; --spark-soft:#352E14; --logo-sub:#66C792; --focus:#FFD23F;
   --ok:#7BD3A3; --ok-bg:#1E3326; --danger:#FF8A7A; --on-danger:#141414; --bad-bg:#3B201C; --bad-ink:#FFA294;
   --warn-bg:#3A3113; --warn-ink:#FFD23F; --viz-1:#66C792;
+  --dt-pen-red:#FF6B6B; --dt-pen-blue:#6FB2FF; --dt-pen-green:#5FD38D; --dt-pen-orange:#FFA24D; --dt-pen-purple:#C49BFF;
+  --gb0:#6FB2FF; --gb1:#FF7AA8; --gb2:#5FD38D; --gb3:#FFA24D; --gb4:#C49BFF; --gb5:#4FD1DC; --gb6:#D9A37A; --gb-angle:#FF9CC8;
+  --dt-vowel:#FF7AA8; --dt-ocean:#BFE3FF; --dt-ocean-halo:rgba(0,0,0,.6); --dt-hidden-edge:#FFFDF2;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32); --shadow-lg:0 12px 32px rgba(0,0,0,.55);
   color-scheme:dark;
 }}
@@ -61,6 +69,9 @@
   --spark-edge:transparent; --spark-soft:#352E14; --logo-sub:#66C792; --focus:#FFD23F;
   --ok:#7BD3A3; --ok-bg:#1E3326; --danger:#FF8A7A; --on-danger:#141414; --bad-bg:#3B201C; --bad-ink:#FFA294;
   --warn-bg:#3A3113; --warn-ink:#FFD23F; --viz-1:#66C792;
+  --dt-pen-red:#FF6B6B; --dt-pen-blue:#6FB2FF; --dt-pen-green:#5FD38D; --dt-pen-orange:#FFA24D; --dt-pen-purple:#C49BFF;
+  --gb0:#6FB2FF; --gb1:#FF7AA8; --gb2:#5FD38D; --gb3:#FFA24D; --gb4:#C49BFF; --gb5:#4FD1DC; --gb6:#D9A37A; --gb-angle:#FF9CC8;
+  --dt-vowel:#FF7AA8; --dt-ocean:#BFE3FF; --dt-ocean-halo:rgba(0,0,0,.6); --dt-hidden-edge:#FFFDF2;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32); --shadow-lg:0 12px 32px rgba(0,0,0,.55);
   color-scheme:dark;
 }}

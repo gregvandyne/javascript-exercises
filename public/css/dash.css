@@ -637,10 +637,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 /* ---------- stage 3: teaching tools, whiteboard, picture (docs/decisions.md "Classroom dashboards, stage 3") ---------- */
 .dash-w[data-group="teach"]{--g:#E0699B}
 .dt{--dt-c0:color-mix(in srgb,var(--accent) 88%,var(--card));--dt-c1:color-mix(in srgb,var(--spark) 92%,var(--card));--dt-c2:color-mix(in srgb,#5AA9D6 88%,var(--card));
-  --dt-pen-red:#D7263D;--dt-pen-blue:#1F6FD1;--dt-pen-green:#1E8E4E;--dt-pen-orange:#E06A00;--dt-pen-purple:#7A3FC4;
   display:flex;flex-direction:column;gap:var(--s2);height:100%;min-height:0}
-:root[data-theme="dark"] .dt{--dt-pen-red:#FF6B6B;--dt-pen-blue:#6FB2FF;--dt-pen-green:#5FD38D;--dt-pen-orange:#FFA24D;--dt-pen-purple:#C49BFF}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt{--dt-pen-red:#FF6B6B;--dt-pen-blue:#6FB2FF;--dt-pen-green:#5FD38D;--dt-pen-orange:#FFA24D;--dt-pen-purple:#C49BFF}}
 .dt .btn{white-space:normal;line-height:1.15;text-align:center}
 /* a button that can't be used now still reads (4.5:1): muted text on a dashed outline instead of a faded button */
 .dt .btn:disabled{opacity:1}
@@ -1004,9 +1001,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-geobig{font-size:clamp(1rem,min(6cqh,3.6cqi),2.2rem)}
 .dt-geok{font-weight:700;color:var(--text-2);font-size:max(13px,.62em)}
 .dt-geosep{color:var(--muted)}
-.gb-tool{--gb0:#1F6FD1;--gb1:#C2185B;--gb2:#1E8E4E;--gb3:#D35F00;--gb4:#7A3FC4;--gb5:#00838F;--gb6:#8D5524;--gb-ink:var(--text)}
-:root[data-theme="dark"] .gb-tool{--gb0:#6FB2FF;--gb1:#FF7AA8;--gb2:#5FD38D;--gb3:#FFA24D;--gb4:#C49BFF;--gb5:#4FD1DC;--gb6:#D9A37A}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-tool{--gb0:#6FB2FF;--gb1:#FF7AA8;--gb2:#5FD38D;--gb3:#FFA24D;--gb4:#C49BFF;--gb5:#4FD1DC;--gb6:#D9A37A}}
+.gb-tool{--gb-ink:var(--text)}   /* the band colours --gb0 to --gb6: theme tokens in public/css/app.css */
 .gb-c0{--gb:var(--gb0)}.gb-c1{--gb:var(--gb1)}.gb-c2{--gb:var(--gb2)}.gb-c3{--gb:var(--gb3)}.gb-c4{--gb:var(--gb4)}.gb-c5{--gb:var(--gb5)}.gb-c6{--gb:var(--gb6)}
 .gb-tool .dt-stage{align-items:stretch}
 .gb{position:relative;flex:1 1 auto;width:100%;min-width:0;min-height:0;display:flex;flex-direction:column;gap:6px}
@@ -1075,12 +1070,8 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .gb-marks text,.gb-rulert{font-family:var(--font);font-weight:800;paint-order:stroke;stroke:var(--card-2);stroke-width:7px;stroke-linejoin:round;pointer-events:none}
 .gb-letter{fill:var(--text)}
 .gb-side{fill:var(--text-2);font-weight:700}
-.gb-angle{fill:#A3216A}
-:root[data-theme="dark"] .gb-angle{fill:#FF9CC8}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-angle{fill:#FF9CC8}}
-.gb-arc{fill:none;stroke:#A3216A;stroke-width:3.5}
-:root[data-theme="dark"] .gb-arc{stroke:#FF9CC8}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gb-arc{stroke:#FF9CC8}}
+.gb-angle{fill:var(--gb-angle)}
+.gb-arc{fill:none;stroke:var(--gb-angle);stroke-width:3.5}
 .gb-ink{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .gb-pen0{stroke:var(--text);background:var(--text)}.gb-pen1{stroke:var(--dt-pen-red);background:var(--dt-pen-red)}.gb-pen2{stroke:var(--dt-pen-blue);background:var(--dt-pen-blue)}
 .gb-pen3{stroke:var(--dt-pen-green);background:var(--dt-pen-green)}.gb-pen4{stroke:var(--dt-pen-orange);background:var(--dt-pen-orange)}
@@ -1193,9 +1184,8 @@ html.gb-maxed,html.gb-maxed body{overflow:hidden}
 .dt-sface.is-curved{fill:#9ED9CF;stroke:#9ED9CF;stroke-width:1;stroke-linejoin:round}
 .dt-sedge{fill:none;stroke:#141414;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
 .dt-sedge.is-marked{stroke:#C2185B;stroke-width:5}
-.dt-shidden{stroke-dasharray:7 6;opacity:.55;stroke-width:2}
-:root[data-theme="dark"] .dt-shidden{stroke:var(--text)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt-shidden{stroke:var(--text)}}
+.dt-shidden{stroke:var(--dt-hidden-edge);stroke-dasharray:7 6;opacity:.55;stroke-width:2}
+.dt-sedge.dt-shidden.is-marked{stroke:#C2185B}
 .dt-svx{fill:#C2185B;stroke:#fff;stroke-width:2.5}
 .dt-sfnum{fill:#141414;font:800 calc(18px * var(--ts,1)) var(--font)}
 .dt-scount{gap:.3em .6em;font-size:clamp(1rem,min(6.5cqh,4.2cqi),2.4rem)}
@@ -1321,9 +1311,7 @@ html.gb-maxed,html.gb-maxed body{overflow:hidden}
 .dt-lch{line-height:1}
 .dt-lread{gap:.15em}
 .dt-ldot{color:var(--muted);font-weight:600}
-.dt-lv{color:#C2185B;text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.12em}
-:root[data-theme="dark"] .dt-lv{color:#FF7AA8}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt-lv{color:#FF7AA8}}
+.dt-lv{color:var(--dt-vowel);text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.12em}
 /* graphic organizers */
 .dt-org{width:100%;height:100%;display:flex;flex-direction:column;gap:var(--s2);min-height:0}
 .dt-orgtitle{flex:none;text-align:center;font-weight:800;font-size:clamp(1rem,min(6cqh,4cqi),1.6rem);overflow-wrap:anywhere}
@@ -1391,9 +1379,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dt-land{fill:color-mix(in srgb,#66C792 75%,var(--card));stroke:color-mix(in srgb,var(--text) 60%,transparent);stroke-width:1.5;stroke-linejoin:round}
 .dt-land-antarctica{fill:color-mix(in srgb,#fff 75%,#9ED9CF)}
 .dt-cont{fill:#141414;font:800 calc(17px * var(--ts,1)) var(--font);paint-order:stroke;stroke:rgba(255,255,255,.85);stroke-width:calc(5px * var(--ts,1));stroke-linejoin:round}
-.dt-ocean{fill:#0D4F7A;font:italic 700 calc(16px * var(--ts,1)) var(--font);paint-order:stroke;stroke:rgba(255,255,255,.7);stroke-width:calc(4px * var(--ts,1));stroke-linejoin:round}
-:root[data-theme="dark"] .dt-ocean{fill:#BFE3FF;stroke:rgba(0,0,0,.6)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dt-ocean{fill:#BFE3FF;stroke:rgba(0,0,0,.6)}}
+.dt-ocean{fill:var(--dt-ocean);font:italic 700 calc(16px * var(--ts,1)) var(--font);paint-order:stroke;stroke:var(--dt-ocean-halo);stroke-width:calc(4px * var(--ts,1));stroke-linejoin:round}
 .dt-gref{fill:var(--text);font:800 calc(18px * var(--ts,1)) var(--font)}
 .dt-rosebg{fill:var(--card);stroke:var(--text);stroke-width:2}
 .dt-rosestar{fill:var(--card-2);stroke:var(--text);stroke-width:2}
@@ -1767,3 +1753,38 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 @media (max-width:719px){.dt-bars .dt-steplab{display:inline}}
 /* Layouts on a phone: focusing or scrolling to something never leaves it under the sticky switcher or the bottom bar. */
 @media (max-width:719px){html:has(.dash.has-topswitch:not(.is-editing)){scroll-padding-top:72px;scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom))}}
+/* Type the number between − and + (docs/decisions.md "Classroom dashboards: type the number between − and +"): the
+   number looks as it did (its own class gives its size), with a faint dashed underline that says it can be typed in;
+   a box shows on hover and while typing. At least 44px tall (36px in the fraction sentence's tight rows, as its buttons). */
+.dash-num{box-sizing:content-box;inline-size:calc(var(--num-ch,1) * 1ch + .3ch);min-block-size:40px;padding:0 4px;margin:0;border:2px solid transparent;border-radius:10px;text-decoration:underline dashed var(--line);text-decoration-thickness:2px;text-underline-offset:.16em;background:transparent;color:inherit;font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;text-align:center;line-height:1.1;cursor:text;appearance:none}
+.dash-num.dt-stepval,.dash-num.dt-fov,.dash-num.dt-matn,.dash-num.dt-fpn{min-block-size:40px}
+@supports (field-sizing:content){.dash-num{field-sizing:content;inline-size:auto;min-inline-size:1ch}}
+.dash-num:hover:not([readonly]){border-color:var(--line);background:var(--card)}
+.dash-num:focus{outline:none;border-color:var(--accent-line);background:var(--card);text-decoration-color:transparent}
+.dash-num:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.dash-num[aria-invalid="true"]{border-color:var(--danger)}
+.dash-num[readonly]{cursor:default;text-decoration:none}
+.dash-num.dt-fpn{font-size:.95rem;color:var(--text)}
+.dt-fs-tight .dash-num,.dt-fs-mini .dash-num{min-block-size:32px}
+.dash-num.dw-teampts{min-inline-size:1.4em;padding-inline:0;border-inline-width:1px}
+@supports (field-sizing:content){.dash-num.dw-teampts{min-inline-size:1.4em}.dash-num.dt-stepval{min-inline-size:2.2em}}
+.dash-projector .dash-num{text-decoration-color:transparent}
+.dash-projector .dash-num:hover:not([readonly]){text-decoration-color:var(--line)}
+.dt-fpl:has(.dash-num){display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:0}
+@container (max-width:480px){.dt-fpl:has(.dash-num){display:inline-flex}.dt-fpl:has(.dash-num) .dt-fplw{display:none}}
+
+/* A widget's settings straight from the board (the teacher's screen, not in edit mode): a quiet gear at the end of its
+   header. On a mouse it shows on hover and on focus; on a touch screen it is always there, faint. On the projector it
+   shows only on hover or focus, laid over the header's corner so the bigger type never makes room for it. It opens the same settings as edit mode, in a sheet (public/js/dash.js boardSettings). */
+.dash-wgear{flex:none;display:inline-grid;place-items:center;inline-size:44px;block-size:44px;margin-block:-6px;margin-inline-end:-10px;padding:0;border:0;border-radius:999px;background:transparent;color:var(--text-2);cursor:pointer;opacity:0;transition:opacity .15s ease}
+.dash-wgear svg{inline-size:22px;block-size:22px}
+.dash-w:hover .dash-wgear,.dash-w:focus-within .dash-wgear,.dash-wgear:focus-visible,.dash-wgear[aria-expanded="true"]{opacity:1}
+.dash-wgear:hover{background:var(--accent-soft);color:var(--accent-ink)}
+.dash-wgear:focus-visible{outline:3px solid var(--focus);outline-offset:-2px;opacity:1}
+@media (hover:none){.dash-wgear{opacity:.55}}
+.dash-projector .dash-wgear{opacity:0;position:absolute;inset-block-start:4px;inset-inline-end:4px;margin:0;background:var(--card);z-index:2}
+.dash-projector .dash-w:hover .dash-wgear,.dash-projector .dash-wgear:focus-visible{opacity:1}
+.dash-idle .dash-wgear{opacity:0!important}
+@media (prefers-reduced-motion:reduce){.dash-wgear{transition:none}}
+.dash-boardset .dash-form{margin-block-start:var(--s2)}
+.dash-boardacts{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin-block-start:var(--s3)}

@@ -24,16 +24,20 @@ function ibtn(icon, text, cls = 'btn btn-sm') {
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
 }
-/** − value + with a visible label; the buttons are named in a tooltip (no native title). */
-function stepper(label, get, dec, inc) {
+/** − value + with a visible label; the buttons are named in a tooltip (no native title). The value is typed too (the
+ *  tool's shared field, public/js/dash-num.js): set(n) is the buttons' own change, inside the limits sync() is given;
+ *  masked() hides the value ("?") while it is the unknown. */
+function stepper(T, key, label, get, dec, inc, set, masked) {
   const g = el('div', 'dt-step'); g.setAttribute('role', 'group'); g.setAttribute('aria-label', label);
   const lab = el('span', 'dt-steplab', label); lab.setAttribute('aria-hidden', 'true');
   const minus = tip(btn('−', 'btn btn-sm dt-pm'), `${label}: −`), plus = tip(btn('+', 'btn btn-sm dt-pm'), `${label}: +`);
   minus.setAttribute('aria-label', `${label} −`); plus.setAttribute('aria-label', `${label} +`);
-  const val = ltr('b', 'dt-stepval'); val.setAttribute('aria-live', 'off');
+  let lim = [1, 999];
+  const val = T.num({ label, key, get, set, min: () => lim[0], max: () => lim[1], up: () => { if (get() < lim[1]) inc(); }, down: () => { if (get() > lim[0]) dec(); }, mask: masked, cls: 'dt-stepval' });
   minus.addEventListener('click', dec); plus.addEventListener('click', inc);
   g.append(lab, minus, val, plus);
-  g.sync = (lo, hi) => { const v = get(); val.textContent = String(v); minus.disabled = v <= lo; plus.disabled = v >= hi; g.setAttribute('aria-label', `${label}: ${v}`); };
+  g.sync = (lo, hi) => { lim = [lo, hi]; const v = get(); val.sync(); minus.disabled = v <= lo; plus.disabled = v >= hi; g.setAttribute('aria-label', `${label}: ${masked() ? '?' : v}`); };
+  g.name = text => val.setAttribute('aria-label', text);
   return g;
 }
 
@@ -64,12 +68,21 @@ export function bars(body, s, ctx) {
     pick = 0; st.kind = v; st.unk = 0; Object.assign(st, B.clampBars(st));
     T.commit(`${W[v]}: ${sayModel()}`);
   });
-  const s1 = stepper(W.groups, () => (st.kind === 'mul' ? st.g : st.kind === 'part' ? st.p.length : st.ca),
+  // The model's slot each stepper changes (its number shows "?" while that slot is the hidden one).
+  const slotOf = which => { const m = B.barModel(st); return m.kind === 'part' ? (which === 2 ? pick + 1 : -1) : which; };
+  const masked = which => () => st.hide && slotOf(which) === B.barModel(st).unk;
+  const s1 = stepper(T, 's1', W.groups, () => (st.kind === 'mul' ? st.g : st.kind === 'part' ? st.p.length : st.ca),
     () => change(() => { if (st.kind === 'mul') st.g--; else if (st.kind === 'part') { st.p.pop(); pick = Math.min(pick, st.p.length - 1); if (st.unk > st.p.length) st.unk = 0; } else st.ca--; }),
-    () => change(() => { if (st.kind === 'mul') st.g++; else if (st.kind === 'part') st.p.push(Math.max(1, Math.min(LIM.v[1], st.p.at(-1)))); else st.ca++; }));
-  const s2 = stepper(W.each, () => (st.kind === 'mul' ? st.e : st.kind === 'part' ? st.p[pick] : st.cb),
+    () => change(() => { if (st.kind === 'mul') st.g++; else if (st.kind === 'part') st.p.push(Math.max(1, Math.min(LIM.v[1], st.p.at(-1)))); else st.ca++; }),
+    n => change(() => {
+      if (st.kind === 'mul') st.g = n;
+      else if (st.kind === 'part') { while (st.p.length < n) st.p.push(Math.max(1, Math.min(LIM.v[1], st.p.at(-1)))); st.p.length = n; pick = Math.min(pick, st.p.length - 1); if (st.unk > st.p.length) st.unk = 0; }
+      else st.ca = n;
+    }), masked(1));
+  const s2 = stepper(T, 's2', W.each, () => (st.kind === 'mul' ? st.e : st.kind === 'part' ? st.p[pick] : st.cb),
     () => change(() => { if (st.kind === 'mul') st.e--; else if (st.kind === 'part') st.p[pick]--; else st.cb--; }),
-    () => change(() => { if (st.kind === 'mul') st.e++; else if (st.kind === 'part') st.p[pick]++; else st.cb++; }));
+    () => change(() => { if (st.kind === 'mul') st.e++; else if (st.kind === 'part') st.p[pick]++; else st.cb++; }),
+    n => change(() => { if (st.kind === 'mul') st.e = n; else if (st.kind === 'part') st.p[pick] = n; else st.cb = n; }), masked(2));
   const fresh = tip(btn('', 'btn btn-sm dt-bnew'), W.newProblem); fresh.setAttribute('aria-label', W.newProblem);
   { const i = el('span', 'dt-ic', '🎲'); i.setAttribute('aria-hidden', 'true'); fresh.appendChild(i); }
   fresh.addEventListener('click', () => {
@@ -275,11 +288,10 @@ export function bars(body, s, ctx) {
     if (m.kind === 'mul') { lab(s1, W.groups); lab(s2, W.each); s1.sync(...LIM.g); s2.sync(...LIM.e); }
     else if (m.kind === 'part') { lab(s1, W.parts); lab(s2, fill(W.partN, { n: pick + 1 })); s1.sync(...LIM.n); s2.sync(...LIM.v); }
     else { lab(s1, W.first); lab(s2, W.second); s1.sync(...LIM.v); s2.sync(...LIM.v); }
-    // A stepper never gives the answer away: the hidden quantity reads "?".
-    const slotOf = g => (m.kind === 'mul' ? (g === s1 ? 1 : 2) : m.kind === 'cmp' ? (g === s1 ? 1 : 2) : g === s2 ? pick + 1 : -1);
-    for (const g of [s1, s2]) if (st.hide && slotOf(g) === m.unk) g.querySelector('.dt-stepval').textContent = '?';
+    // A stepper never gives the answer away: the hidden quantity reads "?" (and can't be typed in).
     for (const [g, text] of [[s1, s1.dataset.label], [s2, s2.dataset.label]]) {
-      const [mi, pl] = g.querySelectorAll('.dt-pm'); g.setAttribute('aria-label', `${text}: ${g.querySelector('.dt-stepval').textContent}`);
+      const [mi, pl] = g.querySelectorAll('.dt-pm'), v = g.querySelector('.dt-stepval');
+      g.setAttribute('aria-label', `${text}: ${v.value}`); g.name(text);
       mi.setAttribute('aria-label', `${text} −`); pl.setAttribute('aria-label', `${text} +`); tip(mi, `${text}: −`); tip(pl, `${text}: +`);
     }
     // What is unknown.

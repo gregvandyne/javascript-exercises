@@ -2746,7 +2746,8 @@
         "takenDown": "Imagem tirada",
         "zoneNone": "Nenhum",
         "placeNote": "Digite uma cidade. O Oomba nunca usa a localização de ninguém.",
-        "qrNote": "Só os links aprovados da turma e as páginas do Oomba podem ser mostrados."
+        "qrNote": "Só os links aprovados da turma e as páginas do Oomba podem ser mostrados.",
+        "undo": "Desfazer"
       },
       "bgChanged": "Fundo mudado",
       "uploading": "Verificando sua imagem…",
@@ -9560,7 +9561,8 @@
         "m": {
           "fractions": "Barras de frações",
           "fdp": "Fração, decimal, porcentagem"
-        }
+        },
+        "partsOf": "Partes da fração {n}"
       },
       "numline": {
         "name": "Reta numérica",

@@ -24,6 +24,7 @@ import { rods } from './dash-rods.js';
 // sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
 import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
+import { numField } from './dash-num.js';
 import { format } from './i18n-format.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -1106,16 +1107,19 @@ function score(body, s, ctx) {
   const scores = names.map((_, i) => Number((s.scores || [])[i]) || 0);
   const ul = el('ul', 'dw-teams dw-scroll');   // more teams than fit: the list scrolls, the reset stays below
   const control = ctx.teacher && !ctx.editing;
+  const pointsWord = ((ctx.type.settings || []).find(f => f.key === 'scores') || {}).label || '';
   names.forEach((nm, i) => {
     const li = el('li', `dw-team dw-team${i % 4}`);
     li.appendChild(typed('span', 'dw-teamname', nm));
-    const pts = el('b', 'dw-teampts', String(scores[i])); pts.setAttribute('aria-live', 'polite');
     if (control) {
       const minus = btn('−', 'btn btn-sm dw-pm', fill(W.minus, { team: nm })), plus = btn('+', 'btn btn-sm dw-pm dw-plus', fill(W.plus, { team: nm }));
-      const change = d => { const next = scores.slice(); next[i] = Math.max(-9999, Math.min(9999, next[i] + d)); ctx.set('scores', next); ctx.say(`${nm}: ${next[i]}`); };
+      const setTo = n => { const next = scores.slice(); next[i] = Math.max(-9999, Math.min(9999, n)); ctx.set('scores', next); ctx.say(`${nm}: ${next[i]}`); };
+      const change = d => setTo(scores[i] + d);
       minus.addEventListener('click', () => change(-1)); plus.addEventListener('click', () => change(1));
+      // The points typed too (the same −9999 to 9999); the widget draws itself again, the typing goes on in the new field.
+      const pts = numField({ label: `${nm}: ${pointsWord}`, key: `score:${ctx.id}:${i}`, get: () => scores[i], set: setTo, min: -9999, max: 9999, format: String, cls: 'dw-teampts' });
       li.append(minus, pts, plus);
-    } else li.appendChild(pts);
+    } else { const pts = el('b', 'dw-teampts', String(scores[i])); pts.setAttribute('aria-live', 'polite'); li.appendChild(pts); }
     ul.appendChild(li);
   });
   body.appendChild(ul);

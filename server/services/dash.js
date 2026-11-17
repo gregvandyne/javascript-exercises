@@ -98,6 +98,8 @@ for (const id of MATH_TOOLS) TOOL_WORDS[id].push('howto', 'helpUse', 'helpIdeas'
 // The fraction tool's Add, Subtract, Multiply and Divide.
 TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul', 'modeDiv', 'howtoOp', 'howtoMul', 'howtoDiv', 'first', 'second', 'num', 'den',
   'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think');
+// Type the number between − and +: the name of a fraction's "parts" field.
+TOOL_WORDS.fractions.push('partsOf');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // maths tools combined: the mode switch ("Choose what Place value shows")

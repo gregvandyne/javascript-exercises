@@ -2745,7 +2745,8 @@
         "takenDown": "Image retirée",
         "zoneNone": "Aucun",
         "placeNote": "Tape une ville ou un village. Oomba n’utilise jamais la position de personne.",
-        "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés."
+        "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés.",
+        "undo": "Annuler"
       },
       "bgChanged": "Fond changé",
       "uploading": "Vérification de ton image…",
@@ -9558,7 +9559,8 @@
         "m": {
           "fractions": "Bandes de fractions",
           "fdp": "Fraction, décimal, pourcentage"
-        }
+        },
+        "partsOf": "Parts de la fraction {n}"
       },
       "numline": {
         "name": "Droite graduée",

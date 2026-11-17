@@ -12,6 +12,7 @@
 import * as M from './dash-math.js';
 import { questionFor } from './dash-ask.js';
 import { tip } from './dash-tip.js';
+import { numField } from './dash-num.js';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -89,17 +90,24 @@ function shell(body, s, ctx, id) {
       g.sync();
       return g;
     },
-    /** − value + with a label; the value is announced. */
-    stepper(label, get, dec, inc, decAria, incAria) {
+    /** − value + with a label; the value is announced. num: the value can be typed too (public/js/dash-num.js):
+     *  { value() (the number), min, max, set(n) (the buttons' own rules: commits), format?, parse?, width?, decimal? };
+     *  ArrowUp and ArrowDown are inc and dec, and the tool's state as typing began is kept for rules that tie values
+     *  together. */
+    stepper(label, get, dec, inc, decAria, incAria, num) {
       const g = el('div', 'dt-step'); g.setAttribute('role', 'group'); g.setAttribute('aria-label', label);
       const lab = el('span', 'dt-steplab', label); lab.setAttribute('aria-hidden', 'true');
       const minus = btn('−', 'btn btn-sm dt-pm', decAria), plus = btn('+', 'btn btn-sm dt-pm', incAria);
-      const val = ltr('b', 'dt-stepval');
+      const val = num ? T.num({ label, get: num.value, set: num.set, min: num.min, max: num.max, up: inc, down: dec, format: num.format, parse: num.parse, width: num.width, decimal: num.decimal, inputMode: num.inputMode, cls: 'dt-stepval' }) : ltr('b', 'dt-stepval');
       minus.addEventListener('click', dec); plus.addEventListener('click', inc);
       g.append(lab, minus, val, plus);
-      g.sync = () => { val.textContent = String(get()); };
+      g.sync = () => { if (num) val.sync(); else val.textContent = String(get()); };
       g.sync();
       return g;
+    },
+    /** A typed number (public/js/dash-num.js) that keeps this tool's state as it was when typing began. */
+    num(o) {
+      return numField({ snap: () => clone(st), restore: x => { for (const k of Object.keys(st)) delete st[k]; Object.assign(st, x); }, off: ctx.editing, ...o, key: `${ctx.copy ? 'copy:' : ''}${ctx.id}:${id}:${o.key || o.label}` });
     },
     toggle(text, aria, get, set) {
       const b = btn(text, 'btn btn-sm', aria);
@@ -359,7 +367,12 @@ function fractions(body, s, ctx) {
       const parts2 = d => { b.d = d; b.n = Math.min(b.n, d); T.commit(fill(W.parts, { n: d })); };
       minus.addEventListener('click', () => { if (b.d > 1) parts2(b.d - 1); });
       plus.addEventListener('click', () => { if (b.d < 12) parts2(b.d + 1); });
-      const pl = el('span', 'dt-fpl', fill(W.parts, { n: b.d }));
+      // "4 parts" with the 4 typed (1-12): the words around the number come from the one translated string.
+      const pl = el('span', 'dt-fpl'), [pre, post = ''] = fill(W.parts, { n: '\u0001' }).split('\u0001');
+      const setD = d => { const x = st.bars[i]; x.d = d; x.n = Math.min(x.n, d); T.commit(fill(W.parts, { n: d })); };
+      const pn = T.num({ label: fill(W.partsOf, { n: i + 1 }), key: `parts${i}`, get: () => st.bars[i].d, min: 1, max: 12, cls: 'dt-fpn', set: setD,
+        up: () => { if (st.bars[i].d < 12) setD(st.bars[i].d + 1); }, down: () => { if (st.bars[i].d > 1) setD(st.bars[i].d - 1); } });
+      if (pre.trim()) pl.append(el('span', 'dt-fplw', pre.trim())); pl.append(pn); if (post.trim()) pl.append(el('span', 'dt-fplw', post.trim()));
       pm.append(minus, pl, plus);
       row.append(lab, shape, pm);
       wrap.appendChild(row);
@@ -439,12 +452,15 @@ function fractions(body, s, ctx) {
       const r = el('div', 'dt-forow');
       const m = btn('−', 'btn btn-sm dt-pm', `${word} − (${who})`), p = btn('+', 'btn btn-sm dt-pm', `${word} + (${who})`);
       m.dataset.k = `${k}${key}-`; p.dataset.k = `${k}${key}+`;
-      const v = ltr('b', 'dt-fov', String(f[key])); v.setAttribute('aria-hidden', 'true');
       // Divide: the second fraction's top number stops at 1 (nothing is divided by zero); − there says why instead.
       const noZero = mode() === 'div' && k === 'b' && key === 'n';
       m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = ctx.editing || f[key] >= hi;
-      const set = x => { zeroNote = noZero && x < 1; if (zeroNote) { T.draw(); ctx.say(W.noZero); return; } st[k] = M.clampOperand({ ...f, [key]: x }); T.commit(opSay()); };
+      const set = x => { zeroNote = noZero && x < 1; if (zeroNote) { T.draw(); ctx.say(W.noZero); return; } st[k] = M.clampOperand({ ...st[k], [key]: x }); T.commit(opSay()); };
       m.addEventListener('click', () => set(f[key] - 1)); p.addEventListener('click', () => set(f[key] + 1));
+      // The number typed: the same limits (a top number at most three wholes; dividing, never by zero), drawn again
+      // as it is typed (the field moves to the new sentence with what is being typed).
+      const v = T.num({ label: `${word} (${who})`, key: `${k}${key}`, get: () => st[k][key], min: noZero ? 1 : lo, max: () => (key === 'n' ? Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * st[k].d) : hi), cls: 'dt-fov',
+        up: () => set(st[k][key] + 1), down: () => set(st[k][key] - 1), set });
       r.append(m, v, p); return r;
     };
     const line = el('div', 'dt-fol'); line.setAttribute('aria-hidden', 'true');
@@ -824,8 +840,12 @@ function coord(body, s, ctx) {
   const T = shell(body, s, ctx, 'coord'), { W, st } = T;
   const m = () => M.SLOPES[st.mi];
   const eqWords = () => M.equationText(m(), st.b);
-  const slope = T.stepper(W.slope, () => M.fracText(m()), () => { if (st.mi > 0) { st.mi--; T.commit(eqWords()); } }, () => { if (st.mi < M.SLOPES.length - 1) { st.mi++; T.commit(eqWords()); } }, `${W.slope} −`, `${W.slope} +`);
-  const startS = T.stepper(W.start, () => (st.b < 0 ? `−${-st.b}` : st.b), () => { if (st.b > -10) { st.b--; T.commit(eqWords()); } }, () => { if (st.b < 10) { st.b++; T.commit(eqWords()); } }, `${W.start} −`, `${W.start} +`);
+  // The slope is typed as one of the slopes − and + step through ("2", "−1/2", "3/2"); its field holds the slope's place
+  // in that list, shown as the slope.
+  const slope = T.stepper(W.slope, () => M.fracText(m()), () => { if (st.mi > 0) { st.mi--; T.commit(eqWords()); } }, () => { if (st.mi < M.SLOPES.length - 1) { st.mi++; T.commit(eqWords()); } }, `${W.slope} −`, `${W.slope} +`,
+    { value: () => st.mi, min: 0, max: M.SLOPES.length - 1, format: i => M.fracText(M.SLOPES[i] || M.SLOPES[0]), parse: M.slopeOfText, inputMode: 'text', set: i => { st.mi = i; T.commit(eqWords()); } });
+  const startS = T.stepper(W.start, () => (st.b < 0 ? `−${-st.b}` : st.b), () => { if (st.b > -10) { st.b--; T.commit(eqWords()); } }, () => { if (st.b < 10) { st.b++; T.commit(eqWords()); } }, `${W.start} −`, `${W.start} +`,
+    { value: () => st.b, min: -10, max: 10, set: b => { st.b = b; T.commit(eqWords()); } });
   T.top.append(slope, startS);
   let cur = { x: 0, y: 0 }, plane, planeRO = null;
   const range = () => (st.quads === 1 ? [0, 2 * st.size] : [-st.size, st.size]);
@@ -1103,18 +1123,21 @@ function base10(body, s, ctx) {
       const col = el('section', `dt-mat${sel === p ? ' is-sel' : ''}`); col.dataset.place = p;
       const head = el('div', 'dt-mathead');
       const piece = el('span', `dt-piece dt-piece-${p}`); piece.setAttribute('aria-hidden', 'true'); piece.title = W.drop;
-      head.append(piece, el('b', 'dt-matname', name), ltr('span', 'dt-matn', String(st[p])));
+      // How many, typed too (0 to the most a mat holds): the − and + below's own rule.
+      const count = T.num({ label: name, key: `mat${p}`, get: () => st[p], min: 0, max: M.BASE10_MAX[p], cls: 'dt-matn', set: n => { st[p] = n; sel = p; T.commit(); say(); },
+        up: () => change(p, 1), down: () => change(p, -1) });
+      head.append(piece, el('b', 'dt-matname', name), count);
       const area = el('div', 'dt-matarea'); area.setAttribute('role', 'img'); area.setAttribute('aria-label', `${st[p]} ${name}`);
       area.appendChild(blocksSvg(p, st[p]));
       const pm = el('div', 'dt-fpm');
       const minus = btn('−', 'btn btn-sm dt-pm', `${W.take} (${name})`), plus = btn('+', 'btn btn-sm dt-pm', `${W.add} (${name})`);
       minus.disabled = st[p] <= 0; plus.disabled = st[p] >= M.BASE10_MAX[p];
       minus.addEventListener('click', () => change(p, -1)); plus.addEventListener('click', () => change(p, 1));
-      for (const b of [minus, plus]) b.addEventListener('focus', () => { if (sel !== p) { sel = p; syncSel(); } });
+      for (const b of [minus, plus, count]) b.addEventListener('focus', () => { if (sel !== p) { sel = p; syncSel(); } });
       pm.append(minus, plus);
       col.append(head, area, pm);
       col.addEventListener('pointerdown', e => {
-        if (ctx.editing || e.target.closest('button')) return;
+        if (ctx.editing || e.target.closest('button,input')) return;
         sel = p; syncSel();
         const fromPiece = !!e.target.closest('.dt-piece'), fromArea = !!e.target.closest('.dt-matarea') && st[p] > 0;
         if (!fromPiece && !fromArea) return;
@@ -1361,8 +1384,10 @@ function area(body, s, ctx) {
   const pp = () => M.partialProducts(st.a, st.b, st.sa, st.sb);
   const sayIt = () => { const r = pp(); return `${st.a} × ${st.b} = ${r.total}${r.parts.length > 1 ? `: ${r.parts.map(x => `${x.a} × ${x.b}`).join(' + ')}` : ''}`; };
   const views = T.seg(W.array, [['array', `⁙ ${W.array}`], ['area', `▦ ${W.area}`]], () => view(), v => { st.view = v; T.commit(); });
-  const rows = T.stepper(W.rows, () => st.a, () => { if (st.a > 1) { st.a--; fix(); T.commit(sayIt()); } }, () => { if (st.a < 99) { st.a++; T.commit(sayIt()); } }, `${W.rows} −`, `${W.rows} +`);
-  const cols = T.stepper(W.cols, () => st.b, () => { if (st.b > 1) { st.b--; fix(); T.commit(sayIt()); } }, () => { if (st.b < 99) { st.b++; T.commit(sayIt()); } }, `${W.cols} −`, `${W.cols} +`);
+  const rows = T.stepper(W.rows, () => st.a, () => { if (st.a > 1) { st.a--; fix(); T.commit(sayIt()); } }, () => { if (st.a < 99) { st.a++; T.commit(sayIt()); } }, `${W.rows} −`, `${W.rows} +`,
+    { value: () => st.a, min: 1, max: 99, set: n => { st.a = n; fix(); T.commit(sayIt()); } });
+  const cols = T.stepper(W.cols, () => st.b, () => { if (st.b > 1) { st.b--; fix(); T.commit(sayIt()); } }, () => { if (st.b < 99) { st.b++; T.commit(sayIt()); } }, `${W.cols} −`, `${W.cols} +`,
+    { value: () => st.b, min: 1, max: 99, set: n => { st.b = n; fix(); T.commit(sayIt()); } });
   T.top.append(views, rows, cols);
   const split = T.toggle(`✂️ ${W.place}`, null, () => st.sa || st.sb, v => { st.sa = v ? M.placeSplit(st.a) : 0; st.sb = v ? M.placeSplit(st.b) : 0; if (v && !st.sa && !st.sb) { st.sb = Math.ceil(st.b / 2) < st.b ? Math.ceil(st.b / 2) : 0; } T.commit(sayIt()); });
   T.foot.appendChild(split);
@@ -1612,8 +1637,11 @@ function tclock(body, s, ctx) {
 function fdp(body, s, ctx) {
   const T = shell(body, s, ctx, 'fdp'), { W, st } = T;
   const say = () => ctx.say(`${st.n}/${st.d} = ${spoken(M.decimalString(st.n, st.d), W.hint)} = ${spoken(M.percentString(st.n, st.d), W.hint)}`);
-  const top = T.stepper(W.top, () => st.n, () => { if (st.n > 0) { st.n--; T.commit(); say(); } }, () => { if (st.n < st.d) { st.n++; T.commit(); say(); } }, `${W.top} −`, `${W.top} +`);
-  const bot = T.stepper(W.bottom, () => st.d, () => { if (st.d > 1) { st.d--; st.n = Math.min(st.n, st.d); T.commit(); say(); } }, () => { if (st.d < 100) { st.d++; T.commit(); say(); } }, `${W.bottom} −`, `${W.bottom} +`);
+  // Typed too: the top number 0 to the bottom one, the bottom 1-100 (the top comes down with it, as with −).
+  const top = T.stepper(W.top, () => st.n, () => { if (st.n > 0) { st.n--; T.commit(); say(); } }, () => { if (st.n < st.d) { st.n++; T.commit(); say(); } }, `${W.top} −`, `${W.top} +`,
+    { value: () => st.n, min: 0, max: () => st.d, set: n => { st.n = n; T.commit(); say(); } });
+  const bot = T.stepper(W.bottom, () => st.d, () => { if (st.d > 1) { st.d--; st.n = Math.min(st.n, st.d); T.commit(); say(); } }, () => { if (st.d < 100) { st.d++; T.commit(); say(); } }, `${W.bottom} −`, `${W.bottom} +`,
+    { value: () => st.d, min: 1, max: 100, set: d => { st.d = d; st.n = Math.min(st.n, st.d); T.commit(); say(); } });
   T.top.append(top, bot);
   let grid;
   T.draw = () => {
