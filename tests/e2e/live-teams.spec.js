@@ -391,6 +391,7 @@ test('game settings: 2 questions, accuracy only, leaderboard off; remembered on 
   await shot(host, 'landing-settings');
   await host.click('#lv-prefs-reset');
   await expect(host.locator('#lv-prefs-reset')).toHaveCount(0);                      // reloaded with no remembered settings
+  await liveStep(host, 'open');
   await host.locator('#lv-settings-landing > summary').click();
   await expect(host.locator('#lv-ls-points')).toHaveValue('speed');
   for (const p of [a, b, host]) await p.context().close();

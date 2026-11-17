@@ -510,7 +510,8 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .lv-aud:hover { background: var(--hover); }
 .lv-aud:has(input:checked) { background: var(--accent-soft); box-shadow: inset 0 0 0 3px var(--accent-line); }
 .lv-aud:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
-.lv-aud input { position: absolute; opacity: 0; pointer-events: none; }
+/* the radio covers its card (see-through): a tap anywhere on the card is a tap on the radio */
+.lv-aud input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .lv-aud-e { font-size: 1.8rem; line-height: 1; }
 .lv-aud .su-tick { top: 50%; margin-top: -14px; inset-inline-end: 14px; }
 /* the check before opening */
