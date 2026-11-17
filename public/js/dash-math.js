@@ -82,6 +82,57 @@ export function operate(op, a, b) {
   const r = o.run(a, b), simple = simplify(r.raw.n, r.raw.d);
   return { op, sign: o.sign, a, b, guarded, ...r, simple, mixed: mixedText(simple), negative: simple.n < 0, whole: simple.d === 1, more: Math.abs(simple.n) > simple.d && simple.d > 1 };
 }
+/** Most same-size pieces a whole is cut into in a drawing (more would be slivers): past it a picture draws lengths only. */
+export const DRAW_PIECES = 48;
+/**
+ * A fraction as the wholes it fills, for drawing: 9/4 -> [4/4, 4/4, 1/4] (two full wholes and a quarter of a third, each
+ * cut into quarters); 2 -> [1/1, 1/1]; 0/5 -> [0/1] (one empty whole); a minus sign is dropped (the picture draws the size).
+ */
+export function splitWholes(f) {
+  const s = simplify(Math.abs(f.n), f.d), out = [];
+  let left = s.n;
+  do { out.push({ n: Math.min(left, s.d), d: s.d }); left -= s.d; } while (left > 0);
+  return out;
+}
+/**
+ * Dividing as measuring: how many copies of b fit in a. -> null when b is zero (nothing is divided by zero), else
+ * { q (a ÷ b in lowest terms), full (whole copies that fit), rest (the part of one more copy that fits, lowest terms; 0/1
+ *   when none), copies (copies to lay down: the full ones and the part one), L (a common bottom number for both),
+ *   per (pieces to draw in each whole: L when that is drawable, else 0: the copies are drawn by length) }.
+ */
+export function measure(a, b) {
+  if (!a || !b || !b.n || !a.d || !b.d) return null;
+  const q = simplify(a.n * b.d, a.d * b.n), full = Math.floor(q.n / q.d), rest = simplify(q.n - full * q.d, q.d);
+  const L = lcm(a.d, b.d);
+  return { q, full, rest, copies: full + (rest.n ? 1 : 0), L, per: L <= DRAW_PIECES ? L : 0 };
+}
+const VULGAR = { '½': [1, 2], '⅓': [1, 3], '⅔': [2, 3], '¼': [1, 4], '¾': [3, 4], '⅕': [1, 5], '⅖': [2, 5], '⅗': [3, 5], '⅘': [4, 5], '⅙': [1, 6], '⅚': [5, 6], '⅐': [1, 7], '⅛': [1, 8], '⅜': [3, 8], '⅝': [5, 8], '⅞': [7, 8], '⅑': [1, 9], '⅒': [1, 10] };
+/**
+ * What a student typed as an answer -> { n, d } (not simplified) or null: "9/4", "18/8", "2 1/4", "2", "−3/4", "2¼".
+ * Only whole numbers, one fraction bar and a mixed number's space; a bottom number of 0 is not a number.
+ */
+export function parseFraction(text) {
+  let t = String(text ?? '').trim().replace(/[−–—]/g, '-').replace(/[⁄∕]/g, '/').replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ');
+  const v = Object.keys(VULGAR).find(k => t.endsWith(k));
+  if (v) { const [n, d] = VULGAR[v]; t = `${t.slice(0, -1).trim()} ${n}/${d}`.trim(); }
+  const m = /^(-)?(?:(\d{1,4}) )?(\d{1,4})(?:\/(\d{1,4}))?$/.exec(t);
+  if (!m) return null;
+  const sign = m[1] ? -1 : 1, whole = m[2] ? Number(m[2]) : 0, n = Number(m[3]), d = m[4] ? Number(m[4]) : 1;
+  if (!d || (m[2] && !m[4])) return null;              // "2 3" is not a number
+  if (m[2] && n >= d) return null;                     // "2 5/4" is not a mixed number
+  return { n: sign * (whole * d + n), d, mixed: !!m[2] };
+}
+/**
+ * A typed answer against the real one: 'right' (the same amount, in lowest terms: 9/4 or 2 1/4), 'simplify' (the same
+ * amount but not in lowest terms: 18/8 or 2 2/8), 'no' (another amount) or 'unread' (not a fraction we can read).
+ */
+export function checkAnswer(text, answer) {
+  const g = parseFraction(text); if (!g) return 'unread';
+  if (!equivalent(g, answer)) return 'no';
+  // A mixed number is in lowest terms when its part is; a fraction when the whole of it is.
+  const part = Math.abs(g.n) % g.d;
+  return (g.mixed ? gcd(part, g.d) === 1 : gcd(g.n, g.d) === 1) ? 'right' : 'simplify';
+}
 
 // ---------------------------------------------------------------- spoken fractions (English; other languages say "3 of 8")
 const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
