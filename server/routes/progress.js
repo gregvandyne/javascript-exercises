@@ -6,6 +6,7 @@ import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, jumpNav, nameFilter, staffStudentName } from '../views/components.js';
 import { requireUser } from '../auth.js';
+import { bandName } from '../views/courses.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
@@ -187,13 +188,18 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     const rows = C.classCourseProgress(gb.students, C.getCourse(course.slug));
     const dot = s => (s.complete ? '✅' : s.row ? '🟡' : '⚪');
     const started = rows.filter(r => r.status !== 'not-started').length;
+    // Each band a student worked in has its own status and count, named (a finished Explorer stays "Completed ·
+    // Explorer" after the student moves on to Pro, and Pro's own count starts at 0): never one status for the course.
+    const bandOf = b => { try { return bandName(t, b); } catch { return String(b); } };
+    const bandStatus = r => (r.bands && r.bands.length ? html`${r.bands.map((b, i) => html`${i ? html`<br>` : ''}${statusChip(b)} <span class="small">· ${bandOf(b.band)}</span>`)}` : statusChip(r));
+    const bandCounts = r => (r.bands && r.bands.length ? html`${r.bands.map(b => html`<span class="small muted cp-band">${t('courses.band.stepsDone', { band: bandOf(b.band), n: b.done, total: b.total })}</span>`)}` : '');
     const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">✅ ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
     return html`<details class="panel coursepanel" id="course-${course.slug}" ${started ? raw('open') : ''}><summary><h2>${course.emoji} ${t(`${course.key}.title`)}</h2><span class="small muted">${t('progress.courses.started', { started, total: rows.length })}</span></summary>
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook cptable">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.courses.status')}</th><th scope="col">${t('progress.courses.steps')}</th><th scope="col">${t('progress.courses.checks')}</th><th scope="col">${t('progress.courses.perStep')}</th></tr></thead>
       <tbody>${rows.map(r => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(r.user, 28)}${staffStudentName(r.user)}</span></th>
-        <td data-label="${t('progress.courses.status')}">${statusChip(r)}</td>
-        <td data-label="${t('progress.courses.steps')}"><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}</td>
+        <td data-label="${t('progress.courses.status')}">${bandStatus(r)}</td>
+        <td data-label="${t('progress.courses.steps')}"><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}${bandCounts(r)}</td>
         <td data-label="${t('progress.courses.checks')}">${r.maxScore ? html`<span class="gb-num">${r.score}/${r.maxScore}</span>` : html`<span class="muted">–</span>`}</td>
         <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;

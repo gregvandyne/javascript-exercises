@@ -7238,7 +7238,13 @@
       "explorerSub": "Klassen 3–5",
       "pro": "Profi",
       "proSub": "Klassen 6–8",
-      "switch": "Zu {band} wechseln"
+      "switch": "Zu {band} wechseln",
+      "launchpad": "Startrampe",
+      "launchpadSub": "Kindergarten bis Klasse 2",
+      "yours": "Dein Level",
+      "showing": "Jetzt zu sehen",
+      "stepsDone": "{band}: {n} von {total} Schritten geschafft",
+      "unitsFinale": "Einheiten {from}–{to}, dann das Finale: {finale}"
     },
     "map": {
       "h": "Kurskarte",

@@ -7237,7 +7237,13 @@
       "explorerSub": "Du CE2 au CM2",
       "pro": "Pro",
       "proSub": "De la 6e à la 4e",
-      "switch": "Passer en {band}"
+      "switch": "Passer en {band}",
+      "launchpad": "Décollage",
+      "launchpadSub": "De la grande section au CE1",
+      "yours": "Ton niveau",
+      "showing": "Niveau affiché",
+      "stepsDone": "{band} : {n} étapes finies sur {total}",
+      "unitsFinale": "Unités {from} à {to}, puis la finale : {finale}"
     },
     "map": {
       "h": "Carte du cours",
