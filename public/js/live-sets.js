@@ -1,5 +1,6 @@
 // /live (landingBody) and /live/sets (setsBody): the host's landing form and the question-set editor
-// (docs/live-protocol.md). The landing form works without this script (app.js posts data-api forms); here it shows the
+// (docs/live-protocol.md). The landing is in steps like the Builder's setup (steps() below). It works without this
+// script (every step shows, and app.js posts data-api forms); here it shows the
 // question sets only for picks that use questions, the class picker only for class rooms, and asks before replacing an
 // open live game (409 hasOpen). Each question may have a category (Brain Board's column). The editor builds sets of 1-100 questions with 2-4 answers each (typed, pasted from a spreadsheet or drafted by the
 // AI, then edited); questions are written by
@@ -106,10 +107,13 @@ if (form) {
     } catch { /* private mode */ }
   }
   form.addEventListener('change', sync); sync();
-  // Our own submit (before app.js's): a second open game asks first.
+  const wiz = steps(form, sync);
+  // Our own submit (before app.js's): a second open game asks first. Enter in a field before the last step goes on to
+  // the next step instead of opening the room.
   document.addEventListener('submit', async e => {
     if (e.target !== form) return;
     e.preventDefault(); e.stopImmediatePropagation();
+    if (wiz && wiz.cur() !== 'open') { wiz.next(); return; }
     // ticked boxes of one name (wyrTopic, bankBoard, atlasKind) go as a list, as app.js posts forms
     const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
     if (body.pick === 'mode:tug') { try { localStorage.setItem(TUG_KEY, JSON.stringify({ g: body.tugGrade, l: body.tugLen })); } catch { /* private mode */ } }
@@ -139,6 +143,84 @@ if (form) {
     };
     go(false);
   }, true);
+}
+
+/**
+ * The landing in steps, as in the Builder's setup (/build/new): what to play -> its questions (only for a game that asks
+ * them) -> who is playing -> a check of every choice, with Change, and "Open the room". All one form: a step only
+ * shows and hides its part. -> { cur(), next() } (null when the page has no steps).
+ */
+function steps(form, sync) {
+  const all = [...form.querySelectorAll('.lv-wstep')];
+  if (!all.length) return null;
+  const bar = $('lv-nav'), recent = $('lv-recent');
+  const picked = () => {
+    const input = form.querySelector('input[name="pick"]:checked'), card = input && input.closest('.lv-pick');
+    const pick = input ? input.value : '';
+    return { pick, card, quiz: pick.startsWith('mode:') || !!(card && card.dataset.quiz === '1'), own: !!(card && card.dataset.own === '1') };
+  };
+  const order = () => ['play', ...(picked().quiz ? ['questions'] : []), 'who', 'open'];
+  let cur = form.dataset.first || 'play';
+  if (!order().includes(cur)) cur = 'who';
+  const text = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
+  const chosen = sel => (sel && sel.selectedOptions[0] ? text(sel.selectedOptions[0]) : '');
+  // The check before opening: one line per choice, in the words the host picked them in.
+  const review = () => {
+    const p = picked(), row = k => form.querySelector(`[data-row="${k}"]`), val = (k, v) => { const d = form.querySelector(`[data-val="${k}"]`); if (d) d.textContent = v; };
+    val('game', text(p.card && p.card.querySelector('.lv-pick-t')));
+    row('questions').hidden = !p.quiz;
+    if (p.quiz) {
+      const box = p.own && form.querySelector(`.lv-own[data-own-mode="${p.pick.slice(5)}"]`);
+      let q = '';
+      if (box) q = [...box.querySelectorAll('select')].map(chosen).filter(Boolean).join(' · ');
+      else {
+        const set = $('lv-set');
+        if (set && set.value === 'bank' && $('lv-bank')) {
+          const board = p.pick === 'mode:board';
+          const parts = board ? [[...form.querySelectorAll('input[name="bankBoard"]:checked')].map(x => text(x.closest('label'))).join(', '), chosen($('lv-bank-level'))]
+            : [chosen($('lv-bank-subject')), chosen($('lv-bank-level')), chosen($('lv-bank-count'))];
+          q = [(set.selectedOptions[0] && set.selectedOptions[0].parentElement.label) || chosen(set), ...parts].filter(Boolean).join(' · ');
+        } else q = chosen(set);
+      }
+      val('questions', q);
+    }
+    const aud = form.querySelector('input[name="audience"]:checked'), mx = $('lv-max');
+    val('who', [text(aud && aud.closest('label').querySelector('.lv-aud-t')), aud && aud.value === 'class' ? chosen($('lv-class')) : '',
+      mx ? `${text(form.querySelector('label[for="lv-max"]'))}: ${mx.value}` : ''].filter(Boolean).join(' · '));
+    const tr = $('lv-teams-landing'), on = tr && !tr.hidden && form.querySelector('input[name="teams"]:checked');
+    row('teams').hidden = !tr || tr.hidden;
+    if (on) val('teams', [text(on.closest('label')), +on.value ? text(form.querySelector('input[name="scoring"]:checked')?.closest('label')) : ''].filter(Boolean).join(' · '));
+  };
+  const show = (key, focus) => {
+    const list = order(); if (!list.includes(key)) key = list[0];
+    cur = key;
+    const at = list.indexOf(key);
+    for (const s of all) {
+      s.classList.toggle('is-on', s.dataset.step === key);
+      // the progress: only the steps this game has, the ones done so far filled in
+      for (const d of s.querySelectorAll('[data-dot]')) { d.hidden = !list.includes(d.dataset.dot); d.classList.toggle('on', list.indexOf(d.dataset.dot) <= at && list.includes(d.dataset.dot)); }
+      const c = s.querySelector('[data-count]'); if (c && c.dataset.tpl) c.textContent = c.dataset.tpl.replace('{n}', String(at + 1)).replace('{total}', String(list.length));
+    }
+    // "Set up the game" for a game with its own options, "Which questions?" for a quiz
+    const qh = $('lv-h-questions'), p = picked(); if (qh) qh.textContent = p.own ? qh.dataset.ownTitle : qh.dataset.quizTitle;
+    if (bar) { bar.hidden = key === 'open'; const back = bar.querySelector('[data-go="back"]'); if (back) back.hidden = at === 0; }
+    if (recent) recent.hidden = key !== 'play';
+    if (key === 'open') review();
+    if (focus) { window.scrollTo({ top: 0 }); const h = $(`lv-h-${key}`); if (h) h.focus({ preventScroll: true }); }
+  };
+  const move = d => { sync(); const list = order(); show(list[Math.max(0, Math.min(list.length - 1, list.indexOf(cur) + d))], true); };
+  form.addEventListener('click', e => {
+    const go = e.target.closest('[data-go]'); if (go) { move(go.dataset.go === 'back' ? -1 : 1); return; }
+    const ch = e.target.closest('[data-change]'); if (ch) { show(ch.dataset.change, true); return; }
+    // the game groups (Live games, Oomba Academy games, My games…): one shown at a time
+    const tab = e.target.closest('[data-pgroup-tab]');
+    if (tab) {
+      for (const b of form.querySelectorAll('[data-pgroup-tab]')) b.setAttribute('aria-pressed', String(b === tab));
+      for (const g of form.querySelectorAll('[data-pgroup]')) g.classList.toggle('is-off', g.dataset.pgroup !== tab.dataset.pgroupTab);
+    }
+  });
+  show(cur, false);
+  return { cur: () => cur, next: () => move(1) };
 }
 
 // ---------------------------------------------------------------- sets editor

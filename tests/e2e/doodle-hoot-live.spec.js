@@ -10,7 +10,7 @@
 // drawing so far, the host's own "Someone said it!", and Remove on the drawer. LIVE_SHOTS=<dir> saves screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
@@ -68,6 +68,7 @@ async function openRoom(host, { rounds = '1', secs = '60', tiles = false } = {})
   await login(host, TEACHER.username, TEACHER.password);
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:doodle"]') }).click();
+  await liveStep(host, 'questions');
   await expect(host.locator('#lv-doodle-opts')).toBeVisible();
   await expect(host.locator('#lv-sets')).toBeHidden();
   await expect(host.locator('#lv-teams-landing')).toBeHidden();
@@ -76,8 +77,9 @@ async function openRoom(host, { rounds = '1', secs = '60', tiles = false } = {})
   await host.selectOption('#lv-doodle-rounds', rounds); await host.selectOption('#lv-doodle-secs', secs);
   await expect(host.locator('#lv-doodle-guess')).toHaveValue('0');   // typing unless the host picks tiles
   await host.selectOption('#lv-doodle-guess', tiles ? '1' : '0');
+  await liveStep(host, 'who');
   await host.locator('input[name="audience"][value="open"]').check();
-  await host.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(host);
   await host.waitForURL(/\/live\/host\//);
   return (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
 }

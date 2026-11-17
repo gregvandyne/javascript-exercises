@@ -31,7 +31,9 @@
       "dark": "ダーク"
     },
     "acct": {
-      "allSettings": "すべての設定"
+      "allSettings": "すべての設定",
+      "themeAuto": "自動",
+      "newMessages": "{count, plural, other {新しいメッセージ # 件}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · あそぶのも、つくるのも、むりょう",
@@ -1426,14 +1428,9 @@
       "text": "ビルダーにアイデアを話してください。ゲームをつくってくれて、何度でもかえられます。"
     },
     "newGame": "新しいゲーム",
-    "startFrom": "ここからはじめる",
-    "startFromLabel": "{title}からはじめる",
-    "worlds": "3Dワールドから はじめる",
-    "startInLabel": "3Dワールド「{title}」から はじめる",
-    "twoPlayers": "2人用",
     "updateWaiting": "アップデートがチェック待ち",
     "changed": "{when}にへんこう",
-    "empty": "「新しいゲーム」をタップするか、上のスターターをえらんでください。きみのゲームはここに出てきます。",
+    "empty": "「新しいゲーム」をタップしてはじめよう。きみのゲームはここに出てきます。",
     "rename": "なまえをかえる",
     "delete": "けす",
     "status": {
@@ -1946,7 +1943,6 @@
     },
     "build": {
       "gettingReady": "じゅんび中…",
-      "needsNewer": "もっと新しい きかいが ひつよう",
       "renameTitle": "ゲームのなまえをかえる",
       "nameLabel": "ゲームの名前",
       "save": "ほぞん",
@@ -6697,6 +6693,36 @@
       "assign": "このクラスに出す",
       "mySets": "自分の問題セット",
       "another": "もうひとつ作る"
+    },
+    "wiz": {
+      "modesTab": "ライブゲーム",
+      "progress": "ステップ {n} / {total}",
+      "back": "もどる",
+      "next": "つぎへ",
+      "change": "かえる",
+      "play": {
+        "title": "なにであそぶ？",
+        "hint": "ゲームをえらびます。部屋をひらくまで、なんでもかえられます。"
+      },
+      "questions": {
+        "title": "どの問題にする？",
+        "ownTitle": "ゲームのせってい",
+        "hint": "ゲームで出すことと、時間をえらびます。"
+      },
+      "who": {
+        "title": "だれがあそぶ？",
+        "hint": "参加できる人、人数、チームであそぶかをえらびます。"
+      },
+      "open": {
+        "title": "部屋をひらく準備ができました",
+        "hint": "えらんだことをたしかめましょう。プレイヤーは {url} でコードを入力します。"
+      },
+      "row": {
+        "game": "ゲーム",
+        "questions": "問題",
+        "who": "参加できる人",
+        "teams": "チーム"
+      }
     }
   },
   "match": {

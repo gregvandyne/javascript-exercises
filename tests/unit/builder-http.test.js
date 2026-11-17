@@ -117,7 +117,7 @@ test('/build needs a real account; guests and visitors go to sign up', async () 
   await anon('/api/auth/guest', { method: 'POST', body: {} });
   r = await anon('/build'); assert.equal(r.status, 302, 'guest redirected too');
   r = await anon('/api/studio/new', { method: 'POST', body: {} }); assert.equal(r.status, 403);
-  r = await owner('/build'); assert.equal(r.status, 200); assert.match(r.text, /Start from/); assert.match(r.text, /data-template="quiz"/);
+  r = await owner('/build'); assert.equal(r.status, 200); assert.doesNotMatch(r.text, /Start from|class="tplcard/, 'starting a game is in the setup steps (New game), not cards here');
   assert.match(r.text, /aria-current="page"[^>]*>|navlink" href="\/build" aria-current/);
 });
 

@@ -1,35 +1,6 @@
-// /build: the "Start from" template cards and the 3D world cards create a game and open the Studio; My games can be
-// renamed or deleted. "New game" is a link to the setup steps (/build/new, buildsetup.js).
+// /build: My games can be renamed or deleted. "New game" is a link to the setup steps (/build/new, buildsetup.js), where
+// a game is started (the "Start from" and 3D world cards that were here are in those steps).
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
-
-async function create(template, btn, world) {
-  $$('.tplcard').forEach(b => (b.disabled = true));
-  const old = btn.innerHTML;
-  try {
-    const r = await api('/api/studio/new', { method: 'POST', body: template ? { template, ...(world ? { world } : {}) } : {} });
-    location.href = r.url;
-  } catch (e) {
-    toast(e.message, { bad: true });
-    btn.innerHTML = old; $$('.tplcard').forEach(b => (b.disabled = false));
-  }
-}
-// A 3D world card (data-world) starts the Kit 2 starter in that world.
-$$('.tplcard').forEach(b => b.addEventListener('click', () => create(b.dataset.template, b, b.dataset.world)));
-
-// A 3D template needs import maps and WebGL 2 (e.g. not an iPad on iPadOS 15). Mark its card so a child sees
-// "Needs a newer device" before making the game, instead of only seeing it in the preview afterwards. A browser
-// with no HTMLScriptElement.supports() is treated as "unknown" (left alone; the game's 20 s fallback handles it).
-function can3d() {
-  let maps = true;
-  try { if (typeof HTMLScriptElement.supports === 'function') maps = !!HTMLScriptElement.supports('importmap'); } catch { /* unknown: leave it */ }
-  let gl = null; try { gl = document.createElement('canvas').getContext('webgl2'); } catch { gl = null; }
-  return maps && !!gl;
-}
-if (!can3d()) $$('.tplcard[data-threed]').forEach(b => {
-  b.classList.add('needs-newer');
-  const n = document.createElement('span'); n.className = 'tpl-needs'; n.textContent = t('js.build.needsNewer');
-  b.appendChild(n);
-});
 
 // My games: rename and delete right from the list.
 function card(btn) { return btn.closest('.mygame'); }
