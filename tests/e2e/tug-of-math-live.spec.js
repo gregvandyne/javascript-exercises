@@ -7,7 +7,7 @@
 // LIVE_SHOTS=<dir> saves the screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
@@ -73,17 +73,19 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   // the landing: Tug of Math with its grade (sample questions) and length; no teams row, no question set
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:tug"]') }).click();
+  await liveStep(host, 'questions');
   await expect(host.locator('#lv-tug-opts')).toBeVisible();
   await expect(host.locator('#lv-sets')).toBeHidden();
   await expect(host.locator('#lv-teams-landing')).toBeHidden();
   await host.selectOption('#lv-tug-grade', '2');
   await expect(host.locator('#lv-tug-sample')).toContainText(/[+−]/);
   await host.selectOption('#lv-tug-len', '120');
+  await liveStep(host, 'who');
   await host.locator('input[name="audience"][value="open"]').check();
   // DemoTeacher may still host a game an earlier spec left open (tts.spec.js): "Replace it?" yes, as a teacher starting
   // a new game would answer (Playwright's default answer is no, which goes back to that old game).
   host.on('dialog', d => d.accept());
-  await host.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(host);
   await host.waitForURL(/\/live\/host\//);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
   await expect(host.locator('#lv-controls [data-lv-act="next"]')).toHaveCount(0);

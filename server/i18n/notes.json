@@ -142,8 +142,6 @@
   "chat.blocked.words": "Shown when a chat message had a rude word and was not sent. Kind tone, not scolding.",
   "chat.blocked.handle": "A handle is a username on another app, like @someone.",
   "build.newGame": "Big button, max ~14 chars. Shown after ✨.",
-  "build.startFrom": "Heading above ready-made starter games a kid can begin from.",
-  "build.startFromLabel": "Screen-reader label of a starter card. {title} is the starter's name (studio.templates.*.title).",
   "build.changed": "{when} is a relative time like \"5 minutes ago\", already translated.",
   "build.empty": "\"New game\" must match build.newGame.",
   "studio.title": "Browser tab title. {title} is the game's name. \"Studio\" is the page where kids make games: pick one word and use it everywhere.",
@@ -1491,8 +1489,6 @@
   "studio.heroes.names.knight": "The names of the 3D characters (studio.heroes.names.*). Skelly, Rattles, Bonzo and Captain Clank are friendly cartoon skeletons with made-up names: keep or transliterate them. The animals (donkey, cow, husky, pig, sheep, horse, deer, stag, fox, shiba) are the everyday word for that animal, as a small child would say it; deer and stag need two different words.",
   "js.studio.worldUse": "Put into the kid's message to the Builder when they tap a 3D world chip in the Studio. {name} is the world's name (studio.worlds.names.*). Short, like the kid would say it; keep \"3D\".",
   "js.studio.heroUse": "Put into the kid's message to the Builder when they tap a 3D hero chip in the Studio. {name} is the character's name (studio.heroes.names.*). Short, like the kid would say it; keep \"3D\".",
-  "build.worlds": "Heading on the Build page over the cards that start a new game in one of the ready-made 3D worlds.",
-  "build.startInLabel": "Screen-reader label of a 3D world card on the Build page. {title} is the world's name.",
   "buildSetup.title": "The step-by-step game setup a kid or teacher sees after pressing \"New game\" (buildSetup.*): one question per screen, then a summary, then the Builder opens. Words an 8-year-old can read, sentence case, no emoji. This is the page's name (top of the page and the browser tab). Short.",
   "buildSetup.skipAll": "Button at the top of every step: leave the steps and go straight to the Builder (the AI helper). Keep \"Builder\" as elsewhere on the site. Max ~24 chars.",
   "buildSetup.skip": "Button under a step: go on without choosing. Max ~18 chars (three buttons share one row on a phone).",
@@ -1562,5 +1558,9 @@
   "buildSetup.say.playsolo": "Part of the plan sentence. Must NOT contain the word \"live\" (it would ask the Builder for a live game).",
   "js.studio.liveLine.kidReady": "Studio live line for a kid: kids never host; a teacher or grown-up does.",
   "js.studio.liveLine.fix": "Studio live line. {issue} is one of the live.check.* reasons.",
-  "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason."
+  "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason.",
+  "live.wiz.modesTab": "Tab over the built-in live games on the Host a live game page (the other tabs are live.landing.official, .mine, .shared).",
+  "live.wiz.questions.ownTitle": "Heading of the questions step for a live game that makes its own questions (Would You Rather, Atlas Quest, Tug of Math, Doodle Hoot).",
+  "live.wiz.open.hint": "{url} is the join address without https://, e.g. oomba.ai/join.",
+  "layout.acct.themeAuto": "Short name for the \"Same as my device\" theme, on a small three-button switch (Auto / Light / Dark): keep it to one short word."
 }

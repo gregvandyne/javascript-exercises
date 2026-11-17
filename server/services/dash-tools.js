@@ -16,18 +16,26 @@ const SAFE_LINES = (v, max) => [...String(v ?? '').replace(/\r/g, '').replace(/[
 const toInt = (v, lo, hi, d) => { const n = Math.round(Number(v)); return v !== null && v !== '' && Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
 
 export const TOOL_SPECS = {
+  // hide: the answer starts hidden (students work it out first); a state saved with it shown keeps it shown.
   // Compare (bars) and, since "help on the maths tools", Add, Subtract, Multiply and Divide two fractions a and b (a bottom number
   // 1-12, a top number 0-12 and at most three wholes; public/js/dash-math.js OP_LIMITS and OP_START, tested to agree).
   // mode, a and b are kept only when one of them is not its starting value, so a Compare state is stored exactly as it
   // always was and layouts saved before the modes load unchanged.
   fractions: {
-    spec: { shape: ['enum', ['bar', 'circle'], 'bar'], bars: ['list', 3, { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }, [{ n: 3, d: 4 }, { n: 5, d: 8 }]], same: ['bool', false], hide: ['bool', false],
-      mode: ['enum', ['compare', 'add', 'sub', 'mul', 'div'], 'compare'], a: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }], b: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 3] }] },
+    spec: { shape: ['enum', ['bar', 'circle'], 'bar'], bars: ['list', 3, { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }, [{ n: 3, d: 4 }, { n: 5, d: 8 }]], same: ['bool', false], hide: ['bool', true],
+      mode: ['enum', ['compare', 'add', 'sub', 'mul', 'div'], 'compare'], a: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 2] }], b: ['obj', { n: ['int', 0, 12, 1], d: ['int', 1, 12, 3] }],
+      // Since "fractions: dividing as measuring": fit is how many copies of the second fraction Divide has laid along the
+      // first (Fit one more; at most 12 ÷ 1/12 = 144), step how many steps of the working are showing (at most 4). Both are
+      // kept only when they are not 0, so states saved before them come back as they were.
+      fit: ['int', 0, 144, 0], step: ['int', 0, 4, 0] },
     fix: s => {
       if (!s.bars.length) s.bars = [{ n: 1, d: 2 }];
       for (const b of s.bars) b.n = Math.min(b.n, b.d);
       for (const f of [s.a, s.b]) f.n = Math.min(f.n, 3 * f.d);
       if (s.mode === 'div' && !s.b.n) s.b.n = 1;   // never divide by zero
+      if (s.mode === 'div') s.fit = Math.min(s.fit, Math.ceil((s.a.n * s.b.d) / (s.a.d * s.b.n)));   // no more copies than fit
+      if (s.mode !== 'div' || !s.fit) delete s.fit;
+      if (s.mode === 'compare' || !s.step) delete s.step;
       if (s.mode === 'compare' && s.a.n === 1 && s.a.d === 2 && s.b.n === 1 && s.b.d === 3) { delete s.mode; delete s.a; delete s.b; }
     },
   },

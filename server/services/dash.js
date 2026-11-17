@@ -100,6 +100,10 @@ TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul'
   'simplest', 'mixed', 'already', 'below', 'swap', 'overlap', 'fits', 'noZero', 'think');
 // Type the number between − and +: the name of a fraction's "parts" field.
 TOOL_WORDS.fractions.push('partsOf');
+// Fractions, dividing as measuring: Show the answer, typing an answer to check, Fit one more and the working's steps.
+TOOL_WORDS.fractions.push('show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again',
+  'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
+  'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // maths tools combined: the mode switch ("Choose what Place value shows")

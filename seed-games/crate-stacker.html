@@ -12,8 +12,12 @@
      by tapping a truck. No timer, no lives, no fail state: a wrong answer wobbles and gets a spoken hint, then
      another try. Lesson mode: BRB.params { chapter: build | greater | add, lock: 1 } opens that chapter only;
      finishing its six rounds reports game over, won, once (the course step's completion signal). With no parameters
-     the game offers the three chapters from a picture menu. Saves only which chapters are finished (BRB.storage
-     'crate-stacker-v1'). The import map below is exactly kit2ImportMap() (server/services/vendor.js);
+     the game offers the three chapters from a picture menu. Every play asks new questions (a fresh random lap; none
+     twice in a play, none of the last plays' where the round has room); mode=same gives everyone the fixed set (a class
+     working together, the course pictures). Saves only which chapters are finished and the ids of the last plays'
+     questions (BRB.storage 'crate-stacker-v1'). The voice coach says one line at a time and the next question waits
+     for its last line (a stuck or failed line never holds the game); the numbers on the trucks are page text above
+     the 3D yard, so its haze and glow never cover them. The import map below is exactly kit2ImportMap() (server/services/vendor.js);
      tests/unit/crate-stacker.test.js fails if a library bump leaves it behind. English only, like Number Quest's
      other lesson games. Test handle: window.__cs (also window.__brbTest, the name the picture scripts wait for). -->
 <script type="importmap">
@@ -51,9 +55,26 @@
  }
 }
 </script><style>
+  /* The game keeps its own light, high-contrast palette in a dark colour scheme too (ink #141414 on cream, gold and
+     mint: 12:1 or more), and asks the browser not to darken it. */
+  :root { color-scheme: light only; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #141414; }
   .cs[hidden], .cs-load[hidden] { display: none; }
-  .cs { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  /* Everything that is read (the words, the number chip, the numbers on the trucks) is page text above the 3D yard:
+     the yard's haze, light glow and outlines are drawn inside the canvas, under it, and never over a number. */
+  .cs { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .cs-tags { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .cs-tag { position: absolute; left: 0; top: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding-top: 0.04em;
+    background: #FFFDF2; color: #141414; border: 3px solid #141414; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cs-tag[hidden] { display: none; }
+  .cs-tag[data-tone="gold"] { background: #FFD23F; } .cs-tag[data-tone="green"] { background: #9df5b9; }
+  .cs-top, .cs-low, .cs-tags { transition: opacity .22s ease; }
+  .cs.swap .cs-top, .cs.swap .cs-low, .cs.swap .cs-tags, .cs.veil .cs-tags { opacity: 0; }
+  .cs-bar.enter .cs-btn { animation: cs-up .32s ease-out both; }
+  .cs-bar.enter .cs-btn:nth-child(2) { animation-delay: .04s; } .cs-bar.enter .cs-btn:nth-child(3) { animation-delay: .08s; } .cs-bar.enter .cs-btn:nth-child(4) { animation-delay: .12s; }
+  @keyframes cs-up { from { opacity: 0; transform: translateY(12px); } }
+  .cs-snap { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 1; transition: opacity .45s ease; }
+  .cs-card > * { animation: cs-up .4s ease-out both; } .cs-card > :nth-child(2) { animation-delay: .1s; }
   .cs button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .cs button:focus-visible { outline: 4px solid #141414; outline-offset: 3px; }
   .cs-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
@@ -93,7 +114,9 @@
   .cs-menu .cs-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
   .cs-menu .cs-btn .i { font-size: 44px; }
   .cs-star { font-size: 76px; line-height: 1; }
-  .cs-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  .cs-load { position: fixed; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px;
+    background: linear-gradient(#7cc4ff, #bfe6ff 55%, #fff4d6); transition: opacity .4s ease; }
+  .cs-load.out { opacity: 0; pointer-events: none; }
   /* Wide screens: the words, the chip and the round dots share one line across the top, so the yard gets the height. */
   @media (min-aspect-ratio: 9/10) {
     .cs-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 58px; box-sizing: border-box; }
@@ -102,10 +125,13 @@
   }
   @media (max-width: 480px) { .cs-sum { font-size: clamp(19px, 5.2vw, 26px); padding: 5px 12px; } .cs-dots { gap: 5px; } .cs-dots i { width: 13px; height: 13px; border-width: 2.5px; } .cs-bar { gap: 8px; padding-left: 8px; padding-right: 8px; } .cs .cs-btn { min-height: 76px; font-size: 14px; border-radius: 18px; padding: 6px 3px; } .cs-btn .i { font-size: 26px; } .cs-menu { gap: 8px; } .cs-menu .cs-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .cs-menu .cs-btn .i { font-size: 36px; } .cs-star { font-size: 60px; } .cs-btn .pic { height: 34px; font-size: 22px; } .cs-btn .tw { height: 34px; } }
   @media (max-height: 520px) { .cs .cs-btn { min-height: 60px; font-size: 15px; } .cs-btn .i { font-size: 24px; } .cs-btn .big { font-size: 36px; } .cs .cs-say { width: 44px; height: 44px; font-size: 20px; } .cs-menu .cs-btn { min-height: 90px; } .cs-star { font-size: 52px; } .cs-btn .pic { height: 28px; } .cs-btn .tw { height: 28px; } }
-  @media (prefers-reduced-motion: reduce) { .cs .cs-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .cs .cs-say:active, .cs .cs-btn:active { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .cs .cs-btn.no { animation: none; outline: 5px dashed #C2431F; outline-offset: 2px; } .cs .cs-say:active, .cs .cs-btn:active { transform: none; }
+    .cs-bar.enter .cs-btn, .cs-card > * { animation-name: cs-fade; } .cs-top, .cs-low, .cs-tags { transition-duration: .15s; } .cs-snap { transition-duration: .25s; } }
+  @keyframes cs-fade { from { opacity: 0; } }
 </style>
 <div class="cs-load" id="load" role="status">Getting the yard ready…</div>
 <div class="cs" id="cs" hidden>
+  <div class="cs-tags" id="tags" aria-hidden="true"></div>
   <div class="cs-top">
     <div class="cs-line" id="line">
       <div class="cs-ask" id="ask" hidden><button class="cs-say" id="say" type="button" aria-label="Say it again">🔊</button><span class="cs-askt" id="askt" role="status" aria-live="polite"></span></div>
@@ -123,9 +149,12 @@
 </div>
 <script>
 /* ===== Crate Stacker's rounds: plain data and functions (no DOM, no 3D), so tests/unit/crate-stacker.test.js can run
-   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
-   so the first six rounds are always the same; a replay gets new numbers). A crate is a one and a tower is a ten:
-   every number here is tens * 10 + ones. ===== */
+   this block on its own. A round is made from its chapter, its number (1-6), the lap (the play's own number) and a
+   redo count (another draw of the same round). Each play gets a fresh random lap, so a player meets new questions every
+   time; lap 0 is the fixed set, played with mode=same (everyone the same questions: a class working through them
+   together, the course pictures). plan() makes a play's six rounds: never one question twice in a play, and, where the
+   round has room, none of the questions the player had in the last plays. A crate is a one and a tower is a ten: every
+   number here is tens * 10 + ones. ===== */
 /* crate-stacker:begin */
 (function (root) {
   var CHAPTERS = ['build', 'greater', 'add'], ROUNDS = 6, SIGNS = ['gt', 'eq', 'lt'];
@@ -138,11 +167,11 @@
     for (var i = 0; i < pool.length && ch.length < 3; i++) if (pool[i] >= lo && pool[i] <= hi && ch.indexOf(pool[i]) < 0) ch.push(pool[i]);
     return ch.sort(function (x, y) { return x - y; });
   }
-  function round(chapter, n, lap) {
+  function round(chapter, n, lap, redo) {
     var ci = CHAPTERS.indexOf(chapter);
     if (ci < 0 || !(n >= 1 && n <= ROUNDS)) return null;
     lap = lap || 0;
-    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709), out = { chapter: chapter, n: n }, t, o, k;
+    var r = rng((ci + 1) * 7919 + n * 104729 + lap * 1299709 + (redo || 0) * 15485863), out = { chapter: chapter, n: n }, t, o, k;
     if (chapter === 'build') {
       // 1-3 load a number: a teen, a number to 49 named as a numeral, a number to 99 named by its tens and ones.
       // 4-6 read a load: the two digits the other way round are offered (34 or 43?), then a load with no loose
@@ -205,11 +234,97 @@
     }
     return out;
   }
-  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
-  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
-  root.CrateStacker = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, SIGNS: SIGNS, MAX: 99, round: round, params: params };
+  /** What a round asks, as an id: two rounds with the same id are the same question. */
+  function qid(r) {
+    if (!r) return '';
+    if (r.chapter === 'build') return 'build:' + r.kind + ':' + r.tens + '.' + r.ones + (r.ask === 'parts' ? 'p' : '');
+    return r.chapter + ':' + r.kind + ':' + r.a + (r.kind === 'less10' ? '-' : r.chapter === 'add' ? '+' : '|') + r.b;
+  }
+  /** A play's six rounds for this lap: each round is the first draw (redo 0, 1, 2 ...) that is not already in this play
+   *  and not in `avoid` (the ids of the last plays); when a round has no such draw (a small range, like the teens), the
+   *  first that is not already in this play. Every round keeps its kind and its number range: only its numbers change. */
+  function plan(chapter, lap, avoid) {
+    if (CHAPTERS.indexOf(chapter) < 0) return [];
+    var out = [], seen = {}, bad = {}, i, k;
+    for (i = 0; avoid && i < avoid.length; i++) bad[avoid[i]] = 1;
+    for (var n = 1; n <= ROUNDS; n++) {
+      var first = null, best = null;
+      for (k = 0; k < 40 && !best; k++) { var r = round(chapter, n, lap, k), id = qid(r); if (seen[id]) continue; if (!first) first = r; if (!bad[id]) best = r; }
+      var pick = best || first || round(chapter, n, lap, 0);
+      pick.id = qid(pick); seen[pick.id] = 1; out.push(pick);
+    }
+    return out;
+  }
+  /** A new lap for a play (1 to 2^31 - 1), not one of `recent`. rand: a function giving [0, 1). */
+  function freshLap(rand, recent) {
+    var lap = 1;
+    for (var i = 0; i < 20; i++) { lap = 1 + Math.floor(rand() * 2147483646); if (!recent || recent.indexOf(lap) < 0) break; }
+    return lap;
+  }
+  /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock, same (mode=same: the fixed questions) }. */
+  function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true), same: p.mode === 'same' }; }
+  root.CrateStacker = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, SIGNS: SIGNS, MAX: 99, round: round, qid: qid, plan: plan, freshLap: freshLap, params: params };
 })(typeof window !== 'undefined' ? window : globalThis);
 /* crate-stacker:end */
+/* ===== The voice coach's line queue: plain functions (no DOM), so the tests can run it with their own clock. ===== */
+/* crate-coach:begin */
+(function (root) {
+  /** One line at a time goes to the platform's voice (o.speak(text, onend) -> true when it started); the next waits
+   *  until that one has ended, so a line is never stopped mid-word. A new instruction (queue false) drops the lines
+   *  still waiting, never the one being said. A line that never reports its end (stuck or failed audio) is let go after
+   *  cap(text) ms, so the game is never held up by it (the audio is not cut: a later line joins the platform's own queue
+   *  behind it). A line that cannot start (no voice, muted) ends at once. idle(fn, max) runs fn once nothing is being
+   *  said or waiting, or after max ms at most. o: { speak, prefetch?, setTimeout, clearTimeout, now?, cap? }. */
+  function coach(o) {
+    var q = [], cur = null, waiters = [], log = [];
+    var cap = o.cap || function (t) { return Math.min(9000, 3500 + 80 * String(t).length); };
+    var now = function () { return o.now ? o.now() : Date.now(); };
+    function settle() {
+      if (cur || q.length) return;
+      var w = waiters; waiters = [];
+      for (var i = 0; i < w.length; i++) w[i].fire();
+    }
+    function end(it, why) {
+      if (cur !== it) return;
+      if (it.dog) o.clearTimeout(it.dog);
+      cur = null; it.ended = now(); it.why = why;
+      pump();
+    }
+    function pump() {
+      if (cur) return;
+      if (!q.length) return settle();
+      var it = cur = q.shift(), ok = false;
+      it.started = now(); log.push(it); if (log.length > 40) log.shift();
+      try { ok = !!o.speak(it.text, function () { end(it, 'ended'); }); } catch (e) { ok = false; }
+      if (!ok) return end(it, 'silent');
+      if (cur === it) it.dog = o.setTimeout(function () { end(it, 'timeout'); }, cap(it.text));
+    }
+    return {
+      /** Say a line: after the one being said; queue false also drops the lines still waiting. */
+      say: function (text, queue) {
+        if (!queue) q.length = 0;
+        var it = { text: String(text), asked: now() };
+        q.push(it);
+        if (cur && o.prefetch) { try { o.prefetch(it.text); } catch (e) { /* no prefetch */ } }
+        pump();
+      },
+      /** The player moves on: the lines still waiting are dropped; the one being said ends by itself. */
+      skip: function () { q.length = 0; },
+      busy: function () { return !!cur || q.length > 0; },
+      idle: function (fn, max) {
+        var done = false, w = { t: 0 };
+        w.fire = function () { if (done) return; done = true; if (w.t) o.clearTimeout(w.t); fn(); };
+        if (!cur && !q.length) { w.fire(); return w; }
+        if (max) w.t = o.setTimeout(w.fire, max);
+        waiters.push(w);
+        return w;
+      },
+      log: log,
+    };
+  }
+  root.CrateCoach = { coach: coach };
+})(typeof window !== 'undefined' ? window : globalThis);
+/* crate-coach:end */
 </script>
 <script>
 /* ===== Crate Stacker's words: every line the game shows or says, keyed, English source. The AI-voice warm-up and
@@ -306,7 +421,7 @@ import { start } from 'oomba3d';
 
 const CS = window.CrateStacker, T = (window.CrateStackerI18n || {}).en || {};
 const B = window.BRB || null;
-const el = Object.fromEntries(['load', 'cs', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
+const el = Object.fromEntries(['load', 'cs', 'tags', 'line', 'ask', 'say', 'askt', 'row2', 'sum', 'hint', 'dots', 'bar', 'card'].map(id => [id, document.getElementById(id)]));
 const fmt = (key, v) => String(T[key] === undefined ? key : T[key]).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null ? v[k] : ''));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const HEROES = ['knight', 'barbarian', 'mage', 'rogue', 'rogue-hooded'];   // the theme's five adventurers
@@ -316,15 +431,50 @@ const SIGN = { gt: '>', eq: '=', lt: '<' };
 
 /* ---------- state ---------- */
 const P = CS.params(B && B.params);
-const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, hist: [], count: 0, shown: false, stage: 0 };
-try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of CS.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
-const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, plan: [], avoid: [], recent: {}, laps: [], R: null, phase: 'idle', hero: null, fast: false, line: null, reported: 0, done: {}, hist: [], count: 0, shown: false, stage: 0, wait: null, waitTok: 0 };
+// The save: which chapters are finished, and the questions of the last plays of each chapter (their ids and laps),
+// so the next play asks other ones where it can.
+const RECENT = 12;
+try {
+  const s = B && B.storage ? B.storage.get(SAVE_KEY) : null;
+  if (s && s.done) for (const c of CS.CHAPTERS) if (s.done[c]) S.done[c] = true;
+  if (s && s.recent) for (const c of CS.CHAPTERS) if (Array.isArray(s.recent[c])) S.recent[c] = s.recent[c].filter(x => typeof x === 'string').slice(-RECENT);
+  if (s && Array.isArray(s.laps)) S.laps = s.laps.filter(Number.isInteger).slice(-8);
+} catch (e) { /* no save */ }
+const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done, recent: S.recent, laps: S.laps }); } catch (e) { /* no save */ } };
+const rand = () => { try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; } catch (e) { return Math.random(); } };
 
-/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ---------- */
+/* ---------- speech and sound: every line is the game's own (the I18N block), read through BRB.speak ----------
+   The coach (CrateCoach, above) hands BRB.speak one line at a time and waits for its end, so a line is never cut off by
+   the next one; the rounds wait for it too (afterLine). Only the fixed lines of the I18N block are ever asked for. */
 const muted = () => { try { return !!(B && B.sfx && B.sfx.muted); } catch (e) { return false; } };
+const coach = window.CrateCoach.coach({
+  speak: (text, onend) => !!(B && B.speak && B.speak(text, { lang: 'en', voice: 'friendly', queue: true, onend })),
+  prefetch: text => { if (B && B.prefetchSpeech) B.prefetchSpeech([text], { lang: 'en', voice: 'friendly' }); },
+  setTimeout: (f, ms) => setTimeout(f, ms), clearTimeout: t => clearTimeout(t), now: () => Math.round(performance.now()),
+});
 function speak(key, vars, o = {}) {
   if (o.auto !== false && muted()) return false;
-  try { return !!(B && B.speak && B.speak(fmt(key, vars), { lang: 'en', voice: 'friendly', queue: !!o.queue })); } catch (e) { return false; }
+  coach.say(fmt(key, vars), !!o.queue);
+  return true;
+}
+const LINE_WAIT_MAX = 12000, SKIP_MIN = 1200, SKIP_GRACE = 900;
+/** After a right answer: `fn` once the feedback has been on screen `ms` and the coach has finished its lines (at most
+ *  LINE_WAIT_MAX more). A tap or a key while waiting (the player moving on) drops the lines not yet started and goes on
+ *  after SKIP_MIN, waiting at most SKIP_GRACE for the line being said; that line is never cut, and the next question's
+ *  words are said after it. Test fast mode does not wait for the voice. */
+function afterLine(ms, fn) {
+  const tok = ++S.waitTok, t0 = performance.now();
+  let minOk = false, voiceOk = false, done = false;
+  const go = () => { if (done || !minOk || !voiceOk || tok !== S.waitTok) return; done = true; S.wait = null; fn(); };
+  S.wait = {
+    skip() {
+      if (done) return;
+      coach.skip();
+      later(Math.max(0, SKIP_MIN - (performance.now() - t0)), () => { minOk = true; coach.idle(() => { voiceOk = true; go(); }, SKIP_GRACE); });
+    },
+  };
+  later(ms, () => { minOk = true; if (S.fast) { voiceOk = true; return go(); } coach.idle(() => { voiceOk = true; go(); }, LINE_WAIT_MAX); });
 }
 /** Show a line in the words box (one or two short sentences) and say it; the speaker button says it again. */
 function say(key, vars, o) {
@@ -347,7 +497,7 @@ el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1],
 function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
 const timers = new Set();
 const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
-const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); S.waitTok++; S.wait = null; };
 /** "3 tens and 4 ones" needs four lines ("1 ten", "1 one"): the key for these tens and ones. */
 const partsKey = (base, t, o) => base + '.' + (t === 1 ? '1' : 'n') + (o === 1 ? '1' : 'n');
 
@@ -360,20 +510,26 @@ try {
   throw e;
 }
 const THREE = g.THREE, W = g.world, V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+let lineup = [];
 const sfx = name => { if (!muted()) g.sound(name); };
 
 // The theme's pieces, loaded once and copied: its buildings, roads, cars, trees and street things are the town.
 const take = async id => { const o = (await W.piece(id, { scale: 1 })).object; g.scene.remove(o); return o; };
 const PIECES = ['road', 'road-crossing', 'building-a', 'building-b', 'building-c', 'building-d', 'building-e', 'building-f', 'building-g', 'building-h', 'car-taxi', 'car-police', 'car-hatchback', 'car-sedan', 'car-wagon',
   'tree', 'tree-round', 'trees', 'forest-round', 'bushes', 'bush', 'streetlight', 'water-tower', 'fire-hydrant', 'bench'];
-const PT = Object.fromEntries(await Promise.all(PIECES.map(async id => [id, await take(id)])));
+// Everything the first screens show is loaded before the curtain lifts (the town's pieces and the five helpers, in
+// parallel), so nothing pops in or stalls a moving thing later.
+const [PT] = await Promise.all([
+  Promise.all(PIECES.map(async id => [id, await take(id)])).then(Object.fromEntries),
+  Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: -40 }))).then(list => { lineup = list; for (const h of list) h.object.visible = false; }),
+]);
 const piece = (id, x, y, z, s = 1, turn = 0) => { const o = PT[id].clone(true); o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = turn; return o; };
 
 // The game's own simple shapes (crates, towers, trucks), with the same ink edge as the theme.
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, ...o });
 const INK = new THREE.MeshBasicMaterial({ color: '#141414', side: THREE.BackSide }), BLACK = new THREE.MeshBasicMaterial({ color: '#141414' });
 const M = { red: mat('#e5484d'), blue: mat('#2f7fe0'), yellow: mat('#ffd23f'), green: mat('#49b86a'), glass: mat('#bfe6ff', { roughness: 0.2 }), tyre: mat('#2b2b2b'), hub: mat('#dfe3e8'), bed: mat('#c9a36b'), steel: mat('#8d99a6'),
-  slab: mat('#e9e2cf'), line: mat('#ffd23f'), grass: mat('#8fd27a'), dock: mat('#b9c2cc'), white: mat('#ffffff'), spotT: mat('#9cc7f5'), spotO: mat('#ffc38a'), teal: mat('#2bb7a9'), purple: mat('#8b6fe0') };
+  slab: mat('#e9e2cf'), line: mat('#ffd23f'), lane: mat('#7d8894'), grass: mat('#8fd27a'), dock: mat('#b9c2cc'), white: mat('#ffffff'), spotT: mat('#9cc7f5'), spotO: mat('#ffc38a'), teal: mat('#2bb7a9'), purple: mat('#8b6fe0') };
 const geos = new Map();
 const boxGeo = (w, h, d) => { const k = [w, h, d].join('|'); if (!geos.has(k)) geos.set(k, new THREE.BoxGeometry(w, h, d)); return geos.get(k); };
 const WHEEL = new THREE.CylinderGeometry(0.5, 0.5, 1, 16);
@@ -418,24 +574,44 @@ function tower() {
   return o;
 }
 
-/** Words on a board that always faces the player (the textures are made once and kept): a number on a truck's
- *  sign, the sign between two trucks, the big number on a closed load. */
-const boardTex = new Map(), BOARD_LIGHT = new THREE.Color(1.5, 1.5, 1.5);   // brighter than white: the tone curve brings it back to cream
+/** Words on a board that always faces the player: a number on a truck's sign, the sign between two trucks, the big
+ *  number on a closed load. The board is a point in the yard (an Object3D, so it rides with its truck) and its face is
+ *  page text in #tags, above the canvas: the yard's haze, glow and tone curve never reach it, so the number is always
+ *  crisp ink on cream (or gold, or green). Each frame it is moved to where its point is on the screen, at the size a
+ *  board `w` wide would be there (only the transform changes while things move; the size only when it really does). */
+const BOARDS = new Set();
 function board(text, w = 1.7, tone = 'cream') {
-  const key = text + '|' + tone;
-  if (!boardTex.has(key)) {
-    const c = document.createElement('canvas'); c.width = 256; c.height = 176;
-    const x = c.getContext('2d');
-    x.fillStyle = { cream: '#FFFDF2', gold: '#FFD23F', green: '#9df5b9' }[tone]; x.strokeStyle = '#141414'; x.lineWidth = 14; x.lineJoin = 'round';
-    x.beginPath(); x.roundRect(10, 10, 236, 156, 36); x.fill(); x.stroke();
-    x.fillStyle = '#141414'; x.font = `900 ${String(text).length > 2 ? 104 : 128}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(text), 128, 97);
-    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; boardTex.set(key, tex);
-  }
-  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex.get(key), fog: false, alphaTest: 0.5, color: BOARD_LIGHT })); s.scale.set(w, w * 176 / 256, 1);
-  s.userData.text = String(text); s.userData.w = w;
-  return s;
+  const o = new THREE.Object3D(), d = document.createElement('div');
+  d.className = 'cs-tag'; d.hidden = true; el.tags.append(d);
+  o.userData = { text: String(text), w, tone, el: d, px: 0, at: '' };
+  paint(o); BOARDS.add(o);
+  return o;
 }
-const reboard = (s, text, tone = 'cream') => { if (!s) return; board(text, 1, tone); s.material.map = boardTex.get(text + '|' + tone); s.userData.text = String(text); };
+function paint(o) { const u = o.userData; u.el.textContent = u.text; u.el.dataset.tone = u.tone; u.px = 0; }
+const reboard = (s, text, tone = 'cream') => { if (!s) return; s.userData.text = String(text); s.userData.tone = tone; paint(s); };
+/** A board leaves the yard with its truck: its face goes too. */
+const unboard = root => root.traverse(o => { if (o.userData && o.userData.el && BOARDS.has(o)) { o.userData.el.remove(); BOARDS.delete(o); } });
+const onScreen = o => { for (let p = o; p; p = p.parent) { if (!p.visible) return false; if (p === g.scene) return true; } return false; };
+function placeBoards() {
+  if (!BOARDS.size) return;
+  const cam = g.camera, r = g.renderer.domElement.getBoundingClientRect(), right = V3(1, 0, 0).applyQuaternion(cam.quaternion), p = V3(0, 0, 0), q = V3(0, 0, 0);
+  for (const o of BOARDS) {
+    const u = o.userData, d = u.el;
+    if (!onScreen(o) || !u.text) { d.hidden = true; continue; }
+    o.getWorldPosition(p); q.copy(p).addScaledVector(right, u.w); p.project(cam); q.project(cam);
+    if (p.z > 1 || p.z < -1) { d.hidden = true; continue; }
+    const x = (p.x + 1) / 2 * r.width + r.left, y = (1 - p.y) / 2 * r.height + r.top, w = Math.max(24, Math.abs(q.x - p.x) / 2 * r.width);
+    if (Math.abs(w - u.px) > 0.5) {
+      const h = w * 176 / 256; u.px = w; u.h = h;
+      d.style.width = w.toFixed(1) + 'px'; d.style.height = h.toFixed(1) + 'px'; d.style.borderRadius = (h * 0.24).toFixed(1) + 'px';
+      d.style.borderWidth = Math.max(2, w * 0.045).toFixed(1) + 'px'; d.style.boxShadow = `0 ${Math.max(2, w * 0.03).toFixed(1)}px 0 #141414`;
+      d.style.fontSize = (h * (u.text.length > 2 ? 0.56 : 0.7)).toFixed(1) + 'px';
+    }
+    const at = `translate3d(${(x - u.px / 2).toFixed(1)}px, ${(y - u.h / 2).toFixed(1)}px, 0)`;
+    if (at !== u.at) { u.at = at; d.style.transform = at; }
+    d.hidden = false;
+  }
+}
 
 /** A toy truck: a cab on the left, a flat bed with room for `cap` towers and, at the far end, the loose crates.
  *  Its origin is where the bed begins. `T.sign` is the number board on the cab roof. */
@@ -458,7 +634,7 @@ function truck(color, cap) {
 const towerAt = (T, i) => V3(0.3 + i * PITCH, BED, 0), crateAt = (T, j) => V3(0.3 + T.cap * PITCH + 0.24, BED + CR / 2 + j * CR, 0);
 /** Put exactly `tens` towers and `ones` loose crates on a truck, at once. */
 function setLoad(T, tens, ones) {
-  for (const o of [...T.load.children]) { drop(o); T.load.remove(o); }
+  for (const o of [...T.load.children]) { drop(o); unboard(o); T.load.remove(o); }
   T.towers = []; T.crates = []; T.tens = tens; T.ones = ones;
   for (let i = 0; i < tens; i++) { const t = tower(); t.position.copy(towerAt(T, i)); T.load.add(t); T.towers.push(t); }
   for (let j = 0; j < ones; j++) { const c = crate(); c.position.copy(crateAt(T, j)); T.load.add(c); T.crates.push(c); }
@@ -494,6 +670,7 @@ function anim(o, dur, step, then, wait = 0) {
   tweens.push({ o, dur, step, then, t: 0, wait });
 }
 const smooth = k => k * k * (3 - 2 * k);
+g.onUpdate(() => placeBoards());
 const bounce = k => { const n = 7.5625, d = 2.75; if (k < 1 / d) return n * k * k; if (k < 2 / d) { k -= 1.5 / d; return n * k * k + 0.75; } if (k < 2.5 / d) { k -= 2.25 / d; return n * k * k + 0.9375; } k -= 2.625 / d; return n * k * k + 0.984375; };
 /** A crate or a tower falls onto its place and bounces; the thud sounds as it lands. */
 function fall(o, { wait = 0, then, high = 3.2 } = {}) {
@@ -516,6 +693,7 @@ function drive(V, toX, { dur = 0.9, then, from } = {}) {
   anim(o, dur, k => { if (a == null) a = o.position.x; const x = a + (toX - a) * smooth(k), dx = x - o.position.x; o.position.x = x; for (const w of V.wheels) w.rotation.y -= dx / 0.3; if (k >= 1) o.position.x = toX; }, then);
 }
 g.onUpdate(dt => {
+  dt = Math.min(dt, 1 / 20);   // a slow frame slows a move down for a moment; it never makes a thing jump
   for (let i = tweens.length - 1; i >= 0; i--) {
     const w = tweens[i];
     if (w.wait > 0) { w.wait -= dt; if (w.wait > 0) continue; w.o.visible = true; }
@@ -530,7 +708,9 @@ const town = new THREE.Group(), traffic = [];
 {
   const BS = 3.1, row = ['building-c', 'building-a', 'building-g', 'building-e', 'building-d', 'building-b', 'building-h', 'building-f', 'building-c', 'building-a', 'building-g'];
   row.forEach((id, i) => town.add(piece(id, (i - 5) * (BS * 2 + 0.5), -0.1, -13, BS)));
-  for (let i = -7; i <= 7; i++) town.add(piece(i === -2 || i === 3 ? 'road-crossing' : 'road', i * 6, -0.29, -6.2, 3, Math.PI / 2));
+  // The street: the theme's road tiles (2 by 2, their surface at y = 0 and the kerbs 0.1 up) at three times their size,
+  // laid on the grass (y -0.06) so the cars drive on the road, not on the grass.
+  for (let i = -8; i <= 8; i++) town.add(piece(i === -2 || i === 3 ? 'road-crossing' : 'road', i * 6, -0.045, -6.2, 3, Math.PI / 2));
   // a second, taller row far behind, and woods at the ends, so the sky line is a town
   ['building-h', 'building-d', 'building-g', 'building-c', 'building-h', 'building-d'].forEach((id, i) => town.add(piece(id, (i - 2.5) * 11.5, -0.1, -23, 4.6)));
   for (const [id, x, z, s, turn = 0] of [['trees', -13, -1.6, 2.3], ['tree-round', -9.4, -2.2, 2.2], ['tree', 9.6, -2.2, 2.3], ['trees', 13.4, -1.6, 2.3, 1], ['bushes', -17.5, -1.5, 2], ['bushes', 18, -1.6, 2, 2], ['tree-round', 22, -1.5, 2.8], ['tree', -22, -1.4, 2.8], ['bush', -5.5, -2.5, 3], ['bush', 5.8, -2.5, 3],
@@ -540,7 +720,7 @@ const town = new THREE.Group(), traffic = [];
     town.add(piece(id, x, id === 'tree' || id === 'tree-round' ? 0.2 : 0, z, s, turn));
   // cars on the road: they drive by, turn round at the ends of the street and come back on the other side
   [['car-taxi', -20, 1, 3.4], ['car-wagon', 6, 1, 2.6], ['car-police', 24, -1, 3], ['car-sedan', -4, -1, 3.8]].forEach(([id, x, dir, speed]) => {
-    const o = piece(id, x, 0.15, -6.2 + dir * 1.25, 2.3, dir > 0 ? Math.PI / 2 : -Math.PI / 2); town.add(o); traffic.push({ o, dir, speed });
+    const o = piece(id, x, 0.1, -6.2 + dir * 1.25, 2.3, dir > 0 ? Math.PI / 2 : -Math.PI / 2); town.add(o); traffic.push({ o, dir, speed });
   });
   // a soft haze in front of the town, so the crates in the yard stand out from the busy street behind them
   const c = document.createElement('canvas'); c.width = 4; c.height = 64;
@@ -550,11 +730,11 @@ const town = new THREE.Group(), traffic = [];
   haze.position.set(0, 20, -0.4); haze.renderOrder = 1; town.add(haze);
   g.scene.add(town);
 }
-if (!reduced) g.onUpdate(dt => { for (const c of traffic) { c.o.position.x += c.dir * c.speed * dt; if (c.o.position.x * c.dir > 44) c.o.position.x = -44 * c.dir; } });
+if (!reduced) g.onUpdate(dt => { dt = Math.min(dt, 1 / 20); for (const c of traffic) { c.o.position.x += c.dir * c.speed * dt; if (c.o.position.x * c.dir > 44) c.o.position.x = -44 * c.dir; } });
 
 const stage = new THREE.Group(); g.scene.add(stage);
 function clearStage() { if (S.hero) g.scene.add(S.hero.object);   // the helper steps off the truck before the yard is cleared
-  for (const o of [...stage.children]) { stage.remove(o); o.traverse(c => { if (c.isSprite) c.material.dispose(); }); } tweens.length = 0; targets.length = 0; S.A = S.B = S.C = S.mid = null; }
+  for (const o of [...stage.children]) { stage.remove(o); unboard(o); } tweens.length = 0; targets.length = 0; S.A = S.B = S.C = S.mid = null; }
 const put = o => { stage.add(o); return o; };
 /** Stand a truck (or a cart) so that its middle is at cx. */
 const centre = (V, cx, y = 0, z = 0) => { V.object.position.set(cx - (V.x0 + V.x1) / 2, y, z); V.home = V.object.position.x; return V; };
@@ -563,6 +743,13 @@ function slab(x0, x1, z0, z1) {
   const w = x1 - x0, d = z1 - z0, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
   put(box(M.slab, w, 0.1, d, cx, -0.04, cz, 0.04));
   for (const [lw, ld, lx, lz] of [[w - 0.5, 0.1, cx, z0 + 0.3], [w - 0.5, 0.1, cx, z1 - 0.3], [0.1, d - 0.5, x0 + 0.3, cz], [0.1, d - 0.5, x1 - 0.3, cz]]) put(box(M.line, lw, 0.012, ld, lx, 0.017, lz, 0));
+}
+
+/** The lane the trucks and the cart drive along, into the yard and out of it: a paved strip under the slab, out past
+ *  both sides of the screen, with a dashed middle line, so nothing drives on the grass. */
+function lane(z, w = 1.8) {
+  put(box(M.lane, 120, 0.06, w, 0, -0.05, z, 0));
+  for (let x = -58; x <= 58; x += 2.4) put(box(M.white, 1.1, 0.012, 0.09, x, -0.014, z + w / 2 - 0.14, 0));
 }
 
 /* ---------- where things go, and the camera ---------- */
@@ -615,17 +802,16 @@ g.renderer.domElement.addEventListener('pointerdown', ev => {
     const reach = Math.max(24, Math.hypot(ex - sx, ey - sy) * 1.15), dist = Math.hypot(sx - ev.clientX, sy - ev.clientY);
     if (dist <= reach && dist < bd) { bd = dist; best = t; }
   }
-  if (best) best.go();
+  if (best) best.go(); else moveOn();
 });
 
 /* ---------- the helper ---------- */
-let lineup = [];
 const HS = 1.3;   // the helper's size in the yard
 /** A parked truck with a small load, for the screens with no round on them. */
 function parked(z = -1.3) { const A = centre(truck('red', 4), 0, 0, z); setLoad(A, 3, 4); put(A.object); return A; }
 async function showHeroes() {
   S.screen = 'hero';
-  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));
+  if (!lineup.length) lineup = await Promise.all(HEROES.map(id => g.hero(id, { x: 0, y: 0, z: 0 })));   // loaded with the town (above)
   clearStage();
   const spots = tall ? [[-2.3, 0.6], [0, 0.2], [2.3, 0.6], [-1.25, 3.5], [1.25, 3.5]] : [[-4.6, 1.6], [-2.3, 1.2], [0, 1], [2.3, 1.2], [4.6, 1.6]];
   parked(tall ? -3 : -2); slab(tall ? -4 : -6.2, tall ? 4 : 6.2, -4.4, tall ? 4.8 : 3.2);
@@ -684,15 +870,25 @@ function solo() {
   Object.assign(view, { rect: [-4.3, 2.6, -1.2, tall ? 2 : 1.6], high: tall ? 5.4 : 3.4, low: 2.2, back: tall ? -5 : -4.5, tilt: 0 });   // on a wide screen the towers may reach up into the band of sky
 }
 function showMenu() {
-  clearTimers(); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
+  clearTimers(); el.cs.classList.remove('swap', 'veil'); S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; solo();
   if (S.hero) S.hero.play('wave');
   card('menu', { title: fmt('title'), line: 'menu.pick', buttons: CS.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
   frame();
 }
 
 /* ---------- a chapter: six rounds ---------- */
-function startChapter(chapter) {
+/** A new play of a chapter: new questions (a fresh lap, none of the last plays' questions where the round has room),
+ *  or, with mode=same, the fixed set (lap 0, then 1, 2 ... on Play again: the same for everyone). */
+function newPlay(chapter, again) {
+  if (P.same) S.lap = again ? S.lap + 1 : 0;
+  else { S.lap = CS.freshLap(rand, S.laps); S.laps = [...S.laps, S.lap].slice(-8); }
+  S.avoid = P.same ? [] : (S.recent[chapter] || []).slice(-RECENT);
+  S.plan = CS.plan(chapter, S.lap, S.avoid);
+  if (!P.same) { S.recent[chapter] = [...(S.recent[chapter] || []), ...S.plan.map(r => r.id)].slice(-RECENT); store(); }
+}
+function startChapter(chapter, again) {
   if (!CS.CHAPTERS.includes(chapter)) return showMenu();
+  newPlay(chapter, again); el.cs.classList.remove('swap', 'veil');
   S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true; el.card.replaceChildren();
   if (S.hero) S.hero.play('idle');
   nextRound();
@@ -721,19 +917,57 @@ function ask(R) {
 function nextRound() {
   clearTimers();
   if (S.round >= CS.ROUNDS) return finish();
-  S.round++; S.R = CS.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.shown = false; S.hist = []; S.count = 0; S.tick = 0; S.after = null;
+  S.round++; S.R = { ...S.plan[S.round - 1] }; S.phase = 'play'; S.shown = false; S.hist = []; S.count = 0; S.tick = 0; S.after = null;
   const R = S.R;
   hint(); dots(); showSum(R, false);
   ask(R);   // the words first: the camera fits the yard under them
   redraw(); frame();
 }
-/** The round is right: cheer and say what is true, then the next round (or the end). */
+/** The round is right: cheer and say what is true, then (once that has been on screen `ms` and the coach has said
+ *  all of it) the next round, or the end. */
 function right(key, vars, ms, then) {
   sfx('cheer'); heroMove('cheer', 1700); if (S.hero) hop(S.hero.object, 0.5);
   showSum(S.R, true); say(key, vars, { queue: true });
   if (then) then();
-  later(ms, nextRound);
+  afterLine(ms, advance);
 }
+/** From one question to the next, calm and brisk (about 0.7 s): the words, the chip and the buttons fade out (0.22 s);
+ *  the yard as it is now is kept as a picture over the canvas while the next round is set up under it, and the picture
+ *  fades away (0.45 s) as the new words and buttons fade in, so the camera's new framing and the new trucks never jump
+ *  or flash. With reduced motion: shorter fades, nothing moves. Test fast mode: at once. */
+let snapAt = null;
+function advance() {
+  if (S.fast || !S.shown || S.screen !== 'play') return nextRound();
+  el.cs.classList.add('swap', 'veil');   // veil: the truck numbers wait for the new yard to show through
+  later(reduced ? 150 : 220, () => {
+    snapshot(snap => {
+      if (S.screen !== 'play') { if (snap) snap.remove(); el.cs.classList.remove('swap', 'veil'); return; }
+      nextRound();
+      el.cs.classList.remove('swap');
+      el.bar.classList.add('enter'); setTimeout(() => el.bar.classList.remove('enter'), 700);
+      if (!snap) return void el.cs.classList.remove('veil');
+      snapAt = snap;
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.cs.classList.remove('veil'); snap.style.opacity = '0'; setTimeout(() => { snap.remove(); if (snapAt === snap) snapAt = null; }, 700); }));
+    });
+  });
+}
+/** The yard's last drawn frame, as a picture over the canvas (cb(null) when the device will not give it). Taken in the
+ *  next animation frame, after the yard has drawn it, at most 1.5 pixels per CSS pixel. */
+function snapshot(cb) {
+  requestAnimationFrame(() => {
+    let c = null;
+    try {
+      const src = g.renderer.domElement, k = Math.min(1, 1.5 / (devicePixelRatio || 1));
+      c = document.createElement('canvas'); c.className = 'cs-snap'; c.width = Math.max(1, Math.round(src.width * k)); c.height = Math.max(1, Math.round(src.height * k));
+      const x = c.getContext('2d'); x.drawImage(src, 0, 0, c.width, c.height);
+      if (!x.getImageData(c.width >> 1, c.height >> 1, 1, 1).data[3]) c = null;   // an empty picture: no dissolve
+      else document.body.append(c);
+    } catch (e) { c = null; }
+    cb(c);
+  });
+}
+/** A tap on the yard or a button while the right answer is shown: the player moves on (afterLine). */
+const moveOn = () => { if (S.phase === 'right' && S.wait) S.wait.skip(); };
 function finish() {
   S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
   // The course step's completion signal: once for each chapter finished, never before its sixth round is right.
@@ -741,7 +975,7 @@ function finish() {
   try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
   solo();
   g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
-  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => startChapter(S.chapter, true) }];
   if (!S.lock) buttons.push({ id: 'menu', icon: '📦', label: fmt('btn.menu'), go: showMenu });
   card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
   frame();
@@ -775,7 +1009,7 @@ function drawOne(R, found) {
   put(A.object);
   if (R.kind === 'build') { const n = found ? R.answer : S.count; setLoad(A, tensOf(n), onesOf(n)); setSign(A, R.ask === 'parts' && !found ? '?' : n, found ? 'green' : 'cream'); }
   else { setLoad(A, R.tens, R.ones); setSign(A, found ? R.answer : '?', found ? 'green' : 'cream'); }
-  slab(-half - 1.6, half + 1.6, -1.9, 2.8);
+  slab(-half - 1.6, half + 1.6, -1.9, 2.8); lane(0);
   ride(A);
   Object.assign(view, { rect: [-half - 0.2, half + 0.2, -0.6, 0.9], high: TOP + 0.3, low: 1.2, back: tall ? -4.6 : -4.2, tilt: 0 });
   if (!S.shown && !found) drive(A, A.home, { from: A.home + 16, dur: 0.8 });
@@ -789,6 +1023,7 @@ function bundle(A, tens) {
   t.position.set(crateAt(A, 0).x, BED, 0); fly(t, to, { arc: 1.1, dur: 0.5, then: () => sfx('land') }); sfx('coin');
 }
 function build(act, b) {
+  if (S.phase === 'right') return moveOn();
   if (S.phase !== 'play' || !S.A || S.R.kind !== 'build') return;
   const R = S.R, A = S.A, tick = ++S.tick;
   setLoad(A, tensOf(S.count), onesOf(S.count));   // whatever was still moving is where it belongs
@@ -826,8 +1061,8 @@ function drawTwo(R, found) {
   const A = S.A = truck('red', cap), B2 = S.B = truck('blue', cap), len = A.x1 - A.x0, half = len / 2;
   put(A.object); put(B2.object);
   // side by side on a wide screen; on a tall phone the first truck is up on the loading dock behind the second
-  if (tall) { centre(A, 0, 1, -6.4); centre(B2, 0, 0, 1.2); put(box(M.dock, len + 2.2, 1, 2.6, 0, 0.5, -6.4)); slab(-half - 1.6, half + 1.6, -4.6, 3.8); }
-  else { centre(A, -half - 0.75); centre(B2, half + 0.75); slab(-len - 2.4, len + 2.4, -1.9, 2.8); }
+  if (tall) { centre(A, 0, 1, -6.4); centre(B2, 0, 0, 1.2); put(box(M.dock, len + 2.2, 1, 2.6, 0, 0.5, -6.4)); slab(-half - 1.6, half + 1.6, -4.6, 3.8); lane(1.2); }
+  else { centre(A, -half - 0.75); centre(B2, half + 0.75); slab(-len - 2.4, len + 2.4, -1.9, 2.8); lane(0); }
   for (const [V, n] of [[A, R.a], [B2, R.b]]) {
     if (R.view === 'numbers') setContainer(V, n); else setLoad(V, tensOf(n), onesOf(n));
     setSign(V, n, found && (R.kind === 'sign' || n === R.answer) ? 'green' : 'cream');
@@ -853,7 +1088,7 @@ function drawAdd(R, found) {
     if (R.kind === 'ones') for (let j = 0; j < R.b; j++) { const c = crate(); c.position.set(0.5, C.top + CR / 2 + j * CR, 0); C.load.add(c); C.crates.push(c); }
     const tag = C.tag = board((R.kind === 'less10' ? '−' : '+') + R.b, 1.25, 'gold'); tag.position.set(C.L / 2, C.top + (tensAdd ? CR * 10 : R.kind === 'ones' ? R.b * CR : 0) + 0.62, 0); C.object.add(tag);
   } else if (R.kind === 'less10') C.object.visible = false;
-  slab(-all / 2 - 1.6, all / 2 + 1.6, -1.9, 2.8);
+  slab(-all / 2 - 1.6, all / 2 + 1.6, -1.9, 2.8); lane(0);
   ride(A);
   Object.assign(view, { rect: [-all / 2 - 0.2, all / 2 + 0.2, -0.6, 0.9], high: TOP + (tensAdd ? 0.9 : 0.3), low: 1.2, back: tall ? -4.6 : -4.2, tilt: 0 });
   if (!S.shown && !found) drive(C, C.home, { from: C.home + 14, dur: 0.8 });
@@ -901,6 +1136,7 @@ function addRight(R) {
 const HINT = R => (R.kind === 'read' ? 'read.hint' : R.kind === 'more' || R.kind === 'sign' ? 'gr.hint.' + R.look : R.kind === 'ones' ? 'ones.hint' + (R.cross ? '.ten' : '') : R.kind + '.hint');
 /** The child picks an answer: a number button, a sign button, or a tap on a truck in the yard. */
 function answer(v, b) {
+  if (S.phase === 'right') return moveOn();
   if (S.phase !== 'play' || !S.R || S.R.kind === 'build') return;
   const R = S.R, id = 'cs-' + (R.kind === 'sign' ? v : 'n' + v);
   if (!R.choices.includes(v)) return;
@@ -929,8 +1165,13 @@ function answer(v, b) {
 const loadOf = V => (V ? { tens: V.tens, ones: V.ones } : null);
 window.__cs = window.__brbTest = {
   state: () => ({ game: 'crate-stacker', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: CS.ROUNDS, phase: S.phase, hero: S.hero ? S.hero.id : null, reported: S.reported, tall,
+    lap: S.lap, same: P.same, avoid: [...S.avoid], plan: S.plan.map(r => r.id), voice: coach.busy() ? 'busy' : 'idle',
     ...(S.R && S.screen === 'play' ? { ...S.R, count: S.count, load: loadOf(S.A), loadB: loadOf(S.B), sign: S.A && S.A.sign.visible ? S.A.sign.userData.text : null, moving: tweens.length } : {}) }),
   fast: on => { S.fast = on !== false; },
+  /** The coach's last lines: { text, asked, started, ended, why } (ms on the page clock; why: ended | silent | timeout). */
+  lines: () => coach.log.map(l => ({ text: l.text, asked: l.asked, started: l.started, ended: l.ended, why: l.why })),
+  /** Each truck number board on the screen: its text and its box (CSS pixels), for the tests and the pictures. */
+  boards: () => [...BOARDS].filter(o => !o.userData.el.hidden).map(o => { const r = o.userData.el.getBoundingClientRect(); return { text: o.userData.text, tone: o.userData.tone, x: r.left, y: r.top, w: r.width, h: r.height }; }),
   hero: id => chooseHero(id || HEROES[0]),
   act: (name, arg) => (name === 'answer' ? answer(arg) : build(name)),
   /** The helper's place in the yard: [x, how far above the ground, z]. */
@@ -945,7 +1186,17 @@ window.__cs = window.__brbTest = {
   },
 };
 
-el.load.hidden = true; el.load.remove(); el.cs.hidden = false;
+// The start: the shaders the round's things need are made now, under the curtain (a truck, a tower, a crate, the cart
+// and its car, drawn once), so the first truck that drives in does not stall; then the helper screen is drawn, and the
+// curtain fades away over it (a fade only: nothing jumps).
+{
+  const T0 = truck('red', 3), C0 = cart(2, true); setLoad(T0, 1, 2); put(T0.object); put(C0.object); C0.object.position.x = 6;
+  try { await (g.renderer.compileAsync ? g.renderer.compileAsync(g.scene, g.camera) : g.renderer.compile(g.scene, g.camera)); } catch (e) { /* drawn the first time instead */ }
+}
+el.cs.hidden = false;
 await showHeroes();
+await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+el.load.classList.add('out');
+setTimeout(() => el.load.remove(), reduced ? 50 : 450);
 window.__ready = true;
 </script>

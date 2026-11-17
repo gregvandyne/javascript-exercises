@@ -32,7 +32,9 @@
       "dark": "Escuro"
     },
     "acct": {
-      "allSettings": "Todas as configurações"
+      "allSettings": "Todas as configurações",
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# mensagem nova} other {# mensagens novas}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · Grátis para jogar, grátis para criar",
@@ -1427,14 +1429,9 @@
       "text": "Conte sua ideia ao Construtor. Ele cria o jogo, e você pode continuar mudando."
     },
     "newGame": "Novo jogo",
-    "startFrom": "Comece com um modelo",
-    "startFromLabel": "Começar com {title}",
-    "worlds": "Comece em um mundo 3D",
-    "startInLabel": "Começar no mundo 3D {title}",
-    "twoPlayers": "2 jogadores",
     "updateWaiting": "Atualização esperando revisão",
     "changed": "Alterado {when}",
-    "empty": "Toque em “Novo jogo” ou escolha um modelo acima. Seus jogos vão aparecer aqui.",
+    "empty": "Toque em “Novo jogo” para começar um. Seus jogos vão aparecer aqui.",
     "rename": "Renomear",
     "delete": "Apagar",
     "status": {
@@ -1947,7 +1944,6 @@
     },
     "build": {
       "gettingReady": "Preparando…",
-      "needsNewer": "Precisa de um aparelho mais novo",
       "renameTitle": "Renomear jogo",
       "nameLabel": "Nome do jogo",
       "save": "Salvar",
@@ -6699,6 +6695,36 @@
       "assign": "Atribuir a esta turma",
       "mySets": "Meus conjuntos de perguntas",
       "another": "Fazer outro"
+    },
+    "wiz": {
+      "modesTab": "Jogos ao vivo",
+      "progress": "Passo {n} de {total}",
+      "back": "Voltar",
+      "next": "Próximo",
+      "change": "Mudar",
+      "play": {
+        "title": "O que vocês querem jogar?",
+        "hint": "Escolha um jogo. Você pode mudar tudo antes de abrir a sala."
+      },
+      "questions": {
+        "title": "Quais perguntas?",
+        "ownTitle": "Configure o jogo",
+        "hint": "Escolha o que o jogo pergunta e quanto tempo ele dura."
+      },
+      "who": {
+        "title": "Quem vai jogar?",
+        "hint": "Escolha quem pode entrar, quantos jogadores e se jogam em equipes."
+      },
+      "open": {
+        "title": "Pronto para abrir a sala",
+        "hint": "Confira suas escolhas. Os jogadores vão para {url} e digitam o código."
+      },
+      "row": {
+        "game": "Jogo",
+        "questions": "Perguntas",
+        "who": "Quem pode entrar",
+        "teams": "Equipes"
+      }
     }
   },
   "match": {
@@ -9538,15 +9564,15 @@
         "fewer": "Menos partes",
         "shadedOf": "{n} de {d} partes pintadas",
         "sameText": "Cortado em {n} partes iguais: {list}.",
-        "tooSmall": "Seriam {n} partes minúsculas: pequenas demais para desenhar.",
+        "tooSmall": "Essas partes seriam pequenas demais para ver, então não são desenhadas.",
         "samePrompt": "Toque em “Partes iguais” para ver por quê.",
         "which": "Fração {n}",
         "order": "Qual é maior?",
         "howto": "Toque numa barra para pintar partes. − e + mudam as partes.",
-        "howtoOp": "Use − e + em cada número. A resposta também é desenhada.",
+        "howtoOp": "Mude cada número com − e +. Digite sua resposta e confira.",
         "howtoMul": "Use − e + em cada número. A parte sobreposta é o resultado.",
-        "helpUse": "Escolha Comparar, Somar, Subtrair, Multiplicar ou Dividir.\nEm Comparar, Partes iguais mostra qual fração é maior.\nEsconder a resposta guarda a resposta até você mostrar.",
-        "helpIdeas": "Mostre 1/2 + 1/3 com a resposta escondida e peça às duplas que a prevejam.",
+        "helpUse": "Escolha Comparar, Somar, Subtrair, Multiplicar ou Dividir.\nDigite sua resposta e toque em Conferir. Próximo passo dá uma dica.\nMostre a resposta quando todos tiverem tentado.",
+        "helpIdeas": "Mostre 5/10 ÷ 2/9 e toquem juntos em Colocar mais uma: quantas cabem?",
         "mode": "O que fazer",
         "modeCompare": "Comparar",
         "modeAdd": "Somar",
@@ -9564,14 +9590,39 @@
         "overlap": "{n} das {d} partes pequenas se sobrepõem.",
         "think": "Resolva e depois mostre a resposta.",
         "modeDiv": "Dividir",
-        "howtoDiv": "Use − e + em cada número. Quantas vezes a segunda cabe na primeira?",
+        "howtoDiv": "Quantas vezes a segunda cabe na primeira? Toque em Colocar mais uma.",
         "fits": "{b} cabe {n} vezes em {a}.",
         "noZero": "Não dá para dividir por zero, então o segundo numerador fica em 1 ou mais.",
         "m": {
           "fractions": "Barras de frações",
           "fdp": "Fração, decimal, porcentagem"
         },
-        "partsOf": "Partes da fração {n}"
+        "partsOf": "Partes da fração {n}",
+        "show": "Mostrar a resposta",
+        "yourAnswer": "Sua resposta",
+        "check": "Conferir",
+        "checkRight": "Sim, está certo!",
+        "checkSimplify": "Quase: é a mesma quantidade. Está simplificada?",
+        "checkNo": "Ainda não. Tente de novo ou toque em Próximo passo.",
+        "checkUnread": "Digite uma fração como 3/4 ou um número misto como 2 1/4.",
+        "fitOne": "Colocar mais uma",
+        "again": "Começar de novo",
+        "fitSoFar": "Cabem {n} até agora.",
+        "fitPart": "Cabem {n} e {f} de mais uma.",
+        "fitAll": "Cabem exatamente {n}.",
+        "stepNext": "Próximo passo",
+        "stepHide": "Esconder os passos",
+        "stepCommon": "Mesmo denominador: {n}",
+        "stepRename": "Reescrever: {a} e {b}",
+        "stepAddTops": "Somar os numeradores: {x}",
+        "stepSubTops": "Subtrair os numeradores: {x}",
+        "stepGrid": "Cortar um quadrado {c} por {r}: {n} partes pequenas",
+        "stepShade": "Pintar {a} embaixo e {b} na lateral",
+        "stepOverlap": "A parte em comum: {x}",
+        "stepKeep": "Manter {a}",
+        "stepChange": "Trocar ÷ por ×",
+        "stepFlip": "Inverter {b}: {f}",
+        "stepTimes": "Multiplicar: {x}"
       },
       "numline": {
         "name": "Reta numérica",

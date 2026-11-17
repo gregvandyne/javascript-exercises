@@ -217,6 +217,11 @@ const FRACTION_EXTRA = [
   { ...D.widgetType('fractions'), wid: 'wfradd', s: { state: { mode: 'add', shape: 'circle', a: { n: 7, d: 4 }, b: { n: 5, d: 6 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrsub', s: { state: { mode: 'sub', a: { n: 1, d: 3 }, b: { n: 11, d: 12 } } } },
   { ...D.widgetType('fractions'), wid: 'wfrmul', s: { state: { mode: 'mul', a: { n: 3, d: 1 }, b: { n: 7, d: 12 } } } },
+  // Fractions, dividing as measuring (docs/decisions.md "Classroom dashboards: fractions, dividing as measuring"): 5/10 ÷
+  // 2/9 in both views, the answer hidden (every copy laid, every step showing) and shown, and the most copies there are.
+  ...[['bar', true], ['bar', false], ['circle', true], ['circle', false]].map(([shape, hide]) => ({ ...D.widgetType('fractions'), wid: `wfrdiv${shape[0]}${hide ? 'h' : 's'}`,
+    s: { state: { mode: 'div', shape, hide, a: { n: 5, d: 10 }, b: { n: 2, d: 9 }, fit: 3, step: 4 } } })),
+  { ...D.widgetType('fractions'), wid: 'wfrdivmany', s: { state: { mode: 'div', shape: 'circle', hide: false, a: { n: 12, d: 1 }, b: { n: 1, d: 12 }, step: 4 } } },
 ];
 // A real picture for the Picture widget (drawn in the browser, then through the stage 1 checks like any upload).
 const exe0 = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
@@ -483,6 +488,20 @@ function problems() {
     if (!t[2]) { out.push(`${name(w)}: the circles are not a number sentence`); continue; }
     if (g.classList.contains('dt-fsent3')) { if (innerWidth >= 720) out.push(`${name(w)}: the circles are a column on a wide screen`); continue; }
     if (!(t[0].right <= t[1].left + 1 && Math.abs(t[0].bottom - t[1].bottom) < 2 && (t[1].right <= t[2].left + 1 || t[2].top >= t[1].bottom - 1))) out.push(`${name(w)}: the fractions' sentence does not read left to right`);
+  }
+  // Fractions, dividing as measuring: one layout hidden or shown. The fractions' − and + are always stacked (never on one
+  // line), the pictures are a readable size, Divide has Fit one more, and Show the answer is a button whose words say
+  // what it does (no aria-pressed: it once read "Hide the answer, pressed" while the answer was hidden).
+  for (const f of document.querySelectorAll('.dash-w .dt-fop')) {
+    const w = f.closest('.dash-w'); if (!w.offsetParent) continue;
+    for (const o of f.querySelectorAll('.dt-fo')) if (getComputedStyle(o).flexDirection !== 'column') out.push(`${name(w)}: a fraction's − and + are not stacked`);
+    for (const pie of f.querySelectorAll('.dt-fpie')) if (pie.getBoundingClientRect().width < 40) out.push(`${name(w)}: a circle is only ${Math.round(pie.getBoundingClientRect().width)}px across`);
+    for (const bar of f.querySelectorAll('.dt-fstrip')) if (bar.getBoundingClientRect().height < 28) out.push(`${name(w)}: a bar is only ${Math.round(bar.getBoundingClientRect().height)}px tall`);
+    if (f.classList.contains('dt-fop-div') && !f.querySelector('.dt-ffit')) out.push(`${name(w)}: Divide has no Fit one more`);
+    if (!f.classList.contains('dt-fop-mul') && !f.querySelector('.dt-fpie, .dt-fstrip')) out.push(`${name(w)}: the fractions have no picture`);
+    const show = w.querySelector('.dt-fshow'), hidden = !!f.querySelector('.dt-fguess');
+    if (show && show.hasAttribute('aria-pressed')) out.push(`${name(w)}: Show the answer has aria-pressed as well as its changing words`);
+    if (hidden && f.querySelector('.dt-fans')) out.push(`${name(w)}: the answer shows while it is hidden`);
   }
   const projector = document.body.classList.contains('dash-projector'), floor = projector ? 13 : 12;
   for (const t of document.querySelectorAll('.dash-w .dt, .dash-w .dw5')) {

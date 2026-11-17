@@ -57,8 +57,8 @@ const guest = auth.createGuest();
 const ON = {
   out: { tabs: ['/', '/learn', '/build', '/parents', '/login'], top: ['/', '/learn', '/build', '/parents', '/teachers'] },
   grownup: { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
-  schoolAdmin: { tabs: ['/teach', '/learn', '/play', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
-  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
+  schoolAdmin: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
+  teacher: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
   admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
   student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
   kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
@@ -66,8 +66,8 @@ const ON = {
 const KEYS = {
   out: ['play', 'learn', 'build', 'grownups', 'signin'],
   grownup: ['family', 'play', 'learn', 'build', 'account'],
-  schoolAdmin: ['classroom', 'learn', 'play', 'me'],
-  teacher: ['classroom', 'learn', 'play', 'live', 'me'],
+  schoolAdmin: ['classroom', 'build', 'live', 'me'],
+  teacher: ['classroom', 'build', 'live', 'me'],
   admin: ['play', 'learn', 'build', 'schools', 'me'],
   student: ['class', 'play', 'learn', 'build', 'me'],
   kid: ['play', 'learn', 'build', 'friends', 'me'],
@@ -92,8 +92,8 @@ test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages 
       for (const k of ['plans', 'school']) assert.ok(!s.tabs.some(([x]) => x === k) && !s.top.some(([x]) => x === k), `${role}: no ${k} in either bar`);
     }
   }
-  // Five tabs for everyone but a school admin (Classroom · Learn · Play · Me: Live is in their top bar only).
-  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 5);
+  // Five tabs for everyone but staff: Classroom · Build · Live · Me for teachers and school admins.
+  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.
@@ -161,7 +161,7 @@ test('\'/\' per role: Play for the signed out, guests, kids and the platform adm
 
 test('the avatar: signed in it opens the account menu (Me, or Account for a grown-up, first); signed out it is Sign in', async () => {
   const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(topbar(s)) || [''])[0];
-  const first = s => (/<div class="acct-menu">[\s\S]*?<a href="([^"]+)"/.exec(menu(s)) || [])[1];
+  const first = s => (/<div class="acct-menu[^"]*">[\s\S]*?<a [^>]*?href="([^"]+)"/.exec(menu(s)) || [])[1];
   const btn = s => (/<a class="me-btn" href="([^"]+)"/.exec(topbar(s)) || [])[1];
   const m = menu((await get(mum, '/play')).text);
   assert.match(m, /<summary class="me-btn" aria-label="Me: RolesMum">/);
@@ -233,10 +233,12 @@ test('the current tab: Play on the game pages and search, Learn on /learn, Class
   assert.deepEqual(cur(acct), ['/family/account']);
   assert.match(acct, /<summary class="me-btn is-current"/);
   assert.match(acct, /<a href="\/family\/account" aria-current="page">/, 'Account in the menu is the page you are on');
-  assert.deepEqual(cur((await get(teacher, '/play')).text), ['/play']);
+  // Teachers' bar is Classroom · Build · Live: Play and Learn still open, with no tab marked
+  assert.deepEqual(cur((await get(teacher, '/play')).text), []);
   assert.deepEqual(cur((await get(teacher, '/teach')).text), ['/teach']);
   assert.deepEqual(cur((await get(teacher, '/live')).text), ['/live']);
-  assert.deepEqual(cur((await get(teacher, '/learn')).text), ['/learn']);
+  assert.deepEqual(cur((await get(teacher, '/build')).text), ['/build']);
+  assert.ok(!/class="navlink" href="\/(?:learn|play)"/.test(topnav((await get(teacher, '/teach')).text)), 'no Learn or Play in a teacher\'s top bar');
   const sch = (await get(head, `/school/${oak.slug}`)).text;
   assert.deepEqual(cur(sch), ['/me'], 'a school admin on their school: Me (School is in its menu)');
   assert.match(sch, /<a href="\/school" aria-current="page"><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/);
@@ -314,8 +316,25 @@ test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the
     assert.doesNotMatch(bars(page), /href="\/school"/, `${role}: no School in the bars`);
     assert.match(topbar(page), /<details class="langpick" data-langpick>/, `${role}: the language picker stays`);
   }
-  // Adults (a grown-up, a school admin, a teacher, the platform admin): Settings with Theme, Plans and All settings.
-  for (const u of [mum, head, teacher, boss]) {
+  // School staff (a school admin, a teacher): the card that opens Me, Play and Learn tiles, Plans, Settings, Sign out,
+  // and the theme as one Auto / Light / Dark switch at the bottom (docs/decisions.md "Teachers' account menu").
+  for (const u of [head, teacher]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.match(m, /<div class="acct-menu acct-staff">\s*<a class="acct-card" href="\/me"/, `${u.username}: the card first`);
+    assert.match(m, /<span class="acct-card-t"><b dir="auto">[^<]+<\/b><small dir="auto">Roles (?:Oak|Elm) School</, `${u.username}: name and school`);
+    assert.match(m, /<div class="acct-tiles">\s*<a href="\/play"[\s\S]*?<a href="\/learn"/, `${u.username}: Play and Learn tiles`);
+    assert.match(m, /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/, `${u.username}: Plans`);
+    assert.match(m, /<a href="\/me\/settings" ><span class="theme-ico" aria-hidden="true">⚙️<\/span><span>Settings<\/span><\/a>/, `${u.username}: Settings`);
+    assert.match(m, /<form data-api="\/api\/auth\/logout" data-next="\/"><button type="submit" class="acct-out">[\s\S]*?Sign out/, `${u.username}: Sign out`);
+    assert.match(m, /<ul class="acct-themeseg" aria-label="Theme">/, `${u.username}: the theme switch`);
+    for (const th of ['light', 'dark', 'system']) assert.match(m, new RegExp(`href="/play\\?theme=${th}" rel="nofollow" data-theme-choice="${th}"`), `${u.username}: ${th}, a plain link`);
+    assert.ok(m.indexOf('acct-themeseg') > m.indexOf('acct-out'), `${u.username}: the theme at the bottom`);
+    assert.doesNotMatch(m, /\$|€|£|\/month|\/year/, `${u.username}: no prices in the menu`);
+  }
+  assert.match(menu((await get(head, '/play')).text), /<a href="\/school" ><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/, 'a school admin: My school');
+  assert.doesNotMatch(menu((await get(teacher, '/play')).text), /href="\/school"/, 'a teacher: no My school');
+  // Other adults (a grown-up, the platform admin): Settings with Theme, Plans and All settings.
+  for (const u of [mum, boss]) {
     const m = menu((await get(u, '/play')).text);
     assert.match(m, /<p class="lang-head" id="acct-set-head">Settings<\/p>/, u.username);
     assert.match(m, /<p class="acct-sub" id="acct-theme-head">Theme<\/p>/, u.username);
@@ -343,7 +362,9 @@ test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the
   assert.doesNotMatch(foot((await get(mum, '/play')).text), /foot-theme|href="\/plans"/, 'signed in: the theme and Plans are in the account menu');
   // The chosen theme is ticked in the menu.
   const dark = await fetch(base + '/play', { headers: { cookie: `${cookieFor(teacher.id)}; theme=dark` } });
-  assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/);
+  assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" title="Dark" aria-current="true">/, 'a teacher: Dark is on in the switch');
+  const darkMum = await fetch(base + '/play', { headers: { cookie: `${cookieFor(mum.id)}; theme=dark` } });
+  assert.match(menu(await darkMum.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/, 'a grown-up: Dark is ticked');
   // Paid-plan pages off: no Plans anywhere, the theme stays.
   config.stripeApiKey = '';
   for (const u of [mum, head, teacher, boss]) {

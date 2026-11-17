@@ -3,7 +3,7 @@
 // Tug of Math Live: a multi-digit answer typed by tapping is exactly the digits tapped ("Right! Pull!").
 // Would You Rather Live: tapping the second card votes for the second card.
 import { test, expect } from '@playwright/test';
-import { login, ownIp } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
 
 const frameOf = page => page.frames().find(x => /\/live\/frame\//.test(x.url()));
 async function liveFrame(page, key) {
@@ -23,9 +23,11 @@ async function hostRoom(browser, mode, setup = async () => {}) {
   await login(host, 'DemoTeacher', 'demo-pass-123');
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator(`input[value="mode:${mode}"]`) }).click();
+  await liveStep(host, 'questions');
   await setup(host);
+  await liveStep(host, 'who');
   await host.locator('input[name="audience"][value="open"]').check();
-  await host.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(host);
   // an earlier test's room still open: end it and open this one
   const replace = host.locator('#lv-open-replace');
   await Promise.race([host.waitForURL(/\/live\/host\//), replace.waitFor()]);

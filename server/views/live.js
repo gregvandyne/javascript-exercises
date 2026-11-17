@@ -461,7 +461,10 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
   // Each game card says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md); data-max
   // lets the page clamp "Most players" to the picked game.
   const players = cap => (cap ? html`<span class="small lv-pick-players">👥 ${t('live.landing.best', { min: cap.best[0], max: cap.best[1] })}${cap.teamsAbove && teamsOn ? html` · ${t('live.landing.teamsAbove', { n: cap.teamsAbove })}` : ''}</span>` : '');
-  const card = (value, icon, title, text, checked, quiz = false, teams = false, cap = null, own = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}${own ? raw(' data-own="1"') : ''}${cap ? raw(` data-max="${cap.max}"`) : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${players(cap)}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
+  // A game card in the Builder setup's look (build-setup.css .su-card): its emoji in a picture box, the name, a line or
+  // two, who it is for, and a tick when picked. It is a real radio inside a label, so it works without the script.
+  const tick = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
+  const card = (value, icon, title, text, checked, quiz = false, teams = false, cap = null, own = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}${own ? raw(' data-own="1"') : ''}${cap ? raw(` data-max="${cap.max}"`) : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="lv-pick-d">${text}</span>` : ''}<span class="lv-pick-foot">${players(cap)}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</span>${tick}</label>`;
   const anyPicked = !!pre.pick;
   // Questions: what the host chose last time (prefs.bank), else the question bank.
   const lastBank = (prefs && prefs.bank) || {};
@@ -496,56 +499,88 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
   const ddLang = dd ? dd.lang : doodle ? doodle.lang : 'en', ddLvl = dd ? dd.lvl : 1;
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
-  return html`<div class="lv lv-landing" data-lv-page="landing">
-  <h1>${t('live.landing.heading')}</h1>
+  // Steps, as in the Builder's setup (/build/new): what to play, its questions (only for a game that asks them), who is
+  // playing, then a check and "Open the room". One form throughout (the same fields and API as before); public/js/
+  // live-sets.js shows one step at a time. Without the script every step shows (the noscript style) and the form posts.
+  const pickGroups = [
+    ...(modes.length ? [{ key: 'modes', label: t('live.wiz.modesTab'), cards: modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, m.id !== 'doodle', m.cap, !!m.own)), picked: modes.some((m, i) => (pre.pick ? pre.pick === `mode:${m.id}` : i === 0)) }] : []),
+    ...groups.filter(g => g.games.length || !modes.length).map(g => ({ key: g.key, label: t(`live.landing.${g.key}`), empty: !g.games.length,
+      cards: g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap)), picked: g.games.some(x => pre.pick === `game:${x.id}`) })),
+  ];
+  const onGroup = (pickGroups.find(g => g.picked) || pickGroups[0] || {}).key;
+  // Opened with a game already chosen (a class's or a lesson's "Host live", ?game=, ?mode=, ?starter=): start on the next
+  // step. A game that asks no questions goes straight to who is playing.
+  const preQuiz = pre.pick.startsWith('mode:') || groups.some(g => g.games.some(x => `game:${x.id}` === pre.pick && x.quiz));
+  const firstStep = pre.pick ? (preQuiz ? 'questions' : 'who') : 'play';
+  const STEPS = ['play', 'questions', 'who', 'open'];
+  const head = (key, i) => html`<div class="su-progress"><span class="su-dots" aria-hidden="true">${STEPS.map((k, n) => raw(`<i data-dot="${k}"${n <= i ? ' class="on"' : ''}></i>`))}</span><span class="su-count" data-count data-tpl="${t('live.wiz.progress', { n: '{n}', total: '{total}' })}">${t('live.wiz.progress', { n: i + 1, total: STEPS.length })}</span></div>
+      <h2 class="lv-wstep-h" id="lv-h-${key}" tabindex="-1"${key === 'questions' ? raw(` data-own-title="${t('live.wiz.questions.ownTitle')}" data-quiz-title="${t('live.wiz.questions.title')}"`) : ''}>${t(`live.wiz.${key}.title`)}</h2>
+      ${key === 'open' ? html`<p class="su-hint">${t('live.wiz.open.hint', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>` : html`<p class="su-hint">${t(`live.wiz.${key}.hint`)}</p>`}`;
+  const step = (key, i, inner) => html`<section class="lv-wstep${key === firstStep ? ' is-on' : ''}" data-step="${key}" aria-labelledby="lv-h-${key}">${head(key, i)}${inner}</section>`;
+  const nav = html`<div class="su-nav lv-nav" id="lv-nav"><button type="button" class="btn" data-go="back">${t('live.wiz.back')}</button><span class="su-nav-end"><button type="button" class="btn btn-primary" data-go="next">${t('live.wiz.next')}</button></span></div>`;
+  const ROWS = ['game', 'questions', 'who', 'teams'];
+  return html`<div class="lv lv-landing lv-wiz" data-lv-page="landing">
+  <noscript><style>.lv-wiz .lv-wstep{display:flex!important}.lv-wiz .lv-nav,.lv-wiz .su-progress,.lv-wiz .lv-tabs,.lv-wiz .lv-review,.lv-wiz [data-go]{display:none!important}.lv-wiz .lv-pgroup{display:grid!important}</style></noscript>
+  <div class="su-top"><h1 class="su-brand">${t('live.landing.heading')}</h1></div>
   ${forClass ? html`<p class="lv-for"><b>🍎 ${t('live.entry.forClass', { name: forClass.name })}</b></p>` : ''}
   ${ch.invites.map(x => html`<p class="notice good lv-cohost-invite" data-lv-cohost-invite="${x.sid}">${t('live.cohost.landingInvite', { name: x.from, title: x.title })} <a class="btn btn-sm btn-primary" href="/live/cohost/${x.sid}">${t('live.cohost.openInvite')}</a></p>`)}
   ${ch.on.map(x => html`<p class="notice lv-cohost-on" data-lv-cohost-on="${x.sid}">${t('live.cohost.landingOn', { title: x.title })} <a class="btn btn-sm" href="/live/host/${x.sid}/dash">${t('live.cohost.openDash')}</a></p>`)}
-  <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
-  <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
+  <form class="lv-steps" id="lv-new" data-api="/api/live/sessions" data-first="${firstStep}" novalidate>
     ${st ? html`<p class="notice lv-preset" id="lv-preset" data-starter="${st.id}">${t('live.cs.preset')}</p>` : ''}
-    <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
-      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, m.id !== 'doodle', m.cap, !!m.own))}
-    </div></fieldset>
+    ${step('play', 0, html`
+      ${pickGroups.length > 1 ? html`<div class="su-tabs lv-tabs" role="group" aria-label="${t('live.wiz.play.title')}">${pickGroups.map(g => html`<button type="button" class="su-tab" data-pgroup-tab="${g.key}" aria-pressed="${String(g.key === onGroup)}">${g.label}</button>`)}</div>` : ''}
+      ${pickGroups.map(g => html`<fieldset class="lv-group lv-pgroup${g.key === onGroup ? '' : ' is-off'}" data-pgroup="${g.key}"><legend class="${pickGroups.length > 1 ? 'sr-only' : ''}">${g.label}</legend>${g.empty ? html`<p class="small muted">${t('live.landing.none')}</p>` : html`<div class="lv-picks">${g.cards}</div>`}</fieldset>`)}`)}
+    ${step('questions', 1, html`
     ${wyr ? html`<fieldset class="lv-group lv-own" id="lv-wyr-opts" data-own-mode="wyr" hidden><legend>${t('live.wyrUi.legend')}</legend>
       <fieldset class="lv-bank-board"><legend>${t('live.wyrUi.topics')}</legend><div class="lv-bank-subs">
         ${wyr.topics.map(x => html`<label class="lv-check"><input type="checkbox" name="wyrTopic" value="${x.id}"${wyrOn(x.id) ? raw(' checked') : ''}> ${x.name}</label>`)}</div>
         <p class="small muted">${t('live.wyrUi.topicsHint')}</p></fieldset>
-      <div class="field"><label for="lv-wyr-count">${t('live.wyrUi.count')}</label><select id="lv-wyr-count" name="wyrCount">${wyr.counts.map(n => html`<option value="${n}"${n === wyrCount ? raw(' selected') : ''}>${n}</option>`)}</select></div>
-      <div class="field"><label for="lv-wyr-secs">${t('live.wyrUi.secs')}</label><select id="lv-wyr-secs" name="wyrSecs">${wyr.secs.map(n => html`<option value="${n}"${n === wyrSecs ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-wyr-count">${t('live.wyrUi.count')}</label><select class="input" id="lv-wyr-count" name="wyrCount">${wyr.counts.map(n => html`<option value="${n}"${n === wyrCount ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-wyr-secs">${t('live.wyrUi.secs')}</label><select class="input" id="lv-wyr-secs" name="wyrSecs">${wyr.secs.map(n => html`<option value="${n}"${n === wyrSecs ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      </div>
       <p class="small muted">${t('live.wyrUi.hint')}</p>
     </fieldset>` : ''}
     ${atlas ? html`<fieldset class="lv-group lv-own" id="lv-atlas-opts" data-own-mode="atlas" hidden><legend>${t('live.atlasUi.legend')}</legend>
-      <div class="field"><label for="lv-atlas-region">${t('live.atlasUi.region')}</label><select id="lv-atlas-region" name="atlasRegion">${atlas.regions.map(x => html`<option value="${x.id}"${x.id === atlasSel('region', 'world') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
-      <div class="field"><label for="lv-atlas-level">${t('live.atlasUi.level')}</label><select id="lv-atlas-level" name="atlasLevel">${atlas.levels.map(x => html`<option value="${x.id}"${x.id === atlasSel('level', 'easy') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-atlas-region">${t('live.atlasUi.region')}</label><select class="input" id="lv-atlas-region" name="atlasRegion">${atlas.regions.map(x => html`<option value="${x.id}"${x.id === atlasSel('region', 'world') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-level">${t('live.atlasUi.level')}</label><select class="input" id="lv-atlas-level" name="atlasLevel">${atlas.levels.map(x => html`<option value="${x.id}"${x.id === atlasSel('level', 'easy') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      </div>
       <fieldset class="lv-bank-board"><legend>${t('live.atlasUi.kinds')}</legend><div class="lv-bank-subs">
         ${atlas.kinds.map((x, i) => html`<label class="lv-check"><input type="checkbox" name="atlasKind" value="${x.id}"${atlasOn(x.id, i) ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
-      <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === atlasSel('count', 10) ? raw(' selected') : ''}>${n}</option>`)}</select></div>
-      <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === atlasSel('secs', 20) ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select class="input" id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === atlasSel('count', 10) ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select class="input" id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === atlasSel('secs', 20) ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      </div>
       <p class="small muted">${t('live.atlasUi.hint')}</p>
     </fieldset>` : ''}
     ${tug ? html`<fieldset class="lv-group lv-own" id="lv-tug-opts" data-own-mode="tug" data-preset="${tg ? '1' : ''}" data-class-grade="${clsGrade || ''}" hidden><legend>${t('live.tugUi.legend')}</legend>
-      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === tugGrade ? raw(' selected') : ''}>${tug.names[g]}</option>`)}</select>${clsGrade ? html`<span class="hint" id="lv-tug-class-grade">${t('live.tugUi.classGrade', { grade: tug.names[clsGrade] })}</span>` : ''}</div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select class="input" id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === tugGrade ? raw(' selected') : ''}>${tug.names[g]}</option>`)}</select>${clsGrade ? html`<span class="hint" id="lv-tug-class-grade">${t('live.tugUi.classGrade', { grade: tug.names[clsGrade] })}</span>` : ''}</div>
+      <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select class="input" id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
+      </div>
       <p class="small muted" id="lv-tug-like" dir="auto">${t('live.tugUi.like')} <span id="lv-tug-sample" dir="ltr">${tug.samples[tugGrade]}</span></p>
-      <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
       <p class="small muted">${t('live.tugUi.hint')}</p>
       ${jsonData('lv-tug-samples', tug.samples)}
     </fieldset>` : ''}
     ${doodle ? html`<fieldset class="lv-group lv-own" id="lv-doodle-opts" data-own-mode="doodle" data-preset="${dd ? '1' : ''}" hidden><legend>${t('live.doodleUi.legend')}</legend>
-      <div class="field"><label for="lv-doodle-lang">${t('live.doodleUi.lang')}</label><select id="lv-doodle-lang" name="doodleLang">${doodle.langs.map(x => html`<option value="${x.id}"${x.id === ddLang ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
-      <div class="field"><label for="lv-doodle-level">${t('live.doodleUi.level')}</label><select id="lv-doodle-level" name="doodleLevel">${doodle.levels.map(x => html`<option value="${x.v}"${x.v === ddLvl ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-doodle-lang">${t('live.doodleUi.lang')}</label><select class="input" id="lv-doodle-lang" name="doodleLang">${doodle.langs.map(x => html`<option value="${x.id}"${x.id === ddLang ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-level">${t('live.doodleUi.level')}</label><select class="input" id="lv-doodle-level" name="doodleLevel">${doodle.levels.map(x => html`<option value="${x.v}"${x.v === ddLvl ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      </div>
       <p class="small muted" id="lv-doodle-like">${t('live.doodleUi.like')} <span id="lv-doodle-sample" dir="auto">${(doodle.samples[ddLang] || {})[ddLvl] || ''}</span></p>
-      <div class="field"><label for="lv-doodle-rounds">${t('live.doodleUi.rounds')}</label><select id="lv-doodle-rounds" name="doodleRounds">${doodle.rounds.map(n => html`<option value="${n}"${n === (dd ? dd.rounds : 2) ? raw(' selected') : ''}>${t('live.doodleUi.roundsList').split('|')[n - 1] || n}</option>`)}</select></div>
-      <div class="field"><label for="lv-doodle-secs">${t('live.doodleUi.secs')}</label><select id="lv-doodle-secs" name="doodleSecs">${doodle.secs.map(n => html`<option value="${n}"${n === (dd ? dd.secs : 80) ? raw(' selected') : ''}>${t('live.doodleUi.secsN', { n })}</option>`)}</select></div>
-      <div class="field"><label for="lv-doodle-guess">${t('live.doodleUi.guess')}</label><select id="lv-doodle-guess" name="doodleTiles"><option value="0"${dd && dd.tiles ? '' : raw(' selected')}>${t('live.doodleUi.guessType')}</option><option value="1"${dd && dd.tiles ? raw(' selected') : ''}>${t('live.doodleUi.guessTiles')}</option></select></div>
+      <div class="lv-fields">
+      <div class="field"><label for="lv-doodle-rounds">${t('live.doodleUi.rounds')}</label><select class="input" id="lv-doodle-rounds" name="doodleRounds">${doodle.rounds.map(n => html`<option value="${n}"${n === (dd ? dd.rounds : 2) ? raw(' selected') : ''}>${t('live.doodleUi.roundsList').split('|')[n - 1] || n}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-secs">${t('live.doodleUi.secs')}</label><select class="input" id="lv-doodle-secs" name="doodleSecs">${doodle.secs.map(n => html`<option value="${n}"${n === (dd ? dd.secs : 80) ? raw(' selected') : ''}>${t('live.doodleUi.secsN', { n })}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-guess">${t('live.doodleUi.guess')}</label><select class="input" id="lv-doodle-guess" name="doodleTiles"><option value="0"${dd && dd.tiles ? '' : raw(' selected')}>${t('live.doodleUi.guessType')}</option><option value="1"${dd && dd.tiles ? raw(' selected') : ''}>${t('live.doodleUi.guessTiles')}</option></select></div>
+      </div>
       <p class="small muted">${t('live.doodleUi.hint')}</p>
       <p class="small muted" id="lv-doodle-big" hidden>${t('live.doodleUi.bigRoom')}</p>
       ${jsonData('lv-doodle-samples', doodle.samples)}
     </fieldset>` : ''}
-    ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
-    <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
+    <fieldset class="lv-group" id="lv-sets"><legend class="sr-only">${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
-        <select id="lv-set" name="set">
+        <select class="input" id="lv-set" name="set">
           ${bank ? html`<optgroup label="${t('live.bankUi.bankGroup')}"><option value="bank"${chosen === 'bank' ? raw(' selected') : ''}>${t('live.bankUi.bank')}</option></optgroup>` : ''}
           ${own.length ? html`<optgroup label="${t('live.landing.mySets')}">${own.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
           ${csq.length ? html`<optgroup label="${t('live.cs.sets')}" data-csq="1">${csq.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
@@ -553,26 +588,33 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
           ${pre.set && pre.set.startsWith('starter:') ? html`<optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>` : ''}
         </select></div>
       ${bank ? html`<div class="lv-bank" id="lv-bank">
+        <div class="lv-fields">
         <div class="field lv-bank-one"><label for="lv-bank-subject">${t('live.bankUi.subject')}</label>
-          <select id="lv-bank-subject" name="bankSubject"><option value="mixed"${bk.subject === 'mixed' ? raw(' selected') : ''}>${bank.mixed}</option>${bank.subjects.map(x => html`<option value="${x.id}"${bk.subject === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+          <select class="input" id="lv-bank-subject" name="bankSubject"><option value="mixed"${bk.subject === 'mixed' ? raw(' selected') : ''}>${bank.mixed}</option>${bank.subjects.map(x => html`<option value="${x.id}"${bk.subject === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+        <div class="field"><label for="lv-bank-level">${t('live.bankUi.level')}</label>
+          <select class="input" id="lv-bank-level" name="bankLevel">${bank.levels.map(x => html`<option value="${x.id}"${bk.level === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+        <div class="field lv-bank-one"><label for="lv-bank-count">${t('live.bankUi.count')}</label>
+          <select class="input" id="lv-bank-count" name="bankCount">${bank.counts.map(n => html`<option value="${n}"${bk.count === n ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+        </div>
         <fieldset class="lv-bank-board" hidden><legend>${t('live.bankUi.boardSubjects')}</legend><div class="lv-bank-subs">
           ${bank.subjects.map(x => html`<label class="lv-check"><input type="checkbox" name="bankBoard" value="${x.id}"${bk.board.includes(x.id) ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
-        <div class="field"><label for="lv-bank-level">${t('live.bankUi.level')}</label>
-          <select id="lv-bank-level" name="bankLevel">${bank.levels.map(x => html`<option value="${x.id}"${bk.level === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
-        <div class="field lv-bank-one"><label for="lv-bank-count">${t('live.bankUi.count')}</label>
-          <select id="lv-bank-count" name="bankCount">${bank.counts.map(n => html`<option value="${n}"${bk.count === n ? raw(' selected') : ''}>${n}</option>`)}</select></div>
         <p class="small muted lv-bank-hint">${t('live.bankUi.bankHint')}</p>
       </div>` : ''}
       <a class="small" href="/live/sets">${t('live.landing.newSet')}</a>
-    </fieldset>
-    <fieldset class="lv-group"><legend>${t('live.landing.who')}</legend>
-      ${audiences.map(a => html`<label class="lv-radio">${radio('audience', a, a === audDefault)} ${t(`live.landing.audience.${a}`)}</label>`)}
-      ${classes.length ? html`<div class="field"><label for="lv-class">${t('live.landing.classPick')}</label><select id="lv-class" name="classId">${classes.map(c => html`<option value="${c.id}"${pre.classId === c.id ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>` : ''}
-      <div class="field"><label for="lv-max">${t('live.landing.maxPlayers')}</label><input id="lv-max" name="maxPlayers" type="number" inputmode="numeric" min="2" max="${maxPlayers}" value="${maxPlayers}" data-ceiling="${maxPlayers}" aria-describedby="lv-max-hint"><p class="small muted" id="lv-max-hint" data-tpl="${t('live.landing.maxHint', { max: '{max}' })}"></p></div>
+    </fieldset>`)}
+    ${step('who', 2, html`
+    <fieldset class="lv-group"><legend class="sr-only">${t('live.landing.who')}</legend>
+      <div class="lv-auds">${audiences.map(a => html`<label class="lv-aud">${radio('audience', a, a === audDefault)}<span class="lv-aud-e" aria-hidden="true">${{ class: '🍎', family: '🏡', open: '🔑' }[a]}</span><span class="lv-aud-t">${t(`live.landing.audience.${a}`)}</span>${tick}</label>`)}</div>
+      <div class="lv-fields">
+      ${classes.length ? html`<div class="field"><label for="lv-class">${t('live.landing.classPick')}</label><select class="input" id="lv-class" name="classId">${classes.map(c => html`<option value="${c.id}"${pre.classId === c.id ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>` : ''}
+      <div class="field"><label for="lv-max">${t('live.landing.maxPlayers')}</label><input class="input" id="lv-max" name="maxPlayers" type="number" inputmode="numeric" min="2" max="${maxPlayers}" value="${maxPlayers}" data-ceiling="${maxPlayers}" aria-describedby="lv-max-hint"><p class="small muted" id="lv-max-hint" data-tpl="${t('live.landing.maxHint', { max: '{max}' })}"></p></div>
+      </div>
       <p class="small muted">${t('live.landing.openHint')}</p>
     </fieldset>
-    ${teamsOn ? html`<div class="lv-group" id="lv-teams-landing">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}
-    <details class="lv-group lv-settings-landing" id="lv-settings-landing"><summary>⚙️ ${t('live.settings.title')}</summary>
+    ${teamsOn ? html`<div class="lv-group" id="lv-teams-landing">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}`)}
+    ${step('open', 3, html`
+    <dl class="su-rows panel lv-review" id="lv-review">${ROWS.map(k => html`<div class="su-row" data-row="${k}"><dt>${t(`live.wiz.row.${k}`)}</dt><dd data-val="${k}"></dd><button type="button" class="btn btn-sm su-change" data-change="${k === 'game' ? 'play' : k === 'teams' ? 'who' : k}">${t('live.wiz.change')}<span class="sr-only">: ${t(`live.wiz.row.${k}`)}</span></button></div>`)}</dl>
+    <details class="lv-group lv-settings-landing panel" id="lv-settings-landing"><summary>⚙️ ${t('live.settings.title')}</summary>
       ${settingsFields(t, { values, quiz: true, accounts: classes.length > 0, idp: 'lv-ls' })}
       <p class="small muted">${t('live.settings.remembered')}${prefs ? html` <button class="btn btn-sm" type="button" id="lv-prefs-reset" data-href="/api/live/prefs">${t('live.settings.reset')}</button>` : ''}</p>
     </details>
@@ -580,9 +622,10 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
     <p class="err form-err" aria-live="polite"></p>
     <div class="notice lv-open-old" id="lv-open-old" role="alert" hidden><p id="lv-open-old-text"></p>
       <div class="row"><a class="btn" id="lv-open-back" href="#">${t('js.live-sets.openOld.back')}</a> <button class="btn btn-primary" type="button" id="lv-open-replace">${t('js.live-sets.openOld.replace')}</button></div></div>
-    <button class="btn btn-primary btn-big" type="submit">${t('live.landing.open')}</button>
+    <div class="su-nav lv-nav-end"><button type="button" class="btn" data-go="back">${t('live.wiz.back')}</button><button class="btn btn-hot su-open" type="submit">${t('live.landing.open')}</button></div>`)}
+    ${nav}
   </form>
-  ${recent.length ? html`<section class="lv-group"><h2>${t('live.landing.recent')}</h2><ul class="lv-recent">${recent.map(r => html`<li><a href="/live/results/${r.id}">${r.title || t('live.results.title')}</a> <span class="small muted">${t('live.results.playersCount', { count: r.players })}</span></li>`)}</ul></section>` : ''}
+  ${recent.length ? html`<section class="lv-group lv-recent-wrap" id="lv-recent"><h2>${t('live.landing.recent')}</h2><ul class="lv-recent">${recent.map(r => html`<li><a href="/live/results/${r.id}">${r.title || t('live.results.title')}</a> <span class="small muted">${t('live.results.playersCount', { count: r.players })}</span></li>`)}</ul></section>` : ''}
 </div>`;
 }
 
