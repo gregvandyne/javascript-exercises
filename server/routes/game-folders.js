@@ -78,13 +78,15 @@ router.get('/build/folders/:id', requireBuilder, (req, res) => {
     : html`<form class="row" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="gsh-s">${t('folders.shareTitle')}</label><select class="input" id="gsh-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
       <button class="btn" type="submit">🤝 ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form><p class="small muted">${t('folders.shareNote')}</p>`}
   </section>` : '';
-  const head = mine ? html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('folders.more', { name: f.name })}">⋯</summary><div class="menu">
-      <form class="row" data-api="/api/game-folders/${f.id}" data-reload><label class="sr-only" for="gf-rn">${t('folders.name')}</label><input class="input input-sm grow" id="gf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
-      <form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit">↑ ${t('lessons.up')}</button></form>
-      <form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit">↓ ${t('lessons.down')}</button></form>
+  // The owner's tools in one row under the name (a row, not a ⋯ menu: it never runs off a phone's screen).
+  const head = mine ? html`<div class="row gfo-tools">
+      <details class="libdrop gfo-rename"><summary class="btn btn-sm">🏷️ ${t('build.rename')}</summary>
+        <form class="row" data-api="/api/game-folders/${f.id}" data-reload><label class="sr-only" for="gf-rn">${t('folders.name')}</label><input class="input input-sm grow" id="gf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-sm btn-primary" type="submit">${t('school.save')}</button></form></details>
+      <form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>
+      <form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>
       <form data-api="/api/game-folders/${f.id}/delete" data-redirect="/build" data-confirm="${t('folders.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">🗑️ ${t('folders.delete')}</button></form>
-    </div></details>` : '';
-  const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1>${head}</div>
+    </div>` : '';
+  const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1></div>${head}
   ${mine ? '' : html`<p class="muted">🤝 <bdi>${t('folders.by', { name: owner })}</bdi> · ${t('folders.sharedWithSchool', { school: sharedIn })}</p>
     <form data-api="/api/game-folders/${f.id}/copy"><button class="btn btn-primary" type="submit">📁 ${t('folders.copy')}</button></form>`}
   ${share}

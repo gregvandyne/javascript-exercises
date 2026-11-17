@@ -350,3 +350,7 @@ button.stp-line{cursor:pointer}
 .gfo-pick{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
 .gfo-pick>li{padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);min-height:52px;align-items:center;flex-wrap:wrap}
 .gfo-newsave{max-width:560px;margin-bottom:12px}
+.gfo-tools{gap:8px;flex-wrap:wrap;align-items:flex-start;margin:-6px 0 14px}
+.gfo-rename[open]{flex-basis:100%}
+.gfo-rename form{margin-top:8px;max-width:520px}
+.gfo-share .btn{white-space:normal;max-width:100%;height:auto;text-align:center}

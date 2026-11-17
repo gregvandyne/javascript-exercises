@@ -415,9 +415,14 @@ export function teacherLessonsPanel(req, c) {
   return html`<section class="panel" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">🎮 ${t('folders.assigned')}</h2>
     ${count ? '' : html`<div class="empty"><div class="emo" aria-hidden="true">🎮</div><h3>${t('folders.classEmpty')}</h3>${staff ? html`<p>${t('folders.classEmptyText')}</p>${acts}${readyMade}` : ''}</div>`}
     ${count ? html`<div class="cl-tools"><div class="cl-more">${staff ? acts : ''}${gcLessonsButton(req, c)}</div>${staff ? readyMade : ''}</div>` : html`<div class="cl-tools"><div class="cl-more">${gcLessonsButton(req, c)}</div></div>`}
-    ${plan.map(g => (g.unit && g.lessons.length) || g.lessons.length ? html`<div class="unit">
-      ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3></div>` : ''}
-      <ol class="plain cl-list">${g.lessons.map((cl, i) => lessonRow(cl, i, g.lessons.length))}</ol></div>` : '')}
+    ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
+      ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">
+        ${gi > 1 ? html`<form data-api="/api/class-units/${g.unit.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${gi < plan.length - 1 ? html`<form data-api="/api/class-units/${g.unit.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
+        <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: g.unit.name })}">⋯</summary><div class="menu">
+          <form class="row" data-api="/api/class-units/${g.unit.id}" data-reload><input class="input input-sm grow" name="name" value="${g.unit.name}" maxlength="60" aria-label="${t('lessons.class.unitName')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
+          <form data-api="/api/class-units/${g.unit.id}/delete" data-reload data-confirm="${t('lessons.class.deleteUnitConfirm', { name: g.unit.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.deleteUnit')}</button></form>
+        </div></details></span></div>` : ''}
+      ${g.lessons.length ? html`<ol class="plain cl-list">${g.lessons.map((cl, i) => lessonRow(cl, i, g.lessons.length))}</ol>` : html`<p class="small muted">${t('lessons.class.emptyUnit')}</p>`}</div>` : '')}
   </section>`;
 }
 /** Student view: open lessons by unit, with how far the student has got in each. */
