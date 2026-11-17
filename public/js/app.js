@@ -184,11 +184,14 @@ on(document, 'submit', async e => {
 // Back to a page kept in the browser's cache: buttons we disabled while leaving work again.
 on(window, 'pageshow', e => { if (e.persisted) $$('[data-busy]').forEach(b => { b.disabled = false; delete b.dataset.busy; }); });
 
-// ---- 🌐 language and ☀️/🌙/🌓 theme menus: a <details> of plain links (works without JS); here we add Escape, outside-click and arrow keys ----
-if (FIRST) for (const d of $$('[data-langpick],[data-themepick]')) {
+// ---- 🌐 language menu and the account menu behind the avatar (Me, My school, Settings: Theme, Plans): a <details> of
+// plain links (works without JS); here we add Escape, outside-click and arrow keys ----
+if (FIRST) for (const d of $$('[data-langpick],[data-acctpick]')) {
   const links = () => $$('li > a', d);
   const close = (focus = true) => { if (!d.open) return; d.open = false; if (focus) $('summary', d).focus(); };
-  d.addEventListener('toggle', () => { if (d.open) { const cur = links().find(a => a.getAttribute('aria-current') === 'true') || links()[0]; if (cur) cur.focus(); } });
+  // The language menu opens on the current language, the account menu on its first item.
+  const first = () => (d.matches('[data-langpick]') && links().find(a => a.getAttribute('aria-current') === 'true')) || links()[0];
+  d.addEventListener('toggle', () => { if (d.open) { const a = first(); if (a) a.focus(); } });
   d.addEventListener('keydown', e => {
     if (e.key === 'Escape') { e.preventDefault(); close(); return; }
     if (!d.open || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
@@ -254,7 +257,6 @@ function applyTheme(theme) {
     const on = a.dataset.themeChoice === theme;
     if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
     const check = $('.lang-check', a); if (check) check.textContent = on ? '✓' : '';
-    if (on) for (const s of $$('[data-themepick] > summary')) { s.setAttribute('aria-label', a.dataset.label); $('.theme-ico', s).textContent = $('.theme-ico', a).textContent; }
   }
   for (const r of $$('#themeform input[name="theme"]')) r.checked = r.value === theme;
 }

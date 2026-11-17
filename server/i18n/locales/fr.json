@@ -30,6 +30,9 @@
       "light": "Clair",
       "dark": "Sombre"
     },
+    "acct": {
+      "allSettings": "Tous les paramètres"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Gratuit pour jouer, gratuit pour créer",
       "safety": "Sécurité",

@@ -31,6 +31,9 @@
       "light": "Light",
       "dark": "Dark"
     },
+    "acct": {
+      "allSettings": "All settings"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Free to play, free to build",
       "safety": "Safety",

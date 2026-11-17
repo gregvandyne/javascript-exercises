@@ -371,7 +371,7 @@ test('the Settings page\'s Teacher plan card, a teacher who owns it: trialing (n
   const me = decode((await call(x.who, '/me/settings')).text);
   const at = id => me.indexOf(`id="${id}"`);
   assert.ok(at('billing') < at('teacher-plan') && at('teacher-plan') < at('language') && at('language') < at('appearance') && at('appearance') < at('password') && at('password') < at('signout'));
-  assert.deepEqual([...me.matchAll(/<nav class="setnav"[\s\S]*?<\/nav>/g)][0][0].match(/href="#[^"]+"/g), ['href="#billing"', 'href="#language-sec"', 'href="#appearance-sec"', 'href="#password-sec"', 'href="#signout-sec"']);
+  assert.deepEqual([...me.matchAll(/<nav class="setnav"[\s\S]*?<\/nav>/g)][0][0].match(/href="#[^"]+"/g), ['href="#billing"', 'href="#language-sec"', 'href="#appearance-sec"', 'href="#plans-sec"', 'href="#password-sec"', 'href="#signout-sec"']);
   assert.doesNotMatch(decode((await call(x.who, '/teach')).text), /id="teacher-plan"/);
   const mePage = decode((await call(x.who, '/me')).text);
   assert.doesNotMatch(mePage, /id="teacher-plan"|id="language"|id="appearance"|id="password"|id="signout"/);
