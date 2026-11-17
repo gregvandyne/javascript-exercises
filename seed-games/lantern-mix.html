@@ -885,6 +885,9 @@ function shake(o, then) {
   anim(o, 0.5, k => { o.position.x = x + Math.sin(k * Math.PI * 5) * 0.09 * (1 - k); if (k >= 1) o.position.x = x; }, then);
 }
 function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+/** The next question waits for the line being said: the pause, then BRB.afterSpeech (an AI line still on its way
+ *  counts; at most 10 s more), so a voice is never cut off by the next question. Without it, the plain pause. */
+function pauseForSpeech(sec, then) { pause(sec, () => { if (S.fast || !B || typeof B.afterSpeech !== 'function') return then(); B.afterSpeech(then, { max: 10000 }); }); }
 g.onUpdate(dt => {
   for (let i = tweens.length - 1; i >= 0; i--) {
     const w = tweens[i];
@@ -1144,7 +1147,7 @@ function redraw() {
   el.light.firstChild.setAttribute('aria-hidden', 'true'); el.light.setAttribute('aria-label', fmt('btn.light'));
   if (focus) { const b = document.getElementById(focus) || el.light; if (b) b.focus(); }   // a keyboard player stays on the workbench
   S.shown = true;
-  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+  if (found) pauseForSpeech(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
 }
 /** A step that only runs if the round it belongs to is still the one on screen. */
 const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
@@ -1174,7 +1177,7 @@ function light() {
   // the round's lantern stays lit on the rack, the lamplighter cheers, and only then the next round
   S.glows[i] = roundGlow(R, v);
   const o = rackLamp(i, S.glows[i].css); rack.add(o); S.lit = i + 1; placeRack(); frame();
-  pop(o, { then: guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.4 : 2.1, guard(nextRound)); }) });
+  pop(o, { then: guard(() => { sfx('cheer'); heroMove('cheer', 1700); pauseForSpeech(reduced ? 3.4 : 2.1, guard(nextRound)); }) });
 }
 el.light.addEventListener('click', light);
 

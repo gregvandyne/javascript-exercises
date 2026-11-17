@@ -273,7 +273,15 @@ el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1],
 function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
 const timers = new Set();
 const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
-const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+// The next question waits for the line being said (BRB.afterSpeech: an AI line still on its way counts), so a voice is
+// never cut off by the next one; at least ms, at most 10 s more. Without the SDK's afterSpeech, the plain wait.
+const waits = new Set();
+function afterLine(ms, fn) {
+  if (S.fast || !B || typeof B.afterSpeech !== 'function') return later(ms, fn);
+  const stop = B.afterSpeech(() => { waits.delete(stop); fn(); }, { min: ms, max: ms + 10000 });
+  waits.add(stop);
+}
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); for (const w of waits) w(); waits.clear(); };
 
 /* ---------- the 3D pond ---------- */
 let g;
@@ -620,7 +628,7 @@ function right(key, vars, ms, then) {
   sfx('cheer');
   showSum(S.R, true); say(key, vars, { queue: true });
   if (then) then();
-  later(ms, nextRound);
+  afterLine(ms, nextRound);
 }
 function finish() {
   S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();

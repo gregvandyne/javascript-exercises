@@ -431,6 +431,9 @@ function fly(o, to, { dur = 0.5, arc = 1, then, wait = 0 } = {}) {
 }
 /** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
 function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+/** The next question waits for the line being said: the pause, then BRB.afterSpeech (an AI line still on its way
+ *  counts; at most 10 s more), so a voice is never cut off by the next question. Without it, the plain pause. */
+function pauseForSpeech(sec, then) { pause(sec, () => { if (S.fast || !B || typeof B.afterSpeech !== 'function') return then(); B.afterSpeech(then, { max: 10000 }); }); }
 g.onUpdate(dt => {
   for (let i = tweens.length - 1; i >= 0; i--) {
     const w = tweens[i];
@@ -832,7 +835,7 @@ function redraw() {
   else el.bar.replaceChildren(...Rd.choices.map(v => num(v)));
   if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
   S.shown = true;
-  if (found) pause(1.6, guard(nextRound));   // the screen turned while the bridge was settling: the round ends here
+  if (found) pauseForSpeech(1.6, guard(nextRound));   // the screen turned while the bridge was settling: the round ends here
 }
 /** A step that only runs if the round it belongs to is still the one on screen. */
 const guard = fn => { const tick = S.tick; return () => { if (tick === S.tick) fn(); }; };
@@ -861,7 +864,7 @@ function answer(v, b) {
   const level = Rd.lv === Rd.rv;
   const done = guard(() => {
     sfx('cheer'); if (!level) heroMove('cheer', 1700);
-    const next = guard(() => pause(reduced ? 3.6 : level ? 1.5 : 2.6, guard(nextRound)));
+    const next = guard(() => pauseForSpeech(reduced ? 3.6 : level ? 1.5 : 2.6, guard(nextRound)));
     if (level) cross(next); else next();
   });
   // the bridge shows the answer: the blocks of the missing number drop in, or the posts let go; then it comes to rest

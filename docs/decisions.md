@@ -7433,3 +7433,32 @@ bottom", then "Leave out the Help and add the My School". School staff's menu (l
 - Grown-ups, students, kids and the platform admin keep the menu from "A quieter top bar".
 - Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
   the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.
+
+## Voices finish before the next question (17 Nov 2026)
+Owner: "All of the games seem to have the voices cut off as they transition from one question to the next. Make sure
+all of the transitions are perfect." Cause: a game said a line ("Yes! 10 and 4 make 14.") and moved on after a fixed
+wait (2 s in Garden Count, a 2-3 s game-time pause in the Number Quest games); the next question's line, spoken without
+queue, cancelled it. With AI voices a line that is not cached yet can take a few seconds to arrive, so it was cut off,
+or never heard at all.
+- **SDK:** `BRB.afterSpeech(fn, { min, max, gap })` calls fn once nothing is being said (a line playing, queued, or
+  still on its way from the AI voice) for `gap` ms (250), never before `min` and never after `max` (10 s, so a line
+  that never says it ended can't hold a game); it returns a cancel function. `BRB.speaking()` says whether anything is.
+  docs/sdk.md lists both; tests/unit/voice.test.js checks a slow AI line holds the wait.
+- **Games:** every automatic move to the next question goes through it, keeping each game's own minimum wait and its
+  cancelling (a screen change still stops it), instant as before in the tests' fast mode, and the old timer where the
+  SDK has no afterSpeech. A tap the player makes may still cut a line (that is their choice).
+- **Garden Count** also asks for each round's closing line and the next question ahead (`BRB.prefetchSpeech`), so the
+  AI voice is ready the moment they are said; tests/unit/garden-count.test.js answers every line 3 s late and checks
+  the next question waits for it.
+
+## Garden Count: Tens and Ones, and a clean start (17 Nov 2026)
+Owner: "This should be more clear that the left is for 10's and the right is for 1's. The beginning of garden count is
+also quite glitchy."
+- **Tens and Ones:** in the teens chapter a sign stands behind each bed, like the columns of a place-value chart: a
+  green "Tens" over the ten-frame and a brown "Ones" over the loose apples, each with how many it holds now (10 | 4,
+  matching "10 and 4 make 14" at the top). In "How many apples?" Tens shows 10 and Ones shows "?" until the answer is
+  right. On a tall phone the ones bed moves down a little to make room for its sign. (I18N `teens.tens`, `teens.ones`.)
+- **The start:** the loading screen was removed before the helpers had loaded and the camera had framed them, and it
+  was see-through, so the 3D view flashed half-built (a black sky, a giant ground tile up close). It now has the sky's
+  colour, stays until the helpers stand in place and one frame is drawn from where they are seen, then fades (no fade
+  with reduced motion).

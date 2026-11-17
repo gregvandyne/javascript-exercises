@@ -1233,6 +1233,9 @@ function shake(o, then) {
 }
 /** Nothing moves for `sec` seconds of the game's own time, then `then` (a pause the game loop counts). */
 function pause(sec, then) { if (S.fast) return then(); tweens.push({ o: { visible: true }, dur: sec, step: () => {}, then, t: 0, wait: 0 }); }
+/** The next question waits for the line being said: the pause, then BRB.afterSpeech (an AI line still on its way
+ *  counts; at most 10 s more), so a voice is never cut off by the next question. Without it, the plain pause. */
+function pauseForSpeech(sec, then) { pause(sec, () => { if (S.fast || !B || typeof B.afterSpeech !== 'function') return then(); B.afterSpeech(then, { max: 10000 }); }); }
 g.onUpdate(dt => {
   for (let i = tweens.length - 1; i >= 0; i--) {
     const w = tweens[i];
@@ -1466,7 +1469,7 @@ function redraw() {
   el.bar.replaceChildren(...Rd.opts.map((o, i) => optButton(o, i, found && i === Rd.answer ? 'go' : '')));
   if (focus) { const b = document.getElementById(focus) || el.bar.querySelector('button'); if (b) b.focus(); }   // a keyboard player stays on the buttons
   S.shown = true;
-  if (found) pause(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
+  if (found) pauseForSpeech(1.6, guard(nextRound));   // the screen turned while the answer was showing: the round ends here
 }
 /** A step that only runs if the round it belongs to is still the one on screen. */
 const guard = fn => { const tick = S.tick; return (...a) => { if (tick === S.tick) fn(...a); }; };
@@ -1490,7 +1493,7 @@ function answer(v, b) {
   for (const [key, vars] of Rd.said.slice(1)) speak(key, vars, { queue: true });
   paint(Rd, 'found'); drop(board); board.position.copy(BOARD); board.scale.set(BW, BH, 1); pop(board, { from: 0.9 });
   // the round's dish goes to the party table, the helper cheers, and only then the next round
-  serve(guard(() => { sfx('cheer'); heroMove('cheer', 1700); pause(reduced ? 3.4 : 2.1, guard(nextRound)); }));
+  serve(guard(() => { sfx('cheer'); heroMove('cheer', 1700); pauseForSpeech(reduced ? 3.4 : 2.1, guard(nextRound)); }));
 }
 
 /* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
