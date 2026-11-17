@@ -6639,6 +6639,7 @@
       "done": "Done",
       "more": "More team options",
       "scoring": "Team score",
+      "scoringHow": "How to score",
       "scoringAvg": "Average per player",
       "scoringAvgHint": "Fair when teams have different sizes.",
       "scoringSum": "Total points",

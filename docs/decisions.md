@@ -7440,3 +7440,16 @@ bottom", then "Leave out the Help and add the My School". School staff's menu (l
 - Grown-ups, students, kids and the platform admin keep the menu from "A quieter top bar".
 - Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
   the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.
+
+## Host a live game: "How to score", bigger radios, Game settings box, the app's dropdowns (17 Nov 2026)
+Owner feedback on the steps from #387:
+- **Teams → How to score.** The two scoring choices (Average per player, Total points) now sit under their own heading,
+  "How to score" (`live.team.scoringHow`, in every locale but en-GB, which falls back to English), as a fieldset in
+  the teams row. Radios and checkboxes in the live pages are 24px (were the browser's 13px), with a 12px gap.
+- **Game settings** (the last step): closed, the box is just its heading, centred in it (the box was a flex column,
+  so its gap sat under the summary), with the ▸ / ◂ / ▾ of the other live disclosures in place of the browser's marker.
+- **Dropdowns.** The Game settings selects, the co-host picker, the dashboard's move picker, the homework class picker,
+  the class-teams count and team pickers (live-class-teams.js, live-host.js) and the Number Quest placement start
+  point were bare browser selects; they now have `class="input"`. **Decided: a test keeps it so**
+  (`tests/unit/selects-styled.test.js`): every `<select>` in a view or script has class `input`, and every select made
+  with `createElement('select')` is given it in the same or the next statement.

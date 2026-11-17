@@ -6278,6 +6278,7 @@
       "done": "Fatto",
       "more": "Altre opzioni squadre",
       "scoring": "Punteggio di squadra",
+      "scoringHow": "Come si assegnano i punti",
       "scoringAvg": "Media per giocatore",
       "scoringAvgHint": "Giusto quando le squadre hanno dimensioni diverse.",
       "scoringSum": "Punti totali",

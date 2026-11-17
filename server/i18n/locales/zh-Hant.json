@@ -6277,6 +6277,7 @@
       "done": "完成",
       "more": "更多隊伍選項",
       "scoring": "隊伍分數",
+      "scoringHow": "計分方式",
       "scoringAvg": "每人平均",
       "scoringAvgHint": "隊伍人數不同時也公平。",
       "scoringSum": "總分",

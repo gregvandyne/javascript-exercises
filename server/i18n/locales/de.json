@@ -6278,6 +6278,7 @@
       "done": "Fertig",
       "more": "Weitere Team-Optionen",
       "scoring": "Team-Punkte",
+      "scoringHow": "Wie gewertet wird",
       "scoringAvg": "Durchschnitt pro Person",
       "scoringAvgHint": "Fair, wenn Teams verschieden groß sind.",
       "scoringSum": "Punkte insgesamt",

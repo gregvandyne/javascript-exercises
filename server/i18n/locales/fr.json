@@ -6277,6 +6277,7 @@
       "done": "Terminé",
       "more": "Plus d'options d'équipe",
       "scoring": "Score d'équipe",
+      "scoringHow": "Comment compter les points",
       "scoringAvg": "Moyenne par joueur",
       "scoringAvgHint": "Juste quand les équipes n'ont pas la même taille.",
       "scoringSum": "Total des points",

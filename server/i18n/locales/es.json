@@ -6277,6 +6277,7 @@
       "done": "Listo",
       "more": "Más opciones de equipo",
       "scoring": "Puntuación del equipo",
+      "scoringHow": "Cómo se puntúa",
       "scoringAvg": "Media por jugador",
       "scoringAvgHint": "Justo cuando los equipos tienen tamaños distintos.",
       "scoringSum": "Puntos totales",

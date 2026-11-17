@@ -6278,6 +6278,7 @@
       "done": "Klaar",
       "more": "Meer teamopties",
       "scoring": "Teamscore",
+      "scoringHow": "Hoe de score telt",
       "scoringAvg": "Gemiddelde per speler",
       "scoringAvgHint": "Eerlijk als teams verschillend groot zijn.",
       "scoringSum": "Totaal aantal punten",

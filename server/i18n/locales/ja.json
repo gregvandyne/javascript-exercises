@@ -6277,6 +6277,7 @@
       "done": "完了",
       "more": "チームのその他の設定",
       "scoring": "チームの得点",
+      "scoringHow": "得点の数え方",
       "scoringAvg": "1人あたりの平均",
       "scoringAvgHint": "人数がちがうチームでも公平です。",
       "scoringSum": "合計点",

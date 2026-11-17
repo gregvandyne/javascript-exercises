@@ -6279,6 +6279,7 @@
       "done": "Pronto",
       "more": "Mais opções de time",
       "scoring": "Pontuação do time",
+      "scoringHow": "Como pontuar",
       "scoringAvg": "Média por jogador",
       "scoringAvgHint": "Justo quando os times têm tamanhos diferentes.",
       "scoringSum": "Total de pontos",
