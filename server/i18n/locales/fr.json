@@ -32,7 +32,8 @@
     },
     "acct": {
       "allSettings": "Tous les paramètres",
-      "browse": "Jeux et leçons"
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# nouveau message} other {# nouveaux messages}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · Gratuit pour jouer, gratuit pour créer",

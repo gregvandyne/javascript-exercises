@@ -32,7 +32,8 @@
     },
     "acct": {
       "allSettings": "すべての設定",
-      "browse": "ゲームとレッスン"
+      "themeAuto": "自動",
+      "newMessages": "{count, plural, other {新しいメッセージ # 件}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · あそぶのも、つくるのも、むりょう",

@@ -33,7 +33,8 @@
     },
     "acct": {
       "allSettings": "כל ההגדרות",
-      "browse": "משחקים ושיעורים"
+      "themeAuto": "אוטומטי",
+      "newMessages": "{count, plural, one {הודעה חדשה אחת} other {# הודעות חדשות}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · משחקים בחינם, בונים בחינם",

@@ -32,7 +32,8 @@
     },
     "acct": {
       "allSettings": "Все настройки",
-      "browse": "Игры и уроки"
+      "themeAuto": "Авто",
+      "newMessages": "{count, plural, one {# новое сообщение} few {# новых сообщения} many {# новых сообщений} other {# новых сообщения}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · Играть бесплатно, создавать бесплатно",

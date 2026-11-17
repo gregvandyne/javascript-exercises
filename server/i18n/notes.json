@@ -1561,5 +1561,6 @@
   "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason.",
   "live.wiz.modesTab": "Tab over the built-in live games on the Host a live game page (the other tabs are live.landing.official, .mine, .shared).",
   "live.wiz.questions.ownTitle": "Heading of the questions step for a live game that makes its own questions (Would You Rather, Atlas Quest, Tug of Math, Doodle Hoot).",
-  "live.wiz.open.hint": "{url} is the join address without https://, e.g. oomba.ai/join."
+  "live.wiz.open.hint": "{url} is the join address without https://, e.g. oomba.ai/join.",
+  "layout.acct.themeAuto": "Short name for the \"Same as my device\" theme, on a small three-button switch (Auto / Light / Dark): keep it to one short word."
 }

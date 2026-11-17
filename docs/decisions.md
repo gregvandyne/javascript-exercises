@@ -7422,6 +7422,19 @@ the case, and "edit settings of individual widgets on a board without having to 
 Owner: "For the top bar for a teacher it should just be Classroom Build Live at the top. You can remove Learn and Play."
 - School staff (teachers and school admins): top bar Classroom · Build · Live; phone tab bar the same with Me. A
   school admin now has Live in the tab bar too (there is room since Learn and Play left). Everyone else is unchanged.
-- Play and Learn are not lost: they are in the account menu under "Games and lessons" for school staff
-  (`accountMenu`, `layout.acct.browse`), and still open at /play and /learn (no tab is marked there).
+- Play and Learn are not lost: they are tiles in the teachers' account menu (below), and still open at /play and
+  /learn (no tab is marked there).
 - Tests: nav-roles, teacher-quick-wins and classroom-homes check the new bars and the menu's links.
+
+## Teachers' account menu (17 Nov 2026)
+Owner, after four mockups: Option 4 (a profile card) "but I would like to use the theme settings from number 3 at the
+bottom", then "Leave out the Help and add the My School". School staff's menu (layout.js `staffMenu`), top to bottom:
+- A card that opens Me: avatar, name, school, and "💬 n new messages ›" when there are any (the Me badge's count).
+- Play and Learn as two tiles (a teacher's bars have neither since "Teachers' top bar").
+- My school (school admins only), Plans (while paid-plan pages are on), Settings (/me/settings), Sign out (the same
+  `/api/auth/logout` form as on /me).
+- The theme as one Auto / Light / Dark switch at the bottom: the same plain `?theme=` links as `themeLinks` (no
+  JavaScript needed; app.js switches at once and moves `aria-current`). "Auto" is `layout.acct.themeAuto`.
+- Grown-ups, students, kids and the platform admin keep the menu from "A quieter top bar".
+- Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
+  the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.

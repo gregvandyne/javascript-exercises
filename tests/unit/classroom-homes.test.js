@@ -180,8 +180,8 @@ test('what My classes no longer lists is still a tap away: Learn has the courses
   assert.match(l.text, /href="\/learn\/brain-break-games"/, 'Learn: the brain break games page');
   // Teachers' bars are Classroom · Build · Live: Play and Learn are in the account menu
   const menu = l.text.slice(l.text.indexOf('<details class="acctpick"'), l.text.indexOf('</details>', l.text.indexOf('<details class="acctpick"')));
-  assert.match(menu, /<a href="\/play" ><span class="theme-ico" aria-hidden="true">🎮<\/span>/, 'Play is in the account menu');
-  assert.match(menu, /<a href="\/learn" aria-current="page"><span class="theme-ico" aria-hidden="true">📚<\/span>/, 'Learn too, marked on /learn');
+  assert.match(menu, /<div class="acct-tiles">\s*<a href="\/play" ><span class="acct-tile-e" aria-hidden="true">🎮<\/span>Play<\/a>/, 'Play is a tile in the account menu');
+  assert.match(menu, /<a href="\/learn" aria-current="page"><span class="acct-tile-e" aria-hidden="true">📚<\/span>Learn<\/a>/, 'Learn too, marked on /learn');
   const lib = await get('/teach/lessons', teacher);
   assert.ok(lib.text.includes('href="/teach/cyber-defenders"'), 'the lesson library\'s ready-made chips');
   assert.match(lib.text, /id="folder-why">📁 Folders sort your own lesson library, and their lessons can go to any class\. Units, on a class page, set the order students see\./);

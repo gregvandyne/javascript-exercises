@@ -161,7 +161,7 @@ test('\'/\' per role: Play for the signed out, guests, kids and the platform adm
 
 test('the avatar: signed in it opens the account menu (Me, or Account for a grown-up, first); signed out it is Sign in', async () => {
   const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(topbar(s)) || [''])[0];
-  const first = s => (/<div class="acct-menu">[\s\S]*?<a href="([^"]+)"/.exec(menu(s)) || [])[1];
+  const first = s => (/<div class="acct-menu[^"]*">[\s\S]*?<a [^>]*?href="([^"]+)"/.exec(menu(s)) || [])[1];
   const btn = s => (/<a class="me-btn" href="([^"]+)"/.exec(topbar(s)) || [])[1];
   const m = menu((await get(mum, '/play')).text);
   assert.match(m, /<summary class="me-btn" aria-label="Me: RolesMum">/);
@@ -316,8 +316,25 @@ test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the
     assert.doesNotMatch(bars(page), /href="\/school"/, `${role}: no School in the bars`);
     assert.match(topbar(page), /<details class="langpick" data-langpick>/, `${role}: the language picker stays`);
   }
-  // Adults (a grown-up, a school admin, a teacher, the platform admin): Settings with Theme, Plans and All settings.
-  for (const u of [mum, head, teacher, boss]) {
+  // School staff (a school admin, a teacher): the card that opens Me, Play and Learn tiles, Plans, Settings, Sign out,
+  // and the theme as one Auto / Light / Dark switch at the bottom (docs/decisions.md "Teachers' account menu").
+  for (const u of [head, teacher]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.match(m, /<div class="acct-menu acct-staff">\s*<a class="acct-card" href="\/me"/, `${u.username}: the card first`);
+    assert.match(m, /<span class="acct-card-t"><b dir="auto">[^<]+<\/b><small dir="auto">Roles (?:Oak|Elm) School</, `${u.username}: name and school`);
+    assert.match(m, /<div class="acct-tiles">\s*<a href="\/play"[\s\S]*?<a href="\/learn"/, `${u.username}: Play and Learn tiles`);
+    assert.match(m, /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/, `${u.username}: Plans`);
+    assert.match(m, /<a href="\/me\/settings" ><span class="theme-ico" aria-hidden="true">⚙️<\/span><span>Settings<\/span><\/a>/, `${u.username}: Settings`);
+    assert.match(m, /<form data-api="\/api\/auth\/logout" data-next="\/"><button type="submit" class="acct-out">[\s\S]*?Sign out/, `${u.username}: Sign out`);
+    assert.match(m, /<ul class="acct-themeseg" aria-label="Theme">/, `${u.username}: the theme switch`);
+    for (const th of ['light', 'dark', 'system']) assert.match(m, new RegExp(`href="/play\\?theme=${th}" rel="nofollow" data-theme-choice="${th}"`), `${u.username}: ${th}, a plain link`);
+    assert.ok(m.indexOf('acct-themeseg') > m.indexOf('acct-out'), `${u.username}: the theme at the bottom`);
+    assert.doesNotMatch(m, /\$|€|£|\/month|\/year/, `${u.username}: no prices in the menu`);
+  }
+  assert.match(menu((await get(head, '/play')).text), /<a href="\/school" ><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/, 'a school admin: My school');
+  assert.doesNotMatch(menu((await get(teacher, '/play')).text), /href="\/school"/, 'a teacher: no My school');
+  // Other adults (a grown-up, the platform admin): Settings with Theme, Plans and All settings.
+  for (const u of [mum, boss]) {
     const m = menu((await get(u, '/play')).text);
     assert.match(m, /<p class="lang-head" id="acct-set-head">Settings<\/p>/, u.username);
     assert.match(m, /<p class="acct-sub" id="acct-theme-head">Theme<\/p>/, u.username);
@@ -345,7 +362,9 @@ test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the
   assert.doesNotMatch(foot((await get(mum, '/play')).text), /foot-theme|href="\/plans"/, 'signed in: the theme and Plans are in the account menu');
   // The chosen theme is ticked in the menu.
   const dark = await fetch(base + '/play', { headers: { cookie: `${cookieFor(teacher.id)}; theme=dark` } });
-  assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/);
+  assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" title="Dark" aria-current="true">/, 'a teacher: Dark is on in the switch');
+  const darkMum = await fetch(base + '/play', { headers: { cookie: `${cookieFor(mum.id)}; theme=dark` } });
+  assert.match(menu(await darkMum.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/, 'a grown-up: Dark is ticked');
   // Paid-plan pages off: no Plans anywhere, the theme stays.
   config.stripeApiKey = '';
   for (const u of [mum, head, teacher, boss]) {

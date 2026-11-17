@@ -33,7 +33,8 @@
     },
     "acct": {
       "allSettings": "Alle instellingen",
-      "browse": "Spellen en lessen"
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",

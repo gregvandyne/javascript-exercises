@@ -32,7 +32,8 @@
     },
     "acct": {
       "allSettings": "所有設定",
-      "browse": "遊戲和課程"
+      "themeAuto": "自動",
+      "newMessages": "{count, plural, other {# 則新訊息}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · 免費玩、免費做",

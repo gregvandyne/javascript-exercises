@@ -97,6 +97,6 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   await head.goto('/teach?all=1');
   expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live']);
   await head.locator('.topbar .acctpick summary').click();
-  expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/school', '/me/settings']);
+  expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/play', '/learn', '/school', '/me/settings']);
   await hctx.close(); await admin.context().close();
 });

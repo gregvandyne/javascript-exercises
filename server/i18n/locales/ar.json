@@ -33,7 +33,8 @@
     },
     "acct": {
       "allSettings": "كل الإعدادات",
-      "browse": "ألعاب ودروس"
+      "themeAuto": "تلقائي",
+      "newMessages": "{count, plural, zero {لا رسائل جديدة} one {رسالة جديدة واحدة} two {رسالتان جديدتان} few {# رسائل جديدة} many {# رسالة جديدة} other {# رسالة جديدة}}"
     },
     "footer": {
       "tagline": "© Oomba Academy · العب مجانًا واصنع مجانًا",
