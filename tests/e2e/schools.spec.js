@@ -61,41 +61,40 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await expect(kid.locator('main')).toContainText('Maria Rivera');      // their teacher's name
   await expect(kid.locator('main')).not.toContainText('Ana Silva');     // never classmates' real names
   await expect(kid.locator('.tabbar a[href="/classes"]')).toHaveCount(1);
-  // The teacher's menu (docs/decisions.md "Play and Learn"): Classroom · Learn · Play · Live · Me; no School tab for a
-  // plain teacher, no Friends or Build tab, and "Make a game" on My classes instead.
+  // The teacher's menu (docs/decisions.md "Teachers' top bar"): Classroom · Build · Live · Me; no School tab for a
+  // plain teacher, no Friends tab, and "Make a game" on My classes too.
   await teacher.setViewportSize({ width: 360, height: 760 });
   await teacher.goto('/teach?all=1');
-  expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/me']);
+  expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live', '/me']);
   await expect(teacher.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
   await expect(teacher.locator('main a[href="/build"]')).toContainText('Make a game');
   expect((await teacher.goto('/school')).status()).toBe(404);
   await tctx.close(); await sctx.close();
 });
 
-test('a school admin\'s School tab opens their school (People); the School tab is current there; Make a game on Me', async ({ browser }) => {
+test('a school admin\'s My school (in the account menu) opens their school; Make a game on Me', async ({ browser }) => {
   const admin = await adminPage(browser);
   const hctx = await browser.newContext({ viewport: { width: 360, height: 760 } }); const head = await hctx.newPage();
   const { username } = await signup(head, uniq('Head'), 'head-pass-123');
   const school = await schoolWithAdmin(admin, username);
-  // '/' is their first tab, School (one school: its overview, the Classes tab); Play is /play, current there.
+  // '/' opens their school (one school: its overview, the Classes tab). The bars are a teacher's (Classroom · Build ·
+  // Live · Me); School is in the account menu, and on the school Me is the current tab.
   await head.goto('/');
   expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);
-  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/me']);
-  await expect(head.locator('.tabbar .tab[href="/school"]')).toHaveAttribute('aria-current', 'page');
+  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live', '/me']);
+  await expect(head.locator('.tabbar .tab[href="/me"]')).toHaveAttribute('aria-current', 'page');
   await head.goto('/play');
-  await expect(head.locator('.tabbar .tab[href="/play"]')).toHaveAttribute('aria-current', 'page');
-  await expect(head.locator('.tabbar .tab[href="/play"] .tab-t')).toHaveText('Play');
-  await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}$`)), head.locator('.tabbar .tab[href="/school"]').click()]);
+  await head.locator('.topbar .acctpick summary').click();
+  await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}$`)), head.locator('.acct-menu a[href="/school"]').click()]);
   await expect(head.locator('h1')).toContainText(school.name);
   await expect(head.locator('nav.tabs a[aria-current="page"]')).toHaveAttribute('href', `/school/${school.slug}?tab=classes`);
-  await expect(head.locator('.tabbar .tab[href="/school"]')).toHaveAttribute('aria-current', 'page');
   await head.goto('/me');
   await expect(head.locator('.pagehead a[href="/build"]')).toContainText('Make a game');
   await Promise.all([head.waitForURL(/\/build$/), head.locator('.pagehead a[href="/build"]').click()]);
-  // Desktop: Classroom · Learn · Play · Live; the avatar opens the account menu: Me, My school, then Settings.
+  // Desktop: Classroom · Build · Live; the avatar opens the account menu: the card (Me), Play, Learn, My school, Settings.
   await head.setViewportSize({ width: 1280, height: 800 });
   await head.goto('/teach?all=1');
-  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live']);
+  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live']);
   await head.locator('.topbar .acctpick summary').click();
   expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/play', '/learn', '/school', '/me/settings']);
   await hctx.close(); await admin.context().close();
