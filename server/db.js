@@ -999,6 +999,18 @@ export const MIGRATIONS = [
   // existed gets its row from the seed import, which reads "shelf" from its JSON; this makes sure an existing row is
   // on Learn too. 0062's list is left as it was (a migration that ran never runs again).
   ['0082_sum_spotter_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='sum-spotter';"],
+  // Staff invites by email (services/staff-email-invites.js): a school admin (any role) or a teacher (Teachers only)
+  // invites an address; the email's link /join-staff/<token> lets the person with that address join once they sign in.
+  // Only the token's SHA-256 is kept (token_hash), never the token. status: 'open' (until expires_at, 14 days after the
+  // last send), 'accepted' / 'declined' (used_at, used_by), 'cancelled'. email (lowercased) is shown only to the school's
+  // admins and the inviter; the audit log keeps the row's id, never the address. lang: the email's language.
+  ['0083_staff_email_invites', `
+    CREATE TABLE IF NOT EXISTS staff_email_invites (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, email TEXT NOT NULL, roster_name TEXT NOT NULL DEFAULT '',
+      role TEXT NOT NULL, token_hash TEXT NOT NULL UNIQUE, lang TEXT NOT NULL DEFAULT '', invited_by TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
+      created_at INTEGER NOT NULL, sent_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, used_at INTEGER, used_by TEXT);
+    CREATE INDEX IF NOT EXISTS staff_email_invites_school ON staff_email_invites(school_id, status);
+    CREATE INDEX IF NOT EXISTS staff_email_invites_by ON staff_email_invites(invited_by);
+    CREATE INDEX IF NOT EXISTS staff_email_invites_email ON staff_email_invites(email);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

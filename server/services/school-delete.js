@@ -33,7 +33,7 @@ const countIn = (table, col, ids) => (ids.length ? q.get(`SELECT COUNT(*) n FROM
 // Every table with a school_id, class_id or class_lesson_id column is in exactly one of these lists
 // (tests/unit/admin-delete.test.js checks it against the schema, so a new table can't be forgotten).
 /** Rows removed by the school's id. */
-export const BY_SCHOOL = ['school_members', 'staff_invites', 'google_invites', 'gc_pending', 'lesson_folders', 'lessons', 'rubrics',
+export const BY_SCHOOL = ['school_members', 'staff_invites', 'staff_email_invites', 'google_invites', 'gc_pending', 'lesson_folders', 'lessons', 'rubrics',
   'announcements', 'billing_requests', 'school_plan_asks', 'teacher_seats'];
 /** Rows removed by its classes' ids. */
 export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_classes', 'gc_posts', 'gc_links', 'gc_syncs', 'gc_roster',
@@ -90,7 +90,8 @@ export function schoolDeletePlan(schoolId) {
       lessons: ids.lessonIds.length,
       rubrics: n('SELECT COUNT(*) n FROM rubrics WHERE school_id=?', s),
       gameShares: countIn('game_classes', 'class_id', ids.classIds),
-      invites: n('SELECT COUNT(*) n FROM google_invites WHERE school_id=?', s) + n('SELECT COUNT(*) n FROM staff_invites WHERE school_id=?', s),
+      invites: n('SELECT COUNT(*) n FROM google_invites WHERE school_id=?', s) + n('SELECT COUNT(*) n FROM staff_invites WHERE school_id=?', s)
+        + n('SELECT COUNT(*) n FROM staff_email_invites WHERE school_id=?', s),
       dashboards: countIn('dash_layouts', 'class_id', ids.classIds) + countIn('dash_class', 'class_id', ids.classIds),
       liveRuns: countIn('live_runs', 'class_id', ids.classIds),
       googleClassroom: countIn('gc_links', 'class_id', ids.classIds),

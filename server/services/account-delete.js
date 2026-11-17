@@ -70,6 +70,9 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
       const fam = q.get('SELECT id FROM families WHERE owner_id=?', u.id);
       q.run("UPDATE billing_grants SET revoked_at=? WHERE revoked_at IS NULL AND ((owner_kind='teacher' AND owner_id=?) OR (owner_kind='family' AND owner_id=?))", t, u.id, fam ? fam.id : '');
     }
+    // 0b. staff invites by email they sent, or that were sent to them (to an address of theirs, or accepted by them)
+    const addrs = q.all("SELECT LOWER(email) e FROM google_identities WHERE user_id=? AND email<>'' UNION SELECT LOWER(email) e FROM email_prefs WHERE user_id=? AND email<>''", u.id, u.id).map(r => r.e);
+    q.run(`DELETE FROM staff_email_invites WHERE invited_by=? OR used_by=?${addrs.length ? ` OR email IN (${addrs.map(() => '?').join(',')})` : ''}`, u.id, u.id, ...addrs);
     // 1. sessions
     endSessions(u.id);
     q.run('DELETE FROM sessions WHERE user_id=?', u.id);

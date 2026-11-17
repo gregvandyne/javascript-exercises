@@ -35,6 +35,8 @@ import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
 import * as DASH from '../services/dash.js';
+import { emailInvitesPanel } from './staff-invites.js';
+import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -383,7 +385,7 @@ function setupChecklist(req, s, tabs) {
   const t = req.t;
   const staff = S.members(s.id, 'staff'), students = S.members(s.id, 'student'), classes = S.classesOfSchool(s.id), placed = S.memberClasses(s.id);
   const steps = [
-    ['teachers', staff.length > 1 || S.invitesOf(s.id).length > 0 || classes.length > 0, `/school/${s.slug}?tab=people#staff`],
+    ['teachers', staff.length > 1 || S.invitesOf(s.id).length > 0 || openEmailInvites(s.id) > 0 || classes.length > 0, `/school/${s.slug}?tab=people#staff`],
     ['classes', classes.length > 0 && classes.every(c => c.teachers), `/school/${s.slug}?tab=classes#class-list`],
     ['students', students.length > 0 && students.every(p => placed[p.id]), `/school/${s.slug}?tab=people#students`],
     ['rules', !!S.zoneOf(s), `/school/${s.slug}?tab=settings`],
@@ -531,6 +533,7 @@ function schoolPeople(req, s) {
   ${invites.length ? html`<section class="panel" id="staff-invites" aria-labelledby="si-h"><h3 id="si-h">✉️ ${t('school.people.invitesH')}</h3><p class="small muted">${t('school.people.invitesText')}</p>
     <ul class="plain">${invites.map(i => html`<li class="row inv-row"><span><b>${i.roster_name || i.username}</b> <span class="small muted"><bdi>@${i.username}</bdi> · ${t(`school.roles.${i.role}`)} · ${t('school.people.invitedWaiting')}</span></span>
       <form data-api="/api/schools/${s.id}/invites/${i.user_id}/cancel" data-reload><button class="btn btn-sm" type="submit">${t('school.people.inviteCancel')}</button></form></li>`)}</ul></section>` : ''}
+  ${emailInvitesPanel(req, s)}
   ${staffGoogleInvites(req, s)}
   <div class="sec-row" id="students"><h2 class="sec-h">👩‍🎓 ${t('school.people.students')} <span class="count">${students.length}</span></h2>
     <details class="libdrop adddrop" id="add-students" ${students.length ? '' : raw('open')}><summary class="btn btn-sm">➕ ${t('school.people.addStudents')}</summary><div>
@@ -852,6 +855,12 @@ router.get('/class/:id', requireUser, (req, res) => {
 // /class/:id/standards (routes/standards.js) but nothing links to it.
 const CLASS_TABS = ['lessons', 'progress', 'games', 'students', 'settings'];
 /** The class header and its tabs (Lessons, Progress, Standards, Games, Students, Settings), shared with the progress pages. */
+/** The school's name over a class: a link to the school's page for its admins, to "Invite a teacher" for its teachers. */
+function schoolLink(req, s) {
+  if (s.archived_at) return s.name;
+  if (S.canManageSchool(req.user, s.id)) return html`<a href="/school/${s.slug}">${s.name}</a>`;
+  return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ✉️ ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
+}
 export function classHeader(req, c, active) {
   const t = req.t; const s = S.getSchool(c.school_id);
   const students = S.roster(c.id).filter(p => p.role === 'student').length;
@@ -861,7 +870,7 @@ export function classHeader(req, c, active) {
   const icon = { lessons: '📚', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
-  <div class="pagehead classhead"><div><span class="small muted classschool">${s.name}</span><h1>${c.name}</h1>
+  <div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
     ${(() => { const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user), dash = DASH.isTeacher(req.user, c);
       return chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''; })()}</div>

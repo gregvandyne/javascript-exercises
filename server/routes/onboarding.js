@@ -55,6 +55,8 @@ export function trialOf(src = {}) {
 const carry = tr => (tr ? `?trial=1${tr.seats ? `&seats=${tr.seats}` : ''}` : '');
 const carryInputs = tr => (tr ? html`<input type="hidden" name="trial" value="1">${tr.seats ? html`<input type="hidden" name="seats" value="${tr.seats}">` : ''}` : '');
 const teacherSteps = () => (GC.enabled() ? 4 : 3);
+/** A staff invite's link (routes/staff-invites.js) as the teacher sign-up's ?next=: the new account goes back to it. */
+const joinNext = v => (typeof v === 'string' && /^\/join-staff\/[A-Za-z0-9_-]{43}$/.test(v) ? v : null);
 
 // ---------------------------------------------------------------- pieces
 /** The "18 or older" box both ways in (Google and the password) need, at the top of the form. */
@@ -195,20 +197,22 @@ const teacherAccount = u => !!u && !u.is_guest && !u.banned && !auth.isGrownup(u
 router.get('/signup/teacher', (req, res) => {
   const t = req.t, u = req.user;
   const tr = trialOf(req.query);
+  const join = joinNext(req.query.next);
   if (u && !u.is_guest) {
+    if (join && (S.teacherToBe(u) || S.isSchoolStaff(u))) return res.redirect(join);
     if (S.teacherToBe(u)) return res.redirect(`/signup/teacher/school${carry(tr)}`);
     if (S.isSchoolStaff(u)) return res.redirect(tr ? `/trial${tr.seats ? `?seats=${tr.seats}` : ''}` : '/teach');
   }
   const signedIn = u && !u.is_guest;
   const body = signedIn ? signOutFirst(req) : html`${googleNotice(req)}
-    <form data-api="/api/onboarding/teacher" novalidate>${carryInputs(tr)}
+    <form data-api="/api/onboarding/teacher" novalidate>${carryInputs(tr)}${join ? html`<input type="hidden" name="next" value="${join}">` : ''}
       ${adultBox(t, 'plans.trial.signup.adult')}
       ${googleWay(req)}
       ${adultFields(req, auth.STAFF_PASSWORD_MIN, 'plans.trial.signup.usernameHint')}
       ${formErr}
       <button class="btn btn-primary btn-block btn-big" type="submit">${t('onboard.create')}</button>
     </form>
-    ${haveAccount(req, tr ? `/trial${tr.seats ? `?seats=${tr.seats}` : ''}` : null)}`;
+    ${haveAccount(req, join || (tr ? `/trial${tr.seats ? `?seats=${tr.seats}` : ''}` : null))}`;
   screen(req, res, { title: t('onboard.teacher.heading'), back: '/signup', at: 1, total: teacherSteps(), emoji: '🍎', heading: t('onboard.teacher.heading'), lead: t('onboard.teacher.lead'), body });
 });
 
@@ -224,7 +228,7 @@ router.post('/api/onboarding/teacher', (req, res) => {
   if (!yes(body.adult)) return res.status(400).json({ error: t('plans.trial.errors.adult'), field: 'adult' });
   if (body.via === 'google') {
     if (!googleEnabled()) return res.status(404).json({ error: t('errors.api.notFound') });
-    return res.json({ ok: true, redirect: `/auth/google/start?intent=signup&t=${enc(signupToken('teacher'))}&next=${enc(`/signup/teacher/school${carry(tr)}`)}` });
+    return res.json({ ok: true, redirect: `/auth/google/start?intent=signup&t=${enc(signupToken('teacher'))}&next=${enc(joinNext(body.next) || `/signup/teacher/school${carry(tr)}`)}` });
   }
   const errors = {};
   const n = auth.cleanName(body.username, t);
@@ -245,7 +249,8 @@ router.post('/api/onboarding/teacher', (req, res) => {
   auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
   auth.notePasswordLength(u, pw);
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
-  res.json({ ok: true, redirect: `/signup/teacher/school${carry(tr)}` });
+  // From a staff invite's link: back to it (accepting it makes them staff; the school step isn't needed).
+  res.json({ ok: true, redirect: joinNext(body.next) || `/signup/teacher/school${carry(tr)}` });
 });
 
 /** A teacher's step after the account, or a redirect to where they belong. -> the user, or null when redirected. */

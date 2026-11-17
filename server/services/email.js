@@ -12,7 +12,8 @@
 //    on /admin/emails and ADMIN_ALERTS=0 stop it). Only ever to an account with role 'admin', even with an explicit `to`.
 // Every email goes only to a grown-up, teacher or staff account (never a kid's: kid accounts have no email anyway), at
 // the address we know for it: a Google sign-in's verified address, else the one the trial's checkout gave us. No
-// address: skipped and logged. Each send carries an Idempotency-Key (Resend keeps it 24 hours, so a retry or a restart
+// address: skipped and logged. One exception: a staff invite (services/staff-email-invites.js) goes to the address a
+// school's staff typed in, which may have no account yet (ADDRESS_TEMPLATES; transactional only). Each send carries an Idempotency-Key (Resend keeps it 24 hours, so a retry or a restart
 // mid-send never sends twice), is retried with backoff on network errors, 429 and 5xx, and leaves one email_log row
 // (to, template, status, the provider's id, a short error): never the body.
 import crypto from 'node:crypto';
@@ -137,6 +138,13 @@ export async function send({ userId, template, category, subject, html, text, id
     return { status: 'off', reason: 'no_postal_address' };
   }
   const base = { userId, template, category, idemKey };
+  // No account: only an email that goes to an address rather than to an account (ADDRESS_TEMPLATES: a staff invite,
+  // typed in by a school's staff), transactional, to exactly that address.
+  if (!userId) {
+    const address = ADDRESS_TEMPLATES.has(template) && category === 'transactional' ? normEmail(to) : '';
+    if (!address) { logRow({ ...base, status: 'skipped', error: 'no_account' }); return { status: 'skipped', reason: 'no_account' }; }
+    return deliver(base, address, { subject, html, text, category, template, unsub: null, key: idemKey || `${template}-${uid(12)}` });
+  }
   const u = getUser(userId);
   if (!adultRecipient(u)) { logRow({ ...base, status: 'skipped', error: 'not_adult' }); return { status: 'skipped', reason: 'not_adult' }; }
   if (category === 'admin' && u.role !== 'admin') { logRow({ ...base, status: 'skipped', error: 'not_admin' }); return { status: 'skipped', reason: 'not_admin' }; }
@@ -146,13 +154,19 @@ export async function send({ userId, template, category, subject, html, text, id
   if (!address) { logRow({ ...base, status: 'skipped', error: 'no_address' }); log('info', 'email skipped: no address', { user: userId, template }); return { status: 'skipped', reason: 'no_address' }; }
   // The one-click unsubscribe headers go on everything but transactional mail (a receipt, a password reset): a mail
   // client's "Unsubscribe" button there would switch off the trial emails, and a security email is not a mailing.
-  const unsub = unsubscribeUrl(userId, category === 'digest' ? 'digest' : '');
+  const unsub = category === 'transactional' || category === 'admin' ? null : unsubscribeUrl(userId, category === 'digest' ? 'digest' : '');
+  return deliver(base, address, { subject, html, text, category, template, unsub, key: idemKey || `${template}-${userId}-${uid(8)}` });
+}
+/** Templates sent to an address with no account behind it (send() without a userId). */
+export const ADDRESS_TEMPLATES = new Set(['staff_invite']);
+/** Posts one email to Resend (with retries) and logs the outcome. unsub: the List-Unsubscribe link, or null for none. */
+async function deliver(base, address, { subject, html, text, category, template, unsub, key }) {
+  const { userId } = base;
   const body = {
     from: config.emailFrom, to: [address], reply_to: config.emailReplyTo, subject, html, text,
-    ...(category === 'transactional' || category === 'admin' ? {} : { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } }),
+    ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}),
     tags: [{ name: 'template', value: String(template).replace(/[^A-Za-z0-9_-]/g, '_') }, { name: 'category', value: category }],
   };
-  const key = idemKey || `${template}-${userId}-${uid(8)}`;
   let attempts = 0, last = '';
   for (;;) {
     attempts++;
