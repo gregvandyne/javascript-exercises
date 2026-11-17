@@ -111,7 +111,11 @@
   .lm-menu .lm-btn { flex: 1 1 0; flex-direction: column; max-width: 240px; min-height: 104px; font-size: 19px; }
   .lm-btn .i { font-size: 30px; line-height: 1.1; }
   .lm-star { font-size: 64px; line-height: 1; }
-  .lm-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; text-align: center; padding: 20px; }
+  /* The loading screen covers the 3D view (in the page's own colour) until the first screen is set up and drawn once,
+     then fades: the scene is never seen half-built (docs/decisions.md "Garden Count: Tens and Ones, and a clean start"). */
+  .lm-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; text-align: center; padding: 20px; z-index: 50; background: #171332; transition: opacity .35s ease; }
+  .lm-load.out { opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .lm-load { transition: none; } }
   @media (min-aspect-ratio: 9/10) {
     .lm-line { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 12px; padding-right: 62px; box-sizing: border-box; }
     .lm-ask { flex: 0 1 auto; max-width: 100%; } .lm-row2 { flex: none; max-width: 44%; }
@@ -1218,7 +1222,11 @@ window.__lm = window.__brbTest = {
   },
 };
 
-el.load.hidden = true; el.load.remove(); el.lm.hidden = false;
+el.lm.hidden = false;
 await showHeroes();
+// One frame drawn of the first screen (two animation frames, or 300 ms in a tab that draws none), then the loading
+// screen fades away.
+await Promise.race([new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise(r => setTimeout(r, 300))]);
+el.load.classList.add('out'); setTimeout(() => el.load.remove(), reduced ? 0 : 400);
 window.__ready = true;
 </script>
