@@ -367,8 +367,16 @@ test('in Chromium: Make a question hides Base-ten blocks\' answer until Show the
     const { page: tp, errors: te } = await open(w.T, [1600, 900]);
     const pv = tp.locator('.dash-w[data-id="pv"]');
     assert.equal(await pv.locator('.dt-matn').first().inputValue(), '3');
+    // Make a question and Build it are in 📤 Share ▾ (docs/decisions.md "one calm row of buttons"): only sharing in it.
+    assert.equal(await pv.locator('.dt-foot .dt-ask, .dt-foot .dt-buildit, .dt-foot .dt-send').evaluateAll(xs => xs.filter(x => x.getClientRects().length).length), 0, 'nothing of Share shows before it opens');
+    await pv.locator('.dt-share').click(); await tp.waitForTimeout(100);
+    assert.equal(await pv.locator('.dt-share').getAttribute('aria-expanded'), 'true');
+    const shared = await pv.locator('.dt-sharemenu .dt-mi').evaluateAll(xs => xs.map(x => x.getAttribute('aria-label')));
+    assert.deepEqual(shared.slice(0, 3), ['Send to students', 'Build it', 'Make a question']);
+    assert.ok(shared.slice(3).every(x => /^Practice it/.test(x)), shared.join(' | '));
     await pv.locator('.dt-ask').click(); await tp.waitForTimeout(200);
     assert.ok(await tp.locator('.dt-askform').isVisible(), 'the question sheet');
+    assert.equal(await pv.locator('.dt-share').getAttribute('aria-expanded'), 'false', 'Share closes when one of its items is used');
     await tp.keyboard.press('Escape');
     assert.equal(await pv.locator('.dash-wb').evaluate(b => b.classList.contains('dt-ans-off')), true, 'the answer is hidden');
     assert.deepEqual(await pv.locator('.dt-matn').evaluateAll(xs => xs.map(x => x.value)), ['?', '?', '?'], 'the counts too');
@@ -397,7 +405,7 @@ test('in Chromium: Make a question hides Base-ten blocks\' answer until Show the
     await inp.fill('9'); await pv2.locator('.dt-pvcol').first().click();
     assert.equal(await inp.inputValue(), '9', 'leaving the field uses it');
     // Build it: the teacher's sheet, then a student's copy.
-    await pv.locator('.dt-buildit').click(); await tp.waitForTimeout(200);
+    await pv.locator('.dt-share').click(); await pv.locator('.dt-buildit').click(); await tp.waitForTimeout(200);
     await tp.fill('#dash-bi-list', '347, 1205, 58');
     assert.match(await tp.locator('#dash-bi-preview').textContent(), /2 targets.*1205/s);
     await tp.click('.dash-biform [type="submit"]'); await tp.waitForTimeout(600);
@@ -409,7 +417,7 @@ test('in Chromium: Make a question hides Base-ten blocks\' answer until Show the
     assert.match(await sp.locator('.dash-bstep').textContent(), /1 of 2/);
     assert.equal(await sp.locator('.dash-bnum').textContent(), '347');
     assert.equal(await sp.locator('.dash-wbuild .dt-modes').count(), 0, 'one mode, no switch');
-    assert.equal(await sp.locator('.dash-wbuild .dt-ask, .dash-wbuild .dt-ans, .dash-wbuild .dt-send, .dash-wbuild .dt-buildit').count(), 0);
+    assert.equal(await sp.locator('.dash-wbuild .dt-ask, .dash-wbuild .dt-ans, .dash-wbuild .dt-send, .dash-wbuild .dt-buildit, .dash-wbuild .dt-share, .dash-wbuild .dt-opt').count(), 0);
     assert.equal(await sp.locator('.dash-wbuild .dash-wb').evaluate(b => b.classList.contains('dt-ans-off')), true, 'the answer hidden');
     const plus = (p, n) => (async () => { for (let i = 0; i < n; i++) await sp.locator(`.dash-wbuild .dt-mat[data-place="${p}"] .dt-pm`).nth(1).click(); })();
     await plus('h', 3); await plus('t', 3); await plus('o', 7);

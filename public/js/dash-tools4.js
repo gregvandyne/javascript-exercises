@@ -223,8 +223,11 @@ function angle(body, s, ctx) {
   const step = T.stepper(W.ray, () => `${st.a}°`, () => setA(st.a - st.step), () => setA(st.a + st.step), `${W.ray} −${st.step}°`, `${W.ray} +${st.step}°`,
     { value: () => st.a, min: 0, max: 360, format: v => `${v}°`, parse: t => numParse(String(t).replace(/°$/, '')), mask: () => T.hid(), set: a => { st.a = a; T.commit(); ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); } });
   T.top.appendChild(step);
-  const presets = el('div', 'dt-seg'); presets.setAttribute('role', 'group'); presets.setAttribute('aria-label', W.ray);
-  for (const a of [45, 90, 135, 180, 270]) { const b = btn(`${a}°`, 'btn btn-sm'); b.dir = 'ltr'; b.addEventListener('click', () => setA(a)); presets.appendChild(b); }
+  // The five presets as one dropdown, "Jump to…" (docs/decisions.md "one calm row of buttons"): picking one sets the
+  // angle, then the dropdown shows "Jump to…" again so the same one can be picked again.
+  const presets = selectOf([['', T.C.jumpTo], ...[45, 90, 135, 180, 270].map(a => [a, `${a}°`])], '');
+  presets.classList.add('dt-select', 'dt-pick', 'dt-jump'); presets.setAttribute('aria-label', `${W.ray}: ${T.C.jumpTo}`);
+  presets.addEventListener('change', () => { const v = presets.value; presets.value = ''; if (v) setA(Number(v)); });
   // A student's "Build it" copy has no presets (a preset would build the angle for them).
   if (!ctx.build) T.top.appendChild(presets);
   const proto = T.toggle(`📐 ${W.proto}`, null, () => st.proto, v => { st.proto = v; T.commit(); });
@@ -418,7 +421,8 @@ function transform(body, s, ctx) {
   const T = shell(body, s, ctx, 'transform'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let plane, drag = null;
-  const ops = T.seg(W.move, [['translate', W.translate, null, '➡️'], ['reflect', W.reflect, null, '🪞'], ['rotate', W.rotate, null, '🔄']], () => st.op, v => { st.op = v; T.commit(`${W[v]}: ${G.ruleText(tr())}`); });
+  const ops = T.pick(W.move, [['translate', W.translate], ['reflect', W.reflect], ['rotate', W.rotate]], () => st.op, v => { st.op = v; T.commit(`${W[v]}: ${G.ruleText(tr())}`); });
+  ops.dataset.pair = '1';
   T.top.appendChild(ops);
   const tr = () => ({ op: st.op, dx: st.dx, dy: st.dy, axis: st.axis, turn: st.turn });
   const dx = T.stepper('x', () => minus(st.dx), () => { if (st.dx > -8) { st.dx--; T.commit(G.ruleText(tr())); } }, () => { if (st.dx < 8) { st.dx++; T.commit(G.ruleText(tr())); } }, 'x −1', 'x +1',
@@ -518,14 +522,18 @@ function transform(body, s, ctx) {
 function balance(body, s, ctx) {
   const T = shell(body, s, ctx, 'balance'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  const where = T.seg(W.where, [['both', W.both], ['left', W.left], ['right', W.right]], () => st.where, v => { st.where = v; T.commit(W[v]); });
+  const where = T.pick(W.where, [['both', W.both], ['left', W.left], ['right', W.right]], () => st.where, v => { st.where = v; T.commit(W[v]); });
+  where.dataset.pair = '1';
   T.top.appendChild(where);
   const L = () => ({ x: st.lx, u: st.lu }), R = () => ({ x: st.rx, u: st.ru });
   const eq = () => `${G.sideText(L())} ${G.tip(L(), R(), st.x) ? '≠' : '='} ${G.sideText(R())}`;
   const opB = (op, label, aria) => { const b = btn(label, 'btn btn-sm dt-balop', aria); b.dir = 'ltr'; b.addEventListener('click', () => doOp(op)); return b; };
   const addx = opB('addx', '+ x', W.addx), subx = opB('subx', '− x', W.subx), add1 = opB('add1', '+ 1', W.add1), sub1 = opB('sub1', '− 1', W.sub1), div = opB('div', '÷', W.div);
   const undo = ibtn('↶', W.undo), fresh = ibtn('🎲', W.new);
-  T.foot.append(addx, subx, add1, sub1, div, undo, fresh);
+  // The five steps are the balance's own controls (a row above); Undo and New equation are the row at the bottom.
+  const ops = el('div', 'dt-seg dt-balops'); ops.append(addx, subx, add1, sub1, div);
+  T.ctl.appendChild(ops);
+  T.foot.append(undo, fresh);
   const g = () => [st.lx, st.lu, st.rx, st.ru].reduce((a, b) => M.gcd(a, b), 0);
   const doOp = op => {
     const n = g(), r = G.balanceOp(L(), R(), op, st.where, n);
@@ -766,7 +774,8 @@ function chance(body, s, ctx) {
   const T = shell(body, s, ctx, 'chance'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let anim = 0, last = null;
-  const kind = T.seg(W.kind, [['coin', W.coin, null, '🪙'], ['dice', W.dice, null, '🎲'], ['spinner', W.spinner, null, '🎡']], () => st.kind, v => { cancelAnimationFrame(anim); st.kind = v; st.counts = G.outcomes(v, st.dice, st.parts).map(() => 0); last = null; T.commit(W[v]); });
+  const kind = T.pick(W.kind, [['coin', W.coin], ['dice', W.dice], ['spinner', W.spinner]], () => st.kind, v => { cancelAnimationFrame(anim); st.kind = v; st.counts = G.outcomes(v, st.dice, st.parts).map(() => 0); last = null; T.commit(W[v]); });
+  kind.dataset.pair = '1';
   T.top.appendChild(kind);
   const runs = rowSelect(W.runs, [], st.runs, v => { st.runs = +v; T.commit(); });
   const run = ibtn('▶️', W.run), reset = ibtn('🧹', W.reset);

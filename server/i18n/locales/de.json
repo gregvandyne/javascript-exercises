@@ -10183,7 +10183,7 @@
         "ray": "Winkel",
         "hint": "Ziehe das Ende des Strahls oder nutze die Pfeiltasten.",
         "howto": "Ziehe am Ende des Schenkels, oder ändere den Winkel mit − und +.",
-        "helpUse": "Die Knöpfe springen auf 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen blenden sie ein oder aus; Optionen: Einrasten.",
+        "helpUse": "Springe zu … wählt 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen blenden sie ein oder aus; Optionen: Einrasten.",
         "helpIdeas": "Verbirg den Winkelmesser und lass zuerst schätzen."
       },
       "solids": {
@@ -10694,6 +10694,7 @@
         "addRod": "Stab {n} hinzufügen",
         "rodN": "Stab {n}",
         "longer": "Längerer Stab (11–20)",
+        "longRod": "Längerer Stab",
         "board": "Stabfläche",
         "boardKeys": "Pfeiltasten verschieben den gewählten Stab; R dreht, D kopiert, Entf löscht ihn.",
         "lying": "Stab {n}, liegend, bei {x}, {y}",
@@ -10739,7 +10740,7 @@
         "count": "{n, plural, one {# Stab} other {# Stäbe}}",
         "find": "Zahlenstäbe, Stäbe, Stab, Rechenstäbe, number rods, rods",
         "howto": "Tippe oder ziehe einen Stab auf die Fläche. Baue gleich lange Züge.",
-        "helpUse": "Tippe einen Stab an: Drehen, Kopieren oder Löschen; Pfeile verschieben.\nZüge zeigen legt beide Seiten der Gleichung; fülle das Kästchen.\nDer Stab 11–20 steht neben der 10; − und + ändern seine Länge.",
+        "helpUse": "Tippe einen Stab an: Drehen, Kopieren oder Löschen; Pfeile verschieben.\nZüge zeigen legt beide Seiten der Gleichung; fülle das Kästchen.\nDer längere Stab steht am Ende der Reihe; sein Menü wählt 11 bis 20.",
         "helpIdeas": "Welche zwei Stäbe sind zusammen so lang wie der 10er?"
       }
     },
@@ -10806,6 +10807,12 @@
       "helpClose": "Schließen",
       "helpTry": "Zum Ausprobieren:",
       "modeFor": "Wählen, was {name} zeigt",
+      "share": "Teilen",
+      "moreActs": "Weitere Aktionen",
+      "view": "Ansicht",
+      "steps": "Schritte",
+      "stepsOf": "{n} von {total}",
+      "jumpTo": "Springe zu …",
       "showAns": "Antwort zeigen",
       "hideAns": "Antwort verstecken",
       "ansHidden": "Die Antwort ist versteckt.",

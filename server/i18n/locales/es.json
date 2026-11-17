@@ -10182,7 +10182,7 @@
         "ray": "Ángulo",
         "hint": "Arrastra el extremo de la semirrecta o usa las flechas.",
         "howto": "Arrastra el extremo del lado, o cambia el ángulo con − y +.",
-        "helpUse": "Los botones saltan a 45°, 90°, 135°, 180° o 270°.\nDebajo se ven la medida y el nombre del ángulo.\nTransportador y Arco se muestran u ocultan; Opciones ajusta el salto.",
+        "helpUse": "Ir a… elige 45°, 90°, 135°, 180° o 270°.\nDebajo se ven la medida y el nombre del ángulo.\nTransportador y Arco se muestran u ocultan; Opciones ajusta el salto.",
         "helpIdeas": "Oculta el transportador y pide primero una estimación."
       },
       "solids": {
@@ -10693,6 +10693,7 @@
         "addRod": "Añadir la regleta {n}",
         "rodN": "Regleta {n}",
         "longer": "Regleta más larga (11–20)",
+        "longRod": "Regleta más larga",
         "board": "Tablero de regletas",
         "boardKeys": "Las flechas mueven la regleta elegida; R la gira, D la copia, Supr la quita.",
         "lying": "Regleta {n}, tumbada, en {x}, {y}",
@@ -10738,7 +10739,7 @@
         "count": "{n, plural, one {# regleta} other {# regletas}}",
         "find": "regletas numéricas, regletas, regleta, barras de números, number rods, rods",
         "howto": "Toca o arrastra una regleta al tablero. Forma trenes iguales de largos.",
-        "helpUse": "Toca una regleta y luego Girar, Copiar o Borrar; las flechas la mueven.\nMostrar trenes arma los dos lados de la igualdad; llena la casilla.\nLa regleta 11–20 está junto al 10; − y + cambian su largo.",
+        "helpUse": "Toca una regleta y luego Girar, Copiar o Borrar; las flechas la mueven.\nMostrar trenes arma los dos lados de la igualdad; llena la casilla.\nLa regleta más larga está al final de la fila; su menú va de 11 a 20.",
         "helpIdeas": "¿Qué dos regletas forman un tren tan largo como la de 10?"
       }
     },
@@ -10805,6 +10806,12 @@
       "helpClose": "Cerrar",
       "helpTry": "Prueba:",
       "modeFor": "Elige qué muestra {name}",
+      "share": "Compartir",
+      "moreActs": "Más acciones",
+      "view": "Ver",
+      "steps": "Pasos",
+      "stepsOf": "{n} de {total}",
+      "jumpTo": "Ir a…",
       "showAns": "Mostrar la respuesta",
       "hideAns": "Ocultar la respuesta",
       "ansHidden": "La respuesta está oculta.",

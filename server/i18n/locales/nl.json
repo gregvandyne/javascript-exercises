@@ -10183,7 +10183,7 @@
         "ray": "Hoek",
         "hint": "Sleep het uiteinde van de halve lijn of gebruik de pijltjestoetsen.",
         "howto": "Sleep het eind van de halve lijn, of verander de hoek met − en +.",
-        "helpUse": "De knoppen springen naar 45°, 90°, 135°, 180° of 270°.\nDe grootte en de naam van de hoek staan eronder.\nGradenboog en Boog zet je aan of uit; Opties stelt het vastklikken in.",
+        "helpUse": "Spring naar… kiest 45°, 90°, 135°, 180° of 270°.\nDe grootte en de naam van de hoek staan eronder.\nGradenboog en Boog zet je aan of uit; Opties stelt het vastklikken in.",
         "helpIdeas": "Verberg de gradenboog en laat eerst schatten."
       },
       "solids": {
@@ -10694,6 +10694,7 @@
         "addRod": "Staaf {n} toevoegen",
         "rodN": "Staaf {n}",
         "longer": "Langere staaf (11–20)",
+        "longRod": "Langere staaf",
         "board": "Stavenbord",
         "boardKeys": "Pijltjes verplaatsen de gekozen staaf; R draait, D kopieert, Delete haalt weg.",
         "lying": "Staaf {n}, liggend, op {x}, {y}",
@@ -10739,7 +10740,7 @@
         "count": "{n, plural, one {# staaf} other {# staven}}",
         "find": "getallenstaven, staven, staaf, rekenstaafjes, number rods, rods",
         "howto": "Tik of sleep een staaf naar het bord. Bouw even lange treinen.",
-        "helpUse": "Tik een staaf aan en kies Draaien, Kopiëren of Verwijderen; pijltjes verplaatsen.\nTreinen tonen legt beide kanten van de som; vul het vakje in.\nDe staaf 11–20 staat naast de 10; − en + veranderen zijn lengte.",
+        "helpUse": "Tik een staaf aan en kies Draaien, Kopiëren of Verwijderen; pijltjes verplaatsen.\nTreinen tonen legt beide kanten van de som; vul het vakje in.\nDe langere staaf staat aan het eind van de rij; het menu kiest 11 tot 20.",
         "helpIdeas": "Welke twee staven maken samen een trein zo lang als de 10?"
       }
     },
@@ -10806,6 +10807,12 @@
       "helpClose": "Sluiten",
       "helpTry": "Probeer:",
       "modeFor": "Kies wat {name} laat zien",
+      "share": "Delen",
+      "moreActs": "Meer acties",
+      "view": "Weergave",
+      "steps": "Stappen",
+      "stepsOf": "{n} van {total}",
+      "jumpTo": "Spring naar…",
       "showAns": "Antwoord tonen",
       "hideAns": "Antwoord verbergen",
       "ansHidden": "Het antwoord is verborgen.",

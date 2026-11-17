@@ -10182,7 +10182,7 @@
         "ray": "Angle",
         "hint": "Fais glisser le bout de la demi-droite ou utilise les flèches.",
         "howto": "Glisse le bout de la demi-droite, ou change l’angle avec − et +.",
-        "helpUse": "Les boutons sautent à 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle s’affichent dessous.\nRapporteur et Arc s’affichent ou se cachent ; Options règle l’arrondi.",
+        "helpUse": "Aller à… choisit 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle s’affichent dessous.\nRapporteur et Arc s’affichent ou se cachent ; Options règle l’arrondi.",
         "helpIdeas": "Cache le rapporteur et fais d’abord estimer."
       },
       "solids": {
@@ -10693,6 +10693,7 @@
         "addRod": "Ajouter la réglette {n}",
         "rodN": "Réglette {n}",
         "longer": "Réglette plus longue (11–20)",
+        "longRod": "Réglette plus longue",
         "board": "Plateau des réglettes",
         "boardKeys": "Les flèches déplacent la réglette choisie ; R la tourne, D la copie, Suppr l'enlève.",
         "lying": "Réglette {n}, couchée, en {x}, {y}",
@@ -10738,7 +10739,7 @@
         "count": "{n, plural, one {# réglette} other {# réglettes}}",
         "find": "réglettes, réglette, réglettes de couleur, barres de nombres, number rods, rods",
         "howto": "Touche ou fais glisser une réglette. Fais des trains de même longueur.",
-        "helpUse": "Touche une réglette, puis Tourner, Copier ou Supprimer ; flèches pour bouger.\nMontrer les trains pose les deux côtés de l'égalité ; remplis la case.\nLa réglette 11–20 est à côté du 10 ; − et + changent sa longueur.",
+        "helpUse": "Touche une réglette, puis Tourner, Copier ou Supprimer ; flèches pour bouger.\nMontrer les trains pose les deux côtés de l'égalité ; remplis la case.\nLa réglette plus longue est au bout de la rangée ; son menu va de 11 à 20.",
         "helpIdeas": "Quelles deux réglettes font un train aussi long que celle de 10 ?"
       }
     },
@@ -10805,6 +10806,12 @@
       "helpClose": "Fermer",
       "helpTry": "À essayer :",
       "modeFor": "Choisir ce que montre {name}",
+      "share": "Partager",
+      "moreActs": "Plus d’actions",
+      "view": "Affichage",
+      "steps": "Étapes",
+      "stepsOf": "{n} sur {total}",
+      "jumpTo": "Aller à…",
       "showAns": "Montrer la réponse",
       "hideAns": "Cacher la réponse",
       "ansHidden": "La réponse est cachée.",
