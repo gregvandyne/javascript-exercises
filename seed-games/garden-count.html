@@ -114,8 +114,7 @@
 </div>
 <script>
 /* ===== Garden Count's rounds: plain data and functions (no DOM, no 3D), so tests/unit/garden-count.test.js can run
-   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 the first time through,
-   so the first six rounds are always the same; a replay gets new numbers). ===== */
+   this block on its own. A round is made from its chapter, its number (1-6) and the lap (0 is a fixed lap the tests pin; each play takes a new random lap from 1 up, so a replay gets new numbers). ===== */
 /* garden-count:begin */
 (function (root) {
   var CHAPTERS = ['count', 'compare', 'teens'], ROUNDS = 6;
@@ -159,7 +158,26 @@
   }
   /** Lesson parameters, cleaned: { chapter (one of CHAPTERS or ''), lock }. */
   function params(p) { p = p || {}; var ch = CHAPTERS.indexOf(String(p.chapter || '')) >= 0 ? String(p.chapter) : ''; return { chapter: ch, lock: !!ch && (p.lock === 1 || p.lock === '1' || p.lock === true) }; }
-  root.GardenCount = { CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params };
+  /* A play's lap (see the top of this block): lapOf(chapter, last, rand) tries random laps from 1 up and takes the
+     first whose rounds all ask different things and share none with the lap `last` (the last play of this chapter);
+     else the try that came closest. rand: a function giving 0..1. sig(round): what a round asks, as text (its
+     numbers and words; not the order of its tiles, its hints or what is said after). */
+  var NOT_ASKED = ['n', 'choices', 'opts', 'hints', 'said', 'show', 'shown', 'items', 'total', 'chip', 'chipDone', 'draws', 'slips', 'lv', 'rv', 'L', 'R'];
+  function sig(rd) { var o = {}; for (var k in rd) if (Object.prototype.hasOwnProperty.call(rd, k) && NOT_ASKED.indexOf(k) < 0) o[k] = rd[k]; return JSON.stringify(o); }
+  function lapOf(chapter, last, rand) {
+    var count = ROUNDS, prev = {}, best = 0, worst = Infinity, i, j, lap, seen, bad, k;
+    last = last >>> 0;
+    if (last > 0) for (j = 1; j <= count; j++) prev[sig(round(chapter, j, last))] = 1;
+    for (i = 0; i < 60; i++) {
+      lap = 1 + Math.floor(rand() * 999999); if (lap === last) continue;
+      seen = {}; bad = 0;
+      for (j = 1; j <= count; j++) { k = sig(round(chapter, j, lap)); bad += seen[k] ? 100 : prev[k] ? 1 : 0; seen[k] = 1; }
+      if (!bad) return lap;
+      if (bad < worst) { worst = bad; best = lap; }
+    }
+    return best || (last === 1 ? 2 : 1);
+  }
+  root.GardenCount = { sig: sig, lapOf: lapOf, CHAPTERS: CHAPTERS, ROUNDS: ROUNDS, round: round, params: params };
 })(typeof window !== 'undefined' ? window : globalThis);
 /* garden-count:end */
 </script>
@@ -247,7 +265,7 @@ const ICON = { count: '🍎', compare: '⚖️', teens: '🔟' };
 
 /* ---------- state ---------- */
 const P = GC.params(B && B.params);
-const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, R: null, phase: 'idle', count: 0, hero: null, fast: false, line: null, reported: 0, done: {} };
+const S = { screen: 'load', chapter: '', lock: P.lock, round: 0, lap: 0, pin: null, R: null, phase: 'idle', count: 0, hero: null, fast: false, line: null, reported: 0, done: {} };
 try { const s = B && B.storage ? B.storage.get(SAVE_KEY) : null; if (s && s.done) for (const c of GC.CHAPTERS) if (s.done[c]) S.done[c] = true; } catch (e) { /* no save */ }
 const store = () => { try { if (B && B.storage) B.storage.set(SAVE_KEY, { done: S.done }); } catch (e) { /* no save */ } };
 
@@ -486,7 +504,6 @@ async function showHeroes() {
   lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.5), r: 1.3, go: () => chooseHero(h.id) }));
   Object.assign(view, { rect: L.rect, high: L.high, hero: null, tilt: L.tilt });
   card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
-  if (P.chapter) prefetch([askOf(GC.round(P.chapter, 1, S.lap))]);   // a lesson: its first question is ready when a helper is picked
   frame();
 }
 function chooseHero(id) {
@@ -535,9 +552,26 @@ function showMenu() {
 }
 
 /* ---------- a chapter: six rounds ---------- */
+/* Each play of a chapter (the first, and every Play again) takes its own lap: a random one whose rounds all ask
+   different things and none of what the last play of that chapter asked (its lap is kept in the game's save, BRB.storage,
+   best effort). The fixed lap 0 only when a test pins it (window.__brbTest.lap). */
+const LAPS_KEY = 'garden-count.laps';
+// fresh numbers from the browser; without them a plain stream, which still never gives the last play's lap (lapOf)
+let spare = 0x9E3779B9;
+function rand01() { try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch (e) { spare = (Math.imul(spare, 1664525) + 1013904223) >>> 0; return spare / 4294967296; } }
+function playLap(chapter) {
+  if (S.pin != null) { const p = S.pin; S.pin = null; return p; }
+  let last = null;
+  try { last = B && B.storage ? B.storage.get(LAPS_KEY) : null; } catch (e) { last = null; }
+  if (!last || typeof last !== 'object' || Array.isArray(last)) last = {};
+  const lap = GC.lapOf(chapter, +last[chapter] || 0, rand01);
+  last[chapter] = lap;
+  try { if (B && B.storage) B.storage.set(LAPS_KEY, last); } catch (e) { /* no save here: the lap is still new */ }
+  return lap;
+}
 function startChapter(chapter) {
   if (!GC.CHAPTERS.includes(chapter)) return showMenu();
-  S.chapter = chapter; S.round = 0; S.screen = 'play'; el.card.hidden = true;
+  S.chapter = chapter; S.lap = playLap(chapter); S.round = 0; S.screen = 'play'; el.card.hidden = true;
   if (S.hero) S.hero.play('idle');
   nextRound();
 }
@@ -583,7 +617,7 @@ function finish() {
   try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
   clearStage(); placeHero([0, 0]); Object.assign(view, { rect: [-4, 4, -1.5, 1.5], high: 3.4, tilt: 0.5 });
   g.celebrate(S.hero, '');   // the cheer and the confetti; the words are on the card
-  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => { S.lap++; startChapter(S.chapter); } }];
+  const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => startChapter(S.chapter) }];
   if (!S.lock) buttons.push({ id: 'menu', icon: '🌻', label: fmt('btn.menu'), go: showMenu });
   card('end', { title: fmt('win'), line: 'win.card', buttons, star: true });
   frame();
@@ -742,9 +776,11 @@ function drawTeens(R, L) {
 
 /* ---------- the test handle: what the round asks and what is on screen (tests, covers, slide pictures) ---------- */
 window.__gc = window.__brbTest = {
-  state: () => ({ game: 'garden-count', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, rounds: GC.ROUNDS, phase: S.phase, count: S.count, hero: S.hero ? S.hero.id : null,
+  state: () => ({ game: 'garden-count', screen: S.screen, chapter: S.chapter, lock: S.lock, round: S.round, lap: S.lap, rounds: GC.ROUNDS, phase: S.phase, count: S.count, hero: S.hero ? S.hero.id : null,
     reported: S.reported, tall, ...(S.R && S.screen === 'play' ? { kind: S.R.kind, target: S.R.target, answer: S.R.answer, ask: S.R.ask, form: S.R.form, same: S.R.same, a: S.R.a, b: S.R.b, choices: S.R.choices, total: S.R.total } : {}) }),
   fast: on => { S.fast = on !== false; },
+  /** lap(n): the next play takes lap n (0: the fixed lap) instead of a random one. */
+  lap: n => { S.pin = Math.max(0, Math.floor(+n) || 0); },
   hero: id => chooseHero(id || HEROES[0]),
   act: (name, arg) => (S.act && S.act[name] ? S.act[name](arg) : undefined),
 };

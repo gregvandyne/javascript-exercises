@@ -13,6 +13,11 @@ import * as M from './dash-math.js';
 import { questionFor } from './dash-ask.js';
 import { tip } from './dash-tip.js';
 import { numField } from './dash-num.js';
+import { BUILD } from './dash-build.js';
+
+/** The tools with the shared Show/Hide the answer (server/services/dash-tools.js ANSWER_TOOLS, tested to agree). */
+export const ANSWER_TOOLS = new Set(['numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'geoboard',
+  'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'map', 'rods']);
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -47,6 +52,7 @@ function shell(body, s, ctx, id) {
   if (ctx.editing) body.classList.add('is-static');
   const top = el('div', 'dt-top dw-row'), stage = el('div', 'dt-stage'), read = el('div', 'dt-read'), foot = el('div', 'dt-foot dw-row');
   read.setAttribute('aria-live', 'polite');
+  read.dataset.ans = C.ansHidden || '?';   // what a screen reader hears for the "?" while the answer is hidden
   // The one-line instruction under the title (a maths tool's `howto`; T.howto changes it, e.g. for a mode).
   const howRow = el('div', 'dt-howrow'), how = el('p', 'dt-howto'); how.dir = 'auto'; howRow.appendChild(how);
   const setHow = text => { how.textContent = text || ''; howRow.hidden = !text && !howRow.querySelector('.dt-info'); };
@@ -63,6 +69,15 @@ function shell(body, s, ctx, id) {
     W, C, st, top, stage, read, foot, draw: () => {}, sized: true, howto: setHow,
     /** Stage 4: a quick check made from what the tool shows now, or null. */
     question: () => questionFor(id, st, W, ctx.askWords || {}, ctx.intl),
+    /** Show/Hide the answer (docs/decisions.md "Classroom dashboards: Build it"): true while what gives the answer away
+     *  is hidden: after Make a question or the teacher's 🙈 (st.qh), and always on a student's "Build it" copy. A tool
+     *  with its own hide (fractions, bar models) sets ownHide/setOwnHide. Each tool hides its own giveaways (counts,
+     *  labels, a typed value); the readout under the model is hidden here for every tool. */
+    ownHide: null, setOwnHide: null,
+    hid: () => !!ctx.build || (T.ownHide ? !!T.ownHide() : !!st.qh),
+    hideAnswer() { if (T.setOwnHide) T.setOwnHide(true); else st.qh = true; },
+    /** Optional: (buttons) => put Show/Hide the answer and Build it somewhere other than the row of buttons. */
+    placeExtra: null,
     /** How much to grow an SVG's text so it is at least min px on screen: the model's viewBox is vbW x vbH user units and
      *  its text is base units. -> a factor >= 1 (CSS --ts). */
     /** Screen pixels per SVG unit for a viewBox of vbW x vbH drawn in the model's area (0 before it has a size). */
@@ -98,7 +113,7 @@ function shell(body, s, ctx, id) {
       const g = el('div', 'dt-step'); g.setAttribute('role', 'group'); g.setAttribute('aria-label', label);
       const lab = el('span', 'dt-steplab', label); lab.setAttribute('aria-hidden', 'true');
       const minus = btn('−', 'btn btn-sm dt-pm', decAria), plus = btn('+', 'btn btn-sm dt-pm', incAria);
-      const val = num ? T.num({ label, get: num.value, set: num.set, min: num.min, max: num.max, up: inc, down: dec, format: num.format, parse: num.parse, width: num.width, decimal: num.decimal, inputMode: num.inputMode, cls: 'dt-stepval' }) : ltr('b', 'dt-stepval');
+      const val = num ? T.num({ label, get: num.value, set: num.set, min: num.min, max: num.max, up: inc, down: dec, format: num.format, parse: num.parse, width: num.width, decimal: num.decimal, inputMode: num.inputMode, mask: num.mask, cls: 'dt-stepval' }) : ltr('b', 'dt-stepval');
       minus.addEventListener('click', dec); plus.addEventListener('click', inc);
       g.append(lab, minus, val, plus);
       g.sync = () => { if (num) val.sync(); else val.textContent = String(get()); };
@@ -118,6 +133,8 @@ function shell(body, s, ctx, id) {
     },
     /** Options in a sheet (built by fn into the sheet's body); Send to students for the class's teacher. */
     finish({ options } = {}) {
+      // A student's "Build it" copy: the tool only (no Options, games, question, sending or answer button).
+      if (ctx.build) options = null;
       if (options && !ctx.editing) {
         const ob = btn(`⚙️ ${C.options}`, 'btn btn-sm dt-opt', fill(C.optionsFor, { name: ctx.type.name }));
         ob.addEventListener('click', () => {
@@ -131,7 +148,7 @@ function shell(body, s, ctx, id) {
       // Stage 4: "Practice it" (official games every student can open; nothing when there is no clean match) and "Make a
       // question from it" (the teacher's own screen: what the tool shows now, as a multiple-choice quick check).
       let ask = null;
-      const games = ctx.editing ? [] : (ctx.practice || []).slice(0, 2);
+      const games = ctx.editing || ctx.build ? [] : (ctx.practice || []).slice(0, 2);
       if (games.length) {
         // One game: a link straight to it. Two: a short list to pick from.
         const one = games.length === 1, a = el(one ? 'a' : 'button', 'btn btn-sm dt-practice');
@@ -148,20 +165,53 @@ function shell(body, s, ctx, id) {
         });
         foot.appendChild(a);
       }
-      if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.ask) {
+      const mine = ctx.teacher && !ctx.copy && !ctx.editing && !ctx.build;
+      if (mine && ctx.ask) {
         ask = tip(btn('', 'btn btn-sm dt-ask', C.ask), C.ask);
         const i = el('span', 'dt-ic', '❓'), l = el('span', 'dt-lbl', C.ask); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         ask.append(i, l);
-        ask.addEventListener('click', () => askSheet(ctx, T.question()));
+        // The question is made from the tool as it is, then whatever gives its answer away is hidden on this screen (and
+        // the projector) until the teacher presses Show the answer.
+        ask.addEventListener('click', () => { const made = T.question(); if (!made) return; if (!T.hid()) { T.hideAnswer(); T.commit(C.ansHidden); } askSheet(ctx, made); });
         foot.appendChild(ask);
       }
-      if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.send && ctx.type.send) {
+      // Show/Hide the answer, the shared one (the fraction tool and bar models have their own): the teacher's screen only.
+      let ans = null;
+      if (mine && !T.setOwnHide && ANSWER_TOOLS.has(id)) {
+        ans = btn('', 'btn btn-sm dt-ans'); ans.dataset.k = 'ans';
+        const i = el('span', 'dt-ic'), l = el('span', 'dt-lbl'); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        ans.append(i, l);
+        ans.sync = () => { const h = !!st.qh, w = h ? C.showAns : C.hideAns; i.textContent = h ? '👀' : '🙈'; l.textContent = w; ans.setAttribute('aria-label', w); tip(ans, w); };
+        ans.addEventListener('click', () => { if (st.qh) delete st.qh; else st.qh = true; T.commit(st.qh ? C.ansHidden : C.ansShown); ans.focus(); });
+        foot.appendChild(ans);
+      }
+      // "Build it": a set of targets to build, sent to students (the tools that can be built with).
+      let build = null;
+      if (mine && ctx.buildIt && BUILD[id]) {
+        const bb = build = tip(btn('', 'btn btn-sm dt-buildit', C.build), C.build);
+        const i = el('span', 'dt-ic', '🧱'), l = el('span', 'dt-lbl', C.build); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        bb.append(i, l);
+        bb.addEventListener('click', () => ctx.buildIt(id, clone(st)));
+        foot.appendChild(bb);
+      }
+      if (mine && ctx.send && ctx.type.send) {
         const sb = btn(`📤 ${C.send}`, 'btn btn-sm btn-primary dt-send');
         sb.addEventListener('click', async () => { sb.disabled = true; try { await ctx.send(clone(st)); } finally { sb.disabled = false; } });
         foot.appendChild(sb);
       }
-      if (ctx.copy) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
-      if (ask) { const d = T.draw; T.draw = () => { d(); ask.hidden = !T.question(); }; }
+      if (ctx.copy && !ctx.build) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
+      {
+        const d = T.draw;
+        T.draw = () => {
+          d();
+          // While the answer is hidden the readout under the model shows only "?" (CSS: .dt-ans-off), whatever writes it.
+          body.classList.toggle('dt-ans-off', !!ctx.build || (!T.ownHide && !!st.qh));
+          if (ask) ask.hidden = !T.question();
+          if (ans) ans.sync();
+          // A tool may keep these two in a row of its own (the shape board's bar of icons).
+          if (T.placeExtra) T.placeExtra([ans, build].filter(Boolean));
+        };
+      }
       const help = W.helpUse && !ctx.editing ? helpButton(body, howRow, ctx) : null;
       setHow(how.textContent);
       T.draw();
@@ -284,6 +334,46 @@ function stacked(n, d, cls = 'dt-frac') {
   f.append(a, line, b); return f;
 }
 
+/** The big number under a tool, typed straight into (docs/decisions.md "Classroom dashboards: Build it": place value and
+ *  base-ten blocks). A text field that looks like the number: tap or click it, type, then Enter or leave it. A number
+ *  the tool can show is used (o.set); anything else keeps the old value, and a short message says why (o.why(reason)).
+ *  Escape puts back the old value. It is made once and kept across redraws (a redraw never takes the focus or what is
+ *  being typed). o: { label, get, format, parse(text) -> { ok, v } | { ok: false, why }, set(v), why(reason), off }. */
+let editIds = 0;
+function bigEdit(o) {
+  const wrap = el('div', 'dt-bigedit'), inp = el('input', 'dt-big dt-bigin'), msg = el('p', 'dt-editmsg'), help = el('span', 'sr-only', o.hint || '');
+  const id = `dt-be${++editIds}`;
+  Object.assign(inp, { type: 'text', autocomplete: 'off', spellcheck: false, id }); inp.dir = 'ltr';
+  inp.inputMode = 'decimal'; inp.setAttribute('enterkeyhint', 'done'); inp.setAttribute('aria-label', o.label);
+  msg.id = `${id}m`; help.id = `${id}h`; msg.setAttribute('role', 'status'); msg.hidden = true;
+  inp.setAttribute('aria-describedby', `${help.id} ${msg.id}`);
+  wrap.append(inp, help, msg);
+  const fit = () => inp.style.setProperty('--len', Math.max(2, [...inp.value].length));
+  const say = text => { msg.textContent = text || ''; msg.hidden = !text; if (text) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); };
+  const show = () => { inp.value = o.format(o.get()); fit(); };
+  let typing = false;
+  const commit = () => {
+    if (!typing) return;
+    typing = false;
+    const text = inp.value;
+    if (text.trim() === o.format(o.get())) { say(''); show(); return; }
+    const r = o.parse(text);
+    if (r.ok) { say(''); if (r.v !== o.get()) o.set(r.v); show(); }
+    else { say(o.why(r.why)); show(); }
+  };
+  inp.addEventListener('focus', () => { typing = true; inp.select(); });
+  inp.addEventListener('input', () => { typing = true; fit(); if (!msg.hidden) say(''); });
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); typing = true; inp.select(); }
+    else if (e.key === 'Escape' && inp.value !== o.format(o.get())) { e.preventDefault(); e.stopPropagation(); say(''); show(); inp.select(); }
+  });
+  inp.addEventListener('blur', commit);
+  wrap.sync = () => { inp.readOnly = !!o.off; inp.tabIndex = o.off ? -1 : 0; if (document.activeElement !== inp) show(); };
+  wrap.input = inp;
+  wrap.sync();
+  return wrap;
+}
+
 // ================================================================ 1. fraction bars and circles
 // Compare (one to three fractions, as in stage 3) and, since "help on the maths tools", Add, Subtract, Multiply and
 // Divide two fractions (docs/decisions.md "Classroom dashboards: help on the maths tools"). The maths is M.operate (exact); a new
@@ -310,6 +400,8 @@ function fractions(body, s, ctx) {
   const hide = btn('', 'btn btn-sm dt-fshow');
   hide.addEventListener('click', () => { st.hide = !st.hide; T.commit(st.hide ? '' : opSay()); });
   hide.sync = () => { hide.textContent = st.hide ? `👀 ${W.show}` : `🙈 ${W.hide}`; };
+  // The fraction tool's own hide is the answer's (Make a question hides it too; docs/decisions.md "Build it").
+  T.ownHide = () => st.hide; T.setOwnHide = v => { st.hide = !!v; };
   const swap = btn(`⇄ ${W.swap}`, 'btn btn-sm dt-fswap');
   add.addEventListener('click', () => { if (st.bars.length < 3) { st.bars.push({ n: 1, d: st.bars[st.bars.length - 1]?.d || 4 }); T.commit(); T.stage.querySelectorAll('.dt-fshape')[st.bars.length - 1]?.focus(); } });
   rm.addEventListener('click', () => { if (st.bars.length > 1) { st.bars.pop(); T.commit(); } });
@@ -344,14 +436,15 @@ function fractions(body, s, ctx) {
     const wrap = el('div', `dt-fwrap dt-f-${st.shape}`); wrap.style.setProperty('--rows', st.bars.length); T.stage.appendChild(wrap);
     st.bars.forEach((b, i) => {
       const row = el('div', 'dt-frow');
-      const lab = el('div', 'dt-flab'); lab.appendChild(stacked(b.n, b.d));
+      // A student's "Build it" copy: the bar's fraction is what they are building, so it shows as "?".
+      const lab = el('div', 'dt-flab'); lab.appendChild(ctx.build ? ltr('span', 'dt-frac dt-fq', '?') : stacked(b.n, b.d));
       if (useL && c.L !== b.d) { const eq = el('span', 'dt-feq'); eq.dir = 'ltr'; const sign = el('span', 'dt-eqsign', '='); sign.setAttribute('aria-hidden', 'true'); eq.append(sign, stacked(c.list[i].n, c.L)); lab.appendChild(eq); }
       const parts = useL ? c.L : b.d, shaded = useL ? c.list[i].n : b.n;
       const shape = st.shape === 'bar' ? barSvg(parts, shaded, i, useL ? c.L / b.d : 1) : pieSvg(parts, shaded, i, useL ? c.L / b.d : 1);
       shape.classList.add('dt-fshape');
       shape.setAttribute('role', 'slider'); shape.setAttribute('tabindex', ctx.editing ? '-1' : '0');
       shape.setAttribute('aria-valuemin', '0'); shape.setAttribute('aria-valuemax', String(b.d)); shape.setAttribute('aria-valuenow', String(b.n));
-      shape.setAttribute('aria-valuetext', shadedWords(b.n, b.d, W, ctx.intl));
+      shape.setAttribute('aria-valuetext', ctx.build ? fill(W.parts, { n: b.d }) : shadedWords(b.n, b.d, W, ctx.intl));
       shape.setAttribute('aria-label', fill(W.which, { n: i + 1 }));
       const setN = (n, keep = true) => { n = Math.max(0, Math.min(b.d, n)); if (n === b.n) return; b.n = n; T.commit(); if (keep) T.stage.querySelectorAll('.dt-fshape')[i]?.focus(); say(i); };
       shape.addEventListener('keydown', e => {
@@ -962,6 +1055,8 @@ function coord(body, s, ctx) {
   const range = () => (st.quads === 1 ? [0, 2 * st.size] : [-st.size, st.size]);
   T.draw = () => {
     slope.sync(); startS.sync();
+    // The answer hidden (a question about the slope): the slope's stepper, rise and run and the table's y go.
+    const hid = T.hid(); slope.hidden = hid;
     const [lo, hi] = range(), n = hi - lo, P = 40, S = 520, u = (S - 2 * P) / n;
     cur.x = Math.max(lo, Math.min(hi, cur.x)); cur.y = Math.max(lo, Math.min(hi, cur.y));
     const X = v => P + (v - lo) * u, Y = v => S - P - (v - lo) * u;
@@ -1000,7 +1095,7 @@ function coord(body, s, ctx) {
         plane.appendChild(svg('line', { x1: X(seg[0][0]), y1: Y(seg[0][1]), x2: X(seg[1][0]), y2: Y(seg[1][1]), class: 'dt-line' }));
         // Rise over run, from where the line starts (0, b) when that is on the grid.
         const sl = m();
-        if (st.b >= lo && st.b <= hi && sl.n && 0 >= lo && sl.d <= hi && st.b + sl.n >= lo && st.b + sl.n <= hi) {
+        if (!hid && st.b >= lo && st.b <= hi && sl.n && 0 >= lo && sl.d <= hi && st.b + sl.n >= lo && st.b + sl.n <= hi) {
           plane.appendChild(svg('path', { d: `M${X(0)} ${Y(st.b)}H${X(sl.d)}V${Y(st.b + sl.n)}`, class: 'dt-tri' }));
           plane.appendChild(svg('text', { x: (X(0) + X(sl.d)) / 2, y: Y(st.b) + (sl.n > 0 ? 22 : -10), class: 'dt-tril', 'text-anchor': 'middle' }, `${W.run} ${sl.d}`));
           plane.appendChild(svg('text', { x: X(sl.d) + 8, y: (Y(st.b) + Y(st.b + sl.n)) / 2 + 6, class: 'dt-tril' }, `${W.rise} ${svgText(sl.n)}`));
@@ -1015,7 +1110,7 @@ function coord(body, s, ctx) {
       const tb = el('table', 'dt-table'); tb.dir = 'ltr';
       const r1 = el('tr'), r2 = el('tr');
       r1.appendChild(el('th', null, 'x')); r2.appendChild(el('th', null, 'y'));
-      for (const p of M.valueTable(m(), st.b, xsOf())) { r1.appendChild(el('td', null, svgText(p.x))); r2.appendChild(el('td', null, M.fracText(p.y))); }
+      for (const p of M.valueTable(m(), st.b, xsOf())) { r1.appendChild(el('td', null, svgText(p.x))); r2.appendChild(el('td', null, hid ? '?' : M.fracText(p.y))); }
       tb.append(r1, r2); box.appendChild(tb);
     }
     T.stage.appendChild(box);
@@ -1216,13 +1311,14 @@ function base10(body, s, ctx) {
   const clear = btn(`🧹 ${W.clear}`, 'btn btn-sm');
   clear.addEventListener('click', () => { Object.assign(st, { h: 0, t: 0, o: 0 }); T.commit(W.clear); });
   T.foot.append(up, down, clear);
-  const say = () => ctx.say(`${M.blocksValue(st)}: ${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
+  // While the answer is hidden the number is not said (the blocks are: what a sighted student sees).
+  const say = () => ctx.say(`${T.hid() ? '' : `${M.blocksValue(st)}: `}${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
   const change = (p, d) => { const n = st[p] + d; if (n < 0 || n > M.BASE10_MAX[p]) return false; st[p] = n; sel = p; T.commit(); say(); return true; };
   const tradeFor = dir => (dir === 'up' ? (sel === 'h' ? null : sel === 't' ? ['t', 'up'] : ['o', 'up']) : (sel === 'o' ? null : [sel, 'down']));
   const doTrade = dir => {
     let tr = tradeFor(dir); if (!tr) tr = dir === 'up' ? ['o', 'up'] : ['t', 'down'];
     const x = M.trade(st, tr[0], tr[1]); if (!x) return;
-    Object.assign(st, x); T.commit(); ctx.say(`${W.traded} ${M.blocksValue(st)}: ${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
+    Object.assign(st, x); T.commit(); ctx.say(`${W.traded} ${T.hid() ? '' : `${M.blocksValue(st)}: `}${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
   };
   /** Drag a block in from the header (or out of the mat to take it away). */
   let drag = null;
@@ -1235,7 +1331,8 @@ function base10(body, s, ctx) {
       const head = el('div', 'dt-mathead');
       const piece = el('span', `dt-piece dt-piece-${p}`); piece.setAttribute('aria-hidden', 'true'); piece.title = W.drop;
       // How many, typed too (0 to the most a mat holds): the − and + below's own rule.
-      const count = T.num({ label: name, key: `mat${p}`, get: () => st[p], min: 0, max: M.BASE10_MAX[p], cls: 'dt-matn', set: n => { st[p] = n; sel = p; T.commit(); say(); },
+      // While the answer is hidden the counts show "?" (the blocks are counted, not read).
+      const count = T.num({ label: name, key: `mat${p}`, get: () => st[p], min: 0, max: M.BASE10_MAX[p], cls: 'dt-matn', mask: () => T.hid(), set: n => { st[p] = n; sel = p; T.commit(); say(); },
         up: () => change(p, 1), down: () => change(p, -1) });
       head.append(piece, el('b', 'dt-matname', name), count);
       const area = el('div', 'dt-matarea'); area.setAttribute('role', 'img'); area.setAttribute('aria-label', `${st[p]} ${name}`);
@@ -1275,11 +1372,19 @@ function base10(body, s, ctx) {
       mats.appendChild(col);
     }
     syncSel();
-    const v = M.blocksValue(st);
-    T.read.textContent = '';
-    T.read.append(ltr('div', 'dt-big', String(v)), ltr('div', 'dt-sub', `${st.h * 100} + ${st.t * 10} + ${st.o}`));
-    if (st.o >= 10 || st.t >= 10) T.read.appendChild(el('div', 'dt-sub dt-note', W.hint));
+    if (!T.read.contains(edit)) { T.read.textContent = ''; T.read.append(edit, parts, note); }
+    edit.sync(); parts.textContent = `${st.h * 100} + ${st.t * 10} + ${st.o}`;
+    note.hidden = !(st.o >= 10 || st.t >= 10);
   };
+  // The number is typed straight into too (0-999): the blocks become its hundreds, tens and ones.
+  const C = T.C;
+  const edit = bigEdit({
+    label: fill(C.editFor, { name: ctx.type.name }), hint: C.editHint, off: ctx.editing, get: () => M.blocksValue(st), format: v => String(v),
+    parse: text => { const r = M.pvParse(text, ctx.intl, 0, 999000); return r.ok ? { ok: true, v: r.v / 1000 } : r; },
+    set: v => { Object.assign(st, M.blocksOf(v)); T.commit(); say(); },
+    why: k => (k === 'places' ? C.editWhole : k === 'range' ? fill(C.editRange, { max: '999' }) : C.editBad),
+  });
+  const parts = ltr('div', 'dt-sub'), note = el('div', 'dt-sub dt-note', W.hint);
   function syncSel() {
     for (const c of mats.children) c.classList.toggle('is-sel', c.dataset.place === sel);
     const u = tradeFor('up') || ['o', 'up'], d = tradeFor('down') || ['t', 'down'];
@@ -1328,8 +1433,19 @@ function placeval(body, s, ctx) {
   d10.addEventListener('click', () => set(st.dec ? M.pvDiv10(st.v) : null, W.div10));
   T.foot.append(minus, plus, x10, d10);
   const nf = new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 3 });
+  // The big number is typed straight into (docs/decisions.md "Build it"): "3,405.27", in the reader's own marks.
+  const C = T.C;
+  const edit = bigEdit({
+    label: fill(C.editFor, { name: ctx.type.name }), hint: C.editHint, off: ctx.editing, get: () => st.v, format: v => M.pvFormat(v, ctx.intl),
+    parse: text => M.pvParse(text, ctx.intl, st.dec ? 3 : 0),
+    set: v => set(v),
+    why: k => (k === 'places' ? (st.dec ? fill(C.editPlaces, { n: 3 }) : C.editWhole) : k === 'range' ? fill(C.editRange, { max: M.pvFormat(st.dec ? M.PV_MAX : M.PV_MAX - 999, ctx.intl) }) : C.editBad),
+  });
+  const expanded = ltr('div', 'dt-sub');
   T.draw = () => {
     if (!cols().includes(sel)) sel = 3;
+    // The answer hidden (what number is shown?): with the discs on, the digits under them show "?" too.
+    const hideDigits = T.hid() && !ctx.build && st.discs;
     const dg = M.pvDigits(st.v);
     T.stage.textContent = '';
     const chart = el('div', `dt-pv${st.discs ? ' has-discs' : ''}`); chart.dir = 'ltr';
@@ -1339,11 +1455,12 @@ function placeval(body, s, ctx) {
       if (i === 4) chart.appendChild(el('span', 'dt-pvdot', '.'));
       const c = el('div', `dt-pvcol dt-pv${i}${i === sel ? ' is-sel' : ''}`);
       c.setAttribute('role', 'spinbutton'); c.setAttribute('aria-label', name(i)); c.setAttribute('aria-valuenow', String(dg[i])); c.setAttribute('aria-valuemin', '0'); c.setAttribute('aria-valuemax', '9');
+      if (hideDigits) c.setAttribute('aria-valuetext', `${dg[i]} ${W.discs}`);
       c.tabIndex = i === sel && !ctx.editing ? 0 : -1;
       const head = el('div', 'dt-pvh', name(i)); head.dir = 'auto';
       const discs = el('div', 'dt-pvdiscs'); discs.setAttribute('aria-hidden', 'true');
       if (st.discs) for (let k = 0; k < dg[i]; k++) discs.appendChild(el('span', `dt-disc dt-disc${i}`)).appendChild(el('span', 'dt-disct', DISC[i]));
-      c.append(head, discs, el('div', 'dt-pvd', String(dg[i])));
+      c.append(head, discs, el('div', 'dt-pvd', hideDigits ? '?' : String(dg[i])));
       c.addEventListener('click', () => { if (ctx.editing) return; sel = i; syncSel(); c.focus(); });
       c.addEventListener('focus', () => { if (sel !== i) { sel = i; syncSel(); } });
       c.addEventListener('keydown', e => {
@@ -1354,9 +1471,9 @@ function placeval(body, s, ctx) {
     }
     roving(chart, cells, cells.length, j => { sel = cols()[j]; syncSel(); });
     T.stage.appendChild(chart);
-    T.read.textContent = '';
     const ex = M.pvExpanded(st.v).map(x => nf.format(x.value)).join(' + ') || '0';
-    T.read.append(ltr('div', 'dt-big', M.pvFormat(st.v, ctx.intl)), ltr('div', 'dt-sub', `${W.expanded}: ${ex}`));
+    if (!T.read.contains(edit)) { T.read.textContent = ''; T.read.append(edit, expanded); }
+    edit.sync(); expanded.textContent = `${W.expanded}: ${ex}`;
     syncSel();
   };
   const focusSel = () => T.stage.querySelector('.dt-pvcol.is-sel')?.focus();
@@ -1452,13 +1569,14 @@ function hundreds(body, s, ctx) {
   let focusAt = 0;
   T.draw = () => {
     skip.value = String(st.skip); hide.value = st.hide; clear.disabled = !st.shade.length && !st.skip;
-    const shaded = new Set(st.shade), counted = new Set(M.skipCount(st.skip, st.start, last()));
+    const shaded = new Set(st.shade), skipped = M.skipCount(st.skip, st.start, last()), counted = new Set(skipped);
     T.stage.textContent = '';
     const g = el('div', `dt-hgrid${last() === 120 ? ' is-120' : ''}`); g.dir = 'ltr'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', ctx.type.name);
     const cells = [];
     for (let k = 0; k <= last() - st.start; k++) {
       const v = k + st.start, on = shaded.has(v), sk = counted.has(v);
-      const hid = st.hide === 'all' || (st.hide === 'shaded' && (on || sk));
+      // The answer hidden (counting by n, what comes next?): the counted numbers after the third one show no number.
+      const hid = st.hide === 'all' || (st.hide === 'shaded' && (on || sk)) || (T.hid() && sk && v > skipped[2]);
       const b = btn(hid ? '' : String(v), `dt-hcell${on ? ' is-on' : ''}${sk ? ' is-skip' : ''}`);
       b.setAttribute('aria-label', `${hid ? W.hidden : v}${on ? `, ${W.shaded}` : ''}${sk ? `, ${fill(W.skipBy, { n: st.skip })}` : ''}`);
       b.setAttribute('aria-pressed', String(on));
@@ -1505,7 +1623,7 @@ function area(body, s, ctx) {
   T.draw = () => {
     views.sync(); rows.sync(); cols.sync(); split.sync();
     views.querySelectorAll('button')[0].disabled = st.a > 12 || st.b > 12;
-    const r = pp(), V = view();
+    const r = pp(), V = view(), hid = T.hid();
     const pad = 46, maxW = 560, maxH = 400, k = Math.min((maxW - pad) / st.b, (maxH - pad) / st.a);
     const w = st.b * k, h = st.a * k;
     // Partial products go inside their part when they fit at a readable size (14px, 16 on the projector); a part too
@@ -1525,7 +1643,7 @@ function area(body, s, ctx) {
             const fs = Math.min(Math.max(34, fMin * 1.6), cw / ([...String(part.p)].length * 0.62), ch / 2.3, (cw - 8) / (top.length * 0.6 * 0.72));
             if (fs * 0.72 >= fMin) place.push({ part, inside: true, x, y, cw, ch, fs, top });
             else {
-              const below = i === r.rows.length - 1 && r.rows.length > 1, fo = fMin * 1.1, text = `${top} = ${part.p}`;
+              const below = i === r.rows.length - 1 && r.rows.length > 1, fo = fMin * 1.1, text = `${top} = ${hid ? '?' : part.p}`;
               place.push({ part, inside: false, below, x, y, cw, ch, fo, text, line: below ? nB++ : 0 });
               if (!below) needR = Math.max(needR, tw(text, fo) + 28);
             }
@@ -1541,7 +1659,7 @@ function area(body, s, ctx) {
     function Y0of(p) { return p; }
     const VW = w + pad + 8 + mR, VH = h + pad + 8 + mB;
     const ts = T.ts(VW, VH, 22, T.minPx());
-    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': sayIt() });
+    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': hid ? `${st.a} × ${st.b}` : sayIt() });
     sv.setAttribute('direction', 'ltr');
     const X0 = pad, Y0 = pad;
     if (V === 'array') {
@@ -1559,7 +1677,7 @@ function area(body, s, ctx) {
         const cx = c.x + c.cw / 2, cy = c.y + c.ch / 2;
         if (c.inside) {
           sv.appendChild(svg('text', { x: cx, y: cy - c.fs * 0.12, 'font-size': c.fs * 0.72, 'text-anchor': 'middle', class: 'dt-rl' }, c.top));
-          sv.appendChild(svg('text', { x: cx, y: cy + c.fs * 0.85, 'font-size': c.fs, 'text-anchor': 'middle', class: 'dt-rv' }, c.part.p));
+          sv.appendChild(svg('text', { x: cx, y: cy + c.fs * 0.85, 'font-size': c.fs, 'text-anchor': 'middle', class: 'dt-rv' }, hid ? '?' : c.part.p));
         } else if (c.below) {
           const ly = Y0 + h + 14 + (c.line + 1) * c.fo * 1.5 - c.fo * 0.35, lx = Math.max(X0 + tw(c.text, c.fo) / 2, Math.min(X0 + w - tw(c.text, c.fo) / 2 + mR, cx));
           sv.appendChild(svg('path', { d: `M${cx} ${cy}V${ly - c.fo * 1.05}`, class: 'dt-leader' }));
@@ -1640,7 +1758,8 @@ function times(body, s, ctx) {
       g.appendChild(el('span', `dt-th${st.r === i ? ' is-lit' : ''}`, String(i)));
       for (let j = 1; j <= N; j++) {
         const on = lit(i, j), here = (i === st.r && j === st.c) || (st.mark === 'turn' && i === st.c && j === st.r);
-        const show = !st.hide || on;
+        // The answer hidden (a question about r × c): the fact's own cell shows no number.
+        const show = (!st.hide || on) && !(here && T.hid());
         const b = btn(show ? String(i * j) : '', `dt-tcell${on ? ' is-lit' : ''}${here ? ' is-here' : ''}${i === j ? ' is-sq' : ''}`, `${i} × ${j}${show ? ` = ${i * j}` : ''}`);
         b.removeAttribute('title');
         if (ctx.editing) b.disabled = true;
@@ -1747,7 +1866,7 @@ function tclock(body, s, ctx) {
 // ================================================================ 12. fraction, decimal, percent
 function fdp(body, s, ctx) {
   const T = shell(body, s, ctx, 'fdp'), { W, st } = T;
-  const say = () => ctx.say(`${st.n}/${st.d} = ${spoken(M.decimalString(st.n, st.d), W.hint)} = ${spoken(M.percentString(st.n, st.d), W.hint)}`);
+  const say = () => ctx.say(T.hid() ? `${st.n}/${st.d}` : `${st.n}/${st.d} = ${spoken(M.decimalString(st.n, st.d), W.hint)} = ${spoken(M.percentString(st.n, st.d), W.hint)}`);
   // Typed too: the top number 0 to the bottom one, the bottom 1-100 (the top comes down with it, as with −).
   const top = T.stepper(W.top, () => st.n, () => { if (st.n > 0) { st.n--; T.commit(); say(); } }, () => { if (st.n < st.d) { st.n++; T.commit(); say(); } }, `${W.top} −`, `${W.top} +`,
     { value: () => st.n, min: 0, max: () => st.d, set: n => { st.n = n; T.commit(); say(); } });
@@ -1769,10 +1888,12 @@ function fdp(body, s, ctx) {
     const fr = el('div', 'dt-cardv'); fr.dir = 'ltr'; fr.appendChild(stacked(st.n, st.d));
     if (simp.d !== st.d && st.n) { fr.append(' = '); fr.appendChild(stacked(simp.n, simp.d)); }
     const dec = M.decimalString(st.n, st.d), pct = M.percentString(st.n, st.d);
-    cards.append(card(W.fraction, fr), card(W.decimal, dec, spoken(dec, W.hint)), card(W.percent, pct, spoken(pct, W.hint)));
+    // The answer hidden (which decimal is n/d?): the decimal and percent cards show "?".
+    const hid = T.hid();
+    cards.append(card(W.fraction, fr), card(W.decimal, hid ? '?' : dec, hid ? '?' : spoken(dec, W.hint)), card(W.percent, hid ? '?' : pct, hid ? '?' : spoken(pct, W.hint)));
     // 10 x 10: a square is one hundredth; tap one to show that many hundredths.
     const h = M.hundredGrid(st.n, st.d);
-    grid = svg('svg', { viewBox: '0 0 104 104', class: 'dt-hund', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.grid, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': Math.round(h.full + h.part), 'aria-valuetext': fill(W.outOf, { n: spoken(M.decimalString(st.n * 100, st.d), W.hint) }) });
+    grid = svg('svg', { viewBox: '0 0 104 104', class: 'dt-hund', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.grid, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': Math.round(h.full + h.part), 'aria-valuetext': hid ? '?' : fill(W.outOf, { n: spoken(M.decimalString(st.n * 100, st.d), W.hint) }) });
     grid.setAttribute('direction', 'ltr');
     for (let k = 0; k < 100; k++) {
       const x = 2 + (k % 10) * 10, y = 2 + Math.floor(k / 10) * 10;
@@ -1949,4 +2070,4 @@ const C = ctx => ctx.common || {};
 export const TOOLS = { fractions, numline, coord, graph, base10, placeval, tenframe, hundreds, area, times, tclock, fdp, board, picture };
 export const PEN_COLORS = PENS;
 /** The shared parts, for stage 4's tools (public/js/dash-tools4.js). */
-export const parts = { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, fill, clone, ltr, svgPoint, svgText, iso };
+export const parts = { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, fill, clone, ltr, svgPoint, svgText, iso, bigEdit };

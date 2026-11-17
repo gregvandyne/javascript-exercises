@@ -299,6 +299,51 @@ export function pvFormat(v, intl = 'en') {
   const f = new Intl.NumberFormat(intl, { minimumFractionDigits: frac.length, maximumFractionDigits: frac.length });
   return f.format(Number(`${int}.${frac || '0'}`));
 }
+/** The reader's grouping mark ("," in English, "." in German). */
+export function groupMark(intl = 'en') {
+  try { return (new Intl.NumberFormat(intl).formatToParts(12345.6).find(p => p.type === 'group') || {}).value || ','; } catch { return ','; }
+}
+/**
+ * A number typed into the place value chart (docs/decisions.md "Build it"): "3,405.27", "3405.27", "3.405,27" in German,
+ * "3 405,27", "0.5", ".5" -> { ok: true, v } (whole thousandths, as the chart keeps it) or { ok: false, why }:
+ * 'bad' (not a number), 'range' (below 0 or past 9,999.999), 'places' (more places after the point than the chart has:
+ * dec = 3 with the decimal columns, 0 without). A mark between digits is a grouping mark when it comes more than once,
+ * or when it is the reader's grouping mark with three digits after it; otherwise it is the point. max: the largest value
+ * allowed (thousandths; base-ten blocks use 999000).
+ */
+export function pvParse(text, intl = 'en', dec = 3, max = PV_MAX) {
+  let t = String(text ?? '').trim().replace(/[\s  '’_]/g, '')
+    .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x660)).replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x6f0)).replace(/٫/g, '.').replace(/٬/g, ',');
+  if (!t) return { ok: false, why: 'bad' };
+  if (/^[-−–]/.test(t)) return /\d/.test(t) ? { ok: false, why: 'range' } : { ok: false, why: 'bad' };
+  t = t.replace(/^\+/, '');
+  if (!/^[\d.,]+$/.test(t) || !/\d/.test(t)) return { ok: false, why: 'bad' };
+  const group = groupMark(intl);
+  const dots = (t.match(/\./g) || []).length, commas = (t.match(/,/g) || []).length;
+  let point = null;
+  if (dots && commas) point = t.lastIndexOf('.') > t.lastIndexOf(',') ? '.' : ',';
+  else if (dots + commas === 1) {
+    const m = dots ? '.' : ',', at = t.indexOf(m);
+    point = m === group && t.length - at - 1 === 3 && at > 0 ? null : m;
+  }
+  const grp = point === '.' ? ',' : point === ',' ? '.' : dots ? '.' : ',';
+  const bits = point ? t.split(point) : [t];
+  if (bits.length > 2) return { ok: false, why: 'bad' };
+  const [whole, frac = ''] = bits;
+  if (frac.includes(grp)) return { ok: false, why: 'bad' };
+  // Grouping marks only between groups of three digits ("3,40,5" is not a number).
+  const groups = whole.split(grp);
+  if (groups.length > 1 && (!groups[0] || groups[0].length > 3 || groups.slice(1).some(g => g.length !== 3))) return { ok: false, why: 'bad' };
+  const w = groups.join('');
+  if (!/^\d*$/.test(w) || !/^\d*$/.test(frac)) return { ok: false, why: 'bad' };
+  const f = frac.replace(/0+$/, '');
+  if (f.length > dec) return { ok: false, why: 'places' };
+  if (w.replace(/^0+/, '').length > 4) return { ok: false, why: 'range' };
+  const v = Number(w || '0') * 1000 + Number(f.padEnd(3, '0'));
+  return v > max ? { ok: false, why: 'range' } : { ok: true, v };
+}
+/** Base-ten blocks from a whole number 0-999: as many hundreds, tens and ones as its digits. */
+export const blocksOf = n => ({ h: Math.floor(n / 100) % 10, t: Math.floor(n / 10) % 10, o: n % 10 });
 /** Expanded form: the non-zero places, biggest first, as numbers (300, 40, 0.2...). */
 export const pvExpanded = v => PLACES.map((c, i) => ({ i, digit: pvDigits(v)[i], value: (pvDigits(v)[i] * c.p) / 1000 })).filter(x => x.digit);
 

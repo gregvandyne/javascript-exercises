@@ -31,7 +31,8 @@ export function withMode(st, own, modes, m, part) {
 export function moded(own, base) {
   return (body, s, ctx) => {
     const type = ctx.type, modes = (type.modes || []).filter(m => base[m.id]);
-    if (modes.length < 2) return base[own](body, s, ctx);
+    // A student's "Build it" copy shows one mode only, without the switch (public/js/dash.js openBuild).
+    if (modes.length < 2 || ctx.build) return base[own](body, s, ctx);
     const ids = modes.map(m => m.id);
     const def = ((type.settings || []).find(f => f.key === 'state') || {}).def || {};
     let st = clone(s.state && typeof s.state === 'object' ? s.state : def);

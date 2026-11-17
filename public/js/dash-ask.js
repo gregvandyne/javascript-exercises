@@ -70,7 +70,8 @@ function barQuestion(b, m) {
  * (dash.ask.*); intl: the reader's language. -> { q, options: [text], answer: index } or null.
  */
 export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
-  const seed = `${type}:${JSON.stringify(st)}`;
+  // The answer hidden or shown (qh) never changes the question or the order of its answers.
+  const seed = `${type}:${JSON.stringify({ ...st, qh: undefined })}`;
   const Q = A.q || {};
   const nf = n => new Intl.NumberFormat(intl).format(n);
   switch (type) {
