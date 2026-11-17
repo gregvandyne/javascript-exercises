@@ -2,7 +2,7 @@
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
-import { page, landingFor, VERSION } from '../views/layout.js';
+import { page, landingFor, VERSION, plansInMenu, tabKey } from '../views/layout.js';
 import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
@@ -369,6 +369,17 @@ export function appearancePanel(req) {
   </section>`;
 }
 
+/** Plans on the settings pages (/me/settings, /family/account), for the adults who have Plans in the account menu
+ *  (plansInMenu: grown-ups, school staff and the platform admin, while paid-plan pages are on): a link to /plans, the one
+ *  page with prices. '' for kids, students and guests (kids are never sold to). */
+export function plansPanel(req) {
+  const t = req.t; if (!plansInMenu(req.user, req)) return '';
+  const key = tabKey(t, 'plans'); const en = k => (t.own(k) ? '' : raw(' lang="en" dir="ltr"'));
+  return html`<section class="panel" id="plans" aria-labelledby="plans-h"><h2 id="plans-h"${en(key)}><span aria-hidden="true">⭐</span> ${t(key)}</h2>
+    <p style="margin-bottom:0"><a class="btn" href="/plans"${en('family.page.seePlans')}>${t('family.page.seePlans')}</a></p>
+  </section>`;
+}
+
 /** Change password (own accounts, school staff, the platform admin, grown-ups), or who looks after it (school students).
  *  Guests: nothing. */
 export function passwordPanel(req) {
@@ -411,7 +422,7 @@ export function signOutPanel(req) {
 let planPanels = () => '', openAsksOf = () => [];
 export const setMePlanPanels = (panels, asks) => { planPanels = panels; openAsksOf = asks; };
 // /me/settings: the account's settings, moved off the Me page (docs/decisions.md "Settings page"): the Teacher plan and
-// billing (staff, while paid-plan pages are on), Language, Appearance, Password and Sign out, in that order, with a small
+// billing (staff, while paid-plan pages are on), Language, Appearance, Plans (adults), Password and Sign out, in that order, with a small
 // section nav (sticky chips on a phone, a side list on a laptop). Every form and API is the one the Me page had.
 // Grown-ups keep their own settings page (/family/account). Old links to /me#language, #appearance, #password,
 // #signout and #teacher-plan are sent here by public/js/app.js.
@@ -425,6 +436,8 @@ router.get(SETTINGS_PATH, auth.requireUser, (req, res) => {
     plan && ['billing', '🍎', t('me.settings.billing'), raw(plan)],
     ['language-sec', '🌐', t('me.language.heading'), languagePanel(req)],
     ['appearance-sec', '🎨', t('me.theme.heading'), appearancePanel(req)],
+    // Plans (adults only, while paid-plan pages are on): also in the account menu behind the avatar.
+    ['plans-sec', '⭐', t(tabKey(t, 'plans')), plansPanel(req)],
     // No Password section for an account that signs in only with Google (it has no Oomba password to change).
     !u.is_guest && !noPasswordText(req) && ['password-sec', '🔑', t('me.password.heading'), passwordPanel(req)],
     ['signout-sec', '👋', t('me.signOut.heading'), signOutPanel(req)],

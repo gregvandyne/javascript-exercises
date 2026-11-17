@@ -11,7 +11,7 @@ import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { findTouching } from './touching.js';
-import { login, ownIp, uniq, ADMIN } from './helpers.js';
+import { login, ownIp, uniq, ADMIN, openLiveRoom } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -92,7 +92,7 @@ test('a teacher lands on the Classroom (their one class opens directly): hello, 
   await endOpen(t);
   await t.goto(`/live?class=${cls}`);
   await t.locator('label.lv-pick', { has: t.locator('input[value="mode:wyr"]') }).click();
-  await t.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(t);
   await t.waitForURL(/\/live\/host\//);
   const sid = new URL(t.url()).pathname.split('/').pop();
   await t.goto('/teach?all=1');
@@ -138,7 +138,7 @@ test('a student lands on Class: To do with progress and Continue, games from the
   const cls = href.split('/')[2];
   await t.goto(`/live?class=${cls}`);
   await t.locator('label.lv-pick', { has: t.locator('input[value="mode:wyr"]') }).click();
-  await t.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(t);
   await t.waitForURL(/\/live\/host\//);
   const code = (await t.locator('#lv-code').textContent()).replace(/\s/g, '');
   await expect(sec.locator('#class-live')).toBeVisible({ timeout: 20_000 });

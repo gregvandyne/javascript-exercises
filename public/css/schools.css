@@ -688,6 +688,8 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 /* People: "➕ Add …" beside each heading opens its form under the heading (open on load when the list is empty). */
 .sec-row>.adddrop[open]{flex:1 1 100%}
 .adddrop>div>p:first-child{margin-top:0}
+/* Course panels (Progress): each level a student worked in, with its own count, one per line. */
+.cptable .cp-band{display:block;margin-top:2px}
 /* Course panels (Progress) on phones: each student is a card: name, then Status, Steps done, Checks, Per step. */
 @media (max-width:600px){
   .gbwrap:has(>.cptable){overflow:visible}

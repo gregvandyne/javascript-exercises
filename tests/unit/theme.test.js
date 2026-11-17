@@ -70,13 +70,12 @@ test('HTTP: data-theme and color-scheme only follow an explicit choice', async (
     assert.equal(h.html, '<html lang="en" dir="ltr">', 'same as the device: no data-theme');
     assert.equal(h.scheme, 'light dark');
     assert.deepEqual(themeColors(h.body), [[BAR_COLORS.light, '(prefers-color-scheme: light)'], [BAR_COLORS.dark, '(prefers-color-scheme: dark)']], 'the toolbar follows the device');
-    assert.match(h.body, /<details class="themepick" data-themepick>/);
-    assert.match(h.body, /aria-label="Theme: Same as my device"/);
-    assert.match(h.body, /href="\/\?theme=dark"[^>]*data-theme-choice="dark"/, 'the menu is plain links (works with no JavaScript)');
+    assert.doesNotMatch(h.body, /data-themepick|class="theme-btn"/, 'no theme button in the top bar (docs/decisions.md "A quieter top bar")');
+    assert.match(h.body, /<div class="foot-theme">[\s\S]*data-theme-choice="system" data-label="Theme: Same as my device" aria-current="true"/, 'signed out: in the footer');
+    assert.match(h.body, /href="\/\?theme=dark"[^>]*data-theme-choice="dark"/, 'plain links (works with no JavaScript)');
     h = await head(await s.get('/', { Cookie: 'theme=dark' }));
     assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="dark">'); assert.equal(h.scheme, 'dark');
     assert.deepEqual(themeColors(h.body), [[BAR_COLORS.dark, null]], 'a chosen theme: one toolbar colour');
-    assert.match(h.body, /aria-label="Theme: Dark"/);
     assert.match(h.body, /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"/);
     h = await head(await s.get('/safety', { Cookie: 'theme=light' }));
     assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="light">'); assert.equal(h.scheme, 'light');

@@ -17,10 +17,21 @@
   .ff-say svg { width: 56px; height: 56px; flex: none; }
   .ff-say p { margin: 0; font-weight: 700; font-size: .98em; }
   .ff-say p b { font-weight: 900; }
-  .ff-stage { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: flex-start; width: 100%; flex: none; }
-  .ff-whole { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; padding: 10px; box-shadow: 0 5px 0 var(--ok-edge); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .ff-stage { display: flex; flex-wrap: wrap; gap: var(--ff-gap); justify-content: center; align-items: flex-start; width: 100%; flex: none; }
+  .ff-whole { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; padding: var(--ff-pad); box-shadow: 0 5px 0 var(--ok-edge); display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .ff-whole small { font-weight: 800; opacity: .85; }
   .ff-whole svg { display: block; }
+  .ff-whole svg.ff-cake { width: var(--ff-cake); height: var(--ff-cake); }
+  .ff-whole svg.ff-barsvg { width: var(--ff-bar); height: calc(var(--ff-bar) * .393); }
+  .ff-src .ff-whole svg, .ff-choice .ff-whole svg { width: var(--ff-mini); height: calc(var(--ff-mini) * .286); }
+  .ff-cap { display: flex; align-items: center; gap: 8px; min-height: 22px; }
+  .ff-x { font: inherit; font-weight: 800; font-size: .8em; min-height: 32px; padding: 2px 10px; border-radius: 999px; border: 2px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); cursor: pointer; }
+  /* Add a cake: a dashed card the size of a cake, beside the last one */
+  .ff-add { align-self: stretch; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 96px; width: calc(var(--ff-cake) * .62); min-height: 96px; padding: 8px;
+    border-radius: 22px; border: 3px dashed var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 var(--ok-edge); }
+  .ff-add b { font-size: 2.2em; line-height: 1; width: 1.4em; height: 1.4em; display: grid; place-items: center; border-radius: 50%; background: var(--ff-go); border: 3px solid var(--ok-edge); }
+  .ff-add:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ok-edge); }
+  .ff-add:focus-visible, .ff-x:focus-visible { outline: 4px solid var(--ff-lit); outline-offset: 2px; }
   .ff-piece { cursor: pointer; }
   .ff-piece:focus { outline: 4px solid var(--ff-lit); outline-offset: 2px; }
   .ff-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; flex: none; }
@@ -67,6 +78,53 @@
   .ff-faces button { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); font-size: 1.6em; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); }
   @media (orientation: landscape) and (max-height: 520px) { .ff-say svg { width: 40px; height: 40px; } .ff-say { min-height: 48px; } .ff-say p { font-size: .88em; } }
   @media (max-width: 520px) { .ff-grid { grid-template-columns: 1fr; } }
+  /* An order on screen fits the frame without scrolling. The sizes follow the frame's height (vh) as well as its
+     width: --ff-cake is a cake's side, --ff-bar a bar's width, --ff-mini the small source bars. One column on a phone
+     or a tall tablet; on a wide, short frame (a laptop window, a phone on its side) the slicer and the buttons sit
+     beside the wholes instead of under them. */
+  .ff[data-screen="level"] { --ff-gap: 10px; --ff-pad: 10px; --ff-cake: clamp(90px, min(calc((100vh - 470px) / 1.15), calc((100vw - 110px) / 2)), 190px);
+    --ff-bar: clamp(150px, min(calc(100vw - 60px), calc((100vh - 420px) * 2)), 260px); --ff-mini: clamp(100px, min(calc((100vw - 120px) / 2), 22vh), 200px); }
+  .ff[data-screen="level"] .ff-main { gap: 8px; }
+  .ff-play { display: flex; flex-direction: column; align-items: center; gap: var(--ff-gap); width: 100%; flex: none; }
+  .ff-work, .ff-ctrl { display: flex; flex-direction: column; align-items: center; gap: var(--ff-gap); min-width: 0; max-width: 100%; }
+  .ff-tools .ff-read { margin-inline-end: 4px; }
+  .ff-tip { text-align: center; font-size: .95em; }
+  @media (min-aspect-ratio: 13/10) {
+    .ff[data-screen="level"] { --ff-cake: clamp(78px, min(calc(100vh - 318px), calc((54vw - 150px) / 2)), 200px);
+      --ff-bar: clamp(140px, min(calc(52vw - 40px), calc((100vh - 300px) * 2.2)), 260px); --ff-mini: clamp(100px, min(calc((52vw - 60px) / 2), calc((100vh - 300px) * 1.4)), 200px); }
+    .ff-play { flex-direction: row; justify-content: center; align-items: center; flex: 1 1 auto; min-height: 0; gap: 18px; }
+    .ff-work { flex: 0 1 auto; }
+    .ff-ctrl { flex: 0 1 380px; }
+    .ff-cuts { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; }
+    .ff-cuts > .ff-h { justify-self: end; }
+    /* a sum or a re-slice: the source bars stand in a column beside the whole they build */
+    .ff-play[data-type="add"] .ff-work, .ff-play[data-type="equiv"] .ff-work { display: grid; grid-template-columns: auto auto; align-items: center; justify-items: center; column-gap: var(--ff-gap); row-gap: var(--ff-gap); }
+    .ff-play[data-type="add"] .ff-work > .ff-h, .ff-play[data-type="equiv"] .ff-work > .ff-h { grid-column: 1 / -1; }
+    .ff-play .ff-src { flex-direction: column; flex-wrap: nowrap; }
+    .ff-play[data-type="line"] { flex-direction: column; }
+    .ff-play[data-type="line"] .ff-work { width: 100%; }
+    .ff-play[data-type="compare"] .ff-vs { flex-wrap: nowrap; }
+    .ff-play[data-type="compare"] .ff-choice { min-width: 0; }
+  }
+  /* a laptop window or a phone on its side: the game starts right under the kit's HUD row (about 60 px), not under
+     the band the kit keeps for taller frames, and the bubble and the buttons get a little smaller */
+  @media (max-height: 760px), (max-width: 899px) { .ff[data-screen="level"] { top: min(var(--ok-safe-top), 66px); } }
+  @media (max-height: 440px) { .ff-tip { display: none; } }
+  @media (max-height: 560px) {
+    .ff[data-screen="level"] { --ff-gap: 8px; --ff-pad: 6px; padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
+    .ff[data-screen="level"] .ff-main { gap: 6px; }
+    .ff[data-screen="level"] .ff-say { min-height: 44px; padding: 4px 10px; }
+    .ff[data-screen="level"] .ff-say svg { width: 36px; height: 36px; }
+    .ff[data-screen="level"] .ff-say p { font-size: .86em; }
+    .ff[data-screen="level"] .ff-tile { min-height: 44px; padding: 4px 10px; }
+    .ff[data-screen="level"] .ff-read { min-height: 44px; font-size: 1.3em; padding: 2px 12px; }
+    .ff[data-screen="level"] .ff-bar { min-height: 36px; }
+    .ff[data-screen="level"] .ff-pill { min-height: 36px; }
+    .ff[data-screen="level"] .ff-h { font-size: .95em; }
+    .ff-tick button { width: 44px; height: 44px; }
+    .ff-line { padding-top: 10px; }
+    .ff-choice { padding: 8px; gap: 4px; }
+  }
   /* the chapter's order picker: a card with the chapter's line, the orders in even rows (3 + 3, never 5 + a lone 6) */
   .ff-pick { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(100%, 560px); margin: 12px 0 auto; padding: 18px 16px 20px; flex: none;
     background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; box-shadow: 0 5px 0 var(--ok-edge); text-align: center; }
@@ -123,14 +181,28 @@ function goalOf(level) {
 }
 
 /** One order on the production line. Actions: cut {n}, tap {i} (toggle a piece), place {i} (number line),
- *  pick {side} (compare), serve {}. A wrong serve is never a fail: it is a clue, counted against the stars. */
+ *  pick {side} (compare), add-whole {} and remove-whole {} (a second cake for an order of more than one whole),
+ *  serve {}. A wrong serve is never a fail: it is a clue, counted against the stars.
+ *  Every order starts with ONE whole on the table. An order of more than one whole (goal.wholes > 1, such as 5/4)
+ *  lets the player add wholes up to that number and take extra ones away again; one slicer cuts every whole on the
+ *  table the same way, so the parts keep one size (fourths stay fourths) and the denominator stays one number. */
 class Run {
   constructor(level, seed) {
     this.level = level; this.type = level.type || 'slice'; this.seed = seed == null ? 1 : seed;
     this.goal = goalOf(level);
     const startDenom = this.type === 'equiv' ? level.from[1] : 0;
     const startTaken = this.type === 'equiv' ? new Set(Array.from({ length: level.from[0] }, (_, i) => i)) : new Set();
-    this.s = { phase: 'play', denom: startDenom, taken: startTaken, placed: -1, picked: -1, wrong: 0, serves: 0, done: false, failed: false, lastWhy: '' };
+    this.s = { phase: 'play', denom: startDenom, taken: startTaken, wholes: 1, placed: -1, picked: -1, wrong: 0, serves: 0, done: false, failed: false, lastWhy: '' };
+  }
+  /** Room for one more whole on the table: only on orders of more than one whole, up to the number they need. */
+  canAddWhole() { return !this.s.done && (this.type === 'slice' || this.type === 'add') && this.s.wholes < this.goal.wholes; }
+  addWhole() { if (!this.canAddWhole()) return { ok: false }; this.s.wholes++; return { ok: true }; }
+  /** Takes the last whole away again (an undo); any of its parts on the tray come off with it. */
+  removeWhole() {
+    const s = this.s; if (s.done || s.wholes <= 1) return { ok: false };
+    s.wholes--;
+    if (s.denom) { const keep = s.denom * s.wholes; for (const i of [...s.taken]) if (i >= keep) s.taken.delete(i); }
+    return { ok: true };
   }
   get takenCount() { return this.s.taken.size; }
   current() { return this.s.denom ? frac(this.takenCount, this.s.denom) : null; }
@@ -145,7 +217,7 @@ class Run {
   }
   tap(i) {
     if (this.s.done || !this.s.denom) return { ok: false };
-    const total = this.s.denom * this.goal.wholes;
+    const total = this.s.denom * this.s.wholes;
     if (!(i >= 0 && i < total)) return { ok: false };
     if (this.s.taken.has(i)) this.s.taken.delete(i); else this.s.taken.add(i);
     return { ok: true };
@@ -172,9 +244,9 @@ class Run {
         // own rule: they ask for one named cut.
         const finer = (this.type === 'slice' || this.type === 'add') && s.denom % g.denom === 0;
         if (!finer) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
-        else { const want = g.take * (s.denom / g.denom); if (this.takenCount !== want) why = this.takenCount < want ? 'too-few' : 'too-many'; }
+        else { const want = g.take * (s.denom / g.denom); if (this.takenCount !== want) why = this.takenCount < want ? (want > s.denom * s.wholes ? 'more-wholes' : 'too-few') : 'too-many'; }
       }
-      else if (this.takenCount !== g.take) why = this.takenCount < g.take ? 'too-few' : 'too-many';
+      else if (this.takenCount !== g.take) why = this.takenCount < g.take ? (g.take > s.denom * s.wholes ? 'more-wholes' : 'too-few') : 'too-many';
       else if (!sameValue([this.takenCount, s.denom], g.value)) why = 'value';
       if (!why) { s.done = true; s.phase = 'done'; return { ok: true, done: true }; }
     }
@@ -186,6 +258,8 @@ class Run {
     if (a.t === 'tap') return this.tap(a.i);
     if (a.t === 'place') return this.place(a.i);
     if (a.t === 'pick') return this.pick(a.side);
+    if (a.t === 'add-whole') return this.addWhole();
+    if (a.t === 'remove-whole') return this.removeWhole();
     if (a.t === 'serve') return this.serve();
     return { ok: false };
   }
@@ -193,13 +267,14 @@ class Run {
     const s = this.s, g = this.goal; if (s.done) return null;
     if (this.type === 'compare') return { t: 'pick', side: g.take };
     if (this.type === 'line') return s.placed === g.take ? { t: 'serve' } : { t: 'place', i: g.take };
+    if (s.wholes < g.wholes) return { t: 'add-whole' };   // the second cake first, then one cut for both
     if (s.denom !== g.denom) return { t: 'cut', n: g.denom };
     if (this.takenCount < g.take) { for (let i = 0; i < g.denom * g.wholes; i++) if (!s.taken.has(i)) return { t: 'tap', i }; }
     if (this.takenCount > g.take) { const it = s.taken.values().next(); return { t: 'tap', i: it.value }; }
     return { t: 'serve' };
   }
   stars() { return this.s.done ? (this.s.wrong === 0 ? 3 : this.s.wrong === 1 ? 2 : 1) : 0; }
-  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, denom: s.denom, taken: [...s.taken].sort((a, b) => a - b), takenCount: this.takenCount, placed: s.placed, picked: s.picked, wrong: s.wrong, serves: s.serves, done: s.done, lastWhy: s.lastWhy, goal: this.goal })); }
+  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, denom: s.denom, taken: [...s.taken].sort((a, b) => a - b), takenCount: this.takenCount, wholes: s.wholes, canAddWhole: this.canAddWhole(), placed: s.placed, picked: s.picked, wrong: s.wrong, serves: s.serves, done: s.done, lastWhy: s.lastWhy, goal: this.goal })); }
 }
 function solve(level, seed) { const run = new Run(level, seed), out = []; let guard = 0; while (!run.s.done && guard++ < 200) { const a = run.advice(); if (!a) break; out.push(a); run.act(a); } return out; }
 function play(level, actions, seed) { const run = new Run(level, seed); for (const a of actions || []) run.act(a); return run; }
@@ -334,8 +409,8 @@ const LEVELS = [
     hints: ['A mistake is a clue about how your brain is thinking.', 'The bottom number names the part size. Part sizes are not added.', 'Re-slice into fourths: 2/4 + 1/4 = 3/4.'],
     check: { q: 'What went wrong in 1/2 + 1/4 = 2/6?', tiles: ['Nothing, it is right', 'The bottom numbers were added, but they name the part size', 'The top numbers were added'], answer: 1 } }),
   L('rc-6', 'recipe', 'slice', { denom: 4, target: [5, 4], wholes: 2, whole: 'cake',
-    intro: 'The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Use two cakes and serve all 5 fourths!',
-    hints: ['5/4 means 5 parts, each one fourth.', 'One cake only holds 4 fourths, so fetch a second cake.', 'Fill the first cake, then take 1 part from the second.'],
+    intro: 'The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Tap Add a cake to get a second cake, then cut both cakes into fourths and serve all 5 fourths!',
+    hints: ['5/4 means 5 parts, each one fourth.', 'One cake only holds 4 fourths, so tap Add a cake to get a second cake.', 'Cut into 4 to slice both cakes. Fill the first cake, then take 1 part from the second.'],
     check: { q: 'What is 5/4?', tiles: ['Less than one whole', 'Exactly one whole', 'More than one whole: one whole and 1/4 more'], answer: 2 } }),
 ];
 const THEN = { '1b': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } }, '2': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } } };
@@ -431,14 +506,15 @@ const I18N = {
     "hint.rc-5.1": "A mistake is a clue about how your brain is thinking.",
     "hint.rc-5.2": "The bottom number names the part size. Part sizes are not added.",
     "hint.rc-5.3": "Re-slice into fourths: 2/4 + 1/4 = 3/4.",
-    "intro.rc-6": "The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Use two cakes and serve all 5 fourths!",
+    "intro.rc-6": "The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Tap Add a cake to get a second cake, then cut both cakes into fourths and serve all 5 fourths!",
     "hint.rc-6.1": "5/4 means 5 parts, each one fourth.",
-    "hint.rc-6.2": "One cake only holds 4 fourths, so fetch a second cake.",
-    "hint.rc-6.3": "Fill the first cake, then take 1 part from the second.",
+    "hint.rc-6.2": "One cake only holds 4 fourths, so tap Add a cake to get a second cake.",
+    "hint.rc-6.3": "Cut into 4 to slice both cakes. Fill the first cake, then take 1 part from the second.",
     "why.no-cut": "Cut the whole into equal parts first. Pick a slicer!",
     "why.cut-size": "Those parts cannot build this order exactly. Pick a slicer whose parts fit it: its own number of parts, or a finer cut that splits each one evenly.",
     "why.reslice": "Re-slice finer: cut each part smaller so the tray fits the new size.",
     "why.too-few": "Not enough on the tray yet. Count the order again.",
+    "why.more-wholes": "One cake cannot hold that many parts. Tap Add a cake to get another one, then fill it.",
     "why.too-many": "Too much on the tray! Tap a part to take it back off.",
     "why.value": "That is not the same amount. Look at the tray and try again.",
     "why.line": "Not that spot. Count the hops from 0.",
@@ -700,14 +776,19 @@ function sectorPath(cx, cy, r, a0, a1) {
   const [x0, y0] = p(a0), [x1, y1] = p(a1), large = a1 - a0 > Math.PI ? 1 : 0;
   return `M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
 }
-function wholeSVG(level, denom, taken, wholes, interactive) {
-  const wrap = $('div', 'ff-stage');
+/** The wholes on the table. o.many: the order allows more than one whole (they are then named Cake 1, Cake 2);
+ *  o.canAdd shows the Add a cake card after the last whole; o.canRemove puts a Remove button on the last extra one. */
+function wholeSVG(level, denom, taken, wholes, interactive, o) {
+  o = o || {};
+  const wrap = $('div', 'ff-stage'), cake = level.whole === 'cake', noun = cake ? 'Cake' : 'Bar';
   for (let w = 0; w < wholes; w++) {
     const box = $('div', 'ff-whole');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    if (level.whole === 'cake') {
-      svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('width', '190'); svg.setAttribute('height', '190');
-      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', denom === 1 ? 'A whole cake, not cut yet' : 'Cake cut into ' + denom + ' equal parts');
+    const name = o.many ? noun + ' ' + (w + 1) : '';
+    const partLabel = i => (name ? name + ', part ' : 'Part ') + (i + 1) + ' of ' + denom;
+    if (cake) {
+      svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('width', '190'); svg.setAttribute('height', '190'); svg.setAttribute('class', 'ff-cake');
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', (name ? name + ': ' : '') + (denom === 1 ? 'A whole cake, not cut yet' : 'Cake cut into ' + denom + ' equal parts'));
       if (denom === 1) { // a whole cake: one round, no cuts (a 360-degree sector draws nothing)
         const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         c.setAttribute('cx', '100'); c.setAttribute('cy', '100'); c.setAttribute('r', '92');
@@ -720,14 +801,14 @@ function wholeSVG(level, denom, taken, wholes, interactive) {
         p.setAttribute('d', sectorPath(100, 100, 92, a0, a1));
         p.setAttribute('fill', taken.has(idx) ? 'var(--ff-num)' : 'var(--ok-bg2, #eee)');
         p.setAttribute('stroke', 'var(--ok-edge)'); p.setAttribute('stroke-width', '3');
-        if (interactive) { p.setAttribute('class', 'ff-piece'); p.setAttribute('tabindex', '0'); p.setAttribute('role', 'button'); p.setAttribute('aria-label', 'Part ' + (i + 1) + ' of ' + denom); p.dataset.i = idx;
+        if (interactive) { p.setAttribute('class', 'ff-piece'); p.setAttribute('tabindex', '0'); p.setAttribute('role', 'button'); p.setAttribute('aria-label', partLabel(i)); p.dataset.i = idx;
           p.addEventListener('click', () => doAction({ t: 'tap', i: idx }));
           p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doAction({ t: 'tap', i: idx }); } }); }
         svg.appendChild(p);
       }
     } else {
-      svg.setAttribute('viewBox', '0 0 280 110'); svg.setAttribute('width', '260'); svg.setAttribute('height', '102');
-      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', denom === 1 ? 'A whole bar, not cut yet' : 'Bar cut into ' + denom + ' equal parts');
+      svg.setAttribute('viewBox', '0 0 280 110'); svg.setAttribute('width', '260'); svg.setAttribute('height', '102'); svg.setAttribute('class', 'ff-barsvg');
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', (name ? name + ': ' : '') + (denom === 1 ? 'A whole bar, not cut yet' : 'Bar cut into ' + denom + ' equal parts'));
       const pw = 264 / denom;
       for (let i = 0; i < denom; i++) {
         const idx = w * denom + i;
@@ -735,15 +816,26 @@ function wholeSVG(level, denom, taken, wholes, interactive) {
         r.setAttribute('x', 8 + i * pw); r.setAttribute('y', '14'); r.setAttribute('width', pw - 3); r.setAttribute('height', '82');
         r.setAttribute('rx', '8'); r.setAttribute('fill', taken.has(idx) ? 'var(--ff-num)' : 'var(--ok-bg2, #eee)');
         r.setAttribute('stroke', 'var(--ok-edge)'); r.setAttribute('stroke-width', '3');
-        if (interactive) { r.setAttribute('class', 'ff-piece'); r.setAttribute('tabindex', '0'); r.setAttribute('role', 'button'); r.setAttribute('aria-label', 'Part ' + (i + 1) + ' of ' + denom); r.dataset.i = idx;
+        if (interactive) { r.setAttribute('class', 'ff-piece'); r.setAttribute('tabindex', '0'); r.setAttribute('role', 'button'); r.setAttribute('aria-label', partLabel(i)); r.dataset.i = idx;
           r.addEventListener('click', () => doAction({ t: 'tap', i: idx }));
           r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doAction({ t: 'tap', i: idx }); } }); }
         svg.appendChild(r);
       }
     }
     box.appendChild(svg);
-    box.appendChild($('small', '', wholes > 1 ? 'Cake ' + (w + 1) : (level.whole === 'cake' ? 'One whole cake' : 'One whole bar')));
+    const cap = $('div', 'ff-cap'); cap.appendChild($('small', '', name || (cake ? 'One whole cake' : 'One whole bar')));
+    if (o.canRemove && w > 0 && w === wholes - 1) {
+      const x = $('button', 'ff-x', 'Remove'); x.setAttribute('aria-label', 'Take ' + name.toLowerCase() + ' away');
+      x.addEventListener('click', () => doAction({ t: 'remove-whole' })); cap.appendChild(x);
+    }
+    box.appendChild(cap);
     wrap.appendChild(box);
+  }
+  if (o.canAdd) {
+    const add = $('button', 'ff-add'); add.setAttribute('aria-label', cake ? 'Add a cake' : 'Add a bar');
+    add.appendChild($('b', '', '+')); add.appendChild($('span', '', cake ? 'Add a cake' : 'Add a bar'));
+    add.addEventListener('click', () => doAction({ t: 'add-whole' }));
+    wrap.appendChild(add);
   }
   return wrap;
 }
@@ -792,10 +884,14 @@ function renderLevel() {
   if (!S.lock) bar.appendChild(btn('Counters', { kind: 'quiet', icon: 'home', onPress: () => showChapterStrip(S.chapter, S.levelIx) }));
   const pill = $('div', 'ff-pill'); pill.appendChild($('span', '', CH_BY_ID[S.chapter].title + ' · Order ' + (S.levelIx + 1) + ' of ' + levelsFor(S.chapter, S.band).length)); bar.appendChild(pill);
   main.appendChild(sayEl());
-  main.appendChild($('p', 'ff-h', orderTitle()));
+  // the play area: the order and its wholes (work), then the slicer, the tray reading and the buttons (ctrl).
+  // Side by side on a wide, short frame (a laptop window), one column on a phone or a tall tablet.
+  const play = $('div', 'ff-play'), work = $('div', 'ff-work'), ctrl = $('div', 'ff-ctrl'); play.append(work, ctrl); main.appendChild(play);
+  work.appendChild($('p', 'ff-h', orderTitle()));
   const run = S.run, snap = run.snapshot(), L = S.level;
+  play.dataset.type = L.type;
   if (L.type === 'compare') {
-    const vs = $('div', 'ff-vs'); main.appendChild(vs);
+    const vs = $('div', 'ff-vs'); work.appendChild(vs);
     [L.a, L.b].forEach((f, side) => {
       const b = $('button', 'ff-choice');
       b.appendChild(miniBar(f, 'Same whole'));
@@ -805,7 +901,7 @@ function renderLevel() {
       vs.appendChild(b);
     });
   } else if (L.type === 'line') {
-    const line = $('div', 'ff-line'); main.appendChild(line);
+    const line = $('div', 'ff-line'); work.appendChild(line);
     for (let i = 0; i <= L.denom; i++) {
       const t = $('div', 'ff-tick');
       const b = $('button', '', i === 0 ? '0' : i === L.denom ? '1' : String(i));
@@ -816,16 +912,15 @@ function renderLevel() {
       line.appendChild(t);
     }
   } else {
-    if (L.type === 'add') { const src = $('div', 'ff-stage'); src.append(miniBar(L.a, fr(L.a)), miniBar(L.b, fr(L.b))); main.appendChild(src); }
-    if (L.type === 'equiv') { const src = $('div', 'ff-stage'); src.appendChild(miniBar(L.from, 'You start with ' + fr(L.from))); main.appendChild(src); }
-    const taken = new Set(snap.taken);
-    main.appendChild(wholeSVG(L, snap.denom || 1, taken, snap.denom ? run.goal.wholes : 1, !!snap.denom)); // uncut (1 part) until a slicer is picked: the order's own cut is never given away
-    if (!snap.denom) main.appendChild($('p', 'ff-h', 'Pick a slicer to cut the whole into equal parts.'));
-    const read = $('div', 'ff-read');
-    read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
-    if (snap.denom) { const sm = $('small', '', snap.takenCount === 0 ? 'nothing on the tray yet' : 'on the tray'); read.appendChild(sm); }
-    main.appendChild(read);
-    const cuts = $('div', 'ff-row'); main.appendChild(cuts);
+    if (L.type === 'add') { const src = $('div', 'ff-stage ff-src'); src.append(miniBar(L.a, fr(L.a)), miniBar(L.b, fr(L.b))); work.appendChild(src); }
+    if (L.type === 'equiv') { const src = $('div', 'ff-stage ff-src'); src.appendChild(miniBar(L.from, 'You start with ' + fr(L.from))); work.appendChild(src); }
+    const taken = new Set(snap.taken), many = run.goal.wholes > 1;
+    // uncut (1 part) until a slicer is picked: the order's own cut is never given away. Only the wholes the player
+    // put on the table are drawn: a second cake comes from Add a cake, never from a slicer.
+    work.appendChild(wholeSVG(L, snap.denom || 1, taken, snap.wholes, !!snap.denom, { many, canAdd: snap.canAddWhole, canRemove: !snap.done }));
+    const noun = L.whole === 'cake' ? 'cake' : 'bar';
+    if (!snap.denom) ctrl.appendChild($('p', 'ff-h ff-tip', snap.wholes > 1 ? 'Pick a slicer. It cuts every ' + noun + ' into the same equal parts.' : snap.canAddWhole ? 'Need more than one ' + noun + '? Tap Add a ' + noun + '. Then pick a slicer.' : 'Pick a slicer to cut the whole into equal parts.'));
+    const cuts = $('div', 'ff-row ff-cuts'); ctrl.appendChild(cuts);
     cuts.appendChild($('span', 'ff-h', 'Slicer:'));
     for (const n of E.CUTS) {
       const t = $('button', 'ff-tile', 'Cut into ' + n);
@@ -834,7 +929,13 @@ function renderLevel() {
       cuts.appendChild(t);
     }
   }
-  const tools = $('div', 'ff-row'); main.appendChild(tools);
+  const tools = $('div', 'ff-row ff-tools'); ctrl.appendChild(tools);
+  if (L.type !== 'compare' && L.type !== 'line') {
+    const read = $('div', 'ff-read');
+    read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
+    if (snap.denom) { const sm = $('small', '', snap.takenCount === 0 ? 'nothing on the tray yet' : 'on the tray'); read.appendChild(sm); }
+    tools.appendChild(read);
+  }
   if (L.type !== 'compare') tools.appendChild(btn('Serve it!', { onPress: () => doAction({ t: 'serve' }) }));
   tools.appendChild(btn('Hint', { kind: 'quiet', onPress: () => giveHint() }));
   if (snap.wrong >= 2 && !S.lesson) tools.appendChild(btn('Skip order', { kind: 'quiet', onPress: () => skipLevel() }));
@@ -845,6 +946,7 @@ const WHY = {
   'cut-size': 'Those parts cannot build this order exactly. Pick a slicer whose parts fit it: its own number of parts, or a finer cut that splits each one evenly.',
   'reslice': 'Re-slice finer: cut each part smaller so the tray fits the new size.',
   'too-few': 'Not enough on the tray yet. Count the order again.',
+  'more-wholes': 'One cake cannot hold that many parts. Tap Add a cake to get another one, then fill it.',
   'too-many': 'Too much on the tray! Tap a part to take it back off.',
   'value': 'That is not the same amount. Look at the tray and try again.',
   'line': 'Not that spot. Count the hops from 0.',
@@ -856,7 +958,7 @@ function doAction(a) {
   const before = run.snapshot();
   const r = run.act(a);
   if (!r.ok) return r;
-  if (a.t === 'cut') sfx('select');
+  if (a.t === 'cut' || a.t === 'add-whole' || a.t === 'remove-whole') sfx('select');
   if (a.t === 'tap' || a.t === 'place') sfx('tap');
   if (r.wrong) {
     S.mood = 'sad';
@@ -868,7 +970,7 @@ function doAction(a) {
   }
   S.mood = 'happy';
   if (run.s.done) { levelComplete(); return r; }
-  if (a.t === 'cut' || a.t === 'tap' || a.t === 'place') { S.sayText = S.level.intro; S.sayKey = 'intro.' + S.level.id; }
+  if (a.t === 'cut' || a.t === 'tap' || a.t === 'place' || a.t === 'add-whole' || a.t === 'remove-whole') { S.sayText = S.level.intro; S.sayKey = 'intro.' + S.level.id; }
   renderLevel();
   return r;
 }
@@ -982,7 +1084,7 @@ function report(level, stars, check, conf, skipped) {
 function testState() {
   const run = S.run, snap = run ? run.snapshot() : null;
   return { ff: true, screen: S.screen, chapter: S.chapter, level: S.chapter ? S.levelIx + 1 : 0, levelId: S.level ? S.level.id : null, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
-    denom: snap ? snap.denom : 0, takenCount: snap ? snap.takenCount : 0, placed: snap ? snap.placed : -1, picked: snap ? snap.picked : -1, wrong: snap ? snap.wrong : 0, done: snap ? snap.done : false,
+    denom: snap ? snap.denom : 0, wholes: snap ? snap.wholes : 0, takenCount: snap ? snap.takenCount : 0, placed: snap ? snap.placed : -1, picked: snap ? snap.picked : -1, wrong: snap ? snap.wrong : 0, done: snap ? snap.done : false,
     stars: S.chapter ? chapterStars(S.chapter, S.band) : 0, levelStars: S.level ? starsOf(S.level.id) : 0, ffScore: S.lastScore, label: S.lastLabel, hint: S.hint, checks: S.checks, ready: true, busy: S.busy, cards: cardPause, report: S.lastReport || null };
 }
 Object.assign(window.__brbTest, {

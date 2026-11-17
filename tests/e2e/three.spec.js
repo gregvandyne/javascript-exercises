@@ -26,8 +26,6 @@ test('Star Island: start from the template, real 3D under the frame CSP, offline
   const csp = [];
   page.on('response', r => { if (r.url().includes('/frame/')) csp.push(r.headers()['content-security-policy'] || ''); });
   await signup(page, uniq('Tri'));
-  await page.goto('/build');
-  await expect(page.locator('.tplcard[data-template="island"]')).toContainText('Star Island');
   const { id } = await templateGame(page, { template: 'island' });
   const v1 = (await studioState(page, id)).current;
   expect(v1.safety).toBe('pass');

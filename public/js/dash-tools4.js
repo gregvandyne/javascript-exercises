@@ -13,6 +13,7 @@ import { parts } from './dash-tools.js';
 import { format } from './i18n-format.js';
 import { geoboard } from './dash-shapeboard.js';
 import { tip } from './dash-tip.js';
+import { numParse } from './dash-num.js';
 
 const { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, ltr, svgPoint, iso } = parts;
 const minus = v => String(v).replace(/^-/, '−');
@@ -218,7 +219,9 @@ function angle(body, s, ctx) {
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let face, drag = null;
   const setA = (a, say = true) => { a = Math.max(0, Math.min(360, Math.round(a))); if (a === st.a) return; st.a = a; T.commit(); if (say) ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); };
-  const step = T.stepper(W.ray, () => `${st.a}°`, () => setA(st.a - st.step), () => setA(st.a + st.step), `${W.ray} −${st.step}°`, `${W.ray} +${st.step}°`);
+  // Typed: any whole degree 0-360 (the − and + step by the step chosen in Options).
+  const step = T.stepper(W.ray, () => `${st.a}°`, () => setA(st.a - st.step), () => setA(st.a + st.step), `${W.ray} −${st.step}°`, `${W.ray} +${st.step}°`,
+    { value: () => st.a, min: 0, max: 360, format: v => `${v}°`, parse: t => numParse(String(t).replace(/°$/, '')), set: a => { st.a = a; T.commit(); ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); } });
   T.top.appendChild(step);
   const presets = el('div', 'dt-seg'); presets.setAttribute('role', 'group'); presets.setAttribute('aria-label', W.ray);
   for (const a of [45, 90, 135, 180, 270]) { const b = btn(`${a}°`, 'btn btn-sm'); b.dir = 'ltr'; b.addEventListener('click', () => setA(a)); presets.appendChild(b); }
@@ -417,8 +420,10 @@ function transform(body, s, ctx) {
   const ops = T.seg(W.move, [['translate', W.translate, null, '➡️'], ['reflect', W.reflect, null, '🪞'], ['rotate', W.rotate, null, '🔄']], () => st.op, v => { st.op = v; T.commit(`${W[v]}: ${G.ruleText(tr())}`); });
   T.top.appendChild(ops);
   const tr = () => ({ op: st.op, dx: st.dx, dy: st.dy, axis: st.axis, turn: st.turn });
-  const dx = T.stepper('x', () => minus(st.dx), () => { if (st.dx > -8) { st.dx--; T.commit(G.ruleText(tr())); } }, () => { if (st.dx < 8) { st.dx++; T.commit(G.ruleText(tr())); } }, 'x −1', 'x +1');
-  const dy = T.stepper('y', () => minus(st.dy), () => { if (st.dy > -8) { st.dy--; T.commit(G.ruleText(tr())); } }, () => { if (st.dy < 8) { st.dy++; T.commit(G.ruleText(tr())); } }, 'y −1', 'y +1');
+  const dx = T.stepper('x', () => minus(st.dx), () => { if (st.dx > -8) { st.dx--; T.commit(G.ruleText(tr())); } }, () => { if (st.dx < 8) { st.dx++; T.commit(G.ruleText(tr())); } }, 'x −1', 'x +1',
+    { value: () => st.dx, min: -8, max: 8, set: n => { st.dx = n; T.commit(G.ruleText(tr())); } });
+  const dy = T.stepper('y', () => minus(st.dy), () => { if (st.dy > -8) { st.dy--; T.commit(G.ruleText(tr())); } }, () => { if (st.dy < 8) { st.dy++; T.commit(G.ruleText(tr())); } }, 'y −1', 'y +1',
+    { value: () => st.dy, min: -8, max: 8, set: n => { st.dy = n; T.commit(G.ruleText(tr())); } });
   const axis = rowSelect(W.axis, [['y', W.axisY], ['x', W.axisX], ['yx', W.axisYX], ['ynx', W.axisYNX]], st.axis, v => { st.axis = v; T.commit(G.ruleText(tr())); });
   const turn = rowSelect(W.turn, [90, 180, 270].map(n => [n, fill(W.deg, { n })]), st.turn, v => { st.turn = +v; T.commit(G.ruleText(tr())); });
   T.foot.append(dx, dy, axis, turn);
@@ -677,9 +682,16 @@ function coins(body, s, ctx) {
   const mode = T.seg(W.mode, [['count', W.count, null, '🧮'], ['change', W.change, null, '🔁']], () => st.mode, v => { st.mode = v; T.commit(W[v]); });
   T.top.appendChild(mode);
   const unit = () => (st.cur === 'gen' ? 1 : 1);
-  const cost = T.stepper(W.cost, () => money(st.cost), () => { if (st.cost > 0) { st.cost -= unit(); T.commit(money(st.cost)); } }, () => { if (st.cost < st.paid) { st.cost += unit(); T.commit(money(st.cost)); } }, `${W.cost} −`, `${W.cost} +`);
+  // Typed amounts are in the money's own units ("1.25" is $1.25; the counters' own currency counts whole numbers): what it
+  // costs from 0 to what was paid, what was paid from the cost to 100 (the most the state keeps, 10000 cents). − and +
+  // on Paid with still step through the notes.
+  const cents = () => st.cur !== 'gen';
+  const amount = { decimal: cents(), format: money, parse: t => { const v = numParse(String(t).replace(/[^\d.,\-−–\s]/g, ''), { dec: cents() ? 2 : 0 }); return v === null ? null : Math.round(cents() ? v * 100 : v); } };
+  const cost = T.stepper(W.cost, () => money(st.cost), () => { if (st.cost > 0) { st.cost -= unit(); T.commit(money(st.cost)); } }, () => { if (st.cost < st.paid) { st.cost += unit(); T.commit(money(st.cost)); } }, `${W.cost} −`, `${W.cost} +`,
+    { ...amount, value: () => st.cost, min: 0, max: () => st.paid, set: v => { st.cost = v; T.commit(money(st.cost)); } });
   const paidSteps = () => [...new Set(G.denoms(st.cur).map(d => d.v).filter(v => v >= 10).concat([st.paid]))].sort((a, b) => a - b);
-  const paid = T.stepper(W.paid, () => money(st.paid), () => { const p = paidSteps().filter(v => v < st.paid && v >= st.cost).pop(); if (p !== undefined) { st.paid = p; T.commit(money(st.paid)); } }, () => { const p = paidSteps().find(v => v > st.paid); if (p !== undefined) { st.paid = p; T.commit(money(st.paid)); } }, `${W.paid} −`, `${W.paid} +`);
+  const paid = T.stepper(W.paid, () => money(st.paid), () => { const p = paidSteps().filter(v => v < st.paid && v >= st.cost).pop(); if (p !== undefined) { st.paid = p; T.commit(money(st.paid)); } }, () => { const p = paidSteps().find(v => v > st.paid); if (p !== undefined) { st.paid = p; T.commit(money(st.paid)); } }, `${W.paid} −`, `${W.paid} +`,
+    { ...amount, value: () => st.paid, min: () => st.cost, max: 10000, set: v => { st.paid = v; T.commit(money(st.paid)); } });
   T.top.append(cost, paid);
   const clear = ibtn('🧹', W.clear);
   T.foot.append(clear);

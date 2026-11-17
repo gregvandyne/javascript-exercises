@@ -1,6 +1,7 @@
-// Navigation (docs/decisions.md "Navigation shells" and "Play and Learn"): a first tab built for each role, Play and Learn
-// shared by all. Every role's phone tab bar and desktop top bar, in order, with paid-plan pages on and off; Plans in every
-// signed-in list while they are on (kids' and students' too); where '/' takes each role; the kid's bar byte for byte; the stand-in labels until a language has the new words (never
+// Navigation (docs/decisions.md "Navigation shells", "Play and Learn" and "A quieter top bar"): a first tab built for each
+// role, Play and Learn shared by all. Every role's phone tab bar and desktop top bar, in order, with paid-plan pages on and
+// off; no Plans, School or theme menu in either bar (they are in the account menu behind the avatar: Plans for adults
+// only, School for school admins; signed out, Plans and the theme are in the footer); where '/' takes each role; the kid's bar byte for byte; the stand-in labels until a language has the new words (never
 // English on a translated page); the page -> current tab mapping; staff's friend badges on Me; search in every top bar.
 import './_setup.js';
 import test from 'node:test';
@@ -54,48 +55,45 @@ const guest = auth.createGuest();
 // Play is '/' for those who land on it (signed out, kids, the platform admin) and /play for everyone whose first tab is
 // another one; Search is the top bar's field for everyone, never a tab; Live (hosting) only while Oomba Live is on (it is).
 const ON = {
-  out: { tabs: ['/', '/learn', '/build', '/parents', '/plans', '/login'], top: ['/', '/learn', '/build', '/plans', '/parents', '/teachers'] },
-  grownup: { tabs: ['/family', '/play', '/learn', '/build', '/plans', '/family/account'], top: ['/family', '/play', '/learn', '/build', '/plans'] },
-  schoolAdmin: { tabs: ['/school', '/teach', '/learn', '/play', '/plans', '/me'], top: ['/school', '/teach', '/learn', '/play', '/live', '/plans'] },
-  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/plans', '/me'], top: ['/teach', '/learn', '/play', '/live', '/plans'] },
-  admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/admin/schools', '/plans'] },
-  student: { tabs: ['/classes', '/play', '/learn', '/build', '/plans', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends', '/plans'] },
-  kid: { tabs: ['/', '/learn', '/build', '/friends', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/plans'] },
+  out: { tabs: ['/', '/learn', '/build', '/parents', '/login'], top: ['/', '/learn', '/build', '/parents', '/teachers'] },
+  grownup: { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
+  schoolAdmin: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
+  teacher: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
+  admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
+  student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
+  kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
 };
 const KEYS = {
-  out: ['play', 'learn', 'build', 'grownups', 'plans', 'signin'],
-  grownup: ['family', 'play', 'learn', 'build', 'plans', 'account'],
-  schoolAdmin: ['school', 'classroom', 'learn', 'play', 'plans', 'me'],
-  teacher: ['classroom', 'learn', 'play', 'live', 'plans', 'me'],
-  admin: ['play', 'learn', 'build', 'schools', 'plans', 'me'],
-  student: ['class', 'play', 'learn', 'build', 'plans', 'me'],
-  kid: ['play', 'learn', 'build', 'friends', 'plans', 'me'],
+  out: ['play', 'learn', 'build', 'grownups', 'signin'],
+  grownup: ['family', 'play', 'learn', 'build', 'account'],
+  schoolAdmin: ['classroom', 'build', 'live', 'me'],
+  teacher: ['classroom', 'build', 'live', 'me'],
+  admin: ['play', 'learn', 'build', 'schools', 'me'],
+  student: ['class', 'play', 'learn', 'build', 'me'],
+  kid: ['play', 'learn', 'build', 'friends', 'me'],
 };
 /** Where '/' takes each role (null: it shows Play). */
 const LANDS = { out: null, grownup: '/family', schoolAdmin: '/school', teacher: '/teach', admin: null, student: '/classes', kid: null };
 const PEOPLE = [['out', null], ['out', guest], ['grownup', mum], ['schoolAdmin', head], ['teacher', teacher], ['admin', boss], ['student', pupil], ['student', ownKid], ['kid', kid]];
 /** The page each role's menus are read on: Play, which is '/' for some and /play for the rest. */
 const playOf = role => (LANDS[role] ? '/play' : '/');
-const KID_TAB = "<nav class=\"tabbar\" aria-label=\"Main\">\n    <a class=\"tab\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span><span class=\"tab-t\">Play</span></a><a class=\"tab\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span><span class=\"tab-t\">Learn</span></a><a class=\"tab\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span><span class=\"tab-t\">Build</span></a><a class=\"tab\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span><span class=\"tab-t\">Friends</span></a><a class=\"tab\" href=\"/plans\" ><span class=\"emo\" aria-hidden=\"true\">⭐</span><span class=\"tab-t\">Plans</span></a>\n    <a class=\"tab\" href=\"/me\" ><span class=\"emo\" aria-hidden=\"true\">🦊</span><span class=\"tab-t\">Me</span></a>\n  </nav>";
-const KID_TOP = "<nav class=\"topnav\" aria-label=\"Main\">\n      <a class=\"navlink\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span>Play</a><a class=\"navlink\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span>Learn</a><a class=\"navlink\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span>Build</a><a class=\"navlink\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span>Friends</a><a class=\"navlink\" href=\"/plans\" ><span class=\"emo\" aria-hidden=\"true\">⭐</span>Plans</a>\n    </nav>";
+const KID_TAB = "<nav class=\"tabbar\" aria-label=\"Main\">\n    <a class=\"tab\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span><span class=\"tab-t\">Play</span></a><a class=\"tab\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span><span class=\"tab-t\">Learn</span></a><a class=\"tab\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span><span class=\"tab-t\">Build</span></a><a class=\"tab\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span><span class=\"tab-t\">Friends</span></a>\n    <a class=\"tab\" href=\"/me\" ><span class=\"emo\" aria-hidden=\"true\">🦊</span><span class=\"tab-t\">Me</span></a>\n  </nav>";
+const KID_TOP = "<nav class=\"topnav\" aria-label=\"Main\">\n      <a class=\"navlink\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span>Play</a><a class=\"navlink\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span>Learn</a><a class=\"navlink\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span>Build</a><a class=\"navlink\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span>Friends</a>\n    </nav>";
 const off = list => list.filter(h => h !== '/plans');
 
-test('shellFor: every role\'s tab keys, in order, with paid-plan pages on and off; Plans in every list while on', () => {
+test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages on and off; never Plans or School', () => {
   const req = {};
-  for (const [role, u] of PEOPLE) {
-    const s = shellFor(u, req);
-    assert.equal(s.role, role, u ? u.username : 'signed out');
-    assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role], role);
-    assert.ok(s.tabs.some(([k]) => k === 'plans') && s.top.some(([k]) => k === 'plans'), `${role}: Plans while plans are on`);
+  for (const on of [true, false]) {
+    if (!on) config.stripeApiKey = '';
+    for (const [role, u] of PEOPLE) {
+      const s = shellFor(u, req);
+      assert.equal(s.role, role, u ? u.username : 'signed out');
+      assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role], `${role}, plans ${on ? 'on' : 'off'}`);
+      for (const k of ['plans', 'school']) assert.ok(!s.tabs.some(([x]) => x === k) && !s.top.some(([x]) => x === k), `${role}: no ${k} in either bar`);
+    }
   }
-  config.stripeApiKey = '';
-  for (const [role, u] of PEOPLE) {
-    const s = shellFor(u, req);
-    assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role].filter(k => k !== 'plans'), `${role}, plans off`);
-    assert.ok(!s.top.some(([k]) => k === 'plans'), `${role}: no Plans while plans are off`);
-  }
-  // With billing off: five tabs for everyone, the platform admin too now that staff have no Friends tab.
-  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 5); assert.equal(shellFor(teacher, req).tabs.length, 5);
+  // Five tabs for everyone but staff: Classroom · Build · Live · Me for teachers and school admins.
+  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.
@@ -119,7 +117,7 @@ test('every role\'s phone tab bar and desktop top bar on the page, plans on and 
   }
 });
 
-test('the kid\'s tab bar and top bar, byte for byte (Play · Learn · Build · Friends · Plans · Me)', async () => {
+test('the kid\'s tab bar and top bar, byte for byte (Play · Learn · Build · Friends · Me)', async () => {
   // A new kid's first sign-in brings the team's automatic welcome (services/team.js, docs/decisions.md "Automatic
   // welcome"): their one unread message, so a badge on Friends. Read, the bars are exactly these.
   const official = auth.getUserByName(auth.OFFICIAL);
@@ -161,11 +159,23 @@ test('\'/\' per role: Play for the signed out, guests, kids and the platform adm
   assert.equal(homeFor(boss), '/admin', 'the platform admin still signs in to /admin');
 });
 
-test('the avatar button: Account for a grown-up, Me for staff, students and kids, Sign in signed out', async () => {
-  const btn = s => (/<a class="me-btn" href="([^"]+)"/.exec(s) || [])[1];
-  assert.equal(btn((await get(mum, '/play')).text), '/family/account');
-  for (const u of [head, teacher, boss, pupil, kid]) assert.equal(btn((await get(u, '/play')).text), '/me', u.username);
+test('the avatar: signed in it opens the account menu (Me, or Account for a grown-up, first); signed out it is Sign in', async () => {
+  const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(topbar(s)) || [''])[0];
+  const first = s => (/<div class="acct-menu[^"]*">[\s\S]*?<a [^>]*?href="([^"]+)"/.exec(menu(s)) || [])[1];
+  const btn = s => (/<a class="me-btn" href="([^"]+)"/.exec(topbar(s)) || [])[1];
+  const m = menu((await get(mum, '/play')).text);
+  assert.match(m, /<summary class="me-btn" aria-label="Me: RolesMum">/);
+  assert.ok(!m.includes('href="/me"'), 'a grown-up has no Me page');
+  assert.match(m, /<a href="\/family\/account" ><span class="theme-ico" aria-hidden="true">⚙️<\/span><span>All settings<\/span><\/a>/);
+  for (const u of [head, teacher, boss, pupil, kid]) {
+    const page = (await get(u, '/play')).text;
+    assert.equal(first(page), '/me', u.username);
+    assert.match(menu(page), /href="\/me\/settings"/, `${u.username}: All settings`);
+    assert.equal(btn(page), undefined, `${u.username}: the avatar is not a plain link any more`);
+  }
   assert.equal(btn((await get(null, '/')).text), '/login');
+  assert.equal(menu((await get(null, '/')).text), '', 'signed out: no account menu');
+  assert.equal(btn((await get(guest, '/play')).text), '/login', 'a guest: Sign in, no account menu');
 });
 
 test('labels: the new words in English and in a translated language, and their translated stand-ins (never English) until a language has them', async () => {
@@ -173,7 +183,7 @@ test('labels: the new words in English and in a translated language, and their t
   const en = (await get(mum, '/play')).text;
   assert.equal(label(en, '/play'), 'Play'); assert.equal(label(en, '/learn'), 'Learn'); assert.equal(label(en, '/family/account'), 'Account'); assert.equal(label(en, '/family'), 'Family');
   const enHead = (await get(head, '/play')).text;
-  assert.equal(label(enHead, '/school'), 'School'); assert.equal(label(enHead, '/teach'), 'Classroom');
+  assert.equal(label(enHead, '/school'), undefined, 'School is in the account menu'); assert.equal(label(enHead, '/teach'), 'Classroom');
   assert.equal(label((await get(pupil, '/play')).text, '/classes'), 'Class');
   assert.equal(label((await get(teacher, '/play')).text, '/live'), 'Live');
   // German has the new words: German labels, nothing marked English.
@@ -184,8 +194,7 @@ test('labels: the new words in English and in a translated language, and their t
   for (const k of ['nav.play', 'nav.learn', 'nav.class', 'nav.classroom', 'nav.account']) assert.ok(dict[k] && dict[k] !== dictionary('en')[k] || k === 'nav.live', k);
   assert.doesNotMatch(tabbar(de) + topnav(de), /lang="en"/);
   const deHead = (await get(head, '/play', { lang: 'de' })).text;
-  assert.equal(label(deHead, '/school'), dict['nav.school']); assert.equal(label(deHead, '/teach'), dict['nav.classroom']);
-  assert.match(topnav(deHead), new RegExp(`href="/school" aria-current="page"|href="/school" ><span class="emo" aria-hidden="true">🏛️</span>${dict['nav.school']}</a>`));
+  assert.equal(label(deHead, '/teach'), dict['nav.classroom']);
   assert.doesNotMatch(tabbar(deHead) + topnav(deHead), /lang="en"/);
   // The new words taken out of German (simulated): Games (else Home), Classes, Me and Schools stand in, never English.
   await withoutKeys('de', ['nav.play', 'nav.account', 'nav.school', 'nav.classroom', 'nav.class'], async () => {
@@ -193,8 +202,7 @@ test('labels: the new words in English and in a translated language, and their t
     assert.equal(label(gap, '/play'), dict['nav.games']); assert.equal(label(gap, '/family/account'), dict['nav.me']);
     assert.doesNotMatch(tabbar(gap) + topnav(gap), /lang="en"/);
     const gapHead = (await get(head, '/play', { lang: 'de' })).text;
-    assert.equal(label(gapHead, '/school'), dict['nav.schools']); assert.equal(label(gapHead, '/teach'), dict['nav.classes']);
-    assert.match(topnav(gapHead), new RegExp(`href="/school" ><span class="emo" aria-hidden="true">🏛️</span>${dict['nav.schools']}</a>`));
+    assert.equal(label(gapHead, '/teach'), dict['nav.classes']);
     assert.doesNotMatch(tabbar(gapHead) + topnav(gapHead), /lang="en"/);
     assert.equal(label((await get(pupil, '/play', { lang: 'de' })).text, '/classes'), dict['nav.classes']);
     await withoutKeys('de', ['nav.games'], async () => {
@@ -203,7 +211,7 @@ test('labels: the new words in English and in a translated language, and their t
   });
 });
 
-test('the current tab: Play on the game pages and search, Learn on /learn, Classroom, Class, Live, Family, Account and School', async () => {
+test('the current tab: Play on the game pages and search, Learn on /learn, Classroom, Class, Live, Family, Account, and Me on School', async () => {
   const cur = s => [...tabbar(s).matchAll(/class="tab" href="([^"]+)" aria-current="page"/g)].map(m => m[1]);
   const curTop = s => [...topnav(s).matchAll(/class="navlink" href="([^"]+)" aria-current="page"/g)].map(m => m[1]);
   const s0 = shellFor(mum, {});
@@ -223,12 +231,17 @@ test('the current tab: Play on the game pages and search, Learn on /learn, Class
   assert.deepEqual(cur((await get(mum, '/family')).text), ['/family']);
   const acct = (await get(mum, '/family/account')).text;
   assert.deepEqual(cur(acct), ['/family/account']);
-  assert.match(acct, /<a class="me-btn" href="\/family\/account" aria-current="page"/);
-  assert.deepEqual(cur((await get(teacher, '/play')).text), ['/play']);
+  assert.match(acct, /<summary class="me-btn is-current"/);
+  assert.match(acct, /<a href="\/family\/account" aria-current="page">/, 'Account in the menu is the page you are on');
+  // Teachers' bar is Classroom · Build · Live: Play and Learn still open, with no tab marked
+  assert.deepEqual(cur((await get(teacher, '/play')).text), []);
   assert.deepEqual(cur((await get(teacher, '/teach')).text), ['/teach']);
   assert.deepEqual(cur((await get(teacher, '/live')).text), ['/live']);
-  assert.deepEqual(cur((await get(teacher, '/learn')).text), ['/learn']);
-  assert.deepEqual(cur((await get(head, `/school/${oak.slug}`)).text), ['/school'], 'a school admin on their school: School');
+  assert.deepEqual(cur((await get(teacher, '/build')).text), ['/build']);
+  assert.ok(!/class="navlink" href="\/(?:learn|play)"/.test(topnav((await get(teacher, '/teach')).text)), 'no Learn or Play in a teacher\'s top bar');
+  const sch = (await get(head, `/school/${oak.slug}`)).text;
+  assert.deepEqual(cur(sch), ['/me'], 'a school admin on their school: Me (School is in its menu)');
+  assert.match(sch, /<a href="\/school" aria-current="page"><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/);
   assert.deepEqual(cur((await get(head, '/teach')).text), ['/teach']);
   assert.deepEqual(curTop((await get(head, '/live')).text), ['/live'], 'a school admin hosting: Live in the top bar');
   assert.deepEqual(cur((await get(ownKid, '/classes')).text), ['/classes']);
@@ -265,7 +278,7 @@ test('/school: one school -> its overview (setup checklist and classes); several
   const two = await get(both, '/school');
   assert.equal(two.status, 200);
   assert.match(two.text, new RegExp(`href="/school/${oak.slug}"`)); assert.match(two.text, new RegExp(`href="/school/${elm.slug}"`));
-  assert.deepEqual([...tabbar(two.text).matchAll(/href="([^"]+)" aria-current="page"/g)].map(m => m[1]), ['/school']);
+  assert.deepEqual([...tabbar(two.text).matchAll(/href="([^"]+)" aria-current="page"/g)].map(m => m[1]), ['/me']);
   SC.removeMember(boss, elm.id, both.id); SC.removeMember(boss, oak.id, both.id);
   for (const u of [teacher, pupil, kid, boss]) assert.equal((await get(u, '/school')).status, 404, u.username);
   assert.equal((await get(mum, '/school')).status, 404);
@@ -288,4 +301,95 @@ test('footer and notices: a grown-up\'s language and password links go to their 
   q.run('UPDATE users SET password_short=1 WHERE id=?', mum.id);
   assert.match((await get(mum, '/play')).text, /href="\/family\/account#password"/);
   q.run('UPDATE users SET password_short=0 WHERE id=?', mum.id);
+});
+
+// docs/decisions.md "A quieter top bar": the owner's "too busy" header. The theme menu, School and Plans left the bars;
+// the avatar opens the account menu, whose Settings part has the theme and (adults only) Plans.
+test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the account menu has Settings with the theme, and Plans for adults only', async () => {
+  const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(topbar(s)) || [''])[0];
+  const foot = s => (/<footer class="foot">[\s\S]*?<\/footer>/.exec(s) || [''])[0];
+  const bars = s => topbar(s).replace(menu(s), '') + tabbar(s);
+  for (const [role, u] of PEOPLE) {
+    const page = (await get(u, playOf(role))).text;
+    assert.doesNotMatch(bars(page), /data-themepick|data-theme-choice|class="theme-btn"/, `${role}: no theme menu in the bar`);
+    assert.doesNotMatch(bars(page), /href="\/plans"/, `${role}: no Plans in the bars`);
+    assert.doesNotMatch(bars(page), /href="\/school"/, `${role}: no School in the bars`);
+    assert.match(topbar(page), /<details class="langpick" data-langpick>/, `${role}: the language picker stays`);
+  }
+  // School staff (a school admin, a teacher): the card that opens Me, Play and Learn tiles, Plans, Settings, Sign out,
+  // and the theme as one Auto / Light / Dark switch at the bottom (docs/decisions.md "Teachers' account menu").
+  for (const u of [head, teacher]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.match(m, /<div class="acct-menu acct-staff">\s*<a class="acct-card" href="\/me"/, `${u.username}: the card first`);
+    assert.match(m, /<span class="acct-card-t"><b dir="auto">[^<]+<\/b><small dir="auto">Roles (?:Oak|Elm) School</, `${u.username}: name and school`);
+    assert.match(m, /<div class="acct-tiles">\s*<a href="\/play"[\s\S]*?<a href="\/learn"/, `${u.username}: Play and Learn tiles`);
+    assert.match(m, /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/, `${u.username}: Plans`);
+    assert.match(m, /<a href="\/me\/settings" ><span class="theme-ico" aria-hidden="true">⚙️<\/span><span>Settings<\/span><\/a>/, `${u.username}: Settings`);
+    assert.match(m, /<form data-api="\/api\/auth\/logout" data-next="\/"><button type="submit" class="acct-out">[\s\S]*?Sign out/, `${u.username}: Sign out`);
+    assert.match(m, /<ul class="acct-themeseg" aria-label="Theme">/, `${u.username}: the theme switch`);
+    for (const th of ['light', 'dark', 'system']) assert.match(m, new RegExp(`href="/play\\?theme=${th}" rel="nofollow" data-theme-choice="${th}"`), `${u.username}: ${th}, a plain link`);
+    assert.ok(m.indexOf('acct-themeseg') > m.indexOf('acct-out'), `${u.username}: the theme at the bottom`);
+    assert.doesNotMatch(m, /\$|€|£|\/month|\/year/, `${u.username}: no prices in the menu`);
+  }
+  assert.match(menu((await get(head, '/play')).text), /<a href="\/school" ><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/, 'a school admin: My school');
+  assert.doesNotMatch(menu((await get(teacher, '/play')).text), /href="\/school"/, 'a teacher: no My school');
+  // Other adults (a grown-up, the platform admin): Settings with Theme, Plans and All settings.
+  for (const u of [mum, boss]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.match(m, /<p class="lang-head" id="acct-set-head">Settings<\/p>/, u.username);
+    assert.match(m, /<p class="acct-sub" id="acct-theme-head">Theme<\/p>/, u.username);
+    for (const th of ['light', 'dark', 'system']) assert.match(m, new RegExp(`href="/play\\?theme=${th}" rel="nofollow" data-theme-choice="${th}"`), `${u.username}: ${th}, a plain link`);
+    assert.match(m, /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/, `${u.username}: Plans`);
+    assert.doesNotMatch(m, /\$|€|£|\/month|\/year/, `${u.username}: no prices in the menu`);
+  }
+  // Kids and students: the theme, never Plans.
+  for (const u of [pupil, ownKid, kid]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.match(m, /data-theme-choice="dark"/, u.username);
+    assert.doesNotMatch(m, /href="\/plans"/, `${u.username}: kids are never sold to`);
+    assert.doesNotMatch(foot((await get(u, '/play')).text), /href="\/plans"/, `${u.username}: no Plans in the footer either`);
+  }
+  // School: in the menu of a school admin only.
+  assert.match(menu((await get(head, '/play')).text), /<a href="\/school" ><span class="theme-ico" aria-hidden="true">🏛️<\/span><span>My school<\/span><\/a>/);
+  for (const u of [teacher, pupil, kid, mum]) assert.doesNotMatch(menu((await get(u, '/play')).text), /href="\/school"/, u.username);
+  // Signed out (and a guest): no account menu; Plans and the theme are in the footer.
+  for (const u of [null, guest]) {
+    const f = foot((await get(u, '/play')).text);
+    assert.match(f, /<a href="\/plans">Plans<\/a>/, 'signed out: Plans in the footer');
+    assert.match(f, /<div class="foot-theme"><span id="foot-theme-head">Theme:<\/span><ul class="foot-themes" aria-labelledby="foot-theme-head">/);
+    assert.match(f, /data-theme-choice="system"[\s\S]*data-theme-choice="light"[\s\S]*data-theme-choice="dark"/);
+  }
+  assert.doesNotMatch(foot((await get(mum, '/play')).text), /foot-theme|href="\/plans"/, 'signed in: the theme and Plans are in the account menu');
+  // The chosen theme is ticked in the menu.
+  const dark = await fetch(base + '/play', { headers: { cookie: `${cookieFor(teacher.id)}; theme=dark` } });
+  assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" title="Dark" aria-current="true">/, 'a teacher: Dark is on in the switch');
+  const darkMum = await fetch(base + '/play', { headers: { cookie: `${cookieFor(mum.id)}; theme=dark` } });
+  assert.match(menu(await darkMum.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/, 'a grown-up: Dark is ticked');
+  // Paid-plan pages off: no Plans anywhere, the theme stays.
+  config.stripeApiKey = '';
+  for (const u of [mum, head, teacher, boss]) {
+    const m = menu((await get(u, '/play')).text);
+    assert.doesNotMatch(m, /href="\/plans"/, `${u.username}, plans off`); assert.match(m, /data-theme-choice="system"/);
+  }
+  assert.doesNotMatch(foot((await get(null, '/play')).text), /href="\/plans"/, 'signed out, plans off: no Plans in the footer');
+  assert.match(foot((await get(null, '/play')).text), /data-theme-choice="dark"/);
+});
+
+test('the settings pages: Appearance for everyone, Plans for adults (staff on /me/settings, a grown-up on /family/account)', async () => {
+  const plans = /<section class="panel" id="plans" aria-labelledby="plans-h"><h2 id="plans-h"><span aria-hidden="true">⭐<\/span> Plans<\/h2>[\s\S]*?<a class="btn" href="\/plans">See plans<\/a>/;
+  for (const u of [head, teacher, boss]) {
+    const s = (await get(u, '/me/settings')).text;
+    assert.match(s, /id="themeform"/, u.username); assert.match(s, plans, u.username);
+    assert.match(s, /<a class="setlink" href="#plans-sec">/, `${u.username}: Plans in the section nav`);
+  }
+  for (const u of [pupil, ownKid, kid]) {
+    const s = (await get(u, '/me/settings')).text;
+    assert.match(s, /id="themeform"/, u.username); assert.doesNotMatch(s, /id="plans"|href="\/plans"/, `${u.username}: no Plans`);
+  }
+  const acct = (await get(mum, '/family/account')).text;
+  assert.match(acct, /<form action="\/family\/account#appearance" method="get" id="themeform">/, 'a grown-up can pick the theme on their settings page');
+  assert.match(acct, plans);
+  config.stripeApiKey = '';
+  assert.doesNotMatch((await get(mum, '/family/account')).text, /id="plans"/, 'plans off: no Plans section');
+  assert.doesNotMatch((await get(teacher, '/me/settings')).text, /id="plans"/);
 });

@@ -10,7 +10,7 @@
 // - Sign in: Show password, and a login card's password typed with spaces still works.
 // - /teachers asks for the sender's name; the thank-you comes first and lists what to do today.
 import { test, expect } from '@playwright/test';
-import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN } from './helpers.js';
+import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN, liveStep, openLiveRoom } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -40,19 +40,20 @@ test('an old open room: the landing says what is open and asks; End it opens the
   // a first room (Atlas), left open (the tab "closed")
   await t.goto(`/live?class=${cls}`);
   await t.locator('label.lv-pick', { has: t.locator('input[value="mode:atlas"]') }).click();
-  await t.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(t);
   await t.waitForURL(/\/live\/host\//);
   const firstHost = t.url();
   // Tug picked from the class: its grade is the class's (Grade 4), not Grade 3
   await t.goto(`/live?class=${cls}`);
   await t.locator('label.lv-pick', { has: t.locator('input[value="mode:tug"]') }).click();
+  await liveStep(t, 'questions');
   await expect(t.locator('#lv-tug-grade')).toHaveValue('4');
   await expect(t.locator('#lv-tug-class-grade')).toContainText('Your class: Grade 4');
   // Game settings: no second "Time per question" / "Number of questions" for a game with its own
   await expect(t.locator('#lv-ls-secs')).toBeHidden();
   await expect(t.locator('#lv-ls-count')).toBeHidden();
   let dialogs = 0; t.on('dialog', d => { dialogs++; d.dismiss(); });
-  await t.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(t);
   const box = t.locator('#lv-open-old');
   await expect(box).toBeVisible();
   await expect(box).toContainText('You still have Atlas Quest');
@@ -95,7 +96,7 @@ test('a student waiting on the class page sees the live game open, and codes typ
   // the teacher opens a class room: the class page shows it without a reload (it checks every few seconds)
   await t.goto(`/live?class=${cls}`);
   await t.locator('label.lv-pick', { has: t.locator('input[value="mode:wyr"]') }).click();
-  await t.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(t);
   await t.waitForURL(/\/live\/host\//);
   const code = (await t.locator('#lv-code').textContent()).replace(/\s/g, '');
   await expect(kid.locator('#class-live')).toBeVisible({ timeout: 20_000 });

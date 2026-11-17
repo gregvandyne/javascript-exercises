@@ -64,6 +64,18 @@ test('Google Classroom: a section on "/" and on /teachers with the same words, o
   for (const path of ['/', '/teachers']) assert.equal(section((await get(path)).text, 'classroom'), '', `${path}: no section while Classroom is off`);
 });
 
+test('Google Classroom on "/": the gradebook and feedback screenshots sit under it, and the teaching loop shows none', async () => {
+  const s = (await get('/')).text;
+  const gc = section(s, 'classroom');
+  for (const name of ['gradebook', 'feedback']) assert.match(gc, new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800"`), name);
+  assert.doesNotMatch(gc, /teach-loop\/attention\.webp/, 'not the Needs attention screen');
+  const at = s.indexOf('id="loop"');
+  assert.doesNotMatch(s.slice(at, s.indexOf('</section>', at)), /lp-loop-shots/, 'no screenshots in the loop section');
+  config.googleClassroom = false;
+  const off = (await get('/')).text, o = off.indexOf('id="loop"');
+  assert.match(off.slice(o, off.indexOf('</section>', o)), /lp-loop-shots/, 'Classroom off: the screenshots stay in the loop section');
+});
+
 test('free and paid: one line on "/" and /teachers saying what is always free and what the Teacher plan adds; no amount on either', async () => {
   const want = /Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students\. The Teacher plan adds 300 AI game builds a day shared by your classes\. <a href="\/plans">See prices on Plans<\/a>\./;
   for (const path of ['/', '/teachers']) {

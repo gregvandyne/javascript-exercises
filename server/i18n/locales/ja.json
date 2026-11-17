@@ -30,6 +30,11 @@
       "light": "ライト",
       "dark": "ダーク"
     },
+    "acct": {
+      "allSettings": "すべての設定",
+      "themeAuto": "自動",
+      "newMessages": "{count, plural, other {新しいメッセージ # 件}}"
+    },
     "footer": {
       "tagline": "© Oomba Academy · あそぶのも、つくるのも、むりょう",
       "safety": "あんぜん",
@@ -1423,14 +1428,9 @@
       "text": "ビルダーにアイデアを話してください。ゲームをつくってくれて、何度でもかえられます。"
     },
     "newGame": "新しいゲーム",
-    "startFrom": "ここからはじめる",
-    "startFromLabel": "{title}からはじめる",
-    "worlds": "3Dワールドから はじめる",
-    "startInLabel": "3Dワールド「{title}」から はじめる",
-    "twoPlayers": "2人用",
     "updateWaiting": "アップデートがチェック待ち",
     "changed": "{when}にへんこう",
-    "empty": "「新しいゲーム」をタップするか、上のスターターをえらんでください。きみのゲームはここに出てきます。",
+    "empty": "「新しいゲーム」をタップしてはじめよう。きみのゲームはここに出てきます。",
     "rename": "なまえをかえる",
     "delete": "けす",
     "status": {
@@ -1943,7 +1943,6 @@
     },
     "build": {
       "gettingReady": "じゅんび中…",
-      "needsNewer": "もっと新しい きかいが ひつよう",
       "renameTitle": "ゲームのなまえをかえる",
       "nameLabel": "ゲームの名前",
       "save": "ほぞん",
@@ -2745,7 +2744,8 @@
         "takenDown": "画像を取り下げました",
         "zoneNone": "なし",
         "placeNote": "町や市の名前を入力してください。Oombaはだれの位置情報も使いません。",
-        "qrNote": "表示できるのは、クラスで承認したリンクとOombaのページだけです。"
+        "qrNote": "表示できるのは、クラスで承認したリンクとOombaのページだけです。",
+        "undo": "元に戻す"
       },
       "bgChanged": "背景をかえました",
       "uploading": "画像をチェックしています…",
@@ -6693,6 +6693,36 @@
       "assign": "このクラスに出す",
       "mySets": "自分の問題セット",
       "another": "もうひとつ作る"
+    },
+    "wiz": {
+      "modesTab": "ライブゲーム",
+      "progress": "ステップ {n} / {total}",
+      "back": "もどる",
+      "next": "つぎへ",
+      "change": "かえる",
+      "play": {
+        "title": "なにであそぶ？",
+        "hint": "ゲームをえらびます。部屋をひらくまで、なんでもかえられます。"
+      },
+      "questions": {
+        "title": "どの問題にする？",
+        "ownTitle": "ゲームのせってい",
+        "hint": "ゲームで出すことと、時間をえらびます。"
+      },
+      "who": {
+        "title": "だれがあそぶ？",
+        "hint": "参加できる人、人数、チームであそぶかをえらびます。"
+      },
+      "open": {
+        "title": "部屋をひらく準備ができました",
+        "hint": "えらんだことをたしかめましょう。プレイヤーは {url} でコードを入力します。"
+      },
+      "row": {
+        "game": "ゲーム",
+        "questions": "問題",
+        "who": "参加できる人",
+        "teams": "チーム"
+      }
     }
   },
   "match": {
@@ -7237,7 +7267,13 @@
       "explorerSub": "小学3〜5年",
       "pro": "プロ",
       "proSub": "小学6年〜中学2年",
-      "switch": "{band}にきりかえる"
+      "switch": "{band}にきりかえる",
+      "launchpad": "ランチパッド",
+      "launchpadSub": "年長〜小学2年",
+      "yours": "あなたのレベル",
+      "showing": "いま表示中",
+      "stepsDone": "{band}：{total}ステップ中{n}ステップ完了",
+      "unitsFinale": "ユニット{from}〜{to}、そしてフィナーレ：{finale}"
     },
     "map": {
       "h": "コースマップ",
@@ -9558,7 +9594,8 @@
         "m": {
           "fractions": "分数バー",
           "fdp": "分数・小数・百分率"
-        }
+        },
+        "partsOf": "分数 {n} の分ける数"
       },
       "numline": {
         "name": "数直線",

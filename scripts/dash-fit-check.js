@@ -457,6 +457,15 @@ function problems() {
     const rows = [...st.parentElement.children].filter(x => getComputedStyle(x).display !== 'none' && x.getClientRects().length && !x.classList.contains('dt-ghost'));
     for (let i = 1; i < rows.length; i++) { const a = rows[i - 1].getBoundingClientRect(), b = rows[i].getBoundingClientRect(); if (b.top < a.bottom - 1) out.push(`${name(w)}: "${rows[i].className}" overlaps "${rows[i - 1].className}"`); }
   }
+  // Fraction, decimal, percent on a phone (docs/decisions.md "Classroom dashboards: fraction, decimal, percent cards on a
+  // phone"): the three cards are never squeezed (they once drew 16px wide, a character a line), and when the cards sit
+  // over the hundred grid they take the tool's whole width.
+  for (const x of document.querySelectorAll('.dash-w .dt-fdpwrap')) {
+    const w = x.closest('.dash-w'); if (!w.offsetParent || !x.getClientRects().length) continue;
+    const cards = x.querySelector('.dt-cards'), xr = x.getBoundingClientRect(), cr = cards.getBoundingClientRect();
+    for (const c of cards.querySelectorAll('.dt-card')) { const q = c.getBoundingClientRect(); if (q.width < 96) out.push(`${name(w)}: the card "${label(c)}" is only ${Math.round(q.width)}px wide`); }
+    if (getComputedStyle(x).flexDirection === 'column' && cr.width < xr.width - 2) out.push(`${name(w)}: the cards over the grid are ${Math.round(cr.width)}px wide, not the tool's ${Math.round(xr.width)}px`);
+  }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
   // Fractions as a number sentence: each bar's fraction is level with its bar, and the sentence reads left to right
   // (the first fraction, the second, the answer) in every language.

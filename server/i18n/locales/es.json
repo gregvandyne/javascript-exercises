@@ -30,6 +30,11 @@
       "light": "Claro",
       "dark": "Oscuro"
     },
+    "acct": {
+      "allSettings": "Todos los ajustes",
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Gratis para jugar, gratis para crear",
       "safety": "Seguridad",
@@ -1423,14 +1428,9 @@
       "text": "Cuéntale tu idea al Constructor. Él crea el juego y tú puedes seguir cambiándolo."
     },
     "newGame": "Juego nuevo",
-    "startFrom": "Empieza con un modelo",
-    "startFromLabel": "Empezar con {title}",
-    "worlds": "Empieza en un mundo 3D",
-    "startInLabel": "Empezar en el mundo 3D {title}",
-    "twoPlayers": "2 jugadores",
     "updateWaiting": "Actualización esperando revisión",
     "changed": "Cambiado {when}",
-    "empty": "Toca “Juego nuevo” o elige un modelo de arriba. Tus juegos aparecerán aquí.",
+    "empty": "Toca “Juego nuevo” para empezar uno. Tus juegos aparecerán aquí.",
     "rename": "Renombrar",
     "delete": "Borrar",
     "status": {
@@ -1943,7 +1943,6 @@
     },
     "build": {
       "gettingReady": "Preparando…",
-      "needsNewer": "Necesita un dispositivo más nuevo",
       "renameTitle": "Renombrar juego",
       "nameLabel": "Nombre del juego",
       "save": "Guardar",
@@ -2745,7 +2744,8 @@
         "takenDown": "Imagen quitada",
         "zoneNone": "Ninguna",
         "placeNote": "Escribe una ciudad o pueblo. Oomba nunca usa la ubicación de nadie.",
-        "qrNote": "Solo se pueden mostrar los enlaces aprobados de la clase y las páginas de Oomba."
+        "qrNote": "Solo se pueden mostrar los enlaces aprobados de la clase y las páginas de Oomba.",
+        "undo": "Deshacer"
       },
       "bgChanged": "Fondo cambiado",
       "uploading": "Revisando tu imagen…",
@@ -6693,6 +6693,36 @@
       "assign": "Asignar a esta clase",
       "mySets": "Mis conjuntos de preguntas",
       "another": "Hacer otro"
+    },
+    "wiz": {
+      "modesTab": "Juegos en vivo",
+      "progress": "Paso {n} de {total}",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "change": "Cambiar",
+      "play": {
+        "title": "¿A qué quieres jugar?",
+        "hint": "Elige un juego. Puedes cambiar cualquier cosa antes de abrir la sala."
+      },
+      "questions": {
+        "title": "¿Qué preguntas?",
+        "ownTitle": "Prepara el juego",
+        "hint": "Elige qué pregunta el juego y cuánto dura."
+      },
+      "who": {
+        "title": "¿Quién juega?",
+        "hint": "Elige quién puede unirse, cuántos y si juegan en equipos."
+      },
+      "open": {
+        "title": "Listo para abrir la sala",
+        "hint": "Revisa lo que elegiste. Los jugadores van a {url} y escriben el código."
+      },
+      "row": {
+        "game": "Juego",
+        "questions": "Preguntas",
+        "who": "Quién puede unirse",
+        "teams": "Equipos"
+      }
     }
   },
   "match": {
@@ -7237,7 +7267,13 @@
       "explorerSub": "Grados 3–5",
       "pro": "Pro",
       "proSub": "Grados 6–8",
-      "switch": "Cambiar a {band}"
+      "switch": "Cambiar a {band}",
+      "launchpad": "Despegue",
+      "launchpadSub": "Kínder a 2.º grado",
+      "yours": "Tu nivel",
+      "showing": "Mostrando ahora",
+      "stepsDone": "{band}: {n} de {total} pasos hechos",
+      "unitsFinale": "Unidades {from}–{to} y luego el final: {finale}"
     },
     "map": {
       "h": "Mapa del curso",
@@ -9558,7 +9594,8 @@
         "m": {
           "fractions": "Barras de fracciones",
           "fdp": "Fracción, decimal, porcentaje"
-        }
+        },
+        "partsOf": "Partes de la fracción {n}"
       },
       "numline": {
         "name": "Recta numérica",

@@ -110,10 +110,36 @@ function streetSwitcher(c, streets, street, canPick) {
   </nav>`;
 }
 
+/** The level banner (owner report, 2026-11-17: "I am not seeing the difference between Pro and Explorer"): right
+ *  under the course title, the street on screen by name, grades and district, what it holds (its units and its own
+ *  finale) and the switcher to the others, so two levels differ above the fold, not only far down the street. Each
+ *  level has its own accent (nqp-band-<tier>). `own` is true when the street is the learner's own level. */
+function levelBanner(t, c, here, streets, units, own, canPick) {
+  const built = units.filter(u => u.n >= 1).map(u => u.n);
+  const info = T.tierInfo(here.key) || {};
+  const finaleKey = info.finale ? `${here.key}-${info.finale}` : '';
+  const finale = finaleKey ? (T.stepsOf(here.key).find(s => s.key === finaleKey) || null) : null;
+  const finaleTitle = finale ? T.stepTitle(here.key, finale.s) : '';
+  return html`<section class="nqp-band nqp-band-${here.key}" id="nqp-band" aria-labelledby="nqp-band-h">
+    <div class="nqp-band-top">
+      <span class="nqp-band-e" aria-hidden="true">${bandEmoji(here.key)}</span>
+      <div class="nqp-band-t">
+        <p class="nqp-band-k">${own ? t('courses.band.yours') : t('courses.band.showing')}</p>
+        <h2 id="nqp-band-h">${t(`courses.band.${here.key}`)} <span class="nqp-band-g">${t(`courses.band.${here.key}Sub`)}</span></h2>
+        ${built.length ? html`<p class="nqp-band-u"><span lang="en" dir="ltr">${here.district || ''}</span>${here.district ? ' · ' : ''}${finaleTitle
+          ? t('courses.band.unitsFinale', { from: built[0], to: built[built.length - 1], finale: finaleTitle })
+          : t('courses.map.units', { from: built[0], to: built[built.length - 1] })}</p>` : ''}
+      </div>
+    </div>
+    ${streetSwitcher(c, streets, here.key, canPick)}
+  </section>`;
+}
+
 /** The path home. d: { course, ov (the overview of the street on screen), units (that street's units),
  *  street (its tier key), streets (the tiers this viewer may see: [{ key, name, grades, district,
  *  building }]), marks, daily, laps (unit -> lapState, that street's), placement, testedOut (that street's
- *  unit numbers), canPick, bandSet, planned (the street's reserved, unbuilt units: the admin's preview only) }.
+ *  unit numbers), canPick, bandSet, own (the learner's own level, or null), anyProgress (any step done on any
+ *  street: the "New here?" line is for a learner who has done nothing yet), planned (the street's reserved, unbuilt units: the admin's preview only) }.
  *  Without street/streets it is the Explorer street alone. */
 export function pathPage(d) {
   const { t } = current();
@@ -129,6 +155,8 @@ export function pathPage(d) {
   const planned = d.planned || []; // reserved, unbuilt units: the admin's preview of a building street only
   // A street walked to its end leads on: when every step of the street on screen is done and a later
   // street is open (Launchpad's Garden Gate leads to Explorer), the page says so and offers the way.
+  // Every count names its level: a bare "23 of 23 steps done" under a "grades K–8" title read as the whole course done.
+  const count = t('courses.band.stepsDone', { band: t(`courses.band.${here.key}`), n: ov.done, total: ov.total });
   const onward = ov.total > 0 && ov.done === ov.total ? streets.slice(streets.indexOf(here) + 1).find(x => !x.building) || null : null;
   return html`<section class="course-page nqpath">
     <a class="back small" href="/">← ${t('courses.home')}</a>
@@ -137,6 +165,7 @@ export function pathPage(d) {
       <div><h1>${t(`${c.key}.title`)}</h1><p class="lead">${subLine(t(`${c.key}.sub`))}</p></div>
       <p class="nqp-hero-p" lang="en" dir="ltr">Every number has a job to do. Walk the street, finish each workshop's steps, and plant its stone.</p>
     </header>
+    ${levelBanner(t, c, here, streets, units, !!d.canPick && d.own === here.key, d.canPick)}
     ${lockedNote(t, ov, d.locked)}
 
     ${!d.bandSet && d.canPick && !d.hasProgress ? html`<section class="bandpick" aria-labelledby="bandpick-h">
@@ -161,9 +190,9 @@ export function pathPage(d) {
         </div>
       </div>
       ${placement && placement.startNode ? html`<p class="nqp-placed">📍 Tally placed your start at <b lang="en" dir="ltr">${placement.workshop || ''}</b>. Every earlier workshop stays open for games, laps and test-out. ${d.canPick ? html`<a href="/number-quest/sorting-game">Play the Sorting Game again</a>` : ''}</p>`
-        : d.canPick ? html`<p class="nqp-placed">📍 New here? <a href="/number-quest/sorting-game"><b>Play Tally's Sorting Game</b></a> and she will find your first workshop. Skipping it is always fine: the street starts at the beginning.</p>` : ''}
-      <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${t('courses.stepsDone', { n: ov.done, total: ov.total })}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
-      <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
+        : d.canPick && !d.anyProgress ? html`<p class="nqp-placed">📍 New here? <a href="/number-quest/sorting-game"><b>Play Tally's Sorting Game</b></a> and she will find your first workshop. Skipping it is always fine: the street starts at the beginning.</p>` : ''}
+      <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${count}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
+      <p class="cmap-count" id="nqp-count">${count}</p>
       ${ov.next && d.canPick ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
 
@@ -173,7 +202,6 @@ export function pathPage(d) {
       ${d.canPick ? html`<form method="post" action="/courses/${c.slug}/band"><button class="btn btn-primary btn-big" type="submit" name="band" value="${onward.key}" id="nqp-onward-go">${bandEmoji(onward.key)} Walk on to ${onward.name} ›</button></form>`
     : html`<a class="btn" href="/courses/${c.slug}?street=${onward.key}" id="nqp-onward-go">Look at ${onward.name} ›</a>`}
     </section>` : ''}
-    ${streetSwitcher(c, streets, here.key, d.canPick)}
     <ol class="nqp-path" aria-label="The Numberworks street, ${here.name}">
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}
     </ol>${planned.length ? html`

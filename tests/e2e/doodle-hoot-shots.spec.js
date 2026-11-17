@@ -8,7 +8,7 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { login, ownIp, gameFrame } from './helpers.js';
+import { login, ownIp, gameFrame, liveStep, openLiveRoom } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const DIR = process.env.DOODLE_SHOTS || '';
@@ -67,10 +67,12 @@ test('live: every view at every size, light and dark', async ({ browser }) => {
   await login(host, TEACHER.username, TEACHER.password);
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:doodle"]') }).click();
+  await liveStep(host, 'questions');
   await host.selectOption('#lv-doodle-level', '3'); await host.selectOption('#lv-doodle-rounds', '2'); await host.selectOption('#lv-doodle-secs', '100');
+  await liveStep(host, 'who');
   await host.locator('input[name="audience"][value="open"]').check();
   await snap(host, null, 'landing', [1366, 768]);
-  await host.locator('#lv-new button[type=submit]').click();
+  await openLiveRoom(host);
   await host.waitForURL(/\/live\/host\//);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
   const a = await player(browser, code), b = await player(browser, code);

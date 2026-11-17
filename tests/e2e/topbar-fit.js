@@ -10,7 +10,7 @@ export function topbarFit() {
   cx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
   const field = vis(q);
   const cut = field && cx.measureText(q.placeholder).width > q.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  const want = ['.topbar .langpick > summary', '.topbar .themepick > summary', '.topbar .me-btn', field ? '#topq' : '.topsearch-btn'];
+  const want = ['.topbar .langpick > summary', '.topbar .me-btn', field ? '#topq' : '.topsearch-btn'];
   if (document.querySelector('.topbar .playnow')) want.push('.topbar .playnow');
   return { rtl, field, cut, missing: want.filter(s => !vis(document.querySelector(s))),
     tight: items.slice(1).some((b, i) => b.left - items[i].right < 4) || nav.slice(1).some((b, i) => b.left - nav[i].right < 2),

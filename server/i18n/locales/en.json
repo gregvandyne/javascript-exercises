@@ -31,6 +31,11 @@
       "light": "Light",
       "dark": "Dark"
     },
+    "acct": {
+      "allSettings": "All settings",
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# new message} other {# new messages}}"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Free to play, free to build",
       "safety": "Safety",
@@ -1424,14 +1429,9 @@
       "text": "Tell the Builder your idea. It builds the game, and you can keep changing it."
     },
     "newGame": "New game",
-    "startFrom": "Start from",
-    "startFromLabel": "Start from {title}",
-    "worlds": "Start in a 3D world",
-    "startInLabel": "Start in the 3D world {title}",
-    "twoPlayers": "2 players",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
-    "empty": "Tap “New game” or pick a starter above. Your games will show up here.",
+    "empty": "Tap “New game” to start one. Your games will show up here.",
     "rename": "Rename",
     "delete": "Delete",
     "status": {
@@ -1956,7 +1956,6 @@
     },
     "build": {
       "gettingReady": "Getting ready…",
-      "needsNewer": "Needs a newer device",
       "renameTitle": "Rename game",
       "nameLabel": "Game name",
       "save": "Save",
@@ -2764,7 +2763,8 @@
         "takenDown": "Picture taken down",
         "zoneNone": "None",
         "placeNote": "Type a town or city. Oomba never uses anyone's location.",
-        "qrNote": "Only the class's approved links and Oomba pages can be shown."
+        "qrNote": "Only the class's approved links and Oomba pages can be shown.",
+        "undo": "Undo"
       },
       "bgChanged": "Background changed",
       "uploading": "Checking your picture…",
@@ -7055,6 +7055,36 @@
       "assign": "Assign to this class",
       "mySets": "My question sets",
       "another": "Make another"
+    },
+    "wiz": {
+      "modesTab": "Live games",
+      "progress": "Step {n} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "change": "Change",
+      "play": {
+        "title": "What do you want to play?",
+        "hint": "Pick a game. You can change anything before the room opens."
+      },
+      "questions": {
+        "title": "Which questions?",
+        "ownTitle": "Set up the game",
+        "hint": "Choose what the game asks and how long it runs."
+      },
+      "who": {
+        "title": "Who is playing?",
+        "hint": "Choose who can join, how many, and whether they play in teams."
+      },
+      "open": {
+        "title": "Ready to open the room",
+        "hint": "Check your choices. Players go to {url} and type the code."
+      },
+      "row": {
+        "game": "Game",
+        "questions": "Questions",
+        "who": "Who can join",
+        "teams": "Teams"
+      }
     }
   },
   "match": {
@@ -7728,7 +7758,11 @@
       "proSub": "Grades 6–8",
       "launchpad": "Launchpad",
       "launchpadSub": "Grades K–2",
-      "switch": "Switch to {band}"
+      "switch": "Switch to {band}",
+      "yours": "Your level",
+      "showing": "Now showing",
+      "stepsDone": "{band}: {n} of {total} steps done",
+      "unitsFinale": "Units {from}–{to}, then the finale: {finale}"
     },
     "map": {
       "h": "Course map",
@@ -9982,7 +10016,8 @@
         "m": {
           "fractions": "Fraction bars",
           "fdp": "Fraction, decimal, percent"
-        }
+        },
+        "partsOf": "Parts in fraction {n}"
       },
       "numline": {
         "name": "Number line",

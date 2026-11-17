@@ -31,6 +31,11 @@
       "light": "Licht",
       "dark": "Donker"
     },
+    "acct": {
+      "allSettings": "Alle instellingen",
+      "themeAuto": "Auto",
+      "newMessages": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
+    },
     "footer": {
       "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
       "safety": "Veiligheid",
@@ -1424,14 +1429,9 @@
       "text": "Vertel de Bouwer je idee. Hij bouwt de game, en jij kunt hem steeds blijven veranderen."
     },
     "newGame": "Nieuwe game",
-    "startFrom": "Begin met een voorbeeld",
-    "startFromLabel": "Begin met {title}",
-    "worlds": "Begin in een 3D-wereld",
-    "startInLabel": "Begin in de 3D-wereld {title}",
-    "twoPlayers": "2 spelers",
     "updateWaiting": "Update wacht op controle",
     "changed": "Veranderd {when}",
-    "empty": "Tik op “Nieuwe game” of kies hierboven een voorbeeld. Je games verschijnen dan hier.",
+    "empty": "Tik op “Nieuwe game” om er een te beginnen. Je games verschijnen dan hier.",
     "rename": "Naam wijzigen",
     "delete": "Verwijderen",
     "status": {
@@ -1944,7 +1944,6 @@
     },
     "build": {
       "gettingReady": "Even klaarmaken…",
-      "needsNewer": "Heeft een nieuwer apparaat nodig",
       "renameTitle": "Naam van spel wijzigen",
       "nameLabel": "Naam van het spel",
       "save": "Opslaan",
@@ -2746,7 +2745,8 @@
         "takenDown": "Afbeelding weggehaald",
         "zoneNone": "Geen",
         "placeNote": "Typ een plaats of stad. Oomba gebruikt nooit iemands locatie.",
-        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond."
+        "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond.",
+        "undo": "Ongedaan maken"
       },
       "bgChanged": "Achtergrond veranderd",
       "uploading": "Je afbeelding wordt gecontroleerd…",
@@ -6694,6 +6694,36 @@
       "assign": "Aan deze klas opgeven",
       "mySets": "Mijn vragensets",
       "another": "Nog een maken"
+    },
+    "wiz": {
+      "modesTab": "Livespellen",
+      "progress": "Stap {n} van {total}",
+      "back": "Terug",
+      "next": "Volgende",
+      "change": "Wijzigen",
+      "play": {
+        "title": "Wat wil je spelen?",
+        "hint": "Kies een spel. Je kunt alles nog veranderen voordat de kamer opengaat."
+      },
+      "questions": {
+        "title": "Welke vragen?",
+        "ownTitle": "Spel instellen",
+        "hint": "Kies wat het spel vraagt en hoe lang het duurt."
+      },
+      "who": {
+        "title": "Wie speelt er mee?",
+        "hint": "Kies wie mag meedoen, hoeveel spelers en of ze in teams spelen."
+      },
+      "open": {
+        "title": "Klaar om de kamer te openen",
+        "hint": "Controleer je keuzes. Spelers gaan naar {url} en typen de code."
+      },
+      "row": {
+        "game": "Spel",
+        "questions": "Vragen",
+        "who": "Wie mag meedoen",
+        "teams": "Teams"
+      }
     }
   },
   "match": {
@@ -7238,7 +7268,13 @@
       "explorerSub": "Groep 5–7",
       "pro": "Pro",
       "proSub": "Groep 8 tot klas 2",
-      "switch": "Wissel naar {band}"
+      "switch": "Wissel naar {band}",
+      "launchpad": "Lanceerplatform",
+      "launchpadSub": "Groep 2–4",
+      "yours": "Jouw niveau",
+      "showing": "Nu te zien",
+      "stepsDone": "{band}: {n} van {total} stappen klaar",
+      "unitsFinale": "Units {from}–{to}, dan de finale: {finale}"
     },
     "map": {
       "h": "Cursuskaart",
@@ -9559,7 +9595,8 @@
         "m": {
           "fractions": "Breukenstroken",
           "fdp": "Breuk, kommagetal, procent"
-        }
+        },
+        "partsOf": "Stukjes in breuk {n}"
       },
       "numline": {
         "name": "Getallenlijn",

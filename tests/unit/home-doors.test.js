@@ -178,21 +178,23 @@ test('a translated home page shows its own doors; until a language has them, its
   assert.doesNotMatch(doors((await call(null, '/de')).text), /Für Eltern/, 'the words are back');
 });
 
-test('the wide top bar, signed out and as a guest: Play · Learn · Build · Plans · Parents · Teachers, then Sign in and ▶ Play now', async () => {
+test('the wide top bar, signed out and as a guest: Play · Learn · Build · Parents · Teachers, then Sign in and ▶ Play now (Plans in the footer)', async () => {
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const page = (await call(u, '/safety')).text;
-    assert.deepEqual(hrefs(topnav(page)), ['/', '/learn', '/build', '/plans', '/parents', '/teachers'], who);
+    assert.deepEqual(hrefs(topnav(page)), ['/', '/learn', '/build', '/parents', '/teachers'], who);
+    assert.match((/<footer class="foot">[\s\S]*?<\/footer>/.exec(page) || [''])[0], /<a href="\/plans">Plans<\/a>/, `${who}: Plans in the footer`);
     assert.match(page, /class="me-btn" href="\/(login|me)"[\s\S]*?<\/a>\s*<a class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Play now<\/span><\/a>\s*<\/header>/, `${who}: Play now ends the bar`);
     assert.match(page, /<form class="topsearch" role="search"/, `${who}: the search field stays`);
   }
   // A kid keeps their menu (Friends in it; search is the field) and no Play now.
   const k = (await call(kid(), '/safety')).text;
-  assert.deepEqual(hrefs(topnav(k)), ['/', '/learn', '/build', '/friends', '/plans']);
+  assert.deepEqual(hrefs(topnav(k)), ['/', '/learn', '/build', '/friends']);
   assert.doesNotMatch(k, /class="btn btn-hot playnow"/);
   // Plans off (billing not public): no Plans for anyone, the doors and Play now unchanged.
   config.stripeApiKey = '';
   const off = (await call(null, '/')).text;
   assert.deepEqual(hrefs(topnav(off)), ['/', '/learn', '/build', '/parents', '/teachers']);
+  assert.doesNotMatch(off, /href="\/plans"/);
   assert.deepEqual(hrefs(doors(off)), ['#play', '/parents', '/teachers']);
   assert.match(off, /class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"/);
 });

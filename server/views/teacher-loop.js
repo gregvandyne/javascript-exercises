@@ -34,13 +34,18 @@ const img = (t, name, sizes, cls = '') => html`<img${cls ? raw(` class="${cls}"`
 
 export function teacherLoop(t, opts = {}) {
   const { variant = 'page', links = null, state = null, live = true, shots = variant !== 'compact', cta = '', id = 'teach-loop', headingTag = 'h2', cls = '' } = opts;
-  if (variant === 'landing') return landing(t, { live, cta, id });
+  if (variant === 'landing') return landing(t, { live, cta, id, shots });
   if (variant === 'compact') return compact(t, { links, state, live, id });
   return pageLook(t, { links, state, live, shots, id, headingTag, cls });
 }
 
+/** The landing's screenshot pair or grid: the named shots (default all), each with its caption. */
+export const loopShots = (t, names = SHOTS.map(([n]) => n)) => html`<div class="lp-loop-shots">
+      ${names.map(name => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw')}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
+    </div>`;
+
 /** On the landing: numbered cards like "How it works", then the four screens, then the trial button. */
-function landing(t, { live, cta, id }) {
+function landing(t, { live, cta, id, shots = true }) {
   return html`<section class="lp-sec lp-loop" id="${id}" aria-labelledby="${id}-h">
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('teach.loop.kicker')}</p><h2 id="${id}-h">${t('teach.loop.h')}</h2><p>${t('teach.loop.lead')}</p></header>
@@ -49,9 +54,7 @@ function landing(t, { live, cta, id }) {
         <h3>${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
         <ul class="lp-loop-tools">${toolsOf(s, live).map(k => html`<li>${lpCheck}<span>${plainName(t, k)}</span></li>`)}</ul></li>`)}
     </ol>
-    <div class="lp-loop-shots">
-      ${SHOTS.map(([name]) => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw')}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
-    </div>
+    ${shots ? loopShots(t) : ''}
     ${cta ? html`<div class="lp-ctas lp-ctas-c lp-loop-cta">${cta}</div>` : ''}
   </div>
 </section>`;

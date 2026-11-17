@@ -144,11 +144,11 @@ test('who may see and change it: staff only; students, kids, grown-ups and guest
   TL.markCheck(pupil); assert.equal(setting(`teach.loop:${pupil.id}`), null);
 });
 
-test('the landing at "/": one teaching-loop section right after how it works, with the four screens, alt text and no prices', async () => {
+test('the landing at "/": one teaching-loop section after the students build, with the screens (Classroom off), alt text and no prices', async () => {
   const s = (await get('/')).text;
   assert.match(s, /<h1 id="lp-h1" class="lp-h1"/);
   const at = s.indexOf('<section class="lp-sec lp-loop" id="loop"');
-  assert.ok(at > s.indexOf('id="how"') && at < s.indexOf('id="builder"'), 'after how it works, before the Builder');
+  assert.ok(at > s.indexOf('id="kids"') && at < s.indexOf('id="courses"'), 'after "Your students build", before courses (the class-day order)');
   assert.equal(s.split('class="lp-sec lp-loop"').length, 2, 'once');
   const sec = s.slice(at, s.indexOf('</section>', at));
   assert.match(sec, /<h2 id="loop-h">Plan → Play → Check → Feedback<\/h2>/);
