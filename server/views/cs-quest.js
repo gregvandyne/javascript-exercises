@@ -127,7 +127,7 @@ export function programBody(req, d) {
   return html`
   <div class="pagehead csq-plan-head"><div><span class="small muted">${school.name}</span><h1>💻 CS Quest ${programBadge(cat)}</h1>
     <p class="muted">${t('cs.program.tagline')} · ${t('cs.program.counts', { lessons: 23, units: 7 })}</p></div>
-    <div class="row"><a class="btn" href="/teach/cs-quest/coverage">🗺️ ${t('cs.program.coverage')}</a><a class="btn" href="/teach/lessons?school=${school.id}">📚 ${t('lessons.library.title')}</a></div></div>
+    <div class="row"><a class="btn" href="/teach/cs-quest/coverage">🗺️ ${t('cs.program.coverage')}</a></div></div>
   ${d.schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${d.schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/cs-quest?band=${band}&school=${s.id}">${s.name}</a>`)}</nav>` : ''}
   <div class="csq-seg"><span class="small muted">${t('cs.band.label')}</span>
     <nav class="seg" aria-label="${t('cs.band.label')}" data-band-toggle>${T.BANDS.map(bc => html`<a href="${href(bc)}" data-band="${bc}" ${bc === band ? raw('aria-current="page"') : ''}>${t(BAND_KEY[bc])} · <span lang="en" dir="ltr">${cat.bands[bc].inGame}</span></a>`)}</nav>

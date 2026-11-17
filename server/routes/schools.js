@@ -738,7 +738,7 @@ function classroomHome(req) {
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
-      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span>${elsewhere}</div>`;
+      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/class/${c.id}#lessons">🎮 ${t('folders.assignGame')}</a>${liveBtn}</span>${elsewhere}</div>`;
   };
   // The teaching loop (docs/decisions.md "The teaching loop"): the card until each step is done once (or it is hidden),
   // then a small "How Oomba fits your week" link under the tools row.
@@ -747,7 +747,7 @@ function classroomHome(req) {
   return html`
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
     ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
-  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
+  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/build">📁 ${t('folders.myGamesFolders')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
   ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>`}
   ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
@@ -867,7 +867,8 @@ export function classHeader(req, c, active) {
   const requests = S.pendingRequests(c.id).length;
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
   const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, standards: `/class/${c.id}/standards`, games: `/class/${c.id}?tab=games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
-  const icon = { lessons: '📚', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
+  // The first tab is the class's assigned games (games, not lessons); its key stays 'lessons' (links and ?tab= unchanged).
+  const icon = { lessons: '📌', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
   <div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
@@ -875,7 +876,7 @@ export function classHeader(req, c, active) {
     ${(() => { const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user), dash = DASH.isTeacher(req.user, c);
       return chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''; })()}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>🗄️ ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
-  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
+  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${k === 'lessons' ? t('folders.assigned') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 }
 
 function requestsPanel(req, c, s, people) {

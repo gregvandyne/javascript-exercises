@@ -64,7 +64,7 @@ export default {
         // accuracy: the approved "each with lesson plans" is true of CS Quest only (23 lessons of 45 minutes); Number
         // Quest and Cyber Defenders come with teacher notes.
         { p: 'There are ready-made courses too: Number Quest (math), CS Quest (computer science) and Cyber Defenders (online safety). CS Quest comes with full 45-minute lesson plans, and the other two with teacher notes.' },
-        { cta: { label: 'Explore courses →', path: '/teach/lessons' } },
+        { cta: { label: 'Explore courses →', path: '/learn' } },
         { tour: "Prefer a guided tour? Reply and we'll find 15 minutes." },
       ],
     },

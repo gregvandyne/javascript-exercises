@@ -11185,5 +11185,48 @@
         "green": "Talk with a partner"
       }
     }
+  },
+  "folders": {
+    "title": "My folders",
+    "why": "Folders sort your games, your own and Oomba's. Putting a game in a folder never changes who can play it.",
+    "new": "New folder",
+    "name": "Folder name",
+    "namePlaceholder": "e.g. Fractions week",
+    "create": "Create",
+    "more": "More for {name}",
+    "delete": "Delete folder",
+    "deleteConfirm": "Delete the folder “{name}”? Its games are not deleted.",
+    "emptyTitle": "This folder is empty",
+    "emptyText": "Save games here with 📁 Save to folder, on Build or on any game's page.",
+    "findOomba": "Find Oomba games",
+    "oombaGame": "Oomba game",
+    "myGame": "My game",
+    "assign": "Assign",
+    "removeGame": "Remove from folder",
+    "save": "Save to folder",
+    "saveTitle": "Save “{game}” to a folder",
+    "gamesN": "{count, plural, one {# game} other {# games}}",
+    "saved": "In this folder",
+    "addHere": "Add here",
+    "none": "You have no folders yet. Name one below.",
+    "newWithGame": "New folder with this game",
+    "savedTo": "Saved to {folder}",
+    "already": "Already in {folder}",
+    "assignGame": "Assign a game",
+    "assignMine": "Assign from my games",
+    "assigned": "Assigned games",
+    "kindGame": "Game",
+    "scores": "Scores",
+    "courses": "Ready-made courses",
+    "classEmpty": "No games assigned yet",
+    "classEmptyText": "Make a game with the Builder, or assign one from your folders or Oomba's games. Ready-made courses are below.",
+    "myGamesFolders": "My games and folders",
+    "assignNote": "Students see it on their class page. Their scores are on the class's Assigned games tab.",
+    "errors": {
+      "name": "Give the folder a name.",
+      "tooMany": "You have the most folders allowed. Delete one first.",
+      "full": "This folder is full.",
+      "publishFirst": "Publish this game first, for your class or your school, so students can play it."
+    }
   }
 }

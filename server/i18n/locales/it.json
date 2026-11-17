@@ -10764,5 +10764,48 @@
         "green": "Parla a coppie"
       }
     }
+  },
+  "folders": {
+    "title": "Le mie cartelle",
+    "why": "Le cartelle ordinano i tuoi giochi, i tuoi e quelli di Oomba. Mettere un gioco in una cartella non cambia mai chi può giocarci.",
+    "new": "Nuova cartella",
+    "name": "Nome della cartella",
+    "namePlaceholder": "es. Settimana delle frazioni",
+    "create": "Crea",
+    "more": "Altro per {name}",
+    "delete": "Elimina cartella",
+    "deleteConfirm": "Eliminare la cartella «{name}»? I suoi giochi non vengono eliminati.",
+    "emptyTitle": "Questa cartella è vuota",
+    "emptyText": "Salva qui i giochi con 📁 Salva in una cartella, in Crea o sulla pagina di qualsiasi gioco.",
+    "findOomba": "Trova giochi Oomba",
+    "oombaGame": "Gioco Oomba",
+    "myGame": "Il mio gioco",
+    "assign": "Assegna",
+    "removeGame": "Togli dalla cartella",
+    "save": "Salva in una cartella",
+    "saveTitle": "Salva «{game}» in una cartella",
+    "gamesN": "{count, plural, one {# gioco} other {# giochi}}",
+    "saved": "In questa cartella",
+    "addHere": "Aggiungi qui",
+    "none": "Non hai ancora cartelle. Dai un nome a una qui sotto.",
+    "newWithGame": "Nuova cartella con questo gioco",
+    "savedTo": "Salvato in {folder}",
+    "already": "Già in {folder}",
+    "assignGame": "Assegna un gioco",
+    "assignMine": "Assegna dai miei giochi",
+    "assigned": "Giochi assegnati",
+    "kindGame": "Gioco",
+    "scores": "Punteggi",
+    "courses": "Corsi pronti",
+    "classEmpty": "Nessun gioco assegnato per ora",
+    "classEmptyText": "Crea un gioco con il Creatore, oppure assegnane uno dalle tue cartelle o dai giochi di Oomba. I corsi pronti sono qui sotto.",
+    "myGamesFolders": "I miei giochi e cartelle",
+    "assignNote": "Gli alunni lo vedono sulla pagina della loro classe. I loro punteggi sono nella scheda Giochi assegnati della classe.",
+    "errors": {
+      "name": "Dai un nome alla cartella.",
+      "tooMany": "Hai il numero massimo di cartelle. Eliminane prima una.",
+      "full": "Questa cartella è piena.",
+      "publishFirst": "Pubblica prima questo gioco, per la tua classe o la tua scuola, così gli alunni possono giocarci."
+    }
   }
 }

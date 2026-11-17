@@ -33,7 +33,7 @@ export function loopState(u) {
   const has = (sql, ...p) => !!q.get(sql, ...p);
   const kept = stored(u.id);
   const done = {
-    plan: has('SELECT 1 FROM lessons WHERE owner_id=? LIMIT 1', u.id) || has("SELECT 1 FROM games WHERE owner_id=? AND status!='deleted' LIMIT 1", u.id),
+    plan: has('SELECT 1 FROM lessons WHERE owner_id=? LIMIT 1', u.id) || has("SELECT 1 FROM games WHERE owner_id=? AND status!='deleted' LIMIT 1", u.id) || has('SELECT 1 FROM game_folders WHERE owner_id=? LIMIT 1', u.id),
     play: has('SELECT 1 FROM class_lessons WHERE assigned_by=? AND removed_at IS NULL LIMIT 1', u.id) || has('SELECT 1 FROM live_runs WHERE host_id=? LIMIT 1', u.id),
     check: !!kept.check,
     feedback: has('SELECT 1 FROM step_progress WHERE reviewed_by=? LIMIT 1', u.id),
@@ -60,24 +60,20 @@ export const showCard = st => !!st && !st.all && !st.hidden;
 export function loopLinks(u) {
   const mine = S.classesOf(u.id, 'teacher');
   const c = mine[0] || null;
-  const schools = S.schoolsOf(u.id).filter(x => x.role !== 'student');
-  const school = c ? c.school_id : schools[0] ? schools[0].id : null;
-  const lib = school ? `/teach/lessons?school=${encodeURIComponent(school)}` : '/teach/lessons';
-  const withClass = c ? `${lib}&class=${encodeURIComponent(c.id)}` : lib;
   // The most recent lesson assigned to the class: "Needs attention first" and its answers live on that lesson's page.
   const latest = c ? L.classLessons(c.id).filter(cl => !cl.removed_at).sort((a, z) => (z.assigned_at || 0) - (a.assigned_at || 0))[0] : null;
-  // "Turn a lesson into a game": the Builder from their latest lesson (its "New game for this lesson"), or a new lesson first.
-  const own = school ? q.get('SELECT id FROM lessons WHERE owner_id=? AND school_id=? AND archived_at IS NULL ORDER BY updated_at DESC LIMIT 1', u.id, school) : null;
   const host = liveOn() && liveCanHost(u);
   // No class yet: the class tools have nowhere to go, so they are left out (the view lists them as plain words) and one
   // "Make your first class" button goes to the form on the Classroom home.
   return {
     class: c ? { id: c.id, name: c.name } : null,
     makeClass: c ? null : '/teach?new=class',
-    library: lib,
-    draftAi: `${withClass}${school ? '&' : '?'}open=ai`,
-    builder: own ? `/teach/lessons/${own.id}#new-game` : `${withClass}${school ? '&' : '?'}open=new`,
-    assign: c ? withClass : null,
+    // Games, not lessons: the library is Build (folders of games), drafting and building are the Builder, and Assign is
+    // the class page (its assigned games, New game, Assign a game).
+    library: '/build',
+    draftAi: '/build/new',
+    builder: '/build/new',
+    assign: c ? `/class/${encodeURIComponent(c.id)}#lessons` : null,
     live: host ? (c ? `/live?class=${encodeURIComponent(c.id)}` : '/live') : null,
     gradebook: c ? `/class/${c.id}/progress` : null,
     csv: c ? `/class/${c.id}/progress.csv` : null,

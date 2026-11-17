@@ -10764,5 +10764,48 @@
         "green": "Praat met je maatje"
       }
     }
+  },
+  "folders": {
+    "title": "Mijn mappen",
+    "why": "Mappen ordenen je spellen, je eigen en die van Oomba. Een spel in een map zetten verandert nooit wie het kan spelen.",
+    "new": "Nieuwe map",
+    "name": "Naam van de map",
+    "namePlaceholder": "bv. Breukenweek",
+    "create": "Maken",
+    "more": "Meer voor {name}",
+    "delete": "Map verwijderen",
+    "deleteConfirm": "De map ‘{name}’ verwijderen? De spellen erin worden niet verwijderd.",
+    "emptyTitle": "Deze map is leeg",
+    "emptyText": "Bewaar hier spellen met 📁 Bewaren in map, bij Bouwen of op de pagina van elk spel.",
+    "findOomba": "Oomba-spellen zoeken",
+    "oombaGame": "Oomba-spel",
+    "myGame": "Mijn spel",
+    "assign": "Toewijzen",
+    "removeGame": "Uit de map halen",
+    "save": "Bewaren in map",
+    "saveTitle": "‘{game}’ in een map bewaren",
+    "gamesN": "{count, plural, one {# spel} other {# spellen}}",
+    "saved": "In deze map",
+    "addHere": "Hier toevoegen",
+    "none": "Je hebt nog geen mappen. Geef er hieronder een een naam.",
+    "newWithGame": "Nieuwe map met dit spel",
+    "savedTo": "Bewaard in {folder}",
+    "already": "Staat al in {folder}",
+    "assignGame": "Een spel toewijzen",
+    "assignMine": "Toewijzen uit mijn spellen",
+    "assigned": "Toegewezen spellen",
+    "kindGame": "Spel",
+    "scores": "Scores",
+    "courses": "Kant-en-klare cursussen",
+    "classEmpty": "Nog geen spellen toegewezen",
+    "classEmptyText": "Maak een spel met de Bouwer, of wijs er een toe uit je mappen of de spellen van Oomba. Kant-en-klare cursussen staan hieronder.",
+    "myGamesFolders": "Mijn spellen en mappen",
+    "assignNote": "Leerlingen zien het op hun klaspagina. Hun scores staan op het tabblad Toegewezen spellen van de klas.",
+    "errors": {
+      "name": "Geef de map een naam.",
+      "tooMany": "Je hebt het maximale aantal mappen. Verwijder er eerst een.",
+      "full": "Deze map is vol.",
+      "publishFirst": "Publiceer dit spel eerst voor je klas of je school, zodat leerlingen het kunnen spelen."
+    }
   }
 }

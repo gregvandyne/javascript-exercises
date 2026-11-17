@@ -10763,5 +10763,48 @@
         "green": "On parle à deux"
       }
     }
+  },
+  "folders": {
+    "title": "Mes dossiers",
+    "why": "Les dossiers rangent tes jeux, les tiens et ceux d'Oomba. Mettre un jeu dans un dossier ne change jamais qui peut y jouer.",
+    "new": "Nouveau dossier",
+    "name": "Nom du dossier",
+    "namePlaceholder": "ex. Semaine des fractions",
+    "create": "Créer",
+    "more": "Plus pour {name}",
+    "delete": "Supprimer le dossier",
+    "deleteConfirm": "Supprimer le dossier « {name} » ? Ses jeux ne sont pas supprimés.",
+    "emptyTitle": "Ce dossier est vide",
+    "emptyText": "Range des jeux ici avec 📁 Ranger dans un dossier, dans Créer ou sur la page de n'importe quel jeu.",
+    "findOomba": "Trouver des jeux Oomba",
+    "oombaGame": "Jeu Oomba",
+    "myGame": "Mon jeu",
+    "assign": "Attribuer",
+    "removeGame": "Retirer du dossier",
+    "save": "Ranger dans un dossier",
+    "saveTitle": "Ranger « {game} » dans un dossier",
+    "gamesN": "{count, plural, one {# jeu} other {# jeux}}",
+    "saved": "Dans ce dossier",
+    "addHere": "Ajouter ici",
+    "none": "Tu n'as pas encore de dossier. Nomme-en un ci-dessous.",
+    "newWithGame": "Nouveau dossier avec ce jeu",
+    "savedTo": "Rangé dans {folder}",
+    "already": "Déjà dans {folder}",
+    "assignGame": "Attribuer un jeu",
+    "assignMine": "Attribuer depuis mes jeux",
+    "assigned": "Jeux attribués",
+    "kindGame": "Jeu",
+    "scores": "Scores",
+    "courses": "Cours prêts à l'emploi",
+    "classEmpty": "Aucun jeu attribué pour l'instant",
+    "classEmptyText": "Crée un jeu avec le Créateur, ou attribues-en un depuis tes dossiers ou les jeux d'Oomba. Les cours prêts à l'emploi sont plus bas.",
+    "myGamesFolders": "Mes jeux et dossiers",
+    "assignNote": "Les élèves le voient sur la page de leur classe. Leurs scores sont dans l'onglet Jeux attribués de la classe.",
+    "errors": {
+      "name": "Donne un nom au dossier.",
+      "tooMany": "Tu as le nombre maximum de dossiers. Supprimes-en un d'abord.",
+      "full": "Ce dossier est plein.",
+      "publishFirst": "Publie d'abord ce jeu pour ta classe ou ton école, pour que les élèves puissent y jouer."
+    }
   }
 }

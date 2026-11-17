@@ -40,7 +40,7 @@ export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_
   'live_class_teams', 'live_class_team_cfg', 'live_support', 'dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes',
   'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_moods', 'dash_pictures', 'live_runs', 'class_lessons'];
 /** Rows removed by its classes' assigned lessons. */
-export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades'];
+export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades', 'lessons_retired'];
 /** Rows kept, with why (handled apart or history). */
 export const KEPT = {
   schools: 'the school row itself, deleted last',

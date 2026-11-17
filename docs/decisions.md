@@ -7518,3 +7518,46 @@ panel beside the cake**; for Pro: **unlike denominators** and **multiply and div
 - Tests: tests/unit/fraction-factory-pro.test.js (bands disjoint, the goals, the cut rules, every Pro order solved by
   its advice script); fraction-factory.test.js's chapter contract is per band; the e2e spec presses the slicer by its
   name ("Cut into 4").
+
+## Games, not lessons: folders of games, assigned to classes (17 Nov 2026)
+Owner: "Let's get rid of lessons and instead just have the builder here with games that teachers can put in folders and
+assign", and "there should still be a folder system so they can organize games (including the ability to save oomba
+games to a folder)". Decided with the owner: **the ready-made courses stay as they are** (Number Quest, CS Quest, Cyber
+Defenders); **teacher-made lessons are hidden, nothing is deleted**, and the games in them go into folders; an assigned
+game **shows on the student's class page, the teacher sees scores, it may have a due date and can be posted to Google
+Classroom**; folders live on **Build**, and the **class page** lists the class's assigned games with New game.
+- **Folders** (`game_folders`, `game_folder_items`, services/game-folders.js, routes/game-folders.js): per person, one
+  level, any game they can see (their own Builder games, drafts included, and Oomba's). A folder only sorts: putting a
+  game in one never changes who can play it, and deleting a folder never deletes its games. "📁 My folders" sits on
+  Build above My games; a folder page (`/build/folders/:id`) lists its games with Play, Assign and Remove, New game and
+  Find Oomba games, and rename, move and delete in its ⋯ menu. **Save to folder** (`/build/save?id=`) is on every
+  My games card, on Oomba game pages and Learn cards (school staff), and on an assigned game's ⋯ menu: each folder with
+  Add here or (already there) Remove, and "New folder with this game". Caps: 100 folders, 200 games a folder.
+- **Assign** (`/teach/assign?id=` or `?game=<slug>`, `F.assignGame`): a class, an optional due day, and "Also post to
+  Google Classroom" (when a class is linked; the same post and grades as before). Underneath it is still a one-game
+  assignment (a lesson of kind 'game' with one game step), so progress, scores, due dates, the gradebook, the dashboard
+  and Google Classroom all work unchanged. An Oomba game: published, public, not course-only. A teacher's own game: once
+  published for the school, publicly, or for classes (a class game reaches the class it is assigned to: it is added to
+  the game's class list); a draft or a private game says "Publish this game first". The same game is never in a class
+  twice (`alreadyAssigned`).
+- **The class page** (first tab, now "📌 Assigned games"; its key stays `lessons`): New game, Assign from my games, Find
+  Oomba games, the ready-made courses, then the assigned games (and course lessons and live homework) with due chips,
+  done counts, and ⋯: dates, Scores, Student view, Save to folder, Unassign. Gone from it: the lesson picker, New lesson,
+  Draft with AI, Lesson library and New unit. Students' heading is "📌 Assigned games"; a game row says "🎮 Game".
+- **lessons.kind** (`0084_game_folders`): 'game' (assigned by Assign: the audit log's lesson.assignGame, or the same shape),
+  'course' (a CS Quest copy: template_key), 'homework' (a live question set sent as homework), 'lesson' (teacher-made).
+  `retireLessons()` (db.js, run once by the migration, safe to run again) makes a folder named after each teacher-made
+  lesson that has games (its games in step order), and soft-removes that lesson's open assignments
+  (`class_lessons.removed_at`, the same remove every query already honours), recording each in `lessons_retired` so it
+  can be undone. Lessons, steps, students' work and rubric marks all stay. A retired lesson's editor link opens its folder.
+- **Elsewhere:** `/teach/lessons` redirects to `/build`; Classroom home's tools button is "📁 My games and folders" and each
+  class card's is "🎮 Assign a game"; the teaching loop's Plan tools are My games and folders and New game; the CS Quest
+  page no longer links the library; the trial email's courses link goes to Learn.
+- **Still there underneath, on purpose:** the lesson editor and the lesson APIs (CS Quest copies are edited there, and
+  their rubrics and standards), and units (CS Quest's assign-a-unit makes them; the class page shows their headings).
+  No screen makes a new teacher lesson any more. **Open:** remove the lesson-library code and the teacher-lesson APIs
+  once the owner is sure nothing should come back; the teaching loop's words still say "lesson" in places.
+- Privacy: folders are private to their owner (another teacher's folder is not found); account delete removes the
+  person's folders; school delete clears `lessons_retired` with the class's assignments (admin-delete.test.js).
+- Tests: tests/unit/games-not-lessons.test.js (the backfill, folders, assign, the pages); updated: lessons, progress,
+  gclassroom (an assigned game posts to Classroom), teach-loop, classroom-homes, course-teacher-view.

@@ -10763,5 +10763,48 @@
         "green": "和夥伴討論"
       }
     }
+  },
+  "folders": {
+    "title": "我的資料夾",
+    "why": "資料夾可以整理你的遊戲，包括你自己的和 Oomba 的。把遊戲放進資料夾，不會改變誰能玩它。",
+    "new": "新增資料夾",
+    "name": "資料夾名稱",
+    "namePlaceholder": "例如：分數週",
+    "create": "建立",
+    "more": "{name} 的更多選項",
+    "delete": "刪除資料夾",
+    "deleteConfirm": "要刪除資料夾「{name}」嗎？裡面的遊戲不會被刪除。",
+    "emptyTitle": "這個資料夾是空的",
+    "emptyText": "在「創作」或任何遊戲頁面用 📁 存到資料夾，把遊戲存到這裡。",
+    "findOomba": "尋找 Oomba 遊戲",
+    "oombaGame": "Oomba 遊戲",
+    "myGame": "我的遊戲",
+    "assign": "指派",
+    "removeGame": "從資料夾移除",
+    "save": "存到資料夾",
+    "saveTitle": "把「{game}」存到資料夾",
+    "gamesN": "{count, plural, other {# 個遊戲}}",
+    "saved": "已在這個資料夾",
+    "addHere": "加到這裡",
+    "none": "你還沒有資料夾。在下面取個名字吧。",
+    "newWithGame": "用這個遊戲新增資料夾",
+    "savedTo": "已存到 {folder}",
+    "already": "已在 {folder}",
+    "assignGame": "指派遊戲",
+    "assignMine": "從我的遊戲指派",
+    "assigned": "已指派的遊戲",
+    "kindGame": "遊戲",
+    "scores": "分數",
+    "courses": "現成課程",
+    "classEmpty": "還沒有指派遊戲",
+    "classEmptyText": "用創作工具做一個遊戲，或從你的資料夾或 Oomba 的遊戲中指派。現成課程在下方。",
+    "myGamesFolders": "我的遊戲和資料夾",
+    "assignNote": "學生會在班級頁面看到它。他們的分數在班級的「已指派的遊戲」分頁。",
+    "errors": {
+      "name": "請替資料夾取個名字。",
+      "tooMany": "資料夾數量已達上限，請先刪除一個。",
+      "full": "這個資料夾已滿。",
+      "publishFirst": "請先為你的班級或學校發布這個遊戲，學生才能玩。"
+    }
   }
 }

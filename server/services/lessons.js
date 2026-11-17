@@ -147,7 +147,10 @@ export function cleanLesson(fields = {}, old = {}) {
   if (!v.template_key) v.template_version = 0;
   return ok({ v });
 }
-export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0 }) {
+/** What a lesson row is (0084_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
+ *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered). */
+export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework'];
+export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
   const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
   if (folderId) { const f = getFolder(folderId); if (!ownsFolder(u, f) || f.school_id !== schoolId) return fail('notFound'); }
@@ -155,6 +158,8 @@ export function createLesson(u, schoolId, { title, folderId = null, summary = ''
   q.run(`INSERT INTO lessons(id, school_id, owner_id, folder_id, title, summary, subject, grade, objectives, position, created_at, updated_at, template_key, template_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     id, schoolId, u.id, folderId || null, v.title, v.summary, v.subject, v.grade, v.objectives,
     nextPos('lessons', 'owner_id=? AND school_id=? AND folder_id IS ?', u.id, schoolId, folderId || null), t, t, v.template_key, v.template_version);
+  const k = LESSON_KINDS.includes(kind) ? kind : v.template_key ? 'course' : 'lesson';
+  if (k !== 'lesson') q.run('UPDATE lessons SET kind=? WHERE id=?', k, id);
   audit(u.id, 'lesson.create', id, { school: schoolId, ...(v.template_key ? { template: v.template_key, version: v.template_version } : {}) });
   return ok({ lesson: getLesson(id) });
 }
@@ -404,7 +409,8 @@ export function gamesForPicker(u, schoolId) {
 
 // ---------------------------------------------------------------- class lessons
 export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_id=? ORDER BY position, created_at', classId);
-export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, sch.settings school_settings,
+export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, l.kind, sch.settings school_settings,
+    (SELECT s.game_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='game' ORDER BY s.position LIMIT 1) first_game,
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
   FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id ${SCHOOL_OF} WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId));
 

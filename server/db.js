@@ -1011,7 +1011,55 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS staff_email_invites_school ON staff_email_invites(school_id, status);
     CREATE INDEX IF NOT EXISTS staff_email_invites_by ON staff_email_invites(invited_by);
     CREATE INDEX IF NOT EXISTS staff_email_invites_email ON staff_email_invites(email);`],
+  // Games, not lessons (owner, 17 Nov 2026: "get rid of lessons and instead just have the builder here with games that
+  // teachers can put in folders and assign"). lessons.kind says what a lesson row is now: 'game' (one game assigned to a
+  // class, made by Assign), 'course' (a ready-made course's copy, CS Quest: template_key), 'homework' (a live question
+  // set sent as homework) or 'lesson' (a teacher-made lesson: no longer shown anywhere). game_folders / game_folder_items:
+  // a person's folders of games, any game they can see (their own Builder games and Oomba's), one level deep.
+  // Backfill: each teacher-made lesson with games becomes a folder named after it holding those games (from_lesson), and
+  // its assignments leave their classes with the usual soft remove (class_lessons.removed_at); lessons_retired keeps
+  // which rows this did, so it can be undone. Nothing is deleted: lessons, steps and students' work all stay.
+  ['0084_game_folders', `
+    ALTER TABLE lessons ADD COLUMN kind TEXT NOT NULL DEFAULT 'lesson';
+    CREATE TABLE IF NOT EXISTS game_folders (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, name TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0,
+      from_lesson TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS game_folders_owner ON game_folders(owner_id, position);
+    CREATE TABLE IF NOT EXISTS game_folder_items (folder_id TEXT NOT NULL, game_id TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0, added_at INTEGER NOT NULL,
+      PRIMARY KEY (folder_id, game_id));
+    CREATE INDEX IF NOT EXISTS game_folder_items_game ON game_folder_items(game_id);
+    CREATE TABLE IF NOT EXISTS lessons_retired (class_lesson_id TEXT PRIMARY KEY, lesson_id TEXT NOT NULL, retired_at INTEGER NOT NULL);`,
+  retireLessons],
 ];
+
+/** 0084's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
+ *  Assign or the same shape; a live set sent as homework; else a teacher-made lesson), then a folder for each teacher-made
+ *  lesson that has games (its games in step order, de-duplicated), and its open assignments retired (soft-removed,
+ *  listed in lessons_retired). Lessons, steps and students' work are all kept. */
+export function retireLessons(conn) {
+  conn.exec(`UPDATE lessons SET kind='course' WHERE kind='lesson' AND template_key!='';
+    UPDATE lessons SET kind='game' WHERE kind='lesson' AND (id IN (SELECT target FROM audit_log WHERE action='lesson.assignGame')
+      OR (summary='' AND (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=lessons.id)=1
+        AND EXISTS (SELECT 1 FROM lesson_steps s JOIN games g ON g.id=s.game_id WHERE s.lesson_id=lessons.id AND s.kind='game' AND g.title=lessons.title)));
+    UPDATE lessons SET kind='homework' WHERE kind='lesson' AND summary='' AND (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=lessons.id)=1
+      AND EXISTS (SELECT 1 FROM lesson_steps s WHERE s.lesson_id=lessons.id AND s.kind='quiz' AND s.set_id IS NOT NULL AND s.title=lessons.title);`);
+  const t = Date.now();
+  const lessons = conn.prepare("SELECT id, owner_id, title FROM lessons WHERE kind='lesson' AND archived_at IS NULL AND id NOT IN (SELECT from_lesson FROM game_folders WHERE from_lesson IS NOT NULL) ORDER BY created_at").all();
+  const gamesOf = conn.prepare(`SELECT DISTINCT s.game_id FROM lesson_steps s JOIN games g ON g.id=s.game_id
+    WHERE s.lesson_id=? AND s.kind='game' AND s.game_id IS NOT NULL AND g.status!='deleted' ORDER BY s.position`);
+  const pos = new Map();
+  for (const l of lessons) {
+    const ids = gamesOf.all(l.id).map(r => r.game_id); if (!ids.length) continue;
+    const id = uid(12), p = (pos.get(l.owner_id) ?? (conn.prepare('SELECT COALESCE(MAX(position),-1) m FROM game_folders WHERE owner_id=?').get(l.owner_id).m)) + 1;
+    pos.set(l.owner_id, p);
+    conn.prepare('INSERT INTO game_folders(id, owner_id, name, position, from_lesson, created_at, updated_at) VALUES (?,?,?,?,?,?,?)').run(id, l.owner_id, String(l.title || '').slice(0, 60) || 'Lesson', p, l.id, t, t);
+    ids.forEach((g, i) => conn.prepare('INSERT OR IGNORE INTO game_folder_items(folder_id, game_id, position, added_at) VALUES (?,?,?,?)').run(id, g, i, t));
+  }
+  const open = conn.prepare("SELECT cl.id, cl.lesson_id FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id WHERE l.kind='lesson' AND cl.removed_at IS NULL").all();
+  for (const cl of open) {
+    conn.prepare('INSERT OR IGNORE INTO lessons_retired(class_lesson_id, lesson_id, retired_at) VALUES (?,?,?)').run(cl.id, cl.lesson_id, t);
+    conn.prepare('UPDATE class_lessons SET removed_at=? WHERE id=?').run(t, cl.id);
+  }
+}
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 /** A new 6-character friend code no account has (no 0/O, 1/I/L, so it reads aloud clearly). */

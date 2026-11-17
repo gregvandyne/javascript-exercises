@@ -10764,5 +10764,48 @@
         "green": "Zu zweit reden"
       }
     }
+  },
+  "folders": {
+    "title": "Meine Ordner",
+    "why": "Ordner sortieren deine Spiele, eigene und die von Oomba. Ein Spiel in einem Ordner ändert nie, wer es spielen kann.",
+    "new": "Neuer Ordner",
+    "name": "Ordnername",
+    "namePlaceholder": "z. B. Woche der Brüche",
+    "create": "Erstellen",
+    "more": "Mehr zu {name}",
+    "delete": "Ordner löschen",
+    "deleteConfirm": "Den Ordner „{name}“ löschen? Seine Spiele werden nicht gelöscht.",
+    "emptyTitle": "Dieser Ordner ist leer",
+    "emptyText": "Speichere Spiele hier mit 📁 In Ordner speichern, unter Bauen oder auf der Seite jedes Spiels.",
+    "findOomba": "Oomba-Spiele finden",
+    "oombaGame": "Oomba-Spiel",
+    "myGame": "Mein Spiel",
+    "assign": "Zuweisen",
+    "removeGame": "Aus dem Ordner entfernen",
+    "save": "In Ordner speichern",
+    "saveTitle": "„{game}“ in einem Ordner speichern",
+    "gamesN": "{count, plural, one {# Spiel} other {# Spiele}}",
+    "saved": "In diesem Ordner",
+    "addHere": "Hier hinzufügen",
+    "none": "Du hast noch keine Ordner. Gib unten einem einen Namen.",
+    "newWithGame": "Neuer Ordner mit diesem Spiel",
+    "savedTo": "In {folder} gespeichert",
+    "already": "Schon in {folder}",
+    "assignGame": "Ein Spiel zuweisen",
+    "assignMine": "Aus meinen Spielen zuweisen",
+    "assigned": "Zugewiesene Spiele",
+    "kindGame": "Spiel",
+    "scores": "Punkte",
+    "courses": "Fertige Kurse",
+    "classEmpty": "Noch keine Spiele zugewiesen",
+    "classEmptyText": "Baue ein Spiel mit dem Baukasten oder weise eines aus deinen Ordnern oder von Oomba zu. Fertige Kurse findest du unten.",
+    "myGamesFolders": "Meine Spiele und Ordner",
+    "assignNote": "Die Kinder sehen es auf ihrer Klassenseite. Ihre Punkte stehen im Reiter Zugewiesene Spiele der Klasse.",
+    "errors": {
+      "name": "Gib dem Ordner einen Namen.",
+      "tooMany": "Du hast die höchste Zahl an Ordnern. Lösche zuerst einen.",
+      "full": "Dieser Ordner ist voll.",
+      "publishFirst": "Veröffentliche dieses Spiel zuerst für deine Klasse oder deine Schule, damit die Kinder es spielen können."
+    }
   }
 }
