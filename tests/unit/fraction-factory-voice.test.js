@@ -36,8 +36,8 @@ test('the I18N block carries every spoken line, identical to the displayed line'
     assert.equal(en[`intro.${l.id}`], l.intro, `intro.${l.id}`);
     l.hints.forEach((h, i) => assert.equal(en[`hint.${l.id}.${i + 1}`], h, `hint.${l.id}.${i + 1}`));
   }
-  const why = Object.fromEntries([...html.matchAll(/'(no-cut|cut-size|reslice|too-few|too-many|value|line|compare|pick-first)': '([^']+)'/g)].map(m => [m[1], m[2]]));
-  assert.equal(Object.keys(why).length, 9, 'all nine WHY feedback lines found in the game');
+  const why = Object.fromEntries([...html.matchAll(/'(no-cut|cut-size|reslice|too-few|more-wholes|too-many|value|line|compare|pick-first)': '([^']+)'/g)].map(m => [m[1], m[2]]));
+  assert.equal(Object.keys(why).length, 10, 'all ten WHY feedback lines found in the game');
   for (const [k, v] of Object.entries(why)) assert.equal(en[`why.${k}`], v, `why.${k}`);
   assert.equal(en['why.default'], 'A mistake is a clue about how your brain is thinking. Try again!');
   assert.equal(en['say.welcome'], 'I am Tally the cat. Pick a counter and let us get slicing!');
