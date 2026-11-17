@@ -280,7 +280,9 @@ const shotsDir = process.env.RS_SHOTS;
 
 /** The game in the production frame, on a stand-in for the play page: it keeps the SDK's messages (window.__msgs) and
  *  answers a speech request with "no AI voice here" at once, as the play page does when a line cannot be read. */
-async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false } = {}) {
+// lap: the lap the first play takes (0, the fixed lap, whose numbers the checks below know), or null for the
+// random lap a play really takes.
+async function open({ params = '', width = 960, height = 600, reducedMotion = 'no-preference', touch = false, lap = 0 } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion, hasTouch: touch });
@@ -304,6 +306,7 @@ async function open({ params = '', width = 960, height = 600, reducedMotion = 'n
   await p.goto(HOST + '/');
   const frame = p.frames().find(f => f.url() === HOST + '/frame');
   await frame.waitForFunction(() => window.__ready === true, null, { timeout: 90_000 });
+  if (lap != null) await frame.evaluate(n => window.__brbTest.lap(n), lap);
   const state = () => frame.evaluate(() => window.__rs.state());
   const msgs = type => p.evaluate(t => window.__msgs.filter(m => m.type === t), type);
   const spoken = async () => (await msgs('brb:tts')).map(m => m.text);
@@ -338,7 +341,7 @@ function loading(s) { const [h, t, o] = hto(s.target); return s.stock.h ? [...Ar
 
 for (const chapter of CHAPTERS) {
   test(`lesson mode, ${chapter}: loads clean, a wrong answer does not advance, six right rounds post game over once`, { skip, timeout: 420_000 }, async () => {
-    const g = await open({ params: `chapter=${chapter}&lock=1` });
+    const g = await open({ params: `chapter=${chapter}&lock=1`, lap: null });   // the lap a real play takes
     const { frame, state, until } = g;
     assert.equal((await state()).screen, 'hero');
     assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('#card .rs-btn')].map(b => b.textContent)), ['Knight', 'Explorer', 'Wizard', 'Ranger', 'Hooded Ranger'], 'the theme’s five adventurers, by the theme’s names (the five the other Launchpad games offer)');
@@ -354,7 +357,8 @@ for (const chapter of CHAPTERS) {
     for (let round = 1; round <= 6; round++) {
       s = await state();
       assert.equal(s.round, round); assert.equal(s.phase, 'play');
-      const want = RS.round(chapter, round, 0);
+      if (round === 1) { assert.ok(Number.isInteger(s.lap) && s.lap >= 1, 'a play takes a random lap, not the fixed lap 0'); g.lap1 = s.lap; } else assert.equal(s.lap, g.lap1, 'one lap for the whole play');
+      const want = RS.round(chapter, round, s.lap);
       assert.deepEqual(Object.fromEntries(Object.keys(want).map(k => [k, s[k]])), want, `round ${round} is the round its number seeds`);
       // the instruction: shown and spoken (a number's name is heard and written in words, never shown in digits)
       const asked = await text(frame, '#askt'), line = say(s.ask[0], s.ask[1]);
@@ -408,7 +412,7 @@ for (const chapter of CHAPTERS) {
         assert.equal((await g.msgs('brb:gameover')).length, 0, `round ${round}: no completion before the sixth round is right`);
         if (s.kind === 'read') assert.deepEqual(after.boards, hto(s.num).map(String), `round ${round}: each place shows how many it holds (an empty place shows 0)`);
         if (s.kind === 'skip') assert.deepEqual(after.boards.filter(b => b[0] === '+'), Array(3).fill('+' + s.by), `round ${round}: the hop between the marks is shown`);
-        if (s.kind === 'compare') { const i = 'hto'.indexOf(s.why); assert.deepEqual(after.boards.slice().sort(), [String(s.a), String(s.b), String(hto(s.a)[i]), String(hto(s.b)[i])].sort(), `round ${round}: the place that decides is marked on both loads`); }
+        if (s.kind === 'compare') { const at = s.why === 'same' ? [0, 1, 2] : ['hto'.indexOf(s.why)]; assert.deepEqual(after.boards.slice().sort(), [String(s.a), String(s.b), ...at.flatMap(i => [String(hto(s.a)[i]), String(hto(s.b)[i])])].sort(), `round ${round}: the place that decides is marked on both loads (every place when they are the same)`); }
         if (s.kind === 'add') { assert.equal(after.work, true); assert.deepEqual([after.pods, after.ghosts], [hto(s.answer), 0], `round ${round}: the sum is worked on the pad: ten ones are a new rack`); }
         if (s.kind === 'sub') { const [, tb, ob] = hto(s.b); assert.equal(after.work, true); assert.deepEqual([after.pods, after.ghosts], [hto(s.answer), tb + ob], `round ${round}: a ten is opened, and what is taken away stays as outlines`); }
         await frame.click(btn(s, s.answer));
@@ -430,7 +434,7 @@ for (const chapter of CHAPTERS) {
     await frame.click('#again');
     await until(() => window.__rs.state().screen === 'play');
     s = await state();
-    assert.equal(s.round, 1); assert.deepEqual(Object.fromEntries(Object.keys(RS.round(chapter, 1, 1)).map(k => [k, s[k]])), RS.round(chapter, 1, 1), 'the second lap’s first round');
+    assert.equal(s.round, 1); assert.ok(s.lap >= 1 && s.lap !== g.lap1, 'Play again takes another lap'); assert.deepEqual(Object.fromEntries(Object.keys(RS.round(chapter, 1, s.lap)).map(k => [k, s[k]])), RS.round(chapter, 1, s.lap), 'the next lap’s first round');
     assert.equal((await g.msgs('brb:gameover')).length, 1);
     assert.deepEqual(g.errors, []);
     assert.deepEqual(g.outside, [], 'the game asked for nothing outside /vendor');
