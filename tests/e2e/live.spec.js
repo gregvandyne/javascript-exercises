@@ -9,7 +9,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
 import WebSocket from 'ws';
-import { login, ownIp, templateGame, uniq } from './helpers.js';
+import { login, ownIp, templateGame, uniq, liveStep, openLiveRoom } from './helpers.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
 const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`) }); };
@@ -156,9 +156,10 @@ test('Question Battle from the landing page: questions on the projector, answers
   await expect(host.locator('input[name="pick"][value="mode:battle"]')).toBeChecked();
   await expect(host.locator('#lv-sets')).toBeVisible();
   await expect(host.locator('#lv-set')).toHaveValue('starter:math-8');
+  await liveStep(host, 'who');
   await host.locator('input[name="audience"][value="open"]').check();
   host.on('dialog', d => d.accept());
-  await host.click('#lv-new button[type=submit]');
+  await openLiveRoom(host);
   await host.waitForURL(/\/live\/host\//);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
   const a = await player(browser, code), b = await player(browser, code);

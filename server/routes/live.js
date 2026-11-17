@@ -187,7 +187,8 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   // Opened from a class (its "Host a live game" or a lesson): a way back to it, and its name under the heading.
   const forClass = pre.classId ? teaching.find(c => c.id === pre.classId) : null;
-  page(req, res, { title: t('live.landing.title'), active: 'live', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
+  // In steps like the Builder's setup (/build/new): its stylesheet for the shared look (progress, cards, Back / Next).
+  page(req, res, { title: t('live.landing.title'), active: 'live', mid: true, head: '<link rel="stylesheet" href="/css/build-setup.css"><link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     ...(forClass ? { back: `/class/${forClass.id}`, backLabel: forClass.name } : {}),
     body: V.landingBody(req, { forClass, modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
       prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() ? tugPicker(req) : null, doodle: doodlePicker(req),

@@ -6688,6 +6688,36 @@
       "assign": "Dieser Klasse aufgeben",
       "mySets": "Meine Fragensätze",
       "another": "Noch eins machen"
+    },
+    "wiz": {
+      "modesTab": "Live-Spiele",
+      "progress": "Schritt {n} von {total}",
+      "back": "Zurück",
+      "next": "Weiter",
+      "change": "Ändern",
+      "play": {
+        "title": "Was wollt ihr spielen?",
+        "hint": "Wähle ein Spiel. Bevor der Raum aufgeht, kannst du alles noch ändern."
+      },
+      "questions": {
+        "title": "Welche Fragen?",
+        "ownTitle": "Spiel einstellen",
+        "hint": "Wähle, was das Spiel fragt und wie lange es dauert."
+      },
+      "who": {
+        "title": "Wer spielt mit?",
+        "hint": "Wähle, wer mitspielen darf, wie viele und ob in Teams gespielt wird."
+      },
+      "open": {
+        "title": "Bereit, den Raum zu öffnen",
+        "hint": "Prüfe deine Auswahl. Die Spielenden gehen auf {url} und geben den Code ein."
+      },
+      "row": {
+        "game": "Spiel",
+        "questions": "Fragen",
+        "who": "Wer darf mitspielen",
+        "teams": "Teams"
+      }
     }
   },
   "match": {

@@ -7049,6 +7049,36 @@
       "assign": "Assign to this class",
       "mySets": "My question sets",
       "another": "Make another"
+    },
+    "wiz": {
+      "modesTab": "Live games",
+      "progress": "Step {n} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "change": "Change",
+      "play": {
+        "title": "What do you want to play?",
+        "hint": "Pick a game. You can change anything before the room opens."
+      },
+      "questions": {
+        "title": "Which questions?",
+        "ownTitle": "Set up the game",
+        "hint": "Choose what the game asks and how long it runs."
+      },
+      "who": {
+        "title": "Who is playing?",
+        "hint": "Choose who can join, how many, and whether they play in teams."
+      },
+      "open": {
+        "title": "Ready to open the room",
+        "hint": "Check your choices. Players go to {url} and type the code."
+      },
+      "row": {
+        "game": "Game",
+        "questions": "Questions",
+        "who": "Who can join",
+        "teams": "Teams"
+      }
     }
   },
   "match": {

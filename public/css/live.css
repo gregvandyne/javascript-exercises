@@ -459,3 +459,65 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .mk-h3 { margin: 0; font-size: 1.05rem; }
 .lv-why { margin: 0; padding: 8px 10px; border-inline-start: 4px solid var(--line); background: var(--bg); border-radius: 8px; color: var(--text); }
 #mk-text { min-block-size: 200px; }
+
+/* ---------------------------------------------------------------- /live in steps (docs/decisions.md "Host a live game
+   in steps"), like the Builder's setup: build-setup.css gives the progress dots, the tabs, the review rows and the
+   Back / Next bar; these rules give the live cards the same look. One step shows at a time (live-sets.js); without
+   the script the page's noscript style shows them all. */
+.lv-wiz { display: flex; flex-direction: column; gap: 16px; padding: 0; max-inline-size: none; }
+.lv-wiz .su-nav-end { margin-inline-start: auto; }
+.lv-wiz .su-top { min-height: 0; }
+.lv-steps { display: flex; flex-direction: column; gap: 16px; }
+.lv-wiz .lv-wstep { display: none; flex-direction: column; gap: 16px; min-inline-size: 0; }
+.lv-wiz .lv-wstep.is-on { display: flex; }
+.lv-wstep-h { margin: 0; font-size: clamp(1.75rem, 4.2vw, 2.4rem); line-height: 1.1; letter-spacing: -.02em; }
+.lv-wstep-h:focus-visible { outline-offset: 4px; }
+.lv-pgroup.is-off { display: none; }
+.lv-wiz .lv-group legend:not(.sr-only) { margin-block-end: 4px; }
+/* the game cards: equal columns, every card in a row the same height, a tick as well as the colour when picked */
+.lv-wiz .lv-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 12px; }
+.lv-wiz .lv-pick { position: relative; display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; padding: 10px; border: 0; border-radius: var(--r); background: var(--card); box-shadow: inset 0 0 0 2px var(--line); color: var(--text); cursor: pointer; }
+.lv-wiz .lv-pick:hover { background: var(--hover); }
+.lv-wiz .lv-pick:has(input:checked) { background: var(--accent-soft); box-shadow: inset 0 0 0 3px var(--accent-line); }
+.lv-wiz .lv-pick:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-wiz .lv-pick-icon { display: grid; place-items: center; block-size: 72px; border-radius: var(--r-sm); background: var(--accent-soft); font-size: 2.4rem; line-height: 1; }
+.lv-wiz .lv-pick:has(input:checked) .lv-pick-icon { background: var(--card); }
+.lv-wiz .lv-pick-t { font-weight: 800; line-height: 1.2; padding-inline-end: 4px; overflow-wrap: anywhere; }
+.lv-wiz .lv-pick-d { font-size: .88rem; line-height: 1.35; color: var(--text-2); overflow-wrap: anywhere; }
+.lv-wiz .lv-pick-foot { margin-block-start: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.lv-wiz .lv-pick-players { font-size: .82rem; color: var(--text-2); }
+.lv-wiz .lv-pick .su-tick { top: 16px; inset-inline-end: 16px; }
+.lv-wiz .lv-pick:has(input:checked) .su-tick, .lv-aud:has(input:checked) .su-tick { display: grid; }
+@media (max-width: 900px) { .lv-wiz .lv-picks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  /* a phone: one card per row, the emoji beside the words */
+  .lv-wiz .lv-picks { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+  .lv-wiz .lv-pick { display: grid; grid-template-columns: 64px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; align-items: start; padding-inline-end: 44px; }
+  .lv-wiz .lv-pick-icon { grid-row: 1 / span 3; inline-size: 64px; block-size: 64px; font-size: 2rem; }
+  .lv-wiz .lv-pick-t, .lv-wiz .lv-pick-d, .lv-wiz .lv-pick-foot { grid-column: 2; }
+  .lv-wiz .lv-pick .su-tick { top: 12px; inset-inline-end: 10px; }
+}
+/* fields side by side where there is room, full width on a phone */
+.lv-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px 16px; align-items: start; }
+.lv-fields .field { margin: 0; }
+.lv-wiz .lv-own, .lv-wiz #lv-sets, .lv-wiz .lv-bank { gap: 12px; }
+.lv-wiz .lv-bank { display: flex; flex-direction: column; align-items: stretch; margin-block: 0; }
+.lv-wiz .lv-bank[hidden], .lv-wiz .lv-own[hidden], .lv-wiz #lv-sets[hidden] { display: none; }
+/* who can join: big cards, as on the Builder's start */
+.lv-auds { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); grid-auto-rows: 1fr; gap: 12px; }
+.lv-aud { position: relative; display: flex; align-items: center; gap: 12px; min-block-size: 72px; padding: 14px 52px 14px 16px; border-radius: var(--r); background: var(--card); box-shadow: inset 0 0 0 2px var(--line); font-weight: 700; cursor: pointer; }
+[dir="rtl"] .lv-aud { padding: 14px 16px 14px 52px; }
+.lv-aud:hover { background: var(--hover); }
+.lv-aud:has(input:checked) { background: var(--accent-soft); box-shadow: inset 0 0 0 3px var(--accent-line); }
+.lv-aud:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lv-aud input { position: absolute; opacity: 0; pointer-events: none; }
+.lv-aud-e { font-size: 1.8rem; line-height: 1; }
+.lv-aud .su-tick { top: 50%; margin-top: -14px; inset-inline-end: 14px; }
+/* the check before opening */
+.lv-wiz .lv-review dd:empty::before { content: "–"; color: var(--muted); }
+.lv-wiz .su-row[hidden] { display: none; }
+.lv-settings-landing.panel { padding: 0 20px; }
+.lv-settings-landing.panel[open] { padding-block-end: 16px; }
+.lv-settings-landing.panel summary { min-block-size: 52px; font-weight: 700; }
+.lv-wiz .su-nav[hidden] { display: none; }
+.lv-wiz .lv-recent-wrap[hidden] { display: none; }

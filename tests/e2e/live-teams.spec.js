@@ -10,7 +10,7 @@
 // LIVE_SHOTS=<dir> saves the screenshots. Run with LIVE_SAVE_SUPPORT=1 for the saved-support check.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp } from './helpers.js';
+import { login, ownIp, liveStep } from './helpers.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
 const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`) }); };
@@ -383,6 +383,7 @@ test('game settings: 2 questions, accuracy only, leaderboard off; remembered on 
   await act(host, 'end');
   // remembered on the landing
   await host.goto('/live');
+  await liveStep(host, 'open');
   await host.locator('#lv-settings-landing > summary').click();
   await expect(host.locator('#lv-ls-points')).toHaveValue('accuracy');
   await expect(host.locator('#lv-ls-board')).toHaveValue('off');

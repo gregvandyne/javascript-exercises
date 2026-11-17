@@ -6689,6 +6689,36 @@
       "assign": "Atribuir a esta turma",
       "mySets": "Meus conjuntos de perguntas",
       "another": "Fazer outro"
+    },
+    "wiz": {
+      "modesTab": "Jogos ao vivo",
+      "progress": "Passo {n} de {total}",
+      "back": "Voltar",
+      "next": "Próximo",
+      "change": "Mudar",
+      "play": {
+        "title": "O que vocês querem jogar?",
+        "hint": "Escolha um jogo. Você pode mudar tudo antes de abrir a sala."
+      },
+      "questions": {
+        "title": "Quais perguntas?",
+        "ownTitle": "Configure o jogo",
+        "hint": "Escolha o que o jogo pergunta e quanto tempo ele dura."
+      },
+      "who": {
+        "title": "Quem vai jogar?",
+        "hint": "Escolha quem pode entrar, quantos jogadores e se jogam em equipes."
+      },
+      "open": {
+        "title": "Pronto para abrir a sala",
+        "hint": "Confira suas escolhas. Os jogadores vão para {url} e digitam o código."
+      },
+      "row": {
+        "game": "Jogo",
+        "questions": "Perguntas",
+        "who": "Quem pode entrar",
+        "teams": "Equipes"
+      }
     }
   },
   "match": {

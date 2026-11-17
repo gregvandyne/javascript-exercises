@@ -7286,3 +7286,26 @@ feedback screens sat in the teaching-loop section in two columns, so the third w
 - /teachers and /teach/loop (the app-look variant) are unchanged.
 - Tests: teach-loop.test.js checks both cases. Its older check that the loop comes before the Builder was out of date
   since "Landing: the whole class day" (it now comes after "Your students build") and is corrected.
+
+## Host a live game in steps (17 Nov 2026)
+Owner: "The host a live game page is not super well put together. Make it more like the builder process." `/live` was
+one long form: seven game cards, then question sets, who can join, most players, teams and settings, with several
+dropdowns and inputs left unstyled (thin native controls).
+- **Steps, as in the Builder's setup (`/build/new`):** 1 What do you want to play? → 2 Which questions? (or "Set up the
+  game" for Would You Rather, Atlas Quest, Tug of Math and Doodle Hoot, which make their own) → 3 Who is playing? →
+  4 Ready to open the room: one row per choice (game, questions, who can join, teams) with Change, Game settings
+  (closed), and "Open the room". A game that asks no questions has no step 2 (three steps). The progress dots, "Step n
+  of N", the card look, the tabs, the review rows and the sticky Back / Next bar are build-setup.css's (the page loads
+  it); live.css only adds what live needs (`.lv-wiz`).
+- **Cards:** each game is a card like the Builder's: its emoji in a picture box, name, line, who it is best for and
+  "Made for teams", a tick when picked; three across, two on a tablet, one per row with the emoji beside the words on
+  a phone. When there is more than one group (Live games, Oomba Academy games, My games, Shared with my classes), tabs
+  show one group at a time. "Who can join" is two or three big cards. Every select and number box uses `.input`.
+- **Same form, same API:** every field keeps its name and id and stays in the one `#lv-new` form; a step only shows
+  and hides its part (public/js/live-sets.js `steps()`), so `/api/live/sessions`, the remembered settings, lesson and
+  class links (`?class=`, `?game=`, `?mode=`, `?starter=`) all work as before. Opened with a game already chosen, the
+  page starts on the next step (its questions, or who is playing). Enter in a field goes to the next step; it opens
+  the room only on the last one. Without the script a noscript style shows every step and the form posts as before.
+- Tests: live-pages.test.js (the four steps in order, one form, the first step for each kind of link, the noscript
+  fallback). The e2e specs that open a room from the landing walk the steps with `liveStep` / `openLiveRoom`
+  (tests/e2e/helpers.js).

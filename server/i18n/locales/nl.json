@@ -6688,6 +6688,36 @@
       "assign": "Aan deze klas opgeven",
       "mySets": "Mijn vragensets",
       "another": "Nog een maken"
+    },
+    "wiz": {
+      "modesTab": "Livespellen",
+      "progress": "Stap {n} van {total}",
+      "back": "Terug",
+      "next": "Volgende",
+      "change": "Wijzigen",
+      "play": {
+        "title": "Wat wil je spelen?",
+        "hint": "Kies een spel. Je kunt alles nog veranderen voordat de kamer opengaat."
+      },
+      "questions": {
+        "title": "Welke vragen?",
+        "ownTitle": "Spel instellen",
+        "hint": "Kies wat het spel vraagt en hoe lang het duurt."
+      },
+      "who": {
+        "title": "Wie speelt er mee?",
+        "hint": "Kies wie mag meedoen, hoeveel spelers en of ze in teams spelen."
+      },
+      "open": {
+        "title": "Klaar om de kamer te openen",
+        "hint": "Controleer je keuzes. Spelers gaan naar {url} en typen de code."
+      },
+      "row": {
+        "game": "Spel",
+        "questions": "Vragen",
+        "who": "Wie mag meedoen",
+        "teams": "Teams"
+      }
     }
   },
   "match": {

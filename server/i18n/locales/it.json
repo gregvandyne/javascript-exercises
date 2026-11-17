@@ -6688,6 +6688,36 @@
       "assign": "Assegna a questa classe",
       "mySets": "I miei set di domande",
       "another": "Fanne un altro"
+    },
+    "wiz": {
+      "modesTab": "Giochi dal vivo",
+      "progress": "Passo {n} di {total}",
+      "back": "Indietro",
+      "next": "Avanti",
+      "change": "Cambia",
+      "play": {
+        "title": "A cosa volete giocare?",
+        "hint": "Scegli un gioco. Puoi cambiare tutto prima di aprire la stanza."
+      },
+      "questions": {
+        "title": "Quali domande?",
+        "ownTitle": "Imposta il gioco",
+        "hint": "Scegli cosa chiede il gioco e quanto dura."
+      },
+      "who": {
+        "title": "Chi gioca?",
+        "hint": "Scegli chi può entrare, quanti giocatori e se giocano a squadre."
+      },
+      "open": {
+        "title": "Pronto ad aprire la stanza",
+        "hint": "Controlla le tue scelte. I giocatori vanno su {url} e scrivono il codice."
+      },
+      "row": {
+        "game": "Gioco",
+        "questions": "Domande",
+        "who": "Chi può entrare",
+        "teams": "Squadre"
+      }
     }
   },
   "match": {

@@ -1557,5 +1557,8 @@
   "buildSetup.say.playsolo": "Part of the plan sentence. Must NOT contain the word \"live\" (it would ask the Builder for a live game).",
   "js.studio.liveLine.kidReady": "Studio live line for a kid: kids never host; a teacher or grown-up does.",
   "js.studio.liveLine.fix": "Studio live line. {issue} is one of the live.check.* reasons.",
-  "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason."
+  "live.entry.studioFixText": "A fixed Builder message sent by the Studio's \"Fix it\". Must keep \"Oomba Live\" exactly as written. {issue} is a live.check.* reason.",
+  "live.wiz.modesTab": "Tab over the built-in live games on the Host a live game page (the other tabs are live.landing.official, .mine, .shared).",
+  "live.wiz.questions.ownTitle": "Heading of the questions step for a live game that makes its own questions (Would You Rather, Atlas Quest, Tug of Math, Doodle Hoot).",
+  "live.wiz.open.hint": "{url} is the join address without https://, e.g. oomba.ai/join."
 }

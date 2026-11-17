@@ -127,3 +127,21 @@ export async function schoolWithAdmin(admin, username, { teacher = null, name = 
   }
   return { id, slug, name };
 }
+
+/** The /live landing is in steps like the Builder's setup (play, questions, who, open): Next or Back until `key` shows.
+ *  (A game with no questions has no questions step.) */
+export async function liveStep(page, key) {
+  const ORDER = ['play', 'questions', 'who', 'open'];
+  for (let i = 0; i < 6; i++) {
+    const cur = await page.locator('#lv-new .lv-wstep.is-on').getAttribute('data-step');
+    if (cur === key) return;
+    const dir = ORDER.indexOf(key) > ORDER.indexOf(cur) ? 'next' : 'back';
+    await page.locator(`#lv-new [data-go="${dir}"]:visible`).first().click();
+  }
+  throw new Error(`the /live step "${key}" never showed`);
+}
+/** On /live: go to the last step and press "Open the room". */
+export async function openLiveRoom(page) {
+  await liveStep(page, 'open');
+  await page.locator('#lv-new button[type=submit]').click();
+}

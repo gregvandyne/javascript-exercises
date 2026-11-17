@@ -6687,6 +6687,36 @@
       "assign": "Donner à cette classe",
       "mySets": "Mes séries de questions",
       "another": "En faire un autre"
+    },
+    "wiz": {
+      "modesTab": "Jeux en direct",
+      "progress": "Étape {n} sur {total}",
+      "back": "Retour",
+      "next": "Suivant",
+      "change": "Modifier",
+      "play": {
+        "title": "À quoi voulez-vous jouer ?",
+        "hint": "Choisis un jeu. Tu peux tout changer avant d’ouvrir la salle."
+      },
+      "questions": {
+        "title": "Quelles questions ?",
+        "ownTitle": "Régler le jeu",
+        "hint": "Choisis ce que le jeu demande et combien de temps il dure."
+      },
+      "who": {
+        "title": "Qui joue ?",
+        "hint": "Choisis qui peut rejoindre, combien de joueurs, et s’ils jouent en équipes."
+      },
+      "open": {
+        "title": "Prêt à ouvrir la salle",
+        "hint": "Vérifie tes choix. Les joueurs vont sur {url} et tapent le code."
+      },
+      "row": {
+        "game": "Jeu",
+        "questions": "Questions",
+        "who": "Qui peut rejoindre",
+        "teams": "Équipes"
+      }
     }
   },
   "match": {

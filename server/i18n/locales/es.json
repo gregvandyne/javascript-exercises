@@ -6687,6 +6687,36 @@
       "assign": "Asignar a esta clase",
       "mySets": "Mis conjuntos de preguntas",
       "another": "Hacer otro"
+    },
+    "wiz": {
+      "modesTab": "Juegos en vivo",
+      "progress": "Paso {n} de {total}",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "change": "Cambiar",
+      "play": {
+        "title": "¿A qué quieres jugar?",
+        "hint": "Elige un juego. Puedes cambiar cualquier cosa antes de abrir la sala."
+      },
+      "questions": {
+        "title": "¿Qué preguntas?",
+        "ownTitle": "Prepara el juego",
+        "hint": "Elige qué pregunta el juego y cuánto dura."
+      },
+      "who": {
+        "title": "¿Quién juega?",
+        "hint": "Elige quién puede unirse, cuántos y si juegan en equipos."
+      },
+      "open": {
+        "title": "Listo para abrir la sala",
+        "hint": "Revisa lo que elegiste. Los jugadores van a {url} y escriben el código."
+      },
+      "row": {
+        "game": "Juego",
+        "questions": "Preguntas",
+        "who": "Quién puede unirse",
+        "teams": "Equipos"
+      }
     }
   },
   "match": {
