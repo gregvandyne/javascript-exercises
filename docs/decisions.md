@@ -7268,3 +7268,15 @@ scroll down a bit to select the right cut."
   wholes. Every level, at its start and with the order built, was measured with no scroll at 1000x504, 1280x560/650/720,
   1366x620/768, 1440x780/900, 820x1180, 1180x820, 390x844 and 844x390. Below 440 px tall the slicer tip line hides
   (the intro says the same). Checks: tests/unit/fraction-factory-add-cake.test.js.
+## Classroom dashboards: fraction, decimal, percent cards on a phone (17 Nov 2026)
+On a phone (390 × 844) the Fractions widget's "Fraction, decimal, percent" tab drew its three cards 16px wide: "8/12 =
+2/3" stacked one character a line and the decimal and percent were tiny. Cause: under 720px `.dt-fdpwrap` is a column
+(`align-items:center`), so `.dt-cards` was only as wide as its content, and each `.dt-card` is an inline-size container
+(for its `cqi` font sizes), which gives it no content width at all: the grid shrank to the cards' padding. On wider
+screens the model area has a fixed height and the `@container (max-aspect-ratio:7/5)` rule already gave `.dt-cards`
+`width:100%`; on a phone the stage is an inline-size container only, so that aspect-ratio query never applied.
+- **Fix:** in the phone block (`@media (max-width:719px)`) `.dt-cards` is `flex:none; width:100%`, one card a row, so
+  each card is the tool's full width and its text is sized from that (up to 2.6rem). Laptop, student and projector are
+  unchanged (the rule is phone-only).
+- **Check:** `npm run dash:fit` now fails when a fraction, decimal, percent card is under 96px wide, or when the cards
+  sit over the hundred grid (the column layout) and are narrower than the tool.
