@@ -568,8 +568,12 @@ async function dashShots({ person, shot }, ids, morning) {
     await api(s, `/api/dash/${ids.classId}/mood`, { mood }).catch(() => {});   // only once a mood widget is pinned: below
     await s.context().close();
   }
-  const layouts = {};
-  for (const tpl of ['morning', 'lesson', 'group', 'quiet', 'fun']) layouts[tpl] = (await api(teacher, `/api/dash/${ids.classId}/templates/${tpl}`, {})).layout;
+  // A first visit makes the six ready-made layouts (services/dash.js DEFAULT_SET, in LAYOUT_TEMPLATES order); the page
+  // lists them with their widgets.
+  const made0 = await teacher.evaluate(() => JSON.parse(document.getElementById('page-data').textContent).layouts);
+  const TPLS = ['morning', 'lesson', 'math', 'group', 'quiet', 'fun'];
+  if (made0.length !== TPLS.length) throw new Error(`dash: a first visit made ${made0.length} layouts, not ${TPLS.length}`);
+  const layouts = Object.fromEntries(TPLS.map((id, i) => [id, made0[i]]));
   // Fun break's video widget with a link, as a teacher would paste one (its host answers with a stand-in below).
   const fun = layouts.fun;
   await api(teacher, `/api/dash/${ids.classId}/layouts/${fun.id}`, { widgets: fun.widgets.map(w => (w.type === 'video' ? { ...w, s: { ...w.s, video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, mute: true } } : w)) });
@@ -596,6 +600,12 @@ async function dashShots({ person, shot }, ids, morning) {
         if (b) await p.mouse.click(b.x + b.width * 0.62, b.y + b.height * 0.5);
       };
     },
+    async math(p) {
+      return async () => {
+        await W(p, 'timer').getByRole('button', { name: /^Start$/ }).click();
+        for (const i of [1, 4]) await api(students[i], `/api/dash/${ids.classId}/help`, { kind: 'help' });
+      };
+    },
     async group(p) {
       return async () => {
         await W(p, 'groups').getByRole('button', { name: /Make groups/ }).click();
@@ -617,7 +627,7 @@ async function dashShots({ person, shot }, ids, morning) {
       };
     },
   };
-  for (const tpl of ['morning', 'lesson', 'group', 'quiet', 'fun']) {
+  for (const tpl of TPLS) {
     if (tpl !== 'morning') await use(layouts[tpl].id);
     const p = await person('wide', 'MsRivera', { timezoneId: 'America/New_York' });
     await p.clock.setFixedTime(new Date(morning));

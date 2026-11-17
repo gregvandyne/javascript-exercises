@@ -7216,3 +7216,34 @@ reached past the inner circle.
   `timer-min`, `timer-big` for Quiet work's 6 × 7; `SIZES=timer` for only these) with timers paused at 0:05, 9:59, 10:00
   and 59:59 in the ring, the digits and the stopwatch, plus 1:05:00 and the Fun break's 3:00 ring: in each group the
   time has one font size, and on every view any ring's time box lies inside its inner circle (2px to spare).
+
+## Landing: the whole class day (17 Nov 2026)
+Owner: "I'm unable to navigate to the dashboard page on mobile. I also think this needs to be part of the main landing
+page. Set up your classroom dashboard, use it to run your day to day, build games to augment learning, play live
+games, have your kids build games too. Make it better than that."
+- **Phones could not reach any section:** below 1120px the top bar hid its links and had no menu. Now a menu
+  (`#lp-menu`, a `<details>` so it opens without script; public/js/landing.js closes it on a choice, Escape or a tap
+  outside) lists every section in story order, with Sign in and Just Play. The links sit in the bar only from 1366px
+  (Dashboards first; "How it works" and "Students build" are menu-only), which also ends the bar running wider than
+  the window in German, French, Russian, Dutch, Spanish and Italian at 1180 to 1440px (measured: no overflow in any of
+  the 13 languages from 320 to 1600px). Below 900px Just Play leaves the bar (it is in the menu), so nothing wraps.
+  The app's own dashboard links were checked on a phone and were fine ("Class dashboard" on the class page, "My
+  dashboard" for students).
+- **The story:** the hero is now "One screen to run your class. Games to make it stick.", its picture the real class
+  dashboard with a student's phone and two cards (a game the Builder just made, a live game starting) at their own
+  depth. "How it works" is the class day in five linked steps: set up your class dashboard → run your day from it →
+  turn lessons into games → play live together → let your students build too, joined by a line that fills as the page
+  scrolls. The sections follow in that order: Class dashboards, the layout tour, the Builder (now with the lesson → game
+  loop that was in the hero), live games, and a new "Your students build games too" (`#kids`: the "Build a game" lesson
+  step, with the Studio screenshot), then the teaching loop, courses and the rest as before.
+- **Words:** every new line in all 13 languages (hero, meta title and description, under 160 characters, the five
+  steps, the students section, the menu); the dashboards lead now gives the real widget count (48 since the maths tools
+  were combined) instead of "more than 50"; the maths line names tools that still exist. The share card
+  (public/og/landing.jpg, scripts/og-images.js) has the new heading and "Class dashboards" first.
+- **Pictures:** scripts/how-shots.js now takes the six layouts a first visit makes (Math included) instead of making its
+  own, so the tour shows all six.
+- **Checks:** tests/unit/teacher-landing.test.js (the sections in order, five steps that each go to a section, the menu
+  with every section and no script needed, the dashboard in the hero and the loop in the Builder section);
+  landing-audit passes at all six sizes, dark and light (layout shift 0).
+- The walkthrough video (scripts/dash-video.js) still opens on the old "Everyday" starter and makes its layouts from the
+  New sheet; with the six made on a first visit it should switch between them instead before it is made again.

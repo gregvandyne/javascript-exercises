@@ -741,7 +741,7 @@
   },
   "landing": {
     "dash": {
-      "li3": "Maths tools on the big screen: fraction bars, number lines, geoboards, base-ten blocks and more.",
+      "li3": "Maths tools on the big screen: fraction bars, number lines, geoboards, place value and more.",
       "shotAlt": "A class dashboard on the projector: the clock, today's goal, the timetable with Maths now and break next, class jobs and a mood check-in."
     },
     "hero": {
@@ -756,7 +756,7 @@
         "p": "Paste your lesson text, upload a PDF, a picture or a text file, or describe what your class should practise, in your own words."
       },
       "s2": {
-        "p": "It writes the game, then playtests it by itself on phone, tablet and computer sizes. Ask for changes in plain words: “make it harder”, “add a timer”."
+        "p": "Check-ins, timers, quick checks, the help queue, groups and maths tools, from morning meeting to home time. Switch layouts in one tap."
       }
     },
     "builder": {

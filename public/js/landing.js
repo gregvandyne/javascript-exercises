@@ -100,6 +100,42 @@ function startDemo() {
   document.addEventListener('visibilitychange', () => { if (!document.hidden && visible) loop(); });
 }
 
+// ---- the menu (a <details>, so it works without this): closes when a section is chosen, on Escape and on a tap outside.
+const menu = document.getElementById('lp-menu');
+if (menu) {
+  const close = () => { if (menu.open) menu.open = false; };
+  menu.addEventListener('click', e => { if (e.target instanceof Element && e.target.closest('.lp-menu-panel a')) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.open) { close(); menu.querySelector('summary')?.focus(); } });
+  document.addEventListener('click', e => { if (menu.open && e.target instanceof Node && !menu.contains(e.target)) close(); });
+}
+
+// ---- How it works (#how): the line through the five steps fills as the page scrolls past it, and each step lights up as
+// the line reaches it. Without this (no script, reduced motion) the line is simply drawn and nothing is lit.
+let journeyOn = false;
+function startJourney() {
+  const list = document.querySelector('[data-journey]');
+  if (!list || journeyOn) return;
+  journeyOn = true;
+  const steps = [...list.children];
+  list.dataset.fill = '';
+  let queued = false;
+  function draw() {
+    queued = false;
+    if (reduce.matches) { list.style.removeProperty('--fill'); delete list.dataset.fill; steps.forEach(s => s.classList.remove('is-on')); return; }
+    list.dataset.fill = '';
+    const r = list.getBoundingClientRect();
+    // Empty when the list's top reaches 85% down the screen; full when its bottom reaches 55%.
+    const f = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.3)));
+    list.style.setProperty('--fill', f.toFixed(3));
+    steps.forEach((s, i) => s.classList.toggle('is-on', f >= (steps.length === 1 ? 0 : i / (steps.length - 1)) - 0.02));
+  }
+  const kickJ = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
+  addEventListener('scroll', kickJ, { passive: true });
+  addEventListener('resize', kickJ, { passive: true });
+  reduce.addEventListener?.('change', kickJ);
+  draw();
+}
+
 // ---- the layout tour (#dash-tour): on a wide screen the section stays put while the page scrolls through it, and the
 // layouts come forward one by one (each rests a moment in front); the widget rows slide sideways, in turn. Without this
 // (narrow screens, reduced motion, no script) it is a plain list. Transforms and opacity only, one frame per scroll burst.
@@ -159,7 +195,7 @@ function startTour() {
 
 function start() {
   if (reduce.matches) return;
-  startParallax(); startReveal(); startDemo(); startTour();
+  startParallax(); startReveal(); startDemo(); startTour(); startJourney();
 }
 start();
 reduce.addEventListener?.('change', () => { if (reduce.matches) { stopParallax(); const f = document.querySelector('.lp-demo'); if (f) f.dataset.stage = 'done'; } else start(); });

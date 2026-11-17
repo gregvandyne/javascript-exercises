@@ -7461,18 +7461,18 @@
     "dash": {
       "kicker": "Nuevo: paneles de clase",
       "h": "Una sola pantalla para todo el día de clase",
-      "lead": "Proyecta un panel de clase: el reloj, el horario de hoy, el objetivo del día y más de 50 widgets para elegir. Cada estudiante tiene también su propia pantalla, con los widgets que fijes.",
+      "lead": "Proyecta un panel de clase: el reloj, el horario de hoy, el objetivo del día y {count} widgets para elegir. Cada estudiante tiene también su propia pantalla, con los widgets que fijes.",
       "li1": "Diseños listos para la mañana, una lección, el trabajo en grupo, el trabajo en silencio y un descanso divertido, o arrastra widgets al tuyo.",
       "li2": "Temporizadores, selector de nombres al azar, creador de grupos, medidor de voz, cola de ayuda y preguntas rápidas.",
-      "li3": "Herramientas de matemáticas en la pantalla grande: barras de fracciones, rectas numéricas, geoplanos, bloques de base diez y más.",
+      "li3": "Herramientas de matemáticas en la pantalla grande: barras de fracciones, rectas numéricas, geoplanos, valor posicional y más.",
       "li4": "Fija widgets en la pantalla de cada estudiante o envía a la clase un juego, una lección o un enlace con un toque.",
       "li5": "Sin IA en ninguna parte. Los estudiantes aparecen con su nombre de Oomba, y lo que escribe cada uno se queda en su propia pantalla.",
       "shotAlt": "Un panel de clase proyectado: el reloj, el objetivo del día, el horario con Matemáticas ahora y Recreo después, los encargos de la clase y un registro de ánimo."
     },
     "meta": {
-      "title": "Convierte tus planes de clase en juegos · Oomba Academy",
-      "description": "Aprendizaje basado en juegos para docentes: pega una lección o sube un PDF y el Constructor IA lo convierte en un juego interactivo para tu clase. 14 días gratis, sin tarjeta.",
-      "imageAlt": "Oomba Academy para docentes: convierte tus planes de clase en juegos que tu clase pedirá jugar."
+      "title": "Paneles de clase y juegos educativos para docentes · Oomba Academy",
+      "description": "Una pantalla para dirigir el día, un Builder de IA que convierte lecciones en juegos, juegos en vivo y juegos de tus estudiantes. 14 días gratis, sin tarjeta.",
+      "imageAlt": "Oomba Academy para docentes: una pantalla para dirigir tu clase y juegos para que lo aprendido se quede."
     },
     "nav": {
       "dashboards": "Paneles",
@@ -7488,17 +7488,23 @@
       "signIn": "Iniciar sesión",
       "justPlay": "Solo jugar",
       "trial": "Prueba gratis",
-      "trialShort": "Prueba gratis"
+      "trialShort": "Prueba gratis",
+      "menu": "Menú",
+      "kids": "Crean los estudiantes"
     },
     "hero": {
       "kicker": "Para docentes · de kínder a 8.º grado",
-      "h1": "Convierte tus planes de clase en juegos que tu clase pedirá jugar",
-      "lead": "Pega una lección, sube un PDF o simplemente describe una idea. El Constructor IA de Oomba la convierte en un juego interactivo que puedes jugar en vivo en el proyector o asignar a tu clase.",
+      "h1": "Una pantalla para dirigir tu clase. Juegos para que lo aprendido se quede.",
+      "lead": "Configura el panel de tu clase en un minuto y dirige todo el día desde él. Convierte cualquier lección en un juego con el Builder de IA, juega en vivo en el proyector y deja que tus estudiantes creen sus propios juegos.",
       "cta": "Empieza tu prueba gratis de 14 días",
       "how": "Mira cómo funciona",
       "trustCard": "Sin tarjeta",
       "trustCancel": "Cancela cuando quieras",
-      "trustStudents": "Estudiantes ilimitados"
+      "trustStudents": "Estudiantes ilimitados",
+      "cBuildTag": "Builder de IA",
+      "cBuild": "Tu lección de fracciones ya es un juego",
+      "cLiveTag": "Juego en vivo",
+      "cLive": "Tu clase se está uniendo"
     },
     "facts": {
       "games": "juegos educativos listos para usar",
@@ -7525,19 +7531,28 @@
     },
     "how": {
       "kicker": "Cómo funciona",
-      "h": "Del plan de clase al juego en tres pasos",
-      "lead": "Sin programar y sin saber de diseño. Si puedes describir tu lección, puedes convertirla en juego.",
+      "h": "Todo tu día de clase, en un solo lugar",
+      "lead": "Empieza con la pantalla que tienes abierta todo el día y luego suma los juegos. Cada paso funciona por sí solo, y juntos funcionan aún mejor.",
       "s1": {
-        "h": "Trae tu lección",
-        "p": "Pega el texto de tu lección, sube un PDF, una imagen o un archivo de texto, o describe con tus palabras lo que tu clase debe practicar."
+        "h": "Configura el panel de tu clase",
+        "p": "Abre tu clase y seis diseños listos te esperan. Proyéctalo y cada estudiante tendrá su propia pantalla."
       },
       "s2": {
-        "h": "El Constructor crea el juego",
-        "p": "Escribe el juego y luego lo prueba solo en tamaño de teléfono, tableta y computadora. Pide cambios con palabras sencillas: «hazlo más difícil», «añade un temporizador»."
+        "h": "Dirige tu día desde ahí",
+        "p": "Registro de ánimo, temporizadores, preguntas rápidas, la cola de ayuda, grupos y herramientas de matemáticas, de la asamblea de la mañana a la salida. Cambia de diseño con un toque."
       },
       "s3": {
-        "h": "Juega a tu manera",
-        "p": "Juégalo en vivo en el proyector, compártelo solo con tus clases o añádelo a una lección con fecha de entrega y mira el progreso de cada estudiante."
+        "h": "Convierte lecciones en juegos",
+        "p": "Pega una lección o sube un PDF. El Builder de IA la convierte en un juego, lo prueba solo y guarda cada versión."
+      },
+      "see": "Verlo",
+      "s4": {
+        "h": "Juega en vivo con todos",
+        "p": "Calentamientos y boletos de salida en la pantalla grande. Los estudiantes entran desde sus dispositivos y los puntos van a tu libro de calificaciones."
+      },
+      "s5": {
+        "h": "Que tus estudiantes también creen",
+        "p": "Añade un paso «Crear un juego» a una lección. Los estudiantes diseñan, prueban y mejoran su propio juego, y luego la clase lo juega."
       }
     },
     "builder": {
@@ -7725,6 +7740,17 @@
       "dark": "Oscuro",
       "light": "Claro",
       "preferredSource": "Añade Oomba como fuente preferida en Google"
+    },
+    "kids": {
+      "kicker": "Estudiantes creadores",
+      "h": "Tus estudiantes también crean juegos",
+      "lead": "Para crear un juego sobre un tema hay que entenderlo lo bastante bien como para enseñarlo. Añade un paso «Crear un juego» a cualquier lección y tus estudiantes describirán, probarán y mejorarán su propio juego con el Builder, sin escribir código.",
+      "li1": "Un paso «Crear un juego» en tus lecciones, con la idea de la que parten los estudiantes",
+      "li2": "Cada estudiante crea en su propio Studio, y ves su progreso junto con el resto de la lección",
+      "li3": "La clase juega a los juegos de los demás: un juego de repaso del tema de la semana funciona muy bien",
+      "li4": "Privado hasta que se comparte: con su clase, o con todos solo después de que una persona de nuestro equipo lo revise",
+      "shotAlt": "El Studio de un estudiante: el Builder dice que la versión 2 está lista y el juego se ejecuta en una vista previa del tamaño de un teléfono.",
+      "caption": "El Studio de un estudiante: lo describe, el Builder lo crea, lo prueba."
     }
   },
   "teach": {
