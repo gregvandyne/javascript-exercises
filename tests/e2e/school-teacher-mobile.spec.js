@@ -5,7 +5,7 @@
 // sideways, nothing touches, no table hides columns, and every control is a 44 px tap target.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
-import { ADMIN, login, signup, uniq } from './helpers.js';
+import { ADMIN, login, signup, uniq, newLesson } from './helpers.js';
 
 const DEMO = 'demo-pass-123', SLUG = 'magic-cups-demo-school';
 const PHONES = [{ width: 360, height: 640, scheme: 'light' }, { width: 360, height: 640, scheme: 'dark' }, { width: 390, height: 844, scheme: 'light' }, { width: 390, height: 844, scheme: 'dark' }];
@@ -24,8 +24,8 @@ test.beforeAll(async ({ browser }) => {
   const suffix = uniq('').toLowerCase();
   expect((await t.request.post(`/api/classes/${cls}/students`, { data: { names: NAMES.map(n => `${n} ${suffix}`).join('\n'), grade: '4' } })).ok()).toBe(true);
   for (const u of ['Fractions', 'Words']) expect((await t.request.post(`/api/classes/${cls}/units`, { data: { name: u } })).ok()).toBe(true);
-  const lib = await (await t.request.get(`/class/${cls}`)).text();
-  const lessonId = lib.match(/<select class="input" id="al-l" name="lessonId">(?:<optgroup[^>]*>)?<option value="([^"]+)"/)[1];
+  // (no lesson picker on the class page any more: games, not lessons) a lesson made through the API, then assigned
+  const lessonId = (await newLesson(t, uniq('Tidy lesson '))).match(/lessons\/([^?]+)/)[1];
   expect((await t.request.post(`/api/classes/${cls}/lessons`, { data: { lessonId } })).ok()).toBe(true);
   lessonProgress = (await (await t.request.get(`/class/${cls}`)).text()).match(/href="(\/class\/[^/"]+\/progress\/[^"#]+)"/)[1];
   teacher = await tctx.storageState(); await tctx.close();
@@ -167,16 +167,14 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   const course = page.locator('details.coursepanel').first();
   await expect(course).not.toHaveAttribute('open', '');
   await expect(course.locator('summary')).toContainText(`0 of ${NAMES.length} started`);
-  // Lessons tab: Assign is a fold at the top; the class has a lesson, so it starts closed
+  // Games tab (first): New game, Assign from my games and Find Oomba games, each a full-size button; no lesson tools
   await page.goto(`/class/${cls}`);
-  await expect(page.locator('#lessons .assigndrop')).not.toHaveAttribute('open', '');
-  // Lesson library and New unit share a row; Assign opens where its button is (the button stays under the finger)
-  const top = sel => page.locator(sel).evaluate(e => Math.round(e.getBoundingClientRect().top));
-  expect(await top('#lessons .cl-more > a.btn:first-of-type')).toBe(await top('#lessons .unitdrop > summary'));
-  const before = await top('#lessons .assigndrop > summary');
-  await page.click('#lessons .assigndrop > summary');
-  await expect(page.locator('#lessons .assigndrop')).toHaveAttribute('open', '');
-  expect(Math.abs(await top('#lessons .assigndrop > summary') - before)).toBeLessThan(24);
+  await expect(page.locator('nav.classtabs a').first()).toContainText('Games');
+  for (const sel of ['#cl-newgame', '#lessons a[href="/build"]', '#lessons a[href="/learn"]']) {
+    const box = await page.locator(sel).first().boundingBox();
+    expect(box.height, sel).toBeGreaterThanOrEqual(43.5); expect(box.x + box.width, sel).toBeLessThanOrEqual(390);
+  }
+  await expect(page.locator('#lessons')).not.toContainText('New unit');
   await ctx.close();
   // School People: counts on the headings and jump chips; grades show as text with ✏️ that opens the same field
   const hc = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: head }); const hp = await hc.newPage();
