@@ -1011,6 +1011,15 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS staff_email_invites_school ON staff_email_invites(school_id, status);
     CREATE INDEX IF NOT EXISTS staff_email_invites_by ON staff_email_invites(invited_by);
     CREATE INDEX IF NOT EXISTS staff_email_invites_email ON staff_email_invites(email);`],
+  // Classroom dashboards: "Build it" practice sets (services/dash.js; docs/decisions.md "Classroom dashboards: Build
+  // it"). The set itself (the tool, its targets, the instruction) is a push's data (dash_pushes, kind 'build').
+  // dash_builds: one row per student per target they have checked: ok (1 once it was right; it stays right) and tries
+  // (how many checks). Nothing a student built is kept. Rows go with their push (14 days), their class and account.
+  ['0084_dash_builds', `
+    CREATE TABLE IF NOT EXISTS dash_builds (push_id TEXT NOT NULL, class_id TEXT NOT NULL, user_id TEXT NOT NULL, item INTEGER NOT NULL,
+      ok INTEGER NOT NULL DEFAULT 0, tries INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (push_id, user_id, item));
+    CREATE INDEX IF NOT EXISTS idx_dash_builds_class ON dash_builds(class_id);
+    CREATE INDEX IF NOT EXISTS idx_dash_builds_user ON dash_builds(user_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

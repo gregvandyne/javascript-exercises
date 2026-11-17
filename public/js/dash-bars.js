@@ -104,6 +104,8 @@ export function bars(body, s, ctx) {
   tip(write, W.story); write.setAttribute('aria-label', W.story);
   { const i = el('span', 'dt-ic', '✏️'), l = el('span', 'dt-lbl', W.storyBtn); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); write.append(i, l); }
   T.foot.append(unk, hide, write);
+  // Bar models' own hide is the answer's (Make a question hides it too; docs/decisions.md "Build it").
+  T.ownHide = () => st.hide; T.setOwnHide = v => { st.hide = !!v; };
 
   // ---- the sentence boxes (this page only)
   const sig = () => JSON.stringify([st.kind, st.g, st.e, st.p, st.ca, st.cb]);

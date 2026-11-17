@@ -168,6 +168,14 @@
       "of": "{n} of {count}",
       "reveal": "Show the answer",
       "hide": "Hide the answer"
+    },
+    "dash": {
+      "build": {
+        "gens": {
+          "bonds": "Make 10 in two colours",
+          "pairs": "Two colours"
+        }
+      }
     }
   },
   "favorites": {

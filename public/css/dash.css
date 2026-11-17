@@ -1019,7 +1019,7 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dash-w[data-group="words"]{--g:#7C6FD6}
 .dt{--dt-c3:color-mix(in srgb,#B98AE0 85%,var(--card))}
 /* "Practice it" and "Make a question": an icon and words; the icon only on a narrow tool */
-.dt-practice,.dt-ask{display:inline-flex;align-items:center;gap:6px;min-width:44px;text-decoration:none}
+.dt-practice,.dt-ask,.dt-ans,.dt-buildit{display:inline-flex;align-items:center;gap:6px;min-width:44px;text-decoration:none}
 .dt .btn[hidden]{display:none}
 .dt .btn:has(.dt-lbl){min-width:44px;justify-content:center}
 /* Stage 4 review: buttons with an icon always show their words (a row wraps rather than drop them); any button whose
@@ -1834,3 +1834,65 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 @media (prefers-reduced-motion:reduce){.dash-wgear{transition:none}}
 .dash-boardset .dash-form{margin-block-start:var(--s2)}
 .dash-boardacts{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin-block-start:var(--s3)}
+
+/* ---------- Build it, Show/Hide the answer, the big number typed into (docs/decisions.md "Classroom dashboards: Build it") ---------- */
+/* While the answer is hidden the readout under the model is one dashed "?", whatever the tool wrote there */
+.dt-ans-off .dt-read>*{display:none!important}
+.dt-ans-off .dt-read::before{content:"?" / attr(data-ans);font-family:var(--font);font-weight:800;line-height:1.1;font-size:clamp(1.15rem,min(9cqh,6.5cqi),3.4rem);color:var(--text-2);min-width:2.4em;padding:0 .4em;border:2px dashed color-mix(in srgb,var(--text-2) 55%,transparent);border-radius:12px;text-align:center}
+.dt-fq{display:inline-grid;place-items:center;min-width:1.6em;padding:0 .2em;border:2px dashed color-mix(in srgb,var(--text-2) 55%,transparent);border-radius:8px;font-weight:800}
+/* the number under the place value chart and the blocks: a field that looks like the number (a faint dashed underline) */
+.dt-bigedit{display:flex;flex-direction:column;align-items:center;max-width:100%;min-width:0}
+.dt-big.dt-bigin{display:block;width:calc(var(--len,4) * 0.62em + 1em);max-width:100%;min-height:44px;margin:0;padding:0 .2em;border:0;border-bottom:2px dashed color-mix(in srgb,var(--text-2) 45%,transparent);border-radius:6px 6px 0 0;background:transparent;color:var(--text);text-align:center;font-variant-numeric:tabular-nums}
+.dt-big.dt-bigin:hover{background:color-mix(in srgb,var(--card-2) 70%,transparent)}
+.dt-big.dt-bigin:focus{outline:3px solid var(--focus);outline-offset:2px;background:var(--card);border-bottom-style:solid}
+.dt-big.dt-bigin[aria-invalid="true"]{border-bottom-color:var(--bad-ink)}
+.dt-big.dt-bigin[readonly]{border-bottom-color:transparent}
+.dt-editmsg{margin:2px 0 0;color:var(--bad-ink);font-weight:700;font-size:clamp(.8rem,min(4.6cqh,2.5cqi),.95rem);overflow-wrap:anywhere;text-align:center}
+.dt-editmsg[hidden]{display:none}
+/* the teacher's Build it sheet and the progress sheet */
+.dash-bisheet{width:min(640px,calc(100vw - 24px));max-width:none}
+.dash-bigen{border:0;margin:0;padding:0;min-width:0}
+.dash-bigen legend{font-weight:700;padding:0;margin-bottom:6px}
+.dash-bigenrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2)}
+.dash-bigenrow .field{flex:1 1 160px;min-width:0;margin:0}
+.dash-bigenrow .field:nth-child(2){flex:0 1 110px}
+.dash-bigenrow .btn{min-height:44px}
+.dash-bichips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0;padding:0}
+.dash-bichips li{padding:4px 12px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-weight:700;font-variant-numeric:tabular-nums}
+.dash-bibad{color:var(--bad-ink);margin:4px 0 0;overflow-wrap:anywhere}
+.dash-bprog section{margin-top:var(--s3)}
+.dash-bsayt{margin:0;overflow-wrap:anywhere}
+.dash-btlist,.dash-bslist{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
+.dash-btlist li,.dash-bslist li{display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--s2);padding:8px 12px;border-radius:var(--r-sm,12px);background:var(--card-2);min-width:0}
+.dash-btt{font-size:1.15rem;font-variant-numeric:tabular-nums;min-width:3em}
+.dash-bslist li b{flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
+.dash-bwrong{flex:1 1 100%;color:var(--text-2);overflow-wrap:anywhere}
+/* a student's Build it: one target at a time on their own copy of the tool */
+.dash-buildsheet .dash-build{display:flex;flex-direction:column;gap:var(--s2)}
+.dash-bhead{display:flex;align-items:center;gap:var(--s3)}
+.dash-bstep{font-weight:800;white-space:nowrap}
+.dash-bbar{flex:1;height:10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.dash-bbar>span{display:block;height:100%;background:var(--accent);border-radius:inherit}
+.dash-bsay{margin:0;color:var(--text-2);font-weight:600;overflow-wrap:anywhere}
+.dash-btarget{margin:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s2)}
+.dash-blab{font-weight:700}
+.dash-bnum{font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.dash-wbuild{height:min(56vh,560px);margin-top:0}
+.dash-wbuild:has(.dt-rods),.dash-wbuild:has(.gb-tool){height:min(64vh,640px)}
+.dash-bacts{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--s2)}
+.dash-bfb{flex:1 1 200px;margin:0;font-weight:800;overflow-wrap:anywhere;min-height:1.3em}
+.dash-bfb.is-right{color:var(--ok)}
+.dash-bfb.is-no{color:var(--text)}
+.dash-bacts .btn{min-height:44px}
+.dash-bdone{display:flex;flex-direction:column;align-items:center;gap:var(--s2);text-align:center;padding:var(--s4) 0}
+.dash-bdonebig{margin:0;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800}
+.dash-bdonen{margin:0;font-size:1.2rem;font-weight:700}
+.dash-bagain{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2);margin:0;padding:0}
+.dash-bdone .dash-bacts{justify-content:center}
+@media (max-width:719px){
+  .dash-wbuild,.dash-wbuild:has(.dt-rods),.dash-wbuild:has(.gb-tool){height:auto}
+  .dash-bacts .btn{flex:1 1 40%}
+}
+/* the shape board (its tools are icons with tooltips already): Show/Hide the answer and Build it as icons too, at the
+   end of its bar (public/js/dash-shapeboard.js placeExtra), so its board keeps the room its labels need */
+.gb-tool .dt-ans .dt-lbl,.gb-tool .dt-buildit .dt-lbl{display:none}

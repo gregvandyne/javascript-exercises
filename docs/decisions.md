@@ -7469,3 +7469,84 @@ bottom", then "Leave out the Help and add the My School". School staff's menu (l
 - Grown-ups, students, kids and the platform admin keep the menu from "A quieter top bar".
 - Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
   the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.
+
+## Classroom dashboards: Build it, the answer hidden, the place value number typed in (17 Nov 2026)
+Owner: "A lot of the times when you have the make a question feature you are showing the answer to the question on the
+screen and there is no way to hide it... These math widgets should be good for explaining a concept, but also for
+teachers to then push this to their students and have them practice using the widget to build understanding." And on
+place value: "User should be able to edit the 3,405.27 number directly." Code: `public/js/dash-build.js` (targets,
+generators, checks; pure, run in the browser and on the server), the shell in `public/js/dash-tools.js` (`T.hid`,
+`T.hideAnswer`, the 🙈/👀 button, Build it, `bigEdit`), the student's and the teacher's sheets in `public/js/dash.js`
+(`openBuildIt`, `openProgress`, `showOnBoard`, `openBuild`), `pvParse`/`blocksOf` in `public/js/dash-math.js`, the
+push and progress in `server/services/dash.js` (`push` kind `build`, `buildCheck`, `buildProgress`, `buildMine`), two
+routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/dash-tools.js`; migration 0084
+(`dash_builds`); strings `dash.tools.showAns|hideAns|ansHidden|ansShown|build|edit*`, `dash.errors.build*`,
+`js.dash.build.*`, `js.dash.kind.build` in all 12 full locales (en-GB: "colours"). Tests: `tests/unit/dash-build.test.js`.
+- **The answer hidden after Make a question.** The question is made from the tool as it is, then the tool hides what
+  gives the answer away on the teacher's screen (and so the projector) until the teacher presses **👀 Show the answer**.
+  The fraction tool and bar models already had their own Show/Hide (the fractions' PR #392 pattern: "👀 Show the
+  answer" / "🙈 Hide the answer", a dashed "?"); Make a question now sets that. Every other tool that makes a question
+  gets the same button (teacher's screen only; never on a student's copy) and a new state key, `qh` (kept only when
+  true, so every saved layout and push loads as before; tested). While hidden, the readout under the model is one
+  dashed "?" for every tool (CSS `.dt-ans-off`, read as "The answer is hidden."), and each tool hides its own
+  giveaways:
+
+  | Tool (mode) | Its question | Hidden while `qh` | Build it |
+  |---|---|---|---|
+  | Base-ten blocks | the number | the number, the expanded sum, each mat's count ("?"), the number in what is said | ✔ 1-999 |
+  | Place value chart | the number | the number and expanded form; with discs on, the digits too | ✔ to 9,999.999 |
+  | Ten frames | how many | the sum and the number bond | ✔ a count or two colours ("3 + 4") |
+  | Number chart | skip counting next / how many shaded | the counted numbers after the third; the count | ✔ find and shade one number |
+  | Area model and arrays | a × b | the product and each part's product | ✔ "3 × 4" (either way) or any array of 12 |
+  | Times table grid | a × b | the fact's own cell and the readout | — (its own Hide stays) |
+  | Teaching clock | the time | the digital time and elapsed time | ✔ a time (12 h: either half of the day) |
+  | Fraction, decimal, percent | the decimal | the decimal and percent cards | ✔ "3/4", "0.25", "25%" |
+  | Fraction bars | per mode | its own hide (as before) | ✔ shade a fraction (an equal one is right) |
+  | Number line | where a jump lands / a point | the jumps' sum | ✔ one point on a tick of the line |
+  | Coordinate plane | the slope | the slope's stepper, rise and run, the table's y | ✔ plot one point |
+  | Graph maker | which is most | the readout | — |
+  | Shape board | the area | area and perimeter | ✔ a closed shape with this area (halves too) |
+  | Angle maker | the kind | degrees (the typed field shows "?"), its name, the arc's label | ✔ an angle (no presets on a student's copy) |
+  | Pattern blocks | part of a hexagon | the readout | ✔ "1 1/2" hexagons (shown as text only) |
+  | 3D shapes, balance, algebra tiles, chance, letter tiles | counts, x, the expression, the chance, vowels | the readout | — |
+  | Transformations | where A lands | the image, its points, the image column | — |
+  | Coins and money | the total / change | the readout | ✔ make an amount |
+  | Maps | the continent | the continents' and oceans' names | — |
+  | Number rods | the box | the readout | ✔ a train this long |
+  | Bar models | the ? | its own hide (as before) | — |
+
+  **Decided:** the question's answer order never changes with `qh` (it is left out of the seed).
+- **Build it.** On the tools marked above, the teacher's tool has **🧱 Build it**: a sheet with an instruction (a default
+  per tool: "Use the base-ten blocks to build each number."), targets typed with commas ("347, 1205, 58", "3:45, 7:10",
+  in the reader's own number marks; "1,205" stays one number) or made by a ready-made generator (41 kinds: 2-digit
+  numbers, quarter hours, tenths, facts to 5 × 5...), and **Send to students**. What a tool can't build is listed as
+  left out ("1205": base-ten blocks have no thousands); at most 12, no repeats. The push (kind `build`) stores the
+  tool, the mode, the teacher's tool as a base (its line's range, the chart's decimals, the coins' currency: "auto" is
+  the teacher's), the targets (rebuilt on the server: only ones the tool can build) and the instruction (cleaned).
+- **On a student's device** the banner or tray opens a sheet: "3 of 5", the instruction, "Build: 347", their own copy
+  of that one mode (no mode switch, no Options, Make a question, Send, Practice it or answer button), the answer
+  hidden, then **Check** and **Next**. "🎉 Yes!" or "Not yet." with one gentle hint from the tool's own state ("Tens:
+  you have 3; you need 4.", "The minutes are right. Now check the hour hand.", "Your train is 6 long; you need 10.").
+  A finish screen: "All done! 4 of 5 right." and a button for each one to have another go. What they build stays in
+  their browser; Check sends only the target's index and the tool's state, which the server cleans and checks again
+  with the same code (`server/services/dash.js` imports `public/js/dash-build.js`, pure). **Decided:** a student may
+  go on after "Not yet" (practice, not a test), and once right a target stays right.
+- **The teacher's live view** (from the sheet after sending, and "📋 Progress" in Sent today): each target with how many
+  got it right of those who tried and **👀 Show on the board** (that target built on the teacher's own tool, its mode on
+  and the answer shown); each student by Oomba name with "2 of 5 done · 1 right" and "Not yet: 347, 58". Refreshed every
+  4 s while open. **On the projector the names are hidden** ("Names are on your own screen, not the projector").
+- **Privacy and safety.** `dash_builds` keeps only (push, class, student, target, ok, tries, at). Rows go with the
+  push after 14 days (as pushes and hidden pushes do), with the student's account (`forgetUser`) and with the school
+  (`BY_CLASS`). The progress route is the class's teacher's; a student gets only their own; everyone else 404. No AI,
+  no free text between students (a student's view has no field at all), Oomba names only.
+- **The place value number typed in.** The big number under the chart (and under the base-ten blocks) is a field that
+  looks like the number (a faint dashed underline): click or tap, type, Enter or leave it. Commas and points in the
+  reader's own marks ("3,405.27", "3.405,27" in German, "3 405,27", Arabic digits); a mark followed by three digits is
+  a grouping mark when it is the reader's, otherwise the point. Out of range ("12,345"), more places than the chart has
+  (or any with the decimal columns off) or not a number: the old value stays, with a short message under it
+  (`aria-invalid`, read with the field). Escape puts the old value back. The columns, discs and expanded form follow.
+  Base-ten blocks take 0-999 (the blocks become its hundreds, tens and ones). Named "Place value chart: type a
+  number"; while the answer is hidden the field is hidden with the readout.
+- **Fit check.** `npm run dash:fit` has `default-buildit` and `min-buildit` layouts: every Build it tool and two
+  number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
+  screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
