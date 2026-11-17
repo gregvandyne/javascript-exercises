@@ -58,6 +58,7 @@ const D = await import('../server/services/dash.js');
 const DT = await import('../server/services/dash-tools.js');
 const { createApp } = await import('../server/app.js');
 const { tFor } = await import('../server/i18n/index.js');
+const BLD = await import('../public/js/dash-build.js');
 
 const OUT = process.env.OUT || '';
 if (OUT) fs.mkdirSync(OUT, { recursive: true });
@@ -261,6 +262,15 @@ for (const size of ['size', 'min']) {
     LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
 }
+// Build it (docs/decisions.md "Classroom dashboards: Build it"): a layout per size with every tool (mode) a set can be
+// made from, plus a place value chart and base-ten blocks whose typed number is refused (the message under it shows).
+// On the teacher's screens the place value number is typed into; on a student's screens a set of each tool (the
+// teacher's, sent for that layout) is opened in turn in its sheet, Checked once ("Not yet" and its hint), and checked.
+for (const size of ['size', 'min']) {
+  const items = BLD.BUILD_TOOLS.map(m => ({ ...D.widgetType(DT.MODE_HOME[m] || m), wid: `wb-${m}`, s: { state: DT.MODE_HOME[m] ? { tab: m } : {} } }))
+    .concat([{ ...D.widgetType('placeval'), wid: 'wpvedit', s: { state: { v: 9999999 } } }, { ...D.widgetType('placeval'), wid: 'wb10edit', s: { state: { tab: 'base10', base10: { h: 9, t: 19, o: 19 } } } }]);
+  pack(size, items).forEach((widgets, k) => LAYOUTS.push({ key: `${size === 'size' ? 'default' : 'min'}-buildit${k ? `-${k + 1}` : ''}`, widgets, own: [], chip: 1, stage5: false, buildit: true }));
+}
 // Ready-made layouts: built per language in the loop below.
 for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
 // The schedule at pinned times of day (docs/decisions.md "Classroom dashboards: the schedule at every time of day"): the
@@ -362,7 +372,7 @@ async function stubOutside(page) {
 /** In the page: every problem with every widget. */
 function problems() {
   const out = [];
-  const name = w => w.querySelector('.dash-wt')?.textContent || w.dataset.id;
+  const name = w => w.querySelector('.dash-wt')?.textContent || w.getAttribute('aria-label') || w.dataset.id;
   const scrolls = x => { const st = getComputedStyle(x); return (/(auto|scroll)/.test(st.overflowY) && x.scrollHeight > x.clientHeight + 1) || (/(auto|scroll)/.test(st.overflowX) && x.scrollWidth > x.clientWidth + 1); };
   const clips = x => { const st = getComputedStyle(x); return st.overflowX !== 'visible' || st.overflowY !== 'visible'; };
   const label = e => (e.getAttribute('aria-label') || e.textContent || e.className || e.tagName).toString().trim().replace(/\s+/g, ' ').slice(0, 30);
@@ -573,7 +583,7 @@ function problems() {
   const sticky = b => getComputedStyle(b).position === 'sticky';
   const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead, .dash-switch')].filter(b => shown(b) && !sticky(b)).map(b => b.getBoundingClientRect());
   for (const w of document.querySelectorAll('.dash-w')) {
-    if (!w.offsetParent) continue;
+    if (!w.offsetParent || w.closest('.sheet')) continue;   // a copy in a sheet sits over the bars, as the sheet does
     const r = w.getBoundingClientRect();
     let clip = { top: 0, bottom: innerHeight, left: 0, right: innerWidth }, scroller = null;
     for (let a = w.parentElement; a && a !== document.body; a = a.parentElement) {
@@ -639,6 +649,18 @@ for (const L of RUN) {
  D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
+ // Build it: this layout's sets (the last layout's are ended first, so a student's tray holds only these).
+ const builds = [];
+ if (L.buildit) {
+   for (const p of D.todaysPushes(C).filter(x => x.kind === 'build')) D.endPush(T, C, p.id);
+   q.run("DELETE FROM dash_pushes WHERE class_id=? AND kind='build' AND ended_at IS NOT NULL", C.id);
+   for (const w of L.widgets.filter(x => x.id.startsWith('wb-'))) {
+     const mode = w.id.slice(3), st = (w.s.state && w.s.state[mode]) || (w.s.state && !w.s.state.tab ? w.s.state : {}), b = BLD.baseFor(mode, DT.cleanToolState(mode, st), 'en');
+     const gen = BLD.gensFor(mode, b).slice(-1)[0];
+     const r = D.push(T, C, { kind: 'build', ref: w.id, build: { mode, base: b, targets: BLD.makeTargets(mode, gen, 12, b, BLD.seeded(5)), say: 'Benutze die Werkzeuge, um jede Zahl ganz genau nachzubauen, und drücke dann auf Prüfen.' } });
+     if (r.push) builds.push(r.push); else console.log(`  build it: ${mode} could not be sent (${r.error})`);
+   }
+ }
  // The timer layouts: each timer paused at its time (a countdown set to it, a stopwatch run that long and paused).
  for (const [id, m, ms] of L.timers || []) { const t0 = Date.now(); if (m === 'down') D.timerAction(T, C, id, { action: 'set', ms }, t0); else { D.timerAction(T, C, id, { action: 'start' }, t0 - ms); D.timerAction(T, C, id, { action: 'pause' }, t0); } }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
@@ -674,6 +696,38 @@ for (const L of RUN) {
     }
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
+    // Build it: the place value number typed into and refused (its message under it), then each set opened by a student.
+    if (L.buildit && v.who === T && !v.projector) {
+      for (const id of ['wpvedit', 'wb10edit'].filter(x => L.widgets.some(y => y.id === x))) {
+        const inp = page.locator(`.dash-w[data-id="${id}"] .dt-bigin`);
+        if (!(await inp.count())) { found.push(`${id}: the number can't be typed into`); continue; }
+        await inp.scrollIntoViewIfNeeded().catch(() => {});
+        await inp.fill('12.345.678,9999').catch(e => found.push(`${id}: ${e.message.split('\n')[0]}`)); await inp.press('Enter').catch(() => {});
+        await page.waitForTimeout(80);
+        if (!(await page.locator(`.dash-w[data-id="${id}"] .dt-editmsg`).isVisible())) found.push(`${id}: no message for a number out of range`);
+      }
+      found.push(...(await page.evaluate(problems)).map(x => `typed number: ${x}`));
+    }
+    if (L.buildit && v.who !== T) {
+      for (const pid of builds) {
+        await page.evaluate(id => { const a = document.createElement('a'); a.href = `#build-${id}`; document.body.appendChild(a); a.click(); a.remove(); }, pid);
+        await page.waitForTimeout(250);
+        const name = await page.locator('.dash-buildsheet .dash-wbuild').getAttribute('aria-label').catch(() => null);
+        if (!name) { found.push(`build it ${pid}: the student's sheet does not open`); continue; }
+        await page.click('.dash-buildsheet [data-bcheck]', { timeout: 3000 }).catch(e => found.push(`build it ${name}: Check can't be pressed (${e.message.split('\n')[0]})`));
+        await page.waitForTimeout(120);
+        found.push(...(await page.evaluate(problems)).map(x => `build it: ${x}`));
+        found.push(...await page.evaluate(() => {
+          const out = [], sh = document.querySelector('.dash-buildsheet');
+          for (const e of sh.querySelectorAll('.dash-bhead *, .dash-bsay, .dash-btarget, .dash-bacts, .dash-bacts *')) if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push(`build it: "${e.textContent.slice(0, 24)}" is cut`);
+          const r = sh.getBoundingClientRect(); if (r.right > innerWidth + 1 || r.left < -1) out.push('build it: the sheet is wider than the screen');
+          for (const b of sh.querySelectorAll('.dash-bacts .btn')) if (b.getBoundingClientRect().height < 43.5) out.push(`build it: "${b.textContent.trim()}" is under 44px tall`);
+          return out;
+        }));
+        if (OUT) await page.screenshot({ path: `${OUT}/fit-${L.key}-${lang}-${v.name}-build-${name.replace(/\W+/g, '_')}.png` }).catch(() => {});
+        await page.keyboard.press('Escape'); await page.waitForTimeout(60);
+      }
+    }
     // Help on the maths tools: each tool's ⓘ panel, opened one at a time, fits its widget without scrolling and no line
     // of it is cut (docs/decisions.md "Classroom dashboards: help on the maths tools"). Not on the projector (hidden).
     if (!v.projector && process.env.HELP !== '0') {

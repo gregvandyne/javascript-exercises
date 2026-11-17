@@ -255,6 +255,10 @@ export function cleanToolState(type, v, o = {}) {
   const t = TOOL_SPECS[type]; if (!t) return null;
   const s = cleanBy(t.spec, v);
   if (t.fix) t.fix(s, o);
+  // Show/Hide the answer (docs/decisions.md "Classroom dashboards: Build it"): qh is true while the answer is hidden
+  // (after Make a question, or the teacher's 🙈). Kept only when true, so every state saved before it is unchanged. The
+  // fraction tool and bar models keep their own `hide`.
+  if (ANSWER_TOOLS.includes(type) && v && typeof v === 'object' && v.qh === true) s.qh = true;
   // A tool with modes: which one shows (kept only when it isn't the tool's own) and each other mode's state, cleaned by
   // its own spec and kept only when it differs from its start. So a state saved before the modes is stored exactly as it
   // was, and switching modes never loses what was set up in another.
@@ -270,6 +274,9 @@ export function cleanToolState(type, v, o = {}) {
   }
   return s;
 }
+/** The tools with the shared Show/Hide the answer (qh): every tool that makes a question but the two with their own. */
+export const ANSWER_TOOLS = ['numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'geoboard',
+  'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'map', 'rods'];
 /** A state of a retired tool -> the same state as a mode of the tool it is now ({ type, state }); anything else unchanged. */
 export function moveToolState(type, state) {
   const home = MODE_HOME[type];

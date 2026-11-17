@@ -21,6 +21,9 @@
 //   POST /api/dash/:id/help/queue             the teacher: next, remove one, clear
 //   POST /api/dash/:id/checks, /checks/:cid/end|save, GET /checks/:cid/names, GET /checks/saved   quick checks (teacher)
 //   POST /api/dash/:id/checks/:cid/answer     a student taps an answer
+// "Build it" (docs/decisions.md "Classroom dashboards: Build it"): a set is sent with POST /pushes (kind 'build');
+//   GET  /api/dash/:id/builds/:pid            the teacher: every student's progress; a student: their own only
+//   POST /api/dash/:id/builds/:pid/check      a student checks what they built for one target
 //   GET  /api/dash/:id/places?q=              the teacher looks up a city for the weather (server side)
 //   GET  /api/dash/:id/qr?kind=&ref=          a QR code for an allowed target (teacher)
 //   GET  /api/dash/:id/tiles?refs=            Oomba tiles the reader can open
@@ -285,7 +288,7 @@ router.get('/api/dash/:id/push-options', requireUser, rateLimit('dash-options', 
 router.post('/api/dash/:id/pushes', requireUser, rateLimit('dash-push', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
   const b = body(req);
-  send(req, res, D.push(req.user, x.c, { kind: b.kind, ref: b.ref, state: b.state }), { toast: req.t('dash.push.sent') });
+  send(req, res, D.push(req.user, x.c, { kind: b.kind, ref: b.ref, state: b.state, build: b.build }), { toast: req.t('dash.push.sent') });
 });
 router.post('/api/dash/:id/pushes/:pid/end', requireUser, rateLimit('dash-push', 60, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
@@ -383,6 +386,19 @@ router.post('/api/dash/:id/checks/:cid/save', requireUser, rateLimit('dash-check
 router.post('/api/dash/:id/checks/:cid/answer', requireUser, rateLimit('dash-answer', 240, 3600e3), (req, res) => {
   const x = load(req, res, { student: true }); if (!x) return;
   send(req, res, D.answerCheck(req.user, x.c, req.params.cid, body(req).value));
+});
+
+// "Build it" (docs/decisions.md "Classroom dashboards: Build it"): the teacher sees each student's progress on a set; a
+// student sees only their own and checks what they built (the state, checked again here; only right / not yet is kept).
+router.get('/api/dash/:id/builds/:pid', requireUser, rateLimit('dash-options', 120, 60e3), (req, res) => {
+  const x = load(req, res); if (!x) return;
+  res.set('Cache-Control', 'no-store');
+  send(req, res, x.role === 'teacher' ? D.buildProgress(x.c, req.params.pid) : D.buildMine(x.c, req.params.pid, req.user.id));
+});
+router.post('/api/dash/:id/builds/:pid/check', requireUser, rateLimit('dash-answer', 600, 3600e3), (req, res) => {
+  const x = load(req, res, { student: true }); if (!x) return;
+  const b = body(req);
+  send(req, res, D.buildCheck(req.user, x.c, req.params.pid, { item: b.item, state: b.state }));
 });
 
 router.get('/api/dash/:id/places', requireUser, rateLimit('dash-places', 40, 3600e3), async (req, res) => {
