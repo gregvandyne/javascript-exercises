@@ -92,10 +92,11 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   await head.goto('/me');
   await expect(head.locator('.pagehead a[href="/build"]')).toContainText('Make a game');
   await Promise.all([head.waitForURL(/\/build$/), head.locator('.pagehead a[href="/build"]').click()]);
-  // Desktop: School · Classroom · Learn · Play · Live, and the avatar button is Me.
+  // Desktop: Classroom · Learn · Play · Live; the avatar opens the account menu: Me, My school, then Settings.
   await head.setViewportSize({ width: 1280, height: 800 });
   await head.goto('/teach?all=1');
-  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/live']);
-  await expect(head.locator('.topbar .me-btn')).toHaveAttribute('href', '/me');
+  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live']);
+  await head.locator('.topbar .acctpick summary').click();
+  expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/school', '/me/settings']);
   await hctx.close(); await admin.context().close();
 });

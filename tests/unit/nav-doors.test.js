@@ -49,7 +49,8 @@ test('signed out and guests get the same doors: Grown-ups tab, no Friends, Paren
     assert.equal(home.status, 200);
     const tabs = tabbar(home.text);
     const order = [...tabs.matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-    assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/plans', '/login'], `${who}: Play · Learn · Build · Grown-ups · Plans · Sign in`);
+    assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/login'], `${who}: Play · Learn · Build · Grown-ups · Sign in`);
+    assert.match(footer(home.text), /href="\/plans"/, `${who}: Plans in the footer (not in the bars)`);
     assert.match(tabs, /🎮<\/span><span class="tab-t">Play<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Learn<\/span>/, who);
     assert.match(tabs, /👪<\/span><span class="tab-t">Grown-ups<\/span>/, who);
     assert.doesNotMatch(tabs, /href="\/search"/, `${who}: search is the top bar's field, not a tab`);
@@ -74,7 +75,7 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
   const k = kid();
   const home = await as(k)('/');
   const order = [...tabbar(home.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(order, ['/', '/learn', '/build', '/friends', '/plans', '/me']);
+  assert.deepEqual(order, ['/', '/learn', '/build', '/friends', '/me']);
   assert.doesNotMatch(topnav(home.text), /href="\/(parents|teachers)"/);
   assert.doesNotMatch(home.text, /class="home-intro"/);
   assert.doesNotMatch(footer(home.text), /href="\/teachers"/);

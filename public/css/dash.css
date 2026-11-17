@@ -1,6 +1,9 @@
 /* Classroom dashboards (server/routes/dash.js, public/js/dash.js). Only the site's tokens: the screens follow the site's
    light or dark theme, and every text sits on a card (--card) whatever the background. */
 .dash-page{background:var(--bg)}
+/* Lists marked "plain" (the Practice it picker, quick-check options, the settings lists): no bullets or numbers. */
+:where(ul.plain,ol.plain){list-style:none;margin:0;padding:0}
+:where(ul.plain,ol.plain)>li{list-style:none}
 body.dash-page{padding-bottom:0}
 .dash{position:relative;display:flex;flex-direction:column;gap:var(--s4);min-height:100vh;min-height:100dvh;padding:var(--s4) 20px;background-color:var(--bg);background-size:28px 28px}
 @media (min-width:720px){.dash{height:100vh;height:100dvh}}
@@ -1427,7 +1430,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
   .dt-stage>svg,.dt-plane,.dt-clock,.dt-hund{height:auto;max-height:70vh;width:100%}
   .dt-fwrap,.dt-mats,.dt-pv,.dt-tfwrap,.dt-cwrap,.dt-fdpwrap,.dt-clockwrap{height:auto}
   .dt-cwrap,.dt-fdpwrap{flex-direction:column}
-  .dt-cards{grid-template-columns:minmax(0,1fr)}
+  /* the cards over the grid take the full width: .dt-card's inline-size containment gives them no width of their own (they shrank to 16px) */
+  .dt-cards{flex:none;width:100%;grid-template-columns:minmax(0,1fr)}
   .dt-trwrap .dt-trtall{display:table}.dt-trwrap .dt-trwide{display:none}
   .dt-plane{flex:none;max-width:100%;aspect-ratio:1}
   .dt-hund{max-width:100%}

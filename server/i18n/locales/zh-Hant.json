@@ -30,6 +30,9 @@
       "light": "淺色",
       "dark": "深色"
     },
+    "acct": {
+      "allSettings": "所有設定"
+    },
     "footer": {
       "tagline": "© Oomba Academy · 免費玩、免費做",
       "safety": "安全",
@@ -7238,7 +7241,13 @@
       "explorerSub": "3–5 年級",
       "pro": "高手",
       "proSub": "6–8 年級",
-      "switch": "切換到{band}"
+      "switch": "切換到{band}",
+      "launchpad": "起飛台",
+      "launchpadSub": "幼兒園大班–2 年級",
+      "yours": "你的等級",
+      "showing": "正在顯示",
+      "stepsDone": "{band}：已完成 {n}／{total} 個步驟",
+      "unitsFinale": "第 {from}–{to} 單元，最後是終章：{finale}"
     },
     "map": {
       "h": "課程地圖",

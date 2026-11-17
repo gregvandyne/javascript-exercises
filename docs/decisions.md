@@ -7248,6 +7248,73 @@ games, have your kids build games too. Make it better than that."
 - The walkthrough video (scripts/dash-video.js) still opens on the old "Everyday" starter and makes its layouts from the
   New sheet; with the six made on a first visit it should switch between them instead before it is made again.
 
+## A quieter top bar (17 Nov 2026)
+Owner, with a screenshot of a school admin's header: "This is also too busy. Let's move light and dark mode under
+settings. Remove School because you can just click that when you click into the icon on the right to open up your
+account. Also move Plans to Settings as well"
+- **The avatar opens an account menu** (`accountMenu` in server/views/layout.js), signed in: Me (a grown-up has no Me
+  page, so no Me item), My school (school admins only: `adminSchools`, /school), then **Settings**: Theme (Same as my
+  device, Light, Dark), Plans (adults only, see below), All settings (`/me/settings`, or `/family/account` for a
+  grown-up). A `<details>` of plain links like the 🌐 picker, so it opens and picks with no JavaScript; public/js/app.js
+  adds Escape, outside-click and arrow keys, and the theme links switch at once (`data-theme-choice`). The avatar was a
+  plain link to /me before; that page is the menu's first item now. Signed out (and guests) the avatar is still the
+  Sign in link.
+- **Gone from the top bar and the phone tab bar, for every role:** the ☀️/🌙/🌓 theme menu (`themePicker` is replaced by
+  `themeLinks`), 🏛 School and ⭐ Plans. The school pages make Me current (`currentTab`). The 🌐 language picker stays.
+  A school admin's bar is Classroom · Learn · Play · (Live); their phone tab bar Classroom · Learn · Play · Me.
+- **Plans: adults only** (`plansInMenu` = `legalReader` and `familiesOn`: grown-ups, school staff and the platform admin,
+  while paid-plan pages are on). Kids and students no longer have a Plans link anywhere (until now everyone had one,
+  per "Plans page and the Basic plan" of 2026-10-27); /plans itself still opens for anyone and still tells a kid that a
+  grown-up buys plans. Prices stay on /plans only: the menu and the settings pages show the word Plans and a link.
+- **Signed out** (no account menu): the bar is Play · Learn · Build · Parents · Teachers (tab bar: Play · Learn · Build ·
+  Grown-ups · Sign in). Plans moved to the footer (while `familiesOn`), next to the landing page's pricing section and
+  footer link and the Plans buttons on /parents and /teachers, so a signed-out grown-up still reaches pricing from every
+  page. The theme moved to the footer as plain links, like the landing footer's theme switch.
+- **Settings pages:** `/me/settings` gains a Plans section for staff and the platform admin (`plansPanel`); a
+  grown-up's `/family/account` gains Appearance (the same theme form) and Plans.
+- **Words:** one new string, `layout.acct.allSettings` ("All settings"), in all 13 languages; the rest reuse
+  `me.settings.title`, `layout.theme.*`, `me.tiles.school`, `nav.plans` and `family.page.seePlans`.
+- Tests: tests/unit/nav-roles.test.js (every role's bars, the menu's items per role, the footer signed out, the settings
+  pages), plans.test.js, home-doors.test.js, nav-doors.test.js; tests/e2e/theme.spec.js drives the footer links and the
+  account menu with and without JavaScript.
+## Number Quest: each level is its own street, on screen and in every count (17 Nov 2026)
+- Owner: "I am not seeing the difference between Pro and Explorer. It also says I have completed both Pro and Explorer even though I have only completed the Explorer."
+- Root cause 1 (look): the band switch worked (the choice is saved for a signed-in learner, grown-ups switch by `?street=`), but everything above the fold was the same on every level: the same "Number Quest · grades K–8" title, the same course-wide Tally Marks and daily goal, a "New here?" line even after a finished street, and the count. The level name and the units only showed far down the page, in a small chip row. Fix: a level banner right under the title (`#nqp-band`: "Your level" or "Now showing", the level's name and grades, its district, "Units 1–7, then the finale: <its finale>") with the level switcher inside it, one accent per level (Launchpad green, Explorer blue, Pro purple, mixed into the theme's card color so both themes work). "New here?" shows only to a learner with no step done on any street.
+- Root cause 2 (completion): display only, nothing stored wrongly. Progress was always per step key (`explorer-1.1`, `pro-1.1`) and every count was per band, but each count was printed bare ("23 of 23 steps done") under a K–8 course title, on the course page and on the Learn tab's course card, so finishing Explorer read as finishing the whole course; the teacher's class view showed one status for the course (the current band's) without saying which band, so a student who finished Explorer and moved to Pro dropped to "Not started". Fix: every count names its level (`courses.band.stepsDone`: "Explorer: 23 of 23 steps done"), and `classCourseProgress` returns `bands` (each band the student worked in, with its own status, count and score) so the class view lists "Completed · Explorer" and "Pro: 0 of 23 steps done" side by side. No migration: no stored row was wrong (`course_progress.band` and the step keys always match), and a migration could only have risked real progress.
+- Pinned by `tests/unit/number-quest-band-scope.test.js` (fails on the old pages, passes now).
+## Fraction Factory: add the second cake first, and an order fits the frame (17 Nov 2026)
+Owner, on Recipe Math order 6 (5/4 of a cake): "it was confusing how you got to two different cakes. You had to click
+the cut into 4 button and then the second cake appeared ... Also, on my normal screen without full screen mode, I had to
+scroll down a bit to select the right cut."
+- **Add a cake:** every order starts with one whole on the table. An order of more than one whole (`goal.wholes > 1`,
+  any level, not only rc-6) shows a dashed "+ Add a cake" card beside the last cake, up to the wholes the order needs;
+  the extra cake has a Remove button (its parts leave the tray with it). A slicer never adds a cake any more. Engine:
+  `Run.s.wholes`, actions `add-whole` / `remove-whole`, the advice script adds the cake before it cuts.
+- **One slicer cuts every cake.** Simplest for kids (one tap, not one per cake) and the part size stays one number, so
+  fourths stay fourths and 5/4 is still read as five of one size; a cake added after the cut comes in with the same cut.
+- **Feedback:** a full table that is still short of the order says `why.more-wholes` ("One cake cannot hold that many
+  parts. Tap Add a cake ..."); too few, too many and the wrong cut keep their lines. The rc-6 intro and hints name the
+  button. The spoken block carries the new lines, so tts-lines warms them with no registry change. Like every other
+  intro, hint and button in this game they are English only; only the how-to cards are in the 13 languages (#350).
+- **Fit:** the order screen sizes cakes and bars from the frame's height and width (`--ff-cake`, `--ff-bar`,
+  `--ff-mini` with clamp/min and vh/vw), starts right under the kit's HUD row on short or narrow frames (66 px, not the
+  140 px band), and on a wide frame (aspect 13:10 or wider) puts the slicer, the tray reading and Serve/Hint beside the
+  wholes. Every level, at its start and with the order built, was measured with no scroll at 1000x504, 1280x560/650/720,
+  1366x620/768, 1440x780/900, 820x1180, 1180x820, 390x844 and 844x390. Below 440 px tall the slicer tip line hides
+  (the intro says the same). Checks: tests/unit/fraction-factory-add-cake.test.js.
+## Classroom dashboards: fraction, decimal, percent cards on a phone (17 Nov 2026)
+On a phone (390 × 844) the Fractions widget's "Fraction, decimal, percent" tab drew its three cards 16px wide: "8/12 =
+2/3" stacked one character a line and the decimal and percent were tiny. Cause: under 720px `.dt-fdpwrap` is a column
+(`align-items:center`), so `.dt-cards` was only as wide as its content, and each `.dt-card` is an inline-size container
+(for its `cqi` font sizes), which gives it no content width at all: the grid shrank to the cards' padding. On wider
+screens the model area has a fixed height and the `@container (max-aspect-ratio:7/5)` rule already gave `.dt-cards`
+`width:100%`; on a phone the stage is an inline-size container only, so that aspect-ratio query never applied.
+- **Fix:** in the phone block (`@media (max-width:719px)`) `.dt-cards` is `flex:none; width:100%`, one card a row, so
+  each card is the tool's full width and its text is sized from that (up to 2.6rem). Laptop, student and projector are
+  unchanged (the rule is phone-only).
+- **Check:** `npm run dash:fit` now fails when a fraction, decimal, percent card is under 96px wide, or when the cards
+  sit over the hundred grid (the column layout) and are narrower than the tool.
+
 ## Classroom dashboards: type the number between − and +; settings from the board (17 Nov 2026)
 Two requests from the owner: "set the numbers manually here instead of only being able to + or −", everywhere that is
 the case, and "edit settings of individual widgets on a board without having to go into the broader edit menu".

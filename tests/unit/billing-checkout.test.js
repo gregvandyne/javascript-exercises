@@ -276,11 +276,11 @@ test('paying on Stripe\'s page: webhooks turn the plan on; the return page shows
   assert.match(page.text, /5 of 5 extra messages left this month/);
   assert.match(page.text, /data-api="\/api\/billing\/portal"/);
   assert.doesNotMatch(page.text, /data-api="\/api\/billing\/family\/checkout"/);
-  // The kid's view of the same moment: no money or plan words anywhere on /me, besides the menu's Plans link that
-  // everyone has (docs/decisions.md "Paid plans" §17).
+  // The kid's view of the same moment: no money or plan words anywhere on /me, and no Plans link (the account menu has
+  // Plans for adults only: docs/decisions.md "A quieter top bar").
   const me = await call(signIn(f.child), '/me');
-  assert.match(me.text, /<a class="navlink" href="\/plans"/);
-  assert.doesNotMatch(me.text.replace(/<a [^>]*href="\/plans"[^>]*>[\s\S]*?<\/a>/g, ''), /\$\d|plan|subscri|billing/i);
+  assert.doesNotMatch(me.text, /href="\/plans"/);
+  assert.doesNotMatch(me.text, /\$\d|plan|subscri|billing/i);
 });
 
 test('the return page\'s fallback: syncs from the session itself; another family\'s session changes nothing', async () => {

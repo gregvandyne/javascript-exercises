@@ -34,7 +34,7 @@ import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
-import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel, namePanel } from './auth.js';
+import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel, namePanel, appearancePanel, plansPanel } from './auth.js';
 import { meGooglePanel, signupToken, noPasswordText } from './google.js';
 import { googleEnabled } from '../oidc.js';
 import { progress, SIGNUP_CSS } from '../views/onboarding.js';
@@ -444,15 +444,16 @@ router.get('/family', grownupOnly, async (req, res) => {
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
 });
 
-// /family/account: the grown-up's own settings (Language, Password, Sign out and Sign out everywhere), moved off /family
-// so that page is about the children and the plan. No new settings. Open while families are off too (grownupOnly), so a
+// /family/account: the grown-up's own settings (Language, Appearance, Plans, Password, Sign out and Sign out everywhere),
+// moved off /family so that page is about the children and the plan. Appearance and Plans are the account menu's
+// Settings too (docs/decisions.md "A quieter top bar"). Open while families are off too (grownupOnly), so a
 // grown-up can always sign out. /family#password, #language and #signout (old bookmarks and links) come here
 // (public/js/family.js).
 router.get('/family/account', grownupOnly, (req, res) => {
   const t = req.t;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
-  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${noPasswordText(req) ? '' : passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${appearancePanel(req)}${plansPanel(req)}${noPasswordText(req) ? '' : passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
 

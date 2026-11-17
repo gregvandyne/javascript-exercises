@@ -297,7 +297,7 @@ test('the grown-up\'s menus: Family · Play · Learn · Build · Plans · Accoun
   await grownupSignup(mum, uniq('Mum'));
   await mum.goto('/family');
   const tabs = () => mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
-  expect(await tabs()).toEqual([['/family', 'Family'], ['/play', 'Play'], ['/learn', 'Learn'], ['/build', 'Build'], ['/plans', 'Plans'], ['/family/account', 'Account']]);
+  expect(await tabs()).toEqual([['/family', 'Family'], ['/play', 'Play'], ['/learn', 'Learn'], ['/build', 'Build'], ['/family/account', 'Account']]);
   await expect(mum.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
   // /family is about the children and the plan; the settings are one tap away.
   await expect(mum.locator('#famcheck')).toBeVisible();
@@ -317,12 +317,13 @@ test('the grown-up\'s menus: Family · Play · Learn · Build · Plans · Accoun
     await mum.waitForURL(new RegExp(`/family/account#${h}$`));
     await expect(mum.locator(`#${h}`)).toBeVisible();
   }
-  // Desktop: Family · Play · Learn · Build · Plans, and the avatar button opens the Account page; it all fits (en, de, ru).
+  // Desktop: Family · Play · Learn · Build; the avatar opens the account menu (Plans and the Account page in it); it all fits (en, de, ru).
   for (const lang of ['en', 'de', 'ru']) for (const width of [821, 1000, 1101, 1280, 1920]) {
     await mum.setViewportSize({ width, height: 760 });
     await mum.goto(`/family?lang=${lang}`); await mum.evaluate(() => document.fonts.ready);
-    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/play', '/learn', '/build', '/plans']);
-    await expect(mum.locator('.topbar .me-btn')).toHaveAttribute('href', '/family/account');
+    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/play', '/learn', '/build']);
+    await expect(mum.locator('.topbar .acctpick a[href="/family/account"]')).toBeAttached();
+    await expect(mum.locator('.topbar .acctpick a[href="/plans"]')).toBeAttached();
     const r = await mum.evaluate(topbarFit);
     expect(r.tight || r.off || r.wide > 0 || r.cut || r.missing.length, `${lang} @${width}: ${JSON.stringify(r)}`).toBeFalsy();
   }

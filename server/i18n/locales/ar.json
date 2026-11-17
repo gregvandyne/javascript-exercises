@@ -31,6 +31,9 @@
       "light": "فاتح",
       "dark": "داكن"
     },
+    "acct": {
+      "allSettings": "كل الإعدادات"
+    },
     "footer": {
       "tagline": "© Oomba Academy · العب مجانًا واصنع مجانًا",
       "safety": "الأمان",
@@ -7239,7 +7242,13 @@
       "explorerSub": "الصفوف 3–5",
       "pro": "المحترف",
       "proSub": "الصفوف 6–8",
-      "switch": "التبديل إلى {band}"
+      "switch": "التبديل إلى {band}",
+      "launchpad": "منصة الإطلاق",
+      "launchpadSub": "الروضة إلى الصف 2",
+      "yours": "مستواك",
+      "showing": "المعروض الآن",
+      "stepsDone": "{band}: أنجزت {n} من {total} خطوة",
+      "unitsFinale": "الوحدات {from}–{to}، ثم الختام: {finale}"
     },
     "map": {
       "h": "خريطة الدورة",
