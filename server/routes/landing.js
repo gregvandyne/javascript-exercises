@@ -141,10 +141,8 @@ export function renderLanding(req, res) {
   // The sky: three star fields and the aurora, each moved at its own speed by public/js/landing.js (data-depth).
   const sky = raw(`<div class="lp-sky" aria-hidden="true"><div class="lp-stars lp-s1" data-sky=".05"></div><div class="lp-stars lp-s2" data-sky=".12"></div><div class="lp-stars lp-s3" data-sky=".22"></div><div class="lp-aurora" data-sky=".08"><i></i><i></i><i></i></div></div>`);
 
-  const FLOATS = [['quest-race', 'lp-f1', '-.18'], ['brain-board', 'lp-f2', '.12'], ['robo-route', 'lp-f3', '-.28'], ['tug-of-math', 'lp-f4', '.22'], ['word-trail', 'lp-f5', '-.1']];
   const hero = html`<section class="lp-hero" aria-labelledby="lp-h1">
   <div class="lp-floor" aria-hidden="true" data-depth=".35"><div class="lp-floor-grid"></div></div>
-  <div class="lp-floats" aria-hidden="true">${FLOATS.map(([s, c, d]) => html`<div class="lp-float ${c}" data-depth="${d}"><div class="lp-bob">${cover(s, { eager: true })}</div></div>`)}</div>
   <div class="lp-wrap lp-hero-in">
     <div class="lp-hero-copy">
       <p class="lp-kicker"${fb('landing.hero.kicker')}><span class="lp-pulse" aria-hidden="true"></span>${t('landing.hero.kicker')}</p>
@@ -470,7 +468,7 @@ ${body}
 </html>`);
 }
 
-/** The covers fanned out in the hero (every size: the floating ones only fit very wide screens). */
+/** The covers fanned out in the hero. */
 const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
 /** The games in the moving row under the courses. */
 const MARQUEE = ['sum-racer', 'atlas-quest', 'doodle-hoot', 'trick-inbox', 'code-isle', 'data-detective', 'fraction-factory', 'quest-race', 'brain-board', 'word-trail'];

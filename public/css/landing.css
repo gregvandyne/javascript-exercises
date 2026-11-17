@@ -166,23 +166,6 @@ main{position:relative;z-index:1}
 .lp-floor-grid::before{content:"";position:absolute;inset:-64px 0 0;background:linear-gradient(var(--grid) 1.5px,transparent 1.5px) 0 0/64px 64px,linear-gradient(90deg,var(--grid) 1.5px,transparent 1.5px) 0 0/64px 64px}
 @media (prefers-reduced-motion:no-preference){.lp-floor-grid::before{animation:lp-grid 4s linear infinite}}
 @keyframes lp-grid{to{transform:translate3d(0,64px,0)}}
-.lp-floats{position:absolute;inset:0;z-index:1;pointer-events:none;display:none}
-@media (min-width:1360px){.lp-floats{display:block}}
-.lp-float{position:absolute;width:100px}
-.lp-float img{width:100%;border-radius:18px;border:2px solid var(--line-2);box-shadow:var(--shadow)}
-.lp-f1{inset-inline-start:1.6%;top:13%}
-.lp-f2{inset-inline-end:1.6%;top:9%;width:92px}
-.lp-f3{inset-inline-start:49%;top:3%;width:78px;opacity:.6}
-.lp-f4{inset-inline-end:2%;bottom:11%;width:96px}
-.lp-f5{inset-inline-start:2.2%;bottom:13%;width:84px;opacity:.75}
-.lp-bob{transform:rotate(var(--rot,-6deg))}
-.lp-f2 .lp-bob{--rot:7deg} .lp-f3 .lp-bob{--rot:-4deg} .lp-f4 .lp-bob{--rot:10deg} .lp-f5 .lp-bob{--rot:5deg}
-@media (prefers-reduced-motion:no-preference){
-  .lp-bob{animation:lp-bob 7s ease-in-out infinite alternate}
-  .lp-f2 .lp-bob{animation-duration:8.5s;animation-delay:-2s} .lp-f3 .lp-bob{animation-duration:6s;animation-delay:-4s}
-  .lp-f4 .lp-bob{animation-duration:9s;animation-delay:-1s} .lp-f5 .lp-bob{animation-duration:7.5s;animation-delay:-3s}
-}
-@keyframes lp-bob{from{transform:translate3d(0,-10px,0) rotate(var(--rot,-6deg))}to{transform:translate3d(0,12px,0) rotate(calc(var(--rot,-6deg) * -.4))}}
 
 /* the demo: a lesson, the Builder at work, a game */
 .lp-demo{margin:0;position:relative;display:grid;gap:0;max-width:540px;width:100%;justify-self:center}
@@ -400,7 +383,7 @@ main{position:relative;z-index:1}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .rv-wait{opacity:1;transform:none}
 }
-@media print{.lp-sky,.lp-floats,.lp-floor,.lp-bar,.lp-marquee{display:none}body.lp{background:#fff;color:#000}}
+@media print{.lp-sky,.lp-floor,.lp-bar,.lp-marquee{display:none}body.lp{background:#fff;color:#000}}
 
 /* The teaching loop, Plan → Play → Check → Feedback (server/views/teacher-loop.js, docs/decisions.md "The teaching loop"):
    numbered cards like "How it works", each with its tools, then the four real screens in the device frame. */

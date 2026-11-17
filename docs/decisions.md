@@ -7462,3 +7462,17 @@ also quite glitchy."
   was see-through, so the 3D view flashed half-built (a black sky, a giant ground tile up close). It now has the sky's
   colour, stays until the helpers stand in place and one frame is drawn from where they are seen, then fades (no fade
   with reduced motion).
+- **Every Number Quest game** (Balance Bridge, Crate Stacker, Keep Builder, Kitchen Rush, Lantern Mix, Launch Lab,
+  Lily Hop, Machine Line, Rocket Supply, Scale Scout, Shape Hunt, Sky Lines, Sub Zero) had the same see-through
+  loading screen removed too early, and gets the same fix (owner: "Make sure the start of all those games are not
+  glitchy as well"): the page's own colour, removed after the first screen is drawn, a fade. Recorded from the first
+  frame in the production frame: each shows its loading screen, then its finished first screen, nothing between.
+- **Other games with automatic moves after speech:** Shark Plank's results card waits for the win or lose line, and
+  Hero of Sunvale's cutscenes hold their clock before the next caption while a voiced line is still playing (at most
+  10 s a line; a tap, Skip and the test hooks move on at once). Word Trail's speed-round clock starts once the word has
+  been said. Fraction Factory, Gulp City, Jungle Cup, Word Hunt and Word Peek move on only on a tap (unchanged).
+
+## Landing: no floating game covers round the hero (17 Nov 2026)
+Owner: "Remove the floating games on the outside... its a bit too distracting." The five game covers that drifted at
+the hero's edges on very wide screens (`.lp-floats`, from 1360px) are gone, with their styles. The covers fanned in
+the hero's "30+ games" link stay. tests/unit/teacher-landing.test.js checks there are none.

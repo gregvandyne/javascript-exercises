@@ -12338,11 +12338,11 @@ GAME.addSystem({
 // `follow` shots compute the camera every frame (the flight home). update(k, t, dt) moves the world; onEnd runs once
 // (also on Skip, after update(1, dur)). Real time drives it; with manual(true) step(seconds) does (deterministic).
 const CUT = {
-  on: false, id: null, t: 0, dur: 0, shots: null, lines: null, li: -1, update: null, onEnd: null, mem: 0, shotI: -1, fadeT: 0,
+  on: false, id: null, t: 0, dur: 0, shots: null, lines: null, li: -1, update: null, onEnd: null, mem: 0, shotI: -1, fadeT: 0, hold: 0,
   pos: new THREE.Vector3(), look: new THREE.Vector3(), a: new THREE.Vector3(), b: new THREE.Vector3(),
   play(o) {
     if (this.on) this.end(true);
-    Object.assign(this, { on: true, id: o.id || 'cut', t: 0, dur: o.dur || 4, shots: o.shots || [], lines: o.lines || [], li: -1, update: o.update || null, onEnd: o.onEnd || null, mem: 0, shotI: -1, fadeT: 0 });
+    Object.assign(this, { on: true, id: o.id || 'cut', t: 0, dur: o.dur || 4, shots: o.shots || [], lines: o.lines || [], li: -1, update: o.update || null, onEnd: o.onEnd || null, mem: 0, shotI: -1, fadeT: 0, hold: 0 });
     if (UI.dialog.open) { UI.dialog.open = false; $('dialog').hidden = true; UI.dialog.done = null; VOICE.stop(); }
     $('cutCap').hidden = true; document.body.classList.add('cut'); UI.setPrompt(null);
     UI.open('cutScreen'); CAM.shot = { pos: this.pos, look: this.look };
@@ -12352,8 +12352,22 @@ const CUT = {
   /** Move the clock on (only while the cutscene is the top overlay: a pause menu stops it). */
   advance(dt) {
     if (!this.on || UI.top() !== 'cutScreen') return;
+    // The next caption (or the end) waits while the line being said is still playing or on its way from the AI voice
+    // (BRB.speaking), so the clock never cuts a voice off; at most 10 s per line. Next / Skip still move on at once.
+    let stop = this.dur; for (const L of this.lines) if (L.at > this.t + 1e-6) { stop = L.at; break; }
+    if (this.t + dt >= stop - 1e-6 && this.voiceBusy(dt)) {
+      const to = Math.max(this.t, stop - 1e-3); if (to > this.t) { const d = to - this.t; this.t = to; this.apply(d); }
+      return;
+    }
     this.t = Math.min(this.dur, this.t + dt); this.apply(dt);
     if (this.t >= this.dur - 1e-6) this.end(false);
+  },
+  /** Is a caption's line still being said? Never in the test hooks' stepped or bot-played runs (they stay as before). */
+  voiceBusy(dt) {
+    if (this.li < 0 || !VOICE.spoke || S.manual || QBOT.on) return false;
+    let busy = false; try { busy = typeof BRB.speaking === 'function' && BRB.speaking(); } catch (e) { busy = false; }
+    if (!busy) return false;
+    this.hold += dt; return this.hold < 10;
   },
   apply(dt) {
     const tm = this.t, cm = calm();
@@ -12373,7 +12387,7 @@ const CUT = {
     // captions
     let li = -1; for (let i = 0; i < this.lines.length; i++) if (tm >= this.lines[i].at) li = i;
     if (li !== this.li) {
-      this.li = li; const L = this.lines[li];
+      this.li = li; this.hold = 0; const L = this.lines[li];
       if (L) {
         const who = L.who, n = NPCS[who], d = n ? n.d : NPC_EXTRA[who];
         setPortrait($('cutPortrait'), who, who === 'hero' ? '🗡️' : who === 'snarlwick' ? '😈' : who === 'cinder' ? '🐉' : who === 'story' ? '📖' : d ? d.portrait : '🙂');
@@ -12390,6 +12404,7 @@ const CUT = {
     for (const L of this.lines) if (L.at > this.t + 0.05) { at = L.at; break; }
     if (at >= this.dur) { if (this.lines.length && this.li >= this.lines.length - 1 && this.dur - this.t > 1.2) at = this.dur - 1; else at = this.dur; }
     const dt = at - this.t; this.t = at - 1e-4; this.apply(Math.max(0, dt));
+    this.hold = 10;   // a tap: the next caption comes at once, it does not wait for the line (voiceBusy)
   },
   skip() { if (!this.on) return; this.t = this.dur; this.apply(0); this.end(false); },
   end(quiet) {
