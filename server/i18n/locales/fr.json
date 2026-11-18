@@ -9411,7 +9411,9 @@
         "calNote": "Google Agenda : Paramètres → ton agenda → « Adresse secrète au format iCal ». Outlook : Paramètres → Calendrier → Calendriers partagés → Publier → lien ICS. Les événements du jour deviennent l'emploi du temps et tous ceux qui voient ce widget les voient : connecte donc un agenda prévu pour la classe. L'adresse elle-même reste privée.",
         "calRemove": "Déconnecter",
         "calOn": "{name} est connecté.",
-        "calToday": "Les événements du jour viennent de cet agenda (vérifié toutes les 15 minutes). Un jour sans événement, l'emploi du temps ci-dessous s'affiche."
+        "calToday": "Les événements du jour viennent de cet agenda (vérifié toutes les 15 minutes). Un jour sans événement, l'emploi du temps ci-dessous s'affiche.",
+        "instructions": "Mode d’emploi",
+        "agendaLabel": "Ajouter un emploi du temps"
       },
       "weather": {
         "name": "Météo",

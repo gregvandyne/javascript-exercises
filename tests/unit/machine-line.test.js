@@ -407,7 +407,7 @@ test('words: every line is a registered spoken line written as it is said; the w
   const ok = text => lines.allowedLine('machine-line', 'en', text);
   const NUMS = { n: 3, m: 5, a: 4, b: 2, c: 7, t: '9' };
   const spoken = Object.keys(T).filter(k => !/^(btn\.|show\.|ch\.|round$|title$|loading$)/.test(k));
-  assert.equal(spoken.length, 94);
+  assert.equal(spoken.length, 95);
   for (const k of spoken) {
     assert.deepEqual(ok(say(k, NUMS)), { text: say(k, NUMS), role: 'friendly' }, `${k}: "${say(k, NUMS)}" may be spoken, in the friendly voice`);
     // the voice is handed words and digits only: no sign, no fraction slash, no bracket
@@ -563,7 +563,10 @@ for (const chapter of CHAPTERS) {
       const want = ML.round(chapter, round, s.lap);
       assert.deepEqual(Object.fromEntries(Object.keys(want).map(k => [k, s[k]])), want, `round ${round} is the round its number seeds`);
       // the instruction: printed with its signs, and every line of it sent to be spoken as it is said
-      assert.equal(await text(frame, '#askt'), box(s.ask), `round ${round}: the instruction`);
+      // Build the Line's first round starts with the order-of-operations rule, then the instruction
+      const rule = chapter === 'build' && round === 1 ? [['o.rule', {}]] : [];
+      assert.equal(await text(frame, '#askt'), box([...rule, ...s.ask]), `round ${round}: the instruction`);
+      for (const [k, v] of rule) assert.ok((await g.spoken()).includes(say(k, v)), `round ${round}: the rule was sent to be spoken`);
       for (const [k, v] of s.ask) assert.ok((await g.spoken()).includes(say(k, v)), `round ${round}: "${say(k, v)}" was sent to be spoken`);
       assert.equal(await text(frame, '#sum'), printed(s.chip), `round ${round}: the chip`);
       assert.deepEqual(s.onStage, { board: true, crates: round - 1 }, `round ${round}: the board, and ${round - 1} crates on the dock`);
@@ -646,7 +649,7 @@ test('no parameters: a menu of the three chapters; at the game’s own speed the
   assert.deepEqual((await state()).value, [add, mul]); assert.equal((await state()).mode, 'ask');
   assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('#bar .blk[aria-pressed="true"]')].map(b => b.getAttribute('aria-label')).sort()), ['+ 5', '× 3']);
   await frame.click('#ml-go');
-  assert.deepEqual([(await state()).phase, (await state()).mode, await text(frame, '#hint')], ['play', 'hint', 'Right machines, wrong way round. Multiply first. 1 in: your line gives 18. It should give 8.']);
+  assert.deepEqual([(await state()).phase, (await state()).mode, await text(frame, '#hint')], ['play', 'hint', 'Right machines, wrong way round. Without brackets, multiplying comes before adding or subtracting, so the times machine goes first. 1 in: your line gives 18. It should give 8.']);
   assert.deepEqual((await state()).tried.rows[0].vals, ['1', '6', '18'], 'the board runs 1 through plus 5, then times 3');
   await until(() => window.__ml.state().moving === 0, null, 120_000);   // the board has shaken its head
   assert.equal((await state()).round, 1); assert.equal((await g.msgs('brb:gameover')).length, 0);
@@ -725,7 +728,7 @@ test('keyboard, a drag, phones and reduced motion: every control is a button a k
   await kb.p.keyboard.press(String(a1 + 1)); await kb.p.keyboard.press(String(m1 + 1));
   assert.deepEqual((await kb.state()).value, [a1, m1], 'number keys put blocks into the line');
   await kb.p.keyboard.press('Enter');
-  assert.equal((await kb.state()).mode, 'hint'); assert.match(await text(kb.frame, '#hint'), /^Right machines, wrong way round\. Multiply first\./);
+  assert.equal((await kb.state()).mode, 'hint'); assert.match(await text(kb.frame, '#hint'), /^Right machines, wrong way round\. Without brackets, multiplying comes before adding or subtracting, so the times machine goes first\./);
   await kb.p.keyboard.press('Backspace'); assert.deepEqual((await kb.state()).value, [a1], 'Backspace takes the last block out');
   await kb.p.keyboard.press(String(a1 + 1)); assert.deepEqual((await kb.state()).value, [], 'the key of a block in the line takes it out');
   await kb.p.keyboard.press(String(m1 + 1)); await kb.p.keyboard.press(String(a1 + 1)); await kb.p.keyboard.press('Enter');

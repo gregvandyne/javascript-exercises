@@ -9412,7 +9412,9 @@
         "calNote": "Google Calendar: Impostazioni → il tuo calendario → «Indirizzo segreto in formato iCal». Outlook: Impostazioni → Calendario → Calendari condivisi → Pubblica → link ICS. Gli eventi di oggi diventano l'orario e chi vede questo widget li vede, quindi collega un calendario pensato per la classe. L'indirizzo resta privato.",
         "calRemove": "Scollega",
         "calOn": "{name} è collegato.",
-        "calToday": "Gli eventi di oggi vengono da questo calendario (controllato ogni 15 minuti). Nei giorni senza eventi si vede l'orario qui sotto."
+        "calToday": "Gli eventi di oggi vengono da questo calendario (controllato ogni 15 minuti). Nei giorni senza eventi si vede l'orario qui sotto.",
+        "instructions": "Istruzioni",
+        "agendaLabel": "Importa un orario"
       },
       "weather": {
         "name": "Meteo",

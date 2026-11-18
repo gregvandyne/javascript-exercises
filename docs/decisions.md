@@ -8003,3 +8003,44 @@ played end to end twice assessing for UX/UI in all the nooks and crannies before
     shows its words, when it last changed and its class code, with Edit, Play, Share and Delete (pressed twice).
   - **Share** from the list saves it on Oomba when it isn't yet and opens "Share with your students": the class code,
     the link, the QR code and Assign to a class (with Google Classroom), as from the preview.
+
+## Schedule settings: the calendar and agenda as cards at the top, instructions folded (18 Nov 2026)
+Owner: "Make this more modular and put it at the top of the widget. Instead of just having the text there put
+Instructions with a drop down caret." Then: "Remove this from the individual days and just make it visible when you
+click Give (that day) its own schedule."
+- The schedule's settings open with two cards: **Connected calendar** (the `cal` setting now comes before `periods`)
+  and **Import an agenda** (upload or paste; moved from the bottom of the periods editor to its top). Each card's long
+  help (`calNote`, `uploadHint`) sits under "▸ Instructions", a `<details>` with a caret that turns when open (mirrored
+  right to left); the calendar field still points at its text with aria-describedby. New words `instructions` and
+  `agendaLabel` in 13 languages.
+- On a weekday the cards are gone while the day uses Every day (only "Give Monday its own schedule" shows). Once the
+  day has its own schedule, Import an agenda shows and imports into that day. The connected calendar fills every day,
+  so it shows only on Every day.
+## Machine Line: a clear board, the voice from the start, order of operations, drag and drop (18 Nov 2026)
+Owner: "The machine line game seems to have that same sort of foggy distortion as another game yesterday ... the initial
+instructions are the computer voice and not AI. Also, I am a bit worried that the game may confuse the student about
+orders of operation. Can you create a solution for this?" And: "you should be able to drag and drop the numbers."
+- **The fog.** The board (the line of machines, the values, the number line) was a sprite in the 3D scene, drawn
+  brighter than white (1.12): the haze and, on Beautiful graphics, the glow (bloom) haloed every edge, as Crate
+  Stacker's truck numbers were. The same picture is now a page canvas over the 3D view (drawn at twice its size, so it is
+  crisp on any screen), placed every frame where the 3D board stands; the 3D board stays as the unseen stand-in that
+  pops in, shakes and sizes, so nothing else moved.
+- **The voice.** Round lines change every play (the numbers), so the warm-up can't have them, and the SDK reads a line
+  that hasn't arrived in 4 s with the device voice: the first instruction was always the computer voice. The play's lap
+  is now chosen while the start card or the menu shows (inside `playLap`, so tests that pin a lap still do), and the
+  first round's lines (and the rule) are asked for then with `BRB.prefetchSpeech`; each round asks for its closing line
+  and the next round's question.
+- **Order of operations.** A line runs its machines in the order they stand; written down, brackets come first, then
+  × and ÷, then + and −. Three things tie the two together: (1) while a line is built the board writes what it makes
+  so far ("your line: 3(n + 5)" or "3n + 5"), the brackets showing where the order needs them; (2) Build the Line's
+  first round opens with the rule, spoken: "Machines run in the order you put them. Written down, brackets come first,
+  then times and divide, then plus and minus."; (3) the right-machines-wrong-order hints say why: "Without brackets,
+  multiplying comes before adding or subtracting, so the times machine goes first." and "Brackets come first, so the
+  plus machine goes first, then the times machine." (A wrong plan's board already writes the line it made beside what
+  it should give.)
+- **Drag and drop.** A machine block can be dragged onto a slot of the line (it goes in there and the rest move along;
+  on a full line it takes that slot's place and the block there goes back), dragged from slot to slot, or dragged off
+  the board to take it out. Taps and keys work as before; a ghost of the block follows the finger and the board is
+  outlined while it would take it.
+- tests/unit/machine-line.test.js (all ten, the browser play-throughs included) expects the rule and the new hints.
+
