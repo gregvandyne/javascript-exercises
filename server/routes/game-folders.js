@@ -39,6 +39,8 @@ const fail = (req, res, r) => res.status(r.code === 'notFound' ? 404 : 400).json
 /** A game by id, or an Oomba game by its slug (?game=fraction-factory). */
 const gameOf = (id, slug) => (id ? games.getGame(String(id)) : slug ? games.getGameBySlug(String(slug)) : null);
 /** Where a game card's Play goes: its page (Oomba's and published ones), else the Studio (a draft of one's own). */
+/** "{name}: {n} of {total}" with its placeholders kept, for public/js/reorder.js to fill in. */
+const movedTpl = t => t('folders.moved', { name: '{name}', n: '{n}', total: '{total}' });
 const playHref = (u, g) => (g.published_version_id || g.source === 'seed' ? `/g/${g.slug}` : `/studio/${g.id}`);
 
 /** The "📁 My folders" strip on Build: each folder (with its count) and New folder. */
@@ -47,11 +49,12 @@ export function foldersStrip(req, current = '') {
   return html`<section class="build-sec gfo-strip" aria-labelledby="gf-h">
     <h2 id="gf-h">📁 ${t('folders.title')}</h2>
     <p class="small muted">${t('folders.why')}</p>
-    <ul class="plain gfo-list">${list.map(f => html`<li><a class="gfo-chip${f.id === current ? ' is-on' : ''}" href="/build/folders/${f.id}" ${f.id === current ? raw('aria-current="page"') : ''}>📁 <b dir="auto">${f.name}</b> <span class="muted">${f.games}</span></a></li>`)}
-      <li><details class="libdrop gfo-new"><summary class="btn">➕ ${t('folders.new')}</summary>
+    <ul class="plain gfo-list"${list.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="gf-order"` : ''}>${list.map(f => html`<li data-id="${f.id}"><a class="gfo-chip${f.id === current ? ' is-on' : ''}" href="/build/folders/${f.id}" data-grip ${f.id === current ? raw('aria-current="page"') : ''}>📁 <b dir="auto">${f.name}</b> <span class="muted">${f.games}</span></a></li>`)}
+      <li class="gfo-newli"><details class="libdrop gfo-new"><summary class="btn">➕ ${t('folders.new')}</summary>
         <form class="row" data-api="/api/game-folders" novalidate><label class="sr-only" for="gf-name">${t('folders.name')}</label>
           <input class="input grow" id="gf-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
           <button class="btn btn-primary" type="submit">📁 ${t('folders.create')}</button></form></details></li></ul>
+    ${list.length > 1 ? html`<p class="small muted gfo-hint" id="gf-order">↕️ ${t('folders.reorderHint')}</p>` : ''}
   </section>${sharedStrip(req, current)}`;
 }
 /** "🤝 Shared by colleagues" on Build: folders staff of the same school shared (only when there are some). */
@@ -66,7 +69,8 @@ function sharedStrip(req, current = '') {
 /** One game card in a folder: cover, title, Play, Assign (school staff), Remove from the folder. */
 function folderGame(req, f, g, staff, mine = true) {
   const t = req.t;
-  return html`<li class="mygame panel gfo-game">
+  return html`<li class="mygame panel gfo-game" data-id="${g.id}">
+    ${mine ? html`<button class="gfo-grip" type="button" data-grip aria-label="${t('folders.move', { name: g.title })}" aria-describedby="gf-gorder"><span aria-hidden="true">⠿</span></button>` : ''}
     <a class="mg-cover" href="${playHref(req.user, g)}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: !g.published_version_id && g.source !== 'seed' })}</a>
     <div class="mg-body"><h3><a href="${playHref(req.user, g)}" dir="auto">${g.title}</a></h3>
       <p class="small muted">${g.source === 'seed' ? `🦉 ${t('folders.oombaGame')}` : g.owner_id === req.user.id ? `🛠️ ${t('folders.myGame')}` : ''}</p></div>
@@ -95,8 +99,6 @@ router.get('/build/folders/:id', requireBuilder, (req, res) => {
   const head = mine ? html`<div class="row gfo-tools">
       <details class="libdrop gfo-rename"><summary class="btn btn-sm">🏷️ ${t('build.rename')}</summary>
         <form class="row" data-api="/api/game-folders/${f.id}" data-reload><label class="sr-only" for="gf-rn">${t('folders.name')}</label><input class="input input-sm grow" id="gf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-sm btn-primary" type="submit">${t('school.save')}</button></form></details>
-      <form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>
-      <form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>
       <form data-api="/api/game-folders/${f.id}/delete" data-redirect="/build" data-confirm="${t('folders.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">🗑️ ${t('folders.delete')}</button></form>
     </div>` : '';
   const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1></div>${head}
@@ -106,7 +108,8 @@ router.get('/build/folders/:id', requireBuilder, (req, res) => {
   ${foldersStrip(req, f.id)}
   <section class="build-sec" aria-labelledby="gf-in-h"><h2 id="gf-in-h" class="sr-only">${f.name}</h2>
     ${mine ? html`<p class="row"><a class="btn btn-primary" href="/build/new?folder=${f.id}">✨ ${t('build.newGame')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></p>` : ''}
-    ${list.length ? html`<ul class="mygames">${list.map(g => folderGame(req, f, g, staff, mine))}</ul>`
+    ${list.length ? html`<ul class="mygames"${mine && list.length > 1 ? html` data-reorder="/api/game-folders/${f.id}/order" data-moved="${movedTpl(t)}"` : ''}>${list.map(g => folderGame(req, f, g, staff, mine))}</ul>
+      ${mine && list.length > 1 ? html`<p class="small muted gfo-hint" id="gf-gorder">↕️ ${t('folders.reorderHint')}</p>` : ''}`
       : emptyState({ emoji: '📁', title: t('folders.emptyTitle'), text: t('folders.emptyText') })}
   </section>`;
   page(req, res, { title: f.name, active: 'build', back: '/build', backLabel: req.t('nav.build'), body, head: CSS });
@@ -134,10 +137,26 @@ router.get('/build/save', requireUser, (req, res) => {
   page(req, res, { title: t('folders.saveTitle', { game: gl.title }), active: 'build', back: '/build', backLabel: t('nav.build'), body, head: CSS });
 });
 
+/** The "Save to folder" pop-up (public/js/folder-save.js): the game, the person's folders (which already hold it), and
+ *  the pop-up's words. The page /build/save stays for a browser without script. */
+router.get('/api/game-folders/save', requireUser, (req, res) => {
+  const t = req.t, u = req.user, g = gameOf(req.query.id, req.query.game);
+  if (!g || g.status === 'deleted' || !games.canView(u, g)) return res.status(404).json({ error: t('game.api.notFound') });
+  const gl = g.source === 'seed' ? games.localizeGame(g) : g, have = F.foldersWith(u.id, g.id);
+  res.set('Cache-Control', 'no-store').json({
+    game: { id: g.id, title: gl.title },
+    folders: F.foldersOf(u.id).map(f => ({ id: f.id, name: f.name, count: t('folders.gamesN', { count: f.games }), has: have.has(f.id) })),
+    words: { title: t('folders.saveTitle', { game: gl.title }), pick: t('folders.pick'), none: t('folders.none'), saved: t('folders.saved'),
+      newFolder: t('folders.new'), name: t('folders.name'),
+      namePlaceholder: t('folders.namePlaceholder'), save: t('folders.save'), keep: t('folders.keepBrowsing'), open: t('folders.openFolder', { folder: '{folder}' }),
+      savedTo: t('folders.savedTo', { folder: '{folder}' }), already: t('folders.already', { folder: '{folder}' }), needName: t('folders.errors.name') },
+  });
+});
+router.post('/api/game-folders/order', requireUser, rateLimit('game-folder-order', 600, 3600e3), (req, res) => { const r = F.orderFolders(req.user, b(req).ids); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => {
   const r = F.createFolder(req.user, b(req).name);
   if (!r.ok) return fail(req, res, r);
-  if (b(req).gameId) { const a = F.addGame(req.user, r.folder.id, b(req).gameId); if (!a.ok) return fail(req, res, a); return res.json({ ok: true, toast: req.t('folders.savedTo', { folder: r.folder.name }) }); }
+  if (b(req).gameId) { const a = F.addGame(req.user, r.folder.id, b(req).gameId); if (!a.ok) return fail(req, res, a); return res.json({ ok: true, folder: { id: r.folder.id, name: r.folder.name }, toast: req.t('folders.savedTo', { folder: r.folder.name }) }); }
   res.json({ ok: true, redirect: `/build/folders/${r.folder.id}` });
 });
 router.post('/api/game-folders/:id', requireUser, (req, res) => { const r = F.renameFolder(req.user, req.params.id, b(req).name); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
@@ -146,8 +165,9 @@ router.post('/api/game-folders/:id/up', requireUser, (req, res) => { const r = F
 router.post('/api/game-folders/:id/down', requireUser, (req, res) => { const r = F.moveFolder(req.user, req.params.id, 1); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/games', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => {
   const r = F.addGame(req.user, req.params.id, b(req).gameId);
-  r.ok ? res.json({ ok: true, toast: req.t(r.already ? 'folders.already' : 'folders.savedTo', { folder: r.folder.name }) }) : fail(req, res, r);
+  r.ok ? res.json({ ok: true, already: !!r.already, folder: { id: r.folder.id, name: r.folder.name }, toast: req.t(r.already ? 'folders.already' : 'folders.savedTo', { folder: r.folder.name }) }) : fail(req, res, r);
 });
+router.post('/api/game-folders/:id/order', requireUser, rateLimit('game-folder-order', 600, 3600e3), (req, res) => { const r = F.orderGames(req.user, req.params.id, b(req).ids); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/share', requireUser, (req, res) => { const r = F.shareFolder(req.user, req.params.id, b(req).schoolId); r.ok ? res.json({ ok: true, toast: req.t(r.folder.school_id ? 'folders.sharedToast' : 'folders.unsharedToast') }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/copy', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => { const r = F.copyFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, toast: req.t('folders.copied'), redirect: `/build/folders/${r.folder.id}` }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/games/:gid/delete', requireUser, (req, res) => { const r = F.removeGame(req.user, req.params.id, req.params.gid); r.ok ? res.json({ ok: true }) : fail(req, res, r); });

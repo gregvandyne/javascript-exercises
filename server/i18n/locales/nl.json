@@ -4977,7 +4977,8 @@
       "popcornHush": "Een geluidsmeter voor de klas: houd het rustig zodat de popcorn niet knalt, want te veel lawaai laat de maiskorrels poppen.",
       "sudoku": "Logische puzzels, van een mini 4×4 met plaatjes tot de klassieke 9×9: in elke rij, kolom en elk blok staat elk getal één keer.",
       "sumSpotter": "Vind het getal dat de som (of het product) is van twee andere, van sommen tot 10 tot de tafels, met een race van 60 seconden.",
-      "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks."
+      "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
+      "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas."
     },
     "hubs": {
       "math": {
@@ -9411,7 +9412,9 @@
         "calNote": "Google Agenda: Instellingen → je agenda → ‘Geheim adres in iCal-indeling’. Outlook: Instellingen → Agenda → Gedeelde agenda's → Publiceren → ICS-link. De afspraken van vandaag worden het rooster en iedereen die deze widget ziet, ziet ze, dus koppel een agenda die voor de klas bedoeld is. Het adres zelf blijft privé.",
         "calRemove": "Ontkoppelen",
         "calOn": "{name} is gekoppeld.",
-        "calToday": "De afspraken van vandaag komen uit deze agenda (elke 15 minuten bekeken). Op een dag zonder afspraken staat het rooster hieronder."
+        "calToday": "De afspraken van vandaag komen uit deze agenda (elke 15 minuten bekeken). Op een dag zonder afspraken staat het rooster hieronder.",
+        "instructions": "Uitleg",
+        "agendaLabel": "Dagplanning importeren"
       },
       "weather": {
         "name": "Weer",
@@ -10997,6 +11000,12 @@
     "assign": "Toewijzen",
     "removeGame": "Uit de map halen",
     "save": "Bewaren in map",
+    "pick": "Welke map?",
+    "keepBrowsing": "Verder kijken",
+    "openFolder": "{folder} openen",
+    "reorderHint": "Sleep om de volgorde te veranderen (op een telefoon of tablet eerst ingedrukt houden). Met het toetsenbord: Alt en de pijltjestoetsen.",
+    "move": "{name} verplaatsen",
+    "moved": "{name}: {n} van {total}",
     "saveTitle": "‘{game}’ in een map bewaren",
     "gamesN": "{count, plural, one {# spel} other {# spellen}}",
     "saved": "In deze map",

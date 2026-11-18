@@ -4978,7 +4978,8 @@
       "popcornHush": "Um medidor de barulho para a turma: mantenham a calma para a pipoca não estourar, porque barulho demais faz os grãos pularem.",
       "sudoku": "Desafios de lógica, de um mini 4×4 com figuras ao clássico 9×9: cada linha, coluna e quadrado tem cada número uma vez.",
       "sumSpotter": "Encontre o número que é a soma (ou o produto) de outros dois, das somas até 10 à tabuada, com uma corrida de 60 segundos.",
-      "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária."
+      "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
+      "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma."
     },
     "hubs": {
       "math": {
@@ -9412,7 +9413,9 @@
         "calNote": "Google Calendar: Definições → o teu calendário → «Endereço secreto no formato iCal». Outlook: Definições → Calendário → Calendários partilhados → Publicar → ligação ICS. Os eventos de hoje passam a ser o horário e quem vê este widget vê-os, por isso liga um calendário pensado para a turma. O endereço continua privado.",
         "calRemove": "Desligar",
         "calOn": "{name} está ligado.",
-        "calToday": "Os eventos de hoje vêm deste calendário (verificado a cada 15 minutos). Num dia sem eventos, mostra-se o horário abaixo."
+        "calToday": "Os eventos de hoje vêm deste calendário (verificado a cada 15 minutos). Num dia sem eventos, mostra-se o horário abaixo.",
+        "instructions": "Instruções",
+        "agendaLabel": "Importar um horário"
       },
       "weather": {
         "name": "Tempo",
@@ -10998,6 +11001,12 @@
     "assign": "Atribuir",
     "removeGame": "Tirar da pasta",
     "save": "Guardar numa pasta",
+    "pick": "Em qual pasta?",
+    "keepBrowsing": "Continuar explorando",
+    "openFolder": "Abrir {folder}",
+    "reorderHint": "Arraste para mudar a ordem (no celular ou tablet, toque e segure primeiro). No teclado: Alt e as setas.",
+    "move": "Mover {name}",
+    "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar “{game}” numa pasta",
     "gamesN": "{count, plural, one {# jogo} other {# jogos}}",
     "saved": "Nesta pasta",

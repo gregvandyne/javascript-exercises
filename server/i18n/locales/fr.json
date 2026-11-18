@@ -4976,7 +4976,8 @@
       "popcornHush": "Un sonomètre pour la classe : gardez le calme pour que le maïs n’éclate pas, car trop de bruit fait sauter les grains.",
       "sudoku": "Des énigmes de logique, d’un mini 4×4 en images au classique 9×9 : chaque ligne, colonne et carré a chaque chiffre une fois.",
       "sumSpotter": "Trouve le nombre qui est la somme (ou le produit) de deux autres, des sommes jusqu’à 10 aux tables de multiplication, avec une course de 60 secondes.",
-      "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne."
+      "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
+      "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe."
     },
     "hubs": {
       "math": {
@@ -9410,7 +9411,9 @@
         "calNote": "Google Agenda : Paramètres → ton agenda → « Adresse secrète au format iCal ». Outlook : Paramètres → Calendrier → Calendriers partagés → Publier → lien ICS. Les événements du jour deviennent l'emploi du temps et tous ceux qui voient ce widget les voient : connecte donc un agenda prévu pour la classe. L'adresse elle-même reste privée.",
         "calRemove": "Déconnecter",
         "calOn": "{name} est connecté.",
-        "calToday": "Les événements du jour viennent de cet agenda (vérifié toutes les 15 minutes). Un jour sans événement, l'emploi du temps ci-dessous s'affiche."
+        "calToday": "Les événements du jour viennent de cet agenda (vérifié toutes les 15 minutes). Un jour sans événement, l'emploi du temps ci-dessous s'affiche.",
+        "instructions": "Mode d’emploi",
+        "agendaLabel": "Ajouter un emploi du temps"
       },
       "weather": {
         "name": "Météo",
@@ -10996,6 +10999,12 @@
     "assign": "Attribuer",
     "removeGame": "Retirer du dossier",
     "save": "Ranger dans un dossier",
+    "pick": "Quel dossier ?",
+    "keepBrowsing": "Continuer à parcourir",
+    "openFolder": "Ouvrir {folder}",
+    "reorderHint": "Faites glisser pour changer l’ordre (sur téléphone ou tablette, appuyez longuement d’abord). Au clavier : Alt et les flèches.",
+    "move": "Déplacer {name}",
+    "moved": "{name} : {n} sur {total}",
     "saveTitle": "Ranger « {game} » dans un dossier",
     "gamesN": "{count, plural, one {# jeu} other {# jeux}}",
     "saved": "Dans ce dossier",

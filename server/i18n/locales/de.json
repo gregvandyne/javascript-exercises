@@ -4977,7 +4977,8 @@
       "popcornHush": "Ein Lärmmesser für die Klasse: Bleibt leise, damit das Popcorn nicht aufpoppt, denn zu viel Lärm lässt die Maiskörner platzen.",
       "sudoku": "Logikrätsel vom Mini-4×4 mit Bildern bis zum klassischen 9×9: In jeder Reihe, Spalte und jedem Kästchen steht jede Zahl einmal.",
       "sumSpotter": "Finde die Zahl, die zwei andere zusammen (oder mal genommen) ergeben, von Summen bis 10 bis zum Einmaleins, mit einem 60-Sekunden-Tempolauf.",
-      "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie."
+      "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
+      "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen."
     },
     "hubs": {
       "math": {
@@ -9411,7 +9412,9 @@
         "calNote": "Google Kalender: Einstellungen → dein Kalender → „Privatadresse im iCal-Format“. Outlook: Einstellungen → Kalender → Freigegebene Kalender → Veröffentlichen → ICS-Link. Die Termine von heute werden zum Plan, und alle, die dieses Widget sehen, sehen sie – verbinde also einen Kalender für die Klasse. Die Adresse selbst bleibt privat.",
         "calRemove": "Trennen",
         "calOn": "{name} ist verbunden.",
-        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt."
+        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt.",
+        "instructions": "Anleitung",
+        "agendaLabel": "Tagesplan übernehmen"
       },
       "weather": {
         "name": "Wetter",
@@ -10997,6 +11000,12 @@
     "assign": "Zuweisen",
     "removeGame": "Aus dem Ordner entfernen",
     "save": "In Ordner speichern",
+    "pick": "Welcher Ordner?",
+    "keepBrowsing": "Weiterstöbern",
+    "openFolder": "{folder} öffnen",
+    "reorderHint": "Zum Sortieren ziehen (auf Handy oder Tablet erst gedrückt halten). Mit der Tastatur: Alt und die Pfeiltasten.",
+    "move": "{name} verschieben",
+    "moved": "{name}: {n} von {total}",
     "saveTitle": "„{game}“ in einem Ordner speichern",
     "gamesN": "{count, plural, one {# Spiel} other {# Spiele}}",
     "saved": "In diesem Ordner",

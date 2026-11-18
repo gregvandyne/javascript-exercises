@@ -369,3 +369,15 @@ on(document, 'keydown', e => {
   if (e.key !== 'Escape') return;
   for (const d of document.querySelectorAll('details.cx-menu[open]')) { d.open = false; d.querySelector('summary').focus(); }
 });
+
+// ---- Folders (docs/decisions.md "Folders: drag to reorder, save in a pop-up"), loaded only where they are used, with this
+// file's version: "Save to folder" links open a pop-up (public/js/folder-save.js; without script, or with a modifier
+// key for a new tab, the link opens the page), and lists marked data-reorder can be dragged (public/js/reorder.js).
+const V = new URL(import.meta.url).search;
+on(document, 'click', e => {
+  const a = e.target instanceof Element && e.target.closest('a[href^="/build/save?"]');
+  if (!a || e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  import(`/js/folder-save.js${V}`).then(m => m.openSave(a.getAttribute('href'))).catch(() => { location.href = a.href; });
+});
+if (FIRST && document.querySelector('[data-reorder]')) import(`/js/reorder.js${V}`).then(m => m.wireAll()).catch(() => {});

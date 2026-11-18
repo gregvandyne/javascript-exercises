@@ -4976,7 +4976,8 @@
       "popcornHush": "Un medidor de ruido para la clase: mantened la calma para que las palomitas no estallen, porque demasiado ruido hace saltar los granos.",
       "sudoku": "Acertijos de lógica, desde un mini 4×4 con dibujos hasta el clásico 9×9: cada fila, columna y caja tiene cada número una vez.",
       "sumSpotter": "Encuentra el número que es la suma (o el producto) de otros dos, desde sumas hasta 10 hasta las tablas, con una carrera de 60 segundos.",
-      "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria."
+      "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
+      "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase."
     },
     "hubs": {
       "math": {
@@ -9410,7 +9411,9 @@
         "calNote": "Google Calendar: Configuración → tu calendario → «Dirección secreta en formato iCal». Outlook: Configuración → Calendario → Calendarios compartidos → Publicar → enlace ICS. Los eventos de hoy pasan a ser el horario y todos los que ven este widget los ven, así que conecta un calendario pensado para la clase. La dirección en sí sigue siendo privada.",
         "calRemove": "Desconectar",
         "calOn": "{name} está conectado.",
-        "calToday": "Los eventos de hoy vienen de este calendario (se revisa cada 15 minutos). Un día sin eventos, se muestra el horario de abajo."
+        "calToday": "Los eventos de hoy vienen de este calendario (se revisa cada 15 minutos). Un día sin eventos, se muestra el horario de abajo.",
+        "instructions": "Instrucciones",
+        "agendaLabel": "Importar un horario"
       },
       "weather": {
         "name": "El tiempo",
@@ -10996,6 +10999,12 @@
     "assign": "Asignar",
     "removeGame": "Quitar de la carpeta",
     "save": "Guardar en carpeta",
+    "pick": "¿En qué carpeta?",
+    "keepBrowsing": "Seguir explorando",
+    "openFolder": "Abrir {folder}",
+    "reorderHint": "Arrastra para cambiar el orden (en teléfono o tableta, mantén pulsado primero). Con teclado: Alt y las flechas.",
+    "move": "Mover {name}",
+    "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar «{game}» en una carpeta",
     "gamesN": "{count, plural, one {# juego} other {# juegos}}",
     "saved": "En esta carpeta",
