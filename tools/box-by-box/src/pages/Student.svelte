@@ -1,5 +1,5 @@
 <script lang="ts">
-	// A student's way in: the class code their teacher gave them (it opens the teacher's activity), or practising on
+	// A student's way in: the class code their teacher gave them (it opens the teacher's activity), or practicing on
 	// their own: long division or multiplication, how hard, and how much help; then a fresh set every time.
 	import { NAME } from '$lib/name';
 	import { go, goBack } from '$lib/nav.svelte';
@@ -38,7 +38,7 @@
 						: 'Couldn’t check the code just now. Check your connection and try again.';
 	}
 
-	// --- practising alone (the last choice is remembered in the student's save) ---
+	// --- practicing alone (the last choice is remembered in the student's save) ---
 	const STUDENT_WAY: Record<string, string> = {
 		'divide-standard': 'Divide, multiply, subtract, bring down, one digit at a time.',
 		'divide-ladder': 'Take away easy groups, like 10 or 100, down a ladder. Then add them up.',
@@ -54,7 +54,7 @@
 	let mode = $state<Level>(HELPS.some((h) => h.mode === last.mode) ? last.mode! : 'guided');
 	// the way they work it, kept for each kind
 	let ways = $state<Record<Kind, Method>>({ divide: methodOr('divide', last.method?.divide), multiply: methodOr('multiply', last.method?.multiply) });
-	function practise() {
+	function practice() {
 		store(LAST, { kind, hard, mode, method: { ...ways } });
 		const a = practiceActivity(kind, hard, mode, ways[kind]);
 		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard } });
@@ -102,12 +102,12 @@
 			</p>
 		</section>
 
-		<section class="card" aria-labelledby="practise-h">
-			<h2 id="practise-h">Practise on your own</h2>
-			<p class="about">Pick what to practise, how hard, and how much help. You get {SET_SIZE} new problems every time.</p>
+		<section class="card" aria-labelledby="practice-h">
+			<h2 id="practice-h">Practice on your own</h2>
+			<p class="about">Pick what to practice, how hard, and how much help. You get {SET_SIZE} new problems every time.</p>
 
 			<fieldset>
-				<legend>What to practise</legend>
+				<legend>What to practice</legend>
 				<div class="choices two">
 					{#each KINDS as k (k.name)}
 						<label class="choice" class:on={kind === k.name}>
@@ -158,7 +158,7 @@
 				</div>
 			</fieldset>
 
-			<button type="button" class="btn-primary start" onclick={practise}>Start practising ▸</button>
+			<button type="button" class="btn-primary start" onclick={practice}>Start practicing ▸</button>
 		</section>
 	</div>
 	<Footer />
