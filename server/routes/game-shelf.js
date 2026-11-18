@@ -7,7 +7,8 @@
 // link keep it. Every item is a plain link; public/js/shelf.js fetches the same address with the X-Shelf header and
 // swaps in only the right side (shelfReply), then pushes the address. Nothing here widens who may see what: folders are
 // the owner's own (F.foldersOf) or shared with their school (F.sharedWith, F.gamesIn: only games they can open), Assign
-// is for school staff, and students never get a shelf (shelfOn, and the class page's manager check).
+// is for school staff, sharing needs a school one is staff of, and students never see a teacher's folders or Assign
+// (the class page's shelf is behind its manager check; a student's Build shelf holds only their own folders).
 import { html, raw } from '../views/html.js';
 import { coverArt, emptyState } from '../views/components.js';
 import { accountKind } from '../auth.js';
@@ -18,8 +19,8 @@ import * as gameSets from '../services/game-sets.js';
 import { liveGameOf } from '../live/live-games.js';
 import { gcAssignField } from './gclassroom.js';
 
-/** May this person keep games in folders? Grown-ups and teachers (school staff, or signed up as a teacher); never a
- *  student or a kid's account: they get Build's plain list of their own games. */
+/** A grown-up's or teacher's account (school staff, or signed up as a teacher): "All my games" offers Find Oomba games.
+ *  Kids and students keep their own folders on Build as before, without it. */
 export const shelfOn = u => !!u && !u.is_guest && (['grownup', 'staff'].includes(accountKind(u)) || u.signup_as === 'teacher');
 
 const ICON = {
@@ -205,7 +206,7 @@ function folderPane(req, ctx, sel, mine) {
 /** Build's "All my games": the person's own games, newest change first. */
 function allPane(req, ctx) {
   const t = req.t, list = ctx.mine;
-  return html`${head(t('folders.allGames'), t('folders.gamesN', { count: list.length }), findBtn(t))}
+  return html`${head(t('folders.allGames'), t('folders.gamesN', { count: list.length }), ctx.adult ? findBtn(t) : '')}
     ${list.length ? html`<ul class="mygames shelf-games">${list.map(g => gameRow(req, ctx, g))}</ul>`
       : html`<div class="shelf-empty">${emptyState({ emoji: '🌱', title: t('home.empty.title'), text: t('build.empty'), action: { href: '/build/new', label: `✨ ${t('build.newGame')}` } })}</div>`}`;
 }

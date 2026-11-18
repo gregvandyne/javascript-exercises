@@ -6,7 +6,7 @@
 import express, { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
-import { coverArt, emptyState, visLabel, categoryLabel } from '../views/components.js';
+import { visLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
@@ -219,43 +219,15 @@ router.get('/build', requireBuilder, (req, res) => {
         ${g.review_note ? html`<p class="mg-note">💬 ${t('game.reviewer', { note: g.review_note })}</p>` : ''}
         <p class="small muted">${t('build.changed', { when: req.fmt.ago(g.updated_at) })}</p>`; };
   const opts = { title: t('nav.build'), active: 'build', head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/build.js'] };
-  // Grown-ups and teachers: the folder shelf (docs/decisions.md "Folders in a sidebar, on Build and the class page"), with
-  // the picked folder in the address (?folder=). public/js/shelf.js swaps the right side in place.
-  if (shelfOn(req.user)) {
-    const ctx = { kind: 'build', base: '/build', folders: true, staff, mine, allCount: mine.length, status,
-      top: html`<p class="build-hero build-hero-compact"><b>${t('build.hero.heading')}</b> <span>${t('build.hero.text')}</span></p>` };
-    if (shelfReply(req, res, ctx)) return;
-    const body = html`<div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>${shelf(req, ctx)}`;
-    return page(req, res, { ...opts, body, scripts: ['/js/build.js', '/js/shelf.js'] });
-  }
-  // A kid or a student: their own games (no folders, nothing to assign).
-  const body = html`
-  <div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>
-  <section class="build-hero panel">
-    <div class="build-hero-text"><h2>${t('build.hero.heading')}</h2><p>${t('build.hero.text')}</p></div>
-    <a class="btn btn-primary btn-big" href="/build/new" id="newgame">✨ ${t('build.newGame')}</a>
-  </section>
-  <section aria-labelledby="mine-h" class="build-sec">
-    <h2 id="mine-h">${t('home.rails.mine')}</h2>
-    ${mine.length ? html`<ul class="mygames">${mine.map(g => { const s = studioStatus(g, t); return html`<li class="mygame panel" data-id="${g.id}" data-title="${g.title}" data-live="${s.live ? '1' : ''}">
-      <a class="mg-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
-      <div class="mg-body">
-        <h3><a href="/studio/${g.id}">${g.title}</a></h3>
-        ${status(g)}
-      </div>
-      <div class="mg-actions">
-        <div class="mg-row">
-          <a class="btn btn-primary" href="/studio/${g.id}">✏️ ${t('game.edit')}</a>
-          ${g.published_version_id ? html`<a class="btn" href="/g/${g.slug}">▶ ${t('game.play')}</a>` : ''}
-        </div>
-        <div class="mg-row mg-more">
-          <button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button>
-          ${g.source === 'seed' ? '' : html`<button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>`}
-        </div>
-      </div></li>`; })}</ul>`
-    : emptyState({ emoji: '🌱', title: t('home.empty.title'), text: t('build.empty') })}
-  </section>`;
-  page(req, res, { ...opts, body });
+  // The folder shelf (docs/decisions.md "Folders in a sidebar, on Build and the class page"), for every builder, kids and
+  // students too (their own folders, as before); Assign is for school staff, sharing and colleagues' folders only come
+  // with a school one is staff of. The picked folder is in the address (?folder=); public/js/shelf.js swaps the right
+  // side in place.
+  const ctx = { kind: 'build', base: '/build', folders: true, staff, adult: shelfOn(req.user), mine, allCount: mine.length, status,
+    top: html`<p class="build-hero build-hero-compact"><b>${t('build.hero.heading')}</b> <span>${t('build.hero.text')}</span></p>` };
+  if (shelfReply(req, res, ctx)) return;
+  const body = html`<div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>${shelf(req, ctx)}`;
+  page(req, res, { ...opts, body, scripts: ['/js/build.js', '/js/shelf.js'] });
 });
 
 router.get('/studio/:id', requireBuilder, (req, res) => {

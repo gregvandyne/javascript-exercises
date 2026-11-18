@@ -8188,14 +8188,16 @@ sidebar on Build and on the class page's Games tab, so a teacher never leaves th
   shelf.js fetches the same address with the `X-Shelf` header, which answers the right side alone as JSON (`no-store`,
   `Vary: X-Shelf`), swaps it in, marks the item (`aria-current="true"`), pushes the address and says the new heading to
   screen readers; Back and Forward swap in place too. Without script, or with a modifier key, the link simply loads.
-- **Build** (grown-ups and teachers, `shelfOn`): New game, "All my games" (n), My folders (each with its count, drag to
+- **Build** (every builder): New game, "All my games" (n), My folders (each with its count, drag to
   reorder as before), + New folder, Shared by colleagues. The right side: the games (cover, title, Oomba game or My
   game with its status chips, Edit for one's own, Play, Assign for school staff, and ⋯: Remove from folder, Save to
   another folder, Rename and Delete for one's own). A folder's head: its name, "n games · Shared with <school>", Find
   Oomba games and a ⋯ menu (Rename, Share or Stop sharing, Move up, Move down, Delete). A colleague's folder is read
   only: "by <name> · Shared with <school>" and Copy to my folders. "Make your own game by chatting" stays as one compact
-  line over the right side. Kids and students keep the plain list of their own games, now without Save to folder:
-  students never see folders or Assign.
+  line over the right side. Kids and students get the same sidebar for their own games and folders, with exactly the
+  folder rights they had before (their folders, New folder, drag, Save to folder, Remove from folder, Rename, Delete,
+  and Find Oomba games in a folder as on the old folder page); never Assign or Assign all, sharing, Shared by
+  colleagues (staff only, as before), Find Oomba games on All my games, or a teacher's folders.
 - **The class page's Games tab:** Build new game, "Assigned to <class>" (n: the assigned games with due dates and their
   ⋯ menus, as before: this replaces the Assigned games section), Find Oomba games, My folders and + New folder, Shared by
   colleagues, "Games students shared" (n: the old "Games from our class" box with Take off and Allow again), and Google
@@ -8219,9 +8221,11 @@ sidebar on Build and on the class page's Games tab, so a teacher never leaves th
   assignAllNote, assignAllDone, assignAllSkipped, assignAllNone, assignedChip, assignedWhere, saveAnother, moveUp,
   moveDown, sharedEmpty; folders.why (the old strip's line) removed.
 - Tests: tests/unit/folders-sidebar.test.js (both pages, the address and X-Shelf, the redirect, read-only shared
-  folders, Assign all, students and kids), tests/unit/folders-sidebar-browser.test.js (Chromium: in place with no page
+  folders, Assign all, a kid's and a student's own folders without assign, share or colleagues),
+  tests/unit/folders-sidebar-browser.test.js (Chromium: in place with no page
   load, Back, reload and keyboard; Assigned first; Assign from a folder; chips at 390 and 360 px and right to left;
-  dark). Updated: games-not-lessons, lessons, class-sharing, e2e lessons and school-teacher-mobile.
+  dark). Updated: games-not-lessons, lessons, class-sharing, builder-setup (New game's classes), e2e lessons and
+  school-teacher-mobile.
 
 ## Timer: settings that stick, tap the time (18 Nov 2026)
 

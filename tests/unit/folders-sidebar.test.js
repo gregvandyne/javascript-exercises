@@ -1,7 +1,7 @@
 // The folder sidebar on Build and the class page's Games tab (docs/decisions.md "Folders in a sidebar, on Build and the
 // class page"): the same left column on both pages for a teacher, the picked item in the address, the right side alone
 // for public/js/shelf.js (X-Shelf), the old folder page redirecting, colleagues' folders read-only, "Assign all", and
-// nothing of it for students or kids. The browser side is tests/unit/folders-sidebar-browser.test.js.
+// for students and kids only their own folders (no Assign, sharing or colleagues' folders). The browser side is tests/unit/folders-sidebar-browser.test.js.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -144,15 +144,35 @@ test('Assign all: each game the class can play, once; skips what it has; back on
   assert.match((await as(ana)(`/class/${cls.id}?folder=${fun.id}`)).text, /✅ Assigned/);
 });
 
-test('students and kids see none of it: no shelf, no folders, no Assign; X-Shelf gets them nothing more', async () => {
+test("students and kids: never a teacher's folders or Assign; on Build their own folders as before, with no assign, share or colleagues", async () => {
+  // The class page: the student view, whatever is asked for.
   const page = await as(kid)(`/class/${cls.id}?folder=${fun.id}`, { headers: shelfOnly });
   assert.equal(page.status, 200); assert.equal(page.json, null, 'the student page, not a shelf answer');
   assert.doesNotMatch(page.text, /data-shelf|Fun Games|My folders|Assign to|assign-folder|game-folders/);
   for (const who of [kid, homeKid]) {
-    const b = await as(who)(`/build?folder=${fun.id}`, { headers: shelfOnly });
-    assert.equal(b.status, 200); assert.equal(b.json, null, 'Build without a shelf');
-    assert.doesNotMatch(b.text, /data-shelf|My folders|Save to folder|\/build\/save|\/teach\/assign|Fun Games/);
-    assert.match(b.text, /id="newgame"/);
+    const own = F.createFolder(who, `${who.username} picks`).folder, other = F.createFolder(who, `${who.username} more`).folder;
+    const mineGame = made(who, { title: `${who.username} game` });
+    assert.ok(F.addGame(who, own.id, o1.id).ok); assert.ok(F.addGame(who, own.id, mineGame.id).ok);
+    const b = await as(who)('/build');
+    assert.equal(b.status, 200); assert.match(b.text, /id="newgame"/);
+    assert.match(b.text, /All my games/); assert.match(b.text, /My folders/); assert.match(b.text, /New folder/);
+    assert.match(b.text, new RegExp(`href="/build\\?folder=${own.id}"`)); assert.match(b.text, /data-reorder="\/api\/game-folders\/order"/, 'drag to reorder');
+    assert.match(b.text, new RegExp(`href="/build/save\\?id=${mineGame.id}">📁 Save to folder`));
+    assert.doesNotMatch(b.text, /Fun Games|Shared by colleagues|Grade 4 math|\/teach\/assign|Find Oomba games/, "no teacher's folders, no colleagues, no Assign, no Find Oomba games on All");
+    // Their own folder: its games, Remove from folder, Save to another folder, drag; still no assign or share.
+    const f = await as(who)(`/build?folder=${own.id}`, { headers: shelfOnly });
+    assert.equal(f.json.key, `f-${own.id}`); assert.match(f.json.html, /Sum Sprint/);
+    assert.match(f.json.html, new RegExp(`/api/game-folders/${own.id}/games/${o1.id}/delete`)); assert.match(f.json.html, /Save to another folder/);
+    assert.match(f.json.html, new RegExp(`data-reorder="/api/game-folders/${own.id}/order"`)); assert.match(f.json.html, /Find Oomba games/, 'as on the old folder page');
+    assert.doesNotMatch(f.json.html, /\/teach\/assign|assign-folder|Assign|\/share"|Share with|Stop sharing/);
+    assert.equal((await as(who)(`/build/folders/${own.id}`)).location, `/build?folder=${own.id}`);
+    // A teacher's folder stays out of reach, by address or API.
+    assert.doesNotMatch((await as(who)(`/build?folder=${fun.id}`)).text, /Fun Games/);
     assert.equal((await as(who)(`/build/folders/${fun.id}`)).status, 404);
+    assert.equal((await as(who)(`/build/folders/${benF.id}`)).status, 404, "a colleague's shared folder is staff only");
+    assert.equal((await as(who)(`/api/game-folders/${own.id}/share`, { method: 'POST', body: { schoolId: oak.id } })).status, 404, 'no school to share with');
+    assert.equal((await as(who)('/api/teach/assign-folder', { method: 'POST', body: { folderId: own.id, classId: cls.id } })).status, 404);
+    assert.ok((await as(who)(`/api/game-folders/order`, { method: 'POST', body: { ids: [other.id, own.id] } })).json.ok);
+    assert.deepEqual(F.foldersOf(who.id).map(x => x.id), [other.id, own.id]);
   }
 });
