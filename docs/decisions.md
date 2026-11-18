@@ -7951,3 +7951,16 @@ for privacy, nothing in the game or the repository points back to the original.
   step, or 45 seconds on it. (Teachers already generate problems in the editor: ranges, How many, New problems.)
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 
+
+## Schedule settings: the calendar and agenda as cards at the top, instructions folded (18 Nov 2026)
+Owner: "Make this more modular and put it at the top of the widget. Instead of just having the text there put
+Instructions with a drop down caret." Then: "Remove this from the individual days and just make it visible when you
+click Give (that day) its own schedule."
+- The schedule's settings open with two cards: **Connected calendar** (the `cal` setting now comes before `periods`)
+  and **Import an agenda** (upload or paste; moved from the bottom of the periods editor to its top). Each card's long
+  help (`calNote`, `uploadHint`) sits under "▸ Instructions", a `<details>` with a caret that turns when open (mirrored
+  right to left); the calendar field still points at its text with aria-describedby. New words `instructions` and
+  `agendaLabel` in 13 languages.
+- On a weekday the cards are gone while the day uses Every day (only "Give Monday its own schedule" shows). Once the
+  day has its own schedule, Import an agenda shows and imports into that day. The connected calendar fills every day,
+  so it shows only on Every day.
