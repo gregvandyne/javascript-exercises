@@ -22,7 +22,7 @@
 			<button type="button" class="path teacher" onclick={() => go({ name: 'home' })}>
 				<span class="icon"><GraduationCap size={30} /></span>
 				<span class="who">I’m a teacher</span>
-				<span class="what">Make long division and multiplication activities, share them with a link or a code, and assign them to a class.</span>
+				<span class="what">Make long division, multiplication, addition and subtraction activities, share them with a link or a code, and assign them to a class.</span>
 				<span class="go">Set up ▸</span>
 			</button>
 		</div>

@@ -4,8 +4,8 @@
 	import { NAME } from '$lib/name';
 	import { go, goBack } from '$lib/nav.svelte';
 	import { findSet, isPreview, load, store } from '$lib/oomba';
-	import { parseItem, kindInfo, KINDS, type Kind, type Level } from '$lib/logic';
-	import { HARDS, HELPS, SET_SIZE, practiceActivity, type Hard } from '$lib/practice';
+	import { parseItem, kindInfo, KINDS, type Kind, type Level, type Numbers } from '$lib/logic';
+	import { HARDS, HELPS, NUMBER_KINDS, SET_SIZE, practiceActivity, type Hard } from '$lib/practice';
 	import { methodOr, methodsFor, type Method } from '$lib/methods';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
@@ -48,16 +48,17 @@
 		'multiply-partial': 'Multiply each place by each place, one line each, then add the lines.'
 	};
 	const LAST = 'box-by-box-practice-v1';
-	const last = (load(LAST) as { kind?: Kind; hard?: Hard; mode?: Level; method?: Partial<Record<Kind, Method>> } | null) ?? {};
+	const last = (load(LAST) as { kind?: Kind; hard?: Hard; mode?: Level; method?: Partial<Record<Kind, Method>>; numbers?: Numbers } | null) ?? {};
 	let kind = $state<Kind>(last.kind === 'multiply' ? 'multiply' : 'divide');
 	let hard = $state<Hard>(HARDS.some((h) => h.hard === last.hard) ? last.hard! : 'easy');
 	let mode = $state<Level>(HELPS.some((h) => h.mode === last.mode) ? last.mode! : 'guided');
 	// the way they work it, kept for each kind
 	let ways = $state<Record<Kind, Method>>({ divide: methodOr('divide', last.method?.divide), multiply: methodOr('multiply', last.method?.multiply) });
+	let numbers = $state<Numbers>(last.numbers === 'decimal' ? 'decimal' : 'whole');
 	function practice() {
-		store(LAST, { kind, hard, mode, method: { ...ways } });
-		const a = practiceActivity(kind, hard, mode, ways[kind]);
-		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard } });
+		store(LAST, { kind, hard, mode, method: { ...ways }, ...(numbers === 'decimal' ? { numbers } : {}) });
+		const a = practiceActivity(kind, hard, mode, ways[kind], numbers);
+		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard, numbers } });
 	}
 </script>
 
@@ -133,6 +134,20 @@
 			</fieldset>
 
 			<fieldset>
+				<legend>Numbers</legend>
+				<div class="choices two">
+					{#each NUMBER_KINDS as n (n.numbers)}
+						<label class="choice level" class:on={numbers === n.numbers}>
+							<input type="radio" name="numbers" value={n.numbers} bind:group={numbers} />
+							<span class="name">{n.name}</span>
+							<span class="small">{n.about}</span>
+						</label>
+					{/each}
+				</div>
+			</fieldset>
+
+			{#if numbers === 'whole' && methodsFor(kind).length > 1}
+			<fieldset>
 				<legend>Which way</legend>
 				<div class="choices three">
 					{#each methodsFor(kind) as m (m.name)}
@@ -144,6 +159,7 @@
 					{/each}
 				</div>
 			</fieldset>
+			{/if}
 
 			<fieldset>
 				<legend>How much help</legend>

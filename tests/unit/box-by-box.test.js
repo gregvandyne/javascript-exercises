@@ -35,7 +35,7 @@ test('box-by-box sets: one activity of problems the game can work, a known level
 
 test('box-by-box sets: the method is one of the kind’s own (never free text); a set without one is the standard algorithm', () => {
   const clean = gameSets.SET_GAMES.get('box-by-box');
-  assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'] });
+  assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'], add: ['standard'], subtract: ['standard'] });
   for (const m of ['ladder', 'area']) assert.deepEqual(clean([{ ...DIV, m }]), [{ ...DIV, m }]);
   for (const m of ['area', 'partial']) assert.deepEqual(clean([{ ...MUL, m }]), [{ ...MUL, m }]);
   assert.deepEqual(clean([{ ...DIV, m: 'standard' }]), [DIV], 'the standard algorithm is kept as a set without a method, as before');
@@ -132,4 +132,62 @@ test('box-by-box: the activity’s label names its method (Ladder, Area model, P
   assert.equal(label([{ ...MUL, m: 'area', l: 'watch' }]), 'Multiplication, 2 problems, Area model, Watch');
   assert.equal(label([DIV]), 'Long division, 3 problems, Guided', 'an old set: as before');
   assert.equal(label([{ ...DIV, m: 'standard' }]), 'Long division, 3 problems, Guided');
+});
+
+test('box-by-box sets: remainders as a fraction or a decimal ride in r (division only, one of two words); old sets stay exactly as they were', () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  assert.deepEqual(gameSets.BB_FORMS, ['fraction', 'decimal']);
+  for (const r of ['fraction', 'decimal']) assert.deepEqual(clean([{ ...DIV, r }]), [{ ...DIV, r }]);
+  const plan = { count: 16, dividends: [100, 999], divisors: [2, 9], remainders: true };
+  assert.deepEqual(clean([{ k: 'divide', p: [], l: 'guided', d: 1, g: plan, r: 'fraction' }]), [{ k: 'divide', p: [], l: 'guided', d: 1, g: plan, r: 'fraction' }]);
+  for (const bad of [{ ...DIV, r: 'R' }, { ...DIV, r: 'Fraction' }, { ...DIV, r: '2/3' }, { ...DIV, r: 1 }, { ...DIV, r: ['fraction'] }, { ...MUL, r: 'fraction' }])
+    assert.equal(clean([bad]), null, JSON.stringify(bad.r));
+  // byte for byte: a set saved before is cleaned to the very same JSON
+  for (const old of [DIV, MUL, { ...DIV, m: 'ladder' }, { k: 'divide', p: [], l: 'guided', d: 1, g: { ...plan, remainders: false } }])
+    assert.equal(JSON.stringify(clean([JSON.parse(JSON.stringify(old))])), JSON.stringify([old]));
+});
+
+test('box-by-box: the label says how remainders are written when they are a fraction or a decimal', async () => {
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([{ ...DIV, r: 'fraction' }]), 'Long division, 3 problems, remainders as fractions, Guided');
+  assert.equal(label([{ ...DIV, r: 'decimal', l: 'onMyOwn' }]), 'Long division, 3 problems, answers as decimals, On my own');
+  assert.equal(label([{ ...DIV, r: 'fraction', m: 'ladder' }]), 'Long division, 3 problems, remainders as fractions, Ladder, Guided');
+});
+
+test('box-by-box sets: decimals only with dec: 1 (at most 2 places each); the label says decimals', async () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const DEC = { k: 'divide', p: [[7.5, 3], [4.5, 0.3], [12, 5]], l: 'guided', dec: 1 };
+  const MDEC = { k: 'multiply', p: [[2.4, 1.3], [0.6, 4]], l: 'onMyOwn', dec: 1 };
+  assert.deepEqual(clean([DEC]), [DEC]);
+  assert.deepEqual(clean([MDEC]), [MDEC]);
+  assert.deepEqual(clean([{ ...DIV, dec: 1 }]), [{ ...DIV, dec: 1 }], 'whole problems in a decimals activity');
+  for (const bad of [{ ...DEC, dec: undefined }, { ...DEC, dec: 2 }, { ...DEC, dec: true }, { ...DEC, dec: 'yes' }, { ...DEC, p: [[7.555, 3]] }, { ...DEC, p: [[7.5, 0.1]] }, { ...DEC, p: [[-7.5, 3]] }, { ...MDEC, p: [[2.4, 13.5]] }])
+    assert.equal(clean([JSON.parse(JSON.stringify(bad))]), null, JSON.stringify(bad));
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([DEC]), 'Long division, 3 problems, decimals, Guided');
+  assert.equal(label([MDEC]), 'Multiplication, 2 problems, decimals, On my own');
+});
+
+test('box-by-box sets: addition and subtraction (2 to 4 digits, the bigger on top), their plans, and their labels', async () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const ADD = { k: 'add', p: [[475, 368], [9999, 9999]], l: 'guided' };
+  const SUB = { k: 'subtract', p: [[400, 167], [5003, 2468]], l: 'onMyOwn' };
+  assert.deepEqual(clean([ADD]), [ADD]);
+  assert.deepEqual(clean([SUB]), [SUB]);
+  assert.deepEqual(clean([{ ...SUB, p: [[5.2, 1.75], [40, 16.3]], dec: 1 }]), [{ ...SUB, p: [[5.2, 1.75], [40, 16.3]], dec: 1 }]);
+  const plan = { count: 12, tops: [100, 999], bottoms: [10, 999] };
+  assert.deepEqual(clean([{ k: 'add', p: [], l: 'countUp', d: 1, g: plan }]), [{ k: 'add', p: [], l: 'countUp', d: 1, g: plan }]);
+  for (const bad of [{ ...SUB, p: [[167, 400]] }, { ...SUB, p: [[400, 400]] }, { ...ADD, p: [[5, 30]] }, { ...ADD, p: [[10000, 30]] }, { ...ADD, p: [[3.5, 27]] }, { ...ADD, m: 'area' }, { ...ADD, r: 'fraction' }, { k: 'add', p: [], l: 'guided', d: 1, g: { ...plan, bottoms: [1, 99] } }])
+    assert.equal(clean([bad]), null, JSON.stringify(bad));
+  assert.deepEqual(clean([{ ...ADD, m: 'standard' }]), [ADD]);
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([ADD]), 'Addition, 2 problems, Guided');
+  assert.equal(label([{ ...SUB, p: [[5.2, 1.75]], dec: 1 }]), 'Subtraction, 1 problem, decimals, On my own');
+  assert.equal(label([{ k: 'subtract', p: [], l: 'watch', d: 1, g: plan }]), 'Subtraction, 12 problems (different for each student), Watch');
 });

@@ -10,7 +10,7 @@
 	import Keypad from '$lib/Keypad.svelte';
 	import FloatingKeypad, { type Rect } from '$lib/FloatingKeypad.svelte';
 	import Footer from '$lib/Footer.svelte';
-	import { kindInfo, levelInfo, problemsForRun, showAnswer, type Playable, type Problem, type Values } from '$lib/logic';
+	import { formOf, kindInfo, levelInfo, problemsForRun, showAnswer, type Playable, type Problem, type Values } from '$lib/logic';
 	import {
 		allFilled,
 		buildWork,
@@ -113,7 +113,8 @@
 	}
 
 	const problem = $derived<Problem | undefined>(problems[index]);
-	const work = $derived<WorkT | undefined>(problem ? buildWork(method, activity.kind, problem, values) : undefined);
+	const form = $derived(formOf(activity));
+	const work = $derived<WorkT | undefined>(problem ? buildWork(method, activity.kind, problem, values, form) : undefined);
 	const fields = $derived<Field[]>(work?.fields ?? []);
 	const fieldOf = (id: string | null) => (id ? fields.find((f) => f.id === id) : undefined);
 	const narrow = $derived(W <= 760);
@@ -292,7 +293,7 @@
 		at = null;
 		phase = 'working';
 		if (!problem) return;
-		watchVals = watchValues(method, activity.kind, problem);
+		watchVals = watchValues(method, activity.kind, problem, form);
 		if (way === 'countUp') advance();
 		else if (way === 'type') focusField(fields[0]?.id ?? null);
 		else tick().then(() => nextBtn?.focus());
@@ -641,7 +642,8 @@
 		cell: 'Box',
 		sum: 'Total',
 		quotient: 'Quotient',
-		remainder: 'Remainder'
+		remainder: 'Remainder',
+		denominator: 'Fraction, bottom'
 	};
 	/** The squares of a field: its digits, lined up on the right, and which of them are wrong. */
 	function squares(f: Field) {

@@ -9,7 +9,7 @@
 
 	let { kind, mode, play = 0, label }: { kind: Kind; mode: Level; play?: number; label: string } = $props();
 
-	const sheet = $derived(kind === 'divide' ? kindInfo(kind).sheet([92, 4]) : kindInfo(kind).sheet([24, 13]));
+	const sheet = $derived(kindInfo(kind).sheet(kindInfo(kind).sample));
 	type Frame = { values: Values; step: number; lit?: string[]; caption: string; button?: string; pressed?: boolean; good?: boolean };
 	const PREFIX: Record<string, string> = { divide: 'Divide', multiply: 'Multiply', subtract: 'Subtract', sumCarry: 'Carry', add: 'Add' };
 	const prefixed = (k: string, t: string) => (PREFIX[k] && !t.toLowerCase().startsWith(PREFIX[k].toLowerCase()) ? `${PREFIX[k]}: ${t[0].toLowerCase()}${t.slice(1)}` : t);
@@ -42,20 +42,28 @@
 			} else if (mode === 'countUp' && (st.kind === 'divide' || st.skipCount)) {
 				const by = st.skipCount ? st.skipCount.by : sheet.steps[i].countUp!.divisor;
 				const times = st.skipCount ? st.skipCount.times : Number(all[st.boxes[0]]);
-				out.push({ values: v, step: i, lit: st.lit, caption: st.skipCount ? `${by} × ${times}: count by ${by}s with ▲.` : 'Press ▲ to count up.', button: 'That’s it' });
+				const from = st.skipCount?.start ?? 0;
+				const words = st.skipCount?.words;
+				out.push({
+					values: v,
+					step: i,
+					lit: st.lit,
+					caption: words === 'add' ? `${from} + ${times}: count on with ▲.` : words === 'sub' ? `Count up from ${from} with ▲.` : st.skipCount ? `${by} × ${times}: count by ${by}s with ▲.` : 'Press ▲ to count up.',
+					button: 'That’s it'
+				});
 				for (let c = 1; c <= times; c++)
 					out.push({
 						values: st.skipCount ? v : { ...v, [st.boxes[0]]: String(c) },
 						step: i,
 						lit: st.lit,
-						caption: st.skipCount ? Array.from({ length: c }, (_, k) => (k + 1) * by).join(', ') : `▲ ${c} × ${by} = ${c * by}`,
+						caption: words ? Array.from({ length: c }, (_, k) => from + k + 1).join(', ') : st.skipCount ? Array.from({ length: c }, (_, k) => (k + 1) * by).join(', ') : `▲ ${c} × ${by} = ${c * by}`,
 						button: 'That’s it',
 						pressed: c === times
 					});
 				fillStep(i);
 				out.push({ values: v, step: i, lit: st.lit, caption: st.skipCount ? (st.told?.(v) ?? '') : `${times} it is.` });
 			} else {
-				const auto = mode === 'countUp' && (st.kind === 'zero' || st.kind === 'bringDown' || (st.kind === 'multiply' && !st.skipCount));
+				const auto = mode === 'countUp' && (st.kind === 'zero' || st.kind === 'bringDown' || st.kind === 'carry' || st.kind === 'point' || (st.kind === 'multiply' && !st.skipCount));
 				if (!auto) out.push({ values: v, step: i, lit: st.lit, caption: ask });
 				fillStep(i);
 				out.push({ values: v, step: i, lit: st.lit, caption: auto && st.kind === 'bringDown' ? `The ${all[st.boxes[0]]} comes down.` : (st.told?.(v) ?? ask) });
@@ -109,12 +117,18 @@
 </script>
 
 {#snippet box(id: string, small: boolean)}
-	<span class="b" class:small class:on={playing && frame.lit?.includes(id)} class:empty={!frame.values[id]}>{frame.values[id] ?? ''}</span>
+	<span
+		class="b"
+		class:small
+		class:crossed={!!sheet.crossedBy?.[id] && !!frame.values[sheet.crossedBy[id]]}
+		class:on={playing && frame.lit?.includes(id)}
+		class:empty={!frame.values[id]}>{frame.values[id] ?? ''}</span
+	>
 {/snippet}
 
 <figure class="demo" aria-label={label}>
 	<div class="paper">
-		<Sheet {sheet} {box} {shown} {lit} label={sheet.title} />
+		<Sheet {sheet} {box} {shown} {lit} crossed={(c) => c.kind === 'given' && !!c.crossBy && !!frame.values[c.crossBy]} label={sheet.title} />
 		{#if !playing}
 			<button type="button" class="replay" onclick={run}><Play size={14} aria-hidden="true" /> Play</button>
 		{/if}
@@ -165,6 +179,17 @@
 		background: var(--box-wash);
 		outline: 1.5px solid var(--box);
 		outline-offset: -1px;
+	}
+	.b.crossed {
+		color: var(--muted);
+		background-image: linear-gradient(to top right, transparent calc(50% - 1px), var(--ink-soft) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));
+	}
+	:global(.demo .slot.corner .b) {
+		font-size: calc(var(--cell) * 0.3);
+	}
+	:global(.demo .slot.half-top .b),
+	:global(.demo .slot.half-bottom .b) {
+		font-size: calc(var(--cell) * 0.4);
 	}
 	.b.small {
 		place-self: end center;

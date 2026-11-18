@@ -8479,3 +8479,91 @@ Owner: "Hide those for parents." A family grown-up's Crossword showed the teache
 - Teachers are unchanged. A kid or a teacher without AI also gets the no-AI wording (they never had the AI buttons).
 - Tests: tests/unit/crossword-family.test.js (the fence, each account's frame flags, and the game in Chromium with the
   frame the server sends: a parent sees none of the tools above, a teacher sees them all, both make, play and print).
+
+## The Big Divide: remainders, decimals, addition and subtraction (18 Nov 2026)
+From 215 teacher comments the owner approved four changes, each put into a choice the game already had (or one it
+replaces), so nothing new to learn for anyone who doesn't want it.
+- **A bring-down arrow that stays.** After each bring-down in long division, a small arrow is drawn from the digit
+  straight down to where it was brought, and it stays, as on paper. It is drawn when its box is filled (`after` on the
+  `arrow` cell in `logic.ts`; Watch, Guided and Count up slide the digit down first, On my own draws it when the student
+  types it), lit with its step under the spotlight, and nothing else ever sits in its column on the way down. Visual
+  only, no setting.
+- **Remainders: none, R, fraction or decimal.** The Remainders switch is now one choice of four (`REMAINDER_OPTIONS`,
+  `logic.ts`); R is the default. Old saves and links read on as R and off as none (`remainderForm`); a fresh set per
+  student keeps `g.remainders` as true or false, as before, and the form rides in the item's `r` only when it is
+  `fraction` or `decimal`, so every set saved before is the same JSON. Only None changes which problems fit, so only
+  going to or from it makes new problems.
+  - *Fraction:* the last difference is what's left (no R); then the student writes it over the divisor in half squares
+    beside the quotient (7 2/3), box by box. Any equal fraction is right (2/4 or 1/2), and a simplified part may leave a
+    box in front empty (`fractionRight`); a top no equal fraction can have is marked at once in Guided. The ladder and
+    the area model write it as "135 2/7" after the quotient, the same rule (`accept` on the field).
+  - *Decimal (one rule):* when digits run out and something is left, the student writes a decimal point and a 0 after
+    the dividend (745 is 745.0), lifts the point straight up into the quotient (an arrow up beside it), brings the 0
+    down, and keeps going, another 0 at a time. **Stop when it comes out exactly, or at 2 decimal places.** Stopped
+    with something left, the answer ends in "…" (745 ÷ 6 = 124.16…), and the answer line says what it rounds to ("Rounded
+    to the nearest hundredth, it's 124.17"), so no digit already written ever changes. Repeating digits aren't marked:
+    two places is enough to see them, and rounding is what grade 5 and 6 work asks for. The bracket grows over each
+    zero as it is written. Standard method only: the ladder and the area model take away whole groups, so there a
+    decimal remainder is written as R and the editor doesn't offer it.
+- **Numbers: whole or decimals.** A second choice next to the ranges, in the editor and in Practice (`NUMBERS_CHOICE`,
+  `NUMBER_KINDS`); it keeps the ranges (age-appropriate as they are) and places a decimal point in the numbers made from
+  them, to hundredths (CCSS 5.NBT.7, 6.NS.3). Typed problems take decimals (a point or a comma) only in a decimals
+  activity. The item carries `dec: 1`; without it a decimal problem is still refused, as before. Decimals use the
+  standard method (the ladder and the models break up and take away whole numbers), and division answers are decimals
+  (the Remainders choice steps aside).
+  - *A decimal dividend (12.6 ÷ 4):* the first step lifts the point straight up into the quotient (typed: the box takes
+    a "." and the keypad gets a point key), with its arrow; then divide as usual, a 0 written on the end when it is
+    needed, as above. Problems made from a plan always come out by hundredths (half of them a multiple of the divisor,
+    half needing a 0 or two written on).
+  - *A decimal divisor (4.5 ÷ 0.3):* the problem as given sits above the work, each point on its grid line with a hop
+    drawn over it; the first two steps move the divisor's point to make it whole (0.3 × 10 = 3) and the dividend's the
+    same number of places (4.5 × 10 = 45, a faint 0 where a place is empty: 4.5 ÷ 0.25 is 450 ÷ 25); the student types
+    the new numbers into the bracket, and divides them.
+  - *Decimal multiplication (2.4 × 1.3):* the points sit on the grid lines, so every digit keeps its column; the student
+    multiplies as whole numbers (the first question says so), then the last step asks how many decimal places the
+    answer has (1 + 1 = 2), and the point is drawn where the typed count puts it (a wrong count shows where it would go).
+    A zero goes in front where the answer is short (0.2 × 0.3 = 0.06), and an answer ending in zeros says they can go
+    (5.00 is 5).
+  - Decimals are checked as text and whole numbers of hundredths (`numbers.ts`), never as floating point; the server's
+    `bbDecCheck` follows the game's rules (tested against them on 8,000 random problems).
+  - Fixed on the way: the editor scrolled sideways on a phone by 12px (its one-column grid was `1fr`, so a tile's
+    min-content could widen it); it is `minmax(0, 1fr)` now.
+- **Addition and subtraction.** Two more kinds beside Long division and Multiplication (`columns.ts`; `KINDS` in
+  `logic.ts`): two to four digits each (10 to 9,999; subtraction takes the smaller from the bigger), or decimals to
+  hundredths with Numbers set to decimals. Laid out in columns with a row of small boxes above for carries and
+  regrouping; with decimals the points share a column, shorter numbers are padded with faint zeros (3.5 over 2.75 is
+  3.50), and a step brings the point straight down into the answer.
+  - *Carrying:* each column from the right is a step; a column of 10 or more writes its ones, then a carry step writes
+    the 1, small, over the next column. A last carry past the digits goes straight into the answer ("Write the 1 you
+    carried").
+  - *Regrouping:* when the top digit is smaller, the digit it borrows from is crossed out and one less is written over
+    it (a small box), and the column that borrows gets a small 1 in its corner (2 becomes 12). Across zeros (400 −
+    167): cross out the 4 and write 3; the tens' 0 gets its 1 (10) and is crossed out for 9; the ones get their 1;
+    then 10 − 7, 9 − 6, 3 − 1. Each is a box, so Watch, Guided and the hints say why; a crossed-out digit is drawn as
+    soon as what replaces it is written (`crossBy` on a given cell, `crossedBy` for a box). No box for a zero in front
+    of the answer (400 − 367 = 33), but the ones (0.75) always.
+  - *Support levels:* Watch, Guided and On my own as for the other kinds. Count up counts each column with ▲: on from
+    the top digit (8, 9, 10 …) for addition, and up from the bottom digit to the top one for subtraction (the count is
+    the answer); the page writes the digit and the carries, and the student types the regrouping and the point. Hints,
+    Check, the second try, scoring and `BRB.gameOver` are the player's own, unchanged.
+  - Teachers make them like the others (ranges for the top and bottom numbers, Numbers, a fresh set per student); the
+    Method section is hidden for a kind with one method. Practice has them too (Easy 2 digits, Medium 3, Hard 4). The
+    server takes `k: 'add' | 'subtract'` with the same rules as the game (`bbCheck`, `bbDecCheck`; tested against the
+    game's own on random problems) and names them in the label ("Subtraction, 12 problems, decimals, Watch"). The game
+    keeps its name; the seed JSON's description and tags (every language) mention addition, subtraction, remainders and
+    decimals.
+- **UI strings** stay in the game's source (English, US spelling) as before, gathered where they are used: the choices
+  in `REMAINDER_OPTIONS`, `NUMBERS_CHOICE` (`logic.ts`) and `NUMBER_KINDS`, `HARDS` (`practice.ts`); each step's
+  prompt, told line and hints next to the step that asks it (`logic.ts`, `columns.ts`), as the game already did, so
+  a translation pass can take them from those places.
+- Tests: tests/unit/box-by-box-math.test.js (the math: fractions, decimal digits and the stop rule, the point lifted,
+  divisors shifted, decimal products, carries and borrows across zeros, the server against the game on random
+  problems); tests/unit/box-by-box-kinds.test.js (Chromium, on a phone: three problems in a row for each new kind and
+  option, Guided with every question read and On my own, 400 − 167's questions in order, the arrows, Watch and Count up
+  for each); tests/unit/box-by-box.test.js (sets: `r`, `dec`, the new kinds, old sets byte for byte, labels).
+- **Layout fixes after review.** A decimal point no longer takes a grid column: it is drawn on the line after the last
+  whole digit, the same in the quotient, the dividend and the answers of addition and subtraction (the point the
+  student types is a small box on that line). Digits stay in adjacent columns, so 1 and 0 brought down read "10"; the
+  lifted point's arrow runs up in the gap before the first decimal digit. Each minus sign sits right before its
+  product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
+  room in the corner, and a strike covers only the digit, so the 1 stays clear of it.

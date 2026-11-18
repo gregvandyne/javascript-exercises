@@ -44,16 +44,34 @@
 		<h1><Logo size={32} /> About {NAME}</h1>
 	</header>
 	<p class="lede">
-		Practice for long division and multiplication, one box at a time: the standard algorithms, the ladder and area model
-		for division, and the area model and partial products for multiplication.
+		Practice for long division, multiplication, addition and subtraction, one box at a time, with whole numbers or
+		decimals: the standard algorithms, the ladder and area model for division, and the area model and partial products
+		for multiplication.
 	</p>
 
 	<section class="card">
 		<h2>What it is</h2>
 		<p>
-			Students work each problem on graph paper, box by box: divide, multiply, subtract and bring down, or multiply
-			each digit, carry and add. A teacher picks the problems and how much help students get, from watching the page
-			work a problem to doing it on their own, and shares the activity as a link or a QR code.
+			Students work each problem on graph paper, box by box: divide, multiply, subtract and bring down; multiply
+			each digit, carry and add; or add and subtract in columns, carrying and regrouping. A teacher picks the problems
+			and how much help students get, from watching the page work a problem to doing it on their own, and shares the
+			activity as a link or a QR code.
+		</p>
+	</section>
+
+	<section class="card">
+		<h2>Remainders and decimals</h2>
+		<p>
+			A remainder can be written three ways: as R (7 R 2), as a fraction over the number you divided by (7 2/3, and
+			2/4 or 1/2 are both right), or as a decimal. For a decimal, write a point and a 0 after the number you’re
+			dividing, lift the point straight up, and keep bringing down zeros. Stop when nothing is left, or after 2 decimal
+			places: then the answer ends in “…”, and says what it rounds to.
+		</p>
+		<p>
+			With decimals, the point in the number you’re dividing goes straight up into the answer. Dividing by a decimal,
+			first move the point in both numbers the same number of places, until the one you divide by is whole: 4.5 ÷ 0.3
+			is the same as 45 ÷ 3. Multiplying decimals, multiply as if there were no points, then count the decimal places
+			in both numbers: the answer has that many. Adding and subtracting, line up the points.
 		</p>
 	</section>
 

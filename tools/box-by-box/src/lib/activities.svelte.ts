@@ -7,6 +7,8 @@
 import {
 	freshSettings,
 	kindInfo,
+	kindOr,
+	numbersOf,
 	parseFlags,
 	toItem,
 	validProblems,
@@ -45,11 +47,12 @@ function fromSave(raw: unknown): Activity | null {
 	if (!raw || typeof raw !== 'object') return null;
 	const o = raw as Record<string, unknown>;
 	if (typeof o.id !== 'string') return null;
-	const kind: Kind = o.kind === 'multiply' ? 'multiply' : 'divide';
-	const problems = validProblems(o.problems, kind);
+	const kind: Kind = kindOr(o.kind);
+	const k = kindInfo(kind).settings;
+	const plan = o.plan ? k.parse(o.plan) : k.fresh();
+	const problems = validProblems(o.problems, kind, numbersOf(plan.numbers));
 	if (!problems.length) return null;
 	const s = (o.settings && typeof o.settings === 'object' ? o.settings : {}) as Record<string, unknown>;
-	const k = kindInfo(kind).settings;
 	const custom = s.custom && typeof s.custom === 'object' ? parseFlags(flagString(s.custom as Record<string, unknown>)) : parseFlags(null);
 	return {
 		id: o.id,
@@ -62,9 +65,9 @@ function fromSave(raw: unknown): Activity | null {
 			level: LEVELS.includes(s.level as Level) ? (s.level as Level) : 'guided',
 			custom,
 			perStudent: s.perStudent === true,
-			method: methodOr(kind, s.method)
+			method: numbersOf(plan.numbers) === 'decimal' ? 'standard' : methodOr(kind, s.method)
 		},
-		plan: o.plan ? k.parse(o.plan) : k.fresh(),
+		plan,
 		...(typeof o.setId === 'string' ? { setId: o.setId } : {}),
 		...(typeof o.shared === 'string' ? { shared: o.shared } : {})
 	};

@@ -56,7 +56,8 @@
 		{@const end = D + N}
 		{@const sideEnd = end + 1 + S}
 		{@const lastRow = 1 + work.rungs.length * 2}
-		<div class="ladder" style:--cols={sideEnd} style:--rows={lastRow + 1}>
+		{@const fr = work.fraction && byId.has('den') ? (byId.get('remainder')?.len ?? 1) + byId.get('den')!.len + 2 : 0}
+		<div class="ladder" style:--cols={sideEnd + fr} style:--rows={lastRow + 1}>
 			<span class="cell" style:grid-row="1" style:grid-column="1 / span {D}">{@render digits(String(work.divisor), D, 'divisor')}</span>
 			<span class="cell bracket" class:dim={!lit('dividend')} style:grid-row="1" style:grid-column="{main} / span {N}"
 				>{@render digits(String(work.dividend), N, 'dividend')}</span
@@ -80,10 +81,18 @@
 				{@const rm = byId.get('remainder')!}
 				<span class="rule top" class:dim={!lit('quotient')} style:grid-row={lastRow + 1} style:grid-column="{end + 2} / span {S}" aria-hidden="true"></span>
 				<span class="cell" style:grid-row={lastRow + 1} style:grid-column="{sideEnd - qf.len + 1} / span {qf.len}">{@render slot('quotient')}</span>
-				{#if shown('remainder')}
-					<span class="r-label" class:dim={!lit('remainder')} style:grid-row={lastRow + 1} style:grid-column={end - rm.len} aria-hidden="true">R</span>
+				{#if work.fraction}
+					{#if fr}
+						<span class="cell frac" style:grid-row={lastRow + 1} style:grid-column="{sideEnd + 1} / span {fr}"
+							>{@render slot('remainder')}<span class="slash" class:dim={!lit('den')} aria-hidden="true">/</span>{@render slot('den')}</span
+						>
+					{/if}
+				{:else}
+					{#if shown('remainder')}
+						<span class="r-label" class:dim={!lit('remainder')} style:grid-row={lastRow + 1} style:grid-column={end - rm.len} aria-hidden="true">R</span>
+					{/if}
+					<span class="cell" style:grid-row={lastRow + 1} style:grid-column="{end - rm.len + 1} / span {rm.len}">{@render slot('remainder')}</span>
 				{/if}
-				<span class="cell" style:grid-row={lastRow + 1} style:grid-column="{end - rm.len + 1} / span {rm.len}">{@render slot('remainder')}</span>
 			{/if}
 		</div>
 	{:else if work.kind === 'divide'}
@@ -114,8 +123,14 @@
 						<span class="sum-words" aria-hidden="true">{work.rungs.map((r) => values[r.q] || '?').join(' + ')} =</span>
 					{/if}
 					{@render slot('quotient')}
-					<span class="words rem-word" class:dim={!lit('remainder')}>R</span>
-					{@render slot('remainder')}
+					{#if work.fraction}
+						{#if byId.has('den')}
+							<span class="frac">{@render slot('remainder')}<span class="slash" class:dim={!lit('den')} aria-hidden="true">/</span>{@render slot('den')}</span>
+						{/if}
+					{:else}
+						<span class="words rem-word" class:dim={!lit('remainder')}>R</span>
+						{@render slot('remainder')}
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -239,6 +254,18 @@
 		place-items: center;
 	}
 	.r-label {
+		color: var(--remainder);
+	}
+	.frac {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		margin-left: calc(var(--sq) * 0.25);
+	}
+	.slash {
+		display: grid;
+		place-items: center;
+		width: calc(var(--sq) * 0.6);
 		color: var(--remainder);
 	}
 	.rule {

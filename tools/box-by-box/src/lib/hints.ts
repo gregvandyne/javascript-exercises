@@ -11,6 +11,7 @@ const countBy = (n: number, times: number) => Array.from({ length: times }, (_, 
 export function hintsFor(sheet: Sheet, i: number, v: Values): string[] {
 	const st = sheet.steps[i];
 	if (!st) return [];
+	if (st.hints) return st.hints(v);
 	const digits = st.boxes.filter((id) => !id.includes('c') || id.startsWith('s')).map((id) => boxOf(sheet, id).digit).join('');
 	const asked = st.prompt(v);
 	switch (st.kind) {
@@ -56,7 +57,7 @@ export function hintsFor(sheet: Sheet, i: number, v: Values): string[] {
 		case 'add':
 			return [`Add the digits in this column, plus any number carried into it.`, asked, `It’s ${digits}.`];
 		case 'sumCarry': {
-			const col = sheet.cells.find((c) => c.kind === 'box' && c.id === st.boxes[0]);
+			const col = sheet.cells.find((c): c is Extract<typeof c, { kind: 'box' }> => c.kind === 'box' && c.id === st.boxes[0]);
 			const place = col ? PLACES[sheet.cols - 1 - col.col] : '';
 			return [`That column added up to 10 or more, so the tens move to the next column${place ? `, the ${place}` : ''}.`, asked];
 		}
