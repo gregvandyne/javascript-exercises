@@ -117,3 +117,32 @@ test('on a phone: a teacher prints the worksheet or the worksheet and its key; a
     await g.ctx.close();
   }
 });
+
+// ---------------------------------------------------------------- the game in the player's language
+const LOCALES = [
+  { lang: 'es', teacher: 'Soy docente', start: 'Empezar', speak: 'Léemelo', first: '¿Cuántas veces cabe 6 en 7?' },
+  { lang: 'pt', teacher: 'Sou professor', start: 'Começar', speak: 'Ler para mim', first: 'Quantas vezes 6 cabe em 7?' },
+  { lang: 'he', teacher: 'אני מורה', start: 'התחלה', speak: 'הקראה', first: 'כמה פעמים 6 נכנס ב־7?', dir: 'rtl' }
+];
+for (const L of LOCALES)
+  test(`on a phone: in ${L.lang} the screens, the steps and the voice are in that language (the math stays as on paper)`, { skip, timeout: 90e3 }, async () => {
+    const g = await openGame({ lang: L.lang, tts: { langs: [L.lang] } });
+    assert.equal(await g.frame.evaluate(() => document.documentElement.lang), L.lang);
+    assert.equal(await g.frame.evaluate(() => document.documentElement.dir), L.dir || 'ltr');
+    await g.frame.getByRole('button', { name: new RegExp(L.teacher) }).waitFor();
+    assert.equal(await g.frame.getByRole('button', { name: /I’m a teacher/ }).count(), 0, 'no English left on the start screen');
+    await g.ctx.close();
+    const h = await openGame({ lang: L.lang, set: { k: 'divide', p: [[745, 6]], l: 'guided' }, tts: { langs: [L.lang] } });
+    await h.frame.getByRole('button', { name: L.start, exact: true }).click();
+    await h.frame.getByText(L.first).first().waitFor();
+    assert.equal(await h.frame.locator('.sheet').first().getAttribute('dir'), 'ltr', 'the problem reads left to right');
+    assert.ok(await h.frame.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+    await h.frame.getByRole('button', { name: L.speak }).click();
+    await h.page.waitForFunction(() => window.__tts.some((x) => !x.check));
+    const read = (await h.asked()).filter((x) => !x.check);
+    assert.equal(read.map((x) => x.text).join(' '), L.first);
+    assert.ok(read.every((x) => x.lang === L.lang && lines.allowedLine('box-by-box', L.lang, x.text)), 'the server reads it in that language');
+    assert.deepEqual((await h.device()).filter((t) => String(t).trim()), [], 'never the device’s voice');
+    assert.deepEqual(h.errors, []);
+    await h.ctx.close();
+  });

@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { segments, t, tn } from '$lib/i18n';
 	// The editor: the settings that make the problems (ranges, remainders), the support students get (the mode), and
 	// the problems themselves, which the teacher can change, reorder, paste or add to. Every change is saved at once.
-	import { NAME } from '$lib/name';
+	import { NAME_HERE as NAME } from '$lib/i18n';
 	import { onMount, tick } from 'svelte';
 	import { ArrowLeft, Dices, ExternalLink, GripVertical, Plus, Share2, X } from '@lucide/svelte';
 	import { find, isShared, list, loadList, titleOf, touch } from '$lib/activities.svelte';
@@ -33,7 +34,7 @@
 	/** Whole numbers, or decimals too (the Numbers choice): what a problem may be typed with. */
 	const numbers = $derived(numbersOf(activity?.plan?.numbers));
 	const fault = (r: Row) =>
-		!r.first && !r.second ? '' : !r.first || !r.second ? 'Type both numbers.' : (checkProblem(activity!.kind, Number(r.first), Number(r.second), numbers, method) ?? '');
+		!r.first && !r.second ? '' : !r.first || !r.second ? t('ui.ed.both') : (checkProblem(activity!.kind, Number(r.first), Number(r.second), numbers, method) ?? '');
 	const valid = (r: Row) => !!r.first && !!r.second && !fault(r);
 	function answerOf(r: Row): [string, string] {
 		if (!valid(r)) return ['', ''];
@@ -304,10 +305,10 @@
 	// --- mode ---
 
 	const TABS: { name: Level; title: string; text: string }[] = [
-		{ name: 'watch', title: 'Watch', text: 'The page works the problem a step at a time as they press Next. Nothing to type.' },
-		{ name: 'countUp', title: 'Count up', text: 'They count each answer digit up with ▲ until the next would be too big, then subtract.' },
-		{ name: 'guided', title: 'Guided', text: 'They type every digit. The box to fill is lit, with a question for the step.' },
-		{ name: 'onMyOwn', title: 'On my own', text: 'Every box from the start and no questions. Checked at the end.' }
+		{ name: 'watch', title: t('ui.level.watch'), text: t('ui.ed.tab.watch') },
+		{ name: 'countUp', title: t('ui.level.countUp'), text: t('ui.ed.tab.countUp') },
+		{ name: 'guided', title: t('ui.level.guided'), text: t('ui.ed.tab.guided') },
+		{ name: 'onMyOwn', title: t('ui.level.onMyOwn'), text: t('ui.ed.tab.onMyOwn') }
 	];
 	const tabs = $derived(
 		TABS.filter((t) => k.levels.includes(t.name)).map((t) => ({
@@ -318,7 +319,7 @@
 						? (COUNT_UP[method] ?? t.text)
 						: COUNT_UP_TIMES
 					: method !== 'standard' && t.name === 'guided'
-						? 'They type every number. The one to fill lights up, with a question for each step.'
+						? t('ui.ed.tab.guidedMethod')
 						: (k.levelText?.[t.name] ?? t.text)
 		}))
 	);
@@ -361,10 +362,10 @@
 	}
 	/** What Count up does in this method, for the Mode tab's line. */
 	const COUNT_UP: Partial<Record<Method, string>> = {
-		ladder: 'They pick how many to take away with ▲ (1, 2, 5, 10, 20, 50, 100 …) and the page multiplies. They type the subtracting and adding.',
-		area: 'They pick each section’s width with ▲ and the page multiplies. They type the subtracting and adding.'
+		ladder: t('ui.ed.countUp.ladder'),
+		area: t('ui.ed.countUp.area')
 	};
-	const COUNT_UP_TIMES = 'They skip-count each part’s product with ▲ and the page writes it in, zeros and all. They type the adding.';
+	const COUNT_UP_TIMES = t('ui.ed.countUp.times');
 
 	function setPerStudent(v: boolean) {
 		if (!activity) return;
@@ -388,7 +389,7 @@
 		if (!e.composedPath().some((el) => el instanceof HTMLElement && el.classList.contains('share-wrap'))) shareOpen = false;
 	}
 	$effect(() => {
-		document.title = `${activity ? titleOf(activity) : 'Activity'} · ${NAME}`;
+		document.title = `${activity ? titleOf(activity) : t('ui.ed.activity')} · ${NAME}`;
 	});
 </script>
 
@@ -403,7 +404,7 @@
 		autocomplete="off"
 		spellcheck="false"
 		maxlength={k.widths[f] + (numbers === 'decimal' ? 3 : 0)}
-		aria-label="Problem {i + 1}: {k.labels[f]}"
+		aria-label={t('ui.ed.problemField', { n: i + 1, x: k.labels[f] })}
 		aria-invalid={bad}
 		value={r[key(f)]}
 		style:width="{Math.max(fieldMax(f), r[key(f)].length) + 0.6}ch"
@@ -416,25 +417,25 @@
 
 {#if !activity}
 	<div class="missing">
-		<button type="button" class="back" onclick={() => show({ name: 'home' })}><ArrowLeft size={16} aria-hidden="true" /> Your activities</button>
-		<h1>This activity isn’t in your list</h1>
-		<p>It may have been deleted. Your activities are kept with your Oomba account.</p>
+		<button type="button" class="back" onclick={() => show({ name: 'home' })}><ArrowLeft size={16} aria-hidden="true" /> {t('ui.home.title')}</button>
+		<h1>{t('ui.ed.missing')}</h1>
+		<p>{t('ui.ed.missingText')}</p>
 	</div>
 {:else}
 	<div class="screen">
 		<header class="top">
-			<button type="button" class="back-icon" aria-label="Your activities" onclick={() => show({ name: 'home' })}
+			<button type="button" class="back-icon" aria-label={t('ui.home.title')} onclick={() => show({ name: 'home' })}
 				><ArrowLeft size={18} aria-hidden="true" /></button
 			>
-			<input class="title" type="text" aria-label="Title" placeholder={k.title} bind:value={activity.title} oninput={save} />
+			<input class="title" type="text" aria-label={t('ui.ed.title')} placeholder={k.title} bind:value={activity.title} oninput={save} />
 			<div class="top-actions">
-				<button type="button" class="btn-ghost" onclick={tryIt}><ExternalLink size={16} aria-hidden="true" /> Try it</button>
+				<button type="button" class="btn-ghost" onclick={tryIt}><ExternalLink size={16} aria-hidden="true" /> {t('ui.ed.try')}</button>
 				<div class="share-wrap">
 					<button type="button" class="btn-primary" aria-expanded={shareOpen} aria-haspopup="dialog" onclick={() => (shareOpen = !shareOpen)}
-						><Share2 size={16} aria-hidden="true" /> {saved ? 'Shared' : 'Share'}</button
+						><Share2 size={16} aria-hidden="true" /> {saved ? t('ui.ed.shared') : t('ui.ed.share')}</button
 					>
 					{#if shareOpen}
-						<div class="share-pop" role="dialog" aria-label="Share with students">
+						<div class="share-pop" role="dialog" aria-label={t('ui.share.title')}>
 							<SharePanel {activity} />
 						</div>
 					{/if}
@@ -444,16 +445,16 @@
 
 		<div class="layout">
 			<aside class="settings" aria-labelledby="settings-title">
-				<h2 id="settings-title">Settings</h2>
+				<h2 id="settings-title">{t('ui.ed.settings')}</h2>
 				<div class="group">
 					{#each s.ranges as r (r.key)}
 						{@const [lo, hi] = planRange(r.key)}
 						<div class="range-row" role="group" aria-label={r.name}>
 							<span class="range-name">{r.name}</span>
 							<span class="range-boxes">
-								<Stepper label="{r.name}, from" value={lo} min={r.limits[0]} max={r.limits[1]} digits={digitsWide} onchange={(v) => setRange(r.key, v, hi)} />
-								<span class="to">to</span>
-								<Stepper label="{r.name}, to" value={hi} min={r.limits[0]} max={r.limits[1]} digits={digitsWide} onchange={(v) => setRange(r.key, lo, v)} />
+								<Stepper label={t('ui.ed.from', { x: r.name })} value={lo} min={r.limits[0]} max={r.limits[1]} digits={digitsWide} onchange={(v) => setRange(r.key, v, hi)} />
+								<span class="to">{t('ui.ed.to')}</span>
+								<Stepper label={t('ui.ed.toLabel', { x: r.name })} value={hi} min={r.limits[0]} max={r.limits[1]} digits={digitsWide} onchange={(v) => setRange(r.key, lo, v)} />
 							</span>
 						</div>
 					{/each}
@@ -474,57 +475,52 @@
 				</div>
 				{#if methods.length > 1}
 				<section class="group methods" aria-labelledby="method-title">
-					<h3 id="method-title">Method</h3>
+					<h3 id="method-title">{t('ui.method')}</h3>
 					<div class="method-list" role="radiogroup" aria-labelledby="method-title">
 						{#each methods.filter((m) => numbers !== 'decimal' || DECIMAL_METHODS[activity.kind].includes(m.name)) as m (m.name)}
 							<button type="button" role="radio" class="method" aria-checked={method === m.name} onclick={() => setMethod(m.name)}>
-								<span class="method-name">{m.name === 'standard' ? (activity.kind === 'divide' ? 'Standard (long division)' : 'Standard algorithm') : m.name === 'ladder' ? 'Ladder (partial quotients)' : m.label}</span>
+								<span class="method-name">{m.name === 'standard' ? t(activity.kind === 'divide' ? 'ui.ed.standardDivide' : 'ui.ed.standardOther') : m.name === 'ladder' ? t('ui.ed.ladder') : m.label}</span>
 								<span class="method-about">{m.about}</span>
 							</button>
 						{/each}
 					</div>
 					{#if numbers === 'decimal' && methods.length > 1}
-						<p class="about">{methodNote ? 'Decimals use the standard method or the area model, so this activity is back on the standard method. ' : ''}{activity.kind === 'divide'
-								? 'With decimals, the ladder and the area model divide by whole numbers, and every problem comes out by hundredths, like 7.5 ÷ 3 = 2.5. A decimal divisor (4.5 ÷ 0.3) uses the standard method.'
-								: 'With decimals, the area model splits each number by place value: 2.3 × 1.4 is (2 + 0.3) × (1 + 0.4). Partial products stay with whole numbers.'}</p>
+						<p class="about">{methodNote ? `${t('ui.ed.decBack')} ` : ''}{t(activity.kind === 'divide' ? 'ui.ed.decDivide' : 'ui.ed.decMultiply')}</p>
 					{/if}
 					{#if method !== 'standard'}
 						<details class="how">
-							<summary>How students work it</summary>
+							<summary>{t('ui.ed.how')}</summary>
 							<ol>
 								{#each methodInfo(activity.kind, method).steps as st (st)}<li>{st}</li>{/each}
 							</ol>
 							<p>
-								{activity.kind === 'divide'
-									? 'Any sensible path is right: each step must take away a whole number of groups, no more than what’s left. Hints suggest a friendly one, and Watch shows the biggest place-value groups first.'
-									: 'Each part is a place value, so zeros in a number make fewer boxes: 406 is 400 + 6.'}
+								{t(activity.kind === 'divide' ? 'ui.ed.howDivide' : 'ui.ed.howMultiply')}
 							</p>
 						</details>
 					{/if}
 				</section>
 				{/if}
 				<div class="group students">
-					<SwitchRow label="Randomize per student" checked={activity.settings.perStudent} onchange={setPerStudent}
-						>Each student gets their own {activity.problems.length} problems, made fresh from these settings every time they open the link. Off,
-						everyone works the problems here, in this order.</SwitchRow
+					<SwitchRow label={t('ui.ed.perStudent')} checked={activity.settings.perStudent} onchange={setPerStudent}
+						>{tn('ui.ed.perStudentText', activity.problems.length)}</SwitchRow
 					>
 					<section class="mode" aria-labelledby="mode-title">
-						<h3 id="mode-title">Mode</h3>
+						<h3 id="mode-title">{t('ui.ed.mode')}</h3>
 						<div class="tabs" role="radiogroup" aria-labelledby="mode-title">
-							{#each tabs as t (t.name)}
-								<button type="button" role="radio" class="tab" aria-checked={level === t.name} onclick={() => setLevel(t.name)}>{t.title}</button>
+							{#each tabs as tb (tb.name)}
+								<button type="button" role="radio" class="tab" aria-checked={level === tb.name} onclick={() => setLevel(tb.name)}>{tb.title}</button>
 							{/each}
 						</div>
 						{#if onTab}
 							<p class="about">{tab?.text}</p>
 						{:else}
 							<p class="about">
-								<strong>{level === 'custom' ? 'Your own mix' : levelInfo(level)?.label}</strong>, kept from before. Pick one of the tabs to change it.
+								{#each segments('ui.ed.kept') as x, i (i)}{#if x.v}<strong>{level === 'custom' ? t('ui.ed.ownMix') : levelInfo(level)?.label}</strong>{:else}{x.s}{/if}{/each}
 							</p>
 						{/if}
 						<div class="preview">
 							{#if method === 'standard'}
-								<Demo kind={activity.kind} mode={demoMode} play={plays} label="What {tab?.title} looks like" />
+								<Demo kind={activity.kind} mode={demoMode} play={plays} label={t('ui.ed.looks', { x: tab?.title ?? '' })} />
 							{:else}
 								<MethodPicture kind={activity.kind} {method} />
 							{/if}
@@ -535,17 +531,17 @@
 
 			<section class="problems" aria-labelledby="problems-title">
 				<div class="problems-head">
-					<h2 id="problems-title">Problems</h2>
+					<h2 id="problems-title">{t('ui.ed.problems')}</h2>
 					<div class="make">
 						<div class="count">
-							<span aria-hidden="true">How many</span>
-							<Stepper label="How many" value={howMany} min={1} max={100} onchange={setCount} />
+							<span aria-hidden="true">{t('ui.ed.howMany')}</span>
+							<Stepper label={t('ui.ed.howMany')} value={howMany} min={1} max={100} onchange={setCount} />
 						</div>
-						<button type="button" class="btn-ghost" onclick={() => confirmThen(regenerate)}><Dices size={16} aria-hidden="true" /> New problems</button>
+						<button type="button" class="btn-ghost" onclick={() => confirmThen(regenerate)}><Dices size={16} aria-hidden="true" /> {t('ui.ed.newProblems')}</button>
 					</div>
 				</div>
 				{#if short !== null}
-					<p class="short" role="status">Only {short} problems fit these settings, so that’s how many there are.</p>
+					<p class="short" role="status">{tn('ui.ed.short', short)}</p>
 				{/if}
 				<ol class="tiles" bind:this={tilesEl} style:--tile="{tileWidth}rem">
 					{#each rows as r, i (i)}
@@ -572,7 +568,7 @@
 								type="button"
 								class="n"
 								draggable="true"
-								aria-label="Move problem {i + 1}: drag, or use the arrow keys"
+								aria-label={t('ui.ed.move', { n: i + 1 })}
 								ondragstart={(e) => {
 									dragFrom = i;
 									e.dataTransfer?.setData('text/plain', String(i + 1));
@@ -603,23 +599,23 @@
 									<i aria-hidden="true"></i>
 								{/if}
 								{#if bad}
-									<span class="result">Not yet a problem</span>
+									<span class="result">{t('ui.ed.notYet')}</span>
 								{:else if layout === 'stacked'}
 									<span class="result">{answerOf(r)[0]}</span>
 								{/if}
 							</div>
-							<button type="button" class="remove" tabindex="-1" aria-label="Remove problem {i + 1}" disabled={rows.length <= 1} onclick={() => removeRow(i)}
+							<button type="button" class="remove" tabindex="-1" aria-label={t('ui.ed.remove', { n: i + 1 })} disabled={rows.length <= 1} onclick={() => removeRow(i)}
 								><X size={12} aria-hidden="true" /></button
 							>
 						</li>
 					{/each}
 					{#if rows.length < MAX_PROBLEMS}
-						<li class="add-tile"><button type="button" onclick={addProblem}><Plus size={20} aria-hidden="true" /> Add a problem</button></li>
+						<li class="add-tile"><button type="button" onclick={addProblem}><Plus size={20} aria-hidden="true" /> {t('ui.ed.add')}</button></li>
 					{/if}
 				</ol>
 				{#each rows as r, i (i)}
 					{@const bad = fault(r)}
-					{#if bad}<p class="fault" role="alert">Problem {i + 1}: {bad}</p>{/if}
+					{#if bad}<p class="fault" role="alert">{t('ui.ed.fault', { n: i + 1, x: bad })}</p>{/if}
 				{/each}
 				<Footer />
 			</section>

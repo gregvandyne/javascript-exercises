@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// A number with − and + beside it (the ranges and How many). Typing commits after a pause, on Enter or on leaving;
 	// the arrow keys step it (Shift: by 10). It is kept within min and max; an empty box goes back to the value.
 	import { tick } from 'svelte';
@@ -47,7 +48,7 @@
 </script>
 
 <div class="stepper" role="group" aria-label={label}>
-	<button type="button" tabindex="-1" aria-label="{label}: one less" disabled={value <= min} onclick={() => commit(value - 1)}
+	<button type="button" tabindex="-1" aria-label={t('ui.stepper.less', { x: label })} disabled={value <= min} onclick={() => commit(value - 1)}
 		><Minus size={15} aria-hidden="true" /></button
 	>
 	<input
@@ -63,7 +64,7 @@
 		onkeydown={key}
 		onblur={() => input && commit(Number(input.value || value))}
 	/>
-	<button type="button" tabindex="-1" aria-label="{label}: one more" disabled={value >= max} onclick={() => commit(value + 1)}
+	<button type="button" tabindex="-1" aria-label={t('ui.stepper.more', { x: label })} disabled={value >= max} onclick={() => commit(value + 1)}
 		><Plus size={15} aria-hidden="true" /></button
 	>
 </div>

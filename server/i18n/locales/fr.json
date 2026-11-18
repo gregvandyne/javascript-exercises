@@ -1219,6 +1219,32 @@
       "made": "Fait avec Oomba Academy",
       "code": "Code de classe : {code}",
       "grid": "Grille de mots croisés"
+    },
+    "printBox": {
+      "divide": "Division posée",
+      "multiply": "Multiplication",
+      "add": "Addition",
+      "subtract": "Soustraction",
+      "howR": "Divise. Écris le reste avec R, comme 7 R 2.",
+      "howFraction": "Divise. Écris le reste sous forme de fraction sur le diviseur, comme 7 2/3.",
+      "howDecimal": "Divise. Quand il n'y a plus de chiffres, écris un point décimal et des zéros et continue. Arrête-toi quand la division tombe juste ou à 2 décimales, et arrondis.",
+      "howShift": "Pour diviser par un nombre décimal, déplace d'abord les deux points du même nombre de rangs vers la droite.",
+      "how": {
+        "multiply": "Multiplie.",
+        "multiplyDec": "Multiplie comme s'il n'y avait pas de points, puis compte les décimales pour placer le point.",
+        "add": "Additionne.",
+        "addDec": "Additionne. Aligne les points décimaux.",
+        "subtract": "Soustrais.",
+        "subtractDec": "Soustrais. Aligne les points décimaux."
+      },
+      "method": {
+        "ladder": "Utilise l'échelle (quotients partiels).",
+        "area": "Utilise le modèle d'aire.",
+        "partial": "Utilise les produits partiels."
+      },
+      "problem": "Problème {n}",
+      "rounds": "Arrondi : {x}",
+      "simpler": "Simplifié : {x}"
     }
   },
   "friends": {

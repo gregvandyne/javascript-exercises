@@ -297,7 +297,12 @@ test('decimals: typed problems take decimals only when Numbers is decimals; the 
   assert.equal(a.plan.numbers, 'decimal');
   assert.equal(L.formOf(a), 'decimal', 'division answers are decimals');
   assert.deepEqual(L.toItem(a), it);
-  assert.equal(L.parseItem({ ...it, m: 'ladder' }).settings.method, 'standard', 'decimals: the standard method');
+  // decimals: the standard method, or the ladder or area model for a whole divisor (round 2: a decimal divisor's problem
+  // is dropped there), and multiplication's partial products fall back to the standard method
+  const lad = L.parseItem({ ...it, m: 'ladder' });
+  assert.equal(lad.settings.method, 'ladder');
+  assert.deepEqual(lad.problems, [[7.5, 3]]);
+  assert.equal(L.parseItem({ k: 'multiply', p: [[2.4, 1.3]], l: 'guided', dec: 1, m: 'partial' }).settings.method, 'standard', 'decimals: no partial products');
   assert.equal(L.parseItem({ k: 'divide', p: [[7.5, 3]], l: 'guided' }), null, 'no dec: a decimal problem is not one');
 });
 

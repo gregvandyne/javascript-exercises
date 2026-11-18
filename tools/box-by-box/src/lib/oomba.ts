@@ -5,6 +5,7 @@
 // problems and the support, never the title), and the link opens it: /play/box-by-box?chapter=s-xxxxxxxxxx&lock=1
 
 import type { Item } from './logic';
+import { t } from './i18n.ts';
 
 type SavedSet = { id: string; items?: readonly unknown[]; mine?: boolean; missing?: boolean };
 type Brb = {
@@ -102,14 +103,7 @@ export async function saveSet(item: Item, id: string | undefined): Promise<{ id?
 		return { error: 'offline' };
 	}
 }
-export const SAVE_ERRORS: Record<string, string> = {
-	guest: 'Sign in to Oomba to share your activity.',
-	preview: 'Student links work in the published game, not in a preview.',
-	bad: 'Something in this activity can’t be shared. Check its problems and try again.',
-	full: 'You have shared as many activities as you can. Share one you shared before instead.',
-	notYours: 'This activity’s link belongs to someone else. Save it again for a link of your own.',
-	offline: 'Couldn’t save just now. Check your connection and try again.'
-};
+export const SAVE_ERRORS: Record<string, string> = Object.fromEntries(['guest', 'preview', 'bad', 'full', 'notYours', 'offline'].map((k) => [k, t(`ui.save.${k}`)]));
 
 // --- assigning to a class (teachers) ---
 

@@ -1220,6 +1220,32 @@
       "made": "Gemaakt met Oomba Academy",
       "code": "Klascode: {code}",
       "grid": "Kruiswoordpuzzelrooster"
+    },
+    "printBox": {
+      "divide": "Staartdeling",
+      "multiply": "Vermenigvuldigen",
+      "add": "Optellen",
+      "subtract": "Aftrekken",
+      "howR": "Deel. Schrijf de rest met R, zoals 7 R 2.",
+      "howFraction": "Deel. Schrijf de rest als breuk met de deler eronder, zoals 7 2/3.",
+      "howDecimal": "Deel. Als de cijfers op zijn, schrijf je een decimaalpunt en nullen en ga je door. Stop als het uitkomt of bij 2 decimalen, en rond af.",
+      "howShift": "Om door een kommagetal te delen, verschuif je eerst beide punten evenveel plaatsen naar rechts.",
+      "how": {
+        "multiply": "Vermenigvuldig.",
+        "multiplyDec": "Vermenigvuldig alsof er geen punten zijn en tel dan de decimalen om de punt te zetten.",
+        "add": "Tel op.",
+        "addDec": "Tel op. Zet de decimaalpunten onder elkaar.",
+        "subtract": "Trek af.",
+        "subtractDec": "Trek af. Zet de decimaalpunten onder elkaar."
+      },
+      "method": {
+        "ladder": "Gebruik de ladder (deelquotiënten).",
+        "area": "Gebruik het oppervlaktemodel.",
+        "partial": "Gebruik deelproducten."
+      },
+      "problem": "Som {n}",
+      "rounds": "Afgerond: {x}",
+      "simpler": "Vereenvoudigd: {x}"
     }
   },
   "friends": {

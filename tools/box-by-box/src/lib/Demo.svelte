@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { LANG, t } from './i18n';
 	// What a mode looks like: 92 ÷ 4 (or 24 × 13) worked on a small sheet of graph paper, a frame every 850 ms, with
 	// the question and the button a student would see. It shows the last frame until Play (or a new mode) starts it.
 	import { onDestroy } from 'svelte';
@@ -11,8 +12,13 @@
 
 	const sheet = $derived(kindInfo(kind).sheet(kindInfo(kind).sample));
 	type Frame = { values: Values; step: number; lit?: string[]; caption: string; button?: string; pressed?: boolean; good?: boolean };
-	const PREFIX: Record<string, string> = { divide: 'Divide', multiply: 'Multiply', subtract: 'Subtract', sumCarry: 'Carry', add: 'Add' };
-	const prefixed = (k: string, t: string) => (PREFIX[k] && !t.toLowerCase().startsWith(PREFIX[k].toLowerCase()) ? `${PREFIX[k]}: ${t[0].toLowerCase()}${t.slice(1)}` : t);
+	const PREFIX: Record<string, string> = { divide: 'divide', multiply: 'multiply', subtract: 'subtract', sumCarry: 'carry', add: 'add' };
+	/** Watch names a step's kind before its question ("Divide: how many …"; English writes it on in lower case). */
+	const prefixed = (k: string, s: string) => {
+		const p = PREFIX[k] ? t(`q.prefix.${PREFIX[k]}`) : '';
+		if (!p || s.toLowerCase().startsWith(p.replace(/[:：]\s*$/, '').toLowerCase())) return s;
+		return `${p} ${LANG.startsWith('en') ? s[0].toLowerCase() + s.slice(1) : s}`;
+	};
 
 	const frames = $derived.by(() => {
 		const all = correctValues(sheet);
@@ -24,21 +30,21 @@
 		};
 		const last = sheet.steps.length - 1;
 		if (mode === 'onMyOwn') {
-			out.push({ values: {}, step: last, caption: '', button: 'Check' });
+			out.push({ values: {}, step: last, caption: '', button: t('ui.check') });
 			sheet.steps.forEach((_, i) => {
 				fillStep(i);
-				out.push({ values: v, step: last, caption: '', button: 'Check' });
+				out.push({ values: v, step: last, caption: '', button: t('ui.check') });
 			});
-			out.push({ values: v, step: last, caption: '', button: 'Check', pressed: true });
-			out.push({ values: v, step: last, caption: `${sheet.title} = ${showAnswer(sheet.answer)}`, button: 'Correct!', good: true });
+			out.push({ values: v, step: last, caption: '', button: t('ui.check'), pressed: true });
+			out.push({ values: v, step: last, caption: `${sheet.title} = ${showAnswer(sheet.answer)}`, button: t('ui.fb.correct'), good: true });
 			return out;
 		}
 		sheet.steps.forEach((st, i) => {
 			const ask = st.kind === 'zero' && mode !== 'guided' ? st.told!(v) : st.prompt(v);
 			if (mode === 'watch') {
-				out.push({ values: v, step: i, lit: st.lit, caption: prefixed(st.kind, ask), button: 'Next', pressed: true });
+				out.push({ values: v, step: i, lit: st.lit, caption: prefixed(st.kind, ask), button: t('ui.next'), pressed: true });
 				fillStep(i);
-				out.push({ values: v, step: i, lit: st.lit, caption: `${prefixed(st.kind, ask)} ${st.boxes.map((b) => all[b]).join('')}`, button: 'Next' });
+				out.push({ values: v, step: i, lit: st.lit, caption: `${prefixed(st.kind, ask)} ${st.boxes.map((b) => all[b]).join('')}`, button: t('ui.next') });
 			} else if (mode === 'countUp' && (st.kind === 'divide' || st.skipCount)) {
 				const by = st.skipCount ? st.skipCount.by : sheet.steps[i].countUp!.divisor;
 				const times = st.skipCount ? st.skipCount.times : Number(all[st.boxes[0]]);
@@ -48,8 +54,8 @@
 					values: v,
 					step: i,
 					lit: st.lit,
-					caption: words === 'add' ? `${from} + ${times}: count on with ▲.` : words === 'sub' ? `Count up from ${from} with ▲.` : st.skipCount ? `${by} × ${times}: count by ${by}s with ▲.` : 'Press ▲ to count up.',
-					button: 'That’s it'
+					caption: words === 'add' ? t('ui.demo.add', { a: from, b: times }) : words === 'sub' ? t('ui.demo.sub', { a: from }) : st.skipCount ? t('ui.demo.mul', { a: by, b: times }) : t('ui.demo.div'),
+					button: t('ui.thatsIt')
 				});
 				for (let c = 1; c <= times; c++)
 					out.push({
@@ -57,19 +63,19 @@
 						step: i,
 						lit: st.lit,
 						caption: words ? Array.from({ length: c }, (_, k) => from + k + 1).join(', ') : st.skipCount ? Array.from({ length: c }, (_, k) => (k + 1) * by).join(', ') : `▲ ${c} × ${by} = ${c * by}`,
-						button: 'That’s it',
+						button: t('ui.thatsIt'),
 						pressed: c === times
 					});
 				fillStep(i);
-				out.push({ values: v, step: i, lit: st.lit, caption: st.skipCount ? (st.told?.(v) ?? '') : `${times} it is.` });
+				out.push({ values: v, step: i, lit: st.lit, caption: st.skipCount ? (st.told?.(v) ?? '') : t('ui.demo.itIs', { n: times }) });
 			} else {
 				const auto = mode === 'countUp' && (st.kind === 'zero' || st.kind === 'bringDown' || st.kind === 'carry' || st.kind === 'point' || (st.kind === 'multiply' && !st.skipCount));
 				if (!auto) out.push({ values: v, step: i, lit: st.lit, caption: ask });
 				fillStep(i);
-				out.push({ values: v, step: i, lit: st.lit, caption: auto && st.kind === 'bringDown' ? `The ${all[st.boxes[0]]} comes down.` : (st.told?.(v) ?? ask) });
+				out.push({ values: v, step: i, lit: st.lit, caption: auto && st.kind === 'bringDown' ? t('ui.demo.comesDown', { d: all[st.boxes[0]] }) : (st.told?.(v) ?? ask) });
 			}
 		});
-		if (mode === 'watch') out.push({ values: v, step: last, caption: `So ${sheet.title} = ${showAnswer(sheet.answer)}.`, button: 'Done' });
+		if (mode === 'watch') out.push({ values: v, step: last, caption: t('q.so', { e: sheet.title, x: showAnswer(sheet.answer) }), button: t('ui.done') });
 		return out;
 	});
 
@@ -126,11 +132,11 @@
 	>
 {/snippet}
 
-<figure class="demo" aria-label={label}>
+<figure class="demo" dir="ltr" aria-label={label}>
 	<div class="paper">
 		<Sheet {sheet} {box} {shown} {lit} crossed={(c) => c.kind === 'given' && !!c.crossBy && !!frame.values[c.crossBy]} label={sheet.title} />
 		{#if !playing}
-			<button type="button" class="replay" onclick={run}><Play size={14} aria-hidden="true" /> Play</button>
+			<button type="button" class="replay" onclick={run}><Play size={14} aria-hidden="true" /> {t('ui.play')}</button>
 		{/if}
 	</div>
 	<figcaption>

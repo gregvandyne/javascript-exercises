@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { t } from '$lib/i18n';
 	// A student's way in: the class code their teacher gave them (it opens the teacher's activity), or practicing on
 	// their own: long division or multiplication, how hard, and how much help; then a fresh set every time.
-	import { NAME } from '$lib/name';
+	import { NAME_HERE as NAME } from '$lib/i18n';
 	import { go, goBack } from '$lib/nav.svelte';
 	import { findSet, isPreview, load, store } from '$lib/oomba';
 	import { DECIMAL_METHODS, parseItem, kindInfo, KINDS, type Kind, type Level, type Numbers } from '$lib/logic';
@@ -19,7 +20,7 @@
 		if (looking) return;
 		problem = '';
 		if (typed !== 10) {
-			problem = 'A class code has 10 letters and numbers. Check it with your teacher.';
+			problem = t('ui.code.short');
 			return;
 		}
 		looking = true;
@@ -28,24 +29,24 @@
 		if ('id' in r) {
 			const a = parseItem(r.item);
 			if (a) go({ name: 'play', activity: a, title: kindInfo(a.kind).title, from: 'code', setId: r.id, item: r.item });
-			else problem = 'That code doesn’t open an activity. Check it with your teacher.';
+			else problem = t('ui.code.bad');
 		} else
 			problem =
 				r.error === 'none'
-					? 'There’s no activity with that code. Check it with your teacher.'
+					? t('ui.code.none')
 					: r.error === 'preview'
-						? 'Class codes work in the published game, not in a preview.'
-						: 'Couldn’t check the code just now. Check your connection and try again.';
+						? t('ui.code.preview')
+						: t('ui.code.offline');
 	}
 
 	// --- practicing alone (the last choice is remembered in the student's save) ---
 	const STUDENT_WAY: Record<string, string> = {
-		'divide-standard': 'Divide, multiply, subtract, bring down, one digit at a time.',
-		'divide-ladder': 'Take away easy groups, like 10 or 100, down a ladder. Then add them up.',
-		'divide-area': 'Fill a rectangle in sections. The widths on top add up to the answer.',
-		'multiply-standard': 'Multiply each digit, carry, then add the rows.',
-		'multiply-area': 'Split both numbers into parts, fill a box for each pair, then add the boxes.',
-		'multiply-partial': 'Multiply each place by each place, one line each, then add the lines.'
+		'divide-standard': t('ui.way.divide.standard'),
+		'divide-ladder': t('ui.way.divide.ladder'),
+		'divide-area': t('ui.way.divide.area'),
+		'multiply-standard': t('ui.way.multiply.standard'),
+		'multiply-area': t('ui.way.multiply.area'),
+		'multiply-partial': t('ui.way.multiply.partial')
 	};
 	const LAST = 'box-by-box-practice-v1';
 	const last = (load(LAST) as { kind?: Kind; hard?: Hard; mode?: Level; method?: Partial<Record<Kind, Method>>; numbers?: Numbers } | null) ?? {};
@@ -71,16 +72,16 @@
 <div class="page">
 	<button type="button" class="brand" onclick={goBack}><Logo size={28} /> {NAME}</button>
 	<header class="bar">
-		<button type="button" class="btn-ghost back" onclick={goBack}>← Back</button>
-		<h1>Let’s work it out, box by box</h1>
+		<button type="button" class="btn-ghost back" onclick={goBack}>{t('ui.back')}</button>
+		<h1>{t('ui.student.title')}</h1>
 	</header>
 
 	<div class="columns">
 		<section class="card" aria-labelledby="code-h">
-			<h2 id="code-h">Got a code from your teacher?</h2>
-			<p class="about">Type it here to open your teacher’s problems.</p>
+			<h2 id="code-h">{t('ui.student.codeTitle')}</h2>
+			<p class="about">{t('ui.student.codeAbout')}</p>
 			<div class="form">
-				<label class="sr-only" for="class-code">Class code</label>
+				<label class="sr-only" for="class-code">{t('ui.classCode')}</label>
 				<input
 					id="class-code"
 					class="code-input"
@@ -101,20 +102,20 @@
 					}}
 				/>
 				<button type="button" class="btn-primary" disabled={looking || typed === 0} onclick={open}>
-					{looking ? 'Opening…' : 'Open'}
+					{looking ? t('ui.opening') : t('ui.open')}
 				</button>
 			</div>
 			<p id="code-msg" class="msg" class:bad={!!problem} role={problem ? 'alert' : undefined}>
-				{problem || (isPreview() ? 'Class codes work in the published game.' : '')}
+				{problem || (isPreview() ? t('ui.code.previewShort') : '')}
 			</p>
 		</section>
 
 		<section class="card" aria-labelledby="practice-h">
-			<h2 id="practice-h">Practice on your own</h2>
-			<p class="about">Pick what to practice, how hard, and how much help. You get {SET_SIZE} new problems every time.</p>
+			<h2 id="practice-h">{t('ui.student.practice')}</h2>
+			<p class="about">{t('ui.student.practiceAbout', { n: SET_SIZE })}</p>
 
 			<fieldset>
-				<legend>What to practice</legend>
+				<legend>{t('ui.student.what')}</legend>
 				<div class="choices two">
 					{#each KINDS as k (k.name)}
 						<label class="choice" class:on={kind === k.name}>
@@ -127,7 +128,7 @@
 			</fieldset>
 
 			<fieldset>
-				<legend>How hard</legend>
+				<legend>{t('ui.student.hard')}</legend>
 				<div class="choices three">
 					{#each HARDS as h (h.hard)}
 						<label class="choice level" class:on={hard === h.hard}>
@@ -140,7 +141,7 @@
 			</fieldset>
 
 			<fieldset>
-				<legend>Numbers</legend>
+				<legend>{t('ui.numbers.name')}</legend>
 				<div class="choices two">
 					{#each NUMBER_KINDS as n (n.numbers)}
 						<label class="choice level" class:on={numbers === n.numbers}>
@@ -154,7 +155,7 @@
 
 			{#if ways_.length > 1}
 			<fieldset>
-				<legend>Which way</legend>
+				<legend>{t('ui.student.way')}</legend>
 				<div class="choices three">
 					{#each ways_ as m (m.name)}
 						<label class="choice level" class:on={ways[kind] === m.name}>
@@ -168,7 +169,7 @@
 			{/if}
 
 			<fieldset>
-				<legend>How much help</legend>
+				<legend>{t('ui.student.help')}</legend>
 				<div class="choices three">
 					{#each HELPS as h (h.mode)}
 						<label class="choice level" class:on={mode === h.mode}>
@@ -180,7 +181,7 @@
 				</div>
 			</fieldset>
 
-			<button type="button" class="btn-primary start" onclick={practice}>Start practicing ▸</button>
+			<button type="button" class="btn-primary start" onclick={practice}>{t('ui.student.go')}</button>
 		</section>
 	</div>
 	<Footer />

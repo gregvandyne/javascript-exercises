@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { t } from '$lib/i18n';
 	// Who's playing? Opened without a link or a lesson, the game asks first: a teacher goes on to their activities, a
 	// student to their own screen (a class code, or practicing alone).
-	import { NAME } from '$lib/name';
+	import { NAME_HERE as NAME } from '$lib/i18n';
 	import { GraduationCap, Backpack } from '@lucide/svelte';
 	import { go } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -11,19 +12,19 @@
 <div class="page">
 	<main>
 		<p class="brand"><Logo size={44} /> {NAME}</p>
-		<h1>Who’s playing?</h1>
+		<h1>{t('ui.start.who')}</h1>
 		<div class="paths">
 			<button type="button" class="path student" onclick={() => go({ name: 'student' })}>
 				<span class="icon"><Backpack size={30} /></span>
-				<span class="who">I’m a student</span>
-				<span class="what">Type the code your teacher gave you, or practice on your own.</span>
-				<span class="go">Let’s go ▸</span>
+				<span class="who">{t('ui.start.student')}</span>
+				<span class="what">{t('ui.start.studentAbout')}</span>
+				<span class="go">{t('ui.start.studentGo')}</span>
 			</button>
 			<button type="button" class="path teacher" onclick={() => go({ name: 'home' })}>
 				<span class="icon"><GraduationCap size={30} /></span>
-				<span class="who">I’m a teacher</span>
-				<span class="what">Make long division, multiplication, addition and subtraction activities, share them with a link or a code, and assign them to a class.</span>
-				<span class="go">Set up ▸</span>
+				<span class="who">{t('ui.start.teacher')}</span>
+				<span class="what">{t('ui.start.teacherAbout')}</span>
+				<span class="go">{t('ui.start.teacherGo')}</span>
 			</button>
 		</div>
 	</main>

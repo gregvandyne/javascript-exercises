@@ -91,3 +91,5 @@ export function segments(k: string, n?: number): { s: string; v?: string }[] {
 	if (last < text.length) out.push({ s: text.slice(last) });
 	return out;
 }
+/** The game's name in the player's language ("La Gran División"; the English one is lib/name.ts NAME). */
+export const NAME_HERE = t('ui.name');

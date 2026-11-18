@@ -44,7 +44,7 @@
 	}
 </script>
 
-<div class="sheet" class:paper role="group" aria-label={label ?? sheet.title} style:--cols={sheet.cols} style:--rows={sheet.rows}>
+<div class="sheet" dir="ltr" class:paper role="group" aria-label={label ?? sheet.title} style:--cols={sheet.cols} style:--rows={sheet.rows}>
 	{#each sheet.cells as c, i (i)}
 		{#if shown(c)}
 			{@const dim = !lit(cellKey(c))}
