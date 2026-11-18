@@ -7951,3 +7951,31 @@ for privacy, nothing in the game or the repository points back to the original.
   step, or 45 seconds on it. (Teachers already generate problems in the editor: ranges, How many, New problems.)
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 
+## Machine Line: a clear board, the voice from the start, order of operations, drag and drop (18 Nov 2026)
+Owner: "The machine line game seems to have that same sort of foggy distortion as another game yesterday ... the initial
+instructions are the computer voice and not AI. Also, I am a bit worried that the game may confuse the student about
+orders of operation. Can you create a solution for this?" And: "you should be able to drag and drop the numbers."
+- **The fog.** The board (the line of machines, the values, the number line) was a sprite in the 3D scene, drawn
+  brighter than white (1.12): the haze and, on Beautiful graphics, the glow (bloom) haloed every edge, as Crate
+  Stacker's truck numbers were. The same picture is now a page canvas over the 3D view (drawn at twice its size, so it is
+  crisp on any screen), placed every frame where the 3D board stands; the 3D board stays as the unseen stand-in that
+  pops in, shakes and sizes, so nothing else moved.
+- **The voice.** Round lines change every play (the numbers), so the warm-up can't have them, and the SDK reads a line
+  that hasn't arrived in 4 s with the device voice: the first instruction was always the computer voice. The play's lap
+  is now chosen while the start card or the menu shows (inside `playLap`, so tests that pin a lap still do), and the
+  first round's lines (and the rule) are asked for then with `BRB.prefetchSpeech`; each round asks for its closing line
+  and the next round's question.
+- **Order of operations.** A line runs its machines in the order they stand; written down, brackets come first, then
+  × and ÷, then + and −. Three things tie the two together: (1) while a line is built the board writes what it makes
+  so far ("your line: 3(n + 5)" or "3n + 5"), the brackets showing where the order needs them; (2) Build the Line's
+  first round opens with the rule, spoken: "Machines run in the order you put them. Written down, brackets come first,
+  then times and divide, then plus and minus."; (3) the right-machines-wrong-order hints say why: "Without brackets,
+  multiplying comes before adding or subtracting, so the times machine goes first." and "Brackets come first, so the
+  plus machine goes first, then the times machine." (A wrong plan's board already writes the line it made beside what
+  it should give.)
+- **Drag and drop.** A machine block can be dragged onto a slot of the line (it goes in there and the rest move along;
+  on a full line it takes that slot's place and the block there goes back), dragged from slot to slot, or dragged off
+  the board to take it out. Taps and keys work as before; a ghost of the block follows the finger and the board is
+  outlined while it would take it.
+- tests/unit/machine-line.test.js (all ten, the browser play-throughs included) expects the rule and the new hints.
+
