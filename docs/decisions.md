@@ -8063,3 +8063,29 @@ orders of operation. Can you create a solution for this?" And: "you should be ab
   outlined while it would take it.
 - tests/unit/machine-line.test.js (all ten, the browser play-throughs included) expects the rule and the new hints.
 
+
+## Folders: drag to reorder, save in a pop-up (18 Nov 2026)
+Owner: "Remove the up and down and just let users edit the order by clicking and dragging, or holding down and dragging
+on mobile and tablet. You should be able to move the games around this way too. Make Save to folder a pop-up that asks
+which folder, confirms it saved, and offers to return to the Oomba game list or go to the folder."
+- **Reorder** (public/js/reorder.js): the folder chips under "My folders" (on Build and on every folder page) and the
+  games in one's own folder are lists marked `data-reorder`. A mouse drags after a few pixels; a finger or pen holds
+  still for 350 ms first, so a swipe still scrolls the page (a short buzz where the device allows). The item lifts and
+  follows the pointer while the others make room (one column: above an item's middle goes before it; wrapped chips:
+  reading order, mirrored right to left). A drop over a chip never opens it. Keyboard: a focused chip or a game's ⠿
+  grip moves one place with Alt and an arrow key; the new place is announced ("Word Trail: 1 of 3"). Each change posts
+  the whole order: `POST /api/game-folders/order` and `POST /api/game-folders/:id/order` with `{ ids }`
+  (services/game-folders.js `orderFolders`, `orderGames`: only the owner's, unknown ids ignored, the rest kept after in
+  their old order, one transaction). If saving fails the page reloads with the saved order. The ↑ ↓ buttons are gone
+  (their routes stay for anything that still calls them). A short hint under each list says how.
+- **Save to folder** (public/js/folder-save.js): every link to `/build/save?…` (the Oomba game list on /learn, a game's
+  page, the Studio, folders shared with you, a lesson) opens a pop-up instead: "Which folder?" with each folder (one
+  that already has the game is marked and can't be picked) or a new folder by name, then Save. The pop-up says "✅ Saved
+  to Fun Games" and offers "Keep browsing" (closes it, so the teacher is still on the game list) or "Open Fun Games".
+  Its data and words come from `GET /api/game-folders/save`; saving uses the existing routes, which now answer with the
+  folder. A modifier-key click (new tab) and a browser without script still get the /build/save page.
+- app.js loads both only where they are used (a list to drag, a click on Save to folder), with its own version.
+- Words in 13 languages: `folders.pick`, `keepBrowsing`, `openFolder`, `reorderHint`, `move`, `moved`.
+- Checks: tests/unit/games-not-lessons.test.js (both orders, owner only, the pop-up's data, the folder in the save
+  answer, no ↑ ↓); in a browser: chips and games by mouse, games by touch hold-and-drag, a swipe not reordering, Alt +
+  arrows, the order after a reload, and the pop-up into an existing and a new folder with both ways out.
