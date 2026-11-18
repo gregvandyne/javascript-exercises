@@ -1803,7 +1803,28 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .gfo-rename[open]{flex-basis:100%}
 .gfo-rename form{margin-top:8px;max-width:520px}
 .gfo-share .btn{white-space:normal;max-width:100%;height:auto;text-align:center}
-.cl-folders{display:flex;flex-direction:column;gap:6px;margin-top:4px}
-.cl-folders .gfo-list{margin-top:0}
-.cl-acts .gfo-new[open]{flex-basis:100%}
-@media (max-width:480px){.cl-acts>.btn,.cl-acts>.gfo-new,.cl-acts>.gfo-new>summary{flex:1 1 100%;width:100%;justify-content:center}}
+/* The class page's Games tab (routes/lessons.js teacherLessonsPanel): toolbar, folders, assigned games */
+.cl-games{display:flex;flex-direction:column;gap:12px}
+.cl-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
+.cl-acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cl-side{display:flex;gap:10px;margin-inline-start:auto}
+.cl-nf{position:relative}
+.cl-nf>summary{list-style:none}
+.cl-nf>summary::-webkit-details-marker{display:none}
+.cl-nf-panel{position:absolute;top:calc(100% + 8px);inset-inline-start:0;z-index:20;width:min(420px,calc(100vw - 48px));display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow),inset 0 0 0 2px var(--line)}
+.cl-nf-panel label{font-weight:700}
+.cl-nf-panel .row{flex-wrap:nowrap;gap:8px}
+.cl-nf-panel .input{min-width:0}
+.cl-sub{margin:0;font-size:.82rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2)}
+.cl-folders{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:2px solid var(--line)}
+.cl-folders .gfo-list{margin:0}
+.cl-assigned-h{padding-top:12px;border-top:2px solid var(--line)}
+.cl-none{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-sm);background:var(--card-2)}
+.cl-none .emo{font-size:2rem;line-height:1}
+.cl-none p{margin:2px 0 0}
+@media (max-width:600px){
+  .cl-bar,.cl-acts,.cl-side{flex-direction:column;align-items:stretch;width:100%}
+  .cl-acts>.btn,.cl-nf>summary,.cl-side>.btn{width:100%;justify-content:center}
+  .cl-side{margin-inline-start:0}
+  .cl-nf-panel{position:static;width:auto;margin-top:8px;box-shadow:inset 0 0 0 2px var(--line)}
+}
