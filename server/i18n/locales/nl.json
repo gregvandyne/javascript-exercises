@@ -10984,7 +10984,7 @@
     "scores": "Scores",
     "courses": "Kant-en-klare cursussen",
     "classEmpty": "Nog geen spellen toegewezen",
-    "classEmptyText": "Maak een spel met de Bouwer, of wijs er een toe uit je mappen of de spellen van Oomba. Kant-en-klare cursussen staan hieronder.",
+    "classEmptyText": "Bouw een spel, of wijs er een toe uit je mappen of de spellen van Oomba.",
     "myGamesFolders": "Mijn spellen en mappen",
     "assignNote": "Leerlingen zien het op hun klaspagina. Hun scores staan op het tabblad Toegewezen spellen van de klas.",
     "errors": {
@@ -11003,6 +11003,11 @@
     "copy": "Kopiëren naar mijn mappen",
     "sharedToast": "Gedeeld met je school",
     "unsharedToast": "Niet meer gedeeld",
-    "copied": "Gekopieerd naar je mappen"
+    "copied": "Gekopieerd naar je mappen",
+    "buildNew": "Nieuw spel bouwen",
+    "progressEmptyText": "Wijs een spel toe op het tabblad Spellen, dan zie je hier hoe het met elke leerling gaat.",
+    "studentEmptyText": "Je leerkracht zet hier spellen klaar.",
+    "liveHistory": "Eerdere livespellen",
+    "liveHistoryNone": "Nog geen livespellen met deze klas."
   }
 }
