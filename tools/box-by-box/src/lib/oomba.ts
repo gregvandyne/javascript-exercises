@@ -1,4 +1,4 @@
-// Box by Box: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit (its sounds
+// The Big Divide: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit (its sounds
 // and effects), in one place. Every call is optional: outside a game frame (or in an old one) it quietly does nothing.
 //
 // A teacher's activities live in their own game save. Sharing one saves it on Oomba as a question set of one item (the

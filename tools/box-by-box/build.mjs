@@ -1,4 +1,4 @@
-// Box by Box: builds tools/box-by-box (a Svelte app) into the single self-contained seed game seed-games/box-by-box.html.
+// The Big Divide (slug box-by-box): builds tools/box-by-box (a Svelte app) into the single self-contained seed game seed-games/box-by-box.html.
 //   cd tools/box-by-box && npm install && node build.mjs          write the game file
 //   node build.mjs --check                                       exit 1 when the committed file is not what the sources build
 // Vite (vite.config.js) bundles the app into one page; then this script
@@ -26,7 +26,8 @@ html = html.replace('<!--@@KIT@@-->', kitTag());
 // Web addresses: Svelte's error links and Tailwind's banner (the license name stays)
 html = html.replace(/https:\/\/svelte\.dev\/e\//g, 'svelte.dev/e/').replace(/ \| https:\/\/tailwindcss\.com/g, '');
 
-const banner = `<!-- Box by Box. Built by tools/box-by-box/build.mjs from tools/box-by-box: do not edit by hand. -->\n`;
+const NAME = fs.readFileSync(path.join(HERE, 'src/lib/name.ts'), 'utf8').match(/export const NAME = '([^']+)'/)[1];
+const banner = `<!-- ${NAME}. Built by tools/box-by-box/build.mjs from tools/box-by-box: do not edit by hand. -->\n`;
 html = html.replace(/^<!doctype html>\n?/i, (m) => m + banner);
 
 // What must never be in the page: an outside web address (SVG namespaces aside), or a name it must not carry (spelled

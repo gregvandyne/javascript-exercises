@@ -8289,3 +8289,23 @@ time should change with a tap on the digits.
 - Words in 12 languages (`js.dash.side.done`, `.saved`, `dash.w.timer.edit*`). Checks:
   tests/unit/dash-timer-edit.test.js (each way of closing, mouse and touch, reloaded; Done; tap, Escape, bad input,
   running, the projector, edit mode).
+
+## Box by Box is now The Big Divide (18 Nov 2026)
+Owner: give Box by Box a better name; they chose a fun one, **The Big Divide** (en and en-GB).
+- **Only the name changes.** The slug `box-by-box`, every `/g/box-by-box` link and QR code, the `BRB.storage` keys
+  (`box-by-box-activities-v1`, `box-by-box-seen-v1`), the question-set game key in `server/services/game-sets.js` and
+  saved set codes all stay, so saved activities, shared links and Classroom posts keep working.
+- **Where the name lives.** `seed-games/box-by-box.json` (`title`, and `l10n.<lang>.title` for each of the 12 other
+  languages), `server/services/tts-lines.js`, and in the game one line, `tools/box-by-box/src/lib/name.ts`: the pages, the
+  footer, the browser tab, `index.html`'s `<title>` (vite.config.js) and the built file's banner (build.mjs) all read it.
+  A later rename is those three lines, a rebuild (`npm run build:box-by-box`) and `node scripts/covers.js box-by-box` plus
+  `node scripts/og-images.js box-by-box.jpg` (the cover shows the game's header, the share picture prints the title).
+- **Translations.** Playful names in the same spirit, not word for word: La Gran División, La Grande Division, Die große
+  Teilung, A Grande Divisão, La Grande Divisione, De Grote Deling, Великое деление, החילוק הגדול, القسمة الكبرى, わり算大作戦,
+  除法大挑戰. A top-level `l10n_note` in the seed JSON tells translators so (the importer ignores it, so it never reaches
+  the database or search). The descriptions are unchanged and still say long division and multiplication; the English tags
+  gain "box by box", so a teacher searching the old name still finds it.
+- **The live database.** No migration: the seed runs on every boot and `scripts/import-game.js` updates an existing official
+  game's title, description, tags and `l10n` from its JSON (`games.updateMeta`), so the deploy renames the row in place.
+  Lessons, assignments and Classroom posts made before keep the name they were saved with.
+- This log's entry above keeps its heading, "Box by Box", as written at the time.

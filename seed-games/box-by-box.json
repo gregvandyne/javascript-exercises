@@ -1,63 +1,76 @@
 {
   "slug": "box-by-box",
-  "title": "Box by Box",
+  "title": "The Big Divide",
   "icon": "🔢",
   "cover": "sky",
   "category": "puzzle",
   "shelf": "play",
-  "tags": "long division,multiplication,multi-digit multiplication,standard algorithm,carrying,remainders,place value,graph paper,math,maths,grade 4,grade 5,grade 6,practice,teacher",
+  "tags": "long division,multiplication,box by box,multi-digit multiplication,standard algorithm,carrying,remainders,place value,graph paper,math,maths,grade 4,grade 5,grade 6,practice,teacher",
   "description": "Long division and multi-digit multiplication, worked one box at a time on graph paper. Teachers make an activity, choose how much support students get (Watch, Count up, Guided or On my own) and share it as a link or QR code. Students divide, multiply, subtract, bring down and carry, then press Check.",
   "orientation": "any",
   "players_max": 1,
   "age_rating": "everyone",
   "featured": true,
   "notes": "Built by tools/box-by-box/build.mjs (Svelte + Vite into one page; npm run build:box-by-box) from tools/box-by-box; tests/unit/box-by-box.test.js. Teachers' activities (long division up to 999,999 ÷ 9,999, multiplication up to 9,999 × 999; ranges, remainders, per-student sets, four support modes) live in their game save (BRB.storage 'box-by-box-activities-v1'). Sharing saves the activity as a question set (server/services/game-sets.js, one activity per set: problems, level, flags, plan; never a title or other free text) and links to it: chapter=s-xxxxxxxxxx&lock=1, with a QR code; BRB.questionSet opens it straight in the player. Teachers (school staff) can Assign it to a class (BRB.assign), with Also post to Google Classroom; the end screen calls BRB.gameOver({ won: true, score: right }) once per run, the step done and the Classroom completion grade. Opened without a link it asks who's playing: teachers get their activities; students type a class code (BRB.findQuestionSet) or practise alone (kind, Easy/Medium/Hard, the help they want; 5 problems never had lately, BRB.storage 'box-by-box-seen-v1'). A Hint button gives up to three hints per step, lit as Stuck? after a failed Check, two wrong digits or 45 seconds. Oomba Kit sounds and confetti. Reads nothing aloud.",
+  "l10n_note": "For translators: \"The Big Divide\" is a playful game name for a long division and multiplication game (a big division to work out, one box at a time). Give each language a fun, natural name in that spirit (\"La Gran División\", \"Die große Teilung\"), not a word-for-word translation. Keep the description and tags plain, so they still say long division and multiplication and search still finds the game. The slug box-by-box never changes.",
   "l10n": {
     "en-GB": {
+      "title": "The Big Divide",
       "description": "Long division and multi-digit multiplication, worked one box at a time on graph paper. Teachers make an activity, choose how much support pupils get (Watch, Count up, Guided or On my own) and share it as a link or QR code. Pupils divide, multiply, subtract, bring down and carry, then press Check.",
       "tags": "long division,multiplication,column method,carrying,remainders,place value,maths,year 5,year 6,practice"
     },
     "pt": {
+      "title": "A Grande Divisão",
       "description": "Divisão longa e multiplicação com vários algarismos, resolvidas casa por casa em papel quadriculado. O professor cria uma atividade, escolhe quanto apoio os alunos recebem (Assistir, Contar, Guiado ou Sozinho) e compartilha por link ou QR code. Os alunos dividem, multiplicam, subtraem, baixam e levam o vai-um, e depois tocam em Verificar.",
       "tags": "divisão,multiplicação,algoritmo,vai-um,resto,valor posicional,matemática"
     },
     "fr": {
+      "title": "La Grande Division",
       "description": "Division posée et multiplication à plusieurs chiffres, case par case sur papier quadrillé. L’enseignant crée une activité, choisit le niveau d’aide (Regarder, Compter, Guidé ou Seul) et la partage par lien ou QR code. Les élèves divisent, multiplient, soustraient, abaissent et retiennent, puis appuient sur Vérifier.",
       "tags": "division posée,multiplication posée,retenue,reste,valeur de position,maths"
     },
     "es": {
+      "title": "La Gran División",
       "description": "División larga y multiplicación de varias cifras, casilla por casilla en papel cuadriculado. El docente crea una actividad, elige cuánta ayuda reciben los alumnos (Ver, Contar, Guiado o Por mi cuenta) y la comparte con un enlace o código QR. Los alumnos dividen, multiplican, restan, bajan cifras y llevan, y pulsan Comprobar.",
       "tags": "división larga,multiplicación,algoritmo,llevar,residuo,valor posicional,matemáticas"
     },
     "de": {
+      "title": "Die große Teilung",
       "description": "Schriftliches Dividieren und Multiplizieren, Kästchen für Kästchen auf Karopapier. Lehrkräfte erstellen eine Aktivität, wählen die Hilfe (Zuschauen, Hochzählen, Geführt oder Allein) und teilen sie als Link oder QR-Code. Schüler dividieren, multiplizieren, subtrahieren, holen herunter und übertragen und tippen dann auf Prüfen.",
       "tags": "schriftliche division,schriftliche multiplikation,übertrag,rest,stellenwert,mathe"
     },
     "he": {
+      "title": "החילוק הגדול",
       "description": "חילוק ארוך וכפל במאונך, משבצת אחר משבצת על נייר משבצות. המורה יוצר פעילות, בוחר כמה עזרה יקבלו התלמידים (צפייה, ספירה, מודרך או לבד) ומשתף בקישור או בקוד QR. התלמידים מחלקים, כופלים, מחסרים, מורידים ספרה ומעבירים, ואז לוחצים על בדיקה.",
       "tags": "חילוק ארוך,כפל במאונך,העברה,שארית,ערך המקום,מתמטיקה"
     },
     "ja": {
+      "title": "わり算大作戦",
       "description": "筆算のわり算と、何けたものかけ算を、方眼紙の上で1マスずつ解きます。先生はアクティビティを作り、サポートの量（見る・数える・ガイドつき・ひとりで）を選んで、リンクやQRコードで共有します。生徒はわる・かける・ひく・おろす・くり上げるを進めて、「チェック」を押します。",
       "tags": "わり算の筆算,かけ算の筆算,くり上がり,あまり,位取り,算数"
     },
     "ar": {
+      "title": "القسمة الكبرى",
       "description": "القسمة الطويلة والضرب بعدة أرقام، خانة بعد خانة على ورق مربعات. يصمم المعلم نشاطًا ويختار مقدار المساعدة (مشاهدة أو عدّ أو موجَّه أو بمفردي) ويشاركه برابط أو رمز QR. يقسم الطلاب ويضربون ويطرحون وينزلون الأرقام ويحملون، ثم يضغطون تحقّق.",
       "tags": "القسمة الطويلة,الضرب,الحمل,الباقي,القيمة المكانية,رياضيات"
     },
     "ru": {
+      "title": "Великое деление",
       "description": "Деление и умножение столбиком, клетка за клеткой на бумаге в клетку. Учитель создаёт задание, выбирает уровень подсказок (Смотреть, Считать, С подсказками или Сам) и делится ссылкой или QR-кодом. Ученики делят, умножают, вычитают, сносят цифры и переносят, а затем нажимают «Проверить».",
       "tags": "деление столбиком,умножение столбиком,перенос,остаток,разряды,математика"
     },
     "it": {
+      "title": "La Grande Divisione",
       "description": "Divisione in colonna e moltiplicazione a più cifre, una casella alla volta su carta a quadretti. L’insegnante crea un’attività, sceglie quanto aiuto dare (Guarda, Conta, Guidato o Da solo) e la condivide con un link o un codice QR. Gli studenti dividono, moltiplicano, sottraggono, abbassano e riportano, poi premono Verifica.",
       "tags": "divisione in colonna,moltiplicazione in colonna,riporto,resto,valore posizionale,matematica"
     },
     "zh-Hant": {
+      "title": "除法大挑戰",
       "description": "在方格紙上一格一格做長除法和多位數乘法。老師建立活動，選擇提示的多寡（觀看、數數、引導或自己來），用連結或 QR 碼分享。學生依序做除、乘、減、往下移和進位，然後按「檢查」。",
       "tags": "長除法,直式乘法,進位,餘數,位值,數學"
     },
     "nl": {
+      "title": "De Grote Deling",
       "description": "Staartdelingen en vermenigvuldigen onder elkaar, vakje voor vakje op ruitjespapier. De leraar maakt een activiteit, kiest hoeveel hulp leerlingen krijgen (Kijken, Optellen, Begeleid of Zelf) en deelt die als link of QR-code. Leerlingen delen, vermenigvuldigen, trekken af, halen omlaag en onthouden, en drukken dan op Controleer.",
       "tags": "staartdeling,vermenigvuldigen onder elkaar,onthouden,rest,plaatswaarde,rekenen"
     }

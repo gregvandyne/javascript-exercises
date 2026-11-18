@@ -1,6 +1,7 @@
 <script lang="ts">
 	// The editor: the settings that make the problems (ranges, remainders), the support students get (the mode), and
 	// the problems themselves, which the teacher can change, reorder, paste or add to. Every change is saved at once.
+	import { NAME } from '$lib/name';
 	import { onMount, tick } from 'svelte';
 	import { ArrowLeft, Dices, ExternalLink, GripVertical, Plus, Share2, X } from '@lucide/svelte';
 	import { find, isShared, list, loadList, titleOf, touch } from '$lib/activities.svelte';
@@ -306,7 +307,7 @@
 		if (!e.composedPath().some((el) => el instanceof HTMLElement && el.classList.contains('share-wrap'))) shareOpen = false;
 	}
 	$effect(() => {
-		document.title = `${activity ? titleOf(activity) : 'Activity'} · Box by Box`;
+		document.title = `${activity ? titleOf(activity) : 'Activity'} · ${NAME}`;
 	});
 </script>
 
