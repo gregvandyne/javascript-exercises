@@ -617,8 +617,8 @@ test('a second adult\'s bonus or message within the session\'s gap is told who j
   d.send({ t: 'h', a: 'bonus', n: a.join.seat, r: 0 });
   const n = await d.next('nak', m => m.a === 'bonus');
   assert.equal(n.why, 'tooSoon'); assert.equal(n.by, h.wel.ctl.me);
-  h.send({ t: 'h', a: 'say', m: 0 }); await a.next('say');
-  h.send({ t: 'h', a: 'say', m: 1 });
+  h.send({ t: 'h', a: 'say', x: 'Two minutes left!' }); await a.next('say');
+  h.send({ t: 'h', a: 'say', x: 'One minute left!' });
   const w = await h.next('nak', m => m.a === 'say');
   assert.equal(w.why, 'wait'); assert.equal(w.by, undefined);
   assert.ok(P.NAK.includes('tooSoon') && P.NAK.includes('wait'));

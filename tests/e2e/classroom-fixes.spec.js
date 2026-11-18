@@ -10,7 +10,7 @@
 // - Sign in: Show password, and a login card's password typed with spaces still works.
 // - /teachers asks for the sender's name; the thank-you comes first and lists what to do today.
 import { test, expect } from '@playwright/test';
-import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN, liveStep, openLiveRoom, newLesson } from './helpers.js';
+import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN, liveStep, openLiveRoom, newLesson, answerDialog } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -26,8 +26,8 @@ async function endOpen(t) {
   const mine = await (await t.request.get('/api/live/mine')).json();
   if (!mine.sid) return;
   await t.goto(mine.host);
-  t.once('dialog', d => d.accept());
   await t.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click();
+  await answerDialog(t);
   await expect.poll(async () => (await (await t.request.get('/api/live/mine')).json()).sid || null).toBe(null);
 }
 
@@ -52,7 +52,7 @@ test('an old open room: the landing says what is open and asks; End it opens the
   // Game settings: no second "Time per question" / "Number of questions" for a game with its own
   await expect(t.locator('#lv-ls-secs')).toBeHidden();
   await expect(t.locator('#lv-ls-count')).toBeHidden();
-  let dialogs = 0; t.on('dialog', d => { dialogs++; d.dismiss(); });
+  let dialogs = 0; t.on('dialog', d => { dialogs++; d.dismiss(); });   // the browser's own box: never
   await openLiveRoom(t);
   const box = t.locator('#lv-open-old');
   await expect(box).toBeVisible();
@@ -60,6 +60,7 @@ test('an old open room: the landing says what is open and asks; End it opens the
   await expect(box).toContainText('still in the lobby');
   await expect(t.locator('#lv-open-back')).toHaveAttribute('href', new URL(firstHost).pathname);
   expect(dialogs).toBe(0);
+  await expect(t.locator('dialog.ob-dialog[open]')).toHaveCount(0);   // nor the site's: the box above says it
   expect(t.url()).toContain('/live?');   // never taken into the old room
   await t.locator('#lv-open-replace').click();
   await t.waitForURL(/\/live\/host\//);
@@ -162,8 +163,8 @@ test('a school admin invites an existing account: not staff until they accept; t
   await other.goto('/classes');
   await expect(other.locator('#my-invites')).toContainText(`${school.name} wants to add you as Teacher`);
   await expect(other.locator('#my-invites .inv-warn')).toContainText('Staff accounts have no friends and no chat');
-  other.once('dialog', d => d.accept());   // Accept asks first: staff accounts lose their friends and friend code
-  await Promise.all([other.waitForURL(/\/teach/), other.locator('#my-invites button.btn-primary').click()]);
+  // Accept asks first: staff accounts lose their friends and friend code
+  await Promise.all([answerDialog(other), other.waitForURL(/\/teach/), other.locator('#my-invites button.btn-primary').click()]);
   await expect(other.locator('.topbar .me-btn .name')).toHaveText('Ana Rivera');
   await head.reload();
   await expect(head.locator('#staff-list')).toContainText('Ana Rivera');

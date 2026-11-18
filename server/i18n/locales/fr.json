@@ -1891,7 +1891,9 @@
       "inviteTitle": "Jouer à {game} ?",
       "inviteText": "{name} veut jouer à {game} avec toi !",
       "invitePlay": "On joue !",
-      "inviteNo": "Pas maintenant"
+      "inviteNo": "Pas maintenant",
+      "ok": "OK",
+      "cancel": "Annuler"
     },
     "game": {
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
@@ -5902,7 +5904,8 @@
       "seeResultsNow": "Voir les résultats",
       "read": "Lire la question",
       "away": "{count} déconnecté(s)",
-      "startEmpty": "Personne n’a encore rejoint la partie. Lancer quand même ?"
+      "startEmpty": "Personne n’a encore rejoint la partie. Lancer quand même ?",
+      "startAnyway": "Lancer quand même"
     },
     "landing": {
       "title": "Animer une partie en direct",
@@ -6504,17 +6507,11 @@
       "voicesHint": "Les voix IA sont faites par un ordinateur ({provider}). Seules vos questions et les choix de réponse sont envoyés, jamais de noms ni ce que les élèves écrivent."
     },
     "say": {
-      "menu": "Message",
-      "twoMinutes": "Plus que 2 minutes !",
-      "oneMinute": "Plus qu'1 minute !",
-      "lastQuestion": "Dernière question !",
-      "lastRound": "Dernière manche !",
-      "eyesOnMe": "Regardez-moi, s'il vous plaît",
-      "greatTeamwork": "Super travail d'équipe !",
-      "greatEffort": "Bravo pour vos efforts !",
-      "beKind": "Pensez à être gentils",
-      "getReady": "Préparez-vous !",
-      "almostDone": "Presque fini !"
+      "label": "Message à tout le monde",
+      "send": "Envoyer à tout le monde",
+      "sent": "Envoyé à tout le monde.",
+      "blocked": "Ce message ne peut pas être envoyé. Essaie avec d’autres mots.",
+      "wait": "Attends un instant, puis renvoie-le."
     },
     "eyes": {
       "on": "Les yeux ici",

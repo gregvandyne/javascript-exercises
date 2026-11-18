@@ -11,7 +11,7 @@ import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { findTouching } from './touching.js';
-import { login, ownIp, uniq, ADMIN, openLiveRoom } from './helpers.js';
+import { login, ownIp, uniq, ADMIN, openLiveRoom, answerDialog } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -55,8 +55,8 @@ async function endOpen(t) {
   const mine = await (await t.request.get('/api/live/mine')).json();
   if (!mine.sid) return;
   await t.goto(mine.host);
-  t.once('dialog', d => d.accept());
   await t.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click();
+  await answerDialog(t);
   await expect.poll(async () => (await (await t.request.get('/api/live/mine')).json()).sid || null).toBe(null);
 }
 

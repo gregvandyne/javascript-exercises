@@ -7,7 +7,7 @@
 // sideways scroll, nothing touches (touching.js), 44 px tap targets on phones.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
-import { login, uniq, ownIp } from './helpers.js';
+import { login, uniq, ownIp, autoAnswer } from './helpers.js';
 import { firstLiveGame } from '../support/fast-live-flow.js';
 
 /** The most steps a new teacher may need from the first page to a started game, and each student to an answer. */
@@ -72,7 +72,7 @@ test('a new teacher: first page -> three-field sign-up -> Quick game -> three gu
   // The typed teacher name is on no player's screen (players see the game, never the host's account).
   for (const text of nicks) expect(text).not.toContain(username);
   // All three answered: the host's dashboard count, then the end and the results.
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   await host.locator('[data-lv-act="end"]:not([hidden])').click();
   await host.waitForURL(/\/live\/results\//);
   const note = host.locator('#lv-guest-note');
@@ -137,7 +137,7 @@ test('after the game: "Make a class to keep scores" -> paste names -> login card
   await expect(home.locator('form.cc-quick')).toHaveCount(0);
   await expect(home.locator('a.cc-live.btn-hot')).toBeVisible();
   // "Change" (once the room is ended) opens the chooser for the class with the pick preselected.
-  t.on('dialog', d => d.accept());
+  await autoAnswer(t);
   await t.locator('[data-lv-act="end"]:not([hidden])').click();
   await expect.poll(() => new URL(t.url()).pathname, { timeout: 15_000 }).toMatch(/\/live\/results\/|\/live$|\/class\//);
   await home.goto(`/live/quick?class=${classId}`);

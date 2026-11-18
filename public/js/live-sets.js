@@ -5,7 +5,7 @@
 // open live game (409 hasOpen). Each question may have a category (Brain Board's column). The editor builds sets of 1-100 questions with 2-4 answers each (typed, pasted from a spreadsheet or drafted by the
 // AI, then edited); questions are written by
 // grown-ups and checked on the server (profanity and personal information are refused).
-import { api, toast, sheet, t, esc } from '/js/app.js';
+import { api, toast, sheet, t, esc, ask } from '/js/app.js';
 import { SECS, MAX, parsePasted } from '/js/live-paste.js';
 
 const $ = id => document.getElementById(id);
@@ -127,7 +127,7 @@ if (form) {
         if (er.data && er.data.code === 'hasOpen') {
           // Never straight into the old room: say what is still open and let the teacher choose.
           const box = $('lv-open-old');
-          if (!box) { if (confirm(t('js.live-sets.replaceOpen'))) return go(true); location.href = er.data.host; return; }
+          if (!box) { if (await ask({ text: t('js.live-sets.replaceOpen'), ok: t('js.live-sets.openOld.replace') })) return go(true); location.href = er.data.host; return; }
           const d = er.data, when = d.since ? new Date(d.since).toLocaleTimeString(document.documentElement.lang || undefined, { hour: 'numeric', minute: '2-digit' }) : '';
           $('lv-open-old-text').textContent = [t('js.live-sets.openOld.what', { title: d.title || '?', time: when }),
             t(d.started ? 'js.live-sets.openOld.started' : 'js.live-sets.openOld.lobby'), t('js.live-sets.openOld.players', { count: d.players || 0 })].join(' ');
@@ -258,7 +258,7 @@ if (editor) {
     $('lv-set-ai').addEventListener('click', aiDialog);
     $('lv-set-paste').addEventListener('click', pasteDialog);
     $('lv-set-form').addEventListener('submit', save);
-    const ar = $('lv-set-archive'); if (ar) ar.addEventListener('click', async () => { if (!confirm(t('js.live-sets.archiveConfirm'))) return; await api(`/api/live/sets/${set.id}/archive`, { method: 'POST', body: {} }); location.href = '/live/sets'; });
+    const ar = $('lv-set-archive'); if (ar) ar.addEventListener('click', async () => { if (!(await ask({ text: t('js.live-sets.archiveConfirm'), ok: t('js.live-sets.archive') }))) return; await api(`/api/live/sets/${set.id}/archive`, { method: 'POST', body: {} }); location.href = '/live/sets'; });
     editor.querySelector('#lv-set-title').focus();
   }
   const count = () => { const n = $('lv-qlist').children.length; $('lv-q-count').textContent = t('js.live-sets.count', { n, max: MAX.items }); $('lv-q-add').disabled = n >= MAX.items; };

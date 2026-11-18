@@ -4,14 +4,15 @@
 // game's own host view in a sandboxed frame (role host: the game draws a spectator view, e.g. the cinematic camera of
 // the shared 3D world and the leaderboard). The game's live settings (Oomba.live.ready) go to the server as rdy.cfg.
 // Part 3: teams (the Teams row, the Teams sheet with drag and select-then-move, the team board during play), game
-// settings, Eyes up, fixed messages, +time, projector sound, the "Teacher view on your phone" QR, and the podium hold
+// settings, Eyes up, the typed message to everyone, +time, projector sound, the "Teacher view on your phone" QR, and the podium hold
 // at the end. This page is on the class's screen: it never shows "needs help", support, marks or a player's bonus.
 // Part 4: co-hosts. The host's "Co-hosts" dialog shows adults' names only behind a gate ("check the class can't see your
 // screen"), and closing it hides them again; no activity line ever shows here. A co-host may use this page when the
 // projector slot is free (else it says so and points to the Teacher view); the host's own projector takes it back.
-import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam, readAloud, stopReading, voiceFor, aiOn, welTracker } from '/js/live-common.js';
+import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam, readAloud, stopReading, voiceFor, aiOn, welTracker, messageForm } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
 import { cohostPanel, actText, namesOf } from '/js/live-cohost.js';
+import { ask, verbOf } from '/js/app.js';
 
 const D = readJson('lv-host-data');
 const $ = id => document.getElementById(id);
@@ -66,13 +67,13 @@ function onMessage(m) {
       if (m.why !== 'ended') document.body.classList.add('lv-offline'); return;
     case 'ch': namesOf(m, adults); if (panel) panel.setCh(m); drawRecent(); return;
     case 'act': if (m.a === 'acc') return; acts.push(m); if (acts.length > 10) acts.shift(); drawRecent(); return;
-    case 'nak': return;   // adults' names: never on the class's screen
+    case 'nak': if (m.a === 'say') msgBox.refused(m.why); return;   // adults' names: never on the class's screen
     case 'tms': teams = teamsOf(m); for (const [seat, k] of teams.of) { const p = players.get(seat); if (p) p.team = k; } for (const p of players.values()) if (!teams.of.has(p.seat)) p.team = 0; drawTeams(); for (const p of players.values()) drawPlayer(p); break;
     case 'tml': tmlNotice(m); return;
     case 'ts': scoresOf(m.s, scores); drawBoard(); break;
     case 'bn': if (m.k) flash($('lv-bonus-toast'), fill(D.text.toastTeam, { team: (presetOf(m.k) || {}).name || '', points: m.p, reason: (D.bonus || [])[m.r] || '' }), 5000); if (!m.k) return; break;   // a player's bonus is private: not on the class's screen
     case 'eyes': setEyes(m.on); return;
-    case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
+    case 'say': if (typeof m.x === 'string') { flash($('lv-say-banner'), m.x, 6000); msgBox.said(m.x); } return;
     case 'cf': { const was = settings; settings = { ...settings, ...m.d }; fillSettings(); setSound();
       // Sound switched off, or Voices switched to each device's own: stop a question being read now.
       if ((settings.sound === false && was.sound !== false) || (settings.voices === 'device' && was.voices !== 'device')) stopReading();
@@ -213,11 +214,11 @@ function drawPlayer(p) {
 }
 
 // ---- controls ----
-function act(a, extra = {}) {
-  if (a === 'end' && !confirm(document.querySelector('[data-lv-act="end"]').dataset.confirm)) return;
-  if (a === 'clear' && !confirm(document.querySelector('[data-lv-act="clear"]').dataset.confirm)) return;
+async function act(a, extra = {}) {
+  // End and Clear ask first, in the app's own question box (app.js ask), its main button saying what the control says.
+  if (a === 'end' || a === 'clear') { const b = document.querySelector(`[data-lv-act="${a}"]`); if (!(await ask({ text: b.dataset.confirm, ok: verbOf(b), danger: true }))) return; }
   // Nobody has joined: starting now is almost always a slip (the class is still typing the code), so ask first.
-  if (a === 'start' && players.size === 0 && D.text.startEmpty && !confirm(D.text.startEmpty)) return;
+  if (a === 'start' && players.size === 0 && D.text.startEmpty && !(await ask({ text: D.text.startEmpty, ok: D.text.startAnyway }))) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
   if (a === 'settings') { const d = $('lv-settings'); fillSettings(); if (d && d.showModal) d.showModal(); return; }
   if (a === 'sound') { sock.send('cf', { d: { sound: settings.sound === false } }); return; }
@@ -231,13 +232,13 @@ function act(a, extra = {}) {
 }
 $('lv-controls').addEventListener('click', e => {
   const t = e.target.closest('[data-lv-time]'); if (t) { sock.send('h', { a: 'time', s: +t.dataset.lvTime }); return; }
-  const s = e.target.closest('[data-lv-say]'); if (s) { sock.send('h', { a: 'say', m: +s.dataset.lvSay }); const d = $('lv-say'); if (d) d.open = false; return; }
   const b = e.target.closest('[data-lv-act]'); if (b && !b.hidden) act(b.dataset.lvAct);
 });
+// the message to everyone: typed, then Send (or Enter)
+const msgBox = messageForm($('lv-msg'), { send: x => sock.send('h', { a: 'say', x }), text: D.say });
 roster.addEventListener('click', e => {
   const b = e.target.closest('[data-lv-kick]'); if (!b) return;
-  if (!confirm(D.text.removeConfirm)) return;
-  act('kick', { n: +b.dataset.lvKick });
+  ask({ text: D.text.removeConfirm, ok: D.text.remove, danger: true }).then(yes => { if (yes) act('kick', { n: +b.dataset.lvKick }); });
 });
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || /input|textarea|select/i.test((e.target && e.target.tagName) || '')) return;

@@ -553,7 +553,9 @@ must be one of the game's own words, written in its code (`Oomba.live.ready({ wo
 session opens, each through the text filter). Underscore-joined messages (`add_me_on_snap`) are never relayed, so a
 game cannot become a chat (the kit checks it, the server checks it again). Question sets, and every string the host
 sends to players (shared state, host events), are written by adults and pass the rude-word and personal-information
-checks (contact words, handles and links included). In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
+checks (contact words, handles and links included). That covers the host's message to everyone (typed, 120
+characters at most, one way: players can't answer it), which goes through the same check on the server before any
+screen shows it; a refused one is said to that adult only. In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
 read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages"). The one exception is
 Doodle Hoot Live's guess box (an `<input data-live-guess>`, only in the built-in mode `doodle` with typed guesses, only
 in a player's frame: the server sets `INIT.live.guess`).
@@ -663,7 +665,7 @@ counted. Player pages use the bare layout: no menus, no prices, plans or sign-up
   help, support, who answered, account names beyond what the room shows, Student details or CSV. Adults' names go only
   to the adults' own pages, never to a student, a game frame or the projector screen (its Co-hosts list is behind a
   "check the class can't see your screen" step). There is no message path between a co-host and a student: the same
-  fixed messages, bonus reasons and Eyes up as the host. Who did what is kept with the run (legal-review item 43).
+  message box to everyone, bonus reasons and Eyes up as the host. Who did what is kept with the run (legal-review item 43).
 
 **Honest limits.** Grown-up accounts are self-declared, so "a host account" does not prove an adult; the limits above
 (open rooms: nicknames only, reviewed games only, 30 players, Report) are the protection. A determined game author

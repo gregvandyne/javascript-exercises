@@ -1892,7 +1892,9 @@
       "inviteTitle": "{game} spielen?",
       "inviteText": "{name} will mit dir {game} spielen!",
       "invitePlay": "Los geht's!",
-      "inviteNo": "Jetzt nicht"
+      "inviteNo": "Jetzt nicht",
+      "ok": "OK",
+      "cancel": "Abbrechen"
     },
     "game": {
       "needSignIn": "Tipp auf „Als Gast spielen“ oder melde dich zuerst an.",
@@ -5903,7 +5905,8 @@
       "seeResultsNow": "Ergebnisse jetzt ansehen",
       "read": "Frage vorlesen",
       "away": "{count} getrennt",
-      "startEmpty": "Es ist noch niemand beigetreten. Trotzdem starten?"
+      "startEmpty": "Es ist noch niemand beigetreten. Trotzdem starten?",
+      "startAnyway": "Trotzdem starten"
     },
     "landing": {
       "title": "Live-Spiel leiten",
@@ -6505,17 +6508,11 @@
       "voicesHint": "KI-Stimmen macht ein Computer ({provider}). Gesendet werden nur deine Fragen und Antworten, nie Namen oder etwas, das Schüler tippen."
     },
     "say": {
-      "menu": "Nachricht",
-      "twoMinutes": "Noch 2 Minuten!",
-      "oneMinute": "Noch 1 Minute!",
-      "lastQuestion": "Letzte Frage!",
-      "lastRound": "Letzte Runde!",
-      "eyesOnMe": "Alle mal herschauen, bitte",
-      "greatTeamwork": "Tolle Teamarbeit!",
-      "greatEffort": "Super gemacht, alle!",
-      "beKind": "Denkt dran, nett zu sein",
-      "getReady": "Macht euch bereit!",
-      "almostDone": "Fast geschafft!"
+      "label": "Nachricht an alle",
+      "send": "An alle senden",
+      "sent": "An alle gesendet.",
+      "blocked": "Diese Nachricht kann nicht gesendet werden. Versuch es mit anderen Wörtern.",
+      "wait": "Warte kurz und sende sie dann noch einmal."
     },
     "eyes": {
       "on": "Augen nach vorn",

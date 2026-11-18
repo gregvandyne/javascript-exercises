@@ -34,7 +34,7 @@ import * as T from '../services/classlive-teams.js';
 import * as ST from '../services/classlive-settings.js';
 import * as D from '../services/classlive-dash.js';
 import * as CH from '../services/classlive-cohost.js';
-import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
+import { BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { gcLiveAnnounce } from './gclassroom.js';
 import { STARTERS } from '../live/starters.js';

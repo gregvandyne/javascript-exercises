@@ -1892,7 +1892,9 @@
       "inviteTitle": "{game} spelen?",
       "inviteText": "{name} wil {game} met je spelen!",
       "invitePlay": "We gaan spelen!",
-      "inviteNo": "Nu niet"
+      "inviteNo": "Nu niet",
+      "ok": "OK",
+      "cancel": "Annuleren"
     },
     "game": {
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
@@ -5903,7 +5905,8 @@
       "seeResultsNow": "Nu de uitslag bekijken",
       "read": "Vraag voorlezen",
       "away": "{count} niet verbonden",
-      "startEmpty": "Er doet nog niemand mee. Toch starten?"
+      "startEmpty": "Er doet nog niemand mee. Toch starten?",
+      "startAnyway": "Toch starten"
     },
     "landing": {
       "title": "Een livespel leiden",
@@ -6505,17 +6508,11 @@
       "voicesHint": "AI-stemmen worden gemaakt door een computer ({provider}). Alleen je vragen en antwoordkeuzes worden verstuurd, nooit namen of wat leerlingen typen."
     },
     "say": {
-      "menu": "Bericht",
-      "twoMinutes": "Nog 2 minuten!",
-      "oneMinute": "Nog 1 minuut!",
-      "lastQuestion": "Laatste vraag!",
-      "lastRound": "Laatste ronde!",
-      "eyesOnMe": "Allemaal even kijken, graag",
-      "greatTeamwork": "Goed samengewerkt!",
-      "greatEffort": "Goed je best gedaan, allemaal!",
-      "beKind": "Denk eraan: wees aardig",
-      "getReady": "Maak je klaar!",
-      "almostDone": "Bijna klaar!"
+      "label": "Bericht aan iedereen",
+      "send": "Naar iedereen sturen",
+      "sent": "Naar iedereen gestuurd.",
+      "blocked": "Dit bericht kan niet worden verstuurd. Probeer andere woorden.",
+      "wait": "Wacht even en stuur het dan opnieuw."
     },
     "eyes": {
       "on": "Ogen hier",

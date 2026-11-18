@@ -1892,7 +1892,9 @@
       "inviteTitle": "Play {game}?",
       "inviteText": "{name} wants to play {game} with you!",
       "invitePlay": "Let's play!",
-      "inviteNo": "Not now"
+      "inviteNo": "Not now",
+      "ok": "OK",
+      "cancel": "Cancel"
     },
     "game": {
       "needSignIn": "Tap “Play as guest” or sign in first.",
@@ -6264,7 +6266,8 @@
       "seeResultsNow": "See results now",
       "read": "Read question",
       "away": "{count} disconnected",
-      "startEmpty": "Nobody has joined yet. Start anyway?"
+      "startEmpty": "Nobody has joined yet. Start anyway?",
+      "startAnyway": "Start anyway"
     },
     "landing": {
       "title": "Host a live game",
@@ -6866,17 +6869,11 @@
       "voicesHint": "AI voices are made by a computer ({provider}). Only your questions and answer choices are sent, never names or anything students type."
     },
     "say": {
-      "menu": "Message",
-      "twoMinutes": "2 minutes left!",
-      "oneMinute": "1 minute left!",
-      "lastQuestion": "Last question!",
-      "lastRound": "Last round!",
-      "eyesOnMe": "Eyes on me, please",
-      "greatTeamwork": "Great teamwork!",
-      "greatEffort": "Great effort, everyone!",
-      "beKind": "Remember to be kind",
-      "getReady": "Get ready!",
-      "almostDone": "Almost done!"
+      "label": "Message to everyone",
+      "send": "Send to everyone",
+      "sent": "Sent to everyone.",
+      "blocked": "That message can't be sent. Try other words.",
+      "wait": "Wait a moment, then send it again."
     },
     "eyes": {
       "on": "Eyes up",

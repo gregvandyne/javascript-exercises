@@ -4,10 +4,10 @@
 // only, never who sent it) and Leave. Nothing for sale and no way to type anything here.
 // Part 3: the player's team (the header band in the team colour, with its shape and name; the team's place when the
 // leaderboard allows ranks), picking a team in the lobby when the host allows it, "Eyes on your teacher" (a cover that
-// makes the game inert), the teacher's fixed messages, bonus toasts, Read aloud (for everyone, so it marks nobody out;
+// makes the game inert), the teacher's typed messages, bonus toasts, Read aloud (for everyone, so it marks nobody out;
 // automatic for a seat whose support says so), and Play again (a private token moves this page to the new game).
 // The seat's own support (me / wel.me.acc) stays on this page: it is never passed into the game frame.
-import { api, toast, t } from '/js/app.js';
+import { api, toast, t, ask, verbOf } from '/js/app.js';
 import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, readAloud, stopReading, voiceFor, aiOn, flash, welTracker } from '/js/live-common.js';
 
 const D = readJson('lv-play-data');
@@ -75,7 +75,7 @@ function onMessage(m) {
     case 'ts': scoresOf(m.s, scores); drawTeam(); break;
     case 'bn': bonusToast(m); if (m.n && m.n !== mySeat) return; break;
     case 'eyes': setEyes(m.on); return;
-    case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
+    case 'say': if (typeof m.x === 'string') flash($('lv-say-banner'), m.x, 6000); return;
     case 'opt': opt = { ...opt, ...m }; applyOpt(); if (m.voices === 'device') stopReading(); showRead(); break;
     case 'me': if (m.acc) setAcc(m.acc); return;
     case 'again': return again(m);
@@ -198,8 +198,8 @@ dlg && dlg.addEventListener('close', async () => {
   try { const r = await api('/api/live/report', { method: 'POST', body: { tok, reason } }); toast(r.toast || D.thanks); }
   catch (e) { toast(e.message, { bad: true }); }
 });
-$('lv-leave').addEventListener('click', () => {
-  if (!confirm($('lv-leave').dataset.confirm)) return;
+$('lv-leave').addEventListener('click', async () => {
+  if (!(await ask({ text: $('lv-leave').dataset.confirm, ok: verbOf($('lv-leave')) }))) return;
   if (sock) sock.close(); if (frame) frame.destroy();
   try { sessionStorage.removeItem(`lv:${sid}`); } catch { /* ignore */ }
   location.href = '/join';

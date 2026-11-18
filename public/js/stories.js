@@ -1,6 +1,6 @@
 // Story Builder pages (server/routes/stories.js): the idea form and its choices, the narrator samples, the progress
 // poll (a new story, or a change to a finished one), the edit page, and the share buttons.
-import { t, api, $, $$, toast, pageData, copyText } from './app.js';
+import { t, api, $, $$, toast, pageData, copyText, ask, verbOf } from './app.js';
 
 const data = pageData();
 const picked = (root, name) => { const r = $(`input[name="${name}"]:checked`, root); return r ? r.value : undefined; };
@@ -141,7 +141,7 @@ document.addEventListener('click', async e => {
   if (!b || !data.id) return;
   const act = b.dataset.act;
   if (act === 'copy') { await copyText(location.href.split('#')[0]); toast(t('js.stories.copied')); return; }
-  if (act === 'delete' && !confirm(t('js.stories.deleteConfirm'))) return;
+  if (act === 'delete' && !(await ask({ text: t('js.stories.deleteConfirm'), ok: verbOf(b), danger: true }))) return;
   b.disabled = true;
   try {
     await api(`/api/stories/${encodeURIComponent(data.id)}/${act}`, { method: 'POST', body: {} });

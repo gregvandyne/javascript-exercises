@@ -8,7 +8,7 @@
 //   i. /forgot (email off on the test server: the contact route) fits a phone, light and dark, and in Hebrew.
 import { test, expect } from '@playwright/test';
 import { findTouching } from './touching.js';
-import { login, ownIp, adminPage, uniq } from './helpers.js';
+import { login, ownIp, adminPage, uniq, answerDialog } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -72,12 +72,10 @@ test('e. a class live game keeps the typed code through sign-in; p. Start with n
   await host.goto((await r.json()).redirect);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
 
-  // p. Nobody has joined: Start asks, and "Cancel" starts nothing.
+  // p. Nobody has joined: Start asks (in the site's own box, tests/e2e/app-dialogs.spec.js), and "Cancel" starts nothing.
   await expect(host.locator('#lv-controls [data-lv-act="start"]')).toBeVisible();
-  let asked = '';
-  host.once('dialog', d => { asked = d.message(); d.dismiss(); });
   await host.locator('#lv-controls [data-lv-act="start"]').click();
-  await expect.poll(() => asked).toBe('Nobody has joined yet. Start anyway?');
+  expect(await answerDialog(host, 'cancel')).toBe('Nobody has joined yet. Start anyway?');
   await expect(host.locator('body')).toHaveAttribute('data-phase', /^(lobby)?$/);
   await expect(host.locator('#lv-controls [data-lv-act="start"]')).toBeVisible();
 
@@ -106,14 +104,11 @@ test('e. a class live game keeps the typed code through sign-in; p. Start with n
   await s.goto('/join');
   await expect(s.locator('#jc')).toHaveValue('');
   // With someone in the room, Start does not ask.
-  let again = false; const onAsk = d => { again = true; d.accept(); };
-  host.on('dialog', onAsk);
   await host.locator('#lv-controls [data-lv-act="start"]').click();
   await expect(host.locator('#lv-controls [data-lv-act="start"]')).toBeHidden();
-  expect(again).toBe(false);
-  host.off('dialog', onAsk);
-  host.on('dialog', d => d.accept());
+  await expect(host.locator('dialog.ob-dialog')).toHaveCount(0);
   await host.locator('#lv-controls [data-lv-act="end"]').click();
+  await answerDialog(host);
   await ctx.close(); await host.context().close();
 });
 

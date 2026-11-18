@@ -6,7 +6,7 @@
 import { html, raw, jsonData } from './html.js';
 import { appMark, wordmark, BRAND } from './brand.js';
 import { qrSvg } from '../services/qr.js';
-import { EMOTES, HOST_ACTIONS, SAY, BONUS_REASONS, ADD_SECS, EXTRA_TIME } from '../services/classlive-protocol.js';
+import { EMOTES, HOST_ACTIONS, SAY_MAX, BONUS_REASONS, ADD_SECS, EXTRA_TIME } from '../services/classlive-protocol.js';
 import { PRESETS, presetsFor } from '../services/classlive-teams.js';
 import { KEYS as SETTING_KEYS, QUIZ_ONLY, view as settingsView } from '../services/classlive-settings.js';
 import { config } from '../config.js';
@@ -42,7 +42,16 @@ const SHAPE_PATHS = {
 };
 export const shapesSprite = () => raw(`<svg id="lv-shapes" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">${PRESETS.map(p => `<symbol id="lv-shape-${p.shape}" viewBox="0 0 24 24">${SHAPE_PATHS[p.shape]}</symbol>`).join('')}</svg>`);
 /** Fixed lists, translated, for the page scripts (sent as indexes on the wire; never free text). */
-const sayList = t => SAY.map(id => t(`live.say.${id}`));
+/** The teacher's message to everyone: one labelled text field and "Send to everyone" (the projector's side panel and
+ *  the Teacher view's Messages tab; live-host.js and live-dash.js send it as h say { x }). Enter sends; the note under
+ *  it says Sent, or why not. */
+const messageBox = (t, idp) => html`<form class="lv-msg" id="${idp}" novalidate>
+    <label class="lv-msg-label" for="${idp}-in">${t('live.say.label')}</label>
+    <div class="lv-msg-row"><input class="input lv-msg-in" id="${idp}-in" name="x" type="text" maxlength="${SAY_MAX}" autocomplete="off" enterkeyhint="send" dir="auto" required>
+    <button class="btn btn-primary lv-msg-send" type="submit" disabled>${t('live.say.send')}</button></div>
+    <p class="small muted lv-msg-note" id="${idp}-note" role="status" aria-live="polite"></p>
+  </form>`;
+const sayText = t => ({ sent: rawT(t)('live.say.sent'), blocked: rawT(t)('live.say.blocked'), wait: rawT(t)('live.say.wait') });
 /** AI voices (server/routes/tts.js): the locales on now, for the pages that read questions aloud; {} when off. */
 const ttsPart = () => { const langs = ttsOnLocales(); return langs.length ? { tts: { langs } } : {}; };
 const TTS_COMPANY = 'OpenAI';   // a company name, never translated
@@ -184,7 +193,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     <button class="btn btn-sm" type="button" id="lv-leave" data-confirm="${t('live.play.leaveConfirm')}">${t('live.play.leave')}</button>
   </header>
   <p class="lv-phase" id="lv-phase" role="status" aria-live="polite">${open ? t('live.play.waiting') : t('live.play.gone')}</p>
-  <p class="lv-say-banner" id="lv-say-banner" role="status" hidden></p>
+  <p class="lv-say-banner" id="lv-say-banner" role="status" dir="auto" hidden></p>
   <p class="lv-toast lv-bonus-toast" id="lv-bonus-toast" role="status" hidden></p>
   <p class="sr-only" id="lv-team-live" aria-live="polite"></p>
   <section class="lv-panel lv-team-pick" id="lv-team-pick" hidden aria-labelledby="lv-team-pick-h">
@@ -215,7 +224,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
   </dialog>
   ${shapesSprite()}
   ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), placeTied: rawT(t)('live.play.placeTied'), placeZero: rawT(t)('live.play.placeZero'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
-    presets: presetsFor(t), say: sayList(t), bonus: bonusList(t),
+    presets: presetsFor(t), bonus: bonusList(t),
     text: { team: rawT(t)('live.play.team'), you: rawT(t)('live.team.you'), moved: rawT(t)('live.play.moved'), rank: rawT(t)('live.team.rank'), full: rawT(t)('live.team.full'), locked: rawT(t)('live.team.locked'), size: rawT(t)('live.team.size'), toastSeat: rawT(t)('live.bonus.toastSeat'), toastTeam: rawT(t)('live.bonus.toastTeam'), read: rawT(t)('live.play.read'), readAgain: rawT(t)('live.play.readAgain'), eyes: rawT(t)('live.play.eyes'), again: rawT(t)('live.play.again'), perPlayer: rawT(t)('live.team.perPlayer') } })}
 </div>`;
 }
@@ -234,7 +243,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   const keys = { start: 'S', pause: 'P', resume: 'P', next: 'N', skip: 'K', clear: 'C', lock: 'L', unlock: 'L', end: 'E' };
   // Doodle Hoot Live: Skip is "Skip turn" and Clear drawing asks first
   const label = a => (s.doodle && a === 'skip' ? t('live.host.skipTurn') : t(`live.host.${a}`));
-  const control = a => html`<button class="btn lv-act lv-act-${a}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip', 'clear'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}${a === 'clear' ? raw(` data-confirm="${t('live.host.clearConfirm')}"`) : ''}>${label(a)}</button>`;
+  const control = a => html`<button class="btn lv-act lv-act-${a}${a === 'start' || a === 'next' ? ' btn-primary' : a === 'end' ? ' btn-danger' : ''}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip', 'clear'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}${a === 'clear' ? raw(` data-confirm="${t('live.host.clearConfirm')}"`) : ''}>${label(a)}</button>`;
   return html`<div class="lv lv-host" data-lv-page="host" data-sid="${s.id}">
   <header class="lv-bar"><a class="btn btn-sm" href="/live"><span class="flip" aria-hidden="true">←</span> ${t('layout.back')}</a><span class="lv-title">${s.title}</span></header>
   <section class="lv-joinbox" id="lv-joinbox">
@@ -255,20 +264,24 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   </section>
   <div class="lv-stage lv-hoststage" id="lv-stage" dir="ltr"></div>
   <section class="lv-controls" id="lv-controls" aria-label="${t('live.host.controls')}">
-    ${['start', 'pause', 'resume', ...(s.tug ? [] : s.doodle ? ['skip', 'clear'] : ['next', 'skip']), 'lock', 'unlock', 'end'].map(control)}
-    <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">👀 ${t('live.host.eyes')}</button>
-    ${s.quiz ? html`<span class="lv-time" id="lv-time" hidden>${ADD_SECS.map(x => html`<button class="btn btn-sm" type="button" data-lv-time="${x}">${t('live.time.add', { s: x })}</button>`)}</span>` : ''}
-    <details class="lv-say" id="lv-say"><summary class="btn">💬 ${t('live.say.menu')}</summary><div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-say="${i}">${x}</button>`)}</div></details>
-    <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">⚙️ ${t('live.settings.open')}</button>
-    <button class="btn lv-act" type="button" data-lv-act="sound" aria-pressed="${st.sound ? 'true' : 'false'}">${t(st.sound ? 'live.host.soundOn' : 'live.host.soundOff')}</button>
-    ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button><p class="small muted lv-host-read-ai" id="lv-host-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>` : ''}
-    <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">📱 ${t('live.host.teacherView')}</button>
-    ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">👥 ${t('live.cohost.open')}</button>` : ''}
+    <div class="lv-ctl-main">${['start', 'pause', 'resume', ...(s.tug ? [] : s.doodle ? ['skip', 'clear'] : ['next', 'skip']), 'end'].map(control)}</div>
+    ${s.quiz ? html`<div class="lv-time" id="lv-time" hidden>${ADD_SECS.map(x => html`<button class="btn btn-sm" type="button" data-lv-time="${x}">${t('live.time.add', { s: x })}</button>`)}</div>` : ''}
+    <div class="lv-ctl-grid">
+      ${['lock', 'unlock'].map(control)}
+      <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">👀 ${t('live.host.eyes')}</button>
+      <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">⚙️ ${t('live.settings.open')}</button>
+      <button class="btn lv-act" type="button" data-lv-act="sound" aria-pressed="${st.sound ? 'true' : 'false'}">${t(st.sound ? 'live.host.soundOn' : 'live.host.soundOff')}</button>
+      <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">📱 ${t('live.host.teacherView')}</button>
+      ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">👥 ${t('live.cohost.open')}</button>` : ''}
+      ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button>` : ''}
+    </div>
+    ${s.quiz ? html`<p class="small muted lv-host-read-ai" id="lv-host-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>` : ''}
+    ${messageBox(t, 'lv-msg')}
     ${me.role === 'cohost' ? html`<p class="small lv-cohost-me" id="lv-cohost-me">${t('live.cohost.youCohostShort')}</p>` : ''}
     <p class="small muted" id="lv-autolock"${s.settings.autoLock ? '' : raw(' hidden')}>${t('live.host.autoLock')}</p>
   </section>
   <p class="lv-eyes-banner" id="lv-eyes-banner" role="status" hidden>👀 ${t('live.eyes.banner')}</p>
-  <p class="lv-say-banner lv-say-big" id="lv-say-banner" role="status" hidden></p>
+  <p class="lv-say-banner lv-say-big" id="lv-say-banner" role="status" dir="auto" hidden></p>
   <p class="lv-toast" id="lv-bonus-toast" role="status" hidden></p>
   ${teamsOn && !s.doodle ? html`<section class="lv-teamsbox" id="lv-teamsbox" aria-labelledby="lv-teams-h">
     <h2 class="lv-h2" id="lv-teams-h">${t('live.team.heading')}</h2>
@@ -346,10 +359,10 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   ${jsonData('lv-host-data', {
     ...ttsPart(), sid: s.id, tok: token, code: s.code, joinUrl, audience: s.audience, nameMode: s.nameMode, mode: s.mode, title: s.title, max: s.settings.maxPlayers, nicks,
     actions: HOST_ACTIONS, results: `/live/results/${s.id}`, kit: KIT(),
-    quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
+    quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayText(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),
     text: { removeConfirm: rawT(t)('live.host.removeConfirm'), ready: rawT(t)('live.host.ready'), late: rawT(t)('live.host.late'), watching: rawT(t)('live.host.watching'), offline: rawT(t)('live.host.offline'), showCode: rawT(t)('live.host.showCode'), hideCode: rawT(t)('live.host.hideCode'), locked: rawT(t)('live.host.locked'), count: rawT(t)('live.host.count'), away: rawT(t)('live.host.away'), answers: rawT(t)('live.host.answers'), phases: phaseText(t),
-      startEmpty: rawT(t)('live.host.startEmpty'), revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
+      startEmpty: rawT(t)('live.host.startEmpty'), startAnyway: rawT(t)('live.host.startAnyway'), remove: rawT(t)('live.host.remove'), revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
   })}
 </div>`;
 }
@@ -405,7 +418,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
     <p class="small muted" id="lv-dash-noteams">${t('live.team.none')}</p>
   </section>
   <section class="lv-tabpanel" role="tabpanel" id="lv-tab-messages" aria-labelledby="lv-tab-messages-btn" hidden>
-    <div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn" type="button" data-lv-say="${i}">${x}</button>`)}</div>
+    ${messageBox(t, 'lv-dash-msg')}
   </section>
   <section class="lv-tabpanel" role="tabpanel" id="lv-tab-settings" aria-labelledby="lv-tab-settings-btn" hidden>
     <form class="stack" id="lv-dash-settings">${settingsFields(t, { values: st, quiz: !!s.quiz, accounts: s.nameMode === 'accounts' && full, idp: 'lv-ds' })}
@@ -436,7 +449,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
   <p class="lv-toast" id="lv-bonus-toast" role="status" hidden></p>
   ${shapesSprite()}
   ${jsonData('lv-dash-data', {
-    sid: s.id, tok: token, code: s.code, audience: s.audience, mode: s.mode, quiz: !!s.quiz, title: s.title, nicks, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY,
+    sid: s.id, tok: token, code: s.code, audience: s.audience, mode: s.mode, quiz: !!s.quiz, title: s.title, nicks, presets, say: sayText(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY,
     teamsOn: !!config.liveTeams, saveSupport: saveSupport && full, results: `/live/results/${s.id}`, kit: KIT(),
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),
     text: { phases: phaseText(t), answered: rawT(t)('live.dash.answered'), thinking: rawT(t)('live.dash.thinking'), offline: rawT(t)('live.dash.offline'), late: rawT(t)('live.dash.late'), needsHelp: rawT(t)('live.dash.needsHelp'),

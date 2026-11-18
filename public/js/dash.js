@@ -12,7 +12,7 @@
 // through ctx.upload (the stage 1 picture checks).
 // Stage 4 (docs/decisions.md "Classroom dashboards, stage 4"): teaching tools part 2 (public/js/dash-tools4.js) use the
 // same ctx, plus ctx.ask (the teacher turns a tool into a quick check) and ctx.practice (official games to practise with).
-import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
+import { api, toast, sheet, pageData, esc, $, $$, t, ask } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf, fill, qrForget } from '/js/dash-widgets.js';
 import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js';
@@ -187,7 +187,7 @@ function start() {
   const ctxFor = (w, type) => ({
     type, intl: INTL, role: D.role, id: w.id, classId: CID, tz: TZ, teacher: TEACHER, pinned: !!w.pinned, own: !TEACHER && !w.pinned, editing: S.editing,
     reduced: () => reduced.matches, private: projecting, live: () => S.live, now: () => Date.now() + S.skew,
-    get: api2, act, poll: () => poll(), sheet, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
+    get: api2, act, poll: () => poll(), sheet, ask, toast, esc, say: msg => announce(msg), flush: async () => { if (saveTimer) await flush(); },
     // Stage 3: teaching tools.
     common: D.registry.common || {}, copy: false,
     keep: state => { if (w.pinned) return; w.s = { ...w.s, state }; save(); },
@@ -1197,7 +1197,7 @@ function start() {
     $('#dash-rename', sh.el).addEventListener('click', () => { sh.close(); nameSheet(t('js.dash.layouts.rename'), l.name, false, async name => {
       const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); resetName(); }); });
     $('#dash-del', sh.el).addEventListener('click', async () => {
-      if (!confirm(t('js.dash.layouts.delConfirm', { name: l.name }))) return;
+      if (!(await ask({ text: t('js.dash.layouts.delConfirm', { name: l.name }), ok: t('js.dash.layouts.del'), danger: true }))) return;
       try {
         await api(`/api/dash/${CID}/layouts/${l.id}/delete`, { method: 'POST', body: {} });
         S.layouts = S.layouts.filter(x => x.id !== l.id); sh.close();

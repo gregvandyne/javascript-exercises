@@ -68,10 +68,29 @@ body.lv-kb[data-lv-mode="doodle"] .lv-play .lv-stage { min-block-size: 0; }
 .lv-count { font-weight: 800; font-size: 1.2rem; }
 .lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
 .lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
-.lv-controls, .lv-emotes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.lv-controls .btn, .lv-emote { min-block-size: 48px; }
-.lv-act-start, .lv-act-next { background: var(--brand-mint); border-color: var(--brand-leaf); color: var(--brand-ink); font-weight: 800; }
-.lv-act-end { margin-inline-start: auto; }
+.lv-emotes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lv-emote { min-block-size: 48px; }
+/* the projector's side panel, under the join box: the main row (Start in Mint, Pause, Next..., End game in Danger),
+   +time while a question runs, an even grid of the rest, then the message to everyone. Every button the same height,
+   its words on one line (they shrink a little in the narrow panel rather than wrap). */
+.lv-controls { display: flex; flex-direction: column; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px; }
+.lv-controls > p { margin: 0; }
+.lv-ctl-main, .lv-ctl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px; }
+.lv-ctl-grid { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); padding-block-start: 12px; border-block-start: 1px solid var(--line); }
+.lv-controls .btn { min-block-size: 48px; min-inline-size: 0; padding-inline: 12px; font-size: .95rem; }
+.lv-ctl-main .btn, .lv-ctl-grid .btn { inline-size: 100%; overflow: hidden; text-overflow: ellipsis; }
+.lv-ctl-main .btn-primary, .lv-ctl-main .btn-danger { font-weight: 800; }
+.lv-time { display: flex; gap: 6px; flex-wrap: wrap; }
+.lv-time .btn { flex: 1 1 0; }
+/* the message to everyone: a label, the field, and Send to everyone under it (the panel is narrow) */
+.lv-msg { display: flex; flex-direction: column; gap: 6px; padding-block-start: 12px; border-block-start: 1px solid var(--line); }
+.lv-msg-label { font-weight: 800; }
+.lv-msg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.lv-msg-in { flex: 1 1 180px; min-inline-size: 0; box-sizing: border-box; block-size: 48px; min-block-size: 48px; }
+.lv-msg-send { flex: 1 0 auto; }
+.lv-msg-note { margin: 0; min-block-size: 1.2em; }
+.lv-msg-note:empty { min-block-size: 0; }
+@media (max-width: 900px) { .lv-ctl-main, .lv-ctl-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .lv-msg-send { flex: 0 0 auto; } }
 .lv-rosterbox { display: flex; flex-direction: column; gap: 8px; }
 .lv-roster { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 6px; max-block-size: 46vh; overflow: auto; }
 .lv-player { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
@@ -202,15 +221,12 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-player[data-team] { border-inline-start: 6px solid var(--team); }
 /* banners and toasts on the projector and phones */
 .lv-say-banner, .lv-eyes-banner, .lv-toast { position: fixed; inset-inline: 0; margin-inline: auto; inline-size: max-content; max-inline-size: calc(100vw - 24px); z-index: 900; border-radius: 18px; padding: 10px 20px; font-weight: 800; text-align: center; box-shadow: var(--shadow-lg); }
-.lv-say-banner { inset-block-start: 12px; background: var(--current); color: var(--on-current); font-size: 1.3rem; }
+.lv-say-banner { overflow-wrap: anywhere; inset-block-start: 12px; background: var(--current); color: var(--on-current); font-size: 1.3rem; }
 .lv-say-big { font-size: clamp(1.6rem, 4vw, 3rem); padding: 16px 32px; }
 .lv-eyes-banner { inset-block-start: 12px; background: var(--spark); color: var(--brand-ink); font-size: 1.4rem; }
 .lv-toast { inset-block-end: 18px; background: var(--card); color: var(--text); border: 2px solid var(--brand-leaf); }
 .lv-act.is-on { background: var(--spark); color: var(--brand-ink); border-color: var(--brand-ink); }
-.lv-say > summary { list-style: none; display: inline-flex; align-items: center; min-block-size: 48px; }
-.lv-say[open] .lv-say-list { margin-block-start: 8px; }
 .lv-say-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.lv-time { display: inline-flex; gap: 6px; }
 .lv-podium-hold { position: fixed; inset-block-end: 20px; inset-inline-end: 20px; inline-size: auto; z-index: 950; }
 .lv-dialog .lv-qr { margin-inline: auto; }
 .lv-dialog .lv-settings-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
@@ -534,3 +550,4 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .lv-settings-landing.panel[open] summary::before { content: '▾'; }
 .lv-wiz .su-nav[hidden] { display: none; }
 .lv-wiz .lv-recent-wrap[hidden] { display: none; }
+.lv-tabpanel > .lv-msg { border: 0; padding: 0; }

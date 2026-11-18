@@ -1891,7 +1891,9 @@
       "inviteTitle": "要玩 {game} 嗎？",
       "inviteText": "{name} 想跟你一起玩 {game}！",
       "invitePlay": "來玩吧！",
-      "inviteNo": "現在不要"
+      "inviteNo": "現在不要",
+      "ok": "確定",
+      "cancel": "取消"
     },
     "game": {
       "needSignIn": "請點「用訪客身分玩」或先登入。",
@@ -5902,7 +5904,8 @@
       "seeResultsNow": "現在看結果",
       "read": "朗讀題目",
       "away": "{count} 位已斷線",
-      "startEmpty": "還沒有人加入。仍然要開始嗎？"
+      "startEmpty": "還沒有人加入。仍然要開始嗎？",
+      "startAnyway": "仍然開始"
     },
     "landing": {
       "title": "主持即時遊戲",
@@ -6504,17 +6507,11 @@
       "voicesHint": "AI 聲音由電腦產生（{provider}）。只會傳送你的題目和答案選項，絕不傳送名字或學生打的字。"
     },
     "say": {
-      "menu": "訊息",
-      "twoMinutes": "還剩 2 分鐘！",
-      "oneMinute": "還剩 1 分鐘！",
-      "lastQuestion": "最後一題！",
-      "lastRound": "最後一輪！",
-      "eyesOnMe": "請大家看這裡",
-      "greatTeamwork": "團隊合作真棒！",
-      "greatEffort": "大家都好努力！",
-      "beKind": "記得要友善喔",
-      "getReady": "準備好！",
-      "almostDone": "快完成了！"
+      "label": "給所有人的訊息",
+      "send": "傳送給所有人",
+      "sent": "已傳送給所有人。",
+      "blocked": "這則訊息無法傳送。請換個說法。",
+      "wait": "請稍等一下再傳送。"
     },
     "eyes": {
       "on": "看這裡",

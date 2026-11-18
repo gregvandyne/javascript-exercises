@@ -10,8 +10,11 @@ export const V = 1;
 export const EMOTES = ['wave', 'cheer', 'jump', 'dance', 'clap', 'heart'];
 export const ANIM = ['idle', 'walk', 'run', 'jump', 'cheer', 'hurt', 'wave', 'dance'];
 export const HOST_ACTIONS = ['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'kick', 'end', 'eyes', 'say', 'time', 'bonus', 'rename', 'acc', 'clear'];
-/** Fixed teacher messages (live.say.<id>): sent as an index, shown in each device's own language. Never free text. */
-export const SAY = ['twoMinutes', 'oneMinute', 'lastQuestion', 'lastRound', 'eyesOnMe', 'greatTeamwork', 'greatEffort', 'beKind', 'getReady', 'almostDone'];
+/** A teacher's message to everyone (h say { x }): text the host typed, at most SAY_MAX characters on one line. The
+ *  server puts it through the text filter (classlive-sessions.js shownOk) before any screen shows it. */
+export const SAY_MAX = 120;
+/** The message as sent: spaces and line breaks squeezed to single spaces, control and direction characters dropped. */
+export const sayText = x => (typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g, ' ').replace(/\s+/g, ' ').trim() : '');
 /** Bonus reasons (live.bonus.reason.<id>): all positive, always +100. */
 export const BONUS_REASONS = ['teamwork', 'kindness', 'effort', 'helping', 'listening'];
 /** Team actions (tm). */
@@ -26,7 +29,7 @@ export const HOST_VIEWS = ['projector', 'dash'];
 export const VIEWS = ['3d', '2d', 'watch'];
 export const BYE = ['removed', 'ended', 'full', 'locked', 'replaced', 'expired', 'restart', 'flood', 'takenDown', 'cohostOff', 'projectorBusy'];
 /** Part 4: why a controller's action was refused (nak). */
-export const NAK = ['already', 'conflict', 'tooSoon', 'wait', 'notAllowed'];
+export const NAK = ['already', 'conflict', 'tooSoon', 'wait', 'notAllowed', 'blocked'];
 /** Largest message (bytes of JSON) a player may send; the host's page and frame may send more (shared state). */
 export const MAX = { player: 2 * 1024, host: 16 * 1024, ev: 512, state: 8 * 1024 };
 /** Messages per second per type (token buckets: this rate, a burst of twice it). Over: dropped silently. */
@@ -148,7 +151,7 @@ export function parse(raw, role = 'player') {
       if (m.a === 'eyes') { if (typeof m.on !== 'boolean') return null; out.on = m.on; }
       // part 4: a co-host's end must say it is sure (the page asks first); any other value is dropped
       if (m.a === 'end' && m.sure === 1) out.sure = 1;
-      if (m.a === 'say') { if (!int(m.m, 0, SAY.length - 1)) return null; out.m = m.m; }
+      if (m.a === 'say') { const x = sayText(m.x); if (!x || x.length > SAY_MAX) return null; out.x = x; }
       if (m.a === 'time') { if (!ADD_SECS.includes(m.s)) return null; out.s = m.s; }
       if (m.a === 'bonus') {
         if (!int(m.r, 0, BONUS_REASONS.length - 1)) return null;

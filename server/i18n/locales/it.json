@@ -1892,7 +1892,9 @@
       "inviteTitle": "Giocare a {game}?",
       "inviteText": "{name} vuole giocare a {game} con te!",
       "invitePlay": "Giochiamo!",
-      "inviteNo": "Non ora"
+      "inviteNo": "Non ora",
+      "ok": "OK",
+      "cancel": "Annulla"
     },
     "game": {
       "needSignIn": "Tocca «Gioca come ospite» oppure accedi prima.",
@@ -5903,7 +5905,8 @@
       "seeResultsNow": "Vedi subito i risultati",
       "read": "Leggi la domanda",
       "away": "{count} scollegati",
-      "startEmpty": "Non è ancora entrato nessuno. Iniziare lo stesso?"
+      "startEmpty": "Non è ancora entrato nessuno. Iniziare lo stesso?",
+      "startAnyway": "Inizia lo stesso"
     },
     "landing": {
       "title": "Guida una partita dal vivo",
@@ -6505,17 +6508,11 @@
       "voicesHint": "Le voci IA le fa un computer ({provider}). Vengono inviate solo le tue domande e le risposte, mai nomi o quello che scrivono gli studenti."
     },
     "say": {
-      "menu": "Messaggio",
-      "twoMinutes": "Mancano 2 minuti!",
-      "oneMinute": "Manca 1 minuto!",
-      "lastQuestion": "Ultima domanda!",
-      "lastRound": "Ultimo turno!",
-      "eyesOnMe": "Occhi su di me, per favore",
-      "greatTeamwork": "Ottimo lavoro di squadra!",
-      "greatEffort": "Bravi tutti, che impegno!",
-      "beKind": "Ricordate di essere gentili",
-      "getReady": "Preparatevi!",
-      "almostDone": "Quasi finito!"
+      "label": "Messaggio per tutti",
+      "send": "Invia a tutti",
+      "sent": "Inviato a tutti.",
+      "blocked": "Questo messaggio non si può inviare. Prova con altre parole.",
+      "wait": "Aspetta un momento, poi invialo di nuovo."
     },
     "eyes": {
       "on": "Occhi qui",

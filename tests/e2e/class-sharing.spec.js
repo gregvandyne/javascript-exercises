@@ -4,7 +4,7 @@
 // it off 5B (audit-logged), and Ana's Studio says so. Last, the share sheet and the Games tab on a 360px phone, in dark
 // mode and right to left.
 import { test, expect } from '@playwright/test';
-import { uniq, login, adminPage, templateGame, studioState } from './helpers.js';
+import { uniq, login, adminPage, templateGame, studioState, answerDialog } from './helpers.js';
 
 test.describe.configure({ mode: 'serial', timeout: 180_000 });
 
@@ -165,8 +165,7 @@ test('the teacher takes the game off the class; it is gone for the class and the
   await expect(teacher.locator('.classtabs a[aria-current="page"]')).toContainText('Games');
   const row = teacher.locator('.cg-row', { hasText: game.title });
   await expect(row).toContainText('Ana Silva');                         // staff see the real name
-  teacher.once('dialog', d => d.accept());
-  await Promise.all([teacher.waitForLoadState('load'), row.locator('button:has-text("Take off this class")').click()]);
+  await Promise.all([answerDialog(teacher), teacher.waitForLoadState('load'), row.locator('button:has-text("Take off this class")').click()]);
   await expect(teacher.locator('#toasts')).toContainText('Taken off 5B.');
   await expect(teacher.locator('section .cg-row', { hasText: game.title })).toHaveCount(0);
   await expect(teacher.locator('details.cg-off summary')).toHaveText('1 game taken off');

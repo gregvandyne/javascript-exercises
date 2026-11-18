@@ -14,7 +14,7 @@
 // - Every relayed message carries the sender's seat number (f) given by the server, never a name typed by anyone.
 // Part 3 (docs/decisions.md "Oomba Live, part 3"): teams (classlive-teams.js), the host's game settings
 // (classlive-settings.js, extending s.settings), a second host connection for the teacher's dashboard (s.dash; s.host.conn
-// stays the projector), names per view (players, projector, dashboard), eyes up, fixed messages, +time, bonus points, a
+// stays the projector), names per view (players, projector, dashboard), eyes up, the host's typed message (through the text filter), +time, bonus points, a
 // new nickname, per-seat support (private: never in a broadcast, a frame or the results), and a short linger after the
 // end so the host can play again with the same players and teams.
 // Part 4 (docs/decisions.md "Oomba Live, part 4"): co-hosts. s.owner is the creator (never changes: the saved run, the
@@ -1008,6 +1008,9 @@ export function hostAction(s, a, m = {}, actor = null) {
     const l = s.lastTime;
     if (l && l.i === s.qz.cur.i && l.by !== who.userId && now() - l.at < hooks.conflictMs) { nak(s, who, a, 'already', l.by); return false; }
   }
+  // a typed message no screen may show (rude words, contact details, links): said to that adult only, and the gap
+  // between messages is not used up
+  if (a === 'say' && !shownOk(P.sayText(m.x))) { nak(s, who, a, 'blocked'); return false; }
   // messages, bonus points: the session's gap (the class hears one at a time); another adult is told who just did
   if (ACTION_GAP[a] && now() - (s.actAt[a] || -Infinity) < ACTION_GAP[a]) {
     const by = s.actBy && s.actBy[a];
@@ -1115,8 +1118,9 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
     case 'end': endSession(s.id, 'ended'); return true;
     case 'eyes': return eyes(s, !!m.on);
     case 'say': {
-      if (!Number.isInteger(m.m) || m.m < 0 || m.m >= P.SAY.length) return false;
-      broadcast(s, { t: 'say', m: m.m });
+      const x = P.sayText(m.x);
+      if (!x || x.length > P.SAY_MAX || !shownOk(x)) return false;
+      broadcast(s, { t: 'say', x });
       return true;
     }
     case 'time': {

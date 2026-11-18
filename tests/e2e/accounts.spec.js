@@ -1,7 +1,7 @@
 // Accounts end to end: changing a password on a phone (other devices are signed out), a school student is sent to
 // their teacher instead, "Not you? Sign out" on a shared classroom device, and the sign-in help.
 import { test, expect } from '@playwright/test';
-import { signup, login, ownIp, uniq } from './helpers.js';
+import { signup, login, ownIp, uniq, answerDialog } from './helpers.js';
 
 const PHONE = { viewport: { width: 390, height: 844 } };
 const DEMO = 'demo-pass-123';
@@ -51,8 +51,7 @@ test('change password on a phone: stay signed in here, other devices are signed 
   await laptop.goto('/me/settings');
 
   // Sign out everywhere: this device too
-  laptop.once('dialog', d => d.accept());
-  await Promise.all([laptop.waitForURL(/\/login$/), laptop.click('form[data-api="/api/auth/logout-everywhere"] button')]);
+  await Promise.all([answerDialog(laptop), laptop.waitForURL(/\/login$/), laptop.click('form[data-api="/api/auth/logout-everywhere"] button')]);
   await expect(laptop.locator('.toast')).toContainText('signed out on every device');
   await phone.reload();
   await expect(phone).toHaveURL(/\/login\?next=/);
@@ -84,8 +83,7 @@ async function signOutElsewhere(browser, username, password) {
   const other = await (await browser.newContext()).newPage();
   await login(other, username, password);
   await other.goto('/me/settings');
-  other.once('dialog', d => d.accept());
-  await Promise.all([other.waitForURL(/\/login$/), other.click('form[data-api="/api/auth/logout-everywhere"] button')]);
+  await Promise.all([answerDialog(other), other.waitForURL(/\/login$/), other.click('form[data-api="/api/auth/logout-everywhere"] button')]);
   await other.context().close();
 }
 

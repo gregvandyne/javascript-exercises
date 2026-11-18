@@ -420,6 +420,25 @@ textarea.input{min-height:96px;resize:vertical}
 .sheet .close{position:absolute;top:10px;inset-inline-end:10px;margin:0}
 @keyframes up{from{transform:translateY(30px);opacity:0}} @keyframes fade{from{opacity:0}}
 
+/* the app's question box (app.js ask, tell, askText): in place of the browser's confirm, alert and prompt */
+.ob-dialog{box-sizing:border-box;inline-size:min(calc(100% - 32px),440px);max-inline-size:440px;max-block-size:calc(100dvh - 32px);margin:auto;padding:24px 22px 20px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--text);box-shadow:var(--shadow-lg);font-family:var(--font)}
+.ob-dialog[open]{animation:obpop .16s ease-out}
+.ob-dialog::backdrop{background:rgba(20,20,20,.5)}
+.ob-dialog-title{margin:0 0 8px;font-size:1.25rem;line-height:1.25}
+.ob-dialog-text{margin:0;color:var(--text-2);line-height:1.45;white-space:pre-line;overflow-wrap:anywhere}
+.ob-dialog-text.is-lead{color:var(--text);font-weight:700;font-size:1.1rem}
+.ob-dialog .field{margin-block-start:14px}
+/* the main button is first in the markup (Enter in a text field means it) and shows last, at the end of the row */
+.ob-dialog-acts{display:flex;flex-direction:row-reverse;flex-wrap:wrap;justify-content:flex-start;gap:10px;margin-block-start:22px}
+.ob-dialog-acts .btn{min-inline-size:96px}
+@media (max-width:480px){.ob-dialog-acts{flex-direction:column}.ob-dialog-acts .btn{inline-size:100%;white-space:normal}}
+@media (prefers-reduced-motion:reduce){.ob-dialog[open]{animation:none}}
+@keyframes obpop{from{transform:translateY(8px) scale(.98);opacity:0}}
+/* a destructive main button: Danger filled, with its pressed-down edge */
+.btn-danger-solid{background:var(--danger);color:var(--on-danger);box-shadow:0 4px 0 color-mix(in srgb,var(--danger) 60%,#000)}
+.btn-danger-solid:hover{background:color-mix(in srgb,var(--danger) 88%,var(--text))}
+.btn-danger-solid:active{box-shadow:0 1px 0 color-mix(in srgb,var(--danger) 60%,#000)}
+
 /* star rating widget: empty stars are outlines, chosen ones filled with Spark */
 .rate{display:inline-flex;gap:2px}
 .rate button{width:44px;height:44px;border:0;background:none;font-size:1.9rem;line-height:1;cursor:pointer;color:transparent;-webkit-text-stroke:1.5px var(--edge);padding:0}

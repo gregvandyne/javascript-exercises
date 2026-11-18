@@ -7,7 +7,7 @@
 // (/trial itself needs billing, which is off in these runs: tests/unit/teacher-plan.test.js signs a teacher up there
 // against the fake Stripe and checks the same refusal.)
 import { test, expect } from '@playwright/test';
-import { uniq, login, signup, adminPage, schoolWithAdmin } from './helpers.js';
+import { uniq, login, signup, adminPage, schoolWithAdmin, answerDialog } from './helpers.js';
 import { findTouching } from './touching.js';
 
 test.describe.configure({ timeout: 180_000 });
@@ -199,11 +199,11 @@ test('an account invited as staff loses its friends the moment it accepts; two c
   await c.goto('/classes');
   await expect(c.locator('#my-invites .inv-warn')).toContainText(WARN);
   // Saying no to the question leaves everything as it was.
-  c.once('dialog', d => { expect(d.message()).toContain(WARN); d.dismiss(); });
   await c.locator(`form[data-api="/api/staff-invites/${school.id}/accept"] button`).click();
+  await answerDialog(c, 'cancel', { text: WARN });
   expect((await c.request.get('/api/friends')).status()).toBe(200);
-  c.once('dialog', d => d.accept());
   await c.locator(`form[data-api="/api/staff-invites/${school.id}/accept"] button`).click();
+  await answerDialog(c);
   await expect.poll(async () => (await c.request.get('/api/friends')).status()).toBe(403);
 
   await a.goto('/friends');
@@ -226,8 +226,8 @@ test('an account invited as staff loses its friends the moment it accepts; two c
   await expect(fix).toBeVisible(); await expect(fix).toContainText('Added by mistake');
   expect((await fix.boundingBox()).height).toBeGreaterThanOrEqual(44);
   expect(await head.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-  head.once('dialog', d => { expect(d.message()).toContain('new friend code'); d.accept(); });
   await fix.click();
+  await answerDialog(head, 'ok', { text: 'new friend code' });
   await expect(head.locator('#staff-list')).not.toContainText(uc.username);
   await expect(head.locator('#former-staff')).toHaveCount(0);
   // c is an ordinary account again: a NEW code, no old friends, and can ask a again.
@@ -260,8 +260,8 @@ test('an account invited as staff loses its friends the moment it accepts; two c
   }
   await head.goto(`/school/${school.slug}?tab=people`);
   await head.locator('#former-staff > summary').click();
-  head.once('dialog', dl => dl.accept());
   await head.locator('#former-staff form button').click();
+  await answerDialog(head);
   await expect(head.locator('#former-staff')).toHaveCount(0);
   await expect.poll(async () => (await d.request.get('/api/friends')).status()).toBe(200);
   for (const p of [a, b, c, d, head, admin]) await p.context().close();

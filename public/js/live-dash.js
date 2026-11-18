@@ -8,9 +8,10 @@
 // Part 4: co-hosts use this page too, with their own token. The Host / Co-host chip, the activity line (act, nak: "Ms. X
 // paused the game"), and the Co-hosts tab. A limited co-host (not a teacher of the class) has no needs help, support or
 // who answered: the server never sends them, and the page has no place for them.
-import { connect, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, teamChip, teamsOf, scoresOf, flash, paintTeam } from '/js/live-common.js';
+import { connect, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, teamChip, teamsOf, scoresOf, flash, paintTeam, messageForm } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
 import { cohostPanel, actText, nakText, namesOf } from '/js/live-cohost.js';
+import { ask, verbOf } from '/js/app.js';
 
 const D = readJson('lv-dash-data');
 const $ = id => document.getElementById(id);
@@ -34,7 +35,8 @@ function onMessage(m) {
     case 'wel': if (m.ctl && (m.ctl.role !== CTL.role || m.ctl.tier !== CTL.tier)) { location.reload(); return; } welcome(m); break;
     case 'ch': onCh(m); break;
     case 'act': onAct(m); break;
-    case 'nak': if (TC) line(nakText(m, { names: adults, TX: TC })); break;
+    case 'nak': if (m.a === 'say') msgBox.refused(m.why); if (TC && m.why !== 'blocked') line(nakText(m, { names: adults, TX: TC })); break;
+    case 'say': if (typeof m.x === 'string') msgBox.said(m.x); break;
     case 'bye': if (m.why === 'cohostOff') cohostOff(); break;
     case 'pj': case 'pu': { const p = playerOf(m.p); players.set(p.seat, p); drawPlayers(); drawTeams(); rosterSoon(); break; }
     case 'pl': players.delete(m.n); progress.delete(m.n); support.delete(m.n); drawPlayers(); drawTeams(); break;
@@ -130,11 +132,11 @@ function drawActs() {
   const ey = document.querySelector('.lv-dash-acts [data-lv-act="eyes"]');
   if (ey) { ey.setAttribute('aria-pressed', String(eyesOn)); ey.classList.toggle('is-on', eyesOn); }
 }
-document.querySelector('.lv-dash-acts').addEventListener('click', e => {
+document.querySelector('.lv-dash-acts').addEventListener('click', async e => {
   const t = e.target.closest('[data-lv-time]'); if (t) { sock.send('h', { a: 'time', s: +t.dataset.lvTime }); return; }
   const b = e.target.closest('[data-lv-act]'); if (!b || b.hidden) return;
   const a = b.dataset.lvAct;
-  if ((a === 'end' || a === 'clear') && !confirm(b.dataset.confirm)) return;
+  if ((a === 'end' || a === 'clear') && !(await ask({ text: b.dataset.confirm, ok: verbOf(b), danger: true }))) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
   if (a === 'skip' && mode === 'doodle') { sock.send('h', { a, at: ddTn }); return; }
   // a co-host's end says it is sure (the server ignores it otherwise)
@@ -251,7 +253,7 @@ function openPlayer(seat) {
   const sv = $('lv-acc-save'); if (sv) sv.checked = !!sp[4];
   if (dlg.showModal) dlg.showModal();
 }
-dlg.addEventListener('click', e => {
+dlg.addEventListener('click', async e => {
   const b = e.target.closest('[data-lv-bonus]'); if (b && current) { sock.send('h', { a: 'bonus', n: current, r: +b.dataset.lvBonus }); dlg.close(); return; }
   if (e.target.id === 'lv-dash-rename' && current) { sock.send('h', { a: 'rename', n: current }); dlg.close(); return; }
   if (e.target.id === 'lv-acc-apply' && current) {
@@ -260,7 +262,7 @@ dlg.addEventListener('click', e => {
     sock.send('h', { a: 'acc', n: current, x, ra: $('lv-acc-read').checked ? 1 : 0, sv: $('lv-acc-simple').checked ? 1 : 0, ...(sv && sv.checked ? { save: 1 } : {}) });
     dlg.close(); return;
   }
-  if (e.target.id === 'lv-dash-remove' && current) { if (confirm(e.target.dataset.confirm)) { sock.send('h', { a: 'kick', n: current }); dlg.close(); } }
+  if (e.target.id === 'lv-dash-remove' && current) { const n = current; if (await ask({ text: e.target.dataset.confirm, ok: verbOf(e.target), danger: true })) { sock.send('h', { a: 'kick', n }); dlg.close(); } }
 });
 $('lv-dash-move').addEventListener('change', e => { if (current) sock.send('tm', { a: 'move', s: current, k: +e.target.value }); });
 
@@ -332,7 +334,7 @@ bonusRow.addEventListener('click', e => {
 });
 
 // ---- messages ----
-$('lv-tab-messages').addEventListener('click', e => { const b = e.target.closest('[data-lv-say]'); if (b) { sock.send('h', { a: 'say', m: +b.dataset.lvSay }); flash($('lv-bonus-toast'), b.textContent, 2500); } });
+const msgBox = messageForm($('lv-dash-msg'), { send: x => sock.send('h', { a: 'say', x }), text: D.say });
 
 // ---- settings ----
 const sform = $('lv-dash-settings');

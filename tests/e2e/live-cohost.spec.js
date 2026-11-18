@@ -7,7 +7,7 @@
 // The test server runs with LIVE_HANDOFF_SECS=3 (playwright.config.js). COHOST_SHOTS=<dir> (or LIVE_SHOTS) saves the screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, signup, uniq, ADMIN } from './helpers.js';
+import { login, signup, uniq, ADMIN, autoAnswer } from './helpers.js';
 
 const SHOTS = process.env.COHOST_SHOTS || process.env.LIVE_SHOTS || '';
 const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`) }); };
@@ -128,7 +128,7 @@ test('invite -> accept -> the co-host pauses -> the host sees who did it -> the 
   expect(await ar.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   await shot(ar, 'cohost-ar-dark-360');
   // Tia removes Tom from her Teacher view (asks first); his page says so; her line says who
-  tiaDash.on('dialog', d => d.accept());
+  await autoAnswer(tiaDash);
   // the chip opens the Co-hosts tab (on a phone the tab sits past the edge of the row)
   await tiaDash.locator('#lv-dash-role').click();
   await expect(tiaDash.locator('#lv-tab-cohosts')).toBeVisible();
@@ -171,7 +171,7 @@ test('handoff: the host leaves, the co-host becomes host after the grace, ends t
   await host.context().close();
   await expect(tom.page.locator('#lv-dash-role')).toHaveText('Host', { timeout: 30_000 });
   await expect(tom.page.locator('[data-lv-tab="cohosts"]')).toBeVisible();
-  tom.page.on('dialog', d => d.accept());
+  await autoAnswer(tom.page);
   await tom.page.locator('.lv-dash-acts [data-lv-act="end"]').click();
   await tom.page.waitForURL(new RegExp(`/live/results/${sid}`), { timeout: 20_000 });
   await expect(tom.page.locator('#lv-limited-note')).toBeVisible();

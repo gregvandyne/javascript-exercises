@@ -130,7 +130,9 @@
       "inviteTitle": "Play {game}?",
       "inviteText": "{name} wants to play {game} with you!",
       "invitePlay": "Let's play!",
-      "inviteNo": "Not now"
+      "inviteNo": "Not now",
+      "ok": "OK",
+      "cancel": "Cancel"
     },
     "match": {
       "title": "Play {title} online",
@@ -449,6 +451,16 @@
       "levelLabel": "Year or level",
       "levelHint": "For example: Year 5",
       "assignText": "It becomes a short quiz in the class's lessons, and the scores go to your markbook."
+    },
+    "host": {
+      "startAnyway": "Start anyway"
+    },
+    "say": {
+      "label": "Message to everyone",
+      "send": "Send to everyone",
+      "sent": "Sent to everyone.",
+      "blocked": "That message can't be sent. Try other words.",
+      "wait": "Wait a moment, then send it again."
     }
   },
   "match": {
