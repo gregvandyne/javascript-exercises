@@ -33,7 +33,7 @@ export function cleanItems(raw) {
 }
 
 // ------------------------------------------------------------ The Big Divide: one activity per set
-// [{ k: 'divide'|'multiply', p: [[a, b], ...] (1-100 problems the game can work), l: level, c?: 7 flags (level custom),
+// [{ k: 'divide'|'multiply'|'add'|'subtract', p: [[a, b], ...] (1-100 problems the game can work), l: level, c?: 7 flags (level custom),
 //    d?: 1 (a fresh set for each student, made from g), g?: the plan it is made from (only with d),
 //    m?: the method, one of the kind's own (BB_METHODS); left out, or 'standard', is the standard algorithm, so sets
 //    saved before methods read as they always did,
@@ -44,7 +44,8 @@ export function cleanItems(raw) {
 // Every field is a number, a fixed flag or one of a few words: never free text. A set saved before a field came along
 // is cleaned to exactly what it was.
 const BB_LEVELS = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn', 'custom'];
-export const BB_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'] };
+export const BB_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'], add: ['standard'], subtract: ['standard'] };
+const BB_KINDS = Object.keys(BB_METHODS);
 export const BB_FORMS = ['fraction', 'decimal'];
 const int = v => (Number.isInteger(v) ? v : NaN);
 const digits = n => String(n).length;
@@ -54,6 +55,11 @@ export function bbCheck(kind, a, b) {
     if (!Number.isInteger(b) || b < 2 || b > 9999) return 'divisor';
     if (!Number.isInteger(a) || a < 10 || a > 999999) return 'dividend';
     return a < b ? 'smaller' : null;
+  }
+  if (kind === 'add' || kind === 'subtract') {
+    if (!Number.isInteger(a) || a < 10 || a > 9999) return 'top';
+    if (!Number.isInteger(b) || b < 10 || b > 9999) return 'bottom';
+    return kind === 'subtract' && !(a > b) ? 'order' : null;
   }
   if (!Number.isInteger(a) || a < 10 || a > 9999) return 'top';
   if (!Number.isInteger(b) || b < 2 || b > 999) return 'bottom';
@@ -70,6 +76,13 @@ const placesOf = x => {
 const scaledInt = (x, k) => { const [i, f = ''] = String(x).split('.'); return Number(i + f.padEnd(k, '0').slice(0, k)); };
 /** The Big Divide's rules for a problem with a decimal in it (the game's own, logic.ts check*): null when it works. */
 export function bbDecCheck(kind, a, b) {
+  if (kind === 'add' || kind === 'subtract') {
+    // a whole number keeps its rule (10 to 9,999); a decimal is more than 0 and under 10,000
+    const ok = x => (Number.isInteger(x) ? x >= 10 && x <= 9999 : x > 0 && x < 10000 && placesOf(x) <= 2);
+    if (!ok(a)) return 'top';
+    if (!ok(b)) return 'bottom';
+    return kind === 'subtract' && !(a > b) ? 'order' : null;
+  }
   if (!(a > 0) || !(b > 0) || placesOf(a) > 2 || placesOf(b) > 2) return 'decimal';
   if (kind === 'divide') {
     const s = placesOf(b), B = scaledInt(b, s);
@@ -95,13 +108,13 @@ function bbPlan(kind, g) {
     const dividends = range(g.dividends, 10, 999999), divisors = range(g.divisors, 2, 9999);
     return dividends && divisors ? { count, dividends, divisors, remainders: g.remainders !== false } : null;
   }
-  const tops = range(g.tops, 10, 9999), bottoms = range(g.bottoms, 2, 999);
+  const tops = range(g.tops, 10, 9999), bottoms = range(g.bottoms, kind === 'multiply' ? 2 : 10, kind === 'multiply' ? 999 : 9999);
   return tops && bottoms ? { count, tops, bottoms } : null;
 }
 export function cleanBoxItems(raw) {
   if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object') return null;
   const it = raw[0];
-  const k = it.k === 'multiply' ? 'multiply' : it.k === 'divide' ? 'divide' : null;
+  const k = BB_KINDS.includes(it.k) ? it.k : null;
   if (!k || !BB_LEVELS.includes(it.l) || !Array.isArray(it.p) || it.p.length > 100) return null;
   const dec = it.dec === 1;
   if (it.dec !== undefined && it.dec !== null && !dec) return null;
@@ -221,7 +234,7 @@ export function readable(code) {
   const t = [...String(code)].map(ch => FROM[ch] || ch).join('');
   return t.replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/([+=])/g, ' $1 ').replace(/(\w|\))-/g, '$1 − ').replace(/^-/, '−').replace(/\s+/g, ' ').trim();
 }
-const BB_KIND = { divide: 'Long division', multiply: 'Multiplication' };
+const BB_KIND = { divide: 'Long division', multiply: 'Multiplication', add: 'Addition', subtract: 'Subtraction' };
 const BB_METHOD = { ladder: 'Ladder', area: 'Area model', partial: 'Partial products' };
 const BB_FORM = { fraction: 'remainders as fractions', decimal: 'answers as decimals' };
 const BB_LEVEL = { watch: 'Watch', countUp: 'Count up', guided: 'Guided', prompted: 'Prompted', onMyOwn: 'On my own', custom: 'your own mix' };

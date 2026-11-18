@@ -453,6 +453,7 @@
 						</div>
 					{/each}
 				</div>
+				{#if methods.length > 1}
 				<section class="group methods" aria-labelledby="method-title">
 					<h3 id="method-title">Method</h3>
 					<div class="method-list" role="radiogroup" aria-labelledby="method-title">
@@ -480,6 +481,7 @@
 						</details>
 					{/if}
 				</section>
+				{/if}
 				<div class="group students">
 					<SwitchRow label="Randomize per student" checked={activity.settings.perStudent} onchange={setPerStudent}
 						>Each student gets their own {activity.problems.length} problems, made fresh from these settings every time they open the link. Off,

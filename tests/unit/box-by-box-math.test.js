@@ -299,16 +299,139 @@ test('decimals: typed problems take decimals only when Numbers is decimals; the 
   assert.equal(L.parseItem({ k: 'divide', p: [[7.5, 3]], l: 'guided' }), null, 'no dec: a decimal problem is not one');
 });
 
-test('decimals: the server takes exactly the problems the game does (dec), and nothing else', async () => {
+test('the server takes exactly the problems the game does, decimals (dec) and every kind, and nothing else', async () => {
   const gameSets = await import(path.join(ROOT, 'server/services/game-sets.js'));
   const r = rng(9);
   const pick = () => { const k = Math.floor(r() * 4); const n = Math.floor(r() * 100000) / [1, 10, 100, 1000][k]; return r() < 0.1 ? -n : n; };
   for (let i = 0; i < 4000; i++) {
-    for (const kind of ['divide', 'multiply']) {
-      const a = r() < 0.5 ? pick() : Math.floor(r() * 2000), b = r() < 0.5 ? pick() / 100 : Math.floor(r() * 30);
-      const game = (kind === 'divide' ? L.checkDivide : L.checkMultiply)(a, b, 'decimal') === null;
+    for (const kind of ['divide', 'multiply', 'add', 'subtract']) {
+      const a = r() < 0.5 ? pick() : Math.floor(r() * 2000), b = r() < 0.5 ? pick() / 100 : Math.floor(r() * (kind === 'add' || kind === 'subtract' ? 3000 : 30));
+      const game = L.kindInfo(kind).check(a, b, 'decimal') === null;
       const server = gameSets.cleanBoxItems([{ k: kind, p: [[a, b]], l: 'guided', dec: 1 }]) !== null;
       assert.equal(server, game, `${kind} ${a}, ${b}`);
+      const wa = Math.floor(r() * 12000), wb = Math.floor(r() * 12000);
+      assert.equal(gameSets.cleanBoxItems([{ k: kind, p: [[wa, wb]], l: 'guided' }]) !== null, L.kindInfo(kind).check(wa, wb) === null, `${kind} ${wa}, ${wb} (whole)`);
     }
   }
+});
+
+// ---------------------------------------------------------------- addition and subtraction
+
+const C = await import(path.join(ROOT, 'tools/box-by-box/src/lib/columns.ts'));
+const digitsOf = (s, prefix) => s.boxes.filter((b) => b.id.startsWith(prefix));
+
+test('addition: each column from the right, a 1 carried over the next column, the last carry written in the answer', () => {
+  const s = C.addSheet({ top: 475, bottom: 368 });
+  assert.equal(s.answer, '843');
+  assert.deepEqual(s.steps.map((x) => x.kind), ['add', 'carry', 'add', 'carry', 'add']);
+  assert.deepEqual(s.steps.map((x) => x.prompt({})), ['What is 5 + 8?', '13 ones is 1 ten and 3 ones: carry the 1 to the tens, up here.', 'What is 7 + 6 + the 1 you carried?', '14 tens is 1 hundred and 4 tens: carry the 1 to the hundreds, up here.', 'What is 4 + 3 + the 1 you carried?']);
+  for (const c of digitsOf(s, 'c')) assert.equal(boxAt(s, c.id).small, true, 'carries are small, over the next column');
+  assert.equal(boxAt(s, 'c1').col, s.cells.find((c) => c.key === 't1').col);
+  assert.equal(boxAt(s, 'c1').row, 0);
+  const t = C.addSheet({ top: 95, bottom: 17 }); // 112: the last carry goes straight into the answer
+  assert.equal(t.answer, '112');
+  assert.equal(t.steps.at(-1).prompt({}), 'Write the 1 you carried.');
+  assert.equal(digitsOf(t, 'c').length, 1);
+  // every problem, against the sum worked out
+  const r = rng(21);
+  for (let n = 0; n < 500; n++) {
+    const a = 10 + Math.floor(r() * 9990), b = 10 + Math.floor(r() * 9990);
+    const s2 = C.addSheet({ top: a, bottom: b });
+    assert.equal(s2.answer, String(a + b), `${a} + ${b}`);
+    assert.equal(s2.answerBoxes.map((id) => L.boxOf(s2, id).digit).join(''), String(a + b));
+    assert.ok(L.allRight(s2, L.correctValues(s2)));
+    // a carry box exactly where a column made 10 or more and another column follows
+    let carries = 0;
+    for (let p = 0, c = 0; p < 4; p++) {
+      const sum = (Math.floor(a / 10 ** p) % 10) + (Math.floor(b / 10 ** p) % 10) + c;
+      c = sum >= 10 ? 1 : 0;
+      if (c && (a >= 10 ** (p + 1) || b >= 10 ** (p + 1))) carries++;
+    }
+    assert.equal(digitsOf(s2, 'c').length, carries, `${a} + ${b}: the carries`);
+  }
+});
+
+test('subtraction: regrouping crosses out and writes the new digit, a small 1 in front; across zeros, 400 − 167', () => {
+  const s = C.subtractSheet({ top: 400, bottom: 167 });
+  assert.equal(s.answer, '233');
+  assert.deepEqual(s.steps.map((x) => [x.kind, x.boxes.map((id) => L.boxOf(s, id).digit).join('')]), [
+    ['borrow', '3'], // the 4 hundreds become 3
+    ['borrow', '1'], // the 0 tens become 10
+    ['borrow', '9'], // then 9
+    ['borrow', '1'], // the ones 0 becomes 10
+    ['subtract', '3'], ['subtract', '3'], ['subtract', '2']
+  ]);
+  const crossed = s.cells.filter((c) => c.kind === 'given' && c.crossBy).map((c) => [c.key, c.crossBy]).sort();
+  assert.deepEqual(crossed, [['t1', 'w1'], ['t2', 'w2']], 'the 4 and the tens 0, each crossed by the digit written over it');
+  assert.deepEqual(s.crossedBy, { o1: 'w1' }, 'the small 1 that made 10 tens, crossed out with it');
+  assert.equal(boxAt(s, 'o0').corner, true);
+  assert.equal(boxAt(s, 'o0').row, 1, 'in front of the 0 itself');
+  // 532 − 148: the tens lend, then borrow themselves: the small 1 goes in front of the new digit
+  const t = C.subtractSheet({ top: 532, bottom: 148 });
+  assert.equal(t.answer, '384');
+  assert.equal(boxAt(t, 'o1').row, 0, 'in front of the 2 written over the 3');
+  assert.equal(t.steps.find((x) => x.boxes.includes('a1')).prompt({}), 'What is 12 − 4?');
+  // 400 − 367 = 33: no box for a zero in front
+  assert.deepEqual(C.subtractSheet({ top: 400, bottom: 367 }).answerBoxes, ['a1', 'a0']);
+  // every problem, against the difference worked out, and the regrouping rules
+  const r = rng(23);
+  for (let n = 0; n < 800; n++) {
+    let a = 10 + Math.floor(r() * 9990), b = 10 + Math.floor(r() * 9990);
+    if (n % 5 === 0) a = [100, 1000, 4000, 5003, 9000][n % 25 / 5 | 0];
+    if (a <= b) [a, b] = [b + 1, a];
+    if (a > 9999) continue;
+    const s2 = C.subtractSheet({ top: a, bottom: b });
+    assert.equal(s2.answer, String(a - b), `${a} − ${b}`);
+    assert.equal(Number(s2.answerBoxes.map((id) => L.boxOf(s2, id).digit).join('')), a - b);
+    assert.ok(L.allRight(s2, L.correctValues(s2)));
+    for (const st of s2.steps.filter((x) => x.kind === 'borrow')) {
+      const id = st.boxes[0];
+      const v = L.boxOf(s2, id).digit;
+      if (id[0] === 'o') assert.equal(v, 1, 'a small 1 in front');
+      else assert.ok(v >= 0 && v <= 9, 'a digit over a crossed-out one');
+    }
+    // each digit crossed out once at most, and only ever by the digit written over it
+    for (const c of s2.cells.filter((x) => x.kind === 'given' && x.crossBy)) assert.equal(boxAt(s2, c.crossBy).col, c.col);
+  }
+});
+
+test('addition and subtraction with decimals: the points line up, padded with faint zeros, and come straight down', () => {
+  const s = C.addSheet({ top: 3.5, bottom: 2.75 });
+  assert.equal(s.answer, '6.25');
+  assert.ok(s.cells.some((c) => c.kind === 'given' && c.key === 't0' && c.text === '0' && c.faint), '3.5 is 3.50');
+  const pts = s.cells.filter((c) => c.text === '.' || c.id === 'ap');
+  assert.equal(new Set(pts.map((c) => c.col)).size, 1, 'one column for the points');
+  assert.ok(s.steps.some((x) => x.kind === 'point' && x.boxes[0] === 'ap'));
+  for (const [k, a, b, want] of [['add', 0.5, 0.25, '0.75'], ['add', 35.6, 7.25, '42.85'], ['subtract', 5.2, 1.75, '3.45'], ['subtract', 10.05, 2.5, '7.55'], ['subtract', 40, 16.3, '23.7'], ['subtract', 1, 0.25, '0.75']]) {
+    const t = (k === 'add' ? C.addSheet : C.subtractSheet)({ top: a, bottom: b });
+    assert.equal(t.answer, want, `${a} ${k} ${b}`);
+    assert.ok(L.allRight(t, L.correctValues(t)));
+  }
+  assert.equal(C.checkColumns('add', 3.5, 2.75), 'Whole numbers, 10 to 9,999.');
+  assert.equal(C.checkColumns('add', 3.5, 2.75, 'decimal'), null);
+  assert.match(C.checkColumns('subtract', 2.75, 3.5, 'decimal'), /bigger/);
+  assert.match(C.checkColumns('add', 5, 30), /two to four digits/);
+  // problems from a plan: within the ranges, the bigger on top, a point in each with decimals
+  for (const kind of ['add', 'subtract'])
+    for (const numbers of ['whole', 'decimal']) {
+      const ps = L.kindInfo(kind).settings.generate({ count: 30, tops: [100, 999], bottoms: [10, 999], ...(numbers === 'decimal' ? { numbers } : {}) }, rng(4));
+      assert.equal(ps.length, 30);
+      for (const [a, b] of ps) {
+        assert.equal(C.checkColumns(kind, a, b, numbers), null, `${a}, ${b}`);
+        if (numbers === 'decimal') assert.ok(N.isDecimal(a) || N.isDecimal(b));
+      }
+    }
+});
+
+test('addition and subtraction: their own items (k add or subtract), the standard method only, old kinds unchanged', () => {
+  for (const k of ['add', 'subtract']) {
+    const it = { k, p: [[475, 368], [400, 167]], l: 'guided' };
+    const a = L.parseItem(it);
+    assert.equal(a.kind, k);
+    assert.deepEqual(L.toItem(a), it);
+    assert.equal(L.parseItem({ ...it, m: 'area' }).settings.method, 'standard');
+    assert.deepEqual(L.toItem(L.parseItem({ k, p: [], l: 'onMyOwn', d: 1, g: { count: 12, tops: [100, 999], bottoms: [10, 99] } })), { k, p: [], l: 'onMyOwn', d: 1, g: { count: 12, tops: [100, 999], bottoms: [10, 99] } });
+  }
+  assert.equal(L.parseItem({ k: 'subtract', p: [[167, 400]], l: 'guided' }), null, 'the smaller on top is not a problem');
+  assert.equal(L.parseItem({ k: 'nonsense', p: [[92, 4]], l: 'guided' }).kind, 'divide', 'an unknown kind is long division, as always');
 });

@@ -8528,3 +8528,36 @@ replaces), so nothing new to learn for anyone who doesn't want it.
     `bbDecCheck` follows the game's rules (tested against them on 8,000 random problems).
   - Fixed on the way: the editor scrolled sideways on a phone by 12px (its one-column grid was `1fr`, so a tile's
     min-content could widen it); it is `minmax(0, 1fr)` now.
+- **Addition and subtraction.** Two more kinds beside Long division and Multiplication (`columns.ts`; `KINDS` in
+  `logic.ts`): two to four digits each (10 to 9,999; subtraction takes the smaller from the bigger), or decimals to
+  hundredths with Numbers set to decimals. Laid out in columns with a row of small boxes above for carries and
+  regrouping; with decimals the points share a column, shorter numbers are padded with faint zeros (3.5 over 2.75 is
+  3.50), and a step brings the point straight down into the answer.
+  - *Carrying:* each column from the right is a step; a column of 10 or more writes its ones, then a carry step writes
+    the 1, small, over the next column. A last carry past the digits goes straight into the answer ("Write the 1 you
+    carried").
+  - *Regrouping:* when the top digit is smaller, the digit it borrows from is crossed out and one less is written over
+    it (a small box), and the column that borrows gets a small 1 in its corner (2 becomes 12). Across zeros (400 −
+    167): cross out the 4 and write 3; the tens' 0 gets its 1 (10) and is crossed out for 9; the ones get their 1;
+    then 10 − 7, 9 − 6, 3 − 1. Each is a box, so Watch, Guided and the hints say why; a crossed-out digit is drawn as
+    soon as what replaces it is written (`crossBy` on a given cell, `crossedBy` for a box). No box for a zero in front
+    of the answer (400 − 367 = 33), but the ones (0.75) always.
+  - *Support levels:* Watch, Guided and On my own as for the other kinds. Count up counts each column with ▲: on from
+    the top digit (8, 9, 10 …) for addition, and up from the bottom digit to the top one for subtraction (the count is
+    the answer); the page writes the digit and the carries, and the student types the regrouping and the point. Hints,
+    Check, the second try, scoring and `BRB.gameOver` are the player's own, unchanged.
+  - Teachers make them like the others (ranges for the top and bottom numbers, Numbers, a fresh set per student); the
+    Method section is hidden for a kind with one method. Practice has them too (Easy 2 digits, Medium 3, Hard 4). The
+    server takes `k: 'add' | 'subtract'` with the same rules as the game (`bbCheck`, `bbDecCheck`; tested against the
+    game's own on random problems) and names them in the label ("Subtraction, 12 problems, decimals, Watch"). The game
+    keeps its name; the seed JSON's description and tags (every language) mention addition, subtraction, remainders and
+    decimals.
+- **UI strings** stay in the game's source (English, US spelling) as before, gathered where they are used: the choices
+  in `REMAINDER_OPTIONS`, `NUMBERS_CHOICE` (`logic.ts`) and `NUMBER_KINDS`, `HARDS` (`practice.ts`); each step's
+  prompt, told line and hints next to the step that asks it (`logic.ts`, `columns.ts`), as the game already did, so
+  a translation pass can take them from those places.
+- Tests: tests/unit/box-by-box-math.test.js (the math: fractions, decimal digits and the stop rule, the point lifted,
+  divisors shifted, decimal products, carries and borrows across zeros, the server against the game on random
+  problems); tests/unit/box-by-box-kinds.test.js (Chromium, on a phone: three problems in a row for each new kind and
+  option, Guided with every question read and On my own, 400 − 167's questions in order, the arrows, Watch and Count up
+  for each); tests/unit/box-by-box.test.js (sets: `r`, `dec`, the new kinds, old sets byte for byte, labels).

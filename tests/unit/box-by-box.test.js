@@ -35,7 +35,7 @@ test('box-by-box sets: one activity of problems the game can work, a known level
 
 test('box-by-box sets: the method is one of the kind’s own (never free text); a set without one is the standard algorithm', () => {
   const clean = gameSets.SET_GAMES.get('box-by-box');
-  assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'] });
+  assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'], add: ['standard'], subtract: ['standard'] });
   for (const m of ['ladder', 'area']) assert.deepEqual(clean([{ ...DIV, m }]), [{ ...DIV, m }]);
   for (const m of ['area', 'partial']) assert.deepEqual(clean([{ ...MUL, m }]), [{ ...MUL, m }]);
   assert.deepEqual(clean([{ ...DIV, m: 'standard' }]), [DIV], 'the standard algorithm is kept as a set without a method, as before');
@@ -170,4 +170,24 @@ test('box-by-box sets: decimals only with dec: 1 (at most 2 places each); the la
   const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
   assert.equal(label([DEC]), 'Long division, 3 problems, decimals, Guided');
   assert.equal(label([MDEC]), 'Multiplication, 2 problems, decimals, On my own');
+});
+
+test('box-by-box sets: addition and subtraction (2 to 4 digits, the bigger on top), their plans, and their labels', async () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const ADD = { k: 'add', p: [[475, 368], [9999, 9999]], l: 'guided' };
+  const SUB = { k: 'subtract', p: [[400, 167], [5003, 2468]], l: 'onMyOwn' };
+  assert.deepEqual(clean([ADD]), [ADD]);
+  assert.deepEqual(clean([SUB]), [SUB]);
+  assert.deepEqual(clean([{ ...SUB, p: [[5.2, 1.75], [40, 16.3]], dec: 1 }]), [{ ...SUB, p: [[5.2, 1.75], [40, 16.3]], dec: 1 }]);
+  const plan = { count: 12, tops: [100, 999], bottoms: [10, 999] };
+  assert.deepEqual(clean([{ k: 'add', p: [], l: 'countUp', d: 1, g: plan }]), [{ k: 'add', p: [], l: 'countUp', d: 1, g: plan }]);
+  for (const bad of [{ ...SUB, p: [[167, 400]] }, { ...SUB, p: [[400, 400]] }, { ...ADD, p: [[5, 30]] }, { ...ADD, p: [[10000, 30]] }, { ...ADD, p: [[3.5, 27]] }, { ...ADD, m: 'area' }, { ...ADD, r: 'fraction' }, { k: 'add', p: [], l: 'guided', d: 1, g: { ...plan, bottoms: [1, 99] } }])
+    assert.equal(clean([bad]), null, JSON.stringify(bad));
+  assert.deepEqual(clean([{ ...ADD, m: 'standard' }]), [ADD]);
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([ADD]), 'Addition, 2 problems, Guided');
+  assert.equal(label([{ ...SUB, p: [[5.2, 1.75]], dec: 1 }]), 'Subtraction, 1 problem, decimals, On my own');
+  assert.equal(label([{ k: 'subtract', p: [], l: 'watch', d: 1, g: plan }]), 'Subtraction, 12 problems (different for each student), Watch');
 });

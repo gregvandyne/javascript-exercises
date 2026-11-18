@@ -219,3 +219,108 @@ for (const { what, item } of DECIMALS)
         if (sheet.steps[0].kind === 'shift') assert.equal(await page.locator('svg.hop').count(), 2, `${w}: the hops`);
       });
     });
+
+// ---------------------------------------------------------------- addition and subtraction
+
+const COLUMNS = [
+  { what: 'addition with carries', item: { k: 'add', p: [[475, 368], [95, 7 + 10], [9999, 9999]] } },
+  { what: 'subtraction with regrouping', item: { k: 'subtract', p: [[400, 167], [532, 148], [4005, 2996]] } },
+  { what: 'decimal addition', item: { k: 'add', p: [[3.5, 2.75], [0.5, 0.25], [35.6, 7.25]], dec: 1 } },
+  { what: 'decimal subtraction', item: { k: 'subtract', p: [[5.2, 1.75], [10.05, 2.5], [40, 16.3]], dec: 1 } }
+];
+for (const { what, item } of COLUMNS)
+  for (const l of ['guided', 'onMyOwn'])
+    test(`in Chromium: ${what}, three in a row, ${l}`, { skip, timeout: 90e3 }, async () => {
+      await inARow(item, l, what, async (page, sheet, w) => {
+        if (item.k === 'subtract') {
+          // every digit regrouped is crossed out, and the small 1s are in
+          const crossedGiven = sheet.cells.filter((c) => c.kind === 'given' && c.crossBy).length;
+          assert.equal(await page.locator('.given.crossed').count(), crossedGiven, `${w}: the crossed-out digits`);
+        }
+      });
+    });
+
+test('in Chromium: 400 − 167, Guided: each regrouping asked for in order, the 4 and the 0 crossed out', { skip, timeout: 60e3 }, async () => {
+  const { page, ctx, errors } = await open({ k: 'subtract', p: [[400, 167]], l: 'guided' }, true);
+  const asked = [];
+  const sheet = sheetOf({ k: 'subtract', p: [[400, 167]] }, [400, 167]);
+  for (let guard = 0; guard < 20; guard++) {
+    const id = await (await page.waitForFunction(() => { const a = document.activeElement; return a?.dataset?.box && a.value === '' ? a.dataset.box : a?.textContent?.trim() === 'Check' ? 'done' : null; })).jsonValue();
+    if (id === 'done') break;
+    asked.push(await page.locator('.prompt').innerText());
+    await page.keyboard.type(String(L.boxOf(sheet, id).digit));
+  }
+  assert.deepEqual(asked, [
+    '0 is less than 7, and there’s nothing to regroup in the tens. Go to the hundreds: cross out the 4 and write 3 over it.',
+    'The 1 hundred is 10 tens: write a small 1 in front of the 0 to make 10.',
+    'Now take 1 of those 10 tens for the ones: cross out the 10 and write 9.',
+    'The ones get 10 more: write a small 1 in front of the 0 to make 10.',
+    'What is 10 − 7?',
+    'What is 9 − 6?',
+    'What is 3 − 1?'
+  ]);
+  assert.equal(await page.locator('.given.crossed').count(), 2, 'the 4 and the tens 0');
+  assert.equal(await page.locator('input.digit.crossed').count(), 1, 'and the small 1 in front of that 0');
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  assert.match(await page.locator('.feedback').innerText(), /Correct! 400 − 167 = 233/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+// ---------------------------------------------------------------- Watch and Count up, for each new kind and option
+
+const EVERY = [
+  { k: 'divide', p: [[30, 4], [745, 6]], r: 'fraction' },
+  { k: 'divide', p: [[745, 6], [27, 6]], r: 'decimal' },
+  { k: 'divide', p: [[12.6, 4], [4.5, 0.25]], dec: 1 },
+  { k: 'multiply', p: [[2.4, 1.3], [0.6, 4]], dec: 1 },
+  { k: 'add', p: [[475, 368], [3.5, 2.75]], dec: 1 },
+  { k: 'subtract', p: [[400, 167], [5.2, 1.75]], dec: 1 }
+];
+for (const item of EVERY) {
+  const name = `${item.k}${item.r ? ` (${item.r})` : ''}${item.dec ? ' (decimals)' : ''}`;
+  test(`in Chromium: Watch works ${name} to the end`, { skip, timeout: 90e3 }, async () => {
+    const { page, ctx, errors } = await open({ ...item, l: 'watch' }, true);
+    for (let i = 0; i < 400 && !(await page.getByText('All done!').count()); i++) {
+      await page.locator('.actions .btn-primary').click();
+      await page.waitForTimeout(15);
+    }
+    assert.deepEqual(await page.evaluate(() => window.__over), [{ won: true, score: 0 }]);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });
+  test(`in Chromium: Count up works ${name}, each to Correct!`, { skip, timeout: 120e3 }, async () => {
+    const it = { ...item, l: 'countUp' };
+    const { page, ctx, errors } = await open(it, true);
+    for (let n = 0; n < it.p.length; n++) {
+      const sheet = sheetOf(it, it.p[n]);
+      for (let guard = 0; guard < 300; guard++) {
+        const id = await (await page.waitForFunction(() => {
+          const a = document.activeElement;
+          if (document.querySelector('.feedback')) return null;
+          if (a?.textContent?.trim() === 'Check') return 'done';
+          return a?.dataset?.box && (a.value === '' || a.classList.contains('counting')) ? a.dataset.box : null;
+        }, null, { timeout: 8000 })).jsonValue();
+        if (id === 'done') break;
+        const st = sheet.steps[L.stepOfBox(sheet, id)];
+        const counting = await page.locator('.stepper').count();
+        if (counting) {
+          const times = st.skipCount ? st.skipCount.times : Number(L.boxOf(sheet, id).digit);
+          if (times === 0 && !st.skipCount) { await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowDown'); }
+          for (let i = 0; i < times; i++) await page.keyboard.press('ArrowUp');
+          await page.keyboard.press('Enter');
+        } else {
+          const lift = st.liftCarry?.ones === id ? String(L.boxOf(sheet, st.liftCarry.tens).digit) : '';
+          await page.keyboard.type(lift + String(L.boxOf(sheet, id).digit), { delay: 30 });
+        }
+        await page.waitForTimeout(40);
+      }
+      await check(page, sheet, `${name}, Count up, ${sheet.title}`);
+      await page.locator('.feedback .btn-primary').click();
+    }
+    await page.getByText('All done!').waitFor();
+    assert.deepEqual(await page.evaluate(() => window.__over), [{ won: true, score: it.p.length }]);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });
+}

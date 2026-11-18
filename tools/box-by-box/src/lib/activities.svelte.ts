@@ -7,6 +7,7 @@
 import {
 	freshSettings,
 	kindInfo,
+	kindOr,
 	numbersOf,
 	parseFlags,
 	toItem,
@@ -46,7 +47,7 @@ function fromSave(raw: unknown): Activity | null {
 	if (!raw || typeof raw !== 'object') return null;
 	const o = raw as Record<string, unknown>;
 	if (typeof o.id !== 'string') return null;
-	const kind: Kind = o.kind === 'multiply' ? 'multiply' : 'divide';
+	const kind: Kind = kindOr(o.kind);
 	const k = kindInfo(kind).settings;
 	const plan = o.plan ? k.parse(o.plan) : k.fresh();
 	const problems = validProblems(o.problems, kind, numbersOf(plan.numbers));

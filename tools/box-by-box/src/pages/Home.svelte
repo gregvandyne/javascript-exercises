@@ -84,7 +84,7 @@
 		confirmFor = null;
 	}
 	$effect(() => {
-		document.title = `${NAME} · Long division and multiplication, step by step`;
+		document.title = `${NAME} · Division, multiplication, addition and subtraction, step by step`;
 	});
 </script>
 
@@ -99,7 +99,7 @@
 			</div>
 			<h1>Your activities</h1>
 			<p class="lede">
-				Each activity is a set of long division or multiplication problems, worked on graph paper with as much support
+				Each activity is a set of long division, multiplication, addition or subtraction problems, worked on graph paper with as much support
 				as you choose, and shared with students as a link. They’re saved with your Oomba account.
 			</p>
 		</div>

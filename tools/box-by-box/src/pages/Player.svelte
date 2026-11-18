@@ -213,12 +213,13 @@
 		if (!counting || busy) return null;
 		if (counted) {
 			if (typed) {
-				const want = String(counted.by * counted.times);
+				const want = String(skipValue(counted));
 				return { digits: [...typed], row: counted.row, onesCol: counted.onesCol, over: typed.length >= want.length && typed !== want };
 			}
-			return count === null || count === 0
+			// (subtraction counts up to the top digit: the count, not where it stands, is the answer, so only the words show it)
+			return count === null || count === 0 || counted.words === 'sub'
 				? null
-				: { digits: [...String(count * counted.by)], row: counted.row, onesCol: counted.onesCol, over: count > counted.times };
+				: { digits: [...String((counted.start ?? 0) + count * counted.by)], row: counted.row, onesCol: counted.onesCol, over: count > counted.times };
 		}
 		const cu = steps[at]?.countUp;
 		return !cu || count === null
@@ -236,7 +237,25 @@
 		const l = st.liftCarry;
 		return l ? `${values[l.tens] ?? ''}${values[l.ones] ?? ''}` : st.boxes.map((b) => values[b] ?? '').join('');
 	});
+	/** What a count comes to, typed instead of counted: the product (multiplication), the column's sum, or (subtraction)
+	 *  how many it took to count up. */
+	const skipValue = (s: NonNullable<Step['skipCount']>) => (s.words === 'sub' ? s.times : (s.start ?? 0) + s.by * s.times);
 	function skipPrompt(s: NonNullable<Step['skipCount']>) {
+		const start = s.start ?? 0;
+		if (s.words === 'add') {
+			if (typed) return `${start} + ${s.times} = ${typed}? Press That’s it.`;
+			if (s.times === 0 && !count) return `${start} + 0 = ${start}: there’s nothing to count. Press That’s it.`;
+			if (count === null || count === 0) return `${start} + ${s.times}: count on ${s.times} from ${start} with ▲, or type it.`;
+			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: that’s ${count} on from ${start}.`;
+		}
+		if (s.words === 'sub') {
+			const goal = start + s.times;
+			if (typed) return `From ${start} up to ${goal} is ${typed}? Press That’s it.`;
+			if (s.times === 0 && !count) return `${goal} − ${start} = 0: there’s nothing to count. Press That’s it.`;
+			if (count === null || count === 0) return `${goal} − ${start}: count up from ${start} to ${goal} with ▲. How many steps?`;
+			const at = start + count;
+			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: ${count} up, at ${at}.${at < goal ? ' Keep going.' : at === goal ? ' Press That’s it.' : ' Too far: go back with ▼.'}`;
+		}
 		if (typed) return `${s.by} × ${s.times} = ${typed}? Press That’s it.`;
 		if (s.times === 0 && !count) return `${s.by} × 0 = 0: there’s nothing to count. Press That’s it.`;
 		const t = `${s.by} × ${s.times}: count by ${s.by}s, ${s.times} times, with ▲, or type it.`;
@@ -648,8 +667,10 @@
 		if (at >= steps.length) return check();
 		const sc = steps[at].skipCount;
 		if (sc && typed) {
-			if (Number(typed) !== sc.by * sc.times) {
-				nudge = `${typed} isn’t ${sc.by} × ${sc.times}. Count by ${sc.by}s with ▲ to find it.`;
+			if (Number(typed) !== skipValue(sc)) {
+				nudge = sc.words
+					? `${typed} isn’t it. Count with ▲ to find it.`
+					: `${typed} isn’t ${sc.by} × ${sc.times}. Count by ${sc.by}s with ▲ to find it.`;
 				fails += 1;
 				typed = '';
 				return;
@@ -670,7 +691,14 @@
 		}
 		if (sc) {
 			if (count !== sc.times) {
-				nudge = count < sc.times ? `That’s ${count} times so far. Keep counting to ${sc.times}.` : `That’s ${count} times, more than ${sc.times}. Count back with ▼.`;
+				const word = sc.words === 'sub' ? `up to ${(sc.start ?? 0) + count}` : `${count} on`;
+				nudge = sc.words
+					? count < sc.times
+						? `That’s ${word} so far. Keep counting.`
+						: `That’s ${word}, too far. Count back with ▼.`
+					: count < sc.times
+						? `That’s ${count} times so far. Keep counting to ${sc.times}.`
+						: `That’s ${count} times, more than ${sc.times}. Count back with ▼.`;
 				fails += 1;
 				return;
 			}
@@ -716,7 +744,7 @@
 	function keypad(k: string) {
 		if (!sheet || phase !== 'working' || busy) return;
 		if (counting && counted) {
-			const most = String(counted.by * 9).length;
+			const most = counted.words ? 2 : String(counted.by * 9).length;
 			typed = k === '' ? typed.slice(0, -1) : typed.length >= most ? k : typed + k;
 			count = null;
 			nudge = '';
@@ -835,7 +863,8 @@
 
 	const toGo = $derived(phase === 'over' ? 0 : sheets.length - index - +settled);
 	function boxLabel(id: string) {
-		if (isCountBox(id) && current === id) return activity.kind === 'multiply' ? 'Product: ▲ and ▼ to count' : 'Quotient digit: ▲ and ▼ to count up';
+		if (isCountBox(id) && current === id)
+			return { multiply: 'Product: ▲ and ▼ to count', divide: 'Quotient digit: ▲ and ▼ to count up', add: 'Sum: ▲ and ▼ to count on', subtract: 'Difference: ▲ and ▼ to count up' }[activity.kind];
 		const c = cellOf(id);
 		if (c?.point) return 'Decimal point';
 		if (c?.half) return c.half === 'top' ? 'Fraction, top digit' : 'Fraction, bottom digit';

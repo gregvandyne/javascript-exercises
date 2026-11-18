@@ -2,9 +2,13 @@
 // calls and no DOM here, so it runs as it is in Node too.
 
 import { methodOr, type Method } from './methods.ts';
+import { addSheet, checkColumns, subtractSheet } from './columns.ts';
 import { asText, digitsOfText, isDecimal, placeWord, placesOf, plural, scaled, shiftPoint, unscaled } from './numbers.ts';
 
-export type Kind = 'divide' | 'multiply';
+export type Kind = 'divide' | 'multiply' | 'add' | 'subtract';
+export const KIND_NAMES: Kind[] = ['divide', 'multiply', 'add', 'subtract'];
+/** A kind as kept (in a save or a link): one of the four, else long division, as it always was. */
+export const kindOr = (v: unknown): Kind => (KIND_NAMES.includes(v as Kind) ? (v as Kind) : 'divide');
 export type Level = 'watch' | 'countUp' | 'guided' | 'prompted' | 'onMyOwn' | 'custom';
 export type Problem = [number, number];
 export type Values = Record<string, string>;
@@ -73,7 +77,9 @@ export type Step = {
 	grow?: string[];
 	view: View;
 	countUp?: { partial: number; divisor: number; row: number; onesCol: number };
-	skipCount?: { by: number; times: number; carry: number; row: number; onesCol: number };
+	/** Count up by skip-counting: `by`, `times` times (then add the carry). Addition and subtraction count by ones from
+	 *  `start` (words: add counts on `times`; sub counts up from the bottom digit to the top one, and the count is it). */
+	skipCount?: { by: number; times: number; carry: number; row: number; onesCol: number; start?: number; words?: 'add' | 'sub' };
 	liftCarry?: { ones: string; tens: string };
 	slide?: { row: number; col: number };
 	/** The step's own hints, easiest first (else hints.ts works them out from its kind). */
@@ -1001,7 +1007,99 @@ function parseMultiplyPlan(raw: unknown): MultiplyPlan {
 	}).plan;
 }
 
-// --- the two kinds ---
+// --- addition and subtraction (columns.ts has the sheets) ---
+
+/** The same shape as multiplication's: the top and bottom numbers' ranges. */
+export type ColumnPlan = MultiplyPlan;
+const COLUMN_LIMITS: [number, number] = [10, 9999];
+const ADD_PLAN: ColumnPlan = { count: 12, tops: [100, 999], bottoms: [100, 999] };
+const SUBTRACT_PLAN: ColumnPlan = { count: 12, tops: [100, 999], bottoms: [10, 999] };
+/** Two numbers from the plan's ranges (subtraction: the bigger on top); with decimals, a point placed in each, at one or
+ *  two places (35.6 + 7.25), keeping a whole digit in front. */
+function makeColumns(kind: 'add' | 'subtract', plan: ColumnPlan, r: Rand): Problem | null {
+	let a = rand(plan.tops[0], plan.tops[1], r);
+	let b = rand(plan.bottoms[0], plan.bottoms[1], r);
+	if (plan.numbers === 'decimal') {
+		a = unscaled(a, rand(1, Math.min(2, len(a) - 1), r));
+		b = unscaled(b, rand(1, Math.min(2, len(b) - 1), r));
+		if (!isDecimal(a) && !isDecimal(b)) return null;
+	}
+	if (kind === 'subtract' && a < b) [a, b] = [b, a];
+	return checkColumns(kind, a, b, plan.numbers ?? 'whole') ? null : [a, b];
+}
+function columnSet(kind: 'add' | 'subtract', plan: ColumnPlan, r: Rand = Math.random, existing: Problem[] = []): Problem[] {
+	return makeSet(Math.max(1, Math.min(100, Math.round(plan.count))), () => makeColumns(kind, plan, r), ([a, b]) => `${a}|${b}`, existing);
+}
+function parseColumnPlan(raw: unknown, dflt: ColumnPlan): ColumnPlan {
+	const t = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+	const count = Number(t.count);
+	return {
+		count: Number.isInteger(count) && count >= 1 && count <= 100 ? count : dflt.count,
+		tops: range(t.tops, COLUMN_LIMITS, dflt.tops),
+		bottoms: range(t.bottoms, COLUMN_LIMITS, dflt.bottoms),
+		...(t.numbers === 'decimal' ? { numbers: 'decimal' as Numbers } : {})
+	};
+}
+const sortRange = ([a, b]: [number, number]): [number, number] => [Math.min(a, b), Math.max(a, b)];
+function columnKind(kind: 'add' | 'subtract', dflt: ColumnPlan): KindInfo {
+	const add = kind === 'add';
+	return {
+		name: kind,
+		title: add ? 'Addition' : 'Subtraction',
+		sign: add ? '+' : '−',
+		labels: ['top number', 'bottom number'],
+		widths: [4, 4],
+		setSize: dflt.count,
+		makeSet: (r, n) => columnSet(kind, { ...dflt, count: n }, r),
+		check: (a, b, numbers) => checkColumns(kind, a, b, numbers),
+		sheet: ([a, b]) => (add ? addSheet({ top: a, bottom: b }) : subtractSheet({ top: a, bottom: b })),
+		settings: {
+			fresh: () => ({ ...dflt, tops: [...dflt.tops], bottoms: [...dflt.bottoms] }),
+			parse: (raw) => parseColumnPlan(raw, dflt),
+			generate: (plan, r = Math.random, existing = []) => columnSet(kind, plan as ColumnPlan, r, existing),
+			ranges: [
+				{ key: 'tops', name: 'Top number', limits: COLUMN_LIMITS },
+				{ key: 'bottoms', name: 'Bottom number', limits: COLUMN_LIMITS }
+			],
+			choices: [NUMBERS_CHOICE],
+			fix: (plan) => {
+				const p = plan as ColumnPlan;
+				let tops = sortRange(p.tops);
+				let bottoms = sortRange(p.bottoms);
+				const swap = !add && bottoms[0] > tops[1];
+				if (swap) [tops, bottoms] = [bottoms, tops];
+				return { plan: { ...p, tops, bottoms }, note: swap ? 'Swapped: the bigger number goes on top.' : null };
+			}
+		},
+		levels: LEVELS,
+		levelText: {
+			countUp: add
+				? 'They count each column on with ▲ (8, 9, 10 …) and the page writes it in, and the carries. They type the decimal point.'
+				: 'They count up from the bottom digit to the top one with ▲, and the page writes how many. They type the regrouping.'
+		},
+		studentLevelText: {
+			countUp: add
+				? 'Count each column on with ▲, and the page writes it in.'
+				: 'Count up from the bottom digit to the top one with ▲, and the page writes how many. Type the regrouping.'
+		},
+		steps: add
+			? [
+					'Line the numbers up on the right (decimals: on their points).',
+					'Add each column, starting with the ones.',
+					'A column that makes 10 or more: write the ones, and carry the 1, small, over the next column.'
+				]
+			: [
+					'Line the numbers up on the right (decimals: on their points).',
+					'Subtract each column, starting with the ones.',
+					'When the top digit is smaller, regroup: cross out the digit next to it, write 1 less over it, and put a small 1 in front of the top digit.',
+					'Across zeros, each 0 becomes 10, then 9.'
+				],
+		tagline: add ? 'Two- to four-digit numbers, with carrying, grades 2 to 4 (decimals: 5 and 6).' : 'Two- to four-digit numbers, with regrouping, grades 2 to 4 (decimals: 5 and 6).',
+		sample: add ? [475, 368] : [400, 167]
+	};
+}
+
+// --- the kinds ---
 
 export type Flag = 'spotlight' | 'prompt' | 'zoom' | 'build' | 'drawSigns' | 'bringDown' | 'markNow';
 export const FLAGS: Flag[] = ['spotlight', 'prompt', 'zoom', 'build', 'drawSigns', 'bringDown', 'markNow'];
@@ -1032,6 +1130,8 @@ export type KindInfo = {
 	studentLevelText?: Partial<Record<Level, string>>;
 	steps: string[];
 	tagline: string;
+	/** The problem the editor's demo works. */
+	sample: Problem;
 };
 
 const LEVELS: Level[] = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn'];
@@ -1100,7 +1200,8 @@ export const KINDS: KindInfo[] = [
 			'Subtract, then bring down the next digit.',
 			'Repeat until there’s nothing to bring down: what’s left is the remainder.'
 		],
-		tagline: 'Up to six digits divided by up to four digits, grades 4 to 6.'
+		tagline: 'Up to six digits divided by up to four digits, grades 4 to 6.',
+		sample: [92, 4]
 	},
 	{
 		name: 'multiply',
@@ -1139,8 +1240,11 @@ export const KINDS: KindInfo[] = [
 			'Start each next row with a placeholder zero for each place it moves over, then multiply by the next digit.',
 			'Add the rows.'
 		],
-		tagline: 'Up to four digits times up to three digits, grades 4 and 5.'
-	}
+		tagline: 'Up to four digits times up to three digits, grades 4 and 5.',
+		sample: [24, 13]
+	},
+	columnKind('add', ADD_PLAN),
+	columnKind('subtract', SUBTRACT_PLAN)
 ];
 export const kindInfo = (k: Kind): KindInfo => KINDS.find((x) => x.name === k)!;
 
@@ -1204,7 +1308,7 @@ export type Item = { k: Kind; p: Problem[]; l: Level; c?: string; d?: 1; g?: Pla
 export function parseItem(raw: unknown): Playable | null {
 	if (!raw || typeof raw !== 'object') return null;
 	const o = raw as Record<string, unknown>;
-	const kind: Kind = o.k === 'multiply' ? 'multiply' : 'divide';
+	const kind = kindOr(o.k);
 	const numbers: Numbers = o.dec === 1 ? 'decimal' : 'whole';
 	const problems = validProblems(o.p, kind, numbers);
 	const perStudent = o.d === 1;

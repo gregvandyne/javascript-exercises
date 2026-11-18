@@ -19,13 +19,27 @@ const PLANS: Record<Kind, Record<Hard, Plan>> = {
 		easy: { count: SET_SIZE, tops: [10, 99], bottoms: [2, 9] },
 		medium: { count: SET_SIZE, tops: [100, 999], bottoms: [2, 9] },
 		hard: { count: SET_SIZE, tops: [100, 999], bottoms: [10, 99] }
+	},
+	add: {
+		easy: { count: SET_SIZE, tops: [10, 99], bottoms: [10, 99] },
+		medium: { count: SET_SIZE, tops: [100, 999], bottoms: [100, 999] },
+		hard: { count: SET_SIZE, tops: [1000, 9999], bottoms: [1000, 9999] }
+	},
+	subtract: {
+		easy: { count: SET_SIZE, tops: [20, 99], bottoms: [10, 99] },
+		medium: { count: SET_SIZE, tops: [100, 999], bottoms: [10, 999] },
+		hard: { count: SET_SIZE, tops: [1000, 9999], bottoms: [100, 9999] }
 	}
 };
 
 export const HARDS: { hard: Hard; name: string; about: Record<Kind, string> }[] = [
-	{ hard: 'easy', name: 'Easy', about: { divide: '2 digits by 1 digit, like 84 ÷ 4. No remainders.', multiply: '2 digits times 1 digit, like 46 × 3.' } },
-	{ hard: 'medium', name: 'Medium', about: { divide: '3 digits by 1 digit, like 735 ÷ 6. Remainders too.', multiply: '3 digits times 1 digit, like 418 × 7.' } },
-	{ hard: 'hard', name: 'Hard', about: { divide: '4 digits by 2 digits, like 5184 ÷ 16.', multiply: '3 digits times 2 digits, like 352 × 47.' } }
+	{
+		hard: 'easy',
+		name: 'Easy',
+		about: { divide: '2 digits by 1 digit, like 84 ÷ 4. No remainders.', multiply: '2 digits times 1 digit, like 46 × 3.', add: '2 digits, like 47 + 38.', subtract: '2 digits, like 52 − 18.' }
+	},
+	{ hard: 'medium', name: 'Medium', about: { divide: '3 digits by 1 digit, like 735 ÷ 6. Remainders too.', multiply: '3 digits times 1 digit, like 418 × 7.', add: '3 digits, like 475 + 368.', subtract: '3 digits, like 400 − 167.' } },
+	{ hard: 'hard', name: 'Hard', about: { divide: '4 digits by 2 digits, like 5184 ÷ 16.', multiply: '3 digits times 2 digits, like 352 × 47.', add: '4 digits, like 4096 + 2785.', subtract: '4 digits, like 5003 − 2468.' } }
 ];
 export const HELPS: { mode: Mode; name: string; about: string }[] = [
 	{ mode: 'guided', name: 'Guided', about: 'The box to fill lights up, with a question for each step.' },

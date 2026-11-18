@@ -20,7 +20,10 @@ export type MethodInfo = {
 	steps: string[];
 };
 
+const STANDARD_ONLY = (about: string): MethodInfo[] => [{ name: 'standard', label: 'Standard', about, steps: [] }];
 export const METHODS: Record<Kind, MethodInfo[]> = {
+	add: STANDARD_ONLY('Add each column from the right, carrying a 1 over the next column.'),
+	subtract: STANDARD_ONLY('Subtract each column from the right, regrouping when the top digit is smaller.'),
 	divide: [
 		{
 			name: 'standard',
