@@ -1,5 +1,5 @@
-// Question sets an official game keeps for a teacher (Algebra Builder's and Box by Box's; docs/sdk.md "Question sets",
-// docs/decisions.md "Algebra Builder", "Box by Box"). A teacher makes a set in the game and saves it; the game's link
+// Question sets an official game keeps for a teacher (Algebra Builder's and The Big Divide's; docs/sdk.md "Question sets",
+// docs/decisions.md "Algebra Builder", "Box by Box", "The Big Divide"). A teacher makes a set in the game and saves it; the game's link
 // carries only the set's short code (?chapter=s-<10 letters and digits>&lock=1), so the link, its QR code and a lesson
 // step stay short, and the teacher can change the set later under the same link. The frame hands the set to the game
 // (BRB.questionSet) when a link opens it. Each game has its own cleaner (SET_GAMES): a set is only numbers, short math
@@ -32,13 +32,13 @@ export function cleanItems(raw) {
   return out;
 }
 
-// ---------------------------------------------------------------- Box by Box: one activity per set
+// ------------------------------------------------------------ The Big Divide: one activity per set
 // [{ k: 'divide'|'multiply', p: [[a, b], ...] (1-100 problems the game can work), l: level, c?: 7 flags (level custom),
 //    d?: 1 (a fresh set for each student, made from g), g?: the plan it is made from (only with d) }]
 const BB_LEVELS = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn', 'custom'];
 const int = v => (Number.isInteger(v) ? v : NaN);
 const digits = n => String(n).length;
-/** Box by Box's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
+/** The Big Divide's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
 export function bbCheck(kind, a, b) {
   if (kind === 'divide') {
     if (!Number.isInteger(b) || b < 2 || b > 9999) return 'divisor';
@@ -176,7 +176,7 @@ export function readable(code) {
 const BB_KIND = { divide: 'Long division', multiply: 'Multiplication' };
 const BB_LEVEL = { watch: 'Watch', countUp: 'Count up', guided: 'Guided', prompted: 'Prompted', onMyOwn: 'On my own', custom: 'your own mix' };
 /** What a set game's lesson options open, for the assign page and the lesson's title: a set (its size), one problem, an
- *  activity (Box by Box: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
+ *  activity (The Big Divide: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
 export function describe(gameId, params, slug = 'algebra-builder') {
   const ch = params && params.chapter;
   if (!ch) return null;

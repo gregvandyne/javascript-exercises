@@ -1,4 +1,4 @@
-// Box by Box's card cover (loaded by scripts/covers.js): the teacher's path: the empty activity list with its New
+// The Big Divide's card cover (loaded by scripts/covers.js): the teacher's path: the empty activity list with its New
 // activity buttons, at a card's shape. Playwright frame calls only.
 export default {
   'box-by-box': {

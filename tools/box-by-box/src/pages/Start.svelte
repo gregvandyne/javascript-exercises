@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Who's playing? Opened without a link or a lesson, the game asks first: a teacher goes on to their activities, a
 	// student to their own screen (a class code, or practising alone).
+	import { NAME } from '$lib/name';
 	import { GraduationCap, Backpack } from '@lucide/svelte';
 	import { go } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -9,7 +10,7 @@
 
 <div class="page">
 	<main>
-		<p class="brand"><Logo size={44} /> Box by Box</p>
+		<p class="brand"><Logo size={44} /> {NAME}</p>
 		<h1>Who’s playing?</h1>
 		<div class="paths">
 			<button type="button" class="path student" onclick={() => go({ name: 'student' })}>

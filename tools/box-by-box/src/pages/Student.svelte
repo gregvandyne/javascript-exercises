@@ -1,6 +1,7 @@
 <script lang="ts">
 	// A student's way in: the class code their teacher gave them (it opens the teacher's activity), or practising on
 	// their own: long division or multiplication, how hard, and how much help; then a fresh set every time.
+	import { NAME } from '$lib/name';
 	import { go, goBack } from '$lib/nav.svelte';
 	import { findSet, isPreview, load, store } from '$lib/oomba';
 	import { parseItem, kindInfo, KINDS, type Kind, type Level } from '$lib/logic';
@@ -50,7 +51,7 @@
 </script>
 
 <div class="page">
-	<button type="button" class="brand" onclick={goBack}><Logo size={28} /> Box by Box</button>
+	<button type="button" class="brand" onclick={goBack}><Logo size={28} /> {NAME}</button>
 	<header class="bar">
 		<button type="button" class="btn-ghost back" onclick={goBack}>← Back</button>
 		<h1>Let’s work it out, box by box</h1>

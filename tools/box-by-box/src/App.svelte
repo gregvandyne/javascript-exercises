@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Box by Box. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it;
+	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it;
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
 	// practising alone.
 	import { nav, go, goBack, show } from '$lib/nav.svelte';
