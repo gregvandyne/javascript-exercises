@@ -8567,3 +8567,44 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   lifted point's arrow runs up in the gap before the first decimal digit. Each minus sign sits right before its
   product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
   room in the corner, and a strike covers only the digit, so the 1 stays clear of it.
+
+## The Games tab on phones: two clear tabs (18 Nov 2026)
+
+- **Why.** On a phone the Games tab mixed "my library" with "this class": folder chips looked like tabs, the green
+  full-width Assign button was louder than the game, the order was explained in prose ("Drag to change the order…"),
+  and colleagues' shared folders looked like one's own. Approved mockup "Option B: two clear tabs".
+- **What.** Below 640px (the class tiles' breakpoint) the shelf (`.shelf-class`) is hidden and a phone block
+  (`phoneLib()` in routes/game-shelf.js, `.lib` in app.css) shows instead: a two-part switch, "📌 Assigned (n)" |
+  "📁 My library", Assigned by default. Tablet and desktop are unchanged: `.lib` is `display:none` there, and the
+  shelf's markup is byte-for-byte what it was (before/after screenshots at 768, 1024 and 1280 are pixel-identical).
+- **Rendered twice, CSS picks.** The server renders both the shelf and the phone block; the phone block's ids start
+  `lib-` so nothing clashes. Its state is in the address, the same as the shelf's: `?view=assigned | library | all |
+  students`, `?folder=<id>`, and `&reorder=1`. Every part is a plain link (no script, Back and reload keep it), and an
+  address made on a phone still opens sensibly on a wide screen (`library` and `all` fall back to the shelf's default).
+  public/js/shelf.js only touches the shelf, so it ignores the phone block.
+- **Assigned.** `assignedPane()` (routes/lessons.js) now also returns `phone({ base, reorder })`: "Assigned to {class}",
+  "n games, in the order students see them", "+ Add from library" (to My library) and "↕ Reorder"; then compact rows
+  (cover, title, a due pill "Due Sat, Nov 21" or "No due date", Late and Due today as before, a done bar from
+  `P.lessonSummaries`, which the wide list already reads, and ⋯ with today's row actions: dates, Scores, Student view,
+  Play, Edit lesson, Save to folder, Move up/down, Remove from class). The Google Classroom button (its `tools`) sits at
+  the card's foot.
+- **Reorder mode** (`&reorder=1`) swaps each row's ⋯ for 48px ↑/↓ buttons with "Move {name} up/down" labels, posting
+  the existing `/api/class-lessons/:id/up|down` (and, in a collection, the existing `/api/game-folders/:id/order` with
+  the whole new order), and a Done button. No drag hint on phones; drag still works on wider screens.
+- **My library.** A Files-style list: All my games ("Games you built", `?view=all`), one's collections (shared ones say
+  "🤝 Shared with your school"), "+ New collection", then "From others": colleagues' shared collections ("by {name} ·
+  read only"), Games students shared ("Made by {class} students") and Oomba games (`/learn`, as Find Oomba games).
+  Above it: "Collections only sort your games. Assign from inside one."
+- **Inside a collection** (opened in place, "← My library"): name, count and shared state, ⋯ with today's folder menu
+  (`folderMenu()`, now taking an id prefix) or, for a colleague's, Copy to my folders; "📌 Assign all n" (`assignAll()`,
+  same) and "↕ Reorder" (own, two or more games); rows with cover, title, kind, a small "+ Assign" / "✓ Assigned"
+  toggle and ⋯ (Play, Remove from folder, Save to folder). The toggle posts the existing `/api/teach/assign-game` or
+  `/api/class-lessons/:id/delete` (with today's confirm); games that need setting up first link to the Assign page as
+  before. Like today's Assign, these are app.js `data-api` forms. From All my games the assign answer comes back to
+  `?view=all` (a `view` field in `/api/teach/assign-game`).
+- **Access unchanged.** Colleagues' collections stay read-only (no rename, share, delete, remove or reorder; the server
+  refuses as before), Assign and the toggle are school staff only (`ctx.staff`, not on archived classes), students get
+  no phone block.
+- **Words.** New phone strings say "collection" ("New collection", "Collection name"); existing desktop strings
+  ("folder") are reused as they are where the phone shows the same action. New strings are under `folders.phone` in all
+  12 locales. On phones narrower than 380px the kind keeps its emoji only (its words stay for screen readers).

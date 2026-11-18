@@ -1941,6 +1941,103 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .shelf-phone-tools>.btn{flex:none;padding:0 14px;font-size:.95rem}
 }
 
+/* The class page's Games tab on a phone (docs/decisions.md "The Games tab on phones: two clear tabs";
+   routes/game-shelf.js phoneLib): below 640px the sidebar and the right side give way to a two-part switch, Assigned
+   and My library, with compact rows. Wider screens never show it. */
+.lib{display:none}
+@media (max-width:639px){
+  .shelf-class{display:none}
+  .lib{display:block}
+  .lib-segs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0 0 12px;padding:4px;border-radius:16px;background:var(--hover)}
+  .lib-seg{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:48px;padding:0 10px;border-radius:12px;color:var(--muted);font:800 1rem/1.2 var(--font);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lib-seg:hover{color:var(--text);text-decoration:none}
+  .lib-seg.is-on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,20,20,.14)}
+  .lib-seg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .lib-segl{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .lib-seg>[aria-hidden],.lib-segn{flex:none}
+  .lib-segn{font-weight:600;color:var(--muted)}
+  .lib-card{padding:0;display:flex;flex-direction:column;min-width:0}
+  /* Not the panels' gap between children (schools.css): the rows here are flush, divided by lines. */
+  .lib .lib-card.panel>*{margin-top:0}
+  .lib-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
+  .lib-title{flex:1 1 0;min-width:0}
+  .lib-title h2{margin:0;font-size:1.3rem;font-weight:800;line-height:1.2;overflow-wrap:anywhere}
+  .lib-title p{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+  .lib-fmore{flex:none}
+  .lib-tools{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:8px}
+  .lib-tools>.btn,.lib-tools>.shelf-pop{flex:1 1 auto;min-width:0}
+  .lib-tools>.btn-primary{flex-grow:2}
+  .lib-tools>.shelf-pop>summary{width:100%}
+  .lib-tools .btn{min-height:44px;white-space:nowrap}
+  .lib-list,.lib-items{list-style:none;margin:0;padding:0}
+  .lib-list>li,.lib-items>li{margin:0}
+  .lib-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .lib-row.is-moving{background:var(--card-2)}
+  .lib-cover{display:block;border-radius:12px;overflow:hidden}
+  .lib-thumb.coverart{width:56px;height:56px;border-radius:12px;--art:1.6rem}
+  .lib-thumb .shot-icon{display:none}
+  .lib-body{position:relative;min-width:0;display:flex;flex-direction:column;gap:4px}
+  /* The title's link covers the row's text column, so the tap target is the row's height, not the line's. */
+  .lib-body>.lib-name::after{content:"";position:absolute;inset:-12px 0}
+  .lib-line{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+  .lib-line>.lib-kind{flex:0 1 auto;min-width:0}
+  /* The narrowest phones keep the kind's emoji only; its words stay for screen readers. */
+  @media (max-width:379px){.lib-line .lib-kindt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+  .lib-line>.lib-tform,.lib-line>.lib-toggle{position:relative;z-index:1;flex:none}
+  .lib-name{display:block;min-width:0;font-weight:800;font-size:1.05rem;color:var(--text);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  a.lib-name:hover{text-decoration:underline}
+  .lib-kind{font-size:.9rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lib-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .lib-due{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:2px 10px;border-radius:999px;background:var(--warn-bg);color:var(--warn-ink);font-size:.85rem;font-weight:800;white-space:nowrap}
+  .lib-due.is-none{background:var(--card-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+  .lib-due.is-late{background:var(--bad-bg);color:var(--bad-ink)}
+  .lib-done{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.9rem;white-space:nowrap}
+  .is-moving .lib-done progress{width:40px}
+  .lib-done progress{flex:none;width:64px;height:8px;border:0;border-radius:999px;background:var(--line);overflow:hidden;-webkit-appearance:none;appearance:none}
+  .lib-done progress::-webkit-progress-bar{background:var(--line);border-radius:999px}
+  .lib-done progress::-webkit-progress-value{background:var(--accent-press);border-radius:999px}
+  .lib-done progress::-moz-progress-bar{background:var(--accent-press);border-radius:999px}
+  .lib-acts{display:flex;align-items:center;gap:8px}
+  .lib .shelf-more{width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line);font-size:1.2rem}
+  .lib-moves{display:flex;gap:6px}
+  .lib-mv,.lib-mv-gap{width:48px;min-width:48px;height:48px;min-height:48px;padding:0}
+  .lib-mv{border-radius:50%;font-size:1.35rem;font-weight:800}
+  .lib-mv-gap{display:block}
+  .lib-tform{margin:0}
+  .lib-toggle{min-height:44px;padding:0 14px;border-radius:999px;font-size:.95rem;white-space:nowrap}
+  .lib-toggle.is-on{background:var(--ok-bg);color:var(--accent-ink);box-shadow:none}
+  .lib-foot{padding:12px 16px}
+  .lib-foot .btn{min-height:44px}
+  .lib-item{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 16px;border-bottom:1px solid var(--line);color:var(--text);text-decoration:none;cursor:pointer}
+  .lib-item:hover{text-decoration:none}
+  @media (hover:hover){.lib-item:hover{background:var(--hover)}}
+  .lib-item:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+  .lib-ico{flex:none;width:28px;text-align:center;font-size:1.35rem;line-height:1}
+  .lib-text{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .lib-sub{color:var(--muted);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lib-n{flex:none;color:var(--muted);font-weight:700}
+  .lib-chev{flex:none;color:var(--muted)}
+  [dir="rtl"] .lib-chev,[dir="rtl"] .lib-backarrow{transform:scaleX(-1)}
+  .lib-add,.lib-add .lib-name{color:var(--link)}
+  .lib-add .lib-ico{font-weight:800;font-size:1.6rem}
+  .lib-newf>summary{list-style:none}
+  .lib-newf>summary::-webkit-details-marker{display:none}
+  .lib-newf-panel{display:grid;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card-2)}
+  .lib-newf-panel label{font-weight:700}
+  .lib-newf-panel .row{flex-wrap:nowrap;gap:8px}
+  .lib-newf-panel .input{min-width:0}
+  .lib-newf-panel .form-err:empty{display:none}
+  .lib .lib-group{margin:0;padding:18px 16px 6px;border-bottom:1px solid var(--line);color:var(--muted);font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .lib-card>.lib-items:last-child>li:last-child .lib-item,.lib-card>.lib-list:last-child>.lib-row:last-child{border-bottom:0}
+  .lib-back{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:44px;padding:8px 16px 0;color:var(--link);font-weight:800;text-decoration:none}
+  .lib-back:hover{text-decoration:underline}
+  .lib-back+.lib-head{padding-top:4px}
+  .lib .lib-unit{margin:14px 16px 4px;font-size:1rem}
+  .lib-none{margin:16px}
+  .lib-students>.shelf-head{padding:4px 16px 14px}
+  .lib-students>:not(.shelf-head){margin:12px 16px}
+}
+
 /* ---- Folders: drag to reorder (public/js/reorder.js) and Save to folder in a pop-up (public/js/folder-save.js). */
 .is-reorderable > [data-id]{touch-action:pan-y;-webkit-touch-callout:none}
 .is-reorderable > [data-id].is-dragging{position:relative;z-index:30;cursor:grabbing;box-shadow:var(--shadow-lg);transition:box-shadow .15s;pointer-events:none}

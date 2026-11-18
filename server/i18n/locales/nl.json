@@ -11142,6 +11142,29 @@
     "saveAnother": "In een andere map bewaren",
     "moveUp": "Omhoog",
     "moveDown": "Omlaag",
-    "sharedEmpty": "Hier staan nog geen spellen die je kunt openen."
+    "sharedEmpty": "Hier staan nog geen spellen die je kunt openen.",
+    "phone": {
+      "assigned": "Toegewezen",
+      "library": "Mijn bibliotheek",
+      "assignedSub": "{count, plural, one {# spel, in de volgorde die leerlingen zien} other {# spellen, in de volgorde die leerlingen zien}}",
+      "addFromLibrary": "Uit bibliotheek toevoegen",
+      "reorder": "Volgorde",
+      "done": "Klaar",
+      "noDue": "Geen inleverdatum",
+      "up": "{name} omhoog",
+      "down": "{name} omlaag",
+      "libraryNote": "Collecties ordenen alleen je spellen. Wijs toe vanuit een collectie.",
+      "allSub": "Spellen die je hebt gebouwd",
+      "sharedSub": "Gedeeld met je school",
+      "newCollection": "Nieuwe collectie",
+      "collectionName": "Naam van de collectie",
+      "fromOthers": "Van anderen",
+      "byReadOnly": "van {name} · alleen lezen",
+      "studentsSub": "Gemaakt door leerlingen van {class}",
+      "oomba": "Oomba-spellen",
+      "oombaSub": "Bekijk alle Oomba-spellen",
+      "collectionEmpty": "Deze collectie is nog leeg",
+      "allEmpty": "Je hebt nog geen spel gebouwd."
+    }
   }
 }

@@ -11141,6 +11141,29 @@
     "saveAnother": "ほかのフォルダーに保存",
     "moveUp": "上へ",
     "moveDown": "下へ",
-    "sharedEmpty": "ここにはまだ、あなたが開けるゲームがありません。"
+    "sharedEmpty": "ここにはまだ、あなたが開けるゲームがありません。",
+    "phone": {
+      "assigned": "割り当て済み",
+      "library": "マイライブラリ",
+      "assignedSub": "{count, plural, other {#本のゲーム（生徒に表示される順）}}",
+      "addFromLibrary": "ライブラリから追加",
+      "reorder": "並べ替え",
+      "done": "完了",
+      "noDue": "期限なし",
+      "up": "{name}を上へ",
+      "down": "{name}を下へ",
+      "libraryNote": "コレクションはゲームを整理するだけです。割り当てはコレクションの中から。",
+      "allSub": "あなたが作ったゲーム",
+      "sharedSub": "学校と共有中",
+      "newCollection": "新しいコレクション",
+      "collectionName": "コレクション名",
+      "fromOthers": "ほかの人から",
+      "byReadOnly": "{name} · 閲覧のみ",
+      "studentsSub": "{class}の生徒が作成",
+      "oomba": "Oombaのゲーム",
+      "oombaSub": "Oombaのゲームをすべて見る",
+      "collectionEmpty": "このコレクションはまだ空です",
+      "allEmpty": "まだゲームを作っていません。"
+    }
   }
 }

@@ -11568,6 +11568,29 @@
     "saveAnother": "Save to another folder",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "sharedEmpty": "There are no games here that you can open yet."
+    "sharedEmpty": "There are no games here that you can open yet.",
+    "phone": {
+      "assigned": "Assigned",
+      "library": "My library",
+      "assignedSub": "{count, plural, one {# game, in the order students see it} other {# games, in the order students see them}}",
+      "addFromLibrary": "Add from library",
+      "reorder": "Reorder",
+      "done": "Done",
+      "noDue": "No due date",
+      "up": "Move {name} up",
+      "down": "Move {name} down",
+      "libraryNote": "Collections only sort your games. Assign from inside one.",
+      "allSub": "Games you built",
+      "sharedSub": "Shared with your school",
+      "newCollection": "New collection",
+      "collectionName": "Collection name",
+      "fromOthers": "From others",
+      "byReadOnly": "by {name} · read only",
+      "studentsSub": "Made by {class} students",
+      "oomba": "Oomba games",
+      "oombaSub": "Browse every Oomba game",
+      "collectionEmpty": "Nothing in this collection yet",
+      "allEmpty": "You haven't built a game yet."
+    }
   }
 }

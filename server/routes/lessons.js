@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { emptyState, gradeLabel, nameFilter, jumpNav } from '../views/components.js';
+import { emptyState, gradeLabel, nameFilter, jumpNav, coverArt } from '../views/components.js';
 import { tHtml } from '../i18n/index.js';
 import { requireUser, requireAccount } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -286,7 +286,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   ${lessonRubric ? html`<section class="panel lessonrubric"><h2>📏 ${t('rubrics.attach.lessonTitle')}</h2>${rubricChip(lessonRubric.id)}</section>` : ''}
   ${l.objectives ? html`<section class="panel"><h2>🎯 ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
   <section class="panel std-lessonpanel" id="standards" aria-labelledby="std-h"><div class="std-lessonhead"><h2 id="std-h">🎯 ${t('standards.lesson.title')}</h2>
-    <a class="btn btn-sm" href="/teach/lessons/${l.id}/standards">${edit ? `＋ ${t('standards.lesson.open')}` : t('standards.lesson.view')}</a></div>
+    <a class="btn btn-sm" href="/teach/lessons/${l.id}/standards">${edit ? `+ ${t('standards.lesson.open')}` : t('standards.lesson.view')}</a></div>
     ${ccOf('').length ? ccChips(ccOf('')) : html`<p class="small muted">${ccTags.length ? t('standards.lesson.onSteps', { count: ccTags.length }) : t('standards.lesson.editorNone')}</p>`}</section>
   ${edit && st.length > 2 ? jumpNav(t, [['steps', `🪜 ${t('lessons.lesson.steps')}`, st.length], ['add-step', `➕ ${t('lessons.step.add')}`], ['assign', `📌 ${t('lessons.assign.title')}`]]) : ''}
   <h2 class="sec-h" id="steps">🪜 ${t('lessons.lesson.steps')}</h2>
@@ -424,7 +424,58 @@ export function assignedPane(req, c, { tools = '' } = {}) {
           </div></details></span></div>` : ''}
         ${g.lessons.length ? html`<ol class="plain cl-list">${g.lessons.map((cl, i) => lessonRow(cl, i, g.lessons.length))}</ol>` : html`<p class="small muted">${t('lessons.class.emptyUnit')}</p>`}</div>` : '')}`;
   };
-  return { count, pane };
+  /** The phone's Assigned view (docs/decisions.md "The Games tab on phones: two clear tabs"): compact rows (cover,
+   *  title, due pill, done bar, ⋯ with today's row actions), and in reorder mode (?reorder=1) big ↑/↓ buttons on each
+   *  row instead of the ⋯. Ids are lib-… so they never clash with the wider screens' list in the same page. */
+  const phone = ({ base, reorder = false } = {}) => {
+    const sums = count ? P.lessonSummaries(c.id) : {};
+    const n = count, canMove = staff && n > 1;
+    const due = cl => {
+      const st = L.dueState(cl);
+      if (!st) return html`<span class="lib-due is-none">📅 ${t('folders.phone.noDue')}</span>`;
+      if (st === 'late') return html`<span class="lib-due is-late">⏰ ${t('lessons.class.late')}</span>`;
+      if (st === 'today') return html`<span class="lib-due is-soon">📅 ${t('lessons.class.dueToday')}</span>`;
+      return html`<span class="lib-due is-soon">📅 ${t('lessons.class.dueOn', { date: f.day(cl.due_at, { weekday: 'short', day: 'numeric', month: 'short' }) })}</span>`;
+    };
+    const row = (cl, i, len) => {
+      const sm = sums[cl.id] || { done: 0, students: 0 };
+      const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null;
+      const thumb = g ? coverArt(g.source === 'seed' ? games.localizeGame(g) : g, 'lib-thumb') : html`<div class="coverart cover-sunset lib-thumb"><div class="art" aria-hidden="true">${icon(cl)}</div></div>`;
+      const play = g ? (g.published_version_id || g.source === 'seed' ? `/g/${g.slug}` : null) : null;
+      const up = t('folders.phone.up', { name: cl.title }), down = t('folders.phone.down', { name: cl.title });
+      const acts = reorder && canMove
+        ? html`<span class="lib-moves">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn lib-mv" type="submit" aria-label="${up}" title="${up}"><span class="lib-arrow" aria-hidden="true">↑</span></button></form>` : html`<span class="lib-mv-gap"></span>`}${i < len - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn lib-mv" type="submit" aria-label="${down}" title="${down}"><span class="lib-arrow" aria-hidden="true">↓</span></button></form>` : html`<span class="lib-mv-gap"></span>`}</span>`
+        : html`<details class="shelf-menu lib-menu"><summary class="btn btn-ghost shelf-more lib-more" aria-label="${t('school.moreFor', { name: cl.title })}" title="${t('school.moreFor', { name: cl.title })}"><span aria-hidden="true">⋯</span></summary><div class="shelf-menu-panel">
+          <form class="formgrid" data-api="/api/class-lessons/${cl.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+            <div class="field"><label for="lib-o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="lib-o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
+            <div class="field"><label for="lib-d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="lib-d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
+            <div class="field end"><button class="btn" type="submit">${t('school.save')}</button></div></form>
+          <a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('folders.scores')}</a>
+          <a class="btn" href="/class/${c.id}/lessons/${cl.id}">👀 ${t('progress.lesson.studentView')}</a>
+          ${play ? html`<a class="btn" href="${play}">▶ ${t('game.play')}</a>` : ''}
+          ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}
+          ${cl.kind === 'game' && cl.first_game ? html`<a class="btn" href="/build/save?id=${cl.first_game}">📁 ${t('folders.save')}</a>` : ''}
+          ${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn" type="submit">↑ ${t('folders.moveUp')}</button></form>` : ''}
+          ${i < len - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn" type="submit">↓ ${t('folders.moveDown')}</button></form>` : ''}
+          <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
+        </div></details>`;
+      return html`<li class="lib-row${reorder && canMove ? ' is-moving' : ''}" data-id="${cl.id}">
+        <a class="lib-cover" href="/class/${c.id}/progress/${cl.id}" tabindex="-1" aria-hidden="true">${thumb}</a>
+        <div class="lib-body"><a class="lib-name" href="/class/${c.id}/progress/${cl.id}" dir="auto">${cl.title}</a>
+          <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}</span>
+          ${sm.students ? html`<span class="lib-done"><progress max="${sm.students}" value="${sm.done}" aria-hidden="true"></progress><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span></span>` : ''}</div>
+        ${staff ? acts : ''}</li>`;
+    };
+    const head = html`<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p>${t('folders.phone.assignedSub', { count: n })}</p></div>
+      ${staff ? html`<div class="lib-tools">${reorder && canMove
+        ? html`<a class="btn btn-primary lib-tool" href="${base}?view=assigned">✓ ${t('folders.phone.done')}</a>`
+        : html`<a class="btn btn-primary lib-tool" href="${base}?view=library">+ ${t('folders.phone.addFromLibrary')}</a>${canMove ? html`<a class="btn lib-tool" href="${base}?view=assigned&amp;reorder=1">↕ ${t('folders.phone.reorder')}</a>` : ''}`}</div>` : ''}</div>`;
+    return html`${head}
+      ${count ? '' : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">🎮</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
+      ${plan.map(g => (g.lessons.length ? html`${g.unit ? html`<h3 class="lib-unit" dir="auto">🗂️ ${g.unit.name}</h3>` : ''}<ol class="lib-list">${g.lessons.map((cl, i) => row(cl, i, g.lessons.length))}</ol>` : ''))}
+      ${tools ? html`<div class="lib-foot">${tools}</div>` : ''}`;
+  };
+  return { count, pane, phone };
 }
 /** Student view: open lessons by unit, with how far the student has got in each. */
 export function studentLessonsPanel(req, c) {
