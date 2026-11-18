@@ -204,7 +204,8 @@ export async function draftClues({ words = [], level = '', locale = 'en', client
 // document's own word list and definitions when it has one, else the key terms it teaches, each with a short clue from
 // the document. For the game's word list only: the teacher checks everything, and nothing is saved until they save
 // the crossword (with the text filter). The document is sent for this one call and never stored or logged.
-export const DOC = { pdfBytes: 2 * 1024 * 1024, textMax: 40000, max: 30 };
+// textMax: about 5 pages (services/crossword-doc.js cuts a longer document there before it comes here).
+export const DOC = { pdfBytes: 2 * 1024 * 1024, textMax: 15000, max: 30 };
 const DOC_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['title', 'words'],
   properties: { title: { type: 'string' }, words: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['word', 'clue'], properties: { word: { type: 'string' }, clue: { type: 'string' } } } } },
@@ -237,7 +238,7 @@ export async function draftWordsFromDoc({ text = '', pdf = null, level = '', loc
     ? [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdf.toString('base64') } }, { type: 'text', text: `The document is the attached PDF.\n${ask}` }]
     : `${body}${ask}`;
   const res = await ai.messages.create({
-    model: config.builderModel, max_tokens: 6000,
+    model: config.builderModel, max_tokens: 4000,
     system: docPrompt({ lang, n: DOC.max }),
     output_config: { effort: 'low', format: { type: 'json_schema', schema: DOC_SCHEMA } },
     messages: [{ role: 'user', content }],
