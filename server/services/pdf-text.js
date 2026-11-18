@@ -190,9 +190,10 @@ export function readable(text) {
  * A PDF (Buffer) -> { pages, text: string|null, fonts: bool, encrypted: bool } or null when it isn't a PDF.
  * pages: how many pages it has; fonts: whether any page can hold text (none: a scanned picture); text: its text, a line
  * a line ('' when there is none), or null when it can't be read here (the caller then lets the model read the PDF).
+ * max: the largest file read (2 MB, Crossword's limit; the Builder's "Your lesson" step reads up to 5 MB).
  */
-export function pdfInfo(buf) {
-  if (!Buffer.isBuffer(buf) || buf.length < 8 || buf.length > PDF_MAX || buf.subarray(0, 5).toString('latin1') !== '%PDF-') return null;
+export function pdfInfo(buf, { max = PDF_MAX } = {}) {
+  if (!Buffer.isBuffer(buf) || buf.length < 8 || buf.length > max || buf.subarray(0, 5).toString('latin1') !== '%PDF-') return null;
   const objs = objects(buf);
   const pageList = [...objs.values()].filter(o => get(o.dict, 'Type') === '/Page');
   const roots = [...objs.values()].filter(o => get(o.dict, 'Type') === '/Pages' && !get(o.dict, 'Parent')).map(o => +get(o.dict, 'Count')).filter(Number.isInteger);

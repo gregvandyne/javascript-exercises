@@ -4,7 +4,7 @@
 // in the builder's language and shown as they are; these are the kit's fixed lines.
 export const WORDS = {
   en: {
-    watch: 'Watch', count: 'Count up', guided: 'Guided', own: 'On my own', keypad: 'Keypad', problemOf: 'Problem {n} of {total}',
+    helpMode: 'Help', watch: 'Watch', count: 'Count up', guided: 'Guided', own: 'On my own', keypad: 'Keypad', problemOf: 'Problem {n} of {total}',
     readAloud: 'Read the task aloud', steps: 'Steps', showSteps: 'Show steps', hideSteps: 'Hide steps', check: 'Check', next: 'Next',
     hint: 'Hint', stuck: 'Stuck?', clear: 'Clear', hintOf: 'Hint {n} of {total}', noMoreHints: 'That was the last hint. Have a go, then press Check.',
     right: 'Right!', notYet: 'Not yet.', tryAgain: 'Have another go.', shown: 'Here is one way to do it. On to the next one.',
@@ -36,7 +36,7 @@ export const WORDS = {
     ones: 'Ones', tens: 'Tens', hundreds: 'Hundreds', thousands: 'Thousands', tenThousands: 'Ten thousands',
   },
   es: {
-    watch: 'Mirar', count: 'Contar', guided: 'Guiado', own: 'Por mi cuenta', keypad: 'Teclado', problemOf: 'Problema {n} de {total}',
+    helpMode: 'Ayuda', watch: 'Mirar', count: 'Contar', guided: 'Guiado', own: 'Por mi cuenta', keypad: 'Teclado', problemOf: 'Problema {n} de {total}',
     readAloud: 'Leer la tarea en voz alta', steps: 'Pasos', showSteps: 'Ver pasos', hideSteps: 'Ocultar pasos', check: 'Comprobar', next: 'Siguiente',
     hint: 'Pista', stuck: '¿Atascado?', clear: 'Borrar', hintOf: 'Pista {n} de {total}', noMoreHints: 'Era la última pista. Inténtalo y pulsa Comprobar.',
     right: '¡Correcto!', notYet: 'Todavía no.', tryAgain: 'Inténtalo otra vez.', shown: 'Así se puede hacer. Vamos al siguiente.',
@@ -68,7 +68,7 @@ export const WORDS = {
     ones: 'Unidades', tens: 'Decenas', hundreds: 'Centenas', thousands: 'Millares', tenThousands: 'Decenas de millar',
   },
   fr: {
-    watch: 'Regarder', count: 'Compter', guided: 'Guidé', own: 'Tout seul', keypad: 'Clavier', problemOf: 'Problème {n} sur {total}',
+    helpMode: 'Aide', watch: 'Regarder', count: 'Compter', guided: 'Guidé', own: 'Tout seul', keypad: 'Clavier', problemOf: 'Problème {n} sur {total}',
     readAloud: 'Lire la consigne à voix haute', steps: 'Étapes', showSteps: 'Voir les étapes', hideSteps: 'Cacher les étapes', check: 'Vérifier', next: 'Suivant',
     hint: 'Indice', stuck: 'Bloqué ?', clear: 'Effacer', hintOf: 'Indice {n} sur {total}', noMoreHints: 'C’était le dernier indice. Essaie, puis appuie sur Vérifier.',
     right: 'Bravo !', notYet: 'Pas encore.', tryAgain: 'Essaie encore.', shown: 'Voici une façon de faire. Au suivant.',
@@ -100,7 +100,7 @@ export const WORDS = {
     ones: 'Unités', tens: 'Dizaines', hundreds: 'Centaines', thousands: 'Milliers', tenThousands: 'Dizaines de mille',
   },
   de: {
-    watch: 'Zuschauen', count: 'Hochzählen', guided: 'Mit Hilfe', own: 'Allein', keypad: 'Ziffern', problemOf: 'Aufgabe {n} von {total}',
+    helpMode: 'Hilfe', watch: 'Zuschauen', count: 'Hochzählen', guided: 'Mit Hilfe', own: 'Allein', keypad: 'Ziffern', problemOf: 'Aufgabe {n} von {total}',
     readAloud: 'Aufgabe vorlesen', steps: 'Schritte', showSteps: 'Schritte zeigen', hideSteps: 'Schritte ausblenden', check: 'Prüfen', next: 'Weiter',
     hint: 'Tipp', stuck: 'Hängst du?', clear: 'Löschen', hintOf: 'Tipp {n} von {total}', noMoreHints: 'Das war der letzte Tipp. Probier es und drück auf Prüfen.',
     right: 'Richtig!', notYet: 'Noch nicht.', tryAgain: 'Versuch es noch einmal.', shown: 'So kann man es machen. Weiter zur nächsten.',
@@ -132,7 +132,7 @@ export const WORDS = {
     ones: 'Einer', tens: 'Zehner', hundreds: 'Hunderter', thousands: 'Tausender', tenThousands: 'Zehntausender',
   },
   it: {
-    watch: 'Guarda', count: 'Conta', guided: 'Guidato', own: 'Da solo', keypad: 'Tastierino', problemOf: 'Problema {n} di {total}',
+    helpMode: 'Aiuto', watch: 'Guarda', count: 'Conta', guided: 'Guidato', own: 'Da solo', keypad: 'Tastierino', problemOf: 'Problema {n} di {total}',
     readAloud: 'Leggi la consegna ad alta voce', steps: 'Passi', showSteps: 'Mostra i passi', hideSteps: 'Nascondi i passi', check: 'Controlla', next: 'Avanti',
     hint: 'Aiuto', stuck: 'Bloccato?', clear: 'Cancella', hintOf: 'Aiuto {n} di {total}', noMoreHints: 'Era l’ultimo aiuto. Prova e poi premi Controlla.',
     right: 'Giusto!', notYet: 'Non ancora.', tryAgain: 'Riprova.', shown: 'Ecco un modo per farlo. Avanti con il prossimo.',
@@ -164,7 +164,7 @@ export const WORDS = {
     ones: 'Unità', tens: 'Decine', hundreds: 'Centinaia', thousands: 'Migliaia', tenThousands: 'Decine di migliaia',
   },
   pt: {
-    watch: 'Assistir', count: 'Contar', guided: 'Com ajuda', own: 'Sozinho', keypad: 'Teclado', problemOf: 'Problema {n} de {total}',
+    helpMode: 'Ajuda', watch: 'Assistir', count: 'Contar', guided: 'Com ajuda', own: 'Sozinho', keypad: 'Teclado', problemOf: 'Problema {n} de {total}',
     readAloud: 'Ler a tarefa em voz alta', steps: 'Passos', showSteps: 'Mostrar passos', hideSteps: 'Esconder passos', check: 'Conferir', next: 'Próximo',
     hint: 'Dica', stuck: 'Travou?', clear: 'Limpar', hintOf: 'Dica {n} de {total}', noMoreHints: 'Essa foi a última dica. Tente e depois toque em Conferir.',
     right: 'Certo!', notYet: 'Ainda não.', tryAgain: 'Tente de novo.', shown: 'Este é um jeito de fazer. Vamos ao próximo.',
@@ -196,7 +196,7 @@ export const WORDS = {
     ones: 'Unidades', tens: 'Dezenas', hundreds: 'Centenas', thousands: 'Milhares', tenThousands: 'Dezenas de milhar',
   },
   nl: {
-    watch: 'Kijken', count: 'Optellen', guided: 'Met hulp', own: 'Zelf', keypad: 'Cijfers', problemOf: 'Opgave {n} van {total}',
+    helpMode: 'Hulp', watch: 'Kijken', count: 'Optellen', guided: 'Met hulp', own: 'Zelf', keypad: 'Cijfers', problemOf: 'Opgave {n} van {total}',
     readAloud: 'Lees de opdracht voor', steps: 'Stappen', showSteps: 'Stappen tonen', hideSteps: 'Stappen verbergen', check: 'Controleer', next: 'Volgende',
     hint: 'Tip', stuck: 'Vast?', clear: 'Wissen', hintOf: 'Tip {n} van {total}', noMoreHints: 'Dat was de laatste tip. Probeer het en druk op Controleer.',
     right: 'Goed zo!', notYet: 'Nog niet.', tryAgain: 'Probeer het nog eens.', shown: 'Zo kun je het doen. Op naar de volgende.',
@@ -228,7 +228,7 @@ export const WORDS = {
     ones: 'Eenheden', tens: 'Tientallen', hundreds: 'Honderdtallen', thousands: 'Duizendtallen', tenThousands: 'Tienduizendtallen',
   },
   ru: {
-    watch: 'Смотреть', count: 'Считать', guided: 'С подсказками', own: 'Сам', keypad: 'Цифры', problemOf: 'Задача {n} из {total}',
+    helpMode: 'Помощь', watch: 'Смотреть', count: 'Считать', guided: 'С подсказками', own: 'Сам', keypad: 'Цифры', problemOf: 'Задача {n} из {total}',
     readAloud: 'Прочитать задание вслух', steps: 'Шаги', showSteps: 'Показать шаги', hideSteps: 'Скрыть шаги', check: 'Проверить', next: 'Дальше',
     hint: 'Подсказка', stuck: 'Застрял?', clear: 'Стереть', hintOf: 'Подсказка {n} из {total}', noMoreHints: 'Это была последняя подсказка. Попробуй и нажми «Проверить».',
     right: 'Верно!', notYet: 'Пока нет.', tryAgain: 'Попробуй ещё раз.', shown: 'Вот как это можно сделать. Переходим к следующей.',
@@ -260,7 +260,7 @@ export const WORDS = {
     ones: 'Единицы', tens: 'Десятки', hundreds: 'Сотни', thousands: 'Тысячи', tenThousands: 'Десятки тысяч',
   },
   ja: {
-    watch: '見る', count: '数える', guided: 'ヒントあり', own: 'ひとりで', keypad: 'すうじ', problemOf: 'もんだい {n} / {total}',
+    helpMode: 'てつだい', watch: '見る', count: '数える', guided: 'ヒントあり', own: 'ひとりで', keypad: 'すうじ', problemOf: 'もんだい {n} / {total}',
     readAloud: 'もんだいを読み上げる', steps: 'ステップ', showSteps: 'ステップを見る', hideSteps: 'ステップをかくす', check: 'たしかめる', next: 'つぎへ',
     hint: 'ヒント', stuck: 'こまった？', clear: 'けす', hintOf: 'ヒント {n} / {total}', noMoreHints: 'これが最後のヒントです。やってみて「たしかめる」をおしてね。',
     right: 'せいかい！', notYet: 'まだだよ。', tryAgain: 'もう一度やってみよう。', shown: 'こうするとできるよ。つぎのもんだいへ。',
@@ -292,7 +292,7 @@ export const WORDS = {
     ones: '一の位', tens: '十の位', hundreds: '百の位', thousands: '千の位', tenThousands: '一万の位',
   },
   'zh-Hant': {
-    watch: '看示範', count: '往上數', guided: '有提示', own: '自己來', keypad: '數字鍵', problemOf: '第 {n} 題，共 {total} 題',
+    helpMode: '協助', watch: '看示範', count: '往上數', guided: '有提示', own: '自己來', keypad: '數字鍵', problemOf: '第 {n} 題，共 {total} 題',
     readAloud: '朗讀題目', steps: '步驟', showSteps: '顯示步驟', hideSteps: '隱藏步驟', check: '檢查', next: '下一題',
     hint: '提示', stuck: '卡住了？', clear: '清除', hintOf: '提示 {n} / {total}', noMoreHints: '這是最後一個提示了。試試看，然後按「檢查」。',
     right: '答對了！', notYet: '還沒有喔。', tryAgain: '再試一次。', shown: '可以這樣做。我們做下一題。',
@@ -324,7 +324,7 @@ export const WORDS = {
     ones: '個位', tens: '十位', hundreds: '百位', thousands: '千位', tenThousands: '萬位',
   },
   ar: {
-    watch: 'شاهد', count: 'عُدّ', guided: 'بمساعدة', own: 'وحدي', keypad: 'الأرقام', problemOf: 'المسألة {n} من {total}',
+    helpMode: 'المساعدة', watch: 'شاهد', count: 'عُدّ', guided: 'بمساعدة', own: 'وحدي', keypad: 'الأرقام', problemOf: 'المسألة {n} من {total}',
     readAloud: 'اقرأ المهمة بصوت عالٍ', steps: 'الخطوات', showSteps: 'أظهر الخطوات', hideSteps: 'أخفِ الخطوات', check: 'تحقّق', next: 'التالي',
     hint: 'تلميح', stuck: 'محتار؟', clear: 'امسح', hintOf: 'تلميح {n} من {total}', noMoreHints: 'كان هذا آخر تلميح. حاول ثم اضغط تحقّق.',
     right: 'صحيح!', notYet: 'ليس بعد.', tryAgain: 'حاول مرة أخرى.', shown: 'هذه طريقة لحلّها. إلى المسألة التالية.',
@@ -356,7 +356,7 @@ export const WORDS = {
     ones: 'الآحاد', tens: 'العشرات', hundreds: 'المئات', thousands: 'الآلاف', tenThousands: 'عشرات الآلاف',
   },
   he: {
-    watch: 'צפייה', count: 'ספירה', guided: 'עם עזרה', own: 'לבד', keypad: 'ספרות', problemOf: 'תרגיל {n} מתוך {total}',
+    helpMode: 'עזרה', watch: 'צפייה', count: 'ספירה', guided: 'עם עזרה', own: 'לבד', keypad: 'ספרות', problemOf: 'תרגיל {n} מתוך {total}',
     readAloud: 'הקראת המשימה', steps: 'שלבים', showSteps: 'הצגת השלבים', hideSteps: 'הסתרת השלבים', check: 'בדיקה', next: 'הבא',
     hint: 'רמז', stuck: 'נתקעת?', clear: 'ניקוי', hintOf: 'רמז {n} מתוך {total}', noMoreHints: 'זה היה הרמז האחרון. נסו ואז לחצו על בדיקה.',
     right: 'נכון!', notYet: 'עוד לא.', tryAgain: 'נסו שוב.', shown: 'זו דרך אחת לפתור. ממשיכים לבא.',

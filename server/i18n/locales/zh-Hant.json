@@ -2718,7 +2718,41 @@
           "kind": "內容",
           "practise": "練習",
           "help": "幫助",
-          "played": "玩法"
+          "played": "玩法",
+          "lesson": "課程"
+        }
+      },
+      "lesson": {
+        "count": "{n} / {max}",
+        "full": "已經寫滿了。",
+        "atLeastOne": "至少選一個。",
+        "reading": "正在讀取 {name}…",
+        "readPages": "✓ 已從 {name} 讀取 {count, plural, other {# 頁}}",
+        "readWords": "✓ 已從 {name} 讀取 {count, plural, other {{n} 個字詞}}",
+        "removed": "{count, plural, other {我們移除了 # 個名字或聯絡資料。}}",
+        "cut": "內容很長，所以只保留前面的部分。",
+        "remove": "移除",
+        "removeLabel": "移除 {name}",
+        "gone": "已移除檔案。",
+        "none": "未加入",
+        "notes": "你的筆記",
+        "details": "其他細節",
+        "from": "來自 {name}",
+        "sumHeading": "Builder 會讀到的課程內容",
+        "sumNote": "我們檢查過學生名字、電子郵件和電話號碼。Builder 只把它當作參考，絕不當作指令。",
+        "sumRemoved": "{count, plural, other {我們移除了 # 個名字或聯絡資料。}} Builder 只把它當作參考，絕不當作指令。",
+        "blockedPlan": "你的課程內容裡有些字詞不能使用，所以 Builder 不會收到。請修改，或不帶它直接開啟 Builder。",
+        "err": {
+          "docType": "無法讀取這種檔案。請用 PDF、Word（.docx）、文字或 Markdown 檔。",
+          "docBig": "檔案太大了。最多 5 MB。",
+          "docPages": "這個 PDF 超過 10 頁。請換短一點的。",
+          "docScan": "無法讀取這個 PDF 的文字（可能是掃描檔）。請存成 Word 或文字檔。",
+          "docBad": "無法開啟這個檔案。它可能已損壞或被鎖定。",
+          "docEmpty": "這個檔案裡找不到文字。",
+          "docLimit": "你今天已經加了 20 個檔案。請明天再試。",
+          "blocked": "這個檔案裡有些字詞不能在這裡使用，所以我們沒有採用。",
+          "notAllowed": "只有老師可以在這裡加入檔案。",
+          "failed": "沒有成功。請再試一次。"
         }
       }
     },
@@ -9224,7 +9258,9 @@
         "devices": "學生在自己的裝置上玩。",
         "board": "我們一起在黑板上玩。",
         "both": "學生在自己的裝置上玩，我們也會投影到黑板上。"
-      }
+      },
+      "lesson": "我說明了我的課程。",
+      "lessonDoc": "我加上了我的教案。"
     },
     "flatNote": "在 2D 裡，目前只有跑酷和接東西遊戲可以使用我們的世界和角色。其他遊戲小幫手會用經典樣式。",
     "typeGroups": {
@@ -9271,16 +9307,16 @@
       "nextPlayed": "下一步：怎麼玩",
       "practise": {
         "heading": "學生要練習什麼？",
-        "text": "選一個或自己輸入。Builder 會做 5 道有步驟和提示的題目。",
+        "text": "輸入一個主題。Builder 會做 5 道有步驟和提示的題目。",
         "label": "學生要練習什麼？",
         "placeholder": "例如：用八分之一和六分之一做等值分數",
         "ideas": "點子",
         "ideasFor": "給 {grade} 的點子",
-        "privacy": "Builder 只會收到你的主題和班級的年級，絕不會收到學生的名字或作業。"
+        "privacy": "Builder 只會收到你的主題、班級年級，以及你補充的課程內容。絕不會有學生的名字或作業。"
       },
       "help": {
         "heading": "需要多少幫助？",
-        "hint": "在 Builder 裡隨時可以修改。",
+        "hint": "選一個或多個。選了多個時，學生可以在它們之間切換。",
         "watch": {
           "title": "看示範",
           "text": "先示範每一題怎麼做，再讓學生試試。"
@@ -9328,7 +9364,33 @@
         "multiples": "倍數",
         "orderFractions": "分數排順序",
         "bigAdd": "大數加法"
-      }
+      },
+      "nextLesson": "下一步：你的課程"
+    },
+    "lesson": {
+      "heading": "你的課程",
+      "hint": "可不填。加上教案或說明你想要的，Builder 會讓活動配合你的課程。",
+      "safe": "請不要放入學生的名字或作業。我們找到的都會移除。",
+      "fileTitle": "加上教案或學習單",
+      "fileText": "PDF、Word（.docx）、文字或 Markdown，最多 5 MB、10 頁。從 Google 文件：檔案、下載，再選 .docx 或 .pdf。",
+      "choose": "選擇檔案",
+      "describe": "說明你想要的",
+      "describeHelp": "點一個問題加上標題，然後在下面寫。",
+      "prompts": "問題",
+      "prompt": {
+        "goal": "最後學生應該會做什麼？",
+        "mistakes": "要留意的常見錯誤",
+        "vocabulary": "要用的詞語或例子",
+        "avoid": "要避免的事"
+      },
+      "heads": {
+        "goal": "最後學生會：",
+        "mistakes": "常見錯誤：",
+        "vocabulary": "詞語和例子：",
+        "avoid": "避免："
+      },
+      "placeholder": "例如：同分母分數相加。很多學生會把分母也加起來。",
+      "atLeastOne": "至少選一個。"
     }
   },
   "dash": {

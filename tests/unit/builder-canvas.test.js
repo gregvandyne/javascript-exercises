@@ -28,7 +28,7 @@ const { toolbox } = await import('../../server/builder/tools.js');
 const autotest = await import('../../server/builder/autotest.js');
 const { loadTemplate } = await import('../../server/builder/templates/index.js');
 const { BUILDER_TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } = await import('../../server/builder/catalog.js');
-const { canvasVersion, activityData, withActivityData, canvasTag } = await import('../../server/services/canvaskit.js');
+const { canvasVersion, activityData, withActivityData, canvasTag, CANVAS_LATEST } = await import('../../server/services/canvaskit.js');
 const { fileText: canvasRulesText } = await import('../../scripts/build-canvas-rules.js');
 const { tFor, CODES } = await import('../../server/i18n/index.js');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -111,7 +111,7 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), '1.0.0');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.1.0', 'new activities pin Oomba Canvas 1.1.0');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);
@@ -136,14 +136,25 @@ test('a version whose self-test fails is not saved (so it can never be published
 });
 
 // ---------------------------------------------------------------- the page
-test('/build/new: both cards; Classroom activity for a teacher and from their class (with its grade\'s topics), Arcade game for a kid', async () => {
+test('/build/new: both cards; Classroom activity for a teacher and from their class (its grade only), Arcade game for a kid; no topic chips', async () => {
   const k = (await kid.c('/build/new')).text, t = (await teacher.c('/build/new')).text;
   for (const h of [k, t]) {
     assert.match(h, /What are you making\?/); assert.match(h, /data-kind="activity"/); assert.match(h, /data-kind="arcade"/);
     assert.match(h, />Classroom activity</); assert.match(h, />Arcade game</);
     assert.match(h, /Need a quiet game, a spinner or a scoreboard\? <a href="#type" id="su-tools">Classroom tools<\/a>/);
-    assert.ok(h.includes('data-screen="help"') && h.includes('data-screen="played"'));
+    assert.ok(h.includes('data-screen="lesson"') && h.includes('data-screen="help"') && h.includes('data-screen="played"'));
+    // the owner's change: one text box, no starter chips ("Even and odd", "Order numbers", "Add in columns"...)
+    assert.doesNotMatch(h, /data-topic=|class="su-chips"|>Even and odd<|>Order numbers<|>Add in columns</, 'no topic chips');
+    assert.match(h, /id="su-topic-in"/, 'the text box stays');
+    assert.equal(pageData(h).canvas.topics, undefined, 'CANVAS_TOPICS are not in the page');
+    // "How much help?": four checkboxes, Guided ticked to start
+    const boxes = [...h.matchAll(/<input type="checkbox" class="sr-only su-cbox" data-help="(\w+)" value="\w+"( checked)?>/g)].map(m => [m[1], !!m[2]]);
+    assert.deepEqual(boxes, [['watch', false], ['count', false], ['guided', true], ['own', false]]);
   }
+  assert.match(t, /id="su-lfile"/, 'a teacher may add a lesson file'); assert.doesNotMatch(k, /id="su-lfile"/, 'a kid never uploads here (their own work)');
+  assert.match(k, /id="su-ltext"/, 'everyone may describe what they want');
+  assert.match(t, /Don&#39;t include student names or work\. We remove any we find\./);
+  assert.ok(pageData(t).lesson.file && pageData(k).lesson.file === null);
   assert.match(k, /data-kind="arcade" aria-pressed="true"/); assert.equal(pageData(k).canvas.kind, 'arcade');
   assert.match(k, /id="su-topic" data-for="activity" hidden/, 'a kid sees the topic box once they pick an activity');
   assert.match(t, /data-kind="activity" aria-pressed="true"/); assert.equal(pageData(t).canvas.kind, 'activity');
@@ -152,8 +163,7 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
   assert.match(c, /data-kind="activity" aria-pressed="true"/);
   assert.match(c, /<span class="su-for">[\s\S]*?For 4B · Grade 4<\/span>/); assert.match(c, /Make something for your class/);
   const d = pageData(c);
-  assert.deepEqual(d.canvas, { kind: 'activity', topics: d.canvas.topics, supports: ['watch', 'count', 'guided', 'own'], plays: ['devices', 'board', 'both'], grade: '4', forClass: true });
-  assert.ok(d.canvas.topics.some(x => x.id === 'equivFractions') && !d.canvas.topics.some(x => x.id === 'evenOdd'), 'grade 4 topics');
+  assert.deepEqual(d.canvas, { kind: 'activity', supports: ['watch', 'count', 'guided', 'own'], help: ['guided'], plays: ['devices', 'board', 'both'], grade: '4', forClass: true });
   assert.doesNotMatch(JSON.stringify(d), new RegExp(cls.id), 'the class id is not in the page data the plan is made from');
   assert.match(c, new RegExp(`href="/class/${cls.id}"`), 'the way back is the class');
   // a class this user does not teach: the page opens as usual (no grade, no chip)
@@ -172,9 +182,9 @@ test('POST /api/build/plan and the first build: an activity plan builds an Oomba
   assert.ok([200, 202].includes(sent.status), sent.text);
   await runner.idle(g.json.id);
   const game = games.getGame(g.json.id), v = games.getVersion(game.current_version_id);
-  assert.equal(canvasVersion(v.html), '1.0.0'); assert.equal(v.safety_status, 'pass');
+  assert.equal(canvasVersion(v.html), CANVAS_LATEST); assert.equal(v.safety_status, 'pass');
   const data = activityData(v.html).data;
-  assert.deepEqual([data.gen.tool, data.config.support], ['digits.mul', 'count']);
+  assert.deepEqual([data.gen.tool, data.config.support, data.config.supports], ['digits.mul', 'count', ['count']], 'an older page\'s single support: that one mode only');
   assert.deepEqual(autotest.canvasSelfTest(v.html), { ok: true, problems: [] });
   const chat = loadChat(g.json.id);
   assert.equal(chat.state.canvas, true);
@@ -184,11 +194,12 @@ test('POST /api/build/plan and the first build: an activity plan builds an Oomba
   assert.match(st.liveClass ? st.liveClass.why : 'Classroom activities can\'t be played live yet.', /can't be played live yet/);
   // "I know what I want" with Classroom activity: the activity starter
   const d = await teacher.c('/api/studio/new', { method: 'POST', body: { template: 'canvas' } });
-  assert.equal(d.status, 200); assert.equal(canvasVersion(games.getVersion(games.getGame(d.json.id).current_version_id).html), '1.0.0');
+  assert.equal(d.status, 200); assert.equal(canvasVersion(games.getVersion(games.getGame(d.json.id).current_version_id).html), CANVAS_LATEST);
 });
 test('every language has the new words of the start, the activity steps and the Studio line', () => {
   const keys = ['buildSetup.kind.heading', 'buildSetup.kind.activity.title', 'buildSetup.kind.arcade.title', 'buildSetup.kind.toolsLink', 'buildSetup.canvas.practise.heading', 'buildSetup.canvas.practise.privacy',
-    ...plan.SUPPORTS.map(s => `buildSetup.canvas.help.${s}.title`), ...plan.CANVAS_PLAYS.map(s => `buildSetup.canvas.played.${s}.text`), ...plan.CANVAS_TOPICS.map(x => `buildSetup.canvas.topics.${x.id}`),
+    ...plan.SUPPORTS.map(s => `buildSetup.canvas.help.${s}.title`), 'buildSetup.lesson.heading', 'buildSetup.lesson.safe', 'buildSetup.lesson.fileText', ...plan.LESSON_HEADS.flatMap(k => [`buildSetup.lesson.heads.${k}`, `buildSetup.lesson.prompt.${k}`]),
+    'js.buildsetup.lesson.readPages', 'js.buildsetup.lesson.err.docBig', 'js.buildsetup.lesson.err.docType', 'js.buildsetup.lesson.sumHeading', 'js.buildsetup.canvas.rows.lesson', ...plan.CANVAS_PLAYS.map(s => `buildSetup.canvas.played.${s}.text`), ...plan.CANVAS_TOPICS.map(x => `buildSetup.canvas.topics.${x.id}`),
     'buildSetup.say.activity', 'buildSetup.play.why.canvas', 'studio.canvasLine.activity', 'studio.canvasLine.toArcadeAsk', 'studio.canvasLine.toCanvasAsk', 'js.buildsetup.canvas.rows.practise'];
   for (const code of CODES) for (const k of keys) assert.ok(tFor(code).has(k) || code === 'en-GB', `${code} ${k}`);
   for (const code of CODES.filter(c => !c.startsWith('en'))) assert.notEqual(tFor(code)('buildSetup.kind.activity.title'), 'Classroom activity', code);

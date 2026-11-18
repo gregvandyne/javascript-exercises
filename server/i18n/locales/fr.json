@@ -2718,7 +2718,41 @@
           "kind": "Quoi",
           "practise": "À travailler",
           "help": "Aide",
-          "played": "Joué"
+          "played": "Joué",
+          "lesson": "Leçon"
+        }
+      },
+      "lesson": {
+        "count": "{n} / {max}",
+        "full": "La zone est pleine.",
+        "atLeastOne": "Choisis-en au moins un.",
+        "reading": "Lecture de {name}…",
+        "readPages": "✓ {count, plural, one {# page lue} other {# pages lues}} dans {name}",
+        "readWords": "✓ {count, plural, one {{n} mot lu} other {{n} mots lus}} dans {name}",
+        "removed": "{count, plural, one {Nous avons retiré # nom ou coordonnée.} other {Nous avons retiré # noms ou coordonnées.}}",
+        "cut": "Il est long : seul le début est gardé.",
+        "remove": "Retirer",
+        "removeLabel": "Retirer {name}",
+        "gone": "Fichier retiré.",
+        "none": "Pas ajouté",
+        "notes": "Tes notes",
+        "details": "Autres précisions",
+        "from": "Tiré de {name}",
+        "sumHeading": "Ce que le Builder lit sur ta leçon",
+        "sumNote": "Nous avons cherché les noms d'élèves, les e-mails et les numéros de téléphone. Le Builder s'en sert comme contexte, jamais comme consignes.",
+        "sumRemoved": "{count, plural, one {Nous avons retiré # nom ou coordonnée.} other {Nous avons retiré # noms ou coordonnées.}} Le Builder s'en sert comme contexte, jamais comme consignes.",
+        "blockedPlan": "Certains mots de ta leçon ne sont pas acceptés, donc le Builder ne la recevra pas. Modifie-les, ou ouvre le Builder sans elle.",
+        "err": {
+          "docType": "Ce type de fichier ne peut pas être lu. Utilise un fichier PDF, Word (.docx), texte ou Markdown.",
+          "docBig": "Ce fichier est trop gros. 5 Mo au maximum.",
+          "docPages": "Ce PDF a plus de 10 pages. Essaie un plus court.",
+          "docScan": "Nous n'avons pas pu lire le texte de ce PDF (c'est peut-être un scan). Enregistre-le en Word ou en texte.",
+          "docBad": "Ce fichier n'a pas pu être ouvert. Il est peut-être abîmé ou verrouillé.",
+          "docEmpty": "Nous n'avons trouvé aucun texte dans ce fichier.",
+          "docLimit": "Tu as déjà ajouté 20 fichiers aujourd'hui. Réessaie demain.",
+          "blocked": "Certains mots de ce fichier ne sont pas acceptés ici, donc nous ne l’avons pas gardé.",
+          "notAllowed": "Seuls les enseignants peuvent ajouter un fichier ici.",
+          "failed": "Ça n'a pas marché. Réessaie."
         }
       }
     },
@@ -9224,7 +9258,9 @@
         "devices": "Les élèves y jouent sur leurs propres appareils.",
         "board": "Nous y jouons ensemble au tableau.",
         "both": "Les élèves y jouent sur leurs appareils, et nous l’affichons aussi au tableau."
-      }
+      },
+      "lesson": "J'ai décrit ma leçon.",
+      "lessonDoc": "J'ai ajouté ma fiche de préparation."
     },
     "flatNote": "En 2D, seuls les jeux de course et d’attrape peuvent utiliser nos mondes et nos personnages pour l’instant. Pour les autres jeux, le Constructeur garde son style classique.",
     "typeGroups": {
@@ -9271,16 +9307,16 @@
       "nextPlayed": "Suivant : comment on joue",
       "practise": {
         "heading": "Que doivent travailler les élèves ?",
-        "text": "Choisis-en un ou écris le tien. Le Builder crée 5 problèmes avec étapes et indices.",
+        "text": "Écris un thème. Le Builder crée 5 problèmes avec des étapes et des indices.",
         "label": "Que doivent travailler les élèves ?",
         "placeholder": "Par exemple : fractions égales avec des huitièmes et des sixièmes",
         "ideas": "Idées",
         "ideasFor": "Idées pour {grade}",
-        "privacy": "Le Builder ne reçoit que ton thème et le niveau de la classe. Jamais les noms ni le travail des élèves."
+        "privacy": "Le Builder reçoit ton thème, le niveau de la classe et ce que tu ajoutes sur ta leçon. Jamais les noms ni le travail des élèves."
       },
       "help": {
         "heading": "Combien d’aide ?",
-        "hint": "Tu peux le changer à tout moment dans le Builder.",
+        "hint": "Choisis-en un ou plusieurs. S'il y en a plusieurs, les élèves peuvent passer de l'un à l'autre.",
         "watch": {
           "title": "Regarder",
           "text": "Montre comment faire chaque problème, puis les élèves essaient."
@@ -9328,7 +9364,33 @@
         "multiples": "Multiples",
         "orderFractions": "Ranger des fractions",
         "bigAdd": "Additionner de grands nombres"
-      }
+      },
+      "nextLesson": "Suivant : ta leçon"
+    },
+    "lesson": {
+      "heading": "Ta leçon",
+      "hint": "Facultatif. Ajoute une fiche de préparation ou dis ce que tu veux, et le Builder adapte l'activité à ta leçon.",
+      "safe": "N'indique ni les noms ni le travail des élèves. Nous retirons ceux que nous trouvons.",
+      "fileTitle": "Ajouter une fiche de préparation ou une fiche d’exercices",
+      "fileText": "PDF, Word (.docx), texte ou Markdown, jusqu’à 5 Mo et 10 pages. Depuis Google Docs : Fichier, Télécharger, puis .docx ou .pdf.",
+      "choose": "Choisir un fichier",
+      "describe": "Décris ce que tu veux",
+      "describeHelp": "Touche une question pour ajouter un titre, puis écris en dessous.",
+      "prompts": "Questions",
+      "prompt": {
+        "goal": "Que doivent savoir faire les élèves à la fin ?",
+        "mistakes": "Les erreurs fréquentes à surveiller",
+        "vocabulary": "Les mots ou exemples à utiliser",
+        "avoid": "Ce qu’il faut éviter"
+      },
+      "heads": {
+        "goal": "À la fin, les élèves savent :",
+        "mistakes": "Erreurs fréquentes :",
+        "vocabulary": "Mots et exemples :",
+        "avoid": "À éviter :"
+      },
+      "placeholder": "Par exemple : additionner des fractions de même dénominateur. Beaucoup additionnent aussi les dénominateurs.",
+      "atLeastOne": "Choisis-en au moins un."
     }
   },
   "dash": {

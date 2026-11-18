@@ -155,7 +155,10 @@
 .su-for svg{color:var(--accent-ink)}
 .su-for{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:color-mix(in srgb,var(--accent) 20%,var(--card));font-weight:700;font-size:.92rem}
 .su-start{padding-block:8px 24px}
-.su-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:min(100%,860px);text-align:start;margin-top:8px}
+/* The two cards are always the same height: side by side the row stretches them, and stacked on a phone every row is
+   1fr (the taller card's height, no more). Inside, the picture box has one fixed height in both and the tags sit at the
+   bottom, so nothing lines up differently. tests/unit/builder-setup-layout.test.js measures it at 390 and 1280. */
+.su-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:16px;width:min(100%,860px);text-align:start;margin-top:8px}
 .su-kind{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px 18px 20px;border:0;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--edge);color:var(--text);font:inherit;text-align:start;cursor:pointer}
 .su-kind:hover{background:var(--hover)}
 .su-kind[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--accent-press),0 4px 0 var(--accent-press);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
@@ -181,7 +184,8 @@
 .su-kp{position:absolute;bottom:40px;left:44%;color:#141414}
 .su-kcoin{position:absolute;bottom:92px;width:22px;height:22px;border-radius:50%;background:#FFD23F;box-shadow:inset 0 0 0 3px #C99A00}
 .su-kground{position:absolute;bottom:0;left:0;right:0;height:22px;background:#8B5A2B}
-.su-ktags{display:flex;flex-wrap:wrap;gap:6px}
+.su-ktags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.su-kpic{flex:none}
 .su-ktags span{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--card-2)}
 .su-topic{width:min(100%,860px);text-align:start;margin-top:6px;padding:18px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);display:flex;flex-direction:column;gap:10px}
 .su-topic h2{margin:0;font-size:1.15rem}
@@ -195,8 +199,9 @@
 .su-grid-4{--cols:4}
 @media (max-width:900px){.su-grid-4{--cols:2}}
 @media (max-width:640px){
-  .su-kinds{grid-template-columns:minmax(0,1fr);gap:12px}
+  .su-kinds{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr;gap:12px}
   .su-kpic{height:104px}
+  .su-karcade .su-kcoin[style*="bottom"]{bottom:72px!important}
   .su-kind{padding:14px 14px 16px}
   .su-kt{font-size:1.2rem}
   .su-rec{top:10px;inset-inline-end:10px}
@@ -205,3 +210,47 @@
   .su-start h1{font-size:1.7rem}
   .su-grid-4{--cols:1}
 }
+
+
+/* "How much help?": one or more. Real checkboxes (visually hidden, still focusable) inside cards like the others; a
+   square shows the tick, so it reads as "pick several", not "pick one". */
+.su-cpick{cursor:pointer}
+.su-check:has(.su-cbox:focus-visible){outline:3px solid var(--focus,var(--accent-line));outline-offset:2px}
+.su-box{position:absolute;top:6px;inset-inline-end:6px;display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--card);box-shadow:inset 0 0 0 2px var(--edge)}
+.su-box .su-tick{position:static;border-radius:6px}
+.su-cbox:checked ~ .su-box{box-shadow:none;background:var(--accent-line)}
+.su-cbox:checked ~ .su-box .su-tick{display:grid}
+.su-one{margin:0}
+@media (max-width:640px){.su-grid-text .su-box{top:50%;margin-top:-14px}}
+
+/* "Your lesson": the file (teachers) and the box to describe what they want, with prompts that add a heading */
+.su-lsafe{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;color:var(--text-2)}
+.su-lsafe svg{flex:none}
+.su-lfile .btn[hidden]{display:none}
+.su-lstatus{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;width:100%;padding:8px 8px 8px 14px;border-radius:var(--r-sm);background:var(--ok-bg);font-weight:700}
+.su-lstatus[hidden]{display:none}
+.su-lstatus.is-busy{background:var(--card-2)}
+.su-lread{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 200px}
+.su-lname{overflow-wrap:anywhere}
+.su-lnote{font-weight:600;font-size:.88rem;color:var(--text-2)}
+.su-lremove{flex:none;color:var(--link);text-decoration:underline;text-underline-offset:3px}
+.su-lerr{margin:0;width:100%;padding:10px 14px;border-radius:var(--r-sm);background:var(--bad-bg,var(--warn-bg));color:var(--bad-ink,var(--warn-ink));font-weight:700;overflow-wrap:anywhere}
+.su-lerr[hidden]{display:none}
+.su-describe{display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 2px var(--line)}
+.su-dlabel{font-weight:800;font-size:1.15rem}
+.su-dhelp{margin:-4px 0 0}
+.su-heads{display:flex;flex-wrap:wrap;gap:8px}
+.su-heads .chip{min-height:44px;white-space:normal;text-align:start;line-height:1.25}
+.su-ltext{min-height:220px;resize:vertical;font:inherit;line-height:1.45}
+.su-lcount{margin:-4px 0 0;text-align:end;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.su-ltext{min-height:200px}}
+
+/* the plan: what the Builder reads about their lesson */
+.su-lsum{display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 0 0 2px var(--line)}
+.su-lsum[hidden]{display:none}
+.su-lsum-h{margin:0;font-size:1.05rem}
+.su-lparts{margin:0;display:flex;flex-direction:column;gap:8px}
+.su-lpart dt{color:var(--muted);font-size:.9rem;font-weight:700}
+.su-lpart dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.su-lexcerpt{font-size:.92rem;color:var(--text-2);max-height:7.5em;overflow:hidden}
+.su-lsum-note,.su-lsum .su-flag{margin:0}

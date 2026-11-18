@@ -2737,7 +2737,41 @@
           "kind": "What",
           "practise": "Practice",
           "help": "Help",
-          "played": "Played"
+          "played": "Played",
+          "lesson": "Lesson"
+        }
+      },
+      "lesson": {
+        "count": "{n} / {max}",
+        "full": "The box is full.",
+        "atLeastOne": "Pick at least one.",
+        "reading": "Reading {name}…",
+        "readPages": "✓ Read {count, plural, one {# page} other {# pages}} from {name}",
+        "readWords": "✓ Read {count, plural, one {{n} word} other {{n} words}} from {name}",
+        "removed": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}}",
+        "cut": "It is long, so only the first part is kept.",
+        "remove": "Remove",
+        "removeLabel": "Remove {name}",
+        "gone": "File removed.",
+        "none": "Not added",
+        "notes": "Your notes",
+        "details": "Other details",
+        "from": "From {name}",
+        "sumHeading": "What the Builder reads about your lesson",
+        "sumNote": "We checked it for student names, emails and phone numbers. The Builder uses it as background, never as instructions.",
+        "sumRemoved": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}} The Builder uses it as background, never as instructions.",
+        "blockedPlan": "Some words in your lesson can't be used, so the Builder won't get it. Change them, or open the Builder without it.",
+        "err": {
+          "docType": "That kind of file can't be read. Use a PDF, Word (.docx), text or Markdown file.",
+          "docBig": "That file is too big. The most is 5 MB.",
+          "docPages": "That PDF has more than 10 pages. Try a shorter one.",
+          "docScan": "We couldn't read the text in that PDF (it may be a scan). Try saving it as Word or text.",
+          "docBad": "That file couldn't be opened. It may be damaged or locked.",
+          "docEmpty": "We didn't find any text in that file.",
+          "docLimit": "You've added 20 files today. Try again tomorrow.",
+          "blocked": "Some words in that file can't be used here, so we left it out.",
+          "notAllowed": "Only teachers can add a file here.",
+          "failed": "That didn't work. Try again."
         }
       }
     },
@@ -9651,7 +9685,9 @@
         "devices": "Students play it on their own devices.",
         "board": "We play it together on the board.",
         "both": "Students play it on their own devices, and we also show it on the board."
-      }
+      },
+      "lesson": "I described my lesson.",
+      "lessonDoc": "I added my lesson plan."
     },
     "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
     "typeGroups": {
@@ -9698,16 +9734,16 @@
       "nextPlayed": "Next: how it is played",
       "practise": {
         "heading": "What should students practice?",
-        "text": "Pick one or type your own. The Builder makes 5 problems with steps and hints.",
+        "text": "Type a topic. The Builder makes 5 problems with steps and hints.",
         "label": "What should students practice?",
         "placeholder": "For example: equivalent fractions with eighths and sixths",
         "ideas": "Ideas",
         "ideasFor": "Ideas for {grade}",
-        "privacy": "The Builder only gets your topic and the class's grade. Never students' names or work."
+        "privacy": "The Builder gets your topic, the class's grade and what you add about your lesson. Never students' names or work."
       },
       "help": {
         "heading": "How much help?",
-        "hint": "You can change it any time in the Builder.",
+        "hint": "Pick one or more. With more than one, students can switch between them.",
         "watch": {
           "title": "Watch",
           "text": "Shows how each one is done, then students try."
@@ -9755,7 +9791,33 @@
         "multiples": "Multiples",
         "orderFractions": "Order fractions",
         "bigAdd": "Add big numbers"
-      }
+      },
+      "nextLesson": "Next: your lesson"
+    },
+    "lesson": {
+      "heading": "Your lesson",
+      "hint": "Optional. Add a lesson plan or say what you want, and the Builder fits the activity to your lesson.",
+      "safe": "Don't include student names or work. We remove any we find.",
+      "fileTitle": "Add a lesson plan or worksheet",
+      "fileText": "PDF, Word (.docx), text or Markdown, up to 5 MB and 10 pages. From Google Docs: File, Download, then .docx or .pdf.",
+      "choose": "Choose a file",
+      "describe": "Describe what you want",
+      "describeHelp": "Tap a prompt to add a heading, then write under it.",
+      "prompts": "Prompts",
+      "prompt": {
+        "goal": "What should students be able to do by the end?",
+        "mistakes": "Common mistakes to watch for",
+        "vocabulary": "Words or examples to use",
+        "avoid": "Anything to avoid"
+      },
+      "heads": {
+        "goal": "By the end, students can:",
+        "mistakes": "Common mistakes:",
+        "vocabulary": "Words and examples:",
+        "avoid": "Avoid:"
+      },
+      "placeholder": "For example: add fractions with the same denominator. Many students add the denominators too.",
+      "atLeastOne": "Pick at least one."
     }
   },
   "dash": {

@@ -375,6 +375,9 @@ export function selfTest(activity, words = null) {
   const add = (at, why) => { if (out.length < 12) out.push({ at, why }); };
   const cfg = a.config && typeof a.config === 'object' ? a.config : {};
   if (cfg.support !== undefined && !SUPPORTS.includes(cfg.support)) add('config', `support must be one of ${SUPPORTS.join(', ')}`);
+  // 1.1.0: the help modes it offers (the switcher): one to four of them, no repeats, and support (where it starts) one of them
+  if (cfg.supports !== undefined && (!Array.isArray(cfg.supports) || !cfg.supports.length || cfg.supports.length > SUPPORTS.length || cfg.supports.some(x => !SUPPORTS.includes(x)) || new Set(cfg.supports).size !== cfg.supports.length)) add('config', `supports must be a list of one to four of ${SUPPORTS.join(', ')}, each once`);
+  else if (Array.isArray(cfg.supports) && cfg.support !== undefined && SUPPORTS.includes(cfg.support) && !cfg.supports.includes(cfg.support)) add('config', 'support must be one of supports (where the activity starts)');
   if (cfg.count !== undefined && !isInt(cfg.count, 1, MAX_COUNT)) add('config', `count must be a whole number from 1 to ${MAX_COUNT}`);
   const fixed = Array.isArray(a.problems) ? a.problems : [];
   if (a.problems !== undefined && !Array.isArray(a.problems)) add('problems', 'problems must be a list');

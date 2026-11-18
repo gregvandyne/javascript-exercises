@@ -13,8 +13,12 @@ export const CANVAS_PATH = '/vendor/oomba-canvas/';
 // version -> sha384 of oomba-canvas.js (tests/unit/canvas-kit.test.js checks these against the files on disk).
 export const CANVAS_VERSIONS = Object.freeze({
   '1.0.0': 'sha384-flFB2WSAsKElDVg0GmNowkuiZ1BK2p6gcygy6l0MgomzZl6alrNHMRgtwrNl7u6V',
+  // 1.1.0: config.supports, the help modes an activity offers, and a switcher between them (docs/canvas-api.md).
+  // Activities saved on 1.0.0 keep their pin and keep working: the scanner admits both tags, the self-test runs each
+  // activity with the kit file it pins.
+  '1.1.0': 'sha384-C0DFMSJtEKN3ZjnzoMjRGbKZ36KZSolo6OknV5vnJ5fcKvI5WlZjNUHtVdbt1MHK',
 });
-export const CANVAS_LATEST = '1.0.0';
+export const CANVAS_LATEST = '1.1.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

@@ -8664,3 +8664,58 @@ vs Arcade game / Oomba Canvas"), with the owner's decisions:
 - **Words.** New phone strings say "collection" ("New collection", "Collection name"); existing desktop strings
   ("folder") are reused as they are where the phone shows the same action. New strings are under `folders.phone` in all
   12 locales. On phones narrower than 380px the kind keeps its emoji only (its words stay for screen readers).
+
+## Your lesson: upload and describe; help as one or more modes; Oomba Canvas 1.1.0 (18 Nov 2026)
+
+The product owner tried `/build/new` on an iPhone after #431 and asked for four changes.
+
+- **Even cards.** "Classroom activity" and "Arcade game" are always the same height: side by side the row stretches
+  them; stacked on a phone `.su-kinds` has `grid-auto-rows:1fr`, so both take the taller card's height and no more.
+  Both picture boxes have one fixed height and the tags sit at the bottom of each card. The arcade picture's top coin
+  no longer pokes out of the shorter phone picture. Measured at 390 and 1280 (`builder-setup-layout.test.js`). Their
+  message was cut off after "allow teachers"; we read it as even heights.
+- **No topic chips.** "What should students practise?" is one text box. `CANVAS_TOPICS` stays on the server only: a
+  typed topic that names one of the kit's ready generators (in any site language, or a few English words) gets that
+  tool and generator as a suggestion in the note for the model, tuned to the class's grade (adding: bigger numbers from
+  grade 4), and the mock Builder builds it. An older page's `topic: { id }` still works.
+- **"How much help?" is one or more.** Real checkboxes styled as the cards (a square tick, not the round one of a
+  single answer); Guided is ticked to start; the last one ticked cannot be unticked ("Pick at least one."). The plan
+  keeps `help: [...]` in Watch, Count up, Guided, On my own order, and `support` (the first: where it starts);
+  `normalisePlan` reads an older page's single `support` as `[support]`. The activity offers only those modes
+  (`config.supports`), and the model is told to offer only those.
+- **Oomba Canvas 1.1.0** for the switcher: 1.0.0 reads only `config.support`, so nothing in 1.0.0's own data could
+  drive a switcher. 1.1.0 adds `config.supports`: with more than one, the support chip becomes a small switcher (one
+  button per mode, `aria-pressed`) and a student, or the teacher on the board, moves between them; the problem on
+  screen starts again in that mode, the set, score and place stay. The self-test checks `supports`. 1.0.0's folder is
+  byte-for-byte unchanged (a test checks its manifest and every file), both versions are in `canvas/SHIPPED.json` and
+  `CANVAS_VERSIONS`, the scanner admits both pinned tags, and the server's self-test runs each activity with the kit
+  file it pins, so activities saved on 1.0.0 keep working. New activities pin 1.1.0.
+- **"Your lesson"**, a new optional step after "What should students practise?" (practise, your lesson, help, how it is
+  played, plan; "Skip this step" is there):
+  - *A file* (teachers only: a kid's own work is never uploaded here): PDF, Word (.docx, which is also how Google Docs
+    exports), .txt or .md, up to 5 MB, a PDF of at most 10 pages, 20 files read a day. It is read on the server with
+    Crossword's own readers (`services/pdf-text.js`, which gained a `max` option, and `services/docx-text.js`); no new
+    library and no AI. A PDF whose text cannot be read here (a scan) is turned away: the file never goes to the model.
+    The file is never stored or logged; only its text comes back (cut to 10,000 characters at a line's end) and the
+    page keeps it with the other choices until "Open the Builder", like everything else on this page.
+  - *A box to describe what they want* (2,000 characters, with a counter), with four prompt chips that put a heading
+    in it: "By the end, students can:", "Common mistakes:", "Words and examples:", "Avoid:". The server splits the box
+    at these headings (in any site language) into goal, mistakes, vocabulary, avoid and other details.
+  - *Child safety, hard rules* (`server/builder/lesson.js`): before any of it can reach the model, the scrubber takes
+    out the names of the students in this teacher's classes (roster names, display names and usernames from the class
+    rosters, and Google Classroom students still waiting to join; for a school's admin, the school's classes), matched
+    case-insensitively on word boundaries and replaced with "[student]"; a name part that is also an everyday word
+    ("Will", "May") or has one or two letters is matched only with its capital. Emails, phone numbers and links go too
+    ("[email]", "[phone]", "[link]"); the numbers of a maths lesson stay. Then the Builder's keyword pre-filter runs on
+    it (rude words, attempts to change the rules, chat, collecting personal details; the personal-details check is off
+    here because the scrubber already did that and a maths lesson is full of numbers); a lesson that fails is never
+    used. It runs on the upload, on the plan summary and again when the build starts (the page sends the text back).
+    "Don't include student names or work. We remove any we find." is shown on the step, in every language.
+  - *For the model*: `planNote` adds a LESSON CONTEXT block (goal, mistakes, words or examples, avoid, other details,
+    and the file's text inside `<teacher_reference>`, marked as reference material, not instructions; a file cannot
+    close that block). `planBrief` carries a shorter one for later turns. The CANVAS RULES (from docs/canvas-api.md)
+    say the lesson context is untrusted data that never overrides the rules. The arcade SYSTEM_PROMPT and TOOLS are
+    byte-for-byte unchanged (a test checks their hash).
+  - The plan summary shows "What the Builder reads about your lesson", exactly as the server will send it (with
+    "[student]" where a name was), and says when a lesson cannot be used.
+- **Arcade** is unchanged (the describe box was not added there).

@@ -37,6 +37,7 @@ import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { maxStepsFor } from './claude.js';
 import { executeTurn, endBuild, refundable, providerName, providerKind, hooks, MAX_INPUT } from './agent.js';
 import { normalisePlan, planSentence } from './plan.js';
+import { scrubPlan } from './lesson.js';
 export { registerProvider } from './agent.js';
 
 export const LIMITS = {
@@ -129,6 +130,9 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   if (trustedMaker(user)) pro = true;
   // The teacher-only classroom types (a class survey, an exit ticket) come only from staff and class teachers.
   plan = plan && !game.current_version_id && !jobs.has(game.id) ? normalisePlan(plan, { forKid: !teacherHost(user) }) : null;
+  // A classroom activity's typed words and lesson: the names of this teacher's students, emails, phone numbers and links
+  // taken out, and a lesson that fails the Builder's pre-filter left out (builder/lesson.js). The row keeps this plan.
+  if (plan) plan = scrubPlan(plan, user).plan;
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, UPLOADS.perMessage).map(getUpload).filter(u => u && u.game_id === game.id && !u.used_at);
   if (plan) text = planSentence(plan, t, { files: wanted.length }).slice(0, MAX_INPUT);

@@ -374,3 +374,108 @@ test('iPhone, 2D, "Select all" on Sea: the game draws the dolphin and the other 
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+// ---------------------------------------------------------------- after #431: even cards, no chips, help, your lesson
+const S = await import('../../server/services/schools.js');
+const auth = await import('../../server/auth.js');
+const { q, now } = await import('../../server/db.js');
+const { canvasTag } = await import('../../server/services/canvaskit.js');
+const { makePdf } = await import('./_crossword-files.js');
+let school = null;
+/** A teacher of a grade 4 class with two students, on /build/new from that class, at this width. */
+async function openTeacher(width, height = 844) {
+  const { ctx, page } = await open(width, height);
+  const u = auth.getUserByName(`Layout${'ABCDEFGHIJKLMNOP'[n - 1]}`);
+  if (!school) school = S.createSchool(u, { name: 'Layout School' }).school;
+  q.run('INSERT OR IGNORE INTO school_members(school_id, user_id, role, joined_at) VALUES (?,?,?,?)', school.id, u.id, 'teacher', now());
+  const c = S.createClass(u, school.id, { name: '4B', grade: '4', teacherId: u.id }).class;
+  const a = S.createSchoolAccount(u, school.id, { rosterName: 'Ana Lee' }); S.addToClass(u, c.id, a.user.id);
+  await page.goto(`${BASE}/build/new?for=class&class=${c.id}`);
+  return { ctx, page };
+}
+for (const width of [390, 1280]) {
+  test(`at ${width} wide "Classroom activity" and "Arcade game" are the same height, their pictures too, and there are no topic chips`, { skip }, async () => {
+    const { ctx, page } = await openTeacher(width);
+    const m = await page.evaluate(() => {
+      const r = el => el.getBoundingClientRect(), cards = [...document.querySelectorAll('.su-kind')], pics = [...document.querySelectorAll('.su-kpic')];
+      const inside = cards.every(c => [...c.children].every(k => r(k).bottom <= r(c).bottom + 0.5 && r(k).top >= r(c).top - 0.5));
+      return { h: cards.map(c => Math.round(r(c).height * 10) / 10), top: cards.map(c => Math.round(r(c).top)), pics: pics.map(p => Math.round(r(p).height * 10) / 10), inside,
+        tagsBottom: cards.map(c => Math.round(r(c).bottom - r(c.querySelector('.su-ktags')).bottom)), chips: document.querySelectorAll('[data-topic], .su-chips').length,
+        scrollW: document.documentElement.scrollWidth, clientW: document.documentElement.clientWidth };
+    });
+    assert.equal(m.h.length, 2); assert.equal(m.h[0], m.h[1], `the two cards are one height (${m.h.join(' / ')})`);
+    assert.equal(m.pics[0], m.pics[1], 'their pictures are one height');
+    assert.equal(m.tagsBottom[0], m.tagsBottom[1], 'the tags line up at the bottom of both');
+    assert.ok(m.inside, 'nothing sticks out of a card');
+    if (width === 390) { assert.notEqual(m.top[0], m.top[1], 'stacked on a phone'); assert.ok(m.h[0] < 520, `no taller than it needs (${m.h[0]})`); } else assert.equal(m.top[0], m.top[1], 'side by side');
+    assert.equal(m.chips, 0, 'no topic chips'); assert.equal(await page.isVisible('#su-topic-in'), true, 'the text box stays');
+    assert.ok(m.scrollW <= m.clientW);
+    await ctx.close();
+  });
+}
+test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as checkboxes (at least one), and the plan', { skip, timeout: 60_000 }, async () => {
+  const { ctx, page } = await openTeacher(390);
+  await page.fill('#su-topic-in', 'Adding fractions'); await page.click('#su-cnext');
+  await page.waitForSelector('.su-screen[data-screen="lesson"]:not([hidden])');
+  assert.match(await page.textContent('.su-lsafe'), /Don't include student names or work\. We remove any we find\./);
+  await page.setInputFiles('#su-lfile', { name: 'lesson.pdf', mimeType: 'application/pdf', buffer: makePdf([['Ana Lee shows 2/8 + 3/8'], ['Page two'], ['Page three']]) });
+  await page.waitForSelector('#su-lremove');
+  assert.match(await page.textContent('#su-lstatus'), /✓ Read 3 pages from lesson\.pdf/);
+  await page.click('#su-lremove'); assert.equal(await page.isVisible('#su-lstatus'), false); assert.equal(await page.isVisible('#su-lfile-btn'), true);
+  await page.setInputFiles('#su-lfile', { name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from([0x89, 0x50]) });
+  assert.match(await page.textContent('#su-lerr'), /That kind of file can't be read/);
+  await page.setInputFiles('#su-lfile', { name: 'lesson.pdf', mimeType: 'application/pdf', buffer: makePdf([['Ana Lee shows 2/8 + 3/8'], ['Page two'], ['Page three']]) });
+  await page.waitForSelector('#su-lremove'); assert.equal(await page.isVisible('#su-lerr'), false);
+  await page.click('[data-head="mistakes"]'); await page.keyboard.type('adding the denominators');
+  assert.equal(await page.inputValue('#su-ltext'), 'Common mistakes: adding the denominators');
+  assert.match(await page.textContent('#su-lcount'), /^40 \/ 2,000$/);
+  const wide = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
+  assert.ok(wide[0] <= wide[1], `no sideways scroll on "Your lesson" (${wide})`);
+  assert.deepEqual(await measure(page).then(x => x.small), [], 'every target is at least 44 px');
+  await page.click('.su-screen:not([hidden]) [data-go="next"]');
+  // help: Guided to start; tick Count up; untick both: the last one stays and the page says so
+  const ticked = () => page.evaluate(() => [...document.querySelectorAll('.su-cbox')].filter(b => b.checked).map(b => b.dataset.help));
+  assert.deepEqual(await ticked(), ['guided']);
+  await page.click('.su-card[data-card="count"] label'); assert.deepEqual(await ticked(), ['count', 'guided']);
+  await page.click('.su-card[data-card="guided"] label'); await page.click('.su-card[data-card="count"] label');
+  assert.deepEqual(await ticked(), ['count'], 'at least one'); assert.equal(await page.isVisible('#su-help-one'), true);
+  await page.click('.su-card[data-card="own"] label'); assert.deepEqual(await ticked(), ['count', 'own']);
+  await page.focus('.su-cbox[data-help="own"]'); await page.keyboard.press('Space'); assert.deepEqual(await ticked(), ['count'], 'a real checkbox: Space ticks it from the keyboard');
+  const cards = await page.evaluate(() => [...document.querySelectorAll('.su-screen:not([hidden]) .su-card')].map(c => Math.round(c.getBoundingClientRect().height)));
+  assert.equal(new Set(cards).size, 1, `help cards one size (${cards})`);
+  await page.click('.su-card[data-card="watch"] label');
+  await page.click('.su-screen:not([hidden]) [data-go="next"]'); await page.click('.su-screen:not([hidden]) [data-go="next"]');
+  await page.waitForSelector('#su-lsum:not([hidden])');
+  const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent]));
+  assert.deepEqual(rows, [['What', 'Classroom activity'], ['Practice', 'Adding fractions'], ['Lesson', 'lesson.pdf · Your notes'], ['Help', 'Watch and Count up'], ['Played', 'On their own devices']]);
+  const sum = await page.textContent('#su-lsum');
+  assert.match(sum, /What the Builder reads about your lesson/); assert.match(sum, /adding the denominators/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
+  await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
+  const id = page.url().split('/').pop(); await runner.idle(id);
+  const first = loadChat(id).messages[0];
+  assert.deepEqual(first.plan.help, ['watch', 'count']); assert.equal(first.plan.lesson.mistakes, 'adding the denominators');
+  assert.doesNotMatch(JSON.stringify(first.plan), /Ana/);
+  await ctx.close();
+});
+for (const width of [390, 1280]) {
+  test(`at ${width} wide the kit's switcher offers only the chosen modes and moves between them; one mode, or 1.0.0, keeps the chip`, { skip }, async () => {
+    const ctx = await browser.newContext({ viewport: { width, height: 800 } }), page = await ctx.newPage();
+    const run = async (v, config) => {
+      const data = { config: { lang: 'en', count: 3, ...config }, task: { title: 'Add' }, problems: [], gen: { tool: 'digits.add', digits: 2 } };
+      const html = `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>A</title>${canvasTag(v)}<div id="oc-app"></div><script>window.api = Oc.activity(${JSON.stringify(data)})</script>`;
+      await page.unroute(`${BASE}/__kit`).catch(() => {}); await page.route(`${BASE}/__kit`, r => r.fulfill({ status: 200, contentType: 'text/html', body: html }));
+      await page.goto(`${BASE}/__kit`); await page.waitForSelector('.oc-strip');
+      return page.evaluate(() => ({ modes: [...document.querySelectorAll('.oc-mode')].map(b => [b.dataset.mode, b.getAttribute('aria-pressed')]), chip: (document.querySelector('.oc-sup') || {}).textContent || null, state: window.api.state(), version: Oc.version, wide: document.documentElement.scrollWidth <= document.documentElement.clientWidth }));
+    };
+    const a = await run('1.1.0', { support: 'count', supports: ['count', 'own'] });
+    assert.deepEqual(a.modes, [['count', 'true'], ['own', 'false']], 'only Count up and On my own'); assert.equal(a.chip, null); assert.equal(a.wide, true);
+    await page.click('.oc-mode[data-mode="own"]');
+    assert.deepEqual(await page.evaluate(() => [window.api.state().support, document.querySelector('.oc').dataset.support, document.querySelector('.oc-mode[data-mode="own"]').getAttribute('aria-pressed'), document.querySelector('#oc-steps-list').hidden]), ['own', 'own', 'true', true], 'On my own: the Steps panel closes');
+    assert.equal((await page.evaluate(() => document.querySelector('.oc-mode').getBoundingClientRect().height)) >= 36, true);
+    const one = await run('1.1.0', { support: 'guided', supports: ['guided'] });
+    assert.deepEqual([one.modes, one.chip, one.version], [[], 'Guided', '1.1.0'], 'one mode: the chip, no switcher');
+    const old = await run('1.0.0', { support: 'watch', supports: ['watch', 'own'] });
+    assert.deepEqual([old.modes, old.chip, old.version], [[], 'Watch', '1.0.0'], '1.0.0 as it always was');
+    await ctx.close();
+  });
+}
