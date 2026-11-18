@@ -107,6 +107,10 @@ TOOL_WORDS.fractions.push('partsOf');
 TOOL_WORDS.fractions.push('show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again',
   'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
   'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes');
+// Fractions, equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a student's Build it equation
+// (the answer bar, its parts and wholes) and the note when + goes past a fraction's limit.
+TOOL_WORDS.fractions.push('howtoEq', 'eqHint', 'eqParts', 'eqWholes', 'eqShaded', 'eqWholesNow', 'eqLessWhole', 'eqMoreWhole',
+  'limitWholes', 'limitTop', 'limitBottom');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // maths tools combined: the mode switch ("Choose what Place value shows")

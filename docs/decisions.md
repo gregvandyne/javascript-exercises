@@ -7586,3 +7586,40 @@ base-ten blocks, the teaching clock, number rods, fractions and coins, and the m
   it opens every Share, ⋯ and View menu: whole inside the screen, never scrolling or cut, 44px items, the focus inside,
   Escape closing it with the focus back on its button, Share hidden on the projector. Fractions' Steps panels are opened
   before the check.
+
+## Classroom dashboards: fractions, equations (18 Nov 2026)
+Owner approved from mockups: Fractions' Build it can ask students to **solve equations** and shade the answer, the Build
+it sheet is tidier for every tool ("use drop downs to keep things clean"), and the fraction operations say why + stops.
+Code: `public/js/dash-build.js` (`eqParse`, `eqAnswer`, `answerBars`, `EQ_OPS`, the `eq*` generators, the fractions
+entry's check/solve), `eqView` and `limitWords` in `public/js/dash-tools.js`, `out(n)` in `public/js/dash-num.js`,
+`openBuildIt`/`openBuild` in `public/js/dash.js`; strings `js.dash.build.*` (new and reworded) and
+`dash.w.fractions.howtoEq|eq*|limit*` in all 12 full locales. Tests: `tests/unit/dash-build.test.js`.
+- **The sheet, for every tool:** the intro; (fractions only) **What do students do?** [Shade a fraction | Solve
+  equations] and **Which equations?** [Add, Subtract, Add and subtract, Multiply, Divide, All four], both dropdowns;
+  the instruction; **Questions students will get**: "🎲 Pick some for me" [kind ▾] [how many ▾] [Pick] fills the box
+  below it, "Or type your own, with commas between, like …"; then one line ("5 questions") and what was left out. The
+  list of chips under the box is gone; "Targets" reads "Questions" (the progress sheet too). Changing what students do
+  or which equations swaps the picker's kinds, the example and the default instruction ("Work out each one. Shade the
+  answer bar."; an instruction the teacher wrote stays).
+- **An equation** is a target `{ op, a, b }` (the fractions' own `n/d` targets are unchanged, so every set sent before
+  loads and checks as it did; no migration). Typed with + - − x × * · ÷ : or a spaced / ("1/2 / 1/4"), "= ?" allowed.
+  Kept only when each fraction is inside the tool's `OP_LIMITS` (bottom 1-12, top 0-12, at most 3 wholes), it never
+  divides by zero, and the answer is more than 0, at most 3 wholes and has a bottom number of at most 12 in its simplest
+  form, so a bar of 1-12 parts can show it. **Decided:** an answer of 0 is left out (nothing to shade), and any
+  operation typed is kept whatever "Which equations?" says (it chooses the picker's kinds). Kinds: same bottom number,
+  bottoms like 3 and 6, unit fractions, a whole number × a fraction, with a whole number (1 ÷ 1/3, 1/2 ÷ 3), easier
+  ones, any (operands in simplest form; subtracting always bigger first).
+- **The student** sees "Work out: 1/2 + 1/4 = ?", the two fractions as fixed bars in the operations' colours on one
+  scale, and a dashed answer bar: − and + for the parts in each whole (1-12, typed too), − and + for the wholes (1-3),
+  tap or arrow keys to shade. It is stored as the tool's own `bars` (one bar a whole, all cut the same), so the server
+  cleans and checks it with no new state. Right is any equal amount (6/8 for 3/4) with one line of why ("With 4 parts
+  in each whole: 2/4 + 1/4 = 3/4."); not yet gives one hint: nothing shaded, tops and bottoms both added, pieces that
+  can't make the answer (with the same-size parts to try), too much or too little. The server keeps only right / not
+  yet, as before.
+- **Show on the board** turns the teacher's tool to that operation with the two fractions, the answer shown and the
+  working reset (`mode`, `a`, `b`, `hide: false`, `step`/`fit` 0); their Compare bars are kept.
+- **The limit note:** in Add, Subtract, Multiply and Divide, + is no longer silently disabled at a limit. Past it, the
+  readout shows "✋ That's as big as it goes. Each fraction can be at most 3 wholes, and 3/1 is already 3 wholes." (or
+  the top / bottom number "can be at most 12"), said aloud too; a number typed past it gives the same note (held at
+  the limit). The next change takes it away.
+- **Fit check:** the Build it layouts also send a set of fraction equations of all four operations for students.

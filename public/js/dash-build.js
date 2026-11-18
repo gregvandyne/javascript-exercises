@@ -195,21 +195,32 @@ export const BUILD = {
     },
     solve: (b, x) => ({ pegs: b.pegs || 7, cur: 0, show: false, bands: [{ pts: areaShape(x, b.pegs || 7), closed: true, c: 0 }] }),
   },
-  // Fraction bars (Compare, one bar): shade a fraction; an equal one (6/8 for 3/4) is right too.
+  // Fraction bars: shade a fraction (Compare, one bar; an equal one, 6/8 for 3/4, is right too), or, since "fractions:
+  // equations" (docs/decisions.md), work out an equation ({ op, a, b }: "1/2 + 1/4") and shade its answer on a bar of up
+  // to three wholes (st.bars: one bar a whole, all cut the same). parse and the generators make equations when the
+  // sheet's base says so (base.task 'eq', base.ops which ones); everything else knows a target by its shape.
   fractions: {
-    parse(t) { const f = fracOf(t); return f && f.d >= 1 && f.d <= 12 && f.n >= 0 && f.n <= f.d ? { n: f.n, d: f.d } : null; },
-    clean: x => (x && int(x.d, 1, 12) !== null && int(x.n, 0, x.d) !== null ? { n: x.n, d: x.d } : null),
-    text: x => `${x.n}/${x.d}`,
+    parse(t, b) {
+      if (b && b.task === 'eq') return eqParse(t);
+      const f = fracOf(t); return f && f.d >= 1 && f.d <= 12 && f.n >= 0 && f.n <= f.d ? { n: f.n, d: f.d } : null;
+    },
+    clean: x => (isEq(x) ? eqClean(x) : x && int(x.d, 1, 12) !== null && int(x.n, 0, x.d) !== null ? { n: x.n, d: x.d } : null),
+    text: x => (isEq(x) ? eqText(x) : `${x.n}/${x.d}`),
     gens: { unit: rnd => ({ n: 1, d: pick(rnd, 2, 10) }), proper: rnd => { const d = pick(rnd, 2, 12); return { n: pick(rnd, 1, d - 1), d }; }, eighths: rnd => { const d = [2, 4, 8][pick(rnd, 0, 2)]; return { n: pick(rnd, 1, d - 1), d }; } },
-    start: b => ({ shape: b.shape || 'bar', bars: [{ n: 0, d: 2 }], same: false, hide: true }),
+    // The equations' generators (gensFor picks the ones that suit the sheet's "Which equations?").
+    eqGens: {},
+    start: (b, x) => ({ shape: isEq(x) ? 'bar' : b.shape || 'bar', bars: [{ n: 0, d: 2 }], same: false, hide: true }),
     check(st, x) {
+      if (isEq(x)) return eqCheck(st, x);
       const f = (st.bars || [])[0] || { n: 0, d: 1 };
       if (sameFrac(f, x)) return { ok: true, hint: null };
       if (!f.n) return { ok: false, hint: { k: 'empty' } };
       return { ok: false, hint: { k: 'made', a: `${f.n}/${f.d}`, b: `${x.n}/${x.d}` } };
     },
-    // The teacher's tool may be on Add, Divide…: the target shows in Compare, the mode the set is built in.
-    solve: (b, x) => ({ shape: b.shape || 'bar', mode: 'compare', fit: 0, step: 0, bars: [{ n: x.n, d: x.d }], same: false, hide: false }),
+    // The teacher's tool may be on Add, Divide…: a fraction shows in Compare, the mode the set is built in; an equation
+    // turns the tool to its operation with its two fractions and the answer shown (the working from its start).
+    solve: (b, x) => (isEq(x) ? { shape: b.shape || 'bar', mode: x.op, a: { ...x.a }, b: { ...x.b }, fit: 0, step: 0, hide: false }
+      : { shape: b.shape || 'bar', mode: 'compare', fit: 0, step: 0, bars: [{ n: x.n, d: x.d }], same: false, hide: false }),
   },
   // Fraction, decimal, percent: show an amount ("3/4", "0.25", "25%"); any equal fraction is right.
   fdp: {
@@ -345,6 +356,121 @@ export const BUILD_TOOLS = Object.keys(BUILD);
 const clockGen = step => (rnd, b) => { const v = pick(rnd, 0, (b && b.h24 ? 1440 : 720) / step - 1) * step; return v; };
 Object.assign(BUILD.tclock.gens, { hour: clockGen(60), half: clockGen(30), quarter: clockGen(15), five: clockGen(5) });
 
+// ---------------------------------------------------------------- fractions: equations
+// (docs/decisions.md "Classroom dashboards: fractions, equations"). An equation is { op, a, b }: two fractions inside the
+// fraction tool's own limits (M.OP_LIMITS: a bottom number 1-12, a top number 0-12, at most three wholes), never divided
+// by zero, with an answer the student can shade: more than zero, at most three wholes, and a bottom number of at most 12
+// in its simplest form (so a bar cut into 1-12 parts can show it).
+/** "Which equations?" on the teacher's sheet -> the operations it covers. */
+export const EQ_OPS = { add: ['add'], sub: ['sub'], addsub: ['add', 'sub'], mul: ['mul'], div: ['div'], all: ['add', 'sub', 'mul', 'div'] };
+export const EQ_SETS = Object.keys(EQ_OPS);
+/** The generators each "Which equations?" offers, simplest first. */
+const EQ_GEN_LIST = {
+  add: ['eqSame', 'eqMult', 'eqAny'], sub: ['eqSame', 'eqMult', 'eqAny'], addsub: ['eqSame', 'eqMult', 'eqAny'],
+  mul: ['eqUnit', 'eqWholeMul', 'eqAny'], div: ['eqMult', 'eqWholeDiv', 'eqAny'], all: ['eqEasy', 'eqAny'],
+};
+const EQ_SIGN = { add: '+', sub: '−', mul: '×', div: '÷' };
+const isEq = x => !!(x && typeof x === 'object' && Object.prototype.hasOwnProperty.call(x, 'op'));
+const fracOk = f => f && int(f.d, 1, M.OP_LIMITS.dMax) !== null && int(f.n, 0, Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * f.d)) !== null;
+/** The answer of a { op, a, b } (lowest terms), or null when it is not an equation a student can shade. */
+export function eqAnswer(x) {
+  if (!x || !M.OPS[x.op] || !fracOk(x.a) || !fracOk(x.b)) return null;
+  if (x.op === 'div' && !x.b.n) return null;   // never divide by zero
+  const r = M.operate(x.op, x.a, x.b), s = r.simple;
+  return s.n > 0 && s.d <= 12 && s.n <= M.OP_LIMITS.wholes * s.d ? s : null;
+}
+function eqClean(x) {
+  const e = { op: x.op, a: x.a && { n: x.a.n, d: x.a.d }, b: x.b && { n: x.b.n, d: x.b.d } };
+  return eqAnswer(e) ? e : null;
+}
+const opText = f => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
+const eqText = x => `${opText(x.a)} ${EQ_SIGN[x.op]} ${opText(x.b)}`;
+/** One fraction of an equation as typed: "3/4", "2", "1 1/2" (not a negative one). */
+function operandOf(t) { const f = fracOf(t); return f && f.n >= 0 && Number.isInteger(f.n) && Number.isInteger(f.d) ? { n: f.n, d: f.d } : null; }
+const OP_OF = { '+': 'add', '-': 'sub', x: 'mul', '×': 'mul', '*': 'mul', '·': 'mul', '÷': 'div', ':': 'div' };
+/** "1/2 + 1/4", "3/4 − 1/8", "2/3 x 3/4", "1/2 ÷ 1/4", "1/2 : 1/4", "1/2 / 1/4" (a slash with spaces round it divides),
+ *  with or without "= ?" -> { op, a, b } or null. */
+export function eqParse(t) {
+  const s = plain(t).replace(/\s*=\s*\??$/, '');
+  const read = str => {
+    const m = /^(.+?)\s*([+\-x×*·÷:])\s*(.+)$/i.exec(str); if (!m) return null;
+    const a = operandOf(m[1]), b = operandOf(m[3]), op = OP_OF[m[2].toLowerCase()];
+    if (!a || !b || !op) return null;
+    const e = { op, a, b }; return eqAnswer(e) ? e : null;
+  };
+  return read(s.replace(/\s*\/\s*/g, '/')) || (/\s\/\s/.test(s) ? read(s.replace(/\s+\/\s+/, ' ÷ ').replace(/\s*\/\s*/g, '/')) : null);
+}
+/** A shaded answer as bars, one a whole, each cut into d parts: `shaded` parts in all, over `wholes` bars. */
+export function answerBars(shaded, d, wholes = 1) {
+  const w = Math.max(1, Math.min(M.OP_LIMITS.wholes, wholes)), t = Math.max(0, Math.min(shaded, w * d));
+  return Array.from({ length: w }, (_, i) => ({ n: Math.max(0, Math.min(d, t - i * d)), d }));
+}
+/** What a student shaded: { n (parts in all), d (parts a whole), f (the amount, exact) }. */
+function shadedOf(st) {
+  const bars = (Array.isArray(st.bars) ? st.bars : []).slice(0, M.OP_LIMITS.wholes).filter(b => b && int(b.d, 1, 12) !== null && int(b.n, 0, b.d) !== null);
+  if (!bars.length) return { n: 0, d: 1, f: { n: 0, d: 1 } };
+  const L = bars.reduce((m, b) => M.lcm(m, b.d), 1), n = bars.reduce((s, b) => s + (b.n * L) / b.d, 0);
+  const d = bars.every(b => b.d === bars[0].d) ? bars[0].d : L;
+  return { n: (n * d) / L, d, f: M.simplify(n, L) };
+}
+/** The student's answer bar against the equation's answer: right (any equal fraction: 6/8 for 3/4) with a one-line why,
+ *  or a hint: nothing shaded; tops and bottoms added; pieces that can't make the answer; too much or too little. */
+function eqCheck(st, x) {
+  const ans = eqAnswer(x); if (!ans) return { ok: false, hint: null };
+  const r = M.operate(x.op, x.a, x.b), me = shadedOf(st), a = `${me.n}/${me.d}`;
+  if (!me.n) return { ok: false, hint: { k: 'empty' } };
+  if (M.equivalent(me.f, ans)) return { ok: true, hint: eqWhy(x, r) };
+  if (x.op === 'add' && sameFrac(me.f, { n: x.a.n + x.b.n, d: x.a.d + x.b.d })) return { ok: false, hint: { k: 'eqTops', a } };
+  if (me.d % ans.d) {
+    const L = x.op === 'add' || x.op === 'sub' || x.op === 'mul' ? r.L : ans.d;
+    return { ok: false, hint: { k: x.op === 'add' || x.op === 'sub' ? 'eqSize' : 'eqParts', a, n: L <= 12 ? L : ans.d } };
+  }
+  return { ok: false, hint: { k: M.compare(me.f, ans) > 0 ? 'eqMore' : 'eqLess', a } };
+}
+/** Why the answer is right, in one line: the same-size pieces (add, subtract), tops and bottoms multiplied, how many fit. */
+function eqWhy(x, r) {
+  const fr = f => `${f.n}/${f.d}`, s = r.simple, simpler = s.n !== r.raw.n || s.d !== r.raw.d;
+  const more = s.n > s.d && s.d > 1;   // 5/4 = 1 1/4
+  const end = `${fr(r.raw)}${simpler ? ` = ${s.d === 1 ? s.n : fr(s)}` : ''}${more ? ` = ${M.mixedText(s)}` : ''}`;
+  if (x.op === 'add' || x.op === 'sub') return { k: 'whySame', n: r.L, x: `${fr(r.a2)} ${EQ_SIGN[x.op]} ${fr(r.b2)} = ${end}` };
+  if (x.op === 'mul') return { k: 'whyMul', x: `${fr(r.a)} × ${fr(r.b)} = ${end}` };
+  return { k: 'whyDiv', a: opText(x.a), b: opText(x.b), n: M.mixedText(s) };
+}
+// The generators: kid-sized numbers, every answer one a bar can show. Each tries a few times for one that fits.
+const eqTry = make => (rnd, b) => {
+  const ops = EQ_OPS[(b && b.ops) || 'add'] || EQ_OPS.add;
+  for (let i = 0; i < 60; i++) { const op = ops[pick(rnd, 0, ops.length - 1)], e = make(rnd, op); if (e && eqAnswer(e)) return e; }
+  return { op: 'add', a: { n: 1, d: 2 }, b: { n: 1, d: 4 } };
+};
+const proper = (rnd, d) => ({ n: pick(rnd, 1, d - 1), d });
+/** A fraction less than one whole in its simplest form (3/4, never 6/8). */
+const simplest = (rnd, d) => { for (let i = 0; i < 20; i++) { const n = pick(rnd, 1, d - 1); if (M.gcd(n, d) === 1) return { n, d }; } return { n: 1, d }; };
+/** Subtracting: the bigger one first (an answer below zero can't be shaded). */
+const ordered = (op, a, b) => (op === 'sub' && M.compare(a, b) < 0 ? { op, a: b, b: a } : { op, a, b });
+const EQ_MAKE = {
+  // The same bottom number: 1/5 + 2/5, 7/8 − 3/8, 3/4 ÷ 1/4 (multiplying: unit fractions).
+  eqSame(rnd, op) { const d = pick(rnd, 2, 12); return op === 'add' || op === 'sub' ? ordered(op, proper(rnd, d), proper(rnd, d)) : op === 'div' ? { op, a: proper(rnd, d), b: proper(rnd, d) } : EQ_MAKE.eqUnit(rnd, op); },
+  // One bottom number a multiple of the other: 1/2 + 1/4, 2/3 − 1/6, 1/2 ÷ 1/4 (multiplying: unit fractions).
+  eqMult(rnd, op) {
+    const d1 = pick(rnd, 2, 6), d2 = d1 * pick(rnd, 2, Math.max(2, Math.floor(12 / d1)));
+    const [p, q] = rnd() < 0.5 ? [simplest(rnd, d1), simplest(rnd, d2)] : [simplest(rnd, d2), simplest(rnd, d1)];
+    return op === 'mul' ? EQ_MAKE.eqUnit(rnd, op) : ordered(op, p, q);
+  },
+  // Unit fractions multiplied: 1/2 × 1/3.
+  eqUnit(rnd, op) { const p = pick(rnd, 2, 6); return { op, a: { n: 1, d: p }, b: { n: 1, d: pick(rnd, 2, Math.max(2, Math.floor(12 / p))) } }; },
+  // A whole number times a fraction: 3 × 1/4, 2 × 2/5.
+  eqWholeMul(rnd, op) { const w = { n: pick(rnd, 2, 4), d: 1 }, f = simplest(rnd, pick(rnd, 2, 8)); return rnd() < 0.5 ? { op, a: w, b: f } : { op, a: f, b: w }; },
+  // A whole number divided by a unit fraction (1 ÷ 1/3: the answer stays three wholes or less) or a fraction divided by
+  // a whole number (1/2 ÷ 3, 3/4 ÷ 3).
+  eqWholeDiv(rnd, op) { return rnd() < 0.4 ? { op, a: { n: 1, d: 1 }, b: { n: 1, d: pick(rnd, 2, 3) } } : { op, a: simplest(rnd, pick(rnd, 2, 6)), b: { n: pick(rnd, 2, 4), d: 1 } }; },
+  // Easier ones of every operation: the same bottom number to add or subtract, unit fractions to multiply, related
+  // bottom numbers to divide.
+  eqEasy(rnd, op) { return op === 'mul' ? EQ_MAKE.eqUnit(rnd, op) : op === 'div' ? EQ_MAKE.eqMult(rnd, op) : EQ_MAKE.eqSame(rnd, op); },
+  // Any two fractions (less than a whole, or a little more) whose answer can be shaded.
+  eqAny(rnd, op) { const f = () => { const d = pick(rnd, 2, 12), g = simplest(rnd, d); return rnd() < 0.8 || d > 6 ? g : { n: g.n + d, d }; }; return ordered(op, f(), f()); },
+};
+for (const [k, make] of Object.entries(EQ_MAKE)) BUILD.fractions.eqGens[k] = eqTry(make);
+
 /** How many counters a ten-frame target has. */
 function total(x) { return 'n' in x ? x.n : x.r + x.y; }
 /** A number chart's first and last number. */
@@ -404,11 +530,12 @@ export function parseTargets(tool, text, base = {}, intl = 'en') {
 /** The generators a tool offers for this starting state (the decimal ones only with the decimal columns). */
 export function gensFor(tool, base = {}) {
   const b = BUILD[tool]; if (!b) return [];
+  if (b.eqGens && base.task === 'eq') return EQ_GEN_LIST[base.ops] || EQ_GEN_LIST.add;
   return Object.keys(b.gens).filter(g => !(b.decGens || []).includes(g) || base.dec !== false);
 }
 /** n targets from a generator, different from each other where the generator has that many. */
 export function makeTargets(tool, gen, n = DEFAULT_COUNT, base = {}, rnd = Math.random) {
-  const b = BUILD[tool], g = b && b.gens[gen]; if (!g) return [];
+  const b = BUILD[tool], g = b && (b.eqGens && base.task === 'eq' ? b.eqGens : b.gens)[gen]; if (!g) return [];
   const want = Math.max(1, Math.min(MAX_TARGETS, n)), out = [], seen = new Set();
   for (let tries = 0; out.length < want && tries < want * 40; tries++) {
     const x = b.clean(g(rnd, base), base); if (x === null) continue;

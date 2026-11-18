@@ -2853,24 +2853,23 @@
       "build": {
         "title": "Monte: {name}",
         "makeTitle": "Monte: {name}",
-        "intro": "Cada aluno recebe a própria cópia e monta um alvo de cada vez, com a resposta escondida. Você vê quem terminou. Ninguém vê o trabalho dos outros.",
+        "intro": "Cada aluno recebe a própria cópia e responde a uma pergunta de cada vez, com a resposta escondida. Você vê quem terminou. Ninguém vê o trabalho dos outros.",
         "say": "Instrução",
-        "targets": "Alvos",
-        "typeHint": "Digite com vírgulas entre eles, como {eg}",
-        "orMake": "Ou crie alguns",
-        "gen": "Prontos",
+        "typeHint": "Ou digite as suas, com vírgulas entre elas, como {eg}",
+        "gen": "Tipo de pergunta",
         "howMany": "Quantos",
-        "make": "Criar",
-        "count": "{n, plural, one {# alvo} other {# alvos}}",
+        "make": "Escolher",
+        "count": "{n, plural, one {# pergunta} other {# perguntas}}",
         "bad": "Deixados de fora (esta ferramenta não monta): {list}",
+        "badEq": "Deixados de fora (a resposta deve ser maior que 0 e ter no máximo 3 inteiros, com denominador até 12, e cada fração dentro dos limites da ferramenta): {list}",
         "over": "Só os {n} primeiros ficam.",
-        "none": "Digite ou crie pelo menos um alvo.",
+        "none": "Digite ou escolha pelo menos uma pergunta.",
         "send": "Enviar para a turma",
         "sent": "“Monte” enviado. Cada aluno monta na própria cópia.",
         "progress": "Progresso",
         "progressName": "Progresso: {title}",
         "progressTitle": "Monte: progresso",
-        "targetsH": "Alvos",
+        "targetsH": "Perguntas",
         "studentsH": "Alunos",
         "rightOf": "{right} de {tried} certos",
         "onBoard": "Mostrar na lousa",
@@ -2908,7 +2907,8 @@
           "angle": "Gire a semirreta para fazer cada ângulo.",
           "pattern": "Use blocos para fazer cada parte de um hexágono.",
           "coord": "Marque cada ponto.",
-          "rods": "Faça um trem de barras do tamanho de cada número."
+          "rods": "Faça um trem de barras do tamanho de cada número.",
+          "fractionsEq": "Resolva cada uma. Pinte a barra da resposta."
         },
         "gens": {
           "d1": "Números de 1 algarismo",
@@ -2951,7 +2951,14 @@
           "wholes": "Hexágonos inteiros",
           "mixed": "Mais de um hexágono",
           "q1": "Primeiro quadrante",
-          "all": "Os quatro quadrantes"
+          "all": "Os quatro quadrantes",
+          "eqSame": "Mesmo denominador",
+          "eqMult": "Denominadores como 3 e 6",
+          "eqUnit": "Frações unitárias (1/2 × 1/3)",
+          "eqWholeMul": "Número inteiro × fração",
+          "eqWholeDiv": "Com um número inteiro",
+          "eqEasy": "Mais fáceis",
+          "eqAny": "Frações quaisquer"
         },
         "hint": {
           "empty": "Comece a montar: ainda não tem nada.",
@@ -2966,8 +2973,31 @@
           "clockHour": "Os minutos estão certos. Agora confira o ponteiro das horas.",
           "shape": "Faça uma forma fechada que não se cruze.",
           "area": "A área da sua forma é {a}; precisa ser {b}.",
-          "train": "Seu trem mede {a}; precisa medir {b}."
-        }
+          "train": "Seu trem mede {a}; precisa medir {b}.",
+          "eqTops": "Você pintou {a}. Parece que os numeradores e os denominadores foram somados. Primeiro deixe as partes do mesmo tamanho e depois some os numeradores.",
+          "eqSize": "Você pintou {a}. Primeiro deixe as partes do mesmo tamanho: {n} partes em cada inteiro servem para as duas frações.",
+          "eqParts": "Você pintou {a}. Com partes desse tamanho não dá para fazer a resposta: tente {n} partes em cada inteiro.",
+          "eqMore": "Você pintou {a}. É demais: tire algumas partes.",
+          "eqLess": "Você pintou {a}. É pouco: pinte mais.",
+          "whySame": "Com {n} partes em cada inteiro: {x}.",
+          "whyMul": "Multiplique os numeradores e os denominadores: {x}.",
+          "whyDiv": "{a} ÷ {b} = {n}: é quantas vezes {b} cabe em {a}."
+        },
+        "task": "O que os alunos fazem?",
+        "taskShade": "Pintar uma fração",
+        "taskEq": "Resolver contas",
+        "ops": "Quais contas?",
+        "opsList": {
+          "add": "Somar",
+          "sub": "Subtrair",
+          "addsub": "Somar e subtrair",
+          "mul": "Multiplicar",
+          "div": "Dividir",
+          "all": "As quatro"
+        },
+        "questions": "Perguntas que os alunos vão receber",
+        "pick": "Escolha algumas para mim",
+        "workOut": "Resolva:"
       }
     }
   },
@@ -9742,7 +9772,18 @@
         "stepKeep": "Manter {a}",
         "stepChange": "Trocar ÷ por ×",
         "stepFlip": "Inverter {b}: {f}",
-        "stepTimes": "Multiplicar: {x}"
+        "stepTimes": "Multiplicar: {x}",
+        "howtoEq": "As duas primeiras barras são a pergunta. Pinte a última barra para mostrar a resposta.",
+        "eqHint": "Mude as partes com − e +, depois toque nas partes para pintá-las. Acrescente um inteiro se a resposta for maior que um.",
+        "eqParts": "Partes em cada inteiro",
+        "eqWholes": "Inteiros",
+        "eqShaded": "{n} partes pintadas, {d} em cada inteiro",
+        "eqWholesNow": "Inteiros: {n}",
+        "eqLessWhole": "Um inteiro a menos",
+        "eqMoreWhole": "Um inteiro a mais",
+        "limitWholes": "Não dá para ir além. Cada fração pode ter no máximo 3 inteiros, e {f} já são 3 inteiros.",
+        "limitTop": "Não dá para ir além. O numerador pode ser no máximo 12.",
+        "limitBottom": "Não dá para ir além. O denominador pode ser no máximo 12."
       },
       "numline": {
         "name": "Reta numérica",
