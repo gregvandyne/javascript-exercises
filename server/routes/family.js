@@ -106,6 +106,9 @@ export function grownupMay(method, path) {
   const list = get ? [...GROWNUP_GET, ...GROWNUP_BUILDER_GET] : method === 'POST' ? [...GROWNUP_POST, ...GROWNUP_BUILDER_POST] : method === 'DELETE' ? GROWNUP_BUILDER_DELETE : [];
   return list.some(re => re.test(path));
 }
+/** Does the fence let this account use this method and path? Always for anyone but a grown-up. The game frame asks it
+ *  (routes/games.js) so a game shows a grown-up only what the fence lets through: one rule for the page and the server. */
+export const fenceLets = (u, method, path) => !auth.isGrownup(u) || grownupMay(method, path);
 export function grownupGuard(req, res, next) {
   if (!auth.isGrownup(req.user)) return next();
   if ((req.method === 'GET' || req.method === 'HEAD') && req.path === '/me') {

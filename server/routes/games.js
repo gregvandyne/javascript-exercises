@@ -41,6 +41,7 @@ import { courseOfSlug } from '../services/course-catalog.js';
 import * as courses from '../services/courses.js';
 import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
+import { fenceLets } from './family.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
 export const FRAME_STYLES = Object.freeze(['cartoon', 'breeze']);
@@ -393,11 +394,15 @@ router.get('/frame/:token', (req, res) => {
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
     // (BRB.questionSet: { id, items, mine }); a code with no set: { id, missing: true }.
     ...(setFor(g, unpackParams(tok.o).chapter, u)),
+    // Saving a set and looking up a class code (BRB.canSaveSet / BRB.canFindSet): false only where the grown-up fence
+    // (routes/family.js) refuses that call, so the game hides what would fail; absent means the game may offer it.
+    ...setRights(g, u),
     // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
     // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
     ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
-    ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() ? { clues: true } : {}),
+    // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
+    ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
     // Crossword's Print (BRB.canPrint / BRB.print): the play page prints the puzzle for the frame (POST /api/games/:id/print).
     ...(!preview && cluesGame(g) ? { print: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
@@ -427,6 +432,11 @@ function apiGame(req, res) {
 // Question sets (services/game-sets.js): an official game on the list keeps a teacher's list of questions under a short
 // code. Body { items, id? } (id: change that set, the caller's own). -> { id }. Not for guests (a set outlives a guest).
 const setGame = g => gameSets.SET_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
+/** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. */
+function setRights(g, u) {
+  if (!setGame(g)) return {};
+  return { ...(fenceLets(u, 'POST', `/api/games/${g.id}/sets`) ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
+}
 function setFor(g, chapter, u) {
   if (!chapter || !gameSets.SET_ID.test(chapter) || !setGame(g)) return {};
   const s = gameSets.get(g.id, chapter);
