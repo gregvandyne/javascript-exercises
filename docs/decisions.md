@@ -8567,3 +8567,35 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   lifted point's arrow runs up in the gap before the first decimal digit. Each minus sign sits right before its
   product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
   room in the corner, and a strike covers only the digit, so the 1 stays clear of it.
+
+## The Big Divide: read aloud, worksheets, decimal models, every language (18 Nov 2026)
+Round two of The Big Divide, in the order the owner asked for, plus three changes the coordinator added on the way.
+- **Count up counts a step of 0 like any other** (live site: 5.89 + 16.00, tenths 8 + 0). The first ▲ on any counted step
+  puts its starting number in the box (counted 0 times so far), never a blank box; a 0 to add is then "That's it".
+- **Read aloud.** A speaker button sits at the start of the question band (`Speaker.svelte`): a tap reads the step's
+  question with the platform's AI voice only (`BRB.speak` with `ai: 'only'`; never the device's voice), tap again to
+  stop. It shows only once `BRB.aiVoiceCheck` says every line is read, and stays put from step to step while the next
+  question is checked (it used to blink out, and the question jumped). The math is read as a teacher says it
+  (`speech.ts`): "745 divided by 6", "7 tenths", "12 and 6 tenths", "7 R 2", "2 over 3", "7 and 2 over 3"; each
+  language has its own words for these (`w.*`), and Japanese, Chinese, Arabic and Hebrew read decimals as digits.
+  The server reads only the game's own lines: `say.*` (each `q.*` question as spoken, written by `build.mjs`) with
+  numbers or the game's `w.*` words in the placeholders (`tts-lines.js`; a word may end in a comma, and a language's own
+  plural forms such as Russian `key.few` are on the list too).
+- **Worksheets.** Print worksheet (anyone who can print) and Worksheet and answer key (school staff only; the route
+  refuses the key to anyone else with 403 `key`) in the Share panel. The game sends only numbers and fixed choices; the
+  server lays the problems out as on paper with room to work (`box-by-box-print.js`) and works out the key itself, with
+  the game's rules (BigInt, rounding and simplest fractions as the game shows them). The crossword's print pipeline is
+  now shared (`game-print.js`, a printer per game); the crossword prints exactly as before.
+- **Decimal area model and ladder.** Decimal multiplication by the area model ((2 + 0.3) × (1 + 0.4)), and a decimal
+  divided by a whole number by the ladder or the area model (7.5 ÷ 3: 2 groups, then 0.5), only for problems that come
+  out by hundredths; a decimal divisor stays with the standard method. The server's set check follows (`BB_DEC_METHODS`,
+  `bbAreaDecCheck`); every set saved before reads the same.
+- **Every language.** Every word on every screen, every step's question, hint and the voice's words are in
+  `src/i18n/<locale>.json` (13 site languages; en-GB uses en), with plural forms per language; the math stays as on
+  paper in every language (left to right, a decimal point). Arabic and Hebrew turn the page right to left, with the
+  problem, keypad and pictures kept left to right. The worksheet's fixed words are translated on the server.
+- **Play-through pass.** Every kind, method and option, at every level, four problems each, as a student on the local
+  server, on a phone and a laptop; the teacher's path (editor, save, assign, print, reload) and the student's (class
+  code, play, practice); the edge cases. Fixed: the speaker blink above; a carry into the millions (9999 × 999) had no
+  place name; decimal chunks in a list and Russian plurals were refused by the voice. Left as is: a subtraction's bottom
+  number is 10 or more (so 1000 − 1 is 1000 − 10 here), and partial products stay whole numbers only.
