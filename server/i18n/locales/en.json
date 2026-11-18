@@ -7774,7 +7774,7 @@
       "liveOnly": "This is a live class game: host it on the big screen instead of assigning it.",
       "opens": "Students open: {what}",
       "set": "{count, plural, one {your question set (# question)} other {your question set (# questions)}}",
-      "pickFirst": "Choose a problem, or make and save a question set, in the game first. Then press Assign to a class there, so your students open it straight away.",
+      "pickFirst": "Make and save what your class will open in the game first (a problem, a question set or an activity). Then press Assign to a class there, so your students open it straight away.",
       "openGame": "Open the game",
       "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there."
     },

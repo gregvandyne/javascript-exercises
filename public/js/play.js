@@ -126,7 +126,7 @@ const TYPES = {
   // BRB.copy: a link to this game's own page or a small PNG (copyForGame checks which); BRB.saveQuestionSet: a set game's
   // questions (the server cleans them); BRB.assign: a set game's lesson parameters (the server cleans them).
   'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
-  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 10 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
+  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 10 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
   'brb:assign': m => typeof m.opts === 'string',
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];

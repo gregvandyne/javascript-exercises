@@ -322,13 +322,16 @@ player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, 
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
 
 ## Question sets (`BRB.questionSet`)
-An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder) can keep a teacher's list
-of questions on Oomba, so one short link (and its QR code, and a lesson step) opens all of them:
+An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, Box by Box; each with its own
+cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, and a lesson step) opens it:
 `/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
 - `BRB.questionSet`: the set the link opened, `{ id, items, mine }` (`mine`: the player saved it), or
-  `{ id, missing: true }` for a code with no set; `null` without one. An item is `{ a, p, s, l }`: the activity
-  (`solve`, `multiply`, `factor`), the problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40
-  characters), what students start with (`all` or `none`) and the live balance (true or false). No free text.
+  `{ id, missing: true }` for a code with no set; `null` without one. The items are the game's own shape, as its
+  cleaner left them. Algebra Builder: 1 to 10 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
+  problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40 characters), what students start with
+  (`all` or `none`) and the live balance (true or false). Box by Box: one item `{ k, p, l, c?, d?, g? }`: `divide` or
+  `multiply`, up to 100 `[a, b]` problems it can work, the support level, the 7 flags of a custom mix, `d: 1` for a fresh
+  set per student and the plan `g` it is made from. No free text in either.
 - `BRB.saveQuestionSet(items, id?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`, `notYours`,
   `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new set, or with
   `id` their own set changed under the same code. 1 to 10 items; 200 sets per player per game.

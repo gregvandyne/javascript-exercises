@@ -430,7 +430,7 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
   if (req.user.is_guest) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' });
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const r = gameSets.save(g.id, req.user.id, b.items, id);
+  const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug);
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
 });

@@ -24,7 +24,7 @@ const setGameOf = g => !!g && gameSets.SET_GAMES.has(g.slug) && g.source === 'se
 function setAssign(t, g, raw) {
   if (!setGameOf(g)) return null;
   const opts = cleanOptions(String(raw || '')) || '';
-  const what = gameSets.describe(g.id, parseParams(opts));
+  const what = gameSets.describe(g.id, parseParams(opts), g.slug);
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
 }

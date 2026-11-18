@@ -7817,3 +7817,26 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
 - **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
   a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.
+
+## Box by Box: long division and multiplication, box by box (18 Nov 2026)
+Owner: a second game for Oomba from a web app they own, played end to end as teacher and student first, rebuilt with the
+same features and the same connectivity as Algebra Builder (tracking, submission, Google Classroom), under a new name;
+for privacy, nothing in the game or the repository points back to the original.
+- **Where it lives.** `tools/box-by-box` (Svelte) builds into `seed-games/box-by-box.html` (`npm run build:box-by-box`;
+  `build.mjs --check`). Play shelf, category puzzle. `build.mjs` and tests/unit/box-by-box.test.js refuse any word that
+  points back to the original (written as character codes, so the checks don't carry them either).
+- **The game.** Long division (10 to 999,999 by 2 to 9,999) and multiplication (10 to 9,999 times 2 to 999), worked on
+  graph paper one digit box at a time: divide, multiply, subtract, bring down; multiply each digit with carries,
+  placeholder zeros, add. Support modes Watch, Count up, Guided and On my own (and Prompted or a custom mix from older
+  activities): spotlight, questions, zoom, building as you go, drawn signs, automatic bring-down, marking mistakes at
+  once. Check compares the answer boxes: a second try, then the answer is shown. A keypad for touch screens.
+- **Teachers** make activities in the game (problem ranges, remainders on or off, a fresh set for each student, how
+  many, problems typed, pasted or reordered); they are kept in the teacher's game save, so they follow the teacher to
+  any device (no backup files). **Sharing** saves the activity as a question set (one activity per set, only numbers and
+  settings: the title stays in the teacher's save) and gives its link and QR code; saving again keeps the link.
+- **Assign to a class** (school staff) opens the Assign page: "Students open: Long division, 16 problems, Guided", the
+  lesson is named after it, and "Also post to Google Classroom" for a linked class. The end screen calls
+  `BRB.gameOver({ won: true, score })` once per run: the step done, and the Classroom completion grade.
+- **Fixed on the way:** Enter in a digit box no longer skips the result; the "to go" chip ends at the end; "1 problem".
+- **Left out:** help email, analytics, outbound links, backup and restore files.
+

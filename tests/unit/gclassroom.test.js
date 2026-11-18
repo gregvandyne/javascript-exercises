@@ -1149,7 +1149,7 @@ test('Algebra Builder: a teacher assigns a problem or a saved question set to a 
   const set = await (await post(`/api/games/${g.id}/sets`, { items }, tc)).json();
   assert.match(set.id, /^s-[a-z0-9]{10}$/);
   const bare = await (await get('/teach/assign?game=algebra-builder', tc)).text();
-  assert.match(bare, /Choose a problem, or make and save a question set, in the game first/);
+  assert.match(bare, /Make and save what your class will open in the game first/);
   assert.doesNotMatch(bare, /data-api="\/api\/teach\/assign-game"/, 'no form: the class would land on the teacher gallery');
   const opts = `chapter=${set.id}&lock=1`;
   const pg = await (await get(`/teach/assign?game=algebra-builder&opts=${encodeURIComponent(opts)}`, tc)).text();

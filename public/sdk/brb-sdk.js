@@ -1001,8 +1001,10 @@
   var questionSet = (function (s) {
     if (!s || typeof s !== 'object' || typeof s.id !== 'string') return null;
     if (s.missing) return Object.freeze({ id: s.id, missing: true });
-    var items = Array.isArray(s.items) ? s.items.map(function (it) { return Object.freeze({ a: it.a, p: it.p, s: it.s, l: it.l }); }) : [];
-    return Object.freeze({ id: s.id, items: Object.freeze(items), mine: s.mine === true });
+    // The game's own shape (the server cleaned it for this game): a frozen copy.
+    var freeze = function (v) { if (v && typeof v === 'object') { Object.keys(v).forEach(function (k) { freeze(v[k]); }); Object.freeze(v); } return v; };
+    var items = Array.isArray(s.items) ? freeze(JSON.parse(JSON.stringify(s.items))) : Object.freeze([]);
+    return Object.freeze({ id: s.id, items: items, mine: s.mine === true });
   })(INIT.set);
   // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
   // its Assign page with these lesson parameters (the problem or the set the class will open).
