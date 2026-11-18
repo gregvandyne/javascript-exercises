@@ -15,7 +15,6 @@ import { publish } from '../services/publish.js';
 import { draftLesson } from '../services/lesson-ai.js';
 import * as P from '../services/progress.js';
 import { audit, q } from '../db.js';
-import { liveGameOf } from '../live/live-games.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { HUBS, SUBJECTS, SHELF_INFO } from '../learn.js';
@@ -116,86 +115,8 @@ function shareForm(t, l, id = null) {
 }
 
 // ================================================================ library
-router.get('/teach/lessons', requireUser, (req, res) => {
-  const t = req.t; const u = req.user;
-  const schools = staffSchools(u);
-  if (!schools.length) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
-  const school = schools.find(s => s.id === req.query.school) || schools[0];
-  const tab = req.query.tab === 'shared' ? 'shared' : 'mine';
-  // From a class's empty Lessons tab: the New lesson / Draft with AI form is ready, and the class comes along to the editor.
-  const open = ['new', 'ai'].includes(req.query.open) ? req.query.open : null;
-  const forClass = managedClass(u, req.query.class);
-  const classId = forClass && forClass.school_id === school.id ? forClass.id : '';
-  const tree = L.folderTree(u.id, school.id);
-  const folder = req.query.folder ? tree.find(f => f.id === req.query.folder) : null;
-  const q = extra => `/teach/lessons?school=${school.id}${extra || ''}`;
-  const crumbs = []; for (let f = folder; f; f = tree.find(x => x.id === f.parent_id)) crumbs.unshift(f);
-  const sub = tree.filter(f => (f.parent_id || null) === (folder ? folder.id : null));
-  const list = L.lessonsIn(u.id, school.id, folder ? folder.id : null);
-  const folderOptions = (selected, exclude = null) => html`<option value="">📚 ${t('lessons.library.top')}</option>${tree.filter(f => !exclude || (f.id !== exclude)).map(f => html`<option value="${f.id}" ${f.id === selected ? raw('selected') : ''}>${'  '.repeat(f.depth)}📁 ${f.name}</option>`)}`;
-  // A folder row counts the lessons in it and in every folder inside it, so a folder of folders doesn't read as empty.
-  const lessonsUnder = id => L.lessonsIn(u.id, school.id, id).length + tree.filter(f => f.parent_id === id).reduce((n, f) => n + lessonsUnder(f.id), 0);
-  const meta = parts => parts.filter(Boolean).map((x, i) => html`${i ? ' · ' : ''}<span class="nw">${x}</span>`);
-  const mine = html`
-    ${crumbs.length ? html`<nav class="crumbs" aria-label="${t('lessons.library.path')}"><a href="${q()}">📚 ${t('lessons.library.top')}</a>${crumbs.map((f, i) => html` <span aria-hidden="true">›</span> ${i === crumbs.length - 1 ? html`<span aria-current="page">📁 ${f.name}</span>` : html`<a href="${q(`&folder=${f.id}`)}">${f.name}</a>`}`)}</nav>` : ''}
-    <div class="libtools">
-      <form class="row grow" data-api="/api/lessons" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="folderId" value="${folder ? folder.id : ''}"><input type="hidden" name="classId" value="${classId}">
-        <label class="sr-only" for="nl-t">${t('lessons.lesson.title')}</label><input class="input grow" id="nl-t" name="title" maxlength="100" placeholder="${t('lessons.library.newLessonPlaceholder')}" required ${open === 'new' ? raw('autofocus') : ''}>
-        <button class="btn btn-primary" type="submit">➕ ${t('lessons.library.newLesson')}</button></form>
-      <details class="libdrop"><summary class="btn">📁 ${t('lessons.folder.new')}</summary>
-        <form class="row newfolder" data-api="/api/lesson-folders" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="parentId" value="${folder ? folder.id : ''}">
-          <label class="sr-only" for="nf">${t('lessons.folder.name')}</label><input class="input grow" id="nf" name="name" maxlength="60" placeholder="${t('lessons.folder.newPlaceholder')}" required>
-          <button class="btn btn-primary" type="submit">📁 ${t('lessons.folder.new')}</button></form>
-        <p class="small muted">${t('lessons.folder.hint')}</p></details>
-      <details class="libdrop aidraft" ${open === 'ai' ? raw('open') : ''}><summary class="btn">✨ ${t('lessons.ai.button')}</summary>
-        <form class="formgrid aiform" data-api="/api/lessons/draft" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="folderId" value="${folder ? folder.id : ''}"><input type="hidden" name="classId" value="${classId}">
-          <div class="field wide"><label for="ai-t">${t('lessons.ai.topic')}</label><input class="input" id="ai-t" name="topic" maxlength="200" required placeholder="${t('lessons.ai.topicPlaceholder')}" ${open === 'ai' ? raw('autofocus') : ''}><span class="err" id="ai-t-err"></span></div>
-          <div class="field"><label for="ai-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="ai-g" name="grade" maxlength="12" value="${classId ? forClass.grade || '' : ''}"></div>
-          <div class="field"><label for="ai-s">${optional(t, t('school.class.subject'))}</label><input class="input" id="ai-s" name="subject" maxlength="40" value="${classId ? forClass.subject || '' : ''}"></div>
-          <div class="field"><label for="ai-m">${t('lessons.ai.minutes')}</label><input class="input" id="ai-m" name="minutes" type="number" min="10" max="180" value="40"></div>
-          <div class="formacts"><button class="btn btn-primary" type="submit">✨ ${t('lessons.ai.make')}</button><p class="small muted">${t('lessons.ai.note')}</p></div>
-        </form></details>
-    </div>
-    <p class="small muted folder-why" id="folder-why">📁 ${t('lessons.folder.why')}</p>
-    <nav class="chips readymade" aria-label="${t('lessons.library.readyMade')}"><span class="ajump-l">${t('lessons.library.readyMade')}</span><a class="chip" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a><a class="chip" href="/teachers/number-quest">🔢 ${t('lessons.library.numberQuest')}</a></nav>
-    ${sub.length ? html`<ul class="plain folderlist">${sub.map((f, i) => html`<li class="panel folderrow">
-      <a class="fr-name" href="${q(`&folder=${f.id}`)}"><span>📁 ${f.name}</span><span class="small muted fr-count">${t('cs.unit.lessonsN', { count: lessonsUnder(f.id) })}</span></a>
-      <span class="acts">${i ? html`<form data-api="/api/lesson-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < sub.length - 1 ? html`<form data-api="/api/lesson-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
-        <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: f.name })}">⋯</summary><div class="menu">
-          <span class="lbl" aria-hidden="true">${t('lessons.folder.name')}</span>
-          <form class="row" data-api="/api/lesson-folders/${f.id}" data-reload><input class="input input-sm grow" name="name" value="${f.name}" maxlength="60" aria-label="${t('lessons.folder.name')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
-          <span class="lbl" aria-hidden="true">${t('lessons.moveTo')}</span>
-          <form class="row" data-api="/api/lesson-folders/${f.id}/move" data-reload><select class="input input-sm grow" name="parentId" aria-label="${t('lessons.moveTo')}">${folderOptions(f.parent_id, f.id)}</select><button class="btn btn-sm" type="submit">${t('lessons.move')}</button></form>
-          <form data-api="/api/lesson-folders/${f.id}/delete" data-reload data-confirm="${t('lessons.folder.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.folder.delete')}</button></form>
-        </div></details></span></li>`)}</ul>` : ''}
-    ${list.length > 8 ? nameFilter(t, 'lesson-list', { placeholder: t('lessons.library.find') }) : ''}
-    ${list.length ? html`<ul class="plain lessonlist" id="lesson-list">${list.map((l, i) => html`<li class="panel lessonrow">
-      <a class="lr-main" href="/teach/lessons/${l.id}"><b dir="auto">${l.title}</b><span class="small muted">${meta([l.subject, gradeLabel(t, l.grade), t('lessons.stepsN', { count: l.steps })])}</span>
-        <span class="lr-chips">${l.shared ? html`<span class="chip-s">🏫 ${t('lessons.lesson.sharedChip')}</span>` : ''}${l.assigned ? html`<span class="chip-s">📌 ${t('lessons.assignedN', { count: l.assigned })}</span>` : ''}</span></a>
-      <span class="acts">${i ? html`<form data-api="/api/lessons/${l.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < list.length - 1 ? html`<form data-api="/api/lessons/${l.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
-        <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: l.title })}">⋯</summary><div class="menu">
-          <span class="lbl" aria-hidden="true">${t('lessons.moveTo')}</span>
-          <form class="row" data-api="/api/lessons/${l.id}/move" data-reload><select class="input input-sm grow" name="folderId" aria-label="${t('lessons.moveTo')}">${folderOptions(l.folder_id)}</select><button class="btn btn-sm" type="submit">${t('lessons.move')}</button></form>
-          <form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-sm" type="submit">📄 ${t('lessons.lesson.duplicate')}</button></form>
-          ${shareForm(t, l)}
-          <form data-api="/api/lessons/${l.id}/delete" data-reload data-confirm="${deleteLessonConfirm(t, l)}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.lesson.delete')}</button></form>
-        </div></details></span></li>`)}</ul>`
-      : !sub.length ? emptyState({ emoji: '📚', title: t('lessons.library.empty'), text: t('lessons.library.emptyText') }) : ''}
-`;
-  const shared = (() => {
-    const rows = L.sharedLessons(u, school.id);
-    if (!rows.length) return emptyState({ emoji: '🏫', title: t('lessons.shared.empty'), text: t('lessons.shared.emptyText') });
-    return html`<ul class="plain lessonlist">${rows.map(l => html`<li class="panel lessonrow">
-      <a class="lr-main" href="/teach/lessons/${l.id}"><b dir="auto">${l.title}</b><span class="small muted">${meta([l.owner_name, l.subject, gradeLabel(t, l.grade), t('lessons.stepsN', { count: l.steps })])}</span></a>
-      <span class="acts"><form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-sm btn-primary" type="submit">📄 ${t('lessons.shared.copy')}</button></form></span></li>`)}</ul>`;
-  })();
-  const body = html`
-  <div class="pagehead"><h1>📚 ${t('lessons.library.title')}</h1></div>
-  ${schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/lessons?school=${s.id}">${s.name}</a>`)}</nav>` : ''}
-  ${libraryTabs(t, school.id, tab)}
-  ${tab === 'mine' ? mine : shared}`;
-  page(req, res, { title: t('lessons.library.title'), active: 'classes', mid: true, body, head: CSS, scripts: ['/js/schools.js'], back: '/teach', backLabel: t('school.teach.title') });
-});
+// Games, not lessons: the lesson library is now Build (folders of games). Old links land there.
+router.get('/teach/lessons', requireUser, (req, res) => res.redirect(302, '/build'));
 
 // ---- library APIs
 /** ?class=<id> for the new lesson's editor, when it was started from that class (the class is preselected in Assign). */
@@ -284,6 +205,11 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const l = L.getLesson(req.params.id);
   const edit = L.canEditLesson(u, l);
   if (!l || !(edit || L.canSeeShared(u, l))) return no(req, res);
+  // A teacher-made lesson is retired: its games are in the folder made from it (0085_game_folders). An assigned game opens
+  // as the game. Ready-made course copies (CS Quest) and live homework still open here.
+  const retired = l.kind === 'lesson' && (q.get('SELECT 1 FROM lessons_retired WHERE lesson_id=? LIMIT 1', l.id) || q.get('SELECT 1 FROM game_folders WHERE from_lesson=? LIMIT 1', l.id));
+  if (retired) { const fd = q.get('SELECT id FROM game_folders WHERE from_lesson=? AND owner_id=?', l.id, u.id); return res.redirect(302, fd ? `/build/folders/${fd.id}` : '/build'); }
+  if (l.kind === 'game') { const s0 = L.steps(l.id)[0]; return res.redirect(302, s0 && s0.game_id ? `/build/save?id=${s0.game_id}` : '/build'); }
   const school = S.getSchool(l.school_id);
   const st = L.steps(l.id);
   const total = st.reduce((n, s) => n + (s.minutes || 0), 0);
@@ -457,67 +383,39 @@ router.post('/api/lessons/:id/assign', requireUser, (req, res) => {
 // ================================================================ class page panels (used by routes/schools.js)
 /** Teacher view: units and assigned lessons (each opens its progress), with ordering, dates and an "assign a lesson" form. */
 export function teacherLessonsPanel(req, c) {
+  // Games, not lessons (docs/decisions.md "Games, not lessons"): the class's assigned games (and its ready-made courses'
+  // lessons and live homework), New game (the Builder), Assign a game (from Build, a folder or Oomba's games).
   const t = req.t, f = req.fmt, u = req.user;
   const plan = L.classPlan(c.id);
-  const units = plan.filter(g => g.unit).map(g => g.unit);
   const count = plan.reduce((n, g) => n + g.lessons.length, 0);
-  // A lesson is in a class once, and colleagues' lessons are copied first: the select lists your lessons not in it yet.
-  const inClass = new Set(plan.flatMap(g => g.lessons.map(cl => cl.lesson_id)));
-  // Lessons removed from this class (anyone's) come back with their work; "My lessons" lists the ones never in it.
-  const back = L.removedFrom(c.id), backIds = new Set(back.map(l => l.id));
-  const mine = L.allLessonsOf(u.id, c.school_id), avail = mine.filter(l => !inClass.has(l.id) && !backIds.has(l.id));
-  // The library is for school staff (the platform admin manages classes from the school page but has no library).
-  const libOk = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
-  const colleagues = L.sharedCount(u, c.school_id) > 0;
+  const staff = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
   const sums = count ? P.lessonSummaries(c.id) : {};
-  const lib = `/teach/lessons?school=${c.school_id}`;
+  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : '📚'; };
   const lessonRow = (cl, i, n) => {
     const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
     return html`<li class="cl-row" id="cl-${cl.id}">
-    <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto">${cl.title}</b><span class="small muted cl-meta"><span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>
+    <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${icon(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>🎮 ${t('folders.kindGame')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
       ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
       ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">✍️ ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
     <span class="acts">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < n - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
       <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: cl.title })}">⋯</summary><div class="menu">
         <form class="formgrid" data-api="/api/class-lessons/${cl.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
-          ${units.length ? html`<div class="field"><label for="u-${cl.id}">${t('lessons.class.unit')}</label><select class="input input-sm" id="u-${cl.id}" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}" ${un.id === cl.unit_id ? raw('selected') : ''}>${un.name}</option>`)}</select></div>` : ''}
           <div class="field"><label for="o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
           <div class="field"><label for="d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
           <div class="field end"><button class="btn btn-sm" type="submit">${t('school.save')}</button></div></form>
+        <a class="btn btn-sm" href="/class/${c.id}/progress/${cl.id}">📊 ${t('folders.scores')}</a>
         <a class="btn btn-sm" href="/class/${c.id}/lessons/${cl.id}">👀 ${t('progress.lesson.studentView')}</a>
-        ${L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn btn-sm" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}
+        ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn btn-sm" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}
+        ${cl.kind === 'game' && cl.first_game ? html`<a class="btn btn-sm" href="/build/save?id=${cl.first_game}">📁 ${t('folders.save')}</a>` : ''}
         <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
       </div></details></span></li>`;
   };
-  return html`<section class="panel" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">📚 ${t('lessons.class.title')}</h2>
-    ${count ? '' : html`<div class="empty"><div class="emo" aria-hidden="true">📚</div><h3>${t('lessons.class.empty')}</h3>${libOk ? html`<p>${t('lessons.class.emptyText')}</p>
-      <div class="row emptyacts"><a class="btn btn-primary" href="#ready-made">📦 ${t('lessons.class.readyMade')}</a><a class="btn" href="${lib}&class=${c.id}&open=new">➕ ${t('lessons.library.newLesson')}</a><a class="btn" href="${lib}&class=${c.id}&open=ai">✨ ${t('lessons.ai.button')}</a></div>
-      <nav class="chips readymade" id="ready-made" aria-label="${t('lessons.library.readyMade')}"><span class="ajump-l">${t('lessons.library.readyMade')}</span><a class="chip" href="/teachers/number-quest">🔢 ${t('lessons.library.numberQuest')}</a><a class="chip" href="/teach/cs-quest?school=${c.school_id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a></nav>` : ''}</div>`}
-    <div class="cl-tools">
-      <div class="cl-more">
-        ${avail.length || back.length ? html`<details class="libdrop assigndrop" data-open-wide ${count ? '' : raw('open')}><summary class="btn btn-primary">📌 ${t('lessons.class.assign')}</summary>
-        <form class="formgrid" data-api="/api/classes/${c.id}/lessons" data-reload novalidate>
-        <div class="field"><label class="sr-only" for="al-l">${t('lessons.class.assign')}</label><select class="input" id="al-l" name="lessonId">${back.length
-          ? html`${avail.length ? html`<optgroup label="${t('lessons.library.mine')}">${avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>` : ''}<optgroup label="${t('lessons.class.removedGroup')}">${back.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>`
-          : avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</select></div>
-        ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
-        <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
-        <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
-        ${gcAssignField(req, c)}
-        <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
-        <p class="small muted wide">${zoneNote(t, c.school_id, req.user)}</p></form></details>` : ''}
-        ${libOk ? html`<a class="btn" href="${lib}">📚 ${t('lessons.class.library')}</a>` : ''}
-        ${gcLessonsButton(req, c)}
-        <details class="libdrop unitdrop"><summary class="btn">🗂️ ${t('lessons.class.newUnit')}</summary>
-          <form class="row unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input grow" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn btn-primary" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
-          <p class="small muted">${t('lessons.class.unitHint')}</p></details>
-        ${libOk && count ? html`<a class="btn" href="${lib}&class=${c.id}&open=new">➕ ${t('lessons.library.newLesson')}</a><a class="btn" href="${lib}&class=${c.id}&open=ai">✨ ${t('lessons.ai.button')}</a>` : ''}
-        ${mine.length && !avail.length && !back.length ? html`<p class="small muted allin">${t('lessons.class.allIn')}</p>` : ''}
-      </div>
-      <p class="small muted unit-why" id="unit-why">🗂️ ${t('lessons.class.unitWhy')}</p>
-      ${colleagues && libOk ? html`<p class="small muted">💡 ${tHtml(t, 'lessons.class.sharedHint', { tab: html`<a href="${lib}&tab=shared">${t('lessons.library.shared')}</a>` })}</p>` : ''}
-    </div>
-    ${plan.map((g, gi) => (g.unit || g.lessons.length) ? html`<div class="unit">
+  const readyMade = html`<nav class="chips readymade" id="ready-made" aria-label="${t('folders.courses')}"><span class="ajump-l">${t('folders.courses')}</span><a class="chip" href="/teachers/number-quest">🔢 ${t('lessons.library.numberQuest')}</a><a class="chip" href="/teach/cs-quest?school=${c.school_id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a></nav>`;
+  const acts = html`<div class="row emptyacts"><a class="btn btn-primary" href="/build/new" id="cl-newgame">✨ ${t('build.newGame')}</a><a class="btn" href="/build">📁 ${t('folders.assignMine')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></div>`;
+  return html`<section class="panel" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">🎮 ${t('folders.assigned')}</h2>
+    ${count ? '' : html`<div class="empty"><div class="emo" aria-hidden="true">🎮</div><h3>${t('folders.classEmpty')}</h3>${staff ? html`<p>${t('folders.classEmptyText')}</p>${acts}${readyMade}` : ''}</div>`}
+    ${count ? html`<div class="cl-tools"><div class="cl-more">${staff ? acts : ''}${gcLessonsButton(req, c)}</div>${staff ? readyMade : ''}</div>` : html`<div class="cl-tools"><div class="cl-more">${gcLessonsButton(req, c)}</div></div>`}
+    ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
       ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">
         ${gi > 1 ? html`<form data-api="/api/class-units/${g.unit.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${gi < plan.length - 1 ? html`<form data-api="/api/class-units/${g.unit.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
         <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: g.unit.name })}">⋯</summary><div class="menu">
@@ -535,10 +433,10 @@ export function studentLessonsPanel(req, c) {
   const doneN = cl => Math.min(done[cl.id] || 0, cl.steps);
   const state = cl => { const d = doneN(cl); return cl.steps && d >= cl.steps ? html`<span class="stepstate is-done">✅ ${t('progress.status.done')}</span>` : d ? html`<span class="stepstate">${t('progress.student.doneOf', { done: d, total: cl.steps })}</span>` : ''; };
   if (!plan.length) return html`<section class="panel">${emptyState({ emoji: '📚', title: t('classes.noLessons'), text: t('classes.noLessonsText') })}</section>`;
-  return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">📚 ${t('lessons.class.title')}</h2>${plan.map(g => html`<div class="unit">
+  return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">📌 ${t('folders.assigned')}</h2>${plan.map(g => html`<div class="unit">
     ${g.unit ? html`<h3>🗂️ ${g.unit.name}</h3>` : ''}
     <ol class="plain cl-list">${g.lessons.map(cl => html`<li class="cl-row"><a class="cl-main" href="/class/${c.id}/lessons/${cl.id}"><b dir="auto">${cl.title}</b>
-      <span class="small muted cl-meta"><span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>${dueChip(t, f, cl, { done: !!cl.steps && doneN(cl) >= cl.steps })}</span></a>${state(cl)}</li>`)}</ol></div>`)}</section>`;
+      <span class="small muted cl-meta"><span>${cl.kind === 'game' ? `🎮 ${t('folders.kindGame')}` : html`${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}`}</span>${dueChip(t, f, cl, { done: !!cl.steps && doneN(cl) >= cl.steps })}</span></a>${state(cl)}</li>`)}</ol></div>`)}</section>`;
 }
 
 // ---- class lesson APIs
@@ -559,64 +457,5 @@ router.post('/api/class-lessons/:id/down', requireUser, (req, res) => send(req, 
 router.post('/api/class-lessons/:id/delete', requireUser, (req, res) => send(req, res, L.unassign(req.user, req.params.id)));
 // The lesson page students work through (/class/:cid/lessons/:clid) and its step actions live in routes/progress.js.
 
-// ================================================================ "Assign" a game from the Learn tab (school staff only)
-// docs/decisions.md "Play and Learn": a teacher on /learn taps Assign on a game, picks one of their classes (and a due
-// date), and the class gets a one-step lesson that plays it. Nothing new underneath: L.createLesson + L.addStep (a game
-// step: cleanStep checks the teacher may open the game) + L.assign, answered like any other assign. Live modes are hosted
-// (/live?mode=), never assigned.
-/** The live classes this staff member may assign to: the ones they teach, then every class of a school they run. */
-function assignClasses(u) {
-  const mine = S.classesOf(u.id, 'teacher');
-  const more = S.adminSchools(u).flatMap(s => S.classesOfSchool(s.id)).filter(c => !mine.some(m => m.id === c.id));
-  return [...mine, ...more].filter(c => S.canManageClass(u, c));
-}
-/** The official Learn or Play game a teacher may assign by slug (never a live-only mode), or null. */
-function assignableGame(u, slug) {
-  const g = games.getGameBySlug(String(slug || ''));
-  if (!g || g.source !== 'seed' || !games.canView(u, g) || g.course_only) return null;
-  const lg = liveGameOf(g);
-  return lg && !lg.play ? { game: g, liveOnly: true } : { game: games.localizeGame(g), liveOnly: false };
-}
-router.get('/teach/assign', requireUser, (req, res) => {
-  const t = req.t, u = req.user;
-  if (!S.isSchoolStaff(u)) return notFound(req, res);
-  const found = assignableGame(u, req.query.game);
-  if (!found) return notFound(req, res);
-  const g = found.game;
-  const classes = assignClasses(u);
-  const body = html`<div class="pagehead"><h1>📌 ${t('teach.assign.title', { game: g.title })}</h1></div>
-  <section class="panel assign-game" aria-labelledby="ag-h">
-    <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
-    ${found.liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${liveGameOf(g).mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
-      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="game" value="${g.slug}">
-      <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
-      <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
-      <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">📌 ${t('teach.assign.submit')}</button></div>
-      <p class="small muted wide">${t('teach.assign.note')}</p><p class="form-err err wide" role="alert"></p></form>`
-      : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
-    <p class="row"><a class="btn" href="/play/${g.slug}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/g/${g.slug}">${t('learn.about')}</a></p>
-  </section>`;
-  page(req, res, { title: t('teach.assign.title', { game: g.title }), active: 'learn', back: '/learn', backLabel: t('nav.learn'), body });
-});
-router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 3600e3), (req, res) => {
-  const u = req.user; const { game, classId, dueAt } = b(req);
-  if (!S.isSchoolStaff(u)) return err(req, res, 'notFound', 404);
-  const found = assignableGame(u, game);
-  if (!found) return err(req, res, 'pickGame');
-  if (found.liveOnly) return res.status(400).json({ error: req.t('teach.assign.liveOnly') });
-  const c = S.getClass(String(classId || ''));
-  if (!c || !S.canManageClass(u, c)) return err(req, res, 'notFound', 404);
-  const g = found.game;
-  // The same game assigned again to the same class: the lesson made last time, never a second copy.
-  const prior = q.get(`SELECT l.id FROM lessons l JOIN lesson_steps s ON s.lesson_id=l.id JOIN class_lessons cl ON cl.lesson_id=l.id
-    WHERE l.owner_id=? AND l.school_id=? AND s.kind='game' AND s.game_id=? AND cl.class_id=? AND cl.removed_at IS NULL LIMIT 1`, u.id, c.school_id, g.id, c.id);
-  if (prior) return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: c.name }) });
-  const made = L.createLesson(u, c.school_id, { title: g.title });
-  if (!made.ok) return err(req, res, made.code);
-  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title: g.title });
-  if (!step.ok) { L.deleteLesson(u, made.lesson.id); return err(req, res, step.code); }
-  const r = L.assign(u, c.id, made.lesson.id, { dueAt });
-  if (!r.ok) { L.deleteLesson(u, made.lesson.id); return assignReply(req, res, r); }
-  audit(u.id, 'lesson.assignGame', made.lesson.id, { game: g.slug, class: c.id });
-  res.json({ ok: true, toast: req.t('lessons.assign.done', { class: c.name }), redirect: `/class/${c.id}` });
-});
+// "Assign" a game (from Learn, Build or a folder): /teach/assign and /api/teach/assign-game live in routes/game-folders.js.
+

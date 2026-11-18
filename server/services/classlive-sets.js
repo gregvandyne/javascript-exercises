@@ -134,7 +134,7 @@ export function homework(u, setId, classId, { opensAt = null, dueAt = null } = {
   if (!c || c.archived_at || !S.teaches(u, c.id) || !S.isStaff(u)) return { ok: false, code: 'noClass' };
   const items = itemsOf(set);
   if (!items.length || items.some(it => !complete(it))) return { ok: false, code: 'setIncomplete' };
-  const made = L.createLesson(u, c.school_id, { title: set.title });
+  const made = L.createLesson(u, c.school_id, { title: set.title, kind: 'homework' });
   if (!made.ok) return made;
   const step = L.addQuizStep(u, made.lesson.id, { title: set.title, setId: set.id, items });
   if (!step.ok) return step;

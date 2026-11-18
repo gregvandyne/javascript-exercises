@@ -6830,6 +6830,13 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   Its safety scan now also reads `dash-shapeboard.js`. New: `tests/unit/dash-shapeboard.test.js`. The fit check has three
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
+- **Fixed (17 Nov 2026): the board drawn again every frame on the projector.** Whether the measures go beside the board
+  was decided from the stage's height, but the stage is taller with the readout beside it than with it underneath: at
+  the smallest size on the projector (605 × 383 with the readout under, 605 × 448 beside) each draw moved the readout and
+  the next moved it back, so the board was redrawn every frame with its words sized for the other arrangement (the fit
+  check's "Geoboard: "A" is 10.1px (needs 13)" in some runs, and a page too busy to click the layout chip). The room is
+  now the stage plus the readout when it is underneath, the same either way, and once beside it stays there until the
+  room is 16px short of the threshold. The fit check is unchanged.
 
 ## Classroom dashboards: the schedule at every time of day (16 Nov 2026)
 The schedule failed the fit check at some times of day and not others (a period row cut in half on the projector, a list
@@ -7470,6 +7477,98 @@ bottom", then "Leave out the Help and add the My School". School staff's menu (l
 - Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
   the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.
 
+## Host a live game: "How to score", bigger radios, Game settings box, the app's dropdowns (17 Nov 2026)
+Owner feedback on the steps from #387:
+- **Teams → How to score.** The two scoring choices (Average per player, Total points) now sit under their own heading,
+  "How to score" (`live.team.scoringHow`, in every locale but en-GB, which falls back to English), as a fieldset in
+  the teams row. Radios and checkboxes in the live pages are 24px (were the browser's 13px), with a 12px gap.
+- **Game settings** (the last step): closed, the box is just its heading, centred in it (the box was a flex column,
+  so its gap sat under the summary), with the ▸ / ◂ / ▾ of the other live disclosures in place of the browser's marker.
+- **Dropdowns.** The Game settings selects, the co-host picker, the dashboard's move picker, the homework class picker,
+  the class-teams count and team pickers (live-class-teams.js, live-host.js) and the Number Quest placement start
+  point were bare browser selects; they now have `class="input"`. **Decided: a test keeps it so**
+  (`tests/unit/selects-styled.test.js`): every `<select>` in a view or script has class `input`, and every select made
+  with `createElement('select')` is given it in the same or the next statement.
+
+## Fraction Factory: Pro is its own game; the controls in one card (17 Nov 2026)
+Owner: "I still don't see the difference between pro and explorer in fraction factory", and the controls looked
+scattered (the slicer wrapping 2 + 3, "not cut yet" alone, Hint on its own line). Picked from three mock-ups: **A, one
+panel beside the cake**; for Pro: **unlike denominators** and **multiply and divide**.
+- **Root cause:** every order was made with `bands: ['1b', '2']`, so Explorer and Pro played the same 21 orders (and
+  stars, kept per order id, counted for both). Now `L()` makes an Explorer order and `P()` a Pro one; no order is in
+  both bands. Explorer is unchanged (First Folds, First Cuts, Re-Slice, Recipe Math: the Number Quest Unit 4 links all
+  pass `band=1b`). Pro has four chapters of six orders: **Common Cuts** (1/3 + 1/4, 3/4 + 2/3 past one whole),
+  **Take Away** (3/4 − 1/6, 5/4 − 1/3), **Scale Up** (3 × 1/4, 4 × 2/3 over three cakes, 1/2 × 3/4, 2/3 × 3/4) and
+  **Share Out** (2 ÷ 1/4, 3/2 ÷ 1/4, 3/4 ÷ 1/12: build the amount in servings and count them). Each has an intro,
+  three hints and a check, the Jumble's wrong answers (5/7 for 3/4 + 2/3, 4/1 for 5/4 − 1/3, 5/7 for 3/4 × 2/3),
+  and every spoken line in the I18N block.
+- **Engine:** types `sub`, `mul`, `div` beside `add`; an order needs as many wholes as its amount (`wholesFor`, up to
+  3); a level may carry its own `cuts` (Pro: 2, 3, 4, 6, 8, 10, 12; Explorer keeps 2, 3, 4, 6, 8). **Decided:** a
+  product is served by any cut that builds it exactly (2/3 × 3/4 = 6/12 or one half), a sum or difference by its cut
+  or a finer one (as before), and a share-out only in the serving's own cut, since it counts servings (new feedback
+  `why.div-cut`). A link to an Explorer chapter with `band=2` plays it in Explorer.
+- **The map** says what each band plays under the switch ("Explorer · grades 3–5: fair shares, re-slicing, comparing
+  and adding", "Pro · grades 5–6 and up: unlike parts, taking away, multiplying and dividing").
+- **Controls (layout A):** an order built on the tray gets one card beside the wholes (under them on a phone):
+  "1 · Slicer: cut into" with one row of number buttons (named "Cut into n"), "2 · On the tray" with the reading and a
+  short line, then a wide Serve it! with Hint beside it. Two or three cakes stand in one row, smaller; a source amount
+  of more than one whole draws one row per whole. Checked with no scroll at 1280×720, 1000×504 and 390×844.
+- **Standards and shelf:** the game's CCSS list and `FRACTION_CHAPTERS` gain 5.NF.A.1-2, 5.NF.B.4, 5.NF.B.6,
+  5.NF.B.7 and 6.NS.A.1; the Learn shelf says grades 3-6.
+- Tests: tests/unit/fraction-factory-pro.test.js (bands disjoint, the goals, the cut rules, every Pro order solved by
+  its advice script); fraction-factory.test.js's chapter contract is per band; the e2e spec presses the slicer by its
+  name ("Cut into 4").
+
+## Games, not lessons: folders of games, assigned to classes (17 Nov 2026)
+Owner: "Let's get rid of lessons and instead just have the builder here with games that teachers can put in folders and
+assign", and "there should still be a folder system so they can organize games (including the ability to save oomba
+games to a folder)". Decided with the owner: **the ready-made courses stay as they are** (Number Quest, CS Quest, Cyber
+Defenders); **teacher-made lessons are hidden, nothing is deleted**, and the games in them go into folders; an assigned
+game **shows on the student's class page, the teacher sees scores, it may have a due date and can be posted to Google
+Classroom**; folders live on **Build**, and the **class page** lists the class's assigned games with New game.
+- **Folders** (`game_folders`, `game_folder_items`, services/game-folders.js, routes/game-folders.js): per person, one
+  level, any game they can see (their own Builder games, drafts included, and Oomba's). A folder only sorts: putting a
+  game in one never changes who can play it, and deleting a folder never deletes its games. "📁 My folders" sits on
+  Build above My games; a folder page (`/build/folders/:id`) lists its games with Play, Assign and Remove, New game and
+  Find Oomba games, and rename, move and delete in its ⋯ menu. **Save to folder** (`/build/save?id=`) is on every
+  My games card, on Oomba game pages and Learn cards (school staff), and on an assigned game's ⋯ menu: each folder with
+  Add here or (already there) Remove, and "New folder with this game". Caps: 100 folders, 200 games a folder.
+- **Assign** (`/teach/assign?id=` or `?game=<slug>`, `F.assignGame`): a class, an optional due day, and "Also post to
+  Google Classroom" (when a class is linked; the same post and grades as before). Underneath it is still a one-game
+  assignment (a lesson of kind 'game' with one game step), so progress, scores, due dates, the gradebook, the dashboard
+  and Google Classroom all work unchanged. An Oomba game: published, public, not course-only. A teacher's own game: once
+  published for the school, publicly, or for classes (a class game reaches the class it is assigned to: it is added to
+  the game's class list); a draft or a private game says "Publish this game first". The same game is never in a class
+  twice (`alreadyAssigned`).
+- **The class page** (first tab, now "📌 Assigned games"; its key stays `lessons`): New game, Assign from my games, Find
+  Oomba games, the ready-made courses, then the assigned games (and course lessons and live homework) with due chips,
+  done counts, and ⋯: dates, Scores, Student view, Save to folder, Unassign. Gone from it: the lesson picker, New lesson,
+  Draft with AI, Lesson library and New unit. Students' heading is "📌 Assigned games"; a game row says "🎮 Game".
+- **lessons.kind** (`0085_game_folders`): 'game' (assigned by Assign: the audit log's lesson.assignGame, or the same shape),
+  'course' (a CS Quest copy: template_key), 'homework' (a live question set sent as homework), 'lesson' (teacher-made).
+  `retireLessons()` (db.js, run once by the migration, safe to run again) makes a folder named after each teacher-made
+  lesson that has games (its games in step order), and soft-removes that lesson's open assignments
+  (`class_lessons.removed_at`, the same remove every query already honours), recording each in `lessons_retired` so it
+  can be undone. Lessons, steps, students' work and rubric marks all stay. A retired lesson's editor link opens its folder.
+- **Sharing** (owner: "Teachers should also still be able to share games"; picked: share **folders** with colleagues,
+  `0086_game_folder_sharing`): on a folder's page its owner shares it with one school they are staff of (a select when
+  they have several), or stops sharing. That school's staff (teachers and admins, never students or other schools) see
+  it under "🤝 Shared by colleagues" on Build with the owner's name, open it read-only (Play, Assign, Save to folder),
+  and "Copy to my folders" (the same name, the games they can open). Colleagues only ever see games they can open, so a
+  teacher's own draft or class-only game stays theirs; the share note says to publish for the school.
+- **Class page tabs:** 🎮 Games (first: build, assign, organise; the assigned games; the games shared with the class),
+  Progress, Students, Settings. The old Lessons and Games tabs are this one (`?tab=games` lands on it).
+- **Elsewhere:** `/teach/lessons` redirects to `/build`; Classroom home's tools button is "📁 My games and folders" and each
+  class card's is "🎮 Assign a game"; the teaching loop's Plan tools are My games and folders and New game; the CS Quest
+  page no longer links the library; the trial email's courses link goes to Learn.
+- **Still there underneath, on purpose:** the lesson editor and the lesson APIs (CS Quest copies are edited there, and
+  their rubrics and standards), and units (CS Quest's assign-a-unit makes them; the class page shows their headings).
+  No screen makes a new teacher lesson any more. **Open:** remove the lesson-library code and the teacher-lesson APIs
+  once the owner is sure nothing should come back; the teaching loop's words still say "lesson" in places.
+- Privacy: folders are private to their owner (another teacher's folder is not found); account delete removes the
+  person's folders; school delete clears `lessons_retired` with the class's assignments (admin-delete.test.js).
+- Tests: tests/unit/games-not-lessons.test.js (the backfill, folders, assign, the pages); updated: lessons, progress,
+  gclassroom (an assigned game posts to Classroom), teach-loop, classroom-homes, course-teacher-view.
 ## Classroom dashboards: Build it, the answer hidden, the place value number typed in (17 Nov 2026)
 Owner: "A lot of the times when you have the make a question feature you are showing the answer to the question on the
 screen and there is no way to hide it... These math widgets should be good for explaining a concept, but also for

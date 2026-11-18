@@ -35,7 +35,12 @@ async function demo(page) {
   const html = await (await page.request.get(`/class/${cls}`)).text();
   // Other specs assign their own short lessons to this class: take the first one with two steps or more, so "another
   // step" below is really another one (its picker lists the whole lesson, then each step).
-  const ids = [...new Set([...html.matchAll(/\/teach\/lessons\/([A-Za-z0-9]+)\?from=/g)].map(m => m[1]))];
+  // (the class page links each assignment's progress; that page links the lesson's editor)
+  const ids = [];
+  for (const cl of new Set([...html.matchAll(new RegExp(`/class/${cls}/progress/([A-Za-z0-9]+)`, 'g'))].map(m => m[1]))) {
+    const p = await (await page.request.get(`/class/${cls}/progress/${cl}`)).text();
+    for (const m of p.matchAll(/href="\/teach\/lessons\/([A-Za-z0-9]+)[?"]/g)) if (!ids.includes(m[1])) ids.push(m[1]);
+  }
   let lesson = null;
   for (const id of ids) {
     const p = await (await page.request.get(`/teach/lessons/${id}/standards`)).text();

@@ -65,15 +65,18 @@ test('student pages: nothing touches', async ({ browser }) => {
 test('teacher pages: nothing touches', async ({ browser }) => {
   const { page, state, ctx } = await signIn(browser, 'DemoTeacher', DEMO);
   const cls = await href(page, '/teach?all=1', 'a.cc-link');
-  const folder = await href(page, '/teach/lessons', 'a.fr-name');
-  const editor = await href(page, folder, 'a.fr-name').then(sub => href(page, sub, 'a.lr-main'));
+  // Games, not lessons: a folder of games (made here), Save to folder and Assign for an Oomba game, and the lesson editor
+  // (ready-made course copies) reached from a lesson's progress page.
+  const made = await page.request.post('/api/game-folders', { data: { name: uniq('Layout ') } });
+  const folder = (await made.json()).redirect;
   const lesson = await href(page, `${cls}/progress`, '.gradebook thead a');
   const preview = await href(page, cls, '.cl-row .menu a[href*="/lessons/"]');
+  const editor = await href(page, lesson, 'a[href^="/teach/lessons/"]');
   await ctx.close();
-  // Every class tab, one lesson's progress and the student view, the library (both tabs), the editor, the teaching
-  // courses and the live start page (tests/e2e/school-teacher-mobile.spec.js checks them at 360 px too).
-  expect(await checkPages(browser, state, ['/teach?all=1', cls, `${cls}?tab=games`, `${cls}?tab=students`, `${cls}?tab=settings`, `${cls}/progress`, lesson, preview, `${cls}/standards`,
-    '/teach/lessons', '/teach/lessons?tab=shared', folder, editor, '/teach/cs-quest', '/teach/cs-quest/coverage', '/teach/cyber-defenders', `/live?class=${cls.split('/').pop()}`, '/live/sets'])).toEqual([]);
+  // Every class tab, one lesson's progress and the student view, Build with folders, a folder, Save to folder, Assign,
+  // the editor, the teaching courses and the live start page (school-teacher-mobile.spec.js checks them at 360 px too).
+  expect(await checkPages(browser, state, ['/teach?all=1', cls, `${cls}?tab=students`, `${cls}?tab=settings`, `${cls}/progress`, lesson, preview, `${cls}/standards`,
+    '/build', folder, '/build/save?game=sum-racer', '/teach/assign?game=sum-racer', editor, '/teach/cs-quest', '/teach/cs-quest/coverage', '/teach/cyber-defenders', `/live?class=${cls.split('/').pop()}`, '/live/sets'])).toEqual([]);
 });
 
 test('admin pages: nothing touches', async ({ browser }) => {

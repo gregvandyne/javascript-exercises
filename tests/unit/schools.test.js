@@ -149,7 +149,7 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   assert.equal((await as(boss)('/admin/schools')).status, 200); assert.equal((await as(head)('/admin/schools')).status, 404);
   r = await as(rivera)('/teach'); assert.equal(r.status, 200); assert.match(r.text, /Web Class/);
   assert.equal((await as(kid)('/teach')).status, 404);
-  r = await as(rivera)(`/class/${c.id}`); assert.match(r.text, /classtabs/); assert.match(r.text, /Lessons/);
+  r = await as(rivera)(`/class/${c.id}`); assert.match(r.text, /classtabs/); assert.match(r.text, /classtabs[^]*?<span aria-hidden="true">🎮<\/span> Games<\/a>/, 'Games is the first tab');
   r = await as(rivera)(`/class/${c.id}?tab=students`); assert.match(r.text, new RegExp(c.join_code)); assert.match(r.text, /New school accounts/);
   r = await as(rivera)(`/class/${c.id}?tab=settings`); assert.match(r.text, /Class details/); assert.match(r.text, /Archive this class/);
   assert.equal((await as(kid)(`/class/${c.id}`)).status, 404, 'not in the class yet');
