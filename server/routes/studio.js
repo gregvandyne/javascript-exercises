@@ -21,7 +21,8 @@ import * as sttUsage from '../services/stt-usage.js';
 import { log } from '../services/log.js';
 import { config } from '../config.js';
 import { audit } from '../db.js';
-import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
+import { templateHtml, templateInfo, TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from '../builder/catalog.js';
+import { canvasVersion } from '../services/canvaskit.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
@@ -180,6 +181,8 @@ export function studioState(user, gameId, t = tEn, req = null) {
     // Oomba Live: the Studio's one live line for the current version (liveClassState). Read again after every build and
     // every new version (public/js/studio.js), so it always says where this version stands.
     liveClass: liveOn() && cur ? liveClassState(user, g, cur, t, chat.state) : null,
+    // A classroom activity (Oomba Canvas): one line under the safety line, with its fixed switch (canvasLineState).
+    canvasLine: cur ? canvasLineState(cur, t, chat.state) : null,
   };
 }
 /**
@@ -196,13 +199,28 @@ export function liveClassState(user, g, cur, t, state = {}) {
   const chk = checkLiveHtml(cur.html), first = chk.issues.find(i => i.level === 'fail');
   const loads = /\/packs\/live\.js/.test(cur.html), published = gameLiveReady(g), canHost = liveCanHost(user);
   const play = (state && state.play) || null;
-  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : (play && play.type && LIVE_NOT[play.type]) || '';
+  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || '';
   const line = chk.ready ? (published ? 'host' : 'publish') : loads ? 'fix' : 'off';
   return {
     line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
     host: `/live?game=${g.id}`, ask: t('live.entry.studioAskText'), fixAsk: first ? t('live.entry.studioFixText', { issue: t(`live.check.${first.code}`) }) : '',
     why: line === 'off' && not ? t(`buildSetup.play.why.${not}`) : '', chose: play ? play.how : '',
   };
+}
+
+/**
+ * The Studio's classroom activity line (docs/decisions.md "Classroom activity vs Arcade game"): for a version that is an
+ * Oomba Canvas activity, "Classroom activity · results go to Progress" (or "· on the board") and "Make it an arcade game
+ * instead"; for an arcade game that came from a class's setup steps (state.fromClass), "Make it a classroom activity".
+ * Each switch is a fixed Builder message in the builder's language (prompt.js wantsCanvas knows them), like "Make it live".
+ */
+export function canvasLineState(cur, t, state = {}) {
+  if (canvasVersion(cur.html)) {
+    const board = /"board"\s*:\s*true/.test(cur.html);
+    return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: t('studio.canvasLine.toArcade'), ask: t('studio.canvasLine.toArcadeAsk') };
+  }
+  if (state && state.fromClass) return { kind: 'arcade', label: t('studio.canvasLine.arcade'), button: t('studio.canvasLine.toCanvas'), ask: t('studio.canvasLine.toCanvasAsk') };
+  return null;
 }
 
 // ---------------------------------------------------------------- pages
@@ -318,7 +336,8 @@ router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e
   const key = String((req.body || {}).template || '');
   // A 3D world card: the Kit 2 starter in that world (the world must be a shipped one; the hero is the world's first).
   const world = key === 'oomba3d' ? String((req.body || {}).world || '') : '';
-  if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
+  // (the classroom activity starter too: /build/new's "I know what I want" with Classroom activity picked)
+  if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key) && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
   if (!req.user.builder_enabled) return res.status(403).json({ error: t('studio.api.buildingOff') });
   if (!key) {
     const g = games.createGame(req.user.id, { title: t('studio.newGameTitle'), icon: '🎮', cover: games.COVERS[Math.floor(Math.random() * games.COVERS.length)] });

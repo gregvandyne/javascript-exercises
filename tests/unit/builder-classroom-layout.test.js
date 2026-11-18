@@ -40,7 +40,8 @@ async function open({ teacher, ...ctxOpts }) {
   const r = await page.request.post(`${BASE}/api/auth/signup`, { data: { username: name, password: 'secret12' } }); assert.equal(r.status(), 200, await r.text());
   if (teacher) { const u = auth.getUserByName(name), school = S.createSchool(u, { name: `School ${name}` }).school; q.run('INSERT INTO school_members(school_id, user_id, role, joined_at) VALUES (?,?,?,?)', school.id, u.id, 'teacher', now()); }
   const errors = []; page.on('pageerror', e => errors.push(String(e)));
-  await page.goto(`${BASE}/build/new`); await page.click('#su-guide');
+  // a teacher starts on Classroom activity: Arcade game, then "Help me choose" (today's steps)
+  await page.goto(`${BASE}/build/new`); if (teacher) await page.click('.su-kind[data-kind="arcade"]'); await page.click('#su-guide');
   await page.waitForSelector('.su-screen[data-screen="type"]:not([hidden])');
   return { ctx, page, errors };
 }

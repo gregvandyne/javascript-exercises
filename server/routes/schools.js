@@ -875,7 +875,7 @@ function classTiles(req, c, { host, dash }) {
   const tiles = [
     host && { href: `/live?class=${c.id}`, emoji: '📡', label: t('live.entry.host'), hot: true },
     dash && { href: `/class/${c.id}/dashboard`, emoji: '🖥️', label: t('dash.entry.teacher') },
-    staff && { href: '/build/new', emoji: '🛠️', label: t('folders.buildNew') },
+    staff && { href: `/build/new?for=class&class=${c.id}`, emoji: '🛠️', label: t('folders.buildNew') },
     staff && { href: '/learn', emoji: '🦉', label: t('folders.findOomba') },
   ].filter(Boolean);
   if (!tiles.length) return '';

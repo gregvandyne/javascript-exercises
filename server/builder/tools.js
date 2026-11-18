@@ -13,18 +13,20 @@ import { respectChoices } from '../services/stylelint.js';
 import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
-import { localeInfo } from '../i18n/index.js';
-import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS } from './catalog.js';
+import { localeInfo, tFor } from '../i18n/index.js';
+import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
 import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
-import { planArt2d, playFor } from './plan.js';
+import { planArt2d, playFor, isActivity, canvasActivity } from './plan.js';
+import { withActivityData } from '../services/canvaskit.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
-// and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js).
-const STARTERS = BUILDER_TEMPLATE_KEYS;
+// and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js), and the classroom activity starter "canvas"
+// (Oomba Canvas: not in the cached tool list, the CANVAS RULES name it).
+const STARTERS = [...BUILDER_TEMPLATE_KEYS, ...CANVAS_TEMPLATE_KEYS];
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
@@ -94,6 +96,10 @@ export function toolbox(ctx) {
       const missing = art2dMissing(rawHtml, planned);
       if (missing.length) return { ok: false, forModel: `Not saved: the builder picked ${plannedCast().length ? `these characters for their 2D game (${plannedCast().join(', ')})` : 'a 2D world'} in the setup steps, and every version of this build must draw them with the 2D art, never the kit's own characters. Problems: ${missing.join('; ')}. ${current() && art2dMissing(current().html, planned).length === 0 ? 'Keep the CONFIG lines world, hero2d and friends2d and the 2D art tags of the current version exactly as they are (edit_game on other lines).' : `Call ${plannedStart()}, then make it theirs with edit_game.`}` };
     }
+    // A classroom activity (Oomba Canvas): its answer key must pass the kit's self-test (autotest.js canvasSelfTest), or
+    // the version is not saved at all, so a broken activity can never be shared or published.
+    const canvas = autotest.canvasSelfTest(rawHtml);
+    if (canvas && !canvas.ok) return { ok: false, forModel: `Not saved: the classroom activity's self-test failed. ${autotest.canvasProblemsText(canvas)}. Fix the data in the oc-activity block (PROBLEMS or GEN; see the CANVAS RULES) and save again. Never write a checker of your own for a standard tool.` };
     // a game on a patched kit version (kit.js KIT_PATCHES) moves to the patch release whenever the Builder saves it
     const { html, removed } = sanitizeGameHtml(upgradeKitPins(rawHtml.replace(/^\s*<!doctype[^>]*>/i, '')));
     const report = scanVersion(html);
@@ -274,6 +280,7 @@ export function toolbox(ctx) {
       if (r.ok && a2) r.forModel += ` It draws ${a2.world ? `the 2D world ${a2.world}` : 'the kit\'s own world'}${a2.hero ? ` with the sprite ${a2.hero} as the hero` : ''}${a2.friends ? ` and ${a2.friends.length} friend${a2.friends.length > 1 ? 's' : ''} in the game too (CONFIG.friends2d: ${a2.friends.join(', ')})` : ''} (CONFIG.world, CONFIG.hero2d, CONFIG.friends2d and the 2D art tags, see the 2D ART RULES): keep those lines and tags.`;
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
       if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}${k2.companion ? ` and the animal friend ${k2.companion} (CONFIG.companion)` : ''}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, companion, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
+      else if (r.ok && CANVAS_TEMPLATE_KEYS.includes(key)) r.forModel += ' It is the classroom activity starter on Oomba Canvas (not the Oomba Kit: the KIT RULES do not apply). Now make it theirs with edit_game on its oc-activity JSON block only, following the CANVAS RULES: config (lang, support, count), task (title, say), problems or gen for the tool, and steps / hints lines only if they add something. The kit draws it and checks every answer; every version must pass its self-test.';
       else if (r.ok && CLASSROOM_TEMPLATE_KEYS.includes(key)) r.forModel += ` It is ${info ? info.title : key}, a classroom starter: plain HTML for the classroom board and phones, not on the Oomba Kit (the KIT RULES do not apply to it). Now make it theirs with edit_game: lines of its CONFIG block (teams, numbers; CONFIG.lang is the language their content is written in), its content list (QUESTIONS, CATEGORIES, ITEMS or CARDS), its <title>, and the WORDS table only where a word should change (every language). Keep its big type, its keyboard and clicker keys and its Sound and Full screen buttons, and follow the CLASSROOM RULES.`;
       else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
@@ -319,6 +326,15 @@ export function toolbox(ctx) {
    * is done (also after a time-out). -> the saveVersion result (its 'version' event already sent), or null.
    */
   async function planFallback() {
+    // A classroom activity's plan (Oomba Canvas): the activity starter with the plan's topic, help and way of playing.
+    if (ctx.plan && isActivity(ctx.plan)) {
+      const { html, fallback } = await templateHtml('canvas');
+      if (fallback) return null;
+      steps.start('template');
+      const r = saveVersion(withActivityData(html, canvasActivity(ctx.plan, tFor(ctx.locale || 'en'))), 'Started your classroom activity', { evenIfStopped: true });
+      if (r.event) ctx.emit(r.event[0], r.event[1]);
+      return r;
+    }
     if (!planned) return null;
     const { html, fallback } = await templateHtml(planned.template, { world: planned.world, hero: planned.hero, friends: planned.friends });
     if (fallback) return null;

@@ -86,7 +86,7 @@ function side(req, ctx, sel, mine, shared) {
   const fItem = f => ({ key: `f-${f.id}`, href: `${ctx.base}?folder=${encodeURIComponent(f.id)}`, icon: 'folder', name: f.name, count: f.games });
   const top = ctx.kind === 'build'
     ? html`<a class="btn btn-primary shelf-go" href="/build/new" id="newgame">${icon('plus', 18)} ${t('build.newGame')}</a>`
-    : ctx.staff ? html`<a class="btn btn-primary shelf-go" href="/build/new" id="cl-newgame">${icon('plus', 18)} ${t('folders.buildNew')}</a>` : '';
+    : ctx.staff ? html`<a class="btn btn-primary shelf-go" href="/build/new?for=class&amp;class=${ctx.c.id}" id="cl-newgame">${icon('plus', 18)} ${t('folders.buildNew')}</a>` : '';
   const first = ctx.kind === 'build'
     ? [{ key: 'all', href: ctx.base, icon: 'all', name: t('folders.allGames'), count: ctx.allCount }]
     : [{ key: 'assigned', href: `${ctx.base}?view=assigned`, icon: 'assigned', name: t('folders.assignedTo', { class: c.name }), count: ctx.assigned.count }];

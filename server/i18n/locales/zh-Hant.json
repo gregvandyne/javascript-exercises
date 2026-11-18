@@ -1726,6 +1726,15 @@
       "step": "課程步驟：{title}",
       "back": "回到課程",
       "handIn": "繳交"
+    },
+    "canvasLine": {
+      "activity": "課堂活動 · 結果進入「學習進度」",
+      "board": "課堂活動 · 在黑板上",
+      "arcade": "街機遊戲 · 為你的班級做的",
+      "toArcade": "改成街機遊戲",
+      "toArcadeAsk": "改成街機遊戲：用同樣題目的問答、跑酷或接東西遊戲。",
+      "toCanvas": "改成課堂活動",
+      "toCanvasAsk": "改成課堂活動：有同樣問題、步驟和提示的動手操作畫布。"
     }
   },
   "publish": {
@@ -2702,7 +2711,16 @@
         "pickedWorld": "已選 {count} 個。牠們都住在「{world}」。",
         "cleared": "已取消"
       },
-      "progress": "第 {n} 步，共 {total} 步"
+      "progress": "第 {n} 步，共 {total} 步",
+      "canvas": {
+        "activity": "課堂活動",
+        "rows": {
+          "kind": "內容",
+          "practise": "練習",
+          "help": "幫助",
+          "played": "玩法"
+        }
+      }
     },
     "dash": {
       "dropHint": "從工具庫把小工具加到這裡",
@@ -9145,7 +9163,8 @@
         "kit2": "現成的 3D 世界還不能直播玩。",
         "board": "這個是在一個螢幕上給全教室一起用的。",
         "survey": "調查的答案只留在這台裝置上，從不送出，所以不能直播玩。",
-        "exitticket": "離場小卡只在一台裝置上用。想看每位學生的答案，請在班級課程裡用問題步驟。"
+        "exitticket": "離場小卡只在一台裝置上用。想看每位學生的答案，請在班級課程裡用問題步驟。",
+        "canvas": "課堂活動暫時還不能即時遊玩。"
       }
     },
     "learn": {
@@ -9195,7 +9214,17 @@
       "file": "請使用我加入的檔案。",
       "playlive": "用 Oomba Live 和我的班級或小組直播一起玩。",
       "playscreen": "我們在同一個螢幕上一起玩。",
-      "playsolo": "我自己玩。"
+      "playsolo": "我自己玩。",
+      "activity": "這是我的計畫：一個課堂活動。",
+      "grade": "給 {grade} 年級。",
+      "gradeK": "給幼兒園。",
+      "practise": "練習：{topic}。",
+      "help": "幫助：{help}。",
+      "played": {
+        "devices": "學生在自己的裝置上玩。",
+        "board": "我們一起在黑板上玩。",
+        "both": "學生在自己的裝置上玩，我們也會投影到黑板上。"
+      }
     },
     "flatNote": "在 2D 裡，目前只有跑酷和接東西遊戲可以使用我們的世界和角色。其他遊戲小幫手會用經典樣式。",
     "typeGroups": {
@@ -9204,6 +9233,102 @@
       "games": "遊戲",
       "classText": "給教室白板和手機用的活動。",
       "gamesText": "可以玩、可以分享的遊戲。"
+    },
+    "kind": {
+      "heading": "你要做什麼？",
+      "text": "在 Builder 裡隨時可以切換。",
+      "forClassTitle": "為你的班級做點東西",
+      "forChip": "給 {name} · {grade}",
+      "forChipNoGrade": "給 {name}",
+      "forClass": "給你的班級",
+      "check": "檢查",
+      "hint": "提示",
+      "activity": {
+        "title": "課堂活動",
+        "text": "動手操作的畫布：學生拖曳、組合、檢查，一步一步來，還有提示。結果會進入「學習進度」。"
+      },
+      "arcade": {
+        "title": "街機遊戲",
+        "text": "好玩又能分享的遊戲：跑酷、接東西、問答、賽跑，2D 或 3D 世界都可以。"
+      },
+      "tools": {
+        "fractions": "分數條",
+        "numberline": "數線",
+        "digits": "數字格",
+        "tiles": "分類與配對"
+      },
+      "games": {
+        "runner": "跑酷",
+        "catch": "接東西",
+        "quiz": "問答",
+        "worlds": "3D 世界"
+      },
+      "toolsText": "需要安靜遊戲、轉盤或計分板嗎？",
+      "toolsLink": "課堂工具"
+    },
+    "canvas": {
+      "nextHelp": "下一步：需要多少幫助",
+      "nextPlayed": "下一步：怎麼玩",
+      "practise": {
+        "heading": "學生要練習什麼？",
+        "text": "選一個或自己輸入。Builder 會做 5 道有步驟和提示的題目。",
+        "label": "學生要練習什麼？",
+        "placeholder": "例如：用八分之一和六分之一做等值分數",
+        "ideas": "點子",
+        "ideasFor": "給 {grade} 的點子",
+        "privacy": "Builder 只會收到你的主題和班級的年級，絕不會收到學生的名字或作業。"
+      },
+      "help": {
+        "heading": "需要多少幫助？",
+        "hint": "在 Builder 裡隨時可以修改。",
+        "watch": {
+          "title": "看示範",
+          "text": "先示範每一題怎麼做，再讓學生試試。"
+        },
+        "count": {
+          "title": "往上數",
+          "text": "用 ▲ ▼ 按鈕回答步驟，不用打字。"
+        },
+        "guided": {
+          "title": "有提示",
+          "text": "步驟打開，最多 3 個提示。"
+        },
+        "own": {
+          "title": "自己來",
+          "text": "步驟先隱藏，學生需要時再打開。"
+        }
+      },
+      "played": {
+        "heading": "要怎麼玩？",
+        "hint": "活動的即時遊玩之後才會推出。",
+        "devices": {
+          "title": "在自己的裝置上",
+          "text": "每個學生用自己的那一份。結果會進入「學習進度」。"
+        },
+        "board": {
+          "title": "在黑板上",
+          "text": "大家一起在大螢幕上做。不計分。"
+        },
+        "both": {
+          "title": "兩種都要",
+          "text": "在自己的裝置上，需要時也在黑板上。"
+        }
+      },
+      "topics": {
+        "evenOdd": "單數和雙數",
+        "orderNumbers": "數字排順序",
+        "numberLineJumps": "數線上跳一跳",
+        "addColumns": "直式加法",
+        "subColumns": "直式減法",
+        "shadeFractions": "塗出分數",
+        "equivFractions": "等值分數",
+        "fractionsLine": "數線上的分數",
+        "compareFractions": "比較分數",
+        "multiplyOne": "乘以一位數",
+        "multiples": "倍數",
+        "orderFractions": "分數排順序",
+        "bigAdd": "大數加法"
+      }
     }
   },
   "dash": {

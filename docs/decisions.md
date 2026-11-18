@@ -8567,3 +8567,60 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   lifted point's arrow runs up in the gap before the first decimal digit. Each minus sign sits right before its
   product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
   room in the corner, and a strike covers only the digit, so the 1 stays clear of it.
+
+## Classroom activity vs Arcade game, and Oomba Canvas (18 Nov 2026)
+
+The owner asked that classroom builds stop using the Oomba Kit and feel like the Big Divide or the dashboard tools: a
+calm canvas where students work, with the arcade games kept for fun. Phase 1 of the approved plan ("Classroom activity
+vs Arcade game / Oomba Canvas"), with the owner's decisions:
+
+- **"What are you making?"** is the first question of `/build/new` (`server/routes/build-setup.js`,
+  `public/js/buildsetup.js`): **Classroom activity** or **Arcade game**. Classroom activity starts selected for every
+  teacher (`teacherHost`) and whenever the page is opened from a class (`?for=class&class=<id>`: the class page's phone
+  tile and its shelf's Build button); kids and families start on Arcade game. One tap switches, and kids may build
+  activities too. Arcade game leads to today's steps, unchanged. The eight board starters stay as their own choice, the
+  "Classroom tools" link under the cards (it opens the game-type step on its "For your class" group).
+- **The class only gives a grade.** The class id is used only when this user may manage that class (`canManageClass`,
+  not archived); the page gets its name (for the chip "For 4B · Grade 4" and the way back) and its grade (for the topic
+  chips). The plan carries the grade and `forClass: true`, never the id, a name or anything about students; only the
+  topic and the grade reach the model. A link to someone else's class opens the page as usual.
+- **The canvas path** is three short steps: what to practise (a typed topic, screened like any message, or a chip of
+  `plan.js CANVAS_TOPICS` for the grade: each chip is a kit tool and a generator), how much help (Watch, Count up,
+  Guided, On my own: the Big Divide's words) and how it is played (their own devices, the board, or both; Live is said
+  to come later and is greyed out in the Studio's live line with the reason). "I know what I want" with Classroom
+  activity picked starts from the activity starter, so the Builder works on an activity from its first message.
+- **Plan engine `canvas`.** `normalisePlan` keeps `{ kind: 'activity', topic, tool, support, played, grade }` (known ids
+  only); `planEngine` returns `{ engine: 'canvas', … }`; `planNote` writes its SETUP CHOICES (start from "canvas", the
+  topic's generator, data only); `engineFor` sets `state.canvas`.
+- **Oomba Canvas 1.0.0** is a new kit, beside Kit 1 and Kit 2 (none of whose files changed): source in `canvas/src/`,
+  frozen at `public/vendor/oomba-canvas/1.0.0/` (locked in `canvas/SHIPPED.json`, hash in
+  `server/services/canvaskit.js`), docs in `docs/canvas-api.md`. Four manipulatives (fraction bars: make, shade,
+  compare; the number line: point, jump; digit boxes: column add, subtract, multiply; tiles: sort, order), each with
+  the dashboard's pure contract (`clean`, `start`, `check → { ok, hint }`, `solve`, `steps`, `hints`, `gen`), written
+  for the kit and frozen with it, never imported from the site. The look copies the site's tokens (a test compares them
+  with app.css) because a game frame cannot load the site's CSS; the band with Check, Hint and Clear stays at the
+  bottom on phones; Hebrew and Arabic read right to left while the maths reads left to right. In-game words live in
+  the kit in the 13 site languages, as the classroom starters do.
+- **Behaviour.** Students tap, drag and type digits through the kit (no text field anywhere); each student's place
+  resumes from their own game save (`oc-progress-v1`), with a fresh seeded set and a "seen" list; up to three hints a
+  problem and "Stuck?" after a failed Check or 45 s; a second try, then the worked answer. Results go the way games
+  report today: `BRB.gameOver({ won: right === total, score: right })` once per set (none when played on the board).
+- **The answer key is checked before it exists.** An activity is JSON data in an `oc-activity` block, so the server
+  reads it and runs the kit's own frozen file on it (`canvaskit.js selfTestHtml`, `autotest.js canvasSelfTest`): every
+  problem (or 30 a generator makes) must be solvable by its worked answer, an empty start must never count as right,
+  and steps and hints must be there. `tools.js saveVersion` refuses a version that fails, naming the problem for the
+  model ("problem 3: cannot be solved: 5/6 cannot be made with pieces of 1/4"), so a broken activity never becomes a
+  version and can never be shared or published; the playtest report lists it too. Publishing rules are unchanged.
+- **Prompting.** `CANVAS_RULES` (generated from `docs/canvas-api.md` by `scripts/build-canvas-rules.js`) is a separate
+  block sent only for canvas builds (a canvas plan, an activity version, or the Studio's fixed switch message), with no
+  cache point of its own. `SYSTEM_PROMPT` and `TOOLS` are byte for byte what they were (the starter "canvas" is kept
+  out of the cached tool list's enum on purpose; the rules name it). The model fills in data; the kit checks.
+- **Safety unchanged.** The scanner and sanitiser are as they were apart from `checkCanvas` (exactly the pinned tag,
+  like `checkKit`); the frame's CSP and the screenshot worker allow `/vendor/oomba-canvas/` for the kit's script and
+  font only. Read-aloud speaks the fixed `task.say` line only.
+- **Studio.** Under the safety line: "Classroom activity · results go to Progress" with "Make it an arcade game
+  instead"; an arcade game made from a class gets "Make it a classroom activity". Each is a fixed, translated Builder
+  message (`prompt.js wantsCanvas` knows them in every language), like "Make it live".
+- **Later phases, not built:** the Gradebook Score for activities, live canvas runs, class codes and Assign for Builder
+  activities, the Studio's Activity panel and the in-activity teacher controls. The lesson's "new game" button still
+  opens the Studio directly (it skips the setup steps), so it does not pass `?for=class` yet.
