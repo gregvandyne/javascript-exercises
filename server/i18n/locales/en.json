@@ -7771,7 +7771,12 @@
       "submit": "Assign",
       "note": "Your class gets a one-step lesson that plays this game. You can change it later in the Lessons library.",
       "none": "You have no classes yet. Make one in Classroom first.",
-      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it."
+      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it.",
+      "opens": "Students open: {what}",
+      "set": "{count, plural, one {your question set (# question)} other {your question set (# questions)}}",
+      "pickFirst": "Choose a problem, or make and save a question set, in the game first. Then press Assign to a class there, so your students open it straight away.",
+      "openGame": "Open the game",
+      "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there."
     },
     "home": {
       "hello": "Hello, {name}",

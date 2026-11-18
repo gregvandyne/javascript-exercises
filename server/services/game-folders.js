@@ -135,18 +135,20 @@ export function assignable(u, g, c) {
   return fail('publishFirst');
 }
 /** The open assignment of this game in this class, if there is one. */
-export const assignmentOf = (classId, gameId) => q.get(`SELECT cl.* FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id JOIN lesson_steps s ON s.lesson_id=l.id
-  WHERE cl.class_id=? AND cl.removed_at IS NULL AND l.kind='game' AND s.kind='game' AND s.game_id=? LIMIT 1`, classId, gameId) || null;
+export const assignmentOf = (classId, gameId, options = null) => q.get(`SELECT cl.* FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id JOIN lesson_steps s ON s.lesson_id=l.id
+  WHERE cl.class_id=? AND cl.removed_at IS NULL AND l.kind='game' AND s.kind='game' AND s.game_id=?${options === null ? '' : ' AND s.options=?'} LIMIT 1`, classId, gameId, ...(options === null ? [] : [options])) || null;
 /** Assign one game to a class (optionally due on a day): a 'game' lesson with the game as its one step. Assigning the same
  *  game to the same class again is refused (alreadyAssigned), so a class never has it twice.
  *  -> { ok, classLesson, game } | { ok: false, code, className? } */
-export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '' } = {}) {
+export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '' } = {}) {
   const c = S.getClass(String(classId || ''));
   if (!c || c.archived_at || !S.canManageClass(u, c)) return fail('notFound');
   const g = games.getGame(String(gameId || ''));
   const a = assignable(u, g, c); if (!a.ok) return a;
-  if (assignmentOf(c.id, g.id)) return { ok: false, code: 'alreadyAssigned', className: c.name };
-  const title = g.title;
+  // A game that opens at a teacher's problem or question set (options; Algebra Builder) may be in a class once per
+  // problem or set, named after it (named); any other game once.
+  if (assignmentOf(c.id, g.id, options ? options : null)) return { ok: false, code: 'alreadyAssigned', className: c.name };
+  const title = String(named || g.title).slice(0, 100);
   const made = L.createLesson(u, c.school_id, { title, kind: 'game' });
   if (!made.ok) return made;
   const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, options });

@@ -37,6 +37,7 @@ import { forgetUser as forgetLive } from './classlive-results.js';
 import { storyDir } from './story-jobs.js';
 import { forgetUser as forgetClassroom } from './gclassroom.js';
 import { forgetUser as forgetDash } from './dash.js';
+import { forgetUser as forgetGameSets } from './game-sets.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -118,6 +119,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
       chat_enabled=0, lang='', theme='', character_spec=NULL, password_short=0, made_note_seen_at=NULL, pw_reset_note_at=NULL WHERE id=?`, `deleted_${u.id}`, TOMB.avatar, TOMB.color, u.id);
     // 11. the old name, reserved
     q.run('INSERT INTO reserved_names(name, until) VALUES (?,?) ON CONFLICT(name) DO UPDATE SET until=excluded.until', u.username, t + RESERVE_DAYS * DAY);
+    // 11b. question sets they kept in official games (their links stop opening a set)
+    forgetGameSets(u.id);
     // 12. the audit (ids only, never the old name)
     audit(actor ? actor.id : null, 'user.delete', u.id, { by: actor ? actor.id : null, kind: by, ...(parentMade ? { parentMade: true } : {}) });
   });

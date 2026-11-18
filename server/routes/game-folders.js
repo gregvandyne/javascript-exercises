@@ -15,6 +15,19 @@ import { liveGameOf } from '../live/live-games.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gcAssignField, gcAfterAssign } from './gclassroom.js';
+import * as gameSets from '../services/game-sets.js';
+import { cleanOptions, parseParams } from '../services/play-params.js';
+
+/** An official game that opens at a teacher's problem or question set (services/game-sets.js SET_GAMES): its Assign
+ *  carries those lesson options (opts), and the lesson is named after them. -> { opts, what, title } | null (not one) */
+const setGameOf = g => !!g && gameSets.SET_GAMES.has(g.slug) && g.source === 'seed';
+function setAssign(t, g, raw) {
+  if (!setGameOf(g)) return null;
+  const opts = cleanOptions(String(raw || '')) || '';
+  const what = gameSets.describe(g.id, parseParams(opts));
+  const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
+  return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
+}
 import { zoneNote } from './lessons.js';
 
 export const router = Router();
@@ -148,17 +161,22 @@ router.get('/teach/assign', requireUser, (req, res) => {
   const classes = F.assignClasses(u), pre = String(req.query.class || '');
   const gc = classes.map(c => gcAssignField(req, c)).find(Boolean) || '';
   const draft = g0.source !== 'seed' && !g0.published_version_id;
+  // Algebra Builder: what students open (from the game's Assign button), or a note to choose it in the game first (the
+  // class would otherwise land on the teacher's gallery).
+  const sa = setAssign(t, g0, req.query.opts);
   const body = html`<div class="pagehead"><h1>📌 ${t('teach.assign.title', { game: g.title })}</h1></div>
   <section class="panel assign-game" aria-labelledby="ag-h">
     <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
-    ${liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
+    ${sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.label })}</p>` : ''}
+    ${sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
+      : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
       : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">✏️ ${t('game.edit')}</a></p>`
-      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">
+      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
       <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
       ${gc}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">📌 ${t('teach.assign.submit')}</button></div>
-      <p class="small muted wide">${t('folders.assignNote')}</p>${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
+      <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">🎓 ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
     <p class="row"><a class="btn" href="${playHref(u, g0)}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/build/save?id=${g0.id}">📁 ${t('folders.save')}</a></p>
   </section>`;
@@ -169,7 +187,9 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   if (!S.isSchoolStaff(u)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   const g = gameOf(gameId, game);
   if (g && g.source === 'seed') { const lg = liveGameOf(g); if (lg && !lg.play) return res.status(400).json({ error: req.t('teach.assign.liveOnly') }); }
-  const r = F.assignGame(u, classId, g && g.id, { dueAt });
+  const sa = setAssign(req.t, g, b(req).opts);
+  if (sa && !sa.what) return res.status(400).json({ error: req.t('teach.assign.pickFirst') });
+  const r = F.assignGame(u, classId, g && g.id, { dueAt, ...(sa ? { options: sa.opts, title: sa.title } : {}) });
   if (!r.ok) return fail(req, res, r);
   const also = await gcAfterAssign(req, r.classLesson);
   const toast = req.t('lessons.assign.done', { class: r.class.name });

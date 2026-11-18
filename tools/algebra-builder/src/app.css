@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+
+/* Oomba's look: cream paper on a warm ground, ink text and ink edges, Oomba green, Bricolage Grotesque (the Oomba Kit
+   loads it), rounder corners. The tiles keep the colors classroom sets use (blue x², green x, yellow 1, red for every
+   negative tile), with darker edges. */
+:root {
+	--ground: #f4f1e6;
+	--paper: #fffdf2;
+	--paper-low: #f9f6eb;
+	--line: #e2ddcb;
+	--line-strong: #8a8573;
+	--ink: #141414;
+	--ink-soft: #3b3a35;
+	--muted: #5b584f;
+	--accent: #14744a;
+	--accent-dark: #0f5a37;
+	--accent-wash: #e1f1e1;
+	--accent-line: #66c792;
+	--oomba-green: #66c792;
+	--oomba-green-hover: #58bc86;
+	--oomba-green-press: #1f9d63;
+	--link: #14744a;
+	--good: #0f5a37;
+	--good-wash: #e1f1e1;
+	--good-line: #66c792;
+	--bad: #b3321f;
+	--bad-wash: #fbe3de;
+	--bad-line: #f0c3b9;
+
+	--x2-fill: #8fb3ee;
+	--x2-edge: #3a63ad;
+	--x2-ink: #10295a;
+	--x-fill: #9fd8b4;
+	--x-edge: #3d8a5a;
+	--x-ink: #0f3d22;
+	--unit-fill: #f7dc84;
+	--unit-edge: #b08d22;
+	--unit-ink: #4d3a03;
+	--neg-fill: #f2a196;
+	--neg-edge: #b8483a;
+	--neg-ink: #5e160b;
+
+	--radius: 14px;
+	--radius-lg: 20px;
+	--shadow: 0 2px 0 rgba(20, 20, 20, 0.08), 0 8px 24px rgba(20, 20, 20, 0.08);
+	--sans: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+	font-family: var(--sans);
+	color: var(--ink);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--ground);
+}
+
+/* Shared button styles (global so components can use them) */
+.btn-primary,
+.btn-ghost,
+.btn-dark {
+	padding: 0.6rem 1.15rem;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	line-height: 1;
+}
+.btn-primary {
+	background: var(--oomba-green);
+	color: var(--ink);
+	font-weight: 800;
+	box-shadow: 0 4px 0 var(--oomba-green-press);
+}
+.btn-primary:hover:not(:disabled) {
+	background: var(--oomba-green-hover);
+}
+.btn-primary:active:not(:disabled) {
+	transform: translateY(2px);
+	box-shadow: 0 2px 0 var(--oomba-green-press);
+}
+.btn-primary:disabled {
+	background: #d7d2c2;
+	box-shadow: none;
+	cursor: default;
+}
+.btn-ghost {
+	background: var(--paper);
+	color: var(--ink-soft);
+	border-color: var(--line-strong);
+}
+.btn-ghost:hover:not(:disabled) {
+	background: var(--paper-low);
+}
+.btn-ghost:disabled {
+	color: #a29d8c;
+	border-color: var(--line);
+	cursor: default;
+}
+.btn-dark {
+	background: var(--ink-soft);
+	color: var(--paper);
+}
+.btn-dark:hover {
+	background: var(--ink);
+}
+
+/* Oomba: buttons that were links in the original (the brand, Set up, Back) */
+button.brand,
+button.setup {
+	font: inherit;
+	cursor: pointer;
+	border: 0;
+	background: none;
+}
+.btn-primary,
+.btn-ghost,
+.btn-dark {
+	border-radius: 999px;
+	font-family: var(--sans);
+	border-width: 2px;
+}
+:focus-visible {
+	outline: 3px solid var(--oomba-green-press);
+	outline-offset: 2px;
+}

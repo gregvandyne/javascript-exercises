@@ -1119,3 +1119,76 @@ test('class header Connections chip: Classroom row with Connect, then account, S
   assert.doesNotMatch(two, /cx-name/, 'two apps: icons and dots only');
   assert.match(two, /id="cx-test-lms"/);
 });
+
+test('Algebra Builder: a teacher assigns a problem or a saved question set to a linked class; it is posted, and finishing it is the grade', async () => {
+  const games = await import('../../server/services/games.js');
+  const { OFFICIAL, getUserByName } = await import('../../server/auth.js');
+  const official = getUserByName(OFFICIAL) || createUser({ username: OFFICIAL, password: 'official-pass-123' });
+  let g = games.getGameBySlug('algebra-builder');
+  if (!g) {
+    g = games.createGame(official.id, { title: 'Algebra Builder', source: 'seed', slug: 'algebra-builder' });
+    const v = games.addVersion(g.id, '<!doctype html><title>t</title><p>ab</p>', { createdBy: official.id, safetyStatus: 'pass' });
+    q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, current_version_id=? WHERE id=?", v.id, v.id, g.id);
+  }
+  const { c, kid, tc, kc } = school();
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '400000000000000000071', kid.id, 'ab-kid@dwes.test', 'dwes.test', Date.now());
+  const id = course([{ userId: '400000000000000000071', fullName: 'Kid Here' }]);
+  await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+
+  // The teacher's frame may assign (BRB.canAssign); a student's may not.
+  const init = async cookie => {
+    const page = await (await get('/play/algebra-builder', cookie)).text();
+    const fr = await (await get(/data-src="(\/frame\/[^"]+?)"/.exec(page)[1].replace(/&amp;/g, '&'), cookie)).text();
+    return JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(fr)[1]);
+  };
+  assert.equal((await init(tc)).canAssign, true);
+  assert.equal((await init(kc)).canAssign, undefined);
+
+  // A saved set, then its Assign page: what students open, and "Also post" for the linked class.
+  const items = [{ a: 'solve', p: '2x+3=7', s: 'all', l: true }, { a: 'factor', p: 'x^2+3x+2', s: 'none', l: true }];
+  const set = await (await post(`/api/games/${g.id}/sets`, { items }, tc)).json();
+  assert.match(set.id, /^s-[a-z0-9]{10}$/);
+  const bare = await (await get('/teach/assign?game=algebra-builder', tc)).text();
+  assert.match(bare, /Choose a problem, or make and save a question set, in the game first/);
+  assert.doesNotMatch(bare, /data-api="\/api\/teach\/assign-game"/, 'no form: the class would land on the teacher gallery');
+  const opts = `chapter=${set.id}&lock=1`;
+  const pg = await (await get(`/teach/assign?game=algebra-builder&opts=${encodeURIComponent(opts)}`, tc)).text();
+  assert.match(pg, /Students open: your question set \(2 questions\)/);
+  assert.match(pg, /name="gcPost" value="1"> <span>🎓 Also post to Google Classroom/);
+  assert.match(pg, new RegExp(`name="opts" value="${opts.replace(/&/g, '&amp;')}"`));
+
+  const due = new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10);
+  const a = await (await post('/api/teach/assign-game', { game: 'algebra-builder', opts, classId: c.id, dueAt: due, gcPost: '1' }, tc)).json();
+  assert.equal(a.ok, true, JSON.stringify(a));
+  assert.match(a.toast, /Posted to Google Classroom\./);
+  const posted = room.calls.findLast(x => x.method === 'POST');
+  assert.equal(posted.body.title, 'Algebra Builder: your question set (2 questions)');
+  const cl = L.classLessons(c.id).find(x => x.title === 'Algebra Builder: your question set (2 questions)');
+  const step = L.steps(cl.lesson_id)[0];
+  assert.equal(step.options, opts);
+  assert.ok(GC.postOf(cl.id).coursework_id);
+  // The same set again: refused; one problem: its own lesson, named by the problem.
+  assert.equal((await post('/api/teach/assign-game', { game: 'algebra-builder', opts, classId: c.id }, tc)).status, 400);
+  assert.equal((await post('/api/teach/assign-game', { game: 'algebra-builder', classId: c.id }, tc)).status, 400, 'nothing to open');
+  const one = await (await post('/api/teach/assign-game', { game: 'algebra-builder', opts: 'mode=solve&chapter=2xp3q7&level=1&lock=1', classId: c.id }, tc)).json();
+  assert.equal(one.ok, true);
+  assert.ok(L.classLessons(c.id).some(x => x.title === 'Algebra Builder: Solve 2x + 3 = 7'));
+
+  // The student's lesson opens the set (Play carries the step's options), and finishing it is the step done.
+  const lessonPage = await (await get(`/class/${c.id}/lessons/${cl.id}`, kc)).text();
+  assert.match(lessonPage, new RegExp(`/play/algebra-builder\\?lesson=${cl.id}&amp;step=${step.id}&amp;chapter=${set.id}&amp;lock=1`));
+  const kidInit = await (async () => {
+    const page = await (await get(`/play/algebra-builder?lesson=${cl.id}&step=${step.id}&${opts}`, kc)).text();
+    const fr = await (await get(/data-src="(\/frame\/[^"]+?)"/.exec(page)[1].replace(/&amp;/g, '&'), kc)).text();
+    return JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(fr)[1]);
+  })();
+  assert.deepEqual(kidInit.set, { id: set.id, items, mine: false });
+  await post(`/api/progress/${cl.id}/${step.id}/game`, { event: 'start' }, kc);
+  assert.notEqual(P.get(cl.id, step.id, kid.id)?.status, 'done', 'starting is not finishing');
+  await post(`/api/progress/${cl.id}/${step.id}/game`, { event: 'end', score: null }, kc);
+  assert.equal(P.get(cl.id, step.id, kid.id).status, 'done');
+  const gr = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
+  assert.match(gr.toast, /1 completion grade sent/);
+  const sub = room.courseWork.get(GC.postOf(cl.id).coursework_id).submissions.find(z => z.userId === '400000000000000000071');
+  assert.equal(sub.draftGrade, 100);
+});

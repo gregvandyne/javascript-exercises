@@ -1045,6 +1045,13 @@ export const MIGRATIONS = [
     ALTER TABLE game_folders ADD COLUMN school_id TEXT;
     ALTER TABLE game_folders ADD COLUMN shared_at INTEGER;
     CREATE INDEX IF NOT EXISTS game_folders_school ON game_folders(school_id, shared_at);`],
+  // Question sets an official game keeps for a teacher (services/game-sets.js; Algebra Builder): id is the short code
+  // its link carries (s-xxxxxxxxxx), items the questions as JSON (an activity, a short math problem, two settings).
+  // Rows go with their owner's account.
+  ['0087_game_sets', `
+    CREATE TABLE IF NOT EXISTS game_sets (id TEXT PRIMARY KEY, game_id TEXT NOT NULL, owner_id TEXT NOT NULL, items TEXT NOT NULL,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_game_sets_owner ON game_sets(owner_id, game_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

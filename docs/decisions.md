@@ -7569,6 +7569,51 @@ Classroom**; folders live on **Build**, and the **class page** lists the class's
   person's folders; school delete clears `lessons_retired` with the class's assignments (admin-delete.test.js).
 - Tests: tests/unit/games-not-lessons.test.js (the backfill, folders, assign, the pages); updated: lessons, progress,
   gclassroom (an assigned game posts to Classroom), teach-loop, classroom-homes, course-teacher-view.
+
+## Voices finish before the next question (17 Nov 2026)
+Owner: "All of the games seem to have the voices cut off as they transition from one question to the next. Make sure
+all of the transitions are perfect." Cause: a game said a line ("Yes! 10 and 4 make 14.") and moved on after a fixed
+wait (2 s in Garden Count, a 2-3 s game-time pause in the Number Quest games); the next question's line, spoken without
+queue, cancelled it. With AI voices a line that is not cached yet can take a few seconds to arrive, so it was cut off,
+or never heard at all.
+- **SDK:** `BRB.afterSpeech(fn, { min, max, gap })` calls fn once nothing is being said (a line playing, queued, or
+  still on its way from the AI voice) for `gap` ms (250), never before `min` and never after `max` (10 s, so a line
+  that never says it ended can't hold a game); it returns a cancel function. `BRB.speaking()` says whether anything is.
+  docs/sdk.md lists both; tests/unit/voice.test.js checks a slow AI line holds the wait.
+- **Games:** every automatic move to the next question goes through it, keeping each game's own minimum wait and its
+  cancelling (a screen change still stops it), instant as before in the tests' fast mode, and the old timer where the
+  SDK has no afterSpeech. A tap the player makes may still cut a line (that is their choice).
+- **Garden Count** also asks for each round's closing line and the next question ahead (`BRB.prefetchSpeech`), so the
+  AI voice is ready the moment they are said; tests/unit/garden-count.test.js answers every line 3 s late and checks
+  the next question waits for it.
+
+## Garden Count: Tens and Ones, and a clean start (17 Nov 2026)
+Owner: "This should be more clear that the left is for 10's and the right is for 1's. The beginning of garden count is
+also quite glitchy."
+- **Tens and Ones:** in the teens chapter a sign stands behind each bed, like the columns of a place-value chart: a
+  green "Tens" over the ten-frame and a brown "Ones" over the loose apples, each with how many it holds now (10 | 4,
+  matching "10 and 4 make 14" at the top). In "How many apples?" Tens shows 10 and Ones shows "?" until the answer is
+  right. On a tall phone the ones bed moves down a little to make room for its sign. (I18N `teens.tens`, `teens.ones`.)
+- **The start:** the loading screen was removed before the helpers had loaded and the camera had framed them, and it
+  was see-through, so the 3D view flashed half-built (a black sky, a giant ground tile up close). It now has the sky's
+  colour, stays until the helpers stand in place and one frame is drawn from where they are seen, then fades (no fade
+  with reduced motion).
+- **Every Number Quest game** (Balance Bridge, Keep Builder, Kitchen Rush, Lantern Mix, Launch Lab,
+  Lily Hop, Machine Line, Rocket Supply, Scale Scout, Shape Hunt, Sky Lines, Sub Zero; Crate Stacker had its own fix
+  in #391, a curtain and a voice coach, kept as it is) had the same see-through
+  loading screen removed too early, and gets the same fix (owner: "Make sure the start of all those games are not
+  glitchy as well"): the page's own colour, removed after the first screen is drawn, a fade. Recorded from the first
+  frame in the production frame: each shows its loading screen, then its finished first screen, nothing between.
+- **Other games with automatic moves after speech:** Shark Plank's results card waits for the win or lose line, and
+  Hero of Sunvale's cutscenes hold their clock before the next caption while a voiced line is still playing (at most
+  10 s a line; a tap, Skip and the test hooks move on at once). Word Trail's speed-round clock starts once the word has
+  been said. Fraction Factory, Gulp City, Jungle Cup, Word Hunt and Word Peek move on only on a tap (unchanged).
+
+## Landing: no floating game covers round the hero (17 Nov 2026)
+Owner: "Remove the floating games on the outside... its a bit too distracting." The five game covers that drifted at
+the hero's edges on very wide screens (`.lp-floats`, from 1360px) are gone, with their styles. The covers fanned in
+the hero's "30+ games" link stay. tests/unit/teacher-landing.test.js checks there are none.
+
 ## Classroom dashboards: Build it, the answer hidden, the place value number typed in (17 Nov 2026)
 Owner: "A lot of the times when you have the make a question feature you are showing the answer to the question on the
 screen and there is no way to hide it... These math widgets should be good for explaining a concept, but also for
@@ -7722,3 +7767,53 @@ entry's check/solve), `eqView` and `limitWords` in `public/js/dash-tools.js`, `o
   the top / bottom number "can be at most 12"), said aloud too; a number typed past it gives the same note (held at
   the limit). The next change takes it away.
 - **Fit check:** the Build it layouts also send a set of fraction equations of all four operations for students.
+
+## Algebra Builder (adapted from Algebra Tiles), with question sets (18 Nov 2026)
+Owner: "Add this game to oomba: [teacher.dev's algebra-tiles] Make sure all functionality stays the same but use oomba
+branding. This should be listed under games, but should use our animation packs. I want to use a similar board like
+structure." Answers: keep its whiteboard; the Oomba Kit's effects only (no character); activity links and QR codes
+open the problem on Oomba; keep its math input field, which we have permission to use, but nothing in the game or the
+repository names it. Then: "Change the name of the game, as well. And allow teachers to create multiple questions."
+Answers: **Algebra Builder**; question sets **saved on Oomba** under a short code; a set **may mix activities**.
+- **Where it lives.** `tools/algebra-builder` (the original's Svelte app, Apache-2.0: LICENSE, NOTICE with what changed,
+  README) builds into `seed-games/algebra-builder.html` (`npm run build:algebra-builder`; `node build.mjs --check`).
+  Play shelf, category puzzle, cover from its gallery (`scripts/covers/algebra-builder.recipe.js`), a share picture.
+  The original is credited by name in the page's banner, About, NOTICE and the seed notes, as its license asks.
+- **The same game.** Gallery, a setup page per activity, and the whiteboard: Solve (Isolate, Divide, Answer, live
+  balance on or off), Multiply and Factor (rectangle, sides, equation; all tiles or none), their checks, toolbar, tray,
+  pan and zoom are the original's code. Its pages became screens in one page, with an in-game Back (no history in the
+  frame). Oomba look: paper, ink and green, Bricolage Grotesque, rounded cards, pill buttons; the tile colours stay.
+  It reads nothing aloud, as the original didn't (registered for AI voices with no lines; a "no-table" game).
+- **Effects.** A passed step: the kit's `correct` and a pop of the problem bar; a wrong Check: `wrong` and a small
+  shake; a question of a set done: `levelup` and a pop; the finish (a problem, or a set's last question): `win`,
+  confetti and `BRB.gameOver({ won: true })` once (completes a lesson step). Reduced motion skips the movement.
+- **One problem, one link** (as the original): `?mode=solve&chapter=2xp3q7&level=1&lock=1` (`+ = ^ ( )` written
+  `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). A
+  problem too long for that says so on its setup page; a preview has no link.
+- **Question sets.** "Make a question set" on the gallery, or "Start a question set with it" on any setup page: up to
+  10 questions from any activity, each made on that activity's setup page (Add to the set / Save this question),
+  reordered, changed or removed in the set's list. **Save and get link** keeps it on Oomba (`game_sets`, migration
+  0085; `server/services/game-sets.js`) and shows its link `?chapter=s-xxxxxxxxxx&lock=1`, the QR code and Copy; saving
+  again keeps the link. Signed-in players only (a guest is told to sign in; a preview has no links). The teacher's
+  sets are listed on the gallery from their game save (`algebra-builder-sets-v1`). Students get "1 of 5" in the bar,
+  **Next question** after each, then "All 5 questions done!" with Do them again; the teacher opening their own link
+  gets "Change this set". A deleted set's link says it isn't there any more. A set is only activities, problems in a
+  fixed math alphabet and two settings (no free text), and goes with its owner's account.
+- **Assigning, and Google Classroom.** Owner: "Make sure this flows into Google classroom if assigned to the class." A
+  teacher (school staff) gets **Assign to a class** beside the link of a problem and of a saved set. It opens Oomba's
+  Assign page for the game with that problem or set (`/teach/assign?game=algebra-builder&opts=…`, routes/game-folders.js): "Students open: your
+  question set (5 questions)", the class and due date, and **Also post to Google Classroom (for …)** when the teacher
+  can post to a linked class. The lesson is named after what it opens ("Algebra Builder: Solve 2x + 3 = 7"), its game
+  step carries the options, so the lesson's Play opens the problem or set straight away, and the same problem or set
+  can't be assigned twice to a class. Without options (the Learn tab's Assign) the page asks the teacher to choose in
+  the game first: students would otherwise land on the teacher's gallery. A student finishing it (`BRB.gameOver`, once,
+  at the end of the problem or the whole set) is the step done: the completion grade Classroom gets (send grades, or
+  automatic grades, on the class's Google Classroom page). tests/unit/gclassroom.test.js walks it end to end.
+- **SDK.** `BRB.gameUrl` (the frame gets the game's own `/play/<slug>` address), `BRB.copy(textOrPng)` (the play page
+  writes the clipboard only for that game's own link, with a query, or a PNG up to 300 KB, right after a tap) and
+  `BRB.questionSet` / `BRB.saveQuestionSet` (docs/sdk.md "Question sets").
+- **Left out.** The original's email links, its "suggest an activity" form and its analytics.
+- **The math input field** is vendored under `tools/algebra-builder/vendor/mathfield-*` with its package names changed;
+  `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
+- **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
+  a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.

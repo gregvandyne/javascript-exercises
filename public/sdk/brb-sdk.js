@@ -905,6 +905,32 @@
     }
     return n > 0;
   }
+  // Is anything being said, or waiting to be said? An AI line asked of the server and not yet back counts (it is
+  // about to play), and so does a queued line and the device's own voice.
+  function speaking() {
+    if (ttsCur || ttsQueue.length) return true;
+    if (pendingSpeech.length || liveUtterances.length) return true;
+    try { return !!(synth && (synth.speaking || synth.pending)); } catch (e) { return false; }
+  }
+  // afterSpeech(fn, { min, max, gap }): fn once nothing is being said (speaking() false for gap ms, 250 by default), and
+  // never before min ms (0) nor after max ms (10 s: a line that never says it ended can't hold the game). Games call it
+  // where they move on to the next question, so the last line is never cut off by the next one (docs/decisions.md
+  // "Voices finish before the next question"). -> a function that cancels it.
+  function afterSpeech(fn, opts) {
+    opts = opts || {};
+    var min = num(opts.min, 0, 60000, 0), max = Math.max(min, num(opts.max, 0, 60000, 10000)), gap = num(opts.gap, 0, 2000, 250);
+    // Time is counted in ticks of 60 ms or by the clock, whichever says more (a slowed background tab can't stretch max).
+    var t0 = Date.now(), ticks = 0, quietAt = -1, done = false, timer = null;
+    var tick = function () {
+      if (done) return;
+      var el = Math.max(ticks * 60, Date.now() - t0); ticks++;
+      if (speaking()) quietAt = -1; else if (quietAt < 0) quietAt = el;
+      if (el >= max || (el >= min && quietAt >= 0 && el - quietAt >= gap)) { done = true; try { fn(); } catch (e) { /* game's own error */ } return; }
+      timer = setTimeout(tick, 60);
+    };
+    timer = setTimeout(tick, 0);
+    return function () { done = true; if (timer) clearTimeout(timer); };
+  }
   // Is this line going to be read by an AI voice? (lang: as for speak). Games use it to leave out their own "voice" beeps.
   function aiVoice(lang) { return !!TTS && ttsMode === 'ai' && ttsWanted('x', typeof lang === 'string' && lang ? lang : USER_LANG, {}); }
   // aiVoiceCheck(lines, { lang, voice }) -> Promise<boolean>: will the AI voice read every one of these lines? The play
@@ -933,6 +959,57 @@
       p.then(function (ok) { if (!ok) delete ttsCheckMemo[key]; });
       return p;
     })).then(function (all) { return all.every(Boolean) && ttsMode === 'ai'; });
+  }
+  // copy(text | Blob): the frame can't use the clipboard (it is sandboxed), so the play page copies for it: only a link
+  // to this game's own play page (BRB.gameUrl, with any query), or a PNG picture (a QR code of that link), and only
+  // right after a tap. -> Promise<boolean> (false when refused, or no answer in 3 s).
+  var copyWait = {}, copySeq = 0;
+  function copy(what) {
+    if (typeof Promise !== 'function') return null;
+    var isPng = typeof Blob === 'function' && what instanceof Blob;
+    if (!isPng && typeof what !== 'string') return Promise.resolve(false);
+    return new Promise(function (res) {
+      var id = ++copySeq, timer = setTimeout(function () { delete copyWait[id]; res(false); }, 3000);
+      copyWait[id] = function (ok) { clearTimeout(timer); delete copyWait[id]; res(ok === true); };
+      send('brb:copy', isPng ? { id: id, png: what } : { id: id, text: what });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:copied' || typeof m.id !== 'number') return;
+    var w = copyWait[m.id]; if (w) w(m.ok);
+  });
+  // Question sets (an official game on the list; docs/sdk.md "Question sets"): BRB.questionSet is the set a link opened
+  // ({ id, items, mine } or { id, missing: true }), null otherwise. BRB.saveQuestionSet(items, id?) asks the page to save
+  // a teacher's set (a new one, or their own one changed): a Promise of { id } or { error } ('guest', 'bad', 'full',
+  // 'notYours', 'offline').
+  var setWait = {}, setSeq = 0;
+  function saveQuestionSet(items, id) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      var n = ++setSeq, timer = setTimeout(function () { delete setWait[n]; res({ error: 'offline' }); }, 10000);
+      setWait[n] = function (r) { clearTimeout(timer); delete setWait[n]; res(r); };
+      send('brb:set-save', { id: n, items: items, set: typeof id === 'string' ? id : null });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:set-saved' || typeof m.id !== 'number') return;
+    var w = setWait[m.id]; if (!w) return;
+    w(typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set) ? { id: m.set } : { error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
+  var questionSet = (function (s) {
+    if (!s || typeof s !== 'object' || typeof s.id !== 'string') return null;
+    if (s.missing) return Object.freeze({ id: s.id, missing: true });
+    var items = Array.isArray(s.items) ? s.items.map(function (it) { return Object.freeze({ a: it.a, p: it.p, s: it.s, l: it.l }); }) : [];
+    return Object.freeze({ id: s.id, items: Object.freeze(items), mine: s.mine === true });
+  })(INIT.set);
+  // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
+  // its Assign page with these lesson parameters (the problem or the set the class will open).
+  function assign(query) {
+    if (INIT.canAssign !== true || typeof query !== 'string' || query.length > 200) return false;
+    send('brb:assign', { opts: query.replace(/^\?/, '') });
+    return true;
   }
   var synthCancel = synth ? synth.cancel : null;
   if (TTS) {
@@ -1150,11 +1227,22 @@
     voice: function (lang) { try { return voiceFor(lang); } catch (e) { return null; } },
     speak: speak,
     stopSpeaking: stopSpeaking,
+    // Moving on after speech: fn once the last line is finished (afterSpeech above); whether a line is playing or waiting.
+    afterSpeech: afterSpeech,
+    speaking: speaking,
     // AI voices (official games, when on): fetch lines ahead, and whether a language is read by an AI voice now.
     prefetchSpeech: prefetchSpeech,
     aiVoice: aiVoice,
     // Whether the AI voice will read these lines (a Promise of true/false); speak(text, { ai: 'only' }) reads them.
-    aiVoiceCheck: aiVoiceCheck
+    aiVoiceCheck: aiVoiceCheck,
+    // The game's own play page (https://…/play/<slug>), or null in a preview: a game that shares a link to itself
+    // (with lesson parameters, docs/sdk.md "Lesson parameters") builds it from this.
+    gameUrl: INIT.game && typeof INIT.game.url === 'string' && /^https?:\/\/[^/]+\/play\/[a-z0-9-]+$/.test(INIT.game.url) ? INIT.game.url : null,
+    copy: copy,
+    questionSet: questionSet,
+    saveQuestionSet: saveQuestionSet,
+    canAssign: INIT.canAssign === true,
+    assign: assign
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

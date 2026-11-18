@@ -1430,7 +1430,10 @@ window.WTCore = (function () {
       };
       it.stop = stop;
       speakAll(['ins.speed', 'w.' + it.word], { auto: true });
-      setTimeout(go, muted() ? 300 : 2600);
+      // The clock starts once the word has been said (BRB.afterSpeech: an AI line still on its way counts), never while
+      // the child is still hearing it; the plain 2.6 s without the SDK's afterSpeech, 0.3 s when the sound is off.
+      if (!muted() && window.BRB && typeof BRB.afterSpeech === 'function') BRB.afterSpeech(go, { min: 600, max: 12000 });
+      else setTimeout(go, muted() ? 300 : 2600);
     },
   };
 

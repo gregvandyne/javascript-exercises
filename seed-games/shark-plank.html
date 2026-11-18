@@ -382,6 +382,14 @@ function markKey(l,good){const k=$('k'+l);k.disabled=true;k.classList.add(good?'
 function showPanel(name){$('play').hidden=name!=='play';$('secret').hidden=name!=='secret';$('result').hidden=name!=='result';Oomba.scene=name;fitLabels();}
 let resultT=null;
 const cancelResult=()=>{if(resultT){resultT();resultT=null;}};
+/** The results card waits for the line being said (BRB.afterSpeech: an AI line still on its way counts), so the cheer
+ *  or the shark's line is never cut off: at least ms, at most 10 s more. Without the SDK's afterSpeech, the plain wait.
+ *  Both give back a function that cancels it (cancelResult). */
+function afterLine(ms,fn){
+  const B=window.BRB;
+  if(!B||typeof B.afterSpeech!=='function')return Oomba.time.real.after(ms,fn);
+  return B.afterSpeech(fn,{min:ms,max:ms+10000});
+}
 document.querySelectorAll('.lvl').forEach(b=>b.addEventListener('click',()=>{
   level=b.dataset.l;document.querySelectorAll('.lvl').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx('select');
   if(level==='two'){cancelResult();showPanel('secret');$('secretIn').value='';$('err').textContent='';resetScene();word='';miss=0;over=false;syncHud();}
@@ -435,7 +443,7 @@ function checkWin(){
     over=true;ABC.split('').forEach(x=>$('k'+x).disabled=true);$('hint').disabled=true;
     stars++;try{localStorage.setItem('shark-plank-stars',stars);}catch(e){}syncHud();
     scene.anim='win';scene.at=0;setTimeout(()=>sayT('sWin',{w:word.toLowerCase()}),600);
-    sfx('win');resultT=Oomba.time.real.after(1500,()=>showResult(true));
+    sfx('win');resultT=afterLine(1500,()=>showResult(true));
   }
 }
 
@@ -736,7 +744,7 @@ function frame(now){
       if(a<3.9){if(k>.5){const f=Math.min(1,(k-.5)/.5);const fx=lerp(kx+200,kidX(0),f),fy=lerp(SEA-40,PLANK_Y-12,f)-Math.sin(f*Math.PI)*220;drawKid(fx,fy+bob,T,{worry:5,fly:1,rot:f*6.28});
         if(f>=1&&!scene.drip){scene.drip=1;sfx('land');}}}
       else{drawKid(kidX(0),PLANK_Y-12+bob,T,{worry:5});
-        if(!scene.revealed){scene.revealed=1;renderWord();sayT('sLose',{w:word.toLowerCase()});cancelResult();resultT=Oomba.time.real.after(1000,()=>showResult(false));}
+        if(!scene.revealed){scene.revealed=1;renderWord();sayT('sLose',{w:word.toLowerCase()});cancelResult();resultT=afterLine(1000,()=>showResult(false));}
         c.fillStyle=pal.drop;for(let i=0;i<3;i++){c.beginPath();c.ellipse(kidX(0)-20+i*20,PLANK_Y-150+((T*60+i*15)%60),3,6,0,0,7);c.fill();ink(1.5);}
         if(!REDUCED)for(let i=0;i<3;i++){const bt=(T*.8+i/3)%1;c.globalAlpha=1-bt;c.fillStyle=rgba(CREAM,.7);c.beginPath();c.arc(kx+200+Math.sin(bt*9+i)*8,sy-30-bt*90,5+i*2,0,7);c.fill();ink(2);c.globalAlpha=1;}}}   // burp bubbles
   } else if(scene.anim==='win'){

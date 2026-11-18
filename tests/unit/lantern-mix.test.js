@@ -127,7 +127,8 @@ test('the file: the scanner passes it, nothing leaves the site, and its import m
   assert.doesNotMatch(HTML, /\b(lives left|you lose|out of time|countdown|time is up|hurry|game over!)\b/i, 'no timer, no lives, no losing');
   // a round's steps are run by the game loop: the only wall-clock timers end a button wobble and bring the lamplighter
   // back to standing. Nothing ends a round on a clock.
-  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 2);
+  // and two at the start: the loading screen's fallback wait for a first frame, and its removal after the fade
+  assert.equal((HTML.match(/setTimeout\(/g) || []).length, 4);
   assert.doesNotMatch(HTML, /setInterval\(|Date\.now|performance\.now/);
   // answers by dials only: sliders and buttons, never a typed number or a name
   assert.doesNotMatch(HTML, /type = 'text'|type="text"|type = 'number'|type="number"|<textarea|contenteditable|prompt\(/);

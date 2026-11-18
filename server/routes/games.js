@@ -10,7 +10,7 @@ import * as seo from '../seo.js';
 import { LEARNING, isLearningGame, gradeBand, ageBand, hubOfGame } from '../learn.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
-import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
+import { frameDocument, sendFrame, sendFrameText, frameOrigins, requestOrigin, SANDBOX } from '../services/frame.js';
 import { signToken, readToken, requireUser, getUser, createGuest, startSession, isGrownup } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
@@ -22,6 +22,7 @@ import * as progress from '../services/progress.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
+import * as gameSets from '../services/game-sets.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
@@ -375,7 +376,9 @@ router.get('/frame/:token', (req, res) => {
   const lang = normalizeCode(tok.l) || req.locale;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest, character: characterOf(u) } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
-    game: { id: g.id, title: g.title },
+    // url: the game's own play page, for a game that shares a link to itself (BRB.gameUrl: a link with lesson
+    // parameters, as Algebra Builder' activity links are). Never another page.
+    game: { id: g.id, title: g.title, url: `${requestOrigin(req)}/play/${g.slug}` },
     // The site theme for games that follow it (Oomba Kit games); 'system' is left out so the device decides.
     ...(req.theme === 'light' || req.theme === 'dark' ? { theme: req.theme } : {}),
     save: u && !preview ? games.getSave(g.id, u.id) : {},
@@ -383,6 +386,12 @@ router.get('/frame/:token', (req, res) => {
     preview,
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
+    // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
+    // (BRB.questionSet: { id, items, mine }); a code with no set: { id, missing: true }.
+    ...(setFor(g, unpackParams(tok.o).chapter, u)),
+    // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
+    // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
+    ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).
@@ -407,6 +416,24 @@ function apiGame(req, res) {
 }
 // Game polls (services/polls.js): an official game on the list counts a choice and gets the totals back.
 // Body { item, choice: 0|1, seat?: 0-5 }. -> { a, b, total, min }
+// Question sets (services/game-sets.js): an official game on the list keeps a teacher's list of questions under a short
+// code. Body { items, id? } (id: change that set, the caller's own). -> { id }. Not for guests (a set outlives a guest).
+const setGame = g => gameSets.SET_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
+function setFor(g, chapter, u) {
+  if (!chapter || !gameSets.SET_ID.test(chapter) || !setGame(g)) return {};
+  const s = gameSets.get(g.id, chapter);
+  return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
+}
+router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (req.user.is_guest) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' });
+  const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
+  if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  const r = gameSets.save(g.id, req.user.id, b.items, id);
+  if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
+  res.json({ id: r.id });
+});
 const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
 router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
