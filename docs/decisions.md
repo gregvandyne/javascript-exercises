@@ -7970,6 +7970,19 @@ of the board, so on a 5 × 8 widget (a board about 280-330px across) every label
   bands on 11 × 11 pegs, triangle dots, the circle, at the default and smallest sizes); unit tests cover the sizes, the
   placing and the 12px minimum.
 
+
+## Schedule settings: the calendar and agenda as cards at the top, instructions folded (18 Nov 2026)
+Owner: "Make this more modular and put it at the top of the widget. Instead of just having the text there put
+Instructions with a drop down caret." Then: "Remove this from the individual days and just make it visible when you
+click Give (that day) its own schedule."
+- The schedule's settings open with two cards: **Connected calendar** (the `cal` setting now comes before `periods`)
+  and **Import an agenda** (upload or paste; moved from the bottom of the periods editor to its top). Each card's long
+  help (`calNote`, `uploadHint`) sits under "▸ Instructions", a `<details>` with a caret that turns when open (mirrored
+  right to left); the calendar field still points at its text with aria-describedby. New words `instructions` and
+  `agendaLabel` in 13 languages.
+- On a weekday the cards are gone while the day uses Every day (only "Give Monday its own schedule" shows). Once the
+  day has its own schedule, Import an agenda shows and imports into that day. The connected calendar fills every day,
+  so it shows only on Every day.
 ## Machine Line: a clear board, the voice from the start, order of operations, drag and drop (18 Nov 2026)
 Owner: "The machine line game seems to have that same sort of foggy distortion as another game yesterday ... the initial
 instructions are the computer voice and not AI. Also, I am a bit worried that the game may confuse the student about

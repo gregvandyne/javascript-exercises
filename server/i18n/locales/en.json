@@ -9837,7 +9837,9 @@
         "calNote": "Google Calendar: Settings → your calendar → “Secret address in iCal format”. Outlook: Settings → Calendar → Shared calendars → Publish → ICS link. Today's timed events become the schedule, and everyone who sees this widget sees them, so connect a calendar meant for the class. The address itself stays private.",
         "calRemove": "Disconnect",
         "calOn": "{name} is connected.",
-        "calToday": "Today's events come from this calendar (checked every 15 minutes). On a day with none, the schedule below is shown."
+        "calToday": "Today's events come from this calendar (checked every 15 minutes). On a day with none, the schedule below is shown.",
+        "instructions": "Instructions",
+        "agendaLabel": "Import an agenda"
       },
       "weather": {
         "name": "Weather",

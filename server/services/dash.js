@@ -182,10 +182,12 @@ export const WIDGETS = [
   // edited with the periods), 'cal' a calendar connected through services/dash-calendar.js (its id and name only).
   { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts',
     'everyDay', 'sameAsEvery', 'ownDay', 'backToEvery', 'upload', 'uploadHint', 'paste', 'pasteHint', 'pasteGo', 'imported', 'importedWeek', 'importNone',
-    'calLabel', 'calHint', 'calConnect', 'calNote', 'calRemove', 'calOn', 'calToday'], settings: [
+    'calLabel', 'calHint', 'calConnect', 'calNote', 'calRemove', 'calOn', 'calToday', 'instructions', 'agendaLabel'], settings: [
+    // The connected calendar first, then the periods (whose editor opens with the agenda import): the two ways to bring a
+    // schedule in sit at the top of the settings, each a card with its instructions folded away.
+    { key: 'cal', type: 'feed', def: null },
     { key: 'periods', type: 'periods', def: [] },
     { key: 'week', type: 'week', hidden: true, def: {} },
-    { key: 'cal', type: 'feed', def: null },
     { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
   { id: 'weather', icon: '⛅', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty', 'resting', 'loading', 'hiLo', 'find', 'search', 'searchHint', 'none', 'place',
     'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
