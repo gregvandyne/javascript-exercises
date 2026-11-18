@@ -26,6 +26,9 @@
 		type Work as WorkT
 	} from '$lib/methods';
 	import { finished, load, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
+	import Speaker from '$lib/Speaker.svelte';
+	import { m, segments, t, tn, tx, type Msg } from '$lib/i18n';
+	import { sayAll } from '$lib/speech';
 
 	let {
 		activity,
@@ -66,11 +69,15 @@
 	let reached = $state<string[]>([]);
 	let count = $state<number | null>(null);
 	let typed = $state('');
-	let nudge = $state('');
+	// (each a line of the table, so the speaker button can read it; null or [] when there is none)
+	let nudgeMsg = $state<Msg | null>(null);
+	const nudge = $derived(nudgeMsg ? tx(nudgeMsg) : '');
 	/** Advice on a choice that works but isn't the method's way, said once for that value (Next keeps it). */
-	let tip = $state('');
+	let tipMsg = $state<Msg | null>(null);
+	const tip = $derived(tipMsg ? tx(tipMsg) : '');
 	let tipped = '';
-	let told = $state('');
+	let toldLines = $state<Msg[]>([]);
+	const told = $derived(tx(toldLines));
 	let busy = $state(false);
 	let watchShown = $state(false);
 	let watchVals: Values = {};
@@ -120,7 +127,7 @@
 	const narrow = $derived(W <= 760);
 	const level = $derived(activity.settings.level);
 	const info = $derived(level === 'custom' ? undefined : levelInfo(level));
-	const levelLabel = $derived(level === 'custom' ? 'Your teacher’s mix' : (info?.label ?? 'Guided'));
+	const levelLabel = $derived(level === 'custom' ? t('ui.level.custom') : (info?.label ?? t('ui.level.guided')));
 	const way = $derived(level === 'custom' ? 'type' : (info?.way ?? 'type'));
 	const flags = $derived(level === 'custom' ? activity.settings.custom : info!.flags);
 	const scored = $derived(level === 'custom' || !!info?.scored);
@@ -186,38 +193,43 @@
 	const litSet = $derived(flags.spotlight && active && phase === 'working' ? new Set(active.lit) : null);
 	const lit = (key: string) => !litSet || litSet.has(key);
 
-	const prompt = $derived.by(() => {
-		if (!work || phase !== 'working') return '';
+	const askOf = (f: Field) => f.ask ?? [];
+	/** The question for now, as lines of the table: shown in the band, and read by the speaker button. */
+	const promptLines = $derived.by((): Msg[] => {
+		if (!work || phase !== 'working') return [];
 		if (way === 'watch') {
-			if (watchShown && told) return told;
-			return firstEmpty ? firstEmpty.prompt : `So ${work.title} = ${showAnswer(work.answer)}.`;
+			if (watchShown && told) return toldLines;
+			return firstEmpty ? askOf(firstEmpty) : [m('q.so', { e: work.title, x: showAnswer(work.answer) })];
 		}
-		if (busy && told) return told;
-		if (nudge) return nudge;
-		if (tip) return tip;
+		if (busy && told) return toldLines;
+		if (nudgeMsg) return [nudgeMsg];
+		if (tipMsg) return [tipMsg];
 		if (way === 'countUp') {
-			if (!active) return firstEmpty ? '' : 'Press Check, or Enter.';
+			if (!active) return firstEmpty ? [] : [m('q.pressCheck')];
 			if (choose) {
 				const v = values[active!.id];
-				if (!v) return `${active!.prompt} Pick with ▲ and ▼, or type it.`;
+				if (!v) return [...askOf(active!), m('q.lad.pick')];
 				const n = Number(v);
+				const x = n * choose.divisor;
 				return n * choose.divisor > choose.left
-					? `${n} × ${choose.divisor} = ${n * choose.divisor}: too many, more than ${choose.left}.`
-					: `${n} × ${choose.divisor} = ${n * choose.divisor}, and ${choose.left - n * choose.divisor} is left. Press That’s it, or go up.`;
+					? [m('q.lad.tooMany', { a: n, b: choose.divisor, x, l: choose.left })]
+					: [m('q.lad.left', { a: n, b: choose.divisor, x, l: choose.left - x })];
 			}
 			if (skip) {
-				const zeros = skip.zeros ? `, then put on ${skip.zeros === 1 ? 'a zero' : `${skip.zeros} zeros`}` : '';
-				if (typed) return `${skip.by} × ${skip.times} = ${typed}? Press That’s it.`;
-				if (!count) return `${active!.prompt} Count by ${skip.by}s, ${skip.times} ${skip.times === 1 ? 'time' : 'times'}, with ▲${zeros}.`;
-				return `${Array.from({ length: count }, (_, i) => (i + 1) * skip.by).join(', ')}: that’s ${count} ${count === 1 ? 'time' : 'times'}.`;
+				if (typed) return [m('q.skip.mulTyped', { a: skip.by, b: skip.times, x: typed }), m('q.skip.pressIt')];
+				if (!count) return [...askOf(active!), m(skip.zeros ? (skip.zeros === 1 ? 'q.lad.countByZero1' : 'q.lad.countByZeros') : 'q.lad.countBy', { a: skip.by, z: skip.zeros }, skip.times)];
+				return [m('q.skip.mulCount', { list: Array.from({ length: count }, (_, i) => (i + 1) * skip.by).join(', ') }, count)];
 			}
 		}
-		if (!flags.prompt && way === 'type') return '';
+		if (!flags.prompt && way === 'type') return [];
 		const f = way === 'type' ? fieldOf(current) : active;
-		if (!f) return allFilled(work, values) ? 'Press Check, or Enter.' : '';
+		if (!f) return allFilled(work, values) ? [m('q.pressCheck')] : [];
 		const typing = f.role !== 'choice' && norm(values[f.id] ?? '').length < (f.expect?.length ?? 0);
-		return flags.markNow && !typing && fieldWrong(f, values) ? `Not quite. ${f.nudge?.(values[f.id] ?? '') ?? f.prompt}` : f.prompt;
+		const n = f.nudgeSay?.(values[f.id] ?? '');
+		return flags.markNow && !typing && fieldWrong(f, values) ? [m('q.notQuite'), ...(n ? [n] : askOf(f))] : askOf(f);
 	});
+	const prompt = $derived(tx(promptLines));
+	const sayLines = $derived(sayAll(promptLines));
 
 	// --- waiting (Space finishes at once) ---
 
@@ -282,10 +294,10 @@
 		reached = [];
 		firstTry = true;
 		sticky = false;
-		nudge = '';
-		tip = '';
+		nudgeMsg = null;
+		tipMsg = null;
 		tipped = '';
-		told = '';
+		toldLines = [];
 		count = null;
 		typed = '';
 		watchShown = false;
@@ -326,19 +338,19 @@
 		if (!v) return false;
 		if (flags.markNow && fieldWrong(f, values)) {
 			misses += 1;
-			if (f.role === 'choice') nudge = f.nudge?.(v) ?? '';
+			if (f.role === 'choice') nudgeMsg = f.nudgeSay?.(v) ?? null;
 			inputOf(f.id)?.select();
 			return false;
 		}
-		nudge = '';
-		const advice = flags.markNow ? f.advice?.(v) : null;
+		nudgeMsg = null;
+		const advice = flags.markNow ? f.adviceSay?.(v) : null;
 		if (advice && tipped !== `${f.id}:${v}`) {
 			tipped = `${f.id}:${v}`;
-			tip = advice;
+			tipMsg = advice;
 			inputOf(f.id)?.select();
 			return false;
 		}
-		tip = '';
+		tipMsg = null;
 		goNext(f.id);
 		return true;
 	}
@@ -347,8 +359,8 @@
 		put(f.id, v);
 		const el = inputOf(f.id);
 		if (el && el.value !== v) el.value = v;
-		nudge = '';
-		tip = '';
+		nudgeMsg = null;
+		tipMsg = null;
 		if (choose && f.id === active?.id) return;
 		// on by itself once all its digits are in (a choice: once its squares are full)
 		if (f.role === 'choice' ? v.length >= f.len : f.expect !== null && norm(v).length >= f.expect.length) commit(f);
@@ -403,20 +415,20 @@
 		at = null;
 		count = null;
 		typed = '';
-		nudge = '';
+		nudgeMsg = null;
 		let f = fields.find((x) => !values[x.id]);
 		if (f && isAuto(f))
 			await busyDo(async () => {
 				while (f && isAuto(f)) {
 					at = f.id;
 					await wait(STEP_MS / 2);
-					told = f.told;
+					toldLines = f.tell ?? [];
 					fill(f, f.expect ?? watchVals[f.id] ?? '');
 					await wait(STEP_MS * 1.6);
 					await tick();
 					f = fields.find((x) => !values[x.id]);
 				}
-				told = '';
+				toldLines = [];
 			});
 		f = fields.find((x) => !values[x.id]);
 		at = f?.id ?? null;
@@ -429,7 +441,7 @@
 	function bump(by: number) {
 		if (!counting || !active) return;
 		typed = '';
-		nudge = '';
+		nudgeMsg = null;
 		if (choose) {
 			const list = friendlySteps(choose.left, choose.divisor);
 			const v = Number(values[active.id] || 0);
@@ -447,22 +459,22 @@
 		if (choose) {
 			const v = values[f.id] ?? '';
 			if (!v) {
-				nudge = 'Pick a number with ▲ first.';
+				nudgeMsg = m('q.lad.pickFirst');
 				return;
 			}
-			const n = f.nudge?.(v);
+			const n = f.nudgeSay?.(v);
 			if (n) {
-				nudge = n;
+				nudgeMsg = n;
 				fails += 1;
 				return;
 			}
-			nudge = '';
+			nudgeMsg = null;
 			return advance();
 		}
 		if (!skip) return;
 		if (typed) {
 			if (Number(typed) !== skip.by * skip.times) {
-				nudge = `${typed} isn’t ${skip.by} × ${skip.times}. Count by ${skip.by}s with ▲ to find it.`;
+				nudgeMsg = m('q.skip.notItMul', { x: typed, a: skip.by, b: skip.times });
 				fails += 1;
 				typed = '';
 				return;
@@ -471,21 +483,21 @@
 			typed = '';
 		}
 		if (count === null) {
-			nudge = 'Count up with ▲ first.';
+			nudgeMsg = m('q.skip.first');
 			return;
 		}
 		if (count !== skip.times) {
-			nudge = count < skip.times ? `That’s ${count} times so far. Keep counting to ${skip.times}.` : `That’s ${count} times, more than ${skip.times}. Count back with ▼.`;
+			nudgeMsg = m(count < skip.times ? 'q.skip.mulSoFar' : 'q.skip.mulTooFar', { b: skip.times }, count);
 			fails += 1;
 			return;
 		}
 		const sk = skip;
 		const product = sk.by * sk.times;
 		await busyDo(async () => {
-			told = sk.zeros ? `${sk.by} × ${sk.times} = ${product}, and ${sk.zeros === 1 ? 'a zero' : `${sk.zeros} zeros`} on the end: ${f.told}` : f.told;
+			toldLines = sk.zeros ? [m('q.lad.zerosOn', { a: sk.by, b: sk.times, p: product }, sk.zeros), ...(f.tell ?? [])] : (f.tell ?? []);
 			fill(f, String(sk.value));
 			await wait(STEP_MS * 2);
-			told = '';
+			toldLines = [];
 		});
 		return advance();
 	}
@@ -497,12 +509,12 @@
 		if (!work || phase !== 'working') return;
 		if (watchShown) {
 			watchShown = false;
-			told = '';
+			toldLines = [];
 			return;
 		}
 		const f = firstEmpty;
 		if (!f) return nextProblem();
-		told = f.told;
+		toldLines = f.tell ?? [];
 		at = f.id;
 		fill(f, watchVals[f.id] ?? f.expect ?? '');
 		watchShown = true;
@@ -518,7 +530,7 @@
 			const most = String(skip.by * 9).length;
 			typed = k === '' ? typed.slice(0, -1) : typed.length >= most ? k : typed + k;
 			count = null;
-			nudge = '';
+			nudgeMsg = null;
 			return;
 		}
 		const f = (way === 'type' ? fieldOf(current) : active) ?? fields.find((x) => !values[x.id] && !isAuto(x));
@@ -635,16 +647,7 @@
 	/** The squares' size: as big as fits (at most 50px), never so small a finger can't hit one (26px; wider work scrolls). */
 	const sq = $derived(work ? Math.round(Math.max(26, Math.min(50, (Math.min(W, 1400) - 48) / (workWidth(work) + 1), H / 13))) : 40);
 	const toGo = $derived(phase === 'over' ? 0 : problems.length - index - +settled);
-	const ROLE: Record<string, string> = {
-		choice: 'How many groups',
-		product: 'Product',
-		difference: 'What’s left',
-		cell: 'Box',
-		sum: 'Total',
-		quotient: 'Quotient',
-		remainder: 'Remainder',
-		denominator: 'Fraction, bottom'
-	};
+	const ROLE = (r: string) => t(`ui.field.${r}`);
 	/** The squares of a field: its digits, lined up on the right, and which of them are wrong. */
 	function squares(f: Field) {
 		const v = values[f.id] ?? '';
@@ -684,7 +687,7 @@
 			spellcheck="false"
 			maxlength={f.len}
 			inputmode={canType ? 'numeric' : 'none'}
-			aria-label="{ROLE[f.role]}{f.role === 'choice' || f.role === 'product' || f.role === 'difference' ? `, step ${Number(f.id.slice(1)) + 1}` : ''}"
+			aria-label={f.role === 'choice' || f.role === 'product' || f.role === 'difference' ? t('ui.field.step', { f: ROLE(f.role), n: Number(f.id.slice(1)) + 1 }) : ROLE(f.role)}
 			aria-invalid={wrongNow}
 			value={values[f.id] ?? ''}
 			readonly={!canType}
@@ -711,20 +714,20 @@
 		<button type="button" class="extra" onclick={extra.onclick}>{extra.label}</button>
 	{/if}
 	<h1>{title}</h1>
-	{#if preview}<span class="chip preview">Preview</span>{/if}
-	<span class="chip method-chip" title="Method">{mInfo.label}</span>
-	<span class="chip level-chip" title="Level of support">{levelLabel}</span>
+	{#if preview}<span class="chip preview">{t('ui.preview')}</span>{/if}
+	<span class="chip method-chip" title={t('ui.method')}>{mInfo.label}</span>
+	<span class="chip level-chip" title={t('ui.player.levelTitle')}>{levelLabel}</span>
 	{#if work && phase !== 'setup'}
-		<div class="count" aria-label="Score">
+		<div class="count" aria-label={t('ui.player.score')}>
 			{#if scored}
-				<span class="chip good" title="Right"><Check size={14} aria-hidden="true" /> {rightCount}</span>
-				<span class="chip bad" title="Wrong"><X size={14} aria-hidden="true" /> {wrongCount}</span>
+				<span class="chip good" title={t('ui.player.right')}><Check size={14} aria-hidden="true" /> {rightCount}</span>
+				<span class="chip bad" title={t('ui.player.wrong')}><X size={14} aria-hidden="true" /> {wrongCount}</span>
 			{/if}
 			{#if phase !== 'over'}<span class="chip">{toGo} to go</span>{/if}
 		</div>
 		{#if way !== 'watch' && phase !== 'over'}
 			<button type="button" class="pad-toggle" aria-pressed={padOpen} onpointerdown={(e) => e.preventDefault()} onclick={() => setPad(!padOpen)}
-				><Grid3x3 size={16} aria-hidden="true" /> Keypad</button
+				><Grid3x3 size={16} aria-hidden="true" /> {t('ui.keypad')}</button
 			>
 		{/if}
 	{/if}
@@ -738,27 +741,26 @@
 				{#each mInfo.steps as s (s)}<li>{s}</li>{/each}
 			</ol>
 			<p class="level-line">
-				{planned}
-				{planned === 1 ? 'problem' : 'problems'}, at <b>{levelLabel}</b>{#if level !== 'custom'}: {kind.studentLevelText?.[level] && method !== 'area' && method !== 'partial'
+				{#each segments('ui.player.planned', planned) as x, i (i)}{#if x.v === 'level'}<b>{levelLabel}</b>{:else if x.v === 'n'}{planned}{:else}{x.s}{/if}{/each}{#if level !== 'custom'}{t('ui.colon')}{kind.studentLevelText?.[level] && method !== 'area' && method !== 'partial'
 						? kind.studentLevelText[level]
 						: level === 'countUp'
-							? activity.kind === 'divide'
-								? 'Pick how many to take away with ▲ and ▼, and the page multiplies. You subtract and add.'
-								: 'Skip-count each box with ▲, and the page writes it in. Then type the adding.'
+							? t(activity.kind === 'divide' ? 'ui.method.countUpDivide' : 'ui.method.countUpMultiply')
 							: info?.detail}{/if}
 			</p>
 			<div class="menu-actions">
-				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> Start</button>
+				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {t('ui.start')}</button>
 			</div>
 		{:else}
-			<h2>All done!</h2>
+			<h2>{t('ui.player.allDone')}</h2>
 			{#if rightCount + wrongCount > 0}
-				<p class="final">You got <b class="good-text">{rightCount}</b> right and <b class="bad-text">{wrongCount}</b> wrong.</p>
+				<p class="final">
+					{#each segments('ui.player.final') as x, i (i)}{#if x.v === 'r'}<b class="good-text">{rightCount}</b>{:else if x.v === 'w'}<b class="bad-text">{wrongCount}</b>{:else}{x.s}{/if}{/each}
+				</p>
 			{:else}
-				<p class="final">You watched {problems.length} {problems.length === 1 ? 'problem' : 'problems'} worked.</p>
+				<p class="final">{tn('ui.player.watched', problems.length)}</p>
 			{/if}
 			<div class="menu-actions">
-				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {againLabel ?? 'Start again'}</button>
+				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {againLabel ?? t('ui.player.again')}</button>
 			</div>
 		{/if}
 		<Footer />
@@ -782,19 +784,21 @@
 		{#if phase === 'feedback'}
 			<div class="feedback {fb}" aria-live="polite" bind:this={feedbackEl}>
 				<p>
-					{#if fb === 'right'}<b>Correct!</b> {work.title} = {showAnswer(work.answer)}{:else if fb === 'again'}<b>Not quite.</b> Check your work
-						and try again.{:else}<b>The answer is {showAnswer(work.answer)}.</b> Here’s one way to work it.{/if}
+					{#if fb === 'right'}<b>{t('ui.fb.correct')}</b> <span dir="ltr">{work.title} = {showAnswer(work.answer)}</span>{:else if fb === 'again'}<b
+							>{t('ui.fb.notQuite')}</b
+						>
+						{t('ui.fb.tryAgainLine')}{:else}<b>{t('ui.fb.answerIs', { x: showAnswer(work.answer) })}</b> {t('ui.fb.oneWay')}{/if}
 				</p>
 				<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
-					{#if fb === 'again'}Try again{:else if index + 1 < problems.length}Next problem{:else}See the score{/if}
+					{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < problems.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
 				</button>
 			</div>
 		{:else}
 			{#if hintOpen && hintShown && hints.length}
 				<div class="hint-box" aria-live="polite">
 					<p class="hint-head">
-						<Lightbulb size={15} aria-hidden="true" /> Hint {Math.min(hintShown, hints.length)} of {hints.length}
-						<button type="button" class="hint-close" aria-label="Hide the hints" onclick={() => (hintOpen = false)}>✕</button>
+						<Lightbulb size={15} aria-hidden="true" /> {t('ui.hint.of', { i: Math.min(hintShown, hints.length), n: hints.length })}
+						<button type="button" class="hint-close" aria-label={t('ui.hint.hide')} onclick={() => (hintOpen = false)}>✕</button>
 					</p>
 					<ol>
 						{#each hints.slice(0, hintShown) as h, i (i)}<li>{h}</li>{/each}
@@ -802,34 +806,37 @@
 				</div>
 			{/if}
 			<div class="prompt-row">
-				<p class="prompt" class:nudge={!!nudge} class:tip={!nudge && !!tip} aria-live="polite">{prompt}</p>
+				<div class="prompt-line">
+					<Speaker lines={sayLines} />
+					<p class="prompt" class:nudge={!!nudge} class:tip={!nudge && !!tip} aria-live="polite">{prompt}</p>
+				</div>
 				<div class="actions">
 					{#if way === 'watch'}
 						<button type="button" class="btn-primary big" bind:this={nextBtn} onclick={watchNext}
 							><SkipForward size={18} aria-hidden="true" />
-							{!firstEmpty && !watchShown ? (index + 1 < problems.length ? 'Next problem' : 'Done') : 'Next'}</button
+							{!firstEmpty && !watchShown ? (index + 1 < problems.length ? t('ui.nextProblem') : t('ui.done')) : t('ui.next')}</button
 						>
 					{:else if counting}
-						<span class="updown" role="group" aria-label="Count up">
-							<button type="button" class="btn-ghost step" aria-label="One more" onpointerdown={(e) => e.preventDefault()} onclick={() => bump(1)}
+						<span class="updown" role="group" aria-label={t('ui.level.countUp')}>
+							<button type="button" class="btn-ghost step" aria-label={t('ui.oneMore')} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(1)}
 								><ChevronUp size={20} aria-hidden="true" /></button
 							>
-							<button type="button" class="btn-ghost step" aria-label="One less" onpointerdown={(e) => e.preventDefault()} onclick={() => bump(-1)}
+							<button type="button" class="btn-ghost step" aria-label={t('ui.oneLess')} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(-1)}
 								><ChevronDown size={20} aria-hidden="true" /></button
 							>
 						</span>
 						<button type="button" class="btn-primary big" disabled={busy} onpointerdown={(e) => e.preventDefault()} onclick={thatsIt}
-							><Check size={18} aria-hidden="true" /> That’s it</button
+							><Check size={18} aria-hidden="true" /> {t('ui.thatsIt')}</button
 						>
 					{:else}
 						{@const cf = fieldOf(current)}
 						{#if cf && cf.role === 'choice' && values[cf.id] && !canCheck}
 							<button type="button" class="btn-ghost" onpointerdown={(e) => e.preventDefault()} onclick={() => commit(cf)}
-								>Next <ArrowRight size={17} aria-hidden="true" /></button
+								>{t('ui.next')} <ArrowRight size={17} aria-hidden="true" /></button
 							>
 						{/if}
 						<button type="button" class="btn-primary big" bind:this={checkBtn} disabled={!canCheck} onclick={check}
-							><Check size={18} aria-hidden="true" /> Check</button
+							><Check size={18} aria-hidden="true" /> {t('ui.check')}</button
 						>
 					{/if}
 					{#if way !== 'watch' && hints.length}
@@ -838,13 +845,13 @@
 							class="btn-ghost hint-btn"
 							class:stuck
 							disabled={hintShown >= hints.length && hintOpen}
-							aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
+							aria-label={t(hintShown >= hints.length ? (hintOpen ? 'ui.hint.noMore' : 'ui.hint.again') : stuck ? 'ui.hint.stuckGet' : 'ui.hint.get')}
 							onpointerdown={(e) => e.preventDefault()}
-							onclick={showHint}><Lightbulb size={17} aria-hidden="true" /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span></button
+							onclick={showHint}><Lightbulb size={17} aria-hidden="true" /><span class="hint-word">{t(stuck ? 'ui.hint.stuck' : 'ui.hint.word')}</span></button
 						>
 					{/if}
 					{#if way === 'type'}
-						<button type="button" class="btn-ghost" onclick={reset}><Eraser size={17} aria-hidden="true" /> Clear</button>
+						<button type="button" class="btn-ghost" onclick={reset}><Eraser size={17} aria-hidden="true" /> {t('ui.clear')}</button>
 					{/if}
 				</div>
 			</div>

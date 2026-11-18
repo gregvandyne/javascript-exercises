@@ -19,16 +19,46 @@ execFileSync(process.execPath, [path.join(HERE, 'node_modules/vite/bin/vite.js')
 let html = fs.readFileSync(path.join(HERE, 'dist/index.html'), 'utf8');
 
 const { kitTag } = await import(path.join(ROOT, 'server/services/kit.js'));
+const { sayText } = await import(path.join(HERE, 'src/lib/speech.ts'));
 const must = (re, what) => { if (!re.test(html)) throw new Error(`build.mjs: ${what} not found (the bundle changed: update build.mjs)`); };
 
 must(/<!--@@KIT@@-->/, 'the kit marker');
 html = html.replace('<!--@@KIT@@-->', kitTag());
+must(/<!--@@I18N@@-->/, 'the words marker');
+html = html.replace('<!--@@I18N@@-->', () => i18nBlock());
 // Web addresses: Svelte's error links and Tailwind's banner (the license name stays)
 html = html.replace(/https:\/\/svelte\.dev\/e\//g, 'svelte.dev/e/').replace(/ \| https:\/\/tailwindcss\.com/g, '');
 
 const NAME = fs.readFileSync(path.join(HERE, 'src/lib/name.ts'), 'utf8').match(/export const NAME = '([^']+)'/)[1];
 const banner = `<!-- ${NAME}. Built by tools/box-by-box/build.mjs from tools/box-by-box: do not edit by hand. -->\n`;
 html = html.replace(/^<!doctype html>\n?/i, (m) => m + banner);
+
+/** The words in every language (src/i18n/<locale>.json; en.json has every key) as the marked I18N block the game reads
+ *  (src/lib/i18n.ts) and the server reads for the AI voice (server/services/tts-lines.js): each language's own keys,
+ *  plus say.<key> for every q.* line, the line as the voice reads it in that language (src/lib/speech.ts), so the
+ *  allowlist holds exactly the lines the speaker button sends. en-GB uses the English (US spelling, as the game). */
+function i18nBlock() {
+  const dir = path.join(HERE, 'src/i18n');
+  const en = JSON.parse(fs.readFileSync(path.join(dir, 'en.json'), 'utf8'));
+  const locales = ['en', ...fs.readdirSync(dir).filter((f) => /^[a-zA-Z-]+\.json$/.test(f) && f !== 'en.json').map((f) => f.slice(0, -5)).sort()];
+  const out = {};
+  for (const loc of locales) {
+    const own = loc === 'en' ? en : JSON.parse(fs.readFileSync(path.join(dir, `${loc}.json`), 'utf8'));
+    // (a language may have plural forms English doesn't: key.few, key.many, key.two, key.zero, for a key with .other)
+    const plural = (k) => /\.(zero|one|two|few|many)$/.test(k) && `${k.replace(/\.\w+$/, '')}.other` in en;
+    for (const k of Object.keys(own)) {
+      if (!(k in en) && !plural(k)) throw new Error(`build.mjs: ${loc}.json has a key en.json lacks: ${k}`);
+      if (typeof own[k] !== 'string') throw new Error(`build.mjs: ${loc}.json ${k} is not words`);
+    }
+    const word = (k) => (typeof own[`w.${k}`] === 'string' ? own[`w.${k}`] : en[`w.${k}`]);
+    const t = { ...own };
+    for (const k of new Set([...Object.keys(en), ...Object.keys(own)]))
+      if (k.startsWith('q.')) t[`say.${k}`] = sayText(typeof own[k] === 'string' ? own[k] : en[k], word);
+    out[loc] = t;
+  }
+  const body = JSON.stringify(out).replace(/</g, '\\u003c');
+  return `<script>\n// ==== I18N START ====\nvar I18N = ${body};\n// ==== I18N END ====\n</script>`;
+}
 
 // What must never be in the page: an outside web address (SVG namespaces aside), or a name it must not carry (spelled
 // by character code, so this file doesn't carry them either).

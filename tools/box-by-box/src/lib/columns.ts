@@ -4,12 +4,18 @@
 // then 9 on the way, each step a box. Decimals line up their points in a column of their own, and the point comes
 // straight down into the answer. No platform calls and no DOM here, so it runs as it is in Node too.
 
-import type { Box, Cell, Sheet, Step, View } from './logic.ts';
-import { asText, placesOf, plural, scaled } from './numbers.ts';
+import type { Box, Cell, Sheet, Step, Values, View } from './logic.ts';
+import { asText, placesOf, scaled } from './numbers.ts';
+import { m as ln, t, tn, tx, type Msg } from './i18n.ts';
 
-const WHOLE = ['ones', 'tens', 'hundreds', 'thousands', 'ten thousands'];
+// places by their keys in the table (w.place.* the place, w.one.* one of it)
+const WHOLE = ['ones', 'tens', 'hundreds', 'thousands', 'tenThousands'];
 const PART = ['tenths', 'hundredths'];
-const ONE = { ones: 'one', tens: 'ten', hundreds: 'hundred', thousands: 'thousand', 'ten thousands': 'ten thousand', tenths: 'tenth', hundredths: 'hundredth' } as Record<string, string>;
+const P_ = (p: string) => t(`w.place.${p}`);
+const ONE = (p: string) => t(`w.one.${p}`);
+const list = (x: Msg | Msg[]) => (Array.isArray(x) ? x : [x]);
+const Ask = (f: (v: Values) => Msg | Msg[]) => ({ prompt: (v: Values) => tx(f(v)), ask: (v: Values) => list(f(v)) });
+const Tell = (f: (v: Values) => Msg | Msg[]) => ({ told: (v: Values) => tx(f(v)), tell: (v: Values) => list(f(v)) });
 
 /** The columns of a problem in columns: each number's digits by place (0 the rightmost), lined up by their points. */
 function lineUp(top: number, bottom: number, answer: (x: number, y: number) => number) {
@@ -74,9 +80,9 @@ const shows = (n: number, P: number) => Math.max(String(n).length, P + 1);
 function pointStep(b: ReturnType<typeof builder>, L: ReturnType<typeof lineUp>, view: View) {
 	b.add([{ id: 'ap', digit: '.', row: 3, col: L.pointCol, point: true }], {
 		kind: 'point',
-		prompt: () => 'Bring the decimal point straight down into the answer.',
-		told: () => 'The decimal point comes straight down into the answer.',
-		hints: () => ['The points stay lined up: the answer’s point goes right under the others.', 'Type a . (the decimal point) in the lit box.'],
+		...Ask(() => ln('q.col.point')),
+		...Tell(() => ln('q.col.pointTold')),
+		hints: () => [t('h.col.point1'), t('h.typePoint')],
 		lit: ['tpt', 'mpt', 'ap'],
 		view
 	});
@@ -109,19 +115,22 @@ export function addSheet({ top, bottom }: { top: number; bottom: number }): Shee
 		const place = L.name(p);
 		const parts = [...xs, ...ys];
 		const asked = !parts.length
-			? `Write the ${c} you carried.`
+			? ln('q.add.writeCarry', { c })
 			: parts.length === 1 && !c
-				? `Bring down the ${parts[0]}: there’s nothing to add to it.`
-				: `What is ${parts.join(' + ')}${c ? ` + the ${c} you carried` : ''}?`;
+				? ln('q.add.bringDown', { d: parts[0] })
+				: ln(c ? 'q.add.sumCarry' : 'q.add.sum', { xs: parts.join(' + '), c });
 		const counts = parts.length > 0;
 		b.add([{ id, digit: sum % 10, row: 3, col: L.colOf(p) }], {
 			kind: 'add',
-			prompt: () => asked,
-			told: () => (parts.length ? `${parts.join(' + ')}${c ? ` + ${c}` : ''} = ${sum}.` : `The ${c} you carried.`) + (sum >= 10 ? ` Write the ${sum % 10}.` : ''),
+			...Ask(() => asked),
+			...Tell(() => [
+				parts.length ? ln('q.col.sumIs', { xs: `${parts.join(' + ')}${c ? ` + ${c}` : ''}`, s: sum }) : ln('q.col.theCarry', { c }),
+				...(sum >= 10 ? [ln('q.col.writeOnes', { d: sum % 10 })] : [])
+			]),
 			hints: () => [
-				`Add the ${place} column, top and bottom${c ? `, and the ${c} you carried` : ''}.`,
-				parts.length > 1 ? `${parts[0]} + ${parts[1]}: count up ${plural(parts[1], 'more', 'more')} from ${parts[0]}${c ? `, then 1 more for the carry` : ''}.` : asked,
-				sum >= 10 ? `${sum}: write the ${sum % 10} here, and the 1 is carried to the ${L.name(p + 1)}.` : `It’s ${sum}.`
+				t(c ? 'h.col.add1carry' : 'h.col.add1', { p: P_(place), c }),
+				parts.length > 1 ? tn(c ? 'h.col.add2carry' : 'h.col.add2', parts[1], { a: parts[0] }) : tx(asked),
+				sum >= 10 ? t('h.col.add3', { s: sum, d: sum % 10, p: P_(L.name(p + 1)) }) : t('h.its', { x: sum })
 			],
 			lit: [...(xs.length ? [`t${p}`] : []), ...(ys.length ? [`m${p}`] : []), ...(c ? [`c${p}`] : []), 'sign', 'rule', id],
 			view,
@@ -136,9 +145,9 @@ export function addSheet({ top, bottom }: { top: number; bottom: number }): Shee
 			const cid = `c${next}`;
 			b.add([{ id: cid, digit: 1, row: 0, col: L.colOf(next), small: true }], {
 				kind: 'carry',
-				prompt: () => `${sum} ${place} is 1 ${ONE[L.name(next)]} and ${sum % 10} ${place}: carry the 1 to the ${L.name(next)}, up here.`,
-				told: () => `The 1 is carried to the ${L.name(next)}.`,
-				hints: () => [`Ten ${place} make 1 ${ONE[L.name(next)]}: it goes on top of the ${L.name(next)} column.`, 'Type 1 in the small box.'],
+				...Ask(() => ln('q.col.carry', { s: sum, p: P_(place), one: ONE(L.name(next)), d: sum % 10, next: P_(L.name(next)) })),
+				...Tell(() => ln('q.col.carryTold', { next: P_(L.name(next)) })),
+				hints: () => [t('h.col.carry1', { p: P_(place), one: ONE(L.name(next)), next: P_(L.name(next)) }), t('h.col.carry2')],
 				lit: [id, cid],
 				view
 			});
@@ -203,16 +212,21 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 			shownAt[k] = 'w';
 			b.add([{ id: wk, digit: cur[k], row: 0, col: L.colOf(k), small: true }], {
 				kind: 'borrow',
-				prompt: () =>
+				...Ask(() =>
 					middle.length
-						? `${was} is less than ${bd}, and there’s nothing to regroup in the ${middle.map((m) => L.name(m)).reverse().join(' or the ')}. Go to the ${L.name(k)}: cross out the ${lenderWas} and write ${lenderWas - 1} over it.`
-						: `${was} is less than ${bd}, so regroup: take 1 from the ${L.name(k)}. Cross out the ${lenderWas} and write ${lenderWas - 1} over it.`,
-				told: () => `Regroup: 1 ${ONE[L.name(k)]} is taken from the ${L.name(k)}, so the ${lenderWas} becomes ${lenderWas - 1}.`,
-				hints: () => [
-					`You can’t take ${bd} from ${was}, so take 1 from the next place that has one: the ${L.name(k)}.`,
-					`The ${lenderWas} gets crossed out, and ${lenderWas - 1} goes in the small box over it.`,
-					`It’s ${lenderWas - 1}.`
-				],
+						? ln(middle.length > 1 ? 'q.sub.borrowAcross2' : 'q.sub.borrowAcross', {
+								a: was,
+								b: bd,
+								m1: middle.slice(1).map((x) => P_(L.name(x))).reverse().join(', ') || P_(L.name(middle[0])),
+								m2: P_(L.name(middle[0])),
+								k: P_(L.name(k)),
+								x: lenderWas,
+								y: lenderWas - 1
+							})
+						: ln('q.sub.borrow', { a: was, b: bd, k: P_(L.name(k)), x: lenderWas, y: lenderWas - 1 })
+				),
+				...Tell(() => ln('q.sub.borrowTold', { one: ONE(L.name(k)), k: P_(L.name(k)), x: lenderWas, y: lenderWas - 1 })),
+				hints: () => [t('h.sub.borrow1', { a: was, b: bd, k: P_(L.name(k)) }), t('h.sub.borrow2', { x: lenderWas, y: lenderWas - 1 }), t('h.its', { x: lenderWas - 1 })],
 				lit: [`t${k}`, wk, `t${p}`, `m${p}`],
 				view
 			});
@@ -222,9 +236,9 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 				nudge(m);
 				b.add([{ id: om, digit: 1, row: 1, col: L.colOf(m), corner: true }], {
 					kind: 'borrow',
-					prompt: () => `The 1 ${ONE[L.name(m + 1)]} is 10 ${L.name(m)}: write a small 1 in front of the 0 to make 10.`,
-					told: () => `The 0 ${L.name(m)} become 10 ${L.name(m)}.`,
-					hints: () => [`1 ${ONE[L.name(m + 1)]} is the same as 10 ${L.name(m)}.`, 'Type 1 in the small box in front of the 0.'],
+					...Ask(() => ln('q.sub.zeroTen', { one: ONE(L.name(m + 1)), p: P_(L.name(m)) })),
+					...Tell(() => ln('q.sub.zeroTenTold', { p: P_(L.name(m)) })),
+					hints: () => [t('h.sub.zeroTen1', { one: ONE(L.name(m + 1)), p: P_(L.name(m)) }), t('h.sub.zeroTen2')],
 					lit: [`w${m + 1}`, `t${m}`, om],
 					view
 				});
@@ -235,9 +249,9 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 				shownAt[m] = 'w';
 				b.add([{ id: wm, digit: 9, row: 0, col: L.colOf(m), small: true }], {
 					kind: 'borrow',
-					prompt: () => `Now take 1 of those 10 ${L.name(m)} for the ${L.name(m - 1)}: cross out the 10 and write 9.`,
-					told: () => `10 − 1 = 9: the 10 becomes 9.`,
-					hints: () => ['One of the 10 goes on to the next place to the right, so 9 are left.', 'It’s 9.'],
+					...Ask(() => ln('q.sub.nine', { p: P_(L.name(m)), q: P_(L.name(m - 1)) })),
+					...Tell(() => ln('q.sub.nineTold')),
+					hints: () => [t('h.sub.nine1'), t('h.its', { x: 9 })],
 					lit: [`t${m}`, om, wm],
 					view
 				});
@@ -248,9 +262,9 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 			if (!onW) nudge(p);
 			b.add([{ id: op, digit: 1, row: onW ? 0 : 1, col: L.colOf(p), corner: true }], {
 				kind: 'borrow',
-				prompt: () => `The ${place} get 10 more: write a small 1 in front of the ${was} to make ${was + 10}.`,
-				told: () => `${was} becomes ${was + 10}.`,
-				hints: () => [`1 ${ONE[L.name(p + 1)]} is 10 ${place}, so the ${was} becomes ${was + 10}.`, `Type 1 in the small box in front of the ${was}.`],
+				...Ask(() => ln('q.sub.tenMore', { p: P_(place), a: was, b: was + 10 })),
+				...Tell(() => ln('q.sub.tenMoreTold', { a: was, b: was + 10 })),
+				hints: () => [t('h.sub.tenMore1', { one: ONE(L.name(p + 1)), p: P_(place), a: was, b: was + 10 }), t('h.sub.tenMore2', { a: was })],
 				lit: [said(p), op, `w${p + 1}`],
 				view
 			});
@@ -264,13 +278,9 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 		const top_ = cur[p];
 		b.add([{ id, digit: diff, row: 3, col: L.colOf(p) }], {
 			kind: 'subtract',
-			prompt: () => (p < shows(L.Y, L.P) ? `What is ${top_} − ${bd}?` : `Bring down the ${top_}: there’s nothing to take away.`),
-			told: () => `${top_} − ${bd} = ${diff}.`,
-			hints: () => [
-				`Subtract in the ${place} column: the top number take away the bottom one.`,
-				`Count up from ${bd} to ${top_}: how many steps is that?`,
-				`It’s ${diff}.`
-			],
+			...Ask(() => (p < shows(L.Y, L.P) ? ln('q.whatIsMinus', { a: top_, b: bd }) : ln('q.sub.bringDown', { d: top_ }))),
+			...Tell(() => ln('q.sub.diffTold', { a: top_, b: bd, x: diff })),
+			hints: () => [t('h.sub.sub1', { p: P_(place) }), t('h.sub.sub2', { a: bd, b: top_ }), t('h.its', { x: diff })],
 			lit: [said(p), `o${p}`, `m${p}`, 'sign', 'rule', id],
 			view,
 			...(p < shows(L.Y, L.P) ? { skipCount: { by: 1, times: diff, start: bd, carry: 0, row: 3, onesCol: L.colOf(p), words: 'sub' as const } } : {})
@@ -295,9 +305,9 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
  *  most 4 whole digits. Subtraction takes the smaller from the bigger. */
 export function checkColumns(kind: 'add' | 'subtract', a: number, b: number, numbers: 'whole' | 'decimal' = 'whole'): string | null {
 	const ok = (x: number) => (Number.isInteger(x) ? x >= 10 && x <= 9999 : numbers === 'decimal' && x > 0 && x < 10000 && placesOf(x) <= 2);
-	if (!Number.isInteger(a) && !Number.isInteger(b) && numbers !== 'decimal') return 'Whole numbers, 10 to 9,999.';
-	if (!ok(a)) return numbers === 'decimal' ? 'The top number needs to be 10 to 9,999, or a decimal with at most 2 decimal places.' : 'The top number needs two to four digits, 10 to 9,999.';
-	if (!ok(b)) return numbers === 'decimal' ? 'The bottom number needs to be 10 to 9,999, or a decimal with at most 2 decimal places.' : 'The bottom number needs two to four digits, 10 to 9,999.';
-	if (kind === 'subtract' && !(a > b)) return 'The top number needs to be bigger than the bottom one.';
+	if (!Number.isInteger(a) && !Number.isInteger(b) && numbers !== 'decimal') return t('ui.check.colWhole');
+	if (!ok(a)) return t(numbers === 'decimal' ? 'ui.check.colDecTop' : 'ui.check.colTop');
+	if (!ok(b)) return t(numbers === 'decimal' ? 'ui.check.colDecBottom' : 'ui.check.colBottom');
+	if (kind === 'subtract' && !(a > b)) return t('ui.check.colOrder');
 	return null;
 }

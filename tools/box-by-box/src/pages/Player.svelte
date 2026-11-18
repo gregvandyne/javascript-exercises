@@ -13,7 +13,7 @@
 		boxOf,
 		cellStep,
 		correctValues,
-		countNudge,
+		countNudgeMsg,
 		countState,
 		isRight,
 		isWrong,
@@ -32,6 +32,9 @@
 	} from '$lib/logic';
 	import { finished, load, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
 	import { hintsFor } from '$lib/hints';
+	import Speaker from '$lib/Speaker.svelte';
+	import { LANG, m, segments, t, tn, tx, type Msg } from '$lib/i18n';
+	import { sayAll } from '$lib/speech';
 
 	let {
 		activity,
@@ -75,7 +78,10 @@
 	let pendingTens = $state('');
 	let typed = $state('');
 	let watchShown = $state(false);
-	let nudge = $state('');
+	/** A word about the count (too far, keep going), shown in place of the question, and its lines. */
+	let nudgeMsg = $state<Msg | null>(null);
+	const nudge = $derived(nudgeMsg ? tx(nudgeMsg) : '');
+	const setNudge = (x: Msg | null) => (nudgeMsg = x);
 	let growLit = $state<string[] | null>(null);
 	let floater = $state<{ text: string; row: number; col: number; toRow: number } | null>(null);
 	let busy = $state(false);
@@ -126,7 +132,7 @@
 	const narrow = $derived(W <= 760);
 	const level = $derived(activity.settings.level);
 	const info = $derived(level === 'custom' ? undefined : levelInfo(level));
-	const levelLabel = $derived(level === 'custom' ? 'Your teacher’s mix' : (info?.label ?? 'Guided'));
+	const levelLabel = $derived(level === 'custom' ? t('ui.level.custom') : (info?.label ?? t('ui.level.guided')));
 	const way = $derived(level === 'custom' ? 'type' : (info?.way ?? 'type'));
 	const flags = $derived(level === 'custom' ? activity.settings.custom : info!.flags);
 	const scored = $derived(level === 'custom' || !!info?.scored);
@@ -228,10 +234,19 @@
 			? null
 			: { digits: [...String(count * cu.divisor)], row: cu.row, onesCol: cu.onesCol, over: countState(cu.partial, cu.divisor, count) === 'over' };
 	});
-	const PREFIX: Record<string, string> = { divide: 'Divide', multiply: 'Multiply', subtract: 'Subtract', carry: 'Carry', sumCarry: 'Carry', add: 'Add' };
-	function prefixed(k: string, text: string) {
+	// Watch names each step's kind before its question ("Divide: how many times …"), unless the question starts with it
+	const PREFIX: Record<string, string> = { divide: 'divide', multiply: 'multiply', subtract: 'subtract', carry: 'carry', sumCarry: 'carry', add: 'add' };
+	function prefixed(k: string, lines: Msg[]): Msg[] {
 		const p = PREFIX[k];
-		return !p || text.toLowerCase().startsWith(p.toLowerCase()) ? text : `${p}: ${text[0].toLowerCase()}${text.slice(1)}`;
+		const text = tx(lines);
+		const word = p ? t(`q.prefix.${p}`) : '';
+		return !p || text.toLowerCase().startsWith(word.replace(/[:：]\s*$/, '').toLowerCase()) ? lines : [m(`q.prefix.${p}`), ...lines];
+	}
+	/** A Watch line shown with its kind in front: English writes it on in lower case ("Divide: how many …"). */
+	function shownPrefixed(lines: Msg[]): string {
+		if (lines.length < 2 || !lines[0].k.startsWith('q.prefix.')) return tx(lines);
+		const rest = tx(lines.slice(1));
+		return `${tx(lines[0])} ${LANG.startsWith('en') ? rest[0].toLowerCase() + rest.slice(1) : rest}`;
 	}
 	const watchAnswer = $derived.by(() => {
 		const st = way === 'watch' && watchShown ? steps[at] : undefined;
@@ -242,57 +257,62 @@
 	/** What a count comes to, typed instead of counted: the product (multiplication), the column's sum, or (subtraction)
 	 *  how many it took to count up. */
 	const skipValue = (s: NonNullable<Step['skipCount']>) => (s.words === 'sub' ? s.times : (s.start ?? 0) + s.by * s.times);
-	function skipPrompt(s: NonNullable<Step['skipCount']>) {
+	function skipPrompt(s: NonNullable<Step['skipCount']>): Msg[] {
 		const start = s.start ?? 0;
 		// Every step the same way, a step of 0 too: ▲ starts at the starting number, then ▲ once for each to count, then
 		// That's it (counting 0 times: start, then That's it).
-		const done = count === s.times ? ' Press That’s it.' : '';
+		const press = m('q.skip.pressIt');
+		const done = count === s.times ? [press] : [];
 		if (s.words === 'add') {
-			if (typed) return `${start} + ${s.times} = ${typed}? Press That’s it.`;
-			if (count === null) return `${start} + ${s.times}: start at ${start} with ▲, then count on ${s.times}. Or type it.`;
-			if (count === 0) return `${start}: you start at ${start}. Count on ${s.times} with ▲.${done}`;
-			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: that’s ${count} on from ${start}.${done}`;
+			if (typed) return [m('q.skip.addTyped', { a: start, b: s.times, x: typed }), press];
+			if (count === null) return [m('q.skip.add', { a: start, b: s.times })];
+			if (count === 0) return [m('q.skip.addStart', { a: start, b: s.times }), ...done];
+			return [m('q.skip.addCount', { list: Array.from({ length: count }, (_, i) => start + i + 1).join(', '), c: count, a: start }), ...done];
 		}
 		if (s.words === 'sub') {
 			const goal = start + s.times;
-			if (typed) return `From ${start} up to ${goal} is ${typed}? Press That’s it.`;
-			if (count === null) return `${goal} − ${start}: start at ${start} with ▲, then count up to ${goal}. How many steps?`;
+			if (typed) return [m('q.skip.subTyped', { a: start, b: goal, x: typed }), press];
+			if (count === null) return [m('q.skip.sub', { a: goal, b: start })];
 			const at = start + count;
-			if (count === 0) return `You start at ${start}: 0 up.${at < goal ? ` Count up to ${goal} with ▲.` : ' Press That’s it.'}`;
-			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: ${count} up, at ${at}.${at < goal ? ' Keep going.' : at === goal ? ' Press That’s it.' : ' Too far: go back with ▼.'}`;
+			if (count === 0) return [m('q.skip.subStart', { b: start }), at < goal ? m('q.skip.subUpTo', { a: goal }) : press];
+			return [
+				m('q.skip.subCount', { list: Array.from({ length: count }, (_, i) => start + i + 1).join(', '), c: count, x: at }),
+				at < goal ? m('q.skip.keepGoing') : at === goal ? press : m('q.skip.tooFar')
+			];
 		}
-		if (typed) return `${s.by} × ${s.times} = ${typed}? Press That’s it.`;
-		if (count === null) return `${s.by} × ${s.times}: start at 0 with ▲, then count by ${s.by}s, ${s.times} ${s.times === 1 ? 'time' : 'times'}. Or type it.`;
-		if (count === 0) return `0: you start at 0. Count by ${s.by}s, ${s.times} ${s.times === 1 ? 'time' : 'times'}, with ▲.${done}`;
-		return `${Array.from({ length: count }, (_, i) => (i + 1) * s.by).join(', ')}: that’s ${count} ${count === 1 ? 'time' : 'times'}.${done}`;
+		if (typed) return [m('q.skip.mulTyped', { a: s.by, b: s.times, x: typed }), press];
+		if (count === null) return [m('q.skip.mul', { a: s.by }, s.times)];
+		if (count === 0) return [m('q.skip.mulStart', { a: s.by }, s.times), ...done];
+		return [m('q.skip.mulCount', { list: Array.from({ length: count }, (_, i) => (i + 1) * s.by).join(', ') }, count), ...done];
 	}
-	const prompt = $derived.by(() => {
-		if (!sheet || phase !== 'working') return '';
+	const askOf = (st: Step | undefined): Msg[] => (st?.ask ? st.ask(values) : []);
+	/** The question for now, as lines of the table: shown in the band, and read by the speaker button. */
+	const promptLines = $derived.by((): Msg[] => {
+		if (!sheet || phase !== 'working') return [];
 		if (way === 'watch') {
-			if (at >= steps.length) return `So ${sheet.title} = ${showAnswer(sheet.answer)}.${sheet.note ? ` ${sheet.note}` : ''}`;
+			if (at >= steps.length) return [m('q.so', { e: sheet.title, x: showAnswer(sheet.answer) }), ...(sheet.noteSay ?? [])];
 			const st = steps[at];
-			return st.kind === 'zero' ? (st.told?.(values) ?? '') : prefixed(st.kind, st.prompt(values));
+			return st.kind === 'zero' ? (st.tell?.(values) ?? []) : prefixed(st.kind, askOf(st));
 		}
 		if (way === 'countUp') {
-			if (at >= steps.length) return 'Press Check, or Enter.';
-			if (busy && steps[at].told) return steps[at].told!(values);
-			if (nudge) return nudge;
+			if (at >= steps.length) return [m('q.pressCheck')];
+			if (busy && steps[at].tell) return steps[at].tell!(values);
+			if (nudgeMsg) return [nudgeMsg];
 			if (counted) return skipPrompt(counted);
-			if (counting) return steps[at].prompt(values);
+			if (counting) return askOf(steps[at]);
 			const si = current ? stepOfBox(sheet, current) : at;
 			const st = steps[si];
 			const sc = st?.skipCount;
-			const p =
-				sc && carryStep === si
-					? `${sc.by} × ${sc.times} = ${sc.by * sc.times}. Now add the ${sc.carry} you carried: what is ${sc.by * sc.times} + ${sc.carry}?`
-					: (st?.prompt(values) ?? '');
-			return current && flags.markNow && isWrong(sheet, values, current) ? `Not quite. ${p}` : p;
+			const p = sc && carryStep === si ? [m('q.skip.addCarried', { a: sc.by, b: sc.times, p: sc.by * sc.times, c: sc.carry })] : askOf(st);
+			return current && flags.markNow && isWrong(sheet, values, current) ? [m('q.notQuite'), ...p] : p;
 		}
-		if (!flags.prompt) return '';
-		if (!current || (values[current] && !nextBox(current) && allFilled(sheet, values))) return 'Press Check, or Enter.';
-		const p = steps[stepOfBox(sheet, current)]?.prompt(values) ?? '';
-		return flags.markNow && isWrong(sheet, values, current) ? `Not quite. ${p}` : p;
+		if (!flags.prompt) return [];
+		if (!current || (values[current] && !nextBox(current) && allFilled(sheet, values))) return [m('q.pressCheck')];
+		const p = askOf(steps[stepOfBox(sheet, current)]);
+		return flags.markNow && isWrong(sheet, values, current) ? [m('q.notQuite'), ...p] : p;
 	});
+	const prompt = $derived(way === 'watch' ? shownPrefixed(promptLines) : tx(promptLines));
+	const sayLines = $derived(sayAll(promptLines));
 
 	function shown(c: Cell) {
 		if (!sheet || phase === 'setup') return true;
@@ -480,7 +500,7 @@
 		before = {};
 		firstTry = true;
 		sticky = false;
-		nudge = '';
+		setNudge(null);
 		count = null;
 		watchShown = false;
 		at = 0;
@@ -629,7 +649,7 @@
 		carryStep = null;
 		count = null;
 		typed = '';
-		nudge = '';
+		setNudge(null);
 		if (!steps[at].skipCount) values[steps[at].boxes[0]] = '';
 		focusBox(steps[at].boxes[0]);
 	}
@@ -664,7 +684,7 @@
 	}
 	function setCount(n: number | null) {
 		count = n;
-		nudge = '';
+		setNudge(null);
 		if (!steps[at].skipCount) values[steps[at].boxes[0]] = n === null ? '' : String(n);
 	}
 	async function thatsIt() {
@@ -673,9 +693,7 @@
 		const sc = steps[at].skipCount;
 		if (sc && typed) {
 			if (Number(typed) !== skipValue(sc)) {
-				nudge = sc.words
-					? `${typed} isn’t it. Count with ▲ to find it.`
-					: `${typed} isn’t ${sc.by} × ${sc.times}. Count by ${sc.by}s with ▲ to find it.`;
+				setNudge(sc.words ? m('q.skip.notIt', { x: typed }) : m('q.skip.notItMul', { x: typed, a: sc.by, b: sc.times }));
 				fails += 1;
 				typed = '';
 				return;
@@ -684,29 +702,23 @@
 			count = sc.times;
 		}
 		if (sc && sc.carry > 0 && count === sc.times) {
-			nudge = '';
+			setNudge(null);
 			carryStep = at;
 			focusBox(steps[at].boxes.find((b) => !isAuto(b)) ?? null);
 			return;
 		}
 		if (count === null) {
-			nudge = sc ? `Start with ▲: you start at ${sc.start ?? 0}.` : 'Count up with ▲ first.';
+			setNudge(sc ? m('q.skip.startFirst', { a: sc.start ?? 0 }) : m('q.skip.first'));
 			return;
 		}
 		if (sc) {
 			if (count !== sc.times) {
-				const word = sc.words === 'sub' ? `up to ${(sc.start ?? 0) + count}` : `${count} on`;
-				nudge = sc.words
-					? count < sc.times
-						? `That’s ${word} so far. Keep counting.`
-						: `That’s ${word}, too far. Count back with ▼.`
-					: count < sc.times
-						? `That’s ${count} times so far. Keep counting to ${sc.times}.`
-						: `That’s ${count} times, more than ${sc.times}. Count back with ▼.`;
+				const which = sc.words === 'sub' ? 'sub' : sc.words === 'add' ? 'add' : 'mul';
+				setNudge(m(`q.skip.${which}${count < sc.times ? 'SoFar' : 'TooFar'}`, { x: (sc.start ?? 0) + count, b: sc.times }, count));
 				fails += 1;
 				return;
 			}
-			nudge = '';
+			setNudge(null);
 			const i = at;
 			await busyDo(async () => {
 				await autoStep(i);
@@ -715,10 +727,10 @@
 			return advance(i + 1);
 		}
 		const cu = steps[at].countUp!;
-		const n = countNudge(cu.partial, cu.divisor, count);
-		if (n) nudge = n;
+		const n = countNudgeMsg(cu.partial, cu.divisor, count);
+		if (n) setNudge(n);
 		else {
-			nudge = '';
+			setNudge(null);
 			return advance(at + 1);
 		}
 	}
@@ -751,7 +763,7 @@
 			const most = counted.words ? 2 : String(counted.by * 9).length;
 			typed = k === '' ? typed.slice(0, -1) : typed.length >= most ? k : typed + k;
 			count = null;
-			nudge = '';
+			setNudge(null);
 			return;
 		}
 		if (counting) {
@@ -868,12 +880,12 @@
 	const toGo = $derived(phase === 'over' ? 0 : sheets.length - index - +settled);
 	function boxLabel(id: string) {
 		if (isCountBox(id) && current === id)
-			return { multiply: 'Product: ▲ and ▼ to count', divide: 'Quotient digit: ▲ and ▼ to count up', add: 'Sum: ▲ and ▼ to count on', subtract: 'Difference: ▲ and ▼ to count up' }[activity.kind];
+			return t(`ui.box.count.${activity.kind}`);
 		const c = cellOf(id);
-		if (c?.point) return 'Decimal point';
-		if (c?.half) return c.half === 'top' ? 'Fraction, top digit' : 'Fraction, bottom digit';
-		if (c?.corner) return 'Regrouping 1';
-		return sheet?.remainderBoxes?.includes(id) ? 'Remainder digit' : 'Digit';
+		if (c?.point) return t('ui.box.point');
+		if (c?.half) return t(c.half === 'top' ? 'ui.box.fracTop' : 'ui.box.fracBottom');
+		if (c?.corner) return t('ui.box.regroup');
+		return t(sheet?.remainderBoxes?.includes(id) ? 'ui.box.remainder' : 'ui.box.digit');
 	}
 </script>
 
@@ -952,11 +964,11 @@
 				</span>
 			{/if}
 			{#if counting && stepperAt}
-				<div class="stepper" role="group" aria-label="Count up" style:left="{(stepperAt.col + 1) * SQUARE + 6}px" style:top="{stepperAt.row * SQUARE}px">
-					<button type="button" aria-label="One more" disabled={busy || count === 9} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(1)}
+				<div class="stepper" role="group" aria-label={t('ui.level.countUp')} style:left="{(stepperAt.col + 1) * SQUARE + 6}px" style:top="{stepperAt.row * SQUARE}px">
+					<button type="button" aria-label={t('ui.oneMore')} disabled={busy || count === 9} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(1)}
 						><ChevronUp size={22} aria-hidden="true" /></button
 					>
-					<button type="button" aria-label="One less" disabled={busy || count === 0} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(-1)}
+					<button type="button" aria-label={t('ui.oneLess')} disabled={busy || count === 0} onpointerdown={(e) => e.preventDefault()} onclick={() => bump(-1)}
 						><ChevronDown size={22} aria-hidden="true" /></button
 					>
 				</div>
@@ -975,19 +987,19 @@
 		<button type="button" class="extra" onclick={extra.onclick}>{extra.label}</button>
 	{/if}
 	<h1>{title}</h1>
-	{#if preview}<span class="chip preview">Preview</span>{/if}
-	<span class="chip level-chip" title="Level of support">{levelLabel}</span>
+	{#if preview}<span class="chip preview">{t('ui.preview')}</span>{/if}
+	<span class="chip level-chip" title={t('ui.player.levelTitle')}>{levelLabel}</span>
 	{#if sheet && phase !== 'setup'}
-		<div class="count" aria-label="Score">
+		<div class="count" aria-label={t('ui.player.score')}>
 			{#if scored}
-				<span class="chip good" title="Right"><Check size={14} aria-hidden="true" /> {rightCount}</span>
-				<span class="chip bad" title="Wrong"><X size={14} aria-hidden="true" /> {wrongCount}</span>
+				<span class="chip good" title={t('ui.player.right')}><Check size={14} aria-hidden="true" /> {rightCount}</span>
+				<span class="chip bad" title={t('ui.player.wrong')}><X size={14} aria-hidden="true" /> {wrongCount}</span>
 			{/if}
-			{#if phase !== 'over'}<span class="chip">{toGo} to go</span>{/if}
+			{#if phase !== 'over'}<span class="chip">{t('ui.player.toGo', { n: toGo })}</span>{/if}
 		</div>
 		{#if way !== 'watch' && phase !== 'over'}
 			<button type="button" class="pad-toggle" aria-pressed={padOpen} onpointerdown={(e) => e.preventDefault()} onclick={() => setPad(!padOpen)}
-				><Grid3x3 size={16} aria-hidden="true" /> Keypad</button
+				><Grid3x3 size={16} aria-hidden="true" /> {t('ui.keypad')}</button
 			>
 		{/if}
 	{/if}
@@ -1001,21 +1013,22 @@
 				{#each kind.steps as s (s)}<li>{s}</li>{/each}
 			</ol>
 			<p class="level-line">
-				{planned}
-				{planned === 1 ? 'problem' : 'problems'}, at <b>{levelLabel}</b>{#if level !== 'custom'}: {kind.studentLevelText?.[level] ?? info?.detail}{/if}
+				{#each segments('ui.player.planned', planned) as x, i (i)}{#if x.v === 'level'}<b>{levelLabel}</b>{:else if x.v === 'n'}{planned}{:else}{x.s}{/if}{/each}{#if level !== 'custom'}{t('ui.colon')}{kind.studentLevelText?.[level] ?? info?.detail}{/if}
 			</p>
 			<div class="menu-actions">
-				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> Start</button>
+				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {t('ui.start')}</button>
 			</div>
 		{:else}
-			<h2>All done!</h2>
+			<h2>{t('ui.player.allDone')}</h2>
 			{#if rightCount + wrongCount > 0}
-				<p class="final">You got <b class="good-text">{rightCount}</b> right and <b class="bad-text">{wrongCount}</b> wrong.</p>
+				<p class="final">
+					{#each segments('ui.player.final') as x, i (i)}{#if x.v === 'r'}<b class="good-text">{rightCount}</b>{:else if x.v === 'w'}<b class="bad-text">{wrongCount}</b>{:else}{x.s}{/if}{/each}
+				</p>
 			{:else}
-				<p class="final">You watched {sheets.length} {sheets.length === 1 ? 'problem' : 'problems'} worked.</p>
+				<p class="final">{tn('ui.player.watched', sheets.length)}</p>
 			{/if}
 			<div class="menu-actions">
-				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {againLabel ?? 'Start again'}</button>
+				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {againLabel ?? t('ui.player.again')}</button>
 			</div>
 		{/if}
 		<Footer />
@@ -1037,20 +1050,22 @@
 		{#if phase === 'feedback'}
 			<div class="feedback {fb}" aria-live="polite" bind:this={feedbackEl}>
 				<p>
-					{#if fb === 'right'}<b>Correct!</b> {sheet.title} = {showAnswer(sheet.answer)}{:else if fb === 'again'}<b>Not quite.</b> Check your work
-						and try again.{:else}<b>The answer is {showAnswer(sheet.answer)}.</b> The digits you missed are filled in.{/if}
+					{#if fb === 'right'}<b>{t('ui.fb.correct')}</b> <span dir="ltr">{sheet.title} = {showAnswer(sheet.answer)}</span>{:else if fb === 'again'}<b
+							>{t('ui.fb.notQuite')}</b
+						>
+						{t('ui.fb.tryAgainLine')}{:else}<b>{t('ui.fb.answerIs', { x: showAnswer(sheet.answer) })}</b> {t('ui.fb.filledIn')}{/if}
 					{#if fb !== 'again' && sheet.note}<span class="note">{sheet.note}</span>{/if}
 				</p>
 				<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
-					{#if fb === 'again'}Try again{:else if index + 1 < sheets.length}Next problem{:else}See the score{/if}
+					{#if fb === 'again'}{t('ui.fb.tryAgain')}{:else if index + 1 < sheets.length}{t('ui.nextProblem')}{:else}{t('ui.fb.seeScore')}{/if}
 				</button>
 			</div>
 		{:else}
 			{#if hintOpen && hintShown && hints.length}
 				<div class="hint-box" aria-live="polite">
 					<p class="hint-head">
-						<Lightbulb size={15} aria-hidden="true" /> Hint {Math.min(hintShown, hints.length)} of {hints.length}
-						<button type="button" class="hint-close" aria-label="Hide the hints" onclick={() => (hintOpen = false)}>✕</button>
+						<Lightbulb size={15} aria-hidden="true" /> {t('ui.hint.of', { i: Math.min(hintShown, hints.length), n: hints.length })}
+						<button type="button" class="hint-close" aria-label={t('ui.hint.hide')} onclick={() => (hintOpen = false)}>✕</button>
 					</p>
 					<ol>
 						{#each hints.slice(0, hintShown) as h, i (i)}<li>{h}</li>{/each}
@@ -1058,22 +1073,25 @@
 				</div>
 			{/if}
 			<div class="prompt-row">
-				<p class="prompt" class:nudge={!!nudge} aria-live="polite">
-					{prompt}{#if watchAnswer}<b class="answer">{watchAnswer}</b>{/if}
-				</p>
+				<div class="prompt-line">
+					<Speaker lines={sayLines} />
+					<p class="prompt" class:nudge={!!nudge} aria-live="polite">
+						{prompt}{#if watchAnswer}<b class="answer" dir="ltr">{watchAnswer}</b>{/if}
+					</p>
+				</div>
 				<div class="actions">
 					{#if way === 'watch'}
 						<button type="button" class="btn-primary big" bind:this={nextBtn} onclick={watchNext}
 							><SkipForward size={18} aria-hidden="true" />
-							{at >= steps.length ? (index + 1 < sheets.length ? 'Next problem' : 'Done') : 'Next'}</button
+							{at >= steps.length ? (index + 1 < sheets.length ? t('ui.nextProblem') : t('ui.done')) : t('ui.next')}</button
 						>
 					{:else if counting}
 						<button type="button" class="btn-primary big" disabled={busy} onpointerdown={(e) => e.preventDefault()} onclick={thatsIt}
-							><Check size={18} aria-hidden="true" /> That’s it</button
+							><Check size={18} aria-hidden="true" /> {t('ui.thatsIt')}</button
 						>
 					{:else}
 						<button type="button" class="btn-primary big" bind:this={checkBtn} disabled={!canCheck} onclick={check}
-							><Check size={18} aria-hidden="true" /> Check</button
+							><Check size={18} aria-hidden="true" /> {t('ui.check')}</button
 						>
 					{/if}
 					{#if way !== 'watch' && hints.length}
@@ -1082,13 +1100,13 @@
 							class="btn-ghost hint-btn"
 							class:stuck
 							disabled={hintShown >= hints.length && hintOpen}
-							aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
+							aria-label={t(hintShown >= hints.length ? (hintOpen ? 'ui.hint.noMore' : 'ui.hint.again') : stuck ? 'ui.hint.stuckGet' : 'ui.hint.get')}
 							onpointerdown={(e) => e.preventDefault()}
-							onclick={showHint}><Lightbulb size={17} aria-hidden="true" /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span></button
+							onclick={showHint}><Lightbulb size={17} aria-hidden="true" /><span class="hint-word">{t(stuck ? 'ui.hint.stuck' : 'ui.hint.word')}</span></button
 						>
 					{/if}
 					{#if way === 'type'}
-						<button type="button" class="btn-ghost" onclick={clear}><Eraser size={17} aria-hidden="true" /> Clear</button>
+						<button type="button" class="btn-ghost" onclick={clear}><Eraser size={17} aria-hidden="true" /> {t('ui.clear')}</button>
 					{/if}
 				</div>
 			</div>
@@ -1432,8 +1450,15 @@
 		align-items: center;
 		gap: 0.6rem 1rem;
 	}
-	.prompt {
+	.prompt-line {
 		flex: 18rem;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		min-width: 0;
+	}
+	.prompt {
+		flex: 1;
 		min-height: 1.6em;
 		margin: 0;
 		color: var(--ink);

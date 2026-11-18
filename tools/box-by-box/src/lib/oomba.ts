@@ -18,6 +18,11 @@ type Brb = {
 	gameUrl?: string | null;
 	copy?: (what: string | Blob) => Promise<boolean> | null;
 	gameOver?: (o: { won: boolean; score?: number }) => void;
+	aiVoiceCheck?: (lines: string[], o?: { lang?: string }) => Promise<boolean> | null;
+	speak?: (text: string, o: Record<string, unknown>) => boolean;
+	stopSpeaking?: () => void;
+	canPrint?: boolean;
+	print?: (doc: unknown) => Promise<{ ok?: boolean; error?: string }> | null;
 };
 type Kit = {
 	sfx?: (name: string, o?: Record<string, unknown>) => void;
@@ -124,6 +129,58 @@ export async function copy(what: string | Blob): Promise<boolean> {
 		return c ? (await c(what)) === true : false;
 	} catch {
 		return false;
+	}
+}
+
+// --- reading a step aloud (the speaker button) ---
+// The platform's AI voice only, as the Oomba Kit's how-to cards do: the button shows once BRB.aiVoiceCheck says every
+// line gets the AI voice, and BRB.speak({ ai: 'only' }) never falls back to the device's voice. Nothing is read by itself.
+
+/** Will the AI voice read all these lines? (false outside a frame with AI voices, or when it can't tell) */
+export async function voiceReady(lines: string[], lang: string): Promise<boolean> {
+	try {
+		const b = brb();
+		if (!b?.aiVoiceCheck || !b.speak || !lines.length) return false;
+		return (await b.aiVoiceCheck(lines, { lang })) === true;
+	} catch {
+		return false;
+	}
+}
+/** Read the lines one after another with the AI voice only; done(true) after the last, done(false) when one isn't read
+ *  (nothing is read by the device instead). -> stop(), or null when nothing started. */
+export function readAloud(lines: string[], lang: string, done: (ok: boolean) => void): (() => void) | null {
+	const b = brb();
+	if (!b?.speak || !lines.length) return null;
+	let over = false;
+	const end = (ok: boolean) => {
+		if (over) return;
+		over = true;
+		if (!ok) stopReading();
+		done(ok);
+	};
+	for (let i = 0; i < lines.length; i++) {
+		let ok = false;
+		try {
+			ok = !!b.speak(lines[i], { lang, ai: 'only', queue: i > 0, onend: i === lines.length - 1 ? () => end(true) : null, onfail: () => end(false) });
+		} catch {
+			ok = false;
+		}
+		if (!ok) {
+			end(false);
+			return null;
+		}
+	}
+	return () => {
+		if (over) return;
+		over = true;
+		stopReading();
+	};
+}
+export function stopReading() {
+	try {
+		brb()?.stopSpeaking?.();
+	} catch {
+		/* fine */
 	}
 }
 

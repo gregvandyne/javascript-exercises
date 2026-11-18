@@ -5,6 +5,7 @@
 import { kindInfo, type Kind, type Level as Mode, type Numbers, type Plan, type Playable, type Problem } from './logic';
 import { methodOr, type Method } from './methods';
 import { load, store } from './oomba';
+import { t } from './i18n';
 
 export type Hard = 'easy' | 'medium' | 'hard';
 export const SET_SIZE = 5;
@@ -32,26 +33,24 @@ const PLANS: Record<Kind, Record<Hard, Plan>> = {
 	}
 };
 
-export const HARDS: { hard: Hard; name: string; about: Record<Kind, string> }[] = [
-	{
-		hard: 'easy',
-		name: 'Easy',
-		about: { divide: '2 digits by 1 digit, like 84 ÷ 4. No remainders.', multiply: '2 digits times 1 digit, like 46 × 3.', add: '2 digits, like 47 + 38.', subtract: '2 digits, like 52 − 18.' }
-	},
-	{ hard: 'medium', name: 'Medium', about: { divide: '3 digits by 1 digit, like 735 ÷ 6. Remainders too.', multiply: '3 digits times 1 digit, like 418 × 7.', add: '3 digits, like 475 + 368.', subtract: '3 digits, like 400 − 167.' } },
-	{ hard: 'hard', name: 'Hard', about: { divide: '4 digits by 2 digits, like 5184 ÷ 16.', multiply: '3 digits times 2 digits, like 352 × 47.', add: '4 digits, like 4096 + 2785.', subtract: '4 digits, like 5003 − 2468.' } }
-];
-export const HELPS: { mode: Mode; name: string; about: string }[] = [
-	{ mode: 'guided', name: 'Guided', about: 'The box to fill lights up, with a question for each step.' },
-	{ mode: 'countUp', name: 'Count up', about: 'Count each answer up with ▲, then the page writes it in.' },
-	{ mode: 'onMyOwn', name: 'On my own', about: 'Every box from the start, checked at the end.' }
-];
+const KINDS4: Kind[] = ['divide', 'multiply', 'add', 'subtract'];
+export const HARDS: { hard: Hard; name: string; about: Record<Kind, string> }[] = (['easy', 'medium', 'hard'] as Hard[]).map((hard) => ({
+	hard,
+	name: t(`ui.hard.${hard}`),
+	about: Object.fromEntries(KINDS4.map((k) => [k, t(`ui.hard.${hard}.${k}`)])) as Record<Kind, string>
+}));
+export const HELPS: { mode: Mode; name: string; about: string }[] = (['guided', 'countUp', 'onMyOwn'] as Mode[]).map((mode) => ({
+	mode,
+	name: t(`ui.level.${mode}`),
+	about: t(`ui.help.${mode}`)
+}));
 
 /** Whole numbers or decimals (the same sizes, with a point placed in them: 8.4 ÷ 2, 2.4 × 1.3). */
-export const NUMBER_KINDS: { numbers: Numbers; name: string; about: string }[] = [
-	{ numbers: 'whole', name: 'Whole numbers', about: 'Like 84 and 735.' },
-	{ numbers: 'decimal', name: 'Decimals', about: 'Like 8.4 and 7.35, to hundredths.' }
-];
+export const NUMBER_KINDS: { numbers: Numbers; name: string; about: string }[] = (['whole', 'decimal'] as Numbers[]).map((numbers) => ({
+	numbers,
+	name: t(`ui.numbers.${numbers}`),
+	about: t(`ui.practice.${numbers}About`)
+}));
 const planOf = (kind: Kind, hard: Hard, numbers: Numbers): Plan => (numbers === 'decimal' ? { ...PLANS[kind][hard], numbers } : PLANS[kind][hard]);
 
 const SEEN = 'box-by-box-seen-v1';

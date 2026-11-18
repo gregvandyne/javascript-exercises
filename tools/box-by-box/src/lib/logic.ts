@@ -3,7 +3,8 @@
 
 import { methodOr, type Method } from './methods.ts';
 import { addSheet, checkColumns, subtractSheet } from './columns.ts';
-import { asText, digitsOfText, isDecimal, placeWord, placesOf, plural, scaled, shiftPoint, unscaled } from './numbers.ts';
+import { asText, digitsOfText, isDecimal, placesOf, scaled, shiftPoint, unscaled } from './numbers.ts';
+import { m as ln, orList, t, tn, tx, type Msg } from './i18n.ts';
 
 export type Kind = 'divide' | 'multiply' | 'add' | 'subtract';
 export const KIND_NAMES: Kind[] = ['divide', 'multiply', 'add', 'subtract'];
@@ -75,6 +76,9 @@ export type Step = {
 	boxes: string[];
 	prompt: (v: Values) => string;
 	told?: (v: Values) => string;
+	/** The question (and the line said when the page writes it) as lines of the table, for the speaker button. */
+	ask?: (v: Values) => Msg[];
+	tell?: (v: Values) => Msg[];
 	lit: string[];
 	grow?: string[];
 	view: View;
@@ -103,11 +107,23 @@ export type Sheet = {
 	crossedBy?: Record<string, string>;
 	/** A remainder as a fraction: its boxes, and what it is (any equal fraction is right: simplifying is up to them). */
 	fraction?: { num: string[]; den: string[]; r: number; d: number };
-	/** A line for the answer (a decimal that was stopped, and what it rounds to). */
+	/** A line for the answer (a decimal that was stopped, and what it rounds to), and its lines for the speaker button. */
 	note?: string;
+	noteSay?: Msg[];
 };
 
 const digitsOf = (n: number) => [...String(n)].map(Number);
+const list = (x: Msg | Msg[]) => (Array.isArray(x) ? x : [x]);
+/** A step's question, from its lines (prompt: the words shown; ask: the lines, for the speaker button). */
+export const Ask = (f: (v: Values) => Msg | Msg[]) => ({ prompt: (v: Values) => tx(f(v)), ask: (v: Values) => list(f(v)) });
+/** The line said when the page writes a step's digits itself. */
+export const Tell = (f: (v: Values) => Msg | Msg[]) => ({ told: (v: Values) => tx(f(v)), tell: (v: Values) => list(f(v)) });
+/** Adding a column (multiplication's rows, addition): the digits in it and what was carried into it. */
+export function addAsk(xs: number[], c: number): Msg {
+	if (!xs.length) return ln('q.add.writeCarry', { c });
+	if (xs.length === 1 && !c) return ln('q.add.bringDown', { d: xs[0] });
+	return ln(c ? 'q.add.sumCarry' : 'q.add.sum', { xs: xs.join(' + '), c });
+}
 const len = (n: number) => String(n).length;
 
 // --- long division ---
@@ -117,23 +133,22 @@ export type Numbers = 'whole' | 'decimal';
 export const numbersOf = (v: unknown): Numbers => (v === 'decimal' ? 'decimal' : 'whole');
 /** A decimal for a problem: more than 0, at most 2 decimal places (hundredths, as grades 5 and 6 work them). */
 const decimalFault = (x: number, what: string): string | null =>
-	!Number.isFinite(x) || x <= 0 ? `Type ${what}.` : placesOf(x) > 2 ? `${what[0].toUpperCase()}${what.slice(1)} needs at most 2 decimal places.` : null;
+	!Number.isFinite(x) || x <= 0 ? t(`ui.check.type.${what}`) : placesOf(x) > 2 ? t(`ui.check.places.${what}`) : null;
 
 export function checkDivide(dividend: number, divisor: number, numbers: Numbers = 'whole'): string | null {
 	if (numbers === 'decimal' && !(Number.isInteger(dividend) && Number.isInteger(divisor))) {
-		const f = decimalFault(divisor, 'the number to divide by') ?? decimalFault(dividend, 'the number to divide');
+		const f = decimalFault(divisor, 'divisor') ?? decimalFault(dividend, 'dividend');
 		if (f) return f;
 		const s = placesOf(divisor);
 		const B = scaled(divisor, s);
-		if (B < 2 || B > 9999) return 'The number to divide by needs to be 2 to 9,999 once its point is moved, like 0.3 or 12.5.';
+		if (B < 2 || B > 9999) return t('ui.check.decDivisor');
 		const A = shiftPoint(dividend, s);
-		if (A.replace('.', '').replace(/^0+/, '').length > 6 || dividend > 99999) return 'That makes too many digits to divide. Try smaller numbers.';
+		if (A.replace('.', '').replace(/^0+/, '').length > 6 || dividend > 99999) return t('ui.check.decTooMany');
 		return null;
 	}
-	if (!Number.isInteger(divisor) || divisor < 2 || divisor > 9999) return 'Divide by a number from 2 to 9,999.';
-	if (!Number.isInteger(dividend) || dividend < 10 || dividend > 999999)
-		return 'The number to divide needs two to six digits, 10 to 999,999.';
-	if (dividend < divisor) return 'The number to divide needs to be at least the number it’s divided by.';
+	if (!Number.isInteger(divisor) || divisor < 2 || divisor > 9999) return t('ui.check.divisor');
+	if (!Number.isInteger(dividend) || dividend < 10 || dividend > 999999) return t('ui.check.dividend');
+	if (dividend < divisor) return t('ui.check.smaller');
 	return null;
 }
 
@@ -217,14 +232,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'shift',
 			boxes: dv.map((_, k) => `v${k}`),
-			prompt: () =>
-				`${y} has ${plural(s, 'decimal place', 'decimal places')}. Move its point ${plural(s, 'place', 'places')} right to make it a whole number: what is ${y} × ${times}?`,
-			told: () => `Move the point ${plural(s, 'place', 'places')} right: ${y} × ${times} = ${B}.`,
-			hints: () => [
-				`We divide by a whole number. Moving the decimal point ${plural(s, 'place', 'places')} to the right multiplies by ${times}.`,
-				`${y} × ${times}: the digits stay, the point hops ${plural(s, 'place', 'places')} right.`,
-				`It’s ${B}.`
-			],
+			...Ask(() => ln('q.div.shiftDivisor', { y, times }, s)),
+			...Tell(() => ln('q.div.shiftDivisorTold', { y, times, b: B }, s)),
+			hints: () => [tn('h.div.shiftDivisor1', s, { times }), tn('h.div.shiftDivisor2', s, { y, times }), t('h.its', { x: B })],
 			lit: ['o-divisor', 'hop-o-divisor', ...divKeys],
 			view: { top: 0, left: 0, bottom: dRow, right: Math.max(headW, D) - 1 }
 		});
@@ -240,14 +250,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'shift',
 			boxes: dIds,
-			prompt: () =>
-				`Now move the point in ${x} the same ${plural(s, 'place', 'places')} right: what is ${x} × ${times}?${pad ? ' Write a 0 where there’s no digit.' : ''}`,
-			told: () => `The same ${plural(s, 'place', 'places')} for ${x}: ${x} × ${times} = ${A}. So ${x} ÷ ${y} is the same as ${A} ÷ ${B}.`,
-			hints: () => [
-				`Move both points the same number of places, and the answer stays the same: ${x} ÷ ${y} = ${A} ÷ ${B}.`,
-				`${x} × ${times}: the point hops ${plural(s, 'place', 'places')} right${pad ? ', and a 0 fills the empty place' : ''}.`,
-				`It’s ${A}.`
-			],
+			...Ask(() => [ln('q.div.shiftDividend', { x, times }, s), ...(pad ? [ln('q.div.shiftPad')] : [])]),
+			...Tell(() => [ln('q.div.shiftDividendTold', { x, times, a: A }, s), ln('q.div.sameAs', { x, y, a: A, b: B })]),
+			hints: () => [t('h.div.shiftDividend1', { x, y, a: A, b: B }), tn(pad ? 'h.div.shiftDividend2pad' : 'h.div.shiftDividend2', s, { x, times }), t('h.its', { x: A })],
 			lit: ['o-dividend', 'hop-o-dividend', ...dIds],
 			view: { top: 0, left: 0, bottom: dRow, right: Math.max(headW, col(total - 1) + 1) - 1 }
 		});
@@ -268,12 +273,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'point',
 			boxes: ['qp'],
-			prompt: () => `Lift the decimal point straight up into the quotient, right above the point in ${afterWriting ? `${A}.0` : A}.`,
-			told: () => 'The decimal point goes straight up into the quotient.',
-			hints: () => [
-				'The point in the quotient goes exactly above the point in the number you’re dividing.',
-				'Type a . (the decimal point) in the lit box.'
-			],
+			...Ask(() => ln('q.div.lift', { a: afterWriting ? `${A}.0` : A })),
+			...Tell(() => ln('q.div.liftTold')),
+			hints: () => [t('h.div.lift1'), t('h.typePoint')],
 			lit: ['np', 'qp', 'lift'],
 			view: { top: 0, left: 0, bottom: dRow, right: col(total - 1) }
 		});
@@ -311,12 +313,10 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'divide',
 			boxes: [qId],
-			prompt: (v) => {
+			...Ask((v) => {
 				const p = first ? thisPartial : typedNumber(v, ids, thisPartial);
-				return first && skipped
-					? `${B} doesn’t go into ${skipped}, so how many times does ${B} go into ${p}?`
-					: `How many times does ${B} go into ${p}?`;
-			},
+				return first && skipped ? ln('q.div.skipped', { b: B, s: skipped, p }) : ln('q.div.howMany', { b: B, p });
+			}),
 			lit: [...divKeys, ...ids, qId],
 			grow: first && skipped ? [...divKeys, ...ids.slice(0, -1), qId] : undefined,
 			view: { top: 0, left: 0, bottom: viewBottom, right: col(i) },
@@ -341,7 +341,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'multiply',
 			boxes: pIds,
-			prompt: (v) => `What is ${typedNumber(v, [qId], q)} × ${B}?`,
+			...Ask((v) => ln('q.whatIsTimes', { a: typedNumber(v, [qId], q), b: B })),
 			lit: [...divKeys, qId, `minus${i}`, `rule${i}`, ...pIds],
 			view: { top: 0, left: 0, bottom: row, right: col(i) }
 		});
@@ -360,12 +360,12 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'subtract',
 			boxes: dIds,
-			prompt: (v) => {
-				const t = `What is ${typedNumber(v, ids, thisPartial)} − ${typedNumber(v, pIds, product)}?`;
-				if (!last) return t;
-				if (dec) return capped ? `${t} That’s ${plural(places, 'decimal place', 'decimal places')}, so we stop here.` : t;
-				return form === 'fraction' ? `${t} What’s left goes in a fraction.` : `${t} What’s left is the remainder.`;
-			},
+			...Ask((v) => {
+				const q = ln('q.whatIsMinus', { a: typedNumber(v, ids, thisPartial), b: typedNumber(v, pIds, product) });
+				if (!last) return q;
+				if (dec) return capped ? [q, ln('q.div.stopHere', {}, places)] : q;
+				return [q, ln(form === 'fraction' ? 'q.div.leftFraction' : 'q.div.leftRemainder')];
+			}),
 			lit: [...ids, `minus${i}`, `rule${i}`, ...pIds, ...dIds, 'rlabel'],
 			view: { top: 0, left: 0, bottom: row, right: col(i) }
 		});
@@ -386,12 +386,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 				steps.push({
 					kind: 'point',
 					boxes: ['np', zId],
-					prompt: () => `There are no more digits to bring down, but ${r} is left. Write a decimal point after ${A}, then a 0: ${A} is the same as ${A}.0.`,
-					told: () => `${r} is left, so write ${A} as ${A}.0: a decimal point, then a 0.`,
-					hints: () => [
-						`A 0 after the decimal point doesn’t change a number: ${A} = ${A}.0. It gives you a digit to bring down.`,
-						'Type a . (the decimal point) in the first lit box, then a 0 in the next.'
-					],
+					...Ask(() => ln('q.div.writePoint', { r, a: A, a0: `${A}.0` })),
+					...Tell(() => ln('q.div.writePointTold', { r, a: A, a0: `${A}.0` })),
+					hints: () => [t('h.div.writePoint1', { a: A, a0: `${A}.0` }), t('h.div.writePoint2')],
 					lit: [...dIds, 'np', zId],
 					view: { top: 0, left: 0, bottom: row, right: col(k) }
 				});
@@ -402,9 +399,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 				steps.push({
 					kind: 'addZero',
 					boxes: [zId],
-					prompt: () => `${r} is still left. Write another 0 on the end of the number you’re dividing.`,
-					told: () => `${r} is still left, so another 0 goes on the end.`,
-					hints: () => ['Zeros on the end, after the decimal point, don’t change the number. Each one gives you a digit to bring down.', 'Type 0 in the lit box.'],
+					...Ask(() => ln('q.div.addZero', { r })),
+					...Tell(() => ln('q.div.addZeroTold', { r })),
+					hints: () => [t('h.div.addZero1'), t('h.type0')],
 					lit: [...dIds, zId],
 					view: { top: 0, left: 0, bottom: row, right: col(k) }
 				});
@@ -417,7 +414,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		steps.push({
 			kind: 'bringDown',
 			boxes: [bId],
-			prompt: () => `Bring down the ${next}.`,
+			...Ask(() => ln('q.div.bringDown', { d: next })),
 			lit: [...dIds, nKey(k), bId, `down${k}`],
 			view: { top: 0, left: 0, bottom: row, right: col(k) },
 			slide: { row: dRow, col: col(k) }
@@ -441,6 +438,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 	let remainderBoxes: string[] | undefined = remIds;
 	let fraction: Sheet['fraction'];
 	let note: string | undefined;
+	let noteSay: Msg[] | undefined;
 	if (dec) {
 		answerBoxes = [...qIds, ...(hasPoint ? ['qp'] : [])];
 		remainderBoxes = undefined;
@@ -449,7 +447,8 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 			const truncated = Number(quotient.replace('.', ''));
 			const nextDigit = Math.floor((remainder * 10) / B);
 			const rounded = asText(truncated + (nextDigit >= 5 ? 1 : 0), places);
-			note = `It doesn’t come out even: the digits keep going, so we stop at ${plural(places, 'decimal place', 'decimal places')}. Rounded to the nearest ${placeWord(places).replace(/s$/, '')}, it’s ${rounded}.`;
+			noteSay = [ln('q.div.notEven', {}, places), ln(places <= 3 ? `q.div.rounded${places}` : 'q.div.roundedN', { x: rounded, n: places })];
+			note = tx(noteSay);
 		}
 	} else if (form === 'fraction') {
 		answerBoxes = [...qIds];
@@ -465,28 +464,22 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 			den.forEach((x, k) => place(x.id, x.d, qRow, fc + W - den.length + k, { half: 'bottom' }));
 			cells.push({ kind: 'rule', row: qRow, from: fc, to: fc + W, key: 'fbar', step: at, mid: true });
 			const g = gcd(remainder, B);
-			const simpler = g > 1 ? ` You may simplify it: ${remainder}/${B} = ${remainder / g}/${B / g}.` : '';
+			const simpler = g > 1 ? [ln('q.simplify', { r: remainder, d: B, rs: remainder / g, ds: B / g })] : [];
 			steps.push({
 				kind: 'fraction',
 				boxes: num.map((x) => x.id),
-				prompt: () => `${remainder} is left over. Write it on top of a fraction, beside the quotient.`,
-				told: () => `${remainder} is left over: it goes on top of the fraction.`,
-				hints: () => [
-					'What’s left at the bottom goes on top of the fraction: it’s the part of one more group you have.',
-					`It’s ${remainder}, the number at the bottom of your work.`
-				],
+				...Ask(() => ln('q.frac.top', { r: remainder })),
+				...Tell(() => ln('q.frac.topTold', { r: remainder })),
+				hints: () => [t('h.frac.top1'), t('h.frac.top2', { r: remainder })],
 				lit: [...remIds, 'fbar', ...num.map((x) => x.id)],
 				view: { top: 0, left: 0, bottom: row, right: fc + W - 1 }
 			});
 			steps.push({
 				kind: 'fraction',
 				boxes: den.map((x) => x.id),
-				prompt: () => `Under the line goes the number you divided by.${simpler}`,
-				told: () => `${B} goes under the line: ${quotient} ${remainder}/${B}.${simpler}`,
-				hints: () => [
-					`The bottom of the fraction says how big a whole group is: the number you divided by.`,
-					`It’s ${B}.${simpler}`
-				],
+				...Ask(() => [ln('q.frac.bottom'), ...simpler]),
+				...Tell(() => [ln('q.frac.bottomTold', { d: B, q: quotient, r: remainder }), ...simpler]),
+				hints: () => [t('h.frac.bottom1'), tx([ln('h.its', { x: B }), ...simpler])],
 				lit: [...divKeys, 'fbar', ...den.map((x) => x.id)],
 				view: { top: 0, left: 0, bottom: row, right: fc + W - 1 }
 			});
@@ -507,7 +500,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		answer,
 		steps,
 		...(fraction ? { fraction } : {}),
-		...(note ? { note } : {})
+		...(note ? { note, noteSay } : {})
 	};
 }
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
@@ -517,15 +510,19 @@ export function countState(partial: number, divisor: number, count: number): 'ov
 	const left = partial - count * divisor;
 	return left < 0 ? 'over' : left >= divisor ? 'under' : 'right';
 }
-export function countNudge(partial: number, divisor: number, count: number): string | null {
+export function countNudgeMsg(partial: number, divisor: number, count: number): Msg | null {
 	switch (countState(partial, divisor, count)) {
 		case 'over':
-			return `${count} × ${divisor} = ${count * divisor}, more than ${partial}. Step down.`;
+			return ln('q.count.over', { c: count, d: divisor, p: count * divisor, x: partial });
 		case 'under':
-			return `${divisor} still fits into what’s left.`;
+			return ln('q.count.under', { d: divisor });
 		default:
 			return null;
 	}
+}
+export function countNudge(partial: number, divisor: number, count: number): string | null {
+	const n = countNudgeMsg(partial, divisor, count);
+	return n ? tx(n) : null;
 }
 
 // --- sheets in general ---
@@ -676,24 +673,24 @@ const BOTTOMS: [number, number] = [2, 999];
 
 export function checkMultiply(top: number, bottom: number, numbers: Numbers = 'whole'): string | null {
 	if (numbers === 'decimal' && !(Number.isInteger(top) && Number.isInteger(bottom))) {
-		const f = decimalFault(top, 'the top number') ?? decimalFault(bottom, 'the bottom number');
+		const f = decimalFault(top, 'top') ?? decimalFault(bottom, 'bottom');
 		if (f) return f;
 		const T = scaled(top, placesOf(top));
 		const B = scaled(bottom, placesOf(bottom));
-		if (T < 2 || T > TOPS[1]) return 'The top number needs one to four digits, like 2.4 or 35.6.';
-		if (B < 2 || B > BOTTOMS[1]) return 'The bottom number needs one to three digits, like 1.3 or 0.6.';
-		if (len(B) > len(T)) return 'The number with more digits goes on top.';
+		if (T < 2 || T > TOPS[1]) return t('ui.check.mulDecTop');
+		if (B < 2 || B > BOTTOMS[1]) return t('ui.check.mulDecBottom');
+		if (len(B) > len(T)) return t('ui.check.moreOnTop');
 		return null;
 	}
-	if (!Number.isInteger(top) || top < TOPS[0] || top > TOPS[1]) return 'The top number needs two to four digits, 10 to 9,999.';
-	if (!Number.isInteger(bottom) || bottom < BOTTOMS[0] || bottom > BOTTOMS[1]) return 'The bottom number needs to be 2 to 999.';
-	if (len(bottom) > len(top)) return 'The number with more digits goes on top.';
+	if (!Number.isInteger(top) || top < TOPS[0] || top > TOPS[1]) return t('ui.check.mulTop');
+	if (!Number.isInteger(bottom) || bottom < BOTTOMS[0] || bottom > BOTTOMS[1]) return t('ui.check.mulBottom');
+	if (len(bottom) > len(top)) return t('ui.check.moreOnTop');
 	return null;
 }
 
 const reversed = (n: number) => [...String(n)].reverse().map(Number);
-const PLACES = ['ones', 'tens', 'hundreds', 'thousands', 'ten thousands', 'hundred thousands'];
-const ROW_PLACES = ['ones', 'tens', 'hundreds'];
+/** Place names, by place (0 the ones), as keys of the table's w.place.* words. */
+export const PLACES = ['ones', 'tens', 'hundreds', 'thousands', 'tenThousands', 'hundredThousands'];
 
 function partialRow(top: number, b: number) {
 	const t = reversed(top);
@@ -729,7 +726,7 @@ type PlacedBox = { id: string; digit: number; row: number; col: number; small?: 
 
 export function multiplySheet(problem: { top: number; bottom: number }, lead = 0): Sheet {
 	const { top, bottom } = problem;
-	const t = reversed(top);
+	const tops = reversed(top);
 	const b = reversed(bottom);
 	const product = top * bottom;
 	const L = len(product);
@@ -754,7 +751,7 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 	const boxes: Box[] = [];
 	const steps: Step[] = [];
 	const crossed: Record<string, number> = {};
-	t.forEach((d, k) => cells.push({ kind: 'given', row: m, col: colOf(k), text: String(d), key: `t${k}` }));
+	tops.forEach((d, k) => cells.push({ kind: 'given', row: m, col: colOf(k), text: String(d), key: `t${k}` }));
 	b.forEach((d, k) => cells.push({ kind: 'given', row: bottomRow, col: colOf(k), text: String(d), key: `m${k}` }));
 	cells.push({ kind: 'given', row: bottomRow, col: 0, text: '×', key: 'times' });
 	cells.push({ kind: 'rule', row: bottomRow, from: 0, to: cols, key: 'rule0' });
@@ -785,8 +782,8 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 			ids.push(id);
 			add([{ id, digit: 0, row: r, col: colOf(e) }], {
 				kind: 'zero',
-				prompt: () => `We’re multiplying by the ${bd} ${ROW_PLACES[n]} now. What goes in the ${PLACES[e]} place?`,
-				told: () => `We’re multiplying by the ${bd} ${ROW_PLACES[n]} now, so a 0 holds the ${PLACES[e]} place.`,
+				...Ask(() => ln('q.mul.zero', { d: bd, row: t(`w.place.${PLACES[n]}`), p: t(`w.place.${PLACES[e]}`) })),
+				...Tell(() => ln('q.mul.zeroTold', { d: bd, row: t(`w.place.${PLACES[n]}`), p: t(`w.place.${PLACES[e]}`) })),
 				lit: [`m${n}`, id],
 				view
 			});
@@ -796,17 +793,17 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 			ids.push(id);
 			add([{ id, digit: 0, row: r, col: colOf(n) }], {
 				kind: 'multiply',
-				prompt: () => `What is 0 × ${top}?`,
-				told: () => 'Anything times 0 is 0, so this row is 0.',
-				lit: [`m${n}`, ...t.map((_, k) => `t${k}`), id],
+				...Ask(() => ln('q.whatIsTimes', { a: 0, b: top })),
+				...Tell(() => ln('q.mul.zeroRow')),
+				lit: [`m${n}`, ...tops.map((_, k) => `t${k}`), id],
 				view
 			});
 		} else
-			t.forEach((td, i) => {
+			tops.forEach((td, i) => {
 				const value = part.values[i];
 				const carryIn = part.carries[i];
 				const carryId = `${letter}c${i}`;
-				const lastDigit = i === t.length - 1;
+				const lastDigit = i === tops.length - 1;
 				const placed: PlacedBox[] = (lastDigit ? reversed(value) : [value % 10])
 					.map((d, k) => ({ id: `${letter}${i + k + n}`, digit: d, row: r, col: colOf(i + k + n) }))
 					.reverse();
@@ -817,12 +814,11 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 					out > 0 ? { id: `${letter}c${i + 1}`, digit: out, row: carryRowOf[n], col: colOf(i + 1), small: true } : null;
 				add(carryBox ? [...placed, carryBox] : placed, {
 					kind: 'multiply',
-					prompt: (v) =>
-						carryIn > 0 ? `What is ${bd} × ${td}? Then add the ${carried(v)} you carried.` : `What is ${bd} × ${td}?`,
-					told: (v) =>
-						(carryIn > 0
-							? `${bd} × ${td} = ${bd * td}, and ${bd * td} + the ${carried(v)} you carried = ${value}.`
-							: `${bd} × ${td} = ${value}.`) + (carryBox ? ` The ${out} is carried, over the ${t[i + 1]}.` : ''),
+					...Ask((v) => (carryIn > 0 ? [ln('q.whatIsTimes', { a: bd, b: td }), ln('q.mul.addCarry', { c: carried(v) })] : ln('q.whatIsTimes', { a: bd, b: td }))),
+					...Tell((v) => [
+						carryIn > 0 ? ln('q.mul.toldCarry', { a: bd, b: td, p: bd * td, c: carried(v), x: value }) : ln('q.eq', { a: bd, b: td, x: value }),
+						...(carryBox ? [ln('q.mul.carried', { c: out, d: tops[i + 1] })] : [])
+					]),
 					lit: [`m${n}`, `t${i}`, ...(carryIn > 0 ? [carryId] : []), ...placed.map((x) => x.id), ...(carryBox ? [carryBox.id] : [])],
 					view,
 					skipCount: { by: bd, times: td, carry: carryIn, row: r, onesCol: colOf(i + n) },
@@ -854,13 +850,11 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 			const carryIn = sc[p] ?? 0;
 			add([{ id, digit: d, row: sumRow, col: colOf(p) }], {
 				kind: 'add',
-				prompt: (v) => {
+				...Ask((v) => {
 					const xs = ops.map((o) => val(v, o, digitOf(o)));
 					const c = carryIn > 0 ? val(v, carryId, carryIn) : 0;
-					if (!xs.length) return `Write the ${c} you carried.`;
-					if (xs.length === 1 && !c) return `Bring down the ${xs[0]}: there’s nothing to add to it.`;
-					return `What is ${xs.join(' + ')}${c ? ` + the ${c} you carried` : ''}?`;
-				},
+					return addAsk(xs, c);
+				}),
 				lit: ['plus', 'rule1', ...ops, ...(carryIn > 0 ? [carryId] : []), id],
 				view
 			});
@@ -868,8 +862,8 @@ export function multiplySheet(problem: { top: number; bottom: number }, lead = 0
 			if (out > 0 && p + 1 < sum.length)
 				add([{ id: `sc${p + 1}`, digit: out, row: sumCarryRow, col: colOf(p + 1), small: true }], {
 					kind: 'sumCarry',
-					prompt: () => `Carry the ${out} to the ${PLACES[p + 1]}, up here.`,
-					told: () => `The ${out} is carried to the ${PLACES[p + 1]}.`,
+					...Ask(() => ln('q.mul.sumCarry', { c: out, p: t(`w.place.${PLACES[p + 1]}`) })),
+					...Tell(() => ln('q.mul.sumCarryTold', { c: out, p: t(`w.place.${PLACES[p + 1]}`) })),
 					lit: ['plus', 'rule1', id, `sc${p + 1}`],
 					view
 				});
@@ -919,33 +913,30 @@ export function decimalMultiplySheet({ top, bottom }: { top: number; bottom: num
 	const countRow = answerRow + 1;
 	const at = s.steps.length;
 	const answer = asText(product, P);
-	cells.push({ kind: 'given', row: countRow, col: s.cols - 2, text: 'decimal places', key: 'dp', step: at, note: true });
+	cells.push({ kind: 'given', row: countRow, col: s.cols - 2, text: t('ui.sheet.decimalPlaces'), key: 'dp', step: at, note: true });
 	cells.push({ kind: 'box', row: countRow, col: s.cols - 1, id: 'dp' });
 	// the point where the count typed puts it (so a wrong count shows where it would go), and the zeros in front once right
 	for (let k = 1; k <= Math.max(P, Math.min(L, 4)); k++)
 		cells.push({ kind: 'given', row: answerRow, col: colOf(k), text: '.', key: 'dp', dot: true, after: 'dp', when: String(k) });
 	for (let p = L; p <= P; p++) cells.push({ kind: 'given', row: answerRow, col: colOf(p), text: '0', key: 'dp', after: 'dp' });
-	const counted = `${top} has ${plural(pt, 'decimal place', 'decimal places')} and ${bottom} has ${plural(pb, 'decimal place', 'decimal places')}`;
+	// "2.4 has 1 decimal place and 1.3 has 2 decimal places" (each count its own plural form)
+	const first = ln('q.mul.hasAnd', { x: top }, pt);
 	const steps: Step[] = s.steps.map((st, i) =>
-		i === 0 ? { ...st, prompt: (v: Values) => `Multiply as if there were no points: ${T} × ${B}. ${st.prompt(v)}` } : st
+		i === 0 ? { ...st, ...Ask((v: Values) => [ln('q.mul.noPoints', { a: T, b: B }), ...(st.ask?.(v) ?? [])]) } : st
 	);
 	steps.push({
 		kind: 'point',
 		boxes: ['dp'],
-		prompt: () => `${counted}. How many decimal places does the answer have?`,
-		told: () => `${counted}: ${pt} + ${pb} = ${P}. Count ${P} places from the right and put the point there: ${answer}.`,
-		hints: () => [
-			'Count the digits after the point in both numbers you multiplied, and add them.',
-			`${counted}: ${pt} + ${pb} = ${P}.`,
-			`It’s ${P}: the point goes ${plural(P, 'place', 'places')} from the right, ${answer}.`
-		],
+		...Ask(() => [first, ln('q.mul.hasEnd', { x: bottom }, pb), ln('q.mul.howManyPlaces')]),
+		...Tell(() => [first, ln('q.mul.hasSum', { x: bottom, a: pt, b: pb, p: P }, pb), ln('q.mul.countPlaces', { x: answer }, P)]),
+		hints: () => [t('h.mul.points1'), tx([first, ln('q.mul.hasSum', { x: bottom, a: pt, b: pb, p: P }, pb)]), tn('h.mul.points3', P, { x: answer })],
 		lit: ['tpt', 'mpt', 'dp', ...s.answerBoxes],
 		view: { top: 0, left: 0, bottom: countRow, right: s.cols - 1 }
 	});
 	const trimmed = answer.replace(/\.?0+$/, '');
 	return {
 		...s,
-		...(trimmed !== answer ? { note: `${answer} is the same as ${trimmed}: zeros on the end, after the point, can go.` } : {}),
+		...(trimmed !== answer ? { note: t('q.mul.trimNote', { x: answer, y: trimmed }), noteSay: [ln('q.mul.trimNote', { x: answer, y: trimmed })] } : {}),
 		title: `${top} × ${bottom}`,
 		rows: countRow + 1,
 		cells,
@@ -1051,9 +1042,9 @@ function columnKind(kind: 'add' | 'subtract', dflt: ColumnPlan): KindInfo {
 	const add = kind === 'add';
 	return {
 		name: kind,
-		title: add ? 'Addition' : 'Subtraction',
+		title: t(`ui.kind.${kind}`),
 		sign: add ? '+' : '−',
-		labels: ['top number', 'bottom number'],
+		labels: [t('ui.label.top'), t('ui.label.bottom')],
 		widths: [4, 4],
 		setSize: dflt.count,
 		makeSet: (r, n) => columnSet(kind, { ...dflt, count: n }, r),
@@ -1064,8 +1055,8 @@ function columnKind(kind: 'add' | 'subtract', dflt: ColumnPlan): KindInfo {
 			parse: (raw) => parseColumnPlan(raw, dflt),
 			generate: (plan, r = Math.random, existing = []) => columnSet(kind, plan as ColumnPlan, r, existing),
 			ranges: [
-				{ key: 'tops', name: 'Top number', limits: COLUMN_LIMITS },
-				{ key: 'bottoms', name: 'Bottom number', limits: COLUMN_LIMITS }
+				{ key: 'tops', name: t('ui.range.tops'), limits: COLUMN_LIMITS },
+				{ key: 'bottoms', name: t('ui.range.bottoms'), limits: COLUMN_LIMITS }
 			],
 			choices: [NUMBERS_CHOICE],
 			fix: (plan) => {
@@ -1074,33 +1065,14 @@ function columnKind(kind: 'add' | 'subtract', dflt: ColumnPlan): KindInfo {
 				let bottoms = sortRange(p.bottoms);
 				const swap = !add && bottoms[0] > tops[1];
 				if (swap) [tops, bottoms] = [bottoms, tops];
-				return { plan: { ...p, tops, bottoms }, note: swap ? 'Swapped: the bigger number goes on top.' : null };
+				return { plan: { ...p, tops, bottoms }, note: swap ? t('ui.swapped') : null };
 			}
 		},
 		levels: LEVELS,
-		levelText: {
-			countUp: add
-				? 'They count each column on with ▲ (8, 9, 10 …) and the page writes it in, and the carries. They type the decimal point.'
-				: 'They count up from the bottom digit to the top one with ▲, and the page writes how many. They type the regrouping.'
-		},
-		studentLevelText: {
-			countUp: add
-				? 'Count each column on with ▲, and the page writes it in.'
-				: 'Count up from the bottom digit to the top one with ▲, and the page writes how many. Type the regrouping.'
-		},
-		steps: add
-			? [
-					'Line the numbers up on the right (decimals: on their points).',
-					'Add each column, starting with the ones.',
-					'A column that makes 10 or more: write the ones, and carry the 1, small, over the next column.'
-				]
-			: [
-					'Line the numbers up on the right (decimals: on their points).',
-					'Subtract each column, starting with the ones.',
-					'When the top digit is smaller, regroup: cross out the digit next to it, write 1 less over it, and put a small 1 in front of the top digit.',
-					'Across zeros, each 0 becomes 10, then 9.'
-				],
-		tagline: add ? 'Two- to four-digit numbers, with carrying, grades 2 to 4 (decimals: 5 and 6).' : 'Two- to four-digit numbers, with regrouping, grades 2 to 4 (decimals: 5 and 6).',
+		levelText: { countUp: t(`ui.${kind}.countUp`) },
+		studentLevelText: { countUp: t(`ui.${kind}.countUpStudent`) },
+		steps: add ? [t('ui.add.step1'), t('ui.add.step2'), t('ui.add.step3')] : [t('ui.add.step1'), t('ui.subtract.step2'), t('ui.subtract.step3'), t('ui.subtract.step4')],
+		tagline: t(`ui.${kind}.tagline`),
 		sample: add ? [475, 368] : [400, 167]
 	};
 }
@@ -1145,35 +1117,26 @@ const LEVELS: Level[] = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn'];
 /** The Numbers choice (every kind): whole numbers, or decimals too. */
 export const NUMBERS_CHOICE: KindInfo['settings']['choices'][number] = {
 	key: 'numbers',
-	name: 'Numbers',
+	name: t('ui.numbers.name'),
 	options: [
-		{ value: 'whole', label: 'Whole numbers', about: 'Whole numbers only.' },
-		{
-			value: 'decimal',
-			label: 'Decimals',
-			about: 'The same sizes of numbers with a decimal point in them, to hundredths (12.6 ÷ 4, 4.5 ÷ 0.3, 2.4 × 1.3). Division answers are decimals too. With the standard method only.'
-		}
+		{ value: 'whole', label: t('ui.numbers.whole'), about: t('ui.numbers.wholeAbout') },
+		{ value: 'decimal', label: t('ui.numbers.decimal'), about: t('ui.numbers.decimalAbout') }
 	]
 };
 
 /** The Remainders choice (a teacher's settings; the label is what the choice shows). */
-export const REMAINDER_OPTIONS: { value: RemainderForm; label: string; about: string }[] = [
-	{ value: 'none', label: 'None', about: 'Every problem divides evenly.' },
-	{ value: 'R', label: 'R', about: 'What’s left is written as a remainder: 7 R 2.' },
-	{ value: 'fraction', label: 'Fraction', about: 'What’s left goes over the divisor as a fraction: 7 2/3. Simplifying is up to the student.' },
-	{
-		value: 'decimal',
-		label: 'Decimal',
-		about: `They write a decimal point and zeros, and keep dividing: 7.66… They stop when it comes out, or at ${DECIMAL_PLACES} decimal places, and the answer says what it rounds to. With the standard method only.`
-	}
-];
+export const REMAINDER_OPTIONS: { value: RemainderForm; label: string; about: string }[] = REMAINDER_FORMS.map((value) => ({
+	value,
+	label: t(`ui.rem.${value}`),
+	about: tn(`ui.rem.${value}About`, DECIMAL_PLACES)
+}));
 
 export const KINDS: KindInfo[] = [
 	{
 		name: 'divide',
-		title: 'Long division',
+		title: t('ui.kind.divide'),
 		sign: '÷',
-		labels: ['number to divide', 'divide by'],
+		labels: [t('ui.label.dividend'), t('ui.label.divisor')],
 		widths: [6, 4],
 		setSize: DIVIDE_PLAN.count,
 		makeSet: (r, n) => divideSet({ ...DIVIDE_PLAN, count: n }, r).map((p) => [p.dividend, p.divisor]),
@@ -1189,10 +1152,10 @@ export const KINDS: KindInfo[] = [
 					existing.map(([a, b]) => ({ dividend: a, divisor: b }))
 				).map((p) => [p.dividend, p.divisor]),
 			ranges: [
-				{ key: 'dividends', name: 'Dividend', limits: DIVIDENDS },
-				{ key: 'divisors', name: 'Divisor', limits: DIVISORS }
+				{ key: 'dividends', name: t('ui.range.dividends'), limits: DIVIDENDS },
+				{ key: 'divisors', name: t('ui.range.divisors'), limits: DIVISORS }
 			],
-			choices: [NUMBERS_CHOICE, { key: 'remainders', name: 'Remainders', options: REMAINDER_OPTIONS }],
+			choices: [NUMBERS_CHOICE, { key: 'remainders', name: t('ui.rem.name'), options: REMAINDER_OPTIONS }],
 			fix: (plan) => {
 				const p = plan as DividePlan;
 				const sort = ([a, b]: [number, number]): [number, number] => [Math.min(a, b), Math.max(a, b)];
@@ -1200,20 +1163,15 @@ export const KINDS: KindInfo[] = [
 			}
 		},
 		levels: LEVELS,
-		steps: [
-			'Divide: how many times does the divisor go in?',
-			'Multiply, and write the product underneath.',
-			'Subtract, then bring down the next digit.',
-			'Repeat until there’s nothing to bring down: what’s left is the remainder.'
-		],
-		tagline: 'Up to six digits divided by up to four digits, grades 4 to 6.',
+		steps: [t('ui.divide.step1'), t('ui.divide.step2'), t('ui.divide.step3'), t('ui.divide.step4')],
+		tagline: t('ui.divide.tagline'),
 		sample: [92, 4]
 	},
 	{
 		name: 'multiply',
-		title: 'Multiplication',
+		title: t('ui.kind.multiply'),
 		sign: '×',
-		labels: ['top number', 'bottom number'],
+		labels: [t('ui.label.top'), t('ui.label.bottom')],
 		widths: [4, 3],
 		setSize: MULTIPLY_PLAN.count,
 		makeSet: (r, n) => multiplySet({ ...MULTIPLY_PLAN, count: n }, r).map((p) => [p.top, p.bottom]),
@@ -1229,24 +1187,20 @@ export const KINDS: KindInfo[] = [
 					existing.map(([a, b]) => ({ top: a, bottom: b }))
 				).map((p) => [p.top, p.bottom]),
 			ranges: [
-				{ key: 'tops', name: 'Top number', limits: TOPS },
-				{ key: 'bottoms', name: 'Bottom number', limits: BOTTOMS }
+				{ key: 'tops', name: t('ui.range.tops'), limits: TOPS },
+				{ key: 'bottoms', name: t('ui.range.bottoms'), limits: BOTTOMS }
 			],
 			choices: [NUMBERS_CHOICE],
 			fix: (plan) => {
 				const f = fixMultiplyPlan(plan as MultiplyPlan);
-				return { plan: f.plan, note: f.swapped ? 'Swapped: the bigger number goes on top.' : null };
+				return { plan: f.plan, note: f.swapped ? t('ui.swapped') : null };
 			}
 		},
 		levels: LEVELS,
-		levelText: { countUp: 'They skip-count with ▲ to find each product, and the page writes it in. They type the adding.' },
-		studentLevelText: { countUp: 'Skip-count with ▲ to find each product, and the page writes it in. Then type the adding.' },
-		steps: [
-			'Multiply the top number by the bottom number’s ones, right to left, carrying as you go.',
-			'Start each next row with a placeholder zero for each place it moves over, then multiply by the next digit.',
-			'Add the rows.'
-		],
-		tagline: 'Up to four digits times up to three digits, grades 4 and 5.',
+		levelText: { countUp: t('ui.multiply.countUp') },
+		studentLevelText: { countUp: t('ui.multiply.countUpStudent') },
+		steps: [t('ui.multiply.step1'), t('ui.multiply.step2'), t('ui.multiply.step3')],
+		tagline: t('ui.multiply.tagline'),
 		sample: [24, 13]
 	},
 	columnKind('add', ADD_PLAN),
@@ -1254,26 +1208,20 @@ export const KINDS: KindInfo[] = [
 ];
 export const kindInfo = (k: Kind): KindInfo => KINDS.find((x) => x.name === k)!;
 
-export const FLAG_INFO: { name: Flag; label: string; detail: string }[] = [
-	{ name: 'spotlight', label: 'Spotlight', detail: 'Only the numbers for this step at full strength.' },
-	{ name: 'prompt', label: 'Prompt', detail: 'Ask each step as a question.' },
-	{ name: 'zoom', label: 'Zoom', detail: 'Move in on the step being worked.' },
-	{ name: 'build', label: 'Build as you go', detail: 'Each box, sign and line appears when its step comes up.' },
-	{ name: 'drawSigns', label: 'Draw the signs', detail: 'Draw the − and the line as each row begins.' },
-	{ name: 'bringDown', label: 'Bring down for me', detail: 'Slide the next digit down after each subtraction.' },
-	{ name: 'markNow', label: 'Mark mistakes now', detail: 'Show a wrong digit when it’s typed, not at Check.' }
-];
+export const FLAG_INFO: { name: Flag; label: string; detail: string }[] = FLAGS.map((name) => ({ name, label: t(`ui.flag.${name}`), detail: t(`ui.flag.${name}About`) }));
 const ALL: Flags = { spotlight: true, prompt: true, zoom: true, build: true, drawSigns: true, bringDown: true, markNow: true };
 const NONE: Flags = { spotlight: false, prompt: false, zoom: false, build: false, drawSigns: false, bringDown: false, markNow: false };
 
 export type LevelInfo = { name: Level; label: string; way: 'watch' | 'countUp' | 'type'; flags: Flags; scored: boolean; detail: string };
-export const LEVEL_INFO: LevelInfo[] = [
-	{ name: 'watch', label: 'Watch', way: 'watch', flags: ALL, scored: false, detail: 'Next does one step at a time. Nothing to type.' },
-	{ name: 'countUp', label: 'Count up', way: 'countUp', flags: ALL, scored: true, detail: 'Step each quotient digit up until the next one is too big.' },
-	{ name: 'guided', label: 'Guided', way: 'type', flags: ALL, scored: true, detail: 'Type every digit. The box to fill lights up, with a question for each step.' },
-	{ name: 'prompted', label: 'Prompted', way: 'type', flags: { ...NONE, prompt: true, build: true }, scored: true, detail: 'Type every digit, with a question for each step.' },
-	{ name: 'onMyOwn', label: 'On my own', way: 'type', flags: NONE, scored: true, detail: 'Every box from the start, checked at the end.' }
-];
+export const LEVEL_INFO: LevelInfo[] = (
+	[
+		['watch', 'watch', ALL, false],
+		['countUp', 'countUp', ALL, true],
+		['guided', 'type', ALL, true],
+		['prompted', 'type', { ...NONE, prompt: true, build: true }, true],
+		['onMyOwn', 'type', NONE, true]
+	] as const
+).map(([name, way, flags, scored]) => ({ name, label: t(`ui.level.${name}`), way, flags, scored, detail: t(`ui.level.${name}About`) }));
 export const levelInfo = (l: Level): LevelInfo | undefined => LEVEL_INFO.find((x) => x.name === l);
 
 export const MAX_PROBLEMS = 100;
