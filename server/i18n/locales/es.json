@@ -1219,6 +1219,32 @@
       "made": "Hecho con Oomba Academy",
       "code": "Código de clase: {code}",
       "grid": "Cuadrícula del crucigrama"
+    },
+    "printBox": {
+      "divide": "División larga",
+      "multiply": "Multiplicación",
+      "add": "Suma",
+      "subtract": "Resta",
+      "howR": "Divide. Escribe el resto con R, como 7 R 2.",
+      "howFraction": "Divide. Escribe el resto como fracción sobre el divisor, como 7 2/3.",
+      "howDecimal": "Divide. Cuando se acaben las cifras, escribe un punto decimal y ceros y sigue. Para cuando la división sea exacta o al llegar a 2 decimales, y redondea.",
+      "howShift": "Para dividir entre un decimal, primero mueve los dos puntos el mismo número de lugares a la derecha.",
+      "how": {
+        "multiply": "Multiplica.",
+        "multiplyDec": "Multiplica como si no hubiera puntos y luego cuenta los decimales para poner el punto.",
+        "add": "Suma.",
+        "addDec": "Suma. Alinea los puntos decimales.",
+        "subtract": "Resta.",
+        "subtractDec": "Resta. Alinea los puntos decimales."
+      },
+      "method": {
+        "ladder": "Usa la escalera (cocientes parciales).",
+        "area": "Usa el modelo de área.",
+        "partial": "Usa productos parciales."
+      },
+      "problem": "Problema {n}",
+      "rounds": "Redondeado: {x}",
+      "simpler": "Simplificado: {x}"
     }
   },
   "friends": {

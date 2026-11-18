@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// Sharing an activity: saved on Oomba (its problems and support, not its title) for a student link and a QR code.
 	// Saving again after a change keeps the same link.
-	import { Check, Copy, GraduationCap, QrCode } from '@lucide/svelte';
+	import { Check, Copy, GraduationCap, KeyRound, Printer, QrCode } from '@lucide/svelte';
 	import { isShared, shareActivity, type Activity } from './activities.svelte';
-	import { assign, canAssign, classCode, copy, isGuest, isPreview, setLink } from './oomba';
+	import { assign, canAssign, canPrint, classCode, copy, isGuest, isPreview, printSheet, setLink } from './oomba';
+	import { toItem } from './logic';
 	import { makeQr, qrExtent, qrPath, qrPng } from './qr';
 
 	let { activity }: { activity: Activity } = $props();
@@ -13,7 +15,7 @@
 	const saved = $derived(isShared(activity));
 	const link = $derived(setLink(activity.setId));
 	const qr = $derived(link ? makeQr(link) : null);
-	const noSave = isPreview() ? 'Student links work in the published game, not in a preview.' : isGuest() ? 'Sign in to Oomba to share your activity.' : '';
+	const noSave = isPreview() ? t('ui.save.preview') : isGuest() ? t('ui.save.guest') : '';
 
 	async function save() {
 		if (saving || saved) return;
@@ -22,6 +24,20 @@
 		const r = await shareActivity(activity);
 		saving = false;
 		if (r.error) problem = r.error;
+	}
+
+	// --- a worksheet to print: the activity's problems (a fresh set for each student: the ones it has now), as numbers
+	// and fixed words; the answer key on a page of its own, for school staff only (the server checks too) ---
+	let printing = $state(false);
+	let printNote = $state('');
+	async function print(key: boolean) {
+		if (printing || !activity.problems.length) return;
+		printing = true;
+		printNote = '';
+		const { k, p, r, dec, m } = toItem(activity);
+		const out = await printSheet({ k, p, ...(r ? { r } : {}), ...(dec ? { dec } : {}), ...(m ? { m } : {}), key, set: isShared(activity) ? (activity.setId ?? '') : '' });
+		printing = false;
+		if (out !== 'ok') printNote = t(out === 'key' ? 'ui.print.key' : out === 'bad' ? 'ui.print.bad' : out === 'tap' ? 'ui.print.tap' : 'ui.print.offline');
 	}
 
 	let copied = $state<'link' | 'qr' | null>(null);
@@ -46,48 +62,63 @@
 </script>
 
 <div class="share">
-	<h2>Share with students</h2>
+	<h2>{t('ui.share.title')}</h2>
 	{#if noSave}
 		<p class="note">{noSave}</p>
 	{:else}
 		<button type="button" class="btn-primary wide" disabled={saving || saved} onclick={save}>
-			{#if saved}<Check size={16} aria-hidden="true" /> Saved{:else if saving}Saving…{:else if activity.setId}Save changes{:else}Save and get link{/if}
+			{#if saved}<Check size={16} aria-hidden="true" /> {t('ui.share.saved')}{:else if saving}{t('ui.saving')}{:else if activity.setId}{t('ui.share.saveChanges')}{:else}{t('ui.share.save')}{/if}
 		</button>
 		{#if activity.setId && !saved && !saving}
-			<p class="note">Saving changes keeps the same link. Students who open it get the new problems.</p>
+			<p class="note">{t('ui.share.sameLink')}</p>
 		{/if}
 		{#if problem}<p class="note bad" role="alert">{problem}</p>{/if}
 	{/if}
 
 	{#if link}
 		<div class="code-box">
-			<span class="code-label">Class code</span>
+			<span class="code-label">{t('ui.classCode')}</span>
 			<span class="code-val">{classCode(activity.setId ?? '')}</span>
-			<span class="code-hint">Students choose “I’m a student” and type it.</span>
+			<span class="code-hint">{t('ui.share.codeHint')}</span>
 		</div>
 		<p class="link" title={link}>{link}</p>
 		<button type="button" class="btn-primary wide" onclick={copyLink}>
-			{#if copied === 'link'}<Check size={16} aria-hidden="true" /> Copied{:else}<Copy size={16} aria-hidden="true" /> Copy link{/if}
+			{#if copied === 'link'}<Check size={16} aria-hidden="true" /> {t('ui.copied')}{:else}<Copy size={16} aria-hidden="true" /> {t('ui.share.copyLink')}{/if}
 		</button>
 		{#if canAssign()}
 			<button type="button" class="btn-ghost wide" disabled={!saved} onclick={() => activity.setId && assign(activity.setId)}
-				><GraduationCap size={16} aria-hidden="true" /> Assign to a class</button
+				><GraduationCap size={16} aria-hidden="true" /> {t('ui.share.assign')}</button
 			>
-			{#if !saved}<p class="note">Save your changes to assign the activity.</p>{/if}
+			{#if !saved}<p class="note">{t('ui.share.saveToAssign')}</p>{/if}
 		{/if}
+	{/if}
+	{#if canPrint()}
+		<div class="print">
+			<h2>{t('ui.print.title')}</h2>
+			<p class="note">{t(canAssign() ? 'ui.print.aboutStaff' : 'ui.print.about')}</p>
+			<button type="button" class="btn-ghost wide" disabled={printing || !activity.problems.length} onclick={() => print(false)}
+				><Printer size={16} aria-hidden="true" /> {t('ui.print.sheet')}</button
+			>
+			{#if canAssign()}
+				<button type="button" class="btn-ghost wide" disabled={printing || !activity.problems.length} onclick={() => print(true)}
+					><KeyRound size={16} aria-hidden="true" /> {t('ui.print.withKey')}</button
+				>
+			{/if}
+			{#if printNote}<p class="note bad" role="alert">{printNote}</p>{/if}
+		</div>
 	{/if}
 	<div class="qr">
 		{#if qr}
-			<svg viewBox="0 0 {qrExtent(qr)} {qrExtent(qr)}" width="168" height="168" role="img" aria-label="QR code for the student link">
+			<svg viewBox="0 0 {qrExtent(qr)} {qrExtent(qr)}" width="168" height="168" role="img" aria-label={t('ui.share.qr')}>
 				<rect width="100%" height="100%" fill="#fff" />
 				<path d={qrPath(qr)} fill="#000" />
 			</svg>
 			<button type="button" class="btn-ghost" onclick={copyQr}>
-				{#if copied === 'qr'}<Check size={16} aria-hidden="true" /> Copied{:else}<Copy size={16} aria-hidden="true" /> Copy QR code{/if}
+				{#if copied === 'qr'}<Check size={16} aria-hidden="true" /> {t('ui.copied')}{:else}<Copy size={16} aria-hidden="true" /> {t('ui.share.copyQr')}{/if}
 			</button>
 		{:else}
 			<div class="qr-waiting"><QrCode size={40} aria-hidden="true" /></div>
-			<p class="note">{noSave && isPreview() ? 'There’s no student link in a preview.' : 'The QR code and the link appear here once the activity is saved.'}</p>
+			<p class="note">{t(noSave && isPreview() ? 'ui.share.noLinkPreview' : 'ui.share.qrLater')}</p>
 		{/if}
 	</div>
 </div>
@@ -152,6 +183,14 @@
 		font-size: 0.82rem;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+	.print {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+		padding-top: 0.8rem;
+		border-top: 2px solid var(--line);
 	}
 	.qr {
 		display: flex;

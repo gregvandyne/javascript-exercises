@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// A finished example of a method (the ladder or area model for 945 ÷ 7; the area model or partial products for
 	// 46 × 23), small, on graph paper: the picture beside a method's name in the editor and on the About page.
 	import Work from './Work.svelte';
@@ -18,7 +19,7 @@
 	>
 {/snippet}
 
-<div class="picture" style:--sq="{size}px" role="img" aria-label="{work.title} = {work.answer.replace(' R 0', '')}, worked this way">
+<div class="picture" dir="ltr" style:--sq="{size}px" role="img" aria-label={t('ui.picture', { x: `${work.title} = ${work.answer.replace(' R 0', '')}` })}>
 	<Work {work} field={still} {values} />
 </div>
 

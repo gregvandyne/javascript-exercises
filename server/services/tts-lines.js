@@ -156,8 +156,11 @@ export const GAMES = {
   // Algebra Builder (adapted from Algebra Tiles by teacher.dev) reads nothing aloud, like the original: its words are
   // the activities' labels and Check's messages, which it shows. Registered so the platform knows it (no I18N block).
   'algebra-builder': { title: 'Algebra Builder', role: 'friendly', spoken: /(?!)/ },
-  // The Big Divide reads nothing aloud either: its questions and messages are shown, step by step.
-  'box-by-box': { title: 'The Big Divide', role: 'friendly', spoken: /(?!)/ },
+  // The Big Divide reads a step's question aloud when the player taps its speaker button (never by itself): the say.*
+  // lines its build writes into its I18N block, each its q.* line as the voice says it ("745 divided by 6"). Their
+  // {placeholders} hold the numbers of the problem, and may also hold the game's own fill-in words (its w.* keys:
+  // place names, "or", "and … tenths", "over"), so a decimal or a list reads naturally; never anything else.
+  'box-by-box': { title: 'The Big Divide', role: 'friendly', spoken: /^say\./, fills: /^w\./ },
   // Crossword reads nothing aloud: its clues are the teacher's own words, shown on the screen.
   'crossword': { title: 'Crossword', role: 'friendly', spoken: /(?!)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
@@ -257,7 +260,8 @@ export function gameLines(slug, locale, game = readGame(slug), { templates = fal
   if (!game) return [];
   const { strings, roles, keyRoles } = game;
   const chain = [...new Set([locale, locale.split('-')[0], 'en'])].filter(c => Object.prototype.hasOwnProperty.call(strings, c));
-  const keys = Object.keys(strings.en || {}).filter(k => GAMES[slug].spoken.test(k));
+  // English's keys, and a language's own plural forms English lacks (Russian "key.few")
+  const keys = [...new Set(['en', ...chain].flatMap(c => Object.keys(strings[c] || {})))].filter(k => GAMES[slug].spoken.test(k));
   const out = [];
   for (const key of keys) {
     let text; for (const c of chain) { if (strings[c][key] !== undefined) { text = strings[c][key]; break; } }
@@ -271,6 +275,19 @@ export function gameLines(slug, locale, game = readGame(slug), { templates = fal
 // A game may only have its own spoken lines read: the server never sends text a player could have typed. A line with
 // {placeholders} matches only with numbers in their place (a count like "Crystal smashed! 3/5"), never letters.
 const NUM = "[0-9][0-9.,'’ ]{0,15}";
+// A game with fill-in words (GAMES[slug].fills: keys whose words may stand in a placeholder, as numbers do): a
+// placeholder is up to 24 tokens, each a number or one of those words (a comma after either), one space apart (no
+// spaces inside a token, so a line is matched in one pass).
+const NUM_TOKEN = "[0-9][0-9.,'’]*";
+function fillWords(slug, game, locale) {
+  const re = GAMES[slug] && GAMES[slug].fills; if (!re || !game) return null;
+  const words = new Set();
+  for (const c of [...new Set([locale, locale.split('-')[0], 'en'])]) {
+    const t = game.strings[c]; if (!t) continue;
+    for (const [k, v] of Object.entries(t)) if (re.test(k) && typeof v === 'string') for (const w of tts.tidy(v.replace(/\{\w+\}/g, ' ')).split(' ')) if (w && !/^[0-9]/.test(w)) words.add(w);
+  }
+  return [...words].sort((a, b) => b.length - a.length);
+}
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const memo = new Map();   // `${slug}|${locale}` -> { mtime, exact: Map(text -> roles[]), tpl: [{ re, roles }] }
 /** The allowlist of one game and locale (memoised per file modification time). */
@@ -283,10 +300,14 @@ export function allowlist(slug, locale, dir = SEED_DIR) {
   const k = `${slug}|${locale}|${dir}`, hit = memo.get(k);
   if (hit && hit.mtime === mtime) return hit;
   const exact = new Map(), tpl = [];
-  for (const x of gameLines(slug, locale, readGame(slug, dir), { templates: true })) {
+  const game = readGame(slug, dir), fills = fillWords(slug, game, locale);
+  // a word may end in a comma, as a number may (a list: "3 tenths, 4 tenths or 5 tenths")
+  const token = fills && `(?:${NUM_TOKEN}${fills.length ? `|(?:${fills.map(escRe).join('|')}),?` : ''})`;
+  const slot = fills ? `${token}(?: ${token}){0,23}` : NUM;
+  for (const x of gameLines(slug, locale, game, { templates: true })) {
     const text = tts.tidy(x.text);
     if (/\{\w+\}/.test(text)) {
-      const re = new RegExp(`^${text.split(/\{\w+\}/).map(escRe).join(NUM)}$`, 'u');
+      const re = new RegExp(`^${text.split(/\{\w+\}/).map(escRe).join(slot)}$`, 'u');
       const t = tpl.find(y => y.re.source === re.source);
       if (t) { if (!t.roles.includes(x.role)) t.roles.push(x.role); } else tpl.push({ re, roles: [x.role] });
     } else {

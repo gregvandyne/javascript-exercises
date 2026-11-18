@@ -1220,6 +1220,32 @@
       "made": "Feito com a Oomba Academy",
       "code": "Código da turma: {code}",
       "grid": "Grade das palavras cruzadas"
+    },
+    "printBox": {
+      "divide": "Divisão longa",
+      "multiply": "Multiplicação",
+      "add": "Adição",
+      "subtract": "Subtração",
+      "howR": "Divida. Escreva o resto com R, como 7 R 2.",
+      "howFraction": "Divida. Escreva o resto como fração sobre o divisor, como 7 2/3.",
+      "howDecimal": "Divida. Quando os algarismos acabarem, escreva um ponto decimal e zeros e continue. Pare quando a divisão for exata ou com 2 casas decimais, e arredonde.",
+      "howShift": "Para dividir por um decimal, primeiro mova os dois pontos o mesmo número de casas para a direita.",
+      "how": {
+        "multiply": "Multiplique.",
+        "multiplyDec": "Multiplique como se não houvesse pontos e depois conte as casas decimais para colocar o ponto.",
+        "add": "Some.",
+        "addDec": "Some. Alinhe os pontos decimais.",
+        "subtract": "Subtraia.",
+        "subtractDec": "Subtraia. Alinhe os pontos decimais."
+      },
+      "method": {
+        "ladder": "Use a escada (quocientes parciais).",
+        "area": "Use o modelo de área.",
+        "partial": "Use produtos parciais."
+      },
+      "problem": "Problema {n}",
+      "rounds": "Arredondado: {x}",
+      "simpler": "Simplificado: {x}"
     }
   },
   "friends": {

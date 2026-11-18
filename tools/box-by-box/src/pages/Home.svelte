@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { t, tn } from '$lib/i18n';
 	// The teacher's activities: a card for each (newest first), a New activity menu, and on each card a menu to open
 	// it, copy its student link (saving it first when it hasn't been shared as it is) or delete it.
-	import { NAME } from '$lib/name';
+	import { NAME_HERE as NAME } from '$lib/i18n';
 	import { Ellipsis, Plus } from '@lucide/svelte';
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
@@ -23,9 +24,9 @@
 			.join(', ');
 	function meta(a: Activity) {
 		const { level, perStudent } = a.settings;
-		const label = level === 'custom' ? 'your own mix' : levelInfo(level)?.label;
+		const label = level === 'custom' ? t('ui.home.ownMix') : levelInfo(level)?.label;
 		const way = a.settings.method && a.settings.method !== 'standard' ? ` · ${methodInfo(a.kind, a.settings.method).label}` : '';
-		return `${kindInfo(a.kind).title} · ${a.problems.length} problems${way} · ${label}${perStudent ? ' · different for each student' : ''}`;
+		return `${kindInfo(a.kind).title} · ${tn('ui.home.problems', a.problems.length)}${way} · ${label}${perStudent ? ` · ${t('ui.home.perStudent')}` : ''}`;
 	}
 
 	let newOpen = $state(false);
@@ -76,7 +77,7 @@
 				copied = null;
 				menuFor = null;
 			}, 1200);
-		} else problem = { id: a.id, text: 'Couldn’t copy the link. Open the activity to see it.' };
+		} else problem = { id: a.id, text: t('ui.home.copyFailed') };
 	}
 	function del(a: Activity) {
 		remove(a.id);
@@ -84,7 +85,7 @@
 		confirmFor = null;
 	}
 	$effect(() => {
-		document.title = `${NAME} · Division, multiplication, addition and subtraction, step by step`;
+		document.title = `${NAME} · ${t('ui.home.docTitle')}`;
 	});
 </script>
 
@@ -95,18 +96,17 @@
 		<div>
 			<div class="top-row">
 				<p class="brand"><Logo size={36} /> {NAME}</p>
-				<button type="button" class="btn-ghost switch" onclick={() => show({ name: 'start' })}>← Not a teacher?</button>
+				<button type="button" class="btn-ghost switch" onclick={() => show({ name: 'start' })}>{t('ui.home.notTeacher')}</button>
 			</div>
-			<h1>Your activities</h1>
+			<h1>{t('ui.home.title')}</h1>
 			<p class="lede">
-				Each activity is a set of long division, multiplication, addition or subtraction problems, worked on graph paper with as much support
-				as you choose, and shared with students as a link. They’re saved with your Oomba account.
+				{t('ui.home.lede')}
 			</p>
 		</div>
 		<div class="top-actions">
 			<div class="menu-wrap new-wrap">
 				<button type="button" class="btn-primary" aria-haspopup="menu" aria-expanded={newOpen} bind:this={newBtn} onclick={() => (newOpen = !newOpen)}
-					><Plus size={16} aria-hidden="true" /> New activity</button
+					><Plus size={16} aria-hidden="true" /> {t('ui.home.new')}</button
 				>
 				{#if newOpen}
 					<div class="menu" role="menu">
@@ -121,7 +121,7 @@
 
 	{#if list.loaded && !items.length}
 		<div class="empty">
-			<p>No activities yet. Make your first one:</p>
+			<p>{t('ui.home.empty')}</p>
 			<div class="empty-actions">
 				{#each KINDS as k (k.name)}
 					<button type="button" class="btn-ghost" onclick={() => make(k.name)}><Plus size={16} aria-hidden="true" /> {k.title}</button>
@@ -136,7 +136,7 @@
 				<button type="button" class="open" onclick={() => open(a)}>
 					<span class="title-row"><span class="title">{titleOf(a)}</span></span>
 					<span class="snippet"
-						>{#if a.settings.perStudent}A fresh set for each student, like {snippet(a, 3)} …{:else}{snippet(a)}{/if}</span
+						>{#if a.settings.perStudent}{t('ui.home.freshLike', { x: snippet(a, 3) })}{:else}{snippet(a)}{/if}</span
 					>
 					<span class="meta">{meta(a)}</span>
 				</button>
@@ -146,23 +146,23 @@
 						class="iconbtn"
 						aria-haspopup="menu"
 						aria-expanded={menuFor === a.id}
-						aria-label="More for {titleOf(a)}"
+						aria-label={t('ui.home.more', { x: titleOf(a) })}
 						onclick={(e) => toggleMenu(a.id, e.currentTarget)}><Ellipsis size={18} strokeWidth={3} aria-hidden="true" /></button
 					>
 					{#if menuFor === a.id}
 						<div class="menu" role="menu">
 							{#if confirmFor === a.id}
-								<p class="confirm">Delete “{titleOf(a)}” for good?</p>
+								<p class="confirm">{t('ui.home.deleteAsk', { x: titleOf(a) })}</p>
 								<div class="confirm-row">
-									<button type="button" class="btn-danger" onclick={() => del(a)}>Delete</button>
-									<button type="button" class="btn-ghost" onclick={() => (confirmFor = null)}>Keep</button>
+									<button type="button" class="btn-danger" onclick={() => del(a)}>{t('ui.delete')}</button>
+									<button type="button" class="btn-ghost" onclick={() => (confirmFor = null)}>{t('ui.keep')}</button>
 								</div>
 							{:else}
-								<button type="button" role="menuitem" onclick={() => open(a)}>Open</button>
+								<button type="button" role="menuitem" onclick={() => open(a)}>{t('ui.open')}</button>
 								<button type="button" role="menuitem" disabled={working === a.id} onclick={() => copyLink(a)}
-									>{copied === a.id ? 'Copied the student link' : working === a.id ? 'Saving…' : 'Copy student link'}</button
+									>{copied === a.id ? t('ui.home.copied') : working === a.id ? t('ui.saving') : t('ui.home.copyLink')}</button
 								>
-								<button type="button" role="menuitem" class="danger" onclick={() => (confirmFor = a.id)}>Delete</button>
+								<button type="button" role="menuitem" class="danger" onclick={() => (confirmFor = a.id)}>{t('ui.delete')}</button>
 								{#if problem?.id === a.id}<p class="problem" role="alert">{problem.text}</p>{/if}
 							{/if}
 						</div>

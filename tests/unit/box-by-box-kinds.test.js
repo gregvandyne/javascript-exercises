@@ -307,6 +307,8 @@ for (const item of EVERY) {
         if (counting) {
           const times = st.skipCount ? st.skipCount.times : Number(L.boxOf(sheet, id).digit);
           if (times === 0 && !st.skipCount) { await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowDown'); }
+          // a count by skips starts with ▲ at its starting number, then ▲ once for each
+          if (st.skipCount) await page.keyboard.press('ArrowUp');
           for (let i = 0; i < times; i++) await page.keyboard.press('ArrowUp');
           await page.keyboard.press('Enter');
         } else {
@@ -324,3 +326,64 @@ for (const item of EVERY) {
     await ctx.close();
   });
 }
+
+// ---------------------------------------------------------------- Count up meets a 0 (Greg, live site: 5.89 + 16.00)
+// A step of 0 is counted like any other: ▲ puts the starting number in the box, then ▲ once for each to count (none
+// here), then That's it. The box never sits empty waiting for That's it, and the words are a normal step's.
+const ZEROS = [
+  { what: '5.89 + 16.00, the tenths 8 + 0', item: { k: 'add', p: [[5.89, 16]], dec: 1 }, box: 'a1', start: '8' },
+  { what: '45 + 30, the ones 5 + 0', item: { k: 'add', p: [[45, 30]] }, box: 'a0', start: '5' },
+  { what: '47 − 27, the ones 7 − 7', item: { k: 'subtract', p: [[47, 27]] }, box: 'a0', start: '0' },
+  { what: '302 × 3, the tens 3 × 0', item: { k: 'multiply', p: [[302, 3]] }, box: 'a1', start: '0' }
+];
+for (const z of ZEROS)
+  test(`in Chromium, on a phone: Count up, ${z.what}: the start goes in the box with ▲, counted 0 times, then That’s it`, { skip, timeout: 90e3 }, async () => {
+    const it = { ...z.item, l: 'countUp' };
+    const { page, ctx, errors } = await open(it, true);
+    const sheet = sheetOf(it, it.p[0]);
+    const zeroStep = L.stepOfBox(sheet, z.box);
+    for (let guard = 0; guard < 300; guard++) {
+      const id = await (await page.waitForFunction(() => {
+        const a = document.activeElement;
+        if (document.querySelector('.feedback')) return null;
+        if (a?.textContent?.trim() === 'Check') return 'done';
+        return a?.dataset?.box && (a.value === '' || a.classList.contains('counting')) ? a.dataset.box : null;
+      }, null, { timeout: 8000 })).jsonValue();
+      if (id === 'done') break;
+      const i = L.stepOfBox(sheet, id);
+      const st = sheet.steps[i];
+      if (await page.locator('.stepper').count()) {
+        if (i === zeroStep) {
+          assert.equal(st.skipCount.times, 0, `${z.what}: this step counts 0`);
+          const asked = await page.locator('.prompt').innerText();
+          assert.match(asked, /start at \d+ with ▲/, `${z.what}: the same words as any step (${asked})`);
+          assert.doesNotMatch(asked, /nothing to count/, z.what);
+          // That's it before the start: the page asks for the ▲, and nothing is written for the student
+          await page.getByRole('button', { name: 'That’s it' }).click();
+          assert.match(await page.locator('.prompt').innerText(), /Start with ▲/);
+          assert.equal(await page.locator(`input[data-box="${z.box}"]`).inputValue(), '');
+          // ▲: the starting number is in the box (not blank), then That's it writes it
+          await page.getByRole('button', { name: 'One more' }).click();
+          assert.equal((await page.locator('.live').innerText()).replace(/\s/g, ''), z.start, `${z.what}: the start shows in the box`);
+          assert.match(await page.locator('.prompt').innerText(), /Press That’s it/);
+          await page.getByRole('button', { name: 'That’s it' }).click();
+          await page.waitForFunction((b) => document.querySelector(`input[data-box="${b}"]`)?.value !== '', z.box);
+          assert.equal(await page.locator(`input[data-box="${z.box}"]`).inputValue(), String(L.boxOf(sheet, z.box).digit));
+          continue;
+        }
+        const times = st.skipCount ? st.skipCount.times : Number(L.boxOf(sheet, id).digit);
+        if (times === 0 && !st.skipCount) { await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowDown'); }
+        if (st.skipCount) await page.keyboard.press('ArrowUp');
+        for (let k = 0; k < times; k++) await page.keyboard.press('ArrowUp');
+        await page.keyboard.press('Enter');
+      } else {
+        const lift = st.liftCarry?.ones === id ? String(L.boxOf(sheet, st.liftCarry.tens).digit) : '';
+        await page.keyboard.type(lift + String(L.boxOf(sheet, id).digit), { delay: 30 });
+      }
+      await page.waitForTimeout(40);
+    }
+    assert.ok(await page.locator(`input[data-box="${z.box}"]`).inputValue(), `${z.what}: the 0 step was reached and filled`);
+    await check(page, sheet, `${z.what}, Count up`);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });

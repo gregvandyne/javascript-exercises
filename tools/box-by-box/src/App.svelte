@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t, tn } from '$lib/i18n';
 	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it
 	// (Player for the standard algorithms, MethodPlayer for the ladder, area models and partial products);
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
@@ -52,22 +53,22 @@
 			title={nav.view.title}
 			preview={nav.view.from === 'editor'}
 			extra={nav.view.from === 'editor'
-				? { label: '← Back to the editor', onclick: goBack }
+				? { label: t('ui.backEditor'), onclick: goBack }
 				: nav.view.from === 'practice'
-					? { label: '← Practice', onclick: goBack }
+					? { label: t('ui.backPractice'), onclick: goBack }
 					: nav.view.from === 'code'
-						? { label: '← Back', onclick: goBack }
+						? { label: t('ui.back'), onclick: goBack }
 						: nav.view.mine
-							? { label: 'Edit this activity', onclick: editOwn }
+							? { label: t('ui.editThis'), onclick: editOwn }
 							: undefined}
-			fresh={nav.view.practice ? () => practiceProblems(nav.view.practice!.kind, nav.view.practice!.hard, nav.view.practice!.numbers) : undefined}
-			againLabel={nav.view.practice ? '5 new problems' : undefined}
+			fresh={nav.view.practice ? () => practiceProblems(nav.view.practice!.kind, nav.view.practice!.hard, nav.view.practice!.numbers, nav.view.practice!.method) : undefined}
+			againLabel={nav.view.practice ? tn('ui.newProblems', 5) : undefined}
 		/>
 	{/key}
 {:else if nav.view.name === 'invalid'}
 	<main class="broken">
-		<h1>This link doesn’t open an activity</h1>
-		<p>Ask your teacher for the link again.</p>
+		<h1>{t('ui.invalid.title')}</h1>
+		<p>{t('ui.invalid.text')}</p>
 	</main>
 {:else}
 	<About />

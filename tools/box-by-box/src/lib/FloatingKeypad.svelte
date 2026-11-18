@@ -3,6 +3,7 @@
 </script>
 
 <script lang="ts">
+	import { t } from './i18n';
 	// The keypad on wide screens: a panel that floats over the paper, moved by its handle and sized by its corner (or
 	// with the arrow keys on either), kept inside the window. Its place is kept in the player's save.
 	import { onMount } from 'svelte';
@@ -98,14 +99,14 @@
 	}
 </script>
 
-<div class="floating" role="group" aria-label="Keypad" style:left="{r.x}px" style:top="{r.y}px" style:width="{r.width}px" style:height="{r.height}px">
-	<button type="button" class="close" aria-label="Close the keypad" onpointerdown={(e) => e.preventDefault()} onclick={onclose}
+<div class="floating" role="group" aria-label={t('ui.keypad')} style:left="{r.x}px" style:top="{r.y}px" style:width="{r.width}px" style:height="{r.height}px">
+	<button type="button" class="close" aria-label={t('ui.keypad.close')} onpointerdown={(e) => e.preventDefault()} onclick={onclose}
 		><X size={16} aria-hidden="true" /></button
 	>
 	<button
 		type="button"
 		class="handle"
-		aria-label="Move the keypad: drag, or use the arrow keys"
+		aria-label={t('ui.keypad.move')}
 		onpointerdown={(e) => drag(e, false)}
 		onkeydown={(e) => nudge(e, false)}><GripHorizontal size={18} aria-hidden="true" /></button
 	>
@@ -113,7 +114,7 @@
 	<button
 		type="button"
 		class="corner"
-		aria-label="Resize the keypad: drag, or use the arrow keys"
+		aria-label={t('ui.keypad.resize')}
 		onpointerdown={(e) => drag(e, true)}
 		onkeydown={(e) => nudge(e, true)}
 	></button>

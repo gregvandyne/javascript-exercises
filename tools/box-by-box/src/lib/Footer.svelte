@@ -1,12 +1,13 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// The footer of the teacher pages and of the player's start and end screens.
 	import { go } from './nav.svelte';
-	import { NAME } from './name';
+	import { NAME_HERE as NAME } from './i18n';
 </script>
 
 <footer>
 	<span>{NAME}</span>
-	<button type="button" class="link" onclick={() => go({ name: 'about' })}>About</button>
+	<button type="button" class="link" onclick={() => go({ name: 'about' })}>{t('ui.about')}</button>
 </footer>
 
 <style>

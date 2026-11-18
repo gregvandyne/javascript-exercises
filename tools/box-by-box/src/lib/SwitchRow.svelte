@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// A setting that is on or off, with an (i) that explains it on hover or focus.
 	import type { Snippet } from 'svelte';
 	import { Info } from '@lucide/svelte';
@@ -9,7 +10,7 @@
 <div class="row">
 	<span class="name" id="{uid}-label">{label}</span>
 	<span class="info-wrap">
-		<button type="button" class="info" aria-label="What {label} does" aria-describedby="{uid}-info"><Info size={16} aria-hidden="true" /></button>
+		<button type="button" class="info" aria-label={t('ui.whatDoes', { x: label })} aria-describedby="{uid}-info"><Info size={16} aria-hidden="true" /></button>
 		<span class="tip" role="tooltip" id="{uid}-info">{@render children()}</span>
 	</span>
 	<button type="button" role="switch" class="switch" aria-checked={checked} aria-labelledby="{uid}-label" onclick={() => onchange(!checked)}
