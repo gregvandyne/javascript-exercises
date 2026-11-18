@@ -17,11 +17,14 @@
 		const k = key;
 		const asked = lines;
 		// a new question: stop the old one, and ask whether this one gets the AI voice (a moment later, so a run of
-		// steps the page writes itself doesn't ask for each)
+		// steps the page writes itself doesn't ask for each). The button stays where it is while asking (it would blink
+		// out and the question shift at every step); a line the voice turns down after all hides it (toggle below).
 		halt();
-		ready = false;
 		clearTimeout(timer);
-		if (!k) return;
+		if (!k) {
+			ready = false;
+			return;
+		}
 		timer = setTimeout(async () => {
 			const ok = await voiceReady(asked, LANG);
 			if (k === key) ready = ok;

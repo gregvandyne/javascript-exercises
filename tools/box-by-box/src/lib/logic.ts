@@ -692,7 +692,7 @@ export function checkMultiply(top: number, bottom: number, numbers: Numbers = 'w
 
 const reversed = (n: number) => [...String(n)].reverse().map(Number);
 /** Place names, by place (0 the ones), as keys of the table's w.place.* words. */
-export const PLACES = ['ones', 'tens', 'hundreds', 'thousands', 'tenThousands', 'hundredThousands'];
+export const PLACES = ['ones', 'tens', 'hundreds', 'thousands', 'tenThousands', 'hundredThousands', 'millions'];
 
 function partialRow(top: number, b: number) {
 	const t = reversed(top);

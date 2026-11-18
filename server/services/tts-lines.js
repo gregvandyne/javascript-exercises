@@ -260,7 +260,8 @@ export function gameLines(slug, locale, game = readGame(slug), { templates = fal
   if (!game) return [];
   const { strings, roles, keyRoles } = game;
   const chain = [...new Set([locale, locale.split('-')[0], 'en'])].filter(c => Object.prototype.hasOwnProperty.call(strings, c));
-  const keys = Object.keys(strings.en || {}).filter(k => GAMES[slug].spoken.test(k));
+  // English's keys, and a language's own plural forms English lacks (Russian "key.few")
+  const keys = [...new Set(['en', ...chain].flatMap(c => Object.keys(strings[c] || {})))].filter(k => GAMES[slug].spoken.test(k));
   const out = [];
   for (const key of keys) {
     let text; for (const c of chain) { if (strings[c][key] !== undefined) { text = strings[c][key]; break; } }
@@ -275,8 +276,8 @@ export function gameLines(slug, locale, game = readGame(slug), { templates = fal
 // {placeholders} matches only with numbers in their place (a count like "Crystal smashed! 3/5"), never letters.
 const NUM = "[0-9][0-9.,'’ ]{0,15}";
 // A game with fill-in words (GAMES[slug].fills: keys whose words may stand in a placeholder, as numbers do): a
-// placeholder is up to 24 tokens, each a number or one of those words, one space apart (no spaces inside a token, so a
-// line is matched in one pass).
+// placeholder is up to 24 tokens, each a number or one of those words (a comma after either), one space apart (no
+// spaces inside a token, so a line is matched in one pass).
 const NUM_TOKEN = "[0-9][0-9.,'’]*";
 function fillWords(slug, game, locale) {
   const re = GAMES[slug] && GAMES[slug].fills; if (!re || !game) return null;
@@ -300,7 +301,8 @@ export function allowlist(slug, locale, dir = SEED_DIR) {
   if (hit && hit.mtime === mtime) return hit;
   const exact = new Map(), tpl = [];
   const game = readGame(slug, dir), fills = fillWords(slug, game, locale);
-  const token = fills && `(?:${NUM_TOKEN}${fills.map(w => `|${escRe(w)}`).join('')})`;
+  // a word may end in a comma, as a number may (a list: "3 tenths, 4 tenths or 5 tenths")
+  const token = fills && `(?:${NUM_TOKEN}${fills.length ? `|(?:${fills.map(escRe).join('|')}),?` : ''})`;
   const slot = fills ? `${token}(?: ${token}){0,23}` : NUM;
   for (const x of gameLines(slug, locale, game, { templates: true })) {
     const text = tts.tidy(x.text);

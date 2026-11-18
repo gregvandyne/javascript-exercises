@@ -67,6 +67,24 @@ for (const s of STEPS)
     await g.ctx.close();
   });
 
+test('on a phone: the speaker button stays put from step to step (no blink, the question doesn’t shift)', { skip, timeout: 60e3 }, async () => {
+  // play-through pass: it hid while each new question was checked, so the question jumped sideways at every step
+  const g = await openGame({ set: { k: 'divide', p: [[745, 6]], l: 'guided' }, tts: { langs: ['en'] } });
+  await g.frame.getByRole('button', { name: 'Start', exact: true }).click();
+  await g.frame.getByRole('button', { name: 'Read it to me' }).waitFor();
+  await g.frame.evaluate(() => {
+    window.__gone = 0;
+    new MutationObserver(() => { if (!document.querySelector('.prompt-line .speak')) window.__gone++; }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  });
+  // 745 ÷ 6: 1, 6, 1 (three steps, three new questions)
+  for (const d of ['1', '6', '1']) { await g.page.keyboard.type(d); await g.page.waitForTimeout(150); }
+  await g.page.waitForTimeout(400);
+  assert.notEqual(await g.frame.locator('.prompt').innerText(), 'How many times does 6 go into 7?', 'the question moved on');
+  assert.equal(await g.frame.evaluate(() => window.__gone), 0, 'the button never left');
+  assert.deepEqual(g.errors, []);
+  await g.ctx.close();
+});
+
 test('on a phone: no speaker button without the AI voice for the game or the language (never the device’s voice)', { skip, timeout: 60e3 }, async () => {
   for (const o of [{}, { tts: { langs: ['en'] }, voice: 'no' }, { tts: { langs: ['fr'] } }]) {
     const g = await openGame({ set: { k: 'divide', p: [[745, 6]], l: 'guided' }, ...o });
