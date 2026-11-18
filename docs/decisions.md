@@ -8039,6 +8039,42 @@ played end to end twice assessing for UX/UI in all the nooks and crannies before
   - **Share** from the list saves it on Oomba when it isn't yet and opens "Share with your students": the class code,
     the link, the QR code and Assign to a class (with Google Classroom), as from the preview.
 
+## Crossword: word lists from a PDF or Word file, with limits (18 Nov 2026)
+
+Owner: "For Crossword, can you also add the ability to upload a pdf or .docx that pulls out the words. To keep it from
+getting too expensive, maybe we can set some sort of limit on size? It should only be a few pages at most for vocab
+words." The upload from earlier the same day (above) is now called **Upload a word list (PDF or Word)**, with a line
+under it giving the limits, and is kept cheap:
+- **Limits** (`services/crossword-doc.js LIMITS`): a file of at most **2 MB**; a PDF of at most **5 pages** (counted
+  from its page tree); about 5 pages of text read, **15,000 characters** (`set-ai.js DOC.textMax`, down from 40,000):
+  a longer .docx or PDF is cut there at a line's end and the teacher is told ("only about the first 5 pages were
+  read"); at most **30 words**. **10 files a day** for each account (`game-doc-day:<user>`, the site's in-memory rate
+  limiter; a file turned away for its size, pages, type or for having no text doesn't count), and 20 a minute.
+- **Text read on the server, no AI where none is needed.** A .docx through `services/docx-text.js` as before; a PDF
+  through the new `services/pdf-text.js` (no library: the objects indexed, FlateDecode streams inflated with
+  node:zlib, each page's text with its font's ToUnicode map, as Word, Google Docs and browsers write them). A PDF with
+  no fonts is a scanned picture and is turned away before any AI ("We couldn't find any text in that PDF"). When the
+  text is already a plain list (a word and its definition a line after a tab, " - ", ":", "=" or "|"; bullets,
+  numbers, a header and wrapped definitions allowed; nearly every line one) it is used as it is (`listFromText`): no
+  AI call, and no "written by AI" note. Otherwise one small call: `set-ai.js draftWordsFromDoc`, the question-set
+  editors' own model (`config.builderModel`) at low effort, now with at most 4,000 tokens out, on the capped text; only
+  a PDF whose text can't be read here (a font without a map) still goes to it as the file, and that is at most 5 pages.
+  The call counts towards the site's AI spending cap as every set-ai call does (there is no per-teacher AI allowance
+  for set-ai to count against).
+- **Safe words and clues** (`cleanWords`): only words the crossword takes (`cleanCrossItems`' rules: letters in any
+  script with spaces, hyphens and apostrophes, 2-24 characters, no word twice), each word and clue through the site's
+  text filter: a word that fails is left out, a clue with rude words, personal details or a link is left empty, as is a
+  clue that gives its word away. The AI prompt already treats the document as data and never repeats personal details.
+- **Who:** signed-in staff (teachers, school admins) and the platform admin; never a kid or a guest. Family grown-up
+  accounts are fenced off from the crossword's teacher calls (AI clues, saving a set) by `routes/family.js` today, so
+  from this too.
+- **Review before saving:** the words land in the editor's list to edit or remove; nothing is saved until the teacher
+  saves. The file is never stored or logged (the audit line has only its kind, how many words, and whether AI or
+  cutting was used). Errors each have their own words in 13 languages: too big, more than 5 pages, no text (scanned),
+  the wrong kind of file, 10 a day, and the older ones.
+- Tests: tests/unit/crossword-upload.test.js (PDFs and .docx files made in the test, `_crossword-files.js`; the AI
+  stood in for through `crossword-doc.js hooks.client`).
+
 ## Shape board: labels you can read (18 Nov 2026)
 The owner found the board's labels (corner letters, side lengths, angles, text labels) too small on the smallest Shape
 board. They had one floor for all of them (13px on the screen, 16px on the projector) and were otherwise a fixed share

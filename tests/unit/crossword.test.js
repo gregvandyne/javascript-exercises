@@ -215,7 +215,7 @@ test('words from a document: the document is data; its list is used, words with 
   assert.equal(r.code, 'docNone'); assert.equal(seen.at(-1).messages[0].content[0].type, 'document');
   assert.equal((await AI.draftWordsFromDoc({ pdf: Buffer.from('not a pdf'), client: fake({}) })).code, 'docBad');
   assert.equal((await AI.draftWordsFromDoc({ text: '', client: fake({}) })).code, 'docEmpty');
-  assert.equal((await AI.draftWordsFromDoc({ text: 'x'.repeat(40001), client: fake({}) })).code, 'docBig');
+  assert.equal((await AI.draftWordsFromDoc({ text: 'x'.repeat(15001), client: fake({}) })).code, 'docBig', 'about 5 pages at most');
   assert.equal((await AI.draftWordsFromDoc({ text: 'some words here', client: null })).code, 'aiOff');
 });
 
@@ -376,7 +376,8 @@ test('teacher: a PDF or Word document fills the list; an old .doc is turned away
     await g.start('home');
     await g.frame.click('#cw-make');
     await g.until(() => window.__brbTest.cwState().screen === 'build');
-    assert.match(await g.frame.textContent('label.cw-file'), /\.pdf, \.docx/);
+    assert.match(await g.frame.textContent('label.cw-file'), /Upload a word list \(PDF or Word\)/);
+    assert.match(await g.frame.textContent('#cw-doclimits'), /up to 2 MB and 5 pages/);
     const dir = fs.mkdtempSync(path.join(fs.realpathSync('/tmp'), 'cw-doc-'));
     fs.writeFileSync(path.join(dir, 'unit3.pdf'), '%PDF-1.4 a small test file');
     await g.frame.setInputFiles('#cw-file', path.join(dir, 'unit3.pdf'));
