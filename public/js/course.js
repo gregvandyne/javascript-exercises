@@ -51,8 +51,8 @@ slides.forEach((s, i) => {
 });
 
 // ---------------------------------------------------------------------------------------------- guided focus
-// A slide picture with focus steps plays a short tour once per view: the clean picture first (~1s), then each
-// step's box, dotted path and cue in order (~1.9s each), then the clean picture again — and only then does
+// A slide picture with focus steps plays a short tour once per view: the clean picture first (~1.4s), then each
+// step's box, dotted path and cue in order (3.5-7s each, by the cue's length: gfStepMs), then the clean picture again — and only then does
 // the figure's Replay button appear (scrolling away mid-tour ends the tour the same way). An
 // IntersectionObserver starts it when the figure scrolls (or pages, in the deck above) into view and
 // resets it when it leaves, so the same code serves the paged deck and the plain scrolling page. Reduced
@@ -77,6 +77,9 @@ function gfFinish(fig) {
   const btn = fig.querySelector('.gf-replay');
   if (btn) btn.hidden = false;
 }
+/** How long one guided-focus step stays up: its cue's reading time (about 45 ms a character, a child's pace),
+ *  never under 3.5 s nor over 7 s. */
+export const gfStepMs = cue => Math.max(3500, Math.min(7000, 1600 + String(cue || '').length * 45));
 function gfPlay(fig) {
   gfStop(fig);
   gfLayout(fig);
@@ -85,8 +88,11 @@ function gfPlay(fig) {
   const n = fig.querySelectorAll('.gf-step').length;
   if (!n) return;
   const ids = [];
-  let at = 1000;
-  for (let i = 0; i < n; i++) { ids.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), at)); at += 1900; }
+  // Unhurried (Greg, 2026-11-18: the highlights came and went too fast): the clean picture for 1.4s, then each step
+  // stays as long as its cue takes to read, about 3.5 to 7 seconds, and fades in and out gently (app.css .gf-step).
+  const cues = [...fig.querySelectorAll('.gf-cues li')].map(li => li.textContent.trim());
+  let at = 1400;
+  for (let i = 0; i < n; i++) { ids.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), at)); at += gfStepMs(cues[i]); }
   ids.push(setTimeout(() => gfFinish(fig), at));
   gfTimers.set(fig, ids);
 }

@@ -7,8 +7,8 @@
  "minutes": 5,
  "slides": [
   {
-   "title": "Meet Tally",
-   "text": "Tally the cat keeps the Numberworks, the street of workshops in the little town of Netville where all the counting gets done. Tally knows every shelf, every scale and every stubborn drawer.",
+   "title": "Welcome to Netville",
+   "text": "Welcome to Netville, a town that runs on numbers. Its busiest street is the Numberworks, where all the counting, measuring and sharing gets done. Tally the cat looks after every workshop there, and Tally will be your guide.",
    "art": "cat",
    "story": {
     "scene": "street",
@@ -20,7 +20,7 @@
   },
   {
    "title": "Workshops gone quiet",
-   "text": "The workshops have gone quiet. Their shutters are shut, their tools are dusty, and the numbers inside have forgotten their jobs.",
+   "text": "But today the workshops have gone quiet. Their shutters are shut, their tools are dusty, and the numbers inside have forgotten their jobs. Your quest is to wake them up again, one workshop at a time.",
    "art": "lock",
    "story": {
     "scene": "street",
@@ -74,7 +74,7 @@
   },
   {
    "title": "A giggle in the dark",
-   "text": "Somewhere behind the shutters, something giggles. A tile clatters. When Tally looks, two number tiles have swapped places. That is the Jumble, heard before it is ever seen.",
+   "text": "Behind the shutters, something giggles. A tile clatters, and two number tiles have swapped places. That is the Jumble, a troublemaker who mixes numbers up. It has hidden the seven Measure Stones too.",
    "art": "mask",
    "visual": {
     "type": "swap",
@@ -174,7 +174,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "There is no game this time. Open the course map, walk the Numberworks street, and find the Vault of Measures with its seven empty sockets.",
+   "text": "There is no game this time. Open the course map and walk the Numberworks street: seven workshops, each with a short lesson, three questions and a game. Each one wins back a Measure Stone for the Vault of Measures and its seven empty sockets.",
    "art": "trophy"
   }
  ],

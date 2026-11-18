@@ -8063,3 +8063,32 @@ orders of operation. Can you create a solution for this?" And: "you should be ab
   outlined while it would take it.
 - tests/unit/machine-line.test.js (all ten, the browser play-throughs included) expects the rule and the new hints.
 
+
+## Number Quest: a journey that is explained, steadier highlights, the AI voice in Lantern Mix (18 Nov 2026)
+
+Owner, on the start of Number Quest: "The beginning to the story ... is super choppy and it seems a bit like I am just
+being thrown into something without much instruction. Make sure the beginning of the journey is explained well and
+really tells the student about the journey they are about to embark on." On a Pro lesson's bar picture: "the yellow
+highlights are off ... these generally move way too quickly throughout the lesson". And on Lantern Mix: "the AI voice
+was super hit or miss ... Sometimes it was the AI voice, other times it was the computer voice."
+- **The welcome decks (0.1) tell the journey in order**, within each tier's own limits (slide count, length, reading
+  level): where you are (Netville, the town that runs on numbers, and this tier's place in it), who guides you (Tally),
+  what went wrong (the Jumble), what your quest is (Pro: climb the seven towers and win back the Great Clock's seven
+  gears; Explorer: wake the seven workshops and win back the Measure Stones for the Vault of Measures; Launchpad: walk
+  the garden path with Tally and win a seed in each garden), how each step works (a short lesson, three questions and a
+  mission game; nothing timed; a hint after a wrong try), and only then a first look at the maths. Pro's welcome no
+  longer opens with "Past the last workshop", which assumed a student had walked the street below (most Pro students
+  are placed straight into the Towers). Pro 1.1 opens with "Your climb begins at the Mixing Tower, the first of the
+  seven", tying the first lesson to the quest.
+- **Highlights on bar and fraction diagrams snap onto their parts** (`server/views/courses.js snapBox`): the parts a
+  box covers for at least half their area are the ones it names, and each edge within 2.5 units of them moves onto
+  them, so the ring hugs exactly those parts (a box that also takes in the row's label keeps that edge). Pro 1.1's
+  "2 parts of amber oil" ring had spilled past the bar's start and into the first blue part.
+- **The guided-focus tour is unhurried** (`public/js/course.js gfStepMs`): the clean picture for 1.4 s, then each step
+  as long as its cue takes to read (about 45 ms a character), 3.5 to 7 s, where it was 1.9 s; the steps and cues fade
+  over 0.6 s and 0.5 s.
+- **Lantern Mix asks for its lines before it needs them** (as Machine Line does since #407): a round's lines carry its
+  numbers, so the warm-up can't hold them, and the SDK reads a line that hasn't arrived in 4 s with the device voice.
+  Each chapter's lap is chosen while the lamplighter picker or the menu shows and its first question prefetched
+  (`BRB.prefetchSpeech`); each round prefetches its closing lines and the next round's question as it starts. A wrong
+  plan's hint depends on the plan, so it can't be asked for ahead and may still be the device voice when slow.

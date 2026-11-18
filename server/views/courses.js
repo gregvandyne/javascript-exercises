@@ -356,6 +356,31 @@ export function boxIn(f, b) {
   const x2 = clamp((b[0] + b[2] - f.vx) / f.vw * 100, 0, 100), y2 = clamp((b[1] + b[3] - f.vy) / f.vh * 100, 0, 100);
   return [r2(x1), r2(y1), r2(Math.max(1, x2 - x1)), r2(Math.max(1, y2 - y1))];
 }
+/** A focus box on a bar or fraction diagram, snapped onto the parts it is about (Greg, 2026-11-18: the ring around
+ *  "2 parts of amber oil" spilled past the bar's start and into the first blue part). The parts a box covers for at
+ *  least half their area are the ones it names; each edge of the box that sits within SNAP units of those parts'
+ *  outline moves onto it, so the ring hugs exactly those parts. An edge further out (a box that also takes in the
+ *  row's label above, or a whole bracket) is left as authored. In % of the 100 x 56.25 drawing, like the box. */
+export function snapBox(v, box) {
+  if (!v || (v.type !== 'bars' && v.type !== 'fraction') || !Array.isArray(box)) return box;
+  const rows = v.type === 'fraction' ? v.rows.map(r => ({ parts: Array.from({ length: r.cuts }, () => ({ w: 1 / r.cuts })) })) : v.rows;
+  const yOff = rows.length === 1 ? 13 : rows.length === 2 ? 5 : 0, SNAP = 2.5;
+  const bx = { l: box[0], t: box[1] * 0.5625, r: box[0] + box[2], b: (box[1] + box[3]) * 0.5625 };
+  let u = null;
+  rows.forEach((r, ri) => {
+    const y = 8 + yOff + ri * 17; let x = 6;
+    for (const p of r.parts || []) {
+      const w = p.w * 88, part = { l: x, t: y, r: x + w, b: y + 8.5 };
+      const ov = Math.max(0, Math.min(part.r, bx.r) - Math.max(part.l, bx.l)) * Math.max(0, Math.min(part.b, bx.b) - Math.max(part.t, bx.t));
+      if (ov >= 0.5 * w * 8.5) u = u ? { l: Math.min(u.l, part.l), t: Math.min(u.t, part.t), r: Math.max(u.r, part.r), b: Math.max(u.b, part.b) } : part;
+      x += w;
+    }
+  });
+  if (!u) return box;
+  const near = (a, b) => Math.abs(a - b) <= SNAP;
+  const out = { l: near(bx.l, u.l) ? u.l : bx.l, t: near(bx.t, u.t) ? u.t : bx.t, r: near(bx.r, u.r) ? u.r : bx.r, b: near(bx.b, u.b) ? u.b : bx.b };
+  return [r2(out.l), r2(out.t / 0.5625), r2(out.r - out.l), r2((out.b - out.t) / 0.5625)];
+}
 /** A path point, from % of the original picture to the overlay's SVG space (100 x fh). */
 const ptIn = (f, p) => [r2((p[0] - f.vx) / f.vw * 100), r2((p[1] - f.vy) / f.vh * f.fh)];
 /** The guided-focus layer, shared by screenshot slides (img) and drawn-diagram slides (visual): one numbered
@@ -365,7 +390,7 @@ const ptIn = (f, p) => [r2((p[0] - f.vx) / f.vw * 100), r2((p[1] - f.vy) / f.vh 
 function gfLayer(t, s, f) {
   const vf = !!s.visual;
   return html`<div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => {
-    const b = boxIn(f, st.box);
+    const b = boxIn(f, vf ? snapBox(s.visual, st.box) : st.box);
     return html`
       <div class="gf-step" data-i="${i}">
         ${st.path ? html`<svg class="gf-path" viewBox="0 0 100 ${f.fh}" preserveAspectRatio="none"><polyline points="${st.path.map(p => ptIn(f, p).join(',')).join(' ')}" pathLength="100" vector-effect="non-scaling-stroke"></polyline></svg>` : ''}

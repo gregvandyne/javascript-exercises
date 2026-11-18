@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "Meet Tally",
-   "text": "This is Tally the cat. Tally looks after the Gardens.",
+   "text": "This is Tally the cat, your guide. Tally looks after the Gardens of Netville.",
    "art": "cat",
    "story": {
     "scene": "street",
@@ -20,7 +20,7 @@
   },
   {
    "title": "The Gardens are quiet",
-   "text": "The Gardens have gone quiet. Nobody is counting the flowers.",
+   "text": "The Gardens have gone quiet. The flowers are shut and nobody is counting.",
    "art": "lock",
    "story": {
     "scene": "street",
@@ -48,7 +48,7 @@
   },
   {
    "title": "You can help",
-   "text": "Help Tally wake the Gardens. Count, and the flowers open.",
+   "text": "You will walk the garden path with Tally. Each garden you wake gives back a magic seed.",
    "art": "star",
    "story": {
     "scene": "street",

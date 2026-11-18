@@ -345,7 +345,7 @@ test('the platform admin previews a sensible Pro street: the welcome and the bui
   const step = await get('/courses/number-quest/pro-0.1', cookie);
   assert.equal(step.status, 200);
   assert.doesNotMatch(clean(step.text), /undefined|NaN|\[object Object\]/);
-  for (const re of [/Welcome to the Towers/, /Above the Workshops/, /The clock has stopped/, /Numbers that move together/, /Numbers below zero/, /How a tower works/, /Words to know/, /Your mission/, /Oats and milk in one mix/, /A sample warming from below zero/]) assert.match(step.text, re);
+  for (const re of [/Welcome to the Towers/, /Welcome to Netville/, /The clock has stopped/, /Numbers that move together/, /Numbers below zero/, /Your quest/, /Words to know/, /Your mission/, /Oats and milk in one mix/, /A sample warming from below zero/]) assert.match(step.text, re);
   assert.match(step.text, /The Cold Store keeps a sample at −5°C\./, 'printed with the true minus sign');
   assert.match(step.text, /data-say="[^"]*a sample at negative 5 degrees Celsius\. Warm it by 8 degrees[^"]*"/, 'and handed to the voice in words');
   assert.equal((step.text.match(/class="slide slide--/g) || []).length, 7);
