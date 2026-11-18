@@ -25,7 +25,7 @@ import * as polls from '../services/polls.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
-import { cleanPrintDoc, printHtml } from '../services/crossword-print.js';
+import { PRINTERS } from '../services/game-print.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -341,7 +341,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(cluesGame(g) ? { print: true } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) ? { print: true } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
@@ -403,8 +403,8 @@ router.get('/frame/:token', (req, res) => {
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
-    // Crossword's Print (BRB.canPrint / BRB.print): the play page prints the puzzle for the frame (POST /api/games/:id/print).
-    ...(!preview && cluesGame(g) ? { print: true } : {}),
+    // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide): the play page prints for the frame (POST /api/games/:id/print).
+    ...(!preview && printGame(g) ? { print: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).
@@ -465,6 +465,8 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
+/** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
+const printGame = g => setGame(g) && PRINTERS.has(g.slug);
 router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 3600e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
@@ -500,22 +502,24 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: r.words.length, ai: r.ai, cut: r.cut });
   res.json({ title: r.title, words: r.words, cut: r.cut, ai: r.ai });
 });
-// Crossword's Print (services/crossword-print.js): the game's puzzle as plain data (its words and clues, the word bank
-// option and the layout as numbers) -> { html }, the printable page the play page prints for the frame, in the viewer's
-// language. Anyone who can open the game may print a puzzle (a student, a guest with the sample, a teacher's unsaved
-// draft); the answer key only school staff (BRB.canAssign's check). The words, clues and title pass the site's text filter
-// as a saved set's do; nothing is kept. Body { doc: { t, w, b, g, key, set } }.
+// Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
+// the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;
+// services/crossword-print.js); The Big Divide: an activity's problems as a question set's item (numbers and fixed
+// words only; services/box-by-box-print.js). Anyone who can open the game may print (a student, a guest with the sample,
+// a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check). Words pass the site's text
+// filter as a saved set's do; nothing is kept. Body { doc }.
 router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
-  const r = cleanPrintDoc((req.body || {}).doc);
+  const printer = printGame(g) && PRINTERS.get(g.slug);
+  if (!printer) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const r = printer.clean((req.body || {}).doc);
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   if (r.doc.key && !isSchoolStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
   // The footer's class code and link: only for a set of this game that is on Oomba.
   const s = r.doc.set && gameSets.get(g.id, r.doc.set);
   const code = s ? s.id.slice(2).toUpperCase().replace(/^(.{5})/, '$1 ') : '';
   const link = s ? `${requestOrigin(req)}/play/${g.slug}?chapter=${s.id}&lock=1` : '';
-  res.json({ html: printHtml(r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, code, link }) });
+  res.json({ html: printer.html(r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, code, link }) });
 });
 const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
 router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {

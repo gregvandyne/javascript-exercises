@@ -1220,6 +1220,32 @@
       "made": "Made with Oomba Academy",
       "code": "Class code: {code}",
       "grid": "Crossword grid"
+    },
+    "printBox": {
+      "divide": "Long division",
+      "multiply": "Multiplication",
+      "add": "Addition",
+      "subtract": "Subtraction",
+      "howR": "Divide. Write any remainder with R, like 7 R 2.",
+      "howFraction": "Divide. Write any remainder as a fraction over the divisor, like 7 2/3.",
+      "howDecimal": "Divide. When the digits run out, write a decimal point and zeros and keep going. Stop when it comes out even, or at 2 decimal places, and round.",
+      "howShift": "To divide by a decimal, first move both points the same number of places to the right.",
+      "how": {
+        "multiply": "Multiply.",
+        "multiplyDec": "Multiply as if there were no points, then count the decimal places to place the point.",
+        "add": "Add.",
+        "addDec": "Add. Line up the decimal points.",
+        "subtract": "Subtract.",
+        "subtractDec": "Subtract. Line up the decimal points."
+      },
+      "method": {
+        "ladder": "Use the ladder (partial quotients).",
+        "area": "Use the area model.",
+        "partial": "Use partial products."
+      },
+      "problem": "Problem {n}",
+      "rounds": "Rounded: {x}",
+      "simpler": "Simplified: {x}"
     }
   },
   "friends": {

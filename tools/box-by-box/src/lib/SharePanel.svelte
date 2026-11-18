@@ -1,9 +1,10 @@
 <script lang="ts">
 	// Sharing an activity: saved on Oomba (its problems and support, not its title) for a student link and a QR code.
 	// Saving again after a change keeps the same link.
-	import { Check, Copy, GraduationCap, QrCode } from '@lucide/svelte';
+	import { Check, Copy, GraduationCap, KeyRound, Printer, QrCode } from '@lucide/svelte';
 	import { isShared, shareActivity, type Activity } from './activities.svelte';
-	import { assign, canAssign, classCode, copy, isGuest, isPreview, setLink } from './oomba';
+	import { assign, canAssign, canPrint, classCode, copy, isGuest, isPreview, printSheet, setLink } from './oomba';
+	import { toItem } from './logic';
 	import { makeQr, qrExtent, qrPath, qrPng } from './qr';
 
 	let { activity }: { activity: Activity } = $props();
@@ -22,6 +23,20 @@
 		const r = await shareActivity(activity);
 		saving = false;
 		if (r.error) problem = r.error;
+	}
+
+	// --- a worksheet to print: the activity's problems (a fresh set for each student: the ones it has now), as numbers
+	// and fixed words; the answer key on a page of its own, for school staff only (the server checks too) ---
+	let printing = $state(false);
+	let printNote = $state('');
+	async function print(key: boolean) {
+		if (printing || !activity.problems.length) return;
+		printing = true;
+		printNote = '';
+		const { k, p, r, dec, m } = toItem(activity);
+		const out = await printSheet({ k, p, ...(r ? { r } : {}), ...(dec ? { dec } : {}), ...(m ? { m } : {}), key, set: isShared(activity) ? (activity.setId ?? '') : '' });
+		printing = false;
+		if (out !== 'ok') printNote = out === 'key' ? 'Only teachers can print the answer key.' : out === 'bad' ? 'Something in these problems can’t be printed. Check them and try again.' : out === 'tap' ? 'Tap Print again.' : 'Couldn’t print just now. Check your connection and try again.';
 	}
 
 	let copied = $state<'link' | 'qr' | null>(null);
@@ -75,6 +90,21 @@
 			>
 			{#if !saved}<p class="note">Save your changes to assign the activity.</p>{/if}
 		{/if}
+	{/if}
+	{#if canPrint()}
+		<div class="print">
+			<h2>Print a worksheet</h2>
+			<p class="note">{canAssign() ? 'The problems laid out as on paper, with room to work. The answer key comes on a page of its own.' : 'The problems laid out as on paper, with room to work.'}</p>
+			<button type="button" class="btn-ghost wide" disabled={printing || !activity.problems.length} onclick={() => print(false)}
+				><Printer size={16} aria-hidden="true" /> Print worksheet</button
+			>
+			{#if canAssign()}
+				<button type="button" class="btn-ghost wide" disabled={printing || !activity.problems.length} onclick={() => print(true)}
+					><KeyRound size={16} aria-hidden="true" /> Worksheet and answer key</button
+				>
+			{/if}
+			{#if printNote}<p class="note bad" role="alert">{printNote}</p>{/if}
+		</div>
 	{/if}
 	<div class="qr">
 		{#if qr}
@@ -152,6 +182,14 @@
 		font-size: 0.82rem;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+	.print {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+		padding-top: 0.8rem;
+		border-top: 2px solid var(--line);
 	}
 	.qr {
 		display: flex;

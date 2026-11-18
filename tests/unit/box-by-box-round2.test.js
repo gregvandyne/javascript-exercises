@@ -2,7 +2,9 @@
 //   - read aloud: the speaker button reads the step's question with the platform's AI voice only, in natural words
 //     ("745 divided by 6", "7 tenths", "2 over 3"), on a tap, never by itself and never with the device's voice; the
 //     lines it sends are on the game's allowlist (server/services/tts-lines.js, its say.* lines and w.* fill words);
-// (the worksheet and the languages follow below).
+//   - the worksheet from the game: Print worksheet for anyone, Worksheet and answer key only for school staff (the
+//     worksheet itself and the route: box-by-box-print.test.js);
+// (the languages follow below).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -73,6 +75,45 @@ test('on a phone: no speaker button without the AI voice for the game or the lan
     await g.page.waitForTimeout(900);
     assert.equal(await g.frame.locator('.speak').count(), 0, JSON.stringify(o));
     assert.deepEqual((await g.device()).filter((t) => String(t).trim()), []);
+    await g.ctx.close();
+  }
+});
+
+// ---------------------------------------------------------------- the worksheet, from the game (the page and the route: box-by-box-print.test.js)
+/** What POST /api/games/:id/print answers for the role (server/routes/games.js; tested there with the real route): the
+ *  worksheet for anyone, the answer key for school staff only. */
+const printRoute = (doc, staff) => (doc.key && !staff ? { error: 'key' } : { ok: true });
+
+/** Through the teacher's screens to an activity's Share panel, in the frame. */
+async function toPrint(g) {
+  await g.frame.getByRole('button', { name: /I’m a teacher/ }).click();
+  await g.frame.getByRole('button', { name: 'New activity' }).click();
+  await g.frame.getByRole('menuitem', { name: /Long division/ }).click();
+  await g.frame.getByRole('button', { name: /^Share/ }).click();
+}
+test('on a phone: a teacher prints the worksheet or the worksheet and its key; anyone else only the worksheet', { skip, timeout: 120e3 }, async () => {
+  for (const staff of [true, false]) {
+    const g = await openGame({ print: true, canAssign: staff, printReply: async (doc) => { const r = printRoute(doc, staff); return r.ok ? { ok: true } : r; } });
+    await toPrint(g);
+    const sheet = g.frame.getByRole('button', { name: 'Print worksheet' });
+    await sheet.waitFor();
+    const keyBtn = g.frame.getByRole('button', { name: 'Worksheet and answer key' });
+    assert.equal(await keyBtn.count(), staff ? 1 : 0, staff ? 'staff: the key button' : 'no key button for anyone else');
+    await sheet.click();
+    await g.page.waitForFunction(() => window.__print.length === 1);
+    const [doc] = await g.printed();
+    assert.equal(doc.key, false); assert.equal(doc.k, 'divide'); assert.ok(doc.p.length > 0);
+    assert.deepEqual(Object.keys(doc).sort().filter((k) => !['k', 'p', 'r', 'dec', 'm', 'key', 'set'].includes(k)), [], 'numbers and fixed words only');
+    if (staff) {
+      await keyBtn.click();
+      await g.page.waitForFunction(() => window.__print.length === 2);
+      assert.equal((await g.printed())[1].key, true);
+      assert.equal(await g.frame.locator('.print .note.bad').count(), 0, 'printed');
+    } else {
+      // a request for the key made by hand is refused (the route: box-by-box-print.test.js)
+      assert.deepEqual(printRoute({ ...doc, key: true }, false), { error: 'key' });
+    }
+    assert.deepEqual(g.errors, []);
     await g.ctx.close();
   }
 });

@@ -132,6 +132,22 @@ export async function copy(what: string | Blob): Promise<boolean> {
 	}
 }
 
+// --- printing a worksheet (the play page prints: the frame can't) ---
+
+export const canPrint = () => brb()?.canPrint === true && typeof brb()?.print === 'function';
+/** Print an activity's problems as a worksheet (key: and its answer key, school staff only; the server checks). The
+ *  doc is the activity's item's numbers and fixed words. -> 'ok', or why not: 'key', 'bad', 'tap', 'offline'. */
+export async function printSheet(doc: Record<string, unknown>): Promise<string> {
+	try {
+		const p = brb()?.print?.(doc);
+		if (!p) return 'offline';
+		const r = await p;
+		return r && r.ok ? 'ok' : (r?.error ?? 'offline');
+	} catch {
+		return 'offline';
+	}
+}
+
 // --- reading a step aloud (the speaker button) ---
 // The platform's AI voice only, as the Oomba Kit's how-to cards do: the button shows once BRB.aiVoiceCheck says every
 // line gets the AI voice, and BRB.speak({ ai: 'only' }) never falls back to the device's voice. Nothing is read by itself.

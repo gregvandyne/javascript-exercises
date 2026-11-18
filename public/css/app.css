@@ -2004,3 +2004,19 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .cwp-bank ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4pt 18pt}
 .cwp-foot{display:flex;flex-wrap:wrap;gap:4pt 16pt;justify-content:center;border-top:0.75pt solid #000;margin-top:10pt;padding-top:4pt;font-size:8.5pt;break-inside:avoid}
 .cwp-link{overflow-wrap:anywhere}
+/* The Big Divide's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
+   (0.3in), with room to work under it; the answer key smaller, four to a row. */
+.bbp-how{margin:0 0 10pt;font-size:11.5pt}
+.bbp-grid{display:grid;gap:14pt 22pt}
+.bbp-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bbp-three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bbp-four{grid-template-columns:repeat(4,minmax(0,1fr));gap:10pt 16pt}
+.bbp-item{display:flex;gap:6pt;align-items:flex-start;break-inside:avoid;page-break-inside:avoid}
+.bbp-num{flex:none;min-width:1.6em;font-size:11pt}
+.bbp-pic{display:flex;flex-direction:column;gap:2pt;min-width:0}
+.bbp-svg{display:block;width:calc(var(--w) * 0.3in);max-width:100%;height:auto;font-family:"Courier New",ui-monospace,monospace}
+.bbp-key .bbp-svg{width:calc(var(--w) * 0.22in)}
+.bbp-svg text{font-size:8.4px;font-weight:700;fill:#000}
+.bbp-svg .bbp-ans{fill:#000;font-style:italic}
+.bbp-svg .bbp-line{fill:none;stroke:#000;stroke-width:0.7}
+.bbp-note{font-size:8.5pt}
