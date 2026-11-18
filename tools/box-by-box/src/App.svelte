@@ -2,7 +2,7 @@
 	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it
 	// (Player for the standard algorithms, MethodPlayer for the ladder, area models and partial products);
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
-	// practising alone.
+	// practicing alone.
 	import { nav, go, goBack, show } from '$lib/nav.svelte';
 	import { openedSet } from '$lib/oomba';
 	import { parseItem, kindInfo } from '$lib/logic';

@@ -43,7 +43,7 @@
 		title: string;
 		preview?: boolean;
 		extra?: { label: string; onclick: () => void };
-		/** Practising alone: a new set of problems for each run (never ones the student has had lately). */
+		/** Practicing alone: a new set of problems for each run (never ones the student has had lately). */
 		fresh?: () => Problem[];
 		/** The end screen's button, when it isn't "Start again". */
 		againLabel?: string;
