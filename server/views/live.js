@@ -68,7 +68,7 @@ export function teamText(t) {
  *  late); quiz: show the quiz-only ones; accounts: the room can show account names. Checkboxes carry a hidden "0"
  *  first, so an unticked box still says so (the form posts the last value). */
 export function settingsFields(t, { values, quiz = true, accounts = false, idp = 'lv-st' }) {
-  const sel = (k, opts) => html`<div class="field${QUIZ_ONLY.includes(k) ? ' lv-quiz-only' : ''}"${QUIZ_ONLY.includes(k) && !quiz ? raw(' hidden') : ''}><label for="${idp}-${k}">${t(`live.settings.${k}`)}</label><select id="${idp}-${k}" name="${k}">${opts.map(([v, label]) => html`<option value="${v}"${values[k] === v ? raw(' selected') : ''}>${label}</option>`)}</select></div>`;
+  const sel = (k, opts) => html`<div class="field${QUIZ_ONLY.includes(k) ? ' lv-quiz-only' : ''}"${QUIZ_ONLY.includes(k) && !quiz ? raw(' hidden') : ''}><label for="${idp}-${k}">${t(`live.settings.${k}`)}</label><select class="input" id="${idp}-${k}" name="${k}">${opts.map(([v, label]) => html`<option value="${v}"${values[k] === v ? raw(' selected') : ''}>${label}</option>`)}</select></div>`;
   const box = k => html`<div class="lv-check-row${QUIZ_ONLY.includes(k) ? ' lv-quiz-only' : ''}"${QUIZ_ONLY.includes(k) && !quiz ? raw(' hidden') : ''}><input type="hidden" name="${k}" value="0"><label class="lv-check"><input type="checkbox" id="${idp}-${k}" name="${k}" value="1"${values[k] ? raw(' checked') : ''}> ${t(`live.settings.${k}`)}</label></div>`;
   const secs = SETTING_KEYS.secs.values.map(v => [v, v ? t('live.settings.secsN', { count: v }) : t('live.settings.secsSet')]);
   const count = SETTING_KEYS.count.values.map(v => [v, v ? String(v) : t('live.settings.countAll')]);
@@ -89,8 +89,8 @@ export function settingsFields(t, { values, quiz = true, accounts = false, idp =
 export function teamsRow(t, { n = 0, scoring = 'avg', name = 'teams', id = 'lv-teams-n', withScoring = true } = {}) {
   return html`<fieldset class="lv-teams-row" id="${id}"><legend>${t('live.team.heading')}</legend>
     <div class="lv-seg" role="radiogroup">${[0, 2, 3, 4, 5, 6].map(v => html`<label class="lv-seg-opt"><input type="radio" name="${name}" value="${v}"${v === n ? raw(' checked') : ''}> ${v ? String(v) : t('live.team.off')}</label>`)}</div>
-    ${withScoring ? html`<div class="lv-team-scoring"><label class="lv-radio"><input type="radio" name="scoring" value="avg"${scoring !== 'sum' ? raw(' checked') : ''}> ${t('live.team.scoringAvg')}</label> <span class="small muted">${t('live.team.scoringAvgHint')}</span>
-      <label class="lv-radio"><input type="radio" name="scoring" value="sum"${scoring === 'sum' ? raw(' checked') : ''}> ${t('live.team.scoringSum')}</label></div>` : ''}
+    ${withScoring ? html`<fieldset class="lv-team-scoring"><legend>${t('live.team.scoringHow')}</legend><label class="lv-radio"><input type="radio" name="scoring" value="avg"${scoring !== 'sum' ? raw(' checked') : ''}> ${t('live.team.scoringAvg')}</label> <span class="small muted">${t('live.team.scoringAvgHint')}</span>
+      <label class="lv-radio"><input type="radio" name="scoring" value="sum"${scoring === 'sum' ? raw(' checked') : ''}> ${t('live.team.scoringSum')}</label></fieldset>` : ''}
   </fieldset>`;
 }
 const teamChip = (presets, x, extra = '') => { const p = presets[x.p]; return html`<span class="lv-team-chip" style="--team:${p.color};--team-ink:${p.ink}" data-team="${x.k}"><svg class="lv-shape" aria-hidden="true"><use href="#lv-shape-${p.shape}"/></svg><span aria-hidden="true">${p.icon}</span> <span class="lv-team-name">${p.name}</span>${extra}</span>`; };
@@ -118,7 +118,7 @@ function cohostPanel(t, { s, id, role, origin }) {
     <p class="small muted">${t(s.audience === 'family' ? 'live.cohost.introFamily' : 'live.cohost.intro')} ${t('live.cohost.max', { max: 3 })}</p>
     <ul class="lv-cohost-list" id="${id}-list" aria-label="${t('live.cohost.title')}"></ul>
     ${host ? html`<form class="lv-cohost-pick" id="${id}-pick" novalidate>
-      <div class="field"><label for="${id}-who">${t('live.cohost.pick')}</label><select id="${id}-who" name="userId" aria-describedby="${id}-tier"></select><p class="small muted lv-cohost-pick-tier" id="${id}-tier"></p></div>
+      <div class="field"><label for="${id}-who">${t('live.cohost.pick')}</label><select class="input" id="${id}-who" name="userId" aria-describedby="${id}-tier"></select><p class="small muted lv-cohost-pick-tier" id="${id}-tier"></p></div>
       <button class="btn btn-primary" type="submit">${t('live.cohost.invite')}</button>
       <p class="small muted" id="${id}-none" hidden>${t(s.audience === 'family' ? 'live.cohost.noneFamily' : 'live.cohost.noneClass')}</p>
       <p class="err form-err" id="${id}-err" aria-live="polite"></p>
@@ -418,7 +418,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
     <form method="dialog" class="stack">
       <h2 id="lv-dash-player-h"></h2>
       <fieldset><legend>${t('live.bonus.give')}</legend><div class="lv-say-list">${bonusList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-bonus="${i}">${x}</button>`)}</div></fieldset>
-      <div class="field" id="lv-dash-move-row"><label for="lv-dash-move">${t('live.dash.move')}</label><select id="lv-dash-move"></select></div>
+      <div class="field" id="lv-dash-move-row"><label for="lv-dash-move">${t('live.dash.move')}</label><select class="input" id="lv-dash-move"></select></div>
       <button class="btn btn-sm" type="button" id="lv-dash-rename">${t('live.dash.rename')}</button>
       ${full ? html`<fieldset id="lv-dash-support"><legend>${t('live.dash.support')}</legend>
         <p class="small muted">${t('live.dash.supportPrivate')}</p>
@@ -694,7 +694,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   ${homework && hostActs && setId && quiz && classes.length ? html`<details class="lv-group lv-homework" id="lv-homework"><summary class="btn">📚 ${t('live.results.homework')}</summary>
     <form class="stack" data-api="/api/live/sets/${setId}/homework" novalidate>
       <p class="small muted">${t('live.homework.hint')}</p>
-      <div class="field"><label for="lv-hw-class">${t('live.landing.classPick')}</label><select id="lv-hw-class" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-hw-class">${t('live.landing.classPick')}</label><select class="input" id="lv-hw-class" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
       <div class="field"><label for="lv-hw-due">${t('live.homework.due')}</label><input class="input" type="date" id="lv-hw-due" name="dueAt"></div>
       <p class="err form-err" aria-live="polite"></p>
       <button class="btn btn-primary" type="submit">${t('live.homework.assign')}</button>

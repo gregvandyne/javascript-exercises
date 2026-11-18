@@ -382,7 +382,7 @@ function drawTeams() {
       for (const t of teams.list) {
         const f = document.createElement('div'); f.className = 'field lv-preset-pick';
         const id = `lv-preset-${t.k}`, l = document.createElement('label'); l.htmlFor = id;
-        const sel = document.createElement('select'); sel.id = id; sel.dataset.lvPreset = t.k;
+        const sel = document.createElement('select'); sel.className = 'input'; sel.id = id; sel.dataset.lvPreset = t.k;
         presets.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `${p.icon} ${p.name}`; sel.append(o); });
         f.append(l, sel); more.append(f);
       }

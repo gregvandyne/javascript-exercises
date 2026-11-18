@@ -89,17 +89,38 @@
   .ff-work, .ff-ctrl { display: flex; flex-direction: column; align-items: center; gap: var(--ff-gap); min-width: 0; max-width: 100%; }
   .ff-tools .ff-read { margin-inline-end: 4px; }
   .ff-tip { text-align: center; font-size: .95em; }
+  /* the control card: the slicer numbers in one row, the tray reading, then Serve it! (wide) and Hint */
+  .ff-panel { align-items: stretch; gap: 8px; padding: 14px 16px; background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 18px; box-shadow: 0 4px 0 var(--ok-edge); }
+  .ff-panel .ff-tip { margin: 0; text-align: start; font-weight: 700; opacity: .85; }
+  .ff-step { margin: 0; font-weight: 900; font-size: .78em; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+  .ff-panel .ff-cuts, .ff-panel .ff-tools { justify-content: flex-start; }
+  .ff-tile.ff-num { min-width: 52px; padding: 6px 0; font-size: 1.25em; font-weight: 900; }
+  .ff-panel .ff-read { border: 0; background: none; padding: 0; min-height: 0; flex-direction: column; align-items: flex-start; font-size: 1.7em; line-height: 1.1; }
+  .ff-panel .ff-read small { margin: 2px 0 0; font-size: .5em; }
+  .ff-panel .ff-tools { margin-top: 4px; flex-wrap: nowrap; }
+  .ff-panel .ff-serve { flex: 1 1 auto; }
+  .ff-panel .ff-cuts { gap: 6px; flex-wrap: nowrap; }
+  .ff-panel .ff-cuts .ff-num { min-width: 0; flex: 1 1 0; max-width: 56px; }
+  @media (max-width: 480px) { .ff-panel .ff-cuts { flex-wrap: wrap; } .ff-panel .ff-cuts .ff-num { flex: 0 0 48px; } }
+  /* two or three cakes stand in one row, each smaller, so a 9/4 order still fits without scrolling */
+  .ff-stage[data-n="2"], .ff-stage[data-n="3"] { flex-wrap: nowrap; }
+  .ff-stage[data-n="2"] .ff-whole svg.ff-cake { width: calc(var(--ff-cake) * .8); height: calc(var(--ff-cake) * .8); }
+  .ff-stage[data-n="3"] .ff-whole svg.ff-cake { width: min(calc(var(--ff-cake) * .55), calc((100vw - 96px) / 3 - 26px)); height: min(calc(var(--ff-cake) * .55), calc((100vw - 96px) / 3 - 26px)); }
+  .ff-stage[data-n="2"] .ff-whole svg.ff-cake { max-width: calc((100vw - 64px) / 2 - 26px); max-height: calc((100vw - 64px) / 2 - 26px); }
+  .ff-stage[data-n="3"] .ff-whole { padding: 6px; }
+  .ff-stage[data-n="3"] .ff-cap { flex-direction: column; gap: 2px; }
+  /* a source amount of more than one whole (3/2, 2): one row per whole, so it keeps its height */
+  .ff-src .ff-whole svg[data-rows="2"] { height: calc(var(--ff-mini) * .572); }
+  .ff-src .ff-whole svg[data-rows="3"] { height: calc(var(--ff-mini) * .858); }
   @media (min-aspect-ratio: 13/10) {
     .ff[data-screen="level"] { --ff-cake: clamp(78px, min(calc(100vh - 318px), calc((54vw - 150px) / 2)), 200px);
       --ff-bar: clamp(140px, min(calc(52vw - 40px), calc((100vh - 300px) * 2.2)), 260px); --ff-mini: clamp(100px, min(calc((52vw - 60px) / 2), calc((100vh - 300px) * 1.4)), 200px); }
     .ff-play { flex-direction: row; justify-content: center; align-items: center; flex: 1 1 auto; min-height: 0; gap: 18px; }
     .ff-work { flex: 0 1 auto; }
-    .ff-ctrl { flex: 0 1 380px; }
-    .ff-cuts { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; }
-    .ff-cuts > .ff-h { justify-self: end; }
+    .ff-ctrl { flex: 0 1 440px; }
     /* a sum or a re-slice: the source bars stand in a column beside the whole they build */
-    .ff-play[data-type="add"] .ff-work, .ff-play[data-type="equiv"] .ff-work { display: grid; grid-template-columns: auto auto; align-items: center; justify-items: center; column-gap: var(--ff-gap); row-gap: var(--ff-gap); }
-    .ff-play[data-type="add"] .ff-work > .ff-h, .ff-play[data-type="equiv"] .ff-work > .ff-h { grid-column: 1 / -1; }
+    .ff-play:is([data-type="add"], [data-type="sub"], [data-type="mul"], [data-type="div"], [data-type="equiv"]) .ff-work { display: grid; grid-template-columns: auto auto; align-items: center; justify-items: center; column-gap: var(--ff-gap); row-gap: var(--ff-gap); }
+    .ff-play:is([data-type="add"], [data-type="sub"], [data-type="mul"], [data-type="div"], [data-type="equiv"]) .ff-work > .ff-h { grid-column: 1 / -1; }
     .ff-play .ff-src { flex-direction: column; flex-wrap: nowrap; }
     .ff-play[data-type="line"] { flex-direction: column; }
     .ff-play[data-type="line"] .ff-work { width: 100%; }
@@ -168,14 +189,29 @@ const cmpFrac = (a, b) => Math.sign(a[0] * b[1] - b[0] * a[1]);
 const addFrac = (a, b) => frac(a[0] * b[1] + b[0] * a[1], a[1] * b[1]);
 const fmt = f => (f[0] === 0 ? '0' : f[1] === 1 ? String(f[0]) : f[0] + '/' + f[1]);
 const MODES = { 0: 'play', 3: 'projector' };
+/** The order types built by cutting wholes and tapping parts onto the tray. */
+const BUILD = ['slice', 'equiv', 'add', 'sub', 'mul', 'div'];
 const CUTS = [2, 3, 4, 6, 8];
+/** Pro's slicers: tenths and twelfths too, so 1/3 + 1/4 (twelfths) and 1/2 + 2/5 (tenths) have a common cut. */
+const PRO_CUTS = [2, 3, 4, 6, 8, 10, 12];
+const subFrac = (a, b) => frac(a[0] * b[1] - b[0] * a[1], a[1] * b[1]);
+const mulFrac = (a, b) => frac(a[0] * b[0], a[1] * b[1]);
+/** How many wholes an amount needs on the table (5/4 needs 2, 8/3 needs 3; never fewer than 1). */
+const wholesFor = v => Math.max(1, Math.ceil(v[0] / v[1]));
+/** The order's value built from a cut: the parts to take, or -1 when that cut cannot build it exactly. */
+const partsFor = (v, n) => ((v[0] * n) % v[1] === 0 ? (v[0] * n) / v[1] : -1);
 
 /** What a level asks for, worked out once: the cut to make, how many pieces to take, and the value aimed at. */
 function goalOf(level) {
   if (level.type === 'slice') return { denom: level.denom, take: level.target[0], value: level.target.slice(), wholes: level.wholes || 1 };
   if (level.type === 'line') return { denom: level.denom, take: level.target[0], value: level.target.slice(), wholes: 1 };
   if (level.type === 'equiv') return { denom: level.denom, take: level.from[0] * (level.denom / level.from[1]), value: level.from.slice(), wholes: 1 };
-  if (level.type === 'add') { const sum = addFrac(level.a, level.b); return { denom: level.denom, take: sum[0] * (level.denom / sum[1]), value: sum, wholes: sum[0] > sum[1] ? 2 : 1 }; }
+  if (level.type === 'add') { const sum = addFrac(level.a, level.b); return { denom: level.denom, take: sum[0] * (level.denom / sum[1]), value: sum, wholes: wholesFor(sum) }; }
+  // Pro: take away (unlike parts), scale up (a whole or a fraction times a fraction), share out (how many servings of
+  // a unit fraction fit in an amount: build the amount in those servings and count them).
+  if (level.type === 'sub') { const d = subFrac(level.a, level.b); return { denom: level.denom, take: d[0] * (level.denom / d[1]), value: d, wholes: wholesFor(d) }; }
+  if (level.type === 'mul') { const m = mulFrac(level.a, level.b); return { denom: level.denom, take: m[0] * (level.denom / m[1]), value: m, wholes: wholesFor(m) }; }
+  if (level.type === 'div') { const n = level.a[0] * level.b[1] / level.a[1]; return { denom: level.b[1], take: n, value: level.a.slice(), wholes: wholesFor(level.a), servings: n }; }
   if (level.type === 'compare') return { denom: 0, take: cmpFrac(level.a, level.b) > 0 ? 0 : 1, value: null, wholes: 1 };
   return { denom: 0, take: 0, value: null, wholes: 1 };
 }
@@ -189,13 +225,13 @@ function goalOf(level) {
 class Run {
   constructor(level, seed) {
     this.level = level; this.type = level.type || 'slice'; this.seed = seed == null ? 1 : seed;
-    this.goal = goalOf(level);
+    this.goal = goalOf(level); this.cuts = level.cuts || CUTS;
     const startDenom = this.type === 'equiv' ? level.from[1] : 0;
     const startTaken = this.type === 'equiv' ? new Set(Array.from({ length: level.from[0] }, (_, i) => i)) : new Set();
     this.s = { phase: 'play', denom: startDenom, taken: startTaken, wholes: 1, placed: -1, picked: -1, wrong: 0, serves: 0, done: false, failed: false, lastWhy: '' };
   }
   /** Room for one more whole on the table: only on orders of more than one whole, up to the number they need. */
-  canAddWhole() { return !this.s.done && (this.type === 'slice' || this.type === 'add') && this.s.wholes < this.goal.wholes; }
+  canAddWhole() { return !this.s.done && BUILD.includes(this.type) && this.type !== 'equiv' && this.s.wholes < this.goal.wholes; }
   addWhole() { if (!this.canAddWhole()) return { ok: false }; this.s.wholes++; return { ok: true }; }
   /** Takes the last whole away again (an undo); any of its parts on the tray come off with it. */
   removeWhole() {
@@ -207,8 +243,8 @@ class Run {
   get takenCount() { return this.s.taken.size; }
   current() { return this.s.denom ? frac(this.takenCount, this.s.denom) : null; }
   cut(n) {
-    if (this.s.done || !CUTS.includes(n)) return { ok: false };
-    if (this.type !== 'slice' && this.type !== 'equiv' && this.type !== 'add') return { ok: false };
+    if (this.s.done || !this.cuts.includes(n)) return { ok: false };
+    if (!BUILD.includes(this.type)) return { ok: false };
     const s = this.s;
     if (s.denom && n % s.denom === 0) { const k = n / s.denom, next = new Set(); for (const i of s.taken) for (let j = 0; j < k; j++) next.add(i * k + j); s.taken = next; }
     else if (s.denom && s.denom % n === 0) { const k = s.denom / n, next = new Set(); for (const i of s.taken) next.add(Math.floor(i / k)); s.taken = next; }
@@ -242,8 +278,13 @@ class Run {
         // cut into a multiple of its parts is served by the matching count of the smaller pieces. A cut that
         // cannot build the order exactly (thirds for a half) is still the wrong size. Re-Slice orders keep their
         // own rule: they ask for one named cut.
-        const finer = (this.type === 'slice' || this.type === 'add') && s.denom % g.denom === 0;
-        if (!finer) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
+        // Pro: a product is served by any cut that builds it exactly (2/3 x 3/4 is 6/12, or 1/2: halves do); a
+        // share-out counts servings, so it needs the serving's own cut (fourths for "how many 1/4s").
+        const finer = (this.type === 'slice' || this.type === 'add' || this.type === 'sub') && s.denom % g.denom === 0;
+        const exact = this.type === 'mul' && partsFor(g.value, s.denom) > 0;
+        if (this.type === 'div') why = 'div-cut';
+        else if (exact) { const want = partsFor(g.value, s.denom); if (this.takenCount !== want) why = this.takenCount < want ? (want > s.denom * s.wholes ? 'more-wholes' : 'too-few') : 'too-many'; }
+        else if (!finer) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
         else { const want = g.take * (s.denom / g.denom); if (this.takenCount !== want) why = this.takenCount < want ? (want > s.denom * s.wholes ? 'more-wholes' : 'too-few') : 'too-many'; }
       }
       else if (this.takenCount !== g.take) why = this.takenCount < g.take ? (g.take > s.denom * s.wholes ? 'more-wholes' : 'too-few') : 'too-many';
@@ -306,7 +347,7 @@ function cleanParams(raw, chapters) {
   if (raw.lock) { out.present = true; out.lock = true; }
   return out;
 }
-root.FractionFactory = { rng, seedOf, gcd, frac, sameValue, cmpFrac, addFrac, fmt, goalOf, Run, solve, play, label, LABEL_RE, questCode, questDigits, cleanParams, MODES, CUTS };
+root.FractionFactory = { rng, seedOf, gcd, frac, sameValue, cmpFrac, addFrac, subFrac, mulFrac, fmt, goalOf, Run, solve, play, label, LABEL_RE, questCode, questDigits, cleanParams, MODES, CUTS, PRO_CUTS, BUILD };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
@@ -321,8 +362,16 @@ const CHAPTERS = [
   { id: 'first-cuts', index: 2, title: 'First Cuts', noun: 'orders', sub: 'Fair shares of one whole', emoji: '🍰' },
   { id: 're-slice', index: 3, title: 'Re-Slice', noun: 'orders', sub: 'Same value, new clothes', emoji: '🔪' },
   { id: 'recipe', index: 4, title: 'Recipe Math', noun: 'orders', sub: 'Adding slices together', emoji: '📖' },
+  // Pro (grades 5-6 fractions, for the 6-8 band): its own four chapters, none shared with Explorer.
+  { id: 'common-cuts', index: 5, title: 'Common Cuts', noun: 'orders', sub: 'Adding unlike parts', emoji: '🧩' },
+  { id: 'take-away', index: 6, title: 'Take Away', noun: 'orders', sub: 'Subtracting unlike parts', emoji: '🍽️' },
+  { id: 'scale-up', index: 7, title: 'Scale Up', noun: 'orders', sub: 'Multiplying fractions', emoji: '✖️' },
+  { id: 'share-out', index: 8, title: 'Share Out', noun: 'orders', sub: 'How many servings fit?', emoji: '🥄' },
 ];
-const L = (id, ch, type, o) => Object.assign({ id, ch, type, bands: ['1b', '2'] }, o);
+/** An Explorer order (grades 3-5). */
+const L = (id, ch, type, o) => Object.assign({ id, ch, type, bands: ['1b'] }, o);
+/** A Pro order: Pro only, with tenths and twelfths on the slicer. */
+const P = (id, ch, type, o) => Object.assign({ id, ch, type, bands: ['2'], cuts: [2, 3, 4, 6, 8, 10, 12] }, o);
 const LEVELS = [
   /* --- First Folds: halves, fourths, thirds by folding (Launchpad 6.3 preview) --- */
   L('fold-1', 'folds', 'slice', { denom: 2, target: [1, 2], whole: 'cake',
@@ -412,8 +461,108 @@ const LEVELS = [
     intro: 'The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Tap Add a cake to get a second cake, then cut both cakes into fourths and serve all 5 fourths!',
     hints: ['5/4 means 5 parts, each one fourth.', 'One cake only holds 4 fourths, so tap Add a cake to get a second cake.', 'Cut into 4 to slice both cakes. Fill the first cake, then take 1 part from the second.'],
     check: { q: 'What is 5/4?', tiles: ['Less than one whole', 'Exactly one whole', 'More than one whole: one whole and 1/4 more'], answer: 2 } }),
+  /* ===== Pro: Common Cuts. Unlike parts: find one cut that both fractions fit, then count. (5.NF.A.1/2) ===== */
+  P('cc-1', 'common-cuts', 'add', { a: [1, 2], b: [1, 3], denom: 6, whole: 'cake',
+    intro: 'Pro bakery! 1/2 plus 1/3. Halves and thirds are different sizes, so find one cut that both fit.',
+    hints: ['Halves fit into sixths: 1/2 is 3/6.', 'Thirds fit into sixths too: 1/3 is 2/6.', 'Cut into 6 and take 3 + 2 = 5 parts.'],
+    check: { q: '1/2 + 1/3 = ?', tiles: ['2/5', '5/6', '2/6'], answer: 1 } }),
+  P('cc-2', 'common-cuts', 'add', { a: [1, 3], b: [1, 4], denom: 12, whole: 'cake',
+    intro: 'A party order: 1/3 plus 1/4 of a cake. Which slicer do thirds and fourths both fit into?',
+    hints: ['Count up in threes and fours: 12 is in both lists.', '1/3 is 4/12 and 1/4 is 3/12.', 'Cut into 12 and take 4 + 3 = 7 parts.'],
+    check: { q: 'Why cut into twelfths for 1/3 + 1/4?', tiles: ['12 is the biggest slicer', 'Both thirds and fourths split evenly into twelfths', 'Because 3 + 4 = 7'], answer: 1 } }),
+  P('cc-3', 'common-cuts', 'add', { a: [2, 3], b: [1, 4], denom: 12, whole: 'bar',
+    intro: 'The ribbon bar order: 2/3 plus 1/4. Re-slice both into the same size parts first.',
+    hints: ['Thirds and fourths meet at twelfths.', '2/3 is 8/12 and 1/4 is 3/12.', 'Cut into 12 and take 11 parts.'],
+    check: { q: '2/3 written in twelfths is…', tiles: ['2/12', '6/12', '8/12'], answer: 2 } }),
+  P('cc-4', 'common-cuts', 'add', { a: [3, 4], b: [1, 6], denom: 12, whole: 'cake',
+    intro: 'Add 3/4 and 1/6 for the bake sale. Fourths and sixths, find the cut they share.',
+    hints: ['Sixths do not split into fourths, and fourths do not split into sixths.', 'Both split evenly into twelfths: 3/4 is 9/12, 1/6 is 2/12.', 'Cut into 12 and take 11 parts.'],
+    check: { q: 'Which cut works for both fourths and sixths?', tiles: ['8', '10', '12'], answer: 2 } }),
+  P('cc-5', 'common-cuts', 'add', { a: [1, 2], b: [2, 5], denom: 10, whole: 'bar',
+    intro: 'A long bar for the teachers: 1/2 plus 2/5. Halves and fifths, which slicer fits both?',
+    hints: ['Halves and fifths both split evenly into tenths.', '1/2 is 5/10 and 2/5 is 4/10.', 'Cut into 10 and take 9 parts.'],
+    check: { q: '1/2 + 2/5 = ?', tiles: ['3/7', '9/10', '3/10'], answer: 1 } }),
+  P('cc-6', 'common-cuts', 'add', { a: [3, 4], b: [2, 3], denom: 12, whole: 'cake', jumble: [5, 7],
+    intro: 'The Jumble wrote 3/4 + 2/3 = 5/7. Tops added, bottoms added! Build the real total. It is more than one cake.',
+    hints: ['Add up the bottoms and you change the part size. That is the Jumble mistake.', '3/4 is 9/12 and 2/3 is 8/12: 17 twelfths in all.', 'Tap Add a cake, cut into 12, fill the first cake and take 5 more.'],
+    check: { q: 'Why is 5/7 wrong?', tiles: ['The bottoms name part sizes and cannot be added', 'It should be 5/12', 'Nothing is wrong'], answer: 0 } }),
+  /* ===== Pro: Take Away. Subtract unlike parts the same way: one common cut first. (5.NF.A.1/2) ===== */
+  P('ta-1', 'take-away', 'sub', { a: [1, 2], b: [1, 3], denom: 6, whole: 'cake',
+    intro: 'Half a cake came back, and a customer eats 1/3 of the whole cake from it. What is left? 1/2 minus 1/3.',
+    hints: ['Find one cut for halves and thirds: sixths.', '1/2 is 3/6 and 1/3 is 2/6.', '3/6 take away 2/6 leaves 1/6. Cut into 6 and take 1 part.'],
+    check: { q: '1/2 − 1/3 = ?', tiles: ['1/6', '0', '1/1'], answer: 0 } }),
+  P('ta-2', 'take-away', 'sub', { a: [3, 4], b: [1, 6], denom: 12, whole: 'cake',
+    intro: 'We had 3/4 of a cake and sold 1/6 of it. Serve what is left.',
+    hints: ['Fourths and sixths meet at twelfths.', '3/4 is 9/12 and 1/6 is 2/12.', '9/12 take away 2/12 leaves 7/12.'],
+    check: { q: '3/4 written in twelfths is…', tiles: ['3/12', '9/12', '6/12'], answer: 1 } }),
+  P('ta-3', 'take-away', 'sub', { a: [5, 6], b: [1, 4], denom: 12, whole: 'bar',
+    intro: 'The ribbon bar was 5/6 long. Snip off 1/4. How much ribbon is left?',
+    hints: ['Sixths and fourths both split into twelfths.', '5/6 is 10/12 and 1/4 is 3/12.', '10/12 take away 3/12 leaves 7/12.'],
+    check: { q: '5/6 − 1/4 = ?', tiles: ['4/2', '7/12', '4/12'], answer: 1 } }),
+  P('ta-4', 'take-away', 'sub', { a: [2, 3], b: [1, 4], denom: 12, whole: 'cake',
+    intro: 'Two thirds of a cake, minus the 1/4 the Jumble nibbled. Serve the rest.',
+    hints: ['Thirds and fourths meet at twelfths.', '2/3 is 8/12 and 1/4 is 3/12.', '8/12 take away 3/12 leaves 5/12.'],
+    check: { q: 'To subtract 1/4 from 2/3, first…', tiles: ['Subtract the tops and the bottoms', 'Make the parts the same size', 'Turn both into wholes'], answer: 1 } }),
+  P('ta-5', 'take-away', 'sub', { a: [4, 5], b: [1, 2], denom: 10, whole: 'bar',
+    intro: 'A fruit bar was 4/5 long. Half the whole bar gets packed away. What stays on the counter?',
+    hints: ['Fifths and halves both split into tenths.', '4/5 is 8/10 and 1/2 is 5/10.', '8/10 take away 5/10 leaves 3/10.'],
+    check: { q: '4/5 − 1/2 = ?', tiles: ['3/10', '3/3', '1/2'], answer: 0 } }),
+  P('ta-6', 'take-away', 'sub', { a: [5, 4], b: [1, 3], denom: 12, whole: 'cake', jumble: [4, 1],
+    intro: 'The Jumble says 5/4 − 1/3 = 4/1, four whole cakes! It took away the bottoms too. Serve the real amount left.',
+    hints: ['5/4 is more than a cake, but taking away 1/3 leaves less than a cake.', '5/4 is 15/12 and 1/3 is 4/12.', '15/12 take away 4/12 leaves 11/12. Cut into 12 and take 11 parts.'],
+    check: { q: 'What did the Jumble do wrong?', tiles: ['It subtracted the bottoms, which name part sizes', 'It forgot to add', 'Nothing'], answer: 0 } }),
+  /* ===== Pro: Scale Up. Groups of a fraction, and a fraction of a fraction. (5.NF.B.4, 5.NF.B.6) ===== */
+  P('su-1', 'scale-up', 'mul', { a: [3, 1], b: [1, 4], denom: 4, whole: 'cake',
+    intro: 'Three customers each want 1/4 of a cake. Serve 3 × 1/4 on one tray.',
+    hints: ['3 × 1/4 means three groups of 1/4.', 'Cut into 4.', 'Take 3 fourths: 3/4.'],
+    check: { q: '3 × 1/4 = ?', tiles: ['3/12', '3/4', '1/12'], answer: 1 } }),
+  P('su-2', 'scale-up', 'mul', { a: [4, 1], b: [2, 3], denom: 3, whole: 'cake',
+    intro: 'Four tables each order 2/3 of a cake. That is 4 × 2/3. You will need more than one cake!',
+    hints: ['4 groups of 2 thirds is 8 thirds.', 'One cake holds 3 thirds, so 8/3 needs 3 cakes.', 'Add cakes until you have 3, cut into 3 and take 8 parts.'],
+    check: { q: '4 × 2/3 = ?', tiles: ['8/12', '8/3', '6/3'], answer: 1 } }),
+  P('su-3', 'scale-up', 'mul', { a: [1, 2], b: [3, 4], denom: 8, whole: 'cake',
+    intro: 'Half of 3/4 of a cake, please. 1/2 × 3/4: cut each fourth in half and take half of them.',
+    hints: ['Half of each fourth is one eighth.', '3/4 is 6/8, so half of it is 3/8.', 'Cut into 8 and take 3 parts.'],
+    check: { q: '1/2 × 3/4 = ?', tiles: ['3/8', '4/6', '3/2'], answer: 0 } }),
+  P('su-4', 'scale-up', 'mul', { a: [2, 3], b: [3, 4], denom: 12, whole: 'bar',
+    intro: 'Two thirds of 3/4 of the ribbon bar. 2/3 × 3/4. Any cut that builds the answer exactly is fine.',
+    hints: ['Cut into 12: 3/4 is 9/12, and 2/3 of 9 parts is 6 parts.', '6/12 is the same as 1/2.', 'Cut into 12 and take 6, or cut into 2 and take 1.'],
+    check: { q: '2/3 × 3/4 = ?', tiles: ['6/12, which is 1/2', '5/7', '2/4, which is 1/4'], answer: 0 } }),
+  P('su-5', 'scale-up', 'mul', { a: [3, 1], b: [3, 4], denom: 4, whole: 'cake',
+    intro: 'Three trays, 3/4 of a cake on each. Put 3 × 3/4 on one big order.',
+    hints: ['3 groups of 3 fourths is 9 fourths.', '9/4 is two whole cakes and 1/4 more, so you need 3 cakes.', 'Add cakes, cut into 4 and take 9 parts.'],
+    check: { q: '3 × 3/4 = ?', tiles: ['9/12', '9/4', '6/4'], answer: 1 } }),
+  P('su-6', 'scale-up', 'mul', { a: [3, 4], b: [2, 3], denom: 12, whole: 'cake', jumble: [5, 7],
+    intro: 'The Jumble wrote 3/4 × 2/3 = 5/7. It added instead of multiplying! Serve the real product.',
+    hints: ['Times means "of": 3/4 of 2/3 of a cake.', 'Multiply the tops and the bottoms: 6/12.', '6/12 is one half: take 6 twelfths, or 1 half.'],
+    check: { q: 'To multiply 3/4 × 2/3 you…', tiles: ['Add the tops and the bottoms', 'Multiply the tops and multiply the bottoms', 'Keep the bottom and add the tops'], answer: 1 } }),
+  /* ===== Pro: Share Out. How many servings of a unit fraction fit in an amount? (5.NF.B.7, 6.NS.A.1) ===== */
+  P('so-1', 'share-out', 'div', { a: [2, 1], b: [1, 4], whole: 'cake',
+    intro: 'Two whole cakes, cut into 1/4 servings. How many servings? That is 2 ÷ 1/4. Build it and count!',
+    hints: ['Dividing by 1/4 asks: how many fourths fit?', 'Add a second cake and cut both into 4.', 'Take every part: 8 servings. 2 ÷ 1/4 = 8.'],
+    check: { q: '2 ÷ 1/4 = ?', tiles: ['1/2', '8', '6'], answer: 1 } }),
+  P('so-2', 'share-out', 'div', { a: [3, 2], b: [1, 4], whole: 'cake',
+    intro: 'We have 3/2 cakes, one and a half. How many 1/4 servings is that? 3/2 ÷ 1/4.',
+    hints: ['Serving size 1/4: cut into 4.', 'One and a half cakes is 6 fourths.', 'Add a cake, cut into 4, take 6 parts: 6 servings.'],
+    check: { q: '3/2 ÷ 1/4 = ?', tiles: ['6', '3/8', '4'], answer: 0 } }),
+  P('so-3', 'share-out', 'div', { a: [3, 4], b: [1, 8], whole: 'cake',
+    intro: 'Mini cupcake tops! 3/4 of a cake, cut into 1/8 servings. How many? 3/4 ÷ 1/8.',
+    hints: ['Serving size 1/8: cut into 8.', '3/4 is 6/8.', 'Take 6 parts: 6 servings.'],
+    check: { q: 'Why is 3/4 ÷ 1/8 bigger than 3/4?', tiles: ['Dividing always makes things bigger', 'Lots of small servings fit into 3/4', 'It is not bigger'], answer: 1 } }),
+  P('so-4', 'share-out', 'div', { a: [2, 3], b: [1, 6], whole: 'bar',
+    intro: 'A ribbon bar 2/3 long, snipped into 1/6 pieces. How many pieces? 2/3 ÷ 1/6.',
+    hints: ['Piece size 1/6: cut into 6.', '2/3 is 4/6.', 'Take 4 parts: 4 pieces.'],
+    check: { q: '2/3 ÷ 1/6 = ?', tiles: ['4', '2/18', '1/9'], answer: 0 } }),
+  P('so-5', 'share-out', 'div', { a: [5, 2], b: [1, 2], whole: 'cake',
+    intro: 'Five half cakes are in the window. That is 5/2 cakes. How many 1/2 servings? 5/2 ÷ 1/2.',
+    hints: ['Serving size 1/2: cut into 2.', '5/2 is two whole cakes and a half: you need 3 cakes.', 'Add cakes, cut into 2, take 5 parts: 5 servings.'],
+    check: { q: '5/2 ÷ 1/2 = ?', tiles: ['5/4', '5', '1'], answer: 1 } }),
+  P('so-6', 'share-out', 'div', { a: [3, 4], b: [1, 12], whole: 'cake',
+    intro: 'Tasting samples! 3/4 of a cake in 1/12 samples. How many samples? 3/4 ÷ 1/12.',
+    hints: ['Sample size 1/12: cut into 12.', '3/4 is 9/12.', 'Take 9 parts: 9 samples.'],
+    check: { q: '3/4 ÷ 1/12 = ?', tiles: ['9', '3/48', '4'], answer: 0 } }),
 ];
-const THEN = { '1b': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } }, '2': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } } };
+const THEN = { '1b': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } }, '2': { 'common-cuts': { ch: 'take-away' }, 'take-away': { ch: 'scale-up' }, 'scale-up': { ch: 'share-out' } } };
 root.FractionFactoryLevels = { CHAPTERS, LEVELS, THEN };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -510,6 +659,102 @@ const I18N = {
     "hint.rc-6.1": "5/4 means 5 parts, each one fourth.",
     "hint.rc-6.2": "One cake only holds 4 fourths, so tap Add a cake to get a second cake.",
     "hint.rc-6.3": "Cut into 4 to slice both cakes. Fill the first cake, then take 1 part from the second.",
+    "intro.cc-1": "Pro bakery! 1/2 plus 1/3. Halves and thirds are different sizes, so find one cut that both fit.",
+    "hint.cc-1.1": "Halves fit into sixths: 1/2 is 3/6.",
+    "hint.cc-1.2": "Thirds fit into sixths too: 1/3 is 2/6.",
+    "hint.cc-1.3": "Cut into 6 and take 3 + 2 = 5 parts.",
+    "intro.cc-2": "A party order: 1/3 plus 1/4 of a cake. Which slicer do thirds and fourths both fit into?",
+    "hint.cc-2.1": "Count up in threes and fours: 12 is in both lists.",
+    "hint.cc-2.2": "1/3 is 4/12 and 1/4 is 3/12.",
+    "hint.cc-2.3": "Cut into 12 and take 4 + 3 = 7 parts.",
+    "intro.cc-3": "The ribbon bar order: 2/3 plus 1/4. Re-slice both into the same size parts first.",
+    "hint.cc-3.1": "Thirds and fourths meet at twelfths.",
+    "hint.cc-3.2": "2/3 is 8/12 and 1/4 is 3/12.",
+    "hint.cc-3.3": "Cut into 12 and take 11 parts.",
+    "intro.cc-4": "Add 3/4 and 1/6 for the bake sale. Fourths and sixths, find the cut they share.",
+    "hint.cc-4.1": "Sixths do not split into fourths, and fourths do not split into sixths.",
+    "hint.cc-4.2": "Both split evenly into twelfths: 3/4 is 9/12, 1/6 is 2/12.",
+    "hint.cc-4.3": "Cut into 12 and take 11 parts.",
+    "intro.cc-5": "A long bar for the teachers: 1/2 plus 2/5. Halves and fifths, which slicer fits both?",
+    "hint.cc-5.1": "Halves and fifths both split evenly into tenths.",
+    "hint.cc-5.2": "1/2 is 5/10 and 2/5 is 4/10.",
+    "hint.cc-5.3": "Cut into 10 and take 9 parts.",
+    "intro.cc-6": "The Jumble wrote 3/4 + 2/3 = 5/7. Tops added, bottoms added! Build the real total. It is more than one cake.",
+    "hint.cc-6.1": "Add up the bottoms and you change the part size. That is the Jumble mistake.",
+    "hint.cc-6.2": "3/4 is 9/12 and 2/3 is 8/12: 17 twelfths in all.",
+    "hint.cc-6.3": "Tap Add a cake, cut into 12, fill the first cake and take 5 more.",
+    "intro.ta-1": "Half a cake came back, and a customer eats 1/3 of the whole cake from it. What is left? 1/2 minus 1/3.",
+    "hint.ta-1.1": "Find one cut for halves and thirds: sixths.",
+    "hint.ta-1.2": "1/2 is 3/6 and 1/3 is 2/6.",
+    "hint.ta-1.3": "3/6 take away 2/6 leaves 1/6. Cut into 6 and take 1 part.",
+    "intro.ta-2": "We had 3/4 of a cake and sold 1/6 of it. Serve what is left.",
+    "hint.ta-2.1": "Fourths and sixths meet at twelfths.",
+    "hint.ta-2.2": "3/4 is 9/12 and 1/6 is 2/12.",
+    "hint.ta-2.3": "9/12 take away 2/12 leaves 7/12.",
+    "intro.ta-3": "The ribbon bar was 5/6 long. Snip off 1/4. How much ribbon is left?",
+    "hint.ta-3.1": "Sixths and fourths both split into twelfths.",
+    "hint.ta-3.2": "5/6 is 10/12 and 1/4 is 3/12.",
+    "hint.ta-3.3": "10/12 take away 3/12 leaves 7/12.",
+    "intro.ta-4": "Two thirds of a cake, minus the 1/4 the Jumble nibbled. Serve the rest.",
+    "hint.ta-4.1": "Thirds and fourths meet at twelfths.",
+    "hint.ta-4.2": "2/3 is 8/12 and 1/4 is 3/12.",
+    "hint.ta-4.3": "8/12 take away 3/12 leaves 5/12.",
+    "intro.ta-5": "A fruit bar was 4/5 long. Half the whole bar gets packed away. What stays on the counter?",
+    "hint.ta-5.1": "Fifths and halves both split into tenths.",
+    "hint.ta-5.2": "4/5 is 8/10 and 1/2 is 5/10.",
+    "hint.ta-5.3": "8/10 take away 5/10 leaves 3/10.",
+    "intro.ta-6": "The Jumble says 5/4 − 1/3 = 4/1, four whole cakes! It took away the bottoms too. Serve the real amount left.",
+    "hint.ta-6.1": "5/4 is more than a cake, but taking away 1/3 leaves less than a cake.",
+    "hint.ta-6.2": "5/4 is 15/12 and 1/3 is 4/12.",
+    "hint.ta-6.3": "15/12 take away 4/12 leaves 11/12. Cut into 12 and take 11 parts.",
+    "intro.su-1": "Three customers each want 1/4 of a cake. Serve 3 × 1/4 on one tray.",
+    "hint.su-1.1": "3 × 1/4 means three groups of 1/4.",
+    "hint.su-1.2": "Cut into 4.",
+    "hint.su-1.3": "Take 3 fourths: 3/4.",
+    "intro.su-2": "Four tables each order 2/3 of a cake. That is 4 × 2/3. You will need more than one cake!",
+    "hint.su-2.1": "4 groups of 2 thirds is 8 thirds.",
+    "hint.su-2.2": "One cake holds 3 thirds, so 8/3 needs 3 cakes.",
+    "hint.su-2.3": "Add cakes until you have 3, cut into 3 and take 8 parts.",
+    "intro.su-3": "Half of 3/4 of a cake, please. 1/2 × 3/4: cut each fourth in half and take half of them.",
+    "hint.su-3.1": "Half of each fourth is one eighth.",
+    "hint.su-3.2": "3/4 is 6/8, so half of it is 3/8.",
+    "hint.su-3.3": "Cut into 8 and take 3 parts.",
+    "intro.su-4": "Two thirds of 3/4 of the ribbon bar. 2/3 × 3/4. Any cut that builds the answer exactly is fine.",
+    "hint.su-4.1": "Cut into 12: 3/4 is 9/12, and 2/3 of 9 parts is 6 parts.",
+    "hint.su-4.2": "6/12 is the same as 1/2.",
+    "hint.su-4.3": "Cut into 12 and take 6, or cut into 2 and take 1.",
+    "intro.su-5": "Three trays, 3/4 of a cake on each. Put 3 × 3/4 on one big order.",
+    "hint.su-5.1": "3 groups of 3 fourths is 9 fourths.",
+    "hint.su-5.2": "9/4 is two whole cakes and 1/4 more, so you need 3 cakes.",
+    "hint.su-5.3": "Add cakes, cut into 4 and take 9 parts.",
+    "intro.su-6": "The Jumble wrote 3/4 × 2/3 = 5/7. It added instead of multiplying! Serve the real product.",
+    "hint.su-6.1": "Times means \"of\": 3/4 of 2/3 of a cake.",
+    "hint.su-6.2": "Multiply the tops and the bottoms: 6/12.",
+    "hint.su-6.3": "6/12 is one half: take 6 twelfths, or 1 half.",
+    "intro.so-1": "Two whole cakes, cut into 1/4 servings. How many servings? That is 2 ÷ 1/4. Build it and count!",
+    "hint.so-1.1": "Dividing by 1/4 asks: how many fourths fit?",
+    "hint.so-1.2": "Add a second cake and cut both into 4.",
+    "hint.so-1.3": "Take every part: 8 servings. 2 ÷ 1/4 = 8.",
+    "intro.so-2": "We have 3/2 cakes, one and a half. How many 1/4 servings is that? 3/2 ÷ 1/4.",
+    "hint.so-2.1": "Serving size 1/4: cut into 4.",
+    "hint.so-2.2": "One and a half cakes is 6 fourths.",
+    "hint.so-2.3": "Add a cake, cut into 4, take 6 parts: 6 servings.",
+    "intro.so-3": "Mini cupcake tops! 3/4 of a cake, cut into 1/8 servings. How many? 3/4 ÷ 1/8.",
+    "hint.so-3.1": "Serving size 1/8: cut into 8.",
+    "hint.so-3.2": "3/4 is 6/8.",
+    "hint.so-3.3": "Take 6 parts: 6 servings.",
+    "intro.so-4": "A ribbon bar 2/3 long, snipped into 1/6 pieces. How many pieces? 2/3 ÷ 1/6.",
+    "hint.so-4.1": "Piece size 1/6: cut into 6.",
+    "hint.so-4.2": "2/3 is 4/6.",
+    "hint.so-4.3": "Take 4 parts: 4 pieces.",
+    "intro.so-5": "Five half cakes are in the window. That is 5/2 cakes. How many 1/2 servings? 5/2 ÷ 1/2.",
+    "hint.so-5.1": "Serving size 1/2: cut into 2.",
+    "hint.so-5.2": "5/2 is two whole cakes and a half: you need 3 cakes.",
+    "hint.so-5.3": "Add cakes, cut into 2, take 5 parts: 5 servings.",
+    "intro.so-6": "Tasting samples! 3/4 of a cake in 1/12 samples. How many samples? 3/4 ÷ 1/12.",
+    "hint.so-6.1": "Sample size 1/12: cut into 12.",
+    "hint.so-6.2": "3/4 is 9/12.",
+    "hint.so-6.3": "Take 9 parts: 9 samples.",
     "why.no-cut": "Cut the whole into equal parts first. Pick a slicer!",
     "why.cut-size": "Those parts cannot build this order exactly. Pick a slicer whose parts fit it: its own number of parts, or a finer cut that splits each one evenly.",
     "why.reslice": "Re-slice finer: cut each part smaller so the tray fits the new size.",
@@ -520,6 +765,7 @@ const I18N = {
     "why.line": "Not that spot. Count the hops from 0.",
     "why.compare": "Same whole, so compare the parts: which share is really bigger?",
     "why.pick-first": "Tap the bigger share!",
+    "why.div-cut": "Cut into the serving size, then count the servings. For 1/4 servings, cut into 4.",
     "why.default": "A mistake is a clue about how your brain is thinking. Try again!",
     // the how-to cards (the kit shows them in the player's language; read aloud only when the player taps their speaker)
     "how.cut": "Cut the whole into equal parts",
@@ -559,6 +805,8 @@ const CONFIG = {
 };
 const CHAPTERS = D.CHAPTERS, LEVELS = D.LEVELS, CH_BY_ID = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
 const BAND_NAME = { '1b': 'Explorer', '2': 'Pro' };
+/** What each band plays, said on the map under the switch (the two bands share no orders). */
+const BAND_BLURB = { '1b': 'Explorer · grades 3–5: fair shares, re-slicing, comparing and adding', '2': 'Pro · grades 5–6 and up: unlike parts, taking away, multiplying and dividing' };
 
 /* ---------- Tally's voice (AI voices): every spoken line lives in the FractionFactoryI18n block above,
    keyed, and is spoken through the platform's shared BRB.speak path only (never the device voice).
@@ -717,6 +965,7 @@ function showMap() {
     for (const b of ['1b', '2']) { const t = $('button', '', BAND_NAME[b]); t.setAttribute('aria-pressed', String(S.band === b)); t.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); showMap(); }); seg.appendChild(t); }
     bar.appendChild(seg);
   }
+  map.appendChild($('p', 'ff-h ff-band', BAND_BLURB[S.band]));
   const say = $('div', 'ff-say'); say.innerHTML = tallySVG('happy'); say.appendChild($('p', '', line('say.welcome'))); map.appendChild(say); VOICE.say(line('say.welcome'), 'say.welcome');
   const grid = $('div', 'ff-grid'); map.appendChild(grid);
   for (const ch of CHAPTERS) {
@@ -731,6 +980,8 @@ function showMap() {
 }
 function enterChapter(ch, levelIx) {
   S.chapter = ch;
+  // a link to a chapter of the other band (an Explorer chapter with band=2) plays it in the band that has it
+  if (!levelsFor(ch, S.band).length) { const other = S.band === '2' ? '1b' : '2'; if (levelsFor(ch, other).length) S.band = other; }
   const ls = levelsFor(ch, S.band); if (!ls.length) return showMap();
   if (levelIx != null) return startLevel(ch, Math.min(Math.max(levelIx, 0), ls.length - 1));
   showChapterStrip(ch, firstUnfinished(ch, S.band));
@@ -781,6 +1032,7 @@ function sectorPath(cx, cy, r, a0, a1) {
 function wholeSVG(level, denom, taken, wholes, interactive, o) {
   o = o || {};
   const wrap = $('div', 'ff-stage'), cake = level.whole === 'cake', noun = cake ? 'Cake' : 'Bar';
+  wrap.dataset.n = String(Math.min(wholes + (o.canAdd ? 1 : 0), 3));   // 2 or 3 cakes in a row get smaller
   for (let w = 0; w < wholes; w++) {
     const box = $('div', 'ff-whole');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -842,12 +1094,14 @@ function wholeSVG(level, denom, taken, wholes, interactive, o) {
 function miniBar(f, label) {
   const box = $('div', 'ff-whole');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 280 80'); svg.setAttribute('width', '200'); svg.setAttribute('height', '58');
+  // an amount of more than one whole (3/2, 2) draws one row per whole, each the same size
+  const rows = Math.max(1, Math.ceil(f[0] / f[1]));
+  svg.setAttribute('viewBox', '0 0 280 ' + (80 * rows)); svg.setAttribute('width', '200'); svg.setAttribute('height', String(58 * rows)); svg.dataset.rows = String(rows);
   const pw = 264 / f[1];
-  for (let i = 0; i < f[1]; i++) {
+  for (let row = 0; row < rows; row++) for (let i = 0; i < f[1]; i++) {
     const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    r.setAttribute('x', 8 + i * pw); r.setAttribute('y', '10'); r.setAttribute('width', pw - 3); r.setAttribute('height', '60'); r.setAttribute('rx', '7');
-    r.setAttribute('fill', i < f[0] ? 'var(--ff-go)' : 'var(--ok-bg2, #eee)'); r.setAttribute('stroke', 'var(--ok-edge)'); r.setAttribute('stroke-width', '3');
+    r.setAttribute('x', 8 + i * pw); r.setAttribute('y', String(10 + 80 * row)); r.setAttribute('width', pw - 3); r.setAttribute('height', '60'); r.setAttribute('rx', '7');
+    r.setAttribute('fill', row * f[1] + i < f[0] ? 'var(--ff-go)' : 'var(--ok-bg2, #eee)'); r.setAttribute('stroke', 'var(--ok-edge)'); r.setAttribute('stroke-width', '3');
     svg.appendChild(r);
   }
   box.appendChild(svg); box.appendChild($('small', '', label));
@@ -875,7 +1129,11 @@ function orderTitle() {
   if (L.type === 'line') return 'Order: walk to ' + fr(L.target) + ' on the line';
   if (L.type === 'equiv') return 'Order: ' + fr(L.from) + ', re-sliced into ' + L.denom + ' parts';
   if (L.type === 'compare') return 'Order: which is more, ' + fr(L.a) + ' or ' + fr(L.b) + '?';
-  if (L.type === 'add') return 'Order: ' + fr(L.a) + ' + ' + fr(L.b) + (L.jumble ? ' · The Jumble says ' + fr(L.jumble) + '!' : '');
+  const jumble = L.jumble ? ' · The Jumble says ' + fr(L.jumble) + '!' : '';
+  if (L.type === 'add') return 'Order: ' + fr(L.a) + ' + ' + fr(L.b) + jumble;
+  if (L.type === 'sub') return 'Order: ' + fr(L.a) + ' − ' + fr(L.b) + jumble;
+  if (L.type === 'mul') return 'Order: ' + fr(L.a) + ' × ' + fr(L.b) + jumble;
+  if (L.type === 'div') return 'Order: how many ' + fr(L.b) + ' servings in ' + fr(L.a) + '?';
   return 'Order';
 }
 function renderLevel() {
@@ -887,6 +1145,8 @@ function renderLevel() {
   // the play area: the order and its wholes (work), then the slicer, the tray reading and the buttons (ctrl).
   // Side by side on a wide, short frame (a laptop window), one column on a phone or a tall tablet.
   const play = $('div', 'ff-play'), work = $('div', 'ff-work'), ctrl = $('div', 'ff-ctrl'); play.append(work, ctrl); main.appendChild(play);
+  // an order built on the tray gets one control card: 1 the slicer, 2 the tray, then Serve it! and Hint
+  if (E.BUILD.includes(S.level.type)) ctrl.classList.add('ff-panel');
   work.appendChild($('p', 'ff-h', orderTitle()));
   const run = S.run, snap = run.snapshot(), L = S.level;
   play.dataset.type = L.type;
@@ -913,30 +1173,37 @@ function renderLevel() {
     }
   } else {
     if (L.type === 'add') { const src = $('div', 'ff-stage ff-src'); src.append(miniBar(L.a, fr(L.a)), miniBar(L.b, fr(L.b))); work.appendChild(src); }
+    if (L.type === 'sub') { const src = $('div', 'ff-stage ff-src'); src.append(miniBar(L.a, 'Start with ' + fr(L.a)), miniBar(L.b, 'Take away ' + fr(L.b))); work.appendChild(src); }
+    if (L.type === 'mul') { const src = $('div', 'ff-stage ff-src'); src.append(miniBar(L.b, L.a[1] === 1 ? L.a[0] + ' groups of ' + fr(L.b) : fr(L.a) + ' of ' + fr(L.b))); work.appendChild(src); }
+    if (L.type === 'div') { const src = $('div', 'ff-stage ff-src'); src.append(miniBar(L.a, 'You have ' + fr(L.a)), miniBar(L.b, 'One serving: ' + fr(L.b))); work.appendChild(src); }
     if (L.type === 'equiv') { const src = $('div', 'ff-stage ff-src'); src.appendChild(miniBar(L.from, 'You start with ' + fr(L.from))); work.appendChild(src); }
     const taken = new Set(snap.taken), many = run.goal.wholes > 1;
     // uncut (1 part) until a slicer is picked: the order's own cut is never given away. Only the wholes the player
     // put on the table are drawn: a second cake comes from Add a cake, never from a slicer.
     work.appendChild(wholeSVG(L, snap.denom || 1, taken, snap.wholes, !!snap.denom, { many, canAdd: snap.canAddWhole, canRemove: !snap.done }));
     const noun = L.whole === 'cake' ? 'cake' : 'bar';
-    if (!snap.denom) ctrl.appendChild($('p', 'ff-h ff-tip', snap.wholes > 1 ? 'Pick a slicer. It cuts every ' + noun + ' into the same equal parts.' : snap.canAddWhole ? 'Need more than one ' + noun + '? Tap Add a ' + noun + '. Then pick a slicer.' : 'Pick a slicer to cut the whole into equal parts.'));
+    if (!snap.denom) ctrl.appendChild($('p', 'ff-tip', snap.wholes > 1 ? 'Pick a slicer. It cuts every ' + noun + ' into the same equal parts.' : snap.canAddWhole ? 'Need more than one ' + noun + '? Tap Add a ' + noun + '. Then pick a slicer.' : 'Pick a slicer to cut the whole into equal parts.'));
+    // 1 · the slicer: one row of numbers (2 3 4 6 8, Pro adds 10 and 12)
+    ctrl.appendChild($('p', 'ff-step', '1 · Slicer: cut into'));
     const cuts = $('div', 'ff-row ff-cuts'); ctrl.appendChild(cuts);
-    cuts.appendChild($('span', 'ff-h', 'Slicer:'));
-    for (const n of E.CUTS) {
-      const t = $('button', 'ff-tile', 'Cut into ' + n);
-      t.setAttribute('aria-pressed', String(snap.denom === n));
+    for (const n of (L.cuts || E.CUTS)) {
+      const t = $('button', 'ff-tile ff-num', String(n));
+      t.setAttribute('aria-label', 'Cut into ' + n); t.setAttribute('aria-pressed', String(snap.denom === n));
       t.addEventListener('click', () => doAction({ t: 'cut', n }));
       cuts.appendChild(t);
     }
   }
-  const tools = $('div', 'ff-row ff-tools'); ctrl.appendChild(tools);
+  // 2 · the tray, then Serve it! and Hint side by side
   if (L.type !== 'compare' && L.type !== 'line') {
+    ctrl.appendChild($('p', 'ff-step', '2 · On the tray'));
     const read = $('div', 'ff-read');
-    read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
-    if (snap.denom) { const sm = $('small', '', snap.takenCount === 0 ? 'nothing on the tray yet' : 'on the tray'); read.appendChild(sm); }
-    tools.appendChild(read);
+    if (L.type === 'div') read.textContent = snap.denom ? snap.takenCount + (snap.takenCount === 1 ? ' serving' : ' servings') : 'not cut yet';
+    else read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
+    read.appendChild($('small', '', !snap.denom ? 'pick a slicer first' : snap.takenCount === 0 ? 'tap parts to put them on the tray' : L.type === 'div' ? 'of ' + fr(L.b) + ' each' : 'tap a part again to take it off'));
+    ctrl.appendChild(read);
   }
-  if (L.type !== 'compare') tools.appendChild(btn('Serve it!', { onPress: () => doAction({ t: 'serve' }) }));
+  const tools = $('div', 'ff-row ff-tools'); ctrl.appendChild(tools);
+  if (L.type !== 'compare') { const serve = btn('Serve it!', { onPress: () => doAction({ t: 'serve' }) }); serve.classList.add('ff-serve'); tools.appendChild(serve); }
   tools.appendChild(btn('Hint', { kind: 'quiet', onPress: () => giveHint() }));
   if (snap.wrong >= 2 && !S.lesson) tools.appendChild(btn('Skip order', { kind: 'quiet', onPress: () => skipLevel() }));
   hudSync();
@@ -952,6 +1219,7 @@ const WHY = {
   'line': 'Not that spot. Count the hops from 0.',
   'compare': 'Same whole, so compare the parts: which share is really bigger?',
   'pick-first': 'Tap the bigger share!',
+  'div-cut': 'Cut into the serving size, then count the servings. For 1/4 servings, cut into 4.',
 };
 function doAction(a) {
   const run = S.run; if (!run || S.busy) return { ok: false };

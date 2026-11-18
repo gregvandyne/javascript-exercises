@@ -49,14 +49,14 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   assert.match(card('Homes 4B'), /<span class="th-due-t">📚 <bdi>Word Hunt<\/bdi><\/span><span class="th-due-d">📅 Due /, 'the next lesson due: its title, the date on its own line');
   assert.doesNotMatch(card('Homes 4B'), /All caught up/);
   assert.match(card('Homes 5A'), /✅ All caught up/);
-  assert.match(card('Homes 4B'), new RegExp(`href="/teach/lessons\\?school=${school.id}&amp;class=${busy.id}">📚 Assign a lesson`));
+  assert.match(card('Homes 4B'), new RegExp(`href="/class/${busy.id}#lessons">🎮 Assign a game`), 'games, not lessons');
   assert.match(card('Homes 4B'), new RegExp(`href="/class/${busy.id}">Open class`));
   // Nothing below the classes any more: courses, live games and brain breaks are on Learn; Quick game is gone from the cards.
   for (const gone of ['id="teach-courses"', 'id="teach-live"', 'id="brain-breaks"', 'id="teach-all-games"', 'href="/learn">📚 Open Learn', 'data-quick=', '⚡ Quick game', 'class="panel schoolcard"', 'id="teacher-plan"']) assert.ok(!r.text.includes(gone), `gone: ${gone}`);
   assert.ok(r.text.indexOf('</section>', r.text.indexOf('id="my-classes"')) > r.text.lastIndexOf('class="panel classcard'), 'the classes end the page');
-  // The tools row: Lesson library, Turn a lesson into a game, Make a game.
+  // The tools row: My games and folders (Build), Make for the live screen, Make a game.
   const tools = r.text.slice(r.text.indexOf('class="row teachtools"'), r.text.indexOf('</nav>', r.text.indexOf('class="row teachtools"')));
-  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/teach/lessons', '/teach/make', '/build']);
+  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/build', '/teach/make', '/build']);
   // + New class: a tile in the class grid, after the classes.
   const grid = r.text.slice(r.text.indexOf('class="classgrid th-classes"'), r.text.indexOf('</section>', r.text.indexOf('class="classgrid th-classes"')));
   assert.ok(grid.indexOf('<b>Homes 5A</b>') < grid.indexOf('class="th-newclass"') && grid.includes('id="nc-n"'), 'New class');
@@ -147,7 +147,8 @@ test('one class: /teach opens it; ?all=1, New class, a welcome or an invite keep
   // The teaching loop's card comes along on the class's Lessons tab while it shows, and the unit line is there.
   assert.match(c.text, /class="panel tl tl-compact" id="teach-loop"/);
   assert.doesNotMatch((await get(`/class/${only.id}?tab=students`, solo)).text, /tl-compact/, 'only on the Lessons tab');
-  assert.match(c.text, /id="unit-why">🗂️ Units group the lessons in this class, in the order students see them\. Folders only sort your own lesson library\./);
+  assert.match(c.text, /id="cl-newgame"/, 'the class page: New game, Assign a game, ready-made courses');
+  assert.match(c.text, /Ready-made courses/);
   // An invite to answer: the list, where it is said.
   const other = SC.createSchool(boss, { name: 'Inviting School' }).school;
   assert.ok(SC.inviteStaff(boss, other.id, solo.id, 'teacher').ok);
@@ -182,7 +183,7 @@ test('what My classes no longer lists is still a tap away: Learn has the courses
   const menu = l.text.slice(l.text.indexOf('<details class="acctpick"'), l.text.indexOf('</details>', l.text.indexOf('<details class="acctpick"')));
   assert.match(menu, /<div class="acct-tiles">\s*<a href="\/play" ><span class="acct-tile-e" aria-hidden="true">🎮<\/span>Play<\/a>/, 'Play is a tile in the account menu');
   assert.match(menu, /<a href="\/learn" aria-current="page"><span class="acct-tile-e" aria-hidden="true">📚<\/span>Learn<\/a>/, 'Learn too, marked on /learn');
+  // The lesson library is now Build (games in folders); the ready-made courses are on each class page.
   const lib = await get('/teach/lessons', teacher);
-  assert.ok(lib.text.includes('href="/teach/cyber-defenders"'), 'the lesson library\'s ready-made chips');
-  assert.match(lib.text, /id="folder-why">📁 Folders sort your own lesson library, and their lessons can go to any class\. Units, on a class page, set the order students see\./);
+  assert.equal(lib.status, 302); assert.equal(lib.location, '/build');
 });

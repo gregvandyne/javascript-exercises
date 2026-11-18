@@ -10,7 +10,7 @@
 // - Sign in: Show password, and a login card's password typed with spaces still works.
 // - /teachers asks for the sender's name; the thank-you comes first and lists what to do today.
 import { test, expect } from '@playwright/test';
-import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN, liveStep, openLiveRoom } from './helpers.js';
+import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN, liveStep, openLiveRoom, newLesson } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -186,10 +186,9 @@ test('a self-marked game step is "marked done" in the grid; real play shows ✅;
   await login(t, TEACHER.username, TEACHER.password);
   const cls = await demoClass(t);
   // a fresh lesson with one game step, assigned from the lesson page
-  await t.goto('/teach/lessons');
+  // (no lesson library page any more: the lesson is made through the API, then edited)
   const title = uniq('Play step ');
-  await t.fill('#nl-t', title);
-  await Promise.all([t.waitForURL(/\/teach\/lessons\/[^?]+/), t.locator('form[data-api="/api/lessons"] button[type=submit]').click()]);
+  await t.goto(await newLesson(t, title));
   await t.selectOption('#ns-k', 'game');
   // the Game picker is grouped by subject
   await expect(t.locator('#ns-g optgroup[label="Math games"]')).toHaveCount(1);

@@ -36,7 +36,7 @@ test('Fraction Factory runs on the kit: pinned tags, Tally, a First Cuts order s
   await T(f, 'start', { chapter: 'first-cuts', band: '1b', level: 3, seed: 1, lesson: true });
   let s = await T(f, 'state');
   expect([s.screen, s.chapter, s.level, s.lesson]).toEqual(['level', 'first-cuts', 3, true]);
-  await f.locator('.ff-tile', { hasText: 'Cut into 4' }).click();
+  await f.getByRole('button', { name: 'Cut into 4', exact: true }).click();   // the slicer shows 4, named Cut into 4
   expect((await T(f, 'state')).denom).toBe(4);
   await f.locator('.ff-piece').nth(0).click();
   await f.locator('.ff-piece').nth(1).click();

@@ -30,8 +30,9 @@ export const GAMES = Object.freeze({
   'sum-racer': { 'ccss-math': uniq(Object.values(SUM_RACER_TRACKS).flat()) },
   'tug-of-math': { 'ccss-math': uniq(Object.values(TUG_GRADES).flat()) },
   // First Folds (halves, fourths, thirds of shapes), First Cuts (unit fractions, the number line), Re-Slice (equivalent
-  // shares, comparing with unlike denominators), Recipe Math (adding slices as sums of unit fractions).
-  'fraction-factory': { 'ccss-math': ['2.G.A.3', '3.NF.A.1', '3.NF.A.2', '3.NF.A.3', '4.NF.A.1', '4.NF.A.2', '4.NF.B.3'] },
+  // shares, comparing with unlike denominators), Recipe Math (adding slices as sums of unit fractions); Pro: Common Cuts
+  // and Take Away (adding and subtracting unlike denominators), Scale Up (multiplying), Share Out (dividing by a unit fraction).
+  'fraction-factory': { 'ccss-math': ['2.G.A.3', '3.NF.A.1', '3.NF.A.2', '3.NF.A.3', '4.NF.A.1', '4.NF.A.2', '4.NF.B.3', '5.NF.A.1', '5.NF.A.2', '5.NF.B.4', '5.NF.B.6', '5.NF.B.7', '6.NS.A.1'] },
   // Garden Count (kindergarten): counting out to 20, comparing two groups and two numerals to 10, and 11-19 as ten
   // ones and some more ones (its three chapters, GARDEN_CHAPTERS below).
   'garden-count': { 'ccss-math': ['K.CC.A.1', 'K.CC.B.4', 'K.CC.B.5', 'K.CC.C.6', 'K.CC.C.7', 'K.NBT.A.1'] },
@@ -100,6 +101,7 @@ export const gameCodes = (slug, framework) => [...(((GAMES[slug] || {})[framewor
 /** Fraction Factory's chapters (seed-games/fraction-factory.html CHAPTERS), for a step locked to one. */
 export const FRACTION_CHAPTERS = Object.freeze({
   folds: ['2.G.A.3'], 'first-cuts': ['3.NF.A.1', '3.NF.A.2'], 're-slice': ['3.NF.A.3', '4.NF.A.1', '4.NF.A.2'], recipe: ['4.NF.B.3'],
+  'common-cuts': ['5.NF.A.1', '5.NF.A.2'], 'take-away': ['5.NF.A.1', '5.NF.A.2'], 'scale-up': ['5.NF.B.4', '5.NF.B.6'], 'share-out': ['5.NF.B.7', '6.NS.A.1'],
 });
 /** Garden Count's chapters (seed-games/garden-count.html GardenCount.CHAPTERS), for a step locked to one. */
 export const GARDEN_CHAPTERS = Object.freeze({

@@ -40,7 +40,7 @@ export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_
   'live_class_teams', 'live_class_team_cfg', 'live_support', 'dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes',
   'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'live_runs', 'class_lessons'];
 /** Rows removed by its classes' assigned lessons. */
-export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades'];
+export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades', 'lessons_retired'];
 /** Rows kept, with why (handled apart or history). */
 export const KEPT = {
   schools: 'the school row itself, deleted last',
@@ -48,6 +48,7 @@ export const KEPT = {
   live_sets: 'the owner keeps their quiz set; school_id is cleared and it is no longer shared',
   school_requests: 'the request stays as a record; its school_id is cleared',
   teacher_trials: 'one free trial ever per school/teacher/email (no school data)',
+  game_folders: 'the owner keeps their folder of games; school_id is cleared and it is no longer shared',
 };
 
 /** Stripe subscriptions of an owner that will still charge: live mode always, test mode when the site runs on a test
@@ -124,6 +125,7 @@ export function deleteSchool(by, schoolId) {
     delIn('lesson_steps', 'lesson_id', lessonIds); delIn('lesson_standards', 'lesson_id', lessonIds);
     if (lessonIds.length) q.run(`UPDATE live_sets SET lesson_id=NULL WHERE lesson_id IN (${marks(lessonIds)})`, ...lessonIds);
     q.run('UPDATE live_sets SET school_id=NULL, shared=0 WHERE school_id=?', s);
+    q.run('UPDATE game_folders SET school_id=NULL, shared_at=NULL WHERE school_id=?', s);   // a teacher's folder stays theirs, unshared
     // Accounts the school made: switched off, as when they leave the school (schools.js removeMember).
     for (const id of schoolAccounts) {
       q.run('UPDATE users SET banned=1 WHERE id=?', id); q.run('DELETE FROM sessions WHERE user_id=?', id);

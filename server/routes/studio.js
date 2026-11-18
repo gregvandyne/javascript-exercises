@@ -12,6 +12,8 @@ import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
 import { REVIEW_REASONS } from '../services/chat.js';
 import { requireBuilder, getUser, isGrownup } from '../auth.js';
+import * as S from '../services/schools.js';
+import { foldersStrip } from './game-folders.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
 import { sttEnabled, liveEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds, RATE } from '../services/stt.js';
 import { consumeFallback } from '../services/stt-live.js';
@@ -212,12 +214,14 @@ router.get('/build', requireBuilder, (req, res) => {
   const t = req.t;
   const mine = games.myGames(req.user.id, 100);
   const news = turns.buildStatus(req.user.id);
+  const staff = S.isSchoolStaff(req.user);
   const body = html`
   <div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>
   <section class="build-hero panel">
     <div class="build-hero-text"><h2>${t('build.hero.heading')}</h2><p>${t('build.hero.text')}</p></div>
     <a class="btn btn-primary btn-big" href="/build/new" id="newgame">✨ ${t('build.newGame')}</a>
   </section>
+  ${foldersStrip(req)}
   <section aria-labelledby="mine-h" class="build-sec">
     <h2 id="mine-h">${t('home.rails.mine')}</h2>
     ${mine.length ? html`<ul class="mygames">${mine.map(g => { const s = studioStatus(g, t); return html`<li class="mygame panel" data-id="${g.id}" data-title="${g.title}" data-live="${s.live ? '1' : ''}">
@@ -234,6 +238,8 @@ router.get('/build', requireBuilder, (req, res) => {
           ${g.published_version_id ? html`<a class="btn" href="/g/${g.slug}">▶ ${t('game.play')}</a>` : ''}
         </div>
         <div class="mg-row mg-more">
+          <a class="btn" href="/build/save?id=${g.id}">📁 ${t('folders.save')}</a>
+          ${staff && g.published_version_id ? html`<a class="btn" href="/teach/assign?id=${g.id}">📌 ${t('folders.assign')}</a>` : ''}
           <button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button>
           ${g.source === 'seed' ? '' : html`<button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>`}
         </div>

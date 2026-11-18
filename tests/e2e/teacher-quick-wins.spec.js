@@ -54,9 +54,9 @@ test('a. "Turn a lesson into a game" lands on the open, visible, focused form', 
     await t.context().close();
   }
 });
-/** The demo teacher's school id (from the lesson library's New lesson form). */
+/** The demo teacher's school id (from the Classroom home's New class form; there is no lesson library page any more). */
 async function schoolOf(t) {
-  await t.goto('/teach/lessons');
+  await t.goto('/teach?all=1');
   const v = await t.locator('input[name="schoolId"], select[name="schoolId"] option').first().getAttribute('value');
   expect(v).toBeTruthy();
   return v;

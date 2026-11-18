@@ -226,3 +226,6 @@
 .nqp-unit-planned { opacity: .8; }
 .nqp-unit-planned .nqp-medal { filter: grayscale(1); }
 .nqp-step-planned .nqp-door { cursor: default; }
+
+/* the placement page's start point picker: the app's select, as wide as its choice in the row */
+#nq-override-form select.input { width: auto; max-width: 100%; margin-inline-start: 8px; }

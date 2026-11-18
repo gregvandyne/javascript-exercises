@@ -324,8 +324,8 @@ test('review fixes: merged accounts keep their work, removed lessons stay out of
   const benL = L.createLesson(ben, oak.id, { title: 'Ben lesson' }).lesson; L.addStep(ben, benL.id, { kind: 'text', body: 'y' });
   const bcl = L.assign(ben, cls.id, benL.id).classLesson; assert.ok(bcl);
   assert.ok(L.unassign(ana, bcl.id).ok);
-  const tab = (await as(ana)(`/class/${cls.id}`)).text;
-  assert.match(tab, /<optgroup label="Removed from this class"><option value="[^"]+">/); assert.match(tab, new RegExp(`<option value="${benL.id}">Ben lesson`));
+  // (The class page no longer offers lessons to assign: games, not lessons. Bringing one back is the assign below.)
+  assert.doesNotMatch((await as(ana)(`/class/${cls.id}`)).text, /Ben lesson/, 'a removed lesson is off the class page');
   const third = S.createClass(ana, oak.id, { name: 'Ana 6A' }).class;
   assert.equal(L.assign(ana, third.id, benL.id).code, 'notFound', 'a colleague\'s lesson is still copied before it goes into a new class');
   assert.ok(L.assign(ana, cls.id, benL.id).ok, 'any teacher of the class can undo a removal');

@@ -5,6 +5,7 @@ import { page, notFound, landingFor, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
+import { isSchoolStaff } from '../services/schools.js';
 import * as seo from '../seo.js';
 import { LEARNING, isLearningGame, gradeBand, ageBand, hubOfGame } from '../learn.js';
 import * as games from '../services/games.js';
@@ -34,7 +35,7 @@ import * as ttsGames from '../services/tts-games.js';
 
 import { courseOfSlug } from '../services/course-catalog.js';
 import * as courses from '../services/courses.js';
-import { isStaff, isSchoolStaff } from '../services/schools.js';
+import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
@@ -117,6 +118,7 @@ router.get('/g/:slug', (req, res) => {
           ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : ''}
+          ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo" aria-hidden="true">📁</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo" aria-hidden="true">📌</span>${t('folders.assign')}</a>` : ''}` : ''}
           ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
         </div>
     </div>

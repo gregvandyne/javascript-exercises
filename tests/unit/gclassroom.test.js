@@ -31,6 +31,7 @@ const L = await import('../../server/services/lessons.js');
 const P = await import('../../server/services/progress.js');
 const G = await import('../../server/services/google.js');
 const GC = await import('../../server/services/gclassroom.js');
+const games = await import('../../server/services/games.js');
 const { SCOPES, REQUIRED_SCOPES, OPTIONAL_SCOPES } = await import('../../server/services/gclassroom-client.js');
 const LS = await import('../../server/services/classlive-sessions.js');
 const { gcLiveAnnounce } = await import('../../server/routes/gclassroom.js');
@@ -381,10 +382,17 @@ test('post a lesson: coursework with the title, a link back and the due date, ne
   assert.match(GC.postOf(cl.id).link, /^https:\/\/classroom\.google\.com\//);
   const twice = await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
   assert.equal(twice.status, 400); assert.match((await twice.json()).error, /already in Google Classroom/);
-  // The Lessons tab's assign form has "Also post"; assigning with it posts the new lesson (a past due date is left off).
+  // The Assign page (a game to a class) has "Also post"; assigning with it posts the new assignment (a past due date is
+  // left off). The API behind it is the same assign as before.
   const l2 = L.createLesson(teacher, s.id, { title: 'Decimals' }).lesson;
-  const tab = await (await get(`/class/${c.id}`, tc)).text();
+  const pub = games.createGame(teacher.id, { title: 'Decimal Dash' });
+  const ver = games.addVersion(pub.id, '<title>x</title><p>x</p><script>1</script>', { createdBy: teacher.id, safetyStatus: 'pass' });
+  q.run("UPDATE games SET status='published', visibility='public', published_version_id=? WHERE id=?", ver.id, pub.id);
+  const tab = await (await get(`/teach/assign?id=${pub.id}&class=${c.id}`, tc)).text();
   assert.match(tab, /name="gcPost" value="1">/, 'the box is there, unticked');
+  const g = await (await post('/api/teach/assign-game', { gameId: pub.id, classId: c.id, gcPost: '1' }, tc)).json();
+  assert.match(g.toast, /Assigned to Class 4B · Posted to Google Classroom/, 'an assigned game posts too');
+  assert.equal(room.calls.findLast(x => x.method === 'POST').body.title, 'Decimal Dash');
   const a = await (await post(`/api/classes/${c.id}/lessons`, { lessonId: l2.id, dueAt: new Date(Date.now() - 5 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
   assert.match(a.toast, /Assigned to Class 4B · Posted to Google Classroom \(without a due date/);
   assert.equal(room.calls.findLast(x => x.method === 'POST').body.dueDate, undefined);
@@ -1146,7 +1154,7 @@ test('Algebra Builder: a teacher assigns a problem or a saved question set to a 
   const opts = `chapter=${set.id}&lock=1`;
   const pg = await (await get(`/teach/assign?game=algebra-builder&opts=${encodeURIComponent(opts)}`, tc)).text();
   assert.match(pg, /Students open: your question set \(2 questions\)/);
-  assert.match(pg, /name="gcPost" value="1"> <span>🎓 Also post to Google Classroom \(for Class 4B\)/);
+  assert.match(pg, /name="gcPost" value="1"> <span>🎓 Also post to Google Classroom/);
   assert.match(pg, new RegExp(`name="opts" value="${opts.replace(/&/g, '&amp;')}"`));
 
   const due = new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10);
