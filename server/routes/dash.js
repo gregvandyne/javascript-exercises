@@ -59,6 +59,7 @@ import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as D from '../services/dash.js';
+import * as DC from '../services/dash-calendar.js';
 import { qrSvg, fits, MAX_DASH_VERSION } from '../services/qr.js';
 import { origin } from '../seo.js';
 import { dashCsp, DASH_TEACHER_POLICY, siteFrame, siteFrameCsp, SITE_SANDBOX } from '../services/dash-media.js';
@@ -407,6 +408,16 @@ router.get('/api/dash/:id/places', requireUser, rateLimit('dash-places', 40, 360
   const r = await D.findPlaces(String(req.query.q || ''), req.locale || 'en');
   if (r.error) return fail(req, res, 'resting', 503);
   res.json(r);
+});
+
+// A calendar connected to the schedule (services/dash-calendar.js): checked by fetching it once; the address stays here.
+router.post('/api/dash/:id/feeds', requireUser, rateLimit('dash-feeds', 30, 3600e3), async (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  send(req, res, await DC.connectFeed(req.user, x.c, body(req).url, D.cleanUrl));
+});
+router.post('/api/dash/:id/feeds/:fid/delete', requireUser, rateLimit('dash-feeds', 30, 3600e3), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  send(req, res, DC.dropFeed(req.user, x.c, req.params.fid));
 });
 
 router.get('/api/dash/:id/qr', requireUser, rateLimit('dash-qr', 240, 3600e3), (req, res) => {

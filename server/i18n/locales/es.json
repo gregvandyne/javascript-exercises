@@ -9366,10 +9366,12 @@
       },
       "schedule": {
         "name": "Horario del día",
-        "desc": "Las clases de hoy; la que va ahora está resaltada.",
+        "desc": "Las clases de hoy, con la actual resaltada. Crea una semana tipo, sube un horario o conecta un calendario.",
         "s": {
           "periods": "Clases",
-          "view": "Mostrar"
+          "view": "Mostrar",
+          "week": "Semana",
+          "cal": "Calendario"
         },
         "empty": "Añade las clases de hoy en Editar pantalla.",
         "now": "Ahora",
@@ -9389,7 +9391,26 @@
           }
         },
         "nothingNext": "No hay nada después",
-        "starts": "Empieza a las {time}"
+        "starts": "Empieza a las {time}",
+        "everyDay": "Todos los días",
+        "sameAsEvery": "{day} usa el horario de todos los días.",
+        "ownDay": "Dar a {day} su propio horario",
+        "backToEvery": "Usar el horario de todos los días",
+        "upload": "Subir un horario",
+        "uploadHint": "Un archivo de calendario (.ics) llena la semana que viene. Un archivo .csv o .txt, o un texto pegado, usa una línea por clase, como «8:30–9:15 Lectura»; una línea con un día (lunes) empieza ese día.",
+        "paste": "Pegar un horario",
+        "pasteHint": "8:30–9:15 Lectura\n9:15 Mates\n10:00 Recreo",
+        "pasteGo": "Usar este horario",
+        "imported": "{n, plural, one {# clase añadida.} other {# clases añadidas.}}",
+        "importedWeek": "Horario añadido para {days}.",
+        "importNone": "No se encontraron horas. Prueba una línea por clase, como «8:30–9:15 Lectura», o un archivo de calendario (.ics).",
+        "calLabel": "Calendario conectado",
+        "calHint": "Pega la dirección iCal del calendario",
+        "calConnect": "Conectar",
+        "calNote": "Google Calendar: Configuración → tu calendario → «Dirección secreta en formato iCal». Outlook: Configuración → Calendario → Calendarios compartidos → Publicar → enlace ICS. Los eventos de hoy pasan a ser el horario y todos los que ven este widget los ven, así que conecta un calendario pensado para la clase. La dirección en sí sigue siendo privada.",
+        "calRemove": "Desconectar",
+        "calOn": "{name} está conectado.",
+        "calToday": "Los eventos de hoy vienen de este calendario (se revisa cada 15 minutos). Un día sin eventos, se muestra el horario de abajo."
       },
       "weather": {
         "name": "El tiempo",
@@ -10829,7 +10850,11 @@
       "buildTool": "Esa herramienta no puede hacer una serie «Constrúyelo».",
       "buildTargets": "Escribe o crea al menos un objetivo.",
       "buildClosed": "Esa serie «Constrúyelo» ha terminado.",
-      "buildItem": "Ese objetivo no está en la serie."
+      "buildItem": "Ese objetivo no está en la serie.",
+      "feedAddress": "Eso no es una dirección de calendario. Pega el enlace https:// o webcal:// de un calendario .ics.",
+      "feedTooMany": "Esta clase tiene demasiados calendarios conectados. Desconecta uno primero.",
+      "feedNotCalendar": "Esa dirección no es un archivo de calendario (.ics). Comprueba que sea la dirección iCal y no la página web del calendario.",
+      "feedUnreachable": "No pudimos llegar a ese calendario. Comprueba la dirección y que el calendario esté compartido, y vuelve a intentarlo."
     },
     "tools": {
       "send": "Enviar a la clase",

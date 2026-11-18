@@ -26,6 +26,7 @@ import { liveOn, openForClass } from './classlive-sessions.js';
 import { isOfficial } from './classlive-access.js';
 import { TOOL_IDS, TOOL_MODES, MODE_HOME, cleanToolState, moveToolState } from './dash-tools.js';
 import { cleanVideo } from './dash-media.js';
+import { cleanFeedRef, feedDay, forgetFeedsOf } from './dash-calendar.js';
 // "Build it" (docs/decisions.md "Classroom dashboards: Build it"): the browser's own pure module, so a student's check is
 // worked out here exactly as on their screen.
 import * as B from '../../public/js/dash-build.js';
@@ -176,8 +177,15 @@ export const WIDGETS = [
     { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
     { key: 'chime', type: 'bool', def: false },
     { key: 'bar', type: 'bool', def: true }] },
-  { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts'], settings: [
+  // A standard week, uploaded agendas and a connected calendar (docs/decisions.md "Schedule: a standard week, uploaded
+  // agendas, a connected calendar"): 'periods' is every day's list, 'week' a weekday's own list (1 Monday ... 7 Sunday;
+  // edited with the periods), 'cal' a calendar connected through services/dash-calendar.js (its id and name only).
+  { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts',
+    'everyDay', 'sameAsEvery', 'ownDay', 'backToEvery', 'upload', 'uploadHint', 'paste', 'pasteHint', 'pasteGo', 'imported', 'importedWeek', 'importNone',
+    'calLabel', 'calHint', 'calConnect', 'calNote', 'calRemove', 'calOn', 'calToday'], settings: [
     { key: 'periods', type: 'periods', def: [] },
+    { key: 'week', type: 'week', hidden: true, def: {} },
+    { key: 'cal', type: 'feed', def: null },
     { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
   { id: 'weather', icon: '⛅', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty', 'resting', 'loading', 'hiLo', 'find', 'search', 'searchHint', 'none', 'place',
     'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
@@ -405,6 +413,13 @@ export function cleanPeriods(v) {
   }
   return out.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
 }
+/** A standard week: a weekday's own periods (1 Monday ... 7 Sunday); a weekday left out uses every day's. */
+export function cleanWeek(v) {
+  const out = {};
+  if (!v || typeof v !== 'object') return out;
+  for (let d = 1; d <= 7; d++) { const list = cleanPeriods(v[d]); if (list.length) out[d] = list; }
+  return out;
+}
 /** A weather place the teacher picked: a name and coordinates (two decimals: about a kilometre, the cache key). */
 export function cleanPlace(v) {
   if (!v || typeof v !== 'object') return null;
@@ -461,6 +476,8 @@ export function cleanSettings(type, s = {}, role = 'teacher') {
     else if (f.type === 'number') { const n = Math.round(Number(v)); out[f.key] = v !== undefined && v !== '' && Number.isFinite(n) ? Math.min(f.max, Math.max(f.min, n)) : f.def; }
     else if (f.type === 'zone') out[f.key] = v && isZone(v) ? String(v) : '';
     else if (f.type === 'periods') out[f.key] = cleanPeriods(v);
+    else if (f.type === 'week') out[f.key] = cleanWeek(v);
+    else if (f.type === 'feed') out[f.key] = cleanFeedRef(v);
     else if (f.type === 'place') out[f.key] = cleanPlace(v);
     else if (f.type === 'target') out[f.key] = cleanTarget(v);
     else if (f.type === 'tiles') out[f.key] = cleanTiles(v);
@@ -977,9 +994,19 @@ export function liveState(c, u, role) {
     help: teacher ? { queue: helpQueue(c) } : { mine: helpMine(c, u.id) },
     checks: checksFor(c, u, role),
     weather,
+    agenda: agendaFor(c, shown, t),
     ...(teacher ? { size: studentsOf(c).length } : {}),
     ...stage5Live(c, u, role, shown),
   };
+}
+
+/** Today's periods from each shown schedule's connected calendar, by widget id (services/dash-calendar.js). */
+function agendaFor(c, shown, t) {
+  const out = {}, list = shown.filter(w => w.type === 'schedule' && w.s && w.s.cal);
+  if (!list.length) return out;
+  const tz = S.zoneOf(S.getSchool(c.school_id)) || FALLBACK_TZ, day = dayOf(c, t);
+  for (const w of list) out[w.id] = feedDay(c, w.s.cal, day, tz, cleanUrl, t);
+  return out;
 }
 
 // ================================================================ stage 2: everyday widgets
@@ -1553,6 +1580,7 @@ export function forgetUser(userId) {
   q.run('DELETE FROM dash_students WHERE user_id=?', userId);
   q.run('DELETE FROM dash_push_hidden WHERE user_id=?', userId);
   q.run('DELETE FROM dash_builds WHERE user_id=?', userId);   // "Build it": their right / not yet per target
+  forgetFeedsOf(userId);                                     // calendars they connected (their private addresses)
   // Stage 2: their place in help queues, their check answers, and any picker list they are on.
   q.run('DELETE FROM dash_help WHERE user_id=?', userId);
   q.run('DELETE FROM dash_answers WHERE user_id=?', userId);

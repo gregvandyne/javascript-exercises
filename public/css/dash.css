@@ -2009,3 +2009,19 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dt-ctlin{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;min-width:0}
 .dt-ctlin:empty{display:none}
 .dt-ctlin .dt-select{flex:0 1 auto}
+/* The schedule's week and agendas (docs/decisions.md "Schedule: a standard week, uploaded agendas, a connected calendar") */
+.dash-days{display:flex;flex-wrap:wrap;gap:6px;margin-block:2px 4px}
+.dash-days .chip{min-height:40px;padding:0 12px;font-size:.9rem}
+.dash-day.has-own:not([aria-pressed="true"]){border-color:var(--accent-line)}
+.dash-day.has-own::after{content:"•";margin-inline-start:2px}
+.dash-sameas{margin:0}
+.dash-agtools{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin-top:var(--s2);padding-top:var(--s2);border-top:1px solid var(--line)}
+.dash-agtools > p{flex-basis:100%;margin:0}
+.dash-upload{cursor:pointer}
+.dash-upload:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.dash-paste{flex:1 1 100%}
+.dash-paste > summary{list-style:none;display:inline-flex}
+.dash-paste > summary::-webkit-details-marker{display:none}
+.dash-paste[open] > summary{margin-bottom:6px}
+.dash-paste textarea{width:100%;min-height:110px;margin-bottom:6px}
+.dw-sched-src{font-size:.8em;opacity:.75;margin:0}

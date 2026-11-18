@@ -7866,3 +7866,28 @@ itself from the class's students, so a class with no student accounts showed eve
 - Typed names are kept to 60 names of 40 characters. They are the teacher's own words on the teacher's screen, so they
   are shown as typed text and never matched to accounts.
 - With no students and no names, the card says where to type them rather than only "No students in this class yet".
+
+## Schedule: a standard week, uploaded agendas, a connected calendar (18 Nov 2026)
+
+The owner asked that teachers can upload an agenda, set up standard agendas for the week ahead, or connect a calendar
+they want shown on the "Schedule for the day" widget. Before, the widget had one list of periods for every day.
+
+- **A standard week.** The settings' periods have day chips: Every day, then Monday to Sunday. A weekday uses Every
+  day's list until the teacher gives it its own ("Give Monday its own schedule" copies Every day's list to start
+  from); "Use the Every day schedule" goes back. Stored as `s.week` ({ 1..7: periods }, cleanWeek), next to `s.periods`.
+  The widget shows the weekday's own list in the school's time zone, else Every day's, and switches at midnight.
+- **Upload or paste an agenda** (public/js/agenda.js, the same code in the browser and on the server). A calendar file
+  (.ics) fills the week ahead (each day with events gets its own list). A .csv or .txt file, or pasted text, takes one
+  line a period ("8:30–9:15 Reading", "8:30 Reading", "Reading, 8:30, 9:15", am/pm or 24-hour; a missing end is the next
+  start); a line that is only a weekday's name, in English or the teacher's language, starts that day. A bare 1–6
+  o'clock is read as the afternoon. Word and PDF files are not read: a picture of an agenda goes on the Picture widget.
+- **Connect a calendar** (services/dash-calendar.js). The teacher pastes a calendar's iCal address (Google's secret
+  address, Outlook's published ICS link, Apple's webcal:// link). Such an address works as a password, so it is kept
+  only in `dash_feeds` (0088) and never in the widget's settings, which pinned widgets send to students: the widget keeps
+  `{ id, name }`. The server checks the address by fetching it once (https only, the same private-address refusal as
+  site windows, 3 MB, three redirects), then keeps the file for 15 minutes; a screen's live answer carries today's timed
+  events for each schedule shown (`live.agenda[widgetId]`), read only for the class the calendar was connected to.
+  All-day events are left out; repeats, skipped days and moved single times are followed. On a day with no events, or
+  when the calendar can't be reached and no copy from the last day is kept, the typed schedule shows.
+- Everyone who sees the widget sees the calendar's event names, so the settings say to connect a calendar meant for the
+  class. Disconnecting deletes the row; a teacher's account going deletes their calendars; a school's delete takes them.

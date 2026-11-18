@@ -9366,10 +9366,12 @@
       },
       "schedule": {
         "name": "Programme du jour",
-        "desc": "Les séances du jour ; celle en cours est mise en avant.",
+        "desc": "Les créneaux du jour, celui en cours mis en avant. Crée une semaine type, importe un emploi du temps ou connecte un agenda.",
         "s": {
           "periods": "Séances",
-          "view": "Afficher"
+          "view": "Afficher",
+          "week": "Semaine",
+          "cal": "Agenda"
         },
         "empty": "Ajoute les séances du jour dans Modifier l’écran.",
         "now": "Maintenant",
@@ -9389,7 +9391,26 @@
           }
         },
         "nothingNext": "Plus rien après",
-        "starts": "Commence à {time}"
+        "starts": "Commence à {time}",
+        "everyDay": "Tous les jours",
+        "sameAsEvery": "{day} suit l'emploi du temps de tous les jours.",
+        "ownDay": "Donner à {day} son propre emploi du temps",
+        "backToEvery": "Suivre l'emploi du temps de tous les jours",
+        "upload": "Importer un emploi du temps",
+        "uploadHint": "Un fichier d'agenda (.ics) remplit la semaine à venir. Un fichier .csv ou .txt, ou un texte collé, prend une ligne par créneau, comme « 8:30–9:15 Lecture » ; une ligne avec un jour (lundi) commence ce jour-là.",
+        "paste": "Coller un emploi du temps",
+        "pasteHint": "8:30–9:15 Lecture\n9:15 Maths\n10:00 Récréation",
+        "pasteGo": "Utiliser cet emploi du temps",
+        "imported": "{n, plural, one {# créneau ajouté.} other {# créneaux ajoutés.}}",
+        "importedWeek": "Emploi du temps ajouté pour {days}.",
+        "importNone": "Aucune heure trouvée. Essaie une ligne par créneau, comme « 8:30–9:15 Lecture », ou un fichier d'agenda (.ics).",
+        "calLabel": "Agenda connecté",
+        "calHint": "Colle l'adresse iCal de l'agenda",
+        "calConnect": "Connecter",
+        "calNote": "Google Agenda : Paramètres → ton agenda → « Adresse secrète au format iCal ». Outlook : Paramètres → Calendrier → Calendriers partagés → Publier → lien ICS. Les événements du jour deviennent l'emploi du temps et tous ceux qui voient ce widget les voient : connecte donc un agenda prévu pour la classe. L'adresse elle-même reste privée.",
+        "calRemove": "Déconnecter",
+        "calOn": "{name} est connecté.",
+        "calToday": "Les événements du jour viennent de cet agenda (vérifié toutes les 15 minutes). Un jour sans événement, l'emploi du temps ci-dessous s'affiche."
       },
       "weather": {
         "name": "Météo",
@@ -10829,7 +10850,11 @@
       "buildTool": "Cet outil ne peut pas faire de série « Construis-le ».",
       "buildTargets": "Tape ou crée au moins une cible.",
       "buildClosed": "Cette série « Construis-le » est terminée.",
-      "buildItem": "Cette cible n’est pas dans la série."
+      "buildItem": "Cette cible n’est pas dans la série.",
+      "feedAddress": "Ce n'est pas une adresse d'agenda. Colle le lien https:// ou webcal:// d'un agenda .ics.",
+      "feedTooMany": "Cette classe a trop d'agendas connectés. Déconnecte-en un d'abord.",
+      "feedNotCalendar": "Cette adresse n'est pas un fichier d'agenda (.ics). Vérifie que c'est l'adresse iCal et non la page web de l'agenda.",
+      "feedUnreachable": "Impossible de joindre cet agenda. Vérifie l'adresse et que l'agenda est partagé, puis réessaie."
     },
     "tools": {
       "send": "Envoyer à la classe",
