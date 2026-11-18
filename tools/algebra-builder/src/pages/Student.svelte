@@ -1,5 +1,5 @@
 <script lang="ts">
-	// A student's way in: the class code their teacher gave them (it opens the teacher's question set), or practising
+	// A student's way in: the class code their teacher gave them (it opens the teacher's question set), or practicing
 	// on their own: an activity and a level, then a fresh set of problems, never the same ones as last time.
 	import { goBack, go } from '$lib/nav.svelte';
 	import { findSet, isPreview, keep, load } from '$lib/oomba';
@@ -36,7 +36,7 @@
 						: 'Couldn’t check the code just now. Check your connection and try again.';
 	}
 
-	// --- practising alone (the last choice is remembered in the student's save) ---
+	// --- practicing alone (the last choice is remembered in the student's save) ---
 	const LAST = 'algebra-builder-practice-v1';
 	const last = load<{ activity?: Activity; level?: Level }>(LAST) ?? {};
 	let activity = $state<Activity>(ACTIVITIES.some((a) => a.activity === last.activity) ? last.activity! : 'solve');
@@ -90,11 +90,11 @@
 		</section>
 
 		<section class="card practise" aria-labelledby="practise-h">
-			<h2 id="practise-h">Practise on your own</h2>
-			<p class="about">Pick what to practise and how hard. You get {SET_SIZE} new problems every time.</p>
+			<h2 id="practise-h">Practice on your own</h2>
+			<p class="about">Pick what to practice and how hard. You get {SET_SIZE} new problems every time.</p>
 
 			<fieldset>
-				<legend>What to practise</legend>
+				<legend>What to practice</legend>
 				<div class="choices three">
 					{#each ACTIVITIES as a (a.activity)}
 						<label class="choice" class:on={activity === a.activity}>
@@ -119,7 +119,7 @@
 				</div>
 			</fieldset>
 
-			<button type="button" class="btn-primary start" onclick={practise}>Start practising ▸</button>
+			<button type="button" class="btn-primary start" onclick={practise}>Start practicing ▸</button>
 		</section>
 	</div>
 	<Footer />
