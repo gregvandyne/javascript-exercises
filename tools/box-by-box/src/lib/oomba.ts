@@ -10,6 +10,7 @@ type SavedSet = { id: string; items?: readonly unknown[]; mine?: boolean; missin
 type Brb = {
 	questionSet?: SavedSet | null;
 	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
+	findQuestionSet?: (code: string) => Promise<{ id?: string; items?: readonly unknown[]; error?: string }> | null;
 	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
 	user?: { isGuest?: boolean };
 	canAssign?: boolean;
@@ -63,6 +64,25 @@ export function setLink(id: string | undefined): string {
 	return base && id ? `${base}?chapter=${id}&lock=1` : '';
 }
 export const isPreview = () => !brb()?.gameUrl;
+/** A saved activity's class code, as a teacher shows it and a student types it: "C5EXP 1CM9H". */
+export const classCode = (id: string) => {
+	const c = id.replace(/^s-/, '').toUpperCase();
+	return `${c.slice(0, 5)} ${c.slice(5)}`;
+};
+/** The activity a student's class code opens (its set id and item), or why not: 'short', 'none', 'offline', 'preview'. */
+export async function findSet(code: string): Promise<{ id: string; item: unknown } | { error: string }> {
+	const t = code.toLowerCase().replace(/[^a-z0-9]/g, '');
+	if (t.length !== 10) return { error: 'short' };
+	try {
+		const f = brb()?.findQuestionSet;
+		if (!f) return { error: 'preview' };
+		const r = await f(t);
+		if (r && r.id && Array.isArray(r.items) && r.items.length) return { id: r.id, item: JSON.parse(JSON.stringify(r.items[0])) };
+		return { error: r?.error === 'offline' ? 'offline' : 'none' };
+	} catch {
+		return { error: 'offline' };
+	}
+}
 export const isGuest = () => brb()?.user?.isGuest === true;
 /** Save the activity's item (a new set, or the teacher's own one again under the same id): its id, or why not. */
 export async function saveSet(item: Item, id: string | undefined): Promise<{ id?: string; error?: string }> {

@@ -5,7 +5,7 @@
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
 	import { copy, setLink } from '$lib/oomba';
-	import { go } from '$lib/nav.svelte';
+	import { go, show } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
 
@@ -90,7 +90,10 @@
 <div class="page">
 	<header class="top">
 		<div>
-			<p class="brand"><Logo size={36} /> Box by Box</p>
+			<div class="top-row">
+				<p class="brand"><Logo size={36} /> Box by Box</p>
+				<button type="button" class="btn-ghost switch" onclick={() => show({ name: 'start' })}>← Not a teacher?</button>
+			</div>
 			<h1>Your activities</h1>
 			<p class="lede">
 				Each activity is a set of long division or multiplication problems, worked on graph paper with as much support
@@ -189,6 +192,17 @@
 		.top {
 			flex-wrap: wrap;
 		}
+	}
+	.top-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6rem 1rem;
+	}
+	.switch {
+		padding: 0.45rem 0.9rem;
+		font-size: 0.9rem;
 	}
 	.brand {
 		display: flex;

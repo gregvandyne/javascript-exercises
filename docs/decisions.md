@@ -7865,5 +7865,15 @@ for privacy, nothing in the game or the repository points back to the original.
   lesson is named after it, and "Also post to Google Classroom" for a linked class. The end screen calls
   `BRB.gameOver({ won: true, score })` once per run: the step done, and the Classroom completion grade.
 - **Fixed on the way:** Enter in a digit box no longer skips the result; the "to go" chip ends at the end; "1 problem".
+- **Who's playing, class codes, practice, hints** (owner: the same as Algebra Builder's). Opened without a link, it asks
+  first: a teacher gets their activities (with "Not a teacher?"), a student a class code or practising alone. A saved
+  activity shows its class code in the share panel. Practising alone: long division or multiplication; Easy (2 digits
+  by 1, no remainders / 2 digits times 1), Medium (3 by 1 with remainders / 3 digits times 1), Hard (4 by 2 / 3 digits
+  times 2); and the help (Guided, Count up, On my own); 5 problems, none the student has had lately (the last 300 per
+  kind and level in their save), "5 new problems" at the end. Checked over 30 sets each: no repeat in 150, except easy
+  division's smaller pool (115). Hints: a Hint button in the bottom band, up to three per step from the step's own
+  numbers (divide: how many fit, count up by the divisor, the digit; multiply: count by the digit, the carry;
+  subtract, bring down, add, carries); it lights up as "Stuck?" after a failed Check or count, two wrong digits on the
+  step, or 45 seconds on it. (Teachers already generate problems in the editor: ranges, How many, New problems.)
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 

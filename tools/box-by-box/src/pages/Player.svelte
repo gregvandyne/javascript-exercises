@@ -2,7 +2,7 @@
 	// The student player: a start screen, then each problem worked on graph paper one box at a time with the support
 	// the teacher chose, Check (one try again, then the answer), and the end screen with the score.
 	import { onMount, tick } from 'svelte';
-	import { Check, ChevronDown, ChevronUp, Eraser, Grid3x3, Play, SkipForward, X } from '@lucide/svelte';
+	import { Check, ChevronDown, ChevronUp, Eraser, Grid3x3, Lightbulb, Play, SkipForward, X } from '@lucide/svelte';
 	import Sheet from '$lib/Sheet.svelte';
 	import Keypad from '$lib/Keypad.svelte';
 	import FloatingKeypad, { type Rect } from '$lib/FloatingKeypad.svelte';
@@ -23,28 +23,38 @@
 		stepOfBox,
 		type Cell,
 		type Playable,
+		type Problem,
 		type Sheet as SheetT,
 		type Step,
 		type Values
 	} from '$lib/logic';
 	import { finished, load, right as soundRight, store, wrong as soundWrong } from '$lib/oomba';
+	import { hintsFor } from '$lib/hints';
 
 	let {
 		activity,
 		title,
 		preview = false,
-		extra
+		extra,
+		fresh,
+		againLabel
 	}: {
 		activity: Playable;
 		title: string;
 		preview?: boolean;
 		extra?: { label: string; onclick: () => void };
+		/** Practising alone: a new set of problems for each run (never ones the student has had lately). */
+		fresh?: () => Problem[];
+		/** The end screen's button, when it isn't "Start again". */
+		againLabel?: string;
 	} = $props();
 
 	const SQUARE = 56;
 	const STEP_MS = 650;
 	const kind = $derived(kindInfo(activity.kind));
-	const makeSheets = () => problemsForRun(activity).map(kind.sheet);
+	let runs = 0;
+	// The first run plays the activity's own problems; a practice run after that gets a new set.
+	const makeSheets = () => (fresh && runs++ > 0 ? fresh() : problemsForRun(activity)).map(kind.sheet);
 
 	let phase = $state<'setup' | 'working' | 'feedback' | 'over'>('setup');
 	let sheets = $state.raw<SheetT[]>([]);
@@ -77,6 +87,16 @@
 	let padRect = $state<Rect | undefined>();
 	let padSaved = $state<Rect | null>(null);
 	let planned = $state(0);
+
+	// --- hints (Oomba): for the step being worked, up to three, one per press of Hint. "Stuck?" lights up after a
+	// Check that didn't pass or a wrong count, or 45 seconds on the same step. ---
+	let hintShown = $state(0);
+	let hintOpen = $state(false);
+	let fails = $state(0);
+	/** Wrong digits typed on this step (Guided marks them as they're typed). */
+	let misses = $state(0);
+	let slow = $state(false);
+	let hintTimer: ReturnType<typeof setTimeout> | undefined;
 	let reported = false;
 
 	const inputs: Record<string, HTMLInputElement | null> = {};
@@ -136,6 +156,40 @@
 	const active = $derived(
 		!sheet || phase !== 'working' ? -1 : way === 'type' ? (current ? stepOfBox(sheet, current) : -1) : at < steps.length ? at : -1
 	);
+	/** The step a hint is for: the one being worked, or (no box chosen) the first empty box's. */
+	const hintStep = $derived.by(() => {
+		if (!sheet || phase !== 'working' || way === 'watch') return -1;
+		if (active >= 0) return active;
+		const empty = typeable.find((id) => !values[id]);
+		return empty ? stepOfBox(sheet, empty) : -1;
+	});
+	const hints = $derived(sheet && hintStep >= 0 ? hintsFor(sheet, hintStep, values) : []);
+	$effect(() => {
+		void index;
+		void hintStep;
+		hintShown = 0;
+		hintOpen = false;
+		misses = 0;
+		slow = false;
+		clearTimeout(hintTimer);
+		if (hintStep >= 0) hintTimer = setTimeout(() => (slow = true), 45000);
+		return () => clearTimeout(hintTimer);
+	});
+	$effect(() => {
+		void index;
+		fails = 0;
+	});
+	const stuck = $derived((fails >= 1 || misses >= 2 || slow) && hintShown < hints.length);
+	function showHint() {
+		hintOpen = true;
+		if (hintShown < hints.length) hintShown += 1;
+		slow = false;
+		fails = 0;
+		misses = 0;
+		clearTimeout(hintTimer);
+		hintTimer = setTimeout(() => (slow = true), 45000);
+	}
+
 	const canCheck = $derived(phase === 'working' && way !== 'watch' && !busy && !!sheet && allFilled(sheet, values));
 	const stepperAt = $derived.by(() => {
 		if (counted) return { row: counted.row, col: counted.onesCol };
@@ -452,6 +506,7 @@
 			const si = stepOfBox(sh, id);
 			await busyDo(() => lift(si, tens));
 			if (flags.markNow && (isWrong(sh, values, id) || isWrong(sh, values, l.tens))) {
+				misses += 1;
 				inputs[id]?.select();
 				return;
 			}
@@ -461,6 +516,7 @@
 		}
 		if (!d) return;
 		if (flags.markNow && isWrong(sh, values, id)) {
+			misses += 1;
 			el?.select();
 			return;
 		}
@@ -574,6 +630,7 @@
 		if (sc && typed) {
 			if (Number(typed) !== sc.by * sc.times) {
 				nudge = `${typed} isn’t ${sc.by} × ${sc.times}. Count by ${sc.by}s with ▲ to find it.`;
+				fails += 1;
 				typed = '';
 				return;
 			}
@@ -594,6 +651,7 @@
 		if (sc) {
 			if (count !== sc.times) {
 				nudge = count < sc.times ? `That’s ${count} times so far. Keep counting to ${sc.times}.` : `That’s ${count} times, more than ${sc.times}. Count back with ▼.`;
+				fails += 1;
 				return;
 			}
 			nudge = '';
@@ -674,10 +732,12 @@
 			if (scored) rightCount++;
 		} else if (firstTry) {
 			fb = 'again';
+			fails += 1;
 			firstTry = false;
 			sticky = true;
 		} else {
 			fb = 'reveal';
+			fails += 1;
 			if (scored) wrongCount++;
 			before = { ...values };
 			values = correctValues(sheet);
@@ -893,7 +953,7 @@
 				<p class="final">You watched {sheets.length} {sheets.length === 1 ? 'problem' : 'problems'} worked.</p>
 			{/if}
 			<div class="menu-actions">
-				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> Start again</button>
+				<button type="button" class="btn-primary big" onclick={start}><Play size={18} aria-hidden="true" /> {againLabel ?? 'Start again'}</button>
 			</div>
 		{/if}
 		<Footer />
@@ -923,6 +983,17 @@
 				</button>
 			</div>
 		{:else}
+			{#if hintOpen && hintShown && hints.length}
+				<div class="hint-box" aria-live="polite">
+					<p class="hint-head">
+						<Lightbulb size={15} aria-hidden="true" /> Hint {Math.min(hintShown, hints.length)} of {hints.length}
+						<button type="button" class="hint-close" aria-label="Hide the hints" onclick={() => (hintOpen = false)}>✕</button>
+					</p>
+					<ol>
+						{#each hints.slice(0, hintShown) as h, i (i)}<li>{h}</li>{/each}
+					</ol>
+				</div>
+			{/if}
 			<div class="prompt-row">
 				<p class="prompt" class:nudge={!!nudge} aria-live="polite">
 					{prompt}{#if watchAnswer}<b class="answer">{watchAnswer}</b>{/if}
@@ -940,6 +1011,17 @@
 					{:else}
 						<button type="button" class="btn-primary big" bind:this={checkBtn} disabled={!canCheck} onclick={check}
 							><Check size={18} aria-hidden="true" /> Check</button
+						>
+					{/if}
+					{#if way !== 'watch' && hints.length}
+						<button
+							type="button"
+							class="btn-ghost hint-btn"
+							class:stuck
+							disabled={hintShown >= hints.length && hintOpen}
+							aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
+							onpointerdown={(e) => e.preventDefault()}
+							onclick={showHint}><Lightbulb size={17} aria-hidden="true" /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span></button
 						>
 					{/if}
 					{#if way === 'type'}
@@ -1294,6 +1376,64 @@
 	.prompt.nudge {
 		color: var(--bad);
 	}
+	.hint-btn {
+		gap: 0.35rem;
+	}
+	.hint-btn.stuck {
+		border-color: #c58a12;
+		background: #fff1cc;
+		animation: hint-glow 1.6s ease-in-out infinite;
+	}
+	@keyframes hint-glow {
+		50% {
+			box-shadow: 0 0 0 5px rgb(245 186 66 / 0.35);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hint-btn.stuck {
+			animation: none;
+		}
+	}
+	.hint-box {
+		padding: 0.55rem 0.95rem;
+		border: 1px solid #f0d58c;
+		border-radius: 12px;
+		background: #fff8e1;
+		color: var(--ink);
+		font-size: 0.95rem;
+		line-height: 1.4;
+	}
+	.hint-head {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin: 0;
+		color: #8a5a00;
+		font-size: 0.78rem;
+		font-weight: 800;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.hint-close {
+		margin-left: auto;
+		padding: 0.1rem 0.45rem;
+		border: 0;
+		border-radius: 8px;
+		background: none;
+		color: #8a5a00;
+		font: inherit;
+		cursor: pointer;
+	}
+	.hint-close:hover {
+		background: #fde7a8;
+	}
+	.hint-box ol {
+		margin: 0.25rem 0 0;
+		padding-left: 1.2rem;
+	}
+	.hint-box li + li {
+		margin-top: 0.2rem;
+	}
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -1337,6 +1477,12 @@
 		}
 		.prompt {
 			font-size: 1.15rem;
+		}
+		.hint-word {
+			display: none;
+		}
+		.hint-btn.stuck .hint-word {
+			display: inline;
 		}
 		.big {
 			padding: 0.7rem 1rem;

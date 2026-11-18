@@ -3,7 +3,7 @@
 	// Saving again after a change keeps the same link.
 	import { Check, Copy, GraduationCap, QrCode } from '@lucide/svelte';
 	import { isShared, shareActivity, type Activity } from './activities.svelte';
-	import { assign, canAssign, copy, isGuest, isPreview, setLink } from './oomba';
+	import { assign, canAssign, classCode, copy, isGuest, isPreview, setLink } from './oomba';
 	import { makeQr, qrExtent, qrPath, qrPng } from './qr';
 
 	let { activity }: { activity: Activity } = $props();
@@ -60,6 +60,11 @@
 	{/if}
 
 	{#if link}
+		<div class="code-box">
+			<span class="code-label">Class code</span>
+			<span class="code-val">{classCode(activity.setId ?? '')}</span>
+			<span class="code-hint">Students choose “I’m a student” and type it.</span>
+		</div>
 		<p class="link" title={link}>{link}</p>
 		<button type="button" class="btn-primary wide" onclick={copyLink}>
 			{#if copied === 'link'}<Check size={16} aria-hidden="true" /> Copied{:else}<Copy size={16} aria-hidden="true" /> Copy link{/if}
@@ -110,6 +115,32 @@
 	.note.bad {
 		color: var(--bad);
 		font-weight: 600;
+	}
+	.code-box {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.15rem;
+		margin-top: 0.75rem;
+		padding: 0.65rem;
+		border: 2px solid var(--ink);
+		border-radius: 14px;
+		background: #fff1cc;
+		text-align: center;
+	}
+	.code-label {
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.code-val {
+		font: 800 1.55rem/1.1 ui-monospace, monospace;
+		letter-spacing: 0.08em;
+	}
+	.code-hint {
+		color: var(--muted);
+		font-size: 0.82rem;
 	}
 	.link {
 		margin: 0;

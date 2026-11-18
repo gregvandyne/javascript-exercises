@@ -1,11 +1,15 @@
 <script lang="ts">
 	// Box by Box. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it;
-	// otherwise it starts on the teacher's list of activities.
+	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
+	// practising alone.
 	import { nav, go, goBack, show } from '$lib/nav.svelte';
 	import { openedSet } from '$lib/oomba';
 	import { parseItem, kindInfo } from '$lib/logic';
 	import { adopt } from '$lib/activities.svelte';
 	import Home from './pages/Home.svelte';
+	import Start from './pages/Start.svelte';
+	import Student from './pages/Student.svelte';
+	import { practiceProblems } from '$lib/practice';
 	import Editor from './pages/Editor.svelte';
 	import Player from './pages/Player.svelte';
 	import About from './pages/About.svelte';
@@ -28,7 +32,11 @@
 	}
 </script>
 
-{#if nav.view.name === 'home'}
+{#if nav.view.name === 'start'}
+	<Start />
+{:else if nav.view.name === 'student'}
+	<Student />
+{:else if nav.view.name === 'home'}
 	<Home />
 {:else if nav.view.name === 'edit'}
 	{#key nav.view.id}
@@ -42,9 +50,15 @@
 			preview={nav.view.from === 'editor'}
 			extra={nav.view.from === 'editor'
 				? { label: '← Back to the editor', onclick: goBack }
-				: nav.view.mine
-					? { label: 'Edit this activity', onclick: editOwn }
-					: undefined}
+				: nav.view.from === 'practice'
+					? { label: '← Practice', onclick: goBack }
+					: nav.view.from === 'code'
+						? { label: '← Back', onclick: goBack }
+						: nav.view.mine
+							? { label: 'Edit this activity', onclick: editOwn }
+							: undefined}
+			fresh={nav.view.practice ? () => practiceProblems(nav.view.practice!.kind, nav.view.practice!.hard) : undefined}
+			againLabel={nav.view.practice ? '5 new problems' : undefined}
 		/>
 	{/key}
 {:else if nav.view.name === 'invalid'}

@@ -4,13 +4,15 @@
 import type { Playable } from './logic';
 
 export type View =
+	| { name: 'start' }
+	| { name: 'student' }
 	| { name: 'home' }
 	| { name: 'edit'; id: string }
-	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor'; id?: string; setId?: string; mine?: boolean; item?: unknown }
+	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: 'divide' | 'multiply'; hard: 'easy' | 'medium' | 'hard' }; id?: string; setId?: string; mine?: boolean; item?: unknown }
 	| { name: 'invalid' }
 	| { name: 'about' };
 
-export const nav = $state<{ view: View; back: View[] }>({ view: { name: 'home' }, back: [] });
+export const nav = $state<{ view: View; back: View[] }>({ view: { name: 'start' }, back: [] });
 
 /** Show another screen; Back returns to this one. */
 export function go(view: View) {
@@ -20,7 +22,7 @@ export function go(view: View) {
 }
 /** The screen before (the list of activities when there is none). */
 export function goBack() {
-	nav.view = nav.back.pop() ?? { name: 'home' };
+	nav.view = nav.back.pop() ?? { name: 'start' };
 	window.scrollTo(0, 0);
 }
 /** Show a screen with nothing to go back to. */

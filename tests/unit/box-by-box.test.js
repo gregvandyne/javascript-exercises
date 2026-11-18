@@ -4,7 +4,7 @@
 // page and the lesson call an activity, and saving one through the route and opening it in the frame.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { reset, call, publish, official, kid, teacher } from './_live.js';
+import { reset, call, publish, official, kid, teacher, games } from './_live.js';
 import * as gameSets from '../../server/services/game-sets.js';
 import { parseParams } from '../../server/services/play-params.js';
 
@@ -97,4 +97,13 @@ test('box-by-box: nothing in the game, its sources, its metadata or its docs poi
   const entry = log.slice(log.indexOf('## Box by Box'));
   assert.ok(entry.length > 200);
   assert.doesNotMatch(entry.slice(0, entry.indexOf('\n## ', 5) > 0 ? entry.indexOf('\n## ', 5) : undefined), re, 'docs/decisions.md: the Box by Box entry');
+});
+
+test('box-by-box: a student types a saved activity’s class code and gets it to play', async () => {
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'Box by Box' });
+  const r = await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [MUL] }, user: teacher });
+  const code = r.json.id.slice(2).toUpperCase();
+  const got = await call(`/api/games/${g.id}/sets/${code.slice(0, 5)}%20${code.slice(5)}`, { user: kid });
+  assert.equal(got.status, 200); assert.deepEqual(got.json, { id: r.json.id, items: [MUL] });
 });
