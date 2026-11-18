@@ -577,7 +577,8 @@ const rand = (lo: number, hi: number, r: Rand = Math.random) => lo + Math.floor(
 
 /** remainders: how they're written (none: every problem divides evenly). Saved before there was a choice, it was on
  *  or off: on reads as R, off as none. */
-export type DividePlan = { count: number; dividends: [number, number]; divisors: [number, number]; remainders: RemainderForm; numbers?: Numbers };
+/** method: (only while making problems, never kept) the area model with decimals divides by whole numbers. */
+export type DividePlan = { count: number; dividends: [number, number]; divisors: [number, number]; remainders: RemainderForm; numbers?: Numbers; method?: Method };
 export type MultiplyPlan = { count: number; tops: [number, number]; bottoms: [number, number]; numbers?: Numbers };
 export type Plan = DividePlan | MultiplyPlan;
 
@@ -593,7 +594,8 @@ function makeDecimalDivide(plan: DividePlan, r: Rand): { dividend: number; divis
 	if (!whole) return null;
 	const N = whole.dividend;
 	const k = rand(Math.min(1, len(N) - 1), Math.min(2, len(N) - 1), r);
-	const s = r() < 0.35 ? 1 : 0;
+	// (the area model divides decimals by whole numbers only)
+	const s = plan.method !== 'area' && r() < 0.35 ? 1 : 0;
 	const dividend = unscaled(N, k);
 	const divisor = unscaled(whole.divisor, s);
 	if (!isDecimal(dividend) && !isDecimal(divisor)) return null;
@@ -1236,14 +1238,31 @@ export function parseFlags(code: unknown): Flags {
 	return f;
 }
 
+/** The methods decimals can be worked with: the standard algorithms, and the area model for multiplication (2.3 × 1.4
+ *  as 2 + 0.3 by 1 + 0.4) and for a decimal divided by a whole number (7.5 ÷ 3: 2, then 0.5). The ladder and partial
+ *  products stay whole numbers. */
+export const DECIMAL_METHODS: Record<Kind, Method[]> = { divide: ['standard', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
+/** The method as an activity may use it: one of the kind's (decimals: one of DECIMAL_METHODS), else the standard one. */
+export const methodFor = (kind: Kind, raw: unknown, numbers: Numbers = 'whole'): Method => {
+	const m = methodOr(kind, raw);
+	return numbers === 'decimal' && !DECIMAL_METHODS[kind].includes(m) ? 'standard' : m;
+};
+/** A problem's own rules, and the method's: decimals by the area model divide by a whole number and come out by
+ *  hundredths (7.5 ÷ 3 = 2.5; no remainder to write), so every section is a friendly chunk. */
+export function checkProblem(kind: Kind, a: number, b: number, numbers: Numbers = 'whole', method: Method = 'standard'): string | null {
+	const f = kindInfo(kind).check(a, b, numbers);
+	if (f || kind !== 'divide' || numbers !== 'decimal' || method !== 'area') return f;
+	if (!Number.isInteger(b)) return t('ui.check.areaWholeDivisor');
+	return scaled(a, 2) % b === 0 ? null : t('ui.check.areaExact');
+}
 /** The problems that work for this kind (numbers as text are taken as numbers), at most 100. */
-export function validProblems(raw: unknown, kind: Kind, numbers: Numbers = 'whole'): Problem[] {
+export function validProblems(raw: unknown, kind: Kind, numbers: Numbers = 'whole', method: Method = 'standard'): Problem[] {
 	if (!Array.isArray(raw)) return [];
 	const out: Problem[] = [];
 	for (const p of raw) {
 		if (!Array.isArray(p)) continue;
 		const [a, b] = p.map(Number);
-		if (kindInfo(kind).check(a, b, numbers) === null) out.push([a, b]);
+		if (checkProblem(kind, a, b, numbers, method) === null) out.push([a, b]);
 	}
 	return out.slice(0, MAX_PROBLEMS);
 }
@@ -1264,7 +1283,8 @@ export function parseItem(raw: unknown): Playable | null {
 	const o = raw as Record<string, unknown>;
 	const kind = kindOr(o.k);
 	const numbers: Numbers = o.dec === 1 ? 'decimal' : 'whole';
-	const problems = validProblems(o.p, kind, numbers);
+	const method = methodFor(kind, o.m, numbers);
+	const problems = validProblems(o.p, kind, numbers, method);
 	const perStudent = o.d === 1;
 	if (!problems.length && !perStudent) return null;
 	const s = kindInfo(kind).settings;
@@ -1272,8 +1292,8 @@ export function parseItem(raw: unknown): Playable | null {
 	return {
 		kind,
 		problems,
-		// decimals: the standard method (the others take away and break up whole numbers)
-		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent, method: numbers === 'decimal' ? 'standard' : methodOr(kind, o.m) },
+		// decimals: the standard method or the area model (the others break up whole numbers)
+		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent, method },
 		plan: numbers === 'decimal' ? { ...plan, numbers } : plan
 	};
 }
@@ -1287,8 +1307,8 @@ export function toItem(a: Playable): Item {
 		item.d = 1;
 		item.g = cleanPlan(a.kind, a.plan);
 	}
-	const m = methodOr(a.kind, a.settings.method);
-	if (m !== 'standard' && numbersOf(a.plan?.numbers) !== 'decimal') item.m = m;
+	const m = methodFor(a.kind, a.settings.method, numbersOf(a.plan?.numbers));
+	if (m !== 'standard') item.m = m;
 	const form = formOf(a);
 	const dec = numbersOf(a.plan?.numbers) === 'decimal';
 	if (!dec && (form === 'fraction' || form === 'decimal')) item.r = form;
@@ -1325,7 +1345,7 @@ export function problemsForRun(a: Playable, r: Rand = Math.random): Problem[] {
 	if (!a.settings.perStudent) return a.problems;
 	const k = kindInfo(a.kind);
 	const count = a.problems.length || k.setSize;
-	return k.settings.generate({ ...(a.plan ?? k.settings.fresh()), count }, r);
+	return k.settings.generate({ ...(a.plan ?? k.settings.fresh()), count, method: a.settings.method } as Plan, r);
 }
 
 /** A problem's sheet, as this activity works it. */

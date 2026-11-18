@@ -4,7 +4,7 @@
 	import { NAME } from '$lib/name';
 	import { go, goBack } from '$lib/nav.svelte';
 	import { findSet, isPreview, load, store } from '$lib/oomba';
-	import { parseItem, kindInfo, KINDS, type Kind, type Level, type Numbers } from '$lib/logic';
+	import { DECIMAL_METHODS, parseItem, kindInfo, KINDS, type Kind, type Level, type Numbers } from '$lib/logic';
 	import { HARDS, HELPS, NUMBER_KINDS, SET_SIZE, practiceActivity, type Hard } from '$lib/practice';
 	import { methodOr, methodsFor, type Method } from '$lib/methods';
 	import Logo from '$lib/Logo.svelte';
@@ -55,10 +55,16 @@
 	// the way they work it, kept for each kind
 	let ways = $state<Record<Kind, Method>>({ divide: methodOr('divide', last.method?.divide), multiply: methodOr('multiply', last.method?.multiply) });
 	let numbers = $state<Numbers>(last.numbers === 'decimal' ? 'decimal' : 'whole');
+	// the ways this kind can be worked (decimals: the standard way or the area model); a way decimals don't have is
+	// worked the standard way
+	const ways_ = $derived(methodsFor(kind).filter((m) => numbers !== 'decimal' || DECIMAL_METHODS[kind].includes(m.name)));
+	$effect(() => {
+		if (!ways_.some((m) => m.name === ways[kind])) ways[kind] = 'standard';
+	});
 	function practice() {
 		store(LAST, { kind, hard, mode, method: { ...ways }, ...(numbers === 'decimal' ? { numbers } : {}) });
 		const a = practiceActivity(kind, hard, mode, ways[kind], numbers);
-		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard, numbers } });
+		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard, numbers, method: a.settings.method } });
 	}
 </script>
 
@@ -146,11 +152,11 @@
 				</div>
 			</fieldset>
 
-			{#if numbers === 'whole' && methodsFor(kind).length > 1}
+			{#if ways_.length > 1}
 			<fieldset>
 				<legend>Which way</legend>
 				<div class="choices three">
-					{#each methodsFor(kind) as m (m.name)}
+					{#each ways_ as m (m.name)}
 						<label class="choice level" class:on={ways[kind] === m.name}>
 							<input type="radio" name="method-{kind}" value={m.name} bind:group={ways[kind]} />
 							<span class="name">{m.label}</span>

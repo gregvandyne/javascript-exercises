@@ -503,5 +503,17 @@
 	"ui.method.countUpDivide": "Pick how many to take away with ▲ and ▼, and the page multiplies. You subtract and add.",
 	"ui.method.countUpMultiply": "Skip-count each box with ▲, and the page writes it in. Then type the adding.",
 	"ui.fb.oneWay": "Here’s one way to work it.",
-	"w.and": "and"
+	"w.and": "and",
+	"h.part.mul2places.one": "{a} × {b} = {x}. Then count the decimal places: 1 in all, so it’s {y}.",
+	"h.part.mul2places.other": "{a} × {b} = {x}. Then count the decimal places: {n} in all, so it’s {y}.",
+	"h.part.add2dec": "Line them up on their decimal points and add one column at a time, starting from the right. Carry when a column makes 10 or more.",
+	"q.lad.doneDec": "Nothing is left, so you’re done taking away.",
+	"h.lad.choose1dec": "Take away a friendly number of {d}s, no more than {l}: whole groups first, then tenths like 0.5 or 0.2.",
+	"h.lad.product2dec": "{c} × {d} = {x}, so {q} × {d} = {y}.",
+	"h.lad.diff2dec": "Line up the decimal points and subtract one column at a time, starting from the right. Regroup when the top digit is smaller.",
+	"q.lad.atLeastSome": "Take away some of a {d}: at least 0.01.",
+	"ui.check.areaWholeDivisor": "With the area model, divide by a whole number, like 7.5 ÷ 3.",
+	"ui.check.areaExact": "With the area model, pick a problem that comes out by hundredths, like 7.5 ÷ 3 = 2.5.",
+	"q.lad.placesOn.one": "{a} × {b} = {p}, and the point goes 1 place from the right:",
+	"q.lad.placesOn.other": "{a} × {b} = {p}, and the point goes {n} places from the right:"
 }

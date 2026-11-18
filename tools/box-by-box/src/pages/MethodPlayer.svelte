@@ -209,11 +209,12 @@
 			if (choose) {
 				const v = values[active!.id];
 				if (!v) return [...askOf(active!), m('q.lad.pick')];
-				const n = Number(v);
+				const S = choose.f.show;
+				const n = choose.f.read(v);
 				const x = n * choose.divisor;
 				return n * choose.divisor > choose.left
-					? [m('q.lad.tooMany', { a: n, b: choose.divisor, x, l: choose.left })]
-					: [m('q.lad.left', { a: n, b: choose.divisor, x, l: choose.left - x })];
+					? [m('q.lad.tooMany', { a: S(n), b: choose.divisor, x: S(x), l: S(choose.left) })]
+					: [m('q.lad.left', { a: S(n), b: choose.divisor, x: S(x), l: S(choose.left - x) })];
 			}
 			if (skip) {
 				if (typed) return [m('q.skip.mulTyped', { a: skip.by, b: skip.times, x: typed }), m('q.skip.pressIt')];
@@ -355,7 +356,8 @@
 		return true;
 	}
 	function setValue(f: Field, raw: string) {
-		const v = raw.replace(/\D/g, '').slice(0, f.len);
+		// (a decimal field takes one point too: 0.12)
+		const v = (f.point ? raw.replace(/,/g, '.').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1') : raw.replace(/\D/g, '')).slice(0, f.len);
 		put(f.id, v);
 		const el = inputOf(f.id);
 		if (el && el.value !== v) el.value = v;
@@ -444,10 +446,10 @@
 		nudgeMsg = null;
 		if (choose) {
 			const list = friendlySteps(choose.left, choose.divisor);
-			const v = Number(values[active.id] || 0);
+			const v = values[active.id] ? choose.f.read(values[active.id]) || 0 : 0;
 			const at = list.findIndex((x) => x >= v);
 			const i = !values[active.id] ? (by > 0 ? 0 : -1) : list[at] === v ? at + by : by > 0 ? at : at - 1;
-			if (i >= 0) put(active.id, String(list[Math.min(i, list.length - 1)]));
+			if (i >= 0) put(active.id, choose.f.show(list[Math.min(i, list.length - 1)]));
 			reach(active.id);
 		} else if (skip) count = count === null ? +(by > 0) : Math.max(0, Math.min(9, count + by));
 	}
@@ -494,7 +496,11 @@
 		const sk = skip;
 		const product = sk.by * sk.times;
 		await busyDo(async () => {
-			toldLines = sk.zeros ? [m('q.lad.zerosOn', { a: sk.by, b: sk.times, p: product }, sk.zeros), ...(f.tell ?? [])] : (f.tell ?? []);
+			toldLines = sk.zeros
+				? [m('q.lad.zerosOn', { a: sk.by, b: sk.times, p: product }, sk.zeros), ...(f.tell ?? [])]
+				: sk.places
+					? [m('q.lad.placesOn', { a: sk.by, b: sk.times, p: product }, sk.places), ...(f.tell ?? [])]
+					: (f.tell ?? []);
 			fill(f, String(sk.value));
 			await wait(STEP_MS * 2);
 			toldLines = [];
@@ -686,7 +692,7 @@
 			autocomplete="off"
 			spellcheck="false"
 			maxlength={f.len}
-			inputmode={canType ? 'numeric' : 'none'}
+			inputmode={canType ? (f.point ? 'decimal' : 'numeric') : 'none'}
 			aria-label={f.role === 'choice' || f.role === 'product' || f.role === 'difference' ? t('ui.field.step', { f: ROLE(f.role), n: Number(f.id.slice(1)) + 1 }) : ROLE(f.role)}
 			aria-invalid={wrongNow}
 			value={values[f.id] ?? ''}
@@ -775,7 +781,7 @@
 		</div>
 	</main>
 	{#if padOpen && !narrow && way !== 'watch'}
-		<FloatingKeypad top={barH} disabled={phase !== 'working'} ontap={keypad} onclose={() => setPad(false)} bind:rect={padRect} saved={padSaved} onmoved={(r) => {
+		<FloatingKeypad top={barH} point={fields.some((x) => x.point)} disabled={phase !== 'working'} ontap={keypad} onclose={() => setPad(false)} bind:rect={padRect} saved={padSaved} onmoved={(r) => {
 			padSaved = r;
 			store(PAD_KEY, { open: padOpen, rect: r });
 		}} />
@@ -856,7 +862,7 @@
 				</div>
 			</div>
 			{#if padOpen && narrow && way !== 'watch'}
-				<Keypad wide disabled={phase !== 'working'} ontap={keypad} />
+				<Keypad wide point={fields.some((x) => x.point)} disabled={phase !== 'working'} ontap={keypad} />
 			{/if}
 		{/if}
 	</div>

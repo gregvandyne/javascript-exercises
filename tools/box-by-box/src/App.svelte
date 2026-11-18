@@ -60,7 +60,7 @@
 						: nav.view.mine
 							? { label: 'Edit this activity', onclick: editOwn }
 							: undefined}
-			fresh={nav.view.practice ? () => practiceProblems(nav.view.practice!.kind, nav.view.practice!.hard, nav.view.practice!.numbers) : undefined}
+			fresh={nav.view.practice ? () => practiceProblems(nav.view.practice!.kind, nav.view.practice!.hard, nav.view.practice!.numbers, nav.view.practice!.method) : undefined}
 			againLabel={nav.view.practice ? '5 new problems' : undefined}
 		/>
 	{/key}

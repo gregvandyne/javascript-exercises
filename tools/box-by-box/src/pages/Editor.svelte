@@ -5,7 +5,7 @@
 	import { onMount, tick } from 'svelte';
 	import { ArrowLeft, Dices, ExternalLink, GripVertical, Plus, Share2, X } from '@lucide/svelte';
 	import { find, isShared, list, loadList, titleOf, touch } from '$lib/activities.svelte';
-	import { MAX_PROBLEMS, formOf, kindInfo, levelInfo, numbersOf, remainderForm, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
+	import { DECIMAL_METHODS, MAX_PROBLEMS, checkProblem, formOf, kindInfo, levelInfo, numbersOf, remainderForm, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
 	import { go, show } from '$lib/nav.svelte';
 	import Stepper from '$lib/Stepper.svelte';
 	import SwitchRow from '$lib/SwitchRow.svelte';
@@ -33,7 +33,7 @@
 	/** Whole numbers, or decimals too (the Numbers choice): what a problem may be typed with. */
 	const numbers = $derived(numbersOf(activity?.plan?.numbers));
 	const fault = (r: Row) =>
-		!r.first && !r.second ? '' : !r.first || !r.second ? 'Type both numbers.' : (k.check(Number(r.first), Number(r.second), numbers) ?? '');
+		!r.first && !r.second ? '' : !r.first || !r.second ? 'Type both numbers.' : (checkProblem(activity!.kind, Number(r.first), Number(r.second), numbers, method) ?? '');
 	const valid = (r: Row) => !!r.first && !!r.second && !fault(r);
 	function answerOf(r: Row): [string, string] {
 		if (!valid(r)) return ['', ''];
@@ -241,8 +241,11 @@
 		const set = () => {
 			if (key === 'numbers' && v === 'whole') delete activity.plan.numbers;
 			else (activity.plan as Record<string, unknown>)[key] = v;
-			// decimals: the standard method
-			if (key === 'numbers' && v === 'decimal') activity.settings.method = 'standard';
+			// decimals: the standard method or the area model (any other method falls back to the standard one)
+			if (key === 'numbers' && v === 'decimal' && !DECIMAL_METHODS[activity.kind].includes(activity.settings.method)) {
+				methodNote = activity.settings.method !== 'standard';
+				activity.settings.method = 'standard';
+			}
 			plays++;
 		};
 		if (key === 'numbers') {
@@ -277,7 +280,7 @@
 		howMany = n;
 		activity.plan.count = n;
 		const kept = activity.problems.slice(0, n);
-		const more = n > kept.length ? s.generate({ ...$state.snapshot(activity.plan), count: n - kept.length } as Plan, Math.random, kept) : [];
+		const more = n > kept.length ? s.generate({ ...$state.snapshot(activity.plan), count: n - kept.length, method } as Plan, Math.random, kept) : [];
 		const all = [...kept, ...more];
 		short = all.length < n ? all.length : null;
 		activity.problems = all;
@@ -288,7 +291,7 @@
 		if (!activity) return;
 		const n = Math.max(1, Math.min(100, howMany));
 		activity.plan.count = n;
-		const made = s.generate($state.snapshot(activity.plan) as Plan);
+		const made = s.generate({ ...$state.snapshot(activity.plan), method } as Plan);
 		short = made.length < n ? made.length : null;
 		if (made.length) {
 			activity.problems = made;
@@ -334,11 +337,27 @@
 
 	const method = $derived<Method>(activity?.settings.method ?? 'standard');
 	const methods = $derived(methodsFor(activity?.kind ?? 'divide'));
+	/** A method the decimals choice set back to the standard one (a short note says so). */
+	let methodNote = $state(false);
 	function setMethod(m: Method) {
 		if (!activity) return;
-		activity.settings.method = m;
-		plays++;
-		save();
+		const a = activity;
+		const apply = () => {
+			a.settings.method = m;
+			methodNote = false;
+			plays++;
+		};
+		// decimals divided by the area model: whole divisors, coming out by hundredths, so problems that don't fit are made again
+		const misfit = numbers === 'decimal' && a.kind === 'divide' && a.problems.some(([x, y]) => checkProblem('divide', x, y, numbers, m));
+		if (misfit)
+			confirmThen(() => {
+				apply();
+				regenerate();
+			});
+		else {
+			apply();
+			save();
+		}
 	}
 	/** What Count up does in this method, for the Mode tab's line. */
 	const COUNT_UP: Partial<Record<Method, string>> = {
@@ -457,7 +476,7 @@
 				<section class="group methods" aria-labelledby="method-title">
 					<h3 id="method-title">Method</h3>
 					<div class="method-list" role="radiogroup" aria-labelledby="method-title">
-						{#each methods.filter((m) => numbers !== 'decimal' || m.name === 'standard') as m (m.name)}
+						{#each methods.filter((m) => numbers !== 'decimal' || DECIMAL_METHODS[activity.kind].includes(m.name)) as m (m.name)}
 							<button type="button" role="radio" class="method" aria-checked={method === m.name} onclick={() => setMethod(m.name)}>
 								<span class="method-name">{m.name === 'standard' ? (activity.kind === 'divide' ? 'Standard (long division)' : 'Standard algorithm') : m.name === 'ladder' ? 'Ladder (partial quotients)' : m.label}</span>
 								<span class="method-about">{m.about}</span>
@@ -465,7 +484,9 @@
 						{/each}
 					</div>
 					{#if numbers === 'decimal' && methods.length > 1}
-						<p class="about">The other methods break up and take away whole numbers, so decimals use the standard one.</p>
+						<p class="about">{methodNote ? 'Decimals use the standard method or the area model, so this activity is back on the standard method. ' : ''}{activity.kind === 'divide'
+								? 'With decimals, the area model divides by whole numbers, and every problem comes out by hundredths, like 7.5 ÷ 3 = 2.5. A decimal divisor (4.5 ÷ 0.3) uses the standard method.'
+								: 'With decimals, the area model splits each number by place value: 2.3 × 1.4 is (2 + 0.3) × (1 + 0.4). Partial products stay with whole numbers.'}</p>
 					{/if}
 					{#if method !== 'standard'}
 						<details class="how">

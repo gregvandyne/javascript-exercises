@@ -2,8 +2,8 @@
 // want; then a fresh set of problems, made at random and never one this student has had lately. The problems they have
 // had are kept in their game save (per kind and level, the last 300), so a new set, on any day or device, is new.
 
-import { kindInfo, type Kind, type Level as Mode, type Numbers, type Plan, type Playable, type Problem } from './logic';
-import { methodOr, type Method } from './methods';
+import { kindInfo, methodFor, type Kind, type Level as Mode, type Numbers, type Plan, type Playable, type Problem } from './logic';
+import type { Method } from './methods';
 import { load, store } from './oomba';
 import { t } from './i18n';
 
@@ -58,10 +58,11 @@ type Seen = Record<string, Problem[]>;
 const keyOf = ([a, b]: Problem) => `${a}|${b}`;
 
 /** A fresh set of this kind and level, none the student has had lately (when there are too few left, any new set). */
-export function practiceProblems(kind: Kind, hard: Hard, numbers: Numbers = 'whole'): Problem[] {
+export function practiceProblems(kind: Kind, hard: Hard, numbers: Numbers = 'whole', method: Method = 'standard'): Problem[] {
 	const seen = (load(SEEN) as Seen | null) ?? {};
 	const slot = numbers === 'decimal' ? `${kind}-${hard}-decimal` : `${kind}-${hard}`;
-	const plan = planOf(kind, hard, numbers);
+	// (the area model divides decimals by whole numbers)
+	const plan = { ...planOf(kind, hard, numbers), method: methodFor(kind, method, numbers) } as Plan;
 	const had: Problem[] = Array.isArray(seen[slot]) ? seen[slot] : [];
 	const gen = kindInfo(kind).settings.generate;
 	let out = gen(plan, Math.random, had);
@@ -77,13 +78,13 @@ export function practiceActivity(kind: Kind, hard: Hard, mode: Mode, method: Met
 	const s = kindInfo(kind).settings;
 	return {
 		kind,
-		problems: practiceProblems(kind, hard, numbers),
+		problems: practiceProblems(kind, hard, numbers, method),
 		settings: {
 			level: mode,
 			custom: { spotlight: true, prompt: true, zoom: true, build: true, drawSigns: true, bringDown: true, markNow: true },
 			perStudent: false,
-			// decimals: the standard method
-			method: numbers === 'decimal' ? 'standard' : methodOr(kind, method)
+			// decimals: the standard method or the area model
+			method: methodFor(kind, method, numbers)
 		},
 		plan: s.parse(planOf(kind, hard, numbers))
 	};
