@@ -289,7 +289,7 @@ test('Launchpad building: the platform admin sees the tier and can open its welc
   const page = await get('/courses/number-quest/launchpad-0.1', cookie);
   assert.equal(page.status, 200);
   assert.match(page.text, /Meet Tally in the Gardens/);
-  assert.match(page.text, /This is Tally the cat\./);
+  assert.match(page.text, /This is Tally the cat, your guide\./);
   const home = await get('/courses/number-quest', cookie);
   assert.match(home.text, /id="nqp-streets"/);
   assert.match(home.text, /id="street-launchpad"[^>]*>[\s\S]*?being built/);
