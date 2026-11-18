@@ -2853,24 +2853,23 @@
       "build": {
         "title": "Costruiscilo: {name}",
         "makeTitle": "Costruiscilo: {name}",
-        "intro": "Ogni alunno riceve la sua copia e costruisce un obiettivo alla volta, con la risposta nascosta. Vedi chi ha finito. Nessuno vede il lavoro degli altri.",
+        "intro": "Ogni alunno riceve la sua copia e risponde a una domanda alla volta, con la risposta nascosta. Vedi chi ha finito. Nessuno vede il lavoro degli altri.",
         "say": "Consegna",
-        "targets": "Obiettivi",
-        "typeHint": "Scrivili separati da virgole, per esempio {eg}",
-        "orMake": "Oppure creali",
-        "gen": "Già pronti",
+        "typeHint": "Oppure scrivi le tue, separate da virgole, per esempio {eg}",
+        "gen": "Tipo di domanda",
         "howMany": "Quanti",
-        "make": "Crea",
-        "count": "{n, plural, one {# obiettivo} other {# obiettivi}}",
+        "make": "Scegli",
+        "count": "{n, plural, one {# domanda} other {# domande}}",
         "bad": "Lasciati fuori (questo strumento non può costruirli): {list}",
+        "badEq": "Lasciati fuori (la risposta deve essere più di 0 e al massimo 3 interi, con un denominatore fino a 12, e ogni frazione nei limiti dello strumento): {list}",
         "over": "Restano solo i primi {n}.",
-        "none": "Scrivi o crea almeno un obiettivo.",
+        "none": "Scrivi o scegli almeno una domanda.",
         "send": "Invia alla classe",
         "sent": "«Costruiscilo» inviato. Ogni alunno costruisce sulla sua copia.",
         "progress": "Andamento",
         "progressName": "Andamento: {title}",
         "progressTitle": "Costruiscilo: andamento",
-        "targetsH": "Obiettivi",
+        "targetsH": "Domande",
         "studentsH": "Alunni",
         "rightOf": "{right} su {tried} giusti",
         "onBoard": "Mostra alla lavagna",
@@ -2908,7 +2907,8 @@
           "angle": "Ruota la semiretta per fare ogni angolo.",
           "pattern": "Con i blocchi fai ogni parte di un esagono.",
           "coord": "Segna ogni punto.",
-          "rods": "Fai un treno di regoli lungo come ogni numero."
+          "rods": "Fai un treno di regoli lungo come ogni numero.",
+          "fractionsEq": "Calcola ogni operazione. Colora la barra della risposta."
         },
         "gens": {
           "d1": "Numeri di 1 cifra",
@@ -2951,7 +2951,14 @@
           "wholes": "Esagoni interi",
           "mixed": "Più di un esagono",
           "q1": "Primo quadrante",
-          "all": "Tutti e quattro i quadranti"
+          "all": "Tutti e quattro i quadranti",
+          "eqSame": "Stesso denominatore",
+          "eqMult": "Denominatori come 3 e 6",
+          "eqUnit": "Frazioni unitarie (1/2 × 1/3)",
+          "eqWholeMul": "Numero intero × frazione",
+          "eqWholeDiv": "Con un numero intero",
+          "eqEasy": "Più facili",
+          "eqAny": "Frazioni qualsiasi"
         },
         "hint": {
           "empty": "Comincia a costruire: non c’è ancora niente.",
@@ -2966,8 +2973,31 @@
           "clockHour": "I minuti sono giusti. Ora controlla la lancetta delle ore.",
           "shape": "Fai una forma chiusa che non si incrocia.",
           "area": "L’area della tua forma è {a}; serve {b}.",
-          "train": "Il tuo treno è lungo {a}; serve {b}."
-        }
+          "train": "Il tuo treno è lungo {a}; serve {b}.",
+          "eqTops": "Hai colorato {a}. Sembra che siano stati sommati sia i numeratori sia i denominatori. Prima rendi le parti della stessa grandezza, poi somma i numeratori.",
+          "eqSize": "Hai colorato {a}. Prima rendi le parti della stessa grandezza: {n} parti in ogni intero vanno bene per tutte e due le frazioni.",
+          "eqParts": "Hai colorato {a}. Con parti così non si ottiene la risposta: prova {n} parti in ogni intero.",
+          "eqMore": "Hai colorato {a}. È troppo: togli qualche parte.",
+          "eqLess": "Hai colorato {a}. È troppo poco: colorane ancora.",
+          "whySame": "Con {n} parti in ogni intero: {x}.",
+          "whyMul": "Moltiplica i numeratori e i denominatori: {x}.",
+          "whyDiv": "{a} ÷ {b} = {n}: è quante volte {b} sta in {a}."
+        },
+        "task": "Che cosa fanno gli alunni?",
+        "taskShade": "Colorare una frazione",
+        "taskEq": "Risolvere operazioni",
+        "ops": "Quali operazioni?",
+        "opsList": {
+          "add": "Addizione",
+          "sub": "Sottrazione",
+          "addsub": "Addizione e sottrazione",
+          "mul": "Moltiplicazione",
+          "div": "Divisione",
+          "all": "Tutte e quattro"
+        },
+        "questions": "Domande che riceveranno",
+        "pick": "Sceglile tu per me",
+        "workOut": "Calcola:"
       }
     }
   },
@@ -9741,7 +9771,18 @@
         "stepKeep": "Tieni {a}",
         "stepChange": "Cambia ÷ in ×",
         "stepFlip": "Capovolgi {b}: {f}",
-        "stepTimes": "Moltiplica: {x}"
+        "stepTimes": "Moltiplica: {x}",
+        "howtoEq": "Le prime due barre sono la domanda. Colora l’ultima barra per mostrare la risposta.",
+        "eqHint": "Cambia le parti con − e +, poi tocca le parti per colorarle. Aggiungi un intero se la risposta è più di uno.",
+        "eqParts": "Parti in ogni intero",
+        "eqWholes": "Interi",
+        "eqShaded": "{n} parti colorate, {d} in ogni intero",
+        "eqWholesNow": "Interi: {n}",
+        "eqLessWhole": "Un intero in meno",
+        "eqMoreWhole": "Un intero in più",
+        "limitWholes": "Più grande non si può. Ogni frazione può valere al massimo 3 interi, e {f} vale già 3 interi.",
+        "limitTop": "Più grande non si può. Il numeratore può essere al massimo 12.",
+        "limitBottom": "Più grande non si può. Il denominatore può essere al massimo 12."
       },
       "numline": {
         "name": "Linea dei numeri",
@@ -10183,7 +10224,7 @@
         "ray": "Angolo",
         "hint": "Trascina la punta della semiretta o usa le frecce.",
         "howto": "Trascina la punta della semiretta, o cambia l’angolo con − e +.",
-        "helpUse": "I pulsanti saltano a 45°, 90°, 135°, 180° o 270°.\nSotto si vedono l’ampiezza e il nome dell’angolo.\nGoniometro e Arco li mostrano o nascondono; Opzioni regola lo scatto.",
+        "helpUse": "Vai a… sceglie 45°, 90°, 135°, 180° o 270°.\nSotto si vedono l’ampiezza e il nome dell’angolo.\nGoniometro e Arco li mostrano o nascondono; Opzioni regola lo scatto.",
         "helpIdeas": "Nascondi il goniometro e chiedi prima una stima."
       },
       "solids": {
@@ -10694,6 +10735,7 @@
         "addRod": "Aggiungi il regolo {n}",
         "rodN": "Regolo {n}",
         "longer": "Regolo più lungo (11–20)",
+        "longRod": "Regolo più lungo",
         "board": "Piano dei regoli",
         "boardKeys": "Le frecce spostano il regolo scelto; R lo gira, D lo copia, Canc lo toglie.",
         "lying": "Regolo {n}, sdraiato, in {x}, {y}",
@@ -10739,7 +10781,7 @@
         "count": "{n, plural, one {# regolo} other {# regoli}}",
         "find": "regoli numerici, regoli, regolo, regoli colorati, number rods, rods",
         "howto": "Tocca o trascina un regolo sul piano. Fai treni lunghi uguali.",
-        "helpUse": "Tocca un regolo, poi Gira, Copia o Elimina; le frecce lo spostano.\nMostra i treni costruisce i due lati dell'uguaglianza; riempi la casella.\nIl regolo 11–20 è accanto al 10; − e + cambiano la sua lunghezza.",
+        "helpUse": "Tocca un regolo, poi Gira, Copia o Elimina; le frecce lo spostano.\nMostra i treni costruisce i due lati dell'uguaglianza; riempi la casella.\nIl regolo più lungo è in fondo alla fila; il suo menu va da 11 a 20.",
         "helpIdeas": "Quali due regoli fanno un treno lungo quanto quello da 10?"
       }
     },
@@ -10806,6 +10848,12 @@
       "helpClose": "Chiudi",
       "helpTry": "Prova:",
       "modeFor": "Scegli cosa mostra {name}",
+      "share": "Condividi",
+      "moreActs": "Altre azioni",
+      "view": "Vista",
+      "steps": "Passi",
+      "stepsOf": "{n} di {total}",
+      "jumpTo": "Vai a…",
       "showAns": "Mostra la risposta",
       "hideAns": "Nascondi la risposta",
       "ansHidden": "La risposta è nascosta.",

@@ -2852,24 +2852,23 @@
       "build": {
         "title": "Construis-le : {name}",
         "makeTitle": "Construis-le : {name}",
-        "intro": "Chaque élève reçoit sa propre copie et construit une cible à la fois, la réponse cachée. Tu vois qui a fini. Personne ne voit le travail des autres.",
+        "intro": "Chaque élève reçoit sa propre copie et répond à une question à la fois, la réponse cachée. Tu vois qui a fini. Personne ne voit le travail des autres.",
         "say": "Consigne",
-        "targets": "Cibles",
-        "typeHint": "Tape-les séparées par des virgules, par exemple {eg}",
-        "orMake": "Ou crée-les",
-        "gen": "Prêtes à l’emploi",
+        "typeHint": "Ou tape les tiennes, séparées par des virgules, par exemple {eg}",
+        "gen": "Type de question",
         "howMany": "Combien",
-        "make": "Créer",
-        "count": "{n, plural, one {# cible} other {# cibles}}",
+        "make": "Choisir",
+        "count": "{n, plural, one {# question prévue} other {# questions prévues}}",
         "bad": "Laissées de côté (cet outil ne peut pas les construire) : {list}",
+        "badEq": "Laissés de côté (la réponse doit être plus grande que 0 et valoir au plus 3 unités, avec un dénominateur jusqu’à 12, et chaque fraction doit rester dans les limites de l’outil) : {list}",
         "over": "Seules les {n} premières sont gardées.",
-        "none": "Tape ou crée au moins une cible.",
+        "none": "Tape ou choisis au moins une question.",
         "send": "Envoyer à la classe",
         "sent": "« Construis-le » envoyé. Chaque élève construit sur sa propre copie.",
         "progress": "Progrès",
         "progressName": "Progrès : {title}",
         "progressTitle": "Construis-le : progrès",
-        "targetsH": "Cibles",
+        "targetsH": "Liste des questions",
         "studentsH": "Élèves",
         "rightOf": "{right} sur {tried} justes",
         "onBoard": "Montrer au tableau",
@@ -2907,7 +2906,8 @@
           "angle": "Tourne la demi-droite pour faire chaque angle.",
           "pattern": "Avec des blocs, fais chaque partie d’un hexagone.",
           "coord": "Place chaque point.",
-          "rods": "Fais un train de réglettes aussi long que chaque nombre."
+          "rods": "Fais un train de réglettes aussi long que chaque nombre.",
+          "fractionsEq": "Calcule chaque question. Colorie la barre de la réponse."
         },
         "gens": {
           "d1": "Nombres à 1 chiffre",
@@ -2950,7 +2950,14 @@
           "wholes": "Hexagones entiers",
           "mixed": "Plus d’un hexagone",
           "q1": "Premier quadrant",
-          "all": "Les quatre quadrants"
+          "all": "Les quatre quadrants",
+          "eqSame": "Même dénominateur",
+          "eqMult": "Dénominateurs comme 3 et 6",
+          "eqUnit": "Fractions unitaires (1/2 × 1/3)",
+          "eqWholeMul": "Nombre entier × fraction",
+          "eqWholeDiv": "Avec un nombre entier",
+          "eqEasy": "Plus faciles",
+          "eqAny": "Fractions au hasard"
         },
         "hint": {
           "empty": "Commence à construire : il n’y a encore rien.",
@@ -2965,8 +2972,31 @@
           "clockHour": "Les minutes sont justes. Vérifie maintenant la petite aiguille.",
           "shape": "Fais une forme fermée qui ne se croise pas.",
           "area": "L’aire de ta forme est {a}, il faut {b}.",
-          "train": "Ton train mesure {a}, il faut {b}."
-        }
+          "train": "Ton train mesure {a}, il faut {b}.",
+          "eqTops": "Tu as colorié {a}. On dirait que les numérateurs et les dénominateurs ont été additionnés. Rends d’abord les parts de la même taille, puis additionne les numérateurs.",
+          "eqSize": "Tu as colorié {a}. Rends d’abord les parts de la même taille : {n} parts dans chaque unité, ça marche pour les deux fractions.",
+          "eqParts": "Tu as colorié {a}. Avec des parts de cette taille, on ne peut pas faire la réponse : essaie {n} parts dans chaque unité.",
+          "eqMore": "Tu as colorié {a}. C’est trop : enlève quelques parts.",
+          "eqLess": "Tu as colorié {a}. C’est trop peu : colorie-en encore.",
+          "whySame": "Avec {n} parts dans chaque unité : {x}.",
+          "whyMul": "Multiplie les numérateurs et les dénominateurs : {x}.",
+          "whyDiv": "{a} ÷ {b} = {n} : c’est le nombre de fois que {b} tient dans {a}."
+        },
+        "task": "Que font les élèves ?",
+        "taskShade": "Colorier une fraction",
+        "taskEq": "Résoudre des calculs",
+        "ops": "Quels calculs ?",
+        "opsList": {
+          "add": "Additionner",
+          "sub": "Soustraire",
+          "addsub": "Additionner et soustraire",
+          "mul": "Multiplier",
+          "div": "Diviser",
+          "all": "Les quatre"
+        },
+        "questions": "Questions que les élèves recevront",
+        "pick": "Choisis-en pour moi",
+        "workOut": "Calcule :"
       }
     }
   },
@@ -9740,7 +9770,18 @@
         "stepKeep": "Garder {a}",
         "stepChange": "Changer ÷ en ×",
         "stepFlip": "Retourner {b} en {f}",
-        "stepTimes": "Multiplier : {x}"
+        "stepTimes": "Multiplier : {x}",
+        "howtoEq": "Les deux premières barres sont la question. Colorie la dernière barre pour montrer la réponse.",
+        "eqHint": "Change les parts avec − et +, puis touche des parts pour les colorier. Ajoute une unité si la réponse dépasse un.",
+        "eqParts": "Parts dans chaque unité",
+        "eqWholes": "Unités",
+        "eqShaded": "{n} parts coloriées, {d} dans chaque unité",
+        "eqWholesNow": "Unités : {n}",
+        "eqLessWhole": "Une unité de moins",
+        "eqMoreWhole": "Une unité de plus",
+        "limitWholes": "On ne peut pas aller plus loin. Chaque fraction vaut au plus 3 unités, et {f} vaut déjà 3 unités.",
+        "limitTop": "On ne peut pas aller plus loin. Le numérateur vaut au plus 12.",
+        "limitBottom": "On ne peut pas aller plus loin. Le dénominateur vaut au plus 12."
       },
       "numline": {
         "name": "Droite graduée",
@@ -10182,7 +10223,7 @@
         "ray": "Angle",
         "hint": "Fais glisser le bout de la demi-droite ou utilise les flèches.",
         "howto": "Glisse le bout de la demi-droite, ou change l’angle avec − et +.",
-        "helpUse": "Les boutons sautent à 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle s’affichent dessous.\nRapporteur et Arc s’affichent ou se cachent ; Options règle l’arrondi.",
+        "helpUse": "Aller à… choisit 45°, 90°, 135°, 180° ou 270°.\nLa mesure et le nom de l’angle s’affichent dessous.\nRapporteur et Arc s’affichent ou se cachent ; Options règle l’arrondi.",
         "helpIdeas": "Cache le rapporteur et fais d’abord estimer."
       },
       "solids": {
@@ -10693,6 +10734,7 @@
         "addRod": "Ajouter la réglette {n}",
         "rodN": "Réglette {n}",
         "longer": "Réglette plus longue (11–20)",
+        "longRod": "Réglette plus longue",
         "board": "Plateau des réglettes",
         "boardKeys": "Les flèches déplacent la réglette choisie ; R la tourne, D la copie, Suppr l'enlève.",
         "lying": "Réglette {n}, couchée, en {x}, {y}",
@@ -10738,7 +10780,7 @@
         "count": "{n, plural, one {# réglette} other {# réglettes}}",
         "find": "réglettes, réglette, réglettes de couleur, barres de nombres, number rods, rods",
         "howto": "Touche ou fais glisser une réglette. Fais des trains de même longueur.",
-        "helpUse": "Touche une réglette, puis Tourner, Copier ou Supprimer ; flèches pour bouger.\nMontrer les trains pose les deux côtés de l'égalité ; remplis la case.\nLa réglette 11–20 est à côté du 10 ; − et + changent sa longueur.",
+        "helpUse": "Touche une réglette, puis Tourner, Copier ou Supprimer ; flèches pour bouger.\nMontrer les trains pose les deux côtés de l'égalité ; remplis la case.\nLa réglette plus longue est au bout de la rangée ; son menu va de 11 à 20.",
         "helpIdeas": "Quelles deux réglettes font un train aussi long que celle de 10 ?"
       }
     },
@@ -10805,6 +10847,12 @@
       "helpClose": "Fermer",
       "helpTry": "À essayer :",
       "modeFor": "Choisir ce que montre {name}",
+      "share": "Partager",
+      "moreActs": "Plus d’actions",
+      "view": "Affichage",
+      "steps": "Étapes",
+      "stepsOf": "{n} sur {total}",
+      "jumpTo": "Aller à…",
       "showAns": "Montrer la réponse",
       "hideAns": "Cacher la réponse",
       "ansHidden": "La réponse est cachée.",

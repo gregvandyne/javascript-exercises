@@ -61,7 +61,11 @@ test('one shared field: every stepper with a number between − and + types thro
     for (const c of calls) assert.match(c.slice(0, 900), /\{ (\.\.\.amount, )?value: \(\) =>/, `${f}: ${c.slice(0, 60)}`);
   }
   assert.match(bars, /T\.num\(\{ label, key, get, set/);
-  assert.match(rods, /T\.num\(\{ label: W\.longer/);
+  // Number rods: the longer rod's length is a dropdown of 11 to 20 now ("Longer rod [20 ▾]", docs/decisions.md "one calm
+  // row of buttons"), not a stepper: nothing of it is typed.
+  assert.match(rods, /const longSel = selectOf\(Array\.from\(\{ length: R\.ROD_LONG\[1\] - R\.ROD_LONG\[0\] \+ 1 \}/);
+  assert.match(rods, /longSel\.setAttribute\('aria-label', W\.longer\)/);
+  assert.doesNotMatch(rods, /T\.num\(|T\.stepper\(/);
   assert.match(widgets, /numField\(\{ label: `\$\{nm\}: \$\{pointsWord\}`/);
   // The field is text with a numeric keyboard, a spinbutton, never a browser's own spinners.
   const num = src('public/js/dash-num.js');

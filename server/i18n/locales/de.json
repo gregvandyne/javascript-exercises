@@ -2853,24 +2853,23 @@
       "build": {
         "title": "Bau es: {name}",
         "makeTitle": "Bau es: {name}",
-        "intro": "Jedes Kind bekommt eine eigene Kopie und baut ein Ziel nach dem anderen, die Antwort ist versteckt. Du siehst, wer fertig ist. Niemand sieht die Arbeit der anderen.",
+        "intro": "Jedes Kind bekommt eine eigene Kopie und löst eine Aufgabe nach der anderen, die Antwort ist versteckt. Du siehst, wer fertig ist. Niemand sieht die Arbeit der anderen.",
         "say": "Aufgabe",
-        "targets": "Ziele",
-        "typeHint": "Mit Kommas dazwischen tippen, zum Beispiel {eg}",
-        "orMake": "Oder erstellen lassen",
-        "gen": "Fertige Auswahl",
+        "typeHint": "Oder tippe eigene, mit Kommas dazwischen, zum Beispiel {eg}",
+        "gen": "Art der Aufgabe",
         "howMany": "Wie viele",
-        "make": "Erstellen",
-        "count": "{n, plural, one {# Ziel} other {# Ziele}}",
+        "make": "Auswählen",
+        "count": "{n, plural, one {# Aufgabe} other {# Aufgaben}}",
         "bad": "Weggelassen (geht mit diesem Werkzeug nicht): {list}",
+        "badEq": "Weggelassen (die Antwort muss größer als 0 und höchstens 3 Ganze sein, mit einem Nenner bis 12, und jeder Bruch muss in die Grenzen des Werkzeugs passen): {list}",
         "over": "Nur die ersten {n} bleiben.",
-        "none": "Tippe oder erstelle mindestens ein Ziel.",
+        "none": "Tippe oder wähle mindestens eine Aufgabe.",
         "send": "An die Klasse senden",
         "sent": "„Bau es“ gesendet. Jedes Kind baut auf seiner eigenen Kopie.",
         "progress": "Fortschritt",
         "progressName": "Fortschritt: {title}",
         "progressTitle": "Bau es: Fortschritt",
-        "targetsH": "Ziele",
+        "targetsH": "Aufgaben",
         "studentsH": "Schülerinnen und Schüler",
         "rightOf": "{right} von {tried} richtig",
         "onBoard": "An der Tafel zeigen",
@@ -2908,7 +2907,8 @@
           "angle": "Drehe den Strahl auf jeden Winkel.",
           "pattern": "Lege mit Formen jeden Teil eines Sechsecks.",
           "coord": "Trage jeden Punkt ein.",
-          "rods": "Lege einen Zug aus Stäben, so lang wie jede Zahl."
+          "rods": "Lege einen Zug aus Stäben, so lang wie jede Zahl.",
+          "fractionsEq": "Rechne jede Aufgabe aus. Färbe den Antwortstreifen."
         },
         "gens": {
           "d1": "Einstellige Zahlen",
@@ -2951,7 +2951,14 @@
           "wholes": "Ganze Sechsecke",
           "mixed": "Mehr als ein Sechseck",
           "q1": "Erster Quadrant",
-          "all": "Alle vier Quadranten"
+          "all": "Alle vier Quadranten",
+          "eqSame": "Gleicher Nenner",
+          "eqMult": "Nenner wie 3 und 6",
+          "eqUnit": "Stammbrüche (1/2 × 1/3)",
+          "eqWholeMul": "Ganze Zahl × Bruch",
+          "eqWholeDiv": "Mit einer ganzen Zahl",
+          "eqEasy": "Leichtere",
+          "eqAny": "Beliebige Brüche"
         },
         "hint": {
           "empty": "Fang an zu bauen: Noch ist nichts da.",
@@ -2966,8 +2973,31 @@
           "clockHour": "Die Minuten stimmen. Prüfe jetzt den Stundenzeiger.",
           "shape": "Mache eine geschlossene Form, die sich nicht kreuzt.",
           "area": "Deine Form hat die Fläche {a}, du brauchst {b}.",
-          "train": "Dein Zug ist {a} lang, du brauchst {b}."
-        }
+          "train": "Dein Zug ist {a} lang, du brauchst {b}.",
+          "eqTops": "Du hast {a} gefärbt. Es sieht so aus, als wären Zähler und Nenner beide addiert worden. Mach die Teile zuerst gleich groß, dann addiere die Zähler.",
+          "eqSize": "Du hast {a} gefärbt. Mach die Teile zuerst gleich groß: {n} Teile in jedem Ganzen passen für beide Brüche.",
+          "eqParts": "Du hast {a} gefärbt. Mit Teilen dieser Größe geht die Antwort nicht: Versuch {n} Teile in jedem Ganzen.",
+          "eqMore": "Du hast {a} gefärbt. Das ist zu viel: Nimm ein paar Teile weg.",
+          "eqLess": "Du hast {a} gefärbt. Das ist zu wenig: Färbe noch mehr.",
+          "whySame": "Mit {n} Teilen in jedem Ganzen: {x}.",
+          "whyMul": "Multipliziere die Zähler und die Nenner: {x}.",
+          "whyDiv": "{a} ÷ {b} = {n}: So oft passt {b} in {a}."
+        },
+        "task": "Was machen die Kinder?",
+        "taskShade": "Einen Bruch färben",
+        "taskEq": "Gleichungen lösen",
+        "ops": "Welche Gleichungen?",
+        "opsList": {
+          "add": "Addieren",
+          "sub": "Subtrahieren",
+          "addsub": "Addieren und subtrahieren",
+          "mul": "Multiplizieren",
+          "div": "Dividieren",
+          "all": "Alle vier"
+        },
+        "questions": "Aufgaben für die Kinder",
+        "pick": "Wähle welche für mich aus",
+        "workOut": "Rechne aus:"
       }
     }
   },
@@ -9741,7 +9771,18 @@
         "stepKeep": "{a} bleibt",
         "stepChange": "Aus ÷ wird ×",
         "stepFlip": "{b} umdrehen zu {f}",
-        "stepTimes": "Multiplizieren: {x}"
+        "stepTimes": "Multiplizieren: {x}",
+        "howtoEq": "Die ersten zwei Streifen sind die Aufgabe. Färbe den letzten Streifen, um die Antwort zu zeigen.",
+        "eqHint": "Ändere die Teile mit − und +, dann tippe auf Teile, um sie zu färben. Nimm ein Ganzes dazu, wenn die Antwort größer als eins ist.",
+        "eqParts": "Teile in jedem Ganzen",
+        "eqWholes": "Ganze",
+        "eqShaded": "{n} Teile gefärbt, {d} in jedem Ganzen",
+        "eqWholesNow": "Ganze: {n}",
+        "eqLessWhole": "Ein Ganzes weniger",
+        "eqMoreWhole": "Ein Ganzes mehr",
+        "limitWholes": "Größer geht es nicht. Jeder Bruch darf höchstens 3 Ganze sein, und {f} sind schon 3 Ganze.",
+        "limitTop": "Größer geht es nicht. Der Zähler darf höchstens 12 sein.",
+        "limitBottom": "Größer geht es nicht. Der Nenner darf höchstens 12 sein."
       },
       "numline": {
         "name": "Zahlenstrahl",
@@ -10183,7 +10224,7 @@
         "ray": "Winkel",
         "hint": "Ziehe das Ende des Strahls oder nutze die Pfeiltasten.",
         "howto": "Ziehe am Ende des Schenkels, oder ändere den Winkel mit − und +.",
-        "helpUse": "Die Knöpfe springen auf 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen blenden sie ein oder aus; Optionen: Einrasten.",
+        "helpUse": "Springe zu … wählt 45°, 90°, 135°, 180° oder 270°.\nGröße und Name des Winkels stehen darunter.\nWinkelmesser und Bogen blenden sie ein oder aus; Optionen: Einrasten.",
         "helpIdeas": "Verbirg den Winkelmesser und lass zuerst schätzen."
       },
       "solids": {
@@ -10694,6 +10735,7 @@
         "addRod": "Stab {n} hinzufügen",
         "rodN": "Stab {n}",
         "longer": "Längerer Stab (11–20)",
+        "longRod": "Längerer Stab",
         "board": "Stabfläche",
         "boardKeys": "Pfeiltasten verschieben den gewählten Stab; R dreht, D kopiert, Entf löscht ihn.",
         "lying": "Stab {n}, liegend, bei {x}, {y}",
@@ -10739,7 +10781,7 @@
         "count": "{n, plural, one {# Stab} other {# Stäbe}}",
         "find": "Zahlenstäbe, Stäbe, Stab, Rechenstäbe, number rods, rods",
         "howto": "Tippe oder ziehe einen Stab auf die Fläche. Baue gleich lange Züge.",
-        "helpUse": "Tippe einen Stab an: Drehen, Kopieren oder Löschen; Pfeile verschieben.\nZüge zeigen legt beide Seiten der Gleichung; fülle das Kästchen.\nDer Stab 11–20 steht neben der 10; − und + ändern seine Länge.",
+        "helpUse": "Tippe einen Stab an: Drehen, Kopieren oder Löschen; Pfeile verschieben.\nZüge zeigen legt beide Seiten der Gleichung; fülle das Kästchen.\nDer längere Stab steht am Ende der Reihe; sein Menü wählt 11 bis 20.",
         "helpIdeas": "Welche zwei Stäbe sind zusammen so lang wie der 10er?"
       }
     },
@@ -10806,6 +10848,12 @@
       "helpClose": "Schließen",
       "helpTry": "Zum Ausprobieren:",
       "modeFor": "Wählen, was {name} zeigt",
+      "share": "Teilen",
+      "moreActs": "Weitere Aktionen",
+      "view": "Ansicht",
+      "steps": "Schritte",
+      "stepsOf": "{n} von {total}",
+      "jumpTo": "Springe zu …",
       "showAns": "Antwort zeigen",
       "hideAns": "Antwort verstecken",
       "ansHidden": "Die Antwort ist versteckt.",

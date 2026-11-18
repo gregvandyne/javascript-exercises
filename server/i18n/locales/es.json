@@ -2852,24 +2852,23 @@
       "build": {
         "title": "Constrúyelo: {name}",
         "makeTitle": "Constrúyelo: {name}",
-        "intro": "Cada estudiante recibe su propia copia y construye un objetivo cada vez, con la respuesta oculta. Ves quién ha terminado. Nadie ve el trabajo de los demás.",
+        "intro": "Cada estudiante recibe su propia copia y resuelve una pregunta cada vez, con la respuesta oculta. Ves quién ha terminado. Nadie ve el trabajo de los demás.",
         "say": "Instrucción",
-        "targets": "Objetivos",
-        "typeHint": "Escríbelos separados por comas, como {eg}",
-        "orMake": "O créalos",
-        "gen": "Listos para usar",
+        "typeHint": "O escribe las tuyas, separadas por comas, como {eg}",
+        "gen": "Tipo de pregunta",
         "howMany": "Cuántos",
-        "make": "Crear",
-        "count": "{n, plural, one {# objetivo} other {# objetivos}}",
+        "make": "Elegir",
+        "count": "{n, plural, one {# pregunta} other {# preguntas}}",
         "bad": "Fuera (esta herramienta no puede construirlos): {list}",
+        "badEq": "Se quedan fuera (la respuesta debe ser mayor que 0 y como mucho 3 enteros, con un denominador hasta 12, y cada fracción dentro de los límites de la herramienta): {list}",
         "over": "Solo se quedan los {n} primeros.",
-        "none": "Escribe o crea al menos un objetivo.",
+        "none": "Escribe o elige al menos una pregunta.",
         "send": "Enviar a la clase",
         "sent": "«Constrúyelo» enviado. Cada estudiante construye en su propia copia.",
         "progress": "Progreso",
         "progressName": "Progreso: {title}",
         "progressTitle": "Constrúyelo: progreso",
-        "targetsH": "Objetivos",
+        "targetsH": "Preguntas",
         "studentsH": "Estudiantes",
         "rightOf": "{right} de {tried} bien",
         "onBoard": "Mostrar en la pizarra",
@@ -2907,7 +2906,8 @@
           "angle": "Gira el rayo para hacer cada ángulo.",
           "pattern": "Usa bloques para hacer cada parte de un hexágono.",
           "coord": "Marca cada punto.",
-          "rods": "Haz un tren de regletas tan largo como cada número."
+          "rods": "Haz un tren de regletas tan largo como cada número.",
+          "fractionsEq": "Resuelve cada una. Colorea la barra de la respuesta."
         },
         "gens": {
           "d1": "Números de 1 cifra",
@@ -2950,7 +2950,14 @@
           "wholes": "Hexágonos enteros",
           "mixed": "Más de un hexágono",
           "q1": "Primer cuadrante",
-          "all": "Los cuatro cuadrantes"
+          "all": "Los cuatro cuadrantes",
+          "eqSame": "Mismo denominador",
+          "eqMult": "Denominadores como 3 y 6",
+          "eqUnit": "Fracciones unitarias (1/2 × 1/3)",
+          "eqWholeMul": "Número entero × fracción",
+          "eqWholeDiv": "Con un número entero",
+          "eqEasy": "Más fáciles",
+          "eqAny": "Fracciones cualesquiera"
         },
         "hint": {
           "empty": "Empieza a construir: todavía no hay nada.",
@@ -2965,8 +2972,31 @@
           "clockHour": "Los minutos están bien. Ahora revisa la aguja de las horas.",
           "shape": "Haz una figura cerrada que no se cruce.",
           "area": "El área de tu figura es {a}; necesitas {b}.",
-          "train": "Tu tren mide {a}; necesitas {b}."
-        }
+          "train": "Tu tren mide {a}; necesitas {b}.",
+          "eqTops": "Coloreaste {a}. Parece que se sumaron los numeradores y también los denominadores. Primero haz las partes del mismo tamaño y luego suma los numeradores.",
+          "eqSize": "Coloreaste {a}. Primero haz las partes del mismo tamaño: {n} partes en cada entero sirven para las dos fracciones.",
+          "eqParts": "Coloreaste {a}. Con partes de este tamaño no sale la respuesta: prueba con {n} partes en cada entero.",
+          "eqMore": "Coloreaste {a}. Es demasiado: quita algunas partes.",
+          "eqLess": "Coloreaste {a}. Es muy poco: colorea más.",
+          "whySame": "Con {n} partes en cada entero: {x}.",
+          "whyMul": "Multiplica los numeradores y los denominadores: {x}.",
+          "whyDiv": "{a} ÷ {b} = {n}: es cuántas veces cabe {b} en {a}."
+        },
+        "task": "¿Qué hacen los estudiantes?",
+        "taskShade": "Colorear una fracción",
+        "taskEq": "Resolver operaciones",
+        "ops": "¿Qué operaciones?",
+        "opsList": {
+          "add": "Sumar",
+          "sub": "Restar",
+          "addsub": "Sumar y restar",
+          "mul": "Multiplicar",
+          "div": "Dividir",
+          "all": "Las cuatro"
+        },
+        "questions": "Preguntas que recibirán",
+        "pick": "Elige algunas por mí",
+        "workOut": "Resuelve:"
       }
     }
   },
@@ -9740,7 +9770,18 @@
         "stepKeep": "Dejar {a}",
         "stepChange": "Cambiar ÷ por ×",
         "stepFlip": "Dar la vuelta a {b}: {f}",
-        "stepTimes": "Multiplicar: {x}"
+        "stepTimes": "Multiplicar: {x}",
+        "howtoEq": "Las dos primeras barras son la pregunta. Colorea la última barra para mostrar la respuesta.",
+        "eqHint": "Cambia las partes con − y +, luego toca partes para colorearlas. Añade un entero si la respuesta es mayor que uno.",
+        "eqParts": "Partes en cada entero",
+        "eqWholes": "Enteros",
+        "eqShaded": "{n} partes coloreadas, {d} en cada entero",
+        "eqWholesNow": "Enteros: {n}",
+        "eqLessWhole": "Un entero menos",
+        "eqMoreWhole": "Un entero más",
+        "limitWholes": "No puede ser más grande. Cada fracción puede valer como mucho 3 enteros, y {f} ya son 3 enteros.",
+        "limitTop": "No puede ser más grande. El numerador puede ser como mucho 12.",
+        "limitBottom": "No puede ser más grande. El denominador puede ser como mucho 12."
       },
       "numline": {
         "name": "Recta numérica",
@@ -10182,7 +10223,7 @@
         "ray": "Ángulo",
         "hint": "Arrastra el extremo de la semirrecta o usa las flechas.",
         "howto": "Arrastra el extremo del lado, o cambia el ángulo con − y +.",
-        "helpUse": "Los botones saltan a 45°, 90°, 135°, 180° o 270°.\nDebajo se ven la medida y el nombre del ángulo.\nTransportador y Arco se muestran u ocultan; Opciones ajusta el salto.",
+        "helpUse": "Ir a… elige 45°, 90°, 135°, 180° o 270°.\nDebajo se ven la medida y el nombre del ángulo.\nTransportador y Arco se muestran u ocultan; Opciones ajusta el salto.",
         "helpIdeas": "Oculta el transportador y pide primero una estimación."
       },
       "solids": {
@@ -10693,6 +10734,7 @@
         "addRod": "Añadir la regleta {n}",
         "rodN": "Regleta {n}",
         "longer": "Regleta más larga (11–20)",
+        "longRod": "Regleta más larga",
         "board": "Tablero de regletas",
         "boardKeys": "Las flechas mueven la regleta elegida; R la gira, D la copia, Supr la quita.",
         "lying": "Regleta {n}, tumbada, en {x}, {y}",
@@ -10738,7 +10780,7 @@
         "count": "{n, plural, one {# regleta} other {# regletas}}",
         "find": "regletas numéricas, regletas, regleta, barras de números, number rods, rods",
         "howto": "Toca o arrastra una regleta al tablero. Forma trenes iguales de largos.",
-        "helpUse": "Toca una regleta y luego Girar, Copiar o Borrar; las flechas la mueven.\nMostrar trenes arma los dos lados de la igualdad; llena la casilla.\nLa regleta 11–20 está junto al 10; − y + cambian su largo.",
+        "helpUse": "Toca una regleta y luego Girar, Copiar o Borrar; las flechas la mueven.\nMostrar trenes arma los dos lados de la igualdad; llena la casilla.\nLa regleta más larga está al final de la fila; su menú va de 11 a 20.",
         "helpIdeas": "¿Qué dos regletas forman un tren tan largo como la de 10?"
       }
     },
@@ -10805,6 +10847,12 @@
       "helpClose": "Cerrar",
       "helpTry": "Prueba:",
       "modeFor": "Elige qué muestra {name}",
+      "share": "Compartir",
+      "moreActs": "Más acciones",
+      "view": "Ver",
+      "steps": "Pasos",
+      "stepsOf": "{n} de {total}",
+      "jumpTo": "Ir a…",
       "showAns": "Mostrar la respuesta",
       "hideAns": "Ocultar la respuesta",
       "ansHidden": "La respuesta está oculta.",

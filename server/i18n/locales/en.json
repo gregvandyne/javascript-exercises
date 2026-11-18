@@ -2871,24 +2871,23 @@
       "build": {
         "title": "Build it: {name}",
         "makeTitle": "Build it: {name}",
-        "intro": "Each student gets their own copy and builds one target at a time, with the answer hidden. You see who is done. Nobody sees anyone else's work.",
+        "intro": "Each student gets their own copy and works on one question at a time, with the answer hidden. You see who is done. Nobody sees anyone else's work.",
         "say": "Instruction",
-        "targets": "Targets",
-        "typeHint": "Type them with commas between, like {eg}",
-        "orMake": "Or make some",
-        "gen": "Ready-made",
+        "typeHint": "Or type your own, with commas between, like {eg}",
+        "gen": "Kind of question",
         "howMany": "How many",
-        "make": "Make",
-        "count": "{n, plural, one {# target} other {# targets}}",
+        "make": "Pick",
+        "count": "{n, plural, one {# question} other {# questions}}",
         "bad": "Left out (this tool can't build them): {list}",
+        "badEq": "Left out (the answer must be more than 0 and at most 3 wholes, with a bottom number up to 12, and each fraction inside the tool's limits): {list}",
         "over": "Only the first {n} are kept.",
-        "none": "Type or make at least one target.",
+        "none": "Type or pick at least one question.",
         "send": "Send to students",
         "sent": "Build it sent. Each student builds on their own copy.",
         "progress": "Progress",
         "progressName": "Progress: {title}",
         "progressTitle": "Build it: progress",
-        "targetsH": "Targets",
+        "targetsH": "Questions",
         "studentsH": "Students",
         "rightOf": "{right} of {tried} right",
         "onBoard": "Show on the board",
@@ -2926,7 +2925,8 @@
           "angle": "Turn the ray to make each angle.",
           "pattern": "Use blocks to make each part of a hexagon.",
           "coord": "Plot each point.",
-          "rods": "Make a train of rods as long as each number."
+          "rods": "Make a train of rods as long as each number.",
+          "fractionsEq": "Work out each one. Shade the answer bar."
         },
         "gens": {
           "d1": "1-digit numbers",
@@ -2969,7 +2969,14 @@
           "wholes": "Whole hexagons",
           "mixed": "More than a hexagon",
           "q1": "First quadrant",
-          "all": "All four quadrants"
+          "all": "All four quadrants",
+          "eqSame": "Same bottom number",
+          "eqMult": "Bottoms like 3 and 6",
+          "eqUnit": "Unit fractions (1/2 × 1/3)",
+          "eqWholeMul": "Whole number × fraction",
+          "eqWholeDiv": "With a whole number",
+          "eqEasy": "Easier ones",
+          "eqAny": "Any fractions"
         },
         "hint": {
           "empty": "Start building: nothing is there yet.",
@@ -2984,8 +2991,31 @@
           "clockHour": "The minutes are right. Now check the hour hand.",
           "shape": "Make a closed shape that doesn't cross itself.",
           "area": "Your shape's area is {a}; you need {b}.",
-          "train": "Your train is {a} long; you need {b}."
-        }
+          "train": "Your train is {a} long; you need {b}.",
+          "eqTops": "You shaded {a}. It looks like the tops and the bottoms were both added. Make the pieces the same size first, then add the tops.",
+          "eqSize": "You shaded {a}. Try making the pieces the same size first: {n} parts in each whole works for both fractions.",
+          "eqParts": "You shaded {a}. Pieces this size can't make the answer: try {n} parts in each whole.",
+          "eqMore": "You shaded {a}. That's too much: take some parts away.",
+          "eqLess": "You shaded {a}. That's too little: shade some more.",
+          "whySame": "With {n} parts in each whole: {x}.",
+          "whyMul": "Multiply the tops and the bottoms: {x}.",
+          "whyDiv": "{a} ÷ {b} = {n}: that's how many {b} fit into {a}."
+        },
+        "task": "What do students do?",
+        "taskShade": "Shade a fraction",
+        "taskEq": "Solve equations",
+        "ops": "Which equations?",
+        "opsList": {
+          "add": "Add",
+          "sub": "Subtract",
+          "addsub": "Add and subtract",
+          "mul": "Multiply",
+          "div": "Divide",
+          "all": "All four"
+        },
+        "questions": "Questions students will get",
+        "pick": "Pick some for me",
+        "workOut": "Work out:"
       }
     }
   },
@@ -10168,7 +10198,18 @@
         "stepKeep": "Keep {a}",
         "stepChange": "Change ÷ to ×",
         "stepFlip": "Flip {b} to {f}",
-        "stepTimes": "Multiply: {x}"
+        "stepTimes": "Multiply: {x}",
+        "howtoEq": "The first two bars are the question. Shade the last bar to show the answer.",
+        "eqHint": "Change the parts with − and +, then tap parts to shade them. Add a whole if the answer is more than one.",
+        "eqParts": "Parts in each whole",
+        "eqWholes": "Wholes",
+        "eqShaded": "{n} parts shaded, {d} in each whole",
+        "eqWholesNow": "Wholes: {n}",
+        "eqLessWhole": "One whole fewer",
+        "eqMoreWhole": "One more whole",
+        "limitWholes": "That's as big as it goes. Each fraction can be at most 3 wholes, and {f} is already 3 wholes.",
+        "limitTop": "That's as big as it goes. The top number can be at most 12.",
+        "limitBottom": "That's as big as it goes. The bottom number can be at most 12."
       },
       "numline": {
         "name": "Number line",
@@ -10610,7 +10651,7 @@
         "ray": "Angle",
         "hint": "Drag the end of the ray, or use the arrow keys.",
         "howto": "Drag the end of the ray, or use − and + to change the angle.",
-        "helpUse": "The buttons jump to 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc switch each on or off; Options sets the snap.",
+        "helpUse": "Jump to… picks 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc switch each on or off; Options sets the snap.",
         "helpIdeas": "Hide the protractor and ask for an estimate first."
       },
       "solids": {
@@ -11121,6 +11162,7 @@
         "addRod": "Add rod {n}",
         "rodN": "Rod {n}",
         "longer": "Longer rod (11–20)",
+        "longRod": "Longer rod",
         "board": "Rod board",
         "boardKeys": "Arrow keys move the chosen rod; R turns it, D copies it, Delete removes it.",
         "lying": "Rod {n}, lying, at {x}, {y}",
@@ -11166,7 +11208,7 @@
         "count": "{n, plural, one {# rod} other {# rods}}",
         "find": "number rods, rods, rod, trains",
         "howto": "Tap or drag a rod onto the board. Build trains of the same length.",
-        "helpUse": "Tap a rod, then Turn, Copy or Delete it; arrows move it.\nShow trains builds both sides of the equation; fill in the box.\nThe 11–20 rod is beside 10; − and + change its length.",
+        "helpUse": "Tap a rod, then Turn, Copy or Delete it; arrows move it.\nShow trains builds both sides of the equation; fill in the box.\nThe longer rod's menu, at the row's end, picks 11 to 20.",
         "helpIdeas": "Which two rods make a train as long as the 10-rod?"
       }
     },
@@ -11233,6 +11275,12 @@
       "helpClose": "Close",
       "helpTry": "Try:",
       "modeFor": "Choose what {name} shows",
+      "share": "Share",
+      "moreActs": "More actions",
+      "view": "View",
+      "steps": "Steps",
+      "stepsOf": "{n} of {total}",
+      "jumpTo": "Jump to…",
       "showAns": "Show the answer",
       "hideAns": "Hide the answer",
       "ansHidden": "The answer is hidden.",

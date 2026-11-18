@@ -7595,6 +7595,79 @@ routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/d
   number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
   screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
 
+## Classroom dashboards: one calm row of buttons (17 Nov 2026)
+The maths tools' bottoms had grown to three to six rows of pills (Options, Practice it, Make a question, Hide the answer,
+Build it, Send to students under the tool's own buttons). The owner approved a calmer layout (mockups of ten frames,
+base-ten blocks, the teaching clock, number rods, fractions and coins, and the mode-dropdown audit).
+- **One row, never more** (`shell().finish()` in `public/js/dash-tools.js`): up to three of the tool's most-used
+  buttons as icons (named by their tooltip and `aria-label`), then **⋯** for the tool's other actions (`T.more(b)`, e.g.
+  ten frames' Take one, place value's ÷ 10), then **📤 Share ▾** at the end: Send to students, 🧱 Build it (where the tool
+  has it), ❓ Make a question, 🎮 Practice it, and nothing else. The teaching clock keeps its four steps (`row: 4`, the
+  one exception). A tool's selects and steppers that were in the row stay at its start when everything fits on one row (a
+  wide widget), else they go to the tool's own row above it (`T.ctl`; the balance's five steps are always there). When a widget is too narrow, Share shows only its icon, then the row's last buttons move behind ⋯
+  (and back when there is room). A student's own screen or copy has no Share: Practice it is its own 🎮 button.
+- **Header icons** next to ⓘ: 👀/🙈 Show/Hide the answer (the shared one on the teacher's own screen; fractions' and bar
+  models' own hide wherever they showed it before; its words say what it does, no `aria-pressed`) and ⚙️ Options.
+- **The menus** (Share, ⋯, Number rods' 👁️ View) are popovers (`popover="auto"`, the top layer, so nothing clips them),
+  placed by their button inside the widget when they fit there, else inside the screen. Outside tap and Escape close
+  them (Escape gives the focus back to the button); ↑ ↓ Home End move inside; Tab out closes. A used item closes Share and
+  ⋯ (before its action, so a sheet it opens returns the focus to Share); View stays open for its switches and zoom.
+  Share is hidden on the projector; a student's Build it copy still has no Share or Options.
+- **Number rods:** Turn, Copy and Delete are a small bar by the chosen rod, only while one is chosen; the way new rods
+  lie, Grid, Unit lines, Zoom out/in and the Equation are in 👁️ View (a tick shows a switch that is on); the longer rod
+  is "Longer rod [20 ▾]" at the end of the tray (the words are the rod: tap or drag it in). Undo, Redo and Reset stay.
+- **Mode dropdowns** (`public/js/dash-modes.js`): a tool with modes shows a native select instead of pills (place value
+  keeps its two pills), with the mode's main choice beside it on one row (`data-pair`): Translate/Reflect/Rotate,
+  Coin/Dice/Spinner, the kind of graph, Both sides/Left/Right, the bar model's kind. Fractions has one dropdown (Compare,
+  Add, Subtract, Multiply, Divide, then Fraction, decimal, percent: `fractions.merge`) beside Bars | Circles, and its
+  empty "= ?" bar is drawn only once the answer shows. The angle maker's five presets are one "Jump to…" dropdown.
+- **Steps:** fractions' working is one "💡 Steps 2 of 4" panel (closed at first, this page remembers it open): a
+  numbered list, Next step inside it, and the readout's line in bold at its end (`stepsPanel` in `parts`).
+- Nothing was removed, and the state format is unchanged (saved layouts and pushed tools load as before). New words:
+  `dash.tools.share/moreActs/view/steps/stepsOf/jumpTo` and `dash.w.rods.longRod`, in all 12 languages.
+- **Check:** `npm run dash:fit` fails when a tool's bottom is more than one row or too wide, has more than three of the
+  tool's own buttons (four on the clock), has Options, the answer or a Share item in it, or Share/⋯ not at its end; and
+  it opens every Share, ⋯ and View menu: whole inside the screen, never scrolling or cut, 44px items, the focus inside,
+  Escape closing it with the focus back on its button, Share hidden on the projector. Fractions' Steps panels are opened
+  before the check.
+
+## Classroom dashboards: fractions, equations (18 Nov 2026)
+Owner approved from mockups: Fractions' Build it can ask students to **solve equations** and shade the answer, the Build
+it sheet is tidier for every tool ("use drop downs to keep things clean"), and the fraction operations say why + stops.
+Code: `public/js/dash-build.js` (`eqParse`, `eqAnswer`, `answerBars`, `EQ_OPS`, the `eq*` generators, the fractions
+entry's check/solve), `eqView` and `limitWords` in `public/js/dash-tools.js`, `out(n)` in `public/js/dash-num.js`,
+`openBuildIt`/`openBuild` in `public/js/dash.js`; strings `js.dash.build.*` (new and reworded) and
+`dash.w.fractions.howtoEq|eq*|limit*` in all 12 full locales. Tests: `tests/unit/dash-build.test.js`.
+- **The sheet, for every tool:** the intro; (fractions only) **What do students do?** [Shade a fraction | Solve
+  equations] and **Which equations?** [Add, Subtract, Add and subtract, Multiply, Divide, All four], both dropdowns;
+  the instruction; **Questions students will get**: "🎲 Pick some for me" [kind ▾] [how many ▾] [Pick] fills the box
+  below it, "Or type your own, with commas between, like …"; then one line ("5 questions") and what was left out. The
+  list of chips under the box is gone; "Targets" reads "Questions" (the progress sheet too). Changing what students do
+  or which equations swaps the picker's kinds, the example and the default instruction ("Work out each one. Shade the
+  answer bar."; an instruction the teacher wrote stays).
+- **An equation** is a target `{ op, a, b }` (the fractions' own `n/d` targets are unchanged, so every set sent before
+  loads and checks as it did; no migration). Typed with + - − x × * · ÷ : or a spaced / ("1/2 / 1/4"), "= ?" allowed.
+  Kept only when each fraction is inside the tool's `OP_LIMITS` (bottom 1-12, top 0-12, at most 3 wholes), it never
+  divides by zero, and the answer is more than 0, at most 3 wholes and has a bottom number of at most 12 in its simplest
+  form, so a bar of 1-12 parts can show it. **Decided:** an answer of 0 is left out (nothing to shade), and any
+  operation typed is kept whatever "Which equations?" says (it chooses the picker's kinds). Kinds: same bottom number,
+  bottoms like 3 and 6, unit fractions, a whole number × a fraction, with a whole number (1 ÷ 1/3, 1/2 ÷ 3), easier
+  ones, any (operands in simplest form; subtracting always bigger first).
+- **The student** sees "Work out: 1/2 + 1/4 = ?", the two fractions as fixed bars in the operations' colours on one
+  scale, and a dashed answer bar: − and + for the parts in each whole (1-12, typed too), − and + for the wholes (1-3),
+  tap or arrow keys to shade. It is stored as the tool's own `bars` (one bar a whole, all cut the same), so the server
+  cleans and checks it with no new state. Right is any equal amount (6/8 for 3/4) with one line of why ("With 4 parts
+  in each whole: 2/4 + 1/4 = 3/4."); not yet gives one hint: nothing shaded, tops and bottoms both added, pieces that
+  can't make the answer (with the same-size parts to try), too much or too little. The server keeps only right / not
+  yet, as before.
+- **Show on the board** turns the teacher's tool to that operation with the two fractions, the answer shown and the
+  working reset (`mode`, `a`, `b`, `hide: false`, `step`/`fit` 0); their Compare bars are kept.
+- **The limit note:** in Add, Subtract, Multiply and Divide, + is no longer silently disabled at a limit. Past it, the
+  readout shows "✋ That's as big as it goes. Each fraction can be at most 3 wholes, and 3/1 is already 3 wholes." (or
+  the top / bottom number "can be at most 12"), said aloud too; a number typed past it gives the same note (held at
+  the limit). The next change takes it away.
+- **Fit check:** the Build it layouts also send a set of fraction equations of all four operations for students.
+
 ## Algebra Builder (adapted from Algebra Tiles), with question sets (18 Nov 2026)
 Owner: "Add this game to oomba: [teacher.dev's algebra-tiles] Make sure all functionality stays the same but use oomba
 branding. This should be listed under games, but should use our animation packs. I want to use a similar board like

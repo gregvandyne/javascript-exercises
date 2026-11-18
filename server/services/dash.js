@@ -85,7 +85,7 @@ const TOOL_WORDS = {
   bars: ['kind', 'mul', 'part', 'cmp', 'groups', 'each', 'parts', 'partN', 'first', 'second', 'total', 'whole', 'diff', 'newProblem', 'unknown', 'unknownIs',
     'braceWhole', 'braceOne', 'braceDiff', 'oneGroup', 'nGroups', 'qGroups', 'hide', 'show', 'answerIs', 'sentences', 'box', 'right', 'wrong', 'story', 'storyBtn', 'storyLocal',
     'model', 'max', 'sayMul', 'sayPart', 'sayCmp', 'find'],
-  rods: ['palette', 'addRod', 'rodN', 'longer', 'board', 'boardKeys', 'lying', 'standing', 'added', 'copied', 'deleted', 'moved', 'full', 'noRoom', 'tooLong',
+  rods: ['palette', 'addRod', 'rodN', 'longer', 'longRod', 'board', 'boardKeys', 'lying', 'standing', 'added', 'copied', 'deleted', 'moved', 'full', 'noRoom', 'tooLong',
     'dirH', 'dirV', 'grid', 'units', 'zoomIn', 'zoomOut', 'undo', 'redo', 'turn', 'copy', 'del', 'reset', 'resetDone', 'chosen', 'eq', 'eqOff', 'box', 'blank',
     'right', 'wrong', 'newEq', 'typeEq', 'typeLabel', 'typeHint', 'typeBad', 'model', 'modelled', 'trainIs', 'same', 'notSame', 'empty', 'count', 'find'],
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
@@ -107,10 +107,16 @@ TOOL_WORDS.fractions.push('partsOf');
 TOOL_WORDS.fractions.push('show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again',
   'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
   'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes');
+// Fractions, equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a student's Build it equation
+// (the answer bar, its parts and wholes) and the note when + goes past a fraction's limit.
+TOOL_WORDS.fractions.push('howtoEq', 'eqHint', 'eqParts', 'eqWholes', 'eqShaded', 'eqWholesNow', 'eqLessWhole', 'eqMoreWhole',
+  'limitWholes', 'limitTop', 'limitBottom');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // maths tools combined: the mode switch ("Choose what Place value shows")
   'modeFor',
+  // one calm row of buttons: Share ▾, ⋯ (more of the tool's actions), Number rods' View, the Steps panel, Jump to…
+  'share', 'moreActs', 'view', 'steps', 'stepsOf', 'jumpTo',
   // stage 4: "Make a question from it" and "Practice it"
   'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
   // "Build it" (docs/decisions.md "Classroom dashboards: Build it"): Show/Hide the answer, the Build it button, and the
