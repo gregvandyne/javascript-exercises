@@ -195,7 +195,7 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   assert.match(r.text, new RegExp(`<a class="cl-main" href="/class/${c5.id}/progress/${cl.id}">`), 'the row opens its progress');
   assert.match(r.text, new RegExp(`href="/class/${c5.id}/lessons/${cl.id}"`), 'student view in the ⋯ menu');
   assert.match(r.text, new RegExp(`href="/class/${c5.id}/progress/${cl.id}">📊 Scores`), 'Scores in the ⋯ menu');
-  assert.match(r.text, /<h2 id="ls-h" class="sr-only">/, 'the tab heading is for screen readers only');
+  assert.match(r.text, /<h2 id="shelf-h" tabindex="-1" dir="auto">Assigned to Ana 5C<\/h2>/, 'the class page opens on its assigned games (the Games tab\'s sidebar)');
   // the editor: one line per class (linking to the row), live notice, class not offered again, back to the class
   r = await as(ana)(`/teach/lessons/${l.id}?from=${c5.id}`);
   assert.match(r.text, new RegExp(`href="/class/${c5.id}#cl-${cl.id}"`));

@@ -11055,7 +11055,6 @@
   },
   "folders": {
     "title": "Meine Ordner",
-    "why": "Ordner sortieren deine Spiele, eigene und die von Oomba. Ein Spiel in einem Ordner ändert nie, wer es spielen kann.",
     "new": "Neuer Ordner",
     "name": "Ordnername",
     "namePlaceholder": "z. B. Woche der Brüche",
@@ -11116,6 +11115,23 @@
     "progressEmptyText": "Weise im Reiter Spiele ein Spiel zu, dann siehst du hier, wie es bei jedem Kind läuft.",
     "studentEmptyText": "Deine Lehrkraft fügt hier Spiele hinzu.",
     "liveHistory": "Bisherige Live-Spiele",
-    "liveHistoryNone": "Noch keine Live-Spiele mit dieser Klasse."
+    "liveHistoryNone": "Noch keine Live-Spiele mit dieser Klasse.",
+    "allGames": "Alle meine Spiele",
+    "assignedTo": "Zugewiesen an {class}",
+    "studentShared": "Spiele von Schülerinnen und Schülern",
+    "fromClass": "Aus unserer Klasse",
+    "sideClass": "Spiele für diese Klasse",
+    "assignTo": "An {class} zuweisen",
+    "assignAll": "{count, plural, one {# Spiel zuweisen} other {Alle # zuweisen}}",
+    "assignAllNote": "Jedes Spiel hier, das {class} spielen kann, wird mit diesem Fälligkeitstag zugewiesen. Spiele, die die Klasse schon hat, und Spiele, die erst eingerichtet werden müssen, werden übersprungen.",
+    "assignAllDone": "{count, plural, one {# Spiel an {class} zugewiesen} other {# Spiele an {class} zugewiesen}}",
+    "assignAllSkipped": "{count, plural, one {# übersprungen} other {# übersprungen}}",
+    "assignAllNone": "Nichts Neues zuzuweisen: Diese Spiele sind schon in {class} oder müssen erst eingerichtet werden.",
+    "assignedChip": "Zugewiesen",
+    "assignedWhere": "Zugewiesene Spiele stehen unter „Zugewiesen an {class}“, mit ihren Fälligkeitstagen.",
+    "saveAnother": "In einem anderen Ordner speichern",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "sharedEmpty": "Hier gibt es noch keine Spiele, die du öffnen kannst."
   }
 }

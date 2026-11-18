@@ -20,7 +20,8 @@ import { siteBase, maskEmail, normEmail, sendingOn, addressOf } from '../service
 import { tFor, LOCALES, CODES } from '../i18n/index.js';
 import { audit } from '../db.js';
 import { cleanName } from '../services/textfilter.js';
-import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
+import { assignedPane, studentLessonsPanel, dueChip } from './lessons.js';
+import { shelf, shelfReply } from './game-shelf.js';
 import { classTeamsSection } from './progress.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
@@ -28,7 +29,7 @@ import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
-import { gcRosterHint } from './gclassroom.js';
+import { gcRosterHint, gcLessonsButton } from './gclassroom.js';
 import { connectionsChip } from '../views/integrations.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass, hostSession } from '../services/classlive-sessions.js';
@@ -918,26 +919,36 @@ function studentRow(req, c, s, p, others, ginfo) {
       </div></details>
     </div></td></tr>`;
 }
-/** The teacher's Games tab: games shared only with this class (each can be taken off it), and the ones taken off
- *  (each can be put back). Staff see students' real names. */
-function classGamesTab(req, c, people) {
+/** The Games tab's "Games students shared" (its sidebar, routes/game-shelf.js): games shared only with this class (each
+ *  can be taken off it), and the ones taken off (each can be put back). Staff see students' real names.
+ *  -> { count, pane() } */
+function classGamesPane(req, c, people) {
   const t = req.t, f = req.fmt;
-  const live = games.classGames(c.id, { limit: 200 }), off = games.removedClassGames(c.id);
-  const real = new Map(people.map(p => [p.id, nameOf(p)]));
-  const who = g => { const n = real.get(g.owner_id); return n && n !== g.owner_name ? `@${g.owner_name} (${n})` : `@${g.owner_name}`; };
-  return html`<section class="panel" aria-labelledby="cg-h" id="shared-games"><h2 id="cg-h">🤝 ${t('classes.games.heading')}</h2>
-    <p class="small muted">${t('school.classGames.text')}</p>
+  const live = games.classGames(c.id, { limit: 200 });
+  const pane = () => {
+    const off = games.removedClassGames(c.id);
+    const real = new Map(people.map(p => [p.id, nameOf(p)]));
+    const who = g => { const n = real.get(g.owner_id); return n && n !== g.owner_name ? `@${g.owner_name} (${n})` : `@${g.owner_name}`; };
+    return html`<div class="shelf-head" id="shared-games"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1">${t('folders.studentShared')}</h2><p class="small muted">${t('school.classGames.text')}</p></div></div>
     ${live.length ? html`<ul class="plain cg-list">${live.map(g => html`<li class="cg-row">
       <a class="cg-cover" href="/g/${g.slug}" tabindex="-1" aria-hidden="true">${coverArt(g, 'cg-thumb')}</a>
       <div class="cg-body"><a href="/g/${g.slug}"><b dir="auto">${g.title}</b></a>
         <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi> · ${t('school.classGames.sharedAgo', { when: f.ago(g.shared_at) })}</span></div>
       <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/remove" data-reload data-confirm="${t('school.classGames.removeConfirm', { title: g.title, class: c.name })}"><button class="btn btn-sm" type="submit">${t('school.classGames.remove')}</button></form>
-    </li>`)}</ul>` : html`<p class="muted">${t('school.classGames.empty')}</p>`}
-  </section>
-  ${off.length ? html`<details class="panel cg-off"><summary>${t('school.classGames.removedHeading', { count: off.length })}</summary>
-    <ul class="plain cg-list">${off.map(g => html`<li class="cg-row"><div class="cg-body">${games.canView(req.user, g) ? html`<b dir="auto">${g.icon} ${g.title}</b>` : html`<b>🎮 ${t('school.classGames.hiddenGame')}</b>`}
-      <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi></span></div>
-      <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/restore" data-reload><button class="btn btn-sm" type="submit">${t('school.classGames.restore')}</button></form></li>`)}</ul></details>` : ''}`;
+    </li>`)}</ul>` : html`<div class="cl-none"><span class="emo" aria-hidden="true">🎒</span><div><b>${t('school.classGames.empty')}</b></div></div>`}
+    ${off.length ? html`<details class="cg-off"><summary>${t('school.classGames.removedHeading', { count: off.length })}</summary>
+      <ul class="plain cg-list">${off.map(g => html`<li class="cg-row"><div class="cg-body">${games.canView(req.user, g) ? html`<b dir="auto">${g.icon} ${g.title}</b>` : html`<b>🎮 ${t('school.classGames.hiddenGame')}</b>`}
+        <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi></span></div>
+        <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/restore" data-reload><button class="btn btn-sm" type="submit">${t('school.classGames.restore')}</button></form></li>`)}</ul></details>` : ''}`;
+  };
+  return { count: live.length, pane };
+}
+/** The Games tab (docs/decisions.md "Folders in a sidebar, on Build and the class page"): the sidebar (Build new game,
+ *  Assigned to <class>, Find Oomba games, My folders, Shared by colleagues, Games students shared, Google Classroom)
+ *  and what is picked, swapped in place by public/js/shelf.js. Folders and Assign only for the school's staff. */
+function gamesShelfCtx(req, c, people) {
+  const staff = S.schoolsOf(req.user.id).some(s => s.id === c.school_id && s.role !== 'student');
+  return { kind: 'class', base: `/class/${c.id}`, c, staff: staff && !c.archived_at, folders: staff, assigned: assignedPane(req, c), students: classGamesPane(req, c, people), gc: gcLessonsButton(req, c) };
 }
 function teacherClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id); const st = S.settingsOf(s);
@@ -1028,9 +1039,11 @@ function teacherClass(req, res, c) {
   const loopCard = loopHere ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(req.user), state: TL.loopState(req.user), live: liveOn() && liveCanHost(req.user) }) : '';
   // Teams for live games live on the Students tab (owner, 18 Nov 2026), next to the roster they are made from.
   const teams = tab === 'students' ? classTeamsSection(req, c) : { html: '', scripts: [] };
+  const gamesCtx = tab === 'lessons' ? gamesShelfCtx(req, c, people) : null;
+  if (gamesCtx && shelfReply(req, res, gamesCtx)) return;
   const body = html`${classHeader(req, c, tab)}${loopCard}
-  ${tab === 'students' ? html`${studentsTab}${teams.html}` : tab === 'settings' ? settingsTab : html`${teacherLessonsPanel(req, c)}${classGamesTab(req, c, people)}`}`;
-  page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js', ...teams.scripts], ...classBack(req, c) });
+  ${tab === 'students' ? html`${studentsTab}${teams.html}` : tab === 'settings' ? settingsTab : shelf(req, gamesCtx, { id: 'lessons' })}`;
+  page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js', ...teams.scripts, ...(gamesCtx ? ['/js/shelf.js'] : [])], ...classBack(req, c) });
 }
 function studentClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id);

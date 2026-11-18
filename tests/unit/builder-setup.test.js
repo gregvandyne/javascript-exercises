@@ -233,7 +233,7 @@ test('/build/new: the start, seven steps, every live world with a Preview, group
   const anon = client(); const a = await anon('/build/new');
   assert.equal(a.status, 302);
   const b = await kid('/build');
-  assert.match(b.text, /<a class="btn btn-primary btn-big" href="\/build\/new" id="newgame">/, '"New game" opens the setup steps');
+  assert.match(b.text, /<a class="btn btn-primary shelf-go" href="\/build\/new" id="newgame">/, '"New game" opens the setup steps');
   const r = await kid('/build/new'); assert.equal(r.status, 200);
   const h = r.text;
   assert.match(h, /id="su-guide"[^>]*><span class="su-way-t">Help me choose</, 'help me choose');

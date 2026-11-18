@@ -30,9 +30,9 @@ test('a teacher saves a game to a folder and assigns it; a student sees it and o
   await t.click('form.gfo-newsave button[type=submit]');
   await expect(t.locator('.gfo-pick')).toContainText('In this folder');
   await t.goto('/build');
-  await t.click('.gfo-chip:has-text("Space week")');
-  await expect(t.locator('h1')).toContainText('Space week');
-  await t.click('.gfo-game a:has-text("Assign")');
+  await t.click('.shelf-item:has-text("Space week")');
+  await expect(t.locator('#shelf-h')).toContainText('Space week');
+  await t.click('.shelf-game a:has-text("Assign")');
   await t.fill('#ag-d', '2031-01-15');
   await Promise.all([t.waitForURL(/\/class\//), t.click('#ag-go')]);
   await expect(t.locator('#lessons')).toContainText('Sum Racer');

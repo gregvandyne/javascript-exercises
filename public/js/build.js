@@ -1,6 +1,6 @@
 // /build: My games can be renamed or deleted. "New game" is a link to the setup steps (/build/new, buildsetup.js), where
 // a game is started (the "Start from" and 3D world cards that were here are in those steps).
-import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
+import { api, toast, sheet, esc, $, t } from '/js/app.js';
 
 // My games: rename and delete right from the list.
 function card(btn) { return btn.closest('.mygame'); }
@@ -41,11 +41,17 @@ function remove(li) {
       await api(`/api/studio/${li.dataset.id}/delete`, { method: 'POST', body: {} });
       close();
       const list = li.parentElement; li.remove();
-      toast(`🗑️ ${t('js.build.deleted')}`);
-      if (list && !list.children.length) location.reload();
+      // With the folder sidebar, its counts change too: the page comes back (the address keeps what was picked).
+      const again = list && (!list.children.length || document.querySelector('[data-shelf]'));
+      if (again) { try { sessionStorage.setItem('brb-toast', `🗑️ ${t('js.build.deleted')}`); } catch { /* shown below */ } location.reload(); }
+      else toast(`🗑️ ${t('js.build.deleted')}`);
     } catch (err) { toast(err.message, { bad: true }); yes.disabled = false; }
   });
 }
 
-$$('[data-rename]').forEach(b => b.addEventListener('click', () => rename(card(b))));
-$$('[data-delete]').forEach(b => b.addEventListener('click', () => remove(card(b))));
+// One listener for the page: the folder sidebar (public/js/shelf.js) swaps the list in place.
+document.addEventListener('click', e => {
+  const b = e.target instanceof Element && e.target.closest('[data-rename],[data-delete]'); if (!b || !card(b)) return;
+  const menu = b.closest('details'); if (menu) menu.open = false;
+  if (b.matches('[data-rename]')) rename(card(b)); else remove(card(b));
+});

@@ -1779,15 +1779,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .sr-account{margin:var(--s4) 0 0;padding:var(--s3) var(--s4) var(--s2);border:1px solid var(--line);border-radius:var(--r-sm)}
 .sr-account legend{padding:0 6px;font-weight:700}
 .sr-account>p{margin:0 0 var(--s3)}
-/* Folders of games (routes/game-folders.js): the strip on Build and a folder page, the Save to folder list. */
-.gfo-strip h2{margin-bottom:4px}
-.gfo-list{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
-.gfo-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);text-decoration:none;font-weight:700}
-.gfo-chip:hover{box-shadow:inset 0 0 0 2px var(--edge)}
-.gfo-chip.is-on{box-shadow:inset 0 0 0 3px var(--accent-line,var(--edge));background:var(--accent-soft,var(--card))}
-.gfo-chip .muted{font-weight:600}
-.gfo-new[open]{flex-basis:100%}
-.gfo-new form{margin-top:8px;max-width:520px}
+/* Folders of games (routes/game-folders.js): the Save to folder list. */
 .gfo-pick{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
 .gfo-pick>li{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--r-sm);background:var(--card-2);min-height:56px}
 .gfo-pick>li.is-in{box-shadow:inset 0 0 0 2px var(--accent-line,var(--edge))}
@@ -1799,49 +1791,129 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .gfo-newsave label{font-weight:700}
 .gfo-newsave .row{flex-wrap:wrap}
 .gfo-newsave .row .input{flex:1 1 200px;min-width:0}
-.gfo-tools{gap:8px;flex-wrap:wrap;align-items:flex-start;margin:-6px 0 14px}
-.gfo-rename[open]{flex-basis:100%}
-.gfo-rename form{margin-top:8px;max-width:520px}
-.gfo-share .btn{white-space:normal;max-width:100%;height:auto;text-align:center}
-/* The class page's Games tab (routes/lessons.js teacherLessonsPanel): toolbar, folders, assigned games */
-.cl-games{display:flex;flex-direction:column;gap:12px}
-.cl-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
-.cl-acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.cl-side{display:flex;gap:10px;margin-inline-start:auto}
-.cl-nf{position:relative}
-.cl-nf>summary{list-style:none}
-.cl-nf>summary::-webkit-details-marker{display:none}
-.cl-nf-panel{position:absolute;top:calc(100% + 8px);inset-inline-start:0;z-index:20;width:min(420px,calc(100vw - 48px));display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow),inset 0 0 0 2px var(--line)}
-.cl-nf-panel label{font-weight:700}
-.cl-nf-panel .row{flex-wrap:nowrap;gap:8px}
-.cl-nf-panel .input{min-width:0}
-.cl-sub{margin:0;font-size:.82rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2)}
-.cl-folders{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:2px solid var(--line)}
-.cl-folders .gfo-list{margin:0}
-.cl-assigned-h{padding-top:12px;border-top:2px solid var(--line)}
 .cl-none{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-sm);background:var(--card-2)}
 .cl-none .emo{font-size:2rem;line-height:1}
 .cl-none p{margin:2px 0 0}
-@media (max-width:600px){
-  .cl-bar,.cl-acts,.cl-side{flex-direction:column;align-items:stretch;width:100%}
-  .cl-acts>.btn,.cl-nf>summary,.cl-side>.btn{width:100%;justify-content:center}
-  .cl-side{margin-inline-start:0}
-  .cl-nf-panel{position:static;width:auto;margin-top:8px;box-shadow:inset 0 0 0 2px var(--line)}
+
+/* ---- The folder sidebar on Build and the class page's Games tab (routes/game-shelf.js, public/js/shelf.js): a left
+   column of links and, on the right, what is picked. On a phone the column is one row of chips that scrolls sideways
+   (the row only, never the page), over the picked item. */
+.shelf{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.shelf-side{display:flex;flex-direction:column;gap:4px;min-width:0}
+.shelf-go{width:100%;margin-bottom:12px}
+.shelf-nav{display:flex;flex-direction:column;gap:4px;min-width:0}
+.shelf-group{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.shelf-group>li{margin:0}
+.shelf-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 14px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--text);font:700 1rem/1.2 var(--font);text-align:start;text-decoration:none;cursor:pointer}
+.shelf-item:hover{background:var(--hover);text-decoration:none}
+.shelf-item.is-on,.shelf-item.is-on:hover{background:var(--current);color:var(--on-current)}
+.shelf-item:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.shelf-ico{flex:none}
+.shelf-name{flex:0 1 auto;min-width:0;overflow-wrap:anywhere}
+.shelf-item .n{margin-inline-start:auto;padding-inline-start:8px;font-weight:500}
+.shelf-add{color:var(--link)}
+.shelf-lab{margin:16px 14px 4px;font-size:.9rem;font-weight:700;color:var(--muted)}
+:is(.shelf-newf,.shelf-menu,.shelf-pop)>summary{list-style:none}
+:is(.shelf-newf,.shelf-menu,.shelf-pop)>summary::-webkit-details-marker{display:none}
+.shelf-newf-panel{display:flex;flex-direction:column;gap:8px;margin:4px 0 8px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.shelf-newf-panel label{font-weight:700}
+.shelf-newf-panel .row{flex-wrap:nowrap;gap:8px}
+.shelf-newf-panel .input{min-width:0}
+.shelf-newf-panel .form-err:empty{display:none}
+.shelf-foot{margin-top:12px;padding:0 14px}
+.shelf-foot .btn{width:100%}
+.shelf-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.build-hero.build-hero-compact{display:block;margin:0;padding:12px 20px;border-radius:var(--r);box-shadow:var(--shadow)}
+.build-hero-compact b{font-size:1.05rem}
+.build-hero-compact span{font-weight:600}
+.shelf-main{padding:0 0 8px;display:flex;flex-direction:column;min-width:0}
+.shelf-main[aria-busy="true"]{opacity:.6;transition:opacity .2s .1s}
+.shelf-head{display:flex;align-items:center;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid var(--line)}
+.shelf-title{min-width:0}
+.shelf-title h2{margin:0;font-size:1.75rem;font-weight:800;letter-spacing:-.01em;overflow-wrap:anywhere}
+.shelf-title h2:focus{outline:none}
+.shelf-title p{margin:4px 0 0}
+.shelf-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shelf-main>:not(.shelf-head):not(.shelf-games):not(.shelf-note){margin:16px 24px 0}
+.shelf-main>.shelf-empty{margin:0;padding:8px 24px 16px}
+.shelf-empty>p{display:flex;justify-content:center;margin:0}
+.shelf-note{display:grid;gap:6px;margin:0;padding:14px 24px 8px}
+.shelf-note>p{margin:0}
+.shelf-games{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.mygame.shelf-game{display:grid;gap:14px;align-items:center;grid-template-columns:72px minmax(0,1fr) auto;padding:14px 24px;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none}
+.mygame.shelf-game:has(> .gfo-grip){grid-template-columns:32px 72px minmax(0,1fr) auto;padding-inline-start:12px}
+.shelf-game .coverart{width:72px;height:54px;--art:1.8rem}
+.shelf-game .mg-body h3{font-size:1.1rem;margin:0}
+.shelf-game .mg-body h3 a{color:var(--text)}
+.shelf-kind{margin:2px 0 0}
+.shelf-game .mg-status{margin-top:6px}
+.shelf-game .mg-body{min-width:0}
+.shelf-game .mg-body p{margin:4px 0 0}
+.shelf-game .mg-actions{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.shelf-game .mg-row{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.shelf-done{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--ok-bg);color:var(--text);font-weight:800;white-space:nowrap}
+.shelf-menu,.shelf-pop{position:relative}
+.shelf-more{min-width:44px;padding:0 10px;color:var(--text)}
+.shelf-menu-panel,.shelf-pop-panel{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:25;width:min(86vw,320px);display:grid;gap:8px;padding:14px;border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--line);text-align:start}
+.shelf-menu-panel>.btn,.shelf-menu-panel>form>.btn,.shelf-pop-panel>.btn{width:100%;white-space:normal;height:auto;min-height:44px}
+.shelf-menu-panel>p{margin:-2px 0 2px}
+.shelf-menu-panel>form:has(.btn-danger){padding-top:8px;border-top:1px solid var(--line)}
+.shelf-rename{display:grid;gap:6px}
+.shelf-rename label{font-weight:700}
+.shelf-rename .row{flex-wrap:nowrap;gap:8px}
+.shelf-rename .input,.shelf-share .input{min-width:0}
+.shelf-share{display:grid;gap:8px}
+.shelf-pop-panel .field{margin:0}
+.shelf-pop-panel>p{margin:0}
+.shelf-pop-panel .form-err:empty,.shelf-pop-panel .gc-also{margin:0}
+.is-reorderable .shelf-item{cursor:grab}
+.is-reorderable > [data-id].is-dragging .shelf-item{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg)}
+@media (max-width:820px){
+  .shelf{grid-template-columns:minmax(0,1fr);gap:16px}
+  .shelf-side{position:relative;gap:12px}
+  .shelf-go{margin:0}
+  .shelf-nav{flex-direction:row;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:thin;overscroll-behavior-x:contain}
+  .shelf-group{flex-direction:row;flex:none;gap:8px}
+  /* The group names stay the lists' names for screen readers (aria-labelledby reads hidden text). */
+  .shelf-lab,.shelf-nav .shelf-ico{display:none}
+  .shelf-nav .shelf-add .shelf-ico{display:block;width:16px;height:16px}
+  .shelf-item{width:auto;flex:none;gap:6px;padding:0 14px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);white-space:nowrap;font-size:.95rem}
+  .shelf-item.is-on,.shelf-item.is-on:hover{box-shadow:inset 0 0 0 2px var(--current)}
+  .shelf-name{overflow-wrap:normal;max-width:16em;overflow:hidden;text-overflow:ellipsis}
+  .shelf-item .n{margin:0;padding:0}
+  .shelf-add{box-shadow:none;outline:2px dashed var(--line);outline-offset:-2px}
+  .shelf-newf{flex:none}
+  .shelf-newf-panel{position:absolute;inset-inline:0;top:calc(100% + 6px);z-index:25;margin:0;box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--line)}
+  .shelf-foot{margin:0;padding:0}
+  .shelf-head{padding:14px 16px}
+  .shelf-title h2{font-size:1.3rem}
+  .shelf-main>:not(.shelf-head):not(.shelf-games):not(.shelf-note){margin:12px 16px 0}
+  .shelf-main>.shelf-empty{padding:4px 16px 12px}
+  .shelf-note{padding:12px 16px 4px}
+  .mygame.shelf-game,.mygame.shelf-game:has(> .gfo-grip){grid-template-columns:56px minmax(0,1fr);padding:12px 16px;gap:10px 12px}
+  .mygame.shelf-game:has(> .gfo-grip){grid-template-columns:28px 56px minmax(0,1fr);padding-inline-start:8px}
+  .shelf-game .coverart{width:56px;height:42px;--art:1.4rem}
+  .shelf-game .mg-actions{grid-column:1/-1}
+  .shelf-game .mg-row{display:flex;flex-wrap:wrap;gap:8px}
+  .shelf-game .mg-row>.btn,.shelf-game .mg-row>.shelf-pop,.shelf-game .mg-row>.shelf-done{flex:1 1 0;min-width:0}
+  .shelf-game .mg-row>.btn-primary,.shelf-game .mg-row>.shelf-pop,.shelf-game .mg-row>.shelf-done{flex-grow:2}
+  .shelf-game .mg-row>.btn,.shelf-pop>summary.btn{white-space:normal;text-align:center;line-height:1.2;width:100%}
+  .shelf-menu{flex:none}
+  .shelf-pop[open]{flex-basis:100%}
+  .shelf-pop-panel{position:static;width:auto;margin-top:8px;box-shadow:inset 0 0 0 2px var(--line)}
+  .shelf-tools{width:100%}
+  .shelf-tools>.btn,.shelf-tools>form,.shelf-tools>.shelf-pop{flex:1 1 auto}
+  .shelf-tools>form>.btn,.shelf-tools>.shelf-pop>summary{width:100%}
 }
 
 /* ---- Folders: drag to reorder (public/js/reorder.js) and Save to folder in a pop-up (public/js/folder-save.js). */
 .is-reorderable > [data-id]{touch-action:pan-y;-webkit-touch-callout:none}
-.is-reorderable .gfo-chip{cursor:grab}
 .is-reorderable > [data-id].is-dragging{position:relative;z-index:30;cursor:grabbing;box-shadow:var(--shadow-lg);transition:box-shadow .15s;pointer-events:none}
-.is-reorderable > [data-id].is-dragging .gfo-chip{box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg);background:var(--accent-soft)}
-.gfo-game.is-dragging{outline:2px solid var(--accent-line);transform-origin:center}
+.shelf-game.is-dragging{outline:2px solid var(--accent-line);transform-origin:center}
 body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;cursor:grabbing}
-.gfo-hint{margin:8px 0 0}
 .gfo-grip{display:grid;place-items:center;width:32px;align-self:stretch;min-height:44px;border:0;border-radius:10px;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:grab;touch-action:none}
 .gfo-grip:hover{background:var(--hover);color:var(--text)}
 .gfo-grip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.mygame.gfo-game:has(> .gfo-grip){grid-template-columns:32px 72px minmax(0,1fr) auto}
-@media (max-width:600px){.mygame.gfo-game:has(> .gfo-grip){grid-template-columns:28px 56px minmax(0,1fr)}.mygame.gfo-game:has(> .gfo-grip) .mg-actions{grid-column:1/-1}}
 .fsave-leg{font-weight:800;margin-bottom:8px;padding:0}
 .fsave-pick{border:0;margin:0;padding:0;display:grid;gap:8px}
 .fsave-list{display:grid;gap:8px;list-style:none;margin:0;padding:0}
