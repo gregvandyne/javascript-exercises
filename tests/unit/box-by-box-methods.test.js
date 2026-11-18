@@ -151,6 +151,34 @@ test('ladder: hints suggest a friendly multiple, and Count up steps through 1, 2
     for (const t of [f.prompt, f.told, ...f.hints]) assert.doesNotMatch(t, /—/);
 });
 
+test('area model (division): as the classroom model, a section per place-value chunk, widths on top; one section for all of it is advised against, not refused', () => {
+  // 68 ÷ 2: Watch takes 30, then 4 (two sections, 30 + 4 = 34)
+  assert.deepEqual(M.watchPath(68, 2), [30, 4]);
+  const w = M.buildWork('area', 'divide', [68, 2], M.watchValues('area', 'divide', [68, 2]));
+  assert.deepEqual(w.rungs.map((r) => r.left), [68, 8], 'what is left goes into the next section');
+  const q0 = M.buildWork('area', 'divide', [68, 2]).fields[0];
+  assert.match(q0.prompt, /How wide is this section\? .*like 10, 20 or 30/);
+  assert.match(q0.told, /Make a section 30 wide: 30 × 2 = 60 fits in 68\. Write 30 on top\./);
+  assert.match(q0.hints[1], /3 × 2 = 6, so 30 × 2 = 60/);
+  assert.match(q0.hints[2], /Try 30/);
+  assert.equal(M.buildWork('area', 'divide', [68, 2], { q0: '30' }).fields[1].prompt, 'The section’s area: what is 30 × 2?');
+  assert.deepEqual(M.placeChunks(68, 2), [10, 20, 30]);
+  assert.deepEqual(M.placeChunks(945, 7), [100]);
+  // 34 at once: it works (checked right), but the area model says to split it
+  assert.match(q0.advice('34'), /Try a friendly chunk like 10, 20 or 30 first, or press Next to keep 34/);
+  assert.equal(q0.advice('30'), null);
+  assert.equal(M.wholeChunkAdvice(60, 2, 30), null, '30 is already one place-value chunk');
+  assert.equal(M.fieldWrong(q0, { q0: '34' }), false);
+  const one = { q0: '34', p0: '68', r0: '0', quotient: '34', remainder: '0' };
+  assert.equal(M.checkWork(M.buildWork('area', 'divide', [68, 2], one), one).right, true);
+  // the ladder keeps its own words and has no advice
+  const l0 = M.buildWork('ladder', 'divide', [68, 2]).fields[0];
+  assert.match(l0.prompt, /How many 2s will you take away from 68\?/);
+  assert.equal(l0.advice, undefined);
+  for (const f of M.buildWork('area', 'divide', [945, 7], M.watchValues('area', 'divide', [945, 7])).fields)
+    for (const t of [f.prompt, f.told, ...f.hints]) assert.doesNotMatch(t, /—/);
+});
+
 // ---------------------------------------------------------------- multiplication: the area model and partial products
 
 test('area model and partial products: place-value parts, a product for each pair, adding up to the answer', () => {
@@ -329,4 +357,134 @@ test('in Chromium: Watch shows one sensible path, and Count up picks with ▲ an
   await type(c.page, ['1058']);
   assert.deepEqual(await finish(c.page), [{ won: true, score: 1 }]);
   await c.ctx.close();
+});
+
+// ---------------------------------------------------------------- several problems in a row (Chromium)
+// Owner: "The area model always works perfectly for the first question and then starts to not work after the second."
+// From the second problem on, the work stopped following what was typed (68 ÷ 2: 34 on top, then "What is ? × 2?" and
+// no difference box, so no Check). Each run below plays three problems in a row, and on each one checks every Guided
+// question against the method's own, what the work shows (the widths, the boxes, the lines), and the answer.
+
+/** The path a student takes down a ladder (or across an area model): a friendly multiple each time, not the watch path. */
+const choiceOf = (f) => (f.countUp.choose.last ? Math.floor(f.countUp.choose.left / f.countUp.choose.divisor) : M.friendlyMultiple(f.countUp.choose.left, f.countUp.choose.divisor));
+/** Type one problem field by field (Guided: each question checked first); the values typed. */
+async function solve(page, method, kind, p, guided, what) {
+  const v = {};
+  for (let guard = 0; guard < 60; guard++) {
+    const f = M.buildWork(method, kind, p, v).fields.find((x) => !v[x.id]);
+    if (!f) break;
+    if (guided) assert.equal(await page.locator('.prompt').innerText(), f.prompt, `${what}: the question for ${f.id}`);
+    const val = f.role === 'choice' ? String(choiceOf(f)) : f.expect;
+    await type(page, f.role === 'choice' && val.length < f.len ? [val, '\n'] : [val]);
+    v[f.id] = val;
+  }
+  return v;
+}
+/** What the work shows: the area model's widths on top, the boxes, or the partial products, as typed. */
+async function shownParts(page, method, kind) {
+  const sel = kind === 'divide' ? (method === 'area' ? '.adiv .width .num' : '.ladder .num') : method === 'area' ? '.amul .num' : '.pp .num';
+  return (await page.locator(sel).allInnerTexts()).map((t) => t.replace(/\s/g, ''));
+}
+function wantParts(method, kind, p, v) {
+  const w = M.buildWork(method, kind, p, v);
+  if (kind === 'divide') return method === 'area' ? w.rungs.map((r) => v[r.q]) : [...w.rungs.flatMap((r) => [v[r.p], v[r.q], v[r.r]]), v.quotient, v.remainder];
+  // the area model's boxes (its sum is listed below them); partial products' lines and their sum
+  return w.fields.filter((f) => method === 'partial' || f.role !== 'sum').map((f) => v[f.id]);
+}
+const MULTI = [
+  { k: 'divide', m: 'area', p: [[96, 4], [68, 2], [75, 3]] },
+  { k: 'divide', m: 'ladder', p: [[945, 7], [68, 2], [87, 5]] },
+  { k: 'multiply', m: 'area', p: [[46, 23], [37, 4], [352, 47]] },
+  { k: 'multiply', m: 'partial', p: [[46, 23], [37, 4], [352, 47]] }
+];
+for (const { k, m, p } of MULTI)
+  for (const l of ['guided', 'onMyOwn'])
+    test(`in Chromium: ${m} ${k === 'divide' ? 'division' : 'multiplication'}, ${l === 'guided' ? 'Guided' : 'On my own'}, three problems in a row on a phone`, { skip, timeout: 90e3 }, async () => {
+      const { page, ctx, errors } = await open({ k, p, l, m }, true);
+      for (let i = 0; i < p.length; i++) {
+        const what = `problem ${i + 1}, ${p[i].join(k === 'divide' ? ' ÷ ' : ' × ')}`;
+        assert.match(await page.locator('.count').innerText(), new RegExp(`${p.length - i} to go`), what);
+        const v = await solve(page, m, k, p[i], l === 'guided', what);
+        assert.deepEqual(await shownParts(page, m, k), wantParts(m, k, p[i], v), `${what}: the widths or parts`);
+        const w = M.buildWork(m, k, p[i], v);
+        await page.getByRole('button', { name: 'Check', exact: true }).click();
+        assert.match(await page.locator('.feedback').innerText(), new RegExp(`Correct! ${w.title.replace(/[×÷]/, '.')} = ${L.showAnswer(w.answer)}`), what);
+        await page.locator('.feedback .btn-primary').click();
+      }
+      await page.getByText('All done!').waitFor();
+      assert.match(await page.locator('.final').innerText(), /You got 3 right and 0 wrong/);
+      assert.deepEqual(await page.evaluate(() => window.__over), [{ won: true, score: 3 }]);
+      assert.deepEqual(errors, []);
+      await ctx.close();
+    });
+
+test('in Chromium: the area model (division) by its class code and in Practice: each problem after the first still follows what is typed', { skip, timeout: 120e3 }, async () => {
+  browser ??= await chromium.launch(exe ? { executablePath: exe } : {});
+  const item = { k: 'divide', p: [[96, 4], [68, 2], [75, 3]], l: 'guided', m: 'area' };
+  for (const entry of ['code', 'practice']) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.route('**/*', (r) => {
+      const u = new URL(r.request().url());
+      if (u.host !== 'game.test') return r.abort();
+      if (u.pathname.startsWith('/vendor/')) return r.fulfill({ path: path.join(ROOT, 'public', u.pathname) });
+      return r.fulfill({ contentType: 'text/html', body: html });
+    });
+    await page.addInitScript((it) => {
+      const kept = {};
+      window.__over = [];
+      window.BRB = { storage: { get: (k) => kept[k] ?? null, set: (k, v) => (kept[k] = v) }, gameOver: (o) => window.__over.push(o), user: { isGuest: false }, gameUrl: 'http://game.test/play', findQuestionSet: async (c) => (c === 'abcde23456' ? { id: 's-abcde23456', items: [it] } : { error: 'none' }) };
+    }, item);
+    await page.goto('http://game.test/play');
+    await page.getByRole('button', { name: /I’m a student/ }).click();
+    if (entry === 'code') {
+      await page.getByLabel('Class code').fill('ABCDE 23456');
+      await page.getByRole('button', { name: 'Open' }).click();
+    } else {
+      await page.locator('input[name="kind"][value="divide"]').check({ force: true });
+      await page.locator('input[name="method-divide"][value="area"]').check({ force: true });
+      await page.locator('input[name="mode"][value="guided"]').check({ force: true });
+      await page.getByRole('button', { name: /Start practicing/ }).click();
+    }
+    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    const n = entry === 'code' ? 3 : 5;
+    for (let i = 0; i < n; i++) {
+      const title = (await page.locator('main.paper .sr-only').innerText()).trim();
+      const pr = title.split(' ÷ ').map(Number);
+      const what = `${entry}, problem ${i + 1}, ${title}`;
+      if (entry === 'code') assert.deepEqual(pr, item.p[i], what);
+      const v = await solve(page, 'area', 'divide', pr, true, what);
+      assert.deepEqual(await shownParts(page, 'area', 'divide'), wantParts('area', 'divide', pr, v), `${what}: the widths`);
+      await page.getByRole('button', { name: 'Check', exact: true }).click();
+      assert.match(await page.locator('.feedback').innerText(), /Correct!/, what);
+      await page.locator('.feedback .btn-primary').click();
+    }
+    await page.getByText('All done!').waitFor();
+    assert.deepEqual(await page.evaluate(() => window.__over), [{ won: true, score: n }], entry);
+    assert.deepEqual(errors, [], entry);
+    await ctx.close();
+  }
+});
+
+test('in Chromium: Guided advises against one section for all of 68 ÷ 2, and Next keeps it; 30 then 4 makes two sections', { skip, timeout: 60e3 }, async () => {
+  const { page, ctx, errors } = await open({ k: 'divide', p: [[68, 2], [68, 2]], l: 'guided', m: 'area' }, true);
+  await type(page, ['34']);
+  assert.match(await page.locator('.prompt').innerText(), /Try a friendly chunk like 10, 20 or 30 first/);
+  assert.equal(await page.locator('.num.wrong').count(), 0, 'advice, not a mistake');
+  await page.getByRole('button', { name: 'Next' }).click();
+  assert.equal(await page.locator('.prompt').innerText(), 'The section’s area: what is 34 × 2?');
+  await type(page, ['68', '0', '34', '0']);
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  assert.match(await page.locator('.feedback').innerText(), /Correct! 68 ÷ 2 = 34/);
+  await page.locator('.feedback .btn-primary').click();
+  // the second time: 30, then 4, a section each
+  await type(page, ['30', '60', '8', '4', '\n', '8', '0', '34', '0']);
+  assert.deepEqual(await shownParts(page, 'area', 'divide'), ['30', '4']);
+  assert.equal(await page.locator('.adiv .section').count(), 2);
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  assert.match(await page.locator('.feedback').innerText(), /Correct! 68 ÷ 2 = 34/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
 });

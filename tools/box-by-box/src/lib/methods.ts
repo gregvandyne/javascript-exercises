@@ -159,6 +159,23 @@ export function watchPath(dividend: number, divisor: number): number[] {
 	return out;
 }
 /** Count up's partial quotients: 1, 2, 5, 10, 20, 50, 100 …, up to the first that is too many (so ▲ can show it). */
+/** The place-value chunks that fit, up to the biggest (68 ÷ 2: 10, 20, 30), at most the last three: the widths to
+ *  suggest for an area model's section. */
+export function placeChunks(left: number, divisor: number): number[] {
+	const pv = placeValueMultiple(left, divisor);
+	if (pv < 1) return [];
+	const p = 10 ** (len(pv) - 1);
+	return Array.from({ length: pv / p }, (_, k) => (k + 1) * p).slice(-3);
+}
+const orList = (xs: number[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} or ${xs.at(-1)}` : String(xs[0] ?? ''));
+/** The area model's advice (not a mistake) on a first section that takes the whole quotient at once (68 ÷ 2: 34) when
+ *  it has more than one place: the classroom model splits it into place-value sections (30, then 4). Null otherwise. */
+export function wholeChunkAdvice(dividend: number, divisor: number, q: number): string | null {
+	const most = Math.floor(dividend / divisor);
+	if (q !== most || placeValueMultiple(dividend, divisor) === most) return null;
+	return `${q} × ${divisor} = ${q * divisor} works, but the area model splits it into sections. Try a friendly chunk like ${orList(placeChunks(dividend, divisor))} first, or press Next to keep ${q}.`;
+}
+
 export function friendlySteps(left: number, divisor: number): number[] {
 	const out: number[] = [];
 	for (let p = 1; p <= 1e6; p *= 10)
@@ -232,6 +249,9 @@ export type Field = {
 	expect: string | null;
 	/** A choice: null when it works, else why not (Guided says so at once; Check marks it). */
 	nudge?: (v: string) => string | null;
+	/** A choice that works but isn't the method's way (an area model's one section for all of it): Guided says so once,
+	 *  and Next keeps it. */
+	advice?: (v: string) => string | null;
 	/** The question Guided asks, the line said when the page writes it, and up to three hints. */
 	prompt: string;
 	told: string;
@@ -279,7 +299,8 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 		const fr = friendlyMultiple(left, divisor);
 		const fits = [1000, 100, 10, 5, 2].filter((x) => x * divisor <= left);
 		const thisLeft = left;
-		const what = i === 0 ? 'the number to divide' : 'what’s left';
+		const chunks = placeChunks(left, divisor);
+		const pvCore = pv / 10 ** zerosOf(pv);
 		fields.push({
 			id: qId,
 			len: Math.max(1, len(Q)),
@@ -288,15 +309,23 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 			nudge: (s) => (s === '' ? null : chooseNudge(thisLeft, divisor, Number(s), last)),
 			prompt: last
 				? `This is the last step: how many ${divisor}s can you take away from ${left}? Take away as many as you can.`
-				: `How many ${divisor}s will you take away from ${left}?${fits.length ? ` A friendly number like ${fits.slice(0, 2).join(' or ')} is easy.` : ''}`,
-			told: `Take away ${pv} ${pv === 1 ? 'group' : 'groups'} of ${divisor}. Write ${pv} ${side}.`,
+				: method === 'area'
+					? `How wide is this section? Pick how many ${divisor}s to take from ${left}.${chunks.length ? ` A place-value chunk like ${orList(chunks)} works well.` : ''}`
+					: `How many ${divisor}s will you take away from ${left}?${fits.length ? ` A friendly number like ${fits.slice(0, 2).join(' or ')} is easy.` : ''}`,
+			told:
+				method === 'area'
+					? `Make a section ${pv} wide: ${pv} × ${divisor} = ${pv * divisor} fits in ${left}. Write ${pv} on top.`
+					: `Take away ${pv} ${pv === 1 ? 'group' : 'groups'} of ${divisor}. Write ${pv} ${side}.`,
 			hints: [
 				`Take away a friendly number of ${divisor}s, no more than ${thisLeft}: groups of 10 or 100 are the easiest to multiply.${i > 0 ? ' Any number that fits is fine.' : ''}`,
-				fr > 1
-					? `${fr} × ${divisor} = ${fr * divisor}, and that isn’t more than ${thisLeft}, so ${fr} fits.${fr * 2 * divisor <= thisLeft ? ` Even ${fr * 2} × ${divisor} = ${fr * 2 * divisor} fits.` : ''}`
-					: `${divisor} goes into ${thisLeft} just ${plural(Math.floor(thisLeft / divisor), 'time', 'times')}.`,
+				pv >= 10
+					? `Think in place values: ${pvCore} × ${divisor} = ${pvCore * divisor}, so ${pv} × ${divisor} = ${pv * divisor}, and that isn’t more than ${thisLeft}. So ${pv} fits.`
+					: fr > 1
+						? `${fr} × ${divisor} = ${fr * divisor}, and that isn’t more than ${thisLeft}, so ${fr} fits.${fr * 2 * divisor <= thisLeft ? ` Even ${fr * 2} × ${divisor} = ${fr * 2 * divisor} fits.` : ''}`
+						: `${divisor} goes into ${thisLeft} just ${plural(Math.floor(thisLeft / divisor), 'time', 'times')}.`,
 				`Try ${pv}: ${pv} × ${divisor} = ${pv * divisor}, the most you can take away with one digit and zeros. Write ${pv}.`
 			],
+			advice: method === 'area' && i === 0 ? (s) => (s === '' ? null : wholeChunkAdvice(dividend, divisor, Number(s))) : undefined,
 			lit: [leftKey, 'divisor', qId],
 			countUp: { choose: { left, divisor, last } }
 		});
@@ -312,7 +341,7 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 			len: len(left),
 			role: 'product',
 			expect: qs_ !== '' && q >= 1 && product <= left ? String(product) : null,
-			prompt: `What is ${qs_ || '?'} × ${divisor}?`,
+			prompt: method === 'area' ? `The section’s area: what is ${qs_ || '?'} × ${divisor}?` : `What is ${qs_ || '?'} × ${divisor}?`,
 			told: `${qs_ || pv} × ${divisor} = ${qs_ ? product : pv * divisor}.`,
 			hints: [
 				`Multiply the number you wrote ${side} by ${divisor}.`,
@@ -504,7 +533,10 @@ export function checkWork(w: Work, v: Values): { right: boolean; wrong: string[]
 export function workWidth(w: Work): number {
 	if (w.kind === 'divide') {
 		const N = len(w.dividend);
-		return w.method === 'ladder' ? len(w.divisor) + N + 1 + Math.max(1, len(Math.floor(w.dividend / w.divisor))) : len(w.divisor) + 2 * (N + 1);
+		// the area model: a section side by side for each chunk (as many as the place-value path takes, or as typed)
+		return w.method === 'ladder'
+			? len(w.divisor) + N + 1 + Math.max(1, len(Math.floor(w.dividend / w.divisor)))
+			: len(w.divisor) + Math.max(2, w.rungs.length, watchPath(w.dividend, w.divisor).length) * (N + 1);
 	}
 	if (w.method === 'area') return len(w.bottom) + 1 + w.cells[0].reduce((s, _, j) => s + Math.max(...w.cells.map((r) => len(r[j].value))) + 0.5, 0);
 	return len(w.top * w.bottom) + 1 + 3.5;
