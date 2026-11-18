@@ -838,6 +838,17 @@ function fractions(body, s, ctx) {
       next = btn(`👣 ${W.stepNext}`, 'btn btn-sm dt-fstepbtn', `${W.stepNext} (${st.step + 1}/${n})`); next.dataset.k = 'step'; next.disabled = !!ctx.editing; tip(next, `${W.stepNext} (${st.step + 1}/${n})`);
       next.addEventListener('click', () => { st.step += 1; stepsOpen.set(ctx.id, true); T.commit(steps[st.step - 1]); });
     }
+    // Back a step and Clear the steps: a Next step pressed by mistake can be taken back, one step or all of them.
+    if (st.step > 0) {
+      const acts = el('div', 'dt-fstepacts');
+      if (next) acts.appendChild(next);
+      const back = btn(`↩ ${W.stepBack}`, 'btn btn-sm dt-fstepback', W.stepBack); back.dataset.k = 'stepback'; back.disabled = !!ctx.editing; tip(back, W.stepBack);
+      back.addEventListener('click', () => { st.step = Math.max(0, st.step - 1); T.commit(st.step ? steps[st.step - 1] : W.stepCleared); });
+      const clear = btn(`✕ ${W.stepClear}`, 'btn btn-sm dt-fstepclear', W.stepClear); clear.dataset.k = 'stepclear'; clear.disabled = !!ctx.editing; tip(clear, W.stepClear);
+      clear.addEventListener('click', () => { st.step = 0; T.commit(W.stepCleared); });
+      acts.append(back, clear);
+      next = acts;
+    }
     row.appendChild(stepsPanel({ key: ctx.id, C: T.C, items: steps.slice(0, st.step), total: n, next, compact, summary: T.read.querySelector('.dt-sub')?.textContent || '',
       onToggle: () => T.draw() }));
     return row;
@@ -1146,7 +1157,10 @@ function stepsPanel(o) {
   const ol = el('ol', `dt-stepsl${o.compact ? ' is-compact' : ''}`);
   o.items.forEach((text, i) => {
     const li = el('li', 'dt-fstep'); li.dir = 'auto'; const k = el('b', 'dt-fstepn', String(i + 1)); k.setAttribute('aria-hidden', 'true');
-    if (o.compact && i < o.items.length - 1) { li.classList.add('dt-fstep-n'); li.append(k, el('span', 'sr-only', text)); } else li.append(k, el('span', null, text));
+    // Every step keeps its words (the owner: a step must never vanish when the next one shows); compact only makes the
+    // earlier ones smaller.
+    if (o.compact && i < o.items.length - 1) li.classList.add('dt-fstep-sm');
+    li.append(k, el('span', null, text));
     ol.appendChild(li);
   });
   inner.appendChild(ol);
