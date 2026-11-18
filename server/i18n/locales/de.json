@@ -10633,9 +10633,10 @@
         "name": "Klassendienste",
         "desc": "Dienste für alle, jede Woche weitergedreht. Nutzt die Oomba-Namen der Klasse oder Namen, die du eintippst.",
         "s": {
-          "jobs": "Dienste (einer in jeder Zeile; leer für die üblichen)",
+          "jobs": "Dienste",
           "crew": "Wer macht was",
-          "names": "Kinder (eines in jeder Zeile; leer für die Kinder der Klasse)"
+          "names": "Eingetippte Namen",
+          "from": "Die Kinder kommen aus"
         },
         "rotate": "Nächste Woche",
         "shuffle": "Mischen",
@@ -10644,7 +10645,29 @@
         "nobody": "Noch keine Kinder in dieser Klasse.",
         "open": "Frei",
         "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst",
-        "nobodyTyped": "Noch keine Kinder: Tippe Namen bei „Kinder“ in den Einstellungen dieses Widgets ein oder füge der Klasse Kinder hinzu."
+        "nobodyTyped": "Noch keine Kinder: Füge in den Einstellungen dieses Widgets Namen hinzu oder füge der Klasse Kinder hinzu.",
+        "waiting": "Warten: {names}",
+        "cardsIntro": "Jeder Dienst hat seine eigene Karte. Wähle, wer ihn diese Woche macht. {rotate} im Widget schiebt alle einen Dienst weiter.",
+        "job": "Dienst",
+        "jobN": "Dienst {n}",
+        "student": "Kind",
+        "studentFor": "Kind für {job}",
+        "nobodyYet": "— Noch niemand —",
+        "typeName": "Namen eintippen…",
+        "nameLabel": "Neuer Name",
+        "addName": "Hinzufügen",
+        "addJob": "Dienst hinzufügen",
+        "newJob": "Neuer Dienst",
+        "removeJob": "{job} entfernen",
+        "removedJob": "{job} entfernt.",
+        "picked": "{name} macht jetzt {job}.",
+        "movedUp": "{job} ist auf Nummer {n} hochgerückt, damit {name} ihn machen kann.",
+        "fromNames": "Namen, die ich eintippe",
+        "fromClass": "Kinder der Klasse {class}",
+        "removeName": "{name} entfernen",
+        "removedName": "{name} entfernt.",
+        "noNames": "Noch keine Namen: Wähle bei einem Dienst „Namen eintippen…“.",
+        "maxJobs": "Höchstens {n} Dienste."
       },
       "mood": {
         "name": "Stimmungsbarometer",

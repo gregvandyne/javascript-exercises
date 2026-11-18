@@ -116,7 +116,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t);
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>

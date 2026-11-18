@@ -10632,9 +10632,10 @@
         "name": "班級工作",
         "desc": "大家的值日工作，每週輪換。使用班級的 Oomba 名字，或你輸入的名字。",
         "s": {
-          "jobs": "工作（一行一個；空白就用常見的）",
+          "jobs": "工作",
           "crew": "誰做什麼",
-          "names": "學生（每行一位；留空則使用班級學生）"
+          "names": "我輸入的名字",
+          "from": "學生來自"
         },
         "rotate": "下一週",
         "shuffle": "打亂",
@@ -10643,7 +10644,29 @@
         "nobody": "這個班級還沒有學生。",
         "open": "空缺",
         "defaults": "排頭\n開門\n電燈\n照顧植物\n整理書本\n整潔隊長\n跑腿\n擦黑板",
-        "nobodyTyped": "還沒有學生：在這個小工具設定的「學生」輸入名字，或把學生加入班級。"
+        "nobodyTyped": "還沒有學生：在這個小工具的設定裡加入名字，或把學生加入班級。",
+        "waiting": "等候中：{names}",
+        "cardsIntro": "每項工作都有自己的卡片。選出這週由誰負責。按小工具上的「{rotate}」，每個人都會換到下一項工作。",
+        "job": "工作",
+        "jobN": "工作 {n}",
+        "student": "學生",
+        "studentFor": "{job}的學生",
+        "nobodyYet": "— 還沒有人 —",
+        "typeName": "輸入名字…",
+        "nameLabel": "新名字",
+        "addName": "加入",
+        "addJob": "新增工作",
+        "newJob": "新工作",
+        "removeJob": "移除{job}",
+        "removedJob": "已移除{job}。",
+        "picked": "現在由{name}負責{job}。",
+        "movedUp": "{job}已移到第 {n} 項，讓{name}可以負責。",
+        "fromNames": "我輸入的名字",
+        "fromClass": "{class}的學生",
+        "removeName": "移除{name}",
+        "removedName": "已移除{name}。",
+        "noNames": "還沒有名字：在某項工作選「輸入名字…」。",
+        "maxJobs": "最多 {n} 項工作。"
       },
       "mood": {
         "name": "心情打卡",

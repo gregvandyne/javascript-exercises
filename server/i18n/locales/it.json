@@ -10633,9 +10633,10 @@
         "name": "Incarichi di classe",
         "desc": "Incarichi per tutti, a rotazione ogni settimana. Usa i nomi Oomba della classe o nomi che scrivi tu.",
         "s": {
-          "jobs": "Incarichi (uno in ogni riga; vuoto per i soliti)",
+          "jobs": "Incarichi",
           "crew": "Chi fa cosa",
-          "names": "Alunni (uno per riga; vuoto per gli alunni della classe)"
+          "names": "Nomi che ho scritto",
+          "from": "Gli alunni vengono da"
         },
         "rotate": "Settimana dopo",
         "shuffle": "Mescola",
@@ -10644,7 +10645,29 @@
         "nobody": "Ancora nessun alunno in questa classe.",
         "open": "Libero",
         "defaults": "Capofila\nPorta\nLuci\nPiante\nLibri\nCapo del riordino\nMessaggero\nLavagna",
-        "nobodyTyped": "Ancora nessun alunno: scrivi dei nomi in «Alunni» nelle impostazioni di questo widget, oppure aggiungi alunni alla classe."
+        "nobodyTyped": "Ancora nessun alunno: aggiungi dei nomi nelle impostazioni di questo widget, oppure aggiungi alunni alla classe.",
+        "waiting": "In attesa: {names}",
+        "cardsIntro": "Ogni incarico ha la sua scheda. Scegli chi lo fa questa settimana. {rotate} sul widget fa passare tutti all’incarico successivo.",
+        "job": "Incarico",
+        "jobN": "Incarico {n}",
+        "student": "Alunno",
+        "studentFor": "Alunno per {job}",
+        "nobodyYet": "— Ancora nessuno —",
+        "typeName": "Scrivi un nome…",
+        "nameLabel": "Nuovo nome",
+        "addName": "Aggiungi",
+        "addJob": "Aggiungi un incarico",
+        "newJob": "Nuovo incarico",
+        "removeJob": "Togli {job}",
+        "removedJob": "{job} tolto.",
+        "picked": "Ora {name} fa {job}.",
+        "movedUp": "{job} è salito al numero {n}, così {name} può farlo.",
+        "fromNames": "Nomi che scrivo io",
+        "fromClass": "Gli alunni di {class}",
+        "removeName": "Togli {name}",
+        "removedName": "{name} tolto.",
+        "noNames": "Ancora nessun nome: in un incarico scegli «Scrivi un nome…».",
+        "maxJobs": "Al massimo {n} incarichi."
       },
       "mood": {
         "name": "Come mi sento",
