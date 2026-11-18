@@ -1,6 +1,8 @@
 // The Big Divide: the problems, the sheets they are worked on, their steps, checking, and making problem sets. No platform
 // calls and no DOM here, so it runs as it is in Node too.
 
+import { methodOr, type Method } from './methods.ts';
+
 export type Kind = 'divide' | 'multiply';
 export type Level = 'watch' | 'countUp' | 'guided' | 'prompted' | 'onMyOwn' | 'custom';
 export type Problem = [number, number];
@@ -700,8 +702,9 @@ export const LEVEL_INFO: LevelInfo[] = [
 export const levelInfo = (l: Level): LevelInfo | undefined => LEVEL_INFO.find((x) => x.name === l);
 
 export const MAX_PROBLEMS = 100;
-export type Settings = { level: Level; custom: Flags; perStudent: boolean };
-export const freshSettings = (): Settings => ({ level: 'guided', custom: { ...ALL }, perStudent: false });
+/** method: the way the problems are worked (the standard algorithm unless the teacher picks another; methods.ts). */
+export type Settings = { level: Level; custom: Flags; perStudent: boolean; method: Method };
+export const freshSettings = (): Settings => ({ level: 'guided', custom: { ...ALL }, perStudent: false, method: 'standard' });
 
 export const flagsCode = (f: Flags) => FLAG_INFO.map(({ name }) => (f[name] ? '1' : '0')).join('');
 export function parseFlags(code: unknown): Flags {
@@ -727,8 +730,9 @@ const levelOr = (l: unknown, kind: Kind): Level =>
 /** What a student plays: the kind, the problems, the support and (for a fresh set each time) the plan. */
 export type Playable = { kind: Kind; problems: Problem[]; settings: Settings; plan: Plan };
 
-/** One question-set item as Oomba keeps it (no title: nothing typed as free text leaves the teacher's save). */
-export type Item = { k: Kind; p: Problem[]; l: Level; c?: string; d?: 1; g?: Plan };
+/** One question-set item as Oomba keeps it (no title: nothing typed as free text leaves the teacher's save). m, the
+ *  method, only when it isn't the standard algorithm (so an item saved before methods is still the same item). */
+export type Item = { k: Kind; p: Problem[]; l: Level; c?: string; d?: 1; g?: Plan; m?: Method };
 
 /** An item from a link, checked the way links always were: bad problems dropped; none left (and not a fresh set for
  *  each student) means no activity. */
@@ -743,7 +747,7 @@ export function parseItem(raw: unknown): Playable | null {
 	return {
 		kind,
 		problems,
-		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent },
+		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent, method: methodOr(kind, o.m) },
 		plan: o.g ? s.parse(o.g) : s.fresh()
 	};
 }
@@ -757,6 +761,8 @@ export function toItem(a: Playable): Item {
 		item.d = 1;
 		item.g = cleanPlan(a.kind, a.plan);
 	}
+	const m = methodOr(a.kind, a.settings.method);
+	if (m !== 'standard') item.m = m;
 	return item;
 }
 export function cleanPlan(kind: Kind, plan: Plan): Plan {

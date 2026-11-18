@@ -12,6 +12,8 @@
 	import ReplaceDialog from '$lib/ReplaceDialog.svelte';
 	import Bracket from '$lib/Bracket.svelte';
 	import Demo from '$lib/Demo.svelte';
+	import MethodPicture from '$lib/MethodPicture.svelte';
+	import { methodInfo, methodsFor, type Method } from '$lib/methods';
 	import SharePanel from '$lib/SharePanel.svelte';
 	import Footer from '$lib/Footer.svelte';
 
@@ -273,7 +275,19 @@
 		{ name: 'guided', title: 'Guided', text: 'They type every digit. The box to fill is lit, with a question for the step.' },
 		{ name: 'onMyOwn', title: 'On my own', text: 'Every box from the start and no questions. Checked at the end.' }
 	];
-	const tabs = $derived(TABS.filter((t) => k.levels.includes(t.name)).map((t) => ({ ...t, text: k.levelText?.[t.name] ?? t.text })));
+	const tabs = $derived(
+		TABS.filter((t) => k.levels.includes(t.name)).map((t) => ({
+			...t,
+			text:
+				t.name === 'countUp' && method !== 'standard'
+					? activity?.kind === 'divide'
+						? (COUNT_UP[method] ?? t.text)
+						: COUNT_UP_TIMES
+					: method !== 'standard' && t.name === 'guided'
+						? 'They type every number. The one to fill lights up, with a question for each step.'
+						: (k.levelText?.[t.name] ?? t.text)
+		}))
+	);
 	const level = $derived(activity?.settings.level ?? 'guided');
 	const onTab = $derived(tabs.some((t) => t.name === level));
 	const demoMode = $derived(onTab ? level : 'guided');
@@ -285,6 +299,23 @@
 		plays++;
 		save();
 	}
+	// --- method ---
+
+	const method = $derived<Method>(activity?.settings.method ?? 'standard');
+	const methods = $derived(methodsFor(activity?.kind ?? 'divide'));
+	function setMethod(m: Method) {
+		if (!activity) return;
+		activity.settings.method = m;
+		plays++;
+		save();
+	}
+	/** What Count up does in this method, for the Mode tab's line. */
+	const COUNT_UP: Partial<Record<Method, string>> = {
+		ladder: 'They pick how many to take away with ▲ (1, 2, 5, 10, 20, 50, 100 …) and the page multiplies. They type the subtracting and adding.',
+		area: 'They pick each section’s width with ▲ and the page multiplies. They type the subtracting and adding.'
+	};
+	const COUNT_UP_TIMES = 'They skip-count each part’s product with ▲ and the page writes it in, zeros and all. They type the adding.';
+
 	function setPerStudent(v: boolean) {
 		if (!activity) return;
 		activity.settings.perStudent = v;
@@ -383,6 +414,30 @@
 						>
 					{/each}
 				</div>
+				<section class="group methods" aria-labelledby="method-title">
+					<h3 id="method-title">Method</h3>
+					<div class="method-list" role="radiogroup" aria-labelledby="method-title">
+						{#each methods as m (m.name)}
+							<button type="button" role="radio" class="method" aria-checked={method === m.name} onclick={() => setMethod(m.name)}>
+								<span class="method-name">{m.name === 'standard' ? (activity.kind === 'divide' ? 'Standard (long division)' : 'Standard algorithm') : m.name === 'ladder' ? 'Ladder (partial quotients)' : m.label}</span>
+								<span class="method-about">{m.about}</span>
+							</button>
+						{/each}
+					</div>
+					{#if method !== 'standard'}
+						<details class="how">
+							<summary>How students work it</summary>
+							<ol>
+								{#each methodInfo(activity.kind, method).steps as st (st)}<li>{st}</li>{/each}
+							</ol>
+							<p>
+								{activity.kind === 'divide'
+									? 'Any sensible path is right: each step must take away a whole number of groups, no more than what’s left. Hints suggest a friendly one, and Watch shows the biggest place-value groups first.'
+									: 'Each part is a place value, so zeros in a number make fewer boxes: 406 is 400 + 6.'}
+							</p>
+						</details>
+					{/if}
+				</section>
 				<div class="group students">
 					<SwitchRow label="Randomize per student" checked={activity.settings.perStudent} onchange={setPerStudent}
 						>Each student gets their own {activity.problems.length} problems, made fresh from these settings every time they open the link. Off,
@@ -403,7 +458,11 @@
 							</p>
 						{/if}
 						<div class="preview">
-							<Demo kind={activity.kind} mode={demoMode} play={plays} label="What {tab?.title} looks like" />
+							{#if method === 'standard'}
+								<Demo kind={activity.kind} mode={demoMode} play={plays} label="What {tab?.title} looks like" />
+							{:else}
+								<MethodPicture kind={activity.kind} {method} />
+							{/if}
 						</div>
 					</section>
 				</div>
@@ -678,9 +737,66 @@
 		gap: 1.1rem;
 		padding: 1rem 0 1.2rem;
 	}
-	.students {
+	.students,
+	.methods {
 		padding-top: 1.2rem;
 		border-top: 2px solid var(--line);
+	}
+	.methods {
+		gap: 0.5rem;
+	}
+	.methods h3 {
+		margin: 0;
+	}
+	.method-list {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.method {
+		display: grid;
+		gap: 0.15rem;
+		padding: 0.55rem 0.75rem;
+		border: 2px solid var(--line);
+		border-radius: 12px;
+		background: var(--paper);
+		color: var(--ink);
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+	.method:hover {
+		border-color: var(--line-strong);
+	}
+	.method[aria-checked='true'] {
+		border-color: var(--accent);
+		background: var(--accent-wash);
+	}
+	.method-name {
+		font-size: 0.9rem;
+		font-weight: 800;
+	}
+	.method-about {
+		color: var(--ink-soft);
+		font-size: 0.8rem;
+		line-height: 1.35;
+	}
+	.how {
+		color: var(--ink-soft);
+		font-size: 0.85rem;
+		line-height: 1.4;
+	}
+	.how summary {
+		color: var(--link);
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.how ol {
+		margin: 0.4rem 0;
+		padding-left: 1.2rem;
+		list-style: decimal;
+	}
+	.how p {
+		margin: 0;
 	}
 	.range-row {
 		display: grid;

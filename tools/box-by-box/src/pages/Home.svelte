@@ -5,6 +5,7 @@
 	import { Ellipsis, Plus } from '@lucide/svelte';
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
+	import { methodInfo } from '$lib/methods';
 	import { copy, setLink } from '$lib/oomba';
 	import { go, show } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -23,7 +24,8 @@
 	function meta(a: Activity) {
 		const { level, perStudent } = a.settings;
 		const label = level === 'custom' ? 'your own mix' : levelInfo(level)?.label;
-		return `${kindInfo(a.kind).title} · ${a.problems.length} problems · ${label}${perStudent ? ' · different for each student' : ''}`;
+		const way = a.settings.method && a.settings.method !== 'standard' ? ` · ${methodInfo(a.kind, a.settings.method).label}` : '';
+		return `${kindInfo(a.kind).title} · ${a.problems.length} problems${way} · ${label}${perStudent ? ' · different for each student' : ''}`;
 	}
 
 	let newOpen = $state(false);

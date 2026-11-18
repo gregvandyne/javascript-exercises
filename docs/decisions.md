@@ -8345,3 +8345,42 @@ Owner: give Box by Box a better name; they chose a fun one, **The Big Divide** (
   game's title, description, tags and `l10n` from its JSON (`games.updateMeta`), so the deploy renames the row in place.
   Lessons, assignments and Classroom posts made before keep the name they were saved with.
 - This log's entry above keeps its heading, "Box by Box", as written at the time.
+
+## The Big Divide: the ladder, area models and partial products (18 Nov 2026)
+Teachers asked (Instagram, passed on by the owner) for "the ladder method for division problems ... keep those numbers
+whole" and "multiplication area model and partial products, as well as other ways of doing division". Each activity now
+has a **method**; the standard algorithms stay the default.
+- **The methods.** Division: Standard, Ladder (partial quotients), Area model (box method). Multiplication: Standard,
+  Area model, Partial products. The math is in `tools/box-by-box/src/lib/methods.ts` (pure, so the tests load it in
+  Node); `lib/Work.svelte` lays each one out on graph-paper squares and `pages/MethodPlayer.svelte` plays it. The
+  standard methods keep their own player (`Player.svelte`, untouched); `App.svelte` picks the player by the method.
+- **Ladder and area model for division: any valid path.** The work is worked out again from what has been typed: a
+  rung (or section) is a choice (how many divisors to take away), its product and its difference, and a new rung opens
+  while what's left still holds the divisor. A choice is right when it is a whole number, at least 1, whose product is
+  no more than what's left (`chooseCheck`); the product and difference must follow from it; the quotient (the choices
+  added up) and the remainder (what's left at the end) must be right (`checkLadder`). At most 10 rungs: the tenth must
+  finish. Hints suggest a friendly multiple (the biggest of 1000, 100, 10, 5, 2 that fits, then the biggest place-value
+  multiple). Watch, and the worked answer after two tries, take the biggest place-value multiples (945 ÷ 7: 100, 30, 5).
+  Count up picks the choice with ▲ ▼ through 1, 2, 5, 10, 20, 50, 100 … (up to the first that is too many) and the page
+  writes the product.
+- **Area model and partial products for multiplication.** Both factors break into place-value parts (406 is 400 + 6:
+  a zero digit makes no part); a box (or a line) for each pair, then the sum. Count up skip-counts the leading digits
+  (40 × 20: by 4s, 2 times) and the page writes the product with its zeros. The area model's boxes are listed again,
+  as typed, above the sum.
+- **The same support and feedback.** Watch, Count up, Guided and On my own (and older Prompted or custom mixes) work for
+  every method; Guided marks a wrong number at once (only its wrong digits, lined up on the right), a choice that doesn't
+  fit says why; Check, a second try, then a worked answer; Hint, Stuck?, sounds, confetti and `BRB.gameOver` as before.
+  Each field is a number typed into a row of squares (one hidden input over them, so the phone's number pad and the
+  keypad work); the squares size themselves to fit the screen (26 to 50px), and wide work scrolls inside the page. The
+  work is always left to right (`dir="ltr"`). The game has one look in light and dark, as before.
+- **Saved and shared.** The activity keeps `settings.method`; the shared item has `m` only when it isn't standard, so an
+  item saved before (and a standard one now) is exactly what it was and old links, codes and lessons are unchanged.
+  `cleanBoxItems` takes `m` only from the kind's own list (`BB_METHODS`), drops `standard`, and refuses anything else;
+  `describe` names it: "Long division, 3 problems, Ladder, Guided" (no name for the standard one).
+- **Teachers and students.** The editor has a Method choice (each with one line, and "How students work it"; a picture
+  of a finished example in place of the mode demo). Students practising alone pick "Which way" too (kept per kind in
+  their save). About explains each method for kids. The game is in English (US spelling); the seed JSON's description
+  and tags mention the methods in every language (en-GB: chunking, grid method; nl: hapmethode).
+- Tests: tests/unit/box-by-box-methods.test.js (paths, invalid steps, remainders, parts, items, and each method in the
+  built game in Chromium, Guided and On my own, plus Watch, Count up, wrong digits and the worked answer);
+  tests/unit/box-by-box.test.js (the method in sets and labels).

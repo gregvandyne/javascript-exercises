@@ -1,5 +1,6 @@
 <script lang="ts">
-	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it;
+	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it
+	// (Player for the standard algorithms, MethodPlayer for the ladder, area models and partial products);
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
 	// practising alone.
 	import { nav, go, goBack, show } from '$lib/nav.svelte';
@@ -12,6 +13,7 @@
 	import { practiceProblems } from '$lib/practice';
 	import Editor from './pages/Editor.svelte';
 	import Player from './pages/Player.svelte';
+	import MethodPlayer from './pages/MethodPlayer.svelte';
 	import About from './pages/About.svelte';
 
 	const opened = openedSet();
@@ -44,7 +46,8 @@
 	{/key}
 {:else if nav.view.name === 'play'}
 	{#key nav.view}
-		<Player
+		{@const Play = nav.view.activity.settings.method && nav.view.activity.settings.method !== 'standard' ? MethodPlayer : Player}
+		<Play
 			activity={nav.view.activity}
 			title={nav.view.title}
 			preview={nav.view.from === 'editor'}

@@ -6,6 +6,7 @@
 	import { findSet, isPreview, load, store } from '$lib/oomba';
 	import { parseItem, kindInfo, KINDS, type Kind, type Level } from '$lib/logic';
 	import { HARDS, HELPS, SET_SIZE, practiceActivity, type Hard } from '$lib/practice';
+	import { methodOr, methodsFor, type Method } from '$lib/methods';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
 
@@ -38,14 +39,24 @@
 	}
 
 	// --- practising alone (the last choice is remembered in the student's save) ---
+	const STUDENT_WAY: Record<string, string> = {
+		'divide-standard': 'Divide, multiply, subtract, bring down, one digit at a time.',
+		'divide-ladder': 'Take away easy groups, like 10 or 100, down a ladder. Then add them up.',
+		'divide-area': 'Fill a rectangle in sections. The widths on top add up to the answer.',
+		'multiply-standard': 'Multiply each digit, carry, then add the rows.',
+		'multiply-area': 'Split both numbers into parts, fill a box for each pair, then add the boxes.',
+		'multiply-partial': 'Multiply each place by each place, one line each, then add the lines.'
+	};
 	const LAST = 'box-by-box-practice-v1';
-	const last = (load(LAST) as { kind?: Kind; hard?: Hard; mode?: Level } | null) ?? {};
+	const last = (load(LAST) as { kind?: Kind; hard?: Hard; mode?: Level; method?: Partial<Record<Kind, Method>> } | null) ?? {};
 	let kind = $state<Kind>(last.kind === 'multiply' ? 'multiply' : 'divide');
 	let hard = $state<Hard>(HARDS.some((h) => h.hard === last.hard) ? last.hard! : 'easy');
 	let mode = $state<Level>(HELPS.some((h) => h.mode === last.mode) ? last.mode! : 'guided');
+	// the way they work it, kept for each kind
+	let ways = $state<Record<Kind, Method>>({ divide: methodOr('divide', last.method?.divide), multiply: methodOr('multiply', last.method?.multiply) });
 	function practise() {
-		store(LAST, { kind, hard, mode });
-		const a = practiceActivity(kind, hard, mode);
+		store(LAST, { kind, hard, mode, method: { ...ways } });
+		const a = practiceActivity(kind, hard, mode, ways[kind]);
 		if (a.problems.length) go({ name: 'play', activity: a, title: kindInfo(kind).title, from: 'practice', practice: { kind, hard } });
 	}
 </script>
@@ -116,6 +127,19 @@
 							<input type="radio" name="hard" value={h.hard} bind:group={hard} />
 							<span class="name">{h.name}</span>
 							<span class="small">{h.about[kind]}</span>
+						</label>
+					{/each}
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>Which way</legend>
+				<div class="choices three">
+					{#each methodsFor(kind) as m (m.name)}
+						<label class="choice level" class:on={ways[kind] === m.name}>
+							<input type="radio" name="method-{kind}" value={m.name} bind:group={ways[kind]} />
+							<span class="name">{m.label}</span>
+							<span class="small">{STUDENT_WAY[`${kind}-${m.name}`]}</span>
 						</label>
 					{/each}
 				</div>

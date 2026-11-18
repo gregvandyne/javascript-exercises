@@ -3,6 +3,7 @@
 // had are kept in their game save (per kind and level, the last 300), so a new set, on any day or device, is new.
 
 import { kindInfo, type Kind, type Level as Mode, type Plan, type Playable, type Problem } from './logic';
+import { methodOr, type Method } from './methods';
 import { load, store } from './oomba';
 
 export type Hard = 'easy' | 'medium' | 'hard';
@@ -49,13 +50,14 @@ export function practiceProblems(kind: Kind, hard: Hard): Problem[] {
 	return out;
 }
 
-/** The activity for a practice run: its kind, the help they chose, and its plan (for the player's own labels). */
-export function practiceActivity(kind: Kind, hard: Hard, mode: Mode): Playable {
+/** The activity for a practice run: its kind, the help they chose, the way they work it, and its plan (for the player's
+ *  own labels). */
+export function practiceActivity(kind: Kind, hard: Hard, mode: Mode, method: Method = 'standard'): Playable {
 	const s = kindInfo(kind).settings;
 	return {
 		kind,
 		problems: practiceProblems(kind, hard),
-		settings: { level: mode, custom: { spotlight: true, prompt: true, zoom: true, build: true, drawSigns: true, bringDown: true, markNow: true }, perStudent: false },
+		settings: { level: mode, custom: { spotlight: true, prompt: true, zoom: true, build: true, drawSigns: true, bringDown: true, markNow: true }, perStudent: false, method: methodOr(kind, method) },
 		plan: s.parse(PLANS[kind][hard])
 	};
 }

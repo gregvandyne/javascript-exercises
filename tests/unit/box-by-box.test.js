@@ -33,6 +33,19 @@ test('box-by-box sets: one activity of problems the game can work, a known level
   assert.deepEqual(clean([{ ...DIV, n: 'Ms Smith’s class', note: 'hi' }]), [DIV]);
 });
 
+test('box-by-box sets: the method is one of the kind’s own (never free text); a set without one is the standard algorithm', () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'] });
+  for (const m of ['ladder', 'area']) assert.deepEqual(clean([{ ...DIV, m }]), [{ ...DIV, m }]);
+  for (const m of ['area', 'partial']) assert.deepEqual(clean([{ ...MUL, m }]), [{ ...MUL, m }]);
+  assert.deepEqual(clean([{ ...DIV, m: 'standard' }]), [DIV], 'the standard algorithm is kept as a set without a method, as before');
+  assert.deepEqual(clean([DIV]), [DIV], 'an old set, unchanged');
+  const plan = { count: 16, dividends: [100, 999], divisors: [2, 9], remainders: true };
+  assert.deepEqual(clean([{ k: 'divide', p: [], l: 'countUp', d: 1, g: plan, m: 'ladder' }]), [{ k: 'divide', p: [], l: 'countUp', d: 1, g: plan, m: 'ladder' }]);
+  for (const bad of [{ ...DIV, m: 'partial' }, { ...MUL, m: 'ladder' }, { ...DIV, m: 'Ladder' }, { ...DIV, m: 'ladder method' }, { ...DIV, m: '' }, { ...DIV, m: 1 }, { ...DIV, m: ['ladder'] }, { ...DIV, m: { x: 1 } }])
+    assert.equal(clean([bad]), null, JSON.stringify(bad.m));
+});
+
 test('box-by-box: a teacher saves an activity, its link opens it, the Assign page and the lesson name it', async () => {
   reset();
   const g = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
@@ -107,4 +120,16 @@ test('box-by-box: a student types a saved activity’s class code and gets it to
   const code = r.json.id.slice(2).toUpperCase();
   const got = await call(`/api/games/${g.id}/sets/${code.slice(0, 5)}%20${code.slice(5)}`, { user: kid });
   assert.equal(got.status, 200); assert.deepEqual(got.json, { id: r.json.id, items: [MUL] });
+});
+
+test('box-by-box: the activity’s label names its method (Ladder, Area model, Partial products), and not the standard one', async () => {
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([{ ...DIV, m: 'ladder' }]), 'Long division, 3 problems, Ladder, Guided');
+  assert.equal(label([{ ...DIV, m: 'area', l: 'onMyOwn' }]), 'Long division, 3 problems, Area model, On my own');
+  assert.equal(label([{ ...MUL, m: 'partial' }]), 'Multiplication, 2 problems, Partial products, Count up');
+  assert.equal(label([{ ...MUL, m: 'area', l: 'watch' }]), 'Multiplication, 2 problems, Area model, Watch');
+  assert.equal(label([DIV]), 'Long division, 3 problems, Guided', 'an old set: as before');
+  assert.equal(label([{ ...DIV, m: 'standard' }]), 'Long division, 3 problems, Guided');
 });
