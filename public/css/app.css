@@ -1954,3 +1954,37 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .fsave-ok{font-size:1.15rem;margin:0}
 .fsave-acts{display:grid;gap:10px}
 @media (min-width:480px){.fsave-acts{grid-template-columns:1fr 1fr}}
+/* Printing (a game's printable page, public/js/play.js printForGame; Crossword's Print): the server's page goes into
+   #print-area, which is hidden on screen and is the only thing printed. Black on white, no fills, so it prints on any
+   printer; no page size is set, so US Letter and A4 both fit (the grid is as wide as the page allows). */
+.print-area{display:none}
+@media print{
+  @page{margin:0.5in}
+  html:has(body.printing),body.printing{background:#fff!important;color:#000!important;height:auto!important;min-height:0!important;overflow:visible!important}
+  body.printing>:not(#print-area){display:none!important}
+  body.printing #print-area{display:block!important}
+}
+.cwp{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;color:#000;background:#fff;font-size:11pt;line-height:1.35}
+.cwp-page{display:block}
+.cwp-page+.cwp-page{break-before:page;page-break-before:always}
+.cwp-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8pt 24pt;border-bottom:1.5pt solid #000;padding-bottom:6pt;margin-bottom:10pt}
+.cwp-head h1{font-size:20pt;line-height:1.15;margin:0;font-weight:800;overflow-wrap:anywhere}
+.cwp-lines{display:flex;gap:18pt;margin:0;font-size:11pt}
+.cwp-line{display:inline-flex;align-items:flex-end;gap:4pt;white-space:nowrap}
+.cwp-blank{display:inline-block;width:1.3in;border-bottom:1pt solid #000;height:1em}
+.cwp-blank-name{width:2.1in}
+.cwp-gridbox{display:flex;justify-content:center;margin:0 0 12pt}
+.cwp-grid{display:block;width:100%;height:auto;max-height:6.4in;break-inside:avoid}
+.cwp-grid rect{fill:#fff;stroke:#000;stroke-width:0.45}
+.cwp-grid .cwp-n{font-size:3.1px;font-weight:700;fill:#000;font-family:Arial,sans-serif}
+.cwp-grid .cwp-l{font-size:5.6px;font-weight:700;fill:#000;font-family:Arial,"Noto Sans",sans-serif}
+.cwp-clues{columns:2;column-gap:24pt}
+.cwp-list{break-inside:avoid-column;margin:0 0 10pt}
+.cwp-list h2,.cwp-bank h2{font-size:13pt;margin:0 0 4pt;font-weight:800;break-after:avoid}
+.cwp-list ol{list-style:none;margin:0;padding:0}
+.cwp-list li{display:flex;gap:6pt;margin:0 0 3pt;break-inside:avoid}
+.cwp-num{min-width:1.6em;text-align:end;flex:none}
+.cwp-bank{border:1pt solid #000;border-radius:4pt;padding:6pt 10pt;margin:6pt 0 10pt;break-inside:avoid}
+.cwp-bank ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4pt 18pt}
+.cwp-foot{display:flex;flex-wrap:wrap;gap:4pt 16pt;justify-content:center;border-top:0.75pt solid #000;margin-top:10pt;padding-top:4pt;font-size:8.5pt;break-inside:avoid}
+.cwp-link{overflow-wrap:anywhere}

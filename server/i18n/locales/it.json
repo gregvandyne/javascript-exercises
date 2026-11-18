@@ -1207,7 +1207,20 @@
       "lostText": "A volte succede. Tocca Riprova per ricominciare il gioco.",
       "retry": "Riprova"
     },
-    "voices": "Voci IA"
+    "voices": "Voci IA",
+    "print": {
+      "untitled": "Cruciverba",
+      "name": "Nome:",
+      "date": "Data:",
+      "across": "Orizzontali",
+      "down": "Verticali",
+      "bank": "Elenco parole",
+      "key": "Soluzioni",
+      "keyTitle": "{title}: soluzioni",
+      "made": "Fatto con Oomba Academy",
+      "code": "Codice classe: {code}",
+      "grid": "Griglia del cruciverba"
+    }
   },
   "friends": {
     "title": "Amici",

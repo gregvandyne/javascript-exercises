@@ -1206,7 +1206,20 @@
       "lostText": "Ça arrive parfois. Touche Réessayer pour recommencer le jeu.",
       "retry": "Réessayer"
     },
-    "voices": "Voix IA"
+    "voices": "Voix IA",
+    "print": {
+      "untitled": "Mots croisés",
+      "name": "Nom :",
+      "date": "Date :",
+      "across": "Horizontal",
+      "down": "Vertical",
+      "bank": "Liste des mots",
+      "key": "Corrigé",
+      "keyTitle": "{title} : corrigé",
+      "made": "Fait avec Oomba Academy",
+      "code": "Code de classe : {code}",
+      "grid": "Grille de mots croisés"
+    }
   },
   "friends": {
     "title": "Amis",

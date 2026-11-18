@@ -1207,7 +1207,20 @@
       "lostText": "Das passiert manchmal. Tippe auf Nochmal versuchen, um das Spiel neu zu starten.",
       "retry": "Nochmal versuchen"
     },
-    "voices": "KI-Stimmen"
+    "voices": "KI-Stimmen",
+    "print": {
+      "untitled": "Kreuzworträtsel",
+      "name": "Name:",
+      "date": "Datum:",
+      "across": "Waagerecht",
+      "down": "Senkrecht",
+      "bank": "Wortliste",
+      "key": "Lösung",
+      "keyTitle": "{title}: Lösung",
+      "made": "Gemacht mit Oomba Academy",
+      "code": "Klassencode: {code}",
+      "grid": "Kreuzworträtsel-Gitter"
+    }
   },
   "friends": {
     "title": "Freunde",

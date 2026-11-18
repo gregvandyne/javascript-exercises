@@ -1074,6 +1074,28 @@
     if (Array.isArray(m.words) && m.words.every(function (p) { return Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' && typeof p[1] === 'string'; })) w({ title: typeof m.title === 'string' ? m.title : '', words: m.words.slice(0, 30), cut: m.cut === true, ai: m.ai !== false });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // Crossword's Print (BRB.canPrint): the frame can't print (no allow-modals), so BRB.print(doc) hands the puzzle to the
+  // page as plain data, { t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }, right
+  // after a tap; the page has the server check it and make the printable page, then prints it. A Promise of { ok: true }
+  // or { error } ('notAllowed', 'bad', 'key' (the answer key is for teachers), 'tap', 'offline'). No HTML, ever.
+  var printWait = {}, printSeq = 0;
+  function askPrint(doc) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (INIT.print !== true) return res({ error: 'notAllowed' });
+      var copy; try { copy = JSON.parse(JSON.stringify(doc)); } catch (e) { copy = null; }
+      if (!copy || typeof copy !== 'object' || Array.isArray(copy) || JSON.stringify(copy).length > 20000) return res({ error: 'bad' });
+      var n = ++printSeq, timer = setTimeout(function () { delete printWait[n]; res({ error: 'offline' }); }, 20000);
+      printWait[n] = function (r) { clearTimeout(timer); delete printWait[n]; res(r); };
+      send('brb:print', { id: n, doc: copy });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:printed' || typeof m.id !== 'number') return;
+    var w = printWait[m.id]; if (!w) return;
+    w(m.ok === true ? { ok: true } : { error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
   // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
   // its Assign page with these lesson parameters (the problem or the set the class will open).
   function assign(query) {
@@ -1316,6 +1338,8 @@
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,
     wordsFromDoc: wordsFromDoc,
+    canPrint: INIT.print === true,
+    print: askPrint,
     assign: assign
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);

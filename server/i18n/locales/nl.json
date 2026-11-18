@@ -1207,7 +1207,20 @@
       "lostText": "Dat gebeurt soms. Tik op Opnieuw om het spel opnieuw te starten.",
       "retry": "Opnieuw proberen"
     },
-    "voices": "AI-stemmen"
+    "voices": "AI-stemmen",
+    "print": {
+      "untitled": "Kruiswoordpuzzel",
+      "name": "Naam:",
+      "date": "Datum:",
+      "across": "Horizontaal",
+      "down": "Verticaal",
+      "bank": "Woordenlijst",
+      "key": "Antwoorden",
+      "keyTitle": "{title}: antwoorden",
+      "made": "Gemaakt met Oomba Academy",
+      "code": "Klascode: {code}",
+      "grid": "Kruiswoordpuzzelrooster"
+    }
   },
   "friends": {
     "title": "Vrienden",

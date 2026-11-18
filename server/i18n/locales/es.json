@@ -1206,7 +1206,20 @@
       "lostText": "A veces pasa. Toca Reintentar para empezar el juego de nuevo.",
       "retry": "Reintentar"
     },
-    "voices": "Voces de IA"
+    "voices": "Voces de IA",
+    "print": {
+      "untitled": "Crucigrama",
+      "name": "Nombre:",
+      "date": "Fecha:",
+      "across": "Horizontal",
+      "down": "Vertical",
+      "bank": "Banco de palabras",
+      "key": "Respuestas",
+      "keyTitle": "{title}: Respuestas",
+      "made": "Hecho con Oomba Academy",
+      "code": "Código de clase: {code}",
+      "grid": "Cuadrícula del crucigrama"
+    }
   },
   "friends": {
     "title": "Amigos",
