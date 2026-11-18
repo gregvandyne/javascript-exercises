@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const L = await import(path.join(ROOT, 'tools/box-by-box/src/lib/logic.ts'));
+const M = await import(path.join(ROOT, 'tools/box-by-box/src/lib/methods.ts'));
 
 const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find((p) => p && fs.existsSync(p));
 let chromium = null;
@@ -123,3 +124,77 @@ test('in Chromium: an arrow is drawn only when its bring-down is done', { skip, 
   assert.equal(await arrows(page), 1, 'the first bring-down, its arrow');
   await ctx.close();
 });
+
+// ---------------------------------------------------------------- remainders as fractions and decimals
+
+for (const l of ['guided', 'onMyOwn']) {
+  test(`in Chromium: remainders as fractions, three in a row, ${l}`, { skip, timeout: 90e3 }, async () => {
+    await inARow({ k: 'divide', p: [[745, 6], [30, 4], [1234, 12]], r: 'fraction' }, l, 'fractions', async (page, sheet, w) => {
+      assert.equal(await page.locator('input.digit.half').count(), sheet.fraction ? sheet.fraction.num.length + sheet.fraction.den.length : 0, `${w}: the fraction's half squares`);
+    });
+  });
+  test(`in Chromium: remainders as decimals, three in a row, ${l}`, { skip, timeout: 90e3 }, async () => {
+    await inARow({ k: 'divide', p: [[745, 6], [745, 4], [92, 8]], r: 'decimal' }, l, 'decimals', async (page, sheet, w) => {
+      assert.equal(await page.locator('svg.arrow').count(), sheet.cells.filter((c) => c.kind === 'arrow').length, `${w}: every arrow, the lifted point's too`);
+      if (sheet.note) assert.match(await page.locator('.feedback').innerText(), /Rounded to the nearest hundredth/, w);
+    });
+  });
+}
+
+test('in Chromium: a fraction simplified is right, on the phone keypad; a decimal point is typed with its own key', { skip, timeout: 60e3 }, async () => {
+  const { page, ctx, errors } = await open({ k: 'divide', p: [[30, 4]], l: 'onMyOwn', r: 'fraction' }, true);
+  const s = sheetOf({ k: 'divide', p: [[30, 4]], r: 'fraction' }, [30, 4]);
+  for (const id of s.answerBoxes.filter((x) => x[0] === 'q')) { await page.locator(`input[data-box="${id}"]`).focus(); await page.keyboard.type(String(L.boxOf(s, id).digit)); }
+  await page.locator(`input[data-box="${s.fraction.num[0]}"]`).focus(); await page.keyboard.type('1');
+  await page.locator(`input[data-box="${s.fraction.den[0]}"]`).focus(); await page.keyboard.type('2');
+  await page.getByRole('button', { name: 'Check', exact: true }).click();
+  assert.match(await page.locator('.feedback').innerText(), /Correct! 30 ÷ 4 = 7 2\/4/);
+  await ctx.close();
+  const d = await open({ k: 'divide', p: [[745, 4]], l: 'guided', r: 'decimal' }, true);
+  await d.page.getByRole('button', { name: 'Keypad' }).click();
+  assert.equal(await d.page.getByRole('button', { name: 'Decimal point' }).count(), 1, 'the keypad has a point key');
+  const ds = sheetOf({ k: 'divide', p: [[745, 4]], r: 'decimal' }, [745, 4]);
+  // up to the point: by the keypad, as on a phone
+  for (let guard = 0; guard < 60; guard++) {
+    const id = await d.page.evaluate(() => document.activeElement?.dataset?.box ?? null);
+    if (!id || L.boxOf(ds, id).digit === '.') break;
+    await d.page.locator('.keypad').getByRole('button', { name: String(L.boxOf(ds, id).digit), exact: true }).click();
+    await d.page.waitForTimeout(30);
+    await d.page.waitForFunction(() => document.activeElement?.dataset?.box && document.activeElement.value === '');
+  }
+  assert.match(await d.page.locator('.prompt').innerText(), /Write a decimal point after 745, then a 0/);
+  await d.page.getByRole('button', { name: 'Decimal point' }).click();
+  assert.equal(await d.page.locator('input[data-box="np"]').inputValue(), '.');
+  await ctx.close().catch(() => {});
+  await d.ctx.close();
+  assert.deepEqual([...errors, ...d.errors], []);
+});
+
+for (const [m, l] of [['ladder', 'guided'], ['area', 'onMyOwn'], ['area', 'guided'], ['ladder', 'onMyOwn']])
+  test(`in Chromium: the ${m === 'ladder' ? 'ladder' : 'area model'} writes remainders as fractions, three in a row, ${l}`, { skip, timeout: 90e3 }, async () => {
+    const p = [[945, 7], [30, 4], [87, 5]];
+    const { page, ctx, errors } = await open({ k: 'divide', p, l, m, r: 'fraction' }, true);
+    for (let i = 0; i < p.length; i++) {
+      const v = {};
+      for (let guard = 0; guard < 60; guard++) {
+        const f = M.buildWork(m, 'divide', p[i], v, 'fraction').fields.find((x) => !v[x.id]);
+        if (!f) break;
+        if (l === 'guided') assert.equal(await page.locator('.prompt').innerText(), f.prompt, `${p[i]}: the question for ${f.id}`);
+        const val = f.role === 'choice' ? String(f.countUp.choose.last ? Math.floor(f.countUp.choose.left / f.countUp.choose.divisor) : M.placeValueMultiple(f.countUp.choose.left, f.countUp.choose.divisor)) : f.expect;
+        if (l !== 'guided') await page.locator(`input[data-field="${f.id}"]`).focus();
+        await page.keyboard.type(val);
+        if (f.role === 'choice' && val.length < f.len) await page.keyboard.press('Enter');
+        await page.waitForTimeout(30);
+        v[f.id] = val;
+      }
+      const w = M.buildWork(m, 'divide', p[i], v, 'fraction');
+      await page.getByRole('button', { name: 'Check', exact: true }).click();
+      assert.match(await page.locator('.feedback').innerText(), new RegExp(`Correct! ${p[i][0]} ÷ ${p[i][1]} = ${w.answer}`));
+      await page.locator('.feedback .btn-primary').click();
+    }
+    await page.getByText('All done!').waitFor();
+    assert.deepEqual(await page.evaluate(() => window.__over), [{ won: true, score: 3 }]);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });

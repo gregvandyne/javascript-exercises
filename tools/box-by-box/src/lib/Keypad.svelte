@@ -5,13 +5,14 @@
 		ontap,
 		disabled = false,
 		wide = false,
-		fill = false
-	}: { ontap: (key: string) => void; disabled?: boolean; wide?: boolean; fill?: boolean } = $props();
+		fill = false,
+		point = false
+	}: { ontap: (key: string) => void; disabled?: boolean; wide?: boolean; fill?: boolean; point?: boolean } = $props();
 </script>
 
-<div class="keypad" class:wide class:fill role="group" aria-label="Keypad">
-	{#each ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'] as k (k)}
-		<button type="button" class="key" class:zero={k === '0'} {disabled} onpointerdown={(e) => e.preventDefault()} onclick={() => ontap(k)}
+<div class="keypad" class:wide class:fill class:point role="group" aria-label="Keypad">
+	{#each ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', ...(point ? ['.'] : [])] as k (k)}
+		<button type="button" class="key" class:zero={k === '0'} aria-label={k === '.' ? 'Decimal point' : undefined} {disabled} onpointerdown={(e) => e.preventDefault()} onclick={() => ontap(k)}
 			>{k}</button
 		>
 	{/each}
@@ -75,6 +76,9 @@
 	}
 	.key.zero {
 		grid-column: span 2;
+	}
+	.point .key.zero {
+		grid-column: span 1;
 	}
 	.wide .key.zero {
 		grid-column: span 1;

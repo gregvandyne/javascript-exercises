@@ -16,7 +16,8 @@
 		top = 64,
 		rect = $bindable(),
 		saved,
-		onmoved
+		onmoved,
+		point = false
 	}: {
 		ontap: (k: string) => void;
 		onclose: () => void;
@@ -25,6 +26,7 @@
 		rect?: Rect;
 		saved?: Rect | null;
 		onmoved: (r: Rect) => void;
+		point?: boolean;
 	} = $props();
 
 	const MIN = { width: 200, height: 260 };
@@ -107,7 +109,7 @@
 		onpointerdown={(e) => drag(e, false)}
 		onkeydown={(e) => nudge(e, false)}><GripHorizontal size={18} aria-hidden="true" /></button
 	>
-	<div class="keys"><Keypad fill {disabled} {ontap} /></div>
+	<div class="keys"><Keypad fill {point} {disabled} {ontap} /></div>
 	<button
 		type="button"
 		class="corner"

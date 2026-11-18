@@ -36,9 +36,14 @@ export function cleanItems(raw) {
 // [{ k: 'divide'|'multiply', p: [[a, b], ...] (1-100 problems the game can work), l: level, c?: 7 flags (level custom),
 //    d?: 1 (a fresh set for each student, made from g), g?: the plan it is made from (only with d),
 //    m?: the method, one of the kind's own (BB_METHODS); left out, or 'standard', is the standard algorithm, so sets
-//    saved before methods read as they always did }]
+//    saved before methods read as they always did,
+//    r?: how long division writes its remainders, 'fraction' or 'decimal' (BB_FORMS); left out, R (g.remainders stays
+//    on or off, as before) }]
+// Every field is a number, a fixed flag or one of a few words: never free text. A set saved before a field came along
+// is cleaned to exactly what it was.
 const BB_LEVELS = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn', 'custom'];
 export const BB_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'] };
+export const BB_FORMS = ['fraction', 'decimal'];
 const int = v => (Number.isInteger(v) ? v : NaN);
 const digits = n => String(n).length;
 /** The Big Divide's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
@@ -84,6 +89,10 @@ export function cleanBoxItems(raw) {
   if (it.m !== undefined && it.m !== null) {
     if (typeof it.m !== 'string' || !BB_METHODS[k].includes(it.m)) return null;
     if (it.m !== 'standard') out.m = it.m;
+  }
+  if (it.r !== undefined && it.r !== null) {
+    if (k !== 'divide' || !BB_FORMS.includes(it.r)) return null;
+    out.r = it.r;
   }
   return [out];
 }
@@ -182,6 +191,7 @@ export function readable(code) {
 }
 const BB_KIND = { divide: 'Long division', multiply: 'Multiplication' };
 const BB_METHOD = { ladder: 'Ladder', area: 'Area model', partial: 'Partial products' };
+const BB_FORM = { fraction: 'remainders as fractions', decimal: 'answers as decimals' };
 const BB_LEVEL = { watch: 'Watch', countUp: 'Count up', guided: 'Guided', prompted: 'Prompted', onMyOwn: 'On my own', custom: 'your own mix' };
 /** What a set game's lesson options open, for the assign page and the lesson's title: a set (its size), one problem, an
  *  activity (The Big Divide: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
@@ -197,7 +207,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
     }
     if (slug === 'box-by-box') {
       const a = s.items[0], n = a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
-      return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}` };
+      return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}` };
     }
     return { kind: 'set', n: s.items.length };
   }

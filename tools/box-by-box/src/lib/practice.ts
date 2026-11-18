@@ -11,9 +11,9 @@ export const SET_SIZE = 5;
 
 const PLANS: Record<Kind, Record<Hard, Plan>> = {
 	divide: {
-		easy: { count: SET_SIZE, dividends: [10, 99], divisors: [2, 5], remainders: false },
-		medium: { count: SET_SIZE, dividends: [100, 999], divisors: [2, 9], remainders: true },
-		hard: { count: SET_SIZE, dividends: [1000, 9999], divisors: [11, 25], remainders: true }
+		easy: { count: SET_SIZE, dividends: [10, 99], divisors: [2, 5], remainders: 'none' },
+		medium: { count: SET_SIZE, dividends: [100, 999], divisors: [2, 9], remainders: 'R' },
+		hard: { count: SET_SIZE, dividends: [1000, 9999], divisors: [11, 25], remainders: 'R' }
 	},
 	multiply: {
 		easy: { count: SET_SIZE, tops: [10, 99], bottoms: [2, 9] },

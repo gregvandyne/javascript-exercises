@@ -15,6 +15,7 @@
 		correctValues,
 		countNudge,
 		countState,
+		isRight,
 		isWrong,
 		kindInfo,
 		levelInfo,
@@ -139,7 +140,7 @@
 		return (
 			way === 'watch' ||
 			st.liftCarry?.tens === id ||
-			(way === 'countUp' && ((st.kind === 'multiply' && !st.skipCount) || st.kind === 'carry' || st.kind === 'zero')) ||
+			(way === 'countUp' && ((st.kind === 'multiply' && !st.skipCount) || st.kind === 'carry' || st.kind === 'zero' || st.kind === 'point' || st.kind === 'addZero')) ||
 			(flags.bringDown && st.kind === 'bringDown')
 		);
 	}
@@ -165,6 +166,16 @@
 		return empty ? stepOfBox(sheet, empty) : -1;
 	});
 	const hints = $derived(sheet && hintStep >= 0 ? hintsFor(sheet, hintStep, values) : []);
+	/** A box that takes a decimal point, its cell (a fraction's half square, a regrouping 1 in a corner), and whether it
+	 *  is crossed out now. */
+	const isPoint = (id: string) => !!cellOf(id)?.point;
+	const hasPoints = $derived(!!sheet?.cells.some((c) => c.kind === 'box' && c.point));
+	function crossedNow(id: string) {
+		const by = sheet?.crossedBy?.[id];
+		if (by) return !!values[by] || isReveal;
+		return sheet?.crossed?.[id] !== undefined && furthest >= sheet.crossed[id];
+	}
+	const givenCrossed = (c: Cell) => c.kind === 'given' && !!c.crossBy && (!!values[c.crossBy] || isReveal);
 	$effect(() => {
 		void index;
 		void hintStep;
@@ -236,7 +247,7 @@
 	const prompt = $derived.by(() => {
 		if (!sheet || phase !== 'working') return '';
 		if (way === 'watch') {
-			if (at >= steps.length) return `So ${sheet.title} = ${showAnswer(sheet.answer)}.`;
+			if (at >= steps.length) return `So ${sheet.title} = ${showAnswer(sheet.answer)}.${sheet.note ? ` ${sheet.note}` : ''}`;
 			const st = steps[at];
 			return st.kind === 'zero' ? (st.told?.(values) ?? '') : prefixed(st.kind, st.prompt(values));
 		}
@@ -265,6 +276,8 @@
 		if (!sheet || isReveal || phase === 'setup') return true;
 		// an arrow (a bring-down, a lifted point) is drawn once its box is filled, and stays
 		if (c.kind === 'arrow' && c.after) return !!values[c.after];
+		// a placed point (and a zero in front of it) once the box that places it is right
+		if (c.kind === 'given' && c.after && !isRight(sheet, values, c.after)) return false;
 		return !flags.build ? true : cellStep(sheet, c) <= furthest;
 	}
 	const litSet = $derived.by(() => {
@@ -540,6 +553,7 @@
 	function onBoxInput(id: string, e: Event) {
 		const el = e.currentTarget as HTMLInputElement;
 		if (busy) el.value = values[id] ?? '';
+		else if (isPoint(id)) enterDigit(id, el.value.replace(/,/g, '.').replace(/[^\d.]/g, '').slice(-1));
 		else enterDigit(id, el.value.replace(/\D/g, '').slice(-1));
 	}
 	let enterHandled: Event | null = null;
@@ -553,6 +567,8 @@
 				await tick();
 				if (current && !busy) enterDigit(current, e.key);
 			});
+		} else if ((e.key === '.' || e.key === ',') && !isPoint(id)) {
+			e.preventDefault();
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
 			// this Enter checks; it must not also go on to the feedback (a second Enter does)
@@ -712,7 +728,7 @@
 		}
 		if (way === 'watch') return;
 		const id = current ?? typeable.find((b) => !values[b]) ?? null;
-		if (!id) return;
+		if (!id || (k === '.' && !isPoint(id))) return;
 		if (k === '') {
 			if (values[id]) enterDigit(id, '');
 			else {
@@ -820,6 +836,10 @@
 	const toGo = $derived(phase === 'over' ? 0 : sheets.length - index - +settled);
 	function boxLabel(id: string) {
 		if (isCountBox(id) && current === id) return activity.kind === 'multiply' ? 'Product: ▲ and ▼ to count' : 'Quotient digit: ▲ and ▼ to count up';
+		const c = cellOf(id);
+		if (c?.point) return 'Decimal point';
+		if (c?.half) return c.half === 'top' ? 'Fraction, top digit' : 'Fraction, bottom digit';
+		if (c?.corner) return 'Regrouping 1';
 		return sheet?.remainderBoxes?.includes(id) ? 'Remainder digit' : 'Digit';
 	}
 </script>
@@ -828,6 +848,7 @@
 
 {#snippet box(id: string, small: boolean)}
 	{@const auto = isAuto(id)}
+	{@const cell = cellOf(id)}
 	{@const countBox = isCountBox(id)}
 	{@const canType = way !== 'watch' && !auto && !countBox}
 	{@const liftTens = !!sheet && steps[stepOfBox(sheet, id)]?.liftCarry?.tens === id && way === 'type'}
@@ -850,8 +871,11 @@
 		class:shown={isReveal && before[id] !== values[id]}
 		class:counting={countBox && current === id && !busy && phase === 'working'}
 		class:remainder={sheet?.remainderBoxes?.includes(id)}
-		class:crossed={sheet?.crossed?.[id] !== undefined && furthest >= sheet.crossed[id]}
-		inputmode={canType ? 'numeric' : 'none'}
+		class:half={!!cell?.half}
+		class:corner={!!cell?.corner}
+		class:point={!!cell?.point}
+		class:crossed={crossedNow(id)}
+		inputmode={canType ? (cell?.point ? 'decimal' : 'numeric') : 'none'}
 		aria-label={boxLabel(id)}
 		value={values[id] ?? ''}
 		readonly={phase !== 'working' || !canType}
@@ -880,7 +904,7 @@
 	{#if sheet && phase !== 'setup' && phase !== 'over'}
 		<div class="world" bind:this={worldEl}>
 			{#key sheet}
-				<Sheet {sheet} {box} paper={false} {shown} {lit} draw={flags.build && flags.drawSigns} />
+				<Sheet {sheet} {box} paper={false} {shown} {lit} crossed={givenCrossed} draw={flags.build && flags.drawSigns} />
 			{/key}
 			{#if live}
 				<span
@@ -982,6 +1006,7 @@
 				<p>
 					{#if fb === 'right'}<b>Correct!</b> {sheet.title} = {showAnswer(sheet.answer)}{:else if fb === 'again'}<b>Not quite.</b> Check your work
 						and try again.{:else}<b>The answer is {showAnswer(sheet.answer)}.</b> The digits you missed are filled in.{/if}
+					{#if fb !== 'again' && sheet.note}<span class="note">{sheet.note}</span>{/if}
 				</p>
 				<button type="button" class="btn-primary" bind:this={feedbackBtn} onclick={onFeedback}>
 					{#if fb === 'again'}Try again{:else if index + 1 < sheets.length}Next problem{:else}See the score{/if}
@@ -1035,7 +1060,7 @@
 				</div>
 			</div>
 			{#if padOpen && narrow && way !== 'watch'}
-				<Keypad wide disabled={phase !== 'working'} ontap={keypad} />
+				<Keypad wide point={hasPoints} disabled={phase !== 'working'} ontap={keypad} />
 			{/if}
 		{/if}
 	</div>
@@ -1114,6 +1139,16 @@
 		width: 62%;
 		height: 62%;
 		font-size: calc(var(--cell) * 0.36);
+	}
+	.digit.half {
+		font-size: calc(var(--cell) * 0.42);
+	}
+	.digit.corner {
+		font-size: calc(var(--cell) * 0.3);
+		border-radius: 4px;
+	}
+	.digit.point {
+		font-size: calc(var(--cell) * 0.7);
 	}
 	.digit.remainder {
 		background: color-mix(in srgb, var(--remainder-wash) 70%, transparent);
@@ -1471,6 +1506,12 @@
 	.feedback p {
 		flex: 14rem;
 		margin: 0;
+	}
+	.feedback .note {
+		display: block;
+		margin-top: 0.25rem;
+		color: var(--ink-soft);
+		font-size: 0.95rem;
 	}
 	.feedback .btn-primary {
 		padding: 0.75rem 1.2rem;

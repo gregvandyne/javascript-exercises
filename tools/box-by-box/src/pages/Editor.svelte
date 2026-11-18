@@ -5,7 +5,7 @@
 	import { onMount, tick } from 'svelte';
 	import { ArrowLeft, Dices, ExternalLink, GripVertical, Plus, Share2, X } from '@lucide/svelte';
 	import { find, isShared, list, loadList, titleOf, touch } from '$lib/activities.svelte';
-	import { MAX_PROBLEMS, kindInfo, levelInfo, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
+	import { MAX_PROBLEMS, formOf, kindInfo, levelInfo, remainderForm, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
 	import { go, show } from '$lib/nav.svelte';
 	import Stepper from '$lib/Stepper.svelte';
 	import SwitchRow from '$lib/SwitchRow.svelte';
@@ -34,7 +34,7 @@
 	const valid = (r: Row) => !!r.first && !!r.second && !fault(r);
 	function answerOf(r: Row): [string, string] {
 		if (!valid(r)) return ['', ''];
-		const [q, rem = ''] = showAnswer(k.sheet([Number(r.first), Number(r.second)]).answer).split(' R ');
+		const [q, rem = ''] = showAnswer(k.sheet([Number(r.first), Number(r.second)], { ...activity!.plan, remainders: form } as Plan).answer).split(' R ');
 		return [q, rem];
 	}
 	const layout = $derived(activity?.kind === 'divide' ? 'bracket' : 'stacked');
@@ -221,12 +221,24 @@
 		if (!activity?.edited) return f();
 		dialog?.ask().then((yes) => yes && f());
 	}
-	function setSwitch(key: 'remainders', v: boolean) {
-		confirmThen(() => {
-			if (!activity) return;
+	/** How remainders are written. Only None (every problem divides evenly) changes which problems fit: going to or
+	 *  from it makes new ones; the others write the same problems' remainders another way. */
+	const form = $derived(activity ? formOf(activity) : 'R');
+	function setChoice(key: 'remainders', v: string) {
+		if (!activity) return;
+		const before = remainderForm((activity.plan as Record<string, unknown>)[key]);
+		const set = () => {
 			(activity.plan as Record<string, unknown>)[key] = v;
-			regenerate();
-		});
+			plays++;
+		};
+		if ((before === 'none') === (v === 'none')) {
+			set();
+			save();
+		} else
+			confirmThen(() => {
+				set();
+				regenerate();
+			});
 	}
 	const digitsWide = $derived(Math.max(...s.ranges.map((r) => String(r.limits[1]).length)));
 	function setRange(key: RangeKey, lo: number, hi: number) {
@@ -408,10 +420,17 @@
 						</div>
 					{/each}
 					{#if note}<p class="range-note" role="status">{note}</p>{/if}
-					{#each s.switches as sw (sw.key)}
-						<SwitchRow label={sw.name} checked={!!(activity.plan as Record<string, unknown>)[sw.key]} onchange={(v) => setSwitch(sw.key, v)}
-							>{sw.about}</SwitchRow
-						>
+					{#each s.choices as ch (ch.key)}
+						{@const options = ch.options.filter((o) => o.value !== 'decimal' || method === 'standard')}
+						<div class="choice-row">
+							<h3 id="choice-{ch.key}">{ch.name}</h3>
+							<div class="tabs" role="radiogroup" aria-labelledby="choice-{ch.key}">
+								{#each options as o (o.value)}
+									<button type="button" role="radio" class="tab" aria-checked={form === o.value} onclick={() => setChoice(ch.key, o.value)}>{o.label}</button>
+								{/each}
+							</div>
+							<p class="about">{ch.options.find((o) => o.value === form)?.about ?? ''}</p>
+						</div>
 					{/each}
 				</div>
 				<section class="group methods" aria-labelledby="method-title">

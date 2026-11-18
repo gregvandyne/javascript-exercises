@@ -11,6 +11,7 @@
 		shown = () => true,
 		lit = () => true,
 		draw = false,
+		crossed = () => false,
 		label
 	}: {
 		sheet: Sheet;
@@ -19,11 +20,19 @@
 		shown?: (c: Cell) => boolean;
 		lit?: (key: string) => boolean;
 		draw?: boolean;
+		/** Whether a given digit is crossed out now (regrouping). */
+		crossed?: (c: Cell) => boolean;
 		label?: string;
 	} = $props();
 
 	/** An arrow down the middle of its column, from under the digit to just over the box it goes to; or (up) a short one
 	 *  beside a lifted point, from the row below to the row above. */
+	/** A decimal point's hop: an arc over the digits it moves past, ending in an arrowhead where the point lands. */
+	function hopPath(x1: number, x2: number): string {
+		const y = 0.62;
+		const top = -0.05;
+		return `M ${x1} ${y} Q ${(x1 + x2) / 2} ${top} ${x2} ${y} M ${x2 - 0.13} ${y - 0.1} L ${x2} ${y} L ${x2 + 0.05} ${y - 0.15}`;
+	}
 	function arrowPath(up: boolean, span: number): string {
 		if (up) {
 			const x = 0.86;
@@ -46,6 +55,8 @@
 					class="given"
 					class:faint={c.faint}
 					class:label={c.label}
+					class:dot={c.dot}
+					class:crossed={crossed(c)}
 					class:dim
 					class:drawn={draw && c.step !== undefined}
 					aria-hidden={c.faint}
@@ -53,10 +64,31 @@
 					style:grid-column={c.col + 1}>{c.text}</span
 				>
 			{:else if c.kind === 'box'}
-				<span class="slot" class:dim style:grid-row={c.row + 1} style:grid-column={c.col + 1}>{@render box(c.id, !!c.small)}</span>
+				<span
+					class="slot"
+					class:half-top={c.half === 'top'}
+					class:half-bottom={c.half === 'bottom'}
+					class:corner={c.corner}
+					class:dim
+					style:grid-row={c.row + 1}
+					style:grid-column={c.col + 1}>{@render box(c.id, !!c.small)}</span
+				>
+			{:else if c.kind === 'hop'}
+				{@const left = Math.floor(c.from)}
+				{@const w = Math.ceil(c.to) - left}
+				<svg
+					class="hop"
+					class:dim
+					aria-hidden="true"
+					viewBox="0 0 {w} 1"
+					style:grid-row={c.row + 1}
+					style:grid-column="{left + 1} / span {w}"
+					><path d={hopPath(c.from - left, c.to - left)} /><circle cx={c.to - left} cy="0.86" r="0.07" /></svg
+				>
 			{:else if c.kind === 'rule'}
 				<span
 					class="rule"
+					class:mid={c.mid}
 					class:dim
 					class:drawn={draw && c.step !== undefined}
 					aria-hidden="true"
@@ -164,6 +196,62 @@
 		stroke: var(--ink);
 		stroke-width: 3px;
 		stroke-linecap: round;
+	}
+	.hop {
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+		fill: none;
+		stroke: var(--accent);
+		stroke-width: 0.05;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.hop circle {
+		fill: var(--accent);
+		stroke: none;
+	}
+	.given.dot {
+		justify-self: end;
+		align-self: end;
+		width: calc(var(--cell) * 0.3);
+		margin-right: calc(var(--cell) * -0.15);
+		padding-bottom: calc(var(--cell) * 0.1);
+		z-index: 1;
+	}
+	.given.crossed {
+		color: var(--muted);
+		background-image: linear-gradient(
+			to top right,
+			transparent calc(50% - 1.5px),
+			var(--ink-soft) calc(50% - 1.5px) calc(50% + 1.5px),
+			transparent calc(50% + 1.5px)
+		);
+	}
+	.slot.half-top,
+	.slot.half-bottom {
+		height: 50%;
+		padding: calc(var(--cell) * 0.04) calc(var(--cell) * 0.06);
+	}
+	.slot.half-top {
+		align-self: start;
+	}
+	.slot.half-bottom {
+		align-self: end;
+	}
+	.slot.corner {
+		align-self: start;
+		justify-self: start;
+		width: 42%;
+		height: 42%;
+		padding: 0;
+		z-index: 1;
+	}
+	.rule.mid {
+		align-self: center;
+		margin-bottom: 0;
+		border-bottom-width: 2.5px;
 	}
 	.arrow {
 		width: 100%;

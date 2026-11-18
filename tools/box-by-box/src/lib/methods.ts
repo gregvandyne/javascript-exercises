@@ -5,7 +5,7 @@
 // The work is a list of number fields, worked out again from what the student has typed (a ladder grows a rung when the
 // last difference still holds the divisor). No platform calls and no DOM here, so it runs as it is in Node too.
 
-import type { Kind, Problem, Values } from './logic';
+import type { Kind, Problem, RemainderForm, Values } from './logic';
 
 export type Method = 'standard' | 'ladder' | 'area' | 'partial';
 export const METHOD_NAMES: Method[] = ['standard', 'ladder', 'area', 'partial'];
@@ -93,6 +93,7 @@ const len = (n: number) => String(n).length;
 export const norm = (s: string) => (s === '' ? '' : s.replace(/^0+(?=\d)/, ''));
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const countBy = (n: number, times: number) => Array.from({ length: times }, (_, i) => n * (i + 1)).join(', ');
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
 /** The trailing zeros of a number: 400 -> 2. */
 const zerosOf = (n: number) => {
 	let z = 0;
@@ -238,7 +239,7 @@ export const partsTotal = (ps: PartProduct[]) => ps.reduce((s, p) => s + p.value
 
 // --- the work: the fields to fill, in order, from what has been typed ---
 
-export type Role = 'choice' | 'product' | 'difference' | 'cell' | 'sum' | 'quotient' | 'remainder';
+export type Role = 'choice' | 'product' | 'difference' | 'cell' | 'sum' | 'quotient' | 'remainder' | 'denominator';
 export type Field = {
 	id: string;
 	/** How many squares it takes. */
@@ -249,6 +250,9 @@ export type Field = {
 	expect: string | null;
 	/** A choice: null when it works, else why not (Guided says so at once; Check marks it). */
 	nudge?: (v: string) => string | null;
+	/** A fraction's part: any part of a fraction equal to the remainder over the divisor is right (simplifying is up
+	 *  to the student), so this says whether what's typed is, in place of expect. */
+	accept?: (v: string) => boolean;
 	/** A choice that works but isn't the method's way (an area model's one section for all of it): Guided says so once,
 	 *  and Next keeps it. */
 	advice?: (v: string) => string | null;
@@ -273,13 +277,15 @@ export type Work =
 			dividend: number;
 			divisor: number;
 			rungs: Rung[];
+			/** The remainder as a fraction (beside the quotient), not as R. */
+			fraction?: boolean;
 	  }
 	| { method: 'area'; kind: 'multiply'; title: string; answer: string; fields: Field[]; closed: true; top: number; bottom: number; cells: PartProduct[][]; sum: string | null }
 	| { method: 'partial'; kind: 'multiply'; title: string; answer: string; fields: Field[]; closed: true; top: number; bottom: number; rows: PartProduct[]; sum: string | null };
 
 const has = (v: Values, id: string) => !!v[id];
 
-function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: number, v: Values): Work {
+function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: number, v: Values, form: RemainderForm = 'R'): Work {
 	const Q = Math.floor(dividend / divisor);
 	const R = dividend % divisor;
 	const fields: Field[] = [];
@@ -394,6 +400,49 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 		lit: [...rungs.map((r) => r.q), 'quotient']
 	});
 	const lastR = rungs.at(-1)!.r;
+	if (form === 'fraction') {
+		// the remainder over the divisor, beside the quotient (nothing left over: no fraction)
+		if (R > 0) {
+			const g = gcd(R, divisor);
+			const simpler = g > 1 ? ` You may simplify it: ${R}/${divisor} = ${R / g}/${divisor / g}.` : '';
+			const numOk = (s: string) => s !== '' && Number(s) >= 1 && Number(s) <= R && (Number(s) * divisor) % R === 0;
+			fields.push({
+				id: 'remainder',
+				len: len(R),
+				role: 'remainder',
+				expect: String(R),
+				accept: numOk,
+				prompt: `${R} is left ${method === 'ladder' ? 'at the bottom' : 'in the last section'}. Write it on top of a fraction, beside the quotient.`,
+				told: `${R} is left over: it goes on top of the fraction.`,
+				hints: [`What’s left at the end goes on top of the fraction.`, `Copy the last number you got when you subtracted.`, `It’s ${R}.`],
+				lit: [lastR, 'remainder']
+			});
+			const n = Number(v.remainder ?? '');
+			fields.push({
+				id: 'den',
+				len: len(divisor),
+				role: 'denominator',
+				expect: String(divisor),
+				accept: (s) => numOk(v.remainder ?? '') && s !== '' && Number(s) >= 1 && n * divisor === R * Number(s),
+				prompt: `Under the line goes the number you divided by.${simpler}`,
+				told: `${divisor} goes under the line: ${Q} ${R}/${divisor}.${simpler}`,
+				hints: [`The bottom of the fraction says how big a whole group is: the number you divided by.`, `It’s ${divisor}.${simpler}`],
+				lit: ['divisor', 'den']
+			});
+		}
+		return {
+			method,
+			kind: 'divide',
+			title: `${dividend} ÷ ${divisor}`,
+			answer: R ? `${Q} ${R}/${divisor}` : String(Q),
+			fields,
+			closed,
+			dividend,
+			divisor,
+			rungs,
+			fraction: true
+		};
+	}
 	fields.push({
 		id: 'remainder',
 		len: Math.max(1, len(divisor - 1)),
@@ -461,8 +510,8 @@ function sumField(parts: PartProduct[], v: Values, total: number, what: string):
 }
 
 /** The work for a problem by a method (not the standard one), from what has been typed so far. */
-export function buildWork(method: Method, kind: Kind, [a, b]: Problem, v: Values = {}): Work {
-	if (kind === 'divide') return divisionWork(method === 'area' ? 'area' : 'ladder', a, b, v);
+export function buildWork(method: Method, kind: Kind, [a, b]: Problem, v: Values = {}, form: RemainderForm = 'R'): Work {
+	if (kind === 'divide') return divisionWork(method === 'area' ? 'area' : 'ladder', a, b, v, form);
 	const product = a * b;
 	if (method === 'partial') {
 		const rows = partialProducts(a, b);
@@ -484,12 +533,14 @@ export function fieldWrong(f: Field, v: Values): boolean {
 	const s = v[f.id] ?? '';
 	if (!s) return false;
 	if (f.role === 'choice') return !!f.nudge?.(s);
+	if (f.accept) return !f.accept(norm(s));
 	return f.expect !== null && norm(s) !== f.expect;
 }
 /** Which typed digits are wrong, lined up on the right with what it must be (for a choice: all, when it doesn't work). */
 export function wrongDigits(f: Field, s: string): boolean[] {
 	if (!s) return [];
 	if (f.role === 'choice') return [...s].map(() => !!f.nudge?.(s));
+	if (f.accept?.(norm(s))) return [...s].map(() => false);
 	if (f.expect === null || norm(s) === f.expect) return [...s].map(() => false);
 	const e = f.expect;
 	// the k-th digit from the right against the k-th digit from the right
@@ -499,7 +550,7 @@ export const allFilled = (w: Work, v: Values) => w.closed && w.fields.every((f) 
 export const allRight = (w: Work, v: Values) => allFilled(w, v) && w.fields.every((f) => !fieldWrong(f, v) && (f.role === 'choice' || f.expect !== null));
 
 /** The whole work done one sensible way (Watch, and the answer shown after the second try). */
-export function watchValues(method: Method, kind: Kind, p: Problem): Values {
+export function watchValues(method: Method, kind: Kind, p: Problem, form: RemainderForm = 'R'): Values {
 	const v: Values = {};
 	if (kind === 'divide') {
 		const [dividend, divisor] = p;
@@ -512,6 +563,10 @@ export function watchValues(method: Method, kind: Kind, p: Problem): Values {
 		});
 		v.quotient = String(Math.floor(dividend / divisor));
 		v.remainder = String(dividend % divisor);
+		if (form === 'fraction') {
+			if (dividend % divisor) v.den = String(divisor);
+			else delete v.remainder;
+		}
 		return v;
 	}
 	for (const f of buildWork(method, kind, p).fields) if (f.expect) v[f.id] = f.expect;
@@ -522,6 +577,14 @@ export function checkWork(w: Work, v: Values): { right: boolean; wrong: string[]
 	if (w.kind === 'divide') {
 		const n = w.rungs.length;
 		const at = (k: string) => Array.from({ length: n }, (_, i) => v[`${k}${i}`] ?? '');
+		if (w.fraction) {
+			// the ladder as R (what's left must be right), then the fraction's own parts, either of them simplified
+			const R = w.dividend % w.divisor;
+			const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', String(R));
+			const parts = w.fields.filter((f) => f.role === 'remainder' || f.role === 'denominator');
+			const wrong = [...c.wrong.filter((x) => x !== 'remainder'), ...parts.filter((f) => !has(v, f.id) || fieldWrong(f, v)).map((f) => f.id)];
+			return { right: c.closed && wrong.length === 0, wrong };
+		}
 		const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', v.remainder ?? '');
 		return { right: c.right, wrong: c.wrong };
 	}
@@ -534,9 +597,10 @@ export function workWidth(w: Work): number {
 	if (w.kind === 'divide') {
 		const N = len(w.dividend);
 		// the area model: a section side by side for each chunk (as many as the place-value path takes, or as typed)
+		const frac = w.fraction ? len(w.divisor) * 2 + 2 : 0;
 		return w.method === 'ladder'
-			? len(w.divisor) + N + 1 + Math.max(1, len(Math.floor(w.dividend / w.divisor)))
-			: len(w.divisor) + Math.max(2, w.rungs.length, watchPath(w.dividend, w.divisor).length) * (N + 1);
+			? len(w.divisor) + N + 1 + Math.max(1, len(Math.floor(w.dividend / w.divisor))) + frac
+			: Math.max(len(w.divisor) + Math.max(2, w.rungs.length, watchPath(w.dividend, w.divisor).length) * (N + 1), 8 + frac);
 	}
 	if (w.method === 'area') return len(w.bottom) + 1 + w.cells[0].reduce((s, _, j) => s + Math.max(...w.cells.map((r) => len(r[j].value))) + 0.5, 0);
 	return len(w.top * w.bottom) + 1 + 3.5;

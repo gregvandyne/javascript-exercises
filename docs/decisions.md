@@ -8488,3 +8488,20 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   `arrow` cell in `logic.ts`; Watch, Guided and Count up slide the digit down first, On my own draws it when the student
   types it), lit with its step under the spotlight, and nothing else ever sits in its column on the way down. Visual
   only, no setting.
+- **Remainders: none, R, fraction or decimal.** The Remainders switch is now one choice of four (`REMAINDER_OPTIONS`,
+  `logic.ts`); R is the default. Old saves and links read on as R and off as none (`remainderForm`); a fresh set per
+  student keeps `g.remainders` as true or false, as before, and the form rides in the item's `r` only when it is
+  `fraction` or `decimal`, so every set saved before is the same JSON. Only None changes which problems fit, so only
+  going to or from it makes new problems.
+  - *Fraction:* the last difference is what's left (no R); then the student writes it over the divisor in half squares
+    beside the quotient (7 2/3), box by box. Any equal fraction is right (2/4 or 1/2), and a simplified part may leave a
+    box in front empty (`fractionRight`); a top no equal fraction can have is marked at once in Guided. The ladder and
+    the area model write it as "135 2/7" after the quotient, the same rule (`accept` on the field).
+  - *Decimal (one rule):* when digits run out and something is left, the student writes a decimal point and a 0 after
+    the dividend (745 is 745.0), lifts the point straight up into the quotient (an arrow up beside it), brings the 0
+    down, and keeps going, another 0 at a time. **Stop when it comes out exactly, or at 2 decimal places.** Stopped
+    with something left, the answer ends in "…" (745 ÷ 6 = 124.16…), and the answer line says what it rounds to ("Rounded
+    to the nearest hundredth, it's 124.17"), so no digit already written ever changes. Repeating digits aren't marked:
+    two places is enough to see them, and rounding is what grade 5 and 6 work asks for. The bracket grows over each
+    zero as it is written. Standard method only: the ladder and the area model take away whole groups, so there a
+    decimal remainder is written as R and the editor doesn't offer it.

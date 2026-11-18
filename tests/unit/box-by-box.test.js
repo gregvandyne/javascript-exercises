@@ -133,3 +133,25 @@ test('box-by-box: the activity’s label names its method (Ladder, Area model, P
   assert.equal(label([DIV]), 'Long division, 3 problems, Guided', 'an old set: as before');
   assert.equal(label([{ ...DIV, m: 'standard' }]), 'Long division, 3 problems, Guided');
 });
+
+test('box-by-box sets: remainders as a fraction or a decimal ride in r (division only, one of two words); old sets stay exactly as they were', () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  assert.deepEqual(gameSets.BB_FORMS, ['fraction', 'decimal']);
+  for (const r of ['fraction', 'decimal']) assert.deepEqual(clean([{ ...DIV, r }]), [{ ...DIV, r }]);
+  const plan = { count: 16, dividends: [100, 999], divisors: [2, 9], remainders: true };
+  assert.deepEqual(clean([{ k: 'divide', p: [], l: 'guided', d: 1, g: plan, r: 'fraction' }]), [{ k: 'divide', p: [], l: 'guided', d: 1, g: plan, r: 'fraction' }]);
+  for (const bad of [{ ...DIV, r: 'R' }, { ...DIV, r: 'Fraction' }, { ...DIV, r: '2/3' }, { ...DIV, r: 1 }, { ...DIV, r: ['fraction'] }, { ...MUL, r: 'fraction' }])
+    assert.equal(clean([bad]), null, JSON.stringify(bad.r));
+  // byte for byte: a set saved before is cleaned to the very same JSON
+  for (const old of [DIV, MUL, { ...DIV, m: 'ladder' }, { k: 'divide', p: [], l: 'guided', d: 1, g: { ...plan, remainders: false } }])
+    assert.equal(JSON.stringify(clean([JSON.parse(JSON.stringify(old))])), JSON.stringify([old]));
+});
+
+test('box-by-box: the label says how remainders are written when they are a fraction or a decimal', async () => {
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([{ ...DIV, r: 'fraction' }]), 'Long division, 3 problems, remainders as fractions, Guided');
+  assert.equal(label([{ ...DIV, r: 'decimal', l: 'onMyOwn' }]), 'Long division, 3 problems, answers as decimals, On my own');
+  assert.equal(label([{ ...DIV, r: 'fraction', m: 'ladder' }]), 'Long division, 3 problems, remainders as fractions, Ladder, Guided');
+});
