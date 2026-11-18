@@ -183,9 +183,14 @@
 		box-shadow: var(--shadow);
 	}
 	@media (max-width: 1299px) {
-		/* Above the toolbar, so it never covers the problem's bar or the tiles. */
+		/* Above the toolbar's left end, level with the zoom on its right, so it never covers the problem's bar. */
 		.corner {
 			top: auto;
+			bottom: 6.4rem;
+		}
+	}
+	@media (max-width: 600px) {
+		.corner {
 			bottom: 170px;
 		}
 	}
