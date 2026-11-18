@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Who's playing? Opened without a link or a lesson, the game asks first: a teacher goes on to their activities, a
-	// student to their own screen (a class code, or practising alone).
+	// student to their own screen (a class code, or practicing alone).
 	import { NAME } from '$lib/name';
 	import { GraduationCap, Backpack } from '@lucide/svelte';
 	import { go } from '$lib/nav.svelte';
@@ -16,7 +16,7 @@
 			<button type="button" class="path student" onclick={() => go({ name: 'student' })}>
 				<span class="icon"><Backpack size={30} /></span>
 				<span class="who">I’m a student</span>
-				<span class="what">Type the code your teacher gave you, or practise on your own.</span>
+				<span class="what">Type the code your teacher gave you, or practice on your own.</span>
 				<span class="go">Let’s go ▸</span>
 			</button>
 			<button type="button" class="path teacher" onclick={() => go({ name: 'home' })}>
