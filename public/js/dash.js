@@ -1309,36 +1309,68 @@ function start() {
   }
   const hintText = (h, W) => (h ? t(`js.dash.build.hint.${h.k}`, { ...h, place: h.place ? (W[h.place] || h.place) : '' }) : '');
   const tText = (mode, x, base) => B.targetText(mode, x, base, INTL);
-  /** The teacher: make a set of targets from the tool as it is now, and send it. */
+  /** The default instruction of a set: the tool's own, or the fractions' for equations. */
+  const sayDefOf = (mode, eq) => t(`js.dash.build.sayDef.${mode === 'fractions' && eq ? 'fractionsEq' : mode}`);
+  /** The teacher: make a set of questions from the tool as it is now, and send it. In order: what students do and which
+   *  equations (fractions only, dropdowns), the instruction, then "Questions students will get": 🎲 Pick some for me
+   *  ([kind ▾] [how many ▾] Pick) fills the box below it, or the teacher types their own; then how many there are and
+   *  what was left out (docs/decisions.md "Classroom dashboards: fractions, equations"). */
   function openBuildIt(w, mode, st) {
     const info = modeOf(w.type, mode); if (!info || !B.BUILD[mode]) return;
-    const base = B.baseFor(mode, st, INTL), gens = B.gensFor(mode, base);
-    const eg = B.makeTargets(mode, gens[Math.min(2, gens.length - 1)], 3, base, B.seeded(11)).map(x => tText(mode, x, base)).join(', ');
+    const base = B.baseFor(mode, st, INTL), eqs = !!B.BUILD[mode].eqGens;
+    const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
     const sh = sheet({ title: t('js.dash.build.makeTitle', { name: info.name }), content: `<form class="stack dash-biform" novalidate>
       <p class="small muted">${esc(t('js.dash.build.intro'))}</p>
-      <div class="field"><label for="dash-bi-say">${esc(t('js.dash.build.say'))}</label><input class="input" id="dash-bi-say" maxlength="120" dir="auto" autocomplete="off" value="${esc(t(`js.dash.build.sayDef.${mode}`))}"></div>
-      <div class="field"><label for="dash-bi-list">${esc(t('js.dash.build.targets'))}</label><textarea class="input" id="dash-bi-list" rows="2" dir="auto" autocomplete="off" spellcheck="false" aria-describedby="dash-bi-eg"></textarea>
-        <p class="small muted" id="dash-bi-eg">${esc(t('js.dash.build.typeHint', { eg }))}</p></div>
-      <fieldset class="dash-bigen"><legend>${esc(t('js.dash.build.orMake'))}</legend>
-        <div class="dash-bigenrow"><div class="field"><label for="dash-bi-gen">${esc(t('js.dash.build.gen'))}</label><select class="input" id="dash-bi-gen">${gens.map(g => `<option value="${g}">${esc(t(`js.dash.build.gens.${g}`))}</option>`).join('')}</select></div>
-          <div class="field"><label for="dash-bi-n">${esc(t('js.dash.build.howMany'))}</label><select class="input" id="dash-bi-n">${B.COUNTS.map(n => `<option value="${n}"${n === B.DEFAULT_COUNT ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
-          <button class="btn" type="button" id="dash-bi-make">🎲 ${esc(t('js.dash.build.make'))}</button></div></fieldset>
+      ${eqs ? `<div class="field"><label for="dash-bi-task">${esc(t('js.dash.build.task'))}</label><select class="input" id="dash-bi-task">${opt('shade', t('js.dash.build.taskShade'), true)}${opt('eq', t('js.dash.build.taskEq'))}</select></div>
+      <div class="field" id="dash-bi-opsf" hidden><label for="dash-bi-ops">${esc(t('js.dash.build.ops'))}</label><select class="input" id="dash-bi-ops">${B.EQ_SETS.map(k => opt(k, t(`js.dash.build.opsList.${k}`), k === 'add')).join('')}</select></div>` : ''}
+      <div class="field"><label for="dash-bi-say">${esc(t('js.dash.build.say'))}</label><input class="input" id="dash-bi-say" maxlength="120" dir="auto" autocomplete="off" value="${esc(sayDefOf(mode, false))}"></div>
+      <fieldset class="dash-biq"><legend id="dash-bi-qh">${esc(t('js.dash.build.questions'))}</legend>
+        <div class="dash-bipick" role="group" aria-labelledby="dash-bi-pickt"><span class="dash-bipickt" id="dash-bi-pickt"><span aria-hidden="true">🎲</span> ${esc(t('js.dash.build.pick'))}</span>
+          <div class="dash-bipickrow"><select class="input" id="dash-bi-gen" aria-label="${esc(t('js.dash.build.gen'))}"></select>
+            <select class="input" id="dash-bi-n" aria-label="${esc(t('js.dash.build.howMany'))}">${B.COUNTS.map(n => opt(n, String(n), n === B.DEFAULT_COUNT)).join('')}</select>
+            <button class="btn" type="button" id="dash-bi-make">${esc(t('js.dash.build.make'))}</button></div></div>
+        <textarea class="input" id="dash-bi-list" rows="2" dir="auto" autocomplete="off" spellcheck="false" aria-labelledby="dash-bi-qh" aria-describedby="dash-bi-eg dash-bi-preview"></textarea>
+        <p class="small muted" id="dash-bi-eg"></p></fieldset>
       <div class="dash-bipreview" id="dash-bi-preview" aria-live="polite"></div>
       <p class="err form-err" role="alert"></p>
       <div class="row"><button class="btn btn-primary" type="submit">📤 ${esc(t('js.dash.build.send'))}</button></div></form>` });
     sh.el.querySelector('.sheet').classList.add('dash-bisheet');
     const f = sh.el.querySelector('form'), list = $('#dash-bi-list', f), prev = $('#dash-bi-preview', f), err = $('.form-err', f);
+    const say = $('#dash-bi-say', f), gen = $('#dash-bi-gen', f), task = $('#dash-bi-task', f), ops = $('#dash-bi-ops', f);
+    // What the questions are read with: the tool as it is, and (fractions) equations of the chosen operations.
+    const eqOn = () => !!(task && task.value === 'eq');
+    const kind = () => (eqOn() ? { ...base, task: 'eq', ops: ops.value } : base);
     let parsed = { targets: [], bad: [], over: false };
     const preview = () => {
-      parsed = B.parseTargets(mode, list.value, base, INTL);
-      prev.innerHTML = parsed.targets.length ? `<p class="small"><b>${esc(t('js.dash.build.count', { n: parsed.targets.length }))}</b></p><ul class="plain dash-bichips">${parsed.targets.map(x => `<li dir="ltr">${esc(tText(mode, x, base))}</li>`).join('')}</ul>` : '';
-      if (parsed.bad.length) prev.insertAdjacentHTML('beforeend', `<p class="small dash-bibad">${esc(t('js.dash.build.bad', { list: parsed.bad.join(', ') }))}</p>`);
+      parsed = B.parseTargets(mode, list.value, kind(), INTL);
+      prev.innerHTML = parsed.targets.length ? `<p class="small dash-bicount"><b>${esc(t('js.dash.build.count', { n: parsed.targets.length }))}</b></p>` : '';
+      if (parsed.bad.length) prev.insertAdjacentHTML('beforeend', `<p class="small dash-bibad">${esc(t(eqOn() ? 'js.dash.build.badEq' : 'js.dash.build.bad', { list: parsed.bad.join(', ') }))}</p>`);
       if (parsed.over) prev.insertAdjacentHTML('beforeend', `<p class="small dash-bibad">${esc(t('js.dash.build.over', { n: B.MAX_TARGETS }))}</p>`);
       if (parsed.targets.length) err.textContent = '';
     };
+    /** The picker's kinds and the example under the box, for what students do now. */
+    const kinds = () => {
+      const k = kind(), gens = B.gensFor(mode, k), was = gen.value;
+      gen.innerHTML = gens.map(g => opt(g, t(`js.dash.build.gens.${g}`), g === was)).join('');
+      const eg = B.makeTargets(mode, gens[eqOn() ? 0 : Math.min(2, gens.length - 1)], eqOn() ? 2 : 3, k, B.seeded(11)).map(x => tText(mode, x, base)).join(', ');
+      $('#dash-bi-eg', f).textContent = t('js.dash.build.typeHint', { eg });
+    };
+    kinds();
+    // Shade a fraction | Solve equations, and which equations: the kinds, the example and the default instruction follow
+    // (an instruction the teacher wrote stays); questions of the other kind are taken out of the box.
+    let sayWas = say.value;
+    const retask = () => {
+      $('#dash-bi-opsf', f).hidden = !eqOn();
+      if (say.value.trim() === sayWas) say.value = sayWas = sayDefOf(mode, eqOn());
+      kinds();
+      if (list.value.trim() && !B.parseTargets(mode, list.value, kind(), INTL).targets.length) list.value = '';
+      preview();
+    };
+    task?.addEventListener('change', retask);
+    ops?.addEventListener('change', retask);
     list.addEventListener('input', preview);
     $('#dash-bi-make', f).addEventListener('click', () => {
-      const xs = B.makeTargets(mode, $('#dash-bi-gen', f).value, +$('#dash-bi-n', f).value, base);
+      const xs = B.makeTargets(mode, gen.value, +$('#dash-bi-n', f).value, kind());
       list.value = xs.map(x => tText(mode, x, base)).join(mode === 'coord' ? ' ' : ', ');
       preview(); list.focus();
     });
@@ -1348,13 +1380,13 @@ function start() {
       if (!parsed.targets.length) { err.textContent = t('js.dash.build.none'); list.focus(); return; }
       const go = f.querySelector('[type="submit"]'); go.disabled = true;
       if (saveTimer) await flush();
-      const r = await act('/pushes', { kind: 'build', ref: w.id, build: { mode, base, targets: parsed.targets, say: $('#dash-bi-say', f).value.trim() } }, err);
+      const r = await act('/pushes', { kind: 'build', ref: w.id, build: { mode, base, targets: parsed.targets, say: say.value.trim() } }, err);
       go.disabled = false;
       if (!r) return;
       sh.close(); toast(t('js.dash.build.sent')); await poll();
       if (r.push) openProgress(r.push);
     });
-    setTimeout(() => list.focus(), 40);
+    setTimeout(() => (task || list).focus(), 40);
   }
   /** The teacher: who is done and right on a set, live while the sheet is open, and each target shown built on the board. */
   async function openProgress(pid) {
@@ -1420,7 +1452,9 @@ function start() {
     sh.el.querySelector('.sheet').classList.add('dash-copysheet', 'dash-buildsheet');
     const box = sh.el.querySelector('.dash-build');
     let live = null;
-    const say = b.say || t(`js.dash.build.sayDef.${b.mode}`);
+    // An equation to work out ("1/2 + 1/4 = ?"; docs/decisions.md "Classroom dashboards: fractions, equations").
+    const isEq = x => !!(x && typeof x === 'object' && x.op);
+    const say = b.say || sayDefOf(b.mode, isEq(b.targets[0]));
     function finish() {
       if (live && live.destroy) live.destroy(); live = null;
       const right = b.targets.filter((x, i) => mem.results[i] && mem.results[i].right).length;
@@ -1439,7 +1473,7 @@ function start() {
       const x = b.targets[i], was = mem.results[i];
       box.innerHTML = `<div class="dash-bhead"><span class="dash-bstep">${esc(t('js.dash.build.of', { i: i + 1, n }))}</span><span class="dash-bbar" aria-hidden="true"><span style="width:${Math.round((100 * i) / n)}%"></span></span></div>
         <p class="dash-bsay" dir="auto">${esc(say)}</p>
-        <p class="dash-btarget"><span class="dash-blab">${esc(t('js.dash.build.build'))}</span> <b class="dash-bnum" dir="ltr">${esc(tText(b.mode, x, b.base))}</b></p>
+        <p class="dash-btarget"><span class="dash-blab">${esc(t(isEq(x) ? 'js.dash.build.workOut' : 'js.dash.build.build'))}</span> <b class="dash-bnum" dir="ltr">${esc(tText(b.mode, x, b.base))}${isEq(x) ? ' = ?' : ''}</b></p>
         <section class="dash-w dash-wcopy dash-wbuild" data-group="${esc(info.ty.group)}" aria-label="${esc(info.name)}"><div class="dash-wb"></div></section>
         <div class="dash-bacts"><p class="dash-bfb${was && was.right ? ' is-right' : ''}" role="status">${was && was.right ? `✔ ${esc(t('js.dash.build.yes'))}` : ''}</p>
           <button class="btn" type="button" data-bnext>${esc(t(i + 1 < n ? 'js.dash.build.next' : 'js.dash.build.finish'))} →</button>
@@ -1459,7 +1493,8 @@ function start() {
       const i = mem.at, x = b.targets[i], st = mem.states[i] || B.startState(b.mode, b.base, x);
       const r = B.checkBuild(b.mode, st, x, b.base, INTL), fb = box.querySelector('.dash-bfb');
       fb.className = `dash-bfb ${r.ok ? 'is-right' : 'is-no'}`;
-      fb.textContent = r.ok ? `🎉 ${t('js.dash.build.yes')}` : `${t('js.dash.build.notYet')} ${hintText(r.hint, W)}`.trim();
+      // Right: "Yes!" (and, for an equation, one line of why); not yet: one gentle hint.
+      fb.textContent = r.ok ? `🎉 ${t('js.dash.build.yes')} ${hintText(r.hint, W)}`.trim() : `${t('js.dash.build.notYet')} ${hintText(r.hint, W)}`.trim();
       mem.results[i] = { right: r.ok || !!(mem.results[i] && mem.results[i].right) };
       if (r.ok) { const nx = box.querySelector('[data-bnext]'); nx.classList.add('btn-primary'); chk.classList.remove('btn-primary'); nx.focus(); }
       chk.disabled = true; setTimeout(() => { if (chk.isConnected) chk.disabled = false; }, 600);

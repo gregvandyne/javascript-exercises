@@ -13,7 +13,7 @@ import * as M from './dash-math.js';
 import { questionFor } from './dash-ask.js';
 import { tip } from './dash-tip.js';
 import { numField } from './dash-num.js';
-import { BUILD } from './dash-build.js';
+import { BUILD, answerBars } from './dash-build.js';
 
 /** The tools with the shared Show/Hide the answer (server/services/dash-tools.js ANSWER_TOOLS, tested to agree). */
 export const ANSWER_TOOLS = new Set(['numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'geoboard',
@@ -592,6 +592,9 @@ const MODE_WORD = { compare: 'modeCompare', add: 'modeAdd', sub: 'modeSub', mul:
 function fractions(body, s, ctx) {
   const T = shell(body, s, ctx, 'fractions'), { W, st } = T;
   const mode = () => (M.OPS[st.mode] ? st.mode : 'compare');
+  // A student's "Build it" equation (docs/decisions.md "Classroom dashboards: fractions, equations"): { op, a, b }.
+  const eqT = ctx.build && ctx.build.target && ctx.build.target.op ? ctx.build.target : null;
+  body.classList.toggle('dt-feqbody', !!eqT);
   // What to do, as a dropdown (inside the tool's mode switch it is that dropdown: fractions.merge below).
   const modes = T.pick(W.mode, M.FRACTION_MODES.map(m => [m, W[MODE_WORD[m]]]), mode, v => {
     if (v !== mode()) fresh();
@@ -617,6 +620,7 @@ function fractions(body, s, ctx) {
   swap.addEventListener('click', () => { [st.a, st.b] = [st.b, st.a]; fresh(); T.commit(opSay()); });
   T.foot.append(add, rm, swap);
   let zeroNote = false;   // Divide: the divisor's top number was kept at 1 (nothing is divided by zero); say why
+  let limitNote = '';     // + (or a typed number) went past a fraction's limit: say why, until the next change
   const cd = () => M.commonDenominator(st.bars);
   const sameText = () => {
     if (!st.same) return '';
@@ -637,6 +641,8 @@ function fractions(body, s, ctx) {
     same.hidden = add.hidden = rm.hidden = op !== 'compare'; shapes.hidden = op === 'mul';
     // A student's Build it copy shades one bar in Compare: no other modes, no second bar.
     if (ctx.build) modes.hidden = same.hidden = add.hidden = rm.hidden = true;
+    // A student's Build it equation: the question's bars and the answer bar they shade, nothing else.
+    if (eqT) { shapes.hidden = swap.hidden = true; T.howto(W.howtoEq); eqView(); return; }
     T.howto(op === 'compare' ? W.howto : op === 'mul' ? W.howtoMul : op === 'div' ? W.howtoDiv : W.howtoOp);
     if (op === 'compare') { swap.hidden = true; compareView(); } else opView(op);
   };
@@ -741,7 +747,7 @@ function fractions(body, s, ctx) {
     }
   }
   /** Changing a fraction or the mode starts the working again: no copies laid, no steps shown, nothing typed. */
-  const fresh = () => { st.fit = 0; st.step = 0; guess = ''; checked = ''; };
+  const fresh = () => { st.fit = 0; st.step = 0; guess = ''; checked = ''; limitNote = ''; };
   let guess = '', checked = '';   // what a student typed as the answer and what Check said ('' | right | simplify | no | unread)
   const CHECK = { right: 'checkRight', simplify: 'checkSimplify', no: 'checkNo', unread: 'checkUnread' };
   /** Divide's copies laid so far, in words: "2 fit so far." / "2 fit, and 1/4 of one more." / "3 fit exactly." */
@@ -754,6 +760,7 @@ function fractions(body, s, ctx) {
   function readout(op, r, meas) {
     T.read.textContent = '';
     const notes = [];
+    if (limitNote) { const x = el('div', 'dt-flimit', `✋ ${limitNote}`); x.dir = 'auto'; T.read.appendChild(x); }
     if (zeroNote) notes.push(W.noZero);
     if (st.hide) {
       if (meas && st.fit) notes.push(fitWords(meas, st.fit));
@@ -860,18 +867,96 @@ function fractions(body, s, ctx) {
       m.dataset.k = `${k}${key}-`; p.dataset.k = `${k}${key}+`;
       // Divide: the second fraction's top number stops at 1 (nothing is divided by zero); − there says why instead.
       const noZero = mode() === 'div' && k === 'b' && key === 'n';
-      m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = ctx.editing || f[key] >= hi;
-      const set = x => { zeroNote = noZero && x < 1; if (zeroNote) { T.draw(); ctx.say(W.noZero); return; } st[k] = M.clampOperand({ ...st[k], [key]: x }); fresh(); T.commit(opSay()); };
+      // + stays tappable at the limit (each fraction at most three wholes, a top and a bottom number at most 12): past
+      // it, a note in the readout says why (docs/decisions.md "Classroom dashboards: fractions, equations").
+      m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = !!ctx.editing;
+      const top = () => (key === 'n' ? Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * st[k].d) : M.OP_LIMITS.dMax);
+      const set = x => {
+        zeroNote = noZero && x < 1; if (zeroNote) { limitNote = ''; T.draw(); ctx.say(W.noZero); return; }
+        if (x > top()) { limitNote = limitWords(st[k], key); T.draw(); ctx.say(limitNote); return; }
+        st[k] = M.clampOperand({ ...st[k], [key]: x }); fresh(); T.commit(opSay());
+      };
       m.addEventListener('click', () => set(f[key] - 1)); p.addEventListener('click', () => set(f[key] + 1));
       // The number typed: the same limits (a top number at most three wholes; dividing, never by zero), drawn again
       // as it is typed (the field moves to the new sentence with what is being typed).
-      const v = T.num({ label: `${word} (${who})`, key: `${k}${key}`, get: () => st[k][key], min: noZero ? 1 : lo, max: () => (key === 'n' ? Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * st[k].d) : hi), cls: 'dt-fov',
-        up: () => set(st[k][key] + 1), down: () => set(st[k][key] - 1), set });
+      const v = T.num({ label: `${word} (${who})`, key: `${k}${key}`, get: () => st[k][key], min: noZero ? 1 : lo, max: top, cls: 'dt-fov',
+        up: () => set(st[k][key] + 1), down: () => set(st[k][key] - 1), set, out: n => { if (n > top()) set(n); } });
       r.append(m, v, p); return r;
     };
     const line = el('div', 'dt-fol'); line.setAttribute('aria-hidden', 'true');
     g.append(row('n', 0, Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * f.d), W.num), line, row('d', 1, M.OP_LIMITS.dMax, W.den));
     return g;
+  }
+  /** Why + went no further: at most three wholes (3/1, 12/4...), else a top or a bottom number of at most 12. */
+  const limitWords = (f, key) => {
+    if (key === 'd') return W.limitBottom;
+    return M.OP_LIMITS.wholes * f.d <= M.OP_LIMITS.nMax ? fill(W.limitWholes, { f: iso(`${M.OP_LIMITS.wholes * f.d}/${f.d}`) }) : W.limitTop;
+  };
+  /** A student's Build it equation (docs/decisions.md "Classroom dashboards: fractions, equations"): "1/2 + 1/4 = ?" as
+   *  the question's two fractions drawn as fixed bars (coloured as the operations' bars, on one scale: a whole is the
+   *  same length in every row), then a dashed answer bar the student builds: − and + for the parts in each whole (1-12),
+   *  − and + for the wholes (1-3, for an answer bigger than one), a tap shades up to the part tapped. st.bars holds it,
+   *  one bar a whole, all cut the same (public/js/dash-build.js answerBars), so the server checks it as it is. */
+  function eqView() {
+    const x = eqT, d = Math.max(1, Math.min(12, Math.round(st.bars[0] && st.bars[0].d) || 2));
+    const wholes = Math.max(1, Math.min(M.OP_LIMITS.wholes, st.bars.length));
+    const shaded = st.bars.slice(0, wholes).reduce((t, b) => t + Math.max(0, Math.min(d, Math.round(b.n) || 0)), 0);
+    st.bars = answerBars(shaded, d, wholes);
+    const had = T.stage.contains(document.activeElement) ? document.activeElement.dataset.k || '' : '';
+    const wholesOf = f => Math.max(1, Math.ceil(f.n / f.d));
+    const W0 = Math.max(wholesOf(x.a), wholesOf(x.b), wholes);
+    const say = () => fill(W.eqShaded, { n: shaded, d });
+    const setAns = (n, dd = d, ww = wholes, msg) => { st.bars = answerBars(n, dd, ww); T.commit(msg || fill(W.eqShaded, { n: Math.min(n, dd * ww), d: dd })); };
+    T.stage.textContent = ''; T.read.textContent = '';
+    const wrap = el('div', 'dt-feqb'); wrap.dir = 'ltr';
+    const grid = el('div', 'dt-fbars dt-feqbars');
+    const rowOf = (label, cls) => { const lab = el('div', 'dt-fblab'); lab.appendChild(label); const c = el('div', `dt-fbarc ${cls || ''}`.trim()); grid.append(lab, c); return c; };
+    const cA = rowOf(tag('', x.a)), cB = rowOf(tag(M.OPS[x.op].sign, x.b)), cN = rowOf(tag('=', null, true), 'dt-feqans');
+    // The parts in each whole (typed too) and the wholes.
+    const ctl = el('div', 'dt-feqctl');
+    const parts = n => setAns(Math.min(shaded, n * wholes), n, wholes, fill(W.parts, { n }));
+    const pStep = T.stepper(W.eqParts, () => d, () => { if (d > 1) parts(d - 1); }, () => { if (d < 12) parts(d + 1); }, `${W.fewer}`, `${W.more}`,
+      { value: () => d, min: 1, max: 12, set: n => parts(n) });
+    const wSet = n => setAns(Math.min(shaded, d * n), d, n, fill(W.eqWholesNow, { n }));
+    const wStep = T.stepper(W.eqWholes, () => wholes, () => { if (wholes > 1) wSet(wholes - 1); }, () => { if (wholes < M.OP_LIMITS.wholes) wSet(wholes + 1); }, W.eqLessWhole, W.eqMoreWhole,
+      { value: () => wholes, min: 1, max: M.OP_LIMITS.wholes, set: n => wSet(n) });
+    const [pm, pp] = pStep.querySelectorAll('.dt-pm'), [wm, wp] = wStep.querySelectorAll('.dt-pm');
+    pm.disabled = d <= 1; pp.disabled = d >= 12; wm.disabled = wholes <= 1; wp.disabled = wholes >= M.OP_LIMITS.wholes;
+    pm.dataset.k = 'eqp-'; pp.dataset.k = 'eqp+'; wm.dataset.k = 'eqw-'; wp.dataset.k = 'eqw+';
+    ctl.append(pStep, wStep);
+    const hint = el('p', 'dt-feqhint', W.eqHint); hint.dir = 'auto';
+    wrap.append(grid, ctl, hint);
+    T.stage.appendChild(wrap);
+    // One scale: the widest row (the most wholes) fills the cell; every whole is the same length.
+    const phone = matchMedia('(max-width: 719px)').matches;
+    const room = T.stage.clientHeight - ctl.offsetHeight - hint.offsetHeight - 40;
+    const bh = phone || room <= 0 ? 48 : Math.max(32, Math.min(64, Math.floor((room - 24) / 3)));
+    grid.style.setProperty('--bh', `${bh}px`);
+    const cw = Math.max(60, cA.clientWidth - 12), gap = W0 > 1 ? 8 : 0, uw = (cw - gap * (W0 - 1)) / W0;
+    const strip = (n, per, on, cls, aria, answer) => {
+      const w = n * uw + (n - 1) * gap;
+      const sv = svg('svg', { viewBox: `0 0 ${w} ${bh}`, width: w, height: bh, class: `dt-fstrip dt-feqstrip${answer ? ' dt-feqa' : ''}`, role: answer ? 'slider' : 'img', 'aria-label': aria });
+      for (let k = 0; k < n; k++) {
+        const x0 = k * (uw + gap);
+        for (let i = 0; i < per; i++) { const g = k * per + i; sv.appendChild(svg('rect', { x: x0 + (i * uw) / per, y: 0, width: uw / per, height: bh, class: g < on ? `dt-on ${cls}` : 'dt-off', ...(answer ? { 'data-piece': g } : {}) })); }
+        for (let i = 1; i < per; i++) sv.appendChild(svg('line', { x1: x0 + (i * uw) / per, x2: x0 + (i * uw) / per, y1: 0, y2: bh, class: 'dt-thin' }));
+        sv.appendChild(svg('rect', { x: x0, y: 0, width: uw, height: bh, class: 'dt-outline' }));
+      }
+      return sv;
+    };
+    cA.appendChild(strip(wholesOf(x.a), x.a.d, x.a.n, 'dt-c0', `${W.first}: ${x.a.n}/${x.a.d}`));
+    cB.appendChild(strip(wholesOf(x.b), x.b.d, x.b.n, 'dt-c1', `${W.second}: ${x.b.n}/${x.b.d}`));
+    const ans = strip(wholes, d, shaded, 'dt-c2', W.yourAnswer, true);
+    ans.dataset.k = 'eqans'; ans.setAttribute('tabindex', ctx.editing ? '-1' : '0');
+    ans.setAttribute('aria-valuemin', '0'); ans.setAttribute('aria-valuemax', String(d * wholes)); ans.setAttribute('aria-valuenow', String(shaded)); ans.setAttribute('aria-valuetext', say());
+    const shade = n => { n = Math.max(0, Math.min(d * wholes, n)); if (n !== shaded) setAns(n); };
+    ans.addEventListener('click', e => { const p = e.target.closest('[data-piece]'); if (!p || ctx.editing) return; const k = +p.dataset.piece + 1; shade(k === shaded ? k - 1 : k); });
+    ans.addEventListener('keydown', e => {
+      const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+      if (k) { e.preventDefault(); shade(shaded + k); } else if (e.key === 'Home') { e.preventDefault(); shade(0); } else if (e.key === 'End') { e.preventDefault(); shade(d * wholes); }
+    });
+    const box = el('div', 'dt-feqabox'); box.appendChild(ans); cN.appendChild(box);
+    if (had) T.stage.querySelector(`[data-k="${had}"]:not(:disabled)`)?.focus();
   }
   /** The answer in the sentence: the fraction in lowest terms, and as a mixed number when it is more than one whole. */
   const answerEl = f => {

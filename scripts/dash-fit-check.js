@@ -677,6 +677,13 @@ for (const L of RUN) {
      const r = D.push(T, C, { kind: 'build', ref: w.id, build: { mode, base: b, targets: BLD.makeTargets(mode, gen, 12, b, BLD.seeded(5)), say: 'Benutze die Werkzeuge, um jede Zahl ganz genau nachzubauen, und drücke dann auf Prüfen.' } });
      if (r.push) builds.push(r.push); else console.log(`  build it: ${mode} could not be sent (${r.error})`);
    }
+   // Fractions' equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a set of all four operations,
+   // its answers up to three wholes, opened by a student like the others.
+   const fw = L.widgets.find(x => x.id === 'wb-fractions');
+   if (fw) {
+     const k = { task: 'eq', ops: 'all' }, r = D.push(T, C, { kind: 'build', ref: fw.id, build: { mode: 'fractions', base: {}, targets: BLD.makeTargets('fractions', 'eqAny', 12, k, BLD.seeded(7)), say: '' } });
+     if (r.push) builds.push(r.push); else console.log(`  build it: fraction equations could not be sent (${r.error})`);
+   }
  }
  // The timer layouts: each timer paused at its time (a countdown set to it, a stopwatch run that long and paused).
  for (const [id, m, ms] of L.timers || []) { const t0 = Date.now(); if (m === 'down') D.timerAction(T, C, id, { action: 'set', ms }, t0); else { D.timerAction(T, C, id, { action: 'start' }, t0 - ms); D.timerAction(T, C, id, { action: 'pause' }, t0); } }
