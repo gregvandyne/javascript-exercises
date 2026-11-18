@@ -11266,6 +11266,29 @@
     "saveAnother": "Ranger dans un autre dossier",
     "moveUp": "Monter",
     "moveDown": "Descendre",
-    "sharedEmpty": "Il n'y a pas encore ici de jeu que tu peux ouvrir."
+    "sharedEmpty": "Il n'y a pas encore ici de jeu que tu peux ouvrir.",
+    "phone": {
+      "assigned": "Assignés",
+      "library": "Ma bibliothèque",
+      "assignedSub": "{count, plural, one {# jeu, dans l’ordre où les élèves le voient} other {# jeux, dans l’ordre où les élèves les voient}}",
+      "addFromLibrary": "Ajouter depuis la bibliothèque",
+      "reorder": "Réordonner",
+      "done": "Terminé",
+      "noDue": "Pas de date limite",
+      "up": "Monter {name}",
+      "down": "Descendre {name}",
+      "libraryNote": "Les collections ne font que trier vos jeux. Assignez depuis l’une d’elles.",
+      "allSub": "Les jeux que vous avez créés",
+      "sharedSub": "Partagée avec votre école",
+      "newCollection": "Nouvelle collection",
+      "collectionName": "Nom de la collection",
+      "fromOthers": "Des autres",
+      "byReadOnly": "par {name} · lecture seule",
+      "studentsSub": "Faits par les élèves de {class}",
+      "oomba": "Jeux Oomba",
+      "oombaSub": "Parcourir tous les jeux Oomba",
+      "collectionEmpty": "Cette collection est encore vide",
+      "allEmpty": "Vous n’avez pas encore créé de jeu."
+    }
   }
 }

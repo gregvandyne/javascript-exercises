@@ -11268,6 +11268,29 @@
     "saveAnother": "שמירה בתיקייה אחרת",
     "moveUp": "הזזה למעלה",
     "moveDown": "הזזה למטה",
-    "sharedEmpty": "אין כאן עדיין משחקים שאפשר לפתוח."
+    "sharedEmpty": "אין כאן עדיין משחקים שאפשר לפתוח.",
+    "phone": {
+      "assigned": "הוקצו",
+      "library": "הספרייה שלי",
+      "assignedSub": "{count, plural, one {משחק אחד, בסדר שבו התלמידים רואים אותו} two {# משחקים, בסדר שבו התלמידים רואים אותם} other {# משחקים, בסדר שבו התלמידים רואים אותם}}",
+      "addFromLibrary": "הוספה מהספרייה",
+      "reorder": "סידור מחדש",
+      "done": "סיום",
+      "noDue": "ללא תאריך הגשה",
+      "up": "הזזת {name} למעלה",
+      "down": "הזזת {name} למטה",
+      "libraryNote": "אוספים רק ממיינים את המשחקים שלך. מקצים מתוך אוסף.",
+      "allSub": "משחקים שבנית",
+      "sharedSub": "משותף עם בית הספר שלך",
+      "newCollection": "אוסף חדש",
+      "collectionName": "שם האוסף",
+      "fromOthers": "מאחרים",
+      "byReadOnly": "מאת {name} · קריאה בלבד",
+      "studentsSub": "נוצרו על ידי תלמידי {class}",
+      "oomba": "משחקי Oomba",
+      "oombaSub": "עיון בכל משחקי Oomba",
+      "collectionEmpty": "האוסף הזה עדיין ריק",
+      "allEmpty": "עדיין לא בנית משחק."
+    }
   }
 }

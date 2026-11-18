@@ -334,7 +334,7 @@ export function readEquation(text: string): Problem {
 	if (/[()]/.test(text))
 		return {
 			ok: false,
-			reason: 'Leave out the brackets: multiply them out first. Multiply is the activity for that.'
+			reason: 'Leave out the parentheses: multiply them out first. Multiply is the activity for that.'
 		};
 	let left: Poly;
 	let right: Poly;

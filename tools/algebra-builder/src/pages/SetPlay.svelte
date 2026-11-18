@@ -27,7 +27,7 @@
 	} = $props();
 	// svelte-ignore state_referenced_locally
 	let items = $state(given);
-	/** Practising alone: a fresh set of the same activity and level (never ones they've had lately). */
+	/** Practicing alone: a fresh set of the same activity and level (never ones they've had lately). */
 	function more() {
 		if (!practice) return;
 		const fresh = practiceSet(practice.activity, practice.level);
@@ -83,7 +83,7 @@
 		<div class="buttons">
 			{#if practice}
 				<button type="button" class="btn-primary" onclick={more}>{items.length} new problems ▸</button>
-				<button type="button" class="btn-ghost" onclick={goBack}>Practise something else</button>
+				<button type="button" class="btn-ghost" onclick={goBack}>Practice something else</button>
 			{:else}
 				<button type="button" class="btn-primary" onclick={again}>Do them again</button>
 			{/if}
@@ -183,9 +183,14 @@
 		box-shadow: var(--shadow);
 	}
 	@media (max-width: 1299px) {
-		/* Above the toolbar, so it never covers the problem's bar or the tiles. */
+		/* Above the toolbar's left end, level with the zoom on its right, so it never covers the problem's bar. */
 		.corner {
 			top: auto;
+			bottom: 6.4rem;
+		}
+	}
+	@media (max-width: 600px) {
+		.corner {
 			bottom: 170px;
 		}
 	}

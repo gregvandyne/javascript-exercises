@@ -11266,6 +11266,29 @@
     "saveAnother": "Guardar en otra carpeta",
     "moveUp": "Subir",
     "moveDown": "Bajar",
-    "sharedEmpty": "Aquí todavía no hay juegos que puedas abrir."
+    "sharedEmpty": "Aquí todavía no hay juegos que puedas abrir.",
+    "phone": {
+      "assigned": "Asignados",
+      "library": "Mi biblioteca",
+      "assignedSub": "{count, plural, one {# juego, en el orden en que lo ven los alumnos} other {# juegos, en el orden en que los ven los alumnos}}",
+      "addFromLibrary": "Añadir de la biblioteca",
+      "reorder": "Ordenar",
+      "done": "Listo",
+      "noDue": "Sin fecha de entrega",
+      "up": "Subir {name}",
+      "down": "Bajar {name}",
+      "libraryNote": "Las colecciones solo ordenan tus juegos. Asigna desde dentro de una.",
+      "allSub": "Juegos que has creado",
+      "sharedSub": "Compartida con tu escuela",
+      "newCollection": "Nueva colección",
+      "collectionName": "Nombre de la colección",
+      "fromOthers": "De otros",
+      "byReadOnly": "de {name} · solo lectura",
+      "studentsSub": "Hechos por alumnos de {class}",
+      "oomba": "Juegos de Oomba",
+      "oombaSub": "Ver todos los juegos de Oomba",
+      "collectionEmpty": "Esta colección aún está vacía",
+      "allEmpty": "Todavía no has creado ningún juego."
+    }
   }
 }
