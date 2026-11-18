@@ -2745,7 +2745,9 @@
         "zoneNone": "Ninguna",
         "placeNote": "Escribe una ciudad o pueblo. Oomba nunca usa la ubicación de nadie.",
         "qrNote": "Solo se pueden mostrar los enlaces aprobados de la clase y las páginas de Oomba.",
-        "undo": "Deshacer"
+        "undo": "Deshacer",
+        "done": "Listo",
+        "saved": "Guardado"
       },
       "bgChanged": "Fondo cambiado",
       "uploading": "Revisando tu imagen…",
@@ -9346,6 +9348,10 @@
         "mode": "Temporizador o cronómetro",
         "toTimer": "Temporizador: cuenta atrás",
         "toStopwatch": "Cronómetro: cuenta desde cero",
+        "editHint": "Toca para cambiar el tiempo",
+        "editLabel": "Nuevo tiempo: minutos, o minutos:segundos",
+        "editBad": "Escribe minutos (8) o minutos y segundos (8:30), hasta 180 minutos.",
+        "editSet": "Temporizador puesto en {time}",
         "o": {
           "mode": {
             "timer": "Temporizador",

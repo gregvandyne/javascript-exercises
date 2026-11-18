@@ -2746,7 +2746,9 @@
         "zoneNone": "Nenhum",
         "placeNote": "Digite uma cidade. O Oomba nunca usa a localização de ninguém.",
         "qrNote": "Só os links aprovados da turma e as páginas do Oomba podem ser mostrados.",
-        "undo": "Desfazer"
+        "undo": "Desfazer",
+        "done": "Pronto",
+        "saved": "Salvo"
       },
       "bgChanged": "Fundo mudado",
       "uploading": "Verificando sua imagem…",
@@ -9348,6 +9350,10 @@
         "mode": "Timer ou cronômetro",
         "toTimer": "Timer: contagem regressiva",
         "toStopwatch": "Cronômetro: conta a partir do zero",
+        "editHint": "Toque para mudar o tempo",
+        "editLabel": "Novo tempo: minutos, ou minutos:segundos",
+        "editBad": "Digite minutos (8) ou minutos e segundos (8:30), até 180 minutos.",
+        "editSet": "Timer ajustado para {time}",
         "o": {
           "mode": {
             "timer": "Timer",

@@ -2745,7 +2745,9 @@
         "zoneNone": "Aucun",
         "placeNote": "Tape une ville ou un village. Oomba n’utilise jamais la position de personne.",
         "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés.",
-        "undo": "Annuler"
+        "undo": "Annuler",
+        "done": "Terminé",
+        "saved": "Enregistré"
       },
       "bgChanged": "Fond changé",
       "uploading": "Vérification de ton image…",
@@ -9346,6 +9348,10 @@
         "mode": "Minuteur ou chronomètre",
         "toTimer": "Minuteur : compte à rebours",
         "toStopwatch": "Chronomètre : compte à partir de zéro",
+        "editHint": "Touchez pour changer le temps",
+        "editLabel": "Nouveau temps : minutes, ou minutes:secondes",
+        "editBad": "Tapez des minutes (8) ou des minutes et secondes (8:30), 180 minutes au plus.",
+        "editSet": "Minuteur réglé sur {time}",
         "o": {
           "mode": {
             "timer": "Minuteur",
