@@ -208,7 +208,8 @@ export const BUILD = {
       if (!f.n) return { ok: false, hint: { k: 'empty' } };
       return { ok: false, hint: { k: 'made', a: `${f.n}/${f.d}`, b: `${x.n}/${x.d}` } };
     },
-    solve: (b, x) => ({ shape: b.shape || 'bar', bars: [{ n: x.n, d: x.d }], same: false, hide: false }),
+    // The teacher's tool may be on Add, Divide…: the target shows in Compare, the mode the set is built in.
+    solve: (b, x) => ({ shape: b.shape || 'bar', mode: 'compare', fit: 0, step: 0, bars: [{ n: x.n, d: x.d }], same: false, hide: false }),
   },
   // Fraction, decimal, percent: show an amount ("3/4", "0.25", "25%"); any equal fraction is right.
   fdp: {

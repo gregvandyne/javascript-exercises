@@ -186,6 +186,8 @@ test('each tool\'s check: the built target is right, the shown answer (solve) is
       if (s) assert.equal(B.checkBuild(tool, DT.cleanToolState(tool, s), x, b).ok, true, `${tool} ${JSON.stringify(x)}: still right once the server has cleaned it`);
     }
   }
+  // The teacher's fractions tool on Add (or any operation): Show on the board turns it to Compare, where the target shows.
+  assert.deepEqual(B.solveState('fractions', { mode: 'add', a: { n: 3, d: 4 }, b: { n: 3, d: 2 }, step: 2 }, { n: 1, d: 5 }), { shape: 'bar', mode: 'compare', fit: 0, step: 0, bars: [{ n: 1, d: 5 }], same: false, hide: false });
   for (let a2 = 1; a2 <= 72; a2++) assert.equal(B.checkBuild('geoboard', { pegs: 7, bands: [{ pts: B.areaShape(a2, 7), closed: true }] }, a2).ok, true, `area ${a2 / 2}`);
   // Every hint has its words.
   const en = JSON.parse(fs.readFileSync('server/i18n/locales/en.json', 'utf8')).js.dash.build;

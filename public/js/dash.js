@@ -1397,7 +1397,7 @@ function start() {
     if (data.mode === w.type) delete st.tab; else st.tab = data.mode;
     w.s = { ...w.s, state: st }; render(); save();
     const card = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-    card?.scrollIntoView({ block: 'nearest' });
+    card?.scrollIntoView({ block: 'center' });
     announce(t('js.dash.build.shown', { target: tText(data.mode, data.targets[i], data.base) }));
   }
   /** A student: their own copy of the tool, one target at a time, Check, then the next; a finish screen at the end. What
