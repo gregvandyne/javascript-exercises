@@ -1343,7 +1343,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 /* Guided focus: a short played-once tour over a slide picture (steps authored per slide, played by
    public/js/course.js). The figure carries data-gf-step while a step is on show; no attribute = clean picture. */
 .gf-layer{position:absolute;inset:0;pointer-events:none}
-.gf-step{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+.gf-step{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
 .gf[data-gf-step="0"] .gf-step[data-i="0"],.gf[data-gf-step="1"] .gf-step[data-i="1"],.gf[data-gf-step="2"] .gf-step[data-i="2"],.gf[data-gf-step="3"] .gf-step[data-i="3"]{opacity:1}
 .gf-box{position:absolute;border-radius:10px;box-shadow:0 0 0 999px rgba(8,14,10,.42)}
 /* The visible ring is the box's ::after, outset on every side: its 3px border then runs OUTSIDE the
@@ -1392,7 +1392,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .gf-js.vf .gf-strip,.gf-js.gf--strip .gf-strip{display:grid}
 /* Between steps (before the tour and after it) the strip only keeps its place: no empty box. */
 .gf:not([data-gf-step]) .gf-strip{background:transparent;box-shadow:none}
-.gf-sc{grid-area:1/1;margin:0;display:flex;align-items:flex-start;gap:8px;font-size:1rem;font-weight:600;line-height:1.35;color:var(--text);visibility:hidden;opacity:0;transition:opacity .3s ease}
+.gf-sc{grid-area:1/1;margin:0;display:flex;align-items:flex-start;gap:8px;font-size:1rem;font-weight:600;line-height:1.35;color:var(--text);visibility:hidden;opacity:0;transition:opacity .5s ease}
 .gf-sc .gf-cue-n{margin-top:1px}
 .gf[data-gf-step="0"] .gf-sc[data-i="0"],.gf[data-gf-step="1"] .gf-sc[data-i="1"],.gf[data-gf-step="2"] .gf-sc[data-i="2"],.gf[data-gf-step="3"] .gf-sc[data-i="3"]{visibility:visible;opacity:1}
 .gf-replay{position:absolute;right:8px;bottom:8px;z-index:2;display:inline-flex;align-items:center;gap:6px;min-height:44px;border:1px solid rgba(255,253,242,.35);background:rgba(20,20,20,.72);color:#FFFDF2;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer}

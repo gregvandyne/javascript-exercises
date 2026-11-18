@@ -1044,6 +1044,7 @@ async function showHeroes() {
   lineup.forEach(h => targets.push({ at: () => h.position.clone().setY(1.1 * k), r: 0.7 * k, go: () => chooseHero(h.id) }));
   view.pts = [V3(-far, 0, at[1][1]), V3(far, 0, at[1][1]), V3(-far, 2.3 * k, at[0][1]), V3(far, 2.3 * k, at[0][1])];
   card('pick', { title: fmt('title'), line: 'hero.pick', buttons: lineup.map(h => ({ id: 'hero-' + h.id, label: h.name, go: () => chooseHero(h.id) })) });
+  if (P.chapter) warm(P.chapter);   // a course step's chapter: its first question is on its way while the player picks
   frame();
 }
 function chooseHero(id) {
@@ -1086,6 +1087,7 @@ function showMenu() {
   S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; S.glows = []; solo(0);
   if (S.hero) S.hero.play('wave');
   card('menu', { title: fmt('title'), line: 'menu.pick', buttons: LM.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
+  for (const c of LM.CHAPTERS) warm(c);
   frame();
 }
 
@@ -1138,9 +1140,34 @@ function playLap(chapter) {
   try { if (B && B.storage) B.storage.set(LAPS_KEY, last); } catch (e) { /* no save here: the lap is still new */ }
   return lap;
 }
+/* The AI voice from the first line (Greg, 2026-11-18: "sometimes it was the AI voice, other times it was the computer
+   voice"). A round's lines carry its numbers, so the warm-up can't hold them, and the SDK reads a line that hasn't
+   arrived in 4 s with the device voice. So the lines are asked for before they are needed (BRB.prefetchSpeech): a
+   chapter's lap is chosen while the lamplighter picker or the menu shows, and its first question asked for then; each
+   round asks for its own closing lines and the next round's question as it starts. */
+const ahead = {};
+function prefetch(lines) { try { if (B && B.prefetchSpeech && lines.length) B.prefetchSpeech(lines.filter(Boolean).map(([k, v]) => fmt(k, v)), { lang: 'en', voice: 'friendly' }); } catch (e) { /* no page */ } }
+function warm(chapter) {
+  if (S.pin != null || !LM.CHAPTERS.includes(chapter)) return;   // a test's pinned lap is never spent here
+  try {
+    if (ahead[chapter] == null) ahead[chapter] = playLap(chapter);
+    prefetch([LM.round(chapter, 1, ahead[chapter]).ask]);
+  } catch (e) { /* the voice will catch up */ }
+}
+function lapFor(chapter) {
+  if (S.pin == null && ahead[chapter] != null) { const lap = ahead[chapter]; delete ahead[chapter]; return lap; }
+  return playLap(chapter);
+}
+/** As a round starts: its closing lines (what is said when it is right) and the next round's question. */
+function warmRound(R) {
+  try {
+    const right = LM.judge(R, R.want), next = S.round < LM.ROUNDS ? LM.round(S.chapter, S.round + 1, S.lap).ask : null;
+    prefetch([...(right && right.ok ? right.said : []), next]);
+  } catch (e) { /* the voice will catch up */ }
+}
 function startChapter(chapter) {
   if (!LM.CHAPTERS.includes(chapter)) return showMenu();
-  S.chapter = chapter; S.lap = playLap(chapter); S.round = 0; S.screen = 'play'; S.glows = []; el.card.hidden = true; el.card.replaceChildren();
+  S.chapter = chapter; S.lap = lapFor(chapter); S.round = 0; S.screen = 'play'; S.glows = []; el.card.hidden = true; el.card.replaceChildren();
   bench.visible = true; setLit(0);
   if (S.hero) S.hero.play('idle');
   nextRound();
@@ -1156,6 +1183,7 @@ function nextRound() {
   const R = S.R;
   hint(); dots2(); chip(R.show);
   say(R.ask[0], R.ask[1]);   // the words first: the camera fits the hollow under them
+  warmRound(R);
   redraw(); frame();
 }
 function finish() {
