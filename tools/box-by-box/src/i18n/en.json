@@ -515,5 +515,6 @@
 	"ui.check.areaWholeDivisor": "With the area model, divide by a whole number, like 7.5 ÷ 3.",
 	"ui.check.areaExact": "With the area model, pick a problem that comes out by hundredths, like 7.5 ÷ 3 = 2.5.",
 	"q.lad.placesOn.one": "{a} × {b} = {p}, and the point goes 1 place from the right:",
-	"q.lad.placesOn.other": "{a} × {b} = {p}, and the point goes {n} places from the right:"
+	"q.lad.placesOn.other": "{a} × {b} = {p}, and the point goes {n} places from the right:",
+	"q.lad.toldDec": "Take away {q} groups of {d}. Write {q} on the side."
 }

@@ -2,8 +2,9 @@
 // language", the area model for decimals):
 //   - multiplication: each number split by place value (2.3 × 1.4 as 2 + 0.3 by 1 + 0.4), a box for each pair (2, 0.3,
 //     0.8, 0.12, each with its point), then the boxes added (3.22); a number typed with more zeros is the same number;
-//   - division: a decimal divided by a whole number, in friendly chunks (7.5 ÷ 3: 2, then 0.5; 2 + 0.5 = 2.5), only for
-//     problems that come out by hundredths (no remainder); a decimal divisor keeps the standard method;
+//   - division: a decimal divided by a whole number, by the area model or the ladder (the T), in friendly chunks (7.5 ÷ 3:
+//     2, then 0.5; 2 + 0.5 = 2.5), only for problems that come out by hundredths (no remainder); a decimal divisor keeps
+//     the standard method;
 //   - what is offered and saved: the game's DECIMAL_METHODS and the server's BB_DEC_METHODS agree, old sets are cleaned
 //     to what they were, and the server refuses the combinations the game doesn't make;
 //   - on a phone, three problems in a row for each, to Correct!.
@@ -72,29 +73,52 @@ test('a decimal divided by a whole number by the area model: friendly chunks, an
   }
 });
 
+test('a decimal divided by a whole number by the ladder: the same chunks down the side, any path, no remainder', () => {
+  const v = M.watchValues('ladder', 'divide', [7.5, 3], 'decimal');
+  assert.deepEqual(v, { q0: '2', p0: '6', r0: '1.5', q1: '0.5', p1: '1.5', r1: '0', quotient: '2.5' });
+  const w = M.buildWork('ladder', 'divide', [7.5, 3], v, 'decimal');
+  assert.equal(w.answer, '2.5');
+  assert.deepEqual(M.checkWork(w, v), { right: true, wrong: [] });
+  assert.ok(!w.fields.some((f) => f.role === 'remainder'), 'no remainder to write');
+  assert.equal(w.fields[0].prompt, 'How many 3s will you take away from 7.5? A friendly number like 2 or 1 is easy.');
+  assert.equal(w.fields[0].told, 'Take away 2 groups of 3. Write 2 on the side.');
+  assert.equal(w.fields[3].prompt, 'How many 3s will you take away from 1.5? A friendly number like 0.5 or 0.2 is easy.');
+  assert.equal(w.fields.at(-1).prompt, 'Add the numbers on the side: 2 + 0.5. What’s the quotient?');
+  // a longer path (1, 1, 0.5) is right too; a wrong difference is marked
+  const alt = { q0: '1', p0: '3', r0: '4.5', q1: '1', p1: '3', r1: '1.5', q2: '0.5', p2: '1.5', r2: '0', quotient: '2.5' };
+  assert.deepEqual(M.checkWork(M.buildWork('ladder', 'divide', [7.5, 3], alt, 'decimal'), alt), { right: true, wrong: [] });
+  const bad = { ...v, r0: '2.5' };
+  assert.ok(M.checkWork(M.buildWork('ladder', 'divide', [7.5, 3], bad, 'decimal'), bad).wrong.includes('r0'));
+  assert.equal(L.checkProblem('divide', 4.5, 0.3, 'decimal', 'ladder').length > 0, true, 'a decimal divisor: the standard method only');
+  for (const [a, b] of L.kindInfo('divide').settings.generate({ count: 60, dividends: [100, 9999], divisors: [2, 25], remainders: 'R', numbers: 'decimal', method: 'ladder' })) {
+    const vv = M.watchValues('ladder', 'divide', [a, b], 'decimal');
+    assert.equal(M.checkWork(M.buildWork('ladder', 'divide', [a, b], vv, 'decimal'), vv).right, true, `${a} ÷ ${b}`);
+  }
+});
+
 test('which methods decimals offer, what is saved, and what the server takes (old sets unchanged)', () => {
   assert.deepEqual(L.DECIMAL_METHODS, G.BB_DEC_METHODS, 'the game and the server agree');
-  assert.equal(L.methodFor('divide', 'ladder', 'decimal'), 'standard');
+  assert.equal(L.methodFor('divide', 'ladder', 'decimal'), 'ladder');
   assert.equal(L.methodFor('multiply', 'partial', 'decimal'), 'standard');
   assert.equal(L.methodFor('divide', 'area', 'decimal'), 'area');
   assert.equal(L.methodFor('multiply', 'area', 'decimal'), 'area');
   const div = { k: 'divide', p: [[7.5, 3], [12.6, 4]], l: 'guided', m: 'area', dec: 1 };
   const mul = { k: 'multiply', p: [[2.3, 1.4]], l: 'guided', m: 'area', dec: 1 };
-  for (const it of [div, mul]) {
+  for (const it of [div, mul, { ...div, m: 'ladder' }]) {
     const a = L.parseItem(it);
-    assert.equal(a.settings.method, 'area');
+    assert.equal(a.settings.method, it.m);
     assert.deepEqual(L.toItem(a), it, 'saved as opened');
     assert.deepEqual(clean([it]), [it], 'the server takes it');
   }
   // a decimal divisor or a problem that doesn't come out: the game drops it, the server refuses the set
   assert.deepEqual(L.parseItem({ ...div, p: [[7.5, 3], [4.5, 0.3], [13, 3]] }).problems, [[7.5, 3]]);
-  for (const bad of [{ ...div, p: [[4.5, 0.3]] }, { ...div, p: [[13, 3]] }, { ...div, m: 'ladder' }, { ...mul, m: 'partial' }, { k: 'add', p: [[3.5, 2.75]], l: 'guided', m: 'area', dec: 1 }])
+  for (const bad of [{ ...div, p: [[4.5, 0.3]] }, { ...div, p: [[13, 3]] }, { ...div, m: 'ladder', p: [[4.5, 0.3]] }, { ...mul, m: 'ladder' }, { ...mul, m: 'partial' }, { k: 'add', p: [[3.5, 2.75]], l: 'guided', m: 'area', dec: 1 }])
     assert.equal(clean([bad]), null, JSON.stringify(bad));
   // sets saved before: the same JSON
   for (const old of [{ k: 'divide', p: [[4.5, 0.3]], l: 'guided', dec: 1 }, { k: 'multiply', p: [[2.4, 1.3]], l: 'countUp', dec: 1 }, { k: 'divide', p: [[96, 4]], l: 'guided', m: 'area' }, { k: 'multiply', p: [[46, 23]], l: 'guided', m: 'partial' }])
     assert.deepEqual(clean([old]), [old]);
-  // an old decimals item with another method in it opens with the standard method, as before
-  assert.equal(L.parseItem({ k: 'divide', p: [[4.5, 0.3]], l: 'guided', dec: 1, m: 'ladder' }).settings.method, 'standard');
+  // a decimals item with a method decimals don't have opens with the standard method
+  assert.equal(L.parseItem({ k: 'multiply', p: [[2.4, 1.3]], l: 'guided', dec: 1, m: 'partial' }).settings.method, 'standard');
 });
 
 // ---------------------------------------------------------------- on a phone, three in a row
@@ -131,17 +155,18 @@ async function openPlain(item, phone = true) {
 /** The friendly chunk a student takes (the biggest place-value one; the last section all that's left). */
 const choiceOf = (f) => f.countUp.choose.f.show(f.countUp.choose.last ? Math.floor(f.countUp.choose.left / f.countUp.choose.divisor) : M.placeValueMultiple(f.countUp.choose.left, f.countUp.choose.divisor));
 const CASES = [
-  { what: 'decimal multiplication', item: { k: 'multiply', p: [[2.3, 1.4], [0.6, 4], [3.25, 2.6]], l: 'guided', m: 'area', dec: 1 }, form: 'R' },
-  { what: 'a decimal divided by a whole number', item: { k: 'divide', p: [[7.5, 3], [12.6, 4], [0.84, 4]], l: 'guided', m: 'area', dec: 1 }, form: 'decimal' }
+  { what: 'decimal multiplication by the area model', item: { k: 'multiply', p: [[2.3, 1.4], [0.6, 4], [3.25, 2.6]], l: 'guided', m: 'area', dec: 1 }, form: 'R' },
+  { what: 'a decimal divided by a whole number by the area model', item: { k: 'divide', p: [[7.5, 3], [12.6, 4], [0.84, 4]], l: 'guided', m: 'area', dec: 1 }, form: 'decimal' },
+  { what: 'a decimal divided by a whole number by the ladder', item: { k: 'divide', p: [[7.5, 3], [12.6, 4], [0.84, 4]], l: 'guided', m: 'ladder', dec: 1 }, form: 'decimal' }
 ];
 for (const c of CASES)
-  test(`in Chromium, on a phone: ${c.what} by the area model, three in a row, Guided, to Correct!`, { skip, timeout: 120e3 }, async () => {
+  test(`in Chromium, on a phone: ${c.what}, three in a row, Guided, to Correct!`, { skip, timeout: 120e3 }, async () => {
     const { page, ctx, errors } = await openPlain(c.item);
     for (let i = 0; i < c.item.p.length; i++) {
       const p = c.item.p[i];
       const v = {};
       for (let guard = 0; guard < 40; guard++) {
-        const f = M.buildWork('area', c.item.k, p, v, c.form).fields.find((x) => !v[x.id]);
+        const f = M.buildWork(c.item.m, c.item.k, p, v, c.form).fields.find((x) => !v[x.id]);
         if (!f) break;
         assert.equal(await page.locator('.prompt').innerText(), f.prompt, `${p}: the question for ${f.id}`);
         const val = f.role === 'choice' ? choiceOf(f) : f.expect;
@@ -150,7 +175,7 @@ for (const c of CASES)
         await page.waitForTimeout(40);
         v[f.id] = val;
       }
-      const w = M.buildWork('area', c.item.k, p, v, c.form);
+      const w = M.buildWork(c.item.m, c.item.k, p, v, c.form);
       if (c.item.k === 'multiply') assert.ok((await page.locator('.amul').innerText()).includes('.'), `${p}: the parts and boxes show their points`);
       await page.getByRole('button', { name: 'Check', exact: true }).click();
       assert.match(await page.locator('.feedback').innerText(), new RegExp(`Correct! ${w.title.replace(/[.×÷]/g, '.')} = ${w.answer.replace('.', '\\.')}`), `${p}`);

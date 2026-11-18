@@ -47,9 +47,9 @@ const BB_LEVELS = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn', 'custom'
 export const BB_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'], add: ['standard'], subtract: ['standard'] };
 const BB_KINDS = Object.keys(BB_METHODS);
 export const BB_FORMS = ['fraction', 'decimal'];
-/** The methods a decimals activity (dec: 1) may use (the game's DECIMAL_METHODS): the standard one, and the area model
- *  for multiplication and for a decimal divided by a whole number. */
-export const BB_DEC_METHODS = { divide: ['standard', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
+/** The methods a decimals activity (dec: 1) may use (the game's DECIMAL_METHODS): the standard one, the area model for
+ *  multiplication, and the ladder and the area model for a decimal divided by a whole number. */
+export const BB_DEC_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
 const int = v => (Number.isInteger(v) ? v : NaN);
 const digits = n => String(n).length;
 /** The Big Divide's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
@@ -102,8 +102,8 @@ export function bbDecCheck(kind, a, b) {
   }
   return 'kind';
 }
-/** The area model's rule for a decimals division problem (the game's checkProblem): a whole divisor, and it comes out by
- *  hundredths (7.5 ÷ 3 = 2.5), so there is no remainder to write. null when it works. */
+/** The ladder's and the area model's rule for a decimals division problem (the game's checkProblem): a whole divisor,
+ *  and it comes out by hundredths (7.5 ÷ 3 = 2.5), so there is no remainder to write. null when it works. */
 export function bbAreaDecCheck(a, b) {
   if (!Number.isInteger(b)) return 'divisor';
   return scaledInt(a, 2) % b === 0 ? null : 'exact';
@@ -141,7 +141,7 @@ export function cleanBoxItems(raw) {
   if (d) { const g = bbPlan(k, it.g); if (!g) return null; out.d = 1; out.g = g; }
   if (it.m !== undefined && it.m !== null) {
     if (typeof it.m !== 'string' || !(dec ? BB_DEC_METHODS : BB_METHODS)[k].includes(it.m)) return null;
-    if (dec && k === 'divide' && it.m === 'area' && p.some(([a, b]) => bbAreaDecCheck(a, b))) return null;
+    if (dec && k === 'divide' && it.m !== 'standard' && p.some(([a, b]) => bbAreaDecCheck(a, b))) return null;
     if (it.m !== 'standard') out.m = it.m;
   }
   if (it.r !== undefined && it.r !== null) {

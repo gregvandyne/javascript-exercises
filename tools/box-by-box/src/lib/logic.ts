@@ -594,8 +594,8 @@ function makeDecimalDivide(plan: DividePlan, r: Rand): { dividend: number; divis
 	if (!whole) return null;
 	const N = whole.dividend;
 	const k = rand(Math.min(1, len(N) - 1), Math.min(2, len(N) - 1), r);
-	// (the area model divides decimals by whole numbers only)
-	const s = plan.method !== 'area' && r() < 0.35 ? 1 : 0;
+	// (the ladder and the area model divide decimals by whole numbers only)
+	const s = (!plan.method || plan.method === 'standard') && r() < 0.35 ? 1 : 0;
 	const dividend = unscaled(N, k);
 	const divisor = unscaled(whole.divisor, s);
 	if (!isDecimal(dividend) && !isDecimal(divisor)) return null;
@@ -1238,20 +1238,20 @@ export function parseFlags(code: unknown): Flags {
 	return f;
 }
 
-/** The methods decimals can be worked with: the standard algorithms, and the area model for multiplication (2.3 × 1.4
- *  as 2 + 0.3 by 1 + 0.4) and for a decimal divided by a whole number (7.5 ÷ 3: 2, then 0.5). The ladder and partial
- *  products stay whole numbers. */
-export const DECIMAL_METHODS: Record<Kind, Method[]> = { divide: ['standard', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
+/** The methods decimals can be worked with: the standard algorithms, the area model for multiplication (2.3 × 1.4 as
+ *  2 + 0.3 by 1 + 0.4), and the ladder and the area model for a decimal divided by a whole number (7.5 ÷ 3: 2, then 0.5).
+ *  Partial products stay whole numbers. */
+export const DECIMAL_METHODS: Record<Kind, Method[]> = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
 /** The method as an activity may use it: one of the kind's (decimals: one of DECIMAL_METHODS), else the standard one. */
 export const methodFor = (kind: Kind, raw: unknown, numbers: Numbers = 'whole'): Method => {
 	const m = methodOr(kind, raw);
 	return numbers === 'decimal' && !DECIMAL_METHODS[kind].includes(m) ? 'standard' : m;
 };
-/** A problem's own rules, and the method's: decimals by the area model divide by a whole number and come out by
- *  hundredths (7.5 ÷ 3 = 2.5; no remainder to write), so every section is a friendly chunk. */
+/** A problem's own rules, and the method's: decimals by the ladder or the area model divide by a whole number and come
+ *  out by hundredths (7.5 ÷ 3 = 2.5; no remainder to write), so every chunk is a friendly one. */
 export function checkProblem(kind: Kind, a: number, b: number, numbers: Numbers = 'whole', method: Method = 'standard'): string | null {
 	const f = kindInfo(kind).check(a, b, numbers);
-	if (f || kind !== 'divide' || numbers !== 'decimal' || method !== 'area') return f;
+	if (f || kind !== 'divide' || numbers !== 'decimal' || method === 'standard') return f;
 	if (!Number.isInteger(b)) return t('ui.check.areaWholeDivisor');
 	return scaled(a, 2) % b === 0 ? null : t('ui.check.areaExact');
 }

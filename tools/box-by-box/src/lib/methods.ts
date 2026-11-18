@@ -305,8 +305,9 @@ const lines = (x: Msg | Msg[]) => (Array.isArray(x) ? x : [x]);
 const words = (ask: Msg | Msg[], tell: Msg | Msg[]) => ({ prompt: tx(ask), ask: lines(ask), told: tx(tell), tell: lines(tell) });
 
 function divisionWork(method: 'ladder' | 'area', given: number, divisor: number, v: Values, form: RemainderForm = 'R'): Work {
-	// decimals (the area model: a decimal divided by a whole number, coming out by hundredths): worked in hundredths
-	const f = nums(form === 'decimal' && method === 'area' ? 2 : 0);
+	// decimals (the ladder or the area model: a decimal divided by a whole number, coming out by hundredths): worked in
+	// hundredths
+	const f = nums(form === 'decimal' ? 2 : 0);
 	const S = f.show;
 	const rd = f.read;
 	const dividend = f.k ? scaled(given, f.k) : given;
@@ -329,7 +330,8 @@ function divisionWork(method: 'ladder' | 'area', given: number, divisor: number,
 		rungs.push({ q: qId, p: pId, r: rId, left, leftKey });
 		const pv = placeValueMultiple(left, divisor);
 		const fr = friendlyMultiple(left, divisor);
-		const fits = [1000, 100, 10, 5, 2].filter((x) => x * divisor <= left);
+		// friendly numbers of groups (decimals: tenths too, in hundredths: 0.5 is 50)
+		const fits = (f.k ? [100000, 10000, 1000, 500, 200, 100, 50, 20, 10] : [1000, 100, 10, 5, 2]).filter((x) => x * divisor <= left);
 		const thisLeft = left;
 		const chunks = placeChunks(left, divisor);
 		const pvCore = pv / 10 ** zerosOf(pv);
@@ -345,8 +347,12 @@ function divisionWork(method: 'ladder' | 'area', given: number, divisor: number,
 					? ln('q.lad.last', { d: divisor, l: S(left) })
 					: method === 'area'
 						? [ln('q.area.howWide', { d: divisor, l: S(left) }), ...(chunks.length ? [ln('q.area.chunk', { list: orList(chunks.map(S)) })] : [])]
-						: [ln('q.lad.howMany', { d: divisor, l: left }), ...(fits.length ? [ln('q.lad.friendly', { list: orList(fits.slice(0, 2)) })] : [])],
-				method === 'area' ? ln('q.area.told', { q: S(pv), d: divisor, x: S(pv * divisor), l: S(left) }) : ln('q.lad.told', { d: divisor }, pv)
+						: [ln('q.lad.howMany', { d: divisor, l: S(left) }), ...(fits.length ? [ln('q.lad.friendly', { list: orList(fits.slice(0, 2).map(S)) })] : [])],
+				method === 'area'
+					? ln('q.area.told', { q: S(pv), d: divisor, x: S(pv * divisor), l: S(left) })
+					: f.k
+						? ln('q.lad.toldDec', { q: S(pv), d: divisor })
+						: ln('q.lad.told', { d: divisor }, pv)
 			),
 			hints: [
 				tx([ln(f.k ? 'h.lad.choose1dec' : 'h.lad.choose1', { d: divisor, l: S(thisLeft) }), ...(i > 0 ? [ln('h.lad.anyFits')] : [])]),

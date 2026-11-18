@@ -485,7 +485,7 @@
 					</div>
 					{#if numbers === 'decimal' && methods.length > 1}
 						<p class="about">{methodNote ? 'Decimals use the standard method or the area model, so this activity is back on the standard method. ' : ''}{activity.kind === 'divide'
-								? 'With decimals, the area model divides by whole numbers, and every problem comes out by hundredths, like 7.5 ÷ 3 = 2.5. A decimal divisor (4.5 ÷ 0.3) uses the standard method.'
+								? 'With decimals, the ladder and the area model divide by whole numbers, and every problem comes out by hundredths, like 7.5 ÷ 3 = 2.5. A decimal divisor (4.5 ÷ 0.3) uses the standard method.'
 								: 'With decimals, the area model splits each number by place value: 2.3 × 1.4 is (2 + 0.3) × (1 + 0.4). Partial products stay with whole numbers.'}</p>
 					{/if}
 					{#if method !== 'standard'}

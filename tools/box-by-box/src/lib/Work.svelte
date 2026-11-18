@@ -54,8 +54,9 @@
 <div class="work" dir="ltr" role="group" aria-label={label ?? work.title}>
 	{#if work.kind === 'divide' && work.method === 'ladder'}
 		{@const D = len(work.divisor)}
-		{@const N = len(work.dividend)}
-		{@const S = Math.max(1, len(Math.floor(work.dividend / work.divisor)))}
+		{@const shownN = work.f.show(work.dividend)}
+		{@const N = Math.max(shownN.length, ...work.fields.filter((x) => x.role === 'product' || x.role === 'difference').map((x) => x.len))}
+		{@const S = Math.max(1, byId.get('quotient')?.len ?? 1, ...work.fields.filter((x) => x.role === 'choice').map((x) => x.len))}
 		{@const main = D + 1}
 		{@const end = D + N}
 		{@const sideEnd = end + 1 + S}
@@ -64,7 +65,7 @@
 		<div class="ladder" style:--cols={sideEnd + fr} style:--rows={lastRow + 1}>
 			<span class="cell" style:grid-row="1" style:grid-column="1 / span {D}">{@render digits(String(work.divisor), D, 'divisor')}</span>
 			<span class="cell bracket" class:dim={!lit('dividend')} style:grid-row="1" style:grid-column="{main} / span {N}"
-				>{@render digits(String(work.dividend), N, 'dividend')}</span
+				>{@render digits(shownN, N, 'dividend')}</span
 			>
 			<span class="side-head" style:grid-row="1" style:grid-column="{end + 2} / span {S}" aria-hidden="true">×{work.divisor}</span>
 			<span class="divider" style:grid-row="1 / span {lastRow + 1}" style:grid-column={end + 1} aria-hidden="true"></span>
@@ -91,7 +92,7 @@
 							>{@render slot('remainder')}<span class="slash" class:dim={!lit('den')} aria-hidden="true">/</span>{@render slot('den')}</span
 						>
 					{/if}
-				{:else}
+				{:else if rm}
 					{#if shown('remainder')}
 						<span class="r-label" class:dim={!lit('remainder')} style:grid-row={lastRow + 1} style:grid-column={end - rm.len} aria-hidden="true">R</span>
 					{/if}
