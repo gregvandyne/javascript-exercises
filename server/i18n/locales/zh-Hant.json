@@ -2745,7 +2745,9 @@
         "zoneNone": "無",
         "placeNote": "輸入城鎮或城市。Oomba 從不使用任何人的位置。",
         "qrNote": "只能顯示班級核准的連結和 Oomba 的頁面。",
-        "undo": "復原"
+        "undo": "復原",
+        "done": "完成",
+        "saved": "已儲存"
       },
       "bgChanged": "已更換背景",
       "uploading": "正在檢查你的圖片…",
@@ -9346,6 +9348,10 @@
         "mode": "計時器或碼錶",
         "toTimer": "計時器：倒數計時",
         "toStopwatch": "碼錶：從零開始正數",
+        "editHint": "點一下以更改時間",
+        "editLabel": "新的時間：分鐘，或 分:秒",
+        "editBad": "請輸入分鐘（8）或分鐘和秒（8:30），最多 180 分鐘。",
+        "editSet": "計時器已設定為 {time}",
         "o": {
           "mode": {
             "timer": "計時器",

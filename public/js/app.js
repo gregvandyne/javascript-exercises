@@ -64,7 +64,9 @@ export function sheet({ title, content, onClose } = {}) {
   bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="${esc(t('js.app.close'))}"><span class="emo">✖️</span></button><h2 id="sheet-title">${esc(title)}</h2><div class="sheet-body">${content}</div></div>`;
   document.body.appendChild(bg);
   requestAnimationFrame(liftToasts); setTimeout(liftToasts, 300);   // after the sheet's slide-up
-  const close = () => { bg.remove(); liftToasts(); document.removeEventListener('keydown', onKey); if (prev && prev.focus) prev.focus(); onClose && onClose(); };
+  // A field still being typed in lets go first, so its change is kept (closing by Escape, ✕ or a tap outside never
+  // takes the focus from it, and Safari fires no blur or change for a field taken out of the page).
+  const close = () => { if (bg.contains(document.activeElement)) document.activeElement.blur?.(); bg.remove(); liftToasts(); document.removeEventListener('keydown', onKey); if (prev && prev.focus) prev.focus(); onClose && onClose(); };
   const onKey = e => { if (e.key === 'Escape') close(); if (e.key === 'Tab') trap(e); };
   const trap = e => { const f = $$('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])', bg).filter(x => !x.disabled && x.offsetParent !== null); if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } };
   bg.addEventListener('click', e => { if (e.target === bg) close(); });

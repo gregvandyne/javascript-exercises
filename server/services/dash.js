@@ -177,7 +177,7 @@ export const WIDGETS = [
   // The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): mode picks a
   // countdown or counting up. Old 'stopwatch' widgets are read as a timer in stopwatch mode (migrateWidgets). A row
   // taller than before (default 4 x 4, smallest 3 x 4): the mode switch sits above the digits and the controls.
-  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 4], min: [3, 4], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins', 'mode', 'toTimer', 'toStopwatch'], settings: [
+  { id: 'timer', icon: '⏳', group: 'time', who: 'both', size: [4, 4], min: [3, 4], words: ['start', 'pause', 'resume', 'reset', 'custom', 'min', 'sec', 'set', 'done', 'left', 'presets', 'mins', 'mode', 'toTimer', 'toStopwatch', 'editHint', 'editLabel', 'editBad', 'editSet'], settings: [
     { key: 'mode', type: 'select', options: ['timer', 'stopwatch'], def: 'timer' },
     { key: 'minutes', type: 'number', min: 1, max: 180, def: 5 },
     { key: 'view', type: 'select', options: ['digits', 'ring'], def: 'digits' },
@@ -634,6 +634,11 @@ export function updateLayout(u, c, id, { name, widgets, bg } = {}) {
   const was = new Map(l.widgets.filter(x => x.type === 'timer').map(x => [x.id, x.s.mode]));
   const switched = w.filter(x => x.type === 'timer' && was.has(x.id) && was.get(x.id) !== x.s.mode).map(x => x.id);
   if (switched.length) dropTimers(c.id, switched);
+  // Starting minutes changed (the settings, or the digits tapped on the board): a timer that has run already takes the
+  // new time at once, so the teacher sees it (docs/decisions.md "Timer: settings that stick, tap the time").
+  const mins = new Map(l.widgets.filter(x => x.type === 'timer').map(x => [x.id, x.s.minutes]));
+  const retimed = w.filter(x => x.type === 'timer' && timerMode(x) === 'down' && mins.has(x.id) && mins.get(x.id) !== x.s.minutes);
+  if (retimed.length) retimeTimers(c.id, retimed);
   if (classState(c.id).layout_id === id) publishPins(c.id, w);
   return { layout: getLayout(id) };
 }
@@ -1050,6 +1055,23 @@ function dropTimers(classId, ids) {
   for (const id of ids) delete all[id];
   q.run('UPDATE dash_class SET timers=? WHERE class_id=?', JSON.stringify(all), classId);
 }
+/** A countdown given a new length: back to full, still counting if it was (a finished one stops); m: the Starting
+ *  minutes it now follows (the same as public/js/dash-widgets.js retime). */
+export function retime(st, ms, t, m) {
+  const going = !!st.on && !timerView(st, t).done;
+  return { ...st, dur: ms, base: 0, start: going ? t : 0, on: going, m };
+}
+/** These countdowns' runs take their widget's new Starting minutes (only ones that have a run: others start from it). */
+function retimeTimers(classId, widgets, t = now()) {
+  const all = json(classState(classId).timers, {});
+  let n = 0;
+  for (const w of widgets) {
+    const cur = all[w.id]; if (!cur || cur.mode !== 'down') continue;
+    const m = w.s.minutes || 5;
+    all[w.id] = retime(cur, Math.min(MAX_TIMER_MS, m * 60e3), t, m); n++;
+  }
+  if (n) q.run('UPDATE dash_class SET timers=? WHERE class_id=?', JSON.stringify(all), classId);
+}
 /** What a timer shows at server time t: { elapsed, left (countdowns), done }. */
 export function timerView(st, t = now()) {
   const elapsed = Math.max(0, (st.base || 0) + (st.on ? t - st.start : 0));
@@ -1057,7 +1079,7 @@ export function timerView(st, t = now()) {
   const left = Math.max(0, st.dur - elapsed);
   return { elapsed: Math.min(elapsed, st.dur), left, done: left === 0 };
 }
-export function timerAction(u, c, wid, { action, ms } = {}, t = now()) {
+export function timerAction(u, c, wid, { action, ms, run } = {}, t = now()) {
   const w = teacherWidget(u, c, wid, TIMER_TYPES); if (!w) return { error: 'notFound' };
   const all = json(classState(c.id).timers, {});
   const down = timerMode(w) === 'down';
@@ -1070,8 +1092,11 @@ export function timerAction(u, c, wid, { action, ms } = {}, t = now()) {
   else if (action === 'set' && down) {
     const n = Math.round(Number(ms));
     if (!Number.isFinite(n) || n < 1000 || n > MAX_TIMER_MS) return { error: 'timer' };
-    Object.assign(cur, { dur: n, base: 0, on: false, start: 0 });
+    // run: the time typed on the digits of a running timer keeps it running, from the new time.
+    Object.assign(cur, run === true ? retime(cur, n, t, cur.m) : { dur: n, base: 0, on: false, start: 0 });
   } else return { error: 'timer' };
+  // The Starting minutes this run follows: a screen that has newer minutes shows them before the server has them.
+  if (down) cur.m = w.s.minutes || 5;
   // Keep only timers whose widget is still on one of the class's layouts.
   const ids = new Set(q.all('SELECT widgets FROM dash_layouts WHERE class_id=?', c.id).flatMap(r => json(r.widgets, []).map(x => x.id)));
   const next = Object.fromEntries(Object.entries(all).filter(([id]) => ids.has(id) && id !== w.id));

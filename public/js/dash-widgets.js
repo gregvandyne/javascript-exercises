@@ -25,6 +25,7 @@ import { rods } from './dash-rods.js';
 import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
 import { numField } from './dash-num.js';
+import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
 import { periodsFor } from './agenda.js';
 
@@ -44,6 +45,20 @@ export function timerView(st, t) {
   if (st.mode !== 'down') return { elapsed, left: null, done: false };
   const left = Math.max(0, st.dur - elapsed);
   return { elapsed: Math.min(elapsed, st.dur), left, done: left === 0 };
+}
+/** A countdown given a new length: back to full, still counting if it was (a finished one stops); m: the Starting
+ *  minutes it now follows (the same as services/dash.js retime). */
+export function retime(st, ms, t, m) {
+  const going = !!st.on && !timerView(st, t).done;
+  return { ...st, dur: ms, base: 0, start: going ? t : 0, on: going, m };
+}
+/** A time typed on the timer's digits -> ms, or null: whole minutes ("8") or minutes and seconds ("8:30", also "8.30"),
+ *  from 1 second to max minutes. */
+export function typedTime(v, max = 180) {
+  const x = /^\s*(\d{1,3})(?:\s*[:.,]\s*([0-5]\d))?\s*$/.exec(String(v ?? ''));
+  if (!x) return null;
+  const ms = (+x[1] * 60 + (+x[2] || 0)) * 1000;
+  return ms >= 1000 && ms <= max * 60e3 ? ms : null;
 }
 /** The server's clock minus this one, from one /live round trip (sent and got are this clock). */
 export const skewOf = (serverNow, sent, got) => serverNow - (sent + got) / 2;
@@ -162,6 +177,7 @@ function chime() {
   } catch { /* no sound: fine */ }
 }
 const localTimers = new Map();   // a student's own timers (their browser only)
+const ahead = new Map();         // a run shown with Starting minutes the server has not saved yet: id -> { k, st }
 const RING = 2 * Math.PI * 45;
 // The timer and the stopwatch are one widget (docs/decisions.md "Timer and stopwatch combined"): s.mode 'timer'
 // counts down, 'stopwatch' counts up. Whoever controls it switches with the two buttons at the top; a switch drops
@@ -171,11 +187,25 @@ function timer(body, s, ctx) {
   const W = ctx.type.words;
   const down = s.mode !== 'stopwatch', mode = down ? 'down' : 'up';
   const control = ctx.teacher || ctx.own;
-  const fresh = () => ({ mode, dur: (s.minutes || 5) * 60e3, base: 0, start: 0, on: false });
+  const mins = s.minutes || 5;
+  const fresh = () => ({ mode, dur: mins * 60e3, base: 0, start: 0, on: false, m: mins });
+  // Starting minutes changed (docs/decisions.md "Timer: settings that stick, tap the time"): a run that follows other
+  // minutes (m) takes the new time at once, as the server does when it saves the layout (services/dash.js retimeTimers).
+  // A run saved before m was kept has none, and is shown as it is.
   const state = () => {
-    if (ctx.own) { const mine = localTimers.get(ctx.id); if (!mine || mine.mode !== mode) localTimers.set(ctx.id, fresh()); return localTimers.get(ctx.id); }
+    if (ctx.own) {
+      let mine = localTimers.get(ctx.id);
+      if (!mine || mine.mode !== mode) localTimers.set(ctx.id, mine = fresh());
+      else if (down && mine.m !== mins) localTimers.set(ctx.id, mine = retime(mine, mins * 60e3, Date.now(), mins));
+      return mine;
+    }
     const st = (ctx.live().timers || {})[ctx.id];
-    return st && st.mode === mode ? st : fresh();
+    if (!st || st.mode !== mode) return fresh();
+    if (!down || st.m == null || st.m === mins) return st;
+    const k = `${JSON.stringify(st)}|${mins}`;
+    let a = ahead.get(ctx.id);
+    if (!a || a.k !== k) ahead.set(ctx.id, a = { k, st: retime(st, Math.min(180, mins) * 60e3, ctx.now(), mins) });
+    return a.st;
   };
   const clockNow = () => (ctx.own ? Date.now() : ctx.now());
   body.classList.add('dw-timer', `dw-timer-${s.mode === 'stopwatch' ? 'stopwatch' : 'timer'}`);
@@ -201,7 +231,11 @@ function timer(body, s, ctx) {
     body.appendChild(modes);
   }
   const main = body.appendChild(el('div', 'dw-tmain'));
-  const digits = el('div', 'dw-digits'); digits.setAttribute('role', 'timer');
+  // The teacher's board (not the projector, a copy or edit mode): the digits are a button that changes the time.
+  const editable = down && ctx.teacher && !ctx.copy && !ctx.editing && !ctx.pinned;
+  const digits = editable ? btn('', 'dw-digits dw-digbtn') : el('div', 'dw-digits');
+  if (editable) { tip(digits, W.editHint); digits.setAttribute('aria-describedby', `dw-${ctx.id}-eh`); }
+  else digits.setAttribute('role', 'timer');
   const doneMsg = el('div', 'dw-done', W.done || ''); doneMsg.hidden = true; doneMsg.setAttribute('role', 'status');
   const ringView = down && s.view === 'ring';
   const bar = down && s.bar && !ringView ? el('div', 'dw-bar') : null;
@@ -219,6 +253,7 @@ function timer(body, s, ctx) {
     main.append(wrap, doneMsg);
   } else main.append(digits, doneMsg);
   if (bar) main.appendChild(bar);
+  if (editable) editDigits();
   let go = null;
   if (control) {
     if (down) {
@@ -251,7 +286,59 @@ function timer(body, s, ctx) {
     row.append(go, reset);
     main.appendChild(row);
   }
-  async function act(action, ms) {
+  /** Tap (or Enter on) the digits: they become a field. Enter or leaving it sets the time, Escape keeps the old one.
+   *  Whole minutes other than the Starting minutes change that setting (saved with the layout, the run takes it);
+   *  anything else ("8:30", or the same minutes again to start over) sets this run's time. A running timer keeps
+   *  running from the new time; a stopped or finished one waits at it. */
+  function editDigits() {
+    const hint = el('span', 'sr-only', W.editHint); hint.id = `dw-${ctx.id}-eh`;
+    const msg = el('p', 'dw-digmsg small'); msg.id = `dw-${ctx.id}-em`; msg.hidden = true;
+    digits.after(hint);
+    main.insertBefore(msg, doneMsg);
+    let field = null;
+    const close = (back = true) => {
+      if (!field) return;
+      const f = field; field = null; f.remove(); digits.hidden = false; msg.hidden = true; msg.textContent = '';
+      body.classList.remove('is-editing-time');
+      if (back) digits.focus();
+    };
+    const commit = async () => {
+      if (!field) return true;
+      const ms = typedTime(field.value);
+      if (ms === null) {
+        msg.textContent = W.editBad; msg.hidden = false; msg.setAttribute('role', 'alert');
+        field.setAttribute('aria-invalid', 'true'); return false;
+      }
+      const st = state(), going = !!st.on && !timerView(st, clockNow()).done;
+      close();
+      const m = ms / 60e3;
+      ctx.say(fill(W.editSet, { time: mmss(ms) }));
+      if (Number.isInteger(m) && m !== mins) { ctx.set('minutes', m); await ctx.flush(); }
+      else await act('set', ms, going);
+      return true;
+    };
+    digits.addEventListener('click', () => {
+      if (field || ctx.private()) return;
+      const st = state();
+      field = el('input', 'input dw-digits dw-digin');
+      Object.assign(field, { type: 'text', inputMode: 'decimal', autocomplete: 'off', spellcheck: false, maxLength: 6, placeholder: 'm:ss', value: mmss(down ? timerView(st, clockNow()).left : 0) });
+      field.setAttribute('enterkeyhint', 'done');
+      field.setAttribute('aria-label', W.editLabel);
+      field.setAttribute('aria-describedby', msg.id);
+      field.dir = 'ltr';
+      field.classList.toggle('is-long', digits.classList.contains('is-long'));
+      digits.after(field); digits.hidden = true; body.classList.add('is-editing-time');
+      field.focus(); field.select();
+      field.addEventListener('keydown', async e => {
+        if (e.key === 'Enter') { e.preventDefault(); await commit(); }
+        else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
+      });
+      field.addEventListener('input', () => { if (!msg.hidden) { msg.hidden = true; field.removeAttribute('aria-invalid'); } });
+      // Leaving the field sets a good time; a bad one is dropped (the old time stays).
+      field.addEventListener('blur', () => { if (field && typedTime(field.value) !== null) commit(); else close(false); });
+    });
+  }
+  async function act(action, ms, run) {
     if (ctx.own) {
       const st = state(), t = Date.now(), v = timerView(st, t);
       if (action === 'start' && !st.on) { if (down && v.done) st.base = 0; st.start = t; st.on = true; }
@@ -261,7 +348,7 @@ function timer(body, s, ctx) {
       draw(); return;
     }
     await ctx.flush();
-    const r = await ctx.act(`/timers/${encodeURIComponent(ctx.id)}`, { action, ms });
+    const r = await ctx.act(`/timers/${encodeURIComponent(ctx.id)}`, { action, ms, ...(run ? { run: true } : {}) });
     if (r && r.timer) { const live = ctx.live(); live.timers = { ...(live.timers || {}), [ctx.id]: r.timer }; draw(); }
   }
   let rang = '';
