@@ -10607,10 +10607,11 @@
       },
       "jobs": {
         "name": "Incarichi di classe",
-        "desc": "Un incarico per tutti, che ruota ogni settimana. Con i nomi Oomba della classe.",
+        "desc": "Incarichi per tutti, a rotazione ogni settimana. Usa i nomi Oomba della classe o nomi che scrivi tu.",
         "s": {
           "jobs": "Incarichi (uno in ogni riga; vuoto per i soliti)",
-          "crew": "Chi fa cosa"
+          "crew": "Chi fa cosa",
+          "names": "Alunni (uno per riga; vuoto per gli alunni della classe)"
         },
         "rotate": "Settimana dopo",
         "shuffle": "Mescola",
@@ -10618,7 +10619,8 @@
         "shuffled": "Incarichi mescolati.",
         "nobody": "Ancora nessun alunno in questa classe.",
         "open": "Libero",
-        "defaults": "Capofila\nPorta\nLuci\nPiante\nLibri\nCapo del riordino\nMessaggero\nLavagna"
+        "defaults": "Capofila\nPorta\nLuci\nPiante\nLibri\nCapo del riordino\nMessaggero\nLavagna",
+        "nobodyTyped": "Ancora nessun alunno: scrivi dei nomi in «Alunni» nelle impostazioni di questo widget, oppure aggiungi alunni alla classe."
       },
       "mood": {
         "name": "Come mi sento",

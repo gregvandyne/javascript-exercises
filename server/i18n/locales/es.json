@@ -10606,10 +10606,11 @@
       },
       "jobs": {
         "name": "Tareas de clase",
-        "desc": "Una tarea para cada uno, que rota cada semana. Con los nombres Oomba de la clase.",
+        "desc": "Tareas para todos, que rotan cada semana. Usa los nombres Oomba de la clase o nombres que escribas.",
         "s": {
           "jobs": "Tareas (una en cada línea; vacío para las de siempre)",
-          "crew": "Quién hace qué"
+          "crew": "Quién hace qué",
+          "names": "Alumnos (uno por línea; vacío para los alumnos de la clase)"
         },
         "rotate": "Semana siguiente",
         "shuffle": "Mezclar",
@@ -10617,7 +10618,8 @@
         "shuffled": "Tareas mezcladas.",
         "nobody": "Todavía no hay alumnos en esta clase.",
         "open": "Libre",
-        "defaults": "Encargado de la fila\nPuerta\nLuces\nPlantas\nLibros\nOrden\nMensajero\nPizarra"
+        "defaults": "Encargado de la fila\nPuerta\nLuces\nPlantas\nLibros\nOrden\nMensajero\nPizarra",
+        "nobodyTyped": "Aún no hay alumnos: escribe nombres en «Alumnos» en los ajustes de este widget, o añade alumnos a la clase."
       },
       "mood": {
         "name": "¿Cómo estás?",

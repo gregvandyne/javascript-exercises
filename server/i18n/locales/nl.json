@@ -10607,10 +10607,11 @@
       },
       "jobs": {
         "name": "Klassentaken",
-        "desc": "Een taak voor iedereen, die elke week doorschuift. Met de Oomba-namen van de klas.",
+        "desc": "Taken voor iedereen, elke week doorgedraaid. Gebruikt de Oomba-namen van de klas, of namen die je typt.",
         "s": {
           "jobs": "Taken (één op elke regel; leeg voor de gewone)",
-          "crew": "Wie doet wat"
+          "crew": "Wie doet wat",
+          "names": "Leerlingen (één per regel; leeg voor de leerlingen van de klas)"
         },
         "rotate": "Volgende week",
         "shuffle": "Husselen",
@@ -10618,7 +10619,8 @@
         "shuffled": "Taken gehusseld.",
         "nobody": "Nog geen leerlingen in deze klas.",
         "open": "Vrij",
-        "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken"
+        "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken",
+        "nobodyTyped": "Nog geen leerlingen: typ namen bij ‘Leerlingen’ in de instellingen van deze widget, of voeg leerlingen toe aan de klas."
       },
       "mood": {
         "name": "Hoe voel ik me",

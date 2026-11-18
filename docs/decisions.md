@@ -7853,3 +7853,16 @@ and mobile." The buttons, the folder chips and Google Classroom shared one wrapp
   yet · Build a game, or assign one from your folders or Oomba's games."
 - **Phone (≤ 600 px):** the toolbar's buttons stack full width, New folder's panel opens in place under its button,
   Google Classroom full width. Checked at 1280 × 900 and 390 × 844 with no sideways scroll (`.cl-*` in app.css).
+
+## Class jobs: names the teacher types (18 Nov 2026)
+
+The owner asked how to put students on the Class jobs chart, and that names can be added by hand. The chart filled
+itself from the class's students, so a class with no student accounts showed every job as "Open" with no way in.
+
+- **Settings → Students:** one name a line. Filled in, the chart uses those names instead of the class's students;
+  empty, it uses the class's students as before.
+- **Next week** turns the typed list by one, as it does the class list. **Shuffle** mixes the typed list itself
+  (saved back into Students) and starts again from week one.
+- Typed names are kept to 60 names of 40 characters. They are the teacher's own words on the teacher's screen, so they
+  are shown as typed text and never matched to accounts.
+- With no students and no names, the card says where to type them rather than only "No students in this class yet".

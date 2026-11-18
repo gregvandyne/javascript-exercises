@@ -10606,10 +10606,11 @@
       },
       "jobs": {
         "name": "Métiers de la classe",
-        "desc": "Un métier pour chacun, qui tourne chaque semaine. Avec les noms Oomba de la classe.",
+        "desc": "Des responsabilités pour tous, qui tournent chaque semaine. Utilise les noms Oomba de la classe, ou des noms que tu tapes.",
         "s": {
           "jobs": "Métiers (un par ligne ; vide pour les habituels)",
-          "crew": "Qui fait quoi"
+          "crew": "Qui fait quoi",
+          "names": "Élèves (un par ligne ; vide pour les élèves de la classe)"
         },
         "rotate": "Semaine suivante",
         "shuffle": "Mélanger",
@@ -10617,7 +10618,8 @@
         "shuffled": "Métiers mélangés.",
         "nobody": "Pas encore d’élèves dans cette classe.",
         "open": "Libre",
-        "defaults": "Chef de rang\nPortier\nLumières\nPlantes\nLivres\nChef du rangement\nMessager\nTableau"
+        "defaults": "Chef de rang\nPortier\nLumières\nPlantes\nLivres\nChef du rangement\nMessager\nTableau",
+        "nobodyTyped": "Pas encore d'élèves : tape des noms dans « Élèves » dans les réglages de ce widget, ou ajoute des élèves à la classe."
       },
       "mood": {
         "name": "Météo des émotions",

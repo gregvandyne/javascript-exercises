@@ -10607,10 +10607,11 @@
       },
       "jobs": {
         "name": "Klassendienste",
-        "desc": "Dienste für alle, jede Woche weitergedreht. Mit den Oomba-Namen der Klasse.",
+        "desc": "Dienste für alle, jede Woche weitergedreht. Nutzt die Oomba-Namen der Klasse oder Namen, die du eintippst.",
         "s": {
           "jobs": "Dienste (einer in jeder Zeile; leer für die üblichen)",
-          "crew": "Wer macht was"
+          "crew": "Wer macht was",
+          "names": "Kinder (eines in jeder Zeile; leer für die Kinder der Klasse)"
         },
         "rotate": "Nächste Woche",
         "shuffle": "Mischen",
@@ -10618,7 +10619,8 @@
         "shuffled": "Dienste gemischt.",
         "nobody": "Noch keine Kinder in dieser Klasse.",
         "open": "Frei",
-        "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst"
+        "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst",
+        "nobodyTyped": "Noch keine Kinder: Tippe Namen bei „Kinder“ in den Einstellungen dieses Widgets ein oder füge der Klasse Kinder hinzu."
       },
       "mood": {
         "name": "Stimmungsbarometer",

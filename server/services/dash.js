@@ -265,8 +265,11 @@ export const WIDGETS = [
     { key: 'places', type: 'places', def: PASS_PLACES },
     { key: 'oneOut', type: 'bool', def: true },
     { key: 'mins', type: 'number', min: 1, max: 30, def: 5 }] },
-  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'open', 'defaults'], settings: [
+  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'nobodyTyped', 'open', 'defaults'], settings: [
     { key: 'jobs', type: 'textarea', max: 400, def: '' },
+    // Names the teacher types (one a line), used instead of the class's students when given: a class without student
+    // accounts yet, or a teacher who wants first names on the chart (owner, 18 Nov 2026).
+    { key: 'names', type: 'textarea', max: 1200, def: '' },
     { key: 'crew', type: 'crew', hidden: true, def: { order: [], shift: 0 } }] },
   { id: 'mood', icon: '😊', group: 'check', who: 'teacher', pinDef: true, size: [4, 4], min: [4, 4], words: ['ask', 'mine', 'counts', 'names', 'nobody', 'notYet', 'saved', 'countsHidden', ...MOODS.map(m => `m_${m}`)], settings: [] },
   { id: 'breathe', icon: '🫧', group: 'tools', who: 'both', size: [3, 4], min: [3, 4], words: ['start', 'pause', 'in', 'hold', 'out', 'ready'], settings: [

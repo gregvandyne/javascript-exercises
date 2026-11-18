@@ -11033,10 +11033,11 @@
       },
       "jobs": {
         "name": "Class jobs",
-        "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names.",
+        "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names, or names you type.",
         "s": {
           "jobs": "Jobs (one per line; empty for the usual ones)",
-          "crew": "Who does what"
+          "crew": "Who does what",
+          "names": "Students (one per line; empty for the class's students)"
         },
         "rotate": "Next week",
         "shuffle": "Shuffle",
@@ -11044,7 +11045,8 @@
         "shuffled": "Jobs shuffled.",
         "nobody": "No students in this class yet.",
         "open": "Open",
-        "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner"
+        "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner",
+        "nobodyTyped": "No students yet: type names under Students in this widget's settings, or add students to the class."
       },
       "mood": {
         "name": "Mood check-in",

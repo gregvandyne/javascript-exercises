@@ -198,6 +198,8 @@ export function jobAssign(jobCount, people, shift = 0) {
   const n = people.length;
   return Array.from({ length: jobCount }, (_, i) => (i < n ? people[((i + shift) % n + n) % n] : null));
 }
+/** The names the teacher typed for the chart (one a line, at most 60 of 40 characters), or [] to use the class's students. */
+export const typedCrew = s => String(s.names || '').split('\n').map(x => x.trim().slice(0, 40)).filter(Boolean).slice(0, 60);
 export const jobList = (s, W) => { const own = String(s.jobs || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 16); return own.length ? { list: own, typed: true } : { list: String(W.defaults || '').split('\n').filter(Boolean), typed: false }; };
 const rnd = n => (globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] % n : Math.floor(Math.random() * n));
 function jobs(body, s, ctx) {
@@ -207,24 +209,32 @@ function jobs(body, s, ctx) {
   const grid = el('ul', 'dw5-jobgrid dw-scroll');
   body.appendChild(grid);
   const crew = s.crew || { order: [], shift: 0 };
+  // Typed names (settings "Students") come first; else the class's students, from the server in the saved order.
+  const typedNames = typedCrew(s), byHand = typedNames.length > 0;
   let people = [];
   const draw = live => {
-    people = (((live || ctx.live()).crew) || {})[ctx.id] || [];
+    people = byHand ? typedNames.map((name, i) => ({ id: `t${i}`, name })) : (((live || ctx.live()).crew) || {})[ctx.id] || [];
     const who = jobAssign(names.length, people, crew.shift || 0);
     grid.textContent = '';
     names.forEach((job, i) => {
       const li = el('li', 'dw5-job');
       li.appendChild(own ? typed('span', 'dw5-jobname', job) : el('span', 'dw5-jobname', job));
-      li.appendChild(who[i] ? el('b', 'dw5-jobwho dw5-iso', who[i].name) : el('span', 'dw5-jobwho dw5-muted', W.open));
+      li.appendChild(who[i] ? (byHand ? typed('b', 'dw5-jobwho dw5-iso', who[i].name) : el('b', 'dw5-jobwho dw5-iso', who[i].name)) : el('span', 'dw5-jobwho dw5-muted', W.open));
       grid.appendChild(li);
     });
-    if (!people.length) grid.appendChild(el('li', 'dw-empty dw5-jobnote', W.nobody));
+    if (!people.length) grid.appendChild(el('li', 'dw-empty dw5-jobnote', W.nobodyTyped || W.nobody));
   };
   if (ctx.teacher && !ctx.editing) {
     const row = el('div', 'dw-row dw-foot');
     const rot = ibtn('↻', W.rotate, 'btn btn-sm btn-primary'), mix = ibtn('🔀', W.shuffle, 'btn btn-sm');
-    rot.addEventListener('click', () => { ctx.set('crew', { order: people.map(p => p.id), shift: (crew.shift || 0) + 1 }); ctx.say(W.rotated); });
+    rot.addEventListener('click', () => { ctx.set('crew', { order: byHand ? [] : people.map(p => p.id), shift: (crew.shift || 0) + 1 }); ctx.say(W.rotated); });
     mix.addEventListener('click', () => {
+      if (byHand) {   // typed names: the list itself is put in a new order (and the chart starts from the top)
+        const list = [...typedNames];
+        for (let i = list.length - 1; i > 0; i--) { const j = rnd(i + 1); [list[i], list[j]] = [list[j], list[i]]; }
+        ctx.set('names', list.join('\n')); ctx.set('crew', { order: [], shift: 0 }); ctx.say(W.shuffled);
+        return;
+      }
       const ids = people.map(p => p.id);
       for (let i = ids.length - 1; i > 0; i--) { const j = rnd(i + 1); [ids[i], ids[j]] = [ids[j], ids[i]]; }
       // Shown at once in the new order (the server sends it again with the next check).

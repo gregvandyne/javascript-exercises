@@ -402,6 +402,11 @@ test('class jobs: the chart turns a week at a time, everyone gets every job, nam
   // A crew from the browser is rebuilt: ids only, the shift a whole number in range.
   assert.deepEqual(D.cleanCrew({ order: ['ok', '<script>', 5, 'ok'], shift: 1e9, x: 1 }), { order: ['ok', '5'], shift: 9999 });
   assert.deepEqual(D.cleanCrew('junk'), { order: [], shift: 0 });
+  // Names the teacher types (a class with no student accounts yet): one a line, blanks dropped, kept short.
+  assert.deepEqual(C5.typedCrew({ names: ' Ana \n\nBen\n' + 'x'.repeat(80) }), ['Ana', 'Ben', 'x'.repeat(40)]);
+  assert.deepEqual(C5.typedCrew({}), []);
+  assert.equal(C5.typedCrew({ names: Array.from({ length: 90 }, (_, i) => `K${i}`).join('\n') }).length, 60);
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { names: 'Ana\nBen' }).names, 'Ana\nBen', 'the typed names are kept');
 });
 
 // ---------------------------------------------------------------- points for each student

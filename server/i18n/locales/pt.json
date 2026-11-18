@@ -10608,10 +10608,11 @@
       },
       "jobs": {
         "name": "Tarefas da turma",
-        "desc": "Uma tarefa para cada um, que gira toda semana. Com os nomes Oomba da turma.",
+        "desc": "Tarefas para todos, que rodam todas as semanas. Usa os nomes Oomba da turma ou nomes que escreves.",
         "s": {
           "jobs": "Tarefas (uma em cada linha; vazio para as de sempre)",
-          "crew": "Quem faz o quê"
+          "crew": "Quem faz o quê",
+          "names": "Alunos (um por linha; vazio para os alunos da turma)"
         },
         "rotate": "Próxima semana",
         "shuffle": "Misturar",
@@ -10619,7 +10620,8 @@
         "shuffled": "Tarefas misturadas.",
         "nobody": "Ainda não há alunos nesta turma.",
         "open": "Livre",
-        "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro"
+        "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro",
+        "nobodyTyped": "Ainda não há alunos: escreve nomes em «Alunos» nas definições deste widget, ou junta alunos à turma."
       },
       "mood": {
         "name": "Como estou",
