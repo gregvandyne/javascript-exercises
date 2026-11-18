@@ -186,6 +186,84 @@ export function angleText(a, intl = 'en') {
 }
 /** Vertex letters across every band in turn: A, B, … Z, then A′, B′ … */
 export const vertexLetter = i => String.fromCharCode(65 + (i % 26)) + '′'.repeat(Math.floor(i / 26));
+
+// ---------------------------------------------------------------- the board's labels: size and place
+/** Each kind of label on the shape board: its size in viewBox units (a 1000-unit board) and the smallest it may be on
+ *  the screen, in CSS px [screen, projector]. On a big board the words grow with it; on the smallest widget they stay
+ *  readable from a seat (the owner found 13px too small, Nov 2026). */
+/** An angle in a small, crowded shape may shrink to this [screen, projector], never below. */
+export const LABEL_MIN_PX = [12, 14];
+export const LABEL_SIZES = { letter: [28, 17, 21], side: [22, 16, 20], angle: [21, 15, 19], note: [30, 18, 22], ruler: [24, 16, 20] };
+/** A label's size on the screen (CSS px) on a board drawn `boardPx` px across: its share of the board, never under its
+ *  floor. */
+export function labelPx(kind, boardPx, projector = false) {
+  const [units, screen, proj] = LABEL_SIZES[kind] || LABEL_SIZES.side;
+  return Math.max(units * (boardPx > 0 ? boardPx : 0) / 1000, projector ? proj : screen);
+}
+/** About how wide a label is, in the units of its font size (the board's labels are bold; ′ and √ are narrow). */
+export const labelWidth = (text, size) => [...String(text)].reduce((s, ch) => s + (/[′'.,:]/.test(ch) ? 0.28 : /[1IJijl ]/.test(ch) ? 0.4 : /°/.test(ch) ? 0.45 : /[0-9]/.test(ch) ? 0.6 : /[MW]/.test(ch) ? 0.95 : 0.66), 0) * size;
+/** Places the board's labels so they don't sit on each other or on the pegs: each label tries its own spot first, then
+ *  spots turned a little round its corner (or side) and a little further out, and takes the one that covers least. Then
+ *  a label still on another is tried again with all the others in place (twice at most).
+ *  items: [{ x, y (what it labels), dx, dy (the way out, a unit vector), d (how far), w, h, near (stay close: an angle), band }]
+ *  in board units, placed in order; minScale: how much smaller it may be drawn where there is no room. opts: { pegs: [{ x, y }], peg (their radius), box: [x0, y0, x1, y1], gap (room kept
+ *  round a label), lines: the bands' sides [[x1, y1, x2, y2, band]] (a label keeps off its own band's), fixed: boxes already there [{ x, y, w, h }] }. -> [{ x, y, scale }] the middle of each label and its
+ *  size (1, or smaller down to its minScale). */
+export function placeLabels(items, opts = {}) {
+  const pegs = opts.pegs || [], lines = opts.lines || [], pr = opts.peg || 0, gap = opts.gap || 0, [bx0, by0, bx1, by1] = opts.box || [-Infinity, -Infinity, Infinity, Infinity];
+  const fixed = (opts.fixed || []).map(b => ({ ...b }));
+  const TURNS = [0, 0.5, -0.5, 1, -1, 1.5, -1.5], FAR = [1, 1.35, 1.75, 2.2];
+  // An angle stays inside its corner (turned only a little, never far), so it is never read as another corner's.
+  const NEAR_TURNS = [0, 0.35, -0.35], NEAR_FAR = [1, 0.85, 1.2, 0.7];
+  const spots = items.map(() => null), scale = items.map(() => 1);
+  const hits = (x, y, w, h, q) => { const ox = Math.min(x + w / 2, q.x + q.w / 2) - Math.max(x - w / 2, q.x - q.w / 2), oy = Math.min(y + h / 2, q.y + q.h / 2) - Math.max(y - h / 2, q.y - q.h / 2); return ox > 0 && oy > 0 ? ox * oy : 0; };
+  const others = i => fixed.concat(spots.filter((p, j) => p && j !== i));
+  const place = (i, wide = false) => {
+    const it = items[i], w = it.w * scale[i] + 2 * gap, h = it.h * scale[i] + 2 * gap, there = others(i);
+    const turns = it.near && !wide ? NEAR_TURNS : TURNS, fars = it.near && !wide ? NEAR_FAR : it.near ? [...NEAR_FAR, 0.55, 1.6] : FAR;
+    let best = null;
+    fars.forEach((far, fi) => turns.forEach((turn, ti) => {
+      const c = Math.cos(turn), s = Math.sin(turn), ux = it.dx * c - it.dy * s, uy = it.dx * s + it.dy * c;
+      const x = it.x + ux * it.d * far, y = it.y + uy * it.d * far;
+      let score = fi * 0.6 + ti * 0.25, on = 0;
+      const l = x - w / 2, r = x + w / 2, t = y - h / 2, b = y + h / 2;
+      if (l < bx0 || r > bx1 || t < by0 || b > by1) score += 1000;
+      for (const q of there) { const a = hits(x, y, w, h, q); if (a) { on++; score += 40 + 100 * a / (w * h); } }
+      for (const p of pegs) {
+        const nx = Math.max(l, Math.min(p.x, r)), ny = Math.max(t, Math.min(p.y, b));
+        if (Math.hypot(p.x - nx, p.y - ny) < pr) score += 6;
+      }
+      for (const g of lines) if (g[4] === it.band && segmentInBox(g, l, t, r, b)) score += 5;
+      if (!best || score < best.score) best = { x, y, w, h, score, on };
+    }));
+    // Never outside the board, whatever else it covers.
+    best.x = Math.max(bx0 + w / 2, Math.min(bx1 - w / 2, best.x)); best.y = Math.max(by0 + h / 2, Math.min(by1 - h / 2, best.y));
+    spots[i] = best;
+  };
+  items.forEach((it, i) => place(i));
+  const bad = () => spots.map((p, i) => i).filter(i => others(i).some(q => hits(spots[i].x, spots[i].y, spots[i].w, spots[i].h, q)));
+  for (let pass = 0; pass < 2; pass++) { const b = bad(); if (!b.length) break; b.forEach(i => place(i)); }
+  // Still crowded (a small shape on a dense board): a label that may be smaller (minScale) gets a little smaller.
+  for (let pass = 0; pass < 6; pass++) {
+    const b = bad().filter(i => scale[i] > (items[i].minScale || 1) + 1e-9); if (!b.length) break;
+    b.forEach(i => { scale[i] = Math.max(items[i].minScale || 1, scale[i] * 0.94); place(i); });
+  }
+  // Still on another: no two labels may sit on each other, so an angle may then turn further round its corner too.
+  for (let pass = 0; pass < 2; pass++) { const b = bad(); if (!b.length) break; b.forEach(i => place(i, true)); }
+  return spots.map((p, i) => ({ x: p.x, y: p.y, scale: scale[i] }));
+}
+/** Whether a line from (x1, y1) to (x2, y2) passes through a box (Liang-Barsky). */
+export function segmentInBox([x1, y1, x2, y2], l, t, r, b) {
+  let u0 = 0, u1 = 1; const dx = x2 - x1, dy = y2 - y1;
+  for (const [p, q] of [[-dx, x1 - l], [dx, r - x1], [-dy, y1 - t], [dy, b - y1]]) {
+    if (p === 0) { if (q < 0) return false; continue; }
+    const u = q / p;
+    if (p < 0) { if (u > u1) return false; if (u > u0) u0 = u; } else { if (u < u0) return false; if (u < u1) u1 = u; }
+  }
+  return true;
+}
+/** Whether two placed labels (middle, width, height) cover each other. */
+export const labelsOverlap = (a, b) => Math.abs(a.x - b.x) * 2 < a.w + b.w && Math.abs(a.y - b.y) * 2 < a.h + b.h;
 /** The nearest peg to a point in board units, and how far it is (board units). */
 export function nearestPeg(board, n, pt) {
   let best = null;
