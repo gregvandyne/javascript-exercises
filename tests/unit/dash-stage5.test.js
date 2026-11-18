@@ -133,9 +133,9 @@ test('video links: YouTube and Vimeo ids are parsed and checked; anything else i
   assert.equal(D.cleanSettings(D.widgetType('video'), { video: 'https://evil.example/x' }).video, null);
 });
 
-test('video players come from the privacy-enhanced hosts only, with the teacher\'s start, end, mute and loop', () => {
+test('video players come from the providers\' embed hosts only, with the teacher\'s start, end, mute and loop', () => {
   const y = new URL(DM.videoSrc({ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 90, end: 150, mute: true, loop: true }));
-  assert.equal(y.origin, 'https://www.youtube-nocookie.com'); assert.equal(y.pathname, '/embed/aqz-KE-bpKQ');
+  assert.equal(y.origin, 'https://www.youtube.com'); assert.equal(y.pathname, '/embed/aqz-KE-bpKQ');
   assert.equal(y.searchParams.get('start'), '90'); assert.equal(y.searchParams.get('end'), '150'); assert.equal(y.searchParams.get('mute'), '1');
   assert.equal(y.searchParams.get('loop'), '1'); assert.equal(y.searchParams.get('playlist'), 'aqz-KE-bpKQ');
   assert.equal(new URL(DM.videoSrc({ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 90, end: 30 })).searchParams.get('end'), null, 'an end before the start is left out');
@@ -145,11 +145,16 @@ test('video players come from the privacy-enhanced hosts only, with the teacher\
   // The browser builds exactly the same address.
   for (const [x, o] of [[{ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 5, loop: true }], [{ p: 'vimeo', id: '76979871' }, { mute: true }]]) assert.equal(V.videoSrc(x, o), DM.videoSrc(x, o));
   assert.deepEqual(V.VIDEO_HOSTS, DM.VIDEO_HOSTS);
-  // The renderer embeds with a sandbox and only the origin as referrer; never youtube.com itself.
+  // "Open on YouTube / Vimeo" when the player can't play here (a sign-in check): the video's own page, at the start.
+  assert.equal(V.watchUrl({ p: 'youtube', id: 'aqz-KE-bpKQ' }, 90), 'https://www.youtube.com/watch?v=aqz-KE-bpKQ&t=90s');
+  assert.equal(V.watchUrl({ p: 'vimeo', id: '76979871' }), 'https://vimeo.com/76979871');
+  assert.equal(V.watchUrl({ p: 'youtube', id: 'javascript:x' }), null);
+  // The renderer embeds with a sandbox (popups may open a new tab, e.g. YouTube's sign-in check; never navigation of
+  // the page) and only the origin as referrer; the player is youtube.com's own embed, never the nocookie host.
   const src = fs.readFileSync('public/js/dash-class5.js', 'utf8');
-  assert.match(src, /sandbox', 'allow-scripts allow-same-origin allow-presentation'/);
+  assert.match(src, /sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation'/);
   assert.match(src, /strict-origin-when-cross-origin/);
-  assert.doesNotMatch(src + fs.readFileSync('public/js/dash-video.js', 'utf8'), /https:\/\/(www\.)?youtube\.com\/embed/);
+  assert.doesNotMatch(src + fs.readFileSync('public/js/dash-video.js', 'utf8'), /youtube-nocookie\.com\/embed/);
 });
 
 // ---------------------------------------------------------------- site window
@@ -204,10 +209,11 @@ test('the CSP: the teacher\'s dashboard frames only the two video hosts; student
   await layout(w, [{ id: 'v1', type: 'video', s: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' } } }, { id: 'st1', type: 'site', s: { url: 'https://maps.example.org/' } }]);
   const tp = await as(w.T)(`/class/${w.A.id}/dashboard`);
   const csp = tp.headers.get('content-security-policy');
-  assert.match(csp, /frame-src 'self' https:\/\/www\.youtube-nocookie\.com https:\/\/player\.vimeo\.com;/);
+  assert.match(csp, /frame-src 'self' https:\/\/www\.youtube\.com https:\/\/player\.vimeo\.com;/);
   assert.doesNotMatch(csp, /frame-src[^;]*\bhttps:(?!\/\/)/, 'never a bare https: frame source');
-  assert.doesNotMatch(csp, /maps\.example\.org|youtube\.com(?!-nocookie)/);
-  assert.equal(csp.replace(" https://www.youtube-nocookie.com https://player.vimeo.com", ''), SITE_CSP, 'otherwise the site\'s CSP exactly');
+  assert.doesNotMatch(csp, /maps\.example\.org|youtube-nocookie/);
+  assert.equal(csp.match(/youtube\.com/g).length, 1, 'youtube.com only in frame-src');
+  assert.equal(csp.replace(" https://www.youtube.com https://player.vimeo.com", ''), SITE_CSP, 'otherwise the site\'s CSP exactly');
   assert.match(tp.headers.get('permissions-policy'), /camera=\(self\), microphone=\(self\)/);
   assert.doesNotMatch(tp.headers.get('permissions-policy'), /\*/);
   const sp = await as(w.a1)(`/class/${w.A.id}/dashboard`);

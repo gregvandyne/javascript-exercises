@@ -6388,8 +6388,13 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
 - **Video** (teacher only, never pinned or pushed). The teacher pastes a YouTube or Vimeo link; only `{ p, id }` (and an
   unlisted Vimeo video's hash) is kept, after checking the host is the provider's own and the id is well formed
   (11 characters for YouTube, digits for Vimeo). Anything else is refused and nothing of the link is stored or echoed.
-  Players come from `www.youtube-nocookie.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin,
-  presentation; no popups or navigation of the page). Options: start, end (YouTube only: Vimeo's player has no end
+  Players come from `www.youtube.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin, presentation,
+  popups that escape the sandbox, storage access after a tap; never navigation of the page). **Changed (Nov 2026):** they
+  were `www.youtube-nocookie.com` with no popups, but YouTube now often answers an embed with "Sign in to confirm you're
+  not a bot": its Sign in button needs a popup, and a sign-in on youtube.com never reaches the nocookie host, so a
+  teacher could not get past it. The widget is teacher only (never on a student's screen), so the teacher's own YouTube
+  sign-in is what lets it play. Under the player, "↗ Open on YouTube/Vimeo" opens the video's own page (at the start
+  time) for when the player still won't play here. Options: start, end (YouTube only: Vimeo's player has no end
   parameter, the settings say so), muted, loop. A time in a pasted link (`t=1m30s`) becomes the start. **Decided:** the
   frame sends `strict-origin-when-cross-origin` (the school site's origin only): both players refuse to play without
   knowing the embedding site, and the site's own `same-origin` policy would send nothing.

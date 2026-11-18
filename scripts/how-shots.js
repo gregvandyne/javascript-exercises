@@ -631,7 +631,7 @@ async function dashShots({ person, shot }, ids, morning) {
     if (tpl !== 'morning') await use(layouts[tpl].id);
     const p = await person('wide', 'MsRivera', { timezoneId: 'America/New_York' });
     await p.clock.setFixedTime(new Date(morning));
-    await p.route(/^https:\/\/(www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ contentType: 'text/html', body: VIDEO_STAND_IN }));
+    await p.route(/^https:\/\/(www\.youtube\.com|www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ contentType: 'text/html', body: VIDEO_STAND_IN }));
     const after = await tour[tpl](p);
     await p.goto(`/class/${ids.classId}/dashboard`);
     await p.locator('.dash-w').first().waitFor(); await p.waitForTimeout(1200);

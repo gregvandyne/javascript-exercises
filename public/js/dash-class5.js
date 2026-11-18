@@ -7,7 +7,7 @@
 //   pass, their own points and their own face; names show only inside the class, and the projector hides them where a
 //   list of names would say something private (requests, points, faces).
 // - Text a person typed is rendered with textContent only.
-import { videoSrc } from './dash-video.js';
+import { videoSrc, watchUrl } from './dash-video.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const typed = (tag, cls, text) => { const e = el(tag, cls, text); e.dir = 'auto'; return e; };
@@ -38,10 +38,11 @@ function video(body, s, ctx) {
   f.src = src; f.title = W.title; f.loading = 'lazy';
   f.setAttribute('allow', 'fullscreen; picture-in-picture; encrypted-media');
   f.setAttribute('allowfullscreen', '');
-  // The players need to know which site embeds them (only the origin is sent); they never get to open windows or
-  // navigate this page.
+  // The players need to know which site embeds them (only the origin is sent). They may open a new tab (YouTube's
+  // "Sign in to confirm you're not a bot", its logo) and ask for their own sign-in cookies after a tap, but never navigate
+  // this page. Teacher only: the video widget is never on a student's screen.
   f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-  f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+  f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation');
   wrap.appendChild(f);
   body.appendChild(wrap);
   const bits = [];
@@ -49,7 +50,16 @@ function video(body, s, ctx) {
   if (s.end > s.start) bits.push(`⏹ ${secsText(s.end)}`);
   if (s.mute) bits.push(`🔇 ${ctx.type.settings.find(x => x.key === 'mute').label}`);
   if (s.loop) bits.push(`🔁 ${ctx.type.settings.find(x => x.key === 'loop').label}`);
-  if (bits.length) body.appendChild(el('p', 'dw5-meta', bits.join(' · ')));
+  // When the player won't play here (a sign-in check, a video that can't be embedded), the teacher can open it there.
+  const out = watchUrl(s.video, s.start);
+  const meta = el('p', 'dw5-meta', bits.join(' · '));
+  if (out && !ctx.editing) {
+    const a = el('a', 'dw5-open', `↗ ${fill(W.openOn, { site: s.video.p === 'vimeo' ? 'Vimeo' : 'YouTube' })}`);
+    a.href = out; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    if (bits.length) meta.append(' · ');
+    meta.appendChild(a);
+  }
+  if (bits.length || meta.querySelector('a')) body.appendChild(meta);
   return null;
 }
 

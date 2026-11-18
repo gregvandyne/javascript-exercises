@@ -2,7 +2,7 @@
 // from outside Oomba, and the headers that make it safe. No database and no AI here.
 // - Video: a pasted YouTube or Vimeo link becomes { p, id } (and Vimeo's unlisted hash): the provider and the video's id,
 //   checked character by character. A link is never stored or echoed: anything that is not a valid id is refused.
-//   Embeds use the privacy-enhanced hosts only (www.youtube-nocookie.com; player.vimeo.com with dnt=1).
+//   Embeds: www.youtube.com (the teacher's own YouTube sign-in works there; see docs/decisions.md "Video") and player.vimeo.com with dnt=1.
 // - Site window: an https address (dash.js cleanUrl) shown inside the teacher's dashboard only when the site says it
 //   may be framed. The server asks the site once (its X-Frame-Options and CSP frame-ancestors headers), never following
 //   an address that resolves to a private, loopback or link-local machine; no answer means "can't be shown".
@@ -13,7 +13,7 @@ import dns from 'node:dns';
 import net from 'node:net';
 
 // ---------------------------------------------------------------- video
-export const VIDEO_HOSTS = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com' };
+export const VIDEO_HOSTS = { youtube: 'https://www.youtube.com', vimeo: 'https://player.vimeo.com' };
 const YT_ID = /^[A-Za-z0-9_-]{11}$/, VIMEO_ID = /^\d{1,12}$/, VIMEO_HASH = /^[0-9a-f]{6,20}$/;
 const YT_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be', 'www.youtu.be', 'youtube-nocookie.com', 'www.youtube-nocookie.com']);
 const VIMEO_HOSTS = new Set(['vimeo.com', 'www.vimeo.com', 'player.vimeo.com']);

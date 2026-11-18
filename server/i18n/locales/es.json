@@ -10551,7 +10551,8 @@
         "note": "Solo se guarda el número del vídeo, no el enlace. Se reproduce en el reproductor con privacidad mejorada del servicio y solo en tu pantalla.",
         "secsHint": "Minutos y segundos, por ejemplo 1:30.",
         "secsBad": "Escribe el tiempo en minutos y segundos, por ejemplo 1:30.",
-        "title": "Reproductor de vídeo"
+        "title": "Reproductor de vídeo",
+        "openOn": "Abrir en {site}"
       },
       "site": {
         "name": "Ventana web",

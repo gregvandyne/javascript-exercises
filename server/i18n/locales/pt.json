@@ -10553,7 +10553,8 @@
         "note": "Só o número do vídeo é guardado, não o link. Ele toca no player com privacidade reforçada do serviço e só na sua tela.",
         "secsHint": "Minutos e segundos, por exemplo 1:30.",
         "secsBad": "Escreva o tempo em minutos e segundos, por exemplo 1:30.",
-        "title": "Player de vídeo"
+        "title": "Player de vídeo",
+        "openOn": "Abrir no {site}"
       },
       "site": {
         "name": "Janela de site",

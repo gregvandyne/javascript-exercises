@@ -2,7 +2,7 @@
 // rules as server/services/dash-media.js (tests/unit/dash-stage5.test.js checks they agree): a pasted YouTube or Vimeo
 // link becomes { p, id } (and Vimeo's unlisted hash), anything else is refused, and the player comes from the
 // privacy-enhanced hosts only. Pure: no network, no storage, no page.
-export const VIDEO_HOSTS = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com' };
+export const VIDEO_HOSTS = { youtube: 'https://www.youtube.com', vimeo: 'https://player.vimeo.com' };
 const YT_ID = /^[A-Za-z0-9_-]{11}$/, VIMEO_ID = /^\d{1,12}$/, VIMEO_HASH = /^[0-9a-f]{6,20}$/;
 const YT_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be', 'www.youtu.be', 'youtube-nocookie.com', 'www.youtube-nocookie.com']);
 const VIMEO_HOSTS = new Set(['vimeo.com', 'www.vimeo.com', 'player.vimeo.com']);
@@ -50,6 +50,13 @@ export function cleanVideo(v) {
   if (v.p === 'youtube' && YT_ID.test(id)) return { p: 'youtube', id };
   if (v.p === 'vimeo' && VIMEO_ID.test(id) && (!h || VIMEO_HASH.test(h))) return { p: 'vimeo', id, ...(h ? { h } : {}) };
   return null;
+}
+/** The video's own page on the provider (for "Open on YouTube" when the player can't play here), at the start time. */
+export function watchUrl(v, start = 0) {
+  const x = cleanVideo(v); if (!x) return null;
+  const st = Math.max(0, Math.min(86400, Math.round(+start) || 0));
+  if (x.p === 'youtube') return `https://www.youtube.com/watch?v=${x.id}${st ? `&t=${st}s` : ''}`;
+  return `https://vimeo.com/${x.id}${x.h ? `/${x.h}` : ''}${st ? `#t=${st}s` : ''}`;
 }
 /** Where the player comes from: the privacy-enhanced host, with the teacher's start, end, mute and loop. */
 export function videoSrc(v, { start = 0, end = 0, mute = false, loop = false } = {}) {

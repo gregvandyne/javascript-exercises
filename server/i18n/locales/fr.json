@@ -10551,7 +10551,8 @@
         "note": "Seul le numéro de la vidéo est gardé, pas le lien. Elle passe dans le lecteur respectueux de la vie privée du service, et seulement sur ton écran.",
         "secsHint": "Minutes et secondes, par exemple 1:30.",
         "secsBad": "Écris le temps en minutes et secondes, par exemple 1:30.",
-        "title": "Lecteur vidéo"
+        "title": "Lecteur vidéo",
+        "openOn": "Ouvrir sur {site}"
       },
       "site": {
         "name": "Fenêtre de site",

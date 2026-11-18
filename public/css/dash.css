@@ -1508,6 +1508,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dw5-emptybox,.dw5-fallback,.dw5-cammsg{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2);padding:var(--s3);text-align:center;border-radius:var(--r-sm);background:var(--card-2)}
 .dw5-bigic{font-size:clamp(1.6rem,min(14cqh,10cqi),3rem);line-height:1}
 .dw5-meta{margin:0;flex:none;font-weight:700;color:var(--text-2);font-size:clamp(.875rem,min(5cqh,3.6cqi),1.1rem)}
+.dw5-open{display:inline-flex;align-items:center;min-height:44px;color:var(--text);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .dw5-muted{color:var(--muted)}
 .dw5-fbtitle{font-size:clamp(1rem,min(8cqh,5cqi),1.6rem);line-height:1.2;overflow-wrap:anywhere}
 .dw5-fbtext{margin:0;max-width:44ch;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(5cqh,3.8cqi),1.15rem)}
