@@ -17,6 +17,10 @@ export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel
 // The classroom starters (plain HTML for the classroom board and phones, not on the kit; docs/decisions.md "Classroom
 // activities in the Builder"): the Builder starts from them for the "For your class" types of /build/new (plan.js).
 export const CLASSROOM_TEMPLATE_KEYS = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard'];
+// The classroom activity starter (Oomba Canvas, docs/canvas-api.md; docs/decisions.md "Classroom activity vs Arcade
+// game"): only for canvas builds. Kept out of BUILDER_TEMPLATE_KEYS on purpose: that list is in the cached tool
+// definitions (prompt.js TOOLS), which stay byte-identical for every arcade build; the CANVAS RULES name this one.
+export const CANVAS_TEMPLATE_KEYS = ['canvas'];
 export const BUILDER_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d', ...CLASSROOM_TEMPLATE_KEYS];
 const DEFAULTS = {
   quiz: { title: 'Quiz Show', icon: '❓', cover: 'sunset', category: 'learning', players: 1, description: 'Quick questions with a timer and a cheering crowd.' },
@@ -37,6 +41,7 @@ const DEFAULTS = {
   exitticket: { title: 'Exit Ticket', icon: '🎟️', cover: 'forest', category: 'learning', players: 1, description: 'A short check at the end of a lesson.' },
   spinner: { title: 'Team Spinner', icon: '🎡', cover: 'candy', category: 'learning', players: 2, description: 'Spin to pick a team, a number or a topic.' },
   scoreboard: { title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, description: 'Big team scores for the classroom board.' },
+  canvas: { title: 'Classroom activity', icon: '🧮', cover: 'mint', category: 'learning', players: 1, description: 'A hands-on canvas: students drag, build and check, one step at a time, with hints.' },
 };
 
 let modPromise = null;

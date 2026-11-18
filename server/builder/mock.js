@@ -38,7 +38,9 @@ import { kitPackTag } from '../services/kit.js';
 import { wantsKit2, isKit2Game, pickKit2, worldLook } from './kit2.js';
 import { wantsArt2d, isArt2dGame, art2dEdits, art2dWorld, art2dCharacter, ART2D_TEMPLATES } from './art2d.js';
 import { buildKit2, followUpKit2 } from './mock-kit2.js';
-import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES } from './plan.js';
+import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES, canvasActivity, topicLabel } from './plan.js';
+import { canvasVersion, activityData, withActivityData } from '../services/canvaskit.js';
+import { tFor } from '../i18n/index.js';
 import { characterById, worldById } from './kit2.js';   // (the plan's own lines, below)
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -431,6 +433,7 @@ function customLine(p, e) {
 /** The first build of a game that came from the setup steps. k2: the plan's Kit 2 pick, or null. */
 async function buildFromPlan(ctx, m, k2) {
   const p = ctx.plan, e = planEngine(p);
+  if (e.engine === 'canvas') return buildCanvas(ctx, m);
   m.plan = { engine: e.engine, custom: customParts(p) };
   m.answers = { ...m.answers, ...answersFromPlan(p, e) }; m.skip = true;
   const line = customLine(p, e); if (line) await say(ctx, line);
@@ -441,6 +444,40 @@ async function buildFromPlan(ctx, m, k2) {
   }
   if (e.engine === '2d' && e.plain) await say(ctx, 'Only running and catching games draw our worlds and characters in 2D so far, so this one keeps the classic look. ');
   return build(ctx, m);
+}
+
+// ---- A classroom activity (Oomba Canvas): the starter with the plan's topic, help and way of playing ------------------
+const CANVAS_CHIPS = ['Make it harder', 'Add a number line step', 'Make it an arcade game instead'];
+async function buildCanvas(ctx, m) {
+  const p = ctx.plan, t = tFor(ctx.locale || 'en'), data = canvasActivity(p, t), title = data.task.title;
+  m.built = true;
+  await say(ctx, `Here is my plan: a classroom activity${p.grade ? ` for grade ${p.grade}` : ''}. Students practise ${p.topic ? topicLabel(p.topic, t) : 'equivalent fractions'}, one problem at a time, with steps and up to 3 hints. Building it now…\n\n`);
+  ctx.tools.exec('set_game', { title, icon: '🧮', description: 'A classroom activity: build it, check it, one step at a time.', category: 'learning', tags: ['activity', p.tool || 'canvas'], players: 1, cover: 'mint' });
+  const s = await ctx.tools.exec('start_from_template', { template: 'canvas', notes: 'Started your classroom activity' });
+  if (!s.ok) { await say(ctx, 'Hmm, I could not start the activity. Ask me again!'); return; }
+  const cur = ctx.tools.current(), html = withActivityData(cur.html, data).replace(/<title>[^<]*<\/title>/, `<title>${title.replace(/[<&]/g, '')}</title>`);
+  const r = ctx.tools.exec('write_game', { html, notes: `${title}: a fresh set for each student` });
+  if (!r.ok) { await say(ctx, 'Hmm, the activity check found a problem. Ask me to fix it and I will!'); return; }
+  await say(ctx, `I made ${title}: 5 problems where students build each answer, with steps and up to 3 hints. Each student gets a fresh set.\n\n✅ Every problem checked: each one can be solved, and an empty start is never right.\n📈 Each finished set goes to Progress.`);
+  ctx.tools.exec('ask_user', { question: 'What should we change next?', options: CANVAS_CHIPS });
+}
+/** A change to a classroom activity: harder numbers, or an arcade game instead (the mock's simple version of each). */
+async function followUpCanvas(ctx, m, cur) {
+  const { text, tools } = ctx, d = activityData(cur.html);
+  if (/arcade|game instead|juego|jeu|spiel/i.test(text)) {
+    await say(ctx, 'Okay! I turned it into an arcade quiz with the same kind of questions. ');
+    m.answers = { ...m.answers, kind: 'quiz', learn: 'maths', theme: m.answers.theme || '' }; m.skip = true;
+    return build(ctx, m);
+  }
+  if (d && d.data && /harder|bigger|more/i.test(text)) {
+    const data = d.data, g = data.gen;
+    if (g && g.digits) g.digits = Math.min(4, g.digits + 1);
+    else if (g && g.dens) g.dens = [...new Set([...g.dens, 6, 8])].filter(x => x <= 12);
+    data.config = { ...data.config, count: Math.min(8, (data.config && data.config.count || 5) + 1) };
+    const r = tools.exec('write_game', { html: withActivityData(cur.html, data), notes: 'A bit harder' });
+    await say(ctx, r.ok ? 'Done: the numbers are a bit bigger, and there is one more problem in each set. It passed the activity check.' : 'Hmm, that change did not pass the activity check, so I kept the old one.');
+  } else await say(ctx, 'I can make it harder or turn it into an arcade game. The real Builder can do much more!');
+  tools.exec('ask_user', { question: 'What should we change next?', options: CANVAS_CHIPS });
 }
 
 /** The runner's checkpoint: null when the build was stopped, else the new messages (read and used at once). */
@@ -486,6 +523,7 @@ export async function run(ctx) {
       const k2 = planned ? engineFor(st, ctx.plan, text, cur) : a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
       m.art2d = k2 ? null : planned ? art2dFor(st, ctx.plan, cur) : a2; if (k2) delete st.art2d;
       if (planned) await buildFromPlan(c2, m, k2);
+      else if (cur && canvasVersion(cur.html)) await followUpCanvas(c2, m, cur);
       else if (cur && isKit2Game(cur.html)) await followUpKit2(c2, m, cur, k2 || {}, say);
       else if (cur && k2) await buildKit2(c2, m, k2, say, { replaces: ctx.tools.game() });
       else if (k2) await buildKit2(c2, m, k2, say);

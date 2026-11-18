@@ -178,6 +178,13 @@
           "pairs": "Two colours"
         }
       }
+    },
+    "buildsetup": {
+      "canvas": {
+        "rows": {
+          "practise": "Practise"
+        }
+      }
     }
   },
   "favorites": {
@@ -853,6 +860,15 @@
       "bingo": {
         "text": "Call maths facts or words, mark the cards"
       }
+    },
+    "canvas": {
+      "practise": {
+        "heading": "What should students practise?",
+        "label": "What should students practise?"
+      }
+    },
+    "say": {
+      "practise": "Practise: {topic}."
     }
   },
   "dash": {

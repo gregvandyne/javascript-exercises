@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { kitTag, kitPackTag } from '../../services/kit.js';
+import { canvasTag } from '../../services/canvaskit.js';
 import { kit2Starter } from '../kit2.js';
 import { art2dTags, art2dConfig } from '../art2d.js';
 
@@ -62,6 +63,10 @@ export const TEMPLATES = [
     description: 'Spin the wheel to pick a team, a number or a topic. Never names.' },
   { key: 'scoreboard', title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, builderOnly: true, classroom: true,
     description: 'Big team scores for the board, with number keys, Undo and Reset.' },
+  // The classroom activity starter (catalog.js CANVAS_TEMPLATE_KEYS): an Oomba Canvas activity (docs/canvas-api.md), not on
+  // the Oomba Kit. The activity is data in its oc-activity block; the kit draws it and owns the maths. builderOnly.
+  { key: 'canvas', title: 'Classroom activity', icon: '🧮', cover: 'mint', category: 'learning', players: 1, builderOnly: true, canvas: true,
+    description: 'A hands-on canvas: students drag, build and check, one step at a time, with hints.' },
 ];
 
 const cache = new Map();
@@ -76,6 +81,6 @@ export function loadTemplate(key, opts = {}) {
   // are filled in (../art2d.js). With neither, the marker goes and the game is the template as it always was.
   return art2dConfig(cache.get(key), opts || {});
 }
-/** The template source with the kit's pinned tags in place of <!--KIT--> and <!--PACK:name-->. */
-export const withKitTags = src => String(src).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));
+/** The template source with the pinned tags in place of <!--KIT-->, <!--PACK:name--> and <!--CANVAS--> (Oomba Canvas). */
+export const withKitTags = src => String(src).replace('<!--CANVAS-->', () => canvasTag()).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));
 export { art2dTags };

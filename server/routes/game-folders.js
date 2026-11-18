@@ -159,8 +159,9 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   const also = await gcAfterAssign(req, r.classLesson);
   const toast = req.t('lessons.assign.done', { class: r.class.name });
   // From a folder on the class page's sidebar: back to that folder, to assign the next one.
-  const fid = String(b(req).folder || '');
-  res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, redirect: `/class/${r.class.id}${/^[\w-]{1,40}$/.test(fid) ? `?folder=${encodeURIComponent(fid)}` : ''}` });
+  // From the phone's "All my games" (view=all): back there.
+  const fid = String(b(req).folder || ''), back = /^[\w-]{1,40}$/.test(fid) ? `?folder=${encodeURIComponent(fid)}` : b(req).view === 'all' ? '?view=all' : '';
+  res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, redirect: `/class/${r.class.id}${back}` });
 });
 /** "Assign all" (a folder on the class page): each game in the folder (one's own, or shared with one) that the class can
  *  play and doesn't have yet, with one due day, and posted to Google Classroom when asked. Games that need setting up

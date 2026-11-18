@@ -1752,6 +1752,15 @@
       "step": "Paso de la lección: {title}",
       "back": "Volver a la lección",
       "handIn": "Entregar"
+    },
+    "canvasLine": {
+      "activity": "Actividad de clase · los resultados van a Progreso",
+      "board": "Actividad de clase · en la pizarra",
+      "arcade": "Juego arcade · hecho para tu clase",
+      "toArcade": "Mejor hazlo un juego arcade",
+      "toArcadeAsk": "Mejor hazlo un juego arcade: un juego de preguntas, de correr o de atrapar con los mismos problemas.",
+      "toCanvas": "Hazlo una actividad de clase",
+      "toCanvasAsk": "Mejor hazlo una actividad de clase: un lienzo práctico con las mismas preguntas, pasos y pistas."
     }
   },
   "publish": {
@@ -2728,7 +2737,16 @@
         "pickedWorld": "{count} elegidos. Todos viven en {world}.",
         "cleared": "Quitados"
       },
-      "progress": "Paso {n} de {total}"
+      "progress": "Paso {n} de {total}",
+      "canvas": {
+        "activity": "Actividad de clase",
+        "rows": {
+          "kind": "Qué",
+          "practise": "Practicar",
+          "help": "Ayuda",
+          "played": "Se juega"
+        }
+      }
     },
     "dash": {
       "dropHint": "Añade aquí un widget de la biblioteca",
@@ -9171,7 +9189,8 @@
         "kit2": "Los mundos 3D ya hechos aún no se pueden jugar en vivo.",
         "board": "Este funciona en una pantalla para toda la sala.",
         "survey": "Las respuestas de la encuesta se quedan en este dispositivo y nunca se envían, así que no se juega en vivo.",
-        "exitticket": "Un ticket de salida se queda en un dispositivo. Para las respuestas de cada estudiante, usa un paso de pregunta en una lección de clase."
+        "exitticket": "Un ticket de salida se queda en un dispositivo. Para las respuestas de cada estudiante, usa un paso de pregunta en una lección de clase.",
+        "canvas": "Las actividades de clase aún no se pueden jugar en directo."
       }
     },
     "learn": {
@@ -9221,7 +9240,17 @@
       "file": "Usa el archivo que añadí.",
       "playlive": "Lo jugamos en vivo con mi clase o grupo en Oomba Live.",
       "playscreen": "Lo jugamos juntos en una pantalla.",
-      "playsolo": "Lo juego yo solo."
+      "playsolo": "Lo juego yo solo.",
+      "activity": "Este es mi plan: una actividad de clase.",
+      "grade": "Para {grade}.º curso.",
+      "gradeK": "Para educación infantil.",
+      "practise": "Practicar: {topic}.",
+      "help": "Ayuda: {help}.",
+      "played": {
+        "devices": "Los alumnos lo juegan en sus propios dispositivos.",
+        "board": "Lo jugamos juntos en la pizarra.",
+        "both": "Los alumnos lo juegan en sus dispositivos y también lo mostramos en la pizarra."
+      }
     },
     "flatNote": "En 2D, por ahora solo los juegos de carrera y de atrapar pueden usar nuestros mundos y personajes. En los otros juegos el Constructor usa su estilo clásico.",
     "typeGroups": {
@@ -9230,6 +9259,102 @@
       "games": "Juegos",
       "classText": "Actividades para la pizarra de clase y para móviles.",
       "gamesText": "Juegos para jugar y compartir."
+    },
+    "kind": {
+      "heading": "¿Qué vas a hacer?",
+      "text": "Puedes cambiarlo cuando quieras en el Builder.",
+      "forClassTitle": "Haz algo para tu clase",
+      "forChip": "Para {name} · {grade}",
+      "forChipNoGrade": "Para {name}",
+      "forClass": "Para tu clase",
+      "check": "Comprobar",
+      "hint": "Pista",
+      "activity": {
+        "title": "Actividad de clase",
+        "text": "Un lienzo práctico: los alumnos arrastran, construyen y comprueban, paso a paso, con pistas. Los resultados van a Progreso."
+      },
+      "arcade": {
+        "title": "Juego arcade",
+        "text": "Un juego divertido para jugar y compartir: correr, atrapar, preguntas, carreras, en 2D o en un mundo 3D."
+      },
+      "tools": {
+        "fractions": "Barras de fracciones",
+        "numberline": "Recta numérica",
+        "digits": "Casillas de cifras",
+        "tiles": "Clasificar y emparejar"
+      },
+      "games": {
+        "runner": "Carrera",
+        "catch": "Atrapar",
+        "quiz": "Preguntas",
+        "worlds": "Mundos 3D"
+      },
+      "toolsText": "¿Necesitas un juego de silencio, una ruleta o un marcador?",
+      "toolsLink": "Herramientas de clase"
+    },
+    "canvas": {
+      "nextHelp": "Siguiente: cuánta ayuda",
+      "nextPlayed": "Siguiente: cómo se juega",
+      "practise": {
+        "heading": "¿Qué deben practicar los alumnos?",
+        "text": "Elige uno o escribe el tuyo. El Builder hace 5 problemas con pasos y pistas.",
+        "label": "¿Qué deben practicar los alumnos?",
+        "placeholder": "Por ejemplo: fracciones equivalentes con octavos y sextos",
+        "ideas": "Ideas",
+        "ideasFor": "Ideas para {grade}",
+        "privacy": "El Builder solo recibe tu tema y el curso de la clase. Nunca los nombres ni el trabajo de los alumnos."
+      },
+      "help": {
+        "heading": "¿Cuánta ayuda?",
+        "hint": "Puedes cambiarlo cuando quieras en el Builder.",
+        "watch": {
+          "title": "Mirar",
+          "text": "Muestra cómo se hace cada uno y luego lo intentan."
+        },
+        "count": {
+          "title": "Contar",
+          "text": "Respuestas de los pasos con botones ▲ ▼, sin escribir."
+        },
+        "guided": {
+          "title": "Guiado",
+          "text": "Pasos abiertos, con hasta 3 pistas."
+        },
+        "own": {
+          "title": "Por su cuenta",
+          "text": "Los pasos quedan ocultos hasta que los pidan."
+        }
+      },
+      "played": {
+        "heading": "¿Cómo se jugará?",
+        "hint": "El juego en directo para actividades llegará más adelante.",
+        "devices": {
+          "title": "En sus propios dispositivos",
+          "text": "Cada alumno trabaja en su propia copia. Los resultados van a Progreso."
+        },
+        "board": {
+          "title": "En la pizarra",
+          "text": "Lo hacéis juntos en la pantalla grande. Sin puntuaciones."
+        },
+        "both": {
+          "title": "Ambos",
+          "text": "Sus propios dispositivos y la pizarra cuando quieras."
+        }
+      },
+      "topics": {
+        "evenOdd": "Pares e impares",
+        "orderNumbers": "Ordenar números",
+        "numberLineJumps": "Saltos en la recta numérica",
+        "addColumns": "Sumar en columnas",
+        "subColumns": "Restar en columnas",
+        "shadeFractions": "Colorear una fracción",
+        "equivFractions": "Fracciones equivalentes",
+        "fractionsLine": "Fracciones en la recta numérica",
+        "compareFractions": "Comparar fracciones",
+        "multiplyOne": "Multiplicar por una cifra",
+        "multiples": "Múltiplos",
+        "orderFractions": "Ordenar fracciones",
+        "bigAdd": "Sumar números grandes"
+      }
     }
   },
   "dash": {
@@ -11167,6 +11292,29 @@
     "saveAnother": "Guardar en otra carpeta",
     "moveUp": "Subir",
     "moveDown": "Bajar",
-    "sharedEmpty": "Aquí todavía no hay juegos que puedas abrir."
+    "sharedEmpty": "Aquí todavía no hay juegos que puedas abrir.",
+    "phone": {
+      "assigned": "Asignados",
+      "library": "Mi biblioteca",
+      "assignedSub": "{count, plural, one {# juego, en el orden en que lo ven los alumnos} other {# juegos, en el orden en que los ven los alumnos}}",
+      "addFromLibrary": "Añadir de la biblioteca",
+      "reorder": "Ordenar",
+      "done": "Listo",
+      "noDue": "Sin fecha de entrega",
+      "up": "Subir {name}",
+      "down": "Bajar {name}",
+      "libraryNote": "Las colecciones solo ordenan tus juegos. Asigna desde dentro de una.",
+      "allSub": "Juegos que has creado",
+      "sharedSub": "Compartida con tu escuela",
+      "newCollection": "Nueva colección",
+      "collectionName": "Nombre de la colección",
+      "fromOthers": "De otros",
+      "byReadOnly": "de {name} · solo lectura",
+      "studentsSub": "Hechos por alumnos de {class}",
+      "oomba": "Juegos de Oomba",
+      "oombaSub": "Ver todos los juegos de Oomba",
+      "collectionEmpty": "Esta colección aún está vacía",
+      "allEmpty": "Todavía no has creado ningún juego."
+    }
   }
 }

@@ -1752,6 +1752,15 @@
       "step": "レッスンのステップ: {title}",
       "back": "レッスンにもどる",
       "handIn": "提出する"
+    },
+    "canvasLine": {
+      "activity": "クラス活動 · 結果は「進み具合」へ",
+      "board": "クラス活動 · 黒板で",
+      "arcade": "アーケードゲーム · クラス向けにつくりました",
+      "toArcade": "アーケードゲームにする",
+      "toArcadeAsk": "アーケードゲームにして：同じ問題を出すクイズ、ランナー、キャッチのゲーム。",
+      "toCanvas": "クラス活動にする",
+      "toCanvasAsk": "クラス活動にして：同じ問題、ステップ、ヒントの手を動かすキャンバス。"
     }
   },
   "publish": {
@@ -2728,7 +2737,16 @@
         "pickedWorld": "{count} こえらんだよ。みんな {world} にいるよ。",
         "cleared": "はずしたよ"
       },
-      "progress": "ステップ {n} / {total}"
+      "progress": "ステップ {n} / {total}",
+      "canvas": {
+        "activity": "クラス活動",
+        "rows": {
+          "kind": "なに",
+          "practise": "練習",
+          "help": "サポート",
+          "played": "遊び方"
+        }
+      }
     },
     "dash": {
       "dropHint": "ここにライブラリからウィジェットを追加",
@@ -9171,7 +9189,8 @@
         "kit2": "できあがった3Dワールドは、まだライブであそべないよ。",
         "board": "これはみんなでひとつの画面を見て使うものだよ。",
         "survey": "アンケートの答えはこの端末だけにのこり、どこにもおくられないので、ライブではあそべないよ。",
-        "exitticket": "出口チケットは1台の端末で使うよ。生徒ひとりひとりの答えは、クラスのレッスンの質問ステップを使ってね。"
+        "exitticket": "出口チケットは1台の端末で使うよ。生徒ひとりひとりの答えは、クラスのレッスンの質問ステップを使ってね。",
+        "canvas": "クラス活動はまだライブでは遊べません。"
       }
     },
     "learn": {
@@ -9221,7 +9240,17 @@
       "file": "ついかしたファイルを使ってください。",
       "playlive": "Oomba Live でクラスやグループとライブであそびます。",
       "playscreen": "ひとつの画面でみんなであそびます。",
-      "playsolo": "ひとりであそびます。"
+      "playsolo": "ひとりであそびます。",
+      "activity": "わたしのプラン：クラス活動です。",
+      "grade": "{grade} 年生向け。",
+      "gradeK": "幼稚園向け。",
+      "practise": "練習すること：{topic}。",
+      "help": "サポート：{help}。",
+      "played": {
+        "devices": "児童はそれぞれの端末で遊びます。",
+        "board": "黒板でいっしょに遊びます。",
+        "both": "児童はそれぞれの端末で遊び、黒板にも映します。"
+      }
     },
     "flatNote": "2Dでは、いまのところランゲームとキャッチゲームだけがワールドとキャラクターを使えるよ。ほかのゲームはビルダーのいつもの見た目になるよ。",
     "typeGroups": {
@@ -9230,6 +9259,102 @@
       "games": "ゲーム",
       "classText": "教室のボードとスマホのための活動です。",
       "gamesText": "あそんでシェアするゲームです。"
+    },
+    "kind": {
+      "heading": "何をつくりますか？",
+      "text": "Builder でいつでも切りかえられます。",
+      "forClassTitle": "クラスのためにつくろう",
+      "forChip": "{name} 向け · {grade}",
+      "forChipNoGrade": "{name} 向け",
+      "forClass": "クラス向け",
+      "check": "たしかめる",
+      "hint": "ヒント",
+      "activity": {
+        "title": "クラス活動",
+        "text": "手を動かすキャンバス：児童がドラッグして組み立て、1 ステップずつたしかめます。ヒントつき。結果は「進み具合」に届きます。"
+      },
+      "arcade": {
+        "title": "アーケードゲーム",
+        "text": "遊んでシェアできる楽しいゲーム：走る、キャッチ、クイズ、レース。2D でも 3D の世界でも。"
+      },
+      "tools": {
+        "fractions": "分数のテープ",
+        "numberline": "数直線",
+        "digits": "数字のマス",
+        "tiles": "分類とマッチ"
+      },
+      "games": {
+        "runner": "ランナー",
+        "catch": "キャッチ",
+        "quiz": "クイズ",
+        "worlds": "3D の世界"
+      },
+      "toolsText": "静かにするゲーム、ルーレット、得点ボードが必要ですか？",
+      "toolsLink": "クラスのツール"
+    },
+    "canvas": {
+      "nextHelp": "つぎ：サポートの量",
+      "nextPlayed": "つぎ：遊び方",
+      "practise": {
+        "heading": "児童に何を練習させますか？",
+        "text": "1 つえらぶか、自分で書いてください。Builder がステップとヒントつきの問題を 5 問つくります。",
+        "label": "児童に何を練習させますか？",
+        "placeholder": "例：8 分の 1 と 6 分の 1 をつかった等しい分数",
+        "ideas": "アイデア",
+        "ideasFor": "{grade} 向けのアイデア",
+        "privacy": "Builder に届くのはテーマとクラスの学年だけです。児童の名前や作品は届きません。"
+      },
+      "help": {
+        "heading": "サポートはどのくらい？",
+        "hint": "Builder でいつでも変えられます。",
+        "watch": {
+          "title": "見る",
+          "text": "1 問ずつやり方を見せてから、児童がやってみます。"
+        },
+        "count": {
+          "title": "数える",
+          "text": "ステップの答えは ▲ ▼ ボタンで。入力なし。"
+        },
+        "guided": {
+          "title": "ヒントあり",
+          "text": "ステップを表示、ヒントは 3 つまで。"
+        },
+        "own": {
+          "title": "ひとりで",
+          "text": "児童がひらくまでステップはかくれています。"
+        }
+      },
+      "played": {
+        "heading": "どうやって遊びますか？",
+        "hint": "活動のライブプレイはのちほど対応します。",
+        "devices": {
+          "title": "それぞれの端末で",
+          "text": "児童ひとりひとりが自分のコピーで取り組みます。結果は「進み具合」に届きます。"
+        },
+        "board": {
+          "title": "黒板で",
+          "text": "大きな画面でいっしょに進めます。得点なし。"
+        },
+        "both": {
+          "title": "両方",
+          "text": "それぞれの端末で、必要なときは黒板でも。"
+        }
+      },
+      "topics": {
+        "evenOdd": "ぐう数とき数",
+        "orderNumbers": "数をならべる",
+        "numberLineJumps": "数直線のジャンプ",
+        "addColumns": "たし算の筆算",
+        "subColumns": "ひき算の筆算",
+        "shadeFractions": "分数をぬる",
+        "equivFractions": "等しい分数",
+        "fractionsLine": "数直線の上の分数",
+        "compareFractions": "分数のくらべっこ",
+        "multiplyOne": "1 けたのかけ算",
+        "multiples": "ばい数",
+        "orderFractions": "分数をならべる",
+        "bigAdd": "大きな数のたし算"
+      }
     }
   },
   "dash": {
@@ -11167,6 +11292,29 @@
     "saveAnother": "ほかのフォルダーに保存",
     "moveUp": "上へ",
     "moveDown": "下へ",
-    "sharedEmpty": "ここにはまだ、あなたが開けるゲームがありません。"
+    "sharedEmpty": "ここにはまだ、あなたが開けるゲームがありません。",
+    "phone": {
+      "assigned": "割り当て済み",
+      "library": "マイライブラリ",
+      "assignedSub": "{count, plural, other {#本のゲーム（生徒に表示される順）}}",
+      "addFromLibrary": "ライブラリから追加",
+      "reorder": "並べ替え",
+      "done": "完了",
+      "noDue": "期限なし",
+      "up": "{name}を上へ",
+      "down": "{name}を下へ",
+      "libraryNote": "コレクションはゲームを整理するだけです。割り当てはコレクションの中から。",
+      "allSub": "あなたが作ったゲーム",
+      "sharedSub": "学校と共有中",
+      "newCollection": "新しいコレクション",
+      "collectionName": "コレクション名",
+      "fromOthers": "ほかの人から",
+      "byReadOnly": "{name} · 閲覧のみ",
+      "studentsSub": "{class}の生徒が作成",
+      "oomba": "Oombaのゲーム",
+      "oombaSub": "Oombaのゲームをすべて見る",
+      "collectionEmpty": "このコレクションはまだ空です",
+      "allEmpty": "まだゲームを作っていません。"
+    }
   }
 }

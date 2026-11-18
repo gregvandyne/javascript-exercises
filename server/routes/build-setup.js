@@ -8,13 +8,21 @@
 // (POST /api/studio/new), adds a file with the Studio's own upload (POST /api/studio/:id/uploads) and starts the first
 // build (POST /api/studio/:id/chat with { plan }). The plan's typed words are part of that message, so they pass the
 // same screening as any typed Builder message (builder/agent.js). No voice, no prices, no plans on this page.
+// It first asks "What are you making?" (docs/decisions.md "Classroom activity vs Arcade game"): a Classroom activity
+// (Oomba Canvas: three short steps, what to practise, how much help, how it is played) or an Arcade game (the steps
+// above, unchanged). Classroom activity starts selected for every teacher and when the page is opened from a class
+// (?for=class&class=<id>, the class page's Build buttons); kids and families start on Arcade game. Either can switch.
+// The class only gives the page its grade (for the topic chips) and its name (for the chip and the way back), and only
+// when this user teaches it: nothing about its students is read, and only the grade goes into the plan.
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
-import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault } from '../builder/plan.js';
+import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault, startKind, topicsFor, gradeOf, SUPPORTS, CANVAS_PLAYS } from '../builder/plan.js';
+import * as S from '../services/schools.js';
+import { gradeLabel } from '../views/components.js';
 import { teacherHost } from '../services/classlive-access.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
@@ -68,13 +76,35 @@ const ART = {
   science: svg('<path d="M19 6h10M21 6v12L9 38a3 3 0 0 0 3 4h24a3 3 0 0 0 3-4L27 18V6"/><path d="M14 30h20"/>'),
   geography: svg('<circle cx="24" cy="24" r="17"/><path d="M7 24h34"/><path d="M24 7c-6 5-6 29 0 34 6-5 6-29 0-34z"/>'),
   fun: svg('<circle cx="24" cy="24" r="17"/><path d="M15 28c2 4 5 6 9 6s7-2 9-6"/><path d="M17 19v.5M31 19v.5"/>'),
+  // a classroom activity's help and how it is played
+  watch: svg('<path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24z"/><circle cx="24" cy="24" r="6"/>'),
+  count: svg('<path d="M16 20l8-8 8 8"/><path d="M16 30l8 8 8-8"/><path d="M14 25h20"/>'),
+  guided: svg('<path d="M8 40V28h10V18h10V8h12"/><circle cx="12" cy="22" r="3"/>'),
+  own: svg('<circle cx="24" cy="14" r="6"/><path d="M14 42c0-8 4-14 10-14s10 6 10 14"/><path d="M34 8l4 4 6-7"/>'),
+  devices: svg('<rect x="6" y="14" width="14" height="22" rx="2"/><rect x="28" y="14" width="14" height="22" rx="2"/><path d="M11 31h4M33 31h4"/>'),
+  both: svg('<rect x="6" y="6" width="36" height="20" rx="2"/><rect x="10" y="30" width="10" height="14" rx="2"/><rect x="28" y="30" width="10" height="14" rx="2"/>'),
 };
+ART.board = ART.screen;
+// The start screen's small drawings (single colour, the text colour; never an emoji, like the cards' drawings).
+const icon = (d, size = 18) => raw(`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`);
+const ICON = {
+  class: icon('<path d="M3 10l9-5 9 5-9 5-9-5z"/><path d="M7 12v4c3 2 7 2 10 0v-4"/>'),
+  lock: icon('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', 16),
+  runner: icon('<circle cx="15" cy="4" r="2"/><path d="M7 11l4-3 4 3 3 1"/><path d="M11 8l-2 6 4 3v5"/><path d="M9 14l-3 3H3"/>', 44),
+};
+/** The classroom activity's steps after "What should students practise?" (on the start screen). */
+export const CANVAS_STEPS = ['help', 'played'];
+/** The Classroom activity card's small picture: a fraction bar (g green, y yellow, e empty parts). */
+const miniBar = (n, parts) => `<span class="su-kbar" style="--n:${n}">${parts.split('').map(c => `<i class="su-kb-${c}"></i>`).join('')}</span>`;
 const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>`);
 const check = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
 
 /** What the page's script needs (ids and facts only; every word comes from the locale files). */
-export function setupData(t, { teacher = false } = {}) {
+export function setupData(t, { teacher = false, forClass = null } = {}) {
   return {
+    // "What are you making?": the card that starts selected, and the classroom activity's steps (the grade's topic chips
+    // with the kit tool each one means, and the class: only a flag and the grade, never an id the plan carries)
+    canvas: { kind: startKind({ teacher, forClass: !!forClass }), topics: topicsFor(forClass && forClass.grade).map(x => ({ id: x.id, tool: x.gen.tool })), supports: SUPPORTS, plays: CANVAS_PLAYS, grade: forClass ? forClass.grade : '', forClass: !!forClass },
     steps: STEPS, types: GAME_TYPES.map(x => x.id), looks: LOOKS,
     // the game-type step's groups for this viewer (the first one shows first), and the steps each type skips (a survey
     // or a scoreboard has no 2D or 3D, world or characters)
@@ -99,8 +129,18 @@ export function setupData(t, { teacher = false } = {}) {
  *  types come first for them, and the teacher-only ones (a survey, an exit ticket) are offered. */
 export const setupTeacher = u => !!u && !u.is_guest && teacherHost(u);
 
+/** The class a ?for=class&class=<id> link names, when this user teaches it (or runs its school) and it is not archived:
+ *  { id, name, grade ('K'...'8' or ''), gradeText }, else null (the link then opens the page as usual). */
+export function setupClass(user, q = {}) {
+  if (!user || user.is_guest || q.for !== 'class' || typeof q.class !== 'string' || q.class.length > 64) return null;
+  const c = S.getClass(q.class);
+  if (!c || c.archived_at || !S.canManageClass(user, c)) return null;
+  return { id: c.id, name: c.name, grade: gradeOf(c.grade), raw: c.grade || '' };
+}
+
 router.get('/build/new', requireBuilder, (req, res) => {
   const t = req.t, total = STEPS.length, teacher = setupTeacher(req.user), groups = typeGroups({ teacher });
+  const forClass = setupClass(req.user, req.query), kind = startKind({ teacher, forClass: !!forClass }), topics = topicsFor(forClass && forClass.grade);
   // One card: a real button (aria-pressed), a picture or drawing, a name of at most two lines and a line under it.
   const card = ({ step, id, pic, title, text = '', extra = '', attrs = '', wrap = '' }) => html`<div class="su-card${extra ? ' has-more' : ''}" data-card="${id}"${raw(wrap)}>
     <button type="button" class="su-pick" data-step="${step}" data-id="${id}" aria-pressed="false"${raw(attrs)}>${pic}<span class="su-name">${title}</span><span class="su-desc">${text}</span>${check}</button>${extra}</div>`;
@@ -154,14 +194,46 @@ router.get('/build/new', requireBuilder, (req, res) => {
 
   const body = html`
   <div class="su" id="su">
-    <div class="su-top"><p class="su-brand">${t('buildSetup.title')}</p><button type="button" class="btn" id="su-skipall" hidden>${t('buildSetup.skipAll')}</button></div>
-    <section class="su-screen su-start" data-screen="start" aria-labelledby="su-h-start">
-      <h1 id="su-h-start" tabindex="-1">${t('buildSetup.start.heading')}</h1><p class="su-hint">${t('buildSetup.start.text')}</p>
-      <div class="su-ways">
-        <button type="button" class="su-way su-way-go" id="su-guide"><span class="su-way-t">${t('buildSetup.start.guide')}</span><span class="su-way-d">${t('buildSetup.start.guideText')}</span></button>
-        <button type="button" class="su-way" id="su-direct"><span class="su-way-t">${t('buildSetup.start.direct')}</span><span class="su-way-d">${t('buildSetup.start.directText')}</span></button>
+    <div class="su-top"><p class="su-brand">${forClass ? t('buildSetup.kind.forClassTitle') : t('buildSetup.title')}</p><button type="button" class="btn" id="su-skipall" hidden>${t('buildSetup.skipAll')}</button></div>
+    <section class="su-screen su-start" data-screen="start" aria-labelledby="su-h-start" data-kind="${kind}">
+      ${forClass ? html`<span class="su-for">${ICON.class} ${forClass.raw ? t('buildSetup.kind.forChip', { name: forClass.name, grade: gradeLabel(t, forClass.raw) }) : t('buildSetup.kind.forChipNoGrade', { name: forClass.name })}</span>` : ''}
+      <h1 id="su-h-start" tabindex="-1">${t('buildSetup.kind.heading')}</h1><p class="su-hint">${t('buildSetup.kind.text')}</p>
+      <div class="su-kinds" role="group" aria-labelledby="su-h-start">
+        <button type="button" class="su-kind" data-kind="activity" aria-pressed="${kind === 'activity' ? 'true' : 'false'}">
+          ${forClass || teacher ? html`<span class="su-rec" data-rec><span class="su-rtick" aria-hidden="true">✓</span> ${t('buildSetup.kind.forClass')}</span>` : ''}
+          <span class="su-kpic su-kcanvas" aria-hidden="true">${raw(miniBar(4, 'ggge'))}${raw(miniBar(8, 'yyyyeeee'))}<span class="su-kmrow"><span class="su-kmtile"></span><span class="su-kmtile"></span><span class="su-kgrow"></span><span class="su-kmbtn su-kmgo">✓ ${t('buildSetup.kind.check')}</span><span class="su-kmbtn">${t('buildSetup.kind.hint')}</span></span></span>
+          <span class="su-kt">${t('buildSetup.kind.activity.title')}</span>
+          <span class="su-kd">${t('buildSetup.kind.activity.text')}</span>
+          <span class="su-ktags">${['fractions', 'numberline', 'digits', 'tiles'].map(k => html`<span>${t(`buildSetup.kind.tools.${k}`)}</span>`)}</span>
+        </button>
+        <button type="button" class="su-kind" data-kind="arcade" aria-pressed="${kind === 'arcade' ? 'true' : 'false'}">
+          <span class="su-kpic su-karcade" aria-hidden="true"><span class="su-ksun"></span><span class="su-khill"></span><span class="su-kground"></span><span class="su-kcoin" style="inset-inline-start:58%"></span><span class="su-kcoin" style="inset-inline-start:70%;bottom:110px"></span><span class="su-kp">${ICON.runner}</span></span>
+          <span class="su-kt">${t('buildSetup.kind.arcade.title')}</span>
+          <span class="su-kd">${t('buildSetup.kind.arcade.text')}</span>
+          <span class="su-ktags">${['runner', 'catch', 'quiz', 'worlds'].map(k => html`<span>${t(`buildSetup.kind.games.${k}`)}</span>`)}</span>
+        </button>
       </div>
+      <div class="su-topic" id="su-topic" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>
+        <h2 id="su-h-practise">${t('buildSetup.canvas.practise.heading')}</h2>
+        <p class="small muted su-topic-text">${t('buildSetup.canvas.practise.text')}</p>
+        <label class="sr-only" for="su-topic-in">${t('buildSetup.canvas.practise.label')}</label>
+        <input class="input" id="su-topic-in" maxlength="${LIMITS.idea}" dir="auto" autocomplete="off" placeholder="${t('buildSetup.canvas.practise.placeholder')}">
+        <div class="su-chips" role="group" aria-label="${forClass && forClass.raw ? t('buildSetup.canvas.practise.ideasFor', { grade: gradeLabel(t, forClass.raw) }) : t('buildSetup.canvas.practise.ideas')}">${topics.map(x => html`<button type="button" class="chip" data-topic="${x.id}" aria-pressed="false">${t(`buildSetup.canvas.topics.${x.id}`)}</button>`)}</div>
+        <p class="su-safe muted small">${ICON.lock} ${t('buildSetup.canvas.practise.privacy')}</p>
+      </div>
+      <div class="su-kways">
+        <button type="button" class="btn" id="su-direct" data-for="both">${t('buildSetup.start.direct')}</button>
+        <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextHelp')} <span aria-hidden="true">›</span></button>
+        <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade"${kind === 'arcade' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
+      </div>
+      <p class="su-tools muted">${t('buildSetup.kind.toolsText')} <a href="#type" id="su-tools">${t('buildSetup.kind.toolsLink')}</a></p>
     </section>
+    ${CANVAS_STEPS.map((k, i) => html`<section class="su-screen su-step su-cstep" data-screen="${k}" aria-labelledby="su-h-${k}" hidden>
+      <div class="su-progress"><span class="su-dots" aria-hidden="true">${[0, 1, 2].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: 3 })}</span></div>
+      <h1 id="su-h-${k}" tabindex="-1">${t(`buildSetup.canvas.${k}.heading`)}</h1><p class="su-hint">${t(`buildSetup.canvas.${k}.hint`)}</p>
+      <div class="su-grid su-grid-text ${k === 'help' ? 'su-grid-4' : 'su-grid-3'}" role="group" aria-labelledby="su-h-${k}">${(k === 'help' ? SUPPORTS : CANVAS_PLAYS).map(id => card({ step: k, id, pic: art(id), title: t(`buildSetup.canvas.${k}.${id}.title`), text: t(`buildSetup.canvas.${k}.${id}.text`) }))}</div>
+      <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end"><button type="button" class="btn btn-primary" data-go="next">${k === 'help' ? t('buildSetup.canvas.nextPlayed') : t('buildSetup.next')}</button></span></div>
+    </section>`)}
     ${STEPS.map((s, i) => html`<section class="su-screen su-step" data-screen="${s.key}" aria-labelledby="su-h-${s.key}" hidden>
       ${head(s, i)}${grids[s.key]()}${s.other ? elseBox(s) : ''}${nav}
     </section>`)}
@@ -174,8 +246,8 @@ router.get('/build/new', requireBuilder, (req, res) => {
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>
   </div>
-  ${jsonData('page-data', setupData(t, { teacher }))}`;
-  page(req, res, { title: t('buildSetup.title'), active: 'build', back: '/build', backLabel: t('nav.build'), body, mid: true, bodyClass: 'setup-page',
+  ${jsonData('page-data', setupData(t, { teacher, forClass }))}`;
+  page(req, res, { title: t('buildSetup.title'), active: 'build', back: forClass ? `/class/${forClass.id}` : '/build', backLabel: forClass ? forClass.name : t('nav.build'), body, mid: true, bodyClass: 'setup-page',
     head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/build-setup.css">'), scripts: ['/js/buildsetup.js'], });
 });
 

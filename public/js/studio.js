@@ -224,6 +224,17 @@ function renderLiveClass() {
       + (L.why ? `<p class="small muted st-live-why" id="st-live-why" hidden>${esc(L.why)}</p>` : '');
   }
 }
+// A classroom activity (Oomba Canvas): one line under the safety line (server/routes/studio.js canvasLineState): "Classroom
+// activity · results go to Progress" and "Make it an arcade game instead", or, for an arcade game made from a class,
+// "Make it a classroom activity". The button sends a fixed Builder message, like "Make it live".
+function renderCanvasLine() {
+  let box = $('#st-canvasline');
+  const L = S.canvasLine;
+  if (!L) { if (box) box.remove(); return; }
+  if (!box) { box = document.createElement('div'); box.id = 'st-canvasline'; box.className = 'st-liveclass st-canvasline'; $('#st-safety').after(box); }
+  box.dataset.kind = L.kind;
+  box.innerHTML = `<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
+}
 /** "Make it live": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
 function makeLive(btn) {
   const L = S.liveClass; if (!L) return;
@@ -233,10 +244,10 @@ function makeLive(btn) {
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
 async function refreshLiveLine() {
-  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; renderLiveClass(); } catch { /* the next resync redraws it */ }
+  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; renderLiveClass(); renderCanvasLine(); } catch { /* the next resync redraws it */ }
 }
 function renderSafety() {
-  renderLiveClass();
+  renderLiveClass(); renderCanvasLine();
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
@@ -1409,6 +1420,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
   else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
+  else if (a.dataset.act === 'canvas-switch' && S.canvasLine) send(S.canvasLine.ask);
   else if (a.dataset.act === 'fix-live' && S.liveClass && S.liveClass.fixAsk) send(S.liveClass.fixAsk);
   else if (a.dataset.act === 'live-publish') $('#st-publish').click();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });

@@ -22,6 +22,7 @@ import { frameDocument, frameCsp, SANDBOX } from './frame.js';
 import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE, KIT2_PATH, THEMES_PATH } from './vendor.js';
 import { ART2D_PATH } from './art2d.js';
 import { KIT_PATH } from './kit.js';
+import { CANVAS_PATH } from './canvaskit.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
@@ -43,7 +44,7 @@ function vendorFile(url) {
     const dir = path.join(PUBLIC_DIR, 'vendor', k[1]), f = path.join(dir, k[2]);
     return f.startsWith(dir + path.sep) && fs.existsSync(f) && fs.statSync(f).isFile() ? f : null;
   }
-  const m = /^\/vendor\/(three|oomba-kit)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/|packs\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
+  const m = /^\/vendor\/(three|oomba-kit|oomba-canvas)\/([0-9][0-9a-z.-]{0,30})\/((?:fonts\/|packs\/)?[a-z0-9][a-z0-9.-]{0,60})$/i.exec(p);
   if (!m || m[2].includes('..') || m[3].includes('..') || (m[1] === 'three' && m[3].includes('/'))) return null;
   const dir = path.join(PUBLIC_DIR, 'vendor', m[1]);
   const f = path.join(dir, m[2], m[3]);
@@ -302,7 +303,7 @@ async function capture(gameHtml, opts) {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
       if (u === `${HOST}/frame`) return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`) || u.startsWith(`${HOST}${KIT2_PATH}`) || u.startsWith(`${HOST}${THEMES_PATH}`) || u.startsWith(`${HOST}${ART2D_PATH}`)) {
+      if (u.startsWith(`${HOST}${VENDOR_PATH}`) || u.startsWith(`${HOST}${KIT_PATH}`) || u.startsWith(`${HOST}${DATA_PATH}`) || u.startsWith(`${HOST}${KIT2_PATH}`) || u.startsWith(`${HOST}${THEMES_PATH}`) || u.startsWith(`${HOST}${ART2D_PATH}`) || u.startsWith(`${HOST}${CANVAS_PATH}`)) {
         const f = vendorFile(u);
         if (!f) return route.fulfill({ status: 404, body: '' });
         return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });

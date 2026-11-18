@@ -9,10 +9,16 @@
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
 
+// "What are you making?" comes first: a Classroom activity (three short steps: what to practise, on the start screen;
+// how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the card that starts
+// selected (a teacher, or opened from a class); one tap switches. An activity's plan is { kind: 'activity', topic,
+// support, played, grade } (builder/plan.js): only the topic and the class's grade, never the class or its students.
 const D = JSON.parse($('#page-data').textContent);
-const STEPS = D.steps, KEYS = STEPS.map(s => s.key), ORDER = ['start', ...KEYS, 'plan'];
-const stepOf = key => STEPS.find(s => s.key === key);
-const S = { screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
+const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['help', 'played'];
+const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
+const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
+const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
+const S = { kind: D.canvas.kind, topic: null, topicText: '', screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: ['guided'], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -52,8 +58,8 @@ history.replaceState({ su: 'start' }, '', location.pathname);   // a reload star
 /** Next / Skip this step / Back. A step opened with "Change" on the plan goes back to the plan. */
 function go(dir) {
   if (S.back && S.screen !== 'plan') { const to = S.back; S.back = null; return show(to); }
-  const order = ORDER.filter(k => !skipped().includes(k)), i = order.indexOf(S.screen);
-  show(order[Math.max(0, Math.min(order.length - 1, i + (dir === 'back' ? -1 : 1)))]);
+  const list = order().filter(k => S.kind === 'activity' || !skipped().includes(k)), i = list.indexOf(S.screen);
+  show(list[Math.max(0, Math.min(list.length - 1, i + (dir === 'back' ? -1 : 1)))]);
 }
 
 // ---------------------------------------------------------------- the two groups of game types
@@ -75,6 +81,7 @@ function paint(key) {
   }
 }
 function pick(key, id) {
+  if (CSTEPS.includes(key)) { S.sel[key] = [id]; paint(key); return; }   // an activity's steps: always one answer
   const st = stepOf(key), cur = S.sel[key], had = cur.includes(id);
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
@@ -200,23 +207,41 @@ function selectAll(btn) {
   btn.focus();
 }
 
+// ---------------------------------------------------------------- "What are you making?"
+/** Pick a card: the topic box and the right buttons follow it. */
+function setKind(kind) {
+  S.kind = kind;
+  for (const b of $$('.su-kind')) b.setAttribute('aria-pressed', String(b.dataset.kind === kind));
+  for (const el of $$('.su-start [data-for]')) el.hidden = !(el.dataset.for === 'both' || el.dataset.for === kind);
+  $('.su-start').dataset.kind = kind;
+}
+/** A topic chip (one at a time; a tap on the picked one clears it), or their own words in the box (typed words win). */
+function pickTopic(id) {
+  S.topic = S.topic === id ? null : id;
+  for (const c of $$('[data-topic]')) c.setAttribute('aria-pressed', String(c.dataset.topic === S.topic));
+}
+const topicOf = () => { const text = S.topicText.trim().replace(/\s+/g, ' '); return text ? { text } : S.topic ? { id: S.topic } : null; };
+
 // ---------------------------------------------------------------- the plan
 const ideaOf = key => S.idea[key].trim().replace(/\s+/g, ' ');
 /** The choices as the Builder gets them: pack choices by id, typed ones as custom text; blank means it decides. */
 function buildPlan() {
+  const from = D.canvas.forClass ? { forClass: true } : {};
+  if (S.kind === 'activity') return { kind: 'activity', topic: topicOf(), support: S.sel.help[0] || 'guided', played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...from };
   const skip = skipped();
   const one = key => { const id = S.sel[key][0]; if (!id || skip.includes(key)) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
   return {
     type: one('type'), look: skip.includes('look') ? null : S.sel.look[0] || null, world: one('world'),
     characters: skip.includes('chars') ? [] : S.sel.chars.map(id => (id === 'else' ? (ideaOf('chars') ? { from: 'custom', text: ideaOf('chars') } : null) : { from: 'pack', id })).filter(Boolean),
     learn: skip.includes('learn') ? [] : S.sel.learn.map(id => (id === 'else' ? (ideaOf('learn') ? { text: ideaOf('learn') } : null) : { id })).filter(Boolean),
-    notes: S.notes.trim(), play: S.sel.play[0] || null,
+    notes: S.notes.trim(), play: S.sel.play[0] || null, ...from,
   };
 }
 // How it is played starts on an answer by itself: alone, it is a plan only once they picked it.
-const isEmpty = p => !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length && !(p.play && S.playPicked);
+const isEmpty = p => p.kind !== 'activity' && !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length && !(p.play && S.playPicked);
 const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id="${id}"] .su-name`); return el ? el.textContent : id; };
 function renderPlan() {
+  if (S.kind === 'activity') return renderActivityPlan();
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
     const name = t(`js.buildsetup.stepNames.${s.key}`);
     let value, scratch = false;
@@ -239,6 +264,23 @@ function renderPlan() {
     .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
 }
 
+/** An activity's plan: what it is, what they practise, how much help, how it is played. */
+function renderActivityPlan() {
+  const topic = topicOf(), chip = topic && topic.id ? $(`[data-topic="${topic.id}"]`) : null;
+  const rows = [
+    ['kind', t('js.buildsetup.canvas.activity'), 'start'],
+    ['practise', topic ? topic.text || (chip ? chip.textContent.trim() : topic.id) : t('js.buildsetup.plan.decides'), 'start'],
+    ['help', nameOf('help', S.sel.help[0]), 'help'],
+    ['played', nameOf('played', S.sel.played[0]), 'played'],
+  ];
+  $('#su-rows').innerHTML = rows.map(([k, value, step]) => { const n = t(`js.buildsetup.canvas.rows.${k}`); return `<div class="su-row"><dt>${esc(n)}</dt><dd><span class="su-val" dir="auto">${esc(value)}</span></dd>
+    <button type="button" class="btn btn-ghost btn-sm su-change" data-change="${step}" aria-label="${esc(t('js.buildsetup.plan.changeLabel', { name: n }))}">${esc(t('js.buildsetup.plan.change'))}</button></div>`; }).join('');
+  const told = $('#su-told'); told.textContent = '…';
+  api('/api/build/plan', { method: 'POST', body: { plan: buildPlan(), files: 0 } })
+    .then(r => { if (S.screen === 'plan') told.textContent = r.text || t('js.buildsetup.plan.empty'); })
+    .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
+}
+
 // ---------------------------------------------------------------- files (worksheets and notes; the Studio's own upload)
 function renderFiles() {
   $('#su-files').innerHTML = S.files.map((f, i) => `<li class="su-filerow"><span class="su-fname" dir="auto">${esc(f.file.name)}</span><button type="button" class="btn btn-ghost btn-sm" data-rmfile="${i}" aria-label="${esc(t('js.buildsetup.extras.removeLabel', { name: f.file.name }))}">${esc(t('js.buildsetup.extras.remove'))}</button></li>`).join('');
@@ -255,12 +297,14 @@ function addFiles(files) {
 }
 
 // ---------------------------------------------------------------- to the Builder
-async function newGame() { if (!S.gameId) S.gameId = (await api('/api/studio/new', { method: 'POST', body: {} })).id; return S.gameId; }
+async function newGame(body = {}) { if (!S.gameId) S.gameId = (await api('/api/studio/new', { method: 'POST', body })).id; return S.gameId; }
 /** Straight to the Builder, as "New game" always did: an empty game, nothing sent. */
 async function direct(btn) {
   if (S.busy) return; S.busy = true;
   const old = btn.textContent; if (btn.id === 'su-skipall') btn.textContent = t('js.buildsetup.gettingReady'); btn.setAttribute('aria-busy', 'true');
-  try { location.href = `/studio/${await newGame()}`; }
+  // "I know what I want" with Classroom activity picked: the activity starter, so the Builder works on an activity from
+  // its first message (an arcade game starts empty, as it always did)
+  try { location.href = `/studio/${await newGame(S.kind === 'activity' && btn.id === 'su-direct' ? { template: 'canvas' } : {})}`; }
   catch (e) { S.busy = false; btn.textContent = old; btn.removeAttribute('aria-busy'); if (e.signedOut) location.href = `/login?next=${encodeURIComponent('/build/new')}`; else toast(e.message, { bad: true }); }
 }
 const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join(''));
@@ -326,6 +370,13 @@ document.addEventListener('click', e => {
   const rm = e.target.closest('[data-rmfile]'); if (rm) { S.files.splice(+rm.dataset.rmfile, 1); renderFiles(); $('#su-file-btn').focus(); }
 });
 $('#su-guide').addEventListener('click', () => show(KEYS[0]));
+$('#su-cnext').addEventListener('click', () => show(CSTEPS[0]));
+for (const b of $$('.su-kind')) b.addEventListener('click', () => setKind(b.dataset.kind));
+for (const c of $$('[data-topic]')) c.addEventListener('click', () => pickTopic(c.dataset.topic));
+$('#su-topic-in').addEventListener('input', e => { S.topicText = e.target.value; });
+$('#su-topic-in').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); show(CSTEPS[0]); } });
+// "Classroom tools": today's eight board starters (the game-type step, on its "For your class" group)
+$('#su-tools').addEventListener('click', e => { e.preventDefault(); setKind('arcade'); show(KEYS[0]); if (D.typeGroups.some(g => g.id === 'class')) showGroup('class'); });
 $('#su-direct').addEventListener('click', e => direct(e.currentTarget));
 $('#su-skipall').addEventListener('click', e => direct(e.currentTarget));
 $('#su-open').addEventListener('click', openBuilder);
@@ -340,3 +391,4 @@ $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e
 refreshLimits();
 if (D.typeGroups.length) showGroup(D.typeGroups[0].id);
 paintProgress();
+setKind(S.kind); paint('help'); paint('played');

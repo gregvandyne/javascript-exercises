@@ -1753,6 +1753,15 @@
       "step": "Lesson step: {title}",
       "back": "Back to the lesson",
       "handIn": "Hand in"
+    },
+    "canvasLine": {
+      "activity": "Classroom activity · results go to Progress",
+      "board": "Classroom activity · on the board",
+      "arcade": "Arcade game · made for your class",
+      "toArcade": "Make it an arcade game instead",
+      "toArcadeAsk": "Make it an arcade game instead: a quiz, running or catching game that asks the same problems.",
+      "toCanvas": "Make it a classroom activity",
+      "toCanvasAsk": "Make it a classroom activity instead: a hands-on canvas with the same questions, steps and hints."
     }
   },
   "publish": {
@@ -2747,7 +2756,16 @@
         "pickedWorld": "{count} picked. They all live in {world}.",
         "cleared": "Cleared"
       },
-      "progress": "Step {n} of {total}"
+      "progress": "Step {n} of {total}",
+      "canvas": {
+        "activity": "Classroom activity",
+        "rows": {
+          "kind": "What",
+          "practise": "Practice",
+          "help": "Help",
+          "played": "Played"
+        }
+      }
     },
     "dash": {
       "dropHint": "Add a widget here from the library",
@@ -9598,7 +9616,8 @@
         "kit2": "The ready-made 3D worlds can't be played live yet.",
         "board": "This one runs on one screen for the whole room.",
         "survey": "Survey answers stay on this device and are never sent, so it isn't played live.",
-        "exitticket": "An exit ticket stays on one device. For each student's answers, use a question step in a class lesson."
+        "exitticket": "An exit ticket stays on one device. For each student's answers, use a question step in a class lesson.",
+        "canvas": "Classroom activities can't be played live yet."
       }
     },
     "learn": {
@@ -9648,7 +9667,17 @@
       "file": "Use the file I added.",
       "playlive": "Play it live with my class or group on Oomba Live.",
       "playscreen": "We play it together on one screen.",
-      "playsolo": "It is played on my own."
+      "playsolo": "It is played on my own.",
+      "activity": "Here is my plan: a classroom activity.",
+      "grade": "For grade {grade}.",
+      "gradeK": "For kindergarten.",
+      "practise": "Practice: {topic}.",
+      "help": "Help: {help}.",
+      "played": {
+        "devices": "Students play it on their own devices.",
+        "board": "We play it together on the board.",
+        "both": "Students play it on their own devices, and we also show it on the board."
+      }
     },
     "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
     "typeGroups": {
@@ -9657,6 +9686,102 @@
       "games": "Games",
       "classText": "Activities for the classroom board and for phones.",
       "gamesText": "Games to play and share."
+    },
+    "kind": {
+      "heading": "What are you making?",
+      "text": "You can switch any time in the Builder.",
+      "forClassTitle": "Make something for your class",
+      "forChip": "For {name} · {grade}",
+      "forChipNoGrade": "For {name}",
+      "forClass": "For your class",
+      "check": "Check",
+      "hint": "Hint",
+      "activity": {
+        "title": "Classroom activity",
+        "text": "A hands-on canvas: students drag, build and check, one step at a time, with hints. Results go to Progress."
+      },
+      "arcade": {
+        "title": "Arcade game",
+        "text": "A fun game to play and share: run, catch, quiz, race, in 2D or a 3D world."
+      },
+      "tools": {
+        "fractions": "Fraction bars",
+        "numberline": "Number line",
+        "digits": "Digit boxes",
+        "tiles": "Sort and match"
+      },
+      "games": {
+        "runner": "Runner",
+        "catch": "Catch",
+        "quiz": "Quiz",
+        "worlds": "3D worlds"
+      },
+      "toolsText": "Need a quiet game, a spinner or a scoreboard?",
+      "toolsLink": "Classroom tools"
+    },
+    "canvas": {
+      "nextHelp": "Next: how much help",
+      "nextPlayed": "Next: how it is played",
+      "practise": {
+        "heading": "What should students practice?",
+        "text": "Pick one or type your own. The Builder makes 5 problems with steps and hints.",
+        "label": "What should students practice?",
+        "placeholder": "For example: equivalent fractions with eighths and sixths",
+        "ideas": "Ideas",
+        "ideasFor": "Ideas for {grade}",
+        "privacy": "The Builder only gets your topic and the class's grade. Never students' names or work."
+      },
+      "help": {
+        "heading": "How much help?",
+        "hint": "You can change it any time in the Builder.",
+        "watch": {
+          "title": "Watch",
+          "text": "Shows how each one is done, then students try."
+        },
+        "count": {
+          "title": "Count up",
+          "text": "Step answers with ▲ ▼ buttons, no typing."
+        },
+        "guided": {
+          "title": "Guided",
+          "text": "Steps open, with up to 3 hints."
+        },
+        "own": {
+          "title": "On my own",
+          "text": "Steps stay hidden until students ask for them."
+        }
+      },
+      "played": {
+        "heading": "How will it be played?",
+        "hint": "Live play for activities comes later.",
+        "devices": {
+          "title": "On their own devices",
+          "text": "Each student works on their own copy. Results go to Progress."
+        },
+        "board": {
+          "title": "On the board",
+          "text": "You work through it together on the big screen. No scores."
+        },
+        "both": {
+          "title": "Both",
+          "text": "Their own devices, and on the board when you want."
+        }
+      },
+      "topics": {
+        "evenOdd": "Even and odd",
+        "orderNumbers": "Order numbers",
+        "numberLineJumps": "Jumps on a number line",
+        "addColumns": "Add in columns",
+        "subColumns": "Subtract in columns",
+        "shadeFractions": "Shade a fraction",
+        "equivFractions": "Equivalent fractions",
+        "fractionsLine": "Fractions on a number line",
+        "compareFractions": "Compare fractions",
+        "multiplyOne": "Multiply by one digit",
+        "multiples": "Multiples",
+        "orderFractions": "Order fractions",
+        "bigAdd": "Add big numbers"
+      }
     }
   },
   "dash": {
@@ -11594,6 +11719,29 @@
     "saveAnother": "Save to another folder",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "sharedEmpty": "There are no games here that you can open yet."
+    "sharedEmpty": "There are no games here that you can open yet.",
+    "phone": {
+      "assigned": "Assigned",
+      "library": "My library",
+      "assignedSub": "{count, plural, one {# game, in the order students see it} other {# games, in the order students see them}}",
+      "addFromLibrary": "Add from library",
+      "reorder": "Reorder",
+      "done": "Done",
+      "noDue": "No due date",
+      "up": "Move {name} up",
+      "down": "Move {name} down",
+      "libraryNote": "Collections only sort your games. Assign from inside one.",
+      "allSub": "Games you built",
+      "sharedSub": "Shared with your school",
+      "newCollection": "New collection",
+      "collectionName": "Collection name",
+      "fromOthers": "From others",
+      "byReadOnly": "by {name} · read only",
+      "studentsSub": "Made by {class} students",
+      "oomba": "Oomba games",
+      "oombaSub": "Browse every Oomba game",
+      "collectionEmpty": "Nothing in this collection yet",
+      "allEmpty": "You haven't built a game yet."
+    }
   }
 }

@@ -1753,6 +1753,15 @@
       "step": "Schritt der Stunde: {title}",
       "back": "Zurück zur Stunde",
       "handIn": "Abgeben"
+    },
+    "canvasLine": {
+      "activity": "Klassenaktivität · Ergebnisse gehen in den Fortschritt",
+      "board": "Klassenaktivität · an der Tafel",
+      "arcade": "Arcade-Spiel · für deine Klasse gemacht",
+      "toArcade": "Lieber ein Arcade-Spiel daraus machen",
+      "toArcadeAsk": "Mach lieber ein Arcade-Spiel daraus: ein Quiz-, Lauf- oder Fangspiel mit denselben Aufgaben.",
+      "toCanvas": "Eine Klassenaktivität daraus machen",
+      "toCanvasAsk": "Mach lieber eine Klassenaktivität daraus: eine Arbeitsfläche mit denselben Fragen, Schritten und Tipps."
     }
   },
   "publish": {
@@ -2729,7 +2738,16 @@
         "pickedWorld": "{count} ausgewählt. Alle leben in {world}.",
         "cleared": "Abgewählt"
       },
-      "progress": "Schritt {n} von {total}"
+      "progress": "Schritt {n} von {total}",
+      "canvas": {
+        "activity": "Klassenaktivität",
+        "rows": {
+          "kind": "Was",
+          "practise": "Üben",
+          "help": "Hilfe",
+          "played": "Gespielt"
+        }
+      }
     },
     "dash": {
       "dropHint": "Füg hier ein Widget aus der Bibliothek hinzu",
@@ -9172,7 +9190,8 @@
         "kit2": "In den fertigen 3D-Welten kann man noch nicht live spielen.",
         "board": "Das läuft auf einem Bildschirm für den ganzen Raum.",
         "survey": "Umfrage-Antworten bleiben auf diesem Gerät und werden nie gesendet, darum wird sie nicht live gespielt.",
-        "exitticket": "Ein Exit-Ticket bleibt auf einem Gerät. Für die Antworten jedes Kindes nimm einen Frageschritt in einer Klassenstunde."
+        "exitticket": "Ein Exit-Ticket bleibt auf einem Gerät. Für die Antworten jedes Kindes nimm einen Frageschritt in einer Klassenstunde.",
+        "canvas": "Klassenaktivitäten können noch nicht live gespielt werden."
       }
     },
     "learn": {
@@ -9222,7 +9241,17 @@
       "file": "Nimm die Datei, die ich dazugegeben habe.",
       "playlive": "Wir spielen es live mit meiner Klasse oder Gruppe mit Oomba Live.",
       "playscreen": "Wir spielen es zusammen auf einem Bildschirm.",
-      "playsolo": "Ich spiele es allein."
+      "playsolo": "Ich spiele es allein.",
+      "activity": "Hier ist mein Plan: eine Klassenaktivität.",
+      "grade": "Für Klasse {grade}.",
+      "gradeK": "Für den Kindergarten.",
+      "practise": "Üben: {topic}.",
+      "help": "Hilfe: {help}.",
+      "played": {
+        "devices": "Die Kinder spielen auf ihren eigenen Geräten.",
+        "board": "Wir spielen gemeinsam an der Tafel.",
+        "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
+      }
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9231,6 +9260,102 @@
       "games": "Spiele",
       "classText": "Aktivitäten für die Tafel im Klassenzimmer und für Handys.",
       "gamesText": "Spiele zum Spielen und Teilen."
+    },
+    "kind": {
+      "heading": "Was machst du?",
+      "text": "Du kannst es im Builder jederzeit ändern.",
+      "forClassTitle": "Etwas für deine Klasse machen",
+      "forChip": "Für {name} · {grade}",
+      "forChipNoGrade": "Für {name}",
+      "forClass": "Für deine Klasse",
+      "check": "Prüfen",
+      "hint": "Tipp",
+      "activity": {
+        "title": "Klassenaktivität",
+        "text": "Eine Arbeitsfläche zum Anfassen: Die Kinder ziehen, bauen und prüfen, Schritt für Schritt, mit Tipps. Die Ergebnisse gehen in den Fortschritt."
+      },
+      "arcade": {
+        "title": "Arcade-Spiel",
+        "text": "Ein lustiges Spiel zum Spielen und Teilen: rennen, fangen, Quiz, Rennen, in 2D oder einer 3D-Welt."
+      },
+      "tools": {
+        "fractions": "Bruchstreifen",
+        "numberline": "Zahlenstrahl",
+        "digits": "Ziffernfelder",
+        "tiles": "Sortieren und zuordnen"
+      },
+      "games": {
+        "runner": "Rennen",
+        "catch": "Fangen",
+        "quiz": "Quiz",
+        "worlds": "3D-Welten"
+      },
+      "toolsText": "Brauchst du ein Leisespiel, ein Glücksrad oder eine Punktetafel?",
+      "toolsLink": "Klassen-Werkzeuge"
+    },
+    "canvas": {
+      "nextHelp": "Weiter: wie viel Hilfe",
+      "nextPlayed": "Weiter: wie gespielt wird",
+      "practise": {
+        "heading": "Was sollen die Kinder üben?",
+        "text": "Wähle etwas aus oder schreib dein eigenes Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
+        "label": "Was sollen die Kinder üben?",
+        "placeholder": "Zum Beispiel: gleichwertige Brüche mit Achteln und Sechsteln",
+        "ideas": "Ideen",
+        "ideasFor": "Ideen für {grade}",
+        "privacy": "Der Builder bekommt nur dein Thema und die Klassenstufe. Nie Namen oder Arbeiten der Kinder."
+      },
+      "help": {
+        "heading": "Wie viel Hilfe?",
+        "hint": "Du kannst es im Builder jederzeit ändern.",
+        "watch": {
+          "title": "Zuschauen",
+          "text": "Zeigt, wie jede Aufgabe geht, dann probieren es die Kinder."
+        },
+        "count": {
+          "title": "Hochzählen",
+          "text": "Antworten der Schritte mit ▲ ▼, ohne Tippen."
+        },
+        "guided": {
+          "title": "Mit Hilfe",
+          "text": "Schritte offen, mit bis zu 3 Tipps."
+        },
+        "own": {
+          "title": "Allein",
+          "text": "Die Schritte bleiben verborgen, bis die Kinder sie öffnen."
+        }
+      },
+      "played": {
+        "heading": "Wie wird gespielt?",
+        "hint": "Live-Spiel für Aktivitäten kommt später.",
+        "devices": {
+          "title": "Auf ihren eigenen Geräten",
+          "text": "Jedes Kind arbeitet an seiner eigenen Kopie. Die Ergebnisse gehen in den Fortschritt."
+        },
+        "board": {
+          "title": "An der Tafel",
+          "text": "Ihr macht es gemeinsam auf dem großen Bildschirm. Ohne Punkte."
+        },
+        "both": {
+          "title": "Beides",
+          "text": "Auf ihren Geräten, und an der Tafel, wenn du willst."
+        }
+      },
+      "topics": {
+        "evenOdd": "Gerade und ungerade",
+        "orderNumbers": "Zahlen ordnen",
+        "numberLineJumps": "Sprünge am Zahlenstrahl",
+        "addColumns": "Schriftlich addieren",
+        "subColumns": "Schriftlich subtrahieren",
+        "shadeFractions": "Einen Bruch färben",
+        "equivFractions": "Gleichwertige Brüche",
+        "fractionsLine": "Brüche am Zahlenstrahl",
+        "compareFractions": "Brüche vergleichen",
+        "multiplyOne": "Mit einer Ziffer multiplizieren",
+        "multiples": "Vielfache",
+        "orderFractions": "Brüche ordnen",
+        "bigAdd": "Große Zahlen addieren"
+      }
     }
   },
   "dash": {
@@ -11168,6 +11293,29 @@
     "saveAnother": "In einem anderen Ordner speichern",
     "moveUp": "Nach oben",
     "moveDown": "Nach unten",
-    "sharedEmpty": "Hier gibt es noch keine Spiele, die du öffnen kannst."
+    "sharedEmpty": "Hier gibt es noch keine Spiele, die du öffnen kannst.",
+    "phone": {
+      "assigned": "Zugewiesen",
+      "library": "Meine Bibliothek",
+      "assignedSub": "{count, plural, one {# Spiel, in der Reihenfolge, die die Schüler sehen} other {# Spiele, in der Reihenfolge, die die Schüler sehen}}",
+      "addFromLibrary": "Aus der Bibliothek",
+      "reorder": "Sortieren",
+      "done": "Fertig",
+      "noDue": "Kein Abgabetermin",
+      "up": "{name} nach oben",
+      "down": "{name} nach unten",
+      "libraryNote": "Sammlungen ordnen nur deine Spiele. Zuweisen kannst du darin.",
+      "allSub": "Spiele, die du gebaut hast",
+      "sharedSub": "Mit deiner Schule geteilt",
+      "newCollection": "Neue Sammlung",
+      "collectionName": "Name der Sammlung",
+      "fromOthers": "Von anderen",
+      "byReadOnly": "von {name} · nur lesen",
+      "studentsSub": "Von Schülern der {class}",
+      "oomba": "Oomba-Spiele",
+      "oombaSub": "Alle Oomba-Spiele ansehen",
+      "collectionEmpty": "Diese Sammlung ist noch leer",
+      "allEmpty": "Du hast noch kein Spiel gebaut."
+    }
   }
 }

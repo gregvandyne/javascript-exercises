@@ -8568,6 +8568,103 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
   room in the corner, and a strike covers only the digit, so the 1 stays clear of it.
 
+## Classroom activity vs Arcade game, and Oomba Canvas (18 Nov 2026)
+
+The owner asked that classroom builds stop using the Oomba Kit and feel like the Big Divide or the dashboard tools: a
+calm canvas where students work, with the arcade games kept for fun. Phase 1 of the approved plan ("Classroom activity
+vs Arcade game / Oomba Canvas"), with the owner's decisions:
+
+- **"What are you making?"** is the first question of `/build/new` (`server/routes/build-setup.js`,
+  `public/js/buildsetup.js`): **Classroom activity** or **Arcade game**. Classroom activity starts selected for every
+  teacher (`teacherHost`) and whenever the page is opened from a class (`?for=class&class=<id>`: the class page's phone
+  tile and its shelf's Build button); kids and families start on Arcade game. One tap switches, and kids may build
+  activities too. Arcade game leads to today's steps, unchanged. The eight board starters stay as their own choice, the
+  "Classroom tools" link under the cards (it opens the game-type step on its "For your class" group).
+- **The class only gives a grade.** The class id is used only when this user may manage that class (`canManageClass`,
+  not archived); the page gets its name (for the chip "For 4B · Grade 4" and the way back) and its grade (for the topic
+  chips). The plan carries the grade and `forClass: true`, never the id, a name or anything about students; only the
+  topic and the grade reach the model. A link to someone else's class opens the page as usual.
+- **The canvas path** is three short steps: what to practise (a typed topic, screened like any message, or a chip of
+  `plan.js CANVAS_TOPICS` for the grade: each chip is a kit tool and a generator), how much help (Watch, Count up,
+  Guided, On my own: the Big Divide's words) and how it is played (their own devices, the board, or both; Live is said
+  to come later and is greyed out in the Studio's live line with the reason). "I know what I want" with Classroom
+  activity picked starts from the activity starter, so the Builder works on an activity from its first message.
+- **Plan engine `canvas`.** `normalisePlan` keeps `{ kind: 'activity', topic, tool, support, played, grade }` (known ids
+  only); `planEngine` returns `{ engine: 'canvas', … }`; `planNote` writes its SETUP CHOICES (start from "canvas", the
+  topic's generator, data only); `engineFor` sets `state.canvas`.
+- **Oomba Canvas 1.0.0** is a new kit, beside Kit 1 and Kit 2 (none of whose files changed): source in `canvas/src/`,
+  frozen at `public/vendor/oomba-canvas/1.0.0/` (locked in `canvas/SHIPPED.json`, hash in
+  `server/services/canvaskit.js`), docs in `docs/canvas-api.md`. Four manipulatives (fraction bars: make, shade,
+  compare; the number line: point, jump; digit boxes: column add, subtract, multiply; tiles: sort, order), each with
+  the dashboard's pure contract (`clean`, `start`, `check → { ok, hint }`, `solve`, `steps`, `hints`, `gen`), written
+  for the kit and frozen with it, never imported from the site. The look copies the site's tokens (a test compares them
+  with app.css) because a game frame cannot load the site's CSS; the band with Check, Hint and Clear stays at the
+  bottom on phones; Hebrew and Arabic read right to left while the maths reads left to right. In-game words live in
+  the kit in the 13 site languages, as the classroom starters do.
+- **Behaviour.** Students tap, drag and type digits through the kit (no text field anywhere); each student's place
+  resumes from their own game save (`oc-progress-v1`), with a fresh seeded set and a "seen" list; up to three hints a
+  problem and "Stuck?" after a failed Check or 45 s; a second try, then the worked answer. Results go the way games
+  report today: `BRB.gameOver({ won: right === total, score: right })` once per set (none when played on the board).
+- **The answer key is checked before it exists.** An activity is JSON data in an `oc-activity` block, so the server
+  reads it and runs the kit's own frozen file on it (`canvaskit.js selfTestHtml`, `autotest.js canvasSelfTest`): every
+  problem (or 30 a generator makes) must be solvable by its worked answer, an empty start must never count as right,
+  and steps and hints must be there. `tools.js saveVersion` refuses a version that fails, naming the problem for the
+  model ("problem 3: cannot be solved: 5/6 cannot be made with pieces of 1/4"), so a broken activity never becomes a
+  version and can never be shared or published; the playtest report lists it too. Publishing rules are unchanged.
+- **Prompting.** `CANVAS_RULES` (generated from `docs/canvas-api.md` by `scripts/build-canvas-rules.js`) is a separate
+  block sent only for canvas builds (a canvas plan, an activity version, or the Studio's fixed switch message), with no
+  cache point of its own. `SYSTEM_PROMPT` and `TOOLS` are byte for byte what they were (the starter "canvas" is kept
+  out of the cached tool list's enum on purpose; the rules name it). The model fills in data; the kit checks.
+- **Safety unchanged.** The scanner and sanitiser are as they were apart from `checkCanvas` (exactly the pinned tag,
+  like `checkKit`); the frame's CSP and the screenshot worker allow `/vendor/oomba-canvas/` for the kit's script and
+  font only. Read-aloud speaks the fixed `task.say` line only.
+- **Studio.** Under the safety line: "Classroom activity · results go to Progress" with "Make it an arcade game
+  instead"; an arcade game made from a class gets "Make it a classroom activity". Each is a fixed, translated Builder
+  message (`prompt.js wantsCanvas` knows them in every language), like "Make it live".
+- **Later phases, not built:** the Gradebook Score for activities, live canvas runs, class codes and Assign for Builder
+  activities, the Studio's Activity panel and the in-activity teacher controls. The lesson's "new game" button still
+  opens the Studio directly (it skips the setup steps), so it does not pass `?for=class` yet.
+## The Games tab on phones: two clear tabs (18 Nov 2026)
+
+- **Why.** On a phone the Games tab mixed "my library" with "this class": folder chips looked like tabs, the green
+  full-width Assign button was louder than the game, the order was explained in prose ("Drag to change the order…"),
+  and colleagues' shared folders looked like one's own. Approved mockup "Option B: two clear tabs".
+- **What.** Below 640px (the class tiles' breakpoint) the shelf (`.shelf-class`) is hidden and a phone block
+  (`phoneLib()` in routes/game-shelf.js, `.lib` in app.css) shows instead: a two-part switch, "📌 Assigned (n)" |
+  "📁 My library", Assigned by default. Tablet and desktop are unchanged: `.lib` is `display:none` there, and the
+  shelf's markup is byte-for-byte what it was (before/after screenshots at 768, 1024 and 1280 are pixel-identical).
+- **Rendered twice, CSS picks.** The server renders both the shelf and the phone block; the phone block's ids start
+  `lib-` so nothing clashes. Its state is in the address, the same as the shelf's: `?view=assigned | library | all |
+  students`, `?folder=<id>`, and `&reorder=1`. Every part is a plain link (no script, Back and reload keep it), and an
+  address made on a phone still opens sensibly on a wide screen (`library` and `all` fall back to the shelf's default).
+  public/js/shelf.js only touches the shelf, so it ignores the phone block.
+- **Assigned.** `assignedPane()` (routes/lessons.js) now also returns `phone({ base, reorder })`: "Assigned to {class}",
+  "n games, in the order students see them", "+ Add from library" (to My library) and "↕ Reorder"; then compact rows
+  (cover, title, a due pill "Due Sat, Nov 21" or "No due date", Late and Due today as before, a done bar from
+  `P.lessonSummaries`, which the wide list already reads, and ⋯ with today's row actions: dates, Scores, Student view,
+  Play, Edit lesson, Save to folder, Move up/down, Remove from class). The Google Classroom button (its `tools`) sits at
+  the card's foot.
+- **Reorder mode** (`&reorder=1`) swaps each row's ⋯ for 48px ↑/↓ buttons with "Move {name} up/down" labels, posting
+  the existing `/api/class-lessons/:id/up|down` (and, in a collection, the existing `/api/game-folders/:id/order` with
+  the whole new order), and a Done button. No drag hint on phones; drag still works on wider screens.
+- **My library.** A Files-style list: All my games ("Games you built", `?view=all`), one's collections (shared ones say
+  "🤝 Shared with your school"), "+ New collection", then "From others": colleagues' shared collections ("by {name} ·
+  read only"), Games students shared ("Made by {class} students") and Oomba games (`/learn`, as Find Oomba games).
+  Above it: "Collections only sort your games. Assign from inside one."
+- **Inside a collection** (opened in place, "← My library"): name, count and shared state, ⋯ with today's folder menu
+  (`folderMenu()`, now taking an id prefix) or, for a colleague's, Copy to my folders; "📌 Assign all n" (`assignAll()`,
+  same) and "↕ Reorder" (own, two or more games); rows with cover, title, kind, a small "+ Assign" / "✓ Assigned"
+  toggle and ⋯ (Play, Remove from folder, Save to folder). The toggle posts the existing `/api/teach/assign-game` or
+  `/api/class-lessons/:id/delete` (with today's confirm); games that need setting up first link to the Assign page as
+  before. Like today's Assign, these are app.js `data-api` forms. From All my games the assign answer comes back to
+  `?view=all` (a `view` field in `/api/teach/assign-game`).
+- **Access unchanged.** Colleagues' collections stay read-only (no rename, share, delete, remove or reorder; the server
+  refuses as before), Assign and the toggle are school staff only (`ctx.staff`, not on archived classes), students get
+  no phone block.
+- **Words.** New phone strings say "collection" ("New collection", "Collection name"); existing desktop strings
+  ("folder") are reused as they are where the phone shows the same action. New strings are under `folders.phone` in all
+  12 locales. On phones narrower than 380px the kind keeps its emoji only (its words stay for screen readers).
+
 ## The Big Divide: read aloud, worksheets, decimal models, every language (18 Nov 2026)
 Round two of The Big Divide, in the order the owner asked for, plus three changes the coordinator added on the way.
 - **Count up counts a step of 0 like any other** (live site: 5.89 + 16.00, tenths 8 + 0). The first ▲ on any counted step
