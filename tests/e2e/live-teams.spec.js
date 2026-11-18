@@ -10,7 +10,7 @@
 // LIVE_SHOTS=<dir> saves the screenshots. Run with LIVE_SAVE_SUPPORT=1 for the saved-support check.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp, liveStep } from './helpers.js';
+import { login, ownIp, liveStep, autoAnswer } from './helpers.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
 const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`) }); };
@@ -177,7 +177,7 @@ test('teams in the lobby: on with 3, presets, the Teams sheet (drag, select then
 test('team play in Question Battle: the projector team board, Battle\'s team board, team ranks on phones; podium hold; split results, CSV and print', async ({ browser }) => {
   test.setTimeout(240_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { pick: 'mode:battle', items: ITEMS.slice(0, 3), teams: { n: 3, scoring: 'avg' } });
   const ps = [];
   for (let i = 0; i < 4; i++) ps.push(await player(browser, code, i === 3 ? { viewport: { width: 360, height: 740 } } : {}));
@@ -263,7 +263,7 @@ test('team play in Question Battle: the projector team board, Battle\'s team boa
 test('the teacher\'s dashboard on a phone: answered status, live bars, needs help behind a toggle, bonus privacy; eyes up, messages in French and Arabic, +10 s and Reveal now', async ({ browser }) => {
   test.setTimeout(240_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { pick: 'mode:battle', items: ITEMS, teams: { n: 2 } });
   const sid = new URL(host.url()).pathname.split('/').pop();
   const a = await player(browser, code), fr = await player(browser, code, { locale: 'fr-FR' }), ar = await player(browser, code, { locale: 'ar', viewport: { width: 360, height: 740 } });
@@ -274,7 +274,7 @@ test('the teacher\'s dashboard on a phone: answered status, live bars, needs hel
   await host.locator('#lv-dash-qr button[type=submit]').click();
   // the dashboard: same teacher, a phone; a student scanning it gets nothing
   const dash = await signedIn(browser, TEACHER, { viewport: { width: 390, height: 844 } });
-  dash.on('dialog', d => d.accept());
+  await autoAnswer(dash);
   await dash.goto(`/live/host/${sid}/dash`);
   await expect(dash.locator('#lv-dash-notice')).toBeVisible();
   await dash.click('#lv-dash-notice-ok');
@@ -317,13 +317,12 @@ test('the teacher\'s dashboard on a phone: answered status, live bars, needs hel
   await expect(host.locator('#lv-controls [data-lv-act="next"]')).toHaveText('Reveal now');
   await act(host, 'next');
   await waitPhase(fa, 'between');
-  // a message in each device's language
-  await host.locator('#lv-say > summary').click();
-  await host.locator('[data-lv-say="5"]').click();
-  await expect(fr.locator('#lv-say-banner')).toBeVisible();
-  await expect(ar.locator('#lv-say-banner')).toBeVisible();
-  const [tfr, tar] = [await fr.locator('#lv-say-banner').textContent(), await ar.locator('#lv-say-banner').textContent()];
-  expect(tfr).not.toBe(tar); expect(tar).toMatch(/[؀-ۿ]/);
+  // the teacher's typed message reaches every device as typed (here in Arabic, right to left on the Arabic phone too)
+  await host.fill('#lv-msg-in', 'عمل رائع يا فريق');
+  await host.press('#lv-msg-in', 'Enter');
+  await expect(fr.locator('#lv-say-banner')).toHaveText('عمل رائع يا فريق');
+  await expect(ar.locator('#lv-say-banner')).toHaveText('عمل رائع يا فريق');
+  await expect(host.locator('#lv-msg-note')).toHaveText('Sent to everyone.');
   await shot(ar, 'say-banner-ar');
   await act(host, 'next');
   // question 2: fr wrong again -> needs help after two wrong (hidden until the toggle)
@@ -360,7 +359,7 @@ test('the teacher\'s dashboard on a phone: answered status, live bars, needs hel
 test('game settings: 2 questions, accuracy only, leaderboard off; remembered on the landing; back to standard', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { pick: 'mode:battle', items: ITEMS, teams: { n: 2 } });
   const a = await player(browser, code), b = await player(browser, code);
   await act(host, 'settings');
@@ -400,7 +399,7 @@ test('game settings: 2 questions, accuracy only, leaderboard off; remembered on 
 test('support kept private, play again with the same players and teams, play the missed questions again', async ({ browser }) => {
   test.setTimeout(240_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { pick: 'mode:battle', items: ITEMS.slice(0, 2), teams: { n: 2 } });
   const sid = new URL(host.url()).pathname.split('/').pop();
   const a = await player(browser, code), b = await player(browser, code), c = await player(browser, code);
@@ -461,7 +460,7 @@ test('support kept private, play again with the same players and teams, play the
 test('class teams: the editor on the class page, "Use last teams" in a class lobby; names hidden on the projector, shown on the dashboard', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   await host.goto('/live');
   const classId = await host.locator('#lv-class option').first().getAttribute('value');
   await host.goto(`/class/${classId}/progress`);
@@ -501,7 +500,7 @@ test('class teams: the editor on the class page, "Use last teams" in a class lob
 test('Quest Race in team mode (3D and 2D): team rings and bands, team bars on the projector, the team podium; Hero of Sunvale team meters', async ({ browser }) => {
   test.setTimeout(300_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { pick: 'mode:quest-race', items: ITEMS.slice(0, 2), teams: { n: 2 } });
   const a = await player(browser, code), b = await player(browser, code, { init: no3d });
   const fa = await liveFrame(a, s => s.started3d), fb = await liveFrame(b, s => s.view === '2d');
@@ -541,7 +540,7 @@ test('homework (LIVE_HOMEWORK=1): assign the run\'s question set to the class; t
   test.skip(process.env.LIVE_HOMEWORK !== '1', 'needs LIVE_HOMEWORK=1 on the test server');
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   // a saved set (homework comes from a set, not loose items)
   const origin = new URL(host.url()).origin;
   const mk = await host.request.post('/api/live/sets', { data: { title: 'Sums homework', items: ITEMS.slice(0, 2) }, headers: { Origin: origin } });

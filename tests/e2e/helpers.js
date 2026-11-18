@@ -152,3 +152,33 @@ export async function newLesson(page, title, classId = '') {
   const r = await page.request.post('/api/lessons', { data: { schoolId: school, title, ...(classId ? { classId } : {}) } });
   return (await r.json()).redirect;
 }
+
+/** The site's own question box (public/js/app.js ask/tell/askText, a <dialog class="ob-dialog">): waits for it, checks
+ *  its words when given, presses OK ('ok') or Cancel ('cancel') and waits for it to close. -> its text */
+export async function answerDialog(page, answer = 'ok', { text } = {}) {
+  const d = page.locator('dialog.ob-dialog[open]');
+  await expect(d).toBeVisible();
+  if (text) await expect(d).toContainText(text);
+  const said = (await d.locator('.ob-dialog-text').textContent()) || '';
+  await d.locator(`[data-ob="${answer}"]`).click();
+  await expect(page.locator('dialog.ob-dialog[open]')).toHaveCount(0);
+  return said;
+}
+/** From now on, every question the page asks in the site's box is answered at once (this page and the ones it goes
+ *  to), as page.on('dialog', d => d.accept()) did for the browser's own. answer: 'ok' or 'cancel'. */
+export async function autoAnswer(page, answer = 'ok') {
+  const arm = a => {
+    window.__obAuto = a;
+    if (window.__obAutoOn) return;
+    window.__obAutoOn = true;
+    const look = () => {
+      const d = document.querySelector('dialog.ob-dialog[open]:not([data-auto])');
+      if (!d || !window.__obAuto) return;
+      d.dataset.auto = '1';
+      setTimeout(() => { const b = d.querySelector(`[data-ob="${window.__obAuto}"]`); if (b) b.click(); }, 0);
+    };
+    new MutationObserver(look).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ['open'] });
+  };
+  await page.addInitScript(arm, answer);
+  await page.evaluate(arm, answer).catch(() => {});
+}

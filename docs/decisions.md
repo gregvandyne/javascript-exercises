@@ -8178,3 +8178,33 @@ which job. Now each job is a card.
 - The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
   at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
 - Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".
+
+## The site's own dialog; the live host's message box (18 Nov 2026)
+
+The owner pressed Start on a live game with nobody in it and got the browser's grey `confirm()`. "Make sure this modal
+is native to the application." The same day: "clean up the side console and get rid of all of the quick message
+options. Just let teachers write in text and broadcast to everyone."
+
+- **One shared dialog** in public/js/app.js, which every page loads (the bare live pages too): `ask({ text, title?, ok?,
+  cancel?, danger? })` → true/false, `tell(text)`, `askText({ label, value? })` → text or null. A `<dialog>` opened with
+  `showModal()` (focus trapped, Escape and a tap on the backdrop are Cancel, focus goes back after), `.ob-dialog` in
+  app.css with the site's tokens: card, 20px corners, shadow-lg, Bricolage, pill buttons, the main one Mint, or Danger
+  filled (`.btn-danger-solid`) for a destructive one, which also gives Cancel the first focus. On a phone the buttons
+  stack, main one on top. Keys stay in the box, so a sheet under it or the live host's shortcuts never hear them.
+- **Every caller moved** (12 scripts; `data-confirm` forms in app.js cover the server-made ones). The main button says
+  what the action says: the form's or control's own button words (`verbOf`, without its emoji), a key that already
+  existed (Delete, Start again, Archive, End it and open the new game), or new `live.host.startAnyway`; otherwise
+  `js.app.ok` / `js.app.cancel`. Code that relied on `confirm()` blocking now waits: the school settings' "leave without
+  saving" link stops first and follows the link on OK; forms submit after OK.
+- tests/unit/no-browser-dialogs.test.js fails on any `confirm(`, `alert(` or `prompt(` in public/js, server/live,
+  server/views and server/routes. The e2e helpers `answerDialog` and `autoAnswer` replace `page.on('dialog')`.
+- **The message box** replaces the 10 fixed messages (`SAY`, `live.say.*` presets, the `💬 Message ▶` menu, the Teacher
+  view's preset buttons): one labelled field (120 characters, `SAY_MAX`) and Send to everyone; Enter sends, empty can't.
+  It goes the old way (`h say`, one per 3 s, broadcast `say` to every screen), now as `{ x: text }`. The server squeezes it
+  to one line and puts it through `shownOk` (rude words, contact details, handles, links) before any screen shows it; a
+  refused one is told to that adult only (`nak blocked`) and uses up no gap. The note under the field says Sent when the
+  message comes back from the server. Trade-off: a fixed message showed in each player's language; a typed one shows as
+  typed. Safety (docs/safety.md): still one way, adults only, filtered; players still can't type to anyone.
+- **The side panel** is grouped: join info; the main row (Start in Mint, Pause/Next/Skip when they apply, End game in
+  Danger); +time; an even grid (Lock room, Eyes up, Settings, Sound, Teacher view, Co-hosts, Read aloud); the message
+  box. Every button 48px, one line, the same height at 1280, 1440 and a tablet (checked in tests/e2e/app-dialogs.spec.js).

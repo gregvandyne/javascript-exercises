@@ -3,7 +3,7 @@
 // Tug of Math Live: a multi-digit answer typed by tapping is exactly the digits tapped ("Right! Pull!").
 // Would You Rather Live: tapping the second card votes for the second card.
 import { test, expect } from '@playwright/test';
-import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom, answerDialog } from './helpers.js';
 
 const frameOf = page => page.frames().find(x => /\/live\/frame\//.test(x.url()));
 async function liveFrame(page, key) {
@@ -40,8 +40,8 @@ async function endOpen(t) {
   const mine = await (await t.request.get('/api/live/mine')).json();
   if (!mine.sid) return;
   await t.goto(mine.host);
-  t.once('dialog', d => d.accept());
   await t.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click();
+  await answerDialog(t);
   await expect.poll(async () => (await (await t.request.get('/api/live/mine')).json()).sid || null).toBe(null);
 }
 async function phone(browser, code) {

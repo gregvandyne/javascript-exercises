@@ -1,4 +1,5 @@
 // Login cards page: the print button.
+import { ask } from '/js/app.js';
 document.addEventListener('click', e => { if (e.target.closest('[data-print]')) window.print(); });
 
 // ---- School pages (batch 2)
@@ -129,8 +130,14 @@ if (setForm) {
   window.addEventListener('beforeunload', e => { if (dirty && !saving) { e.preventDefault(); e.returnValue = ''; } });
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]'); if (!a || !dirty || saving || a.target === '_blank' || a.getAttribute('href').startsWith('#')) return;
-    if (!confirm(setForm.dataset.unsaved)) { e.preventDefault(); return; }
-    saving = true;   // they chose to leave: no second question from the browser
+    // The app's question box doesn't wait like the browser's did: stay on the page now, and go on to the link on OK.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;   // a new tab or window: this page stays
+    e.preventDefault(); e.stopPropagation();
+    ask({ text: setForm.dataset.unsaved }).then(yes => {
+      if (!yes) return;
+      saving = true;   // they chose to leave: no second question from the browser
+      location.href = a.href;
+    });
   }, true);
   const chat = document.getElementById('set-chat'), chatHint = document.getElementById('set-chat-hint');
   if (chat && chatHint) chat.addEventListener('change', () => { chatHint.textContent = chat.value === 'off' ? chat.dataset.hintOff : chat.dataset.hintClassmates; });

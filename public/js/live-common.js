@@ -251,6 +251,33 @@ export function scoresOf(rows, into = new Map()) { for (const r of rows || []) i
  *  by its number): readAloud in /js/tts.js. */
 export { deviceSpeak as speak, deviceVoice as voiceFor, readAloud, stopReading, aiOn } from '/js/tts.js';
 /** A toast in a fixed element for ms (role=status is on the element). */
+/** The teacher's message box (server/views/live.js messageBox): Send is off while the field is empty, Enter sends,
+ *  and the note says Sent once the message comes back from the server (it went to everyone), or why it was refused.
+ *  send(x): sends h say { x }. -> { said(x): a 'say' arrived, refused(why): a 'nak' for 'say' arrived } */
+export function messageForm(form, { send, text = {} }) {
+  const none = { said() {}, refused() {} };
+  if (!form) return none;
+  const input = form.querySelector('input'), btn = form.querySelector('[type=submit]'), note = form.querySelector('.lv-msg-note');
+  // the same cleaning as the server's (classlive-protocol.js sayText), so the echo matches what was sent
+  const clean = v => v.replace(/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g, ' ').replace(/\s+/g, ' ').trim();
+  let pending = '', timer = 0, noteT = 0;
+  const sync = () => { btn.disabled = !!pending || !clean(input.value); };
+  const say = (msg, ms = 4000) => { note.textContent = msg; clearTimeout(noteT); if (ms) noteT = setTimeout(() => { note.textContent = ''; }, ms); };
+  const done = () => { pending = ''; clearTimeout(timer); sync(); };
+  input.addEventListener('input', sync);
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const x = clean(input.value); if (!x || pending) return;
+    pending = x; sync(); say('', 0);
+    send(x);
+    timer = setTimeout(done, 5000);   // no answer (offline): the button comes back
+  });
+  sync();
+  return {
+    said(x) { if (!pending || x !== pending) return; done(); input.value = ''; sync(); say(text.sent || ''); },
+    refused(why) { if (!pending) return; done(); say(why === 'blocked' ? text.blocked : text.wait, 6000); input.focus(); },
+  };
+}
 export function flash(el, text, ms = 4000) {
   if (!el) return; el.textContent = text; el.hidden = false;
   clearTimeout(el._lvT); el._lvT = setTimeout(() => { el.hidden = true; }, ms);

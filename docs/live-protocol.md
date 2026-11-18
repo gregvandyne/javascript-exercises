@@ -64,7 +64,7 @@ removed, `4404` no session/seat, `4409` replaced by another device, `4413` messa
 | `h` | `a`, `n?`, `at?` | host | 5 | `start pause resume next skip lock unlock kick end`. `next`/`skip` carry the `seq` they were pressed at (stale → ignored). `kick` carries `n` (seat). |
 | `st` | `d` (merge patch) | host | 5 | Shared state, 8 KB in all; every string and key must pass the text filter (no rude words, contact details, handles or links), else the patch is dropped; broadcast as the patch. |
 | `hello` (more) | `view?: 'projector'|'dash'` | host | 1 | `dash`: the teacher's dashboard (same host token and sign-in). One projector and one dashboard per session; a newer one of the same view replaces the old (4409). The dashboard sends only `h`, `tm`, `cf`, `pi`; it has no frame and is not waited for at loading. |
-| `h` (more) | `eyes {on}`, `say {m: 0..9}`, `time {s: 10|20|30}`, `bonus {n: seat | k: 1..6, r: 0..4}`, `rename {n}`, `acc {n, x: 100|150|200, ra: 0|1, sv: 0|1, save?: 1}` | host | 5 (say 1 per 3 s, bonus 1/s, eyes 1/s) | `SAY = twoMinutes oneMinute lastQuestion lastRound eyesOnMe greatTeamwork greatEffort beKind getReady almostDone` (`live.say.*`). `BONUS_REASONS = teamwork kindness effort helping listening` (+100). `time`: quiz modes, while playing. `rename`: a seat shown by nickname. `acc`: support (`save` only in class rooms with `LIVE_SAVE_SUPPORT`). |
+| `h` (more) | `eyes {on}`, `say {x: text, 1..120}`, `time {s: 10|20|30}`, `bonus {n: seat | k: 1..6, r: 0..4}`, `rename {n}`, `acc {n, x: 100|150|200, ra: 0|1, sv: 0|1, save?: 1}` | host | 5 (say 1 per 3 s, bonus 1/s, eyes 1/s) | `say`: the host's typed message (`SAY_MAX` 120; spaces squeezed, control and direction characters dropped), refused with `nak blocked` when the text filter (`shownOk`: rude words, contact details, handles, links) won't show it. `BONUS_REASONS = teamwork kindness effort helping listening` (+100). `time`: quiz modes, while playing. `rename`: a seat shown by nickname. `acc`: support (`save` only in class rooms with `LIVE_SAVE_SUPPORT`). |
 | `tm` | `a: on {n?} off count {n} preset {k, p: 0..7} scoring {v: 'avg'|'sum'} choose {v: bool} lock unlock balance shuffle move {s: seat, k: 0..6} last` | host | 10 | Lobby only: on, off, count, preset, scoring, choose, shuffle, last (class rooms). Balance: lobby or `between`. Move: any time (`k: 0` lobby only). Lock: any time. Ignored with `LIVE_TEAMS=0`. Answer: `tms` to everyone (and `tml` to the hosts for `last`). |
 | `pt` | `k: 1..6` | player | 1 | Pick a team: lobby only, the host allows it, not locked, the team under ceil(players / n) + 1. |
 | `cf` | `d: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes, voices }` (a subset) | host | 5 | Unknown keys and values dropped; `secs count shuffleQ shuffleA points` only in the lobby; `names: 'names'` only in a teacher's own class room. `late` is the room's `autoLock` (after start: off locks now, on unlocks). |
@@ -103,7 +103,7 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `ts` | `s: [[k, score, rank, sum, avg]], fin?: 1` | Team scores (score = the ranking kind; rank 0 = no members, or the leaderboard is off for players). Before `rv`, with every `lb`, after a bonus, and before `ph ended` (`fin`). |
 | `bn` | `n?` or `k?`, `r: 0..4`, `p: 100` | Bonus: a seat's goes to that seat and the hosts only; a team's to everyone. |
 | `eyes` | `on` | Everyone. Players cover the screen; frames see `ph paused` when it paused play. |
-| `say` | `m: 0..9` | Everyone: a fixed message, shown in each device's language. |
+| `say` | `x: text` | Everyone: the host's typed message, as typed (it passed the text filter), shown for 6 s. |
 | `opt` | `board, emotes, names, voices` | Players: the public settings changed. `voices`: `'ai'` (default) or `'device'`, the teacher's choice for reading questions aloud (AI voices, docs/tts-design.md). |
 | `ros` | `players: [P], nameMode` | Everyone, per view: the names setting changed (replace the roster). |
 | `cf` | `d` (all settings) | Hosts: the settings changed. |
@@ -183,7 +183,7 @@ mode, title, max, nicks, actions, results, text{…} }`.
 **Part 3 hooks.** Every live page has the shape sprite `<svg id="lv-shapes">` with `<symbol id="lv-shape-<shape>">`
 (`circle triangle square heart star hexagon diamond moon`): draw a team's shape with `<use href="#lv-shape-…">`. Team
 colours are `--team` / `--team-ink` on the element. JSON data adds `presets: [{ id, color, ink, shape, icon, name,
-shapeName }]`, `say: [10 texts]`, `bonus: [5 texts]`.
+shapeName }]`, `bonus: [5 texts]`; the host and dashboard pages add `say: { sent, blocked, wait }` (the message box's notes).
 
 - `/live/play/:sid`: `#lv-me-team` (hidden; `.lv-shape use`, `.lv-me-team-name`, `.lv-me-team-rank`) for the header
   band; `#lv-team-pick` (hidden) with `#lv-team-pick-list` (the script adds a ≥ 48 px button per team; full or locked
@@ -195,7 +195,7 @@ shapeName }]`, `say: [10 texts]`, `bonus: [5 texts]`.
   (`live-common.js`): never relayed into the frame. On `again`: store `tok` in `sessionStorage['lv:'+sid]`, go to
   `/live/play/<sid>`.
 - `/live/host/:sid`: controls add `[data-lv-act="eyes"]` (aria-pressed, key `Y`), `#lv-time` (quiz; hidden; buttons
-  `[data-lv-time="10|20|30"]`), `#lv-say` (`<details>`; buttons `[data-lv-say="0..9"]`), `[data-lv-act="settings"]` →
+  `[data-lv-time="10|20|30"]`), `#lv-msg` (the message box: `#lv-msg-in`, max 120, Enter or Send to everyone sends `h say {x}`; `#lv-msg-note` says Sent when the `say` comes back, or why a `nak` refused it), `[data-lv-act="settings"]` →
   `<dialog id="lv-settings">` with `#lv-settings-form` (fields named by setting; `.lv-quiz-only`; send `cf`),
   `[data-lv-act="sound"]` (aria-pressed), `[data-lv-act="dash"]` → `<dialog id="lv-dash-qr">` (QR and link of the
   dashboard). `#lv-eyes-banner`, `#lv-say-banner`, `#lv-bonus-toast`. Teams (when `teamsOn`): `#lv-teamsbox` with the
@@ -217,7 +217,7 @@ shapeName }]`, `say: [10 texts]`, `bonus: [5 texts]`.
   `#lv-dash-help-toggle` (aria-pressed, remembered), `#lv-dash-empty`, `#lv-dash-players` + `<template
   id="lv-dash-card-tpl">` (`.lv-dash-card[data-seat]`: `.lv-p-avatar`, `.lv-p-name`, `.lv-dash-team`, `.lv-dash-status`,
   `.lv-dash-help`, `.lv-dash-sup`, `.lv-dash-menu`); question: `#lv-dash-q`, `#lv-dash-answer-toggle`, `#lv-dash-bars`,
-  `#lv-dash-answered`, `#lv-dash-extra`; teams: `#lv-dash-teams`, `#lv-dash-noteams`; messages `[data-lv-say]`;
+  `#lv-dash-answered`, `#lv-dash-extra`; teams: `#lv-dash-teams`, `#lv-dash-noteams`; messages `#lv-dash-msg` (the same message box);
   settings `#lv-dash-settings`. `<dialog id="lv-dash-player">`: `#lv-dash-player-h`, `[data-lv-bonus="0..4"]`,
   `#lv-dash-move` (select), `#lv-dash-rename`, `#lv-dash-support` (radios `name="lv-acc-time"`, `#lv-acc-read`,
   `#lv-acc-simple`, `#lv-acc-save` only when saving is on, `#lv-acc-apply`), `#lv-dash-remove`. JSON `#lv-dash-data`:
@@ -286,7 +286,7 @@ projectorBusy`, 4409). Authority is looked up per message: a removed co-host's n
 | `wel` (more) | controllers: `ctl: { me, host, role: 'host'|'cohost', tier: 'full'|'limited' }`, `ch` (as below, without `t`), `acts: [act…]` (last 10; `acc` ones only for a full-tier dashboard, never the projector page) | A limited dashboard: no `dp`/`sup`, `dq` without `answered`/`extra`, players and `nameMode` per the players' view. |
 | `ch` | `host: ref, list: [[ref, name, 'on'|'away'|'invited', tier]], max: 3, past?: [[ref, name]]` | Every controller connection, on any co-host, invite, presence or host change. `list[0]` is the host. `past`: adults no longer listed (removed, left, an invite cancelled or declined), so the activity line keeps naming them, also after a reload; pages merge names and never drop one. Adults' display (school roster) names, to adults only. |
 | `act` | `i, by: ref, a, n?: seat, k?: team, v?, o?: ref` | Every controller connection (`a: 'acc'` only to full tier), only once the session has had a co-host. `a`: `start pause resume next skip lock unlock kick end eyes (v 1/0) say time (v secs) bonus rename acc teams settings joined left removed invited declined cancelled host away back`. `i` rises: the order the server applied. |
-| `nak` | `a, why: 'already'|'conflict'|'tooSoon'|'wait'|'notAllowed', by?: ref` | To the refused connection only. `already`: the toggle is already in that state (`by` only when that adult's change is what the state is now, never a stale one), or another adult already added time to this question within 1 s. `conflict`: another controller changed a toggle family this action would change (pause/resume, lock/unlock, eyes; resume also checks eyes, and eyes up/down also checks pause, since each moves the other) within 1 s. `tooSoon`: another adult sent a message (3 s) or a bonus (1 s) just now (the session's gap: the class hears one at a time), `by` names them; `wait`: the same adult, too soon. |
+| `nak` | `a, why: 'already'|'conflict'|'tooSoon'|'wait'|'notAllowed'|'blocked', by?: ref` | To the refused connection only. `already`: the toggle is already in that state (`by` only when that adult's change is what the state is now, never a stale one), or another adult already added time to this question within 1 s. `conflict`: another controller changed a toggle family this action would change (pause/resume, lock/unlock, eyes; resume also checks eyes, and eyes up/down also checks pause, since each moves the other) within 1 s. `tooSoon`: another adult sent a message (3 s) or a bonus (1 s) just now (the session's gap: the class hears one at a time), `by` names them; `wait`: the same adult, too soon. `blocked`: a `say` the text filter won't show (it doesn't use up the gap). |
 | `bye` (more) | `why: 'cohostOff'|'projectorBusy'` | `cohostOff`: removed, left, or no longer eligible (4403). |
 | `dq` (limited) | `i, answer, counts` | |
 

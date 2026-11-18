@@ -7,7 +7,7 @@
 // LIVE_SHOTS=<dir> saves the screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom, autoAnswer, answerDialog } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
@@ -69,7 +69,7 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   await login(host, TEACHER.username, TEACHER.password);
   // a room another test left open (a failed one) is ended first, so this one starts clean
   const mine = await (await host.request.get('/api/live/mine')).json();
-  if (mine.sid) { await host.goto(mine.host); host.once('dialog', d => d.accept()); await host.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click(); await expect.poll(async () => (await (await host.request.get('/api/live/mine')).json()).sid || null).toBe(null); }
+  if (mine.sid) { await host.goto(mine.host); await host.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click(); await answerDialog(host); await expect.poll(async () => (await (await host.request.get('/api/live/mine')).json()).sid || null).toBe(null); }
   // the landing: Tug of Math with its grade (sample questions) and length; no teams row, no question set
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:tug"]') }).click();
@@ -84,7 +84,7 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   await host.locator('input[name="audience"][value="open"]').check();
   // DemoTeacher may still host a game an earlier spec left open (tts.spec.js): "Replace it?" yes, as a teacher starting
   // a new game would answer (Playwright's default answer is no, which goes back to that old game).
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   await openLiveRoom(host);
   await host.waitForURL(/\/live\/host\//);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');

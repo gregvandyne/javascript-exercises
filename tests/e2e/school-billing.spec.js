@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signup, login, uniq, ownIp, ADMIN, templateGame, schoolWithAdmin } from './helpers.js';
+import { signup, login, uniq, ownIp, ADMIN, templateGame, schoolWithAdmin, answerDialog } from './helpers.js';
 import { findTouching } from './touching.js';
 
 const E2E = +(process.env.E2E_PORT || 4310);
@@ -169,8 +169,7 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
   await expect(req).toContainText('bursar@bay.example');
   await expect(req).toContainText('12 Harbor Road, Portland, ME, 04101, US');
   await expect(req).toContainText('they say so');
-  a.once('dialog', d => d.accept());
-  await Promise.all([a.waitForResponse(r => r.url().includes('/invoice-subscription')), req.locator('button', { hasText: 'Create invoice subscription' }).click()]);
+  await Promise.all([answerDialog(a), a.waitForResponse(r => r.url().includes('/invoice-subscription')), req.locator('button', { hasText: 'Create invoice subscription' }).click()]);
   await a.waitForLoadState('load');
   await expect(a.locator('#requests')).not.toContainText(sch.name);
   await expect(a.locator('#unpaid')).toContainText(sch.name);
@@ -192,8 +191,7 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
   await a.goto('/admin/billing');
   const row = a.locator('#unpaid tr', { hasText: sch.name });
   await expect(row).toContainText('overdue');
-  a.once('dialog', d => d.accept());
-  await Promise.all([a.waitForResponse(r => r.url().includes('/paid-by-check')), row.locator('button', { hasText: 'Mark paid by check' }).click()]);
+  await Promise.all([answerDialog(a), a.waitForResponse(r => r.url().includes('/paid-by-check')), row.locator('button', { hasText: 'Mark paid by check' }).click()]);
   await a.waitForLoadState('load');
   await expect(a.locator('#unpaid')).not.toContainText(sch.name);
   await p.reload();

@@ -10,7 +10,7 @@
 // drawing so far, the host's own "Someone said it!", and Remove on the drawer. LIVE_SHOTS=<dir> saves screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
-import { login, ownIp, liveStep, openLiveRoom } from './helpers.js';
+import { login, ownIp, liveStep, openLiveRoom, autoAnswer } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const SHOTS = process.env.LIVE_SHOTS || '';
@@ -206,7 +206,7 @@ test('the host: Clear drawing, a player hides a drawing, a late joiner sees it s
   test.setTimeout(180_000);
   const hctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const host = await hctx.newPage();
-  host.on('dialog', d => d.accept());
+  await autoAnswer(host);
   const code = await openRoom(host, { rounds: '2', secs: '100', tiles: true });
   const a = await player(browser, code, { width: 390, height: 844 });
   const b = await player(browser, code, { width: 390, height: 844 });

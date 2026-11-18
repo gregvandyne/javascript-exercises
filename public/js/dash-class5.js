@@ -512,7 +512,8 @@ export function points(body, s, ctx) {
     if (r) { last = null; ctx.live().points = r; sig = ''; draw(); ctx.say(W.undone); }
   });
   reset.addEventListener('click', async () => {
-    if (!confirm(W.resetConfirm)) return;
+    // the site's own question box (app.js ask, passed in as ctx.ask: this file is also loaded by the Node tests)
+    if (!(await ctx.ask({ text: W.resetConfirm, ok: W.resetAll, danger: true }))) return;
     const r = await ctx.act('/points', { action: 'reset' });
     if (r) { last = null; ctx.live().points = r; sig = ''; draw(); }
   });

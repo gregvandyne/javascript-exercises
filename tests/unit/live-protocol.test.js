@@ -83,8 +83,12 @@ test('part 3: team, settings and teacher-tool messages at and past every range; 
   for (const d of [{}, [], { board: 'Off now' }, { a: { b: 1 } }, { secs: 2000 }, Object.fromEntries(Array.from({ length: 13 }, (_, i) => [`k${String.fromCharCode(97 + i)}`, 1]))]) assert.equal(ok({ t: 'cf', d }), null, j(d));
   assert.deepEqual(ok({ t: 'h', a: 'eyes', on: true }), { t: 'h', a: 'eyes', on: true });
   assert.equal(ok({ t: 'h', a: 'eyes' }), null);
-  assert.deepEqual(ok({ t: 'h', a: 'say', m: 9 }), { t: 'h', a: 'say', m: 9 });
-  assert.equal(ok({ t: 'h', a: 'say', m: 10 }), null); assert.equal(ok({ t: 'h', a: 'say', m: 'Two minutes left' }), null);
+  // the host's typed message: one line, squeezed, 1..120 characters; the old fixed-message index is gone
+  assert.deepEqual(ok({ t: 'h', a: 'say', x: '  Two minutes\n left!  ' }), { t: 'h', a: 'say', x: 'Two minutes left!' });
+  assert.deepEqual(ok({ t: 'h', a: 'say', x: 'x'.repeat(120) }), { t: 'h', a: 'say', x: 'x'.repeat(120) });
+  for (const x of [undefined, '', '   ', 'x'.repeat(121), 5, ['hi'], { a: 1 }]) assert.equal(ok({ t: 'h', a: 'say', x }), null, j(x));
+  assert.equal(ok({ t: 'h', a: 'say', m: 5 }), null);
+  assert.equal(ok({ t: 'h', a: 'say', x: 'Hi' }, 'player'), null, 'never from a player');
   assert.deepEqual(ok({ t: 'h', a: 'time', s: 30 }), { t: 'h', a: 'time', s: 30 });
   assert.equal(ok({ t: 'h', a: 'time', s: 15 }), null);
   assert.deepEqual(ok({ t: 'h', a: 'bonus', n: 3, r: 4 }), { t: 'h', a: 'bonus', n: 3, r: 4 });
@@ -105,5 +109,5 @@ test('part 3: team, settings and teacher-tool messages at and past every range; 
   // Host types from a player: refused.
   for (const m of [{ t: 'tm', a: 'shuffle' }, { t: 'cf', d: { board: 'off' } }, { t: 'h', a: 'eyes', on: true }]) assert.equal(ok(m, 'player'), null, m.t);
   assert.equal(P.RATES.tm, 10); assert.equal(P.RATES.cf, 5); assert.equal(P.RATES.pt, 1);
-  assert.equal(P.SAY.length, 10); assert.equal(P.BONUS_REASONS.length, 5);
+  assert.equal(P.SAY_MAX, 120); assert.equal(P.SAY, undefined); assert.equal(P.BONUS_REASONS.length, 5);
 });

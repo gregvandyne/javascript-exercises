@@ -73,6 +73,59 @@ export function sheet({ title, content, onClose } = {}) {
   setTimeout(() => { const f = $('.sheet-body input,.sheet-body button,.sheet-body a', bg) || $('.close', bg); f.focus(); }, 30);
   return { el: bg, close };
 }
+/** The app's own question box, in place of the browser's confirm(), alert() and prompt() (whose grey system box looks
+ *  like nothing else on the site). A <dialog> opened with showModal(): focus stays in it, Escape and a tap on the
+ *  backdrop answer Cancel, and focus goes back where it was. Every page loads app.js (the live pages too), and it uses
+ *  only app.css's tokens, so it looks the same everywhere, in both themes and right to left.
+ *    await ask({ text, title?, ok?, cancel?, danger? })   → true for the main button, false otherwise
+ *    await tell(text)  or  tell({ text, title?, ok? })     → resolves once closed
+ *    await askText({ label, value?, title?, ok?, cancel?, max? }) → the typed text, or null
+ *  ok: the main button's verb ("Start anyway", "Delete"); without one it says OK. danger: a destructive action (the main
+ *  button turns red and Cancel gets the first focus). tests/unit/no-browser-dialogs.test.js keeps the browser's boxes out. */
+function dialogBox({ kind, title = '', text = '', ok, cancel, danger = false, label = '', value = '', max = 0 }) {
+  return new Promise(resolve => {
+    const prev = document.activeElement;
+    const d = document.createElement('dialog');
+    d.className = 'ob-dialog' + (danger ? ' is-danger' : '');
+    const id = `ob-dlg-${Math.random().toString(36).slice(2, 8)}`;
+    d.setAttribute('aria-labelledby', `${id}-h`);
+    if (title && text) d.setAttribute('aria-describedby', `${id}-t`);
+    const okCls = danger ? 'btn btn-danger-solid' : 'btn btn-primary';
+    d.innerHTML = `<form method="dialog" class="ob-dialog-form">${title ? `<h2 class="ob-dialog-title" id="${id}-h">${esc(title)}</h2>` : ''}`
+      + (text ? `<p class="ob-dialog-text${title ? '' : ' is-lead'}" id="${title ? `${id}-t` : `${id}-h`}">${esc(text)}</p>` : '')
+      + (kind === 'prompt' ? `<div class="field"><label for="${id}-in"${!title && !text ? ` id="${id}-h"` : ''}>${esc(label)}</label><input class="input" id="${id}-in" type="text"${max ? ` maxlength="${+max}"` : ''} value="${esc(value)}"></div>` : '')
+      // The main button comes first, so Enter in the text field means OK (app.css shows it last, after Cancel).
+      + `<div class="ob-dialog-acts"><button class="${okCls}" type="submit" value="ok" data-ob="ok">${esc(ok || t('js.app.ok'))}</button>`
+      + `${kind === 'alert' ? '' : `<button class="btn" type="submit" value="cancel" data-ob="cancel">${esc(cancel || t('js.app.cancel'))}</button>`}</div></form>`;
+    // Keys stay in the box: a sheet under it (app.js sheet() closes on Escape) or a page's shortcuts (the live host's
+    // keys) never hear them.
+    d.addEventListener('keydown', e => e.stopPropagation());
+    // A tap on the backdrop (the dialog itself, outside its form) answers Cancel.
+    d.addEventListener('click', e => { if (e.target === d) d.close('cancel'); });
+    const input = kind === 'prompt' ? d.querySelector('input') : null;
+    d.addEventListener('close', () => {
+      const yes = d.returnValue === 'ok';
+      d.remove();
+      if (prev && prev.isConnected && prev.focus) prev.focus();
+      resolve(kind === 'prompt' ? (yes ? input.value : null) : kind === 'alert' ? undefined : yes);
+    }, { once: true });
+    document.body.appendChild(d);
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    (input || d.querySelector(danger ? '[data-ob="cancel"]' : '[data-ob="ok"]') || d.querySelector('[data-ob="ok"]')).focus();
+    if (input) input.select();
+  });
+}
+const opts = o => (typeof o === 'string' ? { text: o } : o || {});
+export const ask = o => dialogBox({ ...opts(o), kind: 'confirm' });
+export const tell = o => dialogBox({ ...opts(o), kind: 'alert' });
+export const askText = o => dialogBox({ ...opts(o), kind: 'prompt' });
+/** A button's words for a dialog's main button: its text without a leading emoji or the screen-reader-only part
+ *  ("🗑️ Delete" → "Delete"). */
+export function verbOf(btn) {
+  if (!btn) return '';
+  const c = btn.cloneNode(true); c.querySelectorAll('.sr-only,[aria-hidden="true"],.emo').forEach(x => x.remove());
+  return c.textContent.replace(/^[\p{Extended_Pictographic}️‍\s]+/u, '').replace(/\s+/g, ' ').trim();
+}
 /** The sign-in ended while on this page (timed out, or signed out on another device). What was typed in the given
  *  fields is kept for the same person on this page, then the sign-in page brings them back here. */
 export function signedOut(fields = []) {
@@ -140,10 +193,18 @@ on(document, 'submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;
   e.preventDefault();
   // A chosen <option data-confirm> (e.g. merging accounts) asks its own question, read at submit time.
-  const ask = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || f.dataset.confirm;
-  if (ask && !window.confirm(ask)) return;
+  // The main button says what the form's button says ("Remove from class"); data-confirm-ok gives other words.
+  const q = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || f.dataset.confirm;
+  const btn = e.submitter || f.querySelector('[type=submit]');
+  if (q) {
+    if (f.dataset.asking) return;   // the question is already open
+    f.dataset.asking = '1';
+    const yes = await ask({ text: q, ok: f.dataset.confirmOk || verbOf(btn) || undefined, danger: !!(btn && btn.classList.contains('btn-danger')) });
+    delete f.dataset.asking;
+    if (!yes) return;
+  }
   // The clicked button (it may sit outside the form, with form="…") stays disabled until the reply, so a double click posts once.
-  const btn = e.submitter || f.querySelector('[type=submit]'); if (btn) { btn.disabled = true; btn.dataset.busy = '1'; }
+  if (btn) { btn.disabled = true; btn.dataset.busy = '1'; }
   $$('.err', f).forEach(x => (x.textContent = '')); $$('[aria-invalid]', f).forEach(x => x.removeAttribute('aria-invalid'));
   // Fields that repeat (a list of checkboxes with one name) are sent as arrays.
   const body = {};

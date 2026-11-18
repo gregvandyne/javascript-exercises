@@ -6,7 +6,7 @@
 // Activity lines (act, nak) are filled here from the translated templates: adults' names from ch, a player's name from
 // the page's own roster (as that page may show it).
 import { fill } from '/js/live-common.js';
-import { api, toast } from '/js/app.js';
+import { api, toast, ask, verbOf } from '/js/app.js';
 
 /** ch -> Map(ref -> name): the adults listed now and those who were (ch.past), merged into into (names are never
  *  dropped: the activity line still names a removed co-host or a cancelled invite). */
@@ -114,9 +114,9 @@ export function cohostPanel(root, { sid, TX, onLeft = () => {} }) {
   }
   root.addEventListener('click', async e => {
     const b = e.target.closest('[data-cohost-act]');
-    if (b) { if (b.dataset.confirm && !confirm(b.dataset.confirm)) return; post({ a: b.dataset.cohostAct, userId: b.dataset.userId }); return; }
+    if (b) { if (b.dataset.confirm && !(await ask({ text: b.dataset.confirm, ok: verbOf(b), danger: b.dataset.cohostAct !== 'host' }))) return; post({ a: b.dataset.cohostAct, userId: b.dataset.userId }); return; }
     if (e.target.id === 'lv-cohost-leave') {
-      if (!confirm(TX.leaveConfirm)) return;
+      if (!(await ask({ text: TX.leaveConfirm, ok: verbOf(e.target) || undefined }))) return;
       try { const r = await api(`/api/live/cohost/${sid}/leave`, { method: 'POST', body: {} }); onLeft(); location.href = r.redirect || '/live'; } catch (er) { toast(er.message, { bad: true }); }
     }
   });

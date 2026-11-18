@@ -1891,7 +1891,9 @@
       "inviteTitle": "{game}であそぶ？",
       "inviteText": "{name}がきみと{game}であそびたいって！",
       "invitePlay": "あそぼう！",
-      "inviteNo": "あとで"
+      "inviteNo": "あとで",
+      "ok": "OK",
+      "cancel": "キャンセル"
     },
     "game": {
       "needSignIn": "「ゲストであそぶ」をタップするか、先にログインしてください。",
@@ -5900,7 +5902,8 @@
       "seeResultsNow": "今すぐ結果を見る",
       "read": "問題を読む",
       "away": "{count}人が切断",
-      "startEmpty": "まだだれも参加していません。それでもスタートしますか？"
+      "startEmpty": "まだだれも参加していません。それでもスタートしますか？",
+      "startAnyway": "それでもスタート"
     },
     "landing": {
       "title": "ライブゲームをひらく",
@@ -6502,17 +6505,11 @@
       "voicesHint": "AIのこえはコンピューターが作ります（{provider}）。送られるのは問題と答えの選択肢だけで、名前や生徒が入力したことは送られません。"
     },
     "say": {
-      "menu": "メッセージ",
-      "twoMinutes": "あと2分！",
-      "oneMinute": "あと1分！",
-      "lastQuestion": "最後の問題！",
-      "lastRound": "最後のラウンド！",
-      "eyesOnMe": "先生のほうを見てね",
-      "greatTeamwork": "すばらしいチームワーク！",
-      "greatEffort": "みんな、よくがんばったね！",
-      "beKind": "やさしくしようね",
-      "getReady": "じゅんびして！",
-      "almostDone": "もうすぐおわり！"
+      "label": "みんなへのメッセージ",
+      "send": "みんなにおくる",
+      "sent": "みんなにおくりました。",
+      "blocked": "このメッセージはおくれません。ほかのことばでどうぞ。",
+      "wait": "少し待ってから、もう一度おくってください。"
     },
     "eyes": {
       "on": "こっちを見て",

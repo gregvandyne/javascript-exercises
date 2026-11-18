@@ -3,7 +3,7 @@
 // names), how teams score, then drag or select-then-move (the same board as the projector's Teams sheet). Saved inside
 // the school (live_class_teams); in a live game "Use last teams" puts everyone back in them. "Forget saved teams"
 // deletes them.
-import { api, toast } from '/js/app.js';
+import { api, toast, ask } from '/js/app.js';
 import { readJson, fill, shapeSvg, paintTeam } from '/js/live-common.js';
 import { board as teamBoard } from '/js/live-teams-ui.js';
 
@@ -119,7 +119,7 @@ if (box && wrap && open) {
         wrap.hidden = true; wrap.textContent = ''; open.hidden = false; open.disabled = false;
       } catch (er) { toast(er.message, { bad: true }); b.disabled = false; }
     } else if (a === 'forget') {
-      if (!confirm(T.forgetConfirm)) return;
+      if (!(await ask({ text: T.forgetConfirm, ok: T.forgetLast, danger: true }))) return;
       try { await api(D.api, { method: 'DELETE' }); const st = $('lv-class-teams-state'); if (st) st.textContent = T.notSaved; wrap.hidden = true; wrap.textContent = ''; open.hidden = false; open.disabled = false; }
       catch (er) { toast(er.message, { bad: true }); }
     }

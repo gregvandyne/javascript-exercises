@@ -186,6 +186,8 @@
   "uploads.image.real_faces": "Shown when a kid uploads a photo with a real person's face. Kind tone.",
   "js.app.playing": "Updated every 30 seconds on game covers. {n} is a number already formatted (maybe shortened like \"1.2K\"). Keep it very short.",
   "js.app.justNow": "Relative time for less than a minute ago (same as time.justNow).",
+  "js.app.ok": "The main button of the site's own question box when no clearer verb is given (in place of the browser's OK). Very short.",
+  "js.app.cancel": "The button that closes the site's own question box without doing anything. Very short.",
   "js.game.needSignIn": "Toast. “Play as guest” must match auth.page.playAsGuest (without the emoji).",
   "js.game.rated": "{count} is 1 to 5 stars, {average} is like \"4.2\".",
   "js.game.unliked": "Toast after tapping Like again to undo it.",
@@ -1348,7 +1350,6 @@
   "live.team.moved": "Screen-reader announcement when the teacher moves a player: {name} is the player's nickname or name, {team} a team name.",
   "live.team.uneven": "{sizes} is the team sizes, e.g. 5 · 3 · 4.",
   "live.team.rank": "A team's place, e.g. Place 2 of 4. {rank} and {count} are numbers.",
-  "live.say.twoMinutes": "Fixed messages a teacher sends to every player's screen in a live game (live.say.*): short, friendly, at most ~28 characters.",
   "live.bonus.toastSeat": "Shown on one player's device: {reason} is a bonus reason (live.bonus.reason.*), {points} a number (100).",
   "live.bonus.toastTeam": "Shown on every screen: {reason} is a bonus reason, {points} a number, {team} a team name.",
   "live.bonus.reason.teamwork": "Positive reasons a teacher gives bonus points for (live.bonus.reason.*), one or two words.",
@@ -1562,5 +1563,9 @@
   "live.wiz.modesTab": "Tab over the built-in live games on the Host a live game page (the other tabs are live.landing.official, .mine, .shared).",
   "live.wiz.questions.ownTitle": "Heading of the questions step for a live game that makes its own questions (Would You Rather, Atlas Quest, Tug of Math, Doodle Hoot).",
   "live.wiz.open.hint": "{url} is the join address without https://, e.g. oomba.ai/join.",
-  "layout.acct.themeAuto": "Short name for the \"Same as my device\" theme, on a small three-button switch (Auto / Light / Dark): keep it to one short word."
+  "layout.acct.themeAuto": "Short name for the \"Same as my device\" theme, on a small three-button switch (Auto / Light / Dark): keep it to one short word.",
+  "live.host.startAnyway": "Button in the box that asks 'Nobody has joined yet. Start anyway?' on the live host's projector page. Starts the game with no players.",
+  "live.say.label": "Label of the text field where a teacher types a message that every player's screen shows during a live game.",
+  "live.say.send": "Button that sends the teacher's typed message to every player's screen.",
+  "live.say.blocked": "Shown to the teacher when the filter refused the typed message (rude words, contact details or links)."
 }

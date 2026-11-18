@@ -8,6 +8,7 @@
 // 390 phone and at 1280, light and dark, and in Hebrew: nothing sideways, nothing touching, tap targets 44px.
 // Screenshots go to GC_SHOTS (default /dev/shm/teach-gclassroom).
 import { test, expect } from '@playwright/test';
+import { answerDialog } from './helpers.js';
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -177,13 +178,12 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await checkLayout(page, 'leavers 1280');
   await page.screenshot({ path: `${SHOTS}/2b-full-1280.png`, fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  page.once('dialog', d => d.accept());
   await page.locator('#gc-leavers button', { hasText: 'Remove from class' }).click();
+  await answerDialog(page);
   await expect(page.locator('#gc-leavers')).toHaveCount(0);
 
   // Unlink and link another Classroom class: the lesson isn't "Posted" there, and can be posted to it.
-  page.once('dialog', d => d.accept());
-  await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
+  await Promise.all([answerDialog(page), page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
   await page.selectOption('#gc-course-pick', '700000000002');
   await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
   await expect(page.locator('#gc-course')).toContainText('Linked to Science club');

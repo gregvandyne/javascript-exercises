@@ -135,7 +135,7 @@ test('projector and dashboard: one of each, replaced per view; host gone needs b
   close(a, b);
 });
 
-test('eyes up pauses play and resumes only a pause it made; messages are fixed, translated on each device, at most one every 3 s', async () => {
+test('eyes up pauses play and resumes only a pause it made; the host\'s typed messages pass the text filter, at most one every 3 s', async () => {
   const s = open(teacher, { mode: 'battle', items: items(2), audience: 'open' });
   const h = await hostSocket(s, teacher);
   const a = await player(s);
@@ -166,12 +166,22 @@ test('eyes up pauses play and resumes only a pause it made; messages are fixed, 
   assert.equal(s.eyes, false);
   await sleep(60);
   assert.equal(s.phase, 'paused', 'the host\'s own pause stays');
-  // Messages: an index, everyone gets it, one every 3 s.
-  h.send({ t: 'h', a: 'say', m: 5 });
-  assert.equal((await a.next('say')).m, 5);
-  await h.next('say');
-  h.send({ t: 'h', a: 'say', m: 2 }); await sleep(80);
-  assert.ok(!a.msgs.some(m => m.t === 'say' && m.m === 2), 'too soon');
+  // Messages: typed text, everyone gets it as typed, one every 3 s; text the filter won't show reaches nobody, is
+  // refused to the host only (nak blocked), and doesn't use up the gap.
+  h.send({ t: 'h', a: 'say', x: 'Two  minutes left, everyone!' });
+  assert.equal((await a.next('say')).x, 'Two minutes left, everyone!');
+  assert.equal((await h.next('say')).x, 'Two minutes left, everyone!');
+  h.send({ t: 'h', a: 'say', x: 'Last question' }); await sleep(80);
+  assert.ok(!a.msgs.some(m => m.t === 'say' && m.x === 'Last question'), 'too soon');
+  s.actAt = {}; await sleep(1200);   // the socket's h bucket refills
+  for (const x of ['you are a bitch', 'email me at sam@example.com', 'add me on snap']) {
+    h.msgs.length = 0;   // only the answer to this one
+    h.send({ t: 'h', a: 'say', x });
+    assert.equal((await h.next('nak', m => m.a === 'say')).why, 'blocked', x);
+    assert.ok(!a.msgs.some(m => m.t === 'say' && m.x === x), `never shown: ${x}`);
+  }
+  h.send({ t: 'h', a: 'say', x: 'Great effort!' });
+  assert.equal((await a.next('say', m => m.x === 'Great effort!')).x, 'Great effort!', 'a refused one used up no gap');
   close(h, a);
 });
 

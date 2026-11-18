@@ -2,7 +2,7 @@
 // text file) to /api/teach/make/draft; step 2 is the question-set editor (live-sets.js, on the same page), where the
 // teacher checks and edits every question and saves; step 3 offers to host the set live or assign it to a class.
 // The lesson is never kept: not on the server and not in this browser.
-import { api, toast, t } from '/js/app.js';
+import { api, toast, t, ask, verbOf } from '/js/app.js';
 
 const $ = id => document.getElementById(id);
 const form = $('mk-form');
@@ -43,7 +43,7 @@ if (form) {
     } catch (er) { err.textContent = er.message; }
     go.disabled = false; wait.hidden = true;
   });
-  $('mk-back').addEventListener('click', () => { if (confirm(t('js.teach-make.backConfirm'))) show(0); });
+  $('mk-back').addEventListener('click', async () => { if (await ask({ text: t('js.teach-make.backConfirm'), ok: verbOf($('mk-back')).replace(/^←\s*/, ''), danger: true })) show(0); });
   document.addEventListener('lv-set-saved', e => {
     setId = e.detail.id;
     $('mk-host').href = `/live?set=${encodeURIComponent(setId)}`;

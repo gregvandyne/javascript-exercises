@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { signup, uniq, ownIp, ADMIN, templateGame, studioState } from './helpers.js';
+import { signup, uniq, ownIp, ADMIN, templateGame, studioState, answerDialog } from './helpers.js';
 import { findTouching } from './touching.js';
 import { topbarFit } from './topbar-fit.js';
 
@@ -130,8 +130,7 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await expect(mum.locator('#newgame')).toBeVisible();
   await mum.goto('/me'); await expect(mum).toHaveURL(/\/family$/);
   // The child unlinks.
-  kidPage.once('dialog', d => d.accept());
-  await Promise.all([kidPage.waitForLoadState('load'), kidPage.locator('#grownups button', { hasText: 'Unlink' }).click()]);
+  await Promise.all([answerDialog(kidPage), kidPage.waitForLoadState('load'), kidPage.locator('#grownups button', { hasText: 'Unlink' }).click()]);
   await expect(kidPage.locator('#grownups')).toContainText('A grown-up can link to your account.');
 });
 
@@ -143,8 +142,7 @@ test('a child reports a request; the admin sees it in the link reports queue', a
   const strangerName = await grownupSignup(stranger, uniq('Strngr'));
   await enterCode(stranger, code);
   await kidPage.goto('/me');
-  kidPage.once('dialog', d => d.accept());
-  await Promise.all([kidPage.waitForLoadState('load'), kidPage.locator('#grownups button', { hasText: 'Report' }).click()]);
+  await Promise.all([answerDialog(kidPage), kidPage.waitForLoadState('load'), kidPage.locator('#grownups button', { hasText: 'Report' }).click()]);
   await expect(kidPage.locator('#grownups')).toContainText('A grown-up can link to your account.');
   await stranger.goto('/family');
   await expect(stranger.locator('main')).toContainText('No children linked yet.');
