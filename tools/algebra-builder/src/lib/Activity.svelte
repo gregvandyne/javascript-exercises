@@ -1815,8 +1815,8 @@
 					<RotateCw size={15} /> Turn
 				</button>
 			{/if}
-			<button type="button" onclick={() => flipAll(focus.ids)} title="Flip to the opposite sign">
-				<FlipVertical2 size={15} /> Flip
+			<button type="button" onclick={() => flipAll(focus.ids)} title="Flip to the opposite sign: + becomes −, − becomes +">
+				<FlipVertical2 size={15} /> Flip +/−
 			</button>
 			<button type="button" onclick={() => duplicate(focus.ids)} title="Duplicate (Ctrl+D)">
 				<Copy size={15} /> Duplicate
@@ -2023,14 +2023,18 @@
 				</div>
 			</div>
 			<div class="group">
+				<!-- Oomba: the tray's sign as a + / − switch (it used to read "Flip", which didn't say what flips). -->
 				<button
 					type="button"
-					class="tool labeled"
+					class="tool labeled sign-tool"
 					onclick={flipTray}
-					title="Flip to the {traySign > 0 ? 'negative' : 'positive'} tiles"
-					aria-label="Flip to the {traySign > 0 ? 'negative' : 'positive'} tiles"
+					title="Tile sign: now {traySign > 0 ? 'positive (+)' : 'negative (−)'}. Press for {traySign > 0 ? 'negative' : 'positive'} tiles"
+					aria-label="Tile sign: {traySign > 0 ? 'positive' : 'negative'}. Press for {traySign > 0 ? 'negative' : 'positive'} tiles"
 				>
-					<FlipVertical2 size={20} /><span>Flip</span>
+					<span class="sign-switch" aria-hidden="true">
+						<span class="sign-pos" class:now={traySign > 0}>+</span><span class="sign-neg" class:now={traySign < 0}>−</span>
+					</span>
+					<span>Sign</span>
 				</button>
 				<button
 					type="button"
@@ -2995,6 +2999,35 @@
 		font-size: 0.68rem;
 		font-weight: 700;
 	}
+	.sign-tool {
+		width: auto;
+		padding: 0 0.3rem;
+	}
+	.tool .sign-switch {
+		display: flex;
+		overflow: hidden;
+		border: 2px solid var(--ink-soft);
+		border-radius: 999px;
+		font-size: 1rem;
+		line-height: 1;
+	}
+	.tool .sign-switch span {
+		display: grid;
+		place-items: center;
+		width: 1.35rem;
+		height: 1.25rem;
+		font-size: 1rem;
+		font-weight: 900;
+		color: var(--muted);
+	}
+	.tool .sign-switch .sign-pos.now {
+		background: #f7d774;
+		color: #5a4300;
+	}
+	.tool .sign-switch .sign-neg.now {
+		background: #ee9a8d;
+		color: #6b1a0f;
+	}
 	.tool:hover:not(:disabled) {
 		background: var(--paper-low);
 		color: var(--accent);
@@ -3155,8 +3188,12 @@
 			width: 2.5rem;
 			height: 2.5rem;
 		}
-		.tool.labeled span {
+		.tool.labeled > span:not(.sign-switch) {
 			display: none;
+		}
+		/* The + / − switch keeps its two halves on a phone (only its "Sign" label goes). */
+		.sign-tool {
+			width: auto !important;
 		}
 		/* The tray and the trash share the second row, whatever the width. */
 		.palette {

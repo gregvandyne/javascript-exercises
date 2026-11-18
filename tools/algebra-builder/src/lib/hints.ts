@@ -50,7 +50,7 @@ function solveHints(step: HintStep, eq: Equation, live: boolean): string[] {
 		if (unitsOff) moves.push(`put ${tiles(-unitsOff, 'unit')} in both ${pan}s, then zero out the zero pairs`);
 		if (moves.length)
 			out.push(
-				`Here: ${moves.join('; then ')}. Use Flip in the toolbar to get red tiles, and select a pair to zero it out.`
+				`Here: ${moves.join('; then ')}. Press the + / − switch in the toolbar to get red (negative) tiles, and select a pair to zero it out.`
 			);
 		out.push(
 			`When it’s done, the ${i.xPan} ${pan} holds ${tiles(i.k, 'x')} and the ${i.otherPan} ${pan} holds ${i.u === 0 ? 'nothing' : tiles(i.u, 'unit')}. Then press Check.`
