@@ -135,7 +135,7 @@ function builtHints(step: HintStep, b: Built): string[] {
 			]
 		: [
 				`Write what you found: the polynomial on one side of the =, the sides of your rectangle multiplied on the other.`,
-				`Read each side of the T as a factor, in brackets, then write them next to each other.`,
+				`Read each side of the T as a factor, in parentheses, then write them next to each other.`,
 				`It starts ${poly} = (…)(…)`
 			];
 }
