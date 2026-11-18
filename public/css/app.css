@@ -1887,6 +1887,9 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .shelf-pop-panel .form-err:empty,.shelf-pop-panel .gc-also{margin:0}
 .is-reorderable .shelf-item{cursor:grab}
 .is-reorderable > [data-id].is-dragging .shelf-item{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg)}
+/* Buttons in the "Assigned to <class>" head that only phones show (the Google Classroom button; wider screens have it
+   in the sidebar's foot). */
+.shelf-phone-tools{display:none}
 @media (max-width:820px){
   .shelf{grid-template-columns:minmax(0,1fr);gap:16px}
   .shelf-side{position:relative;gap:12px}
@@ -1923,6 +1926,19 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .shelf-tools{width:100%}
   .shelf-tools>.btn,.shelf-tools>form,.shelf-tools>.shelf-pop{flex:1 1 auto}
   .shelf-tools>form>.btn,.shelf-tools>.shelf-pop>summary{width:100%}
+}
+/* The class page's Games tab on a phone (docs/decisions.md "Action tiles on the class page, on phones"): Build new game
+   and Find Oomba games are tiles under the class header, the Games tab leads to Assigned to <class>, and the Google
+   Classroom button sits small in that card's head. The folder chips wrap onto more lines instead of scrolling. */
+@media (max-width:639px){
+  .shelf-class .shelf-go,.shelf-class .shelf-group.shelf-cltop,.shelf-class .shelf-foot{display:none}
+  /* The groups flow as inline runs, so the chips of every group share lines (the lists stay lists). */
+  .shelf-class .shelf-nav{display:block;overflow:visible;margin:0 0 -8px;padding:0;font-size:0}
+  .shelf-class .shelf-group{display:inline}
+  .shelf-class .shelf-group>li,.shelf-class .shelf-newf{display:inline-block;vertical-align:top;max-width:100%;margin:0 0 8px;margin-inline-end:8px;font-size:1rem}
+  .shelf-class .shelf-item{max-width:100%}
+  .shelf-phone-tools{display:flex;width:auto}
+  .shelf-phone-tools>.btn{flex:none;padding:0 14px;font-size:.95rem}
 }
 
 /* ---- Folders: drag to reorder (public/js/reorder.js) and Save to folder in a pop-up (public/js/folder-save.js). */

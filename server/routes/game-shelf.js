@@ -93,7 +93,7 @@ function side(req, ctx, sel, mine, shared) {
   return html`<div class="shelf-side">
     ${top}
     <nav class="shelf-nav" aria-label="${ctx.kind === 'build' ? t('folders.myGamesFolders') : t('folders.sideClass')}">
-      <ul class="shelf-group">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
+      <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
         ${ctx.kind === 'class' && ctx.staff ? html`<li><a class="shelf-item" href="/learn">${icon('find')}<span class="shelf-name">${t('folders.findOomba')}</span></a></li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1 })}</li>`)}</ul>` : ''}
@@ -227,7 +227,9 @@ function parts(req, ctx) {
 /** The shelf: the left column and the picked item's side. */
 export function shelf(req, ctx, { id = '' } = {}) {
   const { mine, shared, sel, main } = parts(req, ctx);
-  return html`<div class="shelf" data-shelf${id ? html` id="${id}"` : ''}>
+  // The class page's shelf (shelf-class): on a phone its Build button, Assigned and Find chips (shelf-cltop) and the
+  // Google Classroom foot give way to the class header's tiles, the Games tab and the Assigned card's head (app.css).
+  return html`<div class="shelf${ctx.kind === 'class' ? ' shelf-class' : ''}" data-shelf${id ? html` id="${id}"` : ''}>
     ${side(req, ctx, sel, mine, shared)}
     <div class="shelf-col">${ctx.top || ''}<section class="shelf-main panel" id="shelf-main" aria-labelledby="shelf-h" data-shelf-key="${sel.key}" data-href="${hrefOf(ctx, sel)}">${main}</section></div>
     <p class="sr-only" id="shelf-say" aria-live="polite"></p>

@@ -8418,3 +8418,28 @@ has a **method**; the standard algorithms stay the default.
 - Tests: tests/unit/box-by-box-methods.test.js (paths, invalid steps, remainders, parts, items, and each method in the
   built game in Chromium, Guided and On my own, plus Watch, Count up, wrong digits and the worked answer);
   tests/unit/box-by-box.test.js (the method in sets and labels).
+
+## Action tiles on the class page, on phones (18 Nov 2026)
+
+- **What.** Below 640px (the class header's own phone breakpoint) the teacher's class page shows a 2×2 grid of tiles
+  under the header, over the tabs: Host a live game (green, the main one), Class dashboard, Build new game and Find
+  Oomba games, each an emoji over its label and a plain link to where today's button or chip goes (`/live?class=`,
+  `/class/:id/dashboard`, `/build/new`, `/learn`). Approved mockup "B — Action tiles". Wider screens (tablets and
+  desktop) are unchanged: the grid is `display:none` there.
+- **Rendered once, CSS picks.** `classTiles()` in routes/schools.js renders the tiles in `classHeader()`, so every page
+  with the class header (all tabs, Progress, Standards, the Classroom page) has them, under the same conditions as the
+  buttons (Host: live on, may host, class not archived; dashboard: `DASH.isTeacher`; Build and Find: the school's
+  staff, class not archived, as the Games tab's sidebar). On phones the header's two full-width buttons, the shelf's
+  Build button, its Assigned and Find chips (`.shelf-cltop`) and its Google Classroom foot are hidden by CSS. No script.
+- **Games tab leads to Assigned.** The tab links to `/class/:id?view=assigned` (a bare `/class/:id` opens the first
+  folder while nothing is assigned), so on a phone, without the Assigned chip, the tab is the way back to it. Desktop
+  keeps the sidebar item; a bare `/class/:id` (from My classes) still picks as before.
+- **Chips wrap.** On the class page on phones the folder chips (yours, New folder, shared, Games students shared) flow
+  onto several lines instead of scrolling sideways. Build's own chip row is unchanged.
+- **Google Classroom.** `gcLessonsButton()` is unchanged; schools.js passes its output to `assignedPane(req, c, { tools })`
+  (routes/lessons.js), which puts it in the Assigned card's head in `.shelf-phone-tools`, shown only on phones, small
+  and auto width. Wider screens keep it in the sidebar's foot. On a phone it shows on the Assigned view only.
+- **Header.** The Classroom status chip is 44px tall on phones (it was 36px); long class names wrap
+  (`overflow-wrap:anywhere`), the school name ellipsises. No new strings: the tiles reuse `live.entry.host`,
+  `dash.entry.teacher`, `folders.buildNew`, `folders.findOomba`.
+- Tests: tests/unit/class-tiles.test.js; folders-sidebar(-browser) and the mobile e2e updated.

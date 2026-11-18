@@ -167,13 +167,18 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   const course = page.locator('details.coursepanel').first();
   await expect(course).not.toHaveAttribute('open', '');
   await expect(course.locator('summary')).toContainText(`0 of ${NAMES.length} started`);
-  // Games tab (first): Build new game full width, then the sidebar as one row of chips (Assigned, Find Oomba games, the
-  // folders, New folder...) that scrolls sideways on its own; no lesson tools
+  // Games tab (first): the action tiles over the tabs (Host a live game, Class dashboard, Build new game, Find Oomba
+  // games) in two columns; the header's buttons, the Build button and the Assigned and Find chips give way to them; the
+  // folder chips wrap; no lesson tools
   await page.goto(`/class/${cls}`);
   await expect(page.locator('nav.classtabs a').first()).toContainText('Games');
-  const go = await page.locator('#cl-newgame').boundingBox();
-  expect(go.height).toBeGreaterThanOrEqual(43.5); expect(go.x + go.width).toBeLessThanOrEqual(390);
-  for (const sel of ['#lessons .shelf-newf > summary', '#lessons .shelf-nav a[href="/learn"]']) expect((await page.locator(sel).first().boundingBox()).height, sel).toBeGreaterThanOrEqual(43.5);
+  await expect(page.locator('nav.classtabs a').first()).toHaveAttribute('href', `/class/${cls}?view=assigned`);
+  const tiles = page.locator('.classtiles .classtile');
+  await expect(tiles).toHaveCount(4);
+  for (let i = 0; i < 4; i++) { const b = await tiles.nth(i).boundingBox(); expect(b.height).toBeGreaterThanOrEqual(44); expect(b.x + b.width).toBeLessThanOrEqual(390); }
+  for (const sel of ['#cl-newgame', '#class-dash-link', '#lessons .shelf-nav a[href="/learn"]', '#lessons .shelf-item[data-shelf-key="assigned"]']) await expect(page.locator(sel), sel).toBeHidden();
+  expect((await page.locator('#lessons .shelf-newf > summary').boundingBox()).height).toBeGreaterThanOrEqual(43.5);
+  if (await page.locator('.classhead .cx-chip').count()) expect((await page.locator('.classhead .cx-chip').boundingBox()).height).toBeGreaterThanOrEqual(43.5);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   await expect(page.locator('#lessons')).not.toContainText('New unit');
   await ctx.close();

@@ -865,21 +865,40 @@ function schoolLink(req, s) {
   if (S.canManageSchool(req.user, s.id)) return html`<a href="/school/${s.slug}">${s.name}</a>`;
   return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ✉️ ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
 }
+/** Phones only (public/css/schools.css .classtiles; docs/decisions.md "Action tiles on the class page, on phones"): a
+ *  2×2 grid of Host a live game, Class dashboard, Build new game and Find Oomba games, under the class header on every
+ *  tab. They stand in for the header's two buttons and the Games tab's Build button and Find chip, which phones hide;
+ *  each shows when its button does (Build and Find: the school's staff, the class not archived). Wider screens hide it. */
+function classTiles(req, c, { host, dash }) {
+  const t = req.t;
+  const staff = !c.archived_at && S.schoolsOf(req.user.id).some(s => s.id === c.school_id && s.role !== 'student');
+  const tiles = [
+    host && { href: `/live?class=${c.id}`, emoji: '📡', label: t('live.entry.host'), hot: true },
+    dash && { href: `/class/${c.id}/dashboard`, emoji: '🖥️', label: t('dash.entry.teacher') },
+    staff && { href: '/build/new', emoji: '🛠️', label: t('folders.buildNew') },
+    staff && { href: '/learn', emoji: '🦉', label: t('folders.findOomba') },
+  ].filter(Boolean);
+  if (!tiles.length) return '';
+  return html`<div class="classtiles${tiles.length === 1 ? ' is-one' : ''}">${tiles.map(x => html`<a class="classtile${x.hot ? ' is-hot' : ''}" href="${x.href}"><span class="classtile-e" aria-hidden="true">${x.emoji}</span><span class="classtile-l">${x.label}</span></a>`)}</div>`;
+}
 export function classHeader(req, c, active) {
   const t = req.t; const s = S.getSchool(c.school_id);
   const students = S.roster(c.id).filter(p => p.role === 'student').length;
   const requests = S.pendingRequests(c.id).length;
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
-  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, standards: `/class/${c.id}/standards`, games: `/class/${c.id}#shared-games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
+  const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user), dash = DASH.isTeacher(req.user, c);
+  // Games goes to the assigned games (?view=assigned): on a phone "Assigned to <class>" is not in the chip row, so the
+  // tab is the way back to it (a bare /class/:id opens the first folder while nothing is assigned).
+  const href = { lessons: `/class/${c.id}?view=assigned`, progress: `/class/${c.id}/progress`, standards: `/class/${c.id}/standards`, games: `/class/${c.id}#shared-games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
   // The first tab is the class's assigned games (games, not lessons); its key stays 'lessons' (links and ?tab= unchanged).
   const icon = { lessons: '🎮', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
   <div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
-    ${(() => { const chip = connectionsChip(req, c), host = !c.archived_at && liveOn() && liveCanHost(req.user), dash = DASH.isTeacher(req.user, c);
-      return chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''; })()}</div>
+    ${chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a>` : ''}</div>` : ''}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>🗄️ ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
+  ${classTiles(req, c, { host, dash })}
   <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 }
 
@@ -948,7 +967,9 @@ function classGamesPane(req, c, people) {
  *  and what is picked, swapped in place by public/js/shelf.js. Folders and Assign only for the school's staff. */
 function gamesShelfCtx(req, c, people) {
   const staff = S.schoolsOf(req.user.id).some(s => s.id === c.school_id && s.role !== 'student');
-  return { kind: 'class', base: `/class/${c.id}`, c, staff: staff && !c.archived_at, folders: staff, assigned: assignedPane(req, c), students: classGamesPane(req, c, people), gc: gcLessonsButton(req, c) };
+  // The Google Classroom button: the sidebar's foot on wider screens, the "Assigned to" card's head on phones (CSS shows one).
+  const gc = gcLessonsButton(req, c);
+  return { kind: 'class', base: `/class/${c.id}`, c, staff: staff && !c.archived_at, folders: staff, assigned: assignedPane(req, c, { tools: gc }), students: classGamesPane(req, c, people), gc };
 }
 function teacherClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id); const st = S.settingsOf(s);
