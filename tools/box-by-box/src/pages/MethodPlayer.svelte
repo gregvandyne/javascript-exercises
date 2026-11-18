@@ -58,13 +58,18 @@
 	let firstTry = $state(true);
 	let fb = $state<'right' | 'again' | 'reveal'>('right');
 	let sticky = $state(false);
-	let values = $state<Values>({});
+	// What has been typed, replaced (never changed in place) on each change, so the work worked out from it depends on
+	// this one value and not on a field of one problem's object (see put).
+	let values = $state.raw<Values>({});
 	let before = $state<Values>({});
 	let current = $state<string | null>(null);
 	let reached = $state<string[]>([]);
 	let count = $state<number | null>(null);
 	let typed = $state('');
 	let nudge = $state('');
+	/** Advice on a choice that works but isn't the method's way, said once for that value (Next keeps it). */
+	let tip = $state('');
+	let tipped = '';
 	let told = $state('');
 	let busy = $state(false);
 	let watchShown = $state(false);
@@ -87,7 +92,14 @@
 	let hintTimer: ReturnType<typeof setTimeout> | undefined;
 	let reported = false;
 
-	const inputs: Record<string, HTMLInputElement | null> = {};
+	/** A field's input, found by its id when it is needed (no bind:this: Svelte reads a binding's field again as the
+	 *  last problem's work is taken down, which tied the work to that problem's values; decisions.md). */
+	let paperEl = $state<HTMLElement>();
+	const inputOf = (id: string) => paperEl?.querySelector<HTMLInputElement>(`input[data-field="${id}"]`) ?? null;
+	/** A field's value: a new object each time, so everything worked out from what's typed sees the change. */
+	function put(id: string, v: string) {
+		values = { ...values, [id]: v };
+	}
 	let checkBtn = $state<HTMLButtonElement>();
 	let feedbackBtn = $state<HTMLButtonElement>();
 	let feedbackEl = $state<HTMLElement>();
@@ -181,6 +193,7 @@
 		}
 		if (busy && told) return told;
 		if (nudge) return nudge;
+		if (tip) return tip;
 		if (way === 'countUp') {
 			if (!active) return firstEmpty ? '' : 'Press Check, or Enter.';
 			if (choose) {
@@ -237,10 +250,10 @@
 		if (!reached.includes(id)) reached = [...reached, id];
 	}
 	function fill(f: Field, value: string) {
-		values[f.id] = value;
+		put(f.id, value);
 		reach(f.id);
 		tick().then(() =>
-			inputs[f.id]
+			inputOf(f.id)
 				?.closest('.num')
 				?.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], {
 					duration: 350,
@@ -253,7 +266,7 @@
 		if (id === null) return;
 		reach(id);
 		await tick();
-		const el = inputs[id];
+		const el = inputOf(id);
 		if (!el) return;
 		el.focus({ preventScroll: true });
 		el.closest('.num')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: still ? 'auto' : 'smooth' });
@@ -269,6 +282,8 @@
 		firstTry = true;
 		sticky = false;
 		nudge = '';
+		tip = '';
+		tipped = '';
 		told = '';
 		count = null;
 		typed = '';
@@ -311,19 +326,28 @@
 		if (flags.markNow && fieldWrong(f, values)) {
 			misses += 1;
 			if (f.role === 'choice') nudge = f.nudge?.(v) ?? '';
-			inputs[f.id]?.select();
+			inputOf(f.id)?.select();
 			return false;
 		}
 		nudge = '';
+		const advice = flags.markNow ? f.advice?.(v) : null;
+		if (advice && tipped !== `${f.id}:${v}`) {
+			tipped = `${f.id}:${v}`;
+			tip = advice;
+			inputOf(f.id)?.select();
+			return false;
+		}
+		tip = '';
 		goNext(f.id);
 		return true;
 	}
 	function setValue(f: Field, raw: string) {
 		const v = raw.replace(/\D/g, '').slice(0, f.len);
-		values[f.id] = v;
-		const el = inputs[f.id];
+		put(f.id, v);
+		const el = inputOf(f.id);
 		if (el && el.value !== v) el.value = v;
 		nudge = '';
+		tip = '';
 		if (choose && f.id === active?.id) return;
 		// on by itself once all its digits are in (a choice: once its squares are full)
 		if (f.role === 'choice' ? v.length >= f.len : f.expect !== null && norm(v).length >= f.expect.length) commit(f);
@@ -410,7 +434,7 @@
 			const v = Number(values[active.id] || 0);
 			const at = list.findIndex((x) => x >= v);
 			const i = !values[active.id] ? (by > 0 ? 0 : -1) : list[at] === v ? at + by : by > 0 ? at : at - 1;
-			if (i >= 0) values[active.id] = String(list[Math.min(i, list.length - 1)]);
+			if (i >= 0) put(active.id, String(list[Math.min(i, list.length - 1)]));
 			reach(active.id);
 		} else if (skip) count = count === null ? +(by > 0) : Math.max(0, Math.min(9, count + by));
 	}
@@ -482,7 +506,7 @@
 		fill(f, watchVals[f.id] ?? f.expect ?? '');
 		watchShown = true;
 		await tick();
-		inputs[f.id]?.closest('.num')?.scrollIntoView?.({ block: 'nearest', behavior: still ? 'auto' : 'smooth' });
+		inputOf(f.id)?.closest('.num')?.scrollIntoView?.({ block: 'nearest', behavior: still ? 'auto' : 'smooth' });
 	}
 
 	// --- the keypad ---
@@ -546,8 +570,9 @@
 			const bad = fields.find((f) => stickyWrong.has(f.id) && !isAuto(f)) ?? fields.find((f) => !isAuto(f));
 			if (way === 'countUp' && bad) {
 				// Count up: back to the first field that's wrong, and on from there
-				for (const f of fields.slice(fields.indexOf(bad))) delete values[f.id];
-				values = { ...values };
+				const kept = { ...values };
+				for (const f of fields.slice(fields.indexOf(bad))) delete kept[f.id];
+				values = kept;
 				return advance();
 			}
 			await focusField(bad?.id ?? null);
@@ -650,7 +675,7 @@
 	>
 		{#each marks as m, i (i)}<span class="sq" class:bad={wrongNow && m.bad && f.role !== 'choice'}>{m.d}</span>{/each}
 		<input
-			bind:this={inputs[f.id]}
+			data-field={f.id}
 			type="text"
 			pattern="[0-9]*"
 			autocomplete="off"
@@ -737,7 +762,7 @@
 		<Footer />
 	</main>
 {:else if work}
-	<main class="paper" style:--sq="{sq}px" class:with-pad={padOpen && !narrow && way !== 'watch'} style:padding-top="{barH + 20}px" style:padding-bottom="{bandH + 28}px">
+	<main class="paper" bind:this={paperEl} style:--sq="{sq}px" class:with-pad={padOpen && !narrow && way !== 'watch'} style:padding-top="{barH + 20}px" style:padding-bottom="{bandH + 28}px">
 		<p class="sr-only">{work.title}</p>
 		<div class="sheet-wrap">
 			{#key index}
@@ -775,7 +800,7 @@
 				</div>
 			{/if}
 			<div class="prompt-row">
-				<p class="prompt" class:nudge={!!nudge} aria-live="polite">{prompt}</p>
+				<p class="prompt" class:nudge={!!nudge} class:tip={!nudge && !!tip} aria-live="polite">{prompt}</p>
 				<div class="actions">
 					{#if way === 'watch'}
 						<button type="button" class="btn-primary big" bind:this={nextBtn} onclick={watchNext}
@@ -1090,6 +1115,9 @@
 	}
 	.prompt.nudge {
 		color: var(--bad);
+	}
+	.prompt.tip {
+		color: var(--accent-dark);
 	}
 	.actions {
 		display: flex;
