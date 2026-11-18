@@ -1975,8 +1975,8 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dt-menu .btn.dt-mi[aria-pressed]:hover,.dt-menu .btn.dt-mi[aria-pressed]:focus-visible{background:var(--accent-soft)!important}
 .dt-menu:focus{outline:none}
 /* the mode dropdown is as wide as its longest mode: it gives up its room first, so the choice beside it reads whole */
-.dt .dt-modes.has-pick>.dt-modesel{flex:0 4 auto;min-width:5.5em}
-.dt .dt-modes.has-pick>.dt-pick:not(.dt-modesel){flex:0 1 auto;max-width:62%}
+.dt .dt-modes.has-pick>.dt-modesel{flex:0 1 auto;min-width:5.5em}
+.dt .dt-modes.has-pick>.dt-pick:not(.dt-modesel){flex:0 0 auto;max-width:62%}
 .dt-foot.is-empty{display:none}
 .dt-ctlin{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;min-width:0}
 .dt-ctlin:empty{display:none}
