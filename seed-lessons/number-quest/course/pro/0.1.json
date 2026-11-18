@@ -7,8 +7,8 @@
  "minutes": 6,
  "slides": [
   {
-   "title": "Above the Workshops",
-   "text": "Past the last workshop, the street climbs. Seven towers stand over the Numberworks, and above them all hangs the Great Clock. Tally the cat keeps the keys to every one of them.",
+   "title": "Welcome to Netville",
+   "text": "Welcome to Netville, a town that runs on numbers. Its lanterns, bridges and clocks all work because numbers do their jobs. Down below lies the Numberworks, a street of busy workshops. Above it rise seven towers, and over them all hangs the Great Clock.",
    "art": "cat",
    "story": {
     "scene": "street",
@@ -20,7 +20,7 @@
   },
   {
    "title": "The clock has stopped",
-   "text": "The Great Clock runs on seven gears, one kept in each tower. The Jumble has knocked them out of line, so the hands stand still and nobody in Netville agrees on the time.",
+   "text": "Tally the cat keeps the keys to every tower, and Tally will be your guide. Last night the Jumble, a troublemaker who mixes things up, knocked the Great Clock's seven gears out of line. Now the hands stand still, and nobody in Netville agrees on the time.",
    "art": "gears",
    "story": {
     "scene": "street",
@@ -33,7 +33,7 @@
   {
    "kind": "example",
    "title": "Numbers that move together",
-   "text": "Down the street you counted and measured one thing at a time. Up here, two amounts change together. A mix of 2 cups of oats for every 3 cups of milk stays the same mix when both are scaled.",
+   "text": "In the towers, two amounts often change together. A mix of 2 cups of oats for every 3 cups of milk stays the same mix when both amounts are scaled.",
    "art": "scale",
    "steps": [
     "2 cups of oats go with 3 cups of milk",
@@ -166,8 +166,8 @@
    ]
   },
   {
-   "title": "How a tower works",
-   "text": "Each tower has three steps. A step is a short lesson, three questions and a mission that puts the idea to work. Nothing is timed. A wrong try earns a hint, and you can always go again.",
+   "title": "Your quest",
+   "text": "Your quest is to climb all seven towers and win back each tower's gear. A tower has three steps: a short lesson, three questions and a mission game. Nothing is timed, and a wrong try earns a hint. Bring every gear home and the Great Clock will tick again.",
    "art": "map"
   },
   {
@@ -197,7 +197,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "There is no game in this step. Answer the three questions, then look for the first tower on the path. Seven gears are waiting, and the Great Clock will not start without all of them.",
+   "text": "There is no game in this step. Answer the three questions, then find the Mixing Tower on the course map. It holds the first gear, the Ratio Gear, and the Great Clock will not start until all seven gears are back.",
    "art": "trophy"
   }
  ],

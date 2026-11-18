@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "The Mixing Tower",
-   "text": "The first tower smells of lamp oil. Every lantern in Netville was mixed here, and each glow has its own recipe. The Jumble has muddled the recipes, so no two lanterns match. Tally hands you two dials.",
+   "text": "Your climb begins at the Mixing Tower, the first of the seven. Every lantern in Netville was mixed here, and each glow has its own recipe. The Jumble has muddled the recipes, so no two lanterns match. Tally hands you two dials to fix them and win the Ratio Gear.",
    "art": "cat",
    "story": {
     "scene": "street",
