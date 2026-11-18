@@ -1,10 +1,13 @@
 <script lang="ts">
 	// Algebra Builder: the screens the original app had as pages, and Oomba's question sets. Opened with a problem (an
 	// activity link or a lesson step) it goes straight to that problem, as the original's student links did; opened
-	// with a question set's link, straight to its first question; otherwise it starts on the gallery of activities.
+	// with a question set's link, straight to its first question; otherwise it asks who's playing: a teacher goes on to
+	// the gallery of activities, a student to a class code or practising alone.
 	import { nav } from '$lib/nav.svelte';
 	import { openedSet, openedWith } from '$lib/oomba';
 	import Home from './pages/Home.svelte';
+	import Start from './pages/Start.svelte';
+	import Student from './pages/Student.svelte';
 	import Play from './pages/Play.svelte';
 	import About from './pages/About.svelte';
 	import SetBuilder from './pages/SetBuilder.svelte';
@@ -22,7 +25,11 @@
 	});
 </script>
 
-{#if nav.view.name === 'home'}
+{#if nav.view.name === 'start'}
+	<Start />
+{:else if nav.view.name === 'student'}
+	<Student />
+{:else if nav.view.name === 'home'}
 	<Home />
 {:else if nav.view.name === 'setup'}
 	{#key nav.view}
@@ -34,7 +41,7 @@
 	<SetBuilder />
 {:else if nav.view.name === 'set-play'}
 	{#key nav.view}
-		<SetPlay items={nav.view.items} from={nav.view.from} id={nav.view.id} mine={nav.view.mine} />
+		<SetPlay items={nav.view.items} from={nav.view.from} id={nav.view.id} mine={nav.view.mine} practice={nav.view.practice} />
 	{/key}
 {:else if nav.view.name === 'set-missing'}
 	<main class="missing">

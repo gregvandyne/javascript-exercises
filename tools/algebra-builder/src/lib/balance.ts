@@ -120,8 +120,8 @@ export function checkPans(
 	if (negative.length)
 		return fail(
 			say(
-				'The x tiles are negative. Select every tile in both pans and flip them all: the balance stays level.',
-				'The x tiles are negative. Select every tile on both sides and flip them all: the sides stay equal.'
+				'The x tiles are negative. Select every tile in both pans and press Flip +/− to change all their signs: the balance stays level.',
+				'The x tiles are negative. Select every tile on both sides and press Flip +/− to change all their signs: the sides stay equal.'
 			),
 			negative
 		);
