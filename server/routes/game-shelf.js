@@ -159,27 +159,27 @@ const head = (title, meta, tools) => html`<div class="shelf-head"><div class="sh
 const findBtn = t => html`<a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a>`;
 
 /** "Assign all N" (the class page, in a folder): each game the class can play and doesn't have yet, one due day. */
-function assignAll(req, ctx, f, list) {
+function assignAll(req, ctx, f, list, idp = 'sa-all-d') {
   const t = req.t, c = ctx.c;
   if (!ctx.staff || !list.length) return '';
   return html`<details class="shelf-pop"><summary class="btn">📌 ${t('folders.assignAll', { count: list.length })}</summary>
     <form class="shelf-pop-panel" data-api="/api/teach/assign-folder" novalidate><input type="hidden" name="folderId" value="${f.id}"><input type="hidden" name="classId" value="${c.id}">
       <p class="small muted">${t('folders.assignAllNote', { class: c.name })}</p>
-      <div class="field"><label for="sa-all-d">${t('lessons.assign.due')}</label><input class="input" id="sa-all-d" name="dueAt" type="date"></div>
+      <div class="field"><label for="${idp}">${t('lessons.assign.due')}</label><input class="input" id="${idp}" name="dueAt" type="date"></div>
       ${gcAssignField(req, c)}
       <button class="btn btn-primary" type="submit">📌 ${t('folders.assignAll', { count: list.length })}</button><p class="form-err err" role="alert"></p></form></details>`;
 }
 
 /** The owner's folder menu: Rename, Share or Stop sharing, Move up / down, Delete. */
-function folderMenu(req, ctx, f, mine) {
+function folderMenu(req, ctx, f, mine, idp = 'shelf') {
   const t = req.t, schools = F.staffSchools(req.user), i = mine.findIndex(x => x.id === f.id);
   const back = ctx.c ? html`<input type="hidden" name="classId" value="${ctx.c.id}">` : '';
   const share = !schools.length ? ''
     : f.school_id ? html`<form data-api="/api/game-folders/${f.id}/share" data-reload><input type="hidden" name="schoolId" value=""><button class="btn" type="submit">${t('folders.unshare')}</button></form>`
-      : html`<form class="shelf-share" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="shelf-share-s">${t('folders.shareTitle')}</label><select class="input" id="shelf-share-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
+      : html`<form class="shelf-share" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="${idp}-share-s">${t('folders.shareTitle')}</label><select class="input" id="${idp}-share-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
         <button class="btn" type="submit">🤝 ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form>`;
   return menu(t('folders.more', { name: f.name }), [
-    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="shelf-rn">🏷️ ${t('build.rename')}</label><div class="row"><input class="input grow" id="shelf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
+    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="${idp}-rn">🏷️ ${t('build.rename')}</label><div class="row"><input class="input grow" id="${idp}-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
     share, schools.length ? html`<p class="small muted">${t('folders.shareNote')}</p>` : '',
     i > 0 ? html`<form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn" type="submit">↑ ${t('folders.moveUp')}</button></form>` : '',
     i >= 0 && i < mine.length - 1 ? html`<form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn" type="submit">↓ ${t('folders.moveDown')}</button></form>` : '',
@@ -211,6 +211,140 @@ function allPane(req, ctx) {
       : html`<div class="shelf-empty">${emptyState({ emoji: '🌱', title: t('home.empty.title'), text: t('build.empty'), action: { href: '/build/new', label: `✨ ${t('build.newGame')}` } })}</div>`}`;
 }
 
+// ================================================================ the class page's Games tab on a phone
+// docs/decisions.md "The Games tab on phones: two clear tabs". Below 640px the sidebar and the right side give way to
+// this (app.css): a two-part switch, "📌 Assigned (n)" (what this class has, in the order students see it) and
+// "📁 My library" (the teacher's games and collections, where they assign from). Every part is a plain link with the
+// state in the address (?view=assigned | library | all | students, ?folder=<id>, &reorder=1), so it works without
+// script, a reload and Back keep it, and the same address on a wider screen still opens the sidebar. The wider
+// screens' markup is untouched. Ids here start lib- so the two never clash.
+const CHEV = raw('<svg class="lib-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>');
+const BACK = raw('<svg class="lib-backarrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>');
+
+/** What the phone shows: { view: 'assigned' | 'library' | 'all' | 'students' } | { view: 'folder', folder, own }. */
+function phonePicked(req, ctx, mine, shared) {
+  const fid = String(req.query.folder || ''), view = String(req.query.view || '');
+  if (fid && ctx.folders) {
+    const f = mine.find(x => x.id === fid) || shared.find(x => x.id === fid);
+    if (f) return { view: 'folder', folder: f, own: f.owner_id === req.user.id };
+  }
+  if (view === 'students') return { view };
+  if (ctx.folders && ['library', 'all'].includes(view)) return { view };
+  return { view: 'assigned' };
+}
+
+/** One row of the library list: icon, name, a line under it, the count and a chevron. */
+const libItem = (req, { href, emo, name, sub, count }) => html`<li><a class="lib-item" href="${href}"><span class="lib-ico" aria-hidden="true">${emo}</span>
+  <span class="lib-text"><span class="lib-name" dir="auto">${name}</span>${sub ? html`<span class="lib-sub">${sub}</span>` : ''}</span>
+  ${count === undefined ? '' : html`<span class="lib-n" aria-hidden="true">${count}</span><span class="sr-only">, ${req.t('folders.gamesN', { count })}</span>`}${CHEV}</a></li>`;
+
+/** The library list: All my games, one's collections, + New collection, then From others. */
+function libList(req, ctx, mine, shared, myGames) {
+  const t = req.t, c = ctx.c, base = ctx.base;
+  const fHref = f => `${base}?folder=${encodeURIComponent(f.id)}`;
+  return html`<div class="lib-head"><div class="lib-title"><h2 id="lib-h">${t('folders.phone.library')}</h2><p>${t('folders.phone.libraryNote')}</p></div></div>
+    <ul class="lib-items" aria-labelledby="lib-h">
+      ${libItem(req, { href: `${base}?view=all`, emo: '🛠️', name: t('folders.allGames'), sub: t('folders.phone.allSub'), count: myGames.length })}
+      ${mine.map(f => libItem(req, { href: fHref(f), emo: '📁', name: f.name, sub: f.school_id ? `🤝 ${t('folders.phone.sharedSub')}` : '', count: f.games }))}
+      <li><details class="lib-newf"><summary class="lib-item lib-add"><span class="lib-ico" aria-hidden="true">+</span><span class="lib-text"><span class="lib-name">${t('folders.phone.newCollection')}</span></span></summary>
+        <form class="lib-newf-panel" data-api="/api/game-folders" novalidate><input type="hidden" name="classId" value="${c.id}">
+          <label for="lib-nf-name">${t('folders.phone.collectionName')}</label>
+          <div class="row"><input class="input grow" id="lib-nf-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
+          <button class="btn btn-primary" type="submit">${t('folders.create')}</button></div><p class="form-err err" role="alert"></p></form></details></li>
+    </ul>
+    <h3 class="lib-group" id="lib-others">${t('folders.phone.fromOthers')}</h3>
+    <ul class="lib-items" aria-labelledby="lib-others">
+      ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
+      ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
+      ${ctx.staff ? libItem(req, { href: '/learn', emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
+    </ul>`;
+}
+
+/** "+ Assign" / "✓ Assigned" on a game row in a collection: assigns it to the class, or takes it off (the same endpoints
+ *  as the wider screens' Assign and the Assigned list's Unassign). A game that needs setting up first opens the Assign
+ *  page, as it does today. */
+function libToggle(req, ctx, g, folderId) {
+  const t = req.t, c = ctx.c;
+  if (!ctx.staff) return '';
+  const plus = html`<span aria-hidden="true">+</span> ${t('folders.assign')}<span class="sr-only">: ${g.title}</span>`;
+  if (setGame(g) || liveOnly(g) || !F.assignable(req.user, g, c).ok) return html`<a class="btn lib-toggle" href="/teach/assign?id=${g.id}&amp;class=${c.id}">${plus}</a>`;
+  const cl = F.assignmentOf(c.id, g.id);
+  if (cl) {
+    return html`<form class="lib-tform" data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: g.title })}">
+      <button class="btn lib-toggle is-on" type="submit" title="${t('lessons.class.unassign')}"><span aria-hidden="true">✓</span> ${t('folders.assignedChip')}<span class="sr-only">: ${g.title}. ${t('lessons.class.unassign')}</span></button></form>`;
+  }
+  return html`<form class="lib-tform" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g.id}"><input type="hidden" name="classId" value="${c.id}">${folderId ? html`<input type="hidden" name="folder" value="${folderId}">` : html`<input type="hidden" name="view" value="all">`}
+    <button class="btn lib-toggle" type="submit">${plus}</button></form>`;
+}
+
+/** One game in a collection (or All my games): cover, title, what it is, the Assign toggle and ⋯; in reorder mode, ↑/↓. */
+function libGame(req, ctx, g0, i, ids, { folder = null, own = false, reorder = false } = {}) {
+  const t = req.t, u = req.user, g = g0.source === 'seed' ? games.localizeGame(g0) : g0;
+  const mineGame = g.owner_id === u.id && g.source !== 'seed', play = playHref(g);
+  const kind = g.source === 'seed' ? html`🦉 <span class="lib-kindt">${t('folders.oombaGame')}</span>` : mineGame ? html`🛠️ <span class="lib-kindt">${t('folders.myGame')}</span>` : '';
+  let acts, toggle = '';
+  if (reorder) {
+    const order = d => { const o = [...ids]; [o[i], o[i + d]] = [o[i + d], o[i]]; return o.map(id => html`<input type="hidden" name="ids" value="${id}">`); };
+    const up = t('folders.phone.up', { name: g.title }), down = t('folders.phone.down', { name: g.title });
+    acts = html`<span class="lib-moves">${i ? html`<form data-api="/api/game-folders/${folder.id}/order" data-reload>${order(-1)}<button class="btn lib-mv" type="submit" aria-label="${up}" title="${up}"><span class="lib-arrow" aria-hidden="true">↑</span></button></form>` : html`<span class="lib-mv-gap"></span>`}${i < ids.length - 1 ? html`<form data-api="/api/game-folders/${folder.id}/order" data-reload>${order(1)}<button class="btn lib-mv" type="submit" aria-label="${down}" title="${down}"><span class="lib-arrow" aria-hidden="true">↓</span></button></form>` : html`<span class="lib-mv-gap"></span>`}</span>`;
+  } else {
+    toggle = libToggle(req, ctx, g0, folder && folder.id);
+    acts = html`${menu(t('folders.more', { name: g.title }), [
+      html`<a class="btn" href="${play}">${PLAY} ${t('game.play')}</a>`,
+      ctx.staff && (setGame(g0) || liveOnly(g0)) ? html`<a class="btn" href="/teach/assign?id=${g.id}&amp;class=${ctx.c.id}">📌 ${t('folders.assignTo', { class: ctx.c.name })}</a>` : '',
+      folder && own ? html`<form data-api="/api/game-folders/${folder.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>` : '',
+      html`<a class="btn" href="/build/save?id=${g.id}">📁 ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
+    ])}`;
+  }
+  return html`<li class="lib-row${reorder ? ' is-moving' : ''}" data-id="${g.id}">
+    <a class="lib-cover" href="${play}" tabindex="-1" aria-hidden="true">${coverArt(g, 'lib-thumb', { draft: mineGame })}</a>
+    <div class="lib-body"><a class="lib-name" href="${play}" dir="auto">${g.title}</a>${kind || toggle ? html`<div class="lib-line">${kind ? html`<span class="lib-kind">${kind}</span>` : ''}${toggle}</div>` : ''}</div>
+    <div class="lib-acts">${acts}</div></li>`;
+}
+
+/** Inside a collection (or All my games), opened in place in the library. */
+function libFolder(req, ctx, sel, mine, myGames) {
+  const t = req.t, base = ctx.base, reorder = String(req.query.reorder || '') === '1';
+  const back = html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a>`;
+  if (sel.view === 'all') {
+    return html`${back}<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">🛠️ ${t('folders.allGames')}</h2><p>${t('folders.gamesN', { count: myGames.length })}</p></div></div>
+      ${myGames.length ? html`<ul class="lib-list">${myGames.map((g, i) => libGame(req, ctx, g, i, []))}</ul>`
+        : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">🌱</span><div><b>${t('folders.phone.allEmpty')}</b><p class="small"><a href="/build/new">${t('folders.buildNew')}</a></p></div></div>`}`;
+  }
+  const f = sel.folder, own = sel.own, list = F.gamesIn(req.user, f.id), ids = list.map(g => g.id);
+  const canMove = own && list.length > 1, moving = canMove && reorder;
+  const school = f.school_id ? (S.getSchool(f.school_id) || {}).name || '' : '';
+  const meta = [t('folders.gamesN', { count: list.length }), own ? (school ? `🤝 ${t('folders.sharedWithSchool', { school })}` : '') : t('folders.phone.byReadOnly', { name: f.owner_name || '' })].filter(Boolean).join(' · ');
+  const more = own ? folderMenu(req, ctx, f, mine, 'lib')
+    : menu(t('folders.more', { name: f.name }), [html`<form data-api="/api/game-folders/${f.id}/copy"><input type="hidden" name="classId" value="${ctx.c.id}"><button class="btn" type="submit">📁 ${t('folders.copy')}</button></form>`]);
+  const tools = moving ? html`<a class="btn btn-primary lib-tool" href="${base}?folder=${encodeURIComponent(f.id)}">✓ ${t('folders.phone.done')}</a>`
+    : html`${ctx.kind === 'class' ? assignAll(req, ctx, f, list, 'lib-all-d') : ''}${canMove ? html`<a class="btn lib-tool" href="${base}?folder=${encodeURIComponent(f.id)}&amp;reorder=1">↕ ${t('folders.phone.reorder')}</a>` : ''}`;
+  return html`${back}<div class="lib-head"><div class="lib-title lib-ftitle"><h2 id="lib-h" dir="auto"><span aria-hidden="true">${own ? '📁' : '🤝'}</span> ${f.name}</h2><p dir="auto">${meta}</p></div><div class="lib-fmore">${more}</div>
+    ${String(tools).trim() ? html`<div class="lib-tools">${tools}</div>` : ''}</div>
+    ${list.length ? html`<ul class="lib-list">${list.map((g, i) => libGame(req, ctx, g, i, ids, { folder: f, own, reorder: moving }))}</ul>`
+      : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">📁</span><div><b>${t('folders.phone.collectionEmpty')}</b><p class="small muted">${own ? t('folders.emptyText') : t('folders.sharedEmpty')}</p></div></div>`}`;
+}
+
+/** The phone's Games tab: the two-part switch and the picked part. */
+function phoneLib(req, ctx, mine, shared) {
+  const t = req.t, base = ctx.base, sel = phonePicked(req, ctx, mine, shared);
+  const onAssigned = sel.view === 'assigned';
+  const myGames = ctx.folders ? games.myGames(req.user.id, 100) : [];
+  let body;
+  if (onAssigned) body = ctx.assigned.phone({ base, reorder: String(req.query.reorder || '') === '1' });
+  else if (sel.view === 'library') body = libList(req, ctx, mine, shared, myGames);
+  else if (sel.view === 'students') {
+    // The wider screens' list, with its ids made the phone's own.
+    const pane = String(ctx.students.pane()).replace('id="shelf-h" tabindex="-1"', 'id="lib-h"').replace(' id="shared-games"', '');
+    body = html`${ctx.folders ? html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a>` : ''}<div class="lib-students">${raw(pane)}</div>`;
+  } else body = libFolder(req, ctx, sel, mine, myGames);
+  const seg = (on, href, emo, label, n) => html`<a class="lib-seg${on ? ' is-on' : ''}" href="${href}"${on ? raw(' aria-current="page"') : ''}><span aria-hidden="true">${emo}</span> <span class="lib-segl">${label}</span>${n === undefined ? '' : html` <span class="lib-segn">${n}</span>`}</a>`;
+  return html`<div class="lib" data-lib="${sel.view}">
+    ${ctx.folders ? html`<nav class="lib-segs" aria-label="${t('folders.sideClass')}">${seg(onAssigned, `${base}?view=assigned`, '📌', t('folders.phone.assigned'), ctx.assigned.count)}${seg(!onAssigned, `${base}?view=library`, '📁', t('folders.phone.library'))}</nav>` : ''}
+    <section class="lib-card panel" aria-labelledby="lib-h">${body}</section>
+  </div>`;
+}
+
 /** The right side for what is picked. */
 function pane(req, ctx, sel, mine) {
   if (sel.folder) return folderPane(req, ctx, sel, mine);
@@ -227,9 +361,10 @@ function parts(req, ctx) {
 /** The shelf: the left column and the picked item's side. */
 export function shelf(req, ctx, { id = '' } = {}) {
   const { mine, shared, sel, main } = parts(req, ctx);
+  const ph = ctx.kind === 'class' ? phoneLib(req, ctx, mine, shared) : '';
   // The class page's shelf (shelf-class): on a phone its Build button, Assigned and Find chips (shelf-cltop) and the
   // Google Classroom foot give way to the class header's tiles, the Games tab and the Assigned card's head (app.css).
-  return html`<div class="shelf${ctx.kind === 'class' ? ' shelf-class' : ''}" data-shelf${id ? html` id="${id}"` : ''}>
+  return html`${ph}<div class="shelf${ctx.kind === 'class' ? ' shelf-class' : ''}" data-shelf${id ? html` id="${id}"` : ''}>
     ${side(req, ctx, sel, mine, shared)}
     <div class="shelf-col">${ctx.top || ''}<section class="shelf-main panel" id="shelf-main" aria-labelledby="shelf-h" data-shelf-key="${sel.key}" data-href="${hrefOf(ctx, sel)}">${main}</section></div>
     <p class="sr-only" id="shelf-say" aria-live="polite"></p>

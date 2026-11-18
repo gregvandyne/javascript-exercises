@@ -134,20 +134,21 @@ test('class page: "Assigned to" first; a folder in place, with "Assign to <class
 
 for (const [label, opts] of [['390', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }], ['360', { viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true }],
   ['360 right to left', { viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true, lang: 'he' }]]) {
-  test(`phone ${label}: the sidebar is a row of chips over the content; no sideways scroll`, { skip }, async () => {
+  test(`phone ${label}: Build's sidebar is a row of chips, the class page has two clear tabs; no sideways scroll`, { skip }, async () => {
     for (const path of ['/build', `/build?folder=${fun.id}`, `/class/${cls.id}`, `/class/${cls.id}?folder=${fun.id}`]) {
       const { ctx, page, errors } = await open(ana, path, opts);
       assert.ok(await noSideways(page), `${path}: no sideways scroll`);
-      const nav = await page.$eval('.shelf-nav', el => ({ row: getComputedStyle(el).flexDirection, scrolls: el.scrollWidth > el.clientWidth }));
-      assert.equal(nav.row, 'row', 'chips in a row');
       if (path.startsWith('/class/')) {
-        // The class page (docs/decisions.md "Action tiles on the class page, on phones"): the chips wrap instead of
-        // scrolling; Assigned and Find Oomba games are not chips (the Games tab and a tile stand in for them).
-        assert.equal(nav.scrolls, false, 'the class page\'s chips wrap');
-        const hs = await page.$$eval('.shelf-nav .shelf-item', els => els.map(el => [el.dataset.shelfKey || el.getAttribute('href'), el.getBoundingClientRect().height]));
-        assert.ok(hs.filter(([k]) => k === 'assigned' || k === '/learn').every(([, h]) => h === 0), 'no Assigned or Find chip');
-        assert.ok(hs.filter(([k, h]) => h && k !== 'assigned' && k !== '/learn').every(([, h]) => h >= 44), 'chips are 44 px tall');
+        // The class page (docs/decisions.md "The Games tab on phones: two clear tabs"): the sidebar gives way to the
+        // phone block, a two-part switch (Assigned | My library) over compact rows; its tap targets are 44 px or more.
+        assert.equal(await page.$eval('.shelf-class', el => getComputedStyle(el).display), 'none', 'the sidebar hides');
+        const segs = await page.$$eval('.lib-seg', els => els.map(el => el.getBoundingClientRect().height));
+        assert.equal(segs.length, 2); assert.ok(segs.every(h => h >= 44), 'the switch is 44 px tall');
+        const taps = await page.$$eval('.lib .lib-item, .lib .lib-toggle, .lib .shelf-more, .lib .lib-tool, .lib .lib-back', els => els.map(el => el.getBoundingClientRect().height).filter(Boolean));
+        assert.ok(taps.every(h => h >= 44), `${path}: tap targets are 44 px tall (${taps})`);
       } else {
+        const nav = await page.$eval('.shelf-nav', el => ({ row: getComputedStyle(el).flexDirection, scrolls: el.scrollWidth > el.clientWidth }));
+        assert.equal(nav.row, 'row', 'chips in a row');
         const chip = await page.$eval('.shelf-item[aria-current="true"]', el => el.getBoundingClientRect().height);
         assert.ok(chip >= 44, 'chips are 44 px tall');
       }
@@ -156,8 +157,9 @@ for (const [label, opts] of [['390', { viewport: { width: 390, height: 844 }, is
       if (opts.lang && path === `/class/${cls.id}?folder=${fun.id}`) await shot(page, 'class-folder-360-rtl');
       // Menus open inside the screen.
       if (path.includes('folder')) {
-        await page.locator('#shelf-main .shelf-game .shelf-more').first().click();
-        const r = await page.locator('#shelf-main .shelf-game .shelf-menu-panel').first().boundingBox();
+        const where = path.startsWith('/class/') ? '.lib .lib-row' : '#shelf-main .shelf-game';
+        await page.locator(`${where} .shelf-more`).first().click();
+        const r = await page.locator(`${where} .shelf-menu-panel`).first().boundingBox();
         assert.ok(r.x >= 0 && r.x + r.width <= opts.viewport.width + 1, `${path}: the ⋯ menu fits`);
         assert.ok(await noSideways(page), `${path}: still no sideways scroll`);
         await page.keyboard.press('Escape');

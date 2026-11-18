@@ -967,7 +967,8 @@ function classGamesPane(req, c, people) {
  *  and what is picked, swapped in place by public/js/shelf.js. Folders and Assign only for the school's staff. */
 function gamesShelfCtx(req, c, people) {
   const staff = S.schoolsOf(req.user.id).some(s => s.id === c.school_id && s.role !== 'student');
-  // The Google Classroom button: the sidebar's foot on wider screens, the "Assigned to" card's head on phones (CSS shows one).
+  // The Google Classroom button: the sidebar's foot on wider screens, the foot of the phone's Assigned view
+  // (game-shelf.js phoneLib; CSS shows one).
   const gc = gcLessonsButton(req, c);
   return { kind: 'class', base: `/class/${c.id}`, c, staff: staff && !c.archived_at, folders: staff, assigned: assignedPane(req, c, { tools: gc }), students: classGamesPane(req, c, people), gc };
 }

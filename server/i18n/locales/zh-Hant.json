@@ -11141,6 +11141,29 @@
     "saveAnother": "存到其他資料夾",
     "moveUp": "上移",
     "moveDown": "下移",
-    "sharedEmpty": "這裡還沒有你能開啟的遊戲。"
+    "sharedEmpty": "這裡還沒有你能開啟的遊戲。",
+    "phone": {
+      "assigned": "已指派",
+      "library": "我的資料庫",
+      "assignedSub": "{count, plural, other {# 個遊戲，依學生看到的順序}}",
+      "addFromLibrary": "從資料庫加入",
+      "reorder": "重新排序",
+      "done": "完成",
+      "noDue": "沒有截止日",
+      "up": "將{name}上移",
+      "down": "將{name}下移",
+      "libraryNote": "合集只用來整理你的遊戲。請在合集裡指派。",
+      "allSub": "你製作的遊戲",
+      "sharedSub": "已與你的學校共用",
+      "newCollection": "新增合集",
+      "collectionName": "合集名稱",
+      "fromOthers": "來自他人",
+      "byReadOnly": "{name} · 唯讀",
+      "studentsSub": "{class} 的學生製作",
+      "oomba": "Oomba 遊戲",
+      "oombaSub": "瀏覽所有 Oomba 遊戲",
+      "collectionEmpty": "這個合集還是空的",
+      "allEmpty": "你還沒有製作任何遊戲。"
+    }
   }
 }
