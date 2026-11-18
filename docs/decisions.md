@@ -8418,3 +8418,20 @@ has a **method**; the standard algorithms stay the default.
 - Tests: tests/unit/box-by-box-methods.test.js (paths, invalid steps, remainders, parts, items, and each method in the
   built game in Chromium, Guided and On my own, plus Watch, Count up, wrong digits and the worked answer);
   tests/unit/box-by-box.test.js (the method in sets and labels).
+
+## Crossword: a parent sees only what works for them (18 Nov 2026)
+Owner: "Hide those for parents." A family grown-up's Crossword showed the teacher tools that the fence
+(routes/family.js `grownupMay`) refuses them, and they failed when tapped.
+- **One rule:** the frame asks the fence (`fenceLets(u, method, path)`, exported from routes/family.js) for the calls a
+  button would make, so the page and the server cannot drift. AI clues and reading a PDF or Word file (`clues`, now
+  also needing the fence to allow `/clues` and `/words-from-doc`), saving a set (`setSave: false`) and looking up a
+  class code (`setFind: false`). The SDK has `BRB.canSaveSet` and `BRB.canFindSet` (false only when the frame says so).
+- **Hidden for a parent:** Write clues with AI / Rewrite all clues with AI, Upload a word list (PDF or Word) and its
+  limits line (the file picker takes .txt and .csv only), the "Grade or level (for AI clues)" field, Save and share on
+  the preview, Share in Your crosswords, and the class code box on the home screen.
+- **Kept for a parent:** typing or pasting words, a .txt or .csv list, drafts in Your crosswords (their game save),
+  Try another layout, Play it, and Print (the puzzle, never the answer key). Step 1's note says "or type it in step 2"
+  instead of offering AI, and Step 2 says "Type a clue for each word." (`addPNoAi`, `typeClues`, in all 13 languages).
+- Teachers are unchanged. A kid or a teacher without AI also gets the no-AI wording (they never had the AI buttons).
+- Tests: tests/unit/crossword-family.test.js (the fence, each account's frame flags, and the game in Chromium with the
+  frame the server sends: a parent sees none of the tools above, a teacher sees them all, both make, play and print).

@@ -1334,6 +1334,9 @@
     questionSet: questionSet,
     saveQuestionSet: saveQuestionSet,
     findQuestionSet: findQuestionSet,
+    // Whether this viewer may save a set / look up a class code (false: the server would refuse it, so hide it).
+    canSaveSet: INIT.setSave !== false,
+    canFindSet: INIT.setFind !== false,
     canAssign: INIT.canAssign === true,
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,
