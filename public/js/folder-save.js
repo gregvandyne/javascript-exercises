@@ -16,7 +16,7 @@ export async function openSave(href) {
     <fieldset class="fsave-pick"><legend class="fsave-leg">${esc(W.pick)}</legend>
       ${d.folders.length ? `<ul class="plain fsave-list">${d.folders.map(f => `<li><label class="fsave-opt${f.has ? ' is-in' : ''}">
         <input type="radio" name="folder" value="${esc(f.id)}"${f.has ? ' disabled' : ''}${first && f.id === first.id ? ' checked' : ''}>
-        <span class="fsave-name"><b dir="auto">📁 ${esc(f.name)}</b><span class="small muted">${f.has ? `✅ ${esc(W.saved)} · ` : ''}${esc(f.count)}</span></span></label></li>`).join('')}
+        <span class="fsave-name"><b dir="auto">📁 ${esc(f.name)}</b><span class="small muted">${esc(f.count)}</span>${f.has ? `<span class="fsave-here">✅ ${esc(fillIn(W.already, f.name))}</span>` : ''}</span></label></li>`).join('')}
       </ul>` : `<p class="muted">${esc(W.none)}</p>`}
       <label class="fsave-opt fsave-newopt"><input type="radio" name="folder" value=""${first ? '' : ' checked'}><span class="fsave-name"><b>➕ ${esc(W.newFolder)}</b></span></label>
       <div class="fsave-new"${first ? ' hidden' : ''}><label class="sr-only" for="fsave-name">${esc(W.name)}</label>
