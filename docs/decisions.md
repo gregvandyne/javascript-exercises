@@ -7842,3 +7842,14 @@ buttons cleaned up: no ready-made chips, three options, and the existing folders
 - Strings: folders.buildNew, progressEmptyText, studentEmptyText, liveHistory, liveHistoryNone; classEmptyText reworded,
   all 13 locales. Tests updated: games-not-lessons, classroom-homes, course-teacher-view, live-teacher, schools,
   school-teacher-mobile.spec.
+
+## Class page Games tab: one layout for desktop and phone (18 Nov 2026)
+Owner, on the desktop Games tab: "This looks terrible on desktop. Make sure the organization is perfect on both desktop
+and mobile." The buttons, the folder chips and Google Classroom shared one wrapping row. Now, top to bottom:
+- **Toolbar:** 📁 New folder, ✨ Build new game, 🦉 Find Oomba games on the left; 🎓 Google Classroom at the right end.
+  New folder opens a small panel under its button (folder name, Create), so the toolbar never reflows.
+- **📁 My folders:** a labelled row of its own under a divider, each folder a chip that opens it.
+- **📌 Assigned games:** a labelled section under a divider: the assigned games, or one compact row "No games assigned
+  yet · Build a game, or assign one from your folders or Oomba's games."
+- **Phone (≤ 600 px):** the toolbar's buttons stack full width, New folder's panel opens in place under its button,
+  Google Classroom full width. Checked at 1280 × 900 and 390 × 844 with no sideways scroll (`.cl-*` in app.css).

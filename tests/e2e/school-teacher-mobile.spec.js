@@ -170,7 +170,7 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   // Games tab (first): New folder, Build new game and Find Oomba games, each a full-width button on a phone; no lesson tools
   await page.goto(`/class/${cls}`);
   await expect(page.locator('nav.classtabs a').first()).toContainText('Games');
-  for (const sel of ['#lessons .gfo-new > summary', '#cl-newgame', '#lessons a[href="/learn"]']) {
+  for (const sel of ['#lessons .cl-nf > summary', '#cl-newgame', '#lessons a[href="/learn"]']) {
     const box = await page.locator(sel).first().boundingBox();
     expect(box.height, sel).toBeGreaterThanOrEqual(43.5); expect(box.x + box.width, sel).toBeLessThanOrEqual(390);
   }
