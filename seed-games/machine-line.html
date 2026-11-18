@@ -61,7 +61,11 @@
 </script><style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #151b26; font-family: "Bricolage Grotesque", system-ui, sans-serif; color: #FFF6E5; }
   .ml[hidden], .ml-load[hidden] { display: none; }
-  .ml { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .ml { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+  .ml-board { position: fixed; left: 0; top: 0; z-index: 1; visibility: hidden; pointer-events: none; transform-origin: 0 0; border-radius: 4%; transition: box-shadow .15s; }
+  .ml-board.drop { box-shadow: 0 0 0 5px #66E0A3; }
+  .ml .ml-btn.blk { touch-action: none; cursor: grab; }
+  .ml-ghost { position: fixed; left: 0; top: 0; z-index: 6; pointer-events: none; padding: 14px 22px; border: 3px solid #8FD3FF; border-radius: 16px; background: #1d2a3f; color: #fff; font: 900 28px/1 "Bricolage Grotesque", system-ui, sans-serif; box-shadow: 0 10px 24px rgba(0, 0, 0, .35); }
   .ml button { font: inherit; color: inherit; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .ml button:focus-visible { outline: 4px solid #FFD23F; outline-offset: 3px; }
   .ml-top { padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 0 10px; }
@@ -584,8 +588,9 @@ const I18N = {
     "g.said.mulsq": "Yes! {a} times {n} is {m}, and {m} squared is {t}.",
     "m.hint.fill": "Fill every slot in the line, then run it.",
     "m.hint.block": "One machine is not the right one.",
-    "m.hint.first.mul": "Right machines, wrong way round. Multiply first.",
-    "m.hint.first.add": "Right machines, wrong way round. Add first.",
+    "m.hint.first.mul": "Right machines, wrong way round. Without brackets, multiplying comes before adding or subtracting, so the times machine goes first.",
+    "m.hint.first.add": "Right machines, wrong way round. Brackets come first, so the plus machine goes first, then the times machine.",
+    "o.rule": "Machines run in the order you put them. Written down, brackets come first, then times and divide, then plus and minus.",
     "m.hint.run": "{n} in: your line gives {a}. It should give {b}.",
     "s.lineA.am": "Line A is plus {b}, then times {a}.",
     "s.lineA.ma": "Line A is times {a}, then plus {c}.",
@@ -668,6 +673,7 @@ const I18N = {
     "show.opposite": "use the opposites",
     "show.x": "x = {n}",
     "show.idle": "factory street",
+    "show.yours": "your line: {e}",
     "btn.say": "Say it again",
     "btn.up": "Up",
     "btn.down": "Down",
@@ -802,16 +808,25 @@ for (const s of [-1, 1]) { const p = solid(new THREE.CylinderGeometry(0.09, 0.09
 const CW = 1024, CH = 768, BOARD = V3(0, 2.2, -3.05);
 let BW = 6.4, BH = 4.8;   // a wide screen's; a tall screen's is 4 by 3, higher up (sizeBoard)
 const LIGHT = new THREE.Color(1.12, 1.12, 1.12);
-const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = CH;
+/* The board is drawn at twice its size and shown on the page, over the 3D street, where the 3D view had it: inside
+   the scene its brighter-than-white picture went through the haze and (on Beautiful graphics) the glow, and its words
+   and numbers came out soft and foggy, the trouble Crate Stacker's truck numbers had (docs/decisions.md "Machine Line:
+   a clear board, the voice from the start, and order of operations"). The 3D board stays as the stand-in that moves:
+   it pops in, shakes and sizes as before, unseen, and the page board follows it every frame. */
+const RES = 2;
+const canvas = document.createElement('canvas'); canvas.width = CW * RES; canvas.height = CH * RES;
 const X = canvas.getContext('2d');
 const boardTex = new THREE.CanvasTexture(canvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
 const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: boardTex, fog: false, transparent: true, depthWrite: false, color: LIGHT }));
-board.renderOrder = 2;
+board.renderOrder = 2; board.material.visible = false;
+canvas.className = 'ml-board'; canvas.setAttribute('aria-hidden', 'true'); document.body.insertBefore(canvas, document.getElementById('ml'));
 function sizeBoard() {
   BW = tall ? 4.0 : 6.4; BH = BW * 0.75; BOARD.y = squat() ? 2.44 : tall ? 3.12 : 2.75; board.position.copy(BOARD); board.scale.set(BW, BH, 1); board.userData.size = [BW, BH];
   const foot = BOARD.y - BH / 2 + 0.1;
   for (const p of posts.children) { p.scale.set(1, foot, 1); p.position.set(p.userData.side * (BW / 2 - 0.5), foot / 2, BOARD.z - 0.08); }
 }
+/** The line's slots as last drawn (board pixels), left to right: where a dragged block can go. */
+let slotRects = [];
 /** The smallest words and numbers a player must read on the board, in its own pixels (the test turns it into screen pixels). */
 let smallest = 999;
 const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
@@ -851,6 +866,7 @@ function paintRow(row, cy, plan) {
     if (i === n) break;
     line(x + 5, cy, x + GAP - 12, cy, C.dim, 6); head(x + GAP - 3, cy, 1, C.dim, 10); x += GAP;
     let m = row.ops[i];
+    if (m.slot) slotRects.push({ x0: x, x1: x + MW, y0: cy - MH / 2, y1: cy + MH / 2 });   // where a block can be dropped
     if (m.slot && plan && plan.length) m = { t: plan.shift(), planned: true };
     if (m.slot) { fillStroke(rr(x, cy - MH / 2, MW, MH, 22), 'rgba(255, 255, 255, 0.04)', C.dim, 6, [18, 14]); text('?', x + MW / 2, cy + 2, 64, { fill: C.dim }); }
     else {
@@ -905,7 +921,7 @@ function paintView(ov, plan, live) {
 }
 /** Draw the board for a round and one of its three looks ('ask', 'hint', 'found'). */
 function paint(Rd, mode) {
-  smallest = 999; X.setTransform(1, 0, 0, 1, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
+  smallest = 999; slotRects = []; X.setTransform(RES, 0, 0, RES, 0, 0); X.clearRect(0, 0, CW, CH); X.lineJoin = 'round'; X.lineCap = 'round'; X.setLineDash([]);
   fillStroke(rr(8, 8, CW - 16, CH - 16, 36), C.bg, C.amber, 10);
   X.strokeStyle = 'rgba(255, 193, 94, 0.06)'; X.lineWidth = 2; X.beginPath(); for (let x = 72; x < CW - 20; x += 64) { X.moveTo(x, 20); X.lineTo(x, CH - 20); } for (let y = 64; y < CH - 20; y += 64) { X.moveTo(20, y); X.lineTo(CW - 20, y); } X.stroke();
   if (!Rd) paintView({ rows: [{ tag: '', vals: ['n', '', '?'], ops: [{ t: ML.opText(ML.op('m', 3)) }, { t: ML.opText(ML.op('a', 5)) }] }], lines: [fmt('title'), fmt('show.idle')] }, null, null);
@@ -913,7 +929,12 @@ function paint(Rd, mode) {
     const p = Rd.pic; let ov = mode === 'found' ? p.found : mode === 'hint' && S.draw ? S.draw : p.ask, plan = null, live = null;
     if (ov === p.ask) {
       // the board shows the plan, and only the plan, until it is run
-      if (Rd.input === 'build') plan = S.value.map(i => ML.opText(Rd.build.blocks[i]));
+      if (Rd.input === 'build') {
+        plan = S.value.map(i => ML.opText(Rd.build.blocks[i]));
+        // what the line built so far makes, written down (brackets where the order needs them): the machines' order
+        // and the order of operations, side by side, before the line is run
+        if (S.value.length) ov = { ...ov, lines: [...(ov.lines || []), fmt('show.yours', { e: ML.expr(ML.lineOf(Rd, S.value), Rd.v || 'n') })] };
+      }
       else if (Rd.input === 'ray') { live = S.value; ov = { ...ov, lines: [valueText(Rd, S.value)] }; }
     }
     paintView(ov, plan, live);
@@ -1009,6 +1030,17 @@ function frame() {
 let wasSquat = squat();
 addEventListener('resize', () => { const t = portrait(); if (t !== tall || squat() !== wasSquat) { tall = t; wasSquat = squat(); redraw(); } frame(); });
 const scr = p => { const r = g.renderer.domElement.getBoundingClientRect(), q = p.clone().project(g.camera); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; };
+/** The page board over the 3D one: the same place, the same size (its pop and its shake too), seen only while the 3D
+ *  board is on the street. */
+function placeBoard() {
+  if (!stage.children.includes(board) || !board.visible || board.scale.x < 0.02) { canvas.style.visibility = 'hidden'; return; }
+  const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion);
+  const mid = board.getWorldPosition(V3(0, 0, 0)), w = board.scale.x / 2, h = board.scale.y / 2;
+  const [ax, ay] = scr(mid.clone().addScaledVector(right, -w).addScaledVector(up, h)), [bx, by] = scr(mid.clone().addScaledVector(right, w).addScaledVector(up, -h));
+  const st = canvas.style;
+  st.visibility = 'visible'; st.width = `${Math.max(1, bx - ax)}px`; st.height = `${Math.max(1, by - ay)}px`; st.transform = `translate(${ax}px, ${ay}px)`;
+}
+g.onUpdate(placeBoard);
 /** The screen box (left, top, right, bottom in CSS pixels) of the board. */
 function boxOf(o) {
   const cam = g.camera, right = V3(1, 0, 0).applyQuaternion(cam.quaternion), up = V3(0, 1, 0).applyQuaternion(cam.quaternion), [w, h] = o.userData.size;
@@ -1027,6 +1059,7 @@ function boardValue(ev) {
   return Math.max(R.step.min, Math.min(R.step.max, v));
 }
 const cnv = g.renderer.domElement;
+cnv.addEventListener('pointerdown', ev => { const R = S.R, k = R && R.input === 'build' && S.phase === 'play' ? slotAt(ev) : null; if (k != null && k >= 0 && k < S.value.length) startDrag(ev, S.value[k], k); });
 cnv.addEventListener('pointerdown', ev => { const v = boardValue(ev); if (v != null) { dragging = true; setPlan({ at: v, dir: S.value.dir }); } });
 cnv.addEventListener('pointermove', ev => { if (!dragging) return; const v = boardValue(ev); if (v != null && v !== S.value.at) setPlan({ at: v, dir: S.value.dir }); });
 for (const name of ['pointerup', 'pointercancel', 'pointerleave']) cnv.addEventListener(name, () => { dragging = false; });
@@ -1095,13 +1128,25 @@ function solo(crates) {
   clearStage(); putBoard(null, 'ask'); setCrates(crates); placeHero();
   view.pts = stagePts();
 }
+/* The AI voice from the first line: the lines a round asks change with each play, so the voice has none of them ready,
+   and a line it doesn't have in time (4 s) is read by the device's own voice. So a play's lap is chosen while the start
+   card or the menu shows, and its first round's lines (and the rule) are asked for then, ready when Start is pressed. */
+const ahead = {};
+function prefetch(lines) { try { if (B && B.prefetchSpeech) B.prefetchSpeech(lines.filter(Boolean).map(([k, v]) => fmt(k, v)), { lang: 'en', voice: 'friendly' }); } catch (e) { /* no page */ } }
+function warm(chapter) {
+  if (S.pin != null || !ML.CHAPTERS.includes(chapter)) return;   // a test's pinned lap is never spent here
+  try {
+    if (ahead[chapter] == null) ahead[chapter] = newLap(chapter);
+    prefetch([...(chapter === 'build' ? [['o.rule', {}]] : []), ...ML.round(chapter, 1, ahead[chapter]).ask]);
+  } catch (e) { /* the voice will catch up */ }
+}
 function showStart() {
-  S.screen = 'start'; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  S.screen = 'start'; S.phase = 'idle'; S.R = null; S.tick++; solo(0); warm(P.chapter);
   card('start', { title: fmt('title'), sub: fmt('ch.' + P.chapter), line: 'start.line', buttons: [{ id: 'start', icon: ICON[P.chapter], label: fmt('btn.start'), cls: 'go', go: () => startChapter(P.chapter) }] });
   frame();
 }
 function showMenu() {
-  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; solo(0);
+  S.screen = 'menu'; S.chapter = ''; S.phase = 'idle'; S.R = null; S.tick++; solo(0); ML.CHAPTERS.forEach(warm);
   if (S.hero) S.hero.play('wave');
   card('menu', { title: fmt('title'), line: 'menu.pick', buttons: ML.CHAPTERS.map(c => ({ id: 'ch-' + c, icon: ICON[c] + (S.done[c] ? '⭐' : ''), label: fmt('ch.' + c), go: () => startChapter(c) })) });
   frame();
@@ -1117,6 +1162,11 @@ let spare = 0x9E3779B9;
 function rand01() { try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch (e) { spare = (Math.imul(spare, 1664525) + 1013904223) >>> 0; return spare / 4294967296; } }
 function playLap(chapter) {
   if (S.pin != null) { const p = S.pin; S.pin = null; return p; }
+  // the lap chosen ahead while the start card or the menu showed (its first lines already asked for)
+  if (ahead[chapter] != null) { const l = ahead[chapter]; delete ahead[chapter]; return l; }
+  return newLap(chapter);
+}
+function newLap(chapter) {
   let last = null;
   try { last = B && B.storage ? B.storage.get(LAPS_KEY) : null; } catch (e) { last = null; }
   if (!last || typeof last !== 'object' || Array.isArray(last)) last = {};
@@ -1143,7 +1193,10 @@ function nextRound() {
   S.round++; S.R = ML.round(S.chapter, S.round, S.lap); S.phase = 'play'; S.mode = 'ask'; S.draw = null; S.shown = false; S.tick++;
   const Rd = S.R; S.value = firstPlan(Rd);
   hint(); dots2(); chip(Rd.chip);
-  say(Rd.ask);   // the words first: the camera fits the street under them
+  // Build the Line's first round starts with the rule that links a line to what is written: order of operations.
+  say(S.chapter === 'build' && S.round === 1 ? [['o.rule', {}], ...Rd.ask] : Rd.ask);   // the words first: the camera fits the street under them
+  // The AI voice: this round's closing line and the next round's question, asked for now, so they start at once.
+  prefetch([...(Rd.said || []), ...(S.round < ML.ROUNDS ? ML.round(S.chapter, S.round + 1, S.lap).ask : [])]);
   redraw(); frame();
 }
 function finish() {
@@ -1156,6 +1209,7 @@ function finish() {
   const buttons = [{ id: 'again', icon: '🔁', label: fmt('btn.again'), cls: 'go', go: () => startChapter(S.chapter) }];
   if (!S.lock) buttons.push({ id: 'menu', icon: '🏭', label: fmt('btn.menu'), go: showMenu });
   card('end', { title: fmt('win'), sub: fmt('ch.' + S.chapter), line: 'win.card', buttons });
+  warm(S.chapter);   // Play again: its first round, ready
   frame();
 }
 
@@ -1168,7 +1222,7 @@ function valueText(Rd, v) { return Rd.input === 'ray' ? `x ${signOf(Rd, v.dir)} 
 function controls(Rd, found) {
   if (Rd.input === 'tiles') return Rd.opts.map((o, i) => button({ id: 'ml-n' + i, big: o.t, aria: o.t, cls: (o.t.length > 4 ? 'long' : '') + (found && i === Rd.answer ? ' right' : ''), go: b => answer(i, b) }));
   const go = button({ id: 'ml-go', icon: '▶', label: fmt('btn.run'), cls: 'go', go: b => run(b) });
-  if (Rd.input === 'build') return Rd.build.blocks.map((o, i) => { const b = button({ id: 'ml-b' + i, big: ML.opText(o), aria: ML.opText(o), cls: 'blk', go: () => toggle(i) }); b.setAttribute('aria-pressed', String(S.value.includes(i))); return b; }).concat(go);
+  if (Rd.input === 'build') return Rd.build.blocks.map((o, i) => { const b = button({ id: 'ml-b' + i, big: ML.opText(o), aria: ML.opText(o), cls: 'blk', go: () => { if (!dragJustEnded()) toggle(i); } }); b.setAttribute('aria-pressed', String(S.value.includes(i))); b.addEventListener('pointerdown', ev => startDrag(ev, i, -1)); return b; }).concat(go);
   const dn = button({ id: 'ml-dn', big: '−', aria: fmt('btn.down'), cls: 'step', go: () => bump(-1) }), up = button({ id: 'ml-up', big: '+', aria: fmt('btn.up'), cls: 'step', go: () => bump(1) });
   if (Rd.input === 'ray') return [dn, button({ id: 'ml-flip', big: valueText(Rd, S.value), label: '⇄ ' + fmt('btn.flip'), aria: valueText(Rd, S.value), cls: 'flip', go: () => flip() }), up, go];
   const val = document.createElement('output'); val.id = 'ml-val'; val.className = 'ml-val'; val.setAttribute('aria-live', 'polite'); val.textContent = valueText(Rd, S.value);
@@ -1216,6 +1270,63 @@ function toggle(i) {
   if (at >= 0) v.splice(at, 1); else { if (v.length >= Rd.build.slots) v.pop(); v.push(i); }
   setPlan(v);
 }
+/* Drag and drop: a block from the bar onto a slot of the line (it goes in there and the blocks after it move along; on
+   a full line it takes that slot's place and the block that was there goes back to the bar), a block on the line to another slot (the line keeps its order around it), or off the board (it comes out).
+   A tap still puts a block in or takes it out, and the keys still work. */
+const drag = { on: false, i: -1, from: -1, x0: 0, y0: 0, moved: false, ghost: null, ended: false };
+/** The click a browser sends after a drag's pointerup is not a tap. */
+const dragJustEnded = () => drag.ended;
+for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => { drag.ended = false; }, true);
+/** The point on the board under the pointer (board pixels), or null off the board. */
+function boardPoint(ev) {
+  const r = canvas.getBoundingClientRect(); if (canvas.style.visibility === 'hidden' || r.width < 2) return null;
+  const x = (ev.clientX - r.left) / r.width * CW, y = (ev.clientY - r.top) / r.height * CH;
+  return x < 0 || y < 0 || x > CW || y > CH ? null : { x, y };
+}
+/** Which slot the pointer is over: its place in the line, -1 on the board but not on a slot, null off the board. */
+function slotAt(ev) {
+  const q = boardPoint(ev); if (!q) return null;
+  let best = -1, d = Infinity;
+  slotRects.forEach((s, k) => { if (q.y < s.y0 - 70 || q.y > s.y1 + 70) return; const dx = q.x < s.x0 ? s.x0 - q.x : q.x > s.x1 ? q.x - s.x1 : 0; if (dx < 60 && dx < d) { d = dx; best = k; } });
+  return best;
+}
+function startDrag(ev, i, from) {
+  const Rd = S.R; if (!Rd || Rd.input !== 'build' || S.phase !== 'play' || ev.button > 0) return;
+  Object.assign(drag, { on: true, i, from, x0: ev.clientX, y0: ev.clientY, moved: false });
+  addEventListener('pointermove', dragMove); addEventListener('pointerup', dragEnd); addEventListener('pointercancel', dragEnd);
+}
+function dragMove(ev) {
+  if (!drag.on) return;
+  if (!drag.moved) {
+    if (Math.hypot(ev.clientX - drag.x0, ev.clientY - drag.y0) < 8) return;
+    drag.moved = true;
+    const gh = document.createElement('div'); gh.className = 'ml-ghost'; gh.textContent = ML.opText(S.R.build.blocks[drag.i]); gh.setAttribute('aria-hidden', 'true');
+    document.body.append(gh); drag.ghost = gh;
+  }
+  drag.ghost.style.transform = `translate(${ev.clientX}px, ${ev.clientY}px) translate(-50%, -50%)`;
+  const k = slotAt(ev); canvas.classList.toggle('drop', k !== null && (k >= 0 || drag.from >= 0));
+}
+function dragEnd(ev) {
+  if (!drag.on) return;
+  removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragEnd); removeEventListener('pointercancel', dragEnd);
+  drag.on = false; canvas.classList.remove('drop');
+  if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+  if (!drag.moved || ev.type === 'pointercancel') return;
+  drag.ended = true;   // until the next press or key: the click the drag's pointerup makes is not a tap
+  dropBlock(drag.i, drag.from, slotAt(ev));
+}
+/** Put block i where it was dropped (k: a slot's place, -1 the board, null off it); from: its place in the line, or -1 from the bar. */
+function dropBlock(i, from, k) {
+  const Rd = S.R; if (!Rd || Rd.input !== 'build' || S.phase !== 'play') return;
+  const v = S.value.slice(), n = Rd.build.slots;
+  if (from >= 0) v.splice(from, 1); else { const at = v.indexOf(i); if (at >= 0) v.splice(at, 1); }
+  if (k === null) { if (from >= 0) setPlan(v); return; }   // off the board: a block from the line comes out
+  if (k >= 0 && from < 0 && k < v.length && v.length >= n) v.splice(k, 1);   // a full line: the new block takes that slot's place (with room, it goes in there and the rest move along)
+  v.splice(k < 0 ? v.length : Math.min(k, v.length), 0, i);
+  while (v.length > n) v.pop();
+  setPlan(v);
+}
+
 /** Run the plan. */
 function run(b) { const Rd = S.R; if (Rd && Rd.input !== 'tiles') settle(ML.judge(Rd, S.value), b || document.getElementById('ml-go')); }
 /** Pick a tile. */
