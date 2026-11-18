@@ -2764,7 +2764,9 @@
         "zoneNone": "None",
         "placeNote": "Type a town or city. Oomba never uses anyone's location.",
         "qrNote": "Only the class's approved links and Oomba pages can be shown.",
-        "undo": "Undo"
+        "undo": "Undo",
+        "done": "Done",
+        "saved": "Saved"
       },
       "bgChanged": "Background changed",
       "uploading": "Checking your picture…",
@@ -9773,6 +9775,10 @@
         "mode": "Timer or stopwatch",
         "toTimer": "Timer: counts down",
         "toStopwatch": "Stopwatch: counts up from zero",
+        "editHint": "Tap to change the time",
+        "editLabel": "New time: minutes, or minutes:seconds",
+        "editBad": "Type minutes (8) or minutes and seconds (8:30), up to 180 minutes.",
+        "editSet": "Timer set to {time}",
         "o": {
           "mode": {
             "timer": "Timer",

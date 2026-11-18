@@ -2746,7 +2746,9 @@
         "zoneNone": "Geen",
         "placeNote": "Typ een plaats of stad. Oomba gebruikt nooit iemands locatie.",
         "qrNote": "Alleen de goedgekeurde links van de klas en Oomba-pagina's kunnen worden getoond.",
-        "undo": "Ongedaan maken"
+        "undo": "Ongedaan maken",
+        "done": "Klaar",
+        "saved": "Opgeslagen"
       },
       "bgChanged": "Achtergrond veranderd",
       "uploading": "Je afbeelding wordt gecontroleerd…",
@@ -9347,6 +9349,10 @@
         "mode": "Timer of stopwatch",
         "toTimer": "Timer: telt af",
         "toStopwatch": "Stopwatch: telt op vanaf nul",
+        "editHint": "Tik om de tijd te veranderen",
+        "editLabel": "Nieuwe tijd: minuten, of minuten:seconden",
+        "editBad": "Typ minuten (8) of minuten en seconden (8:30), tot 180 minuten.",
+        "editSet": "Timer op {time} gezet",
         "o": {
           "mode": {
             "timer": "Timer",

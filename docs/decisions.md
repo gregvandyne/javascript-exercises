@@ -8178,3 +8178,37 @@ which job. Now each job is a card.
 - The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
   at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
 - Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".
+
+## Timer: settings that stick, tap the time (18 Nov 2026)
+
+The owner (teacher's screen, an iPad): "There is no way to save a new timer time or change in settings", and the
+time should change with a tap on the digits.
+
+- **Why the time did not change.** Starting minutes was saved, but a timer that had run once (Start, a quick time,
+  Reset) has a run on the server (`dash_class.timers`: `{ mode, dur, base, start, on }`), and every screen showed that
+  run's `dur`, never the new minutes. Now saving the layout with other Starting minutes for a countdown gives its run
+  the new time (services/dash.js `retimeTimers`/`retime`): stopped or finished, it waits at the new time; running, it
+  keeps running from it. Each run now records the minutes it follows (`m`); the page shows a run whose `m` differs
+  from the widget's minutes with the new time at once, before the server has it (public/js/dash-widgets.js `retime`).
+  Runs saved before `m` have none and are shown as they are; nothing to migrate.
+- **Fields that never let go.** Safari fires no `change` on a number field until it loses the focus, a tap on ✕, the
+  backdrop or a button doesn't take the focus, and a field taken out of the page fires nothing: a typed number could be
+  lost when the sheet closed. Now the sheet (public/js/app.js `sheet`, every sheet) blurs a focused field inside it
+  before closing, so its `change` runs; leaving edit mode does the same for the side panel; number fields are kept as
+  they are typed (in range; out of range waits for the field to let go, then is clamped), saved with the usual 700 ms
+  debounce, and closing the board's settings sheet saves at once.
+- **Done and Saved.** The board's settings sheet has Done (at the end of the row with Undo): it closes, and a change
+  made in the sheet shows a "✓ Saved" toast once the server has it; while open, "✓ Saved" (role=status) shows by
+  Undo after each save. Nothing changed: no toast.
+- **Tap the time.** On the teacher's board (not the projector, edit mode, a student's screen, a copy, or the
+  stopwatch) the countdown's digits are a button ("Tap to change the time": the dark tooltip, a dotted underline and a
+  pencil on hover or focus, a faint underline on touch screens; the hint is also its description for screen readers).
+  It becomes a field the same size (`inputmode=decimal`, "m:ss"): "8" or "8:30" (also "8.30"), 1 second to 180 minutes
+  (the settings' and the server's limit). Enter or leaving it sets it, Escape keeps the old time; a bad time on Enter
+  shows what to type (role=alert) and stays, a bad time on leaving is dropped. Whole minutes other than Starting
+  minutes change that setting (saved with the layout; the run takes it as above); anything else (8:30, or the same
+  minutes to start over) sets this run's time (`set`, with `run: true` so a running timer keeps running from it);
+  Starting minutes stay. Announced: "Timer set to 8:30".
+- Words in 12 languages (`js.dash.side.done`, `.saved`, `dash.w.timer.edit*`). Checks:
+  tests/unit/dash-timer-edit.test.js (each way of closing, mouse and touch, reloaded; Done; tap, Escape, bad input,
+  running, the projector, edit mode).

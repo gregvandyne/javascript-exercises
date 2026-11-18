@@ -171,7 +171,9 @@ test('timers: a start time and a duration on the server; every screen works out 
   r = await T(`/api/dash/${w.A.id}/timers/tpin`, POST({ action: 'start' }));
   const st = r.json.timer;
   assert.equal(st.on, true); assert.ok(Math.abs(st.start - Date.now()) < 2000); assert.equal(typeof st.start, 'number');
-  assert.deepEqual(Object.keys(st).sort(), ['base', 'dur', 'mode', 'on', 'start'], 'a start time and a duration, never a ticking value');
+  // m: the Starting minutes the run follows (docs/decisions.md "Timer: settings that stick, tap the time"), not a time.
+  assert.deepEqual(Object.keys(st).sort(), ['base', 'dur', 'm', 'mode', 'on', 'start'], 'a start time and a duration, never a ticking value');
+  assert.equal(st.m, 10);
   // A student's screen gets the pinned timer (not the teacher's unpinned one) and the server's clock.
   await T(`/api/dash/${w.A.id}/timers/tmine`, POST({ action: 'start' }));
   const live = (await as(w.a1)(`/api/dash/${w.A.id}/live`)).json;

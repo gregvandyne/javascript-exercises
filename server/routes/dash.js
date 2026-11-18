@@ -337,7 +337,7 @@ router.post('/api/dash/:id/pictures/:pid/remove', requireUser, rateLimit('dash-p
 router.post('/api/dash/:id/timers/:wid', requireUser, rateLimit('dash-timer', 600, 3600e3), (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
   const b = body(req);
-  send(req, res, D.timerAction(req.user, x.c, req.params.wid, { action: b.action, ms: b.ms }));
+  send(req, res, D.timerAction(req.user, x.c, req.params.wid, { action: b.action, ms: b.ms, run: b.run === true }));
 });
 
 router.get('/api/dash/:id/picker', requireUser, rateLimit('dash-picker', 600, 3600e3), (req, res) => {
