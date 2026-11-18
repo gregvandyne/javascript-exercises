@@ -10604,7 +10604,7 @@
         "ray": "Angle",
         "hint": "Drag the end of the ray, or use the arrow keys.",
         "howto": "Drag the end of the ray, or use − and + to change the angle.",
-        "helpUse": "The buttons jump to 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc switch each on or off; Options sets the snap.",
+        "helpUse": "Jump to… picks 45°, 90°, 135°, 180° or 270°.\nThe size and the name of the angle are shown below.\nProtractor and Arc switch each on or off; Options sets the snap.",
         "helpIdeas": "Hide the protractor and ask for an estimate first."
       },
       "solids": {
@@ -11115,6 +11115,7 @@
         "addRod": "Add rod {n}",
         "rodN": "Rod {n}",
         "longer": "Longer rod (11–20)",
+        "longRod": "Longer rod",
         "board": "Rod board",
         "boardKeys": "Arrow keys move the chosen rod; R turns it, D copies it, Delete removes it.",
         "lying": "Rod {n}, lying, at {x}, {y}",
@@ -11160,7 +11161,7 @@
         "count": "{n, plural, one {# rod} other {# rods}}",
         "find": "number rods, rods, rod, trains",
         "howto": "Tap or drag a rod onto the board. Build trains of the same length.",
-        "helpUse": "Tap a rod, then Turn, Copy or Delete it; arrows move it.\nShow trains builds both sides of the equation; fill in the box.\nThe 11–20 rod is beside 10; − and + change its length.",
+        "helpUse": "Tap a rod, then Turn, Copy or Delete it; arrows move it.\nShow trains builds both sides of the equation; fill in the box.\nThe longer rod's menu, at the row's end, picks 11 to 20.",
         "helpIdeas": "Which two rods make a train as long as the 10-rod?"
       }
     },
@@ -11227,6 +11228,12 @@
       "helpClose": "Close",
       "helpTry": "Try:",
       "modeFor": "Choose what {name} shows",
+      "share": "Share",
+      "moreActs": "More actions",
+      "view": "View",
+      "steps": "Steps",
+      "stepsOf": "{n} of {total}",
+      "jumpTo": "Jump to…",
       "showAns": "Show the answer",
       "hideAns": "Hide the answer",
       "ansHidden": "The answer is hidden.",

@@ -910,9 +910,8 @@ export function geoboard(body, s, ctx) {
 
   // ---------------------------------------------------------------- the shell
   T.draw = render;
-  // Show/Hide the answer and Build it (docs/decisions.md "Build it") sit at the end of the board's bar of icons, so the
-  // row of buttons under it stays one row and the board keeps its room.
-  T.placeExtra = nodes => { if (bar.isConnected && nodes.some(x => x.parentElement !== bar)) bar.append(...nodes); };
+  // Show/Hide the answer is 👀/🙈 in the header and Build it is in Share (docs/decisions.md "one calm row of buttons"),
+  // as on every tool.
   const r = T.finish();
   tidyHelp();
   return {

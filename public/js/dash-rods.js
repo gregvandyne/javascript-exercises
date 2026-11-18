@@ -1,5 +1,5 @@
 // Classroom dashboards: number rods (docs/decisions.md "Bar models and number rods"). Rods 1 to 10 long in a palette
-// (and a longer one, 11 to 20, from a stepper), each with its own colour, its number on it and its unit marks, so colour
+// (and a longer one, 11 to 20, from a dropdown), each with its own colour, its number on it and its unit marks, so colour
 // is never the only cue. Tap a rod to add it, or drag it onto the board (the pattern blocks' palette drag: a lifted copy,
 // the board lit up, a dashed outline where it lands). On the board rods move, turn, copy and go; they snap to the unit
 // grid and to each other's ends, so trains join up. An equation with a missing box ("5 + 4 = □ + 3") can be shown
@@ -15,7 +15,7 @@ import { parts } from './dash-tools.js';
 import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
 
-const { shell, el, svg, btn, ltr, svgPoint } = parts;
+const { shell, el, svg, btn, ltr, svgPoint, selectOf, popMenu } = parts;
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 const clone = x => JSON.parse(JSON.stringify(x));
 const U = 40;   // SVG units a rod unit
@@ -85,16 +85,15 @@ export function rods(body, s, ctx) {
     palBtns.push(b); return b;
   };
   for (let n = 1; n <= 10; n++) tray.appendChild(palBtn(n));
+  // The longer rod (docs/decisions.md "one calm row of buttons"): "Longer rod [20 ▾]" at the end of the tray. The
+  // words are the rod (tap or drag it in, as any rod); the dropdown sets its length, 11 to 20.
   const longBox = el('div', 'dt-rlong'); longBox.setAttribute('role', 'group'); longBox.setAttribute('aria-label', W.longer);
   const longBtn = palBtn(st.long);
-  const lm = tip(btn('−', 'btn btn-sm dt-pm'), `${W.longer}: −`), lp = tip(btn('+', 'btn btn-sm dt-pm'), `${W.longer}: +`);
-  lm.setAttribute('aria-label', `${W.longer} −`); lp.setAttribute('aria-label', `${W.longer} +`);
   const setLong = n => { st.long = n; T.commit(fill(W.rodN, { n: st.long })); };
-  lm.addEventListener('click', () => { if (st.long > R.ROD_LONG[0]) setLong(st.long - 1); });
-  lp.addEventListener('click', () => { if (st.long < R.ROD_LONG[1]) setLong(st.long + 1); });
-  // The longer rod's length typed too (11-20); the rod beside it adds one that long.
-  const longIn = T.num({ label: W.longer, key: 'long', get: () => st.long, min: R.ROD_LONG[0], max: R.ROD_LONG[1], set: setLong, cls: 'dt-stepval dt-rlongn' });
-  longBox.append(lm, longIn, lp, longBtn);
+  const longSel = selectOf(Array.from({ length: R.ROD_LONG[1] - R.ROD_LONG[0] + 1 }, (_, i) => [R.ROD_LONG[0] + i, String(R.ROD_LONG[0] + i)]), st.long);
+  longSel.classList.add('dt-select', 'dt-rlongsel'); longSel.setAttribute('aria-label', W.longer); longSel.dir = 'ltr';
+  longSel.addEventListener('change', () => setLong(Number(longSel.value)));
+  longBox.append(longBtn, longSel);
   tray.appendChild(longBox);
   tray.addEventListener('pointermove', e => palMove(e));
   tray.addEventListener('pointerup', e => palUp(e));
@@ -179,11 +178,17 @@ export function rods(body, s, ctx) {
   const eqOn = T.toggle('', null, () => st.eq, v => change(() => { st.eq = v; }, v ? spoken(eq()) : W.eqOff));
   tip(eqOn, W.eq); eqOn.setAttribute('aria-label', W.eq); eqOn.classList.add('dt-ricbtn');
   { const i = el('span', 'dt-ic', '🟰'); i.setAttribute('aria-hidden', 'true'); eqOn.appendChild(i); }
-  const sep = () => { const x = el('span', 'dt-rsep'); x.setAttribute('aria-hidden', 'true'); return x; };
-  const selBox = el('div', 'dt-rsel'); selBox.setAttribute('role', 'group'); selBox.setAttribute('aria-label', W.chosen); selBox.append(turn, copy, del);
-  const viewBox = el('div', 'dt-rview'); viewBox.append(dir, grid, units, zoomOut, zoomIn);
-  const histBox = el('div', 'dt-rview'); histBox.append(undo, redo, reset, eqOn);
-  T.foot.append(selBox, sep(), viewBox, sep(), histBox);
+  // Turn, Copy and Delete: a small bar by the chosen rod, only while a rod is chosen (docs/decisions.md "one calm row
+  // of buttons"). The way new rods lie, the grid, unit lines, zoom and the equation: behind 👁️ View. The row at the
+  // bottom: Undo, Redo, Reset, View and Share.
+  const selBox = el('div', 'dt-rsel'); selBox.setAttribute('role', 'toolbar'); selBox.setAttribute('aria-label', W.chosen); selBox.append(turn, copy, del);
+  const viewWord = (ctx.common || {}).view;
+  const view = tip(btn('', 'btn btn-sm dt-act dt-icon dt-rviewbtn', viewWord), viewWord);
+  { const i = el('span', 'dt-ic', '👁️'), l = el('span', 'dt-lbl', viewWord); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); view.append(i, l); }
+  const viewM = popMenu(view, viewWord, 'dt-viewmenu');
+  viewM.el.dataset.stay = '1';   // its switches and zoom are used a few at a time: it stays open until a tap outside
+  for (const b of [dir, grid, units, zoomOut, zoomIn, eqOn]) viewM.add(b);
+  T.foot.append(undo, redo, reset);
 
   const C = () => ctx.common || {};
   const spoken = e => R.eqText(e, W.blank);
@@ -360,13 +365,13 @@ export function rods(body, s, ctx) {
     const E = eq(), valid = R.eqValid(E);
     if (!valid) { st.l = [...R.EQ_START.l]; st.r = [...R.EQ_START.r]; }
     // ---- the palette and the controls
-    longBtn.dataset.n = st.long; paint(longBtn, st.long);
+    longBtn.dataset.n = st.long; paint(longBtn, st.long); longBtn.classList.add('dt-rlongadd'); longBtn.textContent = ''; longBtn.appendChild(el('span', 'dt-rnum dt-rlongw', W.longRod));
     tip(longBtn, fill(W.addRod, { n: st.long })); longBtn.setAttribute('aria-label', fill(W.addRod, { n: st.long }));
-    lm.disabled = st.long <= R.ROD_LONG[0]; lp.disabled = st.long >= R.ROD_LONG[1]; longIn.sync();
+    longSel.value = String(st.long); longSel.disabled = !!ctx.editing;
     for (const b of palBtns) b.disabled = !!ctx.editing;
     grid.sync(); units.sync(); eqOn.sync();
     const dirText = v0() ? W.dirV : W.dirH;
-    dir.querySelector('.dt-ic').textContent = v0() ? '↕️' : '↔️'; tip(dir, dirText); dir.setAttribute('aria-label', dirText);
+    dir.querySelector('.dt-ic').textContent = v0() ? '↕️' : '↔️'; dir.querySelector('.dt-lbl').textContent = dirText; dir.setAttribute('aria-label', dirText);
     zoomOut.disabled = M.zoom <= ZOOMS[0]; zoomIn.disabled = M.zoom >= ZOOMS.at(-1);
     undo.disabled = !M.undo.length; redo.disabled = !M.redo.length;
     turn.disabled = copy.disabled = del.disabled = !st.rods[sel]; reset.disabled = !st.rods.length && !st.model;
@@ -434,6 +439,8 @@ export function rods(body, s, ctx) {
       g.appendChild(svg('text', { x: ((b.x0 + b.x1) / 2) * U, y: ((b.y0 + b.y1) / 2) * U, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: `dt-rlab ${tone(r.n)}`, 'font-size': fs }, String(r.n)));
       layer.appendChild(g);
     });
+    // Turn, Copy and Delete by the chosen rod: above it, else below it, always inside the model's area.
+    placeSel();
     // The chosen rod's train: a ruler along it with its total.
     if (train) {
       const first = st.rods[train.rods[0]], len = train.len;
@@ -473,7 +480,21 @@ export function rods(body, s, ctx) {
       p.dir = 'auto'; T.read.appendChild(p);
     }
   };
-  const fin = T.finish();
+  function placeSel() {
+    const on = !ctx.editing && sel >= 0 && !!st.rods[sel];
+    selBox.hidden = !on;
+    if (!on) { selBox.remove(); return; }
+    T.stage.appendChild(selBox);
+    const g = board.querySelector(`[data-r="${sel}"]`); if (!g) return;
+    const sr = T.stage.getBoundingClientRect(), rr = g.getBoundingClientRect(), w = selBox.offsetWidth, h = selBox.offsetHeight;
+    let top = rr.top - sr.top - h - 6;
+    if (top < 0) top = rr.bottom - sr.top + 6;
+    top = Math.max(0, Math.min(top, sr.height - h));
+    let left = (rr.left + rr.right) / 2 - sr.left - w / 2;
+    left = Math.max(0, Math.min(left, sr.width - w));
+    selBox.style.insetInlineStart = 'auto'; selBox.style.left = `${Math.round(left)}px`; selBox.style.top = `${Math.round(top)}px`;
+  }
+  const fin = T.finish({ side: [view, viewM.el] });
   // The board's own size changes when the equation row shows or hides: draw again so the numbers stay readable.
   return fin;
 }

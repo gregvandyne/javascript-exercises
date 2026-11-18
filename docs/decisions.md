@@ -7550,3 +7550,39 @@ routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/d
 - **Fit check.** `npm run dash:fit` has `default-buildit` and `min-buildit` layouts: every Build it tool and two
   number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
   screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
+
+## Classroom dashboards: one calm row of buttons (17 Nov 2026)
+The maths tools' bottoms had grown to three to six rows of pills (Options, Practice it, Make a question, Hide the answer,
+Build it, Send to students under the tool's own buttons). The owner approved a calmer layout (mockups of ten frames,
+base-ten blocks, the teaching clock, number rods, fractions and coins, and the mode-dropdown audit).
+- **One row, never more** (`shell().finish()` in `public/js/dash-tools.js`): up to three of the tool's most-used
+  buttons as icons (named by their tooltip and `aria-label`), then **⋯** for the tool's other actions (`T.more(b)`, e.g.
+  ten frames' Take one, place value's ÷ 10), then **📤 Share ▾** at the end: Send to students, 🧱 Build it (where the tool
+  has it), ❓ Make a question, 🎮 Practice it, and nothing else. The teaching clock keeps its four steps (`row: 4`, the
+  one exception). A tool's selects and steppers that were in the row stay at its start when everything fits on one row (a
+  wide widget), else they go to the tool's own row above it (`T.ctl`; the balance's five steps are always there). When a widget is too narrow, Share shows only its icon, then the row's last buttons move behind ⋯
+  (and back when there is room). A student's own screen or copy has no Share: Practice it is its own 🎮 button.
+- **Header icons** next to ⓘ: 👀/🙈 Show/Hide the answer (the shared one on the teacher's own screen; fractions' and bar
+  models' own hide wherever they showed it before; its words say what it does, no `aria-pressed`) and ⚙️ Options.
+- **The menus** (Share, ⋯, Number rods' 👁️ View) are popovers (`popover="auto"`, the top layer, so nothing clips them),
+  placed by their button inside the widget when they fit there, else inside the screen. Outside tap and Escape close
+  them (Escape gives the focus back to the button); ↑ ↓ Home End move inside; Tab out closes. A used item closes Share and
+  ⋯ (before its action, so a sheet it opens returns the focus to Share); View stays open for its switches and zoom.
+  Share is hidden on the projector; a student's Build it copy still has no Share or Options.
+- **Number rods:** Turn, Copy and Delete are a small bar by the chosen rod, only while one is chosen; the way new rods
+  lie, Grid, Unit lines, Zoom out/in and the Equation are in 👁️ View (a tick shows a switch that is on); the longer rod
+  is "Longer rod [20 ▾]" at the end of the tray (the words are the rod: tap or drag it in). Undo, Redo and Reset stay.
+- **Mode dropdowns** (`public/js/dash-modes.js`): a tool with modes shows a native select instead of pills (place value
+  keeps its two pills), with the mode's main choice beside it on one row (`data-pair`): Translate/Reflect/Rotate,
+  Coin/Dice/Spinner, the kind of graph, Both sides/Left/Right, the bar model's kind. Fractions has one dropdown (Compare,
+  Add, Subtract, Multiply, Divide, then Fraction, decimal, percent: `fractions.merge`) beside Bars | Circles, and its
+  empty "= ?" bar is drawn only once the answer shows. The angle maker's five presets are one "Jump to…" dropdown.
+- **Steps:** fractions' working is one "💡 Steps 2 of 4" panel (closed at first, this page remembers it open): a
+  numbered list, Next step inside it, and the readout's line in bold at its end (`stepsPanel` in `parts`).
+- Nothing was removed, and the state format is unchanged (saved layouts and pushed tools load as before). New words:
+  `dash.tools.share/moreActs/view/steps/stepsOf/jumpTo` and `dash.w.rods.longRod`, in all 12 languages.
+- **Check:** `npm run dash:fit` fails when a tool's bottom is more than one row or too wide, has more than three of the
+  tool's own buttons (four on the clock), has Options, the answer or a Share item in it, or Share/⋯ not at its end; and
+  it opens every Share, ⋯ and View menu: whole inside the screen, never scrolling or cut, 44px items, the focus inside,
+  Escape closing it with the focus back on its button, Share hidden on the projector. Fractions' Steps panels are opened
+  before the check.

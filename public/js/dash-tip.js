@@ -38,7 +38,8 @@ export function placeTip(trigger, w, h, vw, vh, gap = GAP, margin = MARGIN) {
  *  is open. */
 export function hoverSkips(el) {
   if (el.getAttribute('aria-expanded') === 'true') return true;
-  return !!el.querySelector('.dt-lbl:not([hidden])');
+  // Words shown in full (a label hidden by the stylesheet, as in a tool's row of icons, does not count).
+  return [...el.querySelectorAll('.dt-lbl:not([hidden])')].some(l => l.getClientRects().length > 0);
 }
 
 let layer = null, cur = null, raf = 0, press = null, hideTimer = 0, installed = false;
@@ -46,6 +47,9 @@ let layer = null, cur = null, raf = 0, press = null, hideTimer = 0, installed = 
 function host(el) {
   const d = el.closest('dialog[open]');
   if (d) return d;
+  // A button in a small menu (public/js/dash-tools.js: a popover, in the top layer): the tooltip goes in the menu.
+  let p = null; try { p = el.closest(':popover-open'); } catch { p = null; }
+  if (p) return p;
   const f = document.fullscreenElement;
   return f && f.contains(el) ? f : document.body;
 }

@@ -481,6 +481,23 @@ function problems() {
     for (const c of cards.querySelectorAll('.dt-card')) { const q = c.getBoundingClientRect(); if (q.width < 96) out.push(`${name(w)}: the card "${label(c)}" is only ${Math.round(q.width)}px wide`); }
     if (getComputedStyle(x).flexDirection === 'column' && cr.width < xr.width - 2) out.push(`${name(w)}: the cards over the grid are ${Math.round(cr.width)}px wide, not the tool's ${Math.round(xr.width)}px`);
   }
+  // One calm row of buttons (docs/decisions.md "Classroom dashboards: one calm row of buttons"): a tool's bottom is one
+  // row, never more, and nothing in it is pushed out sideways; at most three of the tool's own buttons stay in it (four
+  // on the teaching clock), the rest are behind ⋯; Share and ⋯ come after them; Options and Show/Hide the answer are in
+  // the header, never in the row.
+  for (const f of document.querySelectorAll('.dash-w .dt-foot')) {
+    const w = f.closest('.dash-w'); if (!w.offsetParent || !f.getClientRects().length) continue;
+    const vis = [...f.querySelectorAll(':scope > .dt-acts > *, :scope > :not(.dt-acts):not(.dt-fgap):not(.dt-menu)')].filter(e => e.getClientRects().length);
+    const mids = vis.map(e => { const r = e.getBoundingClientRect(); return (r.top + r.bottom) / 2; });
+    if (mids.length && Math.max(...mids) - Math.min(...mids) > 8) out.push(`${name(w)}: the buttons at the bottom are more than one row`);
+    if (f.scrollWidth > f.clientWidth + 1) out.push(`${name(w)}: the row at the bottom is ${f.scrollWidth - f.clientWidth}px too wide`);
+    const own = [...f.querySelectorAll(':scope > .dt-acts > .dt-act')].filter(e => e.getClientRects().length).length;
+    if (own > (w.querySelector('.dt-tclock') ? 4 : 3)) out.push(`${name(w)}: ${own} of the tool's own buttons in the bottom row`);
+    if (vis.some(e => e.matches('.dt-opt, .dt-ans, .dt-send, .dt-ask, .dt-buildit, .dt-practice:not(.dt-practice1)'))) out.push(`${name(w)}: Options, the answer or a Share item sits in the bottom row`);
+    // (a student's screen has no Share: its own 🎮 Practice it is the last button instead)
+    const order = vis.map(e => (e.matches('.dt-share, .dt-practice1') ? 's' : e.classList.contains('dt-morebtn') ? 'm' : 'a')).join('');
+    if (/s./.test(order) || /m.*a/.test(order)) out.push(`${name(w)}: Share and ⋯ are not at the end of the bottom row (${order})`);
+  }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
   // Fractions as a number sentence: each bar's fraction is level with its bar, and the sentence reads left to right
   // (the first fraction, the second, the answer) in every language.
@@ -687,15 +704,52 @@ for (const L of RUN) {
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
     if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
-    // The fraction tool switched between modes and views in turn (a mode is its place in the first row of buttons: 1
-    // Compare, 2 Add, 3 Subtract, 4 Multiply, 5 Divide; a view in the second: 1 Bars, 2 Circles), ending in Divide with bars.
+    // The fraction tool switched between modes and views in turn (a mode is its place in the dropdown: 1 Compare, 2 Add,
+    // 3 Subtract, 4 Multiply, 5 Divide; a view in Bars | Circles: 1 Bars, 2 Circles), ending in Divide with bars.
     if (v.who === T && await page.$('.dash-w[data-id="wfrswitch"]')) {
-      const seg = (k, n) => page.click(`.dash-w[data-id="wfrswitch"] .dt-top .dt-seg:nth-child(${k}) button:nth-child(${n})`, { timeout: 3000 }).then(() => page.waitForTimeout(80));
+      // The mode is the tool's dropdown now (docs/decisions.md "one calm row of buttons"); the view, Bars | Circles beside it.
+      const OPS = ['compare', 'add', 'sub', 'mul', 'div'], W0 = '.dash-w[data-id="wfrswitch"]';
+      const seg = (k, n) => (k === 1 ? page.selectOption(`${W0} .dt-modesel`, `fractions:${OPS[n - 1]}`, { timeout: 3000 }) : page.click(`${W0} .dt-modes .dt-seg button:nth-child(${n})`, { timeout: 3000 })).then(() => page.waitForTimeout(80));
       for (const [k, n] of [[1, 3], [2, 2], [1, 5], [2, 1], [1, 2], [2, 2], [1, 4], [1, 3], [2, 1], [1, 1], [2, 2], [1, 5], [2, 1]]) await seg(k, n).catch(e => errors.push(`the fraction tool's switch can't be pressed (${e.message.split('\n')[0]})`));
       await page.waitForTimeout(300);
     }
+    // The fractions' Steps panels open (every step shown on the busy Divide widgets), as a teacher opens them.
+    if (v.who === T) for (const b of await page.$$('.dash-w[data-id^="wfr"] .dt-stepst[aria-expanded="false"]')) { await b.evaluate(x => x.click()).catch(() => {}); await page.waitForTimeout(40); }
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
+    // The small menus (Share, ⋯, View; docs/decisions.md "one calm row of buttons"): each opens whole inside the screen
+    // (inside its widget when it fits there), is never clipped, holds only buttons of 44px, takes the focus, and Escape
+    // closes it with the focus back on its button. Share is hidden on the projector.
+    if (process.env.MENUS !== '0') found.push(...await page.evaluate(async projector => {
+      const out = [], name = e => e.closest('.dash-w')?.querySelector('.dash-wt')?.textContent || '';
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      for (const b of document.querySelectorAll('.dash-w .dt-share, .dash-w .dt-morebtn, .dash-w .dt-rviewbtn')) {
+        if (!b.closest('.dash-w').offsetParent) continue;
+        if (projector && b.classList.contains('dt-share')) { if (b.getClientRects().length) out.push(`${name(b)}: Share shows on the projector`); continue; }
+        if (!b.getClientRects().length) { if (b.classList.contains('dt-share') && !b.hidden) out.push(`${name(b)}: Share is not shown`); continue; }
+        b.scrollIntoView({ block: 'center' }); b.focus(); b.click();
+        await wait(40);
+        const m = document.getElementById(b.getAttribute('aria-controls'));
+        if (!m || !m.matches(':popover-open')) { out.push(`${name(b)}: "${b.getAttribute('aria-label')}" does not open its menu`); continue; }
+        if (b.getAttribute('aria-expanded') !== 'true') out.push(`${name(b)}: "${b.getAttribute('aria-label')}" does not say its menu is open`);
+        const r = m.getBoundingClientRect();
+        if (r.left < -0.5 || r.top < -0.5 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5) out.push(`${name(b)}: the menu "${m.getAttribute('aria-label')}" goes outside the screen`);
+        if (m.scrollHeight > m.clientHeight + 1 && r.height < innerHeight - 20) out.push(`${name(b)}: the menu "${m.getAttribute('aria-label')}" scrolls`);
+        for (const x of m.querySelectorAll('button, a')) {
+          if (!x.getClientRects().length) continue;
+          const q = x.getBoundingClientRect();
+          if (q.height < 43.5) out.push(`${name(b)}: "${x.getAttribute('aria-label')}" in the menu is under 44px tall`);
+          if (q.left < r.left - 0.5 || q.right > r.right + 0.5) out.push(`${name(b)}: "${x.getAttribute('aria-label')}" is cut in the menu`);
+          for (const t of x.querySelectorAll('.dt-lbl')) if (t.scrollWidth > t.clientWidth + 1) out.push(`${name(b)}: "${t.textContent}" is cut in the menu`);
+        }
+        if (!m.contains(document.activeElement)) out.push(`${name(b)}: the focus is not in the menu "${m.getAttribute('aria-label')}" once it opens`);
+        (m.contains(document.activeElement) ? document.activeElement : m).dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await wait(40);
+        if (m.matches(':popover-open')) { out.push(`${name(b)}: Escape does not close the menu "${m.getAttribute('aria-label')}"`); m.hidePopover(); }
+        else if (document.activeElement !== b) out.push(`${name(b)}: after Escape the focus is not back on "${b.getAttribute('aria-label')}"`);
+      }
+      return out;
+    }, !!v.projector));
     // Build it: the place value number typed into and refused (its message under it), then each set opened by a student.
     if (L.buildit && v.who === T && !v.projector) {
       for (const id of ['wpvedit', 'wb10edit'].filter(x => L.widgets.some(y => y.id === x))) {

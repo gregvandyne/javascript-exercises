@@ -10183,7 +10183,7 @@
         "ray": "Angolo",
         "hint": "Trascina la punta della semiretta o usa le frecce.",
         "howto": "Trascina la punta della semiretta, o cambia l’angolo con − e +.",
-        "helpUse": "I pulsanti saltano a 45°, 90°, 135°, 180° o 270°.\nSotto si vedono l’ampiezza e il nome dell’angolo.\nGoniometro e Arco li mostrano o nascondono; Opzioni regola lo scatto.",
+        "helpUse": "Vai a… sceglie 45°, 90°, 135°, 180° o 270°.\nSotto si vedono l’ampiezza e il nome dell’angolo.\nGoniometro e Arco li mostrano o nascondono; Opzioni regola lo scatto.",
         "helpIdeas": "Nascondi il goniometro e chiedi prima una stima."
       },
       "solids": {
@@ -10694,6 +10694,7 @@
         "addRod": "Aggiungi il regolo {n}",
         "rodN": "Regolo {n}",
         "longer": "Regolo più lungo (11–20)",
+        "longRod": "Regolo più lungo",
         "board": "Piano dei regoli",
         "boardKeys": "Le frecce spostano il regolo scelto; R lo gira, D lo copia, Canc lo toglie.",
         "lying": "Regolo {n}, sdraiato, in {x}, {y}",
@@ -10739,7 +10740,7 @@
         "count": "{n, plural, one {# regolo} other {# regoli}}",
         "find": "regoli numerici, regoli, regolo, regoli colorati, number rods, rods",
         "howto": "Tocca o trascina un regolo sul piano. Fai treni lunghi uguali.",
-        "helpUse": "Tocca un regolo, poi Gira, Copia o Elimina; le frecce lo spostano.\nMostra i treni costruisce i due lati dell'uguaglianza; riempi la casella.\nIl regolo 11–20 è accanto al 10; − e + cambiano la sua lunghezza.",
+        "helpUse": "Tocca un regolo, poi Gira, Copia o Elimina; le frecce lo spostano.\nMostra i treni costruisce i due lati dell'uguaglianza; riempi la casella.\nIl regolo più lungo è in fondo alla fila; il suo menu va da 11 a 20.",
         "helpIdeas": "Quali due regoli fanno un treno lungo quanto quello da 10?"
       }
     },
@@ -10806,6 +10807,12 @@
       "helpClose": "Chiudi",
       "helpTry": "Prova:",
       "modeFor": "Scegli cosa mostra {name}",
+      "share": "Condividi",
+      "moreActs": "Altre azioni",
+      "view": "Vista",
+      "steps": "Passi",
+      "stepsOf": "{n} di {total}",
+      "jumpTo": "Vai a…",
       "showAns": "Mostra la risposta",
       "hideAns": "Nascondi la risposta",
       "ansHidden": "La risposta è nascosta.",

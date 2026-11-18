@@ -10184,7 +10184,7 @@
         "ray": "Ângulo",
         "hint": "Arraste a ponta da semirreta ou use as setas.",
         "howto": "Arraste a ponta da semirreta, ou mude o ângulo com − e +.",
-        "helpUse": "Os botões pulam para 45°, 90°, 135°, 180° ou 270°.\nA medida e o nome do ângulo aparecem embaixo.\nTransferidor e Arco mostram ou escondem cada um; Opções ajusta o encaixe.",
+        "helpUse": "Ir para… escolhe 45°, 90°, 135°, 180° ou 270°.\nA medida e o nome do ângulo aparecem embaixo.\nTransferidor e Arco mostram ou escondem cada um; Opções ajusta o encaixe.",
         "helpIdeas": "Esconda o transferidor e peça primeiro uma estimativa."
       },
       "solids": {
@@ -10695,6 +10695,7 @@
         "addRod": "Adicionar a barra {n}",
         "rodN": "Barra {n}",
         "longer": "Barra mais longa (11–20)",
+        "longRod": "Barra mais longa",
         "board": "Tabuleiro das barras",
         "boardKeys": "As setas movem a barra escolhida; R gira, D copia, Delete remove.",
         "lying": "Barra {n}, deitada, em {x}, {y}",
@@ -10740,7 +10741,7 @@
         "count": "{n, plural, one {# barra} other {# barras}}",
         "find": "barras numéricas, barras, barra, réguas coloridas, number rods, rods",
         "howto": "Toque ou arraste uma barra para o tabuleiro. Monte trens iguais.",
-        "helpUse": "Toque uma barra e depois Girar, Copiar ou Apagar; as setas a movem.\nMostrar trens monta os dois lados da igualdade; preencha a caixa.\nA barra 11–20 fica ao lado do 10; − e + mudam o comprimento.",
+        "helpUse": "Toque uma barra e depois Girar, Copiar ou Apagar; as setas a movem.\nMostrar trens monta os dois lados da igualdade; preencha a caixa.\nA barra mais longa fica no fim da fileira; o menu escolhe de 11 a 20.",
         "helpIdeas": "Quais duas barras formam um trem do tamanho da barra 10?"
       }
     },
@@ -10807,6 +10808,12 @@
       "helpClose": "Fechar",
       "helpTry": "Experimente:",
       "modeFor": "Escolha o que {name} mostra",
+      "share": "Compartilhar",
+      "moreActs": "Mais ações",
+      "view": "Ver",
+      "steps": "Passos",
+      "stepsOf": "{n} de {total}",
+      "jumpTo": "Ir para…",
       "showAns": "Mostrar a resposta",
       "hideAns": "Esconder a resposta",
       "ansHidden": "A resposta está escondida.",
