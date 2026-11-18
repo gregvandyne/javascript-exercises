@@ -635,6 +635,8 @@ function fractions(body, s, ctx) {
     const op = mode();
     modes.sync(); shapes.sync(); same.sync();
     same.hidden = add.hidden = rm.hidden = op !== 'compare'; shapes.hidden = op === 'mul';
+    // A student's Build it copy shades one bar in Compare: no other modes, no second bar.
+    if (ctx.build) modes.hidden = same.hidden = add.hidden = rm.hidden = true;
     T.howto(op === 'compare' ? W.howto : op === 'mul' ? W.howtoMul : op === 'div' ? W.howtoDiv : W.howtoOp);
     if (op === 'compare') { swap.hidden = true; compareView(); } else opView(op);
   };
