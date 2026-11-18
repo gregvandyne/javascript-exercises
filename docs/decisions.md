@@ -8505,3 +8505,26 @@ replaces), so nothing new to learn for anyone who doesn't want it.
     two places is enough to see them, and rounding is what grade 5 and 6 work asks for. The bracket grows over each
     zero as it is written. Standard method only: the ladder and the area model take away whole groups, so there a
     decimal remainder is written as R and the editor doesn't offer it.
+- **Numbers: whole or decimals.** A second choice next to the ranges, in the editor and in Practice (`NUMBERS_CHOICE`,
+  `NUMBER_KINDS`); it keeps the ranges (age-appropriate as they are) and places a decimal point in the numbers made from
+  them, to hundredths (CCSS 5.NBT.7, 6.NS.3). Typed problems take decimals (a point or a comma) only in a decimals
+  activity. The item carries `dec: 1`; without it a decimal problem is still refused, as before. Decimals use the
+  standard method (the ladder and the models break up and take away whole numbers), and division answers are decimals
+  (the Remainders choice steps aside).
+  - *A decimal dividend (12.6 ÷ 4):* the first step lifts the point straight up into the quotient (typed: the box takes
+    a "." and the keypad gets a point key), with its arrow; then divide as usual, a 0 written on the end when it is
+    needed, as above. Problems made from a plan always come out by hundredths (half of them a multiple of the divisor,
+    half needing a 0 or two written on).
+  - *A decimal divisor (4.5 ÷ 0.3):* the problem as given sits above the work, each point on its grid line with a hop
+    drawn over it; the first two steps move the divisor's point to make it whole (0.3 × 10 = 3) and the dividend's the
+    same number of places (4.5 × 10 = 45, a faint 0 where a place is empty: 4.5 ÷ 0.25 is 450 ÷ 25); the student types
+    the new numbers into the bracket, and divides them.
+  - *Decimal multiplication (2.4 × 1.3):* the points sit on the grid lines, so every digit keeps its column; the student
+    multiplies as whole numbers (the first question says so), then the last step asks how many decimal places the
+    answer has (1 + 1 = 2), and the point is drawn where the typed count puts it (a wrong count shows where it would go).
+    A zero goes in front where the answer is short (0.2 × 0.3 = 0.06), and an answer ending in zeros says they can go
+    (5.00 is 5).
+  - Decimals are checked as text and whole numbers of hundredths (`numbers.ts`), never as floating point; the server's
+    `bbDecCheck` follows the game's rules (tested against them on 8,000 random problems).
+  - Fixed on the way: the editor scrolled sideways on a phone by 12px (its one-column grid was `1fr`, so a tile's
+    min-content could widen it); it is `minmax(0, 1fr)` now.

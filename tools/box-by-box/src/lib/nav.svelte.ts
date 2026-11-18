@@ -1,14 +1,14 @@
 // Which screen is showing. In an Oomba game frame there is one page, so the screens are switched here (no browser
 // history: the in-game buttons go back).
 
-import type { Playable } from './logic';
+import type { Kind, Numbers, Playable } from './logic';
 
 export type View =
 	| { name: 'start' }
 	| { name: 'student' }
 	| { name: 'home' }
 	| { name: 'edit'; id: string }
-	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: 'divide' | 'multiply'; hard: 'easy' | 'medium' | 'hard' }; id?: string; setId?: string; mine?: boolean; item?: unknown }
+	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: Kind; hard: 'easy' | 'medium' | 'hard'; numbers?: Numbers }; id?: string; setId?: string; mine?: boolean; item?: unknown }
 	| { name: 'invalid' }
 	| { name: 'about' };
 

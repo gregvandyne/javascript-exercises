@@ -155,3 +155,19 @@ test('box-by-box: the label says how remainders are written when they are a frac
   assert.equal(label([{ ...DIV, r: 'decimal', l: 'onMyOwn' }]), 'Long division, 3 problems, answers as decimals, On my own');
   assert.equal(label([{ ...DIV, r: 'fraction', m: 'ladder' }]), 'Long division, 3 problems, remainders as fractions, Ladder, Guided');
 });
+
+test('box-by-box sets: decimals only with dec: 1 (at most 2 places each); the label says decimals', async () => {
+  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const DEC = { k: 'divide', p: [[7.5, 3], [4.5, 0.3], [12, 5]], l: 'guided', dec: 1 };
+  const MDEC = { k: 'multiply', p: [[2.4, 1.3], [0.6, 4]], l: 'onMyOwn', dec: 1 };
+  assert.deepEqual(clean([DEC]), [DEC]);
+  assert.deepEqual(clean([MDEC]), [MDEC]);
+  assert.deepEqual(clean([{ ...DIV, dec: 1 }]), [{ ...DIV, dec: 1 }], 'whole problems in a decimals activity');
+  for (const bad of [{ ...DEC, dec: undefined }, { ...DEC, dec: 2 }, { ...DEC, dec: true }, { ...DEC, dec: 'yes' }, { ...DEC, p: [[7.555, 3]] }, { ...DEC, p: [[7.5, 0.1]] }, { ...DEC, p: [[-7.5, 3]] }, { ...MDEC, p: [[2.4, 13.5]] }])
+    assert.equal(clean([JSON.parse(JSON.stringify(bad))]), null, JSON.stringify(bad));
+  reset();
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  assert.equal(label([DEC]), 'Long division, 3 problems, decimals, Guided');
+  assert.equal(label([MDEC]), 'Multiplication, 2 problems, decimals, On my own');
+});

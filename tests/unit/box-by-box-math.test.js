@@ -177,3 +177,138 @@ test('remainders: the ladder and the area model write a fraction beside the quot
     assert.ok(M.checkWork(we, e).right);
   }
 });
+
+// ---------------------------------------------------------------- decimals: ÷ and ×
+
+test('decimal numbers: places, shifting the point, and writing hundredths, without floating point', () => {
+  assert.deepEqual([N.placesOf(12.6), N.placesOf(7), N.placesOf(0.25), N.placesOf(1e-7)], [1, 0, 2, 99]);
+  assert.deepEqual([N.scaled(12.6, 1), N.scaled(0.3, 1), N.scaled(4.35, 2), N.scaled(4.5, 2)], [126, 3, 435, 450]);
+  assert.deepEqual([N.shiftPoint(4.5, 1), N.shiftPoint(4.56, 1), N.shiftPoint(4.5, 2), N.shiftPoint(0.84, 1), N.shiftPoint(0.05, 1), N.shiftPoint(6, 1)], ['45', '45.6', '450', '8.4', '0.5', '60']);
+  assert.deepEqual([N.asText(5, 2), N.asText(312, 2), N.asText(300, 2), N.asText(7, 0)], ['0.05', '3.12', '3.00', '7']);
+});
+
+/** The exact quotient of two decimals, written out, from whole numbers (no floating point). */
+function exactQuotient(a, b) {
+  const k = Math.max(N.placesOf(a), N.placesOf(b));
+  const A = N.scaled(a, k), B = N.scaled(b, k);
+  for (let p = 0; p <= 2; p++) if ((A * 10 ** p) % B === 0) return N.asText((A * 10 ** p) / B, p);
+  return null;
+}
+
+test('decimal division: the point lifted straight up into the quotient, as a step, first', () => {
+  for (const [a, b, want] of [[7.5, 3, '2.5'], [12.6, 4, '3.15'], [0.84, 4, '0.21'], [1.5, 6, '0.25'], [55.6, 0.5, '111.2']]) {
+    const s = L.sheetFor(L.parseItem({ k: 'divide', p: [[a, b]], l: 'guided', dec: 1 }), [a, b]);
+    assert.equal(s.answer, want, `${a} ÷ ${b}`);
+    assert.equal(quotientText(s), want);
+    assert.ok(L.allRight(s, L.correctValues(s)));
+    const lift = s.steps.findIndex((x) => x.kind === 'point' && x.boxes.includes('qp'));
+    assert.ok(lift >= 0, 'a step lifts the point');
+    // (55.6 ÷ 0.5 is 556 ÷ 5 once both points move: its point comes when a 0 is written)
+    if (Number.isInteger(b)) assert.ok(!s.steps.slice(0, lift).some((x) => x.kind === 'divide'), 'before any dividing');
+    const pt = s.cells.find((c) => c.key === 'np' || c.id === 'np');
+    assert.equal(boxAt(s, 'qp').col, pt.col, 'straight up');
+    assert.ok(s.cells.some((c) => c.kind === 'arrow' && c.after === 'qp'), 'with its arrow');
+  }
+  // 12.6 ÷ 4: a 0 written on the end and brought down to finish it
+  const s = L.divideSheet({ dividend: 12.6, divisor: 4 });
+  assert.deepEqual(s.steps.map((x) => x.kind).filter((k) => k === 'addZero' || k === 'point'), ['point', 'addZero']);
+});
+
+test('decimal divisors: both points move the same number of places first (×10, ×100), shown with hops, then divide', () => {
+  for (const [a, b, A, B, want] of [[4.5, 0.3, '45', 3, '15'], [4.5, 0.25, '450', 25, '18'], [6, 0.4, '60', 4, '15'], [4.56, 0.3, '45.6', 3, '15.2'], [1.25, 0.5, '12.5', 5, '2.5']]) {
+    const s = L.divideSheet({ dividend: a, divisor: b });
+    const what = `${a} ÷ ${b}`;
+    assert.equal(s.answer, want, what);
+    assert.deepEqual(s.steps.slice(0, 2).map((x) => x.kind), ['shift', 'shift'], `${what}: the divisor, then the dividend`);
+    assert.equal(s.steps[0].boxes.map((id) => L.boxOf(s, id).digit).join(''), String(B));
+    assert.equal(s.steps[1].boxes.map((id) => L.boxOf(s, id).digit).join(''), A);
+    assert.match(s.steps[0].prompt({}), new RegExp(`Move its point ${N.placesOf(b)} place`));
+    assert.match(s.steps[1].prompt({}), new RegExp(`the same ${N.placesOf(b)} place`));
+    const hops = s.cells.filter((c) => c.kind === 'hop');
+    assert.equal(hops.length, 2, `${what}: a hop over each number`);
+    for (const h of hops) assert.equal(h.to - h.from, N.placesOf(b), 'as many places as the divisor has');
+    assert.ok(L.allRight(s, L.correctValues(s)), what);
+  }
+  assert.ok(L.divideSheet({ dividend: 4.5, divisor: 0.25 }).cells.some((c) => c.kind === 'given' && c.row === 0 && c.text === '0' && c.faint), '4.5 → 450: the 0 that fills the empty place');
+});
+
+test('decimal division: problems made from the plan come out exactly, to hundredths, and each works', () => {
+  const gen = L.kindInfo('divide').settings.generate;
+  const r = rng(5);
+  for (const plan of [{ dividends: [10, 99], divisors: [2, 5] }, { dividends: [100, 999], divisors: [2, 9] }, { dividends: [1000, 9999], divisors: [11, 25] }]) {
+    const ps = gen({ count: 40, remainders: 'R', numbers: 'decimal', ...plan }, r);
+    assert.ok(ps.length >= 30, `${JSON.stringify(plan)}: ${ps.length} made`);
+    assert.ok(ps.some(([, b]) => !Number.isInteger(b)), 'some divisors with a point');
+    assert.ok(ps.some(([a, b]) => !Number.isInteger(a) && Number.isInteger(b)), 'some dividends with a point');
+    for (const [a, b] of ps) {
+      assert.equal(L.checkDivide(a, b, 'decimal'), null, `${a} ÷ ${b}`);
+      const s = L.divideSheet({ dividend: a, divisor: b, form: 'decimal' });
+      assert.equal(s.answer, exactQuotient(a, b), `${a} ÷ ${b}: exact`);
+      assert.ok(L.allRight(s, L.correctValues(s)));
+    }
+  }
+});
+
+test('decimal multiplication: multiply as whole numbers, then count the places and put the point, as a step', () => {
+  for (const [a, b, want, P] of [[2.4, 1.3, '3.12', 2], [0.6, 4, '2.4', 1], [12.5, 0.4, '5.00', 2], [3.25, 2.6, '8.450', 3], [0.2, 0.3, '0.06', 2], [35.6, 7, '249.2', 1]]) {
+    const s = L.decimalMultiplySheet({ top: a, bottom: b });
+    const what = `${a} × ${b}`;
+    assert.equal(s.answer, want, what);
+    const last = s.steps.at(-1);
+    assert.equal(last.kind, 'point');
+    assert.deepEqual(last.boxes, ['dp']);
+    assert.equal(L.boxOf(s, 'dp').digit, P, `${what}: ${P} decimal places`);
+    assert.ok(s.answerBoxes.includes('dp'));
+    assert.match(s.steps[0].prompt({}), /Multiply as if there were no points/);
+    // the point where the count puts it: P places from the right, on the line (a dot), shown once the count is in
+    const dot = s.cells.find((c) => c.kind === 'given' && c.dot && c.after === 'dp' && c.when === String(P));
+    assert.ok(dot, `${what}: a point for the right count`);
+    assert.equal(s.cols - 1 - dot.col, P, `${what}: ${P} places from the right`);
+    assert.ok(L.allRight(s, L.correctValues(s)), what);
+    if (want.endsWith('0')) assert.match(s.note, /is the same as/);
+  }
+  // as whole numbers, the sheet is the multiplication it always was
+  assert.equal(L.decimalMultiplySheet({ top: 46, bottom: 23 }).answer, '1058');
+  assert.deepEqual(L.decimalMultiplySheet({ top: 46, bottom: 23 }).steps.map((x) => x.kind), L.multiplySheet({ top: 46, bottom: 23 }).steps.map((x) => x.kind));
+  // made from the plan: points placed in the plan's sizes, and every answer right
+  const ps = L.kindInfo('multiply').settings.generate({ count: 40, tops: [10, 999], bottoms: [2, 99], numbers: 'decimal' }, rng(3));
+  assert.ok(ps.length >= 30);
+  for (const [a, b] of ps) {
+    assert.equal(L.checkMultiply(a, b, 'decimal'), null);
+    const P = N.placesOf(a) + N.placesOf(b);
+    assert.equal(L.decimalMultiplySheet({ top: a, bottom: b }).answer, N.asText(N.scaled(a, N.placesOf(a)) * N.scaled(b, N.placesOf(b)), P), `${a} × ${b}`);
+  }
+});
+
+test('decimals: typed problems take decimals only when Numbers is decimals; the item says so with dec, and old items are unchanged', () => {
+  assert.equal(L.checkDivide(7.5, 3), 'The number to divide needs two to six digits, 10 to 999,999.');
+  assert.equal(L.checkDivide(7.5, 3, 'decimal'), null);
+  assert.equal(L.checkDivide(12, 5, 'decimal'), null, 'whole problems too');
+  assert.match(L.checkDivide(7.555, 3, 'decimal'), /at most 2 decimal places/);
+  assert.match(L.checkDivide(7.5, 0.1, 'decimal'), /2 to 9,999/);
+  assert.equal(L.checkMultiply(2.4, 1.3, 'decimal'), null);
+  assert.match(L.checkMultiply(2.4, 13.5, 'decimal'), /more digits goes on top/);
+  assert.deepEqual(L.validProblems([[7.5, 3], [92, 4]], 'divide'), [[92, 4]]);
+  assert.deepEqual(L.validProblems([[7.5, 3], [92, 4]], 'divide', 'decimal'), [[7.5, 3], [92, 4]]);
+  const it = { k: 'divide', p: [[7.5, 3], [4.5, 0.3]], l: 'guided', dec: 1 };
+  const a = L.parseItem(it);
+  assert.equal(a.plan.numbers, 'decimal');
+  assert.equal(L.formOf(a), 'decimal', 'division answers are decimals');
+  assert.deepEqual(L.toItem(a), it);
+  assert.equal(L.parseItem({ ...it, m: 'ladder' }).settings.method, 'standard', 'decimals: the standard method');
+  assert.equal(L.parseItem({ k: 'divide', p: [[7.5, 3]], l: 'guided' }), null, 'no dec: a decimal problem is not one');
+});
+
+test('decimals: the server takes exactly the problems the game does (dec), and nothing else', async () => {
+  const gameSets = await import(path.join(ROOT, 'server/services/game-sets.js'));
+  const r = rng(9);
+  const pick = () => { const k = Math.floor(r() * 4); const n = Math.floor(r() * 100000) / [1, 10, 100, 1000][k]; return r() < 0.1 ? -n : n; };
+  for (let i = 0; i < 4000; i++) {
+    for (const kind of ['divide', 'multiply']) {
+      const a = r() < 0.5 ? pick() : Math.floor(r() * 2000), b = r() < 0.5 ? pick() / 100 : Math.floor(r() * 30);
+      const game = (kind === 'divide' ? L.checkDivide : L.checkMultiply)(a, b, 'decimal') === null;
+      const server = gameSets.cleanBoxItems([{ k: kind, p: [[a, b]], l: 'guided', dec: 1 }]) !== null;
+      assert.equal(server, game, `${kind} ${a}, ${b}`);
+    }
+  }
+});

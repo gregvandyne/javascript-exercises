@@ -273,12 +273,12 @@
 	});
 
 	function shown(c: Cell) {
-		if (!sheet || isReveal || phase === 'setup') return true;
+		if (!sheet || phase === 'setup') return true;
 		// an arrow (a bring-down, a lifted point) is drawn once its box is filled, and stays
 		if (c.kind === 'arrow' && c.after) return !!values[c.after];
-		// a placed point (and a zero in front of it) once the box that places it is right
-		if (c.kind === 'given' && c.after && !isRight(sheet, values, c.after)) return false;
-		return !flags.build ? true : cellStep(sheet, c) <= furthest;
+		// a placed point where the count typed puts it; a zero in front of it once the count is right
+		if (c.kind === 'given' && c.after) return c.when !== undefined ? values[c.after] === c.when : isRight(sheet, values, c.after);
+		return isReveal || !flags.build ? true : cellStep(sheet, c) <= furthest;
 	}
 	const litSet = $derived.by(() => {
 		if (!flags.spotlight || active < 0) return null;

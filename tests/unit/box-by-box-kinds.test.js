@@ -65,15 +65,19 @@ async function work(page, sheet, guided, what) {
       assert.ok(st, `${what}: box ${id} is on a step`);
       const asked = await page.locator('.prompt').innerText();
       assert.ok(asked.length > 3, `${what}: a question for ${id}`);
-      await page.keyboard.type(String(L.boxOf(sheet, id).digit));
+      // a product with a carry: its tens first (they float up to the carry box), then its ones
+      const lift = st.liftCarry?.ones === id ? String(L.boxOf(sheet, st.liftCarry.tens).digit) : '';
+      await page.keyboard.type(lift + String(L.boxOf(sheet, id).digit), { delay: 30 });
       await page.waitForTimeout(20);
     }
   } else {
     for (const b of sheet.boxes) {
+      const st = sheet.steps[L.stepOfBox(sheet, b.id)];
+      if (st.liftCarry?.tens === b.id) continue;
       const el = page.locator(`input[data-box="${b.id}"]`);
       if (await el.evaluate((e) => e.readOnly)) { auto.add(b.id); continue; }
       await el.focus();
-      await page.keyboard.type(String(b.digit));
+      await page.keyboard.type((st.liftCarry?.ones === b.id ? String(L.boxOf(sheet, st.liftCarry.tens).digit) : '') + String(b.digit), { delay: 20 });
       await page.waitForTimeout(10);
     }
   }
@@ -198,3 +202,20 @@ for (const [m, l] of [['ladder', 'guided'], ['area', 'onMyOwn'], ['area', 'guide
     assert.deepEqual(errors, []);
     await ctx.close();
   });
+
+// ---------------------------------------------------------------- decimals
+
+const DECIMALS = [
+  // the point lifted straight up (and a whole-number problem in a decimals activity: its answer a decimal, stopped at 2 places)
+  { what: 'decimal division', item: { k: 'divide', p: [[12.6, 4], [0.84, 4], [13, 6]], dec: 1 } },
+  { what: 'decimal divisors', item: { k: 'divide', p: [[4.5, 0.3], [4.5, 0.25], [6, 0.4]], dec: 1 } },
+  { what: 'decimal multiplication', item: { k: 'multiply', p: [[2.4, 1.3], [0.6, 4], [3.25, 2.6]], dec: 1 } }
+];
+for (const { what, item } of DECIMALS)
+  for (const l of ['guided', 'onMyOwn'])
+    test(`in Chromium: ${what}, three in a row, ${l}`, { skip, timeout: 90e3 }, async () => {
+      await inARow(item, l, what, async (page, sheet, w) => {
+        if (item.k === 'multiply') assert.equal(await page.locator('.given.dot').count(), sheet.cells.filter((c) => c.dot && !c.after).length + 1, `${w}: a point in each number that has one, and one in the answer`);
+        if (sheet.steps[0].kind === 'shift') assert.equal(await page.locator('svg.hop').count(), 2, `${w}: the hops`);
+      });
+    });

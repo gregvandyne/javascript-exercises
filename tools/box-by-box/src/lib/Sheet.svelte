@@ -29,9 +29,8 @@
 	 *  beside a lifted point, from the row below to the row above. */
 	/** A decimal point's hop: an arc over the digits it moves past, ending in an arrowhead where the point lands. */
 	function hopPath(x1: number, x2: number): string {
-		const y = 0.62;
-		const top = -0.05;
-		return `M ${x1} ${y} Q ${(x1 + x2) / 2} ${top} ${x2} ${y} M ${x2 - 0.13} ${y - 0.1} L ${x2} ${y} L ${x2 + 0.05} ${y - 0.15}`;
+		const d = x2 > x1 ? 1 : -1;
+		return `M ${x1} 0.8 Q ${(x1 + x2) / 2} -0.75 ${x2} 0.8 M ${x2 - d * 0.16} 0.68 L ${x2} 0.8 L ${x2 + d * 0.02} 0.6`;
 	}
 	function arrowPath(up: boolean, span: number): string {
 		if (up) {
@@ -56,6 +55,7 @@
 					class:faint={c.faint}
 					class:label={c.label}
 					class:dot={c.dot}
+					class:note={c.note}
 					class:crossed={crossed(c)}
 					class:dim
 					class:drawn={draw && c.step !== undefined}
@@ -83,7 +83,7 @@
 					viewBox="0 0 {w} 1"
 					style:grid-row={c.row + 1}
 					style:grid-column="{left + 1} / span {w}"
-					><path d={hopPath(c.from - left, c.to - left)} /><circle cx={c.to - left} cy="0.86" r="0.07" /></svg
+					><path d={hopPath(c.from - left, c.to - left)} /><circle cx={c.to - left} cy="0.84" r="0.07" /></svg
 				>
 			{:else if c.kind === 'rule'}
 				<span
@@ -219,6 +219,13 @@
 		margin-right: calc(var(--cell) * -0.15);
 		padding-bottom: calc(var(--cell) * 0.1);
 		z-index: 1;
+	}
+	.given.note {
+		justify-self: end;
+		padding-right: calc(var(--cell) * 0.12);
+		color: var(--ink-soft);
+		font-size: calc(var(--cell) * 0.28);
+		white-space: nowrap;
 	}
 	.given.crossed {
 		color: var(--muted);

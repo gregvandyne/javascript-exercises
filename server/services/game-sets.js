@@ -38,7 +38,9 @@ export function cleanItems(raw) {
 //    m?: the method, one of the kind's own (BB_METHODS); left out, or 'standard', is the standard algorithm, so sets
 //    saved before methods read as they always did,
 //    r?: how long division writes its remainders, 'fraction' or 'decimal' (BB_FORMS); left out, R (g.remainders stays
-//    on or off, as before) }]
+//    on or off, as before),
+//    dec?: 1 (Numbers: decimals): problems may have decimals, at most 2 places (bbDecCheck); without it, whole numbers
+//    only, as always }]
 // Every field is a number, a fixed flag or one of a few words: never free text. A set saved before a field came along
 // is cleaned to exactly what it was.
 const BB_LEVELS = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn', 'custom'];
@@ -57,6 +59,33 @@ export function bbCheck(kind, a, b) {
   if (!Number.isInteger(b) || b < 2 || b > 999) return 'bottom';
   return digits(b) > digits(a) ? 'order' : null;
 }
+/** The decimal places a number is written with (99: none it could be written plainly with). */
+const placesOf = x => {
+  const s = String(x);
+  if (!Number.isFinite(x) || /e/i.test(s)) return 99;
+  const i = s.indexOf('.');
+  return i < 0 ? 0 : s.length - i - 1;
+};
+/** x × 10^k as a whole number, from its digits (no floating point): (12.6, 1) -> 126. */
+const scaledInt = (x, k) => { const [i, f = ''] = String(x).split('.'); return Number(i + f.padEnd(k, '0').slice(0, k)); };
+/** The Big Divide's rules for a problem with a decimal in it (the game's own, logic.ts check*): null when it works. */
+export function bbDecCheck(kind, a, b) {
+  if (!(a > 0) || !(b > 0) || placesOf(a) > 2 || placesOf(b) > 2) return 'decimal';
+  if (kind === 'divide') {
+    const s = placesOf(b), B = scaledInt(b, s);
+    if (B < 2 || B > 9999) return 'divisor';
+    const [i, f = ''] = String(a).split('.');
+    const digits = (i + f.slice(0, s).padEnd(s, '0') + f.slice(s)).replace(/^0+/, '');
+    return digits.length > 6 || a > 99999 ? 'dividend' : null;
+  }
+  if (kind === 'multiply') {
+    const T = scaledInt(a, placesOf(a)), B = scaledInt(b, placesOf(b));
+    if (T < 2 || T > 9999) return 'top';
+    if (B < 2 || B > 999) return 'bottom';
+    return digits(B) > digits(T) ? 'order' : null;
+  }
+  return 'kind';
+}
 const range = (v, lo, hi) => (Array.isArray(v) && v.length === 2 && v.every(x => Number.isInteger(x) && x >= lo && x <= hi) ? [Math.min(...v), Math.max(...v)] : null);
 function bbPlan(kind, g) {
   if (!g || typeof g !== 'object') return null;
@@ -74,11 +103,13 @@ export function cleanBoxItems(raw) {
   const it = raw[0];
   const k = it.k === 'multiply' ? 'multiply' : it.k === 'divide' ? 'divide' : null;
   if (!k || !BB_LEVELS.includes(it.l) || !Array.isArray(it.p) || it.p.length > 100) return null;
+  const dec = it.dec === 1;
+  if (it.dec !== undefined && it.dec !== null && !dec) return null;
   const p = [];
   for (const x of it.p) {
     if (!Array.isArray(x) || x.length !== 2) return null;
     const [a, b] = x.map(Number);
-    if (bbCheck(k, a, b)) return null;
+    if (dec && !(Number.isInteger(a) && Number.isInteger(b)) ? bbDecCheck(k, a, b) : bbCheck(k, a, b)) return null;
     p.push([a, b]);
   }
   const d = it.d === 1;
@@ -94,6 +125,7 @@ export function cleanBoxItems(raw) {
     if (k !== 'divide' || !BB_FORMS.includes(it.r)) return null;
     out.r = it.r;
   }
+  if (dec) out.dec = 1;
   return [out];
 }
 
@@ -207,7 +239,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
     }
     if (slug === 'box-by-box') {
       const a = s.items[0], n = a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
-      return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}` };
+      return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}` };
     }
     return { kind: 'set', n: s.items.length };
   }

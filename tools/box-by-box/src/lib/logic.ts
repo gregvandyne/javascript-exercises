@@ -2,7 +2,7 @@
 // calls and no DOM here, so it runs as it is in Node too.
 
 import { methodOr, type Method } from './methods.ts';
-import { asText, digitsOfText, isDecimal, placeWord, placesOf, plural, scaled, shiftPoint } from './numbers.ts';
+import { asText, digitsOfText, isDecimal, placeWord, placesOf, plural, scaled, shiftPoint, unscaled } from './numbers.ts';
 
 export type Kind = 'divide' | 'multiply';
 export type Level = 'watch' | 'countUp' | 'guided' | 'prompted' | 'onMyOwn' | 'custom';
@@ -22,8 +22,11 @@ export type Cell =
 			faint?: boolean;
 			/** A decimal point on the grid line after this square (multiplication keeps its digits lined up). */
 			dot?: boolean;
-			/** Drawn only once this box is right (a point placed, a zero in front of it). */
+			/** Drawn only once this box is right (a point placed, a zero in front of it); with when, once it holds that. */
 			after?: string;
+			when?: string;
+			/** A small note in words (it may run to the left over empty squares). */
+			note?: boolean;
 			/** Crossed out once this box (the new digit written over it) is filled. */
 			crossBy?: string;
 	  }
@@ -101,7 +104,24 @@ const len = (n: number) => String(n).length;
 
 // --- long division ---
 
-export function checkDivide(dividend: number, divisor: number): string | null {
+/** Whole numbers, or decimals too (a teacher's Numbers choice). */
+export type Numbers = 'whole' | 'decimal';
+export const numbersOf = (v: unknown): Numbers => (v === 'decimal' ? 'decimal' : 'whole');
+/** A decimal for a problem: more than 0, at most 2 decimal places (hundredths, as grades 5 and 6 work them). */
+const decimalFault = (x: number, what: string): string | null =>
+	!Number.isFinite(x) || x <= 0 ? `Type ${what}.` : placesOf(x) > 2 ? `${what[0].toUpperCase()}${what.slice(1)} needs at most 2 decimal places.` : null;
+
+export function checkDivide(dividend: number, divisor: number, numbers: Numbers = 'whole'): string | null {
+	if (numbers === 'decimal' && !(Number.isInteger(dividend) && Number.isInteger(divisor))) {
+		const f = decimalFault(divisor, 'the number to divide by') ?? decimalFault(dividend, 'the number to divide');
+		if (f) return f;
+		const s = placesOf(divisor);
+		const B = scaled(divisor, s);
+		if (B < 2 || B > 9999) return 'The number to divide by needs to be 2 to 9,999 once its point is moved, like 0.3 or 12.5.';
+		const A = shiftPoint(dividend, s);
+		if (A.replace('.', '').replace(/^0+/, '').length > 6 || dividend > 99999) return 'That makes too many digits to divide. Try smaller numbers.';
+		return null;
+	}
 	if (!Number.isInteger(divisor) || divisor < 2 || divisor > 9999) return 'Divide by a number from 2 to 9,999.';
 	if (!Number.isInteger(dividend) || dividend < 10 || dividend > 999999)
 		return 'The number to divide needs two to six digits, 10 to 999,999.';
@@ -167,31 +187,22 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 	if (shifted) {
 		const x = String(dividend);
 		const y = String(divisor);
+		// the problem as given, compact: each digit in a square, the point on the line after its whole digits; each point's
+		// hop s places right drawn over it (a whole number's from after its last digit), and a 0 where a place is empty
 		const pad = Math.max(0, s - placesOf(dividend));
 		let c = 0;
-		const hops: Cell[] = [];
-		const write = (t: string, key: string) => {
-			[...t].forEach((ch) => cells.push({ kind: 'given', row: 0, col: c++, text: ch, key }));
+		const write = (t: string, key: string, step: number) => {
+			const [int, frac = ''] = t.split('.');
+			const start = c;
+			[...(int + frac)].forEach((ch) => cells.push({ kind: 'given', row: 0, col: c++, text: ch, key }));
+			if (frac) cells.push({ kind: 'given', row: 0, col: start + int.length - 1, text: '.', key, dot: true });
+			for (let k = frac.length; k < s; k++) cells.push({ kind: 'given', row: 0, col: c++, text: '0', key: `hop-${key}`, faint: true, step });
+			cells.push({ kind: 'hop', row: 0, from: start + int.length, to: start + int.length + s, key: `hop-${key}`, step });
 		};
-		// the point's hop: from where it is (a whole number's is after its last digit) to s places on
-		const hopFor = (t: string, start: number, key: string, step: number) => {
-			const p = t.indexOf('.');
-			hops.push(
-				p < 0
-					? { kind: 'hop', row: 0, from: start + t.length, to: start + t.length + s, key, step }
-					: { kind: 'hop', row: 0, from: start + p + 0.5, to: start + p + s + 1, key, step }
-			);
-		};
-		hopFor(x, 0, 'hop-dividend', 1);
-		write(x, 'o-dividend');
-		for (let k = 0; k < pad; k++) cells.push({ kind: 'given', row: 0, col: c++, text: '0', key: 'hop-dividend', faint: true, step: 1 });
-		c++;
+		write(x, 'o-dividend', 1);
 		cells.push({ kind: 'given', row: 0, col: c++, text: '÷', key: 'o-sign' });
-		c++;
-		hopFor(y, c, 'hop-divisor', 0);
-		write(y, 'o-divisor');
+		write(y, 'o-divisor', 0);
 		headW = c;
-		cells.push(...hops);
 		const times = 10 ** s;
 		dv.forEach((d, k) => place(`v${k}`, d, dRow, k));
 		steps.push({
@@ -205,7 +216,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 				`${y} × ${times}: the digits stay, the point hops ${plural(s, 'place', 'places')} right.`,
 				`It’s ${B}.`
 			],
-			lit: ['o-divisor', 'hop-divisor', ...divKeys],
+			lit: ['o-divisor', 'hop-o-divisor', ...divKeys],
 			view: { top: 0, left: 0, bottom: dRow, right: Math.max(headW, D) - 1 }
 		});
 		const dIds: string[] = [];
@@ -228,7 +239,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 				`${x} × ${times}: the point hops ${plural(s, 'place', 'places')} right${pad ? ', and a 0 fills the empty place' : ''}.`,
 				`It’s ${A}.`
 			],
-			lit: ['o-dividend', 'hop-dividend', ...dIds],
+			lit: ['o-dividend', 'hop-o-dividend', ...dIds],
 			view: { top: 0, left: 0, bottom: dRow, right: Math.max(headW, col(total - 1) + 1) - 1 }
 		});
 	} else {
@@ -557,15 +568,32 @@ const rand = (lo: number, hi: number, r: Rand = Math.random) => lo + Math.floor(
 
 /** remainders: how they're written (none: every problem divides evenly). Saved before there was a choice, it was on
  *  or off: on reads as R, off as none. */
-export type DividePlan = { count: number; dividends: [number, number]; divisors: [number, number]; remainders: RemainderForm };
-export type MultiplyPlan = { count: number; tops: [number, number]; bottoms: [number, number] };
+export type DividePlan = { count: number; dividends: [number, number]; divisors: [number, number]; remainders: RemainderForm; numbers?: Numbers };
+export type MultiplyPlan = { count: number; tops: [number, number]; bottoms: [number, number]; numbers?: Numbers };
 export type Plan = DividePlan | MultiplyPlan;
 
 const DIVIDENDS: [number, number] = [10, 999999];
 const DIVISORS: [number, number] = [2, 9999];
 const DIVIDE_PLAN: DividePlan = { count: 16, dividends: [100, 999], divisors: [2, 9], remainders: 'R' };
 
+/** A decimal problem made from the plan's whole-number sizes: the point placed in the dividend (12.6 from 126), and
+ *  sometimes in the divisor too (0.3 from 3, 1.2 from 12); only problems that come out exactly by hundredths. */
+function makeDecimalDivide(plan: DividePlan, r: Rand): { dividend: number; divisor: number } | null {
+	// half of them a multiple of the divisor (any divisor), half any number that comes out once a zero or two is written
+	const whole = makeDivide({ ...plan, numbers: 'whole', remainders: r() < 0.5 ? 'none' : 'R' }, r);
+	if (!whole) return null;
+	const N = whole.dividend;
+	const k = rand(Math.min(1, len(N) - 1), Math.min(2, len(N) - 1), r);
+	const s = r() < 0.35 ? 1 : 0;
+	const dividend = unscaled(N, k);
+	const divisor = unscaled(whole.divisor, s);
+	if (!isDecimal(dividend) && !isDecimal(divisor)) return null;
+	// it comes out by hundredths: N × 10^s × 100 is a whole number of (divisor × 10^k)
+	if ((N * 10 ** (s + 2)) % (whole.divisor * 10 ** k) !== 0) return null;
+	return checkDivide(dividend, divisor, 'decimal') ? null : { dividend, divisor };
+}
 function makeDivide(plan: DividePlan, r: Rand): { dividend: number; divisor: number } | null {
+	if (plan.numbers === 'decimal') return makeDecimalDivide(plan, r);
 	const [lo0, hi0] = plan.dividends;
 	const [dlo, dhi] = plan.divisors;
 	const divisor = dlo + rand(0, dhi - dlo, r);
@@ -624,7 +652,8 @@ function parseDividePlan(raw: unknown): DividePlan {
 		count: Number.isInteger(count) && count >= 1 && count <= 100 ? count : DIVIDE_PLAN.count,
 		dividends: range(t.dividends ?? digitRange(t.dividendDigits), DIVIDENDS, DIVIDE_PLAN.dividends),
 		divisors: range(t.divisorDigits === 2 ? [11, 99] : t.divisors, DIVISORS, DIVIDE_PLAN.divisors),
-		remainders: remainderForm(t.remainders)
+		remainders: remainderForm(t.remainders),
+		...(t.numbers === 'decimal' ? { numbers: 'decimal' as Numbers } : {})
 	};
 }
 
@@ -633,7 +662,17 @@ function parseDividePlan(raw: unknown): DividePlan {
 const TOPS: [number, number] = [10, 9999];
 const BOTTOMS: [number, number] = [2, 999];
 
-export function checkMultiply(top: number, bottom: number): string | null {
+export function checkMultiply(top: number, bottom: number, numbers: Numbers = 'whole'): string | null {
+	if (numbers === 'decimal' && !(Number.isInteger(top) && Number.isInteger(bottom))) {
+		const f = decimalFault(top, 'the top number') ?? decimalFault(bottom, 'the bottom number');
+		if (f) return f;
+		const T = scaled(top, placesOf(top));
+		const B = scaled(bottom, placesOf(bottom));
+		if (T < 2 || T > TOPS[1]) return 'The top number needs one to four digits, like 2.4 or 35.6.';
+		if (B < 2 || B > BOTTOMS[1]) return 'The bottom number needs one to three digits, like 1.3 or 0.6.';
+		if (len(B) > len(T)) return 'The number with more digits goes on top.';
+		return null;
+	}
 	if (!Number.isInteger(top) || top < TOPS[0] || top > TOPS[1]) return 'The top number needs two to four digits, 10 to 9,999.';
 	if (!Number.isInteger(bottom) || bottom < BOTTOMS[0] || bottom > BOTTOMS[1]) return 'The bottom number needs to be 2 to 999.';
 	if (len(bottom) > len(top)) return 'The number with more digits goes on top.';
@@ -676,14 +715,14 @@ function sumCarries({ top, bottom }: { top: number; bottom: number }): number[] 
 
 type PlacedBox = { id: string; digit: number; row: number; col: number; small?: boolean };
 
-export function multiplySheet(problem: { top: number; bottom: number }): Sheet {
+export function multiplySheet(problem: { top: number; bottom: number }, lead = 0): Sheet {
 	const { top, bottom } = problem;
 	const t = reversed(top);
 	const b = reversed(bottom);
 	const product = top * bottom;
 	const L = len(product);
-	const colOf = (p: number) => L - p;
-	const cols = L + 1;
+	const colOf = (p: number) => L + lead - p;
+	const cols = L + lead + 1;
 	const oneRow = b.length === 1;
 	const parts = b.map((d) => partialRow(top, d));
 	const hasCarries = parts.map((p) => p.carries.some((c, k) => k > 0 && c > 0));
@@ -783,7 +822,7 @@ export function multiplySheet(problem: { top: number; bottom: number }): Sheet {
 
 	const placeOf = (id: string) => {
 		const c = cells.find((x) => x.kind === 'box' && x.id === id);
-		return c && c.kind === 'box' ? L - c.col : -1;
+		return c && c.kind === 'box' ? L + lead - c.col : -1;
 	};
 	const digitOf = (id: string) => Number(boxes.find((x) => x.id === id)?.digit ?? 0);
 
@@ -838,6 +877,73 @@ export function multiplySheet(problem: { top: number; bottom: number }): Sheet {
 	};
 }
 
+/** Decimal multiplication: multiply as whole numbers (2.4 × 1.3 as 24 × 13), then count the decimal places of both
+ *  numbers and put the point in the answer that many places from the right (a step: the count typed in a box, and the
+ *  point drawn on the line where it goes). The points sit on the grid lines, so every digit stays in its column. */
+export function decimalMultiplySheet({ top, bottom }: { top: number; bottom: number }): Sheet {
+	const pt = placesOf(top);
+	const pb = placesOf(bottom);
+	const P = pt + pb;
+	if (!P) return multiplySheet({ top, bottom });
+	const T = scaled(top, pt);
+	const B = scaled(bottom, pb);
+	const product = T * B;
+	const L = len(product);
+	const lead = Math.max(0, pt - L, pb + 1 - L, P - L);
+	const s = multiplySheet({ top: T, bottom: B }, lead);
+	const colOf = (p: number) => L + lead - p;
+	const rowOf = (key: string) => (s.cells.find((c) => c.kind === 'given' && c.key === key) as { row: number }).row;
+	const topRow = rowOf('t0');
+	const bottomRow = rowOf('m0');
+	const cells = [...s.cells];
+	// the given numbers: a zero in front where there are no whole digits (0.6), and the point on its line
+	const write = (row: number, digits: number, places: number, key: string) => {
+		for (let p = digits; p <= places; p++) cells.push({ kind: 'given', row, col: colOf(p), text: '0', key: `${key}${p}` });
+		if (places) cells.push({ kind: 'given', row, col: colOf(places), text: '.', key: `${key}pt`, dot: true });
+	};
+	write(topRow, len(T), pt, 't');
+	write(bottomRow, len(B), pb, 'm');
+	const answerRow = (s.cells.find((c) => c.kind === 'box' && c.id === s.answerBoxes[0]) as { row: number }).row;
+	const countRow = answerRow + 1;
+	const at = s.steps.length;
+	const answer = asText(product, P);
+	cells.push({ kind: 'given', row: countRow, col: s.cols - 2, text: 'decimal places', key: 'dp', step: at, note: true });
+	cells.push({ kind: 'box', row: countRow, col: s.cols - 1, id: 'dp' });
+	// the point where the count typed puts it (so a wrong count shows where it would go), and the zeros in front once right
+	for (let k = 1; k <= Math.max(P, Math.min(L, 4)); k++)
+		cells.push({ kind: 'given', row: answerRow, col: colOf(k), text: '.', key: 'dp', dot: true, after: 'dp', when: String(k) });
+	for (let p = L; p <= P; p++) cells.push({ kind: 'given', row: answerRow, col: colOf(p), text: '0', key: 'dp', after: 'dp' });
+	const counted = `${top} has ${plural(pt, 'decimal place', 'decimal places')} and ${bottom} has ${plural(pb, 'decimal place', 'decimal places')}`;
+	const steps: Step[] = s.steps.map((st, i) =>
+		i === 0 ? { ...st, prompt: (v: Values) => `Multiply as if there were no points: ${T} × ${B}. ${st.prompt(v)}` } : st
+	);
+	steps.push({
+		kind: 'point',
+		boxes: ['dp'],
+		prompt: () => `${counted}. How many decimal places does the answer have?`,
+		told: () => `${counted}: ${pt} + ${pb} = ${P}. Count ${P} places from the right and put the point there: ${answer}.`,
+		hints: () => [
+			'Count the digits after the point in both numbers you multiplied, and add them.',
+			`${counted}: ${pt} + ${pb} = ${P}.`,
+			`It’s ${P}: the point goes ${plural(P, 'place', 'places')} from the right, ${answer}.`
+		],
+		lit: ['tpt', 'mpt', 'dp', ...s.answerBoxes],
+		view: { top: 0, left: 0, bottom: countRow, right: s.cols - 1 }
+	});
+	const trimmed = answer.replace(/\.?0+$/, '');
+	return {
+		...s,
+		...(trimmed !== answer ? { note: `${answer} is the same as ${trimmed}: zeros on the end, after the point, can go.` } : {}),
+		title: `${top} × ${bottom}`,
+		rows: countRow + 1,
+		cells,
+		boxes: [...s.boxes, { id: 'dp', digit: P }],
+		answerBoxes: [...s.answerBoxes, 'dp'],
+		answer,
+		steps
+	};
+}
+
 const MULTIPLY_PLAN: MultiplyPlan = { count: 12, tops: [10, 99], bottoms: [10, 99] };
 
 /** Multiplication ranges put right: each in order, the bigger number on top, within the limits. */
@@ -860,7 +966,20 @@ function within([lo, hi]: [number, number], digits: number, r: Rand): number | n
 	const b = Math.min(hi, 10 ** digits - 1);
 	return a > b ? null : rand(a, b, r);
 }
+/** A decimal multiplication from the plan's whole-number sizes: a point in the top number (2.4 from 24), and often in
+ *  the bottom one (1.3 from 13, 0.6 from 6). */
+function makeDecimalMultiply(plan: MultiplyPlan, r: Rand): { top: number; bottom: number } | null {
+	const whole = makeMultiply({ ...plan, numbers: 'whole' }, r);
+	if (!whole) return null;
+	const pt = rand(1, Math.min(2, len(whole.top) - 1), r);
+	const pb = r() < 0.6 ? 1 : 0;
+	const top = unscaled(whole.top, pt);
+	const bottom = unscaled(whole.bottom, pb);
+	if (!isDecimal(top) || placesOf(top) + placesOf(bottom) > 3) return null;
+	return checkMultiply(top, bottom, 'decimal') ? null : { top, bottom };
+}
 function makeMultiply(plan: MultiplyPlan, r: Rand): { top: number; bottom: number } | null {
+	if (plan.numbers === 'decimal') return makeDecimalMultiply(plan, r);
 	const nb = rand(len(plan.bottoms[0]), len(plan.bottoms[1]), r);
 	const nt = rand(Math.max(nb, len(plan.tops[0])), len(plan.tops[1]), r);
 	if (nt < nb) return null;
@@ -877,7 +996,8 @@ function parseMultiplyPlan(raw: unknown): MultiplyPlan {
 	return fixMultiplyPlan({
 		count: Number.isInteger(count) && count >= 1 && count <= 100 ? count : MULTIPLY_PLAN.count,
 		tops: range(t.tops, TOPS, MULTIPLY_PLAN.tops),
-		bottoms: range(t.bottoms, BOTTOMS, MULTIPLY_PLAN.bottoms)
+		bottoms: range(t.bottoms, BOTTOMS, MULTIPLY_PLAN.bottoms),
+		...(t.numbers === 'decimal' ? { numbers: 'decimal' as Numbers } : {})
 	}).plan;
 }
 
@@ -896,7 +1016,7 @@ export type KindInfo = {
 	widths: [number, number];
 	setSize: number;
 	makeSet: (r: Rand, n: number) => Problem[];
-	check: (a: number, b: number) => string | null;
+	check: (a: number, b: number, numbers?: Numbers) => string | null;
 	sheet: (p: Problem, plan?: Plan) => Sheet;
 	settings: {
 		fresh: () => Plan;
@@ -904,7 +1024,7 @@ export type KindInfo = {
 		generate: (plan: Plan, r?: Rand, existing?: Problem[]) => Problem[];
 		ranges: { key: RangeKey; name: string; limits: [number, number] }[];
 		/** A choice of a few named options (Remainders: none, R, fraction, decimal). */
-		choices: { key: 'remainders'; name: string; options: { value: string; label: string; about: string }[] }[];
+		choices: { key: 'remainders' | 'numbers'; name: string; options: { value: string; label: string; about: string }[] }[];
 		fix: (plan: Plan) => { plan: Plan; note: string | null };
 	};
 	levels: Level[];
@@ -915,6 +1035,20 @@ export type KindInfo = {
 };
 
 const LEVELS: Level[] = ['watch', 'countUp', 'guided', 'prompted', 'onMyOwn'];
+
+/** The Numbers choice (every kind): whole numbers, or decimals too. */
+export const NUMBERS_CHOICE: KindInfo['settings']['choices'][number] = {
+	key: 'numbers',
+	name: 'Numbers',
+	options: [
+		{ value: 'whole', label: 'Whole numbers', about: 'Whole numbers only.' },
+		{
+			value: 'decimal',
+			label: 'Decimals',
+			about: 'The same sizes of numbers with a decimal point in them, to hundredths (12.6 ÷ 4, 4.5 ÷ 0.3, 2.4 × 1.3). Division answers are decimals too. With the standard method only.'
+		}
+	]
+};
 
 /** The Remainders choice (a teacher's settings; the label is what the choice shows). */
 export const REMAINDER_OPTIONS: { value: RemainderForm; label: string; about: string }[] = [
@@ -952,7 +1086,7 @@ export const KINDS: KindInfo[] = [
 				{ key: 'dividends', name: 'Dividend', limits: DIVIDENDS },
 				{ key: 'divisors', name: 'Divisor', limits: DIVISORS }
 			],
-			choices: [{ key: 'remainders', name: 'Remainders', options: REMAINDER_OPTIONS }],
+			choices: [NUMBERS_CHOICE, { key: 'remainders', name: 'Remainders', options: REMAINDER_OPTIONS }],
 			fix: (plan) => {
 				const p = plan as DividePlan;
 				const sort = ([a, b]: [number, number]): [number, number] => [Math.min(a, b), Math.max(a, b)];
@@ -977,7 +1111,7 @@ export const KINDS: KindInfo[] = [
 		setSize: MULTIPLY_PLAN.count,
 		makeSet: (r, n) => multiplySet({ ...MULTIPLY_PLAN, count: n }, r).map((p) => [p.top, p.bottom]),
 		check: checkMultiply,
-		sheet: ([a, b]) => multiplySheet({ top: a, bottom: b }),
+		sheet: ([a, b]) => decimalMultiplySheet({ top: a, bottom: b }),
 		settings: {
 			fresh: () => ({ ...MULTIPLY_PLAN, tops: [...MULTIPLY_PLAN.tops], bottoms: [...MULTIPLY_PLAN.bottoms] }),
 			parse: parseMultiplyPlan,
@@ -991,7 +1125,7 @@ export const KINDS: KindInfo[] = [
 				{ key: 'tops', name: 'Top number', limits: TOPS },
 				{ key: 'bottoms', name: 'Bottom number', limits: BOTTOMS }
 			],
-			choices: [],
+			choices: [NUMBERS_CHOICE],
 			fix: (plan) => {
 				const f = fixMultiplyPlan(plan as MultiplyPlan);
 				return { plan: f.plan, note: f.swapped ? 'Swapped: the bigger number goes on top.' : null };
@@ -1045,13 +1179,13 @@ export function parseFlags(code: unknown): Flags {
 }
 
 /** The problems that work for this kind (numbers as text are taken as numbers), at most 100. */
-export function validProblems(raw: unknown, kind: Kind): Problem[] {
+export function validProblems(raw: unknown, kind: Kind, numbers: Numbers = 'whole'): Problem[] {
 	if (!Array.isArray(raw)) return [];
 	const out: Problem[] = [];
 	for (const p of raw) {
 		if (!Array.isArray(p)) continue;
 		const [a, b] = p.map(Number);
-		if (kindInfo(kind).check(a, b) === null) out.push([a, b]);
+		if (kindInfo(kind).check(a, b, numbers) === null) out.push([a, b]);
 	}
 	return out.slice(0, MAX_PROBLEMS);
 }
@@ -1063,7 +1197,7 @@ export type Playable = { kind: Kind; problems: Problem[]; settings: Settings; pl
 
 /** One question-set item as Oomba keeps it (no title: nothing typed as free text leaves the teacher's save). m, the
  *  method, only when it isn't the standard algorithm (so an item saved before methods is still the same item). */
-export type Item = { k: Kind; p: Problem[]; l: Level; c?: string; d?: 1; g?: Plan; m?: Method; r?: 'fraction' | 'decimal' };
+export type Item = { k: Kind; p: Problem[]; l: Level; c?: string; d?: 1; g?: Plan; m?: Method; r?: 'fraction' | 'decimal'; dec?: 1 };
 
 /** An item from a link, checked the way links always were: bad problems dropped; none left (and not a fresh set for
  *  each student) means no activity. */
@@ -1071,15 +1205,18 @@ export function parseItem(raw: unknown): Playable | null {
 	if (!raw || typeof raw !== 'object') return null;
 	const o = raw as Record<string, unknown>;
 	const kind: Kind = o.k === 'multiply' ? 'multiply' : 'divide';
-	const problems = validProblems(o.p, kind);
+	const numbers: Numbers = o.dec === 1 ? 'decimal' : 'whole';
+	const problems = validProblems(o.p, kind, numbers);
 	const perStudent = o.d === 1;
 	if (!problems.length && !perStudent) return null;
 	const s = kindInfo(kind).settings;
+	const plan = withForm(kind, o.g ? s.parse(o.g) : s.fresh(), o.r);
 	return {
 		kind,
 		problems,
-		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent, method: methodOr(kind, o.m) },
-		plan: withForm(kind, o.g ? s.parse(o.g) : s.fresh(), o.r)
+		// decimals: the standard method (the others take away and break up whole numbers)
+		settings: { level: levelOr(o.l, kind), custom: parseFlags(o.c), perStudent, method: numbers === 'decimal' ? 'standard' : methodOr(kind, o.m) },
+		plan: numbers === 'decimal' ? { ...plan, numbers } : plan
 	};
 }
 
@@ -1093,9 +1230,11 @@ export function toItem(a: Playable): Item {
 		item.g = cleanPlan(a.kind, a.plan);
 	}
 	const m = methodOr(a.kind, a.settings.method);
-	if (m !== 'standard') item.m = m;
+	if (m !== 'standard' && numbersOf(a.plan?.numbers) !== 'decimal') item.m = m;
 	const form = formOf(a);
-	if (form === 'fraction' || form === 'decimal') item.r = form;
+	const dec = numbersOf(a.plan?.numbers) === 'decimal';
+	if (!dec && (form === 'fraction' || form === 'decimal')) item.r = form;
+	if (dec) item.dec = 1;
 	return item;
 }
 /** An item's remainder form (r, only when it is a fraction or a decimal) put on its plan. */
@@ -1106,6 +1245,8 @@ function withForm(kind: Kind, plan: Plan, r: unknown): Plan {
 /** How an activity's long division writes its remainders (other kinds: as R, which they never have). */
 export const formOf = (a: { kind: Kind; plan?: Plan; settings?: { method?: Method } }): RemainderForm => {
 	if (a.kind !== 'divide') return 'R';
+	// decimals: division answers are decimals too
+	if (numbersOf(a.plan?.numbers) === 'decimal') return 'decimal';
 	const f = remainderForm((a.plan as DividePlan | undefined)?.remainders ?? 'R');
 	// the ladder and the area model take away whole groups: a decimal remainder is written as R there
 	return f === 'decimal' && a.settings?.method && a.settings.method !== 'standard' ? 'R' : f;

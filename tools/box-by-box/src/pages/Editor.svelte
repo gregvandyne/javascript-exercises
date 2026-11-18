@@ -5,7 +5,7 @@
 	import { onMount, tick } from 'svelte';
 	import { ArrowLeft, Dices, ExternalLink, GripVertical, Plus, Share2, X } from '@lucide/svelte';
 	import { find, isShared, list, loadList, titleOf, touch } from '$lib/activities.svelte';
-	import { MAX_PROBLEMS, formOf, kindInfo, levelInfo, remainderForm, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
+	import { MAX_PROBLEMS, formOf, kindInfo, levelInfo, numbersOf, remainderForm, showAnswer, type Level, type Plan, type RangeKey } from '$lib/logic';
 	import { go, show } from '$lib/nav.svelte';
 	import Stepper from '$lib/Stepper.svelte';
 	import SwitchRow from '$lib/SwitchRow.svelte';
@@ -30,7 +30,10 @@
 	}
 	onMount(syncRows);
 
-	const fault = (r: Row) => (!r.first && !r.second ? '' : !r.first || !r.second ? 'Type both numbers.' : (k.check(Number(r.first), Number(r.second)) ?? ''));
+	/** Whole numbers, or decimals too (the Numbers choice): what a problem may be typed with. */
+	const numbers = $derived(numbersOf(activity?.plan?.numbers));
+	const fault = (r: Row) =>
+		!r.first && !r.second ? '' : !r.first || !r.second ? 'Type both numbers.' : (k.check(Number(r.first), Number(r.second), numbers) ?? '');
 	const valid = (r: Row) => !!r.first && !!r.second && !fault(r);
 	function answerOf(r: Row): [string, string] {
 		if (!valid(r)) return ['', ''];
@@ -119,11 +122,19 @@
 	const key = (f: 0 | 1) => (f === 0 ? 'first' : 'second') as 'first' | 'second';
 	function typed(i: number, f: 0 | 1, e: Event) {
 		const el = e.currentTarget as HTMLInputElement;
-		const v = el.value.replace(/\D/g, '').slice(0, fieldMax(f));
+		// decimals: digits and one point (a comma is taken as the point), and no jumping on: a point may come next
+		const v =
+			numbers === 'decimal'
+				? el.value
+						.replace(/,/g, '.')
+						.replace(/[^\d.]/g, '')
+						.replace(/(\..*)\./g, '$1')
+						.slice(0, fieldMax(f) + 3)
+				: el.value.replace(/\D/g, '').slice(0, fieldMax(f));
 		el.value = v;
 		rows[i][key(f)] = v;
 		commitRows();
-		if (v.length >= fieldMax(f)) {
+		if (numbers !== 'decimal' && v.length >= fieldMax(f)) {
 			const n = move({ index: i, field: f }, 'next', columns(), rows.length, layout);
 			if (n) focusSpot(n);
 		}
@@ -152,7 +163,7 @@
 		} else if (e.key === 'Backspace' && n === 0) {
 			e.preventDefault();
 			go2(at, 'previous');
-		} else if (e.key.length === 1 && !/\d/.test(e.key)) {
+		} else if (e.key.length === 1 && !/\d/.test(e.key) && !(numbers === 'decimal' && (e.key === '.' || e.key === ','))) {
 			e.preventDefault();
 			if (jumpChar(e.key)) go2(at, 'next');
 		}
@@ -160,7 +171,7 @@
 	function parsePaste(text: string): [number, number][] {
 		const out: [number, number][] = [];
 		for (const line of text.split(/[\n\r;,]+/)) {
-			const m = line.match(/\d+/g);
+			const m = line.match(numbers === 'decimal' ? /\d+(?:[.,]\d+)?|[.,]\d+/g : /\d+/g)?.map((x) => x.replace(',', '.'));
 			if (m && m.length >= 2) out.push([Number(m.at(-2)), Number(m.at(-1))]);
 		}
 		return out;
@@ -224,14 +235,22 @@
 	/** How remainders are written. Only None (every problem divides evenly) changes which problems fit: going to or
 	 *  from it makes new ones; the others write the same problems' remainders another way. */
 	const form = $derived(activity ? formOf(activity) : 'R');
-	function setChoice(key: 'remainders', v: string) {
+	function setChoice(key: 'remainders' | 'numbers', v: string) {
 		if (!activity) return;
-		const before = remainderForm((activity.plan as Record<string, unknown>)[key]);
+		const was = (activity.plan as Record<string, unknown>)[key];
 		const set = () => {
-			(activity.plan as Record<string, unknown>)[key] = v;
+			if (key === 'numbers' && v === 'whole') delete activity.plan.numbers;
+			else (activity.plan as Record<string, unknown>)[key] = v;
+			// decimals: the standard method
+			if (key === 'numbers' && v === 'decimal') activity.settings.method = 'standard';
 			plays++;
 		};
-		if ((before === 'none') === (v === 'none')) {
+		if (key === 'numbers') {
+			if (numbersOf(was) !== v) confirmThen(() => {
+				set();
+				regenerate();
+			});
+		} else if ((remainderForm(was) === 'none') === (v === 'none')) {
 			set();
 			save();
 		} else
@@ -361,10 +380,10 @@
 		bind:this={() => refs[i]?.[f] ?? null, (el) => ((refs[i] ??= [null, null])[f] = el)}
 		class="operand"
 		type="text"
-		inputmode="numeric"
+		inputmode={numbers === 'decimal' ? 'decimal' : 'numeric'}
 		autocomplete="off"
 		spellcheck="false"
-		maxlength={k.widths[f]}
+		maxlength={k.widths[f] + (numbers === 'decimal' ? 3 : 0)}
 		aria-label="Problem {i + 1}: {k.labels[f]}"
 		aria-invalid={bad}
 		value={r[key(f)]}
@@ -420,29 +439,33 @@
 						</div>
 					{/each}
 					{#if note}<p class="range-note" role="status">{note}</p>{/if}
-					{#each s.choices as ch (ch.key)}
-						{@const options = ch.options.filter((o) => o.value !== 'decimal' || method === 'standard')}
+					{#each s.choices.filter((c) => c.key !== 'remainders' || numbers !== 'decimal') as ch (ch.key)}
+						{@const options = ch.key === 'remainders' ? ch.options.filter((o) => o.value !== 'decimal' || method === 'standard') : ch.options}
+						{@const now = ch.key === 'numbers' ? numbers : form}
 						<div class="choice-row">
 							<h3 id="choice-{ch.key}">{ch.name}</h3>
 							<div class="tabs" role="radiogroup" aria-labelledby="choice-{ch.key}">
 								{#each options as o (o.value)}
-									<button type="button" role="radio" class="tab" aria-checked={form === o.value} onclick={() => setChoice(ch.key, o.value)}>{o.label}</button>
+									<button type="button" role="radio" class="tab" aria-checked={now === o.value} onclick={() => setChoice(ch.key, o.value)}>{o.label}</button>
 								{/each}
 							</div>
-							<p class="about">{ch.options.find((o) => o.value === form)?.about ?? ''}</p>
+							<p class="about">{ch.options.find((o) => o.value === now)?.about ?? ''}</p>
 						</div>
 					{/each}
 				</div>
 				<section class="group methods" aria-labelledby="method-title">
 					<h3 id="method-title">Method</h3>
 					<div class="method-list" role="radiogroup" aria-labelledby="method-title">
-						{#each methods as m (m.name)}
+						{#each methods.filter((m) => numbers !== 'decimal' || m.name === 'standard') as m (m.name)}
 							<button type="button" role="radio" class="method" aria-checked={method === m.name} onclick={() => setMethod(m.name)}>
 								<span class="method-name">{m.name === 'standard' ? (activity.kind === 'divide' ? 'Standard (long division)' : 'Standard algorithm') : m.name === 'ladder' ? 'Ladder (partial quotients)' : m.label}</span>
 								<span class="method-about">{m.about}</span>
 							</button>
 						{/each}
 					</div>
+					{#if numbers === 'decimal' && methods.length > 1}
+						<p class="about">The other methods break up and take away whole numbers, so decimals use the standard one.</p>
+					{/if}
 					{#if method !== 'standard'}
 						<details class="how">
 							<summary>How students work it</summary>
@@ -731,7 +754,7 @@
 	}
 	@media (max-width: 54rem) {
 		.layout {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			grid-template-rows: auto;
 		}
 		.settings,
