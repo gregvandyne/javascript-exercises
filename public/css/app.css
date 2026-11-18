@@ -1849,7 +1849,9 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .fsave-list>li::marker{content:none}
 .fsave-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer}
 .fsave-opt:has(input:checked){box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
-.fsave-opt:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+/* No black focus ring when the pop-up opens on a folder: the card itself shows focus, as a thicker green edge. */
+.fsave-opt input:focus,.fsave-opt input:focus-visible{outline:none;box-shadow:none}
+.fsave-opt:has(input:focus-visible){box-shadow:inset 0 0 0 3px var(--accent-press)}
 .fsave-opt.is-in{cursor:default;background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
 .fsave-opt.is-in input,.fsave-opt.is-in .fsave-name>b,.fsave-opt.is-in .fsave-name>.muted{opacity:.6}
 .fsave-here{display:inline-flex;align-items:center;gap:4px;width:fit-content;margin-top:4px;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--text);font-size:.85rem;font-weight:700}
