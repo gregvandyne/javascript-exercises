@@ -72,7 +72,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.gameUrl` | The game's own play page (`https://…/play/<slug>`), or `null` in a preview. A game that shares a link to itself adds lesson parameters to it (`?mode=…&chapter=…&lock=1`, see [Lesson parameters](#lesson-parameters)). |
 | `BRB.copy(textOrPng)` | Copies for the game, which can't use the clipboard itself (it is sandboxed): a link to the game's own play page (`BRB.gameUrl`, with any query, at most 400 characters) or a PNG `Blob` (at most 300 KB, such as that link's QR code). The play page copies only right after a tap. A Promise of `true` when copied, `false` when refused or after 3 s. |
-| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list only (Algebra Builder, Box by Box, Crossword): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
+| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list only (Algebra Builder, The Big Divide, Crossword): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
 | `BRB.wordsFromDoc(file, { kind, level })` | Crossword only, the same grown-ups as `writeClues`: a PDF or Word (.docx) `Blob` of at most 2 MB (`kind` `'pdf'` or `'docx'`). A Promise of `{ title, words: [[word, clue]] }` or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `docBad`, `docBig`, `docEmpty`, `docNone`, `offline`). The page posts `POST /api/games/:id/words-from-doc`; the document is never stored. |
 | `BRB.canWriteClues` / `BRB.writeClues(words, { level })` | Crossword only, for a grown-up who may host (with AI on): a Promise of `{ clues }` (one per word, `''` where none) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `words`, `offline`). The page posts `POST /api/games/:id/clues`; the clues are for the teacher to read and edit, nothing is saved. |
 | `BRB.afterSpeech(fn, opts?)` | Calls `fn` once nothing is being said: no line playing, queued, or still on its way from the AI voice, for `gap` ms (250). Never before `min` ms (0) nor after `max` ms (10000), so a line that never ends can't hold the game. Returns a function that cancels it. Use it wherever the game moves on to the next question, so the last line is never cut off by the next one. |
@@ -324,14 +324,14 @@ player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, 
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
 
 ## Question sets (`BRB.questionSet`)
-An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, Box by Box; each with its own
+An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, The Big Divide; each with its own
 cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, and a lesson step) opens it:
 `/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
 - `BRB.questionSet`: the set the link opened, `{ id, items, mine }` (`mine`: the player saved it), or
   `{ id, missing: true }` for a code with no set; `null` without one. The items are the game's own shape, as its
   cleaner left them. Algebra Builder: 1 to 20 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
   problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40 characters), what students start with
-  (`all` or `none`) and the live balance (true or false). Box by Box: one item `{ k, p, l, c?, d?, g? }`: `divide` or
+  (`all` or `none`) and the live balance (true or false). The Big Divide: one item `{ k, p, l, c?, d?, g? }`: `divide` or
   `multiply`, up to 100 `[a, b]` problems it can work, the support level, the 7 flags of a custom mix, `d: 1` for a fresh
   set per student and the plan `g` it is made from. No free text in either. Crossword: one item `{ t, w, r, b, h }`: a title,
   3 to 30 `[word, clue]` pairs (the teacher's own words: each word, clue and the title pass the site's text filter when

@@ -1,4 +1,4 @@
-// Box by Box (seed-games/box-by-box.html, built from tools/box-by-box): long division and multiplication worked box by
+// The Big Divide (slug box-by-box; seed-games/box-by-box.html, built from tools/box-by-box): long division and multiplication worked box by
 // box. Its activities are shared as question sets (services/game-sets.js): one activity per set, only numbers and
 // fixed settings (no title or other free text leaves the teacher's save). This file: the set cleaner, what the Assign
 // page and the lesson call an activity, and saving one through the route and opening it in the frame.
@@ -35,7 +35,7 @@ test('box-by-box sets: one activity of problems the game can work, a known level
 
 test('box-by-box: a teacher saves an activity, its link opens it, the Assign page and the lesson name it', async () => {
   reset();
-  const g = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'Box by Box' });
+  const g = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
   const r = await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [DIV] }, user: teacher });
   assert.equal(r.status, 200, r.text);
   assert.match(r.json.id, gameSets.SET_ID);
@@ -68,8 +68,9 @@ const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.j
 
 test('box-by-box: a registered Play game that passes the safety scan, with the pinned Oomba Kit tag and no outside address', () => {
   assert.ok(SEED_GAMES.includes('box-by-box'));
-  assert.equal(meta.slug, 'box-by-box'); assert.equal(meta.shelf, 'play'); assert.equal(meta.title, 'Box by Box');
-  for (const l of ['en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(meta.l10n[l]?.description.length > 80, l);
+  assert.equal(meta.slug, 'box-by-box'); assert.equal(meta.shelf, 'play'); assert.equal(meta.title, 'The Big Divide');
+  for (const l of ['en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) { assert.ok(meta.l10n[l]?.description.length > 80, l); assert.ok(meta.l10n[l].title, `${l}: its title`); }
+  assert.equal(meta.l10n['en-GB'].title, meta.title);
   assert.ok(fs.existsSync(path.join(ROOT, 'public/covers/box-by-box.jpg')), 'its cover');
   const r = scanVersion(sanitizeGameHtml(html).html);
   assert.equal(r.status, 'pass', JSON.stringify(r.issues));
@@ -92,7 +93,7 @@ test('box-by-box: nothing in the game, its sources, its metadata or its docs poi
     ...files(path.join(ROOT, 'tools/box-by-box'))]) {
     assert.doesNotMatch(fs.readFileSync(f, 'utf8'), re, path.relative(ROOT, f));
   }
-  // The decision log: Box by Box's own entry (other entries credit other games' sources, as their licenses ask).
+  // The decision log: the game's own entry, headed by its first name, Box by Box (other entries credit other games' sources, as their licenses ask).
   const log = fs.readFileSync(path.join(ROOT, 'docs/decisions.md'), 'utf8');
   const entry = log.slice(log.indexOf('## Box by Box'));
   assert.ok(entry.length > 200);
@@ -101,7 +102,7 @@ test('box-by-box: nothing in the game, its sources, its metadata or its docs poi
 
 test('box-by-box: a student types a saved activity’s class code and gets it to play', async () => {
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'Box by Box' });
+  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
   const r = await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [MUL] }, user: teacher });
   const code = r.json.id.slice(2).toUpperCase();
   const got = await call(`/api/games/${g.id}/sets/${code.slice(0, 5)}%20${code.slice(5)}`, { user: kid });

@@ -1,17 +1,18 @@
 <script lang="ts">
-	// About Box by Box.
+	// The About page.
+	import { NAME } from '$lib/name';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import { goBack } from '$lib/nav.svelte';
 	$effect(() => {
-		document.title = 'About · Box by Box';
+		document.title = `About · ${NAME}`;
 	});
 </script>
 
 <div class="page">
 	<header class="bar">
 		<button type="button" class="btn-ghost" onclick={goBack}>← Back</button>
-		<h1><Logo size={32} /> About Box by Box</h1>
+		<h1><Logo size={32} /> About {NAME}</h1>
 	</header>
 	<p class="lede">Practice with the standard algorithms for long division and multiplication, one digit at a time.</p>
 

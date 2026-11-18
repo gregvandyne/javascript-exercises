@@ -1,6 +1,7 @@
 <script lang="ts">
 	// The teacher's activities: a card for each (newest first), a New activity menu, and on each card a menu to open
 	// it, copy its student link (saving it first when it hasn't been shared as it is) or delete it.
+	import { NAME } from '$lib/name';
 	import { Ellipsis, Plus } from '@lucide/svelte';
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
@@ -81,7 +82,7 @@
 		confirmFor = null;
 	}
 	$effect(() => {
-		document.title = 'Box by Box · Long division and multiplication, step by step';
+		document.title = `${NAME} · Long division and multiplication, step by step`;
 	});
 </script>
 
@@ -91,7 +92,7 @@
 	<header class="top">
 		<div>
 			<div class="top-row">
-				<p class="brand"><Logo size={36} /> Box by Box</p>
+				<p class="brand"><Logo size={36} /> {NAME}</p>
 				<button type="button" class="btn-ghost switch" onclick={() => show({ name: 'start' })}>← Not a teacher?</button>
 			</div>
 			<h1>Your activities</h1>

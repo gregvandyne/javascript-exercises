@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Box by Box: built into seed-games/box-by-box.html by build.mjs.",
+  "description": "The Big Divide: built into seed-games/box-by-box.html by build.mjs.",
   "scripts": {
     "build": "node build.mjs",
     "check": "node build.mjs --check"

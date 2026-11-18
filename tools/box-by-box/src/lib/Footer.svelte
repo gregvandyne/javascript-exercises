@@ -1,10 +1,11 @@
 <script lang="ts">
 	// The footer of the teacher pages and of the player's start and end screens.
 	import { go } from './nav.svelte';
+	import { NAME } from './name';
 </script>
 
 <footer>
-	<span>Box by Box</span>
+	<span>{NAME}</span>
 	<button type="button" class="link" onclick={() => go({ name: 'about' })}>About</button>
 </footer>
 
