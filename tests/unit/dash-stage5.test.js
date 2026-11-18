@@ -133,9 +133,9 @@ test('video links: YouTube and Vimeo ids are parsed and checked; anything else i
   assert.equal(D.cleanSettings(D.widgetType('video'), { video: 'https://evil.example/x' }).video, null);
 });
 
-test('video players come from the privacy-enhanced hosts only, with the teacher\'s start, end, mute and loop', () => {
+test('video players come from the providers\' embed hosts only, with the teacher\'s start, end, mute and loop', () => {
   const y = new URL(DM.videoSrc({ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 90, end: 150, mute: true, loop: true }));
-  assert.equal(y.origin, 'https://www.youtube-nocookie.com'); assert.equal(y.pathname, '/embed/aqz-KE-bpKQ');
+  assert.equal(y.origin, 'https://www.youtube.com'); assert.equal(y.pathname, '/embed/aqz-KE-bpKQ');
   assert.equal(y.searchParams.get('start'), '90'); assert.equal(y.searchParams.get('end'), '150'); assert.equal(y.searchParams.get('mute'), '1');
   assert.equal(y.searchParams.get('loop'), '1'); assert.equal(y.searchParams.get('playlist'), 'aqz-KE-bpKQ');
   assert.equal(new URL(DM.videoSrc({ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 90, end: 30 })).searchParams.get('end'), null, 'an end before the start is left out');
@@ -145,11 +145,16 @@ test('video players come from the privacy-enhanced hosts only, with the teacher\
   // The browser builds exactly the same address.
   for (const [x, o] of [[{ p: 'youtube', id: 'aqz-KE-bpKQ' }, { start: 5, loop: true }], [{ p: 'vimeo', id: '76979871' }, { mute: true }]]) assert.equal(V.videoSrc(x, o), DM.videoSrc(x, o));
   assert.deepEqual(V.VIDEO_HOSTS, DM.VIDEO_HOSTS);
-  // The renderer embeds with a sandbox and only the origin as referrer; never youtube.com itself.
+  // "Open on YouTube / Vimeo" when the player can't play here (a sign-in check): the video's own page, at the start.
+  assert.equal(V.watchUrl({ p: 'youtube', id: 'aqz-KE-bpKQ' }, 90), 'https://www.youtube.com/watch?v=aqz-KE-bpKQ&t=90s');
+  assert.equal(V.watchUrl({ p: 'vimeo', id: '76979871' }), 'https://vimeo.com/76979871');
+  assert.equal(V.watchUrl({ p: 'youtube', id: 'javascript:x' }), null);
+  // The renderer embeds with a sandbox (popups may open a new tab, e.g. YouTube's sign-in check; never navigation of
+  // the page) and only the origin as referrer; the player is youtube.com's own embed, never the nocookie host.
   const src = fs.readFileSync('public/js/dash-class5.js', 'utf8');
-  assert.match(src, /sandbox', 'allow-scripts allow-same-origin allow-presentation'/);
+  assert.match(src, /sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation'/);
   assert.match(src, /strict-origin-when-cross-origin/);
-  assert.doesNotMatch(src + fs.readFileSync('public/js/dash-video.js', 'utf8'), /https:\/\/(www\.)?youtube\.com\/embed/);
+  assert.doesNotMatch(src + fs.readFileSync('public/js/dash-video.js', 'utf8'), /youtube-nocookie\.com\/embed/);
 });
 
 // ---------------------------------------------------------------- site window
@@ -204,10 +209,11 @@ test('the CSP: the teacher\'s dashboard frames only the two video hosts; student
   await layout(w, [{ id: 'v1', type: 'video', s: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' } } }, { id: 'st1', type: 'site', s: { url: 'https://maps.example.org/' } }]);
   const tp = await as(w.T)(`/class/${w.A.id}/dashboard`);
   const csp = tp.headers.get('content-security-policy');
-  assert.match(csp, /frame-src 'self' https:\/\/www\.youtube-nocookie\.com https:\/\/player\.vimeo\.com;/);
+  assert.match(csp, /frame-src 'self' https:\/\/www\.youtube\.com https:\/\/player\.vimeo\.com;/);
   assert.doesNotMatch(csp, /frame-src[^;]*\bhttps:(?!\/\/)/, 'never a bare https: frame source');
-  assert.doesNotMatch(csp, /maps\.example\.org|youtube\.com(?!-nocookie)/);
-  assert.equal(csp.replace(" https://www.youtube-nocookie.com https://player.vimeo.com", ''), SITE_CSP, 'otherwise the site\'s CSP exactly');
+  assert.doesNotMatch(csp, /maps\.example\.org|youtube-nocookie/);
+  assert.equal(csp.match(/youtube\.com/g).length, 1, 'youtube.com only in frame-src');
+  assert.equal(csp.replace(" https://www.youtube.com https://player.vimeo.com", ''), SITE_CSP, 'otherwise the site\'s CSP exactly');
   assert.match(tp.headers.get('permissions-policy'), /camera=\(self\), microphone=\(self\)/);
   assert.doesNotMatch(tp.headers.get('permissions-policy'), /\*/);
   const sp = await as(w.a1)(`/class/${w.A.id}/dashboard`);
@@ -515,6 +521,74 @@ test('state cleaning: every new setting is rebuilt on the server', () => {
   // A whole layout: unknown keys dropped, sizes clamped.
   const out = D.cleanWidgets([{ id: 'v1', type: 'video', x: 99, y: -3, w: 1, h: 99, s: { video: 'https://youtu.be/aqz-KE-bpKQ', html: '<b>' } }], 'teacher')[0];
   assert.deepEqual(out, { id: 'v1', type: 'video', x: 8, y: 0, w: 4, h: 8, s: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, start: 0, end: 0, mute: false, loop: false } });
+});
+
+test('class jobs cards: old dashboards read the same, picking swaps, rotation still turns, the waiting line, add and remove', () => {
+  const P = n => Array.from({ length: n }, (_, i) => `K${i}`);
+  const W2 = { defaults: 'A\nB\nC' };
+  // Old dashboards (no `from`): typed names if any, else the class; a choice made on the cards wins.
+  assert.equal(C5.crewFrom({ names: 'Ana\nBen' }), 'names');
+  assert.equal(C5.crewFrom({ names: '' }), 'class');
+  assert.equal(C5.crewFrom({ names: 'Ana', from: 'class' }), 'class');
+  assert.equal(C5.crewFrom({ from: 'names' }), 'names');
+  assert.equal(C5.crewFrom({ names: 'Ana', from: 'auto' }), 'names');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { from: 'nope' }).from, 'auto', 'an unknown source is the old rule');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { from: 'class' }).from, 'class');
+  assert.deepEqual(D.cleanSettings(D.widgetType('jobs'), { jobs: 'A\nB', names: 'Ana', crew: { order: ['x'], shift: 3 } }),
+    { jobs: 'A\nB', names: 'Ana', from: 'auto', crew: { order: ['x'], shift: 3 } }, 'an old dashboard keeps what it had');
+  // The cards start from the people turned to shift 0: the same jobs as the widget shows, for every shift.
+  for (const [J, n] of [[5, 2], [5, 7], [4, 4], [8, 3]]) for (let sft = 0; sft < 9; sft++) {
+    assert.deepEqual(C5.jobAssign(J, C5.unturn(P(n), sft), 0), C5.jobAssign(J, P(n), sft));
+    const shown = new Set(C5.jobAssign(J, P(n), sft).filter(Boolean)), waiting = C5.jobWaiting(J, P(n), sft);
+    assert.equal(waiting.length, Math.max(0, n - J));
+    assert.ok(waiting.every(k => !shown.has(k)), 'someone waiting has no job');
+    // The first one waiting comes in with Next week (they have the last job then).
+    if (waiting.length) assert.equal(C5.jobAssign(J, P(n), sft + 1)[J - 1], waiting[0]);
+  }
+  assert.deepEqual(C5.orderBy([{ id: 'a' }, { id: 'b' }, { id: 'c' }], ['c', 'gone', 'a']).map(x => x.id), ['c', 'a', 'b'], 'the class in the saved order at once');
+  assert.deepEqual(C5.orderBy([{ name: 'x' }, { name: 'y' }], ['a']).map(x => x.name), ['x', 'y'], 'names only: left as they came');
+  // Picking: job 1 to someone on job 3 swaps them; to someone waiting, the one who had it waits.
+  const st = { jobs: ['L', 'P', 'B'], people: ['Sam', 'Ava', 'Leo', 'Mia', 'Eli'] };
+  let r = C5.pickFor(st, 0, 2);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Leo', 'Ava', 'Sam']); assert.equal(r.at, 0);
+  r = C5.pickFor(st, 1, 4);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Sam', 'Eli', 'Leo']); assert.deepEqual(C5.jobWaiting(3, r.people), ['Mia', 'Ava']);
+  assert.deepEqual(st.people, ['Sam', 'Ava', 'Leo', 'Mia', 'Eli'], 'nothing changed in place');
+  // An open job (more jobs than people): the job moves up to that person's place; every other pair stays.
+  const few = { jobs: ['L', 'P', 'B', 'T', 'M'], people: ['Greg', 'James'] };
+  r = C5.pickFor(few, 3, 0);
+  assert.deepEqual(r.jobs, ['T', 'P', 'B', 'L', 'M']); assert.equal(r.at, 0);
+  assert.deepEqual(C5.jobAssign(5, r.people).map((k, i) => k && `${r.jobs[i]}:${k}`).filter(Boolean), ['T:Greg', 'P:James']);
+  // A typed name added on a job: it gets the job at once.
+  r = C5.addName(few, 'Ava', 2);
+  assert.deepEqual(C5.jobAssign(5, r.people), ['Greg', 'James', 'Ava', null, null]);
+  r = C5.addName(few, 'Ava', 4);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(5, r.people)[i] || '-'}`), ['L:Greg', 'P:James', 'M:Ava', 'T:-', 'B:-']);
+  // Rotation still turns everyone down one job from what the cards saved (shift 0).
+  r = C5.pickFor(st, 0, 3);
+  assert.deepEqual(C5.jobAssign(3, r.people, 1), C5.jobAssign(3, C5.unturn(r.people, 1)));
+  assert.deepEqual(C5.jobAssign(3, r.people, 1), ['Ava', 'Leo', 'Sam']);
+  // Removing a job: everyone else keeps theirs; its person takes the first open job, or waits first in line.
+  r = C5.dropJob(st, 0);
+  assert.deepEqual(r.jobs, ['P', 'B']); assert.deepEqual(C5.jobAssign(2, r.people), ['Ava', 'Leo']); assert.deepEqual(C5.jobWaiting(2, r.people), ['Sam', 'Mia', 'Eli']);
+  r = C5.dropJob(few, 0);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(4, r.people)[i] || '-'}`), ['P:James', 'B:Greg', 'T:-', 'M:-']);
+  // Removing a typed name: the next one waiting takes the job; nobody waiting, the job moves after the others'.
+  r = C5.dropName(st, 1);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Sam', 'Mia', 'Leo']); assert.deepEqual(C5.jobWaiting(3, r.people), ['Eli']);
+  r = C5.dropName(few, 0);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(5, r.people)[i] || '-'}`), ['P:James', 'L:-', 'B:-', 'T:-', 'M:-']);
+  assert.deepEqual(C5.dropName(st, 4).people, ['Sam', 'Ava', 'Leo', 'Mia'], 'someone waiting just goes');
+  // Adding a job: the next one waiting gets it; nothing else moves. What is saved drops empty jobs the same way.
+  assert.deepEqual(C5.jobAssign(4, st.people), ['Sam', 'Ava', 'Leo', 'Mia']);
+  assert.deepEqual(C5.jobsSaved({ jobs: ['L', ' ', 'B', ''], people: ['Sam', 'Ava', 'Leo'] }), { jobs: ['L', 'B'], people: ['Sam', 'Leo', 'Ava'] });
+  // The usual jobs are the cards when the teacher typed none; 16 jobs at most.
+  assert.deepEqual(C5.jobList({ jobs: '' }, W2).list, ['A', 'B', 'C']);
+  assert.equal(C5.MAX_JOBS, 16);
+  assert.equal(C5.jobList({ jobs: Array.from({ length: 20 }, (_, i) => `J${i}`).join('\n') }, W2).list.length, 16);
+  // Sixteen long jobs still fit what the server keeps.
+  const long = Array.from({ length: 16 }, () => 'x'.repeat(40)).join('\n');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { jobs: long }).jobs, long);
 });
 
 test('the browser helpers: breathing patterns, times, now and next', () => {

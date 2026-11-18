@@ -15,6 +15,10 @@ const SAFE_TEXT = (v, max) => [...String(v ?? '').replace(/[\u0000-\u001F\u007F]
 const SAFE_LINES = (v, max) => [...String(v ?? '').replace(/\r/g, '').replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, '').replace(/[‪-‮⁦-⁩]/g, '').replace(/\n{3,}/g, '\n\n').trim()].slice(0, max).join('');
 const toInt = (v, lo, hi, d) => { const n = Math.round(Number(v)); return v !== null && v !== '' && Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
 
+/** The balance scale's steps as kept in its history: the old buttons' four, a tile put in (add) or taken out (sub) or
+ *  moved to the other side (mv), negative ones with n (addnx: −x put in), Remove zero pairs (zero), ÷ (div), new. */
+const BAL_OPS = ['addx', 'subx', 'add1', 'sub1', 'div', 'new', 'addnx', 'subnx', 'addn1', 'subn1', 'mvx', 'mv1', 'mvnx', 'mvn1', 'zero'];
+const BAL_NEG = ['lnx', 'lnu', 'rnx', 'rnu'];
 export const TOOL_SPECS = {
   // hide: the answer starts hidden (students work it out first); a state saved with it shown keeps it shown.
   // Compare (bars) and, since "help on the maths tools", Add, Subtract, Multiply and Divide two fractions a and b (a bottom number
@@ -133,13 +137,23 @@ export const TOOL_SPECS = {
       s.ox = Math.max(-9, Math.min(8 - span[0], s.ox)); s.oy = Math.max(-9, Math.min(8 - span[1], s.oy));
     },
   },
+  // The balance scale by drag and drop (docs/decisions.md): each side's negative tiles (lnx, lnu, rnx, rnu: −x and −1)
+  // and the x last checked (tx) are kept only when there are some, so a state saved before is stored exactly as it was.
+  // `where` (the old Both sides / Left / Right) is no longer set, and kept only so saved states clean unchanged.
   balance: {
     spec: { x: ['int', 1, 9, 3], lx: ['int', 0, 9, 3], lu: ['int', 0, 30, 2], rx: ['int', 0, 9, 1], ru: ['int', 0, 30, 8], show: ['bool', false], where: ['enum', ['both', 'left', 'right'], 'both'],
-      hist: ['list', 12, { lx: ['int', 0, 9, 0], lu: ['int', 0, 30, 0], rx: ['int', 0, 9, 0], ru: ['int', 0, 30, 0], op: ['enum', ['addx', 'subx', 'add1', 'sub1', 'div', 'new'], 'new'], n: ['int', 0, 9, 0], w: ['enum', ['both', 'left', 'right'], 'both'] }, []] },
+      lnx: ['int', 0, 9, 0], lnu: ['int', 0, 30, 0], rnx: ['int', 0, 9, 0], rnu: ['int', 0, 30, 0], tx: ['int', -99, 99, null],
+      hist: ['list', 12, { lx: ['int', 0, 9, 0], lu: ['int', 0, 30, 0], rx: ['int', 0, 9, 0], ru: ['int', 0, 30, 0], lnx: ['int', 0, 9, 0], lnu: ['int', 0, 30, 0], rnx: ['int', 0, 9, 0], rnu: ['int', 0, 30, 0],
+        op: ['enum', BAL_OPS, 'new'], n: ['int', 0, 9, 0], w: ['enum', ['both', 'left', 'right'], 'both'] }, []] },
+    fix: s => { for (const o of [s, ...s.hist]) for (const k of BAL_NEG) if (!o[k]) delete o[k]; if (s.tx === null) delete s.tx; },
   },
+  // Algebra tiles' "Build this" challenge (docs/decisions.md "the balance scale by drag and drop"): goal is [a, b, c] for
+  // ax² + bx + c, gk true once Check was pressed; both kept only when set.
   algebra: {
     spec: { tiles: ['list', 36, { k: ['enum', ['x2', 'x', '1'], 'x'], neg: ['bool', false] },
-      [{ k: 'x2', neg: false }, { k: 'x2', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: true }, { k: '1', neg: false }, { k: '1', neg: false }, { k: '1', neg: true }]] },
+      [{ k: 'x2', neg: false }, { k: 'x2', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: false }, { k: 'x', neg: true }, { k: '1', neg: false }, { k: '1', neg: false }, { k: '1', neg: true }]],
+      goal: ['ints', 3, -9, 9, []], gk: ['bool', false] },
+    fix: s => { if (s.goal.length !== 3) { delete s.goal; delete s.gk; } if (!s.gk) delete s.gk; },
   },
   coins: {
     spec: { cur: ['enum', ['auto', 'usd', 'eur', 'gbp', 'gen'], 'auto'], mode: ['enum', ['count', 'change'], 'count'], counts: ['ints', 11, 0, 20, [3, 1, 2, 1]],

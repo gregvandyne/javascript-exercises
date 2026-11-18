@@ -1254,36 +1254,81 @@ html.gb-maxed,html.gb-maxed body{overflow:hidden}
 .dt-trwide td,.dt-trwide th{padding:2px 6px}
 @container (max-aspect-ratio:8/5){.dt-trwrap .dt-trtall{display:none}.dt-trwrap .dt-trwide{display:table}.dt-trwrap{gap:var(--s2)}}
 /* balance scale */
-.dt-bal{width:100%;height:100%}
+/* Algebra: the balance scale and algebra tiles by drag and drop (docs/decisions.md "the balance scale by drag and drop").
+   A tile: --tu is the tile unit (a 1 tile is half of it, an x tile 1 by 2 of those, an x² tile 2 by 2). */
+.dt-tl{--s:calc(var(--tu,44px) * .5);display:inline-grid;place-items:center;flex:none;width:var(--s);height:var(--s);border:2px solid #141414;border-radius:5px;color:#141414;font:800 clamp(13px,calc(var(--s) * .55),1.3rem) var(--font);line-height:1;background:#FFD23F;box-sizing:border-box}
+.dt-tl-x{height:calc(var(--s) * 2);background:#66C792}
+.dt-tl-x2{width:calc(var(--s) * 2);height:calc(var(--s) * 2);background:#5AA9D6}
+.dt-tl.is-neg{background:repeating-linear-gradient(45deg,#F7A39A 0 6px,#F28C8C 6px 12px);border-style:dashed}
+.dt-tlt{background:rgba(255,255,255,.78);border-radius:4px;padding:1px 2px;white-space:nowrap}
+.dt-tl-one .dt-tlt{background:none;padding:0;letter-spacing:-.04em}
+/* tiles under 36px show their kind by shape and colour only (their words would be under the smallest text) */
+.is-small .dt-tlt{display:none}
+[data-drag]{touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+.dt.is-static [data-drag]{cursor:default}
+.is-dragsrc{opacity:.45}
+.dt-tghost{position:fixed;left:0;top:0;z-index:10000;pointer-events:none;will-change:transform;filter:drop-shadow(0 10px 12px rgba(20,20,20,.35))}
+.dt-tghost>*{display:grid}
+.dt-tghost.is-out{opacity:.7}
+/* the tray: the sign switch, then a tile of each kind */
+.dt-tray{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:4px;border-radius:var(--r-sm);--tu:40px}
+.dt-tray.is-drop{box-shadow:inset 0 0 0 3px var(--accent-line)}
+.dt .dt-sign{min-width:64px;min-height:44px;padding:0 8px;gap:2px;font:800 1.15rem var(--font)}
+.dt-sign span{padding:0 6px;border-radius:6px;color:var(--text-2);font-weight:600}
+.dt-sign:not(.is-neg) .dt-signp,.dt-sign.is-neg .dt-signn{background:var(--text);color:var(--card);font-weight:800}
+.dt .dt-traytile{min-width:52px;min-height:52px;padding:4px 8px}
+.dt .dt-traytile[aria-pressed="true"]{box-shadow:0 0 0 3px var(--focus)}
+.dt .dt-taway{min-height:44px}
+.dt .dt-taway.is-drop{box-shadow:inset 0 0 0 3px var(--accent-line)}
+/* the balance scale: the beam and post (SVG, behind), the pans, Both sides at its foot */
+.dt-bwrap{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;padding:0 2px}
+.dt .dt-bart{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;max-width:none;max-height:none}
 .dt-balstand{fill:color-mix(in srgb,var(--text) 70%,var(--card))}
 .dt-balbeam{fill:var(--text)}
 .dt-balpin{fill:var(--card);stroke:var(--text);stroke-width:4}
 .dt-balstring{stroke:var(--muted);stroke-width:2.5;fill:none}
-.dt-balpan{fill:color-mix(in srgb,#5AA9D6 55%,var(--card));stroke:var(--text);stroke-width:2.5}
-.dt-xbox{fill:#9B6FE0;stroke:#141414;stroke-width:2}
-.dt-xboxt{fill:#fff;font-style:italic;font-weight:800;font-family:var(--font)}
-.dt-unit1{fill:#FFD23F;stroke:#141414;stroke-width:1.5}
-.dt-balside{fill:var(--text);font:800 calc(22px * var(--ts,1)) var(--font)}
+/* Nothing in the scale changes size by a transition (with reduced motion every property gets a tiny one, and the scale
+   is measured as it is laid out): only the beam, the strings and the pans move. */
+.dt-bwrap,.dt-bwrap *,.dt-algmat,.dt-algmat *{transition-property:none}
+.dt-bwrap .dt-bbeam,.dt-bwrap .dt-bhang,.dt-bwrap .dt-bpan{transition:transform .6s cubic-bezier(.3,.7,.4,1.1)}
+.dt-bpans{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;width:100%}
+.dt-bpan{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:calc(var(--tu) * 1.6);padding:8px 6px 6px;border:2.5px solid var(--text);border-top-style:dashed;border-radius:6px 6px 22px 22px;background:color-mix(in srgb,#5AA9D6 30%,var(--card));box-sizing:border-box;min-width:0}
+.dt-bpan.is-drop,.dt-bboth.is-drop{box-shadow:0 0 0 4px var(--accent-line);background:color-mix(in srgb,var(--accent-line) 18%,var(--card))}
+.dt-btiles{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:6px;min-width:0;max-width:100%}
+.dt .dt-bgrp{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:3px;min-height:44px;min-width:44px;max-width:100%;padding:3px;border:0;border-radius:8px;background:transparent;box-shadow:none}
+.dt .dt-bgrp:hover{background:color-mix(in srgb,var(--card) 60%,transparent)}
+.dt .dt-bgrp.is-sel{outline:4px solid var(--focus);outline-offset:1px}
+.dt .dt-bput{min-height:44px;border-style:dashed;font-weight:700}
+.dt-bcap{font:800 clamp(.95rem,calc(var(--tu) * .4),1.4rem) var(--font);color:var(--text);white-space:nowrap}
+.dt .dt-bboth{display:flex;flex-direction:column;align-items:center;gap:0;min-height:48px;min-width:min(260px,70%);max-width:100%;padding:4px 14px;border:2.5px dashed var(--text);border-radius:12px;background:var(--card);position:relative}
+.dt-bbothn{font-weight:800}
+.dt-bbothh{font-size:.82rem;font-weight:600;color:var(--text-2)}
+.dt-bwrap.is-tight .dt-bbothh,.dt-bwrap.is-tight .dt-bcap{display:none}
+.dt-bwrap.is-tight .dt-bpan{padding:4px;gap:2px}
+.dt-bwrap.is-tight .dt-bboth{min-height:44px}
+.dt-bwrap.is-scroll{max-height:100%;overflow-y:auto}
+.dt-bwrap.is-picking .dt-bboth{border-color:var(--accent-line);border-style:solid}
 .dt-baleq{font-size:clamp(1.1rem,min(8cqh,5cqi),2.8rem)}
+.dt-bwarn{color:var(--warn-ink)}
 .dt-balop{min-width:52px;font-weight:800;font-variant-numeric:tabular-nums}
-.dt-steps{margin:0;padding-inline-start:1.4em;font-variant-numeric:tabular-nums;display:grid;gap:4px}
-/* algebra tiles */
-.dt-algadd{gap:4px}
-.dt-algb{min-width:52px;font-weight:800}
-.dt-algb.is-neg{box-shadow:inset 0 0 0 2px #D7263D}
-.dt-algmat{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:clamp(4px,2cqh,12px);padding:var(--s2);border-radius:var(--r-sm);background:var(--card-2);overflow:hidden}
-.dt-algrow{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;justify-content:center;min-height:0}
-.dt-algrow:empty{display:none}
-.dt-tile{--u:clamp(24px,min(11cqh,6cqi),60px);display:grid;place-items:center;padding:0;border:2px solid #141414;border-radius:6px;cursor:pointer;color:#141414;font:800 clamp(13px,calc(var(--u) * .42),1.2rem) var(--font);background:#5AA9D6}
-.dt-t-x2{width:calc(var(--u) * 2);height:calc(var(--u) * 2);background:#5AA9D6}
-.dt-t-x{width:calc(var(--u) * .9);height:calc(var(--u) * 2);background:#66C792}
-.dt-t-one{width:calc(var(--u) * .9);height:calc(var(--u) * .9);background:#FFD23F}
-.dt-tile.is-neg{background:repeating-linear-gradient(45deg,#F7A39A 0 6px,#F28C8C 6px 12px);border-style:dashed}
-.dt-tile.is-zero{box-shadow:0 0 0 3px var(--card),0 0 0 6px #7A3FC4}
-.dt-tile.is-sel{outline:4px solid var(--focus);outline-offset:2px}
-.dt-tile:focus-visible{outline:4px solid var(--focus);outline-offset:2px}
-.dt-tilet{background:rgba(255,255,255,.75);border-radius:4px;padding:0 3px;line-height:1.2}
-.dt-t-x .dt-tilet,.dt-t-one .dt-tilet{writing-mode:horizontal-tb}
+.dt-bcheckrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px var(--s2)}
+.dt-bres{margin:0;flex-basis:100%;text-align:center;font-weight:700;overflow-wrap:anywhere}
+.dt-bres.is-no{color:var(--warn-ink)}
+.dt-agoal{font-family:var(--font);font-size:1.1rem}
+/* algebra tiles: the mat, rows by kind, zero pairs together in a dashed box */
+.dt-algmat{--tu:clamp(44px,min(24cqh,11cqi),96px);width:100%;height:100%;display:flex;flex-direction:column;justify-content:safe center;gap:clamp(4px,2cqh,12px);padding:var(--s2);border-radius:var(--r-sm);background:var(--card-2);overflow:auto;box-sizing:border-box}
+.dt-algmat.is-drop{box-shadow:inset 0 0 0 3px var(--accent-line)}
+.dt-algrow{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;justify-content:center;flex:none}
+.dt-algmat.is-flow{flex-direction:row;flex-wrap:wrap;align-items:center;align-content:safe center;justify-content:center;column-gap:20px}
+.dt-zpair{display:inline-flex;align-items:flex-end;gap:2px;padding:0 2px;border:2px dashed #7A3FC4;border-radius:10px}
+.dt-algmat.is-small{gap:2px;padding:4px}
+.dt .dt-mtile{display:grid;place-items:center;min-width:44px;min-height:44px;padding:2px;border:0;border-radius:8px;background:transparent;box-shadow:none;cursor:grab}
+.dt .dt-mtile.is-sel{outline:4px solid var(--focus);outline-offset:1px}
+.dt .dt-mtile.is-match .dt-tl{box-shadow:0 0 0 3px var(--card),0 0 0 6px #7A3FC4}
+.dt .dt-mtile.is-drop{background:color-mix(in srgb,#7A3FC4 20%,transparent)}
+.dt-mtile.is-poof .dt-tl{animation:dt-poof .32s ease-in forwards}
+@keyframes dt-poof{to{transform:scale(.2) rotate(25deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dt-bbeam,.dt-bhang,.dt-bpan{transition:none}.dt-mtile.is-poof .dt-tl{animation:none}}
 .dt-algexp{font-size:clamp(1rem,min(7cqh,4.4cqi),2.4rem)}
 .dt-algraw{color:var(--text-2);font-weight:700}
 /* coins and money */
@@ -1436,9 +1481,9 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dt-pinn{fill:#fff;font:800 18px var(--font)}
 .dt-pinl{fill:#141414;font:800 16px var(--font);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
 .dt-pinrow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s2)}
-@media (prefers-reduced-motion:reduce){.dt-mbtn,.dt-tile{transition:none}}
+@media (prefers-reduced-motion:reduce){.dt-mbtn{transition:none}}
 @media (max-width:719px){
-  .dt-angle,.dt-solid,.dt-map,.dt-bal,.dt-pboard{height:auto;width:100%;max-height:70vh}
+  .dt-angle,.dt-solid,.dt-map,.dt-pboard{height:auto;width:100%;max-height:70vh}
   /* the angle maker's body shares the class dt-angle with its drawing: the body itself is never held to 70vh (its mode
      switch made it taller than that) */
   .dash-wb.dt-angle{max-height:none}
@@ -1508,6 +1553,7 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dw5-emptybox,.dw5-fallback,.dw5-cammsg{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:var(--s2);padding:var(--s3);text-align:center;border-radius:var(--r-sm);background:var(--card-2)}
 .dw5-bigic{font-size:clamp(1.6rem,min(14cqh,10cqi),3rem);line-height:1}
 .dw5-meta{margin:0;flex:none;font-weight:700;color:var(--text-2);font-size:clamp(.875rem,min(5cqh,3.6cqi),1.1rem)}
+.dw5-open{display:inline-flex;align-items:center;min-height:44px;color:var(--text);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .dw5-muted{color:var(--muted)}
 .dw5-fbtitle{font-size:clamp(1rem,min(8cqh,5cqi),1.6rem);line-height:1.2;overflow-wrap:anywhere}
 .dw5-fbtext{margin:0;max-width:44ch;color:var(--text-2);font-weight:600;font-size:clamp(.85rem,min(5cqh,3.8cqi),1.15rem)}
@@ -1566,6 +1612,29 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dw5-jobname{font-weight:700;color:var(--text-2);font-size:clamp(.85rem,min(5cqh,3.6cqi),1.15rem);overflow-wrap:anywhere}
 .dw5-jobwho{font-weight:800;font-size:clamp(1rem,min(7cqh,4.6cqi),1.6rem);overflow-wrap:anywhere;line-height:1.15}
 .dw5-jobnote{grid-column:1/-1}
+.dw5-jobwait{margin:var(--s2) 0 0;color:var(--text-2);font-weight:700;overflow-wrap:anywhere}
+/* Class jobs settings: one card per job (docs/decisions.md "Class jobs: one card per job"). */
+.dw5-jobed{display:flex;flex-direction:column;gap:0}
+.dw5-jtop{margin:0 0 12px}
+.dw5-jcards{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.dw5-jcard{padding:12px 12px 14px;border-radius:14px;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);display:grid;gap:10px;min-width:0}
+.dw5-jrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:10px}
+.dw5-jn{display:grid;place-items:center;width:30px;height:30px;margin-bottom:8px;border-radius:999px;background:var(--accent-soft);font-weight:800}
+.dw5-jlab{display:grid;gap:4px;min-width:0}
+.dw5-jlabel{font-weight:700;font-size:.9rem;margin:0}
+.dw5-jlab .input{font-weight:500;font-size:1rem;min-height:46px;width:100%;min-width:0}
+.dw5-jsub{margin-inline-start:40px}
+.dw5-jx.btn{width:44px;height:44px;min-height:44px;padding:0;margin-bottom:1px;justify-content:center;font-size:1rem;flex:none}
+.dw5-jtrow{display:flex;gap:8px;align-items:stretch}
+.dw5-jtrow .input{flex:1 1 auto}
+.dw5-jadd2.btn{min-height:46px;flex:none}
+.dw5-jobed .dw5-jobwait{margin:12px 0 0}
+.dw5-jaddjob.btn{margin-top:12px;width:100%;min-height:48px;justify-content:center}
+.dw5-jfrom{margin:16px 0 0}
+.dw5-jnote{margin:8px 0 0}
+.dw5-jobed > .dw5-jlabel{margin-top:14px}
+.dw5-jnames{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.dw5-jname.btn{min-height:44px;max-width:100%;overflow-wrap:anywhere}
 /* points for each student */
 .dw5-ptop{flex:none;display:flex;align-items:center;gap:var(--s2)}
 .dw5-classtot{margin:0;display:flex;align-items:center;gap:var(--s2);font-weight:800;color:var(--text-2);font-size:clamp(.9rem,min(7cqh,4.4cqi),1.3rem)}

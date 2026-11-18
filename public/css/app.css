@@ -1828,3 +1828,38 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .cl-side{margin-inline-start:0}
   .cl-nf-panel{position:static;width:auto;margin-top:8px;box-shadow:inset 0 0 0 2px var(--line)}
 }
+
+/* ---- Folders: drag to reorder (public/js/reorder.js) and Save to folder in a pop-up (public/js/folder-save.js). */
+.is-reorderable > [data-id]{touch-action:pan-y;-webkit-touch-callout:none}
+.is-reorderable .gfo-chip{cursor:grab}
+.is-reorderable > [data-id].is-dragging{position:relative;z-index:30;cursor:grabbing;box-shadow:var(--shadow-lg);transition:box-shadow .15s;pointer-events:none}
+.is-reorderable > [data-id].is-dragging .gfo-chip{box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg);background:var(--accent-soft)}
+.gfo-game.is-dragging{outline:2px solid var(--accent-line);transform-origin:center}
+body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;cursor:grabbing}
+.gfo-hint{margin:8px 0 0}
+.gfo-grip{display:grid;place-items:center;width:32px;align-self:stretch;min-height:44px;border:0;border-radius:10px;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:grab;touch-action:none}
+.gfo-grip:hover{background:var(--hover);color:var(--text)}
+.gfo-grip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.mygame.gfo-game:has(> .gfo-grip){grid-template-columns:32px 72px minmax(0,1fr) auto}
+@media (max-width:600px){.mygame.gfo-game:has(> .gfo-grip){grid-template-columns:28px 56px minmax(0,1fr)}.mygame.gfo-game:has(> .gfo-grip) .mg-actions{grid-column:1/-1}}
+.fsave-leg{font-weight:800;margin-bottom:8px;padding:0}
+.fsave-pick{border:0;margin:0;padding:0;display:grid;gap:8px}
+.fsave-list{display:grid;gap:8px;list-style:none;margin:0;padding:0}
+.fsave-list>li{margin:0;padding:0}
+.fsave-list>li::marker{content:none}
+.fsave-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer}
+.fsave-opt:has(input:checked){box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
+/* No black focus ring when the pop-up opens on a folder: the card itself shows focus, as a thicker green edge. */
+.fsave-opt input:focus,.fsave-opt input:focus-visible{outline:none;box-shadow:none}
+.fsave-opt:has(input:focus-visible){box-shadow:inset 0 0 0 3px var(--accent-press)}
+.fsave-opt.is-in{cursor:default;background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.fsave-opt.is-in input,.fsave-opt.is-in .fsave-name>b,.fsave-opt.is-in .fsave-name>.muted{opacity:.6}
+.fsave-here{display:inline-flex;align-items:center;gap:4px;width:fit-content;margin-top:4px;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--text);font-size:.85rem;font-weight:700}
+.fsave-opt input{width:20px;height:20px;accent-color:var(--accent-press);flex:none}
+.fsave-name{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fsave-name b{overflow-wrap:anywhere}
+.fsave-new .input{width:100%}
+.fsave-new .err{margin:4px 0 0}
+.fsave-ok{font-size:1.15rem;margin:0}
+.fsave-acts{display:grid;gap:10px}
+@media (min-width:480px){.fsave-acts{grid-template-columns:1fr 1fr}}

@@ -226,7 +226,7 @@ async function main() {
       for (const w of j.layout?.widgets || []) if (w.type === 'video') w.s = { ...w.s, video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, mute: true };
       await r.fulfill({ response: res, json: j });
     });
-    await ctx.route(/^https:\/\/(www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ contentType: 'text/html', body: VIDEO_STAND_IN }));
+    await ctx.route(/^https:\/\/(www\.youtube\.com|www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ contentType: 'text/html', body: VIDEO_STAND_IN }));
     const page = await ctx.newPage();
     page.setDefaultTimeout(20_000);
     await page.clock.setSystemTime(new Date());   // this process's clock: the school morning

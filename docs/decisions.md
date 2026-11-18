@@ -6388,8 +6388,13 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
 - **Video** (teacher only, never pinned or pushed). The teacher pastes a YouTube or Vimeo link; only `{ p, id }` (and an
   unlisted Vimeo video's hash) is kept, after checking the host is the provider's own and the id is well formed
   (11 characters for YouTube, digits for Vimeo). Anything else is refused and nothing of the link is stored or echoed.
-  Players come from `www.youtube-nocookie.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin,
-  presentation; no popups or navigation of the page). Options: start, end (YouTube only: Vimeo's player has no end
+  Players come from `www.youtube.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin, presentation,
+  popups that escape the sandbox, storage access after a tap; never navigation of the page). **Changed (Nov 2026):** they
+  were `www.youtube-nocookie.com` with no popups, but YouTube now often answers an embed with "Sign in to confirm you're
+  not a bot": its Sign in button needs a popup, and a sign-in on youtube.com never reaches the nocookie host, so a
+  teacher could not get past it. The widget is teacher only (never on a student's screen), so the teacher's own YouTube
+  sign-in is what lets it play. Under the player, "↗ Open on YouTube/Vimeo" opens the video's own page (at the start
+  time) for when the player still won't play here. Options: start, end (YouTube only: Vimeo's player has no end
   parameter, the settings say so), muted, loop. A time in a pasted link (`t=1m30s`) becomes the start. **Decided:** the
   frame sends `strict-origin-when-cross-origin` (the school site's origin only): both players refuse to play without
   knowing the embedding site, and the site's own `same-origin` policy would send nothing.
@@ -7952,6 +7957,36 @@ for privacy, nothing in the game or the repository points back to the original.
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 
 
+## Classroom dashboards: the balance scale and algebra tiles by drag and drop (18 Nov 2026)
+The owner asked for the Algebra widget's Balance scale to work "more like the algebra game": drag and drop, no switching
+between Left side / Right side / Both sides, easier to try things and check. Later, the same for Algebra tiles ("can we
+make this more intuitive?"). Only the interaction model comes from Algebra Builder (tools/algebra-builder); the widget's
+code is its own (`public/js/dash-tools4.js`: `tileTray`, `tileDrag`, `balance`, `algebra`; the maths in
+`public/js/dash-math4.js`).
+- **A tray** above the model: a + / − switch (the sign new tiles have) and a tile of each kind (x and 1; x², x and 1).
+  Tiles are dragged with Pointer Events (mouse, touch, pen); a lifted copy follows the finger and the place it would land
+  lights up. Tap a tile, then tap where it goes, is the same without dragging; the keyboard is Enter, Tab to the place,
+  Enter; Delete takes a tile away; Escape lets go. Every move is said (`ctx.say`), with whether the scale is level.
+- **Balance scale:** no side dropdown. A tile dropped on a pan goes on that side only, and the scale tips: as far as the
+  two sides' weights (with the secret x) differ (`tiltDeg`: 3° plus the difference, at most 12°, drawn as at most a fifth
+  of the arm), and the readout says which side is heavier. **Both sides**, a drop zone at the scale's foot, does the same
+  to both: a tile from the tray goes on both; a tile from a pan comes off both, and a side without that tile gets its
+  opposite (taking away x is adding −x, as in the game). A pan's tile dragged off the scale (or onto the tray, or Delete)
+  is taken away; onto the other pan, it moves there. ÷ n shows when every count shares by n; ± Remove zero pairs. "Try
+  x = [−|4|+] ✓ Check" weighs the equation as it is now with that x: "Yes, x = 5: both sides make 20." / "Not yet: left
+  3·4 + 5 = 17, right 2·4 + 10 = 18." It shows outside the readout, so it still works while the answer is hidden.
+- **State:** negative tiles are `lnx lnu rnx rnu`, the x last checked `tx`; each kept only when set, so every saved
+  balance cleans exactly as before (`where` is no longer set and is kept only for that). History steps add `addnx`,
+  `subnx`, `mv…` and `zero`. Make a question counts negative tiles.
+- **Algebra tiles:** tiles sort themselves into rows by kind; each zero pair sits together in a dashed box, explained
+  under the mat. Drag a tile onto its opposite (or tap one, then the other) and the pair puffs away: "+x and −x make 0."
+  Footer: ⇅ Flip sign, ± Remove zero pairs, 🧹 Clear (named by their tooltips, as the calm row has it). 🎯 Challenge:
+  "Build 2x² − x + 3", 🎲 a new one, ✓ Check ("Yes! That is …" / "Not yet: you have … The x tiles don't match."), ✕
+  Free play. State: `goal` [a, b, c] and `gk`, kept only when set.
+- Words in all 12 languages; the fit check adds a full balance (negatives, tipped, checked) and a checked challenge.
+  Tests: tests/unit/dash-algebra-drag.test.js (state, moves and tilt, Both sides, Check, rows and challenge, and a
+  Chromium drag with a mouse and with touch, taps and the keyboard).
+
 ## Crossword: a teacher's vocabulary list as a crossword (18 Nov 2026)
 
 Owner: "Create a crossword puzzle game where a teacher can upload their vocab words and you create a crossword puzzle
@@ -8092,3 +8127,54 @@ was super hit or miss ... Sometimes it was the AI voice, other times it was the 
   Each chapter's lap is chosen while the lamplighter picker or the menu shows and its first question prefetched
   (`BRB.prefetchSpeech`); each round prefetches its closing lines and the next round's question as it starts. A wrong
   plan's hint depends on the plan, so it can't be asked for ahead and may still be the device voice when slow.
+
+## Folders: drag to reorder, save in a pop-up (18 Nov 2026)
+Owner: "Remove the up and down and just let users edit the order by clicking and dragging, or holding down and dragging
+on mobile and tablet. You should be able to move the games around this way too. Make Save to folder a pop-up that asks
+which folder, confirms it saved, and offers to return to the Oomba game list or go to the folder."
+- **Reorder** (public/js/reorder.js): the folder chips under "My folders" (on Build and on every folder page) and the
+  games in one's own folder are lists marked `data-reorder`. A mouse drags after a few pixels; a finger or pen holds
+  still for 350 ms first, so a swipe still scrolls the page (a short buzz where the device allows). The item lifts and
+  follows the pointer while the others make room (one column: above an item's middle goes before it; wrapped chips:
+  reading order, mirrored right to left). A drop over a chip never opens it. Keyboard: a focused chip or a game's ⠿
+  grip moves one place with Alt and an arrow key; the new place is announced ("Word Trail: 1 of 3"). Each change posts
+  the whole order: `POST /api/game-folders/order` and `POST /api/game-folders/:id/order` with `{ ids }`
+  (services/game-folders.js `orderFolders`, `orderGames`: only the owner's, unknown ids ignored, the rest kept after in
+  their old order, one transaction). If saving fails the page reloads with the saved order. The ↑ ↓ buttons are gone
+  (their routes stay for anything that still calls them). A short hint under each list says how.
+- **Save to folder** (public/js/folder-save.js): every link to `/build/save?…` (the Oomba game list on /learn, a game's
+  page, the Studio, folders shared with you, a lesson) opens a pop-up instead: "Which folder?" with each folder (one
+  that already has the game is marked and can't be picked) or a new folder by name, then Save. The pop-up says "✅ Saved
+  to Fun Games" and offers "Keep browsing" (closes it, so the teacher is still on the game list) or "Open Fun Games".
+  Its data and words come from `GET /api/game-folders/save`; saving uses the existing routes, which now answer with the
+  folder. A modifier-key click (new tab) and a browser without script still get the /build/save page.
+- app.js loads both only where they are used (a list to drag, a click on Save to folder), with its own version.
+- Words in 13 languages: `folders.pick`, `keepBrowsing`, `openFolder`, `reorderHint`, `move`, `moved`.
+- Checks: tests/unit/games-not-lessons.test.js (both orders, owner only, the pop-up's data, the folder in the save
+  answer, no ↑ ↓); in a browser: chips and games by mouse, games by touch hold-and-drag, a swipe not reordering, Alt +
+  arrows, the order after a reload, and the pop-up into an existing and a new folder with both ways out.
+
+## Class jobs: one card per job (18 Nov 2026)
+
+The owner approved a mockup: the Class jobs settings had two big textareas (Jobs, Students) that didn't say who does
+which job. Now each job is a card.
+
+- **Cards** (public/js/dash-class5.js `jobsEditor`, EDITORS.jobcards in dash.js): a number, the job's name, ✕ (44 px,
+  not on the last job), and a Student dropdown showing who has the job this week: the people, "— Nobody yet —" on an
+  open job, and, for typed names, "✏️ Type a name…" (a field to add a name, which takes that job). ➕ Add a job under
+  the cards (16 at most); an empty job is dropped when saved. With no jobs typed, the usual jobs are the cards and are
+  saved once one is changed.
+- **Students come from:** "Names I type" or "<class>'s students", saved as `from` ('names' | 'class'). Dashboards saved
+  before have no `from` ('auto'): typed names if any, else the class, as before, so they show the same chart with no
+  migration. Typed names are listed under it, each with ✕ to take it off.
+- **Still positional.** Nothing new is stored for who does what: the sheet turns the people to shift 0 (job i is
+  person i) and a change puts them in a new order (`names` text or `crew.order`), so Next week and Shuffle work as
+  before. Picking someone already on a job, or waiting, swaps the two. An open job (more jobs than people) can't hold a
+  person at its place, so picking someone for it moves the job up to that person's place (the two jobs change places,
+  and the sheet says so); every other pair stays. Removing a job: its person takes the first open job or waits first
+  in line; removing a typed name: the next one waiting takes the job, or that job moves after the others' jobs.
+- **Waiting:** more students than jobs, the ones without a job this turn are one line under the jobs, "Waiting: Sam,
+  Ava" (in the order they come in with Next week), on the widget and under the cards.
+- The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
+  at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
+- Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".

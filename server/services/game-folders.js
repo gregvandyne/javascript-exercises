@@ -57,6 +57,26 @@ export function moveFolder(u, id, dir) {
   return ok();
 }
 
+/** A new order for the person's folders, as dragged (ids first to last). Ids that are not theirs are ignored; their
+ *  folders left out keep their old order after the ones given. */
+export function orderFolders(u, ids) {
+  if (!u || !Array.isArray(ids)) return fail('notFound');
+  const list = foldersOf(u.id), byId = new Map(list.map(x => [x.id, x]));
+  const given = [...new Set(ids.map(String))].filter(id => byId.has(id));
+  const order = [...given, ...list.map(x => x.id).filter(id => !given.includes(id))];
+  tx(() => order.forEach((id, k) => q.run('UPDATE game_folders SET position=? WHERE id=?', k, id)));
+  return ok();
+}
+/** A new order for the games in one of the person's folders, as dragged (game ids first to last); the same rules. */
+export function orderGames(u, folderId, ids) {
+  const f = getFolder(folderId); if (!owns(u, f) || !Array.isArray(ids)) return fail('notFound');
+  const have = q.all('SELECT game_id FROM game_folder_items WHERE folder_id=? ORDER BY position, added_at', f.id).map(r => r.game_id);
+  const set = new Set(have), given = [...new Set(ids.map(String))].filter(id => set.has(id));
+  const order = [...given, ...have.filter(id => !given.includes(id))];
+  tx(() => order.forEach((id, k) => q.run('UPDATE game_folder_items SET position=? WHERE folder_id=? AND game_id=?', k, f.id, id)));
+  return ok({ folder: f });
+}
+
 // ---------------------------------------------------------------- sharing a folder with colleagues
 /** The schools this person is staff of (teacher or admin): where they may share a folder. */
 export const staffSchools = u => (u ? S.schoolsOf(u.id).filter(s => s.role === 'teacher' || s.role === 'admin') : []);
